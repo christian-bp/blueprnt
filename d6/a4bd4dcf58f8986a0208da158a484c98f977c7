@@ -1,0 +1,138 @@
+packages/ui/src/components/button-group.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-83
+packages/ui/src/components/empty.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-104
+packages/ui/src/components/hover-card.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-44
+packages/ui/src/components/popover.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-89
+packages/ui/src/components/toggle.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-47
+packages/ui/src/components/avatar.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-112
+packages/ui/src/components/menubar.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-279
+packages/ui/src/components/sidebar.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-706
+packages/ui/src/components/card.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-100
+packages/ui/src/components/resizable.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-50
+packages/ui/src/components/breadcrumb.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-122
+packages/ui/src/components/native-select.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-62
+packages/ui/src/components/combobox.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-300
+packages/ui/src/components/tabs.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-90
+packages/ui/src/components/select.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-191
+packages/ui/src/components/dialog.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-168
+packages/ui/src/components/badge.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-49
+packages/ui/package.json
+  s_3d7a2a78506bcd::t_71095b20ef3980 12,17-20,24,26-27,29,32
+packages/ui/src/components/separator.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-28
+packages/ui/src/components/direction.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-22
+packages/ui/src/components/textarea.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-18
+packages/ui/src/components/label.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-24
+packages/ui/src/components/checkbox.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-33
+packages/ui/src/components/sonner.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-50
+packages/ui/src/components/kbd.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-26
+packages/ui/src/components/toggle-group.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-89
+turbo.json
+  h_86bcd1ca8b2945 3
+packages/ui/src/components/accordion.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-85
+packages/ui/src/components/aspect-ratio.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-11
+packages/ui/src/components/tooltip.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-57
+packages/ui/src/hooks/use-mobile.ts
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-19
+packages/ui/src/components/navigation-menu.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-165
+packages/ui/src/components/calendar.tsx
+  s_3d7a2a78506bcd::t_4aff8f6f5519e0 91
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-90,92-223
+packages/ui/src/components/input-group.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-155
+packages/ui/src/components/skeleton.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-13
+packages/ui/src/components/table.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-116
+packages/ui/src/components/progress.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-31
+packages/ui/src/components/input-otp.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-87
+packages/ui/src/components/collapsible.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-33
+packages/ui/src/components/alert.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-76
+packages/ui/src/components/command.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-196
+packages/ui/src/components/pagination.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-129
+packages/ui/src/components/scroll-area.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-55
+packages/ui/src/components/sheet.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-147
+packages/ui/src/components/drawer.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-134
+packages/ui/src/components/switch.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-33
+packages/ui/src/components/radio-group.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-44
+packages/ui/src/components/field.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-238
+packages/ui/src/components/chart.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-373
+packages/ui/src/components/slider.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-59
+packages/ui/src/components/input.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-19
+packages/ui/src/components/item.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-196
+packages/ui/src/components/alert-dialog.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-199
+packages/ui/src/components/spinner.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-4,9-14
+  s_3d7a2a78506bcd::t_630d799fe66ec2 5-8
+packages/ui/src/components/context-menu.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-262
+packages/ui/src/components/carousel.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-243
+packages/ui/src/components/dropdown-menu.tsx
+  s_3d7a2a78506bcd::t_71095b20ef3980 1-268
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "d6a4bd4dcf58f8986a0208da158a484c98f977c7",
+  "prompts": {},
+  "humans": {
+    "h_86bcd1ca8b2945": {
+      "author": "Christian Ek <hi@christianek.io>"
+    }
+  },
+  "sessions": {
+    "s_3d7a2a78506bcd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d75a144a-e6ab-4d64-9076-a2a167dc169e",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
