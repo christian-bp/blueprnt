@@ -85,5 +85,13 @@
       "tagline": "Strukturerad rollvärdering och banding: grundlagret för EU:s lönetransparensdirektiv.",
       "cta": "Kom igång"
     }
+  },
+  "dashboard": {
+    "title": "blueprnt",
+    "auth": {
+      "loading": "Kontrollerar din session",
+      "signedIn": "Du är inloggad.",
+      "signIn": { "cta": "Logga in" }
+    }
   }
 }

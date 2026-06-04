@@ -85,5 +85,13 @@
       "tagline": "Jäsennelty roolien arviointi ja luokittelu: perusta EU:n palkka-avoimuusdirektiiville.",
       "cta": "Aloita"
     }
+  },
+  "dashboard": {
+    "title": "blueprnt",
+    "auth": {
+      "loading": "Tarkistetaan istuntoasi",
+      "signedIn": "Olet kirjautunut sisään.",
+      "signIn": { "cta": "Kirjaudu sisään" }
+    }
   }
 }

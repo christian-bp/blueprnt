@@ -85,5 +85,13 @@
       "tagline": "Struktureret rollevurdering og bånding: fundamentet for EU's løngennemsigtighedsdirektiv.",
       "cta": "Kom i gang"
     }
+  },
+  "dashboard": {
+    "title": "blueprnt",
+    "auth": {
+      "loading": "Kontrollerer din session",
+      "signedIn": "Du er logget ind.",
+      "signIn": { "cta": "Log ind" }
+    }
   }
 }

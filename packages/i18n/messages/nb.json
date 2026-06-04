@@ -85,5 +85,13 @@
       "tagline": "Strukturert rollevurdering og bånding: grunnlaget for EUs lønnstransparensdirektiv.",
       "cta": "Kom i gang"
     }
+  },
+  "dashboard": {
+    "title": "blueprnt",
+    "auth": {
+      "loading": "Sjekker økten din",
+      "signedIn": "Du er logget inn.",
+      "signIn": { "cta": "Logg inn" }
+    }
   }
 }
