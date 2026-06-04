@@ -1,0 +1,28 @@
+packages/backend/convex/betterAuth/seed.ts
+  s_e95b5bd4433e6b::t_e36557618c1a59 77-139
+packages/backend/convex/seed.ts
+  s_e95b5bd4433e6b::t_02730983a0c635 78-123
+packages/backend/README.md
+  s_e95b5bd4433e6b::t_060c34ae2e423d 19-20
+packages/backend/convex/accounts/mirrors.ts
+  s_e95b5bd4433e6b::t_45c642a616a885 79-104
+packages/backend/convex/seed.test.ts
+  s_e95b5bd4433e6b::t_82109aff04a4db 181-183
+  s_e95b5bd4433e6b::t_ab086189cd9be1 55-162
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "29e6c3592be4f618ef7291a7b0406f76ced6fa6d",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
