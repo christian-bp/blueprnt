@@ -1530,6 +1530,15 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         Name
       >;
     };
+    seed: {
+      insertCredentialUser: FunctionReference<
+        "mutation",
+        "internal",
+        { email: string; name: string; passwordHash: string },
+        { created: boolean; userId: string },
+        Name
+      >;
+    };
     testing: {
       seedDuplicateMember: FunctionReference<
         "mutation",

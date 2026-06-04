@@ -13,6 +13,7 @@ import type * as auth from "../auth.js";
 import type * as generatedSchema from "../generatedSchema.js";
 import type * as membership from "../membership.js";
 import type * as permissions from "../permissions.js";
+import type * as seed from "../seed.js";
 import type * as testing from "../testing.js";
 
 import type {
@@ -28,6 +29,7 @@ const fullApi: ApiFromModules<{
   generatedSchema: typeof generatedSchema;
   membership: typeof membership;
   permissions: typeof permissions;
+  seed: typeof seed;
   testing: typeof testing;
 }> = anyApi as any;
 

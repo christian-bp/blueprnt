@@ -11,6 +11,8 @@ Convex backend (EU West / Ireland deployment, project quantumlabs/blueprnt).
   filesystem than /Volumes).
 - Deployment env vars: `BETTER_AUTH_SECRET`, `SITE_URL` (and later Scaleway
   TEM credentials). Set via `bunx convex env set`.
+- Dev seed (creates a sign-in-able local account): `bunx convex run seed:seedDevUser`
+  Credentials: `hej@bluprnt.se` / `abc123` (name "Hej"). Guard: only runs when `SITE_URL` contains `localhost`.
 - Email verification is disabled until the Scaleway TEM env vars
   (`SCW_SECRET_KEY`, `SCW_PROJECT_ID`, `SCW_REGION`, `EMAIL_FROM`) are set
   and the sending domain is verified. When configuring them, also flip
