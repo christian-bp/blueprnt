@@ -1,0 +1,28 @@
+apps/dashboard/components/onboarding/model-review.tsx
+  s_df12fc6ddf323c::t_f562f4bd88cb2d 5,24-33
+apps/dashboard/components/onboarding/criterion-editor.test.tsx
+  s_df12fc6ddf323c::t_de8011227e1fd0 139-154,158-178
+  s_df12fc6ddf323c::t_ec64f50b3be455 155-157
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_df12fc6ddf323c::t_f5a3fc2b29176d 52,54-55
+  s_df12fc6ddf323c::t_a1be2c02a59303 87,89,99
+apps/dashboard/components/onboarding/model-setup-step.tsx
+  s_df12fc6ddf323c::t_5a759646deef02 69
+  s_df12fc6ddf323c::t_dcf45757df92c5 103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "cd48384077506a2bbbb54077574a0a03f7eb7b5e",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
