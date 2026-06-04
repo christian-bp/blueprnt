@@ -77,7 +77,9 @@ export const deliver = internalAction({
         }
       )
       if (!response.ok) {
-        throw new Error(`scaleway ${response.status}: ${await response.text()}`)
+        throw new Error(
+          `scaleway ${response.status}: ${(await response.text()).slice(0, 500)}`
+        )
       }
       const body = (await response.json()) as { emails?: { id?: string }[] }
       await ctx.runMutation(internal.email.outbox.markSent, {
@@ -109,8 +111,10 @@ export const getForDelivery = internalMutation({
   returns: v.union(v.null(), v.any()),
   handler: async (ctx, { emailId }) => {
     const email = await ctx.db.get(emailId)
-    // Never re-send or re-flag an already-sent email.
-    if (email === null || email.status === "sent") return null
+    // Never re-send an already-sent email, and never double-pick a row a
+    // concurrent deliver is already sending.
+    if (email === null || email.status === "sent" || email.status === "sending")
+      return null
     await ctx.db.patch(emailId, { status: "sending" })
     return email
   },
@@ -146,6 +150,38 @@ export const markFailedAttempt = internalMutation({
       attempts,
       lastError,
     })
+    return null
+  },
+})
+
+// Scheduled actions are at-most-once: a crashed deliver strands rows in
+// "sending" (or "queued" when its reschedule was lost). The sweep cron
+// requeues stale rows and fails exhausted ones.
+export const sweepStaleEmails = internalMutation({
+  args: { olderThanMs: v.number() },
+  returns: v.null(),
+  handler: async (ctx, { olderThanMs }) => {
+    const cutoff = Date.now() - olderThanMs
+    for (const status of ["sending", "queued"] as const) {
+      const rows = await ctx.db
+        .query("emails")
+        .withIndex("by_status", (q) => q.eq("status", status))
+        .collect()
+      for (const row of rows) {
+        if (row._creationTime >= cutoff) continue
+        if (row.attempts >= MAX_ATTEMPTS) {
+          await ctx.db.patch(row._id, {
+            status: "failed",
+            lastError: "stranded after crash; failed by sweep",
+          })
+          continue
+        }
+        await ctx.db.patch(row._id, { status: "queued" })
+        await ctx.scheduler.runAfter(0, internal.email.outbox.deliver, {
+          emailId: row._id,
+        })
+      }
+    }
     return null
   },
 })

@@ -59,6 +59,44 @@ describe("email outbox", () => {
     })
   })
 
+  it("sweep requeues stale sending/queued rows and fails exhausted ones", async () => {
+    const t = initConvexTest()
+    const fetchSpy = stubFetch(async () =>
+      Response.json({ emails: [{ id: "scw-recovered" }] })
+    )
+    vi.useFakeTimers()
+    await t.run(async (ctx) => {
+      await ctx.db.insert("emails", {
+        to: "stuck@x.se",
+        templateKey: "verifyEmail",
+        props: { url: "https://x.example/verify" },
+        locale: "en",
+        status: "sending",
+        attempts: 1,
+      })
+      await ctx.db.insert("emails", {
+        to: "exhausted@x.se",
+        templateKey: "verifyEmail",
+        props: { url: "https://x.example/verify" },
+        locale: "en",
+        status: "sending",
+        attempts: 3,
+      })
+    })
+    await t.mutation(internal.email.outbox.sweepStaleEmails, {
+      olderThanMs: -1,
+    })
+    await t.finishAllScheduledFunctions(vi.runAllTimers)
+    expect(fetchSpy).toHaveBeenCalledOnce()
+    await t.run(async (ctx) => {
+      const rows = await ctx.db.query("emails").collect()
+      const recovered = rows.find((r) => r.to === "stuck@x.se")
+      const exhausted = rows.find((r) => r.to === "exhausted@x.se")
+      expect(recovered?.status).toBe("sent")
+      expect(exhausted?.status).toBe("failed")
+    })
+  })
+
   it("cleanup deletes old sent rows but keeps queued ones", async () => {
     const t = initConvexTest()
     await t.run(async (ctx) => {

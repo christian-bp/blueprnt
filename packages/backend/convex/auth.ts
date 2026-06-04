@@ -93,8 +93,11 @@ export const createAuthOptions = (
     database: authComponent.adapter(ctx),
     emailAndPassword: {
       enabled: true,
-      // The durable outbox exists now (Task 12), so we can require verification.
-      requireEmailVerification: true,
+      // Flip to true together with configuring the Scaleway TEM env vars:
+      // with no working sender, required verification strands every new
+      // account (the manual path is reading props.url from the emails row
+      // in the Convex dashboard). Tracked in packages/backend/README.md.
+      requireEmailVerification: false,
       sendResetPassword: async (data) => {
         // No per-account locale yet (Task 12 slice); reset emails go out in en.
         await requireRunMutationCtx(ctx).runMutation(
