@@ -1,0 +1,29 @@
+packages/backend/README.md
+  s_e95b5bd4433e6b::t_1d734078093db0 1-13
+docs/superpowers/specs/2026-06-04-convex-backend-better-auth-design.md
+  s_e95b5bd4433e6b::t_e116c48e1ea48a 98
+packages/backend/convex/betterAuth/permissions.ts
+  s_e95b5bd4433e6b::t_285ce81a63618e 20-22
+packages/backend/convex/auth.ts
+  s_e95b5bd4433e6b::t_4ddbbae83e19f1 52-55
+  s_e95b5bd4433e6b::t_7b6575161d0737 40
+  s_e95b5bd4433e6b::t_d4574457d3524a 15-21
+packages/backend/convex/betterAuth/schema.ts
+  s_e95b5bd4433e6b::t_9e12790b118e51 6-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4518e365d4126cb489805a9d256dde20b4bb33b0",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
