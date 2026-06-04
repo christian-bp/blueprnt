@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import { EMAIL_LOCALES } from "./messages"
 import { renderEmail } from "./render"
 
 describe("renderEmail", () => {
@@ -28,5 +29,19 @@ describe("renderEmail", () => {
       locale: "xx",
     })
     expect(result.subject).toBe("Reset your password")
+    expect(result.text).not.toContain("<")
+  })
+
+  it("every EMAIL_LOCALES entry has its own translations (no silent fallback)", async () => {
+    const subjects = await Promise.all(
+      EMAIL_LOCALES.map(async (locale) => {
+        const result = await renderEmail("verifyEmail", {
+          url: "https://x.example/verify",
+          locale,
+        })
+        return result.subject
+      })
+    )
+    expect(new Set(subjects).size).toBe(EMAIL_LOCALES.length)
   })
 })

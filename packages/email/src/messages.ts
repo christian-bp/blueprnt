@@ -19,6 +19,8 @@ export function emailMessages(locale: string): EmailMessages {
   return en.email
 }
 
+// Email messages must use simple {param} placeholders only. No ICU
+// select/plural syntax: fillTemplate's regex would mangle it.
 export function fillTemplate(
   text: string,
   params: Record<string, string>
