@@ -1,0 +1,41 @@
+packages/backend/convex/_generated/api.d.ts
+  s_e95b5bd4433e6b::t_feed4f58eb1676 16,37
+  s_e95b5bd4433e6b::t_4a284805562258 17-18,38-39
+packages/backend/convex/tsconfig.json
+  s_e95b5bd4433e6b::t_46925fa5f57bcc 6-9
+packages/backend/convex/auth.ts
+  s_e95b5bd4433e6b::t_6f2a9808b3a968 7
+  s_e95b5bd4433e6b::t_9f06475f3aa5e0 88-90,92,96-123,134-152
+packages/backend/convex/email/outbox.ts
+  s_e95b5bd4433e6b::t_fa5341b07c0abd 1-51,59-169
+  s_e95b5bd4433e6b::t_5848d761a1b48b 52-58
+packages/backend/package.json
+  s_e95b5bd4433e6b::t_9c63cde6650595 18
+packages/backend/convex/email/tables.ts
+  s_e95b5bd4433e6b::t_3d7b2b463d78c8 1-25
+packages/backend/convex/email/outbox.test.ts
+  s_e95b5bd4433e6b::t_95612d09228ef4 1-91
+packages/backend/convex/schema.ts
+  s_e95b5bd4433e6b::t_9ff8204ed0667d 3,9
+packages/backend/convex/crons.ts
+  s_e95b5bd4433e6b::t_8e9a854e2971ad 1-15
+packages/backend/convex/accounts/workspace.ts
+  s_e95b5bd4433e6b::t_eb0feb16e6d3a3 61-79
+  s_e95b5bd4433e6b::t_8f1dd284cb5a48 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "de767f577f8d18d5c169d3b9fe7bc390bdfb13d1",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
