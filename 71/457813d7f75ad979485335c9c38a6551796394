@@ -1,0 +1,24 @@
+docs/PLAN-V1.md
+  s_e95b5bd4433e6b::t_a5ca863f5f1ed9 107
+apps/web/app/[locale]/page.tsx
+  s_e95b5bd4433e6b::t_b412bdb24b471e 35,37-38,42
+  s_e95b5bd4433e6b::t_3c95abbb5af780 4
+CLAUDE.md
+  s_e95b5bd4433e6b::t_1ad939410ce1fc 22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "71457813d7f75ad979485335c9c38a6551796394",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
