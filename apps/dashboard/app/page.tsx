@@ -1,6 +1,7 @@
 "use client"
 
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react"
+import { Spinner } from "@workspace/ui/components/spinner"
 import { useTranslations } from "next-intl"
 import { SignInScreen } from "@/components/auth/sign-in-screen"
 import { DashboardShell } from "@/components/dashboard-shell"
@@ -11,7 +12,7 @@ export default function HomePage() {
     <>
       <AuthLoading>
         <main className="flex min-h-svh items-center justify-center">
-          <p>{t("auth.loading")}</p>
+          <Spinner className="size-6" aria-label={t("auth.loading")} />
         </main>
       </AuthLoading>
       <Unauthenticated>

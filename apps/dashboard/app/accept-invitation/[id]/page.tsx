@@ -1,6 +1,7 @@
 "use client"
 
 import { AuthLoading, Authenticated, Unauthenticated } from "convex/react"
+import { Spinner } from "@workspace/ui/components/spinner"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
@@ -17,7 +18,7 @@ export default function AcceptInvitationPage() {
     <main>
       <h1>{t("invitation.title")}</h1>
       <AuthLoading>
-        <p>{t("loading")}</p>
+        <Spinner aria-label={t("loading")} />
       </AuthLoading>
       <Unauthenticated>
         <p>
