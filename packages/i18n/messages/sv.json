@@ -100,18 +100,10 @@
       "loading": "Kontrollerar din session",
       "email": "E-post",
       "password": "Lösenord",
-      "name": "Namn",
       "signIn": {
         "title": "Logga in",
         "cta": "Logga in",
-        "description": "Ange din e-post nedan för att logga in på din arbetsyta",
-        "noAccount": "Inget konto ännu?"
-      },
-      "signUp": {
-        "title": "Skapa konto",
-        "cta": "Skapa konto",
-        "description": "Skapa ditt blueprnt-konto",
-        "haveAccount": "Har du redan ett konto?"
+        "description": "Ange din e-post nedan för att logga in på din arbetsyta"
       },
       "invitation": {
         "title": "Arbetsyteinbjudan",

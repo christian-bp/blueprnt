@@ -12,7 +12,6 @@ export function SignInScreen() {
     <main className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm">
         <EmailPasswordForm
-          mode="signIn"
           onSubmit={async ({ email, password }) => {
             const { error } = await authClient.signIn.email({
               email,

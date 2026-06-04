@@ -100,18 +100,10 @@
       "loading": "Checking your session",
       "email": "Email",
       "password": "Password",
-      "name": "Name",
       "signIn": {
         "title": "Sign in",
         "cta": "Sign in",
-        "description": "Enter your email below to sign in to your workspace",
-        "noAccount": "No account yet?"
-      },
-      "signUp": {
-        "title": "Create account",
-        "cta": "Create account",
-        "description": "Create your blueprnt account",
-        "haveAccount": "Already have an account?"
+        "description": "Enter your email below to sign in to your workspace"
       },
       "invitation": {
         "title": "Workspace invitation",
