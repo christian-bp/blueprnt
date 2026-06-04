@@ -1,0 +1,22 @@
+apps/dashboard/components/data-table.tsx
+  ai_agent 770-772
+  s_e95b5bd4433e6b::t_c68ef303f69a09 700-701,715,763
+apps/dashboard/i18n-env.d.ts
+  s_e95b5bd4433e6b::t_fb149ff3d4115e 1-3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "2ef3e943358022167aa827739582e46693d3f65a",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
