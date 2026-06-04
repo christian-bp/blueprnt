@@ -12,7 +12,7 @@ export default function HomePage() {
     <>
       <AuthLoading>
         <main className="flex min-h-svh items-center justify-center">
-          <Spinner className="size-6" aria-label={t("auth.loading")} />
+          <Spinner aria-label={t("auth.loading")} />
         </main>
       </AuthLoading>
       <Unauthenticated>
