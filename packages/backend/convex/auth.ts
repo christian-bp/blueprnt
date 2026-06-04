@@ -11,6 +11,12 @@ import type { DataModel } from "./_generated/dataModel"
 import authConfig from "./auth.config"
 import { ac, admin, editor } from "./betterAuth/permissions"
 import authSchema from "./betterAuth/schema"
+import {
+  onOrganizationCreate,
+  onUserCreate,
+  onUserDelete,
+  onUserUpdate,
+} from "./accounts/mirrors"
 
 function requireSiteUrl(): string {
   const url = process.env.SITE_URL
@@ -28,7 +34,22 @@ export const authComponent = createClient<DataModel, typeof authSchema>(
     local: { schema: authSchema },
     authFunctions,
     triggers: {
-      // Wired in Task 8 (users mirror + workspace profile seed).
+      user: {
+        onCreate: async (ctx, doc) => {
+          await onUserCreate(ctx, doc)
+        },
+        onUpdate: async (ctx, newDoc, oldDoc) => {
+          await onUserUpdate(ctx, newDoc, oldDoc)
+        },
+        onDelete: async (ctx, doc) => {
+          await onUserDelete(ctx, doc)
+        },
+      },
+      organization: {
+        onCreate: async (ctx, doc) => {
+          await onOrganizationCreate(ctx, doc)
+        },
+      },
     },
   }
 )
