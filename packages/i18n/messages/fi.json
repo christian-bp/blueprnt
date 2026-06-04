@@ -91,7 +91,24 @@
     "auth": {
       "loading": "Tarkistetaan istuntoasi",
       "signedIn": "Olet kirjautunut sisään.",
-      "signIn": { "cta": "Kirjaudu sisään" }
+      "email": "Sähköposti",
+      "password": "Salasana",
+      "name": "Nimi",
+      "signIn": { "title": "Kirjaudu sisään", "cta": "Kirjaudu sisään" },
+      "signUp": { "title": "Luo tili", "cta": "Luo tili" },
+      "invitation": {
+        "title": "Työtilakutsu",
+        "accept": "Hyväksy kutsu",
+        "signInFirst": "Kirjaudu sisään hyväksyäksesi tämän kutsun."
+      },
+      "error": "Jokin meni pieleen. Yritä uudelleen."
     }
+  },
+  "errors": {
+    "notAuthenticated": "Sinun täytyy kirjautua sisään.",
+    "notAMember": "Et ole tämän työtilan jäsen.",
+    "adminRequired": "Vain työtilan ylläpitäjät voivat tehdä tämän.",
+    "membershipConflict": "Jäsenyyttäsi ei voitu vahvistaa. Ota yhteyttä tukeen.",
+    "notFound": "Ei löydy."
   }
 }

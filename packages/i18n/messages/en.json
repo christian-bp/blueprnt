@@ -91,7 +91,24 @@
     "auth": {
       "loading": "Checking your session",
       "signedIn": "You are signed in.",
-      "signIn": { "cta": "Sign in" }
+      "email": "Email",
+      "password": "Password",
+      "name": "Name",
+      "signIn": { "title": "Sign in", "cta": "Sign in" },
+      "signUp": { "title": "Create account", "cta": "Create account" },
+      "invitation": {
+        "title": "Workspace invitation",
+        "accept": "Accept invitation",
+        "signInFirst": "Sign in to accept this invitation."
+      },
+      "error": "Something went wrong. Please try again."
     }
+  },
+  "errors": {
+    "notAuthenticated": "You need to sign in.",
+    "notAMember": "You are not a member of this workspace.",
+    "adminRequired": "Only workspace admins can do this.",
+    "membershipConflict": "Your membership could not be verified. Contact support.",
+    "notFound": "Not found."
   }
 }

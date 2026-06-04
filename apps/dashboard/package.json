@@ -10,7 +10,7 @@
     "lint": "biome lint .",
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run"
   },
   "dependencies": {
     "@convex-dev/better-auth": "0.12.2",

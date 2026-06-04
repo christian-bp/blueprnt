@@ -91,7 +91,24 @@
     "auth": {
       "loading": "Kontrollerer din session",
       "signedIn": "Du er logget ind.",
-      "signIn": { "cta": "Log ind" }
+      "email": "E-mail",
+      "password": "Adgangskode",
+      "name": "Navn",
+      "signIn": { "title": "Log ind", "cta": "Log ind" },
+      "signUp": { "title": "Opret konto", "cta": "Opret konto" },
+      "invitation": {
+        "title": "Arbejdsområdeinvitation",
+        "accept": "Accepter invitation",
+        "signInFirst": "Log ind for at acceptere denne invitation."
+      },
+      "error": "Noget gik galt. Prøv igen."
     }
+  },
+  "errors": {
+    "notAuthenticated": "Du skal logge ind.",
+    "notAMember": "Du er ikke medlem af dette arbejdsområde.",
+    "adminRequired": "Kun arbejdsområdeadministratorer kan gøre dette.",
+    "membershipConflict": "Dit medlemskab kunne ikke bekræftes. Kontakt support.",
+    "notFound": "Ikke fundet."
   }
 }

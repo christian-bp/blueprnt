@@ -91,7 +91,24 @@
     "auth": {
       "loading": "Sjekker økten din",
       "signedIn": "Du er logget inn.",
-      "signIn": { "cta": "Logg inn" }
+      "email": "E-post",
+      "password": "Passord",
+      "name": "Navn",
+      "signIn": { "title": "Logg inn", "cta": "Logg inn" },
+      "signUp": { "title": "Opprett konto", "cta": "Opprett konto" },
+      "invitation": {
+        "title": "Arbeidsområdeinvitasjon",
+        "accept": "Aksepter invitasjon",
+        "signInFirst": "Logg inn for å akseptere denne invitasjonen."
+      },
+      "error": "Noe gikk galt. Prøv igjen."
     }
+  },
+  "errors": {
+    "notAuthenticated": "Du må logge inn.",
+    "notAMember": "Du er ikke medlem av dette arbeidsområdet.",
+    "adminRequired": "Bare arbeidsområdeadministratorer kan gjøre dette.",
+    "membershipConflict": "Medlemskapet ditt kunne ikke bekreftes. Kontakt støtte.",
+    "notFound": "Ikke funnet."
   }
 }

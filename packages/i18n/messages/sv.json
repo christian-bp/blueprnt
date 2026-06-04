@@ -91,7 +91,24 @@
     "auth": {
       "loading": "Kontrollerar din session",
       "signedIn": "Du är inloggad.",
-      "signIn": { "cta": "Logga in" }
+      "email": "E-post",
+      "password": "Lösenord",
+      "name": "Namn",
+      "signIn": { "title": "Logga in", "cta": "Logga in" },
+      "signUp": { "title": "Skapa konto", "cta": "Skapa konto" },
+      "invitation": {
+        "title": "Arbetsyteinbjudan",
+        "accept": "Acceptera inbjudan",
+        "signInFirst": "Logga in för att acceptera inbjudan."
+      },
+      "error": "Något gick fel. Försök igen."
     }
+  },
+  "errors": {
+    "notAuthenticated": "Du behöver logga in.",
+    "notAMember": "Du är inte medlem i den här arbetsytan.",
+    "adminRequired": "Endast arbetsytans administratörer kan göra detta.",
+    "membershipConflict": "Ditt medlemskap kunde inte verifieras. Kontakta supporten.",
+    "notFound": "Hittades inte."
   }
 }
