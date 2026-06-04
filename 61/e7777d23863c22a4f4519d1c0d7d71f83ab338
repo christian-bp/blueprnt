@@ -1,0 +1,19 @@
+docs/adr/0003-ai-embedded-assistant.md
+  s_df12fc6ddf323c::t_89677dd5ee8ef2 23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "61e7777d23863c22a4f4519d1c0d7d71f83ab338",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
