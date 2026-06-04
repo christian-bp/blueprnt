@@ -1,0 +1,43 @@
+apps/dashboard/components/onboarding/model-setup-step.tsx
+  s_df12fc6ddf323c::t_92fade41de2cc8 1-11
+apps/dashboard/components/onboarding/onboarding-gate.tsx
+  s_df12fc6ddf323c::t_e88d6756479b49 1-28,30-49
+  s_df12fc6ddf323c::t_2e71a929010b45 29
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_072c7d169f4b5a 211-221
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_c427ac45f0d2a6 211-221
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_66ed228da7d764 211-221
+apps/dashboard/components/onboarding/onboarding-gate.test.tsx
+  s_df12fc6ddf323c::t_a09f9019de038b 1-47
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_9c572583f52410 211-221
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_c99ce2df54ca32 211-221
+apps/dashboard/components/onboarding/company-profile-step.tsx
+  s_df12fc6ddf323c::t_8b3b902c48423e 1-8
+apps/dashboard/components/onboarding/create-workspace-step.tsx
+  s_df12fc6ddf323c::t_f422357499d900 1-8
+apps/dashboard/app/page.tsx
+  s_df12fc6ddf323c::t_031477bfbd1631 7,22
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_df12fc6ddf323c::t_3e86d589e6a297 1-45,48-64
+  s_df12fc6ddf323c::t_b30241cbd2a327 46-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "dfa4d2b6486df1a00eb412593d95835c40460aa8",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
