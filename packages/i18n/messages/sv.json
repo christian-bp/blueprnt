@@ -7,6 +7,26 @@
       "editor": "Editor"
     }
   },
+  "email": {
+    "invitation": {
+      "subject": "{inviterName} har bjudit in dig till {workspaceName} på blueprnt",
+      "heading": "Gå med i {workspaceName}",
+      "body": "{inviterName} har bjudit in dig till arbetsytan {workspaceName}.",
+      "cta": "Acceptera inbjudan"
+    },
+    "verifyEmail": {
+      "subject": "Verifiera din e-postadress",
+      "heading": "Verifiera din e-post",
+      "body": "Bekräfta din e-postadress för att aktivera ditt blueprnt-konto.",
+      "cta": "Verifiera e-post"
+    },
+    "resetPassword": {
+      "subject": "Återställ ditt lösenord",
+      "heading": "Återställ ditt lösenord",
+      "body": "Klicka på knappen nedan för att välja ett nytt lösenord.",
+      "cta": "Återställ lösenord"
+    }
+  },
   "model": {
     "track": "Track",
     "level": "Nivå",

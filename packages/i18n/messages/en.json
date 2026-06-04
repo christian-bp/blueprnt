@@ -7,6 +7,26 @@
       "editor": "Editor"
     }
   },
+  "email": {
+    "invitation": {
+      "subject": "{inviterName} invited you to {workspaceName} on blueprnt",
+      "heading": "Join {workspaceName}",
+      "body": "{inviterName} has invited you to the workspace {workspaceName}.",
+      "cta": "Accept invitation"
+    },
+    "verifyEmail": {
+      "subject": "Verify your email address",
+      "heading": "Verify your email",
+      "body": "Confirm your email address to activate your blueprnt account.",
+      "cta": "Verify email"
+    },
+    "resetPassword": {
+      "subject": "Reset your password",
+      "heading": "Reset your password",
+      "body": "Click the button below to choose a new password.",
+      "cta": "Reset password"
+    }
+  },
   "model": {
     "track": "Track",
     "level": "Level",

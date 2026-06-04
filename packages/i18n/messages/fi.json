@@ -7,6 +7,26 @@
       "editor": "Editor"
     }
   },
+  "email": {
+    "invitation": {
+      "subject": "{inviterName} kutsui sinut työtilaan {workspaceName} blueprntissä",
+      "heading": "Liity työtilaan {workspaceName}",
+      "body": "{inviterName} on kutsunut sinut työtilaan {workspaceName}.",
+      "cta": "Hyväksy kutsu"
+    },
+    "verifyEmail": {
+      "subject": "Vahvista sähköpostiosoitteesi",
+      "heading": "Vahvista sähköpostisi",
+      "body": "Vahvista sähköpostiosoitteesi aktivoidaksesi blueprnt-tilisi.",
+      "cta": "Vahvista sähköposti"
+    },
+    "resetPassword": {
+      "subject": "Nollaa salasanasi",
+      "heading": "Nollaa salasanasi",
+      "body": "Napsauta alla olevaa painiketta valitaksesi uuden salasanan.",
+      "cta": "Nollaa salasana"
+    }
+  },
   "model": {
     "track": "Track",
     "level": "Taso",

@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { describe, expect, it } from "vitest"
 import da from "../messages/da.json"
 import en from "../messages/en.json"
@@ -26,4 +27,15 @@ describe("message file parity", () => {
       expect(flattenKeys(messages).sort()).toEqual(enKeys)
     })
   }
+})
+
+import { routing } from "./routing"
+
+it("messages folder matches routing.locales exactly", () => {
+  const files = Object.keys(
+    import.meta.glob("../messages/*.json", { eager: false })
+  )
+    .map((p) => p.replace("../messages/", "").replace(".json", ""))
+    .sort()
+  expect(files).toEqual([...routing.locales].sort())
 })
