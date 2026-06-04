@@ -1,0 +1,31 @@
+packages/i18n/messages/da.json
+  s_e95b5bd4433e6b::t_23089446d1902c 106
+apps/dashboard/components/auth/email-password-form.test.tsx
+  s_e95b5bd4433e6b::t_7bc2a8caf501bf 7,10,16-17
+packages/i18n/messages/fi.json
+  s_e95b5bd4433e6b::t_23089446d1902c 106
+packages/i18n/messages/sv.json
+  s_e95b5bd4433e6b::t_23089446d1902c 106
+packages/i18n/messages/en.json
+  s_e95b5bd4433e6b::t_23089446d1902c 106
+apps/dashboard/components/auth/email-password-form.tsx
+  s_e95b5bd4433e6b::t_fdda50317e9f29 21-23,51-52,63,72
+packages/i18n/messages/nb.json
+  s_e95b5bd4433e6b::t_23089446d1902c 106
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b238359c0566b312072a02e7c1a6c1edf8e36ac6",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
