@@ -1,0 +1,65 @@
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_f989051ba80225 65
+  s_df12fc6ddf323c::t_d45f4352c315fa 31
+  s_df12fc6ddf323c::t_1c4b687fc5f255 59
+docs/PLAN-V1.md
+  s_df12fc6ddf323c::t_2f9cc3b56d4b75 49
+  s_df12fc6ddf323c::t_2e5611cf8576a9 80
+  s_df12fc6ddf323c::t_878f9ab21ac8ed 129
+  s_df12fc6ddf323c::t_22b2d44a4b30f2 69
+  s_df12fc6ddf323c::t_45db513024967c 119
+  s_df12fc6ddf323c::t_29edf86a94f489 89
+docs/contexts/evaluation-model/track-level-band.md
+  s_df12fc6ddf323c::t_4115c1e7d1432a 1-119
+packages/backend/convex/schema.test.ts
+  s_df12fc6ddf323c::t_902dfec7a866eb 57
+docs/contexts/assessment/CONTEXT.md
+  s_df12fc6ddf323c::t_fde8203c0afa47 8
+  s_df12fc6ddf323c::t_66d4d7f4fb5958 32-34
+  s_df12fc6ddf323c::t_903914e50dc61b 50
+  s_df12fc6ddf323c::t_b5eec56e07de74 12-13
+  s_df12fc6ddf323c::t_27c3e64dcf6d0b 66
+  s_df12fc6ddf323c::t_ee5bdab66d6175 77
+docs/contexts/evaluation-model/CONTEXT.md
+  s_df12fc6ddf323c::t_2157141cea5cdb 109
+  s_df12fc6ddf323c::t_fad812897653dc 5
+  s_df12fc6ddf323c::t_e1af2428211762 9-12,14-15
+  s_df12fc6ddf323c::t_37d874fe741c11 79
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_5991d3529ed545 65
+  s_df12fc6ddf323c::t_c674865b92120f 31
+  s_df12fc6ddf323c::t_e860587794069f 59
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_2ebd5d9cc1ca0e 31
+  s_df12fc6ddf323c::t_488e21f2634097 65
+  s_df12fc6ddf323c::t_47b7cad1935159 59
+CONTEXT-MAP.md
+  s_df12fc6ddf323c::t_700e9543433c94 13
+  s_df12fc6ddf323c::t_435d36d30c83f6 16
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_b41113cfce1201 65
+  s_df12fc6ddf323c::t_daee4315f08605 31
+  s_df12fc6ddf323c::t_1bc9a2927668bb 59
+packages/backend/convex/assessment/tables.ts
+  s_df12fc6ddf323c::t_572a2deff2c7b9 9
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_3409a3b9ac13a6 59
+  s_df12fc6ddf323c::t_8599473b91d330 65
+  s_df12fc6ddf323c::t_fecc28b0a1d2e7 31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "ab202a6d981de5c29a3914a112f6a18caa50dffc",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
