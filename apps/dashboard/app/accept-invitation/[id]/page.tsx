@@ -21,7 +21,7 @@ export default function AcceptInvitationPage() {
       </AuthLoading>
       <Unauthenticated>
         <p>
-          <Link href="/sign-in">{t("invitation.signInFirst")}</Link>
+          <Link href="/">{t("invitation.signInFirst")}</Link>
         </p>
       </Unauthenticated>
       <Authenticated>

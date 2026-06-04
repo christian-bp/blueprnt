@@ -2,7 +2,7 @@
 
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react"
 import { useTranslations } from "next-intl"
-import Link from "next/link"
+import { SignInScreen } from "@/components/auth/sign-in-screen"
 import { DashboardShell } from "@/components/dashboard-shell"
 
 export default function HomePage() {
@@ -10,15 +10,12 @@ export default function HomePage() {
   return (
     <>
       <AuthLoading>
-        <main>
+        <main className="flex min-h-svh items-center justify-center">
           <p>{t("auth.loading")}</p>
         </main>
       </AuthLoading>
       <Unauthenticated>
-        <main>
-          <h1>{t("title")}</h1>
-          <Link href="/sign-in">{t("auth.signIn.cta")}</Link>
-        </main>
+        <SignInScreen />
       </Unauthenticated>
       <Authenticated>
         <DashboardShell />

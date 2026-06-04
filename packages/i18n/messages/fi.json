@@ -98,7 +98,6 @@
     },
     "auth": {
       "loading": "Tarkistetaan istuntoasi",
-      "signedIn": "Olet kirjautunut sisään.",
       "email": "Sähköposti",
       "password": "Salasana",
       "name": "Nimi",

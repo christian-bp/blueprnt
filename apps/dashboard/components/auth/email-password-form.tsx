@@ -100,7 +100,7 @@ export function EmailPasswordForm(props: {
                 ) : (
                   <>
                     {t("signUp.haveAccount")}{" "}
-                    <Link href="/sign-in">{t("signIn.cta")}</Link>
+                    <Link href="/">{t("signIn.cta")}</Link>
                   </>
                 )}
               </FieldDescription>

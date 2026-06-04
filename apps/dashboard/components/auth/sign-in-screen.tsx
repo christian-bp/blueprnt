@@ -4,7 +4,9 @@ import { useRouter } from "next/navigation"
 import { EmailPasswordForm } from "@/components/auth/email-password-form"
 import { authClient } from "@/lib/auth-client"
 
-export default function SignInPage() {
+// Rendered at / for unauthenticated visitors; after sign-in the reactive
+// auth state swaps the route to the dashboard shell.
+export function SignInScreen() {
   const router = useRouter()
   return (
     <main className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">

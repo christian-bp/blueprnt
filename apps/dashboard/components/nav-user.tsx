@@ -41,7 +41,7 @@ export function NavUser() {
 
   async function handleSignOut() {
     await authClient.signOut()
-    router.push("/sign-in")
+    router.push("/")
   }
 
   return (

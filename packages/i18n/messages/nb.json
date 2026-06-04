@@ -98,7 +98,6 @@
     },
     "auth": {
       "loading": "Sjekker økten din",
-      "signedIn": "Du er logget inn.",
       "email": "E-post",
       "password": "Passord",
       "name": "Navn",

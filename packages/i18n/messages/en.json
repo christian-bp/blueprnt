@@ -98,7 +98,6 @@
     },
     "auth": {
       "loading": "Checking your session",
-      "signedIn": "You are signed in.",
       "email": "Email",
       "password": "Password",
       "name": "Name",

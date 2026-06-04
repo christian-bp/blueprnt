@@ -98,7 +98,6 @@
     },
     "auth": {
       "loading": "Kontrollerar din session",
-      "signedIn": "Du är inloggad.",
       "email": "E-post",
       "password": "Lösenord",
       "name": "Namn",
