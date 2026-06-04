@@ -169,13 +169,16 @@
       "name": "@workspace/vitest-config",
       "version": "0.0.0",
       "dependencies": {
-        "vitest": "^4.1.0",
+        "vitest": "4.1.8",
       },
       "devDependencies": {
-        "@vitest/coverage-v8": "^4.1.0",
+        "@vitest/coverage-v8": "4.1.8",
         "happy-dom": "^20.10.0",
       },
     },
+  },
+  "overrides": {
+    "vitest": "4.1.8",
   },
   "packages": {
     "@alloc/quick-lru": ["@alloc/quick-lru@5.2.0", "", {}, "sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw=="],

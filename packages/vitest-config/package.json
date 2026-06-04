@@ -8,10 +8,10 @@
     "./react": "./src/react.ts"
   },
   "dependencies": {
-    "vitest": "^4.1.0"
+    "vitest": "4.1.8"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^4.1.0",
+    "@vitest/coverage-v8": "4.1.8",
     "happy-dom": "^20.10.0"
   }
 }

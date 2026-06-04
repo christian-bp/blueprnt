@@ -1,6 +1,6 @@
 # Design: Convex backend + Better Auth (Fas 1 foundation)
 
-Status: approved design, pending implementation plan.
+Status: implemented (Fas 1 foundation). Remaining manual step: Scaleway TEM credentials + flipping requireEmailVerification (see packages/backend/README.md).
 Date: 2026-06-04.
 Scope decided with the founder: one design covering `packages/backend` and Better Auth together, built in phases (backend scaffold first, auth second). Minimal `apps/dashboard` shell. Email invitations included, via Scaleway TEM.
 
