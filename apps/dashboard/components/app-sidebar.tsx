@@ -18,7 +18,6 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Analytics01Icon,
-  Camera01Icon,
   ChartHistogramIcon,
   CommandIcon,
   Database01Icon,
@@ -62,37 +61,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       title: t("nav.team"),
       url: "#",
       icon: <HugeiconsIcon icon={UserGroupIcon} strokeWidth={2} />,
-    },
-  ]
-
-  const navClouds = [
-    {
-      title: t("nav.capture"),
-      icon: <HugeiconsIcon icon={Camera01Icon} strokeWidth={2} />,
-      isActive: true,
-      url: "#",
-      items: [
-        { title: t("nav.activeProposals"), url: "#" },
-        { title: t("nav.archived"), url: "#" },
-      ],
-    },
-    {
-      title: t("nav.proposal"),
-      icon: <HugeiconsIcon icon={File01Icon} strokeWidth={2} />,
-      url: "#",
-      items: [
-        { title: t("nav.activeProposals"), url: "#" },
-        { title: t("nav.archived"), url: "#" },
-      ],
-    },
-    {
-      title: t("nav.prompts"),
-      icon: <HugeiconsIcon icon={File01Icon} strokeWidth={2} />,
-      url: "#",
-      items: [
-        { title: t("nav.activeProposals"), url: "#" },
-        { title: t("nav.archived"), url: "#" },
-      ],
     },
   ]
 
