@@ -1,0 +1,28 @@
+packages/i18n/vitest.config.ts
+  s_e95b5bd4433e6b::t_098ec7d285d732 1-4
+packages/i18n/src/messages.test.ts
+  s_e95b5bd4433e6b::t_95eaf10580b81e 1-29
+turbo.json
+  s_e95b5bd4433e6b::t_7d7b12a838d352 22-28
+packages/i18n/package.json
+  s_e95b5bd4433e6b::t_7c6b5f05092233 9-10
+  s_e95b5bd4433e6b::t_413efe85b32726 18,21-22
+package.json
+  s_e95b5bd4433e6b::t_75c12e11594a24 11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b59aafe8a3edfca8d50cbb64742db3534717c1c3",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
