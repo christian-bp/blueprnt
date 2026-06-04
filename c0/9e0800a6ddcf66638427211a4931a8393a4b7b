@@ -1,0 +1,21 @@
+packages/backend/convex/accounts/mirrors.test.ts
+  s_e95b5bd4433e6b::t_1386dac82f5641 30-42
+packages/backend/convex/_generated/api.d.ts
+  s_e95b5bd4433e6b::t_181669d0c6eceb 11-12,23-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c09e0800a6ddcf66638427211a4931a8393a4b7b",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
