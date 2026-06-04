@@ -50,6 +50,7 @@ See also: `AGENTS.md` (Next.js version warning + agent-skills config) · `docs/P
 ## Conventions
 
 - **Commit messages use conventional prefixes** (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`).
+- **Branch names use the same conventional prefixes** (`feat/`, `fix/`, `chore/`, `docs/`, `refactor/`), e.g. `feat/onboarding`.
 - **The pre-commit hook** (`.githooks/pre-commit`) runs Biome on staged files, a full typecheck, and the full test suite (`turbo run test`, cache-backed). All three must pass before a commit; never bypass with `--no-verify` unless explicitly told to.
 - **Lint + format = Biome** (`biome.json` at the root, a single binary). eslint/prettier are not in this repo; do not reintroduce them.
 - **shadcn files are vendor code:** `packages/ui/src/{components,hooks,lib,styles}` are excluded from Biome and must not be reformatted or relinted. They must stay diffable against upstream and are updated via the shadcn CLI. Deliberate local fixes are fine but must be documented in the commit message.
