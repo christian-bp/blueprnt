@@ -1,0 +1,28 @@
+docs/contexts/evaluation-model/CONTEXT.md
+  s_3d7a2a78506bcd::t_e9dcb0b9d0ced5 14
+  s_3d7a2a78506bcd::t_1b6cd68333eef2 18
+  s_3d7a2a78506bcd::t_902d76eb428276 5-6
+docs/PLAN-V1.md
+  s_3d7a2a78506bcd::t_1821632c2c44dd 121
+  s_3d7a2a78506bcd::t_c2006f8d5eee98 43
+docs/contexts/evaluation-model/standardmall.md
+  s_3d7a2a78506bcd::t_07f80dea9414fc 86
+  s_3d7a2a78506bcd::t_d4b1c1eb2dd57f 59-60,62,64-82
+  s_3d7a2a78506bcd::t_8a68b920f62ddf 61,63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "20249d28dc79609b9faf027601fbfd9de7ecc3d9",
+  "prompts": {},
+  "sessions": {
+    "s_3d7a2a78506bcd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d75a144a-e6ab-4d64-9076-a2a167dc169e",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
