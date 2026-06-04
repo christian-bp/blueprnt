@@ -1,0 +1,36 @@
+packages/backend/convex/betterAuth/testing.ts
+  s_e95b5bd4433e6b::t_73b6cb6f674fba 1-32
+packages/backend/package.json
+  s_e95b5bd4433e6b::t_f5e2a83a5b6c74 12-13
+packages/backend/convex/betterAuth/_generated/component.ts
+  s_e95b5bd4433e6b::t_f7a170b9ed2dec 1524-1541
+packages/backend/convex/betterAuth/membership.ts
+  s_e95b5bd4433e6b::t_45ff34312568b1 1-14,16-20,22-31
+  s_e95b5bd4433e6b::t_52f670a2bf8f48 15,21
+CLAUDE.md
+  s_e95b5bd4433e6b::t_f27fb5df42bb94 45
+packages/backend/convex/testing.helpers.ts
+  s_e95b5bd4433e6b::t_52f670a2bf8f48 14
+  s_e95b5bd4433e6b::t_8ea553d293ab95 1-13,15-17
+packages/backend/convex/betterAuth/_generated/api.ts
+  s_e95b5bd4433e6b::t_f7a170b9ed2dec 14,16,29,31
+packages/backend/convex/betterAuth/membership.test.ts
+  s_e95b5bd4433e6b::t_a69bf502ea848c 1-10,12-15,17-21,23-26
+  s_e95b5bd4433e6b::t_52f670a2bf8f48 11,16,22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "78064118f1fa32fd4def93255f28933a204d1ec9",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
