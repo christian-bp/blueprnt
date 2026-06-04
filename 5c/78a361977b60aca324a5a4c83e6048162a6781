@@ -1,0 +1,91 @@
+CONTEXT-MAP.md
+  s_3d7a2a78506bcd::t_f3bf5c46131c48 2,4,6,10,18
+  s_3d7a2a78506bcd::t_b43e3a1d7ff377 12,14-17
+  s_3d7a2a78506bcd::t_f4b779a9fc68b3 22
+  s_3d7a2a78506bcd::t_6abf82de229051 1,3,5,9,11,13,19-21,23
+  s_3d7a2a78506bcd::t_2f7ada4fed1eb1 7-8
+docs/contexts/accounts/CONTEXT.md
+  s_3d7a2a78506bcd::t_8500c894348613 1,3,5,7-9,11-13,16-17,20-21,32,34-35,37-39
+  s_3d7a2a78506bcd::t_85fc7554928303 23-31
+  s_3d7a2a78506bcd::t_1d672c346fa9d4 2,4,6,10,14-15,18-19,22,33,36
+docs/contexts/evaluation-model/CONTEXT.md
+  s_3d7a2a78506bcd::t_1cf372c386dbd7 81
+  s_3d7a2a78506bcd::t_ae3de4fe626bf1 100
+  s_3d7a2a78506bcd::t_03c687c2777253 2,4,6-7,10,14-15
+  s_3d7a2a78506bcd::t_d6599d440fd69e 3
+  s_3d7a2a78506bcd::t_9a6bb6406ac638 28,32,34-37
+  s_3d7a2a78506bcd::t_c990fd7294ca03 82-84
+  s_3d7a2a78506bcd::t_78f775f8861352 101
+  s_3d7a2a78506bcd::t_e79dbce3288fb1 85-91,93
+  s_3d7a2a78506bcd::t_2f863da9658e27 55-66
+  s_3d7a2a78506bcd::t_4d7f8b4934ef2c 51-54
+  s_3d7a2a78506bcd::t_9d8ee6acc7e3d5 47-49
+  s_3d7a2a78506bcd::t_37e1a5fbc15ed3 1,5,8-9,11-13,16-27,29-31,33,38-46,50,67-80,92,94-99,102-105
+docs/contexts/evaluation-model/standardmall.md
+  s_3d7a2a78506bcd::t_0a4100e18cda3a 1-18,20-36,38
+  s_3d7a2a78506bcd::t_6295a100b7e4a6 37,39-62
+  s_3d7a2a78506bcd::t_47828c2c769c43 19
+docs/adr/0003-ai-embedded-assistant.md
+  s_3d7a2a78506bcd::t_1954cc409cef15 1-19
+docs/adr/0001-convex-eu-better-auth.md
+  s_3d7a2a78506bcd::t_38f4d3bd169894 2,4,6,8,13,15
+  s_3d7a2a78506bcd::t_cd5d252db0b416 1,3,5,7,9-12,14,16-20
+docs/adr/0002-live-recompute-no-versioning.md
+  s_3d7a2a78506bcd::t_4f924f66e40b78 1-19,21
+  s_3d7a2a78506bcd::t_2038d0b65fd891 20
+docs/PLAN-V1.md
+  s_3d7a2a78506bcd::t_f8f8b40736aa38 1-36,38-40,42-48,51-53,56-65,72,74-79,81-99,104-107,109-115
+  s_3d7a2a78506bcd::t_031d3f4eab4944 108
+  s_3d7a2a78506bcd::t_fbdb348a8b7330 126
+  s_3d7a2a78506bcd::t_0a713eac280944 100
+  s_3d7a2a78506bcd::t_e9c83094a753a3 118-120
+  s_3d7a2a78506bcd::t_3330a5c04c331f 129-133
+  s_3d7a2a78506bcd::t_3967d696d06fee 123,125,128
+  s_3d7a2a78506bcd::t_67de65c929bd48 69
+  s_3d7a2a78506bcd::t_2a1567db4957dc 127
+  s_3d7a2a78506bcd::t_07fdb46852733d 134-153
+  s_3d7a2a78506bcd::t_483e5e7877aff0 73
+  s_3d7a2a78506bcd::t_fad5c3f6141634 103
+  s_3d7a2a78506bcd::t_09cf11f0f72e93 116-117,121-122,124
+  s_3d7a2a78506bcd::t_fa6bfba32a739f 49
+  s_3d7a2a78506bcd::t_bb02f50cfd84c8 41
+  s_3d7a2a78506bcd::t_d2a9e3b1ad838e 37
+  s_3d7a2a78506bcd::t_64440c293a9f25 54
+  s_3d7a2a78506bcd::t_f5034777a406d1 55
+  s_3d7a2a78506bcd::t_8bd683c3717a07 50
+  s_3d7a2a78506bcd::t_61b205112d78fa 66-67,70-71
+  s_3d7a2a78506bcd::t_3b3d35e9e9ff2d 80
+  s_3d7a2a78506bcd::t_8e88287a49dc8a 68
+  s_3d7a2a78506bcd::t_7e2bd8f1acce61 101-102
+docs/build-pdf.sh
+  s_3d7a2a78506bcd::t_8f8529d61c2ec0 1-45
+docs/contexts/assessment/CONTEXT.md
+  s_3d7a2a78506bcd::t_6b06d43051e552 1-10,15-22,27,29-31,34-38,43-47,60-61,63-65,67-72,74-75,77-80
+  s_3d7a2a78506bcd::t_6d0ed10408286e 24
+  s_3d7a2a78506bcd::t_970f0712f3baca 32-33
+  s_3d7a2a78506bcd::t_601c2a94e55aa6 39-42
+  s_3d7a2a78506bcd::t_d78f9a1b345916 11-14
+  s_3d7a2a78506bcd::t_08e0ce85834241 23,25-26
+  s_3d7a2a78506bcd::t_0c820a033a0a55 62
+  s_3d7a2a78506bcd::t_079237b36690d0 66
+  s_3d7a2a78506bcd::t_33a824c6719fff 48-59
+  s_3d7a2a78506bcd::t_7904e6246d9320 73
+  s_3d7a2a78506bcd::t_3fa1d930852e69 76
+  s_3d7a2a78506bcd::t_b9ee18725dfc8a 28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "5c78a361977b60aca324a5a4c83e6048162a6781",
+  "prompts": {},
+  "sessions": {
+    "s_3d7a2a78506bcd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d75a144a-e6ab-4d64-9076-a2a167dc169e",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
