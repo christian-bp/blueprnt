@@ -1,0 +1,29 @@
+AGENTS.md
+  s_e95b5bd4433e6b::t_557928665b699e 23-33
+packages/backend/convex/_generated/ai/guidelines.md
+  s_e95b5bd4433e6b::t_d61e009cf22625 1-365
+packages/backend/AGENTS.md
+  s_e95b5bd4433e6b::t_d61e009cf22625 1-13
+packages/backend/CLAUDE.md
+  s_e95b5bd4433e6b::t_d61e009cf22625 1-13
+packages/backend/convex/_generated/ai/ai-files.state.json
+  s_e95b5bd4433e6b::t_d61e009cf22625 1-6
+CLAUDE.md
+  s_e95b5bd4433e6b::t_c63bd00e13605e 60-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "aa97c3a581ad836388e09d18f4fb7f546523a683",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
