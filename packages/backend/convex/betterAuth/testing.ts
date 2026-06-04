@@ -7,6 +7,7 @@ import { mutation } from "./_generated/server"
 // backend even on this defensive path.
 function assertTestEnv() {
   if (process.env.CONVEX_TEST !== "true") {
+    // Keep in sync with ERROR_CODES in convex/lib/errors.ts (component boundary prevents the import).
     throw new ConvexError({ code: "errors.notFound" })
   }
 }

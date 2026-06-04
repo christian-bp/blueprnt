@@ -50,6 +50,15 @@ describe("org-scoping wrappers", () => {
     expect(ctx).toEqual({ orgId, role: "editor" })
   })
 
+  it("orgMutation allows editors (any member role)", async () => {
+    const t = initConvexTest()
+    const { orgId, userId } = await seed(t, "editor")
+    const asEditor = t.withIdentity({ subject: userId })
+    await expect(
+      asEditor.mutation(api.accounts.context.touchWorkspaceAsMember, { orgId })
+    ).resolves.toBeNull()
+  })
+
   it("adminMutation rejects editors with errors.adminRequired", async () => {
     const t = initConvexTest()
     const { orgId, userId } = await seed(t, "editor")

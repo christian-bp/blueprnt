@@ -37,15 +37,33 @@ async function resolveOrgContext(
       components.betterAuth.membership.getMembership,
       { organizationId: orgId, userId: identity.subject }
     )
-  } catch {
+  } catch (error) {
     // Fail closed: duplicate membership rows (or any lookup failure) deny
-    // access with a machine-readable code, never raw error text.
+    // access with a machine-readable code, never raw error text. The log
+    // line is the ops breadcrumb distinguishing data-integrity conflicts
+    // from transient component failures.
+    console.error("membership lookup failed", {
+      orgId,
+      subject: identity.subject,
+      error: error instanceof Error ? error.message : String(error),
+    })
     throw appError(ERROR_CODES.membershipConflict)
   }
   if (membership === null) throw appError(ERROR_CODES.notAMember)
+  const { role } = membership
+  if (role !== "admin" && role !== "editor") {
+    // Unknown role string (defense-in-depth; roles are fixed to admin and
+    // editor by the access control config). Deny rather than launder it.
+    console.error("unknown workspace role", {
+      orgId,
+      subject: identity.subject,
+      role,
+    })
+    throw appError(ERROR_CODES.membershipConflict)
+  }
   return {
     orgId,
-    role: membership.role as WorkspaceRole,
+    role,
     authUserId: identity.subject,
   }
 }
