@@ -88,6 +88,14 @@
   },
   "dashboard": {
     "title": "blueprnt",
+    "nav": {
+      "overview": "Översikt",
+      "signOut": "Logga ut"
+    },
+    "overview": {
+      "emptyTitle": "Här är det tomt än så länge",
+      "emptyBody": "Din arbetsytas översikt visas här när blueprnt växer."
+    },
     "auth": {
       "loading": "Kontrollerar din session",
       "signedIn": "Du är inloggad.",

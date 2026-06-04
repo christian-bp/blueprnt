@@ -88,6 +88,14 @@
   },
   "dashboard": {
     "title": "blueprnt",
+    "nav": {
+      "overview": "Overview",
+      "signOut": "Sign out"
+    },
+    "overview": {
+      "emptyTitle": "Nothing here yet",
+      "emptyBody": "Your workspace overview will appear here as blueprnt grows."
+    },
     "auth": {
       "loading": "Checking your session",
       "signedIn": "You are signed in.",

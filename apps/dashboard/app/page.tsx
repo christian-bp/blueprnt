@@ -3,21 +3,26 @@
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
+import { DashboardShell } from "@/components/dashboard-shell"
 
 export default function HomePage() {
   const t = useTranslations("dashboard")
   return (
-    <main>
-      <h1>{t("title")}</h1>
+    <>
       <AuthLoading>
-        <p>{t("auth.loading")}</p>
+        <main>
+          <p>{t("auth.loading")}</p>
+        </main>
       </AuthLoading>
       <Unauthenticated>
-        <Link href="/sign-in">{t("auth.signIn.cta")}</Link>
+        <main>
+          <h1>{t("title")}</h1>
+          <Link href="/sign-in">{t("auth.signIn.cta")}</Link>
+        </main>
       </Unauthenticated>
       <Authenticated>
-        <p>{t("auth.signedIn")}</p>
+        <DashboardShell />
       </Authenticated>
-    </main>
+    </>
   )
 }

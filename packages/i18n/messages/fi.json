@@ -88,6 +88,14 @@
   },
   "dashboard": {
     "title": "blueprnt",
+    "nav": {
+      "overview": "Yleiskatsaus",
+      "signOut": "Kirjaudu ulos"
+    },
+    "overview": {
+      "emptyTitle": "Ei vielä mitään",
+      "emptyBody": "Työtilasi yleiskatsaus näytetään tässä, kun blueprnt kasvaa."
+    },
     "auth": {
       "loading": "Tarkistetaan istuntoasi",
       "signedIn": "Olet kirjautunut sisään.",
