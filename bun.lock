@@ -33,6 +33,16 @@
         "typescript": "^5",
       },
     },
+    "packages/core": {
+      "name": "@workspace/core",
+      "version": "0.0.0",
+      "devDependencies": {
+        "@workspace/typescript-config": "workspace:*",
+        "@workspace/vitest-config": "workspace:*",
+        "typescript": "^5",
+        "vitest": "^4.1.0",
+      },
+    },
     "packages/i18n": {
       "name": "@workspace/i18n",
       "version": "0.0.0",
@@ -739,6 +749,8 @@
     "@vitest/spy": ["@vitest/spy@4.1.8", "", {}, "sha512-6EevtBp6OZOPF7bmz36HrGMeP3txgVSrgebWxHOafDXGkhIzfXK14f8KF6MuFfgXXUeHxmpD3BQxkV00/3s5mA=="],
 
     "@vitest/utils": ["@vitest/utils@4.1.8", "", { "dependencies": { "@vitest/pretty-format": "4.1.8", "convert-source-map": "^2.0.0", "tinyrainbow": "^3.1.0" } }, "sha512-uOJamYALNhfJ6iolExyQM40yIQwDqYnkKtQ5VCiSe17E33H0aQ/u+1GlRuz4LZBk6Mm3sg90G9hEbmEt37C1Zg=="],
+
+    "@workspace/core": ["@workspace/core@workspace:packages/core"],
 
     "@workspace/i18n": ["@workspace/i18n@workspace:packages/i18n"],
 
