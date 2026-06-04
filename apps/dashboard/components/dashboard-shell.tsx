@@ -1,21 +1,19 @@
 "use client"
 
+// NOTE: SectionCards, ChartAreaInteractive, and DataTable are demo fixture widgets
+// pending replacement with real product widgets.
+
 import { AppSidebar } from "@/components/app-sidebar"
+import { ChartAreaInteractive } from "@/components/chart-area-interactive"
+import { DataTable } from "@/components/data-table"
+import { SectionCards } from "@/components/section-cards"
 import { SiteHeader } from "@/components/site-header"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
 import { SidebarInset, SidebarProvider } from "@workspace/ui/components/sidebar"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
-import { useTranslations } from "next-intl"
+import type React from "react"
+import data from "@/app/dashboard/data.json"
 
 export function DashboardShell() {
-  const t = useTranslations("dashboard.overview")
-
   return (
     // This ui package's sidebar variant does not bundle a TooltipProvider;
     // SidebarMenuButton tooltips require one at the app level.
@@ -31,14 +29,16 @@ export function DashboardShell() {
         <AppSidebar variant="inset" />
         <SidebarInset>
           <SiteHeader />
-          <div className="flex flex-1 flex-col items-center justify-center p-8">
-            <Card className="w-full max-w-md text-center">
-              <CardHeader>
-                <CardTitle>{t("emptyTitle")}</CardTitle>
-                <CardDescription>{t("emptyBody")}</CardDescription>
-              </CardHeader>
-              <CardContent />
-            </Card>
+          <div className="flex flex-1 flex-col">
+            <div className="@container/main flex flex-1 flex-col gap-2">
+              <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+                <SectionCards />
+                <div className="px-4 lg:px-6">
+                  <ChartAreaInteractive />
+                </div>
+                <DataTable data={data} />
+              </div>
+            </div>
           </div>
         </SidebarInset>
       </SidebarProvider>
