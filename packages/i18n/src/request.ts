@@ -1,10 +1,10 @@
 import { hasLocale } from "next-intl"
 import { getRequestConfig } from "next-intl/server"
 
-import type sv from "../messages/sv.json"
+import type en from "../messages/en.json"
 import { routing } from "./routing"
 
-type Messages = typeof sv
+type Messages = typeof en
 
 export default getRequestConfig(async ({ requestLocale }) => {
   // Typically corresponds to the `[locale]` segment
@@ -17,12 +17,12 @@ export default getRequestConfig(async ({ requestLocale }) => {
   try {
     messages = (
       await (locale === routing.defaultLocale
-        ? import("../messages/sv.json")
+        ? import("../messages/en.json")
         : import(`../messages/${locale}.json`))
     ).default
   } catch (error) {
     console.error(`Failed to load messages for locale: ${locale}`, error)
-    messages = (await import("../messages/sv.json")).default
+    messages = (await import("../messages/en.json")).default
   }
 
   return { locale, messages }
