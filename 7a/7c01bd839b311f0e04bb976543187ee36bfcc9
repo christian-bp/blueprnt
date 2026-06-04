@@ -1,0 +1,29 @@
+packages/backend/convex/_generated/server.d.ts
+  s_e95b5bd4433e6b::t_c5310e05fb53f5 1-143
+packages/backend/.gitignore
+  s_e95b5bd4433e6b::t_c5310e05fb53f5 1-2
+packages/backend/convex/_generated/api.d.ts
+  s_e95b5bd4433e6b::t_c5310e05fb53f5 1-45
+packages/backend/convex/_generated/server.js
+  s_e95b5bd4433e6b::t_c5310e05fb53f5 1-93
+packages/backend/convex/_generated/api.js
+  s_e95b5bd4433e6b::t_c5310e05fb53f5 1-23
+packages/backend/convex/_generated/dataModel.d.ts
+  s_e95b5bd4433e6b::t_c5310e05fb53f5 1-60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7a7c01bd839b311f0e04bb976543187ee36bfcc9",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
