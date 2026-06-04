@@ -1,0 +1,80 @@
+packages/i18n/eslint.config.js
+  s_3d7a2a78506bcd::t_87c9c9ca7e07b5 1-4
+packages/i18n/src/routing.ts
+  s_3d7a2a78506bcd::t_5d39995f68d16c 1-11
+packages/i18n/src/navigation.ts
+  s_3d7a2a78506bcd::t_de6e31b542ba3e 1-6
+packages/i18n/messages/nb.json
+  s_3d7a2a78506bcd::t_8149ed251c0fdb 65
+  s_3d7a2a78506bcd::t_43028971e3a5b2 1-64,66-69
+packages/i18n/tsconfig.json
+  s_3d7a2a78506bcd::t_800a2d33de8746 1-13
+packages/i18n/messages/da.json
+  s_3d7a2a78506bcd::t_83b730594ec02f 65
+  s_3d7a2a78506bcd::t_07cabe8000892f 1-64,66-69
+apps/web/app/[locale]/layout.tsx
+  s_3d7a2a78506bcd::t_d39d4316bab37a 1-5,20-41,52-54
+  s_3d7a2a78506bcd::t_7378a72c469920 9-13,43-49
+packages/i18n/messages/fi.json
+  s_3d7a2a78506bcd::t_cade28f6dd2fcb 65
+  s_3d7a2a78506bcd::t_d4da9e7c4273c7 1-64,66-69
+packages/i18n/messages/sv.json
+  s_3d7a2a78506bcd::t_b5b721f12076db 1-64,66-69
+  s_3d7a2a78506bcd::t_f5ea7103951880 65
+packages/i18n/messages/en.json
+  s_3d7a2a78506bcd::t_3094bce2c55da7 1-64,66-69
+  s_3d7a2a78506bcd::t_bfd52b2a76406d 65
+packages/i18n/package.json
+  s_3d7a2a78506bcd::t_553d647b1df37a 1-6,9-29
+  s_3d7a2a78506bcd::t_d2f162d8782fcf 7-8
+apps/web/app/[locale]/page.tsx
+  s_3d7a2a78506bcd::t_7378a72c469920 33
+  s_3d7a2a78506bcd::t_88b7e3b6b5d7b4 34,36,38,40,44
+  s_3d7a2a78506bcd::t_4c91b1dec0aeca 35
+  s_3d7a2a78506bcd::t_618ee0c98fb867 1-3,5-18,20-31,37,39,41-43,45-46
+  s_3d7a2a78506bcd::t_46850bceff9f6a 19
+  s_3d7a2a78506bcd::t_57efe745d12781 4
+apps/web/next.config.ts
+  s_3d7a2a78506bcd::t_ecb8a7d51c362b 2-4,7,10
+apps/web/tsconfig.json
+  s_3d7a2a78506bcd::t_0d8fc45d390765 17
+  s_3d7a2a78506bcd::t_e0d32c053daf8e 6
+packages/i18n/src/request.ts
+  s_3d7a2a78506bcd::t_186e675e345015 1-26
+packages/i18n/src/index.ts
+  s_3d7a2a78506bcd::t_3acab9a2dba39e 1-8
+apps/web/i18n/request.ts
+  s_3d7a2a78506bcd::t_061435fb398a25 1
+apps/web/proxy.ts
+  s_3d7a2a78506bcd::t_c7d288dfc2df5f 1-9
+  s_3d7a2a78506bcd::t_aa2616a74048bc 10-14
+apps/web/i18n-env.d.ts
+  s_3d7a2a78506bcd::t_7adcf117d3fd58 3
+  s_3d7a2a78506bcd::t_69f27a6e156da7 1
+  s_3d7a2a78506bcd::t_658df2ccc58dae 2
+CLAUDE.md
+  s_3d7a2a78506bcd::t_65ebc830686c81 1,3,5,7,9-14,16-18,27,30,36
+  s_3d7a2a78506bcd::t_28517981f92146 2,4,6,8,15,19-26,28-29,31-35,37
+packages/i18n/src/middleware.ts
+  s_3d7a2a78506bcd::t_c57ea141b856cf 1-5
+packages/i18n/src/i18n.d.ts
+  s_3d7a2a78506bcd::t_d2d932a77097c9 1-11
+docs/PLAN-V1.md
+  s_3d7a2a78506bcd::t_8a72c9d6223ae5 107
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f2930acdb358ef7f48900d9382b6994af27728b0",
+  "prompts": {},
+  "sessions": {
+    "s_3d7a2a78506bcd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d75a144a-e6ab-4d64-9076-a2a167dc169e",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
