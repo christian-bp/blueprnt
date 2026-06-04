@@ -1,0 +1,23 @@
+docs/contexts/assessment/CONTEXT.md
+  s_df12fc6ddf323c::t_4fe172d68f3ddc 41
+docs/adr/0003-ai-embedded-assistant.md
+  s_df12fc6ddf323c::t_baf5d8d9b920c4 20-25
+packages/backend/README.md
+  s_df12fc6ddf323c::t_83c20e33b56466 27-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "06e724556ee38651bedbaa22d25a0966921b07c9",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
