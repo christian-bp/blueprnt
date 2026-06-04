@@ -1,0 +1,34 @@
+packages/core/vitest.config.ts
+  s_e95b5bd4433e6b::t_56f87253f93ff2 4-16,18
+  s_e95b5bd4433e6b::t_779fb602606001 17
+packages/email/vitest.config.ts
+  s_e95b5bd4433e6b::t_779fb602606001 17
+  s_e95b5bd4433e6b::t_4170f5bfff3a8d 4-11,13-16,18
+  s_e95b5bd4433e6b::t_e29fdda4261f00 12
+docs/superpowers/specs/2026-06-04-convex-backend-better-auth-design.md
+  s_e95b5bd4433e6b::t_000ab2cd7b8dd3 3
+bun.lock
+  ai_agent 172,175,180-181
+packages/vitest-config/src/base.ts
+  s_e95b5bd4433e6b::t_8ad03a2cb06c17 14-19
+packages/vitest-config/package.json
+  s_e95b5bd4433e6b::t_2b40bce1fcab89 11,14
+package.json
+  s_e95b5bd4433e6b::t_0288d889378800 27-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1aec3079f3e60ec3ec701dd34aaffbc9480b9875",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
