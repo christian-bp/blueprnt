@@ -1,0 +1,21 @@
+packages/email/src/render.test.ts
+  s_e95b5bd4433e6b::t_4589186b0737f9 2,32-45
+packages/email/src/messages.ts
+  s_e95b5bd4433e6b::t_afcb1b4f64010f 22-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e1a956c72ca776a1085ff0098ec8d0d600b9455c",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
