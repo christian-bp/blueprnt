@@ -1,0 +1,22 @@
+apps/dashboard/components/onboarding/company-profile-step.tsx
+  s_df12fc6ddf323c::t_236611a23457d1 115,117
+  s_df12fc6ddf323c::t_915f4ed6ead3e4 157,159
+  s_df12fc6ddf323c::t_f865b1a7c0769c 130,132
+  s_df12fc6ddf323c::t_93848f4cb51090 100,102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "aaf516d78794061a15c2fefcb51e09284564d147",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
