@@ -27,4 +27,11 @@ if ! bun run typecheck; then
   exit 1
 fi
 
+echo "pre-commit: tests (turbo cache-backed)..."
+if ! bun run test; then
+  echo ""
+  echo "pre-commit: tests failed."
+  exit 1
+fi
+
 echo "pre-commit: OK"

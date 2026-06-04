@@ -37,6 +37,15 @@ See also: `AGENTS.md` (Next.js version warning + agent-skills config) · `docs/P
 - Every Convex function is **org-scoped** (tenant isolation). No band override. Changes that affect results are logged in the audit log.
 - All data stays within the **EU** (Convex eu-west-1; ADR-0001).
 
+## Testing
+
+- **All tests run with Vitest 4.** Never `bun test` (Bun hijacks it with its own runner; convex-test requires Vitest). Always `bun run test`.
+- **Every package has its own `vitest.config.ts`** extending `@workspace/vitest-config` (`/base` or `/react`). No root vitest workspace/projects file; per-package configs are what let Turborepo cache test results per package.
+- **New code ships with tests in the same commit.** The pre-commit hook runs the full `turbo run test`; the turbo cache keeps unchanged packages instant. Never use `--affected` in the hook (it misses staged changes).
+- **`packages/backend` tests use convex-test on the `edge-runtime` environment.** Full sign-in/session round-trips are e2e scope (Playwright, later), not unit scope.
+- **Message files are parity-guarded:** the i18n test fails if any locale's key set differs from `en.json`.
+- **shadcn vendor code (`packages/ui/src/*`) is untested by policy** (same rationale as its Biome exclusion).
+
 ## Conventions
 
 - **Commit messages use conventional prefixes** (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`).
