@@ -27,6 +27,19 @@ describe("user mirror triggers", () => {
         email: "hr@acme.se",
         name: "HR Person",
       })
+      expect(rows[0].name).toBe("HR Person")
+    })
+  })
+
+  it("onUserUpdate creates the mirror row when missing (self-heal)", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      await onUserUpdate(ctx, { ...authUser, name: "Healed" }, authUser)
+      const row = await ctx.db
+        .query("users")
+        .withIndex("by_auth_id", (q) => q.eq("authId", "ba_user_1"))
+        .unique()
+      expect(row).toMatchObject({ authId: "ba_user_1", name: "Healed" })
     })
   })
 
