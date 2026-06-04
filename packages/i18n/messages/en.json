@@ -94,8 +94,18 @@
       "email": "Email",
       "password": "Password",
       "name": "Name",
-      "signIn": { "title": "Sign in", "cta": "Sign in" },
-      "signUp": { "title": "Create account", "cta": "Create account" },
+      "signIn": {
+        "title": "Sign in",
+        "cta": "Sign in",
+        "description": "Enter your email below to sign in to your workspace",
+        "noAccount": "No account yet?"
+      },
+      "signUp": {
+        "title": "Create account",
+        "cta": "Create account",
+        "description": "Create your blueprnt account",
+        "haveAccount": "Already have an account?"
+      },
       "invitation": {
         "title": "Workspace invitation",
         "accept": "Accept invitation",

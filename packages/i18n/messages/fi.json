@@ -94,8 +94,18 @@
       "email": "Sähköposti",
       "password": "Salasana",
       "name": "Nimi",
-      "signIn": { "title": "Kirjaudu sisään", "cta": "Kirjaudu sisään" },
-      "signUp": { "title": "Luo tili", "cta": "Luo tili" },
+      "signIn": {
+        "title": "Kirjaudu sisään",
+        "cta": "Kirjaudu sisään",
+        "description": "Kirjoita sähköpostiosoitteesi alle kirjautuaksesi työtilaasi",
+        "noAccount": "Eikö sinulla ole vielä tiliä?"
+      },
+      "signUp": {
+        "title": "Luo tili",
+        "cta": "Luo tili",
+        "description": "Luo blueprnt-tili",
+        "haveAccount": "Onko sinulla jo tili?"
+      },
       "invitation": {
         "title": "Työtilakutsu",
         "accept": "Hyväksy kutsu",

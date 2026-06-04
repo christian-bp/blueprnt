@@ -4,7 +4,7 @@ import createNextIntlPlugin from "next-intl/plugin"
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts")
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@workspace/backend", "@workspace/i18n"],
+  transpilePackages: ["@workspace/backend", "@workspace/i18n", "@workspace/ui"],
 }
 
 export default withNextIntl(nextConfig)

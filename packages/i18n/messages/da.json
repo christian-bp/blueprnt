@@ -94,8 +94,18 @@
       "email": "E-mail",
       "password": "Adgangskode",
       "name": "Navn",
-      "signIn": { "title": "Log ind", "cta": "Log ind" },
-      "signUp": { "title": "Opret konto", "cta": "Opret konto" },
+      "signIn": {
+        "title": "Log ind",
+        "cta": "Log ind",
+        "description": "Indtast din e-mail nedenfor for at logge ind på dit arbejdsområde",
+        "noAccount": "Ingen konto endnu?"
+      },
+      "signUp": {
+        "title": "Opret konto",
+        "cta": "Opret konto",
+        "description": "Opret din blueprnt-konto",
+        "haveAccount": "Har du allerede en konto?"
+      },
       "invitation": {
         "title": "Arbejdsområdeinvitation",
         "accept": "Accepter invitation",

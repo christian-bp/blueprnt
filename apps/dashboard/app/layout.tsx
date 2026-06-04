@@ -1,3 +1,5 @@
+import "@workspace/ui/globals.css"
+
 import { NextIntlClientProvider } from "next-intl"
 import { getLocale } from "next-intl/server"
 import type { ReactNode } from "react"
