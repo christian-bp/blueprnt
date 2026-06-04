@@ -16,7 +16,7 @@ describe("betterAuth/seed.insertCredentialUser", () => {
     const result = await t.mutation(
       components.betterAuth.seed.insertCredentialUser,
       {
-        email: "hej@bluprnt.se",
+        email: "hej@blueprnt.se",
         name: "Hej",
         passwordHash: "fakesalt:fakehash",
       }
@@ -33,7 +33,7 @@ describe("betterAuth/seed.insertCredentialUser", () => {
     const first = await t.mutation(
       components.betterAuth.seed.insertCredentialUser,
       {
-        email: "hej@bluprnt.se",
+        email: "hej@blueprnt.se",
         name: "Hej",
         passwordHash: "fakesalt:fakehash",
       }
@@ -41,7 +41,7 @@ describe("betterAuth/seed.insertCredentialUser", () => {
     const second = await t.mutation(
       components.betterAuth.seed.insertCredentialUser,
       {
-        email: "hej@bluprnt.se",
+        email: "hej@blueprnt.se",
         name: "Hej",
         passwordHash: "fakesalt:fakehash",
       }

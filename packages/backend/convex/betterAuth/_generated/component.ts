@@ -1538,6 +1538,13 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         { created: boolean; userId: string },
         Name
       >;
+      removeUserByEmail: FunctionReference<
+        "mutation",
+        "internal",
+        { email: string },
+        null | string,
+        Name
+      >;
     };
     testing: {
       seedDuplicateMember: FunctionReference<

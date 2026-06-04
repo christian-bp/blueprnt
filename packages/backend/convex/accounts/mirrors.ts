@@ -65,6 +65,17 @@ export const mirrorSeededUser = internalMutation({
   },
 })
 
+// Cleanup counterpart for the dev seed; email and name are irrelevant to
+// the delete path.
+export const removeMirroredUser = internalMutation({
+  args: { authId: v.string() },
+  returns: v.null(),
+  handler: async (ctx, { authId }) => {
+    await onUserDelete(ctx, { _id: authId, email: "", name: "" })
+    return null
+  },
+})
+
 export async function onUserUpdate(
   ctx: Ctx,
   newDoc: AuthUserDoc,

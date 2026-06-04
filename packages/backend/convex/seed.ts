@@ -23,7 +23,7 @@ export const seedDevUser = internalAction({
       )
     }
 
-    const email = args.email ?? "hej@bluprnt.se"
+    const email = args.email ?? "hej@blueprnt.se"
     const password = args.password ?? "abc123"
     const name = args.name ?? "Hej"
 
@@ -48,5 +48,30 @@ export const seedDevUser = internalAction({
     })
 
     return result
+  },
+})
+
+// Dev-only cleanup. Run from packages/backend with:
+//   bunx convex run seed:removeDevUser '{"email":"..."}'
+export const removeDevUser = internalAction({
+  args: { email: v.string() },
+  returns: v.union(v.null(), v.string()),
+  handler: async (ctx, { email }) => {
+    const siteUrl = process.env.SITE_URL ?? ""
+    if (!siteUrl.includes("localhost")) {
+      throw new Error(
+        "removeDevUser only runs on dev deployments (SITE_URL must contain 'localhost')"
+      )
+    }
+    const authId = await ctx.runMutation(
+      components.betterAuth.seed.removeUserByEmail,
+      { email }
+    )
+    if (authId !== null) {
+      await ctx.runMutation(internal.accounts.mirrors.removeMirroredUser, {
+        authId,
+      })
+    }
+    return authId
   },
 })

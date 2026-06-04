@@ -46,3 +46,31 @@ export const insertCredentialUser = mutation({
     return { userId, created: true }
   },
 })
+
+// Dev-only cleanup counterpart. Only reachable via the internal action
+// convex/seed.ts which enforces the localhost guard. Deletes the user and
+// its account and session rows.
+export const removeUserByEmail = mutation({
+  args: { email: v.string() },
+  returns: v.union(v.null(), v.string()),
+  handler: async (ctx, { email }) => {
+    const user = await ctx.db
+      .query("user")
+      .withIndex("email_name", (q) => q.eq("email", email))
+      .first()
+    if (user === null) return null
+
+    const userId = user._id.toString()
+    for (const table of ["account", "session"] as const) {
+      const rows = await ctx.db
+        .query(table)
+        .withIndex("userId", (q) => q.eq("userId", userId))
+        .collect()
+      for (const row of rows) {
+        await ctx.db.delete(row._id)
+      }
+    }
+    await ctx.db.delete(user._id)
+    return userId
+  },
+})
