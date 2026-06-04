@@ -76,6 +76,32 @@ export const removeMirroredUser = internalMutation({
   },
 })
 
+// Used by the dev workspace seed (convex/seed.ts): seeds the profile row
+// plus the workspace.created audit entry (idempotent), and audits the
+// member.added event only when the seed actually created the member row.
+export const mirrorSeededWorkspace = internalMutation({
+  args: {
+    orgId: v.string(),
+    memberUserId: v.string(),
+    role: v.string(),
+    auditMember: v.boolean(),
+  },
+  returns: v.null(),
+  handler: async (ctx, { orgId, memberUserId, role, auditMember }) => {
+    await onOrganizationCreate(ctx, { _id: orgId })
+    if (auditMember) {
+      await onMemberCreate(ctx, {
+        _id: "seeded",
+        organizationId: orgId,
+        userId: memberUserId,
+        role,
+        createdAt: Date.now(),
+      })
+    }
+    return null
+  },
+})
+
 export async function onUserUpdate(
   ctx: Ctx,
   newDoc: AuthUserDoc,

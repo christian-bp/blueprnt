@@ -1538,6 +1538,18 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         { created: boolean; userId: string },
         Name
       >;
+      insertWorkspace: FunctionReference<
+        "mutation",
+        "internal",
+        { email: string; name: string; role: string; slug: string },
+        {
+          createdMember: boolean;
+          createdOrg: boolean;
+          orgId: string;
+          userId: string;
+        },
+        Name
+      >;
       removeUserByEmail: FunctionReference<
         "mutation",
         "internal",

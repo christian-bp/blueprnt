@@ -75,3 +75,49 @@ export const removeDevUser = internalAction({
     return authId
   },
 })
+
+// Dev-only workspace seed: gives the seeded user an admin membership in a
+// workspace so local sign-in lands in a realistic tenant. Run with:
+//   bunx convex run seed:seedDevWorkspace
+export const seedDevWorkspace = internalAction({
+  args: {
+    name: v.optional(v.string()),
+    slug: v.optional(v.string()),
+    email: v.optional(v.string()),
+  },
+  returns: v.object({
+    orgId: v.string(),
+    userId: v.string(),
+    createdOrg: v.boolean(),
+    createdMember: v.boolean(),
+  }),
+  handler: async (ctx, args) => {
+    const siteUrl = process.env.SITE_URL ?? ""
+    if (!siteUrl.includes("localhost")) {
+      throw new Error(
+        "seedDevWorkspace only runs on dev deployments (SITE_URL must contain 'localhost')"
+      )
+    }
+
+    const result = await ctx.runMutation(
+      components.betterAuth.seed.insertWorkspace,
+      {
+        name: args.name ?? "blueprnt dev",
+        slug: args.slug ?? "blueprnt-dev",
+        email: args.email ?? "hej@blueprnt.se",
+        role: "admin",
+      }
+    )
+
+    // Direct component inserts bypass the Better Auth triggers; seed the
+    // profile row and audit entries explicitly (idempotently).
+    await ctx.runMutation(internal.accounts.mirrors.mirrorSeededWorkspace, {
+      orgId: result.orgId,
+      memberUserId: result.userId,
+      role: "admin",
+      auditMember: result.createdMember,
+    })
+
+    return result
+  },
+})

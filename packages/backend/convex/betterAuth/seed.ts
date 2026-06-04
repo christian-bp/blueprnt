@@ -74,3 +74,66 @@ export const removeUserByEmail = mutation({
     return userId
   },
 })
+
+// Dev-only workspace seed. Only reachable via the internal action
+// convex/seed.ts which enforces the localhost guard. Idempotent by slug;
+// the member row is idempotent per (organization, user).
+export const insertWorkspace = mutation({
+  args: {
+    name: v.string(),
+    slug: v.string(),
+    email: v.string(),
+    role: v.string(),
+  },
+  returns: v.object({
+    orgId: v.string(),
+    userId: v.string(),
+    createdOrg: v.boolean(),
+    createdMember: v.boolean(),
+  }),
+  handler: async (ctx, { name, slug, email, role }) => {
+    const user = await ctx.db
+      .query("user")
+      .withIndex("email_name", (q) => q.eq("email", email))
+      .first()
+    if (user === null) {
+      throw new Error(`no user with email ${email}; run seed:seedDevUser first`)
+    }
+    const userId = user._id.toString()
+
+    const now = Date.now()
+    let orgId: string
+    let createdOrg = false
+    const existingOrg = await ctx.db
+      .query("organization")
+      .withIndex("slug", (q) => q.eq("slug", slug))
+      .first()
+    if (existingOrg !== null) {
+      orgId = existingOrg._id.toString()
+    } else {
+      orgId = (
+        await ctx.db.insert("organization", { name, slug, createdAt: now })
+      ).toString()
+      createdOrg = true
+    }
+
+    let createdMember = false
+    const existingMember = await ctx.db
+      .query("member")
+      .withIndex("organizationId_userId", (q) =>
+        q.eq("organizationId", orgId).eq("userId", userId)
+      )
+      .unique()
+    if (existingMember === null) {
+      await ctx.db.insert("member", {
+        organizationId: orgId,
+        userId,
+        role,
+        createdAt: now,
+      })
+      createdMember = true
+    }
+
+    return { orgId, userId, createdOrg, createdMember }
+  },
+})
