@@ -1,0 +1,69 @@
+{
+  "accounts": {
+    "workspace": "Työtila",
+    "member": "Jäsen",
+    "role": {
+      "admin": "Admin",
+      "editor": "Editor"
+    }
+  },
+  "model": {
+    "track": "Track",
+    "level": "Taso",
+    "band": "Vaativuusluokka",
+    "criterion": "Kriteeri",
+    "anchor": "Ankkuri",
+    "template": "Mallipohja",
+    "bandThreshold": "Luokkaraja",
+    "auditLog": "Auditointiloki",
+    "criterionRationale": "Kriteerien valintaprotokolla",
+    "biasReview": "Vinoumatarkastelu",
+    "methodAppendix": "Menetelmäliite",
+    "importance": {
+      "label": "Merkitys",
+      "critical": "Ratkaiseva",
+      "veryHigh": "Erittäin tärkeä",
+      "high": "Tärkeä",
+      "fair": "Melko tärkeä",
+      "moderate": "Kohtalaisen tärkeä",
+      "slight": "Hieman tärkeä",
+      "least": "Vähiten tärkeä"
+    }
+  },
+  "assessment": {
+    "assessment": "Arviointi",
+    "rating": "Arvosana",
+    "motivation": "Perustelu",
+    "score": "Kokonaispisteet",
+    "bandAssignment": "Luokkasijoitus",
+    "anchorRole": "Ankkurirooli",
+    "aiSuggestion": "Tekoälyehdotus",
+    "jobProfile": "Tehtäväprofiili",
+    "role": {
+      "label": "Rooli",
+      "function": "Toiminto/osasto",
+      "team": "Tiimi",
+      "purpose": "Tarkoitus",
+      "responsibilities": "Vastuualueet",
+      "decisionMandate": "Päätösvaltuudet",
+      "stakeholders": "Sidosryhmät",
+      "knowledge": "Osaamisvaatimukset",
+      "financial": "Taloudellinen vastuu",
+      "people": "Henkilöstövastuu",
+      "risk": "Riski/seuraukset",
+      "deliverables": "Tuotokset"
+    },
+    "status": {
+      "draft": "Luonnos",
+      "inReview": "Tarkastettavana",
+      "approved": "Hyväksytty"
+    }
+  },
+  "web": {
+    "home": {
+      "title": "blueprnt",
+      "tagline": "Jäsennelty roolien arviointi ja luokittelu: perusta EU:n palkka-avoimuusdirektiiville.",
+      "cta": "Aloita"
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "accounts": {
+    "workspace": "Arbeidsområde",
+    "member": "Medlem",
+    "role": {
+      "admin": "Admin",
+      "editor": "Editor"
+    }
+  },
+  "model": {
+    "track": "Track",
+    "level": "Nivå",
+    "band": "Bånd",
+    "criterion": "Kriterium",
+    "anchor": "Anker",
+    "template": "Mal",
+    "bandThreshold": "Båndterskel",
+    "auditLog": "Revisjonslogg",
+    "criterionRationale": "Kriterieutvalgsprotokoll",
+    "biasReview": "Bias-gjennomgang",
+    "methodAppendix": "Metodevedlegg",
+    "importance": {
+      "label": "Betydning",
+      "critical": "Avgjørende",
+      "veryHigh": "Svært viktig",
+      "high": "Viktig",
+      "fair": "Ganske viktig",
+      "moderate": "Moderat viktig",
+      "slight": "Litt viktig",
+      "least": "Minst viktig"
+    }
+  },
+  "assessment": {
+    "assessment": "Vurdering",
+    "rating": "Karakter",
+    "motivation": "Begrunnelse",
+    "score": "Totalpoeng",
+    "bandAssignment": "Båndplassering",
+    "anchorRole": "Ankerrolle",
+    "aiSuggestion": "AI-forslag",
+    "jobProfile": "Jobbprofil",
+    "role": {
+      "label": "Rolle",
+      "function": "Funksjon/avdeling",
+      "team": "Team",
+      "purpose": "Formål",
+      "responsibilities": "Ansvarsområder",
+      "decisionMandate": "Beslutningsmandat",
+      "stakeholders": "Interessenter",
+      "knowledge": "Kompetansekrav",
+      "financial": "Økonomisk ansvar",
+      "people": "Personalansvar",
+      "risk": "Risiko/konsekvens",
+      "deliverables": "Leveranser"
+    },
+    "status": {
+      "draft": "Utkast",
+      "inReview": "Til gjennomgang",
+      "approved": "Godkjent"
+    }
+  },
+  "web": {
+    "home": {
+      "title": "blueprnt",
+      "tagline": "Strukturert rollevurdering og bånding: grunnlaget for EUs lønnstransparensdirektiv.",
+      "cta": "Kom i gang"
+    }
+  }
+}

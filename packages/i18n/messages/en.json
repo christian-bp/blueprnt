@@ -1,0 +1,69 @@
+{
+  "accounts": {
+    "workspace": "Workspace",
+    "member": "Member",
+    "role": {
+      "admin": "Admin",
+      "editor": "Editor"
+    }
+  },
+  "model": {
+    "track": "Track",
+    "level": "Level",
+    "band": "Band",
+    "criterion": "Criterion",
+    "anchor": "Anchor",
+    "template": "Template",
+    "bandThreshold": "Band threshold",
+    "auditLog": "Audit log",
+    "criterionRationale": "Criterion rationale",
+    "biasReview": "Bias review",
+    "methodAppendix": "Method appendix",
+    "importance": {
+      "label": "Importance",
+      "critical": "Critical",
+      "veryHigh": "Very important",
+      "high": "Important",
+      "fair": "Fairly important",
+      "moderate": "Moderately important",
+      "slight": "Slightly important",
+      "least": "Least important"
+    }
+  },
+  "assessment": {
+    "assessment": "Assessment",
+    "rating": "Rating",
+    "motivation": "Motivation",
+    "score": "Score",
+    "bandAssignment": "Band assignment",
+    "anchorRole": "Anchor role",
+    "aiSuggestion": "AI suggestion",
+    "jobProfile": "Job profile",
+    "role": {
+      "label": "Role",
+      "function": "Function/department",
+      "team": "Team",
+      "purpose": "Purpose",
+      "responsibilities": "Responsibilities",
+      "decisionMandate": "Decision mandate",
+      "stakeholders": "Stakeholders",
+      "knowledge": "Knowledge requirements",
+      "financial": "Financial responsibility",
+      "people": "People responsibility",
+      "risk": "Risk/consequence",
+      "deliverables": "Deliverables"
+    },
+    "status": {
+      "draft": "Draft",
+      "inReview": "In review",
+      "approved": "Approved"
+    }
+  },
+  "web": {
+    "home": {
+      "title": "blueprnt",
+      "tagline": "Structured role evaluation and banding: the foundation layer for the EU Pay Transparency Directive.",
+      "cta": "Get started"
+    }
+  }
+}

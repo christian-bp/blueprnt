@@ -3,6 +3,7 @@
   "compilerOptions": {
     "paths": {
       "@/*": ["./*"],
+      "@workspace/i18n/*": ["../../packages/i18n/src/*"],
       "@workspace/ui/*": ["../../packages/ui/src/*"]
     },
     "plugins": [
@@ -13,6 +14,7 @@
   },
   "include": [
     "next-env.d.ts",
+    "i18n-env.d.ts",
     "next.config.ts",
     "**/*.ts",
     "**/*.tsx",

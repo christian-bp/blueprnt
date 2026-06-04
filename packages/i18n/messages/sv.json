@@ -1,0 +1,69 @@
+{
+  "accounts": {
+    "workspace": "Arbetsyta",
+    "member": "Medlem",
+    "role": {
+      "admin": "Admin",
+      "editor": "Editor"
+    }
+  },
+  "model": {
+    "track": "Track",
+    "level": "Nivå",
+    "band": "Band",
+    "criterion": "Kriterium",
+    "anchor": "Ankare",
+    "template": "Mall",
+    "bandThreshold": "Bandtröskel",
+    "auditLog": "Revisionslogg",
+    "criterionRationale": "Kriterieurvalsprotokoll",
+    "biasReview": "Bias-granskning",
+    "methodAppendix": "Metodbilaga",
+    "importance": {
+      "label": "Betydelse",
+      "critical": "Avgörande",
+      "veryHigh": "Mycket viktigt",
+      "high": "Viktigt",
+      "fair": "Ganska viktigt",
+      "moderate": "Måttligt viktigt",
+      "slight": "Lite viktigt",
+      "least": "Minst viktigt"
+    }
+  },
+  "assessment": {
+    "assessment": "Värdering",
+    "rating": "Betyg",
+    "motivation": "Motivering",
+    "score": "Totalpoäng",
+    "bandAssignment": "Bandplacering",
+    "anchorRole": "Ankarroll",
+    "aiSuggestion": "AI-förslag",
+    "jobProfile": "Jobbprofil",
+    "role": {
+      "label": "Roll",
+      "function": "Funktion/avdelning",
+      "team": "Team",
+      "purpose": "Syfte",
+      "responsibilities": "Ansvarsområden",
+      "decisionMandate": "Beslutsmandat",
+      "stakeholders": "Intressenter",
+      "knowledge": "Kunskapskrav",
+      "financial": "Finansiellt ansvar",
+      "people": "Personalansvar",
+      "risk": "Risk/konsekvens",
+      "deliverables": "Leverabler"
+    },
+    "status": {
+      "draft": "Utkast",
+      "inReview": "Under granskning",
+      "approved": "Godkänd"
+    }
+  },
+  "web": {
+    "home": {
+      "title": "blueprnt",
+      "tagline": "Strukturerad rollvärdering och banding: grundlagret för EU:s lönetransparensdirektiv.",
+      "cta": "Kom igång"
+    }
+  }
+}
