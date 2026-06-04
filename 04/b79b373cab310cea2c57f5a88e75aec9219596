@@ -1,0 +1,23 @@
+packages/backend/convex/auth.ts
+  s_e95b5bd4433e6b::t_46c6d332c9118e 38-41,43
+packages/backend/convex/betterAuth/auth.ts
+  s_e95b5bd4433e6b::t_19c0de71fa61ed 2-6,8-10
+packages/backend/convex/betterAuth/adapter.ts
+  s_e95b5bd4433e6b::t_90407b48357f21 5-7,16-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "04b79b373cab310cea2c57f5a88e75aec9219596",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
