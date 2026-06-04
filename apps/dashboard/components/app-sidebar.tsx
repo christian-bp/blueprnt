@@ -17,6 +17,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react"
 import { CommandIcon, DashboardSquare01Icon } from "@hugeicons/core-free-icons"
 import { useTranslations } from "next-intl"
+import Link from "next/link"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations("dashboard")
@@ -30,14 +31,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
-              <a href="/">
+              <Link href="/">
                 <HugeiconsIcon
                   icon={CommandIcon}
                   strokeWidth={2}
                   className="size-5!"
                 />
                 <span className="text-base font-semibold">{t("title")}</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
