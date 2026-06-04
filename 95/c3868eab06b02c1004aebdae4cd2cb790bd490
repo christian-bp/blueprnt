@@ -1,0 +1,30 @@
+packages/backend/convex/ai/suggest.test.ts
+  s_df12fc6ddf323c::t_577219922aef01 220-372
+packages/backend/convex/ai/generate.ts
+  s_df12fc6ddf323c::t_51e3ecde519ca5 48
+  s_df12fc6ddf323c::t_4130f41d7b143b 15-17,19,31
+  s_df12fc6ddf323c::t_6e1b22a25ce8bb 80
+packages/backend/convex/ai/persist.ts
+  s_df12fc6ddf323c::t_867d0b38b88452 3,14,21-23
+packages/backend/convex/ai/suggest.ts
+  s_df12fc6ddf323c::t_fc1739dc3e8436 158-160,162-169,172,180
+  s_df12fc6ddf323c::t_d4ad83a22246f0 190,193,203
+  s_df12fc6ddf323c::t_d2349cf56df286 301,307-308,314-315,324
+  s_df12fc6ddf323c::t_79a3324247472d 152-154
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "95c3868eab06b02c1004aebdae4cd2cb790bd490",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
