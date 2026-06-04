@@ -1,0 +1,24 @@
+package.json
+  s_3d7a2a78506bcd::t_63ad11804b9695 10-11
+.githooks/pre-commit
+  s_3d7a2a78506bcd::t_4daa99187ba14a 1-6,8,10-20
+  s_3d7a2a78506bcd::t_8fd052d340aa0a 7,9
+CLAUDE.md
+  s_3d7a2a78506bcd::t_2de141d10b3c9f 42-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "7bc49d7ad2b0dd8d73e762c44791d08e2045a53a",
+  "prompts": {},
+  "sessions": {
+    "s_3d7a2a78506bcd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d75a144a-e6ab-4d64-9076-a2a167dc169e",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
