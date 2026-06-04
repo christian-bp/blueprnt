@@ -1,10 +1,10 @@
 import { defineRouting } from "next-intl/routing"
 
 export const routing = defineRouting({
-  // Svenska är standard; norska = bokmål (nb)
+  // Swedish is the default; Norwegian = bokmål (nb)
   locales: ["sv", "en", "nb", "da", "fi"],
   defaultLocale: "sv",
-  // Standardspråket utan prefix (/priser), övriga med (/en/pricing)
+  // Default locale without URL prefix (/priser), others prefixed (/en/pricing)
   localePrefix: "as-needed",
 })
 

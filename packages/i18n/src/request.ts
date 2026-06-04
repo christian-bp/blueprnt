@@ -1,16 +1,19 @@
 import { hasLocale } from "next-intl"
 import { getRequestConfig } from "next-intl/server"
 
+import type sv from "../messages/sv.json"
 import { routing } from "./routing"
 
+type Messages = typeof sv
+
 export default getRequestConfig(async ({ requestLocale }) => {
-  // Motsvarar typiskt `[locale]`-segmentet
+  // Typically corresponds to the `[locale]` segment
   const requested = await requestLocale
   const locale = hasLocale(routing.locales, requested)
     ? requested
     : routing.defaultLocale
 
-  let messages
+  let messages: Messages
   try {
     messages = (
       await (locale === routing.defaultLocale
@@ -18,7 +21,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
         : import(`../messages/${locale}.json`))
     ).default
   } catch (error) {
-    console.error(`Kunde inte ladda meddelanden för locale: ${locale}`, error)
+    console.error(`Failed to load messages for locale: ${locale}`, error)
     messages = (await import("../messages/sv.json")).default
   }
 

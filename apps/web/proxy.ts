@@ -9,6 +9,6 @@ export default function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Hoppa över API-rutter, Next-interna sökvägar och statiska filer
+  // Skip API routes, Next.js internals, and static files
   matcher: "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
 }

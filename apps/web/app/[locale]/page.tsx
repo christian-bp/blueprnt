@@ -24,16 +24,13 @@ export default function Page({
 
   return (
     <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
+      <div className="flex min-w-0 max-w-md flex-col gap-4 text-sm leading-loose">
         <div>
-          <h1 className="font-heading text-2xl font-medium">{t("title")}</h1>
+          <h1 className="font-heading font-medium text-2xl">{t("title")}</h1>
           <p>{t("tagline")}</p>
           <Button className="mt-2">{t("cta")}</Button>
         </div>
-        <nav className="flex gap-3 font-mono text-xs text-muted-foreground">
-          {/* Språkbyte = full sidladdning (vanlig <a>): hela <html>-trädet
-              (lang, tema-init-script) byts. Klientnavigering hit triggar
-              annars Reacts "script tag"-varning via next-themes. */}
+        <nav className="flex gap-3 font-mono text-muted-foreground text-xs">
           {routing.locales.map((l) => (
             <a
               key={l}

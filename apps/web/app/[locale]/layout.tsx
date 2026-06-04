@@ -33,7 +33,7 @@ export default async function LocaleLayout({
     notFound()
   }
 
-  // Möjliggör statisk rendering av [locale]-rutter
+  // Enables static rendering of [locale] routes
   setRequestLocale(locale)
 
   return (
