@@ -697,6 +697,8 @@ export function DataTable({
 function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
   const isMobile = useIsMobile()
   const t = useTranslations("dashboard.table")
+  // The drawer mini chart reuses the chart namespace strings.
+  const tChart = useTranslations("dashboard.chart")
 
   return (
     <Drawer direction={isMobile ? "bottom" : "right"}>
@@ -710,7 +712,7 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
         <DrawerHeader className="gap-1">
           {/* Fixture: item.header is demo data */}
           <DrawerTitle>{item.header}</DrawerTitle>
-          <DrawerDescription>{t("drawerDescription")}</DrawerDescription>
+          <DrawerDescription>{tChart("drawerDescription")}</DrawerDescription>
         </DrawerHeader>
         <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
           {!isMobile && (
@@ -758,14 +760,16 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
               <Separator />
               <div className="grid gap-2">
                 <div className="flex gap-2 leading-none font-medium">
-                  {t("trendingUp")}{" "}
+                  {tChart("trendingUp")}{" "}
                   <HugeiconsIcon
                     icon={ChartUpIcon}
                     strokeWidth={2}
                     className="size-4"
                   />
                 </div>
-                <div className="text-muted-foreground">{t("drawerBody")}</div>
+                <div className="text-muted-foreground">
+                  {tChart("drawerBody")}
+                </div>
               </div>
               <Separator />
             </>
