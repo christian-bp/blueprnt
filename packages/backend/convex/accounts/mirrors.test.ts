@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest"
 import { initConvexTest } from "../testing.helpers"
 import {
+  onInvitationCreate,
+  onInvitationUpdate,
+  onMemberCreate,
+  onMemberDelete,
+  onMemberUpdate,
   onOrganizationCreate,
   onUserCreate,
   onUserDelete,
@@ -74,6 +79,148 @@ describe("user mirror triggers", () => {
       const rows = await ctx.db.query("workspaceProfiles").collect()
       expect(rows).toHaveLength(1)
       expect(rows[0].orgId).toBe("ba_org_1")
+      // Also asserts exactly one workspace.created audit row (not duplicated).
+      const auditRows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", "ba_org_1").eq("type", "workspace.created")
+        )
+        .collect()
+      expect(auditRows).toHaveLength(1)
+      expect(auditRows[0].actorId).toBe("system")
+    })
+  })
+})
+
+describe("lifecycle audit triggers", () => {
+  const member = {
+    _id: "ba_member_1",
+    _creationTime: 0,
+    organizationId: "ba_org_1",
+    userId: "ba_user_1",
+    role: "editor",
+    createdAt: 0,
+  }
+
+  const invitation = {
+    _id: "ba_inv_1",
+    _creationTime: 0,
+    organizationId: "ba_org_1",
+    email: "new@acme.se",
+    role: null,
+    status: "pending",
+    expiresAt: 9999999999999,
+    createdAt: 0,
+    inviterId: "ba_user_1",
+  }
+
+  it("onMemberCreate logs member.added with role", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      await onMemberCreate(ctx, member)
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", "ba_org_1").eq("type", "member.added")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+      expect(rows[0].payload).toMatchObject({ role: "editor" })
+    })
+  })
+
+  it("onMemberUpdate logs member.roleChanged only when role changed", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      // Same role: no audit row
+      await onMemberUpdate(ctx, member, member)
+      const unchanged = await ctx.db.query("auditLog").collect()
+      expect(unchanged).toHaveLength(0)
+
+      // Role changed: one audit row
+      await onMemberUpdate(ctx, { ...member, role: "admin" }, member)
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", "ba_org_1").eq("type", "member.roleChanged")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+      expect(rows[0].payload).toMatchObject({ from: "editor", to: "admin" })
+    })
+  })
+
+  it("onMemberDelete logs member.removed", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      await onMemberDelete(ctx, member)
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", "ba_org_1").eq("type", "member.removed")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+      expect(rows[0].payload).toMatchObject({ memberUserId: "ba_user_1" })
+    })
+  })
+
+  it("onInvitationCreate logs invitation.created", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      await onInvitationCreate(ctx, invitation)
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", "ba_org_1").eq("type", "invitation.created")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+      expect(rows[0].payload).toMatchObject({ email: "new@acme.se" })
+    })
+  })
+
+  it("onInvitationUpdate logs invitation.accepted when status changes to accepted", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      await onInvitationUpdate(
+        ctx,
+        { ...invitation, status: "accepted" },
+        invitation
+      )
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", "ba_org_1").eq("type", "invitation.accepted")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+    })
+  })
+
+  it("onInvitationUpdate logs invitation.revoked for other status changes", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      await onInvitationUpdate(
+        ctx,
+        { ...invitation, status: "revoked" },
+        invitation
+      )
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", "ba_org_1").eq("type", "invitation.revoked")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+    })
+  })
+
+  it("onInvitationUpdate emits nothing when status unchanged", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      await onInvitationUpdate(ctx, invitation, invitation)
+      expect(await ctx.db.query("auditLog").collect()).toHaveLength(0)
     })
   })
 })

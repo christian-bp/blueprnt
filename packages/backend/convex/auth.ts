@@ -12,6 +12,11 @@ import authConfig from "./auth.config"
 import { ac, admin, editor } from "./betterAuth/permissions"
 import authSchema from "./betterAuth/schema"
 import {
+  onInvitationCreate,
+  onInvitationUpdate,
+  onMemberCreate,
+  onMemberDelete,
+  onMemberUpdate,
   onOrganizationCreate,
   onUserCreate,
   onUserDelete,
@@ -48,6 +53,25 @@ export const authComponent = createClient<DataModel, typeof authSchema>(
       organization: {
         onCreate: async (ctx, doc) => {
           await onOrganizationCreate(ctx, doc)
+        },
+      },
+      member: {
+        onCreate: async (ctx, doc) => {
+          await onMemberCreate(ctx, doc)
+        },
+        onUpdate: async (ctx, newDoc, oldDoc) => {
+          await onMemberUpdate(ctx, newDoc, oldDoc)
+        },
+        onDelete: async (ctx, doc) => {
+          await onMemberDelete(ctx, doc)
+        },
+      },
+      invitation: {
+        onCreate: async (ctx, doc) => {
+          await onInvitationCreate(ctx, doc)
+        },
+        onUpdate: async (ctx, newDoc, oldDoc) => {
+          await onInvitationUpdate(ctx, newDoc, oldDoc)
         },
       },
     },
