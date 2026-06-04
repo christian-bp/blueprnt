@@ -1,0 +1,27 @@
+apps/dashboard/components/nav-user.tsx
+  s_e95b5bd4433e6b::t_f813d575c8ed1b 44
+apps/dashboard/components/auth/sign-in-screen.tsx
+  s_e95b5bd4433e6b::t_09e9bde7cf16fb 1-28
+apps/dashboard/app/accept-invitation/[id]/page.tsx
+  s_e95b5bd4433e6b::t_f813d575c8ed1b 24
+apps/dashboard/app/page.tsx
+  s_e95b5bd4433e6b::t_2237191c5bac67 5,13,18
+apps/dashboard/components/auth/email-password-form.tsx
+  s_e95b5bd4433e6b::t_f813d575c8ed1b 103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "6f20d230ad995477f4b662735b6a7fa4f461d0e8",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
