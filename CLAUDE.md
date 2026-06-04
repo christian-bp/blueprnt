@@ -39,6 +39,8 @@ See also: `AGENTS.md` (Next.js version warning + agent-skills config) · `docs/P
 
 ## Conventions
 
+- **Commit messages use conventional prefixes** (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`).
+- **The pre-commit hook** (`.githooks/pre-commit`) runs Biome on staged files plus a full typecheck. Both must pass before a commit; never bypass with `--no-verify` unless explicitly told to.
 - **Lint + format = Biome** (`biome.json` at the root, a single binary). eslint/prettier are not in this repo; do not reintroduce them.
 - **shadcn files are vendor code:** `packages/ui/src/{components,hooks,lib,styles}` are excluded from Biome and must not be reformatted or relinted. They must stay diffable against upstream and are updated via the shadcn CLI. Deliberate local fixes are fine but must be documented in the commit message.
 - PDFs are built with `./docs/build-pdf.sh` (pandoc + typst), never Chrome headless.

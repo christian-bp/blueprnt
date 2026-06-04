@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Pre-commit: Biome (staged files) + typecheck must pass before any commit.
+# Bypass in emergencies with: git commit --no-verify
+set -euo pipefail
+
+# Git GUIs and non-login shells run hooks with a minimal PATH.
+# Make sure bun (and Homebrew tools) are reachable.
+export PATH="$HOME/.bun/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
+
+if ! command -v bun >/dev/null 2>&1; then
+  echo "pre-commit: bun not found on PATH (looked in ~/.bun/bin, /opt/homebrew/bin)."
+  echo "pre-commit: install bun or commit with --no-verify."
+  exit 1
+fi
+
+echo "pre-commit: biome check (staged files)..."
+if ! bun x biome check --staged --no-errors-on-unmatched; then
+  echo ""
+  echo "pre-commit: Biome failed. Fix with: bun run format && bun x biome check --staged --write"
+  exit 1
+fi
+
+echo "pre-commit: typecheck..."
+if ! bun run typecheck; then
+  echo ""
+  echo "pre-commit: typecheck failed."
+  exit 1
+fi
+
+echo "pre-commit: OK"
