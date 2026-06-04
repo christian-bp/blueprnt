@@ -1,0 +1,56 @@
+packages/i18n/messages/en.json
+  s_e95b5bd4433e6b::t_5fb8ded3448126 88-95
+packages/i18n/messages/da.json
+  s_e95b5bd4433e6b::t_027dbbcd275e4c 88-95
+bun.lock
+  ai_agent 13-38,229-232,739,817-820,839-848,893-894,937,943-944,1073-1074,1101-1102,1109-1110,1401-1402,1533-1534,1565-1566,1871-1874,1917-1920,1927-1928,1943-1944,2033
+apps/dashboard/lib/auth-client.ts
+  s_e95b5bd4433e6b::t_4d8ae803279436 2-10,12-16
+  s_e95b5bd4433e6b::t_962bc06a95c0ca 11
+  s_e95b5bd4433e6b::t_3a3d1413a90c87 1
+apps/dashboard/app/page.tsx
+  s_e95b5bd4433e6b::t_9430923135de0a 1-23
+apps/dashboard/components/providers.tsx
+  s_e95b5bd4433e6b::t_b61ac476a0d609 1-23
+packages/i18n/messages/sv.json
+  s_e95b5bd4433e6b::t_457b8652ddbda7 88-95
+apps/dashboard/package.json
+  s_e95b5bd4433e6b::t_5249a2ef128b8e 1-37
+apps/dashboard/lib/auth-server.ts
+  s_e95b5bd4433e6b::t_bc95e37b20057e 1-7
+apps/dashboard/app/layout.tsx
+  s_e95b5bd4433e6b::t_b3f7589773083b 1-19
+apps/dashboard/proxy.ts
+  s_e95b5bd4433e6b::t_39cbe6605c1b5f 1-9
+apps/dashboard/tsconfig.json
+  s_e95b5bd4433e6b::t_bfd671d34802b2 6-7
+  s_e95b5bd4433e6b::t_4a39363fbf942e 1-5,8-24
+apps/dashboard/app/api/auth/[...all]/route.ts
+  s_e95b5bd4433e6b::t_b545e262985b0f 1-3
+packages/i18n/messages/fi.json
+  s_e95b5bd4433e6b::t_ec7a6cc4d16ad3 88-95
+packages/i18n/messages/nb.json
+  s_e95b5bd4433e6b::t_601c1a0e7c8956 88-95
+apps/dashboard/i18n/request.ts
+  s_e95b5bd4433e6b::t_c010909e65cfc6 1-4,7
+  s_e95b5bd4433e6b::t_0db911bde862d9 5
+  s_e95b5bd4433e6b::t_28f3091bad0e96 6
+apps/dashboard/next.config.ts
+  s_e95b5bd4433e6b::t_a6200c09ef11af 1-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "5483cad487313ae1b1659f4238b2329e072acd27",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
