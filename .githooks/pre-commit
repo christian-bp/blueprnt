@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pre-commit: Biome (staged files) + typecheck must pass before any commit.
+# Pre-commit: Biome (staged files) + typecheck + tests must pass before any commit.
 # Bypass in emergencies with: git commit --no-verify
 set -euo pipefail
 
