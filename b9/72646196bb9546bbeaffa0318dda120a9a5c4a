@@ -1,0 +1,29 @@
+packages/backend/vitest.config.ts
+  s_e95b5bd4433e6b::t_93805a7765986a 1-12
+biome.json
+  s_e95b5bd4433e6b::t_ede2e378efa68b 18-20
+packages/backend/package.json
+  s_e95b5bd4433e6b::t_3467787b30d1d1 1-28
+packages/backend/tsconfig.json
+  s_e95b5bd4433e6b::t_e7c500fb28b167 1-5
+packages/backend/convex/tsconfig.json
+  s_e95b5bd4433e6b::t_077af87bba4be6 1-17
+packages/backend/convex/schema.ts
+  s_e95b5bd4433e6b::t_bf46c4eae1653e 1-3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b972646196bb9546bbeaffa0318dda120a9a5c4a",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
