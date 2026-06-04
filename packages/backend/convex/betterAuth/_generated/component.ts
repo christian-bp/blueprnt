@@ -1531,6 +1531,13 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
       >;
     };
     testing: {
+      seedDuplicateMember: FunctionReference<
+        "mutation",
+        "internal",
+        { orgId: string; role: string; userId: string },
+        null,
+        Name
+      >;
       seedMembership: FunctionReference<
         "mutation",
         "internal",
