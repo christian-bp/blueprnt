@@ -1521,4 +1521,22 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         Name
       >;
     };
+    membership: {
+      getMembership: FunctionReference<
+        "query",
+        "internal",
+        { organizationId: string; userId: string },
+        null | { organizationId: string; role: string; userId: string },
+        Name
+      >;
+    };
+    testing: {
+      seedMembership: FunctionReference<
+        "mutation",
+        "internal",
+        { email: string; name: string; role: string },
+        { orgId: string; userId: string },
+        Name
+      >;
+    };
   };

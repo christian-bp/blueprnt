@@ -42,7 +42,7 @@ See also: `AGENTS.md` (Next.js version warning + agent-skills config) · `docs/P
 - **All tests run with Vitest 4.** Never `bun test` (Bun hijacks it with its own runner; convex-test requires Vitest). Always `bun run test`.
 - **Every package that has tests has its own `vitest.config.ts`** extending `@workspace/vitest-config` (`/base` or `/react`). No root vitest workspace/projects file; per-package configs are what let Turborepo cache test results per package.
 - **New code ships with tests in the same commit.** The pre-commit hook runs the full `turbo run test`; the turbo cache keeps unchanged packages instant. Never use `--affected` in the hook (it misses staged changes).
-- **Backend tests (`packages/backend`, when it lands) use convex-test on the `edge-runtime` environment.** Full sign-in/session round-trips are e2e scope (Playwright, later), not unit scope.
+- **Backend tests (`packages/backend`) use convex-test on the `edge-runtime` environment.** Full sign-in/session round-trips are e2e scope (Playwright, later), not unit scope.
 - **Message files are parity-guarded:** the i18n test fails if any locale's key set differs from `en.json`.
 - **shadcn vendor code (`packages/ui/src/*`) is untested by policy** (same rationale as its Biome exclusion).
 
