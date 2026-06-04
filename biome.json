@@ -15,7 +15,9 @@
       "!packages/ui/src/components",
       "!packages/ui/src/hooks",
       "!packages/ui/src/lib",
-      "!packages/ui/src/styles"
+      "!packages/ui/src/styles",
+      "!packages/backend/convex/**/_generated",
+      "!packages/backend/convex/betterAuth/generatedSchema.ts"
     ]
   },
   "formatter": {

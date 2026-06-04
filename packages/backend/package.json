@@ -1,0 +1,28 @@
+{
+  "name": "@workspace/backend",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "convex dev",
+    "setup": "convex dev --until-success",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "typecheck": "tsc --noEmit -p convex",
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --coverage --passWithNoTests"
+  },
+  "dependencies": {
+    "@workspace/core": "workspace:*",
+    "convex": "^1.40.0",
+    "convex-helpers": "^0.1.118"
+  },
+  "devDependencies": {
+    "@edge-runtime/vm": "^5.0.0",
+    "@workspace/typescript-config": "workspace:*",
+    "@workspace/vitest-config": "workspace:*",
+    "convex-test": "^0.0.53",
+    "typescript": "^5",
+    "vitest": "^4.1.0"
+  }
+}

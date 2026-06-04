@@ -1,0 +1,5 @@
+{
+  "extends": "@workspace/typescript-config/base.json",
+  "include": ["convex"],
+  "exclude": ["node_modules"]
+}
