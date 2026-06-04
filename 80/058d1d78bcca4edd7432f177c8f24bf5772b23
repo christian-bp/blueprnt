@@ -1,0 +1,46 @@
+apps/dashboard/components/onboarding/importance-review-panel.tsx
+  s_df12fc6ddf323c::t_aa4a920fdf9dbd 1-10
+apps/dashboard/components/onboarding/model-draft-panel.tsx
+  s_df12fc6ddf323c::t_0fcf52e059a525 1-5
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_85aa186e0508cb 261-294
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_817f6eebdfbbbe 261-294
+apps/dashboard/lib/importance.ts
+  s_df12fc6ddf323c::t_0c019ce75f0393 1-18
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_de3181afe44790 261-294
+apps/dashboard/components/onboarding/model-setup-step.tsx
+  s_df12fc6ddf323c::t_48368494b03df7 3-14,16-18,20-28,32-120
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_df12fc6ddf323c::t_a7e60ea00b5f5b 1-161,163-223
+  s_df12fc6ddf323c::t_9b518b947a9214 162
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_df12fc6ddf323c::t_d470cf89b7ad21 1-28,31-144
+  s_df12fc6ddf323c::t_9b518b947a9214 29-30
+apps/dashboard/components/onboarding/criterion-editor.test.tsx
+  s_df12fc6ddf323c::t_44c4afd60c6d39 1-127,129-139
+  s_df12fc6ddf323c::t_9b518b947a9214 128
+apps/dashboard/components/onboarding/model-review.tsx
+  s_df12fc6ddf323c::t_8f5c60949ca288 1-57
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_28bf7662226191 261-294
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_ed5035497d026b 261-294
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "80058d1d78bcca4edd7432f177c8f24bf5772b23",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
