@@ -17,7 +17,8 @@ See also: `AGENTS.md` (Next.js version warning + agent-skills config) · `docs/P
 ## i18n: never hardcode text
 
 - **All user-facing text goes through i18n** (`next-intl` + `@workspace/i18n`). NEVER write display text directly in pages/components, not even "temporarily".
-- New strings are added to **`packages/i18n/messages/en.json` first** (English is the base; the `Messages` type is generated from it), then mirrored to **every other message file in the same folder** (which locales exist is governed by `routing.ts`). The type system catches keys missing from `en`, but NOT from the other files. Keep them in sync manually.
+- New strings are added to **`packages/i18n/messages/en.json` first** (English is the base; the `Messages` type is generated from it), then mirrored to **every other message file in the same folder** (which locales exist is governed by `routing.ts`). The type system catches keys missing from `en`; the parity test in `packages/i18n` catches keys missing from the other files.
+- **Every Next.js app must contain `i18n-env.d.ts`** (the three-line shim importing `packages/i18n/src/i18n`). Without it, typed translation keys are off in that app and unknown keys fail only at runtime.
 - Key naming: dot namespaces per context (`web.*`, `dashboard.*`, `accounts.*`, `model.*`, `assessment.*`). Domain-term keys are defined in the glossaries' i18n tables. Parent/leaf conflicts are resolved with a `label` sub-key.
 - **Internal navigation always uses the Link component** (`next/link`, or `@workspace/i18n/navigation` Link where the locale is involved), never plain `<a>`. shadcn blocks generate framework-agnostic `<a href>` tags; swap them during adaptation.
 - The backend (Convex) returns **error codes/keys, never display text**. The frontend translates.
