@@ -1,7 +1,7 @@
 import { use } from "react"
 import { useTranslations } from "next-intl"
 import { setRequestLocale } from "next-intl/server"
-import { getPathname } from "@workspace/i18n/navigation"
+import { Link } from "@workspace/i18n/navigation"
 import { routing, type Locale } from "@workspace/i18n/routing"
 
 import { Button } from "@workspace/ui/components/button"
@@ -32,13 +32,14 @@ export default function Page({
         </div>
         <nav className="flex gap-3 font-mono text-muted-foreground text-xs">
           {routing.locales.map((l) => (
-            <a
+            <Link
               key={l}
-              href={getPathname({ href: "/", locale: l })}
+              href="/"
+              locale={l}
               className={l === locale ? "text-foreground underline" : undefined}
             >
               {localeNames[l]}
-            </a>
+            </Link>
           ))}
         </nav>
       </div>

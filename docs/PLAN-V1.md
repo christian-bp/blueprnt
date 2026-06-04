@@ -104,7 +104,7 @@ Detta motsvarar briefens "definition av en lyckad första version" i minsta kör
 - **Determinism:** all poäng/band-logik ren och reproducerbar i `packages/core`.
 - **Roll ≠ person:** värderingssteget utesluter person-/prestations-/lönedata.
 - **Spårbarhet:** revisionslogg för resultatpåverkande ändringar.
-- **i18n:** fem språk från start — **engelska (standard), svenska, norska (nb), danska, finska** — via `packages/i18n` (next-intl, typade nycklar, delat av web + dashboard; `en.json` är basfil och typkälla). Sv/en seedas från ordlistornas i18n-tabeller; nb/da/fi är maskinöversatta utkast som ska granskas av modersmålstalare före lansering. Marknadssajten har locale **synlig** i URL:en (engelska utan prefix, övriga som `/sv/...`) med språkväxlings-dropdown i menyn; dashboarden har **ingen** locale i URL:en, språket är en inställning under account settings. Språkbyte sker alltid som full sidladdning (se CLAUDE.md).
+- **i18n:** fem språk från start — **engelska (standard), svenska, norska (nb), danska, finska** — via `packages/i18n` (next-intl, typade nycklar, delat av web + dashboard; `en.json` är basfil och typkälla). Sv/en seedas från ordlistornas i18n-tabeller; nb/da/fi är maskinöversatta utkast som ska granskas av modersmålstalare före lansering. Marknadssajten har locale **synlig** i URL:en (engelska utan prefix, övriga som `/sv/...`) med språkväxlings-dropdown i menyn; dashboarden har **ingen** locale i URL:en, språket är en inställning under account settings.
 - **AI inom EU:** AI-anrop använder en EU-hostad modell med no-training-DPA (se ADR-0003); AI är aldrig i den deterministiska poäng-/bandvägen och auto-beslutar aldrig betyg/band.
 
 ## 8. Utanför V1 (från briefen)
