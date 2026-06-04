@@ -6,7 +6,7 @@
 import { v } from "convex/values"
 import { hashPassword } from "better-auth/crypto"
 import { internalAction } from "./_generated/server"
-import { components } from "./_generated/api"
+import { components, internal } from "./_generated/api"
 
 export const seedDevUser = internalAction({
   args: {
@@ -33,9 +33,20 @@ export const seedDevUser = internalAction({
     // credential verify path (verifyPassword) expects.
     const passwordHash = await hashPassword(password)
 
-    return await ctx.runMutation(
+    const result = await ctx.runMutation(
       components.betterAuth.seed.insertCredentialUser,
       { email, name, passwordHash }
     )
+
+    // Direct component inserts bypass the Better Auth triggers, so the
+    // app-side users mirror row (audit actor names, future locale setting)
+    // is created explicitly.
+    await ctx.runMutation(internal.accounts.mirrors.mirrorSeededUser, {
+      authId: result.userId,
+      email,
+      name,
+    })
+
+    return result
   },
 })

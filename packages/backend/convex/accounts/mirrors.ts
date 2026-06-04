@@ -1,5 +1,7 @@
 import type { GenericMutationCtx } from "convex/server"
+import { v } from "convex/values"
 import type { DataModel } from "../_generated/dataModel"
+import { internalMutation } from "../_generated/server"
 import { AUDIT_EVENTS, logAudit } from "../lib/audit"
 
 type Ctx = GenericMutationCtx<DataModel>
@@ -50,6 +52,18 @@ export async function onUserCreate(ctx: Ctx, doc: AuthUserDoc) {
     email: doc.email,
   })
 }
+
+// Used by the dev seed (convex/seed.ts): direct component-table inserts
+// bypass the Better Auth triggers, so the app-side mirror row is created
+// explicitly. Idempotent via onUserCreate.
+export const mirrorSeededUser = internalMutation({
+  args: { authId: v.string(), email: v.string(), name: v.string() },
+  returns: v.null(),
+  handler: async (ctx, { authId, email, name }) => {
+    await onUserCreate(ctx, { _id: authId, email, name })
+    return null
+  },
+})
 
 export async function onUserUpdate(
   ctx: Ctx,
