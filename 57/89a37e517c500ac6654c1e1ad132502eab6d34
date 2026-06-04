@@ -1,0 +1,38 @@
+packages/backend/convex/ai/persist.ts
+  s_df12fc6ddf323c::t_9f6e6f6b4e74fc 1-59
+packages/backend/convex/_generated/api.d.ts
+  s_df12fc6ddf323c::t_6d3dc578be8cb6 16-20,49-53
+packages/backend/convex/shared/tables.ts
+  s_df12fc6ddf323c::t_362792d8317cd8 17-18,22,25,32,35-36,38
+packages/backend/convex/ai/suggest.test.ts
+  s_df12fc6ddf323c::t_402ea49d84c6e8 1-132
+bun.lock
+  ai_agent 68,72,76,194-201,544-545,930-931,968-969,1398
+packages/backend/package.json
+  s_df12fc6ddf323c::t_486b82f98156c5 16,20,23-24
+packages/backend/convex/ai/provider.ts
+  s_df12fc6ddf323c::t_ffef950c7724d3 1-15
+packages/backend/convex/ai/suggest.ts
+  s_df12fc6ddf323c::t_57ae3b8a5d37c1 1-147,149-302
+  s_df12fc6ddf323c::t_704f3ac6c55542 148
+packages/backend/convex/ai/config.ts
+  s_df12fc6ddf323c::t_ed0f71b3fc9e1c 1-5
+packages/backend/convex/ai/generate.ts
+  s_df12fc6ddf323c::t_642e2932eec4ed 1-162
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "5789a37e517c500ac6654c1e1ad132502eab6d34",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
