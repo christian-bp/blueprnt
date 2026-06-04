@@ -1,0 +1,31 @@
+docs/superpowers/plans/2026-06-04-convex-backend-better-auth.md
+  s_e95b5bd4433e6b::t_dca51bbe34f736 2630-2986,3014-3331,3333-3334,3348-3352,3360-3541
+  s_e95b5bd4433e6b::t_1ad1619125e353 1-508,510-512,514-515,517-533
+  s_e95b5bd4433e6b::t_962f45e1fd49eb 1354
+  s_e95b5bd4433e6b::t_96abac41a5648a 513,516
+  s_e95b5bd4433e6b::t_497723a88d7cf6 1612,1614-1829,1834
+  s_e95b5bd4433e6b::t_a3fbed96305017 1995-2065
+  s_e95b5bd4433e6b::t_0edecd5275502c 2987-3013
+  s_e95b5bd4433e6b::t_2e96c119185b58 1158-1353,1355-1611,1613,1830-1833,1835-1994,2066-2197,2199-2442,2445-2629,3542
+  s_e95b5bd4433e6b::t_291ec0a1773108 3332,3335-3347,3353-3359
+  s_e95b5bd4433e6b::t_c31907bfba2142 509
+  s_e95b5bd4433e6b::t_70ed71ce598255 534-1157,3543
+  s_e95b5bd4433e6b::t_b9db44b2f24223 2443-2444
+  s_e95b5bd4433e6b::t_915a79707bb97a 2198
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "4eb920f6fc1f3c3dadc0ba5afdb1bb46a51252c3",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
