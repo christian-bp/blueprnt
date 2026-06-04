@@ -91,11 +91,15 @@ export async function onOrganizationCreate(ctx: Ctx, doc: AuthOrgDoc) {
   })
 }
 
+// Triggers carry no caller identity; actor attribution for member events
+// is "system" until a server-side member-management mutation logs the real
+// admin actor (future slice). payload.memberUserId identifies the subject.
+
 export async function onMemberCreate(ctx: Ctx, doc: AuthMemberDoc) {
   await logAudit(ctx, {
     orgId: doc.organizationId,
     type: AUDIT_EVENTS.memberAdded,
-    actorId: doc.userId,
+    actorId: "system",
     payload: { memberUserId: doc.userId, role: doc.role },
   })
 }
@@ -109,7 +113,7 @@ export async function onMemberUpdate(
   await logAudit(ctx, {
     orgId: newDoc.organizationId,
     type: AUDIT_EVENTS.memberRoleChanged,
-    actorId: newDoc.userId,
+    actorId: "system",
     payload: {
       memberUserId: newDoc.userId,
       from: oldDoc.role,
@@ -122,7 +126,7 @@ export async function onMemberDelete(ctx: Ctx, doc: AuthMemberDoc) {
   await logAudit(ctx, {
     orgId: doc.organizationId,
     type: AUDIT_EVENTS.memberRemoved,
-    actorId: doc.userId,
+    actorId: "system",
     payload: { memberUserId: doc.userId },
   })
 }
@@ -142,6 +146,9 @@ export async function onInvitationUpdate(
   oldDoc: AuthInvitationDoc
 ) {
   if (newDoc.status === oldDoc.status) return
+  // Deliberate V1 collapse: both invitee-declined (rejected) and
+  // admin-canceled map to invitation.revoked; payload.status preserves the
+  // distinction for any future reporting.
   const type =
     newDoc.status === "accepted"
       ? AUDIT_EVENTS.invitationAccepted

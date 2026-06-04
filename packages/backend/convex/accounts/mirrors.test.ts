@@ -114,7 +114,7 @@ describe("lifecycle audit triggers", () => {
     inviterId: "ba_user_1",
   }
 
-  it("onMemberCreate logs member.added with role", async () => {
+  it("onMemberCreate logs member.added with role and actorId system", async () => {
     const t = initConvexTest()
     await t.run(async (ctx) => {
       await onMemberCreate(ctx, member)
@@ -125,7 +125,25 @@ describe("lifecycle audit triggers", () => {
         )
         .collect()
       expect(rows).toHaveLength(1)
-      expect(rows[0].payload).toMatchObject({ role: "editor" })
+      expect(rows[0].actorId).toBe("system")
+      expect(rows[0].payload).toMatchObject({
+        memberUserId: "ba_user_1",
+        role: "editor",
+      })
+    })
+  })
+
+  it("snapshots actorName as unknown when no mirror row exists", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      await onMemberCreate(ctx, member)
+      const audit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", "ba_org_1").eq("type", "member.added")
+        )
+        .collect()
+      expect(audit[0].actorName).toBe("unknown")
     })
   })
 
@@ -146,11 +164,16 @@ describe("lifecycle audit triggers", () => {
         )
         .collect()
       expect(rows).toHaveLength(1)
-      expect(rows[0].payload).toMatchObject({ from: "editor", to: "admin" })
+      expect(rows[0].actorId).toBe("system")
+      expect(rows[0].payload).toMatchObject({
+        memberUserId: "ba_user_1",
+        from: "editor",
+        to: "admin",
+      })
     })
   })
 
-  it("onMemberDelete logs member.removed", async () => {
+  it("onMemberDelete logs member.removed with actorId system", async () => {
     const t = initConvexTest()
     await t.run(async (ctx) => {
       await onMemberDelete(ctx, member)
@@ -161,6 +184,7 @@ describe("lifecycle audit triggers", () => {
         )
         .collect()
       expect(rows).toHaveLength(1)
+      expect(rows[0].actorId).toBe("system")
       expect(rows[0].payload).toMatchObject({ memberUserId: "ba_user_1" })
     })
   })

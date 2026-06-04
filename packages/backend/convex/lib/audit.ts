@@ -26,15 +26,24 @@ export async function logAudit(
     payload: Record<string, unknown>
   }
 ) {
-  const actor = await ctx.db
-    .query("users")
-    .withIndex("by_auth_id", (q) => q.eq("authId", entry.actorId))
-    .unique()
+  let actorName = "unknown"
+  try {
+    const actor = await ctx.db
+      .query("users")
+      .withIndex("by_auth_id", (q) => q.eq("authId", entry.actorId))
+      .first()
+    if (actor !== null) actorName = actor.name
+  } catch (error) {
+    console.error("audit actor lookup failed", {
+      actorId: entry.actorId,
+      error: error instanceof Error ? error.message : String(error),
+    })
+  }
   await ctx.db.insert("auditLog", {
     orgId: entry.orgId,
     type: entry.type,
     actorId: entry.actorId,
-    actorName: actor?.name ?? "unknown",
+    actorName,
     payload: entry.payload,
   })
 }
