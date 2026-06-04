@@ -3,6 +3,10 @@
     "target": "ESNext",
     "lib": ["ES2021", "DOM"],
     "module": "ESNext",
+    // @workspace/email exports raw .tsx source (React Email templates); the
+    // backend never has JSX of its own, but tsc follows the import and needs
+    // a jsx factory to typecheck that package's modules.
+    "jsx": "react-jsx",
     "moduleResolution": "Bundler",
     "moduleDetection": "force",
     "strict": true,

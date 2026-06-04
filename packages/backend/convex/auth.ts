@@ -4,6 +4,7 @@ import {
   type GenericCtx,
 } from "@convex-dev/better-auth"
 import { convex } from "@convex-dev/better-auth/plugins"
+import { requireRunMutationCtx } from "@convex-dev/better-auth/utils"
 import { type BetterAuthOptions, betterAuth } from "better-auth/minimal"
 import { organization } from "better-auth/plugins"
 import { components, internal } from "./_generated/api"
@@ -84,13 +85,42 @@ export const createAuthOptions = (
   ctx: GenericCtx<DataModel>,
   overrides?: { baseURL?: string }
 ) => {
+  // Hoisted so both baseURL and the invite accept link use the same value.
+  // Analysis/codegen contexts pass an override and must not call requireSiteUrl.
+  const resolvedBaseUrl = overrides?.baseURL ?? requireSiteUrl()
   return {
-    baseURL: overrides?.baseURL ?? requireSiteUrl(),
+    baseURL: resolvedBaseUrl,
     database: authComponent.adapter(ctx),
     emailAndPassword: {
       enabled: true,
-      // Flipped to true in Task 12 when the email outbox exists.
-      requireEmailVerification: false,
+      // The durable outbox exists now (Task 12), so we can require verification.
+      requireEmailVerification: true,
+      sendResetPassword: async (data) => {
+        // No per-account locale yet (Task 12 slice); reset emails go out in en.
+        await requireRunMutationCtx(ctx).runMutation(
+          internal.email.outbox.enqueueEmail,
+          {
+            to: data.user.email,
+            templateKey: "resetPassword",
+            props: { url: data.url },
+            locale: "en",
+          }
+        )
+      },
+    },
+    emailVerification: {
+      sendVerificationEmail: async (data) => {
+        // No per-account locale yet (Task 12 slice); verify emails go out in en.
+        await requireRunMutationCtx(ctx).runMutation(
+          internal.email.outbox.enqueueEmail,
+          {
+            to: data.user.email,
+            templateKey: "verifyEmail",
+            props: { url: data.url },
+            locale: "en",
+          }
+        )
+      },
     },
     plugins: [
       organization({
@@ -101,6 +131,25 @@ export const createAuthOptions = (
         // operation. No product path to delete an organization exists.
         // Revisit post-V1.
         disableOrganizationDeletion: true,
+        sendInvitationEmail: async (data) => {
+          const mctx = requireRunMutationCtx(ctx)
+          // Resolve the workspace's language so the invite goes out in the
+          // org's locale; fall back to en if the profile has no language set.
+          const profile = await mctx.runQuery(
+            internal.accounts.workspace.getProfileForOrg,
+            { orgId: data.organization.id }
+          )
+          await mctx.runMutation(internal.email.outbox.enqueueEmail, {
+            to: data.email,
+            templateKey: "invitation",
+            props: {
+              inviterName: data.inviter.user.name,
+              workspaceName: data.organization.name,
+              acceptUrl: `${resolvedBaseUrl}/accept-invitation/${data.id}`,
+            },
+            locale: profile?.language ?? "en",
+          })
+        },
       }),
       convex({ authConfig }),
     ],

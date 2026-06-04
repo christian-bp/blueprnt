@@ -1,4 +1,5 @@
 import { v } from "convex/values"
+import { internalQuery } from "../_generated/server"
 import { AUDIT_EVENTS, logAudit } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgQuery } from "../lib/functions"
@@ -55,5 +56,24 @@ export const updateWorkspaceProfile = adminMutation({
       payload: { changed: Object.keys(args) },
     })
     return null
+  },
+})
+
+// Used by the auth invitation callback to resolve the workspace's language so
+// the invite email goes out in the org's locale. Not org-scoped: the caller is
+// Better Auth (no app session), and it only exposes the language.
+export const getProfileForOrg = internalQuery({
+  args: { orgId: v.string() },
+  returns: v.union(
+    v.null(),
+    v.object({ language: v.union(v.string(), v.null()) })
+  ),
+  handler: async (ctx, { orgId }) => {
+    const profile = await ctx.db
+      .query("workspaceProfiles")
+      .withIndex("by_org", (q) => q.eq("orgId", orgId))
+      .unique()
+    if (profile === null) return null
+    return { language: profile.language ?? null }
   },
 })
