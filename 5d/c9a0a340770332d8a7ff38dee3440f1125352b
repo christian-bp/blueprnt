@@ -1,0 +1,20 @@
+docs/superpowers/specs/2026-06-04-convex-backend-better-auth-design.md
+  s_e95b5bd4433e6b::t_e992b96a3c3847 1-136,138-264
+  s_e95b5bd4433e6b::t_5a2d98233d68dc 137
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "5dc9a0a340770332d8a7ff38dee3440f1125352b",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
