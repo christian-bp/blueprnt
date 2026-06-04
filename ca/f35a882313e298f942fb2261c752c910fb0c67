@@ -1,0 +1,48 @@
+bun.lock
+  ai_agent 20,29
+apps/dashboard/postcss.config.mjs
+  s_e95b5bd4433e6b::t_36845a8e9a37c0 1
+apps/dashboard/next.config.ts
+  s_e95b5bd4433e6b::t_269e63f0086ba2 7
+apps/dashboard/app/sign-up/page.tsx
+  s_e95b5bd4433e6b::t_591f66e99c5f5e 10-24
+apps/dashboard/tsconfig.json
+  s_e95b5bd4433e6b::t_5f505e114cef93 7-8
+packages/i18n/messages/en.json
+  s_e95b5bd4433e6b::t_7b71082295121c 97-108
+packages/i18n/messages/nb.json
+  s_e95b5bd4433e6b::t_7b71082295121c 97-108
+apps/dashboard/app/layout.tsx
+  s_e95b5bd4433e6b::t_2c8da670fa5bee 1-2
+apps/dashboard/components/auth/email-password-form.tsx
+  s_e95b5bd4433e6b::t_5286f8c6fa47de 3-17,19,28-29,57-111
+packages/i18n/messages/fi.json
+  s_e95b5bd4433e6b::t_7b71082295121c 97-108
+packages/i18n/messages/sv.json
+  s_e95b5bd4433e6b::t_7b71082295121c 97-108
+packages/i18n/messages/da.json
+  s_e95b5bd4433e6b::t_7b71082295121c 97-108
+apps/dashboard/package.json
+  s_e95b5bd4433e6b::t_2ff50c48882d9a 19
+  s_e95b5bd4433e6b::t_71e6942165a532 28
+apps/dashboard/app/sign-in/page.tsx
+  s_e95b5bd4433e6b::t_f19c60c813cfe1 10-23
+apps/dashboard/components.json
+  s_e95b5bd4433e6b::t_19ae5d2fd54139 1-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "caf35a882313e298f942fb2261c752c910fb0c67",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
