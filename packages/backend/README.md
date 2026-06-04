@@ -11,6 +11,9 @@ Convex backend (EU West / Ireland deployment, project quantumlabs/blueprnt).
   filesystem than /Volumes).
 - Deployment env vars: `BETTER_AUTH_SECRET`, `SITE_URL` (and later Scaleway
   TEM credentials). Set via `bunx convex env set`.
+- No self-serve sign-up: `emailAndPassword.disableSignUp` is set in
+  `convex/auth.ts`; accounts are provisioned by an admin (the dev seed
+  today, the invitation flow later).
 - Dev seed (creates a sign-in-able local account): `bunx convex run seed:seedDevUser`
   Credentials: `hej@blueprnt.se` / `abc123` (name "Hej"). Guard: only runs when `SITE_URL` contains `localhost`. Cleanup: `bunx convex run seed:removeDevUser '{"email":"hej@blueprnt.se"}'`.
 - Email verification is disabled until the Scaleway TEM env vars

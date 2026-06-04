@@ -94,7 +94,7 @@ The organization plugin is not in the component's supported-out-of-the-box list,
 
 ### Sign-in and roles
 
-- V1 sign-in: email + password with email verification and password reset (both email through the outbox). SSO/social later; SSO is explicitly incompatible with the component today.
+- V1 sign-in: email + password with email verification and password reset (both email through the outbox). SSO/social later; SSO is explicitly incompatible with the component today. No self-serve sign-up: `disableSignUp` is set, accounts are provisioned by an admin (dev seed today, invitation flow later), and the dashboard has no sign-up page.
 - Organization = workspace (glossary: Arbetsyta). Custom roles via `createAccessControl`: exactly `admin` and `editor`. `admin` is the owner-equivalent (full control, member management, later model configuration); `creatorRole: 'admin'`. `editor` gets role/rating permissions only. Permission statements are defined now so later slices consume them. Organization deletion is deliberately disabled in V1 for every role; tenant deletion is an out-of-band support operation.
 - Org id is an explicit validated argument on every org-scoped function. No hidden active-organization session state in the function contract.
 

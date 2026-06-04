@@ -93,6 +93,10 @@ export const createAuthOptions = (
     database: authComponent.adapter(ctx),
     emailAndPassword: {
       enabled: true,
+      // No self-serve account creation: accounts are provisioned by an
+      // admin (dev seed today, invitation flow later). This closes the
+      // public sign-up endpoint, not just the UI.
+      disableSignUp: true,
       // Flip to true together with configuring the Scaleway TEM env vars:
       // with no working sender, required verification strands every new
       // account (the manual path is reading props.url from the emails row
