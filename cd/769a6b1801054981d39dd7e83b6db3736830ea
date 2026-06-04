@@ -1,0 +1,56 @@
+packages/i18n/src/messages.test.ts
+  s_e95b5bd4433e6b::t_1585590e454492 1
+  s_e95b5bd4433e6b::t_0d318f5a1064ec 36
+  s_e95b5bd4433e6b::t_7fa8131037c146 31-35,37-41
+packages/i18n/messages/sv.json
+  s_e95b5bd4433e6b::t_f9de39a695d0b1 10-29
+packages/email/src/messages.ts
+  s_e95b5bd4433e6b::t_3c481a7cc4b921 6-23,25-27
+  s_e95b5bd4433e6b::t_690c9fb7ec4e8d 1-5
+  s_e95b5bd4433e6b::t_0d318f5a1064ec 24
+packages/email/src/index.ts
+  s_e95b5bd4433e6b::t_03d3a9abcafb4d 1-8
+packages/email/tsconfig.json
+  s_e95b5bd4433e6b::t_a6f78bbbc911ae 1-9
+packages/email/package.json
+  s_e95b5bd4433e6b::t_5422675c355d2d 1-31
+packages/i18n/messages/nb.json
+  s_e95b5bd4433e6b::t_5b4389bcfebe9f 10-29
+packages/email/src/templates/invitation.tsx
+  s_e95b5bd4433e6b::t_466133eb83ea7d 1-39
+packages/email/src/render.ts
+  s_e95b5bd4433e6b::t_0d318f5a1064ec 31
+  s_e95b5bd4433e6b::t_8cc7cccfb01655 1-30,32-64
+packages/email/src/render.test.ts
+  s_e95b5bd4433e6b::t_6abdeae18e571c 1-32
+packages/i18n/messages/da.json
+  s_e95b5bd4433e6b::t_6e3bf6b22d9bf6 10-29
+packages/i18n/messages/en.json
+  s_e95b5bd4433e6b::t_1e7af0ab9af523 10-29
+packages/i18n/messages/fi.json
+  s_e95b5bd4433e6b::t_972d4e272c36fe 10-29
+packages/email/vitest.config.ts
+  s_e95b5bd4433e6b::t_af6dd100bc5371 1-4
+packages/email/src/templates/verify-email.tsx
+  s_e95b5bd4433e6b::t_2487f0960d9ffc 1-31
+bun.lock
+  ai_agent 65-82,194,210,634-675,714-715,718-719,806-807,868-869,878,902-903,906-907,942-945,968,972-973,996-997,1028-1031,1056-1065,1086-1089,1096,1190-1191,1194-1195,1216-1219,1290,1314-1315,1342,1344,1352-1353,1356-1357,1380-1381,1410-1411,1414-1415,1442-1443,1450-1451,1456-1457,1462-1463,1478-1479,1500-1501,1514-1515,1554-1555,1588-1593,1620-1623,1672-1673,1714-1715,1748-1751,1754-1757,1760-1761,1764-1777,1788-1789,1792-1793,1810-1813,1820-1821,1824-1825,1830-1831,1834-1835,1840-1842,1850-1851,1854-1855,1860-1863,1878-1889,1954-1955,1968-2020
+packages/email/src/templates/reset-password.tsx
+  s_e95b5bd4433e6b::t_db7a439027e3f7 1-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "cd769a6b1801054981d39dd7e83b6db3736830ea",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
