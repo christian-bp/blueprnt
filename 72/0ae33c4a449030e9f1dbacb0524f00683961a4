@@ -1,0 +1,30 @@
+apps/dashboard/lib/auth-client.ts
+  s_e95b5bd4433e6b::t_c6245e8f1d9484 10,16-17
+packages/vitest-config/src/react.ts
+  s_e95b5bd4433e6b::t_54e019f9687304 2
+apps/dashboard/components/auth/email-password-form.tsx
+  s_e95b5bd4433e6b::t_5444bb60126c60 53-58
+packages/typescript-config/nextjs.json
+  s_e95b5bd4433e6b::t_96772a16f7164c 12-13
+  s_e95b5bd4433e6b::t_0b2fc9362b667a 11
+apps/dashboard/vitest.config.ts
+  s_e95b5bd4433e6b::t_76dfaffaf0a1b5 2,6
+apps/dashboard/app/accept-invitation/[id]/page.tsx
+  s_e95b5bd4433e6b::t_de3a084902def5 3,19-21,32-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "720ae33c4a449030e9f1dbacb0524f00683961a4",
+  "prompts": {},
+  "sessions": {
+    "s_e95b5bd4433e6b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1ba1ef38-a1e5-46d1-a35f-936e512dc13a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
