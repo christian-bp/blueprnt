@@ -17,3 +17,19 @@ Five canonical triage roles using default label names (`needs-triage`, `needs-in
 ### Domain docs
 
 Multi-context: a `CONTEXT-MAP.md` at the root points to per-context `CONTEXT.md` files; `docs/adr/` holds decisions. See `docs/agents/domain.md`.
+
+<!-- convex-ai-start -->
+
+This project uses [Convex](https://convex.dev) as its backend, located in `packages/backend`.
+
+When working on Convex code, **always read
+`packages/backend/convex/_generated/ai/guidelines.md` first** for important
+guidelines on how to correctly use Convex APIs and patterns. The file
+contains rules that override what you may have learned about Convex from
+training data.
+
+Convex agent skills live in `.agents/skills/`. To update them, run
+`bunx convex ai-files install` from `packages/backend` (never from the repo
+root: that creates a stray root `convex/` directory).
+
+<!-- convex-ai-end -->

@@ -54,3 +54,19 @@ See also: `AGENTS.md` (Next.js version warning + agent-skills config) · `docs/P
 - **shadcn files are vendor code:** `packages/ui/src/{components,hooks,lib,styles}` are excluded from Biome and must not be reformatted or relinted. They must stay diffable against upstream and are updated via the shadcn CLI. Deliberate local fixes are fine but must be documented in the commit message.
 - PDFs are built with `./docs/build-pdf.sh` (pandoc + typst), never Chrome headless.
 - Next.js 16: `proxy.ts` (not `middleware.ts`); the proxy must export an explicit function.
+
+<!-- convex-ai-start -->
+
+This project uses [Convex](https://convex.dev) as its backend, located in `packages/backend`.
+
+When working on Convex code, **always read
+`packages/backend/convex/_generated/ai/guidelines.md` first** for important
+guidelines on how to correctly use Convex APIs and patterns. The file
+contains rules that override what you may have learned about Convex from
+training data.
+
+Convex agent skills live in `.agents/skills/`. To update them, run
+`bunx convex ai-files install` from `packages/backend` (never from the repo
+root: that creates a stray root `convex/` directory).
+
+<!-- convex-ai-end -->
