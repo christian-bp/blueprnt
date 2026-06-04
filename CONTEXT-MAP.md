@@ -10,10 +10,10 @@ Varje ordlista har en sektion **Översättningssträngar (i18n)** med svenska + 
 
 - [Konton (accounts)](./docs/contexts/accounts/CONTEXT.md) — arbetsytor (tenants), medlemmar och behörighetsroller. Bygger på Better Auth-organisationer.
 - [Värderingsmodell (evaluation-model)](./docs/contexts/evaluation-model/CONTEXT.md) — den konfigurerbara jobbarkitekturen + poängmodellen: kriterier, vikter, track/nivå, bandindelning, mallar; live-omräkning (ingen versionering i V1).
-- [Värdering (assessment)](./docs/contexts/assessment/CONTEXT.md) — roller och deras blindade värderingar: betyg, totalpoäng, bandplacering, kalibrering.
+- [Värdering (assessment)](./docs/contexts/assessment/CONTEXT.md) — roller och deras blindade värderingar: betyg, totalpoäng, bandutfall, kalibrering.
 
 **Reserverade framtida kontexter (V2, byggs inte i V1):**
-- **people** — medarbetare (dataminimerade persondata) och koppling medarbetare↔roll.
+- **people** — medarbetare (dataminimerade persondata) och koppling medarbetare↔roll (rollplacering).
 - **pay** — lönedata och lika/likvärdigt arbete-analys (lönekartläggning). Striktare behörighet/minimering än V1-kontexterna. Assessment förblir alltid fri från person-/lönedata.
 
 ## Relationer

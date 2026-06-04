@@ -28,6 +28,7 @@
     }
   },
   "model": {
+    "roleFamily": "Rollfamilj",
     "track": "Track",
     "level": "Nivå",
     "band": "Band",
@@ -55,12 +56,13 @@
     "rating": "Betyg",
     "motivation": "Motivering",
     "score": "Totalpoäng",
-    "bandAssignment": "Bandplacering",
+    "band": "Band",
     "anchorRole": "Ankarroll",
     "aiSuggestion": "AI-förslag",
     "jobProfile": "Jobbprofil",
     "role": {
       "label": "Roll",
+      "title": "Titel",
       "function": "Funktion/avdelning",
       "team": "Team",
       "purpose": "Syfte",

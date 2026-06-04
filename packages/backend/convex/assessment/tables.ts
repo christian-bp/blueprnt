@@ -6,7 +6,7 @@ import { v } from "convex/values"
 // Role/rating tables NEVER carry person, salary, or performance fields.
 export const roles = defineTable({
   orgId: v.string(),
-  name: v.string(),
+  title: v.string(), // the level role's display title, e.g. "Junior Software Developer"
   function: v.string(),
   team: v.string(),
   trackId: v.id("tracks"),

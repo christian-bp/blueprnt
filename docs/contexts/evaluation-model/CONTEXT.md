@@ -2,13 +2,17 @@
 
 Den konfigurerbara jobbarkitekturen och poängmodellen som en arbetsyta definierar: kriterierna och deras vikter, track/nivå-schemat, bandtrösklarna samt mallarna bakom dem.
 
-Grundprincip: **track och nivå beskriver rollen; bandet värderar den.** Ordningen är alltid: beskriv rollen (track + nivå) → värdera mot kriterierna → bandet faller ut sist. Nivå jämförs *inom* en track; band jämförs *mellan* tracks.
+Grundprincip: **track och nivå beskriver rollen; bandet värderar den.** Ordningen är alltid: beskriv rollen (track + nivå) → värdera mot kriterierna → bandet faller ut sist. Nivå jämförs *inom* en track; band jämförs *mellan* tracks. Den pedagogiska förklaringen av hela modellen (rollfamilj, nivåroll, visningstitel, rollplacering) finns i [track-level-band.md](./track-level-band.md).
 
 ## Språk
 
+**Rollfamilj** *(kod: Role family)*:
+En bred familj av liknande roller, t.ex. Software Developer (kan också dras bredare, som Software Engineering). En familj rymmer flera nivåroller: junior och senior utvecklare är oftast samma rollfamilj men olika nivåroller inom samma track. Hierarkin är rollfamilj → roll/nivåroll → (V2) medarbetare. En rollfamilj är inte en track: tracken säger vilken *sorts* jobb rollen är (IC/Lead/M), familjen grupperar besläktade roller. V1 modellerar inte rollfamilj som egen entitet; gruppering fångas via rollernas titlar (se PLAN-V1 §9.14).
+_Undvik_: Jobbfamilj (säg "rollfamilj"), Track (en familj är inte en track)
+
 **Track**:
-Vilken *sorts* jobb en roll är — dess arketyp/familj: Individual Contributor (IC), Lead eller Manager (M). Beskriver rollen, aldrig personen.
-_Undvik_: Karriärväg, Jobbfamilj (godtagbara synonymer, men "Track" är kanoniskt)
+Vilken *sorts* jobb en roll är — dess arketyp: Individual Contributor (IC), Lead eller Manager (M). Beskriver rollen, aldrig personen. En track är inte en rollfamilj: en rollfamilj (t.ex. Software Developer) rymmer flera nivåroller inom samma track.
+_Undvik_: Karriärväg (godtagbar synonym, men "Track" är kanoniskt), Jobbfamilj/Rollfamilj (en familj är inte en track, se Rollfamilj)
 
 **Nivå** *(kod: Level)*:
 Hur *avancerat* ett jobb är *inom sin track* (IC1–IC5, Lead-1–Lead-3, M1–M3). Scopad per track — en IC5 och en M3 är inte samma "nivå". Nivå jämförs inom en track, aldrig mellan tracks.
@@ -72,6 +76,7 @@ Nyckelformat är bibliotek-neutralt (punktnamnrymd). Svenska är standardspråk.
 
 | Nyckel | Svenska | English |
 | --- | --- | --- |
+| `model.roleFamily` | Rollfamilj | Role family |
 | `model.track` | Track | Track |
 | `model.level` | Nivå | Level |
 | `model.band` | Band | Band |
@@ -101,6 +106,7 @@ Etikettsordval är förslag — bekräftas med användaren.
 - **Track-guardrails** (Excelns min/max per (track, nivå) per kriterium): provisoriskt *rådgivande* (varna vid betyg utanför intervall, blockera aldrig) — bekräftas när värderingsflödet designas.
 - **Egna kriterier (full konfiguration)**: HR kan skapa egna kriterier utöver standardmallen, med egna 0–5-ankare, och anpassa kriterier/ankare/betydelser/bandtrösklar fritt. Även egna kriterier får sin vikt genom att tilldelas en **betydelse från den fasta 7-skalan** — aldrig fria siffervikter.
 - **Live-omräkning (V1-beslut)**: ingen modellversionering i V1 — en levande modell per arbetsyta, och ändringar räknar om alla rollers poäng/band direkt (härleds från sparade betyg + aktuell modell). Avviker medvetet från briefens versioneringskrav; konsekvens: roller kan tyst byta band vid modelländring. Spårbarhet löses med en **revisionslogg** (ingår i V1). Se ADR-0002.
+- **Rollfamiljens granularitet**: förklaringsdokumentet (track-level-band.md) använder Software Developer som exempel på rollfamilj; familjer kan också dras bredare (t.ex. Software Engineering, beslutat 2026-06). Granulariteten bestäms per arbetsyta. V1 modellerar inte rollfamilj som egen entitet.
 
 ## Exempeldialog
 — "Det här är en IC3 Software Developer, så det blir Band 4, va?"

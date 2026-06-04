@@ -28,6 +28,7 @@
     }
   },
   "model": {
+    "roleFamily": "Role family",
     "track": "Track",
     "level": "Level",
     "band": "Band",
@@ -55,12 +56,13 @@
     "rating": "Rating",
     "motivation": "Motivation",
     "score": "Score",
-    "bandAssignment": "Band assignment",
+    "band": "Band",
     "anchorRole": "Anchor role",
     "aiSuggestion": "AI suggestion",
     "jobProfile": "Job profile",
     "role": {
       "label": "Role",
+      "title": "Title",
       "function": "Function/department",
       "team": "Team",
       "purpose": "Purpose",

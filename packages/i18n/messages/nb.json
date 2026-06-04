@@ -28,6 +28,7 @@
     }
   },
   "model": {
+    "roleFamily": "Rollefamilie",
     "track": "Track",
     "level": "Nivå",
     "band": "Bånd",
@@ -55,12 +56,13 @@
     "rating": "Karakter",
     "motivation": "Begrunnelse",
     "score": "Totalpoeng",
-    "bandAssignment": "Båndplassering",
+    "band": "Bånd",
     "anchorRole": "Ankerrolle",
     "aiSuggestion": "AI-forslag",
     "jobProfile": "Jobbprofil",
     "role": {
       "label": "Rolle",
+      "title": "Tittel",
       "function": "Funksjon/avdeling",
       "team": "Team",
       "purpose": "Formål",

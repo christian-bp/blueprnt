@@ -46,7 +46,7 @@ packages/ui       shadcn/ui (finns)
 - *Betydelseskalan (7 nivåer → vikt) är **fast** → konstant i `packages/core`, ingen tabell.*
 
 **assessment**:
-- `role` — orgId; **jobbprofil**: obligatorisk kärna (namn, funktion/avdelning, team, trackKey, level, syfte, ansvarsområden) + valfria strukturerade fält (beslutsmandat, intressenter, kunskapskrav, finansiellt ansvar, personalansvar, risk/konsekvens, leverabler); status (draft/inReview/approved).
+- `role` — orgId; **jobbprofil**: obligatorisk kärna (titel, funktion/avdelning, team, trackKey, level, syfte, ansvarsområden) + valfria strukturerade fält (beslutsmandat, intressenter, kunskapskrav, finansiellt ansvar, personalansvar, risk/konsekvens, leverabler); status (draft/inReview/approved). Titeln är nivårollens visningstitel (t.ex. "Junior Software Developer"); kodfältet heter `title`.
 - `rating` — orgId, roleId, criterionId, value (0–5), ev. motivering (frivillig). **(Sanningskällan.)**
 - `anchorRole` — orgId, roleId, förväntat band. (Kalibrering; ev. senare.)
 
@@ -66,7 +66,7 @@ packages/ui       shadcn/ui (finns)
 - **E1 — Konton & arbetsyta:** Better Auth-org (= arbetsyta), HR-only, roller Admin/Editor, org-scoping i alla funktioner, samt grundläggande företagssetup (namn, land, valuta, språk, antal anställda, verksamhetstyp).
 - **E2 — Modellkonfiguration:** kriterier + ankare + hjälptexter, betydelse-skala (fast 7), bandtrösklar, track-schema, **standardmall** (förifylld), egna kriterier, samt **kriterieurvalsprotokoll** & **bias-granskning** per kriterium (lätt compliance-ställning, nivå 2).
 - **E3 — Roller & värdering:** rollregister/jobbprofil, **blindat** betygsflöde mot ankare, status (utkast → granskning → godkänd), frivillig motivering.
-- **E4 — Poäng & band-motor:** `packages/core`, live-omräkning, bandplacering (alltid uträknad — ingen manuell override).
+- **E4 — Poäng & band-motor:** `packages/core`, live-omräkning, bandutfall (alltid uträknat — ingen manuell override).
 - **E5 — Resultat & analys:** resultatvy (poäng + band), bandöversikt, **progressionsvy** (roller skapade / bedömda / bandade — briefens §8), grundläggande analys (**överlapp, avvikare, bandfördelning** — briefens 4.4), jämförelse av roller, export CSV/Excel, samt exporterbar **metodbilaga** (kriterier, betydelser, kriterieurvalsprotokoll, bias-granskning; formulering: "biasreducerande", aldrig "biasfri").
 - **E6 — Revisionslogg & spårbarhet:** modelländringar + band-shiftar (tvärgående, vävs in i E2/E4).
 - **E7 — Senare:** bulkimport CSV/XLSX, kalibrering/ankarroller, fler roller, Word/PDF-rapporter, djupare bias/governance (se §7).
@@ -77,7 +77,7 @@ packages/ui       shadcn/ui (finns)
 1. **Fas 1 — Fundament:** monorepo-paket (`backend`, `core`, `dashboard`), Convex EU-deploy, Better Auth, arbetsyta + Admin/Editor. (E1)
 2. **Fas 2 — Modellmotor & mall:** kriterier/ankare/betydelser, bandtrösklar, standardmall, `packages/core` grundläggande. (E2 + E4-kärna)
 3. **Fas 3 — Roller & värdering:** rollregister, blindat betygsflöde, status. (E3)
-4. **Fas 4 — Poäng & band:** full motor, bandplacering, revisionslogg. (E4 + E6)
+4. **Fas 4 — Poäng & band:** full motor, bandutfall, revisionslogg. (E4 + E6)
 5. **Fas 5 — Resultat & export:** översikts-/jämförelsevyer, CSV/Excel-export. (E5)
 6. **Fas 6 — Förbättringar:** bulkimport, kalibrering, rapporter, fler roller. (E7)
 
@@ -86,7 +86,7 @@ packages/ui       shadcn/ui (finns)
 Tunnast möjliga end-to-end som bevisar kärnloopen *modell → roller → poäng → band*:
 
 - En arbetsyta (Better Auth), **standardmallen seedad** (9 kriterier + ankare + förvalda betydelser + standard-bandtrösklar) — skrivskyddad räcker för skivan.
-- Registrera några roller manuellt (namn + track/nivå + minimalt antal fält).
+- Registrera några roller manuellt (titel + track/nivå + minimalt antal fält).
 - Mata in 0–5-betyg per kriterium mot ankartexterna (blindat).
 - `packages/core` räknar poäng → band live.
 - Resultatvy: lista roller med poäng + band, samt en enkel bandöversikt.
@@ -116,7 +116,7 @@ Avancerad marknads-benchmarking; komplex kompmodellering (bonus/equity/TCC); sto
 1. ~~**Bandschema**~~ → **Avgjort (default):** 7 band, trösklar konfigurerbara, Band 1 högst.
 2. ~~**HR-roller**~~ → **Avgjort (default):** Admin + Editor.
 3. ~~**Värderingsstatus & motivering**~~ → **Avgjort:** status utkast → under granskning → godkänd; **motivering frivillig** (aldrig obligatorisk). *(Medveten avvikelse från HR-kritikens fyra obligatoriska triggers — betyg 0/4/5, utanför track-intervall, nära bandgräns — motiverad av HR-only + blindning. Ev. icke-blockerande uppmaning att motivera är en UX-idé för E3.)* **Ingen manuell bandöverride** — band är alltid det uträknade utfallet (avviker från briefen; vill man ändra justerar man betyg eller modell).
-4. ~~**Roll-fält / jobbprofil**~~ → **Avgjort: nivå (2).** Obligatorisk kärna (namn, funktion/avdelning, team, track, nivå, syfte, ansvarsområden) + strukturerade valfria fält (beslutsmandat, intressenter, kunskapskrav, finansiellt ansvar, personalansvar, risk/konsekvens, leverabler). *(Mappning mot briefen 4.3: "beskrivning" → syfte; "ansvarstext" → ansvarsområden.)*
+4. ~~**Roll-fält / jobbprofil**~~ → **Avgjort: nivå (2).** Obligatorisk kärna (titel, funktion/avdelning, team, track, nivå, syfte, ansvarsområden) + strukturerade valfria fält (beslutsmandat, intressenter, kunskapskrav, finansiellt ansvar, personalansvar, risk/konsekvens, leverabler). *(Mappning mot briefen 4.3: "beskrivning" → syfte; "ansvarstext" → ansvarsområden.)* **Uppdaterat 2026-06:** fältet heter **titel** (kod `title`), inte namn; titeln är nivårollens visningstitel enligt förklaringsdokumentet (track-level-band.md).
 5. ~~**Kalibrering/ankarroller**~~ → **Avgjort:** senare (fast-follow), enligt #8-beslutet (compliance-nivå 2); se E7.
 6. ~~**Track-schema**~~ → **Avgjort:** fast (IC/Lead/M) i V1, konfigurerbart senare. Nivåer: **IC1–5, Lead 1–3, M1–3** (definitioner + guardrails i standardmall.md).
 7. ~~**CSV/XLSX-import**~~ → **Avgjort (default):** manuell inmatning i V1; import senare.
@@ -126,6 +126,7 @@ Avancerad marknads-benchmarking; komplex kompmodellering (bonus/equity/TCC); sto
 11. ~~**AI-modell (EU)**~~ → **Parkerad:** AI-SDK abstraherar leverantören → byte är billigt, beslutas vid bygget av E8. Enda kravet nu: **EU-hostad** modell (ADR-0003). Kandidater: Mistral EU / Azure OpenAI EU / Bedrock EU. Mindre portabelt vid byte: structured-output/caching/vision + prompttrimning per modell.
 12. **AI-betygsförslag** (öppen): planeras *senare* (efter att deterministisk kärna + blindning beprövats), inte V1.
 13. **Likvärdigt arbete-gruppering (V2-söm, öppen):** "likvärdigt arbete" blir ett **eget grupperingsbegrepp** i framtida people/pay-kontexter, härlett från poäng (ev. toleransband/klustring) — **inte** en rak återanvändning av kompensationsbanden. Bandgränser får inte ensamma avgöra rättslig gruppering. (Se §11.)
+14. ~~**Rollfamilj**~~ → **Avgjort (2026-06):** rollfamilj är ett **eget begrepp**, skilt från track (förklaringsdokumentet track-level-band.md: Software Developer är en rollfamilj, IC är dess track; familjer kan också dras bredare, t.ex. Software Engineering). Hierarki: rollfamilj → roll/nivåroll → (V2) medarbetare. **Modelleras inte som egen entitet i V1:** varje `role` är en nivåroll med titel + track + nivå; familjegruppering fångas tills vidare via titlarna. Egen rollfamilj-entitet (och progressionsvy per familj) är en senare fråga. Se evaluation-model-ordlistan.
 
 ## 10. Positionering & referenser
 
