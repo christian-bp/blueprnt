@@ -1,0 +1,62 @@
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_d15991314d4257 295-307
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_d15991314d4257 295-307
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_d15991314d4257 295-307
+apps/dashboard/components/onboarding/model-draft-panel.test.tsx
+  s_df12fc6ddf323c::t_496cee6df839be 1-28,31-181,185-203,207-210
+  s_df12fc6ddf323c::t_56e98067cf62a1 29-30,182-184,204-206
+apps/dashboard/lib/error-label.ts
+  s_df12fc6ddf323c::t_dcb233abaf9fa5 1-15
+apps/dashboard/lib/open-suggestions.ts
+  s_df12fc6ddf323c::t_c8b0af8a730859 1-4,12-13,15-16
+  s_df12fc6ddf323c::t_fa9af85849fcdf 5-11,14,17-22
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_d15991314d4257 295-307
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_d15991314d4257 295-307
+apps/dashboard/components/onboarding/importance-review-panel.tsx
+  s_df12fc6ddf323c::t_68142494e3513c 34-35,37-41
+  s_df12fc6ddf323c::t_4115f9460d590e 70-75,103-105,107,112-123
+  s_df12fc6ddf323c::t_33d627f5c73c75 185,189-190
+  s_df12fc6ddf323c::t_56e98067cf62a1 215-217
+  s_df12fc6ddf323c::t_11d65831809f26 89-95,108-111
+  s_df12fc6ddf323c::t_6e4632d4568f3b 3,5-33,36,42-50,52,54-69,76-88,96-102,106,124-184,186-188,191-214,218-293
+  s_df12fc6ddf323c::t_d1a13a23928565 4
+apps/dashboard/components/onboarding/importance-review-panel.test.tsx
+  s_df12fc6ddf323c::t_c850f2c78f9890 1-25,28-147
+  s_df12fc6ddf323c::t_56e98067cf62a1 26-27
+apps/dashboard/components/onboarding/criterion-editor.test.tsx
+  s_df12fc6ddf323c::t_bdf36a518d5579 94-102,108-111
+  s_df12fc6ddf323c::t_c21b1e2f1b280f 119,125,156,161,171,192
+  s_df12fc6ddf323c::t_0c762953b7e801 27-29
+  s_df12fc6ddf323c::t_e6332b0442ee0e 16-19,21-26,42-47
+apps/dashboard/components/onboarding/model-draft-panel.tsx
+  s_df12fc6ddf323c::t_56e98067cf62a1 100-102
+  s_df12fc6ddf323c::t_c6ee3357acd742 60
+  s_df12fc6ddf323c::t_2a415bee5a629f 21
+  s_df12fc6ddf323c::t_4960ebd0bf5ccb 124
+  s_df12fc6ddf323c::t_efdaef55b5edd2 52-57,61-63,75-77,79-92
+  s_df12fc6ddf323c::t_02c3062e33768f 3-20,22-51,58-59,64-74,78,93-99,103-123,125-271
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_df12fc6ddf323c::t_22f304ed5c06bd 16-20,22-27,49-54
+  s_df12fc6ddf323c::t_2328a79f9c89ae 95-97
+  s_df12fc6ddf323c::t_bab221d4dc5ded 28-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "393c007966a76a76a0f29db67cabb1e87123727f",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
