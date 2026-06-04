@@ -12,7 +12,13 @@ import authConfig from "./auth.config"
 import { ac, admin, editor } from "./betterAuth/permissions"
 import authSchema from "./betterAuth/schema"
 
-const siteUrl = process.env.SITE_URL ?? ""
+function requireSiteUrl(): string {
+  const url = process.env.SITE_URL
+  if (!url) {
+    throw new Error("SITE_URL env var is not set on the deployment")
+  }
+  return url
+}
 
 const authFunctions: AuthFunctions = internal.auth
 
@@ -31,7 +37,7 @@ export const { onCreate, onUpdate, onDelete } = authComponent.triggersApi()
 
 export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
   return {
-    baseURL: siteUrl,
+    baseURL: requireSiteUrl(),
     database: authComponent.adapter(ctx),
     emailAndPassword: {
       enabled: true,
@@ -43,6 +49,10 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
         ac,
         roles: { admin, editor },
         creatorRole: "admin",
+        // Deliberate V1 posture: tenant deletion is an out-of-band support
+        // operation. No product path to delete an organization exists.
+        // Revisit post-V1.
+        disableOrganizationDeletion: true,
       }),
       convex({ authConfig }),
     ],

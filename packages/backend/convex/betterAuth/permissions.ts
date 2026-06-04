@@ -17,6 +17,9 @@ export const statement = {
 
 export const ac = createAccessControl(statement)
 
+// Deliberate V1 posture: no role carries organization:["delete"], so no
+// member (including the creator) can delete a workspace from the product.
+// Tenant deletion is an out-of-band support operation. Revisit post-V1.
 export const admin = ac.newRole({
   ...adminAc.statements,
   model: ["update"],
