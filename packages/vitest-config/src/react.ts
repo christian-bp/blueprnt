@@ -1,5 +1,5 @@
 import { mergeConfig } from "vitest/config"
-import { baseConfig } from "./base"
+import { baseConfig } from "@workspace/vitest-config/base"
 
 // For packages/apps that test React components with Testing Library.
 export const reactConfig = mergeConfig(baseConfig, {

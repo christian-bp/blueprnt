@@ -1,12 +1,9 @@
 import react from "@vitejs/plugin-react"
-import { baseConfig } from "@workspace/vitest-config/base"
+import { reactConfig } from "@workspace/vitest-config/react"
 import { defineProject, mergeConfig } from "vitest/config"
 
-// reactConfig (happy-dom) is inlined here because the relative import inside
-// packages/vitest-config/src/react.ts does not resolve under Node ESM when
-// loaded by vitest from an app workspace. We replicate it to avoid the error.
 export default mergeConfig(
-  baseConfig,
+  reactConfig,
   defineProject({
     plugins: [react()],
     resolve: {
@@ -19,7 +16,6 @@ export default mergeConfig(
       },
     },
     test: {
-      environment: "happy-dom",
       server: {
         deps: {
           // next-intl uses package.json exports conditions that need inlining

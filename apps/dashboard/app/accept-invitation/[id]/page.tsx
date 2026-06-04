@@ -1,23 +1,11 @@
 "use client"
 
-import { Authenticated, Unauthenticated } from "convex/react"
+import { AuthLoading, Authenticated, Unauthenticated } from "convex/react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { useState } from "react"
 import { authClient } from "@/lib/auth-client"
-
-// AuthClient from @convex-dev/better-auth uses a portable union type that
-// omits plugin-specific methods. The organization plugin IS registered at
-// runtime (see lib/auth-client.ts), so we cast locally to call acceptInvitation.
-// This cast is intentional and narrowly scoped.
-type WithOrganization = {
-  organization: {
-    acceptInvitation: (args: {
-      invitationId: string
-    }) => Promise<{ error: unknown | null }>
-  }
-}
 
 export default function AcceptInvitationPage() {
   const t = useTranslations("dashboard.auth")
@@ -28,6 +16,9 @@ export default function AcceptInvitationPage() {
   return (
     <main>
       <h1>{t("invitation.title")}</h1>
+      <AuthLoading>
+        <p>{t("loading")}</p>
+      </AuthLoading>
       <Unauthenticated>
         <p>
           <Link href="/sign-in">{t("invitation.signInFirst")}</Link>
@@ -38,11 +29,10 @@ export default function AcceptInvitationPage() {
         <button
           type="button"
           onClick={async () => {
-            const { error: acceptError } = await (
-              authClient as unknown as WithOrganization
-            ).organization.acceptInvitation({
-              invitationId: params.id,
-            })
+            const { error: acceptError } =
+              await authClient.organization.acceptInvitation({
+                invitationId: params.id,
+              })
             if (acceptError) {
               setError(true)
               return

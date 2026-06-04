@@ -50,7 +50,12 @@ export function EmailPasswordForm(props: {
       </label>
       <label>
         {t("password")}
-        <input name="password" type="password" required minLength={8} />
+        <input
+          name="password"
+          type="password"
+          required
+          minLength={props.mode === "signUp" ? 8 : undefined}
+        />
       </label>
       {error ? <p role="alert">{t("error")}</p> : null}
       <button type="submit" disabled={pending}>
