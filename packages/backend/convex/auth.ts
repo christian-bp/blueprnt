@@ -35,9 +35,12 @@ export const authComponent = createClient<DataModel, typeof authSchema>(
 
 export const { onCreate, onUpdate, onDelete } = authComponent.triggersApi()
 
-export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
+export const createAuthOptions = (
+  ctx: GenericCtx<DataModel>,
+  overrides?: { baseURL?: string }
+) => {
   return {
-    baseURL: requireSiteUrl(),
+    baseURL: overrides?.baseURL ?? requireSiteUrl(),
     database: authComponent.adapter(ctx),
     emailAndPassword: {
       enabled: true,
