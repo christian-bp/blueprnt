@@ -40,7 +40,7 @@ packages/ui       shadcn/ui (finns)
 - `model` — orgId, namn, härkomst (vilken mall den startade från).
 - `criterion` — orgId, namn, beskrivning, **hjälptext** (vägledning till bedömaren, skild från beskrivning/ankare — briefens 4.2), **importanceLevel (1–7**; 7 = högst betydelse/vikt 18, 1 = lägst/vikt 8**)**, ordning, isCustom, samt protokoll/bias-fält (syfte, varförRelevant, **överlapp mot andra kriterier**, biasRisk, **biasKommentar**, biasÅtgärd, godkänd, beslutsfattare, datum).
 - `criterionAnchor` — criterionId, level (0–5), text. (Ankartexter.)
-- `track` / `level` — track-schema (IC/Lead/M + nivåer). Seedas från Excel.
+- `track` / `level` — track-schema (IC/Lead/M; nivåer IC1–5, Lead 1–3, M1–3). Seedas enligt standardmall.md.
 - `trackGuardrail` — (track, level, criterion) → min/max (rådgivande). (Ev. senare.)
 - `bandThreshold` — orgId, band (1..N), minScore, etikett.
 - *Betydelseskalan (7 nivåer → vikt) är **fast** → konstant i `packages/core`, ingen tabell.*
@@ -118,7 +118,7 @@ Avancerad marknads-benchmarking; komplex kompmodellering (bonus/equity/TCC); sto
 3. ~~**Värderingsstatus & motivering**~~ → **Avgjort:** status utkast → under granskning → godkänd; **motivering frivillig** (aldrig obligatorisk). *(Medveten avvikelse från HR-kritikens fyra obligatoriska triggers — betyg 0/4/5, utanför track-intervall, nära bandgräns — motiverad av HR-only + blindning. Ev. icke-blockerande uppmaning att motivera är en UX-idé för E3.)* **Ingen manuell bandöverride** — band är alltid det uträknade utfallet (avviker från briefen; vill man ändra justerar man betyg eller modell).
 4. ~~**Roll-fält / jobbprofil**~~ → **Avgjort: nivå (2).** Obligatorisk kärna (namn, funktion/avdelning, team, track, nivå, syfte, ansvarsområden) + strukturerade valfria fält (beslutsmandat, intressenter, kunskapskrav, finansiellt ansvar, personalansvar, risk/konsekvens, leverabler). *(Mappning mot briefen 4.3: "beskrivning" → syfte; "ansvarstext" → ansvarsområden.)*
 5. ~~**Kalibrering/ankarroller**~~ → **Avgjort:** senare (fast-follow), enligt #8-beslutet (compliance-nivå 2); se E7.
-6. ~~**Track-schema**~~ → **Avgjort (default):** fast (IC/Lead/M + nivåer) i V1, konfigurerbart senare.
+6. ~~**Track-schema**~~ → **Avgjort:** fast (IC/Lead/M) i V1, konfigurerbart senare. Nivåer: **IC1–5, Lead 1–3, M1–3** (definitioner + guardrails i standardmall.md).
 7. ~~**CSV/XLSX-import**~~ → **Avgjort (default):** manuell inmatning i V1; import senare.
 8. ~~**Compliance-omfång V1**~~ → **Avgjort: nivå (2).** Kärna (ankare, blindning, revisionslogg, roll≠person, ingen bandöverride — band härleds alltid) **+ lätt compliance-ställning:** kriterieurvalsprotokoll (per kriterium: syfte, varför relevant, överlapp mot andra kriterier, bias-risk, beslutad betydelse, beslutsfattare, datum) + bias-granskning (risk låg/medel/hög + kommentar + åtgärd + godkänd) + exporterbar metodbilaga (formulering: "biasreducerande", aldrig "biasfri"). Uppskjutet: obligatorisk kalibrering, formell modellgovernance, dubbel-bedömare, interbedömarreliabilitet.
 9. **Designsystem/tema** (öppen): dashboardens utseende (shadcn finns) — ej grillat än.

@@ -2,6 +2,8 @@
 
 Den konfigurerbara jobbarkitekturen och poängmodellen som en arbetsyta definierar: kriterierna och deras vikter, track/nivå-schemat, bandtrösklarna samt mallarna bakom dem.
 
+Grundprincip: **track och nivå beskriver rollen; bandet värderar den.** Ordningen är alltid: beskriv rollen (track + nivå) → värdera mot kriterierna → bandet faller ut sist. Nivå jämförs *inom* en track; band jämförs *mellan* tracks.
+
 ## Språk
 
 **Track**:
@@ -9,11 +11,11 @@ Vilken *sorts* jobb en roll är — dess arketyp/familj: Individual Contributor 
 _Undvik_: Karriärväg, Jobbfamilj (godtagbara synonymer, men "Track" är kanoniskt)
 
 **Nivå** *(kod: Level)*:
-Hur *avancerat* ett jobb är *inom sin track* (IC1–IC5, Lead-1–Lead-2, M1–M3). Scopad per track — en IC5 och en M3 är inte samma "nivå".
+Hur *avancerat* ett jobb är *inom sin track* (IC1–IC5, Lead-1–Lead-3, M1–M3). Scopad per track — en IC5 och en M3 är inte samma "nivå". Nivå jämförs inom en track, aldrig mellan tracks.
 _Undvik_: Senioritet, Grad
 
 **Band**:
-Hur *tung* en roll är jämfört med alla andra roller i bolaget — utdataklassificeringen som beräknas från total viktad poäng via trösklar. **Band 1 är högst.**
+Hur *tung* en roll är jämfört med alla andra roller i bolaget — utdataklassificeringen som beräknas från total viktad poäng via trösklar. **Band 1 är högst.** Bandet skapar jämförbarhet mellan tracks och är grunden för framtida koppling till löneband/policy (V2).
 _Undvik_: Grad, Tier, Nivå (Band är utdata över hela bolaget; nivå är indata inom en track)
 
 **Kriterium** *(kod: Criterion)*:
