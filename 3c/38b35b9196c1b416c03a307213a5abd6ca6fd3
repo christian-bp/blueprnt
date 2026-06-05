@@ -1,0 +1,83 @@
+packages/backend/convex/evaluationModel/criteria.test.ts
+  s_df12fc6ddf323c::t_5ade26764e8ab9 14
+packages/backend/convex/auth.ts
+  s_df12fc6ddf323c::t_9d09c55fc94cbf 144-146
+  s_df12fc6ddf323c::t_a2ea4d0e8ac035 157
+packages/backend/convex/seed.test.ts
+  s_df12fc6ddf323c::t_5ade26764e8ab9 138,234,265
+apps/dashboard/components/onboarding/onboarding-gate.test.tsx
+  s_df12fc6ddf323c::t_b417538c1d806c 34,47,59,70,81
+packages/backend/convex/accounts/organization.ts
+  s_df12fc6ddf323c::t_8258b41bed5fec 70,77-78,81-82,87-88
+  s_df12fc6ddf323c::t_4671cea7120dc6 103,110-111,114-115
+  s_df12fc6ddf323c::t_03c38d65a5b053 7,16,18,20-21,24,26-31,37,39,49-50,53-54,56,60
+apps/dashboard/components/onboarding/onboarding-gate.tsx
+  s_df12fc6ddf323c::t_b2ef0943694690 36
+  s_df12fc6ddf323c::t_6f99a42c3ecb25 12
+apps/dashboard/components/onboarding/organization-setup-step.test.tsx
+  s_df12fc6ddf323c::t_77f6ca4727ce8f 46-49
+packages/backend/convex/accounts/onboarding.ts
+  s_df12fc6ddf323c::t_6c77723479a8d6 101-102,105
+  s_df12fc6ddf323c::t_c99a6eb63331a1 12-13,27,43,49-50,53-58,69,71
+packages/backend/convex/accounts/onboarding.test.ts
+  s_df12fc6ddf323c::t_5ade26764e8ab9 28,49,54,57,62,73,79,86,89,140,152
+packages/backend/convex/accounts/organization.test.ts
+  s_df12fc6ddf323c::t_b0ee3665188a2e 19,28,34-35,48,52,60,67,74,78,88,95,103,107,122,145,155
+  s_df12fc6ddf323c::t_9e3e9eaa2dcb35 6,24
+packages/backend/convex/schema.ts
+  s_df12fc6ddf323c::t_8f9822f7b952c8 18
+  s_df12fc6ddf323c::t_cff748f6512b14 2
+packages/backend/convex/accounts/tables.ts
+  s_df12fc6ddf323c::t_5ef62b141f751e 13-17
+packages/backend/convex/accounts/mirrors.ts
+  s_df12fc6ddf323c::t_097b78db8476ee 168-171
+  s_df12fc6ddf323c::t_178010b39cb4a7 153
+  s_df12fc6ddf323c::t_5d06893384e608 154
+  s_df12fc6ddf323c::t_518e2c4e407e53 221,225
+packages/backend/convex/lib/audit.ts
+  s_df12fc6ddf323c::t_d43d0f31964ca6 6
+packages/backend/convex/ai/suggest.test.ts
+  s_df12fc6ddf323c::t_5ade26764e8ab9 30,122
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_df12fc6ddf323c::t_45e24eede132b4 11,14
+  s_df12fc6ddf323c::t_774699f450c89e 34-35,39
+apps/dashboard/components/onboarding/organization-setup-step.tsx
+  s_df12fc6ddf323c::t_d445ef864c1576 201-202,204
+  s_df12fc6ddf323c::t_eef20bb7b465bc 126,131,133-136
+  s_df12fc6ddf323c::t_4e5284ccc88426 75,77-83,87-89
+  s_df12fc6ddf323c::t_67641ad7f98b16 162,177
+  s_df12fc6ddf323c::t_795f7cd9dca04d 100-101,103,105-106
+packages/backend/convex/seed.ts
+  s_df12fc6ddf323c::t_417efd47480cc0 147
+packages/backend/convex/evaluationModel/model.ts
+  s_df12fc6ddf323c::t_86c664d9f8c960 208-209,212
+  s_df12fc6ddf323c::t_52f0837fbf4681 59-60,63
+apps/dashboard/components/onboarding/onboarding-wizard.test.tsx
+  s_df12fc6ddf323c::t_b417538c1d806c 60,72,85,95,112,129,148,162
+packages/backend/convex/accounts/mirrors.test.ts
+  s_df12fc6ddf323c::t_5ade26764e8ab9 79
+packages/backend/convex/evaluationModel/model.test.ts
+  s_df12fc6ddf323c::t_5ade26764e8ab9 12,127
+packages/backend/convex/ai/suggest.ts
+  s_df12fc6ddf323c::t_93a16814e76b06 10,17,20-22,26-29,35
+  s_df12fc6ddf323c::t_6a056431be3c1f 48,66-70
+  s_df12fc6ddf323c::t_d943109c0e43ff 82,103-107
+docs/PLAN-V1.md
+  s_df12fc6ddf323c::t_b3261d0e16b7f4 39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "3c38b35b9196c1b416c03a307213a5abd6ca6fd3",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
