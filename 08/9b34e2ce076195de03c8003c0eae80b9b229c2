@@ -1,0 +1,20 @@
+apps/dashboard/components/morph-confirm-button.tsx
+  s_df12fc6ddf323c::t_85e9547c967621 89-92
+  s_df12fc6ddf323c::t_9b3810dc7b1507 113-115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "089b34e2ce076195de03c8003c0eae80b9b229c2",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
