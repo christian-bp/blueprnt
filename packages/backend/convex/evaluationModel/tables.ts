@@ -1,7 +1,7 @@
 import { defineTable } from "convex/server"
 import { v } from "convex/values"
 
-// One living model per workspace (V1: no versioning, ADR-0002). Score and
+// One living model per organization (V1: no versioning, ADR-0002). Score and
 // band are NEVER stored; they are derived by packages/core.
 export const models = defineTable({
   orgId: v.string(),
@@ -15,6 +15,11 @@ export const criteria = defineTable({
   name: v.string(),
   description: v.string(),
   helpText: v.string(),
+  // standardmall criterion key ("scope".."formal") set at seed time; display
+  // localizes pristine template rows from the content modules. E2 editing MUST
+  // clear this key when any text field changes (ownership transfer to the
+  // organization).
+  templateKey: v.optional(v.string()),
   importanceLevel: v.number(), // 1-7; weight resolved via @workspace/core
   order: v.number(),
   isCustom: v.boolean(),

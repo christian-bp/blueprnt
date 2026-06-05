@@ -17,3 +17,9 @@ Systemet byggs **AI-redo från dag 1** (förslagslager + proveniens + AI-anrop v
 - Datamodellen får ett **förslagslager** (förslag med proveniens/status) skilt från bekräftade värden.
 - AI-anrop sker i Convex actions (serverside, nycklar skyddade); leverantören hålls utbytbar (t.ex. via en AI-SDK-abstraktion).
 - Determinismen i `packages/core` påverkas inte.
+
+## Tillägg 2026-06-04: modellassistans i onboardingen och leverantörsval
+
+**Scopeutökning (V1):** utöver jobbprofilgenerering omfattar V1 även AI-assistans i onboardingens modellsteg: utkast på kriterier (namn, beskrivning, hjälptext, betydelseetikett, ankartexter) i från scratch-vägen, samt förslag på betydelsejusteringar i mallvägen. Samma regler gäller: förslag med proveniens och status, HR bekräftar per post, inget tillämpas automatiskt, och bekräftelser revisionsloggas (ai.suggestionConfirmed). Statuslivscykeln utökas med "generating" och "failed" (felkod som i18n-nyckel, aldrig display-text).
+
+**Leverantörsbeslut:** Mistral La Plateforme anropas direkt från Convex actions via AI SDK v6 (generateText + Output.object). EU-processing, ingen träning på betald API enligt DPA; Zero Data Retention begärs i DPA:t (godkännandepliktigt, inte självbetjäning). Dokumenterad fallback: Azure OpenAI EU Data Zone (Sweden Central). **Vercel AI Gateway används aldrig i datavägen:** den kan inte pinna EU-routing och bryter därmed EU-datahemvisten (ADR-0001).

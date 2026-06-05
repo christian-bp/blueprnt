@@ -13,12 +13,15 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@ai-sdk/mistral": "^3.0.37",
     "@convex-dev/better-auth": "0.12.2",
     "@workspace/core": "workspace:*",
     "@workspace/email": "workspace:*",
+    "ai": "^6.0.196",
     "better-auth": "1.6.14",
     "convex": "^1.40.0",
-    "convex-helpers": "^0.1.118"
+    "convex-helpers": "^0.1.118",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@edge-runtime/vm": "^5.0.0",

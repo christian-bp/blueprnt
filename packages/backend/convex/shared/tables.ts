@@ -14,23 +14,28 @@ export const auditLog = defineTable({
   .index("by_org_type", ["orgId", "type"])
 
 // AI suggestion layer (ADR-0003): suggestions with provenance, separate from
-// confirmed values. Schema only in this slice; no AI calls yet.
+// confirmed values. status lifecycle: generating -> suggested -> confirmed |
+// rejected; failed carries an errors.* code the frontend translates.
 export const suggestions = defineTable({
   orgId: v.string(),
   target: v.object({
-    kind: v.string(), // e.g. "role.field" | "criterion.anchor"
+    kind: v.string(), // "model.draft" | "model.importanceReview" | "role.field" | "criterion.anchor"
     roleId: v.optional(v.id("roles")),
     criterionId: v.optional(v.id("criteria")),
+    modelId: v.optional(v.id("models")),
     field: v.optional(v.string()),
   }),
   suggestedValue: v.any(),
   motivation: v.optional(v.string()),
   source: v.literal("ai"),
   status: v.union(
+    v.literal("generating"),
     v.literal("suggested"),
     v.literal("confirmed"),
-    v.literal("rejected")
+    v.literal("rejected"),
+    v.literal("failed")
   ),
+  errorCode: v.optional(v.string()),
   model: v.optional(v.object({ provider: v.string(), model: v.string() })),
   confirmedBy: v.optional(v.string()),
 })

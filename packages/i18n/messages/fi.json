@@ -1,6 +1,6 @@
 {
   "accounts": {
-    "workspace": "Työtila",
+    "organization": "Organisaatio",
     "member": "Jäsen",
     "role": {
       "admin": "Admin",
@@ -9,9 +9,9 @@
   },
   "email": {
     "invitation": {
-      "subject": "{inviterName} kutsui sinut työtilaan {workspaceName} blueprntissä",
-      "heading": "Liity työtilaan {workspaceName}",
-      "body": "{inviterName} on kutsunut sinut työtilaan {workspaceName}.",
+      "subject": "{inviterName} kutsui sinut organisaatioon {organizationName} blueprntissä",
+      "heading": "Liity organisaatioon {organizationName}",
+      "body": "{inviterName} on kutsunut sinut organisaatioon {organizationName}.",
       "cta": "Hyväksy kutsu"
     },
     "verifyEmail": {
@@ -191,7 +191,7 @@
     },
     "overview": {
       "emptyTitle": "Ei vielä mitään",
-      "emptyBody": "Työtilasi yleiskatsaus näytetään tässä, kun blueprnt kasvaa."
+      "emptyBody": "Organisaatiosi yleiskatsaus näytetään tässä, kun blueprnt kasvaa."
     },
     "auth": {
       "loading": "Tarkistetaan istuntoasi",
@@ -200,21 +200,133 @@
       "signIn": {
         "title": "Kirjaudu sisään",
         "cta": "Kirjaudu sisään",
-        "description": "Kirjoita sähköpostiosoitteesi alle kirjautuaksesi työtilaasi"
+        "description": "Kirjoita sähköpostiosoitteesi alle kirjautuaksesi organisaatioosi"
       },
       "invitation": {
-        "title": "Työtilakutsu",
+        "title": "Organisaatiokutsu",
         "accept": "Hyväksy kutsu",
         "signInFirst": "Kirjaudu sisään hyväksyäksesi tämän kutsun."
       },
       "error": "Jokin meni pieleen. Yritä uudelleen."
+    },
+    "onboarding": {
+      "accountMenu": "Tilivalikko",
+      "title": "Aloita organisaatiosi käyttö",
+      "step": "Vaihe {current}/{total}",
+      "loading": "Ladataan organisaatiotasi",
+      "waitingForAdmin": "Järjestelmänvalvoja viimeistelee vielä organisaatiosi määritystä.",
+      "back": "Takaisin",
+      "steps": {
+        "organization": "Organisaatio",
+        "model": "Arviointimalli"
+      },
+      "organization": {
+        "heading": "Luo organisaatiosi",
+        "description": "Organisaatio kokoaa roolinne, arviointimallinne ja tiiminne.",
+        "nameLabel": "Organisaation nimi",
+        "namePlaceholder": "esim. yrityksenne nimi",
+        "cta": "Luo organisaatio",
+        "saveCta": "Tallenna ja jatka",
+        "error": "Organisaatiota ei voitu luoda. Yritä uudelleen.",
+        "languageLabel": "Oletuskieli",
+        "languages": {
+          "en": "Englanti",
+          "sv": "Ruotsi",
+          "nb": "Norja",
+          "da": "Tanska",
+          "fi": "Suomi"
+        }
+      },
+      "profile": {
+        "country": "Maa",
+        "currency": "Valuutta",
+        "industry": "Toimiala",
+        "countries": {
+          "se": "Ruotsi",
+          "no": "Norja",
+          "dk": "Tanska",
+          "fi": "Suomi",
+          "other": "Muu"
+        },
+        "industries": {
+          "publicSector": "Julkinen sektori",
+          "manufacturing": "Valmistava teollisuus",
+          "consulting": "Konsultointi",
+          "retail": "Vähittäiskauppa",
+          "itTelecom": "IT/tietoliikenne",
+          "healthcare": "Terveys ja hyvinvointi",
+          "finance": "Rahoitus ja vakuutus",
+          "realEstateConstruction": "Kiinteistö ja rakentaminen",
+          "other": "Muu"
+        }
+      },
+      "model": {
+        "heading": "Valitse arviointimallinne",
+        "description": "Malli määrittää kriteerit, joita vasten roolit arvioidaan. Merkitys on aina nimike, ei koskaan numero.",
+        "error": "Jotakin meni vikaan. Yritä uudelleen.",
+        "template": {
+          "title": "Aloita vakiomallista",
+          "description": "9 kriteeriä ankkuriasteikkoineen, oletusmerkitykset, track-rakenne ja luokkarajat.",
+          "badge": "Suositeltu",
+          "cta": "Käytä mallia"
+        },
+        "scratch": {
+          "title": "Rakenna alusta",
+          "description": "Aloita tyhjästä ja määritä omat kriteerit, tekoälyluonnokset apuna.",
+          "nameLabel": "Mallin nimi",
+          "cta": "Aloita alusta"
+        },
+        "review": {
+          "heading": "Mallinne",
+          "setImportance": "Merkitys: {name}",
+          "cta": "Avaa hallintapaneeli",
+          "editCta": "Muokkaa",
+          "doneEditing": "Valmis"
+        },
+        "editor": {
+          "heading": "Kriteerit",
+          "empty": "Ei kriteerejä vielä. Lisää ensimmäinen kriteeri tai luo tekoälyluonnoksia.",
+          "name": "Nimi",
+          "description": "Kuvaus",
+          "helpText": "Ohjeteksti arvioijalle",
+          "importance": "Merkitys",
+          "anchors": "Ankkuriasteikko (0 - 5)",
+          "anchorLevel": "Ankkuri {level}",
+          "addCta": "Lisää kriteeri",
+          "removeCta": "Poista",
+          "doneCta": "Viimeistele määritys"
+        },
+        "change": {
+          "cta": "Vaihda mallivalintaa",
+          "confirm": "Kyllä, poista ja aloita alusta",
+          "cancel": "Peruuta"
+        }
+      },
+      "ai": {
+        "heading": "Tekoälyapu",
+        "provenance": "Tekoälyn luoma ehdotus. Tarkista ja vahvista; mitään ei oteta käyttöön automaattisesti.",
+        "draftDescriptionLabel": "Kuvaile liiketoimintaanne (valinnainen)",
+        "draftCta": "Luo kriteeriluonnoksia",
+        "reviewCta": "Anna tekoälyn tarkistaa merkitykset",
+        "generating": "Luodaan ehdotuksia",
+        "confirmCta": "Lisää valitut",
+        "applyCta": "Käytä valittuja",
+        "rejectCta": "Hylkää",
+        "noAdjustments": "Tekoäly ei löytänyt ehdotettavia muutoksia.",
+        "motivation": "Perustelu"
+      }
     }
   },
   "errors": {
     "notAuthenticated": "Sinun täytyy kirjautua sisään.",
-    "notAMember": "Et ole tämän työtilan jäsen.",
-    "adminRequired": "Vain työtilan ylläpitäjät voivat tehdä tämän.",
+    "notAMember": "Et ole tämän organisaation jäsen.",
+    "adminRequired": "Vain organisaation ylläpitäjät voivat tehdä tämän.",
     "membershipConflict": "Jäsenyyttäsi ei voitu vahvistaa. Ota yhteyttä tukeen.",
-    "notFound": "Ei löydy."
+    "notFound": "Ei löydy.",
+    "invalidInput": "Virheellinen syöte.",
+    "modelExists": "Organisaatiolla on jo arviointimalli.",
+    "profileIncomplete": "Täytä ensin yritysprofiili.",
+    "aiUnavailable": "Tekoälyä ei ole määritetty tässä ympäristössä.",
+    "aiGenerationFailed": "Tekoälyehdotusta ei voitu luoda."
   }
 }

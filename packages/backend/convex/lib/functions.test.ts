@@ -15,7 +15,7 @@ describe("org-scoping wrappers", () => {
     const t = initConvexTest()
     const { orgId } = await seed(t, "editor")
     await expect(
-      t.query(api.accounts.context.getWorkspaceContext, { orgId })
+      t.query(api.accounts.context.getOrganizationContext, { orgId })
     ).rejects.toThrow(/errors.notAuthenticated/)
   })
 
@@ -24,7 +24,7 @@ describe("org-scoping wrappers", () => {
     const { orgId } = await seed(t, "editor")
     const asOutsider = t.withIdentity({ subject: "not-a-member" })
     await expect(
-      asOutsider.query(api.accounts.context.getWorkspaceContext, { orgId })
+      asOutsider.query(api.accounts.context.getOrganizationContext, { orgId })
     ).rejects.toThrow(/errors.notAMember/)
   })
 
@@ -34,7 +34,7 @@ describe("org-scoping wrappers", () => {
     const b = await seed(t, "editor")
     const asMemberOfB = t.withIdentity({ subject: b.userId })
     await expect(
-      asMemberOfB.query(api.accounts.context.getWorkspaceContext, {
+      asMemberOfB.query(api.accounts.context.getOrganizationContext, {
         orgId: a.orgId,
       })
     ).rejects.toThrow(/errors.notAMember/)
@@ -44,9 +44,12 @@ describe("org-scoping wrappers", () => {
     const t = initConvexTest()
     const { orgId, userId } = await seed(t, "editor")
     const asMember = t.withIdentity({ subject: userId })
-    const ctx = await asMember.query(api.accounts.context.getWorkspaceContext, {
-      orgId,
-    })
+    const ctx = await asMember.query(
+      api.accounts.context.getOrganizationContext,
+      {
+        orgId,
+      }
+    )
     expect(ctx).toEqual({ orgId, role: "editor" })
   })
 
@@ -55,7 +58,9 @@ describe("org-scoping wrappers", () => {
     const { orgId, userId } = await seed(t, "editor")
     const asEditor = t.withIdentity({ subject: userId })
     await expect(
-      asEditor.mutation(api.accounts.context.touchWorkspaceAsMember, { orgId })
+      asEditor.mutation(api.accounts.context.touchOrganizationAsMember, {
+        orgId,
+      })
     ).resolves.toBeNull()
   })
 
@@ -64,7 +69,7 @@ describe("org-scoping wrappers", () => {
     const { orgId, userId } = await seed(t, "editor")
     const asEditor = t.withIdentity({ subject: userId })
     await expect(
-      asEditor.mutation(api.accounts.context.touchWorkspace, { orgId })
+      asEditor.mutation(api.accounts.context.touchOrganization, { orgId })
     ).rejects.toThrow(/errors.adminRequired/)
   })
 
@@ -73,7 +78,7 @@ describe("org-scoping wrappers", () => {
     const { orgId, userId } = await seed(t, "admin")
     const asAdmin = t.withIdentity({ subject: userId })
     await expect(
-      asAdmin.mutation(api.accounts.context.touchWorkspace, { orgId })
+      asAdmin.mutation(api.accounts.context.touchOrganization, { orgId })
     ).resolves.toBeNull()
   })
 
@@ -90,7 +95,7 @@ describe("org-scoping wrappers", () => {
     })
     const asMember = t.withIdentity({ subject: userId })
     await expect(
-      asMember.query(api.accounts.context.getWorkspaceContext, { orgId })
+      asMember.query(api.accounts.context.getOrganizationContext, { orgId })
     ).rejects.toThrow(/errors.membershipConflict/)
   })
 })

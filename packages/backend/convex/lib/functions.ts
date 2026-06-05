@@ -12,11 +12,11 @@ import {
 } from "../_generated/server"
 import { appError, ERROR_CODES } from "./errors"
 
-export type WorkspaceRole = "admin" | "editor"
+export type OrganizationRole = "admin" | "editor"
 
 interface OrgContext {
   orgId: string
-  role: WorkspaceRole
+  role: OrganizationRole
   authUserId: string
 }
 
@@ -54,7 +54,7 @@ async function resolveOrgContext(
   if (role !== "admin" && role !== "editor") {
     // Unknown role string (defense-in-depth; roles are fixed to admin and
     // editor by the access control config). Deny rather than launder it.
-    console.error("unknown workspace role", {
+    console.error("unknown organization role", {
       orgId,
       subject: identity.subject,
       role,

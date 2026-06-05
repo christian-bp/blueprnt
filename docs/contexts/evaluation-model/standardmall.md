@@ -20,7 +20,7 @@ Skalan är **fast** — den ändras inte av användaren. Varje nivå har en text
 
 ## Standardmall — 9 kriterier med förvald betydelse
 
-Så här anpassar en arbetsyta modellen: HR tilldelar varje kriterium en betydelsenivå (väljer etiketten), vilket sätter vikten. Standardmallen levereras förifylld så här (vikterna = Excelns):
+Så här anpassar en organisation modellen: HR tilldelar varje kriterium en betydelsenivå (väljer etiketten), vilket sätter vikten. Standardmallen levereras förifylld så här (vikterna = Excelns):
 
 | Kriterium | Betydelse (standard) | Vikt |
 | --- | --- | --- |
@@ -84,4 +84,4 @@ Guardrail-intervall (rådgivande), med grannarna som kalibreringsreferens:
 
 - **"Helper"-fliken** (8 kriterier, summa 100, andra värden) är en föråldrad/oanvänd viktuppsättning som **inte** används av resultatberäkningen — den seedas aldrig.
 - **Kompetensmatrisens Band→Track-koppling** (t.ex. "Band 1 = Head of X") är *deskriptiv dokumentation*, inte en regel — den seedas **inte** som styrande logik. Band härleds alltid enbart från poängen (track bestämmer aldrig band).
-- **"Impact on Exit"**: kolumnens bidrag i resultatfliken är **inte** en formel av betyget (ingen vikt kopplar dem — en fri justeringspost i prototypen). Den seedas därför **inte** som kriterium. Vill en arbetsyta ha den blir den ett vanligt eget kriterium viktat via 7-skalan — då reproduceras prototypens exakta totaler inte för berörda roller (accepterat).
+- **"Impact on Exit"**: kolumnens bidrag i resultatfliken är **inte** en formel av betyget (ingen vikt kopplar dem — en fri justeringspost i prototypen). Den seedas därför **inte** som kriterium. Vill en organisation ha den blir den ett vanligt eget kriterium viktat via 7-skalan — då reproduceras prototypens exakta totaler inte för berörda roller (accepterat).

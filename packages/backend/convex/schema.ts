@@ -1,5 +1,5 @@
 import { defineSchema } from "convex/server"
-import { users, workspaceProfiles } from "./accounts/tables"
+import { users, organizations } from "./accounts/tables"
 import { roles, ratings } from "./assessment/tables"
 import {
   models,
@@ -15,7 +15,7 @@ import { auditLog, suggestions } from "./shared/tables"
 
 export default defineSchema({
   users,
-  workspaceProfiles,
+  organizations,
   emails,
   auditLog,
   models,

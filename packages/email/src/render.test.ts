@@ -6,7 +6,7 @@ describe("renderEmail", () => {
   it("renders the invitation email with interpolated values", async () => {
     const result = await renderEmail("invitation", {
       inviterName: "Anna",
-      workspaceName: "Acme",
+      organizationName: "Acme",
       acceptUrl: "https://app.example.com/accept-invitation/inv_1",
       locale: "en",
     })

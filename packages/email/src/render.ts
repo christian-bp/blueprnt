@@ -38,7 +38,7 @@ export async function renderEmail<K extends EmailTemplateKey>(
       return {
         subject: fillTemplate(m.invitation.subject, {
           inviterName: p.inviterName,
-          workspaceName: p.workspaceName,
+          organizationName: p.organizationName,
         }),
         html: await render(element),
         text: await render(element, { plainText: true }),

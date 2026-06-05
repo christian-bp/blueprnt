@@ -29,7 +29,7 @@ The onboarding status query must find the signed-in user's workspace before any 
 - Modify: `packages/backend/convex/betterAuth/membership.ts`
 - Test: `packages/backend/convex/betterAuth/membership.test.ts`
 
-- [ ] **Step 1: Write the failing test** (add a second `describe` block as a sibling of the existing `describe("membership.getMembership", ...)` block; the file already imports `describe/expect/it`, `components`, and `initConvexTest`)
+- [x] **Step 1: Write the failing test** (add a second `describe` block as a sibling of the existing `describe("membership.getMembership", ...)` block; the file already imports `describe/expect/it`, `components`, and `initConvexTest`)
 
 ```ts
 describe("membership.listMembershipsForUser", () => {
@@ -57,12 +57,12 @@ describe("membership.listMembershipsForUser", () => {
 })
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `cd packages/backend && bun run test -- membership`
 Expected: FAIL ("Could not find function" for listMembershipsForUser)
 
-- [ ] **Step 3: Implement the component query** (append to `membership.ts`)
+- [x] **Step 3: Implement the component query** (append to `membership.ts`)
 
 ```ts
 // Lists every workspace the user belongs to, with the org display name.
@@ -106,12 +106,12 @@ export const listMembershipsForUser = query({
 })
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `cd packages/backend && bun run test -- membership`
 Expected: PASS (both membership tests)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/backend/convex/betterAuth/membership.ts packages/backend/convex/betterAuth/membership.test.ts
@@ -128,7 +128,7 @@ One authed (NOT org-scoped) query the dashboard gate subscribes to. Returns `nul
 - Create: `packages/backend/convex/accounts/onboarding.ts`
 - Test: `packages/backend/convex/accounts/onboarding.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```ts
 import { describe, expect, it } from "vitest"
@@ -225,12 +225,12 @@ describe("getOnboardingStatus", () => {
 })
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `cd packages/backend && bun run test -- onboarding`
 Expected: FAIL (module not found)
 
-- [ ] **Step 3: Implement the query**
+- [x] **Step 3: Implement the query**
 
 ```ts
 import { v } from "convex/values"
@@ -298,12 +298,12 @@ export const getOnboardingStatus = query({
 })
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `cd packages/backend && bun run test -- onboarding`
 Expected: PASS (3 tests)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/backend/convex/accounts/onboarding.ts packages/backend/convex/accounts/onboarding.test.ts
@@ -319,7 +319,7 @@ git commit -m "feat(accounts): onboarding status query for the first-run gate"
 - Modify: `packages/backend/convex/lib/audit.ts`
 - Modify: `packages/i18n/messages/en.json`, `sv.json`, `nb.json`, `da.json`, `fi.json`
 
-- [ ] **Step 1: Extend ERROR_CODES** (in `errors.ts`, inside the existing object)
+- [x] **Step 1: Extend ERROR_CODES** (in `errors.ts`, inside the existing object)
 
 ```ts
 export const ERROR_CODES = {
@@ -336,7 +336,7 @@ export const ERROR_CODES = {
 } as const
 ```
 
-- [ ] **Step 2: Extend AUDIT_EVENTS** (in `audit.ts`, inside the existing object)
+- [x] **Step 2: Extend AUDIT_EVENTS** (in `audit.ts`, inside the existing object)
 
 ```ts
   modelCreated: "model.created",
@@ -344,7 +344,7 @@ export const ERROR_CODES = {
   aiSuggestionConfirmed: "ai.suggestionConfirmed",
 ```
 
-- [ ] **Step 3: Add the error label keys to all five message files**
+- [x] **Step 3: Add the error label keys to all five message files**
 
 In `en.json` `errors` object (after `notFound`):
 
@@ -368,12 +368,12 @@ In `en.json` `errors` object (after `notFound`):
 
 Mirror the same five keys to `nb.json`, `da.json`, `fi.json` as machine drafts translated from the sv values.
 
-- [ ] **Step 4: Run the parity test and typecheck**
+- [x] **Step 4: Run the parity test and typecheck**
 
 Run: `bun run test && bun run typecheck`
 Expected: PASS (i18n parity green across all five locales)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/backend/convex/lib/errors.ts packages/backend/convex/lib/audit.ts packages/i18n/messages/*.json
@@ -391,7 +391,7 @@ git commit -m "feat(backend): error codes and audit events for onboarding and AI
 - Modify: `packages/i18n/messages/en.json` + mirrors (new `dashboard.onboarding` keys)
 - Test: `apps/dashboard/components/onboarding/onboarding-gate.test.tsx`
 
-- [ ] **Step 1: Add the chrome i18n keys**
+- [x] **Step 1: Add the chrome i18n keys**
 
 In `en.json` under `dashboard` (sibling of `nav`), add:
 
@@ -427,7 +427,7 @@ In `en.json` under `dashboard` (sibling of `nav`), add:
 
 Mirror to `nb/da/fi` as machine drafts. Run `bun run test` (parity must pass).
 
-- [ ] **Step 2: Write the failing gate test**
+- [x] **Step 2: Write the failing gate test**
 
 ```tsx
 import { render, screen } from "@testing-library/react"
@@ -482,7 +482,7 @@ describe("OnboardingGate", () => {
 Run: `cd apps/dashboard && bun run test`
 Expected: FAIL (OnboardingGate not found)
 
-- [ ] **Step 3: Implement the gate**
+- [x] **Step 3: Implement the gate**
 
 ```tsx
 "use client"
@@ -538,7 +538,7 @@ export function OnboardingGate() {
 }
 ```
 
-- [ ] **Step 4: Implement the wizard shell**
+- [x] **Step 4: Implement the wizard shell**
 
 ```tsx
 "use client"
@@ -647,16 +647,16 @@ export function ModelSetupStep(_props: {
 
 The prop signatures match the final implementations so the wizard compiles unchanged in Tasks 5, 6, and 10.
 
-- [ ] **Step 5: Swap the gate into `page.tsx`**
+- [x] **Step 5: Swap the gate into `page.tsx`**
 
 Replace `<DashboardShell />` inside `<Authenticated>` with `<OnboardingGate />` (and swap the import of `DashboardShell` for `OnboardingGate`).
 
-- [ ] **Step 6: Run tests and typecheck**
+- [x] **Step 6: Run tests and typecheck**
 
 Run: `bun run test && bun run typecheck`
 Expected: PASS
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add apps/dashboard packages/i18n/messages
@@ -672,7 +672,7 @@ git commit -m "feat(dashboard): first-run onboarding gate and wizard shell"
 - Create: `apps/dashboard/lib/slug.ts`
 - Modify: `packages/i18n/messages/*.json` (new keys)
 
-- [ ] **Step 1: Add i18n keys** (en, then sv, then mirrors; under `dashboard.onboarding`)
+- [x] **Step 1: Add i18n keys** (en, then sv, then mirrors; under `dashboard.onboarding`)
 
 ```json
       "workspace": {
@@ -698,7 +698,7 @@ sv:
       }
 ```
 
-- [ ] **Step 2: Implement the slug helper**
+- [x] **Step 2: Implement the slug helper**
 
 ```ts
 // Better Auth organizations require a slug; derive one from the name and
@@ -716,7 +716,7 @@ export function workspaceSlug(name: string): string {
 }
 ```
 
-- [ ] **Step 3: Implement the step**
+- [x] **Step 3: Implement the step**
 
 ```tsx
 "use client"
@@ -782,12 +782,12 @@ export function CreateWorkspaceStep() {
 
 (If `@workspace/ui` lacks `label`/`input`, add them with `bunx shadcn@latest add label input` from `packages/ui`, per the repo's shadcn vendor policy.)
 
-- [ ] **Step 4: Verify manually and typecheck**
+- [x] **Step 4: Verify manually and typecheck**
 
 Run: `bun run typecheck && bun run test`
 Expected: PASS. Then with `bun dev` + a seeded user without a workspace (`removeDevUser`/`seedDevUser` only, skip `seedDevWorkspace`), sign in and create a workspace; the wizard should advance to step 2.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/dashboard packages/i18n/messages
@@ -804,7 +804,7 @@ Backend exists (`updateWorkspaceProfile`, admin-only, audited). Pure frontend + 
 - Modify: `apps/dashboard/components/onboarding/company-profile-step.tsx`
 - Modify: `packages/i18n/messages/*.json`
 
-- [ ] **Step 1: Add i18n keys** (under `dashboard.onboarding`; en then sv then mirrors)
+- [x] **Step 1: Add i18n keys** (under `dashboard.onboarding`; en then sv then mirrors)
 
 ```json
       "profile": {
@@ -826,7 +826,7 @@ sv (values: "Berätta om företaget", "Det här styr förvalen i er värderingsm
 
 Canonical casing decision: stored country codes are lowercase ISO-3166 alpha-2 ("se", "no", ...), matching the UI values and the test seeds. Never store mixed casing.
 
-- [ ] **Step 2: Implement the step** (selects use the shadcn `select` component; currency options are ISO codes shown as-is: SEK, NOK, DKK, EUR)
+- [x] **Step 2: Implement the step** (selects use the shadcn `select` component; currency options are ISO codes shown as-is: SEK, NOK, DKK, EUR)
 
 ```tsx
 "use client"
@@ -975,7 +975,7 @@ export function CompanyProfileStep({ orgId }: { orgId: string }) {
 }
 ```
 
-- [ ] **Step 3: Verify, typecheck, commit**
+- [x] **Step 3: Verify, typecheck, commit**
 
 Run: `bun run typecheck && bun run test`, then manual flow check (step 2 saves and the wizard advances to step 3).
 
@@ -997,7 +997,7 @@ git commit -m "feat(dashboard): company-profile onboarding step"
 - Create: `scripts/extract-standardmall.ts` (one-off extraction helper)
 - Test: `packages/backend/convex/evaluationModel/standardmall.test.ts`
 
-- [ ] **Step 1: Extract the Excel content**
+- [x] **Step 1: Extract the Excel content**
 
 ```ts
 // scripts/extract-standardmall.ts
@@ -1022,7 +1022,7 @@ for (const name of ["Vikter & faktorer", "Track"]) {
 
 Run it, then hand-curate the output into the content modules in Step 3. Per standardmall.md: the canonical anchors come from "Vikter & faktorer"; the alternative Kunskapsdjup anchors in "Arbetsblad_enbart" are NOT used; the "Helper" tab is never seeded. Remove `xlsx` from devDependencies again after extraction (`bun remove xlsx`) and keep the script for provenance.
 
-- [ ] **Step 2: Write the structure module** (`standardmall.ts`)
+- [x] **Step 2: Write the structure module** (`standardmall.ts`)
 
 ```ts
 import type { ImportanceLevel } from "@workspace/core"
@@ -1116,7 +1116,7 @@ export function templateContent(locale: TemplateLocale): StandardmallContent {
 }
 ```
 
-- [ ] **Step 3: Write the content modules** from the extracted Excel data. Shared shape (define in `standardmall.content.en.ts`, import the type in the sv file):
+- [x] **Step 3: Write the content modules** from the extracted Excel data. Shared shape (define in `standardmall.content.en.ts`, import the type in the sv file):
 
 ```ts
 import type { CriterionKey, LevelKey } from "./standardmall"
@@ -1146,7 +1146,7 @@ export const standardmallContentEn: StandardmallContent = {
 
 The Swedish module is the source-faithful one. Known fixed values regardless of Excel: the nine `name` values are Scope & Påverkan, Risk & Konsekvens, Komplexitet & Otydlighet, Autonomi & Beslutsmandat, Intressentbredd, Kunskapsdjup/Bredd, Finansiellt ansvar, Personal-/Ledningsansvar, Formell kompetens (sv); track names Individual Contributor / Lead / Manager; level names = their keys; the Lead3 definition is seeded verbatim from standardmall.md ("Lead-3 - Strategisk koordinerande roll (utan fullt personalansvar) ...", full paragraph, with the em dash from the source replaced per the writing rule).
 
-- [ ] **Step 4: Write the structure test**
+- [x] **Step 4: Write the structure test**
 
 ```ts
 import { IMPORTANCE_LEVELS } from "@workspace/core"
@@ -1202,7 +1202,7 @@ describe("standardmall structure", () => {
 })
 ```
 
-- [ ] **Step 5: Run tests, then commit**
+- [x] **Step 5: Run tests, then commit**
 
 Run: `cd packages/backend && bun run test -- standardmall`
 Expected: PASS
@@ -1220,7 +1220,7 @@ git commit -m "feat(model): encode the standardmall template as data (sv source,
 - Create: `packages/backend/convex/evaluationModel/model.ts`
 - Test: `packages/backend/convex/evaluationModel/model.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```ts
 import { describe, expect, it } from "vitest"
@@ -1383,12 +1383,12 @@ describe("getModel", () => {
 })
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `cd packages/backend && bun run test -- evaluationModel/model`
 Expected: FAIL (module not found)
 
-- [ ] **Step 3: Implement `model.ts`**
+- [x] **Step 3: Implement `model.ts`**
 
 ```ts
 import { v } from "convex/values"
@@ -1676,12 +1676,12 @@ export const getModel = orgQuery({
 })
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `cd packages/backend && bun run test -- evaluationModel/model`
 Expected: PASS (4 tests)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/backend/convex/evaluationModel
@@ -1696,7 +1696,7 @@ git commit -m "feat(model): template and scratch model creation plus full model 
 - Create: `packages/backend/convex/evaluationModel/criteria.ts`
 - Test: `packages/backend/convex/evaluationModel/criteria.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```ts
 import { describe, expect, it } from "vitest"
@@ -1823,12 +1823,12 @@ describe("criterion editor", () => {
 })
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `cd packages/backend && bun run test -- criteria`
 Expected: FAIL
 
-- [ ] **Step 3: Implement `criteria.ts`**
+- [x] **Step 3: Implement `criteria.ts`**
 
 ```ts
 import { IMPORTANCE_LEVELS, type ImportanceLevel } from "@workspace/core"
@@ -1923,7 +1923,7 @@ export const removeCriterion = adminMutation({
 })
 ```
 
-- [ ] **Step 4: Run tests to verify they pass, then commit**
+- [x] **Step 4: Run tests to verify they pass, then commit**
 
 Run: `cd packages/backend && bun run test -- criteria`
 Expected: PASS (3 tests)
@@ -1945,7 +1945,7 @@ git commit -m "feat(model): minimal criterion editor mutations for the scratch p
 - Create (typed stubs replaced in Task 12): `apps/dashboard/components/onboarding/importance-review-panel.tsx`, `apps/dashboard/components/onboarding/model-draft-panel.tsx`
 - Modify: `packages/i18n/messages/*.json`
 
-- [ ] **Step 1: Add i18n keys** (under `dashboard.onboarding`; en then sv then mirrors)
+- [x] **Step 1: Add i18n keys** (under `dashboard.onboarding`; en then sv then mirrors)
 
 ```json
       "model": {
@@ -1985,7 +1985,7 @@ git commit -m "feat(model): minimal criterion editor mutations for the scratch p
 
 sv: heading "Välj er värderingsmodell"; description "Modellen definierar kriterierna som roller värderas mot. Betydelse är alltid en etikett, aldrig en siffra."; template: "Utgå från standardmallen" / "9 kriterier med ankarskalor, förvalda betydelser, track-schema och bandtrösklar. Rekommenderas." / "Använd mallen"; scratch: "Bygg från grunden" / "Börja tomt och definiera egna kriterier, med AI-utkast som hjälp." / "Modellens namn" / "Börja från grunden"; review: "Er modell" / "Band 1 är högsta bandet. Högre bandnummer betyder lägre tyngd." / "Öppna dashboarden"; editor: "Kriterier" / "Inga kriterier ännu. Lägg till ert första kriterium eller generera AI-utkast." / "Namn" / "Beskrivning" / "Hjälptext till bedömaren" / "Betydelse" / "Ankarskala (0 till 5)" / "Ankare {level}" / "Lägg till kriterium" / "Ta bort" / "Slutför".
 
-- [ ] **Step 2: Create `apps/dashboard/lib/importance.ts`** (single source for the importance-label map; typed so the values are literal `model.importance.*` sub-keys, which the typed translator requires)
+- [x] **Step 2: Create `apps/dashboard/lib/importance.ts`** (single source for the importance-label map; typed so the values are literal `model.importance.*` sub-keys, which the typed translator requires)
 
 ```ts
 import type { ImportanceLevel } from "@workspace/core"
@@ -2008,7 +2008,7 @@ export function importanceLabelKey(level: number) {
 }
 ```
 
-- [ ] **Step 3: Implement `model-setup-step.tsx`**
+- [x] **Step 3: Implement `model-setup-step.tsx`**
 
 The gate keeps the wizard mounted for the whole onboarding session (Task 4), so the choice screen, review screen, and editor live in LOCAL state after the create call, and "Finish setup" calls the `onFinished` prop, which hands control back to the gate.
 
@@ -2117,7 +2117,7 @@ export function ModelSetupStep({
 }
 ```
 
-- [ ] **Step 4: Implement `model-review.tsx`** (template path landing: lists criteria with importance LABELS via `model.importance.*`, the band thresholds with the Band-1-highest note, hosts the AI importance review panel from Task 12, and a "Finish" button)
+- [x] **Step 4: Implement `model-review.tsx`** (template path landing: lists criteria with importance LABELS via `model.importance.*`, the band thresholds with the Band-1-highest note, hosts the AI importance review panel from Task 12, and a "Finish" button)
 
 ```tsx
 "use client"
@@ -2191,7 +2191,7 @@ export function ImportanceReviewPanel(_props: {
 
 Task 12 replaces the body and may widen the `model` prop type to the `getModel` return type.)
 
-- [ ] **Step 5: Implement `criterion-editor.tsx`** (scratch path: reactive criteria list from `getModel`, add form with importance label select and six anchor inputs, remove buttons, AI draft panel slot from Task 12, finish button calling `onFinished`; disable finish until at least one criterion exists)
+- [x] **Step 5: Implement `criterion-editor.tsx`** (scratch path: reactive criteria list from `getModel`, add form with importance label select and six anchor inputs, remove buttons, AI draft panel slot from Task 12, finish button calling `onFinished`; disable finish until at least one criterion exists)
 
 Component signature: `export function CriterionEditor({ orgId, onFinished }: { orgId: string; onFinished: () => void })`. Structure (full code follows the same component idioms as Steps 3-4):
 - `useQuery(api.evaluationModel.model.getModel, { orgId })` drives the list.
@@ -2200,7 +2200,7 @@ Component signature: `export function CriterionEditor({ orgId, onFinished }: { o
 - Renders `<ModelDraftPanel orgId={orgId} />` (Task 12; until then create the file with the typed stub `export function ModelDraftPanel(_props: { orgId: string }) { return null }` marked `"use client"`).
 - Finish button (`editor.doneCta`): `disabled={model === null || model === undefined || model.criteria.length === 0}`, `onClick={onFinished}`.
 
-- [ ] **Step 6: Typecheck, test, manual flow, commit**
+- [x] **Step 6: Typecheck, test, manual flow, commit**
 
 Run: `bun run typecheck && bun run test`, then walk the full wizard manually on a fresh seeded user for BOTH paths.
 
@@ -2225,14 +2225,14 @@ git commit -m "feat(dashboard): model setup step with template and scratch paths
 
 **Runtime split (critical):** `suggest.ts` and `persist.ts` export queries/mutations and run in the default V8 runtime; they must NEVER import (even transitively) a `"use node"` module. The shared constants therefore live in `ai/config.ts` (no directive), and the `@ai-sdk/mistral` import is isolated in `ai/provider.ts` ("use node"), imported only by `ai/generate.ts` ("use node"). Importing provider.ts from suggest.ts fails the `convex dev` push; convex-test will not catch it.
 
-- [ ] **Step 1: Install AI dependencies**
+- [x] **Step 1: Install AI dependencies**
 
 Run from `packages/backend`: `bun add ai @ai-sdk/mistral zod`
 Floor check: `ai` must resolve to `>=6.0.35` (the v6 line; `generateText` + `Output.object`). Verify with `bun pm ls | grep -E '^| (ai|@ai-sdk|zod)'`.
 IMPORTANT: this install must complete before ANY backend test run in this task; `initConvexTest` globs every `convex/**/*.ts` including `ai/generate.ts`, so a missing dependency breaks the whole backend suite, not just the AI tests.
 Also verify the structured-output API against the installed package before writing Step 5 (the docs-win rule): confirm `import { generateText, Output } from "ai"`, the `output: Output.object({ schema })` option, and the `result.output` accessor at https://ai-sdk.dev/docs/reference/ai-sdk-core/output (cross-checked correct as of 2026-06-04).
 
-- [ ] **Step 2: Extend the suggestions table** (replace the `status`/`target` parts of the existing definition; the table is empty in all deployments so this widening is safe)
+- [x] **Step 2: Extend the suggestions table** (replace the `status`/`target` parts of the existing definition; the table is empty in all deployments so this widening is safe)
 
 ```ts
 // AI suggestion layer (ADR-0003): suggestions with provenance, separate from
@@ -2265,7 +2265,7 @@ export const suggestions = defineTable({
   .index("by_org_status", ["orgId", "status"])
 ```
 
-- [ ] **Step 3: Implement the config and provider modules**
+- [x] **Step 3: Implement the config and provider modules**
 
 `ai/config.ts` (NO "use node"; importable from the default runtime):
 
@@ -2297,7 +2297,7 @@ export function aiModel() {
 }
 ```
 
-- [ ] **Step 4: Implement the internal persistence mutations** (`ai/persist.ts`)
+- [x] **Step 4: Implement the internal persistence mutations** (`ai/persist.ts`)
 
 ```ts
 import { v } from "convex/values"
@@ -2361,7 +2361,7 @@ export const markFailed = internalMutation({
 })
 ```
 
-- [ ] **Step 5: Implement the generation actions** (`ai/generate.ts`)
+- [x] **Step 5: Implement the generation actions** (`ai/generate.ts`)
 
 ```ts
 "use node"
@@ -2528,7 +2528,7 @@ export const reviewImportances = internalAction({
 })
 ```
 
-- [ ] **Step 6: Implement the public suggestion surface** (`ai/suggest.ts`)
+- [x] **Step 6: Implement the public suggestion surface** (`ai/suggest.ts`)
 
 ```ts
 import { IMPORTANCE_LEVELS, type ImportanceLevel } from "@workspace/core"
@@ -2836,7 +2836,7 @@ export const getOpenSuggestions = orgQuery({
 })
 ```
 
-- [ ] **Step 7: Write the tests** (the AI action itself is not executed in tests; the network boundary is covered by the persist/confirm mutations plus the request mutation's row + scheduling)
+- [x] **Step 7: Write the tests** (the AI action itself is not executed in tests; the network boundary is covered by the persist/confirm mutations plus the request mutation's row + scheduling)
 
 ```ts
 import { describe, expect, it } from "vitest"
@@ -2975,7 +2975,7 @@ describe("AI suggestion lifecycle", () => {
 
 Note: scheduled actions are NOT run by these tests (they would hit the network). convex-test does not run scheduled functions automatically and does not warn about pending ones at test end (verified against convex-test 0.0.53), so the node action is never executed and no network call occurs. Do not add fake timers.
 
-- [ ] **Step 8: Set the deployment env vars** (manual, once per deployment)
+- [x] **Step 8: Set the deployment env vars** (manual, once per deployment)
 
 ```bash
 cd packages/backend && bunx convex env set MISTRAL_API_KEY <key>
@@ -2983,7 +2983,7 @@ cd packages/backend && bunx convex env set MISTRAL_API_KEY <key>
 
 Document in `packages/backend/README.md` (Task 13). Without the key the action degrades to `errors.aiUnavailable`, which the UI translates; onboarding is never blocked by AI.
 
-- [ ] **Step 9: Run the full backend suite, typecheck, commit**
+- [x] **Step 9: Run the full backend suite, typecheck, commit**
 
 Run: `bun run test && bun run typecheck`
 Expected: PASS
@@ -3004,7 +3004,7 @@ git commit -m "feat(ai): EU-direct suggestion pipeline for model setup (ADR-0003
 - Create: `apps/dashboard/lib/error-label.ts` (typed AI error-code translation helper)
 - Modify: `packages/i18n/messages/*.json`
 
-- [ ] **Step 1: Add i18n keys** (under `dashboard.onboarding`; en then sv then mirrors)
+- [x] **Step 1: Add i18n keys** (under `dashboard.onboarding`; en then sv then mirrors)
 
 ```json
       "ai": {
@@ -3024,7 +3024,7 @@ git commit -m "feat(ai): EU-direct suggestion pipeline for model setup (ADR-0003
 
 sv: "AI-assistans" / "AI-genererat förslag. Granska och bekräfta; inget tillämpas automatiskt." / "Beskriv er verksamhet (frivilligt)" / "Generera kriterieutkast" / "Låt AI gå igenom betydelserna" / "Genererar förslag" / "Lägg till valda" / "Tillämpa valda" / "Avfärda" / "AI:n hittade inga justeringar att föreslå." / "Motivering".
 
-- [ ] **Step 2: Implement `model-draft-panel.tsx`**
+- [x] **Step 2: Implement `model-draft-panel.tsx`**
 
 First create `apps/dashboard/lib/error-label.ts`. Typed keys mean the translator rejects a runtime `string`, so the two AI error codes are narrowed explicitly (they are the only codes the AI actions persist; both keys exist from Task 3):
 
@@ -3053,11 +3053,11 @@ Behavior contract for `model-draft-panel.tsx` (full component, same idioms as Ta
 - `status === "failed"`: translate the persisted code with `const tErrors = useTranslations("errors")` and `tErrors(aiErrorSubKey(suggestion.errorCode ?? ""))`, plus the `ai.draftCta` button to retry.
 - `status === "suggested"`: list `suggestedValue.criteria` with a checkbox each (default checked), showing name, description, and the importance LABEL via `tImportance(importanceLabelKey(criterion.importanceLevel))` from `@/lib/importance` (created in Task 10). Buttons: `ai.confirmCta` calls `confirmModelDraft({ orgId, suggestionId, acceptedIndexes })`; `ai.rejectCta` calls `rejectSuggestion({ orgId, suggestionId })`.
 
-- [ ] **Step 3: Implement `importance-review-panel.tsx`** (replacing the Task 10 stub)
+- [x] **Step 3: Implement `importance-review-panel.tsx`** (replacing the Task 10 stub)
 
 Same shape: button `ai.reviewCta` calling `requestImportanceReview({ orgId })`; renders open suggestions of `kind === "model.importanceReview"`; the suggested state lists `suggestedValue.adjustments` with checkboxes showing criterion name (resolve via the `model` prop passed from `ModelReview`), current importance label, suggested importance label (both via `importanceLabelKey`), and `motivation`. BOTH suggested states render the `ai.rejectCta` button calling `rejectSuggestion({ orgId, suggestionId })`: with adjustments it sits next to `ai.applyCta` (which calls `confirmImportanceReview({ orgId, suggestionId, acceptedCriterionIds })`); with an empty adjustments list the panel renders `ai.noAdjustments` and the dismiss button alone. Failed state translates via `aiErrorSubKey` exactly like the draft panel.
 
-- [ ] **Step 4: Mount, verify end to end, commit**
+- [x] **Step 4: Mount, verify end to end, commit**
 
 The draft panel is already mounted in `criterion-editor.tsx` (Task 10); replace the stub bodies and verify both panels render. Run `bun run typecheck && bun run test`. Manual: with `MISTRAL_API_KEY` set on the dev deployment, run both AI flows; without it, confirm the translated `errors.aiUnavailable` failure state renders.
 
@@ -3075,7 +3075,7 @@ git commit -m "feat(dashboard): embedded AI panels for criteria drafts and impor
 - Modify: `packages/backend/README.md`
 - Modify: `docs/contexts/assessment/CONTEXT.md` (AI-förslag entry already covers suggestions; verify no change needed, else note the new statuses)
 
-- [ ] **Step 1: Amend ADR-0003** (Swedish, no em dashes; append a dated section)
+- [x] **Step 1: Amend ADR-0003** (Swedish, no em dashes; append a dated section)
 
 ```markdown
 ## Tillägg 2026-06-04: modellassistans i onboardingen och leverantörsval
@@ -3098,11 +3098,11 @@ aldrig i datavägen:** den kan inte pinna EU-routing och bryter därmed
 EU-datahemvisten (ADR-0001).
 ```
 
-- [ ] **Step 2: Document env vars in `packages/backend/README.md`**
+- [x] **Step 2: Document env vars in `packages/backend/README.md`**
 
 Add a section: `MISTRAL_API_KEY` (required for AI suggestions; absent key degrades to errors.aiUnavailable) and `MISTRAL_MODEL` (optional override, default mistral-large-latest), set via `bunx convex env set`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add docs/adr/0003-ai-embedded-assistant.md packages/backend/README.md docs/contexts
@@ -3113,7 +3113,7 @@ git commit -m "docs(adr): extend ADR-0003 V1 scope with onboarding model assista
 
 ## Task 14: Final verification sweep
 
-- [ ] **Step 1: Full gates**
+- [x] **Step 1: Full gates**
 
 Run: `bun run typecheck && bun run test && bunx biome check .`
 Expected: all green.
@@ -3126,7 +3126,7 @@ Expected: all green.
 4. Reset (wipe org via dashboard data or re-seed) and walk Path B: scratch + manual criterion + AI drafts; confirm a subset; finish.
 5. Verify audit rows exist for model.created and ai.suggestionConfirmed, and that signing in again lands directly in the dashboard.
 
-- [ ] **Step 3: Self-review against the spec**
+- [x] **Step 3: Self-review against the spec**
 
 Walk `docs/superpowers/specs/2026-06-04-onboarding-design.md` requirement by requirement and check each maps to shipped behavior. Confirm: no hardcoded UI text, parity test green, no `<a>` for internal nav, no weight numbers in any payload or UI, backend throws only `errors.*` codes.
 

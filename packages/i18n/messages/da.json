@@ -1,6 +1,6 @@
 {
   "accounts": {
-    "workspace": "Arbejdsområde",
+    "organization": "Organisation",
     "member": "Medlem",
     "role": {
       "admin": "Admin",
@@ -9,9 +9,9 @@
   },
   "email": {
     "invitation": {
-      "subject": "{inviterName} har inviteret dig til {workspaceName} på blueprnt",
-      "heading": "Bliv medlem af {workspaceName}",
-      "body": "{inviterName} har inviteret dig til arbejdsområdet {workspaceName}.",
+      "subject": "{inviterName} har inviteret dig til {organizationName} på blueprnt",
+      "heading": "Bliv medlem af {organizationName}",
+      "body": "{inviterName} har inviteret dig til organisationen {organizationName}.",
       "cta": "Accepter invitation"
     },
     "verifyEmail": {
@@ -191,7 +191,7 @@
     },
     "overview": {
       "emptyTitle": "Intet her endnu",
-      "emptyBody": "Din arbejdsområdeoversigt vises her, efterhånden som blueprnt vokser."
+      "emptyBody": "Din organisationsoversigt vises her, efterhånden som blueprnt vokser."
     },
     "auth": {
       "loading": "Kontrollerer din session",
@@ -200,21 +200,133 @@
       "signIn": {
         "title": "Log ind",
         "cta": "Log ind",
-        "description": "Indtast din e-mail nedenfor for at logge ind på dit arbejdsområde"
+        "description": "Indtast din e-mail nedenfor for at logge ind på din organisation"
       },
       "invitation": {
-        "title": "Arbejdsområdeinvitation",
+        "title": "Organisationsinvitation",
         "accept": "Accepter invitation",
         "signInFirst": "Log ind for at acceptere denne invitation."
       },
       "error": "Noget gik galt. Prøv igen."
+    },
+    "onboarding": {
+      "accountMenu": "Kontomenu",
+      "title": "Kom i gang med din organisation",
+      "step": "Trin {current} af {total}",
+      "loading": "Indlæser din organisation",
+      "waitingForAdmin": "Din organisation er stadig ved at blive sat op af en administrator.",
+      "back": "Tilbage",
+      "steps": {
+        "organization": "Organisation",
+        "model": "Vurderingsmodel"
+      },
+      "organization": {
+        "heading": "Opret din organisation",
+        "description": "Organisationen samler jeres roller, jeres vurderingsmodel og jeres team.",
+        "nameLabel": "Organisationens navn",
+        "namePlaceholder": "f.eks. jeres firmanavn",
+        "cta": "Opret organisation",
+        "saveCta": "Gem og fortsæt",
+        "error": "Organisationen kunne ikke oprettes. Prøv igen.",
+        "languageLabel": "Standardsprog",
+        "languages": {
+          "en": "Engelsk",
+          "sv": "Svensk",
+          "nb": "Norsk",
+          "da": "Dansk",
+          "fi": "Finsk"
+        }
+      },
+      "profile": {
+        "country": "Land",
+        "currency": "Valuta",
+        "industry": "Branche",
+        "countries": {
+          "se": "Sverige",
+          "no": "Norge",
+          "dk": "Danmark",
+          "fi": "Finland",
+          "other": "Andet"
+        },
+        "industries": {
+          "publicSector": "Offentlig sektor",
+          "manufacturing": "Produktion",
+          "consulting": "Konsulentvirksomhed",
+          "retail": "Detailhandel",
+          "itTelecom": "IT/Telekom",
+          "healthcare": "Sundhed og velvære",
+          "finance": "Finans og forsikring",
+          "realEstateConstruction": "Ejendom og byggeri",
+          "other": "Andet"
+        }
+      },
+      "model": {
+        "heading": "Vælg jeres vurderingsmodel",
+        "description": "Modellen definerer kriterierne, som roller vurderes imod. Betydning er altid en etiket, aldrig et tal.",
+        "error": "Noget gik galt. Prøv igen.",
+        "template": {
+          "title": "Start fra standardskabelonen",
+          "description": "9 kriterier med ankerskalaer, forvalgte betydninger, track-skema og båndtærskler.",
+          "badge": "Anbefales",
+          "cta": "Brug skabelonen"
+        },
+        "scratch": {
+          "title": "Byg fra bunden",
+          "description": "Start tomt og definer jeres egne kriterier, med AI-udkast som hjælp.",
+          "nameLabel": "Modellens navn",
+          "cta": "Start fra bunden"
+        },
+        "review": {
+          "heading": "Jeres model",
+          "setImportance": "Betydning for {name}",
+          "cta": "Åbn dashboardet",
+          "editCta": "Rediger",
+          "doneEditing": "Færdig"
+        },
+        "editor": {
+          "heading": "Kriterier",
+          "empty": "Ingen kriterier endnu. Tilføj jeres første kriterium eller generer AI-udkast.",
+          "name": "Navn",
+          "description": "Beskrivelse",
+          "helpText": "Hjælpetekst til bedømmeren",
+          "importance": "Betydning",
+          "anchors": "Ankerskala (0 til 5)",
+          "anchorLevel": "Anker {level}",
+          "addCta": "Tilføj kriterium",
+          "removeCta": "Fjern",
+          "doneCta": "Fuldfør opsætningen"
+        },
+        "change": {
+          "cta": "Skift modelvalg",
+          "confirm": "Ja, slet og start forfra",
+          "cancel": "Annuller"
+        }
+      },
+      "ai": {
+        "heading": "AI-assistance",
+        "provenance": "AI-genereret forslag. Gennemgå og bekræft; intet anvendes automatisk.",
+        "draftDescriptionLabel": "Beskriv jeres virksomhed (valgfrit)",
+        "draftCta": "Generer kriterieudkast",
+        "reviewCta": "Lad AI gennemgå betydningerne",
+        "generating": "Genererer forslag",
+        "confirmCta": "Tilføj valgte",
+        "applyCta": "Anvend valgte",
+        "rejectCta": "Afvis",
+        "noAdjustments": "AI'en fandt ingen justeringer at foreslå.",
+        "motivation": "Begrundelse"
+      }
     }
   },
   "errors": {
     "notAuthenticated": "Du skal logge ind.",
-    "notAMember": "Du er ikke medlem af dette arbejdsområde.",
-    "adminRequired": "Kun arbejdsområdeadministratorer kan gøre dette.",
+    "notAMember": "Du er ikke medlem af denne organisation.",
+    "adminRequired": "Kun organisationsadministratorer kan gøre dette.",
     "membershipConflict": "Dit medlemskab kunne ikke bekræftes. Kontakt support.",
-    "notFound": "Ikke fundet."
+    "notFound": "Ikke fundet.",
+    "invalidInput": "Ugyldigt input.",
+    "modelExists": "Organisationen har allerede en vurderingsmodel.",
+    "profileIncomplete": "Udfyld virksomhedsprofilen først.",
+    "aiUnavailable": "AI er ikke konfigureret i dette miljø.",
+    "aiGenerationFailed": "AI-forslaget kunne ikke genereres."
   }
 }

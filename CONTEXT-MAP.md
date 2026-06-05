@@ -8,7 +8,7 @@ Varje ordlista har en sektion **Översättningssträngar (i18n)** med svenska + 
 
 ## Kontexter
 
-- [Konton (accounts)](./docs/contexts/accounts/CONTEXT.md) — arbetsytor (tenants), medlemmar och behörighetsroller. Bygger på Better Auth-organisationer.
+- [Konton (accounts)](./docs/contexts/accounts/CONTEXT.md) — organisationer (tenants), medlemmar och behörighetsroller. Bygger på Better Auth-organisationer.
 - [Värderingsmodell (evaluation-model)](./docs/contexts/evaluation-model/CONTEXT.md) — den konfigurerbara jobbarkitekturen + poängmodellen: kriterier, vikter, track/nivå, bandindelning, mallar; live-omräkning (ingen versionering i V1).
 - [Värdering (assessment)](./docs/contexts/assessment/CONTEXT.md) — roller och deras blindade värderingar: betyg, totalpoäng, bandutfall, kalibrering.
 
@@ -18,6 +18,6 @@ Varje ordlista har en sektion **Översättningssträngar (i18n)** med svenska + 
 
 ## Relationer
 
-- **Konton → allt**: varje post hör till en arbetsyta (tenant). Convex-funktioner upprätthåller org-scoping.
-- **Värderingsmodell → Värdering**: en värdering använder arbetsytans **aktuella** modell (kriterier, vikter, track/nivå-schema, bandtrösklar). Poäng och band härleds live från sparade betyg + aktuell modell (ingen versionering i V1).
+- **Konton → allt**: varje post hör till en organisation (tenant). Convex-funktioner upprätthåller org-scoping.
+- **Värderingsmodell → Värdering**: en värdering använder organisationens **aktuella** modell (kriterier, vikter, track/nivå-schema, bandtrösklar). Poäng och band härleds live från sparade betyg + aktuell modell (ingen versionering i V1).
 - **Värdering → Värderingsmodell**: en roll bär en track + nivå hämtad från modellens jobbarkitektur-vokabulär.

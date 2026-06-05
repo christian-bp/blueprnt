@@ -1,6 +1,6 @@
 {
   "accounts": {
-    "workspace": "Workspace",
+    "organization": "Organization",
     "member": "Member",
     "role": {
       "admin": "Admin",
@@ -9,9 +9,9 @@
   },
   "email": {
     "invitation": {
-      "subject": "{inviterName} invited you to {workspaceName} on blueprnt",
-      "heading": "Join {workspaceName}",
-      "body": "{inviterName} has invited you to the workspace {workspaceName}.",
+      "subject": "{inviterName} invited you to {organizationName} on blueprnt",
+      "heading": "Join {organizationName}",
+      "body": "{inviterName} has invited you to the organization {organizationName}.",
       "cta": "Accept invitation"
     },
     "verifyEmail": {
@@ -191,7 +191,7 @@
     },
     "overview": {
       "emptyTitle": "Nothing here yet",
-      "emptyBody": "Your workspace overview will appear here as blueprnt grows."
+      "emptyBody": "Your organization overview will appear here as blueprnt grows."
     },
     "auth": {
       "loading": "Checking your session",
@@ -200,21 +200,133 @@
       "signIn": {
         "title": "Sign in",
         "cta": "Sign in",
-        "description": "Enter your email below to sign in to your workspace"
+        "description": "Enter your email below to sign in to your organization"
       },
       "invitation": {
-        "title": "Workspace invitation",
+        "title": "Organization invitation",
         "accept": "Accept invitation",
         "signInFirst": "Sign in to accept this invitation."
       },
       "error": "Something went wrong. Please try again."
+    },
+    "onboarding": {
+      "accountMenu": "Account menu",
+      "title": "Set up your organization",
+      "step": "Step {current} of {total}",
+      "loading": "Loading your organization",
+      "waitingForAdmin": "Your organization is still being set up by an administrator.",
+      "back": "Back",
+      "steps": {
+        "organization": "Organization",
+        "model": "Evaluation model"
+      },
+      "organization": {
+        "heading": "Create your organization",
+        "description": "The organization holds your roles, your evaluation model, and your team.",
+        "nameLabel": "Organization name",
+        "namePlaceholder": "e.g. your company name",
+        "cta": "Create organization",
+        "saveCta": "Save and continue",
+        "error": "The organization could not be created. Try again.",
+        "languageLabel": "Default language",
+        "languages": {
+          "en": "English",
+          "sv": "Swedish",
+          "nb": "Norwegian",
+          "da": "Danish",
+          "fi": "Finnish"
+        }
+      },
+      "profile": {
+        "country": "Country",
+        "currency": "Currency",
+        "industry": "Industry",
+        "countries": {
+          "se": "Sweden",
+          "no": "Norway",
+          "dk": "Denmark",
+          "fi": "Finland",
+          "other": "Other"
+        },
+        "industries": {
+          "publicSector": "Public sector",
+          "manufacturing": "Manufacturing",
+          "consulting": "Consulting",
+          "retail": "Retail",
+          "itTelecom": "IT/Telecom",
+          "healthcare": "Healthcare & wellness",
+          "finance": "Finance & insurance",
+          "realEstateConstruction": "Real estate & construction",
+          "other": "Other"
+        }
+      },
+      "model": {
+        "heading": "Choose your evaluation model",
+        "description": "The model defines the criteria roles are rated against. Importance is always a label, never a number.",
+        "error": "Something went wrong. Try again.",
+        "template": {
+          "title": "Start from the standard template",
+          "description": "9 criteria with anchor scales, default importances, the track schema, and band thresholds.",
+          "badge": "Recommended",
+          "cta": "Use the template"
+        },
+        "scratch": {
+          "title": "Build from scratch",
+          "description": "Start empty and define your own criteria, with AI drafts to help.",
+          "nameLabel": "Model name",
+          "cta": "Start from scratch"
+        },
+        "review": {
+          "heading": "Your model",
+          "setImportance": "Importance for {name}",
+          "cta": "Open the dashboard",
+          "editCta": "Edit",
+          "doneEditing": "Done"
+        },
+        "editor": {
+          "heading": "Criteria",
+          "empty": "No criteria yet. Add your first criterion or generate AI drafts.",
+          "name": "Name",
+          "description": "Description",
+          "helpText": "Help text for the assessor",
+          "importance": "Importance",
+          "anchors": "Anchor scale (0 to 5)",
+          "anchorLevel": "Anchor {level}",
+          "addCta": "Add criterion",
+          "removeCta": "Remove",
+          "doneCta": "Finish setup"
+        },
+        "change": {
+          "cta": "Change model choice",
+          "confirm": "Yes, delete and start over",
+          "cancel": "Cancel"
+        }
+      },
+      "ai": {
+        "heading": "AI assistance",
+        "provenance": "AI-generated suggestion. Review and confirm; nothing is applied automatically.",
+        "draftDescriptionLabel": "Describe your business (optional)",
+        "draftCta": "Generate criteria drafts",
+        "reviewCta": "Let AI review the importance levels",
+        "generating": "Generating suggestions",
+        "confirmCta": "Add selected",
+        "applyCta": "Apply selected",
+        "rejectCta": "Dismiss",
+        "noAdjustments": "The AI found no adjustments to suggest.",
+        "motivation": "Motivation"
+      }
     }
   },
   "errors": {
     "notAuthenticated": "You need to sign in.",
-    "notAMember": "You are not a member of this workspace.",
-    "adminRequired": "Only workspace admins can do this.",
+    "notAMember": "You are not a member of this organization.",
+    "adminRequired": "Only organization admins can do this.",
     "membershipConflict": "Your membership could not be verified. Contact support.",
-    "notFound": "Not found."
+    "notFound": "Not found.",
+    "invalidInput": "Invalid input.",
+    "modelExists": "This organization already has an evaluation model.",
+    "profileIncomplete": "Complete the company profile first.",
+    "aiUnavailable": "AI is not configured for this environment.",
+    "aiGenerationFailed": "The AI suggestion could not be generated."
   }
 }

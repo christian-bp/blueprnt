@@ -1,6 +1,6 @@
 # Värderingsmodell (evaluation-model)
 
-Den konfigurerbara jobbarkitekturen och poängmodellen som en arbetsyta definierar: kriterierna och deras vikter, track/nivå-schemat, bandtrösklarna samt mallarna bakom dem.
+Den konfigurerbara jobbarkitekturen och poängmodellen som en organisation definierar: kriterierna och deras vikter, track/nivå-schemat, bandtrösklarna samt mallarna bakom dem.
 
 Grundprincip: **track och nivå beskriver rollen; bandet värderar den.** Ordningen är alltid: beskriv rollen (track + nivå) → värdera mot kriterierna → bandet faller ut sist. Nivå jämförs *inom* en track; band jämförs *mellan* tracks. Den pedagogiska förklaringen av hela modellen (rollfamilj, nivåroll, visningstitel, rollplacering) finns i [track-level-band.md](./track-level-band.md).
 
@@ -23,7 +23,7 @@ Hur *tung* en roll är jämfört med alla andra roller i bolaget — utdataklass
 _Undvik_: Grad, Tier, Nivå (Band är utdata över hela bolaget; nivå är indata inom en track)
 
 **Kriterium** *(kod: Criterion)*:
-En sak en roll värderas på (t.ex. Scope & Påverkan, Komplexitet, Finansiellt ansvar). Har namn, beskrivning och en 0–5-**ankarskala**. Fullt konfigurerbart — en arbetsyta kan lägga till egna (Excelns "Impact on Exit" är ett eget kriterium).
+En sak en roll värderas på (t.ex. Scope & Påverkan, Komplexitet, Finansiellt ansvar). Har namn, beskrivning och en 0–5-**ankarskala**. Fullt konfigurerbart — en organisation kan lägga till egna (Excelns "Impact on Exit" är ett eget kriterium).
 _Undvik_: Faktor ("faktor" finns i källdokumenten; "kriterium" är kanoniskt, "faktor" är alias)
 
 **Ankare** *(kod: Anchor)*:
@@ -31,7 +31,7 @@ Texten som beskriver vad varje poäng 0–5 betyder för ett kriterium (t.ex. Au
 _Undvik_: Ankarroll (en annan sak — se Värdering), Skalbeskrivning
 
 **Betydelse** *(kod: Importance)*:
-Hur viktigt ett kriterium är, valt av HR som en etikett på den fasta 7-gradiga **betydelseskalan** (Avgörande, Mycket viktigt … Minst viktigt) — aldrig ett rått tal. Att tilldela varje kriterium en betydelse är hur en arbetsyta anpassar standardmallen efter sitt företag.
+Hur viktigt ett kriterium är, valt av HR som en etikett på den fasta 7-gradiga **betydelseskalan** (Avgörande, Mycket viktigt … Minst viktigt) — aldrig ett rått tal. Att tilldela varje kriterium en betydelse är hur en organisation anpassar standardmallen efter sitt företag.
 _Undvik_: Vikt (vikt är det interna talet; användare ser bara betydelse)
 
 **Vikt** *(kod: Weight)*:
@@ -43,16 +43,16 @@ Den **fasta** 7-gradiga skalan som mappar varje betydelseetikett till en vikt. �
 _Undvik_: Viktskala (säg "betydelseskala" i produktspråk)
 
 **Mall** *(kod: Template)*:
-En återanvändbar förkonfigurerad modell — kriterier, ankare, betydelser, track-schema, bandtrösklar — anpassad till en jobb-/organisationstyp (t.ex. SaaS/tech, kommersiell, G&A, operations). En arbetsyta startar från en mall (eller tomt) och anpassar sedan; dess modell är oberoende därefter.
-_Undvik_: Modell (en mall är startförkonfigurationen; arbetsytans redigerbara kopia är modellen)
+En återanvändbar förkonfigurerad modell — kriterier, ankare, betydelser, track-schema, bandtrösklar — anpassad till en jobb-/organisationstyp (t.ex. SaaS/tech, kommersiell, G&A, operations). En organisation startar från en mall (eller tomt) och anpassar sedan; dess modell är oberoende därefter.
+_Undvik_: Modell (en mall är startförkonfigurationen; organisationens redigerbara kopia är modellen)
 
 **Bandtröskel** *(kod: Band threshold)*:
 Lägsta poäng för ett band. Konfigurerbar per band; definierar var poäng → band. (Band 1 = högst.)
 _Undvik_: Gränsvärde, Intervallgräns
 
 **Modell** *(kod: Model)*:
-En arbetsytas levande värderingskonfiguration — kriterier, ankare, betydelser, track-schema, bandtrösklar. Det finns **en** aktiv modell per arbetsyta (V1: ingen versionering). När modellen ändras räknas alla rollers poäng/band om direkt — poäng och band **härleds** från sparade betyg + aktuell modell.
-_Undvik_: Mall (mallen är startförkonfigurationen; modellen är arbetsytans levande, redigerbara konfiguration), Modellversion (ingen versionering i V1)
+En organisations levande värderingskonfiguration — kriterier, ankare, betydelser, track-schema, bandtrösklar. Det finns **en** aktiv modell per organisation (V1: ingen versionering). När modellen ändras räknas alla rollers poäng/band om direkt — poäng och band **härleds** från sparade betyg + aktuell modell.
+_Undvik_: Mall (mallen är startförkonfigurationen; modellen är organisationens levande, redigerbara konfiguration), Modellversion (ingen versionering i V1)
 
 **Revisionslogg** *(kod: Audit log)*:
 Spårbar logg över ändringar som påverkar utfall — främst modelländringar (vem, vad, när) och vilka roller som bytte band som följd. Ger spårbarhet trots att V1 saknar versionering.
@@ -105,8 +105,9 @@ Etikettsordval är förslag — bekräftas med användaren.
 - **Track/nivå vs band-orsakssamband**: en rolls track/nivå *bestämmer inte* dess band — bandet kommer enbart från poängen. De korrelerar men är inte kausala.
 - **Track-guardrails** (Excelns min/max per (track, nivå) per kriterium): provisoriskt *rådgivande* (varna vid betyg utanför intervall, blockera aldrig) — bekräftas när värderingsflödet designas.
 - **Egna kriterier (full konfiguration)**: HR kan skapa egna kriterier utöver standardmallen, med egna 0–5-ankare, och anpassa kriterier/ankare/betydelser/bandtrösklar fritt. Även egna kriterier får sin vikt genom att tilldelas en **betydelse från den fasta 7-skalan** — aldrig fria siffervikter.
-- **Live-omräkning (V1-beslut)**: ingen modellversionering i V1 — en levande modell per arbetsyta, och ändringar räknar om alla rollers poäng/band direkt (härleds från sparade betyg + aktuell modell). Avviker medvetet från briefens versioneringskrav; konsekvens: roller kan tyst byta band vid modelländring. Spårbarhet löses med en **revisionslogg** (ingår i V1). Se ADR-0002.
-- **Rollfamiljens granularitet**: förklaringsdokumentet (track-level-band.md) använder Software Developer som exempel på rollfamilj; familjer kan också dras bredare (t.ex. Software Engineering, beslutat 2026-06). Granulariteten bestäms per arbetsyta. V1 modellerar inte rollfamilj som egen entitet.
+- **Live-omräkning (V1-beslut)**: ingen modellversionering i V1 — en levande modell per organisation, och ändringar räknar om alla rollers poäng/band direkt (härleds från sparade betyg + aktuell modell). Avviker medvetet från briefens versioneringskrav; konsekvens: roller kan tyst byta band vid modelländring. Spårbarhet löses med en **revisionslogg** (ingår i V1). Se ADR-0002.
+- **Rollfamiljens granularitet**: förklaringsdokumentet (track-level-band.md) använder Software Developer som exempel på rollfamilj; familjer kan också dras bredare (t.ex. Software Engineering, beslutat 2026-06). Granulariteten bestäms per organisation. V1 modellerar inte rollfamilj som egen entitet.
+- **Mallinnehållets språk**: mallseedade, orörda rader (kriterier via templateKey, tracks/nivåer via key) lokaliseras vid läsning till UI-språket (sv/en, fallback en). Egna och AI-skapade kriterier visas som de författats. När E2-redigering ändrar en mallrad rensas templateKey och organisationen äger texten (beslut 2026-06-05).
 
 ## Exempeldialog
 — "Det här är en IC3 Software Developer, så det blir Band 4, va?"

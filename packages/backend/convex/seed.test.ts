@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { components, internal } from "./_generated/api"
+import { api, components, internal } from "./_generated/api"
 import { initConvexTest } from "./testing.helpers"
 
 // The seedDevUser action is "use node" (hashPassword requires node:crypto) and
@@ -52,7 +52,7 @@ describe("betterAuth/seed.insertCredentialUser", () => {
   })
 })
 
-describe("betterAuth/seed.insertWorkspace", () => {
+describe("betterAuth/seed.insertOrganization", () => {
   async function seedUser(t: ReturnType<typeof initConvexTest>) {
     return await t.mutation(components.betterAuth.seed.insertCredentialUser, {
       email: "hej@blueprnt.se",
@@ -65,18 +65,21 @@ describe("betterAuth/seed.insertWorkspace", () => {
     const t = initConvexTest()
     const { userId } = await seedUser(t)
 
-    const first = await t.mutation(components.betterAuth.seed.insertWorkspace, {
-      name: "blueprnt dev",
-      slug: "blueprnt-dev",
-      email: "hej@blueprnt.se",
-      role: "admin",
-    })
+    const first = await t.mutation(
+      components.betterAuth.seed.insertOrganization,
+      {
+        name: "blueprnt dev",
+        slug: "blueprnt-dev",
+        email: "hej@blueprnt.se",
+        role: "admin",
+      }
+    )
     expect(first.createdOrg).toBe(true)
     expect(first.createdMember).toBe(true)
     expect(first.userId).toBe(userId)
 
     const second = await t.mutation(
-      components.betterAuth.seed.insertWorkspace,
+      components.betterAuth.seed.insertOrganization,
       {
         name: "blueprnt dev",
         slug: "blueprnt-dev",
@@ -102,7 +105,7 @@ describe("betterAuth/seed.insertWorkspace", () => {
   it("rejects when the user does not exist yet", async () => {
     const t = initConvexTest()
     await expect(
-      t.mutation(components.betterAuth.seed.insertWorkspace, {
+      t.mutation(components.betterAuth.seed.insertOrganization, {
         name: "x",
         slug: "x",
         email: "nobody@blueprnt.se",
@@ -112,18 +115,18 @@ describe("betterAuth/seed.insertWorkspace", () => {
   })
 })
 
-describe("accounts/mirrors.mirrorSeededWorkspace", () => {
+describe("accounts/mirrors.mirrorSeededOrganization", () => {
   it("seeds the profile and audits org plus member exactly once", async () => {
     const t = initConvexTest()
 
-    await t.mutation(internal.accounts.mirrors.mirrorSeededWorkspace, {
+    await t.mutation(internal.accounts.mirrors.mirrorSeededOrganization, {
       orgId: "ba_org_seed",
       memberUserId: "ba_user_seed",
       role: "admin",
       auditMember: true,
     })
     // Re-run as the idempotent path: no second profile, no second audit.
-    await t.mutation(internal.accounts.mirrors.mirrorSeededWorkspace, {
+    await t.mutation(internal.accounts.mirrors.mirrorSeededOrganization, {
       orgId: "ba_org_seed",
       memberUserId: "ba_user_seed",
       role: "admin",
@@ -132,7 +135,7 @@ describe("accounts/mirrors.mirrorSeededWorkspace", () => {
 
     await t.run(async (ctx) => {
       const profiles = await ctx.db
-        .query("workspaceProfiles")
+        .query("organizations")
         .withIndex("by_org", (q) => q.eq("orgId", "ba_org_seed"))
         .collect()
       expect(profiles).toHaveLength(1)
@@ -140,7 +143,7 @@ describe("accounts/mirrors.mirrorSeededWorkspace", () => {
       const created = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", "ba_org_seed").eq("type", "workspace.created")
+          q.eq("orgId", "ba_org_seed").eq("type", "organization.created")
         )
         .collect()
       expect(created).toHaveLength(1)
@@ -157,6 +160,152 @@ describe("accounts/mirrors.mirrorSeededWorkspace", () => {
         role: "admin",
       })
     })
+  })
+})
+
+describe("betterAuth/seed.removeOrganizationsForUserEmail + accounts/mirrors.removeSeededOrganization", () => {
+  async function seedAll(t: ReturnType<typeof initConvexTest>) {
+    // Seed a user.
+    const { userId } = await t.mutation(
+      components.betterAuth.seed.insertCredentialUser,
+      {
+        email: "hej@blueprnt.se",
+        name: "Hej",
+        passwordHash: "fakesalt:fakehash",
+      }
+    )
+
+    // Seed an organization (org + member).
+    const { orgId } = await t.mutation(
+      components.betterAuth.seed.insertOrganization,
+      {
+        name: "blueprnt dev",
+        slug: "blueprnt-dev",
+        email: "hej@blueprnt.se",
+        role: "admin",
+      }
+    )
+
+    // Seed the app-side profile and audit rows.
+    await t.mutation(internal.accounts.mirrors.mirrorSeededOrganization, {
+      orgId,
+      memberUserId: userId,
+      role: "admin",
+      auditMember: true,
+    })
+
+    return { orgId, userId }
+  }
+
+  it("removes all auth-side and app-side rows and leaves organization: null in onboarding status", async () => {
+    const t = initConvexTest()
+    const { orgId, userId } = await seedAll(t)
+
+    // Seed a model, a criterion with an anchor, a suggestion, and fill the profile.
+    await t.run(async (ctx) => {
+      const modelId = await ctx.db.insert("models", {
+        orgId,
+        name: "Standard",
+      })
+      const criterionId = await ctx.db.insert("criteria", {
+        orgId,
+        modelId,
+        name: "Scope",
+        description: "desc",
+        helpText: "help",
+        importanceLevel: 4,
+        order: 1,
+        isCustom: false,
+      })
+      await ctx.db.insert("criterionAnchors", {
+        criterionId,
+        level: 3,
+        text: "anchor text",
+      })
+      await ctx.db.insert("suggestions", {
+        orgId,
+        target: { kind: "model.draft" },
+        suggestedValue: {},
+        source: "ai",
+        status: "suggested",
+      })
+      // Complete the profile so the test exercises the patch path.
+      const profile = await ctx.db
+        .query("organizations")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (profile !== null) {
+        await ctx.db.patch(profile._id, {
+          country: "se",
+          currency: "SEK",
+          language: "sv",
+          employeeCount: 10,
+          industry: "itTelecom",
+        })
+      }
+    })
+
+    // Run the component mutation to remove the auth-side org.
+    const removedOrgIds = await t.mutation(
+      components.betterAuth.seed.removeOrganizationsForUserEmail,
+      { email: "hej@blueprnt.se" }
+    )
+    expect(removedOrgIds).toContain(orgId)
+
+    // Run the app-side cleanup for each returned orgId.
+    for (const id of removedOrgIds) {
+      await t.mutation(internal.accounts.mirrors.removeSeededOrganization, {
+        orgId: id,
+      })
+    }
+
+    // Assert all app-side rows are gone.
+    await t.run(async (ctx) => {
+      const profiles = await ctx.db
+        .query("organizations")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(profiles).toHaveLength(0)
+
+      const models = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(models).toHaveLength(0)
+
+      const criteria = await ctx.db
+        .query("criteria")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(criteria).toHaveLength(0)
+
+      const suggestions = await ctx.db
+        .query("suggestions")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(suggestions).toHaveLength(0)
+
+      const auditRows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(auditRows).toHaveLength(0)
+    })
+
+    // Onboarding status now reports organization: null because the member row is gone.
+    const status = await t
+      .withIdentity({ subject: userId })
+      .query(api.accounts.onboarding.getOnboardingStatus, {})
+    expect(status?.organization).toBeNull()
+  })
+
+  it("is a no-op for an unknown email", async () => {
+    const t = initConvexTest()
+    const removed = await t.mutation(
+      components.betterAuth.seed.removeOrganizationsForUserEmail,
+      { email: "nobody@blueprnt.se" }
+    )
+    expect(removed).toEqual([])
   })
 })
 
@@ -178,8 +327,11 @@ describe("seed.seedDevUser guard", () => {
     await expect(t.action(internal.seed.seedDevUser, {})).rejects.toThrow(
       "seedDevUser only runs on dev deployments"
     )
-    await expect(t.action(internal.seed.seedDevWorkspace, {})).rejects.toThrow(
-      "seedDevWorkspace only runs on dev deployments"
-    )
+    await expect(
+      t.action(internal.seed.seedDevOrganization, {})
+    ).rejects.toThrow("seedDevOrganization only runs on dev deployments")
+    await expect(
+      t.action(internal.seed.removeDevOrganizations, {})
+    ).rejects.toThrow("removeDevOrganizations only runs on dev deployments")
   })
 })

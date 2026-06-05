@@ -140,10 +140,10 @@ export const createAuthOptions = (
         disableOrganizationDeletion: true,
         sendInvitationEmail: async (data) => {
           const mctx = requireRunMutationCtx(ctx)
-          // Resolve the workspace's language so the invite goes out in the
-          // org's locale; fall back to en if the profile has no language set.
-          const profile = await mctx.runQuery(
-            internal.accounts.workspace.getProfileForOrg,
+          // Resolve the organization's language so the invite goes out in the
+          // org's locale; fall back to en if the settings have no language set.
+          const settings = await mctx.runQuery(
+            internal.accounts.organization.getLanguageForOrg,
             { orgId: data.organization.id }
           )
           await mctx.runMutation(internal.email.outbox.enqueueEmail, {
@@ -151,10 +151,10 @@ export const createAuthOptions = (
             templateKey: "invitation",
             props: {
               inviterName: data.inviter.user.name,
-              workspaceName: data.organization.name,
+              organizationName: data.organization.name,
               acceptUrl: `${resolvedBaseUrl}/accept-invitation/${data.id}`,
             },
-            locale: profile?.language ?? "en",
+            locale: settings?.language ?? "en",
           })
         },
       }),

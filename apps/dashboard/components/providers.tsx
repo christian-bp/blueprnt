@@ -2,6 +2,7 @@
 
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react"
 import { ConvexReactClient } from "convex/react"
+import { MotionConfig } from "motion/react"
 import type { ReactNode } from "react"
 import { authClient } from "@/lib/auth-client"
 
@@ -17,7 +18,9 @@ export function Providers(props: {
       authClient={authClient}
       initialToken={props.initialToken}
     >
-      {props.children}
+      {/* Honour the OS-level prefers-reduced-motion preference for all motion
+          components in this app. */}
+      <MotionConfig reducedMotion="user">{props.children}</MotionConfig>
     </ConvexBetterAuthProvider>
   )
 }

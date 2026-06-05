@@ -6,6 +6,8 @@ Strukturerad plan för första versionen. Bygger på CTO-briefen, HR-kritiken mo
 
 blueprnt gör om en HR-avdelnings ad hoc-rollvärdering till en dokumenterad, repeterbar och spårbar modell — *grundlagret* för efterlevnad av EU:s lönetransparensdirektiv (inte hela compliance-modellen). Sverige-först, HR-only, SMB.
 
+**Designprincip (topprioritet, beslut 2026-06-05): enkelhet för användaren.** Det ska aldrig vara krångligt att komma igång eller att använda applikationen: färre steg, färre obligatoriska fält, vettiga förval, och data som kan härledas (t.ex. antal anställda från importerade medarbetare) frågas aldrig efter. Varje nytt flöde prövas mot den här principen.
+
 V1 lyckas när en HR-användare kan:
 1. utgå från en **standardmall** och anpassa kriterier, betydelser och bandtrösklar efter sitt företag,
 2. registrera roller och **betygsätta** dem (0–5) mot ankartexter, utan att se vikter,
@@ -24,7 +26,7 @@ packages/ui       shadcn/ui (finns)
 ```
 
 - **Backend/data:** managed Convex Cloud, EU-region (eu-west-1). Reaktivt: vyer prenumererar på data live.
-- **Auth + tenant:** Better Auth (org-plugin) i Convex-deploymentet. Org = **arbetsyta**. All data org-scopad i Convex-funktioner.
+- **Auth + tenant:** Better Auth (org-plugin) i Convex-deploymentet. Org = **organisationen**. All data org-scopad i Convex-funktioner.
 - **Ren motor:** `packages/core` har inga Convex/Next-beroenden → enhetstestbar, återanvändbar för framtida rapport/AI.
 - **Bounded contexts** (multi-context): `accounts`, `evaluation-model`, `assessment` — initialt som modulmappar under `packages/backend/convex/`.
 
@@ -34,9 +36,9 @@ packages/ui       shadcn/ui (finns)
 
 **accounts** (mestadels Better Auth):
 - `user`, `session`, `account`, `organization`, `member`, `invitation` (från Better Auth-komponenten). `member` bär roll (Admin/Editor).
-- `workspaceProfile` — orgId, land, valuta, språk, antal anställda, verksamhetstyp (styr mallval). (Briefens företagssetup, 4.1.)
+- `organizations`-tabellen (app-sidans organisationsinställningar) — orgId, land, valuta, språk, antal anställda, bransch (styr mallval). Identitet (namn/slug/medlemmar) ligger i Better Auth-komponenten; den här raden trigger-seedas vid organisationsskapande och nycklas på komponentens org-id. (Briefens företagssetup, 4.1.) Antal anställda efterfrågas inte i onboardingen; det härleds automatiskt i V2 från importerade medarbetare (beslut 2026-06-05).
 
-**evaluation-model** (en levande modell per arbetsyta):
+**evaluation-model** (en levande modell per organisation):
 - `model` — orgId, namn, härkomst (vilken mall den startade från).
 - `criterion` — orgId, namn, beskrivning, **hjälptext** (vägledning till bedömaren, skild från beskrivning/ankare — briefens 4.2), **importanceLevel (1–7**; 7 = högst betydelse/vikt 18, 1 = lägst/vikt 8**)**, ordning, isCustom, samt protokoll/bias-fält (syfte, varförRelevant, **överlapp mot andra kriterier**, biasRisk, **biasKommentar**, biasÅtgärd, godkänd, beslutsfattare, datum).
 - `criterionAnchor` — criterionId, level (0–5), text. (Ankartexter.)
@@ -63,7 +65,7 @@ packages/ui       shadcn/ui (finns)
 
 ## 4. Epics
 
-- **E1 — Konton & arbetsyta:** Better Auth-org (= arbetsyta), HR-only, roller Admin/Editor, org-scoping i alla funktioner, samt grundläggande företagssetup (namn, land, valuta, språk, antal anställda, verksamhetstyp).
+- **E1 — Konton & organisation:** Better Auth-org (= organisation), HR-only, roller Admin/Editor, org-scoping i alla funktioner, samt grundläggande företagssetup (namn, land, valuta, språk, antal anställda, bransch).
 - **E2 — Modellkonfiguration:** kriterier + ankare + hjälptexter, betydelse-skala (fast 7), bandtrösklar, track-schema, **standardmall** (förifylld), egna kriterier, samt **kriterieurvalsprotokoll** & **bias-granskning** per kriterium (lätt compliance-ställning, nivå 2).
 - **E3 — Roller & värdering:** rollregister/jobbprofil, **blindat** betygsflöde mot ankare, status (utkast → granskning → godkänd), frivillig motivering.
 - **E4 — Poäng & band-motor:** `packages/core`, live-omräkning, bandutfall (alltid uträknat — ingen manuell override).
@@ -74,7 +76,7 @@ packages/ui       shadcn/ui (finns)
 
 ## 5. Byggordning (faser, från briefen anpassad till stacken)
 
-1. **Fas 1 — Fundament:** monorepo-paket (`backend`, `core`, `dashboard`), Convex EU-deploy, Better Auth, arbetsyta + Admin/Editor. (E1)
+1. **Fas 1 — Fundament:** monorepo-paket (`backend`, `core`, `dashboard`), Convex EU-deploy, Better Auth, organisation + Admin/Editor. (E1)
 2. **Fas 2 — Modellmotor & mall:** kriterier/ankare/betydelser, bandtrösklar, standardmall, `packages/core` grundläggande. (E2 + E4-kärna)
 3. **Fas 3 — Roller & värdering:** rollregister, blindat betygsflöde, status. (E3)
 4. **Fas 4 — Poäng & band:** full motor, bandutfall, revisionslogg. (E4 + E6)
@@ -85,7 +87,7 @@ packages/ui       shadcn/ui (finns)
 
 Tunnast möjliga end-to-end som bevisar kärnloopen *modell → roller → poäng → band*:
 
-- En arbetsyta (Better Auth), **standardmallen seedad** (9 kriterier + ankare + förvalda betydelser + standard-bandtrösklar) — skrivskyddad räcker för skivan.
+- En organisation (Better Auth), **standardmallen seedad** (9 kriterier + ankare + förvalda betydelser + standard-bandtrösklar) — skrivskyddad räcker för skivan.
 - Registrera några roller manuellt (titel + track/nivå + minimalt antal fält).
 - Mata in 0–5-betyg per kriterium mot ankartexterna (blindat).
 - `packages/core` räknar poäng → band live.

@@ -24,3 +24,27 @@ describe("membership.getMembership", () => {
     expect(outsider).toBeNull()
   })
 })
+
+describe("membership.listMembershipsForUser", () => {
+  it("lists the user's memberships with org names and is empty for strangers", async () => {
+    const t = initConvexTest()
+    const { orgId, userId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "hr@acme.se", name: "HR Person", role: "admin" }
+    )
+
+    const memberships = await t.query(
+      components.betterAuth.membership.listMembershipsForUser,
+      { userId }
+    )
+    expect(memberships).toEqual([
+      { organizationId: orgId, organizationName: "Acme", role: "admin" },
+    ])
+
+    const none = await t.query(
+      components.betterAuth.membership.listMembershipsForUser,
+      { userId: "someone-else" }
+    )
+    expect(none).toEqual([])
+  })
+})

@@ -75,10 +75,64 @@ export const removeUserByEmail = mutation({
   },
 })
 
-// Dev-only workspace seed. Only reachable via the internal action
+// Dev-only organization removal. Only reachable via the internal action
+// convex/seed.ts which enforces the localhost guard. Finds all orgs the
+// user belongs to, deletes every member and invitation row for each org,
+// then deletes the org itself. Returns the list of removed org id strings
+// so the caller can clean up the app-side tables.
+export const removeOrganizationsForUserEmail = mutation({
+  args: { email: v.string() },
+  returns: v.array(v.string()),
+  handler: async (ctx, { email }) => {
+    const user = await ctx.db
+      .query("user")
+      .withIndex("email_name", (q) => q.eq("email", email))
+      .first()
+    if (user === null) return []
+
+    const userId = user._id.toString()
+    const memberRows = await ctx.db
+      .query("member")
+      .withIndex("userId", (q) => q.eq("userId", userId))
+      .collect()
+
+    // Collect distinct org ids from the user's memberships.
+    const orgIds = [...new Set(memberRows.map((m) => m.organizationId))]
+
+    for (const orgId of orgIds) {
+      // Delete all member rows for this org.
+      const orgMembers = await ctx.db
+        .query("member")
+        .withIndex("organizationId", (q) => q.eq("organizationId", orgId))
+        .collect()
+      for (const m of orgMembers) {
+        await ctx.db.delete(m._id)
+      }
+
+      // Delete all invitation rows for this org.
+      const invitations = await ctx.db
+        .query("invitation")
+        .withIndex("organizationId", (q) => q.eq("organizationId", orgId))
+        .collect()
+      for (const inv of invitations) {
+        await ctx.db.delete(inv._id)
+      }
+
+      // Delete the org document.
+      const orgDocId = ctx.db.normalizeId("organization", orgId)
+      if (orgDocId !== null) {
+        await ctx.db.delete(orgDocId)
+      }
+    }
+
+    return orgIds
+  },
+})
+
+// Dev-only organization seed. Only reachable via the internal action
 // convex/seed.ts which enforces the localhost guard. Idempotent by slug;
 // the member row is idempotent per (organization, user).
-export const insertWorkspace = mutation({
+export const insertOrganization = mutation({
   args: {
     name: v.string(),
     slug: v.string(),

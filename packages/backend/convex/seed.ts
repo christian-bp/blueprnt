@@ -76,10 +76,44 @@ export const removeDevUser = internalAction({
   },
 })
 
-// Dev-only workspace seed: gives the seeded user an admin membership in a
-// workspace so local sign-in lands in a realistic tenant. Run with:
-//   bunx convex run seed:seedDevWorkspace
-export const seedDevWorkspace = internalAction({
+// Dev-only organization reset: removes all organizations (and their app-side rows)
+// for the given user so the onboarding flow can be retested from step 1. Run with:
+//   bunx convex run seed:removeDevOrganizations
+export const removeDevOrganizations = internalAction({
+  args: { email: v.optional(v.string()) },
+  returns: v.array(v.string()),
+  handler: async (ctx, args) => {
+    const siteUrl = process.env.SITE_URL ?? ""
+    if (!siteUrl.includes("localhost")) {
+      throw new Error(
+        "removeDevOrganizations only runs on dev deployments (SITE_URL must contain 'localhost')"
+      )
+    }
+
+    const email = args.email ?? "hej@blueprnt.se"
+
+    const orgIds = await ctx.runMutation(
+      components.betterAuth.seed.removeOrganizationsForUserEmail,
+      { email }
+    )
+
+    for (const orgId of orgIds) {
+      await ctx.runMutation(
+        internal.accounts.mirrors.removeSeededOrganization,
+        {
+          orgId,
+        }
+      )
+    }
+
+    return orgIds
+  },
+})
+
+// Dev-only organization seed: gives the seeded user an admin membership in a
+// organization so local sign-in lands in a realistic tenant. Run with:
+//   bunx convex run seed:seedDevOrganization
+export const seedDevOrganization = internalAction({
   args: {
     name: v.optional(v.string()),
     slug: v.optional(v.string()),
@@ -95,12 +129,12 @@ export const seedDevWorkspace = internalAction({
     const siteUrl = process.env.SITE_URL ?? ""
     if (!siteUrl.includes("localhost")) {
       throw new Error(
-        "seedDevWorkspace only runs on dev deployments (SITE_URL must contain 'localhost')"
+        "seedDevOrganization only runs on dev deployments (SITE_URL must contain 'localhost')"
       )
     }
 
     const result = await ctx.runMutation(
-      components.betterAuth.seed.insertWorkspace,
+      components.betterAuth.seed.insertOrganization,
       {
         name: args.name ?? "blueprnt dev",
         slug: args.slug ?? "blueprnt-dev",
@@ -110,8 +144,8 @@ export const seedDevWorkspace = internalAction({
     )
 
     // Direct component inserts bypass the Better Auth triggers; seed the
-    // profile row and audit entries explicitly (idempotently).
-    await ctx.runMutation(internal.accounts.mirrors.mirrorSeededWorkspace, {
+    // organization settings row and audit entries explicitly (idempotently).
+    await ctx.runMutation(internal.accounts.mirrors.mirrorSeededOrganization, {
       orgId: result.orgId,
       memberUserId: result.userId,
       role: "admin",

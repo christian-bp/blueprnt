@@ -16,11 +16,26 @@ Convex backend (EU West / Ireland deployment, project quantumlabs/blueprnt).
   today, the invitation flow later).
 - Dev seed (creates a sign-in-able local account): `bunx convex run seed:seedDevUser`
   Credentials: `hej@blueprnt.se` / `abc123` (name "Hej"). Guard: only runs when `SITE_URL` contains `localhost`. Cleanup: `bunx convex run seed:removeDevUser '{"email":"hej@blueprnt.se"}'`.
-- Dev workspace (admin membership for the seeded user): `bunx convex run seed:seedDevWorkspace`
-  Creates workspace "blueprnt dev" (slug `blueprnt-dev`) with the seeded user as admin, plus the profile row and audit entries. Idempotent; same localhost guard.
+- Dev organization reset (removes all organizations for the seeded user to retest onboarding from step 1): `bunx convex run seed:removeDevOrganizations`
+  Same localhost guard. Pass `'{"email":"..."}'` to target a different address.
+- Dev organization (admin membership for the seeded user): `bunx convex run seed:seedDevOrganization`
+  Creates organization "blueprnt dev" (slug `blueprnt-dev`) with the seeded user as admin, plus the profile row and audit entries. Idempotent; same localhost guard.
 - Email verification is disabled until the Scaleway TEM env vars
   (`SCW_SECRET_KEY`, `SCW_PROJECT_ID`, `SCW_REGION`, `EMAIL_FROM`) are set
   and the sending domain is verified. When configuring them, also flip
   `requireEmailVerification` to `true` in `convex/auth.ts`. Manual verify
   fallback: open the `emails` row in the Convex dashboard and visit
   `props.url`.
+
+## AI environment variables
+
+The model-setup AI assistance (ADR-0003) calls Mistral La Plateforme directly
+from Convex actions. Set on the deployment via `bunx convex env set`:
+
+- `MISTRAL_API_KEY` (required for AI suggestions; with no key the actions
+  degrade to the translated `errors.aiUnavailable` state and onboarding is
+  never blocked)
+- `MISTRAL_MODEL` (optional override, default `mistral-large-latest`)
+
+Never route role data through Vercel AI Gateway: it cannot pin EU residency
+(ADR-0001).

@@ -18,7 +18,7 @@ const enqueueArgs = {
   templateKey: "invitation" as const,
   props: {
     inviterName: "Anna",
-    workspaceName: "Acme",
+    organizationName: "Acme",
     acceptUrl: "https://x.example/accept-invitation/inv_1",
   },
   locale: "en",

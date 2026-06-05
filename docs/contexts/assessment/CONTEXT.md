@@ -38,7 +38,7 @@ En referensroll med ett överenskommet/förväntat band, använd för att kalibr
 _Undvik_: Benchmark-roll, Referens (var tydlig)
 
 **AI-förslag** *(kod: AI suggestion)*:
-Ett värde som AI föreslår (t.ex. jobbprofil-text, senare betyg) — alltid med proveniens (källa, modell) och status *föreslagen → bekräftad/avvisad*. HR bekräftar alltid; AI beslutar aldrig och rör aldrig den deterministiska poäng-/bandvägen. Tvärgående (gäller även konfiguration). Se ADR-0003.
+Ett värde som AI föreslår (t.ex. jobbprofil-text, senare betyg) — alltid med proveniens (källa, modell) och status *föreslagen → bekräftad/avvisad*. HR bekräftar alltid; AI beslutar aldrig och rör aldrig den deterministiska poäng-/bandvägen. Tvärgående (gäller även konfiguration). Se ADR-0003. Tekniskt har förslaget även statusarna genererar (under AI-anropet) och misslyckad (med felkod som i18n-nyckel).
 _Undvik_: AI-svar, Automatiskt värde (det är ett *förslag* tills HR bekräftar)
 
 ## Översättningssträngar (i18n)

@@ -2,14 +2,19 @@ import type { GenericMutationCtx } from "convex/server"
 import type { DataModel } from "../_generated/dataModel"
 
 export const AUDIT_EVENTS = {
-  workspaceCreated: "workspace.created",
-  workspaceProfileUpdated: "workspace.profileUpdated",
+  organizationCreated: "organization.created",
+  organizationSettingsUpdated: "organization.settingsUpdated",
+  onboardingCompleted: "organization.onboardingCompleted",
   memberAdded: "member.added",
   memberRoleChanged: "member.roleChanged",
   memberRemoved: "member.removed",
   invitationCreated: "invitation.created",
   invitationAccepted: "invitation.accepted",
   invitationRevoked: "invitation.revoked",
+  modelCreated: "model.created",
+  modelUpdated: "model.updated",
+  modelDiscarded: "model.discarded",
+  aiSuggestionConfirmed: "ai.suggestionConfirmed",
 } as const
 
 export type AuditEvent = (typeof AUDIT_EVENTS)[keyof typeof AUDIT_EVENTS]

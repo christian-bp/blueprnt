@@ -9,6 +9,11 @@ export const ERROR_CODES = {
   adminRequired: "errors.adminRequired",
   membershipConflict: "errors.membershipConflict",
   notFound: "errors.notFound",
+  invalidInput: "errors.invalidInput",
+  modelExists: "errors.modelExists",
+  profileIncomplete: "errors.profileIncomplete",
+  aiUnavailable: "errors.aiUnavailable",
+  aiGenerationFailed: "errors.aiGenerationFailed",
 } as const
 
 export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES]

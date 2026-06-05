@@ -1529,6 +1529,17 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         null | { organizationId: string; role: string; userId: string },
         Name
       >;
+      listMembershipsForUser: FunctionReference<
+        "query",
+        "internal",
+        { userId: string },
+        Array<{
+          organizationId: string;
+          organizationName: string;
+          role: string;
+        }>,
+        Name
+      >;
     };
     seed: {
       insertCredentialUser: FunctionReference<
@@ -1538,7 +1549,7 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         { created: boolean; userId: string },
         Name
       >;
-      insertWorkspace: FunctionReference<
+      insertOrganization: FunctionReference<
         "mutation",
         "internal",
         { email: string; name: string; role: string; slug: string },
@@ -1548,6 +1559,13 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
           orgId: string;
           userId: string;
         },
+        Name
+      >;
+      removeOrganizationsForUserEmail: FunctionReference<
+        "mutation",
+        "internal",
+        { email: string },
+        Array<string>,
         Name
       >;
       removeUserByEmail: FunctionReference<

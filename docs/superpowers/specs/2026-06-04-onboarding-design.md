@@ -149,3 +149,82 @@ override (never); role-family entity (PLAN-V1 9.14); employee placement (V2).
 - nb/da/fi onboarding copy ships as machine drafts flagged for native review.
 - Editor invites during onboarding (member management) is E1 scope already
   partially built (invitation flow exists); not surfaced in the wizard.
+
+## Amendment 2026-06-05
+
+The company-profile step no longer asks for the number of employees
+(founder decision during the walkthrough). Employee count is derived
+automatically in V2 when employees are imported (people context); the
+optional `workspaceProfiles.employeeCount` field remains as the landing
+spot for that derivation. Profile completeness and the AI context treat
+it as optional.
+
+Also 2026-06-05: the profile field "type of business" (businessType) is
+replaced by "industry" (Swedish: bransch) with a standard taxonomy
+(public sector, manufacturing, consulting, retail, IT/telecom,
+healthcare, finance, real estate & construction, other). The old values
+were internal template typology, not user-recognizable company
+attributes.
+
+Also 2026-06-05: the workspace default language is chosen in step 1
+(create workspace) and saved right after the organization is created
+(updateWorkspaceProfile is now an upsert to make that safe); step 2
+keeps country, currency, and industry.
+
+Also 2026-06-05: onboarding completion is explicit server state
+(workspaceProfiles.onboardingCompletedAt, set by the audited
+completeOnboarding mutation when the wizard finishes). The gate no
+longer infers completion from hasModel, and step 3 resumes into the
+review screen or the editor when a model already exists.
+
+Also 2026-06-05: revisited steps walk forward sequentially (step 1 save
+goes to step 2, never skips ahead), and the model choice is reversible
+during onboarding: an audited discardModel mutation (blocked once
+onboarding completes or any role exists) deletes the model and its
+children plus stale model.* suggestions, returning the user to the
+choice screen.
+
+Also 2026-06-05: the dashboard UI language follows the resolution chain
+user locale -> workspace default language -> en, reactively via the
+getUiLocale query (changing the default language in step 1 switches the
+page language immediately), with a locale cookie so SSR serves the
+last-known language on reload. No locale in the dashboard URL (PLAN-V1
+section 7).
+
+Also 2026-06-05: standard-template model content is localized at read
+time. Template-seeded criteria carry their standardmall key (criteria.
+templateKey) and pristine rows are served from the per-locale content
+modules in getModel's requested locale (sv/en today, en fallback);
+tracks and levels localize by their stable keys. Custom and AI-authored
+rows render as stored. E2 editing must clear templateKey on any text
+edit (workspace takes ownership of the text).
+
+Also 2026-06-05: criterion importance is adjustable on the model review
+screen (the canonical per-workspace customization). The audited
+updateCriterionImportance mutation patches only importanceLevel and
+never clears templateKey, so template texts stay localized. Text and
+threshold editing remain E2 scope.
+
+Also 2026-06-05: the model review screen shows a labeled criteria list
+with descriptions, supports adding and removing criteria (shared
+AddCriterionForm with the scratch editor), and no longer displays band
+thresholds (numeric internals belong in the result views, not the
+model setup).
+
+Also 2026-06-05: the model review starts read-only; an Edit toggle
+reveals importance selects, hover-trashcan removal (shared criterion
+item with the scratch editor), and the add-criterion form.
+
+Also 2026-06-05 (amendment): criterion removal uses the same inline
+two-step confirm as the model-choice change (no dialog).
+
+Also 2026-06-05: onboarding steps 1 and 2 are merged into a single
+workspace-setup screen (name, default language, country, currency,
+industry); the wizard is two steps: workspace setup, then model setup.
+
+Also 2026-06-05: the tenant concept is renamed from workspace
+(arbetsyta) to organization (organisation) everywhere: domain docs,
+code identifiers, i18n keys and copy, and audit event strings. Better
+Auth already used organization, so the domain language now matches the
+implementation. V2's org-structure tree must never be called just
+"organisation" (see the accounts glossary note).

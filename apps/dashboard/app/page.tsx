@@ -4,7 +4,7 @@ import { Authenticated, AuthLoading, Unauthenticated } from "convex/react"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { useTranslations } from "next-intl"
 import { SignInScreen } from "@/components/auth/sign-in-screen"
-import { DashboardShell } from "@/components/dashboard-shell"
+import { OnboardingGate } from "@/components/onboarding/onboarding-gate"
 
 export default function HomePage() {
   const t = useTranslations("dashboard")
@@ -19,7 +19,7 @@ export default function HomePage() {
         <SignInScreen />
       </Unauthenticated>
       <Authenticated>
-        <DashboardShell />
+        <OnboardingGate />
       </Authenticated>
     </>
   )

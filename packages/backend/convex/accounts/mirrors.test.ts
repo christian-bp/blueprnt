@@ -76,14 +76,14 @@ describe("user mirror triggers", () => {
     await t.run(async (ctx) => {
       await onOrganizationCreate(ctx, org)
       await onOrganizationCreate(ctx, org)
-      const rows = await ctx.db.query("workspaceProfiles").collect()
+      const rows = await ctx.db.query("organizations").collect()
       expect(rows).toHaveLength(1)
       expect(rows[0].orgId).toBe("ba_org_1")
-      // Also asserts exactly one workspace.created audit row (not duplicated).
+      // Also asserts exactly one organization.created audit row (not duplicated).
       const auditRows = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", "ba_org_1").eq("type", "workspace.created")
+          q.eq("orgId", "ba_org_1").eq("type", "organization.created")
         )
         .collect()
       expect(auditRows).toHaveLength(1)

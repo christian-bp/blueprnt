@@ -1,6 +1,6 @@
 {
   "accounts": {
-    "workspace": "Arbetsyta",
+    "organization": "Organisation",
     "member": "Medlem",
     "role": {
       "admin": "Admin",
@@ -9,9 +9,9 @@
   },
   "email": {
     "invitation": {
-      "subject": "{inviterName} har bjudit in dig till {workspaceName} på blueprnt",
-      "heading": "Gå med i {workspaceName}",
-      "body": "{inviterName} har bjudit in dig till arbetsytan {workspaceName}.",
+      "subject": "{inviterName} har bjudit in dig till {organizationName} på blueprnt",
+      "heading": "Gå med i {organizationName}",
+      "body": "{inviterName} har bjudit in dig till organisationen {organizationName}.",
       "cta": "Acceptera inbjudan"
     },
     "verifyEmail": {
@@ -191,7 +191,7 @@
     },
     "overview": {
       "emptyTitle": "Här är det tomt än så länge",
-      "emptyBody": "Din arbetsytas översikt visas här när blueprnt växer."
+      "emptyBody": "Din organisations översikt visas här när blueprnt växer."
     },
     "auth": {
       "loading": "Kontrollerar din session",
@@ -200,21 +200,133 @@
       "signIn": {
         "title": "Logga in",
         "cta": "Logga in",
-        "description": "Ange din e-post nedan för att logga in på din arbetsyta"
+        "description": "Ange din e-post nedan för att logga in på din organisation"
       },
       "invitation": {
-        "title": "Arbetsyteinbjudan",
+        "title": "Organisationsinbjudan",
         "accept": "Acceptera inbjudan",
         "signInFirst": "Logga in för att acceptera inbjudan."
       },
       "error": "Något gick fel. Försök igen."
+    },
+    "onboarding": {
+      "accountMenu": "Kontomeny",
+      "title": "Kom igång med din organisation",
+      "step": "Steg {current} av {total}",
+      "loading": "Laddar din organisation",
+      "waitingForAdmin": "Din organisation håller fortfarande på att sättas upp av en administratör.",
+      "back": "Tillbaka",
+      "steps": {
+        "organization": "Organisation",
+        "model": "Värderingsmodell"
+      },
+      "organization": {
+        "heading": "Skapa din organisation",
+        "description": "Organisationen samlar era roller, er värderingsmodell och ert team.",
+        "nameLabel": "Organisationens namn",
+        "namePlaceholder": "t.ex. ert företagsnamn",
+        "cta": "Skapa organisation",
+        "saveCta": "Spara och fortsätt",
+        "error": "Organisationen kunde inte skapas. Försök igen.",
+        "languageLabel": "Standardspråk",
+        "languages": {
+          "en": "Engelska",
+          "sv": "Svenska",
+          "nb": "Norska",
+          "da": "Danska",
+          "fi": "Finska"
+        }
+      },
+      "profile": {
+        "country": "Land",
+        "currency": "Valuta",
+        "industry": "Bransch",
+        "countries": {
+          "se": "Sverige",
+          "no": "Norge",
+          "dk": "Danmark",
+          "fi": "Finland",
+          "other": "Annat"
+        },
+        "industries": {
+          "publicSector": "Offentlig sektor",
+          "manufacturing": "Tillverkning",
+          "consulting": "Konsultbolag",
+          "retail": "Detaljhandel",
+          "itTelecom": "IT/Telekom",
+          "healthcare": "Hälsa & vård",
+          "finance": "Finans & försäkring",
+          "realEstateConstruction": "Fastighet & bygg",
+          "other": "Annat"
+        }
+      },
+      "model": {
+        "heading": "Välj er värderingsmodell",
+        "description": "Modellen definierar kriterierna som roller värderas mot. Betydelse är alltid en etikett, aldrig en siffra.",
+        "error": "Något gick fel. Försök igen.",
+        "template": {
+          "title": "Utgå från standardmallen",
+          "description": "9 kriterier med ankarskalor, förvalda betydelser, track-schema och bandtrösklar.",
+          "badge": "Rekommenderas",
+          "cta": "Använd mallen"
+        },
+        "scratch": {
+          "title": "Bygg från grunden",
+          "description": "Börja tomt och definiera egna kriterier, med AI-utkast som hjälp.",
+          "nameLabel": "Modellens namn",
+          "cta": "Börja från grunden"
+        },
+        "review": {
+          "heading": "Er modell",
+          "setImportance": "Betydelse för {name}",
+          "cta": "Öppna dashboarden",
+          "editCta": "Redigera",
+          "doneEditing": "Klar"
+        },
+        "editor": {
+          "heading": "Kriterier",
+          "empty": "Inga kriterier ännu. Lägg till ert första kriterium eller generera AI-utkast.",
+          "name": "Namn",
+          "description": "Beskrivning",
+          "helpText": "Hjälptext till bedömaren",
+          "importance": "Betydelse",
+          "anchors": "Ankarskala (0 till 5)",
+          "anchorLevel": "Ankare {level}",
+          "addCta": "Lägg till kriterium",
+          "removeCta": "Ta bort",
+          "doneCta": "Slutför"
+        },
+        "change": {
+          "cta": "Ändra modellval",
+          "confirm": "Ja, ta bort och börja om",
+          "cancel": "Avbryt"
+        }
+      },
+      "ai": {
+        "heading": "AI-assistans",
+        "provenance": "AI-genererat förslag. Granska och bekräfta; inget tillämpas automatiskt.",
+        "draftDescriptionLabel": "Beskriv er verksamhet (frivilligt)",
+        "draftCta": "Generera kriterieutkast",
+        "reviewCta": "Låt AI gå igenom betydelserna",
+        "generating": "Genererar förslag",
+        "confirmCta": "Lägg till valda",
+        "applyCta": "Tillämpa valda",
+        "rejectCta": "Avfärda",
+        "noAdjustments": "AI:n hittade inga justeringar att föreslå.",
+        "motivation": "Motivering"
+      }
     }
   },
   "errors": {
     "notAuthenticated": "Du behöver logga in.",
-    "notAMember": "Du är inte medlem i den här arbetsytan.",
-    "adminRequired": "Endast arbetsytans administratörer kan göra detta.",
+    "notAMember": "Du är inte medlem i den här organisationen.",
+    "adminRequired": "Endast organisationens administratörer kan göra detta.",
     "membershipConflict": "Ditt medlemskap kunde inte verifieras. Kontakta supporten.",
-    "notFound": "Hittades inte."
+    "notFound": "Hittades inte.",
+    "invalidInput": "Ogiltig indata.",
+    "modelExists": "Organisationen har redan en värderingsmodell.",
+    "profileIncomplete": "Fyll i företagsprofilen först.",
+    "aiUnavailable": "AI är inte konfigurerat i den här miljön.",
+    "aiGenerationFailed": "AI-förslaget kunde inte genereras."
   }
 }

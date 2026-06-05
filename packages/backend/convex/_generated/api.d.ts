@@ -10,13 +10,22 @@
 
 import type * as accounts_context from "../accounts/context.js";
 import type * as accounts_mirrors from "../accounts/mirrors.js";
+import type * as accounts_onboarding from "../accounts/onboarding.js";
+import type * as accounts_organization from "../accounts/organization.js";
 import type * as accounts_tables from "../accounts/tables.js";
-import type * as accounts_workspace from "../accounts/workspace.js";
+import type * as ai_config from "../ai/config.js";
+import type * as ai_generate from "../ai/generate.js";
+import type * as ai_persist from "../ai/persist.js";
+import type * as ai_provider from "../ai/provider.js";
+import type * as ai_suggest from "../ai/suggest.js";
 import type * as assessment_tables from "../assessment/tables.js";
 import type * as auth from "../auth.js";
 import type * as crons from "../crons.js";
 import type * as email_outbox from "../email/outbox.js";
 import type * as email_tables from "../email/tables.js";
+import type * as evaluationModel_criteria from "../evaluationModel/criteria.js";
+import type * as evaluationModel_model from "../evaluationModel/model.js";
+import type * as evaluationModel_standardmall from "../evaluationModel/standardmall.js";
 import type * as evaluationModel_tables from "../evaluationModel/tables.js";
 import type * as http from "../http.js";
 import type * as lib_audit from "../lib/audit.js";
@@ -34,13 +43,22 @@ import type {
 declare const fullApi: ApiFromModules<{
   "accounts/context": typeof accounts_context;
   "accounts/mirrors": typeof accounts_mirrors;
+  "accounts/onboarding": typeof accounts_onboarding;
+  "accounts/organization": typeof accounts_organization;
   "accounts/tables": typeof accounts_tables;
-  "accounts/workspace": typeof accounts_workspace;
+  "ai/config": typeof ai_config;
+  "ai/generate": typeof ai_generate;
+  "ai/persist": typeof ai_persist;
+  "ai/provider": typeof ai_provider;
+  "ai/suggest": typeof ai_suggest;
   "assessment/tables": typeof assessment_tables;
   auth: typeof auth;
   crons: typeof crons;
   "email/outbox": typeof email_outbox;
   "email/tables": typeof email_tables;
+  "evaluationModel/criteria": typeof evaluationModel_criteria;
+  "evaluationModel/model": typeof evaluationModel_model;
+  "evaluationModel/standardmall": typeof evaluationModel_standardmall;
   "evaluationModel/tables": typeof evaluationModel_tables;
   http: typeof http;
   "lib/audit": typeof lib_audit;

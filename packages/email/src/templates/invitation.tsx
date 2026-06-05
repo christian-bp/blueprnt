@@ -11,19 +11,19 @@ import { emailMessages, fillTemplate } from "../messages"
 
 export interface InvitationEmailProps {
   inviterName: string
-  workspaceName: string
+  organizationName: string
   acceptUrl: string
   locale: string
 }
 
 export function InvitationEmail({
   inviterName,
-  workspaceName,
+  organizationName,
   acceptUrl,
   locale,
 }: InvitationEmailProps) {
   const m = emailMessages(locale).invitation
-  const params = { inviterName, workspaceName }
+  const params = { inviterName, organizationName }
   return (
     <Html lang={locale}>
       <Preview>{fillTemplate(m.subject, params)}</Preview>
