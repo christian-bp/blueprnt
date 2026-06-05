@@ -1,0 +1,19 @@
+apps/dashboard/components/onboarding/criterion-item.tsx
+  s_df12fc6ddf323c::t_30f1142f5b08c9 90-91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "de789767077527b275e22268f874d06cfd36f8c1",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
