@@ -1,0 +1,29 @@
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_df12fc6ddf323c::t_4950e2cca3862d 7,22,32-39,68,71-85,88,92
+apps/dashboard/components/onboarding/workspace-setup-step.tsx
+  s_df12fc6ddf323c::t_6c0731fbda8fdd 1-321
+apps/dashboard/components/locale-provider.tsx
+  s_df12fc6ddf323c::t_8ad4577a4d12b8 112
+apps/dashboard/components/onboarding/onboarding-wizard.test.tsx
+  s_df12fc6ddf323c::t_d3d7553029b0a5 8-9,14-16,21,57,64,67-69,76-79,82,85,89,92,103-105,109,118-123,129,134,136,138,141-145,153-155
+apps/dashboard/components/onboarding/workspace-setup-step.test.tsx
+  s_df12fc6ddf323c::t_2fc4b4738f6e1c 1-409
+docs/superpowers/specs/2026-06-04-onboarding-design.md
+  s_df12fc6ddf323c::t_8fd9ea2a0d8603 220-223
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "979090e5e879461314ad075c6c1430a77a2f5490",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
