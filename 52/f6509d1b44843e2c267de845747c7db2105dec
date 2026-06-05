@@ -1,0 +1,74 @@
+apps/dashboard/components/onboarding/onboarding-gate.test.tsx
+  s_df12fc6ddf323c::t_10af6a09791dd9 36,42-55,61,72,77-78,83
+packages/backend/convex/accounts/onboarding.ts
+  s_df12fc6ddf323c::t_fdd556ed4eb6ea 41-46
+  s_df12fc6ddf323c::t_4f9dd235ef0fe6 9-13
+  s_df12fc6ddf323c::t_55750bf1ec5584 29
+  s_df12fc6ddf323c::t_0a461e97ba2109 71
+packages/backend/convex/accounts/workspace.ts
+  s_df12fc6ddf323c::t_4cfa31867d298c 68-99
+packages/backend/convex/accounts/tables.ts
+  s_df12fc6ddf323c::t_45cfcf6026ed67 23-25
+packages/backend/convex/accounts/workspace.test.ts
+  s_df12fc6ddf323c::t_80ac3f78a91428 107-174
+apps/dashboard/components/onboarding/onboarding-wizard.test.tsx
+  s_df12fc6ddf323c::t_40a8e29a992177 161
+  s_df12fc6ddf323c::t_ca1ebe1b57c1a7 75-80,85-90,95-100,111-116,127-132,141-146,188-193
+  s_df12fc6ddf323c::t_243525b7398e55 172-177
+  s_df12fc6ddf323c::t_fd6a4d0faf1786 208
+packages/backend/convex/accounts/onboarding.test.ts
+  s_df12fc6ddf323c::t_e48580ce0411e1 30
+  s_df12fc6ddf323c::t_abeb3f7531cffb 96-97,103-108
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_df12fc6ddf323c::t_42e67a8e071f4f 14-17
+apps/dashboard/components/onboarding/model-review.tsx
+  s_df12fc6ddf323c::t_0aaca94b1d0985 6,8,14-16,25,28-32
+  s_df12fc6ddf323c::t_dbb95806a7e1f1 73-93
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_df12fc6ddf323c::t_cc3b71c30399f9 59-60,65
+  s_df12fc6ddf323c::t_5e983c1e24a11f 226-239
+  s_df12fc6ddf323c::t_4e4b6679112fcf 46-48
+apps/dashboard/components/onboarding/model-setup-step.tsx
+  s_df12fc6ddf323c::t_6e32521320bd32 54,59-72,80-87
+  s_df12fc6ddf323c::t_1c576c66bde22c 16-17,27-34
+packages/backend/convex/lib/audit.ts
+  s_df12fc6ddf323c::t_04033921e523eb 7
+apps/dashboard/components/onboarding/onboarding-gate.tsx
+  s_df12fc6ddf323c::t_2fd231f1fe3ea5 12-14,16-26
+  s_df12fc6ddf323c::t_5791381f085b53 35-38
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_df12fc6ddf323c::t_430861120d02e2 115,117,119
+  s_df12fc6ddf323c::t_c7e0916da205b8 79-83,86
+  s_df12fc6ddf323c::t_e4ef99d1ab6e11 215-243
+  s_df12fc6ddf323c::t_c4f2e690570de7 40,44
+  s_df12fc6ddf323c::t_035aa20812072d 14,27-28
+  s_df12fc6ddf323c::t_86a973b54d2cef 70-78
+  s_df12fc6ddf323c::t_cd2103d26ec5d5 156-160
+  s_df12fc6ddf323c::t_ca1ebe1b57c1a7 41-43
+  s_df12fc6ddf323c::t_79aa0f8d996ebd 244-261
+apps/dashboard/components/onboarding/criterion-editor.test.tsx
+  s_df12fc6ddf323c::t_cd1f7a7075303e 14,26-27
+  s_df12fc6ddf323c::t_ca1ebe1b57c1a7 39-41
+  s_df12fc6ddf323c::t_3767b4f7589f30 218-245
+  s_df12fc6ddf323c::t_8be9e70638b9e2 115
+  s_df12fc6ddf323c::t_0db4b6423b3c97 38,42
+  s_df12fc6ddf323c::t_52301505bd960c 92,95
+docs/superpowers/specs/2026-06-04-onboarding-design.md
+  s_df12fc6ddf323c::t_8cb2dee529cfc8 173-178
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "52f6509d1b44843e2c267de845747c7db2105dec",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
