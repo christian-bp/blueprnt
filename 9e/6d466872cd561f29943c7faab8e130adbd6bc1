@@ -1,0 +1,66 @@
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_df12fc6ddf323c::t_c0e9a2ee6987a3 41,46
+  s_df12fc6ddf323c::t_979c3dfa87fc76 237-247
+  s_df12fc6ddf323c::t_1c7ebf3393574e 18
+apps/dashboard/components/onboarding/model-setup-step.tsx
+  s_df12fc6ddf323c::t_970aa2150b895a 76-91,93-100,104-109
+  s_df12fc6ddf323c::t_3d3a651448422e 55
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_d8f40a7045bb50 301-305
+packages/backend/convex/evaluationModel/model.ts
+  s_df12fc6ddf323c::t_fa5449751702d6 168-274
+apps/dashboard/components/onboarding/change-choice-button.test.tsx
+  s_df12fc6ddf323c::t_5d83eecc9f66c9 1-70
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_ea815bce84a609 301-305
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_8f15596d16dfed 301-305
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_df12fc6ddf323c::t_d09a53be35a2dc 52
+  s_df12fc6ddf323c::t_8bc3316f7b415d 14
+  s_df12fc6ddf323c::t_e44cb2dc8b128e 28
+  s_df12fc6ddf323c::t_45eb272cd8241b 118
+  s_df12fc6ddf323c::t_19c2aae83aef2f 287-319
+apps/dashboard/components/onboarding/criterion-editor.test.tsx
+  s_df12fc6ddf323c::t_ee1b92c37d9556 95-96,100-105
+  s_df12fc6ddf323c::t_2a9061c83f07b5 266-288
+packages/backend/convex/lib/audit.ts
+  s_df12fc6ddf323c::t_1a2244c1335d6e 16
+docs/superpowers/specs/2026-06-04-onboarding-design.md
+  s_df12fc6ddf323c::t_43801abb665fe1 179-185
+packages/backend/convex/evaluationModel/model.test.ts
+  s_df12fc6ddf323c::t_c183ffacf51fff 4
+  s_df12fc6ddf323c::t_794c51912a7651 247-256
+  s_df12fc6ddf323c::t_991990097c1b23 203-246,258-351
+  s_df12fc6ddf323c::t_a2e20a57b889f1 257
+apps/dashboard/components/onboarding/change-choice-button.tsx
+  s_df12fc6ddf323c::t_ea2a9c2eae7850 1-56
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_f79b7d8dc4436a 301-305
+apps/dashboard/components/onboarding/onboarding-wizard.test.tsx
+  s_df12fc6ddf323c::t_34c7882d641e5b 126-153
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_fb6b6a1b069684 301-305
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_df12fc6ddf323c::t_1533c0e9d46609 81-84,90
+apps/dashboard/components/onboarding/model-review.tsx
+  s_df12fc6ddf323c::t_a7b7555f1ae6e0 28,33
+  s_df12fc6ddf323c::t_ecf74ebe4ad82a 9
+  s_df12fc6ddf323c::t_001887bbbe9afe 90-100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "9e6d466872cd561f29943c7faab8e130adbd6bc1",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
