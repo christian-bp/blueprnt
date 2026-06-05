@@ -1,0 +1,27 @@
+apps/dashboard/components/morph-confirm-button.test.tsx
+  s_df12fc6ddf323c::t_f93b511cbecf75 59
+apps/dashboard/components/onboarding/onboarding-header.tsx
+  s_df12fc6ddf323c::t_772f583c28f2dc 49
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_df12fc6ddf323c::t_772f583c28f2dc 66-67
+packages/backend/convex/ai/suggest.ts
+  s_df12fc6ddf323c::t_073bee58aba2f3 33-36
+apps/dashboard/components/locale-provider.tsx
+  s_df12fc6ddf323c::t_38a1f98123d99f 135-141,166
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "d736a5090011c3f9c2508f92436b6a273ccddd65",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
