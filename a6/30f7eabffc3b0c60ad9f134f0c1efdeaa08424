@@ -1,0 +1,23 @@
+packages/core/src/scoring.ts
+  s_df12fc6ddf323c::t_14068334c4b64d 89-92,96
+  s_df12fc6ddf323c::t_dd93e660f1ca73 108
+packages/core/src/scoring.test.ts
+  s_df12fc6ddf323c::t_3652c0cced1d51 173-191
+  s_df12fc6ddf323c::t_9a2f8d1e882d05 192-211
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a630f7eabffc3b0c60ad9f134f0c1efdeaa08424",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
