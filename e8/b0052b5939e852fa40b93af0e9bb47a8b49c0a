@@ -1,0 +1,38 @@
+apps/dashboard/components/onboarding/criterion-editor.test.tsx
+  s_df12fc6ddf323c::t_66f395a6e36ad0 215-219
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_df12fc6ddf323c::t_76e8c76aa34607 17-18
+  s_df12fc6ddf323c::t_1f5d5c9649920a 112
+  s_df12fc6ddf323c::t_c47578b4d15963 131-132
+  s_df12fc6ddf323c::t_f8c66a21e22884 368
+  s_df12fc6ddf323c::t_63c503ed26bae9 36-38
+  s_df12fc6ddf323c::t_6cbc6c9754463a 356-367,369-436
+apps/dashboard/components/onboarding/add-criterion-form.test.tsx
+  s_df12fc6ddf323c::t_405bf7c1a723de 1-128
+apps/dashboard/components/onboarding/add-criterion-form.tsx
+  s_df12fc6ddf323c::t_62fe568c526b4d 1-153
+apps/dashboard/components/onboarding/model-review.tsx
+  s_df12fc6ddf323c::t_32736cc83a5531 16,25-33,54-55,59-60,69-71,77-81,96-98,100-101,103-169,173-183
+docs/superpowers/specs/2026-06-04-onboarding-design.md
+  s_df12fc6ddf323c::t_002656e24b9593 207-212
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_df12fc6ddf323c::t_0a1f3cc493cc4d 84-86
+  s_df12fc6ddf323c::t_7bcceb6c54710f 109
+  s_df12fc6ddf323c::t_e6ed27d15d0e79 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e8b0052b5939e852fa40b93af0e9bb47a8b49c0a",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
