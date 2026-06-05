@@ -1,0 +1,183 @@
+packages/backend/convex/seed.test.ts
+  s_df12fc6ddf323c::t_727dbc4f57fcd3 68-76,331-332
+  s_df12fc6ddf323c::t_ef488908f50573 178,200,295
+  s_df12fc6ddf323c::t_e6006bbce86919 138,234,265
+  s_df12fc6ddf323c::t_2944bb326266c2 55,82,108,118,122,129,166,180,190,250,257,305,334-335
+  s_df12fc6ddf323c::t_ea56bbf36996a4 146,299
+packages/backend/convex/betterAuth/permissions.ts
+  s_df12fc6ddf323c::t_acbcddbdb466bb 21
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_50b068a680773a 3,14,194,203,206,214,216-217,220,224-226,228,230,323-324,328
+  s_df12fc6ddf323c::t_c2f8826b7d76d2 12-13,223
+apps/dashboard/i18n/request.ts
+  s_df12fc6ddf323c::t_25b0a9f8755d3f 7
+packages/backend/convex/ai/generate.ts
+  s_df12fc6ddf323c::t_acbcddbdb466bb 141
+packages/backend/convex/email/outbox.test.ts
+  s_df12fc6ddf323c::t_a2b1bfdeabb44b 21
+packages/backend/README.md
+  s_df12fc6ddf323c::t_71cb950dc5e2ca 19,21-22
+apps/dashboard/components/onboarding/organization-setup-step.test.tsx
+  s_df12fc6ddf323c::t_6ab2af9d7d9ad1 32,45,48,54,57,61,66,84,87,113,201,217,227,240,251,267,285,291,326,357,399
+  s_df12fc6ddf323c::t_727dbc4f57fcd3 46-47
+packages/backend/convex/accounts/mirrors.ts
+  s_df12fc6ddf323c::t_7f5f80418935b6 153
+  s_df12fc6ddf323c::t_4d64c439d705e5 172-173
+  s_df12fc6ddf323c::t_c7905858c97953 232
+  s_df12fc6ddf323c::t_2944bb326266c2 79,83,175
+  s_df12fc6ddf323c::t_e6006bbce86919 156,224,228
+packages/email/src/templates/invitation.tsx
+  s_df12fc6ddf323c::t_a2b1bfdeabb44b 14,21,26
+packages/backend/convex/accounts/onboarding.ts
+  s_df12fc6ddf323c::t_a8eb7c3ca12f48 94
+  s_df12fc6ddf323c::t_3b9dc2cf47b621 42
+  s_df12fc6ddf323c::t_cd770e3cbde897 77,80
+  s_df12fc6ddf323c::t_b65cfcd20f4743 6,8,12
+  s_df12fc6ddf323c::t_e6006bbce86919 50,102
+  s_df12fc6ddf323c::t_723be430f4a56d 64
+  s_df12fc6ddf323c::t_a6a1766095b2ad 19
+packages/backend/convex/evaluationModel/model.ts
+  s_df12fc6ddf323c::t_e6006bbce86919 60,209
+  s_df12fc6ddf323c::t_2944bb326266c2 199,228
+packages/backend/convex/evaluationModel/criteria.ts
+  s_df12fc6ddf323c::t_acbcddbdb466bb 70
+apps/dashboard/lib/slug.ts
+  s_df12fc6ddf323c::t_773a80341bdfd5 3
+  s_df12fc6ddf323c::t_17bb5a45377d81 12
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_df12fc6ddf323c::t_4129fcb843f9b9 32,34
+  s_df12fc6ddf323c::t_773a80341bdfd5 7,22,47,73,77,79,82-83,89,91
+  s_df12fc6ddf323c::t_9cf28fc6b4b36a 10,14
+  s_df12fc6ddf323c::t_727dbc4f57fcd3 38-39
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_e5c2809bff018a 3,14,194,203,206,214,216-217,220,224-226,228,230,323-324,328
+  s_df12fc6ddf323c::t_c2f8826b7d76d2 12-13,223
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_c2f8826b7d76d2 12-13,223
+  s_df12fc6ddf323c::t_d0fa60f4c1b37e 3,14,194,203,206,214,216-217,220,224-226,228,230,323-324,328
+apps/dashboard/components/onboarding/model-review.tsx
+  s_df12fc6ddf323c::t_773a80341bdfd5 62
+packages/backend/convex/accounts/tables.ts
+  s_df12fc6ddf323c::t_185b83a5358cb3 13,15
+apps/dashboard/components/onboarding/criterion-editor.test.tsx
+  s_df12fc6ddf323c::t_6ab2af9d7d9ad1 39
+  s_df12fc6ddf323c::t_773a80341bdfd5 26,40
+packages/backend/convex/accounts/context.ts
+  s_df12fc6ddf323c::t_acbcddbdb466bb 4
+  s_df12fc6ddf323c::t_2944bb326266c2 5,14,21
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_df12fc6ddf323c::t_773a80341bdfd5 32,52
+  s_df12fc6ddf323c::t_6ab2af9d7d9ad1 51
+packages/backend/convex/seed.ts
+  s_df12fc6ddf323c::t_727dbc4f57fcd3 101-106
+  s_df12fc6ddf323c::t_acbcddbdb466bb 79,113-114
+  s_df12fc6ddf323c::t_2944bb326266c2 81-82,89,96,115-116,132,137,148
+packages/backend/convex/lib/functions.test.ts
+  s_df12fc6ddf323c::t_727dbc4f57fcd3 47-52,61-63
+  s_df12fc6ddf323c::t_2944bb326266c2 18,27,37,72,81,98
+docs/superpowers/specs/2026-06-04-onboarding-design.md
+  s_df12fc6ddf323c::t_c6e65320247049 224-230
+packages/backend/convex/auth.ts
+  s_df12fc6ddf323c::t_a2b1bfdeabb44b 143,154
+  s_df12fc6ddf323c::t_2944bb326266c2 146
+packages/backend/convex/betterAuth/seed.ts
+  s_df12fc6ddf323c::t_acbcddbdb466bb 78,132
+  s_df12fc6ddf323c::t_2944bb326266c2 83,135
+packages/backend/convex/lib/functions.ts
+  s_df12fc6ddf323c::t_2944bb326266c2 15,19
+  s_df12fc6ddf323c::t_acbcddbdb466bb 57
+packages/backend/convex/betterAuth/membership.ts
+  s_df12fc6ddf323c::t_acbcddbdb466bb 33,46
+packages/backend/convex/accounts/organization.test.ts
+  s_df12fc6ddf323c::t_ef488908f50573 6,35,48
+  s_df12fc6ddf323c::t_c16008a28c712b 19,24,28,34,60,74,88,103,107,122,145,152,155,184
+  s_df12fc6ddf323c::t_ea56bbf36996a4 67,95,129,163
+  s_df12fc6ddf323c::t_727dbc4f57fcd3 51-57,77-85,117-119,140-142,150-151
+packages/backend/convex/ai/suggest.test.ts
+  s_df12fc6ddf323c::t_ef488908f50573 133,223,237
+  s_df12fc6ddf323c::t_e6006bbce86919 30,122
+  s_df12fc6ddf323c::t_2944bb326266c2 24,49,78,142,161,224,238,303,330
+apps/dashboard/components/onboarding/onboarding-gate.tsx
+  s_df12fc6ddf323c::t_773a80341bdfd5 35
+  s_df12fc6ddf323c::t_459e65eea9d0b6 12
+packages/email/src/render.test.ts
+  s_df12fc6ddf323c::t_a2b1bfdeabb44b 9
+CONTEXT-MAP.md
+  s_df12fc6ddf323c::t_551fe662ccda48 11,21-22
+packages/backend/convex/accounts/mirrors.test.ts
+  s_df12fc6ddf323c::t_e6006bbce86919 79
+  s_df12fc6ddf323c::t_ef488908f50573 82
+  s_df12fc6ddf323c::t_ea56bbf36996a4 86
+packages/backend/convex/accounts/onboarding.test.ts
+  s_df12fc6ddf323c::t_e6006bbce86919 54,62,79,89,140,152
+  s_df12fc6ddf323c::t_ef488908f50573 21,34,39,136,148,168
+  s_df12fc6ddf323c::t_ea56bbf36996a4 27,44
+  s_df12fc6ddf323c::t_727dbc4f57fcd3 106-108,122-126
+docs/contexts/accounts/CONTEXT.md
+  s_df12fc6ddf323c::t_1350cd13e47ab6 3
+  s_df12fc6ddf323c::t_a01b621da5a54d 34
+  s_df12fc6ddf323c::t_dfe9996319a710 40
+  s_df12fc6ddf323c::t_cc9413dd1ed77c 7-9,12-13
+  s_df12fc6ddf323c::t_2b61c9828fb768 27
+packages/backend/convex/lib/audit.ts
+  s_df12fc6ddf323c::t_d86c766304f585 5-7
+docs/PLAN-V1.md
+  s_df12fc6ddf323c::t_8affb3563fb0a6 29
+  s_df12fc6ddf323c::t_5e7f58d72f90ae 39
+  s_df12fc6ddf323c::t_551fe662ccda48 41,68,79,90
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_ff643ddc1e5e75 3,14,194,203,206,214,216-217,220,224-226,228,230,323-324,328
+  s_df12fc6ddf323c::t_c2f8826b7d76d2 12-13,223
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_c2f8826b7d76d2 223
+  s_df12fc6ddf323c::t_d70aedd867d3ad 3,12-14,194,203,206,214,216-217,220,224-226,228,230,323-324,328
+apps/dashboard/components/onboarding/onboarding-wizard.test.tsx
+  s_df12fc6ddf323c::t_773a80341bdfd5 14-15,19-20,24,64,76,103,118,120,123,153
+  s_df12fc6ddf323c::t_6ab2af9d7d9ad1 8,57,59,67,71,82,84,92,94,109,111,128,147,161
+packages/backend/convex/evaluationModel/model.test.ts
+  s_df12fc6ddf323c::t_e6006bbce86919 12,127
+  s_df12fc6ddf323c::t_ef488908f50573 120,386
+  s_df12fc6ddf323c::t_2944bb326266c2 6,27,96,150,173,206,283,291,305,357,366,388,416,430,461
+  s_df12fc6ddf323c::t_727dbc4f57fcd3 295-297
+packages/backend/convex/ai/suggest.ts
+  s_df12fc6ddf323c::t_e6006bbce86919 22
+packages/email/src/render.ts
+  s_df12fc6ddf323c::t_a2b1bfdeabb44b 41
+packages/backend/convex/schema.ts
+  s_df12fc6ddf323c::t_24987291efa698 2
+  s_df12fc6ddf323c::t_561a22e06f7755 18
+apps/dashboard/components/onboarding/onboarding-gate.test.tsx
+  s_df12fc6ddf323c::t_6ab2af9d7d9ad1 33,46,58,69,80
+apps/dashboard/components/locale-provider.tsx
+  s_df12fc6ddf323c::t_c82c32ed463d79 112
+  s_df12fc6ddf323c::t_da1f5435cb326f 80
+packages/backend/convex/evaluationModel/criteria.test.ts
+  s_df12fc6ddf323c::t_e6006bbce86919 14
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_df12fc6ddf323c::t_773a80341bdfd5 50
+packages/backend/convex/accounts/organization.ts
+  s_df12fc6ddf323c::t_c16008a28c712b 16,21,37,39,50,54,70,78,82,111
+  s_df12fc6ddf323c::t_53b3caeba2ba7b 100
+  s_df12fc6ddf323c::t_dfd1697a270b3d 60
+packages/backend/convex/evaluationModel/tables.ts
+  s_df12fc6ddf323c::t_acbcddbdb466bb 4,21
+apps/dashboard/lib/slug.test.ts
+  s_df12fc6ddf323c::t_773a80341bdfd5 2,4,6,17
+  s_df12fc6ddf323c::t_2e6fba41462065 11-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "ca6515be9da9e45937170564399d337912e3f9ac",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
