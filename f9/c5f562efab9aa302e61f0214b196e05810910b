@@ -1,0 +1,21 @@
+packages/backend/convex/assessment/roles.test.ts
+  s_df12fc6ddf323c::t_de4432ab3b50ba 1-160
+packages/backend/convex/assessment/roles.ts
+  s_df12fc6ddf323c::t_a940987d3dc5de 1-364
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f9c5f562efab9aa302e61f0214b196e05810910b",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
