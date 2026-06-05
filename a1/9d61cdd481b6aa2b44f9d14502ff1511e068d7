@@ -1,0 +1,59 @@
+apps/dashboard/components/onboarding/add-criterion-form.test.tsx
+  s_df12fc6ddf323c::t_a666e63dad84b4 39
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_3f1977c072012e 262-272,274-285,287-303,305-317
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_df12fc6ddf323c::t_a666e63dad84b4 38,40
+apps/dashboard/components/onboarding/importance-review-panel.test.tsx
+  s_df12fc6ddf323c::t_a666e63dad84b4 48
+apps/dashboard/components/onboarding/model-draft-panel.test.tsx
+  s_df12fc6ddf323c::t_a666e63dad84b4 51
+apps/dashboard/components/onboarding/importance-review-panel.tsx
+  s_df12fc6ddf323c::t_a666e63dad84b4 54-55
+apps/dashboard/components/onboarding/criterion-editor.test.tsx
+  s_df12fc6ddf323c::t_a666e63dad84b4 110,230,272,325,338
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_3f1977c072012e 262-272,274-285,287-303,305-317
+apps/dashboard/components/onboarding/add-criterion-dialog.test.tsx
+  s_df12fc6ddf323c::t_a666e63dad84b4 31
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_3f1977c072012e 262-272,274-285,287-303,305-317
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_3f1977c072012e 262-272,274-285,287-303,305-317
+apps/dashboard/components/onboarding/change-choice-button.test.tsx
+  s_df12fc6ddf323c::t_a666e63dad84b4 7
+apps/dashboard/components/onboarding/add-criterion-form.tsx
+  s_df12fc6ddf323c::t_a666e63dad84b4 41-42
+apps/dashboard/components/onboarding/criterion-item.tsx
+  s_df12fc6ddf323c::t_a666e63dad84b4 86-87
+apps/dashboard/components/onboarding/model-review.tsx
+  s_df12fc6ddf323c::t_a666e63dad84b4 49,51-52
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_df12fc6ddf323c::t_a666e63dad84b4 147,150,154,161,166,182,193,204,240,245,260,264,278,297,313,324,331,342,346,355,363,373,387,394,416,423,451,466,481,486,494,501,506,519,531,535,549,554,561,569,574,586,591,596,602,620,625,630,635,643,651,657,662,699,715,720
+apps/dashboard/components/onboarding/change-choice-button.tsx
+  s_df12fc6ddf323c::t_a666e63dad84b4 22
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_3f1977c072012e 262-272,274-285,287-303,305-317
+apps/dashboard/components/onboarding/model-setup-step.tsx
+  s_df12fc6ddf323c::t_a666e63dad84b4 49
+apps/dashboard/components/onboarding/add-criterion-dialog.tsx
+  s_df12fc6ddf323c::t_a666e63dad84b4 21
+apps/dashboard/components/onboarding/model-draft-panel.tsx
+  s_df12fc6ddf323c::t_a666e63dad84b4 39-40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a19d61cdd481b6aa2b44f9d14502ff1511e068d7",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
