@@ -1,0 +1,35 @@
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_df12fc6ddf323c::t_4c4c63c9cae542 73-76,79-89,91-109
+  s_df12fc6ddf323c::t_0b4bcee01a7f46 110
+  s_df12fc6ddf323c::t_7bdd66eeba2cb6 6
+  s_df12fc6ddf323c::t_c0f885752237a8 77-78
+apps/dashboard/components/onboarding/criterion-item.tsx
+  s_df12fc6ddf323c::t_1131c8c2f5a11e 32-35
+  s_df12fc6ddf323c::t_03584849704005 68-85
+  s_df12fc6ddf323c::t_32c1459eec801c 4-5
+  s_df12fc6ddf323c::t_8ff05daca51b8f 120
+apps/dashboard/components/onboarding/model-review.tsx
+  s_df12fc6ddf323c::t_7efffba9bb1c28 193
+  s_df12fc6ddf323c::t_0cc81b9be8e5f4 16
+  s_df12fc6ddf323c::t_124e363b98ef3c 114-118
+apps/dashboard/components/morph-confirm-button.tsx
+  s_df12fc6ddf323c::t_88eef2f2e35f25 7,9
+apps/dashboard/lib/motion.ts
+  s_df12fc6ddf323c::t_e5483c94b9a9ca 1-9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "bc9b32a88dbbc94d2d6991afcfb875a09a678dbb",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
