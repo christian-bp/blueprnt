@@ -1,0 +1,47 @@
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_1e47c07b881a5d 229-237
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_f87bebddaeb295 229-237
+packages/backend/convex/accounts/workspace.test.ts
+  s_df12fc6ddf323c::t_55e4e5fcf0d3db 34-70
+apps/dashboard/components/onboarding/create-workspace-step.tsx
+  s_df12fc6ddf323c::t_b3d140a138b00b 3,7-14,16,20-39,46,58,62,65-74,98-111
+  s_df12fc6ddf323c::t_1b09fbf5b795f6 42-44
+apps/dashboard/components/onboarding/company-profile-step.tsx
+  s_df12fc6ddf323c::t_0f5fdef6088ea6 53-58,94-95,127
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_cc35ede2e55a92 229-237
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_5df285babc8c3b 229-237
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_e6b2f6c1509c52 229-237
+apps/dashboard/components/onboarding/model-setup-step.tsx
+  s_df12fc6ddf323c::t_0311291b0cfa2a 61
+  s_df12fc6ddf323c::t_3d3c36a809f434 60
+apps/dashboard/components/onboarding/create-workspace-step.test.tsx
+  s_df12fc6ddf323c::t_35e777f59bb0fd 13,27-42,56,80,85-100
+  s_df12fc6ddf323c::t_f0e7329b0c7ab3 81-84
+  s_df12fc6ddf323c::t_e621a4447b815b 104-107
+apps/dashboard/components/onboarding/company-profile-step.test.tsx
+  s_df12fc6ddf323c::t_a04a3bcfa9e12e 78,102-103
+docs/superpowers/specs/2026-06-04-onboarding-design.md
+  s_df12fc6ddf323c::t_2ad89924dcd3ca 168-172
+packages/backend/convex/accounts/workspace.ts
+  s_df12fc6ddf323c::t_6e645d76d6d2b5 36-38,53-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "6ec56a7657259a268a18fb6432572dba8c3b9e72",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
