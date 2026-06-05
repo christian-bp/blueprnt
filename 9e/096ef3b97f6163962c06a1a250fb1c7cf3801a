@@ -1,0 +1,28 @@
+apps/dashboard/components/onboarding/criterion-item.tsx
+  s_df12fc6ddf323c::t_eca616da414013 5
+  s_df12fc6ddf323c::t_8d28c5d5e794f0 3
+  s_df12fc6ddf323c::t_92f7788e3fefbf 87,89-91,93-102
+apps/dashboard/components/morph-confirm-button.test.tsx
+  s_df12fc6ddf323c::t_f354f31e1a17ed 1-30,34-38,41-55,62-88
+  s_df12fc6ddf323c::t_49ccbc3fee7e52 56-60
+  s_df12fc6ddf323c::t_eca616da414013 31-33,39-40,61
+apps/dashboard/components/morph-confirm-button.tsx
+  s_df12fc6ddf323c::t_458191d0926553 13,20-24,33-34,44,71-73,79-80
+  s_df12fc6ddf323c::t_c4fc479d02475f 1-12,14-19,25-32,35-43,45-70,74-78,81-143
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "9e096ef3b97f6163962c06a1a250fb1c7cf3801a",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
