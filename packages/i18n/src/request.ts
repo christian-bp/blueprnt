@@ -2,7 +2,7 @@ import { hasLocale } from "next-intl"
 import { getRequestConfig } from "next-intl/server"
 
 import type en from "../messages/en.json"
-import { routing } from "./routing"
+import { routing, TIME_ZONE } from "./routing"
 
 type Messages = typeof en
 
@@ -25,5 +25,5 @@ export default getRequestConfig(async ({ requestLocale }) => {
     messages = (await import("../messages/en.json")).default
   }
 
-  return { locale, messages }
+  return { locale, messages, timeZone: TIME_ZONE }
 })

@@ -2,7 +2,7 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import type enMessages from "@workspace/i18n/messages/en.json"
-import type { Locale } from "@workspace/i18n/routing"
+import { type Locale, TIME_ZONE } from "@workspace/i18n/routing"
 import { useQuery } from "convex/react"
 import { NextIntlClientProvider } from "next-intl"
 import {
@@ -161,7 +161,11 @@ export function LocaleProvider(props: {
 
   return (
     <LocalePreviewContext value={setPreviewLocale}>
-      <NextIntlClientProvider locale={active.locale} messages={active.messages}>
+      <NextIntlClientProvider
+        locale={active.locale}
+        messages={active.messages}
+        timeZone={TIME_ZONE}
+      >
         {props.children}
       </NextIntlClientProvider>
     </LocalePreviewContext>

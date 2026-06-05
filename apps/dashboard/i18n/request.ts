@@ -1,4 +1,4 @@
-import { routing } from "@workspace/i18n/routing"
+import { routing, TIME_ZONE } from "@workspace/i18n/routing"
 import { getRequestConfig } from "next-intl/server"
 import { cookies } from "next/headers"
 import { LOCALE_COOKIE, resolveUiLocale } from "@/lib/locale"
@@ -21,5 +21,5 @@ export default getRequestConfig(async () => {
       fi: () => import("@workspace/i18n/messages/fi.json"),
     }[locale]()
   ).default
-  return { locale, messages }
+  return { locale, messages, timeZone: TIME_ZONE }
 })

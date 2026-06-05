@@ -13,3 +13,9 @@ export const routing = defineRouting({
 })
 
 export type Locale = (typeof routing.locales)[number]
+
+// Global next-intl time zone (Sweden-first product). Both apps pass this to
+// their request configs and client providers so server and client render
+// dates identically (avoids next-intl's ENVIRONMENT_FALLBACK warning and
+// markup mismatches).
+export const TIME_ZONE = "Europe/Stockholm"
