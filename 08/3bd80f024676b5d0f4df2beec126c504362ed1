@@ -1,0 +1,43 @@
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_6e2180e62c9da6 287
+apps/dashboard/components/onboarding/model-review.tsx
+  s_df12fc6ddf323c::t_41f1897c42fee4 5-11,20-22
+  s_df12fc6ddf323c::t_5ee88b3fc3bea9 58-60,63-65
+  s_df12fc6ddf323c::t_a4b24b294b3e1b 86-118
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_e990faf7b6491f 287
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_df12fc6ddf323c::t_b4accbe8ee7694 16,32-33
+  s_df12fc6ddf323c::t_ca349c83f5a26b 61-62
+  s_df12fc6ddf323c::t_08bb0dff8679a1 125
+  s_df12fc6ddf323c::t_f49c3b335a099d 300-348
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_a8d9aec769f5a6 287
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_231d6b67d2714f 287
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_963c373fa45bdb 287
+packages/backend/convex/evaluationModel/criteria.ts
+  s_df12fc6ddf323c::t_9ce32658757b1f 69-99
+docs/superpowers/specs/2026-06-04-onboarding-design.md
+  s_df12fc6ddf323c::t_fe4b52d3880cef 201-206
+packages/backend/convex/evaluationModel/criteria.test.ts
+  s_df12fc6ddf323c::t_2af180865ad139 190-197,203,232-239,243,295-302
+  s_df12fc6ddf323c::t_2da23c6b653294 176-189,198-202,204-231,240-242,244-294,303-339
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "083bd80f024676b5d0f4df2beec126c504362ed1",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
