@@ -1,0 +1,21 @@
+apps/dashboard/components/roles/create-role-dialog.tsx
+  s_df12fc6ddf323c::t_3462a90ebbcda3 78-90
+  s_df12fc6ddf323c::t_368e3c52b9baa3 115
+  s_df12fc6ddf323c::t_cbf99bbc1c1dac 193
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "769bd26ebcce97d63c69dc5f3aff7860d6a12d61",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
