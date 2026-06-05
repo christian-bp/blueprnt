@@ -1,0 +1,33 @@
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_df12fc6ddf323c::t_90173aea866110 474,492,498-509,534-535,548,574-579
+apps/dashboard/components/onboarding/criterion-editor.test.tsx
+  s_df12fc6ddf323c::t_26f9f6b374e44d 210,221-228,232,242-243,257,272-275
+apps/dashboard/components/onboarding/change-choice-button.tsx
+  s_df12fc6ddf323c::t_68b5f9bfec55de 23
+  s_df12fc6ddf323c::t_cd2fc8f147d521 5,7-10,21-22,24-31
+apps/dashboard/components/onboarding/two-step-confirm.test.tsx
+  s_df12fc6ddf323c::t_871d26438423fd 1-68
+docs/superpowers/specs/2026-06-04-onboarding-design.md
+  s_df12fc6ddf323c::t_e82292822253d9 217-219
+apps/dashboard/components/onboarding/criterion-item.tsx
+  s_df12fc6ddf323c::t_68b5f9bfec55de 7
+  s_df12fc6ddf323c::t_586e620141faa6 8,18-20,26,65,67-68,75,77,81,85-90
+apps/dashboard/components/onboarding/two-step-confirm.tsx
+  s_df12fc6ddf323c::t_0356e278b554e8 1-62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "6162e2cceae0fb407a57619d4f84f4c84c99b90d",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
