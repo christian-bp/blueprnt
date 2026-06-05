@@ -1,0 +1,38 @@
+docs/superpowers/specs/2026-06-05-evaluation-loop-design.md
+  s_df12fc6ddf323c::t_d5db910d8f0968 1-292,295-312,314-346
+  s_df12fc6ddf323c::t_fa63af393a40e4 293-294
+  s_df12fc6ddf323c::t_756d0f20d00a72 313
+docs/superpowers/plans/2026-06-05-evaluation-loop.md
+  s_df12fc6ddf323c::t_3703317cce3097 6024
+  s_df12fc6ddf323c::t_5f78817878448e 2664,2675-2676,2678
+  s_df12fc6ddf323c::t_1a4cf12cda086c 676,679
+  s_df12fc6ddf323c::t_a2a4b0e003d92f 4437
+  s_df12fc6ddf323c::t_13bc2b8472f562 5842-5851
+  s_df12fc6ddf323c::t_ed5d88641c0607 4421
+  s_df12fc6ddf323c::t_9bd94b4596c497 717
+  s_df12fc6ddf323c::t_d9d5f42b2551ce 4717
+  s_df12fc6ddf323c::t_dc3bf8357ba697 3613-3620
+  s_df12fc6ddf323c::t_09f30c64faeb91 518-520
+  s_df12fc6ddf323c::t_ee16e3f7eb3866 4642-4646
+  s_df12fc6ddf323c::t_230a7e39542ad6 1-517,521-636
+  s_df12fc6ddf323c::t_97609c85153fa1 637-675,677-678,680-716,718-2455,7361
+  s_df12fc6ddf323c::t_5a01670f3e293a 2456-2663,2665-2674,2677,2679-3612,3621-3992,7360
+  s_df12fc6ddf323c::t_c38813a2390b6d 3993-4420,4422-4436,4438-4641,4647-4716,4718-5377,7359
+  s_df12fc6ddf323c::t_350f3df6809e10 5378-5841,5852-6023,6025-7358
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "37460f08115222cf24ccca9f7bdc5d70d91353fd",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
