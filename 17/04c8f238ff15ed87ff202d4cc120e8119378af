@@ -1,0 +1,29 @@
+packages/backend/convex/assessment/roles.ts
+  s_df12fc6ddf323c::t_7df016eb114490 166,251
+  s_df12fc6ddf323c::t_742b203bd5b410 4,6
+packages/backend/convex/_generated/api.d.ts
+  ai_agent 22,61
+packages/backend/convex/assessment/names.ts
+  s_df12fc6ddf323c::t_3591b72a0944e7 1,7-54
+  ai_agent 2-6
+packages/backend/convex/assessment/results.ts
+  s_df12fc6ddf323c::t_23903b18f009f7 3,5,9,15,19
+  s_df12fc6ddf323c::t_95e96f6518edc2 63
+  s_df12fc6ddf323c::t_ab16416fc3c5eb 89,94-95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "1704c8f238ff15ed87ff202d4cc120e8119378af",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
