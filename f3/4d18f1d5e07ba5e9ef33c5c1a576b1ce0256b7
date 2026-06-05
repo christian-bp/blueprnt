@@ -1,0 +1,61 @@
+apps/dashboard/components/onboarding/create-workspace-step.test.tsx
+  s_df12fc6ddf323c::t_5a3da97a24d6fa 152-220
+  s_df12fc6ddf323c::t_223ccf08fd1245 13,15,21,32
+  s_df12fc6ddf323c::t_97b5236d38cfe3 42,53,61,63-65
+  s_df12fc6ddf323c::t_7c23d0702d97ae 50
+apps/dashboard/components/onboarding/company-profile-step.test.tsx
+  s_df12fc6ddf323c::t_39a946abbf397d 13,17,27,35-37,40,48-50
+  s_df12fc6ddf323c::t_8a3c4a44c7b5d8 88
+  s_df12fc6ddf323c::t_7c23d0702d97ae 148-152,197-201
+  s_df12fc6ddf323c::t_b8dab43c16231b 133-147,153-196,202-228
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_df12fc6ddf323c::t_3c2d73a07cbf6d 168-187
+  s_df12fc6ddf323c::t_f0a36cf421b5c8 62,65
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_c44afdce9abb85 218
+  s_df12fc6ddf323c::t_93910878f738f0 230
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_58ee9a9137eab4 218
+  s_df12fc6ddf323c::t_1f575df7c675af 230
+apps/dashboard/components/onboarding/onboarding-wizard.test.tsx
+  s_df12fc6ddf323c::t_6c25d470f88541 1-172
+apps/dashboard/components/onboarding/create-workspace-step.tsx
+  s_df12fc6ddf323c::t_7ccc63f4582fa4 14,40-51,56-62,67-75,83-106,169
+apps/dashboard/components/onboarding/company-profile-step.tsx
+  s_df12fc6ddf323c::t_6820b34f8af569 13
+  s_df12fc6ddf323c::t_19ba3d146b01c9 59-72,76-78,85-95,111
+  s_df12fc6ddf323c::t_971dc28caf326f 74
+  s_df12fc6ddf323c::t_81dec8b16d1bc6 179-192
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_bd8a5fd7925818 218
+  s_df12fc6ddf323c::t_8b4890fa00ff81 230
+apps/dashboard/components/onboarding/model-setup-step.tsx
+  s_df12fc6ddf323c::t_ae1ee620fb2769 27-30,34,38,41
+  s_df12fc6ddf323c::t_58c12ae08968df 137-145
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_df12fc6ddf323c::t_8904071effb357 4
+  s_df12fc6ddf323c::t_ddcaaca8208b56 33-37,39-43
+  s_df12fc6ddf323c::t_e240bb9fb46e3a 71-84,86-90,96
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_45784ae11818c1 230
+  s_df12fc6ddf323c::t_fcc3fe6d0c0c2d 218
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_03c86d5926d178 230
+  s_df12fc6ddf323c::t_8229c9a416cd59 218
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f34d18f1d5e07ba5e9ef33c5c1a576b1ce0256b7",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
