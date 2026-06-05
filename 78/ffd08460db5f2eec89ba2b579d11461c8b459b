@@ -1,0 +1,40 @@
+apps/dashboard/components/onboarding/company-profile-step.tsx
+  s_df12fc6ddf323c::t_c770d79c3e3777 54-59
+  s_df12fc6ddf323c::t_044e80e0d6dd89 166
+apps/dashboard/components/onboarding/company-profile-step.test.tsx
+  s_df12fc6ddf323c::t_51f5deddfb254e 49-56,60,63-75,78,97-101
+packages/backend/convex/accounts/tables.ts
+  s_df12fc6ddf323c::t_5a49e1e251cf31 20
+packages/backend/convex/ai/generate.ts
+  s_df12fc6ddf323c::t_cb0685316eb126 46-48
+  s_df12fc6ddf323c::t_b1422166c7b8ac 62
+  s_df12fc6ddf323c::t_0add1b576f331e 114
+  s_df12fc6ddf323c::t_4d5ff1807d3b82 39,45,51
+packages/backend/convex/ai/suggest.ts
+  s_df12fc6ddf323c::t_d8fa72f9da93d4 103-108
+  s_df12fc6ddf323c::t_4f45cc47b5940a 13
+  s_df12fc6ddf323c::t_9b811485dad049 34
+  s_df12fc6ddf323c::t_8e250d0ff06ec9 62-63,66-71
+docs/superpowers/specs/2026-06-04-onboarding-design.md
+  s_df12fc6ddf323c::t_337dac3506e070 152-160
+packages/backend/convex/ai/suggest.test.ts
+  s_df12fc6ddf323c::t_8455ee0dc75c5d 119-120
+docs/PLAN-V1.md
+  s_df12fc6ddf323c::t_804fb1b0a04907 37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "78ffd08460db5f2eec89ba2b579d11461c8b459b",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
