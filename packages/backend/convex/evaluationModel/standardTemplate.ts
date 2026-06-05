@@ -1,16 +1,16 @@
 import type { ImportanceLevel } from "@workspace/core"
 import {
-  standardmallContentEn,
-  type StandardmallContent,
-} from "./standardmall.content.en"
-import { standardmallContentSv } from "./standardmall.content.sv"
+  standardTemplateContentEn,
+  type StandardTemplateContent,
+} from "./standardTemplate.content.en"
+import { standardTemplateContentSv } from "./standardTemplate.content.sv"
 
-// Structure of the standardmall (the Excel prototype's evaluation model).
+// Structure of the standard template (the Excel prototype's evaluation model).
 // Prose lives in the per-locale content modules; this module owns every
 // numeric/structural decision so they cannot drift between locales.
 // Source of record: docs/contexts/evaluation-model/standardmall.md.
 
-export const STANDARDMALL_TEMPLATE_KEY = "standardmall-v1"
+export const STANDARD_TEMPLATE_KEY = "standard-template-v1"
 
 export const CRITERION_KEYS = [
   "scope",
@@ -182,6 +182,8 @@ export const DEFAULT_BAND_THRESHOLDS = [
 
 export type TemplateLocale = "sv" | "en"
 
-export function templateContent(locale: TemplateLocale): StandardmallContent {
-  return locale === "sv" ? standardmallContentSv : standardmallContentEn
+export function templateContent(
+  locale: TemplateLocale
+): StandardTemplateContent {
+  return locale === "sv" ? standardTemplateContentSv : standardTemplateContentEn
 }

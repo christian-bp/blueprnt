@@ -25,7 +25,7 @@ import type * as email_outbox from "../email/outbox.js";
 import type * as email_tables from "../email/tables.js";
 import type * as evaluationModel_criteria from "../evaluationModel/criteria.js";
 import type * as evaluationModel_model from "../evaluationModel/model.js";
-import type * as evaluationModel_standardmall from "../evaluationModel/standardmall.js";
+import type * as evaluationModel_standardTemplate from "../evaluationModel/standardTemplate.js";
 import type * as evaluationModel_tables from "../evaluationModel/tables.js";
 import type * as http from "../http.js";
 import type * as lib_audit from "../lib/audit.js";
@@ -58,7 +58,7 @@ declare const fullApi: ApiFromModules<{
   "email/tables": typeof email_tables;
   "evaluationModel/criteria": typeof evaluationModel_criteria;
   "evaluationModel/model": typeof evaluationModel_model;
-  "evaluationModel/standardmall": typeof evaluationModel_standardmall;
+  "evaluationModel/standardTemplate": typeof evaluationModel_standardTemplate;
   "evaluationModel/tables": typeof evaluationModel_tables;
   http: typeof http;
   "lib/audit": typeof lib_audit;

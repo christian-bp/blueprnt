@@ -11,11 +11,11 @@ import {
   DEFAULT_IMPORTANCE,
   GUARDRAILS,
   type LevelKey,
-  STANDARDMALL_TEMPLATE_KEY,
+  STANDARD_TEMPLATE_KEY,
   TRACK_DEFS,
   type TemplateLocale,
   templateContent,
-} from "./standardmall"
+} from "./standardTemplate"
 
 // Read-time localization helpers (see getModel). Content exists for sv/en
 // only; nb/da/fi template content does not exist yet, so any non-sv/en locale
@@ -115,7 +115,7 @@ export const createModelFromTemplate = adminMutation({
     const modelId = await ctx.db.insert("models", {
       orgId: ctx.orgId,
       name: content.modelName,
-      templateKey: STANDARDMALL_TEMPLATE_KEY,
+      templateKey: STANDARD_TEMPLATE_KEY,
     })
 
     const criterionIdByKey = new Map<string, Id<"criteria">>()
@@ -127,7 +127,7 @@ export const createModelFromTemplate = adminMutation({
         name: criterion.name,
         description: criterion.description,
         helpText: criterion.helpText,
-        // The standardmall key keeps this row pristine-localizable in getModel.
+        // The standard template key keeps this row pristine-localizable in getModel.
         // E2 editing MUST clear it when any text field changes.
         templateKey: key,
         importanceLevel: DEFAULT_IMPORTANCE[key],
@@ -166,7 +166,7 @@ export const createModelFromTemplate = adminMutation({
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.modelCreated,
       actorId: ctx.authUserId,
-      payload: { modelId, templateKey: STANDARDMALL_TEMPLATE_KEY },
+      payload: { modelId, templateKey: STANDARD_TEMPLATE_KEY },
     })
     return modelId
   },
@@ -304,7 +304,7 @@ export const discardModel = adminMutation({
 const anchorShape = v.object({ level: v.number(), text: v.string() })
 
 // Localizes pristine standard-template content at read time. Template-seeded
-// criteria carry their standardmall key (criteria.templateKey); tracks and
+// criteria carry their standard template key (criteria.templateKey); tracks and
 // levels carry stable keys. For those rows we serve name/description/helpText/
 // anchors and track/level names/definitions from the per-locale content modules
 // in the requested locale instead of the stored copies. Custom and AI-authored
@@ -375,7 +375,7 @@ export const getModel = orgQuery({
         .collect()
       anchors.sort((a, b) => a.level - b.level)
       // Pristine template criteria localize from the content module by their
-      // standardmall key. Custom/AI rows (no key, or an unknown key) and rows
+      // standard template key. Custom/AI rows (no key, or an unknown key) and rows
       // whose key was cleared by an E2 edit render as stored.
       const localized =
         row.templateKey !== undefined && isCriterionKey(row.templateKey)

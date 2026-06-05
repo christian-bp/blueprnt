@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
-import { STANDARDMALL_TEMPLATE_KEY } from "./standardmall"
+import { STANDARD_TEMPLATE_KEY } from "./standardTemplate"
 
 async function seedReadyOrganization(t: ReturnType<typeof initConvexTest>) {
   const { orgId, userId } = await t.mutation(
@@ -22,7 +22,7 @@ async function seedReadyOrganization(t: ReturnType<typeof initConvexTest>) {
 }
 
 describe("createModelFromTemplate", () => {
-  it("seeds the full standardmall in one transaction and audits it", async () => {
+  it("seeds the full standard template in one transaction and audits it", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedReadyOrganization(t)
 
@@ -274,7 +274,7 @@ describe("discardModel", () => {
         )
         .collect()
       expect(audit).toHaveLength(1)
-      expect(audit[0]?.payload.templateKey).toBe(STANDARDMALL_TEMPLATE_KEY)
+      expect(audit[0]?.payload.templateKey).toBe(STANDARD_TEMPLATE_KEY)
     })
   })
 
@@ -374,10 +374,10 @@ describe("getModel", () => {
     expect(result?.criteria).toHaveLength(9)
     expect(result?.criteria[0]?.anchors).toHaveLength(6)
     expect(JSON.stringify(result)).not.toMatch(/"weight"/)
-    const importanceLevels = result!.criteria.map(
+    const importanceLevels = result?.criteria.map(
       (criterion) => criterion.importanceLevel
     )
-    expect(importanceLevels.every((level) => level >= 1 && level <= 7)).toBe(
+    expect(importanceLevels?.every((level) => level >= 1 && level <= 7)).toBe(
       true
     )
   })

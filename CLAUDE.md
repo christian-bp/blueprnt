@@ -6,7 +6,7 @@ See also: `AGENTS.md` (Next.js version warning + agent-skills config) · `docs/P
 
 ## Language
 
-- **All code, code comments, log messages, and commit messages are in English.** This file too.
+- **All code, code comments, log messages, commit messages, and code filenames are in English.** This file too. (Swedish domain documents under `docs/` keep their Swedish filenames; they are content, not code.)
 - **Domain documents are in Swedish:** `docs/PLAN-V1.md`, `CONTEXT-MAP.md`, `docs/contexts/`, `docs/adr/`.
 - UI copy lives in the i18n message files; English (`en.json`) is the source locale.
 

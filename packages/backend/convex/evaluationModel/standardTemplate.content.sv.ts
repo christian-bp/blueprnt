@@ -1,12 +1,12 @@
-import type { StandardmallContent } from "./standardmall.content.en"
+import type { StandardTemplateContent } from "./standardTemplate.content.en"
 
-// Swedish source content for the standardmall (source of record). Criterion
+// Swedish source content for the standard template (source of record). Criterion
 // definitions and anchor texts are curated from the Excel prototype tab
 // "Vikter & faktorer"; level definitions from the "Track" tab. The Lead3
 // definition is from docs/contexts/evaluation-model/standardmall.md.
 // helpText is authored assessor guidance derived from each criterion's anchor
 // span (the Excel has no distinct help text per criterion).
-export const standardmallContentSv: StandardmallContent = {
+export const standardTemplateContentSv: StandardTemplateContent = {
   modelName: "Standardmodell",
   criteria: {
     scope: {

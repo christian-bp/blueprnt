@@ -15,7 +15,7 @@ export const criteria = defineTable({
   name: v.string(),
   description: v.string(),
   helpText: v.string(),
-  // standardmall criterion key ("scope".."formal") set at seed time; display
+  // standard template criterion key ("scope".."formal") set at seed time; display
   // localizes pristine template rows from the content modules. E2 editing MUST
   // clear this key when any text field changes (ownership transfer to the
   // organization).

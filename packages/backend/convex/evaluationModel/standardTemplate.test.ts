@@ -7,9 +7,9 @@ import {
   GUARDRAILS,
   TRACK_DEFS,
   templateContent,
-} from "./standardmall"
+} from "./standardTemplate"
 
-describe("standardmall structure", () => {
+describe("standard template structure", () => {
   it("has 9 criteria, 3 tracks, 11 levels, 7 descending thresholds", () => {
     expect(CRITERION_KEYS).toHaveLength(9)
     expect(TRACK_DEFS).toHaveLength(3)

@@ -1,4 +1,4 @@
-import type { CriterionKey, LevelKey } from "./standardmall"
+import type { CriterionKey, LevelKey } from "./standardTemplate"
 
 export interface CriterionContent {
   name: string
@@ -8,7 +8,7 @@ export interface CriterionContent {
   anchors: [string, string, string, string, string, string]
 }
 
-export interface StandardmallContent {
+export interface StandardTemplateContent {
   modelName: string
   criteria: Record<CriterionKey, CriterionContent>
   trackNames: Record<"IC" | "Lead" | "M", string>
@@ -16,11 +16,11 @@ export interface StandardmallContent {
   levelDefinitions: Partial<Record<LevelKey, string>>
 }
 
-// English content for the standardmall. This is a translation draft of the
-// Swedish source (standardmall.content.sv.ts) and must be reviewed by a native
+// English content for the standard template. This is a translation draft of the
+// Swedish source (standardTemplate.content.sv.ts) and must be reviewed by a native
 // speaker before it ships to users. All structural decisions live in
-// standardmall.ts; this module carries only prose.
-export const standardmallContentEn: StandardmallContent = {
+// standard template.ts; this module carries only prose.
+export const standardTemplateContentEn: StandardTemplateContent = {
   modelName: "Standard model",
   criteria: {
     scope: {
