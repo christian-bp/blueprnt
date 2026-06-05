@@ -1,0 +1,27 @@
+apps/dashboard/components/onboarding/create-workspace-step.test.tsx
+  s_df12fc6ddf323c::t_3852ba1dead824 69
+  s_df12fc6ddf323c::t_04ea71210818bd 16-20
+  s_df12fc6ddf323c::t_2ebd518e5fbeee 227-243
+apps/dashboard/components/locale-provider.tsx
+  s_df12fc6ddf323c::t_5da936d3480859 9-14,66-78,85-89,98-100,102-118,120,139-144,152-154,159,162-166
+apps/dashboard/components/onboarding/create-workspace-step.tsx
+  s_df12fc6ddf323c::t_4eac01e16e6875 152-158
+  s_df12fc6ddf323c::t_9430c9967db755 54
+  s_df12fc6ddf323c::t_a5f47dae9a34df 17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "0107bb3551dc3216b149ee14c8d041683c41bff7",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
