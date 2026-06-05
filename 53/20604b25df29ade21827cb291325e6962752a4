@@ -1,0 +1,25 @@
+apps/dashboard/lib/role-status.ts
+  s_df12fc6ddf323c::t_82a4c9a1665015 1-9
+apps/dashboard/components/roles/create-role-dialog.test.tsx
+  s_df12fc6ddf323c::t_3d86d2e278712b 1-131
+apps/dashboard/app/(app)/roles/page.tsx
+  s_df12fc6ddf323c::t_956f0877ee89a4 1-106
+apps/dashboard/components/roles/create-role-dialog.tsx
+  s_df12fc6ddf323c::t_486fb0e345e7f9 1-192
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "5320604b25df29ade21827cb291325e6962752a4",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
