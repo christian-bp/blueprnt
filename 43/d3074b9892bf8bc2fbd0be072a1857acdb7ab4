@@ -1,0 +1,20 @@
+apps/dashboard/components/roles/role-result-card.tsx
+  s_df12fc6ddf323c::t_9b11ba66f303aa 36
+  s_df12fc6ddf323c::t_a7f4f7218285e4 65,68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "43d3074b9892bf8bc2fbd0be072a1857acdb7ab4",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
