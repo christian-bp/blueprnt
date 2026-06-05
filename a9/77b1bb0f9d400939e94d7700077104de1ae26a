@@ -1,0 +1,24 @@
+apps/dashboard/components/roles/role-profile-card.tsx
+  s_df12fc6ddf323c::t_53ce228576d27b 70
+  s_df12fc6ddf323c::t_21d58aa7ab30cf 52-53
+  s_df12fc6ddf323c::t_67819c16e04763 37
+apps/dashboard/components/roles/role-profile-card.test.tsx
+  s_df12fc6ddf323c::t_2702c18f404916 8-23,28-58,60-76,80-85,92-126
+  s_df12fc6ddf323c::t_f68ed56dec0c3c 1-7,24-27,59,77-79,86-91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a977b1bb0f9d400939e94d7700077104de1ae26a",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
