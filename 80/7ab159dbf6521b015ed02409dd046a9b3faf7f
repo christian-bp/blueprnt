@@ -1,0 +1,55 @@
+packages/constants/src/countries.ts
+  s_df12fc6ddf323c::t_3883a51a0a23e4 30-43
+apps/dashboard/components/onboarding/onboarding-wizard.test.tsx
+  s_df12fc6ddf323c::t_85a458fd4ac03e 281-321
+packages/constants/src/index.ts
+  s_df12fc6ddf323c::t_fd77bfbcf63b79 5,8
+apps/dashboard/components/nav-user.test.tsx
+  s_df12fc6ddf323c::t_74b717da7139f4 1-142
+apps/dashboard/components/onboarding/name-screen.test.tsx
+  s_df12fc6ddf323c::t_d028929a9eae30 121-122
+packages/constants/src/countries.test.ts
+  s_df12fc6ddf323c::t_78c0b13ecf5531 32-44
+  s_df12fc6ddf323c::t_202a3468d5b3f9 5,8
+apps/dashboard/components/onboarding/name-screen.tsx
+  s_df12fc6ddf323c::t_e194bf90980ce2 14-18
+apps/dashboard/components/nav-user.tsx
+  s_df12fc6ddf323c::t_2cf96c264609a7 4-5,12-13,15-17,30,32-33,35-45,52-54,70-81,131-152
+packages/backend/convex/accounts/onboarding.ts
+  s_df12fc6ddf323c::t_a5c6c9d1614aa4 3-4,109-142
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_2cf96c264609a7 98,101-106
+packages/backend/convex/accounts/onboarding.test.ts
+  s_df12fc6ddf323c::t_750f65658e972e 177-226
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_2cf96c264609a7 98,101-106
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_2cf96c264609a7 98,101-106
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_df12fc6ddf323c::t_5fa2ac53f49d5a 57-63,66-67,76-80,88-91,117-121,125-126,167,187-189
+apps/dashboard/components/onboarding/country-screen.test.tsx
+  s_df12fc6ddf323c::t_d028929a9eae30 13,19-22,49,63-64,70,82-86
+  s_df12fc6ddf323c::t_b02348ac01763a 87,102
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_2cf96c264609a7 98,101-106
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_2cf96c264609a7 98,101-106
+apps/dashboard/components/onboarding/country-screen.tsx
+  s_df12fc6ddf323c::t_e194bf90980ce2 10,15,19-23,49,56,89-92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "807ab159dbf6521b015ed02409dd046a9b3faf7f",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
