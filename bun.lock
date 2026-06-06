@@ -16,6 +16,7 @@
       "dependencies": {
         "@convex-dev/better-auth": "0.12.2",
         "@workspace/backend": "workspace:*",
+        "@workspace/constants": "workspace:*",
         "@workspace/i18n": "workspace:*",
         "@workspace/ui": "workspace:*",
         "better-auth": "1.6.14",
@@ -68,6 +69,7 @@
       "dependencies": {
         "@ai-sdk/mistral": "^3.0.37",
         "@convex-dev/better-auth": "0.12.2",
+        "@workspace/constants": "workspace:*",
         "@workspace/core": "workspace:*",
         "@workspace/email": "workspace:*",
         "ai": "^6.0.196",
@@ -81,6 +83,16 @@
         "@workspace/typescript-config": "workspace:*",
         "@workspace/vitest-config": "workspace:*",
         "convex-test": "^0.0.53",
+        "typescript": "^5",
+        "vitest": "^4.1.0",
+      },
+    },
+    "packages/constants": {
+      "name": "@workspace/constants",
+      "version": "0.0.0",
+      "devDependencies": {
+        "@workspace/typescript-config": "workspace:*",
+        "@workspace/vitest-config": "workspace:*",
         "typescript": "^5",
         "vitest": "^4.1.0",
       },
@@ -949,6 +961,8 @@
     "@vitest/utils": ["@vitest/utils@4.1.8", "", { "dependencies": { "@vitest/pretty-format": "4.1.8", "convert-source-map": "^2.0.0", "tinyrainbow": "^3.1.0" } }, "sha512-uOJamYALNhfJ6iolExyQM40yIQwDqYnkKtQ5VCiSe17E33H0aQ/u+1GlRuz4LZBk6Mm3sg90G9hEbmEt37C1Zg=="],
 
     "@workspace/backend": ["@workspace/backend@workspace:packages/backend"],
+
+    "@workspace/constants": ["@workspace/constants@workspace:packages/constants"],
 
     "@workspace/core": ["@workspace/core@workspace:packages/core"],
 

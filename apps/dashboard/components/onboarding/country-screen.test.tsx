@@ -29,23 +29,13 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
 import { CountryScreen } from "@/components/onboarding/country-screen"
 
 const profile = messages.dashboard.onboarding.profile
-const continueCta = messages.dashboard.onboarding.screens.continueCta
 
 function renderScreen(props: Parameters<typeof CountryScreen>[0]) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      {/* The form wrapper makes Radix render its hidden native select, the
-          only way to drive a Select under happy-dom. Same idiom as the
-          family-picker tests. */}
-      <form>
-        <CountryScreen {...props} />
-      </form>
+      <CountryScreen {...props} />
     </NextIntlClientProvider>
   )
-}
-
-function hiddenSelect(): HTMLSelectElement | null {
-  return document.querySelector("select")
 }
 
 describe("CountryScreen", () => {
@@ -57,18 +47,12 @@ describe("CountryScreen", () => {
     cleanup()
   })
 
-  it("picking the Norway card flips the derived currency to NOK and saves it", async () => {
+  it("picking Norway saves the country with its derived currency and auto-advances", async () => {
     updateSettingsMock.mockResolvedValue(undefined)
     const onDone = vi.fn()
-    renderScreen({
-      orgId: "org-1",
-      savedCountry: null,
-      savedCurrency: null,
-      onDone,
-    })
+    renderScreen({ orgId: "org-1", savedCountry: null, onDone })
 
     fireEvent.click(screen.getByRole("button", { name: profile.countries.no }))
-    fireEvent.click(screen.getByRole("button", { name: continueCta }))
 
     await waitFor(() => {
       expect(updateSettingsMock).toHaveBeenCalledWith({
@@ -77,39 +61,50 @@ describe("CountryScreen", () => {
         currency: "NOK",
       })
     })
-    await waitFor(() => {
-      expect(onDone).toHaveBeenCalledTimes(1)
-    })
+    await waitFor(
+      () => {
+        expect(onDone).toHaveBeenCalledTimes(1)
+      },
+      { timeout: 2000 }
+    )
   })
 
-  it("continue saves the default Swedish country and currency", async () => {
+  it.each([
+    ["se", "SEK"],
+    ["no", "NOK"],
+    ["dk", "DKK"],
+    ["fi", "EUR"],
+    ["other", "EUR"],
+  ])("derives the currency for %s as %s", async (country, currency) => {
     updateSettingsMock.mockResolvedValue(undefined)
-    const onDone = vi.fn()
-    renderScreen({
-      orgId: "org-1",
-      savedCountry: null,
-      savedCurrency: null,
-      onDone,
-    })
+    renderScreen({ orgId: "org-1", savedCountry: null, onDone: vi.fn() })
 
-    fireEvent.click(screen.getByRole("button", { name: continueCta }))
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: profile.countries[country as keyof typeof profile.countries],
+      })
+    )
 
     await waitFor(() => {
       expect(updateSettingsMock).toHaveBeenCalledWith({
         orgId: "org-1",
-        country: "se",
-        currency: "SEK",
+        country,
+        currency,
       })
     })
   })
 
+  it("the fresh flow marks no card", () => {
+    renderScreen({ orgId: "org-1", savedCountry: null, onDone: vi.fn() })
+    for (const name of Object.values(profile.countries)) {
+      expect(
+        screen.getByRole("button", { name }).getAttribute("aria-pressed")
+      ).toBe("false")
+    }
+  })
+
   it("a saved country preselects its card", () => {
-    renderScreen({
-      orgId: "org-1",
-      savedCountry: "dk",
-      savedCurrency: "DKK",
-      onDone: vi.fn(),
-    })
+    renderScreen({ orgId: "org-1", savedCountry: "dk", onDone: vi.fn() })
     expect(
       screen
         .getByRole("button", { name: profile.countries.dk })
@@ -122,52 +117,28 @@ describe("CountryScreen", () => {
     ).toBe("false")
   })
 
-  it("the override Select changes the saved currency without changing the country", async () => {
-    updateSettingsMock.mockResolvedValue(undefined)
-    renderScreen({
-      orgId: "org-1",
-      savedCountry: null,
-      savedCurrency: null,
-      onDone: vi.fn(),
-    })
-
-    const hidden = hiddenSelect()
-    // Radix renders the hidden native select only in form contexts; if the
-    // environment skips it, the override is e2e scope (repo idiom). The
-    // derivation itself is still asserted by the Norway-card test above.
-    if (hidden === null) {
-      expect(updateSettingsMock).toBeDefined()
-      return
-    }
-    fireEvent.change(hidden, { target: { value: "EUR" } })
-    fireEvent.click(screen.getByRole("button", { name: continueCta }))
-
-    await waitFor(() => {
-      expect(updateSettingsMock).toHaveBeenCalledWith({
-        orgId: "org-1",
-        country: "se",
-        currency: "EUR",
-      })
-    })
-  })
-
-  it("shows an alert when the save rejects", async () => {
+  it("shows an alert and restores the cards when the save rejects", async () => {
     updateSettingsMock.mockRejectedValue(
       new Error("ConvexError: adminRequired")
     )
     const onDone = vi.fn()
-    renderScreen({
-      orgId: "org-1",
-      savedCountry: "se",
-      savedCurrency: "SEK",
-      onDone,
-    })
+    // Fresh flow: nothing saved, so the marking must come from the pick alone.
+    renderScreen({ orgId: "org-1", savedCountry: null, onDone })
 
-    fireEvent.click(screen.getByRole("button", { name: continueCta }))
+    fireEvent.click(screen.getByRole("button", { name: profile.countries.no }))
 
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeDefined()
     })
     expect(onDone).not.toHaveBeenCalled()
+    expect(
+      screen.getByRole("button", { name: profile.countries.se })
+    ).toHaveProperty("disabled", false)
+    // The failed pick stays marked next to the error alert.
+    expect(
+      screen
+        .getByRole("button", { name: profile.countries.no })
+        .getAttribute("aria-pressed")
+    ).toBe("true")
   })
 })

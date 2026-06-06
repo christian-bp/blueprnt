@@ -272,7 +272,6 @@
       },
       "profile": {
         "country": "Maa",
-        "currency": "Valuutta",
         "industry": "Toimiala",
         "countries": {
           "se": "Ruotsi",
@@ -294,7 +293,7 @@
         }
       },
       "screens": {
-        "continueCta": "Jatka",
+        "nextCta": "Seuraava",
         "name": {
           "heading": "Mikä on organisaationne nimi?"
         },

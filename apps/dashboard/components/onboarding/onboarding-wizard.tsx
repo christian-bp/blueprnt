@@ -74,7 +74,13 @@ export function OnboardingWizard({
     return 4
   }
   const derived = resumeIndex()
-  const frontier = Math.max(derived, sessionStep ?? 0)
+  // The session latch only counts while the model still exists: discarding
+  // the model from a revisited model step retracts the families dot, which
+  // would otherwise stay reachable and dead-end on its loading spinner.
+  const frontier = Math.max(
+    derived,
+    sessionStep !== null && status.hasModel ? sessionStep : 0
+  )
   const current = backTo !== null && backTo < frontier ? backTo : frontier
 
   // Members who are not admins cannot run setup mutations; tell them to wait.
@@ -101,7 +107,14 @@ export function OnboardingWizard({
   }
 
   const screen = SCREENS[current] ?? "name"
-  const advance = () => setBackTo(null)
+  // Completing a screen moves one step forward. On the frontier that simply
+  // follows the server-derived resume; on a revisited screen (backTo set) it
+  // walks to the NEXT screen, not back to the frontier, so the user retraces
+  // the flow step by step. Reaching the frontier clears the back-state.
+  const advance = () =>
+    setBackTo((prev) =>
+      prev !== null && prev + 1 < frontier ? prev + 1 : null
+    )
 
   return (
     <>
@@ -133,7 +146,6 @@ export function OnboardingWizard({
               <CountryScreen
                 orgId={orgId}
                 savedCountry={settings?.country ?? null}
-                savedCurrency={settings?.currency ?? null}
                 onDone={advance}
               />
             )}

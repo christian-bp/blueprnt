@@ -272,7 +272,6 @@
       },
       "profile": {
         "country": "Land",
-        "currency": "Valuta",
         "industry": "Branche",
         "countries": {
           "se": "Sverige",
@@ -294,7 +293,7 @@
         }
       },
       "screens": {
-        "continueCta": "Fortsæt",
+        "nextCta": "Næste",
         "name": {
           "heading": "Hvad hedder jeres organisation?"
         },

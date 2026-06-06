@@ -272,7 +272,6 @@
       },
       "profile": {
         "country": "Country",
-        "currency": "Currency",
         "industry": "Industry",
         "countries": {
           "se": "Sweden",
@@ -294,7 +293,7 @@
         }
       },
       "screens": {
-        "continueCta": "Continue",
+        "nextCta": "Next",
         "name": {
           "heading": "What is your organization called?"
         },

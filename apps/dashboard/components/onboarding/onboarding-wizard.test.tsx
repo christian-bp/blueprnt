@@ -47,13 +47,10 @@ vi.mock("@/components/onboarding/language-screen", () => ({
 vi.mock("@/components/onboarding/country-screen", () => ({
   CountryScreen: (props: {
     savedCountry: string | null
-    savedCurrency: string | null
     onDone: () => void
   }) => (
     <div data-testid="country-screen">
-      <span data-testid="country-saved">
-        {props.savedCountry ?? "null"}/{props.savedCurrency ?? "null"}
-      </span>
+      <span data-testid="country-saved">{props.savedCountry ?? "null"}</span>
       <button type="button" onClick={() => props.onDone()}>
         country-done
       </button>
@@ -291,6 +288,73 @@ describe("OnboardingWizard", () => {
     expect(dotsProps?.maxReachedIndex).toBe(5)
   })
 
+  it("completing a revisited screen advances one step, not to the frontier", () => {
+    renderWizard(
+      {
+        organization: admin,
+        settingsComplete: true,
+        hasModel: false,
+        completed: false,
+      },
+      fullSettings
+    )
+    // Frontier is the model screen (index 4); jump back to the language
+    // screen (index 1) via its dot.
+    expect(screen.getByTestId("model-step")).toBeDefined()
+    fireEvent.click(screen.getByTestId("dot-1"))
+    expect(screen.getByTestId("language-screen")).toBeDefined()
+
+    // Completing it lands on the country screen (index 2), not the frontier.
+    fireEvent.click(screen.getByText("language-done"))
+    expect(screen.getByTestId("country-screen")).toBeDefined()
+    expect(screen.queryByTestId("model-step")).toBeNull()
+    expect(dotsProps?.activeIndex).toBe(2)
+
+    // Walking the rest of the way returns to the frontier and clears the
+    // back-state (industry, then model).
+    fireEvent.click(screen.getByText("country-done"))
+    expect(screen.getByTestId("industry-screen")).toBeDefined()
+    fireEvent.click(screen.getByText("industry-done"))
+    expect(screen.getByTestId("model-step")).toBeDefined()
+    expect(dotsProps?.activeIndex).toBe(4)
+  })
+
+  it("discarding the model retracts the families dot and returns to the model step", () => {
+    // The session latch (model continue) must only count while the model still
+    // exists: after a discard the families screen would dead-end on its
+    // spinner, so the dot may not stay reachable.
+    useQueryMock.mockReturnValue(fullSettings)
+    const status = {
+      organization: admin,
+      settingsComplete: true,
+      hasModel: true,
+      completed: false,
+    }
+    const view = render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <OnboardingWizard status={status} onFinished={() => {}} />
+      </NextIntlClientProvider>
+    )
+    fireEvent.click(screen.getByText("model-continue"))
+    expect(screen.getByTestId("families-step")).toBeDefined()
+    expect(dotsProps?.maxReachedIndex).toBe(5)
+
+    // The model is discarded (change-choice inside the model step); the status
+    // query updates reactively and hasModel flips to false.
+    view.rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <OnboardingWizard
+          status={{ ...status, hasModel: false }}
+          onFinished={() => {}}
+        />
+      </NextIntlClientProvider>
+    )
+    expect(screen.getByTestId("model-step")).toBeDefined()
+    expect(screen.queryByTestId("families-step")).toBeNull()
+    expect(dotsProps?.activeIndex).toBe(4)
+    expect(dotsProps?.maxReachedIndex).toBe(4)
+  })
+
   it("clicking a previous dot navigates back to that screen", () => {
     renderWizard(
       {
@@ -311,24 +375,5 @@ describe("OnboardingWizard", () => {
     // The active dot follows the revisited screen; the gate is unchanged.
     expect(dotsProps?.activeIndex).toBe(1)
     expect(dotsProps?.maxReachedIndex).toBe(4)
-  })
-
-  it("a screen onDone clears the back-navigation and returns to the frontier", () => {
-    renderWizard(
-      {
-        organization: admin,
-        settingsComplete: true,
-        hasModel: false,
-        completed: false,
-      },
-      fullSettings
-    )
-    fireEvent.click(screen.getByTestId("dot-1"))
-    expect(screen.getByTestId("language-screen")).toBeDefined()
-
-    fireEvent.click(screen.getByText("language-done"))
-    // backTo cleared; the derived frontier (model step) shows again.
-    expect(screen.getByTestId("model-step")).toBeDefined()
-    expect(screen.queryByTestId("language-screen")).toBeNull()
   })
 })

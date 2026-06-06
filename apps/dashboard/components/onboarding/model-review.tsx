@@ -1,9 +1,9 @@
 "use client"
 
-import { Button } from "@workspace/ui/components/button"
 import { useTranslations } from "next-intl"
 import { ModelEditor } from "@/components/model/model-editor"
 import { ChangeChoiceButton } from "@/components/onboarding/change-choice-button"
+import { NextButton } from "@/components/onboarding/next-button"
 
 // Screen 5 (template path): the shared ModelEditor renders the criteria list
 // (read-only with an Edit toggle for importance, removal, and the add dialog)
@@ -20,7 +20,6 @@ export function ModelReview({
   onChangeChoice?: () => void | Promise<void>
 }) {
   const t = useTranslations("dashboard.model.review")
-  const tScreens = useTranslations("dashboard.onboarding.screens")
 
   return (
     <div className="space-y-6">
@@ -30,7 +29,7 @@ export function ModelReview({
         <div className="flex items-center gap-2">
           {onChangeChoice && <ChangeChoiceButton onConfirm={onChangeChoice} />}
         </div>
-        <Button onClick={onContinue}>{tScreens("continueCta")}</Button>
+        <NextButton onClick={onContinue} />
       </div>
     </div>
   )

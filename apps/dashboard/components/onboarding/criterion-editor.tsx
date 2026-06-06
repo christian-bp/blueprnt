@@ -1,7 +1,6 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Button } from "@workspace/ui/components/button"
 import { useMutation, useQuery } from "convex/react"
 import { AnimatePresence } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
@@ -9,14 +8,15 @@ import { useState } from "react"
 import { AddCriterionDialog } from "@/components/onboarding/add-criterion-dialog"
 import { ChangeChoiceButton } from "@/components/onboarding/change-choice-button"
 import { CriterionItem } from "@/components/onboarding/criterion-item"
+import { NextButton } from "@/components/onboarding/next-button"
 import { ModelDraftPanel } from "@/components/onboarding/model-draft-panel"
 import { importanceLabelKey } from "@/lib/importance"
 
 // Screen 5 (scratch path). The criteria list is reactive from getModel; the
 // add-criterion dialog posts a new criterion, the hover-trashcan removes one,
-// the AI draft panel (Task 12) is slotted in, and "Continue" hands control back
+// the AI draft panel (Task 12) is slotted in, and "Next" hands control back
 // to the wizard (onContinue), which advances to the families screen; completion
-// happens there, not here. Continue is disabled until at least one criterion
+// happens there, not here. Next is disabled until at least one criterion
 // exists.
 //
 // Uses the shared CriterionItem component (always editable here: no importance
@@ -32,7 +32,6 @@ export function CriterionEditor({
 }) {
   const t = useTranslations("dashboard.model")
   const tEditor = useTranslations("dashboard.model.editor")
-  const tScreens = useTranslations("dashboard.onboarding.screens")
   const tImportance = useTranslations("model.importance")
   // The fixed tracks/levels localize server-side in getModel; passing the
   // active UI locale re-runs the reactive query when the language changes.
@@ -115,9 +114,7 @@ export function CriterionEditor({
         <div className="flex items-center gap-2">
           {onChangeChoice && <ChangeChoiceButton onConfirm={onChangeChoice} />}
         </div>
-        <Button disabled={finishDisabled} onClick={onContinue}>
-          {tScreens("continueCta")}
-        </Button>
+        <NextButton disabled={finishDisabled} onClick={onContinue} />
       </div>
     </div>
   )

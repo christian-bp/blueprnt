@@ -1,9 +1,9 @@
 "use client"
 
-import { Button } from "@workspace/ui/components/button"
-import { Input } from "@workspace/ui/components/input"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
+import { NextButton } from "@/components/onboarding/next-button"
+import { OnboardingInput } from "@/components/onboarding/onboarding-input"
 import { authClient } from "@/lib/auth-client"
 import { organizationSlug } from "@/lib/slug"
 
@@ -70,7 +70,7 @@ export function NameScreen({
       <h1 className="text-center font-semibold text-2xl">
         {tScreens("name.heading")}
       </h1>
-      <Input
+      <OnboardingInput
         aria-label={t("nameLabel")}
         value={name}
         placeholder={t("namePlaceholder")}
@@ -82,9 +82,7 @@ export function NameScreen({
           {t("error")}
         </p>
       )}
-      <Button type="submit" disabled={pending || name.trim().length < 2}>
-        {tScreens("continueCta")}
-      </Button>
+      <NextButton type="submit" disabled={pending || name.trim().length < 2} />
     </form>
   )
 }

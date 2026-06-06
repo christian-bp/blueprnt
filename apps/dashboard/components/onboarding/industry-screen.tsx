@@ -1,25 +1,15 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Button } from "@workspace/ui/components/button"
+import { INDUSTRY_KEYS, type IndustryKey } from "@workspace/constants"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
-import { useState } from "react"
 import { OptionCard } from "@/components/option-card"
+import { useAutoAdvance } from "@/hooks/use-auto-advance"
 
-const INDUSTRIES = [
-  "publicSector",
-  "manufacturing",
-  "consulting",
-  "retail",
-  "itTelecom",
-  "healthcare",
-  "finance",
-  "realEstateConstruction",
-  "other",
-] as const
-
-const INDUSTRY_KEYS = {
+// The industry list lives in @workspace/constants; it also keys the starter
+// sets in the backend, so the cards and the starters never drift apart.
+const INDUSTRY_LABEL_KEYS = {
   publicSector: "industries.publicSector",
   manufacturing: "industries.manufacturing",
   consulting: "industries.consulting",
@@ -29,9 +19,10 @@ const INDUSTRY_KEYS = {
   finance: "industries.finance",
   realEstateConstruction: "industries.realEstateConstruction",
   other: "industries.other",
-} as const satisfies Record<(typeof INDUSTRIES)[number], string>
+} as const satisfies Record<IndustryKey, string>
 
-// Screen 4: the organization's industry as option cards. The industry shapes
+// Screen 4: the organization's industry as option cards. Picking one persists
+// it and auto-advances once the other cards have faded. The industry shapes
 // the families starter set offered on the final onboarding screen.
 export function IndustryScreen({
   orgId,
@@ -48,9 +39,13 @@ export function IndustryScreen({
   const updateSettings = useMutation(
     api.accounts.organization.updateOrganizationSettings
   )
-  const [industry, setIndustry] = useState<string>(saved ?? "itTelecom")
-  const [pending, setPending] = useState(false)
-  const [failed, setFailed] = useState(false)
+  const { chosen, picked, failed, choose } = useAutoAdvance({
+    persist: (code) => updateSettings({ orgId, industry: code }),
+    onDone,
+  })
+  // Fresh flow marks nothing; a revisit marks the saved industry. picked
+  // survives a failed save so the choice stays marked next to the alert.
+  const marked = picked ?? saved
 
   return (
     <div className="flex flex-col items-center gap-6">
@@ -58,12 +53,13 @@ export function IndustryScreen({
         {tScreens("industry.heading")}
       </h1>
       <div className="grid w-full max-w-2xl grid-cols-2 gap-3 sm:grid-cols-3">
-        {INDUSTRIES.map((code) => (
+        {INDUSTRY_KEYS.map((code) => (
           <OptionCard
             key={code}
-            title={tProfile(INDUSTRY_KEYS[code])}
-            selected={industry === code}
-            onSelect={() => setIndustry(code)}
+            title={tProfile(INDUSTRY_LABEL_KEYS[code])}
+            selected={marked === code}
+            faded={chosen !== null && chosen !== code}
+            onSelect={() => choose(code)}
           />
         ))}
       </div>
@@ -72,24 +68,6 @@ export function IndustryScreen({
           {t("error")}
         </p>
       )}
-      <Button
-        type="button"
-        disabled={pending}
-        onClick={async () => {
-          setPending(true)
-          setFailed(false)
-          try {
-            await updateSettings({ orgId, industry })
-            onDone()
-          } catch {
-            setFailed(true)
-          } finally {
-            setPending(false)
-          }
-        }}
-      >
-        {tScreens("continueCta")}
-      </Button>
     </div>
   )
 }

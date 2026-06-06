@@ -29,7 +29,6 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
 import { IndustryScreen } from "@/components/onboarding/industry-screen"
 
 const profile = messages.dashboard.onboarding.profile
-const continueCta = messages.dashboard.onboarding.screens.continueCta
 
 function renderScreen(props: Parameters<typeof IndustryScreen>[0]) {
   return render(
@@ -48,7 +47,7 @@ describe("IndustryScreen", () => {
     cleanup()
   })
 
-  it("selecting a card and continuing saves the chosen industry", async () => {
+  it("picking a card saves the industry and auto-advances", async () => {
     updateSettingsMock.mockResolvedValue(undefined)
     const onDone = vi.fn()
     renderScreen({ orgId: "org-1", saved: null, onDone })
@@ -56,7 +55,6 @@ describe("IndustryScreen", () => {
     fireEvent.click(
       screen.getByRole("button", { name: profile.industries.healthcare })
     )
-    fireEvent.click(screen.getByRole("button", { name: continueCta }))
 
     await waitFor(() => {
       expect(updateSettingsMock).toHaveBeenCalledWith({
@@ -64,23 +62,21 @@ describe("IndustryScreen", () => {
         industry: "healthcare",
       })
     })
-    await waitFor(() => {
-      expect(onDone).toHaveBeenCalledTimes(1)
-    })
+    await waitFor(
+      () => {
+        expect(onDone).toHaveBeenCalledTimes(1)
+      },
+      { timeout: 2000 }
+    )
   })
 
-  it("continue saves the default industry when nothing is picked", async () => {
-    updateSettingsMock.mockResolvedValue(undefined)
+  it("the fresh flow marks no card", () => {
     renderScreen({ orgId: "org-1", saved: null, onDone: vi.fn() })
-
-    fireEvent.click(screen.getByRole("button", { name: continueCta }))
-
-    await waitFor(() => {
-      expect(updateSettingsMock).toHaveBeenCalledWith({
-        orgId: "org-1",
-        industry: "itTelecom",
-      })
-    })
+    expect(
+      screen
+        .getByRole("button", { name: profile.industries.itTelecom })
+        .getAttribute("aria-pressed")
+    ).toBe("false")
   })
 
   it("a saved value preselects its card", () => {
@@ -97,18 +93,30 @@ describe("IndustryScreen", () => {
     ).toBe("false")
   })
 
-  it("shows an alert when the save rejects", async () => {
+  it("shows an alert and restores the cards when the save rejects", async () => {
     updateSettingsMock.mockRejectedValue(
       new Error("ConvexError: adminRequired")
     )
     const onDone = vi.fn()
-    renderScreen({ orgId: "org-1", saved: "retail", onDone })
+    // Fresh flow: nothing saved, so the marking must come from the pick alone.
+    renderScreen({ orgId: "org-1", saved: null, onDone })
 
-    fireEvent.click(screen.getByRole("button", { name: continueCta }))
+    fireEvent.click(
+      screen.getByRole("button", { name: profile.industries.finance })
+    )
 
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeDefined()
     })
     expect(onDone).not.toHaveBeenCalled()
+    expect(
+      screen.getByRole("button", { name: profile.industries.retail })
+    ).toHaveProperty("disabled", false)
+    // The failed pick stays marked next to the error alert.
+    expect(
+      screen
+        .getByRole("button", { name: profile.industries.finance })
+        .getAttribute("aria-pressed")
+    ).toBe("true")
   })
 })

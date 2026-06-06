@@ -33,4 +33,20 @@ describe("OptionCard", () => {
         .getAttribute("aria-pressed")
     ).toBe("true")
   })
+
+  it("a faded card is disabled and ignores clicks", () => {
+    const onSelect = vi.fn()
+    render(
+      <OptionCard
+        title="Norwegian"
+        selected={false}
+        faded
+        onSelect={onSelect}
+      />
+    )
+    const card = screen.getByRole("button", { name: "Norwegian" })
+    expect(card).toHaveProperty("disabled", true)
+    fireEvent.click(card)
+    expect(onSelect).not.toHaveBeenCalled()
+  })
 })

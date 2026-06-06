@@ -272,7 +272,6 @@
       },
       "profile": {
         "country": "Land",
-        "currency": "Valuta",
         "industry": "Bransje",
         "countries": {
           "se": "Sverige",
@@ -294,7 +293,7 @@
         }
       },
       "screens": {
-        "continueCta": "Fortsett",
+        "nextCta": "Neste",
         "name": {
           "heading": "Hva heter organisasjonen deres?"
         },

@@ -151,20 +151,94 @@ describe("ModelSetupStep", () => {
     ).toBeDefined()
   })
 
-  it("disables Continue for the scratch path until a name is typed", () => {
+  it("selecting scratch reveals the name form; Next stays disabled until a name is typed", () => {
     renderStep()
-    // Select the scratch card; the name input is revealed below the cards.
+    // Select the scratch card; the name form is revealed below the cards and
+    // the template card fades away (disabled while faded).
     fireEvent.click(screen.getByRole("button", { name: /Build from scratch/ }))
-    const continueCta = screen.getByRole("button", {
-      name: messages.dashboard.onboarding.screens.continueCta,
+    expect(
+      screen.getByRole("button", { name: /Start from the standard template/ })
+    ).toHaveProperty("disabled", true)
+    const nextCta = screen.getByRole("button", {
+      name: messages.dashboard.onboarding.screens.nextCta,
     })
-    expect(continueCta).toHaveProperty("disabled", true)
+    expect(nextCta).toHaveProperty("disabled", true)
 
     const input = screen.getByLabelText(
       messages.dashboard.model.scratch.nameLabel
     )
     fireEvent.change(input, { target: { value: "My model" } })
-    expect(continueCta).toHaveProperty("disabled", false)
+    expect(nextCta).toHaveProperty("disabled", false)
+  })
+
+  it("clicking the scratch card again deselects it and brings the template card back", () => {
+    renderStep()
+    const scratch = screen.getByRole("button", { name: /Build from scratch/ })
+    fireEvent.click(scratch)
+    expect(scratch.getAttribute("aria-pressed")).toBe("true")
+
+    fireEvent.click(scratch)
+    expect(scratch.getAttribute("aria-pressed")).toBe("false")
+    expect(
+      screen.getByRole("button", { name: /Start from the standard template/ })
+    ).toHaveProperty("disabled", false)
+  })
+
+  it("submitting the scratch name creates the empty model and opens the editor", async () => {
+    createEmptyMock.mockImplementation(async () => {
+      setModel({ ...reviewModel, templateKey: null })
+      return "model-2"
+    })
+    renderStep("org-scr")
+
+    fireEvent.click(screen.getByRole("button", { name: /Build from scratch/ }))
+    const input = screen.getByLabelText(
+      messages.dashboard.model.scratch.nameLabel
+    )
+    fireEvent.change(input, { target: { value: "My model" } })
+    const form = input.closest("form")
+    if (!form) throw new Error("form not found")
+    fireEvent.submit(form)
+
+    await waitFor(() => {
+      expect(createEmptyMock).toHaveBeenCalledWith({
+        orgId: "org-scr",
+        name: "My model",
+      })
+    })
+    await waitFor(() => {
+      expect(
+        screen.getByText(messages.dashboard.model.editor.heading)
+      ).toBeDefined()
+    })
+  })
+
+  it("shows the error alert and keeps the form when the scratch creation rejects", async () => {
+    createEmptyMock.mockRejectedValue(new Error("ConvexError: modelExists"))
+    renderStep("org-scr")
+
+    fireEvent.click(screen.getByRole("button", { name: /Build from scratch/ }))
+    const input = screen.getByLabelText(
+      messages.dashboard.model.scratch.nameLabel
+    )
+    fireEvent.change(input, { target: { value: "My model" } })
+    const form = input.closest("form")
+    if (!form) throw new Error("form not found")
+    fireEvent.submit(form)
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toBeDefined()
+    })
+    // Still on the choice screen with the scratch form open and Next enabled
+    // for a retry; the editor never opened.
+    expect(
+      screen.queryByText(messages.dashboard.model.editor.heading)
+    ).toBeNull()
+    expect(
+      screen.getByRole("button", {
+        name: messages.dashboard.onboarding.screens.nextCta,
+      })
+    ).toHaveProperty("disabled", false)
   })
 
   it("calls createModelFromTemplate and switches to the review screen", async () => {
@@ -175,45 +249,48 @@ describe("ModelSetupStep", () => {
     })
     renderStep("org-abc")
 
-    // Select the template card, then confirm with Continue.
+    // Picking the template card creates the model and auto-advances; there is
+    // no separate confirm button.
     fireEvent.click(
       screen.getByRole("button", { name: /Start from the standard template/ })
-    )
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: messages.dashboard.onboarding.screens.continueCta,
-      })
     )
 
     await waitFor(() => {
       expect(createFromTemplateMock).toHaveBeenCalledWith({ orgId: "org-abc" })
     })
 
-    // The review screen renders its heading once the mode flips.
-    await waitFor(() => {
-      expect(
-        screen.getByText(messages.dashboard.model.review.heading)
-      ).toBeDefined()
-    })
+    // The review screen renders its heading once the mode flips (after the
+    // fade-plus-pause advance delay).
+    await waitFor(
+      () => {
+        expect(
+          screen.getByText(messages.dashboard.model.review.heading)
+        ).toBeDefined()
+      },
+      { timeout: 2000 }
+    )
   })
 
   it("shows the error alert when the template mutation rejects", async () => {
     createFromTemplateMock.mockRejectedValue(new Error("ConvexError: notFound"))
     renderStep()
 
-    // Select the template card, then confirm with Continue.
     fireEvent.click(
       screen.getByRole("button", { name: /Start from the standard template/ })
-    )
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: messages.dashboard.onboarding.screens.continueCta,
-      })
     )
 
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeDefined()
     })
+    // The cards are restored so the user can pick again.
+    expect(
+      screen.getByRole("button", { name: /Build from scratch/ })
+    ).toHaveProperty("disabled", false)
+    expect(
+      screen
+        .getByRole("button", { name: /Start from the standard template/ })
+        .getAttribute("aria-pressed")
+    ).toBe("false")
   })
 
   it("resumes into the review screen when a template model already exists", async () => {
@@ -256,11 +333,11 @@ describe("ModelSetupStep", () => {
     const onContinue = vi.fn()
     renderStep("org-fin", onContinue)
 
-    // Resumes into the review screen; click its Continue CTA.
-    const continueCta = await screen.findByRole("button", {
-      name: messages.dashboard.onboarding.screens.continueCta,
+    // Resumes into the review screen; click its Next CTA.
+    const nextCta = await screen.findByRole("button", {
+      name: messages.dashboard.onboarding.screens.nextCta,
     })
-    fireEvent.click(continueCta)
+    fireEvent.click(nextCta)
 
     expect(onContinue).toHaveBeenCalledTimes(1)
     // Completion moves to the families step: the model step never completes.

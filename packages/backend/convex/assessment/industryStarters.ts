@@ -1,3 +1,4 @@
+import type { IndustryKey } from "@workspace/constants"
 import type { TemplateLocale } from "../evaluationModel/standardTemplate"
 import { industryStartersEn } from "./industryStarters.content.en"
 import { industryStartersSv } from "./industryStarters.content.sv"
@@ -7,18 +8,11 @@ import { industryStartersSv } from "./industryStarters.content.sv"
 // onboarding families step; nothing is seeded until the user confirms.
 // Prose lives in the per-locale content modules.
 
-export const INDUSTRY_KEYS = [
-  "publicSector",
-  "manufacturing",
-  "consulting",
-  "retail",
-  "itTelecom",
-  "healthcare",
-  "finance",
-  "realEstateConstruction",
-  "other",
-] as const
-export type IndustryKey = (typeof INDUSTRY_KEYS)[number]
+export {
+  INDUSTRY_KEYS,
+  type IndustryKey,
+  clampIndustry,
+} from "@workspace/constants"
 
 export interface StarterRole {
   title: string
@@ -32,13 +26,6 @@ export interface StarterFamily {
 }
 
 export type StarterContent = Record<IndustryKey, StarterFamily[]>
-
-const INDUSTRY_KEY_SET = new Set<string>(INDUSTRY_KEYS)
-export function clampIndustry(industry: string | undefined): IndustryKey {
-  return industry !== undefined && INDUSTRY_KEY_SET.has(industry)
-    ? (industry as IndustryKey)
-    : "other"
-}
 
 export function starterContent(locale: TemplateLocale): StarterContent {
   return locale === "sv" ? industryStartersSv : industryStartersEn

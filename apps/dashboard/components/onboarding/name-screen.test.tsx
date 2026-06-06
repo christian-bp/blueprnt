@@ -28,7 +28,7 @@ vi.mock("@/lib/slug", () => ({
 import { NameScreen } from "@/components/onboarding/name-screen"
 
 const labels = messages.dashboard.onboarding.organization
-const continueCta = messages.dashboard.onboarding.screens.continueCta
+const nextCta = messages.dashboard.onboarding.screens.nextCta
 
 function renderScreen(props: Parameters<typeof NameScreen>[0]) {
   return render(
@@ -75,7 +75,7 @@ describe("NameScreen", () => {
   it("create mode: the CTA is disabled for a too-short name", () => {
     renderScreen({ existing: null, onDone: vi.fn() })
     const input = screen.getByLabelText(labels.nameLabel)
-    const button = screen.getByRole("button", { name: continueCta })
+    const button = screen.getByRole("button", { name: nextCta })
 
     expect(button).toHaveProperty("disabled", true)
     fireEvent.change(input, { target: { value: "a" } })
@@ -145,7 +145,7 @@ describe("NameScreen", () => {
       expect(screen.getByRole("alert")).toBeDefined()
     })
     expect(onDone).not.toHaveBeenCalled()
-    expect(screen.getByRole("button", { name: continueCta })).toHaveProperty(
+    expect(screen.getByRole("button", { name: nextCta })).toHaveProperty(
       "disabled",
       false
     )

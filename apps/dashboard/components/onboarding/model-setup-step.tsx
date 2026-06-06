@@ -1,24 +1,32 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Button } from "@workspace/ui/components/button"
-import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { useMutation, useQuery } from "convex/react"
+import { AnimatePresence, motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { CriterionEditor } from "@/components/onboarding/criterion-editor"
 import { ModelReview } from "@/components/onboarding/model-review"
-import { OptionCard } from "@/components/option-card"
+import { NextButton } from "@/components/onboarding/next-button"
+import { OnboardingInput } from "@/components/onboarding/onboarding-input"
+import { OPTION_FADE_MS, OptionCard } from "@/components/option-card"
+import { advanceDelay } from "@/hooks/use-auto-advance"
 
 type Mode = "choice" | "template-review" | "scratch-editor"
 type Choice = "template" | "scratch" | null
 
 // Screen 5: the gate keeps the wizard mounted for the whole onboarding session,
 // so the choice, review, and editor screens live in LOCAL state after the
-// create call. "Continue" hands control back to the wizard (onContinue), which
+// create call. "Next" hands control back to the wizard (onContinue), which
 // advances to the families screen.
+//
+// Choice behavior matches the other option screens: picking the template card
+// fades the scratch card, creates the model, and advances to the review
+// automatically (recoverable there via the change-choice button). Picking the
+// scratch card fades the template card and reveals the name input; clicking
+// the scratch card again deselects it and brings the template card back.
 //
 // Resume: a reload lands here whenever a model already exists but onboarding
 // was never finished (completed is false). getModel tells us which path the
@@ -36,7 +44,6 @@ export function ModelSetupStep({
 }) {
   const t = useTranslations("dashboard.model")
   const tOnboarding = useTranslations("dashboard.onboarding")
-  const tScreens = useTranslations("dashboard.onboarding.screens")
   const createFromTemplate = useMutation(
     api.evaluationModel.model.createModelFromTemplate
   )
@@ -112,31 +119,47 @@ export function ModelSetupStep({
     )
   }
 
-  // Confirm creates the model for the selected path: template creates from the
-  // standard template, scratch creates an empty model with the typed name.
-  const confirm = async () => {
+  // Template is the auto-advance path: create from the standard template
+  // while the scratch card fades, then jump to the review once both the
+  // mutation and the fade have finished. On failure the cards come back.
+  const pickTemplate = async () => {
+    if (pending || choice === "template") return
+    setChoice("template")
     setPending(true)
     setFailed(false)
     try {
-      if (choice === "template") {
-        await createFromTemplate({ orgId })
-        setPending(false)
-        setMode("template-review")
-      } else {
-        await createEmpty({ orgId, name: scratchName.trim() })
-        setPending(false)
-        setMode("scratch-editor")
-      }
+      await Promise.all([createFromTemplate({ orgId }), advanceDelay()])
+      setMode("template-review")
+    } catch {
+      setChoice(null)
+      setFailed(true)
+    } finally {
+      setPending(false)
+    }
+  }
+
+  // Scratch needs a name first, so it cannot auto-advance: selecting reveals
+  // the name form below; clicking the card again deselects it.
+  const pickScratch = () => {
+    if (pending) return
+    setFailed(false)
+    setChoice(choice === "scratch" ? null : "scratch")
+  }
+
+  const confirmScratch = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (pending || scratchName.trim().length === 0) return
+    setPending(true)
+    setFailed(false)
+    try {
+      await createEmpty({ orgId, name: scratchName.trim() })
+      setPending(false)
+      setMode("scratch-editor")
     } catch {
       setFailed(true)
       setPending(false)
     }
   }
-
-  const confirmDisabled =
-    pending ||
-    choice === null ||
-    (choice === "scratch" && scratchName.trim().length === 0)
 
   return (
     <div className="flex flex-col items-center gap-6">
@@ -147,36 +170,54 @@ export function ModelSetupStep({
           title={t("template.title")}
           description={t("template.description")}
           selected={choice === "template"}
-          onSelect={() => setChoice("template")}
+          faded={choice === "scratch"}
+          onSelect={pickTemplate}
         />
         <OptionCard
           title={t("scratch.title")}
           description={t("scratch.description")}
           selected={choice === "scratch"}
-          onSelect={() => setChoice("scratch")}
+          faded={choice === "template"}
+          onSelect={pickScratch}
         />
       </div>
-      {/* The scratch name input lives below the cards, revealed once the scratch
-          card is selected (matching the prior in-card input as closely as the
-          centered layout allows). */}
-      {choice === "scratch" && (
-        <div className="w-full max-w-xs space-y-2">
-          <Label htmlFor="model-name">{t("scratch.nameLabel")}</Label>
-          <Input
-            id="model-name"
-            value={scratchName}
-            onChange={(event) => setScratchName(event.target.value)}
-          />
-        </div>
-      )}
+      {/* The scratch name form enters and leaves below the cards. The outer
+          motion element carries only animated geometry (height, opacity); the
+          inner div owns spacing (docs/ui-animation.md rule 2). */}
+      <AnimatePresence initial={false}>
+        {choice === "scratch" && (
+          <motion.div
+            key="scratch-name"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: OPTION_FADE_MS / 1000, ease: "easeOut" }}
+            className="w-full max-w-xs overflow-hidden"
+          >
+            <form
+              className="flex flex-col gap-2 px-1 pb-1"
+              onSubmit={confirmScratch}
+            >
+              <Label htmlFor="model-name">{t("scratch.nameLabel")}</Label>
+              <OnboardingInput
+                id="model-name"
+                value={scratchName}
+                onChange={(event) => setScratchName(event.target.value)}
+              />
+              <NextButton
+                type="submit"
+                className="mt-2 self-end"
+                disabled={pending || scratchName.trim().length === 0}
+              />
+            </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
       {failed && (
         <p role="alert" className="text-destructive text-sm">
           {t("error")}
         </p>
       )}
-      <Button type="button" disabled={confirmDisabled} onClick={confirm}>
-        {tScreens("continueCta")}
-      </Button>
     </div>
   )
 }

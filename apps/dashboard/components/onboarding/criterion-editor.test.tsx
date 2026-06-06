@@ -176,7 +176,7 @@ describe("CriterionEditor", () => {
     const { rerender } = renderEditor()
     const getFinish = () =>
       screen.getByRole("button", {
-        name: messages.dashboard.onboarding.screens.continueCta,
+        name: messages.dashboard.onboarding.screens.nextCta,
       })
     expect(getFinish()).toHaveProperty("disabled", true)
 
@@ -288,7 +288,7 @@ describe("CriterionEditor", () => {
 
     fireEvent.click(
       screen.getByRole("button", {
-        name: messages.dashboard.onboarding.screens.continueCta,
+        name: messages.dashboard.onboarding.screens.nextCta,
       })
     )
 

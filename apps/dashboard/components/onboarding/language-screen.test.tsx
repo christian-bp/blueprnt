@@ -38,7 +38,6 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
 import { LanguageScreen } from "@/components/onboarding/language-screen"
 
 const labels = messages.dashboard.onboarding.organization
-const continueCta = messages.dashboard.onboarding.screens.continueCta
 
 function renderScreen(props: Parameters<typeof LanguageScreen>[0]) {
   return render(
@@ -58,19 +57,19 @@ describe("LanguageScreen", () => {
     cleanup()
   })
 
-  it("selecting a card previews that locale", () => {
+  it("picking a card previews that locale immediately", () => {
+    updateSettingsMock.mockResolvedValue(undefined)
     renderScreen({ orgId: "org-1", saved: null, onDone: vi.fn() })
     fireEvent.click(screen.getByRole("button", { name: labels.languages.en }))
     expect(setPreviewLocaleMock).toHaveBeenCalledWith("en")
   })
 
-  it("continue saves the selected language and calls onDone", async () => {
+  it("picking a card saves the language and auto-advances", async () => {
     updateSettingsMock.mockResolvedValue(undefined)
     const onDone = vi.fn()
     renderScreen({ orgId: "org-1", saved: null, onDone })
 
     fireEvent.click(screen.getByRole("button", { name: labels.languages.fi }))
-    fireEvent.click(screen.getByRole("button", { name: continueCta }))
 
     await waitFor(() => {
       expect(updateSettingsMock).toHaveBeenCalledWith({
@@ -78,9 +77,28 @@ describe("LanguageScreen", () => {
         language: "fi",
       })
     })
-    await waitFor(() => {
-      expect(onDone).toHaveBeenCalledTimes(1)
-    })
+    // onDone waits for both the save and the fade-out of the other cards.
+    await waitFor(
+      () => {
+        expect(onDone).toHaveBeenCalledTimes(1)
+      },
+      { timeout: 2000 }
+    )
+  })
+
+  it("disables the other cards while a pick is in flight", () => {
+    // A pending save keeps the choice in flight.
+    updateSettingsMock.mockReturnValue(new Promise(() => {}))
+    renderScreen({ orgId: "org-1", saved: null, onDone: vi.fn() })
+
+    fireEvent.click(screen.getByRole("button", { name: labels.languages.fi }))
+
+    expect(
+      screen.getByRole("button", { name: labels.languages.sv })
+    ).toHaveProperty("disabled", true)
+    expect(
+      screen.getByRole("button", { name: labels.languages.fi })
+    ).toHaveProperty("disabled", false)
   })
 
   it("a saved value preselects its card", () => {
@@ -97,18 +115,28 @@ describe("LanguageScreen", () => {
     ).toBe("false")
   })
 
-  it("shows an alert when the save rejects", async () => {
+  it("shows an alert and restores the cards when the save rejects", async () => {
     updateSettingsMock.mockRejectedValue(
       new Error("ConvexError: adminRequired")
     )
     const onDone = vi.fn()
     renderScreen({ orgId: "org-1", saved: "sv", onDone })
 
-    fireEvent.click(screen.getByRole("button", { name: continueCta }))
+    fireEvent.click(screen.getByRole("button", { name: labels.languages.en }))
 
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeDefined()
     })
     expect(onDone).not.toHaveBeenCalled()
+    // The cards are interactive again, and the failed pick stays marked so
+    // the cards keep agreeing with the previewed page language.
+    expect(
+      screen.getByRole("button", { name: labels.languages.sv })
+    ).toHaveProperty("disabled", false)
+    expect(
+      screen
+        .getByRole("button", { name: labels.languages.en })
+        .getAttribute("aria-pressed")
+    ).toBe("true")
   })
 })
