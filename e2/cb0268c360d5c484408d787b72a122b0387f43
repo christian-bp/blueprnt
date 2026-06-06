@@ -1,0 +1,79 @@
+apps/dashboard/components/onboarding/onboarding-wizard.test.tsx
+  s_df12fc6ddf323c::t_3a200f3a595661 291-321
+packages/constants/src/countries.ts
+  s_df12fc6ddf323c::t_eb3b96317a53da 1-29
+packages/constants/src/industries.ts
+  s_df12fc6ddf323c::t_19eae3232770d4 1-24
+packages/constants/src/industries.test.ts
+  s_df12fc6ddf323c::t_9c150cd999964a 1-12
+apps/dashboard/package.json
+  s_df12fc6ddf323c::t_03ba610c912889 18
+apps/dashboard/components/onboarding/country-screen.tsx
+  s_df12fc6ddf323c::t_119e77b7508381 4-8,14-17,23,47,61,64
+apps/dashboard/hooks/use-auto-advance.ts
+  s_df12fc6ddf323c::t_2ad0bd95202439 40-51,59,62
+  s_df12fc6ddf323c::t_ad57d2fc41cea4 6-19,22
+  s_df12fc6ddf323c::t_75f30143e6d74d 3
+  s_df12fc6ddf323c::t_f339448672c8a2 58
+apps/dashboard/components/onboarding/language-screen.test.tsx
+  s_df12fc6ddf323c::t_3b1527d4a01e91 81-86
+packages/constants/src/index.ts
+  s_df12fc6ddf323c::t_450086495c5d82 1-8
+apps/dashboard/components/onboarding/industry-screen.tsx
+  s_df12fc6ddf323c::t_119e77b7508381 4,10-12,22,56,59
+packages/backend/convex/assessment/industryStarters.ts
+  s_df12fc6ddf323c::t_b9ec7e9974ea68 1
+  s_df12fc6ddf323c::t_288c0baefc90a4 11-15
+packages/constants/vitest.config.ts
+  s_df12fc6ddf323c::t_7748db851d48d5 1-4
+apps/dashboard/components/confirm-buttons.tsx
+  s_df12fc6ddf323c::t_251effd6827a01 79
+  s_df12fc6ddf323c::t_2e4cf2483401f4 76-78,80
+  s_df12fc6ddf323c::t_35635604519746 1-75,81-108
+apps/dashboard/components/onboarding/change-choice-button.tsx
+  s_df12fc6ddf323c::t_aee3be7cad3b92 4,6-10,12-14,25
+packages/constants/tsconfig.json
+  s_df12fc6ddf323c::t_dedeeb74e57f58 1-9
+packages/backend/package.json
+  s_df12fc6ddf323c::t_03ba610c912889 19
+packages/constants/src/countries.test.ts
+  s_df12fc6ddf323c::t_1b4a4a970b96cc 1-30
+apps/dashboard/components/onboarding/model-setup-step.tsx
+  s_df12fc6ddf323c::t_10f692212d9e84 15
+  s_df12fc6ddf323c::t_86176f5f141622 131
+packages/constants/package.json
+  s_df12fc6ddf323c::t_935a1421efff2a 1-22
+apps/dashboard/components/onboarding/industry-screen.test.tsx
+  s_df12fc6ddf323c::t_3b1527d4a01e91 65-70
+apps/dashboard/hooks/use-auto-advance.test.tsx
+  s_df12fc6ddf323c::t_9cfdbf9e956270 79-92
+  s_df12fc6ddf323c::t_3b1527d4a01e91 55,73,114
+  s_df12fc6ddf323c::t_e172a43c29c865 53-54,56-58,71-72,74-76,112-113,115-117
+apps/dashboard/components/confirm-buttons.test.tsx
+  s_df12fc6ddf323c::t_d2c6a3d98a74a2 1-106
+bun.lock
+  ai_agent 19,72,90-99,965
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_df12fc6ddf323c::t_c1efea3e45354e 114-117
+  s_df12fc6ddf323c::t_166cf89f1c9907 110-113
+apps/dashboard/components/onboarding/country-screen.test.tsx
+  s_df12fc6ddf323c::t_3b1527d4a01e91 64-69
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_df12fc6ddf323c::t_3b1527d4a01e91 262-271
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e2cb0268c360d5c484408d787b72a122b0387f43",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
