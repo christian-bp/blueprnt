@@ -1,0 +1,176 @@
+packages/backend/convex/assessment/compute.test.ts
+  s_df12fc6ddf323c::t_c2612479358ab7 137,145,163,171
+  s_df12fc6ddf323c::t_40c2a9ad00acbc 65
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_f235cdd1adcdb6 43-45,212-213,322,326,338,340,348,352-357,373,378,396-397
+apps/dashboard/components/rating/rating-result.tsx
+  s_df12fc6ddf323c::t_de24f42967775b 65
+packages/backend/convex/ai/weights.test.ts
+  s_df12fc6ddf323c::t_8d0651dace7ecd 16-18
+  s_df12fc6ddf323c::t_097b008781f67f 1-15,19-87
+apps/dashboard/components/onboarding/add-criterion-form.test.tsx
+  s_df12fc6ddf323c::t_a17b765b1cf446 61,78,82-85
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_f235cdd1adcdb6 43-45,212-213,322,326,338,340,348,352-357,373,378,396-397
+apps/dashboard/components/onboarding/criterion-editor.test.tsx
+  s_df12fc6ddf323c::t_3f6bda35d3a7aa 83
+  s_df12fc6ddf323c::t_be4fc8b13566d3 141,161,165-166
+apps/dashboard/components/onboarding/weight-review-panel.tsx
+  s_df12fc6ddf323c::t_f6b4da3b53631a 3-363
+packages/core/src/weighting.test.ts
+  s_df12fc6ddf323c::t_072aa12e71795d 1-67
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_df12fc6ddf323c::t_fd78f110810c6b 100-101,112,117-123
+  s_df12fc6ddf323c::t_edb1f523a6f994 465,468-469,472,474,483,490-495,498-510,513,515-518
+  s_df12fc6ddf323c::t_bc7549bfc46361 7
+  s_df12fc6ddf323c::t_41788db70ba840 17,22,35-36
+  s_df12fc6ddf323c::t_c5f4c44041752c 403,414,423-424,430,434-435,438
+  s_df12fc6ddf323c::t_92e812f57a721c 138
+  s_df12fc6ddf323c::t_2c73c04bdc1b46 421
+  s_df12fc6ddf323c::t_93bbfedf3df98c 67,73-74
+  s_df12fc6ddf323c::t_b9c1a367f127e9 577-581,583,588
+  s_df12fc6ddf323c::t_65bac77591b200 720-723
+  s_df12fc6ddf323c::t_5bd56d479a43ed 649-652,654,659
+  s_df12fc6ddf323c::t_14c26b97638d14 374,384-386
+  s_df12fc6ddf323c::t_e4d159813666ce 596,606-608,611,617-618,623
+packages/backend/convex/assessment/compute.ts
+  s_df12fc6ddf323c::t_94017d8950e649 7
+  s_df12fc6ddf323c::t_a46c28232ae4c9 43
+packages/backend/convex/ai/persist.ts
+  s_df12fc6ddf323c::t_3fec40a183cfcd 1,14,25-29,38,41-42,44,46-48,54,56
+packages/core/src/types.ts
+  s_df12fc6ddf323c::t_b3177bab929454 1,14,24-25,38
+packages/core/src/scoring.ts
+  s_df12fc6ddf323c::t_31baa28b88aa1a 1,29-39,45-57,59,66-68,70
+packages/backend/convex/evaluationModel/tables.ts
+  s_df12fc6ddf323c::t_0548a53570352f 23-26
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_f235cdd1adcdb6 43-45,212-213,322,326,338,340,348,352-357,373,378,396-397
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_f235cdd1adcdb6 43-45,212-213,322,326,338,340,348,352-357,373,378,396-397
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_f235cdd1adcdb6 43-45,212-213,322,326,338,340,348,352-357,373,378,396-397
+apps/dashboard/lib/weighting.ts
+  s_df12fc6ddf323c::t_ba99d196061460 1-20
+packages/backend/convex/evaluationModel/criteria.ts
+  s_df12fc6ddf323c::t_4b93f077aa0cb9 1-5,14-20,54,78-84,86-88,91-120,122-129,131-135,148-153,160-164,173-174
+apps/dashboard/components/onboarding/model-draft-panel.tsx
+  s_df12fc6ddf323c::t_a12a6558dd550b 23
+  s_df12fc6ddf323c::t_bbade2d81a0e94 245
+  s_df12fc6ddf323c::t_0ba5c271c7ccf8 270-271
+  s_df12fc6ddf323c::t_6c35efad90ea16 47
+  s_df12fc6ddf323c::t_9361a395c59cc7 155-156
+packages/backend/convex/lib/errors.ts
+  s_df12fc6ddf323c::t_090d730ecbcad5 13
+apps/dashboard/components/onboarding/weight-review-panel.test.tsx
+  s_df12fc6ddf323c::t_b310e8c026433e 12-277
+packages/backend/convex/evaluationModel/standardTemplate.test.ts
+  s_df12fc6ddf323c::t_7d397e050870ff 1,6,20,23-26,28-29
+apps/dashboard/components/rating/rating-result.test.tsx
+  s_df12fc6ddf323c::t_6326300aa91c06 93-96
+  s_df12fc6ddf323c::t_2e0e50dc34e013 20-21,28,34,43
+packages/backend/convex/assessment/ratings.test.ts
+  s_df12fc6ddf323c::t_7b9596e095354e 114
+  s_df12fc6ddf323c::t_a6310a293e4a88 67
+  s_df12fc6ddf323c::t_c996774a98de77 89-90
+packages/backend/convex/assessment/results.ts
+  s_df12fc6ddf323c::t_81cb558ddb55b7 137-142
+  s_df12fc6ddf323c::t_7c231c93e868cc 159
+  s_df12fc6ddf323c::t_39c29c9e854701 233
+packages/backend/convex/evaluationModel/model.ts
+  s_df12fc6ddf323c::t_91d03d072935fa 303
+  s_df12fc6ddf323c::t_3a2e0ad41c5df4 364
+  s_df12fc6ddf323c::t_97e9a2204989ec 108
+  s_df12fc6ddf323c::t_6661f32df286b6 10
+  s_df12fc6ddf323c::t_9a89d24d57ae22 263
+packages/backend/convex/ai/suggest.test.ts
+  s_df12fc6ddf323c::t_f25308bf371ea5 41-48
+  s_df12fc6ddf323c::t_8dcf6475da75bc 256
+  s_df12fc6ddf323c::t_5a800b340eae9b 415,423
+  s_df12fc6ddf323c::t_479274d0c02e78 277,294,296,298-302,306,309-312,314,316-318,322-324,328-330,333-340,343,346,350-355,357
+  s_df12fc6ddf323c::t_2c73c04bdc1b46 367-369
+  s_df12fc6ddf323c::t_ae079f1007bb97 382
+  s_df12fc6ddf323c::t_154bdaac19cebb 103,110-127,139,143-145,158-170
+packages/backend/convex/seed.test.ts
+  s_df12fc6ddf323c::t_0bf085b7c558c2 216
+apps/dashboard/components/model/model-editor.tsx
+  s_df12fc6ddf323c::t_0c14b9a1fb0f5d 108
+  s_df12fc6ddf323c::t_2d61dba0e109e3 3,5,15,17,24-25,27-33,35-39,41-42,52,57-58,64-69,71-73,88-107,109-129,133,135-196,198-210,218-219,221-228,233-235,240-242,248-254,262,268,274-275,295,297-299
+  s_df12fc6ddf323c::t_2c73c04bdc1b46 84-87
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_df12fc6ddf323c::t_32caa8606ad2bc 16
+  s_df12fc6ddf323c::t_c3cebcd21db6a8 55-58
+  s_df12fc6ddf323c::t_e88ac6e2a8bc51 94-96,98-107
+  s_df12fc6ddf323c::t_0dd1aeabb5cade 25,27-28
+apps/dashboard/components/onboarding/model-draft-panel.test.tsx
+  s_df12fc6ddf323c::t_f134ac7e6dc245 60,67
+  s_df12fc6ddf323c::t_dfcd6a1d1a83f6 140
+  s_df12fc6ddf323c::t_2c73c04bdc1b46 144-145
+packages/core/src/scoring.fixtures.ts
+  s_df12fc6ddf323c::t_8e01200d57437f 8-9,11-19,22,24-29
+packages/core/src/weighting.ts
+  s_df12fc6ddf323c::t_03dcdeccc33f1b 1-44
+packages/backend/convex/evaluationModel/standardTemplate.ts
+  s_df12fc6ddf323c::t_dd6eda1953d243 175-179,181-186
+  s_df12fc6ddf323c::t_0c9396663ce3a7 1,15-16,21,23,30-36,38,40-41
+packages/backend/convex/ai/suggest.ts
+  s_df12fc6ddf323c::t_b34a4197a62308 140
+  s_df12fc6ddf323c::t_8094590153ae82 1,5,11
+  s_df12fc6ddf323c::t_e4b05a5ed97137 179-186,202,206-212,217-219,224,227-237
+  s_df12fc6ddf323c::t_c58feab5e71300 257-263,266,269,274,280-283,287-293,295-309,311-312,316-320,324-332,343
+  s_df12fc6ddf323c::t_2c73c04bdc1b46 220
+  s_df12fc6ddf323c::t_9219443f5f5605 95,112,118,129
+packages/backend/convex/evaluationModel/criteria.test.ts
+  s_df12fc6ddf323c::t_32cfb52eaade60 31-40,42,57,62-65,77,91,96,117,121,131,142,144-145,147,149,151-153,155-167,169-172,177-180,182-185,189,191-198,204-207,209,213,215-217,219-229,231,233-236,241,243-256,258,260,262-264,266-270,273,275,288,290-293,298,322-325,361,366,373,375-377,379,381-394,404-405,412-414,416-420,423,429,433,442-443,448-460
+  s_df12fc6ddf323c::t_2c73c04bdc1b46 313-316
+packages/backend/convex/schema.test.ts
+  s_df12fc6ddf323c::t_b45e0b30a0f839 20
+apps/dashboard/components/roles/role-result-card.tsx
+  s_df12fc6ddf323c::t_ced141134d4da1 52
+  s_df12fc6ddf323c::t_404ae918b51f19 65
+  s_df12fc6ddf323c::t_172fff66509c71 84-85
+  s_df12fc6ddf323c::t_c43a5a1d2c7ede 22-25
+packages/core/src/index.ts
+  s_df12fc6ddf323c::t_b577d76e193fa9 4
+packages/core/src/scoring.test.ts
+  s_df12fc6ddf323c::t_500d7dabb38dfb 11-16,19-33,36-64,67,69-88,92-94,107-108,121-131,135-140,146-147,150,158,189
+apps/dashboard/components/onboarding/add-criterion-form.tsx
+  s_df12fc6ddf323c::t_9ac7d014f94844 14-21
+packages/backend/convex/evaluationModel/model.test.ts
+  s_df12fc6ddf323c::t_2c73c04bdc1b46 379
+  s_df12fc6ddf323c::t_484e54c523eb09 224
+  s_df12fc6ddf323c::t_42dd6b8817be05 376-377,382-383
+  s_df12fc6ddf323c::t_dda1e84596db42 212
+  s_df12fc6ddf323c::t_dd07df4ddfaf40 82
+packages/backend/convex/ai/weights.ts
+  s_df12fc6ddf323c::t_a0f56be49f6c2c 1-14,16-18,21-23,26-60
+  s_df12fc6ddf323c::t_730c4178a4d55f 19-20,24-25
+  s_df12fc6ddf323c::t_2c73c04bdc1b46 15
+packages/backend/convex/ai/generate.ts
+  s_df12fc6ddf323c::t_6c7858dcf505ad 103-104,109-113,116-119
+  s_df12fc6ddf323c::t_36c72b2b4d6eb7 19
+  s_df12fc6ddf323c::t_1b676a50de8707 28,36-38,40-49
+  s_df12fc6ddf323c::t_e163591320fbfa 227,238,259-261,265-268,270,273
+packages/backend/convex/assessment/results.test.ts
+  s_df12fc6ddf323c::t_70ab7c90cc9d5d 151-153
+  s_df12fc6ddf323c::t_4c325e627454f3 144
+  s_df12fc6ddf323c::t_df9fc58144718b 111
+packages/backend/convex/shared/tables.ts
+  s_df12fc6ddf323c::t_4308062674de1b 22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "9c2b4e67d5d51088e7050cdf999ac261aa56616e",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
