@@ -1,0 +1,28 @@
+apps/dashboard/components/onboarding-dots.tsx
+  s_df12fc6ddf323c::t_72505bd490915b 1-55,58-67
+  s_df12fc6ddf323c::t_0d529ea9008a9a 56-57
+apps/dashboard/components/onboarding-dots.test.tsx
+  s_df12fc6ddf323c::t_be6eeeb209d62c 1-44
+apps/dashboard/components/option-card.tsx
+  s_df12fc6ddf323c::t_e1ebaab67589b9 40
+  s_df12fc6ddf323c::t_1e2c9fb60acd64 1-39,41-49
+apps/dashboard/components/option-card.test.tsx
+  s_df12fc6ddf323c::t_a875206c9b460c 31-33
+  s_df12fc6ddf323c::t_e1c980619e084e 1-30,34-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "bac96fb9c726a8556f4c6094fc795468cd911a25",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
