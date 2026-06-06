@@ -1,0 +1,22 @@
+apps/dashboard/components/roles/family-picker.test.tsx
+  s_df12fc6ddf323c::t_c9ae6eaa515a2e 1-129
+apps/dashboard/components/roles/family-picker.tsx
+  s_df12fc6ddf323c::t_712db2a366d771 96
+  s_df12fc6ddf323c::t_9a6774c9f77692 1-95,97-129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "fac93fe2a8760c11b8bb0cccd0a6c3b0abe72120",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
