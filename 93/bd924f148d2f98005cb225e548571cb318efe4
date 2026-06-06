@@ -1,0 +1,89 @@
+apps/dashboard/app/(app)/results/page.tsx
+  s_df12fc6ddf323c::t_1a37d37c41d306 12-18,31,36-38,44,53-54,63-85,104-124,139
+packages/backend/convex/lib/audit.ts
+  s_df12fc6ddf323c::t_1a37d37c41d306 24-26
+apps/dashboard/components/roles/family-header.test.tsx
+  s_df12fc6ddf323c::t_1a37d37c41d306 1-135
+apps/dashboard/components/roles/family-picker.tsx
+  s_df12fc6ddf323c::t_1a37d37c41d306 1-130
+apps/dashboard/components/roles/create-role-dialog.tsx
+  s_df12fc6ddf323c::t_1a37d37c41d306 26,50,61,90,108,189-195
+apps/dashboard/components/roles/family-picker.test.tsx
+  s_df12fc6ddf323c::t_1a37d37c41d306 1-129
+packages/backend/convex/assessment/families.ts
+  s_df12fc6ddf323c::t_1a37d37c41d306 1-151
+docs/README.md
+  s_df12fc6ddf323c::t_1a37d37c41d306 1-38
+packages/backend/convex/assessment/names.ts
+  s_df12fc6ddf323c::t_1a37d37c41d306 10-11,28-35,45,57,63-74
+packages/backend/convex/assessment/roles.test.ts
+  s_df12fc6ddf323c::t_1a37d37c41d306 5-8,11,451-532
+apps/dashboard/components/roles/create-role-dialog.test.tsx
+  s_df12fc6ddf323c::t_1a37d37c41d306 20-21,26-32,103
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_1a37d37c41d306 134-150,371-372
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_1a37d37c41d306 134-150,371-372
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_1a37d37c41d306 134-150,371-372
+apps/dashboard/components/roles/role-profile-card.test.tsx
+  s_df12fc6ddf323c::t_1a37d37c41d306 16-17,22-28,39,49-50,130-156
+apps/dashboard/lib/role-groups.ts
+  s_df12fc6ddf323c::t_1a37d37c41d306 1-31
+docs/superpowers/plans/2026-06-06-role-families.md
+  s_df12fc6ddf323c::t_1a37d37c41d306 1-1542
+packages/backend/convex/assessment/tables.ts
+  s_df12fc6ddf323c::t_1a37d37c41d306 4-12,23
+apps/dashboard/lib/family-error.ts
+  s_df12fc6ddf323c::t_1a37d37c41d306 1-8
+packages/backend/convex/assessment/roles.ts
+  s_df12fc6ddf323c::t_1a37d37c41d306 6,92,109-114,129,167-170,179,204-210,260-261,276,335-339,358,394-405
+docs/superpowers/specs/2026-06-06-role-families-design.md
+  s_df12fc6ddf323c::t_1a37d37c41d306 1-166
+packages/backend/convex/assessment/families.test.ts
+  s_df12fc6ddf323c::t_1a37d37c41d306 1-204
+apps/dashboard/app/(app)/roles/page.tsx
+  s_df12fc6ddf323c::t_1a37d37c41d306 25,30,45-46,68-137
+packages/backend/convex/assessment/results.ts
+  s_df12fc6ddf323c::t_1a37d37c41d306 9,50-51,66,113-117
+packages/backend/convex/schema.ts
+  s_df12fc6ddf323c::t_1a37d37c41d306 3,28
+apps/dashboard/components/roles/role-profile-card.tsx
+  s_df12fc6ddf323c::t_1a37d37c41d306 18,28-29,66-67,74,93,107-111,113-119,193-207
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_1a37d37c41d306 134-150,371-372
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_1a37d37c41d306 134-150,371-372
+apps/dashboard/lib/role-groups.test.ts
+  s_df12fc6ddf323c::t_1a37d37c41d306 1-25
+apps/dashboard/lib/family-error.test.ts
+  s_df12fc6ddf323c::t_1a37d37c41d306 1-18
+packages/backend/convex/_generated/api.d.ts
+  s_df12fc6ddf323c::t_1a37d37c41d306 22,62
+apps/dashboard/components/roles/family-header.tsx
+  s_df12fc6ddf323c::t_1a37d37c41d306 1-127
+apps/dashboard/app/(app)/roles/families/[familyId]/page.tsx
+  s_df12fc6ddf323c::t_1a37d37c41d306 1-144
+docs/PLAN-V1.md
+  s_df12fc6ddf323c::t_1a37d37c41d306 135-136
+docs/contexts/evaluation-model/CONTEXT.md
+  s_df12fc6ddf323c::t_1a37d37c41d306 10,109
+packages/backend/convex/lib/errors.ts
+  s_df12fc6ddf323c::t_1a37d37c41d306 20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "93bd924f148d2f98005cb225e548571cb318efe4",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
