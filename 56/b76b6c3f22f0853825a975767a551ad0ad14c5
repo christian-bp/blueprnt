@@ -1,0 +1,34 @@
+package.json
+  s_df12fc6ddf323c::t_a2fac2e45fe27b 12
+packages/backend/convex/devReset.ts
+  s_df12fc6ddf323c::t_b7000bc6bf19e4 1-52
+packages/backend/convex/betterAuth/seed.ts
+  s_df12fc6ddf323c::t_a396c73d5aca92 78-116
+packages/backend/convex/seed.test.ts
+  s_df12fc6ddf323c::t_d574c1e71a2a1f 328-329
+  s_df12fc6ddf323c::t_3486cd29dfa946 312-327,330-391,393-408
+  s_df12fc6ddf323c::t_99fa01d98dfab7 392
+  s_df12fc6ddf323c::t_e5ab2e7630b297 433-435
+packages/backend/package.json
+  s_df12fc6ddf323c::t_0a5f998921c2e5 9
+packages/backend/convex/seed.ts
+  s_df12fc6ddf323c::t_bf5414dfbebfdd 6-13
+  s_df12fc6ddf323c::t_bc0cff414d0b6f 178-179,181-187
+  s_df12fc6ddf323c::t_a19f68a96445c8 166-177,180,188-227
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "56b76b6c3f22f0853825a975767a551ad0ad14c5",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
