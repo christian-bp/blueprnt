@@ -1,0 +1,19 @@
+packages/backend/convex/seed.ts
+  s_df12fc6ddf323c::t_bc0cff414d0b6f 178-179,181-187
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "64fdfe4a82bc938fa072209f05c739ea35f73373",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
