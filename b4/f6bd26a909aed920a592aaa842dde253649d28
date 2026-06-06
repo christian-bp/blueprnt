@@ -1,0 +1,36 @@
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_529f8c8601738a 264
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_529f8c8601738a 264
+apps/dashboard/components/onboarding/name-screen.test.tsx
+  s_df12fc6ddf323c::t_dedeb1ffb325d1 14-15,30-52,70-72,97-104,111-132,164-166
+apps/dashboard/components/onboarding/onboarding-wizard.test.tsx
+  s_df12fc6ddf323c::t_6128c31f2e399b 157,165,167,171,175,179,181-183,252-255,269,271,277-278,291,297,300-303,306,327,341-342,357,360,364
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_df12fc6ddf323c::t_6128c31f2e399b 26
+  s_df12fc6ddf323c::t_40510ca501affe 59-60,64-66,148
+apps/dashboard/components/onboarding/name-screen.tsx
+  s_df12fc6ddf323c::t_bcbce532fd0a28 3-4,6-7,11,16-18,29-32,37-46,78-87
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_529f8c8601738a 264
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_529f8c8601738a 264
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_529f8c8601738a 264
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b4f6bd26a909aed920a592aaa842dde253649d28",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
