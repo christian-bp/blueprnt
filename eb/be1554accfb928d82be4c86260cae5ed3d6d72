@@ -1,0 +1,23 @@
+docs/superpowers/specs/2026-06-06-conversational-onboarding-design.md
+  s_df12fc6ddf323c::t_2e6ee89170bd0a 1-167
+docs/superpowers/plans/2026-06-06-conversational-onboarding.md
+  s_df12fc6ddf323c::t_db73f2cd8dbaa9 1-965
+  s_df12fc6ddf323c::t_f8379d40f109d4 966-1662,2233
+  s_df12fc6ddf323c::t_7bd42cc72dde96 1663-2232
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "ebbe1554accfb928d82be4c86260cae5ed3d6d72",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
