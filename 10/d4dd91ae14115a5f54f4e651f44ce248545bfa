@@ -1,0 +1,28 @@
+apps/dashboard/components/onboarding/name-screen.tsx
+  s_df12fc6ddf323c::t_1aa47bea7b7bf3 66-69
+  s_df12fc6ddf323c::t_6a13ebe0b2ec2b 1-65,70-90
+apps/dashboard/components/onboarding/language-screen.tsx
+  s_df12fc6ddf323c::t_5c05556c72ac85 1-101
+apps/dashboard/components/onboarding/name-screen.test.tsx
+  s_df12fc6ddf323c::t_3652653a9a3f4e 1-147,152-153
+  s_df12fc6ddf323c::t_1aa47bea7b7bf3 148-151
+apps/dashboard/components/onboarding/language-screen.test.tsx
+  s_df12fc6ddf323c::t_1aa47bea7b7bf3 63,72
+  s_df12fc6ddf323c::t_c0e9d122dd83e8 1-62,64-71,73-114
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "10d4dd91ae14115a5f54f4e651f44ce248545bfa",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
