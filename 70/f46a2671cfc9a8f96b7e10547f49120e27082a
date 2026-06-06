@@ -1,0 +1,29 @@
+docs/superpowers/specs/2026-06-06-role-families-design.md
+  s_df12fc6ddf323c::t_5a0200c90b49a9 1-166
+docs/superpowers/plans/2026-06-06-role-families.md
+  s_df12fc6ddf323c::t_429b6a47d15f19 521-526
+  s_df12fc6ddf323c::t_0a377a57eb370a 1367
+  s_df12fc6ddf323c::t_e955ec081781e0 20
+  s_df12fc6ddf323c::t_7bc0b2c37f2bd3 1110
+  s_df12fc6ddf323c::t_522f2f5991dd6a 723-848,856-860,865-873,875,877-878,880,889-894,901-918,926-937,939-1075,1077-1109,1111-1344,1347-1366,1368-1542
+  s_df12fc6ddf323c::t_c2af3f989453e1 849-855,861-864,874,876,879,881-888,895-900,919-925,938
+  s_df12fc6ddf323c::t_13acf05168db85 1-19,21-520,527-722
+  s_df12fc6ddf323c::t_d25bac19524d69 1076
+  s_df12fc6ddf323c::t_6dbaa2dc2c5711 1345-1346
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "70f46a2671cfc9a8f96b7e10547f49120e27082a",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
