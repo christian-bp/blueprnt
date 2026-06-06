@@ -15,12 +15,17 @@ export const OPTION_FADE_MS = 300
 // edge (the established "Recommended" ribbon position); the card reserves
 // no extra space for it, so toggling selection never shifts layout.
 //
+// `media` renders a small decorative visual (flag, icon) inline to the left
+// of the title, hidden from assistive tech since the title already names
+// the option.
+//
 // `faded` fades the card away in place (opacity only, no layout change) and
 // disables it; screens set it on the non-chosen cards once a choice is made.
 export function OptionCard({
   title,
   description,
   badge,
+  media,
   selected,
   faded = false,
   onSelect,
@@ -30,6 +35,7 @@ export function OptionCard({
   title: string
   description?: string
   badge?: string
+  media?: ReactNode
   selected: boolean
   faded?: boolean
   onSelect: () => void
@@ -54,7 +60,14 @@ export function OptionCard({
       {badge !== undefined && (
         <Badge className="absolute -top-2.5">{badge}</Badge>
       )}
-      <span className="font-medium">{title}</span>
+      <span className="flex items-center gap-2">
+        {media !== undefined && (
+          <span aria-hidden="true" className="flex items-center">
+            {media}
+          </span>
+        )}
+        <span className="font-medium">{title}</span>
+      </span>
       {description !== undefined && (
         <span className="text-muted-foreground text-sm">{description}</span>
       )}

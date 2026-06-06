@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "biome lint .",
     "format": "biome format --write .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
@@ -39,16 +40,21 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@testing-library/react": "^16.3.0",
     "@turbo/gen": "^2.9.15",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^5.0.0",
     "@workspace/typescript-config": "workspace:*",
+    "@workspace/vitest-config": "workspace:*",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.0"
   },
   "exports": {
     "./globals.css": "./src/styles/globals.css",
+    "./flag": "./src/flag.tsx",
     "./postcss.config": "./postcss.config.mjs",
     "./lib/*": "./src/lib/*.ts",
     "./components/*": "./src/components/*.tsx",

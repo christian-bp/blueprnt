@@ -34,6 +34,21 @@ describe("OptionCard", () => {
     ).toBe("true")
   })
 
+  it("renders media above the title, hidden from assistive tech", () => {
+    render(
+      <OptionCard
+        title="Sweden"
+        media={<svg data-testid="card-media" role="presentation" />}
+        selected={false}
+        onSelect={vi.fn()}
+      />
+    )
+    const media = screen.getByTestId("card-media")
+    expect(media.parentElement?.getAttribute("aria-hidden")).toBe("true")
+    // The accessible name stays the title alone.
+    expect(screen.getByRole("button", { name: "Sweden" })).toBeDefined()
+  })
+
   it("a faded card is disabled and ignores clicks", () => {
     const onSelect = vi.fn()
     render(

@@ -1,11 +1,14 @@
 "use client"
 
+import { Globe02Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
   COUNTRY_KEYS,
   type CountryKey,
   defaultCurrencyFor,
 } from "@workspace/constants"
+import { Flag } from "@workspace/ui/flag"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { OptionCard } from "@/components/option-card"
@@ -62,6 +65,19 @@ export function CountryScreen({
           <OptionCard
             key={code}
             title={tProfile(COUNTRY_LABEL_KEYS[code])}
+            // The media slot is aria-hidden (the title names the option), so
+            // the flag is decorative: alt stays empty. "Other" has no flag
+            // and gets a neutral globe in the same slot.
+            media={
+              code === "other" ? (
+                <HugeiconsIcon
+                  icon={Globe02Icon}
+                  className="size-4 text-muted-foreground"
+                />
+              ) : (
+                <Flag code={code} alt="" size="M" hasDropShadow />
+              )
+            }
             selected={marked === code}
             faded={chosen !== null && chosen !== code}
             onSelect={() => choose(code)}

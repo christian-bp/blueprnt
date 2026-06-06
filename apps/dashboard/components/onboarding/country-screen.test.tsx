@@ -94,6 +94,18 @@ describe("CountryScreen", () => {
     })
   })
 
+  it("shows a flag per country card and a flagless slot for Other", () => {
+    renderScreen({ orgId: "org-1", savedCountry: null, onDone: vi.fn() })
+    const flags = Array.from(document.querySelectorAll("img"))
+    // Four countries carry their flag; Other renders the globe icon instead.
+    expect(flags.map((img) => img.getAttribute("src")).sort()).toEqual([
+      expect.stringContaining("/flags/m/DK.svg"),
+      expect.stringContaining("/flags/m/FI.svg"),
+      expect.stringContaining("/flags/m/NO.svg"),
+      expect.stringContaining("/flags/m/SE.svg"),
+    ])
+  })
+
   it("the fresh flow marks no card", () => {
     renderScreen({ orgId: "org-1", savedCountry: null, onDone: vi.fn() })
     for (const name of Object.values(profile.countries)) {

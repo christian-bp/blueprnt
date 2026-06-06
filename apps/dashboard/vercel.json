@@ -1,5 +1,4 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "cd ../../packages/backend && bunx convex deploy --cmd 'cd ../../apps/dashboard && bun run build'",
-  "ignoreCommand": "npx turbo-ignore"
+  "buildCommand": "cd ../../packages/backend && bunx convex deploy --cmd 'cd ../../apps/dashboard && bun run build'"
 }
