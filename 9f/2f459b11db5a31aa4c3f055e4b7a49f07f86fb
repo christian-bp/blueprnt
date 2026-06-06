@@ -1,0 +1,24 @@
+packages/backend/convex/assessment/families.test.ts
+  s_df12fc6ddf323c::t_cead3ec6aad2cc 1-123,129,131-180,187-204
+  s_df12fc6ddf323c::t_3361be69c0a058 124-128,130
+  s_df12fc6ddf323c::t_20355967f9aa80 181-186
+packages/backend/convex/assessment/families.ts
+  ai_agent 34
+  s_df12fc6ddf323c::t_6e581a477d0fca 1-33,35-151
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "9f2f459b11db5a31aa4c3f055e4b7a49f07f86fb",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
