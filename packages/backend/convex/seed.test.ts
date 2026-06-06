@@ -406,6 +406,81 @@ describe("betterAuth/seed.wipeAuthData", () => {
   })
 })
 
+describe("seed.seedProduction validation", () => {
+  // The happy path needs hashPassword (node:crypto) and cannot run in the
+  // edge-runtime harness; the wipe loop and insertCredentialUser are covered
+  // by their own tests. Every validation throw happens BEFORE the wipe and
+  // before any Node-only call, so a typo can never destroy data.
+  it("rejects without the confirm sentinel and leaves data intact", async () => {
+    const t = initConvexTest()
+    const existing = await t.mutation(
+      components.betterAuth.seed.insertCredentialUser,
+      {
+        email: "hej@blueprnt.se",
+        name: "Hej",
+        passwordHash: "fakesalt:fakehash",
+      }
+    )
+
+    await expect(
+      t.action(internal.seed.seedProduction, {
+        email: "demo@blueprnt.se",
+        password: "longenough1",
+        name: "Demo",
+        confirm: "yes",
+      })
+    ).rejects.toThrow('pass confirm: "wipe-and-seed"')
+
+    // The pre-existing user survived: nothing was wiped.
+    const again = await t.mutation(
+      components.betterAuth.seed.insertCredentialUser,
+      {
+        email: "hej@blueprnt.se",
+        name: "Hej",
+        passwordHash: "fakesalt:fakehash",
+      }
+    )
+    expect(again.created).toBe(false)
+    expect(again.userId).toBe(existing.userId)
+  })
+
+  it("rejects an invalid email", async () => {
+    const t = initConvexTest()
+    await expect(
+      t.action(internal.seed.seedProduction, {
+        email: "not-an-email",
+        password: "longenough1",
+        name: "Demo",
+        confirm: "wipe-and-seed",
+      })
+    ).rejects.toThrow("email must be a valid address")
+  })
+
+  it("rejects a too-short password", async () => {
+    const t = initConvexTest()
+    await expect(
+      t.action(internal.seed.seedProduction, {
+        email: "demo@blueprnt.se",
+        password: "short",
+        name: "Demo",
+        confirm: "wipe-and-seed",
+      })
+    ).rejects.toThrow("password must be at least 8 characters")
+  })
+
+  it("rejects an empty name", async () => {
+    const t = initConvexTest()
+    await expect(
+      t.action(internal.seed.seedProduction, {
+        email: "demo@blueprnt.se",
+        password: "longenough1",
+        name: "   ",
+        confirm: "wipe-and-seed",
+      })
+    ).rejects.toThrow("name must not be empty")
+  })
+})
+
 describe("seed.seedDevUser guard", () => {
   beforeEach(() => {
     // The vitest config already sets CONVEX_TEST=true; stub SITE_URL per test.

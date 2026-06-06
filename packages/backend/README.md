@@ -27,6 +27,15 @@ Convex backend (EU West / Ireland deployment, project quantumlabs/blueprnt).
   fallback: open the `emails` row in the Convex dashboard and visit
   `props.url`.
 
+## Before go-live
+
+- **Remove `seed:seedProduction`** (and reassess every wipe-capable surface:
+  `devReset.wipeAppTables`, `betterAuth/seed.wipeAuthData`). They exist for
+  the demo phase; once real customer data exists there must be no admin
+  action that can erase a production deployment in one call.
+- Flip `requireEmailVerification` to `true` together with the Scaleway TEM
+  env vars (see above).
+
 ## AI environment variables
 
 The model-setup AI assistance (ADR-0003) calls Mistral La Plateforme directly

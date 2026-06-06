@@ -13,8 +13,96 @@
 // scratch. The dev user is re-seeded at the end so local sign-in works again.
 import { v } from "convex/values"
 import { hashPassword } from "better-auth/crypto"
-import { internalAction } from "./_generated/server"
+import { type ActionCtx, internalAction } from "./_generated/server"
 import { components, internal } from "./_generated/api"
+
+const MAX_WIPE_ITERATIONS = 50
+
+// Shared by resetDatabase (dev) and seedProduction: wipes every app table,
+// then every Better Auth table (except jwks), paging until no table reports
+// a full page.
+async function wipeAllData(ctx: ActionCtx): Promise<void> {
+  let appIterations = 0
+  while (true) {
+    const { done } = await ctx.runMutation(internal.devReset.wipeAppTables, {})
+    if (done) break
+    if (++appIterations >= MAX_WIPE_ITERATIONS) {
+      throw new Error("wipe did not converge")
+    }
+  }
+  let authIterations = 0
+  while (true) {
+    const { done } = await ctx.runMutation(
+      components.betterAuth.seed.wipeAuthData,
+      {}
+    )
+    if (done) break
+    if (++authIterations >= MAX_WIPE_ITERATIONS) {
+      throw new Error("wipe did not converge")
+    }
+  }
+}
+
+// TODO(go-live): remove this action (and this whole wipe-capable surface)
+// before real customer data exists; tracked in packages/backend/README.md
+// under "Before go-live".
+//
+// Production reset + seed, the prod sibling of resetDatabase. Self-serve
+// sign-up is disabled (disableSignUp in auth.ts) and the dev seeds are
+// localhost-guarded, so this internalAction (never callable from clients)
+// is the admin path to a clean demo state: it wipes EVERY app table and
+// EVERY Better Auth table (except jwks) on the target deployment, then
+// creates the single explicit account. There are NO defaults; the
+// destructive step is gated by the confirm sentinel instead of a hostname
+// guard, and the password hash is computed BEFORE the wipe so nothing can
+// fail after the data is gone. Run from packages/backend with:
+//   bunx convex run seed:seedProduction '{"email":"...","password":"...","name":"...","confirm":"wipe-and-seed"}' --prod
+export const seedProduction = internalAction({
+  args: {
+    email: v.string(),
+    password: v.string(),
+    name: v.string(),
+    confirm: v.string(),
+  },
+  returns: v.object({ userId: v.string(), created: v.boolean() }),
+  handler: async (ctx, { email, password, name, confirm }) => {
+    if (confirm !== "wipe-and-seed") {
+      throw new Error(
+        'seedProduction: pass confirm: "wipe-and-seed" to acknowledge that this deletes ALL data on the deployment'
+      )
+    }
+    if (!email.includes("@")) {
+      throw new Error("seedProduction: email must be a valid address")
+    }
+    // Matches Better Auth's default minimum password length so the account
+    // is consistent with what the auth endpoints would accept.
+    if (password.length < 8) {
+      throw new Error("seedProduction: password must be at least 8 characters")
+    }
+    if (name.trim().length === 0) {
+      throw new Error("seedProduction: name must not be empty")
+    }
+
+    // Hash before the wipe: the only Node-only call happens while the data
+    // is still intact.
+    const passwordHash = await hashPassword(password)
+
+    await wipeAllData(ctx)
+
+    const result = await ctx.runMutation(
+      components.betterAuth.seed.insertCredentialUser,
+      { email, name: name.trim(), passwordHash }
+    )
+    // Same mirror step as the dev seed: direct component inserts bypass the
+    // Better Auth triggers, so the app-side users row is created explicitly.
+    await ctx.runMutation(internal.accounts.mirrors.mirrorSeededUser, {
+      authId: result.userId,
+      email,
+      name: name.trim(),
+    })
+    return result
+  },
+})
 
 export const seedDevUser = internalAction({
   args: {
@@ -169,8 +257,6 @@ export const seedDevOrganization = internalAction({
 // `bun db:reset` (or from packages/backend with
 // `bunx convex run seed:resetDatabase`). See the file header for what this
 // deletes and how to recover.
-const MAX_WIPE_ITERATIONS = 50
-
 export const resetDatabase = internalAction({
   args: {},
   returns: v.object({ userId: v.string() }),
@@ -190,31 +276,7 @@ export const resetDatabase = internalAction({
       )
     }
 
-    // Wipe the app tables, paging until no table reported a full page.
-    let appIterations = 0
-    while (true) {
-      const { done } = await ctx.runMutation(
-        internal.devReset.wipeAppTables,
-        {}
-      )
-      if (done) break
-      if (++appIterations >= MAX_WIPE_ITERATIONS) {
-        throw new Error("wipe did not converge")
-      }
-    }
-
-    // Wipe the Better Auth tables (component side), same paging contract.
-    let authIterations = 0
-    while (true) {
-      const { done } = await ctx.runMutation(
-        components.betterAuth.seed.wipeAuthData,
-        {}
-      )
-      if (done) break
-      if (++authIterations >= MAX_WIPE_ITERATIONS) {
-        throw new Error("wipe did not converge")
-      }
-    }
+    await wipeAllData(ctx)
 
     // Re-seed the dev user (reuses the defaults hej@blueprnt.se / abc123 / "Hej").
     const result: { userId: string; created: boolean } = await ctx.runAction(
