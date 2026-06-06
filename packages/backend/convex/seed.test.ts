@@ -309,6 +309,103 @@ describe("betterAuth/seed.removeOrganizationsForUserEmail + accounts/mirrors.rem
   })
 })
 
+describe("devReset.wipeAppTables", () => {
+  it("deletes rows from every app table and reports done", async () => {
+    const t = initConvexTest()
+
+    // Seed rows across several app tables. roles requires trackId/levelId, so
+    // insert a model + track + level first to satisfy the foreign keys.
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
+        authId: "ba_user_seed",
+        email: "hej@blueprnt.se",
+        name: "Hej",
+      })
+      await ctx.db.insert("organizations", { orgId: "ba_org_seed" })
+      await ctx.db.insert("auditLog", {
+        orgId: "ba_org_seed",
+        type: "organization.created",
+        actorId: "ba_user_seed",
+        actorName: "Hej",
+        payload: {},
+      })
+
+      const modelId = await ctx.db.insert("models", {
+        orgId: "ba_org_seed",
+        name: "Standard",
+      })
+      const trackId = await ctx.db.insert("tracks", {
+        orgId: "ba_org_seed",
+        modelId,
+        key: "IC",
+        name: "Individual Contributor",
+        order: 1,
+      })
+      const levelId = await ctx.db.insert("levels", {
+        trackId,
+        key: "IC1",
+        name: "IC1",
+        order: 1,
+      })
+      await ctx.db.insert("roles", {
+        orgId: "ba_org_seed",
+        title: "Junior Developer",
+        function: "Engineering",
+        team: "Platform",
+        trackId,
+        levelId,
+        purpose: "Build things",
+        responsibilities: "Ship code",
+        status: "draft",
+      })
+    })
+
+    const result = await t.mutation(internal.devReset.wipeAppTables, {})
+    expect(result).toEqual({ done: true })
+
+    await t.run(async (ctx) => {
+      for (const table of [
+        "users",
+        "organizations",
+        "auditLog",
+        "models",
+        "tracks",
+        "levels",
+        "roles",
+      ] as const) {
+        const rows = await ctx.db.query(table).take(1)
+        expect(rows).toEqual([])
+      }
+    })
+  })
+})
+
+describe("betterAuth/seed.wipeAuthData", () => {
+  it("clears auth tables (keeping no membership) and reports done", async () => {
+    const t = initConvexTest()
+
+    const { orgId, userId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "hr@acme.se", name: "HR Person", role: "admin" }
+    )
+
+    const result = await t.mutation(components.betterAuth.seed.wipeAuthData, {})
+    expect(result).toEqual({ done: true })
+
+    const membership = await t.query(
+      components.betterAuth.membership.getMembership,
+      { organizationId: orgId, userId }
+    )
+    expect(membership).toBeNull()
+
+    const memberships = await t.query(
+      components.betterAuth.membership.listMembershipsForUser,
+      { userId }
+    )
+    expect(memberships).toEqual([])
+  })
+})
+
 describe("seed.seedDevUser guard", () => {
   beforeEach(() => {
     // The vitest config already sets CONVEX_TEST=true; stub SITE_URL per test.
@@ -333,5 +430,8 @@ describe("seed.seedDevUser guard", () => {
     await expect(
       t.action(internal.seed.removeDevOrganizations, {})
     ).rejects.toThrow("removeDevOrganizations only runs on dev deployments")
+    await expect(t.action(internal.seed.resetDatabase, {})).rejects.toThrow(
+      "resetDatabase only runs on dev deployments"
+    )
   })
 })

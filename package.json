@@ -9,6 +9,7 @@
     "format": "turbo format",
     "typecheck": "turbo typecheck",
     "test": "turbo test",
+    "db:reset": "bun run --cwd packages/backend db:reset",
     "prepare": "git config core.hooksPath .githooks"
   },
   "devDependencies": {

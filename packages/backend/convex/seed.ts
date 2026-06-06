@@ -3,6 +3,14 @@
 //   bunx convex run seed:seedDevUser
 // Guarded so it can never run against a deployment whose SITE_URL is not
 // localhost (i.e. production).
+//
+// Full database reset (seed:resetDatabase): run from the repo root with
+//   bun db:reset
+// or from packages/backend with
+//   bunx convex run seed:resetDatabase
+// Everything is deleted: the signed-in browser session dies (sign in again
+// with the seeded user, hej@blueprnt.se / abc123) and onboarding restarts from
+// scratch. The dev user is re-seeded at the end so local sign-in works again.
 import { v } from "convex/values"
 import { hashPassword } from "better-auth/crypto"
 import { internalAction } from "./_generated/server"
@@ -153,5 +161,67 @@ export const seedDevOrganization = internalAction({
     })
 
     return result
+  },
+})
+
+// Dev-only full reset: wipes every app table and every Better Auth table
+// (except jwks), then re-seeds the dev user. Run from the repo root with
+// `bun db:reset` (or from packages/backend with
+// `bunx convex run seed:resetDatabase`). See the file header for what this
+// deletes and how to recover.
+const MAX_WIPE_ITERATIONS = 50
+
+export const resetDatabase = internalAction({
+  args: {},
+  returns: v.object({ userId: v.string() }),
+  handler: async (ctx) => {
+    // Stricter than the sibling guards (substring match): this action wipes
+    // EVERYTHING, so the hostname must BE localhost, not merely contain it.
+    const siteUrl = process.env.SITE_URL ?? ""
+    let hostname = ""
+    try {
+      hostname = new URL(siteUrl).hostname
+    } catch {
+      hostname = ""
+    }
+    if (hostname !== "localhost" && hostname !== "127.0.0.1") {
+      throw new Error(
+        "resetDatabase only runs on dev deployments (SITE_URL must contain 'localhost')"
+      )
+    }
+
+    // Wipe the app tables, paging until no table reported a full page.
+    let appIterations = 0
+    while (true) {
+      const { done } = await ctx.runMutation(
+        internal.devReset.wipeAppTables,
+        {}
+      )
+      if (done) break
+      if (++appIterations >= MAX_WIPE_ITERATIONS) {
+        throw new Error("wipe did not converge")
+      }
+    }
+
+    // Wipe the Better Auth tables (component side), same paging contract.
+    let authIterations = 0
+    while (true) {
+      const { done } = await ctx.runMutation(
+        components.betterAuth.seed.wipeAuthData,
+        {}
+      )
+      if (done) break
+      if (++authIterations >= MAX_WIPE_ITERATIONS) {
+        throw new Error("wipe did not converge")
+      }
+    }
+
+    // Re-seed the dev user (reuses the defaults hej@blueprnt.se / abc123 / "Hej").
+    const result: { userId: string; created: boolean } = await ctx.runAction(
+      internal.seed.seedDevUser,
+      {}
+    )
+
+    return { userId: result.userId }
   },
 })

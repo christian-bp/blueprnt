@@ -1575,6 +1575,13 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         null | string,
         Name
       >;
+      wipeAuthData: FunctionReference<
+        "mutation",
+        "internal",
+        {},
+        { done: boolean },
+        Name
+      >;
     };
     testing: {
       seedDuplicateMember: FunctionReference<

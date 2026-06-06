@@ -27,6 +27,7 @@ import type * as assessment_roles from "../assessment/roles.js";
 import type * as assessment_tables from "../assessment/tables.js";
 import type * as auth from "../auth.js";
 import type * as crons from "../crons.js";
+import type * as devReset from "../devReset.js";
 import type * as email_outbox from "../email/outbox.js";
 import type * as email_tables from "../email/tables.js";
 import type * as evaluationModel_criteria from "../evaluationModel/criteria.js";
@@ -67,6 +68,7 @@ declare const fullApi: ApiFromModules<{
   "assessment/tables": typeof assessment_tables;
   auth: typeof auth;
   crons: typeof crons;
+  devReset: typeof devReset;
   "email/outbox": typeof email_outbox;
   "email/tables": typeof email_tables;
   "evaluationModel/criteria": typeof evaluationModel_criteria;

@@ -75,6 +75,45 @@ export const removeUserByEmail = mutation({
   },
 })
 
+// Tables wiped by wipeAuthData. jwks is deliberately excluded (see below).
+const AUTH_WIPE_TABLES = [
+  "user",
+  "session",
+  "account",
+  "verification",
+  "organization",
+  "member",
+  "invitation",
+] as const
+
+// Page size mirrors devReset.wipeAppTables: bound the per-transaction write
+// count so the mutation stays under Convex's limit and the caller loops.
+const AUTH_WIPE_PAGE_SIZE = 500
+
+// Dev-only auth wipe. Only reachable via the internal action convex/seed.ts
+// which enforces the localhost guard. Clears every Better Auth table EXCEPT
+// jwks: those are the JWT signing keys, and wiping them would needlessly churn
+// the auth handshake (clients would have to re-establish trust on every reset)
+// without buying anything, since they carry no user data. Returns done = no
+// table was truncated, so the caller loops until done.
+export const wipeAuthData = mutation({
+  args: {},
+  returns: v.object({ done: v.boolean() }),
+  handler: async (ctx) => {
+    let truncated = false
+    for (const table of AUTH_WIPE_TABLES) {
+      const rows = await ctx.db.query(table).take(AUTH_WIPE_PAGE_SIZE)
+      for (const row of rows) {
+        await ctx.db.delete(row._id)
+      }
+      if (rows.length === AUTH_WIPE_PAGE_SIZE) {
+        truncated = true
+      }
+    }
+    return { done: !truncated }
+  },
+})
+
 // Dev-only organization removal. Only reachable via the internal action
 // convex/seed.ts which enforces the localhost guard. Finds all orgs the
 // user belongs to, deletes every member and invitation row for each org,
