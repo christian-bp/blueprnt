@@ -1,0 +1,38 @@
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_cee7c6c678b43f 343-344
+apps/dashboard/components/model/model-editor.tsx
+  s_df12fc6ddf323c::t_09973de45a4472 71
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_cee7c6c678b43f 343-344
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_cee7c6c678b43f 343-344
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_cee7c6c678b43f 343-344
+apps/dashboard/components/onboarding/model-review.tsx
+  s_df12fc6ddf323c::t_09973de45a4472 26
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_cee7c6c678b43f 343-344
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_df12fc6ddf323c::t_09973de45a4472 15,37,58-59,61,135,138
+  s_df12fc6ddf323c::t_cee7c6c678b43f 75-96,98-119,121,123-127,129-134
+apps/dashboard/components/onboarding/families-step.tsx
+  s_df12fc6ddf323c::t_09973de45a4472 140
+apps/dashboard/components/onboarding/screen-shell.tsx
+  s_df12fc6ddf323c::t_09973de45a4472 15,19-21,44-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b251d29a995e946e46912ccd7decbfbda7771f29",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
