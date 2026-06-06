@@ -1,0 +1,44 @@
+apps/dashboard/components/onboarding/onboarding-wizard.test.tsx
+  s_df12fc6ddf323c::t_67a83729659369 1-7,264,277-278,281,283-285,290,326,328,331,345,349,355,359,376,389-392,397,412
+docs/ui-animation.md
+  s_df12fc6ddf323c::t_9c03f414de7de1 76-82
+apps/dashboard/components/onboarding/screen-shell.test.tsx
+  s_df12fc6ddf323c::t_d3260e3b472c71 1-39
+apps/dashboard/components/onboarding/model-setup-step.tsx
+  s_df12fc6ddf323c::t_918d2b644431e5 14,166,221
+apps/dashboard/components/onboarding/industry-screen.tsx
+  s_df12fc6ddf323c::t_5005af301202be 8,52,69
+apps/dashboard/components/onboarding/name-screen.tsx
+  s_df12fc6ddf323c::t_918d2b644431e5 7,83-105
+packages/ui/package.json
+  s_df12fc6ddf323c::t_047cda5697439c 27,59
+packages/ui/src/text-effect.test.tsx
+  s_df12fc6ddf323c::t_319325f87bacba 1-56
+apps/dashboard/components/onboarding/screen-shell.tsx
+  s_df12fc6ddf323c::t_30dfc74fb694d3 1-44
+apps/dashboard/components/onboarding/families-step.tsx
+  s_df12fc6ddf323c::t_3825ea39e9bda2 18,138-142,290
+packages/ui/src/text-effect.tsx
+  s_df12fc6ddf323c::t_f40f8adf585d6f 1-289,291-302
+  s_df12fc6ddf323c::t_a95422c417cc4c 290
+apps/dashboard/components/onboarding/country-screen.tsx
+  s_df12fc6ddf323c::t_5005af301202be 17,66,99
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_df12fc6ddf323c::t_8563472f227435 6,135-188
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "cd80e984cafc230497b25e465e56e0ab9e8b32fc",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
