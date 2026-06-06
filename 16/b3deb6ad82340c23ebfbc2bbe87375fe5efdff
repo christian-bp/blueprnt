@@ -1,0 +1,24 @@
+apps/dashboard/components/onboarding/country-screen.tsx
+  s_df12fc6ddf323c::t_81ff9980ea28ea 75,78
+apps/dashboard/components/onboarding/country-screen.test.tsx
+  s_df12fc6ddf323c::t_1b16a919c09d9c 102-105
+apps/dashboard/components/option-card.tsx
+  s_df12fc6ddf323c::t_200246a20ede56 18-20
+  s_df12fc6ddf323c::t_681c2603cfb502 63-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "16b3deb6ad82340c23ebfbc2bbe87375fe5efdff",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
