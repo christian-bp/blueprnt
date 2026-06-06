@@ -1,0 +1,50 @@
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_4b9268a4a1c549 343,370-372
+apps/dashboard/components/morph-popover.tsx
+  s_df12fc6ddf323c::t_a84627573a9e54 1-155
+apps/dashboard/components/onboarding/importance-review-panel.tsx
+  s_df12fc6ddf323c::t_4b9268a4a1c549 155-247,266-280,284-289
+  s_df12fc6ddf323c::t_554e7f009a350d 11,37-42,46,50,135-140,142-148,154,291-296
+  s_df12fc6ddf323c::t_95a22698125148 141
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_4b9268a4a1c549 343,370-372
+apps/dashboard/components/onboarding/model-review.tsx
+  s_df12fc6ddf323c::t_62b39a0ce87612 7,26-35,38
+apps/dashboard/components/onboarding/importance-review-panel.test.tsx
+  s_df12fc6ddf323c::t_4b12eac07da314 70-123
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_df12fc6ddf323c::t_62b39a0ce87612 3,9,36,58-69
+apps/dashboard/components/model/model-editor.tsx
+  s_df12fc6ddf323c::t_62b39a0ce87612 13,18,31-32,44,72-80,86-96
+  s_df12fc6ddf323c::t_4b9268a4a1c549 81-85
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_4b9268a4a1c549 343,370-372
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_df12fc6ddf323c::t_a2db76fc1e80e0 347-361
+apps/dashboard/components/morph-popover.test.tsx
+  s_df12fc6ddf323c::t_5a9cccfb93c3c9 1-34,36-68
+  s_df12fc6ddf323c::t_a2db76fc1e80e0 35
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_4b9268a4a1c549 343,370-372
+apps/dashboard/components/onboarding/model-draft-panel.tsx
+  s_df12fc6ddf323c::t_554e7f009a350d 28-30,109,187-192
+  s_df12fc6ddf323c::t_4b9268a4a1c549 110-144,146-147,149-163,165-179,181-185
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_4b9268a4a1c549 343,370-372
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "d9b51977d40d6fa86439de26dd79bf53e49c1362",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
