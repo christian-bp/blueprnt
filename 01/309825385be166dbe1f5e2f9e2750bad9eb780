@@ -1,0 +1,56 @@
+docs/contexts/evaluation-model/standardmall.md
+  s_df12fc6ddf323c::t_6dc4bc8cef1995 1,3,5,7,9-15,17-19,21,23,25,27-37,41-43,47,51-56,59-60
+  s_df12fc6ddf323c::t_ec93d696900bab 91
+docs/superpowers/plans/2026-06-06-point-budget-weighting.md
+  s_df12fc6ddf323c::t_056ab2c2600003 1-10
+docs/contexts/evaluation-model/viktning-poangbudget.md
+  s_df12fc6ddf323c::t_98c9420d5fc1be 1-137
+docs/contexts/evaluation-model/CONTEXT.md
+  s_df12fc6ddf323c::t_ad311004a06f27 46
+  s_df12fc6ddf323c::t_8c666a803ec257 50
+  s_df12fc6ddf323c::t_c33588f2295c54 33-35,37-39,41-43
+  s_df12fc6ddf323c::t_a601918b38f180 85-87
+  s_df12fc6ddf323c::t_20d6230d83a627 70
+  s_df12fc6ddf323c::t_764b01001cc7ee 102
+  s_df12fc6ddf323c::t_5dbaa145b04251 54
+  s_df12fc6ddf323c::t_f0294c79240ff4 62
+  s_df12fc6ddf323c::t_ea78a3b470f15a 95
+docs/superpowers/specs/2026-06-06-point-budget-weighting-design.md
+  s_df12fc6ddf323c::t_158cd18b0e847d 1-31
+CLAUDE.md
+  s_df12fc6ddf323c::t_9f7e69d425f185 37
+docs/adr/0004-point-budget-weighting.md
+  s_df12fc6ddf323c::t_886775540674d9 1-34
+docs/contexts/assessment/CONTEXT.md
+  s_df12fc6ddf323c::t_81afd15ef696ba 29-30
+  s_df12fc6ddf323c::t_dc908ab9ed34cb 78
+docs/PLAN-V1.md
+  s_df12fc6ddf323c::t_2495b0ef271f07 137-138
+  s_df12fc6ddf323c::t_499e4d4dc55d19 43
+  s_df12fc6ddf323c::t_eb36c73e15d19c 48
+  s_df12fc6ddf323c::t_c53c103bacb3ac 12
+  s_df12fc6ddf323c::t_71a34b94ba75ff 69
+  s_df12fc6ddf323c::t_79547e18a31b40 127
+  s_df12fc6ddf323c::t_622e747cc24098 60-61
+CONTEXT-MAP.md
+  s_df12fc6ddf323c::t_fc8e3e0155a8f5 12
+  s_df12fc6ddf323c::t_5fa067c70ed6a8 22
+docs/build-pdf.sh
+  s_df12fc6ddf323c::t_82f91318412565 13,18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "01309825385be166dbe1f5e2f9e2750bad9eb780",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
