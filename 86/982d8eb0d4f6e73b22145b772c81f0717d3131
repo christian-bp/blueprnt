@@ -1,0 +1,87 @@
+apps/dashboard/components/onboarding-dots.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-67
+apps/dashboard/components/onboarding/language-screen.test.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-114
+packages/backend/convex/assessment/industryStarters.content.en.ts
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-268
+packages/backend/convex/assessment/starters.ts
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-149
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 295-329,365
+apps/dashboard/components/onboarding/model-review.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 8-12,15,19,23,33
+apps/dashboard/components/onboarding/families-step.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-292
+apps/dashboard/components/onboarding/onboarding-wizard.test.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 7-15,20-21,23,25-26,29-69,76,78-80,86-131,136-146,157-158,161,168,171-179,181-182,185-196,199-211,213-225,227-235,237-239,243,245-246,250-253,255-269,271-280,282,284-285,287-291,294-302,304-309,311-313,316-332
+apps/dashboard/components/option-card.test.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-36
+packages/backend/convex/assessment/industryStarters.content.sv.ts
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-270
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 15,17-20,26,30,35,51,118-119
+apps/dashboard/components/onboarding/language-screen.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-101
+packages/backend/convex/_generated/api.d.ts
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 23,28,66,71
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-233
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 295-329,365
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 295-329,365
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 92,95,154,156-159,161,167,178-181,184,204-207,210,254,256-257,259-261,263,265-267
+apps/dashboard/components/onboarding-dots.test.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-44
+apps/dashboard/components/onboarding/industry-screen.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-95
+apps/dashboard/components/option-card.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-49
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 3-5,8-12,14,24-44,54-78,92-105,109-173
+apps/dashboard/components/onboarding/model-setup-step.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 13,16,18,20-21,29,32,35,39,51,80,91,100,115-140,142-157,159-171,177-179
+docs/superpowers/plans/2026-06-06-conversational-onboarding.md
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-2254
+apps/dashboard/components/onboarding/name-screen.test.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-153
+apps/dashboard/components/onboarding/criterion-editor.test.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 94,101,174,177-180,186,284,286-287,289-291,293-297,303
+docs/superpowers/specs/2026-06-06-conversational-onboarding-design.md
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-173
+docs/PLAN-V1.md
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 100
+packages/backend/convex/assessment/industryStarters.ts
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-45
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 295-329,365
+apps/dashboard/components/onboarding/name-screen.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-90
+apps/dashboard/components/onboarding/country-screen.test.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-173
+apps/dashboard/components/onboarding/industry-screen.test.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-114
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 295-329,365
+apps/dashboard/components/onboarding/country-screen.tsx
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-131
+packages/backend/convex/assessment/starters.test.ts
+  s_df12fc6ddf323c::t_9bf3b6b05b42ae 1-176
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "86982d8eb0d4f6e73b22145b772c81f0717d3131",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
