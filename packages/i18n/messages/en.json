@@ -131,6 +131,23 @@
         "cancel": "Cancel",
         "error": "The role could not be created. Try again."
       },
+      "family": {
+        "none": "No family",
+        "all": "All families",
+        "createNew": "New family",
+        "nameLabel": "Family name",
+        "createCta": "Create family",
+        "cancel": "Cancel",
+        "renameCta": "Rename",
+        "saveCta": "Save",
+        "removeCta": "Remove family",
+        "removeConfirm": "Yes, remove",
+        "removeHint": "Roles keep all their data; they just leave the family.",
+        "error": "Something went wrong. Try again.",
+        "rolesHeading": "Roles in the family",
+        "notFound": "This family does not exist.",
+        "roleCount": "{count, plural, =1 {1 role} other {# roles}}"
+      },
       "detail": {
         "profileHeading": "Job profile",
         "editCta": "Edit",
@@ -351,6 +368,7 @@
     "aiGenerationFailed": "The AI suggestion could not be generated.",
     "roleLocked": "This role is approved and locked. Reopen it first.",
     "ratingsIncomplete": "All criteria must be rated first.",
-    "invalidTransition": "That status change is not allowed."
+    "invalidTransition": "That status change is not allowed.",
+    "roleFamilyExists": "A family with that name already exists."
   }
 }

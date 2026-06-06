@@ -17,6 +17,7 @@ export const ERROR_CODES = {
   roleLocked: "errors.roleLocked",
   ratingsIncomplete: "errors.ratingsIncomplete",
   invalidTransition: "errors.invalidTransition",
+  roleFamilyExists: "errors.roleFamilyExists",
 } as const
 
 export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES]

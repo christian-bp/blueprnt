@@ -7,8 +7,8 @@ import {
 import { templateContent } from "../evaluationModel/standardTemplate"
 
 export interface TrackLevelNames {
-  trackName: Map<string, { key: string; name: string }>
-  levelName: Map<string, { key: string; name: string }>
+  trackName: Map<string, { key: string; name: string; order: number }>
+  levelName: Map<string, { key: string; name: string; order: number }>
 }
 
 // Localized track/level name lookup for the org's model. Both seed paths
@@ -25,8 +25,14 @@ export async function trackLevelNames(
     .query("models")
     .withIndex("by_org", (q) => q.eq("orgId", orgId))
     .unique()
-  const trackName = new Map<string, { key: string; name: string }>()
-  const levelName = new Map<string, { key: string; name: string }>()
+  const trackName = new Map<
+    string,
+    { key: string; name: string; order: number }
+  >()
+  const levelName = new Map<
+    string,
+    { key: string; name: string; order: number }
+  >()
   if (model === null) return { trackName, levelName }
   const tracks = await ctx.db
     .query("tracks")
@@ -36,6 +42,7 @@ export async function trackLevelNames(
     trackName.set(track._id as string, {
       key: track.key,
       name: isTrackKey(track.key) ? content.trackNames[track.key] : track.name,
+      order: track.order,
     })
     const levels = await ctx.db
       .query("levels")
@@ -47,8 +54,22 @@ export async function trackLevelNames(
         name: isLevelKey(level.key)
           ? content.levelNames[level.key]
           : level.name,
+        order: level.order,
       })
     }
   }
   return { trackName, levelName }
+}
+
+// Family name lookup for the org. Families are user-entered names, stored
+// as written; no localization applies.
+export async function familyNames(
+  ctx: QueryCtx,
+  orgId: string
+): Promise<Map<string, string>> {
+  const families = await ctx.db
+    .query("roleFamilies")
+    .withIndex("by_org", (q) => q.eq("orgId", orgId))
+    .collect()
+  return new Map(families.map((family) => [family._id as string, family.name]))
 }

@@ -3,7 +3,7 @@ import type { Doc, Id } from "../_generated/dataModel"
 import type { QueryCtx } from "../_generated/server"
 import { clampLocale } from "../evaluationModel/localize"
 import { AUDIT_EVENTS, logAudit } from "../lib/audit"
-import { trackLevelNames } from "./names"
+import { familyNames, trackLevelNames } from "./names"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
 import { deriveResults, logBandShifts } from "./compute"
@@ -89,6 +89,7 @@ export const createRole = orgMutation({
     team: v.string(),
     trackId: v.id("tracks"),
     levelId: v.id("levels"),
+    familyId: v.optional(v.id("roleFamilies")),
     ...optionalProfileArgs,
   },
   returns: v.id("roles"),
@@ -105,6 +106,12 @@ export const createRole = orgMutation({
       throw appError(ERROR_CODES.invalidInput)
     }
     await requireOwnTrackLevel(ctx, args.trackId, args.levelId)
+    if (args.familyId !== undefined) {
+      const family = await ctx.db.get(args.familyId)
+      if (family === null || family.orgId !== ctx.orgId) {
+        throw appError(ERROR_CODES.notFound)
+      }
+    }
     const optional: Record<string, string> = {}
     for (const field of PROFILE_TEXT_FIELDS) {
       const value = args[field]
@@ -119,6 +126,7 @@ export const createRole = orgMutation({
       team,
       trackId: args.trackId,
       levelId: args.levelId,
+      ...(args.familyId !== undefined ? { familyId: args.familyId } : {}),
       // purpose/responsibilities are required strings in the schema; they
       // start empty and gate the rating flow via profileComplete.
       purpose: optional.purpose ?? "",
@@ -156,6 +164,10 @@ export const listRoles = orgQuery({
       ratedCount: v.number(),
       totalCriteria: v.number(),
       profileComplete: v.boolean(),
+      familyId: v.union(v.id("roleFamilies"), v.null()),
+      familyName: v.union(v.string(), v.null()),
+      trackOrder: v.number(),
+      levelOrder: v.number(),
     })
   ),
   handler: async (ctx, { locale }) => {
@@ -164,6 +176,7 @@ export const listRoles = orgQuery({
       derived.results.map((result) => [result.roleId, result])
     )
     const names = await trackLevelNames(ctx, ctx.orgId, locale)
+    const families = await familyNames(ctx, ctx.orgId)
     const roles = await ctx.db
       .query("roles")
       .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
@@ -188,6 +201,13 @@ export const listRoles = orgQuery({
         ratedCount: result?.ratedCount ?? 0,
         totalCriteria: derived.totalCriteria,
         profileComplete: isProfileComplete(role),
+        familyId: role.familyId ?? null,
+        familyName:
+          role.familyId !== undefined
+            ? (families.get(role.familyId as string) ?? null)
+            : null,
+        trackOrder: track?.order ?? 0,
+        levelOrder: level?.order ?? 0,
       }
     })
   },
@@ -237,6 +257,8 @@ export const getRole = orgQuery({
       profileComplete: v.boolean(),
       ratedCount: v.number(),
       totalCriteria: v.number(),
+      familyId: v.union(v.id("roleFamilies"), v.null()),
+      familyName: v.union(v.string(), v.null()),
       ratings: v.array(ratingShape),
       guardrails: v.array(guardrailShape),
     })
@@ -251,6 +273,7 @@ export const getRole = orgQuery({
     const names = await trackLevelNames(ctx, ctx.orgId, locale)
     const track = names.trackName.get(role.trackId as string)
     const level = names.levelName.get(role.levelId as string)
+    const fNames = await familyNames(ctx, ctx.orgId)
 
     const model = await ctx.db
       .query("models")
@@ -309,6 +332,11 @@ export const getRole = orgQuery({
       profileComplete: isProfileComplete(role),
       ratedCount: ratings.length,
       totalCriteria: criterionIds.size,
+      familyId: role.familyId ?? null,
+      familyName:
+        role.familyId !== undefined
+          ? (fNames.get(role.familyId as string) ?? null)
+          : null,
       ratings,
       guardrails: guardrailRows.map((row) => ({
         criterionId: row.criterionId,
@@ -327,6 +355,7 @@ export const updateRole = orgMutation({
     team: v.optional(v.string()),
     trackId: v.optional(v.id("tracks")),
     levelId: v.optional(v.id("levels")),
+    familyId: v.optional(v.union(v.id("roleFamilies"), v.null())),
     ...optionalProfileArgs,
   },
   returns: v.null(),
@@ -361,6 +390,19 @@ export const updateRole = orgMutation({
       await requireOwnTrackLevel(ctx, trackId, levelId)
       patch.trackId = trackId
       patch.levelId = levelId
+    }
+    if (args.familyId !== undefined) {
+      if (args.familyId === null) {
+        // The null sentinel clears membership (patching undefined removes
+        // the field); undefined in args means "leave unchanged".
+        patch.familyId = undefined
+      } else {
+        const family = await ctx.db.get(args.familyId)
+        if (family === null || family.orgId !== ctx.orgId) {
+          throw appError(ERROR_CODES.notFound)
+        }
+        patch.familyId = args.familyId
+      }
     }
     for (const field of PROFILE_TEXT_FIELDS) {
       const value = args[field]

@@ -132,6 +132,8 @@ Avancerad marknads-benchmarking; komplex kompmodellering (bonus/equity/TCC); sto
 13. **Likvärdigt arbete-gruppering (V2-söm, öppen):** "likvärdigt arbete" blir ett **eget grupperingsbegrepp** i framtida people/pay-kontexter, härlett från poäng (ev. toleransband/klustring) — **inte** en rak återanvändning av kompensationsbanden. Bandgränser får inte ensamma avgöra rättslig gruppering. (Se §11.)
 14. ~~**Rollfamilj**~~ → **Avgjort (2026-06):** rollfamilj är ett **eget begrepp**, skilt från track (förklaringsdokumentet track-level-band.md: Software Developer är en rollfamilj, IC är dess track; familjer kan också dras bredare, t.ex. Software Engineering). Hierarki: rollfamilj → roll/nivåroll → (V2) medarbetare. **Modelleras inte som egen entitet i V1:** varje `role` är en nivåroll med titel + track + nivå; familjegruppering fångas tills vidare via titlarna. Egen rollfamilj-entitet (och progressionsvy per familj) är en senare fråga. Se evaluation-model-ordlistan.
 
+    **Uppdaterat 2026-06-06:** rollfamilj modelleras nu som egen entitet: frivillig tillhörighet per roll, högst en familj, namn unika per organisation. Gruppering i rollistan, familjeväljare vid skapa/redigera, filter i resultatvyn och progressionsvy per familj levererades i role-families-skivan (docs/superpowers/specs/2026-06-06-role-families-design.md). Familjer påverkar aldrig poäng eller band. Fritextfältet funktion/avdelning kvarstår som organisatorisk hemvist.
+
 ## 10. Positionering & referenser
 
 - **Sysarb** (https://sysarb.com/) — mogen konkurrent: heltäckande EU-lönetransparens + pay equity (arbetsvärdering, jobbarkitektur, lönespann, gap-analys, lönerevision, comp management), 70+ HRIS-integrationer, ISO 27001 + GDPR, mid-market→enterprise, SE/EN.

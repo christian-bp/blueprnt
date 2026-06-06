@@ -19,6 +19,7 @@ import type * as ai_persist from "../ai/persist.js";
 import type * as ai_provider from "../ai/provider.js";
 import type * as ai_suggest from "../ai/suggest.js";
 import type * as assessment_compute from "../assessment/compute.js";
+import type * as assessment_families from "../assessment/families.js";
 import type * as assessment_names from "../assessment/names.js";
 import type * as assessment_ratings from "../assessment/ratings.js";
 import type * as assessment_results from "../assessment/results.js";
@@ -58,6 +59,7 @@ declare const fullApi: ApiFromModules<{
   "ai/provider": typeof ai_provider;
   "ai/suggest": typeof ai_suggest;
   "assessment/compute": typeof assessment_compute;
+  "assessment/families": typeof assessment_families;
   "assessment/names": typeof assessment_names;
   "assessment/ratings": typeof assessment_ratings;
   "assessment/results": typeof assessment_results;

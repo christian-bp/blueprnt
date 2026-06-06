@@ -131,6 +131,23 @@
         "cancel": "Avbryt",
         "error": "Rollen kunde inte skapas. Försök igen."
       },
+      "family": {
+        "none": "Ingen familj",
+        "all": "Alla familjer",
+        "createNew": "Ny familj",
+        "nameLabel": "Familjens namn",
+        "createCta": "Skapa familj",
+        "cancel": "Avbryt",
+        "renameCta": "Byt namn",
+        "saveCta": "Spara",
+        "removeCta": "Ta bort familj",
+        "removeConfirm": "Ja, ta bort",
+        "removeHint": "Rollerna behåller alla sina data; de lämnar bara familjen.",
+        "error": "Något gick fel. Försök igen.",
+        "rolesHeading": "Roller i familjen",
+        "notFound": "Den här familjen finns inte.",
+        "roleCount": "{count, plural, =1 {1 roll} other {# roller}}"
+      },
       "detail": {
         "profileHeading": "Jobbprofil",
         "editCta": "Redigera",
@@ -351,6 +368,7 @@
     "aiGenerationFailed": "AI-förslaget kunde inte genereras.",
     "roleLocked": "Rollen är godkänd och låst. Öppna den igen först.",
     "ratingsIncomplete": "Alla kriterier måste betygsättas först.",
-    "invalidTransition": "Den statusändringen är inte tillåten."
+    "invalidTransition": "Den statusändringen är inte tillåten.",
+    "roleFamilyExists": "En familj med det namnet finns redan."
   }
 }

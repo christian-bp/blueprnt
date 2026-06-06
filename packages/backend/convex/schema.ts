@@ -1,6 +1,6 @@
 import { defineSchema } from "convex/server"
 import { users, organizations } from "./accounts/tables"
-import { roles, ratings } from "./assessment/tables"
+import { roleFamilies, roles, ratings } from "./assessment/tables"
 import {
   models,
   criteria,
@@ -25,6 +25,7 @@ export default defineSchema({
   levels,
   trackGuardrails,
   bandThresholds,
+  roleFamilies,
   roles,
   ratings,
   suggestions,

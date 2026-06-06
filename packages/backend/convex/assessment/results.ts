@@ -6,7 +6,7 @@ import { clampLocale, isCriterionKey } from "../evaluationModel/localize"
 import { templateContent } from "../evaluationModel/standardTemplate"
 import { orgQuery } from "../lib/functions"
 import { deriveResults } from "./compute"
-import { trackLevelNames } from "./names"
+import { familyNames, trackLevelNames } from "./names"
 
 // Guardrail ranges for one level, keyed for the engine. Plain QueryCtx: the
 // org-scoped wrapper ctx is structurally assignable.
@@ -47,6 +47,8 @@ export const getResults = orgQuery({
         score: v.union(v.number(), v.null()),
         band: v.union(v.number(), v.null()),
         warningCount: v.number(),
+        familyId: v.union(v.id("roleFamilies"), v.null()),
+        familyName: v.union(v.string(), v.null()),
       })
     ),
     bands: v.array(v.object({ band: v.number(), minScore: v.number() })),
@@ -61,6 +63,7 @@ export const getResults = orgQuery({
     )
 
     const names = await trackLevelNames(ctx, ctx.orgId, locale)
+    const families = await familyNames(ctx, ctx.orgId)
     const model = await ctx.db
       .query("models")
       .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
@@ -107,6 +110,11 @@ export const getResults = orgQuery({
         score: result?.score ?? null,
         band: result?.band ?? null,
         warningCount: warnings.length,
+        familyId: role.familyId ?? null,
+        familyName:
+          role.familyId !== undefined
+            ? (families.get(role.familyId as string) ?? null)
+            : null,
       })
     }
     const sortLocale = clampLocale(locale)

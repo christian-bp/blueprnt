@@ -13,11 +13,19 @@ const updateRoleMock = vi.fn()
 
 vi.mock("convex/react", () => ({
   useMutation: () => updateRoleMock,
+  // The nested FamilyPicker lists families; none needed for these tests.
+  useQuery: () => [],
 }))
 
 vi.mock("@workspace/backend/convex/_generated/api", () => ({
   api: {
-    assessment: { roles: { updateRole: "assessment.roles.updateRole" } },
+    assessment: {
+      roles: { updateRole: "assessment.roles.updateRole" },
+      families: {
+        listRoleFamilies: "assessment.families.listRoleFamilies",
+        createRoleFamily: "assessment.families.createRoleFamily",
+      },
+    },
   },
 }))
 
@@ -28,6 +36,7 @@ import {
 
 const labels = messages.dashboard.roles.detail
 const roleLabels = messages.assessment.role
+const familyLabels = messages.dashboard.roles.family
 
 function makeRole(overrides?: Partial<RoleProfile>): RoleProfile {
   return {
@@ -37,6 +46,8 @@ function makeRole(overrides?: Partial<RoleProfile>): RoleProfile {
     team: "Core",
     trackName: "Individual contributor",
     levelName: "IC2",
+    familyId: null,
+    familyName: null,
     purpose: "Builds the product",
     responsibilities: "Implementation",
     decisionMandate: null,
@@ -114,6 +125,35 @@ describe("RoleProfileCard", () => {
       expect(screen.getByRole("alert")).toBeDefined()
     })
     expect(screen.getByRole("textbox", { name: roleLabels.team })).toBeDefined()
+  })
+
+  it("shows the family name in read mode, or the none label when unset", () => {
+    renderCard(makeRole({ familyId: "f-tech", familyName: "Tech" }))
+    expect(screen.getByText("Tech")).toBeDefined()
+    cleanup()
+    renderCard(makeRole())
+    expect(screen.getByText(familyLabels.none)).toBeDefined()
+  })
+
+  it("leaves the family untouched when only a text field changes", async () => {
+    updateRoleMock.mockResolvedValue(null)
+    renderCard(makeRole({ familyId: "f-tech", familyName: "Tech" }))
+    fireEvent.click(screen.getByRole("button", { name: labels.editCta }))
+    fireEvent.change(
+      screen.getByRole("textbox", { name: roleLabels.purpose }),
+      {
+        target: { value: "New purpose" },
+      }
+    )
+    fireEvent.click(screen.getByRole("button", { name: labels.saveCta }))
+    await waitFor(() => {
+      // The family did not change, so no familyId key is sent.
+      expect(updateRoleMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        roleId: "role-1",
+        purpose: "New purpose",
+      })
+    })
   })
 
   it("hides the edit button for approved and archived roles", () => {

@@ -9,6 +9,13 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
 import { Spinner } from "@workspace/ui/components/spinner"
 import {
   Table,
@@ -21,15 +28,20 @@ import {
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
+import { useState } from "react"
 import { useOrganization } from "@/components/org-context"
 import { BandOverview } from "@/components/results/band-overview"
 import { statusBadgeVariant } from "@/lib/role-status"
+
+// Sentinel for "show all families" in the Select.
+const ALL_FAMILIES = "__all__"
 
 // The results view: live-derived band distribution + roles table. Score and
 // band outcome recompute reactively when the model or any rating changes
 // (ADR-0002: never stored, never overridable).
 export default function ResultsPage() {
   const t = useTranslations("dashboard.results")
+  const tFamily = useTranslations("dashboard.roles.family")
   const tStatus = useTranslations("assessment.status")
   const { orgId } = useOrganization()
   const locale = useLocale()
@@ -38,6 +50,8 @@ export default function ResultsPage() {
     locale,
   })
 
+  const [familyFilter, setFamilyFilter] = useState<string | null>(null)
+
   if (results === undefined) {
     return (
       <main className="flex items-center justify-center p-6">
@@ -45,6 +59,29 @@ export default function ResultsPage() {
       </main>
     )
   }
+
+  // Distinct families present in the results rows, sorted by name so the
+  // filter lists them in the same order as the grouped roles page.
+  const familiesInResults = (() => {
+    const seen = new Map<string, string>()
+    for (const row of results.rows) {
+      if (row.familyId !== null && row.familyName !== null) {
+        seen.set(row.familyId as string, row.familyName)
+      }
+    }
+    return [...seen.entries()]
+      .map(([id, name]) => ({ id, name }))
+      .sort((a, b) => a.name.localeCompare(b.name))
+  })()
+
+  const hasAnyFamily = familiesInResults.length > 0
+
+  const filteredRows =
+    familyFilter === null
+      ? results.rows
+      : results.rows.filter(
+          (row) => (row.familyId as string | null) === familyFilter
+        )
 
   return (
     <div className="space-y-6">
@@ -64,7 +101,27 @@ export default function ResultsPage() {
         </Empty>
       ) : (
         <>
-          <BandOverview bands={results.bands} rows={results.rows} />
+          {hasAnyFamily && (
+            <Select
+              value={familyFilter ?? ALL_FAMILIES}
+              onValueChange={(next) =>
+                setFamilyFilter(next === ALL_FAMILIES ? null : next)
+              }
+            >
+              <SelectTrigger className="w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ALL_FAMILIES}>{tFamily("all")}</SelectItem>
+                {familiesInResults.map((family) => (
+                  <SelectItem key={family.id} value={family.id}>
+                    {family.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          <BandOverview bands={results.bands} rows={filteredRows} />
           <Table>
             <TableHeader>
               <TableRow>
@@ -79,7 +136,7 @@ export default function ResultsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {results.rows.map((row) => (
+              {filteredRows.map((row) => (
                 <TableRow key={row.roleId}>
                   <TableCell>
                     <Link

@@ -1,6 +1,15 @@
 import { defineTable } from "convex/server"
 import { v } from "convex/values"
 
+// Role families (rollfamilj): content grouping of roles, e.g. "Software
+// Engineering" or as broad as the organization wants. Families never affect
+// scoring (presentation and organization only); membership is optional and
+// a role belongs to at most one family.
+export const roleFamilies = defineTable({
+  orgId: v.string(),
+  name: v.string(),
+}).index("by_org", ["orgId"])
+
 // Role identity is permanent: never hard-delete a role with ratings or
 // approved status, never reuse ids (V2 equal-work grouping depends on it).
 // Role/rating tables NEVER carry person, salary, or performance fields.
@@ -11,6 +20,7 @@ export const roles = defineTable({
   team: v.string(),
   trackId: v.id("tracks"),
   levelId: v.id("levels"),
+  familyId: v.optional(v.id("roleFamilies")),
   purpose: v.string(),
   responsibilities: v.string(),
   decisionMandate: v.optional(v.string()),

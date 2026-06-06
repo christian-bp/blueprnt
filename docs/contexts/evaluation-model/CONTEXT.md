@@ -7,7 +7,7 @@ Grundprincip: **track och nivå beskriver rollen; bandet värderar den.** Ordnin
 ## Språk
 
 **Rollfamilj** *(kod: Role family)*:
-En bred familj av liknande roller, t.ex. Software Developer (kan också dras bredare, som Software Engineering). En familj rymmer flera nivåroller: junior och senior utvecklare är oftast samma rollfamilj men olika nivåroller inom samma track. Hierarkin är rollfamilj → roll/nivåroll → (V2) medarbetare. En rollfamilj är inte en track: tracken säger vilken *sorts* jobb rollen är (IC/Lead/M), familjen grupperar besläktade roller. V1 modellerar inte rollfamilj som egen entitet; gruppering fångas via rollernas titlar (se PLAN-V1 §9.14).
+En bred familj av liknande roller, t.ex. Software Developer (kan också dras bredare, som Software Engineering). En familj rymmer flera nivåroller: junior och senior utvecklare är oftast samma rollfamilj men olika nivåroller inom samma track. Hierarkin är rollfamilj → roll/nivåroll → (V2) medarbetare. En rollfamilj är inte en track: tracken säger vilken *sorts* jobb rollen är (IC/Lead/M), familjen grupperar besläktade roller. Sedan 2026-06-06 modelleras rollfamiljen som egen entitet: organisationen skapar familjer och en roll kan tillhöra högst en familj (tillhörigheten är frivillig). Familjer påverkar aldrig poäng eller band; de grupperar rollistan, filtrerar resultatvyn och ger progressionsvyn per familj (se PLAN-V1 §9.14).
 _Undvik_: Jobbfamilj (säg "rollfamilj"), Track (en familj är inte en track)
 
 **Track**:
@@ -106,7 +106,7 @@ Etikettsordval är förslag — bekräftas med användaren.
 - **Track-guardrails** (Excelns min/max per (track, nivå) per kriterium): provisoriskt *rådgivande* (varna vid betyg utanför intervall, blockera aldrig) — bekräftas när värderingsflödet designas.
 - **Egna kriterier (full konfiguration)**: HR kan skapa egna kriterier utöver standardmallen, med egna 0–5-ankare, och anpassa kriterier/ankare/betydelser/bandtrösklar fritt. Även egna kriterier får sin vikt genom att tilldelas en **betydelse från den fasta 7-skalan** — aldrig fria siffervikter.
 - **Live-omräkning (V1-beslut)**: ingen modellversionering i V1 — en levande modell per organisation, och ändringar räknar om alla rollers poäng/band direkt (härleds från sparade betyg + aktuell modell). Avviker medvetet från briefens versioneringskrav; konsekvens: roller kan tyst byta band vid modelländring. Spårbarhet löses med en **revisionslogg** (ingår i V1). Se ADR-0002.
-- **Rollfamiljens granularitet**: förklaringsdokumentet (track-level-band.md) använder Software Developer som exempel på rollfamilj; familjer kan också dras bredare (t.ex. Software Engineering, beslutat 2026-06). Granulariteten bestäms per organisation. V1 modellerar inte rollfamilj som egen entitet.
+- **Rollfamiljens granularitet**: förklaringsdokumentet (track-level-band.md) använder Software Developer som exempel på rollfamilj; familjer kan också dras bredare (t.ex. Software Engineering, beslutat 2026-06). Granulariteten bestäms per organisation. Sedan 2026-06-06 är rollfamiljen en egen entitet med frivillig tillhörighet per roll.
 - **Mallinnehållets språk**: mallseedade, orörda rader (kriterier via templateKey, tracks/nivåer via key) lokaliseras vid läsning till UI-språket (sv/en, fallback en). Egna och AI-skapade kriterier visas som de författats. När E2-redigering ändrar en mallrad rensas templateKey och organisationen äger texten (beslut 2026-06-05).
 
 ## Exempeldialog

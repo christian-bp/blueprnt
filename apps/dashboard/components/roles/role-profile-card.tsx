@@ -15,6 +15,7 @@ import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
+import { FamilyPicker } from "@/components/roles/family-picker"
 
 // Structural subset of getRole used by this card.
 export interface RoleProfile {
@@ -24,6 +25,8 @@ export interface RoleProfile {
   team: string
   trackName: string
   levelName: string
+  familyId: string | null
+  familyName: string | null
   purpose: string
   responsibilities: string
   decisionMandate: string | null
@@ -60,12 +63,15 @@ export function RoleProfileCard({
 }) {
   const t = useTranslations("dashboard.roles.detail")
   const tRole = useTranslations("assessment.role")
+  const tFamily = useTranslations("dashboard.roles.family")
+  const tModel = useTranslations("model")
   const updateRole = useMutation(api.assessment.roles.updateRole)
 
   const [editing, setEditing] = useState(false)
   const [pending, setPending] = useState(false)
   const [failed, setFailed] = useState(false)
   const [draft, setDraft] = useState<Record<string, string>>({})
+  const [draftFamilyId, setDraftFamilyId] = useState<string | null>(null)
 
   const locked = role.status === "approved" || role.archived
 
@@ -84,6 +90,7 @@ export function RoleProfileCard({
 
   function startEditing() {
     setDraft(currentValues())
+    setDraftFamilyId(role.familyId ?? null)
     setFailed(false)
     setEditing(true)
   }
@@ -97,9 +104,19 @@ export function RoleProfileCard({
     for (const [field, value] of Object.entries(draft)) {
       if (value !== current[field]) patch[field] = value
     }
+    // The null sentinel clears membership; undefined leaves it unchanged.
+    const familyChange =
+      draftFamilyId !== (role.familyId ?? null)
+        ? { familyId: draftFamilyId as never }
+        : {}
     try {
-      if (Object.keys(patch).length > 0) {
-        await updateRole({ orgId, roleId: role.roleId, ...patch })
+      if (Object.keys(patch).length > 0 || "familyId" in familyChange) {
+        await updateRole({
+          orgId,
+          roleId: role.roleId,
+          ...patch,
+          ...familyChange,
+        })
       }
       setEditing(false)
     } catch {
@@ -172,6 +189,22 @@ export function RoleProfileCard({
               )}
             </div>
           ))}
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="profile-family" className="text-muted-foreground">
+            {tModel("roleFamily")}
+          </Label>
+          {editing ? (
+            <FamilyPicker
+              orgId={orgId}
+              value={draftFamilyId}
+              onChange={setDraftFamilyId}
+            />
+          ) : (
+            <p id="profile-family" className="text-sm">
+              {role.familyName ?? tFamily("none")}
+            </p>
+          )}
         </div>
         {textRows.map((row) => (
           <div key={row.key} className="space-y-1">

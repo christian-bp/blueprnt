@@ -131,6 +131,23 @@
         "cancel": "Annuller",
         "error": "Rollen kunne ikke oprettes. Prøv igen."
       },
+      "family": {
+        "none": "Ingen familie",
+        "all": "Alle familier",
+        "createNew": "Ny familie",
+        "nameLabel": "Familiens navn",
+        "createCta": "Opret familie",
+        "cancel": "Annuller",
+        "renameCta": "Omdøb",
+        "saveCta": "Gem",
+        "removeCta": "Fjern familie",
+        "removeConfirm": "Ja, fjern",
+        "removeHint": "Rollerne beholder alle deres data; de forlader blot familien.",
+        "error": "Noget gik galt. Prøv igen.",
+        "rolesHeading": "Roller i familien",
+        "notFound": "Denne familie findes ikke.",
+        "roleCount": "{count, plural, =1 {1 rolle} other {# roller}}"
+      },
       "detail": {
         "profileHeading": "Jobprofil",
         "editCta": "Rediger",
@@ -351,6 +368,7 @@
     "aiGenerationFailed": "AI-forslaget kunne ikke genereres.",
     "roleLocked": "Denne rolle er godkendt og låst. Åbn den igen først.",
     "ratingsIncomplete": "Alle kriterier skal vurderes først.",
-    "invalidTransition": "Den statusændring er ikke tilladt."
+    "invalidTransition": "Den statusændring er ikke tilladt.",
+    "roleFamilyExists": "En familie med det navn findes allerede."
   }
 }

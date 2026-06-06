@@ -22,10 +22,12 @@ import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { useOrganization } from "@/components/org-context"
 import { CreateRoleDialog } from "@/components/roles/create-role-dialog"
+import { groupByFamily } from "@/lib/role-groups"
 import { statusBadgeVariant } from "@/lib/role-status"
 
 export default function RolesPage() {
   const t = useTranslations("dashboard.roles")
+  const tFamily = useTranslations("dashboard.roles.family")
   const tStatus = useTranslations("assessment.status")
   const { orgId } = useOrganization()
   const locale = useLocale()
@@ -39,6 +41,8 @@ export default function RolesPage() {
       </main>
     )
   }
+
+  const groups = groupByFamily(roles)
 
   return (
     <div className="space-y-4">
@@ -61,45 +65,76 @@ export default function RolesPage() {
           </EmptyHeader>
         </Empty>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t("table.title")}</TableHead>
-              <TableHead>{t("table.trackLevel")}</TableHead>
-              <TableHead>{t("table.team")}</TableHead>
-              <TableHead>{t("table.status")}</TableHead>
-              <TableHead className="text-right">{t("table.rated")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {roles.map((role) => (
-              <TableRow key={role.roleId}>
-                <TableCell>
-                  <Link
-                    href={`/roles/${role.roleId}`}
-                    className="font-medium underline-offset-4 hover:underline"
-                  >
-                    {role.title}
-                  </Link>
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {role.trackName} {role.levelKey}
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {role.team}
-                </TableCell>
-                <TableCell>
-                  <Badge variant={statusBadgeVariant(role.status)}>
-                    {tStatus(role.status as "draft" | "inReview" | "approved")}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right tabular-nums">
-                  {role.ratedCount}/{role.totalCriteria}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <div className="space-y-6">
+          {groups.map((group) => (
+            <section key={group.familyId ?? "__none__"}>
+              <div className="mb-2 flex items-baseline gap-2">
+                {group.familyId !== null ? (
+                  <h3 className="font-medium text-sm">
+                    <Link
+                      href={`/roles/families/${group.familyId}`}
+                      className="underline-offset-4 hover:underline"
+                    >
+                      {group.familyName}
+                    </Link>
+                  </h3>
+                ) : (
+                  <h3 className="text-muted-foreground text-sm">
+                    {tFamily("none")}
+                  </h3>
+                )}
+                {group.familyId !== null && (
+                  <span className="text-muted-foreground text-xs">
+                    {tFamily("roleCount", { count: group.rows.length })}
+                  </span>
+                )}
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t("table.title")}</TableHead>
+                    <TableHead>{t("table.trackLevel")}</TableHead>
+                    <TableHead>{t("table.team")}</TableHead>
+                    <TableHead>{t("table.status")}</TableHead>
+                    <TableHead className="text-right">
+                      {t("table.rated")}
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {group.rows.map((role) => (
+                    <TableRow key={role.roleId}>
+                      <TableCell>
+                        <Link
+                          href={`/roles/${role.roleId}`}
+                          className="font-medium underline-offset-4 hover:underline"
+                        >
+                          {role.title}
+                        </Link>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {role.trackName} {role.levelKey}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {role.team}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={statusBadgeVariant(role.status)}>
+                          {tStatus(
+                            role.status as "draft" | "inReview" | "approved"
+                          )}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {role.ratedCount}/{role.totalCriteria}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </section>
+          ))}
+        </div>
       )}
     </div>
   )

@@ -23,6 +23,7 @@ import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { FamilyPicker } from "@/components/roles/family-picker"
 
 // Structural subset of getModel's tracks; the branded ids flow through to
 // the mutation untouched.
@@ -46,6 +47,7 @@ export function CreateRoleDialog({
   triggerLabel: string
 }) {
   const t = useTranslations("dashboard.roles.create")
+  const tModel = useTranslations("model")
   const createRole = useMutation(api.assessment.roles.createRole)
   const router = useRouter()
 
@@ -56,6 +58,7 @@ export function CreateRoleDialog({
   const firstTrack = tracks[0]
   const [trackId, setTrackId] = useState(firstTrack?.trackId ?? "")
   const [levelId, setLevelId] = useState(firstTrack?.levels[0]?.levelId ?? "")
+  const [familyId, setFamilyId] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
   const [failed, setFailed] = useState(false)
 
@@ -84,6 +87,7 @@ export function CreateRoleDialog({
       setTeam("")
       setTrackId(firstTrack?.trackId ?? "")
       setLevelId(firstTrack?.levels[0]?.levelId ?? "")
+      setFamilyId(null)
       setFailed(false)
     }
   }
@@ -101,6 +105,7 @@ export function CreateRoleDialog({
         team: team.trim(),
         trackId: trackId as never,
         levelId: levelId as never,
+        ...(familyId !== null ? { familyId: familyId as never } : {}),
       })
       setOpen(false)
       router.push(`/roles/${roleId}`)
@@ -180,6 +185,14 @@ export function CreateRoleDialog({
                 </SelectContent>
               </Select>
             </div>
+          </div>
+          <div className="space-y-2">
+            <Label>{tModel("roleFamily")}</Label>
+            <FamilyPicker
+              orgId={orgId}
+              value={familyId}
+              onChange={setFamilyId}
+            />
           </div>
           {failed && (
             <p role="alert" className="text-destructive text-sm">

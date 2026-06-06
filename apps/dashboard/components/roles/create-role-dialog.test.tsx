@@ -17,11 +17,19 @@ vi.mock("convex/react", () => ({
     if (ref === "assessment.roles.createRole") return createRoleMock
     return vi.fn()
   },
+  // The nested FamilyPicker lists families; no families needed for these tests.
+  useQuery: () => [],
 }))
 
 vi.mock("@workspace/backend/convex/_generated/api", () => ({
   api: {
-    assessment: { roles: { createRole: "assessment.roles.createRole" } },
+    assessment: {
+      roles: { createRole: "assessment.roles.createRole" },
+      families: {
+        listRoleFamilies: "assessment.families.listRoleFamilies",
+        createRoleFamily: "assessment.families.createRoleFamily",
+      },
+    },
   },
 }))
 
@@ -92,6 +100,7 @@ describe("CreateRoleDialog", () => {
       .closest("form") as HTMLFormElement
     fireEvent.submit(form)
     await waitFor(() => {
+      // Exact match: with no family picked, createRole carries no familyId key.
       expect(createRoleMock).toHaveBeenCalledWith({
         orgId: "org-1",
         title: "Junior Developer",

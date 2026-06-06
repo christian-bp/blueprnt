@@ -131,6 +131,23 @@
         "cancel": "Peruuta",
         "error": "Roolia ei voitu luoda. Yritä uudelleen."
       },
+      "family": {
+        "none": "Ei perhettä",
+        "all": "Kaikki perheet",
+        "createNew": "Uusi perhe",
+        "nameLabel": "Perheen nimi",
+        "createCta": "Luo perhe",
+        "cancel": "Peruuta",
+        "renameCta": "Nimeä uudelleen",
+        "saveCta": "Tallenna",
+        "removeCta": "Poista perhe",
+        "removeConfirm": "Kyllä, poista",
+        "removeHint": "Roolit säilyttävät kaikki tietonsa; ne vain poistuvat perheestä.",
+        "error": "Jokin meni pieleen. Yritä uudelleen.",
+        "rolesHeading": "Roolit perheessä",
+        "notFound": "Tätä perhettä ei ole olemassa.",
+        "roleCount": "{count, plural, =1 {1 rooli} other {# roolia}}"
+      },
       "detail": {
         "profileHeading": "Tehtäväprofiili",
         "editCta": "Muokkaa",
@@ -351,6 +368,7 @@
     "aiGenerationFailed": "Tekoälyehdotusta ei voitu luoda.",
     "roleLocked": "Tämä rooli on hyväksytty ja lukittu. Avaa se ensin uudelleen.",
     "ratingsIncomplete": "Kaikki kriteerit on arvioitava ensin.",
-    "invalidTransition": "Kyseinen tilamuutos ei ole sallittu."
+    "invalidTransition": "Kyseinen tilamuutos ei ole sallittu.",
+    "roleFamilyExists": "Samanniminen perhe on jo olemassa."
   }
 }

@@ -2,10 +2,13 @@ import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
 
-async function seedTemplateOrganization(t: ReturnType<typeof initConvexTest>) {
+async function seedTemplateOrganization(
+  t: ReturnType<typeof initConvexTest>,
+  email = "hr@acme.se"
+) {
   const { orgId, userId } = await t.mutation(
     components.betterAuth.testing.seedMembership,
-    { email: "hr@acme.se", name: "HR Person", role: "admin" }
+    { email, name: "HR Person", role: "admin" }
   )
   await t.run(async (ctx) => {
     await ctx.db.insert("organizations", {
@@ -443,5 +446,89 @@ describe("archiveRole", () => {
     })
     const list = await asAdmin.query(api.assessment.roles.listRoles, { orgId })
     expect(list).toHaveLength(0)
+  })
+})
+
+describe("role family membership", () => {
+  it("creates with a family, moves, clears, and rejects foreign families", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, track, level } = await seedTemplateOrganization(t)
+    const techId = await asAdmin.mutation(
+      api.assessment.families.createRoleFamily,
+      { orgId, name: "Tech" }
+    )
+    const salesId = await asAdmin.mutation(
+      api.assessment.families.createRoleFamily,
+      { orgId, name: "Sales" }
+    )
+    const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Developer",
+      function: "Engineering",
+      team: "Core",
+      trackId: track.trackId,
+      levelId: level.levelId,
+      familyId: techId,
+    })
+
+    // listRoles carries the family and the track/level orders.
+    const list = await asAdmin.query(api.assessment.roles.listRoles, {
+      orgId,
+      locale: "sv",
+    })
+    expect(list[0]).toMatchObject({
+      familyId: techId,
+      familyName: "Tech",
+      trackOrder: 1,
+      levelOrder: level.order,
+    })
+
+    // Move to another family.
+    await asAdmin.mutation(api.assessment.roles.updateRole, {
+      orgId,
+      roleId,
+      familyId: salesId,
+    })
+    // Clear with the null sentinel.
+    await asAdmin.mutation(api.assessment.roles.updateRole, {
+      orgId,
+      roleId,
+      familyId: null,
+    })
+    await t.run(async (ctx) => {
+      const role = await ctx.db.get(roleId)
+      expect(role?.familyId).toBeUndefined()
+      const updated = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "role.updated")
+        )
+        .collect()
+      expect(updated.map((row) => row.payload)).toContainEqual({
+        roleId,
+        fields: ["familyId"],
+      })
+    })
+
+    // A family from another organization is rejected.
+    const foreign = await seedTemplateOrganization(t, "hr2@acme.se")
+    const foreignFamilyId = await foreign.asAdmin.mutation(
+      api.assessment.families.createRoleFamily,
+      { orgId: foreign.orgId, name: "Foreign" }
+    )
+    await expect(
+      asAdmin.mutation(api.assessment.roles.updateRole, {
+        orgId,
+        roleId,
+        familyId: foreignFamilyId,
+      })
+    ).rejects.toThrow(/errors.notFound/)
+
+    const role = await asAdmin.query(api.assessment.roles.getRole, {
+      orgId,
+      roleId: roleId as string,
+    })
+    expect(role?.familyId).toBeNull()
+    expect(role?.familyName).toBeNull()
   })
 })

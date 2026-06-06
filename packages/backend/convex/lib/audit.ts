@@ -21,6 +21,9 @@ export const AUDIT_EVENTS = {
   roleStatusChanged: "role.statusChange",
   ratingChanged: "rating.change",
   bandShift: "band.shift",
+  roleFamilyCreated: "roleFamily.created",
+  roleFamilyRenamed: "roleFamily.renamed",
+  roleFamilyRemoved: "roleFamily.removed",
 } as const
 
 export type AuditEvent = (typeof AUDIT_EVENTS)[keyof typeof AUDIT_EVENTS]
