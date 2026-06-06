@@ -3,16 +3,19 @@ import "@workspace/ui/globals.css"
 import type { Locale } from "@workspace/i18n/routing"
 import { cn } from "@workspace/ui/lib/utils"
 import { getLocale, getMessages } from "next-intl/server"
-import { Geist_Mono, Inter, Lora } from "next/font/google"
+import { Geist_Mono, Source_Sans_3 } from "next/font/google"
 import type { ReactNode } from "react"
 import { LocaleProvider } from "@/components/locale-provider"
 import { Providers } from "@/components/providers"
 import { getToken } from "@/lib/auth-server"
 
-// Same fonts and variable names as apps/web: the shared globals.css maps
-// font-sans/font-heading/font-mono to these runtime variables.
-const loraHeading = Lora({ subsets: ["latin"], variable: "--font-heading" })
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
+// Same fonts and variable names as apps/web. The radix-vega preset maps
+// font-heading to font-sans in the shared globals.css, so no separate
+// heading font is loaded.
+const sourceSans = Source_Sans_3({
+  subsets: ["latin"],
+  variable: "--font-sans",
+})
 const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
 export default async function RootLayout(props: { children: ReactNode }) {
@@ -36,8 +39,7 @@ export default async function RootLayout(props: { children: ReactNode }) {
         "antialiased",
         "font-sans",
         fontMono.variable,
-        inter.variable,
-        loraHeading.variable
+        sourceSans.variable
       )}
     >
       <body>

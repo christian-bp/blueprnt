@@ -1,4 +1,4 @@
-import { Geist_Mono, Inter, Lora } from "next/font/google"
+import { Geist_Mono, Source_Sans_3 } from "next/font/google"
 import { notFound } from "next/navigation"
 import { hasLocale, NextIntlClientProvider } from "next-intl"
 import { setRequestLocale } from "next-intl/server"
@@ -8,9 +8,12 @@ import "@workspace/ui/globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@workspace/ui/lib/utils"
 
-const loraHeading = Lora({ subsets: ["latin"], variable: "--font-heading" })
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
+// The radix-vega preset maps font-heading to font-sans in the shared
+// globals.css, so a separate heading font is no longer loaded.
+const sourceSans = Source_Sans_3({
+  subsets: ["latin"],
+  variable: "--font-sans",
+})
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
@@ -44,8 +47,7 @@ export default async function LocaleLayout({
         "antialiased",
         fontMono.variable,
         "font-sans",
-        inter.variable,
-        loraHeading.variable
+        sourceSans.variable
       )}
     >
       <body>
