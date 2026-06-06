@@ -1,0 +1,87 @@
+apps/dashboard/components/onboarding/industry-screen.test.tsx
+  s_df12fc6ddf323c::t_5bd0702461d522 98-99,112-117
+  s_df12fc6ddf323c::t_225f658564156b 50,70,72-76,93,101-103,109-111
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_f2ce796ee6093f 296
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_df12fc6ddf323c::t_916969745ed768 77-83
+apps/dashboard/hooks/use-auto-advance.test.tsx
+  s_df12fc6ddf323c::t_b934b2b288fd3b 1-95
+apps/dashboard/components/option-card.test.tsx
+  s_df12fc6ddf323c::t_b6b57f498b10c8 40-45
+  s_df12fc6ddf323c::t_abc6c9b7b4ff86 36-39,46-51
+apps/dashboard/components/onboarding/onboarding-input.tsx
+  s_df12fc6ddf323c::t_91a3fcaf0f76aa 1-19
+apps/dashboard/components/option-card.tsx
+  s_df12fc6ddf323c::t_ef2598fb8d0886 5,8-12,17-19,25,34,40,43,45-47,62
+apps/dashboard/components/onboarding/language-screen.test.tsx
+  s_df12fc6ddf323c::t_0730beda21cbb2 60-61,67,80,86-100,115,122,128-137
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_f2ce796ee6093f 296
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_df12fc6ddf323c::t_ec7459241262ad 11,117
+  s_df12fc6ddf323c::t_f4cbb509c7b237 17,19
+apps/dashboard/components/onboarding/criterion-editor.test.tsx
+  s_df12fc6ddf323c::t_813c10bf6adb5e 179,291
+apps/dashboard/components/onboarding/onboarding-wizard.test.tsx
+  s_df12fc6ddf323c::t_522ad348a99128 291-326
+  s_df12fc6ddf323c::t_711de69fd7a4b0 53
+apps/dashboard/components/onboarding/industry-screen.tsx
+  s_df12fc6ddf323c::t_0b035a1a2c0819 7,33-34,52-54,69-71
+  s_df12fc6ddf323c::t_d7cf9da2ae07f4 51,55-57
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_f2ce796ee6093f 296
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_f2ce796ee6093f 296
+apps/dashboard/components/onboarding/name-screen.tsx
+  s_df12fc6ddf323c::t_3ecf35318bc395 73,85
+  s_df12fc6ddf323c::t_96955c7192d428 5-6
+apps/dashboard/components/onboarding/model-setup-step.tsx
+  s_df12fc6ddf323c::t_fcad0b8d1a4cc2 7,12-14,24-29,121-126,130-134,136,138,143-164,175-176,182-183,186-217
+  s_df12fc6ddf323c::t_f4cbb509c7b237 21
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_f2ce796ee6093f 296
+apps/dashboard/components/onboarding/country-screen.tsx
+  s_df12fc6ddf323c::t_eb8e5a9f84204d 47,56-58
+  s_df12fc6ddf323c::t_9a9e711f8a549f 7,19-21,30-31,48-51,53-55,70-72
+  s_df12fc6ddf323c::t_b6b57f498b10c8 52
+apps/dashboard/components/onboarding/country-screen.test.tsx
+  s_df12fc6ddf323c::t_4d6b9595024277 36,50,53,77,79,83,94-102,104,117,125,131-133
+  s_df12fc6ddf323c::t_20349603edad77 122-123,134-139
+  s_df12fc6ddf323c::t_cb6abb03f7aa6e 69-75,80-82,88-89
+apps/dashboard/components/onboarding/name-screen.test.tsx
+  s_df12fc6ddf323c::t_813c10bf6adb5e 31,78,148
+apps/dashboard/components/onboarding/model-review.tsx
+  s_df12fc6ddf323c::t_8ab23ee631643e 6,32
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_df12fc6ddf323c::t_522aeb6cf275a1 154,156-157,159-163,165,171-213,252-253,281-289,332-334,336
+  s_df12fc6ddf323c::t_0ebe6daa8567fb 216-241
+apps/dashboard/components/onboarding/language-screen.tsx
+  s_df12fc6ddf323c::t_80afc8e37b1ddf 46-48
+  s_df12fc6ddf323c::t_7a930339b5ae0c 9,22-26,43,49-51,59-60,74-75,78
+  s_df12fc6ddf323c::t_27f56a23959faa 52
+apps/dashboard/components/onboarding/next-button.test.tsx
+  s_df12fc6ddf323c::t_d6fb61b1838045 1-39
+apps/dashboard/components/onboarding/next-button.tsx
+  s_df12fc6ddf323c::t_00c678415032b5 1-24,26-29
+  s_df12fc6ddf323c::t_cf39f7271b8bd4 25
+apps/dashboard/hooks/use-auto-advance.ts
+  s_df12fc6ddf323c::t_5c6e615c70c1c9 11-14,23,29,43
+  s_df12fc6ddf323c::t_69d89549223d0e 1-10,15-22,24-28,30-42,44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b499f5d2537da4ec6930fd6a98af7aea21cd417a",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
