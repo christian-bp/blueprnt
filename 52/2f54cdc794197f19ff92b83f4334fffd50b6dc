@@ -1,0 +1,119 @@
+packages/ui/src/components/skeleton.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 7
+packages/ui/src/components/alert-dialog.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 39,61,110
+packages/ui/src/components/field.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 46,109
+packages/ui/src/components/badge.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 8
+packages/ui/src/components/empty.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 10,34
+packages/ui/src/components/input-otp.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 36,59
+packages/ui/src/components/input-group.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 17,26,31,33,69,73,75-76
+packages/ui/src/components/context-menu.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 72,94,115,133,153,182,209,224
+packages/ui/src/components/sidebar.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 245,310,326,337,374,405,425,452,470,476,481,557,576,600,605,670
+packages/ui/src/components/carousel.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 189,219
+packages/ui/src/components/hover-card.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 35
+packages/ui/src/components/toggle-group.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 44,75
+packages/ui/src/styles/globals.css
+  s_df12fc6ddf323c::t_fbac036275b7cc 119,129-130
+packages/ui/src/components/accordion.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 17,30,46,67
+apps/web/components.json
+  s_df12fc6ddf323c::t_092d639d2faee7 3
+packages/ui/src/components/chart.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 194
+packages/ui/src/components/progress.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 17
+packages/ui/src/components/navigation-menu.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 63,91,112,129
+packages/ui/src/components/drawer.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 40,59,101
+packages/ui/src/components/toggle.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 10,15,19-21
+packages/ui/src/components/select.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 23,48,73,101,116
+packages/ui/src/components/dialog.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 43,65,75,92,132
+packages/ui/src/components/button.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 8,14,25-34
+packages/ui/src/components/dropdown-menu.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 47,77,99,142,172,187,228,246
+packages/ui/src/components/alert.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 7
+packages/ui/src/components/input.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 11
+packages/ui/src/components/kbd.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 8
+packages/ui/src/components/pagination.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 74,92,110
+packages/ui/package.json
+  s_df12fc6ddf323c::t_fbac036275b7cc 27
+packages/ui/src/components/sheet.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 41,66,76,93,103,116
+packages/ui/src/components/menubar.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 18,60,82,104,126,132,155,160,182,197,238,256
+packages/ui/src/components/popover.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 33,62
+packages/ui/src/components/slider.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 41,52
+apps/dashboard/components.json
+  s_df12fc6ddf323c::t_fbac036275b7cc 3,13,17-19,22-23
+packages/ui/src/components/item.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 37,47,86,115,141
+packages/ui/src/components/switch.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 20,27
+packages/ui/src/components/card.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 15,28,40-43,76,87
+packages/ui/src/components/button-group.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 8,13,15,52
+packages/ui/src/components/command.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 29,58,75,144,159
+packages/ui/src/components/combobox.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 116,146,227,247,256
+packages/ui/src/components/checkbox.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 18
+packages/ui/components.json
+  s_df12fc6ddf323c::t_9facd78d03e52d 3
+packages/ui/src/components/calendar.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 35
+packages/ui/src/components/native-select.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 28
+packages/ui/src/components/radio-group.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 29,38
+packages/ui/src/components/tabs.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 28,66
+packages/ui/src/components/textarea.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 10
+packages/ui/src/components/tooltip.tsx
+  s_df12fc6ddf323c::t_fbac036275b7cc 45,51
+apps/web/app/[locale]/layout.tsx
+  s_df12fc6ddf323c::t_4eef3240d5db93 1,11-16
+  s_df12fc6ddf323c::t_69c6742b3e06f1 50
+apps/dashboard/app/layout.tsx
+  s_df12fc6ddf323c::t_ad7c4dd5e9d812 42
+  s_df12fc6ddf323c::t_19924fb237c6dd 6,12-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "522f54cdc794197f19ff92b83f4334fffd50b6dc",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
