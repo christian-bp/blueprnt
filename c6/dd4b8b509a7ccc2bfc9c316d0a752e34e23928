@@ -1,0 +1,117 @@
+packages/ui/src/components/dropdown-menu.tsx
+  s_df12fc6ddf323c::t_451a1454841936 47,77,99,142,172,187,228,246
+packages/ui/src/components/toggle-group.tsx
+  s_df12fc6ddf323c::t_451a1454841936 44,75
+packages/ui/src/styles/globals.css
+  s_df12fc6ddf323c::t_451a1454841936 119,129-130
+packages/ui/src/components/navigation-menu.tsx
+  s_df12fc6ddf323c::t_451a1454841936 63,91,112,129
+packages/ui/src/components/dialog.tsx
+  s_df12fc6ddf323c::t_451a1454841936 43,65,75,92,132
+packages/ui/src/components/checkbox.tsx
+  s_df12fc6ddf323c::t_451a1454841936 18
+packages/ui/src/components/skeleton.tsx
+  s_df12fc6ddf323c::t_451a1454841936 7
+packages/ui/src/components/input.tsx
+  s_df12fc6ddf323c::t_451a1454841936 11
+packages/ui/src/components/item.tsx
+  s_df12fc6ddf323c::t_451a1454841936 37,47,86,115,141
+packages/ui/src/components/carousel.tsx
+  s_df12fc6ddf323c::t_451a1454841936 189,219
+packages/ui/src/components/hover-card.tsx
+  s_df12fc6ddf323c::t_451a1454841936 35
+packages/ui/src/components/card.tsx
+  s_df12fc6ddf323c::t_451a1454841936 15,28,40-43,76,87
+packages/ui/src/components/kbd.tsx
+  s_df12fc6ddf323c::t_451a1454841936 8
+packages/ui/src/components/select.tsx
+  s_df12fc6ddf323c::t_451a1454841936 23,48,73,101,116
+packages/ui/src/components/drawer.tsx
+  s_df12fc6ddf323c::t_451a1454841936 40,59,101
+packages/ui/src/components/combobox.tsx
+  s_df12fc6ddf323c::t_451a1454841936 116,146,227,247,256
+packages/ui/src/components/slider.tsx
+  s_df12fc6ddf323c::t_451a1454841936 41,52
+apps/web/components.json
+  s_df12fc6ddf323c::t_451a1454841936 3
+packages/ui/src/components/tabs.tsx
+  s_df12fc6ddf323c::t_451a1454841936 28,66
+packages/ui/src/components/popover.tsx
+  s_df12fc6ddf323c::t_451a1454841936 33,62
+packages/ui/src/components/sheet.tsx
+  s_df12fc6ddf323c::t_451a1454841936 41,66,76,93,103,116
+packages/ui/src/components/pagination.tsx
+  s_df12fc6ddf323c::t_451a1454841936 74,92,110
+packages/ui/src/components/button-group.tsx
+  s_df12fc6ddf323c::t_451a1454841936 8,13,15,52
+packages/ui/src/components/accordion.tsx
+  s_df12fc6ddf323c::t_451a1454841936 17,30,46,67
+packages/ui/src/components/command.tsx
+  s_df12fc6ddf323c::t_451a1454841936 29,58,75,144,159
+packages/ui/src/components/context-menu.tsx
+  s_df12fc6ddf323c::t_451a1454841936 72,94,115,133,153,182,209,224
+packages/ui/src/components/button.tsx
+  s_df12fc6ddf323c::t_451a1454841936 8,14,25-34
+packages/ui/src/components/input-otp.tsx
+  s_df12fc6ddf323c::t_451a1454841936 36,59
+packages/ui/src/components/calendar.tsx
+  s_df12fc6ddf323c::t_451a1454841936 35
+packages/ui/package.json
+  s_df12fc6ddf323c::t_451a1454841936 27
+packages/ui/src/components/chart.tsx
+  s_df12fc6ddf323c::t_451a1454841936 194
+packages/ui/src/components/menubar.tsx
+  s_df12fc6ddf323c::t_451a1454841936 18,60,82,104,126,132,155,160,182,197,238,256
+apps/dashboard/components.json
+  s_df12fc6ddf323c::t_451a1454841936 3,13,17-19,22-23
+packages/ui/src/components/textarea.tsx
+  s_df12fc6ddf323c::t_451a1454841936 10
+packages/ui/src/components/sidebar.tsx
+  s_df12fc6ddf323c::t_451a1454841936 245,310,326,337,374,405,425,452,470,476,481,557,576,600,605,670
+packages/ui/src/components/tooltip.tsx
+  s_df12fc6ddf323c::t_451a1454841936 45,51
+packages/ui/components.json
+  s_df12fc6ddf323c::t_451a1454841936 3
+packages/ui/src/components/field.tsx
+  s_df12fc6ddf323c::t_451a1454841936 46,109
+packages/ui/src/components/alert-dialog.tsx
+  s_df12fc6ddf323c::t_451a1454841936 39,61,110
+packages/ui/src/components/alert.tsx
+  s_df12fc6ddf323c::t_451a1454841936 7
+packages/ui/src/components/badge.tsx
+  s_df12fc6ddf323c::t_451a1454841936 8
+packages/ui/src/components/input-group.tsx
+  s_df12fc6ddf323c::t_451a1454841936 17,26,31,33,69,73,75-76
+apps/web/app/[locale]/layout.tsx
+  s_df12fc6ddf323c::t_451a1454841936 1,11-16,50
+packages/ui/src/components/progress.tsx
+  s_df12fc6ddf323c::t_451a1454841936 17
+packages/ui/src/components/radio-group.tsx
+  s_df12fc6ddf323c::t_451a1454841936 29,38
+packages/ui/src/components/native-select.tsx
+  s_df12fc6ddf323c::t_451a1454841936 28
+apps/dashboard/app/layout.tsx
+  s_df12fc6ddf323c::t_451a1454841936 6,12-18,42
+packages/ui/src/components/switch.tsx
+  s_df12fc6ddf323c::t_451a1454841936 20,27
+packages/ui/src/components/toggle.tsx
+  s_df12fc6ddf323c::t_451a1454841936 10,15,19-21
+packages/ui/src/components/empty.tsx
+  s_df12fc6ddf323c::t_451a1454841936 10,34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c6dd4b8b509a7ccc2bfc9c316d0a752e34e23928",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
