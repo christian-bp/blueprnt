@@ -35,9 +35,9 @@ export function CriterionEditor({
   onBack?: () => void
   onChangeChoice?: () => void | Promise<void>
 }) {
-  const t = useTranslations("dashboard.onboarding.model")
+  const t = useTranslations("dashboard.model")
   const tOnboarding = useTranslations("dashboard.onboarding")
-  const tEditor = useTranslations("dashboard.onboarding.model.editor")
+  const tEditor = useTranslations("dashboard.model.editor")
   const tImportance = useTranslations("model.importance")
   // The fixed tracks/levels localize server-side in getModel; passing the
   // active UI locale re-runs the reactive query when the language changes.

@@ -92,106 +92,127 @@
     "title": "blueprnt",
     "nav": {
       "overview": "Oversikt",
-      "signOut": "Logg ut",
-      "dashboard": "Dashbord",
-      "lifecycle": "Livssyklus",
-      "analytics": "Analyse",
-      "projects": "Prosjekter",
-      "team": "Team",
-      "quickCreate": "Hurtigopprett",
-      "inbox": "Innboks",
-      "settings": "Innstillinger",
-      "getHelp": "Få hjelp",
-      "search": "Søk",
-      "documents": "Dokumenter",
-      "dataLibrary": "Databibliotek",
-      "reports": "Rapporter",
-      "wordAssistant": "Tekstassistent",
-      "capture": "Samle inn",
-      "proposal": "Forslag",
-      "prompts": "Oppfordringer",
-      "activeProposals": "Aktive forslag",
-      "archived": "Arkiverte",
-      "more": "Mer",
-      "open": "Åpne",
-      "share": "Del",
-      "delete": "Slett"
-    },
-    "cards": {
-      "totalRevenue": "Total inntekt",
-      "trendingUp": "Stigende trend denne måneden",
-      "visitorsLast6Months": "Besøkende siste 6 måneder",
-      "newCustomers": "Nye kunder",
-      "down20Period": "Ned 20% denne perioden",
-      "acquisitionAttention": "Anskaffelse trenger oppmerksomhet",
-      "activeAccounts": "Aktive kontoer",
-      "strongRetention": "Sterk brukerlojalitet",
-      "engagementExceed": "Engasjement overstiger mål",
-      "growthRate": "Vekstrate",
-      "steadyIncrease": "Stødig ytelsesøkning",
-      "meetsProjections": "Oppfyller vekstprognoser"
-    },
-    "chart": {
-      "title": "Totalt antall besøkende",
-      "descriptionLong": "Totalt for de siste 3 månedene",
-      "descriptionShort": "Siste 3 måneder",
-      "last3Months": "Siste 3 måneder",
-      "last30Days": "Siste 30 dager",
-      "last7Days": "Siste 7 dager",
-      "drawerDescription": "Viser totalt antall besøkende de siste 6 månedene",
-      "trendingUp": "Stigende trend med 5,2% denne måneden",
-      "drawerBody": "Viser totalt antall besøkende de siste 6 månedene. Dette er bare litt tilfeldig tekst for å teste oppsettet. Den strekker seg over flere linjer og skal brytes."
-    },
-    "table": {
-      "outline": "Disposisjon",
-      "pastPerformance": "Tidligere ytelse",
-      "keyPersonnel": "Nøkkelpersonell",
-      "focusDocuments": "Fokaldokumenter",
-      "columns": "Kolonner",
-      "addSection": "Legg til seksjon",
-      "noResults": "Ingen resultater.",
-      "rowsPerPage": "Rader per side",
-      "pageOf": "Side {page} av {total}",
-      "rowsSelected": "{selected} av {total} rad(er) valgt.",
-      "goToFirstPage": "Gå til første side",
-      "goToPreviousPage": "Gå til forrige side",
-      "goToNextPage": "Gå til neste side",
-      "goToLastPage": "Gå til siste side",
-      "dragToReorder": "Dra for å omorganisere",
-      "openMenu": "Åpne meny",
-      "selectAll": "Velg alle",
-      "selectRow": "Velg rad",
-      "view": "Visning",
-      "selectView": "Velg en visning",
-      "colHeader": "Overskrift",
-      "colSectionType": "Seksjonstype",
-      "colStatus": "Status",
-      "colTarget": "Mål",
-      "colLimit": "Grense",
-      "colReviewer": "Gjennomgår",
-      "assignReviewer": "Tilordne gjennomgår",
-      "edit": "Rediger",
-      "makeACopy": "Lag en kopi",
-      "favorite": "Favoritt",
-      "delete": "Slett",
-      "submit": "Send inn",
-      "done": "Ferdig",
-      "drawerFormHeader": "Overskrift",
-      "drawerFormType": "Type",
-      "drawerFormStatus": "Status",
-      "drawerFormTarget": "Mål",
-      "drawerFormLimit": "Grense",
-      "drawerFormReviewer": "Gjennomgår",
-      "selectType": "Velg en type",
-      "selectStatus": "Velg en status",
-      "selectReviewer": "Velg en gjennomgår",
-      "saving": "Lagrer {name}",
-      "saved": "Ferdig",
-      "saveError": "Feil"
+      "roles": "Roller",
+      "model": "Modell",
+      "results": "Resultater",
+      "signOut": "Logg ut"
     },
     "overview": {
-      "emptyTitle": "Ingenting her ennå",
-      "emptyBody": "Organisasjonens oversikt vil vises her etter hvert som blueprnt vokser."
+      "rolesCard": "Roller",
+      "approvedCard": "Godkjente roller",
+      "ratedCard": "Fullstendig vurderte roller",
+      "criteriaCard": "Kriterier i modellen",
+      "goRoles": "Gå til roller",
+      "goModel": "Vis modellen",
+      "goResults": "Vis resultater"
+    },
+    "roles": {
+      "heading": "Roller",
+      "description": "Jobbprofiler som vurderes mot modellen deres. Roller, aldri personer.",
+      "newCta": "Ny rolle",
+      "empty": "Ingen roller ennå. Opprett den første rollen for å begynne å vurdere.",
+      "table": {
+        "title": "Tittel",
+        "trackLevel": "Track og nivå",
+        "team": "Team",
+        "status": "Status",
+        "rated": "Vurdert"
+      },
+      "create": {
+        "title": "Ny rolle",
+        "description": "Det grunnleggende først. Formål og ansvarsområder kan utkastes med AI på rollesiden.",
+        "titleLabel": "Tittel",
+        "titlePlaceholder": "f.eks. Junior Software Developer",
+        "functionLabel": "Funksjon/avdeling",
+        "teamLabel": "Team",
+        "trackLabel": "Track",
+        "levelLabel": "Nivå",
+        "cta": "Opprett rolle",
+        "cancel": "Avbryt",
+        "error": "Rollen kunne ikke opprettes. Prøv igjen."
+      },
+      "detail": {
+        "profileHeading": "Jobbprofil",
+        "editCta": "Rediger",
+        "doneCta": "Ferdig",
+        "saveCta": "Lagre",
+        "saveError": "Kunne ikke lagre. Prøv igjen.",
+        "profileIncomplete": "Fyll inn formål og ansvarsområder før vurdering.",
+        "ratingHeading": "Vurdering",
+        "ratingProgress": "{rated} av {total} kriterier vurdert",
+        "rateCta": "Vurder rolle",
+        "resumeRateCta": "Fortsett vurderingen",
+        "adjustRateCta": "Juster vurderinger",
+        "resultHeading": "Resultat",
+        "notFound": "Denne rollen finnes ikke.",
+        "backToRoles": "Tilbake til roller",
+        "emptyField": "Ikke fylt inn ennå"
+      },
+      "status": {
+        "submitCta": "Send til gjennomgang",
+        "approveCta": "Godkjenn",
+        "withdrawCta": "Trekk tilbake fra gjennomgang",
+        "reopenCta": "Åpne igjen",
+        "reopenConfirm": "Åpne igjen og lås opp",
+        "cancel": "Avbryt",
+        "lockedHint": "Godkjente roller er låst. Åpne igjen for å endre profilen eller vurderingene.",
+        "incompleteHint": "Rollen må være fullstendig vurdert før gjennomgang eller godkjenning.",
+        "error": "Statusen kunne ikke endres. Prøv igjen."
+      },
+      "archive": {
+        "cta": "Arkiver rolle",
+        "confirm": "Ja, arkiver",
+        "cancel": "Avbryt",
+        "error": "Rollen kunne ikke arkiveres. Prøv igjen."
+      },
+      "ai": {
+        "heading": "AI-assistanse",
+        "descriptionLabel": "Beskriv rollen (valgfritt)",
+        "draftCta": "Utkast jobbprofil med AI",
+        "error": "Noe gikk galt. Prøv igjen."
+      }
+    },
+    "rating": {
+      "title": "Vurder rolle",
+      "step": "Kriterium {current} av {total}",
+      "motivationLabel": "Begrunnelse (valgfritt)",
+      "motivationPlaceholder": "Hvorfor denne vurderingen?",
+      "guardrailHint": "Utenfor veiledningsintervallet {min} til {max} for {level}.",
+      "anchorGroupLabel": "Vurdering for {name}",
+      "backCta": "Tilbake",
+      "nextCta": "Neste kriterium",
+      "finishCta": "Vis resultat",
+      "saveError": "Vurderingen kunne ikke lagres. Prøv igjen.",
+      "result": {
+        "heading": "Resultat",
+        "scoreLabel": "Totalpoeng",
+        "bandLabel": "Bånd",
+        "bandHighest": "Bånd 1 er det høyeste båndet.",
+        "computing": "Beregner resultatet",
+        "guardrailsHeading": "Veiledende merknader",
+        "guardrailRow": "{name}: {value} er utenfor {min} til {max}",
+        "noWarnings": "Alle vurderinger er innenfor veiledningsintervallene.",
+        "backToRole": "Tilbake til rollen"
+      }
+    },
+    "results": {
+      "heading": "Resultater",
+      "description": "Totalpoeng og båndutfall beregnes alltid direkte fra gjeldende modell og vurderinger.",
+      "bandsHeading": "Båndoversikt",
+      "bandHighest": "Bånd 1 er det høyeste båndet.",
+      "bandRow": "Bånd {band}",
+      "roleCount": "{count, plural, =1 {1 rolle} other {# roller}}",
+      "table": {
+        "title": "Tittel",
+        "trackLevel": "Track og nivå",
+        "status": "Status",
+        "score": "Totalpoeng",
+        "band": "Bånd",
+        "warnings": "Veiledende merknader",
+        "progress": "{rated} av {total} vurdert"
+      },
+      "empty": "Ingen roller å vise ennå. Opprett en rolle og vurder den for å se resultater.",
+      "emptyCta": "Opprett en rolle"
     },
     "auth": {
       "loading": "Sjekker økten din",
@@ -259,62 +280,62 @@
           "realEstateConstruction": "Eiendom og bygg",
           "other": "Annet"
         }
-      },
-      "model": {
-        "heading": "Velg vurderingsmodellen deres",
-        "description": "Modellen definerer kriteriene roller vurderes mot. Betydning er alltid en etikett, aldri et tall.",
-        "error": "Noe gikk galt. Prøv igjen.",
-        "template": {
-          "title": "Start fra standardmalen",
-          "description": "9 kriterier med ankerskalaer, forvalgte betydninger, track-skjema og båndterskler.",
-          "badge": "Anbefales",
-          "cta": "Bruk malen"
-        },
-        "scratch": {
-          "title": "Bygg fra bunnen",
-          "description": "Start tomt og definer egne kriterier, med AI-utkast som hjelp.",
-          "nameLabel": "Modellens navn",
-          "cta": "Start fra bunnen"
-        },
-        "review": {
-          "heading": "Modellen deres",
-          "setImportance": "Betydning for {name}",
-          "cta": "Åpne dashbordet",
-          "editCta": "Rediger",
-          "doneEditing": "Ferdig"
-        },
-        "editor": {
-          "heading": "Kriterier",
-          "empty": "Ingen kriterier ennå. Legg til det første kriteriet eller generer AI-utkast.",
-          "name": "Navn",
-          "description": "Beskrivelse",
-          "helpText": "Hjelpetekst til vurdereren",
-          "importance": "Betydning",
-          "anchors": "Ankerskala (0 til 5)",
-          "anchorLevel": "Anker {level}",
-          "addCta": "Legg til kriterium",
-          "removeCta": "Fjern",
-          "doneCta": "Fullfør oppsettet"
-        },
-        "change": {
-          "cta": "Endre modellvalg",
-          "confirm": "Ja, slett og start på nytt",
-          "cancel": "Avbryt"
-        }
-      },
-      "ai": {
-        "heading": "AI-assistanse",
-        "provenance": "AI-generert forslag. Gjennomgå og bekreft; ingenting tas i bruk automatisk.",
-        "draftDescriptionLabel": "Beskriv virksomheten deres (valgfritt)",
-        "draftCta": "Generer kriterieutkast",
-        "reviewCta": "La AI gjennomgå betydningene",
-        "generating": "Genererer forslag",
-        "confirmCta": "Legg til valgte",
-        "applyCta": "Bruk valgte",
-        "rejectCta": "Avvis",
-        "noAdjustments": "AI-en fant ingen justeringer å foreslå.",
-        "motivation": "Begrunnelse"
       }
+    },
+    "model": {
+      "heading": "Velg vurderingsmodellen deres",
+      "description": "Modellen definerer kriteriene roller vurderes mot. Betydning er alltid en etikett, aldri et tall.",
+      "error": "Noe gikk galt. Prøv igjen.",
+      "template": {
+        "title": "Start fra standardmalen",
+        "description": "9 kriterier med ankerskalaer, forvalgte betydninger, track-skjema og båndterskler.",
+        "badge": "Anbefales",
+        "cta": "Bruk malen"
+      },
+      "scratch": {
+        "title": "Bygg fra bunnen",
+        "description": "Start tomt og definer egne kriterier, med AI-utkast som hjelp.",
+        "nameLabel": "Modellens navn",
+        "cta": "Start fra bunnen"
+      },
+      "review": {
+        "heading": "Modellen deres",
+        "setImportance": "Betydning for {name}",
+        "cta": "Åpne dashbordet",
+        "editCta": "Rediger",
+        "doneEditing": "Ferdig"
+      },
+      "editor": {
+        "heading": "Kriterier",
+        "empty": "Ingen kriterier ennå. Legg til det første kriteriet eller generer AI-utkast.",
+        "name": "Navn",
+        "description": "Beskrivelse",
+        "helpText": "Hjelpetekst til vurdereren",
+        "importance": "Betydning",
+        "anchors": "Ankerskala (0 til 5)",
+        "anchorLevel": "Anker {level}",
+        "addCta": "Legg til kriterium",
+        "removeCta": "Fjern",
+        "doneCta": "Fullfør oppsettet"
+      },
+      "change": {
+        "cta": "Endre modellvalg",
+        "confirm": "Ja, slett og start på nytt",
+        "cancel": "Avbryt"
+      }
+    },
+    "ai": {
+      "heading": "AI-assistanse",
+      "provenance": "AI-generert forslag. Gjennomgå og bekreft; ingenting tas i bruk automatisk.",
+      "draftDescriptionLabel": "Beskriv virksomheten deres (valgfritt)",
+      "draftCta": "Generer kriterieutkast",
+      "reviewCta": "La AI gjennomgå betydningene",
+      "generating": "Genererer forslag",
+      "confirmCta": "Legg til valgte",
+      "applyCta": "Bruk valgte",
+      "rejectCta": "Avvis",
+      "noAdjustments": "AI-en fant ingen justeringer å foreslå.",
+      "motivation": "Begrunnelse"
     }
   },
   "errors": {
@@ -327,6 +348,9 @@
     "modelExists": "Organisasjonen har allerede en vurderingsmodell.",
     "profileIncomplete": "Fyll ut bedriftsprofilen først.",
     "aiUnavailable": "AI er ikke konfigurert i dette miljøet.",
-    "aiGenerationFailed": "AI-forslaget kunne ikke genereres."
+    "aiGenerationFailed": "AI-forslaget kunne ikke genereres.",
+    "roleLocked": "Denne rollen er godkjent og låst. Åpne den igjen først.",
+    "ratingsIncomplete": "Alle kriterier må vurderes først.",
+    "invalidTransition": "Den statusendringen er ikke tillatt."
   }
 }

@@ -363,3 +363,139 @@ describe("criterion editor", () => {
     ).rejects.toThrow(/errors.adminRequired/)
   })
 })
+
+async function seedRatedTemplateOrganization(
+  t: ReturnType<typeof initConvexTest>
+) {
+  const { orgId, userId } = await t.mutation(
+    components.betterAuth.testing.seedMembership,
+    { email: "hr-loop@acme.se", name: "HR Person", role: "admin" }
+  )
+  await t.run(async (ctx) => {
+    await ctx.db.insert("organizations", {
+      orgId,
+      country: "se",
+      currency: "SEK",
+      language: "sv",
+      industry: "itTelecom",
+    })
+  })
+  const asAdmin = t.withIdentity({ subject: userId })
+  await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
+    orgId,
+  })
+  const model = await asAdmin.query(api.evaluationModel.model.getModel, {
+    orgId,
+  })
+  if (model === null) throw new Error("model not seeded")
+  const track = model.tracks[0]
+  const level = track?.levels[0]
+  if (track === undefined || level === undefined) throw new Error("seed")
+  const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
+    orgId,
+    title: "Anchor",
+    function: "Engineering",
+    team: "Core",
+    trackId: track.trackId,
+    levelId: level.levelId,
+    purpose: "p",
+    responsibilities: "r",
+  })
+  for (const criterion of model.criteria) {
+    await asAdmin.mutation(api.assessment.ratings.setRating, {
+      orgId,
+      roleId,
+      criterionId: criterion.criterionId,
+      value: 5,
+    })
+  }
+  return { orgId, asAdmin, model, roleId }
+}
+
+describe("model edits shift bands live", () => {
+  it("updateCriterionImportance logs band.shift when a derived band moves", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model, roleId } =
+      await seedRatedTemplateOrganization(t)
+    // All-5 role sits at 540 (Band 1). Dropping scope from importance 7 to 1
+    // (weight 18 -> 8) drops the score by 50 to 490: Band 2.
+    const scope = model.criteria[0]
+    if (scope === undefined) throw new Error("seed")
+    await asAdmin.mutation(
+      api.evaluationModel.criteria.updateCriterionImportance,
+      { orgId, criterionId: scope.criterionId, importanceLevel: 1 }
+    )
+    await t.run(async (ctx) => {
+      const shifts = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "band.shift")
+        )
+        .collect()
+      expect(shifts.map((row) => row.payload)).toContainEqual({
+        roleId,
+        fromBand: 1,
+        toBand: 2,
+      })
+    })
+  })
+
+  it("removeCriterion deletes its ratings and can keep a role complete", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model, roleId } =
+      await seedRatedTemplateOrganization(t)
+    const formal = model.criteria[8]
+    if (formal === undefined) throw new Error("seed")
+    await asAdmin.mutation(api.evaluationModel.criteria.removeCriterion, {
+      orgId,
+      criterionId: formal.criterionId,
+    })
+    await t.run(async (ctx) => {
+      const orphans = await ctx.db
+        .query("ratings")
+        .withIndex("by_criterion", (q) =>
+          q.eq("criterionId", formal.criterionId)
+        )
+        .collect()
+      expect(orphans).toHaveLength(0)
+      // 540 - 5 * 8 = 500: still complete (8 of 8), now Band 2.
+      const shifts = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "band.shift")
+        )
+        .collect()
+      expect(shifts.map((row) => row.payload)).toContainEqual({
+        roleId,
+        fromBand: 1,
+        toBand: 2,
+      })
+    })
+  })
+
+  it("addCriterion makes complete roles incomplete (band.shift to null)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, roleId } = await seedRatedTemplateOrganization(t)
+    await asAdmin.mutation(api.evaluationModel.criteria.addCriterion, {
+      orgId,
+      name: "Collaboration",
+      description: "d",
+      helpText: "h",
+      importanceLevel: 3,
+      anchors: ["a0", "a1", "a2", "a3", "a4", "a5"],
+    })
+    await t.run(async (ctx) => {
+      const shifts = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "band.shift")
+        )
+        .collect()
+      expect(shifts.map((row) => row.payload)).toContainEqual({
+        roleId,
+        fromBand: 1,
+        toBand: null,
+      })
+    })
+  })
+})

@@ -40,3 +40,4 @@ export const ratings = defineTable({
 })
   .index("by_role_criterion", ["roleId", "criterionId"])
   .index("by_org", ["orgId"])
+  .index("by_criterion", ["criterionId"])

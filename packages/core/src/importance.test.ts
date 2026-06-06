@@ -35,4 +35,10 @@ describe("IMPORTANCE_SCALE", () => {
     expect(weightForImportance(7)).toBe(18)
     expect(weightForImportance(1)).toBe(8)
   })
+
+  it("maps every level to its Excel weight", () => {
+    expect(IMPORTANCE_LEVELS.map(weightForImportance)).toEqual([
+      8, 10, 11, 12, 13, 14, 18,
+    ])
+  })
 })

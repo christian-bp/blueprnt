@@ -92,106 +92,127 @@
     "title": "blueprnt",
     "nav": {
       "overview": "Overview",
-      "signOut": "Sign out",
-      "dashboard": "Dashboard",
-      "lifecycle": "Lifecycle",
-      "analytics": "Analytics",
-      "projects": "Projects",
-      "team": "Team",
-      "quickCreate": "Quick Create",
-      "inbox": "Inbox",
-      "settings": "Settings",
-      "getHelp": "Get Help",
-      "search": "Search",
-      "documents": "Documents",
-      "dataLibrary": "Data Library",
-      "reports": "Reports",
-      "wordAssistant": "Word Assistant",
-      "capture": "Capture",
-      "proposal": "Proposal",
-      "prompts": "Prompts",
-      "activeProposals": "Active Proposals",
-      "archived": "Archived",
-      "more": "More",
-      "open": "Open",
-      "share": "Share",
-      "delete": "Delete"
-    },
-    "cards": {
-      "totalRevenue": "Total Revenue",
-      "trendingUp": "Trending up this month",
-      "visitorsLast6Months": "Visitors for the last 6 months",
-      "newCustomers": "New Customers",
-      "down20Period": "Down 20% this period",
-      "acquisitionAttention": "Acquisition needs attention",
-      "activeAccounts": "Active Accounts",
-      "strongRetention": "Strong user retention",
-      "engagementExceed": "Engagement exceed targets",
-      "growthRate": "Growth Rate",
-      "steadyIncrease": "Steady performance increase",
-      "meetsProjections": "Meets growth projections"
-    },
-    "chart": {
-      "title": "Total Visitors",
-      "descriptionLong": "Total for the last 3 months",
-      "descriptionShort": "Last 3 months",
-      "last3Months": "Last 3 months",
-      "last30Days": "Last 30 days",
-      "last7Days": "Last 7 days",
-      "drawerDescription": "Showing total visitors for the last 6 months",
-      "trendingUp": "Trending up by 5.2% this month",
-      "drawerBody": "Showing total visitors for the last 6 months. This is just some random text to test the layout. It spans multiple lines and should wrap around."
-    },
-    "table": {
-      "outline": "Outline",
-      "pastPerformance": "Past Performance",
-      "keyPersonnel": "Key Personnel",
-      "focusDocuments": "Focus Documents",
-      "columns": "Columns",
-      "addSection": "Add Section",
-      "noResults": "No results.",
-      "rowsPerPage": "Rows per page",
-      "pageOf": "Page {page} of {total}",
-      "rowsSelected": "{selected} of {total} row(s) selected.",
-      "goToFirstPage": "Go to first page",
-      "goToPreviousPage": "Go to previous page",
-      "goToNextPage": "Go to next page",
-      "goToLastPage": "Go to last page",
-      "dragToReorder": "Drag to reorder",
-      "openMenu": "Open menu",
-      "selectAll": "Select all",
-      "selectRow": "Select row",
-      "view": "View",
-      "selectView": "Select a view",
-      "colHeader": "Header",
-      "colSectionType": "Section Type",
-      "colStatus": "Status",
-      "colTarget": "Target",
-      "colLimit": "Limit",
-      "colReviewer": "Reviewer",
-      "assignReviewer": "Assign reviewer",
-      "edit": "Edit",
-      "makeACopy": "Make a copy",
-      "favorite": "Favorite",
-      "delete": "Delete",
-      "submit": "Submit",
-      "done": "Done",
-      "drawerFormHeader": "Header",
-      "drawerFormType": "Type",
-      "drawerFormStatus": "Status",
-      "drawerFormTarget": "Target",
-      "drawerFormLimit": "Limit",
-      "drawerFormReviewer": "Reviewer",
-      "selectType": "Select a type",
-      "selectStatus": "Select a status",
-      "selectReviewer": "Select a reviewer",
-      "saving": "Saving {name}",
-      "saved": "Done",
-      "saveError": "Error"
+      "roles": "Roles",
+      "model": "Model",
+      "results": "Results",
+      "signOut": "Sign out"
     },
     "overview": {
-      "emptyTitle": "Nothing here yet",
-      "emptyBody": "Your organization overview will appear here as blueprnt grows."
+      "rolesCard": "Roles",
+      "approvedCard": "Approved roles",
+      "ratedCard": "Fully rated roles",
+      "criteriaCard": "Criteria in the model",
+      "goRoles": "Go to roles",
+      "goModel": "View the model",
+      "goResults": "View results"
+    },
+    "roles": {
+      "heading": "Roles",
+      "description": "Job profiles evaluated against your model. Roles, never persons.",
+      "newCta": "New role",
+      "empty": "No roles yet. Create your first role to start evaluating.",
+      "table": {
+        "title": "Title",
+        "trackLevel": "Track and level",
+        "team": "Team",
+        "status": "Status",
+        "rated": "Rated"
+      },
+      "create": {
+        "title": "New role",
+        "description": "The basics first. Purpose and responsibilities can be drafted with AI on the role page.",
+        "titleLabel": "Title",
+        "titlePlaceholder": "e.g. Junior Software Developer",
+        "functionLabel": "Function/department",
+        "teamLabel": "Team",
+        "trackLabel": "Track",
+        "levelLabel": "Level",
+        "cta": "Create role",
+        "cancel": "Cancel",
+        "error": "The role could not be created. Try again."
+      },
+      "detail": {
+        "profileHeading": "Job profile",
+        "editCta": "Edit",
+        "doneCta": "Done",
+        "saveCta": "Save",
+        "saveError": "Could not save. Try again.",
+        "profileIncomplete": "Fill in purpose and responsibilities before rating.",
+        "ratingHeading": "Rating",
+        "ratingProgress": "{rated} of {total} criteria rated",
+        "rateCta": "Rate role",
+        "resumeRateCta": "Continue rating",
+        "adjustRateCta": "Adjust ratings",
+        "resultHeading": "Result",
+        "notFound": "This role does not exist.",
+        "backToRoles": "Back to roles",
+        "emptyField": "Not filled in yet"
+      },
+      "status": {
+        "submitCta": "Submit for review",
+        "approveCta": "Approve",
+        "withdrawCta": "Withdraw from review",
+        "reopenCta": "Reopen",
+        "reopenConfirm": "Reopen and unlock",
+        "cancel": "Cancel",
+        "lockedHint": "Approved roles are locked. Reopen to change the profile or ratings.",
+        "incompleteHint": "The role must be fully rated before review or approval.",
+        "error": "The status could not be changed. Try again."
+      },
+      "archive": {
+        "cta": "Archive role",
+        "confirm": "Yes, archive",
+        "cancel": "Cancel",
+        "error": "The role could not be archived. Try again."
+      },
+      "ai": {
+        "heading": "AI assistance",
+        "descriptionLabel": "Describe the role (optional)",
+        "draftCta": "Draft job profile with AI",
+        "error": "Something went wrong. Try again."
+      }
+    },
+    "rating": {
+      "title": "Rate role",
+      "step": "Criterion {current} of {total}",
+      "motivationLabel": "Motivation (optional)",
+      "motivationPlaceholder": "Why this rating?",
+      "guardrailHint": "Outside the advisory range {min} to {max} for {level}.",
+      "anchorGroupLabel": "Rating for {name}",
+      "backCta": "Back",
+      "nextCta": "Next criterion",
+      "finishCta": "Show result",
+      "saveError": "The rating could not be saved. Try again.",
+      "result": {
+        "heading": "Result",
+        "scoreLabel": "Score",
+        "bandLabel": "Band",
+        "bandHighest": "Band 1 is the highest band.",
+        "computing": "Deriving the result",
+        "guardrailsHeading": "Advisory notes",
+        "guardrailRow": "{name}: {value} is outside {min} to {max}",
+        "noWarnings": "All ratings are within the advisory ranges.",
+        "backToRole": "Back to the role"
+      }
+    },
+    "results": {
+      "heading": "Results",
+      "description": "Score and band outcome are always derived live from the current model and ratings.",
+      "bandsHeading": "Band overview",
+      "bandHighest": "Band 1 is the highest band.",
+      "bandRow": "Band {band}",
+      "roleCount": "{count, plural, =1 {1 role} other {# roles}}",
+      "table": {
+        "title": "Title",
+        "trackLevel": "Track and level",
+        "status": "Status",
+        "score": "Score",
+        "band": "Band",
+        "warnings": "Advisory notes",
+        "progress": "{rated} of {total} rated"
+      },
+      "empty": "No roles to show yet. Create a role and rate it to see results.",
+      "emptyCta": "Create a role"
     },
     "auth": {
       "loading": "Checking your session",
@@ -259,62 +280,62 @@
           "realEstateConstruction": "Real estate & construction",
           "other": "Other"
         }
-      },
-      "model": {
-        "heading": "Choose your evaluation model",
-        "description": "The model defines the criteria roles are rated against. Importance is always a label, never a number.",
-        "error": "Something went wrong. Try again.",
-        "template": {
-          "title": "Start from the standard template",
-          "description": "9 criteria with anchor scales, default importances, the track schema, and band thresholds.",
-          "badge": "Recommended",
-          "cta": "Use the template"
-        },
-        "scratch": {
-          "title": "Build from scratch",
-          "description": "Start empty and define your own criteria, with AI drafts to help.",
-          "nameLabel": "Model name",
-          "cta": "Start from scratch"
-        },
-        "review": {
-          "heading": "Your model",
-          "setImportance": "Importance for {name}",
-          "cta": "Open the dashboard",
-          "editCta": "Edit",
-          "doneEditing": "Done"
-        },
-        "editor": {
-          "heading": "Criteria",
-          "empty": "No criteria yet. Add your first criterion or generate AI drafts.",
-          "name": "Name",
-          "description": "Description",
-          "helpText": "Help text for the assessor",
-          "importance": "Importance",
-          "anchors": "Anchor scale (0 to 5)",
-          "anchorLevel": "Anchor {level}",
-          "addCta": "Add criterion",
-          "removeCta": "Remove",
-          "doneCta": "Finish setup"
-        },
-        "change": {
-          "cta": "Change model choice",
-          "confirm": "Yes, delete and start over",
-          "cancel": "Cancel"
-        }
-      },
-      "ai": {
-        "heading": "AI assistance",
-        "provenance": "AI-generated suggestion. Review and confirm; nothing is applied automatically.",
-        "draftDescriptionLabel": "Describe your business (optional)",
-        "draftCta": "Generate criteria drafts",
-        "reviewCta": "Let AI review the importance levels",
-        "generating": "Generating suggestions",
-        "confirmCta": "Add selected",
-        "applyCta": "Apply selected",
-        "rejectCta": "Dismiss",
-        "noAdjustments": "The AI found no adjustments to suggest.",
-        "motivation": "Motivation"
       }
+    },
+    "model": {
+      "heading": "Choose your evaluation model",
+      "description": "The model defines the criteria roles are rated against. Importance is always a label, never a number.",
+      "error": "Something went wrong. Try again.",
+      "template": {
+        "title": "Start from the standard template",
+        "description": "9 criteria with anchor scales, default importances, the track schema, and band thresholds.",
+        "badge": "Recommended",
+        "cta": "Use the template"
+      },
+      "scratch": {
+        "title": "Build from scratch",
+        "description": "Start empty and define your own criteria, with AI drafts to help.",
+        "nameLabel": "Model name",
+        "cta": "Start from scratch"
+      },
+      "review": {
+        "heading": "Your model",
+        "setImportance": "Importance for {name}",
+        "cta": "Open the dashboard",
+        "editCta": "Edit",
+        "doneEditing": "Done"
+      },
+      "editor": {
+        "heading": "Criteria",
+        "empty": "No criteria yet. Add your first criterion or generate AI drafts.",
+        "name": "Name",
+        "description": "Description",
+        "helpText": "Help text for the assessor",
+        "importance": "Importance",
+        "anchors": "Anchor scale (0 to 5)",
+        "anchorLevel": "Anchor {level}",
+        "addCta": "Add criterion",
+        "removeCta": "Remove",
+        "doneCta": "Finish setup"
+      },
+      "change": {
+        "cta": "Change model choice",
+        "confirm": "Yes, delete and start over",
+        "cancel": "Cancel"
+      }
+    },
+    "ai": {
+      "heading": "AI assistance",
+      "provenance": "AI-generated suggestion. Review and confirm; nothing is applied automatically.",
+      "draftDescriptionLabel": "Describe your business (optional)",
+      "draftCta": "Generate criteria drafts",
+      "reviewCta": "Let AI review the importance levels",
+      "generating": "Generating suggestions",
+      "confirmCta": "Add selected",
+      "applyCta": "Apply selected",
+      "rejectCta": "Dismiss",
+      "noAdjustments": "The AI found no adjustments to suggest.",
+      "motivation": "Motivation"
     }
   },
   "errors": {
@@ -327,6 +348,9 @@
     "modelExists": "This organization already has an evaluation model.",
     "profileIncomplete": "Complete the company profile first.",
     "aiUnavailable": "AI is not configured for this environment.",
-    "aiGenerationFailed": "The AI suggestion could not be generated."
+    "aiGenerationFailed": "The AI suggestion could not be generated.",
+    "roleLocked": "This role is approved and locked. Reopen it first.",
+    "ratingsIncomplete": "All criteria must be rated first.",
+    "invalidTransition": "That status change is not allowed."
   }
 }

@@ -19,7 +19,7 @@ export function ChangeChoiceButton({
   onConfirm: () => void | Promise<void>
   disabled?: boolean
 }) {
-  const t = useTranslations("dashboard.onboarding.model.change")
+  const t = useTranslations("dashboard.model.change")
 
   return (
     <MorphConfirmButton

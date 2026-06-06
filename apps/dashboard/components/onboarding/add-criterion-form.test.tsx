@@ -36,7 +36,7 @@ function renderForm(orgId = "org-123", onAdded?: () => void) {
   )
 }
 
-const editor = messages.dashboard.onboarding.model.editor
+const editor = messages.dashboard.model.editor
 
 describe("AddCriterionForm", () => {
   beforeEach(() => {

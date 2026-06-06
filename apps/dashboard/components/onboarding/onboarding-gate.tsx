@@ -3,9 +3,9 @@
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { useQuery } from "convex/react"
-import { useEffect, useState } from "react"
 import { useTranslations } from "next-intl"
-import { DashboardShell } from "@/components/dashboard-shell"
+import { type ReactNode, useEffect, useState } from "react"
+import { AppShell } from "@/components/app-shell"
 import { OnboardingWizard } from "@/components/onboarding/onboarding-wizard"
 
 // First-run gate: holds the user in the onboarding wizard until the
@@ -24,7 +24,7 @@ import { OnboardingWizard } from "@/components/onboarding/onboarding-wizard"
 // wizard therefore OWNS the session once it has started: it stays mounted
 // (even after hasModel turns true) until it calls onFinished. On a later
 // sign-in the session never starts and the dashboard renders directly.
-export function OnboardingGate() {
+export function OnboardingGate(props: { children: ReactNode }) {
   const t = useTranslations("dashboard.onboarding")
   const status = useQuery(api.accounts.onboarding.getOnboardingStatus)
   const [sessionStarted, setSessionStarted] = useState(false)
@@ -40,7 +40,7 @@ export function OnboardingGate() {
     if (incomplete) setSessionStarted(true)
   }, [incomplete])
 
-  // Sign-out resets everything: <Authenticated> in page.tsx unmounts the gate.
+  // Sign-out resets everything: <Authenticated> in the (app) layout unmounts the gate.
   if (status === undefined || status === null) {
     return (
       <main className="flex min-h-svh items-center justify-center">
@@ -49,7 +49,22 @@ export function OnboardingGate() {
     )
   }
   const showWizard = incomplete || (sessionStarted && !sessionFinished)
-  if (!showWizard) return <DashboardShell />
+  if (!showWizard) {
+    // completed implies the organization exists; null here would be a server
+    // bug, so degrade to nothing rather than crash the shell.
+    if (status.organization === null) return null
+    return (
+      <AppShell
+        organization={{
+          orgId: status.organization.orgId,
+          name: status.organization.name,
+          role: status.organization.role,
+        }}
+      >
+        {props.children}
+      </AppShell>
+    )
+  }
   return (
     <OnboardingWizard
       status={status}

@@ -38,8 +38,8 @@ export function AddCriterionForm({
   orgId: string
   onAdded?: () => void
 }) {
-  const tEditor = useTranslations("dashboard.onboarding.model.editor")
-  const t = useTranslations("dashboard.onboarding.model")
+  const tEditor = useTranslations("dashboard.model.editor")
+  const t = useTranslations("dashboard.model")
   const tImportance = useTranslations("model.importance")
   const addCriterion = useMutation(api.evaluationModel.criteria.addCriterion)
 

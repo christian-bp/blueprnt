@@ -83,8 +83,8 @@ export function CriterionItem({
   removing?: boolean
   removeLabel?: string
 }) {
-  const tEditor = useTranslations("dashboard.onboarding.model.editor")
-  const tChange = useTranslations("dashboard.onboarding.model.change")
+  const tEditor = useTranslations("dashboard.model.editor")
+  const tChange = useTranslations("dashboard.model.change")
 
   const showRemove = editable && onRemove !== undefined
 

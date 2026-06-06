@@ -46,7 +46,7 @@ export function ModelSetupStep({
   onFinished: () => void
   onBack?: () => void
 }) {
-  const t = useTranslations("dashboard.onboarding.model")
+  const t = useTranslations("dashboard.model")
   const tOnboarding = useTranslations("dashboard.onboarding")
   const createFromTemplate = useMutation(
     api.evaluationModel.model.createModelFromTemplate

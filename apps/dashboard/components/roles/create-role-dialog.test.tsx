@@ -1,0 +1,131 @@
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
+import { NextIntlClientProvider } from "next-intl"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import messages from "@workspace/i18n/messages/en.json"
+
+const createRoleMock = vi.fn()
+const pushMock = vi.fn()
+
+vi.mock("convex/react", () => ({
+  useMutation: (ref: unknown) => {
+    if (ref === "assessment.roles.createRole") return createRoleMock
+    return vi.fn()
+  },
+}))
+
+vi.mock("@workspace/backend/convex/_generated/api", () => ({
+  api: {
+    assessment: { roles: { createRole: "assessment.roles.createRole" } },
+  },
+}))
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: pushMock }),
+}))
+
+import { CreateRoleDialog } from "@/components/roles/create-role-dialog"
+
+const labels = messages.dashboard.roles.create
+
+const TRACKS = [
+  {
+    trackId: "t-ic",
+    key: "IC",
+    name: "Individual contributor",
+    order: 1,
+    levels: [
+      { levelId: "l-ic1", key: "IC1", name: "IC1", order: 1 },
+      { levelId: "l-ic2", key: "IC2", name: "IC2", order: 2 },
+    ],
+  },
+  {
+    trackId: "t-m",
+    key: "M",
+    name: "Manager",
+    order: 2,
+    levels: [{ levelId: "l-m1", key: "M1", name: "M1", order: 1 }],
+  },
+]
+
+function renderDialog() {
+  return render(
+    <NextIntlClientProvider locale="en" messages={messages}>
+      <CreateRoleDialog
+        orgId="org-1"
+        tracks={TRACKS}
+        triggerLabel={labels.title}
+      />
+    </NextIntlClientProvider>
+  )
+}
+
+describe("CreateRoleDialog", () => {
+  beforeEach(() => {
+    createRoleMock.mockReset()
+    pushMock.mockReset()
+  })
+  afterEach(() => {
+    cleanup()
+  })
+
+  it("opens on the trigger and submits the basics, then navigates", async () => {
+    createRoleMock.mockResolvedValue("role-new")
+    renderDialog()
+    fireEvent.click(screen.getByRole("button", { name: labels.title }))
+    fireEvent.change(screen.getByLabelText(labels.titleLabel), {
+      target: { value: "Junior Developer" },
+    })
+    fireEvent.change(screen.getByLabelText(labels.functionLabel), {
+      target: { value: "Engineering" },
+    })
+    fireEvent.change(screen.getByLabelText(labels.teamLabel), {
+      target: { value: "Core" },
+    })
+    const form = screen
+      .getByLabelText(labels.titleLabel)
+      .closest("form") as HTMLFormElement
+    fireEvent.submit(form)
+    await waitFor(() => {
+      expect(createRoleMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        title: "Junior Developer",
+        function: "Engineering",
+        team: "Core",
+        trackId: "t-ic",
+        levelId: "l-ic1",
+      })
+    })
+    await waitFor(() => {
+      expect(pushMock).toHaveBeenCalledWith("/roles/role-new")
+    })
+  })
+
+  it("keeps the dialog open and shows an alert when create fails", async () => {
+    createRoleMock.mockRejectedValue(new Error("ConvexError: invalidInput"))
+    renderDialog()
+    fireEvent.click(screen.getByRole("button", { name: labels.title }))
+    fireEvent.change(screen.getByLabelText(labels.titleLabel), {
+      target: { value: "X" },
+    })
+    fireEvent.change(screen.getByLabelText(labels.functionLabel), {
+      target: { value: "F" },
+    })
+    fireEvent.change(screen.getByLabelText(labels.teamLabel), {
+      target: { value: "T" },
+    })
+    const form = screen
+      .getByLabelText(labels.titleLabel)
+      .closest("form") as HTMLFormElement
+    fireEvent.submit(form)
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toBeDefined()
+    })
+    expect(screen.getByLabelText(labels.titleLabel)).toBeDefined()
+  })
+})

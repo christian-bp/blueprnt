@@ -97,6 +97,8 @@ Tunnast möjliga end-to-end som bevisar kärnloopen *modell → roller → poän
 
 Detta motsvarar briefens "definition av en lyckad första version" i minsta körbara form.
 
+**Status (juni 2026):** alfa-loopen levererad i evaluation-loop-skivan: motor i `packages/core` (scoreRole, assignBand, computeResults, checkGuardrails), rollregister med AI-jobbprofilutkast, blind betygsättning (stegvis, ett kriterium i taget, ankartexterna som val), resultatvy med bandöversikt och riktig dashboardnavigering (Översikt/Roller/Modell/Resultat). Skivan levererade mer än minsta form: betydelse- och kriterieredigering, statusmaskin med godkännande/återöppning, arkivering och band.shift-revisionslogg kom med. Ankarroller, kalibrering och import återstår.
+
 ## 7. Icke-funktionellt
 
 - **GDPR & EU-hosting (kärnkrav):** *hela* systemet ska hostas inom EU. Convex eu-west-1 (Irland) håller persondata fysiskt i EU och är förenligt med GDPR + ISO 27001. **Beslut:** fysiskt-i-EU räcker för V1; strikt EU-suveränitet (EU-ägd infra, ingen US-moderexponering → självhostad Convex) skjuts upp tills en kund avtalsmässigt kräver det. (Se ADR-0001.)

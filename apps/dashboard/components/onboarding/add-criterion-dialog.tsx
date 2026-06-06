@@ -18,7 +18,7 @@ import { AddCriterionForm } from "@/components/onboarding/add-criterion-form"
 // The new criterion animates into the parent list (AnimatePresence) once the
 // reactive getModel query picks it up; the list stays mounted throughout.
 export function AddCriterionDialog({ orgId }: { orgId: string }) {
-  const tEditor = useTranslations("dashboard.onboarding.model.editor")
+  const tEditor = useTranslations("dashboard.model.editor")
   const [open, setOpen] = useState(false)
 
   return (

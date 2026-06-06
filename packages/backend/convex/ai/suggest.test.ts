@@ -2,6 +2,42 @@ import { describe, expect, it } from "vitest"
 import { api, components, internal } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
 
+async function seedRoleOrganization(t: ReturnType<typeof initConvexTest>) {
+  const { orgId, userId } = await t.mutation(
+    components.betterAuth.testing.seedMembership,
+    { email: "hr-role@acme.se", name: "HR Person", role: "admin" }
+  )
+  await t.run(async (ctx) => {
+    await ctx.db.insert("organizations", {
+      orgId,
+      country: "se",
+      currency: "SEK",
+      language: "sv",
+      industry: "itTelecom",
+    })
+  })
+  const asAdmin = t.withIdentity({ subject: userId })
+  await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
+    orgId,
+  })
+  const model = await asAdmin.query(api.evaluationModel.model.getModel, {
+    orgId,
+  })
+  if (model === null) throw new Error("model not seeded")
+  const track = model.tracks[0]
+  const level = track?.levels[0]
+  if (track === undefined || level === undefined) throw new Error("seed")
+  const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
+    orgId,
+    title: "Junior Software Developer",
+    function: "Engineering",
+    team: "Core",
+    trackId: track.trackId,
+    levelId: level.levelId,
+  })
+  return { orgId, asAdmin, roleId }
+}
+
 const DRAFT = {
   criteria: [
     {
@@ -367,5 +403,99 @@ describe("AI suggestion lifecycle", () => {
       const suggestion = await ctx.db.get(suggestionId)
       expect(suggestion?.status).toBe("rejected")
     })
+  })
+})
+
+describe("role profile drafts", () => {
+  it("requestRoleProfileDraft inserts a generating row targeting the role", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, roleId } = await seedRoleOrganization(t)
+    const suggestionId = await asAdmin.mutation(
+      api.ai.suggest.requestRoleProfileDraft,
+      { orgId, roleId, description: "Bygger kärnprodukten." }
+    )
+    await t.run(async (ctx) => {
+      const suggestion = await ctx.db.get(suggestionId)
+      expect(suggestion?.status).toBe("generating")
+      expect(suggestion?.target.kind).toBe("role.profile")
+      expect(suggestion?.target.roleId).toBe(roleId)
+    })
+    // getOpenSuggestions must expose roleId so the role page can filter.
+    const open = await asAdmin.query(api.ai.suggest.getOpenSuggestions, {
+      orgId,
+    })
+    const row = open.find((item) => item.kind === "role.profile")
+    expect(row?.roleId).toBe(roleId)
+  })
+
+  it("confirmRoleProfileDraft applies only accepted, whitelisted, bounded fields", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, roleId } = await seedRoleOrganization(t)
+    const suggestionId = await asAdmin.mutation(
+      api.ai.suggest.requestRoleProfileDraft,
+      { orgId, roleId }
+    )
+    await t.mutation(internal.ai.persist.saveRoleProfileDraft, {
+      suggestionId,
+      profile: {
+        purpose: "Bygger och underhåller kärnprodukten.",
+        responsibilities: "Implementerar features\nGranskar kod",
+        knowledge: "  Grundläggande systemdesign  ",
+        financial: "x".repeat(1001),
+      },
+    })
+    await asAdmin.mutation(api.ai.suggest.confirmRoleProfileDraft, {
+      orgId,
+      suggestionId,
+      acceptedFields: [
+        "purpose",
+        "knowledge",
+        "financial",
+        "title",
+        "nonsense",
+      ],
+    })
+    await t.run(async (ctx) => {
+      const docId = ctx.db.normalizeId("roles", roleId)
+      if (docId === null) throw new Error("bad id")
+      const role = await ctx.db.get(docId)
+      // Accepted and valid: purpose, knowledge (trimmed).
+      expect(role?.purpose).toBe("Bygger och underhåller kärnprodukten.")
+      expect(role?.knowledge).toBe("Grundläggande systemdesign")
+      // Not accepted: responsibilities stays empty.
+      expect(role?.responsibilities).toBe("")
+      // Over the length bound: financial is skipped.
+      expect(role?.financial).toBeUndefined()
+      // Whitelist: title is never AI-writable.
+      expect(role?.title).toBe("Junior Software Developer")
+      const suggestion = await ctx.db.get(suggestionId)
+      expect(suggestion?.status).toBe("confirmed")
+      const updated = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "role.updated")
+        )
+        .collect()
+      expect(updated.map((row) => row.payload)).toContainEqual({
+        roleId: docId,
+        fields: ["purpose", "knowledge"],
+      })
+    })
+  })
+
+  it("locks drafts for approved roles", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, roleId } = await seedRoleOrganization(t)
+    await t.run(async (ctx) => {
+      const docId = ctx.db.normalizeId("roles", roleId)
+      if (docId === null) throw new Error("bad id")
+      await ctx.db.patch(docId, { status: "approved" })
+    })
+    await expect(
+      asAdmin.mutation(api.ai.suggest.requestRoleProfileDraft, {
+        orgId,
+        roleId,
+      })
+    ).rejects.toThrow(/errors.roleLocked/)
   })
 })

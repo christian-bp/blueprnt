@@ -144,26 +144,26 @@ describe("ModelSetupStep", () => {
   it("renders both the template and scratch cards", () => {
     renderStep()
     expect(
-      screen.getByText(messages.dashboard.onboarding.model.template.title)
+      screen.getByText(messages.dashboard.model.template.title)
     ).toBeDefined()
     expect(
-      screen.getByText(messages.dashboard.onboarding.model.scratch.title)
+      screen.getByText(messages.dashboard.model.scratch.title)
     ).toBeDefined()
     // The template card carries the recommended badge.
     expect(
-      screen.getByText(messages.dashboard.onboarding.model.template.badge)
+      screen.getByText(messages.dashboard.model.template.badge)
     ).toBeDefined()
   })
 
   it("disables the scratch CTA until a name is typed", () => {
     renderStep()
     const scratchCta = screen.getByRole("button", {
-      name: messages.dashboard.onboarding.model.scratch.cta,
+      name: messages.dashboard.model.scratch.cta,
     })
     expect(scratchCta).toHaveProperty("disabled", true)
 
     const input = screen.getByLabelText(
-      messages.dashboard.onboarding.model.scratch.nameLabel
+      messages.dashboard.model.scratch.nameLabel
     )
     fireEvent.change(input, { target: { value: "My model" } })
     expect(scratchCta).toHaveProperty("disabled", false)
@@ -179,7 +179,7 @@ describe("ModelSetupStep", () => {
 
     fireEvent.click(
       screen.getByRole("button", {
-        name: messages.dashboard.onboarding.model.template.cta,
+        name: messages.dashboard.model.template.cta,
       })
     )
 
@@ -190,7 +190,7 @@ describe("ModelSetupStep", () => {
     // The review screen renders its heading once the mode flips.
     await waitFor(() => {
       expect(
-        screen.getByText(messages.dashboard.onboarding.model.review.heading)
+        screen.getByText(messages.dashboard.model.review.heading)
       ).toBeDefined()
     })
   })
@@ -201,7 +201,7 @@ describe("ModelSetupStep", () => {
 
     fireEvent.click(
       screen.getByRole("button", {
-        name: messages.dashboard.onboarding.model.template.cta,
+        name: messages.dashboard.model.template.cta,
       })
     )
 
@@ -237,12 +237,12 @@ describe("ModelSetupStep", () => {
     renderStep()
     await waitFor(() => {
       expect(
-        screen.getByText(messages.dashboard.onboarding.model.review.heading)
+        screen.getByText(messages.dashboard.model.review.heading)
       ).toBeDefined()
     })
     // The choice cards are not shown.
     expect(
-      screen.queryByText(messages.dashboard.onboarding.model.template.badge)
+      screen.queryByText(messages.dashboard.model.template.badge)
     ).toBeNull()
     // The review screen localizes its content: getModel is queried with the
     // active UI locale ("en" from the test provider) so it re-runs on a switch.
@@ -257,11 +257,11 @@ describe("ModelSetupStep", () => {
     renderStep()
     await waitFor(() => {
       expect(
-        screen.getByText(messages.dashboard.onboarding.model.editor.heading)
+        screen.getByText(messages.dashboard.model.editor.heading)
       ).toBeDefined()
     })
     expect(
-      screen.queryByText(messages.dashboard.onboarding.model.template.badge)
+      screen.queryByText(messages.dashboard.model.template.badge)
     ).toBeNull()
   })
 
@@ -275,7 +275,7 @@ describe("ModelSetupStep", () => {
     // Wait for the review screen to appear.
     await waitFor(() => {
       expect(
-        screen.getByText(messages.dashboard.onboarding.model.review.heading)
+        screen.getByText(messages.dashboard.model.review.heading)
       ).toBeDefined()
     })
 
@@ -294,7 +294,7 @@ describe("ModelSetupStep", () => {
 
     // Resumes into the review screen; click its finish CTA.
     const finish = await screen.findByRole("button", {
-      name: messages.dashboard.onboarding.model.review.cta,
+      name: messages.dashboard.model.review.cta,
     })
     fireEvent.click(finish)
 
@@ -310,7 +310,7 @@ describe("ModelSetupStep", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(messages.dashboard.onboarding.model.review.heading)
+        screen.getByText(messages.dashboard.model.review.heading)
       ).toBeDefined()
     })
 
@@ -321,14 +321,14 @@ describe("ModelSetupStep", () => {
     // No remove button in the accessibility tree in read-only mode.
     expect(
       screen.queryByRole("button", {
-        name: `${messages.dashboard.onboarding.model.editor.removeCta} Problem solving`,
+        name: `${messages.dashboard.model.editor.removeCta} Problem solving`,
       })
     ).toBeNull()
 
     // The add-criterion form toggle is not rendered in read-only mode.
     expect(
       screen.queryByRole("button", {
-        name: messages.dashboard.onboarding.model.editor.addCta,
+        name: messages.dashboard.model.editor.addCta,
       })
     ).toBeNull()
   })
@@ -339,11 +339,11 @@ describe("ModelSetupStep", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(messages.dashboard.onboarding.model.review.heading)
+        screen.getByText(messages.dashboard.model.review.heading)
       ).toBeDefined()
     })
 
-    const review = messages.dashboard.onboarding.model.review
+    const review = messages.dashboard.model.review
 
     // Enter edit mode.
     const editButton = screen.getByRole("button", { name: review.editCta })
@@ -352,7 +352,7 @@ describe("ModelSetupStep", () => {
     // The add-criterion toggle appears in edit mode.
     expect(
       screen.getByRole("button", {
-        name: messages.dashboard.onboarding.model.editor.addCta,
+        name: messages.dashboard.model.editor.addCta,
       })
     ).toBeDefined()
 
@@ -360,7 +360,7 @@ describe("ModelSetupStep", () => {
     // not hide from queries; only visual styling changes).
     expect(
       screen.getByRole("button", {
-        name: `${messages.dashboard.onboarding.model.editor.removeCta} Problem solving`,
+        name: `${messages.dashboard.model.editor.removeCta} Problem solving`,
       })
     ).toBeDefined()
 
@@ -370,7 +370,7 @@ describe("ModelSetupStep", () => {
     // Back to read-only: the add toggle is gone again.
     expect(
       screen.queryByRole("button", {
-        name: messages.dashboard.onboarding.model.editor.addCta,
+        name: messages.dashboard.model.editor.addCta,
       })
     ).toBeNull()
 
@@ -384,14 +384,14 @@ describe("ModelSetupStep", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(messages.dashboard.onboarding.model.review.heading)
+        screen.getByText(messages.dashboard.model.review.heading)
       ).toBeDefined()
     })
 
     // Enter edit mode so the importance select appears.
     fireEvent.click(
       screen.getByRole("button", {
-        name: messages.dashboard.onboarding.model.review.editCta,
+        name: messages.dashboard.model.review.editCta,
       })
     )
 
@@ -413,14 +413,14 @@ describe("ModelSetupStep", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(messages.dashboard.onboarding.model.review.heading)
+        screen.getByText(messages.dashboard.model.review.heading)
       ).toBeDefined()
     })
 
     // Enter edit mode so the importance select appears.
     fireEvent.click(
       screen.getByRole("button", {
-        name: messages.dashboard.onboarding.model.review.editCta,
+        name: messages.dashboard.model.review.editCta,
       })
     )
 
@@ -448,7 +448,7 @@ describe("ModelSetupStep", () => {
     // The criteria section carries the editor.heading label ("Criteria").
     await waitFor(() => {
       expect(
-        screen.getByText(messages.dashboard.onboarding.model.editor.heading)
+        screen.getByText(messages.dashboard.model.editor.heading)
       ).toBeDefined()
     })
     // The localized description (server-side) renders under the name.
@@ -463,7 +463,7 @@ describe("ModelSetupStep", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(messages.dashboard.onboarding.model.review.heading)
+        screen.getByText(messages.dashboard.model.review.heading)
       ).toBeDefined()
     })
     // The threshold chip text ("1: 100+") must not appear: numeric internals
@@ -478,12 +478,12 @@ describe("ModelSetupStep", () => {
     // Wait for the review screen, then enter edit mode so remove is available.
     await waitFor(() => {
       expect(
-        screen.getByText(messages.dashboard.onboarding.model.review.heading)
+        screen.getByText(messages.dashboard.model.review.heading)
       ).toBeDefined()
     })
     fireEvent.click(
       screen.getByRole("button", {
-        name: messages.dashboard.onboarding.model.review.editCta,
+        name: messages.dashboard.model.review.editCta,
       })
     )
 
@@ -491,19 +491,19 @@ describe("ModelSetupStep", () => {
     // from queries; only visual styling changes on hover/focus). Clicking it
     // arms the inline confirm.
     const removeButton = screen.getByRole("button", {
-      name: `${messages.dashboard.onboarding.model.editor.removeCta} Problem solving`,
+      name: `${messages.dashboard.model.editor.removeCta} Problem solving`,
     })
     fireEvent.click(removeButton)
 
     // Confirm and cancel are now rendered inline.
     expect(
       screen.getByRole("button", {
-        name: messages.dashboard.onboarding.model.editor.removeCta,
+        name: messages.dashboard.model.editor.removeCta,
       })
     ).toBeDefined()
     expect(
       screen.getByRole("button", {
-        name: messages.dashboard.onboarding.model.change.cancel,
+        name: messages.dashboard.model.change.cancel,
       })
     ).toBeDefined()
     // The mutation has NOT been called yet (only armed, not confirmed).
@@ -516,7 +516,7 @@ describe("ModelSetupStep", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(messages.dashboard.onboarding.model.review.heading)
+        screen.getByText(messages.dashboard.model.review.heading)
       ).toBeDefined()
     })
 
@@ -528,11 +528,11 @@ describe("ModelSetupStep", () => {
     // Edit mode: the same slot now renders the importance select.
     fireEvent.click(
       screen.getByRole("button", {
-        name: messages.dashboard.onboarding.model.review.editCta,
+        name: messages.dashboard.model.review.editCta,
       })
     )
     const importanceSelect = screen.getByRole("combobox", {
-      name: messages.dashboard.onboarding.model.review.setImportance.replace(
+      name: messages.dashboard.model.review.setImportance.replace(
         "{name}",
         "Problem solving"
       ),
@@ -546,19 +546,19 @@ describe("ModelSetupStep", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(messages.dashboard.onboarding.model.review.heading)
+        screen.getByText(messages.dashboard.model.review.heading)
       ).toBeDefined()
     })
     fireEvent.click(
       screen.getByRole("button", {
-        name: messages.dashboard.onboarding.model.review.editCta,
+        name: messages.dashboard.model.review.editCta,
       })
     )
 
     // Arm the floating confirm overlay by clicking the trashcan.
     fireEvent.click(
       screen.getByRole("button", {
-        name: `${messages.dashboard.onboarding.model.editor.removeCta} Problem solving`,
+        name: `${messages.dashboard.model.editor.removeCta} Problem solving`,
       })
     )
 
@@ -566,12 +566,12 @@ describe("ModelSetupStep", () => {
     // the outline cancel button.
     expect(
       screen.getByRole("button", {
-        name: messages.dashboard.onboarding.model.editor.removeCta,
+        name: messages.dashboard.model.editor.removeCta,
       })
     ).toBeDefined()
     expect(
       screen.getByRole("button", {
-        name: messages.dashboard.onboarding.model.change.cancel,
+        name: messages.dashboard.model.change.cancel,
       })
     ).toBeDefined()
   })
@@ -583,23 +583,23 @@ describe("ModelSetupStep", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(messages.dashboard.onboarding.model.review.heading)
+        screen.getByText(messages.dashboard.model.review.heading)
       ).toBeDefined()
     })
     fireEvent.click(
       screen.getByRole("button", {
-        name: messages.dashboard.onboarding.model.review.editCta,
+        name: messages.dashboard.model.review.editCta,
       })
     )
 
     const removeButton = screen.getByRole("button", {
-      name: `${messages.dashboard.onboarding.model.editor.removeCta} Problem solving`,
+      name: `${messages.dashboard.model.editor.removeCta} Problem solving`,
     })
     fireEvent.click(removeButton)
 
     // The inline confirm button shares the removeCta label.
     const confirmButton = screen.getByRole("button", {
-      name: messages.dashboard.onboarding.model.editor.removeCta,
+      name: messages.dashboard.model.editor.removeCta,
     })
     fireEvent.click(confirmButton)
 
@@ -617,22 +617,22 @@ describe("ModelSetupStep", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(messages.dashboard.onboarding.model.review.heading)
+        screen.getByText(messages.dashboard.model.review.heading)
       ).toBeDefined()
     })
     fireEvent.click(
       screen.getByRole("button", {
-        name: messages.dashboard.onboarding.model.review.editCta,
+        name: messages.dashboard.model.review.editCta,
       })
     )
 
     const removeButton = screen.getByRole("button", {
-      name: `${messages.dashboard.onboarding.model.editor.removeCta} Problem solving`,
+      name: `${messages.dashboard.model.editor.removeCta} Problem solving`,
     })
     fireEvent.click(removeButton)
 
     const cancelButton = screen.getByRole("button", {
-      name: messages.dashboard.onboarding.model.change.cancel,
+      name: messages.dashboard.model.change.cancel,
     })
     fireEvent.click(cancelButton)
 
@@ -640,7 +640,7 @@ describe("ModelSetupStep", () => {
     // After cancel the trigger (trashcan with removeLabel) is back.
     expect(
       screen.getByRole("button", {
-        name: `${messages.dashboard.onboarding.model.editor.removeCta} Problem solving`,
+        name: `${messages.dashboard.model.editor.removeCta} Problem solving`,
       })
     ).toBeDefined()
   })
@@ -648,18 +648,18 @@ describe("ModelSetupStep", () => {
   it("review screen opens the add dialog after entering edit mode, then submits to addCriterion", async () => {
     setModel(reviewModel)
     addCriterionMock.mockResolvedValue("c-new")
-    const editor = messages.dashboard.onboarding.model.editor
+    const editor = messages.dashboard.model.editor
     renderStep("org-add")
 
     // Wait for the review screen, then enter edit mode.
     await waitFor(() => {
       expect(
-        screen.getByText(messages.dashboard.onboarding.model.review.heading)
+        screen.getByText(messages.dashboard.model.review.heading)
       ).toBeDefined()
     })
     fireEvent.click(
       screen.getByRole("button", {
-        name: messages.dashboard.onboarding.model.review.editCta,
+        name: messages.dashboard.model.review.editCta,
       })
     )
 
@@ -696,7 +696,7 @@ describe("ModelSetupStep", () => {
       setModel(null)
       return null
     })
-    const change = messages.dashboard.onboarding.model.change
+    const change = messages.dashboard.model.change
     renderStep("org-chg")
 
     // Wait for the review screen, then arm and confirm the change.
@@ -712,12 +712,12 @@ describe("ModelSetupStep", () => {
     // are shown again.
     await waitFor(() => {
       expect(
-        screen.getByText(messages.dashboard.onboarding.model.template.badge)
+        screen.getByText(messages.dashboard.model.template.badge)
       ).toBeDefined()
     })
     // The review screen is gone.
     expect(
-      screen.queryByText(messages.dashboard.onboarding.model.review.heading)
+      screen.queryByText(messages.dashboard.model.review.heading)
     ).toBeNull()
   })
 })

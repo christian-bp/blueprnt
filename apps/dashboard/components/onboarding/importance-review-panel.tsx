@@ -51,8 +51,8 @@ export function ImportanceReviewPanel({
   orgId: string
   model: ReviewModel
 }) {
-  const t = useTranslations("dashboard.onboarding.ai")
-  const tModel = useTranslations("dashboard.onboarding.model")
+  const t = useTranslations("dashboard.ai")
+  const tModel = useTranslations("dashboard.model")
   const tErrors = useTranslations("errors")
   const tImportance = useTranslations("model.importance")
 

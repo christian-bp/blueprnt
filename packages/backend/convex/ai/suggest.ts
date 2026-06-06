@@ -2,9 +2,10 @@ import { IMPORTANCE_LEVELS, type ImportanceLevel } from "@workspace/core"
 import { v } from "convex/values"
 import { internal } from "../_generated/api"
 import type { MutationCtx } from "../_generated/server"
+import { PROFILE_TEXT_FIELDS, type ProfileTextField } from "../assessment/roles"
 import { AUDIT_EVENTS, logAudit } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
-import { adminMutation, orgQuery } from "../lib/functions"
+import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
 import { AI_MODEL_ID, AI_PROVIDER } from "./config"
 
 interface SettingsContext {
@@ -285,7 +286,141 @@ export const confirmImportanceReview = adminMutation({
   },
 })
 
-export const rejectSuggestion = adminMutation({
+// AI-writable job profile fields: the shared list from the role register.
+// Title, function, and team are HR context the model cannot know; they are
+// prompt INPUT only. Ratings are never AI territory (ADR-0003).
+const ROLE_PROFILE_FIELDS = PROFILE_TEXT_FIELDS
+
+function maxLengthFor(field: ProfileTextField): number {
+  return field === "responsibilities" ? 2000 : 1000
+}
+
+// Role profile work is member scope (unlike model configuration): editors
+// register and describe roles, so request/confirm use orgMutation.
+export const requestRoleProfileDraft = orgMutation({
+  args: { roleId: v.id("roles"), description: v.optional(v.string()) },
+  returns: v.id("suggestions"),
+  handler: async (ctx, { roleId, description }) => {
+    const settings = await requireCompleteSettings(ctx, ctx.orgId)
+    const role = await ctx.db.get(roleId)
+    if (role === null || role.orgId !== ctx.orgId) {
+      throw appError(ERROR_CODES.notFound)
+    }
+    if (role.archivedAt !== undefined || role.status === "approved") {
+      throw appError(ERROR_CODES.roleLocked)
+    }
+    const track = await ctx.db.get(role.trackId)
+    const level = await ctx.db.get(role.levelId)
+    if (track === null || level === null) {
+      throw appError(ERROR_CODES.notFound)
+    }
+    const suggestionId = await ctx.db.insert("suggestions", {
+      orgId: ctx.orgId,
+      target: { kind: "role.profile", roleId },
+      suggestedValue: null,
+      source: "ai",
+      status: "generating",
+      model: { provider: AI_PROVIDER, model: AI_MODEL_ID },
+    })
+    await ctx.scheduler.runAfter(
+      0,
+      internal.ai.generate.generateRoleProfileDraft,
+      {
+        suggestionId,
+        locale: settings.locale,
+        industry: settings.industry,
+        country: settings.country,
+        ...(settings.employeeCount !== undefined
+          ? { employeeCount: settings.employeeCount }
+          : {}),
+        title: role.title,
+        trackName: track.name,
+        levelName: level.name,
+        roleFunction: role.function,
+        team: role.team,
+        ...(description !== undefined ? { description } : {}),
+      }
+    )
+    return suggestionId
+  },
+})
+
+export const confirmRoleProfileDraft = orgMutation({
+  args: {
+    suggestionId: v.id("suggestions"),
+    acceptedFields: v.array(v.string()),
+  },
+  returns: v.null(),
+  handler: async (ctx, { suggestionId, acceptedFields }) => {
+    const suggestion = await ctx.db.get(suggestionId)
+    if (
+      suggestion === null ||
+      suggestion.orgId !== ctx.orgId ||
+      suggestion.target.kind !== "role.profile" ||
+      suggestion.status !== "suggested"
+    ) {
+      throw appError(ERROR_CODES.notFound)
+    }
+    const roleId = suggestion.target.roleId
+    if (roleId === undefined) throw appError(ERROR_CODES.notFound)
+    const role = await ctx.db.get(roleId)
+    if (role === null || role.orgId !== ctx.orgId) {
+      throw appError(ERROR_CODES.notFound)
+    }
+    if (role.archivedAt !== undefined || role.status === "approved") {
+      throw appError(ERROR_CODES.roleLocked)
+    }
+    const value = suggestion.suggestedValue as {
+      profile?: Record<string, unknown>
+    } | null
+    const profile = value?.profile ?? {}
+    // LLM output crosses a trust boundary here: whitelist the field names,
+    // require strings, trim, and re-enforce length bounds before patching.
+    const patch: Record<string, string> = {}
+    const appliedFields: string[] = []
+    const acceptedSet = new Set(acceptedFields)
+    for (const field of ROLE_PROFILE_FIELDS) {
+      if (!acceptedSet.has(field)) continue
+      const raw = profile[field]
+      if (typeof raw !== "string") continue
+      const trimmed = raw.trim()
+      if (trimmed.length === 0 || trimmed.length > maxLengthFor(field)) {
+        continue
+      }
+      patch[field] = trimmed
+      appliedFields.push(field)
+    }
+    if (appliedFields.length > 0) {
+      await ctx.db.patch(roleId, patch)
+      await logAudit(ctx, {
+        orgId: ctx.orgId,
+        type: AUDIT_EVENTS.roleUpdated,
+        actorId: ctx.authUserId,
+        payload: { roleId, fields: appliedFields },
+      })
+    }
+    await ctx.db.patch(suggestionId, {
+      status: appliedFields.length > 0 ? "confirmed" : "rejected",
+      confirmedBy: ctx.authUserId,
+    })
+    await logAudit(ctx, {
+      orgId: ctx.orgId,
+      type: AUDIT_EVENTS.aiSuggestionConfirmed,
+      actorId: ctx.authUserId,
+      payload: {
+        suggestionId,
+        kind: "role.profile",
+        appliedCount: appliedFields.length,
+      },
+    })
+    return null
+  },
+})
+
+// Member scope: rejecting applies nothing, and editors must be able to
+// dismiss their own role-profile drafts. Confirm paths keep their own
+// scoping (model.* confirms are adminMutation, role.profile is orgMutation).
+export const rejectSuggestion = orgMutation({
   args: { suggestionId: v.id("suggestions") },
   returns: v.null(),
   handler: async (ctx, { suggestionId }) => {
@@ -313,6 +448,7 @@ export const getOpenSuggestions = orgQuery({
       suggestedValue: v.any(),
       errorCode: v.union(v.string(), v.null()),
       createdAt: v.number(),
+      roleId: v.union(v.id("roles"), v.null()),
     })
   ),
   handler: async (ctx) => {
@@ -336,6 +472,7 @@ export const getOpenSuggestions = orgQuery({
       suggestedValue: row.suggestedValue ?? null,
       errorCode: row.errorCode ?? null,
       createdAt: row._creationTime,
+      roleId: row.target.roleId ?? null,
     }))
   },
 })

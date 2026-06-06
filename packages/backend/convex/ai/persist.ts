@@ -53,6 +53,31 @@ export const saveImportanceReview = internalMutation({
   },
 })
 
+export const saveRoleProfileDraft = internalMutation({
+  args: {
+    suggestionId: v.id("suggestions"),
+    profile: v.object({
+      purpose: v.string(),
+      responsibilities: v.string(),
+      decisionMandate: v.optional(v.string()),
+      stakeholders: v.optional(v.string()),
+      knowledge: v.optional(v.string()),
+      financial: v.optional(v.string()),
+      people: v.optional(v.string()),
+      risk: v.optional(v.string()),
+      deliverables: v.optional(v.string()),
+    }),
+  },
+  returns: v.null(),
+  handler: async (ctx, { suggestionId, profile }) => {
+    await ctx.db.patch(suggestionId, {
+      suggestedValue: { profile },
+      status: "suggested",
+    })
+    return null
+  },
+})
+
 // Failures persist a machine-readable errors.* code; the frontend translates.
 export const markFailed = internalMutation({
   args: { suggestionId: v.id("suggestions"), errorCode: v.string() },

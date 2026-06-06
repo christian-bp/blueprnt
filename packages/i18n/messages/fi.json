@@ -92,106 +92,127 @@
     "title": "blueprnt",
     "nav": {
       "overview": "Yleiskatsaus",
-      "signOut": "Kirjaudu ulos",
-      "dashboard": "Kojelauta",
-      "lifecycle": "Elinkaari",
-      "analytics": "Analytiikka",
-      "projects": "Projektit",
-      "team": "Tiimi",
-      "quickCreate": "Pikaluonti",
-      "inbox": "Saapuneet",
-      "settings": "Asetukset",
-      "getHelp": "Hanki apua",
-      "search": "Hae",
-      "documents": "Asiakirjat",
-      "dataLibrary": "Datakirjasto",
-      "reports": "Raportit",
-      "wordAssistant": "Tekstiavustaja",
-      "capture": "Kerää",
-      "proposal": "Ehdotus",
-      "prompts": "Kehotteet",
-      "activeProposals": "Aktiiviset ehdotukset",
-      "archived": "Arkistoidut",
-      "more": "Lisää",
-      "open": "Avaa",
-      "share": "Jaa",
-      "delete": "Poista"
-    },
-    "cards": {
-      "totalRevenue": "Kokonaistulot",
-      "trendingUp": "Nouseva trendi tässä kuussa",
-      "visitorsLast6Months": "Kävijämäärä viimeisten 6 kuukauden ajalta",
-      "newCustomers": "Uudet asiakkaat",
-      "down20Period": "Laskenut 20 % tällä kaudella",
-      "acquisitionAttention": "Hankinta kaipaa huomiota",
-      "activeAccounts": "Aktiiviset tilit",
-      "strongRetention": "Vahva käyttäjäpysyvyys",
-      "engagementExceed": "Sitoutuminen ylittää tavoitteet",
-      "growthRate": "Kasvuvauhti",
-      "steadyIncrease": "Vakaa suorituskyvyn kasvu",
-      "meetsProjections": "Täyttää kasvuennusteet"
-    },
-    "chart": {
-      "title": "Kävijät yhteensä",
-      "descriptionLong": "Yhteensä viimeisten 3 kuukauden ajalta",
-      "descriptionShort": "Viimeiset 3 kuukautta",
-      "last3Months": "Viimeiset 3 kuukautta",
-      "last30Days": "Viimeiset 30 päivää",
-      "last7Days": "Viimeiset 7 päivää",
-      "drawerDescription": "Näyttää kävijät yhteensä viimeisten 6 kuukauden ajalta",
-      "trendingUp": "Nouseva trendi 5,2 % tässä kuussa",
-      "drawerBody": "Näyttää kävijät yhteensä viimeisten 6 kuukauden ajalta. Tämä on vain satunnaista tekstiä asettelun testaamiseksi."
-    },
-    "table": {
-      "outline": "Jäsennys",
-      "pastPerformance": "Aiempi suorituskyky",
-      "keyPersonnel": "Avainhenkilöstö",
-      "focusDocuments": "Fokusasiakirjat",
-      "columns": "Sarakkeet",
-      "addSection": "Lisää osio",
-      "noResults": "Ei tuloksia.",
-      "rowsPerPage": "Rivejä sivulla",
-      "pageOf": "Sivu {page} / {total}",
-      "rowsSelected": "{selected} / {total} riviä valittu.",
-      "goToFirstPage": "Siirry ensimmäiselle sivulle",
-      "goToPreviousPage": "Siirry edelliselle sivulle",
-      "goToNextPage": "Siirry seuraavalle sivulle",
-      "goToLastPage": "Siirry viimeiselle sivulle",
-      "dragToReorder": "Vedä järjestääksesi uudelleen",
-      "openMenu": "Avaa valikko",
-      "selectAll": "Valitse kaikki",
-      "selectRow": "Valitse rivi",
-      "view": "Näkymä",
-      "selectView": "Valitse näkymä",
-      "colHeader": "Otsikko",
-      "colSectionType": "Osiotyyppi",
-      "colStatus": "Tila",
-      "colTarget": "Tavoite",
-      "colLimit": "Raja",
-      "colReviewer": "Tarkastaja",
-      "assignReviewer": "Määritä tarkastaja",
-      "edit": "Muokkaa",
-      "makeACopy": "Tee kopio",
-      "favorite": "Suosikki",
-      "delete": "Poista",
-      "submit": "Lähetä",
-      "done": "Valmis",
-      "drawerFormHeader": "Otsikko",
-      "drawerFormType": "Tyyppi",
-      "drawerFormStatus": "Tila",
-      "drawerFormTarget": "Tavoite",
-      "drawerFormLimit": "Raja",
-      "drawerFormReviewer": "Tarkastaja",
-      "selectType": "Valitse tyyppi",
-      "selectStatus": "Valitse tila",
-      "selectReviewer": "Valitse tarkastaja",
-      "saving": "Tallennetaan {name}",
-      "saved": "Valmis",
-      "saveError": "Virhe"
+      "roles": "Roolit",
+      "model": "Malli",
+      "results": "Tulokset",
+      "signOut": "Kirjaudu ulos"
     },
     "overview": {
-      "emptyTitle": "Ei vielä mitään",
-      "emptyBody": "Organisaatiosi yleiskatsaus näytetään tässä, kun blueprnt kasvaa."
+      "rolesCard": "Roolit",
+      "approvedCard": "Hyväksytyt roolit",
+      "ratedCard": "Täysin arvioidut roolit",
+      "criteriaCard": "Kriteerit mallissa",
+      "goRoles": "Siirry rooleihin",
+      "goModel": "Näytä malli",
+      "goResults": "Näytä tulokset"
+    },
+    "roles": {
+      "heading": "Roolit",
+      "description": "Tehtäväprofiilit, joita arvioidaan mallinne perusteella. Roolit, ei koskaan henkilöt.",
+      "newCta": "Uusi rooli",
+      "empty": "Ei vielä rooleja. Luo ensimmäinen rooli aloittaaksesi arvioinnin.",
+      "table": {
+        "title": "Tehtävänimike",
+        "trackLevel": "Track ja taso",
+        "team": "Tiimi",
+        "status": "Tila",
+        "rated": "Arvioitu"
+      },
+      "create": {
+        "title": "Uusi rooli",
+        "description": "Perustiedot ensin. Tarkoitus ja vastuualueet voidaan luonnostella tekoälyllä roolisivulla.",
+        "titleLabel": "Tehtävänimike",
+        "titlePlaceholder": "esim. Junior Software Developer",
+        "functionLabel": "Toiminto/osasto",
+        "teamLabel": "Tiimi",
+        "trackLabel": "Track",
+        "levelLabel": "Taso",
+        "cta": "Luo rooli",
+        "cancel": "Peruuta",
+        "error": "Roolia ei voitu luoda. Yritä uudelleen."
+      },
+      "detail": {
+        "profileHeading": "Tehtäväprofiili",
+        "editCta": "Muokkaa",
+        "doneCta": "Valmis",
+        "saveCta": "Tallenna",
+        "saveError": "Tallennus epäonnistui. Yritä uudelleen.",
+        "profileIncomplete": "Täytä tarkoitus ja vastuualueet ennen arviointia.",
+        "ratingHeading": "Arviointi",
+        "ratingProgress": "{rated} / {total} kriteeriä arvioitu",
+        "rateCta": "Arvioi rooli",
+        "resumeRateCta": "Jatka arviointia",
+        "adjustRateCta": "Muuta arvioita",
+        "resultHeading": "Tulos",
+        "notFound": "Tätä roolia ei ole olemassa.",
+        "backToRoles": "Takaisin rooleihin",
+        "emptyField": "Ei vielä täytetty"
+      },
+      "status": {
+        "submitCta": "Lähetä tarkistettavaksi",
+        "approveCta": "Hyväksy",
+        "withdrawCta": "Peruuta tarkistus",
+        "reopenCta": "Avaa uudelleen",
+        "reopenConfirm": "Avaa uudelleen ja poista lukitus",
+        "cancel": "Peruuta",
+        "lockedHint": "Hyväksytyt roolit ovat lukittuja. Avaa uudelleen muuttaaksesi profiilia tai arvioita.",
+        "incompleteHint": "Rooli on arvioitava kokonaan ennen tarkistusta tai hyväksyntää.",
+        "error": "Tilaa ei voitu muuttaa. Yritä uudelleen."
+      },
+      "archive": {
+        "cta": "Arkistoi rooli",
+        "confirm": "Kyllä, arkistoi",
+        "cancel": "Peruuta",
+        "error": "Roolia ei voitu arkistoida. Yritä uudelleen."
+      },
+      "ai": {
+        "heading": "Tekoälyapu",
+        "descriptionLabel": "Kuvaile roolia (valinnainen)",
+        "draftCta": "Luonnostele tehtäväprofiili tekoälyllä",
+        "error": "Jokin meni pieleen. Yritä uudelleen."
+      }
+    },
+    "rating": {
+      "title": "Arvioi rooli",
+      "step": "Kriteeri {current} / {total}",
+      "motivationLabel": "Perustelu (valinnainen)",
+      "motivationPlaceholder": "Miksi tämä arvio?",
+      "guardrailHint": "Suositusvälin {min} - {max} ulkopuolella tasolle {level}.",
+      "anchorGroupLabel": "Arvio: {name}",
+      "backCta": "Takaisin",
+      "nextCta": "Seuraava kriteeri",
+      "finishCta": "Näytä tulos",
+      "saveError": "Arviota ei voitu tallentaa. Yritä uudelleen.",
+      "result": {
+        "heading": "Tulos",
+        "scoreLabel": "Kokonaispisteet",
+        "bandLabel": "Vaativuusluokka",
+        "bandHighest": "Luokka 1 on korkein luokka.",
+        "computing": "Lasketaan tulosta",
+        "guardrailsHeading": "Ohjaavat huomiot",
+        "guardrailRow": "{name}: {value} on suositusvälin {min} - {max} ulkopuolella",
+        "noWarnings": "Kaikki arviot ovat suositusväleillä.",
+        "backToRole": "Takaisin rooliin"
+      }
+    },
+    "results": {
+      "heading": "Tulokset",
+      "description": "Kokonaispisteet ja luokkatulos lasketaan aina reaaliajassa nykyisen mallin ja arvioiden perusteella.",
+      "bandsHeading": "Luokkayhteenveto",
+      "bandHighest": "Luokka 1 on korkein luokka.",
+      "bandRow": "Luokka {band}",
+      "roleCount": "{count, plural, =1 {1 rooli} other {# roolia}}",
+      "table": {
+        "title": "Tehtävänimike",
+        "trackLevel": "Track ja taso",
+        "status": "Tila",
+        "score": "Kokonaispisteet",
+        "band": "Vaativuusluokka",
+        "warnings": "Ohjaavat huomiot",
+        "progress": "{rated} / {total} arvioitu"
+      },
+      "empty": "Ei vielä näytettäviä rooleja. Luo rooli ja arvioi se nähdäksesi tulokset.",
+      "emptyCta": "Luo rooli"
     },
     "auth": {
       "loading": "Tarkistetaan istuntoasi",
@@ -259,62 +280,62 @@
           "realEstateConstruction": "Kiinteistö ja rakentaminen",
           "other": "Muu"
         }
-      },
-      "model": {
-        "heading": "Valitse arviointimallinne",
-        "description": "Malli määrittää kriteerit, joita vasten roolit arvioidaan. Merkitys on aina nimike, ei koskaan numero.",
-        "error": "Jotakin meni vikaan. Yritä uudelleen.",
-        "template": {
-          "title": "Aloita vakiomallista",
-          "description": "9 kriteeriä ankkuriasteikkoineen, oletusmerkitykset, track-rakenne ja luokkarajat.",
-          "badge": "Suositeltu",
-          "cta": "Käytä mallia"
-        },
-        "scratch": {
-          "title": "Rakenna alusta",
-          "description": "Aloita tyhjästä ja määritä omat kriteerit, tekoälyluonnokset apuna.",
-          "nameLabel": "Mallin nimi",
-          "cta": "Aloita alusta"
-        },
-        "review": {
-          "heading": "Mallinne",
-          "setImportance": "Merkitys: {name}",
-          "cta": "Avaa hallintapaneeli",
-          "editCta": "Muokkaa",
-          "doneEditing": "Valmis"
-        },
-        "editor": {
-          "heading": "Kriteerit",
-          "empty": "Ei kriteerejä vielä. Lisää ensimmäinen kriteeri tai luo tekoälyluonnoksia.",
-          "name": "Nimi",
-          "description": "Kuvaus",
-          "helpText": "Ohjeteksti arvioijalle",
-          "importance": "Merkitys",
-          "anchors": "Ankkuriasteikko (0 - 5)",
-          "anchorLevel": "Ankkuri {level}",
-          "addCta": "Lisää kriteeri",
-          "removeCta": "Poista",
-          "doneCta": "Viimeistele määritys"
-        },
-        "change": {
-          "cta": "Vaihda mallivalintaa",
-          "confirm": "Kyllä, poista ja aloita alusta",
-          "cancel": "Peruuta"
-        }
-      },
-      "ai": {
-        "heading": "Tekoälyapu",
-        "provenance": "Tekoälyn luoma ehdotus. Tarkista ja vahvista; mitään ei oteta käyttöön automaattisesti.",
-        "draftDescriptionLabel": "Kuvaile liiketoimintaanne (valinnainen)",
-        "draftCta": "Luo kriteeriluonnoksia",
-        "reviewCta": "Anna tekoälyn tarkistaa merkitykset",
-        "generating": "Luodaan ehdotuksia",
-        "confirmCta": "Lisää valitut",
-        "applyCta": "Käytä valittuja",
-        "rejectCta": "Hylkää",
-        "noAdjustments": "Tekoäly ei löytänyt ehdotettavia muutoksia.",
-        "motivation": "Perustelu"
       }
+    },
+    "model": {
+      "heading": "Valitse arviointimallinne",
+      "description": "Malli määrittää kriteerit, joita vasten roolit arvioidaan. Merkitys on aina nimike, ei koskaan numero.",
+      "error": "Jotakin meni vikaan. Yritä uudelleen.",
+      "template": {
+        "title": "Aloita vakiomallista",
+        "description": "9 kriteeriä ankkuriasteikkoineen, oletusmerkitykset, track-rakenne ja luokkarajat.",
+        "badge": "Suositeltu",
+        "cta": "Käytä mallia"
+      },
+      "scratch": {
+        "title": "Rakenna alusta",
+        "description": "Aloita tyhjästä ja määritä omat kriteerit, tekoälyluonnokset apuna.",
+        "nameLabel": "Mallin nimi",
+        "cta": "Aloita alusta"
+      },
+      "review": {
+        "heading": "Mallinne",
+        "setImportance": "Merkitys: {name}",
+        "cta": "Avaa hallintapaneeli",
+        "editCta": "Muokkaa",
+        "doneEditing": "Valmis"
+      },
+      "editor": {
+        "heading": "Kriteerit",
+        "empty": "Ei kriteerejä vielä. Lisää ensimmäinen kriteeri tai luo tekoälyluonnoksia.",
+        "name": "Nimi",
+        "description": "Kuvaus",
+        "helpText": "Ohjeteksti arvioijalle",
+        "importance": "Merkitys",
+        "anchors": "Ankkuriasteikko (0 - 5)",
+        "anchorLevel": "Ankkuri {level}",
+        "addCta": "Lisää kriteeri",
+        "removeCta": "Poista",
+        "doneCta": "Viimeistele määritys"
+      },
+      "change": {
+        "cta": "Vaihda mallivalintaa",
+        "confirm": "Kyllä, poista ja aloita alusta",
+        "cancel": "Peruuta"
+      }
+    },
+    "ai": {
+      "heading": "Tekoälyapu",
+      "provenance": "Tekoälyn luoma ehdotus. Tarkista ja vahvista; mitään ei oteta käyttöön automaattisesti.",
+      "draftDescriptionLabel": "Kuvaile liiketoimintaanne (valinnainen)",
+      "draftCta": "Luo kriteeriluonnoksia",
+      "reviewCta": "Anna tekoälyn tarkistaa merkitykset",
+      "generating": "Luodaan ehdotuksia",
+      "confirmCta": "Lisää valitut",
+      "applyCta": "Käytä valittuja",
+      "rejectCta": "Hylkää",
+      "noAdjustments": "Tekoäly ei löytänyt ehdotettavia muutoksia.",
+      "motivation": "Perustelu"
     }
   },
   "errors": {
@@ -327,6 +348,9 @@
     "modelExists": "Organisaatiolla on jo arviointimalli.",
     "profileIncomplete": "Täytä ensin yritysprofiili.",
     "aiUnavailable": "Tekoälyä ei ole määritetty tässä ympäristössä.",
-    "aiGenerationFailed": "Tekoälyehdotusta ei voitu luoda."
+    "aiGenerationFailed": "Tekoälyehdotusta ei voitu luoda.",
+    "roleLocked": "Tämä rooli on hyväksytty ja lukittu. Avaa se ensin uudelleen.",
+    "ratingsIncomplete": "Kaikki kriteerit on arvioitava ensin.",
+    "invalidTransition": "Kyseinen tilamuutos ei ole sallittu."
   }
 }

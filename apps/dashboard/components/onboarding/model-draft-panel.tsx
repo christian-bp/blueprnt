@@ -36,8 +36,8 @@ interface DraftCriterion {
 // proposes criteria the HR admin selects and confirms. The provenance line is
 // always visible on a suggestion.
 export function ModelDraftPanel({ orgId }: { orgId: string }) {
-  const t = useTranslations("dashboard.onboarding.ai")
-  const tModel = useTranslations("dashboard.onboarding.model")
+  const t = useTranslations("dashboard.ai")
+  const tModel = useTranslations("dashboard.model")
   const tErrors = useTranslations("errors")
   const tImportance = useTranslations("model.importance")
 

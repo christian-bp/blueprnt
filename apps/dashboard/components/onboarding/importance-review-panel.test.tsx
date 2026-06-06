@@ -45,7 +45,7 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
 
 import { ImportanceReviewPanel } from "@/components/onboarding/importance-review-panel"
 
-const ai = messages.dashboard.onboarding.ai
+const ai = messages.dashboard.ai
 
 // The model prop mirrors the relevant slice of the getModel result.
 const model = {

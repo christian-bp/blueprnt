@@ -5,41 +5,16 @@ import { AUDIT_EVENTS, logAudit } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgQuery } from "../lib/functions"
 import {
-  type CriterionKey,
   CRITERION_KEYS,
   DEFAULT_BAND_THRESHOLDS,
   DEFAULT_IMPORTANCE,
   GUARDRAILS,
-  type LevelKey,
   STANDARD_TEMPLATE_KEY,
   TRACK_DEFS,
   type TemplateLocale,
   templateContent,
 } from "./standardTemplate"
-
-// Read-time localization helpers (see getModel). Content exists for sv/en
-// only; nb/da/fi template content does not exist yet, so any non-sv/en locale
-// falls back to English.
-function clampLocale(locale: string | undefined): TemplateLocale {
-  return locale === "sv" || locale === "en" ? locale : "en"
-}
-
-const CRITERION_KEY_SET = new Set<string>(CRITERION_KEYS)
-function isCriterionKey(key: string): key is CriterionKey {
-  return CRITERION_KEY_SET.has(key)
-}
-
-const TRACK_KEY_SET = new Set<string>(TRACK_DEFS.map((track) => track.key))
-function isTrackKey(key: string): key is "IC" | "Lead" | "M" {
-  return TRACK_KEY_SET.has(key)
-}
-
-const LEVEL_KEY_SET = new Set<string>(
-  TRACK_DEFS.flatMap((track) => track.levels)
-)
-function isLevelKey(key: string): key is LevelKey {
-  return LEVEL_KEY_SET.has(key)
-}
+import { clampLocale, isCriterionKey, isLevelKey, isTrackKey } from "./localize"
 
 async function assertNoModel(ctx: MutationCtx, orgId: string) {
   // Read-then-insert is safe here: a concurrent create invalidates this

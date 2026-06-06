@@ -107,7 +107,7 @@ function renderEditor(
   )
 }
 
-const editor = messages.dashboard.onboarding.model.editor
+const editor = messages.dashboard.model.editor
 
 // useQueryMock dispatches on the api ref: the embedded draft panel's
 // getOpenSuggestions always returns [], while getModel returns whatever the
@@ -227,7 +227,7 @@ describe("CriterionEditor", () => {
     expect(screen.getByRole("button", { name: editor.removeCta })).toBeDefined()
     expect(
       screen.getByRole("button", {
-        name: messages.dashboard.onboarding.model.change.cancel,
+        name: messages.dashboard.model.change.cancel,
       })
     ).toBeDefined()
     // The mutation has NOT been called yet (only armed, not confirmed).
@@ -269,7 +269,7 @@ describe("CriterionEditor", () => {
     fireEvent.click(removeButton)
 
     const cancelButton = screen.getByRole("button", {
-      name: messages.dashboard.onboarding.model.change.cancel,
+      name: messages.dashboard.model.change.cancel,
     })
     fireEvent.click(cancelButton)
 
@@ -322,7 +322,7 @@ describe("CriterionEditor", () => {
     const onChangeChoice = vi.fn()
     renderEditor("org-123", () => {}, undefined, onChangeChoice)
 
-    const change = messages.dashboard.onboarding.model.change
+    const change = messages.dashboard.model.change
     // Arm then confirm the two-step control.
     fireEvent.click(screen.getByRole("button", { name: change.cta }))
     fireEvent.click(screen.getByRole("button", { name: change.confirm }))
@@ -335,7 +335,7 @@ describe("CriterionEditor", () => {
 
     expect(
       screen.queryByRole("button", {
-        name: messages.dashboard.onboarding.model.change.cta,
+        name: messages.dashboard.model.change.cta,
       })
     ).toBeNull()
   })

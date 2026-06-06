@@ -92,106 +92,127 @@
     "title": "blueprnt",
     "nav": {
       "overview": "Översikt",
-      "signOut": "Logga ut",
-      "dashboard": "Instrumentpanel",
-      "lifecycle": "Livscykel",
-      "analytics": "Analys",
-      "projects": "Projekt",
-      "team": "Team",
-      "quickCreate": "Skapa snabbt",
-      "inbox": "Inkorg",
-      "settings": "Inställningar",
-      "getHelp": "Få hjälp",
-      "search": "Sök",
-      "documents": "Dokument",
-      "dataLibrary": "Databiliotek",
-      "reports": "Rapporter",
-      "wordAssistant": "Ordassistent",
-      "capture": "Samla in",
-      "proposal": "Förslag",
-      "prompts": "Uppmaningar",
-      "activeProposals": "Aktiva förslag",
-      "archived": "Arkiverade",
-      "more": "Mer",
-      "open": "Öppna",
-      "share": "Dela",
-      "delete": "Ta bort"
-    },
-    "cards": {
-      "totalRevenue": "Total intäkt",
-      "trendingUp": "Uppåtgående trend denna månad",
-      "visitorsLast6Months": "Besökare de senaste 6 månaderna",
-      "newCustomers": "Nya kunder",
-      "down20Period": "Ned 20% under perioden",
-      "acquisitionAttention": "Anskaffning behöver uppmärksamhet",
-      "activeAccounts": "Aktiva konton",
-      "strongRetention": "Stark användarlojalitet",
-      "engagementExceed": "Engagemanget överstiger målen",
-      "growthRate": "Tillväxttakt",
-      "steadyIncrease": "Stabil prestandaökning",
-      "meetsProjections": "Uppfyller tillväxtprognoser"
-    },
-    "chart": {
-      "title": "Totalt antal besökare",
-      "descriptionLong": "Totalt för de senaste 3 månaderna",
-      "descriptionShort": "Senaste 3 månaderna",
-      "last3Months": "Senaste 3 månaderna",
-      "last30Days": "Senaste 30 dagarna",
-      "last7Days": "Senaste 7 dagarna",
-      "drawerDescription": "Visar totalt antal besökare de senaste 6 månaderna",
-      "trendingUp": "Uppåtgående trend med 5,2% denna månad",
-      "drawerBody": "Visar totalt antal besökare de senaste 6 månaderna. Detta är bara lite slumpmässig text för att testa layouten. Den sträcker sig över flera rader och ska radbrytas."
-    },
-    "table": {
-      "outline": "Disposition",
-      "pastPerformance": "Tidigare prestanda",
-      "keyPersonnel": "Nyckelpersoner",
-      "focusDocuments": "Fokaldokument",
-      "columns": "Kolumner",
-      "addSection": "Lägg till avsnitt",
-      "noResults": "Inga resultat.",
-      "rowsPerPage": "Rader per sida",
-      "pageOf": "Sida {page} av {total}",
-      "rowsSelected": "{selected} av {total} rad(er) vald(a).",
-      "goToFirstPage": "Gå till första sidan",
-      "goToPreviousPage": "Gå till föregående sida",
-      "goToNextPage": "Gå till nästa sida",
-      "goToLastPage": "Gå till sista sidan",
-      "dragToReorder": "Dra för att ändra ordning",
-      "openMenu": "Öppna meny",
-      "selectAll": "Välj alla",
-      "selectRow": "Välj rad",
-      "view": "Vy",
-      "selectView": "Välj en vy",
-      "colHeader": "Rubrik",
-      "colSectionType": "Avsnitttyp",
-      "colStatus": "Status",
-      "colTarget": "Mål",
-      "colLimit": "Gräns",
-      "colReviewer": "Granskare",
-      "assignReviewer": "Tilldela granskare",
-      "edit": "Redigera",
-      "makeACopy": "Skapa en kopia",
-      "favorite": "Favorit",
-      "delete": "Ta bort",
-      "submit": "Skicka",
-      "done": "Klar",
-      "drawerFormHeader": "Rubrik",
-      "drawerFormType": "Typ",
-      "drawerFormStatus": "Status",
-      "drawerFormTarget": "Mål",
-      "drawerFormLimit": "Gräns",
-      "drawerFormReviewer": "Granskare",
-      "selectType": "Välj en typ",
-      "selectStatus": "Välj en status",
-      "selectReviewer": "Välj en granskare",
-      "saving": "Sparar {name}",
-      "saved": "Klar",
-      "saveError": "Fel"
+      "roles": "Roller",
+      "model": "Modell",
+      "results": "Resultat",
+      "signOut": "Logga ut"
     },
     "overview": {
-      "emptyTitle": "Här är det tomt än så länge",
-      "emptyBody": "Din organisations översikt visas här när blueprnt växer."
+      "rolesCard": "Roller",
+      "approvedCard": "Godkända roller",
+      "ratedCard": "Färdigbetygsatta roller",
+      "criteriaCard": "Kriterier i modellen",
+      "goRoles": "Gå till roller",
+      "goModel": "Visa modellen",
+      "goResults": "Visa resultat"
+    },
+    "roles": {
+      "heading": "Roller",
+      "description": "Jobbprofiler som värderas mot er modell. Roller, aldrig personer.",
+      "newCta": "Ny roll",
+      "empty": "Inga roller ännu. Skapa din första roll för att börja värdera.",
+      "table": {
+        "title": "Titel",
+        "trackLevel": "Track och nivå",
+        "team": "Team",
+        "status": "Status",
+        "rated": "Betygsatt"
+      },
+      "create": {
+        "title": "Ny roll",
+        "description": "Grunderna först. Syfte och ansvarsområden kan utkastas med AI på rollsidan.",
+        "titleLabel": "Titel",
+        "titlePlaceholder": "t.ex. Junior Software Developer",
+        "functionLabel": "Funktion/avdelning",
+        "teamLabel": "Team",
+        "trackLabel": "Track",
+        "levelLabel": "Nivå",
+        "cta": "Skapa roll",
+        "cancel": "Avbryt",
+        "error": "Rollen kunde inte skapas. Försök igen."
+      },
+      "detail": {
+        "profileHeading": "Jobbprofil",
+        "editCta": "Redigera",
+        "doneCta": "Klar",
+        "saveCta": "Spara",
+        "saveError": "Kunde inte spara. Försök igen.",
+        "profileIncomplete": "Fyll i syfte och ansvarsområden innan betygsättning.",
+        "ratingHeading": "Betygsättning",
+        "ratingProgress": "{rated} av {total} kriterier betygsatta",
+        "rateCta": "Betygsätt roll",
+        "resumeRateCta": "Fortsätt betygsätta",
+        "adjustRateCta": "Justera betyg",
+        "resultHeading": "Resultat",
+        "notFound": "Den här rollen finns inte.",
+        "backToRoles": "Tillbaka till roller",
+        "emptyField": "Inte ifylld ännu"
+      },
+      "status": {
+        "submitCta": "Skicka för granskning",
+        "approveCta": "Godkänn",
+        "withdrawCta": "Dra tillbaka från granskning",
+        "reopenCta": "Öppna igen",
+        "reopenConfirm": "Öppna igen och lås upp",
+        "cancel": "Avbryt",
+        "lockedHint": "Godkända roller är låsta. Öppna igen för att ändra profilen eller betygen.",
+        "incompleteHint": "Rollen måste vara helt betygsatt innan granskning eller godkännande.",
+        "error": "Statusen kunde inte ändras. Försök igen."
+      },
+      "archive": {
+        "cta": "Arkivera roll",
+        "confirm": "Ja, arkivera",
+        "cancel": "Avbryt",
+        "error": "Rollen kunde inte arkiveras. Försök igen."
+      },
+      "ai": {
+        "heading": "AI-assistans",
+        "descriptionLabel": "Beskriv rollen (frivilligt)",
+        "draftCta": "Utkasta jobbprofil med AI",
+        "error": "Något gick fel. Försök igen."
+      }
+    },
+    "rating": {
+      "title": "Betygsätt roll",
+      "step": "Kriterium {current} av {total}",
+      "motivationLabel": "Motivering (frivillig)",
+      "motivationPlaceholder": "Varför detta betyg?",
+      "guardrailHint": "Utanför riktintervallet {min} till {max} för {level}.",
+      "anchorGroupLabel": "Betyg för {name}",
+      "backCta": "Tillbaka",
+      "nextCta": "Nästa kriterium",
+      "finishCta": "Visa resultat",
+      "saveError": "Betyget kunde inte sparas. Försök igen.",
+      "result": {
+        "heading": "Resultat",
+        "scoreLabel": "Totalpoäng",
+        "bandLabel": "Band",
+        "bandHighest": "Band 1 är det högsta bandet.",
+        "computing": "Räknar fram resultatet",
+        "guardrailsHeading": "Rådgivande noteringar",
+        "guardrailRow": "{name}: {value} är utanför {min} till {max}",
+        "noWarnings": "Alla betyg ligger inom riktintervallen.",
+        "backToRole": "Tillbaka till rollen"
+      }
+    },
+    "results": {
+      "heading": "Resultat",
+      "description": "Totalpoäng och bandutfall räknas alltid fram live från aktuell modell och aktuella betyg.",
+      "bandsHeading": "Bandöversikt",
+      "bandHighest": "Band 1 är det högsta bandet.",
+      "bandRow": "Band {band}",
+      "roleCount": "{count, plural, =1 {1 roll} other {# roller}}",
+      "table": {
+        "title": "Titel",
+        "trackLevel": "Track och nivå",
+        "status": "Status",
+        "score": "Totalpoäng",
+        "band": "Band",
+        "warnings": "Rådgivande noteringar",
+        "progress": "{rated} av {total} betygsatta"
+      },
+      "empty": "Inga roller att visa ännu. Skapa en roll och betygsätt den för att se resultat.",
+      "emptyCta": "Skapa en roll"
     },
     "auth": {
       "loading": "Kontrollerar din session",
@@ -259,62 +280,62 @@
           "realEstateConstruction": "Fastighet & bygg",
           "other": "Annat"
         }
-      },
-      "model": {
-        "heading": "Välj er värderingsmodell",
-        "description": "Modellen definierar kriterierna som roller värderas mot. Betydelse är alltid en etikett, aldrig en siffra.",
-        "error": "Något gick fel. Försök igen.",
-        "template": {
-          "title": "Utgå från standardmallen",
-          "description": "9 kriterier med ankarskalor, förvalda betydelser, track-schema och bandtrösklar.",
-          "badge": "Rekommenderas",
-          "cta": "Använd mallen"
-        },
-        "scratch": {
-          "title": "Bygg från grunden",
-          "description": "Börja tomt och definiera egna kriterier, med AI-utkast som hjälp.",
-          "nameLabel": "Modellens namn",
-          "cta": "Börja från grunden"
-        },
-        "review": {
-          "heading": "Er modell",
-          "setImportance": "Betydelse för {name}",
-          "cta": "Öppna dashboarden",
-          "editCta": "Redigera",
-          "doneEditing": "Klar"
-        },
-        "editor": {
-          "heading": "Kriterier",
-          "empty": "Inga kriterier ännu. Lägg till ert första kriterium eller generera AI-utkast.",
-          "name": "Namn",
-          "description": "Beskrivning",
-          "helpText": "Hjälptext till bedömaren",
-          "importance": "Betydelse",
-          "anchors": "Ankarskala (0 till 5)",
-          "anchorLevel": "Ankare {level}",
-          "addCta": "Lägg till kriterium",
-          "removeCta": "Ta bort",
-          "doneCta": "Slutför"
-        },
-        "change": {
-          "cta": "Ändra modellval",
-          "confirm": "Ja, ta bort och börja om",
-          "cancel": "Avbryt"
-        }
-      },
-      "ai": {
-        "heading": "AI-assistans",
-        "provenance": "AI-genererat förslag. Granska och bekräfta; inget tillämpas automatiskt.",
-        "draftDescriptionLabel": "Beskriv er verksamhet (frivilligt)",
-        "draftCta": "Generera kriterieutkast",
-        "reviewCta": "Låt AI gå igenom betydelserna",
-        "generating": "Genererar förslag",
-        "confirmCta": "Lägg till valda",
-        "applyCta": "Tillämpa valda",
-        "rejectCta": "Avfärda",
-        "noAdjustments": "AI:n hittade inga justeringar att föreslå.",
-        "motivation": "Motivering"
       }
+    },
+    "model": {
+      "heading": "Välj er värderingsmodell",
+      "description": "Modellen definierar kriterierna som roller värderas mot. Betydelse är alltid en etikett, aldrig en siffra.",
+      "error": "Något gick fel. Försök igen.",
+      "template": {
+        "title": "Utgå från standardmallen",
+        "description": "9 kriterier med ankarskalor, förvalda betydelser, track-schema och bandtrösklar.",
+        "badge": "Rekommenderas",
+        "cta": "Använd mallen"
+      },
+      "scratch": {
+        "title": "Bygg från grunden",
+        "description": "Börja tomt och definiera egna kriterier, med AI-utkast som hjälp.",
+        "nameLabel": "Modellens namn",
+        "cta": "Börja från grunden"
+      },
+      "review": {
+        "heading": "Er modell",
+        "setImportance": "Betydelse för {name}",
+        "cta": "Öppna dashboarden",
+        "editCta": "Redigera",
+        "doneEditing": "Klar"
+      },
+      "editor": {
+        "heading": "Kriterier",
+        "empty": "Inga kriterier ännu. Lägg till ert första kriterium eller generera AI-utkast.",
+        "name": "Namn",
+        "description": "Beskrivning",
+        "helpText": "Hjälptext till bedömaren",
+        "importance": "Betydelse",
+        "anchors": "Ankarskala (0 till 5)",
+        "anchorLevel": "Ankare {level}",
+        "addCta": "Lägg till kriterium",
+        "removeCta": "Ta bort",
+        "doneCta": "Slutför"
+      },
+      "change": {
+        "cta": "Ändra modellval",
+        "confirm": "Ja, ta bort och börja om",
+        "cancel": "Avbryt"
+      }
+    },
+    "ai": {
+      "heading": "AI-assistans",
+      "provenance": "AI-genererat förslag. Granska och bekräfta; inget tillämpas automatiskt.",
+      "draftDescriptionLabel": "Beskriv er verksamhet (frivilligt)",
+      "draftCta": "Generera kriterieutkast",
+      "reviewCta": "Låt AI gå igenom betydelserna",
+      "generating": "Genererar förslag",
+      "confirmCta": "Lägg till valda",
+      "applyCta": "Tillämpa valda",
+      "rejectCta": "Avfärda",
+      "noAdjustments": "AI:n hittade inga justeringar att föreslå.",
+      "motivation": "Motivering"
     }
   },
   "errors": {
@@ -327,6 +348,9 @@
     "modelExists": "Organisationen har redan en värderingsmodell.",
     "profileIncomplete": "Fyll i företagsprofilen först.",
     "aiUnavailable": "AI är inte konfigurerat i den här miljön.",
-    "aiGenerationFailed": "AI-förslaget kunde inte genereras."
+    "aiGenerationFailed": "AI-förslaget kunde inte genereras.",
+    "roleLocked": "Rollen är godkänd och låst. Öppna den igen först.",
+    "ratingsIncomplete": "Alla kriterier måste betygsättas först.",
+    "invalidTransition": "Den statusändringen är inte tillåten."
   }
 }

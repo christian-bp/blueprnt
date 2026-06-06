@@ -7,8 +7,10 @@ const useQueryMock = vi.fn()
 vi.mock("convex/react", () => ({
   useQuery: (...args: unknown[]) => useQueryMock(...args),
 }))
-vi.mock("@/components/dashboard-shell", () => ({
-  DashboardShell: () => <div data-testid="shell" />,
+vi.mock("@/components/app-shell", () => ({
+  AppShell: (props: { children?: React.ReactNode }) => (
+    <div data-testid="shell">{props.children}</div>
+  ),
 }))
 vi.mock("@/components/onboarding/onboarding-wizard", () => ({
   OnboardingWizard: () => <div data-testid="wizard" />,
@@ -19,7 +21,9 @@ import { OnboardingGate } from "@/components/onboarding/onboarding-gate"
 function renderGate() {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <OnboardingGate />
+      <OnboardingGate>
+        <div data-testid="page" />
+      </OnboardingGate>
     </NextIntlClientProvider>
   )
 }
@@ -62,6 +66,7 @@ describe("OnboardingGate", () => {
     })
     renderGate()
     expect(screen.getByTestId("shell")).toBeDefined()
+    expect(screen.getByTestId("page")).toBeDefined()
   })
 
   it("keeps the wizard mounted when status completes mid-session", () => {
@@ -84,7 +89,9 @@ describe("OnboardingGate", () => {
     })
     rerender(
       <NextIntlClientProvider locale="en" messages={messages}>
-        <OnboardingGate />
+        <OnboardingGate>
+          <div data-testid="page" />
+        </OnboardingGate>
       </NextIntlClientProvider>
     )
     expect(screen.getByTestId("wizard")).toBeDefined()

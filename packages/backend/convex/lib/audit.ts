@@ -15,6 +15,12 @@ export const AUDIT_EVENTS = {
   modelUpdated: "model.updated",
   modelDiscarded: "model.discarded",
   aiSuggestionConfirmed: "ai.suggestionConfirmed",
+  roleCreated: "role.created",
+  roleUpdated: "role.updated",
+  roleArchived: "role.archived",
+  roleStatusChanged: "role.statusChange",
+  ratingChanged: "rating.change",
+  bandShift: "band.shift",
 } as const
 
 export type AuditEvent = (typeof AUDIT_EVENTS)[keyof typeof AUDIT_EVENTS]

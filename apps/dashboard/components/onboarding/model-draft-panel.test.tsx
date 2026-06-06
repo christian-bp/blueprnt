@@ -48,7 +48,7 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
 
 import { ModelDraftPanel } from "@/components/onboarding/model-draft-panel"
 
-const ai = messages.dashboard.onboarding.ai
+const ai = messages.dashboard.ai
 const errors = messages.errors
 
 function draftCriteria() {

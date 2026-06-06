@@ -28,7 +28,7 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
 
 import { AddCriterionDialog } from "@/components/onboarding/add-criterion-dialog"
 
-const editor = messages.dashboard.onboarding.model.editor
+const editor = messages.dashboard.model.editor
 
 function renderDialog(orgId = "org-123") {
   return render(

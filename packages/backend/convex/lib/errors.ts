@@ -14,6 +14,9 @@ export const ERROR_CODES = {
   profileIncomplete: "errors.profileIncomplete",
   aiUnavailable: "errors.aiUnavailable",
   aiGenerationFailed: "errors.aiGenerationFailed",
+  roleLocked: "errors.roleLocked",
+  ratingsIncomplete: "errors.ratingsIncomplete",
+  invalidTransition: "errors.invalidTransition",
 } as const
 
 export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES]

@@ -19,7 +19,7 @@ export const auditLog = defineTable({
 export const suggestions = defineTable({
   orgId: v.string(),
   target: v.object({
-    kind: v.string(), // "model.draft" | "model.importanceReview" | "role.field" | "criterion.anchor"
+    kind: v.string(), // "model.draft" | "model.importanceReview" | "role.field" | "criterion.anchor" | "role.profile"
     roleId: v.optional(v.id("roles")),
     criterionId: v.optional(v.id("criteria")),
     modelId: v.optional(v.id("models")),

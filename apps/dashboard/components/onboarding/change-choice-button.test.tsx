@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import { ChangeChoiceButton } from "@/components/onboarding/change-choice-button"
 
-const change = messages.dashboard.onboarding.model.change
+const change = messages.dashboard.model.change
 
 function renderButton(
   onConfirm: () => void | Promise<void> = () => {},
