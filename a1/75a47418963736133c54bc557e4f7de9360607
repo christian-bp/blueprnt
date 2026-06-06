@@ -1,0 +1,99 @@
+packages/constants/src/index.ts
+  s_df12fc6ddf323c::t_261948b0d69dd1 1-8
+apps/dashboard/components/onboarding/next-button.test.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 1-39
+apps/dashboard/components/onboarding/name-screen.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 5-6,73,85
+packages/constants/src/countries.ts
+  s_df12fc6ddf323c::t_261948b0d69dd1 1-29
+apps/dashboard/hooks/use-auto-advance.test.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 1-120
+packages/backend/convex/assessment/industryStarters.ts
+  s_df12fc6ddf323c::t_261948b0d69dd1 1,11-15
+apps/dashboard/package.json
+  s_df12fc6ddf323c::t_261948b0d69dd1 18
+apps/dashboard/components/onboarding/model-review.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 6,32
+apps/dashboard/components/onboarding/change-choice-button.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 4,6-10,12-14,25
+apps/dashboard/components/onboarding/criterion-editor.test.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 179,291
+apps/dashboard/components/option-card.test.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 36-51
+packages/constants/src/countries.test.ts
+  s_df12fc6ddf323c::t_261948b0d69dd1 1-30
+packages/constants/tsconfig.json
+  s_df12fc6ddf323c::t_261948b0d69dd1 1-9
+apps/dashboard/components/onboarding/onboarding-wizard.test.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 53,291,301-302,306-309,311-354,358,368-370,373-377
+packages/constants/vitest.config.ts
+  s_df12fc6ddf323c::t_261948b0d69dd1 1-4
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_261948b0d69dd1 296
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 154,156-157,159-212,214,216-220,225-241,252-253,262-271,285-293,336-338,340
+apps/dashboard/components/onboarding/industry-screen.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 4,8,10-12,22,24-25,42-48,56,59-62
+apps/dashboard/components/onboarding/language-screen.test.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 60-61,67,80-101,118,125,131-140
+apps/dashboard/hooks/use-auto-advance.ts
+  s_df12fc6ddf323c::t_261948b0d69dd1 1-69
+apps/dashboard/components/onboarding/industry-screen.test.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 50,65-70,73,75-79,96,101-102,104-106,112-120
+apps/dashboard/components/onboarding/country-screen.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 5-8,12,14-17,23,25-26,42-53,61,64-67
+apps/dashboard/components/onboarding/language-screen.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 9,22-26,43,46-52,59-60,74-75,78
+apps/dashboard/components/confirm-buttons.test.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 1-106
+apps/dashboard/components/onboarding/next-button.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 1-29
+packages/constants/src/industries.ts
+  s_df12fc6ddf323c::t_261948b0d69dd1 1-24
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_261948b0d69dd1 296
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_261948b0d69dd1 296
+apps/dashboard/components/onboarding/name-screen.test.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 31,78,148
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_261948b0d69dd1 296
+apps/dashboard/components/confirm-buttons.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 1-108
+apps/dashboard/components/onboarding/onboarding-input.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 1-19
+apps/dashboard/components/option-card.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 5,8-12,17-19,25,34,40,43,45-47,62
+apps/dashboard/components/onboarding/country-screen.test.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 36,50,53,64-69,72-78,80,82-86,91-92,97-105,107,120,125-126,128,134-142
+packages/backend/package.json
+  s_df12fc6ddf323c::t_261948b0d69dd1 19
+apps/dashboard/components/onboarding/model-setup-step.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 7,12-15,22,25-30,122-127,131-132,134,136,141-162,173-174,180-181,184-215
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 11,17,19,117
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_df12fc6ddf323c::t_261948b0d69dd1 77-83,110-117
+packages/constants/src/industries.test.ts
+  s_df12fc6ddf323c::t_261948b0d69dd1 1-12
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_261948b0d69dd1 296
+packages/constants/package.json
+  s_df12fc6ddf323c::t_261948b0d69dd1 1-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a175a47418963736133c54bc557e4f7de9360607",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
