@@ -1,0 +1,24 @@
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_df12fc6ddf323c::t_0a9f292e5e7dba 205,216-218
+  s_df12fc6ddf323c::t_b027e85abc7ec4 202-204,206-209,214-215,219-221
+apps/dashboard/components/onboarding/families-step.tsx
+  s_df12fc6ddf323c::t_2883cb6f0a9cd0 4-5
+  s_df12fc6ddf323c::t_b027e85abc7ec4 112,128,279-282
+  s_df12fc6ddf323c::t_0a9f292e5e7dba 284
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "b9682b12829fa545c5281b2069eb9dcba5d7011f",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
