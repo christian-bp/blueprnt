@@ -1,16 +1,7 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { Spinner } from "@workspace/ui/components/spinner"
@@ -19,13 +10,15 @@ import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { CriterionEditor } from "@/components/onboarding/criterion-editor"
 import { ModelReview } from "@/components/onboarding/model-review"
+import { OptionCard } from "@/components/option-card"
 
 type Mode = "choice" | "template-review" | "scratch-editor"
+type Choice = "template" | "scratch" | null
 
-// Step 3: the gate keeps the wizard mounted for the whole onboarding session,
+// Screen 5: the gate keeps the wizard mounted for the whole onboarding session,
 // so the choice, review, and editor screens live in LOCAL state after the
-// create call. "Finish setup" calls completeOnboarding, then onFinished, which
-// hands control to the gate.
+// create call. "Continue" hands control back to the wizard (onContinue), which
+// advances to the families screen.
 //
 // Resume: a reload lands here whenever a model already exists but onboarding
 // was never finished (completed is false). getModel tells us which path the
@@ -33,21 +26,17 @@ type Mode = "choice" | "template-review" | "scratch-editor"
 // editor (scratch) instead of offering the choice cards again, which would
 // dead-end on modelExists.
 //
-// onBack supports back-navigation from the choice screen AND from the review and
-// editor screens. The model is already created on those screens, but returning
-// to the profile step (step 2) is harmless: only re-choosing the model would be
-// irreversible, and that is not offered on the review/editor screens.
+// Back navigation is owned by the dots, so there is no onBack prop here.
 export function ModelSetupStep({
   orgId,
-  onFinished,
-  onBack,
+  onContinue,
 }: {
   orgId: string
-  onFinished: () => void
-  onBack?: () => void
+  onContinue: () => void
 }) {
   const t = useTranslations("dashboard.model")
   const tOnboarding = useTranslations("dashboard.onboarding")
+  const tScreens = useTranslations("dashboard.onboarding.screens")
   const createFromTemplate = useMutation(
     api.evaluationModel.model.createModelFromTemplate
   )
@@ -59,6 +48,7 @@ export function ModelSetupStep({
   const locale = useLocale()
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
   const [mode, setMode] = useState<Mode>("choice")
+  const [choice, setChoice] = useState<Choice>(null)
   const [scratchName, setScratchName] = useState("")
   const [pending, setPending] = useState(false)
   const [failed, setFailed] = useState(false)
@@ -87,6 +77,7 @@ export function ModelSetupStep({
     try {
       await discardModel({ orgId })
       setResumedModelId(null)
+      setChoice(null)
       setMode("choice")
     } catch {
       setFailed(true)
@@ -97,8 +88,7 @@ export function ModelSetupStep({
     return (
       <ModelReview
         orgId={orgId}
-        onFinished={onFinished}
-        onBack={onBack}
+        onContinue={onContinue}
         onChangeChoice={changeChoice}
       />
     )
@@ -107,8 +97,7 @@ export function ModelSetupStep({
     return (
       <CriterionEditor
         orgId={orgId}
-        onFinished={onFinished}
-        onBack={onBack}
+        onContinue={onContinue}
         onChangeChoice={changeChoice}
       />
     )
@@ -123,94 +112,71 @@ export function ModelSetupStep({
     )
   }
 
+  // Confirm creates the model for the selected path: template creates from the
+  // standard template, scratch creates an empty model with the typed name.
+  const confirm = async () => {
+    setPending(true)
+    setFailed(false)
+    try {
+      if (choice === "template") {
+        await createFromTemplate({ orgId })
+        setPending(false)
+        setMode("template-review")
+      } else {
+        await createEmpty({ orgId, name: scratchName.trim() })
+        setPending(false)
+        setMode("scratch-editor")
+      }
+    } catch {
+      setFailed(true)
+      setPending(false)
+    }
+  }
+
+  const confirmDisabled =
+    pending ||
+    choice === null ||
+    (choice === "scratch" && scratchName.trim().length === 0)
+
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <h2 className="font-medium text-lg">{t("heading")}</h2>
-        <p className="text-muted-foreground text-sm">{t("description")}</p>
+    <div className="flex flex-col items-center gap-6">
+      <h1 className="text-center font-semibold text-2xl">{t("heading")}</h1>
+      <div className="grid w-full max-w-2xl gap-3 sm:grid-cols-2">
+        <OptionCard
+          badge={t("template.badge")}
+          title={t("template.title")}
+          description={t("template.description")}
+          selected={choice === "template"}
+          onSelect={() => setChoice("template")}
+        />
+        <OptionCard
+          title={t("scratch.title")}
+          description={t("scratch.description")}
+          selected={choice === "scratch"}
+          onSelect={() => setChoice("scratch")}
+        />
       </div>
-      <div className="grid gap-4 md:grid-cols-2">
-        {/* The recommended card carries a corner badge and a primary border;
-            both CTAs sit in bottom-aligned footers so the cards line up. */}
-        <Card className="relative flex flex-col overflow-visible border-primary">
-          <Badge className="absolute -top-2.5 right-4">
-            {t("template.badge")}
-          </Badge>
-          <CardHeader>
-            <CardTitle>{t("template.title")}</CardTitle>
-            <CardDescription>{t("template.description")}</CardDescription>
-          </CardHeader>
-          <CardFooter className="mt-auto">
-            <Button
-              disabled={pending}
-              onClick={async () => {
-                setPending(true)
-                setFailed(false)
-                try {
-                  await createFromTemplate({ orgId })
-                  setPending(false)
-                  setMode("template-review")
-                } catch {
-                  setFailed(true)
-                  setPending(false)
-                }
-              }}
-            >
-              {t("template.cta")}
-            </Button>
-          </CardFooter>
-        </Card>
-        <Card className="flex flex-col">
-          <CardHeader>
-            <CardTitle>{t("scratch.title")}</CardTitle>
-            <CardDescription>{t("scratch.description")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <Label htmlFor="model-name">{t("scratch.nameLabel")}</Label>
-              <Input
-                id="model-name"
-                value={scratchName}
-                onChange={(event) => setScratchName(event.target.value)}
-              />
-            </div>
-          </CardContent>
-          <CardFooter className="mt-auto">
-            <Button
-              variant="outline"
-              disabled={pending || scratchName.trim().length === 0}
-              onClick={async () => {
-                setPending(true)
-                setFailed(false)
-                try {
-                  await createEmpty({ orgId, name: scratchName.trim() })
-                  setPending(false)
-                  setMode("scratch-editor")
-                } catch {
-                  setFailed(true)
-                  setPending(false)
-                }
-              }}
-            >
-              {t("scratch.cta")}
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
+      {/* The scratch name input lives below the cards, revealed once the scratch
+          card is selected (matching the prior in-card input as closely as the
+          centered layout allows). */}
+      {choice === "scratch" && (
+        <div className="w-full max-w-xs space-y-2">
+          <Label htmlFor="model-name">{t("scratch.nameLabel")}</Label>
+          <Input
+            id="model-name"
+            value={scratchName}
+            onChange={(event) => setScratchName(event.target.value)}
+          />
+        </div>
+      )}
       {failed && (
         <p role="alert" className="text-destructive text-sm">
           {t("error")}
         </p>
       )}
-      {/* Back control under the cards (choice screen only). Model creation has
-          not happened yet here, so returning to step 2 is safe. */}
-      {onBack && (
-        <div className="flex">
-          <Button type="button" variant="outline" onClick={onBack}>
-            {tOnboarding("back")}
-          </Button>
-        </div>
-      )}
+      <Button type="button" disabled={confirmDisabled} onClick={confirm}>
+        {tScreens("continueCta")}
+      </Button>
     </div>
   )
 }

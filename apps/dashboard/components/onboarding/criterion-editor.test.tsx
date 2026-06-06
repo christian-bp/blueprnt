@@ -91,16 +91,14 @@ function modelWithCriterion() {
 
 function renderEditor(
   orgId = "org-123",
-  onFinished: () => void = () => {},
-  onBack?: () => void,
+  onContinue: () => void = () => {},
   onChangeChoice?: () => void | Promise<void>
 ) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <CriterionEditor
         orgId={orgId}
-        onFinished={onFinished}
-        onBack={onBack}
+        onContinue={onContinue}
         onChangeChoice={onChangeChoice}
       />
     </NextIntlClientProvider>
@@ -173,16 +171,19 @@ describe("CriterionEditor", () => {
     expect(call.anchors).toHaveLength(6)
   })
 
-  it("disables Finish with zero criteria and enables it with one", () => {
+  it("disables Continue with zero criteria and enables it with one", () => {
     setModel(emptyModel())
     const { rerender } = renderEditor()
-    const getFinish = () => screen.getByRole("button", { name: editor.doneCta })
+    const getFinish = () =>
+      screen.getByRole("button", {
+        name: messages.dashboard.onboarding.screens.continueCta,
+      })
     expect(getFinish()).toHaveProperty("disabled", true)
 
     setModel(modelWithCriterion())
     rerender(
       <NextIntlClientProvider locale="en" messages={messages}>
-        <CriterionEditor orgId="org-123" onFinished={() => {}} />
+        <CriterionEditor orgId="org-123" onContinue={() => {}} />
       </NextIntlClientProvider>
     )
     expect(getFinish()).toHaveProperty("disabled", false)
@@ -280,47 +281,26 @@ describe("CriterionEditor", () => {
     ).toBeDefined()
   })
 
-  it("Finish calls completeOnboarding before onFinished", async () => {
+  it("Continue calls onContinue and does not complete onboarding", () => {
     setModel(modelWithCriterion())
-    completeOnboardingMock.mockResolvedValue(null)
-    const onFinished = vi.fn()
-    renderEditor("org-fin", onFinished)
+    const onContinue = vi.fn()
+    renderEditor("org-fin", onContinue)
 
-    fireEvent.click(screen.getByRole("button", { name: editor.doneCta }))
-
-    await waitFor(() => {
-      expect(completeOnboardingMock).toHaveBeenCalledWith({ orgId: "org-fin" })
-    })
-    expect(onFinished).toHaveBeenCalledTimes(1)
-  })
-
-  it("renders the back button when onBack is provided and calls it on click", () => {
-    setModel(emptyModel())
-    const onBack = vi.fn()
-    renderEditor("org-123", () => {}, onBack)
-
-    const backButton = screen.getByRole("button", {
-      name: messages.dashboard.onboarding.back,
-    })
-    fireEvent.click(backButton)
-    expect(onBack).toHaveBeenCalledTimes(1)
-  })
-
-  it("does not render the back button when onBack is omitted", () => {
-    setModel(emptyModel())
-    renderEditor()
-
-    expect(
-      screen.queryByRole("button", {
-        name: messages.dashboard.onboarding.back,
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: messages.dashboard.onboarding.screens.continueCta,
       })
-    ).toBeNull()
+    )
+
+    expect(onContinue).toHaveBeenCalledTimes(1)
+    // Completion moves to the families step: the editor never completes.
+    expect(completeOnboardingMock).not.toHaveBeenCalled()
   })
 
   it("renders the change-choice button when onChangeChoice is provided and confirming calls it", () => {
     setModel(emptyModel())
     const onChangeChoice = vi.fn()
-    renderEditor("org-123", () => {}, undefined, onChangeChoice)
+    renderEditor("org-123", () => {}, onChangeChoice)
 
     const change = messages.dashboard.model.change
     // Arm then confirm the two-step control.
@@ -338,19 +318,5 @@ describe("CriterionEditor", () => {
         name: messages.dashboard.model.change.cta,
       })
     ).toBeNull()
-  })
-
-  it("Finish surfaces the error alert and does not finish when completion fails", async () => {
-    setModel(modelWithCriterion())
-    completeOnboardingMock.mockRejectedValue(new Error("ConvexError: notFound"))
-    const onFinished = vi.fn()
-    renderEditor("org-fin", onFinished)
-
-    fireEvent.click(screen.getByRole("button", { name: editor.doneCta }))
-
-    await waitFor(() => {
-      expect(screen.getByRole("alert")).toBeDefined()
-    })
-    expect(onFinished).not.toHaveBeenCalled()
   })
 })

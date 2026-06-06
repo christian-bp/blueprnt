@@ -250,14 +250,9 @@
     "onboarding": {
       "accountMenu": "Kontomenu",
       "title": "Kom i gang med din organisation",
-      "step": "Trin {current} af {total}",
       "loading": "Indlæser din organisation",
       "waitingForAdmin": "Din organisation er stadig ved at blive sat op af en administrator.",
       "back": "Tilbage",
-      "steps": {
-        "organization": "Organisation",
-        "model": "Vurderingsmodel"
-      },
       "organization": {
         "heading": "Opret din organisation",
         "description": "Organisationen samler jeres roller, jeres vurderingsmodel og jeres team.",
@@ -297,6 +292,41 @@
           "realEstateConstruction": "Ejendom og byggeri",
           "other": "Andet"
         }
+      },
+      "screens": {
+        "continueCta": "Fortsæt",
+        "name": {
+          "heading": "Hvad hedder jeres organisation?"
+        },
+        "language": {
+          "heading": "Hvilket sprog skal organisationen bruge?"
+        },
+        "country": {
+          "heading": "Hvor er I baseret?"
+        },
+        "industry": {
+          "heading": "Hvilken branche er I i?"
+        }
+      },
+      "dots": {
+        "navLabel": "Trin i onboardingen",
+        "name": "Organisationens navn",
+        "language": "Sprog",
+        "country": "Land",
+        "industry": "Branche",
+        "model": "Vurderingsmodel",
+        "families": "Rollefamilier"
+      },
+      "families": {
+        "heading": "Jeres rollefamilier og roller",
+        "description": "Et udgangspunkt baseret på jeres branche. Juster frit; alt kan ændres senere.",
+        "skipCta": "Spring over for nu",
+        "createCta": "Opret og åbn dashboardet",
+        "addFamilyCta": "Tilføj familie",
+        "addRoleCta": "Tilføj rolle",
+        "removeFamilyLabel": "Fjern familien {name}",
+        "removeRoleLabel": "Fjern rollen {title}",
+        "error": "Noget gik galt. Prøv igen."
       }
     },
     "model": {
@@ -332,8 +362,7 @@
         "anchors": "Ankerskala (0 til 5)",
         "anchorLevel": "Anker {level}",
         "addCta": "Tilføj kriterium",
-        "removeCta": "Fjern",
-        "doneCta": "Fuldfør opsætningen"
+        "removeCta": "Fjern"
       },
       "change": {
         "cta": "Skift modelvalg",

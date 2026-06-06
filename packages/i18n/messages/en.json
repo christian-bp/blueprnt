@@ -250,14 +250,9 @@
     "onboarding": {
       "accountMenu": "Account menu",
       "title": "Set up your organization",
-      "step": "Step {current} of {total}",
       "loading": "Loading your organization",
       "waitingForAdmin": "Your organization is still being set up by an administrator.",
       "back": "Back",
-      "steps": {
-        "organization": "Organization",
-        "model": "Evaluation model"
-      },
       "organization": {
         "heading": "Create your organization",
         "description": "The organization holds your roles, your evaluation model, and your team.",
@@ -297,6 +292,41 @@
           "realEstateConstruction": "Real estate & construction",
           "other": "Other"
         }
+      },
+      "screens": {
+        "continueCta": "Continue",
+        "name": {
+          "heading": "What is your organization called?"
+        },
+        "language": {
+          "heading": "Which language should the organization use?"
+        },
+        "country": {
+          "heading": "Where are you based?"
+        },
+        "industry": {
+          "heading": "Which industry are you in?"
+        }
+      },
+      "dots": {
+        "navLabel": "Onboarding steps",
+        "name": "Organization name",
+        "language": "Language",
+        "country": "Country",
+        "industry": "Industry",
+        "model": "Evaluation model",
+        "families": "Role families"
+      },
+      "families": {
+        "heading": "Your role families and roles",
+        "description": "A starting point based on your industry. Adjust it freely; everything can be changed later.",
+        "skipCta": "Skip for now",
+        "createCta": "Create and open the dashboard",
+        "addFamilyCta": "Add family",
+        "addRoleCta": "Add role",
+        "removeFamilyLabel": "Remove family {name}",
+        "removeRoleLabel": "Remove role {title}",
+        "error": "Something went wrong. Try again."
       }
     },
     "model": {
@@ -332,8 +362,7 @@
         "anchors": "Anchor scale (0 to 5)",
         "anchorLevel": "Anchor {level}",
         "addCta": "Add criterion",
-        "removeCta": "Remove",
-        "doneCta": "Finish setup"
+        "removeCta": "Remove"
       },
       "change": {
         "cta": "Change model choice",

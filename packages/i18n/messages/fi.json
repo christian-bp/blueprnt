@@ -250,14 +250,9 @@
     "onboarding": {
       "accountMenu": "Tilivalikko",
       "title": "Aloita organisaatiosi käyttö",
-      "step": "Vaihe {current}/{total}",
       "loading": "Ladataan organisaatiotasi",
       "waitingForAdmin": "Järjestelmänvalvoja viimeistelee vielä organisaatiosi määritystä.",
       "back": "Takaisin",
-      "steps": {
-        "organization": "Organisaatio",
-        "model": "Arviointimalli"
-      },
       "organization": {
         "heading": "Luo organisaatiosi",
         "description": "Organisaatio kokoaa roolinne, arviointimallinne ja tiiminne.",
@@ -297,6 +292,41 @@
           "realEstateConstruction": "Kiinteistö ja rakentaminen",
           "other": "Muu"
         }
+      },
+      "screens": {
+        "continueCta": "Jatka",
+        "name": {
+          "heading": "Mikä on organisaationne nimi?"
+        },
+        "language": {
+          "heading": "Mitä kieltä organisaatio käyttää?"
+        },
+        "country": {
+          "heading": "Missä teillä on toimipaikka?"
+        },
+        "industry": {
+          "heading": "Millä toimialalla toimitte?"
+        }
+      },
+      "dots": {
+        "navLabel": "Käyttöönoton vaiheet",
+        "name": "Organisaation nimi",
+        "language": "Kieli",
+        "country": "Maa",
+        "industry": "Toimiala",
+        "model": "Arviointimalli",
+        "families": "Rooliperheet"
+      },
+      "families": {
+        "heading": "Rooliperheenne ja roolinne",
+        "description": "Lähtökohta toimialanne perusteella. Muokkaa vapaasti; kaikkea voi muuttaa myöhemmin.",
+        "skipCta": "Ohita toistaiseksi",
+        "createCta": "Luo ja avaa kojelauta",
+        "addFamilyCta": "Lisää perhe",
+        "addRoleCta": "Lisää rooli",
+        "removeFamilyLabel": "Poista perhe {name}",
+        "removeRoleLabel": "Poista rooli {title}",
+        "error": "Jokin meni pieleen. Yritä uudelleen."
       }
     },
     "model": {
@@ -332,8 +362,7 @@
         "anchors": "Ankkuriasteikko (0 - 5)",
         "anchorLevel": "Ankkuri {level}",
         "addCta": "Lisää kriteeri",
-        "removeCta": "Poista",
-        "doneCta": "Viimeistele määritys"
+        "removeCta": "Poista"
       },
       "change": {
         "cta": "Vaihda mallivalintaa",

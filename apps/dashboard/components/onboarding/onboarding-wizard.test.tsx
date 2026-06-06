@@ -4,44 +4,146 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import type { OnboardingStatus } from "@/components/onboarding/onboarding-wizard"
 
-// Each step is mocked as a small set of buttons that expose its callback props
-// and, for the organization step, the "existing" prop. This keeps the test focused
-// on the wizard's two-step selection and back-navigation wiring.
+// The wizard reads getOrganizationSettings via convex/react useQuery; each case
+// supplies the settings fixture (or undefined for the loading state).
+const useQueryMock = vi.fn()
+vi.mock("convex/react", () => ({
+  useQuery: (...args: unknown[]) => useQueryMock(...args),
+}))
+
+// Each screen is mocked as a marker plus its onDone callback, so the tests
+// assert which screen the machine selected without pulling in real screens.
 vi.mock("@/components/onboarding/onboarding-header", () => ({
   OnboardingHeader: () => <div data-testid="header" />,
 }))
 
-vi.mock("@/components/onboarding/organization-setup-step", () => ({
-  OrganizationSetupStep: (props: {
+vi.mock("@/components/onboarding/name-screen", () => ({
+  NameScreen: (props: {
     existing: { orgId: string; name: string } | null
-    onDone?: () => void
+    onDone: () => void
   }) => (
-    <div data-testid="organization-step">
-      <span data-testid="organization-mode">
+    <div data-testid="name-screen">
+      <span data-testid="name-mode">
         {props.existing ? `existing:${props.existing.name}` : "fresh"}
       </span>
-      <button type="button" onClick={() => props.onDone?.()}>
-        organization-done
+      <button type="button" onClick={() => props.onDone()}>
+        name-done
+      </button>
+    </div>
+  ),
+}))
+
+vi.mock("@/components/onboarding/language-screen", () => ({
+  LanguageScreen: (props: { saved: string | null; onDone: () => void }) => (
+    <div data-testid="language-screen">
+      <span data-testid="language-saved">{props.saved ?? "null"}</span>
+      <button type="button" onClick={() => props.onDone()}>
+        language-done
+      </button>
+    </div>
+  ),
+}))
+
+vi.mock("@/components/onboarding/country-screen", () => ({
+  CountryScreen: (props: {
+    savedCountry: string | null
+    savedCurrency: string | null
+    onDone: () => void
+  }) => (
+    <div data-testid="country-screen">
+      <span data-testid="country-saved">
+        {props.savedCountry ?? "null"}/{props.savedCurrency ?? "null"}
+      </span>
+      <button type="button" onClick={() => props.onDone()}>
+        country-done
+      </button>
+    </div>
+  ),
+}))
+
+vi.mock("@/components/onboarding/industry-screen", () => ({
+  IndustryScreen: (props: { saved: string | null; onDone: () => void }) => (
+    <div data-testid="industry-screen">
+      <span data-testid="industry-saved">{props.saved ?? "null"}</span>
+      <button type="button" onClick={() => props.onDone()}>
+        industry-done
       </button>
     </div>
   ),
 }))
 
 vi.mock("@/components/onboarding/model-setup-step", () => ({
-  ModelSetupStep: (props: { orgId: string; onBack?: () => void }) => (
+  ModelSetupStep: (props: { orgId: string; onContinue: () => void }) => (
     <div data-testid="model-step">
-      <button type="button" onClick={() => props.onBack?.()}>
-        model-back
+      <span data-testid="model-orgid">{props.orgId}</span>
+      <button type="button" onClick={() => props.onContinue()}>
+        model-continue
       </button>
     </div>
   ),
+}))
+
+vi.mock("@/components/onboarding/families-step", () => ({
+  FamiliesStep: (props: { orgId: string; onFinished: () => void }) => (
+    <div data-testid="families-step">
+      <span data-testid="families-orgid">{props.orgId}</span>
+      <button type="button" onClick={() => props.onFinished()}>
+        families-finished
+      </button>
+    </div>
+  ),
+}))
+
+// The dots are a probe: it records the props it received (active index, the
+// reach gate) and renders one real button per step that calls onSelect, so
+// tests drive back-navigation through React's event batching (fireEvent),
+// not by invoking the callback outside act().
+let dotsProps: {
+  steps: { key: string; label: string }[]
+  activeIndex: number
+  maxReachedIndex: number
+  onSelect: (index: number) => void
+} | null = null
+vi.mock("@/components/onboarding-dots", () => ({
+  OnboardingDots: (props: {
+    steps: { key: string; label: string }[]
+    activeIndex: number
+    maxReachedIndex: number
+    onSelect: (index: number) => void
+  }) => {
+    dotsProps = props
+    return (
+      <div data-testid="dots">
+        {props.steps.map((step, index) => (
+          <button
+            key={step.key}
+            type="button"
+            data-testid={`dot-${index}`}
+            onClick={() => props.onSelect(index)}
+          >
+            {step.key}
+          </button>
+        ))}
+      </div>
+    )
+  },
 }))
 
 import { OnboardingWizard } from "@/components/onboarding/onboarding-wizard"
 
 const admin = { orgId: "org-1", name: "Acme", role: "admin" }
 
-function renderWizard(status: OnboardingStatus) {
+const fullSettings = {
+  orgId: "org-1",
+  country: "se",
+  currency: "SEK",
+  language: "sv",
+  employeeCount: null,
+  industry: "itTelecom",
+}
+
+function renderWizard(status: OnboardingStatus, settings: unknown = undefined) {
+  useQueryMock.mockReturnValue(settings)
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <OnboardingWizard status={status} onFinished={() => {}} />
@@ -52,107 +154,89 @@ function renderWizard(status: OnboardingStatus) {
 describe("OnboardingWizard", () => {
   afterEach(() => {
     cleanup()
+    dotsProps = null
+    useQueryMock.mockReset()
   })
 
-  it("renders the organization step in fresh mode when no organization exists", () => {
+  it("renders the name screen in fresh mode when no organization exists", () => {
     renderWizard({
       organization: null,
       settingsComplete: false,
       hasModel: false,
       completed: false,
     })
-    expect(screen.getByTestId("organization-mode").textContent).toBe("fresh")
+    expect(screen.getByTestId("name-mode").textContent).toBe("fresh")
   })
 
-  it("stays on the organization step (existing mode) when the organization exists but the profile is incomplete", () => {
-    // A fresh-create retry: the org exists but the profile write has not landed,
-    // so derived is still step 1 with a non-null existing.
-    renderWizard({
-      organization: admin,
-      settingsComplete: false,
-      hasModel: false,
-      completed: false,
-    })
-    expect(screen.getByTestId("organization-mode").textContent).toBe(
-      "existing:Acme"
+  it("renders the language screen when the organization exists but no language is saved", () => {
+    renderWizard(
+      {
+        organization: admin,
+        settingsComplete: false,
+        hasModel: false,
+        completed: false,
+      },
+      { ...fullSettings, language: null }
     )
-    expect(screen.queryByTestId("model-step")).toBeNull()
+    expect(screen.getByTestId("language-screen")).toBeDefined()
+    expect(screen.queryByTestId("name-screen")).toBeNull()
   })
 
-  it("renders the model step at derived step 2 (organization plus complete profile)", () => {
-    renderWizard({
-      organization: admin,
-      settingsComplete: true,
-      hasModel: false,
-      completed: false,
-    })
-    expect(screen.getByTestId("model-step")).toBeDefined()
-  })
-
-  it("back from the model step revisits the organization step in existing mode", () => {
-    renderWizard({
-      organization: admin,
-      settingsComplete: true,
-      hasModel: false,
-      completed: false,
-    })
-    expect(screen.getByTestId("model-step")).toBeDefined()
-
-    fireEvent.click(screen.getByText("model-back"))
-
-    expect(screen.getByTestId("organization-mode").textContent).toBe(
-      "existing:Acme"
+  it("renders the country screen when the language is saved but no country is set", () => {
+    renderWizard(
+      {
+        organization: admin,
+        settingsComplete: false,
+        hasModel: false,
+        completed: false,
+      },
+      { ...fullSettings, country: null, currency: null }
     )
-    expect(screen.queryByTestId("model-step")).toBeNull()
+    expect(screen.getByTestId("country-screen")).toBeDefined()
+    expect(screen.queryByTestId("language-screen")).toBeNull()
   })
 
-  it("organization done from the revisit returns forward to the model step", () => {
-    renderWizard({
-      organization: admin,
-      settingsComplete: true,
-      hasModel: false,
-      completed: false,
-    })
-
-    fireEvent.click(screen.getByText("model-back"))
-    expect(screen.getByTestId("organization-step")).toBeDefined()
-
-    fireEvent.click(screen.getByText("organization-done"))
-    // backTo cleared, derived step 2 shows again.
-    expect(screen.getByTestId("model-step")).toBeDefined()
-    expect(screen.queryByTestId("organization-step")).toBeNull()
-  })
-
-  it("the step indicator follows the effective step, not the derived step", () => {
-    renderWizard({
-      organization: admin,
-      settingsComplete: true,
-      hasModel: false,
-      completed: false,
-    })
-    // Derived step 2.
-    expect(screen.getByText(/Step 2 of 2/)).toBeDefined()
-
-    fireEvent.click(screen.getByText("model-back"))
-    // Effective step 1 after going back.
-    expect(screen.getByText(/Step 1 of 2/)).toBeDefined()
-  })
-
-  it("neutralizes a stale backTo once the derived step is no longer above it", () => {
-    // The user is at derived step 2 and goes back to step 1. backTo (1) is held
-    // only while it stays below derived; once derived is no longer above it the
-    // revisit is dropped. With a two-step wizard derived cannot exceed 2, so a
-    // back to 1 from 2 is honored until cleared.
-    renderWizard({
-      organization: admin,
-      settingsComplete: true,
-      hasModel: false,
-      completed: false,
-    })
-    fireEvent.click(screen.getByText("model-back"))
-    expect(screen.getByTestId("organization-mode").textContent).toBe(
-      "existing:Acme"
+  it("renders the industry screen when country and currency are set but no industry is chosen", () => {
+    renderWizard(
+      {
+        organization: admin,
+        settingsComplete: false,
+        hasModel: false,
+        completed: false,
+      },
+      { ...fullSettings, industry: null }
     )
+    expect(screen.getByTestId("industry-screen")).toBeDefined()
+    expect(screen.queryByTestId("country-screen")).toBeNull()
+  })
+
+  it("renders the model step when every setting is present", () => {
+    renderWizard(
+      {
+        organization: admin,
+        settingsComplete: true,
+        hasModel: false,
+        completed: false,
+      },
+      fullSettings
+    )
+    expect(screen.getByTestId("model-step")).toBeDefined()
+    expect(screen.getByTestId("model-orgid").textContent).toBe("org-1")
+  })
+
+  it("shows a spinner while settings are still loading", () => {
+    renderWizard(
+      {
+        organization: admin,
+        settingsComplete: false,
+        hasModel: false,
+        completed: false,
+      },
+      undefined
+    )
+    expect(
+      screen.getByLabelText(messages.dashboard.onboarding.loading)
+    ).toBeDefined()
     expect(screen.queryByTestId("model-step")).toBeNull()
   })
 
@@ -166,5 +250,85 @@ describe("OnboardingWizard", () => {
     expect(
       screen.getByText(messages.dashboard.onboarding.waitingForAdmin)
     ).toBeDefined()
+  })
+
+  it("gates the dots at the derived frontier (the model step before continue)", () => {
+    renderWizard(
+      {
+        organization: admin,
+        settingsComplete: true,
+        hasModel: false,
+        completed: false,
+      },
+      fullSettings
+    )
+    // Frontier is the model screen (index 4); the gate follows the frontier, so
+    // the families dot (index 5) stays unreachable until the model continues.
+    expect(dotsProps?.activeIndex).toBe(4)
+    expect(dotsProps?.maxReachedIndex).toBe(4)
+  })
+
+  it("the model continue advances to the families screen and opens its dot", () => {
+    renderWizard(
+      {
+        organization: admin,
+        settingsComplete: true,
+        hasModel: true,
+        completed: false,
+      },
+      fullSettings
+    )
+    expect(screen.getByTestId("model-step")).toBeDefined()
+    expect(dotsProps?.maxReachedIndex).toBe(4)
+
+    // onContinue sets the session step to the families index (5).
+    fireEvent.click(screen.getByText("model-continue"))
+
+    expect(screen.getByTestId("families-step")).toBeDefined()
+    expect(screen.getByTestId("families-orgid").textContent).toBe("org-1")
+    expect(screen.queryByTestId("model-step")).toBeNull()
+    expect(dotsProps?.activeIndex).toBe(5)
+    expect(dotsProps?.maxReachedIndex).toBe(5)
+  })
+
+  it("clicking a previous dot navigates back to that screen", () => {
+    renderWizard(
+      {
+        organization: admin,
+        settingsComplete: true,
+        hasModel: false,
+        completed: false,
+      },
+      fullSettings
+    )
+    expect(screen.getByTestId("model-step")).toBeDefined()
+
+    // Drive back-navigation through the dot button (index 1 = language).
+    fireEvent.click(screen.getByTestId("dot-1"))
+
+    expect(screen.getByTestId("language-screen")).toBeDefined()
+    expect(screen.queryByTestId("model-step")).toBeNull()
+    // The active dot follows the revisited screen; the gate is unchanged.
+    expect(dotsProps?.activeIndex).toBe(1)
+    expect(dotsProps?.maxReachedIndex).toBe(4)
+  })
+
+  it("a screen onDone clears the back-navigation and returns to the frontier", () => {
+    renderWizard(
+      {
+        organization: admin,
+        settingsComplete: true,
+        hasModel: false,
+        completed: false,
+      },
+      fullSettings
+    )
+    fireEvent.click(screen.getByTestId("dot-1"))
+    expect(screen.getByTestId("language-screen")).toBeDefined()
+
+    fireEvent.click(screen.getByText("language-done"))
+    // backTo cleared; the derived frontier (model step) shows again.
+    expect(screen.getByTestId("model-step")).toBeDefined()
+    expect(screen.queryByTestId("language-screen")).toBeNull()
   })
 })

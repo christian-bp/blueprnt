@@ -250,14 +250,9 @@
     "onboarding": {
       "accountMenu": "Kontomeny",
       "title": "Kom igång med din organisation",
-      "step": "Steg {current} av {total}",
       "loading": "Laddar din organisation",
       "waitingForAdmin": "Din organisation håller fortfarande på att sättas upp av en administratör.",
       "back": "Tillbaka",
-      "steps": {
-        "organization": "Organisation",
-        "model": "Värderingsmodell"
-      },
       "organization": {
         "heading": "Skapa din organisation",
         "description": "Organisationen samlar era roller, er värderingsmodell och ert team.",
@@ -297,6 +292,41 @@
           "realEstateConstruction": "Fastighet & bygg",
           "other": "Annat"
         }
+      },
+      "screens": {
+        "continueCta": "Fortsätt",
+        "name": {
+          "heading": "Vad heter er organisation?"
+        },
+        "language": {
+          "heading": "Vilket språk ska organisationen använda?"
+        },
+        "country": {
+          "heading": "Var finns ni?"
+        },
+        "industry": {
+          "heading": "Vilken bransch är ni i?"
+        }
+      },
+      "dots": {
+        "navLabel": "Steg i onboardingen",
+        "name": "Organisationens namn",
+        "language": "Språk",
+        "country": "Land",
+        "industry": "Bransch",
+        "model": "Värderingsmodell",
+        "families": "Rollfamiljer"
+      },
+      "families": {
+        "heading": "Era rollfamiljer och roller",
+        "description": "En startpunkt utifrån er bransch. Justera fritt; allt kan ändras senare.",
+        "skipCta": "Hoppa över så länge",
+        "createCta": "Skapa och öppna dashboarden",
+        "addFamilyCta": "Lägg till familj",
+        "addRoleCta": "Lägg till roll",
+        "removeFamilyLabel": "Ta bort familjen {name}",
+        "removeRoleLabel": "Ta bort rollen {title}",
+        "error": "Något gick fel. Försök igen."
       }
     },
     "model": {
@@ -332,8 +362,7 @@
         "anchors": "Ankarskala (0 till 5)",
         "anchorLevel": "Ankare {level}",
         "addCta": "Lägg till kriterium",
-        "removeCta": "Ta bort",
-        "doneCta": "Slutför"
+        "removeCta": "Ta bort"
       },
       "change": {
         "cta": "Ändra modellval",

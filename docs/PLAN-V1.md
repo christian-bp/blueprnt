@@ -97,7 +97,7 @@ Tunnast möjliga end-to-end som bevisar kärnloopen *modell → roller → poän
 
 Detta motsvarar briefens "definition av en lyckad första version" i minsta körbara form.
 
-**Status (juni 2026):** alfa-loopen levererad i evaluation-loop-skivan: motor i `packages/core` (scoreRole, assignBand, computeResults, checkGuardrails), rollregister med AI-jobbprofilutkast, blind betygsättning (stegvis, ett kriterium i taget, ankartexterna som val), resultatvy med bandöversikt och riktig dashboardnavigering (Översikt/Roller/Modell/Resultat). Skivan levererade mer än minsta form: betydelse- och kriterieredigering, statusmaskin med godkännande/återöppning, arkivering och band.shift-revisionslogg kom med. Ankarroller, kalibrering och import återstår.
+**Status (juni 2026):** alfa-loopen levererad i evaluation-loop-skivan: motor i `packages/core` (scoreRole, assignBand, computeResults, checkGuardrails), rollregister med AI-jobbprofilutkast, blind betygsättning (stegvis, ett kriterium i taget, ankartexterna som val), resultatvy med bandöversikt och riktig dashboardnavigering (Översikt/Roller/Modell/Resultat). Skivan levererade mer än minsta form: betydelse- och kriterieredigering, statusmaskin med godkännande/återöppning, arkivering och band.shift-revisionslogg kom med. Ankarroller, kalibrering och import återstår. Onboardingen gjordes konversationell (en fråga per skärm, animerad punktnavigering) med ett avslutande steg där rollfamiljer och roller sätts upp, förifyllda från branschvisa startuppsättningar (juni 2026).
 
 ## 7. Icke-funktionellt
 

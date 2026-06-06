@@ -250,14 +250,9 @@
     "onboarding": {
       "accountMenu": "Kontomeny",
       "title": "Kom i gang med organisasjonen din",
-      "step": "Steg {current} av {total}",
       "loading": "Laster organisasjonen din",
       "waitingForAdmin": "Organisasjonen din holder fortsatt på å bli satt opp av en administrator.",
       "back": "Tilbake",
-      "steps": {
-        "organization": "Organisasjon",
-        "model": "Vurderingsmodell"
-      },
       "organization": {
         "heading": "Opprett organisasjonen din",
         "description": "Organisasjonen samler rollene deres, vurderingsmodellen deres og teamet deres.",
@@ -297,6 +292,41 @@
           "realEstateConstruction": "Eiendom og bygg",
           "other": "Annet"
         }
+      },
+      "screens": {
+        "continueCta": "Fortsett",
+        "name": {
+          "heading": "Hva heter organisasjonen deres?"
+        },
+        "language": {
+          "heading": "Hvilket språk skal organisasjonen bruke?"
+        },
+        "country": {
+          "heading": "Hvor holder dere til?"
+        },
+        "industry": {
+          "heading": "Hvilken bransje er dere i?"
+        }
+      },
+      "dots": {
+        "navLabel": "Steg i onboardingen",
+        "name": "Organisasjonens navn",
+        "language": "Språk",
+        "country": "Land",
+        "industry": "Bransje",
+        "model": "Vurderingsmodell",
+        "families": "Rollefamilier"
+      },
+      "families": {
+        "heading": "Rollefamiliene og rollene deres",
+        "description": "Et utgangspunkt basert på bransjen deres. Juster fritt; alt kan endres senere.",
+        "skipCta": "Hopp over for nå",
+        "createCta": "Opprett og åpne dashbordet",
+        "addFamilyCta": "Legg til familie",
+        "addRoleCta": "Legg til rolle",
+        "removeFamilyLabel": "Fjern familien {name}",
+        "removeRoleLabel": "Fjern rollen {title}",
+        "error": "Noe gikk galt. Prøv igjen."
       }
     },
     "model": {
@@ -332,8 +362,7 @@
         "anchors": "Ankerskala (0 til 5)",
         "anchorLevel": "Anker {level}",
         "addCta": "Legg til kriterium",
-        "removeCta": "Fjern",
-        "doneCta": "Fullfør oppsettet"
+        "removeCta": "Fjern"
       },
       "change": {
         "cta": "Endre modellvalg",

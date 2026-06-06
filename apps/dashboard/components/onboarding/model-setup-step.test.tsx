@@ -89,14 +89,10 @@ function setModel(model: unknown) {
   currentModel = model
 }
 
-function renderStep(
-  orgId = "org-123",
-  onBack?: () => void,
-  onFinished: () => void = () => {}
-) {
+function renderStep(orgId = "org-123", onContinue: () => void = () => {}) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <ModelSetupStep orgId={orgId} onFinished={onFinished} onBack={onBack} />
+      <ModelSetupStep orgId={orgId} onContinue={onContinue} />
     </NextIntlClientProvider>
   )
 }
@@ -155,18 +151,20 @@ describe("ModelSetupStep", () => {
     ).toBeDefined()
   })
 
-  it("disables the scratch CTA until a name is typed", () => {
+  it("disables Continue for the scratch path until a name is typed", () => {
     renderStep()
-    const scratchCta = screen.getByRole("button", {
-      name: messages.dashboard.model.scratch.cta,
+    // Select the scratch card; the name input is revealed below the cards.
+    fireEvent.click(screen.getByRole("button", { name: /Build from scratch/ }))
+    const continueCta = screen.getByRole("button", {
+      name: messages.dashboard.onboarding.screens.continueCta,
     })
-    expect(scratchCta).toHaveProperty("disabled", true)
+    expect(continueCta).toHaveProperty("disabled", true)
 
     const input = screen.getByLabelText(
       messages.dashboard.model.scratch.nameLabel
     )
     fireEvent.change(input, { target: { value: "My model" } })
-    expect(scratchCta).toHaveProperty("disabled", false)
+    expect(continueCta).toHaveProperty("disabled", false)
   })
 
   it("calls createModelFromTemplate and switches to the review screen", async () => {
@@ -177,9 +175,13 @@ describe("ModelSetupStep", () => {
     })
     renderStep("org-abc")
 
+    // Select the template card, then confirm with Continue.
+    fireEvent.click(
+      screen.getByRole("button", { name: /Start from the standard template/ })
+    )
     fireEvent.click(
       screen.getByRole("button", {
-        name: messages.dashboard.model.template.cta,
+        name: messages.dashboard.onboarding.screens.continueCta,
       })
     )
 
@@ -199,35 +201,19 @@ describe("ModelSetupStep", () => {
     createFromTemplateMock.mockRejectedValue(new Error("ConvexError: notFound"))
     renderStep()
 
+    // Select the template card, then confirm with Continue.
+    fireEvent.click(
+      screen.getByRole("button", { name: /Start from the standard template/ })
+    )
     fireEvent.click(
       screen.getByRole("button", {
-        name: messages.dashboard.model.template.cta,
+        name: messages.dashboard.onboarding.screens.continueCta,
       })
     )
 
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeDefined()
     })
-  })
-
-  it("shows a back control on the choice screen and calls onBack", () => {
-    const onBack = vi.fn()
-    renderStep("org-123", onBack)
-
-    const backButton = screen.getByRole("button", {
-      name: messages.dashboard.onboarding.back,
-    })
-    fireEvent.click(backButton)
-    expect(onBack).toHaveBeenCalledTimes(1)
-  })
-
-  it("does not render a back control when onBack is missing", () => {
-    renderStep()
-    expect(
-      screen.queryByRole("button", {
-        name: messages.dashboard.onboarding.back,
-      })
-    ).toBeNull()
   })
 
   it("resumes into the review screen when a template model already exists", async () => {
@@ -265,43 +251,20 @@ describe("ModelSetupStep", () => {
     ).toBeNull()
   })
 
-  it("shows the back button on the resumed review screen and calls onBack", async () => {
-    // Resume path: model already exists with a templateKey, so the step jumps
-    // straight to the review screen. onBack must be wired through to that screen.
+  it("Continue on the review screen calls onContinue and does not complete onboarding", async () => {
     setModel(reviewModel)
-    const onBack = vi.fn()
-    renderStep("org-123", onBack)
+    const onContinue = vi.fn()
+    renderStep("org-fin", onContinue)
 
-    // Wait for the review screen to appear.
-    await waitFor(() => {
-      expect(
-        screen.getByText(messages.dashboard.model.review.heading)
-      ).toBeDefined()
+    // Resumes into the review screen; click its Continue CTA.
+    const continueCta = await screen.findByRole("button", {
+      name: messages.dashboard.onboarding.screens.continueCta,
     })
+    fireEvent.click(continueCta)
 
-    const backButton = screen.getByRole("button", {
-      name: messages.dashboard.onboarding.back,
-    })
-    fireEvent.click(backButton)
-    expect(onBack).toHaveBeenCalledTimes(1)
-  })
-
-  it("Finish on the review screen calls completeOnboarding before onFinished", async () => {
-    setModel(reviewModel)
-    completeOnboardingMock.mockResolvedValue(null)
-    const onFinished = vi.fn()
-    renderStep("org-fin", undefined, onFinished)
-
-    // Resumes into the review screen; click its finish CTA.
-    const finish = await screen.findByRole("button", {
-      name: messages.dashboard.model.review.cta,
-    })
-    fireEvent.click(finish)
-
-    await waitFor(() => {
-      expect(completeOnboardingMock).toHaveBeenCalledWith({ orgId: "org-fin" })
-    })
-    expect(onFinished).toHaveBeenCalledTimes(1)
+    expect(onContinue).toHaveBeenCalledTimes(1)
+    // Completion moves to the families step: the model step never completes.
+    expect(completeOnboardingMock).not.toHaveBeenCalled()
   })
 
   it("review screen is read-only by default: shows importance as text and no remove button", async () => {
