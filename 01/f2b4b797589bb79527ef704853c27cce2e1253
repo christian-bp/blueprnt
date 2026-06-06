@@ -1,0 +1,45 @@
+apps/dashboard/components/morph-popover.tsx
+  s_df12fc6ddf323c::t_b4d5fe1c8f6e86 42-44,150
+apps/dashboard/components/onboarding/model-draft-panel.tsx
+  s_df12fc6ddf323c::t_241d7e080f6f32 10,31-33,35-39,44,49-50,108,166,178
+  s_df12fc6ddf323c::t_281c62628ff2ab 11,34,40-43,120-133
+apps/dashboard/components/model/model-editor.tsx
+  s_df12fc6ddf323c::t_cb69f2d4e14cd3 81-85,87-89
+  s_df12fc6ddf323c::t_281c62628ff2ab 86
+apps/dashboard/components/roles/role-ai-panel.tsx
+  s_df12fc6ddf323c::t_68ad692a58515b 18,61-62,122
+apps/dashboard/components/onboarding/importance-review-panel.test.tsx
+  s_df12fc6ddf323c::t_f1a53f672b891c 93
+  s_df12fc6ddf323c::t_2a010ca2517002 125-177
+apps/dashboard/components/roles/role-ai-panel.test.tsx
+  s_df12fc6ddf323c::t_a10a60d6a612c3 108,128
+packages/backend/convex/ai/suggest.ts
+  s_df12fc6ddf323c::t_1903e8b0fa74b1 18-21,23-27,60,62,81,94,96,118,311-315,317,344
+  s_df12fc6ddf323c::t_2a010ca2517002 22
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_df12fc6ddf323c::t_281c62628ff2ab 67-69
+apps/dashboard/components/onboarding/importance-review-panel.tsx
+  s_df12fc6ddf323c::t_281c62628ff2ab 50,58-62,170-183
+  s_df12fc6ddf323c::t_ad6890c02823df 9-10,12,49,55-57,68-69,141,158-165,206,246,250-256,284,301
+apps/dashboard/components/onboarding/model-draft-panel.test.tsx
+  s_df12fc6ddf323c::t_0e0d4c0152a9af 118-121,136
+packages/backend/convex/ai/generate.ts
+  s_df12fc6ddf323c::t_1903e8b0fa74b1 9-16,53
+  s_df12fc6ddf323c::t_b4d5fe1c8f6e86 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "01f2b4b797589bb79527ef704853c27cce2e1253",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
