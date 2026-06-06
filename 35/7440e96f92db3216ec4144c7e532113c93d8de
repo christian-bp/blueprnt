@@ -1,0 +1,24 @@
+apps/dashboard/lib/role-groups.ts
+  s_df12fc6ddf323c::t_45c89b06867393 1-31
+apps/dashboard/lib/role-groups.test.ts
+  s_df12fc6ddf323c::t_e344df9934ad62 1-25
+apps/dashboard/app/(app)/roles/page.tsx
+  s_df12fc6ddf323c::t_49f1ee966b796b 124
+  s_df12fc6ddf323c::t_8a130edb68f5b3 25,30,45-46,68-123,125-137
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "357440e96f92db3216ec4144c7e532113c93d8de",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
