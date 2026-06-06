@@ -1,0 +1,37 @@
+packages/backend/convex/assessment/roles.test.ts
+  s_df12fc6ddf323c::t_25b874ad3f450d 451-534
+  s_df12fc6ddf323c::t_725b83e7ed89c8 5-8,11
+packages/backend/convex/assessment/names.ts
+  s_df12fc6ddf323c::t_8d29a18fff2467 28-35,74
+  s_df12fc6ddf323c::t_c0efd915b38789 10-11
+  s_df12fc6ddf323c::t_9a0ed621a0bc72 45,57,63-73
+packages/backend/convex/assessment/results.ts
+  s_df12fc6ddf323c::t_e785e0a9e480c6 66
+  s_df12fc6ddf323c::t_7ef9174c3e10c9 113-117
+  s_df12fc6ddf323c::t_08e5e4b7109e03 9
+  s_df12fc6ddf323c::t_a91f48c0756bc7 50-51
+packages/backend/convex/assessment/roles.ts
+  s_df12fc6ddf323c::t_5b893ff87164dd 276
+  s_df12fc6ddf323c::t_7061efbd22c32c 335-339
+  s_df12fc6ddf323c::t_112077fe36c5fe 167-170,179,204-210
+  s_df12fc6ddf323c::t_2b2f808656e636 260-261
+  s_df12fc6ddf323c::t_15c981f6247ee1 92,109-114,129
+  s_df12fc6ddf323c::t_a1289035f66d0a 358,394-405
+  s_df12fc6ddf323c::t_f0ce436e264894 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c96b803129dfc9385213ae18588f4fe9c6bf657f",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
