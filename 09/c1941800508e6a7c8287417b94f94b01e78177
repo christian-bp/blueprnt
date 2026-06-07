@@ -1,0 +1,34 @@
+apps/dashboard/components/morph-popover.tsx
+  s_df12fc6ddf323c::t_0b9a8e089e6982 141-149
+apps/dashboard/app/(app)/roles/[roleId]/page.tsx
+  s_df12fc6ddf323c::t_893ff1b8281ca4 79-80
+apps/dashboard/components/roles/role-profile-card.tsx
+  s_df12fc6ddf323c::t_5cf4482d2396bd 71
+  s_df12fc6ddf323c::t_7a7f7df731a97d 156-183
+  s_df12fc6ddf323c::t_d392171cd3b28d 15,19,21
+apps/dashboard/components/roles/role-ai-panel.tsx
+  s_df12fc6ddf323c::t_93ee241d729d7a 140-141
+  s_df12fc6ddf323c::t_f80c72b9a5ac6e 142-195,197-213,216-223,225-229,231-250
+  s_df12fc6ddf323c::t_6ba5c8be1e929e 251-256
+  s_df12fc6ddf323c::t_bff90c2c15d9db 99-101,103-107
+  s_df12fc6ddf323c::t_d8909213a8962a 44-49,53,57-59
+  s_df12fc6ddf323c::t_bc6b92ad94a43d 14
+apps/dashboard/lib/suggestion-schemas.ts
+  s_df12fc6ddf323c::t_f95c73080ac6fd 35-40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "09c1941800508e6a7c8287417b94f94b01e78177",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
