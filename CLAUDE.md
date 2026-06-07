@@ -35,7 +35,8 @@ See also: `AGENTS.md` (Next.js version warning + agent-skills config) · `docs/P
 - **AI never touches the deterministic score/band path** and never auto-decides. AI output is a suggestion with provenance that HR confirms (ADR-0003). AI calls happen only in Convex actions, only against EU-hosted models.
 - **Role ≠ Person:** the `role`/`rating` tables must never carry person, salary, or performance fields. Role ids are permanent and never reused.
 - **Weights are 1-5 weight points under a fixed point budget** (criteria count x 3, exact sum; ADR-0004). Percent shares are derived display values; free percentages or arbitrary weight numbers are never entered. Role scores are normalized to the fixed 0-100 scale.
-- Every Convex function is **org-scoped** (tenant isolation). No band override. Changes that affect results are logged in the audit log.
+- Every Convex function is **org-scoped** (tenant isolation). No band override.
+- **Every state-changing mutation writes an audit row** via `logAudit` with an `AUDIT_EVENTS` key (`lib/audit.ts`). Adding a new auditable operation means adding its event key; result-affecting changes additionally log a `band.shift` diff.
 - All data stays within the **EU** (Convex eu-west-1; ADR-0001).
 
 ## Testing
