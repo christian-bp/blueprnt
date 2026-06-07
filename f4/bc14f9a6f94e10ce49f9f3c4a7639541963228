@@ -1,0 +1,19 @@
+packages/backend/convex/schema.ts
+  s_df12fc6ddf323c::t_98fedf8cab75d5 8-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "f4bc14f9a6f94e10ce49f9f3c4a7639541963228",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
