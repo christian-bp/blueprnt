@@ -1,0 +1,90 @@
+packages/backend/convex/ai/generate.ts
+  s_df12fc6ddf323c::t_91992666baf61b 32-35
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_e341164ae252ce 357-358,405-406
+  s_df12fc6ddf323c::t_ba4caf3191efd7 383-387
+packages/backend/convex/lib/errors.ts
+  s_df12fc6ddf323c::t_de8f9b80cd4a83 14
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_e341164ae252ce 357-358,405-406
+  s_df12fc6ddf323c::t_ba4caf3191efd7 383-387
+packages/backend/convex/accounts/organization.ts
+  s_df12fc6ddf323c::t_57077e7056c7ae 1
+  s_df12fc6ddf323c::t_e19e6b694233fd 74-76,81-93
+apps/dashboard/app/(app)/model/page.tsx
+  s_df12fc6ddf323c::t_6f2322abca852f 3,7-11,14
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_df12fc6ddf323c::t_91e42ec5ed53aa 156-162
+  s_df12fc6ddf323c::t_df5cb8028f06d7 44
+  s_df12fc6ddf323c::t_c9fe05c3a4165e 72-77
+  s_df12fc6ddf323c::t_37dccaf670550e 10
+  s_df12fc6ddf323c::t_0bdafeb44365ce 62-64,66
+  s_df12fc6ddf323c::t_7365c9acabdef6 5
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_e341164ae252ce 357-358,405-406
+  s_df12fc6ddf323c::t_ba4caf3191efd7 383-387
+packages/backend/convex/accounts/onboarding.test.ts
+  s_df12fc6ddf323c::t_5cd4fef51ccb06 98-99,101-113
+apps/dashboard/components/onboarding/criterion-editor.test.tsx
+  s_df12fc6ddf323c::t_1d1fa1e081d866 92-109
+  s_df12fc6ddf323c::t_4e2ac3cd049e55 187,194-199,202-204,206-215,217
+  s_df12fc6ddf323c::t_bf37fd8abc4423 313-314
+packages/backend/convex/accounts/organization.test.ts
+  s_df12fc6ddf323c::t_3a2ed70a1b6997 137-161
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_df12fc6ddf323c::t_ec0090f9514c77 105-106,133-159
+  s_df12fc6ddf323c::t_369efdf8ed456c 450-451,583-585,676
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_e341164ae252ce 357-358,405-406
+  s_df12fc6ddf323c::t_ba4caf3191efd7 383-387
+apps/dashboard/components/morph-popover.tsx
+  s_df12fc6ddf323c::t_e5f63b4101bf15 83-125
+  s_df12fc6ddf323c::t_8ae5f8b37e9089 144-145
+  s_df12fc6ddf323c::t_bebe7e9d4264e0 30-31,41-47
+apps/dashboard/components/model/model-editor.tsx
+  s_df12fc6ddf323c::t_f7ce89b348c0a9 68
+  s_df12fc6ddf323c::t_30d44e76ad4036 28-39
+  s_df12fc6ddf323c::t_cb875332b87f6c 53,57-61
+  s_df12fc6ddf323c::t_4d9edba5dd8863 116-117
+  s_df12fc6ddf323c::t_a1750e28cd7170 319
+  s_df12fc6ddf323c::t_6c43f40491ef8d 152-157
+  s_df12fc6ddf323c::t_ca39827cadf259 21
+  s_df12fc6ddf323c::t_7317ecc18760f9 89
+  s_df12fc6ddf323c::t_111e6e85773502 287
+packages/backend/convex/evaluationModel/criteria.ts
+  s_df12fc6ddf323c::t_b3ee668b238985 4
+  s_df12fc6ddf323c::t_649faf38e300f9 174-178,187-200
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_e341164ae252ce 357-358,405-406
+  s_df12fc6ddf323c::t_ba4caf3191efd7 383-387
+packages/core/src/weighting.ts
+  s_df12fc6ddf323c::t_816106f7e7ae7e 12,15-19
+apps/dashboard/components/confirm-buttons.tsx
+  s_df12fc6ddf323c::t_b2cf912d129a72 76-82
+packages/backend/convex/evaluationModel/criteria.test.ts
+  s_df12fc6ddf323c::t_737d33a2432aaf 505-538
+apps/dashboard/components/help-morph-button.test.tsx
+  s_df12fc6ddf323c::t_0354d3abc5aaa8 1-49
+CLAUDE.md
+  s_df12fc6ddf323c::t_a2695e12fe3cb0 56
+apps/dashboard/components/help-morph-button.tsx
+  s_df12fc6ddf323c::t_6e61811502b002 1-36
+apps/dashboard/components/onboarding/model-review.tsx
+  s_df12fc6ddf323c::t_b389cd531dd20b 3-6,15-18,29-33,45-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "2bc2d90325deedabc505779e2b07ad3bfad218b7",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
