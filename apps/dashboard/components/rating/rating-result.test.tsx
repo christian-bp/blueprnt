@@ -17,43 +17,31 @@ import { RatingResult } from "@/components/rating/rating-result"
 
 const labels = messages.dashboard.rating.result
 
-// A fully complete result with no guardrail violations.
+// A fully complete result. The score is the normalized 0-100 integer
+// (ADR-0004).
 const COMPLETE_RESULT = {
   roleId: "role-1",
   title: "Senior Engineer",
   complete: true,
   ratedCount: 2,
   totalCriteria: 2,
-  score: 540,
+  score: 74,
   band: 2,
   criteria: [
     {
       criterionId: "c-scope",
       name: "Scope",
-      importanceLevel: 6,
+      weightPoints: 4,
       value: 4,
       motivation: null,
-      guardrail: { min: 2, max: 5 },
-      outside: false,
     },
     {
       criterionId: "c-risk",
       name: "Risk",
-      importanceLevel: 5,
+      weightPoints: 2,
       value: 3,
       motivation: "Moderate risk exposure",
-      guardrail: { min: 1, max: 4 },
-      outside: false,
     },
-  ],
-}
-
-// Same result but with the first criterion outside its guardrail.
-const RESULT_WITH_WARNING = {
-  ...COMPLETE_RESULT,
-  criteria: [
-    { ...COMPLETE_RESULT.criteria[0], value: 1, outside: true },
-    COMPLETE_RESULT.criteria[1],
   ],
 }
 
@@ -85,37 +73,18 @@ describe("RatingResult", () => {
     expect(screen.getByLabelText(labels.computing)).toBeDefined()
   })
 
-  it("shows the score, band badge, bandHighest note, and noWarnings when complete with no violations", () => {
+  it("shows the score, band badge, and bandHighest note when complete", () => {
     useQueryMock.mockReturnValue(COMPLETE_RESULT)
     renderResult()
 
-    // Score and band visible.
-    expect(screen.getByText("540")).toBeDefined()
+    // Score (with its fixed 0-100 scale) and band visible.
+    expect(
+      screen.getByText(labels.scoreOutOf.replace("{score}", "74"))
+    ).toBeDefined()
     expect(screen.getByText("2")).toBeDefined()
 
     // Band-1-is-highest explanation.
     expect(screen.getByText(labels.bandHighest)).toBeDefined()
-
-    // No warnings message.
-    expect(screen.getByText(labels.noWarnings)).toBeDefined()
-  })
-
-  it("shows the warning list when some criteria are outside their guardrail", () => {
-    useQueryMock.mockReturnValue(RESULT_WITH_WARNING)
-    renderResult()
-
-    // The guardrailRow message is formatted as "Scope: 1 is outside 2 to 5".
-    const warningText = screen.getByText(
-      (content) =>
-        content.includes("Scope") &&
-        content.includes("1") &&
-        content.includes("2") &&
-        content.includes("5")
-    )
-    expect(warningText).toBeDefined()
-
-    // noWarnings text must NOT be present.
-    expect(screen.queryByText(labels.noWarnings)).toBeNull()
   })
 
   it("renders the back-to-role link with the correct href", () => {

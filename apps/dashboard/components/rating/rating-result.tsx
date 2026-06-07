@@ -42,8 +42,6 @@ export function RatingResult({
     )
   }
 
-  const warnings = result.criteria.filter((row) => row.outside)
-
   return (
     <div className="mx-auto w-full max-w-2xl">
       <motion.div
@@ -62,7 +60,7 @@ export function RatingResult({
                   {t("scoreLabel")}
                 </p>
                 <p className="font-semibold text-4xl tabular-nums">
-                  {result.score}
+                  {t("scoreOutOf", { score: result.score ?? 0 })}
                 </p>
               </div>
               <div>
@@ -73,30 +71,6 @@ export function RatingResult({
               </div>
             </div>
             <p className="text-muted-foreground text-sm">{t("bandHighest")}</p>
-            <div className="space-y-2">
-              <p className="font-medium text-sm">{t("guardrailsHeading")}</p>
-              {warnings.length === 0 ? (
-                <p className="text-muted-foreground text-sm">
-                  {t("noWarnings")}
-                </p>
-              ) : (
-                <ul className="space-y-1">
-                  {warnings.map((row) => (
-                    <li
-                      key={row.criterionId}
-                      className="text-amber-600 text-sm dark:text-amber-500"
-                    >
-                      {t("guardrailRow", {
-                        name: row.name,
-                        value: row.value ?? 0,
-                        min: row.guardrail?.min ?? 0,
-                        max: row.guardrail?.max ?? 0,
-                      })}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
             <Button asChild>
               <Link href={`/roles/${roleId}`}>{t("backToRole")}</Link>
             </Button>

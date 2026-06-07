@@ -40,16 +40,9 @@
     "criterionRationale": "Kriteerien valintaprotokolla",
     "biasReview": "Vinoumatarkastelu",
     "methodAppendix": "Menetelmäliite",
-    "importance": {
-      "label": "Merkitys",
-      "critical": "Ratkaiseva",
-      "veryHigh": "Erittäin tärkeä",
-      "high": "Tärkeä",
-      "fair": "Melko tärkeä",
-      "moderate": "Kohtalaisen tärkeä",
-      "slight": "Hieman tärkeä",
-      "least": "Vähiten tärkeä"
-    }
+    "weightPoints": "Painopisteet",
+    "pointBudget": "Pistebudjetti",
+    "share": "Osuus"
   },
   "assessment": {
     "assessment": "Arviointi",
@@ -120,7 +113,7 @@
       "empty": "Ei vielä rooleja. Luo ensimmäinen rooli aloittaaksesi arvioinnin.",
       "table": {
         "title": "Tehtävänimike",
-        "trackLevel": "Track ja taso",
+        "track": "Track",
         "team": "Tiimi",
         "status": "Tila",
         "rated": "Arvioitu"
@@ -133,7 +126,6 @@
         "functionLabel": "Toiminto/osasto",
         "teamLabel": "Tiimi",
         "trackLabel": "Track",
-        "levelLabel": "Taso",
         "cta": "Luo rooli",
         "cancel": "Peruuta",
         "error": "Roolia ei voitu luoda. Yritä uudelleen."
@@ -190,7 +182,6 @@
         "error": "Roolia ei voitu arkistoida. Yritä uudelleen."
       },
       "ai": {
-        "heading": "Tekoälyapu",
         "descriptionLabel": "Kuvaile roolia (valinnainen)",
         "draftCta": "Luonnostele tehtäväprofiili tekoälyllä",
         "error": "Jokin meni pieleen. Yritä uudelleen."
@@ -201,7 +192,6 @@
       "step": "Kriteeri {current} / {total}",
       "motivationLabel": "Perustelu (valinnainen)",
       "motivationPlaceholder": "Miksi tämä arvio?",
-      "guardrailHint": "Suositusvälin {min} - {max} ulkopuolella tasolle {level}.",
       "anchorGroupLabel": "Arvio: {name}",
       "backCta": "Takaisin",
       "nextCta": "Seuraava kriteeri",
@@ -213,10 +203,8 @@
         "bandLabel": "Vaativuusluokka",
         "bandHighest": "Luokka 1 on korkein luokka.",
         "computing": "Lasketaan tulosta",
-        "guardrailsHeading": "Ohjaavat huomiot",
-        "guardrailRow": "{name}: {value} on suositusvälin {min} - {max} ulkopuolella",
-        "noWarnings": "Kaikki arviot ovat suositusväleillä.",
-        "backToRole": "Takaisin rooliin"
+        "backToRole": "Takaisin rooliin",
+        "scoreOutOf": "{score} / 100"
       }
     },
     "results": {
@@ -228,11 +216,10 @@
       "roleCount": "{count, plural, =1 {1 rooli} other {# roolia}}",
       "table": {
         "title": "Tehtävänimike",
-        "trackLevel": "Track ja taso",
+        "track": "Track",
         "status": "Tila",
         "score": "Kokonaispisteet",
         "band": "Vaativuusluokka",
-        "warnings": "Ohjaavat huomiot",
         "progress": "{rated} / {total} arvioitu"
       },
       "empty": "Ei vielä näytettäviä rooleja. Luo rooli ja arvioi se nähdäksesi tulokset.",
@@ -313,7 +300,7 @@
         "families": "Rooliperheet"
       },
       "families": {
-        "heading": "Rooliperheenne ja roolinne",
+        "heading": "Organisaation {name} rooliperheet ja roolit",
         "description": "Lähtökohta toimialanne perusteella. Muokkaa vapaasti; kaikkea voi muuttaa myöhemmin.",
         "createCta": "Luo ja avaa kojelauta",
         "addFamilyCta": "Lisää perhe",
@@ -325,11 +312,11 @@
     },
     "model": {
       "heading": "Valitse arviointimallinne",
-      "description": "Malli määrittää kriteerit, joita vasten roolit arvioidaan. Merkitys on aina nimike, ei koskaan numero.",
+      "description": "Malli määrittää kriteerit, joita vasten roolit arvioidaan. Jokainen kriteeri saa 1-5 painopistettä kiinteän pistebudjetin sisällä.",
       "error": "Jotakin meni vikaan. Yritä uudelleen.",
       "template": {
         "title": "Aloita vakiomallista",
-        "description": "9 kriteeriä ankkuriasteikkoineen, oletusmerkitykset, track-rakenne ja luokkarajat.",
+        "description": "9 kriteeriä ankkuriasteikkoineen, oletuspainotus, track-rakenne ja luokkarajat.",
         "badge": "Suositeltu",
         "cta": "Käytä mallia"
       },
@@ -340,12 +327,10 @@
         "cta": "Aloita alusta"
       },
       "review": {
-        "heading": "Mallinne",
-        "description": "Tarkista kriteerit ja niiden tärkeys. Kaikkea voi muuttaa myöhemmin.",
-        "setImportance": "Merkitys: {name}",
+        "heading": "Organisaation {name} malli",
+        "description": "Tarkista kriteerit ja niiden painotus. Kaikkea voi muuttaa myöhemmin.",
         "cta": "Avaa hallintapaneeli",
-        "editCta": "Muokkaa",
-        "doneEditing": "Valmis"
+        "editCta": "Muokkaa"
       },
       "editor": {
         "heading": "Kriteerit",
@@ -353,11 +338,17 @@
         "name": "Nimi",
         "description": "Kuvaus",
         "helpText": "Ohjeteksti arvioijalle",
-        "importance": "Merkitys",
+        "setWeightPoints": "Painopisteet: {name}",
         "anchors": "Ankkuriasteikko (0 - 5)",
         "anchorLevel": "Ankkuri {level}",
         "addCta": "Lisää kriteeri",
-        "removeCta": "Poista"
+        "removeCta": "Poista",
+        "saveCta": "Tallenna painotus",
+        "cancelCta": "Peruuta",
+        "pointsLeft": "{count} painopistettä jaettavana",
+        "pointsOver": "{count} painopistettä yli budjetin",
+        "balanced": "Kaikki painopisteet on jaettu",
+        "minCriteriaHint": "Lisää vähintään {min} kriteeriä jatkaaksesi."
       },
       "change": {
         "cta": "Vaihda mallivalintaa",
@@ -373,13 +364,20 @@
       "closeLabel": "Sulje",
       "draftDescriptionLabel": "Kuvaile liiketoimintaanne (valinnainen)",
       "draftCta": "Luo kriteeriluonnoksia",
-      "reviewCta": "Anna tekoälyn tarkistaa merkitykset",
+      "reviewCta": "Anna tekoälyn tarkistaa painotus",
       "generating": "Luodaan ehdotuksia",
+      "reviewing": "Tarkistetaan mallianne",
       "confirmCta": "Lisää valitut",
       "applyCta": "Käytä valittuja",
       "rejectCta": "Hylkää",
-      "noAdjustments": "Tekoäly ei löytänyt ehdotettavia muutoksia.",
+      "noMoves": "Tekoäly ei löytänyt ehdotettavia siirtoja.",
+      "moveLabel": "Siirrä {points} painopistettä kohteesta {from} kohteeseen {to}",
       "motivation": "Perustelu"
+    },
+    "help": {
+      "close": "Sulje",
+      "criterionLabel": "Mikä kriteeri on?",
+      "criterionBody": "Kriteeri on asia, jota vasten jokainen rooli arvioidaan, esimerkiksi laajuus tai monimutkaisuus. Ankkuritekstit kuvaavat, mitä arviot 0-5 sen kohdalla tarkoittavat, ja sen painopisteet ratkaisevat, kuinka paljon se painaa kokonaispisteissä."
     }
   },
   "errors": {
@@ -396,6 +394,8 @@
     "roleLocked": "Tämä rooli on hyväksytty ja lukittu. Avaa se ensin uudelleen.",
     "ratingsIncomplete": "Kaikki kriteerit on arvioitava ensin.",
     "invalidTransition": "Kyseinen tilamuutos ei ole sallittu.",
-    "roleFamilyExists": "Samanniminen perhe on jo olemassa."
+    "roleFamilyExists": "Samanniminen perhe on jo olemassa.",
+    "weightsUnbalanced": "Painotuksen on vastattava pistebudjettia.",
+    "tooFewCriteria": "Malli tarvitsee vähintään 5 kriteeriä."
   }
 }

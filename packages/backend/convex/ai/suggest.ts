@@ -1,12 +1,16 @@
-import { IMPORTANCE_LEVELS, type ImportanceLevel } from "@workspace/core"
+import { isWeightPoints } from "@workspace/core"
 import { v } from "convex/values"
 import { internal } from "../_generated/api"
 import type { MutationCtx } from "../_generated/server"
+import { deriveResults, logBandShifts } from "../assessment/compute"
 import { PROFILE_TEXT_FIELDS, type ProfileTextField } from "../assessment/roles"
+import { clampLocale, isCriterionKey } from "../evaluationModel/localize"
+import { templateContent } from "../evaluationModel/standardTemplate"
 import { AUDIT_EVENTS, logAudit } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
 import { AI_MODEL_ID, AI_PROVIDER } from "./config"
+import { repairDraftWeights } from "./weights"
 
 interface SettingsContext {
   locale: string
@@ -90,7 +94,7 @@ export const requestModelDraft = adminMutation({
   },
 })
 
-export const requestImportanceReview = adminMutation({
+export const requestWeightReview = adminMutation({
   args: { locale: v.optional(v.string()) },
   returns: v.id("suggestions"),
   handler: async (ctx, { locale }) => {
@@ -107,15 +111,20 @@ export const requestImportanceReview = adminMutation({
     if (criteria.length === 0) throw appError(ERROR_CODES.invalidInput)
     const suggestionId = await ctx.db.insert("suggestions", {
       orgId: ctx.orgId,
-      target: { kind: "model.importanceReview", modelId: model._id },
+      target: { kind: "model.weightReview", modelId: model._id },
       suggestedValue: null,
       source: "ai",
       status: "generating",
       model: { provider: AI_PROVIDER, model: AI_MODEL_ID },
     })
-    await ctx.scheduler.runAfter(0, internal.ai.generate.reviewImportances, {
+    const resolvedLocale = promptLocale(locale, settings.locale)
+    // The AI quotes criterion names in its motivations: send the names the
+    // requester actually SEES. Pristine template rows localize by key (the
+    // same rule as getModel); custom and edited rows use their stored names.
+    const content = templateContent(clampLocale(resolvedLocale))
+    await ctx.scheduler.runAfter(0, internal.ai.generate.reviewWeights, {
       suggestionId,
-      locale: promptLocale(locale, settings.locale),
+      locale: resolvedLocale,
       industry: settings.industry,
       country: settings.country,
       ...(settings.employeeCount !== undefined
@@ -123,8 +132,12 @@ export const requestImportanceReview = adminMutation({
         : {}),
       criteria: criteria.map((criterion) => ({
         criterionId: criterion._id as string,
-        name: criterion.name,
-        importanceLevel: criterion.importanceLevel,
+        name:
+          criterion.templateKey !== undefined &&
+          isCriterionKey(criterion.templateKey)
+            ? content.criteria[criterion.templateKey].name
+            : criterion.name,
+        weightPoints: criterion.weightPoints,
       })),
     })
     return suggestionId
@@ -135,7 +148,7 @@ interface DraftCriterion {
   name: string
   description: string
   helpText: string
-  importanceLevel: number
+  weightPoints: number
   anchors: string[]
 }
 
@@ -174,9 +187,14 @@ export const confirmModelDraft = adminMutation({
       (index) =>
         Number.isInteger(index) && index >= 0 && index < draft.criteria.length
     )
-    // Count criteria actually inserted: an accepted index whose criterion fails
-    // the trust-boundary checks below is skipped and must not count as applied.
-    let insertedCount = 0
+    // Two passes: validate and collect first, then repair the accepted
+    // subset's weight points to its own budget before inserting. The stored
+    // draft is balanced as a WHOLE; a partial accept is generally not, and
+    // the persisted allocation must stay exactly balanced (ADR-0004). The
+    // pre-insert model is balanced, so repairing the inserted subset to
+    // 3 x (inserted count) keeps the whole model balanced; accepting the
+    // full draft passes through unchanged.
+    const toInsert: { name: string; criterion: DraftCriterion }[] = []
     for (const index of accepted) {
       const criterion = draft.criteria[index]
       if (criterion === undefined) continue
@@ -192,27 +210,43 @@ export const confirmModelDraft = adminMutation({
         criterion.anchors.some(
           (text) => text.trim().length === 0 || text.length > 1000
         ) ||
-        !IMPORTANCE_LEVELS.includes(
-          criterion.importanceLevel as ImportanceLevel
-        )
+        !isWeightPoints(criterion.weightPoints)
       ) {
         continue
       }
+      toInsert.push({ name, criterion })
+    }
+    const repairedPoints = repairDraftWeights(
+      toInsert.map((entry) => entry.criterion.weightPoints)
+    )
+    const before = await deriveResults(ctx, ctx.orgId)
+    for (const [position, entry] of toInsert.entries()) {
       order += 1
-      const criterionId = await ctx.db.insert("criteria", {
+      await ctx.db.insert("criteria", {
         orgId: ctx.orgId,
         modelId: model._id,
-        name,
-        description: criterion.description,
-        helpText: criterion.helpText,
-        importanceLevel: criterion.importanceLevel,
+        name: entry.name,
+        description: entry.criterion.description,
+        helpText: entry.criterion.helpText,
+        anchors: entry.criterion.anchors.map((text, level) => ({
+          level,
+          text,
+        })),
+        weightPoints: repairedPoints[position] ?? entry.criterion.weightPoints,
         order,
         isCustom: true,
       })
-      for (const [level, text] of criterion.anchors.entries()) {
-        await ctx.db.insert("criterionAnchors", { criterionId, level, text })
-      }
-      insertedCount += 1
+    }
+    const insertedCount = toInsert.length
+    if (insertedCount > 0) {
+      // New criteria flip fully rated roles to incomplete: log the shifts.
+      const after = await deriveResults(ctx, ctx.orgId)
+      await logBandShifts(ctx, {
+        orgId: ctx.orgId,
+        actorId: ctx.authUserId,
+        before: before.results,
+        after: after.results,
+      })
     }
     await ctx.db.patch(suggestionId, {
       status: insertedCount > 0 ? "confirmed" : "rejected",
@@ -232,51 +266,81 @@ export const confirmModelDraft = adminMutation({
   },
 })
 
-export const confirmImportanceReview = adminMutation({
+// Applies the accepted weight-review MOVES. Every move is zero-sum (take N
+// points from one criterion, give them to another), so any accepted subset
+// keeps the allocation exactly balanced (ADR-0004). Bounds are re-checked
+// cumulatively at apply time: moves stacking on the same criterion can be
+// individually valid but jointly breach the 1-5 scale, and the breaching
+// move is skipped, not clamped.
+export const confirmWeightReview = adminMutation({
   args: {
     suggestionId: v.id("suggestions"),
-    acceptedCriterionIds: v.array(v.id("criteria")),
+    acceptedMoveIndexes: v.array(v.number()),
   },
   returns: v.null(),
-  handler: async (ctx, { suggestionId, acceptedCriterionIds }) => {
+  handler: async (ctx, { suggestionId, acceptedMoveIndexes }) => {
     const suggestion = await ctx.db.get(suggestionId)
     if (
       suggestion === null ||
       suggestion.orgId !== ctx.orgId ||
-      suggestion.target.kind !== "model.importanceReview" ||
+      suggestion.target.kind !== "model.weightReview" ||
       suggestion.status !== "suggested"
     ) {
       throw appError(ERROR_CODES.notFound)
     }
     const value = suggestion.suggestedValue as {
-      adjustments: {
-        criterionId: string
-        suggestedImportanceLevel: number
+      moves: {
+        fromCriterionId: string
+        toCriterionId: string
+        points: number
         motivation: string
       }[]
     }
-    const acceptedSet = new Set<string>(acceptedCriterionIds)
+    const accepted = [...new Set(acceptedMoveIndexes)]
+      .filter(
+        (index) =>
+          Number.isInteger(index) && index >= 0 && index < value.moves.length
+      )
+      .sort((a, b) => a - b)
+    const before = await deriveResults(ctx, ctx.orgId)
     let appliedCount = 0
-    for (const adjustment of value.adjustments) {
-      if (!acceptedSet.has(adjustment.criterionId)) continue
+    for (const index of accepted) {
+      const move = value.moves[index]
+      if (move === undefined) continue
+      if (!Number.isInteger(move.points) || move.points < 1) continue
+      const fromDocId = ctx.db.normalizeId("criteria", move.fromCriterionId)
+      const toDocId = ctx.db.normalizeId("criteria", move.toCriterionId)
+      if (fromDocId === null || toDocId === null || fromDocId === toDocId) {
+        continue
+      }
+      // Re-reading per move sees the previous moves' patches (transactional
+      // read-your-writes), which is exactly the cumulative bound check.
+      const from = await ctx.db.get(fromDocId)
+      const to = await ctx.db.get(toDocId)
+      if (from === null || from.orgId !== ctx.orgId) continue
+      if (to === null || to.orgId !== ctx.orgId) continue
       if (
-        !IMPORTANCE_LEVELS.includes(
-          adjustment.suggestedImportanceLevel as ImportanceLevel
-        )
+        !isWeightPoints(from.weightPoints - move.points) ||
+        !isWeightPoints(to.weightPoints + move.points)
       ) {
         continue
       }
-      const criterionDocId = ctx.db.normalizeId(
-        "criteria",
-        adjustment.criterionId
-      )
-      if (criterionDocId === null) continue
-      const criterion = await ctx.db.get(criterionDocId)
-      if (criterion === null || criterion.orgId !== ctx.orgId) continue
-      await ctx.db.patch(criterionDocId, {
-        importanceLevel: adjustment.suggestedImportanceLevel,
+      await ctx.db.patch(fromDocId, {
+        weightPoints: from.weightPoints - move.points,
+      })
+      await ctx.db.patch(toDocId, {
+        weightPoints: to.weightPoints + move.points,
       })
       appliedCount += 1
+    }
+    if (appliedCount > 0) {
+      const after = await deriveResults(ctx, ctx.orgId)
+      await logBandShifts(ctx, {
+        orgId: ctx.orgId,
+        actorId: ctx.authUserId,
+        before: before.results,
+        after: after.results,
+      })
     }
     await ctx.db.patch(suggestionId, {
       status: appliedCount > 0 ? "confirmed" : "rejected",
@@ -288,7 +352,7 @@ export const confirmImportanceReview = adminMutation({
       actorId: ctx.authUserId,
       payload: {
         suggestionId,
-        kind: "model.importanceReview",
+        kind: "model.weightReview",
         appliedCount,
       },
     })
@@ -323,11 +387,12 @@ export const requestRoleProfileDraft = orgMutation({
     if (role.archivedAt !== undefined || role.status === "approved") {
       throw appError(ERROR_CODES.roleLocked)
     }
-    const track = await ctx.db.get(role.trackId)
-    const level = await ctx.db.get(role.levelId)
-    if (track === null || level === null) {
-      throw appError(ERROR_CODES.notFound)
-    }
+    // Tracks are fixed constants (ADR-0006): the prompt's track name is a
+    // content lookup in the generation locale, no row to fetch.
+    const resolvedLocale = promptLocale(locale, settings.locale)
+    const trackName = templateContent(clampLocale(resolvedLocale)).trackNames[
+      role.trackKey
+    ]
     const suggestionId = await ctx.db.insert("suggestions", {
       orgId: ctx.orgId,
       target: { kind: "role.profile", roleId },
@@ -341,15 +406,14 @@ export const requestRoleProfileDraft = orgMutation({
       internal.ai.generate.generateRoleProfileDraft,
       {
         suggestionId,
-        locale: promptLocale(locale, settings.locale),
+        locale: resolvedLocale,
         industry: settings.industry,
         country: settings.country,
         ...(settings.employeeCount !== undefined
           ? { employeeCount: settings.employeeCount }
           : {}),
         title: role.title,
-        trackName: track.name,
-        levelName: level.name,
+        trackName,
         roleFunction: role.function,
         team: role.team,
         ...(description !== undefined ? { description } : {}),
@@ -447,6 +511,46 @@ export const rejectSuggestion = orgMutation({
       confirmedBy: ctx.authUserId,
     })
     return null
+  },
+})
+
+// After a confirmed weight review the allocation IS what the AI just
+// reviewed: re-running it immediately would mostly repeat itself and invites
+// spamming the button. The lock holds until the weighting actually changes
+// again: any model.updated audit row (weights rebalanced, criterion added or
+// removed) or a confirmed model draft NEWER than the confirm releases it.
+// Dismissed reviews never lock. Alpha-scale data: the full-org collect is
+// deliberate and fine.
+export const getWeightReviewLock = orgQuery({
+  args: {},
+  returns: v.boolean(),
+  handler: async (ctx) => {
+    const confirmed = await ctx.db
+      .query("suggestions")
+      .withIndex("by_org_status", (q) =>
+        q.eq("orgId", ctx.orgId).eq("status", "confirmed")
+      )
+      .collect()
+    let lastReviewAt = 0
+    let lastDraftAt = 0
+    for (const row of confirmed) {
+      if (row.target.kind === "model.weightReview") {
+        lastReviewAt = Math.max(lastReviewAt, row._creationTime)
+      }
+      if (row.target.kind === "model.draft") {
+        lastDraftAt = Math.max(lastDraftAt, row._creationTime)
+      }
+    }
+    if (lastReviewAt === 0) return false
+    const lastUpdate = await ctx.db
+      .query("auditLog")
+      .withIndex("by_org_type", (q) =>
+        q.eq("orgId", ctx.orgId).eq("type", AUDIT_EVENTS.modelUpdated)
+      )
+      .order("desc")
+      .first()
+    const lastChangeAt = Math.max(lastUpdate?._creationTime ?? 0, lastDraftAt)
+    return lastReviewAt > lastChangeAt
   },
 })
 

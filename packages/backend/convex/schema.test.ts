@@ -10,6 +10,9 @@ describe("domain schema skeleton", () => {
       const modelId = await ctx.db.insert("models", {
         orgId: "org1",
         name: "Standard",
+        // Thresholds and anchors are aggregates on their parent documents
+        // (ADR-0006), not tables.
+        bandThresholds: [{ band: 1, minScore: 98 }],
       })
       const criterionId = await ctx.db.insert("criteria", {
         orgId: "org1",
@@ -17,48 +20,17 @@ describe("domain schema skeleton", () => {
         name: "Scope & Impact",
         description: "d",
         helpText: "h",
-        importanceLevel: 7,
+        anchors: [{ level: 0, text: "anchor" }],
+        weightPoints: 5,
         order: 1,
         isCustom: false,
-      })
-      await ctx.db.insert("criterionAnchors", {
-        criterionId,
-        level: 0,
-        text: "anchor",
-      })
-      const trackId = await ctx.db.insert("tracks", {
-        orgId: "org1",
-        modelId,
-        key: "IC",
-        name: "Individual Contributor",
-        order: 1,
-      })
-      const levelId = await ctx.db.insert("levels", {
-        trackId,
-        key: "IC1",
-        name: "IC1",
-        order: 1,
-      })
-      await ctx.db.insert("trackGuardrails", {
-        orgId: "org1",
-        levelId,
-        criterionId,
-        min: 0,
-        max: 2,
-      })
-      await ctx.db.insert("bandThresholds", {
-        orgId: "org1",
-        modelId,
-        band: 1,
-        minScore: 530,
       })
       const roleId = await ctx.db.insert("roles", {
         orgId: "org1",
         title: "Software Developer",
         function: "Engineering",
         team: "Platform",
-        trackId,
-        levelId,
+        trackKey: "IC",
         purpose: "p",
         responsibilities: "r",
         status: "draft",

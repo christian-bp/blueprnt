@@ -1,10 +1,10 @@
 import {
   type BandThreshold,
   type CriterionWeight,
-  type ImportanceLevel,
   type RatingValue,
   type RoleRatings,
   type RoleResult,
+  type WeightPoints,
   computeResults,
 } from "@workspace/core"
 import type { GenericMutationCtx } from "convex/server"
@@ -15,9 +15,6 @@ import { AUDIT_EVENTS, logAudit } from "../lib/audit"
 export interface DerivedResults {
   results: RoleResult[]
   totalCriteria: number
-  // The grouped ratings that produced the results, for callers that also
-  // need raw per-role ratings (guardrail checks in the results queries).
-  roles: RoleRatings[]
 }
 
 // Derives the org's full result set (score/band per role) from current state
@@ -32,7 +29,7 @@ export async function deriveResults(
     .query("models")
     .withIndex("by_org", (q) => q.eq("orgId", orgId))
     .unique()
-  if (model === null) return { results: [], totalCriteria: 0, roles: [] }
+  if (model === null) return { results: [], totalCriteria: 0 }
 
   const criteriaRows = await ctx.db
     .query("criteria")
@@ -40,14 +37,12 @@ export async function deriveResults(
     .collect()
   const criteria: CriterionWeight[] = criteriaRows.map((row) => ({
     criterionId: row._id as string,
-    importanceLevel: row.importanceLevel as ImportanceLevel,
+    weightPoints: row.weightPoints as WeightPoints,
   }))
 
-  const thresholdRows = await ctx.db
-    .query("bandThresholds")
-    .withIndex("by_model", (q) => q.eq("modelId", model._id))
-    .collect()
-  const thresholds: BandThreshold[] = thresholdRows.map((row) => ({
+  // Thresholds live on the model document (ADR-0006): no extra read on the
+  // hottest path in the app (this runs twice per result-affecting mutation).
+  const thresholds: BandThreshold[] = model.bandThresholds.map((row) => ({
     band: row.band,
     minScore: row.minScore,
   }))
@@ -82,7 +77,6 @@ export async function deriveResults(
   return {
     results: computeResults({ criteria, thresholds, roles }),
     totalCriteria: criteria.length,
-    roles,
   }
 }
 

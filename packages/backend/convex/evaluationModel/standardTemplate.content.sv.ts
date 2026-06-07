@@ -142,33 +142,4 @@ export const standardTemplateContentSv: StandardTemplateContent = {
     Lead: "Lead",
     M: "Manager",
   },
-  levelNames: {
-    IC1: "IC1",
-    IC2: "IC2",
-    IC3: "IC3",
-    IC4: "IC4",
-    IC5: "IC5",
-    Lead1: "Lead1",
-    Lead2: "Lead2",
-    Lead3: "Lead3",
-    M1: "M1",
-    M2: "M2",
-    M3: "M3",
-  },
-  levelDefinitions: {
-    IC1: "IC1 – Grundläggande yrkesroll. Utför tydligt definierade arbetsuppgifter. Följer etablerade arbetssätt och behöver stöd vid mer komplexa moment.",
-    IC2: "IC2 – Självständig yrkesroll. Arbetar självständigt inom ett avgränsat område. Bidrar stabilt till teamets leveranser och hanterar rutinmässiga komplexa uppgifter.",
-    IC3: "IC3 – Avancerad yrkesroll / områdesansvar. Tar ansvar för ett eget arbetsområde. Prioriterar och löser mer komplexa frågor och bidrar med vägledning till andra i teamet.",
-    IC4: "IC4 – Domänansvarig eller expertinriktad roll. Driver utveckling inom ett större arbets- eller teknikområde. Hanterar betydande komplexitet och påverkar arbetssätt i flera team.",
-    IC5: "IC5 – Strategisk domänroll / principalnivå. Formar riktning, metoder och principer inom sin domän. Har tydlig tvärfunktionell påverkan och bidrar till långsiktig utveckling.",
-    Lead1:
-      "Lead-1 – Operativ koordinerande roll (utan personalansvar). Samordnar planering, prioritering och arbetsflöden i teamet. Driver operativ struktur och genomförande utan personalansvar.",
-    Lead2:
-      "Lead-2 – Tvärfunktionell koordinerande roll. Driver större initiativ eller flera team. Säkerställer helhet och hanterar beroenden mellan funktioner.",
-    Lead3:
-      "Lead-3 – Strategisk koordinerande roll (utan fullt personalansvar). Ger riktning åt och samordnar flera områden, team eller initiativ och säkerställer strategisk helhet, prioritering och hantering av beroenden på tvärs. Påverkar genom inflytande, koordinering och vägledning snarare än formellt personalansvar.",
-    M1: "M1 – Första linjes chef. Formellt personalansvar. Leder teamets mål, utveckling, arbetsmiljö och leverans.",
-    M2: "M2 – Funktionsansvarig chef / chef över chefer. Styr en hel funktion genom M1-roller. Ansvarar för taktik, resursfördelning, budget och funktionens helhet.",
-    M3: "Head of X – Strategisk ledningsroll. Övergripande ledningsansvar för funktion eller verksamhetsområde. Påverkar strategi, prioriteringar och organisationens långsiktiga riktning.",
-  },
 }

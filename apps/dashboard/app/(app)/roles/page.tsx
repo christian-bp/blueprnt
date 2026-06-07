@@ -93,7 +93,7 @@ export default function RolesPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>{t("table.title")}</TableHead>
-                    <TableHead>{t("table.trackLevel")}</TableHead>
+                    <TableHead>{t("table.track")}</TableHead>
                     <TableHead>{t("table.team")}</TableHead>
                     <TableHead>{t("table.status")}</TableHead>
                     <TableHead className="text-right">
@@ -113,7 +113,7 @@ export default function RolesPage() {
                         </Link>
                       </TableCell>
                       <TableCell className="text-muted-foreground">
-                        {role.trackName} {role.levelKey}
+                        {role.trackName}
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {role.team}

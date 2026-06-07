@@ -1,6 +1,5 @@
 import { v } from "convex/values"
-import type { Id } from "../_generated/dataModel"
-import { clampLocale } from "../evaluationModel/localize"
+import { clampLocale, isTrackKey } from "../evaluationModel/localize"
 import { AUDIT_EVENTS, logAudit } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
@@ -17,7 +16,6 @@ const starterFamilyShape = v.object({
     v.object({
       title: v.string(),
       trackKey: v.string(),
-      levelKey: v.string(),
     })
   ),
 })
@@ -59,35 +57,6 @@ export const createStarterSet = orgMutation({
     )
     if (totalRoles > MAX_ROLES) throw appError(ERROR_CODES.invalidInput)
 
-    // Level lookup by stable key against the org's model; both seed paths
-    // write the fixed schema, so keys resolve for every org with a model.
-    const model = await ctx.db
-      .query("models")
-      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
-      .unique()
-    if (model === null) throw appError(ERROR_CODES.notFound)
-    const levelByKey = new Map<
-      string,
-      { trackId: Id<"tracks">; levelId: Id<"levels">; trackKey: string }
-    >()
-    const tracks = await ctx.db
-      .query("tracks")
-      .withIndex("by_model", (q) => q.eq("modelId", model._id))
-      .collect()
-    for (const track of tracks) {
-      const levels = await ctx.db
-        .query("levels")
-        .withIndex("by_track", (q) => q.eq("trackId", track._id))
-        .collect()
-      for (const level of levels) {
-        levelByKey.set(level.key, {
-          trackId: track._id,
-          levelId: level._id,
-          trackKey: track.key,
-        })
-      }
-    }
-
     // Uniqueness: against the org's existing families AND within the payload.
     const existing = await ctx.db
       .query("roleFamilies")
@@ -120,8 +89,10 @@ export const createStarterSet = orgMutation({
         if (title.length === 0 || title.length > MAX_ROLE_TITLE) {
           throw appError(ERROR_CODES.invalidInput)
         }
-        const level = levelByKey.get(role.levelKey)
-        if (level === undefined || level.trackKey !== role.trackKey) {
+        // Tracks are fixed constants (ADR-0006): validate the client-sent
+        // key against TRACK_KEYS before the schema validator would reject it
+        // with a generic error.
+        if (!isTrackKey(role.trackKey)) {
           throw appError(ERROR_CODES.invalidInput)
         }
         const roleId = await ctx.db.insert("roles", {
@@ -129,8 +100,7 @@ export const createStarterSet = orgMutation({
           title,
           function: "",
           team: "",
-          trackId: level.trackId,
-          levelId: level.levelId,
+          trackKey: role.trackKey,
           familyId,
           purpose: "",
           responsibilities: "",

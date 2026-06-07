@@ -40,46 +40,24 @@ describe("createModelFromTemplate", () => {
       expect(criteria).toHaveLength(9)
       expect(criteria.every((c) => c.isCustom === false)).toBe(true)
 
+      // Anchors live on the criterion document (ADR-0006): exactly 6 per
+      // criterion, ordered by level.
       let anchorCount = 0
       for (const criterion of criteria) {
-        const anchors = await ctx.db
-          .query("criterionAnchors")
-          .withIndex("by_criterion", (q) => q.eq("criterionId", criterion._id))
-          .collect()
-        expect(anchors.map((a) => a.level).sort()).toEqual([0, 1, 2, 3, 4, 5])
-        anchorCount += anchors.length
+        expect(criterion.anchors.map((a) => a.level)).toEqual([
+          0, 1, 2, 3, 4, 5,
+        ])
+        anchorCount += criterion.anchors.length
       }
       expect(anchorCount).toBe(54)
 
-      const tracks = await ctx.db
-        .query("tracks")
-        .withIndex("by_model", (q) => q.eq("modelId", modelId))
-        .collect()
-      expect(tracks.map((track) => track.key).sort()).toEqual([
-        "IC",
-        "Lead",
-        "M",
-      ])
-
-      let levelCount = 0
-      for (const track of tracks) {
-        levelCount += (
-          await ctx.db
-            .query("levels")
-            .withIndex("by_track", (q) => q.eq("trackId", track._id))
-            .collect()
-        ).length
-      }
-      expect(levelCount).toBe(11)
-
-      const thresholds = await ctx.db
-        .query("bandThresholds")
-        .withIndex("by_model", (q) => q.eq("modelId", modelId))
-        .collect()
-      expect(thresholds).toHaveLength(7)
+      // Thresholds live on the model document (ADR-0006).
+      const model = await ctx.db.get(modelId)
+      expect(model?.bandThresholds).toHaveLength(7)
       expect(
-        thresholds.find((threshold) => threshold.band === 1)?.minScore
-      ).toBe(530)
+        model?.bandThresholds.find((threshold) => threshold.band === 1)
+          ?.minScore
+      ).toBe(98)
 
       const audit = await ctx.db
         .query("auditLog")
@@ -168,7 +146,7 @@ describe("createEmptyModel", () => {
     })
   })
 
-  it("creates a model with fixed tracks and thresholds but no criteria", async () => {
+  it("creates a model with default thresholds but no criteria", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedReadyOrganization(t)
     const modelId = await asAdmin.mutation(
@@ -181,21 +159,12 @@ describe("createEmptyModel", () => {
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .unique()
       expect(model?.templateKey).toBeUndefined()
+      expect(model?.bandThresholds).toHaveLength(7)
       const criteria = await ctx.db
         .query("criteria")
         .withIndex("by_model", (q) => q.eq("modelId", modelId))
         .collect()
       expect(criteria).toHaveLength(0)
-      const tracks = await ctx.db
-        .query("tracks")
-        .withIndex("by_model", (q) => q.eq("modelId", modelId))
-        .collect()
-      expect(tracks).toHaveLength(3)
-      const thresholds = await ctx.db
-        .query("bandThresholds")
-        .withIndex("by_model", (q) => q.eq("modelId", modelId))
-        .collect()
-      expect(thresholds).toHaveLength(7)
     })
   })
 })
@@ -209,7 +178,7 @@ describe("discardModel", () => {
       { orgId }
     )
 
-    // Seed one model.draft and one model.importanceReview suggestion that must
+    // Seed one model.draft and one model.weightReview suggestion that must
     // be deleted, plus an unrelated suggestion kind that must survive.
     await t.run(async (ctx) => {
       await ctx.db.insert("suggestions", {
@@ -221,7 +190,7 @@ describe("discardModel", () => {
       })
       await ctx.db.insert("suggestions", {
         orgId,
-        target: { kind: "model.importanceReview", modelId },
+        target: { kind: "model.weightReview", modelId },
         suggestedValue: {},
         source: "ai",
         status: "suggested",
@@ -250,14 +219,8 @@ describe("discardModel", () => {
           .withIndex("by_org", (q) => q.eq("orgId", orgId))
           .collect()
       ).toHaveLength(0)
-      // tracks, bandThresholds, levels, anchors, and guardrails are only
-      // indexed by_model/by_track/by_criterion/by_level; the org is otherwise
-      // fresh, so a full scan confirms none survive.
-      expect(await ctx.db.query("tracks").collect()).toHaveLength(0)
-      expect(await ctx.db.query("bandThresholds").collect()).toHaveLength(0)
-      expect(await ctx.db.query("levels").collect()).toHaveLength(0)
-      expect(await ctx.db.query("criterionAnchors").collect()).toHaveLength(0)
-      expect(await ctx.db.query("trackGuardrails").collect()).toHaveLength(0)
+      // Anchors and thresholds ride along on their deleted parent documents;
+      // tracks are constants (ADR-0006): nothing else to scan.
 
       // Only the model.* suggestions are gone; the unrelated one survives.
       const suggestions = await ctx.db
@@ -303,30 +266,17 @@ describe("discardModel", () => {
   it("rejects with errors.invalidInput when a role exists", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedReadyOrganization(t)
-    const modelId = await asAdmin.mutation(
-      api.evaluationModel.model.createModelFromTemplate,
-      { orgId }
-    )
-    // Insert a minimal role wired to the seeded model's first track/level so
-    // the referential-integrity guard trips.
+    await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
+      orgId,
+    })
+    // Insert a minimal role so the role guard trips.
     await t.run(async (ctx) => {
-      const track = await ctx.db
-        .query("tracks")
-        .withIndex("by_model", (q) => q.eq("modelId", modelId))
-        .first()
-      if (track === null) throw new Error("no track seeded")
-      const level = await ctx.db
-        .query("levels")
-        .withIndex("by_track", (q) => q.eq("trackId", track._id))
-        .first()
-      if (level === null) throw new Error("no level seeded")
       await ctx.db.insert("roles", {
         orgId,
         title: "Junior Developer",
         function: "Engineering",
         team: "Platform",
-        trackId: track._id,
-        levelId: level._id,
+        trackKey: "IC",
         purpose: "",
         responsibilities: "",
         status: "draft",
@@ -373,13 +323,14 @@ describe("getModel", () => {
     expect(result).not.toBeNull()
     expect(result?.criteria).toHaveLength(9)
     expect(result?.criteria[0]?.anchors).toHaveLength(6)
-    expect(JSON.stringify(result)).not.toMatch(/"weight"/)
-    const importanceLevels = result?.criteria.map(
-      (criterion) => criterion.importanceLevel
+    const weightPoints = result?.criteria.map(
+      (criterion) => criterion.weightPoints
     )
-    expect(importanceLevels?.every((level) => level >= 1 && level <= 7)).toBe(
+    expect(weightPoints?.every((points) => points >= 1 && points <= 5)).toBe(
       true
     )
+    // The template ships exactly balanced: 9 criteria, point budget 27.
+    expect(weightPoints?.reduce((sum, points) => sum + points, 0)).toBe(27)
   })
 
   it("localizes pristine template content to the requested locale", async () => {
@@ -399,7 +350,6 @@ describe("getModel", () => {
     expect(en?.criteria[0]?.anchors[0]?.text).toMatch(/Responsible for own/)
     const enIc = en?.tracks.find((track) => track.key === "IC")
     expect(enIc?.name).toBe("Individual Contributor")
-    expect(enIc?.levels[0]?.name).toBe("IC1")
 
     // The same stored rows render in Swedish under the sv locale.
     const sv = await asAdmin.query(api.evaluationModel.model.getModel, {
@@ -436,7 +386,6 @@ describe("getModel", () => {
       name: "Custom criterion",
       description: "Stored description",
       helpText: "Stored help",
-      importanceLevel: 4,
       anchors: ["a0", "a1", "a2", "a3", "a4", "a5"],
     })
     const en = await asAdmin.query(api.evaluationModel.model.getModel, {
@@ -454,8 +403,8 @@ describe("getModel", () => {
     expect(sv?.criteria.find((c) => c.isCustom)?.name).toBe("Custom criterion")
   })
 
-  it("localizes track and level names for a scratch model too", async () => {
-    // A scratch model keeps its user-chosen name but its fixed tracks/levels
+  it("localizes track names for a scratch model too", async () => {
+    // A scratch model keeps its user-chosen name but the fixed tracks
     // localize by their stable keys.
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedReadyOrganization(t)

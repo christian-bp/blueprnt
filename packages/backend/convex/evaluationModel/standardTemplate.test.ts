@@ -1,43 +1,39 @@
-import { IMPORTANCE_LEVELS } from "@workspace/core"
+import { isBalanced, isWeightPoints } from "@workspace/core"
 import { describe, expect, it } from "vitest"
 import {
   CRITERION_KEYS,
   DEFAULT_BAND_THRESHOLDS,
-  DEFAULT_IMPORTANCE,
-  GUARDRAILS,
-  TRACK_DEFS,
+  DEFAULT_WEIGHT_POINTS,
+  TRACK_KEYS,
   templateContent,
 } from "./standardTemplate"
+import { trackKeyValidator } from "./tables"
 
 describe("standard template structure", () => {
-  it("has 9 criteria, 3 tracks, 11 levels, 7 descending thresholds", () => {
+  it("has 9 criteria, 3 tracks, 7 descending thresholds", () => {
     expect(CRITERION_KEYS).toHaveLength(9)
-    expect(TRACK_DEFS).toHaveLength(3)
-    expect(TRACK_DEFS.flatMap((t) => t.levels)).toHaveLength(11)
+    expect(TRACK_KEYS).toEqual(["IC", "Lead", "M"])
     expect(DEFAULT_BAND_THRESHOLDS).toHaveLength(7)
     const scores = DEFAULT_BAND_THRESHOLDS.map((t) => t.minScore)
     expect([...scores].sort((a, b) => b - a)).toEqual(scores)
-    expect(DEFAULT_BAND_THRESHOLDS[0]).toEqual({ band: 1, minScore: 530 })
+    expect(DEFAULT_BAND_THRESHOLDS[0]).toEqual({ band: 1, minScore: 98 })
   })
 
-  it("keeps importances on the fixed scale and guardrails in 0-5", () => {
-    for (const key of CRITERION_KEYS) {
-      expect(IMPORTANCE_LEVELS).toContain(DEFAULT_IMPORTANCE[key])
+  it("keeps weight points on the 1-5 scale, exactly balanced", () => {
+    const points = CRITERION_KEYS.map((key) => DEFAULT_WEIGHT_POINTS[key])
+    for (const value of points) {
+      expect(isWeightPoints(value)).toBe(true)
     }
-    for (const ranges of Object.values(GUARDRAILS)) {
-      for (const [min, max] of Object.values(ranges)) {
-        expect(min).toBeGreaterThanOrEqual(0)
-        expect(max).toBeLessThanOrEqual(5)
-        expect(min).toBeLessThanOrEqual(max)
-      }
-    }
+    // 9 criteria, point budget 27: the template ships balanced (ADR-0004).
+    expect(isBalanced(points)).toBe(true)
   })
 
-  it("has a guardrail entry for every one of the 11 levels (completeness gate)", () => {
-    expect(Object.keys(GUARDRAILS)).toHaveLength(11)
-    for (const level of TRACK_DEFS.flatMap((t) => t.levels)) {
-      expect(GUARDRAILS[level]).toBeDefined()
-    }
+  it("keeps the roles.trackKey validator in sync with TRACK_KEYS (ADR-0006)", () => {
+    // The validator lives in tables.ts without importing this module; this
+    // bijection assertion is what keeps the two literal lists honest.
+    expect(trackKeyValidator.members.map((member) => member.value)).toEqual([
+      ...TRACK_KEYS,
+    ])
   })
 
   it("ships complete content in both locales", () => {
@@ -52,6 +48,9 @@ describe("standard template structure", () => {
         for (const anchor of criterion.anchors) {
           expect(anchor.length).toBeGreaterThan(0)
         }
+      }
+      for (const key of TRACK_KEYS) {
+        expect(content.trackNames[key].length).toBeGreaterThan(0)
       }
     }
   })

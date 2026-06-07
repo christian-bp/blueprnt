@@ -10,10 +10,13 @@ DOCS=(
   docs/contexts/accounts/CONTEXT.md
   docs/contexts/evaluation-model/CONTEXT.md
   docs/contexts/evaluation-model/standardmall.md
+  docs/contexts/evaluation-model/viktning-poangbudget.md
   docs/contexts/assessment/CONTEXT.md
   docs/adr/0001-convex-eu-better-auth.md
   docs/adr/0002-live-recompute-no-versioning.md
   docs/adr/0003-ai-embedded-assistant.md
+  docs/adr/0004-point-budget-weighting.md
+  docs/adr/0005-level-per-individual.md
 )
 
 # The documents are in Swedish, so the date in the PDF uses Swedish formatting.

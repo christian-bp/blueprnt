@@ -28,22 +28,20 @@ async function seedTemplateOrganization(
   })
   if (model === null) throw new Error("model not seeded")
   const track = model.tracks[0]
-  const level = track?.levels[1]
-  if (track === undefined || level === undefined) throw new Error("seed")
-  return { orgId, userId, asAdmin, model, track, level }
+  if (track === undefined) throw new Error("seed")
+  return { orgId, userId, asAdmin, model, track }
 }
 
 describe("createRole", () => {
   it("creates a draft role with trimmed core fields and audits", async () => {
     const t = initConvexTest()
-    const { orgId, asAdmin, track, level } = await seedTemplateOrganization(t)
+    const { orgId, asAdmin, track } = await seedTemplateOrganization(t)
     const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,
       title: "  Junior Software Developer  ",
       function: "Engineering",
       team: "Core",
-      trackId: track.trackId,
-      levelId: level.levelId,
+      trackKey: track.key,
     })
     await t.run(async (ctx) => {
       const role = await ctx.db.get(roleId)
@@ -61,47 +59,31 @@ describe("createRole", () => {
     })
   })
 
-  it("rejects an empty title and a level from another track", async () => {
+  it("rejects an empty title", async () => {
     const t = initConvexTest()
-    const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
+    const { orgId, asAdmin, track } = await seedTemplateOrganization(t)
     await expect(
       asAdmin.mutation(api.assessment.roles.createRole, {
         orgId,
         title: "   ",
         function: "F",
         team: "T",
-        trackId: track.trackId,
-        levelId: track.levels[0]?.levelId as never,
+        trackKey: track.key,
       })
     ).rejects.toThrow(/errors.invalidInput/)
-    const otherTrack = model.tracks[1]
-    const foreignLevel = otherTrack?.levels[0]
-    if (foreignLevel === undefined) throw new Error("seed")
-    await expect(
-      asAdmin.mutation(api.assessment.roles.createRole, {
-        orgId,
-        title: "Valid",
-        function: "F",
-        team: "T",
-        trackId: track.trackId,
-        levelId: foreignLevel.levelId,
-      })
-    ).rejects.toThrow(/errors.notFound/)
   })
 })
 
 describe("listRoles and getRole", () => {
   it("lists non-archived roles with progress and resolves a role with guardrails", async () => {
     const t = initConvexTest()
-    const { orgId, asAdmin, model, track, level } =
-      await seedTemplateOrganization(t)
+    const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
     const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,
       title: "Developer",
       function: "Engineering",
       team: "Core",
-      trackId: track.trackId,
-      levelId: level.levelId,
+      trackKey: track.key,
       purpose: "Builds the product",
       responsibilities: "Implementation",
     })
@@ -130,7 +112,6 @@ describe("listRoles and getRole", () => {
       totalCriteria: 9,
       profileComplete: true,
     })
-    expect(list[0]?.levelKey).toBe(level.key)
 
     const role = await asAdmin.query(api.assessment.roles.getRole, {
       orgId,
@@ -145,8 +126,6 @@ describe("listRoles and getRole", () => {
         motivation: "Solid",
       },
     ])
-    // The template seeds 8 guardrail rows per level (no "formal" row).
-    expect(role?.guardrails).toHaveLength(8)
     expect(role?.profileComplete).toBe(true)
   })
 
@@ -208,15 +187,13 @@ async function rateAll(
 describe("updateRole", () => {
   it("patches profile fields, audits the field names, and locks approved roles", async () => {
     const t = initConvexTest()
-    const { orgId, asAdmin, model, track, level } =
-      await seedTemplateOrganization(t)
+    const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
     const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,
       title: "Developer",
       function: "Engineering",
       team: "Core",
-      trackId: track.trackId,
-      levelId: level.levelId,
+      trackKey: track.key,
       decisionMandate: "  Decides implementation details  ",
     })
     await t.run(async (ctx) => {
@@ -262,39 +239,26 @@ describe("updateRole", () => {
     ).rejects.toThrow(/errors.roleLocked/)
   })
 
-  it("requires levelId when trackId changes", async () => {
+  it("changes the track on its own", async () => {
     const t = initConvexTest()
-    const { orgId, asAdmin, model, track, level } =
-      await seedTemplateOrganization(t)
+    const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
     const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,
       title: "Developer",
       function: "Engineering",
       team: "Core",
-      trackId: track.trackId,
-      levelId: level.levelId,
+      trackKey: track.key,
     })
     const otherTrack = model.tracks[1]
     if (otherTrack === undefined) throw new Error("seed")
-    await expect(
-      asAdmin.mutation(api.assessment.roles.updateRole, {
-        orgId,
-        roleId,
-        trackId: otherTrack.trackId,
-      })
-    ).rejects.toThrow(/errors.notFound/)
-    const newLevel = otherTrack.levels[0]
-    if (newLevel === undefined) throw new Error("seed")
     await asAdmin.mutation(api.assessment.roles.updateRole, {
       orgId,
       roleId,
-      trackId: otherTrack.trackId,
-      levelId: newLevel.levelId,
+      trackKey: otherTrack.key,
     })
     await t.run(async (ctx) => {
       const role = await ctx.db.get(roleId)
-      expect(role?.trackId).toBe(otherTrack.trackId)
-      expect(role?.levelId).toBe(newLevel.levelId)
+      expect(role?.trackKey).toBe(otherTrack.key)
     })
   })
 })
@@ -302,16 +266,14 @@ describe("updateRole", () => {
 describe("setRoleStatus", () => {
   it("walks draft -> inReview -> approved -> draft with permission checks", async () => {
     const t = initConvexTest()
-    const { orgId, asAdmin, model, track, level } =
-      await seedTemplateOrganization(t)
+    const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
     const asEditor = await addEditor(t, orgId, "editor@acme.se")
     const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,
       title: "Developer",
       function: "Engineering",
       team: "Core",
-      trackId: track.trackId,
-      levelId: level.levelId,
+      trackKey: track.key,
       purpose: "p",
       responsibilities: "r",
     })
@@ -376,15 +338,13 @@ describe("setRoleStatus", () => {
 
   it("rejects unknown transitions and incomplete profiles", async () => {
     const t = initConvexTest()
-    const { orgId, asAdmin, model, track, level } =
-      await seedTemplateOrganization(t)
+    const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
     const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,
       title: "Developer",
       function: "Engineering",
       team: "Core",
-      trackId: track.trackId,
-      levelId: level.levelId,
+      trackKey: track.key,
     })
     await rateAll(t, orgId, roleId as string, model.criteria, 3)
     // Profile incomplete (purpose/responsibilities empty) blocks submission.
@@ -409,16 +369,14 @@ describe("setRoleStatus", () => {
 describe("archiveRole", () => {
   it("soft-archives (admin only), logs band.shift to null, hides from listRoles", async () => {
     const t = initConvexTest()
-    const { orgId, asAdmin, model, track, level } =
-      await seedTemplateOrganization(t)
+    const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
     const asEditor = await addEditor(t, orgId, "editor2@acme.se")
     const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,
       title: "Developer",
       function: "Engineering",
       team: "Core",
-      trackId: track.trackId,
-      levelId: level.levelId,
+      trackKey: track.key,
       purpose: "p",
       responsibilities: "r",
     })
@@ -452,7 +410,7 @@ describe("archiveRole", () => {
 describe("role family membership", () => {
   it("creates with a family, moves, clears, and rejects foreign families", async () => {
     const t = initConvexTest()
-    const { orgId, asAdmin, track, level } = await seedTemplateOrganization(t)
+    const { orgId, asAdmin, track } = await seedTemplateOrganization(t)
     const techId = await asAdmin.mutation(
       api.assessment.families.createRoleFamily,
       { orgId, name: "Tech" }
@@ -466,8 +424,7 @@ describe("role family membership", () => {
       title: "Developer",
       function: "Engineering",
       team: "Core",
-      trackId: track.trackId,
-      levelId: level.levelId,
+      trackKey: track.key,
       familyId: techId,
     })
 
@@ -480,7 +437,6 @@ describe("role family membership", () => {
       familyId: techId,
       familyName: "Tech",
       trackOrder: 1,
-      levelOrder: level.order,
     })
 
     // Move to another family.

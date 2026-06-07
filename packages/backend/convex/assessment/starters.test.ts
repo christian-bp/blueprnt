@@ -36,10 +36,10 @@ describe("getIndustryStarter", () => {
     )
     expect(starter.families.length).toBeGreaterThan(0)
     expect(starter.families[0]?.name).toBe("Engineering")
+    // One role per JOB (ADR-0005): no junior/senior variants, no level.
     expect(starter.families[0]?.roles[0]).toEqual({
-      title: "Junior systemutvecklare",
+      title: "Systemutvecklare",
       trackKey: "IC",
-      levelKey: "IC1",
     })
   })
 
@@ -67,8 +67,8 @@ describe("createStarterSet", () => {
         {
           name: "Engineering",
           roles: [
-            { title: "Software Developer", trackKey: "IC", levelKey: "IC2" },
-            { title: "Tech Lead", trackKey: "Lead", levelKey: "Lead2" },
+            { title: "Software Developer", trackKey: "IC" },
+            { title: "Tech Lead", trackKey: "Lead" },
           ],
         },
         { name: "Design", roles: [] },
@@ -89,7 +89,7 @@ describe("createStarterSet", () => {
     expect(roles[0]).toMatchObject({
       title: "Software Developer",
       familyName: "Engineering",
-      levelKey: "IC2",
+      trackKey: "IC",
       status: "draft",
       profileComplete: false,
     })
@@ -121,7 +121,7 @@ describe("createStarterSet", () => {
     })
   })
 
-  it("rejects duplicates against existing families and unknown level keys", async () => {
+  it("rejects duplicates against existing families and unknown track keys", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedTemplateOrganization(t)
     await asAdmin.mutation(api.assessment.families.createRoleFamily, {
@@ -140,20 +140,7 @@ describe("createStarterSet", () => {
         families: [
           {
             name: "Quality",
-            roles: [{ title: "QA", trackKey: "IC", levelKey: "IC9" }],
-          },
-        ],
-      })
-    ).rejects.toThrow(/errors.invalidInput/)
-    // The guard is compound: a KNOWN level key on the WRONG track must also
-    // be rejected (IC2 resolves, but its track is IC, not Lead).
-    await expect(
-      asAdmin.mutation(api.assessment.starters.createStarterSet, {
-        orgId,
-        families: [
-          {
-            name: "Quality",
-            roles: [{ title: "QA", trackKey: "Lead", levelKey: "IC2" }],
+            roles: [{ title: "QA", trackKey: "Ghost" }],
           },
         ],
       })

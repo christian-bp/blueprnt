@@ -4,6 +4,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -13,12 +14,12 @@ const createFromTemplateMock = vi.fn()
 const createEmptyMock = vi.fn()
 const discardModelMock = vi.fn()
 const completeOnboardingMock = vi.fn()
-const updateCriterionImportanceMock = vi.fn()
+const rebalanceWeightsMock = vi.fn()
 const addCriterionMock = vi.fn()
 const removeCriterionMock = vi.fn()
 const useQueryMock = vi.fn()
 
-// The review screen embeds ImportanceReviewPanel, which issues its own AI
+// The review screen embeds WeightReviewPanel, which issues its own AI
 // mutations; they are no-ops here but must resolve to a function.
 const noopMutation = vi.fn()
 
@@ -31,8 +32,8 @@ vi.mock("convex/react", () => ({
     if (ref === "evaluationModel.model.discardModel") return discardModelMock
     if (ref === "accounts.organization.completeOnboarding")
       return completeOnboardingMock
-    if (ref === "evaluationModel.criteria.updateCriterionImportance")
-      return updateCriterionImportanceMock
+    if (ref === "evaluationModel.criteria.rebalanceWeights")
+      return rebalanceWeightsMock
     if (ref === "evaluationModel.criteria.addCriterion") return addCriterionMock
     if (ref === "evaluationModel.criteria.removeCriterion")
       return removeCriterionMock
@@ -63,15 +64,15 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
       criteria: {
         addCriterion: "evaluationModel.criteria.addCriterion",
         removeCriterion: "evaluationModel.criteria.removeCriterion",
-        updateCriterionImportance:
-          "evaluationModel.criteria.updateCriterionImportance",
+        rebalanceWeights: "evaluationModel.criteria.rebalanceWeights",
       },
     },
     ai: {
       suggest: {
         getOpenSuggestions: "ai.suggest.getOpenSuggestions",
-        requestImportanceReview: "ai.suggest.requestImportanceReview",
-        confirmImportanceReview: "ai.suggest.confirmImportanceReview",
+        getWeightReviewLock: "ai.suggest.getWeightReviewLock",
+        requestWeightReview: "ai.suggest.requestWeightReview",
+        confirmWeightReview: "ai.suggest.confirmWeightReview",
         rejectSuggestion: "ai.suggest.rejectSuggestion",
       },
     },
@@ -89,14 +90,31 @@ function setModel(model: unknown) {
   currentModel = model
 }
 
+// The weight-review lock (false = Review button visible); the lock test
+// flips it.
+let reviewLocked = false
+
+// The review/editor headings greet the organization by name.
+const reviewHeading = messages.dashboard.model.review.heading.replace(
+  "{name}",
+  "Acme"
+)
+
 function renderStep(orgId = "org-123", onContinue: () => void = () => {}) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <ModelSetupStep orgId={orgId} onContinue={onContinue} />
+      <ModelSetupStep
+        orgId={orgId}
+        organizationName="Acme"
+        onContinue={onContinue}
+      />
     </NextIntlClientProvider>
   )
 }
 
+// Five criteria (the composition floor, so the review screen's Next is
+// enabled), exactly balanced (sum 15 = 5 x 3): the persisted allocation is
+// always on the point budget (ADR-0004).
 const reviewModel = {
   modelId: "model-1",
   name: "Standard",
@@ -107,8 +125,48 @@ const reviewModel = {
       name: "Problem solving",
       description: "How the role breaks down and resolves hard problems.",
       helpText: "",
-      importanceLevel: 6,
+      weightPoints: 4,
       order: 1,
+      isCustom: false,
+      anchors: [],
+    },
+    {
+      criterionId: "c2",
+      name: "Autonomy",
+      description: "How independently the role operates.",
+      helpText: "",
+      weightPoints: 2,
+      order: 2,
+      isCustom: false,
+      anchors: [],
+    },
+    {
+      criterionId: "c3",
+      name: "Collaboration",
+      description: "How the role works across teams.",
+      helpText: "",
+      weightPoints: 3,
+      order: 3,
+      isCustom: false,
+      anchors: [],
+    },
+    {
+      criterionId: "c4",
+      name: "Knowledge depth",
+      description: "How deep the role's expertise runs.",
+      helpText: "",
+      weightPoints: 3,
+      order: 4,
+      isCustom: false,
+      anchors: [],
+    },
+    {
+      criterionId: "c5",
+      name: "Risk awareness",
+      description: "How the role handles risk.",
+      helpText: "",
+      weightPoints: 3,
+      order: 5,
       isCustom: false,
       anchors: [],
     },
@@ -123,13 +181,18 @@ describe("ModelSetupStep", () => {
     createEmptyMock.mockReset()
     discardModelMock.mockReset()
     completeOnboardingMock.mockReset()
-    updateCriterionImportanceMock.mockReset()
+    rebalanceWeightsMock.mockReset()
     addCriterionMock.mockReset()
     removeCriterionMock.mockReset()
     useQueryMock.mockReset()
     currentModel = null
+    reviewLocked = false
     useQueryMock.mockImplementation((ref: unknown) =>
-      ref === "ai.suggest.getOpenSuggestions" ? [] : currentModel
+      ref === "ai.suggest.getOpenSuggestions"
+        ? []
+        : ref === "ai.suggest.getWeightReviewLock"
+          ? reviewLocked
+          : currentModel
     )
   })
 
@@ -263,9 +326,7 @@ describe("ModelSetupStep", () => {
     // fade-plus-pause advance delay).
     await waitFor(
       () => {
-        expect(
-          screen.getByText(messages.dashboard.model.review.heading)
-        ).toBeDefined()
+        expect(screen.getByText(reviewHeading)).toBeDefined()
       },
       { timeout: 2000 }
     )
@@ -299,9 +360,7 @@ describe("ModelSetupStep", () => {
     setModel(reviewModel)
     renderStep()
     await waitFor(() => {
-      expect(
-        screen.getByText(messages.dashboard.model.review.heading)
-      ).toBeDefined()
+      expect(screen.getByText(reviewHeading)).toBeDefined()
     })
     // The choice cards are not shown.
     expect(
@@ -313,6 +372,29 @@ describe("ModelSetupStep", () => {
       "evaluationModel.model.getModel",
       expect.objectContaining({ locale: "en" })
     )
+  })
+
+  it("capitalizes a lowercase organization name when it leads the heading", async () => {
+    // The name renders as typed mid-sentence, but a name-first heading still
+    // starts with a capital: "acme's model" reads as "Acme's model".
+    setModel(reviewModel)
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <ModelSetupStep
+          orgId="org-123"
+          organizationName="acme"
+          onContinue={() => {}}
+        />
+      </NextIntlClientProvider>
+    )
+    const raw = messages.dashboard.model.review.heading.replace(
+      "{name}",
+      "acme"
+    )
+    const expected = raw.charAt(0).toUpperCase() + raw.slice(1)
+    await waitFor(() => {
+      expect(screen.getByText(expected)).toBeDefined()
+    })
   })
 
   it("resumes into the editor when a scratch model already exists", async () => {
@@ -348,9 +430,7 @@ describe("ModelSetupStep", () => {
     setModel(reviewModel)
     renderStep()
     await waitFor(() => {
-      expect(
-        screen.getByText(messages.dashboard.model.review.heading)
-      ).toBeDefined()
+      expect(screen.getByText(reviewHeading)).toBeDefined()
     })
     expect(
       screen.getByRole("button", {
@@ -359,19 +439,39 @@ describe("ModelSetupStep", () => {
     ).toBeDefined()
   })
 
-  it("review screen is read-only by default: shows importance as text and no remove button", async () => {
+  it("hides the AI Review trigger while the review lock holds", async () => {
+    setModel(reviewModel)
+    // A confirmed review with no model change after it: re-reviewing would
+    // only repeat itself, so the button is gone until the weighting changes.
+    reviewLocked = true
+    renderStep()
+    await waitFor(() => {
+      expect(screen.getByText(reviewHeading)).toBeDefined()
+    })
+    expect(
+      screen.queryByRole("button", {
+        name: messages.dashboard.ai.openReviewCta,
+      })
+    ).toBeNull()
+    // Editing is still available; only the AI review is locked.
+    expect(
+      screen.getByRole("button", {
+        name: messages.dashboard.model.review.editCta,
+      })
+    ).toBeDefined()
+  })
+
+  it("review screen is read-only by default: shows the weighting as text and no remove button", async () => {
     setModel(reviewModel)
     renderStep()
 
     await waitFor(() => {
-      expect(
-        screen.getByText(messages.dashboard.model.review.heading)
-      ).toBeDefined()
+      expect(screen.getByText(reviewHeading)).toBeDefined()
     })
 
-    // The importance label renders as static text, not a select, in read-only mode.
-    // importanceLevel 6 maps to "Very important" in en.json model.importance.veryHigh.
-    expect(screen.getByText(messages.model.importance.veryHigh)).toBeDefined()
+    // The weight points render as static text with the derived share, not a
+    // select, in read-only mode (4 of 15 points = 26.7%).
+    expect(screen.getByText(/26\.7%/)).toBeDefined()
 
     // No remove button in the accessibility tree in read-only mode.
     expect(
@@ -388,46 +488,40 @@ describe("ModelSetupStep", () => {
     ).toBeNull()
   })
 
-  it("clicking editCta enters edit mode and doneEditing returns to read-only", async () => {
+  it("clicking editCta enters edit mode and cancel returns to read-only", async () => {
     setModel(reviewModel)
     renderStep()
 
     await waitFor(() => {
-      expect(
-        screen.getByText(messages.dashboard.model.review.heading)
-      ).toBeDefined()
+      expect(screen.getByText(reviewHeading)).toBeDefined()
     })
 
     const review = messages.dashboard.model.review
+    const editor = messages.dashboard.model.editor
 
     // Enter edit mode.
     const editButton = screen.getByRole("button", { name: review.editCta })
     fireEvent.click(editButton)
 
     // The add-criterion toggle appears in edit mode.
-    expect(
-      screen.getByRole("button", {
-        name: messages.dashboard.model.editor.addCta,
-      })
-    ).toBeDefined()
+    expect(screen.getByRole("button", { name: editor.addCta })).toBeDefined()
+
+    // The budget meter reports the balanced allocation.
+    expect(screen.getByText(editor.balanced)).toBeDefined()
 
     // The remove button is present in the accessibility tree (opacity-0 does
     // not hide from queries; only visual styling changes).
     expect(
       screen.getByRole("button", {
-        name: `${messages.dashboard.model.editor.removeCta} Problem solving`,
+        name: `${editor.removeCta} Problem solving`,
       })
     ).toBeDefined()
 
-    // Click Done to leave edit mode.
-    fireEvent.click(screen.getByRole("button", { name: review.doneEditing }))
+    // Cancel leaves edit mode without saving.
+    fireEvent.click(screen.getByRole("button", { name: editor.cancelCta }))
 
     // Back to read-only: the add toggle is gone again.
-    expect(
-      screen.queryByRole("button", {
-        name: messages.dashboard.model.editor.addCta,
-      })
-    ).toBeNull()
+    expect(screen.queryByRole("button", { name: editor.addCta })).toBeNull()
 
     // The Edit button is back.
     expect(screen.getByRole("button", { name: review.editCta })).toBeDefined()
@@ -438,9 +532,7 @@ describe("ModelSetupStep", () => {
     renderStep()
 
     await waitFor(() => {
-      expect(
-        screen.getByText(messages.dashboard.model.review.heading)
-      ).toBeDefined()
+      expect(screen.getByText(reviewHeading)).toBeDefined()
     })
 
     // Enter edit mode so the importance select appears.
@@ -454,44 +546,61 @@ describe("ModelSetupStep", () => {
     const hiddenSelect = document.querySelector("select")
     if (!hiddenSelect) {
       // Portal-based selects may not render in happy-dom; the mock is wired.
-      expect(updateCriterionImportanceMock).toBeDefined()
+      expect(rebalanceWeightsMock).toBeDefined()
       return
     }
-    // The criterion has importanceLevel 6.
-    expect(hiddenSelect.value).toBe("6")
+    // The first criterion carries 4 weight points.
+    expect(hiddenSelect.value).toBe("4")
   })
 
-  it("changing the importance select calls updateCriterionImportance with correct args", async () => {
+  it("editing the allocation saves the full balanced set via rebalanceWeights", async () => {
     setModel(reviewModel)
-    updateCriterionImportanceMock.mockResolvedValue(null)
+    rebalanceWeightsMock.mockResolvedValue(null)
     renderStep("org-imp")
 
     await waitFor(() => {
-      expect(
-        screen.getByText(messages.dashboard.model.review.heading)
-      ).toBeDefined()
+      expect(screen.getByText(reviewHeading)).toBeDefined()
     })
 
-    // Enter edit mode so the importance select appears.
+    // Enter edit mode so the weight selects appear.
     fireEvent.click(
       screen.getByRole("button", {
         name: messages.dashboard.model.review.editCta,
       })
     )
 
-    // Use the hidden Radix select to simulate a value change.
-    const hiddenSelect = document.querySelector("select")
-    if (!hiddenSelect) {
-      expect(updateCriterionImportanceMock).toBeDefined()
+    // Use the hidden Radix selects to simulate value changes.
+    const selects = document.querySelectorAll("select")
+    const first = selects[0]
+    const second = selects[1]
+    if (first === undefined || second === undefined) {
+      expect(rebalanceWeightsMock).toBeDefined()
       return
     }
-    fireEvent.change(hiddenSelect, { target: { value: "4" } })
+    // 4 -> 3 alone is one point under budget: Save must be disabled and
+    // nothing posted (the zero-sum rule forces a compensating change).
+    fireEvent.change(first, { target: { value: "3" } })
+    const editor = messages.dashboard.model.editor
+    const saveButton = screen.getByRole("button", { name: editor.saveCta })
+    expect((saveButton as HTMLButtonElement).disabled).toBe(true)
+    fireEvent.click(saveButton)
+    expect(rebalanceWeightsMock).not.toHaveBeenCalled()
+
+    // Compensate (2 -> 3): the allocation balances and Save posts the
+    // WHOLE allocation atomically.
+    fireEvent.change(second, { target: { value: "3" } })
+    fireEvent.click(screen.getByRole("button", { name: editor.saveCta }))
 
     await waitFor(() => {
-      expect(updateCriterionImportanceMock).toHaveBeenCalledWith({
+      expect(rebalanceWeightsMock).toHaveBeenCalledWith({
         orgId: "org-imp",
-        criterionId: "c1",
-        importanceLevel: 4,
+        allocations: [
+          { criterionId: "c1", weightPoints: 3 },
+          { criterionId: "c2", weightPoints: 3 },
+          { criterionId: "c3", weightPoints: 3 },
+          { criterionId: "c4", weightPoints: 3 },
+          { criterionId: "c5", weightPoints: 3 },
+        ],
       })
     })
   })
@@ -517,9 +626,7 @@ describe("ModelSetupStep", () => {
     renderStep()
 
     await waitFor(() => {
-      expect(
-        screen.getByText(messages.dashboard.model.review.heading)
-      ).toBeDefined()
+      expect(screen.getByText(reviewHeading)).toBeDefined()
     })
     // The threshold chip text ("1: 100+") must not appear: numeric internals
     // belong in the result views, not in model setup.
@@ -532,9 +639,7 @@ describe("ModelSetupStep", () => {
 
     // Wait for the review screen, then enter edit mode so remove is available.
     await waitFor(() => {
-      expect(
-        screen.getByText(messages.dashboard.model.review.heading)
-      ).toBeDefined()
+      expect(screen.getByText(reviewHeading)).toBeDefined()
     })
     fireEvent.click(
       screen.getByRole("button", {
@@ -550,14 +655,18 @@ describe("ModelSetupStep", () => {
     })
     fireEvent.click(removeButton)
 
-    // Confirm and cancel are now rendered inline.
+    // Confirm and cancel are now rendered inline. The queries scope to the
+    // criterion's row: the editor header carries its own Cancel button (the
+    // zero-sum edit flow), so an unscoped name query would be ambiguous.
+    const row = screen.getByText("Problem solving").closest("li")
+    if (!row) throw new Error("criterion row not found")
     expect(
-      screen.getByRole("button", {
+      within(row).getByRole("button", {
         name: messages.dashboard.model.editor.removeCta,
       })
     ).toBeDefined()
     expect(
-      screen.getByRole("button", {
+      within(row).getByRole("button", {
         name: messages.dashboard.model.change.cancel,
       })
     ).toBeDefined()
@@ -565,34 +674,32 @@ describe("ModelSetupStep", () => {
     expect(removeCriterionMock).not.toHaveBeenCalled()
   })
 
-  it("review screen importance slot renders the label in read mode and the select in edit mode", async () => {
+  it("review screen weight slot renders points + share in read mode and the select in edit mode", async () => {
     setModel(reviewModel)
     renderStep()
 
     await waitFor(() => {
-      expect(
-        screen.getByText(messages.dashboard.model.review.heading)
-      ).toBeDefined()
+      expect(screen.getByText(reviewHeading)).toBeDefined()
     })
 
-    // Read mode: the importance shows as static text (importanceLevel 6 maps to
-    // "Very important"), and there is no select.
-    expect(screen.getByText(messages.model.importance.veryHigh)).toBeDefined()
+    // Read mode: the weight points show as static text with the derived
+    // share, and there is no select.
+    expect(screen.getByText(/26\.7%/)).toBeDefined()
     expect(document.querySelector("select")).toBeNull()
 
-    // Edit mode: the same slot now renders the importance select.
+    // Edit mode: the same slot now renders the weight-point select.
     fireEvent.click(
       screen.getByRole("button", {
         name: messages.dashboard.model.review.editCta,
       })
     )
-    const importanceSelect = screen.getByRole("combobox", {
-      name: messages.dashboard.model.review.setImportance.replace(
+    const weightSelect = screen.getByRole("combobox", {
+      name: messages.dashboard.model.editor.setWeightPoints.replace(
         "{name}",
         "Problem solving"
       ),
     })
-    expect(importanceSelect).toBeDefined()
+    expect(weightSelect).toBeDefined()
   })
 
   it("review screen armed overlay renders both the confirm and cancel buttons", async () => {
@@ -600,9 +707,7 @@ describe("ModelSetupStep", () => {
     renderStep("org-rm")
 
     await waitFor(() => {
-      expect(
-        screen.getByText(messages.dashboard.model.review.heading)
-      ).toBeDefined()
+      expect(screen.getByText(reviewHeading)).toBeDefined()
     })
     fireEvent.click(
       screen.getByRole("button", {
@@ -618,14 +723,17 @@ describe("ModelSetupStep", () => {
     )
 
     // The overlay renders both the destructive confirm (removeCta label) and
-    // the outline cancel button.
+    // the outline cancel button, scoped to the row (the editor header has its
+    // own Cancel).
+    const row = screen.getByText("Problem solving").closest("li")
+    if (!row) throw new Error("criterion row not found")
     expect(
-      screen.getByRole("button", {
+      within(row).getByRole("button", {
         name: messages.dashboard.model.editor.removeCta,
       })
     ).toBeDefined()
     expect(
-      screen.getByRole("button", {
+      within(row).getByRole("button", {
         name: messages.dashboard.model.change.cancel,
       })
     ).toBeDefined()
@@ -637,9 +745,7 @@ describe("ModelSetupStep", () => {
     renderStep("org-rm")
 
     await waitFor(() => {
-      expect(
-        screen.getByText(messages.dashboard.model.review.heading)
-      ).toBeDefined()
+      expect(screen.getByText(reviewHeading)).toBeDefined()
     })
     fireEvent.click(
       screen.getByRole("button", {
@@ -671,9 +777,7 @@ describe("ModelSetupStep", () => {
     renderStep("org-rm")
 
     await waitFor(() => {
-      expect(
-        screen.getByText(messages.dashboard.model.review.heading)
-      ).toBeDefined()
+      expect(screen.getByText(reviewHeading)).toBeDefined()
     })
     fireEvent.click(
       screen.getByRole("button", {
@@ -686,7 +790,10 @@ describe("ModelSetupStep", () => {
     })
     fireEvent.click(removeButton)
 
-    const cancelButton = screen.getByRole("button", {
+    // Scoped to the row: the editor header has its own Cancel button.
+    const row = screen.getByText("Problem solving").closest("li")
+    if (!row) throw new Error("criterion row not found")
+    const cancelButton = within(row).getByRole("button", {
       name: messages.dashboard.model.change.cancel,
     })
     fireEvent.click(cancelButton)
@@ -708,9 +815,7 @@ describe("ModelSetupStep", () => {
 
     // Wait for the review screen, then enter edit mode.
     await waitFor(() => {
-      expect(
-        screen.getByText(messages.dashboard.model.review.heading)
-      ).toBeDefined()
+      expect(screen.getByText(reviewHeading)).toBeDefined()
     })
     fireEvent.click(
       screen.getByRole("button", {
@@ -771,8 +876,6 @@ describe("ModelSetupStep", () => {
       ).toBeDefined()
     })
     // The review screen is gone.
-    expect(
-      screen.queryByText(messages.dashboard.model.review.heading)
-    ).toBeNull()
+    expect(screen.queryByText(reviewHeading)).toBeNull()
   })
 })

@@ -32,10 +32,6 @@ describe("deriveResults", () => {
   it("derives the standardmall all-5 anchor live from db state", async () => {
     const t = initConvexTest()
     const { orgId, model } = await seedTemplateOrganization(t)
-    const track = model.tracks[0]
-    if (track === undefined) throw new Error("missing track")
-    const level = track.levels[0]
-    if (level === undefined) throw new Error("missing level")
 
     await t.run(async (ctx) => {
       const roleId = await ctx.db.insert("roles", {
@@ -43,8 +39,7 @@ describe("deriveResults", () => {
         title: "Head of Everything",
         function: "Engineering",
         team: "Core",
-        trackId: track.trackId,
-        levelId: level.levelId,
+        trackKey: "IC",
         purpose: "p",
         responsibilities: "r",
         status: "draft",
@@ -62,7 +57,7 @@ describe("deriveResults", () => {
       expect(derived.results).toHaveLength(1)
       expect(derived.results[0]).toMatchObject({
         complete: true,
-        score: 540,
+        score: 100,
         band: 1,
       })
     })
@@ -71,9 +66,6 @@ describe("deriveResults", () => {
   it("excludes archived roles and reports partials as incomplete", async () => {
     const t = initConvexTest()
     const { orgId, model } = await seedTemplateOrganization(t)
-    const track = model.tracks[0]
-    const level = track?.levels[0]
-    if (track === undefined || level === undefined) throw new Error("seed")
 
     await t.run(async (ctx) => {
       const partialId = await ctx.db.insert("roles", {
@@ -81,8 +73,7 @@ describe("deriveResults", () => {
         title: "Partial",
         function: "F",
         team: "T",
-        trackId: track.trackId,
-        levelId: level.levelId,
+        trackKey: "IC",
         purpose: "p",
         responsibilities: "r",
         status: "draft",
@@ -100,8 +91,7 @@ describe("deriveResults", () => {
         title: "Archived",
         function: "F",
         team: "T",
-        trackId: track.trackId,
-        levelId: level.levelId,
+        trackKey: "IC",
         purpose: "p",
         responsibilities: "r",
         status: "draft",
@@ -134,7 +124,7 @@ describe("logBandShifts", () => {
             ratedCount: 9,
             totalCriteria: 9,
             complete: true,
-            score: 540,
+            score: 100,
             band: 1,
           },
           {
@@ -142,7 +132,7 @@ describe("logBandShifts", () => {
             ratedCount: 9,
             totalCriteria: 9,
             complete: true,
-            score: 300,
+            score: 55,
             band: 5,
           },
           {
@@ -160,7 +150,7 @@ describe("logBandShifts", () => {
             ratedCount: 9,
             totalCriteria: 9,
             complete: true,
-            score: 500,
+            score: 90,
             band: 2,
           },
           {
@@ -168,7 +158,7 @@ describe("logBandShifts", () => {
             ratedCount: 9,
             totalCriteria: 9,
             complete: true,
-            score: 300,
+            score: 55,
             band: 5,
           },
           {

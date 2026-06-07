@@ -12,10 +12,13 @@ import {
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { Textarea } from "@workspace/ui/components/textarea"
+import { AiMagicIcon } from "@hugeicons/core-free-icons"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
+import { MorphPopover } from "@/components/morph-popover"
 import { FamilyPicker } from "@/components/roles/family-picker"
+import { RoleAiPanel } from "@/components/roles/role-ai-panel"
 
 // Structural subset of getRole used by this card.
 export interface RoleProfile {
@@ -24,7 +27,6 @@ export interface RoleProfile {
   function: string
   team: string
   trackName: string
-  levelName: string
   familyId: string | null
   familyName: string | null
   purpose: string
@@ -65,6 +67,7 @@ export function RoleProfileCard({
   const tRole = useTranslations("assessment.role")
   const tFamily = useTranslations("dashboard.roles.family")
   const tModel = useTranslations("model")
+  const tAi = useTranslations("dashboard.ai")
   const updateRole = useMutation(api.assessment.roles.updateRole)
 
   const [editing, setEditing] = useState(false)
@@ -149,15 +152,34 @@ export function RoleProfileCard({
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>{t("profileHeading")}</CardTitle>
         {!locked && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={pending}
-            onClick={editing ? handleSave : startEditing}
-          >
-            {editing ? t("saveCta") : t("editCta")}
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* The AI draft popover sits next to Edit, the same pattern as
+                the model editor's Review button. */}
+            <MorphPopover
+              triggerLabel={tAi("openDraftCta")}
+              triggerIcon={AiMagicIcon}
+              title={tAi("heading")}
+              description={tAi("provenance")}
+              closeLabel={tAi("closeLabel")}
+            >
+              {(close) => (
+                <RoleAiPanel
+                  orgId={orgId}
+                  roleId={role.roleId}
+                  onDone={close}
+                />
+              )}
+            </MorphPopover>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={pending}
+              onClick={editing ? handleSave : startEditing}
+            >
+              {editing ? t("saveCta") : t("editCta")}
+            </Button>
+          </div>
         )}
       </CardHeader>
       <CardContent className="space-y-4">

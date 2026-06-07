@@ -18,13 +18,13 @@ import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { ScreenShell } from "@/components/onboarding/screen-shell"
+import { capitalizeFirst } from "@/lib/capitalize"
 import { isDuplicateFamilyError } from "@/lib/family-error"
 
 interface DraftRole {
   id: number
   title: string
   trackKey: string
-  levelKey: string
 }
 
 interface DraftFamily {
@@ -38,9 +38,11 @@ interface DraftFamily {
 // continue"; skip creates nothing. Both paths complete onboarding.
 export function FamiliesStep({
   orgId,
+  organizationName,
   onFinished,
 }: {
   orgId: string
+  organizationName: string
   onFinished: () => void
 }) {
   const t = useTranslations("dashboard.onboarding.families")
@@ -82,18 +84,15 @@ export function FamiliesStep({
   if (families === null || model === undefined || model === null) {
     return (
       <main className="flex items-center justify-center p-6">
-        <Spinner aria-label={t("heading")} />
+        <Spinner aria-label={t("heading", { name: organizationName })} />
       </main>
     )
   }
 
-  const levelOptions = model.tracks.flatMap((track) =>
-    track.levels.map((level) => ({
-      trackKey: track.key,
-      levelKey: level.key,
-      label: `${track.key} ${level.name}`,
-    }))
-  )
+  const trackOptions = model.tracks.map((track) => ({
+    trackKey: track.key,
+    label: track.name,
+  }))
 
   function claimId(): number {
     const id = nextId
@@ -120,7 +119,6 @@ export function FamiliesStep({
             .map((role) => ({
               title: role.title.trim(),
               trackKey: role.trackKey,
-              levelKey: role.levelKey,
             }))
             .filter((role) => role.title !== ""),
         }))
@@ -137,7 +135,15 @@ export function FamiliesStep({
   }
 
   return (
-    <ScreenShell heading={t("heading")} description={t("description")}>
+    <ScreenShell
+      // A name-first heading starts with the name as typed; heading
+      // typography still wants a capital (translators may reorder).
+      heading={capitalizeFirst(
+        t("heading", { name: organizationName }),
+        locale
+      )}
+      description={t("description")}
+    >
       <div className="w-full space-y-4">
         {families.map((family) => (
           <Card key={family.id}>
@@ -182,33 +188,23 @@ export function FamiliesStep({
                     }
                   />
                   <Select
-                    value={role.levelKey}
-                    onValueChange={(levelKey) => {
-                      const option = levelOptions.find(
-                        (item) => item.levelKey === levelKey
-                      )
-                      if (option === undefined) return
+                    value={role.trackKey}
+                    onValueChange={(trackKey) =>
                       updateFamily(family.id, {
                         roles: family.roles.map((item) =>
-                          item.id === role.id
-                            ? {
-                                ...item,
-                                levelKey: option.levelKey,
-                                trackKey: option.trackKey,
-                              }
-                            : item
+                          item.id === role.id ? { ...item, trackKey } : item
                         ),
                       })
-                    }}
+                    }
                   >
                     <SelectTrigger size="sm" className="w-36 shrink-0">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {levelOptions.map((option) => (
+                      {trackOptions.map((option) => (
                         <SelectItem
-                          key={option.levelKey}
-                          value={option.levelKey}
+                          key={option.trackKey}
+                          value={option.trackKey}
                         >
                           {option.label}
                         </SelectItem>
@@ -244,7 +240,6 @@ export function FamiliesStep({
                         id: claimId(),
                         title: "",
                         trackKey: "IC",
-                        levelKey: "IC1",
                       },
                     ],
                   })

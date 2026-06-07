@@ -29,7 +29,6 @@ async function seedTemplateOrganization(t: ReturnType<typeof initConvexTest>) {
 
 interface SeededModel {
   criteria: { criterionId: string }[]
-  tracks: { trackId: string; levels: { levelId: string }[] }[]
 }
 
 async function createRatedRole(args: {
@@ -39,18 +38,13 @@ async function createRatedRole(args: {
   title: string
   value: number
   rateCount?: number
-  levelIndex?: number
 }) {
-  const track = args.model.tracks[0]
-  const level = track?.levels[args.levelIndex ?? 1]
-  if (track === undefined || level === undefined) throw new Error("seed")
   const roleId = await args.asAdmin.mutation(api.assessment.roles.createRole, {
     orgId: args.orgId,
     title: args.title,
     function: "Engineering",
     team: "Core",
-    trackId: track.trackId as never,
-    levelId: level.levelId as never,
+    trackKey: "IC",
     purpose: "p",
     responsibilities: "r",
   })
@@ -108,11 +102,9 @@ describe("getResults", () => {
     expect(results.rows[0]).toMatchObject({
       title: "Top",
       complete: true,
-      score: 540,
+      score: 100,
       band: 1,
     })
-    // All-5 on an IC2 role violates all 8 advisory ranges for that level.
-    expect(results.rows[0]?.warningCount).toBe(8)
     expect(results.rows[1]).toMatchObject({ score: 0, band: 7 })
     expect(results.rows[2]).toMatchObject({
       complete: false,
@@ -125,7 +117,7 @@ describe("getResults", () => {
 })
 
 describe("getRoleResult", () => {
-  it("returns the per-criterion breakdown with guardrail flags when complete", async () => {
+  it("returns the per-criterion breakdown when complete", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
     const roleId = await createRatedRole({
@@ -141,15 +133,13 @@ describe("getRoleResult", () => {
       locale: "sv",
     })
     expect(result).not.toBeNull()
-    expect(result).toMatchObject({ complete: true, score: 540, band: 1 })
+    expect(result).toMatchObject({ complete: true, score: 100, band: 1 })
     expect(result?.criteria).toHaveLength(9)
     const scopeRow = result?.criteria[0]
     expect(scopeRow?.value).toBe(5)
-    // IC2 scope guardrail is [1, 2]: a 5 is outside.
-    expect(scopeRow?.guardrail).toEqual({ min: 1, max: 2 })
-    expect(scopeRow?.outside).toBe(true)
-    // The breakdown shows importance LEVELS (labels client-side), never weights.
-    expect(scopeRow?.importanceLevel).toBe(7)
+    // The breakdown carries the criterion's weight points (scope = 5 in the
+    // standard template).
+    expect(scopeRow?.weightPoints).toBe(5)
   })
 
   it("returns the incomplete shape while ratings are missing", async () => {

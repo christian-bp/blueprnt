@@ -56,21 +56,19 @@ function starterFixture() {
       {
         name: "Engineering",
         roles: [
-          { title: "Developer", trackKey: "IC", levelKey: "IC1" },
-          { title: "Tech Lead", trackKey: "Lead", levelKey: "Lead2" },
+          { title: "Developer", trackKey: "IC" },
+          { title: "Tech Lead", trackKey: "Lead" },
         ],
       },
       {
         name: "Sales",
-        roles: [
-          { title: "Account Executive", trackKey: "IC", levelKey: "IC2" },
-        ],
+        roles: [{ title: "Account Executive", trackKey: "IC" }],
       },
     ],
   }
 }
 
-// Tracks/levels fixture; only the keys/names the Select needs to render.
+// Tracks fixture; only the keys/names the Select needs to render.
 function modelFixture() {
   return {
     modelId: "model-1",
@@ -78,25 +76,8 @@ function modelFixture() {
     templateKey: "standard",
     criteria: [],
     tracks: [
-      {
-        trackId: "t-ic",
-        key: "IC",
-        name: "Individual Contributor",
-        order: 1,
-        levels: [
-          { levelId: "l-ic1", key: "IC1", name: "Level 1", order: 1 },
-          { levelId: "l-ic2", key: "IC2", name: "Level 2", order: 2 },
-        ],
-      },
-      {
-        trackId: "t-lead",
-        key: "Lead",
-        name: "Lead",
-        order: 2,
-        levels: [
-          { levelId: "l-lead2", key: "Lead2", name: "Level 2", order: 1 },
-        ],
-      },
+      { key: "IC", name: "Individual Contributor", order: 1 },
+      { key: "Lead", name: "Lead", order: 2 },
     ],
     bandThresholds: [],
   }
@@ -108,7 +89,11 @@ let currentModel: unknown
 function renderStep(onFinished: () => void = () => {}) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <FamiliesStep orgId="org-1" onFinished={onFinished} />
+      <FamiliesStep
+        orgId="org-1"
+        organizationName="Acme"
+        onFinished={onFinished}
+      />
     </NextIntlClientProvider>
   )
 }
@@ -160,15 +145,13 @@ describe("FamiliesStep", () => {
         {
           name: "Engineering",
           roles: [
-            { title: "Developer", trackKey: "IC", levelKey: "IC1" },
-            { title: "Tech Lead", trackKey: "Lead", levelKey: "Lead2" },
+            { title: "Developer", trackKey: "IC" },
+            { title: "Tech Lead", trackKey: "Lead" },
           ],
         },
         {
           name: "Sales",
-          roles: [
-            { title: "Account Executive", trackKey: "IC", levelKey: "IC2" },
-          ],
+          roles: [{ title: "Account Executive", trackKey: "IC" }],
         },
       ],
     })

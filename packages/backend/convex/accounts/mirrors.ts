@@ -84,56 +84,19 @@ export const removeSeededOrganization = internalMutation({
   args: { orgId: v.string() },
   returns: v.null(),
   handler: async (ctx, { orgId }) => {
-    // Models: tracks -> levels -> trackGuardrails; criteria -> criterionAnchors;
-    // bandThresholds; then the model itself.
+    // Models: criteria, then the model itself. Anchors and band thresholds
+    // ride along on their parent documents; tracks are constants (ADR-0006).
     const models = await ctx.db
       .query("models")
       .withIndex("by_org", (q) => q.eq("orgId", orgId))
       .collect()
     for (const model of models) {
-      const tracks = await ctx.db
-        .query("tracks")
-        .withIndex("by_model", (q) => q.eq("modelId", model._id))
-        .collect()
-      for (const track of tracks) {
-        const levels = await ctx.db
-          .query("levels")
-          .withIndex("by_track", (q) => q.eq("trackId", track._id))
-          .collect()
-        for (const level of levels) {
-          const guardrails = await ctx.db
-            .query("trackGuardrails")
-            .withIndex("by_level", (q) => q.eq("levelId", level._id))
-            .collect()
-          for (const g of guardrails) {
-            await ctx.db.delete(g._id)
-          }
-          await ctx.db.delete(level._id)
-        }
-        await ctx.db.delete(track._id)
-      }
-
       const criteria = await ctx.db
         .query("criteria")
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .collect()
       for (const criterion of criteria) {
-        const anchors = await ctx.db
-          .query("criterionAnchors")
-          .withIndex("by_criterion", (q) => q.eq("criterionId", criterion._id))
-          .collect()
-        for (const anchor of anchors) {
-          await ctx.db.delete(anchor._id)
-        }
         await ctx.db.delete(criterion._id)
-      }
-
-      const thresholds = await ctx.db
-        .query("bandThresholds")
-        .withIndex("by_model", (q) => q.eq("modelId", model._id))
-        .collect()
-      for (const t of thresholds) {
-        await ctx.db.delete(t._id)
       }
 
       await ctx.db.delete(model._id)

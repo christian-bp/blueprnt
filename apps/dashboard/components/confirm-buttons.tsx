@@ -73,10 +73,13 @@ export function ConfirmButtons({
             exit={{ opacity: 0, scale: 0.95 }}
             transition={SPRING}
             className={cn(
-              // The viewport-relative max-width plus wrap keeps the armed row
-              // from overflowing the screen edge on narrow viewports (the
-              // absolute overlay otherwise sizes to its content).
-              "absolute top-1/2 z-20 flex max-w-[calc(100vw-4rem)] -translate-y-1/2 flex-wrap items-center gap-2",
+              // w-max sizes the overlay to its CONTENT: an absolutely
+              // positioned box otherwise shrink-wraps to its containing
+              // block (the trigger-sized wrapper), which forced the pair
+              // onto two rows. The buttons stay side by side (nowrap); the
+              // viewport-relative max-width remains as an overflow guard on
+              // very narrow screens.
+              "absolute top-1/2 z-20 flex w-max max-w-[calc(100vw-4rem)] -translate-y-1/2 flex-nowrap items-center gap-2",
               align === "right" ? "right-0 justify-end" : "left-0"
             )}
           >

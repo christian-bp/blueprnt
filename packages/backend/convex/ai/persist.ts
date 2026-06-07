@@ -1,3 +1,4 @@
+import { isBalanced } from "@workspace/core"
 import { v } from "convex/values"
 import { internalMutation } from "../_generated/server"
 import { appError, ERROR_CODES } from "../lib/errors"
@@ -10,7 +11,7 @@ export const saveDraft = internalMutation({
         name: v.string(),
         description: v.string(),
         helpText: v.string(),
-        importanceLevel: v.number(),
+        weightPoints: v.number(),
         // Convex has no length validator; the handler guards anchors.length.
         anchors: v.array(v.string()),
       })
@@ -21,6 +22,11 @@ export const saveDraft = internalMutation({
     if (criteria.some((criterion) => criterion.anchors.length !== 6)) {
       throw appError(ERROR_CODES.invalidInput)
     }
+    // The action repairs the allocation before calling; this gate keeps an
+    // unbalanced draft from ever reaching the suggestion store (ADR-0004).
+    if (!isBalanced(criteria.map((criterion) => criterion.weightPoints))) {
+      throw appError(ERROR_CODES.weightsUnbalanced)
+    }
     await ctx.db.patch(suggestionId, {
       suggestedValue: { criteria },
       status: "suggested",
@@ -29,24 +35,25 @@ export const saveDraft = internalMutation({
   },
 })
 
-export const saveImportanceReview = internalMutation({
+export const saveWeightReview = internalMutation({
   args: {
     suggestionId: v.id("suggestions"),
-    // criterionId stays a string here: it is an LLM-echoed value, and the
-    // confirm path re-validates it with ctx.db.normalizeId + an org check
+    // Criterion ids stay strings here: they are LLM-echoed values, and the
+    // confirm path re-validates them with ctx.db.normalizeId + an org check
     // before anything is patched.
-    adjustments: v.array(
+    moves: v.array(
       v.object({
-        criterionId: v.string(),
-        suggestedImportanceLevel: v.number(),
+        fromCriterionId: v.string(),
+        toCriterionId: v.string(),
+        points: v.number(),
         motivation: v.string(),
       })
     ),
   },
   returns: v.null(),
-  handler: async (ctx, { suggestionId, adjustments }) => {
+  handler: async (ctx, { suggestionId, moves }) => {
     await ctx.db.patch(suggestionId, {
-      suggestedValue: { adjustments },
+      suggestedValue: { moves },
       status: "suggested",
     })
     return null

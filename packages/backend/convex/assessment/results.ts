@@ -1,29 +1,9 @@
-import { checkGuardrails, type GuardrailRange } from "@workspace/core"
 import { v } from "convex/values"
-import type { Id } from "../_generated/dataModel"
-import type { QueryCtx } from "../_generated/server"
 import { clampLocale, isCriterionKey } from "../evaluationModel/localize"
 import { templateContent } from "../evaluationModel/standardTemplate"
 import { orgQuery } from "../lib/functions"
 import { deriveResults } from "./compute"
-import { familyNames, trackLevelNames } from "./names"
-
-// Guardrail ranges for one level, keyed for the engine. Plain QueryCtx: the
-// org-scoped wrapper ctx is structurally assignable.
-async function guardrailsForLevel(
-  ctx: QueryCtx,
-  levelId: Id<"levels">
-): Promise<GuardrailRange[]> {
-  const rows = await ctx.db
-    .query("trackGuardrails")
-    .withIndex("by_level", (q) => q.eq("levelId", levelId))
-    .collect()
-  return rows.map((row) => ({
-    criterionId: row.criterionId as string,
-    min: row.min,
-    max: row.max,
-  }))
-}
+import { familyNames, trackNames } from "./names"
 
 // The results view: live-derived rows for every non-archived role plus the
 // model's band list. Score/band are computed at read time and never stored
@@ -38,15 +18,12 @@ export const getResults = orgQuery({
         title: v.string(),
         trackKey: v.string(),
         trackName: v.string(),
-        levelKey: v.string(),
-        levelName: v.string(),
         status: v.string(),
         complete: v.boolean(),
         ratedCount: v.number(),
         totalCriteria: v.number(),
         score: v.union(v.number(), v.null()),
         band: v.union(v.number(), v.null()),
-        warningCount: v.number(),
         familyId: v.union(v.id("roleFamilies"), v.null()),
         familyName: v.union(v.string(), v.null()),
       })
@@ -58,27 +35,22 @@ export const getResults = orgQuery({
     const resultByRole = new Map(
       derived.results.map((result) => [result.roleId, result])
     )
-    const ratingsByRole = new Map(
-      derived.roles.map((role) => [role.roleId, role.ratings])
-    )
 
-    const names = await trackLevelNames(ctx, ctx.orgId, locale)
+    const names = trackNames(locale)
     const families = await familyNames(ctx, ctx.orgId)
     const model = await ctx.db
       .query("models")
       .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
       .unique()
-    const bands: { band: number; minScore: number }[] = []
-    if (model !== null) {
-      const thresholds = await ctx.db
-        .query("bandThresholds")
-        .withIndex("by_model", (q) => q.eq("modelId", model._id))
-        .collect()
-      thresholds.sort((a, b) => a.band - b.band)
-      for (const threshold of thresholds) {
-        bands.push({ band: threshold.band, minScore: threshold.minScore })
-      }
-    }
+    const bands =
+      model === null
+        ? []
+        : [...model.bandThresholds]
+            .sort((a, b) => a.band - b.band)
+            .map((threshold) => ({
+              band: threshold.band,
+              minScore: threshold.minScore,
+            }))
 
     const roleRows = await ctx.db
       .query("roles")
@@ -89,27 +61,18 @@ export const getResults = orgQuery({
     const rows = []
     for (const role of active) {
       const result = resultByRole.get(role._id as string)
-      const guardrails = await guardrailsForLevel(ctx, role.levelId)
-      const warnings = checkGuardrails(
-        ratingsByRole.get(role._id as string) ?? [],
-        guardrails
-      )
-      const track = names.trackName.get(role.trackId as string)
-      const level = names.levelName.get(role.levelId as string)
+      const track = names.get(role.trackKey)
       rows.push({
         roleId: role._id,
         title: role.title,
-        trackKey: track?.key ?? "",
-        trackName: track?.name ?? "",
-        levelKey: level?.key ?? "",
-        levelName: level?.name ?? "",
+        trackKey: role.trackKey,
+        trackName: track?.name ?? role.trackKey,
         status: role.status,
         complete: result?.complete ?? false,
         ratedCount: result?.ratedCount ?? 0,
         totalCriteria: derived.totalCriteria,
         score: result?.score ?? null,
         band: result?.band ?? null,
-        warningCount: warnings.length,
         familyId: role.familyId ?? null,
         familyName:
           role.familyId !== undefined
@@ -134,10 +97,12 @@ export const getResults = orgQuery({
   },
 })
 
-// Per-role result: score, band outcome, and the per-criterion breakdown
-// (localized criterion name, importance LEVEL for the label, rating value,
-// motivation, advisory guardrail flag). Weighted per-criterion contributions
-// are deliberately absent: they would expose the weights (CLAUDE.md rule).
+// Per-role result: score (normalized 0-100), band outcome, and the
+// per-criterion breakdown (localized criterion name, weight points, rating
+// value, motivation). Weighted per-criterion contributions are deliberately
+// absent: the breakdown reads as ratings against criteria, not as an
+// arithmetic worksheet (ADR-0004 keeps the derived percent shares in the
+// model view, not here).
 export const getRoleResult = orgQuery({
   args: { roleId: v.string(), locale: v.optional(v.string()) },
   returns: v.union(
@@ -154,14 +119,9 @@ export const getRoleResult = orgQuery({
         v.object({
           criterionId: v.id("criteria"),
           name: v.string(),
-          importanceLevel: v.number(),
+          weightPoints: v.number(),
           value: v.union(v.number(), v.null()),
           motivation: v.union(v.string(), v.null()),
-          guardrail: v.union(
-            v.null(),
-            v.object({ min: v.number(), max: v.number() })
-          ),
-          outside: v.boolean(),
         })
       ),
     })
@@ -196,13 +156,6 @@ export const getRoleResult = orgQuery({
     const ratingByCriterion = new Map(
       ratingRows.map((rating) => [rating.criterionId as string, rating])
     )
-    const guardrailRows = await ctx.db
-      .query("trackGuardrails")
-      .withIndex("by_level", (q) => q.eq("levelId", role.levelId))
-      .collect()
-    const guardrailByCriterion = new Map(
-      guardrailRows.map((row) => [row.criterionId as string, row])
-    )
 
     return {
       roleId: role._id,
@@ -219,23 +172,12 @@ export const getRoleResult = orgQuery({
             ? content.criteria[row.templateKey]
             : null
         const rating = ratingByCriterion.get(row._id as string)
-        const guardrail = guardrailByCriterion.get(row._id as string)
-        const value = rating?.value ?? null
-        const outside =
-          guardrail !== undefined &&
-          value !== null &&
-          (value < guardrail.min || value > guardrail.max)
         return {
           criterionId: row._id,
           name: localized?.name ?? row.name,
-          importanceLevel: row.importanceLevel,
-          value,
+          weightPoints: row.weightPoints,
+          value: rating?.value ?? null,
           motivation: rating?.motivation ?? null,
-          guardrail:
-            guardrail === undefined
-              ? null
-              : { min: guardrail.min, max: guardrail.max },
-          outside,
         }
       }),
     }

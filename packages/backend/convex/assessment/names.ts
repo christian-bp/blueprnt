@@ -1,64 +1,27 @@
 import type { QueryCtx } from "../_generated/server"
+import { clampLocale } from "../evaluationModel/localize"
 import {
-  clampLocale,
-  isLevelKey,
-  isTrackKey,
-} from "../evaluationModel/localize"
-import { templateContent } from "../evaluationModel/standardTemplate"
+  TRACK_KEYS,
+  templateContent,
+} from "../evaluationModel/standardTemplate"
 
-export interface TrackLevelNames {
-  trackName: Map<string, { key: string; name: string; order: number }>
-  levelName: Map<string, { key: string; name: string; order: number }>
-}
+export type TrackNames = Map<
+  string,
+  { key: string; name: string; order: number }
+>
 
-// Localized track/level name lookup for the org's model. Both seed paths
-// write stable keys, so names localize by key with stored values as fallback
-// (same rule as getModel). Shared by the role register and the results
-// queries so the localization rule cannot drift between readers.
-export async function trackLevelNames(
-  ctx: QueryCtx,
-  orgId: string,
-  locale: string | undefined
-): Promise<TrackLevelNames> {
+// Localized track name lookup keyed by the stable track key. Tracks are
+// fixed V1 constants (ADR-0006), so this is a pure content lookup with no
+// database read. Shared by the role register and the results queries so the
+// localization rule cannot drift between readers.
+export function trackNames(locale: string | undefined): TrackNames {
   const content = templateContent(clampLocale(locale))
-  const model = await ctx.db
-    .query("models")
-    .withIndex("by_org", (q) => q.eq("orgId", orgId))
-    .unique()
-  const trackName = new Map<
-    string,
-    { key: string; name: string; order: number }
-  >()
-  const levelName = new Map<
-    string,
-    { key: string; name: string; order: number }
-  >()
-  if (model === null) return { trackName, levelName }
-  const tracks = await ctx.db
-    .query("tracks")
-    .withIndex("by_model", (q) => q.eq("modelId", model._id))
-    .collect()
-  for (const track of tracks) {
-    trackName.set(track._id as string, {
-      key: track.key,
-      name: isTrackKey(track.key) ? content.trackNames[track.key] : track.name,
-      order: track.order,
-    })
-    const levels = await ctx.db
-      .query("levels")
-      .withIndex("by_track", (q) => q.eq("trackId", track._id))
-      .collect()
-    for (const level of levels) {
-      levelName.set(level._id as string, {
-        key: level.key,
-        name: isLevelKey(level.key)
-          ? content.levelNames[level.key]
-          : level.name,
-        order: level.order,
-      })
-    }
-  }
-  return { trackName, levelName }
+  return new Map(
+    TRACK_KEYS.map((key, index) => [
+      key as string,
+      { key, name: content.trackNames[key], order: index + 1 },
+    ])
+  )
 }
 
 // Family name lookup for the org. Families are user-entered names, stored

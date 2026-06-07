@@ -7,6 +7,11 @@ export const models = defineTable({
   orgId: v.string(),
   name: v.string(),
   templateKey: v.optional(v.string()),
+  // Band thresholds are an aggregate of the model (ADR-0006): always exactly
+  // 7 entries (band 1-7, Band 1 = highest), read as a complete set and edited
+  // as a set, so they live on the model document. minScore is the lowest
+  // inclusive score on the normalized 0-100 scale (ADR-0004).
+  bandThresholds: v.array(v.object({ band: v.number(), minScore: v.number() })),
 }).index("by_org", ["orgId"])
 
 export const criteria = defineTable({
@@ -15,12 +20,20 @@ export const criteria = defineTable({
   name: v.string(),
   description: v.string(),
   helpText: v.string(),
+  // Anchor texts for scores 0-5, always exactly 6, ordered by level. Anchors
+  // are an aggregate of the criterion (ADR-0006): never referenced from
+  // elsewhere and never read without it, so they live on its document and
+  // cannot outlive it.
+  anchors: v.array(v.object({ level: v.number(), text: v.string() })),
   // standard template criterion key ("scope".."formal") set at seed time; display
   // localizes pristine template rows from the content modules. E2 editing MUST
   // clear this key when any text field changes (ownership transfer to the
   // organization).
   templateKey: v.optional(v.string()),
-  importanceLevel: v.number(), // 1-7; weight resolved via @workspace/core
+  // 1-5 weight points under the point budget (criteria count x 3, exact sum;
+  // ADR-0004). Mutations keep the model balanced at all times: new criteria
+  // enter at 3, reweighting is an atomic batch, removal requires 3.
+  weightPoints: v.number(),
   order: v.number(),
   isCustom: v.boolean(),
   // Criterion rationale (kriterieurvalsprotokoll), filled in E2.
@@ -40,39 +53,12 @@ export const criteria = defineTable({
   .index("by_model", ["modelId"])
   .index("by_org", ["orgId"])
 
-export const criterionAnchors = defineTable({
-  criterionId: v.id("criteria"),
-  level: v.number(), // 0-5
-  text: v.string(),
-}).index("by_criterion", ["criterionId"])
-
-export const tracks = defineTable({
-  orgId: v.string(),
-  modelId: v.id("models"),
-  key: v.string(), // IC | Lead | M
-  name: v.string(),
-  order: v.number(),
-}).index("by_model", ["modelId"])
-
-export const levels = defineTable({
-  trackId: v.id("tracks"),
-  key: v.string(), // IC1..IC5, Lead1..Lead3, M1..M3
-  name: v.string(),
-  definition: v.optional(v.string()),
-  order: v.number(),
-}).index("by_track", ["trackId"])
-
-export const trackGuardrails = defineTable({
-  orgId: v.string(),
-  levelId: v.id("levels"),
-  criterionId: v.id("criteria"),
-  min: v.number(),
-  max: v.number(),
-}).index("by_level", ["levelId"])
-
-export const bandThresholds = defineTable({
-  orgId: v.string(),
-  modelId: v.id("models"),
-  band: v.number(), // 1-7, Band 1 = highest
-  minScore: v.number(),
-}).index("by_model", ["modelId"])
+// The fixed V1 track schema as a validator (ADR-0006): tracks are constants,
+// not rows. MUST stay in sync with TRACK_KEYS in standardTemplate.ts
+// (standardTemplate.test.ts asserts the bijection). Used by roles.trackKey
+// and by getModel's wire shape.
+export const trackKeyValidator = v.union(
+  v.literal("IC"),
+  v.literal("Lead"),
+  v.literal("M")
+)

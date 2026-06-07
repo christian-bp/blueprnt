@@ -5,11 +5,11 @@ Roller och deras värderingar mot modellen — där roller registreras, betygsä
 ## Språk
 
 **Roll** *(kod: Role)*:
-Ett jobb/en befattning som värderas — definierad av sitt innehåll, sina krav, sitt ansvar och sin påverkan, aldrig av personen som innehar den. blueprnt värderar roller, aldrig personer. En roll är alltid en **nivåroll**: en konkret definierad roll i jobbarkitekturen (t.ex. Software Developer IC2) med en titel, en track och en nivå. Besläktade nivåroller bildar en rollfamilj (se Värderingsmodell-ordlistan).
-_Undvik_: Befattning (godtagbar synonym), Person, Anställd, Individ (uttryckligen INTE en roll)
+Ett jobb/en befattning som värderas — definierad av sitt innehåll, sina krav, sitt ansvar och sin påverkan, aldrig av personen som innehar den. blueprnt värderar roller, aldrig personer. En roll har en titel och en track ("System Developer" är IC); **nivån sitter på individen, inte på rollen** (V2-rollplaceringen, ADR-0005). Skiljer sig seniorens arbete åt på riktigt blir det en egen roll. Besläktade roller bildar en rollfamilj (se Värderingsmodell-ordlistan).
+_Undvik_: Befattning (godtagbar synonym), Nivåroll (utgånget begrepp), Person, Anställd, Individ (uttryckligen INTE en roll)
 
 **Jobbprofil** *(kod: Job profile)*:
-Den standardiserade beskrivningen av en roll som krävs som input före värdering. Obligatorisk kärna (titel, funktion/avdelning, team, track, nivå, syfte, ansvarsområden) + strukturerade valfria fält (beslutsmandat, intressenter, kunskapskrav, finansiellt ansvar, personalansvar, risk/konsekvens, leverabler). Titeln är nivårollens visningstitel (t.ex. "Junior Software Developer" för IC1, "Principal Software Developer" för IC5). Standardiserad input = jämförbara värderingar.
+Den standardiserade beskrivningen av en roll som krävs som input före värdering. Obligatorisk kärna (titel, funktion/avdelning, team, track, syfte, ansvarsområden) + strukturerade valfria fält (beslutsmandat, intressenter, kunskapskrav, finansiellt ansvar, personalansvar, risk/konsekvens, leverabler). Titeln är rollens visningstitel (t.ex. "System Developer"); ingen nivå anges (ADR-0005). Standardiserad input = jämförbara värderingar.
 _Undvik (fältet titel)_: Namn (säg "titel"; beslutat 2026-06)
 _Undvik_: Rollbeskrivning (ok beskrivande; "jobbprofil" är den strukturerade mallen)
 
@@ -26,8 +26,8 @@ En kort fritextförklaring till ett betyg. **Frivillig** — aldrig obligatorisk
 _Undvik_: Kommentar (ok beskrivande), Anteckning
 
 **Poäng** *(kod: Score)*:
-Den viktade totalen för en roll (Σ betyg × vikt), beräknad av motorn. Mappas till ett band via bandtrösklarna. UI-etiketten är "Totalpoäng" (i18n); kanonisk term i tal och kod är Poäng/Score.
-_Undvik_: Total, Betyg
+Den viktade totalen för en roll, normaliserad till 0 till 100: 20 × Σ(betyg × viktpoäng) / Σ(viktpoäng), avrundad nedåt (ADR-0004). Max är alltid 100 oavsett antal kriterier. Mappas till ett band via bandtrösklarna. UI-etiketten är "Totalpoäng" (i18n); kanonisk term i tal och kod är Poäng/Score.
+_Undvik_: Total, Betyg, Viktpoäng (kriteriets vikt, se Värderingsmodell-ordlistan)
 
 **Bandutfall** *(kod: Band outcome)*:
 Bandet en roll hamnar i — **alltid** det som räknas fram automatiskt från poängen via bandtrösklarna. Ingen manuell override; vill man ändra utfallet justerar man betygen eller modellen (kriterier/betydelser/trösklar), inte den enskilda rollens band. UI-etiketten är kort "Band" (i18n `assessment.band`).
@@ -74,8 +74,8 @@ _Undvik_: AI-svar, Automatiskt värde (det är ett *förslag* tills HR bekräfta
 
 - **Roll ≠ Person (hård gräns)**: role-/rating-tabellerna får ALDRIG bära person-, löne- eller prestationsfält — sådan data hör till framtida people-/pay-kontexter (V2, se CONTEXT-MAP). **Roll-id är stabilt och permanent**: omvärdering ändrar betyg/poäng/band men aldrig rollens identitet, och roll-id återanvänds aldrig (V2:s lika/likvärdigt arbete-gruppering hänger på det).
 - **Ankare vs Ankarroll**: ett **ankare** är ett kriteriums 0–5-text (Värderingsmodell); en **ankarroll** är en referensroll för kalibrering. Samma ord, olika saker — säg alltid "ankarroll" explicit.
-- **Rollplacering (V2-term)**: förklaringsdokumentets term för att placera en medarbetare i rätt nivåroll (medarbetare mot roll). Hör till den framtida people-kontexten, aldrig assessment. Därför är "placering" reserverat för medarbetare-mot-roll och används inte om band (säg "bandutfall").
-- **Blindning (mildrad av HR-only)**: eftersom bara betrodd HR använder verktyget handlar dolda tal om att undvika falsk precision, inte om att förhindra fusk. Arbetsdefault: HR sätter betydelse som ord; vid inmatning av betyg ser de bara kriterier + ankare; poängen och föreslaget band visas i resultatsteget, inte live under betygsättningen. Skärp senare vid behov.
+- **Rollplacering (V2-term)**: att koppla en medarbetare till en roll och ge hen sin **nivå** inom rollens track (ADR-0005: nivån är individdata). Hör till den framtida people-kontexten, aldrig assessment. Därför är "placering" reserverat för medarbetare-mot-roll och används inte om band (säg "bandutfall").
+- **Blindning (mildrad av HR-only)**: eftersom bara betrodd HR använder verktyget handlar blindningen om att undvika att totalen styr betygen, inte om att förhindra fusk. Arbetsdefault: viktpoängen sätts i modellkonfigurationen; vid inmatning av betyg ser bedömaren bara kriterier + ankare (inga viktpoäng); poängen och föreslaget band visas i resultatsteget, inte live under betygsättningen. Skärp senare vid behov.
 - **Ingen bandöverride (avviker från briefen)**: briefen nämnde manuell bandjustering med dokumenterad anledning; vi tar bort det. Band är alltid det deterministiska utfallet — vill man ändra justerar man betyg eller modell (stöds av live-omräkning + revisionslogg). Stärker objektiviteten; lätt att återinföra senare.
 
 ## Exempeldialog

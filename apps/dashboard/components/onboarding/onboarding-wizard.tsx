@@ -171,9 +171,10 @@ export function OnboardingWizard({
                     onDone={advance}
                   />
                 )}
-                {screen === "model" && orgId !== null && (
+                {screen === "model" && status.organization !== null && (
                   <ModelSetupStep
-                    orgId={orgId}
+                    orgId={status.organization.orgId}
+                    organizationName={status.organization.name}
                     onContinue={() => {
                       setSessionStep(4)
                       setBackTo(null)
@@ -181,8 +182,12 @@ export function OnboardingWizard({
                     }}
                   />
                 )}
-                {screen === "families" && orgId !== null && (
-                  <FamiliesStep orgId={orgId} onFinished={onFinished} />
+                {screen === "families" && status.organization !== null && (
+                  <FamiliesStep
+                    orgId={status.organization.orgId}
+                    organizationName={status.organization.name}
+                    onFinished={onFinished}
+                  />
                 )}
               </motion.div>
             </AnimatePresence>

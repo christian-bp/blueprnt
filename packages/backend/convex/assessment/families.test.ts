@@ -25,15 +25,14 @@ async function seedTemplateOrganization(t: ReturnType<typeof initConvexTest>) {
   })
   if (model === null) throw new Error("model not seeded")
   const track = model.tracks[0]
-  const level = track?.levels[0]
-  if (track === undefined || level === undefined) throw new Error("seed")
-  return { orgId, asAdmin, track, level }
+  if (track === undefined) throw new Error("seed")
+  return { orgId, asAdmin, track }
 }
 
 describe("role families", () => {
   it("creates, lists with role counts, and rejects duplicate names", async () => {
     const t = initConvexTest()
-    const { orgId, asAdmin, track, level } = await seedTemplateOrganization(t)
+    const { orgId, asAdmin } = await seedTemplateOrganization(t)
     const familyId = await asAdmin.mutation(
       api.assessment.families.createRoleFamily,
       { orgId, name: "  Software Engineering  " }
@@ -41,23 +40,12 @@ describe("role families", () => {
     await t.run(async (ctx) => {
       const docId = ctx.db.normalizeId("roleFamilies", familyId)
       if (docId === null) throw new Error("bad family id")
-      const trackDocId =
-        ctx.db.normalizeId("tracks", track.trackId) ??
-        (() => {
-          throw new Error("bad track")
-        })()
-      const levelDocId =
-        ctx.db.normalizeId("levels", level.levelId) ??
-        (() => {
-          throw new Error("bad level")
-        })()
       await ctx.db.insert("roles", {
         orgId,
         title: "Developer",
         function: "Engineering",
         team: "Core",
-        trackId: trackDocId,
-        levelId: levelDocId,
+        trackKey: "IC",
         purpose: "p",
         responsibilities: "r",
         status: "draft",
@@ -141,32 +129,20 @@ describe("role families", () => {
 
   it("removal clears membership from roles and audits the cleared ids", async () => {
     const t = initConvexTest()
-    const { orgId, asAdmin, track, level } = await seedTemplateOrganization(t)
+    const { orgId, asAdmin } = await seedTemplateOrganization(t)
     const familyId = await asAdmin.mutation(
       api.assessment.families.createRoleFamily,
       { orgId, name: "Tech" }
     )
-    let roleId: string
-    await t.run(async (ctx) => {
+    const roleId = await t.run(async (ctx) => {
       const docId = ctx.db.normalizeId("roleFamilies", familyId)
       if (docId === null) throw new Error("bad family id")
-      const trackDocId =
-        ctx.db.normalizeId("tracks", track.trackId) ??
-        (() => {
-          throw new Error("bad track")
-        })()
-      const levelDocId =
-        ctx.db.normalizeId("levels", level.levelId) ??
-        (() => {
-          throw new Error("bad level")
-        })()
-      roleId = await ctx.db.insert("roles", {
+      return await ctx.db.insert("roles", {
         orgId,
         title: "Developer",
         function: "Engineering",
         team: "Core",
-        trackId: trackDocId,
-        levelId: levelDocId,
+        trackKey: "IC",
         purpose: "p",
         responsibilities: "r",
         status: "draft",
@@ -181,7 +157,7 @@ describe("role families", () => {
       const familyDocId = ctx.db.normalizeId("roleFamilies", familyId)
       if (familyDocId === null) throw new Error("bad family id")
       expect(await ctx.db.get(familyDocId)).toBeNull()
-      const roleDocId = ctx.db.normalizeId("roles", roleId!)
+      const roleDocId = ctx.db.normalizeId("roles", roleId)
       if (roleDocId === null) throw new Error("bad role id")
       const role = await ctx.db.get(roleDocId)
       // The role row survives; only the membership is cleared.
@@ -197,7 +173,7 @@ describe("role families", () => {
       expect(audit[0]?.payload).toEqual({
         familyId,
         name: "Tech",
-        clearedRoleIds: [roleId!],
+        clearedRoleIds: [roleId],
       })
     })
   })

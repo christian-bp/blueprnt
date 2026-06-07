@@ -81,7 +81,7 @@ export default function FamilyPage(props: {
       {trackKeys.map((track) => {
         const trackRoles = familyRoles
           .filter((role) => role.trackKey === track.key)
-          .sort((a, b) => a.levelOrder - b.levelOrder)
+          .sort((a, b) => a.title.localeCompare(b.title))
         return (
           <div key={track.key} className="space-y-2">
             <h3 className="font-medium text-sm">{track.name}</h3>
@@ -89,7 +89,6 @@ export default function FamilyPage(props: {
               <TableHeader>
                 <TableRow>
                   <TableHead>{t("table.title")}</TableHead>
-                  <TableHead>{t("table.trackLevel")}</TableHead>
                   <TableHead>{t("table.status")}</TableHead>
                   <TableHead className="text-right">
                     {tAssessment("band")}
@@ -108,9 +107,6 @@ export default function FamilyPage(props: {
                         >
                           {role.title}
                         </Link>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {role.levelKey}
                       </TableCell>
                       <TableCell>
                         <Badge variant={statusBadgeVariant(role.status)}>

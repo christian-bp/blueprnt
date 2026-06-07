@@ -57,16 +57,14 @@ function draftCriteria() {
       name: "Problem solving",
       description: "How the role tackles novel problems.",
       helpText: "Assess complexity.",
-      // Level 5 maps to the "Important" label; the raw weight (13) must never
-      // surface in the UI.
-      importanceLevel: 5,
+      weightPoints: 4,
       anchors: ["a0", "a1", "a2", "a3", "a4", "a5"],
     },
     {
       name: "Autonomy",
       description: "How independently the role operates.",
       helpText: "Assess oversight.",
-      importanceLevel: 3,
+      weightPoints: 2,
       anchors: ["b0", "b1", "b2", "b3", "b4", "b5"],
     },
   ]
@@ -139,16 +137,32 @@ describe("ModelDraftPanel", () => {
     })
   })
 
-  it("renders criteria with importance LABELS, never raw weight numbers", () => {
+  it("renders criteria with their drafted weight points", () => {
     useQueryMock.mockReturnValue(suggestedRow())
     renderPanel()
 
-    // Importance shows as the label, never the weight behind the level.
-    expect(screen.getByText(messages.model.importance.high)).toBeDefined()
-    expect(screen.getByText(messages.model.importance.moderate)).toBeDefined()
-    // The raw weight (13 for level 5) must not appear anywhere.
-    expect(screen.queryByText(/\b13\b/)).toBeNull()
+    expect(screen.getByText(`${messages.model.weightPoints}: 4`)).toBeDefined()
+    expect(screen.getByText(`${messages.model.weightPoints}: 2`)).toBeDefined()
     expect(screen.getByText("Problem solving")).toBeDefined()
+  })
+
+  it("treats a malformed stored payload as empty (Zod gate before render)", () => {
+    useQueryMock.mockReturnValue([
+      {
+        suggestionId: "sug-1",
+        kind: "model.draft",
+        status: "suggested",
+        // Free text instead of the criteria array: must never render as a draft.
+        suggestedValue: { criteria: "Here are some criteria ideas!" },
+        errorCode: null,
+        createdAt: Date.now(),
+      },
+    ])
+    renderPanel()
+
+    expect(screen.queryByRole("checkbox")).toBeNull()
+    const confirm = screen.getByRole("button", { name: ai.confirmCta })
+    expect((confirm as HTMLButtonElement).disabled).toBe(true)
   })
 
   it("confirms only the still-checked criteria after one is unchecked", async () => {

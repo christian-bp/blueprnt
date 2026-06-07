@@ -8,44 +8,39 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { aiErrorSubKey } from "@/lib/error-label"
-import { importanceLabelKey } from "@/lib/importance"
 import { newestByKind } from "@/lib/open-suggestions"
+import {
+  type ModelDraftValue,
+  modelDraftValueSchema,
+} from "@/lib/suggestion-schemas"
 
 // A crashed action never reaches markFailed, so a "generating" row can linger
 // forever. The panel treats one older than this as a failure and offers a retry.
 const STALE_AFTER_MS = 90_000
 
-interface DraftCriterion {
-  name: string
-  description: string
-  helpText: string
-  importanceLevel: number
-  anchors: string[]
-}
+type DraftCriterion = ModelDraftValue["criteria"][number]
 
 // The draft assistant, rendered inside the MorphPopover (which owns the
 // heading and the always-visible provenance line). AI never auto-applies
 // (ADR-0003): it proposes criteria the HR admin selects and confirms.
+//
+// Closing the popover does NOT dismiss: an open draft stays put and reopening
+// shows it again, so the only ways out are an explicit confirm or dismiss.
 export function ModelDraftPanel({
   orgId,
   onDone,
-  dismissOnUnmount = false,
 }: {
   orgId: string
   // Called after a successful confirm or dismiss so the host (the popover)
   // can morph back to its button.
   onDone?: () => void
-  // Closing the popover (any path) counts as a dismiss: an open suggested
-  // or failed draft is rejected when the panel unmounts, so the next open
-  // always starts fresh. A generating row is left to finish.
-  dismissOnUnmount?: boolean
 }) {
   const t = useTranslations("dashboard.ai")
   const tModel = useTranslations("dashboard.model")
   const tErrors = useTranslations("errors")
-  const tImportance = useTranslations("model.importance")
+  const tWeightPoints = useTranslations("model")
   // The AI responds in the requester's current UI language.
   const locale = useLocale()
 
@@ -65,10 +60,14 @@ export function ModelDraftPanel({
   }>({ seededFor: null, accepted: new Set() })
 
   // The newest draft row drives the UI; rows are capped at 20 per status.
+  // The stored payload is re-parsed with Zod before anything renders; a
+  // malformed value reads as an empty draft (see suggestion-schemas).
   const draft = newestByKind(suggestions, "model.draft")
-  const criteria =
-    (draft?.suggestedValue as { criteria?: DraftCriterion[] } | null)
-      ?.criteria ?? []
+  const parsedValue =
+    draft?.status === "suggested"
+      ? modelDraftValueSchema.safeParse(draft.suggestedValue)
+      : null
+  const criteria = parsedValue?.success ? parsedValue.data.criteria : []
 
   // Tick every 10s while a generating row exists so the staleness check is
   // re-evaluated without busy-waiting. No interval runs otherwise.
@@ -117,21 +116,6 @@ export function ModelDraftPanel({
     }
   }
 
-  // See the dismissOnUnmount prop doc; the ref keeps the cleanup closure on
-  // the CURRENT draft row.
-  const draftRef = useRef(draft)
-  draftRef.current = draft
-  // biome-ignore lint/correctness/useExhaustiveDependencies: unmount-only cleanup reading refs
-  useEffect(() => {
-    if (!dismissOnUnmount) return
-    return () => {
-      const open = draftRef.current
-      if (open?.status === "suggested" || open?.status === "failed") {
-        void rejectSuggestion({ orgId, suggestionId: open.suggestionId })
-      }
-    }
-  }, [dismissOnUnmount])
-
   const isStaleGenerating =
     draft?.status === "generating" &&
     Date.now() - draft.createdAt >= STALE_AFTER_MS
@@ -153,7 +137,8 @@ export function ModelDraftPanel({
           labels={{
             confirmCta: t("confirmCta"),
             rejectCta: t("rejectCta"),
-            importance: (level) => tImportance(importanceLabelKey(level)),
+            weightPoints: (points) =>
+              `${tWeightPoints("weightPoints")}: ${points}`,
           }}
           onConfirm={async () => {
             setFailed(false)
@@ -242,7 +227,7 @@ function SuggestedDraft({
   labels: {
     confirmCta: string
     rejectCta: string
-    importance: (level: number) => string
+    weightPoints: (points: number) => string
   }
 }) {
   return (
@@ -267,8 +252,8 @@ function SuggestedDraft({
               <div className="space-y-1">
                 <Label htmlFor={checkboxId} className="flex items-center gap-2">
                   <span>{criterion.name}</span>
-                  <span className="text-muted-foreground text-sm">
-                    {labels.importance(criterion.importanceLevel)}
+                  <span className="text-muted-foreground text-sm tabular-nums">
+                    {labels.weightPoints(criterion.weightPoints)}
                   </span>
                 </Label>
                 <p className="text-muted-foreground text-sm">

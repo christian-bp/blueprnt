@@ -42,31 +42,16 @@ import { CreateRoleDialog } from "@/components/roles/create-role-dialog"
 const labels = messages.dashboard.roles.create
 
 const TRACKS = [
-  {
-    trackId: "t-ic",
-    key: "IC",
-    name: "Individual contributor",
-    order: 1,
-    levels: [
-      { levelId: "l-ic1", key: "IC1", name: "IC1", order: 1 },
-      { levelId: "l-ic2", key: "IC2", name: "IC2", order: 2 },
-    ],
-  },
-  {
-    trackId: "t-m",
-    key: "M",
-    name: "Manager",
-    order: 2,
-    levels: [{ levelId: "l-m1", key: "M1", name: "M1", order: 1 }],
-  },
-]
+  { key: "IC", name: "Individual contributor", order: 1 },
+  { key: "M", name: "Manager", order: 2 },
+] as const
 
 function renderDialog() {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <CreateRoleDialog
         orgId="org-1"
-        tracks={TRACKS}
+        tracks={[...TRACKS]}
         triggerLabel={labels.title}
       />
     </NextIntlClientProvider>
@@ -106,8 +91,7 @@ describe("CreateRoleDialog", () => {
         title: "Junior Developer",
         function: "Engineering",
         team: "Core",
-        trackId: "t-ic",
-        levelId: "l-ic1",
+        trackKey: "IC",
       })
     })
     await waitFor(() => {

@@ -134,6 +134,36 @@ describe("organization settings", () => {
     })
   })
 
+  it("completeOnboarding rejects a model below the composition floor", async () => {
+    const { t, orgId, userId } = await setup("admin")
+    const asAdmin = t.withIdentity({ subject: userId })
+    // Three criteria is below MIN_CRITERIA (5): the wizard's Next gates
+    // prevent this in the UI; the server backstop must hold regardless.
+    await t.run(async (ctx) => {
+      const modelId = await ctx.db.insert("models", {
+        orgId,
+        name: "Scratch",
+        bandThresholds: [],
+      })
+      for (let index = 0; index < 3; index++) {
+        await ctx.db.insert("criteria", {
+          orgId,
+          modelId,
+          name: `Criterion ${index + 1}`,
+          description: "",
+          helpText: "",
+          anchors: [],
+          weightPoints: 3,
+          order: index + 1,
+          isCustom: true,
+        })
+      }
+    })
+    await expect(
+      asAdmin.mutation(api.accounts.organization.completeOnboarding, { orgId })
+    ).rejects.toThrow(/errors.tooFewCriteria/)
+  })
+
   it("completeOnboarding is idempotent: keeps the first timestamp, no second audit row", async () => {
     const { t, orgId, userId } = await setup("admin")
     const asAdmin = t.withIdentity({ subject: userId })

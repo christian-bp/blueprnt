@@ -71,10 +71,8 @@ export default function RatePage(props: {
       <RatingStepper
         orgId={orgId}
         roleId={role.roleId}
-        levelName={role.levelName}
         criteria={model.criteria}
         ratings={role.ratings}
-        guardrails={role.guardrails}
         onCompleted={() => setFinished(true)}
       />
     </div>

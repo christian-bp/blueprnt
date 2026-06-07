@@ -4,9 +4,9 @@ import { industryStartersEn } from "./industryStarters.content.en"
 import { industryStartersSv } from "./industryStarters.content.sv"
 
 // Industry starter sets: per industry, role families with example roles
-// (title + suggested track/level on the fixed schema). Pre-fills the
-// onboarding families step; nothing is seeded until the user confirms.
-// Prose lives in the per-locale content modules.
+// (title + suggested track on the fixed schema; one role per JOB, ADR-0005).
+// Pre-fills the onboarding families step; nothing is seeded until the user
+// confirms. Prose lives in the per-locale content modules.
 
 export {
   INDUSTRY_KEYS,
@@ -17,7 +17,6 @@ export {
 export interface StarterRole {
   title: string
   trackKey: string
-  levelKey: string
 }
 
 export interface StarterFamily {

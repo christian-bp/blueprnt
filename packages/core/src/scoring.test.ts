@@ -8,34 +8,90 @@ import {
 import type { CriterionWeight, RatingInput, RoleRatings } from "./types"
 
 describe("scoreRole", () => {
-  it("scores the standardmall all-5 anchor at 540", () => {
-    expect(scoreRole(allRated(5), STANDARD_CRITERIA)).toBe(540)
-  })
-
-  it("scores all-0 at 0", () => {
+  it("scores uniform ratings at exactly 20 x rating, regardless of allocation", () => {
+    // raw = r * sum(points), so the normalization cancels the allocation.
+    expect(scoreRole(allRated(5), STANDARD_CRITERIA)).toBe(100)
+    expect(scoreRole(allRated(4), STANDARD_CRITERIA)).toBe(80)
+    expect(scoreRole(allRated(3), STANDARD_CRITERIA)).toBe(60)
     expect(scoreRole(allRated(0), STANDARD_CRITERIA)).toBe(0)
   })
 
-  it("changes by exactly rating * weight delta when importance changes", () => {
-    // scope importance 7 -> 6 is weight 18 -> 14; with rating 4 the score
-    // must drop by exactly 16.
-    const ratings: RatingInput[] = [{ criterionId: "scope", value: 4 }]
-    const at7 = scoreRole(ratings, STANDARD_CRITERIA)
-    const adjusted = STANDARD_CRITERIA.map((criterion) =>
-      criterion.criterionId === "scope"
-        ? { ...criterion, importanceLevel: 6 as const }
-        : criterion
-    )
-    const at6 = scoreRole(ratings, adjusted)
-    expect(at7 - at6).toBe(16)
+  it("scores a mixed standardmall role to the hand-computed golden", () => {
+    // raw = 4*5 + 3*4 + 3*4 + 3*3 + 2*3 + 2*3 + 1*2 + 1*2 + 0*1 = 69
+    // 20 * 69 / 27 = 51.11 -> floored to 51.
+    const ratings: RatingInput[] = [
+      { criterionId: "scope", value: 4 },
+      { criterionId: "complexity", value: 3 },
+      { criterionId: "autonomy", value: 3 },
+      { criterionId: "risk", value: 3 },
+      { criterionId: "knowledge", value: 2 },
+      { criterionId: "stakeholders", value: 2 },
+      { criterionId: "financial", value: 1 },
+      { criterionId: "people", value: 1 },
+      { criterionId: "formal", value: 0 },
+    ]
+    expect(scoreRole(ratings, STANDARD_CRITERIA)).toBe(51)
+  })
+
+  it("floors the normalized score (never rounds up past a threshold)", () => {
+    // Three criteria at 4/3/2 (balanced, sum 9): raw 34 -> 75.55 -> 75,
+    // raw 33 -> 73.33 -> 73. The floor keeps integer-threshold comparison
+    // exact on both sides of 74.
+    const criteria: CriterionWeight[] = [
+      { criterionId: "a", weightPoints: 4 },
+      { criterionId: "b", weightPoints: 3 },
+      { criterionId: "c", weightPoints: 2 },
+    ]
+    expect(
+      scoreRole(
+        [
+          { criterionId: "a", value: 5 },
+          { criterionId: "b", value: 4 },
+          { criterionId: "c", value: 1 },
+        ],
+        criteria
+      )
+    ).toBe(75)
+    expect(
+      scoreRole(
+        [
+          { criterionId: "a", value: 4 },
+          { criterionId: "b", value: 5 },
+          { criterionId: "c", value: 1 },
+        ],
+        criteria
+      )
+    ).toBe(73)
+  })
+
+  it("uniform point inflation does not change the score (normalization)", () => {
+    const ratings: RatingInput[] = [
+      { criterionId: "a", value: 4 },
+      { criterionId: "b", value: 2 },
+      { criterionId: "c", value: 1 },
+    ]
+    const allThrees: CriterionWeight[] = [
+      { criterionId: "a", weightPoints: 3 },
+      { criterionId: "b", weightPoints: 3 },
+      { criterionId: "c", weightPoints: 3 },
+    ]
+    const allFives: CriterionWeight[] = [
+      { criterionId: "a", weightPoints: 5 },
+      { criterionId: "b", weightPoints: 5 },
+      { criterionId: "c", weightPoints: 5 },
+    ]
+    expect(scoreRole(ratings, allThrees)).toBe(scoreRole(ratings, allFives))
   })
 
   it("ignores ratings for criteria not in the model", () => {
-    const ratings: RatingInput[] = [
+    const only: RatingInput[] = [{ criterionId: "scope", value: 5 }]
+    const withGhost: RatingInput[] = [
       { criterionId: "scope", value: 5 },
       { criterionId: "ghost", value: 5 },
     ]
-    expect(scoreRole(ratings, STANDARD_CRITERIA)).toBe(90)
+    // raw = 25, total points 27: 20 * 25 / 27 = 18.51 -> 18.
+    expect(scoreRole(only, STANDARD_CRITERIA)).toBe(18)
+    expect(scoreRole(withGhost, STANDARD_CRITERIA)).toBe(18)
   })
 
   it("throws on a duplicate rating for the same criterion", () => {
@@ -48,8 +104,8 @@ describe("scoreRole", () => {
 
   it("throws on a duplicate criterion in the model", () => {
     const criteria: CriterionWeight[] = [
-      { criterionId: "scope", importanceLevel: 7 },
-      { criterionId: "scope", importanceLevel: 1 },
+      { criterionId: "scope", weightPoints: 5 },
+      { criterionId: "scope", weightPoints: 1 },
     ]
     expect(() => scoreRole([], criteria)).toThrow(/duplicate/)
   })
@@ -62,25 +118,36 @@ describe("scoreRole", () => {
     ] as unknown as RatingInput[]
     expect(() => scoreRole(negative, STANDARD_CRITERIA)).toThrow(/out of range/)
   })
+
+  it("throws on weight points outside the 1-5 scale", () => {
+    const criteria = [
+      { criterionId: "scope", weightPoints: 7 },
+    ] as unknown as CriterionWeight[]
+    expect(() => scoreRole([], criteria)).toThrow(/invalid weight points/)
+  })
+
+  it("throws on an empty criteria list", () => {
+    expect(() => scoreRole([], [])).toThrow(/no criteria/)
+  })
 })
 
 describe("assignBand", () => {
-  it("maps the standardmall anchors with inclusive lower bounds", () => {
-    expect(assignBand(540, STANDARD_THRESHOLDS)).toBe(1)
-    expect(assignBand(530, STANDARD_THRESHOLDS)).toBe(1)
-    expect(assignBand(529, STANDARD_THRESHOLDS)).toBe(2)
-    expect(assignBand(450, STANDARD_THRESHOLDS)).toBe(2)
-    expect(assignBand(449, STANDARD_THRESHOLDS)).toBe(3)
+  it("maps the 0-100 default thresholds with inclusive lower bounds", () => {
+    expect(assignBand(100, STANDARD_THRESHOLDS)).toBe(1)
+    expect(assignBand(98, STANDARD_THRESHOLDS)).toBe(1)
+    expect(assignBand(97, STANDARD_THRESHOLDS)).toBe(2)
+    expect(assignBand(83, STANDARD_THRESHOLDS)).toBe(2)
+    expect(assignBand(82, STANDARD_THRESHOLDS)).toBe(3)
     expect(assignBand(0, STANDARD_THRESHOLDS)).toBe(7)
   })
 
   it("breaks minScore ties toward the lowest band number (highest band)", () => {
     const thresholds = [
-      { band: 2, minScore: 100 },
-      { band: 1, minScore: 100 },
+      { band: 2, minScore: 50 },
+      { band: 1, minScore: 50 },
       { band: 3, minScore: 0 },
     ]
-    expect(assignBand(150, thresholds)).toBe(1)
+    expect(assignBand(75, thresholds)).toBe(1)
   })
 
   it("throws on an empty threshold list", () => {
@@ -88,7 +155,7 @@ describe("assignBand", () => {
   })
 
   it("throws when no threshold matches (missing floor)", () => {
-    expect(() => assignBand(10, [{ band: 1, minScore: 100 }])).toThrow(
+    expect(() => assignBand(10, [{ band: 1, minScore: 50 }])).toThrow(
       /no band threshold matches/
     )
   })
@@ -119,7 +186,7 @@ describe("computeResults", () => {
         ratedCount: 9,
         totalCriteria: 9,
         complete: true,
-        score: 540,
+        score: 100,
         band: 1,
       },
       {

@@ -45,7 +45,6 @@ function makeRole(overrides?: Partial<RoleProfile>): RoleProfile {
     function: "Engineering",
     team: "Core",
     trackName: "Individual contributor",
-    levelName: "IC2",
     familyId: null,
     familyName: null,
     purpose: "Builds the product",

@@ -1,3 +1,4 @@
+import { MIN_CRITERIA } from "@workspace/core"
 import { v } from "convex/values"
 import { internalQuery } from "../_generated/server"
 import { AUDIT_EVENTS, logAudit } from "../lib/audit"
@@ -70,10 +71,26 @@ export const updateOrganizationSettings = adminMutation({
 // presence of a model. Upsert posture mirrors updateOrganizationSettings: insert
 // an empty row if the trigger-seeded one is not there yet. Idempotent: the
 // first timestamp is kept and no second audit row is written on re-calls.
+// Composition floor: a model may not be finished with fewer than
+// MIN_CRITERIA criteria (the wizard's Next gates enforce this in the UI;
+// this is the server-side backstop).
 export const completeOnboarding = adminMutation({
   args: {},
   returns: v.null(),
   handler: async (ctx) => {
+    const model = await ctx.db
+      .query("models")
+      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
+      .unique()
+    if (model !== null) {
+      const count = (
+        await ctx.db
+          .query("criteria")
+          .withIndex("by_model", (q) => q.eq("modelId", model._id))
+          .collect()
+      ).length
+      if (count < MIN_CRITERIA) throw appError(ERROR_CODES.tooFewCriteria)
+    }
     const settings = await ctx.db
       .query("organizations")
       .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))

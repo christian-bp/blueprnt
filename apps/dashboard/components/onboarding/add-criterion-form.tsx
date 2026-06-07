@@ -4,30 +4,21 @@ import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
-import { importanceLabelKey } from "@/lib/importance"
 
-// Importance levels are offered highest-first so the recommended weight sits at
-// the top. The label is shown via importanceLabelKey; the numeric WEIGHT behind
-// a level stays inside @workspace/core and never reaches the user.
-const IMPORTANCE_OPTIONS = [7, 6, 5, 4, 3, 2, 1]
 const EMPTY_ANCHORS = ["", "", "", "", "", ""]
 
-// The add-criterion form: name, description, help text, importance LABEL select
-// (never numbers), and six anchor inputs. Posts addCriterion, then resets on
-// success. Shared by the scratch editor and the model review screen so both
-// paths add criteria with identical behavior. The reactive getModel query in
-// the parent picks up the new criterion; this form owns only the add concern.
+// The add-criterion form: name, description, help text, and six anchor
+// inputs. There is no weight input: a new criterion always enters at the
+// neutral 3 weight points so the allocation stays exactly on the point
+// budget (ADR-0004); reweighting happens in the editor's zero-sum flow.
+// Posts addCriterion, then resets on success. Shared by the scratch editor
+// and the model review screen so both paths add criteria with identical
+// behavior. The reactive getModel query in the parent picks up the new
+// criterion; this form owns only the add concern.
 //
 // onAdded is optional: called after a successful add and the form reset, so a
 // hosting dialog can close itself once the criterion is persisted.
@@ -40,13 +31,11 @@ export function AddCriterionForm({
 }) {
   const tEditor = useTranslations("dashboard.model.editor")
   const t = useTranslations("dashboard.model")
-  const tImportance = useTranslations("model.importance")
   const addCriterion = useMutation(api.evaluationModel.criteria.addCriterion)
 
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [helpText, setHelpText] = useState("")
-  const [importanceLevel, setImportanceLevel] = useState("4")
   const [anchors, setAnchors] = useState<string[]>(EMPTY_ANCHORS)
   // pending: add-form submission in flight.
   const [pending, setPending] = useState(false)
@@ -65,13 +54,11 @@ export function AddCriterionForm({
             name: name.trim(),
             description,
             helpText,
-            importanceLevel: Number(importanceLevel),
             anchors,
           })
           setName("")
           setDescription("")
           setHelpText("")
-          setImportanceLevel("4")
           setAnchors(EMPTY_ANCHORS)
           onAdded?.()
         } catch {
@@ -105,21 +92,6 @@ export function AddCriterionForm({
           value={helpText}
           onChange={(event) => setHelpText(event.target.value)}
         />
-      </div>
-      <div className="space-y-2">
-        <Label id="criterion-importance-label">{tEditor("importance")}</Label>
-        <Select value={importanceLevel} onValueChange={setImportanceLevel}>
-          <SelectTrigger aria-labelledby="criterion-importance-label">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {IMPORTANCE_OPTIONS.map((level) => (
-              <SelectItem key={level} value={String(level)}>
-                {tImportance(importanceLabelKey(level))}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </div>
       <fieldset className="space-y-2">
         <legend className="font-medium text-sm">{tEditor("anchors")}</legend>

@@ -1,4 +1,4 @@
-import { weightForImportance } from "./importance"
+import { isWeightPoints } from "./weighting"
 import type {
   BandThreshold,
   ComputeInput,
@@ -26,33 +26,48 @@ function assertValidRating(value: number): void {
   }
 }
 
-// Weighted total: sum of rating * weight over ratings whose criterion is in
-// the model. Ratings for unknown criterion ids are ignored (orphan safety:
-// the backend cleans up on criterion removal; the engine tolerates strays).
+// Normalized weighted score on the fixed 0-100 scale (ADR-0004):
+// floor(20 * sum(rating * weightPoints) / sum(weightPoints)). Normalizing
+// over the model's own point sum keeps the scale independent of the
+// criterion count, so band thresholds stay meaningful when criteria are
+// added or removed. Flooring keeps the comparison against integer band
+// thresholds exact: floored >= T iff unfloored >= T for integer T. All
+// inputs are small integers, so the float quotient is exact whenever the
+// true quotient is an integer and the floor is safe.
+//
+// Ratings for unknown criterion ids are ignored (orphan safety: the backend
+// cleans up on criterion removal; the engine tolerates strays).
 export function scoreRole(
   ratings: RatingInput[],
   criteria: CriterionWeight[]
 ): number {
   assertUniqueCriteria(criteria)
-  const weightById = new Map(
-    criteria.map((criterion) => [
-      criterion.criterionId,
-      weightForImportance(criterion.importanceLevel),
-    ])
-  )
+  if (criteria.length === 0) {
+    throw new Error("no criteria to score against")
+  }
+  const pointsById = new Map<string, number>()
+  let totalPoints = 0
+  for (const criterion of criteria) {
+    // Runtime guard: the backend casts stored numbers into WeightPoints.
+    if (!isWeightPoints(criterion.weightPoints)) {
+      throw new Error(`invalid weight points: ${criterion.weightPoints}`)
+    }
+    pointsById.set(criterion.criterionId, criterion.weightPoints)
+    totalPoints += criterion.weightPoints
+  }
   const seen = new Set<string>()
-  let score = 0
+  let raw = 0
   for (const rating of ratings) {
     if (seen.has(rating.criterionId)) {
       throw new Error(`duplicate rating: ${rating.criterionId}`)
     }
     seen.add(rating.criterionId)
     assertValidRating(rating.value)
-    const weight = weightById.get(rating.criterionId)
-    if (weight === undefined) continue
-    score += rating.value * weight
+    const points = pointsById.get(rating.criterionId)
+    if (points === undefined) continue
+    raw += rating.value * points
   }
-  return score
+  return Math.floor((20 * raw) / totalPoints)
 }
 
 // Band 1 is highest; minScore is the inclusive lower bound of a band. Picks

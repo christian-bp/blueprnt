@@ -126,13 +126,10 @@ export default function ResultsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>{t("table.title")}</TableHead>
-                <TableHead>{t("table.trackLevel")}</TableHead>
+                <TableHead>{t("table.track")}</TableHead>
                 <TableHead>{t("table.status")}</TableHead>
                 <TableHead className="text-right">{t("table.score")}</TableHead>
                 <TableHead className="text-right">{t("table.band")}</TableHead>
-                <TableHead className="text-right">
-                  {t("table.warnings")}
-                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -147,7 +144,7 @@ export default function ResultsPage() {
                     </Link>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {row.trackName} {row.levelKey}
+                    {row.trackName}
                   </TableCell>
                   <TableCell>
                     <Badge variant={statusBadgeVariant(row.status)}>
@@ -168,13 +165,6 @@ export default function ResultsPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     {row.band !== null && <Badge>{row.band}</Badge>}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {row.warningCount > 0 && (
-                      <span className="text-amber-600 text-sm tabular-nums dark:text-amber-500">
-                        {row.warningCount}
-                      </span>
-                    )}
                   </TableCell>
                 </TableRow>
               ))}

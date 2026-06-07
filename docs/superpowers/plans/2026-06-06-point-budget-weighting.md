@@ -1,0 +1,10 @@
+# Point-budget weighting: implementation plan
+
+> Executed inline (single session, full context) against `docs/superpowers/specs/2026-06-06-point-budget-weighting-design.md`. Tasks land as green commits on `feat/point-budget` (stacked on `feat/derived-language`); the pre-commit hook runs Biome, typecheck, and the full test suite per commit.
+
+- [x] **Task 1: docs.** ADR-0004, source document copy, CLAUDE.md invariant, evaluation-model glossary (Viktpoäng/Poängbudget/Andel replace Betydelse/Vikt/Betydelseskala), standardmall.md (scale, normative defaults, 0-100 thresholds), assessment glossary (Poäng formula, blinding note), PLAN-V1 (1, 3, E2, 9.8, new 9.15), CONTEXT-MAP.
+- [x] **Task 2: core engine.** `importance.ts` becomes `weighting.ts` (WEIGHT_POINTS 1-5, NEUTRAL_WEIGHT_POINTS 3, `pointBudget(n)`, allocation validation). `types.ts`: `CriterionWeight.weightPoints`. `scoring.ts`: `scoreRole` returns the floored normalized 0-100 integer; `assignBand` unchanged. New fixtures (template allocation, thresholds 98/83/74/63/53/41/0) and tests.
+- [x] **Task 3: backend.** Schema `criteria.weightPoints`; `standardTemplate.ts` defaults + thresholds + seed order per spec; `criteria.ts` (`addCriterion` auto-3, `rebalanceWeights` batch, `removeCriterion` neutral-guard, `weightsUnbalanced` error code); `compute.ts`/`model.ts`/`results.ts` wiring; tests.
+- [x] **Task 4: AI layer.** Draft schema 1-5 + deterministic budget repair; review becomes balanced moves (`model.weightReview` kind, `{fromCriterionId, toCriterionId, points, motivation}`); confirm applies selected moves atomically and logs band shifts; tests for repair and move application.
+- [x] **Task 5: dashboard.** Model editor: local draft allocations, live budget meter, atomic save, read mode shows points + share; weight review panel renders moves with checkboxes; add-criterion form drops the importance select; score displays as 0-100; `lib/importance.ts` becomes `lib/weighting.ts`; tests.
+- [x] **Task 6: i18n + verification.** Remove `model.importance.*`; add weighting strings (en first, mirrored to sv/nb/da/fi, parity test); full `turbo run test` + typecheck; rebuild PLAN-V1.pdf.

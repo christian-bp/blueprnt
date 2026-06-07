@@ -40,16 +40,9 @@
     "criterionRationale": "Criterion rationale",
     "biasReview": "Bias review",
     "methodAppendix": "Method appendix",
-    "importance": {
-      "label": "Importance",
-      "critical": "Critical",
-      "veryHigh": "Very important",
-      "high": "Important",
-      "fair": "Fairly important",
-      "moderate": "Moderately important",
-      "slight": "Slightly important",
-      "least": "Least important"
-    }
+    "weightPoints": "Weight points",
+    "pointBudget": "Point budget",
+    "share": "Share"
   },
   "assessment": {
     "assessment": "Assessment",
@@ -120,7 +113,7 @@
       "empty": "No roles yet. Create your first role to start evaluating.",
       "table": {
         "title": "Title",
-        "trackLevel": "Track and level",
+        "track": "Track",
         "team": "Team",
         "status": "Status",
         "rated": "Rated"
@@ -133,7 +126,6 @@
         "functionLabel": "Function/department",
         "teamLabel": "Team",
         "trackLabel": "Track",
-        "levelLabel": "Level",
         "cta": "Create role",
         "cancel": "Cancel",
         "error": "The role could not be created. Try again."
@@ -190,7 +182,6 @@
         "error": "The role could not be archived. Try again."
       },
       "ai": {
-        "heading": "AI assistance",
         "descriptionLabel": "Describe the role (optional)",
         "draftCta": "Draft job profile with AI",
         "error": "Something went wrong. Try again."
@@ -201,7 +192,6 @@
       "step": "Criterion {current} of {total}",
       "motivationLabel": "Motivation (optional)",
       "motivationPlaceholder": "Why this rating?",
-      "guardrailHint": "Outside the advisory range {min} to {max} for {level}.",
       "anchorGroupLabel": "Rating for {name}",
       "backCta": "Back",
       "nextCta": "Next criterion",
@@ -213,10 +203,8 @@
         "bandLabel": "Band",
         "bandHighest": "Band 1 is the highest band.",
         "computing": "Deriving the result",
-        "guardrailsHeading": "Advisory notes",
-        "guardrailRow": "{name}: {value} is outside {min} to {max}",
-        "noWarnings": "All ratings are within the advisory ranges.",
-        "backToRole": "Back to the role"
+        "backToRole": "Back to the role",
+        "scoreOutOf": "{score} / 100"
       }
     },
     "results": {
@@ -228,11 +216,10 @@
       "roleCount": "{count, plural, =1 {1 role} other {# roles}}",
       "table": {
         "title": "Title",
-        "trackLevel": "Track and level",
+        "track": "Track",
         "status": "Status",
         "score": "Score",
         "band": "Band",
-        "warnings": "Advisory notes",
         "progress": "{rated} of {total} rated"
       },
       "empty": "No roles to show yet. Create a role and rate it to see results.",
@@ -313,7 +300,7 @@
         "families": "Role families"
       },
       "families": {
-        "heading": "Your role families and roles",
+        "heading": "Role families and roles at {name}",
         "description": "A starting point based on your industry. Adjust it freely; everything can be changed later.",
         "createCta": "Create and open the dashboard",
         "addFamilyCta": "Add family",
@@ -325,11 +312,11 @@
     },
     "model": {
       "heading": "Choose your evaluation model",
-      "description": "The model defines the criteria roles are rated against. Importance is always a label, never a number.",
+      "description": "The model defines the criteria roles are rated against. Each criterion gets 1 to 5 weight points within a fixed point budget.",
       "error": "Something went wrong. Try again.",
       "template": {
         "title": "Start from the standard template",
-        "description": "9 criteria with anchor scales, default importances, the track schema, and band thresholds.",
+        "description": "9 criteria with anchor scales, a default weighting, the track schema, and band thresholds.",
         "badge": "Recommended",
         "cta": "Use the template"
       },
@@ -340,12 +327,10 @@
         "cta": "Start from scratch"
       },
       "review": {
-        "heading": "Your model",
-        "description": "Review the criteria and their importance. Everything can be changed later.",
-        "setImportance": "Importance for {name}",
+        "heading": "{name}'s model",
+        "description": "Review the criteria and their weighting. Everything can be changed later.",
         "cta": "Open the dashboard",
-        "editCta": "Edit",
-        "doneEditing": "Done"
+        "editCta": "Edit"
       },
       "editor": {
         "heading": "Criteria",
@@ -353,11 +338,17 @@
         "name": "Name",
         "description": "Description",
         "helpText": "Help text for the assessor",
-        "importance": "Importance",
+        "setWeightPoints": "Weight points for {name}",
         "anchors": "Anchor scale (0 to 5)",
         "anchorLevel": "Anchor {level}",
         "addCta": "Add criterion",
-        "removeCta": "Remove"
+        "removeCta": "Remove",
+        "saveCta": "Save weighting",
+        "cancelCta": "Cancel",
+        "pointsLeft": "{count, plural, one {# weight point} other {# weight points}} left to distribute",
+        "pointsOver": "{count, plural, one {# weight point} other {# weight points}} over the budget",
+        "balanced": "All weight points are distributed",
+        "minCriteriaHint": "Add at least {min} criteria to continue."
       },
       "change": {
         "cta": "Change model choice",
@@ -373,13 +364,20 @@
       "closeLabel": "Close",
       "draftDescriptionLabel": "Describe your business (optional)",
       "draftCta": "Generate criteria drafts",
-      "reviewCta": "Let AI review the importance levels",
+      "reviewCta": "Let AI review the weighting",
       "generating": "Generating suggestions",
+      "reviewing": "Reviewing your model",
       "confirmCta": "Add selected",
       "applyCta": "Apply selected",
       "rejectCta": "Dismiss",
-      "noAdjustments": "The AI found no adjustments to suggest.",
+      "noMoves": "The AI found no moves to suggest.",
+      "moveLabel": "Move {points, plural, one {# weight point} other {# weight points}} from {from} to {to}",
       "motivation": "Motivation"
+    },
+    "help": {
+      "close": "Close",
+      "criterionLabel": "What is a criterion?",
+      "criterionBody": "A criterion is something every role is rated against, like scope or complexity. Anchor texts describe what the ratings 0 to 5 mean for it, and its weight points decide how much it counts in the total score."
     }
   },
   "errors": {
@@ -396,6 +394,8 @@
     "roleLocked": "This role is approved and locked. Reopen it first.",
     "ratingsIncomplete": "All criteria must be rated first.",
     "invalidTransition": "That status change is not allowed.",
-    "roleFamilyExists": "A family with that name already exists."
+    "roleFamilyExists": "A family with that name already exists.",
+    "weightsUnbalanced": "The weighting must match the point budget.",
+    "tooFewCriteria": "A model needs at least 5 criteria."
   }
 }

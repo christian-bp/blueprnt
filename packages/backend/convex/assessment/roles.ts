@@ -2,16 +2,17 @@ import { v } from "convex/values"
 import type { Doc, Id } from "../_generated/dataModel"
 import type { QueryCtx } from "../_generated/server"
 import { clampLocale } from "../evaluationModel/localize"
+import { trackKeyValidator } from "../evaluationModel/tables"
 import { AUDIT_EVENTS, logAudit } from "../lib/audit"
-import { familyNames, trackLevelNames } from "./names"
+import { familyNames, trackNames } from "./names"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
 import { deriveResults, logBandShifts } from "./compute"
 
 // The nine free-text job profile fields (assessment glossary). purpose and
 // responsibilities are the mandatory core (required before rating); the rest
-// are optional structured fields. Title/function/team/track/level are
-// handled separately.
+// are optional structured fields. Title/function/team/track are handled
+// separately.
 export const PROFILE_TEXT_FIELDS = [
   "purpose",
   "responsibilities",
@@ -67,28 +68,13 @@ export async function requireOwnRole(
   return role
 }
 
-async function requireOwnTrackLevel(
-  ctx: QueryCtx & { orgId: string },
-  trackId: Id<"tracks">,
-  levelId: Id<"levels">
-): Promise<void> {
-  const track = await ctx.db.get(trackId)
-  if (track === null || track.orgId !== ctx.orgId) {
-    throw appError(ERROR_CODES.notFound)
-  }
-  const level = await ctx.db.get(levelId)
-  if (level === null || level.trackId !== trackId) {
-    throw appError(ERROR_CODES.notFound)
-  }
-}
-
 export const createRole = orgMutation({
   args: {
     title: v.string(),
     function: v.string(),
     team: v.string(),
-    trackId: v.id("tracks"),
-    levelId: v.id("levels"),
+    // The literal-union validator IS the track integrity check (ADR-0006).
+    trackKey: trackKeyValidator,
     familyId: v.optional(v.id("roleFamilies")),
     ...optionalProfileArgs,
   },
@@ -105,7 +91,6 @@ export const createRole = orgMutation({
     ) {
       throw appError(ERROR_CODES.invalidInput)
     }
-    await requireOwnTrackLevel(ctx, args.trackId, args.levelId)
     if (args.familyId !== undefined) {
       const family = await ctx.db.get(args.familyId)
       if (family === null || family.orgId !== ctx.orgId) {
@@ -124,8 +109,7 @@ export const createRole = orgMutation({
       title,
       function: roleFunction,
       team,
-      trackId: args.trackId,
-      levelId: args.levelId,
+      trackKey: args.trackKey,
       ...(args.familyId !== undefined ? { familyId: args.familyId } : {}),
       // purpose/responsibilities are required strings in the schema; they
       // start empty and gate the rating flow via profileComplete.
@@ -158,8 +142,6 @@ export const listRoles = orgQuery({
       team: v.string(),
       trackKey: v.string(),
       trackName: v.string(),
-      levelKey: v.string(),
-      levelName: v.string(),
       status: v.string(),
       ratedCount: v.number(),
       totalCriteria: v.number(),
@@ -167,7 +149,6 @@ export const listRoles = orgQuery({
       familyId: v.union(v.id("roleFamilies"), v.null()),
       familyName: v.union(v.string(), v.null()),
       trackOrder: v.number(),
-      levelOrder: v.number(),
     })
   ),
   handler: async (ctx, { locale }) => {
@@ -175,7 +156,7 @@ export const listRoles = orgQuery({
     const resultByRole = new Map(
       derived.results.map((result) => [result.roleId, result])
     )
-    const names = await trackLevelNames(ctx, ctx.orgId, locale)
+    const names = trackNames(locale)
     const families = await familyNames(ctx, ctx.orgId)
     const roles = await ctx.db
       .query("roles")
@@ -186,8 +167,7 @@ export const listRoles = orgQuery({
     active.sort((a, b) => a.title.localeCompare(b.title, sortLocale))
     return active.map((role) => {
       const result = resultByRole.get(role._id as string)
-      const track = names.trackName.get(role.trackId as string)
-      const level = names.levelName.get(role.levelId as string)
+      const track = names.get(role.trackKey)
       return {
         roleId: role._id,
         title: role.title,
@@ -195,8 +175,6 @@ export const listRoles = orgQuery({
         team: role.team,
         trackKey: track?.key ?? "",
         trackName: track?.name ?? "",
-        levelKey: level?.key ?? "",
-        levelName: level?.name ?? "",
         status: role.status,
         ratedCount: result?.ratedCount ?? 0,
         totalCriteria: derived.totalCriteria,
@@ -207,7 +185,6 @@ export const listRoles = orgQuery({
             ? (families.get(role.familyId as string) ?? null)
             : null,
         trackOrder: track?.order ?? 0,
-        levelOrder: level?.order ?? 0,
       }
     })
   },
@@ -217,12 +194,6 @@ const ratingShape = v.object({
   criterionId: v.id("criteria"),
   value: v.number(),
   motivation: v.union(v.string(), v.null()),
-})
-
-const guardrailShape = v.object({
-  criterionId: v.id("criteria"),
-  min: v.number(),
-  max: v.number(),
 })
 
 // Full job profile readout for the role page and the rating flow. NEVER
@@ -237,12 +208,8 @@ export const getRole = orgQuery({
       title: v.string(),
       function: v.string(),
       team: v.string(),
-      trackId: v.id("tracks"),
-      levelId: v.id("levels"),
-      trackKey: v.string(),
+      trackKey: trackKeyValidator,
       trackName: v.string(),
-      levelKey: v.string(),
-      levelName: v.string(),
       purpose: v.string(),
       responsibilities: v.string(),
       decisionMandate: v.union(v.string(), v.null()),
@@ -260,7 +227,6 @@ export const getRole = orgQuery({
       familyId: v.union(v.id("roleFamilies"), v.null()),
       familyName: v.union(v.string(), v.null()),
       ratings: v.array(ratingShape),
-      guardrails: v.array(guardrailShape),
     })
   ),
   handler: async (ctx, { roleId, locale }) => {
@@ -270,9 +236,7 @@ export const getRole = orgQuery({
     const role = await ctx.db.get(docId)
     if (role === null || role.orgId !== ctx.orgId) return null
 
-    const names = await trackLevelNames(ctx, ctx.orgId, locale)
-    const track = names.trackName.get(role.trackId as string)
-    const level = names.levelName.get(role.levelId as string)
+    const track = trackNames(locale).get(role.trackKey)
     const fNames = await familyNames(ctx, ctx.orgId)
 
     const model = await ctx.db
@@ -302,22 +266,13 @@ export const getRole = orgQuery({
         motivation: rating.motivation ?? null,
       }))
 
-    const guardrailRows = await ctx.db
-      .query("trackGuardrails")
-      .withIndex("by_level", (q) => q.eq("levelId", role.levelId))
-      .collect()
-
     return {
       roleId: role._id,
       title: role.title,
       function: role.function,
       team: role.team,
-      trackId: role.trackId,
-      levelId: role.levelId,
-      trackKey: track?.key ?? "",
-      trackName: track?.name ?? "",
-      levelKey: level?.key ?? "",
-      levelName: level?.name ?? "",
+      trackKey: role.trackKey,
+      trackName: track?.name ?? role.trackKey,
       purpose: role.purpose,
       responsibilities: role.responsibilities,
       decisionMandate: role.decisionMandate ?? null,
@@ -338,11 +293,6 @@ export const getRole = orgQuery({
           ? (fNames.get(role.familyId as string) ?? null)
           : null,
       ratings,
-      guardrails: guardrailRows.map((row) => ({
-        criterionId: row.criterionId,
-        min: row.min,
-        max: row.max,
-      })),
     }
   },
 })
@@ -353,8 +303,7 @@ export const updateRole = orgMutation({
     title: v.optional(v.string()),
     function: v.optional(v.string()),
     team: v.optional(v.string()),
-    trackId: v.optional(v.id("tracks")),
-    levelId: v.optional(v.id("levels")),
+    trackKey: v.optional(trackKeyValidator),
     familyId: v.optional(v.union(v.id("roleFamilies"), v.null())),
     ...optionalProfileArgs,
   },
@@ -382,14 +331,8 @@ export const updateRole = orgMutation({
       if (team.length === 0) throw appError(ERROR_CODES.invalidInput)
       patch.team = team
     }
-    if (args.trackId !== undefined || args.levelId !== undefined) {
-      // A track change always needs an explicit level on the new track; the
-      // old level cannot belong to it, so requireOwnTrackLevel rejects that.
-      const trackId = args.trackId ?? role.trackId
-      const levelId = args.levelId ?? role.levelId
-      await requireOwnTrackLevel(ctx, trackId, levelId)
-      patch.trackId = trackId
-      patch.levelId = levelId
+    if (args.trackKey !== undefined) {
+      patch.trackKey = args.trackKey
     }
     if (args.familyId !== undefined) {
       if (args.familyId === null) {

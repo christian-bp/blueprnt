@@ -25,17 +25,15 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { FamilyPicker } from "@/components/roles/family-picker"
 
-// Structural subset of getModel's tracks; the branded ids flow through to
-// the mutation untouched.
+// Structural subset of getModel's tracks: the stable key (typed as the fixed
+// V1 literal union, ADR-0006) flows through to the mutation untouched.
 export interface TrackOption {
-  trackId: string
-  key: string
+  key: "IC" | "Lead" | "M"
   name: string
   order: number
-  levels: { levelId: string; key: string; name: string; order: number }[]
 }
 
-// The basics only (title, function, team, track, level): purpose and
+// The basics only (title, function, team, track): purpose and
 // responsibilities are filled on the role page, by hand or via the AI draft.
 export function CreateRoleDialog({
   orgId,
@@ -56,27 +54,19 @@ export function CreateRoleDialog({
   const [roleFunction, setRoleFunction] = useState("")
   const [team, setTeam] = useState("")
   const firstTrack = tracks[0]
-  const [trackId, setTrackId] = useState(firstTrack?.trackId ?? "")
-  const [levelId, setLevelId] = useState(firstTrack?.levels[0]?.levelId ?? "")
+  const [trackKey, setTrackKey] = useState<TrackOption["key"] | "">(
+    firstTrack?.key ?? ""
+  )
   const [familyId, setFamilyId] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
   const [failed, setFailed] = useState(false)
 
-  const selectedTrack = tracks.find((track) => track.trackId === trackId)
   const canSubmit =
     title.trim().length > 0 &&
     roleFunction.trim().length > 0 &&
     team.trim().length > 0 &&
-    trackId !== "" &&
-    levelId !== "" &&
+    trackKey !== "" &&
     !pending
-
-  function handleTrackChange(nextTrackId: string) {
-    setTrackId(nextTrackId)
-    // The old level never belongs to the new track: reset to its first level.
-    const nextTrack = tracks.find((track) => track.trackId === nextTrackId)
-    setLevelId(nextTrack?.levels[0]?.levelId ?? "")
-  }
 
   function handleOpenChange(nextOpen: boolean) {
     setOpen(nextOpen)
@@ -85,8 +75,7 @@ export function CreateRoleDialog({
       setTitle("")
       setRoleFunction("")
       setTeam("")
-      setTrackId(firstTrack?.trackId ?? "")
-      setLevelId(firstTrack?.levels[0]?.levelId ?? "")
+      setTrackKey(firstTrack?.key ?? "")
       setFamilyId(null)
       setFailed(false)
     }
@@ -94,6 +83,7 @@ export function CreateRoleDialog({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    // canSubmit aliases trackKey !== "", so trackKey narrows to the union.
     if (!canSubmit) return
     setPending(true)
     setFailed(false)
@@ -103,8 +93,7 @@ export function CreateRoleDialog({
         title: title.trim(),
         function: roleFunction.trim(),
         team: team.trim(),
-        trackId: trackId as never,
-        levelId: levelId as never,
+        trackKey,
         ...(familyId !== null ? { familyId: familyId as never } : {}),
       })
       setOpen(false)
@@ -154,37 +143,27 @@ export function CreateRoleDialog({
               />
             </div>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="role-track">{t("trackLabel")}</Label>
-              <Select value={trackId} onValueChange={handleTrackChange}>
-                <SelectTrigger id="role-track" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {tracks.map((track) => (
-                    <SelectItem key={track.trackId} value={track.trackId}>
-                      {track.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="role-level">{t("levelLabel")}</Label>
-              <Select value={levelId} onValueChange={setLevelId}>
-                <SelectTrigger id="role-level" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {(selectedTrack?.levels ?? []).map((level) => (
-                    <SelectItem key={level.levelId} value={level.levelId}>
-                      {level.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="role-track">{t("trackLabel")}</Label>
+            <Select
+              value={trackKey}
+              // The Select's values are our own SelectItems below, so the
+              // string narrows safely back to the track key union.
+              onValueChange={(value) =>
+                setTrackKey(value as TrackOption["key"])
+              }
+            >
+              <SelectTrigger id="role-track" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {tracks.map((track) => (
+                  <SelectItem key={track.key} value={track.key}>
+                    {track.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label>{tModel("roleFamily")}</Label>

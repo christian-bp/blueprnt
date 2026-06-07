@@ -10,6 +10,8 @@ export const ERROR_CODES = {
   membershipConflict: "errors.membershipConflict",
   notFound: "errors.notFound",
   invalidInput: "errors.invalidInput",
+  weightsUnbalanced: "errors.weightsUnbalanced",
+  tooFewCriteria: "errors.tooFewCriteria",
   modelExists: "errors.modelExists",
   profileIncomplete: "errors.profileIncomplete",
   aiUnavailable: "errors.aiUnavailable",

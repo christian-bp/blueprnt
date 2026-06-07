@@ -1,4 +1,4 @@
-import type { CriterionKey, LevelKey } from "./standardTemplate"
+import type { CriterionKey, TrackKey } from "./standardTemplate"
 
 export interface CriterionContent {
   name: string
@@ -11,9 +11,7 @@ export interface CriterionContent {
 export interface StandardTemplateContent {
   modelName: string
   criteria: Record<CriterionKey, CriterionContent>
-  trackNames: Record<"IC" | "Lead" | "M", string>
-  levelNames: Record<LevelKey, string>
-  levelDefinitions: Partial<Record<LevelKey, string>>
+  trackNames: Record<TrackKey, string>
 }
 
 // English content for the standard template. This is a translation draft of the
@@ -157,34 +155,5 @@ export const standardTemplateContentEn: StandardTemplateContent = {
     IC: "Individual Contributor",
     Lead: "Lead",
     M: "Manager",
-  },
-  levelNames: {
-    IC1: "IC1",
-    IC2: "IC2",
-    IC3: "IC3",
-    IC4: "IC4",
-    IC5: "IC5",
-    Lead1: "Lead1",
-    Lead2: "Lead2",
-    Lead3: "Lead3",
-    M1: "M1",
-    M2: "M2",
-    M3: "M3",
-  },
-  levelDefinitions: {
-    IC1: "IC1 – Foundational professional role. Performs clearly defined tasks. Follows established working practices and needs support for more complex steps.",
-    IC2: "IC2 – Independent professional role. Works independently within a defined area. Contributes steadily to the team's deliverables and handles routine complex tasks.",
-    IC3: "IC3 – Advanced professional role / area responsibility. Takes responsibility for an own work area. Prioritizes and solves more complex matters and provides guidance to others in the team.",
-    IC4: "IC4 – Domain owner or expert-oriented role. Drives progress within a larger work or technology area. Handles significant complexity and affects working practices across several teams.",
-    IC5: "IC5 – Strategic domain role / principal level. Shapes direction, methods and principles within its domain. Has clear cross-functional impact and contributes to long-term progress.",
-    Lead1:
-      "Lead-1 – Operational coordinating role (without people responsibility). Coordinates planning, prioritization and workflows in the team. Drives operational structure and execution without people responsibility.",
-    Lead2:
-      "Lead-2 – Cross-functional coordinating role. Drives larger initiatives or several teams. Ensures the whole and manages dependencies between functions.",
-    Lead3:
-      "Lead-3 – Strategic coordinating role (without full people responsibility). Provides direction to and coordinates several areas, teams or initiatives and ensures strategic coherence, prioritization and the management of dependencies across the board. Has impact through influence, coordination and guidance rather than formal people responsibility.",
-    M1: "M1 – First-line manager. Formal people responsibility. Leads the team's goals, development, work environment and delivery.",
-    M2: "M2 – Function manager / manager of managers. Steers a whole function through M1 roles. Responsible for tactics, resource allocation, budget and the function as a whole.",
-    M3: "Head of X – Strategic leadership role. Overall leadership responsibility for a function or business area. Affects strategy, priorities and the organization's long-term direction.",
   },
 }

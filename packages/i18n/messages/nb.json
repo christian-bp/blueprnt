@@ -40,16 +40,9 @@
     "criterionRationale": "Kriterieutvalgsprotokoll",
     "biasReview": "Bias-gjennomgang",
     "methodAppendix": "Metodevedlegg",
-    "importance": {
-      "label": "Betydning",
-      "critical": "Avgjørende",
-      "veryHigh": "Svært viktig",
-      "high": "Viktig",
-      "fair": "Ganske viktig",
-      "moderate": "Moderat viktig",
-      "slight": "Litt viktig",
-      "least": "Minst viktig"
-    }
+    "weightPoints": "Vektpoeng",
+    "pointBudget": "Poengbudsjett",
+    "share": "Andel"
   },
   "assessment": {
     "assessment": "Vurdering",
@@ -120,7 +113,7 @@
       "empty": "Ingen roller ennå. Opprett den første rollen for å begynne å vurdere.",
       "table": {
         "title": "Tittel",
-        "trackLevel": "Track og nivå",
+        "track": "Track",
         "team": "Team",
         "status": "Status",
         "rated": "Vurdert"
@@ -133,7 +126,6 @@
         "functionLabel": "Funksjon/avdeling",
         "teamLabel": "Team",
         "trackLabel": "Track",
-        "levelLabel": "Nivå",
         "cta": "Opprett rolle",
         "cancel": "Avbryt",
         "error": "Rollen kunne ikke opprettes. Prøv igjen."
@@ -190,7 +182,6 @@
         "error": "Rollen kunne ikke arkiveres. Prøv igjen."
       },
       "ai": {
-        "heading": "AI-assistanse",
         "descriptionLabel": "Beskriv rollen (valgfritt)",
         "draftCta": "Utkast jobbprofil med AI",
         "error": "Noe gikk galt. Prøv igjen."
@@ -201,7 +192,6 @@
       "step": "Kriterium {current} av {total}",
       "motivationLabel": "Begrunnelse (valgfritt)",
       "motivationPlaceholder": "Hvorfor denne vurderingen?",
-      "guardrailHint": "Utenfor veiledningsintervallet {min} til {max} for {level}.",
       "anchorGroupLabel": "Vurdering for {name}",
       "backCta": "Tilbake",
       "nextCta": "Neste kriterium",
@@ -213,10 +203,8 @@
         "bandLabel": "Bånd",
         "bandHighest": "Bånd 1 er det høyeste båndet.",
         "computing": "Beregner resultatet",
-        "guardrailsHeading": "Veiledende merknader",
-        "guardrailRow": "{name}: {value} er utenfor {min} til {max}",
-        "noWarnings": "Alle vurderinger er innenfor veiledningsintervallene.",
-        "backToRole": "Tilbake til rollen"
+        "backToRole": "Tilbake til rollen",
+        "scoreOutOf": "{score} / 100"
       }
     },
     "results": {
@@ -228,11 +216,10 @@
       "roleCount": "{count, plural, =1 {1 rolle} other {# roller}}",
       "table": {
         "title": "Tittel",
-        "trackLevel": "Track og nivå",
+        "track": "Track",
         "status": "Status",
         "score": "Totalpoeng",
         "band": "Bånd",
-        "warnings": "Veiledende merknader",
         "progress": "{rated} av {total} vurdert"
       },
       "empty": "Ingen roller å vise ennå. Opprett en rolle og vurder den for å se resultater.",
@@ -313,7 +300,7 @@
         "families": "Rollefamilier"
       },
       "families": {
-        "heading": "Rollefamiliene og rollene deres",
+        "heading": "Rollefamilier og roller hos {name}",
         "description": "Et utgangspunkt basert på bransjen deres. Juster fritt; alt kan endres senere.",
         "createCta": "Opprett og åpne dashbordet",
         "addFamilyCta": "Legg til familie",
@@ -325,11 +312,11 @@
     },
     "model": {
       "heading": "Velg vurderingsmodellen deres",
-      "description": "Modellen definerer kriteriene roller vurderes mot. Betydning er alltid en etikett, aldri et tall.",
+      "description": "Modellen definerer kriteriene roller vurderes mot. Hvert kriterium får 1 til 5 vektpoeng innenfor et fast poengbudsjett.",
       "error": "Noe gikk galt. Prøv igjen.",
       "template": {
         "title": "Start fra standardmalen",
-        "description": "9 kriterier med ankerskalaer, forvalgte betydninger, track-skjema og båndterskler.",
+        "description": "9 kriterier med ankerskalaer, forhåndsvalgt vekting, track-skjema og båndterskler.",
         "badge": "Anbefales",
         "cta": "Bruk malen"
       },
@@ -340,12 +327,10 @@
         "cta": "Start fra bunnen"
       },
       "review": {
-        "heading": "Modellen deres",
-        "description": "Gjennomgå kriteriene og viktigheten deres. Alt kan endres senere.",
-        "setImportance": "Betydning for {name}",
+        "heading": "Modellen til {name}",
+        "description": "Gjennomgå kriteriene og vektingen deres. Alt kan endres senere.",
         "cta": "Åpne dashbordet",
-        "editCta": "Rediger",
-        "doneEditing": "Ferdig"
+        "editCta": "Rediger"
       },
       "editor": {
         "heading": "Kriterier",
@@ -353,11 +338,17 @@
         "name": "Navn",
         "description": "Beskrivelse",
         "helpText": "Hjelpetekst til vurdereren",
-        "importance": "Betydning",
+        "setWeightPoints": "Vektpoeng for {name}",
         "anchors": "Ankerskala (0 til 5)",
         "anchorLevel": "Anker {level}",
         "addCta": "Legg til kriterium",
-        "removeCta": "Fjern"
+        "removeCta": "Fjern",
+        "saveCta": "Lagre vekting",
+        "cancelCta": "Avbryt",
+        "pointsLeft": "{count} vektpoeng igjen å fordele",
+        "pointsOver": "{count} vektpoeng over budsjettet",
+        "balanced": "Alle vektpoeng er fordelt",
+        "minCriteriaHint": "Legg til minst {min} kriterier for å fortsette."
       },
       "change": {
         "cta": "Endre modellvalg",
@@ -373,13 +364,20 @@
       "closeLabel": "Lukk",
       "draftDescriptionLabel": "Beskriv virksomheten deres (valgfritt)",
       "draftCta": "Generer kriterieutkast",
-      "reviewCta": "La AI gjennomgå betydningene",
+      "reviewCta": "La AI gjennomgå vektingen",
       "generating": "Genererer forslag",
+      "reviewing": "Gjennomgår modellen deres",
       "confirmCta": "Legg til valgte",
       "applyCta": "Bruk valgte",
       "rejectCta": "Avvis",
-      "noAdjustments": "AI-en fant ingen justeringer å foreslå.",
+      "noMoves": "AI-en fant ingen flyttinger å foreslå.",
+      "moveLabel": "Flytt {points} vektpoeng fra {from} til {to}",
       "motivation": "Begrunnelse"
+    },
+    "help": {
+      "close": "Lukk",
+      "criterionLabel": "Hva er et kriterium?",
+      "criterionBody": "Et kriterium er noe hver rolle vurderes mot, for eksempel omfang eller kompleksitet. Ankertekster beskriver hva vurderingene 0 til 5 betyr for det, og vektpoengene avgjør hvor mye det teller i totalpoengsummen."
     }
   },
   "errors": {
@@ -396,6 +394,8 @@
     "roleLocked": "Denne rollen er godkjent og låst. Åpne den igjen først.",
     "ratingsIncomplete": "Alle kriterier må vurderes først.",
     "invalidTransition": "Den statusendringen er ikke tillatt.",
-    "roleFamilyExists": "En familie med det navnet finnes allerede."
+    "roleFamilyExists": "En familie med det navnet finnes allerede.",
+    "weightsUnbalanced": "Vektingen må stemme med poengbudsjettet.",
+    "tooFewCriteria": "En modell trenger minst 5 kriterier."
   }
 }

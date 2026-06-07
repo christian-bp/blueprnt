@@ -18,11 +18,11 @@ import {
 } from "@workspace/ui/components/table"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
-import { importanceLabelKey } from "@/lib/importance"
 
-// Per-role result breakdown: rating + importance LABEL per criterion. The
-// weighted contribution per criterion is deliberately absent: showing it
-// would expose the numeric weights (CLAUDE.md rule).
+// Per-role result breakdown: rating + weight points per criterion, with the
+// normalized 0-100 score in the header (ADR-0004). The weighted contribution
+// per criterion is deliberately absent: the breakdown reads as ratings
+// against criteria, not as an arithmetic worksheet.
 export function RoleResultCard({
   orgId,
   roleId,
@@ -34,7 +34,6 @@ export function RoleResultCard({
   const tResult = useTranslations("dashboard.rating.result")
   const tAssessment = useTranslations("assessment")
   const tModel = useTranslations("model")
-  const tImportance = useTranslations("model.importance")
   const locale = useLocale()
   const result = useQuery(api.assessment.results.getRoleResult, {
     orgId,
@@ -50,7 +49,7 @@ export function RoleResultCard({
         <CardTitle>{t("resultHeading")}</CardTitle>
         <div className="flex items-center gap-4">
           <span className="font-semibold text-2xl tabular-nums">
-            {result.score}
+            {tResult("scoreOutOf", { score: result.score ?? 0 })}
           </span>
           <Badge>{`${tAssessment("band")} ${result.band}`}</Badge>
         </div>
@@ -63,7 +62,7 @@ export function RoleResultCard({
           <TableHeader>
             <TableRow>
               <TableHead>{tModel("criterion")}</TableHead>
-              <TableHead>{tImportance("label")}</TableHead>
+              <TableHead>{tModel("weightPoints")}</TableHead>
               <TableHead className="text-right">
                 {tAssessment("rating")}
               </TableHead>
@@ -82,19 +81,11 @@ export function RoleResultCard({
                     )}
                   </div>
                 </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {tImportance(importanceLabelKey(row.importanceLevel))}
+                <TableCell className="text-muted-foreground tabular-nums">
+                  {row.weightPoints}
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
-                  <span
-                    className={
-                      row.outside
-                        ? "text-amber-600 dark:text-amber-500"
-                        : undefined
-                    }
-                  >
-                    {row.value}
-                  </span>
+                  {row.value}
                 </TableCell>
               </TableRow>
             ))}

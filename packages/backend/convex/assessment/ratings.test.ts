@@ -25,15 +25,13 @@ async function seedTemplateOrganization(t: ReturnType<typeof initConvexTest>) {
   })
   if (model === null) throw new Error("model not seeded")
   const track = model.tracks[0]
-  const level = track?.levels[1]
-  if (track === undefined || level === undefined) throw new Error("seed")
+  if (track === undefined) throw new Error("seed")
   const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
     orgId,
     title: "Developer",
     function: "Engineering",
     team: "Core",
-    trackId: track.trackId,
-    levelId: level.levelId,
+    trackKey: track.key,
     purpose: "p",
     responsibilities: "r",
   })
@@ -64,7 +62,7 @@ describe("setRating", () => {
       expect(shifts).toHaveLength(0)
     })
 
-    // The 9th rating completes the role: all-5 means score 540, Band 1.
+    // The 9th rating completes the role: all-5 means score 100, Band 1.
     const lastCriterion = model.criteria[8]
     if (lastCriterion === undefined) throw new Error("seed")
     await asAdmin.mutation(api.assessment.ratings.setRating, {
@@ -86,8 +84,8 @@ describe("setRating", () => {
       ])
     })
 
-    // Re-rating the scope criterion (weight 18) from 5 to 0 drops the score
-    // by 90 to 450: still Band 2 boundary inclusive, so the band shifts 1 -> 2.
+    // Re-rating the scope criterion (5 weight points) from 5 to 0 drops the
+    // normalized score from 100 to floor(20 * 110 / 27) = 81: Band 3.
     const scopeCriterion = model.criteria[0]
     if (scopeCriterion === undefined) throw new Error("seed")
     await asAdmin.mutation(api.assessment.ratings.setRating, {
@@ -111,7 +109,7 @@ describe("setRating", () => {
         .collect()
       expect(shifts.map((row) => row.payload)).toEqual([
         { roleId, fromBand: null, toBand: 1 },
-        { roleId, fromBand: 1, toBand: 2 },
+        { roleId, fromBand: 1, toBand: 3 },
       ])
       const changes = await ctx.db
         .query("auditLog")
@@ -209,15 +207,13 @@ describe("setRating", () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
     const track = model.tracks[0]
-    const level = track?.levels[0]
-    if (track === undefined || level === undefined) throw new Error("seed")
+    if (track === undefined) throw new Error("seed")
     const bareRoleId = await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,
       title: "Bare",
       function: "F",
       team: "T",
-      trackId: track.trackId,
-      levelId: level.levelId,
+      trackKey: track.key,
     })
     const criterion = model.criteria[0]
     if (criterion === undefined) throw new Error("seed")

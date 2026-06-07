@@ -48,18 +48,14 @@ const stepVariants: Variants = {
 export function RatingStepper({
   orgId,
   roleId,
-  levelName,
   criteria,
   ratings,
-  guardrails,
   onCompleted,
 }: {
   orgId: string
   roleId: Id<"roles">
-  levelName: string
   criteria: StepperCriterion[]
   ratings: { criterionId: string; value: number; motivation: string | null }[]
-  guardrails: { criterionId: string; min: number; max: number }[]
   onCompleted: () => void
 }) {
   const t = useTranslations("dashboard.rating")
@@ -87,13 +83,6 @@ export function RatingStepper({
   const current = criteria[index]
   if (current === undefined) return null
   const selected = values[current.criterionId]
-  const guardrail = guardrails.find(
-    (range) => range.criterionId === current.criterionId
-  )
-  const outside =
-    selected !== undefined &&
-    guardrail !== undefined &&
-    (selected < guardrail.min || selected > guardrail.max)
 
   async function handleNext() {
     if (current === undefined || selected === undefined) return
@@ -210,25 +199,6 @@ export function RatingStepper({
                   )
                 })}
               </div>
-
-              {/* Pre-reserved advisory slot: reveals with opacity only, so
-                  selecting an out-of-range value never reflows the card. */}
-              <p
-                data-testid="guardrail-hint"
-                aria-live="polite"
-                className={cn(
-                  "min-h-5 text-amber-600 text-sm transition-opacity dark:text-amber-500",
-                  outside ? "opacity-100" : "opacity-0"
-                )}
-              >
-                {guardrail !== undefined
-                  ? t("guardrailHint", {
-                      min: guardrail.min,
-                      max: guardrail.max,
-                      level: levelName,
-                    })
-                  : ""}
-              </p>
 
               <div className="space-y-2">
                 <Label htmlFor="rating-motivation">

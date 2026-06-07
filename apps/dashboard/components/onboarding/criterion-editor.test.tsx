@@ -80,12 +80,30 @@ function modelWithCriterion() {
         name: "Autonomy",
         description: "",
         helpText: "",
-        importanceLevel: 5,
+        weightPoints: 3,
         order: 1,
         isCustom: true,
         anchors: [],
       },
     ],
+  }
+}
+
+// A balanced model with `count` criteria, all at the neutral 3, for the
+// composition-floor gate tests.
+function modelWithCriteria(count: number) {
+  return {
+    ...emptyModel(),
+    criteria: Array.from({ length: count }, (_, index) => ({
+      criterionId: `c${index + 1}`,
+      name: `Criterion ${index + 1}`,
+      description: "",
+      helpText: "",
+      weightPoints: 3,
+      order: index + 1,
+      isCustom: true,
+      anchors: [],
+    })),
   }
 }
 
@@ -98,6 +116,7 @@ function renderEditor(
     <NextIntlClientProvider locale="en" messages={messages}>
       <CriterionEditor
         orgId={orgId}
+        organizationName="Acme"
         onContinue={onContinue}
         onChangeChoice={onChangeChoice}
       />
@@ -138,7 +157,7 @@ describe("CriterionEditor", () => {
     expect(screen.getByText(editor.empty)).toBeDefined()
   })
 
-  it("submits a numeric importanceLevel and six anchors to addCriterion", async () => {
+  it("submits the name and six anchors to addCriterion, with no weight input", async () => {
     setModel(emptyModel())
     addCriterionMock.mockResolvedValue("c-new")
     renderEditor("org-abc")
@@ -158,35 +177,49 @@ describe("CriterionEditor", () => {
       expect(addCriterionMock).toHaveBeenCalledTimes(1)
     })
 
-    const call = addCriterionMock.mock.calls[0]?.[0] as {
-      orgId: string
-      name: string
-      importanceLevel: unknown
-      anchors: unknown[]
-    }
+    const call = addCriterionMock.mock.calls[0]?.[0] as Record<string, unknown>
     expect(call.orgId).toBe("org-abc")
     expect(call.name).toBe("Problem solving")
-    // importanceLevel must reach the backend as a NUMBER, never a string.
-    expect(typeof call.importanceLevel).toBe("number")
     expect(call.anchors).toHaveLength(6)
+    // No weight is sent: a new criterion enters at the neutral 3 (ADR-0004).
+    expect("weightPoints" in call).toBe(false)
   })
 
-  it("disables Continue with zero criteria and enables it with one", () => {
+  it("disables Continue below the composition floor and enables it at five", () => {
     setModel(emptyModel())
     const { rerender } = renderEditor()
     const getFinish = () =>
       screen.getByRole("button", {
         name: messages.dashboard.onboarding.screens.nextCta,
       })
+    const rerenderEditor = () =>
+      rerender(
+        <NextIntlClientProvider locale="en" messages={messages}>
+          <CriterionEditor
+            orgId="org-123"
+            organizationName="Acme"
+            onContinue={() => {}}
+          />
+        </NextIntlClientProvider>
+      )
     expect(getFinish()).toHaveProperty("disabled", true)
 
-    setModel(modelWithCriterion())
-    rerender(
-      <NextIntlClientProvider locale="en" messages={messages}>
-        <CriterionEditor orgId="org-123" onContinue={() => {}} />
-      </NextIntlClientProvider>
+    const hint = messages.dashboard.model.editor.minCriteriaHint.replace(
+      "{min}",
+      "5"
     )
+
+    // Four criteria: still below the floor, hint visible.
+    setModel(modelWithCriteria(4))
+    rerenderEditor()
+    expect(getFinish()).toHaveProperty("disabled", true)
+    expect(screen.getByText(hint)).toBeDefined()
+
+    // Five criteria: the floor is met, the hint is gone.
+    setModel(modelWithCriteria(5))
+    rerenderEditor()
     expect(getFinish()).toHaveProperty("disabled", false)
+    expect(screen.queryByText(hint)).toBeNull()
   })
 
   it("closes the dialog after a successful addCriterion call", async () => {
@@ -282,7 +315,8 @@ describe("CriterionEditor", () => {
   })
 
   it("Continue calls onContinue and does not complete onboarding", () => {
-    setModel(modelWithCriterion())
+    // At the composition floor, so Continue is enabled.
+    setModel(modelWithCriteria(5))
     const onContinue = vi.fn()
     renderEditor("org-fin", onContinue)
 

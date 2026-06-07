@@ -2,10 +2,12 @@
 
 import { AiMagicIcon } from "@hugeicons/core-free-icons"
 import { api } from "@workspace/backend/convex/_generated/api"
+import { MIN_CRITERIA } from "@workspace/core"
 import { useMutation, useQuery } from "convex/react"
 import { AnimatePresence } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { MorphPopover } from "@/components/morph-popover"
 import { AddCriterionDialog } from "@/components/onboarding/add-criterion-dialog"
 import { ChangeChoiceButton } from "@/components/onboarding/change-choice-button"
@@ -13,7 +15,8 @@ import { CriterionItem } from "@/components/onboarding/criterion-item"
 import { NextButton } from "@/components/onboarding/next-button"
 import { ModelDraftPanel } from "@/components/onboarding/model-draft-panel"
 import { ScreenShell } from "@/components/onboarding/screen-shell"
-import { importanceLabelKey } from "@/lib/importance"
+import { capitalizeFirst } from "@/lib/capitalize"
+import { formatShare } from "@/lib/weighting"
 
 // Screen 5 (scratch path). The criteria list is reactive from getModel; the
 // add-criterion dialog posts a new criterion, the hover-trashcan removes one,
@@ -22,14 +25,18 @@ import { importanceLabelKey } from "@/lib/importance"
 // happens there, not here. Next is disabled until at least one criterion
 // exists.
 //
-// Uses the shared CriterionItem component (always editable here: no importance
+// Uses the shared CriterionItem component (always editable here: no weight
 // select per row, but with the hover-trashcan and name+description layout).
+// Criteria enter at the neutral 3 weight points (ADR-0004); reweighting
+// happens on the review screen's zero-sum editor.
 export function CriterionEditor({
   orgId,
+  organizationName,
   onContinue,
   onChangeChoice,
 }: {
   orgId: string
+  organizationName: string
   onContinue: () => void
   onChangeChoice?: () => void | Promise<void>
 }) {
@@ -37,9 +44,9 @@ export function CriterionEditor({
   const tReview = useTranslations("dashboard.model.review")
   const tAi = useTranslations("dashboard.ai")
   const tEditor = useTranslations("dashboard.model.editor")
-  const tImportance = useTranslations("model.importance")
-  // The fixed tracks/levels localize server-side in getModel; passing the
-  // active UI locale re-runs the reactive query when the language changes.
+  const tHelp = useTranslations("dashboard.help")
+  // Template content localizes server-side in getModel; passing the active
+  // UI locale re-runs the reactive query when the language changes.
   const locale = useLocale()
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
   const removeCriterion = useMutation(
@@ -51,14 +58,34 @@ export function CriterionEditor({
   const [failed, setFailed] = useState(false)
 
   const criteria = model?.criteria ?? []
+  const totalPoints = criteria.reduce(
+    (sum, criterion) => sum + criterion.weightPoints,
+    0
+  )
+  // The composition floor (ADR-0004): a model cannot be finished with fewer
+  // than MIN_CRITERIA criteria. Building below the floor is fine; finishing
+  // is not.
   const finishDisabled =
-    model === null || model === undefined || criteria.length === 0
+    model === null || model === undefined || criteria.length < MIN_CRITERIA
 
   return (
-    <ScreenShell heading={tReview("heading")} description={t("description")}>
+    <ScreenShell
+      // A name-first heading starts with the name as typed; heading
+      // typography still wants a capital ("acme's model" -> "Acme's model").
+      heading={capitalizeFirst(
+        tReview("heading", { name: organizationName }),
+        locale
+      )}
+      description={t("description")}
+    >
       <div className="w-full space-y-6">
         <div className="flex items-center justify-between gap-2">
-          <h3 className="font-medium text-base">{tEditor("heading")}</h3>
+          <span className="flex shrink-0 items-center gap-1.5">
+            <h3 className="font-medium text-base">{tEditor("heading")}</h3>
+            <HelpMorphButton label={tHelp("criterionLabel")}>
+              {tHelp("criterionBody")}
+            </HelpMorphButton>
+          </span>
           <MorphPopover
             triggerLabel={tAi("openDraftCta")}
             triggerIcon={AiMagicIcon}
@@ -66,9 +93,7 @@ export function CriterionEditor({
             description={tAi("provenance")}
             closeLabel={tAi("closeLabel")}
           >
-            {(close) => (
-              <ModelDraftPanel orgId={orgId} onDone={close} dismissOnUnmount />
-            )}
+            {(close) => <ModelDraftPanel orgId={orgId} onDone={close} />}
           </MorphPopover>
         </div>
 
@@ -86,13 +111,20 @@ export function CriterionEditor({
                   key={criterion.criterionId}
                   name={criterion.name}
                   description={criterion.description || undefined}
-                  // The scratch editor shows the importance as a static label (no
-                  // per-row select here; importance is set in the add form).
+                  // The scratch editor shows the weight points and derived
+                  // share as static text (no per-row select here; reweighting
+                  // happens on the review screen).
                   importanceNode={
-                    <span className="text-muted-foreground text-sm">
-                      {tImportance(
-                        importanceLabelKey(criterion.importanceLevel)
-                      )}
+                    <span className="text-sm tabular-nums">
+                      {criterion.weightPoints}
+                      <span className="text-muted-foreground">
+                        {" · "}
+                        {formatShare(
+                          criterion.weightPoints,
+                          totalPoints,
+                          locale
+                        )}
+                      </span>
                     </span>
                   }
                   editable={true}
@@ -132,6 +164,13 @@ export function CriterionEditor({
               <ChangeChoiceButton onConfirm={onChangeChoice} />
             )}
           </div>
+          {/* The floor hint sits inside the footer row, so its appearance
+              never shifts the layout vertically. */}
+          {model != null && criteria.length < MIN_CRITERIA && (
+            <span className="min-w-0 flex-1 truncate text-right text-muted-foreground text-sm">
+              {tEditor("minCriteriaHint", { min: MIN_CRITERIA })}
+            </span>
+          )}
           <NextButton disabled={finishDisabled} onClick={onContinue} />
         </div>
       </div>

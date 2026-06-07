@@ -58,7 +58,7 @@ describe("AddCriterionForm", () => {
     expect(addButton).toHaveProperty("disabled", false)
   })
 
-  it("submits a numeric importanceLevel and six anchors to addCriterion", async () => {
+  it("submits the trimmed name and six anchors, with no weight input", async () => {
     addCriterionMock.mockResolvedValue("c-new")
     renderForm("org-abc")
 
@@ -75,17 +75,14 @@ describe("AddCriterionForm", () => {
       expect(addCriterionMock).toHaveBeenCalledTimes(1)
     })
 
-    const call = addCriterionMock.mock.calls[0]?.[0] as {
-      orgId: string
-      name: string
-      importanceLevel: unknown
-      anchors: unknown[]
-    }
+    const call = addCriterionMock.mock.calls[0]?.[0] as Record<string, unknown>
     expect(call.orgId).toBe("org-abc")
     expect(call.name).toBe("Problem solving")
-    // importanceLevel must reach the backend as a NUMBER, never a string.
-    expect(typeof call.importanceLevel).toBe("number")
     expect(call.anchors).toHaveLength(6)
+    // The form never sends a weight: a new criterion always enters at the
+    // neutral 3 weight points (the backend assigns it, ADR-0004).
+    expect("weightPoints" in call).toBe(false)
+    expect("importanceLevel" in call).toBe(false)
   })
 
   it("resets the form after a successful addCriterion call", async () => {

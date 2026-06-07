@@ -27,14 +27,14 @@ See also: `AGENTS.md` (Next.js version warning + agent-skills config) · `docs/P
 ## Domain language
 
 - Use the glossaries' canonical terms (`docs/contexts/*/CONTEXT.md`) in code, issues, and commits. Code identifiers in **English** (the code term in the glossary), domain documents in **Swedish**.
-- Band 1 = **highest**. Track = kind of job; Level = how advanced within the track; Band = computed weight. Never conflate them.
+- Band 1 = **highest**. Track = kind of job, set on the role; Level = the individual's seniority within the track (V2, never on the role; ADR-0005); Band = computed weight. Never conflate them.
 
 ## Architecture invariants (never break without a new ADR)
 
 - `packages/core` is **pure and deterministic**: no Convex/Next imports, no side effects. Score/band are always derived by the engine and never stored (ADR-0002).
 - **AI never touches the deterministic score/band path** and never auto-decides. AI output is a suggestion with provenance that HR confirms (ADR-0003). AI calls happen only in Convex actions, only against EU-hosted models.
 - **Role ≠ Person:** the `role`/`rating` tables must never carry person, salary, or performance fields. Role ids are permanent and never reused.
-- **Weights are never shown as numbers** to users, always importance labels (fixed 7-level scale).
+- **Weights are 1-5 weight points under a fixed point budget** (criteria count x 3, exact sum; ADR-0004). Percent shares are derived display values; free percentages or arbitrary weight numbers are never entered. Role scores are normalized to the fixed 0-100 scale.
 - Every Convex function is **org-scoped** (tenant isolation). No band override. Changes that affect results are logged in the audit log.
 - All data stays within the **EU** (Convex eu-west-1; ADR-0001).
 
@@ -49,10 +49,12 @@ See also: `AGENTS.md` (Next.js version warning + agent-skills config) · `docs/P
 
 ## Conventions
 
+- **No legacy before launch.** We are pre-launch: when something is replaced or retired, delete it completely in the same change (schema fields, tables, dead constants, compat shims, unused i18n keys) and reset dev/prod data instead of keeping retired columns around. Backwards-compatibility obligations start at go-live.
 - **Commit messages use conventional prefixes** (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`).
 - **Branch names use the same conventional prefixes** (`feat/`, `fix/`, `chore/`, `docs/`, `refactor/`), e.g. `feat/onboarding`.
 - **Feature branches land on main as ONE squash commit** (`git merge --squash`), so main reads one commit per feature. **Delete the feature branch right after the merge** (verify containment first: `git diff <branch> main --stat` must be empty); the squash commit body is the record of what landed.
 - **The pre-commit hook** (`.githooks/pre-commit`) runs Biome on staged files, a full typecheck, and the full test suite (`turbo run test`, cache-backed). All three must pass before a commit; never bypass with `--no-verify` unless explicitly told to.
+- **Client-side validation uses Zod.** Encode form rules (minimum counts, lengths) and the shape of any stored or AI payload in a Zod schema instead of ad hoc checks (AI payloads: `apps/dashboard/lib/suggestion-schemas.ts`). The backend always re-validates independently (Convex validators + `appError` codes); Zod is the client's gate.
 - **Lint + format = Biome** (`biome.json` at the root, a single binary). eslint/prettier are not in this repo; do not reintroduce them.
 - **shadcn files are vendor code:** `packages/ui/src/{components,hooks,lib,styles}` are excluded from Biome and must not be reformatted or relinted. They must stay diffable against upstream and are updated via the shadcn CLI. Deliberate local fixes are fine but must be documented in the commit message.
 - **Minimize layout shift in the UI.** State changes (hover, edit modes, inline confirms, loading) must not reflow existing content: reveal controls with opacity or overlays inside pre-reserved, fixed-size slots; never insert or remove inline elements that resize their neighbors. New content may extend below existing content, but what is already on screen stays put.

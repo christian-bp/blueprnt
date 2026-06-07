@@ -57,10 +57,8 @@ function renderStepper(overrides?: {
       <RatingStepper
         orgId="org-1"
         roleId={"role-1" as never}
-        levelName="IC2"
         criteria={CRITERIA as never}
         ratings={overrides?.ratings ?? []}
-        guardrails={[{ criterionId: "c-scope", min: 1, max: 2 }]}
         onCompleted={overrides?.onCompleted ?? vi.fn()}
       />
     </NextIntlClientProvider>
@@ -125,15 +123,6 @@ describe("RatingStepper", () => {
     await waitFor(() => {
       expect(onCompleted).toHaveBeenCalled()
     })
-  })
-
-  it("reveals the advisory hint only outside the guardrail range", () => {
-    renderStepper()
-    fireEvent.click(screen.getByText("Scope anchor 2"))
-    const slot = screen.getByTestId("guardrail-hint")
-    expect(slot.className).toContain("opacity-0")
-    fireEvent.click(screen.getByText("Scope anchor 5"))
-    expect(slot.className).toContain("opacity-100")
   })
 
   it("never renders score or band during the steps (blindness)", () => {

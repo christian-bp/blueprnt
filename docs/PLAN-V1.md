@@ -9,7 +9,7 @@ blueprnt gör om en HR-avdelnings ad hoc-rollvärdering till en dokumenterad, re
 **Designprincip (topprioritet, beslut 2026-06-05): enkelhet för användaren.** Det ska aldrig vara krångligt att komma igång eller att använda applikationen: färre steg, färre obligatoriska fält, vettiga förval, och data som kan härledas (t.ex. antal anställda från importerade medarbetare) frågas aldrig efter. Varje nytt flöde prövas mot den här principen.
 
 V1 lyckas när en HR-användare kan:
-1. utgå från en **standardmall** och anpassa kriterier, betydelser och bandtrösklar efter sitt företag,
+1. utgå från en **standardmall** och anpassa kriterier, viktpoäng och bandtrösklar efter sitt företag,
 2. registrera roller och **betygsätta** dem (0–5) mot ankartexter, utan att se vikter,
 3. få **poäng** uträknad och **band** föreslaget automatiskt,
 4. se en tydlig **bandöversikt** och använda den som beslutsunderlag,
@@ -40,15 +40,14 @@ packages/ui       shadcn/ui (finns)
 
 **evaluation-model** (en levande modell per organisation):
 - `model` — orgId, namn, härkomst (vilken mall den startade från).
-- `criterion` — orgId, namn, beskrivning, **hjälptext** (vägledning till bedömaren, skild från beskrivning/ankare — briefens 4.2), **importanceLevel (1–7**; 7 = högst betydelse/vikt 18, 1 = lägst/vikt 8**)**, ordning, isCustom, samt protokoll/bias-fält (syfte, varförRelevant, **överlapp mot andra kriterier**, biasRisk, **biasKommentar**, biasÅtgärd, godkänd, beslutsfattare, datum).
+- `criterion` — orgId, namn, beskrivning, **hjälptext** (vägledning till bedömaren, skild från beskrivning/ankare — briefens 4.2), **weightPoints (1–5**, neutral 3; summan över modellens kriterier är alltid exakt poängbudgeten = antal kriterier × 3, ADR-0004**)**, ordning, isCustom, samt protokoll/bias-fält (syfte, varförRelevant, **överlapp mot andra kriterier**, biasRisk, **biasKommentar**, biasÅtgärd, godkänd, beslutsfattare, datum).
 - `criterionAnchor` — criterionId, level (0–5), text. (Ankartexter.)
-- `track` / `level` — track-schema (IC/Lead/M; nivåer IC1–5, Lead 1–3, M1–3). Seedas enligt standardmall.md.
-- `trackGuardrail` — (track, level, criterion) → min/max (rådgivande). (Ev. senare.)
+- `track` / `level` — track-schema (IC/Lead/M; nivåer IC1–5, Lead 1–3, M1–3). Seedas enligt standardmall.md; nivåerna är referensdata för V2:s rollplacering, roller bär ingen nivå (ADR-0005). Track-guardrails utgick med ADR-0005; intervallen är referensdata i standardmall.md.
 - `bandThreshold` — orgId, band (1..N), minScore, etikett.
-- *Betydelseskalan (7 nivåer → vikt) är **fast** → konstant i `packages/core`, ingen tabell.*
+- *Viktpoängskalan (1–5) och poängbudgeten (antal kriterier × 3) är **fasta** → konstanter i `packages/core`, ingen tabell (ADR-0004).*
 
 **assessment**:
-- `role` — orgId; **jobbprofil**: obligatorisk kärna (titel, funktion/avdelning, team, trackKey, level, syfte, ansvarsområden) + valfria strukturerade fält (beslutsmandat, intressenter, kunskapskrav, finansiellt ansvar, personalansvar, risk/konsekvens, leverabler); status (draft/inReview/approved). Titeln är nivårollens visningstitel (t.ex. "Junior Software Developer"); kodfältet heter `title`.
+- `role` — orgId; **jobbprofil**: obligatorisk kärna (titel, funktion/avdelning, team, track, syfte, ansvarsområden) + valfria strukturerade fält (beslutsmandat, intressenter, kunskapskrav, finansiellt ansvar, personalansvar, risk/konsekvens, leverabler); status (draft/inReview/approved). Ingen nivå på rollen (ADR-0005: nivån är individdata, V2); kodfältet för titeln heter `title`.
 - `rating` — orgId, roleId, criterionId, value (0–5), ev. motivering (frivillig). **(Sanningskällan.)**
 - `anchorRole` — orgId, roleId, förväntat band. (Kalibrering; ev. senare.)
 
@@ -57,16 +56,15 @@ packages/ui       shadcn/ui (finns)
 - `suggestion` — orgId, mål (roll-fält / kriterium), föreslaget värde, motivering, källa (`ai`), status (föreslagen/bekräftad/avvisad), modell, tidsstämpel. (Förslagslagret — skilt från bekräftade värden; ADR-0003.)
 
 **packages/core** (rent):
-- `IMPORTANCE_SCALE` (7 nivåer → vikt: 8,10,11,12,13,14,18).
-- `scoreRole(ratings, criteriaWithWeights) → number`
+- Viktpoängkonstanter (1–5, neutral 3), `pointBudget(antalKriterier)` och allokeringvalidering (ADR-0004).
+- `scoreRole(ratings, criteriaWithWeights) → heltal 0–100` (normaliserad: 20 × Σ(betyg × viktpoäng) / Σ(viktpoäng), avrundad nedåt)
 - `assignBand(score, thresholds) → band`
 - `computeResults(model, ratingsByRole) → resultat[]`
-- `checkGuardrails(role, ratings, scheme) → varningar[]` (rådgivande)
 
 ## 4. Epics
 
 - **E1 — Konton & organisation:** Better Auth-org (= organisation), HR-only, roller Admin/Editor, org-scoping i alla funktioner, samt grundläggande företagssetup (namn, land, valuta, språk, antal anställda, bransch).
-- **E2 — Modellkonfiguration:** kriterier + ankare + hjälptexter, betydelse-skala (fast 7), bandtrösklar, track-schema, **standardmall** (förifylld), egna kriterier, samt **kriterieurvalsprotokoll** & **bias-granskning** per kriterium (lätt compliance-ställning, nivå 2).
+- **E2 — Modellkonfiguration:** kriterier + ankare + hjälptexter, viktpoäng med poängbudget (1–5, summa = antal kriterier × 3; ADR-0004), bandtrösklar, track-schema, **standardmall** (förifylld), egna kriterier, samt **kriterieurvalsprotokoll** & **bias-granskning** per kriterium (lätt compliance-ställning, nivå 2).
 - **E3 — Roller & värdering:** rollregister/jobbprofil, **blindat** betygsflöde mot ankare, status (utkast → granskning → godkänd), frivillig motivering.
 - **E4 — Poäng & band-motor:** `packages/core`, live-omräkning, bandutfall (alltid uträknat — ingen manuell override).
 - **E5 — Resultat & analys:** resultatvy (poäng + band), bandöversikt, **progressionsvy** (roller skapade / bedömda / bandade — briefens §8), grundläggande analys (**överlapp, avvikare, bandfördelning** — briefens 4.4), jämförelse av roller, export CSV/Excel, samt exporterbar **metodbilaga** (kriterier, betydelser, kriterieurvalsprotokoll, bias-granskning; formulering: "biasreducerande", aldrig "biasfri").
@@ -120,11 +118,11 @@ Avancerad marknads-benchmarking; komplex kompmodellering (bonus/equity/TCC); sto
 1. ~~**Bandschema**~~ → **Avgjort (default):** 7 band, trösklar konfigurerbara, Band 1 högst.
 2. ~~**HR-roller**~~ → **Avgjort (default):** Admin + Editor.
 3. ~~**Värderingsstatus & motivering**~~ → **Avgjort:** status utkast → under granskning → godkänd; **motivering frivillig** (aldrig obligatorisk). *(Medveten avvikelse från HR-kritikens fyra obligatoriska triggers — betyg 0/4/5, utanför track-intervall, nära bandgräns — motiverad av HR-only + blindning. Ev. icke-blockerande uppmaning att motivera är en UX-idé för E3.)* **Ingen manuell bandöverride** — band är alltid det uträknade utfallet (avviker från briefen; vill man ändra justerar man betyg eller modell).
-4. ~~**Roll-fält / jobbprofil**~~ → **Avgjort: nivå (2).** Obligatorisk kärna (titel, funktion/avdelning, team, track, nivå, syfte, ansvarsområden) + strukturerade valfria fält (beslutsmandat, intressenter, kunskapskrav, finansiellt ansvar, personalansvar, risk/konsekvens, leverabler). *(Mappning mot briefen 4.3: "beskrivning" → syfte; "ansvarstext" → ansvarsområden.)* **Uppdaterat 2026-06:** fältet heter **titel** (kod `title`), inte namn; titeln är nivårollens visningstitel enligt förklaringsdokumentet (track-level-band.md).
+4. ~~**Roll-fält / jobbprofil**~~ → **Avgjort: nivå (2).** Obligatorisk kärna (titel, funktion/avdelning, team, track, syfte, ansvarsområden) + strukturerade valfria fält (beslutsmandat, intressenter, kunskapskrav, finansiellt ansvar, personalansvar, risk/konsekvens, leverabler). *(Mappning mot briefen 4.3: "beskrivning" → syfte; "ansvarstext" → ansvarsområden.)* **Uppdaterat 2026-06:** fältet heter **titel** (kod `title`), inte namn. **Uppdaterat 2026-06-07 (ADR-0005):** nivåfältet utgår ur jobbprofilen; nivån sätts på individen i V2.
 5. ~~**Kalibrering/ankarroller**~~ → **Avgjort:** senare (fast-follow), enligt #8-beslutet (compliance-nivå 2); se E7.
-6. ~~**Track-schema**~~ → **Avgjort:** fast (IC/Lead/M) i V1, konfigurerbart senare. Nivåer: **IC1–5, Lead 1–3, M1–3** (definitioner + guardrails i standardmall.md).
+6. ~~**Track-schema**~~ → **Avgjort:** fast (IC/Lead/M) i V1, konfigurerbart senare. Nivåer: **IC1–5, Lead 1–3, M1–3** (definitioner + guardrail-referensdata i standardmall.md). **Uppdaterat 2026-06-07 (ADR-0005):** nivåerna sätts på individen (V2-rollplaceringen), inte på rollen; guardrails pensionerade ur V1:s betygsflöde.
 7. ~~**CSV/XLSX-import**~~ → **Avgjort (default):** manuell inmatning i V1; import senare.
-8. ~~**Compliance-omfång V1**~~ → **Avgjort: nivå (2).** Kärna (ankare, blindning, revisionslogg, roll≠person, ingen bandöverride — band härleds alltid) **+ lätt compliance-ställning:** kriterieurvalsprotokoll (per kriterium: syfte, varför relevant, överlapp mot andra kriterier, bias-risk, beslutad betydelse, beslutsfattare, datum) + bias-granskning (risk låg/medel/hög + kommentar + åtgärd + godkänd) + exporterbar metodbilaga (formulering: "biasreducerande", aldrig "biasfri"). Uppskjutet: obligatorisk kalibrering, formell modellgovernance, dubbel-bedömare, interbedömarreliabilitet.
+8. ~~**Compliance-omfång V1**~~ → **Avgjort: nivå (2).** Kärna (ankare, blindning, revisionslogg, roll≠person, ingen bandöverride — band härleds alltid) **+ lätt compliance-ställning:** kriterieurvalsprotokoll (per kriterium: syfte, varför relevant, överlapp mot andra kriterier, bias-risk, beslutade viktpoäng, beslutsfattare, datum) + bias-granskning (risk låg/medel/hög + kommentar + åtgärd + godkänd) + exporterbar metodbilaga (formulering: "biasreducerande", aldrig "biasfri"). Uppskjutet: obligatorisk kalibrering, formell modellgovernance, dubbel-bedömare, interbedömarreliabilitet.
 9. **Designsystem/tema** (öppen): dashboardens utseende (shadcn finns) — ej grillat än.
 10. ~~**EU-hosting: residens vs suveränitet**~~ → **Avgjort:** fysiskt-i-EU (Convex eu-west-1) räcker för V1; strikt suveränitet uppskjuten. (ADR-0001.)
 11. ~~**AI-modell (EU)**~~ → **Parkerad:** AI-SDK abstraherar leverantören → byte är billigt, beslutas vid bygget av E8. Enda kravet nu: **EU-hostad** modell (ADR-0003). Kandidater: Mistral EU / Azure OpenAI EU / Bedrock EU. Mindre portabelt vid byte: structured-output/caching/vision + prompttrimning per modell.
@@ -133,6 +131,10 @@ Avancerad marknads-benchmarking; komplex kompmodellering (bonus/equity/TCC); sto
 14. ~~**Rollfamilj**~~ → **Avgjort (2026-06):** rollfamilj är ett **eget begrepp**, skilt från track (förklaringsdokumentet track-level-band.md: Software Developer är en rollfamilj, IC är dess track; familjer kan också dras bredare, t.ex. Software Engineering). Hierarki: rollfamilj → roll/nivåroll → (V2) medarbetare. **Modelleras inte som egen entitet i V1:** varje `role` är en nivåroll med titel + track + nivå; familjegruppering fångas tills vidare via titlarna. Egen rollfamilj-entitet (och progressionsvy per familj) är en senare fråga. Se evaluation-model-ordlistan.
 
     **Uppdaterat 2026-06-06:** rollfamilj modelleras nu som egen entitet: frivillig tillhörighet per roll, högst en familj, namn unika per organisation. Gruppering i rollistan, familjeväljare vid skapa/redigera, filter i resultatvyn och progressionsvy per familj levererades i role-families-skivan (docs/superpowers/specs/2026-06-06-role-families-design.md). Familjer påverkar aldrig poäng eller band. Fritextfältet funktion/avdelning kvarstår som organisatorisk hemvist.
+
+15. ~~**Viktning**~~ → **Avgjort (2026-06-06, ADR-0004):** viktning med **poängbudget** ersätter den 7-gradiga betydelseskalan med dolda Excel-vikter. Kriterier viktas med synliga **viktpoäng 1–5** (neutral 3) där summan alltid är exakt **antal kriterier × 3**; andelen per kriterium är härledd visning. Rollens totalpoäng normaliseras till **0–100** (20 × Σ(betyg × viktpoäng) / Σ(viktpoäng), avrundad nedåt) så bandtrösklarna är stabila oavsett antal kriterier; standardmallens trösklar översätts till 98/83/74/63/53/41/0 (kalibreras före lansering). AI-viktgranskningen föreslår **balanserade flyttar** (varje flytt är i sig nollsumma, HR kan bekräfta valfri delmängd). Källdokument: docs/contexts/evaluation-model/viktning-poangbudget.md.
+
+16. ~~**Nivå på roll eller individ**~~ → **Avgjort (2026-06-07, ADR-0005):** en roll bär bara **track**; **nivån är individens senioritet** inom rollens track och sätts vid V2:s rollplacering ("System Developer" är IC; Bo kan vara IC1 och Axel IC4 i samma roll). Värderingsobjektet blir därmed rollen som helhet, vilket matchar lönekartläggningens "lika arbete"-grupper; skiljer sig seniorens arbete åt blir det en egen roll. Track-guardrails (per nivå) pensioneras ur V1:s betygsflöde; nivådefinitionerna består som referensdata. Reviderar källdokumentet track-level-band.md (se dess repo-anmärkning).
 
 ## 10. Positionering & referenser
 

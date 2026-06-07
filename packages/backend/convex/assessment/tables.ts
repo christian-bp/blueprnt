@@ -1,5 +1,6 @@
 import { defineTable } from "convex/server"
 import { v } from "convex/values"
+import { trackKeyValidator } from "../evaluationModel/tables"
 
 // Role families (rollfamilj): content grouping of roles, e.g. "Software
 // Engineering" or as broad as the organization wants. Families never affect
@@ -15,11 +16,12 @@ export const roleFamilies = defineTable({
 // Role/rating tables NEVER carry person, salary, or performance fields.
 export const roles = defineTable({
   orgId: v.string(),
-  title: v.string(), // the level role's display title, e.g. "Junior Software Developer"
+  title: v.string(), // the role's display title, e.g. "System Developer"
   function: v.string(),
   team: v.string(),
-  trackId: v.id("tracks"),
-  levelId: v.id("levels"),
+  // Stable track key (ADR-0006): tracks are fixed V1 constants, so the
+  // schema-level literal union IS the referential integrity check.
+  trackKey: trackKeyValidator,
   familyId: v.optional(v.id("roleFamilies")),
   purpose: v.string(),
   responsibilities: v.string(),

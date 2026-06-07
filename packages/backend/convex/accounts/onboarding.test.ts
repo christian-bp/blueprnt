@@ -95,8 +95,27 @@ describe("getOnboardingStatus", () => {
 
     // Model exists, but the wizard has not been finished yet: hasModel is true
     // while completed stays false. The gate must NOT infer done from hasModel.
+    // The model carries MIN_CRITERIA criteria so completeOnboarding's
+    // composition floor passes below.
     await t.run(async (ctx) => {
-      await ctx.db.insert("models", { orgId, name: "Standard" })
+      const modelId = await ctx.db.insert("models", {
+        orgId,
+        name: "Standard",
+        bandThresholds: [],
+      })
+      for (let index = 0; index < 5; index++) {
+        await ctx.db.insert("criteria", {
+          orgId,
+          modelId,
+          name: `Criterion ${index + 1}`,
+          description: "",
+          helpText: "",
+          anchors: [],
+          weightPoints: 3,
+          order: index + 1,
+          isCustom: true,
+        })
+      }
     })
     status = await asUser.query(api.accounts.onboarding.getOnboardingStatus, {})
     expect(status?.hasModel).toBe(true)

@@ -2,10 +2,11 @@
 
 *Hur vi sätter detta på roller, hur vi placerar medarbetare och varför det finns.*
 
-> **Om detta dokument (repo-anmärkning):** källdokument inlagt 2026-06-04 (från `Track_Level_Band_roller_medarbetare_enkel_forklaring.docx`). Detta är den kanoniska förklaringen av track/level/band-modellen; ordlistorna ([CONTEXT.md](./CONTEXT.md), [assessment](../assessment/CONTEXT.md)) och PLAN-V1 följer den. Två preciseringar gäller i repot:
+> **Om detta dokument (repo-anmärkning):** källdokument inlagt 2026-06-04 (från `Track_Level_Band_roller_medarbetare_enkel_forklaring.docx`). Ordlistorna ([CONTEXT.md](./CONTEXT.md), [assessment](../assessment/CONTEXT.md)) och PLAN-V1 följer den, med preciseringarna nedan:
 >
-> 1. **"Sätter Band" beskriver utfallet, inte mekanismen.** Band härleds alltid deterministiskt från sparade betyg + aktuell modell och kan aldrig sättas manuellt (ADR-0002). Dokumentet säger inget annat; det är tyst om mekanismen.
-> 2. **Band 1 är högst** (högre bandnummer = lägre tyngd). Dokumentet anger ingen numreringsriktning; detta är repots beslut.
+> 1. **REVIDERAT 2026-06-07 (ADR-0005): nivån sitter på individen, inte på rollen.** Dokumentets modell "Track och Level sätts på rollen" med nivåroller ("Software Developer - IC2" som egen roll) gäller inte längre: en roll bär bara en track ("System Developer" är IC), och nivån beskriver medarbetarens senioritet inom rollens track (sätts i V2:s rollplacering: Bo kan vara IC1 och Axel IC4 i samma roll). Skiljer sig seniorens *arbete* åt blir det en egen roll. Värderingen och bandet gäller därmed rollen som helhet, vilket matchar lönekartläggningens "lika arbete"-grupper. Nivåtabellerna nedan (avsnitt 2, 3 och 8) läses som referens för individnivåer, inte som separata roller.
+> 2. **"Sätter Band" beskriver utfallet, inte mekanismen.** Band härleds alltid deterministiskt från sparade betyg + aktuell modell och kan aldrig sättas manuellt (ADR-0002). Dokumentet säger inget annat; det är tyst om mekanismen.
+> 3. **Band 1 är högst** (högre bandnummer = lägre tyngd). Dokumentet anger ingen numreringsriktning; detta är repots beslut.
 >
 > Medarbetarplacering (rollplacering, steg 4 till 5 nedan) är V2-scope (people-kontexten), inte V1.
 

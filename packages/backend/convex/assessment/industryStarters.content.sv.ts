@@ -1,46 +1,40 @@
 import type { StarterContent } from "./industryStarters"
 
 // Swedish starter sets. Titles are stored as written once the user confirms
-// (user data, no read-time localization). Track/level keys reference the
-// fixed schema (IC1..IC5, Lead1..Lead3, M1..M3).
+// (user data, no read-time localization). Track keys reference the fixed
+// schema (IC/Lead/M). One role per JOB (ADR-0005): seniority lives on the
+// individual, so there are no junior/senior title variants; a senior whose
+// work actually differs becomes its own role, added by the user.
 export const industryStartersSv: StarterContent = {
   itTelecom: [
     {
       name: "Engineering",
       roles: [
-        { title: "Junior systemutvecklare", trackKey: "IC", levelKey: "IC1" },
-        { title: "Systemutvecklare", trackKey: "IC", levelKey: "IC2" },
-        { title: "Senior systemutvecklare", trackKey: "IC", levelKey: "IC3" },
-        { title: "Tech Lead", trackKey: "Lead", levelKey: "Lead2" },
-        { title: "Engineering Manager", trackKey: "M", levelKey: "M2" },
+        { title: "Systemutvecklare", trackKey: "IC" },
+        { title: "Tech Lead", trackKey: "Lead" },
+        { title: "Engineering Manager", trackKey: "M" },
       ],
     },
     {
       name: "Produkt",
-      roles: [
-        { title: "Product Manager", trackKey: "IC", levelKey: "IC3" },
-        { title: "Senior Product Manager", trackKey: "IC", levelKey: "IC4" },
-      ],
+      roles: [{ title: "Product Manager", trackKey: "IC" }],
     },
     {
       name: "Design",
-      roles: [
-        { title: "UX-designer", trackKey: "IC", levelKey: "IC2" },
-        { title: "Senior UX-designer", trackKey: "IC", levelKey: "IC3" },
-      ],
+      roles: [{ title: "UX-designer", trackKey: "IC" }],
     },
     {
       name: "Försäljning",
       roles: [
-        { title: "Account Executive", trackKey: "IC", levelKey: "IC2" },
-        { title: "Försäljningschef", trackKey: "M", levelKey: "M2" },
+        { title: "Account Executive", trackKey: "IC" },
+        { title: "Försäljningschef", trackKey: "M" },
       ],
     },
     {
       name: "Kundsupport",
       roles: [
-        { title: "Supportspecialist", trackKey: "IC", levelKey: "IC1" },
-        { title: "Customer Success Manager", trackKey: "IC", levelKey: "IC2" },
+        { title: "Supportspecialist", trackKey: "IC" },
+        { title: "Customer Success Manager", trackKey: "IC" },
       ],
     },
   ],
@@ -48,25 +42,23 @@ export const industryStartersSv: StarterContent = {
     {
       name: "Konsultverksamhet",
       roles: [
-        { title: "Junior konsult", trackKey: "IC", levelKey: "IC1" },
-        { title: "Konsult", trackKey: "IC", levelKey: "IC2" },
-        { title: "Seniorkonsult", trackKey: "IC", levelKey: "IC3" },
-        { title: "Uppdragsledare", trackKey: "Lead", levelKey: "Lead2" },
-        { title: "Affärsområdeschef", trackKey: "M", levelKey: "M2" },
+        { title: "Konsult", trackKey: "IC" },
+        { title: "Uppdragsledare", trackKey: "Lead" },
+        { title: "Affärsområdeschef", trackKey: "M" },
       ],
     },
     {
       name: "Försäljning",
       roles: [
-        { title: "Account Manager", trackKey: "IC", levelKey: "IC2" },
-        { title: "Säljchef", trackKey: "M", levelKey: "M1" },
+        { title: "Account Manager", trackKey: "IC" },
+        { title: "Säljchef", trackKey: "M" },
       ],
     },
     {
       name: "Verksamhetsstöd",
       roles: [
-        { title: "Administratör", trackKey: "IC", levelKey: "IC1" },
-        { title: "Ekonomiansvarig", trackKey: "M", levelKey: "M1" },
+        { title: "Administratör", trackKey: "IC" },
+        { title: "Ekonomiansvarig", trackKey: "M" },
       ],
     },
   ],
@@ -74,31 +66,31 @@ export const industryStartersSv: StarterContent = {
     {
       name: "Produktion",
       roles: [
-        { title: "Operatör", trackKey: "IC", levelKey: "IC1" },
-        { title: "Produktionstekniker", trackKey: "IC", levelKey: "IC2" },
-        { title: "Produktionsledare", trackKey: "Lead", levelKey: "Lead2" },
-        { title: "Produktionschef", trackKey: "M", levelKey: "M2" },
+        { title: "Operatör", trackKey: "IC" },
+        { title: "Produktionstekniker", trackKey: "IC" },
+        { title: "Produktionsledare", trackKey: "Lead" },
+        { title: "Produktionschef", trackKey: "M" },
       ],
     },
     {
       name: "Kvalitet",
       roles: [
-        { title: "Kvalitetsingenjör", trackKey: "IC", levelKey: "IC2" },
-        { title: "Kvalitetschef", trackKey: "M", levelKey: "M1" },
+        { title: "Kvalitetsingenjör", trackKey: "IC" },
+        { title: "Kvalitetschef", trackKey: "M" },
       ],
     },
     {
       name: "Underhåll",
       roles: [
-        { title: "Underhållstekniker", trackKey: "IC", levelKey: "IC2" },
-        { title: "Underhållsledare", trackKey: "Lead", levelKey: "Lead1" },
+        { title: "Underhållstekniker", trackKey: "IC" },
+        { title: "Underhållsledare", trackKey: "Lead" },
       ],
     },
     {
       name: "Logistik",
       roles: [
-        { title: "Logistikkoordinator", trackKey: "IC", levelKey: "IC2" },
-        { title: "Logistikchef", trackKey: "M", levelKey: "M1" },
+        { title: "Logistikkoordinator", trackKey: "IC" },
+        { title: "Logistikchef", trackKey: "M" },
       ],
     },
   ],
@@ -106,31 +98,31 @@ export const industryStartersSv: StarterContent = {
     {
       name: "Butik",
       roles: [
-        { title: "Butikssäljare", trackKey: "IC", levelKey: "IC1" },
-        { title: "Butiksansvarig", trackKey: "Lead", levelKey: "Lead1" },
-        { title: "Butikschef", trackKey: "M", levelKey: "M1" },
-        { title: "Regionchef", trackKey: "M", levelKey: "M2" },
+        { title: "Butikssäljare", trackKey: "IC" },
+        { title: "Butiksansvarig", trackKey: "Lead" },
+        { title: "Butikschef", trackKey: "M" },
+        { title: "Regionchef", trackKey: "M" },
       ],
     },
     {
       name: "E-handel",
       roles: [
-        { title: "E-handelsspecialist", trackKey: "IC", levelKey: "IC2" },
-        { title: "E-handelsansvarig", trackKey: "M", levelKey: "M1" },
+        { title: "E-handelsspecialist", trackKey: "IC" },
+        { title: "E-handelsansvarig", trackKey: "M" },
       ],
     },
     {
       name: "Inköp",
       roles: [
-        { title: "Inköpare", trackKey: "IC", levelKey: "IC2" },
-        { title: "Inköpschef", trackKey: "M", levelKey: "M1" },
+        { title: "Inköpare", trackKey: "IC" },
+        { title: "Inköpschef", trackKey: "M" },
       ],
     },
     {
       name: "Lager och logistik",
       roles: [
-        { title: "Lagermedarbetare", trackKey: "IC", levelKey: "IC1" },
-        { title: "Lagerchef", trackKey: "M", levelKey: "M1" },
+        { title: "Lagermedarbetare", trackKey: "IC" },
+        { title: "Lagerchef", trackKey: "M" },
       ],
     },
   ],
@@ -138,24 +130,23 @@ export const industryStartersSv: StarterContent = {
     {
       name: "Handläggning",
       roles: [
-        { title: "Handläggare", trackKey: "IC", levelKey: "IC2" },
-        { title: "Senior handläggare", trackKey: "IC", levelKey: "IC3" },
-        { title: "Gruppledare", trackKey: "Lead", levelKey: "Lead1" },
-        { title: "Enhetschef", trackKey: "M", levelKey: "M1" },
+        { title: "Handläggare", trackKey: "IC" },
+        { title: "Gruppledare", trackKey: "Lead" },
+        { title: "Enhetschef", trackKey: "M" },
       ],
     },
     {
       name: "Verksamhetsutveckling",
       roles: [
-        { title: "Verksamhetsutvecklare", trackKey: "IC", levelKey: "IC3" },
-        { title: "Projektledare", trackKey: "Lead", levelKey: "Lead2" },
+        { title: "Verksamhetsutvecklare", trackKey: "IC" },
+        { title: "Projektledare", trackKey: "Lead" },
       ],
     },
     {
       name: "Administration",
       roles: [
-        { title: "Administratör", trackKey: "IC", levelKey: "IC1" },
-        { title: "Registrator", trackKey: "IC", levelKey: "IC2" },
+        { title: "Administratör", trackKey: "IC" },
+        { title: "Registrator", trackKey: "IC" },
       ],
     },
   ],
@@ -163,24 +154,24 @@ export const industryStartersSv: StarterContent = {
     {
       name: "Vård",
       roles: [
-        { title: "Undersköterska", trackKey: "IC", levelKey: "IC1" },
-        { title: "Sjuksköterska", trackKey: "IC", levelKey: "IC2" },
-        { title: "Specialistsjuksköterska", trackKey: "IC", levelKey: "IC3" },
-        { title: "Enhetschef", trackKey: "M", levelKey: "M1" },
+        { title: "Undersköterska", trackKey: "IC" },
+        { title: "Sjuksköterska", trackKey: "IC" },
+        { title: "Specialistsjuksköterska", trackKey: "IC" },
+        { title: "Enhetschef", trackKey: "M" },
       ],
     },
     {
       name: "Omsorg",
       roles: [
-        { title: "Omsorgsassistent", trackKey: "IC", levelKey: "IC1" },
-        { title: "Stödpedagog", trackKey: "IC", levelKey: "IC2" },
+        { title: "Omsorgsassistent", trackKey: "IC" },
+        { title: "Stödpedagog", trackKey: "IC" },
       ],
     },
     {
       name: "Administration",
       roles: [
-        { title: "Vårdadministratör", trackKey: "IC", levelKey: "IC1" },
-        { title: "Verksamhetschef", trackKey: "M", levelKey: "M2" },
+        { title: "Vårdadministratör", trackKey: "IC" },
+        { title: "Verksamhetschef", trackKey: "M" },
       ],
     },
   ],
@@ -188,31 +179,29 @@ export const industryStartersSv: StarterContent = {
     {
       name: "Rådgivning",
       roles: [
-        { title: "Rådgivare", trackKey: "IC", levelKey: "IC2" },
-        { title: "Senior rådgivare", trackKey: "IC", levelKey: "IC3" },
-        { title: "Kontorschef", trackKey: "M", levelKey: "M1" },
+        { title: "Rådgivare", trackKey: "IC" },
+        { title: "Kontorschef", trackKey: "M" },
       ],
     },
     {
       name: "Analys",
       roles: [
-        { title: "Analytiker", trackKey: "IC", levelKey: "IC2" },
-        { title: "Senior analytiker", trackKey: "IC", levelKey: "IC3" },
-        { title: "Chefsanalytiker", trackKey: "Lead", levelKey: "Lead2" },
+        { title: "Analytiker", trackKey: "IC" },
+        { title: "Chefsanalytiker", trackKey: "Lead" },
       ],
     },
     {
       name: "Risk och compliance",
       roles: [
-        { title: "Compliance Officer", trackKey: "IC", levelKey: "IC3" },
-        { title: "Riskchef", trackKey: "M", levelKey: "M2" },
+        { title: "Compliance Officer", trackKey: "IC" },
+        { title: "Riskchef", trackKey: "M" },
       ],
     },
     {
       name: "Backoffice",
       roles: [
-        { title: "Handläggare", trackKey: "IC", levelKey: "IC1" },
-        { title: "Teamledare", trackKey: "Lead", levelKey: "Lead1" },
+        { title: "Handläggare", trackKey: "IC" },
+        { title: "Teamledare", trackKey: "Lead" },
       ],
     },
   ],
@@ -220,25 +209,25 @@ export const industryStartersSv: StarterContent = {
     {
       name: "Projekt",
       roles: [
-        { title: "Projektingenjör", trackKey: "IC", levelKey: "IC2" },
-        { title: "Projektledare", trackKey: "Lead", levelKey: "Lead2" },
-        { title: "Projektchef", trackKey: "M", levelKey: "M2" },
+        { title: "Projektingenjör", trackKey: "IC" },
+        { title: "Projektledare", trackKey: "Lead" },
+        { title: "Projektchef", trackKey: "M" },
       ],
     },
     {
       name: "Produktion",
       roles: [
-        { title: "Hantverkare", trackKey: "IC", levelKey: "IC2" },
-        { title: "Arbetsledare", trackKey: "Lead", levelKey: "Lead1" },
-        { title: "Platschef", trackKey: "M", levelKey: "M1" },
+        { title: "Hantverkare", trackKey: "IC" },
+        { title: "Arbetsledare", trackKey: "Lead" },
+        { title: "Platschef", trackKey: "M" },
       ],
     },
     {
       name: "Förvaltning",
       roles: [
-        { title: "Fastighetstekniker", trackKey: "IC", levelKey: "IC1" },
-        { title: "Fastighetsförvaltare", trackKey: "IC", levelKey: "IC2" },
-        { title: "Förvaltningschef", trackKey: "M", levelKey: "M1" },
+        { title: "Fastighetstekniker", trackKey: "IC" },
+        { title: "Fastighetsförvaltare", trackKey: "IC" },
+        { title: "Förvaltningschef", trackKey: "M" },
       ],
     },
   ],
@@ -246,24 +235,23 @@ export const industryStartersSv: StarterContent = {
     {
       name: "Verksamhet",
       roles: [
-        { title: "Medarbetare", trackKey: "IC", levelKey: "IC1" },
-        { title: "Senior medarbetare", trackKey: "IC", levelKey: "IC3" },
-        { title: "Teamledare", trackKey: "Lead", levelKey: "Lead1" },
-        { title: "Chef", trackKey: "M", levelKey: "M1" },
+        { title: "Medarbetare", trackKey: "IC" },
+        { title: "Teamledare", trackKey: "Lead" },
+        { title: "Chef", trackKey: "M" },
       ],
     },
     {
       name: "Försäljning",
       roles: [
-        { title: "Säljare", trackKey: "IC", levelKey: "IC2" },
-        { title: "Säljchef", trackKey: "M", levelKey: "M1" },
+        { title: "Säljare", trackKey: "IC" },
+        { title: "Säljchef", trackKey: "M" },
       ],
     },
     {
       name: "Administration",
       roles: [
-        { title: "Administratör", trackKey: "IC", levelKey: "IC1" },
-        { title: "Ekonomiansvarig", trackKey: "M", levelKey: "M1" },
+        { title: "Administratör", trackKey: "IC" },
+        { title: "Ekonomiansvarig", trackKey: "M" },
       ],
     },
   ],

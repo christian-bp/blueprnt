@@ -40,16 +40,9 @@
     "criterionRationale": "Kriterieurvalsprotokoll",
     "biasReview": "Bias-granskning",
     "methodAppendix": "Metodbilaga",
-    "importance": {
-      "label": "Betydelse",
-      "critical": "Avgörande",
-      "veryHigh": "Mycket viktigt",
-      "high": "Viktigt",
-      "fair": "Ganska viktigt",
-      "moderate": "Måttligt viktigt",
-      "slight": "Lite viktigt",
-      "least": "Minst viktigt"
-    }
+    "weightPoints": "Viktpoäng",
+    "pointBudget": "Poängbudget",
+    "share": "Andel"
   },
   "assessment": {
     "assessment": "Värdering",
@@ -120,7 +113,7 @@
       "empty": "Inga roller ännu. Skapa din första roll för att börja värdera.",
       "table": {
         "title": "Titel",
-        "trackLevel": "Track och nivå",
+        "track": "Track",
         "team": "Team",
         "status": "Status",
         "rated": "Betygsatt"
@@ -133,7 +126,6 @@
         "functionLabel": "Funktion/avdelning",
         "teamLabel": "Team",
         "trackLabel": "Track",
-        "levelLabel": "Nivå",
         "cta": "Skapa roll",
         "cancel": "Avbryt",
         "error": "Rollen kunde inte skapas. Försök igen."
@@ -190,7 +182,6 @@
         "error": "Rollen kunde inte arkiveras. Försök igen."
       },
       "ai": {
-        "heading": "AI-assistans",
         "descriptionLabel": "Beskriv rollen (frivilligt)",
         "draftCta": "Utkasta jobbprofil med AI",
         "error": "Något gick fel. Försök igen."
@@ -201,7 +192,6 @@
       "step": "Kriterium {current} av {total}",
       "motivationLabel": "Motivering (frivillig)",
       "motivationPlaceholder": "Varför detta betyg?",
-      "guardrailHint": "Utanför riktintervallet {min} till {max} för {level}.",
       "anchorGroupLabel": "Betyg för {name}",
       "backCta": "Tillbaka",
       "nextCta": "Nästa kriterium",
@@ -213,10 +203,8 @@
         "bandLabel": "Band",
         "bandHighest": "Band 1 är det högsta bandet.",
         "computing": "Räknar fram resultatet",
-        "guardrailsHeading": "Rådgivande noteringar",
-        "guardrailRow": "{name}: {value} är utanför {min} till {max}",
-        "noWarnings": "Alla betyg ligger inom riktintervallen.",
-        "backToRole": "Tillbaka till rollen"
+        "backToRole": "Tillbaka till rollen",
+        "scoreOutOf": "{score} / 100"
       }
     },
     "results": {
@@ -228,11 +216,10 @@
       "roleCount": "{count, plural, =1 {1 roll} other {# roller}}",
       "table": {
         "title": "Titel",
-        "trackLevel": "Track och nivå",
+        "track": "Track",
         "status": "Status",
         "score": "Totalpoäng",
         "band": "Band",
-        "warnings": "Rådgivande noteringar",
         "progress": "{rated} av {total} betygsatta"
       },
       "empty": "Inga roller att visa ännu. Skapa en roll och betygsätt den för att se resultat.",
@@ -313,7 +300,7 @@
         "families": "Rollfamiljer"
       },
       "families": {
-        "heading": "Era rollfamiljer och roller",
+        "heading": "Rollfamiljer och roller hos {name}",
         "description": "En startpunkt utifrån er bransch. Justera fritt; allt kan ändras senare.",
         "createCta": "Skapa och öppna dashboarden",
         "addFamilyCta": "Lägg till familj",
@@ -325,11 +312,11 @@
     },
     "model": {
       "heading": "Välj er värderingsmodell",
-      "description": "Modellen definierar kriterierna som roller värderas mot. Betydelse är alltid en etikett, aldrig en siffra.",
+      "description": "Modellen definierar kriterierna som roller värderas mot. Varje kriterium får 1 till 5 viktpoäng inom en fast poängbudget.",
       "error": "Något gick fel. Försök igen.",
       "template": {
         "title": "Utgå från standardmallen",
-        "description": "9 kriterier med ankarskalor, förvalda betydelser, track-schema och bandtrösklar.",
+        "description": "9 kriterier med ankarskalor, förvald viktning, track-schema och bandtrösklar.",
         "badge": "Rekommenderas",
         "cta": "Använd mallen"
       },
@@ -340,12 +327,10 @@
         "cta": "Börja från grunden"
       },
       "review": {
-        "heading": "Er modell",
-        "description": "Granska kriterierna och deras viktighet. Allt kan ändras senare.",
-        "setImportance": "Betydelse för {name}",
+        "heading": "Modellen för {name}",
+        "description": "Granska kriterierna och deras viktning. Allt kan ändras senare.",
         "cta": "Öppna dashboarden",
-        "editCta": "Redigera",
-        "doneEditing": "Klar"
+        "editCta": "Redigera"
       },
       "editor": {
         "heading": "Kriterier",
@@ -353,11 +338,17 @@
         "name": "Namn",
         "description": "Beskrivning",
         "helpText": "Hjälptext till bedömaren",
-        "importance": "Betydelse",
+        "setWeightPoints": "Viktpoäng för {name}",
         "anchors": "Ankarskala (0 till 5)",
         "anchorLevel": "Ankare {level}",
         "addCta": "Lägg till kriterium",
-        "removeCta": "Ta bort"
+        "removeCta": "Ta bort",
+        "saveCta": "Spara viktning",
+        "cancelCta": "Avbryt",
+        "pointsLeft": "{count} viktpoäng kvar att fördela",
+        "pointsOver": "{count} viktpoäng över budgeten",
+        "balanced": "Alla viktpoäng är fördelade",
+        "minCriteriaHint": "Lägg till minst {min} kriterier för att gå vidare."
       },
       "change": {
         "cta": "Ändra modellval",
@@ -373,13 +364,20 @@
       "closeLabel": "Stäng",
       "draftDescriptionLabel": "Beskriv er verksamhet (frivilligt)",
       "draftCta": "Generera kriterieutkast",
-      "reviewCta": "Låt AI gå igenom betydelserna",
+      "reviewCta": "Låt AI granska viktningen",
       "generating": "Genererar förslag",
+      "reviewing": "Granskar er modell",
       "confirmCta": "Lägg till valda",
       "applyCta": "Tillämpa valda",
       "rejectCta": "Avfärda",
-      "noAdjustments": "AI:n hittade inga justeringar att föreslå.",
+      "noMoves": "AI:n hittade inga flyttar att föreslå.",
+      "moveLabel": "Flytta {points} viktpoäng från {from} till {to}",
       "motivation": "Motivering"
+    },
+    "help": {
+      "close": "Stäng",
+      "criterionLabel": "Vad är ett kriterium?",
+      "criterionBody": "Ett kriterium är något varje roll betygsätts mot, till exempel omfång eller komplexitet. Ankartexter beskriver vad betygen 0 till 5 betyder för det, och dess viktpoäng avgör hur mycket det väger i totalpoängen."
     }
   },
   "errors": {
@@ -396,6 +394,8 @@
     "roleLocked": "Rollen är godkänd och låst. Öppna den igen först.",
     "ratingsIncomplete": "Alla kriterier måste betygsättas först.",
     "invalidTransition": "Den statusändringen är inte tillåten.",
-    "roleFamilyExists": "En familj med det namnet finns redan."
+    "roleFamilyExists": "En familj med det namnet finns redan.",
+    "weightsUnbalanced": "Viktningen måste stämma med poängbudgeten.",
+    "tooFewCriteria": "En modell behöver minst 5 kriterier."
   }
 }

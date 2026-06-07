@@ -38,9 +38,11 @@ type Choice = "template" | "scratch" | null
 // Back navigation is owned by the dots, so there is no onBack prop here.
 export function ModelSetupStep({
   orgId,
+  organizationName,
   onContinue,
 }: {
   orgId: string
+  organizationName: string
   onContinue: () => void
 }) {
   const t = useTranslations("dashboard.model")
@@ -96,6 +98,7 @@ export function ModelSetupStep({
     return (
       <ModelReview
         orgId={orgId}
+        organizationName={organizationName}
         onContinue={onContinue}
         onChangeChoice={changeChoice}
       />
@@ -105,6 +108,7 @@ export function ModelSetupStep({
     return (
       <CriterionEditor
         orgId={orgId}
+        organizationName={organizationName}
         onContinue={onContinue}
         onChangeChoice={changeChoice}
       />

@@ -5,27 +5,28 @@ import type {
   RatingValue,
 } from "./types"
 
-// The standard template importance mix (standardmall.md): weights sum to 108,
-// so an all-5 role scores 540.
+// The standard template allocation (standardmall.md): 9 criteria, point
+// budget 27, exactly balanced. Order matches the template's display order.
 export const STANDARD_CRITERIA: CriterionWeight[] = [
-  { criterionId: "scope", importanceLevel: 7 },
-  { criterionId: "risk", importanceLevel: 6 },
-  { criterionId: "complexity", importanceLevel: 5 },
-  { criterionId: "autonomy", importanceLevel: 4 },
-  { criterionId: "stakeholders", importanceLevel: 3 },
-  { criterionId: "knowledge", importanceLevel: 3 },
-  { criterionId: "financial", importanceLevel: 3 },
-  { criterionId: "people", importanceLevel: 2 },
-  { criterionId: "formal", importanceLevel: 1 },
+  { criterionId: "scope", weightPoints: 5 },
+  { criterionId: "complexity", weightPoints: 4 },
+  { criterionId: "autonomy", weightPoints: 4 },
+  { criterionId: "risk", weightPoints: 3 },
+  { criterionId: "knowledge", weightPoints: 3 },
+  { criterionId: "stakeholders", weightPoints: 3 },
+  { criterionId: "financial", weightPoints: 2 },
+  { criterionId: "people", weightPoints: 2 },
+  { criterionId: "formal", weightPoints: 1 },
 ]
 
+// Default thresholds on the normalized 0-100 scale (standardmall.md).
 export const STANDARD_THRESHOLDS: BandThreshold[] = [
-  { band: 1, minScore: 530 },
-  { band: 2, minScore: 450 },
-  { band: 3, minScore: 400 },
-  { band: 4, minScore: 340 },
-  { band: 5, minScore: 285 },
-  { band: 6, minScore: 220 },
+  { band: 1, minScore: 98 },
+  { band: 2, minScore: 83 },
+  { band: 3, minScore: 74 },
+  { band: 4, minScore: 63 },
+  { band: 5, minScore: 53 },
+  { band: 6, minScore: 41 },
   { band: 7, minScore: 0 },
 ]
 

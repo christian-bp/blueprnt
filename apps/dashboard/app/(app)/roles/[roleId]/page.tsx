@@ -10,7 +10,6 @@ import { useRouter } from "next/navigation"
 import { use } from "react"
 import { MorphConfirmButton } from "@/components/morph-confirm-button"
 import { useOrganization } from "@/components/org-context"
-import { RoleAiPanel } from "@/components/roles/role-ai-panel"
 import { RoleProfileCard } from "@/components/roles/role-profile-card"
 import { RoleRatingCard } from "@/components/roles/role-rating-card"
 import { RoleResultCard } from "@/components/roles/role-result-card"
@@ -60,7 +59,7 @@ export default function RolePage(props: {
           {tStatus(role.status as "draft" | "inReview" | "approved")}
         </Badge>
         <span className="text-muted-foreground text-sm">
-          {role.trackName} {role.levelKey} · {role.function} · {role.team}
+          {role.trackName} · {role.function} · {role.team}
         </span>
         {orgRole === "admin" && (
           <MorphConfirmButton
@@ -77,10 +76,9 @@ export default function RolePage(props: {
       </div>
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
+          {/* The AI draft assistant lives in the profile card's header (a
+              MorphPopover next to Edit), not as a separate card. */}
           <RoleProfileCard orgId={orgId} role={role} />
-          {role.status !== "approved" && !role.archived && (
-            <RoleAiPanel orgId={orgId} roleId={role.roleId} />
-          )}
         </div>
         <div className="space-y-6">
           <RoleRatingCard

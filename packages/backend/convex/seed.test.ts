@@ -206,21 +206,18 @@ describe("betterAuth/seed.removeOrganizationsForUserEmail + accounts/mirrors.rem
       const modelId = await ctx.db.insert("models", {
         orgId,
         name: "Standard",
+        bandThresholds: [{ band: 1, minScore: 98 }],
       })
-      const criterionId = await ctx.db.insert("criteria", {
+      await ctx.db.insert("criteria", {
         orgId,
         modelId,
         name: "Scope",
         description: "desc",
         helpText: "help",
-        importanceLevel: 4,
+        anchors: [{ level: 3, text: "anchor text" }],
+        weightPoints: 4,
         order: 1,
         isCustom: false,
-      })
-      await ctx.db.insert("criterionAnchors", {
-        criterionId,
-        level: 3,
-        text: "anchor text",
       })
       await ctx.db.insert("suggestions", {
         orgId,
@@ -313,8 +310,7 @@ describe("devReset.wipeAppTables", () => {
   it("deletes rows from every app table and reports done", async () => {
     const t = initConvexTest()
 
-    // Seed rows across several app tables. roles requires trackId/levelId, so
-    // insert a model + track + level first to satisfy the foreign keys.
+    // Seed rows across several app tables.
     await t.run(async (ctx) => {
       await ctx.db.insert("users", {
         authId: "ba_user_seed",
@@ -330,30 +326,17 @@ describe("devReset.wipeAppTables", () => {
         payload: {},
       })
 
-      const modelId = await ctx.db.insert("models", {
+      await ctx.db.insert("models", {
         orgId: "ba_org_seed",
         name: "Standard",
-      })
-      const trackId = await ctx.db.insert("tracks", {
-        orgId: "ba_org_seed",
-        modelId,
-        key: "IC",
-        name: "Individual Contributor",
-        order: 1,
-      })
-      const levelId = await ctx.db.insert("levels", {
-        trackId,
-        key: "IC1",
-        name: "IC1",
-        order: 1,
+        bandThresholds: [],
       })
       await ctx.db.insert("roles", {
         orgId: "ba_org_seed",
         title: "Junior Developer",
         function: "Engineering",
         team: "Platform",
-        trackId,
-        levelId,
+        trackKey: "IC",
         purpose: "Build things",
         responsibilities: "Ship code",
         status: "draft",
@@ -369,8 +352,6 @@ describe("devReset.wipeAppTables", () => {
         "organizations",
         "auditLog",
         "models",
-        "tracks",
-        "levels",
         "roles",
       ] as const) {
         const rows = await ctx.db.query(table).take(1)
