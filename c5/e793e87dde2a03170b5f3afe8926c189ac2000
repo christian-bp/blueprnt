@@ -1,0 +1,20 @@
+apps/dashboard/components/help-morph-button.tsx
+  s_df12fc6ddf323c::t_bde66c039fb2a8 27
+  s_df12fc6ddf323c::t_cea68e929285c3 3,8-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "c5e793e87dde2a03170b5f3afe8926c189ac2000",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
