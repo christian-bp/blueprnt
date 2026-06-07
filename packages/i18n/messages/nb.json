@@ -97,6 +97,13 @@
       "results": "Resultater",
       "signOut": "Logg ut"
     },
+    "languages": {
+      "sv": "Svenska",
+      "en": "English",
+      "nb": "Norsk bokmål",
+      "da": "Dansk",
+      "fi": "Suomi"
+    },
     "overview": {
       "rolesCard": "Roller",
       "approvedCard": "Godkjente roller",
@@ -261,14 +268,7 @@
         "cta": "Opprett organisasjon",
         "saveCta": "Lagre og fortsett",
         "error": "Organisasjonen kunne ikke opprettes. Prøv igjen.",
-        "languageLabel": "Standardspråk",
-        "languages": {
-          "en": "Engelsk",
-          "sv": "Svensk",
-          "nb": "Norsk",
-          "da": "Dansk",
-          "fi": "Finsk"
-        }
+        "languageLabel": "Standardspråk"
       },
       "profile": {
         "country": "Land",
@@ -297,9 +297,6 @@
         "name": {
           "heading": "Hva heter organisasjonen deres?"
         },
-        "language": {
-          "heading": "Hvilket språk skal organisasjonen bruke?"
-        },
         "country": {
           "heading": "Hvor holder dere til?"
         },
@@ -310,7 +307,6 @@
       "dots": {
         "navLabel": "Steg i onboardingen",
         "name": "Organisasjonens navn",
-        "language": "Språk",
         "country": "Land",
         "industry": "Bransje",
         "model": "Vurderingsmodell",
@@ -319,7 +315,6 @@
       "families": {
         "heading": "Rollefamiliene og rollene deres",
         "description": "Et utgangspunkt basert på bransjen deres. Juster fritt; alt kan endres senere.",
-        "skipCta": "Hopp over for nå",
         "createCta": "Opprett og åpne dashbordet",
         "addFamilyCta": "Legg til familie",
         "addRoleCta": "Legg til rolle",
@@ -346,6 +341,7 @@
       },
       "review": {
         "heading": "Modellen deres",
+        "description": "Gjennomgå kriteriene og viktigheten deres. Alt kan endres senere.",
         "setImportance": "Betydning for {name}",
         "cta": "Åpne dashbordet",
         "editCta": "Rediger",
@@ -372,6 +368,9 @@
     "ai": {
       "heading": "AI-assistanse",
       "provenance": "AI-generert forslag. Gjennomgå og bekreft; ingenting tas i bruk automatisk.",
+      "openReviewCta": "Gjennomgå",
+      "openDraftCta": "AI-utkast",
+      "closeLabel": "Lukk",
       "draftDescriptionLabel": "Beskriv virksomheten deres (valgfritt)",
       "draftCta": "Generer kriterieutkast",
       "reviewCta": "La AI gjennomgå betydningene",

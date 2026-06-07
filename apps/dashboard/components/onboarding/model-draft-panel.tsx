@@ -2,20 +2,13 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Label } from "@workspace/ui/components/label"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation, useQuery } from "convex/react"
-import { useTranslations } from "next-intl"
-import { useEffect, useState } from "react"
+import { useLocale, useTranslations } from "next-intl"
+import { useEffect, useRef, useState } from "react"
 import { aiErrorSubKey } from "@/lib/error-label"
 import { importanceLabelKey } from "@/lib/importance"
 import { newestByKind } from "@/lib/open-suggestions"
@@ -32,14 +25,29 @@ interface DraftCriterion {
   anchors: string[]
 }
 
-// Step 12: the embedded draft assistant. AI never auto-applies (ADR-0003): it
-// proposes criteria the HR admin selects and confirms. The provenance line is
-// always visible on a suggestion.
-export function ModelDraftPanel({ orgId }: { orgId: string }) {
+// The draft assistant, rendered inside the MorphPopover (which owns the
+// heading and the always-visible provenance line). AI never auto-applies
+// (ADR-0003): it proposes criteria the HR admin selects and confirms.
+export function ModelDraftPanel({
+  orgId,
+  onDone,
+  dismissOnUnmount = false,
+}: {
+  orgId: string
+  // Called after a successful confirm or dismiss so the host (the popover)
+  // can morph back to its button.
+  onDone?: () => void
+  // Closing the popover (any path) counts as a dismiss: an open suggested
+  // or failed draft is rejected when the panel unmounts, so the next open
+  // always starts fresh. A generating row is left to finish.
+  dismissOnUnmount?: boolean
+}) {
   const t = useTranslations("dashboard.ai")
   const tModel = useTranslations("dashboard.model")
   const tErrors = useTranslations("errors")
   const tImportance = useTranslations("model.importance")
+  // The AI responds in the requester's current UI language.
+  const locale = useLocale()
 
   const suggestions = useQuery(api.ai.suggest.getOpenSuggestions, { orgId })
   const requestModelDraft = useMutation(api.ai.suggest.requestModelDraft)
@@ -97,6 +105,7 @@ export function ModelDraftPanel({ orgId }: { orgId: string }) {
     try {
       await requestModelDraft({
         orgId,
+        locale,
         ...(description.trim() !== ""
           ? { description: description.trim() }
           : {}),
@@ -108,101 +117,112 @@ export function ModelDraftPanel({ orgId }: { orgId: string }) {
     }
   }
 
+  // See the dismissOnUnmount prop doc; the ref keeps the cleanup closure on
+  // the CURRENT draft row.
+  const draftRef = useRef(draft)
+  draftRef.current = draft
+  // biome-ignore lint/correctness/useExhaustiveDependencies: unmount-only cleanup reading refs
+  useEffect(() => {
+    if (!dismissOnUnmount) return
+    return () => {
+      const open = draftRef.current
+      if (open?.status === "suggested" || open?.status === "failed") {
+        void rejectSuggestion({ orgId, suggestionId: open.suggestionId })
+      }
+    }
+  }, [dismissOnUnmount])
+
   const isStaleGenerating =
     draft?.status === "generating" &&
     Date.now() - draft.createdAt >= STALE_AFTER_MS
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("heading")}</CardTitle>
-        <CardDescription>{t("provenance")}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {draft?.status === "suggested" ? (
-          <SuggestedDraft
-            criteria={criteria}
-            accepted={accepted}
-            onToggle={(index, checked) =>
-              setAccepted((current) => {
-                const next = new Set(current)
-                if (checked) next.add(index)
-                else next.delete(index)
-                return next
+    <div className="space-y-4">
+      {draft?.status === "suggested" ? (
+        <SuggestedDraft
+          criteria={criteria}
+          accepted={accepted}
+          onToggle={(index, checked) =>
+            setAccepted((current) => {
+              const next = new Set(current)
+              if (checked) next.add(index)
+              else next.delete(index)
+              return next
+            })
+          }
+          labels={{
+            confirmCta: t("confirmCta"),
+            rejectCta: t("rejectCta"),
+            importance: (level) => tImportance(importanceLabelKey(level)),
+          }}
+          onConfirm={async () => {
+            setFailed(false)
+            try {
+              await confirmModelDraft({
+                orgId,
+                suggestionId: draft.suggestionId,
+                acceptedIndexes: [...accepted],
               })
+              onDone?.()
+            } catch {
+              setFailed(true)
             }
-            labels={{
-              confirmCta: t("confirmCta"),
-              rejectCta: t("rejectCta"),
-              importance: (level) => tImportance(importanceLabelKey(level)),
-            }}
-            onConfirm={async () => {
-              setFailed(false)
-              try {
-                await confirmModelDraft({
-                  orgId,
-                  suggestionId: draft.suggestionId,
-                  acceptedIndexes: [...accepted],
-                })
-              } catch {
-                setFailed(true)
-              }
-            }}
-            onReject={async () => {
-              setFailed(false)
-              try {
-                await rejectSuggestion({
-                  orgId,
-                  suggestionId: draft.suggestionId,
-                })
-              } catch {
-                setFailed(true)
-              }
-            }}
-          />
-        ) : isGenerating && !isStaleGenerating ? (
-          <p className="flex items-center gap-2 text-muted-foreground text-sm">
-            <Spinner />
-            {t("generating")}
-          </p>
-        ) : draft?.status === "failed" || isStaleGenerating ? (
-          <div className="space-y-3">
-            <p role="alert" className="text-destructive text-sm">
-              {tErrors(
-                aiErrorSubKey(
-                  draft?.status === "failed" ? (draft.errorCode ?? "") : ""
-                )
-              )}
-            </p>
-            <Button variant="outline" disabled={pending} onClick={onRequest}>
-              {t("draftCta")}
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="ai-draft-description">
-                {t("draftDescriptionLabel")}
-              </Label>
-              <Textarea
-                id="ai-draft-description"
-                value={description}
-                onChange={(event) => setDescription(event.target.value)}
-              />
-            </div>
-            <Button variant="outline" disabled={pending} onClick={onRequest}>
-              {t("draftCta")}
-            </Button>
-          </div>
-        )}
-
-        {failed && (
+          }}
+          onReject={async () => {
+            setFailed(false)
+            try {
+              await rejectSuggestion({
+                orgId,
+                suggestionId: draft.suggestionId,
+              })
+              onDone?.()
+            } catch {
+              setFailed(true)
+            }
+          }}
+        />
+      ) : isGenerating && !isStaleGenerating ? (
+        <p className="flex items-center gap-2 text-muted-foreground text-sm">
+          <Spinner />
+          {t("generating")}
+        </p>
+      ) : draft?.status === "failed" || isStaleGenerating ? (
+        <div className="space-y-3">
           <p role="alert" className="text-destructive text-sm">
-            {tModel("error")}
+            {tErrors(
+              aiErrorSubKey(
+                draft?.status === "failed" ? (draft.errorCode ?? "") : ""
+              )
+            )}
           </p>
-        )}
-      </CardContent>
-    </Card>
+          <Button variant="outline" disabled={pending} onClick={onRequest}>
+            {t("draftCta")}
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="ai-draft-description">
+              {t("draftDescriptionLabel")}
+            </Label>
+            <Textarea
+              id="ai-draft-description"
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+            />
+          </div>
+          <Button variant="outline" disabled={pending} onClick={onRequest}>
+            {t("draftCta")}
+          </Button>
+        </div>
+      )}
+
+      {failed && (
+        <p role="alert" className="text-destructive text-sm">
+          {tModel("error")}
+        </p>
+      )}
+    </div>
   )
 }
 

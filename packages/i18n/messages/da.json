@@ -97,6 +97,13 @@
       "results": "Resultater",
       "signOut": "Log ud"
     },
+    "languages": {
+      "sv": "Svenska",
+      "en": "English",
+      "nb": "Norsk bokmål",
+      "da": "Dansk",
+      "fi": "Suomi"
+    },
     "overview": {
       "rolesCard": "Roller",
       "approvedCard": "Godkendte roller",
@@ -261,14 +268,7 @@
         "cta": "Opret organisation",
         "saveCta": "Gem og fortsæt",
         "error": "Organisationen kunne ikke oprettes. Prøv igen.",
-        "languageLabel": "Standardsprog",
-        "languages": {
-          "en": "Engelsk",
-          "sv": "Svensk",
-          "nb": "Norsk",
-          "da": "Dansk",
-          "fi": "Finsk"
-        }
+        "languageLabel": "Standardsprog"
       },
       "profile": {
         "country": "Land",
@@ -297,9 +297,6 @@
         "name": {
           "heading": "Hvad hedder jeres organisation?"
         },
-        "language": {
-          "heading": "Hvilket sprog skal organisationen bruge?"
-        },
         "country": {
           "heading": "Hvor er I baseret?"
         },
@@ -310,7 +307,6 @@
       "dots": {
         "navLabel": "Trin i onboardingen",
         "name": "Organisationens navn",
-        "language": "Sprog",
         "country": "Land",
         "industry": "Branche",
         "model": "Vurderingsmodel",
@@ -319,7 +315,6 @@
       "families": {
         "heading": "Jeres rollefamilier og roller",
         "description": "Et udgangspunkt baseret på jeres branche. Juster frit; alt kan ændres senere.",
-        "skipCta": "Spring over for nu",
         "createCta": "Opret og åbn dashboardet",
         "addFamilyCta": "Tilføj familie",
         "addRoleCta": "Tilføj rolle",
@@ -346,6 +341,7 @@
       },
       "review": {
         "heading": "Jeres model",
+        "description": "Gennemgå kriterierne og deres vigtighed. Alt kan ændres senere.",
         "setImportance": "Betydning for {name}",
         "cta": "Åbn dashboardet",
         "editCta": "Rediger",
@@ -372,6 +368,9 @@
     "ai": {
       "heading": "AI-assistance",
       "provenance": "AI-genereret forslag. Gennemgå og bekræft; intet anvendes automatisk.",
+      "openReviewCta": "Gennemgå",
+      "openDraftCta": "AI-udkast",
+      "closeLabel": "Luk",
       "draftDescriptionLabel": "Beskriv jeres virksomhed (valgfrit)",
       "draftCta": "Generer kriterieudkast",
       "reviewCta": "Lad AI gennemgå betydningerne",

@@ -1,4 +1,10 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
@@ -28,17 +34,6 @@ vi.mock("@/components/onboarding/name-screen", () => ({
       </span>
       <button type="button" onClick={() => props.onDone()}>
         name-done
-      </button>
-    </div>
-  ),
-}))
-
-vi.mock("@/components/onboarding/language-screen", () => ({
-  LanguageScreen: (props: { saved: string | null; onDone: () => void }) => (
-    <div data-testid="language-screen">
-      <span data-testid="language-saved">{props.saved ?? "null"}</span>
-      <button type="button" onClick={() => props.onDone()}>
-        language-done
       </button>
     </div>
   ),
@@ -165,21 +160,7 @@ describe("OnboardingWizard", () => {
     expect(screen.getByTestId("name-mode").textContent).toBe("fresh")
   })
 
-  it("renders the language screen when the organization exists but no language is saved", () => {
-    renderWizard(
-      {
-        organization: admin,
-        settingsComplete: false,
-        hasModel: false,
-        completed: false,
-      },
-      { ...fullSettings, language: null }
-    )
-    expect(screen.getByTestId("language-screen")).toBeDefined()
-    expect(screen.queryByTestId("name-screen")).toBeNull()
-  })
-
-  it("renders the country screen when the language is saved but no country is set", () => {
+  it("renders the country screen when the organization exists but no country is set", () => {
     renderWizard(
       {
         organization: admin,
@@ -190,7 +171,22 @@ describe("OnboardingWizard", () => {
       { ...fullSettings, country: null, currency: null }
     )
     expect(screen.getByTestId("country-screen")).toBeDefined()
-    expect(screen.queryByTestId("language-screen")).toBeNull()
+    expect(screen.queryByTestId("name-screen")).toBeNull()
+  })
+
+  it("a missing language never gates the resume (it derives at creation)", () => {
+    renderWizard(
+      {
+        organization: admin,
+        settingsComplete: true,
+        hasModel: false,
+        completed: false,
+      },
+      { ...fullSettings, language: null }
+    )
+    // Every screen-gated setting is present, so the model step shows even
+    // though language is null.
+    expect(screen.getByTestId("model-step")).toBeDefined()
   })
 
   it("renders the industry screen when country and currency are set but no industry is chosen", () => {
@@ -259,13 +255,13 @@ describe("OnboardingWizard", () => {
       },
       fullSettings
     )
-    // Frontier is the model screen (index 4); the gate follows the frontier, so
-    // the families dot (index 5) stays unreachable until the model continues.
-    expect(dotsProps?.activeIndex).toBe(4)
-    expect(dotsProps?.maxReachedIndex).toBe(4)
+    // Frontier is the model screen (index 3); the gate follows the frontier, so
+    // the families dot (index 4) stays unreachable until the model continues.
+    expect(dotsProps?.activeIndex).toBe(3)
+    expect(dotsProps?.maxReachedIndex).toBe(3)
   })
 
-  it("the model continue advances to the families screen and opens its dot", () => {
+  it("the model continue advances to the families screen and opens its dot", async () => {
     renderWizard(
       {
         organization: admin,
@@ -276,19 +272,63 @@ describe("OnboardingWizard", () => {
       fullSettings
     )
     expect(screen.getByTestId("model-step")).toBeDefined()
-    expect(dotsProps?.maxReachedIndex).toBe(4)
+    expect(dotsProps?.maxReachedIndex).toBe(3)
 
-    // onContinue sets the session step to the families index (5).
+    // onContinue sets the session step to the families index (4). The step
+    // crossfade mounts the next screen only after the old one has faded out.
     fireEvent.click(screen.getByText("model-continue"))
 
-    expect(screen.getByTestId("families-step")).toBeDefined()
+    expect(await screen.findByTestId("families-step")).toBeDefined()
     expect(screen.getByTestId("families-orgid").textContent).toBe("org-1")
-    expect(screen.queryByTestId("model-step")).toBeNull()
-    expect(dotsProps?.activeIndex).toBe(5)
-    expect(dotsProps?.maxReachedIndex).toBe(5)
+    await waitFor(() => {
+      expect(screen.queryByTestId("model-step")).toBeNull()
+    })
+    expect(dotsProps?.activeIndex).toBe(4)
+    expect(dotsProps?.maxReachedIndex).toBe(4)
   })
 
-  it("completing a revisited screen advances one step, not to the frontier", () => {
+  it("a reactive settings update never yanks the frontier screen before it advances", async () => {
+    // The choice screens persist on pick and play a fade before calling
+    // onDone; the settings subscription updates in between. The wizard must
+    // hold the current screen until the screen itself advances.
+    useQueryMock.mockReturnValue({
+      ...fullSettings,
+      country: null,
+      currency: null,
+      industry: null,
+    })
+    const status = {
+      organization: admin,
+      settingsComplete: false,
+      hasModel: false,
+      completed: false,
+    }
+    const view = render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <OnboardingWizard status={status} onFinished={() => {}} />
+      </NextIntlClientProvider>
+    )
+    expect(screen.getByTestId("country-screen")).toBeDefined()
+
+    // The pick persisted: settings now complete, derived jumps to the model
+    // step, but the country screen must stay until its onDone fires.
+    useQueryMock.mockReturnValue(fullSettings)
+    view.rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <OnboardingWizard status={status} onFinished={() => {}} />
+      </NextIntlClientProvider>
+    )
+    expect(screen.getByTestId("country-screen")).toBeDefined()
+    expect(screen.queryByTestId("model-step")).toBeNull()
+
+    // onDone acknowledges the move: one step forward, not to the frontier.
+    fireEvent.click(screen.getByText("country-done"))
+    expect(await screen.findByTestId("industry-screen")).toBeDefined()
+    fireEvent.click(screen.getByText("industry-done"))
+    expect(await screen.findByTestId("model-step")).toBeDefined()
+  })
+
+  it("completing a revisited screen advances one step, not to the frontier", async () => {
     renderWizard(
       {
         organization: admin,
@@ -298,28 +338,25 @@ describe("OnboardingWizard", () => {
       },
       fullSettings
     )
-    // Frontier is the model screen (index 4); jump back to the language
+    // Frontier is the model screen (index 3); jump back to the country
     // screen (index 1) via its dot.
     expect(screen.getByTestId("model-step")).toBeDefined()
     fireEvent.click(screen.getByTestId("dot-1"))
-    expect(screen.getByTestId("language-screen")).toBeDefined()
+    expect(await screen.findByTestId("country-screen")).toBeDefined()
 
-    // Completing it lands on the country screen (index 2), not the frontier.
-    fireEvent.click(screen.getByText("language-done"))
-    expect(screen.getByTestId("country-screen")).toBeDefined()
+    // Completing it lands on the industry screen (index 2), not the frontier.
+    fireEvent.click(screen.getByText("country-done"))
+    expect(await screen.findByTestId("industry-screen")).toBeDefined()
     expect(screen.queryByTestId("model-step")).toBeNull()
     expect(dotsProps?.activeIndex).toBe(2)
 
-    // Walking the rest of the way returns to the frontier and clears the
-    // back-state (industry, then model).
-    fireEvent.click(screen.getByText("country-done"))
-    expect(screen.getByTestId("industry-screen")).toBeDefined()
+    // Walking the last step returns to the frontier and clears the back-state.
     fireEvent.click(screen.getByText("industry-done"))
-    expect(screen.getByTestId("model-step")).toBeDefined()
-    expect(dotsProps?.activeIndex).toBe(4)
+    expect(await screen.findByTestId("model-step")).toBeDefined()
+    expect(dotsProps?.activeIndex).toBe(3)
   })
 
-  it("discarding the model retracts the families dot and returns to the model step", () => {
+  it("discarding the model retracts the families dot and returns to the model step", async () => {
     // The session latch (model continue) must only count while the model still
     // exists: after a discard the families screen would dead-end on its
     // spinner, so the dot may not stay reachable.
@@ -336,8 +373,8 @@ describe("OnboardingWizard", () => {
       </NextIntlClientProvider>
     )
     fireEvent.click(screen.getByText("model-continue"))
-    expect(screen.getByTestId("families-step")).toBeDefined()
-    expect(dotsProps?.maxReachedIndex).toBe(5)
+    expect(await screen.findByTestId("families-step")).toBeDefined()
+    expect(dotsProps?.maxReachedIndex).toBe(4)
 
     // The model is discarded (change-choice inside the model step); the status
     // query updates reactively and hasModel flips to false.
@@ -349,13 +386,15 @@ describe("OnboardingWizard", () => {
         />
       </NextIntlClientProvider>
     )
-    expect(screen.getByTestId("model-step")).toBeDefined()
-    expect(screen.queryByTestId("families-step")).toBeNull()
-    expect(dotsProps?.activeIndex).toBe(4)
-    expect(dotsProps?.maxReachedIndex).toBe(4)
+    expect(await screen.findByTestId("model-step")).toBeDefined()
+    await waitFor(() => {
+      expect(screen.queryByTestId("families-step")).toBeNull()
+    })
+    expect(dotsProps?.activeIndex).toBe(3)
+    expect(dotsProps?.maxReachedIndex).toBe(3)
   })
 
-  it("clicking a previous dot navigates back to that screen", () => {
+  it("clicking a previous dot navigates back to that screen", async () => {
     renderWizard(
       {
         organization: admin,
@@ -367,13 +406,13 @@ describe("OnboardingWizard", () => {
     )
     expect(screen.getByTestId("model-step")).toBeDefined()
 
-    // Drive back-navigation through the dot button (index 1 = language).
+    // Drive back-navigation through the dot button (index 1 = country).
     fireEvent.click(screen.getByTestId("dot-1"))
 
-    expect(screen.getByTestId("language-screen")).toBeDefined()
+    expect(await screen.findByTestId("country-screen")).toBeDefined()
     expect(screen.queryByTestId("model-step")).toBeNull()
     // The active dot follows the revisited screen; the gate is unchanged.
     expect(dotsProps?.activeIndex).toBe(1)
-    expect(dotsProps?.maxReachedIndex).toBe(4)
+    expect(dotsProps?.maxReachedIndex).toBe(3)
   })
 })

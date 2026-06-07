@@ -7,16 +7,21 @@ import {
   COUNTRY_KEYS,
   type CountryKey,
   defaultCurrencyFor,
+  defaultLanguageFor,
 } from "@workspace/constants"
 import { Flag } from "@workspace/ui/flag"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { OptionCard } from "@/components/option-card"
+import { ScreenShell } from "@/components/onboarding/screen-shell"
 import { useAutoAdvance } from "@/hooks/use-auto-advance"
 
-// The country list and the derived currency live in @workspace/constants
-// (simplicity-first: currency is never asked, "other" defaults to EUR).
-// Adjustable later in the organization settings, outside onboarding.
+// The country list and the derived currency AND default language live in
+// @workspace/constants (simplicity-first: neither is asked; "other" gets
+// EUR and English). Adjustable later in the organization settings, outside
+// onboarding. The org language is an ORGANIZATION setting (starter sets,
+// invitations); it never drives the active user's UI language, which
+// follows the browser unless overridden in the user menu.
 const COUNTRY_LABEL_KEYS = {
   se: "countries.se",
   no: "countries.no",
@@ -48,6 +53,7 @@ export function CountryScreen({
         orgId,
         country: code,
         currency: defaultCurrencyFor(code),
+        language: defaultLanguageFor(code),
       }),
     onDone,
   })
@@ -56,10 +62,7 @@ export function CountryScreen({
   const marked = picked ?? savedCountry
 
   return (
-    <div className="flex flex-col items-center gap-6">
-      <h1 className="text-center font-semibold text-2xl">
-        {tScreens("country.heading")}
-      </h1>
+    <ScreenShell heading={tScreens("country.heading")}>
       <div className="grid w-full max-w-md grid-cols-2 gap-3 sm:grid-cols-3">
         {COUNTRY_KEYS.map((code) => (
           <OptionCard
@@ -89,6 +92,6 @@ export function CountryScreen({
           {t("error")}
         </p>
       )}
-    </div>
+    </ScreenShell>
   )
 }

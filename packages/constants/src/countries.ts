@@ -27,3 +27,17 @@ export function clampCountry(country: string | undefined): CountryKey {
 export function defaultCurrencyFor(country: string | undefined): string {
   return CURRENCY_BY_COUNTRY[clampCountry(country)]
 }
+
+// The organization's default language also derives from the country
+// (simplicity-first); "other" and unknown values fall back to English.
+export const LANGUAGE_BY_COUNTRY = {
+  se: "sv",
+  no: "nb",
+  dk: "da",
+  fi: "fi",
+  other: "en",
+} as const satisfies Record<CountryKey, string>
+
+export function defaultLanguageFor(country: string | undefined): string {
+  return LANGUAGE_BY_COUNTRY[clampCountry(country)]
+}

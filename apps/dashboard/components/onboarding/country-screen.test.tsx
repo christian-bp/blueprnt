@@ -59,6 +59,7 @@ describe("CountryScreen", () => {
         orgId: "org-1",
         country: "no",
         currency: "NOK",
+        language: "nb",
       })
     })
     await waitFor(
@@ -70,12 +71,12 @@ describe("CountryScreen", () => {
   })
 
   it.each([
-    ["se", "SEK"],
-    ["no", "NOK"],
-    ["dk", "DKK"],
-    ["fi", "EUR"],
-    ["other", "EUR"],
-  ])("derives the currency for %s as %s", async (country, currency) => {
+    ["se", "SEK", "sv"],
+    ["no", "NOK", "nb"],
+    ["dk", "DKK", "da"],
+    ["fi", "EUR", "fi"],
+    ["other", "EUR", "en"],
+  ])("derives currency and language for %s as %s + %s", async (country, currency, language) => {
     updateSettingsMock.mockResolvedValue(undefined)
     renderScreen({ orgId: "org-1", savedCountry: null, onDone: vi.fn() })
 
@@ -90,6 +91,7 @@ describe("CountryScreen", () => {
         orgId: "org-1",
         country,
         currency,
+        language,
       })
     })
   })

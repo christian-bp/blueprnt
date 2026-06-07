@@ -199,12 +199,26 @@ describe("FamiliesStep", () => {
     ])
   })
 
-  it("skip completes onboarding without creating a starter set", async () => {
+  it("there is no skip: the finish button is the only way forward", () => {
+    renderStep(vi.fn())
+    const buttons = screen.getAllByRole("button")
+    expect(buttons.filter((b) => b.textContent === t.createCta).length).toBe(1)
+    expect(screen.queryByText("Skip for now")).toBeNull()
+  })
+
+  it("finishing with only blank families completes without creating", async () => {
     completeOnboardingMock.mockResolvedValue(null)
     const onFinished = vi.fn()
     renderStep(onFinished)
 
-    fireEvent.click(screen.getByRole("button", { name: t.skipCta }))
+    // Empty every prefilled family name; cleaned input is then empty and
+    // nothing is created, but onboarding still completes.
+    for (const input of screen.getAllByLabelText(
+      messages.dashboard.roles.family.nameLabel
+    )) {
+      fireEvent.change(input, { target: { value: "   " } })
+    }
+    fireEvent.click(screen.getByRole("button", { name: t.createCta }))
 
     await waitFor(() => {
       expect(completeOnboardingMock).toHaveBeenCalledTimes(1)

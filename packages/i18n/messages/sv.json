@@ -97,6 +97,13 @@
       "results": "Resultat",
       "signOut": "Logga ut"
     },
+    "languages": {
+      "sv": "Svenska",
+      "en": "English",
+      "nb": "Norsk bokmål",
+      "da": "Dansk",
+      "fi": "Suomi"
+    },
     "overview": {
       "rolesCard": "Roller",
       "approvedCard": "Godkända roller",
@@ -261,14 +268,7 @@
         "cta": "Skapa organisation",
         "saveCta": "Spara och fortsätt",
         "error": "Organisationen kunde inte skapas. Försök igen.",
-        "languageLabel": "Standardspråk",
-        "languages": {
-          "en": "Engelska",
-          "sv": "Svenska",
-          "nb": "Norska",
-          "da": "Danska",
-          "fi": "Finska"
-        }
+        "languageLabel": "Standardspråk"
       },
       "profile": {
         "country": "Land",
@@ -297,9 +297,6 @@
         "name": {
           "heading": "Vad heter er organisation?"
         },
-        "language": {
-          "heading": "Vilket språk ska organisationen använda?"
-        },
         "country": {
           "heading": "Var finns ni?"
         },
@@ -310,7 +307,6 @@
       "dots": {
         "navLabel": "Steg i onboardingen",
         "name": "Organisationens namn",
-        "language": "Språk",
         "country": "Land",
         "industry": "Bransch",
         "model": "Värderingsmodell",
@@ -319,7 +315,6 @@
       "families": {
         "heading": "Era rollfamiljer och roller",
         "description": "En startpunkt utifrån er bransch. Justera fritt; allt kan ändras senare.",
-        "skipCta": "Hoppa över så länge",
         "createCta": "Skapa och öppna dashboarden",
         "addFamilyCta": "Lägg till familj",
         "addRoleCta": "Lägg till roll",
@@ -346,6 +341,7 @@
       },
       "review": {
         "heading": "Er modell",
+        "description": "Granska kriterierna och deras viktighet. Allt kan ändras senare.",
         "setImportance": "Betydelse för {name}",
         "cta": "Öppna dashboarden",
         "editCta": "Redigera",
@@ -372,6 +368,9 @@
     "ai": {
       "heading": "AI-assistans",
       "provenance": "AI-genererat förslag. Granska och bekräfta; inget tillämpas automatiskt.",
+      "openReviewCta": "Granska",
+      "openDraftCta": "AI-utkast",
+      "closeLabel": "Stäng",
       "draftDescriptionLabel": "Beskriv er verksamhet (frivilligt)",
       "draftCta": "Generera kriterieutkast",
       "reviewCta": "Låt AI gå igenom betydelserna",

@@ -105,6 +105,7 @@ describe("RoleAiPanel", () => {
         expect(requestMock).toHaveBeenCalledWith({
           orgId: ORG_ID,
           roleId: ROLE_ID,
+          locale: "en",
         })
       })
       // The description key must not be present when the textarea is empty.
@@ -124,6 +125,7 @@ describe("RoleAiPanel", () => {
         expect(requestMock).toHaveBeenCalledWith({
           orgId: ORG_ID,
           roleId: ROLE_ID,
+          locale: "en",
           description: "Senior backend engineer",
         })
       })

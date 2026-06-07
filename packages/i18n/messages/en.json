@@ -97,6 +97,13 @@
       "results": "Results",
       "signOut": "Sign out"
     },
+    "languages": {
+      "sv": "Svenska",
+      "en": "English",
+      "nb": "Norsk bokmål",
+      "da": "Dansk",
+      "fi": "Suomi"
+    },
     "overview": {
       "rolesCard": "Roles",
       "approvedCard": "Approved roles",
@@ -261,14 +268,7 @@
         "cta": "Create organization",
         "saveCta": "Save and continue",
         "error": "The organization could not be created. Try again.",
-        "languageLabel": "Default language",
-        "languages": {
-          "en": "English",
-          "sv": "Swedish",
-          "nb": "Norwegian",
-          "da": "Danish",
-          "fi": "Finnish"
-        }
+        "languageLabel": "Default language"
       },
       "profile": {
         "country": "Country",
@@ -297,9 +297,6 @@
         "name": {
           "heading": "What is your organization called?"
         },
-        "language": {
-          "heading": "Which language should the organization use?"
-        },
         "country": {
           "heading": "Where are you based?"
         },
@@ -310,7 +307,6 @@
       "dots": {
         "navLabel": "Onboarding steps",
         "name": "Organization name",
-        "language": "Language",
         "country": "Country",
         "industry": "Industry",
         "model": "Evaluation model",
@@ -319,7 +315,6 @@
       "families": {
         "heading": "Your role families and roles",
         "description": "A starting point based on your industry. Adjust it freely; everything can be changed later.",
-        "skipCta": "Skip for now",
         "createCta": "Create and open the dashboard",
         "addFamilyCta": "Add family",
         "addRoleCta": "Add role",
@@ -346,6 +341,7 @@
       },
       "review": {
         "heading": "Your model",
+        "description": "Review the criteria and their importance. Everything can be changed later.",
         "setImportance": "Importance for {name}",
         "cta": "Open the dashboard",
         "editCta": "Edit",
@@ -372,6 +368,9 @@
     "ai": {
       "heading": "AI assistance",
       "provenance": "AI-generated suggestion. Review and confirm; nothing is applied automatically.",
+      "openReviewCta": "Review",
+      "openDraftCta": "AI draft",
+      "closeLabel": "Close",
       "draftDescriptionLabel": "Describe your business (optional)",
       "draftCta": "Generate criteria drafts",
       "reviewCta": "Let AI review the importance levels",

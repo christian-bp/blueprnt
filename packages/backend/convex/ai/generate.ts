@@ -5,6 +5,15 @@ import { v } from "convex/values"
 import { z } from "zod"
 import { internal } from "../_generated/api"
 import { internalAction } from "../_generated/server"
+
+// The prompt instructs the model to respond in the requester's UI language.
+const LANGUAGE_NAMES: Record<string, string> = {
+  en: "English",
+  sv: "Swedish",
+  nb: "Norwegian (Bokmal)",
+  da: "Danish",
+  fi: "Finnish",
+}
 import { ERROR_CODES } from "../lib/errors"
 import { aiModel } from "./provider"
 
@@ -41,7 +50,7 @@ interface CompanyContext {
 }
 
 function companyLines(args: CompanyContext): string[] {
-  const language = args.locale === "sv" ? "Swedish" : "English"
+  const language = LANGUAGE_NAMES[args.locale] ?? "English"
   const employeePart =
     args.employeeCount !== undefined
       ? `, about ${args.employeeCount} employees`

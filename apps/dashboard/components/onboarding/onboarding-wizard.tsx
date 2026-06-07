@@ -3,13 +3,13 @@
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { useQuery } from "convex/react"
+import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { OnboardingDots } from "@/components/onboarding-dots"
 import { CountryScreen } from "@/components/onboarding/country-screen"
 import { FamiliesStep } from "@/components/onboarding/families-step"
 import { IndustryScreen } from "@/components/onboarding/industry-screen"
-import { LanguageScreen } from "@/components/onboarding/language-screen"
 import { ModelSetupStep } from "@/components/onboarding/model-setup-step"
 import { NameScreen } from "@/components/onboarding/name-screen"
 import { OnboardingHeader } from "@/components/onboarding/onboarding-header"
@@ -24,19 +24,11 @@ export interface OnboardingStatus {
 // Screen order; one dot each. The model screen owns its internal choice ->
 // review sub-flow; families is reached only via the model step's continue
 // (session state), so a reload mid-flow resumes at the model review.
-const SCREENS = [
-  "name",
-  "language",
-  "country",
-  "industry",
-  "model",
-  "families",
-] as const
+const SCREENS = ["name", "country", "industry", "model", "families"] as const
 type ScreenKey = (typeof SCREENS)[number]
 
 const DOT_LABEL_KEYS = {
   name: "dots.name",
-  language: "dots.language",
   country: "dots.country",
   industry: "dots.industry",
   model: "dots.model",
@@ -63,17 +55,30 @@ export function OnboardingWizard({
   const [sessionStep, setSessionStep] = useState<number | null>(null)
   // Back-navigation from the dots; cleared when a revisited screen saves.
   const [backTo, setBackTo] = useState<number | null>(null)
+  // The highest screen index the UI may show. Settings save reactively the
+  // moment a choice persists, which moves the derived resume index BEFORE
+  // the choice screen's fade-and-pause has played; without this cap the
+  // wizard would yank the screen away instantly. Screens raise it through
+  // advance()/onContinue (and forward dot clicks); it seeds once from the
+  // first resolved resume index so a reload still lands on the frontier.
+  const [acked, setAcked] = useState<number | null>(null)
 
   // Server-derived resume index: the first screen whose data is missing.
+  // Language is never a screen: the organization's language derives from
+  // the country pick, so it never gates the resume.
   function resumeIndex(): number {
     if (status.organization === null) return 0
     if (settings === undefined) return -1 // settings still loading
-    if (!settings?.language) return 1
-    if (!settings?.country || !settings?.currency) return 2
-    if (!settings?.industry) return 3
-    return 4
+    if (!settings?.country || !settings?.currency) return 1
+    if (!settings?.industry) return 2
+    return 3
   }
   const derived = resumeIndex()
+  // Seed-once during render (adjust-state-during-render: the guard is false
+  // on the next pass), only after settings have resolved.
+  if (acked === null && derived !== -1) {
+    setAcked(derived)
+  }
   // The session latch only counts while the model still exists: discarding
   // the model from a revisited model step retracts the families dot, which
   // would otherwise stay reachable and dead-end on its loading spinner.
@@ -81,7 +86,10 @@ export function OnboardingWizard({
     derived,
     sessionStep !== null && status.hasModel ? sessionStep : 0
   )
-  const current = backTo !== null && backTo < frontier ? backTo : frontier
+  const current =
+    backTo !== null && backTo < frontier
+      ? backTo
+      : Math.min(frontier, acked ?? Math.max(derived, 0))
 
   // Members who are not admins cannot run setup mutations; tell them to wait.
   if (status.organization !== null && status.organization.role !== "admin") {
@@ -107,14 +115,16 @@ export function OnboardingWizard({
   }
 
   const screen = SCREENS[current] ?? "name"
-  // Completing a screen moves one step forward. On the frontier that simply
-  // follows the server-derived resume; on a revisited screen (backTo set) it
-  // walks to the NEXT screen, not back to the frontier, so the user retraces
-  // the flow step by step. Reaching the frontier clears the back-state.
-  const advance = () =>
+  // Completing a screen moves one step forward and acknowledges the move
+  // (see acked above). On a revisited screen (backTo set) it walks to the
+  // NEXT screen, not back to the frontier, so the user retraces the flow
+  // step by step. Reaching the frontier clears the back-state.
+  const advance = () => {
     setBackTo((prev) =>
       prev !== null && prev + 1 < frontier ? prev + 1 : null
     )
+    setAcked((prev) => Math.max(prev ?? 0, current + 1))
+  }
 
   return (
     <>
@@ -122,52 +132,60 @@ export function OnboardingWizard({
       <main className="flex min-h-[calc(100svh-3.5rem)] flex-col">
         <div className="flex flex-1 flex-col justify-center">
           <div className="mx-auto w-full max-w-2xl p-6 md:p-10">
-            {screen === "name" && (
-              <NameScreen
-                existing={
-                  status.organization === null
-                    ? null
-                    : {
-                        orgId: status.organization.orgId,
-                        name: status.organization.name,
-                      }
-                }
-                onDone={advance}
-              />
-            )}
-            {screen === "language" && orgId !== null && (
-              <LanguageScreen
-                orgId={orgId}
-                saved={settings?.language ?? null}
-                onDone={advance}
-              />
-            )}
-            {screen === "country" && orgId !== null && (
-              <CountryScreen
-                orgId={orgId}
-                savedCountry={settings?.country ?? null}
-                onDone={advance}
-              />
-            )}
-            {screen === "industry" && orgId !== null && (
-              <IndustryScreen
-                orgId={orgId}
-                saved={settings?.industry ?? null}
-                onDone={advance}
-              />
-            )}
-            {screen === "model" && orgId !== null && (
-              <ModelSetupStep
-                orgId={orgId}
-                onContinue={() => {
-                  setSessionStep(5)
-                  setBackTo(null)
-                }}
-              />
-            )}
-            {screen === "families" && orgId !== null && (
-              <FamiliesStep orgId={orgId} onFinished={onFinished} />
-            )}
+            {/* Step crossfade (the polyform onboarding pattern): the old
+                screen fades out before the new one fades in. initial={false}
+                keeps the very first screen from fading on page load; its
+                heading still plays the TextEffect reveal. */}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={screen}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                {screen === "name" && (
+                  <NameScreen
+                    existing={
+                      status.organization === null
+                        ? null
+                        : {
+                            orgId: status.organization.orgId,
+                            name: status.organization.name,
+                          }
+                    }
+                    onDone={advance}
+                  />
+                )}
+                {screen === "country" && orgId !== null && (
+                  <CountryScreen
+                    orgId={orgId}
+                    savedCountry={settings?.country ?? null}
+                    onDone={advance}
+                  />
+                )}
+                {screen === "industry" && orgId !== null && (
+                  <IndustryScreen
+                    orgId={orgId}
+                    saved={settings?.industry ?? null}
+                    onDone={advance}
+                  />
+                )}
+                {screen === "model" && orgId !== null && (
+                  <ModelSetupStep
+                    orgId={orgId}
+                    onContinue={() => {
+                      setSessionStep(4)
+                      setBackTo(null)
+                      setAcked((prev) => Math.max(prev ?? 0, 4))
+                    }}
+                  />
+                )}
+                {screen === "families" && orgId !== null && (
+                  <FamiliesStep orgId={orgId} onFinished={onFinished} />
+                )}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
         <div className="pb-8">
@@ -181,6 +199,9 @@ export function OnboardingWizard({
             navLabel={t("dots.navLabel")}
             onSelect={(index) => {
               setBackTo(index < frontier ? index : null)
+              // A forward dot click is also an acknowledgement (the dots
+              // only offer indices up to the frontier).
+              setAcked((prev) => Math.max(prev ?? 0, index))
             }}
           />
         </div>

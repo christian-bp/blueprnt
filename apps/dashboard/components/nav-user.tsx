@@ -23,6 +23,7 @@ import {
 } from "@hugeicons/core-free-icons"
 import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
+import { LanguageMenuSub } from "@/components/language-menu"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
@@ -92,6 +93,8 @@ export function NavUser() {
                 </div>
               </div>
             </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <LanguageMenuSub />
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut}>
               <HugeiconsIcon icon={Logout01Icon} strokeWidth={2} />

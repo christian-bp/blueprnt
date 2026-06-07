@@ -10,10 +10,13 @@ import { describe, expect, it, vi, afterEach, beforeEach } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 
 // Use vi.hoisted so the spies are initialised before the vi.mock factory runs.
-const { pushMock, signOutMock } = vi.hoisted(() => ({
-  pushMock: vi.fn(),
-  signOutMock: vi.fn(),
-}))
+const { pushMock, signOutMock, setUiLocaleMock, setPreviewLocaleMock } =
+  vi.hoisted(() => ({
+    pushMock: vi.fn(),
+    signOutMock: vi.fn(),
+    setUiLocaleMock: vi.fn(),
+    setPreviewLocaleMock: vi.fn(),
+  }))
 
 // Mock next/navigation (used by onboarding-header for router.push after sign-out).
 vi.mock("next/navigation", () => ({
@@ -28,6 +31,24 @@ vi.mock("@/lib/auth-client", () => ({
     }),
     signOut: signOutMock,
   },
+}))
+
+// The embedded LanguageMenuSub persists the per-user locale through Convex
+// and previews through the locale provider; both are spies here.
+vi.mock("convex/react", () => ({
+  useMutation: () => setUiLocaleMock,
+}))
+
+vi.mock("@workspace/backend/convex/_generated/api", () => ({
+  api: {
+    accounts: {
+      onboarding: { setUiLocale: "accounts.onboarding.setUiLocale" },
+    },
+  },
+}))
+
+vi.mock("@/components/locale-provider", () => ({
+  useSetPreviewLocale: () => setPreviewLocaleMock,
 }))
 
 import { OnboardingHeader } from "@/components/onboarding/onboarding-header"
@@ -92,6 +113,40 @@ describe("OnboardingHeader", () => {
 
     await waitFor(() => {
       expect(signOutMock).toHaveBeenCalledTimes(1)
+    })
+  })
+})
+
+describe("OnboardingHeader language picker", () => {
+  beforeEach(() => {
+    setUiLocaleMock.mockReset()
+    setUiLocaleMock.mockResolvedValue(null)
+    setPreviewLocaleMock.mockReset()
+  })
+
+  afterEach(() => {
+    cleanup()
+  })
+
+  it("picking a language previews it and persists the per-user override", async () => {
+    renderHeader()
+    const trigger = screen.getByRole("button", { name: "Account menu" })
+    fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false })
+    fireEvent.click(trigger)
+
+    const subTrigger = await screen.findByRole("menuitem", {
+      name: messages.dashboard.languages.en,
+    })
+    fireEvent.keyDown(subTrigger, { key: "ArrowRight" })
+
+    const item = await screen.findByRole("menuitemradio", {
+      name: messages.dashboard.languages.sv,
+    })
+    fireEvent.click(item)
+
+    expect(setPreviewLocaleMock).toHaveBeenCalledWith("sv")
+    await waitFor(() => {
+      expect(setUiLocaleMock).toHaveBeenCalledWith({ locale: "sv" })
     })
   })
 })

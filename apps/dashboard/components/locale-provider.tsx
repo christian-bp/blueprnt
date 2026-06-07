@@ -15,6 +15,7 @@ import {
 import {
   LOCALE_COOKIE,
   LOCALE_COOKIE_MAX_AGE,
+  detectBrowserLocale,
   resolveUiLocale,
 } from "@/lib/locale"
 
@@ -77,10 +78,11 @@ export function useSetPreviewLocale(): (locale: string | null) => void {
 }
 
 // Makes the dashboard UI language follow the resolution chain
-// user locale -> organization default -> en, reactively. getUiLocale is a Convex
-// subscription, so changing the default language in onboarding step 1
-// re-renders the whole app in the new language. The locale cookie lets SSR
-// serve the last-known language on reload (see i18n/request.ts).
+// user override (the user-menu picker) -> browser language -> en,
+// reactively. getUiLocale is a Convex subscription carrying only the
+// per-user override; the organization's language is an org setting and
+// never drives the UI. The locale cookie lets SSR serve the last-known
+// language on reload (see i18n/request.ts).
 //
 // A preview locale can be set via useSetPreviewLocale() so the UI switches
 // immediately on selection (before the Convex mutation and subscription
@@ -100,12 +102,20 @@ export function LocaleProvider(props: {
 
   const resolved = useQuery(api.accounts.onboarding.getUiLocale)
 
-  // serverValue is the settled query result: null when signed out, undefined
-  // while in-flight. Collapse undefined -> null for resolveUiLocale.
+  // serverValue is the settled query result: null when signed out or when
+  // no per-user override exists, undefined while in-flight. Collapse
+  // undefined -> null for resolveUiLocale.
   const serverValue = resolved === undefined ? null : resolved
 
+  // With no override the UI follows the browser language (clamped to the
+  // supported five, falling back to the SSR initial). detectBrowserLocale
+  // is stable per session; during SSR/hydration it returns the fallback,
+  // and the bundle swap below happens post-mount, so server and client
+  // first paints always agree.
+  const browserFallback = detectBrowserLocale(props.initialLocale)
+
   // The server-confirmed locale (ignoring any preview).
-  const resolvedServer = resolveUiLocale(serverValue, props.initialLocale)
+  const resolvedServer = resolveUiLocale(serverValue, browserFallback)
 
   // Auto-release the preview once the server value has caught up. This uses
   // the adjust-state-during-render pattern (same as seededFor in
@@ -116,10 +126,7 @@ export function LocaleProvider(props: {
   }
 
   // Active locale: preview wins while set; otherwise use the server path.
-  const target = resolveUiLocale(
-    previewLocale ?? serverValue,
-    props.initialLocale
-  )
+  const target = resolveUiLocale(previewLocale ?? serverValue, browserFallback)
 
   const [active, setActive] = useState<{ locale: Locale; messages: Messages }>({
     locale: props.initialLocale,

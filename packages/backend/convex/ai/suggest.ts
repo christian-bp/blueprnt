@@ -15,6 +15,16 @@ interface SettingsContext {
   country: string
 }
 
+// The AI responds in the requester's CURRENT UI language when the client
+// passes one (clamped to the supported five); the organization default
+// language is only the fallback.
+const SUPPORTED_PROMPT_LOCALES = new Set(["en", "sv", "nb", "da", "fi"])
+function promptLocale(requested: string | undefined, fallback: string): string {
+  return requested !== undefined && SUPPORTED_PROMPT_LOCALES.has(requested)
+    ? requested
+    : fallback
+}
+
 async function requireCompleteSettings(
   ctx: MutationCtx,
   orgId: string
@@ -47,9 +57,9 @@ async function requireCompleteSettings(
 }
 
 export const requestModelDraft = adminMutation({
-  args: { description: v.optional(v.string()) },
+  args: { description: v.optional(v.string()), locale: v.optional(v.string()) },
   returns: v.id("suggestions"),
-  handler: async (ctx, { description }) => {
+  handler: async (ctx, { description, locale }) => {
     const settings = await requireCompleteSettings(ctx, ctx.orgId)
     const model = await ctx.db
       .query("models")
@@ -68,7 +78,7 @@ export const requestModelDraft = adminMutation({
     // not valid Convex values and would fail scheduler arg serialization.
     await ctx.scheduler.runAfter(0, internal.ai.generate.generateModelDraft, {
       suggestionId,
-      locale: settings.locale,
+      locale: promptLocale(locale, settings.locale),
       industry: settings.industry,
       country: settings.country,
       ...(settings.employeeCount !== undefined
@@ -81,9 +91,9 @@ export const requestModelDraft = adminMutation({
 })
 
 export const requestImportanceReview = adminMutation({
-  args: {},
+  args: { locale: v.optional(v.string()) },
   returns: v.id("suggestions"),
-  handler: async (ctx) => {
+  handler: async (ctx, { locale }) => {
     const settings = await requireCompleteSettings(ctx, ctx.orgId)
     const model = await ctx.db
       .query("models")
@@ -105,7 +115,7 @@ export const requestImportanceReview = adminMutation({
     })
     await ctx.scheduler.runAfter(0, internal.ai.generate.reviewImportances, {
       suggestionId,
-      locale: settings.locale,
+      locale: promptLocale(locale, settings.locale),
       industry: settings.industry,
       country: settings.country,
       ...(settings.employeeCount !== undefined
@@ -298,9 +308,13 @@ function maxLengthFor(field: ProfileTextField): number {
 // Role profile work is member scope (unlike model configuration): editors
 // register and describe roles, so request/confirm use orgMutation.
 export const requestRoleProfileDraft = orgMutation({
-  args: { roleId: v.id("roles"), description: v.optional(v.string()) },
+  args: {
+    roleId: v.id("roles"),
+    description: v.optional(v.string()),
+    locale: v.optional(v.string()),
+  },
   returns: v.id("suggestions"),
-  handler: async (ctx, { roleId, description }) => {
+  handler: async (ctx, { roleId, description, locale }) => {
     const settings = await requireCompleteSettings(ctx, ctx.orgId)
     const role = await ctx.db.get(roleId)
     if (role === null || role.orgId !== ctx.orgId) {
@@ -327,7 +341,7 @@ export const requestRoleProfileDraft = orgMutation({
       internal.ai.generate.generateRoleProfileDraft,
       {
         suggestionId,
-        locale: settings.locale,
+        locale: promptLocale(locale, settings.locale),
         industry: settings.industry,
         country: settings.country,
         ...(settings.employeeCount !== undefined

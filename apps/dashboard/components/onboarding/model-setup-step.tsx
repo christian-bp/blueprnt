@@ -11,6 +11,7 @@ import { CriterionEditor } from "@/components/onboarding/criterion-editor"
 import { ModelReview } from "@/components/onboarding/model-review"
 import { NextButton } from "@/components/onboarding/next-button"
 import { OnboardingInput } from "@/components/onboarding/onboarding-input"
+import { ScreenShell } from "@/components/onboarding/screen-shell"
 import { OPTION_FADE_MS, OptionCard } from "@/components/option-card"
 import { advanceDelay } from "@/hooks/use-auto-advance"
 
@@ -162,8 +163,7 @@ export function ModelSetupStep({
   }
 
   return (
-    <div className="flex flex-col items-center gap-6">
-      <h1 className="text-center font-semibold text-2xl">{t("heading")}</h1>
+    <ScreenShell heading={t("heading")}>
       <div className="grid w-full max-w-2xl gap-3 sm:grid-cols-2">
         <OptionCard
           badge={t("template.badge")}
@@ -218,6 +218,6 @@ export function ModelSetupStep({
           {t("error")}
         </p>
       )}
-    </div>
+    </ScreenShell>
   )
 }

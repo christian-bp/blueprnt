@@ -58,7 +58,7 @@ export function OptionCard({
       )}
     >
       {badge !== undefined && (
-        <Badge className="absolute -top-2.5">{badge}</Badge>
+        <Badge className="absolute -top-2.5 right-3">{badge}</Badge>
       )}
       <span className="flex items-center gap-2">
         {media !== undefined && (

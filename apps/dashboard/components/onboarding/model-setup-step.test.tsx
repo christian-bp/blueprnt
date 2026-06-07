@@ -344,6 +344,21 @@ describe("ModelSetupStep", () => {
     expect(completeOnboardingMock).not.toHaveBeenCalled()
   })
 
+  it("review screen shows the AI Review trigger next to Edit", async () => {
+    setModel(reviewModel)
+    renderStep()
+    await waitFor(() => {
+      expect(
+        screen.getByText(messages.dashboard.model.review.heading)
+      ).toBeDefined()
+    })
+    expect(
+      screen.getByRole("button", {
+        name: messages.dashboard.ai.openReviewCta,
+      })
+    ).toBeDefined()
+  })
+
   it("review screen is read-only by default: shows importance as text and no remove button", async () => {
     setModel(reviewModel)
     renderStep()

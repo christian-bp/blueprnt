@@ -10,10 +10,12 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 import { Spinner } from "@workspace/ui/components/spinner"
+import { AiMagicIcon } from "@hugeicons/core-free-icons"
 import { useMutation, useQuery } from "convex/react"
 import { AnimatePresence } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
+import { MorphPopover } from "@/components/morph-popover"
 import { AddCriterionDialog } from "@/components/onboarding/add-criterion-dialog"
 import { CriterionItem } from "@/components/onboarding/criterion-item"
 import { ImportanceReviewPanel } from "@/components/onboarding/importance-review-panel"
@@ -26,7 +28,8 @@ const IMPORTANCE_OPTIONS = [7, 6, 5, 4, 3, 2, 1] as const
 // Shared criteria editor: read-only list with an Edit toggle that unlocks
 // importance selects, removal, and the add dialog. Used by the onboarding
 // model review step AND the /model page (E2's starting point). The optional
-// AI importance review panel renders below the list.
+// AI importance review opens from a Review button next to Edit: the button
+// morphs into a popover that requests the review and shows its states.
 export function ModelEditor({
   orgId,
   withAiReview,
@@ -38,6 +41,7 @@ export function ModelEditor({
   const tError = useTranslations("dashboard.model")
   const tEditor = useTranslations("dashboard.model.editor")
   const tImportance = useTranslations("model.importance")
+  const tAi = useTranslations("dashboard.ai")
   const locale = useLocale()
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
   const updateCriterionImportance = useMutation(
@@ -64,15 +68,36 @@ export function ModelEditor({
     <div className="space-y-6">
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <h3 className="font-medium text-sm">{tEditor("heading")}</h3>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => setEditing(!editing)}
-          >
-            {editing ? t("doneEditing") : t("editCta")}
-          </Button>
+          <h3 className="font-medium text-base">{tEditor("heading")}</h3>
+          <div className="flex items-center gap-2">
+            {withAiReview && (
+              <MorphPopover
+                triggerLabel={tAi("openReviewCta")}
+                triggerIcon={AiMagicIcon}
+                title={tAi("heading")}
+                description={tAi("provenance")}
+                closeLabel={tAi("closeLabel")}
+              >
+                {(close) => (
+                  <ImportanceReviewPanel
+                    orgId={orgId}
+                    model={model}
+                    autoRequest
+                    dismissOnUnmount
+                    onDone={close}
+                  />
+                )}
+              </MorphPopover>
+            )}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setEditing(!editing)}
+            >
+              {editing ? t("doneEditing") : t("editCta")}
+            </Button>
+          </div>
         </div>
         <ul>
           <AnimatePresence initial={false}>
@@ -158,7 +183,6 @@ export function ModelEditor({
           </div>
         )}
       </div>
-      {withAiReview && <ImportanceReviewPanel orgId={orgId} model={model} />}
       {failed && (
         <p role="alert" className="text-destructive text-sm">
           {tError("error")}

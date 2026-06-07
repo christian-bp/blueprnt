@@ -73,6 +73,13 @@ must force visibility while armed or busy (the component appends
 
 - The shared spring lives in `apps/dashboard/lib/motion.ts`; reuse it so
   everything moves with the same character.
+- Onboarding screens use the staged-reveal pattern (ported from polyform):
+  the heading animates word by word via `@workspace/ui/text-effect`
+  (preset blur), the content below fades in once the heading completes
+  (`ScreenShell` in `apps/dashboard/components/onboarding/`), and steps
+  crossfade through `AnimatePresence mode="wait"` in the wizard. Content
+  is mounted at opacity 0 from the start (no layout shift) with pointer
+  events off until revealed.
 - `MotionConfig reducedMotion="user"` wraps the app; never bypass it.
 - The CLAUDE.md rules still govern: no layout shift from state reveals, and
   legitimate enter/leave transitions are animated, never instant.

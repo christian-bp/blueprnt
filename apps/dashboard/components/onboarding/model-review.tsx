@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl"
 import { ModelEditor } from "@/components/model/model-editor"
 import { ChangeChoiceButton } from "@/components/onboarding/change-choice-button"
 import { NextButton } from "@/components/onboarding/next-button"
+import { ScreenShell } from "@/components/onboarding/screen-shell"
 
 // Screen 5 (template path): the shared ModelEditor renders the criteria list
 // (read-only with an Edit toggle for importance, removal, and the add dialog)
@@ -22,15 +23,18 @@ export function ModelReview({
   const t = useTranslations("dashboard.model.review")
 
   return (
-    <div className="space-y-6">
-      <h2 className="font-medium text-lg">{t("heading")}</h2>
-      <ModelEditor orgId={orgId} withAiReview />
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          {onChangeChoice && <ChangeChoiceButton onConfirm={onChangeChoice} />}
+    <ScreenShell heading={t("heading")} description={t("description")}>
+      <div className="w-full space-y-6">
+        <ModelEditor orgId={orgId} withAiReview />
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            {onChangeChoice && (
+              <ChangeChoiceButton onConfirm={onChangeChoice} />
+            )}
+          </div>
+          <NextButton onClick={onContinue} />
         </div>
-        <NextButton onClick={onContinue} />
       </div>
-    </div>
+    </ScreenShell>
   )
 }

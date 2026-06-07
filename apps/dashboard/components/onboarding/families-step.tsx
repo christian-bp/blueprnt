@@ -1,6 +1,8 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
+import { Tick02Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
 import { Input } from "@workspace/ui/components/input"
@@ -15,6 +17,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
+import { ScreenShell } from "@/components/onboarding/screen-shell"
 import { isDuplicateFamilyError } from "@/lib/family-error"
 
 interface DraftRole {
@@ -106,7 +109,7 @@ export function FamiliesStep({
     )
   }
 
-  async function finish(create: boolean) {
+  async function finish() {
     setPending(true)
     setFailure(null)
     try {
@@ -122,7 +125,7 @@ export function FamiliesStep({
             .filter((role) => role.title !== ""),
         }))
         .filter((family) => family.name !== "")
-      if (create && cleaned.length > 0) {
+      if (cleaned.length > 0) {
         await createStarterSet({ orgId, families: cleaned })
       }
       await completeOnboarding({ orgId })
@@ -134,12 +137,8 @@ export function FamiliesStep({
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="space-y-2 text-center">
-        <h1 className="font-semibold text-2xl">{t("heading")}</h1>
-        <p className="text-muted-foreground text-sm">{t("description")}</p>
-      </div>
-      <div className="space-y-4">
+    <ScreenShell heading={t("heading")} description={t("description")}>
+      <div className="w-full space-y-4">
         {families.map((family) => (
           <Card key={family.id}>
             <CardHeader className="flex flex-row items-center gap-2">
@@ -274,19 +273,14 @@ export function FamiliesStep({
           {failure === "duplicate" ? tErrors("roleFamilyExists") : t("error")}
         </p>
       )}
-      <div className="flex items-center justify-center gap-3">
-        <Button
-          type="button"
-          variant="ghost"
-          disabled={pending}
-          onClick={() => finish(false)}
-        >
-          {t("skipCta")}
-        </Button>
-        <Button type="button" disabled={pending} onClick={() => finish(true)}>
+      {/* The final step cannot be skipped: emptying the list and finishing
+          is the explicit way to start without families. */}
+      <div className="flex w-full items-center justify-end">
+        <Button type="button" disabled={pending} onClick={() => finish()}>
           {families.length === 0 ? tReview("cta") : t("createCta")}
+          <HugeiconsIcon icon={Tick02Icon} strokeWidth={2} aria-hidden="true" />
         </Button>
       </div>
-    </div>
+    </ScreenShell>
   )
 }

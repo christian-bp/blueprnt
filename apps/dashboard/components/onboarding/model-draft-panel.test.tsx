@@ -115,7 +115,10 @@ describe("ModelDraftPanel", () => {
     await waitFor(() => {
       expect(requestModelDraftMock).toHaveBeenCalledTimes(1)
     })
-    expect(requestModelDraftMock).toHaveBeenCalledWith({ orgId: "org-abc" })
+    expect(requestModelDraftMock).toHaveBeenCalledWith({
+      orgId: "org-abc",
+      locale: "en",
+    })
   })
 
   it("sends a trimmed description when the textarea is non-empty", async () => {
@@ -130,6 +133,7 @@ describe("ModelDraftPanel", () => {
     await waitFor(() => {
       expect(requestModelDraftMock).toHaveBeenCalledWith({
         orgId: "org-abc",
+        locale: "en",
         description: "A small clinic",
       })
     })

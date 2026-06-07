@@ -133,7 +133,7 @@ describe("getUiLocale", () => {
     expect(await t.query(api.accounts.onboarding.getUiLocale, {})).toBeNull()
   })
 
-  it("returns the organization default language", async () => {
+  it("ignores the organization default language (the UI follows the browser)", async () => {
     const t = initConvexTest()
     const { orgId, userId } = await seedAdmin(t)
     await t.run(async (ctx) => {
@@ -142,10 +142,10 @@ describe("getUiLocale", () => {
     const locale = await t
       .withIdentity({ subject: userId })
       .query(api.accounts.onboarding.getUiLocale, {})
-    expect(locale).toBe("sv")
+    expect(locale).toBeNull()
   })
 
-  it("lets the per-user locale win over the organization default", async () => {
+  it("returns the per-user override when set", async () => {
     const t = initConvexTest()
     const { orgId, userId } = await seedAdmin(t)
     await t.run(async (ctx) => {
@@ -165,12 +165,62 @@ describe("getUiLocale", () => {
     expect(locale).toBe("da")
   })
 
-  it("returns null when neither override nor organization language is set", async () => {
+  it("returns null when no override is set", async () => {
     const t = initConvexTest()
     const { userId } = await seedAdmin(t)
     const locale = await t
       .withIdentity({ subject: userId })
       .query(api.accounts.onboarding.getUiLocale, {})
     expect(locale).toBeNull()
+  })
+})
+
+describe("setUiLocale", () => {
+  it("rejects unauthenticated callers", async () => {
+    const t = initConvexTest()
+    await expect(
+      t.mutation(api.accounts.onboarding.setUiLocale, { locale: "sv" })
+    ).rejects.toThrow(/notAuthenticated/)
+  })
+
+  it("rejects unsupported locales", async () => {
+    const t = initConvexTest()
+    const { userId } = await seedAdmin(t)
+    await expect(
+      t
+        .withIdentity({ subject: userId })
+        .mutation(api.accounts.onboarding.setUiLocale, { locale: "de" })
+    ).rejects.toThrow(/invalidInput/)
+  })
+
+  it("updates the mirror row and getUiLocale follows", async () => {
+    const t = initConvexTest()
+    const { userId } = await seedAdmin(t)
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
+        authId: userId,
+        name: "HR Person",
+        email: "hr@acme.se",
+      })
+    })
+    const asUser = t.withIdentity({ subject: userId })
+    await asUser.mutation(api.accounts.onboarding.setUiLocale, {
+      locale: "fi",
+    })
+    expect(await asUser.query(api.accounts.onboarding.getUiLocale, {})).toBe(
+      "fi"
+    )
+  })
+
+  it("creates the mirror row when the trigger never ran", async () => {
+    const t = initConvexTest()
+    const { userId } = await seedAdmin(t)
+    const asUser = t.withIdentity({ subject: userId })
+    await asUser.mutation(api.accounts.onboarding.setUiLocale, {
+      locale: "nb",
+    })
+    expect(await asUser.query(api.accounts.onboarding.getUiLocale, {})).toBe(
+      "nb"
+    )
   })
 })

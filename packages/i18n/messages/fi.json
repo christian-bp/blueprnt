@@ -97,6 +97,13 @@
       "results": "Tulokset",
       "signOut": "Kirjaudu ulos"
     },
+    "languages": {
+      "sv": "Svenska",
+      "en": "English",
+      "nb": "Norsk bokmål",
+      "da": "Dansk",
+      "fi": "Suomi"
+    },
     "overview": {
       "rolesCard": "Roolit",
       "approvedCard": "Hyväksytyt roolit",
@@ -261,14 +268,7 @@
         "cta": "Luo organisaatio",
         "saveCta": "Tallenna ja jatka",
         "error": "Organisaatiota ei voitu luoda. Yritä uudelleen.",
-        "languageLabel": "Oletuskieli",
-        "languages": {
-          "en": "Englanti",
-          "sv": "Ruotsi",
-          "nb": "Norja",
-          "da": "Tanska",
-          "fi": "Suomi"
-        }
+        "languageLabel": "Oletuskieli"
       },
       "profile": {
         "country": "Maa",
@@ -297,9 +297,6 @@
         "name": {
           "heading": "Mikä on organisaationne nimi?"
         },
-        "language": {
-          "heading": "Mitä kieltä organisaatio käyttää?"
-        },
         "country": {
           "heading": "Missä teillä on toimipaikka?"
         },
@@ -310,7 +307,6 @@
       "dots": {
         "navLabel": "Käyttöönoton vaiheet",
         "name": "Organisaation nimi",
-        "language": "Kieli",
         "country": "Maa",
         "industry": "Toimiala",
         "model": "Arviointimalli",
@@ -319,7 +315,6 @@
       "families": {
         "heading": "Rooliperheenne ja roolinne",
         "description": "Lähtökohta toimialanne perusteella. Muokkaa vapaasti; kaikkea voi muuttaa myöhemmin.",
-        "skipCta": "Ohita toistaiseksi",
         "createCta": "Luo ja avaa kojelauta",
         "addFamilyCta": "Lisää perhe",
         "addRoleCta": "Lisää rooli",
@@ -346,6 +341,7 @@
       },
       "review": {
         "heading": "Mallinne",
+        "description": "Tarkista kriteerit ja niiden tärkeys. Kaikkea voi muuttaa myöhemmin.",
         "setImportance": "Merkitys: {name}",
         "cta": "Avaa hallintapaneeli",
         "editCta": "Muokkaa",
@@ -372,6 +368,9 @@
     "ai": {
       "heading": "Tekoälyapu",
       "provenance": "Tekoälyn luoma ehdotus. Tarkista ja vahvista; mitään ei oteta käyttöön automaattisesti.",
+      "openReviewCta": "Tarkista",
+      "openDraftCta": "AI-luonnos",
+      "closeLabel": "Sulje",
       "draftDescriptionLabel": "Kuvaile liiketoimintaanne (valinnainen)",
       "draftCta": "Luo kriteeriluonnoksia",
       "reviewCta": "Anna tekoälyn tarkistaa merkitykset",

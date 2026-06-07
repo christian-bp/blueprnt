@@ -1,15 +1,18 @@
 "use client"
 
+import { AiMagicIcon } from "@hugeicons/core-free-icons"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { useMutation, useQuery } from "convex/react"
 import { AnimatePresence } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
+import { MorphPopover } from "@/components/morph-popover"
 import { AddCriterionDialog } from "@/components/onboarding/add-criterion-dialog"
 import { ChangeChoiceButton } from "@/components/onboarding/change-choice-button"
 import { CriterionItem } from "@/components/onboarding/criterion-item"
 import { NextButton } from "@/components/onboarding/next-button"
 import { ModelDraftPanel } from "@/components/onboarding/model-draft-panel"
+import { ScreenShell } from "@/components/onboarding/screen-shell"
 import { importanceLabelKey } from "@/lib/importance"
 
 // Screen 5 (scratch path). The criteria list is reactive from getModel; the
@@ -31,6 +34,8 @@ export function CriterionEditor({
   onChangeChoice?: () => void | Promise<void>
 }) {
   const t = useTranslations("dashboard.model")
+  const tReview = useTranslations("dashboard.model.review")
+  const tAi = useTranslations("dashboard.ai")
   const tEditor = useTranslations("dashboard.model.editor")
   const tImportance = useTranslations("model.importance")
   // The fixed tracks/levels localize server-side in getModel; passing the
@@ -50,72 +55,86 @@ export function CriterionEditor({
     model === null || model === undefined || criteria.length === 0
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <h2 className="font-medium text-lg">{tEditor("heading")}</h2>
-        <p className="text-muted-foreground text-sm">{t("description")}</p>
-      </div>
-
-      {criteria.length === 0 ? (
-        <p className="text-muted-foreground text-sm">{tEditor("empty")}</p>
-      ) : (
-        // AnimatePresence tracks keyed CriterionItem children so entering and
-        // exiting items animate. initial={false} skips the enter animation on
-        // first render (the list is already populated; we only animate reactive
-        // changes driven by the Convex subscription).
-        <ul>
-          <AnimatePresence initial={false}>
-            {criteria.map((criterion) => (
-              <CriterionItem
-                key={criterion.criterionId}
-                name={criterion.name}
-                description={criterion.description || undefined}
-                // The scratch editor shows the importance as a static label (no
-                // per-row select here; importance is set in the add form).
-                importanceNode={
-                  <span className="text-muted-foreground text-sm">
-                    {tImportance(importanceLabelKey(criterion.importanceLevel))}
-                  </span>
-                }
-                editable={true}
-                onRemove={async () => {
-                  setRemoving(criterion.criterionId)
-                  setFailed(false)
-                  try {
-                    await removeCriterion({
-                      orgId,
-                      criterionId: criterion.criterionId,
-                    })
-                  } catch {
-                    setFailed(true)
-                  } finally {
-                    setRemoving(null)
-                  }
-                }}
-                removing={removing === criterion.criterionId}
-                removeLabel={`${tEditor("removeCta")} ${criterion.name}`}
-              />
-            ))}
-          </AnimatePresence>
-        </ul>
-      )}
-
-      <AddCriterionDialog orgId={orgId} />
-
-      <ModelDraftPanel orgId={orgId} />
-
-      {failed && (
-        <p role="alert" className="text-destructive text-sm">
-          {t("error")}
-        </p>
-      )}
-
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          {onChangeChoice && <ChangeChoiceButton onConfirm={onChangeChoice} />}
+    <ScreenShell heading={tReview("heading")} description={t("description")}>
+      <div className="w-full space-y-6">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="font-medium text-base">{tEditor("heading")}</h3>
+          <MorphPopover
+            triggerLabel={tAi("openDraftCta")}
+            triggerIcon={AiMagicIcon}
+            title={tAi("heading")}
+            description={tAi("provenance")}
+            closeLabel={tAi("closeLabel")}
+          >
+            {(close) => (
+              <ModelDraftPanel orgId={orgId} onDone={close} dismissOnUnmount />
+            )}
+          </MorphPopover>
         </div>
-        <NextButton disabled={finishDisabled} onClick={onContinue} />
+
+        {criteria.length === 0 ? (
+          <p className="text-muted-foreground text-sm">{tEditor("empty")}</p>
+        ) : (
+          // AnimatePresence tracks keyed CriterionItem children so entering and
+          // exiting items animate. initial={false} skips the enter animation on
+          // first render (the list is already populated; we only animate reactive
+          // changes driven by the Convex subscription).
+          <ul>
+            <AnimatePresence initial={false}>
+              {criteria.map((criterion) => (
+                <CriterionItem
+                  key={criterion.criterionId}
+                  name={criterion.name}
+                  description={criterion.description || undefined}
+                  // The scratch editor shows the importance as a static label (no
+                  // per-row select here; importance is set in the add form).
+                  importanceNode={
+                    <span className="text-muted-foreground text-sm">
+                      {tImportance(
+                        importanceLabelKey(criterion.importanceLevel)
+                      )}
+                    </span>
+                  }
+                  editable={true}
+                  onRemove={async () => {
+                    setRemoving(criterion.criterionId)
+                    setFailed(false)
+                    try {
+                      await removeCriterion({
+                        orgId,
+                        criterionId: criterion.criterionId,
+                      })
+                    } catch {
+                      setFailed(true)
+                    } finally {
+                      setRemoving(null)
+                    }
+                  }}
+                  removing={removing === criterion.criterionId}
+                  removeLabel={`${tEditor("removeCta")} ${criterion.name}`}
+                />
+              ))}
+            </AnimatePresence>
+          </ul>
+        )}
+
+        <AddCriterionDialog orgId={orgId} />
+
+        {failed && (
+          <p role="alert" className="text-destructive text-sm">
+            {t("error")}
+          </p>
+        )}
+
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            {onChangeChoice && (
+              <ChangeChoiceButton onConfirm={onChangeChoice} />
+            )}
+          </div>
+          <NextButton disabled={finishDisabled} onClick={onContinue} />
+        </div>
       </div>
-    </div>
+    </ScreenShell>
   )
 }

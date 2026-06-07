@@ -5,6 +5,7 @@ import { INDUSTRY_KEYS, type IndustryKey } from "@workspace/constants"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { OptionCard } from "@/components/option-card"
+import { ScreenShell } from "@/components/onboarding/screen-shell"
 import { useAutoAdvance } from "@/hooks/use-auto-advance"
 
 // The industry list lives in @workspace/constants; it also keys the starter
@@ -48,10 +49,7 @@ export function IndustryScreen({
   const marked = picked ?? saved
 
   return (
-    <div className="flex flex-col items-center gap-6">
-      <h1 className="text-center font-semibold text-2xl">
-        {tScreens("industry.heading")}
-      </h1>
+    <ScreenShell heading={tScreens("industry.heading")}>
       <div className="grid w-full max-w-2xl grid-cols-2 gap-3 sm:grid-cols-3">
         {INDUSTRY_KEYS.map((code) => (
           <OptionCard
@@ -68,6 +66,6 @@ export function IndustryScreen({
           {t("error")}
         </p>
       )}
-    </div>
+    </ScreenShell>
   )
 }

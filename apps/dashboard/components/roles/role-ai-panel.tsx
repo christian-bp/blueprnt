@@ -15,7 +15,7 @@ import { Label } from "@workspace/ui/components/label"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation, useQuery } from "convex/react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 import { aiErrorSubKey } from "@/lib/error-label"
 
@@ -58,6 +58,8 @@ export function RoleAiPanel({
   roleId: Id<"roles">
 }) {
   const t = useTranslations("dashboard.roles.ai")
+  // The AI responds in the requester's current UI language.
+  const locale = useLocale()
   const tAi = useTranslations("dashboard.ai")
   const tRole = useTranslations("assessment.role")
   const tErrors = useTranslations("errors")
@@ -117,6 +119,7 @@ export function RoleAiPanel({
       await requestDraft({
         orgId,
         roleId,
+        locale,
         ...(description.trim() !== ""
           ? { description: description.trim() }
           : {}),
