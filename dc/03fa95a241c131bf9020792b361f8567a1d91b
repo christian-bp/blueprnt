@@ -1,0 +1,46 @@
+docs/adr/0005-level-per-individual.md
+  s_df12fc6ddf323c::t_0c4760afe3dd75 1-25
+docs/PLAN-V1.md
+  s_df12fc6ddf323c::t_7a82c360c53756 45-46
+  s_df12fc6ddf323c::t_abb3932f31ae42 51
+  s_df12fc6ddf323c::t_d5ef7df9e8355c 122
+  s_df12fc6ddf323c::t_1b739ee2a427a5 138
+  s_df12fc6ddf323c::t_877a04d2c9904b 124
+CONTEXT-MAP.md
+  s_df12fc6ddf323c::t_9bdf9eeeb59cf8 23
+docs/build-pdf.sh
+  s_df12fc6ddf323c::t_04b7d3154c75db 19
+docs/contexts/evaluation-model/track-level-band.md
+  s_df12fc6ddf323c::t_e7e5a471987b82 5,7-9
+CLAUDE.md
+  s_df12fc6ddf323c::t_3192cd66ba71b9 30
+docs/contexts/assessment/CONTEXT.md
+  s_df12fc6ddf323c::t_a0ba9fab4c7472 8-9
+  s_df12fc6ddf323c::t_a6ac5dcee55bad 12
+  s_df12fc6ddf323c::t_cb69e49a79e09b 77
+docs/contexts/evaluation-model/standardmall.md
+  s_df12fc6ddf323c::t_d0dc3cd8956344 65
+docs/contexts/evaluation-model/CONTEXT.md
+  s_df12fc6ddf323c::t_d03f2fe9fb8789 108-109
+  s_df12fc6ddf323c::t_8fd0effda415bf 101
+  s_df12fc6ddf323c::t_b765f6b5aef3d6 5
+  s_df12fc6ddf323c::t_86c88662883ebf 104
+  s_df12fc6ddf323c::t_2c751fce91b368 10
+  s_df12fc6ddf323c::t_c6bb203f8916ce 14,18-19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "dc03fa95a241c131bf9020792b361f8567a1d91b",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
