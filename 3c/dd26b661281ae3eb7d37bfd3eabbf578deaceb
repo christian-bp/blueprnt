@@ -1,0 +1,59 @@
+packages/backend/convex/accounts/mirrors.ts
+  s_df12fc6ddf323c::t_3e8744a7dfeb07 87-88
+packages/backend/convex/accounts/organization.test.ts
+  s_df12fc6ddf323c::t_d225d21f400d2c 143-147,155
+packages/backend/convex/ai/suggest.ts
+  s_df12fc6ddf323c::t_8aaa6df557bad9 225,231-234
+packages/backend/convex/evaluationModel/model.test.ts
+  s_df12fc6ddf323c::t_be41b10497fe79 75-77,79-80
+  s_df12fc6ddf323c::t_598afce6f543b1 183
+  s_df12fc6ddf323c::t_66972eba73c028 248-250
+  s_df12fc6ddf323c::t_08e5111006f4eb 43-44,47-50
+packages/backend/convex/assessment/compute.ts
+  s_df12fc6ddf323c::t_acb69e18ca855b 43-45
+packages/backend/convex/evaluationModel/tables.ts
+  s_df12fc6ddf323c::t_47096bb9cdd930 14
+  s_df12fc6ddf323c::t_9b0828e9cf0eb2 23-27
+  s_df12fc6ddf323c::t_98e06614acb1f1 10-13
+packages/backend/convex/accounts/onboarding.test.ts
+  s_df12fc6ddf323c::t_10e25d2822372d 101-105,113
+packages/backend/convex/schema.ts
+  s_df12fc6ddf323c::t_0f4f4e194ca33d 4
+packages/backend/convex/assessment/results.ts
+  s_df12fc6ddf323c::t_46e9aa807f95e7 45-53
+packages/backend/convex/evaluationModel/criteria.ts
+  s_df12fc6ddf323c::t_fa2cbf425090cb 58
+  s_df12fc6ddf323c::t_dbdf1c5f07acb1 162-163
+packages/backend/convex/seed.test.ts
+  s_df12fc6ddf323c::t_27058b525ad852 209,211,217
+  s_df12fc6ddf323c::t_9d905112d225e8 333
+packages/backend/convex/evaluationModel/criteria.test.ts
+  s_df12fc6ddf323c::t_c16cb3d57ca0c4 69-73
+  s_df12fc6ddf323c::t_2731ee2a2d3a49 91
+packages/backend/convex/schema.test.ts
+  s_df12fc6ddf323c::t_ee88a0da9e5edd 13-15,23
+packages/backend/convex/evaluationModel/model.ts
+  s_df12fc6ddf323c::t_00aea9b7ea68ac 40-44,69-76
+  s_df12fc6ddf323c::t_52dea96f56d4cb 302
+  s_df12fc6ddf323c::t_3d8d23e8c269ea 91,96,102,114
+  s_df12fc6ddf323c::t_50c8d4081f2938 181-182
+  s_df12fc6ddf323c::t_148daabe5bb278 359
+  s_df12fc6ddf323c::t_9343c50da66728 369
+  s_df12fc6ddf323c::t_c7fc01aeea9851 136,138
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "3cdd26b661281ae3eb7d37bfd3eabbf578deaceb",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
