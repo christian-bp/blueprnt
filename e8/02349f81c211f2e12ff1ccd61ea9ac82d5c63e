@@ -1,0 +1,32 @@
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_df12fc6ddf323c::t_8e47e958870663 18
+  s_df12fc6ddf323c::t_b155ae01309a0b 73-78
+apps/dashboard/components/onboarding/families-step.tsx
+  s_df12fc6ddf323c::t_1d65880c3f8d0e 21
+  s_df12fc6ddf323c::t_65496163cef617 139-144
+apps/dashboard/components/onboarding/model-review.tsx
+  s_df12fc6ddf323c::t_e9028150187bbd 11
+  s_df12fc6ddf323c::t_898d4b232c92aa 40-45
+apps/dashboard/lib/capitalize.test.ts
+  s_df12fc6ddf323c::t_a6c8eb87cc97ac 1-24
+apps/dashboard/lib/capitalize.ts
+  s_df12fc6ddf323c::t_8e59e54ee8a95c 1-11
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_df12fc6ddf323c::t_6a567812cad29c 377-399
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "e802349f81c211f2e12ff1ccd61ea9ac82d5c63e",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
