@@ -1,0 +1,22 @@
+docs/adr/0006-aggregate-document-model.md
+  s_df12fc6ddf323c::t_c6ca8b148cf387 1-40
+docs/adr/0005-level-per-individual.md
+  s_df12fc6ddf323c::t_da6ebe5899ef5f 15
+  s_df12fc6ddf323c::t_35aea47718c067 18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "95627c313e210586472c49829b2d762b1623cf54",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
