@@ -1,0 +1,109 @@
+packages/backend/convex/assessment/ratings.test.ts
+  s_df12fc6ddf323c::t_aa4231a9c115b9 28,34
+  s_df12fc6ddf323c::t_803f3b671de8c9 216
+packages/backend/convex/evaluationModel/localize.ts
+  s_df12fc6ddf323c::t_58df8ab089000a 4,6,20-21
+apps/dashboard/components/roles/create-role-dialog.test.tsx
+  s_df12fc6ddf323c::t_edc55e6340b84e 54
+  s_df12fc6ddf323c::t_0495451d091fa5 45-47
+  s_df12fc6ddf323c::t_5a33a801302bc8 94
+packages/backend/convex/evaluationModel/standardTemplate.content.en.ts
+  s_df12fc6ddf323c::t_f08661615d02d9 1,14
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_df12fc6ddf323c::t_32b9bbbf553cf6 45-46
+packages/backend/convex/assessment/starters.ts
+  s_df12fc6ddf323c::t_c79f9c275a208b 92-95,103
+  s_df12fc6ddf323c::t_a433d58761d1dd 2
+packages/backend/convex/evaluationModel/standardTemplate.ts
+  s_df12fc6ddf323c::t_7bfeef5e100784 46-53
+packages/backend/convex/assessment/roles.ts
+  s_df12fc6ddf323c::t_0aa4e2ff19376c 112
+  s_df12fc6ddf323c::t_31c675b58397e9 239
+  s_df12fc6ddf323c::t_aaadea82975859 159,170
+  s_df12fc6ddf323c::t_c8c02b38181fc6 274-275
+  s_df12fc6ddf323c::t_cf9b775ccb556b 5
+  s_df12fc6ddf323c::t_09bd5cdf0b76c1 334-335
+  s_df12fc6ddf323c::t_76365d2e48de3e 76-77
+  s_df12fc6ddf323c::t_94427d68e5bc24 306
+  s_df12fc6ddf323c::t_f90680f85dd9f1 211
+packages/backend/convex/evaluationModel/model.ts
+  s_df12fc6ddf323c::t_5cbcd80ab299fb 117-119
+  s_df12fc6ddf323c::t_46e4e8849b10f3 11,15-16
+  s_df12fc6ddf323c::t_4cae72d5f4ec46 41
+  s_df12fc6ddf323c::t_0c580879fceb46 268-274
+  s_df12fc6ddf323c::t_e0885228d2f381 215
+  s_df12fc6ddf323c::t_ec0a40e4a95271 145-146
+packages/backend/convex/accounts/mirrors.ts
+  s_df12fc6ddf323c::t_b24a3cd59344c6 87-88
+packages/backend/convex/ai/suggest.test.ts
+  s_df12fc6ddf323c::t_dda86fdb1a92c3 34
+packages/backend/convex/evaluationModel/standardTemplate.test.ts
+  s_df12fc6ddf323c::t_ecc1a8611effe4 7,10,13,15,22,31-36,52-53
+packages/backend/convex/assessment/families.test.ts
+  s_df12fc6ddf323c::t_3f1cfe4883633a 35,48
+  s_df12fc6ddf323c::t_8b73769665d6cd 160
+  s_df12fc6ddf323c::t_9b3a43345d98a2 176
+  s_df12fc6ddf323c::t_2f4ae782ad3b81 137,140
+  s_df12fc6ddf323c::t_3b5c8100d0aa33 132,145
+packages/backend/convex/schema.test.ts
+  s_df12fc6ddf323c::t_de53b01f482842 33
+packages/backend/convex/seed.test.ts
+  s_df12fc6ddf323c::t_c1868e0b4ec5da 329,339
+  s_df12fc6ddf323c::t_8ebb2b53047f91 313
+packages/backend/convex/evaluationModel/criteria.test.ts
+  s_df12fc6ddf323c::t_9e88e6a1543bad 348
+packages/backend/convex/assessment/results.test.ts
+  s_df12fc6ddf323c::t_a99bc968fa8320 47
+packages/backend/convex/ai/suggest.ts
+  s_df12fc6ddf323c::t_ff8328cb38fa0c 409,416
+  s_df12fc6ddf323c::t_d4c6910ab590c5 390-395
+packages/backend/convex/schema.ts
+  s_df12fc6ddf323c::t_cd0e0e67d6b770 4
+packages/backend/convex/assessment/compute.test.ts
+  s_df12fc6ddf323c::t_caeff5edab20d7 76
+  s_df12fc6ddf323c::t_19d378d77bd415 42
+  s_df12fc6ddf323c::t_80143db65bcb91 94
+packages/backend/convex/evaluationModel/tables.ts
+  s_df12fc6ddf323c::t_2b353413f998e5 56-64
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_df12fc6ddf323c::t_01c8f4c413201e 71,79-80
+packages/backend/convex/assessment/roles.test.ts
+  s_df12fc6ddf323c::t_610d51c3a0acd2 257,261
+  s_df12fc6ddf323c::t_c6593fbf4263aa 44,71,86,196,250,276,347,379,427
+packages/backend/convex/assessment/results.ts
+  s_df12fc6ddf323c::t_7e793ad48d32b3 64,68-69
+  s_df12fc6ddf323c::t_92d1fc5fb559d8 39
+packages/backend/convex/evaluationModel/model.test.ts
+  s_df12fc6ddf323c::t_0d311e7c5837fb 406-407
+  s_df12fc6ddf323c::t_a8fd48c7bf3e13 222-223
+  s_df12fc6ddf323c::t_bd170b6e9500ba 269-272,279
+  s_df12fc6ddf323c::t_f4b7c78e463a4e 149
+apps/dashboard/components/roles/create-role-dialog.tsx
+  s_df12fc6ddf323c::t_a6c28581c3c543 28-29,31
+  s_df12fc6ddf323c::t_0c71d5624c9d44 57-59,68,78
+  s_df12fc6ddf323c::t_69cc4e6e8553f8 86
+  s_df12fc6ddf323c::t_993ef0200d4270 148-155,161
+  s_df12fc6ddf323c::t_f9949a75001d78 96
+packages/backend/convex/assessment/tables.ts
+  s_df12fc6ddf323c::t_3b0ec895357ed3 3
+  s_df12fc6ddf323c::t_bb829764b9128e 22-24
+packages/backend/convex/assessment/names.ts
+  s_df12fc6ddf323c::t_bcc1f5d37d5623 2,13-17,19-24
+  s_df12fc6ddf323c::t_9c9670374a3a19 3-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "6398f0ae1d2318925e7d34979729b0080bf91435",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
