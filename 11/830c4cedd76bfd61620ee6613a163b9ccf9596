@@ -1,0 +1,42 @@
+packages/backend/convex/ai/weights.ts
+  s_df12fc6ddf323c::t_8df4f755e91e2a 3-8
+docs/superpowers/specs/2026-06-06-point-budget-weighting-design.md
+  s_df12fc6ddf323c::t_44ab152f87937d 20
+packages/i18n/messages/fi.json
+  s_df12fc6ddf323c::t_40659b5420315c 399
+packages/i18n/messages/nb.json
+  s_df12fc6ddf323c::t_40659b5420315c 399
+docs/contexts/evaluation-model/CONTEXT.md
+  s_df12fc6ddf323c::t_b7bd15880fe9a0 38
+docs/contexts/evaluation-model/standardmall.md
+  s_df12fc6ddf323c::t_8e1353f6eb3152 19
+packages/i18n/messages/da.json
+  s_df12fc6ddf323c::t_40659b5420315c 399
+packages/backend/convex/evaluationModel/criteria.test.ts
+  s_df12fc6ddf323c::t_62518b8c046b02 448,451-454,456-502
+docs/adr/0004-point-budget-weighting.md
+  s_df12fc6ddf323c::t_f5700b07e7123f 19
+packages/backend/convex/evaluationModel/criteria.ts
+  s_df12fc6ddf323c::t_81c751e68725a1 7-8,21-23
+  s_df12fc6ddf323c::t_a7652832fb6e9e 163-172,200-227,239
+packages/i18n/messages/en.json
+  s_df12fc6ddf323c::t_40659b5420315c 399
+packages/i18n/messages/sv.json
+  s_df12fc6ddf323c::t_40659b5420315c 399
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "11830c4cedd76bfd61620ee6613a163b9ccf9596",
+  "prompts": {},
+  "sessions": {
+    "s_df12fc6ddf323c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3232e4cc-5433-4d15-9483-96a306c2e923",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
