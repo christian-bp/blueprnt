@@ -1,0 +1,61 @@
+packages/i18n/messages/fi.json
+  s_fa45b53f6da63b::t_deceba17760844 304-314
+packages/backend/convex/ai/persist.ts
+  s_fa45b53f6da63b::t_c46a9fb8cdd803 4-5
+  s_fa45b53f6da63b::t_e0fa1a301e92f1 90-134
+packages/backend/convex/ai/suggest.test.ts
+  s_fa45b53f6da63b::t_cfcbd42eb5367b 855,969
+  s_fa45b53f6da63b::t_929ffa9cafd76d 767-854,856-968,970-979
+packages/backend/convex/ai/generate.ts
+  s_fa45b53f6da63b::t_948d4145e57a79 44
+  s_fa45b53f6da63b::t_2db0e441325fc9 164-247
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_fa45b53f6da63b::t_6ea9906799c1b0 14-16,25-29,33-34,54-61,65-70,74,110-132,135,149-153,158-160,164-170,177,179-250,252-274,277,282,284-290,292,312,316-336,341,366,390
+apps/dashboard/components/onboarding/typewriter-placeholder.tsx
+  s_fa45b53f6da63b::t_e65e268c6184de 1-85
+packages/backend/convex/assessment/starters.ts
+  s_fa45b53f6da63b::t_b1f1a8ce856961 2,9-14,16,26-30,49-86,89-91,93-102,104-106,109-124,127-130,132,134-149
+apps/dashboard/components/onboarding/typewriter-placeholder.test.tsx
+  s_fa45b53f6da63b::t_e82a3abe6f38c5 1-63
+packages/backend/convex/ai/starterImport.test.ts
+  s_fa45b53f6da63b::t_cfcbd42eb5367b 27-31,61
+  s_fa45b53f6da63b::t_9ce1172cb2e1e0 1-26,32-60,62-77
+apps/dashboard/components/onboarding/families-step.tsx
+  s_fa45b53f6da63b::t_cfcbd42eb5367b 335-337
+  s_fa45b53f6da63b::t_a6bd8e5611d396 370
+  s_fa45b53f6da63b::t_345a66355e979c 130
+  s_fa45b53f6da63b::t_09784ff4430649 5-6,10,19,21,23-25,27,29,31-39,53-62,77,85,87-89,94,97,99-100,103-129,131,134,137-143,147,164-202,218-226,237-257,266-272,274-281,283,285-290,292-294,297,302-334,338-369,371-516
+  s_fa45b53f6da63b::t_9af248cc1ef0d2 284,291
+  s_fa45b53f6da63b::t_60c272fcbb73b1 298-301
+packages/backend/convex/ai/starterImport.ts
+  s_fa45b53f6da63b::t_90576c551a64bb 1-49
+apps/dashboard/lib/suggestion-schemas.ts
+  s_fa45b53f6da63b::t_063b8c3c0fe558 41-55
+packages/i18n/messages/en.json
+  s_fa45b53f6da63b::t_deceba17760844 304-314
+packages/backend/convex/ai/suggest.ts
+  s_fa45b53f6da63b::t_9c18e3f4adc8f8 7,9-12
+  s_fa45b53f6da63b::t_268c0330333151 505-598
+packages/i18n/messages/nb.json
+  s_fa45b53f6da63b::t_deceba17760844 304-314
+packages/i18n/messages/sv.json
+  s_fa45b53f6da63b::t_deceba17760844 304-314
+packages/i18n/messages/da.json
+  s_fa45b53f6da63b::t_deceba17760844 304-314
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "35438a60564407dc7adebfa9cc08dd6fd050de69",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
