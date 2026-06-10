@@ -1,0 +1,27 @@
+docs/superpowers/specs/2026-06-10-ai-usage-tracking-design.md
+  s_edfacac3601b15::t_e98e1ac8c7df4a 30
+  s_edfacac3601b15::t_b934a9a7e14c9f 51
+  s_edfacac3601b15::t_a45cef477e1de2 75
+  s_edfacac3601b15::t_2c001c7758f684 41
+  s_edfacac3601b15::t_dccc62672e0e66 1-12,14-22,24-29,31-40,42-50,52-74,76-80
+  s_edfacac3601b15::t_80e2feb13647ee 13
+  s_edfacac3601b15::t_1372f7b63ca316 23
+docs/superpowers/plans/2026-06-10-ai-usage-tracking.md
+  s_edfacac3601b15::t_d16ceb18f0dfd1 1-1083
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "1937fde8dea69ed4dd3273b8be6a3a77544459b4",
+  "prompts": {},
+  "sessions": {
+    "s_edfacac3601b15": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c56db89e-a84b-40b0-9259-562927452d3a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
