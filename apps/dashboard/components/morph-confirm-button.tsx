@@ -226,20 +226,26 @@ export function MorphConfirmButton(props: MorphConfirmButtonProps) {
             exit={{ opacity: 0, scale: 0.9 }}
             transition={SPRING}
           >
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              disabled={disabled}
-              aria-label={props.triggerLabel}
-              className="text-muted-foreground hover:text-destructive"
-              onClick={() => setArmed(true)}
-            >
-              <HugeiconsIcon
-                icon={props.triggerIcon ?? Cancel01Icon}
-                strokeWidth={2}
-              />
-            </Button>
+            {/* Same box recipe as the armed pill (p-0.5 + icon-xs = the
+                armed cancel button), so arming changes width only: the pill
+                never shrinks in height and the icon is the small one from
+                the start. */}
+            <span className="flex items-center p-0.5">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                disabled={disabled}
+                aria-label={props.triggerLabel}
+                className="text-muted-foreground hover:text-destructive"
+                onClick={() => setArmed(true)}
+              >
+                <HugeiconsIcon
+                  icon={props.triggerIcon ?? Cancel01Icon}
+                  strokeWidth={2}
+                />
+              </Button>
+            </span>
           </motion.div>
         ) : (
           // Armed state: destructive confirm + neutral cancel. Focus moves to
