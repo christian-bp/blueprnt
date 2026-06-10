@@ -23,7 +23,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { DragDropVerticalIcon } from "@hugeicons/core-free-icons"
+import { Delete02Icon, DragDropVerticalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
@@ -82,7 +82,6 @@ export function FamiliesReview({
 }) {
   const t = useTranslations("dashboard.onboarding.families")
   const tFamily = useTranslations("dashboard.roles.family")
-  const tEditor = useTranslations("dashboard.model.editor")
 
   const [activeRoleId, setActiveRoleId] = useState<number | null>(null)
   // Cross-family moves apply live during onDragOver; a cancelled drag (escape)
@@ -233,8 +232,8 @@ export function FamiliesReview({
               <Button
                 type="button"
                 variant="ghost"
-                size="sm"
-                className="ml-auto"
+                size="icon-sm"
+                className="ml-auto shrink-0 text-muted-foreground hover:text-destructive"
                 aria-label={t("removeFamilyLabel", { name: family.name })}
                 onClick={() =>
                   onFamiliesChange((current) =>
@@ -242,7 +241,7 @@ export function FamiliesReview({
                   )
                 }
               >
-                {tEditor("removeCta")}
+                <HugeiconsIcon icon={Delete02Icon} aria-hidden="true" />
               </Button>
             </CardHeader>
             <CardContent className="space-y-2">
@@ -367,7 +366,6 @@ function SortableRoleRow({
 }) {
   const t = useTranslations("dashboard.onboarding.families")
   const tCreate = useTranslations("dashboard.roles.create")
-  const tEditor = useTranslations("dashboard.model.editor")
   const {
     attributes,
     listeners,
@@ -416,11 +414,12 @@ function SortableRoleRow({
       <Button
         type="button"
         variant="ghost"
-        size="sm"
+        size="icon-sm"
+        className="shrink-0 text-muted-foreground hover:text-destructive"
         aria-label={t("removeRoleLabel", { title: role.title })}
         onClick={onRemove}
       >
-        {tEditor("removeCta")}
+        <HugeiconsIcon icon={Delete02Icon} aria-hidden="true" />
       </Button>
     </div>
   )
