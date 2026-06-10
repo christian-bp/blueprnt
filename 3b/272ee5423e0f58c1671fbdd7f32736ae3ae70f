@@ -1,0 +1,23 @@
+apps/dashboard/components/morph-confirm-button.tsx
+  s_fa45b53f6da63b::t_6f28e1746044d9 99-100,107,116,118-119,122,125-126
+  s_fa45b53f6da63b::t_112a2cda5f70c6 217,219-220,223,230
+apps/dashboard/components/onboarding/families-review.tsx
+  s_fa45b53f6da63b::t_5e5e323622eb4a 423
+  s_fa45b53f6da63b::t_d55d8a55666bc4 239
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "3b272ee5423e0f58c1671fbdd7f32736ae3ae70f",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
