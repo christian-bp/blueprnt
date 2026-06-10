@@ -316,6 +316,8 @@
         "addRoleCta": "Lisää rooli",
         "removeFamilyLabel": "Poista perhe {name}",
         "removeRoleLabel": "Poista rooli {title}",
+        "removeFamilyConfirm": "Kyllä, poista perhe",
+        "removeRoleConfirm": "Kyllä, poista rooli",
         "error": "Jokin meni pieleen. Yritä uudelleen.",
         "restartCta": "Aloita alusta",
         "dragHandleLabel": "Siirrä roolia {title}",

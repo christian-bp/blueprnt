@@ -241,7 +241,7 @@ export function FamiliesReview({
                   idleVariant="ghost"
                   triggerIcon={Delete02Icon}
                   triggerLabel={t("removeFamilyLabel", { name: family.name })}
-                  confirmLabel={tFamily("removeConfirm")}
+                  confirmLabel={t("removeFamilyConfirm")}
                   cancelLabel={tFamily("cancel")}
                   // h-9 + min-w-9 squares the idle pill up to the row's field
                   // height (the inner icon button centers inside the border).
@@ -428,7 +428,7 @@ function SortableRoleRow({
           idleVariant="ghost"
           triggerIcon={Delete02Icon}
           triggerLabel={t("removeRoleLabel", { title: role.title })}
-          confirmLabel={tFamily("removeConfirm")}
+          confirmLabel={t("removeRoleConfirm")}
           cancelLabel={tFamily("cancel")}
           // h-9 + min-w-9 squares the idle pill up to the row's field height
           // (the inner icon button centers inside the border).

@@ -316,6 +316,8 @@
         "addRoleCta": "Legg til rolle",
         "removeFamilyLabel": "Fjern familien {name}",
         "removeRoleLabel": "Fjern rollen {title}",
+        "removeFamilyConfirm": "Ja, fjern familien",
+        "removeRoleConfirm": "Ja, fjern rollen",
         "error": "Noe gikk galt. Prøv igjen.",
         "restartCta": "Start på nytt",
         "dragHandleLabel": "Flytt rollen {title}",

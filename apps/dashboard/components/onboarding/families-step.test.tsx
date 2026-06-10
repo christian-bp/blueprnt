@@ -349,7 +349,7 @@ describe("FamiliesStep", () => {
     )
     fireEvent.click(
       await screen.findByRole("button", {
-        name: messages.dashboard.roles.family.removeConfirm,
+        name: t.removeFamilyConfirm,
       })
     )
     fireEvent.click(screen.getByRole("button", { name: t.createCta }))

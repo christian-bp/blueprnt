@@ -316,6 +316,8 @@
         "addRoleCta": "Add role",
         "removeFamilyLabel": "Remove family {name}",
         "removeRoleLabel": "Remove role {title}",
+        "removeFamilyConfirm": "Yes, remove the family",
+        "removeRoleConfirm": "Yes, remove the role",
         "error": "Something went wrong. Try again.",
         "restartCta": "Start over",
         "dragHandleLabel": "Move role {title}",
