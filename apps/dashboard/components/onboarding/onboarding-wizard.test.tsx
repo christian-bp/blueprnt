@@ -17,7 +17,7 @@ vi.mock("convex/react", () => ({
   useQuery: (...args: unknown[]) => useQueryMock(...args),
 }))
 
-// Each screen is mocked as a marker plus its onDone callback, so the tests
+// Each screen is mocked as a marker plus its onAdvance callback, so the tests
 // assert which screen the machine selected without pulling in real screens.
 vi.mock("@/components/onboarding/onboarding-header", () => ({
   OnboardingHeader: () => <div data-testid="header" />,
@@ -26,13 +26,13 @@ vi.mock("@/components/onboarding/onboarding-header", () => ({
 vi.mock("@/components/onboarding/name-screen", () => ({
   NameScreen: (props: {
     existing: { orgId: string; name: string } | null
-    onDone: () => void
+    onAdvance: () => void
   }) => (
     <div data-testid="name-screen">
       <span data-testid="name-mode">
         {props.existing ? `existing:${props.existing.name}` : "fresh"}
       </span>
-      <button type="button" onClick={() => props.onDone()}>
+      <button type="button" onClick={() => props.onAdvance()}>
         name-done
       </button>
     </div>
@@ -42,11 +42,11 @@ vi.mock("@/components/onboarding/name-screen", () => ({
 vi.mock("@/components/onboarding/country-screen", () => ({
   CountryScreen: (props: {
     savedCountry: string | null
-    onDone: () => void
+    onAdvance: () => void
   }) => (
     <div data-testid="country-screen">
       <span data-testid="country-saved">{props.savedCountry ?? "null"}</span>
-      <button type="button" onClick={() => props.onDone()}>
+      <button type="button" onClick={() => props.onAdvance()}>
         country-done
       </button>
     </div>
@@ -54,10 +54,10 @@ vi.mock("@/components/onboarding/country-screen", () => ({
 }))
 
 vi.mock("@/components/onboarding/industry-screen", () => ({
-  IndustryScreen: (props: { saved: string | null; onDone: () => void }) => (
+  IndustryScreen: (props: { saved: string | null; onAdvance: () => void }) => (
     <div data-testid="industry-screen">
       <span data-testid="industry-saved">{props.saved ?? "null"}</span>
-      <button type="button" onClick={() => props.onDone()}>
+      <button type="button" onClick={() => props.onAdvance()}>
         industry-done
       </button>
     </div>
@@ -65,10 +65,10 @@ vi.mock("@/components/onboarding/industry-screen", () => ({
 }))
 
 vi.mock("@/components/onboarding/model-setup-step", () => ({
-  ModelSetupStep: (props: { orgId: string; onContinue: () => void }) => (
+  ModelSetupStep: (props: { orgId: string; onAdvance: () => void }) => (
     <div data-testid="model-step">
       <span data-testid="model-orgid">{props.orgId}</span>
-      <button type="button" onClick={() => props.onContinue()}>
+      <button type="button" onClick={() => props.onAdvance()}>
         model-continue
       </button>
     </div>
@@ -76,10 +76,10 @@ vi.mock("@/components/onboarding/model-setup-step", () => ({
 }))
 
 vi.mock("@/components/onboarding/families-step", () => ({
-  FamiliesStep: (props: { orgId: string; onFinished: () => void }) => (
+  FamiliesStep: (props: { orgId: string; onAdvance: () => void }) => (
     <div data-testid="families-step">
       <span data-testid="families-orgid">{props.orgId}</span>
-      <button type="button" onClick={() => props.onFinished()}>
+      <button type="button" onClick={() => props.onAdvance()}>
         families-finished
       </button>
     </div>
@@ -274,7 +274,7 @@ describe("OnboardingWizard", () => {
     expect(screen.getByTestId("model-step")).toBeDefined()
     expect(dotsProps?.maxReachedIndex).toBe(3)
 
-    // onContinue sets the session step to the families index (4). The step
+    // onAdvance sets the session step to the families index (4). The step
     // crossfade mounts the next screen only after the old one has faded out.
     fireEvent.click(screen.getByText("model-continue"))
 
@@ -289,7 +289,7 @@ describe("OnboardingWizard", () => {
 
   it("a reactive settings update never yanks the frontier screen before it advances", async () => {
     // The choice screens persist on pick and play a fade before calling
-    // onDone; the settings subscription updates in between. The wizard must
+    // onAdvance; the settings subscription updates in between. The wizard must
     // hold the current screen until the screen itself advances.
     useQueryMock.mockReturnValue({
       ...fullSettings,
@@ -311,7 +311,7 @@ describe("OnboardingWizard", () => {
     expect(screen.getByTestId("country-screen")).toBeDefined()
 
     // The pick persisted: settings now complete, derived jumps to the model
-    // step, but the country screen must stay until its onDone fires.
+    // step, but the country screen must stay until its onAdvance fires.
     useQueryMock.mockReturnValue(fullSettings)
     view.rerender(
       <NextIntlClientProvider locale="en" messages={messages}>
@@ -321,7 +321,7 @@ describe("OnboardingWizard", () => {
     expect(screen.getByTestId("country-screen")).toBeDefined()
     expect(screen.queryByTestId("model-step")).toBeNull()
 
-    // onDone acknowledges the move: one step forward, not to the frontier.
+    // onAdvance acknowledges the move: one step forward, not to the frontier.
     fireEvent.click(screen.getByText("country-done"))
     expect(await screen.findByTestId("industry-screen")).toBeDefined()
     fireEvent.click(screen.getByText("industry-done"))

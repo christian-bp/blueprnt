@@ -28,11 +28,11 @@ const INDUSTRY_LABEL_KEYS = {
 export function IndustryScreen({
   orgId,
   saved,
-  onDone,
+  onAdvance,
 }: {
   orgId: string
   saved: string | null
-  onDone: () => void
+  onAdvance: () => void
 }) {
   const t = useTranslations("dashboard.onboarding.organization")
   const tProfile = useTranslations("dashboard.onboarding.profile")
@@ -42,7 +42,7 @@ export function IndustryScreen({
   )
   const { chosen, picked, failed, choose } = useAutoAdvance({
     persist: (code) => updateSettings({ orgId, industry: code }),
-    onDone,
+    onAdvance,
   })
   // Fresh flow marks nothing; a revisit marks the saved industry. picked
   // survives a failed save so the choice stays marked next to the alert.

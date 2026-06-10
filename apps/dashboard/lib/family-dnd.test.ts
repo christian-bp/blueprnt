@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import {
+  cleanDraftFamilies,
   type DraftFamily,
   findFamilyIdByRole,
   moveRoleToFamily,
@@ -86,5 +87,28 @@ describe("reorderRoleWithinFamily", () => {
     expect(reorderRoleWithinFamily(families, 10, 20)).toBe(families)
     expect(reorderRoleWithinFamily(families, 10, 10)).toBe(families)
     expect(reorderRoleWithinFamily(families, 99, 10)).toBe(families)
+  })
+})
+
+describe("cleanDraftFamilies", () => {
+  it("trims names and titles and drops blanks", () => {
+    const cleaned = cleanDraftFamilies([
+      {
+        id: 1,
+        name: "  Engineering ",
+        roles: [
+          { id: 10, title: " Developer ", trackKey: "IC" },
+          { id: 11, title: "   ", trackKey: "IC" },
+        ],
+      },
+      {
+        id: 2,
+        name: "   ",
+        roles: [{ id: 20, title: "Orphan", trackKey: "IC" }],
+      },
+    ])
+    expect(cleaned).toEqual([
+      { name: "Engineering", roles: [{ title: "Developer", trackKey: "IC" }] },
+    ])
   })
 })

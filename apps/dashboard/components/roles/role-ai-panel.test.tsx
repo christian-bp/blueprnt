@@ -9,33 +9,20 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 
+import { mockMutation, onQuery } from "@/test/convex-mocks"
+
 const useQueryMock = vi.fn()
-const requestMock = vi.fn()
-const confirmMock = vi.fn()
-const rejectMock = vi.fn()
+const requestMock = mockMutation("ai.suggest.requestRoleProfileDraft")
+const confirmMock = mockMutation("ai.suggest.confirmRoleProfileDraft")
+const rejectMock = mockMutation("ai.suggest.rejectSuggestion")
+onQuery((ref, args) => useQueryMock(ref, args))
 
-vi.mock("convex/react", () => ({
-  useQuery: (...args: unknown[]) => useQueryMock(...args),
-  useMutation: (ref: unknown) => {
-    if (ref === "ai.requestRoleProfileDraft") return requestMock
-    if (ref === "ai.confirmRoleProfileDraft") return confirmMock
-    if (ref === "ai.rejectSuggestion") return rejectMock
-    return vi.fn()
-  },
-}))
-
-vi.mock("@workspace/backend/convex/_generated/api", () => ({
-  api: {
-    ai: {
-      suggest: {
-        getOpenSuggestions: "ai.getOpenSuggestions",
-        requestRoleProfileDraft: "ai.requestRoleProfileDraft",
-        confirmRoleProfileDraft: "ai.confirmRoleProfileDraft",
-        rejectSuggestion: "ai.rejectSuggestion",
-      },
-    },
-  },
-}))
+vi.mock("convex/react", async () => {
+  return (await import("@/test/convex-mocks")).convexReactModule
+})
+vi.mock("@workspace/backend/convex/_generated/api", async () => {
+  return (await import("@/test/convex-mocks")).apiModule
+})
 
 import { RoleAiPanel } from "@/components/roles/role-ai-panel"
 

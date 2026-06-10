@@ -9,58 +9,29 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 
-const createStarterSetMock = vi.fn()
-const completeOnboardingMock = vi.fn()
-const requestStarterImportMock = vi.fn()
-const confirmStarterImportMock = vi.fn()
-const rejectSuggestionMock = vi.fn()
+import { mockMutation, onQuery } from "@/test/convex-mocks"
+
+const createStarterSetMock = mockMutation(
+  "assessment.starters.createStarterSet"
+)
+const completeOnboardingMock = mockMutation(
+  "accounts.organization.completeOnboarding"
+)
+const requestStarterImportMock = mockMutation("ai.suggest.requestStarterImport")
+const confirmStarterImportMock = mockMutation("ai.suggest.confirmStarterImport")
+const rejectSuggestionMock = mockMutation("ai.suggest.rejectSuggestion")
+// The query mock dispatches on the api ref (see beforeEach): getIndustryStarter
+// returns the seed fixture, getModel the tracks fixture, and
+// getOpenSuggestions the AI rows for the import flow.
 const useQueryMock = vi.fn()
+onQuery((ref, args) => useQueryMock(ref, args))
 
-vi.mock("convex/react", () => ({
-  useMutation: (ref: unknown) => {
-    if (ref === "assessment.starters.createStarterSet")
-      return createStarterSetMock
-    if (ref === "accounts.organization.completeOnboarding")
-      return completeOnboardingMock
-    if (ref === "ai.suggest.requestStarterImport")
-      return requestStarterImportMock
-    if (ref === "ai.suggest.confirmStarterImport")
-      return confirmStarterImportMock
-    if (ref === "ai.suggest.rejectSuggestion") return rejectSuggestionMock
-    return vi.fn()
-  },
-  // The mock dispatches on the api ref (see beforeEach): getIndustryStarter
-  // returns the seed fixture, getModel the tracks fixture, and
-  // getOpenSuggestions the AI rows for the import flow.
-  useQuery: (...args: unknown[]) => useQueryMock(...args),
-}))
-
-vi.mock("@workspace/backend/convex/_generated/api", () => ({
-  api: {
-    accounts: {
-      organization: {
-        completeOnboarding: "accounts.organization.completeOnboarding",
-      },
-    },
-    assessment: {
-      starters: {
-        getIndustryStarter: "assessment.starters.getIndustryStarter",
-        createStarterSet: "assessment.starters.createStarterSet",
-      },
-    },
-    evaluationModel: {
-      model: { getModel: "evaluationModel.model.getModel" },
-    },
-    ai: {
-      suggest: {
-        getOpenSuggestions: "ai.suggest.getOpenSuggestions",
-        requestStarterImport: "ai.suggest.requestStarterImport",
-        confirmStarterImport: "ai.suggest.confirmStarterImport",
-        rejectSuggestion: "ai.suggest.rejectSuggestion",
-      },
-    },
-  },
-}))
+vi.mock("convex/react", async () => {
+  return (await import("@/test/convex-mocks")).convexReactModule
+})
+vi.mock("@workspace/backend/convex/_generated/api", async () => {
+  return (await import("@/test/convex-mocks")).apiModule
+})
 
 // The animated placeholder runs real timers; it has its own test file and
 // only adds noise (act warnings) here.
@@ -140,7 +111,7 @@ function renderStep(onFinished: () => void = () => {}) {
       <FamiliesStep
         orgId="org-1"
         organizationName="Acme"
-        onFinished={onFinished}
+        onAdvance={onFinished}
       />
     </NextIntlClientProvider>
   )

@@ -9,12 +9,11 @@ import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Label } from "@workspace/ui/components/label"
 import { Spinner } from "@workspace/ui/components/spinner"
-import { useMutation, useQuery } from "convex/react"
+import { useMutation } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useEffect, useRef, useState } from "react"
-import { useGeneratingStaleness } from "@/hooks/use-generating-staleness"
-import { aiErrorSubKey } from "@/lib/error-label"
-import { newestByKind } from "@/lib/open-suggestions"
+import { useSuggestionFlow } from "@/hooks/use-suggestion-flow"
+import { useSuggestionSelection } from "@/hooks/use-suggestion-selection"
 import { weightReviewValueSchema } from "@/lib/suggestion-schemas"
 
 // The review panel only needs each criterion's id, name, and current weight
@@ -58,27 +57,18 @@ export function WeightReviewPanel({
   // The AI responds in the requester's current UI language.
   const locale = useLocale()
 
-  const suggestions = useQuery(api.ai.suggest.getOpenSuggestions, {
+  // The shared suggestion lifecycle: newest open review, Zod re-parse,
+  // staleness, dismissal. Request/confirm stay here (kind-specific args).
+  const flow = useSuggestionFlow({
     orgId,
     kind: SUGGESTION_KINDS.weightReview,
+    schema: weightReviewValueSchema,
   })
   const requestWeightReview = useMutation(api.ai.suggest.requestWeightReview)
   const confirmWeightReview = useMutation(api.ai.suggest.confirmWeightReview)
-  const rejectSuggestion = useMutation(api.ai.suggest.rejectSuggestion)
 
   const [pending, setPending] = useState(false)
   const [failed, setFailed] = useState(false)
-  // Selected move indexes, paired with the suggestion id they were seeded
-  // for. Moves default to checked.
-  const [selection, setSelection] = useState<{
-    seededFor: string | null
-    accepted: Set<number>
-  }>({ seededFor: null, accepted: new Set() })
-
-  const review = newestByKind(suggestions, SUGGESTION_KINDS.weightReview)
-
-  const isGenerating = review?.status === "generating"
-  const isStaleGenerating = useGeneratingStaleness(review)
 
   // Index the model's criteria so moves resolve to names and current points.
   // A move whose criteria are absent from the model is skipped as defense in
@@ -89,13 +79,7 @@ export function WeightReviewPanel({
       { name: criterion.name, weightPoints: criterion.weightPoints },
     ])
   )
-  // The stored payload is re-parsed with Zod before anything renders; a
-  // malformed value reads as an empty review (see suggestion-schemas).
-  const parsedValue =
-    review?.status === "suggested"
-      ? weightReviewValueSchema.safeParse(review.suggestedValue)
-      : null
-  const allMoves = parsedValue?.success ? parsedValue.data.moves : []
+  const allMoves = flow.value?.moves ?? []
   // Indexes must stay aligned with the STORED move list (the confirm payload
   // is index-based), so unresolvable moves are filtered as (move, index)
   // pairs rather than re-indexed.
@@ -106,23 +90,11 @@ export function WeightReviewPanel({
         byId.has(move.fromCriterionId) && byId.has(move.toCriterionId)
     )
 
-  // Seed the selection (all checked) the first render a new review appears,
-  // adjusting state during render rather than in an effect.
-  const reviewId = review?.status === "suggested" ? review.suggestionId : null
-  if (reviewId !== null && selection.seededFor !== reviewId) {
-    setSelection({
-      seededFor: reviewId,
-      accepted: new Set(moves.map(({ index }) => index)),
-    })
-  }
-  const accepted = selection.accepted
-
-  function setAccepted(next: (current: Set<number>) => Set<number>) {
-    setSelection((current) => ({
-      seededFor: current.seededFor,
-      accepted: next(current.accepted),
-    }))
-  }
+  // Moves default to checked when a fresh review arrives.
+  const { accepted, toggle } = useSuggestionSelection(
+    flow.status === "suggested" ? flow.suggestionId : null,
+    () => moves.map(({ index }) => index)
+  )
 
   async function onRequest() {
     setPending(true)
@@ -140,8 +112,8 @@ export function WeightReviewPanel({
   // resolved and there is nothing open to show. A failed row is left for the
   // manual retry button.
   const requestedRef = useRef(false)
-  const queryLoaded = suggestions !== undefined
-  const hasReview = review !== undefined && review !== null
+  const queryLoaded = flow.loaded
+  const hasReview = flow.row !== undefined
   // biome-ignore lint/correctness/useExhaustiveDependencies: onRequest is recreated per render and intentionally not a dependency (one-shot guarded by requestedRef)
   useEffect(() => {
     if (!autoRequest || requestedRef.current) return
@@ -159,7 +131,7 @@ export function WeightReviewPanel({
 
   return (
     <div className="space-y-4">
-      {review?.status === "suggested" ? (
+      {flow.status === "suggested" ? (
         moves.length === 0 ? (
           <div className="space-y-3">
             <p className="text-muted-foreground text-sm">{t("noMoves")}</p>
@@ -168,10 +140,7 @@ export function WeightReviewPanel({
               onClick={async () => {
                 setFailed(false)
                 try {
-                  await rejectSuggestion({
-                    orgId,
-                    suggestionId: review.suggestionId,
-                  })
+                  await flow.reject()
                   onDone?.()
                 } catch {
                   setFailed(true)
@@ -197,14 +166,7 @@ export function WeightReviewPanel({
                     <Checkbox
                       id={checkboxId}
                       checked={accepted.has(index)}
-                      onCheckedChange={(value) =>
-                        setAccepted((current) => {
-                          const next = new Set(current)
-                          if (value === true) next.add(index)
-                          else next.delete(index)
-                          return next
-                        })
-                      }
+                      onCheckedChange={(value) => toggle(index, value === true)}
                       className="mt-1"
                     />
                     <div className="space-y-1">
@@ -242,11 +204,13 @@ export function WeightReviewPanel({
               <Button
                 disabled={accepted.size === 0}
                 onClick={async () => {
+                  const suggestionId = flow.suggestionId
+                  if (suggestionId === null) return
                   setFailed(false)
                   try {
                     await confirmWeightReview({
                       orgId,
-                      suggestionId: review.suggestionId,
+                      suggestionId,
                       acceptedMoveIndexes: [...accepted],
                     })
                     onDone?.()
@@ -262,10 +226,7 @@ export function WeightReviewPanel({
                 onClick={async () => {
                   setFailed(false)
                   try {
-                    await rejectSuggestion({
-                      orgId,
-                      suggestionId: review.suggestionId,
-                    })
+                    await flow.reject()
                     onDone?.()
                   } catch {
                     setFailed(true)
@@ -277,19 +238,15 @@ export function WeightReviewPanel({
             </div>
           </div>
         )
-      ) : isGenerating && !isStaleGenerating ? (
+      ) : flow.status === "generating" ? (
         <p className="flex items-center gap-2 text-muted-foreground text-sm">
           <Spinner />
           {t("reviewing")}
         </p>
-      ) : review?.status === "failed" || isStaleGenerating ? (
+      ) : flow.status === "failed" ? (
         <div className="space-y-3">
           <p role="alert" className="text-destructive text-sm">
-            {tErrors(
-              aiErrorSubKey(
-                review?.status === "failed" ? (review.errorCode ?? "") : ""
-              )
-            )}
+            {tErrors(flow.errorSubKey ?? "aiGenerationFailed")}
           </p>
           <Button variant="outline" disabled={pending} onClick={onRequest}>
             {t("reviewCta")}

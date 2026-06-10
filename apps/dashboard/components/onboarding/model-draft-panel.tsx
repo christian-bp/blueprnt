@@ -7,12 +7,11 @@ import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Label } from "@workspace/ui/components/label"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { Textarea } from "@workspace/ui/components/textarea"
-import { useMutation, useQuery } from "convex/react"
+import { useMutation } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
-import { useGeneratingStaleness } from "@/hooks/use-generating-staleness"
-import { aiErrorSubKey } from "@/lib/error-label"
-import { newestByKind } from "@/lib/open-suggestions"
+import { useSuggestionFlow } from "@/hooks/use-suggestion-flow"
+import { useSuggestionSelection } from "@/hooks/use-suggestion-selection"
 import {
   type ModelDraftValue,
   modelDraftValueSchema,
@@ -42,55 +41,26 @@ export function ModelDraftPanel({
   // The AI responds in the requester's current UI language.
   const locale = useLocale()
 
-  const suggestions = useQuery(api.ai.suggest.getOpenSuggestions, {
+  // The shared suggestion lifecycle: newest open draft, Zod re-parse,
+  // staleness, dismissal. Request/confirm stay here (kind-specific args).
+  const flow = useSuggestionFlow({
     orgId,
     kind: SUGGESTION_KINDS.modelDraft,
+    schema: modelDraftValueSchema,
   })
   const requestModelDraft = useMutation(api.ai.suggest.requestModelDraft)
   const confirmModelDraft = useMutation(api.ai.suggest.confirmModelDraft)
-  const rejectSuggestion = useMutation(api.ai.suggest.rejectSuggestion)
 
   const [description, setDescription] = useState("")
   const [pending, setPending] = useState(false)
   const [failed, setFailed] = useState(false)
-  // Selected draft indexes, paired with the suggestion id they were seeded for.
+
+  const criteria = flow.value?.criteria ?? []
   // Criteria default to checked when a fresh suggestion arrives.
-  const [selection, setSelection] = useState<{
-    seededFor: string | null
-    accepted: Set<number>
-  }>({ seededFor: null, accepted: new Set() })
-
-  // The newest draft row drives the UI; rows are capped at 20 per status.
-  // The stored payload is re-parsed with Zod before anything renders; a
-  // malformed value reads as an empty draft (see suggestion-schemas).
-  const draft = newestByKind(suggestions, SUGGESTION_KINDS.modelDraft)
-  const parsedValue =
-    draft?.status === "suggested"
-      ? modelDraftValueSchema.safeParse(draft.suggestedValue)
-      : null
-  const criteria = parsedValue?.success ? parsedValue.data.criteria : []
-
-  const isGenerating = draft?.status === "generating"
-  const isStaleGenerating = useGeneratingStaleness(draft)
-
-  // Seed the selection (all checked) the first render a new suggestion appears,
-  // adjusting state during render rather than in an effect. Re-runs only when
-  // the suggestion id changes, never on each user toggle.
-  const draftId = draft?.status === "suggested" ? draft.suggestionId : null
-  if (draftId !== null && selection.seededFor !== draftId) {
-    setSelection({
-      seededFor: draftId,
-      accepted: new Set(criteria.map((_, index) => index)),
-    })
-  }
-  const accepted = selection.accepted
-
-  function setAccepted(next: (current: Set<number>) => Set<number>) {
-    setSelection((current) => ({
-      seededFor: current.seededFor,
-      accepted: next(current.accepted),
-    }))
-  }
+  const { accepted, toggle } = useSuggestionSelection(
+    flow.status === "suggested" ? flow.suggestionId : null,
+    () => criteria.map((_, index) => index)
+  )
 
   async function onRequest() {
     setPending(true)
@@ -112,18 +82,11 @@ export function ModelDraftPanel({
 
   return (
     <div className="space-y-4">
-      {draft?.status === "suggested" ? (
+      {flow.status === "suggested" ? (
         <SuggestedDraft
           criteria={criteria}
           accepted={accepted}
-          onToggle={(index, checked) =>
-            setAccepted((current) => {
-              const next = new Set(current)
-              if (checked) next.add(index)
-              else next.delete(index)
-              return next
-            })
-          }
+          onToggle={toggle}
           labels={{
             confirmCta: t("confirmCta"),
             rejectCta: t("rejectCta"),
@@ -131,11 +94,13 @@ export function ModelDraftPanel({
               `${tWeightPoints("weightPoints")}: ${points}`,
           }}
           onConfirm={async () => {
+            const suggestionId = flow.suggestionId
+            if (suggestionId === null) return
             setFailed(false)
             try {
               await confirmModelDraft({
                 orgId,
-                suggestionId: draft.suggestionId,
+                suggestionId,
                 acceptedIndexes: [...accepted],
               })
               onDone?.()
@@ -146,29 +111,22 @@ export function ModelDraftPanel({
           onReject={async () => {
             setFailed(false)
             try {
-              await rejectSuggestion({
-                orgId,
-                suggestionId: draft.suggestionId,
-              })
+              await flow.reject()
               onDone?.()
             } catch {
               setFailed(true)
             }
           }}
         />
-      ) : isGenerating && !isStaleGenerating ? (
+      ) : flow.status === "generating" ? (
         <p className="flex items-center gap-2 text-muted-foreground text-sm">
           <Spinner />
           {t("generating")}
         </p>
-      ) : draft?.status === "failed" || isStaleGenerating ? (
+      ) : flow.status === "failed" ? (
         <div className="space-y-3">
           <p role="alert" className="text-destructive text-sm">
-            {tErrors(
-              aiErrorSubKey(
-                draft?.status === "failed" ? (draft.errorCode ?? "") : ""
-              )
-            )}
+            {tErrors(flow.errorSubKey ?? "aiGenerationFailed")}
           </p>
           <Button variant="outline" disabled={pending} onClick={onRequest}>
             {t("draftCta")}

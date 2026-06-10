@@ -97,3 +97,19 @@ export function reorderRoleWithinFamily(
     return { ...family, roles }
   })
 }
+
+// The payload shape createStarterSet/confirmStarterImport accept: trimmed
+// names and titles, empty roles and nameless families dropped (the explicit
+// way to create nothing is emptying the list).
+export function cleanDraftFamilies(
+  families: DraftFamily[]
+): { name: string; roles: { title: string; trackKey: string }[] }[] {
+  return families
+    .map((family) => ({
+      name: family.name.trim(),
+      roles: family.roles
+        .map((role) => ({ title: role.title.trim(), trackKey: role.trackKey }))
+        .filter((role) => role.title !== ""),
+    }))
+    .filter((family) => family.name !== "")
+}

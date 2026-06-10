@@ -8,11 +8,11 @@ import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Label } from "@workspace/ui/components/label"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { Textarea } from "@workspace/ui/components/textarea"
-import { useMutation, useQuery } from "convex/react"
+import { useMutation } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
-import { useGeneratingStaleness } from "@/hooks/use-generating-staleness"
-import { aiErrorSubKey } from "@/lib/error-label"
+import { useSuggestionFlow } from "@/hooks/use-suggestion-flow"
+import { useSuggestionSelection } from "@/hooks/use-suggestion-selection"
 import { roleProfileValueSchema } from "@/lib/suggestion-schemas"
 
 const PROFILE_FIELDS = [
@@ -27,17 +27,6 @@ const PROFILE_FIELDS = [
   "deliverables",
 ] as const
 type ProfileField = (typeof PROFILE_FIELDS)[number]
-
-// Mirrors the getOpenSuggestions row shape for the fields this panel reads.
-interface OpenSuggestionRow {
-  suggestionId: Id<"suggestions">
-  kind: string
-  status: string
-  suggestedValue: unknown
-  errorCode: string | null
-  createdAt: number
-  roleId: Id<"roles"> | null
-}
 
 // The job-profile assistant, rendered inside the MorphPopover (which owns
 // the heading and the always-visible provenance line). AI drafts field
@@ -63,53 +52,31 @@ export function RoleAiPanel({
   const tRole = useTranslations("assessment.role")
   const tErrors = useTranslations("errors")
 
-  const suggestions = useQuery(api.ai.suggest.getOpenSuggestions, {
+  // The shared suggestion lifecycle, scoped to THIS role. Request/confirm
+  // stay here (kind-specific args).
+  const flow = useSuggestionFlow({
     orgId,
     kind: SUGGESTION_KINDS.roleProfile,
+    schema: roleProfileValueSchema,
+    roleId,
   })
   const requestDraft = useMutation(api.ai.suggest.requestRoleProfileDraft)
   const confirmDraft = useMutation(api.ai.suggest.confirmRoleProfileDraft)
-  const rejectSuggestion = useMutation(api.ai.suggest.rejectSuggestion)
 
   const [description, setDescription] = useState("")
   const [pending, setPending] = useState(false)
   const [failed, setFailed] = useState(false)
-  const [selection, setSelection] = useState<{
-    seededFor: string | null
-    accepted: Set<ProfileField>
-  }>({ seededFor: null, accepted: new Set() })
 
-  // Newest open suggestion for THIS role (the query returns all open rows).
-  let draft: OpenSuggestionRow | undefined
-  for (const row of suggestions ?? []) {
-    if (row.kind !== SUGGESTION_KINDS.roleProfile || row.roleId !== roleId)
-      continue
-    if (draft === undefined || row.createdAt > draft.createdAt) draft = row
-  }
-
-  const isGenerating = draft?.status === "generating"
-  const isStaleGenerating = useGeneratingStaleness(draft)
-
-  // The stored payload is re-parsed with Zod before anything renders; a
-  // malformed value reads as an empty draft (see suggestion-schemas).
-  const parsedValue =
-    draft?.status === "suggested"
-      ? roleProfileValueSchema.safeParse(draft.suggestedValue)
-      : null
-  const profile: Record<string, string> = parsedValue?.success
-    ? parsedValue.data.profile
-    : {}
+  const profile: Record<string, string> = flow.value?.profile ?? {}
   const suggestedFields = PROFILE_FIELDS.filter(
     (field) => typeof profile[field] === "string"
   )
 
-  // Seed the selection (all checked) when a new suggestion appears
-  // (adjust-state-during-render, same as the onboarding panels).
-  const draftId = draft?.status === "suggested" ? draft.suggestionId : null
-  if (draftId !== null && selection.seededFor !== draftId) {
-    setSelection({ seededFor: draftId, accepted: new Set(suggestedFields) })
-  }
-  const accepted = selection.accepted
+  // Fields default to checked when a fresh suggestion arrives.
+  const { accepted, toggle } = useSuggestionSelection<ProfileField>(
+    flow.status === "suggested" ? flow.suggestionId : null,
+    () => suggestedFields
+  )
 
   async function onRequest() {
     setPending(true)
@@ -132,7 +99,7 @@ export function RoleAiPanel({
 
   return (
     <div className="space-y-4">
-      {draft?.status === "suggested" ? (
+      {flow.status === "suggested" ? (
         <div className="space-y-4">
           <ul className="space-y-2">
             {suggestedFields.map((field) => {
@@ -145,17 +112,7 @@ export function RoleAiPanel({
                   <Checkbox
                     id={checkboxId}
                     checked={accepted.has(field)}
-                    onCheckedChange={(value) =>
-                      setSelection((current) => {
-                        const next = new Set(current.accepted)
-                        if (value === true) next.add(field)
-                        else next.delete(field)
-                        return {
-                          seededFor: current.seededFor,
-                          accepted: next,
-                        }
-                      })
-                    }
+                    onCheckedChange={(value) => toggle(field, value === true)}
                     className="mt-1"
                   />
                   <div className="min-w-0 space-y-1">
@@ -172,12 +129,13 @@ export function RoleAiPanel({
             <Button
               disabled={accepted.size === 0}
               onClick={async () => {
-                if (draft === undefined) return
+                const suggestionId = flow.suggestionId
+                if (suggestionId === null) return
                 setFailed(false)
                 try {
                   await confirmDraft({
                     orgId,
-                    suggestionId: draft.suggestionId,
+                    suggestionId,
                     acceptedFields: [...accepted],
                   })
                   onDone?.()
@@ -191,13 +149,9 @@ export function RoleAiPanel({
             <Button
               variant="ghost"
               onClick={async () => {
-                if (draft === undefined) return
                 setFailed(false)
                 try {
-                  await rejectSuggestion({
-                    orgId,
-                    suggestionId: draft.suggestionId,
-                  })
+                  await flow.reject()
                   onDone?.()
                 } catch {
                   setFailed(true)
@@ -208,19 +162,15 @@ export function RoleAiPanel({
             </Button>
           </div>
         </div>
-      ) : isGenerating && !isStaleGenerating ? (
+      ) : flow.status === "generating" ? (
         <p className="flex items-center gap-2 text-muted-foreground text-sm">
           <Spinner />
           {tAi("generating")}
         </p>
-      ) : draft?.status === "failed" || isStaleGenerating ? (
+      ) : flow.status === "failed" ? (
         <div className="space-y-3">
           <p role="alert" className="text-destructive text-sm">
-            {tErrors(
-              aiErrorSubKey(
-                draft?.status === "failed" ? (draft.errorCode ?? "") : ""
-              )
-            )}
+            {tErrors(flow.errorSubKey ?? "aiGenerationFailed")}
           </p>
           <Button variant="outline" disabled={pending} onClick={onRequest}>
             {t("draftCta")}

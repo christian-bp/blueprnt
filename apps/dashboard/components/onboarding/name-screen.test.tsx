@@ -50,8 +50,8 @@ describe("NameScreen", () => {
 
   it("create mode: creates the organization with name and slug on continue", async () => {
     createMock.mockResolvedValue({ data: { id: "org-new" }, error: null })
-    const onDone = vi.fn()
-    renderScreen({ existing: null, onDone })
+    const onAdvance = vi.fn()
+    renderScreen({ existing: null, onAdvance })
 
     const input = screen.getByLabelText(labels.nameLabel)
     fireEvent.change(input, { target: { value: "Acme Corp" } })
@@ -67,13 +67,13 @@ describe("NameScreen", () => {
       })
     })
     await waitFor(() => {
-      expect(onDone).toHaveBeenCalledTimes(1)
+      expect(onAdvance).toHaveBeenCalledTimes(1)
     })
     expect(orgUpdateMock).not.toHaveBeenCalled()
   })
 
   it("create mode: the CTA is disabled for a too-short name", () => {
-    renderScreen({ existing: null, onDone: vi.fn() })
+    renderScreen({ existing: null, onAdvance: vi.fn() })
     const input = screen.getByLabelText(labels.nameLabel)
     const button = screen.getByRole("button", { name: nextCta })
 
@@ -84,11 +84,11 @@ describe("NameScreen", () => {
     expect(button).toHaveProperty("disabled", false)
   })
 
-  it("existing mode: an unchanged name calls onDone without renaming", async () => {
-    const onDone = vi.fn()
+  it("existing mode: an unchanged name calls onAdvance without renaming", async () => {
+    const onAdvance = vi.fn()
     renderScreen({
       existing: { orgId: "org-9", name: "Existing Name" },
-      onDone,
+      onAdvance,
     })
 
     const input = screen.getByLabelText(labels.nameLabel) as HTMLInputElement
@@ -99,16 +99,16 @@ describe("NameScreen", () => {
     fireEvent.submit(form)
 
     await waitFor(() => {
-      expect(onDone).toHaveBeenCalledTimes(1)
+      expect(onAdvance).toHaveBeenCalledTimes(1)
     })
     expect(orgUpdateMock).not.toHaveBeenCalled()
     expect(createMock).not.toHaveBeenCalled()
   })
 
-  it("existing mode: a changed name calls organization.update then onDone", async () => {
+  it("existing mode: a changed name calls organization.update then onAdvance", async () => {
     orgUpdateMock.mockResolvedValue({ data: { id: "org-9" }, error: null })
-    const onDone = vi.fn()
-    renderScreen({ existing: { orgId: "org-9", name: "Old Name" }, onDone })
+    const onAdvance = vi.fn()
+    renderScreen({ existing: { orgId: "org-9", name: "Old Name" }, onAdvance })
 
     const input = screen.getByLabelText(labels.nameLabel)
     fireEvent.change(input, { target: { value: "New Name" } })
@@ -124,15 +124,15 @@ describe("NameScreen", () => {
       })
     })
     await waitFor(() => {
-      expect(onDone).toHaveBeenCalledTimes(1)
+      expect(onAdvance).toHaveBeenCalledTimes(1)
     })
     expect(createMock).not.toHaveBeenCalled()
   })
 
   it("create mode: shows an alert when organization.create resolves with an error", async () => {
     createMock.mockResolvedValue({ error: { message: "taken" }, data: null })
-    const onDone = vi.fn()
-    renderScreen({ existing: null, onDone })
+    const onAdvance = vi.fn()
+    renderScreen({ existing: null, onAdvance })
 
     const input = screen.getByLabelText(labels.nameLabel)
     fireEvent.change(input, { target: { value: "Acme Corp" } })
@@ -144,7 +144,7 @@ describe("NameScreen", () => {
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeDefined()
     })
-    expect(onDone).not.toHaveBeenCalled()
+    expect(onAdvance).not.toHaveBeenCalled()
     expect(screen.getByRole("button", { name: nextCta })).toHaveProperty(
       "disabled",
       false

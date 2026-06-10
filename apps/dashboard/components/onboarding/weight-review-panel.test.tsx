@@ -9,39 +9,20 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 
-const requestWeightReviewMock = vi.fn()
-const confirmWeightReviewMock = vi.fn()
-const rejectSuggestionMock = vi.fn()
+import { mockMutation, onQuery } from "@/test/convex-mocks"
+
+const requestWeightReviewMock = mockMutation("ai.suggest.requestWeightReview")
+const confirmWeightReviewMock = mockMutation("ai.suggest.confirmWeightReview")
+const rejectSuggestionMock = mockMutation("ai.suggest.rejectSuggestion")
 const useQueryMock = vi.fn()
+onQuery((ref, args) => useQueryMock(ref, args))
 
-const mutationByRef = new Map<unknown, ReturnType<typeof vi.fn>>([
-  ["ai.suggest.requestWeightReview", requestWeightReviewMock],
-  ["ai.suggest.confirmWeightReview", confirmWeightReviewMock],
-  ["ai.suggest.rejectSuggestion", rejectSuggestionMock],
-])
-
-vi.mock("convex/react", () => ({
-  useMutation: (ref: unknown) => {
-    const mock = mutationByRef.get(ref)
-    if (mock === undefined)
-      throw new Error(`unexpected useMutation ref: ${ref}`)
-    return mock
-  },
-  useQuery: (...args: unknown[]) => useQueryMock(...args),
-}))
-
-vi.mock("@workspace/backend/convex/_generated/api", () => ({
-  api: {
-    ai: {
-      suggest: {
-        getOpenSuggestions: "ai.suggest.getOpenSuggestions",
-        requestWeightReview: "ai.suggest.requestWeightReview",
-        confirmWeightReview: "ai.suggest.confirmWeightReview",
-        rejectSuggestion: "ai.suggest.rejectSuggestion",
-      },
-    },
-  },
-}))
+vi.mock("convex/react", async () => {
+  return (await import("@/test/convex-mocks")).convexReactModule
+})
+vi.mock("@workspace/backend/convex/_generated/api", async () => {
+  return (await import("@/test/convex-mocks")).apiModule
+})
 
 import { WeightReviewPanel } from "@/components/onboarding/weight-review-panel"
 

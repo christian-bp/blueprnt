@@ -49,8 +49,8 @@ describe("CountryScreen", () => {
 
   it("picking Norway saves the country with its derived currency and auto-advances", async () => {
     updateSettingsMock.mockResolvedValue(undefined)
-    const onDone = vi.fn()
-    renderScreen({ orgId: "org-1", savedCountry: null, onDone })
+    const onAdvance = vi.fn()
+    renderScreen({ orgId: "org-1", savedCountry: null, onAdvance })
 
     fireEvent.click(screen.getByRole("button", { name: profile.countries.no }))
 
@@ -64,7 +64,7 @@ describe("CountryScreen", () => {
     })
     await waitFor(
       () => {
-        expect(onDone).toHaveBeenCalledTimes(1)
+        expect(onAdvance).toHaveBeenCalledTimes(1)
       },
       { timeout: 2000 }
     )
@@ -78,7 +78,7 @@ describe("CountryScreen", () => {
     ["other", "EUR", "en"],
   ])("derives currency and language for %s as %s + %s", async (country, currency, language) => {
     updateSettingsMock.mockResolvedValue(undefined)
-    renderScreen({ orgId: "org-1", savedCountry: null, onDone: vi.fn() })
+    renderScreen({ orgId: "org-1", savedCountry: null, onAdvance: vi.fn() })
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -97,7 +97,7 @@ describe("CountryScreen", () => {
   })
 
   it("shows a flag per country card and a flagless slot for Other", () => {
-    renderScreen({ orgId: "org-1", savedCountry: null, onDone: vi.fn() })
+    renderScreen({ orgId: "org-1", savedCountry: null, onAdvance: vi.fn() })
     const flags = Array.from(document.querySelectorAll("img"))
     // Four countries carry their flag; Other renders the globe icon instead.
     expect(flags.map((img) => img.getAttribute("src")).sort()).toEqual([
@@ -109,7 +109,7 @@ describe("CountryScreen", () => {
   })
 
   it("the fresh flow marks no card", () => {
-    renderScreen({ orgId: "org-1", savedCountry: null, onDone: vi.fn() })
+    renderScreen({ orgId: "org-1", savedCountry: null, onAdvance: vi.fn() })
     for (const name of Object.values(profile.countries)) {
       expect(
         screen.getByRole("button", { name }).getAttribute("aria-pressed")
@@ -118,7 +118,7 @@ describe("CountryScreen", () => {
   })
 
   it("a saved country preselects its card", () => {
-    renderScreen({ orgId: "org-1", savedCountry: "dk", onDone: vi.fn() })
+    renderScreen({ orgId: "org-1", savedCountry: "dk", onAdvance: vi.fn() })
     expect(
       screen
         .getByRole("button", { name: profile.countries.dk })
@@ -135,16 +135,16 @@ describe("CountryScreen", () => {
     updateSettingsMock.mockRejectedValue(
       new Error("ConvexError: adminRequired")
     )
-    const onDone = vi.fn()
+    const onAdvance = vi.fn()
     // Fresh flow: nothing saved, so the marking must come from the pick alone.
-    renderScreen({ orgId: "org-1", savedCountry: null, onDone })
+    renderScreen({ orgId: "org-1", savedCountry: null, onAdvance })
 
     fireEvent.click(screen.getByRole("button", { name: profile.countries.no }))
 
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeDefined()
     })
-    expect(onDone).not.toHaveBeenCalled()
+    expect(onAdvance).not.toHaveBeenCalled()
     expect(
       screen.getByRole("button", { name: profile.countries.se })
     ).toHaveProperty("disabled", false)

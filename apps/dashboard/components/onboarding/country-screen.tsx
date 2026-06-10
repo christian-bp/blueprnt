@@ -35,11 +35,11 @@ const COUNTRY_LABEL_KEYS = {
 export function CountryScreen({
   orgId,
   savedCountry,
-  onDone,
+  onAdvance,
 }: {
   orgId: string
   savedCountry: string | null
-  onDone: () => void
+  onAdvance: () => void
 }) {
   const t = useTranslations("dashboard.onboarding.organization")
   const tProfile = useTranslations("dashboard.onboarding.profile")
@@ -55,7 +55,7 @@ export function CountryScreen({
         currency: defaultCurrencyFor(code),
         language: defaultLanguageFor(code),
       }),
-    onDone,
+    onAdvance,
   })
   // Fresh flow marks nothing; a revisit marks the saved country. picked
   // survives a failed save so the choice stays marked next to the alert.

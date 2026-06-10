@@ -39,11 +39,11 @@ type Choice = "template" | "scratch" | null
 export function ModelSetupStep({
   orgId,
   organizationName,
-  onContinue,
+  onAdvance,
 }: {
   orgId: string
   organizationName: string
-  onContinue: () => void
+  onAdvance: () => void
 }) {
   const t = useTranslations("dashboard.model")
   const tOnboarding = useTranslations("dashboard.onboarding")
@@ -99,7 +99,7 @@ export function ModelSetupStep({
       <ModelReview
         orgId={orgId}
         organizationName={organizationName}
-        onContinue={onContinue}
+        onContinue={onAdvance}
         onChangeChoice={changeChoice}
       />
     )
@@ -109,7 +109,7 @@ export function ModelSetupStep({
       <CriterionEditor
         orgId={orgId}
         organizationName={organizationName}
-        onContinue={onContinue}
+        onContinue={onAdvance}
         onChangeChoice={changeChoice}
       />
     )

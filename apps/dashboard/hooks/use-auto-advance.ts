@@ -28,10 +28,10 @@ export function advanceDelay(): Promise<void> {
 // Re-entrant calls while a pick is in flight are ignored.
 export function useAutoAdvance({
   persist,
-  onDone,
+  onAdvance,
 }: {
   persist: (code: string) => Promise<unknown>
-  onDone: () => void
+  onAdvance: () => void
 }) {
   const [chosen, setChosen] = useState<string | null>(null)
   const [picked, setPicked] = useState<string | null>(null)
@@ -39,7 +39,7 @@ export function useAutoAdvance({
 
   // If the screen unmounts during the wait (the user navigated away via the
   // dots mid-pause), the pending advance must die with it: the save still
-  // completes, but firing onDone() against the wizard's NEW position would
+  // completes, but firing onAdvance() against the wizard's NEW position would
   // walk the user one step forward from wherever they just navigated to.
   const mountedRef = useRef(true)
   useEffect(() => {
@@ -57,7 +57,7 @@ export function useAutoAdvance({
     try {
       await Promise.all([persist(code), advanceDelay()])
       if (!mountedRef.current) return
-      onDone()
+      onAdvance()
     } catch {
       if (!mountedRef.current) return
       setChosen(null)

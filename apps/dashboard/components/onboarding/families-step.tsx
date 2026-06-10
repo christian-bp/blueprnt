@@ -19,12 +19,10 @@ import { NextButton } from "@/components/onboarding/next-button"
 import { ScreenShell } from "@/components/onboarding/screen-shell"
 import { TypewriterPlaceholder } from "@/components/onboarding/typewriter-placeholder"
 import { WizardFooter } from "@/components/onboarding/wizard-footer"
-import { useGeneratingStaleness } from "@/hooks/use-generating-staleness"
+import { useDraftFamilies } from "@/hooks/use-draft-families"
+import { useSuggestionFlow } from "@/hooks/use-suggestion-flow"
 import { capitalizeFirst } from "@/lib/capitalize"
-import { aiErrorSubKey } from "@/lib/error-label"
-import type { DraftFamily } from "@/lib/family-dnd"
 import { isDuplicateFamilyError } from "@/lib/family-error"
-import { newestByKind } from "@/lib/open-suggestions"
 import {
   starterImportInputSchema,
   starterImportValueSchema,
@@ -43,11 +41,11 @@ type SeedSource =
 export function FamiliesStep({
   orgId,
   organizationName,
-  onFinished,
+  onAdvance,
 }: {
   orgId: string
   organizationName: string
-  onFinished: () => void
+  onAdvance: () => void
 }) {
   const t = useTranslations("dashboard.onboarding.families")
   const tReview = useTranslations("dashboard.model.review")
@@ -59,23 +57,24 @@ export function FamiliesStep({
     locale,
   })
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
-  // kind narrows the query to this panel's rows, so the import can never be
-  // evicted from the per-status cap by newer suggestions of other kinds.
-  const suggestions = useQuery(api.ai.suggest.getOpenSuggestions, {
+  // The shared suggestion lifecycle for the paste-import proposal; request
+  // and confirm stay here (kind-specific args).
+  const flow = useSuggestionFlow({
     orgId,
     kind: SUGGESTION_KINDS.starterImport,
+    schema: starterImportValueSchema,
   })
   const createStarterSet = useMutation(api.assessment.starters.createStarterSet)
   const requestStarterImport = useMutation(api.ai.suggest.requestStarterImport)
   const confirmStarterImport = useMutation(api.ai.suggest.confirmStarterImport)
-  const rejectSuggestion = useMutation(api.ai.suggest.rejectSuggestion)
   const completeOnboarding = useMutation(
     api.accounts.organization.completeOnboarding
   )
 
+  // The editable review list (families, unique ids, cleaned payload).
+  const draft = useDraftFamilies()
+
   const [rawText, setRawText] = useState("")
-  const [families, setFamilies] = useState<DraftFamily[] | null>(null)
-  const [nextId, setNextId] = useState(0)
   const [seededFrom, setSeededFrom] = useState<SeedSource | null>(null)
   const [pending, setPending] = useState(false)
   const [requestPending, setRequestPending] = useState(false)
@@ -90,51 +89,26 @@ export function FamiliesStep({
   // suggestion may still read as suggested until the reject round-trips.
   const [lastDismissedId, setLastDismissedId] = useState<string | null>(null)
 
-  const importRow = newestByKind(suggestions, SUGGESTION_KINDS.starterImport)
-  const parsedImport =
-    importRow?.status === "suggested"
-      ? starterImportValueSchema.safeParse(importRow.suggestedValue)
-      : null
-
-  const isGenerating = importRow?.status === "generating"
-  const isStaleGenerating = useGeneratingStaleness(importRow)
-
   // Seed the review list from a suggested AI import the first render both
   // the suggestion and the model (for valid track keys) are available
   // (adjust-state-during-render, the established pattern). Resuming after a
   // reload lands here too: an unreviewed import goes straight to review.
+  const importValue = flow.value
   if (
     seededFrom === null &&
-    importRow?.status === "suggested" &&
-    importRow.suggestionId !== lastDismissedId &&
-    parsedImport?.success === true &&
+    flow.status === "suggested" &&
+    flow.suggestionId !== null &&
+    flow.suggestionId !== lastDismissedId &&
+    importValue !== null &&
     model !== undefined &&
     model !== null
   ) {
     const validKeys = new Set<string>(model.tracks.map((track) => track.key))
     const fallbackTrackKey = model.tracks[0]?.key ?? "IC"
-    let id = 0
-    setFamilies(
-      parsedImport.data.families.map((family) => ({
-        id: id++,
-        name: family.name,
-        roles: family.roles.map((role) => ({
-          id: id++,
-          title: role.title,
-          trackKey: validKeys.has(role.trackKey)
-            ? role.trackKey
-            : fallbackTrackKey,
-        })),
-      }))
+    draft.seed(importValue.families, (trackKey) =>
+      validKeys.has(trackKey) ? trackKey : fallbackTrackKey
     )
-    setNextId(id)
-    setSeededFrom({ source: "ai", suggestionId: importRow.suggestionId })
-  }
-
-  function claimId(): number {
-    const id = nextId
-    setNextId(id + 1)
-    return id
+    setSeededFrom({ source: "ai", suggestionId: flow.suggestionId })
   }
 
   // Back to the paste view with the pasted text intact. An AI-seeded review
@@ -142,13 +116,10 @@ export function FamiliesStep({
   // rejected); best-effort, with lastDismissedId blocking an instant re-seed.
   function restart() {
     if (seededFrom?.source === "ai") {
-      rejectSuggestion({
-        orgId,
-        suggestionId: seededFrom.suggestionId,
-      }).catch(() => {})
+      flow.reject().catch(() => {})
       setLastDismissedId(seededFrom.suggestionId)
     }
-    setFamilies(null)
+    draft.clear()
     setSeededFrom(null)
     setFailure(null)
   }
@@ -158,23 +129,10 @@ export function FamiliesStep({
     // Walking away from an open AI proposal dismisses it (the suggestion
     // lifecycle always ends in confirmed or rejected); a still-generating
     // row cannot be rejected and is simply superseded.
-    if (
-      importRow !== undefined &&
-      (importRow.status === "suggested" || importRow.status === "failed")
-    ) {
-      rejectSuggestion({ orgId, suggestionId: importRow.suggestionId }).catch(
-        () => {}
-      )
+    if (flow.status === "suggested" || flow.status === "failed") {
+      flow.reject().catch(() => {})
     }
-    let id = 0
-    setFamilies(
-      starter.families.map((family) => ({
-        id: id++,
-        name: family.name,
-        roles: family.roles.map((role) => ({ id: id++, ...role })),
-      }))
-    )
-    setNextId(id)
+    draft.seed(starter.families)
     setSeededFrom({ source: "template" })
   }
 
@@ -197,17 +155,7 @@ export function FamiliesStep({
     setFailure(null)
     try {
       if (!created) {
-        const cleaned = (families ?? [])
-          .map((family) => ({
-            name: family.name.trim(),
-            roles: family.roles
-              .map((role) => ({
-                title: role.title.trim(),
-                trackKey: role.trackKey,
-              }))
-              .filter((role) => role.title !== ""),
-          }))
-          .filter((family) => family.name !== "")
+        const cleaned = draft.cleaned()
         if (seededFrom?.source === "ai") {
           // The AI path closes the suggestion with the user's edited list;
           // an emptied list confirms nothing and rejects the suggestion.
@@ -222,16 +170,19 @@ export function FamiliesStep({
         setCreated(true)
       }
       await completeOnboarding({ orgId })
-      onFinished()
+      onAdvance()
     } catch (error) {
       setFailure(isDuplicateFamilyError(error) ? "duplicate" : "generic")
       setPending(false)
     }
   }
 
-  const inReview = seededFrom !== null && families !== null
-  const showGenerating = isGenerating && !isStaleGenerating
-  const phase = inReview ? "review" : showGenerating ? "generating" : "paste"
+  const inReview = seededFrom !== null && draft.families !== null
+  const phase = inReview
+    ? "review"
+    : flow.status === "generating"
+      ? "generating"
+      : "paste"
 
   // The review list needs the model's tracks for the Select options.
   if (inReview && (model === undefined || model === null)) {
@@ -294,7 +245,6 @@ export function FamiliesStep({
   // parent gets a new identity every render and would remount the subtree
   // (the textarea would drop focus on every keystroke).
   function renderPastePhase() {
-    const aiFailed = importRow?.status === "failed" || isStaleGenerating
     return (
       <div className="w-full space-y-3">
         <div className="flex items-center gap-2">
@@ -346,17 +296,11 @@ export function FamiliesStep({
           />
         </WizardFooter>
         {/* Alerts extend below the CTA so nothing on screen reflows. */}
-        {(aiFailed || requestFailed) && (
+        {(flow.status === "failed" || requestFailed) && (
           <p role="alert" className="text-destructive text-sm">
             {requestFailed
               ? t("error")
-              : tErrors(
-                  aiErrorSubKey(
-                    importRow?.status === "failed"
-                      ? (importRow.errorCode ?? "")
-                      : ""
-                  )
-                )}
+              : tErrors(flow.errorSubKey ?? "aiGenerationFailed")}
           </p>
         )}
       </div>
@@ -372,11 +316,9 @@ export function FamiliesStep({
           </p>
         )}
         <FamiliesReview
-          families={families ?? []}
-          onFamiliesChange={(updater) =>
-            setFamilies((current) => updater(current ?? []))
-          }
-          claimId={claimId}
+          families={draft.families ?? []}
+          onFamiliesChange={draft.update}
+          claimId={draft.claimId}
           trackOptions={trackOptions}
         />
         {failure !== null && (
@@ -399,7 +341,9 @@ export function FamiliesStep({
             {t("restartCta")}
           </Button>
           <Button type="button" disabled={pending} onClick={() => finish()}>
-            {(families ?? []).length === 0 ? tReview("cta") : t("createCta")}
+            {(draft.families ?? []).length === 0
+              ? tReview("cta")
+              : t("createCta")}
             <HugeiconsIcon
               icon={Tick02Icon}
               strokeWidth={2}

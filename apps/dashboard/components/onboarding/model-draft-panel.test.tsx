@@ -9,42 +9,20 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 
-// String refs stand in for the generated api function references. useMutation
-// dispatches through an explicit map keyed on those refs, so a typo or a
-// renamed ref throws instead of silently returning the wrong mock.
-const requestModelDraftMock = vi.fn()
-const confirmModelDraftMock = vi.fn()
-const rejectSuggestionMock = vi.fn()
+import { mockMutation, onQuery } from "@/test/convex-mocks"
+
+const requestModelDraftMock = mockMutation("ai.suggest.requestModelDraft")
+const confirmModelDraftMock = mockMutation("ai.suggest.confirmModelDraft")
+const rejectSuggestionMock = mockMutation("ai.suggest.rejectSuggestion")
 const useQueryMock = vi.fn()
+onQuery((ref, args) => useQueryMock(ref, args))
 
-const mutationByRef = new Map<unknown, ReturnType<typeof vi.fn>>([
-  ["ai.suggest.requestModelDraft", requestModelDraftMock],
-  ["ai.suggest.confirmModelDraft", confirmModelDraftMock],
-  ["ai.suggest.rejectSuggestion", rejectSuggestionMock],
-])
-
-vi.mock("convex/react", () => ({
-  useMutation: (ref: unknown) => {
-    const mock = mutationByRef.get(ref)
-    if (mock === undefined)
-      throw new Error(`unexpected useMutation ref: ${ref}`)
-    return mock
-  },
-  useQuery: (...args: unknown[]) => useQueryMock(...args),
-}))
-
-vi.mock("@workspace/backend/convex/_generated/api", () => ({
-  api: {
-    ai: {
-      suggest: {
-        getOpenSuggestions: "ai.suggest.getOpenSuggestions",
-        requestModelDraft: "ai.suggest.requestModelDraft",
-        confirmModelDraft: "ai.suggest.confirmModelDraft",
-        rejectSuggestion: "ai.suggest.rejectSuggestion",
-      },
-    },
-  },
-}))
+vi.mock("convex/react", async () => {
+  return (await import("@/test/convex-mocks")).convexReactModule
+})
+vi.mock("@workspace/backend/convex/_generated/api", async () => {
+  return (await import("@/test/convex-mocks")).apiModule
+})
 
 import { ModelDraftPanel } from "@/components/onboarding/model-draft-panel"
 

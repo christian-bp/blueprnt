@@ -49,8 +49,8 @@ describe("IndustryScreen", () => {
 
   it("picking a card saves the industry and auto-advances", async () => {
     updateSettingsMock.mockResolvedValue(undefined)
-    const onDone = vi.fn()
-    renderScreen({ orgId: "org-1", saved: null, onDone })
+    const onAdvance = vi.fn()
+    renderScreen({ orgId: "org-1", saved: null, onAdvance })
 
     fireEvent.click(
       screen.getByRole("button", { name: profile.industries.healthcare })
@@ -64,14 +64,14 @@ describe("IndustryScreen", () => {
     })
     await waitFor(
       () => {
-        expect(onDone).toHaveBeenCalledTimes(1)
+        expect(onAdvance).toHaveBeenCalledTimes(1)
       },
       { timeout: 2000 }
     )
   })
 
   it("the fresh flow marks no card", () => {
-    renderScreen({ orgId: "org-1", saved: null, onDone: vi.fn() })
+    renderScreen({ orgId: "org-1", saved: null, onAdvance: vi.fn() })
     expect(
       screen
         .getByRole("button", { name: profile.industries.itTelecom })
@@ -80,7 +80,7 @@ describe("IndustryScreen", () => {
   })
 
   it("a saved value preselects its card", () => {
-    renderScreen({ orgId: "org-1", saved: "manufacturing", onDone: vi.fn() })
+    renderScreen({ orgId: "org-1", saved: "manufacturing", onAdvance: vi.fn() })
     expect(
       screen
         .getByRole("button", { name: profile.industries.manufacturing })
@@ -97,9 +97,9 @@ describe("IndustryScreen", () => {
     updateSettingsMock.mockRejectedValue(
       new Error("ConvexError: adminRequired")
     )
-    const onDone = vi.fn()
+    const onAdvance = vi.fn()
     // Fresh flow: nothing saved, so the marking must come from the pick alone.
-    renderScreen({ orgId: "org-1", saved: null, onDone })
+    renderScreen({ orgId: "org-1", saved: null, onAdvance })
 
     fireEvent.click(
       screen.getByRole("button", { name: profile.industries.finance })
@@ -108,7 +108,7 @@ describe("IndustryScreen", () => {
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeDefined()
     })
-    expect(onDone).not.toHaveBeenCalled()
+    expect(onAdvance).not.toHaveBeenCalled()
     expect(
       screen.getByRole("button", { name: profile.industries.retail })
     ).toHaveProperty("disabled", false)

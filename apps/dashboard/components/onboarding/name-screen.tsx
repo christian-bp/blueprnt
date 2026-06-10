@@ -17,10 +17,10 @@ import { organizationSlug } from "@/lib/slug"
 // actually changed.
 export function NameScreen({
   existing,
-  onDone,
+  onAdvance,
 }: {
   existing: { orgId: string; name: string } | null
-  onDone: () => void
+  onAdvance: () => void
 }) {
   const t = useTranslations("dashboard.onboarding.organization")
   const tScreens = useTranslations("dashboard.onboarding.screens")
@@ -47,7 +47,7 @@ export function NameScreen({
             return
           }
         }
-        onDone()
+        onAdvance()
         return
       }
       const { data, error } = await authClient.organization.create({
@@ -59,7 +59,7 @@ export function NameScreen({
         setPending(false)
         return
       }
-      onDone()
+      onAdvance()
     } catch {
       setFailed(true)
       setPending(false)

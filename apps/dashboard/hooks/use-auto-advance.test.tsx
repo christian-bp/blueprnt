@@ -12,14 +12,14 @@ import { useAutoAdvance } from "@/hooks/use-auto-advance"
 // integrated behavior, this covers the corners (re-entrancy, picked survival).
 function Probe({
   persist,
-  onDone,
+  onAdvance,
 }: {
   persist: (code: string) => Promise<unknown>
-  onDone: () => void
+  onAdvance: () => void
 }) {
   const { chosen, picked, failed, choose } = useAutoAdvance({
     persist,
-    onDone,
+    onAdvance,
   })
   return (
     <div>
@@ -43,16 +43,16 @@ describe("useAutoAdvance", () => {
 
   it("persists the pick and advances once both the save and the fade are done", async () => {
     const persist = vi.fn().mockResolvedValue(undefined)
-    const onDone = vi.fn()
-    render(<Probe persist={persist} onDone={onDone} />)
+    const onAdvance = vi.fn()
+    render(<Probe persist={persist} onAdvance={onAdvance} />)
 
     fireEvent.click(screen.getByText("pick-a"))
 
     expect(persist).toHaveBeenCalledWith("a")
-    expect(onDone).not.toHaveBeenCalled() // the fade delay has not elapsed yet
+    expect(onAdvance).not.toHaveBeenCalled() // the fade delay has not elapsed yet
     await waitFor(
       () => {
-        expect(onDone).toHaveBeenCalledTimes(1)
+        expect(onAdvance).toHaveBeenCalledTimes(1)
       },
       { timeout: 2000 }
     )
@@ -60,8 +60,8 @@ describe("useAutoAdvance", () => {
 
   it("ignores a second pick while one is in flight", async () => {
     const persist = vi.fn().mockResolvedValue(undefined)
-    const onDone = vi.fn()
-    render(<Probe persist={persist} onDone={onDone} />)
+    const onAdvance = vi.fn()
+    render(<Probe persist={persist} onAdvance={onAdvance} />)
 
     fireEvent.click(screen.getByText("pick-a"))
     fireEvent.click(screen.getByText("pick-b"))
@@ -70,7 +70,7 @@ describe("useAutoAdvance", () => {
     expect(persist).toHaveBeenCalledWith("a")
     await waitFor(
       () => {
-        expect(onDone).toHaveBeenCalledTimes(1)
+        expect(onAdvance).toHaveBeenCalledTimes(1)
       },
       { timeout: 2000 }
     )
@@ -78,8 +78,8 @@ describe("useAutoAdvance", () => {
 
   it("unmounting during the wait kills the pending advance", async () => {
     const persist = vi.fn().mockResolvedValue(undefined)
-    const onDone = vi.fn()
-    const view = render(<Probe persist={persist} onDone={onDone} />)
+    const onAdvance = vi.fn()
+    const view = render(<Probe persist={persist} onAdvance={onAdvance} />)
 
     fireEvent.click(screen.getByText("pick-a"))
     // The user navigates away (the wizard unmounts the screen) mid-pause.
@@ -89,13 +89,13 @@ describe("useAutoAdvance", () => {
     // must never fire against the wizard's new position.
     await new Promise((resolve) => setTimeout(resolve, 900))
     expect(persist).toHaveBeenCalledTimes(1)
-    expect(onDone).not.toHaveBeenCalled()
+    expect(onAdvance).not.toHaveBeenCalled()
   })
 
   it("a failed save clears chosen, keeps picked, and flags failed", async () => {
     const persist = vi.fn().mockRejectedValue(new Error("nope"))
-    const onDone = vi.fn()
-    render(<Probe persist={persist} onDone={onDone} />)
+    const onAdvance = vi.fn()
+    render(<Probe persist={persist} onAdvance={onAdvance} />)
 
     fireEvent.click(screen.getByText("pick-a"))
 
@@ -104,14 +104,14 @@ describe("useAutoAdvance", () => {
     })
     expect(screen.getByTestId("chosen").textContent).toBe("none")
     expect(screen.getByTestId("picked").textContent).toBe("a")
-    expect(onDone).not.toHaveBeenCalled()
+    expect(onAdvance).not.toHaveBeenCalled()
 
     // The hook accepts a new pick after the failure.
     persist.mockResolvedValue(undefined)
     fireEvent.click(screen.getByText("pick-b"))
     await waitFor(
       () => {
-        expect(onDone).toHaveBeenCalledTimes(1)
+        expect(onAdvance).toHaveBeenCalledTimes(1)
       },
       { timeout: 2000 }
     )

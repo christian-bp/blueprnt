@@ -100,13 +100,13 @@ const reviewHeading = messages.dashboard.model.review.heading.replace(
   "Acme"
 )
 
-function renderStep(orgId = "org-123", onContinue: () => void = () => {}) {
+function renderStep(orgId = "org-123", onAdvance: () => void = () => {}) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <ModelSetupStep
         orgId={orgId}
         organizationName="Acme"
-        onContinue={onContinue}
+        onAdvance={onAdvance}
       />
     </NextIntlClientProvider>
   )
@@ -383,7 +383,7 @@ describe("ModelSetupStep", () => {
         <ModelSetupStep
           orgId="org-123"
           organizationName="acme"
-          onContinue={() => {}}
+          onAdvance={() => {}}
         />
       </NextIntlClientProvider>
     )
@@ -410,10 +410,10 @@ describe("ModelSetupStep", () => {
     ).toBeNull()
   })
 
-  it("Continue on the review screen calls onContinue and does not complete onboarding", async () => {
+  it("Continue on the review screen calls onAdvance and does not complete onboarding", async () => {
     setModel(reviewModel)
-    const onContinue = vi.fn()
-    renderStep("org-fin", onContinue)
+    const onAdvance = vi.fn()
+    renderStep("org-fin", onAdvance)
 
     // Resumes into the review screen; click its Next CTA.
     const nextCta = await screen.findByRole("button", {
@@ -421,7 +421,7 @@ describe("ModelSetupStep", () => {
     })
     fireEvent.click(nextCta)
 
-    expect(onContinue).toHaveBeenCalledTimes(1)
+    expect(onAdvance).toHaveBeenCalledTimes(1)
     // Completion moves to the families step: the model step never completes.
     expect(completeOnboardingMock).not.toHaveBeenCalled()
   })

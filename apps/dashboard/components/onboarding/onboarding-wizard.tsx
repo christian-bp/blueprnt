@@ -5,7 +5,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { useQuery } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
-import { useState } from "react"
+import { type ReactNode, useState } from "react"
 import { OnboardingDots } from "@/components/onboarding-dots"
 import { CountryScreen } from "@/components/onboarding/country-screen"
 import { FamiliesStep } from "@/components/onboarding/families-step"
@@ -21,19 +21,112 @@ export interface OnboardingStatus {
   completed: boolean
 }
 
-// Screen order; one dot each. The model screen owns its internal choice ->
-// review sub-flow; families is reached only via the model step's continue
-// (session state), so a reload mid-flow resumes at the model review.
-const SCREENS = ["name", "country", "industry", "model", "families"] as const
-type ScreenKey = (typeof SCREENS)[number]
+// The slice of the persisted settings the resume logic reads.
+interface SettingsSlice {
+  country?: string | null
+  currency?: string | null
+  industry?: string | null
+}
 
-const DOT_LABEL_KEYS = {
-  name: "dots.name",
-  country: "dots.country",
-  industry: "dots.industry",
-  model: "dots.model",
-  families: "dots.families",
-} as const satisfies Record<ScreenKey, string>
+// Everything a step's render needs from the wizard.
+interface StepContext {
+  status: OnboardingStatus
+  orgId: string | null
+  settings: SettingsSlice | null | undefined
+  // Standard forward move: acknowledges the next screen.
+  advance: () => void
+  // The model step's continue: additionally raises the session latch so the
+  // families step (which is never server-complete) becomes reachable.
+  latchNext: () => void
+  // The last step's exit: hands control back to the onboarding gate.
+  finish: () => void
+}
+
+// The wizard's single source of truth: order, dot labels, server-derived
+// completion (the resume index is the first incomplete step), and rendering.
+// Adding a step means adding ONE entry here.
+const STEPS = [
+  {
+    key: "name",
+    dotLabelKey: "dots.name",
+    isComplete: (status: OnboardingStatus) => status.organization !== null,
+    render: (ctx: StepContext) => (
+      <NameScreen
+        existing={
+          ctx.status.organization === null
+            ? null
+            : {
+                orgId: ctx.status.organization.orgId,
+                name: ctx.status.organization.name,
+              }
+        }
+        onAdvance={ctx.advance}
+      />
+    ),
+  },
+  {
+    key: "country",
+    dotLabelKey: "dots.country",
+    isComplete: (_status: OnboardingStatus, settings: SettingsSlice) =>
+      Boolean(settings.country && settings.currency),
+    render: (ctx: StepContext) =>
+      ctx.orgId === null ? null : (
+        <CountryScreen
+          orgId={ctx.orgId}
+          savedCountry={ctx.settings?.country ?? null}
+          onAdvance={ctx.advance}
+        />
+      ),
+  },
+  {
+    key: "industry",
+    dotLabelKey: "dots.industry",
+    isComplete: (_status: OnboardingStatus, settings: SettingsSlice) =>
+      Boolean(settings.industry),
+    render: (ctx: StepContext) =>
+      ctx.orgId === null ? null : (
+        <IndustryScreen
+          orgId={ctx.orgId}
+          saved={ctx.settings?.industry ?? null}
+          onAdvance={ctx.advance}
+        />
+      ),
+  },
+  {
+    key: "model",
+    dotLabelKey: "dots.model",
+    // Never server-complete: the model screen owns its internal choice ->
+    // review sub-flow, and families is reached only via its continue (the
+    // session latch), so a reload mid-flow resumes at the model review.
+    isComplete: () => false,
+    render: (ctx: StepContext) =>
+      ctx.status.organization === null ? null : (
+        <ModelSetupStep
+          orgId={ctx.status.organization.orgId}
+          organizationName={ctx.status.organization.name}
+          onAdvance={ctx.latchNext}
+        />
+      ),
+  },
+  {
+    key: "families",
+    dotLabelKey: "dots.families",
+    isComplete: () => false,
+    render: (ctx: StepContext) =>
+      ctx.status.organization === null ? null : (
+        <FamiliesStep
+          orgId={ctx.status.organization.orgId}
+          organizationName={ctx.status.organization.name}
+          onAdvance={ctx.finish}
+        />
+      ),
+  },
+] as const satisfies readonly {
+  key: string
+  dotLabelKey: `dots.${string}`
+  isComplete: (status: OnboardingStatus, settings: SettingsSlice) => boolean
+  render: (ctx: StepContext) => ReactNode
+}[]
 
 export function OnboardingWizard({
   status,
@@ -59,19 +152,19 @@ export function OnboardingWizard({
   // moment a choice persists, which moves the derived resume index BEFORE
   // the choice screen's fade-and-pause has played; without this cap the
   // wizard would yank the screen away instantly. Screens raise it through
-  // advance()/onContinue (and forward dot clicks); it seeds once from the
-  // first resolved resume index so a reload still lands on the frontier.
+  // advance() (and forward dot clicks); it seeds once from the first
+  // resolved resume index so a reload still lands on the frontier.
   const [acked, setAcked] = useState<number | null>(null)
 
-  // Server-derived resume index: the first screen whose data is missing.
-  // Language is never a screen: the organization's language derives from
-  // the country pick, so it never gates the resume.
+  // Server-derived resume index: the first step whose isComplete is false.
+  // Language is never a step: the organization's language derives from the
+  // country pick, so it never gates the resume.
   function resumeIndex(): number {
     if (status.organization === null) return 0
     if (settings === undefined) return -1 // settings still loading
-    if (!settings?.country || !settings?.currency) return 1
-    if (!settings?.industry) return 2
-    return 3
+    const slice: SettingsSlice = settings ?? {}
+    const index = STEPS.findIndex((step) => !step.isComplete(status, slice))
+    return index === -1 ? STEPS.length - 1 : index
   }
   const derived = resumeIndex()
   // Seed-once during render (adjust-state-during-render: the guard is false
@@ -114,7 +207,7 @@ export function OnboardingWizard({
     )
   }
 
-  const screen = SCREENS[current] ?? "name"
+  const step = STEPS[current] ?? STEPS[0]
   // Completing a screen moves one step forward and acknowledges the move
   // (see acked above). On a revisited screen (backTo set) it walks to the
   // NEXT screen, not back to the frontier, so the user retraces the flow
@@ -124,6 +217,19 @@ export function OnboardingWizard({
       prev !== null && prev + 1 < frontier ? prev + 1 : null
     )
     setAcked((prev) => Math.max(prev ?? 0, current + 1))
+  }
+  const ctx: StepContext = {
+    status,
+    orgId,
+    settings,
+    advance,
+    latchNext: () => {
+      const next = current + 1
+      setSessionStep(next)
+      setBackTo(null)
+      setAcked((prev) => Math.max(prev ?? 0, next))
+    },
+    finish: onFinished,
   }
 
   return (
@@ -138,66 +244,22 @@ export function OnboardingWizard({
                 heading still plays the TextEffect reveal. */}
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
-                key={screen}
+                key={step.key}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                {screen === "name" && (
-                  <NameScreen
-                    existing={
-                      status.organization === null
-                        ? null
-                        : {
-                            orgId: status.organization.orgId,
-                            name: status.organization.name,
-                          }
-                    }
-                    onDone={advance}
-                  />
-                )}
-                {screen === "country" && orgId !== null && (
-                  <CountryScreen
-                    orgId={orgId}
-                    savedCountry={settings?.country ?? null}
-                    onDone={advance}
-                  />
-                )}
-                {screen === "industry" && orgId !== null && (
-                  <IndustryScreen
-                    orgId={orgId}
-                    saved={settings?.industry ?? null}
-                    onDone={advance}
-                  />
-                )}
-                {screen === "model" && status.organization !== null && (
-                  <ModelSetupStep
-                    orgId={status.organization.orgId}
-                    organizationName={status.organization.name}
-                    onContinue={() => {
-                      setSessionStep(4)
-                      setBackTo(null)
-                      setAcked((prev) => Math.max(prev ?? 0, 4))
-                    }}
-                  />
-                )}
-                {screen === "families" && status.organization !== null && (
-                  <FamiliesStep
-                    orgId={status.organization.orgId}
-                    organizationName={status.organization.name}
-                    onFinished={onFinished}
-                  />
-                )}
+                {step.render(ctx)}
               </motion.div>
             </AnimatePresence>
           </div>
         </div>
         <div className="pb-8">
           <OnboardingDots
-            steps={SCREENS.map((key) => ({
+            steps={STEPS.map(({ key, dotLabelKey }) => ({
               key,
-              label: t(DOT_LABEL_KEYS[key]),
+              label: t(dotLabelKey),
             }))}
             activeIndex={current}
             maxReachedIndex={frontier}
