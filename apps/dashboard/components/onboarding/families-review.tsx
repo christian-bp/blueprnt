@@ -288,11 +288,13 @@ export function FamiliesReview({
                   {/* Icon-only add row: full width and dashed, so it doubles
                       as the visible drop surface (it lives inside the
                       droppable area) and keeps the card quiet. The i18n label
-                      carries the meaning for assistive tech. */}
+                      carries the meaning for assistive tech. border-border is
+                      required: the Button base paints border-transparent, so
+                      border-dashed alone renders an invisible border. */}
                   <Button
                     type="button"
                     variant="ghost"
-                    className="h-9 w-full border border-dashed text-muted-foreground hover:text-foreground"
+                    className="h-9 w-full border-border border-dashed bg-transparent text-muted-foreground hover:border-foreground/40 hover:bg-transparent hover:text-foreground"
                     aria-label={t("addRoleCta")}
                     onClick={() =>
                       updateFamily(family.id, {
