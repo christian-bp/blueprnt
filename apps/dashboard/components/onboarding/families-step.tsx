@@ -326,12 +326,13 @@ export function FamiliesStep({
             />
           )}
         </div>
-        <div className="flex justify-center">
+        <div className="flex items-center justify-center gap-1.5 text-muted-foreground text-sm">
+          <span>{t("templateOr")}</span>
           <Button
             type="button"
-            variant="ghost"
+            variant="link"
             size="sm"
-            className="text-muted-foreground"
+            className="h-auto p-0 text-muted-foreground underline underline-offset-4"
             disabled={
               starter === undefined || model === undefined || model === null
             }
