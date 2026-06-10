@@ -23,11 +23,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import {
-  Add01Icon,
-  Delete02Icon,
-  DragDropVerticalIcon,
-} from "@hugeicons/core-free-icons"
+import { Add01Icon, DragDropVerticalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
@@ -42,7 +38,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 import { useTranslations } from "next-intl"
 import { useRef, useState } from "react"
-import { MorphConfirmButton } from "@/components/morph-confirm-button"
+import { RemoveConfirm } from "@/components/remove-confirm"
 import {
   type DraftFamily,
   type DraftRole,
@@ -238,6 +234,7 @@ export function FamiliesReview({
                 className="ml-auto"
                 triggerLabel={t("removeFamilyLabel", { name: family.name })}
                 confirmLabel={t("removeFamilyConfirm")}
+                cancelLabel={tFamily("cancel")}
                 onConfirm={() =>
                   onFamiliesChange((current) =>
                     current.filter((item) => item.id !== family.id)
@@ -366,6 +363,7 @@ function SortableRoleRow({
 }) {
   const t = useTranslations("dashboard.onboarding.families")
   const tCreate = useTranslations("dashboard.roles.create")
+  const tFamily = useTranslations("dashboard.roles.family")
   const {
     attributes,
     listeners,
@@ -414,39 +412,9 @@ function SortableRoleRow({
       <RemoveConfirm
         triggerLabel={t("removeRoleLabel", { title: role.title })}
         confirmLabel={t("removeRoleConfirm")}
+        cancelLabel={tFamily("cancel")}
         onConfirm={onRemove}
       />
     </div>
-  )
-}
-
-// The review's shared remove affordance: a ghost trashcan in a fixed-size
-// slot with the armed pill absolutely anchored right, so arming overlays the
-// row leftwards and never reflows it. h-9 + min-w-9 square the pill up to
-// the row's field height (the inner icon button centers inside the border).
-function RemoveConfirm({
-  triggerLabel,
-  confirmLabel,
-  onConfirm,
-  className,
-}: {
-  triggerLabel: string
-  confirmLabel: string
-  onConfirm: () => void
-  className?: string
-}) {
-  const tFamily = useTranslations("dashboard.roles.family")
-  return (
-    <span className={cn("relative size-9 shrink-0", className)}>
-      <MorphConfirmButton
-        idleVariant="ghost"
-        triggerIcon={Delete02Icon}
-        triggerLabel={triggerLabel}
-        confirmLabel={confirmLabel}
-        cancelLabel={tFamily("cancel")}
-        className="absolute top-1/2 right-0 z-10 h-9 min-w-9 -translate-y-1/2 justify-center"
-        onConfirm={onConfirm}
-      />
-    </span>
   )
 }

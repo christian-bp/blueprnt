@@ -361,6 +361,7 @@
         "anchorLevel": "Anchor {level}",
         "addCta": "Add criterion",
         "removeCta": "Remove",
+        "removeConfirm": "Yes, remove the criterion",
         "saveCta": "Save weighting",
         "cancelCta": "Cancel",
         "pointsLeft": "{count, plural, one {# weight point} other {# weight points}} left to distribute",

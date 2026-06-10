@@ -361,6 +361,7 @@
         "anchorLevel": "Ankkuri {level}",
         "addCta": "Lisää kriteeri",
         "removeCta": "Poista",
+        "removeConfirm": "Kyllä, poista kriteeri",
         "saveCta": "Tallenna painotus",
         "cancelCta": "Peruuta",
         "pointsLeft": "{count} painopistettä jaettavana",

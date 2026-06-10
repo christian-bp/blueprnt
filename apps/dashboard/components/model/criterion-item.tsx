@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "motion/react"
 import type { Variants } from "motion/react"
 import { useTranslations } from "next-intl"
 import { type ReactNode, useId, useState } from "react"
-import { MorphConfirmButton } from "@/components/morph-confirm-button"
+import { RemoveConfirm } from "@/components/remove-confirm"
 import { SPRING } from "@/lib/motion"
 
 // Shared criterion row used by both the model review screen (editable or
@@ -18,25 +18,17 @@ import { SPRING } from "@/lib/motion"
 // and edit mode. State changes reveal controls outside the row's layout box;
 // nothing resizes its neighbors.
 //
-//   - The row is `group relative` with a constant min-height (tall enough for
-//     the Select). No right-padding is reserved for the delete button: the
-//     importance slot sits flush right, and the delete button floats outside
-//     the row's corner.
 //   - The importance slot is a fixed-size right-aligned container that renders
-//     the static label (read mode) or the Select filling the slot (edit mode).
-//     Identical outer dimensions either way: toggling edit shifts nothing.
-//   - The corner container (absolute -top-2.5 -right-2.5, z-10) uses a
-//     motion.div with the `layout` prop so its width animates as a spring when
-//     the content swaps between the idle X button and the armed confirm pill.
-//     AnimatePresence (mode="popLayout") handles the keyed content swap with
-//     opacity and scale transitions.
-//     Idle: a round size-7 button with a neutral cross icon (muted-foreground).
-//     Armed: the same container expands to fit a compact row of a destructive
-//     confirm button and a neutral cancel icon button.
+//     the static label (read mode) or the weight control filling the slot
+//     (edit mode). Identical outer dimensions either way: toggling edit
+//     shifts nothing.
+//   - The remove affordance is the shared RemoveConfirm (ghost trashcan that
+//     morphs to an inline confirm pill, same as the onboarding family rows),
+//     sitting in an ALWAYS-reserved fixed slot right of the importance slot,
+//     so toggling edit mode or the removal floor never reflows the row.
 //   - The gap between items is marginBottom: 12 on the motion.li (animated to
-//     0 on exit so the gap collapses with the height). Consumers must not apply
-//     space-y or gap on the ul. The 12px bottom margin keeps the -top-2.5
-//     (10px) corner overlap clear of the previous item's border.
+//     0 on exit so the gap collapses with the height). Consumers must not
+//     apply space-y or gap on the ul.
 
 // Variants for the outer motion.li so the exit state can carry its own
 // per-property transition (staged: fade then collapse) while the enter
@@ -137,12 +129,29 @@ export function CriterionItem({
             )}
           </span>
 
-          {/* Fixed-size importance slot: identical outer box for the static label
-              (read mode) and the Select (edit mode), so toggling edit shifts
-              nothing. The Select node is told to fill the slot by its parent. */}
+          {/* Fixed-size importance slot: identical outer box for the static
+              label (read mode) and the weight control (edit mode), so
+              toggling edit shifts nothing. The node is told to fill the slot
+              by its parent. */}
           <span className="flex h-9 w-44 shrink-0 items-center justify-end">
             {importanceNode}
           </span>
+
+          {/* Always-reserved remove slot: empty outside edit mode so the
+              importance column never moves when the trashcan appears. */}
+          {showRemove ? (
+            <RemoveConfirm
+              triggerLabel={removeLabel ?? tEditor("removeCta")}
+              confirmLabel={tEditor("removeConfirm")}
+              cancelLabel={tChange("cancel")}
+              onConfirm={async () => {
+                await onRemove?.()
+              }}
+              disabled={removing}
+            />
+          ) : (
+            <span aria-hidden="true" className="size-9 shrink-0" />
+          )}
         </div>
 
         {/* Collapsible anchor scale: the trigger is always present (no
@@ -197,24 +206,6 @@ export function CriterionItem({
               )}
             </AnimatePresence>
           </>
-        )}
-
-        {/* Morphing corner confirm: overlaps the top-right corner of the inner
-            div (absolute -top-2.5 -right-2.5) so it takes no layout space.
-            The corner is hidden at rest and revealed on group-hover/focus-within;
-            while armed or in-flight (removing) the component forces opacity-100
-            to stay visible. */}
-        {showRemove && (
-          <MorphConfirmButton
-            triggerLabel={removeLabel ?? tEditor("removeCta")}
-            confirmLabel={tEditor("removeCta")}
-            cancelLabel={tChange("cancel")}
-            onConfirm={async () => {
-              await onRemove?.()
-            }}
-            disabled={removing}
-            className="absolute -top-2.5 -right-2.5 z-10 opacity-0 focus-within:opacity-100 group-hover:opacity-100"
-          />
         )}
       </div>
     </motion.li>

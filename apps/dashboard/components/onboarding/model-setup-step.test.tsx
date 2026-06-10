@@ -662,7 +662,7 @@ describe("ModelSetupStep", () => {
     if (!row) throw new Error("criterion row not found")
     expect(
       within(row).getByRole("button", {
-        name: messages.dashboard.model.editor.removeCta,
+        name: messages.dashboard.model.editor.removeConfirm,
       })
     ).toBeDefined()
     expect(
@@ -674,7 +674,7 @@ describe("ModelSetupStep", () => {
     expect(removeCriterionMock).not.toHaveBeenCalled()
   })
 
-  it("review screen weight slot renders points + share in read mode and the select in edit mode", async () => {
+  it("review screen weight slot renders points + share in read mode and the 1-5 scale in edit mode", async () => {
     setModel(reviewModel)
     renderStep()
 
@@ -683,23 +683,27 @@ describe("ModelSetupStep", () => {
     })
 
     // Read mode: the weight points show as static text with the derived
-    // share, and there is no select.
+    // share, and no weight controls exist yet.
     expect(screen.getByText(/26\.7%/)).toBeDefined()
-    expect(document.querySelector("select")).toBeNull()
 
-    // Edit mode: the same slot now renders the weight-point select.
+    // Edit mode: the same slot now renders the 1-5 scale as a button group
+    // with the current allocation pressed.
     fireEvent.click(
       screen.getByRole("button", {
         name: messages.dashboard.model.review.editCta,
       })
     )
-    const weightSelect = screen.getByRole("combobox", {
+    const weightGroup = screen.getByRole("group", {
       name: messages.dashboard.model.editor.setWeightPoints.replace(
         "{name}",
         "Problem solving"
       ),
     })
-    expect(weightSelect).toBeDefined()
+    const options = within(weightGroup).getAllByRole("button")
+    expect(options).toHaveLength(5)
+    expect(
+      options.map((option) => option.getAttribute("aria-pressed"))
+    ).toEqual(["false", "true", "false", "false", "false"])
   })
 
   it("review screen armed overlay renders both the confirm and cancel buttons", async () => {
@@ -729,7 +733,7 @@ describe("ModelSetupStep", () => {
     if (!row) throw new Error("criterion row not found")
     expect(
       within(row).getByRole("button", {
-        name: messages.dashboard.model.editor.removeCta,
+        name: messages.dashboard.model.editor.removeConfirm,
       })
     ).toBeDefined()
     expect(
@@ -758,9 +762,8 @@ describe("ModelSetupStep", () => {
     })
     fireEvent.click(removeButton)
 
-    // The inline confirm button shares the removeCta label.
     const confirmButton = screen.getByRole("button", {
-      name: messages.dashboard.model.editor.removeCta,
+      name: messages.dashboard.model.editor.removeConfirm,
     })
     fireEvent.click(confirmButton)
 

@@ -361,6 +361,7 @@
         "anchorLevel": "Ankare {level}",
         "addCta": "Lägg till kriterium",
         "removeCta": "Ta bort",
+        "removeConfirm": "Ja, ta bort kriteriet",
         "saveCta": "Spara viktning",
         "cancelCta": "Avbryt",
         "pointsLeft": "{count} viktpoäng kvar att fördela",

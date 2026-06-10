@@ -361,6 +361,7 @@
         "anchorLevel": "Anker {level}",
         "addCta": "Legg til kriterium",
         "removeCta": "Fjern",
+        "removeConfirm": "Ja, fjern kriteriet",
         "saveCta": "Lagre vekting",
         "cancelCta": "Avbryt",
         "pointsLeft": "{count} vektpoeng igjen å fordele",

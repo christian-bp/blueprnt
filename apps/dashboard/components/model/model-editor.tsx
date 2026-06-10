@@ -4,13 +4,7 @@ import { AiMagicIcon } from "@hugeicons/core-free-icons"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { pointBudget } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select"
+import { ButtonGroup } from "@workspace/ui/components/button-group"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { cn } from "@workspace/ui/lib/utils"
 import { useMutation, useQuery } from "convex/react"
@@ -239,33 +233,35 @@ export function ModelEditor({
               const isRemoving = removing === criterion.criterionId
               const points = pointsFor(criterion)
               const weightNode = editing ? (
-                <Select
-                  value={String(points)}
-                  disabled={saving}
-                  onValueChange={(value) =>
-                    setDraft((current) => ({
-                      ...current,
-                      [criterion.criterionId]: Number(value),
-                    }))
-                  }
+                // The full 1-5 scale as a joined button group: every option
+                // visible and one click away, with the current allocation
+                // highlighted (aria-pressed carries the state).
+                <ButtonGroup
+                  aria-label={tEditor("setWeightPoints", {
+                    name: criterion.name,
+                  })}
+                  className="w-full"
                 >
-                  <SelectTrigger
-                    size="sm"
-                    className="w-full"
-                    aria-label={tEditor("setWeightPoints", {
-                      name: criterion.name,
-                    })}
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {WEIGHT_POINT_OPTIONS.map((option) => (
-                      <SelectItem key={option} value={String(option)}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  {WEIGHT_POINT_OPTIONS.map((option) => (
+                    <Button
+                      key={option}
+                      type="button"
+                      size="sm"
+                      variant={points === option ? "default" : "outline"}
+                      disabled={saving}
+                      aria-pressed={points === option}
+                      className="flex-1 px-0 tabular-nums"
+                      onClick={() =>
+                        setDraft((current) => ({
+                          ...current,
+                          [criterion.criterionId]: option,
+                        }))
+                      }
+                    >
+                      {option}
+                    </Button>
+                  ))}
+                </ButtonGroup>
               ) : (
                 <span className="text-sm tabular-nums">
                   {criterion.weightPoints}

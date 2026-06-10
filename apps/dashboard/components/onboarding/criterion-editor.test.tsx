@@ -258,7 +258,9 @@ describe("CriterionEditor", () => {
     fireEvent.click(removeButton)
 
     // Confirm and cancel are now rendered inline (no dialog).
-    expect(screen.getByRole("button", { name: editor.removeCta })).toBeDefined()
+    expect(
+      screen.getByRole("button", { name: editor.removeConfirm })
+    ).toBeDefined()
     expect(
       screen.getByRole("button", {
         name: messages.dashboard.model.change.cancel,
@@ -278,8 +280,9 @@ describe("CriterionEditor", () => {
     })
     fireEvent.click(removeButton)
 
-    // The inline confirm button shares the removeCta label.
-    const confirmButton = screen.getByRole("button", { name: editor.removeCta })
+    const confirmButton = screen.getByRole("button", {
+      name: editor.removeConfirm,
+    })
     fireEvent.click(confirmButton)
 
     await waitFor(() => {
