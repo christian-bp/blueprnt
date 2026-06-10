@@ -27,12 +27,12 @@ export const standardTemplateContentEn: StandardTemplateContent = {
       helpText:
         "Weigh the role's reach: how far its outcomes and responsibility extend, from its own tasks to company-wide effect.",
       anchors: [
-        "0 – Responsible for own tasks within a clearly limited area.",
-        "1 – Impact within the own team; responsible for well-defined deliverables.",
-        "2 – Ownership of a sub-area or recurring process; impact within a smaller function.",
-        "3 – Responsible for a larger area, project or flow; affects several teams/functions.",
-        "4 – Affects a business/functional area; defines direction for larger parts of the organization.",
-        "5 – Company-wide impact; strategic responsibility and direct effect on the organization's results.",
+        "Responsible for own tasks within a clearly limited area.",
+        "Impact within the own team; responsible for well-defined deliverables.",
+        "Ownership of a sub-area or recurring process; impact within a smaller function.",
+        "Responsible for a larger area, project or flow; affects several teams/functions.",
+        "Affects a business/functional area; defines direction for larger parts of the organization.",
+        "Company-wide impact; strategic responsibility and direct effect on the organization's results.",
       ],
     },
     risk: {
@@ -41,12 +41,12 @@ export const standardTemplateContentEn: StandardTemplateContent = {
       helpText:
         "Weigh the consequence if the role makes a mistake: from easily corrected errors to critical impact on results, reputation or compliance.",
       anchors: [
-        "0 – Low impact; errors can be corrected easily.",
-        "1 – Affects mainly own work or team.",
-        "2 – Errors affect deliverables or quality on a smaller scale.",
-        "3 – Errors have noticeable consequences for processes, deadlines or customer relations.",
-        "4 – High impact on finances, reputation or compliance.",
-        "5 – Critical impact on the organization's results, strategy or regulatory compliance.",
+        "Low impact; errors can be corrected easily.",
+        "Affects mainly own work or team.",
+        "Errors affect deliverables or quality on a smaller scale.",
+        "Errors have noticeable consequences for processes, deadlines or customer relations.",
+        "High impact on finances, reputation or compliance.",
+        "Critical impact on the organization's results, strategy or regulatory compliance.",
       ],
     },
     complexity: {
@@ -55,12 +55,12 @@ export const standardTemplateContentEn: StandardTemplateContent = {
       helpText:
         "Weigh the difficulty and uncertainty of the work: from routine, well-defined tasks to new areas with high uncertainty.",
       anchors: [
-        "0 – Work is routine and well defined with clear instructions.",
-        "1 – Handles standardized tasks with low variation.",
-        "2 – Solves tasks with some variation and a need for own analysis.",
-        "3 – Works with several dependencies and trade-offs; requires interpretation and prioritization.",
-        "4 – High complexity; handles conflicting requirements and unclear conditions.",
-        "5 – Extremely complex situations; drives progress in unknown/innovative areas with high uncertainty.",
+        "Work is routine and well defined with clear instructions.",
+        "Handles standardized tasks with low variation.",
+        "Solves tasks with some variation and a need for own analysis.",
+        "Works with several dependencies and trade-offs; requires interpretation and prioritization.",
+        "High complexity; handles conflicting requirements and unclear conditions.",
+        "Extremely complex situations; drives progress in unknown/innovative areas with high uncertainty.",
       ],
     },
     autonomy: {
@@ -69,12 +69,12 @@ export const standardTemplateContentEn: StandardTemplateContent = {
       helpText:
         "Weigh how independently the role acts and how weighty the decisions it makes: from following instructions to decisions that affect the whole organization.",
       anchors: [
-        "0 – Works closely directed; follows instructions.",
-        "1 – Independent in everyday tasks within defined frameworks.",
-        "2 – Takes own initiatives and priorities within its area.",
-        "3 – Makes tactical decisions that affect a team or workflow.",
-        "4 – Makes strategic decisions within a domain and sets direction for a sub-area.",
-        "5 – Makes decisions that affect several domains or the entire organization.",
+        "Works closely directed; follows instructions.",
+        "Independent in everyday tasks within defined frameworks.",
+        "Takes own initiatives and priorities within its area.",
+        "Makes tactical decisions that affect a team or workflow.",
+        "Makes strategic decisions within a domain and sets direction for a sub-area.",
+        "Makes decisions that affect several domains or the entire organization.",
       ],
     },
     stakeholders: {
@@ -84,12 +84,12 @@ export const standardTemplateContentEn: StandardTemplateContent = {
       helpText:
         "Weigh the breadth and complexity of the role's collaboration: from working within the own team to managing strategic external stakeholders.",
       anchors: [
-        "0 – Collaboration mainly within the own team.",
-        "1 – Collaboration within adjacent functions.",
-        "2 – Regular cross-functional collaboration.",
-        "3 – Coordination with external parties/customers or several internal functions.",
-        "4 – Manages a complex stakeholder environment with competing interests.",
-        "5 – Represents the organization externally and manages strategic stakeholders.",
+        "Collaboration mainly within the own team.",
+        "Collaboration within adjacent functions.",
+        "Regular cross-functional collaboration.",
+        "Coordination with external parties/customers or several internal functions.",
+        "Manages a complex stakeholder environment with competing interests.",
+        "Represents the organization externally and manages strategic stakeholders.",
       ],
     },
     knowledge: {
@@ -99,12 +99,12 @@ export const standardTemplateContentEn: StandardTemplateContent = {
       helpText:
         "Weigh the knowledge the role requires: from an introductory level with established routines to domain-leading expertise that sets direction for the organization's future capabilities.",
       anchors: [
-        "0 – The role requires basic knowledge. The role assumes an introductory level within its area and that tasks can be performed through established routines and instructions.",
-        "1 – The role requires solid professional knowledge within a defined area. The role needs clearly defined and established competence within its domain, with the ability to apply standardized working methods.",
-        "2 – The role requires in-depth competence and understanding of methods. The role needs to handle more complex tasks, use more advanced methods/tools and have a good understanding of how the area works in practice.",
-        "3 – The role requires advanced specialist competence. The role requires deeper knowledge within one or more sub-areas and the ability to handle harder problems, perform analyses and produce solutions that become guiding in the operational work.",
-        "4 – The role requires expert competence within a complex domain. The role assumes that the holder defines methods, structures and working practices within its domain and acts as an internal expert in qualified matters.",
-        "5 – The role requires domain-leading competence and knowledge development. The role requires the holder to develop new working practices, models or techniques and to set direction and principles for the organization's future capabilities within the area.",
+        "The role requires basic knowledge. The role assumes an introductory level within its area and that tasks can be performed through established routines and instructions.",
+        "The role requires solid professional knowledge within a defined area. The role needs clearly defined and established competence within its domain, with the ability to apply standardized working methods.",
+        "The role requires in-depth competence and understanding of methods. The role needs to handle more complex tasks, use more advanced methods/tools and have a good understanding of how the area works in practice.",
+        "The role requires advanced specialist competence. The role requires deeper knowledge within one or more sub-areas and the ability to handle harder problems, perform analyses and produce solutions that become guiding in the operational work.",
+        "The role requires expert competence within a complex domain. The role assumes that the holder defines methods, structures and working practices within its domain and acts as an internal expert in qualified matters.",
+        "The role requires domain-leading competence and knowledge development. The role requires the holder to develop new working practices, models or techniques and to set direction and principles for the organization's future capabilities within the area.",
       ],
     },
     financial: {
@@ -113,12 +113,12 @@ export const standardTemplateContentEn: StandardTemplateContent = {
       helpText:
         "Weigh the role's financial responsibility: from no budget responsibility to responsibility for a significant part of the company's finances or P&L.",
       anchors: [
-        "0 – No budget or cost responsibility.",
-        "1 – Affects costs indirectly through decisions.",
-        "2 – Responsible for a smaller cost frame or part of a project/budget.",
-        "3 – Budget responsibility within the own area/team.",
-        "4 – Responsible for a larger budget/business area.",
-        "5 – Responsible for a significant part of the company's finances or P&L.",
+        "No budget or cost responsibility.",
+        "Affects costs indirectly through decisions.",
+        "Responsible for a smaller cost frame or part of a project/budget.",
+        "Budget responsibility within the own area/team.",
+        "Responsible for a larger budget/business area.",
+        "Responsible for a significant part of the company's finances or P&L.",
       ],
     },
     people: {
@@ -127,12 +127,12 @@ export const standardTemplateContentEn: StandardTemplateContent = {
       helpText:
         "Weigh the role's formal people and management responsibility: from no responsibility to strategic leadership at company level.",
       anchors: [
-        "0 – No people or management responsibility.",
-        "1 – Operational direction of work, but no HR responsibility.",
-        "2 – People responsibility for staff (M1).",
-        "3 – Manager over several teams or first-line managers (M2).",
-        "4 – Function head with several management layers or a larger organization.",
-        "5 – Strategic leader at company level (Head/Director/C-level).",
+        "No people or management responsibility.",
+        "Operational direction of work, but no HR responsibility.",
+        "People responsibility for staff (M1).",
+        "Manager over several teams or first-line managers (M2).",
+        "Function head with several management layers or a larger organization.",
+        "Strategic leader at company level (Head/Director/C-level).",
       ],
     },
     formal: {
@@ -142,12 +142,12 @@ export const standardTemplateContentEn: StandardTemplateContent = {
       helpText:
         "Weigh the formal education or equivalent experience the role requires at recruitment: from no prior qualifications to professional expertise at the highest level.",
       anchors: [
-        "0 – No formal prior qualifications required. The role can be learned from scratch through internal onboarding. Requires no particular theoretical base or vocational training.",
-        "1 – Basic professional knowledge required. The role requires some prior knowledge within the area (e.g. shorter courses or practical experience), but no post-secondary education.",
-        "2 – Post-secondary vocational training or equivalent prior knowledge required. The role requires a vocational college education, certification or equivalent theoretical base to be able to perform the tasks.",
-        "3 – University degree or equivalent qualified prior knowledge required. The role requires a bachelor's degree/engineering degree or equivalent documented competence to handle typical tasks.",
-        "4 – Advanced academic level or advanced specialist certification required. The role requires e.g. a master's degree, advanced certification (IFRS, TISAX, security certificate, CPA etc.) or equivalent high theoretical level.",
-        "5 – Professional expertise at the highest level required. The role requires research-level competence, advanced expert accreditation or very substantial domain-specific expertise that sets the norm for the area.",
+        "No formal prior qualifications required. The role can be learned from scratch through internal onboarding. Requires no particular theoretical base or vocational training.",
+        "Basic professional knowledge required. The role requires some prior knowledge within the area (e.g. shorter courses or practical experience), but no post-secondary education.",
+        "Post-secondary vocational training or equivalent prior knowledge required. The role requires a vocational college education, certification or equivalent theoretical base to be able to perform the tasks.",
+        "University degree or equivalent qualified prior knowledge required. The role requires a bachelor's degree/engineering degree or equivalent documented competence to handle typical tasks.",
+        "Advanced academic level or advanced specialist certification required. The role requires e.g. a master's degree, advanced certification (IFRS, TISAX, security certificate, CPA etc.) or equivalent high theoretical level.",
+        "Professional expertise at the highest level required. The role requires research-level competence, advanced expert accreditation or very substantial domain-specific expertise that sets the norm for the area.",
       ],
     },
   },
