@@ -52,14 +52,17 @@ export function NavUser() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              // In the collapsed icon square only the avatar remains: the
+              // text block and chevron are display-none (their flex-1/gap
+              // would otherwise shrink the avatar and push it off center).
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground group-data-[collapsible=icon]:justify-center"
             >
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
+              <Avatar className="h-8 w-8 shrink-0 rounded-lg grayscale">
                 <AvatarFallback className="rounded-lg">
                   {initials}
                 </AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
+              <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                 <span className="truncate font-medium">{name}</span>
                 <span className="truncate text-xs text-muted-foreground">
                   {email}
@@ -68,7 +71,7 @@ export function NavUser() {
               <HugeiconsIcon
                 icon={MoreVerticalCircle01Icon}
                 strokeWidth={2}
-                className="ml-auto size-4"
+                className="ml-auto size-4 group-data-[collapsible=icon]:hidden"
               />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
