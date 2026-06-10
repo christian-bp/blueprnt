@@ -1,0 +1,88 @@
+apps/dashboard/components/onboarding/model-setup-step.tsx
+  s_fa45b53f6da63b::t_2eaf928c60fd64 42,46,102,112
+apps/dashboard/lib/family-dnd.ts
+  s_fa45b53f6da63b::t_b8df9694b67cb5 100-115
+apps/dashboard/components/roles/role-ai-panel.tsx
+  s_fa45b53f6da63b::t_c4754cc106d0a7 14-15,55-57,60-61,70,75-79,102,115,132-133,138,154,165,170,173
+  s_fa45b53f6da63b::t_f6a0e5cc653191 11
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_fa45b53f6da63b::t_b3fe170c56b913 8,24-25,29,31-129,155-156,159-161,165-167,210,221-233,247,253,260,262
+  s_fa45b53f6da63b::t_31d72af640ada4 26-28
+apps/dashboard/components/onboarding/onboarding-wizard.test.tsx
+  s_fa45b53f6da63b::t_8dc3303d400289 20,29,35,45,49,57,60,68,71,79,82,277,292,314,324
+apps/dashboard/hooks/use-draft-families.test.tsx
+  s_fa45b53f6da63b::t_405c0b1db9a084 1-69
+apps/dashboard/components/onboarding/model-draft-panel.test.tsx
+  s_fa45b53f6da63b::t_b8c9c21d0e1903 12,14-18,20-25
+apps/dashboard/components/onboarding/industry-screen.test.tsx
+  s_fa45b53f6da63b::t_8dc3303d400289 52-53,67,74,83,100,102,111
+apps/dashboard/hooks/use-suggestion-selection.test.tsx
+  s_fa45b53f6da63b::t_8dc3303d400289 38
+  s_fa45b53f6da63b::t_19637dc0dbea69 1-37,39-41
+apps/dashboard/hooks/use-suggestion-selection.ts
+  s_fa45b53f6da63b::t_46dc35218ea516 1-35
+apps/dashboard/hooks/use-draft-families.ts
+  s_fa45b53f6da63b::t_b55e8fc3b116e1 1-59
+apps/dashboard/hooks/use-auto-advance.test.tsx
+  s_fa45b53f6da63b::t_0ff77225693535 15,18,22,46-47,52,55,63-64,73,81-82,92,97-98,107,114
+apps/dashboard/hooks/use-suggestion-flow.test.tsx
+  s_fa45b53f6da63b::t_a497e796cc6f80 1-134
+apps/dashboard/lib/family-dnd.test.ts
+  s_fa45b53f6da63b::t_b8df9694b67cb5 92-103,109-112,114
+  s_fa45b53f6da63b::t_af898a2adddf40 3
+  s_fa45b53f6da63b::t_8dc3303d400289 104-108
+  s_fa45b53f6da63b::t_7eedfe1ab718a7 113
+apps/dashboard/components/onboarding/industry-screen.tsx
+  s_fa45b53f6da63b::t_2eaf928c60fd64 31,35,45
+apps/dashboard/components/onboarding/name-screen.test.tsx
+  s_fa45b53f6da63b::t_8dc3303d400289 53-54,70,76,87-88,91,102,108,110-111,127,134-135,147
+apps/dashboard/components/onboarding/model-draft-panel.tsx
+  s_fa45b53f6da63b::t_e9ee1d58a53eee 10
+  s_fa45b53f6da63b::t_ad816c6354438b 13-14,44-46,49,58-63,85,89,97-98,103,114,121,126,129
+apps/dashboard/test/convex-mocks.ts
+  s_fa45b53f6da63b::t_5748134e33e04d 1-74
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_fa45b53f6da63b::t_b8c9c21d0e1903 12,17-27,29-34
+  s_fa45b53f6da63b::t_8dc3303d400289 14-16,114
+apps/dashboard/components/onboarding/weight-review-panel.test.tsx
+  s_fa45b53f6da63b::t_b8c9c21d0e1903 12,14-25
+apps/dashboard/components/onboarding/families-step.tsx
+  s_fa45b53f6da63b::t_4a3637a90acebd 22-23,44,48,60-62,65,74-76,96,99-102,108-109,111,119,122,158,173,180-185,299,319-321,344-346
+  s_fa45b53f6da63b::t_7b1cd2631ba233 303
+  s_fa45b53f6da63b::t_65fb5d1fa2540e 132-133,135
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_fa45b53f6da63b::t_8dc3303d400289 103,109,386,413,415-416,424
+apps/dashboard/components/onboarding/country-screen.tsx
+  s_fa45b53f6da63b::t_2eaf928c60fd64 38,42,58
+apps/dashboard/components/roles/role-ai-panel.test.tsx
+  s_fa45b53f6da63b::t_b8c9c21d0e1903 12,14-18,20-25
+apps/dashboard/components/onboarding/weight-review-panel.tsx
+  s_fa45b53f6da63b::t_8dc3303d400289 169
+  s_fa45b53f6da63b::t_c878e9dcd38031 15-16,60-62,65,82,93-97,115-116,134,143,207-208,213,229,241,246,249
+  s_fa45b53f6da63b::t_e9ee1d58a53eee 12
+apps/dashboard/components/onboarding/country-screen.test.tsx
+  s_fa45b53f6da63b::t_8dc3303d400289 52-53,67,81,100,112,121,138,140,147
+apps/dashboard/hooks/use-auto-advance.ts
+  s_fa45b53f6da63b::t_0ff77225693535 31,34,42,60
+apps/dashboard/components/onboarding/name-screen.tsx
+  s_fa45b53f6da63b::t_2eaf928c60fd64 20,23,50,62
+apps/dashboard/hooks/use-suggestion-flow.ts
+  s_fa45b53f6da63b::t_dabcd4829046bf 1-95,97-104
+  s_fa45b53f6da63b::t_8dc3303d400289 96
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "63084595c910dbd3840817878508f1495a05a74a",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
