@@ -253,12 +253,15 @@ export function FamiliesStep({
         t("heading", { name: organizationName }),
         locale
       )}
+      // Only the template review keeps a subtitle: its reassurance (adjust
+      // freely, changeable later) works passively at the one step that
+      // creates data. The paste view is covered by the animated placeholder
+      // plus the help popover, and the AI review's line is the provenance
+      // paragraph (ADR-0003), so neither carries a second subtitle.
       description={
-        inReview
-          ? seededFrom.source === "template"
-            ? t("reviewDescriptionStarter")
-            : t("reviewDescriptionImport")
-          : t("pasteDescription")
+        inReview && seededFrom?.source === "template"
+          ? t("reviewDescriptionStarter")
+          : undefined
       }
     >
       <AnimatePresence mode="wait" initial={false}>

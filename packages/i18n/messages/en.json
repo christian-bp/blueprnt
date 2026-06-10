@@ -301,7 +301,6 @@
       },
       "families": {
         "heading": "Role families and roles at {name}",
-        "pasteDescription": "Paste your roles below, in whatever form you have them.",
         "pasteLabel": "Your roles and role families",
         "pasteHelpLabel": "How does this work?",
         "pasteHelpBody": "Paste straight from a document, spreadsheet or HR system; the AI works out what you mean. If your text already mentions role families they are kept, otherwise the AI suggests which roles belong together in a family. You review the result and can change everything before anything is created.",
@@ -312,7 +311,6 @@
         "templateCta": "use an industry template",
         "generating": "Organizing your roles into families",
         "reviewDescriptionStarter": "A starting point based on your industry. Adjust it freely; everything can be changed later.",
-        "reviewDescriptionImport": "Here is how your roles were organized. Adjust freely; everything can be changed later.",
         "createCta": "Create and open the dashboard",
         "addFamilyCta": "Add family",
         "addRoleCta": "Add role",

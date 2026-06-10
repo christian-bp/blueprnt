@@ -301,7 +301,6 @@
       },
       "families": {
         "heading": "Rollefamilier og roller hos {name}",
-        "pasteDescription": "Indsæt jeres roller nedenfor, i den form I har dem.",
         "pasteLabel": "Jeres roller og rollefamilier",
         "pasteHelpLabel": "Hvordan fungerer det?",
         "pasteHelpBody": "Indsæt direkte fra et dokument, regneark eller HR-system; AI'en finder ud af, hvad du mener. Hvis teksten allerede nævner rollefamilier, beholdes de, ellers foreslår AI'en hvilke roller der hører sammen i en familie. Du gennemgår resultatet og kan ændre alt, før noget oprettes.",
@@ -312,7 +311,6 @@
         "templateCta": "brug en brancheskabelon",
         "generating": "Organiserer dine roller i familier",
         "reviewDescriptionStarter": "Et udgangspunkt baseret på jeres branche. Juster frit; alt kan ændres senere.",
-        "reviewDescriptionImport": "Sådan blev dine roller organiseret. Juster frit; alt kan ændres senere.",
         "createCta": "Opret og åbn dashboardet",
         "addFamilyCta": "Tilføj familie",
         "addRoleCta": "Tilføj rolle",

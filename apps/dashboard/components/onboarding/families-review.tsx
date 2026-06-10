@@ -23,7 +23,11 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { Delete02Icon, DragDropVerticalIcon } from "@hugeicons/core-free-icons"
+import {
+  Add01Icon,
+  Delete02Icon,
+  DragDropVerticalIcon,
+} from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
@@ -252,10 +256,7 @@ export function FamiliesReview({
                 items={family.roles.map((role) => `role-${role.id}`)}
                 strategy={verticalListSortingStrategy}
               >
-                <FamilyRolesArea
-                  familyId={family.id}
-                  empty={family.roles.length === 0}
-                >
+                <FamilyRolesArea familyId={family.id}>
                   {family.roles.map((role) => (
                     <SortableRoleRow
                       key={role.id}
@@ -284,23 +285,28 @@ export function FamiliesReview({
                       }
                     />
                   ))}
+                  {/* Icon-only add row: full width and dashed, so it doubles
+                      as the visible drop surface (it lives inside the
+                      droppable area) and keeps the card quiet. The i18n label
+                      carries the meaning for assistive tech. */}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="h-9 w-full border border-dashed text-muted-foreground hover:text-foreground"
+                    aria-label={t("addRoleCta")}
+                    onClick={() =>
+                      updateFamily(family.id, {
+                        roles: [
+                          ...family.roles,
+                          { id: claimId(), title: "", trackKey: "IC" },
+                        ],
+                      })
+                    }
+                  >
+                    <HugeiconsIcon icon={Add01Icon} aria-hidden="true" />
+                  </Button>
                 </FamilyRolesArea>
               </SortableContext>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  updateFamily(family.id, {
-                    roles: [
-                      ...family.roles,
-                      { id: claimId(), title: "", trackKey: "IC" },
-                    ],
-                  })
-                }
-              >
-                {t("addRoleCta")}
-              </Button>
             </CardContent>
           </Card>
         ))}
@@ -329,25 +335,20 @@ export function FamiliesReview({
 }
 
 // The roles list is the droppable surface so a role can be dropped into a
-// family that has no roles yet; the dashed outline marks the empty target.
+// family that has no roles yet; the dashed add row inside it keeps the
+// target visible even when the family is empty.
 function FamilyRolesArea({
   familyId,
-  empty,
   children,
 }: {
   familyId: number
-  empty: boolean
   children: React.ReactNode
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: `family-${familyId}` })
   return (
     <div
       ref={setNodeRef}
-      className={cn(
-        "space-y-2 rounded-md",
-        empty && "min-h-9 border border-dashed",
-        isOver && "bg-muted/50"
-      )}
+      className={cn("space-y-2 rounded-md", isOver && "bg-muted/50")}
     >
       {children}
     </div>

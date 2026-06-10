@@ -301,7 +301,6 @@
       },
       "families": {
         "heading": "Rollfamiljer och roller hos {name}",
-        "pasteDescription": "Klistra in era roller nedan, i den form ni har dem.",
         "pasteLabel": "Era roller och rollfamiljer",
         "pasteHelpLabel": "Hur fungerar det här?",
         "pasteHelpBody": "Klistra in direkt från ett dokument, kalkylblad eller HR-system; AI:n listar ut vad du menar. Om texten redan nämner rollfamiljer behålls de, annars föreslår AI:n vilka roller som hör ihop i en familj. Du granskar resultatet och kan ändra allt innan något skapas.",
@@ -312,7 +311,6 @@
         "templateCta": "använd en branschmall",
         "generating": "Organiserar dina roller i familjer",
         "reviewDescriptionStarter": "En startpunkt utifrån er bransch. Justera fritt; allt kan ändras senare.",
-        "reviewDescriptionImport": "Så här organiserades dina roller. Justera fritt; allt kan ändras senare.",
         "createCta": "Skapa och öppna dashboarden",
         "addFamilyCta": "Lägg till familj",
         "addRoleCta": "Lägg till roll",

@@ -19,7 +19,7 @@ import { SPRING } from "@/lib/motion"
 // cancel-to-disarm, confirm-calls-onConfirm-then-disarms.
 //
 // Variants:
-//   "icon" (default) - a round neutral cross icon that morphs in place into the
+//   "icon" (default) - a neutral icon button that morphs in place into the
 //     armed pill. Callers position it absolutely (e.g. a row corner) so the
 //     pill's width morph shifts nothing. Behavior is unchanged from the
 //     original single-variant component.
@@ -103,7 +103,7 @@ export function MorphConfirmButton(props: MorphConfirmButtonProps) {
         type="button"
         variant="destructive"
         disabled={disabled}
-        className="h-6 rounded-full px-2 text-xs"
+        className="h-6 px-2 text-xs"
         onClick={async () => {
           await onConfirm()
           setArmed(false)
@@ -115,7 +115,7 @@ export function MorphConfirmButton(props: MorphConfirmButtonProps) {
         type="button"
         disabled={disabled}
         aria-label={cancelLabel}
-        className="flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+        className="flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
         onClick={() => setArmed(false)}
       >
         <HugeiconsIcon icon={Cancel01Icon} size={14} strokeWidth={2} />
@@ -156,7 +156,7 @@ export function MorphConfirmButton(props: MorphConfirmButtonProps) {
               layout
               transition={SPRING}
               className={cn(
-                "absolute top-1/2 z-20 flex -translate-y-1/2 items-center overflow-hidden rounded-full border bg-background shadow-sm",
+                "absolute top-1/2 z-20 flex -translate-y-1/2 items-center overflow-hidden rounded-md border bg-background shadow-sm",
                 align === "right" ? "right-0" : "left-0"
               )}
             >
@@ -178,7 +178,7 @@ export function MorphConfirmButton(props: MorphConfirmButtonProps) {
     )
   }
 
-  // ICON variant: round cross that morphs in place. Callers position the
+  // ICON variant: an icon button that morphs in place. Callers position the
   // container absolutely so its width morph shifts nothing.
   return (
     // motion.div with `layout` so the pill width springs when content swaps.
@@ -190,7 +190,7 @@ export function MorphConfirmButton(props: MorphConfirmButtonProps) {
       layout
       transition={SPRING}
       className={cn(
-        "flex items-center overflow-hidden rounded-full border bg-background shadow-sm",
+        "flex items-center overflow-hidden rounded-md border bg-background shadow-sm",
         className,
         (armed || disabled) && "opacity-100"
       )}
@@ -214,7 +214,7 @@ export function MorphConfirmButton(props: MorphConfirmButtonProps) {
               type="button"
               disabled={disabled}
               aria-label={props.triggerLabel}
-              className="flex size-7 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+              className="flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
               onClick={() => setArmed(true)}
             >
               <HugeiconsIcon
