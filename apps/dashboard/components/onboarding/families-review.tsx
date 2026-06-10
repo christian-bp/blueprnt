@@ -236,13 +236,15 @@ export function FamiliesReview({
               />
               {/* Fixed-size slot + absolute anchor: the armed pill grows
                   leftwards as an overlay, so the header never reflows. */}
-              <span className="relative ml-auto size-8 shrink-0">
+              <span className="relative ml-auto size-9 shrink-0">
                 <MorphConfirmButton
                   triggerIcon={Delete02Icon}
                   triggerLabel={t("removeFamilyLabel", { name: family.name })}
                   confirmLabel={tFamily("removeConfirm")}
                   cancelLabel={tFamily("cancel")}
-                  className="absolute top-1/2 right-0 z-10 -translate-y-1/2"
+                  // h-9 + min-w-9 squares the idle pill up to the row's field
+                  // height (the inner icon button centers inside the border).
+                  className="absolute top-1/2 right-0 z-10 h-9 min-w-9 -translate-y-1/2 justify-center"
                   onConfirm={() =>
                     onFamiliesChange((current) =>
                       current.filter((item) => item.id !== family.id)
@@ -393,7 +395,7 @@ function SortableRoleRow({
         type="button"
         ref={setActivatorNodeRef}
         variant="ghost"
-        size="icon-sm"
+        size="icon"
         className="shrink-0 cursor-grab touch-none text-muted-foreground active:cursor-grabbing"
         aria-label={t("dragHandleLabel", { title: role.title })}
         {...attributes}
@@ -407,7 +409,7 @@ function SortableRoleRow({
         onChange={(event) => onTitleChange(event.target.value)}
       />
       <Select value={role.trackKey} onValueChange={onTrackChange}>
-        <SelectTrigger size="sm" className="w-36 shrink-0">
+        <SelectTrigger className="w-36 shrink-0">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -420,13 +422,15 @@ function SortableRoleRow({
       </Select>
       {/* Fixed-size slot + absolute anchor: the armed pill overlays the row
           leftwards instead of pushing the select and input aside. */}
-      <span className="relative size-8 shrink-0">
+      <span className="relative size-9 shrink-0">
         <MorphConfirmButton
           triggerIcon={Delete02Icon}
           triggerLabel={t("removeRoleLabel", { title: role.title })}
           confirmLabel={tFamily("removeConfirm")}
           cancelLabel={tFamily("cancel")}
-          className="absolute top-1/2 right-0 z-10 -translate-y-1/2"
+          // h-9 + min-w-9 squares the idle pill up to the row's field height
+          // (the inner icon button centers inside the border).
+          className="absolute top-1/2 right-0 z-10 h-9 min-w-9 -translate-y-1/2 justify-center"
           onConfirm={onRemove}
         />
       </span>
