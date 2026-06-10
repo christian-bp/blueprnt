@@ -37,6 +37,10 @@ export function NavMain({
                   asChild
                   isActive={isActive}
                   tooltip={item.title}
+                  // Larger nav icons than the sidebar default (16px): 20px,
+                  // with the collapsed square's padding tightened so the
+                  // icon is not clipped (32px box = 20px icon + 2x6px).
+                  className="group-data-[collapsible=icon]:p-1.5! [&_svg]:size-5"
                 >
                   <Link href={item.url}>
                     {item.icon}

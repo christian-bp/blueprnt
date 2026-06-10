@@ -4,7 +4,7 @@ import {
   Briefcase01Icon,
   ChartHistogramIcon,
   CommandIcon,
-  DashboardSquare01Icon,
+  Home01Icon,
   Layers01Icon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -31,7 +31,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     {
       title: t("nav.overview"),
       url: "/",
-      icon: <HugeiconsIcon icon={DashboardSquare01Icon} strokeWidth={2} />,
+      icon: <HugeiconsIcon icon={Home01Icon} strokeWidth={2} />,
     },
     {
       title: t("nav.roles"),
