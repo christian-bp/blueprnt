@@ -9,7 +9,7 @@ import {
 } from "@workspace/ui/components/dialog"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
-import { AddCriterionForm } from "@/components/onboarding/add-criterion-form"
+import { AddCriterionForm } from "@/components/model/add-criterion-form"
 
 // Wraps AddCriterionForm in a dialog so the tall form does not push the criteria
 // list down. The trigger reuses the existing addCta button styling; the form

@@ -4,11 +4,7 @@ import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
 import { motion } from "motion/react"
 import type { ReactNode } from "react"
-
-// How long the non-chosen cards take to fade away. Screens that auto-advance
-// after a choice wait at least this long before moving on, so the user sees
-// the fade complete (see use-auto-advance.ts).
-export const OPTION_FADE_MS = 300
+import { OPTION_FADE_MS } from "@/hooks/use-auto-advance"
 
 // Large selectable card for one-question-per-screen choices (language,
 // country, industry, model choice). The optional badge overlaps the top

@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, describe, expect, it, vi } from "vitest"
-import { OnboardingDots } from "@/components/onboarding-dots"
+import { OnboardingDots } from "@/components/onboarding/onboarding-dots"
 
 const STEPS = [
   { key: "a", label: "Step A" },

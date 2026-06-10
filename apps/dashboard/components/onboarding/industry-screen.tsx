@@ -4,7 +4,7 @@ import { api } from "@workspace/backend/convex/_generated/api"
 import { INDUSTRY_KEYS, type IndustryKey } from "@workspace/constants"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
-import { OptionCard } from "@/components/option-card"
+import { OptionCard } from "@/components/onboarding/option-card"
 import { ScreenShell } from "@/components/onboarding/screen-shell"
 import { useAutoAdvance } from "@/hooks/use-auto-advance"
 

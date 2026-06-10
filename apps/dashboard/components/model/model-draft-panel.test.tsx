@@ -24,7 +24,7 @@ vi.mock("@workspace/backend/convex/_generated/api", async () => {
   return (await import("@/test/convex-mocks")).apiModule
 })
 
-import { ModelDraftPanel } from "@/components/onboarding/model-draft-panel"
+import { ModelDraftPanel } from "@/components/model/model-draft-panel"
 
 const ai = messages.dashboard.ai
 const errors = messages.errors

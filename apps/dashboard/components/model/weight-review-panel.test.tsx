@@ -24,7 +24,7 @@ vi.mock("@workspace/backend/convex/_generated/api", async () => {
   return (await import("@/test/convex-mocks")).apiModule
 })
 
-import { WeightReviewPanel } from "@/components/onboarding/weight-review-panel"
+import { WeightReviewPanel } from "@/components/model/weight-review-panel"
 
 const ai = messages.dashboard.ai
 

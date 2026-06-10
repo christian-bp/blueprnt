@@ -26,7 +26,7 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
   },
 }))
 
-import { AddCriterionForm } from "@/components/onboarding/add-criterion-form"
+import { AddCriterionForm } from "@/components/model/add-criterion-form"
 
 function renderForm(orgId = "org-123", onAdded?: () => void) {
   return render(

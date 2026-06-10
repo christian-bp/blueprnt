@@ -1,11 +1,14 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { OPTION_FADE_MS } from "@/components/option-card"
 
 // A beat of rest after the fade-out completes, so the user sees their choice
 // standing alone before the next screen appears. Without it the hand-off
 // feels rushed.
+// The choice-screen rhythm lives in ONE place: the picked card fades for
+// OPTION_FADE_MS (the card imports it from here), then the screen holds for
+// ADVANCE_PAUSE_MS before advancing.
+export const OPTION_FADE_MS = 300
 export const ADVANCE_PAUSE_MS = 450
 
 // The full auto-advance wait: the fade of the non-chosen options plus the

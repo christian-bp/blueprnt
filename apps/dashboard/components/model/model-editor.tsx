@@ -20,9 +20,9 @@ import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { MorphPopover } from "@/components/morph-popover"
-import { AddCriterionDialog } from "@/components/onboarding/add-criterion-dialog"
-import { CriterionItem } from "@/components/onboarding/criterion-item"
-import { WeightReviewPanel } from "@/components/onboarding/weight-review-panel"
+import { AddCriterionDialog } from "@/components/model/add-criterion-dialog"
+import { CriterionItem } from "@/components/model/criterion-item"
+import { WeightReviewPanel } from "@/components/model/weight-review-panel"
 import { formatShare, WEIGHT_POINT_OPTIONS } from "@/lib/weighting"
 
 // Error codes with their own translated message; everything else falls back
