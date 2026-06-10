@@ -1,0 +1,21 @@
+apps/dashboard/components/onboarding/families-review.tsx
+  s_fa45b53f6da63b::t_28896b6590d620 417-418,422
+  s_fa45b53f6da63b::t_2986f0a882f790 26
+  s_fa45b53f6da63b::t_22e64a356974b5 235-236,244
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "634adf185acb7650837347ee3288f56ab320fb80",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
