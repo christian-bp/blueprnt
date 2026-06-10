@@ -16,6 +16,10 @@ export const auditLog = defineTable({
 // AI suggestion layer (ADR-0003): suggestions with provenance, separate from
 // confirmed values. status lifecycle: generating -> suggested -> confirmed |
 // rejected; failed carries an errors.* code the frontend translates.
+// confirmed and rejected are terminal: confirmedBy records who applied the
+// suggestion, rejectedBy who dismissed it. The two never share a field so the
+// human-confirmation provenance an applied suggestion carries cannot be
+// rewritten by a later dismissal.
 export const suggestions = defineTable({
   orgId: v.string(),
   target: v.object({
@@ -38,6 +42,7 @@ export const suggestions = defineTable({
   errorCode: v.optional(v.string()),
   model: v.optional(v.object({ provider: v.string(), model: v.string() })),
   confirmedBy: v.optional(v.string()),
+  rejectedBy: v.optional(v.string()),
 })
   .index("by_org", ["orgId"])
   .index("by_org_status", ["orgId", "status"])

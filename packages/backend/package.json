@@ -15,12 +15,12 @@
   },
   "dependencies": {
     "@ai-sdk/mistral": "^3.0.37",
-    "@convex-dev/better-auth": "0.12.2",
+    "@convex-dev/better-auth": "0.12.3",
     "@workspace/constants": "workspace:*",
     "@workspace/core": "workspace:*",
     "@workspace/email": "workspace:*",
     "ai": "^6.0.196",
-    "better-auth": "1.6.14",
+    "better-auth": "1.6.16",
     "convex": "^1.40.0",
     "convex-helpers": "^0.1.118",
     "zod": "^4.4.3"

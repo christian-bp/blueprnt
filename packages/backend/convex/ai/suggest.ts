@@ -495,9 +495,18 @@ export const confirmRoleProfileDraft = orgMutation({
   },
 })
 
-// Member scope: rejecting applies nothing, and editors must be able to
-// dismiss their own role-profile drafts. Confirm paths keep their own
-// scoping (model.* confirms are adminMutation, role.profile is orgMutation).
+// Member scope: dismissing applies nothing, and editors must be able to
+// dismiss their own role-profile drafts. Two guards keep this from becoming a
+// backdoor around the confirm paths' scoping (model.* confirms are
+// adminMutation, role.profile is orgMutation):
+//   1. model.draft / model.weightReview are admin-configuration surfaces, so
+//      dismissing them requires admin, mirroring their confirm paths. Editors
+//      keep dismiss rights over role.profile only.
+//   2. Only the open states (suggested, failed) are dismissible. confirmed and
+//      rejected are terminal, so a confirmed suggestion's human-confirmation
+//      provenance can never be flipped to rejected and reattributed.
+// The dismisser is recorded in rejectedBy, never confirmedBy, and the
+// transition writes an audit row like every other state-changing mutation.
 export const rejectSuggestion = orgMutation({
   args: { suggestionId: v.id("suggestions") },
   returns: v.null(),
@@ -506,9 +515,24 @@ export const rejectSuggestion = orgMutation({
     if (suggestion === null || suggestion.orgId !== ctx.orgId) {
       throw appError(ERROR_CODES.notFound)
     }
+    const isModelTarget =
+      suggestion.target.kind === "model.draft" ||
+      suggestion.target.kind === "model.weightReview"
+    if (isModelTarget && ctx.role !== "admin") {
+      throw appError(ERROR_CODES.adminRequired)
+    }
+    if (suggestion.status !== "suggested" && suggestion.status !== "failed") {
+      throw appError(ERROR_CODES.invalidTransition)
+    }
     await ctx.db.patch(suggestionId, {
       status: "rejected",
-      confirmedBy: ctx.authUserId,
+      rejectedBy: ctx.authUserId,
+    })
+    await logAudit(ctx, {
+      orgId: ctx.orgId,
+      type: AUDIT_EVENTS.aiSuggestionRejected,
+      actorId: ctx.authUserId,
+      payload: { suggestionId, kind: suggestion.target.kind },
     })
     return null
   },

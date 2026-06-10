@@ -15,6 +15,7 @@ export const AUDIT_EVENTS = {
   modelUpdated: "model.updated",
   modelDiscarded: "model.discarded",
   aiSuggestionConfirmed: "ai.suggestionConfirmed",
+  aiSuggestionRejected: "ai.suggestionRejected",
   roleCreated: "role.created",
   roleUpdated: "role.updated",
   roleArchived: "role.archived",

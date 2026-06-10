@@ -468,6 +468,134 @@ describe("AI suggestion lifecycle", () => {
     ).rejects.toThrow(/errors.notFound/)
   })
 
+  it("rejectSuggestion records rejectedBy and an audit row without touching confirmedBy", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedScratchOrganization(t)
+    const suggestionId = await asAdmin.mutation(
+      api.ai.suggest.requestModelDraft,
+      { orgId }
+    )
+    // saveDraft moves the row to "suggested"; dismissing it must not run the
+    // confirm path's confirmedBy attribution.
+    await t.mutation(internal.ai.persist.saveDraft, {
+      suggestionId,
+      criteria: [VALID_DRAFT_CRITERION],
+    })
+    await asAdmin.mutation(api.ai.suggest.rejectSuggestion, {
+      orgId,
+      suggestionId,
+    })
+    await t.run(async (ctx) => {
+      const suggestion = await ctx.db.get(suggestionId)
+      expect(suggestion?.status).toBe("rejected")
+      expect(typeof suggestion?.rejectedBy).toBe("string")
+      // confirmedBy stays empty: a dismissal is not a confirmation.
+      expect(suggestion?.confirmedBy).toBeUndefined()
+      const audit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "ai.suggestionRejected")
+        )
+        .collect()
+      expect(audit).toHaveLength(1)
+      expect((audit[0]?.payload as Record<string, unknown>).kind).toBe(
+        "model.draft"
+      )
+    })
+  })
+
+  it("rejectSuggestion refuses to overwrite a confirmed suggestion", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedScratchOrganization(t)
+    const suggestionId = await asAdmin.mutation(
+      api.ai.suggest.requestModelDraft,
+      { orgId }
+    )
+    await t.mutation(internal.ai.persist.saveDraft, {
+      suggestionId,
+      criteria: [VALID_DRAFT_CRITERION],
+    })
+    await asAdmin.mutation(api.ai.suggest.confirmModelDraft, {
+      orgId,
+      suggestionId,
+      acceptedIndexes: [0],
+    })
+    // The confirmed row is terminal: its provenance cannot be flipped to
+    // rejected after the fact.
+    await expect(
+      asAdmin.mutation(api.ai.suggest.rejectSuggestion, {
+        orgId,
+        suggestionId,
+      })
+    ).rejects.toThrow(/errors.invalidTransition/)
+    await t.run(async (ctx) => {
+      const suggestion = await ctx.db.get(suggestionId)
+      expect(suggestion?.status).toBe("confirmed")
+      expect(suggestion?.confirmedBy).toBeTruthy()
+      expect(suggestion?.rejectedBy).toBeUndefined()
+    })
+  })
+
+  it("editors cannot dismiss model-configuration suggestions but can dismiss role-profile drafts", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, roleId } = await seedRoleOrganization(t)
+    // Give the org an editor alongside the seeded admin. seedDuplicateMember
+    // just inserts a member row for an existing org; reused here to add a
+    // distinct editor member (the editor's own seeded org is irrelevant).
+    const { userId: editorId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "editor-role@acme.se", name: "Editor Person", role: "editor" }
+    )
+    await t.mutation(components.betterAuth.testing.seedDuplicateMember, {
+      orgId,
+      userId: editorId,
+      role: "editor",
+    })
+    const asEditor = t.withIdentity({ subject: editorId })
+
+    // model.weightReview is admin-configuration: an editor must not dismiss it.
+    const modelSuggestionId = await asAdmin.mutation(
+      api.ai.suggest.requestWeightReview,
+      { orgId }
+    )
+    await t.mutation(internal.ai.persist.saveWeightReview, {
+      suggestionId: modelSuggestionId,
+      moves: [],
+    })
+    await expect(
+      asEditor.mutation(api.ai.suggest.rejectSuggestion, {
+        orgId,
+        suggestionId: modelSuggestionId,
+      })
+    ).rejects.toThrow(/errors.adminRequired/)
+    await t.run(async (ctx) => {
+      const suggestion = await ctx.db.get(modelSuggestionId)
+      expect(suggestion?.status).toBe("suggested")
+    })
+
+    // role.profile is member scope: the editor CAN dismiss it.
+    const roleSuggestionId = await asEditor.mutation(
+      api.ai.suggest.requestRoleProfileDraft,
+      { orgId, roleId }
+    )
+    await t.mutation(internal.ai.persist.saveRoleProfileDraft, {
+      suggestionId: roleSuggestionId,
+      profile: {
+        purpose: "Bygger kärnprodukten.",
+        responsibilities: "Implementerar features",
+      },
+    })
+    await asEditor.mutation(api.ai.suggest.rejectSuggestion, {
+      orgId,
+      suggestionId: roleSuggestionId,
+    })
+    await t.run(async (ctx) => {
+      const suggestion = await ctx.db.get(roleSuggestionId)
+      expect(suggestion?.status).toBe("rejected")
+      expect(suggestion?.rejectedBy).toBe(editorId)
+    })
+  })
+
   it("confirmModelDraft skips malformed draft values and rejects the suggestion", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedScratchOrganization(t)
