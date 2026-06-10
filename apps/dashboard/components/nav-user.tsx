@@ -55,12 +55,16 @@ export function NavUser() {
               // In the collapsed icon square only the avatar remains: the
               // text block and chevron are display-none (their flex-1/gap
               // would otherwise shrink the avatar and push it off center).
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground group-data-[collapsible=icon]:justify-center"
+              // The square grows to 36px there so the avatar reads slightly
+              // larger than the 32px nav squares (matching the bigger nav
+              // icons); -mx-0.5 recenters the overhang in the 32px column.
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground group-data-[collapsible=icon]:-mx-0.5 group-data-[collapsible=icon]:size-9! group-data-[collapsible=icon]:justify-center"
             >
-              <Avatar className="h-8 w-8 shrink-0 rounded-lg grayscale">
-                <AvatarFallback className="rounded-lg">
-                  {initials}
-                </AvatarFallback>
+              {/* Default avatar radius (rounded-full): the component's border
+                  ring is always round, so a rounded-lg override makes the
+                  fallback poke outside it. */}
+              <Avatar className="shrink-0 grayscale group-data-[collapsible=icon]:size-9">
+                <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                 <span className="truncate font-medium">{name}</span>
@@ -83,10 +87,8 @@ export function NavUser() {
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarFallback className="rounded-lg">
-                    {initials}
-                  </AvatarFallback>
+                <Avatar>
+                  <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{name}</span>
