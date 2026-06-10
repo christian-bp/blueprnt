@@ -16,6 +16,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarRail,
 } from "@workspace/ui/components/sidebar"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
@@ -50,7 +51,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   ]
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    // collapsible="icon" (the sidebar-07 pattern): collapsing shrinks the
+    // sidebar to an icon rail instead of removing it. The inset variant set
+    // by AppShell keeps the rounded content panel in both states; NavMain's
+    // tooltips and NavUser's lg button carry the collapsed affordances.
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -76,6 +81,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <NavUser />
       </SidebarFooter>
+      {/* Click strip on the sidebar edge that toggles the collapse. */}
+      <SidebarRail />
     </Sidebar>
   )
 }
