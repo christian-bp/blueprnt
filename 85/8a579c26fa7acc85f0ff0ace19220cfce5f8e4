@@ -1,0 +1,51 @@
+apps/dashboard/components/onboarding/country-screen.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 15
+apps/dashboard/components/onboarding/onboarding-wizard.test.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 99
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 12,14,16
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 9
+apps/dashboard/hooks/use-auto-advance.ts
+  s_fa45b53f6da63b::t_3a9df2f920e3ed 8-11
+apps/dashboard/components/onboarding/model-setup-step.tsx
+  s_fa45b53f6da63b::t_224f6431e7a907 15-16
+apps/dashboard/components/onboarding/option-card.test.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 3
+apps/dashboard/components/model/add-criterion-form.test.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 29
+apps/dashboard/components/onboarding/option-card.tsx
+  s_fa45b53f6da63b::t_3a9df2f920e3ed 7
+apps/dashboard/components/onboarding/industry-screen.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 7
+CLAUDE.md
+  s_fa45b53f6da63b::t_1f19e96ea5bd54 62
+apps/dashboard/components/model/add-criterion-dialog.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 12
+apps/dashboard/components/onboarding/onboarding-dots.test.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 3
+apps/dashboard/components/model/model-draft-panel.test.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 27
+apps/dashboard/components/model/weight-review-panel.test.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 27
+apps/dashboard/components/model/add-criterion-dialog.test.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 29
+apps/dashboard/components/model/model-editor.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 23-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "858a579c26fa7acc85f0ff0ace19220cfce5f8e4",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
