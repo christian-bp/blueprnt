@@ -85,6 +85,36 @@ describe("AI suggestion lifecycle", () => {
     })
   })
 
+  it("requestModelDraft stamps requestedBy with the caller", async () => {
+    const t = initConvexTest()
+    const { orgId, userId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "requester@acme.se", name: "Requester", role: "admin" }
+    )
+    await t.run(async (ctx) => {
+      await ctx.db.insert("organizations", {
+        orgId,
+        country: "se",
+        currency: "SEK",
+        language: "sv",
+        industry: "itTelecom",
+      })
+    })
+    const asAdmin = t.withIdentity({ subject: userId })
+    await asAdmin.mutation(api.evaluationModel.model.createEmptyModel, {
+      orgId,
+      name: "Scratch",
+    })
+    const suggestionId = await asAdmin.mutation(
+      api.ai.suggest.requestModelDraft,
+      { orgId }
+    )
+    await t.run(async (ctx) => {
+      const suggestion = await ctx.db.get(suggestionId)
+      expect(suggestion?.requestedBy).toBe(userId)
+    })
+  })
+
   it("requires a complete profile", async () => {
     const t = initConvexTest()
     const { orgId, userId } = await t.mutation(

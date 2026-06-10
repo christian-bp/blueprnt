@@ -41,6 +41,9 @@ export const suggestions = defineTable({
   ),
   errorCode: v.optional(v.string()),
   model: v.optional(v.object({ provider: v.string(), model: v.string() })),
+  // requestedBy: who triggered the AI generation; confirmedBy / rejectedBy:
+  // who applied or dismissed it. The three are distinct provenance fields.
+  requestedBy: v.optional(v.string()),
   confirmedBy: v.optional(v.string()),
   rejectedBy: v.optional(v.string()),
 })

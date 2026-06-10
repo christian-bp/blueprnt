@@ -1,10 +1,35 @@
 "use node"
 
-import { generateText, Output } from "ai"
+import { type LanguageModelUsage, generateText, Output } from "ai"
 import { v } from "convex/values"
 import { z } from "zod"
 import { internal } from "../_generated/api"
-import { internalAction } from "../_generated/server"
+import type { Id } from "../_generated/dataModel"
+import { type ActionCtx, internalAction } from "../_generated/server"
+
+// Best-effort: record the token usage for a completed generation. Isolated in
+// its own try/catch so a usage-write failure never turns a successful
+// generation into a failure. result.totalUsage is the across-all-steps total
+// (equal to result.usage for these single-step calls).
+async function recordUsage(
+  ctx: ActionCtx,
+  suggestionId: Id<"suggestions">,
+  usage: LanguageModelUsage
+) {
+  try {
+    await ctx.runMutation(internal.ai.usage.recordAiUsage, {
+      suggestionId,
+      inputTokens: usage.inputTokens ?? 0,
+      outputTokens: usage.outputTokens ?? 0,
+      totalTokens: usage.totalTokens ?? 0,
+      cachedInputTokens: usage.inputTokenDetails?.cacheReadTokens ?? 0,
+    })
+  } catch (error) {
+    console.error("ai usage recording failed", {
+      error: error instanceof Error ? error.message : String(error),
+    })
+  }
+}
 
 // The prompt instructs the model to respond in the requester's UI language.
 const LANGUAGE_NAMES: Record<string, string> = {
@@ -109,6 +134,7 @@ export const generateModelDraft = internalAction({
           .filter((line) => line !== "")
           .join("\n"),
       })
+      await recordUsage(ctx, args.suggestionId, result.totalUsage)
       // The exact-sum constraint crosses the LLM trust boundary: repair the
       // allocation deterministically before anything is persisted.
       const repairedPoints = repairDraftWeights(
@@ -196,6 +222,7 @@ export const generateRoleProfileDraft = internalAction({
           .filter((line) => line !== "")
           .join("\n"),
       })
+      await recordUsage(ctx, args.suggestionId, result.totalUsage)
       // Strip undefined optionals: explicit undefined is not a valid Convex
       // value and would fail runMutation arg serialization.
       const profile: {
@@ -265,6 +292,7 @@ export const reviewWeights = internalAction({
           `Criteria: ${JSON.stringify(args.criteria)}`,
         ].join("\n"),
       })
+      await recordUsage(ctx, args.suggestionId, result.totalUsage)
       // Trust boundary: drop moves with unknown ids, self-moves, or transfers
       // that leave the 1-5 scale against the current allocation snapshot, and
       // keep the moves disjoint (one move per criterion, first wins).

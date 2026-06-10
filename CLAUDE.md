@@ -36,7 +36,7 @@ See also: `AGENTS.md` (Next.js version warning + agent-skills config) · `docs/P
 - **Role ≠ Person:** the `role`/`rating` tables must never carry person, salary, or performance fields. Role ids are permanent and never reused.
 - **Weights are 1-5 weight points under a fixed point budget** (criteria count x 3, exact sum; ADR-0004). Percent shares are derived display values; free percentages or arbitrary weight numbers are never entered. Role scores are normalized to the fixed 0-100 scale.
 - Every Convex function is **org-scoped** (tenant isolation). No band override.
-- **Every state-changing mutation writes an audit row** via `logAudit` with an `AUDIT_EVENTS` key (`lib/audit.ts`). Adding a new auditable operation means adding its event key; result-affecting changes additionally log a `band.shift` diff.
+- **Every state-changing mutation writes an audit row** via `logAudit` with an `AUDIT_EVENTS` key (`lib/audit.ts`). Adding a new auditable operation means adding its event key; result-affecting changes additionally log a `band.shift` diff. Scope: this governs user-initiated changes to auditable domain state. Append-only telemetry logs (e.g. AI usage events in `ai/usage.ts`) are outside it: they are not user-initiated domain changes and the event table is itself the record.
 - All data stays within the **EU** (Convex eu-west-1; ADR-0001).
 
 ## Testing

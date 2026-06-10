@@ -77,6 +77,7 @@ export const requestModelDraft = adminMutation({
       source: "ai",
       status: "generating",
       model: { provider: AI_PROVIDER, model: AI_MODEL_ID },
+      requestedBy: ctx.authUserId,
     })
     // Spread optional fields only when defined: explicit undefined values are
     // not valid Convex values and would fail scheduler arg serialization.
@@ -116,6 +117,7 @@ export const requestWeightReview = adminMutation({
       source: "ai",
       status: "generating",
       model: { provider: AI_PROVIDER, model: AI_MODEL_ID },
+      requestedBy: ctx.authUserId,
     })
     const resolvedLocale = promptLocale(locale, settings.locale)
     // The AI quotes criterion names in its motivations: send the names the
@@ -400,6 +402,7 @@ export const requestRoleProfileDraft = orgMutation({
       source: "ai",
       status: "generating",
       model: { provider: AI_PROVIDER, model: AI_MODEL_ID },
+      requestedBy: ctx.authUserId,
     })
     await ctx.scheduler.runAfter(
       0,
