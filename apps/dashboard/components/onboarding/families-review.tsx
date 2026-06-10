@@ -238,6 +238,7 @@ export function FamiliesReview({
                   leftwards as an overlay, so the header never reflows. */}
               <span className="relative ml-auto size-9 shrink-0">
                 <MorphConfirmButton
+                  idleVariant="ghost"
                   triggerIcon={Delete02Icon}
                   triggerLabel={t("removeFamilyLabel", { name: family.name })}
                   confirmLabel={tFamily("removeConfirm")}
@@ -424,6 +425,7 @@ function SortableRoleRow({
           leftwards instead of pushing the select and input aside. */}
       <span className="relative size-9 shrink-0">
         <MorphConfirmButton
+          idleVariant="ghost"
           triggerIcon={Delete02Icon}
           triggerLabel={t("removeRoleLabel", { title: role.title })}
           confirmLabel={tFamily("removeConfirm")}

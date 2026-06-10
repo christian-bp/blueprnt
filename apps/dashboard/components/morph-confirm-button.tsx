@@ -47,6 +47,10 @@ import { SPRING } from "@/lib/motion"
 //   triggerLabel  - aria-label for the idle icon button
 //   triggerIcon   - idle icon; defaults to the neutral cross (pass a trashcan
 //                   where the trigger should read as delete, e.g. list rows)
+//   idleVariant   - "pill" (default) keeps the bordered pill at rest (for
+//                   triggers floating over content, e.g. a card corner);
+//                   "ghost" rests as a plain icon button and only shows the
+//                   pill when armed (for triggers inline in rows)
 //
 // Label-variant props:
 //   variant       - "label"
@@ -65,6 +69,7 @@ interface MorphConfirmIconProps extends MorphConfirmBaseProps {
   variant?: "icon"
   triggerLabel: string
   triggerIcon?: IconSvgElement
+  idleVariant?: "pill" | "ghost"
 }
 
 interface MorphConfirmLabelProps extends MorphConfirmBaseProps {
@@ -184,25 +189,32 @@ export function MorphConfirmButton(props: MorphConfirmButtonProps) {
 
   // ICON variant: an icon button that morphs in place. Callers position the
   // container absolutely so its width morph shifts nothing.
+  const pillVisible = armed || (props.idleVariant ?? "pill") === "pill"
   return (
     // motion.div with `layout` so the pill width springs when content swaps.
     // overflow-hidden clips content during the width animation.
-    // Base pill styling is always applied. Caller className is included for
-    // positioning and reveal; when armed or disabled we append opacity-100 to
-    // force visibility regardless of the caller's hide-at-rest classes.
+    // Caller className is included for positioning and reveal; when armed or
+    // disabled we append opacity-100 to force visibility regardless of the
+    // caller's hide-at-rest classes.
     <motion.div
       layout
       transition={SPRING}
       className={cn(
-        "flex items-center overflow-hidden rounded-md border bg-background shadow-sm",
+        // The border is always painted (transparent in the ghost idle) so
+        // arming never changes geometry. At rest the pill matches the
+        // system's bordered controls (shadow-xs, like Input/SelectTrigger);
+        // armed it floats over its neighbors and gets overlay elevation.
+        "flex items-center overflow-hidden rounded-md border",
+        pillVisible ? "bg-background" : "border-transparent",
+        pillVisible && (armed ? "shadow-sm" : "shadow-xs"),
         className,
         (armed || disabled) && "opacity-100"
       )}
     >
       <AnimatePresence mode="popLayout" initial={false}>
         {!armed ? (
-          // Idle state: neutral cross icon. Destructive color is reserved for
-          // the confirm action only.
+          // Idle state: muted icon that warns with the destructive color on
+          // hover; the destructive ACTION still requires the armed confirm.
           <motion.div
             key="idle"
             // layout="position" lets Motion scale-correct this child while the
@@ -220,7 +232,7 @@ export function MorphConfirmButton(props: MorphConfirmButtonProps) {
               size="icon-sm"
               disabled={disabled}
               aria-label={props.triggerLabel}
-              className="text-muted-foreground"
+              className="text-muted-foreground hover:text-destructive"
               onClick={() => setArmed(true)}
             >
               <HugeiconsIcon
