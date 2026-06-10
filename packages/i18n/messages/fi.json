@@ -318,7 +318,14 @@
         "addRoleCta": "Lisää rooli",
         "removeFamilyLabel": "Poista perhe {name}",
         "removeRoleLabel": "Poista rooli {title}",
-        "error": "Jokin meni pieleen. Yritä uudelleen."
+        "error": "Jokin meni pieleen. Yritä uudelleen.",
+        "restartCta": "Aloita alusta",
+        "dragHandleLabel": "Siirrä roolia {title}",
+        "dndInstructions": "Nosta rooli painamalla välilyöntiä tai enteriä, siirrä sitä nuolinäppäimillä ja pudota painamalla välilyöntiä tai enteriä uudelleen. Peruuta painamalla escapea.",
+        "dndPickedUp": "Nostettiin {title}.",
+        "dndOver": "{title} on perheen {family} päällä.",
+        "dndDropped": "{title} sijoitettiin perheeseen {family}.",
+        "dndCancelled": "Roolin {title} siirto peruutettiin."
       }
     },
     "model": {

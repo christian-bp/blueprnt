@@ -318,7 +318,14 @@
         "addRoleCta": "Add role",
         "removeFamilyLabel": "Remove family {name}",
         "removeRoleLabel": "Remove role {title}",
-        "error": "Something went wrong. Try again."
+        "error": "Something went wrong. Try again.",
+        "restartCta": "Start over",
+        "dragHandleLabel": "Move role {title}",
+        "dndInstructions": "Press space or enter to pick up a role, use the arrow keys to move it, and press space or enter again to drop it. Press escape to cancel.",
+        "dndPickedUp": "Picked up {title}.",
+        "dndOver": "{title} is over {family}.",
+        "dndDropped": "{title} was placed in {family}.",
+        "dndCancelled": "Moving {title} was cancelled."
       }
     },
     "model": {

@@ -318,7 +318,14 @@
         "addRoleCta": "Tilføj rolle",
         "removeFamilyLabel": "Fjern familien {name}",
         "removeRoleLabel": "Fjern rollen {title}",
-        "error": "Noget gik galt. Prøv igen."
+        "error": "Noget gik galt. Prøv igen.",
+        "restartCta": "Start forfra",
+        "dragHandleLabel": "Flyt rollen {title}",
+        "dndInstructions": "Tryk på mellemrum eller enter for at løfte en rolle, brug piletasterne til at flytte den, og tryk på mellemrum eller enter igen for at slippe den. Tryk på escape for at annullere.",
+        "dndPickedUp": "Løftede {title}.",
+        "dndOver": "{title} er over {family}.",
+        "dndDropped": "{title} blev placeret i {family}.",
+        "dndCancelled": "Flytningen af {title} blev annulleret."
       }
     },
     "model": {

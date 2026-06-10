@@ -5,16 +5,7 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Button } from "@workspace/ui/components/button"
-import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
-import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation, useQuery } from "convex/react"
@@ -22,11 +13,13 @@ import { AnimatePresence, motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
+import { FamiliesReview } from "@/components/onboarding/families-review"
 import { NextButton } from "@/components/onboarding/next-button"
 import { ScreenShell } from "@/components/onboarding/screen-shell"
 import { TypewriterPlaceholder } from "@/components/onboarding/typewriter-placeholder"
 import { capitalizeFirst } from "@/lib/capitalize"
 import { aiErrorSubKey } from "@/lib/error-label"
+import type { DraftFamily } from "@/lib/family-dnd"
 import { isDuplicateFamilyError } from "@/lib/family-error"
 import { newestByKind } from "@/lib/open-suggestions"
 import {
@@ -37,18 +30,6 @@ import {
 // A crashed action never reaches markFailed, so a "generating" row can linger
 // forever. Rows older than this are treated as failed and retryable.
 const STALE_AFTER_MS = 90_000
-
-interface DraftRole {
-  id: number
-  title: string
-  trackKey: string
-}
-
-interface DraftFamily {
-  id: number
-  name: string
-  roles: DraftRole[]
-}
 
 // What seeded the editable review list: the industry template, or an AI
 // import whose suggestion the create button must close out (ADR-0003).
@@ -70,9 +51,6 @@ export function FamiliesStep({
   onFinished: () => void
 }) {
   const t = useTranslations("dashboard.onboarding.families")
-  const tFamily = useTranslations("dashboard.roles.family")
-  const tCreate = useTranslations("dashboard.roles.create")
-  const tEditor = useTranslations("dashboard.model.editor")
   const tReview = useTranslations("dashboard.model.review")
   const tAi = useTranslations("dashboard.ai")
   const tErrors = useTranslations("errors")
@@ -99,6 +77,9 @@ export function FamiliesStep({
   const [requestPending, setRequestPending] = useState(false)
   const [requestFailed, setRequestFailed] = useState(false)
   const [failure, setFailure] = useState<"duplicate" | "generic" | null>(null)
+  // Guards the seed-on-render block after "start over": the dismissed
+  // suggestion may still read as suggested until the reject round-trips.
+  const [lastDismissedId, setLastDismissedId] = useState<string | null>(null)
 
   const importRow = newestByKind(suggestions, "starter.import")
   const parsedImport =
@@ -123,6 +104,7 @@ export function FamiliesStep({
   if (
     seededFrom === null &&
     importRow?.status === "suggested" &&
+    importRow.suggestionId !== lastDismissedId &&
     parsedImport?.success === true &&
     model !== undefined &&
     model !== null
@@ -153,12 +135,20 @@ export function FamiliesStep({
     return id
   }
 
-  function updateFamily(familyId: number, patch: Partial<DraftFamily>) {
-    setFamilies((current) =>
-      (current ?? []).map((family) =>
-        family.id === familyId ? { ...family, ...patch } : family
-      )
-    )
+  // Back to the paste view with the pasted text intact. An AI-seeded review
+  // dismisses its suggestion (the lifecycle always ends in confirmed or
+  // rejected); best-effort, with lastDismissedId blocking an instant re-seed.
+  function restart() {
+    if (seededFrom?.source === "ai") {
+      rejectSuggestion({
+        orgId,
+        suggestionId: seededFrom.suggestionId,
+      }).catch(() => {})
+      setLastDismissedId(seededFrom.suggestionId)
+    }
+    setFamilies(null)
+    setSeededFrom(null)
+    setFailure(null)
   }
 
   function seedFromTemplate() {
@@ -376,133 +366,31 @@ export function FamiliesStep({
             {tAi("provenance")}
           </p>
         )}
-        <div className="w-full space-y-4">
-          {(families ?? []).map((family) => (
-            <Card key={family.id}>
-              <CardHeader className="flex flex-row items-center gap-2">
-                <Input
-                  aria-label={tFamily("nameLabel")}
-                  value={family.name}
-                  className="max-w-xs font-medium"
-                  onChange={(event) =>
-                    updateFamily(family.id, { name: event.target.value })
-                  }
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="ml-auto"
-                  aria-label={t("removeFamilyLabel", { name: family.name })}
-                  onClick={() =>
-                    setFamilies((current) =>
-                      (current ?? []).filter((item) => item.id !== family.id)
-                    )
-                  }
-                >
-                  {tEditor("removeCta")}
-                </Button>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {family.roles.map((role) => (
-                  <div key={role.id} className="flex items-center gap-2">
-                    <Input
-                      aria-label={tCreate("titleLabel")}
-                      value={role.title}
-                      onChange={(event) =>
-                        updateFamily(family.id, {
-                          roles: family.roles.map((item) =>
-                            item.id === role.id
-                              ? { ...item, title: event.target.value }
-                              : item
-                          ),
-                        })
-                      }
-                    />
-                    <Select
-                      value={role.trackKey}
-                      onValueChange={(trackKey) =>
-                        updateFamily(family.id, {
-                          roles: family.roles.map((item) =>
-                            item.id === role.id ? { ...item, trackKey } : item
-                          ),
-                        })
-                      }
-                    >
-                      <SelectTrigger size="sm" className="w-36 shrink-0">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {trackOptions.map((option) => (
-                          <SelectItem
-                            key={option.trackKey}
-                            value={option.trackKey}
-                          >
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      aria-label={t("removeRoleLabel", { title: role.title })}
-                      onClick={() =>
-                        updateFamily(family.id, {
-                          roles: family.roles.filter(
-                            (item) => item.id !== role.id
-                          ),
-                        })
-                      }
-                    >
-                      {tEditor("removeCta")}
-                    </Button>
-                  </div>
-                ))}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    updateFamily(family.id, {
-                      roles: [
-                        ...family.roles,
-                        {
-                          id: claimId(),
-                          title: "",
-                          trackKey: "IC",
-                        },
-                      ],
-                    })
-                  }
-                >
-                  {t("addRoleCta")}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() =>
-              setFamilies((current) => [
-                ...(current ?? []),
-                { id: claimId(), name: "", roles: [] },
-              ])
-            }
-          >
-            {t("addFamilyCta")}
-          </Button>
-        </div>
+        <FamiliesReview
+          families={families ?? []}
+          onFamiliesChange={(updater) =>
+            setFamilies((current) => updater(current ?? []))
+          }
+          claimId={claimId}
+          trackOptions={trackOptions}
+        />
         {failure !== null && (
           <p role="alert" className="text-destructive text-sm">
             {failure === "duplicate" ? tErrors("roleFamilyExists") : t("error")}
           </p>
         )}
         {/* The final step cannot be skipped: emptying the list and finishing
-            is the explicit way to start without families. */}
-        <div className="flex w-full items-center justify-end">
+            is the explicit way to start without families. Start over returns
+            to the paste view with the pasted text intact. */}
+        <div className="flex w-full items-center justify-between">
+          <Button
+            type="button"
+            variant="ghost"
+            disabled={pending}
+            onClick={restart}
+          >
+            {t("restartCta")}
+          </Button>
           <Button type="button" disabled={pending} onClick={() => finish()}>
             {(families ?? []).length === 0 ? tReview("cta") : t("createCta")}
             <HugeiconsIcon

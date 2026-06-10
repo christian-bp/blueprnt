@@ -381,6 +381,45 @@ describe("FamiliesStep", () => {
     expect(onFinished).toHaveBeenCalledTimes(1)
   })
 
+  it("renders a drag handle per role in the review list", async () => {
+    renderStep()
+    await seedFromTemplate()
+    for (const title of ["Developer", "Tech Lead", "Account Executive"]) {
+      expect(
+        screen.getByRole("button", {
+          name: t.dragHandleLabel.replace("{title}", title),
+        })
+      ).toBeDefined()
+    }
+  })
+
+  it("start over from an AI review dismisses the suggestion and returns to the paste view", async () => {
+    currentSuggestions = [suggestedImportFixture()]
+    rejectSuggestionMock.mockResolvedValue(null)
+    renderStep()
+    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+
+    fireEvent.click(screen.getByRole("button", { name: t.restartCta }))
+
+    expect(rejectSuggestionMock).toHaveBeenCalledWith({
+      orgId: "org-1",
+      suggestionId: "sugg-1",
+    })
+    // The fixture still reports the suggestion as suggested; the dismissal
+    // guard must keep it from instantly re-seeding the review.
+    expect(await screen.findByLabelText(t.pasteLabel)).toBeDefined()
+  })
+
+  it("start over from a template review returns to the paste view without dismissing anything", async () => {
+    renderStep()
+    await seedFromTemplate()
+
+    fireEvent.click(screen.getByRole("button", { name: t.restartCta }))
+
+    expect(await screen.findByLabelText(t.pasteLabel)).toBeDefined()
+    expect(rejectSuggestionMock).not.toHaveBeenCalled()
+  })
+
   it("shows the translated duplicate alert and stays when create is rejected", async () => {
     createStarterSetMock.mockRejectedValue(
       new Error("ConvexError: errors.roleFamilyExists")
