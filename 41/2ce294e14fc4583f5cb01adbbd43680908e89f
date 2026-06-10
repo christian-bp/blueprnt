@@ -1,0 +1,21 @@
+packages/backend/convex/ai/pricing.ts
+  s_edfacac3601b15::t_1123c3153db8be 1-29
+packages/backend/convex/ai/pricing.test.ts
+  s_edfacac3601b15::t_2e537b1f0f4061 1-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "412ce294e14fc4583f5cb01adbbd43680908e89f",
+  "prompts": {},
+  "sessions": {
+    "s_edfacac3601b15": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c56db89e-a84b-40b0-9259-562927452d3a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
