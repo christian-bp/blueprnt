@@ -1,0 +1,33 @@
+apps/dashboard/components/model/add-criterion-form.test.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 1-164
+apps/dashboard/components/onboarding/onboarding-dots.test.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 1-44
+apps/dashboard/components/onboarding/option-card.test.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 1-67
+apps/dashboard/components/model/model-draft-panel.test.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 1-206
+apps/dashboard/components/onboarding/option-card.tsx
+  s_fa45b53f6da63b::t_3a9df2f920e3ed 1-73
+apps/dashboard/components/model/add-criterion-dialog.test.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 1-104
+apps/dashboard/components/model/weight-review-panel.test.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 1-284
+apps/dashboard/components/model/add-criterion-dialog.tsx
+  s_fa45b53f6da63b::t_e656cc9a4195d1 1-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "f76fee1fcafcae4dca849d6975dcef1c542c4b63",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
