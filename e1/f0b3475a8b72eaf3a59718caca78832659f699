@@ -1,0 +1,77 @@
+packages/backend/convex/ai/suggest.test.ts
+  s_fa45b53f6da63b::t_c9855961e4cfd5 980-1005
+apps/dashboard/lib/suggestion-schemas.ts
+  s_fa45b53f6da63b::t_4fbde4782f1d47 1
+  s_fa45b53f6da63b::t_7152ad939da3c7 44-49
+packages/backend/convex/ai/suggest.ts
+  s_fa45b53f6da63b::t_9a83e25efa2a52 514-516,518
+  s_fa45b53f6da63b::t_0fea56b592326c 80,120,173,268,293,362,405,445,498,527,569,590,620-621,662,665
+  s_fa45b53f6da63b::t_429ab870ab1a3b 1
+  s_fa45b53f6da63b::t_34d1aa7c760c7e 685-688,700,705-723
+apps/dashboard/components/onboarding/weight-review-panel.tsx
+  s_fa45b53f6da63b::t_c5f4dd4657dd6d 6,15,61-64,78
+  s_fa45b53f6da63b::t_26f55b0a7baf2c 81
+apps/dashboard/components/onboarding/wizard-footer.tsx
+  s_fa45b53f6da63b::t_11468ad4d12d5b 1-24
+apps/dashboard/components/onboarding/families-step.tsx
+  s_fa45b53f6da63b::t_d599e5c80b45f5 15,21-22
+  s_fa45b53f6da63b::t_6f045c5ccd1295 339,347
+  s_fa45b53f6da63b::t_429ab870ab1a3b 7
+  s_fa45b53f6da63b::t_0f26c7164dd78e 62-67
+  s_fa45b53f6da63b::t_b63127d6d6d978 84-88,93,100
+  s_fa45b53f6da63b::t_2d32953eba10bc 312
+  s_fa45b53f6da63b::t_65fb5d1fa2540e 199-222
+  s_fa45b53f6da63b::t_7b1cd2631ba233 389-392,396,409
+packages/constants/src/suggestions.test.ts
+  s_fa45b53f6da63b::t_0c3be6c16aa5cd 1-10
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_fa45b53f6da63b::t_0b4cae29dd8bfd 18
+  s_fa45b53f6da63b::t_45425988de51c1 162-168,171
+apps/dashboard/components/onboarding/families-review.tsx
+  s_fa45b53f6da63b::t_785b916b196fe7 237-246
+  s_fa45b53f6da63b::t_64b7c01fa44a0f 414-418,422-450
+packages/constants/src/suggestions.ts
+  s_fa45b53f6da63b::t_806df49d9fb2d4 1-16
+apps/dashboard/lib/family-dnd.test.ts
+  s_fa45b53f6da63b::t_110f4dd369858b 70-74
+  s_fa45b53f6da63b::t_7eedfe1ab718a7 84-88
+packages/backend/convex/shared/tables.ts
+  s_fa45b53f6da63b::t_aa087db14ccc08 26
+  s_fa45b53f6da63b::t_c38228c5ac3dfd 52-54
+packages/backend/convex/ai/generate.ts
+  s_fa45b53f6da63b::t_b8eb9e16355187 97
+apps/dashboard/lib/family-dnd.ts
+  s_fa45b53f6da63b::t_5f9cfa6e5229f1 19
+  s_fa45b53f6da63b::t_6ec9bb290470cc 30-31,33,44,51
+  s_fa45b53f6da63b::t_6ad0c203529751 74-75,77,81,87
+apps/dashboard/hooks/use-generating-staleness.ts
+  s_fa45b53f6da63b::t_78dbda55b08a55 1-30
+apps/dashboard/components/onboarding/model-draft-panel.tsx
+  s_fa45b53f6da63b::t_c5f4dd4657dd6d 4,12-13,45-48,66,74
+apps/dashboard/components/onboarding/model-review.tsx
+  s_fa45b53f6da63b::t_4db4494a0dacfc 51-57,63
+  s_fa45b53f6da63b::t_0b4cae29dd8bfd 11
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_fa45b53f6da63b::t_7ff4598d5ad2f9 447-501
+apps/dashboard/components/roles/role-ai-panel.tsx
+  s_fa45b53f6da63b::t_43ae1054194aab 13-14,66-69,85-86,91
+  s_fa45b53f6da63b::t_49ed6c82f2a8a6 4
+packages/constants/src/index.ts
+  s_fa45b53f6da63b::t_6c09e54e459118 11-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "e1f0b3475a8b72eaf3a59718caca78832659f699",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
