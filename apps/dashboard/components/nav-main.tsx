@@ -39,8 +39,11 @@ export function NavMain({
                   tooltip={item.title}
                   // Larger nav icons than the sidebar default (16px): 20px,
                   // with the collapsed square's padding tightened so the
-                  // icon is not clipped (32px box = 20px icon + 2x6px).
-                  className="group-data-[collapsible=icon]:p-1.5! [&_svg]:size-5"
+                  // icon is not clipped (32px box = 20px icon + 2x6px). In
+                  // the collapsed square the label span must be display-none
+                  // (not just zero width): the flex gap against it otherwise
+                  // pushes the icon off center.
+                  className="group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-1.5! [&_svg]:size-5 group-data-[collapsible=icon]:[&_span]:hidden"
                 >
                   <Link href={item.url}>
                     {item.icon}

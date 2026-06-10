@@ -22,6 +22,9 @@ export function AppShell(props: {
           SidebarMenuButton tooltips require one at the app level. */}
       <TooltipProvider>
         <SidebarProvider
+          // Collapsed icon rail is the default; expanding is the opt-in
+          // (toggle, rail, or cmd+b).
+          defaultOpen={false}
           style={
             {
               "--sidebar-width": "calc(var(--spacing) * 72)",
