@@ -1,0 +1,32 @@
+packages/i18n/messages/da.json
+  s_fa45b53f6da63b::t_7cc6807a8d468f 319-320
+packages/i18n/messages/sv.json
+  s_fa45b53f6da63b::t_7cc6807a8d468f 319-320
+packages/i18n/messages/en.json
+  s_fa45b53f6da63b::t_7cc6807a8d468f 319-320
+packages/i18n/messages/nb.json
+  s_fa45b53f6da63b::t_7cc6807a8d468f 319-320
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_fa45b53f6da63b::t_f811a1d9bf9cb7 352
+packages/i18n/messages/fi.json
+  s_fa45b53f6da63b::t_7cc6807a8d468f 319-320
+apps/dashboard/components/onboarding/families-review.tsx
+  s_fa45b53f6da63b::t_2b5ae57e33db92 244
+  s_fa45b53f6da63b::t_6396690084df66 431
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b86474f2e5e38f83ee550983235780e86912ac27",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
