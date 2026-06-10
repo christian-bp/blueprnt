@@ -1,0 +1,38 @@
+packages/backend/convex/evaluationModel/standardTemplate.ts
+  s_fa45b53f6da63b::t_05822dba1d4626 6-8,73-81,86
+packages/backend/convex/evaluationModel/standardTemplate.content.nb.ts
+  s_fa45b53f6da63b::t_98243c57c75345 1-143
+packages/backend/convex/assessment/industryStarters.ts
+  s_fa45b53f6da63b::t_bf4473054876ea 28-30
+packages/backend/convex/evaluationModel/standardTemplate.content.da.ts
+  s_fa45b53f6da63b::t_960c53ceb7b7d0 12,14,16,18-21,28,30-35,40,42,44-49,54,56,58-63,68,70,73-74,76-77,82,84,86-91,95-96,98,101,103-105,110,112,117-119,125-134
+  s_fa45b53f6da63b::t_360c29db7e6191 1-11,13,15,17,22-27,29,36-39,41,43,50-53,55,57,64-67,69,71-72,75,78-81,83,85,92-94,97,99-100,102,106-109,111,113-116,120-124,135-143
+packages/backend/convex/evaluationModel/standardTemplate.content.fi.ts
+  s_fa45b53f6da63b::t_1bfe7244788d86 40,83-84,126
+  s_fa45b53f6da63b::t_c38456daf501fc 1-39,41-82,85-125,127-144
+packages/backend/convex/evaluationModel/model.test.ts
+  s_fa45b53f6da63b::t_a58912245a2f3a 364,374-386
+packages/backend/convex/assessment/starters.ts
+  s_fa45b53f6da63b::t_bf4473054876ea 44
+  s_fa45b53f6da63b::t_1bfe7244788d86 3
+packages/backend/convex/evaluationModel/standardTemplate.test.ts
+  s_fa45b53f6da63b::t_1bfe7244788d86 39-40
+packages/backend/convex/evaluationModel/localize.ts
+  s_fa45b53f6da63b::t_05822dba1d4626 10-12,14-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b5004e885b4083d0867e0e0f04ee030ec3e0f69d",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
