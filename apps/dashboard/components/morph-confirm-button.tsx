@@ -2,7 +2,7 @@
 
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
-import { HugeiconsIcon } from "@hugeicons/react"
+import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react"
 import { Cancel01Icon } from "@hugeicons/core-free-icons"
 import { AnimatePresence, motion } from "motion/react"
 import { useEffect, useRef, useState } from "react"
@@ -44,7 +44,9 @@ import { SPRING } from "@/lib/motion"
 //
 // Icon-variant props:
 //   variant       - "icon" (or omitted)
-//   triggerLabel  - aria-label for the idle cross icon button
+//   triggerLabel  - aria-label for the idle icon button
+//   triggerIcon   - idle icon; defaults to the neutral cross (pass a trashcan
+//                   where the trigger should read as delete, e.g. list rows)
 //
 // Label-variant props:
 //   variant       - "label"
@@ -62,6 +64,7 @@ interface MorphConfirmBaseProps {
 interface MorphConfirmIconProps extends MorphConfirmBaseProps {
   variant?: "icon"
   triggerLabel: string
+  triggerIcon?: IconSvgElement
 }
 
 interface MorphConfirmLabelProps extends MorphConfirmBaseProps {
@@ -214,7 +217,11 @@ export function MorphConfirmButton(props: MorphConfirmButtonProps) {
               className="flex size-7 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
               onClick={() => setArmed(true)}
             >
-              <HugeiconsIcon icon={Cancel01Icon} size={14} strokeWidth={2} />
+              <HugeiconsIcon
+                icon={props.triggerIcon ?? Cancel01Icon}
+                size={14}
+                strokeWidth={2}
+              />
             </button>
           </motion.div>
         ) : (

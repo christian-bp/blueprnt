@@ -340,10 +340,16 @@ describe("FamiliesStep", () => {
     renderStep()
     await seedFromTemplate()
 
-    // Remove the Sales family, then create.
+    // Remove the Sales family (arm the morph confirm, then confirm), then
+    // create.
     fireEvent.click(
       screen.getByRole("button", {
         name: t.removeFamilyLabel.replace("{name}", "Sales"),
+      })
+    )
+    fireEvent.click(
+      await screen.findByRole("button", {
+        name: messages.dashboard.roles.family.removeConfirm,
       })
     )
     fireEvent.click(screen.getByRole("button", { name: t.createCta }))

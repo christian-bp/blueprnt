@@ -38,6 +38,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 import { useTranslations } from "next-intl"
 import { useRef, useState } from "react"
+import { MorphConfirmButton } from "@/components/morph-confirm-button"
 import {
   type DraftFamily,
   type DraftRole,
@@ -229,20 +230,22 @@ export function FamiliesReview({
                   updateFamily(family.id, { name: event.target.value })
                 }
               />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                className="ml-auto shrink-0 text-muted-foreground hover:text-destructive"
-                aria-label={t("removeFamilyLabel", { name: family.name })}
-                onClick={() =>
-                  onFamiliesChange((current) =>
-                    current.filter((item) => item.id !== family.id)
-                  )
-                }
-              >
-                <HugeiconsIcon icon={Delete02Icon} aria-hidden="true" />
-              </Button>
+              {/* Fixed-size slot + absolute anchor: the armed pill grows
+                  leftwards as an overlay, so the header never reflows. */}
+              <span className="relative ml-auto size-7 shrink-0">
+                <MorphConfirmButton
+                  triggerIcon={Delete02Icon}
+                  triggerLabel={t("removeFamilyLabel", { name: family.name })}
+                  confirmLabel={tFamily("removeConfirm")}
+                  cancelLabel={tFamily("cancel")}
+                  className="absolute top-1/2 right-0 z-10 -translate-y-1/2"
+                  onConfirm={() =>
+                    onFamiliesChange((current) =>
+                      current.filter((item) => item.id !== family.id)
+                    )
+                  }
+                />
+              </span>
             </CardHeader>
             <CardContent className="space-y-2">
               <SortableContext
@@ -366,6 +369,7 @@ function SortableRoleRow({
 }) {
   const t = useTranslations("dashboard.onboarding.families")
   const tCreate = useTranslations("dashboard.roles.create")
+  const tFamily = useTranslations("dashboard.roles.family")
   const {
     attributes,
     listeners,
@@ -411,16 +415,18 @@ function SortableRoleRow({
           ))}
         </SelectContent>
       </Select>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon-sm"
-        className="shrink-0 text-muted-foreground hover:text-destructive"
-        aria-label={t("removeRoleLabel", { title: role.title })}
-        onClick={onRemove}
-      >
-        <HugeiconsIcon icon={Delete02Icon} aria-hidden="true" />
-      </Button>
+      {/* Fixed-size slot + absolute anchor: the armed pill overlays the row
+          leftwards instead of pushing the select and input aside. */}
+      <span className="relative size-7 shrink-0">
+        <MorphConfirmButton
+          triggerIcon={Delete02Icon}
+          triggerLabel={t("removeRoleLabel", { title: role.title })}
+          confirmLabel={tFamily("removeConfirm")}
+          cancelLabel={tFamily("cancel")}
+          className="absolute top-1/2 right-0 z-10 -translate-y-1/2"
+          onConfirm={onRemove}
+        />
+      </span>
     </div>
   )
 }
