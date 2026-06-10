@@ -1,0 +1,29 @@
+apps/dashboard/components/morph-confirm-button.tsx
+  s_fa45b53f6da63b::t_09884472f992a3 47-49
+  s_fa45b53f6da63b::t_3fc78d53d60cbd 67
+  s_fa45b53f6da63b::t_2d53849c69e25c 5
+  s_fa45b53f6da63b::t_0406a2baa59d82 220-224
+apps/dashboard/components/onboarding/families-review.tsx
+  s_fa45b53f6da63b::t_95efc60fdc228c 418-429
+  s_fa45b53f6da63b::t_ac922df08bcd04 41
+  s_fa45b53f6da63b::t_516a207c87255e 233-248
+  s_fa45b53f6da63b::t_29d64e6861cbc6 372
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_fa45b53f6da63b::t_54bb6e4c8200ec 343-344,350-352
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "ee943e72f6529f1889ab8b2d794bb17a842e1b89",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
