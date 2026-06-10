@@ -9,9 +9,9 @@ import { ConfirmButtons } from "@/components/confirm-buttons"
 // its children), so the first click only arms the control; the regular-sized
 // confirm/cancel pair then animates in over the trigger's spot.
 //
-// align="left" so the armed row grows into the empty footer space to the
-// trigger's right, staying clear of the Next button (far right, across the
-// justify-between gap).
+// The trigger sits immediately left of the Next button (the wizard's footer
+// convention), so the armed row keeps the default right anchor and grows
+// leftward into the footer's empty space, staying clear of the Next button.
 export function ChangeChoiceButton({
   onConfirm,
   disabled,
@@ -23,7 +23,6 @@ export function ChangeChoiceButton({
 
   return (
     <ConfirmButtons
-      align="left"
       triggerText={t("cta")}
       confirmLabel={t("confirm")}
       cancelLabel={t("cancel")}

@@ -384,8 +384,10 @@ export function FamiliesStep({
         )}
         {/* The final step cannot be skipped: emptying the list and finishing
             is the explicit way to start without families. Start over returns
-            to the paste view with the pasted text intact. */}
-        <div className="flex w-full items-center justify-between">
+            to the paste view with the pasted text intact; the secondary
+            action sits immediately left of the primary (the wizard's footer
+            convention). */}
+        <div className="flex w-full items-center justify-end gap-2">
           <Button
             type="button"
             variant="ghost"

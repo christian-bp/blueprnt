@@ -158,19 +158,17 @@ export function CriterionEditor({
           </p>
         )}
 
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            {onChangeChoice && (
-              <ChangeChoiceButton onConfirm={onChangeChoice} />
-            )}
-          </div>
-          {/* The floor hint sits inside the footer row, so its appearance
-              never shifts the layout vertically. */}
+        {/* Wizard footer convention: the secondary action sits immediately
+            left of the primary. The floor hint stays inside the row (its
+            appearance never shifts the layout vertically) and fills the
+            space to the buttons' left. */}
+        <div className="flex items-center justify-end gap-2">
           {model != null && criteria.length < MIN_CRITERIA && (
             <span className="min-w-0 flex-1 truncate text-right text-muted-foreground text-sm">
               {tEditor("minCriteriaHint", { min: MIN_CRITERIA })}
             </span>
           )}
+          {onChangeChoice && <ChangeChoiceButton onConfirm={onChangeChoice} />}
           <NextButton disabled={finishDisabled} onClick={onContinue} />
         </div>
       </div>
