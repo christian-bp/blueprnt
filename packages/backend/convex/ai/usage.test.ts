@@ -40,7 +40,7 @@ describe("recordAiUsage", () => {
       inputTokens: 1000,
       outputTokens: 200,
       totalTokens: 1200,
-      cachedInputTokens: 0,
+      cachedInputTokens: 7,
     })
     await t.run(async (ctx) => {
       const events = await ctx.db
@@ -52,6 +52,7 @@ describe("recordAiUsage", () => {
       expect(events[0]?.kind).toBe("model.draft")
       expect(events[0]?.actorId).toBe("user-admin")
       expect(events[0]?.estimatedCostNanos).toBe(1000 * 500 + 200 * 1500)
+      expect(events[0]?.cachedInputTokens).toBe(7)
       const monthly = await ctx.db
         .query("aiUsageMonthly")
         .withIndex("by_org_period", (q) => q.eq("orgId", "org-acme"))

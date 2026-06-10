@@ -103,7 +103,9 @@ export const recordAiUsage = internalMutation({
 // Internal ops reads (V1: no client-callable usage surface). Used from the
 // Convex dashboard to answer "how much has org X spent" and "where is the
 // spend concentrated". Full-table scan in getTopOrgsByCost is fine at alpha
-// volume; add a by_period index if the rollup ever grows large.
+// volume; add a by_period index if the rollup ever grows large. Note:
+// getTopOrgsByCost without a period ranks (org, period) rows, not org lifetime
+// totals; pass a period for the "spend this month" view.
 export const getOrgUsage = internalQuery({
   args: { orgId: v.string(), period: v.optional(v.string()) },
   returns: v.array(

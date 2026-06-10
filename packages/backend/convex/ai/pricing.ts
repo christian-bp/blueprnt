@@ -10,7 +10,10 @@ interface ModelPrice {
   outNanosPerToken: number
 }
 
-export const MODEL_PRICING: Record<string, ModelPrice> = {
+// Value type is `ModelPrice | undefined` so a lookup with an unknown model
+// (the key is always a runtime, env-derived string) is typed as possibly
+// undefined and the guard below is type-meaningful rather than a dead check.
+export const MODEL_PRICING: Record<string, ModelPrice | undefined> = {
   "mistral-large-latest": { inNanosPerToken: 500, outNanosPerToken: 1500 },
 }
 
