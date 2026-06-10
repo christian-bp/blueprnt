@@ -444,4 +444,59 @@ describe("FamiliesStep", () => {
     expect(completeOnboardingMock).not.toHaveBeenCalled()
     expect(onFinished).not.toHaveBeenCalled()
   })
+
+  it("there is no skip: the create button is the only way forward in review", async () => {
+    renderStep()
+    await seedFromTemplate()
+    const buttons = screen.getAllByRole("button")
+    expect(buttons.filter((b) => b.textContent === t.createCta)).toHaveLength(1)
+    expect(screen.queryByText("Skip for now")).toBeNull()
+  })
+
+  it("shows the duplicate alert when the AI confirm is rejected", async () => {
+    currentSuggestions = [suggestedImportFixture()]
+    confirmStarterImportMock.mockRejectedValue(
+      new Error("ConvexError: errors.roleFamilyExists")
+    )
+    const onFinished = vi.fn()
+    renderStep(onFinished)
+    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+
+    fireEvent.click(screen.getByRole("button", { name: t.createCta }))
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert").textContent).toBe(
+        messages.errors.roleFamilyExists
+      )
+    })
+    expect(completeOnboardingMock).not.toHaveBeenCalled()
+    expect(onFinished).not.toHaveBeenCalled()
+  })
+
+  it("retrying after a failed completion does not re-run the creation", async () => {
+    currentSuggestions = [suggestedImportFixture()]
+    confirmStarterImportMock.mockResolvedValue(null)
+    completeOnboardingMock
+      .mockRejectedValueOnce(new Error("ConvexError: errors.notFound"))
+      .mockResolvedValueOnce(null)
+    const onFinished = vi.fn()
+    renderStep(onFinished)
+    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+
+    // First attempt: the set is created, completion fails.
+    fireEvent.click(screen.getByRole("button", { name: t.createCta }))
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toBeDefined()
+    })
+    expect(confirmStarterImportMock).toHaveBeenCalledTimes(1)
+
+    // Retry: only the completion re-runs (a second confirm would throw
+    // notFound on the already-confirmed suggestion).
+    fireEvent.click(screen.getByRole("button", { name: t.createCta }))
+    await waitFor(() => {
+      expect(onFinished).toHaveBeenCalledTimes(1)
+    })
+    expect(confirmStarterImportMock).toHaveBeenCalledTimes(1)
+    expect(completeOnboardingMock).toHaveBeenCalledTimes(2)
+  })
 })

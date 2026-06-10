@@ -1,3 +1,4 @@
+import { MAX_STARTER_IMPORT_TEXT, SUGGESTION_KINDS } from "@workspace/constants"
 import { isWeightPoints } from "@workspace/core"
 import { v } from "convex/values"
 import { internal } from "../_generated/api"
@@ -76,7 +77,7 @@ export const requestModelDraft = adminMutation({
     if (model === null) throw appError(ERROR_CODES.notFound)
     const suggestionId = await ctx.db.insert("suggestions", {
       orgId: ctx.orgId,
-      target: { kind: "model.draft", modelId: model._id },
+      target: { kind: SUGGESTION_KINDS.modelDraft, modelId: model._id },
       suggestedValue: null,
       source: "ai",
       status: "generating",
@@ -116,7 +117,7 @@ export const requestWeightReview = adminMutation({
     if (criteria.length === 0) throw appError(ERROR_CODES.invalidInput)
     const suggestionId = await ctx.db.insert("suggestions", {
       orgId: ctx.orgId,
-      target: { kind: "model.weightReview", modelId: model._id },
+      target: { kind: SUGGESTION_KINDS.weightReview, modelId: model._id },
       suggestedValue: null,
       source: "ai",
       status: "generating",
@@ -169,7 +170,7 @@ export const confirmModelDraft = adminMutation({
     if (
       suggestion === null ||
       suggestion.orgId !== ctx.orgId ||
-      suggestion.target.kind !== "model.draft" ||
+      suggestion.target.kind !== SUGGESTION_KINDS.modelDraft ||
       suggestion.status !== "suggested"
     ) {
       throw appError(ERROR_CODES.notFound)
@@ -264,7 +265,7 @@ export const confirmModelDraft = adminMutation({
       actorId: ctx.authUserId,
       payload: {
         suggestionId,
-        kind: "model.draft",
+        kind: SUGGESTION_KINDS.modelDraft,
         acceptedCount: insertedCount,
       },
     })
@@ -289,7 +290,7 @@ export const confirmWeightReview = adminMutation({
     if (
       suggestion === null ||
       suggestion.orgId !== ctx.orgId ||
-      suggestion.target.kind !== "model.weightReview" ||
+      suggestion.target.kind !== SUGGESTION_KINDS.weightReview ||
       suggestion.status !== "suggested"
     ) {
       throw appError(ERROR_CODES.notFound)
@@ -358,7 +359,7 @@ export const confirmWeightReview = adminMutation({
       actorId: ctx.authUserId,
       payload: {
         suggestionId,
-        kind: "model.weightReview",
+        kind: SUGGESTION_KINDS.weightReview,
         appliedCount,
       },
     })
@@ -401,7 +402,7 @@ export const requestRoleProfileDraft = orgMutation({
     ]
     const suggestionId = await ctx.db.insert("suggestions", {
       orgId: ctx.orgId,
-      target: { kind: "role.profile", roleId },
+      target: { kind: SUGGESTION_KINDS.roleProfile, roleId },
       suggestedValue: null,
       source: "ai",
       status: "generating",
@@ -441,7 +442,7 @@ export const confirmRoleProfileDraft = orgMutation({
     if (
       suggestion === null ||
       suggestion.orgId !== ctx.orgId ||
-      suggestion.target.kind !== "role.profile" ||
+      suggestion.target.kind !== SUGGESTION_KINDS.roleProfile ||
       suggestion.status !== "suggested"
     ) {
       throw appError(ERROR_CODES.notFound)
@@ -494,17 +495,13 @@ export const confirmRoleProfileDraft = orgMutation({
       actorId: ctx.authUserId,
       payload: {
         suggestionId,
-        kind: "role.profile",
+        kind: SUGGESTION_KINDS.roleProfile,
         appliedCount: appliedFields.length,
       },
     })
     return null
   },
 })
-
-// The whole pasted role list is prompt data; anything longer than this is
-// almost certainly not a role list and would blow the prompt budget.
-const MAX_IMPORT_TEXT = 20_000
 
 // The onboarding paste-import: the user pastes their roles (optionally
 // pre-grouped into families) and the AI organizes them into a starter-set
@@ -514,8 +511,11 @@ export const requestStarterImport = orgMutation({
   returns: v.id("suggestions"),
   handler: async (ctx, { rawText, locale }) => {
     const settings = await requireCompleteSettings(ctx, ctx.orgId)
+    // The whole pasted role list is prompt data; anything longer than the
+    // shared limit is almost certainly not a role list and would blow the
+    // prompt budget. The client Zod gate enforces the same constant.
     const text = rawText.trim()
-    if (text.length === 0 || text.length > MAX_IMPORT_TEXT) {
+    if (text.length === 0 || text.length > MAX_STARTER_IMPORT_TEXT) {
       throw appError(ERROR_CODES.invalidInput)
     }
     const resolvedLocale = promptLocale(locale, settings.locale)
@@ -524,7 +524,7 @@ export const requestStarterImport = orgMutation({
     const trackNames = templateContent(clampLocale(resolvedLocale)).trackNames
     const suggestionId = await ctx.db.insert("suggestions", {
       orgId: ctx.orgId,
-      target: { kind: "starter.import" },
+      target: { kind: SUGGESTION_KINDS.starterImport },
       suggestedValue: null,
       source: "ai",
       status: "generating",
@@ -566,7 +566,7 @@ export const confirmStarterImport = orgMutation({
     if (
       suggestion === null ||
       suggestion.orgId !== ctx.orgId ||
-      suggestion.target.kind !== "starter.import" ||
+      suggestion.target.kind !== SUGGESTION_KINDS.starterImport ||
       suggestion.status !== "suggested"
     ) {
       throw appError(ERROR_CODES.notFound)
@@ -587,7 +587,7 @@ export const confirmStarterImport = orgMutation({
       actorId: ctx.authUserId,
       payload: {
         suggestionId,
-        kind: "starter.import",
+        kind: SUGGESTION_KINDS.starterImport,
         familyCount,
         roleCount,
       },
@@ -617,8 +617,8 @@ export const rejectSuggestion = orgMutation({
       throw appError(ERROR_CODES.notFound)
     }
     const isModelTarget =
-      suggestion.target.kind === "model.draft" ||
-      suggestion.target.kind === "model.weightReview"
+      suggestion.target.kind === SUGGESTION_KINDS.modelDraft ||
+      suggestion.target.kind === SUGGESTION_KINDS.weightReview
     if (isModelTarget && ctx.role !== "admin") {
       throw appError(ERROR_CODES.adminRequired)
     }
@@ -659,10 +659,10 @@ export const getWeightReviewLock = orgQuery({
     let lastReviewAt = 0
     let lastDraftAt = 0
     for (const row of confirmed) {
-      if (row.target.kind === "model.weightReview") {
+      if (row.target.kind === SUGGESTION_KINDS.weightReview) {
         lastReviewAt = Math.max(lastReviewAt, row._creationTime)
       }
-      if (row.target.kind === "model.draft") {
+      if (row.target.kind === SUGGESTION_KINDS.modelDraft) {
         lastDraftAt = Math.max(lastDraftAt, row._creationTime)
       }
     }
@@ -682,7 +682,10 @@ export const getWeightReviewLock = orgQuery({
 // Open suggestions drive the reactive AI panels (spinner on "generating",
 // review list on "suggested", translated error on "failed").
 export const getOpenSuggestions = orgQuery({
-  args: {},
+  // kind narrows the read to one suggestion kind via the kind-scoped index:
+  // without it, a panel's row can be evicted from the per-status take cap by
+  // 20 newer open rows of OTHER kinds and silently disappear from the panel.
+  args: { kind: v.optional(v.string()) },
   returns: v.array(
     v.object({
       suggestionId: v.id("suggestions"),
@@ -694,18 +697,30 @@ export const getOpenSuggestions = orgQuery({
       roleId: v.union(v.id("roles"), v.null()),
     })
   ),
-  handler: async (ctx) => {
+  handler: async (ctx, { kind }) => {
     const open = []
     for (const status of ["generating", "suggested", "failed"] as const) {
       // A crashed action never reaches markFailed; the panel treats generating
       // rows older than ~90s as retryable (createdAt drives that).
-      const rows = await ctx.db
-        .query("suggestions")
-        .withIndex("by_org_status", (q) =>
-          q.eq("orgId", ctx.orgId).eq("status", status)
-        )
-        .order("desc")
-        .take(20)
+      const rows =
+        kind === undefined
+          ? await ctx.db
+              .query("suggestions")
+              .withIndex("by_org_status", (q) =>
+                q.eq("orgId", ctx.orgId).eq("status", status)
+              )
+              .order("desc")
+              .take(20)
+          : await ctx.db
+              .query("suggestions")
+              .withIndex("by_org_status_kind", (q) =>
+                q
+                  .eq("orgId", ctx.orgId)
+                  .eq("status", status)
+                  .eq("target.kind", kind)
+              )
+              .order("desc")
+              .take(20)
       open.push(...rows)
     }
     return open.map((row) => ({

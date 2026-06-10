@@ -67,10 +67,11 @@ describe("moveRoleToFamily", () => {
     expect(titles(result, 2)).toEqual([])
   })
 
-  it("is a no-op for same-family moves, unknown roles, and unknown targets", () => {
-    expect(moveRoleToFamily(fixture(), 10, 1)).toEqual(fixture())
-    expect(moveRoleToFamily(fixture(), 99, 2)).toEqual(fixture())
-    expect(moveRoleToFamily(fixture(), 10, 99)).toEqual(fixture())
+  it("no-ops return the input reference so setState can bail out", () => {
+    const families = fixture()
+    expect(moveRoleToFamily(families, 10, 1)).toBe(families)
+    expect(moveRoleToFamily(families, 99, 2)).toBe(families)
+    expect(moveRoleToFamily(families, 10, 99)).toBe(families)
   })
 })
 
@@ -80,9 +81,10 @@ describe("reorderRoleWithinFamily", () => {
     expect(titles(result, 1)).toEqual(["Tech Lead", "Developer"])
   })
 
-  it("is a no-op across families, for the same id, and for unknown ids", () => {
-    expect(reorderRoleWithinFamily(fixture(), 10, 20)).toEqual(fixture())
-    expect(reorderRoleWithinFamily(fixture(), 10, 10)).toEqual(fixture())
-    expect(reorderRoleWithinFamily(fixture(), 99, 10)).toEqual(fixture())
+  it("no-ops (cross-family, same id, unknown ids) return the input reference", () => {
+    const families = fixture()
+    expect(reorderRoleWithinFamily(families, 10, 20)).toBe(families)
+    expect(reorderRoleWithinFamily(families, 10, 10)).toBe(families)
+    expect(reorderRoleWithinFamily(families, 99, 10)).toBe(families)
   })
 })

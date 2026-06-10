@@ -1,3 +1,4 @@
+import { MAX_STARTER_IMPORT_TEXT } from "@workspace/constants"
 import { z } from "zod"
 
 // Stored AI suggestion payloads cross a trust boundary before rendering: the
@@ -40,8 +41,12 @@ export const roleProfileValueSchema = z.object({
 })
 
 // The onboarding paste-import textarea: client gate for the pasted role
-// list (the backend re-validates with the same bounds).
-export const starterImportInputSchema = z.string().trim().min(1).max(20_000)
+// list (the backend re-validates with the same shared constant).
+export const starterImportInputSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(MAX_STARTER_IMPORT_TEXT)
 
 export const starterImportValueSchema = z.object({
   families: z.array(

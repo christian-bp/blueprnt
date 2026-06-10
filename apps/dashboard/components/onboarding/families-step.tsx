@@ -4,6 +4,7 @@ import { Tick02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
+import { MAX_STARTER_IMPORT_TEXT, SUGGESTION_KINDS } from "@workspace/constants"
 import { Button } from "@workspace/ui/components/button"
 import { Label } from "@workspace/ui/components/label"
 import { Spinner } from "@workspace/ui/components/spinner"
@@ -11,12 +12,14 @@ import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation, useQuery } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { FamiliesReview } from "@/components/onboarding/families-review"
 import { NextButton } from "@/components/onboarding/next-button"
 import { ScreenShell } from "@/components/onboarding/screen-shell"
 import { TypewriterPlaceholder } from "@/components/onboarding/typewriter-placeholder"
+import { WizardFooter } from "@/components/onboarding/wizard-footer"
+import { useGeneratingStaleness } from "@/hooks/use-generating-staleness"
 import { capitalizeFirst } from "@/lib/capitalize"
 import { aiErrorSubKey } from "@/lib/error-label"
 import type { DraftFamily } from "@/lib/family-dnd"
@@ -26,10 +29,6 @@ import {
   starterImportInputSchema,
   starterImportValueSchema,
 } from "@/lib/suggestion-schemas"
-
-// A crashed action never reaches markFailed, so a "generating" row can linger
-// forever. Rows older than this are treated as failed and retryable.
-const STALE_AFTER_MS = 90_000
 
 // What seeded the editable review list: the industry template, or an AI
 // import whose suggestion the create button must close out (ADR-0003).
@@ -60,7 +59,12 @@ export function FamiliesStep({
     locale,
   })
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
-  const suggestions = useQuery(api.ai.suggest.getOpenSuggestions, { orgId })
+  // kind narrows the query to this panel's rows, so the import can never be
+  // evicted from the per-status cap by newer suggestions of other kinds.
+  const suggestions = useQuery(api.ai.suggest.getOpenSuggestions, {
+    orgId,
+    kind: SUGGESTION_KINDS.starterImport,
+  })
   const createStarterSet = useMutation(api.assessment.starters.createStarterSet)
   const requestStarterImport = useMutation(api.ai.suggest.requestStarterImport)
   const confirmStarterImport = useMutation(api.ai.suggest.confirmStarterImport)
@@ -77,25 +81,23 @@ export function FamiliesStep({
   const [requestPending, setRequestPending] = useState(false)
   const [requestFailed, setRequestFailed] = useState(false)
   const [failure, setFailure] = useState<"duplicate" | "generic" | null>(null)
+  // The creation step (confirm/create) and completeOnboarding are separate
+  // backend writes: remember a successful creation so a retry after a failed
+  // completeOnboarding only re-runs the completion, never the creation
+  // (which would throw notFound / roleFamilyExists on the second run).
+  const [created, setCreated] = useState(false)
   // Guards the seed-on-render block after "start over": the dismissed
   // suggestion may still read as suggested until the reject round-trips.
   const [lastDismissedId, setLastDismissedId] = useState<string | null>(null)
 
-  const importRow = newestByKind(suggestions, "starter.import")
+  const importRow = newestByKind(suggestions, SUGGESTION_KINDS.starterImport)
   const parsedImport =
     importRow?.status === "suggested"
       ? starterImportValueSchema.safeParse(importRow.suggestedValue)
       : null
 
-  // Tick every 10s while a generating row exists so the staleness check is
-  // re-evaluated without busy-waiting. No interval runs otherwise.
-  const [, setTick] = useState(0)
   const isGenerating = importRow?.status === "generating"
-  useEffect(() => {
-    if (!isGenerating) return
-    const id = setInterval(() => setTick((n) => n + 1), 10_000)
-    return () => clearInterval(id)
-  }, [isGenerating])
+  const isStaleGenerating = useGeneratingStaleness(importRow)
 
   // Seed the review list from a suggested AI import the first render both
   // the suggestion and the model (for valid track keys) are available
@@ -194,27 +196,30 @@ export function FamiliesStep({
     setPending(true)
     setFailure(null)
     try {
-      const cleaned = (families ?? [])
-        .map((family) => ({
-          name: family.name.trim(),
-          roles: family.roles
-            .map((role) => ({
-              title: role.title.trim(),
-              trackKey: role.trackKey,
-            }))
-            .filter((role) => role.title !== ""),
-        }))
-        .filter((family) => family.name !== "")
-      if (seededFrom?.source === "ai") {
-        // The AI path closes the suggestion with the user's edited list;
-        // an emptied list confirms nothing and rejects the suggestion.
-        await confirmStarterImport({
-          orgId,
-          suggestionId: seededFrom.suggestionId,
-          families: cleaned,
-        })
-      } else if (cleaned.length > 0) {
-        await createStarterSet({ orgId, families: cleaned })
+      if (!created) {
+        const cleaned = (families ?? [])
+          .map((family) => ({
+            name: family.name.trim(),
+            roles: family.roles
+              .map((role) => ({
+                title: role.title.trim(),
+                trackKey: role.trackKey,
+              }))
+              .filter((role) => role.title !== ""),
+          }))
+          .filter((family) => family.name !== "")
+        if (seededFrom?.source === "ai") {
+          // The AI path closes the suggestion with the user's edited list;
+          // an emptied list confirms nothing and rejects the suggestion.
+          await confirmStarterImport({
+            orgId,
+            suggestionId: seededFrom.suggestionId,
+            families: cleaned,
+          })
+        } else if (cleaned.length > 0) {
+          await createStarterSet({ orgId, families: cleaned })
+        }
+        setCreated(true)
       }
       await completeOnboarding({ orgId })
       onFinished()
@@ -225,9 +230,6 @@ export function FamiliesStep({
   }
 
   const inReview = seededFrom !== null && families !== null
-  const isStaleGenerating =
-    importRow?.status === "generating" &&
-    Date.now() - importRow.createdAt >= STALE_AFTER_MS
   const showGenerating = isGenerating && !isStaleGenerating
   const phase = inReview ? "review" : showGenerating ? "generating" : "paste"
 
@@ -307,7 +309,7 @@ export function FamiliesStep({
             value={rawText}
             onChange={(event) => setRawText(event.target.value)}
             className="min-h-40"
-            maxLength={20_000}
+            maxLength={MAX_STARTER_IMPORT_TEXT}
           />
           {rawText === "" && (
             <TypewriterPlaceholder
@@ -334,7 +336,7 @@ export function FamiliesStep({
             {t("templateCta")}
           </Button>
         </div>
-        <div className="flex w-full items-center justify-end">
+        <WizardFooter>
           <NextButton
             disabled={
               requestPending ||
@@ -342,7 +344,7 @@ export function FamiliesStep({
             }
             onClick={() => onAnalyze()}
           />
-        </div>
+        </WizardFooter>
         {/* Alerts extend below the CTA so nothing on screen reflows. */}
         {(aiFailed || requestFailed) && (
           <p role="alert" className="text-destructive text-sm">
@@ -384,14 +386,14 @@ export function FamiliesStep({
         )}
         {/* The final step cannot be skipped: emptying the list and finishing
             is the explicit way to start without families. Start over returns
-            to the paste view with the pasted text intact; the secondary
-            action sits immediately left of the primary (the wizard's footer
-            convention). */}
-        <div className="flex w-full items-center justify-end gap-2">
+            to the paste view with the pasted text intact; it is disabled once
+            the set was created (a failed completeOnboarding retry), because
+            starting over would then create duplicates. */}
+        <WizardFooter>
           <Button
             type="button"
             variant="ghost"
-            disabled={pending}
+            disabled={pending || created}
             onClick={restart}
           >
             {t("restartCta")}
@@ -404,7 +406,7 @@ export function FamiliesStep({
               aria-hidden="true"
             />
           </Button>
-        </div>
+        </WizardFooter>
       </>
     )
   }

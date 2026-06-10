@@ -8,6 +8,7 @@ import { ModelEditor } from "@/components/model/model-editor"
 import { ChangeChoiceButton } from "@/components/onboarding/change-choice-button"
 import { NextButton } from "@/components/onboarding/next-button"
 import { ScreenShell } from "@/components/onboarding/screen-shell"
+import { WizardFooter } from "@/components/onboarding/wizard-footer"
 import { capitalizeFirst } from "@/lib/capitalize"
 
 // Screen 5 (template path): the shared ModelEditor renders the criteria list
@@ -47,22 +48,19 @@ export function ModelReview({
     >
       <div className="w-full space-y-6">
         <ModelEditor orgId={orgId} withAiReview />
-        {/* Wizard footer convention: the secondary action sits immediately
-            left of the primary. The floor hint stays inside the row (its
-            appearance never shifts the layout vertically) and fills the
-            space to the buttons' left. */}
-        <div className="flex items-center justify-end gap-2">
-          {model != null && criteriaCount < MIN_CRITERIA && (
-            <span className="min-w-0 flex-1 truncate text-right text-muted-foreground text-sm">
-              {tEditor("minCriteriaHint", { min: MIN_CRITERIA })}
-            </span>
-          )}
+        <WizardFooter
+          hint={
+            model != null && criteriaCount < MIN_CRITERIA
+              ? tEditor("minCriteriaHint", { min: MIN_CRITERIA })
+              : undefined
+          }
+        >
           {onChangeChoice && <ChangeChoiceButton onConfirm={onChangeChoice} />}
           <NextButton
             disabled={model == null || criteriaCount < MIN_CRITERIA}
             onClick={onContinue}
           />
-        </div>
+        </WizardFooter>
       </div>
     </ScreenShell>
   )

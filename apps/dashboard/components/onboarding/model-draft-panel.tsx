@@ -1,6 +1,7 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
+import { SUGGESTION_KINDS } from "@workspace/constants"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Label } from "@workspace/ui/components/label"
@@ -8,17 +9,14 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
-import { useEffect, useState } from "react"
+import { useState } from "react"
+import { useGeneratingStaleness } from "@/hooks/use-generating-staleness"
 import { aiErrorSubKey } from "@/lib/error-label"
 import { newestByKind } from "@/lib/open-suggestions"
 import {
   type ModelDraftValue,
   modelDraftValueSchema,
 } from "@/lib/suggestion-schemas"
-
-// A crashed action never reaches markFailed, so a "generating" row can linger
-// forever. The panel treats one older than this as a failure and offers a retry.
-const STALE_AFTER_MS = 90_000
 
 type DraftCriterion = ModelDraftValue["criteria"][number]
 
@@ -44,7 +42,10 @@ export function ModelDraftPanel({
   // The AI responds in the requester's current UI language.
   const locale = useLocale()
 
-  const suggestions = useQuery(api.ai.suggest.getOpenSuggestions, { orgId })
+  const suggestions = useQuery(api.ai.suggest.getOpenSuggestions, {
+    orgId,
+    kind: SUGGESTION_KINDS.modelDraft,
+  })
   const requestModelDraft = useMutation(api.ai.suggest.requestModelDraft)
   const confirmModelDraft = useMutation(api.ai.suggest.confirmModelDraft)
   const rejectSuggestion = useMutation(api.ai.suggest.rejectSuggestion)
@@ -62,22 +63,15 @@ export function ModelDraftPanel({
   // The newest draft row drives the UI; rows are capped at 20 per status.
   // The stored payload is re-parsed with Zod before anything renders; a
   // malformed value reads as an empty draft (see suggestion-schemas).
-  const draft = newestByKind(suggestions, "model.draft")
+  const draft = newestByKind(suggestions, SUGGESTION_KINDS.modelDraft)
   const parsedValue =
     draft?.status === "suggested"
       ? modelDraftValueSchema.safeParse(draft.suggestedValue)
       : null
   const criteria = parsedValue?.success ? parsedValue.data.criteria : []
 
-  // Tick every 10s while a generating row exists so the staleness check is
-  // re-evaluated without busy-waiting. No interval runs otherwise.
-  const [, setTick] = useState(0)
   const isGenerating = draft?.status === "generating"
-  useEffect(() => {
-    if (!isGenerating) return
-    const id = setInterval(() => setTick((n) => n + 1), 10_000)
-    return () => clearInterval(id)
-  }, [isGenerating])
+  const isStaleGenerating = useGeneratingStaleness(draft)
 
   // Seed the selection (all checked) the first render a new suggestion appears,
   // adjusting state during render rather than in an effect. Re-runs only when
@@ -115,10 +109,6 @@ export function ModelDraftPanel({
       setPending(false)
     }
   }
-
-  const isStaleGenerating =
-    draft?.status === "generating" &&
-    Date.now() - draft.createdAt >= STALE_AFTER_MS
 
   return (
     <div className="space-y-4">

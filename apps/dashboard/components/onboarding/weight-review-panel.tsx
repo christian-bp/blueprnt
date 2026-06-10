@@ -3,6 +3,7 @@
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
+import { SUGGESTION_KINDS } from "@workspace/constants"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -11,13 +12,10 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useEffect, useRef, useState } from "react"
+import { useGeneratingStaleness } from "@/hooks/use-generating-staleness"
 import { aiErrorSubKey } from "@/lib/error-label"
 import { newestByKind } from "@/lib/open-suggestions"
 import { weightReviewValueSchema } from "@/lib/suggestion-schemas"
-
-// A crashed action never reaches markFailed, so a "generating" row can linger
-// forever. The panel treats one older than this as a failure and offers a retry.
-const STALE_AFTER_MS = 90_000
 
 // The review panel only needs each criterion's id, name, and current weight
 // points. ModelEditor passes the full getModel result, which structurally
@@ -60,7 +58,10 @@ export function WeightReviewPanel({
   // The AI responds in the requester's current UI language.
   const locale = useLocale()
 
-  const suggestions = useQuery(api.ai.suggest.getOpenSuggestions, { orgId })
+  const suggestions = useQuery(api.ai.suggest.getOpenSuggestions, {
+    orgId,
+    kind: SUGGESTION_KINDS.weightReview,
+  })
   const requestWeightReview = useMutation(api.ai.suggest.requestWeightReview)
   const confirmWeightReview = useMutation(api.ai.suggest.confirmWeightReview)
   const rejectSuggestion = useMutation(api.ai.suggest.rejectSuggestion)
@@ -74,17 +75,10 @@ export function WeightReviewPanel({
     accepted: Set<number>
   }>({ seededFor: null, accepted: new Set() })
 
-  const review = newestByKind(suggestions, "model.weightReview")
+  const review = newestByKind(suggestions, SUGGESTION_KINDS.weightReview)
 
-  // Tick every 10s while a generating row exists so the staleness check is
-  // re-evaluated without busy-waiting. No interval runs otherwise.
-  const [, setTick] = useState(0)
   const isGenerating = review?.status === "generating"
-  useEffect(() => {
-    if (!isGenerating) return
-    const id = setInterval(() => setTick((n) => n + 1), 10_000)
-    return () => clearInterval(id)
-  }, [isGenerating])
+  const isStaleGenerating = useGeneratingStaleness(review)
 
   // Index the model's criteria so moves resolve to names and current points.
   // A move whose criteria are absent from the model is skipped as defense in
@@ -162,10 +156,6 @@ export function WeightReviewPanel({
     requestedRef.current = true
     void onRequest()
   }, [autoRequest, queryLoaded, hasReview])
-
-  const isStaleGenerating =
-    review?.status === "generating" &&
-    Date.now() - review.createdAt >= STALE_AFTER_MS
 
   return (
     <div className="space-y-4">

@@ -1,6 +1,7 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
+import { SUGGESTION_KINDS } from "@workspace/constants"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -9,13 +10,10 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
-import { useEffect, useState } from "react"
+import { useState } from "react"
+import { useGeneratingStaleness } from "@/hooks/use-generating-staleness"
 import { aiErrorSubKey } from "@/lib/error-label"
 import { roleProfileValueSchema } from "@/lib/suggestion-schemas"
-
-// A crashed action never reaches markFailed; rows older than this count as
-// failed and offer a retry (same constant as the onboarding panels).
-const STALE_AFTER_MS = 90_000
 
 const PROFILE_FIELDS = [
   "purpose",
@@ -65,7 +63,10 @@ export function RoleAiPanel({
   const tRole = useTranslations("assessment.role")
   const tErrors = useTranslations("errors")
 
-  const suggestions = useQuery(api.ai.suggest.getOpenSuggestions, { orgId })
+  const suggestions = useQuery(api.ai.suggest.getOpenSuggestions, {
+    orgId,
+    kind: SUGGESTION_KINDS.roleProfile,
+  })
   const requestDraft = useMutation(api.ai.suggest.requestRoleProfileDraft)
   const confirmDraft = useMutation(api.ai.suggest.confirmRoleProfileDraft)
   const rejectSuggestion = useMutation(api.ai.suggest.rejectSuggestion)
@@ -81,20 +82,13 @@ export function RoleAiPanel({
   // Newest open suggestion for THIS role (the query returns all open rows).
   let draft: OpenSuggestionRow | undefined
   for (const row of suggestions ?? []) {
-    if (row.kind !== "role.profile" || row.roleId !== roleId) continue
+    if (row.kind !== SUGGESTION_KINDS.roleProfile || row.roleId !== roleId)
+      continue
     if (draft === undefined || row.createdAt > draft.createdAt) draft = row
   }
 
   const isGenerating = draft?.status === "generating"
-  const [, setTick] = useState(0)
-  useEffect(() => {
-    if (!isGenerating) return
-    const id = setInterval(() => setTick((n) => n + 1), 10_000)
-    return () => clearInterval(id)
-  }, [isGenerating])
-  const isStaleGenerating =
-    draft?.status === "generating" &&
-    Date.now() - draft.createdAt >= STALE_AFTER_MS
+  const isStaleGenerating = useGeneratingStaleness(draft)
 
   // The stored payload is re-parsed with Zod before anything renders; a
   // malformed value reads as an empty draft (see suggestion-schemas).

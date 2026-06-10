@@ -977,3 +977,29 @@ describe("starter import", () => {
     ).rejects.toThrow(/errors.notFound/)
   })
 })
+
+describe("getOpenSuggestions kind filter", () => {
+  it("returns only the requested kind via the kind-scoped index", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedScratchOrganization(t)
+    // One open import row plus several open drafts that would otherwise
+    // compete for the same per-status cap.
+    const importId = await asAdmin.mutation(
+      api.ai.suggest.requestStarterImport,
+      { orgId, rawText: "Developer" }
+    )
+    for (let i = 0; i < 3; i++) {
+      await asAdmin.mutation(api.ai.suggest.requestModelDraft, { orgId })
+    }
+    const filtered = await asAdmin.query(api.ai.suggest.getOpenSuggestions, {
+      orgId,
+      kind: "starter.import",
+    })
+    expect(filtered).toHaveLength(1)
+    expect(filtered[0]?.suggestionId).toBe(importId)
+    const all = await asAdmin.query(api.ai.suggest.getOpenSuggestions, {
+      orgId,
+    })
+    expect(all.length).toBeGreaterThan(1)
+  })
+})

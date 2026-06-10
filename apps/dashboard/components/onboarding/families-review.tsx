@@ -234,25 +234,16 @@ export function FamiliesReview({
                   updateFamily(family.id, { name: event.target.value })
                 }
               />
-              {/* Fixed-size slot + absolute anchor: the armed pill grows
-                  leftwards as an overlay, so the header never reflows. */}
-              <span className="relative ml-auto size-9 shrink-0">
-                <MorphConfirmButton
-                  idleVariant="ghost"
-                  triggerIcon={Delete02Icon}
-                  triggerLabel={t("removeFamilyLabel", { name: family.name })}
-                  confirmLabel={t("removeFamilyConfirm")}
-                  cancelLabel={tFamily("cancel")}
-                  // h-9 + min-w-9 squares the idle pill up to the row's field
-                  // height (the inner icon button centers inside the border).
-                  className="absolute top-1/2 right-0 z-10 h-9 min-w-9 -translate-y-1/2 justify-center"
-                  onConfirm={() =>
-                    onFamiliesChange((current) =>
-                      current.filter((item) => item.id !== family.id)
-                    )
-                  }
-                />
-              </span>
+              <RemoveConfirm
+                className="ml-auto"
+                triggerLabel={t("removeFamilyLabel", { name: family.name })}
+                confirmLabel={t("removeFamilyConfirm")}
+                onConfirm={() =>
+                  onFamiliesChange((current) =>
+                    current.filter((item) => item.id !== family.id)
+                  )
+                }
+              />
             </CardHeader>
             <CardContent className="space-y-2">
               <SortableContext
@@ -375,7 +366,6 @@ function SortableRoleRow({
 }) {
   const t = useTranslations("dashboard.onboarding.families")
   const tCreate = useTranslations("dashboard.roles.create")
-  const tFamily = useTranslations("dashboard.roles.family")
   const {
     attributes,
     listeners,
@@ -421,21 +411,42 @@ function SortableRoleRow({
           ))}
         </SelectContent>
       </Select>
-      {/* Fixed-size slot + absolute anchor: the armed pill overlays the row
-          leftwards instead of pushing the select and input aside. */}
-      <span className="relative size-9 shrink-0">
-        <MorphConfirmButton
-          idleVariant="ghost"
-          triggerIcon={Delete02Icon}
-          triggerLabel={t("removeRoleLabel", { title: role.title })}
-          confirmLabel={t("removeRoleConfirm")}
-          cancelLabel={tFamily("cancel")}
-          // h-9 + min-w-9 squares the idle pill up to the row's field height
-          // (the inner icon button centers inside the border).
-          className="absolute top-1/2 right-0 z-10 h-9 min-w-9 -translate-y-1/2 justify-center"
-          onConfirm={onRemove}
-        />
-      </span>
+      <RemoveConfirm
+        triggerLabel={t("removeRoleLabel", { title: role.title })}
+        confirmLabel={t("removeRoleConfirm")}
+        onConfirm={onRemove}
+      />
     </div>
+  )
+}
+
+// The review's shared remove affordance: a ghost trashcan in a fixed-size
+// slot with the armed pill absolutely anchored right, so arming overlays the
+// row leftwards and never reflows it. h-9 + min-w-9 square the pill up to
+// the row's field height (the inner icon button centers inside the border).
+function RemoveConfirm({
+  triggerLabel,
+  confirmLabel,
+  onConfirm,
+  className,
+}: {
+  triggerLabel: string
+  confirmLabel: string
+  onConfirm: () => void
+  className?: string
+}) {
+  const tFamily = useTranslations("dashboard.roles.family")
+  return (
+    <span className={cn("relative size-9 shrink-0", className)}>
+      <MorphConfirmButton
+        idleVariant="ghost"
+        triggerIcon={Delete02Icon}
+        triggerLabel={triggerLabel}
+        confirmLabel={confirmLabel}
+        cancelLabel={tFamily("cancel")}
+        className="absolute top-1/2 right-0 z-10 h-9 min-w-9 -translate-y-1/2 justify-center"
+        onConfirm={onConfirm}
+      />
+    </span>
   )
 }

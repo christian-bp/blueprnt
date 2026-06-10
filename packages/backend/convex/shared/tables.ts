@@ -23,7 +23,7 @@ export const auditLog = defineTable({
 export const suggestions = defineTable({
   orgId: v.string(),
   target: v.object({
-    kind: v.string(), // "model.draft" | "model.weightReview" | "role.field" | "criterion.anchor" | "role.profile"
+    kind: v.string(), // a SUGGESTION_KINDS value (@workspace/constants)
     roleId: v.optional(v.id("roles")),
     criterionId: v.optional(v.id("criteria")),
     modelId: v.optional(v.id("models")),
@@ -49,3 +49,6 @@ export const suggestions = defineTable({
 })
   .index("by_org", ["orgId"])
   .index("by_org_status", ["orgId", "status"])
+  // Kind-scoped reads: a panel asking for ONE kind must not lose its row
+  // behind 20 newer rows of other kinds (the per-status take cap).
+  .index("by_org_status_kind", ["orgId", "status", "target.kind"])

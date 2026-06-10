@@ -8,3 +8,8 @@ export {
   defaultLanguageFor,
 } from "./countries"
 export { INDUSTRY_KEYS, type IndustryKey, clampIndustry } from "./industries"
+export {
+  MAX_STARTER_IMPORT_TEXT,
+  SUGGESTION_KINDS,
+  type SuggestionKind,
+} from "./suggestions"
