@@ -1,0 +1,25 @@
+apps/dashboard/components/onboarding/model-review.tsx
+  s_fa45b53f6da63b::t_4a8f92f0b39ce6 50-54,60
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_fa45b53f6da63b::t_170f5338695bf5 161-165,171
+apps/dashboard/components/onboarding/change-choice-button.tsx
+  s_fa45b53f6da63b::t_064eb3448271bc 12-14
+apps/dashboard/components/onboarding/families-step.tsx
+  s_fa45b53f6da63b::t_131cfd5019571a 387-390
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "74b6938d947d88b8738905100d1028b1b08fa632",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
