@@ -395,7 +395,9 @@
     "help": {
       "close": "Lukk",
       "criterionLabel": "Hva er et kriterium?",
-      "criterionBody": "Et kriterium er noe hver rolle vurderes mot, for eksempel omfang eller kompleksitet. Ankertekster beskriver hva vurderingene 0 til 5 betyr for det, og vektpoengene avgjør hvor mye det teller i totalpoengsummen."
+      "criterionBody": "Et kriterium er noe hver rolle vurderes mot, for eksempel omfang eller kompleksitet. Ankertekster beskriver hva vurderingene 0 til 5 betyr for det, og vektpoengene avgjør hvor mye det teller i totalpoengsummen.",
+      "anchorsLabel": "Hvordan fungerer ankertekster?",
+      "anchorsBody": "Hvert kriterium har seks ankertekster som beskriver hva karakterene 0 til 5 betyr for akkurat det kriteriet. Skriv dem konkrete og rollefokuserte, tydelig stigende fra 0 (forekommer ikke) til 5 (det sterkeste rimelige uttrykket), slik at to vurderere som leser samme jobbprofil lander på samme karakter."
     }
   },
   "errors": {

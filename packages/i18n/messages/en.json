@@ -395,7 +395,9 @@
     "help": {
       "close": "Close",
       "criterionLabel": "What is a criterion?",
-      "criterionBody": "A criterion is something every role is rated against, like scope or complexity. Anchor texts describe what the ratings 0 to 5 mean for it, and its weight points decide how much it counts in the total score."
+      "criterionBody": "A criterion is something every role is rated against, like scope or complexity. Anchor texts describe what the ratings 0 to 5 mean for it, and its weight points decide how much it counts in the total score.",
+      "anchorsLabel": "How do anchor texts work?",
+      "anchorsBody": "Each criterion has six anchor texts describing what the ratings 0 to 5 mean for exactly that criterion. Write them concrete and role-focused, clearly increasing from 0 (not present) to 5 (the strongest reasonable expression), so two assessors reading the same job profile land on the same rating."
     }
   },
   "errors": {

@@ -395,7 +395,9 @@
     "help": {
       "close": "Sulje",
       "criterionLabel": "Mikä kriteeri on?",
-      "criterionBody": "Kriteeri on asia, jota vasten jokainen rooli arvioidaan, esimerkiksi laajuus tai monimutkaisuus. Ankkuritekstit kuvaavat, mitä arviot 0-5 sen kohdalla tarkoittavat, ja sen painopisteet ratkaisevat, kuinka paljon se painaa kokonaispisteissä."
+      "criterionBody": "Kriteeri on asia, jota vasten jokainen rooli arvioidaan, esimerkiksi laajuus tai monimutkaisuus. Ankkuritekstit kuvaavat, mitä arviot 0-5 sen kohdalla tarkoittavat, ja sen painopisteet ratkaisevat, kuinka paljon se painaa kokonaispisteissä.",
+      "anchorsLabel": "Miten ankkuritekstit toimivat?",
+      "anchorsBody": "Jokaisella kriteerillä on kuusi ankkuritekstiä, jotka kuvaavat mitä arvosanat 0:sta 5:een tarkoittavat juuri sille kriteerille. Kirjoita niistä konkreettisia ja rooliin keskittyviä, selvästi nousevia arvosta 0 (ei esiinny) arvoon 5 (vahvin kohtuullinen ilmentymä), jotta kaksi arvioijaa, jotka lukevat saman tehtäväprofiilin, päätyvät samaan arvosanaan."
     }
   },
   "errors": {

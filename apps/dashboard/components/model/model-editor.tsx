@@ -281,6 +281,7 @@ export function ModelEditor({
                   key={criterion.criterionId}
                   name={criterion.name}
                   description={criterion.description}
+                  anchors={criterion.anchors}
                   importanceNode={weightNode}
                   editable={editing}
                   onRemove={

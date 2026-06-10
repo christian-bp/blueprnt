@@ -8,6 +8,7 @@ import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
+import { HelpMorphButton } from "@/components/help-morph-button"
 
 const EMPTY_ANCHORS = ["", "", "", "", "", ""]
 
@@ -31,6 +32,7 @@ export function AddCriterionForm({
 }) {
   const tEditor = useTranslations("dashboard.model.editor")
   const t = useTranslations("dashboard.model")
+  const tHelp = useTranslations("dashboard.help")
   const addCriterion = useMutation(api.evaluationModel.criteria.addCriterion)
 
   const [name, setName] = useState("")
@@ -94,7 +96,14 @@ export function AddCriterionForm({
         />
       </div>
       <fieldset className="space-y-2">
-        <legend className="font-medium text-sm">{tEditor("anchors")}</legend>
+        <legend className="font-medium text-sm">
+          <span className="flex items-center gap-1.5">
+            {tEditor("anchors")}
+            <HelpMorphButton label={tHelp("anchorsLabel")}>
+              {tHelp("anchorsBody")}
+            </HelpMorphButton>
+          </span>
+        </legend>
         {anchors.map((anchor, index) => (
           <div
             // The anchor list is fixed-length and positional, so the index is

@@ -395,7 +395,9 @@
     "help": {
       "close": "Stäng",
       "criterionLabel": "Vad är ett kriterium?",
-      "criterionBody": "Ett kriterium är något varje roll betygsätts mot, till exempel omfång eller komplexitet. Ankartexter beskriver vad betygen 0 till 5 betyder för det, och dess viktpoäng avgör hur mycket det väger i totalpoängen."
+      "criterionBody": "Ett kriterium är något varje roll betygsätts mot, till exempel omfång eller komplexitet. Ankartexter beskriver vad betygen 0 till 5 betyder för det, och dess viktpoäng avgör hur mycket det väger i totalpoängen.",
+      "anchorsLabel": "Hur fungerar ankartexter?",
+      "anchorsBody": "Varje kriterium har sex ankartexter som beskriver vad betygen 0 till 5 betyder för just det kriteriet. Skriv dem konkreta och rollfokuserade, tydligt stigande från 0 (förekommer inte) till 5 (det starkaste rimliga uttrycket), så att två bedömare som läser samma jobbprofil landar i samma betyg."
     }
   },
   "errors": {

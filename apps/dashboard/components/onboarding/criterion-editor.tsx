@@ -112,6 +112,7 @@ export function CriterionEditor({
                   key={criterion.criterionId}
                   name={criterion.name}
                   description={criterion.description || undefined}
+                  anchors={criterion.anchors}
                   // The scratch editor shows the weight points and derived
                   // share as static text (no per-row select here; reweighting
                   // happens on the review screen).

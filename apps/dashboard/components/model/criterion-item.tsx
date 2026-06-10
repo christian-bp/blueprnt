@@ -1,11 +1,14 @@
 "use client"
 
-import { MorphConfirmButton } from "@/components/morph-confirm-button"
-import { SPRING } from "@/lib/motion"
-import { motion } from "motion/react"
+import { ArrowDown01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { cn } from "@workspace/ui/lib/utils"
+import { AnimatePresence, motion } from "motion/react"
 import type { Variants } from "motion/react"
 import { useTranslations } from "next-intl"
-import type { ReactNode } from "react"
+import { type ReactNode, useId, useState } from "react"
+import { MorphConfirmButton } from "@/components/morph-confirm-button"
+import { SPRING } from "@/lib/motion"
 
 // Shared criterion row used by both the model review screen (editable or
 // read-only depending on the edit toggle) and the scratch editor (always
@@ -70,6 +73,7 @@ export function CriterionItem({
   name,
   description,
   importanceNode,
+  anchors,
   editable,
   onRemove,
   removing,
@@ -78,6 +82,9 @@ export function CriterionItem({
   name: string
   description?: string
   importanceNode: ReactNode
+  // The criterion's 0-5 anchor scale; when given, the row gets a collapsible
+  // section revealing the texts (shared by onboarding and the model page).
+  anchors?: { level: number; text: string }[]
   editable: boolean
   onRemove?: () => void
   removing?: boolean
@@ -85,8 +92,11 @@ export function CriterionItem({
 }) {
   const tEditor = useTranslations("dashboard.model.editor")
   const tChange = useTranslations("dashboard.model.change")
+  const [anchorsOpen, setAnchorsOpen] = useState(false)
+  const anchorsId = useId()
 
   const showRemove = editable && onRemove !== undefined
+  const hasAnchors = anchors !== undefined && anchors.length > 0
 
   return (
     // Outer motion.li carries ONLY animated geometry: layout spring for
@@ -115,23 +125,79 @@ export function CriterionItem({
           for the MorphConfirmButton corner anchor. The group/relative classes
           move here so the hover reveal and absolute corner overlap are
           unchanged from the consumer's perspective. */}
-      <div className="group relative flex min-h-15 items-center gap-3 rounded-md border p-3">
-        {/* Name + description take all remaining space and stay truncation-safe. */}
-        <span className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate">{name}</span>
-          {description && (
-            <span className="truncate text-muted-foreground text-sm">
-              {description}
-            </span>
-          )}
-        </span>
+      <div className="group relative rounded-md border p-3">
+        <div className="flex min-h-9 items-center gap-3">
+          {/* Name + description take all remaining space and stay truncation-safe. */}
+          <span className="flex min-w-0 flex-1 flex-col">
+            <span className="truncate">{name}</span>
+            {description && (
+              <span className="truncate text-muted-foreground text-sm">
+                {description}
+              </span>
+            )}
+          </span>
 
-        {/* Fixed-size importance slot: identical outer box for the static label
-            (read mode) and the Select (edit mode), so toggling edit shifts
-            nothing. The Select node is told to fill the slot by its parent. */}
-        <span className="flex h-9 w-44 shrink-0 items-center justify-end">
-          {importanceNode}
-        </span>
+          {/* Fixed-size importance slot: identical outer box for the static label
+              (read mode) and the Select (edit mode), so toggling edit shifts
+              nothing. The Select node is told to fill the slot by its parent. */}
+          <span className="flex h-9 w-44 shrink-0 items-center justify-end">
+            {importanceNode}
+          </span>
+        </div>
+
+        {/* Collapsible anchor scale: the trigger is always present (no
+            layout shift from hover/state), and expanding animates new
+            content below the row, a legitimate enter. The animated element
+            carries ONLY geometry (height/opacity, docs/ui-animation.md rule
+            2); the list inside owns the padding. */}
+        {hasAnchors && (
+          <>
+            <button
+              type="button"
+              aria-expanded={anchorsOpen}
+              aria-controls={anchorsId}
+              className="mt-1 flex items-center gap-1 text-muted-foreground text-xs hover:text-foreground"
+              onClick={() => setAnchorsOpen((open) => !open)}
+            >
+              {tEditor("anchors")}
+              <HugeiconsIcon
+                icon={ArrowDown01Icon}
+                strokeWidth={2}
+                aria-hidden="true"
+                className={cn(
+                  "size-3.5 transition-transform motion-reduce:transition-none",
+                  anchorsOpen && "rotate-180"
+                )}
+              />
+            </button>
+            <AnimatePresence initial={false}>
+              {anchorsOpen && (
+                <motion.div
+                  id={anchorsId}
+                  key="anchors"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={SPRING}
+                  className="overflow-hidden"
+                >
+                  <ol className="space-y-1.5 pt-2">
+                    {anchors.map((anchor) => (
+                      <li key={anchor.level} className="flex gap-2 text-sm">
+                        <span className="w-4 shrink-0 text-right font-medium tabular-nums">
+                          {anchor.level}
+                        </span>
+                        <span className="min-w-0 text-muted-foreground">
+                          {anchor.text}
+                        </span>
+                      </li>
+                    ))}
+                  </ol>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </>
+        )}
 
         {/* Morphing corner confirm: overlaps the top-right corner of the inner
             div (absolute -top-2.5 -right-2.5) so it takes no layout space.
