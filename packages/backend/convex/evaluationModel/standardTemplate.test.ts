@@ -36,8 +36,8 @@ describe("standard template structure", () => {
     ])
   })
 
-  it("ships complete content in both locales", () => {
-    for (const locale of ["sv", "en"] as const) {
+  it("ships complete content in every product locale", () => {
+    for (const locale of ["sv", "en", "nb", "da", "fi"] as const) {
       const content = templateContent(locale)
       for (const key of CRITERION_KEYS) {
         const criterion = content.criteria[key]

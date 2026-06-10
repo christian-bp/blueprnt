@@ -361,7 +361,7 @@ describe("getModel", () => {
     expect(sv?.criteria[0]?.anchors[0]?.text).toMatch(/Ansvar för egna/)
   })
 
-  it("falls back to English for an unsupported locale", async () => {
+  it("localizes a supported template locale", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedReadyOrganization(t)
     await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
@@ -370,6 +370,20 @@ describe("getModel", () => {
     const result = await asAdmin.query(api.evaluationModel.model.getModel, {
       orgId,
       locale: "fi",
+    })
+    expect(result?.name).toBe("Vakiomalli")
+    expect(result?.criteria[0]?.name).toBe("Laajuus ja vaikutus")
+  })
+
+  it("falls back to English for an unsupported locale", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedReadyOrganization(t)
+    await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
+      orgId,
+    })
+    const result = await asAdmin.query(api.evaluationModel.model.getModel, {
+      orgId,
+      locale: "de",
     })
     expect(result?.name).toBe("Standard model")
     expect(result?.criteria[0]?.name).toBe("Scope & Impact")

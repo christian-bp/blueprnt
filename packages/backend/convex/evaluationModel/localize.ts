@@ -7,9 +7,13 @@ import {
 } from "./standardTemplate"
 
 // Read-time localization helpers shared by getModel and the assessment
-// queries. Content exists for sv/en only; any other locale falls back to en.
+// queries. Template content exists in all five product locales; anything
+// else falls back to en.
+const TEMPLATE_LOCALES = new Set<TemplateLocale>(["sv", "en", "nb", "da", "fi"])
 export function clampLocale(locale: string | undefined): TemplateLocale {
-  return locale === "sv" || locale === "en" ? locale : "en"
+  return locale !== undefined && TEMPLATE_LOCALES.has(locale as TemplateLocale)
+    ? (locale as TemplateLocale)
+    : "en"
 }
 
 const CRITERION_KEY_SET = new Set<string>(CRITERION_KEYS)

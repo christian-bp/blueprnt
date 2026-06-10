@@ -1,6 +1,6 @@
 import { v } from "convex/values"
 import type { MutationCtx } from "../_generated/server"
-import { clampLocale, isTrackKey } from "../evaluationModel/localize"
+import { isTrackKey } from "../evaluationModel/localize"
 import { AUDIT_EVENTS, logAudit } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
@@ -41,7 +41,7 @@ export const getIndustryStarter = orgQuery({
       .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
       .unique()
     const industry = clampIndustry(settings?.industry ?? undefined)
-    const content = starterContent(clampLocale(locale))
+    const content = starterContent(locale)
     return { families: content[industry] }
   },
 })

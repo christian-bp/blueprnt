@@ -1,5 +1,4 @@
 import type { IndustryKey } from "@workspace/constants"
-import type { TemplateLocale } from "../evaluationModel/standardTemplate"
 import { industryStartersEn } from "./industryStarters.content.en"
 import { industryStartersSv } from "./industryStarters.content.sv"
 
@@ -26,6 +25,8 @@ export interface StarterFamily {
 
 export type StarterContent = Record<IndustryKey, StarterFamily[]>
 
-export function starterContent(locale: TemplateLocale): StarterContent {
+// Starter content exists in sv/en only (unlike the standard template's five
+// locales); other locales fall back to en here.
+export function starterContent(locale: string | undefined): StarterContent {
   return locale === "sv" ? industryStartersSv : industryStartersEn
 }

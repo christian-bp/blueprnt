@@ -3,6 +3,9 @@ import {
   standardTemplateContentEn,
   type StandardTemplateContent,
 } from "./standardTemplate.content.en"
+import { standardTemplateContentDa } from "./standardTemplate.content.da"
+import { standardTemplateContentFi } from "./standardTemplate.content.fi"
+import { standardTemplateContentNb } from "./standardTemplate.content.nb"
 import { standardTemplateContentSv } from "./standardTemplate.content.sv"
 
 // Structure of the standard template (the Excel prototype's evaluation model).
@@ -67,10 +70,18 @@ export const DEFAULT_BAND_THRESHOLDS = [
   { band: 7, minScore: 0 },
 ] as const
 
-export type TemplateLocale = "sv" | "en"
+export type TemplateLocale = "sv" | "en" | "nb" | "da" | "fi"
+
+const CONTENT_BY_LOCALE: Record<TemplateLocale, StandardTemplateContent> = {
+  sv: standardTemplateContentSv,
+  en: standardTemplateContentEn,
+  nb: standardTemplateContentNb,
+  da: standardTemplateContentDa,
+  fi: standardTemplateContentFi,
+}
 
 export function templateContent(
   locale: TemplateLocale
 ): StandardTemplateContent {
-  return locale === "sv" ? standardTemplateContentSv : standardTemplateContentEn
+  return CONTENT_BY_LOCALE[locale]
 }
