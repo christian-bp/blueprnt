@@ -32,7 +32,9 @@ function TooltipTrigger({
 
 function TooltipContent({
   className,
-  sideOffset = 0,
+  // Local fix: 4px default offset; without the (removed) arrow the pill
+  // otherwise sits flush against its trigger.
+  sideOffset = 4,
   children,
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Content>) {
