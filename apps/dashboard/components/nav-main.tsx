@@ -42,8 +42,11 @@ export function NavMain({
                   // icon is not clipped (32px box = 20px icon + 2x6px). In
                   // the collapsed square the label span must be display-none
                   // (not just zero width): the flex gap against it otherwise
-                  // pushes the icon off center.
-                  className="group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-1.5! [&_svg]:size-5 group-data-[collapsible=icon]:[&_span]:hidden"
+                  // pushes the icon off center. mx-auto centers the 32px
+                  // square in the icon rail's column, which is 34px (the
+                  // inset variant adds 2px width compensation), so the
+                  // squares otherwise sit 2px left of center.
+                  className="group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-1.5! [&_svg]:size-5 group-data-[collapsible=icon]:[&_span]:hidden"
                 >
                   <Link href={item.url}>
                     {item.icon}

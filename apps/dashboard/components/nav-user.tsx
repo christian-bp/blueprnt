@@ -57,8 +57,9 @@ export function NavUser() {
               // would otherwise shrink the avatar and push it off center).
               // The square grows to 36px there so the avatar reads slightly
               // larger than the 32px nav squares (matching the bigger nav
-              // icons); -mx-0.5 recenters the overhang in the 32px column.
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground group-data-[collapsible=icon]:-mx-0.5 group-data-[collapsible=icon]:size-9! group-data-[collapsible=icon]:justify-center"
+              // icons); -mx-px centers the 36px square in the rail's 34px
+              // column (1px overhang each side).
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground group-data-[collapsible=icon]:-mx-px group-data-[collapsible=icon]:size-9! group-data-[collapsible=icon]:justify-center"
             >
               {/* Default avatar radius (rounded-full): the component's border
                   ring is always round, so a rounded-lg override makes the
