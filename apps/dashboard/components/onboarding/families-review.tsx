@@ -236,7 +236,7 @@ export function FamiliesReview({
               />
               {/* Fixed-size slot + absolute anchor: the armed pill grows
                   leftwards as an overlay, so the header never reflows. */}
-              <span className="relative ml-auto size-7 shrink-0">
+              <span className="relative ml-auto size-8 shrink-0">
                 <MorphConfirmButton
                   triggerIcon={Delete02Icon}
                   triggerLabel={t("removeFamilyLabel", { name: family.name })}
@@ -420,7 +420,7 @@ function SortableRoleRow({
       </Select>
       {/* Fixed-size slot + absolute anchor: the armed pill overlays the row
           leftwards instead of pushing the select and input aside. */}
-      <span className="relative size-7 shrink-0">
+      <span className="relative size-8 shrink-0">
         <MorphConfirmButton
           triggerIcon={Delete02Icon}
           triggerLabel={t("removeRoleLabel", { title: role.title })}

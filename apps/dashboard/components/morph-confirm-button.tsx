@@ -96,14 +96,16 @@ export function MorphConfirmButton(props: MorphConfirmButtonProps) {
 
   // The armed pill body is identical across variants: a destructive confirm
   // button and a neutral cancel cross. Focus moves to confirm via the useEffect.
+  // Every interactive element is the design-system Button so sizing, focus,
+  // hover, and disabled styling come from its variants, not custom CSS.
   const armedContent = (
     <span className="flex items-center gap-1 p-0.5">
       <Button
         ref={confirmRef}
         type="button"
         variant="destructive"
+        size="xs"
         disabled={disabled}
-        className="h-6 px-2 text-xs"
         onClick={async () => {
           await onConfirm()
           setArmed(false)
@@ -111,15 +113,17 @@ export function MorphConfirmButton(props: MorphConfirmButtonProps) {
       >
         {confirmLabel}
       </Button>
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="icon-xs"
         disabled={disabled}
         aria-label={cancelLabel}
-        className="flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+        className="text-muted-foreground"
         onClick={() => setArmed(false)}
       >
-        <HugeiconsIcon icon={Cancel01Icon} size={14} strokeWidth={2} />
-      </button>
+        <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} />
+      </Button>
     </span>
   )
 
@@ -210,19 +214,20 @@ export function MorphConfirmButton(props: MorphConfirmButtonProps) {
             exit={{ opacity: 0, scale: 0.9 }}
             transition={SPRING}
           >
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon-sm"
               disabled={disabled}
               aria-label={props.triggerLabel}
-              className="flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+              className="text-muted-foreground"
               onClick={() => setArmed(true)}
             >
               <HugeiconsIcon
                 icon={props.triggerIcon ?? Cancel01Icon}
-                size={14}
                 strokeWidth={2}
               />
-            </button>
+            </Button>
           </motion.div>
         ) : (
           // Armed state: destructive confirm + neutral cancel. Focus moves to
