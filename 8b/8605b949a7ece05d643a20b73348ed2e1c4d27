@@ -1,0 +1,23 @@
+packages/backend/convex/ai/usage.test.ts
+  s_edfacac3601b15::t_481e0bc0da1892 1-144
+packages/backend/convex/_generated/api.d.ts
+  s_edfacac3601b15::t_112d265ef92a74 19,22-23,66,69-70
+packages/backend/convex/ai/usage.ts
+  s_edfacac3601b15::t_203a4e2ecaf19c 1-101
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "8b8605b949a7ece05d643a20b73348ed2e1c4d27",
+  "prompts": {},
+  "sessions": {
+    "s_edfacac3601b15": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c56db89e-a84b-40b0-9259-562927452d3a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
