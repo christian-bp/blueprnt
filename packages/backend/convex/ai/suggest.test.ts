@@ -764,3 +764,216 @@ describe("role profile drafts", () => {
     ).rejects.toThrow(/errors.roleLocked/)
   })
 })
+
+describe("starter import", () => {
+  const SUGGESTED_FAMILIES = [
+    {
+      name: "Engineering",
+      roles: [
+        { title: "Software Developer", trackKey: "IC" },
+        { title: "Engineering Manager", trackKey: "M" },
+      ],
+    },
+    {
+      name: "Sales",
+      roles: [{ title: "Account Executive", trackKey: "IC" }],
+    },
+  ]
+
+  it("requestStarterImport inserts a generating row with provenance", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedScratchOrganization(t)
+    const suggestionId = await asAdmin.mutation(
+      api.ai.suggest.requestStarterImport,
+      { orgId, rawText: "Software Developer\nTech Lead\nAccountant" }
+    )
+    await t.run(async (ctx) => {
+      const suggestion = await ctx.db.get(suggestionId)
+      expect(suggestion?.status).toBe("generating")
+      expect(suggestion?.source).toBe("ai")
+      expect(suggestion?.target.kind).toBe("starter.import")
+      expect(suggestion?.model?.provider).toBe("mistral")
+      expect(suggestion?.requestedBy).toBeTruthy()
+    })
+  })
+
+  it("requestStarterImport rejects blank and oversized text", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedScratchOrganization(t)
+    await expect(
+      asAdmin.mutation(api.ai.suggest.requestStarterImport, {
+        orgId,
+        rawText: "   \n  ",
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+    await expect(
+      asAdmin.mutation(api.ai.suggest.requestStarterImport, {
+        orgId,
+        rawText: "x".repeat(20_001),
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+  })
+
+  it("saveStarterImport rejects an unknown track key and an empty list", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedScratchOrganization(t)
+    const suggestionId = await asAdmin.mutation(
+      api.ai.suggest.requestStarterImport,
+      { orgId, rawText: "Developer" }
+    )
+    await expect(
+      t.mutation(internal.ai.persist.saveStarterImport, {
+        suggestionId,
+        families: [
+          { name: "Engineering", roles: [{ title: "Dev", trackKey: "Boss" }] },
+        ],
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+    await expect(
+      t.mutation(internal.ai.persist.saveStarterImport, {
+        suggestionId,
+        families: [],
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+  })
+
+  it("confirmStarterImport creates the edited set, marks confirmed, and audits", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedScratchOrganization(t)
+    const suggestionId = await asAdmin.mutation(
+      api.ai.suggest.requestStarterImport,
+      { orgId, rawText: "Software Developer\nAccount Executive" }
+    )
+    await t.mutation(internal.ai.persist.saveStarterImport, {
+      suggestionId,
+      families: SUGGESTED_FAMILIES,
+    })
+    // The user edited the proposal before confirming: one role removed.
+    await asAdmin.mutation(api.ai.suggest.confirmStarterImport, {
+      orgId,
+      suggestionId,
+      families: [SUGGESTED_FAMILIES[0] as (typeof SUGGESTED_FAMILIES)[number]],
+    })
+    await t.run(async (ctx) => {
+      const families = await ctx.db
+        .query("roleFamilies")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(families.map((family) => family.name)).toEqual(["Engineering"])
+      const roles = await ctx.db
+        .query("roles")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(roles.map((role) => role.title).sort()).toEqual([
+        "Engineering Manager",
+        "Software Developer",
+      ])
+      expect(roles.every((role) => role.familyId === families[0]?._id)).toBe(
+        true
+      )
+      const suggestion = await ctx.db.get(suggestionId)
+      expect(suggestion?.status).toBe("confirmed")
+      expect(suggestion?.confirmedBy).toBeTruthy()
+      const audit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "ai.suggestionConfirmed")
+        )
+        .collect()
+      expect(audit).toHaveLength(1)
+      expect(audit[0]?.payload).toMatchObject({
+        kind: "starter.import",
+        familyCount: 1,
+        roleCount: 2,
+      })
+      const created = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "role.created")
+        )
+        .collect()
+      expect(created).toHaveLength(2)
+      expect(created[0]?.payload).toMatchObject({ source: "aiImport" })
+    })
+  })
+
+  it("confirmStarterImport with an emptied list creates nothing and closes as rejected", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedScratchOrganization(t)
+    const suggestionId = await asAdmin.mutation(
+      api.ai.suggest.requestStarterImport,
+      { orgId, rawText: "Software Developer" }
+    )
+    await t.mutation(internal.ai.persist.saveStarterImport, {
+      suggestionId,
+      families: SUGGESTED_FAMILIES,
+    })
+    await asAdmin.mutation(api.ai.suggest.confirmStarterImport, {
+      orgId,
+      suggestionId,
+      families: [],
+    })
+    await t.run(async (ctx) => {
+      const families = await ctx.db
+        .query("roleFamilies")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(families).toHaveLength(0)
+      const suggestion = await ctx.db.get(suggestionId)
+      expect(suggestion?.status).toBe("rejected")
+    })
+  })
+
+  it("confirmStarterImport surfaces a duplicate family and leaves the suggestion open", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedScratchOrganization(t)
+    await asAdmin.mutation(api.assessment.starters.createStarterSet, {
+      orgId,
+      families: [{ name: "engineering", roles: [] }],
+    })
+    const suggestionId = await asAdmin.mutation(
+      api.ai.suggest.requestStarterImport,
+      { orgId, rawText: "Software Developer" }
+    )
+    await t.mutation(internal.ai.persist.saveStarterImport, {
+      suggestionId,
+      families: SUGGESTED_FAMILIES,
+    })
+    await expect(
+      asAdmin.mutation(api.ai.suggest.confirmStarterImport, {
+        orgId,
+        suggestionId,
+        families: SUGGESTED_FAMILIES,
+      })
+    ).rejects.toThrow(/errors.roleFamilyExists/)
+    await t.run(async (ctx) => {
+      const suggestion = await ctx.db.get(suggestionId)
+      expect(suggestion?.status).toBe("suggested")
+    })
+  })
+
+  it("confirmStarterImport refuses a second confirm on the same suggestion", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedScratchOrganization(t)
+    const suggestionId = await asAdmin.mutation(
+      api.ai.suggest.requestStarterImport,
+      { orgId, rawText: "Software Developer" }
+    )
+    await t.mutation(internal.ai.persist.saveStarterImport, {
+      suggestionId,
+      families: SUGGESTED_FAMILIES,
+    })
+    await asAdmin.mutation(api.ai.suggest.confirmStarterImport, {
+      orgId,
+      suggestionId,
+      families: [SUGGESTED_FAMILIES[1] as (typeof SUGGESTED_FAMILIES)[number]],
+    })
+    await expect(
+      asAdmin.mutation(api.ai.suggest.confirmStarterImport, {
+        orgId,
+        suggestionId,
+        families: SUGGESTED_FAMILIES,
+      })
+    ).rejects.toThrow(/errors.notFound/)
+  })
+})

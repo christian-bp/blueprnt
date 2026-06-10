@@ -4,8 +4,12 @@ import { internal } from "../_generated/api"
 import type { MutationCtx } from "../_generated/server"
 import { deriveResults, logBandShifts } from "../assessment/compute"
 import { PROFILE_TEXT_FIELDS, type ProfileTextField } from "../assessment/roles"
+import { insertStarterSet, starterFamilyShape } from "../assessment/starters"
 import { clampLocale, isCriterionKey } from "../evaluationModel/localize"
-import { templateContent } from "../evaluationModel/standardTemplate"
+import {
+  TRACK_KEYS,
+  templateContent,
+} from "../evaluationModel/standardTemplate"
 import { AUDIT_EVENTS, logAudit } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
@@ -492,6 +496,100 @@ export const confirmRoleProfileDraft = orgMutation({
         suggestionId,
         kind: "role.profile",
         appliedCount: appliedFields.length,
+      },
+    })
+    return null
+  },
+})
+
+// The whole pasted role list is prompt data; anything longer than this is
+// almost certainly not a role list and would blow the prompt budget.
+const MAX_IMPORT_TEXT = 20_000
+
+// The onboarding paste-import: the user pastes their roles (optionally
+// pre-grouped into families) and the AI organizes them into a starter-set
+// proposal. Member scope, like createStarterSet (the role register).
+export const requestStarterImport = orgMutation({
+  args: { rawText: v.string(), locale: v.optional(v.string()) },
+  returns: v.id("suggestions"),
+  handler: async (ctx, { rawText, locale }) => {
+    const settings = await requireCompleteSettings(ctx, ctx.orgId)
+    const text = rawText.trim()
+    if (text.length === 0 || text.length > MAX_IMPORT_TEXT) {
+      throw appError(ERROR_CODES.invalidInput)
+    }
+    const resolvedLocale = promptLocale(locale, settings.locale)
+    // Tracks are fixed constants (ADR-0006): the prompt's track names are a
+    // content lookup in the generation locale, no rows to fetch.
+    const trackNames = templateContent(clampLocale(resolvedLocale)).trackNames
+    const suggestionId = await ctx.db.insert("suggestions", {
+      orgId: ctx.orgId,
+      target: { kind: "starter.import" },
+      suggestedValue: null,
+      source: "ai",
+      status: "generating",
+      model: { provider: AI_PROVIDER, model: AI_MODEL_ID },
+      requestedBy: ctx.authUserId,
+    })
+    await ctx.scheduler.runAfter(
+      0,
+      internal.ai.generate.generateStarterImport,
+      {
+        suggestionId,
+        locale: resolvedLocale,
+        industry: settings.industry,
+        country: settings.country,
+        ...(settings.employeeCount !== undefined
+          ? { employeeCount: settings.employeeCount }
+          : {}),
+        rawText: text,
+        tracks: TRACK_KEYS.map((key) => ({ key, name: trackNames[key] })),
+      }
+    )
+    return suggestionId
+  },
+})
+
+// Confirms the AI import with the user's EDITED list: the suggestion stores
+// what the AI proposed, the confirm receives what the human approved after
+// review (ADR-0003). Rows insert through the same validated path as
+// createStarterSet; an emptied list confirms nothing and closes the
+// suggestion as rejected, mirroring the other confirm paths.
+export const confirmStarterImport = orgMutation({
+  args: {
+    suggestionId: v.id("suggestions"),
+    families: v.array(starterFamilyShape),
+  },
+  returns: v.null(),
+  handler: async (ctx, { suggestionId, families }) => {
+    const suggestion = await ctx.db.get(suggestionId)
+    if (
+      suggestion === null ||
+      suggestion.orgId !== ctx.orgId ||
+      suggestion.target.kind !== "starter.import" ||
+      suggestion.status !== "suggested"
+    ) {
+      throw appError(ERROR_CODES.notFound)
+    }
+    const { familyCount, roleCount } = await insertStarterSet(ctx, {
+      orgId: ctx.orgId,
+      actorId: ctx.authUserId,
+      families,
+      source: "aiImport",
+    })
+    await ctx.db.patch(suggestionId, {
+      status: familyCount > 0 ? "confirmed" : "rejected",
+      confirmedBy: ctx.authUserId,
+    })
+    await logAudit(ctx, {
+      orgId: ctx.orgId,
+      type: AUDIT_EVENTS.aiSuggestionConfirmed,
+      actorId: ctx.authUserId,
+      payload: {
+        suggestionId,
+        kind: "starter.import",
+        familyCount,
+        roleCount,
       },
     })
     return null

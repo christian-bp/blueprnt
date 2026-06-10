@@ -11,6 +11,9 @@ import messages from "@workspace/i18n/messages/en.json"
 
 const createStarterSetMock = vi.fn()
 const completeOnboardingMock = vi.fn()
+const requestStarterImportMock = vi.fn()
+const confirmStarterImportMock = vi.fn()
+const rejectSuggestionMock = vi.fn()
 const useQueryMock = vi.fn()
 
 vi.mock("convex/react", () => ({
@@ -19,10 +22,16 @@ vi.mock("convex/react", () => ({
       return createStarterSetMock
     if (ref === "accounts.organization.completeOnboarding")
       return completeOnboardingMock
+    if (ref === "ai.suggest.requestStarterImport")
+      return requestStarterImportMock
+    if (ref === "ai.suggest.confirmStarterImport")
+      return confirmStarterImportMock
+    if (ref === "ai.suggest.rejectSuggestion") return rejectSuggestionMock
     return vi.fn()
   },
   // The mock dispatches on the api ref (see beforeEach): getIndustryStarter
-  // returns the seed fixture, getModel returns the tracks/levels fixture.
+  // returns the seed fixture, getModel the tracks fixture, and
+  // getOpenSuggestions the AI rows for the import flow.
   useQuery: (...args: unknown[]) => useQueryMock(...args),
 }))
 
@@ -42,12 +51,27 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
     evaluationModel: {
       model: { getModel: "evaluationModel.model.getModel" },
     },
+    ai: {
+      suggest: {
+        getOpenSuggestions: "ai.suggest.getOpenSuggestions",
+        requestStarterImport: "ai.suggest.requestStarterImport",
+        confirmStarterImport: "ai.suggest.confirmStarterImport",
+        rejectSuggestion: "ai.suggest.rejectSuggestion",
+      },
+    },
   },
+}))
+
+// The animated placeholder runs real timers; it has its own test file and
+// only adds noise (act warnings) here.
+vi.mock("@/components/onboarding/typewriter-placeholder", () => ({
+  TypewriterPlaceholder: () => null,
 }))
 
 import { FamiliesStep } from "@/components/onboarding/families-step"
 
 const t = messages.dashboard.onboarding.families
+const nextCta = messages.dashboard.onboarding.screens.nextCta
 
 // A two-family starter; the second family is removable in its own test.
 function starterFixture() {
@@ -83,8 +107,32 @@ function modelFixture() {
   }
 }
 
+function suggestedImportFixture() {
+  return {
+    suggestionId: "sugg-1",
+    kind: "starter.import",
+    status: "suggested",
+    suggestedValue: {
+      families: [
+        {
+          name: "Engineering",
+          roles: [
+            { title: "Developer", trackKey: "IC" },
+            // Unknown track keys from the model are coerced to the first track.
+            { title: "Tech Lead", trackKey: "Boss" },
+          ],
+        },
+      ],
+    },
+    errorCode: null,
+    createdAt: Date.now(),
+    roleId: null,
+  }
+}
+
 let currentStarter: unknown
 let currentModel: unknown
+let currentSuggestions: unknown
 
 function renderStep(onFinished: () => void = () => {}) {
   return render(
@@ -98,26 +146,141 @@ function renderStep(onFinished: () => void = () => {}) {
   )
 }
 
+async function seedFromTemplate() {
+  fireEvent.click(screen.getByRole("button", { name: t.templateCta }))
+  await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+}
+
 describe("FamiliesStep", () => {
   beforeEach(() => {
     createStarterSetMock.mockReset()
     completeOnboardingMock.mockReset()
+    requestStarterImportMock.mockReset()
+    confirmStarterImportMock.mockReset()
+    rejectSuggestionMock.mockReset()
     useQueryMock.mockReset()
     currentStarter = starterFixture()
     currentModel = modelFixture()
-    useQueryMock.mockImplementation((ref: unknown) =>
-      ref === "assessment.starters.getIndustryStarter"
-        ? currentStarter
-        : currentModel
-    )
+    currentSuggestions = []
+    useQueryMock.mockImplementation((ref: unknown) => {
+      if (ref === "assessment.starters.getIndustryStarter")
+        return currentStarter
+      if (ref === "ai.suggest.getOpenSuggestions") return currentSuggestions
+      return currentModel
+    })
   })
 
   afterEach(() => {
     cleanup()
   })
 
-  it("seeds the editable list from the industry starter", () => {
+  it("starts in the paste view with a disabled next button", () => {
     renderStep()
+    expect(screen.getByLabelText(t.pasteLabel)).toBeDefined()
+    expect(
+      screen.queryAllByLabelText(messages.dashboard.roles.family.nameLabel)
+    ).toHaveLength(0)
+    const next = screen.getByRole("button", {
+      name: nextCta,
+    }) as HTMLButtonElement
+    expect(next.disabled).toBe(true)
+  })
+
+  it("sends the pasted text to the AI on next", async () => {
+    requestStarterImportMock.mockResolvedValue("sugg-1")
+    renderStep()
+    fireEvent.change(screen.getByLabelText(t.pasteLabel), {
+      target: { value: "Developer\nTech Lead\nAccountant" },
+    })
+    fireEvent.click(screen.getByRole("button", { name: nextCta }))
+    await waitFor(() => {
+      expect(requestStarterImportMock).toHaveBeenCalledTimes(1)
+    })
+    expect(requestStarterImportMock).toHaveBeenCalledWith({
+      orgId: "org-1",
+      rawText: "Developer\nTech Lead\nAccountant",
+      locale: "en",
+    })
+  })
+
+  it("shows the progress state while the import is generating", async () => {
+    currentSuggestions = [
+      {
+        suggestionId: "sugg-1",
+        kind: "starter.import",
+        status: "generating",
+        suggestedValue: null,
+        errorCode: null,
+        createdAt: Date.now(),
+        roleId: null,
+      },
+    ]
+    renderStep()
+    expect(await screen.findByText(t.generating)).toBeDefined()
+    expect(screen.queryByLabelText(t.pasteLabel)).toBeNull()
+  })
+
+  it("shows the translated error and keeps the textarea when the import failed", async () => {
+    currentSuggestions = [
+      {
+        suggestionId: "sugg-1",
+        kind: "starter.import",
+        status: "failed",
+        suggestedValue: null,
+        errorCode: "errors.aiGenerationFailed",
+        createdAt: Date.now(),
+        roleId: null,
+      },
+    ]
+    renderStep()
+    expect((await screen.findByRole("alert")).textContent).toBe(
+      messages.errors.aiGenerationFailed
+    )
+    expect(screen.getByLabelText(t.pasteLabel)).toBeDefined()
+  })
+
+  it("seeds review from a suggested import, coerces unknown tracks, and confirms with the edited list", async () => {
+    currentSuggestions = [suggestedImportFixture()]
+    confirmStarterImportMock.mockResolvedValue(null)
+    completeOnboardingMock.mockResolvedValue(null)
+    const onFinished = vi.fn()
+    renderStep(onFinished)
+
+    // The AI proposal seeds the editable review list directly.
+    const nameInputs = (await screen.findAllByLabelText(
+      messages.dashboard.roles.family.nameLabel
+    )) as HTMLInputElement[]
+    expect(nameInputs.map((input) => input.value)).toEqual(["Engineering"])
+    expect(screen.getByText(messages.dashboard.ai.provenance)).toBeDefined()
+
+    fireEvent.click(screen.getByRole("button", { name: t.createCta }))
+    await waitFor(() => {
+      expect(completeOnboardingMock).toHaveBeenCalledTimes(1)
+    })
+    expect(confirmStarterImportMock).toHaveBeenCalledWith({
+      orgId: "org-1",
+      suggestionId: "sugg-1",
+      families: [
+        {
+          name: "Engineering",
+          roles: [
+            { title: "Developer", trackKey: "IC" },
+            { title: "Tech Lead", trackKey: "IC" },
+          ],
+        },
+      ],
+    })
+    expect(createStarterSetMock).not.toHaveBeenCalled()
+    expect(onFinished).toHaveBeenCalledTimes(1)
+  })
+
+  it("the template button seeds from the industry starter and creates via createStarterSet", async () => {
+    createStarterSetMock.mockResolvedValue(null)
+    completeOnboardingMock.mockResolvedValue(null)
+    const onFinished = vi.fn()
+    renderStep(onFinished)
+    await seedFromTemplate()
+
     const nameInputs = screen.getAllByLabelText(
       messages.dashboard.roles.family.nameLabel
     ) as HTMLInputElement[]
@@ -125,20 +288,11 @@ describe("FamiliesStep", () => {
       "Engineering",
       "Sales",
     ])
-  })
-
-  it("creates and sends the cleaned payload, then completes, then finishes", async () => {
-    createStarterSetMock.mockResolvedValue(null)
-    completeOnboardingMock.mockResolvedValue(null)
-    const onFinished = vi.fn()
-    renderStep(onFinished)
 
     fireEvent.click(screen.getByRole("button", { name: t.createCta }))
-
     await waitFor(() => {
       expect(completeOnboardingMock).toHaveBeenCalledTimes(1)
     })
-    expect(createStarterSetMock).toHaveBeenCalledTimes(1)
     expect(createStarterSetMock).toHaveBeenCalledWith({
       orgId: "org-1",
       families: [
@@ -155,13 +309,36 @@ describe("FamiliesStep", () => {
         },
       ],
     })
+    expect(confirmStarterImportMock).not.toHaveBeenCalled()
     expect(onFinished).toHaveBeenCalledTimes(1)
+  })
+
+  it("choosing the template dismisses an open AI proposal", async () => {
+    currentSuggestions = [
+      {
+        suggestionId: "sugg-1",
+        kind: "starter.import",
+        status: "failed",
+        suggestedValue: null,
+        errorCode: "errors.aiGenerationFailed",
+        createdAt: Date.now(),
+        roleId: null,
+      },
+    ]
+    rejectSuggestionMock.mockResolvedValue(null)
+    renderStep()
+    await seedFromTemplate()
+    expect(rejectSuggestionMock).toHaveBeenCalledWith({
+      orgId: "org-1",
+      suggestionId: "sugg-1",
+    })
   })
 
   it("excludes a removed family from the createStarterSet payload", async () => {
     createStarterSetMock.mockResolvedValue(null)
     completeOnboardingMock.mockResolvedValue(null)
     renderStep()
+    await seedFromTemplate()
 
     // Remove the Sales family, then create.
     fireEvent.click(
@@ -182,17 +359,11 @@ describe("FamiliesStep", () => {
     ])
   })
 
-  it("there is no skip: the finish button is the only way forward", () => {
-    renderStep(vi.fn())
-    const buttons = screen.getAllByRole("button")
-    expect(buttons.filter((b) => b.textContent === t.createCta).length).toBe(1)
-    expect(screen.queryByText("Skip for now")).toBeNull()
-  })
-
   it("finishing with only blank families completes without creating", async () => {
     completeOnboardingMock.mockResolvedValue(null)
     const onFinished = vi.fn()
     renderStep(onFinished)
+    await seedFromTemplate()
 
     // Empty every prefilled family name; cleaned input is then empty and
     // nothing is created, but onboarding still completes.
@@ -216,6 +387,7 @@ describe("FamiliesStep", () => {
     )
     const onFinished = vi.fn()
     renderStep(onFinished)
+    await seedFromTemplate()
 
     fireEvent.click(screen.getByRole("button", { name: t.createCta }))
 

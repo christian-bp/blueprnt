@@ -38,3 +38,18 @@ export type ModelDraftValue = z.infer<typeof modelDraftValueSchema>
 export const roleProfileValueSchema = z.object({
   profile: z.record(z.string(), z.string()),
 })
+
+// The onboarding paste-import textarea: client gate for the pasted role
+// list (the backend re-validates with the same bounds).
+export const starterImportInputSchema = z.string().trim().min(1).max(20_000)
+
+export const starterImportValueSchema = z.object({
+  families: z.array(
+    z.object({
+      name: z.string(),
+      roles: z.array(z.object({ title: z.string(), trackKey: z.string() })),
+    })
+  ),
+})
+
+export type StarterImportValue = z.infer<typeof starterImportValueSchema>

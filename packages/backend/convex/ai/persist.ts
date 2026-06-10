@@ -1,6 +1,8 @@
 import { isBalanced } from "@workspace/core"
 import { v } from "convex/values"
 import { internalMutation } from "../_generated/server"
+import { MAX_FAMILIES, MAX_ROLES } from "../assessment/starters"
+import { isTrackKey } from "../evaluationModel/localize"
 import { appError, ERROR_CODES } from "../lib/errors"
 
 export const saveDraft = internalMutation({
@@ -79,6 +81,51 @@ export const saveRoleProfileDraft = internalMutation({
   handler: async (ctx, { suggestionId, profile }) => {
     await ctx.db.patch(suggestionId, {
       suggestedValue: { profile },
+      status: "suggested",
+    })
+    return null
+  },
+})
+
+// The action sanitizes the import before calling (ai/starterImport); these
+// gates keep an out-of-contract grouping from ever reaching the suggestion
+// store, so a stored import is always confirmable as-is.
+export const saveStarterImport = internalMutation({
+  args: {
+    suggestionId: v.id("suggestions"),
+    families: v.array(
+      v.object({
+        name: v.string(),
+        roles: v.array(
+          v.object({
+            title: v.string(),
+            trackKey: v.string(),
+          })
+        ),
+      })
+    ),
+  },
+  returns: v.null(),
+  handler: async (ctx, { suggestionId, families }) => {
+    const totalRoles = families.reduce(
+      (sum, family) => sum + family.roles.length,
+      0
+    )
+    if (
+      families.length === 0 ||
+      families.length > MAX_FAMILIES ||
+      totalRoles === 0 ||
+      totalRoles > MAX_ROLES ||
+      families.some(
+        (family) =>
+          family.name.trim() === "" ||
+          family.roles.some((role) => !isTrackKey(role.trackKey))
+      )
+    ) {
+      throw appError(ERROR_CODES.invalidInput)
+    }
+    await ctx.db.patch(suggestionId, {
+      suggestedValue: { families },
       status: "suggested",
     })
     return null
