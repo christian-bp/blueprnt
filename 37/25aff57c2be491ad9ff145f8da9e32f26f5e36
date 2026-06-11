@@ -1,0 +1,61 @@
+packages/backend/convex/assessment/anchorRoles.ts
+  s_fa45b53f6da63b::t_59372569aa8b7a 1-208
+docs/contexts/assessment/CONTEXT.md
+  s_fa45b53f6da63b::t_59372569aa8b7a 37,76
+docs/PLAN-V1.md
+  s_fa45b53f6da63b::t_59372569aa8b7a 98
+packages/backend/convex/assessment/roles.ts
+  s_fa45b53f6da63b::t_59372569aa8b7a 229-242,309,453-469,477-484
+apps/dashboard/app/(app)/roles/[roleId]/page.tsx
+  s_fa45b53f6da63b::t_59372569aa8b7a 13,104-112
+apps/dashboard/components/results/anchor-roles-panel.tsx
+  s_fa45b53f6da63b::t_59372569aa8b7a 1-95
+packages/backend/convex/assessment/tables.ts
+  s_fa45b53f6da63b::t_59372569aa8b7a 41-60
+packages/i18n/messages/nb.json
+  s_fa45b53f6da63b::t_59372569aa8b7a 188-205,225-228,247-253,387,427-430
+apps/dashboard/components/rating/rating-result.tsx
+  s_fa45b53f6da63b::t_59372569aa8b7a 36-44,46-51,59-71,101-125
+apps/dashboard/components/roles/anchor-role-card.test.tsx
+  s_fa45b53f6da63b::t_59372569aa8b7a 1-187
+packages/backend/convex/_generated/api.d.ts
+  s_fa45b53f6da63b::t_59372569aa8b7a 26,75
+CLAUDE.md
+  s_fa45b53f6da63b::t_59372569aa8b7a 55,63
+packages/i18n/messages/en.json
+  s_fa45b53f6da63b::t_59372569aa8b7a 188-205,225-228,247-253,387,427-430
+packages/i18n/messages/sv.json
+  s_fa45b53f6da63b::t_59372569aa8b7a 188-205,225-228,247-253,387,427-430
+apps/dashboard/app/(app)/results/page.tsx
+  s_fa45b53f6da63b::t_59372569aa8b7a 33,53-58,62,132
+packages/backend/convex/assessment/anchorRoles.test.ts
+  s_fa45b53f6da63b::t_59372569aa8b7a 1-368
+packages/i18n/messages/da.json
+  s_fa45b53f6da63b::t_59372569aa8b7a 188-205,225-228,247-253,387,427-430
+packages/i18n/messages/fi.json
+  s_fa45b53f6da63b::t_59372569aa8b7a 188-205,225-228,247-253,387,427-430
+apps/dashboard/components/rating/rating-result.test.tsx
+  s_fa45b53f6da63b::t_59372569aa8b7a 6-13,16,48-60,71-72,79,85,108-135
+apps/dashboard/components/results/anchor-roles-panel.test.tsx
+  s_fa45b53f6da63b::t_59372569aa8b7a 1-71
+apps/dashboard/components/roles/anchor-role-card.tsx
+  s_fa45b53f6da63b::t_59372569aa8b7a 1-417
+packages/backend/convex/lib/audit.ts
+  s_fa45b53f6da63b::t_59372569aa8b7a 25-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "3725aff57c2be491ad9ff145f8da9e32f26f5e36",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
