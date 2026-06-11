@@ -1,0 +1,60 @@
+apps/dashboard/components/rating/rating-result.test.tsx
+  s_fa45b53f6da63b::t_07d94c9611b1da 6-13,16,48-60,71-72,79,85,108-135
+apps/dashboard/components/roles/anchor-role-card.tsx
+  s_fa45b53f6da63b::t_43f0d87d183924 61-148,151-152,156-157,161-162,184-237,239-244,267-271,273,275-313,315,317-333,335-361,381-386,393-399,411
+  s_fa45b53f6da63b::t_dc8149c5d01e18 1-60,149-150,153-155,158-160,163-183,238,245-266,272,274,314,316,334,362-380,387-392,400-410,412-417
+apps/dashboard/app/(app)/roles/[roleId]/page.tsx
+  s_fa45b53f6da63b::t_15b05b184b2e89 104-112
+  s_fa45b53f6da63b::t_a1ad8617abcefa 13
+CLAUDE.md
+  s_fa45b53f6da63b::t_3521372775c9b7 55
+  s_fa45b53f6da63b::t_759221af5467ba 63
+packages/backend/convex/assessment/anchorRoles.test.ts
+  s_fa45b53f6da63b::t_b1622456f56866 1-244,350-368
+  s_fa45b53f6da63b::t_210b962485a406 245-349
+apps/dashboard/components/roles/anchor-role-card.test.tsx
+  s_fa45b53f6da63b::t_d68d962356646b 93-94
+  s_fa45b53f6da63b::t_4ff98abae91611 133-149
+  s_fa45b53f6da63b::t_9dd894637aff43 1-92,95-132,150-187
+docs/contexts/assessment/CONTEXT.md
+  s_fa45b53f6da63b::t_5fae29be4956b0 37
+  s_fa45b53f6da63b::t_9a179946c2733c 76
+apps/dashboard/components/rating/rating-result.tsx
+  s_fa45b53f6da63b::t_2cfd4172b78887 60-71
+  s_fa45b53f6da63b::t_b8a52446e854d6 39-41,46-51
+  s_fa45b53f6da63b::t_dd4735d4a386c5 101-125
+  s_fa45b53f6da63b::t_818334aa607732 59
+  s_fa45b53f6da63b::t_7d88bad141ac62 36-38,42-44
+packages/backend/convex/assessment/roles.ts
+  s_fa45b53f6da63b::t_b217a856961976 453-469,477-484
+packages/backend/convex/assessment/anchorRoles.ts
+  s_fa45b53f6da63b::t_28600581a28e47 166-167
+  s_fa45b53f6da63b::t_99f912843e4444 104-107,130-137
+  s_fa45b53f6da63b::t_9c9128f46f3da5 1-103,108-129,138-165,168-208
+apps/dashboard/app/(app)/results/page.tsx
+  s_fa45b53f6da63b::t_e23a90e369ec69 132
+  s_fa45b53f6da63b::t_095c4355169611 53-58,62
+  s_fa45b53f6da63b::t_5e78a44b59baad 33
+apps/dashboard/components/results/anchor-roles-panel.test.tsx
+  s_fa45b53f6da63b::t_1996072a6cce11 3,5-8,12,23,26,37,42,47,49,60,62-69
+  s_fa45b53f6da63b::t_dbb37561446a04 1-2,4,9-11,13-22,24-25,27-36,38-41,43-46,50-59,61,70-71
+apps/dashboard/components/results/anchor-roles-panel.tsx
+  s_fa45b53f6da63b::t_7eb3b8e6016d66 1-16,33-38,40-73,82,84-95
+  s_fa45b53f6da63b::t_f9402f0142c61c 17-32,39,74-81,83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b02c2dc796f788663654a774533b810fe334ecd7",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
