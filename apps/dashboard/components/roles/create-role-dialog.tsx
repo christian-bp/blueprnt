@@ -6,6 +6,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -190,10 +191,10 @@ export function CreateRoleDialog({
               {t("error")}
             </p>
           )}
-          <div className="flex justify-end gap-2">
+          <DialogFooter>
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
               onClick={() => handleOpenChange(false)}
             >
               {t("cancel")}
@@ -201,7 +202,7 @@ export function CreateRoleDialog({
             <Button type="submit" disabled={!canSubmit}>
               {t("cta")}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

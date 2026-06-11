@@ -2,6 +2,7 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
+import { DialogFooter } from "@workspace/ui/components/dialog"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { Textarea } from "@workspace/ui/components/textarea"
@@ -26,9 +27,13 @@ const EMPTY_ANCHORS = ["", "", "", "", "", ""]
 export function AddCriterionForm({
   orgId,
   onAdded,
+  onCancel,
 }: {
   orgId: string
   onAdded?: () => void
+  // Renders the footer's cancel button when given (the dialog close); kept a
+  // plain callback so the form stays renderable outside a Dialog context.
+  onCancel?: () => void
 }) {
   const tEditor = useTranslations("dashboard.model.editor")
   const t = useTranslations("dashboard.model")
@@ -132,13 +137,16 @@ export function AddCriterionForm({
           {t("error")}
         </p>
       )}
-      <Button
-        type="submit"
-        variant="outline"
-        disabled={pending || name.trim().length === 0}
-      >
-        {tEditor("addCta")}
-      </Button>
+      <DialogFooter>
+        {onCancel !== undefined && (
+          <Button type="button" variant="outline" onClick={onCancel}>
+            {tEditor("cancelCta")}
+          </Button>
+        )}
+        <Button type="submit" disabled={pending || name.trim().length === 0}>
+          {tEditor("addCta")}
+        </Button>
+      </DialogFooter>
     </form>
   )
 }

@@ -399,7 +399,8 @@
         "pointsOver": "{count} painopistettä yli budjetin",
         "balanced": "Kaikki painopisteet on jaettu",
         "minCriteriaHint": "Lisää vähintään {min} kriteeriä jatkaaksesi.",
-        "removalFloorHint": "Malli tarvitsee vähintään {min} kriteeriä, joten kriteerejä ei voi poistaa juuri nyt."
+        "removalFloorHint": "Malli tarvitsee vähintään {min} kriteeriä, joten kriteerejä ei voi poistaa juuri nyt.",
+        "addDialogDescription": "Kuvaa mitä kriteeri mittaa ja kirjoita arviointiankkurit. Uudet kriteerit alkavat painolla 3."
       },
       "change": {
         "cta": "Vaihda mallivalintaa",

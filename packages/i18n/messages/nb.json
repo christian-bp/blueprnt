@@ -399,7 +399,8 @@
         "pointsOver": "{count} vektpoeng over budsjettet",
         "balanced": "Alle vektpoeng er fordelt",
         "minCriteriaHint": "Legg til minst {min} kriterier for å fortsette.",
-        "removalFloorHint": "En modell trenger minst {min} kriterier, så kriterier kan ikke fjernes akkurat nå."
+        "removalFloorHint": "En modell trenger minst {min} kriterier, så kriterier kan ikke fjernes akkurat nå.",
+        "addDialogDescription": "Beskriv hva kriteriet måler og skriv vurderingsankerne. Nye kriterier starter på vekt 3."
       },
       "change": {
         "cta": "Endre modellvalg",

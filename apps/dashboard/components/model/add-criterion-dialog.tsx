@@ -4,6 +4,7 @@ import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -30,17 +31,19 @@ export function AddCriterionDialog({ orgId }: { orgId: string }) {
         </Button>
       </DialogTrigger>
       {/* The form is tall; cap the height and scroll inside so the dialog stays
-          centered and the overlay shifts nothing behind it. The title alone
-          describes the dialog, so opt out of the description with an explicit
-          undefined aria-describedby (no extra i18n copy needed). */}
-      <DialogContent
-        aria-describedby={undefined}
-        className="max-h-[85svh] overflow-y-auto sm:max-w-lg"
-      >
+          centered and the overlay shifts nothing behind it. */}
+      <DialogContent className="max-h-[85svh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{tEditor("addCta")}</DialogTitle>
+          <DialogDescription>
+            {tEditor("addDialogDescription")}
+          </DialogDescription>
         </DialogHeader>
-        <AddCriterionForm orgId={orgId} onAdded={() => setOpen(false)} />
+        <AddCriterionForm
+          orgId={orgId}
+          onAdded={() => setOpen(false)}
+          onCancel={() => setOpen(false)}
+        />
       </DialogContent>
     </Dialog>
   )
