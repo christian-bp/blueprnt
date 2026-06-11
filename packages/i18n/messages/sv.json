@@ -445,7 +445,9 @@
       "blindRatingLabel": "Hur fungerar betygsättningen?",
       "blindRatingBody": "Välj ankartexten som bäst matchar vad rollen kräver, inte hur nuvarande medarbetare presterar. Betyg, poäng och band hålls dolda till sista kriteriet så att varje kriterium bedöms för sig; resultatet visas så snart alla kriterier är betygsatta.",
       "statusLabel": "Vad betyder statusarna?",
-      "statusBody": "En roll går från utkast till under granskning till godkänd. Godkännandet låser profilen och betygen som granskade; återöppna rollen för att ändra dem igen. Statusen påverkar aldrig det beräknade resultatet."
+      "statusBody": "En roll går från utkast till under granskning till godkänd. Godkännandet låser profilen och betygen som granskade; återöppna rollen för att ändra dem igen. Statusen påverkar aldrig det beräknade resultatet.",
+      "familiesReviewLabel": "Vad är familjer och tracks?",
+      "familiesReviewBody": "En rollfamilj grupperar roller som delar samma slags arbete, som Teknik eller Sälj; familjer organiserar registret och påverkar aldrig poängen. En track är typen av jobb, till exempel individuell specialist eller chef; den säger inget om senioritet."
     }
   },
   "errors": {

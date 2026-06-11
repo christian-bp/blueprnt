@@ -148,27 +148,31 @@ export function ModelEditor({
             <HelpMorphButton label={tHelp("criterionLabel")}>
               {tHelp("criterionBody")}
             </HelpMorphButton>
-            <HelpMorphButton label={tHelp("weightPointsLabel")}>
-              {tHelp("weightPointsBody")}
-            </HelpMorphButton>
           </span>
           {/* Live budget meter: rendered inside the header row so toggling
-              edit mode never adds vertical space (zero layout shift). */}
+              edit mode never adds vertical space (zero layout shift). The
+              weight-points help lives here, where weights are changed, so
+              the heading carries a single help morph (one per title). */}
           {editing && (
-            <span
-              aria-live="polite"
-              className={cn(
-                "min-w-0 flex-1 truncate text-right text-sm",
-                delta === 0
-                  ? "text-muted-foreground"
-                  : "text-amber-600 dark:text-amber-500"
-              )}
-            >
-              {delta === 0
-                ? tEditor("balanced")
-                : delta < 0
-                  ? tEditor("pointsLeft", { count: -delta })
-                  : tEditor("pointsOver", { count: delta })}
+            <span className="flex min-w-0 flex-1 items-center justify-end gap-1.5">
+              <span
+                aria-live="polite"
+                className={cn(
+                  "min-w-0 truncate text-right text-sm",
+                  delta === 0
+                    ? "text-muted-foreground"
+                    : "text-amber-600 dark:text-amber-500"
+                )}
+              >
+                {delta === 0
+                  ? tEditor("balanced")
+                  : delta < 0
+                    ? tEditor("pointsLeft", { count: -delta })
+                    : tEditor("pointsOver", { count: delta })}
+              </span>
+              <HelpMorphButton label={tHelp("weightPointsLabel")}>
+                {tHelp("weightPointsBody")}
+              </HelpMorphButton>
             </span>
           )}
           {/* After a confirmed weight review the Review trigger is locked

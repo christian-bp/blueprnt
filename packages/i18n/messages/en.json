@@ -445,7 +445,9 @@
       "blindRatingLabel": "How does rating work?",
       "blindRatingBody": "Pick the anchor text that best matches what the role requires, not how the current employee performs. Ratings, score, and band stay hidden until the last criterion so each one is judged on its own; the result appears as soon as every criterion is rated.",
       "statusLabel": "What do the statuses mean?",
-      "statusBody": "A role moves from draft to in review to approved. Approving locks the profile and the ratings as reviewed; reopen the role to change them again. The status never affects the computed result."
+      "statusBody": "A role moves from draft to in review to approved. Approving locks the profile and the ratings as reviewed; reopen the role to change them again. The status never affects the computed result.",
+      "familiesReviewLabel": "What are families and tracks?",
+      "familiesReviewBody": "A role family groups roles that share the same kind of work, like Engineering or Sales; families organize the register and never affect the score. A track is the kind of job, for example individual contributor or manager; it says nothing about seniority."
     }
   },
   "errors": {

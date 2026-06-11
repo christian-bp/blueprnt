@@ -313,11 +313,8 @@ export function FamiliesStep({
       <>
         <div className="flex items-center justify-center gap-1.5">
           <p className="text-muted-foreground text-sm">{t("reviewHint")}</p>
-          <HelpMorphButton label={tHelp("familyLabel")}>
-            {tHelp("familyBody")}
-          </HelpMorphButton>
-          <HelpMorphButton label={tHelp("trackLabel")}>
-            {tHelp("trackBody")}
+          <HelpMorphButton label={tHelp("familiesReviewLabel")}>
+            {tHelp("familiesReviewBody")}
           </HelpMorphButton>
         </div>
         {seededFrom?.source === "ai" && (
