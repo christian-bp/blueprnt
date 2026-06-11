@@ -1,0 +1,51 @@
+apps/dashboard/components/onboarding/families-review.tsx
+  s_fa45b53f6da63b::t_cacb24794d0582 401-404
+apps/dashboard/components/results/anchor-roles-panel.tsx
+  s_fa45b53f6da63b::t_59372569aa8b7a 47-52
+packages/i18n/messages/en.json
+  s_fa45b53f6da63b::t_59372569aa8b7a 231
+apps/dashboard/components/roles/role-result-card.tsx
+  s_fa45b53f6da63b::t_cacb24794d0582 21,35,51-56
+packages/i18n/messages/fi.json
+  s_fa45b53f6da63b::t_59372569aa8b7a 231
+packages/i18n/messages/da.json
+  s_fa45b53f6da63b::t_59372569aa8b7a 231
+apps/dashboard/components/roles/role-rating-card.tsx
+  s_fa45b53f6da63b::t_cacb24794d0582 12,34,46-51
+apps/dashboard/components/roles/create-role-dialog.tsx
+  s_fa45b53f6da63b::t_cacb24794d0582 26,49,149-154,176-181
+packages/i18n/messages/nb.json
+  s_fa45b53f6da63b::t_59372569aa8b7a 231
+apps/dashboard/app/(app)/roles/families/[familyId]/page.tsx
+  s_fa45b53f6da63b::t_cacb24794d0582 33,82-84
+apps/dashboard/components/model/model-editor.tsx
+  s_fa45b53f6da63b::t_cacb24794d0582 151-153,174-186,326-340
+apps/dashboard/app/(app)/roles/[roleId]/rate/page.tsx
+  s_fa45b53f6da63b::t_cacb24794d0582 42-43,49
+apps/dashboard/app/(app)/page.tsx
+  s_fa45b53f6da63b::t_cacb24794d0582 14,21,41,49,57-60,68,77-86
+apps/dashboard/components/onboarding/model-setup-step.tsx
+  s_fa45b53f6da63b::t_cacb24794d0582 171
+apps/dashboard/components/onboarding/families-step.tsx
+  s_fa45b53f6da63b::t_cacb24794d0582 51,314-322
+apps/dashboard/components/rating/rating-stepper.tsx
+  s_fa45b53f6da63b::t_cacb24794d0582 20,63,124,126-129
+packages/i18n/messages/sv.json
+  s_fa45b53f6da63b::t_59372569aa8b7a 231
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "dd335b9756ee7b50f86fb0719c21cef0f22184f5",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
