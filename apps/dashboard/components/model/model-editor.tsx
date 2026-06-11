@@ -12,7 +12,7 @@ import { ConvexError } from "convex/values"
 import { AnimatePresence } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
-import { HelpMorphButton } from "@/components/help-morph-button"
+import { HelpPopover } from "@/components/help-popover"
 import { MorphPopover } from "@/components/morph-popover"
 import { AddCriterionDialog } from "@/components/model/add-criterion-dialog"
 import { CriterionItem } from "@/components/model/criterion-item"
@@ -145,9 +145,9 @@ export function ModelEditor({
         <div className="flex items-center justify-between gap-3">
           <span className="flex shrink-0 items-center gap-1.5">
             <h3 className="font-medium text-base">{tEditor("heading")}</h3>
-            <HelpMorphButton label={tHelp("criterionLabel")}>
+            <HelpPopover label={tHelp("criterionLabel")}>
               {tHelp("criterionBody")}
-            </HelpMorphButton>
+            </HelpPopover>
           </span>
           {/* Live budget meter: rendered inside the header row so toggling
               edit mode never adds vertical space (zero layout shift). The
@@ -170,9 +170,9 @@ export function ModelEditor({
                     ? tEditor("pointsLeft", { count: -delta })
                     : tEditor("pointsOver", { count: delta })}
               </span>
-              <HelpMorphButton label={tHelp("weightPointsLabel")}>
+              <HelpPopover label={tHelp("weightPointsLabel")}>
                 {tHelp("weightPointsBody")}
-              </HelpMorphButton>
+              </HelpPopover>
             </span>
           )}
           {/* After a confirmed weight review the Review trigger is locked

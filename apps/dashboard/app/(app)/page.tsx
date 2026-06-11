@@ -11,7 +11,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
-import { HelpMorphButton } from "@/components/help-morph-button"
+import { HelpPopover } from "@/components/help-popover"
 import { useOrganization } from "@/components/org-context"
 
 // Start page: real derived counts, no stored aggregates. Each card links to
@@ -79,9 +79,9 @@ export default function OverviewPage() {
             <div className="flex items-center gap-1.5">
               <CardDescription>{card.label}</CardDescription>
               {card.help !== undefined && (
-                <HelpMorphButton label={card.help.label}>
+                <HelpPopover label={card.help.label}>
                   {card.help.body}
-                </HelpMorphButton>
+                </HelpPopover>
               )}
             </div>
             <CardTitle className="text-3xl tabular-nums">

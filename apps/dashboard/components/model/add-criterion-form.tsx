@@ -8,7 +8,7 @@ import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
-import { HelpMorphButton } from "@/components/help-morph-button"
+import { HelpPopover } from "@/components/help-popover"
 
 const EMPTY_ANCHORS = ["", "", "", "", "", ""]
 
@@ -45,7 +45,7 @@ export function AddCriterionForm({
 
   return (
     <form
-      className="space-y-4 rounded-md border p-4"
+      className="space-y-4"
       onSubmit={async (event) => {
         event.preventDefault()
         setPending(true)
@@ -99,9 +99,9 @@ export function AddCriterionForm({
         <legend className="font-medium text-sm">
           <span className="flex items-center gap-1.5">
             {tEditor("anchors")}
-            <HelpMorphButton label={tHelp("anchorsLabel")}>
+            <HelpPopover label={tHelp("anchorsLabel")}>
               {tHelp("anchorsBody")}
-            </HelpMorphButton>
+            </HelpPopover>
           </span>
         </legend>
         {anchors.map((anchor, index) => (

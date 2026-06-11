@@ -18,7 +18,7 @@ import {
 } from "@workspace/ui/components/table"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
-import { HelpMorphButton } from "@/components/help-morph-button"
+import { HelpPopover } from "@/components/help-popover"
 
 // Per-role result breakdown: rating + weight points per criterion, with the
 // normalized 0-100 score in the header (ADR-0004). The weighted contribution
@@ -50,9 +50,9 @@ export function RoleResultCard({
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           {t("resultHeading")}
-          <HelpMorphButton label={tHelp("scoreLabel")}>
+          <HelpPopover label={tHelp("scoreLabel")}>
             {tHelp("scoreBody")}
-          </HelpMorphButton>
+          </HelpPopover>
         </CardTitle>
         <div className="flex items-center gap-4">
           <span className="font-semibold text-2xl tabular-nums">

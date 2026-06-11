@@ -4,6 +4,7 @@ import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
   DialogContent,
+  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@workspace/ui/components/dialog"
@@ -36,7 +37,9 @@ export function AddCriterionDialog({ orgId }: { orgId: string }) {
         aria-describedby={undefined}
         className="max-h-[85svh] overflow-y-auto sm:max-w-lg"
       >
-        <DialogTitle>{tEditor("addCta")}</DialogTitle>
+        <DialogHeader>
+          <DialogTitle>{tEditor("addCta")}</DialogTitle>
+        </DialogHeader>
         <AddCriterionForm orgId={orgId} onAdded={() => setOpen(false)} />
       </DialogContent>
     </Dialog>

@@ -427,7 +427,6 @@
       "reviewLockedHint": "Vægtningen er netop gennemgået. Gennemgangen vender tilbage, når vægtningen ændres."
     },
     "help": {
-      "close": "Luk",
       "criterionLabel": "Hvad er et kriterium?",
       "criterionBody": "Et kriterium er noget, hver rolle vurderes imod, for eksempel omfang eller kompleksitet. Ankertekster beskriver, hvad vurderingerne 0 til 5 betyder for det, og dets vægtpoint afgør, hvor meget det tæller i den samlede score.",
       "anchorsLabel": "Hvordan fungerer bedømmelsesankre?",

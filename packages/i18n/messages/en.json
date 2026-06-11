@@ -427,7 +427,6 @@
       "reviewLockedHint": "The weighting was just reviewed. The review returns when the weighting changes."
     },
     "help": {
-      "close": "Close",
       "criterionLabel": "What is a criterion?",
       "criterionBody": "A criterion is something every role is rated against, like scope or complexity. Anchor texts describe what the ratings 0 to 5 mean for it, and its weight points decide how much it counts in the total score.",
       "anchorsLabel": "How do assessment anchors work?",

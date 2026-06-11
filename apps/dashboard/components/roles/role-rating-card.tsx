@@ -9,7 +9,7 @@ import {
 } from "@workspace/ui/components/card"
 import { Progress } from "@workspace/ui/components/progress"
 import { useTranslations } from "next-intl"
-import { HelpMorphButton } from "@/components/help-morph-button"
+import { HelpPopover } from "@/components/help-popover"
 import Link from "next/link"
 
 // Rating progress + the entry point into the blind stepper. Deliberately
@@ -45,9 +45,9 @@ export function RoleRatingCard({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           {t("ratingHeading")}
-          <HelpMorphButton label={tHelp("blindRatingLabel")}>
+          <HelpPopover label={tHelp("blindRatingLabel")}>
             {tHelp("blindRatingBody")}
-          </HelpMorphButton>
+          </HelpPopover>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">

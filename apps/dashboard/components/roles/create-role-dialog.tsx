@@ -23,7 +23,7 @@ import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { HelpMorphButton } from "@/components/help-morph-button"
+import { HelpPopover } from "@/components/help-popover"
 import { FamilyPicker } from "@/components/roles/family-picker"
 
 // Structural subset of getModel's tracks: the stable key (typed as the fixed
@@ -148,9 +148,9 @@ export function CreateRoleDialog({
           <div className="space-y-2">
             <div className="flex items-center gap-1.5">
               <Label htmlFor="role-track">{t("trackLabel")}</Label>
-              <HelpMorphButton label={tHelp("trackLabel")}>
+              <HelpPopover label={tHelp("trackLabel")}>
                 {tHelp("trackBody")}
-              </HelpMorphButton>
+              </HelpPopover>
             </div>
             <Select
               value={trackKey}
@@ -175,9 +175,9 @@ export function CreateRoleDialog({
           <div className="space-y-2">
             <div className="flex items-center gap-1.5">
               <Label>{tModel("roleFamily")}</Label>
-              <HelpMorphButton label={tHelp("familyLabel")}>
+              <HelpPopover label={tHelp("familyLabel")}>
                 {tHelp("familyBody")}
-              </HelpMorphButton>
+              </HelpPopover>
             </div>
             <FamilyPicker
               orgId={orgId}

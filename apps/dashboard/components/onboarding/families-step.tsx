@@ -13,7 +13,7 @@ import { useMutation, useQuery } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
-import { HelpMorphButton } from "@/components/help-morph-button"
+import { HelpPopover } from "@/components/help-popover"
 import { FamiliesReview } from "@/components/onboarding/families-review"
 import { NextButton } from "@/components/onboarding/next-button"
 import { ScreenShell } from "@/components/onboarding/screen-shell"
@@ -250,9 +250,9 @@ export function FamiliesStep({
       <div className="w-full space-y-3">
         <div className="flex items-center gap-2">
           <Label htmlFor="families-import-text">{t("pasteLabel")}</Label>
-          <HelpMorphButton label={t("pasteHelpLabel")}>
+          <HelpPopover label={t("pasteHelpLabel")}>
             {t("pasteHelpBody")}
-          </HelpMorphButton>
+          </HelpPopover>
         </div>
         <div className="relative">
           <Textarea
@@ -313,9 +313,9 @@ export function FamiliesStep({
       <>
         <div className="flex items-center justify-center gap-1.5">
           <p className="text-muted-foreground text-sm">{t("reviewHint")}</p>
-          <HelpMorphButton label={tHelp("familiesReviewLabel")}>
+          <HelpPopover label={tHelp("familiesReviewLabel")}>
             {tHelp("familiesReviewBody")}
-          </HelpMorphButton>
+          </HelpPopover>
         </div>
         {seededFrom?.source === "ai" && (
           <p className="text-center text-muted-foreground text-sm">

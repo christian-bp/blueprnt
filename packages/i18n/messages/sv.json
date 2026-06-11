@@ -427,7 +427,6 @@
       "reviewLockedHint": "Viktningen är nyss granskad. Granskningen kommer tillbaka när viktningen ändras."
     },
     "help": {
-      "close": "Stäng",
       "criterionLabel": "Vad är ett kriterium?",
       "criterionBody": "Ett kriterium är något varje roll betygsätts mot, till exempel omfång eller komplexitet. Ankartexter beskriver vad betygen 0 till 5 betyder för det, och dess viktpoäng avgör hur mycket det väger i totalpoängen.",
       "anchorsLabel": "Hur fungerar bedömningsankare?",

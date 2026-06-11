@@ -27,7 +27,7 @@ import {
 } from "@workspace/ui/components/table"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
-import { HelpMorphButton } from "@/components/help-morph-button"
+import { HelpPopover } from "@/components/help-popover"
 import Link from "next/link"
 import { useState } from "react"
 import { useOrganization } from "@/components/org-context"
@@ -98,9 +98,9 @@ export default function ResultsPage() {
         <h2 className="font-medium text-lg">{t("heading")}</h2>
         <div className="flex items-center gap-1.5">
           <p className="text-muted-foreground text-sm">{t("description")}</p>
-          <HelpMorphButton label={tHelp("scoreLabel")}>
+          <HelpPopover label={tHelp("scoreLabel")}>
             {tHelp("scoreBody")}
-          </HelpMorphButton>
+          </HelpPopover>
         </div>
       </div>
       {results.rows.length === 0 ? (

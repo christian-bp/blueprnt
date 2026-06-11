@@ -427,7 +427,6 @@
       "reviewLockedHint": "Painotus on juuri tarkistettu. Tarkistus palaa, kun painotus muuttuu."
     },
     "help": {
-      "close": "Sulje",
       "criterionLabel": "Mikä kriteeri on?",
       "criterionBody": "Kriteeri on asia, jota vasten jokainen rooli arvioidaan, esimerkiksi laajuus tai monimutkaisuus. Ankkuritekstit kuvaavat, mitä arviot 0-5 sen kohdalla tarkoittavat, ja sen painopisteet ratkaisevat, kuinka paljon se painaa kokonaispisteissä.",
       "anchorsLabel": "Miten arviointiankkurit toimivat?",

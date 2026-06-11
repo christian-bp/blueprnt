@@ -22,7 +22,7 @@ import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
-import { HelpMorphButton } from "@/components/help-morph-button"
+import { HelpPopover } from "@/components/help-popover"
 import { useOrganization } from "@/components/org-context"
 
 // The anchor-role section of the role page. Anchor roles (ankarroller) are
@@ -365,9 +365,9 @@ export function AnchorRoleCard({
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           {t("heading")}
-          <HelpMorphButton label={tHelp("anchorRoleLabel")}>
+          <HelpPopover label={tHelp("anchorRoleLabel")}>
             {tHelp("anchorRoleBody")}
-          </HelpMorphButton>
+          </HelpPopover>
         </CardTitle>
         {anchorRole !== null && (
           <Badge variant={STATUS_BADGE_VARIANTS[anchorRole.status]}>

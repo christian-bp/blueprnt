@@ -17,7 +17,7 @@ import { useMutation } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
 import type { Variants } from "motion/react"
 import { useTranslations } from "next-intl"
-import { HelpMorphButton } from "@/components/help-morph-button"
+import { HelpPopover } from "@/components/help-popover"
 import { useState } from "react"
 import { SPRING } from "@/lib/motion"
 
@@ -123,9 +123,9 @@ export function RatingStepper({
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-1.5 text-muted-foreground text-sm">
           {t("step", { current: index + 1, total: criteria.length })}
-          <HelpMorphButton label={tHelp("blindRatingLabel")}>
+          <HelpPopover label={tHelp("blindRatingLabel")}>
             {tHelp("blindRatingBody")}
-          </HelpMorphButton>
+          </HelpPopover>
         </span>
         <div className="flex gap-1" aria-hidden>
           {criteria.map((criterion, dotIndex) => (

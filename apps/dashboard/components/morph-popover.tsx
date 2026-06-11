@@ -27,7 +27,6 @@ import { SPRING } from "@/lib/motion"
 export function MorphPopover({
   triggerLabel,
   triggerIcon,
-  iconOnly = false,
   anchor = "right",
   title,
   description,
@@ -38,9 +37,6 @@ export function MorphPopover({
 }: {
   triggerLabel: string
   triggerIcon?: IconSvgElement
-  // Renders the trigger as a discreet round icon button (triggerLabel
-  // becomes its accessible name); used by HelpMorphButton.
-  iconOnly?: boolean
   // Which trigger edge the panel anchors to. "right" grows leftward (fits
   // controls at a container's right edge); "left" grows rightward (fits
   // triggers next to left-aligned headings).
@@ -80,49 +76,25 @@ export function MorphPopover({
 
   return (
     <div className={cn("relative inline-flex", className)}>
-      {iconOnly ? (
-        <button
-          ref={triggerRef}
-          type="button"
-          aria-label={triggerLabel}
-          aria-hidden={open}
-          tabIndex={open ? -1 : undefined}
-          className={cn(
-            "flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-            open && "pointer-events-none opacity-0"
-          )}
-          onClick={openPanel}
-        >
-          {triggerIcon !== undefined && (
-            <HugeiconsIcon
-              icon={triggerIcon}
-              size={16}
-              strokeWidth={2}
-              aria-hidden="true"
-            />
-          )}
-        </button>
-      ) : (
-        <Button
-          ref={triggerRef}
-          type="button"
-          variant="outline"
-          size="sm"
-          aria-hidden={open}
-          tabIndex={open ? -1 : undefined}
-          className={cn(open && "pointer-events-none opacity-0")}
-          onClick={openPanel}
-        >
-          {triggerIcon !== undefined && (
-            <HugeiconsIcon
-              icon={triggerIcon}
-              strokeWidth={2}
-              aria-hidden="true"
-            />
-          )}
-          {triggerLabel}
-        </Button>
-      )}
+      <Button
+        ref={triggerRef}
+        type="button"
+        variant="outline"
+        size="sm"
+        aria-hidden={open}
+        tabIndex={open ? -1 : undefined}
+        className={cn(open && "pointer-events-none opacity-0")}
+        onClick={openPanel}
+      >
+        {triggerIcon !== undefined && (
+          <HugeiconsIcon
+            icon={triggerIcon}
+            strokeWidth={2}
+            aria-hidden="true"
+          />
+        )}
+        {triggerLabel}
+      </Button>
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
