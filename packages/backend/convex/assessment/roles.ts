@@ -226,6 +226,20 @@ export const getRole = orgQuery({
       totalCriteria: v.number(),
       familyId: v.union(v.id("roleFamilies"), v.null()),
       familyName: v.union(v.string(), v.null()),
+      // The anchor-role designation, when this role is a calibration anchor.
+      anchorRole: v.union(
+        v.null(),
+        v.object({
+          expectedBand: v.number(),
+          motivation: v.string(),
+          status: v.union(
+            v.literal("active"),
+            v.literal("underReview"),
+            v.literal("replaced")
+          ),
+          reviewedAt: v.number(),
+        })
+      ),
       ratings: v.array(ratingShape),
     })
   ),
@@ -292,6 +306,7 @@ export const getRole = orgQuery({
         role.familyId !== undefined
           ? (fNames.get(role.familyId as string) ?? null)
           : null,
+      anchorRole: role.anchorRole ?? null,
       ratings,
     }
   },
@@ -435,7 +450,23 @@ export const archiveRole = adminMutation({
     const role = await requireOwnRole(ctx, roleId)
     if (role.archivedAt !== undefined) return null
     const before = await deriveResults(ctx, ctx.orgId)
-    await ctx.db.patch(roleId, { archivedAt: Date.now() })
+    // An archived role cannot stay an active calibration reference:
+    // listAnchorRoles excludes archived roles, so without this transition
+    // the designation would silently vanish from the calibration surfaces
+    // while the role page kept showing it as active. Archiving retires the
+    // anchor explicitly (status "replaced") with its own audit row.
+    const retiredAnchor =
+      role.anchorRole !== undefined && role.anchorRole.status !== "replaced"
+        ? {
+            ...role.anchorRole,
+            status: "replaced" as const,
+            reviewedAt: Date.now(),
+          }
+        : undefined
+    await ctx.db.patch(roleId, {
+      archivedAt: Date.now(),
+      ...(retiredAnchor !== undefined ? { anchorRole: retiredAnchor } : {}),
+    })
     const after = await deriveResults(ctx, ctx.orgId)
     await logBandShifts(ctx, {
       orgId: ctx.orgId,
@@ -443,6 +474,14 @@ export const archiveRole = adminMutation({
       before: before.results,
       after: after.results,
     })
+    if (retiredAnchor !== undefined) {
+      await logAudit(ctx, {
+        orgId: ctx.orgId,
+        type: AUDIT_EVENTS.anchorRoleUpdated,
+        actorId: ctx.authUserId,
+        payload: { roleId, status: "replaced", viaArchive: true },
+      })
+    }
     await logAudit(ctx, {
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.roleArchived,

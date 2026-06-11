@@ -30,6 +30,7 @@ import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { useState } from "react"
 import { useOrganization } from "@/components/org-context"
+import { AnchorRolesPanel } from "@/components/results/anchor-roles-panel"
 import { BandOverview } from "@/components/results/band-overview"
 import { statusBadgeVariant } from "@/lib/role-status"
 
@@ -49,10 +50,16 @@ export default function ResultsPage() {
     orgId,
     locale,
   })
+  // Owned here (not inside the panel) so the page's loading gate covers it:
+  // the anchor panel renders together with the table instead of popping in
+  // above it once its own query resolves (layout-shift rule).
+  const anchors = useQuery(api.assessment.anchorRoles.listAnchorRoles, {
+    orgId,
+  })
 
   const [familyFilter, setFamilyFilter] = useState<string | null>(null)
 
-  if (results === undefined) {
+  if (results === undefined || anchors === undefined) {
     return (
       <main className="flex items-center justify-center p-6">
         <Spinner aria-label={t("heading")} />
@@ -122,6 +129,7 @@ export default function ResultsPage() {
             </Select>
           )}
           <BandOverview bands={results.bands} rows={filteredRows} />
+          <AnchorRolesPanel anchors={anchors} />
           <Table>
             <TableHeader>
               <TableRow>

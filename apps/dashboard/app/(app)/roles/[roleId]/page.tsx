@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation"
 import { use } from "react"
 import { MorphConfirmButton } from "@/components/morph-confirm-button"
 import { useOrganization } from "@/components/org-context"
+import { AnchorRoleCard } from "@/components/roles/anchor-role-card"
 import { RoleProfileCard } from "@/components/roles/role-profile-card"
 import { RoleRatingCard } from "@/components/roles/role-rating-card"
 import { RoleResultCard } from "@/components/roles/role-result-card"
@@ -100,6 +101,15 @@ export default function RolePage(props: {
             }
           />
           <RoleResultCard orgId={orgId} roleId={roleId} />
+          <AnchorRoleCard
+            orgId={orgId}
+            roleId={role.roleId}
+            anchorRole={role.anchorRole}
+            assessmentComplete={
+              role.totalCriteria > 0 && role.ratedCount === role.totalCriteria
+            }
+            archived={role.archived}
+          />
         </div>
       </div>
     </div>

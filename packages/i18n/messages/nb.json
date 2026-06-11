@@ -185,6 +185,24 @@
         "descriptionLabel": "Beskriv rollen (valgfritt)",
         "draftCta": "Utkast jobbprofil med AI",
         "error": "Noe gikk galt. Prøv igjen."
+      },
+      "anchor": {
+        "heading": "Ankerrolle",
+        "designateCta": "Utnevn til ankerrolle",
+        "expectedBandLabel": "Avtalt bånd",
+        "bandOption": "Bånd {band}",
+        "motivationLabel": "Begrunnelse",
+        "motivationPlaceholder": "Hvorfor er rollen et godt referansepunkt?",
+        "requiresAssessment": "Rollen trenger en fullført vurdering før den kan bli ankerrolle.",
+        "countHint": "2 til 5 ankerroller totalt er som regel nok.",
+        "tooMany": "Dere har allerede {count} aktive ankerroller. 2 til 5 totalt er som regel nok.",
+        "statusLabel": "Status",
+        "statusActive": "Aktiv",
+        "statusUnderReview": "Under gjennomgang",
+        "statusReplaced": "Erstattet",
+        "reviewedAt": "Sist gjennomgått {date}",
+        "updateCta": "Lagre endringer",
+        "error": "Endringen kunne ikke lagres. Prøv igjen."
       }
     },
     "rating": {
@@ -204,7 +222,10 @@
         "bandHighest": "Bånd 1 er det høyeste båndet.",
         "computing": "Beregner resultatet",
         "backToRole": "Tilbake til rollen",
-        "scoreOutOf": "{score} / 100"
+        "scoreOutOf": "{score} / 100",
+        "anchorsHeading": "Sammenlignet med ankerrollene deres",
+        "anchorBand": "Bånd {band}",
+        "farFromAnchors": "Resultatet ligger minst to bånd fra nærmeste ankerrolle. Valider vurderingen manuelt før godkjenning."
       }
     },
     "results": {
@@ -223,7 +244,13 @@
         "progress": "{rated} av {total} vurdert"
       },
       "empty": "Ingen roller å vise ennå. Opprett en rolle og vurder den for å se resultater.",
-      "emptyCta": "Opprett en rolle"
+      "emptyCta": "Opprett en rolle",
+      "anchors": {
+        "heading": "Ankerroller",
+        "expectedBand": "Avtalt bånd",
+        "computedBand": "Beregnet bånd",
+        "mismatch": "Avviker fra avtalt bånd"
+      }
     },
     "auth": {
       "loading": "Sjekker økten din",
@@ -357,7 +384,7 @@
         "description": "Beskrivelse",
         "helpText": "Hjelpetekst til vurdereren",
         "setWeightPoints": "Vektpoeng for {name}",
-        "anchors": "Ankerskala (0 til 5)",
+        "anchors": "Vurderingsankere (0 til 5)",
         "anchorLevel": "Anker {level}",
         "addCta": "Legg til kriterium",
         "removeCta": "Fjern",
@@ -397,8 +424,10 @@
       "close": "Lukk",
       "criterionLabel": "Hva er et kriterium?",
       "criterionBody": "Et kriterium er noe hver rolle vurderes mot, for eksempel omfang eller kompleksitet. Ankertekster beskriver hva vurderingene 0 til 5 betyr for det, og vektpoengene avgjør hvor mye det teller i totalpoengsummen.",
-      "anchorsLabel": "Hvordan fungerer ankertekster?",
-      "anchorsBody": "Hvert kriterium har seks ankertekster som beskriver hva karakterene 0 til 5 betyr for akkurat det kriteriet. Skriv dem konkrete og rollefokuserte, tydelig stigende fra 0 (forekommer ikke) til 5 (det sterkeste rimelige uttrykket), slik at to vurderere som leser samme jobbprofil lander på samme karakter."
+      "anchorsLabel": "Hvordan fungerer vurderingsankere?",
+      "anchorsBody": "Hvert kriterium har seks ankertekster som beskriver hva karakterene 0 til 5 betyr for akkurat det kriteriet. Skriv dem konkrete og rollefokuserte, tydelig stigende fra 0 (forekommer ikke) til 5 (det sterkeste rimelige uttrykket), slik at to vurderere som leser samme jobbprofil lander på samme karakter. Vurderingsankere er tekster på ett enkelt kriterium; en ankerrolle er en hel referanserolle som brukes til å sammenligne vurderinger.",
+      "anchorRoleLabel": "Hva er en ankerrolle?",
+      "anchorRoleBody": "En ankerrolle er en referanserolle organisasjonen har vurdert og blitt enige om. Bruk de få dere utnevner (2 til 5 er som regel nok) til å rimelighetssjekke andre vurderinger: sammenligningen støtter en beslutning, den erstatter aldri vurderingen. Ankerroller er hele roller; vurderingsankerne på hvert kriterium er beskrivelser av karakterene."
     }
   },
   "errors": {

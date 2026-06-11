@@ -185,6 +185,24 @@
         "descriptionLabel": "Kuvaile roolia (valinnainen)",
         "draftCta": "Luonnostele tehtäväprofiili tekoälyllä",
         "error": "Jokin meni pieleen. Yritä uudelleen."
+      },
+      "anchor": {
+        "heading": "Ankkurirooli",
+        "designateCta": "Nimeä ankkurirooliksi",
+        "expectedBandLabel": "Sovittu luokka",
+        "bandOption": "Luokka {band}",
+        "motivationLabel": "Perustelu",
+        "motivationPlaceholder": "Miksi rooli on hyvä vertailukohta?",
+        "requiresAssessment": "Rooli tarvitsee valmiin arvioinnin ennen kuin siitä voi tulla ankkurirooli.",
+        "countHint": "Yhteensä 2-5 ankkuriroolia riittää yleensä.",
+        "tooMany": "Teillä on jo {count} aktiivista ankkuriroolia. Yhteensä 2-5 riittää yleensä.",
+        "statusLabel": "Tila",
+        "statusActive": "Aktiivinen",
+        "statusUnderReview": "Tarkistettavana",
+        "statusReplaced": "Korvattu",
+        "reviewedAt": "Viimeksi tarkistettu {date}",
+        "updateCta": "Tallenna muutokset",
+        "error": "Muutosta ei voitu tallentaa. Yritä uudelleen."
       }
     },
     "rating": {
@@ -204,7 +222,10 @@
         "bandHighest": "Luokka 1 on korkein luokka.",
         "computing": "Lasketaan tulosta",
         "backToRole": "Takaisin rooliin",
-        "scoreOutOf": "{score} / 100"
+        "scoreOutOf": "{score} / 100",
+        "anchorsHeading": "Verrattuna ankkurirooleihinne",
+        "anchorBand": "Luokka {band}",
+        "farFromAnchors": "Tulos on vähintään kaksi luokkaa lähimmästä ankkuriroolista. Validoi arviointi manuaalisesti ennen hyväksyntää."
       }
     },
     "results": {
@@ -223,7 +244,13 @@
         "progress": "{rated} / {total} arvioitu"
       },
       "empty": "Ei vielä näytettäviä rooleja. Luo rooli ja arvioi se nähdäksesi tulokset.",
-      "emptyCta": "Luo rooli"
+      "emptyCta": "Luo rooli",
+      "anchors": {
+        "heading": "Ankkuriroolit",
+        "expectedBand": "Sovittu luokka",
+        "computedBand": "Laskettu luokka",
+        "mismatch": "Poikkeaa sovitusta luokasta"
+      }
     },
     "auth": {
       "loading": "Tarkistetaan istuntoasi",
@@ -357,7 +384,7 @@
         "description": "Kuvaus",
         "helpText": "Ohjeteksti arvioijalle",
         "setWeightPoints": "Painopisteet: {name}",
-        "anchors": "Ankkuriasteikko (0 - 5)",
+        "anchors": "Arviointiankkurit (0 - 5)",
         "anchorLevel": "Ankkuri {level}",
         "addCta": "Lisää kriteeri",
         "removeCta": "Poista",
@@ -397,8 +424,10 @@
       "close": "Sulje",
       "criterionLabel": "Mikä kriteeri on?",
       "criterionBody": "Kriteeri on asia, jota vasten jokainen rooli arvioidaan, esimerkiksi laajuus tai monimutkaisuus. Ankkuritekstit kuvaavat, mitä arviot 0-5 sen kohdalla tarkoittavat, ja sen painopisteet ratkaisevat, kuinka paljon se painaa kokonaispisteissä.",
-      "anchorsLabel": "Miten ankkuritekstit toimivat?",
-      "anchorsBody": "Jokaisella kriteerillä on kuusi ankkuritekstiä, jotka kuvaavat mitä arvosanat 0:sta 5:een tarkoittavat juuri sille kriteerille. Kirjoita niistä konkreettisia ja rooliin keskittyviä, selvästi nousevia arvosta 0 (ei esiinny) arvoon 5 (vahvin kohtuullinen ilmentymä), jotta kaksi arvioijaa, jotka lukevat saman tehtäväprofiilin, päätyvät samaan arvosanaan."
+      "anchorsLabel": "Miten arviointiankkurit toimivat?",
+      "anchorsBody": "Jokaisella kriteerillä on kuusi ankkuritekstiä, jotka kuvaavat mitä arvosanat 0:sta 5:een tarkoittavat juuri sille kriteerille. Kirjoita niistä konkreettisia ja rooliin keskittyviä, selvästi nousevia arvosta 0 (ei esiinny) arvoon 5 (vahvin kohtuullinen ilmentymä), jotta kaksi arvioijaa, jotka lukevat saman tehtäväprofiilin, päätyvät samaan arvosanaan. Arviointiankkurit ovat yhden kriteerin tekstejä; ankkurirooli on kokonainen vertailurooli, jota käytetään arviointien vertaamiseen.",
+      "anchorRoleLabel": "Mikä on ankkurirooli?",
+      "anchorRoleBody": "Ankkurirooli on vertailurooli, jonka organisaatio on arvioinut ja josta on yhteisymmärrys. Käyttäkää muutamaa nimettyä ankkuriroolia (2-5 riittää yleensä) muiden arviointien järkevyystarkistukseen: vertailu tukee päätöstä, se ei koskaan korvaa arviointia. Ankkuriroolit ovat kokonaisia rooleja; kunkin kriteerin arviointiankkurit ovat arvosanojen kuvauksia."
     }
   },
   "errors": {

@@ -33,14 +33,41 @@ export function RatingResult({
     roleId,
     locale,
   })
+  // Anchor-role comparison AFTER the ordinary assessment (the guide's order:
+  // criteria first, anchors as a sanity check afterwards). Active anchors
+  // only; the rated role itself may appear, in which case the row reads as
+  // its own calibration point. The spinner gate below waits for this query
+  // too, so the comparison renders with the reveal instead of popping in
+  // under the band a beat later (layout-shift rule).
+  const anchors = useQuery(api.assessment.anchorRoles.listAnchorRoles, {
+    orgId,
+  })
 
-  if (result === undefined || result === null || !result.complete) {
+  if (
+    result === undefined ||
+    anchors === undefined ||
+    result === null ||
+    !result.complete
+  ) {
     return (
       <main className="flex items-center justify-center p-6">
         <Spinner aria-label={t("computing")} />
       </main>
     )
   }
+
+  const activeAnchors = anchors.filter((anchor) => anchor.status === "active")
+  // The guide's manual-validation principle: when the result lands two or
+  // more bands from EVERY anchor, the comparison is too uncertain to support
+  // the score and the reveal asks for a manual check.
+  const nearestDistance =
+    result.band !== null && activeAnchors.length > 0
+      ? Math.min(
+          ...activeAnchors.map((anchor) =>
+            Math.abs(anchor.expectedBand - (result.band ?? 0))
+          )
+        )
+      : null
 
   return (
     <div className="mx-auto w-full max-w-2xl">
@@ -71,6 +98,31 @@ export function RatingResult({
               </div>
             </div>
             <p className="text-muted-foreground text-sm">{t("bandHighest")}</p>
+            {activeAnchors.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-muted-foreground text-sm">
+                  {t("anchorsHeading")}
+                </p>
+                <ul className="space-y-1">
+                  {activeAnchors.map((anchor) => (
+                    <li
+                      key={anchor.roleId}
+                      className="flex items-center justify-between gap-3 text-sm"
+                    >
+                      <span className="truncate">{anchor.title}</span>
+                      <Badge variant="outline">
+                        {t("anchorBand", { band: anchor.expectedBand })}
+                      </Badge>
+                    </li>
+                  ))}
+                </ul>
+                {nearestDistance !== null && nearestDistance >= 2 && (
+                  <p className="text-muted-foreground text-sm">
+                    {t("farFromAnchors")}
+                  </p>
+                )}
+              </div>
+            )}
             <Button asChild>
               <Link href={`/roles/${roleId}`}>{t("backToRole")}</Link>
             </Button>

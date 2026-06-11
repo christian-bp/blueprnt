@@ -22,6 +22,8 @@ export const AUDIT_EVENTS = {
   roleStatusChanged: "role.statusChange",
   ratingChanged: "rating.change",
   bandShift: "band.shift",
+  anchorRoleDesignated: "anchorRole.designated",
+  anchorRoleUpdated: "anchorRole.updated",
   roleFamilyCreated: "roleFamily.created",
   roleFamilyRenamed: "roleFamily.renamed",
   roleFamilyRemoved: "roleFamily.removed",

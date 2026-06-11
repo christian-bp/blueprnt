@@ -185,6 +185,24 @@
         "descriptionLabel": "Beskriv rollen (frivilligt)",
         "draftCta": "Utkasta jobbprofil med AI",
         "error": "Något gick fel. Försök igen."
+      },
+      "anchor": {
+        "heading": "Ankarroll",
+        "designateCta": "Utse till ankarroll",
+        "expectedBandLabel": "Överenskommet band",
+        "bandOption": "Band {band}",
+        "motivationLabel": "Motivering",
+        "motivationPlaceholder": "Varför är rollen en bra referenspunkt?",
+        "requiresAssessment": "Rollen behöver en slutförd bedömning innan den kan bli ankarroll.",
+        "countHint": "2 till 5 ankarroller totalt räcker oftast.",
+        "tooMany": "Ni har redan {count} aktiva ankarroller. 2 till 5 totalt räcker oftast.",
+        "statusLabel": "Status",
+        "statusActive": "Aktiv",
+        "statusUnderReview": "Under översyn",
+        "statusReplaced": "Ersatt",
+        "reviewedAt": "Senast översedd {date}",
+        "updateCta": "Spara ändringar",
+        "error": "Ändringen kunde inte sparas. Försök igen."
       }
     },
     "rating": {
@@ -204,7 +222,10 @@
         "bandHighest": "Band 1 är det högsta bandet.",
         "computing": "Räknar fram resultatet",
         "backToRole": "Tillbaka till rollen",
-        "scoreOutOf": "{score} / 100"
+        "scoreOutOf": "{score} / 100",
+        "anchorsHeading": "Jämfört med era ankarroller",
+        "anchorBand": "Band {band}",
+        "farFromAnchors": "Resultatet ligger minst två band från närmaste ankarroll. Validera bedömningen manuellt innan godkännande."
       }
     },
     "results": {
@@ -223,7 +244,13 @@
         "progress": "{rated} av {total} betygsatta"
       },
       "empty": "Inga roller att visa ännu. Skapa en roll och betygsätt den för att se resultat.",
-      "emptyCta": "Skapa en roll"
+      "emptyCta": "Skapa en roll",
+      "anchors": {
+        "heading": "Ankarroller",
+        "expectedBand": "Överenskommet band",
+        "computedBand": "Beräknat band",
+        "mismatch": "Avviker från överenskommet band"
+      }
     },
     "auth": {
       "loading": "Kontrollerar din session",
@@ -357,7 +384,7 @@
         "description": "Beskrivning",
         "helpText": "Hjälptext till bedömaren",
         "setWeightPoints": "Viktpoäng för {name}",
-        "anchors": "Ankarskala (0 till 5)",
+        "anchors": "Bedömningsankare (0 till 5)",
         "anchorLevel": "Ankare {level}",
         "addCta": "Lägg till kriterium",
         "removeCta": "Ta bort",
@@ -397,8 +424,10 @@
       "close": "Stäng",
       "criterionLabel": "Vad är ett kriterium?",
       "criterionBody": "Ett kriterium är något varje roll betygsätts mot, till exempel omfång eller komplexitet. Ankartexter beskriver vad betygen 0 till 5 betyder för det, och dess viktpoäng avgör hur mycket det väger i totalpoängen.",
-      "anchorsLabel": "Hur fungerar ankartexter?",
-      "anchorsBody": "Varje kriterium har sex ankartexter som beskriver vad betygen 0 till 5 betyder för just det kriteriet. Skriv dem konkreta och rollfokuserade, tydligt stigande från 0 (förekommer inte) till 5 (det starkaste rimliga uttrycket), så att två bedömare som läser samma jobbprofil landar i samma betyg."
+      "anchorsLabel": "Hur fungerar bedömningsankare?",
+      "anchorsBody": "Varje kriterium har sex ankartexter som beskriver vad betygen 0 till 5 betyder för just det kriteriet. Skriv dem konkreta och rollfokuserade, tydligt stigande från 0 (förekommer inte) till 5 (det starkaste rimliga uttrycket), så att två bedömare som läser samma jobbprofil landar i samma betyg. Bedömningsankare är texter på ett enskilt kriterium; en ankarroll är en hel referensroll som används för att jämföra bedömningar.",
+      "anchorRoleLabel": "Vad är en ankarroll?",
+      "anchorRoleBody": "En ankarroll är en referensroll som organisationen har bedömt och enats om. Använd de få ni utser (2 till 5 räcker oftast) för att rimlighetskontrollera andra bedömningar: jämförelsen stödjer ett beslut, den ersätter aldrig bedömningen. Ankarroller är hela roller; bedömningsankarna på varje kriterium är beskrivningar av betygen."
     }
   },
   "errors": {

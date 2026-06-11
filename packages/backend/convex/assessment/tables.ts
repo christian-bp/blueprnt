@@ -38,6 +38,26 @@ export const roles = defineTable({
     v.literal("approved")
   ),
   archivedAt: v.optional(v.number()),
+  // Anchor-role designation (ankarroll): the role as a calibration reference
+  // point (2-5 per org is the guideline). An aggregate of the role
+  // (ADR-0006): never referenced without it and cannot outlive it. The
+  // designation persists through status "replaced" instead of being deleted,
+  // so the calibration history stays auditable.
+  anchorRole: v.optional(
+    v.object({
+      // The agreed band for the reference role (1 = highest).
+      expectedBand: v.number(),
+      // Why this role was chosen as an anchor (designation rationale).
+      motivation: v.string(),
+      status: v.union(
+        v.literal("active"),
+        v.literal("underReview"),
+        v.literal("replaced")
+      ),
+      // Last review timestamp (anchors are reviewed at least yearly).
+      reviewedAt: v.number(),
+    })
+  ),
 })
   .index("by_org", ["orgId"])
   .index("by_org_status", ["orgId", "status"])

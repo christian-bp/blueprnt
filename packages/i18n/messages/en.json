@@ -185,6 +185,24 @@
         "descriptionLabel": "Describe the role (optional)",
         "draftCta": "Draft job profile with AI",
         "error": "Something went wrong. Try again."
+      },
+      "anchor": {
+        "heading": "Anchor role",
+        "designateCta": "Designate as anchor role",
+        "expectedBandLabel": "Agreed band",
+        "bandOption": "Band {band}",
+        "motivationLabel": "Motivation",
+        "motivationPlaceholder": "Why is this role a good reference point?",
+        "requiresAssessment": "The role needs a completed assessment before it can become an anchor role.",
+        "countHint": "2 to 5 anchor roles in total is usually enough.",
+        "tooMany": "You already have {count} active anchor roles. 2 to 5 in total is usually enough.",
+        "statusLabel": "Status",
+        "statusActive": "Active",
+        "statusUnderReview": "Under review",
+        "statusReplaced": "Replaced",
+        "reviewedAt": "Last reviewed {date}",
+        "updateCta": "Save changes",
+        "error": "The change could not be saved. Try again."
       }
     },
     "rating": {
@@ -204,7 +222,10 @@
         "bandHighest": "Band 1 is the highest band.",
         "computing": "Deriving the result",
         "backToRole": "Back to the role",
-        "scoreOutOf": "{score} / 100"
+        "scoreOutOf": "{score} / 100",
+        "anchorsHeading": "Compared with your anchor roles",
+        "anchorBand": "Band {band}",
+        "farFromAnchors": "This result is at least two bands from the nearest anchor role. Validate the assessment manually before approving."
       }
     },
     "results": {
@@ -223,7 +244,13 @@
         "progress": "{rated} of {total} rated"
       },
       "empty": "No roles to show yet. Create a role and rate it to see results.",
-      "emptyCta": "Create a role"
+      "emptyCta": "Create a role",
+      "anchors": {
+        "heading": "Anchor roles",
+        "expectedBand": "Agreed band",
+        "computedBand": "Computed band",
+        "mismatch": "Deviates from the agreed band"
+      }
     },
     "auth": {
       "loading": "Checking your session",
@@ -357,7 +384,7 @@
         "description": "Description",
         "helpText": "Help text for the assessor",
         "setWeightPoints": "Weight points for {name}",
-        "anchors": "Anchor scale (0 to 5)",
+        "anchors": "Assessment anchors (0 to 5)",
         "anchorLevel": "Anchor {level}",
         "addCta": "Add criterion",
         "removeCta": "Remove",
@@ -397,8 +424,10 @@
       "close": "Close",
       "criterionLabel": "What is a criterion?",
       "criterionBody": "A criterion is something every role is rated against, like scope or complexity. Anchor texts describe what the ratings 0 to 5 mean for it, and its weight points decide how much it counts in the total score.",
-      "anchorsLabel": "How do anchor texts work?",
-      "anchorsBody": "Each criterion has six anchor texts describing what the ratings 0 to 5 mean for exactly that criterion. Write them concrete and role-focused, clearly increasing from 0 (not present) to 5 (the strongest reasonable expression), so two assessors reading the same job profile land on the same rating."
+      "anchorsLabel": "How do assessment anchors work?",
+      "anchorsBody": "Each criterion has six anchor texts describing what the ratings 0 to 5 mean for exactly that criterion. Write them concrete and role-focused, clearly increasing from 0 (not present) to 5 (the strongest reasonable expression), so two assessors reading the same job profile land on the same rating. Assessment anchors are texts on a single criterion; an anchor role is a whole reference role used to compare assessments.",
+      "anchorRoleLabel": "What is an anchor role?",
+      "anchorRoleBody": "An anchor role is a reference role your organization has assessed and agreed on. Use the few you designate (2 to 5 is usually enough) to sanity-check other assessments: the comparison supports a decision, it never replaces the assessment. Anchor roles are whole roles; the assessment anchors on each criterion are descriptions of the ratings."
     }
   },
   "errors": {

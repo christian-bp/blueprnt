@@ -34,7 +34,7 @@ Bandet en roll hamnar i — **alltid** det som räknas fram automatiskt från po
 _Undvik_: Bandplacering ("placering" är reserverat för rollplacering av medarbetare och kan läsas som ett manuellt moment), Bandning (aktiviteten), Grad, Override (finns inte)
 
 **Ankarroll** *(kod: Anchor role)*:
-En referensroll med ett överenskommet/förväntat band, använd för att kalibrera och rimlighetspröva modellen tvärs funktioner. INTE samma som ett **ankare** (ett kriteriums 0–5-text).
+En utvald intern referensroll med ett överenskommet band, använd för att jämföra och rimlighetspröva andra rollers bedömningar EFTER den ordinarie kriteriebedömningen (stöd för beslut, aldrig facit). Utses medvetet av admin och kräver en komplett bedömning, så att ankaret har en kriterieprofil och ett beräknat band; 2-5 stycken totalt räcker normalt i små och medelstora organisationer. Varje ankarroll dokumenteras med överenskommet band, motivering, datum för senaste översyn och status (aktiv, under översyn, ersatt; tas aldrig bort, så kalibreringshistoriken förblir spårbar). INTE samma som ett **ankare** (ett kriteriums 0–5-text; i UI "bedömningsankare").
 _Undvik_: Benchmark-roll, Referens (var tydlig)
 
 **AI-förslag** *(kod: AI suggestion)*:
@@ -73,7 +73,7 @@ _Undvik_: AI-svar, Automatiskt värde (det är ett *förslag* tills HR bekräfta
 ## Flaggade oklarheter
 
 - **Roll ≠ Person (hård gräns)**: role-/rating-tabellerna får ALDRIG bära person-, löne- eller prestationsfält — sådan data hör till framtida people-/pay-kontexter (V2, se CONTEXT-MAP). **Roll-id är stabilt och permanent**: omvärdering ändrar betyg/poäng/band men aldrig rollens identitet, och roll-id återanvänds aldrig (V2:s lika/likvärdigt arbete-gruppering hänger på det).
-- **Ankare vs Ankarroll**: ett **ankare** är ett kriteriums 0–5-text (Värderingsmodell); en **ankarroll** är en referensroll för kalibrering. Samma ord, olika saker — säg alltid "ankarroll" explicit.
+- **Ankare vs Ankarroll**: ett **ankare** är ett kriteriums 0–5-text (Värderingsmodell); en **ankarroll** är en referensroll för kalibrering. Samma ord, olika saker; säg alltid "ankarroll" explicit. I UI heter kriteriets texter "bedömningsankare" just för att undvika kollisionen.
 - **Rollplacering (V2-term)**: att koppla en medarbetare till en roll och ge hen sin **nivå** inom rollens track (ADR-0005: nivån är individdata). Hör till den framtida people-kontexten, aldrig assessment. Därför är "placering" reserverat för medarbetare-mot-roll och används inte om band (säg "bandutfall").
 - **Blindning (mildrad av HR-only)**: eftersom bara betrodd HR använder verktyget handlar blindningen om att undvika att totalen styr betygen, inte om att förhindra fusk. Arbetsdefault: viktpoängen sätts i modellkonfigurationen; vid inmatning av betyg ser bedömaren bara kriterier + ankare (inga viktpoäng); poängen och föreslaget band visas i resultatsteget, inte live under betygsättningen. Skärp senare vid behov.
 - **Ingen bandöverride (avviker från briefen)**: briefen nämnde manuell bandjustering med dokumenterad anledning; vi tar bort det. Band är alltid det deterministiska utfallet — vill man ändra justerar man betyg eller modell (stöds av live-omräkning + revisionslogg). Stärker objektiviteten; lätt att återinföra senare.
