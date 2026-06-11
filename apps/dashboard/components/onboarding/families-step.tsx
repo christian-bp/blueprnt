@@ -48,6 +48,7 @@ export function FamiliesStep({
   onAdvance: () => void
 }) {
   const t = useTranslations("dashboard.onboarding.families")
+  const tHelp = useTranslations("dashboard.help")
   const tReview = useTranslations("dashboard.model.review")
   const tAi = useTranslations("dashboard.ai")
   const tErrors = useTranslations("errors")
@@ -310,6 +311,15 @@ export function FamiliesStep({
   function renderReviewPhase() {
     return (
       <>
+        <div className="flex items-center justify-center gap-1.5">
+          <p className="text-muted-foreground text-sm">{t("reviewHint")}</p>
+          <HelpMorphButton label={tHelp("familyLabel")}>
+            {tHelp("familyBody")}
+          </HelpMorphButton>
+          <HelpMorphButton label={tHelp("trackLabel")}>
+            {tHelp("trackBody")}
+          </HelpMorphButton>
+        </div>
         {seededFrom?.source === "ai" && (
           <p className="text-center text-muted-foreground text-sm">
             {tAi("provenance")}

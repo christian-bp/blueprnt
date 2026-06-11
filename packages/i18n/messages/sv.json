@@ -162,7 +162,9 @@
         "resultHeading": "Resultat",
         "notFound": "Den här rollen finns inte.",
         "backToRoles": "Tillbaka till roller",
-        "emptyField": "Inte ifylld ännu"
+        "emptyField": "Inte ifylld ännu",
+        "archivedBadge": "Arkiverad",
+        "archivedHint": "Rollen är arkiverad och skrivskyddad. Historiken finns kvar."
       },
       "status": {
         "submitCta": "Skicka för granskning",
@@ -226,7 +228,8 @@
         "anchorsHeading": "Jämfört med era ankarroller",
         "anchorBand": "Band {band}",
         "farFromAnchors": "Resultatet ligger minst två band från närmaste ankarroll. Validera bedömningen manuellt innan godkännande."
-      }
+      },
+      "lockedExplanation": "Betygsättningen är låst eftersom rollen är godkänd eller arkiverad. Återöppna rollen från rollsidan för att betygsätta igen."
     },
     "results": {
       "heading": "Resultat",
@@ -352,7 +355,8 @@
         "dndPickedUp": "Lyfte {title}.",
         "dndOver": "{title} är över {family}.",
         "dndDropped": "{title} placerades i {family}.",
-        "dndCancelled": "Flytten av {title} avbröts."
+        "dndCancelled": "Flytten av {title} avbröts.",
+        "reviewHint": "Gruppera rollerna i familjer och sätt varje rolls track."
       }
     },
     "model": {
@@ -361,7 +365,7 @@
       "error": "Något gick fel. Försök igen.",
       "template": {
         "title": "Utgå från standardmallen",
-        "description": "9 kriterier med ankarskalor, förvald viktning, track-schema och bandtrösklar.",
+        "description": "9 färdiga kriterier med bedömningsankare och en balanserad viktning. Allt kan justeras efteråt.",
         "badge": "Rekommenderas",
         "cta": "Använd mallen"
       },
@@ -394,7 +398,8 @@
         "pointsLeft": "{count} viktpoäng kvar att fördela",
         "pointsOver": "{count} viktpoäng över budgeten",
         "balanced": "Alla viktpoäng är fördelade",
-        "minCriteriaHint": "Lägg till minst {min} kriterier för att gå vidare."
+        "minCriteriaHint": "Lägg till minst {min} kriterier för att gå vidare.",
+        "removalFloorHint": "En modell behöver minst {min} kriterier, så kriterier kan inte tas bort just nu."
       },
       "change": {
         "cta": "Ändra modellval",
@@ -418,7 +423,8 @@
       "rejectCta": "Avfärda",
       "noMoves": "AI:n hittade inga flyttar att föreslå.",
       "moveLabel": "Flytta {points} viktpoäng från {from} till {to}",
-      "motivation": "Motivering"
+      "motivation": "Motivering",
+      "reviewLockedHint": "Viktningen är nyss granskad. Granskningen kommer tillbaka när viktningen ändras."
     },
     "help": {
       "close": "Stäng",
@@ -427,7 +433,19 @@
       "anchorsLabel": "Hur fungerar bedömningsankare?",
       "anchorsBody": "Varje kriterium har sex ankartexter som beskriver vad betygen 0 till 5 betyder för just det kriteriet. Skriv dem konkreta och rollfokuserade, tydligt stigande från 0 (förekommer inte) till 5 (det starkaste rimliga uttrycket), så att två bedömare som läser samma jobbprofil landar i samma betyg. Bedömningsankare är texter på ett enskilt kriterium; en ankarroll är en hel referensroll som används för att jämföra bedömningar.",
       "anchorRoleLabel": "Vad är en ankarroll?",
-      "anchorRoleBody": "En ankarroll är en referensroll som organisationen har bedömt och enats om. Använd de få ni utser (2 till 5 räcker oftast) för att rimlighetskontrollera andra bedömningar: jämförelsen stödjer ett beslut, den ersätter aldrig bedömningen. Ankarroller är hela roller; bedömningsankarna på varje kriterium är beskrivningar av betygen."
+      "anchorRoleBody": "En ankarroll är en referensroll som organisationen har bedömt och enats om. Använd de få ni utser (2 till 5 räcker oftast) för att rimlighetskontrollera andra bedömningar: jämförelsen stödjer ett beslut, den ersätter aldrig bedömningen. Ankarroller är hela roller; bedömningsankarna på varje kriterium är beskrivningar av betygen.",
+      "trackLabel": "Vad är en track?",
+      "trackBody": "En track är typen av jobb, till exempel individuell specialist eller chef. Den sätts på rollen och grupperar roller med samma slags ansvar. Den säger inget om senioritet eller hur högt rollen hamnar.",
+      "familyLabel": "Vad är en rollfamilj?",
+      "familyBody": "En rollfamilj grupperar roller som delar samma slags arbete, som Teknik eller Sälj. Familjer organiserar rollregistret och resultatfiltret; de påverkar aldrig poängen.",
+      "weightPointsLabel": "Hur fungerar viktpoäng?",
+      "weightPointsBody": "Varje kriterium får 1 till 5 viktpoäng ur en fast budget för hela modellen, och procentandelen beräknas från poängen. Att ge ett kriterium mer vikt innebär därför att andra räknas relativt mindre. Nya kriterier börjar på neutrala 3.",
+      "scoreLabel": "Hur beräknas poäng och band?",
+      "scoreBody": "Varje kriterium betygsätts 0 till 5 och viktas med sina viktpoäng; totalen normaliseras till en fast skala 0 till 100. Bandet följer sedan automatiskt av poängen via modellens bandtrösklar, där band 1 är högst. Inget av dem kan sättas för hand.",
+      "blindRatingLabel": "Hur fungerar betygsättningen?",
+      "blindRatingBody": "Välj ankartexten som bäst matchar vad rollen kräver, inte hur nuvarande medarbetare presterar. Betyg, poäng och band hålls dolda till sista kriteriet så att varje kriterium bedöms för sig; resultatet visas så snart alla kriterier är betygsatta.",
+      "statusLabel": "Vad betyder statusarna?",
+      "statusBody": "En roll går från utkast till under granskning till godkänd. Godkännandet låser profilen och betygen som granskade; återöppna rollen för att ändra dem igen. Statusen påverkar aldrig det beräknade resultatet."
     }
   },
   "errors": {

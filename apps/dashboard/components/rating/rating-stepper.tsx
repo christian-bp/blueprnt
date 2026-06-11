@@ -17,6 +17,7 @@ import { useMutation } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
 import type { Variants } from "motion/react"
 import { useTranslations } from "next-intl"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { useState } from "react"
 import { SPRING } from "@/lib/motion"
 
@@ -59,6 +60,7 @@ export function RatingStepper({
   onCompleted: () => void
 }) {
   const t = useTranslations("dashboard.rating")
+  const tHelp = useTranslations("dashboard.help")
   const setRating = useMutation(api.assessment.ratings.setRating)
 
   const firstUnrated = criteria.findIndex(
@@ -119,9 +121,12 @@ export function RatingStepper({
   return (
     <div className="mx-auto w-full max-w-2xl space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-muted-foreground text-sm">
+        <span className="flex items-center gap-1.5 text-muted-foreground text-sm">
           {t("step", { current: index + 1, total: criteria.length })}
-        </p>
+          <HelpMorphButton label={tHelp("blindRatingLabel")}>
+            {tHelp("blindRatingBody")}
+          </HelpMorphButton>
+        </span>
         <div className="flex gap-1" aria-hidden>
           {criteria.map((criterion, dotIndex) => (
             <span

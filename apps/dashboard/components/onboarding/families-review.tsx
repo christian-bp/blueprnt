@@ -398,7 +398,10 @@ function SortableRoleRow({
         onChange={(event) => onTitleChange(event.target.value)}
       />
       <Select value={role.trackKey} onValueChange={onTrackChange}>
-        <SelectTrigger className="w-36 shrink-0">
+        <SelectTrigger
+          aria-label={tCreate("trackLabel")}
+          className="w-36 shrink-0"
+        >
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

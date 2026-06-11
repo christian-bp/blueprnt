@@ -148,6 +148,9 @@ export function ModelEditor({
             <HelpMorphButton label={tHelp("criterionLabel")}>
               {tHelp("criterionBody")}
             </HelpMorphButton>
+            <HelpMorphButton label={tHelp("weightPointsLabel")}>
+              {tHelp("weightPointsBody")}
+            </HelpMorphButton>
           </span>
           {/* Live budget meter: rendered inside the header row so toggling
               edit mode never adds vertical space (zero layout shift). */}
@@ -166,6 +169,19 @@ export function ModelEditor({
                 : delta < 0
                   ? tEditor("pointsLeft", { count: -delta })
                   : tEditor("pointsOver", { count: delta })}
+            </span>
+          )}
+          {/* After a confirmed weight review the Review trigger is locked
+              until the weighting changes; say so instead of letting the
+              button vanish silently. The hint lives in the meter's flexible
+              middle slot (min-w-0 flex-1 truncate) so it can never push the
+              fixed button cluster. */}
+          {!editing && withAiReview && reviewLocked === true && (
+            <span
+              title={tAi("reviewLockedHint")}
+              className="min-w-0 flex-1 truncate text-right text-muted-foreground text-xs"
+            >
+              {tAi("reviewLockedHint")}
             </span>
           )}
           {/* Two fixed sm buttons in both modes (Review/Edit vs Cancel/Save):
@@ -307,6 +323,21 @@ export function ModelEditor({
         </ul>
         {editing && (
           <div className="space-y-2">
+            {/* Reserved slot: the floor hint toggles with opacity because
+                removalAllowed flips MID-EDIT (removing down to the floor),
+                and mounting the line would push the add button (zero layout
+                shift). The whole block mounting with edit mode is fine. */}
+            {removalFloor !== undefined && (
+              <p
+                aria-hidden={removalAllowed}
+                className={cn(
+                  "text-muted-foreground text-xs",
+                  removalAllowed && "opacity-0"
+                )}
+              >
+                {tEditor("removalFloorHint", { min: removalFloor })}
+              </p>
+            )}
             <AddCriterionDialog orgId={orgId} />
           </div>
         )}

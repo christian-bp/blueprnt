@@ -39,14 +39,14 @@ export default function RatePage(props: {
       </div>
     )
   }
-  // Locked or not ready to rate: send the user back to the role page, where
-  // the reason (locked / profile incomplete) is explained.
+  // Locked or not ready to rate: state the precondition here and send the
+  // user back to the role page where the controls live.
   if (role.status === "approved" || role.archived || !role.profileComplete) {
     return (
       <div className="space-y-2">
         <p className="text-muted-foreground text-sm">
           {role.profileComplete
-            ? tDetail("resultHeading")
+            ? t("lockedExplanation")
             : tDetail("profileIncomplete")}
         </p>
         <Link

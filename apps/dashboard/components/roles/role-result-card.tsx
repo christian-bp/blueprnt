@@ -18,6 +18,7 @@ import {
 } from "@workspace/ui/components/table"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
+import { HelpMorphButton } from "@/components/help-morph-button"
 
 // Per-role result breakdown: rating + weight points per criterion, with the
 // normalized 0-100 score in the header (ADR-0004). The weighted contribution
@@ -31,6 +32,7 @@ export function RoleResultCard({
   roleId: string
 }) {
   const t = useTranslations("dashboard.roles.detail")
+  const tHelp = useTranslations("dashboard.help")
   const tResult = useTranslations("dashboard.rating.result")
   const tAssessment = useTranslations("assessment")
   const tModel = useTranslations("model")
@@ -46,7 +48,12 @@ export function RoleResultCard({
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>{t("resultHeading")}</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          {t("resultHeading")}
+          <HelpMorphButton label={tHelp("scoreLabel")}>
+            {tHelp("scoreBody")}
+          </HelpMorphButton>
+        </CardTitle>
         <div className="flex items-center gap-4">
           <span className="font-semibold text-2xl tabular-nums">
             {tResult("scoreOutOf", { score: result.score ?? 0 })}

@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 import { useTranslations } from "next-intl"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import Link from "next/link"
 
 // The calibration panel on the results page: every non-replaced anchor role
@@ -31,6 +32,7 @@ export function AnchorRolesPanel({
   anchors: AnchorRolesPanelRow[]
 }) {
   const t = useTranslations("dashboard.results.anchors")
+  const tHelp = useTranslations("dashboard.help")
   const tAnchor = useTranslations("dashboard.roles.anchor")
 
   // Replaced anchors are history, not calibration points; with no anchors at
@@ -42,7 +44,12 @@ export function AnchorRolesPanel({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("heading")}</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          {t("heading")}
+          <HelpMorphButton label={tHelp("anchorRoleLabel")}>
+            {tHelp("anchorRoleBody")}
+          </HelpMorphButton>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ul className="space-y-3">

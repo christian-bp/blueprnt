@@ -162,7 +162,9 @@
         "resultHeading": "Resultat",
         "notFound": "Denne rolle findes ikke.",
         "backToRoles": "Tilbage til roller",
-        "emptyField": "Ikke udfyldt endnu"
+        "emptyField": "Ikke udfyldt endnu",
+        "archivedBadge": "Arkiveret",
+        "archivedHint": "Rollen er arkiveret og skrivebeskyttet. Historikken bevares."
       },
       "status": {
         "submitCta": "Send til gennemgang",
@@ -226,7 +228,8 @@
         "anchorsHeading": "Sammenlignet med jeres ankerroller",
         "anchorBand": "Bånd {band}",
         "farFromAnchors": "Resultatet ligger mindst to bånd fra den nærmeste ankerrolle. Valider vurderingen manuelt før godkendelse."
-      }
+      },
+      "lockedExplanation": "Vurderingen er låst, fordi rollen er godkendt eller arkiveret. Genåbn rollen fra rollesiden for at vurdere igen."
     },
     "results": {
       "heading": "Resultater",
@@ -352,7 +355,8 @@
         "dndPickedUp": "Løftede {title}.",
         "dndOver": "{title} er over {family}.",
         "dndDropped": "{title} blev placeret i {family}.",
-        "dndCancelled": "Flytningen af {title} blev annulleret."
+        "dndCancelled": "Flytningen af {title} blev annulleret.",
+        "reviewHint": "Gruppér rollerne i familier og sæt hver rolles track."
       }
     },
     "model": {
@@ -361,7 +365,7 @@
       "error": "Noget gik galt. Prøv igen.",
       "template": {
         "title": "Start fra standardskabelonen",
-        "description": "9 kriterier med ankerskalaer, forvalgt vægtning, track-skema og båndtærskler.",
+        "description": "9 færdige kriterier med bedømmelsesankre og en balanceret vægtning. Alt kan justeres bagefter.",
         "badge": "Anbefales",
         "cta": "Brug skabelonen"
       },
@@ -394,7 +398,8 @@
         "pointsLeft": "{count} vægtpoint tilbage at fordele",
         "pointsOver": "{count} vægtpoint over budgettet",
         "balanced": "Alle vægtpoint er fordelt",
-        "minCriteriaHint": "Tilføj mindst {min} kriterier for at fortsætte."
+        "minCriteriaHint": "Tilføj mindst {min} kriterier for at fortsætte.",
+        "removalFloorHint": "En model skal have mindst {min} kriterier, så kriterier kan ikke fjernes lige nu."
       },
       "change": {
         "cta": "Skift modelvalg",
@@ -418,7 +423,8 @@
       "rejectCta": "Afvis",
       "noMoves": "AI'en fandt ingen flytninger at foreslå.",
       "moveLabel": "Flyt {points} vægtpoint fra {from} til {to}",
-      "motivation": "Begrundelse"
+      "motivation": "Begrundelse",
+      "reviewLockedHint": "Vægtningen er netop gennemgået. Gennemgangen vender tilbage, når vægtningen ændres."
     },
     "help": {
       "close": "Luk",
@@ -427,7 +433,19 @@
       "anchorsLabel": "Hvordan fungerer bedømmelsesankre?",
       "anchorsBody": "Hvert kriterium har seks ankertekster, der beskriver, hvad karaktererne 0 til 5 betyder for netop det kriterium. Skriv dem konkrete og rollefokuserede, tydeligt stigende fra 0 (forekommer ikke) til 5 (det stærkeste rimelige udtryk), så to bedømmere, der læser samme jobprofil, lander på samme karakter. Bedømmelsesankre er tekster på et enkelt kriterium; en ankerrolle er en hel referencerolle, der bruges til at sammenligne vurderinger.",
       "anchorRoleLabel": "Hvad er en ankerrolle?",
-      "anchorRoleBody": "En ankerrolle er en referencerolle, som organisationen har vurderet og er enige om. Brug de få, I udpeger (2 til 5 er som regel nok), til at rimelighedstjekke andre vurderinger: sammenligningen støtter en beslutning, den erstatter aldrig vurderingen. Ankerroller er hele roller; bedømmelsesankrene på hvert kriterium er beskrivelser af vurderingerne."
+      "anchorRoleBody": "En ankerrolle er en referencerolle, som organisationen har vurderet og er enige om. Brug de få, I udpeger (2 til 5 er som regel nok), til at rimelighedstjekke andre vurderinger: sammenligningen støtter en beslutning, den erstatter aldrig vurderingen. Ankerroller er hele roller; bedømmelsesankrene på hvert kriterium er beskrivelser af vurderingerne.",
+      "trackLabel": "Hvad er en track?",
+      "trackBody": "En track er typen af job, for eksempel individuel specialist eller leder. Den sættes på rollen og grupperer roller med samme slags ansvar. Den siger intet om senioritet eller hvor højt rollen lander.",
+      "familyLabel": "Hvad er en rollefamilie?",
+      "familyBody": "En rollefamilie grupperer roller, der deler samme slags arbejde, som Teknologi eller Salg. Familier organiserer rolleregisteret og resultatfilteret; de påvirker aldrig pointtallet.",
+      "weightPointsLabel": "Hvordan fungerer vægtpoint?",
+      "weightPointsBody": "Hvert kriterium får 1 til 5 vægtpoint fra ét fast budget for hele modellen, og procentandelen beregnes ud fra pointene. At give ét kriterium mere vægt betyder derfor, at andre tæller relativt mindre. Nye kriterier starter på neutrale 3.",
+      "scoreLabel": "Hvordan beregnes pointtal og bånd?",
+      "scoreBody": "Hvert kriterium vurderes 0 til 5 og vægtes med sine vægtpoint; totalen normaliseres til en fast skala fra 0 til 100. Båndet følger derefter automatisk af pointtallet via modellens båndtærskler, hvor bånd 1 er højest. Ingen af dem kan sættes manuelt.",
+      "blindRatingLabel": "Hvordan fungerer vurderingen?",
+      "blindRatingBody": "Vælg ankerteksten, der bedst matcher hvad rollen kræver, ikke hvordan den nuværende medarbejder præsterer. Vurderinger, pointtal og bånd holdes skjult indtil sidste kriterium, så hvert kriterium bedømmes for sig; resultatet vises, så snart alle kriterier er vurderet.",
+      "statusLabel": "Hvad betyder statusserne?",
+      "statusBody": "En rolle går fra udkast til under gennemsyn til godkendt. Godkendelsen låser profilen og vurderingerne som gennemgået; genåbn rollen for at ændre dem igen. Statussen påvirker aldrig det beregnede resultat."
     }
   },
   "errors": {

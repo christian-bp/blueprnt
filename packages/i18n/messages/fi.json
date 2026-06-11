@@ -162,7 +162,9 @@
         "resultHeading": "Tulos",
         "notFound": "Tätä roolia ei ole olemassa.",
         "backToRoles": "Takaisin rooleihin",
-        "emptyField": "Ei vielä täytetty"
+        "emptyField": "Ei vielä täytetty",
+        "archivedBadge": "Arkistoitu",
+        "archivedHint": "Rooli on arkistoitu ja vain luku -tilassa. Historia säilyy."
       },
       "status": {
         "submitCta": "Lähetä tarkistettavaksi",
@@ -226,7 +228,8 @@
         "anchorsHeading": "Verrattuna ankkurirooleihinne",
         "anchorBand": "Luokka {band}",
         "farFromAnchors": "Tulos on vähintään kaksi luokkaa lähimmästä ankkuriroolista. Validoi arviointi manuaalisesti ennen hyväksyntää."
-      }
+      },
+      "lockedExplanation": "Arviointi on lukittu, koska rooli on hyväksytty tai arkistoitu. Avaa rooli uudelleen roolisivulta arvioidaksesi uudestaan."
     },
     "results": {
       "heading": "Tulokset",
@@ -352,7 +355,8 @@
         "dndPickedUp": "Nostettiin {title}.",
         "dndOver": "{title} on perheen {family} päällä.",
         "dndDropped": "{title} sijoitettiin perheeseen {family}.",
-        "dndCancelled": "Roolin {title} siirto peruutettiin."
+        "dndCancelled": "Roolin {title} siirto peruutettiin.",
+        "reviewHint": "Ryhmittele roolit perheisiin ja aseta jokaisen roolin track."
       }
     },
     "model": {
@@ -361,7 +365,7 @@
       "error": "Jotakin meni vikaan. Yritä uudelleen.",
       "template": {
         "title": "Aloita vakiomallista",
-        "description": "9 kriteeriä ankkuriasteikkoineen, oletuspainotus, track-rakenne ja luokkarajat.",
+        "description": "9 valmista kriteeriä arviointiankkureineen ja tasapainoinen painotus. Kaikkea voi säätää jälkikäteen.",
         "badge": "Suositeltu",
         "cta": "Käytä mallia"
       },
@@ -394,7 +398,8 @@
         "pointsLeft": "{count} painopistettä jaettavana",
         "pointsOver": "{count} painopistettä yli budjetin",
         "balanced": "Kaikki painopisteet on jaettu",
-        "minCriteriaHint": "Lisää vähintään {min} kriteeriä jatkaaksesi."
+        "minCriteriaHint": "Lisää vähintään {min} kriteeriä jatkaaksesi.",
+        "removalFloorHint": "Malli tarvitsee vähintään {min} kriteeriä, joten kriteerejä ei voi poistaa juuri nyt."
       },
       "change": {
         "cta": "Vaihda mallivalintaa",
@@ -418,7 +423,8 @@
       "rejectCta": "Hylkää",
       "noMoves": "Tekoäly ei löytänyt ehdotettavia siirtoja.",
       "moveLabel": "Siirrä {points} painopistettä kohteesta {from} kohteeseen {to}",
-      "motivation": "Perustelu"
+      "motivation": "Perustelu",
+      "reviewLockedHint": "Painotus on juuri tarkistettu. Tarkistus palaa, kun painotus muuttuu."
     },
     "help": {
       "close": "Sulje",
@@ -427,7 +433,19 @@
       "anchorsLabel": "Miten arviointiankkurit toimivat?",
       "anchorsBody": "Jokaisella kriteerillä on kuusi ankkuritekstiä, jotka kuvaavat mitä arvosanat 0:sta 5:een tarkoittavat juuri sille kriteerille. Kirjoita niistä konkreettisia ja rooliin keskittyviä, selvästi nousevia arvosta 0 (ei esiinny) arvoon 5 (vahvin kohtuullinen ilmentymä), jotta kaksi arvioijaa, jotka lukevat saman tehtäväprofiilin, päätyvät samaan arvosanaan. Arviointiankkurit ovat yhden kriteerin tekstejä; ankkurirooli on kokonainen vertailurooli, jota käytetään arviointien vertaamiseen.",
       "anchorRoleLabel": "Mikä on ankkurirooli?",
-      "anchorRoleBody": "Ankkurirooli on vertailurooli, jonka organisaatio on arvioinut ja josta on yhteisymmärrys. Käyttäkää muutamaa nimettyä ankkuriroolia (2-5 riittää yleensä) muiden arviointien järkevyystarkistukseen: vertailu tukee päätöstä, se ei koskaan korvaa arviointia. Ankkuriroolit ovat kokonaisia rooleja; kunkin kriteerin arviointiankkurit ovat arvosanojen kuvauksia."
+      "anchorRoleBody": "Ankkurirooli on vertailurooli, jonka organisaatio on arvioinut ja josta on yhteisymmärrys. Käyttäkää muutamaa nimettyä ankkuriroolia (2-5 riittää yleensä) muiden arviointien järkevyystarkistukseen: vertailu tukee päätöstä, se ei koskaan korvaa arviointia. Ankkuriroolit ovat kokonaisia rooleja; kunkin kriteerin arviointiankkurit ovat arvosanojen kuvauksia.",
+      "trackLabel": "Mikä on track?",
+      "trackBody": "Track on työn tyyppi, esimerkiksi yksilöasiantuntija tai esihenkilö. Se asetetaan roolille ja ryhmittelee roolit, joilla on samanlainen vastuu. Se ei kerro mitään senioriteetista tai siitä, kuinka korkealle rooli sijoittuu.",
+      "familyLabel": "Mikä on rooliperhe?",
+      "familyBody": "Rooliperhe ryhmittelee roolit, jotka jakavat samanlaisen työn, kuten Teknologia tai Myynti. Perheet järjestävät rooliluettelon ja tulosten suodattimen; ne eivät koskaan vaikuta pisteisiin.",
+      "weightPointsLabel": "Miten painopisteet toimivat?",
+      "weightPointsBody": "Jokainen kriteeri saa 1-5 painopistettä koko mallin yhteisestä kiinteästä budjetista, ja prosenttiosuus lasketaan pisteistä. Yhden kriteerin painon nostaminen tarkoittaa siksi, että muut painavat suhteessa vähemmän. Uudet kriteerit alkavat neutraalista 3:sta.",
+      "scoreLabel": "Miten pisteet ja luokka lasketaan?",
+      "scoreBody": "Jokainen kriteeri arvioidaan 0-5 ja painotetaan painopisteillään; summa normalisoidaan kiinteälle asteikolle 0-100. Luokka seuraa sitten automaattisesti pisteistä mallin luokkarajojen kautta, ja luokka 1 on korkein. Kumpaakaan ei voi asettaa käsin.",
+      "blindRatingLabel": "Miten arviointi toimii?",
+      "blindRatingBody": "Valitse ankkuriteksti, joka parhaiten vastaa roolin vaatimuksia, ei nykyisen työntekijän suoriutumista. Arviot, pisteet ja luokka pysyvät piilossa viimeiseen kriteeriin asti, jotta jokainen kriteeri arvioidaan erikseen; tulos näkyy heti, kun kaikki kriteerit on arvioitu.",
+      "statusLabel": "Mitä tilat tarkoittavat?",
+      "statusBody": "Rooli etenee luonnoksesta tarkistettavaksi ja hyväksytyksi. Hyväksyminen lukitsee profiilin ja arviot tarkistettuina; avaa rooli uudelleen muuttaaksesi niitä. Tila ei koskaan vaikuta laskettuun tulokseen."
     }
   },
   "errors": {

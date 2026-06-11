@@ -59,6 +59,7 @@ export default function RolePage(props: {
         <Badge variant={statusBadgeVariant(role.status)}>
           {tStatus(role.status as "draft" | "inReview" | "approved")}
         </Badge>
+        {role.archived && <Badge variant="outline">{t("archivedBadge")}</Badge>}
         <span className="text-muted-foreground text-sm">
           {role.trackName} · {role.function} · {role.team}
         </span>
@@ -75,6 +76,12 @@ export default function RolePage(props: {
           />
         )}
       </div>
+      {/* Archived roles turn read-only everywhere (edit, AI draft, rating);
+          state the consequence once instead of letting controls vanish
+          silently (guidance convention). */}
+      {role.archived && (
+        <p className="text-muted-foreground text-sm">{t("archivedHint")}</p>
+      )}
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           {/* The AI draft assistant lives in the profile card's header (a

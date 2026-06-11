@@ -27,6 +27,7 @@ import {
 } from "@workspace/ui/components/table"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import Link from "next/link"
 import { useState } from "react"
 import { useOrganization } from "@/components/org-context"
@@ -42,6 +43,7 @@ const ALL_FAMILIES = "__all__"
 // (ADR-0002: never stored, never overridable).
 export default function ResultsPage() {
   const t = useTranslations("dashboard.results")
+  const tHelp = useTranslations("dashboard.help")
   const tFamily = useTranslations("dashboard.roles.family")
   const tStatus = useTranslations("assessment.status")
   const { orgId } = useOrganization()
@@ -94,7 +96,12 @@ export default function ResultsPage() {
     <div className="space-y-6">
       <div>
         <h2 className="font-medium text-lg">{t("heading")}</h2>
-        <p className="text-muted-foreground text-sm">{t("description")}</p>
+        <div className="flex items-center gap-1.5">
+          <p className="text-muted-foreground text-sm">{t("description")}</p>
+          <HelpMorphButton label={tHelp("scoreLabel")}>
+            {tHelp("scoreBody")}
+          </HelpMorphButton>
+        </div>
       </div>
       {results.rows.length === 0 ? (
         <Empty>

@@ -13,6 +13,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { useQuery } from "convex/react"
 import { motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import Link from "next/link"
 import { SPRING } from "@/lib/motion"
 
@@ -27,6 +28,7 @@ export function RatingResult({
   roleId: string
 }) {
   const t = useTranslations("dashboard.rating.result")
+  const tHelp = useTranslations("dashboard.help")
   const locale = useLocale()
   const result = useQuery(api.assessment.results.getRoleResult, {
     orgId,
@@ -78,7 +80,12 @@ export function RatingResult({
       >
         <Card>
           <CardHeader>
-            <CardTitle>{t("heading")}</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              {t("heading")}
+              <HelpMorphButton label={tHelp("scoreLabel")}>
+                {tHelp("scoreBody")}
+              </HelpMorphButton>
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-end gap-8">
@@ -100,9 +107,12 @@ export function RatingResult({
             <p className="text-muted-foreground text-sm">{t("bandHighest")}</p>
             {activeAnchors.length > 0 && (
               <div className="space-y-2">
-                <p className="text-muted-foreground text-sm">
+                <span className="flex items-center gap-1.5 text-muted-foreground text-sm">
                   {t("anchorsHeading")}
-                </p>
+                  <HelpMorphButton label={tHelp("anchorRoleLabel")}>
+                    {tHelp("anchorRoleBody")}
+                  </HelpMorphButton>
+                </span>
                 <ul className="space-y-1">
                   {activeAnchors.map((anchor) => (
                     <li

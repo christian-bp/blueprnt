@@ -23,6 +23,7 @@ import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { FamilyPicker } from "@/components/roles/family-picker"
 
 // Structural subset of getModel's tracks: the stable key (typed as the fixed
@@ -45,6 +46,7 @@ export function CreateRoleDialog({
   triggerLabel: string
 }) {
   const t = useTranslations("dashboard.roles.create")
+  const tHelp = useTranslations("dashboard.help")
   const tModel = useTranslations("model")
   const createRole = useMutation(api.assessment.roles.createRole)
   const router = useRouter()
@@ -144,7 +146,12 @@ export function CreateRoleDialog({
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="role-track">{t("trackLabel")}</Label>
+            <div className="flex items-center gap-1.5">
+              <Label htmlFor="role-track">{t("trackLabel")}</Label>
+              <HelpMorphButton label={tHelp("trackLabel")}>
+                {tHelp("trackBody")}
+              </HelpMorphButton>
+            </div>
             <Select
               value={trackKey}
               // The Select's values are our own SelectItems below, so the
@@ -166,7 +173,12 @@ export function CreateRoleDialog({
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>{tModel("roleFamily")}</Label>
+            <div className="flex items-center gap-1.5">
+              <Label>{tModel("roleFamily")}</Label>
+              <HelpMorphButton label={tHelp("familyLabel")}>
+                {tHelp("familyBody")}
+              </HelpMorphButton>
+            </div>
             <FamilyPicker
               orgId={orgId}
               value={familyId}

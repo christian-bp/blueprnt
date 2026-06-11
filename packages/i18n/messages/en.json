@@ -162,7 +162,9 @@
         "resultHeading": "Result",
         "notFound": "This role does not exist.",
         "backToRoles": "Back to roles",
-        "emptyField": "Not filled in yet"
+        "emptyField": "Not filled in yet",
+        "archivedBadge": "Archived",
+        "archivedHint": "This role is archived and read-only. Its history is kept."
       },
       "status": {
         "submitCta": "Submit for review",
@@ -226,7 +228,8 @@
         "anchorsHeading": "Compared with your anchor roles",
         "anchorBand": "Band {band}",
         "farFromAnchors": "This result is at least two bands from the nearest anchor role. Validate the assessment manually before approving."
-      }
+      },
+      "lockedExplanation": "The rating is locked because the role is approved or archived. Reopen the role from the role page to rate it again."
     },
     "results": {
       "heading": "Results",
@@ -352,7 +355,8 @@
         "dndPickedUp": "Picked up {title}.",
         "dndOver": "{title} is over {family}.",
         "dndDropped": "{title} was placed in {family}.",
-        "dndCancelled": "Moving {title} was cancelled."
+        "dndCancelled": "Moving {title} was cancelled.",
+        "reviewHint": "Group the roles into families and set each role's track."
       }
     },
     "model": {
@@ -361,7 +365,7 @@
       "error": "Something went wrong. Try again.",
       "template": {
         "title": "Start from the standard template",
-        "description": "9 criteria with anchor scales, a default weighting, the track schema, and band thresholds.",
+        "description": "9 ready-made criteria with assessment anchors and a balanced weighting. Everything can be adjusted afterwards.",
         "badge": "Recommended",
         "cta": "Use the template"
       },
@@ -394,7 +398,8 @@
         "pointsLeft": "{count, plural, one {# weight point} other {# weight points}} left to distribute",
         "pointsOver": "{count, plural, one {# weight point} other {# weight points}} over the budget",
         "balanced": "All weight points are distributed",
-        "minCriteriaHint": "Add at least {min} criteria to continue."
+        "minCriteriaHint": "Add at least {min} criteria to continue.",
+        "removalFloorHint": "A model needs at least {min} criteria, so criteria cannot be removed right now."
       },
       "change": {
         "cta": "Change model choice",
@@ -418,7 +423,8 @@
       "rejectCta": "Dismiss",
       "noMoves": "The AI found no moves to suggest.",
       "moveLabel": "Move {points, plural, one {# weight point} other {# weight points}} from {from} to {to}",
-      "motivation": "Motivation"
+      "motivation": "Motivation",
+      "reviewLockedHint": "The weighting was just reviewed. The review returns when the weighting changes."
     },
     "help": {
       "close": "Close",
@@ -427,7 +433,19 @@
       "anchorsLabel": "How do assessment anchors work?",
       "anchorsBody": "Each criterion has six anchor texts describing what the ratings 0 to 5 mean for exactly that criterion. Write them concrete and role-focused, clearly increasing from 0 (not present) to 5 (the strongest reasonable expression), so two assessors reading the same job profile land on the same rating. Assessment anchors are texts on a single criterion; an anchor role is a whole reference role used to compare assessments.",
       "anchorRoleLabel": "What is an anchor role?",
-      "anchorRoleBody": "An anchor role is a reference role your organization has assessed and agreed on. Use the few you designate (2 to 5 is usually enough) to sanity-check other assessments: the comparison supports a decision, it never replaces the assessment. Anchor roles are whole roles; the assessment anchors on each criterion are descriptions of the ratings."
+      "anchorRoleBody": "An anchor role is a reference role your organization has assessed and agreed on. Use the few you designate (2 to 5 is usually enough) to sanity-check other assessments: the comparison supports a decision, it never replaces the assessment. Anchor roles are whole roles; the assessment anchors on each criterion are descriptions of the ratings.",
+      "trackLabel": "What is a track?",
+      "trackBody": "A track is the kind of job, for example individual contributor or manager. It is set on the role and groups roles with the same kind of responsibility. It says nothing about seniority or how high the role lands.",
+      "familyLabel": "What is a role family?",
+      "familyBody": "A role family groups roles that share the same kind of work, like Engineering or Sales. Families organize the role register and the results filter; they never affect the score.",
+      "weightPointsLabel": "How do weight points work?",
+      "weightPointsBody": "Every criterion gets 1 to 5 weight points from one fixed budget for the whole model, and the percentage share is computed from the points. Giving one criterion more weight therefore means others count relatively less. New criteria start at the neutral 3.",
+      "scoreLabel": "How are the score and band computed?",
+      "scoreBody": "Every criterion is rated 0 to 5 and weighted by its weight points; the total is normalized to a fixed 0 to 100 scale. The band then follows automatically from the score via the model's band thresholds, where band 1 is the highest. Neither can be set by hand.",
+      "blindRatingLabel": "How does rating work?",
+      "blindRatingBody": "Pick the anchor text that best matches what the role requires, not how the current employee performs. Ratings, score, and band stay hidden until the last criterion so each one is judged on its own; the result appears as soon as every criterion is rated.",
+      "statusLabel": "What do the statuses mean?",
+      "statusBody": "A role moves from draft to in review to approved. Approving locks the profile and the ratings as reviewed; reopen the role to change them again. The status never affects the computed result."
     }
   },
   "errors": {

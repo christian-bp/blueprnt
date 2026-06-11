@@ -11,12 +11,14 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
 
 // Start page: real derived counts, no stored aggregates. Each card links to
 // its section. Numbers here are counts, never scores or weights.
 export default function OverviewPage() {
   const t = useTranslations("dashboard.overview")
+  const tHelp = useTranslations("dashboard.help")
   const { orgId } = useOrganization()
   const locale = useLocale()
   const roles = useQuery(api.assessment.roles.listRoles, { orgId, locale })
@@ -36,6 +38,7 @@ export default function OverviewPage() {
       value: roles?.length ?? 0,
       href: "/roles",
       linkLabel: t("goRoles"),
+      help: undefined,
     },
     {
       key: "approved",
@@ -43,6 +46,7 @@ export default function OverviewPage() {
       value: approved.length,
       href: "/results",
       linkLabel: t("goResults"),
+      help: { label: tHelp("statusLabel"), body: tHelp("statusBody") },
     },
     {
       key: "rated",
@@ -50,6 +54,10 @@ export default function OverviewPage() {
       value: rated.length,
       href: "/results",
       linkLabel: t("goResults"),
+      help: {
+        label: tHelp("blindRatingLabel"),
+        body: tHelp("blindRatingBody"),
+      },
     },
     {
       key: "criteria",
@@ -57,6 +65,7 @@ export default function OverviewPage() {
       value: model?.criteria.length ?? 0,
       href: "/model",
       linkLabel: t("goModel"),
+      help: { label: tHelp("criterionLabel"), body: tHelp("criterionBody") },
     },
   ]
 
@@ -65,7 +74,16 @@ export default function OverviewPage() {
       {cards.map((card) => (
         <Card key={card.key}>
           <CardHeader>
-            <CardDescription>{card.label}</CardDescription>
+            {/* The help morph sits OUTSIDE CardDescription (a <p>): the
+                popover renders a div, which is invalid inside a paragraph. */}
+            <div className="flex items-center gap-1.5">
+              <CardDescription>{card.label}</CardDescription>
+              {card.help !== undefined && (
+                <HelpMorphButton label={card.help.label}>
+                  {card.help.body}
+                </HelpMorphButton>
+              )}
+            </div>
             <CardTitle className="text-3xl tabular-nums">
               {loading ? <Skeleton className="h-9 w-12" /> : card.value}
             </CardTitle>

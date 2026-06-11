@@ -168,7 +168,7 @@ export function ModelSetupStep({
   }
 
   return (
-    <ScreenShell heading={t("heading")}>
+    <ScreenShell heading={t("heading")} description={t("description")}>
       <div className="grid w-full max-w-2xl gap-3 sm:grid-cols-2">
         <OptionCard
           badge={t("template.badge")}
