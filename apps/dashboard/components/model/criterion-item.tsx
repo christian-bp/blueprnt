@@ -213,6 +213,7 @@ export function CriterionItem({
                 {tChange("cancel")}
               </AlertDialogCancel>
               <AlertDialogAction
+                variant="destructive"
                 disabled={removing}
                 onClick={async () => {
                   await onRemove?.()
