@@ -1,10 +1,9 @@
 "use client"
 
-import { Cancel01Icon, InformationCircleIcon } from "@hugeicons/core-free-icons"
+import { InformationCircleIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { cn } from "@workspace/ui/lib/utils"
 import { AnimatePresence, motion } from "motion/react"
-import { useTranslations } from "next-intl"
 import { Popover as PopoverPrimitive } from "radix-ui"
 import { type ReactNode, useRef, useState } from "react"
 import { SPRING } from "@/lib/motion"
@@ -12,7 +11,8 @@ import { SPRING } from "@/lib/motion"
 // A discreet round information icon that MORPHS into an explainer panel,
 // the product's signature help affordance. Sits next to a heading or a
 // field label; `label` doubles as the trigger's accessible name and the
-// panel title.
+// panel title. There is no close button: outside click and Escape close
+// the panel (radix dismissal).
 //
 // The morph follows docs/ui-animation.md and MorphConfirmButton: the panel
 // springs open FROM the trigger's measured rect to its full size, the text
@@ -37,7 +37,6 @@ export function HelpMorphButton({
   children: ReactNode
   className?: string
 }) {
-  const t = useTranslations("dashboard.help")
   const [open, setOpen] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
   // The trigger's size at the moment of opening; the panel morphs from and
@@ -122,19 +121,7 @@ export function HelpMorphButton({
                   exit={{ opacity: 0, transition: { duration: 0.08 } }}
                   className="w-[26rem] max-w-[85vw] space-y-3 p-4"
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-medium text-sm">{label}</h3>
-                    <PopoverPrimitive.Close
-                      aria-label={t("close")}
-                      className="flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                      <HugeiconsIcon
-                        icon={Cancel01Icon}
-                        size={14}
-                        strokeWidth={2}
-                      />
-                    </PopoverPrimitive.Close>
-                  </div>
+                  <h3 className="font-medium text-sm">{label}</h3>
                   <p className="text-muted-foreground text-sm">{children}</p>
                 </motion.div>
               </motion.div>

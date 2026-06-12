@@ -451,8 +451,7 @@
       "statusLabel": "What do the statuses mean?",
       "statusBody": "A role moves from draft to in review to approved. Approving locks the profile and the ratings as reviewed; reopen the role to change them again. The status never affects the computed result.",
       "familiesReviewLabel": "What are families and tracks?",
-      "familiesReviewBody": "A role family groups roles that share the same kind of work, like Engineering or Sales; families organize the register and never affect the score. A track is the kind of job, for example individual contributor or manager; it says nothing about seniority.",
-      "close": "Close"
+      "familiesReviewBody": "A role family groups roles that share the same kind of work, like Engineering or Sales; families organize the register and never affect the score. A track is the kind of job, for example individual contributor or manager; it says nothing about seniority."
     }
   },
   "errors": {

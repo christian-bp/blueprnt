@@ -54,22 +54,21 @@ describe("HelpMorphButton", () => {
     })
   })
 
-  it("morphs open with the help text and closes from the close button", async () => {
+  it("morphs open with the help text and closes on Escape", async () => {
     renderHelp()
     fireEvent.click(
       screen.getByRole("button", { name: "What is a criterion?" })
     )
     // forceMount + owned presence: the portaled panel exists in the tree
     // even under happy-dom (unlike popper-measured default mounting).
-    expect(
-      screen.getByText("Criteria are what roles are rated against.")
-    ).toBeDefined()
+    const body = screen.getByText("Criteria are what roles are rated against.")
+    expect(body).toBeDefined()
 
-    fireEvent.click(
-      screen.getByRole("button", { name: messages.dashboard.help.close })
-    )
-    expect(
-      await screen.findByRole("button", { name: "What is a criterion?" })
-    ).toBeDefined()
+    fireEvent.keyDown(body, { key: "Escape" })
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Criteria are what roles are rated against.")
+      ).toBeNull()
+    })
   })
 })
