@@ -1,0 +1,42 @@
+apps/web/app/sitemap.ts
+  s_fa45b53f6da63b::t_d1f53e6769d14f 1-12,18,21-55
+  s_fa45b53f6da63b::t_83676498d1f8ae 13-17,19-20
+apps/web/components/about-hero.tsx
+  s_fa45b53f6da63b::t_376e08a324fd59 1-22,24-30
+apps/web/components/about-team.tsx
+  s_fa45b53f6da63b::t_523fc8732a7da7 1-12,14-39,41-50
+apps/web/app/[locale]/how-it-works/page.tsx
+  s_fa45b53f6da63b::t_4de7c3c397c577 7,14,17-19
+apps/web/lib/page-metadata.ts
+  s_fa45b53f6da63b::t_7cf2917051c8a5 31-33,35-36
+  s_fa45b53f6da63b::t_6085445dbe5b39 1-5,8-9,11-30,34,37-58
+  s_fa45b53f6da63b::t_aa3f52b91b4316 6-7,10
+apps/web/components/about-cta.tsx
+  s_fa45b53f6da63b::t_f1068945286c28 1-16,18-43
+apps/web/app/[locale]/about/page.tsx
+  s_fa45b53f6da63b::t_e9ce1a76dee900 1-37
+apps/web/components/about-sections.test.tsx
+  s_fa45b53f6da63b::t_f82e2a19497280 1-97
+apps/web/components/about-story.tsx
+  s_fa45b53f6da63b::t_a103b06f021358 1-12,14-27
+apps/web/app/robots.ts
+  s_fa45b53f6da63b::t_82277b9be0331a 1-13
+apps/web/app/[locale]/page.tsx
+  s_fa45b53f6da63b::t_3928666818ee93 11,18,21-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "c3e94d6e6e48a82edb5ec74bed1bc62d57c11ba6",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
