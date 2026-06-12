@@ -21,7 +21,7 @@ export function SiteFooter() {
               aria-label="blueprnt"
               className="self-start rounded-sm text-brand focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-4"
             >
-              <Logo className="h-7 w-auto" />
+              <Logo className="h-9 w-auto" />
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed">
               {t("footer.tagline")}
