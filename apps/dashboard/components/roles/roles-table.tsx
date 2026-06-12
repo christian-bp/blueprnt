@@ -345,7 +345,7 @@ export function RolesTable({
                         firstLeaf.familyId !== null ? (
                           <Link
                             href={`/roles/families/${firstLeaf.familyId}`}
-                            className="font-semibold text-sm underline-offset-4 hover:underline"
+                            className="font-bold text-sm underline-offset-4 hover:underline"
                           >
                             {firstLeaf.familyName}
                           </Link>
