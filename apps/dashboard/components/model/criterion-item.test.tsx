@@ -1,14 +1,22 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import { CriterionItem } from "@/components/model/criterion-item"
 
+const editor = messages.dashboard.model.editor
+
 function renderItem(props: {
   anchors?: { level: number; text: string }[]
   editable?: boolean
   onEdit?: () => void
-  editLabel?: string
+  onRemove?: () => void
 }) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
@@ -63,20 +71,64 @@ describe("CriterionItem anchor scale section", () => {
   })
 })
 
-describe("CriterionItem edit affordance", () => {
+describe("CriterionItem row menu", () => {
   afterEach(() => {
     cleanup()
   })
 
-  it("shows the pencil only while editable and forwards the click", () => {
+  function openMenu() {
+    const trigger = screen.getByRole("button", {
+      name: "Actions for Complexity",
+    })
+    fireEvent.pointerDown(trigger)
+    fireEvent.click(trigger)
+  }
+
+  it("renders no menu in read mode", () => {
+    renderItem({ editable: false, onEdit: () => {}, onRemove: () => {} })
+    expect(
+      screen.queryByRole("button", { name: "Actions for Complexity" })
+    ).toBeNull()
+  })
+
+  it("forwards Edit from the menu", () => {
     const onEdit = vi.fn()
-    renderItem({ editable: true, onEdit, editLabel: "Edit Complexity" })
-    fireEvent.click(screen.getByRole("button", { name: "Edit Complexity" }))
+    renderItem({ editable: true, onEdit })
+    openMenu()
+    fireEvent.click(screen.getByRole("menuitem", { name: editor.editCta }))
     expect(onEdit).toHaveBeenCalledTimes(1)
   })
 
-  it("renders no edit button in read mode", () => {
-    renderItem({ editable: false, onEdit: () => {} })
-    expect(screen.queryByRole("button", { name: "Edit Complexity" })).toBeNull()
+  it("confirms removal through the alert dialog", async () => {
+    const onRemove = vi.fn().mockResolvedValue(undefined)
+    renderItem({ editable: true, onRemove })
+    openMenu()
+    fireEvent.click(screen.getByRole("menuitem", { name: editor.removeCta }))
+
+    // The destructive action is gated behind the AlertDialog; nothing has
+    // been removed yet.
+    expect(screen.getByRole("alertdialog")).toBeDefined()
+    expect(onRemove).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByRole("button", { name: editor.removeConfirm }))
+    await waitFor(() => {
+      expect(onRemove).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it("cancelling the alert dialog removes nothing", async () => {
+    const onRemove = vi.fn()
+    renderItem({ editable: true, onRemove })
+    openMenu()
+    fireEvent.click(screen.getByRole("menuitem", { name: editor.removeCta }))
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: messages.dashboard.model.change.cancel,
+      })
+    )
+    await waitFor(() => {
+      expect(screen.queryByRole("alertdialog")).toBeNull()
+    })
+    expect(onRemove).not.toHaveBeenCalled()
   })
 })

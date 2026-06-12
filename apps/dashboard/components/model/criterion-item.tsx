@@ -1,14 +1,29 @@
 "use client"
 
-import { Edit02Icon, ArrowDown01Icon } from "@hugeicons/core-free-icons"
+import { ArrowDown01Icon, MoreVerticalIcon } from "@hugeicons/core-free-icons"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@workspace/ui/components/alert-dialog"
 import { Button } from "@workspace/ui/components/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { cn } from "@workspace/ui/lib/utils"
 import { AnimatePresence, motion } from "motion/react"
 import type { Variants } from "motion/react"
 import { useTranslations } from "next-intl"
 import { type ReactNode, useId, useState } from "react"
-import { RemoveConfirm } from "@/components/remove-confirm"
 import { SPRING } from "@/lib/motion"
 
 // Shared criterion row used by both the model review screen (editable or
@@ -69,10 +84,8 @@ export function CriterionItem({
   anchors,
   editable,
   onEdit,
-  editLabel,
   onRemove,
   removing,
-  removeLabel,
 }: {
   name: string
   description?: string
@@ -81,21 +94,20 @@ export function CriterionItem({
   // section revealing the texts (shared by onboarding and the model page).
   anchors?: { level: number; text: string }[]
   editable: boolean
-  // Opens the text editor for this criterion (the pencil next to the
-  // trashcan); like onRemove it only renders while editable.
+  // Row actions, rendered as one dropdown menu while editable: onEdit opens
+  // the text editor, onRemove (behind an AlertDialog confirmation) deletes
+  // the criterion.
   onEdit?: () => void
-  editLabel?: string
   onRemove?: () => void
   removing?: boolean
-  removeLabel?: string
 }) {
   const tEditor = useTranslations("dashboard.model.editor")
   const tChange = useTranslations("dashboard.model.change")
   const [anchorsOpen, setAnchorsOpen] = useState(false)
   const anchorsId = useId()
 
-  const showRemove = editable && onRemove !== undefined
-  const showEdit = editable && onEdit !== undefined
+  const showMenu = editable && (onEdit !== undefined || onRemove !== undefined)
+  const [confirmRemove, setConfirmRemove] = useState(false)
   const hasAnchors = anchors !== undefined && anchors.length > 0
 
   return (
@@ -145,39 +157,73 @@ export function CriterionItem({
             {importanceNode}
           </span>
 
-          {/* Always-reserved edit slot, mirroring the remove slot below:
-              the pencil opens the criterion text editor. */}
-          {showEdit ? (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label={editLabel ?? tEditor("editCta")}
-              className="shrink-0 text-muted-foreground hover:text-foreground"
-              onClick={onEdit}
-            >
-              <HugeiconsIcon icon={Edit02Icon} strokeWidth={2} />
-            </Button>
-          ) : (
-            <span aria-hidden="true" className="size-9 shrink-0" />
-          )}
-
-          {/* Always-reserved remove slot: empty outside edit mode so the
-              importance column never moves when the trashcan appears. */}
-          {showRemove ? (
-            <RemoveConfirm
-              triggerLabel={removeLabel ?? tEditor("removeCta")}
-              confirmLabel={tEditor("removeConfirm")}
-              cancelLabel={tChange("cancel")}
-              onConfirm={async () => {
-                await onRemove?.()
-              }}
-              disabled={removing}
-            />
+          {/* Always-reserved actions slot: one row menu (edit / remove)
+              instead of separate buttons; empty outside edit mode so the
+              importance column never moves when the menu appears. */}
+          {showMenu ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  disabled={removing}
+                  aria-label={tEditor("rowMenuLabel", { name })}
+                  className="shrink-0 text-muted-foreground hover:text-foreground"
+                >
+                  <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {onEdit !== undefined && (
+                  <DropdownMenuItem onSelect={onEdit}>
+                    {tEditor("editCta")}
+                  </DropdownMenuItem>
+                )}
+                {onRemove !== undefined && (
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onSelect={() => setConfirmRemove(true)}
+                  >
+                    {tEditor("removeCta")}
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <span aria-hidden="true" className="size-9 shrink-0" />
           )}
         </div>
+
+        {/* Destructive confirmation in an AlertDialog (the standard pattern
+            for irreversible actions): removal deletes the criterion's
+            ratings on every role and redistributes its weight points. */}
+        <AlertDialog open={confirmRemove} onOpenChange={setConfirmRemove}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {tEditor("removeDialogTitle", { name })}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {tEditor("removeDialogDescription")}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={removing}>
+                {tChange("cancel")}
+              </AlertDialogCancel>
+              <AlertDialogAction
+                disabled={removing}
+                onClick={async () => {
+                  await onRemove?.()
+                  setConfirmRemove(false)
+                }}
+              >
+                {tEditor("removeConfirm")}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Collapsible anchor scale: the trigger is always present (no
             layout shift from hover/state), and expanding animates new

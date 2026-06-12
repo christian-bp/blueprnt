@@ -404,7 +404,10 @@
         "editCta": "Muokkaa",
         "editDialogTitle": "Muokkaa kriteeriä",
         "editSaveCta": "Tallenna muutokset",
-        "editDialogDescription": "Mukauta tekstit organisaatiollenne. Paino ja olemassa olevat arviot eivät muutu."
+        "editDialogDescription": "Mukauta tekstit organisaatiollenne. Paino ja olemassa olevat arviot eivät muutu.",
+        "rowMenuLabel": "Toiminnot: {name}",
+        "removeDialogTitle": "Poistetaanko {name}?",
+        "removeDialogDescription": "Kriteerin arviot poistetaan kaikilta rooleilta ja sen painopisteet jaetaan uudelleen jäljellä oleville kriteereille. Tätä ei voi kumota."
       },
       "change": {
         "cta": "Vaihda mallivalintaa",

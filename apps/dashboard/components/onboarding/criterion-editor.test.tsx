@@ -246,39 +246,37 @@ describe("CriterionEditor", () => {
     })
   })
 
-  it("clicking the trash arms the inline confirm: confirm and cancel appear, mutation not yet called", () => {
+  function openRowMenu(name: string) {
+    const trigger = screen.getByRole("button", {
+      name: editor.rowMenuLabel.replace("{name}", name),
+    })
+    fireEvent.pointerDown(trigger)
+    fireEvent.click(trigger)
+  }
+
+  it("choosing Remove in the row menu opens the alert dialog, mutation not yet called", () => {
     setModel(modelWithCriterion())
     renderEditor("org-rm")
 
-    // The remove button is always in the accessibility tree (opacity does not
-    // hide from queries; only visual styling changes on hover/focus).
-    const removeButton = screen.getByRole("button", {
-      name: `${editor.removeCta} Autonomy`,
-    })
-    fireEvent.click(removeButton)
+    openRowMenu("Autonomy")
+    fireEvent.click(screen.getByRole("menuitem", { name: editor.removeCta }))
 
-    // Confirm and cancel are now rendered inline (no dialog).
+    // The destructive confirmation is an AlertDialog (standard pattern).
+    expect(screen.getByRole("alertdialog")).toBeDefined()
     expect(
       screen.getByRole("button", { name: editor.removeConfirm })
     ).toBeDefined()
-    expect(
-      screen.getByRole("button", {
-        name: messages.dashboard.model.change.cancel,
-      })
-    ).toBeDefined()
-    // The mutation has NOT been called yet (only armed, not confirmed).
+    // The mutation has NOT been called yet (only the dialog opened).
     expect(removeCriterionMock).not.toHaveBeenCalled()
   })
 
-  it("confirming the inline confirm calls removeCriterion with the correct criterionId", async () => {
+  it("confirming the alert dialog calls removeCriterion with the correct criterionId", async () => {
     setModel(modelWithCriterion())
     removeCriterionMock.mockResolvedValue(undefined)
     renderEditor("org-rm")
 
-    const removeButton = screen.getByRole("button", {
-      name: `${editor.removeCta} Autonomy`,
-    })
-    fireEvent.click(removeButton)
+    openRowMenu("Autonomy")
+    fireEvent.click(screen.getByRole("menuitem", { name: editor.removeCta }))
 
     const confirmButton = screen.getByRole("button", {
       name: editor.removeConfirm,
@@ -296,14 +294,12 @@ describe("CriterionEditor", () => {
     expect(call.criterionId).toBe("c1")
   })
 
-  it("cancelling the inline confirm disarms without calling removeCriterion", () => {
+  it("cancelling the alert dialog removes nothing", async () => {
     setModel(modelWithCriterion())
     renderEditor("org-rm")
 
-    const removeButton = screen.getByRole("button", {
-      name: `${editor.removeCta} Autonomy`,
-    })
-    fireEvent.click(removeButton)
+    openRowMenu("Autonomy")
+    fireEvent.click(screen.getByRole("menuitem", { name: editor.removeCta }))
 
     const cancelButton = screen.getByRole("button", {
       name: messages.dashboard.model.change.cancel,
@@ -311,9 +307,11 @@ describe("CriterionEditor", () => {
     fireEvent.click(cancelButton)
 
     expect(removeCriterionMock).not.toHaveBeenCalled()
-    // After cancel the trigger (trashcan with removeLabel) is back.
+    // After cancel the row menu trigger is back in reach.
     expect(
-      screen.getByRole("button", { name: `${editor.removeCta} Autonomy` })
+      screen.getByRole("button", {
+        name: editor.rowMenuLabel.replace("{name}", "Autonomy"),
+      })
     ).toBeDefined()
   })
 

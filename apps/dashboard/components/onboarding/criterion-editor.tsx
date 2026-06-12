@@ -144,7 +144,6 @@ export function CriterionEditor({
                       anchors: criterion.anchors.map((anchor) => anchor.text),
                     })
                   }
-                  editLabel={`${tEditor("editCta")} ${criterion.name}`}
                   onRemove={async () => {
                     setRemoving(criterion.criterionId)
                     setFailed(false)
@@ -160,7 +159,6 @@ export function CriterionEditor({
                     }
                   }}
                   removing={removing === criterion.criterionId}
-                  removeLabel={`${tEditor("removeCta")} ${criterion.name}`}
                 />
               ))}
             </AnimatePresence>

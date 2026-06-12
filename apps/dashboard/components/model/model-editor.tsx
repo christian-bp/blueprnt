@@ -315,7 +315,6 @@ export function ModelEditor({
                       anchors: criterion.anchors.map((anchor) => anchor.text),
                     })
                   }
-                  editLabel={`${tEditor("editCta")} ${criterion.name}`}
                   onRemove={
                     editing && removalAllowed
                       ? async () => {
@@ -335,7 +334,6 @@ export function ModelEditor({
                       : undefined
                   }
                   removing={isRemoving}
-                  removeLabel={`${tEditor("removeCta")} ${criterion.name}`}
                 />
               )
             })}

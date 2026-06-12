@@ -473,10 +473,13 @@ describe("ModelSetupStep", () => {
     // select, in read-only mode (4 of 15 points = 26.7%).
     expect(screen.getByText(/26\.7%/)).toBeDefined()
 
-    // No remove button in the accessibility tree in read-only mode.
+    // No row actions menu in the accessibility tree in read-only mode.
     expect(
       screen.queryByRole("button", {
-        name: `${messages.dashboard.model.editor.removeCta} Problem solving`,
+        name: messages.dashboard.model.editor.rowMenuLabel.replace(
+          "{name}",
+          "Problem solving"
+        ),
       })
     ).toBeNull()
 
@@ -509,11 +512,10 @@ describe("ModelSetupStep", () => {
     // The budget meter reports the balanced allocation.
     expect(screen.getByText(editor.balanced)).toBeDefined()
 
-    // The remove button is present in the accessibility tree (opacity-0 does
-    // not hide from queries; only visual styling changes).
+    // The row actions menu appears in edit mode.
     expect(
       screen.getByRole("button", {
-        name: `${editor.removeCta} Problem solving`,
+        name: editor.rowMenuLabel.replace("{name}", "Problem solving"),
       })
     ).toBeDefined()
 
@@ -633,11 +635,22 @@ describe("ModelSetupStep", () => {
     expect(screen.queryByText("1: 100+")).toBeNull()
   })
 
-  it("review screen remove button arms the inline confirm (after entering edit mode), mutation not yet called", async () => {
+  function openRowMenu(name: string) {
+    const trigger = screen.getByRole("button", {
+      name: messages.dashboard.model.editor.rowMenuLabel.replace(
+        "{name}",
+        name
+      ),
+    })
+    fireEvent.pointerDown(trigger)
+    fireEvent.click(trigger)
+  }
+
+  it("review screen Remove in the row menu opens the alert dialog, mutation not yet called", async () => {
     setModel(reviewModel)
     renderStep("org-rm")
 
-    // Wait for the review screen, then enter edit mode so remove is available.
+    // Wait for the review screen, then enter edit mode so the menu exists.
     await waitFor(() => {
       expect(screen.getByText(reviewHeading)).toBeDefined()
     })
@@ -647,30 +660,27 @@ describe("ModelSetupStep", () => {
       })
     )
 
-    // The remove button is in the accessibility tree (opacity-0 does not hide
-    // from queries; only visual styling changes on hover/focus). Clicking it
-    // arms the inline confirm.
-    const removeButton = screen.getByRole("button", {
-      name: `${messages.dashboard.model.editor.removeCta} Problem solving`,
-    })
-    fireEvent.click(removeButton)
+    openRowMenu("Problem solving")
+    fireEvent.click(
+      screen.getByRole("menuitem", {
+        name: messages.dashboard.model.editor.removeCta,
+      })
+    )
 
-    // Confirm and cancel are now rendered inline. The queries scope to the
-    // criterion's row: the editor header carries its own Cancel button (the
-    // zero-sum edit flow), so an unscoped name query would be ambiguous.
-    const row = screen.getByText("Problem solving").closest("li")
-    if (!row) throw new Error("criterion row not found")
+    // The destructive confirmation is an AlertDialog (portaled), carrying
+    // both the destructive confirm and the cancel button.
+    const dialog = screen.getByRole("alertdialog")
     expect(
-      within(row).getByRole("button", {
+      within(dialog).getByRole("button", {
         name: messages.dashboard.model.editor.removeConfirm,
       })
     ).toBeDefined()
     expect(
-      within(row).getByRole("button", {
+      within(dialog).getByRole("button", {
         name: messages.dashboard.model.change.cancel,
       })
     ).toBeDefined()
-    // The mutation has NOT been called yet (only armed, not confirmed).
+    // The mutation has NOT been called yet (only the dialog opened).
     expect(removeCriterionMock).not.toHaveBeenCalled()
   })
 
@@ -706,43 +716,6 @@ describe("ModelSetupStep", () => {
     ).toEqual(["false", "true", "false", "false", "false"])
   })
 
-  it("review screen armed overlay renders both the confirm and cancel buttons", async () => {
-    setModel(reviewModel)
-    renderStep("org-rm")
-
-    await waitFor(() => {
-      expect(screen.getByText(reviewHeading)).toBeDefined()
-    })
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: messages.dashboard.model.review.editCta,
-      })
-    )
-
-    // Arm the floating confirm overlay by clicking the trashcan.
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: `${messages.dashboard.model.editor.removeCta} Problem solving`,
-      })
-    )
-
-    // The overlay renders both the destructive confirm (removeCta label) and
-    // the outline cancel button, scoped to the row (the editor header has its
-    // own Cancel).
-    const row = screen.getByText("Problem solving").closest("li")
-    if (!row) throw new Error("criterion row not found")
-    expect(
-      within(row).getByRole("button", {
-        name: messages.dashboard.model.editor.removeConfirm,
-      })
-    ).toBeDefined()
-    expect(
-      within(row).getByRole("button", {
-        name: messages.dashboard.model.change.cancel,
-      })
-    ).toBeDefined()
-  })
-
   it("review screen confirming removal calls removeCriterion with the criterionId", async () => {
     setModel(reviewModel)
     removeCriterionMock.mockResolvedValue(undefined)
@@ -757,14 +730,19 @@ describe("ModelSetupStep", () => {
       })
     )
 
-    const removeButton = screen.getByRole("button", {
-      name: `${messages.dashboard.model.editor.removeCta} Problem solving`,
-    })
-    fireEvent.click(removeButton)
+    openRowMenu("Problem solving")
+    fireEvent.click(
+      screen.getByRole("menuitem", {
+        name: messages.dashboard.model.editor.removeCta,
+      })
+    )
 
-    const confirmButton = screen.getByRole("button", {
-      name: messages.dashboard.model.editor.removeConfirm,
-    })
+    const confirmButton = within(screen.getByRole("alertdialog")).getByRole(
+      "button",
+      {
+        name: messages.dashboard.model.editor.removeConfirm,
+      }
+    )
     fireEvent.click(confirmButton)
 
     await waitFor(() => {
@@ -775,7 +753,7 @@ describe("ModelSetupStep", () => {
     })
   })
 
-  it("review screen cancelling the inline confirm disarms without calling removeCriterion", async () => {
+  it("review screen cancelling the alert dialog removes nothing", async () => {
     setModel(reviewModel)
     renderStep("org-rm")
 
@@ -788,24 +766,30 @@ describe("ModelSetupStep", () => {
       })
     )
 
-    const removeButton = screen.getByRole("button", {
-      name: `${messages.dashboard.model.editor.removeCta} Problem solving`,
-    })
-    fireEvent.click(removeButton)
+    openRowMenu("Problem solving")
+    fireEvent.click(
+      screen.getByRole("menuitem", {
+        name: messages.dashboard.model.editor.removeCta,
+      })
+    )
 
-    // Scoped to the row: the editor header has its own Cancel button.
-    const row = screen.getByText("Problem solving").closest("li")
-    if (!row) throw new Error("criterion row not found")
-    const cancelButton = within(row).getByRole("button", {
-      name: messages.dashboard.model.change.cancel,
-    })
+    // Scoped to the alert dialog: the editor header has its own Cancel.
+    const cancelButton = within(screen.getByRole("alertdialog")).getByRole(
+      "button",
+      {
+        name: messages.dashboard.model.change.cancel,
+      }
+    )
     fireEvent.click(cancelButton)
 
     expect(removeCriterionMock).not.toHaveBeenCalled()
-    // After cancel the trigger (trashcan with removeLabel) is back.
+    // After cancel the row menu trigger is back in reach.
     expect(
       screen.getByRole("button", {
-        name: `${messages.dashboard.model.editor.removeCta} Problem solving`,
+        name: messages.dashboard.model.editor.rowMenuLabel.replace(
+          "{name}",
+          "Problem solving"
+        ),
       })
     ).toBeDefined()
   })

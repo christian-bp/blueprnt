@@ -404,7 +404,10 @@
         "editCta": "Redigera",
         "editDialogTitle": "Redigera kriterium",
         "editSaveCta": "Spara ändringar",
-        "editDialogDescription": "Anpassa texterna till er organisation. Vikten och befintliga betyg påverkas inte."
+        "editDialogDescription": "Anpassa texterna till er organisation. Vikten och befintliga betyg påverkas inte.",
+        "rowMenuLabel": "Åtgärder för {name}",
+        "removeDialogTitle": "Ta bort {name}?",
+        "removeDialogDescription": "Kriteriets betyg tas bort från alla roller och dess viktpoäng omfördelas till de återstående kriterierna. Detta kan inte ångras."
       },
       "change": {
         "cta": "Ändra modellval",

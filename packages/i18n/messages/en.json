@@ -404,7 +404,10 @@
         "editCta": "Edit",
         "editDialogTitle": "Edit criterion",
         "editSaveCta": "Save changes",
-        "editDialogDescription": "Adjust the texts to your organization. The weight and existing ratings are not affected."
+        "editDialogDescription": "Adjust the texts to your organization. The weight and existing ratings are not affected.",
+        "rowMenuLabel": "Actions for {name}",
+        "removeDialogTitle": "Remove {name}?",
+        "removeDialogDescription": "The criterion's ratings are removed from every role and its weight points are redistributed across the remaining criteria. This cannot be undone."
       },
       "change": {
         "cta": "Change model choice",

@@ -404,7 +404,10 @@
         "editCta": "Rediger",
         "editDialogTitle": "Rediger kriterium",
         "editSaveCta": "Gem ændringer",
-        "editDialogDescription": "Tilpas teksterne til jeres organisation. Vægten og eksisterende vurderinger påvirkes ikke."
+        "editDialogDescription": "Tilpas teksterne til jeres organisation. Vægten og eksisterende vurderinger påvirkes ikke.",
+        "rowMenuLabel": "Handlinger for {name}",
+        "removeDialogTitle": "Fjern {name}?",
+        "removeDialogDescription": "Kriteriets vurderinger fjernes fra alle roller, og vægtpointene omfordeles til de resterende kriterier. Dette kan ikke fortrydes."
       },
       "change": {
         "cta": "Skift modelvalg",
