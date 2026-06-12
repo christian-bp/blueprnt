@@ -1,6 +1,7 @@
 "use client"
 
-import { ArrowDown01Icon } from "@hugeicons/core-free-icons"
+import { Edit02Icon, ArrowDown01Icon } from "@hugeicons/core-free-icons"
+import { Button } from "@workspace/ui/components/button"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { cn } from "@workspace/ui/lib/utils"
 import { AnimatePresence, motion } from "motion/react"
@@ -67,6 +68,8 @@ export function CriterionItem({
   importanceNode,
   anchors,
   editable,
+  onEdit,
+  editLabel,
   onRemove,
   removing,
   removeLabel,
@@ -78,6 +81,10 @@ export function CriterionItem({
   // section revealing the texts (shared by onboarding and the model page).
   anchors?: { level: number; text: string }[]
   editable: boolean
+  // Opens the text editor for this criterion (the pencil next to the
+  // trashcan); like onRemove it only renders while editable.
+  onEdit?: () => void
+  editLabel?: string
   onRemove?: () => void
   removing?: boolean
   removeLabel?: string
@@ -88,6 +95,7 @@ export function CriterionItem({
   const anchorsId = useId()
 
   const showRemove = editable && onRemove !== undefined
+  const showEdit = editable && onEdit !== undefined
   const hasAnchors = anchors !== undefined && anchors.length > 0
 
   return (
@@ -136,6 +144,23 @@ export function CriterionItem({
           <span className="flex h-9 w-44 shrink-0 items-center justify-end">
             {importanceNode}
           </span>
+
+          {/* Always-reserved edit slot, mirroring the remove slot below:
+              the pencil opens the criterion text editor. */}
+          {showEdit ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label={editLabel ?? tEditor("editCta")}
+              className="shrink-0 text-muted-foreground hover:text-foreground"
+              onClick={onEdit}
+            >
+              <HugeiconsIcon icon={Edit02Icon} strokeWidth={2} />
+            </Button>
+          ) : (
+            <span aria-hidden="true" className="size-9 shrink-0" />
+          )}
 
           {/* Always-reserved remove slot: empty outside edit mode so the
               importance column never moves when the trashcan appears. */}

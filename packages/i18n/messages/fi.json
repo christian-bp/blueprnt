@@ -400,7 +400,11 @@
         "balanced": "Kaikki painopisteet on jaettu",
         "minCriteriaHint": "Lisää vähintään {min} kriteeriä jatkaaksesi.",
         "removalFloorHint": "Malli tarvitsee vähintään {min} kriteeriä, joten kriteerejä ei voi poistaa juuri nyt.",
-        "addDialogDescription": "Kuvaa mitä kriteeri mittaa ja kirjoita arviointiankkurit. Uudet kriteerit alkavat painolla 3."
+        "addDialogDescription": "Kuvaa mitä kriteeri mittaa ja kirjoita arviointiankkurit. Uudet kriteerit alkavat painolla 3.",
+        "editCta": "Muokkaa",
+        "editDialogTitle": "Muokkaa kriteeriä",
+        "editSaveCta": "Tallenna muutokset",
+        "editDialogDescription": "Mukauta tekstit organisaatiollenne. Paino ja olemassa olevat arviot eivät muutu."
       },
       "change": {
         "cta": "Vaihda mallivalintaa",

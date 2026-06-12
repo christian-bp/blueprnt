@@ -1,50 +1,58 @@
 "use client"
 
-import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
 import { DialogFooter } from "@workspace/ui/components/dialog"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { Textarea } from "@workspace/ui/components/textarea"
-import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { HelpPopover } from "@/components/help-popover"
 
 const EMPTY_ANCHORS = ["", "", "", "", "", ""]
 
-// The add-criterion form: name, description, help text, and six anchor
-// inputs. There is no weight input: a new criterion always enters at the
-// neutral 3 weight points so the allocation stays exactly on the point
-// budget (ADR-0004); reweighting happens in the editor's zero-sum flow.
-// Posts addCriterion, then resets on success. Shared by the scratch editor
-// and the model review screen so both paths add criteria with identical
-// behavior. The reactive getModel query in the parent picks up the new
-// criterion; this form owns only the add concern.
+export interface CriterionFormValues {
+  name: string
+  description: string
+  helpText: string
+  anchors: string[]
+}
+
+// The shared criterion form: name, description, help text, and six anchor
+// inputs, used by both the add and the edit dialog. There is no weight
+// input: a new criterion always enters at the neutral 3 weight points so the
+// allocation stays exactly on the point budget (ADR-0004), and existing
+// weights are changed in the editor's zero-sum flow, never here.
 //
-// onAdded is optional: called after a successful add and the form reset, so a
-// hosting dialog can close itself once the criterion is persisted.
-export function AddCriterionForm({
-  orgId,
-  onAdded,
+// The form owns only field state; the hosting dialog owns the mutation via
+// onSubmit (which throws on failure). Without initialValues the fields reset
+// after a successful submit (add mode); with initialValues they keep the
+// saved state (edit mode; the host closes the dialog). onCancel renders the
+// footer's cancel button; it is a plain callback so the form stays
+// renderable outside a Dialog context.
+export function CriterionForm({
+  initialValues,
+  submitLabel,
+  onSubmit,
   onCancel,
 }: {
-  orgId: string
-  onAdded?: () => void
-  // Renders the footer's cancel button when given (the dialog close); kept a
-  // plain callback so the form stays renderable outside a Dialog context.
+  initialValues?: CriterionFormValues
+  submitLabel: string
+  onSubmit: (values: CriterionFormValues) => Promise<void>
   onCancel?: () => void
 }) {
   const tEditor = useTranslations("dashboard.model.editor")
   const t = useTranslations("dashboard.model")
   const tHelp = useTranslations("dashboard.help")
-  const addCriterion = useMutation(api.evaluationModel.criteria.addCriterion)
 
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [helpText, setHelpText] = useState("")
-  const [anchors, setAnchors] = useState<string[]>(EMPTY_ANCHORS)
-  // pending: add-form submission in flight.
+  const [name, setName] = useState(initialValues?.name ?? "")
+  const [description, setDescription] = useState(
+    initialValues?.description ?? ""
+  )
+  const [helpText, setHelpText] = useState(initialValues?.helpText ?? "")
+  const [anchors, setAnchors] = useState<string[]>(
+    initialValues?.anchors ?? EMPTY_ANCHORS
+  )
   const [pending, setPending] = useState(false)
   const [failed, setFailed] = useState(false)
 
@@ -56,18 +64,13 @@ export function AddCriterionForm({
         setPending(true)
         setFailed(false)
         try {
-          await addCriterion({
-            orgId,
-            name: name.trim(),
-            description,
-            helpText,
-            anchors,
-          })
-          setName("")
-          setDescription("")
-          setHelpText("")
-          setAnchors(EMPTY_ANCHORS)
-          onAdded?.()
+          await onSubmit({ name: name.trim(), description, helpText, anchors })
+          if (initialValues === undefined) {
+            setName("")
+            setDescription("")
+            setHelpText("")
+            setAnchors(EMPTY_ANCHORS)
+          }
         } catch {
           setFailed(true)
         } finally {
@@ -144,7 +147,7 @@ export function AddCriterionForm({
           </Button>
         )}
         <Button type="submit" disabled={pending || name.trim().length === 0}>
-          {tEditor("addCta")}
+          {submitLabel}
         </Button>
       </DialogFooter>
     </form>

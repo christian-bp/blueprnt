@@ -400,7 +400,11 @@
         "balanced": "All weight points are distributed",
         "minCriteriaHint": "Add at least {min} criteria to continue.",
         "removalFloorHint": "A model needs at least {min} criteria, so criteria cannot be removed right now.",
-        "addDialogDescription": "Describe what the criterion measures and write its assessment anchors. New criteria start at weight 3."
+        "addDialogDescription": "Describe what the criterion measures and write its assessment anchors. New criteria start at weight 3.",
+        "editCta": "Edit",
+        "editDialogTitle": "Edit criterion",
+        "editSaveCta": "Save changes",
+        "editDialogDescription": "Adjust the texts to your organization. The weight and existing ratings are not affected."
       },
       "change": {
         "cta": "Change model choice",

@@ -400,7 +400,11 @@
         "balanced": "Alla viktpoäng är fördelade",
         "minCriteriaHint": "Lägg till minst {min} kriterier för att gå vidare.",
         "removalFloorHint": "En modell behöver minst {min} kriterier, så kriterier kan inte tas bort just nu.",
-        "addDialogDescription": "Beskriv vad kriteriet mäter och skriv dess bedömningsankare. Nya kriterier börjar på vikt 3."
+        "addDialogDescription": "Beskriv vad kriteriet mäter och skriv dess bedömningsankare. Nya kriterier börjar på vikt 3.",
+        "editCta": "Redigera",
+        "editDialogTitle": "Redigera kriterium",
+        "editSaveCta": "Spara ändringar",
+        "editDialogDescription": "Anpassa texterna till er organisation. Vikten och befintliga betyg påverkas inte."
       },
       "change": {
         "cta": "Ändra modellval",

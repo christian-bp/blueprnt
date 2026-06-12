@@ -77,7 +77,7 @@ describe("AddCriterionDialog", () => {
         expect.objectContaining({ orgId: "org-dlg", name: "Communication" })
       )
     })
-    // onAdded closes the controlled dialog, so the form unmounts.
+    // A successful submit closes the controlled dialog, so the form unmounts.
     await waitFor(() => {
       expect(screen.queryByLabelText(editor.name)).toBeNull()
     })

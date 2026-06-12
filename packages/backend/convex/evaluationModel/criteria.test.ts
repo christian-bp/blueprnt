@@ -552,3 +552,117 @@ describe("model edits shift bands live", () => {
     })
   })
 })
+
+describe("updateCriterion", () => {
+  async function seedTemplateModel(t: ReturnType<typeof initConvexTest>) {
+    const { orgId, userId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "hr-edit@acme.se", name: "HR Person", role: "admin" }
+    )
+    await t.run(async (ctx) => {
+      await ctx.db.insert("organizations", {
+        orgId,
+        country: "se",
+        currency: "SEK",
+        language: "sv",
+        industry: "itTelecom",
+      })
+    })
+    const asAdmin = t.withIdentity({ subject: userId })
+    await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
+      orgId,
+    })
+    const model = await asAdmin.query(api.evaluationModel.model.getModel, {
+      orgId,
+      locale: "sv",
+    })
+    if (model === null) throw new Error("model not seeded")
+    return { orgId, asAdmin, model }
+  }
+
+  it("edits the texts, materializes the template row, and audits", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedTemplateModel(t)
+    const target = model.criteria[0]
+    if (target === undefined) throw new Error("no criteria")
+
+    await asAdmin.mutation(api.evaluationModel.criteria.updateCriterion, {
+      orgId,
+      criterionId: target.criterionId,
+      name: "  Anpassad komplexitet  ",
+      description: "Vår egen beskrivning.",
+      helpText: "Vår egen hjälptext.",
+      anchors: VALID_ANCHORS,
+    })
+
+    await t.run(async (ctx) => {
+      const row = (await ctx.db.get(
+        target.criterionId
+      )) as Doc<"criteria"> | null
+      // Stored trimmed, anchors rebuilt positionally, template link cleared.
+      expect(row?.name).toBe("Anpassad komplexitet")
+      expect(row?.templateKey).toBeUndefined()
+      expect(row?.anchors.map((anchor) => anchor.text)).toEqual(VALID_ANCHORS)
+      const audits = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.updated")
+        )
+        .collect()
+      expect(
+        audits.filter(
+          (row) =>
+            (row.payload as { change?: string }).change === "criterion.updated"
+        )
+      ).toHaveLength(1)
+    })
+
+    // The edited row now renders as stored in EVERY locale, while untouched
+    // template rows keep localizing (read-time localization, localize.ts).
+    const finnish = await asAdmin.query(api.evaluationModel.model.getModel, {
+      orgId,
+      locale: "fi",
+    })
+    const editedRow = finnish?.criteria.find(
+      (criterion) => criterion.criterionId === target.criterionId
+    )
+    expect(editedRow?.name).toBe("Anpassad komplexitet")
+    // An untouched template row still localizes: its Finnish name differs
+    // from the Swedish one the model was seeded with.
+    const untouchedSv = model.criteria.find(
+      (criterion) => criterion.criterionId !== target.criterionId
+    )
+    const untouchedFi = finnish?.criteria.find(
+      (criterion) => criterion.criterionId === untouchedSv?.criterionId
+    )
+    expect(untouchedFi?.name).toBeDefined()
+    expect(untouchedFi?.name).not.toBe(untouchedSv?.name)
+  })
+
+  it("rejects a blank name and a wrong anchor count", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedTemplateModel(t)
+    const target = model.criteria[0]
+    if (target === undefined) throw new Error("no criteria")
+    await expect(
+      asAdmin.mutation(api.evaluationModel.criteria.updateCriterion, {
+        orgId,
+        criterionId: target.criterionId,
+        name: "   ",
+        description: "d",
+        helpText: "h",
+        anchors: VALID_ANCHORS,
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+    await expect(
+      asAdmin.mutation(api.evaluationModel.criteria.updateCriterion, {
+        orgId,
+        criterionId: target.criterionId,
+        name: "Ok",
+        description: "d",
+        helpText: "h",
+        anchors: VALID_ANCHORS.slice(0, 5),
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+  })
+})

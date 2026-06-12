@@ -10,6 +10,10 @@ import { useState } from "react"
 import { HelpPopover } from "@/components/help-popover"
 import { MorphPopover } from "@/components/morph-popover"
 import { AddCriterionDialog } from "@/components/model/add-criterion-dialog"
+import {
+  EditCriterionDialog,
+  type EditCriterionTarget,
+} from "@/components/model/edit-criterion-dialog"
 import { ChangeChoiceButton } from "@/components/onboarding/change-choice-button"
 import { CriterionItem } from "@/components/model/criterion-item"
 import { NextButton } from "@/components/onboarding/next-button"
@@ -56,6 +60,7 @@ export function CriterionEditor({
 
   // removing: the criterionId currently being deleted (null = none in flight).
   const [removing, setRemoving] = useState<string | null>(null)
+  const [editTarget, setEditTarget] = useState<EditCriterionTarget | null>(null)
   const [failed, setFailed] = useState(false)
 
   const criteria = model?.criteria ?? []
@@ -130,6 +135,16 @@ export function CriterionEditor({
                     </span>
                   }
                   editable={true}
+                  onEdit={() =>
+                    setEditTarget({
+                      criterionId: criterion.criterionId,
+                      name: criterion.name,
+                      description: criterion.description,
+                      helpText: criterion.helpText,
+                      anchors: criterion.anchors.map((anchor) => anchor.text),
+                    })
+                  }
+                  editLabel={`${tEditor("editCta")} ${criterion.name}`}
                   onRemove={async () => {
                     setRemoving(criterion.criterionId)
                     setFailed(false)
@@ -153,6 +168,11 @@ export function CriterionEditor({
         )}
 
         <AddCriterionDialog orgId={orgId} />
+        <EditCriterionDialog
+          orgId={orgId}
+          target={editTarget}
+          onClose={() => setEditTarget(null)}
+        />
 
         {failed && (
           <p role="alert" className="text-destructive text-sm">

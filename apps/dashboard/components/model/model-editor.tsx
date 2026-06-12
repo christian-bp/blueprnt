@@ -15,6 +15,10 @@ import { useState } from "react"
 import { HelpPopover } from "@/components/help-popover"
 import { MorphPopover } from "@/components/morph-popover"
 import { AddCriterionDialog } from "@/components/model/add-criterion-dialog"
+import {
+  EditCriterionDialog,
+  type EditCriterionTarget,
+} from "@/components/model/edit-criterion-dialog"
 import { CriterionItem } from "@/components/model/criterion-item"
 import { WeightReviewPanel } from "@/components/model/weight-review-panel"
 import { formatShare, WEIGHT_POINT_OPTIONS } from "@/lib/weighting"
@@ -80,6 +84,8 @@ export function ModelEditor({
   const [draft, setDraft] = useState<Record<string, number>>({})
   const [saving, setSaving] = useState(false)
   const [removing, setRemoving] = useState<string | null>(null)
+  // The criterion whose texts are being edited in the dialog; null = closed.
+  const [editTarget, setEditTarget] = useState<EditCriterionTarget | null>(null)
   const [errorKey, setErrorKey] = useState<EditorErrorKey | null>(null)
 
   if (model === undefined) {
@@ -300,6 +306,16 @@ export function ModelEditor({
                   anchors={criterion.anchors}
                   importanceNode={weightNode}
                   editable={editing}
+                  onEdit={() =>
+                    setEditTarget({
+                      criterionId: criterion.criterionId,
+                      name: criterion.name,
+                      description: criterion.description,
+                      helpText: criterion.helpText,
+                      anchors: criterion.anchors.map((anchor) => anchor.text),
+                    })
+                  }
+                  editLabel={`${tEditor("editCta")} ${criterion.name}`}
                   onRemove={
                     editing && removalAllowed
                       ? async () => {
@@ -351,6 +367,11 @@ export function ModelEditor({
           {errorKey === "generic" ? tError("error") : tErrors(errorKey)}
         </p>
       )}
+      <EditCriterionDialog
+        orgId={orgId}
+        target={editTarget}
+        onClose={() => setEditTarget(null)}
+      />
     </div>
   )
 }

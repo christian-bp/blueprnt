@@ -400,7 +400,11 @@
         "balanced": "Alle vægtpoint er fordelt",
         "minCriteriaHint": "Tilføj mindst {min} kriterier for at fortsætte.",
         "removalFloorHint": "En model skal have mindst {min} kriterier, så kriterier kan ikke fjernes lige nu.",
-        "addDialogDescription": "Beskriv hvad kriteriet måler og skriv bedømmelsesankrene. Nye kriterier starter på vægt 3."
+        "addDialogDescription": "Beskriv hvad kriteriet måler og skriv bedømmelsesankrene. Nye kriterier starter på vægt 3.",
+        "editCta": "Rediger",
+        "editDialogTitle": "Rediger kriterium",
+        "editSaveCta": "Gem ændringer",
+        "editDialogDescription": "Tilpas teksterne til jeres organisation. Vægten og eksisterende vurderinger påvirkes ikke."
       },
       "change": {
         "cta": "Skift modelvalg",

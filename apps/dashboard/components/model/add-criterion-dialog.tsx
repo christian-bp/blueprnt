@@ -1,5 +1,6 @@
 "use client"
 
+import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
@@ -9,18 +10,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@workspace/ui/components/dialog"
+import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
-import { AddCriterionForm } from "@/components/model/add-criterion-form"
+import { CriterionForm } from "@/components/model/criterion-form"
 
-// Wraps AddCriterionForm in a dialog so the tall form does not push the criteria
-// list down. The trigger reuses the existing addCta button styling; the form
-// closes the dialog on a successful add via its onAdded callback. Open state is
-// controlled so the close is driven from the add result, not a stray click.
-// The new criterion animates into the parent list (AnimatePresence) once the
+// Wraps the shared CriterionForm in a dialog so the tall form does not push
+// the criteria list down. The trigger reuses the existing addCta button
+// styling; a successful add closes the dialog. Open state is controlled so
+// the close is driven from the add result, not a stray click. The new
+// criterion animates into the parent list (AnimatePresence) once the
 // reactive getModel query picks it up; the list stays mounted throughout.
 export function AddCriterionDialog({ orgId }: { orgId: string }) {
   const tEditor = useTranslations("dashboard.model.editor")
+  const addCriterion = useMutation(api.evaluationModel.criteria.addCriterion)
   const [open, setOpen] = useState(false)
 
   return (
@@ -39,10 +42,13 @@ export function AddCriterionDialog({ orgId }: { orgId: string }) {
             {tEditor("addDialogDescription")}
           </DialogDescription>
         </DialogHeader>
-        <AddCriterionForm
-          orgId={orgId}
-          onAdded={() => setOpen(false)}
+        <CriterionForm
+          submitLabel={tEditor("addCta")}
           onCancel={() => setOpen(false)}
+          onSubmit={async (values) => {
+            await addCriterion({ orgId, ...values })
+            setOpen(false)
+          }}
         />
       </DialogContent>
     </Dialog>

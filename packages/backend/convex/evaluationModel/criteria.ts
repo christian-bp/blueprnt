@@ -12,16 +12,17 @@ import { AUDIT_EVENTS, logAudit } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation } from "../lib/functions"
 
-// Minimal criterion editor for the onboarding scratch path; E2 reuses and
-// extends this surface (update, rationale, bias review).
+// The criterion editor: add, text update, reweight, remove. E2 extends this
+// surface further (rationale, bias review).
 //
 // Weighting invariant (ADR-0004): the persisted allocation is ALWAYS exactly
-// balanced against the point budget (criteria count x 3). The three mutations
+// balanced against the point budget (criteria count x 3). The mutations
 // uphold it from different angles: addCriterion enters at the neutral 3 (the
 // budget grows by 3 at the same time), rebalanceWeights swaps the whole
-// allocation atomically and validates the exact sum, and removeCriterion
+// allocation atomically and validates the exact sum, removeCriterion
 // deterministically redistributes the removed criterion's surplus or deficit
-// across the survivors.
+// across the survivors, and updateCriterion deliberately never touches
+// weightPoints (texts only).
 export const addCriterion = adminMutation({
   args: {
     name: v.string(),
@@ -74,6 +75,47 @@ export const addCriterion = adminMutation({
       payload: { change: "criterion.added", criterionId },
     })
     return criterionId
+  },
+})
+
+// Edits a criterion's texts: name, description, help text, and the six
+// assessment anchors. Weights are NOT edited here (rebalanceWeights owns the
+// zero-sum flow), and a text change can never move a score, so there is no
+// band-shift diff. Editing a template-seeded criterion materializes the
+// texts as organization content: templateKey is cleared, so getModel stops
+// localizing the row and renders it as stored (see localize.ts). This is the
+// "start from the standard model, then adapt" path.
+export const updateCriterion = adminMutation({
+  args: {
+    criterionId: v.id("criteria"),
+    name: v.string(),
+    description: v.string(),
+    helpText: v.string(),
+    anchors: v.array(v.string()),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    if (args.name.trim().length === 0 || args.anchors.length !== 6) {
+      throw appError(ERROR_CODES.invalidInput)
+    }
+    const criterion = await ctx.db.get(args.criterionId)
+    if (criterion === null || criterion.orgId !== ctx.orgId) {
+      throw appError(ERROR_CODES.notFound)
+    }
+    await ctx.db.patch(args.criterionId, {
+      name: args.name.trim(),
+      description: args.description,
+      helpText: args.helpText,
+      anchors: args.anchors.map((text, level) => ({ level, text })),
+      templateKey: undefined,
+    })
+    await logAudit(ctx, {
+      orgId: ctx.orgId,
+      type: AUDIT_EVENTS.modelUpdated,
+      actorId: ctx.authUserId,
+      payload: { change: "criterion.updated", criterionId: args.criterionId },
+    })
+    return null
   },
 })
 
