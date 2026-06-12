@@ -1,0 +1,23 @@
+apps/web/components/site-header.tsx
+  s_fa45b53f6da63b::t_6369b193036bb8 3,23-24,26
+apps/web/components/site-footer.tsx
+  s_fa45b53f6da63b::t_b3aaa016c73ad1 4,21-22,24
+apps/web/components/logo.tsx
+  s_fa45b53f6da63b::t_6369b193036bb8 1-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "477b74c4609c38088a815265879aa9dbf03e2d34",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
