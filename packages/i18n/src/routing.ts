@@ -10,25 +10,6 @@ export const routing = defineRouting({
   localePrefix: "as-needed",
   // Remember the language choice across sessions (one year).
   localeCookie: { maxAge: 60 * 60 * 24 * 365 },
-  // Marketing pathnames: localized slugs per page (SEO). The dashboard
-  // does not use URL locales, so this only affects apps/web.
-  pathnames: {
-    "/": "/",
-    "/how-it-works": {
-      en: "/how-it-works",
-      sv: "/sa-funkar-det",
-      nb: "/slik-fungerer-det",
-      da: "/sadan-fungerer-det",
-      fi: "/nain-se-toimii",
-    },
-    "/about": {
-      en: "/about",
-      sv: "/om-oss",
-      nb: "/om-oss",
-      da: "/om-os",
-      fi: "/meista",
-    },
-  },
 })
 
 export type Locale = (typeof routing.locales)[number]

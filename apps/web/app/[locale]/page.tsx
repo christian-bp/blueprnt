@@ -1,41 +1,48 @@
-import type { Metadata } from "next"
-import { getTranslations, setRequestLocale } from "next-intl/server"
-import type { Locale } from "@workspace/i18n/routing"
+import { use } from "react"
+import { useTranslations } from "next-intl"
+import { setRequestLocale } from "next-intl/server"
+import { Link } from "@workspace/i18n/navigation"
+import { routing, type Locale } from "@workspace/i18n/routing"
 
-import { Approach } from "@/components/approach"
-import { ComplianceBand } from "@/components/compliance-band"
-import { ContactCta } from "@/components/contact-cta"
-import { FrameworkSteps } from "@/components/framework-steps"
-import { Hero } from "@/components/hero"
-import { ModelUsp } from "@/components/model-usp"
-import { buildPageMetadata } from "@/lib/page-metadata"
+import { Button } from "@workspace/ui/components/button"
 
-type Props = Readonly<{ params: Promise<{ locale: Locale }> }>
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params
-  const t = await getTranslations({ locale, namespace: "web.meta" })
-  return buildPageMetadata({
-    title: t("landingTitle"),
-    description: t("landingDescription"),
-    locale,
-    href: "/",
-  })
+const localeNames: Record<Locale, string> = {
+  sv: "Svenska",
+  en: "English",
+  nb: "Norsk",
+  da: "Dansk",
+  fi: "Suomi",
 }
 
-export default async function LandingPage({ params }: Props) {
-  const { locale } = await params
-  // Enables static rendering; must run before any translation renders.
+export default function Page({
+  params,
+}: Readonly<{ params: Promise<{ locale: Locale }> }>) {
+  const { locale } = use(params)
   setRequestLocale(locale)
 
+  const t = useTranslations("web.home")
+
   return (
-    <>
-      <Hero />
-      <FrameworkSteps />
-      <ModelUsp />
-      <ComplianceBand />
-      <Approach />
-      <ContactCta />
-    </>
+    <div className="flex min-h-svh p-6">
+      <div className="flex min-w-0 max-w-md flex-col gap-4 text-sm leading-loose">
+        <div>
+          <h1 className="font-heading font-medium text-2xl">{t("title")}</h1>
+          <p>{t("tagline")}</p>
+          <Button className="mt-2">{t("cta")}</Button>
+        </div>
+        <nav className="flex gap-3 font-mono text-muted-foreground text-xs">
+          {routing.locales.map((l) => (
+            <Link
+              key={l}
+              href="/"
+              locale={l}
+              className={l === locale ? "text-foreground underline" : undefined}
+            >
+              {localeNames[l]}
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </div>
   )
 }

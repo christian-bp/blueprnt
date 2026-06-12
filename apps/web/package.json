@@ -9,30 +9,25 @@
     "start": "next start",
     "lint": "biome lint .",
     "format": "biome format --write .",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@hugeicons/core-free-icons": "^4.2.0",
     "@hugeicons/react": "^1.1.6",
     "@workspace/i18n": "workspace:*",
     "@workspace/ui": "workspace:*",
-    "motion": "^12.40.0",
     "next": "16.2.9",
     "next-intl": "^4.13.0",
+    "next-themes": "^0.4.6",
     "react": "19.2.7",
     "react-dom": "19.2.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@testing-library/react": "^16.3.2",
     "@types/node": "^25",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@vitejs/plugin-react": "^6.0.2",
     "@workspace/typescript-config": "workspace:*",
-    "@workspace/vitest-config": "workspace:*",
-    "typescript": "^6",
-    "vitest": "^4.1.8"
+    "typescript": "^6"
   }
 }

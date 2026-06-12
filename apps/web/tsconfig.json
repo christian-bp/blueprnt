@@ -4,7 +4,6 @@
     "paths": {
       "@/*": ["./*"],
       "@workspace/i18n/*": ["../../packages/i18n/src/*"],
-      "@workspace/i18n/messages/*": ["../../packages/i18n/messages/*"],
       "@workspace/ui/*": ["../../packages/ui/src/*"]
     },
     "plugins": [

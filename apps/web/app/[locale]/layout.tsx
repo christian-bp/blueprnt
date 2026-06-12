@@ -1,22 +1,18 @@
-import { Geist_Mono, Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google"
+import { Geist_Mono, Source_Sans_3 } from "next/font/google"
 import { notFound } from "next/navigation"
 import { hasLocale, NextIntlClientProvider } from "next-intl"
 import { setRequestLocale } from "next-intl/server"
 import { routing } from "@workspace/i18n/routing"
 
-import "../globals.css"
-import { SiteFooter } from "@/components/site-footer"
-import { SiteHeader } from "@/components/site-header"
+import "@workspace/ui/globals.css"
+import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@workspace/ui/lib/utils"
 
-const fontSans = Plus_Jakarta_Sans({
+// The radix-vega preset maps font-heading to font-sans in the shared
+// globals.css, so a separate heading font is no longer loaded.
+const sourceSans = Source_Sans_3({
   subsets: ["latin"],
   variable: "--font-sans",
-})
-
-const fontDisplay = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-display-next",
 })
 
 const fontMono = Geist_Mono({
@@ -46,21 +42,17 @@ export default async function LocaleLayout({
   return (
     <html
       lang={locale}
+      suppressHydrationWarning
       className={cn(
         "antialiased",
-        fontSans.variable,
-        fontDisplay.variable,
         fontMono.variable,
-        "font-sans"
+        "font-sans",
+        sourceSans.variable
       )}
     >
       <body>
         <NextIntlClientProvider>
-          <div className="flex min-h-screen flex-col">
-            <SiteHeader />
-            <main className="flex-1">{children}</main>
-            <SiteFooter />
-          </div>
+          <ThemeProvider>{children}</ThemeProvider>
         </NextIntlClientProvider>
       </body>
     </html>
