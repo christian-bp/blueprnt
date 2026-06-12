@@ -1,4 +1,10 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
@@ -26,6 +32,26 @@ describe("HelpMorphButton", () => {
     })
     expect(trigger.getAttribute("aria-haspopup")).toBe("dialog")
     expect(trigger.getAttribute("aria-expanded")).toBe("false")
+  })
+
+  it("closes on pointerdown outside", async () => {
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <div>
+          <button type="button">elsewhere</button>
+          <HelpMorphButton label="Help label">Body text.</HelpMorphButton>
+        </div>
+      </NextIntlClientProvider>
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Help label" }))
+    expect(screen.getByText("Body text.")).toBeDefined()
+    // Radix attaches its document pointerdown listener in a setTimeout(0),
+    // so the outside click needs a tick after opening.
+    await new Promise((resolve) => setTimeout(resolve, 20))
+    fireEvent.pointerDown(screen.getByRole("button", { name: "elsewhere" }))
+    await waitFor(() => {
+      expect(screen.queryByText("Body text.")).toBeNull()
+    })
   })
 
   it("morphs open with the help text and closes from the close button", async () => {
