@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 import { useTranslations } from "next-intl"
-import { HelpPopover } from "@/components/help-popover"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import Link from "next/link"
 
 // The calibration panel on the results page: every non-replaced anchor role
@@ -46,9 +46,9 @@ export function AnchorRolesPanel({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           {t("heading")}
-          <HelpPopover label={tHelp("anchorRoleLabel")}>
+          <HelpMorphButton label={tHelp("anchorRoleLabel")}>
             {tHelp("anchorRoleBody")}
-          </HelpPopover>
+          </HelpMorphButton>
         </CardTitle>
       </CardHeader>
       <CardContent>

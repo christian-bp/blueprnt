@@ -7,7 +7,7 @@ import { Label } from "@workspace/ui/components/label"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
-import { HelpPopover } from "@/components/help-popover"
+import { HelpMorphButton } from "@/components/help-morph-button"
 
 const EMPTY_ANCHORS = ["", "", "", "", "", ""]
 
@@ -107,9 +107,9 @@ export function CriterionForm({
         <legend className="font-medium text-sm">
           <span className="flex items-center gap-1.5">
             {tEditor("anchors")}
-            <HelpPopover label={tHelp("anchorsLabel")}>
+            <HelpMorphButton label={tHelp("anchorsLabel")}>
               {tHelp("anchorsBody")}
-            </HelpPopover>
+            </HelpMorphButton>
           </span>
         </legend>
         {anchors.map((anchor, index) => (

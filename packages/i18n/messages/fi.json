@@ -451,7 +451,8 @@
       "statusLabel": "Mitä tilat tarkoittavat?",
       "statusBody": "Rooli etenee luonnoksesta tarkistettavaksi ja hyväksytyksi. Hyväksyminen lukitsee profiilin ja arviot tarkistettuina; avaa rooli uudelleen muuttaaksesi niitä. Tila ei koskaan vaikuta laskettuun tulokseen.",
       "familiesReviewLabel": "Mitä perheet ja trackit ovat?",
-      "familiesReviewBody": "Rooliperhe ryhmittelee roolit, jotka jakavat samanlaisen työn, kuten Teknologia tai Myynti; perheet järjestävät luettelon eivätkä koskaan vaikuta pisteisiin. Track on työn tyyppi, esimerkiksi yksilöasiantuntija tai esihenkilö; se ei kerro mitään senioriteetista."
+      "familiesReviewBody": "Rooliperhe ryhmittelee roolit, jotka jakavat samanlaisen työn, kuten Teknologia tai Myynti; perheet järjestävät luettelon eivätkä koskaan vaikuta pisteisiin. Track on työn tyyppi, esimerkiksi yksilöasiantuntija tai esihenkilö; se ei kerro mitään senioriteetista.",
+      "close": "Sulje"
     }
   },
   "errors": {

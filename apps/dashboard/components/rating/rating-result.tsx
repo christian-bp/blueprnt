@@ -13,7 +13,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { useQuery } from "convex/react"
 import { motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
-import { HelpPopover } from "@/components/help-popover"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import Link from "next/link"
 import { SPRING } from "@/lib/motion"
 
@@ -82,9 +82,9 @@ export function RatingResult({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               {t("heading")}
-              <HelpPopover label={tHelp("scoreLabel")}>
+              <HelpMorphButton label={tHelp("scoreLabel")}>
                 {tHelp("scoreBody")}
-              </HelpPopover>
+              </HelpMorphButton>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -109,9 +109,9 @@ export function RatingResult({
               <div className="space-y-2">
                 <span className="flex items-center gap-1.5 text-muted-foreground text-sm">
                   {t("anchorsHeading")}
-                  <HelpPopover label={tHelp("anchorRoleLabel")}>
+                  <HelpMorphButton label={tHelp("anchorRoleLabel")}>
                     {tHelp("anchorRoleBody")}
-                  </HelpPopover>
+                  </HelpMorphButton>
                 </span>
                 <ul className="space-y-1">
                   {activeAnchors.map((anchor) => (

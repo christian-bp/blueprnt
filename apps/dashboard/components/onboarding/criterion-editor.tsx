@@ -7,7 +7,7 @@ import { useMutation, useQuery } from "convex/react"
 import { AnimatePresence } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
-import { HelpPopover } from "@/components/help-popover"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { MorphPopover } from "@/components/morph-popover"
 import { AddCriterionDialog } from "@/components/model/add-criterion-dialog"
 import {
@@ -88,9 +88,9 @@ export function CriterionEditor({
         <div className="flex items-center justify-between gap-2">
           <span className="flex shrink-0 items-center gap-1.5">
             <h3 className="font-medium text-base">{tEditor("heading")}</h3>
-            <HelpPopover label={tHelp("criterionLabel")}>
+            <HelpMorphButton label={tHelp("criterionLabel")}>
               {tHelp("criterionBody")}
-            </HelpPopover>
+            </HelpMorphButton>
           </span>
           <MorphPopover
             triggerLabel={tAi("openDraftCta")}

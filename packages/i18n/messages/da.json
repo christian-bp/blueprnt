@@ -451,7 +451,8 @@
       "statusLabel": "Hvad betyder statusserne?",
       "statusBody": "En rolle går fra udkast til under gennemsyn til godkendt. Godkendelsen låser profilen og vurderingerne som gennemgået; genåbn rollen for at ændre dem igen. Statussen påvirker aldrig det beregnede resultat.",
       "familiesReviewLabel": "Hvad er familier og tracks?",
-      "familiesReviewBody": "En rollefamilie grupperer roller, der deler samme slags arbejde, som Teknologi eller Salg; familier organiserer registeret og påvirker aldrig pointtallet. En track er typen af job, for eksempel individuel specialist eller leder; den siger intet om senioritet."
+      "familiesReviewBody": "En rollefamilie grupperer roller, der deler samme slags arbejde, som Teknologi eller Salg; familier organiserer registeret og påvirker aldrig pointtallet. En track er typen af job, for eksempel individuel specialist eller leder; den siger intet om senioritet.",
+      "close": "Luk"
     }
   },
   "errors": {
