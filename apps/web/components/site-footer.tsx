@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl"
 import { Link } from "@workspace/i18n/navigation"
 
+import { Logo } from "@/components/logo"
 import { LanguageSwitcher } from "@/components/language-switcher"
 
 const FOOTER_LINK_CLASS =
@@ -17,9 +18,10 @@ export function SiteFooter() {
           <div className="flex max-w-md flex-col gap-3">
             <Link
               href="/"
-              className="self-start rounded-sm font-bold font-display text-2xl text-foreground lowercase leading-none tracking-tight focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-4"
+              aria-label="blueprnt"
+              className="self-start rounded-sm text-brand focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-4"
             >
-              blueprnt
+              <Logo className="h-7 w-auto" />
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed">
               {t("footer.tagline")}

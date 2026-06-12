@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl"
 import { Link } from "@workspace/i18n/navigation"
+import { Logo } from "@/components/logo"
 import { Button } from "@workspace/ui/components/button"
 
 import { LanguageSwitcher } from "@/components/language-switcher"
@@ -19,9 +20,10 @@ export function SiteHeader() {
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-6">
         <Link
           href="/"
-          className="rounded-sm font-bold font-display text-2xl text-foreground lowercase leading-none tracking-tight focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-4"
+          aria-label="blueprnt"
+          className="rounded-sm text-brand focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-4"
         >
-          blueprnt
+          <Logo className="h-7 w-auto" />
         </Link>
         <nav className="hidden items-center gap-9 font-bold text-[13px] text-muted-foreground uppercase tracking-widest sm:flex">
           <Link href="/how-it-works" className={NAV_LINK_CLASS}>
