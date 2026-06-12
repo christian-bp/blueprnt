@@ -1,0 +1,19 @@
+docs/superpowers/plans/2026-06-12-marketing-website.md
+  s_fa45b53f6da63b::t_ae14ddc51f937f 1-259
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "aec61ac8eb788b87fd72a4f3bb1040c8e79ffe8f",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
