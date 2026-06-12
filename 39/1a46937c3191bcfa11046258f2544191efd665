@@ -1,0 +1,23 @@
+apps/dashboard/components/model/criterion-form.tsx
+  s_fa45b53f6da63b::t_b040fea8db71bd 1-155
+packages/backend/convex/evaluationModel/criteria.ts
+  s_fa45b53f6da63b::t_a8e69baed5ddcd 102
+apps/dashboard/components/model/edit-criterion-dialog.tsx
+  s_fa45b53f6da63b::t_799810d0424dc3 1-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "391a46937c3191bcfa11046258f2544191efd665",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
