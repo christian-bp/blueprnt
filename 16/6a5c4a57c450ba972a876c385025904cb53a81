@@ -1,0 +1,19 @@
+apps/dashboard/components/model/criterion-item.tsx
+  s_fa45b53f6da63b::t_136f3d458490cc 160-177,179-200
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "166a5c4a57c450ba972a876c385025904cb53a81",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
