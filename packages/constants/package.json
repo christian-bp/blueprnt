@@ -16,7 +16,7 @@
   "devDependencies": {
     "@workspace/typescript-config": "workspace:*",
     "@workspace/vitest-config": "workspace:*",
-    "typescript": "^5",
-    "vitest": "^4.1.0"
+    "typescript": "^6",
+    "vitest": "^4.1.8"
   }
 }

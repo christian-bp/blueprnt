@@ -16,10 +16,10 @@
     "@types/react": "^19",
     "@workspace/typescript-config": "workspace:*",
     "@workspace/vitest-config": "workspace:*",
-    "next": "16.2.6",
-    "react": "19.2.4",
-    "typescript": "^5",
-    "vitest": "^4.1.0"
+    "next": "16.2.9",
+    "react": "19.2.7",
+    "typescript": "^6",
+    "vitest": "^4.1.8"
   },
   "exports": {
     ".": "./src/index.ts",

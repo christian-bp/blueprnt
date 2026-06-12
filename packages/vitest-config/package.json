@@ -12,6 +12,6 @@
   },
   "devDependencies": {
     "@vitest/coverage-v8": "4.1.8",
-    "happy-dom": "^20.10.0"
+    "happy-dom": "^20.10.2"
   }
 }

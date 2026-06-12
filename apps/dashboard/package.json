@@ -21,25 +21,25 @@
     "@workspace/constants": "workspace:*",
     "@workspace/i18n": "workspace:*",
     "@workspace/ui": "workspace:*",
-    "better-auth": "1.6.16",
-    "convex": "^1.40.0",
+    "better-auth": "1.6.17",
+    "convex": "^1.41.0",
     "motion": "^12.40.0",
-    "next": "16.2.6",
+    "next": "16.2.9",
     "next-intl": "^4.13.0",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@testing-library/react": "^16.3.0",
-    "@types/node": "^20",
+    "@testing-library/react": "^16.3.2",
+    "@types/node": "^25",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@vitejs/plugin-react": "^5.0.0",
+    "@vitejs/plugin-react": "^6.0.2",
     "@workspace/typescript-config": "workspace:*",
     "@workspace/vitest-config": "workspace:*",
-    "typescript": "^5",
-    "vitest": "^4.1.0"
+    "typescript": "^6",
+    "vitest": "^4.1.8"
   }
 }
