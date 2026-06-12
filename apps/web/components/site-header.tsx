@@ -23,7 +23,7 @@ export function SiteHeader() {
           aria-label="blueprnt"
           className="rounded-sm text-brand focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-4"
         >
-          <Logo className="h-9 w-auto" />
+          <Logo className="h-11 w-auto" />
         </Link>
         <nav className="hidden items-center gap-9 font-bold text-[13px] text-muted-foreground uppercase tracking-widest sm:flex">
           <Link href="/how-it-works" className={NAV_LINK_CLASS}>
