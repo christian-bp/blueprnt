@@ -1,0 +1,25 @@
+apps/web/components/contact-cta.tsx
+  s_fa45b53f6da63b::t_fb6ac092e74285 30
+apps/web/app/[locale]/layout.tsx
+  s_fa45b53f6da63b::t_fe04bc5e21740c 59-63
+apps/web/components/about-cta.tsx
+  s_fa45b53f6da63b::t_343a76de354fc9 22
+packages/i18n/messages/sv.json
+  s_fa45b53f6da63b::t_14e48ed3614f70 266
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "7c8ace8f771c9230e4a0ac877475d3cf81acc92e",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
