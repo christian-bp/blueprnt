@@ -157,42 +157,47 @@ export function CriterionItem({
             {importanceNode}
           </span>
 
-          {/* Always-reserved actions slot: one row menu (edit / remove)
-              instead of separate buttons; empty outside edit mode so the
-              importance column never moves when the menu appears. */}
-          {showMenu ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  disabled={removing}
-                  aria-label={tEditor("rowMenuLabel", { name })}
-                  className="shrink-0 text-muted-foreground hover:text-foreground"
-                >
-                  <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {onEdit !== undefined && (
-                  <DropdownMenuItem onSelect={onEdit}>
-                    {tEditor("editCta")}
-                  </DropdownMenuItem>
-                )}
-                {onRemove !== undefined && (
-                  <DropdownMenuItem
-                    variant="destructive"
-                    onSelect={() => setConfirmRemove(true)}
+          {/* Actions slot, rendered only while editable so the importance
+              column sits flush with the row edge in read mode. Entering
+              edit is a full mode switch that already swaps the weight
+              control, so the column moving left with the menu is part of
+              that one deliberate relayout, not a hover/state shift. Within
+              edit mode the slot stays reserved when the menu has no
+              actions. */}
+          {editable &&
+            (showMenu ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    disabled={removing}
+                    aria-label={tEditor("rowMenuLabel", { name })}
+                    className="shrink-0 text-muted-foreground hover:text-foreground"
                   >
-                    {tEditor("removeCta")}
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <span aria-hidden="true" className="size-9 shrink-0" />
-          )}
+                    <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {onEdit !== undefined && (
+                    <DropdownMenuItem onSelect={onEdit}>
+                      {tEditor("editCta")}
+                    </DropdownMenuItem>
+                  )}
+                  {onRemove !== undefined && (
+                    <DropdownMenuItem
+                      variant="destructive"
+                      onSelect={() => setConfirmRemove(true)}
+                    >
+                      {tEditor("removeCta")}
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <span aria-hidden="true" className="size-9 shrink-0" />
+            ))}
         </div>
 
         {/* Destructive confirmation in an AlertDialog (the standard pattern
