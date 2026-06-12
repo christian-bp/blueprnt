@@ -23,9 +23,11 @@ import { SPRING } from "@/lib/motion"
 // in-flow absolute panel: help triggers sit inside arbitrary containers,
 // including dialogs and scroll areas, and only a portaled panel escapes
 // their overflow clipping while composing with the dialog's focus trap and
-// Escape handling. side=bottom + align=start pins the panel's top-left
-// corner, so the width/height spring grows right and down from a stable
-// anchor (the same growth direction as the original in-flow morph).
+// Escape handling. side=bottom + align=start with a negative sideOffset of
+// the trigger's own height pins the panel's top-left corner ON the
+// trigger's top-left corner, so the panel starts exactly over the button
+// and the width/height spring grows right and down out of it (the same
+// overlay-and-grow as the original in-flow morph).
 export function HelpMorphButton({
   label,
   children,
@@ -59,6 +61,9 @@ export function HelpMorphButton({
         aria-label={label}
         className={cn(
           "flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          // Hidden while open: the panel overlays this exact rect, and the
+          // close crossfade reveals the trigger again underneath.
+          "data-[state=open]:pointer-events-none data-[state=open]:opacity-0",
           className
         )}
       >
@@ -79,7 +84,7 @@ export function HelpMorphButton({
               forceMount
               side="bottom"
               align="start"
-              sideOffset={4}
+              sideOffset={-fromRect.height}
               collisionPadding={8}
               aria-label={label}
             >
