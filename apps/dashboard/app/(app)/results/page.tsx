@@ -31,6 +31,7 @@ import { HelpMorphButton } from "@/components/help-morph-button"
 import Link from "next/link"
 import { useState } from "react"
 import { useOrganization } from "@/components/org-context"
+import { TrackBadge } from "@/components/track-badge"
 import { AnchorRolesPanel } from "@/components/results/anchor-roles-panel"
 import { BandOverview } from "@/components/results/band-overview"
 import { statusBadgeVariant } from "@/lib/role-status"
@@ -158,8 +159,8 @@ export default function ResultsPage() {
                       {row.title}
                     </Link>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {row.trackName}
+                  <TableCell>
+                    <TrackBadge trackKey={row.trackKey} name={row.trackName} />
                   </TableCell>
                   <TableCell>
                     <Badge variant={statusBadgeVariant(row.status)}>

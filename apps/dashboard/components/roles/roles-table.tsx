@@ -41,6 +41,7 @@ import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
+import { TrackBadge } from "@/components/track-badge"
 import { groupByFamily } from "@/lib/role-groups"
 import { statusBadgeVariant } from "@/lib/role-status"
 
@@ -157,9 +158,10 @@ export function RolesTable({
         filterFn: exactString,
         enableGlobalFilter: false,
         cell: ({ row }) => (
-          <span className="text-muted-foreground">
-            {row.original.trackName}
-          </span>
+          <TrackBadge
+            trackKey={row.original.trackKey}
+            name={row.original.trackName}
+          />
         ),
       },
       {

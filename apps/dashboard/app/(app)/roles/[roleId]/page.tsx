@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation"
 import { use } from "react"
 import { MorphConfirmButton } from "@/components/morph-confirm-button"
 import { useOrganization } from "@/components/org-context"
+import { TrackBadge } from "@/components/track-badge"
 import { AnchorRoleCard } from "@/components/roles/anchor-role-card"
 import { RoleProfileCard } from "@/components/roles/role-profile-card"
 import { RoleRatingCard } from "@/components/roles/role-rating-card"
@@ -60,8 +61,9 @@ export default function RolePage(props: {
           {tStatus(role.status as "draft" | "inReview" | "approved")}
         </Badge>
         {role.archived && <Badge variant="outline">{t("archivedBadge")}</Badge>}
+        <TrackBadge trackKey={role.trackKey} name={role.trackName} />
         <span className="text-muted-foreground text-sm">
-          {role.trackName} · {role.function} · {role.team}
+          {role.function} · {role.team}
         </span>
         {orgRole === "admin" && (
           <MorphConfirmButton
