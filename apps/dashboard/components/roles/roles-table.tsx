@@ -88,6 +88,14 @@ export function matchesRoleQuery(
 }
 
 const ROLE_STATUSES = ["draft", "inReview", "approved"] as const
+
+// MODULE-LEVEL constant: state.grouping keys the grouped-row-model memo, and
+// every recompute of that memo queues TanStack's auto-resets, whose
+// resetPageIndex setState re-renders the table. An inline ["family"] array
+// (new identity per render) therefore turns ANY re-render (e.g. a radix
+// Select opening inside this tree) into an infinite render loop that
+// freezes the page. Keep the identity stable and the auto-resets off.
+const GROUPING = ["family"]
 type RoleStatus = (typeof ROLE_STATUSES)[number]
 
 const exactString = (
@@ -198,7 +206,7 @@ export function RolesTable({
       // Grouping and expansion are pinned: the family grouping is the
       // page's organization, never user state, so groups cannot collapse
       // (and autoReset on filter changes cannot close them either).
-      grouping: ["family"],
+      grouping: GROUPING,
       expanded: true,
       globalFilter,
       columnFilters,
@@ -207,6 +215,11 @@ export function RolesTable({
     onColumnFiltersChange: setColumnFilters,
     onExpandedChange: () => {},
     onGroupingChange: () => {},
+    // Unused features must not queue resets: expansion is pinned and there
+    // is no pagination, but their auto-resets would still setState (see the
+    // GROUPING note above).
+    autoResetExpanded: false,
+    autoResetPageIndex: false,
     groupedColumnMode: "remove",
     // The matcher reads the whole row, so it runs on the title column only
     // (every other column opts out of global filtering).
