@@ -1,0 +1,38 @@
+apps/web/components/language-switcher.tsx
+  s_fa45b53f6da63b::t_7d414df8a3040e 1-50
+apps/web/app/[locale]/layout.tsx
+  s_fa45b53f6da63b::t_d1e15e4a23a58d 8-9
+  s_fa45b53f6da63b::t_8b84390a47084a 61-67
+apps/web/components/language-switcher.test.tsx
+  s_fa45b53f6da63b::t_4e0c394af8a36f 1-70
+apps/web/components/site-footer.tsx
+  s_fa45b53f6da63b::t_e37bfca0ad71bc 1-19,21-53
+apps/web/vitest.config.ts
+  s_fa45b53f6da63b::t_d455ba632f1162 1-28
+apps/web/package.json
+  s_fa45b53f6da63b::t_594c93574437cd 12-13
+apps/web/components/site-header.test.tsx
+  s_fa45b53f6da63b::t_b387e98a7d0378 9-14,23,25
+  s_fa45b53f6da63b::t_ad0385f7757ef2 15-22,24
+  s_fa45b53f6da63b::t_81acf68358ccd6 1-8,26-64
+apps/web/tsconfig.json
+  s_fa45b53f6da63b::t_5c72d5bdaa00ff 7
+apps/web/components/site-header.tsx
+  s_fa45b53f6da63b::t_08bc7a654fd29b 1-17,19-21,23-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "08f1f582747c301f8f1da3ff3d471c80967b1b94",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
