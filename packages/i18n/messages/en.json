@@ -205,6 +205,14 @@
         "reviewedAt": "Last reviewed {date}",
         "updateCta": "Save changes",
         "error": "The change could not be saved. Try again."
+      },
+      "toolbar": {
+        "searchPlaceholder": "Search by title, team, or function",
+        "statusAll": "All statuses",
+        "trackAll": "All tracks",
+        "resultCount": "{shown} of {total} roles",
+        "noMatches": "No roles match the search or filters.",
+        "clearFilters": "Clear filters"
       }
     },
     "rating": {

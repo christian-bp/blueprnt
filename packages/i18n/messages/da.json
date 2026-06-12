@@ -205,6 +205,14 @@
         "reviewedAt": "Senest gennemgået {date}",
         "updateCta": "Gem ændringer",
         "error": "Ændringen kunne ikke gemmes. Prøv igen."
+      },
+      "toolbar": {
+        "searchPlaceholder": "Søg på titel, team eller funktion",
+        "statusAll": "Alle statusser",
+        "trackAll": "Alle tracks",
+        "resultCount": "{shown} af {total} roller",
+        "noMatches": "Ingen roller matcher søgningen eller filtrene.",
+        "clearFilters": "Ryd filtrene"
       }
     },
     "rating": {

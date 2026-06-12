@@ -205,6 +205,14 @@
         "reviewedAt": "Senast översedd {date}",
         "updateCta": "Spara ändringar",
         "error": "Ändringen kunde inte sparas. Försök igen."
+      },
+      "toolbar": {
+        "searchPlaceholder": "Sök på titel, team eller funktion",
+        "statusAll": "Alla statusar",
+        "trackAll": "Alla tracks",
+        "resultCount": "{shown} av {total} roller",
+        "noMatches": "Inga roller matchar sökningen eller filtren.",
+        "clearFilters": "Rensa filtren"
       }
     },
     "rating": {

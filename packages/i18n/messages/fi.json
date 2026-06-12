@@ -205,6 +205,14 @@
         "reviewedAt": "Viimeksi tarkistettu {date}",
         "updateCta": "Tallenna muutokset",
         "error": "Muutosta ei voitu tallentaa. Yritä uudelleen."
+      },
+      "toolbar": {
+        "searchPlaceholder": "Hae nimikkeellä, tiimillä tai toiminnolla",
+        "statusAll": "Kaikki tilat",
+        "trackAll": "Kaikki trackit",
+        "resultCount": "{shown}/{total} roolia",
+        "noMatches": "Yksikään rooli ei vastaa hakua tai suodattimia.",
+        "clearFilters": "Tyhjennä suodattimet"
       }
     },
     "rating": {

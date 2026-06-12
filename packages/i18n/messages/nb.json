@@ -205,6 +205,14 @@
         "reviewedAt": "Sist gjennomgått {date}",
         "updateCta": "Lagre endringer",
         "error": "Endringen kunne ikke lagres. Prøv igjen."
+      },
+      "toolbar": {
+        "searchPlaceholder": "Søk på tittel, team eller funksjon",
+        "statusAll": "Alle statuser",
+        "trackAll": "Alle tracks",
+        "resultCount": "{shown} av {total} roller",
+        "noMatches": "Ingen roller matcher søket eller filtrene.",
+        "clearFilters": "Nullstill filtrene"
       }
     },
     "rating": {
