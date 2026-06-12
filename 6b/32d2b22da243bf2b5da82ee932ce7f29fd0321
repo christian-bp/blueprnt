@@ -1,0 +1,23 @@
+apps/web/components/how-steps.tsx
+  s_fa45b53f6da63b::t_05f87ecc683787 1-56
+apps/web/components/how-steps.test.tsx
+  s_fa45b53f6da63b::t_37ec376e021f59 1-52
+apps/web/app/[locale]/how-it-works/page.tsx
+  s_fa45b53f6da63b::t_6ed39909c55b27 1-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "6b32d2b22da243bf2b5da82ee932ce7f29fd0321",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
