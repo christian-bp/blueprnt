@@ -75,10 +75,199 @@
     }
   },
   "web": {
-    "home": {
-      "title": "blueprnt",
+    "meta": {
+      "landingTitle": "Blueprnt – Job architecture and pay model",
+      "landingDescription": "Blueprnt builds transparent, scalable models for job architecture and compensation, tailored to Swedish pay equity audits and the EU Pay Transparency Directive.",
+      "howTitle": "How it works – Blueprnt",
+      "howDescription": "Five steps from zero to a finished job architecture: template, model, blind rating, automatic bands, and calibration with anchor roles.",
+      "aboutTitle": "About us – Blueprnt",
+      "aboutDescription": "Meet the team behind Blueprnt. We build transparent models for job architecture and compensation."
+    },
+    "nav": {
+      "how": "How it works",
+      "about": "About us",
+      "login": "Log in",
+      "cta": "Build your framework"
+    },
+    "hero": {
+      "badge": "Get ready",
+      "titleLead": "The job architecture that creates",
+      "titleAccent": "value.",
+      "lede": "Compare roles for real, based on how your company works. Blueprnt helps you build a job architecture where roles are valued and compared on the same basis across the whole organization.",
+      "ctaPrimary": "Build your framework",
+      "ctaSecondary": "See the model",
+      "imageAlt": "Isometric visualization of a leveled job architecture"
+    },
+    "framework": {
+      "heading": "Role evaluation, frameworks, rethought.",
+      "lede": "We replace ambiguity with a configurable evaluation model. Roles are weighted by complexity, impact, and skill requirements, not tenure, title inflation, or a standard that does not fit your philosophy. This is the model shaped around what your company actually values.",
+      "kicker": "[01] OBJECTIVITY",
+      "steps": {
+        "factors": {
+          "step": "01",
+          "title": "Targeted Factors",
+          "body": "Targeted factors that make clear what the company values in every role: from responsibility and complexity to impact, leadership, and business value."
+        },
+        "weighting": {
+          "step": "02",
+          "title": "Guided Weighting",
+          "body": "Weighted factors with clear guidance on how each criterion should be rated, for more consistent and accurate evaluations."
+        },
+        "structure": {
+          "step": "03",
+          "title": "Automagic Structure",
+          "body": "Automagic banding that turns a role's overall assessment into the right level: fast, consistent, and free of manual guesswork."
+        }
+      }
+    },
+    "model": {
+      "badge": "What makes us unique",
+      "titleLead": "A",
+      "titleAccent": "configurable",
+      "titleTail": "evaluation model, shaped around what your company actually values.",
+      "lede": "The model is built from your context and what drives your company forward, so the structure becomes clear, relevant, and useful in practice. Easy to get started with, intuitive to use, and free of heavy implementation.",
+      "kicker": "[03] GET STARTED",
+      "cards": {
+        "start": {
+          "label": "Feature _A",
+          "title": "Low thresholds, easy start, predictable pricing",
+          "body": "Get going quickly with no long implementation period, no sluggish rollout phase, and no heavyweight project setups."
+        },
+        "implementation": {
+          "label": "Feature _B",
+          "title": "No lengthy implementation",
+          "body": "No large upfront investment, no expensive onboarding fees, a fixed monthly cost, and a discount for longer commitments."
+        },
+        "independence": {
+          "label": "Feature _C",
+          "title": "No dependence on consultants",
+          "body": "Built to be used without constant consulting support. You can work independently, with help whenever you want it."
+        },
+        "exit": {
+          "label": "Feature _D",
+          "title": "Easy to cancel",
+          "body": "No needlessly long lock-in, and flexible terms that make it easy to get started."
+        }
+      }
+    },
+    "compliance": {
+      "title": "Support for your pay equity audit, organizational change, role creation, calibration, and more…",
+      "body": "Make decisions on a structural foundation, not a guess in a spreadsheet. Everything traces back to role value, ready to be reviewed and defended.",
+      "items": {
+        "equalWork": "Supports \"comparison of equal work\"",
+        "equalValue": "Documents \"work of equal value\"",
+        "directive": "The foundation for the EU Pay Transparency Directive"
+      },
+      "statValue": "100%",
+      "statLabel": "Structural objectivity"
+    },
+    "approach": {
+      "heading": "How we work.",
+      "lede": "One engagement in four steps: simplicity is our guiding principle.",
+      "kicker": "[02] METHODOLOGY",
+      "steps": {
+        "contact": {
+          "label": "STEP_01",
+          "title": "Contact",
+          "body": "A first conversation where you present the direction you want to take."
+        },
+        "walkthrough": {
+          "label": "STEP_02",
+          "title": "Walkthrough",
+          "body": "We guide you through our methodology and setup."
+        },
+        "handshake": {
+          "label": "STEP_03",
+          "title": "Handshake",
+          "body": "You see value in our product, and we see value in you as a customer."
+        },
+        "start": {
+          "label": "STEP_04",
+          "title": "Up and running",
+          "body": "You are live in the system and can start exploring the road ahead right away."
+        }
+      }
+    },
+    "contact": {
+      "badge": "Accepting new partners",
+      "heading": "Build the structure you deserve.",
+      "lede": "We are opening up to a limited number of pilot customers at an attractive introductory price. We are looking for small and mid-sized companies that want a clear structure for roles, levels, and pay. Email us a short description of your company, your needs, and what you want to get out of working with us.",
+      "email": "hej@blueprnt.se"
+    },
+    "how": {
+      "heading": "How Blueprnt works",
+      "lede": "From zero to a finished job architecture in five steps. No consulting hours, no spreadsheet acrobatics, just a clear model the whole organization can trust.",
+      "steps": {
+        "onboarding": {
+          "step": "01",
+          "title": "Onboard in minutes",
+          "body": "Pick an industry template or start from a blank slate. Role families and roles are set up right in the onboarding, pre-filled for your industry."
+        },
+        "model": {
+          "step": "02",
+          "title": "Shape the model",
+          "body": "Adjust criteria, rating anchors, and weight points until the model reflects what your company actually values. The weighting always keeps to a fixed point budget, so the whole stays balanced."
+        },
+        "rating": {
+          "step": "03",
+          "title": "Rate blind",
+          "body": "Roles are rated one criterion at a time against clear anchor texts, with scores and bands hidden along the way. That keeps the assessment honest."
+        },
+        "bands": {
+          "step": "04",
+          "title": "Bands and results, automatically",
+          "body": "Scores are recomputed into bands the moment something changes. No manual adjustments, no title inflation, the same basis for every role."
+        },
+        "calibration": {
+          "step": "05",
+          "title": "Calibrate with anchor roles",
+          "body": "Designate a few reference roles the whole organization agrees on, and let them keep the model honest over time."
+        }
+      }
+    },
+    "about": {
+      "badge": "About Blueprnt",
+      "heading": "Who we are.",
+      "lede": "We are a team based in Trollhättan, Sweden, with deep expertise in both HR and software engineering. Our hands-on, theoretical, and strategic experience gives us a unique understanding of the challenges you face every day. With that insight we are now launching blueprnt, the first in a line of innovative solutions set to shape the future of HR work. Our products grow out of real needs and challenges we have experienced first-hand.",
+      "story": {
+        "titleLead": "Why we are building",
+        "titleAccent": "blueprnt.",
+        "p1": "It started with a simple observation: most companies lack a clear structure for how roles are valued and compared. The result is often a poor fit, you are forced into a standard that does not feel right, and the outcome follows: inequitable, with a culture where we cannot be transparent about how we actually work.",
+        "p2": "We decided to build a tool that turns this around. A platform where every role is assessed against the same objective criteria and all roles can be compared across the whole company, whether you are 20 or 100 people, adapted to your company's unique conditions and values.",
+        "p3": "Today we help small and mid-sized companies lay a structural foundation for their job architecture. We believe in transparency, fairness, and that every employee should understand why their role is valued the way it is."
+      },
+      "team": {
+        "heading": "Our team.",
+        "lede": "A small, passionate team with broad experience across HR, tech, product development, and organizational design.",
+        "members": {
+          "founders": {
+            "name": "The founders",
+            "role": "Product & Strategy",
+            "bio": "With backgrounds in both tech and HR, we have seen how job architecture can both help and hinder organizations. Blueprnt is our answer."
+          },
+          "development": {
+            "name": "The development team",
+            "role": "Engineering & Design",
+            "bio": "We build tools that are as powerful behind the scenes as they are simple to use. Every detail is deliberate."
+          },
+          "success": {
+            "name": "Customer success",
+            "role": "Implementation & Support",
+            "bio": "From first contact to finished model, we are at your side. Your success is our success."
+          }
+        }
+      },
+      "cta": {
+        "heading": "Want to know more?",
+        "lede": "We love talking about job architecture, pay transparency, and how organizations can grow with the right structure. Get in touch!"
+      }
+    },
+    "footer": {
       "tagline": "Structured role evaluation and banding: the foundation layer for the EU Pay Transparency Directive.",
-      "cta": "Get started"
+      "rights": "© {year} Blueprnt · HR Tech"
+    },
+    "language": {
+      "label": "Language"
     }
   },
   "dashboard": {

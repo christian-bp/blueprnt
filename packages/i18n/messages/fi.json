@@ -75,10 +75,199 @@
     }
   },
   "web": {
-    "home": {
-      "title": "blueprnt",
+    "meta": {
+      "landingTitle": "Blueprnt – Tehtäväarkkitehtuuri ja palkkamalli",
+      "landingDescription": "Blueprnt rakentaa läpinäkyviä ja skaalautuvia malleja tehtäväarkkitehtuuriin ja palkitsemiseen, sovitettuna ruotsalaiseen palkkakartoitukseen ja EU:n palkka-avoimuusdirektiiviin.",
+      "howTitle": "Näin se toimii – Blueprnt",
+      "howDescription": "Viisi vaihetta nollasta valmiiseen tehtäväarkkitehtuuriin: pohja, malli, sokea arviointi, automaattiset luokat ja kalibrointi ankkurirooleilla.",
+      "aboutTitle": "Tietoa meistä – Blueprnt",
+      "aboutDescription": "Tutustu Blueprntin takana olevaan tiimiin. Rakennamme läpinäkyviä malleja tehtäväarkkitehtuuriin ja palkitsemiseen."
+    },
+    "nav": {
+      "how": "Näin se toimii",
+      "about": "Tietoa meistä",
+      "login": "Kirjaudu sisään",
+      "cta": "Rakentakaa viitekehyksenne"
+    },
+    "hero": {
+      "badge": "Valmistautukaa",
+      "titleLead": "Tehtäväarkkitehtuuri, joka luo",
+      "titleAccent": "arvoa.",
+      "lede": "Vertailkaa rooleja oikeasti, sen pohjalta miten yrityksenne toimii. Blueprnt auttaa rakentamaan tehtäväarkkitehtuurin, jossa roolit arvioidaan ja niitä verrataan samalta pohjalta koko organisaatiossa.",
+      "ctaPrimary": "Rakentakaa viitekehyksenne",
+      "ctaSecondary": "Katso malli",
+      "imageAlt": "Isometrinen visualisointi tasoihin jaetusta tehtäväarkkitehtuurista"
+    },
+    "framework": {
+      "heading": "Roolien arviointi, viitekehys, uudelleenajateltuna.",
+      "lede": "Korvaamme epäselvyyden konfiguroitavalla arviointimallilla. Roolit painotetaan monimutkaisuuden, vaikutuksen ja osaamisvaatimusten mukaan, ei työsuhteen keston, titteli-inflaation tai sellaisen standardin mukaan, joka ei sovi teidän filosofiaanne. Tämä on malli, joka mukautuu siihen, mitä yrityksenne todella arvostaa.",
+      "kicker": "[01] OBJEKTIIVISUUS",
+      "steps": {
+        "factors": {
+          "step": "01",
+          "title": "Kohdennetut tekijät",
+          "body": "Kohdennetut tekijät, jotka tekevät näkyväksi, mitä yritys arvostaa kussakin roolissa: vastuusta ja monimutkaisuudesta vaikutukseen, johtajuuteen ja liiketoiminta-arvoon."
+        },
+        "weighting": {
+          "step": "02",
+          "title": "Ohjattu painotus",
+          "body": "Painotetut tekijät ja selkeä ohjeistus siitä, miten kukin kriteeri arvioidaan, jotta arvioinnit ovat johdonmukaisempia ja osuvampia."
+        },
+        "structure": {
+          "step": "03",
+          "title": "Automaaginen rakenne",
+          "body": "Automaaginen luokkajako, jossa roolin kokonaisarvio muuttuu oikeaksi tasoksi: nopeasti, johdonmukaisesti ja ilman manuaalista arvailua."
+        }
+      }
+    },
+    "model": {
+      "badge": "Se mikä tekee meistä ainutlaatuisia",
+      "titleLead": "Aidosti",
+      "titleAccent": "konfiguroitava",
+      "titleTail": "arviointimalli, mukautettu siihen, mitä yrityksenne todella arvostaa.",
+      "lede": "Malli rakennetaan teidän kontekstistanne ja siitä, mikä vie juuri teidän yritystänne eteenpäin, jotta rakenteesta tulee selkeä, relevantti ja käytännössä hyödyllinen. Helppo ottaa käyttöön, intuitiivinen käyttää ja ilman raskasta käyttöönottoprojektia.",
+      "kicker": "[03] ALOITA",
+      "cards": {
+        "start": {
+          "label": "Feature _A",
+          "title": "Matala kynnys, helppo aloitus, ennustettava hinta",
+          "body": "Pääsette alkuun nopeasti ilman pitkää käyttöönottoaikaa, ei hidasta käyttöönottovaihetta tai raskaita projektimalleja."
+        },
+        "implementation": {
+          "label": "Feature _B",
+          "title": "Ei pitkää käyttöönottoa",
+          "body": "Ei suurta alkuinvestointia, ei kalliita aloitusmaksuja, kiinteä kuukausihinta, alennus sitoutumisajasta."
+        },
+        "independence": {
+          "label": "Feature _C",
+          "title": "Ei riippuvuutta konsulteista",
+          "body": "Rakennettu käytettäväksi ilman jatkuvaa konsulttityötä. Voitte työskennellä itsenäisesti, tukea saa halutessanne."
+        },
+        "exit": {
+          "label": "Feature _D",
+          "title": "Helppo irtisanominen",
+          "body": "Ei tarpeettoman pitkää sitoutumisaikaa, joustavat ehdot tekevät aloittamisesta helppoa."
+        }
+      }
+    },
+    "compliance": {
+      "title": "Tukea palkkakartoitukseen, organisaatiomuutoksiin, roolien luomiseen, kalibrointiin ja muuhun…",
+      "body": "Tehkää päätökset rakenteelliselta pohjalta, ei taulukkolaskennan arvauksella. Kaikki on johdettavissa roolin arvoon ja valmista tarkastettavaksi ja perusteltavaksi.",
+      "items": {
+        "equalWork": "Täyttää \"saman työn\" vertailun",
+        "equalValue": "Dokumentoi \"samanarvoisen työn\"",
+        "directive": "Perusta EU:n palkka-avoimuusdirektiiville"
+      },
+      "statValue": "100%",
+      "statLabel": "Rakenteellinen objektiivisuus"
+    },
+    "approach": {
+      "heading": "Näin työskentelemme.",
+      "lede": "Toimeksianto neljässä vaiheessa: yksinkertaisuus on johtotähtemme.",
+      "kicker": "[02] METODIIKKA",
+      "steps": {
+        "contact": {
+          "label": "VAIHE_01",
+          "title": "Yhteydenotto",
+          "body": "Ensimmäinen yhteydenotto, jossa kerrotte, mihin suuntaan haluatte mennä."
+        },
+        "walkthrough": {
+          "label": "VAIHE_02",
+          "title": "Läpikäynti",
+          "body": "Opastamme teidät metodologiamme ja toimintamallimme läpi."
+        },
+        "handshake": {
+          "label": "VAIHE_03",
+          "title": "Kädenpuristus",
+          "body": "Te näette arvon tuotteessamme, ja me näemme arvon teissä asiakkaana."
+        },
+        "start": {
+          "label": "VAIHE_04",
+          "title": "Käyntiin",
+          "body": "Olette järjestelmässä ja voitte heti alkaa kokeilla matkaanne eteenpäin."
+        }
+      }
+    },
+    "contact": {
+      "badge": "Otamme vastaan uusia kumppaneita",
+      "heading": "Rakentakaa rakenne, jonka ansaitsette.",
+      "lede": "Avaamme nyt ovet rajatulle määrälle pilottiasiakkaita houkuttelevaan tutustumishintaan. Etsimme pieniä ja keskisuuria yrityksiä, jotka haluavat selkeän rakenteen rooleille, tasoille ja palkanmuodostukselle. Lähettäkää meille lyhyt kuvaus yrityksestänne, tarpeistanne ja siitä, mitä haluatte yhteistyöltä kanssamme.",
+      "email": "hej@blueprnt.se"
+    },
+    "how": {
+      "heading": "Näin Blueprnt toimii",
+      "lede": "Nollasta valmiiseen tehtäväarkkitehtuuriin viidessä vaiheessa. Ei konsulttitunteja, ei Excel-akrobatiaa, vain selkeä malli, johon koko organisaatio voi luottaa.",
+      "steps": {
+        "onboarding": {
+          "step": "01",
+          "title": "Käyttöönotto minuuteissa",
+          "body": "Valitkaa toimialapohja tai aloittakaa tyhjästä. Rooliperheet ja roolit luodaan suoraan käyttöönotossa, esitäytettyinä toimialallenne."
+        },
+        "model": {
+          "step": "02",
+          "title": "Mukauttakaa malli",
+          "body": "Säätäkää kriteerejä, arviointiankkureita ja painopisteitä, kunnes malli heijastaa sitä, mitä yrityksenne todella arvostaa. Painotus pysyy aina kiinteässä pistebudjetissa, joten kokonaisuus pysyy tasapainossa."
+        },
+        "rating": {
+          "step": "03",
+          "title": "Arvioikaa sokkona",
+          "body": "Roolit arvioidaan kriteeri kerrallaan selkeitä ankkuritekstejä vasten, ilman että pisteet tai luokat näkyvät arvioinnin aikana. Se pitää arvioinnin rehellisenä."
+        },
+        "bands": {
+          "step": "04",
+          "title": "Luokat ja tulokset, automaattisesti",
+          "body": "Pisteet lasketaan luokiksi heti, kun jokin muuttuu. Ei manuaalisia säätöjä, ei titteli-inflaatiota, sama perusta kaikille rooleille."
+        },
+        "calibration": {
+          "step": "05",
+          "title": "Kalibroikaa ankkurirooleilla",
+          "body": "Nimetkää pari referenssiroolia, joista koko organisaatio on yhtä mieltä, ja antakaa niiden pitää malli rehellisenä ajan mittaan."
+        }
+      }
+    },
+    "about": {
+      "badge": "Tietoa Blueprntistä",
+      "heading": "Keitä me olemme.",
+      "lede": "Olemme Trollhättanissa toimiva tiimi, jolla on syvää osaamista sekä HR:stä että ohjelmistokehityksestä. Käytännön, teorian ja strategian kokemuksemme ansiosta ymmärrämme ainutlaatuisella tavalla haasteet, joita kohtaatte arjessa. Tällä ymmärryksellä lanseeraamme nyt blueprntin: ensimmäisen sarjassa innovatiivisia ratkaisuja, jotka muovaavat tulevaisuuden HR-työtä. Tuotteemme ovat syntyneet todellisista tarpeista ja haasteista, jotka olemme itse kokeneet käytännössä.",
+      "story": {
+        "titleLead": "Miksi rakennamme",
+        "titleAccent": "blueprntiä.",
+        "p1": "Kaikki alkoi yksinkertaisesta havainnosta: useimmilta yrityksiltä puuttuu selkeä rakenne sille, miten rooleja arvioidaan ja vertaillaan. Lopputulos on usein huonosti istuva, teidät pakotetaan standardiin, joka ei tunnu oikealta, ja tulos on sen mukainen: epätasa-arvoinen ja kulttuuri, jossa emme voi olla läpinäkyviä sen suhteen, miten oikeasti toimimme.",
+        "p2": "Päätimme rakentaa työkalun, joka kääntää asetelman. Alustan, jossa jokainen rooli voidaan arvioida samoilla objektiivisilla kriteereillä ja kaikkia rooleja voidaan vertailla läpi koko yrityksen, olittepa 20 tai 100 henkeä, mukautettuna juuri teidän yrityksenne ainutlaatuisiin lähtökohtiin ja arvoihin.",
+        "p3": "Tänään autamme pieniä ja keskisuuria yrityksiä laskemaan rakenteellisen perustan tehtäväarkkitehtuurilleen. Uskomme läpinäkyvyyteen, oikeudenmukaisuuteen ja siihen, että jokaisen työntekijän tulee ymmärtää, miksi heidän roolinsa arvioidaan niin kuin se arvioidaan."
+      },
+      "team": {
+        "heading": "Tiimimme.",
+        "lede": "Pieni, intohimoinen tiimi, jolla on laajaa kokemusta HR:stä, teknologiasta, tuotekehityksestä ja organisaatiosuunnittelusta.",
+        "members": {
+          "founders": {
+            "name": "Perustajat",
+            "role": "Tuote & Strategia",
+            "bio": "Teknologia- ja HR-taustamme ansiosta olemme nähneet, miten tehtäväarkkitehtuuri voi sekä auttaa että jarruttaa organisaatioita. Blueprnt on vastauksemme."
+          },
+          "development": {
+            "name": "Kehitystiimi",
+            "role": "Teknologia & Design",
+            "bio": "Rakennamme työkaluja, jotka ovat yhtä tehokkaita kulissien takana kuin ne ovat helppoja käyttää. Jokainen yksityiskohta on harkittu."
+          },
+          "success": {
+            "name": "Asiakasmenestys",
+            "role": "Käyttöönotto & Tuki",
+            "bio": "Ensimmäisestä yhteydenotosta valmiiseen malliin olemme rinnallanne. Teidän menestyksenne on meidän menestyksemme."
+          }
+        }
+      },
+      "cta": {
+        "heading": "Haluatteko tietää lisää?",
+        "lede": "Puhumme mielellämme tehtäväarkkitehtuurista, palkka-avoimuudesta ja siitä, miten organisaatiot voivat kasvaa oikealla rakenteella. Ottakaa yhteyttä!"
+      }
+    },
+    "footer": {
       "tagline": "Jäsennelty roolien arviointi ja luokittelu: perusta EU:n palkka-avoimuusdirektiiville.",
-      "cta": "Aloita"
+      "rights": "© {year} Blueprnt · HR Tech"
+    },
+    "language": {
+      "label": "Kieli"
     }
   },
   "dashboard": {

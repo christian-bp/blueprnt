@@ -75,10 +75,199 @@
     }
   },
   "web": {
-    "home": {
-      "title": "blueprnt",
-      "tagline": "Strukturerad rollvärdering och banding: grundlagret för EU:s lönetransparensdirektiv.",
-      "cta": "Kom igång"
+    "meta": {
+      "landingTitle": "Blueprnt – Jobbarkitektur och lönemodell",
+      "landingDescription": "Blueprnt bygger transparenta och skalbara modeller för jobbarkitektur och kompensation, anpassade för svensk lönekartläggning och EU:s lönetransparensdirektiv.",
+      "howTitle": "Så funkar det – Blueprnt",
+      "howDescription": "Fem steg från noll till färdig jobbarkitektur: mall, modell, blind betygsättning, automatiska band och kalibrering med ankarroller.",
+      "aboutTitle": "Om oss – Blueprnt",
+      "aboutDescription": "Lär känna teamet bakom Blueprnt. Vi bygger transparenta modeller för jobbarkitektur och kompensation."
+    },
+    "nav": {
+      "how": "Så funkar det",
+      "about": "Om oss",
+      "login": "Logga in",
+      "cta": "Bygg ert ramverk"
+    },
+    "hero": {
+      "badge": "Gör dig redo",
+      "titleLead": "Jobbarkitekturen som skapar",
+      "titleAccent": "värde.",
+      "lede": "Jämför roller på riktigt, utifrån hur ert bolag fungerar. Blueprnt hjälper er bygga en jobbarkitektur där roller värderas och jämförs på samma grund över hela organisationen.",
+      "ctaPrimary": "Bygg ert ramverk",
+      "ctaSecondary": "Se modellen",
+      "imageAlt": "Isometrisk visualisering av en nivåindelad jobbarkitektur"
+    },
+    "framework": {
+      "heading": "Rollvärdering, ramverk, omtänkt.",
+      "lede": "Vi ersätter otydlighet med en konfigurerbar värderingsmodell. Roller viktas utifrån komplexitet, påverkan och kompetenskrav, inte anställningstid, titelinflation eller en standard som inte passar er filosofi. Detta är modellen som är anpassad efter det ert företag faktiskt värdesätter.",
+      "kicker": "[01] OBJEKTIVITET",
+      "steps": {
+        "factors": {
+          "step": "01",
+          "title": "Riktade Faktorer",
+          "body": "Riktade faktorer som tydliggör vad bolaget värdesätter i varje roll: från ansvar och komplexitet till påverkan, ledarskap och affärsvärde."
+        },
+        "weighting": {
+          "step": "02",
+          "title": "Guidad Viktning",
+          "body": "Viktade faktorer med tydlig vägledning i hur varje kriterium ska bedömas, för mer konsekventa och träffsäkra värderingar."
+        },
+        "structure": {
+          "step": "03",
+          "title": "Automagisk Struktur",
+          "body": "Automagisk bandindelning där rollens samlade bedömning omsätts till rätt nivå: snabbt, konsekvent och utan manuellt gissande."
+        }
+      }
+    },
+    "model": {
+      "badge": "Det som gör oss unika",
+      "titleLead": "En",
+      "titleAccent": "konfigurerbar",
+      "titleTail": "värderingsmodell, anpassad efter det ert företag faktiskt värdesätter.",
+      "lede": "Modellen byggs utifrån ert sammanhang och det som driver just ert bolag framåt, så att strukturen blir tydlig, relevant och användbar i praktiken. Enkelt att komma igång, intuitivt att använda och utan tung implementation.",
+      "kicker": "[03] KOM IGÅNG",
+      "cards": {
+        "start": {
+          "label": "Feature _A",
+          "title": "Låga trösklar, enkel start, förutsägbart pris",
+          "body": "Kom igång snabbt utan lång implementationstid, ingen seg implementationsfas eller tunga projektupplägg."
+        },
+        "implementation": {
+          "label": "Feature _B",
+          "title": "Ingen lång implementation",
+          "body": "Ingen stor initial investering, inga dyra onboardingavgifter, fast månadskostnad, rabatt vid bindningstid."
+        },
+        "independence": {
+          "label": "Feature _C",
+          "title": "Ingen beroendeställning till konsulter",
+          "body": "Byggt för att kunna användas utan ständig konsultinsats. Ni kan arbeta självständigt, med stöd om ni vill."
+        },
+        "exit": {
+          "label": "Feature _D",
+          "title": "Enkel uppsägning",
+          "body": "Ingen onödigt lång bindningstid, flexibla villkor som gör det enkelt att komma igång."
+        }
+      }
+    },
+    "compliance": {
+      "title": "Stöd till din lönekartläggning, organisationsförändring, rollskapande, kalibrering och mer…",
+      "body": "Ta beslut på en strukturell grund, inte en gissning i ett kalkylark. Allt går att härleda till rollvärde och är redo att granskas och försvaras.",
+      "items": {
+        "equalWork": "Uppfyller \"jämförelse i lika arbete\"",
+        "equalValue": "Dokumenterar \"arbete av lika värde\"",
+        "directive": "Grunden för EU:s lönetransparensdirektiv"
+      },
+      "statValue": "100%",
+      "statLabel": "Strukturell objektivitet"
+    },
+    "approach": {
+      "heading": "Så arbetar vi.",
+      "lede": "Ett uppdrag i fyra steg: enkelhet är vårt ledord.",
+      "kicker": "[02] METODIK",
+      "steps": {
+        "contact": {
+          "label": "STEG_01",
+          "title": "Kontakt",
+          "body": "En första kontakt där ni får presentera riktningen ni önskar gå."
+        },
+        "walkthrough": {
+          "label": "STEG_02",
+          "title": "Genomgång",
+          "body": "Vi guidar er igenom vår metodologi och upplägg."
+        },
+        "handshake": {
+          "label": "STEG_03",
+          "title": "Handskakning",
+          "body": "Ni ser ett värde i vår produkt och vi ser ett värde i er som kund."
+        },
+        "start": {
+          "label": "STEG_04",
+          "title": "Igång",
+          "body": "Ni är igång i systemet och kan redan börja laborera med er resa framåt."
+        }
+      }
+    },
+    "contact": {
+      "badge": "Tar emot nya partners",
+      "heading": "Bygg den struktur ni förtjänar.",
+      "lede": "Vi öppnar nu upp för ett begränsat antal pilotkunder till ett attraktivt introduktionspris. Vi söker små och medelstora företag som vill komma igång med en tydlig struktur för roller, nivåer och lönesättning. Mejla oss gärna en kort beskrivning av ert bolag, era behov och vad ni vill få ut av ett samarbete med oss.",
+      "email": "hej@blueprnt.se"
+    },
+    "how": {
+      "heading": "Så funkar Blueprnt",
+      "lede": "Från noll till färdig jobbarkitektur i fem steg. Inga konsulttimmar, ingen Excel-akrobatik, bara en tydlig modell som hela organisationen kan lita på.",
+      "steps": {
+        "onboarding": {
+          "step": "01",
+          "title": "Onboarda på minuter",
+          "body": "Välj en branschmall eller börja från ett tomt ark. Rollfamiljer och roller sätts upp direkt i onboardingen, förifyllda för er bransch."
+        },
+        "model": {
+          "step": "02",
+          "title": "Anpassa modellen",
+          "body": "Justera kriterier, bedömningsankare och viktpoäng tills modellen speglar vad ert bolag faktiskt värdesätter. Viktningen håller alltid en fast poängbudget, så helheten förblir balanserad."
+        },
+        "rating": {
+          "step": "03",
+          "title": "Betygsätt blint",
+          "body": "Roller betygsätts ett kriterium i taget mot tydliga ankartexter, utan att poäng eller band syns under tiden. Det håller bedömningen ärlig."
+        },
+        "bands": {
+          "step": "04",
+          "title": "Band och resultat, automatiskt",
+          "body": "Poäng räknas om till band direkt när något ändras. Inga manuella justeringar, ingen titelinflation, samma grund för alla roller."
+        },
+        "calibration": {
+          "step": "05",
+          "title": "Kalibrera med ankarroller",
+          "body": "Utse ett par referensroller som hela organisationen är överens om och låt dem hålla modellen ärlig över tid."
+        }
+      }
+    },
+    "about": {
+      "badge": "Om Blueprnt",
+      "heading": "Vilka är vi.",
+      "lede": "Vi är ett team baserat i Trollhättan med djup expertis inom både HR och systemutveckling. Tack vare vår praktiska, teoretiska och strategiska erfarenhet har vi en unik förståelse för de utmaningar ni möter i vardagen. Det är med den insikten vi nu lanserar blueprnt – den första i en rad innovativa lösningar som ska forma framtidens HR-arbete. Våra produkter är sprungna ur verkliga behov och utmaningar vi själva upplevt i praktiken.",
+      "story": {
+        "titleLead": "Varför vi bygger",
+        "titleAccent": "blueprnt.",
+        "p1": "Det började med en enkel iakttagelse: de flesta företag saknar en tydlig struktur för hur roller värderas och jämförs. Resultatet blir ofta dåligt anpassat och ni blir intvingade i en standard som inte känns rätt och resultatet blir därefter: ojämställt och en kultur där vi inte kan vara transparenta med hur vi faktiskt arbetar.",
+        "p2": "Vi bestämde oss för att bygga ett verktyg som vänder på det. En plattform där varje roll kan bedömas utifrån samma objektiva kriterier där alla roller kan jämföras genom hela bolaget oavsett om ni är 20 eller 100 personer, anpassade efter just ert bolags unika förutsättningar och värderingar.",
+        "p3": "Idag hjälper vi små och medelstora företag att lägga en strukturell grund för sin jobbarkitektur. Vi tror på transparens, rättvisa och att varje anställd ska förstå varför deras roll värderas som den gör."
+      },
+      "team": {
+        "heading": "Vårt team.",
+        "lede": "Ett litet, passionerat team med bred erfarenhet av HR, tech, produktutveckling och organisationsdesign.",
+        "members": {
+          "founders": {
+            "name": "Grundarna",
+            "role": "Produkt & Strategi",
+            "bio": "Med bakgrund inom både teknik och HR har vi sett hur jobbarkitektur kan både hjälpa och hindra organisationer. Blueprnt är vårt svar."
+          },
+          "development": {
+            "name": "Utvecklingsteamet",
+            "role": "Teknik & Design",
+            "bio": "Vi bygger verktyg som är lika kraftfulla bakom kulisserna som de är enkla att använda. Varje detalj är genomtänkt."
+          },
+          "success": {
+            "name": "Kundframgång",
+            "role": "Implementation & Support",
+            "bio": "Från första kontakt till färdig modell finns vi vid er sida. Er framgång är vår framgång."
+          }
+        }
+      },
+      "cta": {
+        "heading": "Vill ni veta mer?",
+        "lede": "Vi älskar att prata om jobbarkitektur, lönetransparens och hur organisationer kan växa med rätt struktur. Hör av er!"
+      }
+    },
+    "footer": {
+      "tagline": "Strukturerad rollvärdering och bandindelning: grundlagret för EU:s lönetransparensdirektiv.",
+      "rights": "© {year} Blueprnt · HR Tech"
+    },
+    "language": {
+      "label": "Språk"
     }
   },
   "dashboard": {

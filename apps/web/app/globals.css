@@ -1,0 +1,60 @@
+@import "@workspace/ui/globals.css";
+
+/* Marketing theme layer: shared shadcn variables remapped to the Lovable
+   variant's palette, plus marketing-only tokens. packages/ui components pick
+   these up with no per-call-site overrides. Light only (no dark mode). */
+
+/* Marketing-only tokens: bg-brand, text-pop, border-hairline, bg-surface,
+   bg-ink / text-ink-foreground, font-display. Declared here; resolved from
+   :root below so the single :root block is the source of truth. */
+@theme inline {
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-pop: var(--pop);
+  --color-pop-foreground: var(--pop-foreground);
+  --color-surface: var(--surface);
+  --color-hairline: var(--hairline);
+  --color-ink: var(--ink);
+  --color-ink-foreground: var(--ink-foreground);
+  /* Space Grotesk loaded in layout.tsx as --font-display-next */
+  --font-display: var(--font-display-next), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Override the shared :root values with the marketing palette. The shared
+   @theme inline already maps --color-primary -> var(--primary) etc., so
+   updating :root here is enough for all shadcn utilities and components.
+   primary = ink-black (Button variant="default" renders black on white).
+   accent = rose tint (shadcn accent-foreground rose for hover states). */
+:root {
+  --radius: 1rem;
+
+  --background: #ffffff;
+  --foreground: #09090b;
+  --ink: #09090b;
+  --ink-foreground: #ffffff;
+  --surface: #fafafa;
+  --hairline: #e4e4e7;
+
+  --brand: #f43f5e;
+  --brand-foreground: #ffffff;
+  --pop: #34d399;
+  --pop-foreground: #052e1a;
+
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  --popover: #ffffff;
+  --popover-foreground: #09090b;
+  --primary: #09090b;
+  --primary-foreground: #ffffff;
+  --secondary: #fafafa;
+  --secondary-foreground: #09090b;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --accent: #fff1f2;
+  --accent-foreground: #f43f5e;
+  --destructive: #f43f5e;
+  --destructive-foreground: #ffffff;
+  --border: #e4e4e7;
+  --input: #e4e4e7;
+  --ring: #f43f5e;
+}
