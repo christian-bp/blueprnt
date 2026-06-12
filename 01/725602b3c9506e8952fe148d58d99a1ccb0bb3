@@ -1,0 +1,27 @@
+apps/web/components/model-usp.tsx
+  s_fa45b53f6da63b::t_d7351dd36a8f5a 12,27
+apps/web/components/approach.tsx
+  s_fa45b53f6da63b::t_0de238a887ec2a 12-17,19-22,39
+apps/web/components/framework-steps.tsx
+  s_fa45b53f6da63b::t_ad57955cff9e1f 99-100
+apps/web/components/reveal.tsx
+  s_fa45b53f6da63b::t_156dbf45bf577d 1-53
+apps/web/components/hero.tsx
+  s_fa45b53f6da63b::t_ec4a5484dcf6f5 27-44,57,59,69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "01725602b3c9506e8952fe148d58d99a1ccb0bb3",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
