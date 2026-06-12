@@ -76,11 +76,11 @@
   },
   "web": {
     "meta": {
-      "landingTitle": "Blueprnt – Job architecture and pay model",
+      "landingTitle": "Blueprnt | Job architecture and pay model",
       "landingDescription": "Blueprnt builds transparent, scalable models for job architecture and compensation, tailored to Swedish pay equity audits and the EU Pay Transparency Directive.",
-      "howTitle": "How it works – Blueprnt",
+      "howTitle": "How it works | Blueprnt",
       "howDescription": "Five steps from zero to a finished job architecture: template, model, blind rating, automatic bands, and calibration with anchor roles.",
-      "aboutTitle": "About us – Blueprnt",
+      "aboutTitle": "About us | Blueprnt",
       "aboutDescription": "Meet the team behind Blueprnt. We build transparent models for job architecture and compensation."
     },
     "nav": {
@@ -90,7 +90,6 @@
       "cta": "Build your framework"
     },
     "hero": {
-      "badge": "Get ready",
       "titleLead": "The job architecture that creates",
       "titleAccent": "value.",
       "lede": "Compare roles for real, based on how your company works. Blueprnt helps you build a job architecture where roles are valued and compared on the same basis across the whole organization.",
@@ -101,7 +100,6 @@
     "framework": {
       "heading": "Role evaluation, frameworks, rethought.",
       "lede": "We replace ambiguity with a configurable evaluation model. Roles are weighted by complexity, impact, and skill requirements, not tenure, title inflation, or a standard that does not fit your philosophy. This is the model shaped around what your company actually values.",
-      "kicker": "[01] OBJECTIVITY",
       "steps": {
         "factors": {
           "step": "01",
@@ -126,7 +124,6 @@
       "titleAccent": "configurable",
       "titleTail": "evaluation model, shaped around what your company actually values.",
       "lede": "The model is built from your context and what drives your company forward, so the structure becomes clear, relevant, and useful in practice. Easy to get started with, intuitive to use, and free of heavy implementation.",
-      "kicker": "[03] GET STARTED",
       "cards": {
         "start": {
           "label": "Feature _A",
@@ -164,7 +161,6 @@
     "approach": {
       "heading": "How we work.",
       "lede": "One engagement in four steps: simplicity is our guiding principle.",
-      "kicker": "[02] METHODOLOGY",
       "steps": {
         "contact": {
           "label": "STEP_01",
@@ -226,7 +222,6 @@
       }
     },
     "about": {
-      "badge": "About Blueprnt",
       "heading": "Who we are.",
       "lede": "We are a team based in Trollhättan, Sweden, with deep expertise in both HR and software engineering. Our hands-on, theoretical, and strategic experience gives us a unique understanding of the challenges you face every day. With that insight we are now launching blueprnt, the first in a line of innovative solutions set to shape the future of HR work. Our products grow out of real needs and challenges we have experienced first-hand.",
       "story": {

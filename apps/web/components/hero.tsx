@@ -1,4 +1,5 @@
 import Image from "next/image"
+import { Reveal } from "@/components/reveal"
 import { useTranslations } from "next-intl"
 
 const FOCUS_RING =
@@ -23,20 +24,24 @@ export function Hero() {
       <div className="relative mx-auto max-w-7xl">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div className="space-y-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-pop/30 bg-pop/15 px-4 py-1.5 font-extrabold text-[11px] text-emerald-700 uppercase tracking-[0.2em]">
-              <span className="size-1.5 rounded-full bg-pop" />
-              {t("badge")}
-            </div>
-            <h1 className="font-display font-extrabold text-5xl text-foreground leading-[1.02] tracking-tight md:text-7xl">
-              {t("titleLead")}{" "}
-              <span className="bg-gradient-to-r from-brand to-orange-400 bg-clip-text text-transparent">
-                {t("titleAccent")}
-              </span>
-            </h1>
-            <p className="max-w-xl font-medium text-lg text-muted-foreground leading-relaxed md:text-xl">
-              {t("lede")}
-            </p>
-            <div className="flex flex-wrap gap-4 pt-2">
+            <Reveal mode="load">
+              <h1 className="font-display font-extrabold text-5xl text-foreground leading-[1.02] tracking-tight md:text-7xl">
+                {t("titleLead")}{" "}
+                <span className="bg-gradient-to-r from-brand to-orange-400 bg-clip-text text-transparent">
+                  {t("titleAccent")}
+                </span>
+              </h1>
+            </Reveal>
+            <Reveal mode="load" delay={0.08}>
+              <p className="max-w-xl font-medium text-lg text-muted-foreground leading-relaxed md:text-xl">
+                {t("lede")}
+              </p>
+            </Reveal>
+            <Reveal
+              mode="load"
+              delay={0.16}
+              className="flex flex-wrap gap-4 pt-2"
+            >
               <a
                 href={`mailto:${tContact("email")}`}
                 className={`rounded-2xl bg-brand px-8 py-4 font-bold text-brand-foreground shadow-rose-200 shadow-xl transition-[translate] duration-300 hover:-translate-y-0.5 ${FOCUS_RING}`}
@@ -49,9 +54,9 @@ export function Hero() {
               >
                 {t("ctaSecondary")}
               </a>
-            </div>
+            </Reveal>
           </div>
-          <div className="relative">
+          <Reveal mode="load" delay={0.2} className="relative">
             <Image
               src="/hero-architecture.png"
               alt={t("imageAlt")}
@@ -61,7 +66,7 @@ export function Hero() {
               sizes="(min-width: 1024px) 50vw, 100vw"
               className="aspect-[6/5] w-full object-contain [mask-image:radial-gradient(ellipse_at_center,black_55%,transparent_85%)]"
             />
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>

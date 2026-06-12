@@ -51,7 +51,6 @@ describe("landing sections", () => {
     expect(
       screen.getByRole("heading", { name: web.framework.heading })
     ).toBeTruthy()
-    expect(screen.getByText(web.framework.kicker)).toBeTruthy()
     for (const step of Object.values(web.framework.steps)) {
       expect(screen.getByRole("heading", { name: step.title })).toBeTruthy()
     }

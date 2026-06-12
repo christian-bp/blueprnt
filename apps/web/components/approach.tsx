@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl"
+import { Reveal } from "@/components/reveal"
 
 const STEPS = ["contact", "walkthrough", "handshake", "start"] as const
 
@@ -8,19 +9,17 @@ export function Approach() {
   return (
     <section id="approach" className="py-24 md:py-28">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="mb-14 flex flex-col justify-between gap-8 md:flex-row md:items-end">
-          <div className="max-w-2xl space-y-3">
-            <h2 className="font-display font-extrabold text-4xl text-foreground tracking-tight md:text-5xl">
-              {t("heading")}
-            </h2>
-            <p className="text-lg text-muted-foreground">{t("lede")}</p>
-          </div>
-          <div className="whitespace-nowrap font-mono text-brand text-xs tracking-widest">
-            {t("kicker")}
-          </div>
-        </div>
+        <Reveal className="mb-14 max-w-2xl space-y-3">
+          <h2 className="font-display font-extrabold text-4xl text-foreground tracking-tight md:text-5xl">
+            {t("heading")}
+          </h2>
+          <p className="text-lg text-muted-foreground">{t("lede")}</p>
+        </Reveal>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Reveal
+          delay={0.08}
+          className="grid gap-6 md:grid-cols-2 lg:grid-cols-4"
+        >
           {STEPS.map((key) => (
             <div
               key={key}
@@ -37,7 +36,7 @@ export function Approach() {
               </p>
             </div>
           ))}
-        </div>
+        </Reveal>
       </div>
     </section>
   )

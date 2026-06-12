@@ -28,9 +28,8 @@ describe("about page sections", () => {
     expect(h1.textContent).toBe(web.about.heading)
   })
 
-  it("hero renders the badge and lede", () => {
+  it("hero renders the heading and lede", () => {
     renderSection(<AboutHero />)
-    expect(screen.getByText(web.about.badge)).toBeTruthy()
     expect(screen.getByText(web.about.lede)).toBeTruthy()
   })
 

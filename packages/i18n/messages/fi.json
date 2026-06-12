@@ -76,11 +76,11 @@
   },
   "web": {
     "meta": {
-      "landingTitle": "Blueprnt – Tehtäväarkkitehtuuri ja palkkamalli",
+      "landingTitle": "Blueprnt | Tehtäväarkkitehtuuri ja palkkamalli",
       "landingDescription": "Blueprnt rakentaa läpinäkyviä ja skaalautuvia malleja tehtäväarkkitehtuuriin ja palkitsemiseen, sovitettuna ruotsalaiseen palkkakartoitukseen ja EU:n palkka-avoimuusdirektiiviin.",
-      "howTitle": "Näin se toimii – Blueprnt",
+      "howTitle": "Näin se toimii | Blueprnt",
       "howDescription": "Viisi vaihetta nollasta valmiiseen tehtäväarkkitehtuuriin: pohja, malli, sokea arviointi, automaattiset luokat ja kalibrointi ankkurirooleilla.",
-      "aboutTitle": "Tietoa meistä – Blueprnt",
+      "aboutTitle": "Tietoa meistä | Blueprnt",
       "aboutDescription": "Tutustu Blueprntin takana olevaan tiimiin. Rakennamme läpinäkyviä malleja tehtäväarkkitehtuuriin ja palkitsemiseen."
     },
     "nav": {
@@ -90,7 +90,6 @@
       "cta": "Rakentakaa viitekehyksenne"
     },
     "hero": {
-      "badge": "Valmistautukaa",
       "titleLead": "Tehtäväarkkitehtuuri, joka luo",
       "titleAccent": "arvoa.",
       "lede": "Vertailkaa rooleja oikeasti, sen pohjalta miten yrityksenne toimii. Blueprnt auttaa rakentamaan tehtäväarkkitehtuurin, jossa roolit arvioidaan ja niitä verrataan samalta pohjalta koko organisaatiossa.",
@@ -101,7 +100,6 @@
     "framework": {
       "heading": "Roolien arviointi, viitekehys, uudelleenajateltuna.",
       "lede": "Korvaamme epäselvyyden konfiguroitavalla arviointimallilla. Roolit painotetaan monimutkaisuuden, vaikutuksen ja osaamisvaatimusten mukaan, ei työsuhteen keston, titteli-inflaation tai sellaisen standardin mukaan, joka ei sovi teidän filosofiaanne. Tämä on malli, joka mukautuu siihen, mitä yrityksenne todella arvostaa.",
-      "kicker": "[01] OBJEKTIIVISUUS",
       "steps": {
         "factors": {
           "step": "01",
@@ -126,7 +124,6 @@
       "titleAccent": "konfiguroitava",
       "titleTail": "arviointimalli, mukautettu siihen, mitä yrityksenne todella arvostaa.",
       "lede": "Malli rakennetaan teidän kontekstistanne ja siitä, mikä vie juuri teidän yritystänne eteenpäin, jotta rakenteesta tulee selkeä, relevantti ja käytännössä hyödyllinen. Helppo ottaa käyttöön, intuitiivinen käyttää ja ilman raskasta käyttöönottoprojektia.",
-      "kicker": "[03] ALOITA",
       "cards": {
         "start": {
           "label": "Feature _A",
@@ -164,7 +161,6 @@
     "approach": {
       "heading": "Näin työskentelemme.",
       "lede": "Toimeksianto neljässä vaiheessa: yksinkertaisuus on johtotähtemme.",
-      "kicker": "[02] METODIIKKA",
       "steps": {
         "contact": {
           "label": "VAIHE_01",
@@ -226,7 +222,6 @@
       }
     },
     "about": {
-      "badge": "Tietoa Blueprntistä",
       "heading": "Keitä me olemme.",
       "lede": "Olemme Trollhättanissa toimiva tiimi, jolla on syvää osaamista sekä HR:stä että ohjelmistokehityksestä. Käytännön, teorian ja strategian kokemuksemme ansiosta ymmärrämme ainutlaatuisella tavalla haasteet, joita kohtaatte arjessa. Tällä ymmärryksellä lanseeraamme nyt blueprntin: ensimmäisen sarjassa innovatiivisia ratkaisuja, jotka muovaavat tulevaisuuden HR-työtä. Tuotteemme ovat syntyneet todellisista tarpeista ja haasteista, jotka olemme itse kokeneet käytännössä.",
       "story": {

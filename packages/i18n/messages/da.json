@@ -76,11 +76,11 @@
   },
   "web": {
     "meta": {
-      "landingTitle": "Blueprnt – Jobarkitektur og lønmodel",
+      "landingTitle": "Blueprnt | Jobarkitektur og lønmodel",
       "landingDescription": "Blueprnt bygger transparente og skalerbare modeller for jobarkitektur og kompensation, tilpasset svensk lønkortlægning og EU's løngennemsigtighedsdirektiv.",
-      "howTitle": "Sådan fungerer det – Blueprnt",
+      "howTitle": "Sådan fungerer det | Blueprnt",
       "howDescription": "Fem trin fra nul til færdig jobarkitektur: skabelon, model, blind vurdering, automatiske bånd og kalibrering med ankerroller.",
-      "aboutTitle": "Om os – Blueprnt",
+      "aboutTitle": "Om os | Blueprnt",
       "aboutDescription": "Mød holdet bag Blueprnt. Vi bygger transparente modeller for jobarkitektur og kompensation."
     },
     "nav": {
@@ -90,7 +90,6 @@
       "cta": "Byg jeres rammeværk"
     },
     "hero": {
-      "badge": "Gør jer klar",
       "titleLead": "Jobarkitekturen der skaber",
       "titleAccent": "værdi.",
       "lede": "Sammenlign roller på et reelt grundlag, ud fra hvordan jeres virksomhed fungerer. Blueprnt hjælper jer med at bygge en jobarkitektur, hvor roller vurderes og sammenlignes på samme grundlag i hele organisationen.",
@@ -101,7 +100,6 @@
     "framework": {
       "heading": "Rollevurdering, rammeværk, gentænkt.",
       "lede": "Vi erstatter uklarhed med en konfigurerbar vurderingsmodel. Roller vægtes ud fra kompleksitet, indflydelse og kompetencekrav, ikke anciennitet, titelinflation eller en standard, der ikke passer til jeres filosofi. Det er modellen, der er tilpasset det, jeres virksomhed faktisk værdsætter.",
-      "kicker": "[01] OBJEKTIVITET",
       "steps": {
         "factors": {
           "step": "01",
@@ -126,7 +124,6 @@
       "titleAccent": "konfigurerbar",
       "titleTail": "vurderingsmodel, tilpasset det, jeres virksomhed faktisk værdsætter.",
       "lede": "Modellen bygges ud fra jeres kontekst og det, der driver netop jeres virksomhed fremad, så strukturen bliver tydelig, relevant og anvendelig i praksis. Nemt at komme i gang med, intuitivt at bruge og uden tung implementering.",
-      "kicker": "[03] KOM I GANG",
       "cards": {
         "start": {
           "label": "Feature _A",
@@ -164,7 +161,6 @@
     "approach": {
       "heading": "Sådan arbejder vi.",
       "lede": "En opgave i fire trin: enkelhed er vores ledeord.",
-      "kicker": "[02] METODIK",
       "steps": {
         "contact": {
           "label": "TRIN_01",
@@ -226,7 +222,6 @@
       }
     },
     "about": {
-      "badge": "Om Blueprnt",
       "heading": "Hvem er vi.",
       "lede": "Vi er et team baseret i Trollhättan med dyb ekspertise inden for både HR og systemudvikling. Takket være vores praktiske, teoretiske og strategiske erfaring har vi en unik forståelse for de udfordringer, I møder i hverdagen. Det er med den indsigt, vi nu lancerer blueprnt: den første i en række innovative løsninger, der skal forme fremtidens HR-arbejde. Vores produkter udspringer af reelle behov og udfordringer, vi selv har oplevet i praksis.",
       "story": {

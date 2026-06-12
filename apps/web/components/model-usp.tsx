@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl"
+import { Reveal } from "@/components/reveal"
 
 const CARDS = ["start", "implementation", "independence", "exit"] as const
 
@@ -8,7 +9,7 @@ export function ModelUsp() {
   return (
     <section id="model" className="py-24 md:py-28">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="mb-14 flex flex-col justify-between gap-8 md:flex-row md:items-end">
+        <Reveal className="mb-14">
           <div className="max-w-3xl space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-brand/15 bg-accent px-4 py-1.5 font-extrabold text-[11px] text-brand uppercase tracking-[0.2em]">
               <span className="size-1.5 rounded-full bg-brand" />
@@ -23,29 +24,28 @@ export function ModelUsp() {
               {t("lede")}
             </p>
           </div>
-          <div className="whitespace-nowrap font-mono text-brand text-xs tracking-widest">
-            {t("kicker")}
-          </div>
-        </div>
+        </Reveal>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          {CARDS.map((key) => (
-            <div
-              key={key}
-              className="rounded-3xl border border-hairline bg-surface p-10 transition-colors hover:border-brand/30 hover:bg-background"
-            >
-              <div className="mb-4 font-mono text-[10px] text-muted-foreground/60 uppercase tracking-widest">
-                {t(`cards.${key}.label`)}
+        <Reveal delay={0.08}>
+          <div className="grid gap-6 md:grid-cols-2">
+            {CARDS.map((key) => (
+              <div
+                key={key}
+                className="rounded-3xl border border-hairline bg-surface p-10 transition-colors hover:border-brand/30 hover:bg-background"
+              >
+                <div className="mb-4 font-mono text-[10px] text-muted-foreground/60 uppercase tracking-widest">
+                  {t(`cards.${key}.label`)}
+                </div>
+                <h3 className="mb-3 font-bold font-display text-foreground text-xl">
+                  {t(`cards.${key}.title`)}
+                </h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {t(`cards.${key}.body`)}
+                </p>
               </div>
-              <h3 className="mb-3 font-bold font-display text-foreground text-xl">
-                {t(`cards.${key}.title`)}
-              </h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                {t(`cards.${key}.body`)}
-              </p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </Reveal>
       </div>
     </section>
   )
