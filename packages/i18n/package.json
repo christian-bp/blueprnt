@@ -24,9 +24,6 @@
   "exports": {
     ".": "./src/index.ts",
     "./routing": "./src/routing.ts",
-    "./navigation": "./src/navigation.ts",
-    "./request": "./src/request.ts",
-    "./middleware": "./src/middleware.ts",
     "./messages/*": "./messages/*.json"
   }
 }

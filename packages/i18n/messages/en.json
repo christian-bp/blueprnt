@@ -74,13 +74,6 @@
       "approved": "Approved"
     }
   },
-  "web": {
-    "home": {
-      "title": "blueprnt",
-      "tagline": "Structured role evaluation and banding: the foundation layer for the EU Pay Transparency Directive.",
-      "cta": "Get started"
-    }
-  },
   "dashboard": {
     "title": "blueprnt",
     "nav": {

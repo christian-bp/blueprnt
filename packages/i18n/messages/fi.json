@@ -74,13 +74,6 @@
       "approved": "Hyväksytty"
     }
   },
-  "web": {
-    "home": {
-      "title": "blueprnt",
-      "tagline": "Jäsennelty roolien arviointi ja luokittelu: perusta EU:n palkka-avoimuusdirektiiville.",
-      "cta": "Aloita"
-    }
-  },
   "dashboard": {
     "title": "blueprnt",
     "nav": {

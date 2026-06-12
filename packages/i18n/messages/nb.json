@@ -74,13 +74,6 @@
       "approved": "Godkjent"
     }
   },
-  "web": {
-    "home": {
-      "title": "blueprnt",
-      "tagline": "Strukturert rollevurdering og bånding: grunnlaget for EUs lønnstransparensdirektiv.",
-      "cta": "Kom i gang"
-    }
-  },
   "dashboard": {
     "title": "blueprnt",
     "nav": {

@@ -74,13 +74,6 @@
       "approved": "Godkänd"
     }
   },
-  "web": {
-    "home": {
-      "title": "blueprnt",
-      "tagline": "Strukturerad rollvärdering och banding: grundlagret för EU:s lönetransparensdirektiv.",
-      "cta": "Kom igång"
-    }
-  },
   "dashboard": {
     "title": "blueprnt",
     "nav": {
