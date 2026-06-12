@@ -1,0 +1,59 @@
+apps/dashboard/components/roles/role-result-card.tsx
+  s_fa45b53f6da63b::t_ff78117178620e 21,53,55
+apps/dashboard/components/roles/role-rating-card.tsx
+  s_fa45b53f6da63b::t_ff78117178620e 12,48,50
+packages/i18n/messages/nb.json
+  s_fa45b53f6da63b::t_ff78117178620e 454-455
+apps/dashboard/components/rating/rating-result.tsx
+  s_fa45b53f6da63b::t_ff78117178620e 16,85,87,112,114
+apps/dashboard/components/roles/create-role-dialog.tsx
+  s_fa45b53f6da63b::t_ff78117178620e 27,152,154,179,181
+packages/i18n/messages/en.json
+  s_fa45b53f6da63b::t_ff78117178620e 454-455
+apps/dashboard/components/roles/anchor-role-card.tsx
+  s_fa45b53f6da63b::t_ff78117178620e 25,368,370
+packages/i18n/messages/da.json
+  s_fa45b53f6da63b::t_ff78117178620e 454-455
+apps/dashboard/app/(app)/page.tsx
+  s_fa45b53f6da63b::t_ff78117178620e 14,82,84
+packages/i18n/messages/fi.json
+  s_fa45b53f6da63b::t_ff78117178620e 454-455
+apps/dashboard/components/model/model-editor.tsx
+  s_fa45b53f6da63b::t_ff78117178620e 15,154,156,179,181
+apps/dashboard/components/rating/rating-stepper.tsx
+  s_fa45b53f6da63b::t_ff78117178620e 20,126,128
+apps/dashboard/components/help-morph-button.tsx
+  s_fa45b53f6da63b::t_ff78117178620e 1-142
+apps/dashboard/components/onboarding/families-step.tsx
+  s_fa45b53f6da63b::t_ff78117178620e 16,253,255,316,318
+apps/dashboard/components/results/anchor-roles-panel.tsx
+  s_fa45b53f6da63b::t_ff78117178620e 11,49,51
+packages/i18n/messages/sv.json
+  s_fa45b53f6da63b::t_ff78117178620e 454-455
+apps/dashboard/components/help-morph-button.test.tsx
+  s_fa45b53f6da63b::t_5657bec5194120 1-49
+CLAUDE.md
+  s_fa45b53f6da63b::t_ff78117178620e 63
+apps/dashboard/app/(app)/results/page.tsx
+  s_fa45b53f6da63b::t_ff78117178620e 30,101,103
+apps/dashboard/components/model/criterion-form.tsx
+  s_fa45b53f6da63b::t_ff78117178620e 10,110,112
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_fa45b53f6da63b::t_ff78117178620e 10,91,93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "8f05f6c7ee458dfd43b93cb376781851d9818000",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
