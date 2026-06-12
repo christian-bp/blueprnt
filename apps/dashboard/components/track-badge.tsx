@@ -24,8 +24,17 @@ export function TrackBadge({
   className?: string
 }) {
   return (
-    <Badge variant="outline" className={cn(TRACK_TINTS[trackKey], className)}>
-      {name}
+    // Below md the tables get cramped, so the badge falls back to the short
+    // track key (the full name stays reachable via the title tooltip); both
+    // renderings are in the DOM and CSS picks one, so nothing measures or
+    // reflows.
+    <Badge
+      variant="outline"
+      title={name}
+      className={cn(TRACK_TINTS[trackKey], className)}
+    >
+      <span className="max-md:hidden">{name}</span>
+      <span className="md:hidden">{trackKey}</span>
     </Badge>
   )
 }
