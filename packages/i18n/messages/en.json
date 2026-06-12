@@ -109,7 +109,7 @@
     "roles": {
       "heading": "Roles",
       "description": "Job profiles evaluated against your model. Roles, never persons.",
-      "newCta": "New role",
+      "newCta": "Create role",
       "empty": "No roles yet. Create your first role to start evaluating.",
       "table": {
         "title": "Title",

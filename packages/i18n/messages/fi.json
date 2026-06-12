@@ -109,7 +109,7 @@
     "roles": {
       "heading": "Roolit",
       "description": "Tehtäväprofiilit, joita arvioidaan mallinne perusteella. Roolit, ei koskaan henkilöt.",
-      "newCta": "Uusi rooli",
+      "newCta": "Luo rooli",
       "empty": "Ei vielä rooleja. Luo ensimmäinen rooli aloittaaksesi arvioinnin.",
       "table": {
         "title": "Tehtävänimike",

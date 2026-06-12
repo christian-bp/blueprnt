@@ -109,7 +109,7 @@
     "roles": {
       "heading": "Roller",
       "description": "Jobbprofiler som vurderes mot modellen deres. Roller, aldri personer.",
-      "newCta": "Ny rolle",
+      "newCta": "Opprett rolle",
       "empty": "Ingen roller ennå. Opprett den første rollen for å begynne å vurdere.",
       "table": {
         "title": "Tittel",
