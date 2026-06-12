@@ -80,3 +80,11 @@ Convex agent skills for common tasks can be installed by running
 `npx convex ai-files install`.
 
 <!-- convex-ai-end -->
+Project specifics for the Convex block above: the Convex project lives in
+`packages/backend`, so the guidelines file is actually
+`packages/backend/convex/_generated/ai/guidelines.md` and the Convex agent
+skills live in `packages/backend/.agents/skills/`. Update them with
+`bunx convex ai-files update` run FROM `packages/backend`, never from the
+repo root: a root run creates a stray root `convex/` directory and resets
+the marker block above to its generic text. The root `.agents/skills/`
+holds non-Convex skills (shadcn).
