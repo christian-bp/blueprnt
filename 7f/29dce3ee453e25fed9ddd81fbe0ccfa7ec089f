@@ -1,0 +1,21 @@
+apps/dashboard/components/roles/roles-table.tsx
+  s_fa45b53f6da63b::t_977230d059dd47 1-16
+apps/dashboard/components/roles/roles-table.test.tsx
+  s_fa45b53f6da63b::t_88c39b864c0729 1-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "7f29dce3ee453e25fed9ddd81fbe0ccfa7ec089f",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
