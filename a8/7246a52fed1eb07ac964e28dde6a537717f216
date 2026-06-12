@@ -1,0 +1,41 @@
+apps/dashboard/components/model/edit-criterion-dialog.test.tsx
+  s_fa45b53f6da63b::t_515a22dd024328 1-92
+apps/dashboard/components/model/criterion-form.test.tsx
+  s_fa45b53f6da63b::t_515a22dd024328 11-14,16-17,19,22-26,31-36,38,40,46,48-49,54,57-59,61,63-67,70-75,77,85-99,101,103-105,108-111
+apps/dashboard/components/onboarding/criterion-editor.tsx
+  s_fa45b53f6da63b::t_515a22dd024328 13-16,63,138-147,171-175
+apps/dashboard/components/onboarding/criterion-editor.test.tsx
+  s_fa45b53f6da63b::t_515a22dd024328 243
+packages/backend/convex/evaluationModel/criteria.test.ts
+  s_fa45b53f6da63b::t_515a22dd024328 555-668
+apps/dashboard/components/model/criterion-item.tsx
+  s_fa45b53f6da63b::t_515a22dd024328 3-4,71-72,84-87,98,148-163
+packages/backend/convex/evaluationModel/criteria.ts
+  s_fa45b53f6da63b::t_a8e69baed5ddcd 102
+apps/dashboard/components/model/model-editor.tsx
+  s_fa45b53f6da63b::t_515a22dd024328 18-21,87-88,309-318,370-374
+apps/dashboard/components/model/add-criterion-dialog.tsx
+  s_fa45b53f6da63b::t_93f1943e24facb 45-46
+apps/dashboard/components/model/edit-criterion-dialog.tsx
+  s_fa45b53f6da63b::t_799810d0424dc3 4-11,14-17,19-21,23-29,31-32,35-36,39-41,44-68,70-71
+apps/dashboard/components/model/add-criterion-dialog.test.tsx
+  s_fa45b53f6da63b::t_515a22dd024328 80
+apps/dashboard/components/model/criterion-item.test.tsx
+  s_fa45b53f6da63b::t_515a22dd024328 3,7-12,65-80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "a87246a52fed1eb07ac964e28dde6a537717f216",
+  "prompts": {},
+  "sessions": {
+    "s_fa45b53f6da63b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0ac66755-b1d5-4971-b397-e3e43b6ac9f2",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
