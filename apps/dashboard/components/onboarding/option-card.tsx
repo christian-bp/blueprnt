@@ -49,12 +49,16 @@ export function OptionCard({
       transition={{ duration: OPTION_FADE_MS / 1000, ease: "easeOut" }}
       className={cn(
         "relative flex flex-col items-center gap-1 rounded-lg border p-4 text-center transition-colors hover:bg-muted/50",
-        selected && "border-primary bg-primary/5",
+        selected && "border-brand bg-brand/5",
         className
       )}
     >
       {badge !== undefined && (
-        <Badge className="absolute -top-2.5 right-3">{badge}</Badge>
+        // The "recommended" ribbon is a positive accent, so brand it. Call-site
+        // override since Badge's default variant is neutral (bg-primary).
+        <Badge className="absolute -top-2.5 right-3 bg-brand text-brand-foreground">
+          {badge}
+        </Badge>
       )}
       <span className="flex items-center gap-2">
         {media !== undefined && (

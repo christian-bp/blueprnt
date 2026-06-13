@@ -12,6 +12,7 @@ import {
 import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import { LanguageMenuSub } from "@/components/language-menu"
+import { Logo } from "@/components/logo"
 
 // Derive at most two initials from the display name, or fall back to the
 // first letter of the email address, or "?" if neither is available.
@@ -48,7 +49,7 @@ export function OnboardingHeader() {
 
   return (
     <header className="flex h-14 items-center justify-between px-6">
-      <span className="font-semibold text-lg">{t("title")}</span>
+      <Logo label={t("title")} className="h-8 text-brand" />
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label={t("onboarding.accountMenu")}

@@ -134,9 +134,9 @@ export function RatingStepper({
               className={cn(
                 "size-1.5 rounded-full",
                 dotIndex < index
-                  ? "bg-primary"
+                  ? "bg-brand"
                   : dotIndex === index
-                    ? "bg-primary/60"
+                    ? "bg-brand/60"
                     : "bg-muted"
               )}
             />
@@ -181,7 +181,7 @@ export function RatingStepper({
                       className={cn(
                         "flex w-full items-baseline gap-3 rounded-md border p-3 text-left text-sm transition-colors",
                         isSelected
-                          ? "border-primary bg-primary/5"
+                          ? "border-brand bg-brand/5"
                           : "hover:bg-muted/50"
                       )}
                       onClick={() =>
@@ -194,7 +194,7 @@ export function RatingStepper({
                       <span
                         className={cn(
                           "font-medium tabular-nums",
-                          isSelected ? "text-primary" : "text-muted-foreground"
+                          isSelected ? "text-brand" : "text-muted-foreground"
                         )}
                       >
                         {anchor.level}

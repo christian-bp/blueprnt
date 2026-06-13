@@ -84,7 +84,8 @@ export default function OverviewPage() {
                 </HelpMorphButton>
               )}
             </div>
-            <CardTitle className="text-3xl tabular-nums">
+            {/* Counts are neutral values, not identity: keep ink, not brand. */}
+            <CardTitle className="text-3xl text-foreground tabular-nums">
               {loading ? <Skeleton className="h-9 w-12" /> : card.value}
             </CardTitle>
             <Link

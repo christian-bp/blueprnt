@@ -33,7 +33,9 @@ export function BandOverview({
             </span>
             <span className="relative h-4 flex-1 overflow-hidden rounded-sm bg-muted">
               <motion.span
-                className="absolute inset-y-0 left-0 rounded-sm bg-primary/70"
+                // Distribution is neutral DATA, not an action: keep it ink, not
+                // brand. Branding a band-count bar pink would read as "flagged".
+                className="absolute inset-y-0 left-0 rounded-sm bg-foreground/70"
                 initial={false}
                 animate={{ width: `${(entry.count / max) * 100}%` }}
                 transition={SPRING}

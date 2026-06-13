@@ -78,10 +78,10 @@ describe("OnboardingHeader", () => {
     cleanup()
   })
 
-  it("renders the blueprnt text logo", () => {
+  it("renders the blueprnt logo", () => {
     renderHeader()
-    // dashboard.title = "blueprnt"
-    expect(screen.getByText("blueprnt")).toBeDefined()
+    // The wordmark is the Logo SVG, labelled with dashboard.title = "blueprnt".
+    expect(screen.getByRole("img", { name: "blueprnt" })).toBeDefined()
   })
 
   it("renders the avatar with user initials derived from the display name", () => {

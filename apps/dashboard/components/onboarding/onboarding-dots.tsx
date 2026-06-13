@@ -52,10 +52,8 @@ export function OnboardingDots({
               transition={SPRING}
               className={cn(
                 "block h-2 rounded-full",
-                isActive ? "w-6 bg-primary" : "w-2",
-                !isActive &&
-                  reachable &&
-                  "bg-primary/40 group-hover:bg-primary/60",
+                isActive ? "w-6 bg-brand" : "w-2",
+                !isActive && reachable && "bg-brand/40 group-hover:bg-brand/60",
                 !reachable && "bg-muted"
               )}
             />
