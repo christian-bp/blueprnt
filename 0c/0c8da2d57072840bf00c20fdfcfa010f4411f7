@@ -1,0 +1,61 @@
+docs/PLAN-V1.md
+  s_288cc0dfb82db8::t_7d445040c9bd85 98
+apps/dashboard/components/model/model-editor.tsx
+  s_288cc0dfb82db8::t_dbe5d09fa37aef 292-298,300-303
+docs/contexts/assessment/CONTEXT.md
+  s_288cc0dfb82db8::t_c4aaeaf6927bb8 69
+  s_288cc0dfb82db8::t_7350b892ab4b4b 37
+apps/dashboard/components/model/criterion-item.tsx
+  s_288cc0dfb82db8::t_1624661496bc49 156
+  s_288cc0dfb82db8::t_3b5bcc5d24308b 152-155
+apps/dashboard/components/model/criterion-form.test.tsx
+  s_288cc0dfb82db8::t_d7f40d5d7b17a3 117-165
+packages/i18n/messages/da.json
+  s_288cc0dfb82db8::t_a340c63a600417 389-390
+  s_288cc0dfb82db8::t_220402a12aa0f3 443-444
+  s_288cc0dfb82db8::t_d3573ea428d3c8 388
+  s_288cc0dfb82db8::t_825e7b107f8c66 391-395
+apps/dashboard/components/model/model-editor.test.tsx
+  s_288cc0dfb82db8::t_f44dd67b76d022 74-76
+  s_288cc0dfb82db8::t_c0a2276961455e 1-73,77-79
+packages/i18n/messages/en.json
+  s_288cc0dfb82db8::t_a68637c352530c 388
+  s_288cc0dfb82db8::t_1410529c885829 443-444
+  s_288cc0dfb82db8::t_bd2132dfbe0b8e 391-395
+  s_288cc0dfb82db8::t_14b7b1962397e5 389-390
+packages/i18n/messages/sv.json
+  s_288cc0dfb82db8::t_09bb50bf43b00d 443-444
+  s_288cc0dfb82db8::t_d5339a3d5e0c0e 391-395
+  s_288cc0dfb82db8::t_022358f06ed698 389-390
+  s_288cc0dfb82db8::t_8559a09606c1b0 388
+docs/contexts/evaluation-model/CONTEXT.md
+  s_288cc0dfb82db8::t_5d7d4ad05dde4c 30-31
+packages/i18n/messages/nb.json
+  s_288cc0dfb82db8::t_0cd3ea371aa333 443-444
+  s_288cc0dfb82db8::t_213b3a7102858e 391-395
+  s_288cc0dfb82db8::t_e49f781beee7c8 389-390
+  s_288cc0dfb82db8::t_89016733058a36 388
+packages/i18n/messages/fi.json
+  s_288cc0dfb82db8::t_6978d27479766c 388
+  s_288cc0dfb82db8::t_fae6705b1457b2 443-444
+  s_288cc0dfb82db8::t_51dcafe82b8b83 391-395
+  s_288cc0dfb82db8::t_af3cc721274aba 389-390
+apps/dashboard/components/model/criterion-form.tsx
+  s_288cc0dfb82db8::t_b0290e06a5b625 115-179
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "0c0c8da2d57072840bf00c20fdfcfa010f4411f7",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
