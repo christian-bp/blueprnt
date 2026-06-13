@@ -1,0 +1,95 @@
+apps/dashboard/components/onboarding/families-step.tsx
+  s_288cc0dfb82db8::t_90e5df2fff3937 40-41
+  s_288cc0dfb82db8::t_8ad1ae389bac39 334-338
+  s_288cc0dfb82db8::t_cc25ace5c4f70c 82-84
+  s_288cc0dfb82db8::t_33c070b37cf4a8 170-171
+apps/dashboard/components/onboarding/score-step.test.tsx
+  s_288cc0dfb82db8::t_d0fc1f91f62417 1-114,116-120,124-170,175-178,180-181
+  s_288cc0dfb82db8::t_91bac650ceb0eb 115,121-123
+  s_288cc0dfb82db8::t_8ba8289aed15e6 171-174,179
+apps/dashboard/components/onboarding/score-role.tsx
+  s_288cc0dfb82db8::t_3545fe90106ca5 36,48-70,75-77
+  s_288cc0dfb82db8::t_cec895e2f9bebc 107-122
+  s_288cc0dfb82db8::t_9e2f7c702c2299 1-2,4-12,14-18,23-33,35,37-47,71-74,78-106,123-189
+  s_288cc0dfb82db8::t_910f40b2567eb8 3,13
+  s_288cc0dfb82db8::t_15dd01946f6b4f 34
+  s_288cc0dfb82db8::t_aa9ebe17fb9393 19-22
+apps/dashboard/components/onboarding/score-role.test.tsx
+  s_288cc0dfb82db8::t_61ce26052f7391 193-220
+  s_288cc0dfb82db8::t_e6ec82e12c1cd8 1-54,56-135,137,139,141,148-151,154,159-192,221-234
+  s_288cc0dfb82db8::t_94861f0cbf629d 136,138,140,142-147,152-153,155-158
+  s_288cc0dfb82db8::t_2545869b637a98 55
+packages/i18n/messages/en.json
+  s_288cc0dfb82db8::t_2fa1085bfd95b3 332-333
+  s_288cc0dfb82db8::t_80888801cd4e42 485-486
+  s_288cc0dfb82db8::t_cc0ed69f3be47a 96-101
+  s_288cc0dfb82db8::t_d3bfba2cd8d998 363-384
+packages/backend/convex/accounts/onboarding.ts
+  s_288cc0dfb82db8::t_e2020feef9613e 66-69,78
+  s_288cc0dfb82db8::t_0d71a21799e48f 47
+  s_288cc0dfb82db8::t_756f53e5077b54 30
+packages/i18n/messages/nb.json
+  s_288cc0dfb82db8::t_7cf0564e343b23 96-101
+  s_288cc0dfb82db8::t_8259dbf678281b 485-486
+  s_288cc0dfb82db8::t_d659595334b144 332-333
+  s_288cc0dfb82db8::t_2b1361443e0768 363-384
+packages/i18n/messages/da.json
+  s_288cc0dfb82db8::t_9c9db6980170ae 96-101
+  s_288cc0dfb82db8::t_1a15a3eb439dc9 363-384
+  s_288cc0dfb82db8::t_c2239ace3130bd 485-486
+  s_288cc0dfb82db8::t_563758da49d896 332-333
+apps/dashboard/components/onboarding/onboarding-wizard.test.tsx
+  s_288cc0dfb82db8::t_48d3f30af1ccb1 89-99
+  s_288cc0dfb82db8::t_a505ba73607baa 442-498
+packages/i18n/messages/sv.json
+  s_288cc0dfb82db8::t_46e53e77e90875 96-101
+  s_288cc0dfb82db8::t_8658f6da62dbf1 485-486
+  s_288cc0dfb82db8::t_00b36c001170a5 363-384
+  s_288cc0dfb82db8::t_473020d548f489 332-333
+apps/dashboard/components/onboarding/score-step.tsx
+  s_288cc0dfb82db8::t_4410100239eb4a 31
+  s_288cc0dfb82db8::t_866f1fca515423 1-30,32-61,65-196
+  s_288cc0dfb82db8::t_493b4181f3bd2d 62-64
+apps/dashboard/app/(app)/page.tsx
+  s_288cc0dfb82db8::t_cfa5c482c2f561 4
+  s_288cc0dfb82db8::t_7b5af4cab58082 27-31
+  s_288cc0dfb82db8::t_8755ababde21d4 79-81,83-89,92-120
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_288cc0dfb82db8::t_3d7a5795cf4d9f 450,452,459,464,466,471-472
+  s_288cc0dfb82db8::t_54225e95fc015a 341,348-349,358,361
+  s_288cc0dfb82db8::t_575e0ecaf17aed 266,284
+  s_288cc0dfb82db8::t_7086e5e45a9999 229,244
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_288cc0dfb82db8::t_498366c8ee2aae 40-41
+  s_288cc0dfb82db8::t_7c950a9bb72728 16,22
+  s_288cc0dfb82db8::t_44f363ccea8cc5 100-107
+  s_288cc0dfb82db8::t_0f306a2e753504 120-122,128-142
+packages/backend/convex/accounts/organization.test.ts
+  s_288cc0dfb82db8::t_8ad6933594ba5c 200-253
+packages/i18n/messages/fi.json
+  s_288cc0dfb82db8::t_9841e6c53916cc 332-333
+  s_288cc0dfb82db8::t_174636ee128e26 96-101
+  s_288cc0dfb82db8::t_5f1bf489c9aad1 363-384
+  s_288cc0dfb82db8::t_6b5796c3f7ca63 485-486
+packages/backend/convex/accounts/onboarding.test.ts
+  s_288cc0dfb82db8::t_a92f934262637c 30
+  s_288cc0dfb82db8::t_d3e1a253e3fa7f 148-176
+apps/dashboard/app/(app)/page.test.tsx
+  s_288cc0dfb82db8::t_60b6d16843ed84 1-95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "0ca9ad15212b0000ac522026b068e6beb4911140",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
