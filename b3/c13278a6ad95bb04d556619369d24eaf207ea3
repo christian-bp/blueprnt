@@ -1,0 +1,80 @@
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_288cc0dfb82db8::t_57ceb4607e8fa7 523-589
+  s_288cc0dfb82db8::t_b64cc7b8776322 17-19,27-29
+  s_288cc0dfb82db8::t_dcad818b3e691f 590,620-682
+  s_288cc0dfb82db8::t_54fdbab280ed58 111-148
+  s_288cc0dfb82db8::t_5c02d717288c09 591-619
+  s_288cc0dfb82db8::t_39d8b802e59a5c 170,179-182,187-188
+apps/dashboard/components/onboarding/score-step.tsx
+  s_288cc0dfb82db8::t_5f7aa1b3eacd78 67,78-84
+  s_288cc0dfb82db8::t_deb707c10f5ff4 36-38
+packages/backend/convex/assessment/starters.ts
+  s_288cc0dfb82db8::t_9b90290f0899be 367
+  s_288cc0dfb82db8::t_651370efc35d83 248-316
+  s_288cc0dfb82db8::t_6a71c82a3d8b29 155-247,317-366,368-460
+  s_288cc0dfb82db8::t_89419c98c73283 2,5
+packages/i18n/messages/da.json
+  s_288cc0dfb82db8::t_38e938a1345309 362-363
+apps/dashboard/hooks/use-draft-families.test.tsx
+  s_288cc0dfb82db8::t_23ac34be954f71 69-83,88,96-107
+  s_288cc0dfb82db8::t_78605fb379cba3 84-87,89-95
+packages/i18n/messages/fi.json
+  s_288cc0dfb82db8::t_38e938a1345309 362-363
+apps/dashboard/components/onboarding/families-step.tsx
+  s_288cc0dfb82db8::t_02a86dd34e863c 23
+  s_288cc0dfb82db8::t_a9c11507c974cf 32-34,36
+  s_288cc0dfb82db8::t_43dd524c68fccf 323-329,334
+  s_288cc0dfb82db8::t_0f51855857a9ba 486-488,490-499
+  s_288cc0dfb82db8::t_5fbaf727b6f7fe 100-102
+  s_288cc0dfb82db8::t_9dc98f39a6b885 40-55
+  s_288cc0dfb82db8::t_8b1e55778e6c91 320-322,330-333,335-342
+  s_288cc0dfb82db8::t_8eafbe4e39c788 122-147,166-167,169-176,180,182-183,185-187
+  s_288cc0dfb82db8::t_b52444f6344205 148-165,168,177-179,181,184
+  s_288cc0dfb82db8::t_8057472bf290ee 265-267,277,296-298
+  s_288cc0dfb82db8::t_70d07cd1d86258 81-91
+  s_288cc0dfb82db8::t_e543064cf6ce33 268-276
+  s_288cc0dfb82db8::t_7ff4b1f0574d29 12
+  s_288cc0dfb82db8::t_aac56de69b11d5 193-201,205-206
+packages/i18n/messages/en.json
+  s_288cc0dfb82db8::t_38e938a1345309 362-363
+packages/i18n/messages/nb.json
+  s_288cc0dfb82db8::t_38e938a1345309 362-363
+packages/i18n/messages/sv.json
+  s_288cc0dfb82db8::t_38e938a1345309 362-363
+apps/dashboard/lib/family-dnd.ts
+  s_288cc0dfb82db8::t_e60e531c049aa6 112-113,126-146
+  s_288cc0dfb82db8::t_d5d973401c29e0 6-12,15,22
+apps/dashboard/components/onboarding/score-step.test.tsx
+  s_288cc0dfb82db8::t_f88cb82338c99f 181-183,190-200
+  s_288cc0dfb82db8::t_d1997cb0ad0da4 164-166
+  s_288cc0dfb82db8::t_99baa3813fc884 226-229
+  s_288cc0dfb82db8::t_71b25589cb66c9 146-148
+  s_288cc0dfb82db8::t_5d404e041c4e19 244-246
+  s_288cc0dfb82db8::t_9a813a25eecc3f 68-89,91
+  s_288cc0dfb82db8::t_98cbd735213e6f 209-211
+  s_288cc0dfb82db8::t_c2a95c5ea6b7bc 121-124
+  s_288cc0dfb82db8::t_98622ed17b3feb 106,109
+apps/dashboard/hooks/use-draft-families.ts
+  s_288cc0dfb82db8::t_c2bda9abe6acb6 43,55-58,62,80-82,84
+  s_288cc0dfb82db8::t_deaa539f3a5394 3,5-9,11-13,15,17-25
+packages/backend/convex/assessment/starters.test.ts
+  s_288cc0dfb82db8::t_f476cea20e67ad 613-854
+  s_288cc0dfb82db8::t_b3ae3aeb9d8b06 165-612,855
+  s_288cc0dfb82db8::t_d7795d1c081888 7-8,12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b3c13278a6ad95bb04d556619369d24eaf207ea3",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
