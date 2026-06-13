@@ -1,0 +1,23 @@
+docs/superpowers/plans/2026-06-13-slim-role-profile.md
+  s_288cc0dfb82db8::t_2402d9523107f1 1-695
+docs/superpowers/plans/2026-06-13-model-surface-clarity.md
+  s_288cc0dfb82db8::t_2402d9523107f1 1-871
+docs/superpowers/plans/2026-06-13-onboarding-role-scoring.md
+  s_288cc0dfb82db8::t_2402d9523107f1 1-1806
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "ee670c173f088a1aa25897c80babf4a235612ea5",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
