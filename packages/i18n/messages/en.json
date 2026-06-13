@@ -83,6 +83,9 @@
       "results": "Results",
       "signOut": "Sign out"
     },
+    "breadcrumb": {
+      "rate": "Rate"
+    },
     "languages": {
       "sv": "Svenska",
       "en": "English",

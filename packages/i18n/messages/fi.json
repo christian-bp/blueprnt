@@ -83,6 +83,9 @@
       "results": "Tulokset",
       "signOut": "Kirjaudu ulos"
     },
+    "breadcrumb": {
+      "rate": "Arvioi"
+    },
     "languages": {
       "sv": "Svenska",
       "en": "English",

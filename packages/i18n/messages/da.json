@@ -83,6 +83,9 @@
       "results": "Resultater",
       "signOut": "Log ud"
     },
+    "breadcrumb": {
+      "rate": "Vurder"
+    },
     "languages": {
       "sv": "Svenska",
       "en": "English",
