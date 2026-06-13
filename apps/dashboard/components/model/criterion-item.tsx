@@ -149,11 +149,11 @@ export function CriterionItem({
             )}
           </span>
 
-          {/* Fixed-size importance slot: identical outer box for the static
-              label (read mode) and the weight control (edit mode), so
-              toggling edit shifts nothing. The node is told to fill the slot
-              by its parent. */}
-          <span className="flex h-9 w-44 shrink-0 items-center justify-end">
+          {/* Fixed-size importance slot (w-52): identical outer box for the
+              read-mode label "Importance 5 · 20%" and the edit-mode ButtonGroup
+              (w-full), so toggling edit shifts nothing. The node fills the slot
+              via its parent. */}
+          <span className="flex h-9 w-52 shrink-0 items-center justify-end">
             {importanceNode}
           </span>
 

@@ -289,9 +289,18 @@ export function ModelEditor({
                   ))}
                 </ButtonGroup>
               ) : (
-                <span className="text-sm tabular-nums">
-                  {criterion.weightPoints}
+                // Read-mode importance: the surface label prefixes the bare
+                // points + derived share so the value reads "Importance 5 ·
+                // 20%". "Importance / Viktnivå" is only the display label; the
+                // documented domain term is weight points (ADR-0004). The
+                // single weight-points help lives on the budget meter, so no
+                // second popover is added here.
+                <span className="text-sm">
                   <span className="text-muted-foreground">
+                    {tEditor("importance")}{" "}
+                  </span>
+                  <span className="tabular-nums">{criterion.weightPoints}</span>
+                  <span className="text-muted-foreground tabular-nums">
                     {" · "}
                     {formatShare(criterion.weightPoints, storedTotal, locale)}
                   </span>

@@ -114,3 +114,52 @@ describe("CriterionForm", () => {
     })
   })
 })
+
+describe("CriterionForm level clarity pass", () => {
+  afterEach(() => {
+    cleanup()
+  })
+
+  it("renders the levels helper line under the anchors legend", () => {
+    renderForm()
+    expect(screen.getByText(editor.levelsIntro)).toBeDefined()
+  })
+
+  it("renders all six level labels from 0 to 5", () => {
+    renderForm()
+    for (let level = 0; level <= 5; level++) {
+      expect(
+        screen.getByText(editor.anchorLevel.replace("{level}", String(level)))
+      ).toBeDefined()
+    }
+  })
+
+  it("tags the lowest and highest rows", () => {
+    renderForm()
+    expect(screen.getByText(editor.levelEndpointLowest)).toBeDefined()
+    expect(screen.getByText(editor.levelEndpointHighest)).toBeDefined()
+  })
+
+  it("gives the 0 and 5 inputs example placeholders", () => {
+    renderForm()
+    expect(
+      screen.getByPlaceholderText(editor.levelPlaceholderLowest)
+    ).toBeDefined()
+    expect(
+      screen.getByPlaceholderText(editor.levelPlaceholderHighest)
+    ).toBeDefined()
+  })
+
+  it("keeps each anchor input's accessible name exactly the level label", () => {
+    renderForm()
+    // getByLabelText defaults to exact=true and matches the full accessible
+    // name; the explicit aria-label on the input keeps it "Level 0"/"Level 5"
+    // even though the visible Label also contains the badge and endpoint tag.
+    expect(
+      screen.getByLabelText(editor.anchorLevel.replace("{level}", "0"))
+    ).toBeDefined()
+    expect(
+      screen.getByLabelText(editor.anchorLevel.replace("{level}", "5"))
+    ).toBeDefined()
+  })
+})

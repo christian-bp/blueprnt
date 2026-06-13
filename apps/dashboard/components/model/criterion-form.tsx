@@ -112,28 +112,71 @@ export function CriterionForm({
             </HelpMorphButton>
           </span>
         </legend>
-        {anchors.map((anchor, index) => (
-          <div
-            // The anchor list is fixed-length and positional, so the index is
-            // a stable key here.
-            // biome-ignore lint/suspicious/noArrayIndexKey: positional fixed-length list
-            key={index}
-            className="space-y-1"
-          >
-            <Label htmlFor={`criterion-anchor-${index}`}>
-              {tEditor("anchorLevel", { level: index })}
-            </Label>
-            <Input
-              id={`criterion-anchor-${index}`}
-              value={anchor}
-              onChange={(event) => {
-                const next = [...anchors]
-                next[index] = event.target.value
-                setAnchors(next)
-              }}
-            />
-          </div>
-        ))}
+        {/* Static helper line: states the 0-to-5 direction in plain language
+            so the six inputs read as the levels of the scale, not as a list
+            of names. Always present (no state-triggered reveal), so the
+            layout never shifts. */}
+        <p className="text-muted-foreground text-sm">
+          {tEditor("levelsIntro")}
+        </p>
+        {anchors.map((anchor, index) => {
+          const isLowest = index === 0
+          const isHighest = index === anchors.length - 1
+          const levelLabel = tEditor("anchorLevel", { level: index })
+          return (
+            <div
+              // The anchor list is fixed-length and positional, so the index
+              // is a stable key here.
+              // biome-ignore lint/suspicious/noArrayIndexKey: positional fixed-length list
+              key={index}
+              className="space-y-1"
+            >
+              <Label
+                htmlFor={`criterion-anchor-${index}`}
+                className="flex items-center gap-2"
+              >
+                {/* Fixed-width numeric badge so the number reads as scale
+                    position, not part of the label text. */}
+                <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground text-xs tabular-nums">
+                  {index}
+                </span>
+                {levelLabel}
+                {isLowest && (
+                  <span className="text-muted-foreground text-xs">
+                    {tEditor("levelEndpointLowest")}
+                  </span>
+                )}
+                {isHighest && (
+                  <span className="text-muted-foreground text-xs">
+                    {tEditor("levelEndpointHighest")}
+                  </span>
+                )}
+              </Label>
+              <Input
+                id={`criterion-anchor-${index}`}
+                // Explicit accessible name so the input is "Level N" even
+                // though the visible Label also holds the badge and endpoint
+                // tag; aria-label overrides the associated label text in the
+                // accessible-name computation. Keeps getByLabelText("Level N")
+                // working.
+                aria-label={levelLabel}
+                value={anchor}
+                placeholder={
+                  isLowest
+                    ? tEditor("levelPlaceholderLowest")
+                    : isHighest
+                      ? tEditor("levelPlaceholderHighest")
+                      : undefined
+                }
+                onChange={(event) => {
+                  const next = [...anchors]
+                  next[index] = event.target.value
+                  setAnchors(next)
+                }}
+              />
+            </div>
+          )
+        })}
       </fieldset>
       {failed && (
         <p role="alert" className="text-destructive text-sm">

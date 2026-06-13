@@ -27,8 +27,8 @@ En sak en roll värderas på (t.ex. Scope & Påverkan, Komplexitet, Finansiellt 
 _Undvik_: Faktor ("faktor" finns i källdokumenten; "kriterium" är kanoniskt, "faktor" är alias)
 
 **Ankare** *(kod: Anchor)*:
-Texten som beskriver vad varje poäng 0–5 betyder för ett kriterium (t.ex. Autonomi 1 = "följer instruktioner", 5 = "sätter riktning för andra funktioner"). Konfigurerbar per kriterium.
-_Undvik_: Ankarroll (en annan sak — se Värdering), Skalbeskrivning
+Texten som beskriver vad varje poäng 0–5 betyder för ett kriterium (t.ex. Autonomi 1 = "följer instruktioner", 5 = "sätter riktning för andra funktioner"). Konfigurerbar per kriterium. Kanonisk term i tal och kod är **ankare** (fältet `criteria.anchors`); i UI heter kriteriets texter "bedömningsnivå" (de sex nivåerna 0 till 5), så att numreringen läses som skalans position. Obs: detta `nivå` är kriteriets 0–5-skala och är INTE samma som individens senioritetsnivå inom ett track (V2-term, ADR-0005).
+_Undvik_: Ankarroll (en annan sak, se Värdering), Skalbeskrivning
 
 **Viktpoäng** *(kod: Weight points)*:
 Kriteriets vikt, angiven av HR som ett heltal 1 till 5 (1 = relativt lägst, 3 = neutral, 5 = relativt högst). Viktpoängen är synliga och redigerbara men begränsade av poängbudgeten: summan över alla kriterier är alltid exakt lika med budgeten, så att höja ett kriterium kräver att sänka ett annat. Motorn multiplicerar betyget med viktpoängen. Sedan 2026-06-06; ersätter den tidigare 7-gradiga betydelseskalan med dolda vikter (se [viktning-poangbudget.md](./viktning-poangbudget.md) och ADR-0004).
