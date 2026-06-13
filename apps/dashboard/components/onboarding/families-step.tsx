@@ -348,7 +348,7 @@ export function FamiliesStep({
           <Button type="button" disabled={pending} onClick={() => finish()}>
             {(draft.families ?? []).length === 0
               ? tReview("cta")
-              : t("createCta")}
+              : t("nextCta")}
             <HugeiconsIcon
               icon={Tick02Icon}
               strokeWidth={2}

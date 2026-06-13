@@ -224,7 +224,7 @@ describe("FamiliesStep", () => {
     expect(nameInputs.map((input) => input.value)).toEqual(["Engineering"])
     expect(screen.getByText(messages.dashboard.ai.provenance)).toBeDefined()
 
-    fireEvent.click(screen.getByRole("button", { name: t.createCta }))
+    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
     await waitFor(() => {
       expect(confirmStarterImportMock).toHaveBeenCalledTimes(1)
     })
@@ -261,7 +261,7 @@ describe("FamiliesStep", () => {
       "Sales",
     ])
 
-    fireEvent.click(screen.getByRole("button", { name: t.createCta }))
+    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
     await waitFor(() => {
       expect(createStarterSetMock).toHaveBeenCalledTimes(1)
     })
@@ -325,7 +325,7 @@ describe("FamiliesStep", () => {
         name: t.removeFamilyConfirm,
       })
     )
-    fireEvent.click(screen.getByRole("button", { name: t.createCta }))
+    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
 
     await waitFor(() => {
       expect(createStarterSetMock).toHaveBeenCalledTimes(1)
@@ -352,7 +352,7 @@ describe("FamiliesStep", () => {
     )) {
       fireEvent.change(input, { target: { value: "   " } })
     }
-    fireEvent.click(screen.getByRole("button", { name: t.createCta }))
+    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
 
     await waitFor(() => {
       expect(onFinished).toHaveBeenCalledTimes(1)
@@ -408,7 +408,7 @@ describe("FamiliesStep", () => {
     renderStep(onFinished)
     await seedFromTemplate()
 
-    fireEvent.click(screen.getByRole("button", { name: t.createCta }))
+    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
 
     await waitFor(() => {
       expect(screen.getByRole("alert").textContent).toBe(
@@ -423,7 +423,7 @@ describe("FamiliesStep", () => {
     renderStep()
     await seedFromTemplate()
     const buttons = screen.getAllByRole("button")
-    expect(buttons.filter((b) => b.textContent === t.createCta)).toHaveLength(1)
+    expect(buttons.filter((b) => b.textContent === t.nextCta)).toHaveLength(1)
     expect(screen.queryByText("Skip for now")).toBeNull()
   })
 
@@ -436,7 +436,7 @@ describe("FamiliesStep", () => {
     renderStep(onFinished)
     await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
 
-    fireEvent.click(screen.getByRole("button", { name: t.createCta }))
+    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
 
     await waitFor(() => {
       expect(screen.getByRole("alert").textContent).toBe(
@@ -457,14 +457,14 @@ describe("FamiliesStep", () => {
     await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
 
     // First attempt: the confirm throws, the step stays and shows the alert.
-    fireEvent.click(screen.getByRole("button", { name: t.createCta }))
+    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeDefined()
     })
     expect(onFinished).not.toHaveBeenCalled()
 
     // Retry: the confirm re-runs and now succeeds, then the step advances.
-    fireEvent.click(screen.getByRole("button", { name: t.createCta }))
+    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
     await waitFor(() => {
       expect(onFinished).toHaveBeenCalledTimes(1)
     })

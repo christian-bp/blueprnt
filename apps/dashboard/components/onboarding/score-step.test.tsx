@@ -95,8 +95,19 @@ describe("ScoreStep", () => {
     ])
     renderStep()
     expect(screen.getByText(t.forkHeading)).toBeDefined()
-    expect(screen.getByRole("button", { name: t.scoreNowCta })).toBeDefined()
-    expect(screen.getByRole("button", { name: t.laterCta })).toBeDefined()
+    // OptionCard folds the description into the button's accessible name, so
+    // an exact-name lookup no longer matches; use a regex on the title (the
+    // approach model-setup-step.test.tsx uses for its choice cards).
+    expect(
+      screen.getByRole("button", { name: new RegExp(t.scoreNowCta) })
+    ).toBeDefined()
+    expect(
+      screen.getByRole("button", { name: new RegExp(t.laterCta) })
+    ).toBeDefined()
+    // The fork's explanatory text replaces the lone help popover.
+    expect(
+      screen.getByText(messages.dashboard.help.onboardingScoreBody)
+    ).toBeDefined()
   })
 
   it("'I'll do this later' completes onboarding and finishes", async () => {
@@ -105,7 +116,9 @@ describe("ScoreStep", () => {
     ])
     const onFinish = vi.fn()
     renderStep(onFinish)
-    fireEvent.click(screen.getByRole("button", { name: t.laterCta }))
+    fireEvent.click(
+      screen.getByRole("button", { name: new RegExp(t.laterCta) })
+    )
     await waitFor(() => {
       expect(completeOnboardingMock).toHaveBeenCalledWith({ orgId: "org-1" })
     })
@@ -117,7 +130,9 @@ describe("ScoreStep", () => {
       { roleId: "role-1", title: "A", ratedCount: 0, complete: false },
     ])
     renderStep()
-    fireEvent.click(screen.getByRole("button", { name: t.scoreNowCta }))
+    fireEvent.click(
+      screen.getByRole("button", { name: new RegExp(t.scoreNowCta) })
+    )
     // mode="wait" holds the fork phase mounted until its exit crossfade ends,
     // then mounts the list phase; await the swap like the wizard tests do.
     expect(await screen.findByText(t.saveExitLine)).toBeDefined()

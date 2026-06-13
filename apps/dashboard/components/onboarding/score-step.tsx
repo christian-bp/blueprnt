@@ -9,6 +9,7 @@ import { AnimatePresence, motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
+import { OptionCard } from "@/components/onboarding/option-card"
 import { ScoreRole } from "@/components/onboarding/score-role"
 import { ScreenShell } from "@/components/onboarding/screen-shell"
 
@@ -39,6 +40,9 @@ export function ScoreStep({
   // The user explicitly chose to score now (or no fork was needed). The fork
   // is skipped once any role has been started.
   const [scoring, setScoring] = useState(false)
+  // Which fork card is chosen, so the other one fades (the model-choice
+  // pattern). "now" flips to the list; "later" runs exit().
+  const [picked, setPicked] = useState<"now" | "later" | null>(null)
   // The role currently open in the per-role view, or null for the list.
   const [openRoleId, setOpenRoleId] = useState<string | null>(null)
   const [exiting, setExiting] = useState(false)
@@ -101,24 +105,32 @@ export function ScoreStep({
             onDone={() => setOpenRoleId(null)}
           />
         ) : phase === "fork" ? (
-          <ScreenShell heading={t("forkHeading")}>
-            <div className="flex items-center justify-center">
-              <HelpMorphButton label={tHelp("onboardingScoreLabel")}>
-                {tHelp("onboardingScoreBody")}
-              </HelpMorphButton>
-            </div>
-            <div className="flex items-center justify-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                disabled={exiting}
-                onClick={() => exit()}
-              >
-                {t("laterCta")}
-              </Button>
-              <Button type="button" onClick={() => setScoring(true)}>
-                {t("scoreNowCta")}
-              </Button>
+          <ScreenShell
+            heading={t("forkHeading")}
+            description={tHelp("onboardingScoreBody")}
+          >
+            <div className="grid w-full max-w-2xl gap-3 sm:grid-cols-2">
+              <OptionCard
+                title={t("scoreNowCta")}
+                description={t("scoreNowDescription")}
+                selected={picked === "now"}
+                faded={picked === "later"}
+                onSelect={() => {
+                  setPicked("now")
+                  setScoring(true)
+                }}
+              />
+              <OptionCard
+                title={t("laterCta")}
+                description={t("laterDescription")}
+                selected={picked === "later"}
+                faded={picked === "now"}
+                onSelect={() => {
+                  if (exiting) return
+                  setPicked("later")
+                  exit()
+                }}
+              />
             </div>
           </ScreenShell>
         ) : phase === "done" ? (
