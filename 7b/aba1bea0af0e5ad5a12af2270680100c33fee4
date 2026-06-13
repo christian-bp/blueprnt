@@ -1,0 +1,24 @@
+docs/contexts/assessment/CONTEXT.md
+  s_288cc0dfb82db8::t_7350b892ab4b4b 37
+  s_288cc0dfb82db8::t_c4aaeaf6927bb8 69
+docs/contexts/evaluation-model/CONTEXT.md
+  s_288cc0dfb82db8::t_5d7d4ad05dde4c 30-31
+docs/PLAN-V1.md
+  s_288cc0dfb82db8::t_7d445040c9bd85 98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "7baba1bea0af0e5ad5a12af2270680100c33fee4",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
