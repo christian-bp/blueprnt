@@ -9,21 +9,10 @@ import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
 import { deriveResults, logBandShifts } from "./compute"
 
-// The nine free-text job profile fields (assessment glossary). purpose and
-// responsibilities are the mandatory core (required before rating); the rest
-// are optional structured fields. Title/function/team/track are handled
-// separately.
-export const PROFILE_TEXT_FIELDS = [
-  "purpose",
-  "responsibilities",
-  "decisionMandate",
-  "stakeholders",
-  "knowledge",
-  "financial",
-  "people",
-  "risk",
-  "deliverables",
-] as const
+// The job profile text fields (assessment glossary). purpose and
+// responsibilities are the mandatory core (required before rating).
+// Title/function/team/track are identity, handled separately.
+export const PROFILE_TEXT_FIELDS = ["purpose", "responsibilities"] as const
 export type ProfileTextField = (typeof PROFILE_TEXT_FIELDS)[number]
 
 const MAX_TITLE_LENGTH = 200
@@ -32,17 +21,9 @@ const MAX_FIELD_LENGTH = 5000
 const optionalProfileArgs = {
   purpose: v.optional(v.string()),
   responsibilities: v.optional(v.string()),
-  decisionMandate: v.optional(v.string()),
-  stakeholders: v.optional(v.string()),
-  knowledge: v.optional(v.string()),
-  financial: v.optional(v.string()),
-  people: v.optional(v.string()),
-  risk: v.optional(v.string()),
-  deliverables: v.optional(v.string()),
 }
 
-// Mandatory job profile core present? (purpose + responsibilities non-empty;
-// the other core fields are enforced non-empty at insert.)
+// Mandatory job profile core present? (purpose + responsibilities non-empty.)
 export function isProfileComplete(role: {
   purpose: string
   responsibilities: string
@@ -115,11 +96,6 @@ export const createRole = orgMutation({
       // start empty and gate the rating flow via profileComplete.
       purpose: optional.purpose ?? "",
       responsibilities: optional.responsibilities ?? "",
-      ...Object.fromEntries(
-        Object.entries(optional).filter(
-          ([key]) => key !== "purpose" && key !== "responsibilities"
-        )
-      ),
       status: "draft",
     })
     await logAudit(ctx, {
@@ -212,13 +188,6 @@ export const getRole = orgQuery({
       trackName: v.string(),
       purpose: v.string(),
       responsibilities: v.string(),
-      decisionMandate: v.union(v.string(), v.null()),
-      stakeholders: v.union(v.string(), v.null()),
-      knowledge: v.union(v.string(), v.null()),
-      financial: v.union(v.string(), v.null()),
-      people: v.union(v.string(), v.null()),
-      risk: v.union(v.string(), v.null()),
-      deliverables: v.union(v.string(), v.null()),
       status: v.string(),
       archived: v.boolean(),
       profileComplete: v.boolean(),
@@ -289,13 +258,6 @@ export const getRole = orgQuery({
       trackName: track?.name ?? role.trackKey,
       purpose: role.purpose,
       responsibilities: role.responsibilities,
-      decisionMandate: role.decisionMandate ?? null,
-      stakeholders: role.stakeholders ?? null,
-      knowledge: role.knowledge ?? null,
-      financial: role.financial ?? null,
-      people: role.people ?? null,
-      risk: role.risk ?? null,
-      deliverables: role.deliverables ?? null,
       status: role.status,
       archived: role.archivedAt !== undefined,
       profileComplete: isProfileComplete(role),

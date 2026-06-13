@@ -31,27 +31,9 @@ export interface RoleProfile {
   familyName: string | null
   purpose: string
   responsibilities: string
-  decisionMandate: string | null
-  stakeholders: string | null
-  knowledge: string | null
-  financial: string | null
-  people: string | null
-  risk: string | null
-  deliverables: string | null
   status: string
   archived: boolean
 }
-
-const OPTIONAL_FIELDS = [
-  "decisionMandate",
-  "stakeholders",
-  "knowledge",
-  "financial",
-  "people",
-  "risk",
-  "deliverables",
-] as const
-type OptionalField = (typeof OPTIONAL_FIELDS)[number]
 
 // Read-first job profile: an Edit toggle swaps the texts for inputs, Save
 // patches only what changed. Approved or archived roles never enter edit
@@ -85,9 +67,6 @@ export function RoleProfileCard({
       team: role.team,
       purpose: role.purpose,
       responsibilities: role.responsibilities,
-      ...Object.fromEntries(
-        OPTIONAL_FIELDS.map((field) => [field, role[field] ?? ""])
-      ),
     }
   }
 
@@ -140,11 +119,6 @@ export function RoleProfileCard({
       label: tRole("responsibilities"),
       value: role.responsibilities,
     },
-    ...OPTIONAL_FIELDS.map((key) => ({
-      key: key as string,
-      label: tRole(key as OptionalField),
-      value: role[key as OptionalField] ?? "",
-    })),
   ]
 
   return (

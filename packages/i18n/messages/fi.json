@@ -59,14 +59,7 @@
       "function": "Toiminto/osasto",
       "team": "Tiimi",
       "purpose": "Tarkoitus",
-      "responsibilities": "Vastuualueet",
-      "decisionMandate": "Päätösvaltuudet",
-      "stakeholders": "Sidosryhmät",
-      "knowledge": "Osaamisvaatimukset",
-      "financial": "Taloudellinen vastuu",
-      "people": "Henkilöstövastuu",
-      "risk": "Riski/seuraukset",
-      "deliverables": "Tuotokset"
+      "responsibilities": "Vastuualueet"
     },
     "status": {
       "draft": "Luonnos",

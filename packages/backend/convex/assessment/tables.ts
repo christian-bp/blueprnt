@@ -25,13 +25,6 @@ export const roles = defineTable({
   familyId: v.optional(v.id("roleFamilies")),
   purpose: v.string(),
   responsibilities: v.string(),
-  decisionMandate: v.optional(v.string()),
-  stakeholders: v.optional(v.string()),
-  knowledge: v.optional(v.string()),
-  financial: v.optional(v.string()),
-  people: v.optional(v.string()),
-  risk: v.optional(v.string()),
-  deliverables: v.optional(v.string()),
   status: v.union(
     v.literal("draft"),
     v.literal("inReview"),

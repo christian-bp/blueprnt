@@ -68,13 +68,6 @@ export const saveRoleProfileDraft = internalMutation({
     profile: v.object({
       purpose: v.string(),
       responsibilities: v.string(),
-      decisionMandate: v.optional(v.string()),
-      stakeholders: v.optional(v.string()),
-      knowledge: v.optional(v.string()),
-      financial: v.optional(v.string()),
-      people: v.optional(v.string()),
-      risk: v.optional(v.string()),
-      deliverables: v.optional(v.string()),
     }),
   },
   returns: v.null(),

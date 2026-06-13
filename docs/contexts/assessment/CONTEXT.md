@@ -9,7 +9,7 @@ Ett jobb/en befattning som värderas — definierad av sitt innehåll, sina krav
 _Undvik_: Befattning (godtagbar synonym), Nivåroll (utgånget begrepp), Person, Anställd, Individ (uttryckligen INTE en roll)
 
 **Jobbprofil** *(kod: Job profile)*:
-Den standardiserade beskrivningen av en roll som krävs som input före värdering. Obligatorisk kärna (titel, funktion/avdelning, team, track, syfte, ansvarsområden) + strukturerade valfria fält (beslutsmandat, intressenter, kunskapskrav, finansiellt ansvar, personalansvar, risk/konsekvens, leverabler). Titeln är rollens visningstitel (t.ex. "System Developer"); ingen nivå anges (ADR-0005). Standardiserad input = jämförbara värderingar.
+Den standardiserade beskrivningen av en roll som krävs som input före värdering. Obligatorisk kärna: identitet (titel, funktion/avdelning, team, track) plus syfte och ansvarsområden. Titeln är rollens visningstitel (t.ex. "System Developer"); ingen nivå anges (ADR-0005). Standardiserad input = jämförbara värderingar. De tidigare strukturerade valfria fälten (beslutsmandat, intressenter, kunskapskrav, finansiellt ansvar, personalansvar, risk/konsekvens, leverabler) är borttagna före lansering för enkelhet; de kan återinföras senare utan migrationskostnad.
 _Undvik (fältet titel)_: Namn (säg "titel"; beslutat 2026-06)
 _Undvik_: Rollbeskrivning (ok beskrivande; "jobbprofil" är den strukturerade mallen)
 
@@ -52,13 +52,6 @@ _Undvik_: AI-svar, Automatiskt värde (det är ett *förslag* tills HR bekräfta
 | `assessment.role.team` | Team | Team |
 | `assessment.role.purpose` | Syfte | Purpose |
 | `assessment.role.responsibilities` | Ansvarsområden | Responsibilities |
-| `assessment.role.decisionMandate` | Beslutsmandat | Decision mandate |
-| `assessment.role.stakeholders` | Intressenter | Stakeholders |
-| `assessment.role.knowledge` | Kunskapskrav | Knowledge requirements |
-| `assessment.role.financial` | Finansiellt ansvar | Financial responsibility |
-| `assessment.role.people` | Personalansvar | People responsibility |
-| `assessment.role.risk` | Risk/konsekvens | Risk/consequence |
-| `assessment.role.deliverables` | Leverabler | Deliverables |
 | `assessment.assessment` | Värdering | Assessment |
 | `assessment.rating` | Betyg | Rating |
 | `assessment.motivation` | Motivering | Motivation |

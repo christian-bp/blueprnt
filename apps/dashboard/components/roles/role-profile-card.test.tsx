@@ -49,13 +49,6 @@ function makeRole(overrides?: Partial<RoleProfile>): RoleProfile {
     familyName: null,
     purpose: "Builds the product",
     responsibilities: "Implementation",
-    decisionMandate: null,
-    stakeholders: null,
-    knowledge: null,
-    financial: null,
-    people: null,
-    risk: null,
-    deliverables: null,
     status: "draft",
     archived: false,
     ...overrides,
@@ -78,11 +71,10 @@ describe("RoleProfileCard", () => {
     cleanup()
   })
 
-  it("renders read mode with the empty-field hint for blank optionals", () => {
+  it("renders read mode with the purpose and responsibilities text, no inputs", () => {
     renderCard(makeRole())
     expect(screen.getByText("Builds the product")).toBeDefined()
-    // 7 blank optional fields all show the empty hint.
-    expect(screen.getAllByText(labels.emptyField)).toHaveLength(7)
+    expect(screen.getByText("Implementation")).toBeDefined()
     // No textbox inputs in read mode.
     expect(
       screen.queryByRole("textbox", { name: roleLabels.purpose })

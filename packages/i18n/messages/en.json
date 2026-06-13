@@ -59,14 +59,7 @@
       "function": "Function/department",
       "team": "Team",
       "purpose": "Purpose",
-      "responsibilities": "Responsibilities",
-      "decisionMandate": "Decision mandate",
-      "stakeholders": "Stakeholders",
-      "knowledge": "Knowledge requirements",
-      "financial": "Financial responsibility",
-      "people": "People responsibility",
-      "risk": "Risk/consequence",
-      "deliverables": "Deliverables"
+      "responsibilities": "Responsibilities"
     },
     "status": {
       "draft": "Draft",

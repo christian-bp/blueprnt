@@ -59,14 +59,7 @@
       "function": "Funktion/avdelning",
       "team": "Team",
       "purpose": "Syfte",
-      "responsibilities": "Ansvarsområden",
-      "decisionMandate": "Beslutsmandat",
-      "stakeholders": "Intressenter",
-      "knowledge": "Kunskapskrav",
-      "financial": "Finansiellt ansvar",
-      "people": "Personalansvar",
-      "risk": "Risk/konsekvens",
-      "deliverables": "Leverabler"
+      "responsibilities": "Ansvarsområden"
     },
     "status": {
       "draft": "Utkast",

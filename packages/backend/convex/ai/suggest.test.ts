@@ -703,34 +703,23 @@ describe("role profile drafts", () => {
     await t.mutation(internal.ai.persist.saveRoleProfileDraft, {
       suggestionId,
       profile: {
-        purpose: "Bygger och underhåller kärnprodukten.",
-        responsibilities: "Implementerar features\nGranskar kod",
-        knowledge: "  Grundläggande systemdesign  ",
-        financial: "x".repeat(1001),
+        purpose: "  Bygger och underhåller kärnprodukten.  ",
+        responsibilities: "x".repeat(2001),
       },
     })
     await asAdmin.mutation(api.ai.suggest.confirmRoleProfileDraft, {
       orgId,
       suggestionId,
-      acceptedFields: [
-        "purpose",
-        "knowledge",
-        "financial",
-        "title",
-        "nonsense",
-      ],
+      acceptedFields: ["purpose", "responsibilities", "title", "nonsense"],
     })
     await t.run(async (ctx) => {
       const docId = ctx.db.normalizeId("roles", roleId)
       if (docId === null) throw new Error("bad id")
       const role = await ctx.db.get(docId)
-      // Accepted and valid: purpose, knowledge (trimmed).
+      // Accepted and valid: purpose (trimmed).
       expect(role?.purpose).toBe("Bygger och underhåller kärnprodukten.")
-      expect(role?.knowledge).toBe("Grundläggande systemdesign")
-      // Not accepted: responsibilities stays empty.
+      // Over the length bound (responsibilities cap is 2000): skipped.
       expect(role?.responsibilities).toBe("")
-      // Over the length bound: financial is skipped.
-      expect(role?.financial).toBeUndefined()
       // Whitelist: title is never AI-writable.
       expect(role?.title).toBe("Junior Software Developer")
       const suggestion = await ctx.db.get(suggestionId)
@@ -743,7 +732,7 @@ describe("role profile drafts", () => {
         .collect()
       expect(updated.map((row) => row.payload)).toContainEqual({
         roleId: docId,
-        fields: ["purpose", "knowledge"],
+        fields: ["purpose"],
       })
     })
   })

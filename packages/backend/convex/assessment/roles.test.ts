@@ -194,22 +194,23 @@ describe("updateRole", () => {
       function: "Engineering",
       team: "Core",
       trackKey: track.key,
-      decisionMandate: "  Decides implementation details  ",
+      purpose: "  Builds the core product  ",
     })
     await t.run(async (ctx) => {
-      // Optional structured fields store trimmed at create time.
+      // Profile text fields store trimmed at create time.
       const created = await ctx.db.get(roleId)
-      expect(created?.decisionMandate).toBe("Decides implementation details")
+      expect(created?.purpose).toBe("Builds the core product")
     })
     await asAdmin.mutation(api.assessment.roles.updateRole, {
       orgId,
       roleId,
-      purpose: "Builds the core product",
+      purpose: "Builds and ships the core product",
       responsibilities: "Implementation and reviews",
     })
     await t.run(async (ctx) => {
       const role = await ctx.db.get(roleId)
-      expect(role?.purpose).toBe("Builds the core product")
+      expect(role?.purpose).toBe("Builds and ships the core product")
+      expect(role?.responsibilities).toBe("Implementation and reviews")
       const audit = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
@@ -217,6 +218,8 @@ describe("updateRole", () => {
         )
         .collect()
       expect(audit).toHaveLength(1)
+      // updateRole iterates PROFILE_TEXT_FIELDS (purpose before
+      // responsibilities), so the audited field order is fixed.
       expect(audit[0]?.payload).toEqual({
         roleId,
         fields: ["purpose", "responsibilities"],

@@ -15,17 +15,7 @@ import { useSuggestionFlow } from "@/hooks/use-suggestion-flow"
 import { useSuggestionSelection } from "@/hooks/use-suggestion-selection"
 import { roleProfileValueSchema } from "@/lib/suggestion-schemas"
 
-const PROFILE_FIELDS = [
-  "purpose",
-  "responsibilities",
-  "decisionMandate",
-  "stakeholders",
-  "knowledge",
-  "financial",
-  "people",
-  "risk",
-  "deliverables",
-] as const
+const PROFILE_FIELDS = ["purpose", "responsibilities"] as const
 type ProfileField = (typeof PROFILE_FIELDS)[number]
 
 // The job-profile assistant, rendered inside the MorphPopover (which owns
