@@ -1,0 +1,30 @@
+apps/dashboard/components/onboarding/score-step.tsx
+  s_288cc0dfb82db8::t_5f7aa1b3eacd78 67,78-84
+  s_288cc0dfb82db8::t_deb707c10f5ff4 36-38
+apps/dashboard/components/onboarding/score-step.test.tsx
+  s_288cc0dfb82db8::t_98cbd735213e6f 209-211
+  s_288cc0dfb82db8::t_c2a95c5ea6b7bc 121-124
+  s_288cc0dfb82db8::t_99baa3813fc884 226-229
+  s_288cc0dfb82db8::t_5d404e041c4e19 244-246
+  s_288cc0dfb82db8::t_71b25589cb66c9 146-148
+  s_288cc0dfb82db8::t_9a813a25eecc3f 68-89,91
+  s_288cc0dfb82db8::t_98622ed17b3feb 106,109
+  s_288cc0dfb82db8::t_f88cb82338c99f 181-183,190-200
+  s_288cc0dfb82db8::t_d1997cb0ad0da4 164-166
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "2e9fbc1d48e2793d2a071b3b3e661dbd5abc6f37",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
