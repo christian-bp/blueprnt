@@ -1,0 +1,24 @@
+packages/backend/convex/accounts/onboarding.test.ts
+  s_288cc0dfb82db8::t_d3e1a253e3fa7f 148-176
+  s_288cc0dfb82db8::t_a92f934262637c 30
+packages/backend/convex/accounts/onboarding.ts
+  s_288cc0dfb82db8::t_756f53e5077b54 30
+  s_288cc0dfb82db8::t_e2020feef9613e 66-69,78
+  s_288cc0dfb82db8::t_0d71a21799e48f 47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "7c04145240d7424480ca6b6fbd8b6222222ce7eb",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
