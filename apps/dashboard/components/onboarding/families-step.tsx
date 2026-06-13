@@ -1,6 +1,6 @@
 "use client"
 
-import { Tick02Icon } from "@hugeicons/core-free-icons"
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
@@ -350,7 +350,7 @@ export function FamiliesStep({
               ? tReview("cta")
               : t("nextCta")}
             <HugeiconsIcon
-              icon={Tick02Icon}
+              icon={ArrowRight01Icon}
               strokeWidth={2}
               aria-hidden="true"
             />
