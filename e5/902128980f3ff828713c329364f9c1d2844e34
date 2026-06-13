@@ -1,0 +1,35 @@
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_288cc0dfb82db8::t_230c0e9013d8f8 629-630
+  s_288cc0dfb82db8::t_4608851d080413 162-166,168-173
+  s_288cc0dfb82db8::t_b3f6198a16d9e7 358
+  s_288cc0dfb82db8::t_365d0c863c43cd 313-315,319
+  s_288cc0dfb82db8::t_36a34a7a3ab5f3 534-536,543,550
+  s_288cc0dfb82db8::t_ade76f0c86a931 631
+  s_288cc0dfb82db8::t_c4a4b5f93e7527 309-312,316-318,320-326,328,330-331,351-357,359-415
+  s_288cc0dfb82db8::t_b2d6fdfa500fd4 439-442,444-445,449,463,465,471-473,476-481,497-500
+apps/dashboard/components/onboarding/families-step.tsx
+  s_288cc0dfb82db8::t_9614561cb41f94 32-36
+  s_288cc0dfb82db8::t_af362f2db4be6b 235-259,269-276,283-292
+  s_288cc0dfb82db8::t_4804a83e1cafbb 505-509,511-515
+  s_288cc0dfb82db8::t_149fb07be38483 127-135
+  s_288cc0dfb82db8::t_781b93b0743db9 315-322,327-336
+  s_288cc0dfb82db8::t_7ca69521dd527e 415-420,422
+  s_288cc0dfb82db8::t_abb12422544aa8 373-384,393
+  s_288cc0dfb82db8::t_e6b3b510cd6521 548-556,558,562
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "e5902128980f3ff828713c329364f9c1d2844e34",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
