@@ -1,0 +1,21 @@
+apps/dashboard/components/model/criterion-form.test.tsx
+  s_288cc0dfb82db8::t_d7f40d5d7b17a3 117-165
+apps/dashboard/components/model/criterion-form.tsx
+  s_288cc0dfb82db8::t_b0290e06a5b625 115-179
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "14bc60139da14f4a64929873fbea8b2da043af6c",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
