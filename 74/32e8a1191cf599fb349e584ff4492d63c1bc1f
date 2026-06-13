@@ -1,0 +1,45 @@
+apps/dashboard/hooks/use-draft-families.test.tsx
+  s_288cc0dfb82db8::t_23ac34be954f71 69-83,88,96-107
+  s_288cc0dfb82db8::t_78605fb379cba3 84-87,89-95
+apps/dashboard/lib/family-dnd.ts
+  s_288cc0dfb82db8::t_d5d973401c29e0 6-12,15,22
+  s_288cc0dfb82db8::t_e60e531c049aa6 112-113,126-146
+apps/dashboard/hooks/use-draft-families.ts
+  s_288cc0dfb82db8::t_c2bda9abe6acb6 43,55-58,62,80-82,84
+  s_288cc0dfb82db8::t_deaa539f3a5394 3,5-9,11-13,15,17-25
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_288cc0dfb82db8::t_b64cc7b8776322 17-19,27-29
+  s_288cc0dfb82db8::t_54fdbab280ed58 111-148
+  s_288cc0dfb82db8::t_39d8b802e59a5c 170,179-182,187-188
+  s_288cc0dfb82db8::t_57ceb4607e8fa7 523-589
+apps/dashboard/components/onboarding/families-step.tsx
+  s_288cc0dfb82db8::t_8eafbe4e39c788 122-147,166-167,169-176,180,182-183,185-187
+  s_288cc0dfb82db8::t_02a86dd34e863c 23
+  s_288cc0dfb82db8::t_70d07cd1d86258 81-85,87-91
+  s_288cc0dfb82db8::t_a9c11507c974cf 32-34,36
+  s_288cc0dfb82db8::t_8057472bf290ee 254-256,266,285-287
+  s_288cc0dfb82db8::t_7ff4b1f0574d29 12
+  s_288cc0dfb82db8::t_43dd524c68fccf 312-318,323
+  s_288cc0dfb82db8::t_5fbaf727b6f7fe 100-102
+  s_288cc0dfb82db8::t_9dc98f39a6b885 40-55
+  s_288cc0dfb82db8::t_0f51855857a9ba 475-477,479-488
+  s_288cc0dfb82db8::t_e543064cf6ce33 257-265
+  s_288cc0dfb82db8::t_8b1e55778e6c91 309-311,319-322,324-331
+  s_288cc0dfb82db8::t_b52444f6344205 148-165,168,177-179,181,184
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "7432e8a1191cf599fb349e584ff4492d63c1bc1f",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
