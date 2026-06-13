@@ -359,7 +359,8 @@
         "dndOver": "{title} er over {family}.",
         "dndDropped": "{title} ble plassert i {family}.",
         "dndCancelled": "Flyttingen av {title} ble avbrutt.",
-        "reviewHint": "Grupper rollene i familier og sett hver rolles track."
+        "reviewHint": "Grupper rollene i familier og sett hver rolles track.",
+        "ungroupedFamilyName": "Andre roller"
       },
       "score": {
         "forkHeading": "Rollene dine er klare. Vil du vurdere dem nå?",

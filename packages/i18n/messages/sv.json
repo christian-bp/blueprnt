@@ -359,7 +359,8 @@
         "dndOver": "{title} är över {family}.",
         "dndDropped": "{title} placerades i {family}.",
         "dndCancelled": "Flytten av {title} avbröts.",
-        "reviewHint": "Gruppera rollerna i familjer och sätt varje rolls track."
+        "reviewHint": "Gruppera rollerna i familjer och sätt varje rolls track.",
+        "ungroupedFamilyName": "Övriga roller"
       },
       "score": {
         "forkHeading": "Dina roller är klara. Vill du värdera dem nu?",

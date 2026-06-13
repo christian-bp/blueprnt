@@ -14,6 +14,9 @@ import { mockMutation, onQuery } from "@/test/convex-mocks"
 const createStarterSetMock = mockMutation(
   "assessment.starters.createStarterSet"
 )
+const reconcileStarterSetMock = mockMutation(
+  "assessment.starters.reconcileStarterSet"
+)
 const completeOnboardingMock = mockMutation(
   "accounts.organization.completeOnboarding"
 )
@@ -21,8 +24,9 @@ const requestStarterImportMock = mockMutation("ai.suggest.requestStarterImport")
 const confirmStarterImportMock = mockMutation("ai.suggest.confirmStarterImport")
 const rejectSuggestionMock = mockMutation("ai.suggest.rejectSuggestion")
 // The query mock dispatches on the api ref (see beforeEach): getIndustryStarter
-// returns the seed fixture, getModel the tracks fixture, and
-// getOpenSuggestions the AI rows for the import flow.
+// returns the seed fixture, getModel the tracks fixture, getOpenSuggestions the
+// AI rows for the import flow, and listRoleFamilies/listRoles the already-created
+// set on a revisit (empty in the forward flow, so the resume block stays off).
 const useQueryMock = vi.fn()
 onQuery((ref, args) => useQueryMock(ref, args))
 
@@ -104,6 +108,44 @@ function suggestedImportFixture() {
 let currentStarter: unknown
 let currentModel: unknown
 let currentSuggestions: unknown
+let currentFamilies: unknown
+let currentRoles: unknown
+
+// An already-created set the way listRoleFamilies + listRoles return it on a
+// revisit: families carry their id, roles carry their id/title/trackKey and the
+// familyId they belong to (null for an unfamilied role).
+function existingFamiliesFixture() {
+  return [
+    { familyId: "fam-eng", name: "Engineering", roleCount: 2 },
+    { familyId: "fam-sales", name: "Sales", roleCount: 1 },
+  ]
+}
+
+function existingRolesFixture() {
+  return [
+    {
+      roleId: "role-dev",
+      title: "Developer",
+      trackKey: "IC",
+      familyId: "fam-eng",
+      familyName: "Engineering",
+    },
+    {
+      roleId: "role-lead",
+      title: "Tech Lead",
+      trackKey: "Lead",
+      familyId: "fam-eng",
+      familyName: "Engineering",
+    },
+    {
+      roleId: "role-ae",
+      title: "Account Executive",
+      trackKey: "IC",
+      familyId: "fam-sales",
+      familyName: "Sales",
+    },
+  ]
+}
 
 function renderStep(onFinished: () => void = () => {}) {
   return render(
@@ -125,6 +167,7 @@ async function seedFromTemplate() {
 describe("FamiliesStep", () => {
   beforeEach(() => {
     createStarterSetMock.mockReset()
+    reconcileStarterSetMock.mockReset()
     completeOnboardingMock.mockReset()
     requestStarterImportMock.mockReset()
     confirmStarterImportMock.mockReset()
@@ -133,10 +176,16 @@ describe("FamiliesStep", () => {
     currentStarter = starterFixture()
     currentModel = modelFixture()
     currentSuggestions = []
+    // Forward flow: no roles exist yet, so the resume-from-existing block must
+    // not fire and the paste/template/AI create flow stays in charge.
+    currentFamilies = []
+    currentRoles = []
     useQueryMock.mockImplementation((ref: unknown) => {
       if (ref === "assessment.starters.getIndustryStarter")
         return currentStarter
       if (ref === "ai.suggest.getOpenSuggestions") return currentSuggestions
+      if (ref === "assessment.families.listRoleFamilies") return currentFamilies
+      if (ref === "assessment.roles.listRoles") return currentRoles
       return currentModel
     })
   })
@@ -470,5 +519,165 @@ describe("FamiliesStep", () => {
     })
     expect(confirmStarterImportMock).toHaveBeenCalledTimes(2)
     expect(completeOnboardingMock).not.toHaveBeenCalled()
+  })
+
+  it("resumes into an editable review of the existing roles and reconciles on advance", async () => {
+    // A revisit: the families step was finished once, so families + roles
+    // already exist. The step must seed the review straight from them (no
+    // paste view) and route the advance to reconcileStarterSet, carrying the
+    // existing ids.
+    currentFamilies = existingFamiliesFixture()
+    currentRoles = existingRolesFixture()
+    reconcileStarterSetMock.mockResolvedValue(null)
+    const onFinished = vi.fn()
+    renderStep(onFinished)
+
+    // The editable review shows the existing role families; the paste/import
+    // entry is gone.
+    const nameInputs = (await screen.findAllByLabelText(
+      messages.dashboard.roles.family.nameLabel
+    )) as HTMLInputElement[]
+    expect(nameInputs.map((input) => input.value)).toEqual([
+      "Engineering",
+      "Sales",
+    ])
+    expect(screen.queryByLabelText(t.pasteLabel)).toBeNull()
+    // The existing role titles are visible and editable.
+    const titleInputs = screen.getAllByLabelText(
+      messages.dashboard.roles.create.titleLabel
+    ) as HTMLInputElement[]
+    expect(titleInputs.map((input) => input.value)).toEqual([
+      "Developer",
+      "Tech Lead",
+      "Account Executive",
+    ])
+
+    // Edit one title to prove the user's edits ride along.
+    fireEvent.change(titleInputs[0] as HTMLInputElement, {
+      target: { value: "Senior Developer" },
+    })
+
+    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
+    await waitFor(() => {
+      expect(reconcileStarterSetMock).toHaveBeenCalledTimes(1)
+    })
+    expect(reconcileStarterSetMock).toHaveBeenCalledWith({
+      orgId: "org-1",
+      families: [
+        {
+          familyId: "fam-eng",
+          name: "Engineering",
+          roles: [
+            { roleId: "role-dev", title: "Senior Developer", trackKey: "IC" },
+            { roleId: "role-lead", title: "Tech Lead", trackKey: "Lead" },
+          ],
+        },
+        {
+          familyId: "fam-sales",
+          name: "Sales",
+          roles: [
+            { roleId: "role-ae", title: "Account Executive", trackKey: "IC" },
+          ],
+        },
+      ],
+    })
+    // The reconcile path never re-creates: no create/confirm calls.
+    expect(createStarterSetMock).not.toHaveBeenCalled()
+    expect(confirmStarterImportMock).not.toHaveBeenCalled()
+    expect(completeOnboardingMock).not.toHaveBeenCalled()
+    expect(onFinished).toHaveBeenCalledTimes(1)
+  })
+
+  it("holds the spinner while listRoles is still loading, even with a coincident open AI suggestion", async () => {
+    // The loading-window defect: Convex useQuery subscriptions resolve
+    // independently, so on a revisit the suggestion + families + model can be
+    // resolved while listRoles is still loading (existingRoles === undefined).
+    // In that window nothing must seed: the AI block must NOT fire (it would
+    // seed the stale import and route finish() to confirmStarterImport), and
+    // the spinner must hold until roles resolve so the resume-from-existing
+    // path can win once they do. Roles still loading: listRoles returns
+    // undefined while families + model are resolved and a suggested import is
+    // open.
+    currentRoles = undefined
+    currentSuggestions = [suggestedImportFixture()]
+    reconcileStarterSetMock.mockResolvedValue(null)
+    const onFinished = vi.fn()
+    renderStep(onFinished)
+
+    // The spinner holds: no review (no family-name inputs), no AI provenance
+    // line, and no paste view. Nothing has seeded yet.
+    expect(
+      screen.queryAllByLabelText(messages.dashboard.roles.family.nameLabel)
+    ).toHaveLength(0)
+    expect(screen.queryByText(messages.dashboard.ai.provenance)).toBeNull()
+    expect(screen.queryByLabelText(t.pasteLabel)).toBeNull()
+    // Nothing is created, confirmed, or reconciled while roles are loading.
+    expect(confirmStarterImportMock).not.toHaveBeenCalled()
+    expect(createStarterSetMock).not.toHaveBeenCalled()
+    expect(reconcileStarterSetMock).not.toHaveBeenCalled()
+  })
+
+  it("resume from existing wins over a coincident open AI suggestion", async () => {
+    // The coincidence the ordering defect mishandled: a revisit (existing
+    // families + roles) AND a still-open suggested import row resolving in the
+    // same render. Resume-from-existing must win regardless of block order:
+    // the review shows the EXISTING role titles, not the suggested import's,
+    // and advancing reconciles the real ids (never confirms the stale import).
+    currentFamilies = existingFamiliesFixture()
+    currentRoles = existingRolesFixture()
+    currentSuggestions = [suggestedImportFixture()]
+    reconcileStarterSetMock.mockResolvedValue(null)
+    const onFinished = vi.fn()
+    renderStep(onFinished)
+
+    // The existing set seeded the review, not the suggested import (which is a
+    // single "Engineering" family). The provenance line (AI-seeded only) is
+    // absent.
+    const nameInputs = (await screen.findAllByLabelText(
+      messages.dashboard.roles.family.nameLabel
+    )) as HTMLInputElement[]
+    expect(nameInputs.map((input) => input.value)).toEqual([
+      "Engineering",
+      "Sales",
+    ])
+    expect(screen.queryByText(messages.dashboard.ai.provenance)).toBeNull()
+    const titleInputs = screen.getAllByLabelText(
+      messages.dashboard.roles.create.titleLabel
+    ) as HTMLInputElement[]
+    expect(titleInputs.map((input) => input.value)).toEqual([
+      "Developer",
+      "Tech Lead",
+      "Account Executive",
+    ])
+
+    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
+    await waitFor(() => {
+      expect(reconcileStarterSetMock).toHaveBeenCalledTimes(1)
+    })
+    expect(reconcileStarterSetMock).toHaveBeenCalledWith({
+      orgId: "org-1",
+      families: [
+        {
+          familyId: "fam-eng",
+          name: "Engineering",
+          roles: [
+            { roleId: "role-dev", title: "Developer", trackKey: "IC" },
+            { roleId: "role-lead", title: "Tech Lead", trackKey: "Lead" },
+          ],
+        },
+        {
+          familyId: "fam-sales",
+          name: "Sales",
+          roles: [
+            { roleId: "role-ae", title: "Account Executive", trackKey: "IC" },
+          ],
+        },
+      ],
+    })
+    // The stale import is never confirmed and nothing is re-created.
+    expect(confirmStarterImportMock).not.toHaveBeenCalled()
+    expect(createStarterSetMock).not.toHaveBeenCalled()
+    expect(completeOnboardingMock).not.toHaveBeenCalled()
+    expect(onFinished).toHaveBeenCalledTimes(1)
   })
 })

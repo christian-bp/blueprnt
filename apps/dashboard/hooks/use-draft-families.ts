@@ -1,11 +1,28 @@
 "use client"
 
+import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { useState } from "react"
-import { cleanDraftFamilies, type DraftFamily } from "@/lib/family-dnd"
+import {
+  cleanDraftFamilies,
+  cleanDraftFamiliesWithIds,
+  type DraftFamily,
+} from "@/lib/family-dnd"
 
+// A seed source: the create paths (template/AI) pass families without ids; the
+// resume-from-existing path also carries the real familyId/roleId so the draft
+// can reconcile against the stored set instead of re-creating it.
 export interface SeedFamily {
+  familyId?: Id<"roleFamilies">
   name: string
-  roles: { title: string; trackKey: string }[]
+  roles: { roleId?: Id<"roles">; title: string; trackKey: string }[]
+}
+
+// The reconcileStarterSet payload shape: like SeedFamily but with the ids made
+// explicit (omitted when undefined so the validator's v.optional is satisfied).
+export interface ReconcileFamily {
+  familyId?: Id<"roleFamilies">
+  name: string
+  roles: { roleId?: Id<"roles">; title: string; trackKey: string }[]
 }
 
 // Owns the families step's editable draft list: the families, the unique id
@@ -23,6 +40,7 @@ export function useDraftFamilies(): {
   clear: () => void
   claimId: () => number
   cleaned: () => SeedFamily[]
+  cleanedWithIds: () => ReconcileFamily[]
 } {
   const [families, setFamilies] = useState<DraftFamily[] | null>(null)
   const [nextId, setNextId] = useState(0)
@@ -34,9 +52,14 @@ export function useDraftFamilies(): {
       setFamilies(
         source.map((family) => ({
           id: id++,
+          // Carry the real ids through (undefined for template/AI seeds).
+          ...(family.familyId !== undefined
+            ? { familyId: family.familyId }
+            : {}),
           name: family.name,
           roles: family.roles.map((role) => ({
             id: id++,
+            ...(role.roleId !== undefined ? { roleId: role.roleId } : {}),
             title: role.title,
             trackKey: mapTrackKey(role.trackKey),
           })),
@@ -54,6 +77,10 @@ export function useDraftFamilies(): {
       setNextId(id + 1)
       return id
     },
+    // The create paths drop the ids (createStarterSet/confirmStarterImport
+    // only take name/title/trackKey); the reconcile path keeps them so the
+    // server can diff against the stored set.
     cleaned: () => cleanDraftFamilies(families ?? []),
+    cleanedWithIds: () => cleanDraftFamiliesWithIds(families ?? []),
   }
 }

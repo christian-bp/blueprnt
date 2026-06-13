@@ -66,4 +66,43 @@ describe("useDraftFamilies", () => {
       { name: "Engineering", roles: [{ title: "Dev", trackKey: "IC" }] },
     ])
   })
+
+  it("cleanedWithIds carries seeded ids and omits them for new rows", () => {
+    const { result } = renderHook(() => useDraftFamilies())
+    // Seed an existing family (with ids), then add a brand-new role without one.
+    act(() =>
+      result.current.seed([
+        {
+          // biome-ignore lint/suspicious/noExplicitAny: test ids stand in for branded Convex ids.
+          familyId: "fam-1" as any,
+          name: "Engineering",
+          // biome-ignore lint/suspicious/noExplicitAny: test ids stand in for branded Convex ids.
+          roles: [{ roleId: "role-1" as any, title: "Dev", trackKey: "IC" }],
+        },
+      ])
+    )
+    let newId = -1
+    act(() => {
+      newId = result.current.claimId()
+    })
+    act(() =>
+      result.current.update((current) =>
+        current.map((family) => ({
+          ...family,
+          // A newly-added row: no roleId, so reconcile treats it as new.
+          roles: [...family.roles, { id: newId, title: "New", trackKey: "IC" }],
+        }))
+      )
+    )
+    expect(result.current.cleanedWithIds()).toEqual([
+      {
+        familyId: "fam-1",
+        name: "Engineering",
+        roles: [
+          { roleId: "role-1", title: "Dev", trackKey: "IC" },
+          { title: "New", trackKey: "IC" },
+        ],
+      },
+    ])
+  })
 })

@@ -33,6 +33,9 @@ export function ScoreStep({
   const tHelp = useTranslations("dashboard.help")
   const locale = useLocale()
   const results = useQuery(api.assessment.results.getResults, { orgId, locale })
+  // listRoles carries per-role profileComplete; getResults sees ratings only,
+  // so anyStarted reads from here to count a drafted profile as engagement.
+  const roles = useQuery(api.assessment.roles.listRoles, { orgId, locale })
   const completeOnboarding = useMutation(
     api.accounts.organization.completeOnboarding
   )
@@ -61,7 +64,7 @@ export function ScoreStep({
     }
   }
 
-  if (results === undefined) {
+  if (results === undefined || roles === undefined) {
     return (
       <div className="flex items-center justify-center p-6">
         <Spinner aria-label={tOnboarding("loading")} />
@@ -72,10 +75,13 @@ export function ScoreStep({
   const rows = results.rows
   const total = rows.length
   const scored = rows.filter((row) => row.complete).length
-  // "Started" = any role has at least one rating (or is complete). getResults
-  // exposes no profile field, so a profile-only role is intentionally not
-  // counted here; the fork only gates the very first entry into scoring.
-  const anyStarted = rows.some((row) => row.ratedCount > 0 || row.complete)
+  // "Started" = any role has a filled profile OR at least one rating. Derived
+  // from listRoles (which exposes profileComplete) rather than getResults
+  // (ratings only), so drafting a profile and returning to this step does not
+  // reopen the fork. The fork only gates the very first entry into scoring.
+  const anyStarted = roles.some(
+    (role) => role.profileComplete || role.ratedCount > 0
+  )
   const allComplete = total > 0 && scored === total
 
   // Phase selection. mode="wait" opacity crossfade reuses the wizard frame's

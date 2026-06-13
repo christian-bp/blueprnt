@@ -359,7 +359,8 @@
         "dndOver": "{title} on perheen {family} päällä.",
         "dndDropped": "{title} sijoitettiin perheeseen {family}.",
         "dndCancelled": "Roolin {title} siirto peruutettiin.",
-        "reviewHint": "Ryhmittele roolit perheisiin ja aseta jokaisen roolin track."
+        "reviewHint": "Ryhmittele roolit perheisiin ja aseta jokaisen roolin track.",
+        "ungroupedFamilyName": "Muut roolit"
       },
       "score": {
         "forkHeading": "Roolisi ovat valmiit. Haluatko arvioida ne nyt?",

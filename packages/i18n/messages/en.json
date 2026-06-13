@@ -359,7 +359,8 @@
         "dndOver": "{title} is over {family}.",
         "dndDropped": "{title} was placed in {family}.",
         "dndCancelled": "Moving {title} was cancelled.",
-        "reviewHint": "Group the roles into families and set each role's track."
+        "reviewHint": "Group the roles into families and set each role's track.",
+        "ungroupedFamilyName": "Other roles"
       },
       "score": {
         "forkHeading": "Your roles are ready. Want to score them now?",

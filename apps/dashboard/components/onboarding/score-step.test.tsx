@@ -65,7 +65,30 @@ function resultsFixture(rows: Array<Record<string, unknown>>) {
   }
 }
 
+// listRoles rows: per-role profileComplete + ratedCount, matching the
+// returns validator in convex/assessment/roles.ts listRoles. The step derives
+// anyStarted from these (profileComplete || ratedCount > 0).
+function listRolesFixture(rows: Array<Record<string, unknown>>) {
+  return rows.map((row) => ({
+    roleId: "role-x",
+    title: "Role",
+    function: "Eng",
+    team: "Team",
+    trackKey: "IC",
+    trackName: "IC",
+    status: "draft",
+    ratedCount: 0,
+    totalCriteria: 5,
+    profileComplete: false,
+    familyId: null,
+    familyName: null,
+    trackOrder: 0,
+    ...row,
+  }))
+}
+
 let currentResults: unknown
+let currentRoles: unknown
 
 function renderStep(onFinish: () => void = () => {}) {
   return render(
@@ -80,8 +103,10 @@ describe("ScoreStep", () => {
     completeOnboardingMock.mockReset()
     useQueryMock.mockReset()
     completeOnboardingMock.mockResolvedValue(null)
+    currentRoles = listRolesFixture([])
     useQueryMock.mockImplementation((ref: string) => {
       if (ref === "assessment.results.getResults") return currentResults
+      if (ref === "assessment.roles.listRoles") return currentRoles
       return undefined
     })
   })
@@ -92,6 +117,10 @@ describe("ScoreStep", () => {
     currentResults = resultsFixture([
       { roleId: "role-1", title: "A", ratedCount: 0, complete: false },
       { roleId: "role-2", title: "B", ratedCount: 0, complete: false },
+    ])
+    currentRoles = listRolesFixture([
+      { roleId: "role-1", title: "A", profileComplete: false, ratedCount: 0 },
+      { roleId: "role-2", title: "B", profileComplete: false, ratedCount: 0 },
     ])
     renderStep()
     expect(screen.getByText(t.forkHeading)).toBeDefined()
@@ -114,6 +143,9 @@ describe("ScoreStep", () => {
     currentResults = resultsFixture([
       { roleId: "role-1", title: "A", ratedCount: 0, complete: false },
     ])
+    currentRoles = listRolesFixture([
+      { roleId: "role-1", title: "A", profileComplete: false, ratedCount: 0 },
+    ])
     const onFinish = vi.fn()
     renderStep(onFinish)
     fireEvent.click(
@@ -129,6 +161,9 @@ describe("ScoreStep", () => {
     currentResults = resultsFixture([
       { roleId: "role-1", title: "A", ratedCount: 0, complete: false },
     ])
+    currentRoles = listRolesFixture([
+      { roleId: "role-1", title: "A", profileComplete: false, ratedCount: 0 },
+    ])
     renderStep()
     fireEvent.click(
       screen.getByRole("button", { name: new RegExp(t.scoreNowCta) })
@@ -143,8 +178,26 @@ describe("ScoreStep", () => {
     currentResults = resultsFixture([
       { roleId: "role-1", title: "A", ratedCount: 2, complete: false },
     ])
+    currentRoles = listRolesFixture([
+      { roleId: "role-1", title: "A", profileComplete: false, ratedCount: 2 },
+    ])
     renderStep()
     // No fork: it lands straight on the scoring list.
+    expect(screen.queryByText(t.forkHeading)).toBeNull()
+    expect(screen.getByText(t.saveExitLine)).toBeDefined()
+  })
+
+  it("skips the fork when a role has a profile but no ratings", () => {
+    // The bug: navigating back to a previous wizard step remounts this one and
+    // resets local `scoring`. getResults shows no ratings, so a ratings-only
+    // anyStarted reopened the fork. A drafted profile is engagement: no fork.
+    currentResults = resultsFixture([
+      { roleId: "role-1", title: "A", ratedCount: 0, complete: false },
+    ])
+    currentRoles = listRolesFixture([
+      { roleId: "role-1", title: "A", profileComplete: true, ratedCount: 0 },
+    ])
+    renderStep()
     expect(screen.queryByText(t.forkHeading)).toBeNull()
     expect(screen.getByText(t.saveExitLine)).toBeDefined()
   })
@@ -152,6 +205,9 @@ describe("ScoreStep", () => {
   it("'Save and exit' completes onboarding and finishes", async () => {
     currentResults = resultsFixture([
       { roleId: "role-1", title: "A", ratedCount: 2, complete: false },
+    ])
+    currentRoles = listRolesFixture([
+      { roleId: "role-1", title: "A", profileComplete: true, ratedCount: 2 },
     ])
     const onFinish = vi.fn()
     renderStep(onFinish)
@@ -167,6 +223,10 @@ describe("ScoreStep", () => {
       { roleId: "role-1", title: "A", ratedCount: 5, complete: true },
       { roleId: "role-2", title: "B", ratedCount: 5, complete: true },
     ])
+    currentRoles = listRolesFixture([
+      { roleId: "role-1", title: "A", profileComplete: true, ratedCount: 5 },
+      { roleId: "role-2", title: "B", profileComplete: true, ratedCount: 5 },
+    ])
     const onFinish = vi.fn()
     renderStep(onFinish)
     expect(screen.getByText(t.doneHeading)).toBeDefined()
@@ -180,6 +240,9 @@ describe("ScoreStep", () => {
   it("opens a role from the list and returns after the role is done", async () => {
     currentResults = resultsFixture([
       { roleId: "role-1", title: "A", ratedCount: 1, complete: false },
+    ])
+    currentRoles = listRolesFixture([
+      { roleId: "role-1", title: "A", profileComplete: true, ratedCount: 1 },
     ])
     renderStep()
     fireEvent.click(screen.getByRole("button", { name: t.resumeRoleCta }))
