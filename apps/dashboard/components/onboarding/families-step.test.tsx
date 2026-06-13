@@ -159,7 +159,18 @@ function renderStep(onFinished: () => void = () => {}) {
   )
 }
 
+// Picking the template now CREATES immediately: createStarterSet is awaited,
+// then the created set appears via listRoleFamilies/listRoles (the resume
+// block seeds the editable review from it). The mock populates those query
+// fixtures so a re-render reflects the now-created set, mirroring how the live
+// Convex queries update after the mutation resolves.
 async function seedFromTemplate() {
+  createStarterSetMock.mockResolvedValue(null)
+  createStarterSetMock.mockImplementation(() => {
+    currentFamilies = existingFamiliesFixture()
+    currentRoles = existingRolesFixture()
+    return Promise.resolve(null)
+  })
   fireEvent.click(screen.getByRole("button", { name: t.templateCta }))
   await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
 }
@@ -295,22 +306,29 @@ describe("FamiliesStep", () => {
     expect(onFinished).toHaveBeenCalledTimes(1)
   })
 
-  it("the template button seeds from the industry starter and creates via createStarterSet", async () => {
-    createStarterSetMock.mockResolvedValue(null)
-    completeOnboardingMock.mockResolvedValue(null)
-    const onFinished = vi.fn()
-    renderStep(onFinished)
-    await seedFromTemplate()
+  it("use template creates immediately, shows a spinner, then renders the editable review", async () => {
+    // The template create is deferred until the queries reflect it, so the
+    // mock holds the listRoles/listRoleFamilies update behind a manual resolve
+    // and we can observe the spinner gate between the click and the review.
+    // The deferred resolver is captured synchronously (the Promise executor
+    // runs synchronously) into an explicitly-typed holder so it stays callable.
+    const deferred: { resolve: () => void } = { resolve: () => {} }
+    createStarterSetMock.mockImplementation(
+      () =>
+        new Promise<null>((resolve) => {
+          deferred.resolve = () => {
+            currentFamilies = existingFamiliesFixture()
+            currentRoles = existingRolesFixture()
+            resolve(null)
+          }
+        })
+    )
+    renderStep()
 
-    const nameInputs = screen.getAllByLabelText(
-      messages.dashboard.roles.family.nameLabel
-    ) as HTMLInputElement[]
-    expect(nameInputs.map((input) => input.value)).toEqual([
-      "Engineering",
-      "Sales",
-    ])
+    fireEvent.click(screen.getByRole("button", { name: t.templateCta }))
 
-    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
+    // createStarterSet runs on the pick (NOT deferred to Next) with the
+    // industry families, and the paste view is replaced by the spinner.
     await waitFor(() => {
       expect(createStarterSetMock).toHaveBeenCalledTimes(1)
     })
@@ -330,9 +348,71 @@ describe("FamiliesStep", () => {
         },
       ],
     })
-    expect(completeOnboardingMock).not.toHaveBeenCalled()
-    expect(confirmStarterImportMock).not.toHaveBeenCalled()
-    expect(onFinished).toHaveBeenCalledTimes(1)
+    expect(screen.queryByLabelText(t.pasteLabel)).toBeNull()
+    expect(
+      screen.queryAllByLabelText(messages.dashboard.roles.family.nameLabel)
+    ).toHaveLength(0)
+
+    // Once the created set appears, the resume-from-existing seed renders the
+    // editable review (the same families, now carrying their real ids).
+    deferred.resolve()
+    const nameInputs = (await screen.findAllByLabelText(
+      messages.dashboard.roles.family.nameLabel
+    )) as HTMLInputElement[]
+    expect(nameInputs.map((input) => input.value)).toEqual([
+      "Engineering",
+      "Sales",
+    ])
+    // AI provenance is not shown: the review is the freshly-created set.
+    expect(screen.queryByText(messages.dashboard.ai.provenance)).toBeNull()
+  })
+
+  it("template choice persists across a remount/revisit", async () => {
+    // The regression for the reported bug: after the template create, a remount
+    // (e.g. the user navigated back a step then forward, dropping local state)
+    // with the created set present resumes straight into the editable review,
+    // never offering the paste/template choice again.
+    await (async () => {
+      const { unmount } = renderStep()
+      await seedFromTemplate()
+      unmount()
+    })()
+
+    // currentFamilies/currentRoles are now populated (seedFromTemplate created
+    // them); a fresh mount has no local draft, yet must resume into the review.
+    renderStep()
+    const nameInputs = (await screen.findAllByLabelText(
+      messages.dashboard.roles.family.nameLabel
+    )) as HTMLInputElement[]
+    expect(nameInputs.map((input) => input.value)).toEqual([
+      "Engineering",
+      "Sales",
+    ])
+    expect(screen.queryByLabelText(t.pasteLabel)).toBeNull()
+  })
+
+  it("start over in the just-created template review discards via reconcile-empty", async () => {
+    reconcileStarterSetMock.mockImplementation(() => {
+      // Discarding archives all roles and removes all families: the queries go
+      // back to empty, so the paste/template/AI choice can show again.
+      currentFamilies = []
+      currentRoles = []
+      return Promise.resolve(null)
+    })
+    renderStep()
+    await seedFromTemplate()
+
+    fireEvent.click(screen.getByRole("button", { name: t.restartCta }))
+
+    await waitFor(() => {
+      expect(reconcileStarterSetMock).toHaveBeenCalledTimes(1)
+    })
+    expect(reconcileStarterSetMock).toHaveBeenCalledWith({
+      orgId: "org-1",
+      families: [],
+    })
+    expect(await screen.findByLabelText(t.pasteLabel)).toBeDefined()
+    expect(rejectSuggestionMock).not.toHaveBeenCalled()
   })
 
   it("choosing the template dismisses an open AI proposal", async () => {
@@ -356,14 +436,107 @@ describe("FamiliesStep", () => {
     })
   })
 
-  it("excludes a removed family from the createStarterSet payload", async () => {
-    createStarterSetMock.mockResolvedValue(null)
+  it("the template review wins even when a suggested AI proposal is open during the in-flight create", async () => {
+    // The hijack regression. seedFromTemplate fires flow.reject()
+    // fire-and-forget and awaits createStarterSet, but sets no seededFrom
+    // synchronously and (without the fix) leaves lastDismissedId untouched.
+    // flow.status is derived from getOpenSuggestions and does NOT flip on the
+    // (in-flight, not-yet-round-tripped) reject. So there is a render after the
+    // create resolves but before listRoles reports the new roles where
+    // seededFrom === null, existingRoles is resolved-empty [], and
+    // flow.status === "suggested" with the id un-latched: the AI seed block's
+    // gate is fully satisfied and it hijacks the screen onto the abandoned AI
+    // proposal (provenance shown), and Next would confirm a walked-away-from
+    // suggestion instead of reconciling the created set.
+    //
+    // Reproduce that exact window deterministically: the suggestion is NOT
+    // "suggested" at mount (so the paste view, with its template CTA, is
+    // reachable); the create mock makes it "suggested" while the create is in
+    // flight and resolves WITHOUT yet reporting roles, so the next render is the
+    // vulnerable one. Resolving the roles afterward lets the resume-from-existing
+    // seed claim the review.
+    rejectSuggestionMock.mockResolvedValue(null)
+    reconcileStarterSetMock.mockResolvedValue(null)
+    const deferred: { resolve: () => void } = { resolve: () => {} }
+    createStarterSetMock.mockImplementation(
+      () =>
+        new Promise<null>((resolve) => {
+          deferred.resolve = () => {
+            // The create resolved: the open-suggestion query now reports the
+            // proposal as "suggested" (the window the bug exploits), but the
+            // roles subscription has NOT yet reported the new roles (they stay
+            // empty until the explicit rerender below). This is the single
+            // vulnerable render the bug exploits.
+            currentSuggestions = [suggestedImportFixture()]
+            resolve(null)
+          }
+        })
+    )
+    const onFinished = vi.fn()
+    const view = renderStep(onFinished)
+
+    fireEvent.click(screen.getByRole("button", { name: t.templateCta }))
+    await waitFor(() => {
+      expect(createStarterSetMock).toHaveBeenCalledTimes(1)
+    })
+
+    // The create resolves into the vulnerable window (suggestion "suggested",
+    // existingRoles resolved-empty []). The post-await re-render (the create's
+    // finally clearing templatePending) reads the queries here. The AI seed
+    // block must NOT fire: with the fix the spinner holds (createdViaTemplate +
+    // no roles yet), so no AI provenance and no AI single-family review appear.
+    // On the buggy code the AI block hijacks the screen onto the abandoned
+    // proposal and the provenance line shows.
+    deferred.resolve()
+    await waitFor(() => {
+      expect(createStarterSetMock).toHaveBeenCalledTimes(1)
+    })
+    expect(screen.queryByText(messages.dashboard.ai.provenance)).toBeNull()
+
+    // The roles subscription now reports the created set; a re-render lets the
+    // resume-from-existing seed render the TEMPLATE set (both families), never
+    // the single-family AI proposal, and never the provenance line.
+    currentFamilies = existingFamiliesFixture()
+    currentRoles = existingRolesFixture()
+    view.rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <FamiliesStep
+          orgId="org-1"
+          organizationName="Acme"
+          onAdvance={onFinished}
+        />
+      </NextIntlClientProvider>
+    )
+    const nameInputs = (await screen.findAllByLabelText(
+      messages.dashboard.roles.family.nameLabel
+    )) as HTMLInputElement[]
+    expect(nameInputs.map((input) => input.value)).toEqual([
+      "Engineering",
+      "Sales",
+    ])
+    expect(screen.queryByText(messages.dashboard.ai.provenance)).toBeNull()
+
+    // Advancing reconciles the created set; it must NOT confirm the abandoned
+    // import.
+    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
+    await waitFor(() => {
+      expect(reconcileStarterSetMock).toHaveBeenCalledTimes(1)
+    })
+    expect(confirmStarterImportMock).not.toHaveBeenCalled()
+    expect(onFinished).toHaveBeenCalledTimes(1)
+  })
+
+  it("removing a family in the just-created review reconciles it away on next", async () => {
+    // Template now creates on pick, so the review is the created set: Next
+    // reconciles the edited list against the stored roles (never re-creates).
+    reconcileStarterSetMock.mockResolvedValue(null)
     completeOnboardingMock.mockResolvedValue(null)
-    renderStep()
+    const onFinished = vi.fn()
+    renderStep(onFinished)
     await seedFromTemplate()
 
     // Remove the Sales family (arm the morph confirm, then confirm), then
-    // create.
+    // reconcile on Next.
     fireEvent.click(
       screen.getByRole("button", {
         name: t.removeFamilyLabel.replace("{name}", "Sales"),
@@ -377,25 +550,30 @@ describe("FamiliesStep", () => {
     fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
 
     await waitFor(() => {
-      expect(createStarterSetMock).toHaveBeenCalledTimes(1)
+      expect(reconcileStarterSetMock).toHaveBeenCalledTimes(1)
     })
-    const payload = createStarterSetMock.mock.calls[0]?.[0] as {
+    const payload = reconcileStarterSetMock.mock.calls[0]?.[0] as {
       families: { name: string }[]
     }
     expect(payload.families.map((family) => family.name)).toEqual([
       "Engineering",
     ])
+    expect(createStarterSetMock).toHaveBeenCalledTimes(1) // the create-on-pick
+    expect(completeOnboardingMock).not.toHaveBeenCalled()
+    expect(onFinished).toHaveBeenCalledTimes(1)
   })
 
-  it("finishing with only blank families advances without creating", async () => {
+  it("emptying every family in the just-created review reconciles to an empty set on next", async () => {
+    // Template creates on pick, then deleting all role-family names empties the
+    // list; Next reconciles to an empty set (archives every created role,
+    // removes every family) rather than re-creating. Onboarding is NOT
+    // completed here (the score step owns completion).
+    reconcileStarterSetMock.mockResolvedValue(null)
     completeOnboardingMock.mockResolvedValue(null)
     const onFinished = vi.fn()
     renderStep(onFinished)
     await seedFromTemplate()
 
-    // Empty every prefilled family name; cleaned input is then empty and
-    // nothing is created. The step still advances, and onboarding is NOT
-    // completed here (the score step owns completion).
     for (const input of screen.getAllByLabelText(
       messages.dashboard.roles.family.nameLabel
     )) {
@@ -406,7 +584,11 @@ describe("FamiliesStep", () => {
     await waitFor(() => {
       expect(onFinished).toHaveBeenCalledTimes(1)
     })
-    expect(createStarterSetMock).not.toHaveBeenCalled()
+    expect(reconcileStarterSetMock).toHaveBeenCalledTimes(1)
+    expect(reconcileStarterSetMock).toHaveBeenCalledWith({
+      orgId: "org-1",
+      families: [],
+    })
     expect(completeOnboardingMock).not.toHaveBeenCalled()
   })
 
@@ -439,31 +621,23 @@ describe("FamiliesStep", () => {
     expect(await screen.findByLabelText(t.pasteLabel)).toBeDefined()
   })
 
-  it("start over from a template review returns to the paste view without dismissing anything", async () => {
-    renderStep()
-    await seedFromTemplate()
-
-    fireEvent.click(screen.getByRole("button", { name: t.restartCta }))
-
-    expect(await screen.findByLabelText(t.pasteLabel)).toBeDefined()
-    expect(rejectSuggestionMock).not.toHaveBeenCalled()
-  })
-
-  it("shows the translated duplicate alert and stays when create is rejected", async () => {
+  it("shows the translated duplicate alert and returns to the paste view when the template create is rejected", async () => {
+    // The create now runs on pick, so a duplicate-name rejection surfaces there:
+    // the flag/pending reset and the paste view comes back with the alert.
     createStarterSetMock.mockRejectedValue(
       new Error("ConvexError: errors.roleFamilyExists")
     )
     const onFinished = vi.fn()
     renderStep(onFinished)
-    await seedFromTemplate()
 
-    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
+    fireEvent.click(screen.getByRole("button", { name: t.templateCta }))
 
     await waitFor(() => {
       expect(screen.getByRole("alert").textContent).toBe(
         messages.errors.roleFamilyExists
       )
     })
+    expect(screen.getByLabelText(t.pasteLabel)).toBeDefined()
     expect(completeOnboardingMock).not.toHaveBeenCalled()
     expect(onFinished).not.toHaveBeenCalled()
   })
@@ -542,6 +716,9 @@ describe("FamiliesStep", () => {
       "Sales",
     ])
     expect(screen.queryByLabelText(t.pasteLabel)).toBeNull()
+    // A genuine revisit (not created this session) offers NO one-click Start
+    // over: it would archive everything. Editing happens in place.
+    expect(screen.queryByRole("button", { name: t.restartCta })).toBeNull()
     // The existing role titles are visible and editable.
     const titleInputs = screen.getAllByLabelText(
       messages.dashboard.roles.create.titleLabel

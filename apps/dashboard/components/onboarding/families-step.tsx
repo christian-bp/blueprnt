@@ -29,12 +29,13 @@ import {
   starterImportValueSchema,
 } from "@/lib/suggestion-schemas"
 
-// What seeded the editable review list: the already-created set on a revisit
-// (reconciled on advance), the industry template, or an AI import whose
-// suggestion the create button must close out (ADR-0003).
+// What seeded the editable review list: the already-created set (a revisit, or
+// the just-created-this-session template set, both reconciled on advance) or an
+// AI import whose suggestion the create button must close out (ADR-0003). The
+// template path no longer has its own source: picking it creates immediately,
+// then the created roles seed the "existing" review like any other saved set.
 type SeedSource =
   | { source: "existing" }
-  | { source: "template" }
   | { source: "ai"; suggestionId: Id<"suggestions"> }
 
 // The exact reconcileStarterSet families payload, derived from the mutation so
@@ -123,6 +124,15 @@ export function FamiliesStep({
   // stay non-empty after seeding, so without this a "start over" back to the
   // paste view would instantly re-seed the same review.
   const [resumedExisting, setResumedExisting] = useState(false)
+  // The template path creates on pick (like the model step), then flows through
+  // the resume-from-existing seed. createdViaTemplate marks the freshly-created
+  // set so this one screen offers a discarding Start over (a genuine revisit
+  // must not); templatePending covers the in-flight create so the paste view
+  // never flashes and the create runs at most once. restartPending guards the
+  // discard against a double-click.
+  const [createdViaTemplate, setCreatedViaTemplate] = useState(false)
+  const [templatePending, setTemplatePending] = useState(false)
+  const [restartPending, setRestartPending] = useState(false)
 
   // Resume on a revisit: when the families step was finished once, families
   // and roles already exist, so seed the review straight from them (carrying
@@ -202,6 +212,11 @@ export function FamiliesStep({
   const importValue = flow.value
   if (
     seededFrom === null &&
+    // Defense-in-depth against the template-create hijack: an in-progress or
+    // just-resolved template create (createdViaTemplate, possibly before the
+    // listRoles subscription reports the new roles) must never let the AI
+    // block seed, regardless of how the reject round-trip is timed.
+    !createdViaTemplate &&
     existingRoles !== undefined &&
     existingRoles.length === 0 &&
     flow.status === "suggested" &&
@@ -222,7 +237,31 @@ export function FamiliesStep({
   // Back to the paste view with the pasted text intact. An AI-seeded review
   // dismisses its suggestion (the lifecycle always ends in confirmed or
   // rejected); best-effort, with lastDismissedId blocking an instant re-seed.
-  function restart() {
+  // The just-created-via-template review (an "existing" review flagged
+  // createdViaTemplate) instead DISCARDS: it reconciles to an empty set, which
+  // archives every created role and removes every family, so the queries go
+  // back to empty and the paste/template/AI choice can show again. A genuine
+  // revisit never reaches this (its Start over is hidden), so reconcile-empty
+  // can only wipe a set this session just created.
+  async function restart() {
+    if (createdViaTemplate) {
+      if (restartPending) return
+      setRestartPending(true)
+      setFailure(null)
+      try {
+        await reconcileStarterSet({ orgId, families: [] })
+        draft.clear()
+        setSeededFrom(null)
+        setResumedExisting(false)
+        setCreatedViaTemplate(false)
+        setFailure(null)
+      } catch (error) {
+        setFailure(isDuplicateFamilyError(error) ? "duplicate" : "generic")
+      } finally {
+        setRestartPending(false)
+      }
+      return
+    }
     if (seededFrom?.source === "ai") {
       flow.reject().catch(() => {})
       setLastDismissedId(seededFrom.suggestionId)
@@ -232,16 +271,38 @@ export function FamiliesStep({
     setFailure(null)
   }
 
-  function seedFromTemplate() {
-    if (starter === undefined) return
+  // The template path creates immediately on pick (matching the model step),
+  // then lets the resume-from-existing seed render the editable review from the
+  // now-created roles. Nothing is seeded locally: persisting on pick is what
+  // makes the choice survive a remount (navigating back a step and forward
+  // again). Guarded by templatePending so it runs once; only reachable from the
+  // paste view.
+  async function seedFromTemplate() {
+    if (starter === undefined || templatePending) return
     // Walking away from an open AI proposal dismisses it (the suggestion
     // lifecycle always ends in confirmed or rejected); a still-generating
-    // row cannot be rejected and is simply superseded.
+    // row cannot be rejected and is simply superseded. The reject is
+    // fire-and-forget and flow.status (derived from getOpenSuggestions) does
+    // not flip synchronously, so ALSO latch the id out of the AI seed block
+    // the same way restart() does: without this, the in-flight window (create
+    // pending, seededFrom still null, roles still empty, status still
+    // "suggested") satisfies the AI block's gate and it would hijack the
+    // screen onto the abandoned proposal.
     if (flow.status === "suggested" || flow.status === "failed") {
       flow.reject().catch(() => {})
+      if (flow.suggestionId !== null) setLastDismissedId(flow.suggestionId)
     }
-    draft.seed(starter.families)
-    setSeededFrom({ source: "template" })
+    setCreatedViaTemplate(true)
+    setTemplatePending(true)
+    setFailure(null)
+    try {
+      await createStarterSet({ orgId, families: starter.families })
+    } catch (error) {
+      setFailure(isDuplicateFamilyError(error) ? "duplicate" : "generic")
+      setCreatedViaTemplate(false)
+    } finally {
+      setTemplatePending(false)
+    }
   }
 
   async function onAnalyze() {
@@ -263,30 +324,28 @@ export function FamiliesStep({
     setFailure(null)
     try {
       if (seededFrom?.source === "existing") {
-        // The revisit path: reconcile the edited list against the stored set.
-        // Reconcile is idempotent (it diffs by id), so there is no `created`
-        // re-run concern and a retry after a failure simply diffs again. The
-        // draft carries trackKey as a plain string (the Select yields strings,
-        // and the resume seed coerces unknown keys to a valid one); reconcile's
-        // validator is the literal track-key union, so the payload is asserted
-        // here and the backend re-validates each key with isTrackKey.
+        // The revisit + just-created-via-template path: reconcile the edited
+        // list against the stored set. Reconcile is idempotent (it diffs by id),
+        // so there is no `created` re-run concern and a retry after a failure
+        // simply diffs again. The draft carries trackKey as a plain string (the
+        // Select yields strings, and the resume seed coerces unknown keys to a
+        // valid one); reconcile's validator is the literal track-key union, so
+        // the payload is asserted here and the backend re-validates each key
+        // with isTrackKey.
         await reconcileStarterSet({
           orgId,
           families: assertReconcileTrackKeys(draft.cleanedWithIds()),
         })
-      } else if (!created) {
-        const cleaned = draft.cleaned()
-        if (seededFrom?.source === "ai") {
-          // The AI path closes the suggestion with the user's edited list;
-          // an emptied list confirms nothing and rejects the suggestion.
-          await confirmStarterImport({
-            orgId,
-            suggestionId: seededFrom.suggestionId,
-            families: cleaned,
-          })
-        } else if (cleaned.length > 0) {
-          await createStarterSet({ orgId, families: cleaned })
-        }
+      } else if (seededFrom?.source === "ai" && !created) {
+        // The AI path closes the suggestion with the user's edited list; an
+        // emptied list confirms nothing and rejects the suggestion. The
+        // `created` guard makes a retry after a later failure only advance,
+        // never re-confirm (which would throw on the second run).
+        await confirmStarterImport({
+          orgId,
+          suggestionId: seededFrom.suggestionId,
+          families: draft.cleaned(),
+        })
         setCreated(true)
       }
       // Onboarding is NOT completed here: the score step owns completion on
@@ -323,6 +382,18 @@ export function FamiliesStep({
   // already mid-flight (generating wins, since that is the forward flow). The
   // queries still loading, OR roles present but the model not yet ready (the
   // seed needs the model's tracks), both keep spinning.
+  //
+  // The template create-on-pick also holds the spinner here: from the click
+  // (templatePending) through the window where the create has resolved but the
+  // listRoles subscription has not yet reported the new roles (createdViaTemplate
+  // with existingRoles not yet non-empty), the paste view would otherwise flash
+  // before the resume-from-existing seed claims charge. On a create FAILURE
+  // createdViaTemplate is reset, so the gate releases back to the paste view
+  // with the alert.
+  const templateCreatePending =
+    templatePending ||
+    (createdViaTemplate &&
+      !(existingRoles !== undefined && existingRoles.length > 0))
   const revisitPending =
     existingRoles === undefined ||
     existingFamilies === undefined ||
@@ -331,7 +402,7 @@ export function FamiliesStep({
     !inReview &&
     flow.status !== "generating" &&
     !resumedExisting &&
-    revisitPending
+    (revisitPending || templateCreatePending)
   ) {
     return (
       <main className="flex items-center justify-center p-6">
@@ -353,13 +424,14 @@ export function FamiliesStep({
         t("heading", { name: organizationName }),
         locale
       )}
-      // Only the template review keeps a subtitle: its reassurance (adjust
-      // freely, changeable later) works passively at the one step that
-      // creates data. The paste view is covered by the animated placeholder
-      // plus the help popover, and the AI review's line is the provenance
-      // paragraph (ADR-0003), so neither carries a second subtitle.
+      // Only the freshly-created-via-template review keeps a subtitle: its
+      // reassurance (adjust freely, changeable later) works passively on the one
+      // screen this session just created data. A genuine revisit of the same
+      // "existing" review omits it (the data is already established), the paste
+      // view is covered by the animated placeholder plus the help popover, and
+      // the AI review's line is the provenance paragraph (ADR-0003).
       description={
-        inReview && seededFrom?.source === "template"
+        inReview && createdViaTemplate
           ? t("reviewDescriptionStarter")
           : undefined
       }
@@ -442,12 +514,17 @@ export function FamiliesStep({
             onClick={() => onAnalyze()}
           />
         </WizardFooter>
-        {/* Alerts extend below the CTA so nothing on screen reflows. */}
-        {(flow.status === "failed" || requestFailed) && (
+        {/* Alerts extend below the CTA so nothing on screen reflows. A failed
+            template create (which runs on pick) drops back here, so its
+            duplicate/generic failure surfaces in the paste view alongside the
+            AI-import failures. */}
+        {(flow.status === "failed" || requestFailed || failure !== null) && (
           <p role="alert" className="text-destructive text-sm">
-            {requestFailed
-              ? t("error")
-              : tErrors(flow.errorSubKey ?? "aiGenerationFailed")}
+            {failure === "duplicate"
+              ? tErrors("roleFamilyExists")
+              : failure === "generic" || requestFailed
+                ? t("error")
+                : tErrors(flow.errorSubKey ?? "aiGenerationFailed")}
           </p>
         )}
       </div>
@@ -480,18 +557,21 @@ export function FamiliesStep({
           </p>
         )}
         {/* This step cannot be skipped: emptying the list and finishing is the
-            explicit way to start without families. Start over returns to the
-            paste view with the pasted text intact; it is disabled once the set
-            was created (a retry after a failed advance), because starting over
-            would then create duplicates. The revisit (existing) review has no
-            paste view to return to, so it omits Start over and edits the saved
-            set in place. */}
+            explicit way to start without families. Start over is shown for the
+            AI review (returns to the paste view with the pasted text intact)
+            and for the just-created-via-template review (discards the created
+            set via reconcile-empty, then returns to the paste view). It is
+            disabled once an AI set was confirmed (a retry after a failed
+            advance) and while a discard is in flight. A GENUINE revisit (an
+            "existing" review NOT created this session) omits Start over: it has
+            no paste view to return to and a one-click "archive everything" there
+            would be a footgun, so it edits the saved set in place. */}
         <WizardFooter>
-          {seededFrom?.source !== "existing" && (
+          {(seededFrom?.source !== "existing" || createdViaTemplate) && (
             <Button
               type="button"
               variant="ghost"
-              disabled={pending || created}
+              disabled={pending || created || restartPending}
               onClick={restart}
             >
               {t("restartCta")}
