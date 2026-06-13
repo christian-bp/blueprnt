@@ -98,10 +98,6 @@ export function ScoreRole({
       purpose.trim().length > 0 && responsibilities.trim().length > 0
     return (
       <div className="mx-auto w-full max-w-2xl space-y-4">
-        <Button type="button" variant="ghost" size="sm" onClick={onDone}>
-          <HugeiconsIcon icon={ArrowLeft01Icon} aria-hidden="true" />
-          {t("backToRolesCta")}
-        </Button>
         <div className="flex items-center gap-2">
           <h2 className="font-medium text-lg">
             {t("captureHeading", { title: role.title })}
@@ -152,7 +148,14 @@ export function ScoreRole({
             {t("saveError")}
           </p>
         )}
-        <div className="flex justify-end">
+        {/* Footer: back to the list on the left, the forward action on the
+            right (the standard wizard/dialog footer; the stepper phase keeps
+            its top back link since RatingStepper owns its own Back/Next row). */}
+        <div className="flex items-center justify-between">
+          <Button type="button" variant="outline" onClick={onDone}>
+            <HugeiconsIcon icon={ArrowLeft01Icon} aria-hidden="true" />
+            {t("backToRolesCta")}
+          </Button>
           <Button
             type="button"
             disabled={!canContinue || pending}
