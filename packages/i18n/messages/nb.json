@@ -374,7 +374,7 @@
         "scoreRoleCta": "Vurder denne rollen",
         "resumeRoleCta": "Fortsett vurderingen",
         "roleDoneLabel": "Vurdert",
-        "captureHeading": "Beskriv først rollen",
+        "captureHeading": "Beskriv først {title}",
         "captureHint": "Et nivå trenger et kort skriftlig grunnlag. Fyll inn formål og ansvar, eller lag et utkast med AI.",
         "purposeLabel": "Formål",
         "responsibilitiesLabel": "Ansvar",

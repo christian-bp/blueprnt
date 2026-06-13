@@ -374,7 +374,7 @@
         "scoreRoleCta": "Värdera den här rollen",
         "resumeRoleCta": "Fortsätt värdera",
         "roleDoneLabel": "Värderad",
-        "captureHeading": "Beskriv först rollen",
+        "captureHeading": "Beskriv först {title}",
         "captureHint": "En nivå behöver ett kort skriftligt underlag. Fyll i syfte och ansvar, eller låt AI:n skapa ett utkast.",
         "purposeLabel": "Syfte",
         "responsibilitiesLabel": "Ansvar",

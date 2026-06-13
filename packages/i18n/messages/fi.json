@@ -374,7 +374,7 @@
         "scoreRoleCta": "Arvioi tämä rooli",
         "resumeRoleCta": "Jatka arviointia",
         "roleDoneLabel": "Arvioitu",
-        "captureHeading": "Kuvaile ensin rooli",
+        "captureHeading": "Kuvaile ensin {title}",
         "captureHint": "Taso tarvitsee lyhyen kirjallisen perustan. Täytä tarkoitus ja vastuut tai luo luonnos tekoälyllä.",
         "purposeLabel": "Tarkoitus",
         "responsibilitiesLabel": "Vastuut",

@@ -1,6 +1,7 @@
 "use client"
 
-import { AiMagicIcon } from "@hugeicons/core-free-icons"
+import { AiMagicIcon, ArrowLeft01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
 import { Label } from "@workspace/ui/components/label"
@@ -97,8 +98,14 @@ export function ScoreRole({
       purpose.trim().length > 0 && responsibilities.trim().length > 0
     return (
       <div className="mx-auto w-full max-w-2xl space-y-4">
+        <Button type="button" variant="ghost" size="sm" onClick={onDone}>
+          <HugeiconsIcon icon={ArrowLeft01Icon} aria-hidden="true" />
+          {t("backToRolesCta")}
+        </Button>
         <div className="flex items-center gap-2">
-          <h2 className="font-medium text-lg">{t("captureHeading")}</h2>
+          <h2 className="font-medium text-lg">
+            {t("captureHeading", { title: role.title })}
+          </h2>
           <HelpMorphButton label={tHelp("onboardingScoreLabel")}>
             {tHelp("onboardingScoreBody")}
           </HelpMorphButton>
@@ -176,6 +183,10 @@ export function ScoreRole({
 
   return (
     <div className="space-y-4">
+      <Button type="button" variant="ghost" size="sm" onClick={onDone}>
+        <HugeiconsIcon icon={ArrowLeft01Icon} aria-hidden="true" />
+        {t("backToRolesCta")}
+      </Button>
       <h2 className="font-medium text-lg">{role.title}</h2>
       <RatingStepper
         orgId={orgId}

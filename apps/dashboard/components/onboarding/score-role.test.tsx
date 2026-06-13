@@ -133,6 +133,34 @@ describe("ScoreRole", () => {
     expect(screen.queryByTestId("stepper")).toBeNull()
   })
 
+  it("names the role in the capture heading", () => {
+    renderRole()
+    // captureHeading interpolates the role title instead of "this role".
+    expect(screen.getByText("First, describe Developer")).toBeDefined()
+  })
+
+  it("offers a back-to-roles button on the capture phase that returns to the list", () => {
+    const onDone = vi.fn()
+    renderRole(onDone)
+    // Still on capture (no stepper yet).
+    expect(screen.queryByTestId("stepper")).toBeNull()
+    fireEvent.click(screen.getByRole("button", { name: t.backToRolesCta }))
+    expect(onDone).toHaveBeenCalledTimes(1)
+  })
+
+  it("offers a back-to-roles button on the stepper phase that returns to the list", () => {
+    currentRole = roleFixture({
+      profileComplete: true,
+      purpose: "p",
+      responsibilities: "r",
+    })
+    const onDone = vi.fn()
+    renderRole(onDone)
+    expect(screen.getByTestId("stepper")).toBeDefined()
+    fireEvent.click(screen.getByRole("button", { name: t.backToRolesCta }))
+    expect(onDone).toHaveBeenCalledTimes(1)
+  })
+
   it("hosts the AI panel in a provenance popover and keeps it open across a keystroke", async () => {
     renderRole()
     // The AI panel is collapsed behind the "AI draft" popover trigger.

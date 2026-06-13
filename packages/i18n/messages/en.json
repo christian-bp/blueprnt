@@ -374,7 +374,7 @@
         "scoreRoleCta": "Score this role",
         "resumeRoleCta": "Continue scoring",
         "roleDoneLabel": "Scored",
-        "captureHeading": "First, describe this role",
+        "captureHeading": "First, describe {title}",
         "captureHint": "A band needs a short written basis. Fill in purpose and responsibilities, or draft them with AI.",
         "purposeLabel": "Purpose",
         "responsibilitiesLabel": "Responsibilities",
