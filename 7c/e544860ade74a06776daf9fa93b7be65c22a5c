@@ -1,0 +1,20 @@
+docs/superpowers/specs/2026-06-13-onboarding-role-scoring-design.md
+  s_288cc0dfb82db8::t_ee55252f9c3abb 1-203,208-280
+  s_288cc0dfb82db8::t_456d780f1024cf 204-207
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "7ce544860ade74a06776daf9fa93b7be65c22a5c",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
