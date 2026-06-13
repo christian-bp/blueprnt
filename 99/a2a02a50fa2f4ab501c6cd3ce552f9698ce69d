@@ -1,0 +1,45 @@
+apps/dashboard/components/roles/role-profile-card.test.tsx
+  s_288cc0dfb82db8::t_158a8e1d127866 74,77
+packages/i18n/messages/sv.json
+  s_288cc0dfb82db8::t_d35677cd8362a3 62
+apps/dashboard/components/roles/role-ai-panel.tsx
+  s_288cc0dfb82db8::t_d06416d376c8e0 18
+packages/backend/convex/assessment/roles.test.ts
+  s_288cc0dfb82db8::t_250bd8e65c1c02 197,200,202,213
+  s_288cc0dfb82db8::t_4ea372a2cc6dc0 207,212,221-222
+packages/backend/convex/assessment/roles.ts
+  s_288cc0dfb82db8::t_50a7f976bf3c99 12-15
+  s_288cc0dfb82db8::t_6d738690cd7a27 26
+packages/i18n/messages/en.json
+  s_288cc0dfb82db8::t_7da93f3f547d94 62
+packages/i18n/messages/fi.json
+  s_288cc0dfb82db8::t_bb40ae69a1432b 62
+packages/i18n/messages/nb.json
+  s_288cc0dfb82db8::t_048ae7ebc090e8 62
+docs/contexts/assessment/CONTEXT.md
+  s_288cc0dfb82db8::t_a316b236ce2581 12
+packages/backend/convex/ai/suggest.test.ts
+  s_288cc0dfb82db8::t_954efdcdb9f79b 706-707,719,721,735
+  s_288cc0dfb82db8::t_f060804efbbd9f 713
+packages/backend/convex/ai/generate.ts
+  s_288cc0dfb82db8::t_d05fac43698b53 286
+  s_288cc0dfb82db8::t_66a351c504cf24 296
+packages/i18n/messages/da.json
+  s_288cc0dfb82db8::t_51ba5dc04b7c2c 62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "99a2a02a50fa2f4ab501c6cd3ce552f9698ce69d",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
