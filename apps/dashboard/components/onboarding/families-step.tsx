@@ -37,7 +37,8 @@ type SeedSource =
 // Screen 6: rollfamiljer and roller. The user pastes their own role list
 // (the AI groups it into families) or falls back to the industry template;
 // either way the result is an editable review list, and nothing is written
-// until "create and continue". Both paths complete onboarding.
+// until "create and continue". Both paths create the starter set and advance
+// to the score step.
 export function FamiliesStep({
   orgId,
   organizationName,
@@ -68,9 +69,6 @@ export function FamiliesStep({
   const createStarterSet = useMutation(api.assessment.starters.createStarterSet)
   const requestStarterImport = useMutation(api.ai.suggest.requestStarterImport)
   const confirmStarterImport = useMutation(api.ai.suggest.confirmStarterImport)
-  const completeOnboarding = useMutation(
-    api.accounts.organization.completeOnboarding
-  )
 
   // The editable review list (families, unique ids, cleaned payload).
   const draft = useDraftFamilies()
@@ -81,10 +79,9 @@ export function FamiliesStep({
   const [requestPending, setRequestPending] = useState(false)
   const [requestFailed, setRequestFailed] = useState(false)
   const [failure, setFailure] = useState<"duplicate" | "generic" | null>(null)
-  // The creation step (confirm/create) and completeOnboarding are separate
-  // backend writes: remember a successful creation so a retry after a failed
-  // completeOnboarding only re-runs the completion, never the creation
-  // (which would throw notFound / roleFamilyExists on the second run).
+  // Remember a successful creation so a retry after a later failure only
+  // advances, never re-runs the creation (which would throw notFound /
+  // roleFamilyExists on the second run).
   const [created, setCreated] = useState(false)
   // Guards the seed-on-render block after "start over": the dismissed
   // suggestion may still read as suggested until the reject round-trips.
@@ -170,7 +167,8 @@ export function FamiliesStep({
         }
         setCreated(true)
       }
-      await completeOnboarding({ orgId })
+      // Onboarding is NOT completed here: the score step owns completion on
+      // every exit path. This step only creates the starter set and advances.
       onAdvance()
     } catch (error) {
       setFailure(isDuplicateFamilyError(error) ? "duplicate" : "generic")
@@ -333,11 +331,11 @@ export function FamiliesStep({
             {failure === "duplicate" ? tErrors("roleFamilyExists") : t("error")}
           </p>
         )}
-        {/* The final step cannot be skipped: emptying the list and finishing
-            is the explicit way to start without families. Start over returns
-            to the paste view with the pasted text intact; it is disabled once
-            the set was created (a failed completeOnboarding retry), because
-            starting over would then create duplicates. */}
+        {/* This step cannot be skipped: emptying the list and finishing is the
+            explicit way to start without families. Start over returns to the
+            paste view with the pasted text intact; it is disabled once the set
+            was created (a retry after a failed advance), because starting over
+            would then create duplicates. */}
         <WizardFooter>
           <Button
             type="button"

@@ -197,6 +197,60 @@ describe("organization settings", () => {
     })
   })
 
+  it("stamps onboardingCompletedAt once and is idempotent across exit paths", async () => {
+    const { t, orgId, userId } = await setup("admin")
+    const asUser = t.withIdentity({ subject: userId })
+
+    // A model with MIN_CRITERIA criteria so the composition floor passes.
+    await t.run(async (ctx) => {
+      const modelId = await ctx.db.insert("models", {
+        orgId,
+        name: "Standard",
+        bandThresholds: [],
+      })
+      for (let index = 0; index < 5; index++) {
+        await ctx.db.insert("criteria", {
+          orgId,
+          modelId,
+          name: `Criterion ${index + 1}`,
+          description: "",
+          helpText: "",
+          anchors: [],
+          weightPoints: 3,
+          order: index + 1,
+          isCustom: true,
+        })
+      }
+    })
+
+    // First exit (e.g. "I'll do this later"): the timestamp is stamped.
+    await asUser.mutation(api.accounts.organization.completeOnboarding, {
+      orgId,
+    })
+    const firstStamp = await t.run(async (ctx) => {
+      const settings = await ctx.db
+        .query("organizations")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      return settings?.onboardingCompletedAt ?? null
+    })
+    expect(typeof firstStamp).toBe("number")
+
+    // A later exit (e.g. "Save and exit" after re-entry) is idempotent: the
+    // original timestamp is kept.
+    await asUser.mutation(api.accounts.organization.completeOnboarding, {
+      orgId,
+    })
+    const secondStamp = await t.run(async (ctx) => {
+      const settings = await ctx.db
+        .query("organizations")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      return settings?.onboardingCompletedAt ?? null
+    })
+    expect(secondStamp).toBe(firstStamp)
+  })
+
   it("completeOnboarding rejects same-org editors with errors.adminRequired", async () => {
     const { t, orgId } = await setup("admin")
     const { userId: editorId } = await t.mutation(

@@ -86,6 +86,17 @@ vi.mock("@/components/onboarding/families-step", () => ({
   ),
 }))
 
+vi.mock("@/components/onboarding/score-step", () => ({
+  ScoreStep: (props: { orgId: string; onFinish: () => void }) => (
+    <div data-testid="score-step">
+      <span data-testid="score-orgid">{props.orgId}</span>
+      <button type="button" onClick={() => props.onFinish()}>
+        score-finished
+      </button>
+    </div>
+  ),
+}))
+
 // The dots are a probe: it records the props it received (active index, the
 // reach gate) and renders one real button per step that calls onSelect, so
 // tests drive back-navigation through React's event batching (fireEvent),
@@ -155,6 +166,7 @@ describe("OnboardingWizard", () => {
       organization: null,
       settingsComplete: false,
       hasModel: false,
+      hasRoles: false,
       completed: false,
     })
     expect(screen.getByTestId("name-mode").textContent).toBe("fresh")
@@ -166,6 +178,7 @@ describe("OnboardingWizard", () => {
         organization: admin,
         settingsComplete: false,
         hasModel: false,
+        hasRoles: false,
         completed: false,
       },
       { ...fullSettings, country: null, currency: null }
@@ -180,6 +193,7 @@ describe("OnboardingWizard", () => {
         organization: admin,
         settingsComplete: true,
         hasModel: false,
+        hasRoles: false,
         completed: false,
       },
       { ...fullSettings, language: null }
@@ -195,6 +209,7 @@ describe("OnboardingWizard", () => {
         organization: admin,
         settingsComplete: false,
         hasModel: false,
+        hasRoles: false,
         completed: false,
       },
       { ...fullSettings, industry: null }
@@ -209,6 +224,7 @@ describe("OnboardingWizard", () => {
         organization: admin,
         settingsComplete: true,
         hasModel: false,
+        hasRoles: false,
         completed: false,
       },
       fullSettings
@@ -223,6 +239,7 @@ describe("OnboardingWizard", () => {
         organization: admin,
         settingsComplete: false,
         hasModel: false,
+        hasRoles: false,
         completed: false,
       },
       undefined
@@ -238,6 +255,7 @@ describe("OnboardingWizard", () => {
       organization: { orgId: "org-1", name: "Acme", role: "member" },
       settingsComplete: false,
       hasModel: false,
+      hasRoles: false,
       completed: false,
     })
     expect(
@@ -251,6 +269,7 @@ describe("OnboardingWizard", () => {
         organization: admin,
         settingsComplete: true,
         hasModel: false,
+        hasRoles: false,
         completed: false,
       },
       fullSettings
@@ -267,6 +286,7 @@ describe("OnboardingWizard", () => {
         organization: admin,
         settingsComplete: true,
         hasModel: true,
+        hasRoles: false,
         completed: false,
       },
       fullSettings
@@ -301,6 +321,7 @@ describe("OnboardingWizard", () => {
       organization: admin,
       settingsComplete: false,
       hasModel: false,
+      hasRoles: false,
       completed: false,
     }
     const view = render(
@@ -334,6 +355,7 @@ describe("OnboardingWizard", () => {
         organization: admin,
         settingsComplete: true,
         hasModel: false,
+        hasRoles: false,
         completed: false,
       },
       fullSettings
@@ -365,6 +387,7 @@ describe("OnboardingWizard", () => {
       organization: admin,
       settingsComplete: true,
       hasModel: true,
+      hasRoles: false,
       completed: false,
     }
     const view = render(
@@ -400,6 +423,7 @@ describe("OnboardingWizard", () => {
         organization: admin,
         settingsComplete: true,
         hasModel: false,
+        hasRoles: false,
         completed: false,
       },
       fullSettings
@@ -414,5 +438,62 @@ describe("OnboardingWizard", () => {
     // The active dot follows the revisited screen; the gate is unchanged.
     expect(dotsProps?.activeIndex).toBe(1)
     expect(dotsProps?.maxReachedIndex).toBe(3)
+  })
+
+  it("resumes on the score step when families is server-complete but onboarding is not", () => {
+    renderWizard(
+      {
+        organization: admin,
+        settingsComplete: true,
+        hasModel: true,
+        hasRoles: true,
+        completed: false,
+      },
+      fullSettings
+    )
+    // families.isComplete follows hasRoles (true), score.isComplete follows
+    // completed (false), so the first incomplete step is the score step.
+    expect(screen.getByTestId("score-step")).toBeDefined()
+    expect(screen.getByTestId("score-orgid").textContent).toBe("org-1")
+  })
+
+  it("the families continue advances to the score step", async () => {
+    renderWizard(
+      {
+        organization: admin,
+        settingsComplete: true,
+        hasModel: true,
+        hasRoles: false,
+        completed: false,
+      },
+      fullSettings
+    )
+    // hasRoles is false, so families is the frontier. Continue from model,
+    // then from families, landing on the score step.
+    fireEvent.click(screen.getByText("model-continue"))
+    expect(await screen.findByTestId("families-step")).toBeDefined()
+    fireEvent.click(screen.getByText("families-finished"))
+    expect(await screen.findByTestId("score-step")).toBeDefined()
+  })
+
+  it("the score step's finish hands control back to the gate", async () => {
+    const onFinished = vi.fn()
+    useQueryMock.mockReturnValue(fullSettings)
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <OnboardingWizard
+          status={{
+            organization: admin,
+            settingsComplete: true,
+            hasModel: true,
+            hasRoles: true,
+            completed: false,
+          }}
+          onFinished={onFinished}
+        />
+      </NextIntlClientProvider>
+    )
+    fireEvent.click(screen.getByText("score-finished"))
+    expect(onFinished).toHaveBeenCalledTimes(1)
   })
 })

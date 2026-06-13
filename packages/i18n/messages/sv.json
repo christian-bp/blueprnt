@@ -93,7 +93,12 @@
       "criteriaCard": "Kriterier i modellen",
       "goRoles": "Gå till roller",
       "goModel": "Visa modellen",
-      "goResults": "Visa resultat"
+      "goResults": "Visa resultat",
+      "continueScoring": {
+        "title": "Fortsätt värdera",
+        "progress": "{scored} av {total} roller värderade",
+        "cta": "Till roller"
+      }
     },
     "roles": {
       "heading": "Roller",
@@ -324,7 +329,8 @@
         "country": "Land",
         "industry": "Bransch",
         "model": "Värderingsmodell",
-        "families": "Rollfamiljer"
+        "families": "Rollfamiljer",
+        "score": "Värdera dina roller"
       },
       "families": {
         "heading": "Rollfamiljer och roller hos {name}",
@@ -354,6 +360,28 @@
         "dndDropped": "{title} placerades i {family}.",
         "dndCancelled": "Flytten av {title} avbröts.",
         "reviewHint": "Gruppera rollerna i familjer och sätt varje rolls track."
+      },
+      "score": {
+        "forkHeading": "Dina roller är klara. Vill du värdera dem nu?",
+        "scoreNowCta": "Värdera nu",
+        "laterCta": "Jag gör det senare",
+        "saveExitLine": "Du kan spara och avsluta när som helst och fortsätta i din instrumentpanel.",
+        "saveExitCta": "Spara och avsluta",
+        "rolesHeading": "Dina roller",
+        "roleProgress": "{rated} av {total} kriterier värderade",
+        "scoreRoleCta": "Värdera den här rollen",
+        "resumeRoleCta": "Fortsätt värdera",
+        "roleDoneLabel": "Värderad",
+        "captureHeading": "Beskriv först rollen",
+        "captureHint": "En nivå behöver ett kort skriftligt underlag. Fyll i syfte och ansvar, eller låt AI:n skapa ett utkast.",
+        "purposeLabel": "Syfte",
+        "responsibilitiesLabel": "Ansvar",
+        "captureContinueCta": "Fortsätt till värdering",
+        "doneHeading": "Alla roller värderade",
+        "doneBody": "Du har värderat alla roller. Du kan finjustera dem när som helst i instrumentpanelen.",
+        "doneCta": "Till instrumentpanelen",
+        "backToRolesCta": "Tillbaka till dina roller",
+        "saveError": "Något gick fel. Försök igen."
       }
     },
     "model": {
@@ -454,6 +482,8 @@
       "scoreBody": "Varje kriterium betygsätts 0 till 5 och viktas med sina viktpoäng; totalen normaliseras till en fast skala 0 till 100. Bandet följer sedan automatiskt av poängen via modellens bandtrösklar, där band 1 är högst. Inget av dem kan sättas för hand.",
       "blindRatingLabel": "Hur fungerar betygsättningen?",
       "blindRatingBody": "Välj ankartexten som bäst matchar vad rollen kräver, inte hur nuvarande medarbetare presterar. Betyg, poäng och band hålls dolda till sista kriteriet så att varje kriterium bedöms för sig; resultatet visas så snart alla kriterier är betygsatta.",
+      "onboardingScoreLabel": "Vad gör en värdering av en roll?",
+      "onboardingScoreBody": "Värderingen bedömer rollen mot varje kriterium i din modell. Nivån härleds från bedömningarna på en fast skala och sätts aldrig för hand, så roller förblir jämförbara. Du bedömer ett kriterium i taget utan att se det löpande resultatet.",
       "statusLabel": "Vad betyder statusarna?",
       "statusBody": "En roll går från utkast till under granskning till godkänd. Godkännandet låser profilen och betygen som granskade; återöppna rollen för att ändra dem igen. Statusen påverkar aldrig det beräknade resultatet.",
       "familiesReviewLabel": "Vad är familjer och tracks?",

@@ -27,6 +27,7 @@ export const getOnboardingStatus = query({
       ),
       settingsComplete: v.boolean(),
       hasModel: v.boolean(),
+      hasRoles: v.boolean(),
       completed: v.boolean(),
     })
   ),
@@ -43,6 +44,7 @@ export const getOnboardingStatus = query({
         organization: null,
         settingsComplete: false,
         hasModel: false,
+        hasRoles: false,
         completed: false,
       }
     }
@@ -61,6 +63,10 @@ export const getOnboardingStatus = query({
       .query("models")
       .withIndex("by_org", (q) => q.eq("orgId", orgId))
       .first()
+    const firstRole = await ctx.db
+      .query("roles")
+      .withIndex("by_org", (q) => q.eq("orgId", orgId))
+      .first()
     return {
       organization: {
         orgId,
@@ -69,6 +75,7 @@ export const getOnboardingStatus = query({
       },
       settingsComplete,
       hasModel: model !== null,
+      hasRoles: firstRole !== null,
       completed: typeof settings?.onboardingCompletedAt === "number",
     }
   },

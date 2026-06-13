@@ -1,6 +1,7 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
+import { Button } from "@workspace/ui/components/button"
 import {
   Card,
   CardDescription,
@@ -23,6 +24,11 @@ export default function OverviewPage() {
   const locale = useLocale()
   const roles = useQuery(api.assessment.roles.listRoles, { orgId, locale })
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
+  const results = useQuery(api.assessment.results.getResults, { orgId, locale })
+  const tScoring = useTranslations("dashboard.overview.continueScoring")
+  const scoredCount = results?.rows.filter((row) => row.complete).length ?? 0
+  const totalRoles = results?.rows.length ?? 0
+  const showContinueScoring = totalRoles > 0 && scoredCount < totalRoles
 
   const loading = roles === undefined || model === undefined
   const approved = roles?.filter((role) => role.status === "approved") ?? []
@@ -70,33 +76,48 @@ export default function OverviewPage() {
   ]
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {cards.map((card) => (
-        <Card key={card.key}>
+    <div className="space-y-4">
+      {showContinueScoring && (
+        <Card>
           <CardHeader>
-            {/* The help morph sits OUTSIDE CardDescription (a <p>): the
-                popover renders a div, which is invalid inside a paragraph. */}
-            <div className="flex items-center gap-1.5">
-              <CardDescription>{card.label}</CardDescription>
-              {card.help !== undefined && (
-                <HelpMorphButton label={card.help.label}>
-                  {card.help.body}
-                </HelpMorphButton>
-              )}
-            </div>
-            {/* Counts are neutral values, not identity: keep ink, not brand. */}
-            <CardTitle className="text-3xl text-foreground tabular-nums">
-              {loading ? <Skeleton className="h-9 w-12" /> : card.value}
-            </CardTitle>
-            <Link
-              href={card.href}
-              className="text-muted-foreground text-sm underline-offset-4 hover:underline"
-            >
-              {card.linkLabel}
-            </Link>
+            <CardTitle className="text-lg">{tScoring("title")}</CardTitle>
+            <CardDescription>
+              {tScoring("progress", { scored: scoredCount, total: totalRoles })}
+            </CardDescription>
+            <Button asChild className="mt-2 self-start">
+              <Link href="/roles">{tScoring("cta")}</Link>
+            </Button>
           </CardHeader>
         </Card>
-      ))}
+      )}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {cards.map((card) => (
+          <Card key={card.key}>
+            <CardHeader>
+              {/* The help morph sits OUTSIDE CardDescription (a <p>): the
+                  popover renders a div, which is invalid inside a paragraph. */}
+              <div className="flex items-center gap-1.5">
+                <CardDescription>{card.label}</CardDescription>
+                {card.help !== undefined && (
+                  <HelpMorphButton label={card.help.label}>
+                    {card.help.body}
+                  </HelpMorphButton>
+                )}
+              </div>
+              {/* Counts are neutral values, not identity: keep ink, not brand. */}
+              <CardTitle className="text-3xl text-foreground tabular-nums">
+                {loading ? <Skeleton className="h-9 w-12" /> : card.value}
+              </CardTitle>
+              <Link
+                href={card.href}
+                className="text-muted-foreground text-sm underline-offset-4 hover:underline"
+              >
+                {card.linkLabel}
+              </Link>
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
     </div>
   )
 }

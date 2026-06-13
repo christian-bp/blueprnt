@@ -13,11 +13,13 @@ import { IndustryScreen } from "@/components/onboarding/industry-screen"
 import { ModelSetupStep } from "@/components/onboarding/model-setup-step"
 import { NameScreen } from "@/components/onboarding/name-screen"
 import { OnboardingHeader } from "@/components/onboarding/onboarding-header"
+import { ScoreStep } from "@/components/onboarding/score-step"
 
 export interface OnboardingStatus {
   organization: { orgId: string; name: string; role: string } | null
   settingsComplete: boolean
   hasModel: boolean
+  hasRoles: boolean
   completed: boolean
 }
 
@@ -35,8 +37,8 @@ interface StepContext {
   settings: SettingsSlice | null | undefined
   // Standard forward move: acknowledges the next screen.
   advance: () => void
-  // The model step's continue: additionally raises the session latch so the
-  // families step (which is never server-complete) becomes reachable.
+  // The model/families continue: additionally raises the session latch so
+  // the next step (not yet server-complete this session) becomes reachable.
   latchNext: () => void
   // The last step's exit: hands control back to the onboarding gate.
   finish: () => void
@@ -95,10 +97,14 @@ const STEPS = [
   {
     key: "model",
     dotLabelKey: "dots.model",
-    // Never server-complete: the model screen owns its internal choice ->
-    // review sub-flow, and families is reached only via its continue (the
-    // session latch), so a reload mid-flow resumes at the model review.
-    isComplete: () => false,
+    // No server signal distinguishes "in the model review" from "model done",
+    // so the model step owns its internal choice -> review sub-flow and is
+    // reached/passed only via the session latch (a reload mid-flow resumes at
+    // the model review). hasRoles is the exception: roles can only exist once
+    // the model is finished, so once the org has a role the model is
+    // definitively complete and the server-derived resume can skip past it to
+    // the score step.
+    isComplete: (status: OnboardingStatus) => status.hasRoles,
     render: (ctx: StepContext) =>
       ctx.status.organization === null ? null : (
         <ModelSetupStep
@@ -111,13 +117,29 @@ const STEPS = [
   {
     key: "families",
     dotLabelKey: "dots.families",
-    isComplete: () => false,
+    // Server-derived: once the org has at least one role, families is
+    // complete, so a reload mid-scoring resumes on the score step.
+    isComplete: (status: OnboardingStatus) => status.hasRoles,
     render: (ctx: StepContext) =>
       ctx.status.organization === null ? null : (
         <FamiliesStep
           orgId={ctx.status.organization.orgId}
           organizationName={ctx.status.organization.name}
-          onAdvance={ctx.finish}
+          onAdvance={ctx.latchNext}
+        />
+      ),
+  },
+  {
+    key: "score",
+    dotLabelKey: "dots.score",
+    // Complete exactly when onboarding is complete: leaving the score step by
+    // any path stamps onboardingCompletedAt and flips this true.
+    isComplete: (status: OnboardingStatus) => status.completed,
+    render: (ctx: StepContext) =>
+      ctx.status.organization === null ? null : (
+        <ScoreStep
+          orgId={ctx.status.organization.orgId}
+          onFinish={ctx.finish}
         />
       ),
   },

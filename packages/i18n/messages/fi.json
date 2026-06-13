@@ -93,7 +93,12 @@
       "criteriaCard": "Kriteerit mallissa",
       "goRoles": "Siirry rooleihin",
       "goModel": "Näytä malli",
-      "goResults": "Näytä tulokset"
+      "goResults": "Näytä tulokset",
+      "continueScoring": {
+        "title": "Jatka arviointia",
+        "progress": "{scored}/{total} roolia arvioitu",
+        "cta": "Rooleihin"
+      }
     },
     "roles": {
       "heading": "Roolit",
@@ -324,7 +329,8 @@
         "country": "Maa",
         "industry": "Toimiala",
         "model": "Arviointimalli",
-        "families": "Rooliperheet"
+        "families": "Rooliperheet",
+        "score": "Arvioi roolisi"
       },
       "families": {
         "heading": "Organisaation {name} rooliperheet ja roolit",
@@ -354,6 +360,28 @@
         "dndDropped": "{title} sijoitettiin perheeseen {family}.",
         "dndCancelled": "Roolin {title} siirto peruutettiin.",
         "reviewHint": "Ryhmittele roolit perheisiin ja aseta jokaisen roolin track."
+      },
+      "score": {
+        "forkHeading": "Roolisi ovat valmiit. Haluatko arvioida ne nyt?",
+        "scoreNowCta": "Arvioi nyt",
+        "laterCta": "Teen tämän myöhemmin",
+        "saveExitLine": "Voit tallentaa ja poistua milloin tahansa ja jatkaa hallintapaneelissa.",
+        "saveExitCta": "Tallenna ja poistu",
+        "rolesHeading": "Roolisi",
+        "roleProgress": "{rated}/{total} kriteeriä arvioitu",
+        "scoreRoleCta": "Arvioi tämä rooli",
+        "resumeRoleCta": "Jatka arviointia",
+        "roleDoneLabel": "Arvioitu",
+        "captureHeading": "Kuvaile ensin rooli",
+        "captureHint": "Taso tarvitsee lyhyen kirjallisen perustan. Täytä tarkoitus ja vastuut tai luo luonnos tekoälyllä.",
+        "purposeLabel": "Tarkoitus",
+        "responsibilitiesLabel": "Vastuut",
+        "captureContinueCta": "Jatka arviointiin",
+        "doneHeading": "Kaikki roolit arvioitu",
+        "doneBody": "Olet arvioinut kaikki roolit. Voit hienosäätää niitä milloin tahansa hallintapaneelissa.",
+        "doneCta": "Hallintapaneeliin",
+        "backToRolesCta": "Takaisin rooleihisi",
+        "saveError": "Jokin meni vikaan. Yritä uudelleen."
       }
     },
     "model": {
@@ -454,6 +482,8 @@
       "scoreBody": "Jokainen kriteeri arvioidaan 0-5 ja painotetaan painopisteillään; summa normalisoidaan kiinteälle asteikolle 0-100. Luokka seuraa sitten automaattisesti pisteistä mallin luokkarajojen kautta, ja luokka 1 on korkein. Kumpaakaan ei voi asettaa käsin.",
       "blindRatingLabel": "Miten arviointi toimii?",
       "blindRatingBody": "Valitse ankkuriteksti, joka parhaiten vastaa roolin vaatimuksia, ei nykyisen työntekijän suoriutumista. Arviot, pisteet ja luokka pysyvät piilossa viimeiseen kriteeriin asti, jotta jokainen kriteeri arvioidaan erikseen; tulos näkyy heti, kun kaikki kriteerit on arvioitu.",
+      "onboardingScoreLabel": "Mitä roolin arviointi tekee?",
+      "onboardingScoreBody": "Arviointi vertaa roolia mallisi jokaiseen kriteeriin. Taso johdetaan arvioinneista kiinteällä asteikolla, eikä sitä koskaan aseteta käsin, joten roolit pysyvät vertailukelpoisina. Arvioit yhden kriteerin kerrallaan näkemättä juoksevaa tulosta.",
       "statusLabel": "Mitä tilat tarkoittavat?",
       "statusBody": "Rooli etenee luonnoksesta tarkistettavaksi ja hyväksytyksi. Hyväksyminen lukitsee profiilin ja arviot tarkistettuina; avaa rooli uudelleen muuttaaksesi niitä. Tila ei koskaan vaikuta laskettuun tulokseen.",
       "familiesReviewLabel": "Mitä perheet ja trackit ovat?",

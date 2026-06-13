@@ -226,7 +226,7 @@ describe("FamiliesStep", () => {
 
     fireEvent.click(screen.getByRole("button", { name: t.createCta }))
     await waitFor(() => {
-      expect(completeOnboardingMock).toHaveBeenCalledTimes(1)
+      expect(confirmStarterImportMock).toHaveBeenCalledTimes(1)
     })
     expect(confirmStarterImportMock).toHaveBeenCalledWith({
       orgId: "org-1",
@@ -241,6 +241,7 @@ describe("FamiliesStep", () => {
         },
       ],
     })
+    expect(completeOnboardingMock).not.toHaveBeenCalled()
     expect(createStarterSetMock).not.toHaveBeenCalled()
     expect(onFinished).toHaveBeenCalledTimes(1)
   })
@@ -262,7 +263,7 @@ describe("FamiliesStep", () => {
 
     fireEvent.click(screen.getByRole("button", { name: t.createCta }))
     await waitFor(() => {
-      expect(completeOnboardingMock).toHaveBeenCalledTimes(1)
+      expect(createStarterSetMock).toHaveBeenCalledTimes(1)
     })
     expect(createStarterSetMock).toHaveBeenCalledWith({
       orgId: "org-1",
@@ -280,6 +281,7 @@ describe("FamiliesStep", () => {
         },
       ],
     })
+    expect(completeOnboardingMock).not.toHaveBeenCalled()
     expect(confirmStarterImportMock).not.toHaveBeenCalled()
     expect(onFinished).toHaveBeenCalledTimes(1)
   })
@@ -336,14 +338,15 @@ describe("FamiliesStep", () => {
     ])
   })
 
-  it("finishing with only blank families completes without creating", async () => {
+  it("finishing with only blank families advances without creating", async () => {
     completeOnboardingMock.mockResolvedValue(null)
     const onFinished = vi.fn()
     renderStep(onFinished)
     await seedFromTemplate()
 
     // Empty every prefilled family name; cleaned input is then empty and
-    // nothing is created, but onboarding still completes.
+    // nothing is created. The step still advances, and onboarding is NOT
+    // completed here (the score step owns completion).
     for (const input of screen.getAllByLabelText(
       messages.dashboard.roles.family.nameLabel
     )) {
@@ -352,10 +355,10 @@ describe("FamiliesStep", () => {
     fireEvent.click(screen.getByRole("button", { name: t.createCta }))
 
     await waitFor(() => {
-      expect(completeOnboardingMock).toHaveBeenCalledTimes(1)
+      expect(onFinished).toHaveBeenCalledTimes(1)
     })
     expect(createStarterSetMock).not.toHaveBeenCalled()
-    expect(onFinished).toHaveBeenCalledTimes(1)
+    expect(completeOnboardingMock).not.toHaveBeenCalled()
   })
 
   it("renders a drag handle per role in the review list", async () => {
@@ -444,30 +447,28 @@ describe("FamiliesStep", () => {
     expect(onFinished).not.toHaveBeenCalled()
   })
 
-  it("retrying after a failed completion does not re-run the creation", async () => {
+  it("retrying after a failed creation re-runs the confirm only", async () => {
     currentSuggestions = [suggestedImportFixture()]
-    confirmStarterImportMock.mockResolvedValue(null)
-    completeOnboardingMock
+    confirmStarterImportMock
       .mockRejectedValueOnce(new Error("ConvexError: errors.notFound"))
       .mockResolvedValueOnce(null)
     const onFinished = vi.fn()
     renderStep(onFinished)
     await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
 
-    // First attempt: the set is created, completion fails.
+    // First attempt: the confirm throws, the step stays and shows the alert.
     fireEvent.click(screen.getByRole("button", { name: t.createCta }))
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeDefined()
     })
-    expect(confirmStarterImportMock).toHaveBeenCalledTimes(1)
+    expect(onFinished).not.toHaveBeenCalled()
 
-    // Retry: only the completion re-runs (a second confirm would throw
-    // notFound on the already-confirmed suggestion).
+    // Retry: the confirm re-runs and now succeeds, then the step advances.
     fireEvent.click(screen.getByRole("button", { name: t.createCta }))
     await waitFor(() => {
       expect(onFinished).toHaveBeenCalledTimes(1)
     })
-    expect(confirmStarterImportMock).toHaveBeenCalledTimes(1)
-    expect(completeOnboardingMock).toHaveBeenCalledTimes(2)
+    expect(confirmStarterImportMock).toHaveBeenCalledTimes(2)
+    expect(completeOnboardingMock).not.toHaveBeenCalled()
   })
 })

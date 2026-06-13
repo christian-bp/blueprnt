@@ -27,6 +27,7 @@ describe("getOnboardingStatus", () => {
       organization: null,
       settingsComplete: false,
       hasModel: false,
+      hasRoles: false,
       completed: false,
     })
   })
@@ -143,6 +144,35 @@ describe("getOnboardingStatus", () => {
       name: "Acme",
       role: "editor",
     })
+  })
+
+  it("reports hasRoles once the org has at least one role", async () => {
+    const t = initConvexTest()
+    const { orgId, userId } = await seedAdmin(t)
+    const asUser = t.withIdentity({ subject: userId })
+
+    // No roles yet: hasRoles is false.
+    let status = await asUser.query(
+      api.accounts.onboarding.getOnboardingStatus,
+      {}
+    )
+    expect(status?.hasRoles).toBe(false)
+
+    // Insert one role: hasRoles flips true.
+    await t.run(async (ctx) => {
+      await ctx.db.insert("roles", {
+        orgId,
+        title: "Developer",
+        function: "Engineering",
+        team: "Core",
+        trackKey: "IC",
+        purpose: "",
+        responsibilities: "",
+        status: "draft",
+      })
+    })
+    status = await asUser.query(api.accounts.onboarding.getOnboardingStatus, {})
+    expect(status?.hasRoles).toBe(true)
   })
 })
 

@@ -1,0 +1,196 @@
+"use client"
+
+import { api } from "@workspace/backend/convex/_generated/api"
+import { Button } from "@workspace/ui/components/button"
+import { Progress } from "@workspace/ui/components/progress"
+import { Spinner } from "@workspace/ui/components/spinner"
+import { useMutation, useQuery } from "convex/react"
+import { AnimatePresence, motion } from "motion/react"
+import { useLocale, useTranslations } from "next-intl"
+import { useState } from "react"
+import { HelpMorphButton } from "@/components/help-morph-button"
+import { ScoreRole } from "@/components/onboarding/score-role"
+import { ScreenShell } from "@/components/onboarding/screen-shell"
+
+// The final onboarding step: opt-in scoring with a save-and-exit escape on
+// every path. The fork screen shows only when no role is started; otherwise
+// it lands on the scoring list. Reaching this step and leaving it by any
+// path (later, save and exit, all complete) completes onboarding, which is
+// what flips the gate to the dashboard. Score/band are derived and never
+// stored (ADR-0002); this step writes nothing but the per-criterion ratings
+// and the profile fields (in ScoreRole), then calls completeOnboarding.
+export function ScoreStep({
+  orgId,
+  onFinish,
+}: {
+  orgId: string
+  // The wizard's finish callback: hands control back to the onboarding gate.
+  onFinish: () => void
+}) {
+  const t = useTranslations("dashboard.onboarding.score")
+  const tOnboarding = useTranslations("dashboard.onboarding")
+  const tHelp = useTranslations("dashboard.help")
+  const locale = useLocale()
+  const results = useQuery(api.assessment.results.getResults, { orgId, locale })
+  const completeOnboarding = useMutation(
+    api.accounts.organization.completeOnboarding
+  )
+
+  // The user explicitly chose to score now (or no fork was needed). The fork
+  // is skipped once any role has been started.
+  const [scoring, setScoring] = useState(false)
+  // The role currently open in the per-role view, or null for the list.
+  const [openRoleId, setOpenRoleId] = useState<string | null>(null)
+  const [exiting, setExiting] = useState(false)
+
+  // Every exit path runs through here: complete onboarding, then finish.
+  async function exit() {
+    if (exiting) return
+    setExiting(true)
+    try {
+      await completeOnboarding({ orgId })
+      onFinish()
+    } catch {
+      // completeOnboarding is idempotent and the gate stays on this step on
+      // failure; re-enable the control so the user can retry.
+      setExiting(false)
+    }
+  }
+
+  if (results === undefined) {
+    return (
+      <div className="flex items-center justify-center p-6">
+        <Spinner aria-label={tOnboarding("loading")} />
+      </div>
+    )
+  }
+
+  const rows = results.rows
+  const total = rows.length
+  const scored = rows.filter((row) => row.complete).length
+  // "Started" = any role has at least one rating (or is complete). getResults
+  // exposes no profile field, so a profile-only role is intentionally not
+  // counted here; the fork only gates the very first entry into scoring.
+  const anyStarted = rows.some((row) => row.ratedCount > 0 || row.complete)
+  const allComplete = total > 0 && scored === total
+
+  // Phase selection. mode="wait" opacity crossfade reuses the wizard frame's
+  // animation language; no height/layout animation (docs/ui-animation.md).
+  const phase =
+    openRoleId !== null
+      ? "role"
+      : allComplete
+        ? "done"
+        : scoring || anyStarted
+          ? "list"
+          : "fork"
+
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={phase}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        {phase === "role" && openRoleId !== null ? (
+          <ScoreRole
+            orgId={orgId}
+            roleId={openRoleId}
+            onDone={() => setOpenRoleId(null)}
+          />
+        ) : phase === "fork" ? (
+          <ScreenShell heading={t("forkHeading")}>
+            <div className="flex items-center justify-center">
+              <HelpMorphButton label={tHelp("onboardingScoreLabel")}>
+                {tHelp("onboardingScoreBody")}
+              </HelpMorphButton>
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                disabled={exiting}
+                onClick={() => exit()}
+              >
+                {t("laterCta")}
+              </Button>
+              <Button type="button" onClick={() => setScoring(true)}>
+                {t("scoreNowCta")}
+              </Button>
+            </div>
+          </ScreenShell>
+        ) : phase === "done" ? (
+          <ScreenShell heading={t("doneHeading")} description={t("doneBody")}>
+            <Button type="button" disabled={exiting} onClick={() => exit()}>
+              {t("doneCta")}
+            </Button>
+          </ScreenShell>
+        ) : (
+          <div className="mx-auto w-full max-w-2xl space-y-4">
+            <div className="flex items-center gap-2">
+              <h2 className="font-medium text-lg">{t("rolesHeading")}</h2>
+              <HelpMorphButton label={tHelp("onboardingScoreLabel")}>
+                {tHelp("onboardingScoreBody")}
+              </HelpMorphButton>
+            </div>
+            {/* Persistent reassurance line, in its own slot so opting in does
+                not reflow the list below it. */}
+            <p className="text-muted-foreground text-sm">{t("saveExitLine")}</p>
+            <ul className="space-y-2">
+              {rows.map((row) => (
+                <li
+                  key={row.roleId}
+                  className="flex items-center justify-between gap-3 rounded-md border p-3"
+                >
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <p className="truncate font-medium text-sm">{row.title}</p>
+                    <p className="text-muted-foreground text-sm">
+                      {t("roleProgress", {
+                        rated: row.ratedCount,
+                        total: row.totalCriteria,
+                      })}
+                    </p>
+                    <Progress
+                      value={
+                        row.totalCriteria === 0
+                          ? 0
+                          : (row.ratedCount / row.totalCriteria) * 100
+                      }
+                    />
+                  </div>
+                  {row.complete ? (
+                    <span className="text-muted-foreground text-sm">
+                      {t("roleDoneLabel")}
+                    </span>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setOpenRoleId(row.roleId)}
+                    >
+                      {row.ratedCount > 0
+                        ? t("resumeRoleCta")
+                        : t("scoreRoleCta")}
+                    </Button>
+                  )}
+                </li>
+              ))}
+            </ul>
+            <div className="flex justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                disabled={exiting}
+                onClick={() => exit()}
+              >
+                {t("saveExitCta")}
+              </Button>
+            </div>
+          </div>
+        )}
+      </motion.div>
+    </AnimatePresence>
+  )
+}
