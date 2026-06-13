@@ -1,0 +1,23 @@
+apps/dashboard/components/onboarding/score-step.tsx
+  s_288cc0dfb82db8::t_866f1fca515423 1-195
+apps/dashboard/components/onboarding/score-step.test.tsx
+  s_288cc0dfb82db8::t_91bac650ceb0eb 115,121-123
+  s_288cc0dfb82db8::t_d0fc1f91f62417 1-5,7-114,116-120,124-170,175-178,180-181
+  s_288cc0dfb82db8::t_8ba8289aed15e6 171-174,179
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "f43916fcd67998a7b6325c9bbafa71b389ba3fc2",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
