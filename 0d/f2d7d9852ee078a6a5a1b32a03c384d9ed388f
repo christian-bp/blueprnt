@@ -1,0 +1,21 @@
+packages/backend/convex/ai/prefill.ts
+  s_288cc0dfb82db8::t_f3998f53445fb3 72-75,78-88
+  s_288cc0dfb82db8::t_1dba75480e31a8 49-51
+  s_288cc0dfb82db8::t_afc35e1eebe9eb 29-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "0df2d7d9852ee078a6a5a1b32a03c384d9ed388f",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
