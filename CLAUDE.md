@@ -23,6 +23,7 @@ See also: `AGENTS.md` (Next.js version warning + agent-skills config) · `docs/P
 - Key naming: dot namespaces per context (`web.*`, `dashboard.*`, `accounts.*`, `model.*`, `assessment.*`). Domain-term keys are defined in the glossaries' i18n tables. Parent/leaf conflicts are resolved with a `label` sub-key.
 - **Internal navigation always uses the Link component** (`next/link`, or `@workspace/i18n/navigation` Link where the locale is involved), never plain `<a>`. shadcn blocks generate framework-agnostic `<a href>` tags; swap them during adaptation.
 - The backend (Convex) returns **error codes/keys, never display text**. The frontend translates.
+- **AI-generated text is always in the user's CURRENT DISPLAY LANGUAGE** (the active next-intl locale passed from the client), never the org's stored default. Every AI generation action takes the caller's `locale` and uses it for the prompt's output-language instruction AND any localized prompt content (e.g. track names). The prefill is the canonical example: it resolves `promptLocale(locale, settings.language)`.
 - Machine-translated message files are drafts. Flag new translations for native review.
 
 ## Domain language

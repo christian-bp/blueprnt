@@ -3,7 +3,7 @@ import { components } from "../_generated/api"
 import { internalMutation, internalQuery } from "../_generated/server"
 import { familyNames } from "../assessment/names"
 import { PROFILE_TEXT_FIELDS, isProfileComplete } from "../assessment/roles"
-import { clampLocale } from "../evaluationModel/localize"
+import { clampLocale, promptLocale } from "../evaluationModel/localize"
 import { templateContent } from "../evaluationModel/standardTemplate"
 import { AUDIT_EVENTS, logAudit } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
@@ -30,7 +30,11 @@ function maxLengthFor(field: (typeof PROFILE_TEXT_FIELDS)[number]): number {
 // rejected before any model call. Roles that already have a non-empty profile
 // are filtered out, so the action never spends a generation on them.
 export const collectPrefillTargets = internalQuery({
-  args: { orgId: v.string(), userId: v.string() },
+  args: {
+    orgId: v.string(),
+    userId: v.string(),
+    locale: v.optional(v.string()),
+  },
   returns: v.object({
     actorId: v.string(),
     context: v.object({
@@ -52,7 +56,7 @@ export const collectPrefillTargets = internalQuery({
       })
     ),
   }),
-  handler: async (ctx, { orgId, userId }) => {
+  handler: async (ctx, { orgId, userId, locale }) => {
     // Membership re-check (fail closed), mirroring resolveOrgContext: the
     // action authenticated the caller, this confirms they belong to THIS org.
     let membership: { role: string } | null
@@ -72,8 +76,7 @@ export const collectPrefillTargets = internalQuery({
     if (membership === null) throw appError(ERROR_CODES.notAMember)
 
     // Company context, the same subset of settings the draft flow reads
-    // (currency is never used by the prompts). The prefill has no client UI
-    // locale, so the org's saved language is the generation locale.
+    // (currency is never used by the prompts).
     const settings = await ctx.db
       .query("organizations")
       .withIndex("by_org", (q) => q.eq("orgId", orgId))
@@ -87,9 +90,15 @@ export const collectPrefillTargets = internalQuery({
       throw appError(ERROR_CODES.profileIncomplete)
     }
 
-    const trackNames = templateContent(
-      clampLocale(settings.language)
-    ).trackNames
+    // Generate in the caller's CURRENT display locale (the active next-intl
+    // locale threaded from the client), falling back to the org's saved
+    // language. This drives BOTH the prompt's output-language instruction
+    // (context.locale) and the localized track names quoted in the prompt, so
+    // an org configured in one language but viewed in another gets profiles in
+    // the language the user is actually looking at.
+    const generationLocale = promptLocale(locale, settings.language)
+
+    const trackNames = templateContent(clampLocale(generationLocale)).trackNames
 
     // Family names resolved ONCE for the org (one indexed read), then looked up
     // per role below. A role's familyId always points to a same-org family, so
@@ -126,7 +135,7 @@ export const collectPrefillTargets = internalQuery({
     return {
       actorId: userId,
       context: {
-        locale: settings.language,
+        locale: generationLocale,
         industry: settings.industry,
         country: settings.country,
         ...(settings.employeeCount !== undefined

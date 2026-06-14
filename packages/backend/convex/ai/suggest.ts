@@ -6,7 +6,11 @@ import type { MutationCtx } from "../_generated/server"
 import { deriveResults, logBandShifts } from "../assessment/compute"
 import { PROFILE_TEXT_FIELDS, type ProfileTextField } from "../assessment/roles"
 import { insertStarterSet, starterFamilyShape } from "../assessment/starters"
-import { clampLocale, isCriterionKey } from "../evaluationModel/localize"
+import {
+  clampLocale,
+  isCriterionKey,
+  promptLocale,
+} from "../evaluationModel/localize"
 import {
   TRACK_KEYS,
   templateContent,
@@ -22,16 +26,6 @@ interface SettingsContext {
   industry: string
   employeeCount: number | undefined
   country: string
-}
-
-// The AI responds in the requester's CURRENT UI language when the client
-// passes one (clamped to the supported five); the organization default
-// language is only the fallback.
-const SUPPORTED_PROMPT_LOCALES = new Set(["en", "sv", "nb", "da", "fi"])
-function promptLocale(requested: string | undefined, fallback: string): string {
-  return requested !== undefined && SUPPORTED_PROMPT_LOCALES.has(requested)
-    ? requested
-    : fallback
 }
 
 async function requireCompleteSettings(

@@ -75,11 +75,15 @@ const PREFILL_CONCURRENCY = 1
 // the other chunks in its wave (or any later wave) and without a partial write
 // within the failed chunk.
 export const prefillRoleProfiles = action({
-  args: { orgId: v.string() },
+  // locale is the caller's CURRENT display locale (the active next-intl
+  // locale), mirroring the other AI flows. collectPrefillTargets resolves it
+  // through promptLocale (falling back to the org's saved language), so the
+  // generated profiles come back in the language the user is actually viewing.
+  args: { orgId: v.string(), locale: v.optional(v.string()) },
   returns: v.object({ generated: v.number(), failed: v.number() }),
   handler: async (
     ctx,
-    { orgId }
+    { orgId, locale }
   ): Promise<{ generated: number; failed: number }> => {
     // Org scope: resolve identity + membership exactly like the org function
     // wrapper, but from an action (which has ctx.auth but no ctx.db). The
@@ -90,7 +94,11 @@ export const prefillRoleProfiles = action({
 
     const { targets, context, actorId } = await ctx.runQuery(
       internal.ai.prefillData.collectPrefillTargets,
-      { orgId, userId: identity.subject }
+      {
+        orgId,
+        userId: identity.subject,
+        ...(locale !== undefined ? { locale } : {}),
+      }
     )
 
     // No empty roles -> no model call (the "no changes -> no AI" gate).

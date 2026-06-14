@@ -943,7 +943,10 @@ describe("FamiliesStep", () => {
       expect(onFinished).toHaveBeenCalledTimes(1)
     })
     expect(prefillRoleProfilesMock).toHaveBeenCalledTimes(1)
-    expect(prefillRoleProfilesMock).toHaveBeenCalledWith({ orgId: "org-1" })
+    expect(prefillRoleProfilesMock).toHaveBeenCalledWith({
+      orgId: "org-1",
+      locale: "en",
+    })
     // persist -> prefill -> advance, strictly ordered.
     expect(order).toEqual(["reconcile", "prefill", "advance"])
   })
@@ -969,7 +972,10 @@ describe("FamiliesStep", () => {
       expect(onFinished).toHaveBeenCalledTimes(1)
     })
     expect(prefillRoleProfilesMock).toHaveBeenCalledTimes(1)
-    expect(prefillRoleProfilesMock).toHaveBeenCalledWith({ orgId: "org-1" })
+    expect(prefillRoleProfilesMock).toHaveBeenCalledWith({
+      orgId: "org-1",
+      locale: "en",
+    })
     expect(order).toEqual(["confirm", "prefill", "advance"])
   })
 

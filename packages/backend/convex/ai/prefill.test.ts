@@ -669,3 +669,70 @@ describe("collectPrefillTargets family resolution", () => {
     expect(plain && "family" in plain).toBe(false)
   })
 })
+
+describe("collectPrefillTargets generation locale", () => {
+  beforeEach(() => {
+    vi.stubEnv("MISTRAL_API_KEY", "test-key")
+  })
+
+  it("generates in the PASSED display locale, not the org default (regression)", async () => {
+    const t = initConvexTest()
+    // seedOrg saves the org language as "sv". The caller is viewing the app in
+    // English, so the prefill must generate English profiles, NOT Swedish ones.
+    // This is the bug fix: before threading the display locale,
+    // collectPrefillTargets hardcoded the org's saved language as BOTH the
+    // output-language instruction and the track-names lookup locale.
+    const { orgId, userId } = await seedOrg(t, "collect-locale-en@acme.se")
+    const roleId = await insertRole(t, orgId, { title: "Backend Developer" })
+
+    const { context, targets } = await t.query(
+      internal.ai.prefillData.collectPrefillTargets,
+      { orgId, userId, locale: "en" }
+    )
+
+    // context.locale is the load-bearing proof: collectPrefillTargets resolves
+    // ONE generationLocale = promptLocale(locale, settings.language) and uses it
+    // for BOTH the prompt's output-language instruction (context.locale) AND the
+    // track-names lookup. Before the fix this was the org's "sv". We do NOT
+    // assert trackName by value: the standard template's track names are
+    // byte-identical across all five locales today, so the lookup locale is not
+    // observable from the result; the lookup shares generationLocale with
+    // context.locale, so it follows the display locale by construction.
+    expect(context.locale).toBe("en")
+    expect(targets.some((entry) => entry.roleId === roleId)).toBe(true)
+  })
+
+  it("falls back to the org language when no locale is passed", async () => {
+    const t = initConvexTest()
+    // seedOrg saves the org language as "sv" and passes no locale: promptLocale
+    // falls back to settings.language, so the generation locale is "sv".
+    const { orgId, userId } = await seedOrg(
+      t,
+      "collect-locale-fallback@acme.se"
+    )
+    const roleId = await insertRole(t, orgId, { title: "Backend Developer" })
+
+    const { context, targets } = await t.query(
+      internal.ai.prefillData.collectPrefillTargets,
+      { orgId, userId }
+    )
+
+    expect(context.locale).toBe("sv")
+    expect(targets.some((entry) => entry.roleId === roleId)).toBe(true)
+  })
+
+  it("falls back to the org language when an unsupported locale is passed", async () => {
+    const t = initConvexTest()
+    // An out-of-range locale ("de", not one of the supported five) is rejected
+    // by promptLocale, so the org's saved language ("sv") is used instead.
+    const { orgId, userId } = await seedOrg(t, "collect-locale-bad@acme.se")
+    await insertRole(t, orgId, { title: "Backend Developer" })
+
+    const { context } = await t.query(
+      internal.ai.prefillData.collectPrefillTargets,
+      { orgId, userId, locale: "de" }
+    )
+
+    expect(context.locale).toBe("sv")
+  })
+})

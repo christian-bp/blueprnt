@@ -429,7 +429,7 @@ export function useFamiliesDraftFlow(options: {
           ? (draft.families ?? []).some((family) => family.roles.length > 0)
           : (existingRoles ?? []).some((role) => !role.profileComplete)
       if (willPrefill) setPrefilling(true)
-      const { failed } = await prefillRoleProfiles({ orgId })
+      const { failed } = await prefillRoleProfiles({ orgId, locale })
       // A partial failure (one batched call hit a rate limit or timeout) leaves
       // some roles empty but does not throw. Give it ONE best-effort retry: the
       // action re-targets only the still-empty roles, so the roles that already
@@ -438,7 +438,7 @@ export function useFamiliesDraftFlow(options: {
       // any role still empty after it, so a second miss must not block onboarding.
       if (failed > 0) {
         try {
-          await prefillRoleProfiles({ orgId })
+          await prefillRoleProfiles({ orgId, locale })
         } catch {
           // Best effort only: advancing with a few empty profiles is fine.
         }
