@@ -1,0 +1,24 @@
+apps/dashboard/components/onboarding/score-role.tsx
+  s_288cc0dfb82db8::t_2f7611cfcb1f97 3,18-20
+  s_288cc0dfb82db8::t_55047ed1290cf2 91-93
+apps/dashboard/components/onboarding/score-role.test.tsx
+  s_288cc0dfb82db8::t_e04d98643a507e 27-28
+  s_288cc0dfb82db8::t_c18c1f1a2a4cb0 154-156,158,160
+  s_288cc0dfb82db8::t_0adf9c1b1e7ba2 159
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "9a63d382de345820c213a78a4f82527fc07743b5",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
