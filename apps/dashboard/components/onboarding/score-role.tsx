@@ -4,12 +4,13 @@ import { ArrowLeft01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
+import { Kbd } from "@workspace/ui/components/kbd"
 import { Label } from "@workspace/ui/components/label"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { RatingResult } from "@/components/rating/rating-result"
 import { RatingStepper } from "@/components/rating/rating-stepper"
@@ -57,6 +58,46 @@ export function ScoreRole({
   const [lastSyncedResponsibilities, setLastSyncedResponsibilities] = useState<
     string | null
   >(null)
+
+  // Enter saves and continues from the profile review screen (the matching Kbd
+  // hint sits on the Continue button). The ref bridges to a key handler bound
+  // once below; it is set ONLY on the review screen and cleared on every other
+  // render, so Enter never fires during the stepper phase (the stepper owns its
+  // own Enter shortcut) nor while an editable field is focused.
+  const continueRef = useRef<{
+    canContinue: boolean
+    pending: boolean
+    submit: () => void
+  } | null>(null)
+  continueRef.current = null
+
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      const handler = continueRef.current
+      if (handler === null) return
+      if (event.key !== "Enter") return
+      if (event.ctrlKey || event.metaKey || event.altKey) return
+      const target = event.target
+      if (
+        target instanceof HTMLElement &&
+        (target.isContentEditable ||
+          target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.tagName === "SELECT")
+      ) {
+        return
+      }
+      if (target instanceof HTMLElement && target.closest("button") !== null) {
+        return
+      }
+      if (!handler.canContinue || handler.pending) return
+      event.preventDefault()
+      handler.submit()
+    }
+    document.addEventListener("keydown", onKeyDown)
+    return () => document.removeEventListener("keydown", onKeyDown)
+  }, [])
+
   if (role !== undefined && role !== null) {
     if (role.purpose !== lastSyncedPurpose) {
       setLastSyncedPurpose(role.purpose)
@@ -98,6 +139,45 @@ export function ScoreRole({
     const prefilled = role.profileComplete
     const canContinue =
       purpose.trim().length > 0 && responsibilities.trim().length > 0
+
+    // Persist the reviewed profile (skipping a no-op write when nothing changed,
+    // the common prefilled case) and advance to the stepper. Shared by the
+    // Continue button and the Enter shortcut.
+    const continueToEvaluation = async () => {
+      const nextPurpose = purpose.trim()
+      const nextResponsibilities = responsibilities.trim()
+      if (
+        nextPurpose === role.purpose &&
+        nextResponsibilities === role.responsibilities
+      ) {
+        setSavedProfile(true)
+        return
+      }
+      setPending(true)
+      setFailed(false)
+      try {
+        await updateRole({
+          orgId,
+          roleId: role.roleId,
+          purpose: nextPurpose,
+          responsibilities: nextResponsibilities,
+        })
+        setSavedProfile(true)
+      } catch {
+        setFailed(true)
+      } finally {
+        setPending(false)
+      }
+    }
+
+    continueRef.current = {
+      canContinue,
+      pending,
+      submit: () => {
+        void continueToEvaluation()
+      },
+    }
+
     return (
       <div className="mx-auto w-full max-w-2xl space-y-4">
         <div className="flex items-center gap-2">
@@ -166,37 +246,16 @@ export function ScoreRole({
           <Button
             type="button"
             disabled={!canContinue || pending}
-            onClick={async () => {
-              // Skip the write when the reviewed values match what is already
-              // stored (the common prefilled case where the user just confirms):
-              // no mutation, no audit row, straight to the stepper.
-              const nextPurpose = purpose.trim()
-              const nextResponsibilities = responsibilities.trim()
-              if (
-                nextPurpose === role.purpose &&
-                nextResponsibilities === role.responsibilities
-              ) {
-                setSavedProfile(true)
-                return
-              }
-              setPending(true)
-              setFailed(false)
-              try {
-                await updateRole({
-                  orgId,
-                  roleId: role.roleId,
-                  purpose: nextPurpose,
-                  responsibilities: nextResponsibilities,
-                })
-                setSavedProfile(true)
-              } catch {
-                setFailed(true)
-              } finally {
-                setPending(false)
-              }
-            }}
+            onClick={continueToEvaluation}
           >
             {t("captureContinueCta")}
+            <Kbd
+              data-icon="inline-end"
+              aria-hidden="true"
+              className="translate-x-0.5"
+            >
+              ⏎
+            </Kbd>
           </Button>
         </div>
       </div>

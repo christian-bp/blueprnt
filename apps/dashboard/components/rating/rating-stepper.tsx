@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import { Kbd } from "@workspace/ui/components/kbd"
 import { Label } from "@workspace/ui/components/label"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { cn } from "@workspace/ui/lib/utils"
@@ -18,7 +19,7 @@ import { AnimatePresence, motion } from "motion/react"
 import type { Variants } from "motion/react"
 import { useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { SPRING } from "@/lib/motion"
 
 export interface StepperCriterion {
@@ -82,6 +83,61 @@ export function RatingStepper({
   const [pending, setPending] = useState(false)
   const [failed, setFailed] = useState(false)
 
+  // The latest keyboard-relevant state and actions, read by the document key
+  // handler below so it can bind once and never read stale values.
+  const keysRef = useRef<{
+    anchors: { level: number; text: string }[]
+    selected: number | undefined
+    pending: boolean
+    select: (level: number) => void
+    advance: () => void
+  } | null>(null)
+
+  // Keyboard shortcuts for the blind rating flow: press a digit (an anchor
+  // level, 0-5) to choose it, Enter to save and continue. Editable fields (the
+  // motivation textarea) keep their own typing, and Enter on a focused button
+  // (Next/Back/anchor) is left to that button's native activation so we never
+  // advance twice. The Next button carries the matching Enter hint (Kbd).
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      const keys = keysRef.current
+      if (keys === null) return
+      if (event.ctrlKey || event.metaKey || event.altKey) return
+      const target = event.target
+      if (
+        target instanceof HTMLElement &&
+        (target.isContentEditable ||
+          target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.tagName === "SELECT")
+      ) {
+        return
+      }
+      if (event.key === "Enter") {
+        if (
+          target instanceof HTMLElement &&
+          target.closest("button") !== null
+        ) {
+          return
+        }
+        if (keys.selected !== undefined && !keys.pending) {
+          event.preventDefault()
+          keys.advance()
+        }
+        return
+      }
+      if (/^[0-9]$/.test(event.key)) {
+        const level = Number(event.key)
+        if (keys.anchors.some((anchor) => anchor.level === level)) {
+          event.preventDefault()
+          keys.select(level)
+        }
+      }
+    }
+    document.addEventListener("keydown", onKeyDown)
+    return () => document.removeEventListener("keydown", onKeyDown)
+  }, [])
+
   const current = criteria[index]
   if (current === undefined) return null
   const selected = values[current.criterionId]
@@ -116,6 +172,22 @@ export function RatingStepper({
     if (index === 0) return
     setDirection(-1)
     setIndex(index - 1)
+  }
+
+  // Publish the latest state/actions for the document key handler. Set during
+  // render so it always reflects the current criterion and selection.
+  keysRef.current = {
+    anchors: current.anchors,
+    selected,
+    pending,
+    select: (level) =>
+      setValues((currentValues) => ({
+        ...currentValues,
+        [current.criterionId]: level,
+      })),
+    advance: () => {
+      void handleNext()
+    },
   }
 
   return (
@@ -246,6 +318,13 @@ export function RatingStepper({
                   {index === criteria.length - 1
                     ? t("finishCta")
                     : t("nextCta")}
+                  <Kbd
+                    data-icon="inline-end"
+                    aria-hidden="true"
+                    className="translate-x-0.5"
+                  >
+                    ⏎
+                  </Kbd>
                 </Button>
               </div>
             </CardContent>

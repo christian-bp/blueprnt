@@ -130,4 +130,52 @@ describe("RatingStepper", () => {
     expect(screen.queryByText(labels.result.scoreLabel)).toBeNull()
     expect(screen.queryByText(labels.result.bandLabel)).toBeNull()
   })
+
+  it("selects an anchor by its number key and advances on Enter", async () => {
+    renderStepper()
+    fireEvent.keyDown(document.body, { key: "3" })
+    expect(
+      screen
+        .getByText("Scope anchor 3")
+        .closest("button")
+        ?.getAttribute("aria-checked")
+    ).toBe("true")
+    fireEvent.keyDown(document.body, { key: "Enter" })
+    await waitFor(() => {
+      expect(setRatingMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        roleId: "role-1",
+        criterionId: "c-scope",
+        value: 3,
+      })
+    })
+    await waitFor(() => {
+      expect(screen.getByText("Risk")).toBeDefined()
+    })
+  })
+
+  it("does not hijack number keys typed in the motivation field", () => {
+    renderStepper()
+    fireEvent.keyDown(screen.getByLabelText(labels.motivationLabel), {
+      key: "3",
+    })
+    expect(
+      screen
+        .getByText("Scope anchor 3")
+        .closest("button")
+        ?.getAttribute("aria-checked")
+    ).toBe("false")
+    expect(
+      screen
+        .getByRole("button", { name: labels.nextCta })
+        .hasAttribute("disabled")
+    ).toBe(true)
+  })
+
+  it("ignores Enter until an anchor is selected", () => {
+    renderStepper()
+    fireEvent.keyDown(document.body, { key: "Enter" })
+    expect(setRatingMock).not.toHaveBeenCalled()
+    expect(screen.getByText("Scope")).toBeDefined()
+  })
 })

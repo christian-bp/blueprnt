@@ -291,4 +291,48 @@ describe("ScoreRole", () => {
     fireEvent.click(screen.getByRole("button", { name: t.backToRolesCta }))
     expect(onDone).toHaveBeenCalledTimes(1)
   })
+
+  it("continues to the stepper when Enter is pressed on the review screen", async () => {
+    updateRoleMock.mockResolvedValue(null)
+    renderRole()
+    fireEvent.change(screen.getByLabelText(t.purposeLabel), {
+      target: { value: "Builds the product." },
+    })
+    fireEvent.change(screen.getByLabelText(t.responsibilitiesLabel), {
+      target: { value: "Ships features." },
+    })
+    fireEvent.keyDown(document.body, { key: "Enter" })
+    await waitFor(() => {
+      expect(updateRoleMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        roleId: "role-1",
+        purpose: "Builds the product.",
+        responsibilities: "Ships features.",
+      })
+    })
+    expect(await screen.findByTestId("stepper")).toBeDefined()
+  })
+
+  it("does not continue when Enter is pressed inside a profile textarea", () => {
+    renderRole()
+    fireEvent.change(screen.getByLabelText(t.purposeLabel), {
+      target: { value: "Builds the product." },
+    })
+    fireEvent.change(screen.getByLabelText(t.responsibilitiesLabel), {
+      target: { value: "Ships features." },
+    })
+    // Enter inside a textarea is a newline, never a submit.
+    fireEvent.keyDown(screen.getByLabelText(t.responsibilitiesLabel), {
+      key: "Enter",
+    })
+    expect(updateRoleMock).not.toHaveBeenCalled()
+    expect(screen.queryByTestId("stepper")).toBeNull()
+  })
+
+  it("ignores Enter on the review screen until both fields are filled", () => {
+    renderRole()
+    fireEvent.keyDown(document.body, { key: "Enter" })
+    expect(updateRoleMock).not.toHaveBeenCalled()
+    expect(screen.queryByTestId("stepper")).toBeNull()
+  })
 })
