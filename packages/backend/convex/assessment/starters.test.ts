@@ -38,10 +38,29 @@ describe("getIndustryStarter", () => {
     expect(starter.families.length).toBeGreaterThan(0)
     expect(starter.families[0]?.name).toBe("Engineering")
     // One role per JOB (ADR-0005): no junior/senior variants, no level.
-    expect(starter.families[0]?.roles[0]).toEqual({
-      title: "Systemutvecklare",
-      trackKey: "IC",
-    })
+    // The predefined profile (purpose + responsibilities) rides along, so a
+    // template create makes the role arrive profileComplete.
+    const role = starter.families[0]?.roles[0]
+    expect(role?.title).toBe("Systemutvecklare")
+    expect(role?.trackKey).toBe("IC")
+    expect(role?.purpose.length ?? 0).toBeGreaterThan(0)
+    expect(role?.responsibilities.length ?? 0).toBeGreaterThan(0)
+  })
+
+  it("returns non-empty predefined profiles for a known industry/locale", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedTemplateOrganization(t, "itTelecom")
+    const starter = await asAdmin.query(
+      api.assessment.starters.getIndustryStarter,
+      { orgId, locale: "en" }
+    )
+    // Every role in every family carries a non-empty purpose + responsibilities.
+    const roles = starter.families.flatMap((family) => family.roles)
+    expect(roles.length).toBeGreaterThan(0)
+    for (const role of roles) {
+      expect(role.purpose.trim().length).toBeGreaterThan(0)
+      expect(role.responsibilities.trim().length).toBeGreaterThan(0)
+    }
   })
 
   it("falls back to the generic set for an unknown industry", async () => {
@@ -119,6 +138,72 @@ describe("createStarterSet", () => {
       expect(role?.function).toBe("")
       expect(role?.team).toBe("")
       expect(role?.purpose).toBe("")
+    })
+  })
+
+  it("carries predefined profiles through to the created roles (template path)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedTemplateOrganization(t)
+    await asAdmin.mutation(api.assessment.starters.createStarterSet, {
+      orgId,
+      families: [
+        {
+          name: "Engineering",
+          roles: [
+            {
+              title: "Software Developer",
+              trackKey: "IC",
+              purpose: "Builds and maintains software.",
+              responsibilities: "Design features\nWrite code",
+            },
+          ],
+        },
+      ],
+    })
+    const roles = await asAdmin.query(api.assessment.roles.listRoles, { orgId })
+    expect(roles).toHaveLength(1)
+    // The predefined profile reaches the row, so the role arrives complete and
+    // the onboarding prefill will skip it (zero AI calls for template names).
+    expect(roles[0]).toMatchObject({
+      title: "Software Developer",
+      profileComplete: true,
+    })
+    await t.run(async (ctx) => {
+      const role = await ctx.db
+        .query("roles")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .first()
+      expect(role?.purpose).toBe("Builds and maintains software.")
+      expect(role?.responsibilities).toBe("Design features\nWrite code")
+    })
+  })
+
+  it("creates empty-profile roles when none are sent (AI-import back-compat)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedTemplateOrganization(t)
+    // The AI-import / reconcile path sends no purpose/responsibilities; the
+    // role must start empty so the prefill regenerates it.
+    await asAdmin.mutation(api.assessment.starters.createStarterSet, {
+      orgId,
+      families: [
+        {
+          name: "Engineering",
+          roles: [{ title: "Tech Lead", trackKey: "Lead" }],
+        },
+      ],
+    })
+    const roles = await asAdmin.query(api.assessment.roles.listRoles, { orgId })
+    expect(roles[0]).toMatchObject({
+      title: "Tech Lead",
+      profileComplete: false,
+    })
+    await t.run(async (ctx) => {
+      const role = await ctx.db
+        .query("roles")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .first()
+      expect(role?.purpose).toBe("")
+      expect(role?.responsibilities).toBe("")
     })
   })
 

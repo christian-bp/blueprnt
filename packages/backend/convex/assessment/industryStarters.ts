@@ -1,5 +1,8 @@
 import type { IndustryKey } from "@workspace/constants"
+import { industryStartersDa } from "./industryStarters.content.da"
 import { industryStartersEn } from "./industryStarters.content.en"
+import { industryStartersFi } from "./industryStarters.content.fi"
+import { industryStartersNb } from "./industryStarters.content.nb"
 import { industryStartersSv } from "./industryStarters.content.sv"
 
 // Industry starter sets: per industry, role families with example roles
@@ -16,6 +19,8 @@ export {
 export interface StarterRole {
   title: string
   trackKey: string
+  purpose: string
+  responsibilities: string
 }
 
 export interface StarterFamily {
@@ -25,8 +30,20 @@ export interface StarterFamily {
 
 export type StarterContent = Record<IndustryKey, StarterFamily[]>
 
-// Starter content exists in sv/en only (unlike the standard template's five
-// locales); other locales fall back to en here.
+// Starter content exists in all five locales (en/sv/nb/da/fi), each with a
+// predefined purpose + responsibilities on every role. The locale picks the
+// module; en is the fallback for any unrecognised locale.
 export function starterContent(locale: string | undefined): StarterContent {
-  return locale === "sv" ? industryStartersSv : industryStartersEn
+  switch (locale) {
+    case "sv":
+      return industryStartersSv
+    case "nb":
+      return industryStartersNb
+    case "da":
+      return industryStartersDa
+    case "fi":
+      return industryStartersFi
+    default:
+      return industryStartersEn
+  }
 }

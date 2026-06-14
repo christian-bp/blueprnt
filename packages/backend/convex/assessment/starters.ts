@@ -15,19 +15,44 @@ export const MAX_ROLES = 100
 export const MAX_FAMILY_NAME = 100
 export const MAX_ROLE_TITLE = 200
 
+// The createStarterSet input shape: purpose/responsibilities are OPTIONAL
+// because the AI-import and reconcile paths create roles with no predefined
+// profile (they default to ""). The template path sends them, carrying the
+// predefined profiles straight through from getIndustryStarter.
 export const starterFamilyShape = v.object({
   name: v.string(),
   roles: v.array(
     v.object({
       title: v.string(),
       trackKey: v.string(),
+      purpose: v.optional(v.string()),
+      responsibilities: v.optional(v.string()),
+    })
+  ),
+})
+
+// The getIndustryStarter return shape: every predefined role carries a
+// purpose + responsibilities (required here, unlike the input shape).
+const industryStarterFamilyShape = v.object({
+  name: v.string(),
+  roles: v.array(
+    v.object({
+      title: v.string(),
+      trackKey: v.string(),
+      purpose: v.string(),
+      responsibilities: v.string(),
     })
   ),
 })
 
 export interface StarterFamilyInput {
   name: string
-  roles: { title: string; trackKey: string }[]
+  roles: {
+    title: string
+    trackKey: string
+    purpose?: string
+    responsibilities?: string
+  }[]
 }
 
 // The industry starter for the onboarding families step. Display only: the
@@ -36,7 +61,7 @@ export interface StarterFamilyInput {
 // list (founder decision 2026-06-06: pre-filled and adjustable).
 export const getIndustryStarter = orgQuery({
   args: { locale: v.optional(v.string()) },
-  returns: v.object({ families: v.array(starterFamilyShape) }),
+  returns: v.object({ families: v.array(industryStarterFamilyShape) }),
   handler: async (ctx, { locale }) => {
     const settings = await ctx.db
       .query("organizations")
@@ -51,10 +76,13 @@ export const getIndustryStarter = orgQuery({
 // Inserts a starter set in ONE transaction: families plus their draft roles.
 // Shared by the plain onboarding flow (createStarterSet) and the AI import
 // confirm (ai/suggest.confirmStarterImport); `source` distinguishes them in
-// the audit trail. Roles insert with EMPTY function/team/purpose/
-// responsibilities (honest drafts, no invented data; rollfamilj stays
-// separate from funktion/avdelning). Families never affect scoring, so there
-// is no band-shift wrap.
+// the audit trail. Roles insert with EMPTY function/team (honest drafts, no
+// invented data; rollfamilj stays separate from funktion/avdelning). Purpose
+// and responsibilities come from the input: the template path carries the
+// predefined per-role profile (so those roles arrive profileComplete and the
+// onboarding prefill skips them), while the AI-import path sends none and the
+// roles start empty (default "") for prefill to fill. Families never affect
+// scoring, so there is no band-shift wrap.
 export async function insertStarterSet(
   ctx: MutationCtx,
   args: {
@@ -121,8 +149,8 @@ export async function insertStarterSet(
         team: "",
         trackKey: role.trackKey,
         familyId,
-        purpose: "",
-        responsibilities: "",
+        purpose: role.purpose ?? "",
+        responsibilities: role.responsibilities ?? "",
         status: "draft",
       })
       await logAudit(ctx, {
