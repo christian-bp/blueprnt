@@ -39,18 +39,28 @@ interface PrefillContext {
 // chunks instead of one oversized request.
 const PREFILL_MAX_PER_CALL = 5
 
-// How many chunks may have a model request in flight at once. Kept at 1, i.e.
-// the chunks run strictly ONE AFTER ANOTHER (each "wave" is a Promise.all over a
-// single chunk). The EU model's rate limit is tight enough that bursting (waves
-// of 4, then 2) tripped it ("Rate limit exceeded") on a ~40 role set; running
-// one call at a time never bursts, so the request rate stays well under the
-// limit. Billing is per token, so the sequential run costs exactly the same as
-// a parallel one (just slower; the prefilling progress screen covers the wait).
-// maxRetries in generateRoleProfileBatch still rides out any stray 429, and a
-// chunk that exhausts its retries is isolated, with the frontend re-running
-// prefill once to re-target whatever stayed empty. Raise this only if the
-// model's rate limit is later confirmed to allow more concurrent requests.
-const PREFILL_CONCURRENCY = 1
+// How many chunks may have a model request in flight at once. The chunks run in
+// WAVES of this size (each wave a Promise.all over up to this many chunks, waves
+// one after another).
+//
+// DEFAULTS TO 1 (strictly one-after-another), which is what the Mistral FREE
+// tier needs: its ~1 request/second limit means bursting (waves of 4, then 2)
+// tripped "Rate limit exceeded" on a ~40 role set, while one call at a time
+// never bursts. Billing is per token, so concurrency only changes SPEED, not
+// cost (the prefilling progress screen covers the sequential wait).
+//
+// PAID-TIER READY: set the PREFILL_CONCURRENCY Convex env var (e.g. 4) once on a
+// higher rate limit to run several chunks per wave for a real speedup, with NO
+// code change. Invalid/unset values fall back to 1, and it is clamped to >= 1.
+// maxRetries in generateRoleProfileBatch still rides out a stray 429, and a
+// chunk that exhausts its retries is isolated (the frontend re-runs prefill once
+// to re-target whatever stayed empty), so over-raising it degrades to slower,
+// not broken.
+const parsedPrefillConcurrency = Number(process.env.PREFILL_CONCURRENCY)
+const PREFILL_CONCURRENCY =
+  Number.isInteger(parsedPrefillConcurrency) && parsedPrefillConcurrency >= 1
+    ? parsedPrefillConcurrency
+    : 1
 
 // Auto-applies AI-drafted job profiles for an org's roles whose profile is
 // still empty, during onboarding. Collects every empty-profile role, splits
