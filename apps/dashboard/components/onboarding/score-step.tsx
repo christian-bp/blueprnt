@@ -170,12 +170,15 @@ export function ScoreStep({
                         total: row.totalCriteria,
                       })}
                     </p>
+                    {/* Brand-rose indicator, matching the drafting bar; the
+                        shared Progress (other bars) stays neutral. */}
                     <Progress
                       value={
                         row.totalCriteria === 0
                           ? 0
                           : (row.ratedCount / row.totalCriteria) * 100
                       }
+                      className="[&>[data-slot=progress-indicator]]:bg-brand"
                     />
                   </div>
                   {row.complete ? (
