@@ -1,0 +1,49 @@
+packages/i18n/messages/en.json
+  s_288cc0dfb82db8::t_badb9fb28b5b62 365-368
+apps/dashboard/components/onboarding/families-step.tsx
+  s_288cc0dfb82db8::t_f76cc855e17f3f 120-122
+  s_288cc0dfb82db8::t_553c6559d57de0 203-226
+  s_288cc0dfb82db8::t_856a81fea3417d 8
+  s_288cc0dfb82db8::t_31c7dae8de6a0d 64
+apps/dashboard/hooks/use-families-draft-flow.ts
+  s_288cc0dfb82db8::t_2becb7ce137e03 43-47
+  s_288cc0dfb82db8::t_8812b306b76555 453-454,456
+  s_288cc0dfb82db8::t_dfee093555d130 418-431
+  s_288cc0dfb82db8::t_b45cedeb5433ce 417
+  s_288cc0dfb82db8::t_36ff0f5ee604fe 160-166
+  s_288cc0dfb82db8::t_4c6e95248c9029 167
+  s_288cc0dfb82db8::t_a33846726a99d8 87-90
+  s_288cc0dfb82db8::t_a5e5840c995d10 509-517
+  s_288cc0dfb82db8::t_7b164dab8f74c8 462-471
+  s_288cc0dfb82db8::t_c4a0207c5719f4 537
+packages/i18n/messages/da.json
+  s_288cc0dfb82db8::t_6f263dfb189dd6 365-368
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_288cc0dfb82db8::t_5755fb8018bc5f 979-982,984
+  s_288cc0dfb82db8::t_8bafd4f3181304 1065-1105
+  s_288cc0dfb82db8::t_c4fd43291413fb 129-133,141,149,157
+  s_288cc0dfb82db8::t_b72950265353c7 1010-1012
+  s_288cc0dfb82db8::t_c3f67bbc35c4ff 1021-1064
+packages/i18n/messages/nb.json
+  s_288cc0dfb82db8::t_46704c7d24a393 365-368
+packages/i18n/messages/sv.json
+  s_288cc0dfb82db8::t_40d94d423cc6dd 365-368
+packages/i18n/messages/fi.json
+  s_288cc0dfb82db8::t_243c41ef681ab1 365-368
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "254f58f4c54f638f9ba4fa2a47b02d47786271de",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
