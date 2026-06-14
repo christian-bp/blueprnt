@@ -39,17 +39,18 @@ interface PrefillContext {
 // chunks instead of one oversized request.
 const PREFILL_MAX_PER_CALL = 5
 
-// How many chunks may have a model request in flight at once. The chunks run in
-// WAVES of this size (Promise.all over up to this many chunks, waves one after
-// another), so a large set finishes in a few waves instead of strictly serial
-// calls, while the number of concurrent model requests stays bounded. Kept low
-// (2): the EU model's rate limit is tight enough that a wave of 4 tripped it
-// ("Rate limit exceeded") on a ~40 role set. With 2 in flight plus the model
-// call's own 429 backoff (maxRetries in generateRoleProfileBatch, which spaces
-// retried requests out), the effective request rate stays under the limit; a
-// chunk that still exhausts its retries is isolated and the frontend re-runs
-// prefill once to re-target whatever stayed empty.
-const PREFILL_CONCURRENCY = 2
+// How many chunks may have a model request in flight at once. Kept at 1, i.e.
+// the chunks run strictly ONE AFTER ANOTHER (each "wave" is a Promise.all over a
+// single chunk). The EU model's rate limit is tight enough that bursting (waves
+// of 4, then 2) tripped it ("Rate limit exceeded") on a ~40 role set; running
+// one call at a time never bursts, so the request rate stays well under the
+// limit. Billing is per token, so the sequential run costs exactly the same as
+// a parallel one (just slower; the prefilling progress screen covers the wait).
+// maxRetries in generateRoleProfileBatch still rides out any stray 429, and a
+// chunk that exhausts its retries is isolated, with the frontend re-running
+// prefill once to re-target whatever stayed empty. Raise this only if the
+// model's rate limit is later confirmed to allow more concurrent requests.
+const PREFILL_CONCURRENCY = 1
 
 // Auto-applies AI-drafted job profiles for an org's roles whose profile is
 // still empty, during onboarding. Collects every empty-profile role, splits
