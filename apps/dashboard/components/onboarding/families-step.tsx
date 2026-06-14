@@ -199,14 +199,18 @@ export function FamiliesStep({
   function renderReviewPhase() {
     return (
       <>
-        <div className="flex items-center justify-center gap-1.5">
-          <p className="text-center text-muted-foreground text-sm">
-            {createdViaTemplate ? t("reviewHintStarter") : t("reviewHint")}
-          </p>
-          <HelpMorphButton label={tHelp("familiesReviewLabel")}>
+        {/* The help icon flows inline at the end of the sentence (not as a
+            flex sibling), so it trails the last word instead of floating
+            vertically centered to the right when the hint wraps to two lines. */}
+        <p className="text-center text-muted-foreground text-sm">
+          {createdViaTemplate ? t("reviewHintStarter") : t("reviewHint")}{" "}
+          <HelpMorphButton
+            label={tHelp("familiesReviewLabel")}
+            className="inline-flex translate-y-1 align-middle"
+          >
             {tHelp("familiesReviewBody")}
           </HelpMorphButton>
-        </div>
+        </p>
         {seededFrom?.source === "ai" && (
           <p className="text-center text-muted-foreground text-sm">
             {tAi("provenance")}
