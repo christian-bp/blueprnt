@@ -1,0 +1,41 @@
+apps/dashboard/app/(app)/roles/[roleId]/rate/page.tsx
+  s_288cc0dfb82db8::t_3c696f3de04910 4
+  s_288cc0dfb82db8::t_4060a167852f0a 63-64,66-73
+apps/dashboard/components/roles/role-profile-card.test.tsx
+  s_288cc0dfb82db8::t_fb86a48d35c9d5 74,77-80
+apps/dashboard/components/roles/role-ai-panel.test.tsx
+  s_288cc0dfb82db8::t_26fa396755209e 132,134-138
+apps/dashboard/components/roles/responsibilities-list.tsx
+  s_288cc0dfb82db8::t_e6778e297ec3f1 3-14,19-21,23,27-30,36-39,43-46
+  s_288cc0dfb82db8::t_28f2cee0126001 1-2,15-18,22
+  s_288cc0dfb82db8::t_1681bddec332d8 40
+  s_288cc0dfb82db8::t_8aa74665c85279 24-26,31-35,41-42
+apps/dashboard/components/roles/role-ai-panel.tsx
+  s_288cc0dfb82db8::t_ce1d4fc376ff67 114-115
+  s_288cc0dfb82db8::t_67f620118e8592 111-113,121-125
+  s_288cc0dfb82db8::t_87529d508d2f31 116-120
+  s_288cc0dfb82db8::t_d91678d2ee75d2 14
+apps/dashboard/components/roles/responsibilities-list.test.tsx
+  s_288cc0dfb82db8::t_9b5b41b54e60ad 1-79,90
+  s_288cc0dfb82db8::t_8d58353dae5014 80-81,85-89
+  s_288cc0dfb82db8::t_29a8710831af28 82-84
+apps/dashboard/components/roles/role-profile-card.tsx
+  s_288cc0dfb82db8::t_17178fe5423a7d 21
+  s_288cc0dfb82db8::t_c320dbf68d9a93 222-236
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "e51e9fc857ca9282327065cf92c2e5b44525564d",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
