@@ -343,7 +343,6 @@
         "templateOr": "or",
         "templateCta": "use an industry template",
         "generating": "Organizing your roles into families",
-        "reviewDescriptionStarter": "A starting point based on your industry. Adjust it freely; everything can be changed later.",
         "nextCta": "Next",
         "addFamilyCta": "Add family",
         "addRoleCta": "Add role",
@@ -362,6 +361,7 @@
         "dndDropped": "{title} was placed in {family}.",
         "dndCancelled": "Moving {title} was cancelled.",
         "reviewHint": "Group the roles into families and set each role's track.",
+        "reviewHintStarter": "A starting point from your industry: group roles into families and set each role's track. Change anything later.",
         "ungroupedFamilyName": "Other roles"
       },
       "score": {
@@ -377,8 +377,8 @@
         "scoreRoleCta": "Evaluate this role",
         "resumeRoleCta": "Continue evaluating",
         "roleDoneLabel": "Evaluated",
-        "captureHeading": "First, describe {title}",
-        "captureHeadingPrefilled": "First, review {title}",
+        "captureHeading": "First, describe <brand>{title}</brand>",
+        "captureHeadingPrefilled": "First, review <brand>{title}</brand>",
         "captureHint": "A band needs a short written basis. Fill in the purpose and responsibilities to continue.",
         "captureHintPrefilled": "We drafted this purpose and these responsibilities from the role name. Edit anything before you evaluate.",
         "purposeLabel": "Purpose",

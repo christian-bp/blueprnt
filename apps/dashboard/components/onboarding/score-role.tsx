@@ -102,9 +102,21 @@ export function ScoreRole({
       <div className="mx-auto w-full max-w-2xl space-y-4">
         <div className="flex items-center gap-2">
           <h2 className="font-medium text-lg">
+            {/* The role title is the derived value: brand only it (the <brand>
+                tag in the message), the static words stay default color. */}
             {prefilled
-              ? t("captureHeadingPrefilled", { title: role.title })
-              : t("captureHeading", { title: role.title })}
+              ? t.rich("captureHeadingPrefilled", {
+                  title: role.title,
+                  brand: (chunks) => (
+                    <span className="text-brand">{chunks}</span>
+                  ),
+                })
+              : t.rich("captureHeading", {
+                  title: role.title,
+                  brand: (chunks) => (
+                    <span className="text-brand">{chunks}</span>
+                  ),
+                })}
           </h2>
           <HelpMorphButton label={tHelp("onboardingScoreLabel")}>
             {tHelp("onboardingScoreBody")}
@@ -192,7 +204,9 @@ export function ScoreRole({
         <HugeiconsIcon icon={ArrowLeft01Icon} aria-hidden="true" />
         {t("backToRolesCta")}
       </Button>
-      <h2 className="font-medium text-lg">{role.title}</h2>
+      <h2 className="font-medium text-lg">
+        <span className="text-brand">{role.title}</span>
+      </h2>
       <RatingStepper
         orgId={orgId}
         roleId={role.roleId}

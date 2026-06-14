@@ -343,7 +343,6 @@
         "templateOr": "eller",
         "templateCta": "använd en branschmall",
         "generating": "Organiserar dina roller i familjer",
-        "reviewDescriptionStarter": "En startpunkt utifrån er bransch. Justera fritt; allt kan ändras senare.",
         "nextCta": "Nästa",
         "addFamilyCta": "Lägg till familj",
         "addRoleCta": "Lägg till roll",
@@ -362,6 +361,7 @@
         "dndDropped": "{title} placerades i {family}.",
         "dndCancelled": "Flytten av {title} avbröts.",
         "reviewHint": "Gruppera rollerna i familjer och sätt varje rolls track.",
+        "reviewHintStarter": "En startpunkt utifrån er bransch: gruppera rollerna i familjer och sätt varje rolls track. Ändra vad som helst senare.",
         "ungroupedFamilyName": "Övriga roller"
       },
       "score": {
@@ -377,8 +377,8 @@
         "scoreRoleCta": "Värdera den här rollen",
         "resumeRoleCta": "Fortsätt värdera",
         "roleDoneLabel": "Värderad",
-        "captureHeading": "Beskriv först {title}",
-        "captureHeadingPrefilled": "Granska först {title}",
+        "captureHeading": "Beskriv först <brand>{title}</brand>",
+        "captureHeadingPrefilled": "Granska först <brand>{title}</brand>",
         "captureHint": "En nivå behöver ett kort skriftligt underlag. Fyll i syfte och ansvar för att fortsätta.",
         "captureHintPrefilled": "Vi har tagit fram ett utkast till syfte och ansvar utifrån rollens namn. Justera vad du vill innan du bedömer.",
         "purposeLabel": "Syfte",

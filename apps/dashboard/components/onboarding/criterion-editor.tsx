@@ -82,6 +82,8 @@ export function CriterionEditor({
         tReview("heading", { name: organizationName }),
         locale
       )}
+      // Brand the company name inside the heading (the derived value).
+      highlight={organizationName}
       description={t("description")}
     >
       <div className="w-full space-y-6">

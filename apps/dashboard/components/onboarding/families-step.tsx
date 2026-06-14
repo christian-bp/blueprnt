@@ -44,7 +44,6 @@ export function FamiliesStep({
   const flowState = useFamiliesDraftFlow({ orgId, organizationName, onAdvance })
   const {
     phase,
-    inReview,
     reviewModelPending,
     loadingGate,
     draft,
@@ -99,17 +98,13 @@ export function FamiliesStep({
         t("heading", { name: organizationName }),
         locale
       )}
-      // Only the freshly-created-via-template review keeps a subtitle: its
-      // reassurance (adjust freely, changeable later) works passively on the one
-      // screen this session just created data. A genuine revisit of the same
-      // "existing" review omits it (the data is already established), the paste
-      // view is covered by the animated placeholder plus the help popover, and
-      // the AI review's line is the provenance paragraph (ADR-0003).
-      description={
-        inReview && createdViaTemplate
-          ? t("reviewDescriptionStarter")
-          : undefined
-      }
+      // Brand the company name inside the heading (the derived value).
+      highlight={organizationName}
+      // No ScreenShell subtitle: the single muted subtitle every phase needs
+      // lives inside the phase. The review phase's hint row carries it (the
+      // template variant via reviewHintStarter), the paste view is covered by
+      // the animated placeholder plus the help popover, and the AI review's
+      // line is the provenance paragraph (ADR-0003).
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
@@ -205,7 +200,9 @@ export function FamiliesStep({
     return (
       <>
         <div className="flex items-center justify-center gap-1.5">
-          <p className="text-muted-foreground text-sm">{t("reviewHint")}</p>
+          <p className="text-center text-muted-foreground text-sm">
+            {createdViaTemplate ? t("reviewHintStarter") : t("reviewHint")}
+          </p>
           <HelpMorphButton label={tHelp("familiesReviewLabel")}>
             {tHelp("familiesReviewBody")}
           </HelpMorphButton>

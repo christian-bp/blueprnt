@@ -343,7 +343,6 @@
         "templateOr": "eller",
         "templateCta": "brug en brancheskabelon",
         "generating": "Organiserer dine roller i familier",
-        "reviewDescriptionStarter": "Et udgangspunkt baseret på jeres branche. Juster frit; alt kan ændres senere.",
         "nextCta": "Næste",
         "addFamilyCta": "Tilføj familie",
         "addRoleCta": "Tilføj rolle",
@@ -362,6 +361,7 @@
         "dndDropped": "{title} blev placeret i {family}.",
         "dndCancelled": "Flytningen af {title} blev annulleret.",
         "reviewHint": "Gruppér rollerne i familier og sæt hver rolles track.",
+        "reviewHintStarter": "Et udgangspunkt baseret på jeres branche: gruppér rollerne i familier og sæt hver rolles track. Ændr hvad som helst senere.",
         "ungroupedFamilyName": "Øvrige roller"
       },
       "score": {
@@ -377,8 +377,8 @@
         "scoreRoleCta": "Vurder denne rolle",
         "resumeRoleCta": "Fortsæt vurderingen",
         "roleDoneLabel": "Vurderet",
-        "captureHeading": "Beskriv først {title}",
-        "captureHeadingPrefilled": "Gennemgå først {title}",
+        "captureHeading": "Beskriv først <brand>{title}</brand>",
+        "captureHeadingPrefilled": "Gennemgå først <brand>{title}</brand>",
         "captureHint": "Et niveau kræver et kort skriftligt grundlag. Udfyld formål og ansvar for at fortsætte.",
         "captureHintPrefilled": "Vi har lavet et udkast til formål og ansvar ud fra rollens navn. Tilpas det, du vil, før du vurderer.",
         "purposeLabel": "Formål",

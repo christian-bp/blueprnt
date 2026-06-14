@@ -125,8 +125,12 @@ describe("ScoreRole", () => {
 
   it("names the role in the capture heading", () => {
     renderRole()
-    // captureHeading interpolates the role title instead of "this role".
-    expect(screen.getByText("First, describe Developer")).toBeDefined()
+    // captureHeading interpolates the role title instead of "this role". The
+    // title is wrapped in a brand-colored span, so the accessible heading name
+    // (concatenated across the span) is what we assert.
+    expect(
+      screen.getByRole("heading", { name: "First, describe Developer" })
+    ).toBeDefined()
   })
 
   it("offers a back-to-roles button on the capture phase that returns to the list", () => {
@@ -193,7 +197,9 @@ describe("ScoreRole", () => {
     renderRole()
     // The profile is prefilled, so the review step shows first (not the
     // stepper): the prefilled heading and the stored values in the textareas.
-    expect(screen.getByText("First, review Developer")).toBeDefined()
+    expect(
+      screen.getByRole("heading", { name: "First, review Developer" })
+    ).toBeDefined()
     expect(screen.getByText(t.captureHintPrefilled)).toBeDefined()
     expect(
       (screen.getByLabelText(t.purposeLabel) as HTMLTextAreaElement).value

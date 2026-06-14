@@ -76,7 +76,7 @@ export default function RatePage(props: {
   return (
     <div className="space-y-4">
       <h2 className="font-medium text-lg">
-        {t("title")}: {role.title}
+        {t("title")}: <span className="text-brand">{role.title}</span>
       </h2>
       <RatingStepper
         orgId={orgId}

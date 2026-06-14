@@ -33,6 +33,12 @@ export type TextEffectProps = {
   }
   className?: string
   preset?: PresetType
+  // When set, the first case-insensitive occurrence of `highlight` in
+  // `children` is rendered in the brand color. Case-insensitive because the
+  // heading is usually run through capitalizeFirst before it reaches here
+  // (e.g. "{name}'s model" -> "Acme's model"). The color is a static class on
+  // the matching word span(s), orthogonal to the per-word reveal animation.
+  highlight?: string
   delay?: number
   speedReveal?: number
   speedSegment?: number
@@ -125,47 +131,54 @@ const AnimationComponent: React.FC<{
   variants: Variants
   per: "line" | "word" | "char"
   segmentWrapperClassName?: string
-}> = React.memo(({ segment, variants, per, segmentWrapperClassName }) => {
-  const content =
-    per === "line" ? (
-      <motion.span variants={variants} className="block">
-        {segment}
-      </motion.span>
-    ) : per === "word" ? (
-      <motion.span
-        aria-hidden="true"
-        variants={variants}
-        className="inline-block whitespace-pre"
-      >
-        {segment}
-      </motion.span>
-    ) : (
-      <motion.span className="inline-block whitespace-pre">
-        {segment.split("").map((char, charIndex) => (
-          <motion.span
-            key={`char-${charIndex.toString()}`}
-            aria-hidden="true"
-            variants={variants}
-            className="inline-block whitespace-pre"
-          >
-            {char}
-          </motion.span>
-        ))}
-      </motion.span>
+  // A word segment that overlaps the highlight range gets the brand color.
+  highlighted?: boolean
+}> = React.memo(
+  ({ segment, variants, per, segmentWrapperClassName, highlighted }) => {
+    const content =
+      per === "line" ? (
+        <motion.span variants={variants} className="block">
+          {segment}
+        </motion.span>
+      ) : per === "word" ? (
+        <motion.span
+          aria-hidden="true"
+          variants={variants}
+          className={cn(
+            "inline-block whitespace-pre",
+            highlighted && "text-brand"
+          )}
+        >
+          {segment}
+        </motion.span>
+      ) : (
+        <motion.span className="inline-block whitespace-pre">
+          {segment.split("").map((char, charIndex) => (
+            <motion.span
+              key={`char-${charIndex.toString()}`}
+              aria-hidden="true"
+              variants={variants}
+              className="inline-block whitespace-pre"
+            >
+              {char}
+            </motion.span>
+          ))}
+        </motion.span>
+      )
+
+    if (!segmentWrapperClassName) {
+      return content
+    }
+
+    const defaultWrapperClassName = per === "line" ? "block" : "inline-block"
+
+    return (
+      <span className={cn(defaultWrapperClassName, segmentWrapperClassName)}>
+        {content}
+      </span>
     )
-
-  if (!segmentWrapperClassName) {
-    return content
   }
-
-  const defaultWrapperClassName = per === "line" ? "block" : "inline-block"
-
-  return (
-    <span className={cn(defaultWrapperClassName, segmentWrapperClassName)}>
-      {content}
-    </span>
-  )
-})
+)
 
 AnimationComponent.displayName = "AnimationComponent"
 
@@ -220,6 +233,7 @@ export function TextEffect({
   variants,
   className,
   preset = "fade",
+  highlight,
   delay = 0,
   speedReveal = 1,
   speedSegment = 1,
@@ -233,6 +247,30 @@ export function TextEffect({
 }: TextEffectProps) {
   const segments = splitText(children, per)
   const MotionTag = motion[as as keyof typeof motion] as typeof motion.div
+
+  // The [start, end) char range of the first case-insensitive occurrence of
+  // `highlight` in `children`, or null when there is no highlight or no match.
+  // A word segment whose own char range overlaps this gets the brand color.
+  const highlightRange = (() => {
+    if (!highlight) return null
+    const matchStart = children.toLowerCase().indexOf(highlight.toLowerCase())
+    if (matchStart === -1) return null
+    return { start: matchStart, end: matchStart + highlight.length }
+  })()
+
+  // The cumulative char offset of each segment's start. For word/char modes
+  // the segments (split on /(\s+)/) concatenate back to `children`, so the
+  // offset is the running sum of prior segment lengths. A word segment whose
+  // own [offset, offset + length) range overlaps highlightRange is brand-
+  // colored. Line mode does not support highlight, so no offsets are needed.
+  const segmentOffsets: number[] = []
+  if (highlightRange && per !== "line") {
+    let cursor = 0
+    for (const segment of segments) {
+      segmentOffsets.push(cursor)
+      cursor += segment.length
+    }
+  }
 
   const baseVariants = preset
     ? presetVariants[preset]
@@ -285,16 +323,28 @@ export function TextEffect({
           style={style}
         >
           {per !== "line" ? <span className="sr-only">{children}</span> : null}
-          {segments.map((segment, index) => (
-            <AnimationComponent
-              // biome-ignore lint/suspicious/noArrayIndexKey: segments are positional fragments of a static string; duplicates (whitespace, repeated words) make the index the only stable discriminator
-              key={`${per}-${index}-${segment}`}
-              segment={segment}
-              variants={computedVariants.item}
-              per={per}
-              segmentWrapperClassName={segmentWrapperClassName}
-            />
-          ))}
+          {segments.map((segment, index) => {
+            // A word segment is highlighted when its own [start, end) char
+            // range overlaps the highlight range (word-level overlap, so a
+            // trailing possessive like "Inc's" rides along acceptably).
+            const segStart = segmentOffsets[index] ?? 0
+            const segEnd = segStart + segment.length
+            const highlighted =
+              highlightRange !== null &&
+              segStart < highlightRange.end &&
+              segEnd > highlightRange.start
+            return (
+              <AnimationComponent
+                // biome-ignore lint/suspicious/noArrayIndexKey: segments are positional fragments of a static string; duplicates (whitespace, repeated words) make the index the only stable discriminator
+                key={`${per}-${index}-${segment}`}
+                segment={segment}
+                variants={computedVariants.item}
+                per={per}
+                segmentWrapperClassName={segmentWrapperClassName}
+                highlighted={highlighted}
+              />
+            )
+          })}
         </MotionTag>
       )}
     </AnimatePresence>

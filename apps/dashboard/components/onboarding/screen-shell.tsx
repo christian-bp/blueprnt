@@ -13,12 +13,16 @@ import { type ReactNode, useState } from "react"
 export function ScreenShell({
   heading,
   description,
+  highlight,
   children,
 }: {
   heading: string
   // Optional subtitle rendered as the first line of the revealed content,
   // so the last steps share one shape: heading, muted description, content.
   description?: string
+  // Optional derived-value highlight forwarded to the heading's TextEffect:
+  // the first case-insensitive match (e.g. the company name) is brand-colored.
+  highlight?: string
   children: ReactNode
 }) {
   const [revealed, setRevealed] = useState(false)
@@ -29,6 +33,7 @@ export function ScreenShell({
         as="h1"
         preset="blur"
         per="word"
+        highlight={highlight}
         className="text-center font-semibold text-2xl"
         onAnimationComplete={() => setRevealed(true)}
       >
