@@ -146,6 +146,9 @@ describe("ScoreRole", () => {
     })
     const onDone = vi.fn()
     renderRole(onDone)
+    // The prefilled review step shows first; continue past it (values
+    // unchanged, so no write) to reach the stepper.
+    fireEvent.click(screen.getByRole("button", { name: t.captureContinueCta }))
     expect(screen.getByTestId("stepper")).toBeDefined()
     fireEvent.click(screen.getByRole("button", { name: t.backToRolesCta }))
     expect(onDone).toHaveBeenCalledTimes(1)
@@ -181,15 +184,61 @@ describe("ScoreRole", () => {
     expect(await screen.findByTestId("stepper")).toBeDefined()
   })
 
-  it("skips capture and opens the stepper when the profile is already complete", () => {
+  it("opens on the prefilled review step when the profile is already complete", () => {
+    currentRole = roleFixture({
+      profileComplete: true,
+      purpose: "Builds the product.",
+      responsibilities: "Ships features.",
+    })
+    renderRole()
+    // The profile is prefilled, so the review step shows first (not the
+    // stepper): the prefilled heading and the stored values in the textareas.
+    expect(screen.getByText("First, review Developer")).toBeDefined()
+    expect(screen.getByText(t.captureHintPrefilled)).toBeDefined()
+    expect(
+      (screen.getByLabelText(t.purposeLabel) as HTMLTextAreaElement).value
+    ).toBe("Builds the product.")
+    expect(
+      (screen.getByLabelText(t.responsibilitiesLabel) as HTMLTextAreaElement)
+        .value
+    ).toBe("Ships features.")
+    expect(screen.queryByTestId("stepper")).toBeNull()
+  })
+
+  it("advances to the stepper without a write when the prefilled review is unchanged", () => {
     currentRole = roleFixture({
       profileComplete: true,
       purpose: "p",
       responsibilities: "r",
     })
     renderRole()
+    // Confirming the prefilled values unchanged skips the no-op mutation.
+    fireEvent.click(screen.getByRole("button", { name: t.captureContinueCta }))
+    expect(updateRoleMock).not.toHaveBeenCalled()
     expect(screen.getByTestId("stepper")).toBeDefined()
-    expect(screen.queryByLabelText(t.purposeLabel)).toBeNull()
+  })
+
+  it("saves edits to a prefilled profile before advancing to the stepper", async () => {
+    updateRoleMock.mockResolvedValue(null)
+    currentRole = roleFixture({
+      profileComplete: true,
+      purpose: "p",
+      responsibilities: "r",
+    })
+    renderRole()
+    fireEvent.change(screen.getByLabelText(t.purposeLabel), {
+      target: { value: "Edited purpose." },
+    })
+    fireEvent.click(screen.getByRole("button", { name: t.captureContinueCta }))
+    await waitFor(() => {
+      expect(updateRoleMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        roleId: "role-1",
+        purpose: "Edited purpose.",
+        responsibilities: "r",
+      })
+    })
+    expect(await screen.findByTestId("stepper")).toBeDefined()
   })
 
   it("refills the purpose textarea when an AI accept reactively patches the role", () => {
@@ -228,6 +277,9 @@ describe("ScoreRole", () => {
     })
     const onDone = vi.fn()
     renderRole(onDone)
+    // Advance past the prefilled review step (unchanged, no write) to the
+    // stepper, then complete it.
+    fireEvent.click(screen.getByRole("button", { name: t.captureContinueCta }))
     fireEvent.click(screen.getByText("stepper-done"))
     expect(await screen.findByTestId("result")).toBeDefined()
     fireEvent.click(screen.getByRole("button", { name: t.backToRolesCta }))

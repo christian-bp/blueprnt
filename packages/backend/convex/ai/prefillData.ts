@@ -1,6 +1,7 @@
 import { v } from "convex/values"
 import { components } from "../_generated/api"
 import { internalMutation, internalQuery } from "../_generated/server"
+import { familyNames } from "../assessment/names"
 import { PROFILE_TEXT_FIELDS, isProfileComplete } from "../assessment/roles"
 import { clampLocale } from "../evaluationModel/localize"
 import { templateContent } from "../evaluationModel/standardTemplate"
@@ -45,6 +46,9 @@ export const collectPrefillTargets = internalQuery({
         trackName: v.string(),
         roleFunction: v.string(),
         team: v.string(),
+        // The role's family name, present only when the role belongs to a
+        // family whose id still resolves (v.optional -> key absent otherwise).
+        family: v.optional(v.string()),
       })
     ),
   }),
@@ -87,6 +91,12 @@ export const collectPrefillTargets = internalQuery({
       clampLocale(settings.language)
     ).trackNames
 
+    // Family names resolved ONCE for the org (one indexed read), then looked up
+    // per role below. A role's familyId always points to a same-org family, so
+    // a miss only happens if the family was deleted between writes; that role
+    // simply omits the family clause.
+    const families = await familyNames(ctx, orgId)
+
     const roles = await ctx.db
       .query("roles")
       .withIndex("by_org", (q) => q.eq("orgId", orgId))
@@ -95,13 +105,23 @@ export const collectPrefillTargets = internalQuery({
       .filter(
         (role) => role.archivedAt === undefined && !isProfileComplete(role)
       )
-      .map((role) => ({
-        roleId: role._id,
-        title: role.title,
-        trackName: trackNames[role.trackKey],
-        roleFunction: role.function,
-        team: role.team,
-      }))
+      .map((role) => {
+        // Omit the family key entirely when the role has no family (or its
+        // family no longer resolves), so the target is byte-identical to the
+        // pre-family shape for unfamilied roles (matching v.optional).
+        const familyName =
+          role.familyId !== undefined
+            ? families.get(role.familyId as string)
+            : undefined
+        return {
+          roleId: role._id,
+          title: role.title,
+          trackName: trackNames[role.trackKey],
+          roleFunction: role.function,
+          team: role.team,
+          ...(familyName !== undefined ? { family: familyName } : {}),
+        }
+      })
 
     return {
       actorId: userId,

@@ -19,6 +19,9 @@ interface PrefillTarget {
   trackName: string
   roleFunction: string
   team: string
+  // Present only for roles that belong to a family (collectPrefillTargets
+  // omits the key otherwise); fed into the prompt's role-identity line.
+  family?: string
 }
 
 interface PrefillContext {
@@ -118,6 +121,7 @@ async function prefillChunk(
     trackName: target.trackName,
     roleFunction: target.roleFunction,
     team: target.team,
+    ...(target.family !== undefined ? { family: target.family } : {}),
   }))
 
   try {

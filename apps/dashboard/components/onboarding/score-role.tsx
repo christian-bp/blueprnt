@@ -88,24 +88,31 @@ export function ScoreRole({
     )
   }
 
-  // The profile gate: the role needs purpose + responsibilities before the
-  // blind stepper. Profiles are prefilled on the families step, so this manual
-  // capture is now a fallback for the rare case where a role's profile is still
-  // empty here (e.g. a generation failure).
-  if (!role.profileComplete && !savedProfile) {
+  // The profile review/capture step: always shown when opening a role to score
+  // (until the user continues past it), so the prefilled purpose +
+  // responsibilities are a review-and-edit step rather than a hidden value.
+  // Profiles are prefilled on the families step; when prefill failed the fields
+  // are empty and this is the manual fallback. The heading/hint adapt to which
+  // case it is (review the draft vs. describe from scratch).
+  if (!savedProfile) {
+    const prefilled = role.profileComplete
     const canContinue =
       purpose.trim().length > 0 && responsibilities.trim().length > 0
     return (
       <div className="mx-auto w-full max-w-2xl space-y-4">
         <div className="flex items-center gap-2">
           <h2 className="font-medium text-lg">
-            {t("captureHeading", { title: role.title })}
+            {prefilled
+              ? t("captureHeadingPrefilled", { title: role.title })
+              : t("captureHeading", { title: role.title })}
           </h2>
           <HelpMorphButton label={tHelp("onboardingScoreLabel")}>
             {tHelp("onboardingScoreBody")}
           </HelpMorphButton>
         </div>
-        <p className="text-muted-foreground text-sm">{t("captureHint")}</p>
+        <p className="text-muted-foreground text-sm">
+          {prefilled ? t("captureHintPrefilled") : t("captureHint")}
+        </p>
         <div className="space-y-2">
           <Label htmlFor="score-role-purpose">{t("purposeLabel")}</Label>
           <Textarea
@@ -143,14 +150,26 @@ export function ScoreRole({
             type="button"
             disabled={!canContinue || pending}
             onClick={async () => {
+              // Skip the write when the reviewed values match what is already
+              // stored (the common prefilled case where the user just confirms):
+              // no mutation, no audit row, straight to the stepper.
+              const nextPurpose = purpose.trim()
+              const nextResponsibilities = responsibilities.trim()
+              if (
+                nextPurpose === role.purpose &&
+                nextResponsibilities === role.responsibilities
+              ) {
+                setSavedProfile(true)
+                return
+              }
               setPending(true)
               setFailed(false)
               try {
                 await updateRole({
                   orgId,
                   roleId: role.roleId,
-                  purpose: purpose.trim(),
-                  responsibilities: responsibilities.trim(),
+                  purpose: nextPurpose,
+                  responsibilities: nextResponsibilities,
                 })
                 setSavedProfile(true)
               } catch {

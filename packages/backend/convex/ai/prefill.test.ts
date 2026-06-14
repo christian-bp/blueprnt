@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { api, components } from "../_generated/api"
+import { api, components, internal } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
 import { initConvexTest } from "../testing.helpers"
 
@@ -76,10 +76,17 @@ async function seedOrg(t: ReturnType<typeof initConvexTest>, email: string) {
 
 // Inserts a role directly (the prefill reads roles by org; createRole would
 // also work but a direct insert lets us seed a non-empty profile in one step).
+// familyId is optional so a test can seed a familied role alongside an
+// unfamilied one and assert the prompt differs only by the family clause.
 async function insertRole(
   t: ReturnType<typeof initConvexTest>,
   orgId: string,
-  fields: { title: string; purpose?: string; responsibilities?: string }
+  fields: {
+    title: string
+    purpose?: string
+    responsibilities?: string
+    familyId?: Id<"roleFamilies">
+  }
 ): Promise<Id<"roles">> {
   return await t.run(async (ctx) =>
     ctx.db.insert("roles", {
@@ -91,7 +98,19 @@ async function insertRole(
       purpose: fields.purpose ?? "",
       responsibilities: fields.responsibilities ?? "",
       status: "draft",
+      ...(fields.familyId !== undefined ? { familyId: fields.familyId } : {}),
     })
+  )
+}
+
+// Inserts a role family (user-entered name) for the org and returns its id.
+async function insertFamily(
+  t: ReturnType<typeof initConvexTest>,
+  orgId: string,
+  name: string
+): Promise<Id<"roleFamilies">> {
+  return await t.run(async (ctx) =>
+    ctx.db.insert("roleFamilies", { orgId, name })
   )
 }
 
@@ -490,6 +509,98 @@ describe("prefillRoleProfiles", () => {
     })
   })
 
+  it("includes the family clause for a familied role and omits it for an unfamilied one", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t, "prefill-family@acme.se")
+    const familyId = await insertFamily(t, orgId, "Engineering")
+    // One role in a family, one in none. Both are empty, so both reach the
+    // single batched call; the family clause must distinguish exactly one.
+    await insertRole(t, orgId, { title: "Backend Developer", familyId })
+    await insertRole(t, orgId, { title: "Office Manager" })
+
+    let capturedPrompt = ""
+    generateTextMock.mockImplementation(async (options: { prompt: string }) => {
+      capturedPrompt = options.prompt
+      return okBatch(options.prompt, (title) => ({
+        purpose: `Drives the ${title}.`,
+        responsibilities: `Owns ${title} delivery`,
+      }))
+    })
+
+    const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
+      orgId,
+    })
+    expect(result).toEqual({ generated: 2, failed: 0 })
+    expect(generateTextMock).toHaveBeenCalledTimes(1)
+
+    // The familied role's identity line carries the family name verbatim.
+    expect(capturedPrompt).toContain('role family "Engineering"')
+    // The familied role's full identity clause appears intact.
+    expect(capturedPrompt).toContain('team "Core", role family "Engineering"')
+    // Exactly ONE family clause: the unfamilied role contributes none. Two
+    // roles, one family => one occurrence of the clause prefix.
+    expect(capturedPrompt.match(/role family "/g)).toHaveLength(1)
+    // No empty family clause is ever emitted for the unfamilied role.
+    expect(capturedPrompt).not.toContain('role family ""')
+  })
+
+  it("emits NO family clause when no role has a family (byte-identical prompt)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t, "prefill-nofamily@acme.se")
+    await insertRole(t, orgId, { title: "Backend Developer" })
+    await insertRole(t, orgId, { title: "Office Manager" })
+
+    let capturedPrompt = ""
+    generateTextMock.mockImplementation(async (options: { prompt: string }) => {
+      capturedPrompt = options.prompt
+      return okBatch(options.prompt, (title) => ({
+        purpose: `Drives the ${title}.`,
+        responsibilities: `Owns ${title} delivery`,
+      }))
+    })
+
+    const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
+      orgId,
+    })
+    expect(result).toEqual({ generated: 2, failed: 0 })
+    // The family clause prefix never appears when no role has a family, so the
+    // unfamilied prompt is byte-identical to the pre-family behavior.
+    expect(capturedPrompt).not.toContain("role family")
+  })
+
+  it("omits the family clause when a role's family id no longer resolves", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t, "prefill-dangling@acme.se")
+    const familyId = await insertFamily(t, orgId, "Engineering")
+    const roleId = await insertRole(t, orgId, {
+      title: "Backend Developer",
+      familyId,
+    })
+    // Delete the family after the role points at it: the lookup misses, so the
+    // role contributes no family clause (no crash, no empty clause).
+    await t.run(async (ctx) => {
+      await ctx.db.delete(familyId)
+    })
+
+    let capturedPrompt = ""
+    generateTextMock.mockImplementation(async (options: { prompt: string }) => {
+      capturedPrompt = options.prompt
+      return okBatch(options.prompt, (title) => ({
+        purpose: `Drives the ${title}.`,
+        responsibilities: `Owns ${title} delivery`,
+      }))
+    })
+
+    const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
+      orgId,
+    })
+    expect(result).toEqual({ generated: 1, failed: 0 })
+    expect(capturedPrompt).not.toContain("role family")
+    // The role itself still appears in the prompt; only its family is gone.
+    expect(capturedPrompt).toContain("Backend Developer")
+    void roleId
+  })
+
   it("rejects a caller who is not a member of the org (foreign org)", async () => {
     const t = initConvexTest()
     const { orgId } = await seedOrg(t, "prefill-owner@acme.se")
@@ -506,5 +617,39 @@ describe("prefillRoleProfiles", () => {
     ).rejects.toThrow(/errors.notAMember/)
     // No generation happened for the foreign org.
     expect(generateTextMock).toHaveBeenCalledTimes(0)
+  })
+})
+
+describe("collectPrefillTargets family resolution", () => {
+  beforeEach(() => {
+    // This block calls the query directly (no model call), but seedOrg still
+    // builds the model and roles, so keep the env stub for parity with the rest
+    // of the suite. No generateText is invoked here.
+    vi.stubEnv("MISTRAL_API_KEY", "test-key")
+  })
+
+  it("carries family for a familied role and omits the key for an unfamilied one", async () => {
+    const t = initConvexTest()
+    const { orgId, userId } = await seedOrg(t, "collect-family@acme.se")
+    const familyId = await insertFamily(t, orgId, "Engineering")
+    const familiedId = await insertRole(t, orgId, {
+      title: "Backend Developer",
+      familyId,
+    })
+    const plainId = await insertRole(t, orgId, { title: "Office Manager" })
+
+    const { targets } = await t.query(
+      internal.ai.prefillData.collectPrefillTargets,
+      { orgId, userId }
+    )
+
+    const familied = targets.find((target) => target.roleId === familiedId)
+    const plain = targets.find((target) => target.roleId === plainId)
+    // The familied role resolves its family NAME (not the id).
+    expect(familied?.family).toBe("Engineering")
+    // The unfamilied role omits the key entirely (v.optional -> undefined, not
+    // an empty string), so its target is byte-identical to the pre-family shape.
+    expect(plain?.family).toBeUndefined()
+    expect(plain && "family" in plain).toBe(false)
   })
 })

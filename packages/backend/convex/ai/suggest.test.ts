@@ -737,6 +737,65 @@ describe("role profile drafts", () => {
     })
   })
 
+  it("schedules generateRoleProfileDraft with the role's family name when it has one", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, roleId } = await seedRoleOrganization(t)
+    // Attach the seeded role to a family (user-entered grouping name).
+    const familyId = await t.run(async (ctx) => {
+      const id = await ctx.db.insert("roleFamilies", {
+        orgId,
+        name: "Engineering",
+      })
+      const docId = ctx.db.normalizeId("roles", roleId)
+      if (docId === null) throw new Error("bad id")
+      await ctx.db.patch(docId, { familyId: id })
+      return id
+    })
+
+    await asAdmin.mutation(api.ai.suggest.requestRoleProfileDraft, {
+      orgId,
+      roleId,
+    })
+
+    // The draft generation runs in a scheduled action; assert the family NAME
+    // (not the id) was threaded into its args. convex-test records pending
+    // scheduled calls in the _scheduled_functions system table.
+    await t.run(async (ctx) => {
+      const scheduled = await ctx.db.system
+        .query("_scheduled_functions")
+        .collect()
+      const draftCall = scheduled.find((row) =>
+        row.name.endsWith("generateRoleProfileDraft")
+      )
+      expect(draftCall).toBeTruthy()
+      const args = draftCall?.args[0] as { family?: string }
+      expect(args.family).toBe("Engineering")
+    })
+    void familyId
+  })
+
+  it("schedules generateRoleProfileDraft with NO family arg for an unfamilied role", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, roleId } = await seedRoleOrganization(t)
+    // The seeded role has no familyId, so the scheduled args must omit the key
+    // entirely (not pass family: undefined) to stay byte-identical to before.
+    await asAdmin.mutation(api.ai.suggest.requestRoleProfileDraft, {
+      orgId,
+      roleId,
+    })
+    await t.run(async (ctx) => {
+      const scheduled = await ctx.db.system
+        .query("_scheduled_functions")
+        .collect()
+      const draftCall = scheduled.find((row) =>
+        row.name.endsWith("generateRoleProfileDraft")
+      )
+      expect(draftCall).toBeTruthy()
+      const args = draftCall?.args[0] as Record<string, unknown>
+      expect("family" in args).toBe(false)
+    })
+  })
+
   it("locks drafts for approved roles", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, roleId } = await seedRoleOrganization(t)

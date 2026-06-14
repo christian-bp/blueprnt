@@ -989,4 +989,50 @@ describe("FamiliesStep", () => {
     })
     expect(prefillRoleProfilesMock).toHaveBeenCalledTimes(2)
   })
+
+  it("retries the prefill once when a batch partially failed, then advances", async () => {
+    // A partial failure (the action returned failed > 0 without throwing) gets
+    // ONE best-effort retry that re-targets only the still-empty roles, then
+    // advances regardless of the retry's counts.
+    currentFamilies = existingFamiliesFixture()
+    currentRoles = existingRolesFixture()
+    reconcileStarterSetMock.mockResolvedValue(null)
+    prefillRoleProfilesMock
+      .mockResolvedValueOnce({ generated: 2, failed: 1 })
+      .mockResolvedValueOnce({ generated: 1, failed: 0 })
+    const onFinished = vi.fn()
+    renderStep(onFinished)
+    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+
+    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
+    await waitFor(() => {
+      expect(onFinished).toHaveBeenCalledTimes(1)
+    })
+    // Exactly one retry: the first call reported a partial failure, the second
+    // is the single re-attempt. No third call (it cannot loop).
+    expect(prefillRoleProfilesMock).toHaveBeenCalledTimes(2)
+    expect(screen.queryByRole("alert")).toBeNull()
+  })
+
+  it("advances even when the best-effort prefill retry rejects", async () => {
+    // The retry is swallowed: a second miss must not block onboarding, because
+    // the score step's manual capture is the final fallback for an empty role.
+    currentFamilies = existingFamiliesFixture()
+    currentRoles = existingRolesFixture()
+    reconcileStarterSetMock.mockResolvedValue(null)
+    prefillRoleProfilesMock
+      .mockResolvedValueOnce({ generated: 0, failed: 2 })
+      .mockRejectedValueOnce(new Error("retry transport blew up"))
+    const onFinished = vi.fn()
+    renderStep(onFinished)
+    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+
+    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
+    await waitFor(() => {
+      expect(onFinished).toHaveBeenCalledTimes(1)
+    })
+    expect(prefillRoleProfilesMock).toHaveBeenCalledTimes(2)
+    // The swallowed retry did not turn into a surfaced generic failure.
+    expect(screen.queryByRole("alert")).toBeNull()
+  })
 })

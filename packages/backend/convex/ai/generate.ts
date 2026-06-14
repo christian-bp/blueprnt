@@ -277,6 +277,10 @@ export interface RoleProfileInput extends CompanyContext {
   trackName: string
   roleFunction: string
   team: string
+  // The role's family is the user-entered grouping name (e.g. "Engineering").
+  // Optional: a role MAY have no family, in which case the identity line omits
+  // the family clause entirely (see roleIdentityLine).
+  family?: string
   description?: string
 }
 
@@ -295,7 +299,14 @@ const ROLE_PROFILE_CONTRACT =
 // One role's identity line in a prompt. Used by both paths so the single and
 // batched prompts describe a role identically.
 function roleIdentityLine(args: RoleProfileInput): string {
-  return `the role "${args.title}" (track ${args.trackName}) in function "${args.roleFunction}", team "${args.team}"`
+  // The family is appended as a trailing clause only when present and
+  // non-empty. When absent the line is byte-identical to the no-family wording,
+  // so a role without a family produces exactly the prompt it did before.
+  const familyClause =
+    args.family !== undefined && args.family !== ""
+      ? `, role family "${args.family}"`
+      : ""
+  return `the role "${args.title}" (track ${args.trackName}) in function "${args.roleFunction}", team "${args.team}"${familyClause}`
 }
 
 // Generates a role's { purpose, responsibilities } from its title and HR
@@ -420,6 +431,8 @@ export const generateRoleProfileDraft = internalAction({
     trackName: v.string(),
     roleFunction: v.string(),
     team: v.string(),
+    // The role's family name, when it belongs to one (ai/suggest resolves it).
+    family: v.optional(v.string()),
     description: v.optional(v.string()),
   },
   returns: v.null(),
@@ -438,6 +451,7 @@ export const generateRoleProfileDraft = internalAction({
         trackName: args.trackName,
         roleFunction: args.roleFunction,
         team: args.team,
+        ...(args.family !== undefined ? { family: args.family } : {}),
         ...(args.description !== undefined
           ? { description: args.description }
           : {}),

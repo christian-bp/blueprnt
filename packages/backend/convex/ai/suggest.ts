@@ -400,6 +400,15 @@ export const requestRoleProfileDraft = orgMutation({
     const trackName = templateContent(clampLocale(resolvedLocale)).trackNames[
       role.trackKey
     ]
+    // Resolve the role's family NAME (the user-entered grouping) so the prompt
+    // reflects it. One role -> a direct get is fine (no map needed). The role's
+    // familyId always points to a same-org family (enforced at create/update),
+    // so no extra org check is required. Undefined when the role has no family,
+    // in which case the family arg is omitted and the prompt is unchanged.
+    const family =
+      role.familyId !== undefined
+        ? (await ctx.db.get(role.familyId))?.name
+        : undefined
     const suggestionId = await ctx.db.insert("suggestions", {
       orgId: ctx.orgId,
       target: { kind: SUGGESTION_KINDS.roleProfile, roleId },
@@ -424,6 +433,7 @@ export const requestRoleProfileDraft = orgMutation({
         trackName,
         roleFunction: role.function,
         team: role.team,
+        ...(family !== undefined ? { family } : {}),
         ...(description !== undefined ? { description } : {}),
       }
     )
