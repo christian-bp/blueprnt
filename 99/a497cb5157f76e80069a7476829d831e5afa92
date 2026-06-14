@@ -1,0 +1,37 @@
+packages/backend/convex/ai/generate.ts
+  s_288cc0dfb82db8::t_f807dd8069578d 256-270,283-300,305-306,311,322,326,338-352,357-374,376-409
+  s_288cc0dfb82db8::t_4232334ae74f37 353-356,375
+packages/backend/convex/ai/usage.ts
+  s_288cc0dfb82db8::t_1799f12613e5c0 3,13-22,26-60,62-63,67-102
+  s_288cc0dfb82db8::t_62e69bb54f9bdb 61,64-66
+  s_288cc0dfb82db8::t_6adb50d96562a0 132,134-136,141-144,146-148,150-180
+  s_288cc0dfb82db8::t_709075daee7f1a 2
+  s_288cc0dfb82db8::t_4a47582c75615a 23-25
+docs/adr/0003-ai-embedded-assistant.md
+  s_288cc0dfb82db8::t_8afedd49e67b5a 31-32,37
+packages/backend/convex/ai/prefill.ts
+  s_288cc0dfb82db8::t_f5ae8e8a03b94b 4,9-10,31-36,39-44,49-50,52-56,76,79-88,94-100,106,108-122,124-165,167-173,175
+packages/backend/convex/ai/prefill.test.ts
+  s_288cc0dfb82db8::t_cfb25586582db8 277-283,293-298,300-375
+  s_288cc0dfb82db8::t_7510a0fac9991a 9-12,23-47,49,111,116,129-135,143-145,147-153,160,165-169,175-186,188-192,195-266,273,402-443,446-451,454,457-460,466-473,476-477,483-489
+  s_288cc0dfb82db8::t_ce24d49478af8b 274-276
+  s_288cc0dfb82db8::t_7cfed2ddb69b7e 284-292,299
+packages/backend/convex/ai/prefillData.ts
+  s_288cc0dfb82db8::t_15fbe9da96de9b 121-126,129-130,138-139,164,166-171,173
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "99a497cb5157f76e80069a7476829d831e5afa92",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
