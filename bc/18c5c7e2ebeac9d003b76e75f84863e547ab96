@@ -1,0 +1,41 @@
+packages/backend/convex/assessment/industryStarters.content.fi.ts
+  s_288cc0dfb82db8::t_7023e2c0a4d364 1-781
+packages/backend/convex/assessment/starters.test.ts
+  s_288cc0dfb82db8::t_ef2d55cee4c5ae 41-63
+  s_288cc0dfb82db8::t_2825c4d2660a8f 144-209
+packages/backend/convex/assessment/industryStarters.content.test.ts
+  s_288cc0dfb82db8::t_f17f1cff7c2f2a 1-99
+packages/backend/convex/assessment/starters.ts
+  s_288cc0dfb82db8::t_d7335d08f56ddb 18-21,28-43,50-55
+  s_288cc0dfb82db8::t_f2df7bf15c514c 152-153
+  s_288cc0dfb82db8::t_902e12c74a6039 64
+  s_288cc0dfb82db8::t_be60cc23995faa 79-85
+packages/backend/convex/assessment/industryStarters.content.da.ts
+  s_288cc0dfb82db8::t_3c467a9bf9adbb 1-775
+packages/backend/convex/assessment/industryStarters.content.nb.ts
+  s_288cc0dfb82db8::t_33ced0d0aa3f5f 1-770
+packages/backend/convex/assessment/industryStarters.ts
+  s_288cc0dfb82db8::t_b487a24aa6df08 33-35,37-48
+  s_288cc0dfb82db8::t_ed59668de32ce0 22-23
+  s_288cc0dfb82db8::t_fa24b8754a5874 2,4-5
+packages/backend/convex/assessment/industryStarters.content.sv.ts
+  s_288cc0dfb82db8::t_ea29be4793e5cd 8-9,15-38,43-52,56-65,70-84,90-105,113-135,141-155,161-176,184-215,221-236,242-257,263-278,286-315,321-335,341-356,362-376,384-407,413-428,434-448,456-486,492-507,513-527,535-550,556-570,576-591,597-612,620-642,648-670,676-699,707-728,734-747,753-767
+packages/backend/convex/assessment/industryStarters.content.en.ts
+  s_288cc0dfb82db8::t_de9fccb3513341 12-35,40-49,53-62,67-82,88-103,111-134,140-154,160-175,183-214,220-235,241-255,261-276,284-314,320-334,340-355,361-376,384-406,412-427,433-448,456-487,493-508,514-529,537-551,557-572,578-592,598-613,621-644,650-673,679-702,710-730,736-749,755-770
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "bc18c5c7e2ebeac9d003b76e75f84863e547ab96",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
