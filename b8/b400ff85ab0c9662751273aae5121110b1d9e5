@@ -1,0 +1,35 @@
+packages/i18n/messages/nb.json
+  s_2fe2243e77263b::t_9264197914c044 383
+packages/i18n/messages/da.json
+  s_2fe2243e77263b::t_29141759a745fc 383
+packages/i18n/messages/en.json
+  s_2fe2243e77263b::t_6d3d2db6b3abad 383
+apps/dashboard/components/onboarding/score-step.test.tsx
+  s_2fe2243e77263b::t_c636072406e5c8 259-293
+apps/dashboard/lib/group-roles-by-family.test.ts
+  s_2fe2243e77263b::t_a574d35ba192b6 1-68
+apps/dashboard/components/onboarding/score-step.tsx
+  s_2fe2243e77263b::t_51f7a831ba1e3b 15
+  s_2fe2243e77263b::t_fab867a921e93c 208-217,219-223
+  s_2fe2243e77263b::t_ef1add939500c0 99-146
+packages/i18n/messages/fi.json
+  s_2fe2243e77263b::t_3b594bea3b2e76 383
+packages/i18n/messages/sv.json
+  s_2fe2243e77263b::t_3f3c034e35f774 383
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "b8b400ff85ab0c9662751273aae5121110b1d9e5",
+  "prompts": {},
+  "sessions": {
+    "s_2fe2243e77263b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e8d786ee-2cd8-4bf2-bf4f-18e1f28af2b1",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
