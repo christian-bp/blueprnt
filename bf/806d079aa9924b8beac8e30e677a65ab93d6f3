@@ -1,0 +1,42 @@
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_288cc0dfb82db8::t_a84aa924141154 946-949,975-978
+packages/backend/convex/ai/prefill.test.ts
+  s_288cc0dfb82db8::t_b39fc9c88b9ba3 682-685,694-698,700-703,705
+  s_288cc0dfb82db8::t_75c87d286f30ed 673-681,686-693,699,704,706-711,716-742
+  s_288cc0dfb82db8::t_0f16d2e40cd793 5
+  s_288cc0dfb82db8::t_71060be2005759 712-715
+packages/backend/convex/ai/suggest.ts
+  s_288cc0dfb82db8::t_2d7975770912ae 9-13
+apps/dashboard/hooks/use-families-draft-flow.ts
+  s_288cc0dfb82db8::t_13ada883b9335b 441
+  s_288cc0dfb82db8::t_ae32fda0afd440 432
+CLAUDE.md
+  s_288cc0dfb82db8::t_008f14e6e3f2f9 26
+packages/backend/convex/evaluationModel/localize.ts
+  s_288cc0dfb82db8::t_b9af04063ef698 24-37
+packages/backend/convex/ai/prefillData.ts
+  s_288cc0dfb82db8::t_6e34841962b2e9 101
+  s_288cc0dfb82db8::t_e9ab641e8bafd7 33-37
+  s_288cc0dfb82db8::t_19d56fbb48f454 138
+  s_288cc0dfb82db8::t_06d3205ca6e32c 6
+  s_288cc0dfb82db8::t_bfc1cb0d3eea63 59
+  s_288cc0dfb82db8::t_a02f45e7b419fe 79,93-100
+packages/backend/convex/ai/prefill.ts
+  s_288cc0dfb82db8::t_f9cee64895a6df 78-82,86,97-101
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "bf806d079aa9924b8beac8e30e677a65ab93d6f3",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
