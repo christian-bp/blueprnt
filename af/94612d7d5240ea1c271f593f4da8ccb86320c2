@@ -1,0 +1,43 @@
+packages/backend/convex/evaluationModel/localize.ts
+  s_288cc0dfb82db8::t_b9af04063ef698 24-37
+packages/backend/convex/ai/prefill.test.ts
+  s_288cc0dfb82db8::t_f0627e9bebae72 693-700,702
+  s_288cc0dfb82db8::t_75c87d286f30ed 672-680,685-692,701,703-708,713-720,722-738
+  s_288cc0dfb82db8::t_b39fc9c88b9ba3 681-684
+  s_288cc0dfb82db8::t_e370462976060b 721
+  s_288cc0dfb82db8::t_71060be2005759 709-712
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_288cc0dfb82db8::t_a84aa924141154 946-949,975-978
+packages/backend/convex/ai/prefill.ts
+  s_288cc0dfb82db8::t_f9cee64895a6df 78-82,86,97-101
+packages/backend/convex/ai/prefillData.ts
+  s_288cc0dfb82db8::t_e9ab641e8bafd7 33-37
+  s_288cc0dfb82db8::t_06d3205ca6e32c 6
+  s_288cc0dfb82db8::t_a02f45e7b419fe 79,93-100
+  s_288cc0dfb82db8::t_6e34841962b2e9 101
+  s_288cc0dfb82db8::t_bfc1cb0d3eea63 59
+  s_288cc0dfb82db8::t_19d56fbb48f454 138
+packages/backend/convex/ai/suggest.ts
+  s_288cc0dfb82db8::t_2d7975770912ae 9-13
+CLAUDE.md
+  s_288cc0dfb82db8::t_008f14e6e3f2f9 26
+apps/dashboard/hooks/use-families-draft-flow.ts
+  s_288cc0dfb82db8::t_13ada883b9335b 441
+  s_288cc0dfb82db8::t_ae32fda0afd440 432
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "af94612d7d5240ea1c271f593f4da8ccb86320c2",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
