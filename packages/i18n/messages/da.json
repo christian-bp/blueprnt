@@ -352,7 +352,7 @@
         "removeRoleConfirm": "Ja, fjern rollen",
         "error": "Noget gik galt. Prøv igen.",
         "restartCta": "Start forfra",
-        "restartConfirm": "Ja, arkivér og start forfra",
+        "restartConfirm": "Ja, start forfra",
         "restartCancel": "Annuller",
         "dragHandleLabel": "Flyt rollen {title}",
         "dndInstructions": "Tryk på mellemrum eller enter for at løfte en rolle, brug piletasterne til at flytte den, og tryk på mellemrum eller enter igen for at slippe den. Tryk på escape for at annullere.",

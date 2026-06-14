@@ -352,7 +352,7 @@
         "removeRoleConfirm": "Yes, remove the role",
         "error": "Something went wrong. Try again.",
         "restartCta": "Start over",
-        "restartConfirm": "Yes, archive and start over",
+        "restartConfirm": "Yes, start over",
         "restartCancel": "Cancel",
         "dragHandleLabel": "Move role {title}",
         "dndInstructions": "Press space or enter to pick up a role, use the arrow keys to move it, and press space or enter again to drop it. Press escape to cancel.",

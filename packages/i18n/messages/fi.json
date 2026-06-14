@@ -352,7 +352,7 @@
         "removeRoleConfirm": "Kyllä, poista rooli",
         "error": "Jokin meni pieleen. Yritä uudelleen.",
         "restartCta": "Aloita alusta",
-        "restartConfirm": "Kyllä, arkistoi ja aloita alusta",
+        "restartConfirm": "Kyllä, aloita alusta",
         "restartCancel": "Peruuta",
         "dragHandleLabel": "Siirrä roolia {title}",
         "dndInstructions": "Nosta rooli painamalla välilyöntiä tai enteriä, siirrä sitä nuolinäppäimillä ja pudota painamalla välilyöntiä tai enteriä uudelleen. Peruuta painamalla escapea.",
