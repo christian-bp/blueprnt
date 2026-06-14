@@ -1,4 +1,3 @@
-import { SUGGESTION_KINDS } from "@workspace/constants"
 import { v } from "convex/values"
 import { components } from "../_generated/api"
 import { internalMutation, internalQuery } from "../_generated/server"
@@ -7,7 +6,6 @@ import { clampLocale } from "../evaluationModel/localize"
 import { templateContent } from "../evaluationModel/standardTemplate"
 import { AUDIT_EVENTS, logAudit } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
-import { AI_MODEL_ID, AI_PROVIDER } from "./config"
 
 // The DB side of the role-profile prefill (ai/prefill). Split out of the
 // "use node" action file so the query/mutation work runs on the default V8
@@ -120,45 +118,25 @@ export const collectPrefillTargets = internalQuery({
   },
 })
 
-// Opens the per-role suggestion row that anchors usage logging and provenance,
-// exactly like requestRoleProfileDraft's insert but stamped requestedBy with
-// the prefill caller. recordAiUsage derives org/kind/actor/model from this row.
-export const openPrefillSuggestion = internalMutation({
-  args: {
-    orgId: v.string(),
-    roleId: v.id("roles"),
-    requestedBy: v.string(),
-  },
-  returns: v.id("suggestions"),
-  handler: async (ctx, { orgId, roleId, requestedBy }) => {
-    return await ctx.db.insert("suggestions", {
-      orgId,
-      target: { kind: SUGGESTION_KINDS.roleProfile, roleId },
-      suggestedValue: null,
-      source: "ai",
-      status: "generating",
-      model: { provider: AI_PROVIDER, model: AI_MODEL_ID },
-      requestedBy,
-    })
-  },
-})
-
-// Auto-applies a generated profile to its role and closes the suggestion as
-// confirmed. The LLM output crosses a trust boundary here (same gate as
+// Auto-applies one generated profile to its role. The batched prefill makes
+// ONE model call for the whole set and logs usage per call (ai/usage
+// recordAiUsageDirect), so there is no per-role suggestion row: provenance is
+// the per-call AI usage event plus the role.updated audit row written here.
+//
+// The LLM output crosses a trust boundary here (same gate as
 // confirmRoleProfileDraft): require strings, trim, enforce the length bounds.
 // A role concurrently archived/approved between collect and apply is skipped
-// without an error; the suggestion still closes (rejected) so no row is left
-// dangling. Org scope is re-checked against the stored role.
+// without an error. Org scope is re-checked against the stored role. Returns
+// whether the profile was applied so the caller can count it.
 export const applyPrefill = internalMutation({
   args: {
-    suggestionId: v.id("suggestions"),
     orgId: v.string(),
     roleId: v.id("roles"),
     actorId: v.string(),
     profile: profileShape,
   },
-  returns: v.null(),
-  handler: async (ctx, { suggestionId, orgId, roleId, actorId, profile }) => {
+  returns: v.boolean(),
+  handler: async (ctx, { orgId, roleId, actorId, profile }) => {
     const role = await ctx.db.get(roleId)
     const locked =
       role === null ||
@@ -183,23 +161,15 @@ export const applyPrefill = internalMutation({
       }
     }
 
-    if (appliedFields.length > 0) {
-      await ctx.db.patch(roleId, patch)
-      await logAudit(ctx, {
-        orgId,
-        type: AUDIT_EVENTS.roleUpdated,
-        actorId,
-        payload: { roleId, fields: appliedFields },
-      })
-    }
+    if (appliedFields.length === 0) return false
 
-    await ctx.db.patch(suggestionId, {
-      // suggestedValue records WHAT was applied (provenance), matching the
-      // draft flow's saved shape; status is the auto-apply confirmation.
-      suggestedValue: { profile },
-      status: appliedFields.length > 0 ? "confirmed" : "rejected",
-      confirmedBy: actorId,
+    await ctx.db.patch(roleId, patch)
+    await logAudit(ctx, {
+      orgId,
+      type: AUDIT_EVENTS.roleUpdated,
+      actorId,
+      payload: { roleId, fields: appliedFields },
     })
-    return null
+    return true
   },
 })

@@ -1,4 +1,6 @@
 import { v } from "convex/values"
+import type { Id } from "../_generated/dataModel"
+import type { MutationCtx } from "../_generated/server"
 import { internalMutation, internalQuery } from "../_generated/server"
 import { estimateCostNanos } from "./pricing"
 
@@ -6,6 +8,98 @@ import { estimateCostNanos } from "./pricing"
 // fixed timestamps; the mutation passes Date.now().
 export function monthKey(timestampMs: number): string {
   return new Date(timestampMs).toISOString().slice(0, 7)
+}
+
+// One AI call's recorded usage: org/kind/provider/model/actor plus token
+// counts. Both the suggestion-derived path (recordAiUsage, which reads these
+// off the suggestion) and the context-based path (recordAiUsageDirect, which
+// is passed them) fold into the event + monthly rollup through the SAME helper.
+interface UsageRecord {
+  orgId: string
+  kind: string
+  provider: string
+  model: string
+  actorId?: string
+  // Set by the suggestion-derived path for provenance back to the row; the
+  // batched prefill has no per-role suggestion and leaves it unset.
+  suggestionId?: Id<"suggestions">
+  inputTokens: number
+  outputTokens: number
+  totalTokens: number
+  cachedInputTokens: number
+}
+
+// Inserts one usage event and folds it into the org's monthly rollup, in the
+// caller's transaction. The single home for the write: callers differ only in
+// where they SOURCE the attribution (a suggestion row vs. direct args).
+async function writeUsage(
+  ctx: MutationCtx,
+  record: UsageRecord
+): Promise<void> {
+  const cost = estimateCostNanos(
+    record.model,
+    record.inputTokens,
+    record.outputTokens
+  )
+  if (cost === null) {
+    console.error("ai usage recording: no pricing for model", {
+      model: record.model,
+    })
+  }
+  const costNanos = cost ?? 0
+
+  await ctx.db.insert("aiUsageEvents", {
+    orgId: record.orgId,
+    kind: record.kind,
+    provider: record.provider,
+    model: record.model,
+    inputTokens: record.inputTokens,
+    outputTokens: record.outputTokens,
+    totalTokens: record.totalTokens,
+    cachedInputTokens: record.cachedInputTokens,
+    estimatedCostNanos: costNanos,
+    // Spread the optional fields only when defined: explicit undefined is not a
+    // valid Convex value.
+    ...(record.actorId !== undefined ? { actorId: record.actorId } : {}),
+    ...(record.suggestionId !== undefined
+      ? { suggestionId: record.suggestionId }
+      : {}),
+  })
+
+  const period = monthKey(Date.now())
+  // At most one row per (orgId, period). Concurrent first-writes for the same
+  // bucket are serialized by Convex OCC (the index-range read conflicts with
+  // the other transaction's insert and retries), so .unique() never sees two.
+  const existing = await ctx.db
+    .query("aiUsageMonthly")
+    .withIndex("by_org_period", (q) =>
+      q.eq("orgId", record.orgId).eq("period", period)
+    )
+    .unique()
+  if (existing === null) {
+    await ctx.db.insert("aiUsageMonthly", {
+      orgId: record.orgId,
+      period,
+      callCount: 1,
+      inputTokens: record.inputTokens,
+      outputTokens: record.outputTokens,
+      totalTokens: record.totalTokens,
+      costNanos,
+      byKind: { [record.kind]: 1 },
+    })
+  } else {
+    await ctx.db.patch(existing._id, {
+      callCount: existing.callCount + 1,
+      inputTokens: existing.inputTokens + record.inputTokens,
+      outputTokens: existing.outputTokens + record.outputTokens,
+      totalTokens: existing.totalTokens + record.totalTokens,
+      costNanos: existing.costNanos + costNanos,
+      byKind: {
+        ...existing.byKind,
+        [record.kind]: (existing.byKind[record.kind] ?? 0) + 1,
+      },
+    })
+  }
 }
 
 // Records one usage event and folds it into the org's monthly rollup. Called
@@ -35,67 +129,55 @@ export const recordAiUsage = internalMutation({
       })
       return null
     }
-    const provider = suggestion.model?.provider ?? "unknown"
-    const model = suggestion.model?.model ?? "unknown"
-    const kind = suggestion.target.kind
-    const cost = estimateCostNanos(model, args.inputTokens, args.outputTokens)
-    if (cost === null) {
-      console.error("ai usage recording: no pricing for model", { model })
-    }
-    const costNanos = cost ?? 0
-
-    await ctx.db.insert("aiUsageEvents", {
+    await writeUsage(ctx, {
       orgId: suggestion.orgId,
-      kind,
-      provider,
-      model,
-      inputTokens: args.inputTokens,
-      outputTokens: args.outputTokens,
-      totalTokens: args.totalTokens,
-      cachedInputTokens: args.cachedInputTokens,
-      estimatedCostNanos: costNanos,
-      // Spread the optional field only when defined: explicit undefined is not
-      // a valid Convex value.
+      kind: suggestion.target.kind,
+      provider: suggestion.model?.provider ?? "unknown",
+      model: suggestion.model?.model ?? "unknown",
       ...(suggestion.requestedBy !== undefined
         ? { actorId: suggestion.requestedBy }
         : {}),
       suggestionId: args.suggestionId,
+      inputTokens: args.inputTokens,
+      outputTokens: args.outputTokens,
+      totalTokens: args.totalTokens,
+      cachedInputTokens: args.cachedInputTokens,
     })
+    return null
+  },
+})
 
-    const period = monthKey(Date.now())
-    // At most one row per (orgId, period). Concurrent first-writes for the same
-    // bucket are serialized by Convex OCC (the index-range read conflicts with
-    // the other transaction's insert and retries), so .unique() never sees two.
-    const existing = await ctx.db
-      .query("aiUsageMonthly")
-      .withIndex("by_org_period", (q) =>
-        q.eq("orgId", suggestion.orgId).eq("period", period)
-      )
-      .unique()
-    if (existing === null) {
-      await ctx.db.insert("aiUsageMonthly", {
-        orgId: suggestion.orgId,
-        period,
-        callCount: 1,
-        inputTokens: args.inputTokens,
-        outputTokens: args.outputTokens,
-        totalTokens: args.totalTokens,
-        costNanos,
-        byKind: { [kind]: 1 },
-      })
-    } else {
-      await ctx.db.patch(existing._id, {
-        callCount: existing.callCount + 1,
-        inputTokens: existing.inputTokens + args.inputTokens,
-        outputTokens: existing.outputTokens + args.outputTokens,
-        totalTokens: existing.totalTokens + args.totalTokens,
-        costNanos: existing.costNanos + costNanos,
-        byKind: {
-          ...existing.byKind,
-          [kind]: (existing.byKind[kind] ?? 0) + 1,
-        },
-      })
-    }
+// Context-based usage logging: the caller passes org/kind/provider/model/actor
+// and the token counts directly, with no suggestion row to derive them from.
+// Used by the batched onboarding prefill (ai/prefill), which makes ONE model
+// call for a whole set of roles and logs ONE usage event per call (no per-role
+// suggestion rows). Folds into the event + monthly rollup through the same
+// helper as recordAiUsage. Append-only telemetry: writes no audit row.
+export const recordAiUsageDirect = internalMutation({
+  args: {
+    orgId: v.string(),
+    kind: v.string(),
+    provider: v.string(),
+    model: v.string(),
+    actorId: v.optional(v.string()),
+    inputTokens: v.number(),
+    outputTokens: v.number(),
+    totalTokens: v.number(),
+    cachedInputTokens: v.number(),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    await writeUsage(ctx, {
+      orgId: args.orgId,
+      kind: args.kind,
+      provider: args.provider,
+      model: args.model,
+      ...(args.actorId !== undefined ? { actorId: args.actorId } : {}),
+      inputTokens: args.inputTokens,
+      outputTokens: args.outputTokens,
+      totalTokens: args.totalTokens,
+      cachedInputTokens: args.cachedInputTokens,
+    })
     return null
   },
 })

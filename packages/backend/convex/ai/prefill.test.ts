@@ -6,10 +6,10 @@ import { initConvexTest } from "../testing.helpers"
 
 // convex-test cannot reach the real EU model, so the "ai" module's
 // generateText is mocked: the action's prompt building and the surrounding
-// suggestion/usage/apply wiring run for real, only the model call is faked.
-// Each test sets generateTextMock's behavior. The action runs against the
-// mocked model only when MISTRAL_API_KEY is set (aiModel returns null
-// otherwise), so every test stubs it.
+// usage/apply wiring run for real, only the model call is faked. Each test
+// sets generateTextMock's behavior. The action runs against the mocked model
+// only when MISTRAL_API_KEY is set (aiModel returns null otherwise), so every
+// test stubs it.
 const generateTextMock = vi.fn()
 
 vi.mock("ai", async (importOriginal) => {
@@ -20,11 +20,33 @@ vi.mock("ai", async (importOriginal) => {
   }
 })
 
-// A successful generation: returns a profile + a token-usage total so the
-// usage-logging path has something to record (provenance).
-function okResult(purpose: string, responsibilities: string) {
+// The batched call now enumerates the input roles in the prompt as
+// <role index="N">title</role>; this parses them back out so a mock can
+// echo each role's index (and, for the reorder test, shuffle them).
+function parsePromptRoles(prompt: string): { index: number; title: string }[] {
+  const matches = [
+    ...prompt.matchAll(/<role index="(\d+)">([\s\S]*?)<\/role>/g),
+  ]
+  return matches.map((m) => ({
+    index: Number(m[1]),
+    title: (m[2] ?? "").trim(),
+  }))
+}
+
+// A successful batched generation: one entry per input role, each echoing its
+// index, plus a token-usage total so the per-call usage logging has something
+// to record (provenance). `order` controls how the entries are arranged so a
+// test can prove index-keyed (not position-keyed) mapping.
+function okBatch(
+  prompt: string,
+  body: (title: string) => { purpose: string; responsibilities: string },
+  order: "asc" | "shuffled" = "asc"
+) {
+  const roles = parsePromptRoles(prompt)
+  const entries = roles.map((r) => ({ index: r.index, ...body(r.title) }))
+  if (order === "shuffled") entries.reverse()
   return {
-    output: { purpose, responsibilities },
+    output: { roles: entries },
     totalUsage: { inputTokens: 10, outputTokens: 20, totalTokens: 30 },
   }
 }
@@ -86,12 +108,12 @@ describe("prefillRoleProfiles", () => {
     vi.stubEnv("MISTRAL_API_KEY", "test-key")
   })
 
-  it("generates and auto-applies profiles only for empty-profile roles", async () => {
+  it("prefills every empty role in ONE batched call, applied by echoed index", async () => {
     const t = initConvexTest()
     const { orgId, userId, asAdmin } = await seedOrg(t, "prefill-apply@acme.se")
     const empty1 = await insertRole(t, orgId, { title: "Software Developer" })
     const empty2 = await insertRole(t, orgId, { title: "Product Manager" })
-    // Already complete: must be skipped, no model call.
+    // Already complete: must be excluded from the batch, no model entry.
     const filled = await insertRole(t, orgId, {
       title: "Designer",
       purpose: "Existing purpose.",
@@ -104,8 +126,13 @@ describe("prefillRoleProfiles", () => {
       responsibilities: "",
     })
 
-    generateTextMock.mockImplementation(async () =>
-      okResult("Drives the role.", "Owns delivery\nMentors peers")
+    // Per-title body so we can assert each role got ITS OWN profile, not a
+    // shared blob: the purpose echoes the title back.
+    generateTextMock.mockImplementation(async (options: { prompt: string }) =>
+      okBatch(options.prompt, (title) => ({
+        purpose: `Drives the ${title}.`,
+        responsibilities: `Owns ${title} delivery\nMentors peers`,
+      }))
     )
 
     const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
@@ -113,47 +140,41 @@ describe("prefillRoleProfiles", () => {
     })
     expect(result).toEqual({ generated: 3, failed: 0 })
 
-    // Three empty roles -> exactly three model calls; the filled role was
-    // skipped before any generation. This is the "no changes -> no AI" gate.
-    expect(generateTextMock).toHaveBeenCalledTimes(3)
+    // Three empty roles -> exactly ONE model call (the whole set in one
+    // structured-object request). The filled role was excluded.
+    expect(generateTextMock).toHaveBeenCalledTimes(1)
 
-    for (const roleId of [empty1, empty2, blank]) {
-      const role = await readRole(t, roleId)
-      expect(role?.purpose).toBe("Drives the role.")
-      expect(role?.responsibilities).toBe("Owns delivery\nMentors peers")
-    }
+    // Each empty role got its own title-specific profile.
+    const dev = await readRole(t, empty1)
+    expect(dev?.purpose).toBe("Drives the Software Developer.")
+    const pm = await readRole(t, empty2)
+    expect(pm?.purpose).toBe("Drives the Product Manager.")
+    const qa = await readRole(t, blank)
+    expect(qa?.purpose).toBe("Drives the QA Engineer.")
     // The already-filled role is untouched.
     const untouched = await readRole(t, filled)
     expect(untouched?.purpose).toBe("Existing purpose.")
     expect(untouched?.responsibilities).toBe("Existing responsibilities")
 
     await t.run(async (ctx) => {
-      // One usage event per generation, attributed to the org + the caller.
+      // ONE usage event for the whole call, attributed to the org + caller.
       const usage = await ctx.db
         .query("aiUsageEvents")
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .collect()
-      expect(usage).toHaveLength(3)
-      expect(usage.every((row) => row.kind === "role.profile")).toBe(true)
-      expect(usage.every((row) => row.actorId === userId)).toBe(true)
-      expect(usage.every((row) => row.totalTokens === 30)).toBe(true)
-      // The monthly rollup folded all three in.
+      expect(usage).toHaveLength(1)
+      expect(usage[0]?.kind).toBe("role.profile")
+      expect(usage[0]?.actorId).toBe(userId)
+      expect(usage[0]?.totalTokens).toBe(30)
+      // The monthly rollup folded the single call in.
       const monthly = await ctx.db
         .query("aiUsageMonthly")
         .withIndex("by_org_period", (q) => q.eq("orgId", orgId))
         .collect()
       expect(monthly).toHaveLength(1)
-      expect(monthly[0]?.callCount).toBe(3)
-      // Each auto-apply closed its suggestion as confirmed (provenance), and
-      // wrote a role.updated audit row.
-      const confirmed = await ctx.db
-        .query("suggestions")
-        .withIndex("by_org_status", (q) =>
-          q.eq("orgId", orgId).eq("status", "confirmed")
-        )
-        .collect()
-      expect(confirmed).toHaveLength(3)
-      expect(confirmed.every((row) => row.confirmedBy === userId)).toBe(true)
+      expect(monthly[0]?.callCount).toBe(1)
+      // Provenance is the per-role role.updated audit row (one per applied
+      // role), NOT a per-role suggestion row.
       const updated = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
@@ -161,6 +182,197 @@ describe("prefillRoleProfiles", () => {
         )
         .collect()
       expect(updated).toHaveLength(3)
+      // The per-role role.profile suggestion rows are gone.
+      const suggestions = await ctx.db
+        .query("suggestions")
+        .withIndex("by_org_status_kind", (q) =>
+          q
+            .eq("orgId", orgId)
+            .eq("status", "confirmed")
+            .eq("target.kind", "role.profile")
+        )
+        .collect()
+      expect(suggestions).toHaveLength(0)
+    })
+  })
+
+  it("maps each profile by its ECHOED index even when the model reorders them", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t, "prefill-reorder@acme.se")
+    const first = await insertRole(t, orgId, { title: "Alpha" })
+    const second = await insertRole(t, orgId, { title: "Beta" })
+    const third = await insertRole(t, orgId, { title: "Gamma" })
+
+    // The mock returns the entries in SHUFFLED (reversed) order: index 2
+    // first, then 1, then 0. If apply mapped by array POSITION, Alpha would
+    // get Gamma's text. Index-keyed mapping must still give each its own.
+    generateTextMock.mockImplementation(async (options: { prompt: string }) =>
+      okBatch(
+        options.prompt,
+        (title) => ({
+          purpose: `Purpose of ${title}.`,
+          responsibilities: `Responsibilities of ${title}`,
+        }),
+        "shuffled"
+      )
+    )
+
+    const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
+      orgId,
+    })
+    expect(result).toEqual({ generated: 3, failed: 0 })
+    expect(generateTextMock).toHaveBeenCalledTimes(1)
+
+    // Each role keeps ITS OWN content despite the reordering.
+    expect((await readRole(t, first))?.purpose).toBe("Purpose of Alpha.")
+    expect((await readRole(t, second))?.purpose).toBe("Purpose of Beta.")
+    expect((await readRole(t, third))?.purpose).toBe("Purpose of Gamma.")
+  })
+
+  it("rejects a batch whose returned index set does not match the inputs (nothing mis-applied)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t, "prefill-mismatch@acme.se")
+    const a = await insertRole(t, orgId, { title: "Alpha" })
+    const b = await insertRole(t, orgId, { title: "Beta" })
+    const c = await insertRole(t, orgId, { title: "Gamma" })
+
+    // The model drops index 2 entirely (returns only 0 and 1) -> the returned
+    // index set != the input set, so the whole call is rejected and NOTHING is
+    // applied (no profile may be assigned to the wrong role).
+    generateTextMock.mockImplementation(async () => ({
+      output: {
+        roles: [
+          { index: 0, purpose: "P0", responsibilities: "R0" },
+          { index: 1, purpose: "P1", responsibilities: "R1" },
+        ],
+      },
+      totalUsage: { inputTokens: 10, outputTokens: 20, totalTokens: 30 },
+    }))
+
+    const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
+      orgId,
+    })
+    // The single call failed; all three roles are counted failed, none applied.
+    expect(result).toEqual({ generated: 0, failed: 3 })
+    expect((await readRole(t, a))?.purpose).toBe("")
+    expect((await readRole(t, b))?.purpose).toBe("")
+    expect((await readRole(t, c))?.purpose).toBe("")
+    await t.run(async (ctx) => {
+      // No partial write: no usage event, no audit row.
+      const usage = await ctx.db
+        .query("aiUsageEvents")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(usage).toHaveLength(0)
+      const updated = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "role.updated")
+        )
+        .collect()
+      expect(updated).toHaveLength(0)
+    })
+  })
+
+  it("rejects a batch that echoes a DUPLICATE index (nothing mis-applied)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t, "prefill-duplicate@acme.se")
+    const a = await insertRole(t, orgId, { title: "Alpha" })
+    const b = await insertRole(t, orgId, { title: "Beta" })
+    const c = await insertRole(t, orgId, { title: "Gamma" })
+
+    // The model echoes index 0 TWICE on top of a full {0,1,2} set: four entries
+    // whose index MULTISET is {0,0,1,2}. This isolates the byIndex.has(entry.index)
+    // duplicate guard: the throw fires on the second index-0 entry while folding,
+    // BEFORE the size check. With the guard gone, the duplicate would silently
+    // overwrite and the deduplicated map would still cover {0,1,2} (size 3),
+    // sailing past every later check and mis-applying one entry. So this case is
+    // distinct from the short-response size guard (which only catches a map whose
+    // size already differs). A duplicated index makes the mapping ambiguous, so
+    // the whole call is rejected and NOTHING is applied.
+    generateTextMock.mockImplementation(async () => ({
+      output: {
+        roles: [
+          { index: 0, purpose: "P0", responsibilities: "R0" },
+          { index: 0, purpose: "P0b", responsibilities: "R0b" },
+          { index: 1, purpose: "P1", responsibilities: "R1" },
+          { index: 2, purpose: "P2", responsibilities: "R2" },
+        ],
+      },
+      totalUsage: { inputTokens: 10, outputTokens: 20, totalTokens: 30 },
+    }))
+
+    const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
+      orgId,
+    })
+    // The single call failed; all three roles are counted failed, none applied.
+    expect(result).toEqual({ generated: 0, failed: 3 })
+    expect((await readRole(t, a))?.purpose).toBe("")
+    expect((await readRole(t, b))?.purpose).toBe("")
+    expect((await readRole(t, c))?.purpose).toBe("")
+    await t.run(async (ctx) => {
+      // No partial write: no usage event, no audit row.
+      const usage = await ctx.db
+        .query("aiUsageEvents")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(usage).toHaveLength(0)
+      const updated = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "role.updated")
+        )
+        .collect()
+      expect(updated).toHaveLength(0)
+    })
+  })
+
+  it("rejects a batch with the right COUNT but a GAP in the index set (nothing mis-applied)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t, "prefill-gap@acme.se")
+    const a = await insertRole(t, orgId, { title: "Alpha" })
+    const b = await insertRole(t, orgId, { title: "Beta" })
+    const c = await insertRole(t, orgId, { title: "Gamma" })
+
+    // The model returns the right COUNT (3 entries) but indices {0, 1, 3}: the
+    // size check passes (byIndex.size === roles.length), yet index 2 is missing.
+    // This trips the byIndex.get(i) === undefined loop (a distinct branch from
+    // both the short-response size check and the duplicate guard). Out-of-range
+    // index 3 has no input role, so the whole call is rejected and NOTHING is
+    // applied.
+    generateTextMock.mockImplementation(async () => ({
+      output: {
+        roles: [
+          { index: 0, purpose: "P0", responsibilities: "R0" },
+          { index: 1, purpose: "P1", responsibilities: "R1" },
+          { index: 3, purpose: "P3", responsibilities: "R3" },
+        ],
+      },
+      totalUsage: { inputTokens: 10, outputTokens: 20, totalTokens: 30 },
+    }))
+
+    const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
+      orgId,
+    })
+    // The single call failed; all three roles are counted failed, none applied.
+    expect(result).toEqual({ generated: 0, failed: 3 })
+    expect((await readRole(t, a))?.purpose).toBe("")
+    expect((await readRole(t, b))?.purpose).toBe("")
+    expect((await readRole(t, c))?.purpose).toBe("")
+    await t.run(async (ctx) => {
+      // No partial write: no usage event, no audit row.
+      const usage = await ctx.db
+        .query("aiUsageEvents")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(usage).toHaveLength(0)
+      const updated = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "role.updated")
+        )
+        .collect()
+      expect(updated).toHaveLength(0)
     })
   })
 
@@ -187,58 +399,94 @@ describe("prefillRoleProfiles", () => {
     })
   })
 
-  it("isolates a single role's failure: the others still apply", async () => {
+  it("splits an unusually large set into ceil(n / cap) sequential calls, all applied", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t, "prefill-large@acme.se")
+    // PREFILL_MAX_PER_CALL is 30; 65 empty roles -> ceil(65/30) = 3 calls.
+    const ids: Id<"roles">[] = []
+    for (let i = 0; i < 65; i++) {
+      ids.push(await insertRole(t, orgId, { title: `Role ${i}` }))
+    }
+
+    generateTextMock.mockImplementation(async (options: { prompt: string }) =>
+      okBatch(options.prompt, (title) => ({
+        purpose: `Purpose of ${title}.`,
+        responsibilities: `Responsibilities of ${title}`,
+      }))
+    )
+
+    const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
+      orgId,
+    })
+    expect(result).toEqual({ generated: 65, failed: 0 })
+    expect(generateTextMock).toHaveBeenCalledTimes(3)
+    // Every role got its own title-specific profile across the chunks.
+    for (let i = 0; i < 65; i++) {
+      const role = await readRole(t, ids[i] as Id<"roles">)
+      expect(role?.purpose).toBe(`Purpose of Role ${i}.`)
+    }
+    await t.run(async (ctx) => {
+      // One usage event per call (3), not per role.
+      const usage = await ctx.db
+        .query("aiUsageEvents")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(usage).toHaveLength(3)
+      const monthly = await ctx.db
+        .query("aiUsageMonthly")
+        .withIndex("by_org_period", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(monthly[0]?.callCount).toBe(3)
+    })
+  })
+
+  it("isolates a failed chunk: its roles stay empty + counted, the other chunk still applies", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t, "prefill-fail@acme.se")
-    const good = await insertRole(t, orgId, { title: "Software Developer" })
-    const bad = await insertRole(t, orgId, { title: "Bad Role" })
+    // 35 empty roles -> 2 chunks (30 + 5). The chunk containing "Role 0"
+    // throws; the other chunk applies in full.
+    const ids: Id<"roles">[] = []
+    for (let i = 0; i < 35; i++) {
+      ids.push(await insertRole(t, orgId, { title: `Role ${i}` }))
+    }
 
-    // The "Bad Role" generation throws; every other call succeeds. A single
-    // failure must not abort the parallel batch.
     generateTextMock.mockImplementation(async (options: { prompt: string }) => {
-      if (options.prompt.includes("Bad Role")) {
+      if (options.prompt.includes("Role 0</role>")) {
         throw new Error("model exploded")
       }
-      return okResult("Drives the role.", "Owns delivery")
+      return okBatch(options.prompt, (title) => ({
+        purpose: `Purpose of ${title}.`,
+        responsibilities: `Responsibilities of ${title}`,
+      }))
     })
 
     const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
       orgId,
     })
-    expect(result).toEqual({ generated: 1, failed: 1 })
-
-    const goodRole = await readRole(t, good)
-    expect(goodRole?.purpose).toBe("Drives the role.")
-    // The failed role keeps its empty profile (manual fallback on the client).
-    const badRole = await readRole(t, bad)
-    expect(badRole?.purpose).toBe("")
-    expect(badRole?.responsibilities).toBe("")
+    // First chunk (30 roles incl. Role 0) failed; second chunk (5) applied.
+    expect(result).toEqual({ generated: 5, failed: 30 })
+    // A role in the failed chunk keeps its empty profile (manual fallback).
+    expect((await readRole(t, ids[0] as Id<"roles">))?.purpose).toBe("")
+    // A role in the succeeding chunk is filled.
+    expect((await readRole(t, ids[34] as Id<"roles">))?.purpose).toBe(
+      "Purpose of Role 34."
+    )
 
     await t.run(async (ctx) => {
-      // The failed generation's suggestion is marked failed with a code.
-      const failed = await ctx.db
-        .query("suggestions")
-        .withIndex("by_org_status", (q) =>
-          q.eq("orgId", orgId).eq("status", "failed")
-        )
-        .collect()
-      expect(failed).toHaveLength(1)
-      expect(failed[0]?.errorCode).toBe("errors.aiGenerationFailed")
-      // The successful one still confirmed and logged usage.
-      const confirmed = await ctx.db
-        .query("suggestions")
-        .withIndex("by_org_status", (q) =>
-          q.eq("orgId", orgId).eq("status", "confirmed")
-        )
-        .collect()
-      expect(confirmed).toHaveLength(1)
+      // No partial write within the failed chunk: only the good chunk logged
+      // usage and wrote audit rows.
       const usage = await ctx.db
         .query("aiUsageEvents")
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .collect()
-      // Usage is recorded after a successful generateText, so only the good
-      // role logged a usage event.
       expect(usage).toHaveLength(1)
+      const updated = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "role.updated")
+        )
+        .collect()
+      expect(updated).toHaveLength(5)
     })
   })
 

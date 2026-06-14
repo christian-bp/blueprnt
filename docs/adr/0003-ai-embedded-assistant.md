@@ -28,10 +28,12 @@ Systemet byggs **AI-redo från dag 1** (förslagslager + proveniens + AI-anrop v
 
 **Scopeundantag (V1):** I onboardingens värderingssteg fylls varje rolls *syfte* och *ansvarsområden* i automatiskt med ett AI-utkast härlett ur rollens titel, utan ett blockerande HR-bekräftelsesteg per post. Det är ett medvetet undantag från regeln "inget tillämpas automatiskt" ovan, avgränsat till just denna profil-ifyllning. Ifyllningen körs när användaren går vidare från rollsteget: nya och omdöpta roller får ett namnhärlett utkast, medan oförändrade roller (som redan har en profil) lämnas orörda, så inget AI-anrop sker utan en faktisk ändring.
 
+**Ett anrop per uppsättning:** Alla rollens tomma profiler genereras i ETT strukturerat objekt-anrop (generateText + Output.object) som returnerar en post per roll. Varje post ekar tillbaka det index rollen fick i prompten, och utdatat mappas till rätt roll via det ekade indexet (aldrig via positionen i listan); en omordnad, för kort eller för lång respons (indexmängden matchar inte exakt inmatningen) förkastas som ett misslyckat anrop, så ingen profil kan hamna på fel roll. Endast en ovanligt stor uppsättning delas upp i ett fåtal sekventiella anrop under ett tak (PREFILL_MAX_PER_CALL); normalfallet är exakt ett anrop. Ett anrop som misslyckas lämnar just det anropets roller tomma (inget partiellt skriv) utan att avbryta övriga.
+
 **Varför det är försvarbart:**
 
 - Texten rör aldrig den deterministiska poäng-/bandvägen (ADR-0002 gäller oförändrat): poäng/band härleds enbart ur HR:s betyg, aldrig ur profiltexten.
 - Utkastet är fritt redigerbart (i värderingsstegets manuella reservvy om generering misslyckas, och i instrumentpanelens rollvy), så HR behåller kontrollen, bara inte som ett blockerande per-post-steg.
-- Proveniensen bevaras: varje ifyllning går via ett `role.profile`-förslag som auto-bekräftas plus en loggad AI-användningshändelse, så källa, modell och tidpunkt finns kvar i revisions-/telemetriloggen.
+- Proveniensen bevaras: AI-användning loggas en gång PER ANROP (en aiUsageEvents-rad med org, modell, leverantör, token och tidpunkt) och varje tillämpad roll får en `role.updated`-revisionsrad. Ifyllningen skapar inte längre per-roll-`role.profile`-förslag; det per-anrops-loggade användningseventet plus per-roll-revisionsraden är proveniensen.
 
 **Avgränsning:** Undantaget gäller endast onboardingens profil-ifyllning. Övriga AI-utdata (kriterieutkast, betydelsejusteringar, framtida betygsförslag) kräver fortsatt explicit HR-bekräftelse per post enligt ovan.
