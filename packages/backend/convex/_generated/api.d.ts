@@ -20,6 +20,7 @@ import type * as ai_prefill from "../ai/prefill.js";
 import type * as ai_prefillData from "../ai/prefillData.js";
 import type * as ai_pricing from "../ai/pricing.js";
 import type * as ai_provider from "../ai/provider.js";
+import type * as ai_retry from "../ai/retry.js";
 import type * as ai_starterImport from "../ai/starterImport.js";
 import type * as ai_suggest from "../ai/suggest.js";
 import type * as ai_tables from "../ai/tables.js";
@@ -71,6 +72,7 @@ declare const fullApi: ApiFromModules<{
   "ai/prefillData": typeof ai_prefillData;
   "ai/pricing": typeof ai_pricing;
   "ai/provider": typeof ai_provider;
+  "ai/retry": typeof ai_retry;
   "ai/starterImport": typeof ai_starterImport;
   "ai/suggest": typeof ai_suggest;
   "ai/tables": typeof ai_tables;
