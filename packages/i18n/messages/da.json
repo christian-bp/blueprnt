@@ -362,7 +362,10 @@
         "dndCancelled": "Flytningen af {title} blev annulleret.",
         "reviewHint": "Gruppér rollerne i familier og sæt hver rolles track.",
         "reviewHintStarter": "Et udgangspunkt baseret på jeres branche: gruppér rollerne i familier og sæt hver rolles track. Ændr hvad som helst senere.",
-        "ungroupedFamilyName": "Øvrige roller"
+        "ungroupedFamilyName": "Øvrige roller",
+        "prefillingHeading": "Udarbejder rolleprofiler",
+        "prefillingBody": "Vi skriver et formål og ansvarsområder for hver rolle ud fra dens navn. Det kan tage et øjeblik for et stort sæt.",
+        "prefillingProgress": "{done} af {total} roller"
       },
       "score": {
         "forkHeading": "Dine roller er klar. Vil du vurdere dem nu?",

@@ -362,7 +362,10 @@
         "dndCancelled": "Roolin {title} siirto peruutettiin.",
         "reviewHint": "Ryhmittele roolit perheisiin ja aseta jokaisen roolin track.",
         "reviewHintStarter": "Lähtökohta toimialanne perusteella: ryhmittele roolit perheisiin ja aseta jokaisen roolin track. Muuta mitä tahansa myöhemmin.",
-        "ungroupedFamilyName": "Muut roolit"
+        "ungroupedFamilyName": "Muut roolit",
+        "prefillingHeading": "Luodaan rooliprofiileja",
+        "prefillingBody": "Kirjoitamme jokaiselle roolille tarkoituksen ja vastuut sen nimen perusteella. Tämä voi kestää hetken suuren joukon kohdalla.",
+        "prefillingProgress": "{done}/{total} roolia"
       },
       "score": {
         "forkHeading": "Roolisi ovat valmiit. Haluatko arvioida ne nyt?",

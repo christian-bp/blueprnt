@@ -126,7 +126,11 @@ function existingFamiliesFixture() {
   ]
 }
 
-function existingRolesFixture() {
+function existingRolesFixture({
+  profileComplete = false,
+}: {
+  profileComplete?: boolean
+} = {}) {
   return [
     {
       roleId: "role-dev",
@@ -134,6 +138,7 @@ function existingRolesFixture() {
       trackKey: "IC",
       familyId: "fam-eng",
       familyName: "Engineering",
+      profileComplete,
     },
     {
       roleId: "role-lead",
@@ -141,6 +146,7 @@ function existingRolesFixture() {
       trackKey: "Lead",
       familyId: "fam-eng",
       familyName: "Engineering",
+      profileComplete,
     },
     {
       roleId: "role-ae",
@@ -148,6 +154,7 @@ function existingRolesFixture() {
       trackKey: "IC",
       familyId: "fam-sales",
       familyName: "Sales",
+      profileComplete,
     },
   ]
 }
@@ -969,9 +976,12 @@ describe("FamiliesStep", () => {
   it("shows the Next button loading state across persist + prefill, then advances when prefill resolves", async () => {
     // The whole finish() (persist + prefill) is one loading span on the Next
     // button: it disables and shows the spinner until prefill resolves, then
-    // advances. We hold the prefill behind a manual resolve to observe it.
+    // advances. We hold the prefill behind a manual resolve to observe it. The
+    // roles are already profileComplete, so the dedicated prefilling screen does
+    // NOT show (there is nothing to fill) and the Next-button spinner covers the
+    // brief span on its own, exactly as the all-complete (template) path does.
     currentFamilies = existingFamiliesFixture()
-    currentRoles = existingRolesFixture()
+    currentRoles = existingRolesFixture({ profileComplete: true })
     reconcileStarterSetMock.mockResolvedValue(null)
     const deferred: { resolve: () => void } = { resolve: () => {} }
     prefillRoleProfilesMock.mockImplementation(
@@ -997,8 +1007,96 @@ describe("FamiliesStep", () => {
     expect(prefillRoleProfilesMock).toHaveBeenCalledTimes(1)
     expect(within(next).getByRole("status")).toBeDefined()
     expect(onFinished).not.toHaveBeenCalled()
+    // The all-complete path must NOT flash the dedicated prefilling screen: its
+    // heading is absent and the Next button (with its inline spinner) stays.
+    expect(screen.queryByText(t.prefillingHeading)).toBeNull()
 
     // Once prefill resolves, the step advances.
+    deferred.resolve()
+    await waitFor(() => {
+      expect(onFinished).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it("shows the prefilling screen with progress while empty profiles fill, then advances", async () => {
+    // With empty-profile roles to fill, finish() shows the dedicated prefilling
+    // screen (loader + message + progress bar) across the prefill span, NOT just
+    // the Next-button spinner. We hold the prefill behind a manual resolve to
+    // observe the screen; resolving it advances. The roles start with no
+    // complete profile, so done = 0 of 3.
+    currentFamilies = existingFamiliesFixture()
+    currentRoles = existingRolesFixture()
+    reconcileStarterSetMock.mockResolvedValue(null)
+    const deferred: { resolve: () => void } = { resolve: () => {} }
+    prefillRoleProfilesMock.mockImplementation(
+      () =>
+        new Promise<{ generated: number; failed: number }>((resolve) => {
+          deferred.resolve = () => resolve({ generated: 3, failed: 0 })
+        })
+    )
+    const onFinished = vi.fn()
+    renderStep(onFinished)
+    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+
+    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
+
+    // The dedicated prefilling screen takes over while the action runs: the
+    // heading + body, the progress bar (role=progressbar), and the
+    // "{done} of {total} roles" line are all on screen.
+    expect(await screen.findByText(t.prefillingHeading)).toBeDefined()
+    expect(screen.getByText(t.prefillingBody)).toBeDefined()
+    expect(screen.getByRole("progressbar")).toBeDefined()
+    expect(
+      screen.getByText(
+        t.prefillingProgress.replace("{done}", "0").replace("{total}", "3")
+      )
+    ).toBeDefined()
+    // The review's Next button is gone while the prefilling screen is up.
+    expect(screen.queryByRole("button", { name: t.nextCta })).toBeNull()
+    expect(onFinished).not.toHaveBeenCalled()
+
+    // Resolving the action advances the wizard exactly once.
+    deferred.resolve()
+    await waitFor(() => {
+      expect(onFinished).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it("shows the prefilling screen on the AI import path, where the new empty roles are created during finish()", async () => {
+    // The AI import is the primary path that creates the many empty roles that
+    // time out, and it creates them DURING finish() (confirmStarterImport), so
+    // existingRoles is the stale empty render-closure value at that point. The
+    // screen must show from the source decision (an AI seed always produces
+    // brand-new empty roles), NOT from a stale [].some(...) over existingRoles.
+    // currentRoles stays empty (the AI-path precondition) and we hold the
+    // prefill behind a manual resolve to observe the screen in flight.
+    currentSuggestions = [suggestedImportFixture()]
+    confirmStarterImportMock.mockResolvedValue(null)
+    const deferred: { resolve: () => void } = { resolve: () => {} }
+    prefillRoleProfilesMock.mockImplementation(
+      () =>
+        new Promise<{ generated: number; failed: number }>((resolve) => {
+          deferred.resolve = () => resolve({ generated: 2, failed: 0 })
+        })
+    )
+    const onFinished = vi.fn()
+    renderStep(onFinished)
+
+    // The AI proposal seeds the editable review; confirm it with Next.
+    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
+
+    // While the prefill is in flight the dedicated prefilling screen takes over
+    // (heading + progress bar), even though existingRoles was empty at finish().
+    expect(await screen.findByText(t.prefillingHeading)).toBeDefined()
+    expect(screen.getByRole("progressbar")).toBeDefined()
+    expect(screen.queryByRole("button", { name: t.nextCta })).toBeNull()
+    await waitFor(() => {
+      expect(confirmStarterImportMock).toHaveBeenCalledTimes(1)
+    })
+    expect(onFinished).not.toHaveBeenCalled()
+
+    // Resolving the action advances the wizard exactly once.
     deferred.resolve()
     await waitFor(() => {
       expect(onFinished).toHaveBeenCalledTimes(1)

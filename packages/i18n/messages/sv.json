@@ -362,7 +362,10 @@
         "dndCancelled": "Flytten av {title} avbröts.",
         "reviewHint": "Gruppera rollerna i familjer och sätt varje rolls track.",
         "reviewHintStarter": "En startpunkt utifrån er bransch: gruppera rollerna i familjer och sätt varje rolls track. Ändra vad som helst senare.",
-        "ungroupedFamilyName": "Övriga roller"
+        "ungroupedFamilyName": "Övriga roller",
+        "prefillingHeading": "Skapar rollprofiler",
+        "prefillingBody": "Vi skriver ett syfte och ansvarsområden för varje roll utifrån dess namn. Det kan ta en stund för en stor uppsättning.",
+        "prefillingProgress": "{done} av {total} roller"
       },
       "score": {
         "forkHeading": "Dina roller är klara. Vill du värdera dem nu?",

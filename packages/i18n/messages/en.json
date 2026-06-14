@@ -362,7 +362,10 @@
         "dndCancelled": "Moving {title} was cancelled.",
         "reviewHint": "Group the roles into families and set each role's track.",
         "reviewHintStarter": "A starting point from your industry: group roles into families and set each role's track. Change anything later.",
-        "ungroupedFamilyName": "Other roles"
+        "ungroupedFamilyName": "Other roles",
+        "prefillingHeading": "Drafting role profiles",
+        "prefillingBody": "We're writing a purpose and responsibilities for each role from its name. This can take a moment for a large set.",
+        "prefillingProgress": "{done} of {total} roles"
       },
       "score": {
         "forkHeading": "Your roles are ready. Want to evaluate them now?",

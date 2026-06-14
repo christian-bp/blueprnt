@@ -31,20 +31,31 @@ interface PrefillContext {
   country: string
 }
 
-// Safety cap on roles per model call. The normal case is one call for the few
-// empty roles an onboarding org has (template roles ship with predefined
-// profiles, so only renamed/new/pasted roles ever reach here). An unusually
-// large set is split into ceil(n / cap) SEQUENTIAL calls (at most one in
-// flight) so a single request never grows unbounded.
-const PREFILL_MAX_PER_CALL = 30
+// Roles per model call, kept small ON PURPOSE. generateRoleProfileBatch wraps a
+// single completion in AbortSignal.timeout(60_000), and generating many full
+// { purpose, responsibilities } profiles in one completion does not finish in
+// 60s. A small chunk (~5) keeps each call's output small enough to beat the
+// timeout, so the empty roles of an onboarding org are split into ceil(n / 5)
+// chunks instead of one oversized request.
+const PREFILL_MAX_PER_CALL = 5
+
+// How many chunks may have a model request in flight at once. The chunks run in
+// WAVES of this size (Promise.all over up to this many chunks, waves one after
+// another), so a large set finishes in a few waves instead of strictly serial
+// calls, while the number of concurrent model requests stays bounded. The cap
+// matches the prior "waves of 3" rate-limit fix: the earlier incident came from
+// UNBOUNDED per-role parallelism, and ~4 concurrent requests is safe.
+const PREFILL_CONCURRENCY = 4
 
 // Auto-applies AI-drafted job profiles for an org's roles whose profile is
-// still empty, during onboarding. Collects every empty-profile role and, in
-// the normal case, makes ONE structured-object call that returns one profile
-// per role (generateRoleProfileBatch); each returned profile is applied
-// directly to its role (applyPrefill) instead of routing through the
-// suggestion/confirm flow. An unusually large set is split into a few
-// sequential calls under PREFILL_MAX_PER_CALL.
+// still empty, during onboarding. Collects every empty-profile role, splits
+// them into small chunks (PREFILL_MAX_PER_CALL), and for each chunk makes ONE
+// structured-object call that returns one profile per role in the chunk
+// (generateRoleProfileBatch); each returned profile is applied directly to its
+// role (applyPrefill) instead of routing through the suggestion/confirm flow.
+// The chunks run in bounded-concurrency WAVES (PREFILL_CONCURRENCY at a time),
+// and each call stays small enough to beat generateRoleProfileBatch's 60s
+// per-call timeout.
 //
 // ADR-0003 note: this is a deliberate, scoped softening of "AI output is a
 // suggestion HR confirms". The auto-applied text is name-derived profile copy
@@ -53,10 +64,11 @@ const PREFILL_MAX_PER_CALL = 30
 // and a per-role role.updated audit row (written by applyPrefill).
 //
 // Roles with a non-empty profile are EXCLUDED before any model call, so
-// revisiting onboarding with no new empty roles costs nothing. Each call is
-// independent: a call that throws (rate limit, timeout, or an index-misaligned
-// response) leaves that call's roles empty + counted failed, without aborting
-// the other (rare) chunks and without a partial write within the failed call.
+// revisiting onboarding with no new empty roles costs nothing. Each chunk is
+// independent: a chunk that throws (rate limit, timeout, or an index-misaligned
+// response) leaves that chunk's roles empty + counted failed, without aborting
+// the other chunks in its wave (or any later wave) and without a partial write
+// within the failed chunk.
 export const prefillRoleProfiles = action({
   args: { orgId: v.string() },
   returns: v.object({ generated: v.number(), failed: v.number() }),
@@ -77,18 +89,35 @@ export const prefillRoleProfiles = action({
     )
 
     // No empty roles -> no model call (the "no changes -> no AI" gate).
+    // Slice the targets into small chunks, then run those chunks in waves of
+    // PREFILL_CONCURRENCY so at most that many model requests are ever in flight
+    // (a wave is a Promise.all over up to PREFILL_CONCURRENCY chunks; waves run
+    // one after another). Each chunk commits its own results as soon as it
+    // resolves (applyPrefill per role), which is what drives the frontend
+    // progress. Even 100 roles is 20 chunks over 5 waves of fast calls, well
+    // within an action's wall-clock budget.
+    const chunks: PrefillTarget[][] = []
+    for (let i = 0; i < targets.length; i += PREFILL_MAX_PER_CALL) {
+      chunks.push(targets.slice(i, i + PREFILL_MAX_PER_CALL))
+    }
+
     let generated = 0
     let failed = 0
-    for (let i = 0; i < targets.length; i += PREFILL_MAX_PER_CALL) {
-      const chunk = targets.slice(i, i + PREFILL_MAX_PER_CALL)
-      const applied = await prefillChunk(ctx, {
-        orgId,
-        actorId,
-        context,
-        chunk,
-      })
-      generated += applied
-      failed += chunk.length - applied
+    for (let i = 0; i < chunks.length; i += PREFILL_CONCURRENCY) {
+      const wave = chunks.slice(i, i + PREFILL_CONCURRENCY)
+      // prefillChunk is self-contained: it try/catches and resolves to the
+      // applied count (never rejects), so Promise.all over a wave never rejects
+      // and one bad chunk cannot fail the rest of its wave.
+      const appliedCounts = await Promise.all(
+        wave.map((chunk) =>
+          prefillChunk(ctx, { orgId, actorId, context, chunk })
+        )
+      )
+      for (let w = 0; w < wave.length; w++) {
+        const applied = appliedCounts[w] ?? 0
+        generated += applied
+        failed += (wave[w]?.length ?? 0) - applied
+      }
     }
     return { generated, failed }
   },

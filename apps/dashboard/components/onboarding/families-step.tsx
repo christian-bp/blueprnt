@@ -5,6 +5,7 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { MAX_STARTER_IMPORT_TEXT } from "@workspace/constants"
 import { Button } from "@workspace/ui/components/button"
 import { Label } from "@workspace/ui/components/label"
+import { Progress } from "@workspace/ui/components/progress"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { AnimatePresence, motion } from "motion/react"
@@ -60,6 +61,7 @@ export function FamiliesStep({
     failure,
     flow,
     pending,
+    prefillProgress,
     created,
     restartPending,
     inputValid,
@@ -115,7 +117,9 @@ export function FamiliesStep({
           transition={{ duration: 0.15 }}
           className="flex w-full flex-col items-center gap-6"
         >
-          {phase === "review" ? (
+          {phase === "prefilling" ? (
+            renderPrefillingPhase()
+          ) : phase === "review" ? (
             renderReviewPhase()
           ) : phase === "generating" ? (
             <p className="flex items-center gap-2 text-muted-foreground text-sm">
@@ -192,6 +196,30 @@ export function FamiliesStep({
                 : tErrors(flow.errorSubKey ?? "aiGenerationFailed")}
           </p>
         )}
+      </div>
+    )
+  }
+
+  // The prefill span after persist: a dedicated screen (loader + message +
+  // progress bar) inside the same ScreenShell so the heading stays for
+  // continuity. Drives off prefillProgress, which climbs reactively as each
+  // prefill chunk commits a role's profile. The wizard advances away once the
+  // action resolves. Shown only when there were empty profiles to fill, so the
+  // template path (every role already complete) never reaches here.
+  function renderPrefillingPhase() {
+    const { done, total } = prefillProgress
+    const percent = total > 0 ? Math.round((done / total) * 100) : 0
+    return (
+      <div className="flex w-full max-w-md flex-col items-center gap-4 text-center">
+        <Spinner />
+        <div className="space-y-1">
+          <p className="font-medium text-base">{t("prefillingHeading")}</p>
+          <p className="text-muted-foreground text-sm">{t("prefillingBody")}</p>
+        </div>
+        <Progress value={percent} />
+        <p className="text-muted-foreground text-sm">
+          {t("prefillingProgress", { done, total })}
+        </p>
       </div>
     )
   }

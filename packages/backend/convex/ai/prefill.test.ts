@@ -418,12 +418,14 @@ describe("prefillRoleProfiles", () => {
     })
   })
 
-  it("splits an unusually large set into ceil(n / cap) sequential calls, all applied", async () => {
+  it("splits a large set into ceil(n / cap) small calls run in bounded-concurrency waves, all applied", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t, "prefill-large@acme.se")
-    // PREFILL_MAX_PER_CALL is 30; 65 empty roles -> ceil(65/30) = 3 calls.
+    // PREFILL_MAX_PER_CALL is 5 and PREFILL_CONCURRENCY is 4; 23 empty roles ->
+    // ceil(23/5) = 5 chunks, run as 2 waves (4 chunks, then 1). The wave
+    // structure is internal, but the call count proves the chunking.
     const ids: Id<"roles">[] = []
-    for (let i = 0; i < 65; i++) {
+    for (let i = 0; i < 23; i++) {
       ids.push(await insertRole(t, orgId, { title: `Role ${i}` }))
     }
 
@@ -437,39 +439,45 @@ describe("prefillRoleProfiles", () => {
     const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
       orgId,
     })
-    expect(result).toEqual({ generated: 65, failed: 0 })
-    expect(generateTextMock).toHaveBeenCalledTimes(3)
-    // Every role got its own title-specific profile across the chunks.
-    for (let i = 0; i < 65; i++) {
+    expect(result).toEqual({ generated: 23, failed: 0 })
+    expect(generateTextMock).toHaveBeenCalledTimes(5)
+    // Every role got its own title-specific profile across the chunks/waves.
+    for (let i = 0; i < 23; i++) {
       const role = await readRole(t, ids[i] as Id<"roles">)
       expect(role?.purpose).toBe(`Purpose of Role ${i}.`)
     }
     await t.run(async (ctx) => {
-      // One usage event per call (3), not per role.
+      // One usage event per call (5), not per role.
       const usage = await ctx.db
         .query("aiUsageEvents")
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .collect()
-      expect(usage).toHaveLength(3)
+      expect(usage).toHaveLength(5)
       const monthly = await ctx.db
         .query("aiUsageMonthly")
         .withIndex("by_org_period", (q) => q.eq("orgId", orgId))
         .collect()
-      expect(monthly[0]?.callCount).toBe(3)
+      expect(monthly[0]?.callCount).toBe(5)
     })
   })
 
-  it("isolates a failed chunk: its roles stay empty + counted, the other chunk still applies", async () => {
+  it("isolates a failed chunk: its roles stay empty + counted, the other chunks (same wave and later wave) still apply", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t, "prefill-fail@acme.se")
-    // 35 empty roles -> 2 chunks (30 + 5). The chunk containing "Role 0"
-    // throws; the other chunk applies in full.
+    // PREFILL_MAX_PER_CALL is 5; 23 empty roles -> 5 chunks
+    // ([0-4],[5-9],[10-14],[15-19],[20-22]). With PREFILL_CONCURRENCY 4 the
+    // first wave runs chunks 0-3 (roles 0-19) concurrently and the second wave
+    // runs chunk 4 (roles 20-22). The chunk containing "Role 0" (chunk 0)
+    // throws; its three wave-mates AND the later wave still apply in full, so
+    // one bad chunk never fails its wave or a later wave.
     const ids: Id<"roles">[] = []
-    for (let i = 0; i < 35; i++) {
+    for (let i = 0; i < 23; i++) {
       ids.push(await insertRole(t, orgId, { title: `Role ${i}` }))
     }
 
     generateTextMock.mockImplementation(async (options: { prompt: string }) => {
+      // "Role 0</role>" matches only the exact title "Role 0" (the closing tag
+      // follows immediately), never "Role 10" or "Role 20".
       if (options.prompt.includes("Role 0</role>")) {
         throw new Error("model exploded")
       }
@@ -482,30 +490,34 @@ describe("prefillRoleProfiles", () => {
     const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
       orgId,
     })
-    // First chunk (30 roles incl. Role 0) failed; second chunk (5) applied.
-    expect(result).toEqual({ generated: 5, failed: 30 })
+    // Chunk 0 (roles 0-4) failed; the other four chunks (18 roles) applied.
+    expect(result).toEqual({ generated: 18, failed: 5 })
     // A role in the failed chunk keeps its empty profile (manual fallback).
     expect((await readRole(t, ids[0] as Id<"roles">))?.purpose).toBe("")
-    // A role in the succeeding chunk is filled.
-    expect((await readRole(t, ids[34] as Id<"roles">))?.purpose).toBe(
-      "Purpose of Role 34."
+    // A role in a succeeding chunk that SHARED the failed chunk's wave is filled.
+    expect((await readRole(t, ids[19] as Id<"roles">))?.purpose).toBe(
+      "Purpose of Role 19."
+    )
+    // A role in a succeeding chunk from a LATER wave is filled too.
+    expect((await readRole(t, ids[22] as Id<"roles">))?.purpose).toBe(
+      "Purpose of Role 22."
     )
 
     await t.run(async (ctx) => {
-      // No partial write within the failed chunk: only the good chunk logged
-      // usage and wrote audit rows.
+      // No partial write within the failed chunk: only the four good chunks
+      // logged usage (one event each) and wrote audit rows (one per role).
       const usage = await ctx.db
         .query("aiUsageEvents")
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .collect()
-      expect(usage).toHaveLength(1)
+      expect(usage).toHaveLength(4)
       const updated = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
           q.eq("orgId", orgId).eq("type", "role.updated")
         )
         .collect()
-      expect(updated).toHaveLength(5)
+      expect(updated).toHaveLength(18)
     })
   })
 

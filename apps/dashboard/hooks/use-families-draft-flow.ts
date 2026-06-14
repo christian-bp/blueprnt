@@ -40,7 +40,11 @@ function assertReconcileTrackKeys(
   return families as ReconcilePayload
 }
 
-export type FamiliesDraftPhase = "paste" | "generating" | "review"
+export type FamiliesDraftPhase =
+  | "paste"
+  | "generating"
+  | "review"
+  | "prefilling"
 
 export interface FamiliesDraftFlow {
   // The current phase the view renders.
@@ -80,6 +84,10 @@ export interface FamiliesDraftFlow {
   flow: ReturnType<typeof useSuggestionFlow<unknown>>
   // True while finish() runs (persist + prefill).
   pending: boolean
+  // How many roles already have a complete profile out of the total, derived
+  // live from listRoles. Drives the prefilling screen's progress bar: as each
+  // prefill chunk commits, done climbs reactively without any new plumbing.
+  prefillProgress: { done: number; total: number }
   // True once an AI set was confirmed (disables Start over on a retry).
   created: boolean
   // True while a template discard is in flight (disables Start over).
@@ -149,6 +157,14 @@ export function useFamiliesDraftFlow(options: {
   const [rawText, setRawText] = useState("")
   const [seededFrom, setSeededFrom] = useState<SeedSource | null>(null)
   const [pending, setPending] = useState(false)
+  // True across the prefill await in finish(), and only when prefill will have
+  // something to draft (see the willPrefill decision there): the AI import
+  // always creates brand-new empty roles, while the template/revisit paths only
+  // prefill stored roles that still lack a profile. While set it drives the
+  // dedicated prefilling screen (a loader + progress bar). The template path
+  // arrives already profileComplete, so it never sets this and never flashes
+  // the screen. Left true on success so the wizard advances away from it.
+  const [prefilling, setPrefilling] = useState(false)
   const [requestPending, setRequestPending] = useState(false)
   const [requestFailed, setRequestFailed] = useState(false)
   const [failure, setFailure] = useState<"duplicate" | "generic" | null>(null)
@@ -398,6 +414,21 @@ export function useFamiliesDraftFlow(options: {
       // advances cleanly later via the score step's manual fallback). The whole
       // span (persist + prefill) shares the one `pending` flag, so the Next
       // button stays in its loading state until the prefill resolves.
+      //
+      // Whether prefill will have anything to draft, decided up front
+      // (existingRoles is the stale render-closure value on the AI path, where
+      // confirmStarterImport creates the new empty roles during finish()). The
+      // AI import always produces brand-new roles with empty profiles, so the
+      // screen should show whenever the confirmed draft has any role; the
+      // template/revisit paths reuse existing roles, so only show it when some
+      // stored role still lacks a profile (the template path arrives
+      // all-complete and must not flash the screen). We READ the existing
+      // profileComplete field on listRoles; nothing here changes server-side.
+      const willPrefill =
+        seededFrom?.source === "ai"
+          ? (draft.families ?? []).some((family) => family.roles.length > 0)
+          : (existingRoles ?? []).some((role) => !role.profileComplete)
+      if (willPrefill) setPrefilling(true)
       const { failed } = await prefillRoleProfiles({ orgId })
       // A partial failure (one batched call hit a rate limit or timeout) leaves
       // some roles empty but does not throw. Give it ONE best-effort retry: the
@@ -419,18 +450,25 @@ export function useFamiliesDraftFlow(options: {
       // reconcile can throw roleFamilyExists (duplicate) / roleLocked /
       // invalidInput; map the duplicate to the existing duplicate message and
       // everything else to the generic one, exactly like the create paths. A
-      // hard prefill reject lands here too and shows the generic error.
+      // hard prefill reject lands here too and shows the generic error; drop
+      // the prefilling screen so the user returns to the review with the error.
       setFailure(isDuplicateFamilyError(error) ? "duplicate" : "generic")
+      setPrefilling(false)
       setPending(false)
     }
   }
 
   const inReview = seededFrom !== null && draft.families !== null
-  const phase: FamiliesDraftPhase = inReview
-    ? "review"
-    : flow.status === "generating"
-      ? "generating"
-      : "paste"
+  // The prefilling screen wins while set: it covers the (possibly long) prefill
+  // span after persist, replacing the review's Next-button spinner with a
+  // dedicated loader + progress bar.
+  const phase: FamiliesDraftPhase = prefilling
+    ? "prefilling"
+    : inReview
+      ? "review"
+      : flow.status === "generating"
+        ? "generating"
+        : "paste"
 
   // The review list needs the model's tracks for the Select options.
   const reviewModelPending = inReview && (model === undefined || model === null)
@@ -468,6 +506,15 @@ export function useFamiliesDraftFlow(options: {
     label: track.name,
   }))
 
+  // Live prefill progress from listRoles: total roles vs the roles that already
+  // report a complete profile. As each prefill chunk's applyPrefill commits,
+  // listRoles re-runs and done climbs, so the progress bar advances reactively
+  // without any extra backend plumbing.
+  const prefillProgress = {
+    total: (existingRoles ?? []).length,
+    done: (existingRoles ?? []).filter((role) => role.profileComplete).length,
+  }
+
   return {
     phase,
     inReview,
@@ -487,6 +534,7 @@ export function useFamiliesDraftFlow(options: {
     failure,
     flow,
     pending,
+    prefillProgress,
     created,
     restartPending,
     inputValid: starterImportInputSchema.safeParse(rawText).success,

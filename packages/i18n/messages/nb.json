@@ -362,7 +362,10 @@
         "dndCancelled": "Flyttingen av {title} ble avbrutt.",
         "reviewHint": "Grupper rollene i familier og sett hver rolles track.",
         "reviewHintStarter": "Et utgangspunkt basert på bransjen deres: grupper rollene i familier og sett hver rolles track. Endre hva som helst senere.",
-        "ungroupedFamilyName": "Andre roller"
+        "ungroupedFamilyName": "Andre roller",
+        "prefillingHeading": "Lager rolleprofiler",
+        "prefillingBody": "Vi skriver et formål og ansvarsområder for hver rolle ut fra navnet. Dette kan ta et øyeblikk for et stort sett.",
+        "prefillingProgress": "{done} av {total} roller"
       },
       "score": {
         "forkHeading": "Rollene dine er klare. Vil du vurdere dem nå?",
