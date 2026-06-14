@@ -135,9 +135,14 @@ export function ScoreRole({
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="score-role-responsibilities">
-            {t("responsibilitiesLabel")}
-          </Label>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="score-role-responsibilities">
+              {t("responsibilitiesLabel")}
+            </Label>
+            <span className="text-muted-foreground text-xs">
+              {t("responsibilitiesHint")}
+            </span>
+          </div>
           <Textarea
             id="score-role-responsibilities"
             value={responsibilities}
@@ -205,7 +210,10 @@ export function ScoreRole({
         {t("backToRolesCta")}
       </Button>
       <h2 className="font-medium text-lg">
-        <span className="text-brand">{role.title}</span>
+        {t.rich("assessmentHeading", {
+          title: role.title,
+          brand: (chunks) => <span className="text-brand">{chunks}</span>,
+        })}
       </h2>
       <RatingStepper
         orgId={orgId}

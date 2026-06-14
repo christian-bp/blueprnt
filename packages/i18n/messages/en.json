@@ -386,7 +386,9 @@
         "captureHintPrefilled": "We drafted this purpose and these responsibilities from the role name. Edit anything before you evaluate.",
         "purposeLabel": "Purpose",
         "responsibilitiesLabel": "Responsibilities",
+        "responsibilitiesHint": "(one per line)",
         "captureContinueCta": "Continue to evaluation",
+        "assessmentHeading": "Assessment of the <brand>{title}</brand> role",
         "doneHeading": "All roles evaluated",
         "doneBody": "You have evaluated every role. You can refine them anytime in your dashboard.",
         "doneCta": "Go to the dashboard",
@@ -472,8 +474,7 @@
       "rejectCta": "Dismiss",
       "noMoves": "The AI found no moves to suggest.",
       "moveLabel": "Move {points, plural, one {# weight point} other {# weight points}} from {from} to {to}",
-      "motivation": "Motivation",
-      "reviewLockedHint": "The weighting was just reviewed. The review returns when the weighting changes."
+      "whyChange": "Why this change?"
     },
     "help": {
       "criterionLabel": "What is a criterion?",

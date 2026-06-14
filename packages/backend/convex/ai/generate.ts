@@ -295,7 +295,7 @@ export interface GeneratedRoleProfile {
 // The instruction that describes the { purpose, responsibilities } contract.
 // Shared by the single and batched prompts so the contract has ONE wording.
 const ROLE_PROFILE_CONTRACT =
-  "Return purpose (one or two sentences: why the role exists) and responsibilities (4 to 7 key responsibility areas, one per line)."
+  "Return purpose (one or two sentences: why the role exists) and responsibilities (3 to 5 short responsibility points, one per line; each a brief phrase of a few words, not a full sentence)."
 
 // One role's identity line in a prompt. Used by both paths so the single and
 // batched prompts describe a role identically.

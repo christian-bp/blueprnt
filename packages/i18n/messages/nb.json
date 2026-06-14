@@ -386,7 +386,9 @@
         "captureHintPrefilled": "Vi har laget et utkast til formål og ansvar ut fra rollens navn. Juster det du vil før du vurderer.",
         "purposeLabel": "Formål",
         "responsibilitiesLabel": "Ansvar",
+        "responsibilitiesHint": "(én per linje)",
         "captureContinueCta": "Fortsett til vurdering",
+        "assessmentHeading": "Vurdering av rollen <brand>{title}</brand>",
         "doneHeading": "Alle roller vurdert",
         "doneBody": "Du har vurdert alle roller. Du kan finjustere dem når som helst i dashbordet.",
         "doneCta": "Til dashbordet",
@@ -472,8 +474,7 @@
       "rejectCta": "Avvis",
       "noMoves": "AI-en fant ingen flyttinger å foreslå.",
       "moveLabel": "Flytt {points} vektpoeng fra {from} til {to}",
-      "motivation": "Begrunnelse",
-      "reviewLockedHint": "Vektingen er nettopp gjennomgått. Gjennomgangen kommer tilbake når vektingen endres."
+      "whyChange": "Hvorfor denne endringen?"
     },
     "help": {
       "criterionLabel": "Hva er et kriterium?",

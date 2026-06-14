@@ -1,19 +1,21 @@
 "use client"
 
-import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
+import { ArrowDown01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
-import { SUGGESTION_KINDS } from "@workspace/constants"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
+import { SUGGESTION_KINDS } from "@workspace/constants"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
-import { Label } from "@workspace/ui/components/label"
 import { Spinner } from "@workspace/ui/components/spinner"
+import { cn } from "@workspace/ui/lib/utils"
 import { useMutation } from "convex/react"
+import { AnimatePresence, motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useEffect, useRef, useState } from "react"
 import { useSuggestionFlow } from "@/hooks/use-suggestion-flow"
 import { useSuggestionSelection } from "@/hooks/use-suggestion-selection"
+import { SPRING } from "@/lib/motion"
 import { weightReviewValueSchema } from "@/lib/suggestion-schemas"
 
 // The review panel only needs each criterion's id, name, and current weight
@@ -157,46 +159,29 @@ export function WeightReviewPanel({
                 const from = byId.get(move.fromCriterionId)
                 const to = byId.get(move.toCriterionId)
                 if (from === undefined || to === undefined) return null
-                const checkboxId = `ai-move-${index}`
                 return (
-                  <li
-                    key={checkboxId}
-                    className="flex items-start gap-3 rounded-md border p-3"
-                  >
-                    <Checkbox
-                      id={checkboxId}
-                      checked={accepted.has(index)}
-                      onCheckedChange={(value) => toggle(index, value === true)}
-                      className="mt-1"
-                    />
-                    <div className="space-y-1">
-                      {/* One suggestion = one sentence: the zero-sum transfer.
-                          The numbers line below details both sides. */}
-                      <Label htmlFor={checkboxId}>
-                        {t("moveLabel", {
-                          points: move.points,
-                          from: from.name,
-                          to: to.name,
-                        })}
-                      </Label>
-                      <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-muted-foreground text-sm">
-                        <MovedPoints
-                          name={from.name}
-                          from={from.weightPoints}
-                          to={from.weightPoints - move.points}
-                        />
-                        <MovedPoints
-                          name={to.name}
-                          from={to.weightPoints}
-                          to={to.weightPoints + move.points}
-                        />
-                      </p>
-                      <p className="text-muted-foreground text-sm">
-                        <span className="font-medium">{t("motivation")}: </span>
-                        {move.motivation}
-                      </p>
-                    </div>
-                  </li>
+                  <MoveCard
+                    key={`ai-move-${index}`}
+                    index={index}
+                    fromName={from.name}
+                    toName={to.name}
+                    fromBefore={from.weightPoints}
+                    fromAfter={from.weightPoints - move.points}
+                    toBefore={to.weightPoints}
+                    toAfter={to.weightPoints + move.points}
+                    points={move.points}
+                    motivation={move.motivation}
+                    checked={accepted.has(index)}
+                    onToggle={toggle}
+                    // The full sentence is the checkbox's accessible name; the
+                    // visible card shows the compact transfer instead.
+                    label={t("moveLabel", {
+                      points: move.points,
+                      from: from.name,
+                      to: to.name,
+                    })}
+                    whyLabel={t("whyChange")}
+                  />
                 )
               })}
             </ul>
@@ -267,30 +252,143 @@ export function WeightReviewPanel({
   )
 }
 
-// One side of a balanced move: "Name 4 -> 5" with the shared arrow glyph.
-// Inherits the muted detail styling from its parent line.
-function MovedPoints({
+// One balanced move as a scannable card: a checkbox, the two-line transfer
+// (each affected criterion with its before -> after points and signed delta),
+// and the motivation tucked behind a "Why this change?" disclosure so the list
+// stays scannable and the reasoning is one click away.
+function MoveCard({
+  index,
+  fromName,
+  toName,
+  fromBefore,
+  fromAfter,
+  toBefore,
+  toAfter,
+  points,
+  motivation,
+  checked,
+  onToggle,
+  label,
+  whyLabel,
+}: {
+  index: number
+  fromName: string
+  toName: string
+  fromBefore: number
+  fromAfter: number
+  toBefore: number
+  toAfter: number
+  points: number
+  motivation: string
+  checked: boolean
+  onToggle: (index: number, checked: boolean) => void
+  label: string
+  whyLabel: string
+}) {
+  const [showWhy, setShowWhy] = useState(false)
+  const checkboxId = `ai-move-${index}`
+  return (
+    <li className="flex items-start gap-3 rounded-md border p-3">
+      <Checkbox
+        id={checkboxId}
+        aria-label={label}
+        checked={checked}
+        onCheckedChange={(value) => onToggle(index, value === true)}
+        className="mt-0.5"
+      />
+      <div className="min-w-0 flex-1 space-y-2">
+        {/* The transfer is wrapped in a label so the whole block toggles the
+            checkbox; the screen-reader name stays the full sentence via the
+            checkbox aria-label. */}
+        <label htmlFor={checkboxId} className="block cursor-pointer space-y-1">
+          <TransferRow
+            name={fromName}
+            before={fromBefore}
+            after={fromAfter}
+            delta={-points}
+          />
+          <TransferRow
+            name={toName}
+            before={toBefore}
+            after={toAfter}
+            delta={points}
+          />
+        </label>
+        <div>
+          <button
+            type="button"
+            aria-expanded={showWhy}
+            onClick={() => setShowWhy((open) => !open)}
+            className="flex items-center gap-1 text-muted-foreground text-xs transition-colors hover:text-foreground"
+          >
+            <HugeiconsIcon
+              icon={ArrowDown01Icon}
+              size={14}
+              strokeWidth={2}
+              aria-hidden="true"
+              className={cn("transition-transform", showWhy && "rotate-180")}
+            />
+            {whyLabel}
+          </button>
+          {/* The reveal carries ONLY geometry (height/opacity) and no box
+              styles, so height:0 truly collapses (docs/ui-animation.md rule
+              2); the inner padding lives on the clipped paragraph. Reduced
+              motion is honored globally via MotionConfig. */}
+          <AnimatePresence initial={false}>
+            {showWhy && (
+              <motion.div
+                key="why"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={SPRING}
+                className="overflow-hidden"
+              >
+                <p className="pt-1 text-muted-foreground text-sm">
+                  {motivation}
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    </li>
+  )
+}
+
+// One side of a balanced move: the criterion name, its before -> after points
+// with the shared arrow glyph, and a neutral signed delta (no good/bad color:
+// a transfer is not a judgement). The name takes the remaining width and may
+// wrap; the numbers stay aligned on the right.
+function TransferRow({
   name,
-  from,
-  to,
+  before,
+  after,
+  delta,
 }: {
   name: string
-  from: number
-  to: number
+  before: number
+  after: number
+  delta: number
 }) {
   return (
-    <span className="flex items-center gap-1">
-      <span>{name}</span>
-      <span className="flex items-center gap-1 tabular-nums">
-        {from}
-        <HugeiconsIcon
-          icon={ArrowRight01Icon}
-          size={14}
-          strokeWidth={2}
-          aria-hidden="true"
-          className="shrink-0"
-        />
-        {to}
+    <span className="flex items-start justify-between gap-3 text-sm">
+      <span className="min-w-0 flex-1">{name}</span>
+      <span className="flex shrink-0 items-center gap-2 tabular-nums">
+        <span className="flex items-center gap-1 text-muted-foreground">
+          {before}
+          <HugeiconsIcon
+            icon={ArrowRight01Icon}
+            size={14}
+            strokeWidth={2}
+            aria-hidden="true"
+            className="shrink-0"
+          />
+          <span className="font-medium text-foreground">{after}</span>
+        </span>
+        <span className="rounded bg-muted px-1.5 py-0.5 font-medium text-muted-foreground text-xs">
+          {delta > 0 ? `+${delta}` : `−${Math.abs(delta)}`}
+        </span>
       </span>
     </span>
   )

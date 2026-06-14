@@ -194,16 +194,26 @@ describe("WeightReviewPanel", () => {
     confirmWeightReviewMock.mockResolvedValue(null)
     renderPanel("org-rev")
 
-    // One suggestion = one sentence (the zero-sum transfer), with the
-    // numbers detailed below it.
+    // The move's full sentence is the checkbox's accessible name; the card
+    // shows the compact transfer (criterion names + before/after points).
     expect(
-      screen.getByText(
-        "Move 1 weight point from Formal merit to Problem solving"
-      )
+      screen.getByRole("checkbox", {
+        name: "Move 1 weight point from Formal merit to Problem solving",
+      })
     ).toBeDefined()
     expect(screen.getAllByText("Problem solving")).toHaveLength(1)
     expect(screen.getAllByText("Formal merit")).toHaveLength(2)
+
+    // The motivation is tucked behind a per-move "Why this change?" disclosure:
+    // hidden until opened, revealed on click.
+    expect(screen.queryByText("Highly technical context.")).toBeNull()
+    for (const button of screen.getAllByRole("button", {
+      name: ai.whyChange,
+    })) {
+      fireEvent.click(button)
+    }
     expect(screen.getByText("Highly technical context.")).toBeDefined()
+    expect(screen.getByText("More independent than the default.")).toBeDefined()
 
     // Both default to checked; uncheck the second move (to Autonomy), apply.
     fireEvent.click(screen.getByRole("checkbox", { name: /Autonomy/ }))

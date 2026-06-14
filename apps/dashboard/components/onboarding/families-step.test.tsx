@@ -4,7 +4,6 @@ import {
   render,
   screen,
   waitFor,
-  within,
 } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -979,13 +978,13 @@ describe("FamiliesStep", () => {
     expect(order).toEqual(["confirm", "prefill", "advance"])
   })
 
-  it("shows the Next button loading state across persist + prefill, then advances when prefill resolves", async () => {
-    // The whole finish() (persist + prefill) is one loading span on the Next
-    // button: it disables and shows the spinner until prefill resolves, then
-    // advances. We hold the prefill behind a manual resolve to observe it. The
-    // roles are already profileComplete, so the dedicated prefilling screen does
-    // NOT show (there is nothing to fill) and the Next-button spinner covers the
-    // brief span on its own, exactly as the all-complete (template) path does.
+  it("disables the Next button across persist + prefill on the all-complete path, then advances when prefill resolves", async () => {
+    // The whole finish() (persist + prefill) is one loading span: the Next
+    // button disables until prefill resolves, then advances. We hold the prefill
+    // behind a manual resolve to observe it. The roles are already
+    // profileComplete, so the dedicated prefilling screen does NOT show (there
+    // is nothing to fill); the disabled button is the only loading feedback on
+    // this path (there is no in-button spinner anymore).
     currentFamilies = existingFamiliesFixture()
     currentRoles = existingRolesFixture({ profileComplete: true })
     reconcileStarterSetMock.mockResolvedValue(null)
@@ -1005,16 +1004,15 @@ describe("FamiliesStep", () => {
     }) as HTMLButtonElement
     fireEvent.click(next)
 
-    // While the prefill action is in flight the button is disabled and the
-    // spinner (role=status) is visible, so the user sees the generating state.
+    // While the prefill action is in flight the button is disabled, so the user
+    // cannot double-submit while finish() runs.
     await waitFor(() => {
       expect(next.disabled).toBe(true)
     })
     expect(prefillRoleProfilesMock).toHaveBeenCalledTimes(1)
-    expect(within(next).getByRole("status")).toBeDefined()
     expect(onFinished).not.toHaveBeenCalled()
-    // The all-complete path must NOT flash the dedicated prefilling screen: its
-    // heading is absent and the Next button (with its inline spinner) stays.
+    // The all-complete path must NOT show the dedicated prefilling screen (there
+    // is nothing to fill): its heading is absent and the Next button stays.
     expect(screen.queryByText(t.prefillingHeading)).toBeNull()
 
     // Once prefill resolves, the step advances.

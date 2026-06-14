@@ -386,7 +386,9 @@
         "captureHintPrefilled": "Loimme luonnoksen tarkoituksesta ja vastuista roolin nimen perusteella. Muokkaa haluamaasi ennen arviointia.",
         "purposeLabel": "Tarkoitus",
         "responsibilitiesLabel": "Vastuut",
+        "responsibilitiesHint": "(yksi per rivi)",
         "captureContinueCta": "Jatka arviointiin",
+        "assessmentHeading": "Roolin <brand>{title}</brand> arviointi",
         "doneHeading": "Kaikki roolit arvioitu",
         "doneBody": "Olet arvioinut kaikki roolit. Voit hienosäätää niitä milloin tahansa hallintapaneelissa.",
         "doneCta": "Hallintapaneeliin",
@@ -472,8 +474,7 @@
       "rejectCta": "Hylkää",
       "noMoves": "Tekoäly ei löytänyt ehdotettavia siirtoja.",
       "moveLabel": "Siirrä {points} painopistettä kohteesta {from} kohteeseen {to}",
-      "motivation": "Perustelu",
-      "reviewLockedHint": "Painotus on juuri tarkistettu. Tarkistus palaa, kun painotus muuttuu."
+      "whyChange": "Miksi tämä muutos?"
     },
     "help": {
       "criterionLabel": "Mikä kriteeri on?",

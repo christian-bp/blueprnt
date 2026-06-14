@@ -220,7 +220,13 @@ export function FamiliesStep({
           </p>
           <p className="text-muted-foreground text-sm">{t("prefillingBody")}</p>
         </div>
-        <Progress value={percent} />
+        {/* The drafting bar wears the rose brand accent (override the shared
+            Progress indicator at the call site) so this branded onboarding
+            moment matches the heading; other progress bars stay neutral. */}
+        <Progress
+          value={percent}
+          className="[&>[data-slot=progress-indicator]]:bg-brand"
+        />
         <p className="text-muted-foreground text-sm">
           {t("prefillingProgress", { done, total })}
         </p>
@@ -297,18 +303,14 @@ export function FamiliesStep({
             {(draft.families ?? []).length === 0
               ? tReview("cta")
               : t("nextCta")}
-            {/* The arrow slot is fixed-size: while finish() runs (persist +
-                prefill) it holds a same-size spinner so the loading state never
-                reflows the button. */}
-            {pending ? (
-              <Spinner />
-            ) : (
-              <HugeiconsIcon
-                icon={ArrowRight01Icon}
-                strokeWidth={2}
-                aria-hidden="true"
-              />
-            )}
+            {/* No in-button spinner: when finish() kicks off the prefill the
+                wizard swaps to the dedicated prefilling screen, so the button
+                just carries its static forward arrow. */}
+            <HugeiconsIcon
+              icon={ArrowRight01Icon}
+              strokeWidth={2}
+              aria-hidden="true"
+            />
           </Button>
         </WizardFooter>
       </>

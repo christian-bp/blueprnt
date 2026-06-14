@@ -181,19 +181,6 @@ export function ModelEditor({
               </HelpMorphButton>
             </span>
           )}
-          {/* After a confirmed weight review the Review trigger is locked
-              until the weighting changes; say so instead of letting the
-              button vanish silently. The hint lives in the meter's flexible
-              middle slot (min-w-0 flex-1 truncate) so it can never push the
-              fixed button cluster. */}
-          {!editing && withAiReview && reviewLocked === true && (
-            <span
-              title={tAi("reviewLockedHint")}
-              className="min-w-0 flex-1 truncate text-right text-muted-foreground text-xs"
-            >
-              {tAi("reviewLockedHint")}
-            </span>
-          )}
           {/* Two fixed sm buttons in both modes (Review/Edit vs Cancel/Save):
               the cluster swaps labels rather than count, so nothing reflows. */}
           <div className="flex shrink-0 items-center gap-2">

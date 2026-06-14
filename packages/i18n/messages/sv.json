@@ -386,7 +386,9 @@
         "captureHintPrefilled": "Vi har tagit fram ett utkast till syfte och ansvar utifrån rollens namn. Justera vad du vill innan du bedömer.",
         "purposeLabel": "Syfte",
         "responsibilitiesLabel": "Ansvar",
+        "responsibilitiesHint": "(en per rad)",
         "captureContinueCta": "Fortsätt till värdering",
+        "assessmentHeading": "Bedömning av rollen <brand>{title}</brand>",
         "doneHeading": "Alla roller värderade",
         "doneBody": "Du har värderat alla roller. Du kan finjustera dem när som helst i instrumentpanelen.",
         "doneCta": "Till instrumentpanelen",
@@ -472,8 +474,7 @@
       "rejectCta": "Avfärda",
       "noMoves": "AI:n hittade inga flyttar att föreslå.",
       "moveLabel": "Flytta {points} viktpoäng från {from} till {to}",
-      "motivation": "Motivering",
-      "reviewLockedHint": "Viktningen är nyss granskad. Granskningen kommer tillbaka när viktningen ändras."
+      "whyChange": "Varför den här ändringen?"
     },
     "help": {
       "criterionLabel": "Vad är ett kriterium?",
