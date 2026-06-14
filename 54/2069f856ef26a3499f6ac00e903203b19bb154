@@ -1,0 +1,25 @@
+apps/dashboard/components/rating/rating-stepper.tsx
+  s_2fe2243e77263b::t_05cc9ee6ebd243 13
+  s_2fe2243e77263b::t_f55b6462646571 22
+  s_2fe2243e77263b::t_763006465eb045 177-192
+  s_2fe2243e77263b::t_fb8e380e9b3e95 321-327
+  s_2fe2243e77263b::t_1c9c8cf0280f33 86-140
+apps/dashboard/components/rating/rating-stepper.test.tsx
+  s_2fe2243e77263b::t_4d47a34374a7e1 133-180
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "542069f856ef26a3499f6ac00e903203b19bb154",
+  "prompts": {},
+  "sessions": {
+    "s_2fe2243e77263b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e8d786ee-2cd8-4bf2-bf4f-18e1f28af2b1",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
