@@ -1,0 +1,19 @@
+apps/dashboard/components/onboarding/families-step.tsx
+  s_288cc0dfb82db8::t_2f40e4f723d80c 202-210,213
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "248035e889cfdd13c46354f8c64d857869546ca8",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
