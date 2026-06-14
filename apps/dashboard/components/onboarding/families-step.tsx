@@ -199,23 +199,25 @@ export function FamiliesStep({
   function renderReviewPhase() {
     return (
       <>
-        {/* The help icon flows inline at the end of the sentence (not as a
-            flex sibling), so it trails the last word instead of floating
-            vertically centered to the right when the hint wraps to two lines. */}
+        {/* One muted subtitle per review source so the screen never stacks two
+            centered lines: the AI review shows its provenance (ADR-0003: review
+            and confirm, nothing auto-applied), the just-created template review
+            its reassurance, and a genuine revisit the plain grouping hint. The
+            help icon flows inline at the end so it trails the last word instead
+            of floating when the line wraps. */}
         <p className="text-center text-muted-foreground text-sm">
-          {createdViaTemplate ? t("reviewHintStarter") : t("reviewHint")}{" "}
+          {createdViaTemplate
+            ? t("reviewHintStarter")
+            : seededFrom?.source === "ai"
+              ? tAi("provenance")
+              : t("reviewHint")}{" "}
           <HelpMorphButton
             label={tHelp("familiesReviewLabel")}
-            className="inline-flex translate-y-1 align-middle"
+            className="inline-flex align-middle"
           >
             {tHelp("familiesReviewBody")}
           </HelpMorphButton>
         </p>
-        {seededFrom?.source === "ai" && (
-          <p className="text-center text-muted-foreground text-sm">
-            {tAi("provenance")}
-          </p>
-        )}
         <FamiliesReview
           families={draft.families ?? []}
           onFamiliesChange={draft.update}
