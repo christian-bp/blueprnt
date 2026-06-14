@@ -1,0 +1,45 @@
+packages/backend/convex/ai/pricing.ts
+  s_288cc0dfb82db8::t_8fc76499c8820d 19
+  s_288cc0dfb82db8::t_443ffd5d03a5be 6-8
+packages/backend/convex/ai/suggest.ts
+  s_288cc0dfb82db8::t_d4eed07108162c 17
+  s_288cc0dfb82db8::t_4d2dd349509558 418-420
+packages/backend/convex/ai/provider.ts
+  s_288cc0dfb82db8::t_4f0227073fe743 10-12,15
+packages/backend/convex/ai/config.ts
+  s_288cc0dfb82db8::t_00178b2ecfc87f 5-9,11-12
+packages/backend/convex/ai/prefill.test.ts
+  s_288cc0dfb82db8::t_f8c3042057febd 6
+  s_288cc0dfb82db8::t_b6b1bda88c9a41 189-191
+packages/backend/convex/ai/pricing.test.ts
+  s_288cc0dfb82db8::t_3c69f9933b518f 26-32
+packages/backend/convex/ai/suggest.test.ts
+  s_288cc0dfb82db8::t_1cc25aa349a727 340-345
+  s_288cc0dfb82db8::t_53d77bb6f27306 696-698
+  s_288cc0dfb82db8::t_d296dbe4f6f0b6 86-87
+  s_288cc0dfb82db8::t_25690fdbfcacca 4
+  s_288cc0dfb82db8::t_5e8db53e12ed8b 856-857
+packages/backend/convex/ai/generate.ts
+  s_288cc0dfb82db8::t_9be6999247340c 43
+  s_288cc0dfb82db8::t_78fd10a3cbfd34 324
+  s_288cc0dfb82db8::t_b4a4b66836ad2c 373
+packages/backend/convex/ai/prefill.ts
+  s_288cc0dfb82db8::t_a7207ab6c97191 9
+  s_288cc0dfb82db8::t_1d267bb2539f20 174
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "4e49eb4a8ec1f361e46ccdc8985907d77ca723b2",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
