@@ -9,6 +9,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { AnimatePresence, motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
+import { ConfirmButtons } from "@/components/confirm-buttons"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { FamiliesReview } from "@/components/onboarding/families-review"
 import { NextButton } from "@/components/onboarding/next-button"
@@ -49,6 +50,7 @@ export function FamiliesStep({
     draft,
     seededFrom,
     createdViaTemplate,
+    restartDestructive,
     trackOptions,
     rawText,
     setRawText,
@@ -225,17 +227,28 @@ export function FamiliesStep({
           </p>
         )}
         {/* This step cannot be skipped: emptying the list and finishing is the
-            explicit way to start without families. Start over is shown for the
-            AI review (returns to the paste view with the pasted text intact)
-            and for the just-created-via-template review (discards the created
-            set via reconcile-empty, then returns to the paste view). It is
-            disabled once an AI set was confirmed (a retry after a failed
-            advance) and while a discard is in flight. A GENUINE revisit (an
-            "existing" review NOT created this session) omits Start over: it has
-            no paste view to return to and a one-click "archive everything" there
-            would be a footgun, so it edits the saved set in place. */}
+            explicit way to start without families. Start over is always shown in
+            review, but its weight matches what it does. When a role set is
+            persisted (restartDestructive: any "existing" review, a saved revisit
+            or the just-created-via-template set), Start over archives those roles
+            via reconcile-empty, so it is gated behind a two-step confirm (the
+            ConfirmButtons trigger arms a destructive confirm + cancel, zero
+            layout shift) before it wipes the set and returns to the paste view.
+            When nothing is persisted yet (the AI review created no roles), Start
+            over only dismisses the suggestion and returns to the paste view with
+            the pasted text intact, so it stays a plain ghost trigger. Either way
+            it is disabled once an AI set was confirmed (a retry after a failed
+            advance) and while a discard is in flight. */}
         <WizardFooter>
-          {(seededFrom?.source !== "existing" || createdViaTemplate) && (
+          {restartDestructive ? (
+            <ConfirmButtons
+              triggerText={t("restartCta")}
+              confirmLabel={t("restartConfirm")}
+              cancelLabel={t("restartCancel")}
+              onConfirm={restart}
+              disabled={pending || created || restartPending}
+            />
+          ) : (
             <Button
               type="button"
               variant="ghost"

@@ -409,7 +409,12 @@ describe("FamiliesStep", () => {
     renderStep()
     await seedFromTemplate()
 
+    // The just-created template review is destructive, so Start over is the
+    // ConfirmButtons trigger: arm it, then click the destructive confirm.
     fireEvent.click(screen.getByRole("button", { name: t.restartCta }))
+    fireEvent.click(
+      await screen.findByRole("button", { name: t.restartConfirm })
+    )
 
     await waitFor(() => {
       expect(reconcileStarterSetMock).toHaveBeenCalledTimes(1)
@@ -723,9 +728,10 @@ describe("FamiliesStep", () => {
       "Sales",
     ])
     expect(screen.queryByLabelText(t.pasteLabel)).toBeNull()
-    // A genuine revisit (not created this session) offers NO one-click Start
-    // over: it would archive everything. Editing happens in place.
-    expect(screen.queryByRole("button", { name: t.restartCta })).toBeNull()
+    // A genuine revisit now offers Start over too (the destructive
+    // ConfirmButtons trigger), mirroring the model step's change-choice; the
+    // dedicated test below covers the confirm-gated archive-and-rebuild path.
+    expect(screen.getByRole("button", { name: t.restartCta })).toBeDefined()
     // The existing role titles are visible and editable.
     const titleInputs = screen.getAllByLabelText(
       messages.dashboard.roles.create.titleLabel
@@ -770,6 +776,46 @@ describe("FamiliesStep", () => {
     expect(confirmStarterImportMock).not.toHaveBeenCalled()
     expect(completeOnboardingMock).not.toHaveBeenCalled()
     expect(onFinished).toHaveBeenCalledTimes(1)
+  })
+
+  it("start over on a saved revisit archives all roles via reconcile-empty after confirm", async () => {
+    // A genuine revisit (the families step finished in an earlier session, so
+    // families + roles already exist) now offers Start over too, gated behind a
+    // two-step confirm because it is destructive. Confirming reconciles to an
+    // empty set (archives every role, removes every family), so the queries go
+    // back to empty and the paste/template/AI fork returns. After the archive
+    // the resume-from-existing seed must NOT re-seed the now-archived roles.
+    currentFamilies = existingFamiliesFixture()
+    currentRoles = existingRolesFixture()
+    reconcileStarterSetMock.mockImplementation(() => {
+      currentFamilies = []
+      currentRoles = []
+      return Promise.resolve(null)
+    })
+    renderStep()
+
+    // The revisit resumes straight into the editable review of the saved set.
+    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+
+    // Arm the destructive Start over (ConfirmButtons trigger), then confirm.
+    fireEvent.click(screen.getByRole("button", { name: t.restartCta }))
+    fireEvent.click(
+      await screen.findByRole("button", { name: t.restartConfirm })
+    )
+
+    await waitFor(() => {
+      expect(reconcileStarterSetMock).toHaveBeenCalledTimes(1)
+    })
+    expect(reconcileStarterSetMock).toHaveBeenCalledWith({
+      orgId: "org-1",
+      families: [],
+    })
+    // The paste fork returns and the archived roles do not re-seed a review.
+    expect(await screen.findByLabelText(t.pasteLabel)).toBeDefined()
+    expect(
+      screen.queryAllByLabelText(messages.dashboard.roles.family.nameLabel)
+    ).toHaveLength(0)
+    expect(rejectSuggestionMock).not.toHaveBeenCalled()
   })
 
   it("holds the spinner while listRoles is still loading, even with a coincident open AI suggestion", async () => {

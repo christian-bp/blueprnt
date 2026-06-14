@@ -60,6 +60,11 @@ export interface FamiliesDraftFlow {
   seededFrom: SeedSource | null
   // True only for the freshly-created-via-template review.
   createdViaTemplate: boolean
+  // True when Start over would archive a persisted role set (any "existing"
+  // review: a saved revisit or the just-created-via-template set). The view
+  // gates the destructive Start over behind a confirm; otherwise (the AI review,
+  // which created no roles yet) Start over is a plain non-destructive trigger.
+  restartDestructive: boolean
   // Track options for the review's Select.
   trackOptions: { trackKey: string; label: string }[]
   // The paste view's textarea state.
@@ -271,14 +276,16 @@ export function useFamiliesDraftFlow(options: {
   // Back to the paste view with the pasted text intact. An AI-seeded review
   // dismisses its suggestion (the lifecycle always ends in confirmed or
   // rejected); best-effort, with lastDismissedId blocking an instant re-seed.
-  // The just-created-via-template review (an "existing" review flagged
-  // createdViaTemplate) instead DISCARDS: it reconciles to an empty set, which
-  // archives every created role and removes every family, so the queries go
-  // back to empty and the paste/template/AI choice can show again. A genuine
-  // revisit never reaches this (its Start over is hidden), so reconcile-empty
-  // can only wipe a set this session just created.
+  // Any "existing" review (a saved revisit OR the just-created-via-template set,
+  // both flowing through the resume-from-existing seed) instead DISCARDS: it
+  // reconciles to an empty set, which archives every active role and removes
+  // every family, so the queries go back to empty and the paste/template/AI
+  // choice can show again. The view gates this behind a two-step confirm (it is
+  // destructive), so a revisit cannot wipe its saved set with one click. After
+  // reconcile-empty the queried roles are gone, so the resume-from-existing seed
+  // (latched on roles being present) stays off and does not re-seed the set.
   async function restart() {
-    if (createdViaTemplate) {
+    if (seededFrom?.source === "existing") {
       if (restartPending) return
       setRestartPending(true)
       setFailure(null)
@@ -469,6 +476,7 @@ export function useFamiliesDraftFlow(options: {
     draft,
     seededFrom,
     createdViaTemplate,
+    restartDestructive: seededFrom?.source === "existing",
     trackOptions,
     rawText,
     setRawText,
