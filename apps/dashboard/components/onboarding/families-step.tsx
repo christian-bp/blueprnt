@@ -10,7 +10,7 @@ import { Label } from "@workspace/ui/components/label"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { Textarea } from "@workspace/ui/components/textarea"
 import type { FunctionArgs } from "convex/server"
-import { useMutation, useQuery } from "convex/react"
+import { useAction, useMutation, useQuery } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
@@ -103,6 +103,11 @@ export function FamiliesStep({
   )
   const requestStarterImport = useMutation(api.ai.suggest.requestStarterImport)
   const confirmStarterImport = useMutation(api.ai.suggest.confirmStarterImport)
+  // Auto-prefills empty role profiles after the set is persisted. The action
+  // skips roles that already have a profile (so an unchanged revisit makes no
+  // model call), which is why finish() always calls it after persist rather
+  // than gating on a possibly-stale client view of which roles are empty.
+  const prefillRoleProfiles = useAction(api.ai.prefill.prefillRoleProfiles)
 
   // The editable review list (families, unique ids, cleaned payload).
   const draft = useDraftFamilies()
@@ -348,13 +353,24 @@ export function FamiliesStep({
         })
         setCreated(true)
       }
+      // After the set is persisted, auto-prefill the empty role profiles so the
+      // score step opens with drafted purpose + responsibilities. The action
+      // skips non-empty roles (an unchanged revisit costs no model call) and
+      // isolates per-role failures, returning counts rather than throwing for
+      // them; only a hard/transport error rejects, and on that we surface the
+      // generic error and let the user retry Next (a half-prefilled set still
+      // advances cleanly later via the score step's manual fallback). The whole
+      // span (persist + prefill) shares the one `pending` flag, so the Next
+      // button stays in its loading state until the prefill resolves.
+      await prefillRoleProfiles({ orgId })
       // Onboarding is NOT completed here: the score step owns completion on
       // every exit path. This step only creates the starter set and advances.
       onAdvance()
     } catch (error) {
       // reconcile can throw roleFamilyExists (duplicate) / roleLocked /
       // invalidInput; map the duplicate to the existing duplicate message and
-      // everything else to the generic one, exactly like the create paths.
+      // everything else to the generic one, exactly like the create paths. A
+      // hard prefill reject lands here too and shows the generic error.
       setFailure(isDuplicateFamilyError(error) ? "duplicate" : "generic")
       setPending(false)
     }
@@ -581,11 +597,18 @@ export function FamiliesStep({
             {(draft.families ?? []).length === 0
               ? tReview("cta")
               : t("nextCta")}
-            <HugeiconsIcon
-              icon={ArrowRight01Icon}
-              strokeWidth={2}
-              aria-hidden="true"
-            />
+            {/* The arrow slot is fixed-size: while finish() runs (persist +
+                prefill) it holds a same-size spinner so the loading state never
+                reflows the button. */}
+            {pending ? (
+              <Spinner />
+            ) : (
+              <HugeiconsIcon
+                icon={ArrowRight01Icon}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+            )}
           </Button>
         </WizardFooter>
       </>

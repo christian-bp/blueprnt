@@ -24,9 +24,8 @@ vi.mock(
   async () => (await import("@/test/convex-mocks")).apiModule
 )
 
-// The stepper and result and AI panel are reused unchanged; mock them as
-// markers so this test asserts only the wrapper's phase machine. The AI panel
-// mock exposes an onDone button so the open/close state can be exercised.
+// The stepper and result are reused unchanged; mock them as markers so this
+// test asserts only the wrapper's phase machine.
 vi.mock("@/components/rating/rating-stepper", () => ({
   RatingStepper: (props: { onCompleted: () => void }) => (
     <div data-testid="stepper">
@@ -38,15 +37,6 @@ vi.mock("@/components/rating/rating-stepper", () => ({
 }))
 vi.mock("@/components/rating/rating-result", () => ({
   RatingResult: () => <div data-testid="result" />,
-}))
-vi.mock("@/components/roles/role-ai-panel", () => ({
-  RoleAiPanel: (props: { onDone: () => void }) => (
-    <div data-testid="ai-panel">
-      <button type="button" onClick={() => props.onDone()}>
-        ai-done
-      </button>
-    </div>
-  ),
 }))
 
 import { ScoreRole } from "@/components/onboarding/score-role"
@@ -161,29 +151,13 @@ describe("ScoreRole", () => {
     expect(onDone).toHaveBeenCalledTimes(1)
   })
 
-  it("hosts the AI panel in a provenance popover and keeps it open across a keystroke", async () => {
+  it("offers no AI draft trigger in the manual capture fallback", () => {
+    // Profiles are prefilled on the families step; the capture is now a manual
+    // fallback only and exposes no AI draft button or provenance line.
     renderRole()
-    // The AI panel is collapsed behind the "AI draft" popover trigger.
-    expect(screen.queryByTestId("ai-panel")).toBeNull()
-    fireEvent.click(screen.getByRole("button", { name: tAi.openDraftCta }))
-    expect(screen.getByTestId("ai-panel")).toBeDefined()
-    // The provenance line is always visible while open (ADR-0003): nothing is
-    // applied automatically.
-    expect(screen.getByText(tAi.provenance)).toBeDefined()
-    // Typing in the purpose field re-renders the parent; the popover stays
-    // open because MorphPopover owns its own open state (Radix/Motion), not a
-    // parent flag that a remount would reset.
-    fireEvent.change(screen.getByLabelText(t.purposeLabel), {
-      target: { value: "Builds the product." },
-    })
-    expect(screen.getByTestId("ai-panel")).toBeDefined()
-    // Closing the panel via its onDone (the close() passed by MorphPopover)
-    // morphs it back to the trigger.
-    fireEvent.click(screen.getByRole("button", { name: "ai-done" }))
-    await waitFor(() => {
-      expect(screen.queryByTestId("ai-panel")).toBeNull()
-    })
-    expect(screen.getByRole("button", { name: tAi.openDraftCta })).toBeDefined()
+    expect(screen.getByLabelText(t.purposeLabel)).toBeDefined()
+    expect(screen.queryByRole("button", { name: tAi.openDraftCta })).toBeNull()
+    expect(screen.queryByText(tAi.provenance)).toBeNull()
   })
 
   it("saves the profile and advances to the blind stepper", async () => {

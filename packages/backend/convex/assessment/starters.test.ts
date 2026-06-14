@@ -852,4 +852,158 @@ describe("reconcileStarterSet", () => {
       goner.roleId
     )
   })
+
+  // The job profile is name-derived (AI prefill drafts purpose/responsibilities
+  // from the title), so a renamed role's profile must be cleared to regenerate;
+  // a track-only or family-only edit keeps it (the name did not change).
+  describe("clears the name-derived profile on a title change", () => {
+    // Seeds one role inside one family and gives it a non-empty profile, then
+    // returns the ids the reconcile payload needs.
+    async function seedRoleWithProfile(t: ReturnType<typeof initConvexTest>) {
+      const { orgId, asAdmin } = await seedTemplateOrganization(t)
+      await asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
+        orgId,
+        families: [
+          {
+            name: "Engineering",
+            roles: [{ title: "Developer", trackKey: "IC" }],
+          },
+        ],
+      })
+      const family = (
+        await asAdmin.query(api.assessment.families.listRoleFamilies, { orgId })
+      )[0]
+      const role = (
+        await asAdmin.query(api.assessment.roles.listRoles, { orgId })
+      )[0]
+      if (family === undefined || role === undefined) throw new Error("seed")
+      await t.run(async (ctx) => {
+        const docId = ctx.db.normalizeId("roles", role.roleId)
+        if (docId === null) throw new Error("bad id")
+        await ctx.db.patch(docId, {
+          purpose: "Builds the core product.",
+          responsibilities: "Implements features",
+        })
+      })
+      return { orgId, asAdmin, family, role }
+    }
+
+    async function readProfile(
+      t: ReturnType<typeof initConvexTest>,
+      roleId: string
+    ) {
+      return await t.run(async (ctx) => {
+        const docId = ctx.db.normalizeId("roles", roleId)
+        if (docId === null) throw new Error("bad id")
+        const doc = await ctx.db.get(docId)
+        return {
+          purpose: doc?.purpose,
+          responsibilities: doc?.responsibilities,
+        }
+      })
+    }
+
+    it("renaming a role clears its purpose and responsibilities", async () => {
+      const t = initConvexTest()
+      const { orgId, asAdmin, family, role } = await seedRoleWithProfile(t)
+      await asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
+        orgId,
+        families: [
+          {
+            familyId: family.familyId,
+            name: "Engineering",
+            roles: [
+              {
+                roleId: role.roleId,
+                title: "Senior Developer",
+                trackKey: "IC",
+              },
+            ],
+          },
+        ],
+      })
+      const profile = await readProfile(t, role.roleId)
+      expect(profile.purpose).toBe("")
+      expect(profile.responsibilities).toBe("")
+      // The cleared fields ride along on the same role.updated audit row.
+      const updated = await auditOfType(t, orgId, "role.updated")
+      expect(updated).toHaveLength(1)
+      expect(
+        (updated[0]?.payload as { fields: string[] }).fields.sort()
+      ).toEqual(["purpose", "responsibilities", "title"])
+    })
+
+    it("a track-only change keeps the profile", async () => {
+      const t = initConvexTest()
+      const { orgId, asAdmin, family, role } = await seedRoleWithProfile(t)
+      await asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
+        orgId,
+        families: [
+          {
+            familyId: family.familyId,
+            name: "Engineering",
+            roles: [
+              // Same title, new track: the name did not change.
+              { roleId: role.roleId, title: "Developer", trackKey: "M" },
+            ],
+          },
+        ],
+      })
+      const profile = await readProfile(t, role.roleId)
+      expect(profile.purpose).toBe("Builds the core product.")
+      expect(profile.responsibilities).toBe("Implements features")
+      const updated = await auditOfType(t, orgId, "role.updated")
+      expect((updated[0]?.payload as { fields: string[] }).fields).toEqual([
+        "trackKey",
+      ])
+    })
+
+    it("a family-only change keeps the profile", async () => {
+      const t = initConvexTest()
+      const { orgId, asAdmin, family, role } = await seedRoleWithProfile(t)
+      // Add a second family to move the role into; the title is unchanged.
+      await asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
+        orgId,
+        families: [
+          { familyId: family.familyId, name: "Engineering", roles: [] },
+          {
+            name: "Platform",
+            roles: [
+              { roleId: role.roleId, title: "Developer", trackKey: "IC" },
+            ],
+          },
+        ],
+      })
+      const profile = await readProfile(t, role.roleId)
+      expect(profile.purpose).toBe("Builds the core product.")
+      expect(profile.responsibilities).toBe("Implements features")
+      const updated = await auditOfType(t, orgId, "role.updated")
+      expect((updated[0]?.payload as { fields: string[] }).fields).toEqual([
+        "familyId",
+      ])
+    })
+
+    it("an unchanged role keeps its profile and writes nothing", async () => {
+      const t = initConvexTest()
+      const { orgId, asAdmin, family, role } = await seedRoleWithProfile(t)
+      await asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
+        orgId,
+        families: [
+          {
+            familyId: family.familyId,
+            name: "Engineering",
+            roles: [
+              { roleId: role.roleId, title: "Developer", trackKey: "IC" },
+            ],
+          },
+        ],
+      })
+      const profile = await readProfile(t, role.roleId)
+      expect(profile.purpose).toBe("Builds the core product.")
+      expect(profile.responsibilities).toBe("Implements features")
+      // No field changed: no role.updated audit row at all.
+      const updated = await auditOfType(t, orgId, "role.updated")
+      expect(updated).toHaveLength(0)
+    })
+  })
 })

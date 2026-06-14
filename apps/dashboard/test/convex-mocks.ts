@@ -21,6 +21,7 @@ import { vi } from "vitest"
 type MutationMock = ReturnType<typeof vi.fn>
 
 const mutationMocks = new Map<string, MutationMock>()
+const actionMocks = new Map<string, MutationMock>()
 let queryHandler: (ref: string, args?: unknown) => unknown = () => undefined
 
 // Registers (or returns the existing) mutation mock for a dot-path ref.
@@ -31,6 +32,16 @@ export function mockMutation(ref: string): MutationMock {
   if (existing !== undefined) return existing
   const mock = vi.fn()
   mutationMocks.set(ref, mock)
+  return mock
+}
+
+// Registers (or returns the existing) action mock for a dot-path ref, mirroring
+// mockMutation for useAction-backed components.
+export function mockAction(ref: string): MutationMock {
+  const existing = actionMocks.get(ref)
+  if (existing !== undefined) return existing
+  const mock = vi.fn()
+  actionMocks.set(ref, mock)
   return mock
 }
 
@@ -70,5 +81,6 @@ export const apiModule = { api: pathProxy("") }
 
 export const convexReactModule = {
   useMutation: (ref: unknown) => mockMutation(String(ref)),
+  useAction: (ref: unknown) => mockAction(String(ref)),
   useQuery: (ref: unknown, args?: unknown) => queryHandler(String(ref), args),
 }

@@ -4,12 +4,13 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 
-import { mockMutation, onQuery } from "@/test/convex-mocks"
+import { mockAction, mockMutation, onQuery } from "@/test/convex-mocks"
 
 const createStarterSetMock = mockMutation(
   "assessment.starters.createStarterSet"
@@ -23,6 +24,10 @@ const completeOnboardingMock = mockMutation(
 const requestStarterImportMock = mockMutation("ai.suggest.requestStarterImport")
 const confirmStarterImportMock = mockMutation("ai.suggest.confirmStarterImport")
 const rejectSuggestionMock = mockMutation("ai.suggest.rejectSuggestion")
+// The prefill action runs after persist on every advance; the action itself
+// skips non-empty roles, so an unchanged revisit makes no model call. The mock
+// resolves with zero counts by default so finish() flows through to onAdvance.
+const prefillRoleProfilesMock = mockAction("ai.prefill.prefillRoleProfiles")
 // The query mock dispatches on the api ref (see beforeEach): getIndustryStarter
 // returns the seed fixture, getModel the tracks fixture, getOpenSuggestions the
 // AI rows for the import flow, and listRoleFamilies/listRoles the already-created
@@ -183,6 +188,8 @@ describe("FamiliesStep", () => {
     requestStarterImportMock.mockReset()
     confirmStarterImportMock.mockReset()
     rejectSuggestionMock.mockReset()
+    prefillRoleProfilesMock.mockReset()
+    prefillRoleProfilesMock.mockResolvedValue({ generated: 0, failed: 0 })
     useQueryMock.mockReset()
     currentStarter = starterFixture()
     currentModel = modelFixture()
@@ -856,5 +863,130 @@ describe("FamiliesStep", () => {
     expect(createStarterSetMock).not.toHaveBeenCalled()
     expect(completeOnboardingMock).not.toHaveBeenCalled()
     expect(onFinished).toHaveBeenCalledTimes(1)
+  })
+
+  it("prefills role profiles after reconcile and before advancing on the existing path", async () => {
+    // After the persist step (reconcile here), Next must prefill the role
+    // profiles, then advance. The action skips non-empty roles server-side, so
+    // it is always safe to call; the order is persist -> prefill -> advance.
+    currentFamilies = existingFamiliesFixture()
+    currentRoles = existingRolesFixture()
+    const order: string[] = []
+    reconcileStarterSetMock.mockImplementation(() => {
+      order.push("reconcile")
+      return Promise.resolve(null)
+    })
+    prefillRoleProfilesMock.mockImplementation(() => {
+      order.push("prefill")
+      return Promise.resolve({ generated: 0, failed: 0 })
+    })
+    const onFinished = vi.fn(() => order.push("advance"))
+    renderStep(onFinished)
+    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+
+    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
+
+    await waitFor(() => {
+      expect(onFinished).toHaveBeenCalledTimes(1)
+    })
+    expect(prefillRoleProfilesMock).toHaveBeenCalledTimes(1)
+    expect(prefillRoleProfilesMock).toHaveBeenCalledWith({ orgId: "org-1" })
+    // persist -> prefill -> advance, strictly ordered.
+    expect(order).toEqual(["reconcile", "prefill", "advance"])
+  })
+
+  it("prefills role profiles after the AI confirm and before advancing", async () => {
+    currentSuggestions = [suggestedImportFixture()]
+    const order: string[] = []
+    confirmStarterImportMock.mockImplementation(() => {
+      order.push("confirm")
+      return Promise.resolve(null)
+    })
+    prefillRoleProfilesMock.mockImplementation(() => {
+      order.push("prefill")
+      return Promise.resolve({ generated: 1, failed: 0 })
+    })
+    const onFinished = vi.fn(() => order.push("advance"))
+    renderStep(onFinished)
+    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+
+    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
+
+    await waitFor(() => {
+      expect(onFinished).toHaveBeenCalledTimes(1)
+    })
+    expect(prefillRoleProfilesMock).toHaveBeenCalledTimes(1)
+    expect(prefillRoleProfilesMock).toHaveBeenCalledWith({ orgId: "org-1" })
+    expect(order).toEqual(["confirm", "prefill", "advance"])
+  })
+
+  it("shows the Next button loading state across persist + prefill, then advances when prefill resolves", async () => {
+    // The whole finish() (persist + prefill) is one loading span on the Next
+    // button: it disables and shows the spinner until prefill resolves, then
+    // advances. We hold the prefill behind a manual resolve to observe it.
+    currentFamilies = existingFamiliesFixture()
+    currentRoles = existingRolesFixture()
+    reconcileStarterSetMock.mockResolvedValue(null)
+    const deferred: { resolve: () => void } = { resolve: () => {} }
+    prefillRoleProfilesMock.mockImplementation(
+      () =>
+        new Promise<{ generated: number; failed: number }>((resolve) => {
+          deferred.resolve = () => resolve({ generated: 0, failed: 0 })
+        })
+    )
+    const onFinished = vi.fn()
+    renderStep(onFinished)
+    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+
+    const next = screen.getByRole("button", {
+      name: t.nextCta,
+    }) as HTMLButtonElement
+    fireEvent.click(next)
+
+    // While the prefill action is in flight the button is disabled and the
+    // spinner (role=status) is visible, so the user sees the generating state.
+    await waitFor(() => {
+      expect(next.disabled).toBe(true)
+    })
+    expect(prefillRoleProfilesMock).toHaveBeenCalledTimes(1)
+    expect(within(next).getByRole("status")).toBeDefined()
+    expect(onFinished).not.toHaveBeenCalled()
+
+    // Once prefill resolves, the step advances.
+    deferred.resolve()
+    await waitFor(() => {
+      expect(onFinished).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it("surfaces the generic error and lets the user retry when prefill rejects", async () => {
+    // A hard/transport prefill reject must not advance: the error shows and the
+    // loading state resets so Next is clickable again.
+    currentFamilies = existingFamiliesFixture()
+    currentRoles = existingRolesFixture()
+    reconcileStarterSetMock.mockResolvedValue(null)
+    prefillRoleProfilesMock
+      .mockRejectedValueOnce(new Error("transport blew up"))
+      .mockResolvedValueOnce({ generated: 0, failed: 0 })
+    const onFinished = vi.fn()
+    renderStep(onFinished)
+    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+
+    fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toBeDefined()
+    })
+    expect(onFinished).not.toHaveBeenCalled()
+    const next = screen.getByRole("button", {
+      name: t.nextCta,
+    }) as HTMLButtonElement
+    expect(next.disabled).toBe(false)
+
+    // Retry: prefill now resolves and the step advances.
+    fireEvent.click(next)
+    await waitFor(() => {
+      expect(onFinished).toHaveBeenCalledTimes(1)
+    })
+    expect(prefillRoleProfilesMock).toHaveBeenCalledTimes(2)
   })
 })

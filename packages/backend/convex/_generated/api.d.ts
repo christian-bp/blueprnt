@@ -16,6 +16,8 @@ import type * as accounts_tables from "../accounts/tables.js";
 import type * as ai_config from "../ai/config.js";
 import type * as ai_generate from "../ai/generate.js";
 import type * as ai_persist from "../ai/persist.js";
+import type * as ai_prefill from "../ai/prefill.js";
+import type * as ai_prefillData from "../ai/prefillData.js";
 import type * as ai_pricing from "../ai/pricing.js";
 import type * as ai_provider from "../ai/provider.js";
 import type * as ai_starterImport from "../ai/starterImport.js";
@@ -65,6 +67,8 @@ declare const fullApi: ApiFromModules<{
   "ai/config": typeof ai_config;
   "ai/generate": typeof ai_generate;
   "ai/persist": typeof ai_persist;
+  "ai/prefill": typeof ai_prefill;
+  "ai/prefillData": typeof ai_prefillData;
   "ai/pricing": typeof ai_pricing;
   "ai/provider": typeof ai_provider;
   "ai/starterImport": typeof ai_starterImport;

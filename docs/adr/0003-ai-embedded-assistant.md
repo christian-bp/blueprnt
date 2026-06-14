@@ -23,3 +23,15 @@ Systemet byggs **AI-redo från dag 1** (förslagslager + proveniens + AI-anrop v
 **Scopeutökning (V1):** utöver jobbprofilgenerering omfattar V1 även AI-assistans i onboardingens modellsteg: utkast på kriterier (namn, beskrivning, hjälptext, betydelseetikett, ankartexter) i från scratch-vägen, samt förslag på betydelsejusteringar i mallvägen. Samma regler gäller: förslag med proveniens och status, HR bekräftar per post, inget tillämpas automatiskt, och bekräftelser revisionsloggas (ai.suggestionConfirmed). Statuslivscykeln utökas med "generating" och "failed" (felkod som i18n-nyckel, aldrig display-text).
 
 **Leverantörsbeslut:** Mistral La Plateforme anropas direkt från Convex actions via AI SDK v6 (generateText + Output.object). EU-processing, ingen träning på betald API enligt DPA; Zero Data Retention begärs i DPA:t (godkännandepliktigt, inte självbetjäning). Dokumenterad fallback: Azure OpenAI EU Data Zone (Sweden Central). **Vercel AI Gateway används aldrig i datavägen:** den kan inte pinna EU-routing och bryter därmed EU-datahemvisten (ADR-0001).
+
+## Tillägg 2026-06-14: automatisk ifyllning av jobbprofil i onboardingen
+
+**Scopeundantag (V1):** I onboardingens värderingssteg fylls varje rolls *syfte* och *ansvarsområden* i automatiskt med ett AI-utkast härlett ur rollens titel, utan ett blockerande HR-bekräftelsesteg per post. Det är ett medvetet undantag från regeln "inget tillämpas automatiskt" ovan, avgränsat till just denna profil-ifyllning. Ifyllningen körs när användaren går vidare från rollsteget: nya och omdöpta roller får ett namnhärlett utkast, medan oförändrade roller (som redan har en profil) lämnas orörda, så inget AI-anrop sker utan en faktisk ändring.
+
+**Varför det är försvarbart:**
+
+- Texten rör aldrig den deterministiska poäng-/bandvägen (ADR-0002 gäller oförändrat): poäng/band härleds enbart ur HR:s betyg, aldrig ur profiltexten.
+- Utkastet är fritt redigerbart (i värderingsstegets manuella reservvy om generering misslyckas, och i instrumentpanelens rollvy), så HR behåller kontrollen, bara inte som ett blockerande per-post-steg.
+- Proveniensen bevaras: varje ifyllning går via ett `role.profile`-förslag som auto-bekräftas plus en loggad AI-användningshändelse, så källa, modell och tidpunkt finns kvar i revisions-/telemetriloggen.
+
+**Avgränsning:** Undantaget gäller endast onboardingens profil-ifyllning. Övriga AI-utdata (kriterieutkast, betydelsejusteringar, framtida betygsförslag) kräver fortsatt explicit HR-bekräftelse per post enligt ovan.

@@ -361,7 +361,17 @@ export const reconcileStarterSet = orgMutation({
           // Patch only the fields that changed, recording their names in the
           // audit payload exactly like updateRole.
           const patch: Record<string, unknown> = {}
-          if (existing.title !== title) patch.title = title
+          if (existing.title !== title) {
+            patch.title = title
+            // The job profile is NAME-derived (AI prefill drafts it from the
+            // title), so a renamed role's old profile no longer fits: clear
+            // purpose + responsibilities so the next prefill regenerates them.
+            // Only on a title change (a track-only or family-only edit keeps
+            // the profile); only clear non-empty fields, so an already-empty
+            // profile stays a no-op and is not re-listed in the audit fields.
+            if (existing.purpose !== "") patch.purpose = ""
+            if (existing.responsibilities !== "") patch.responsibilities = ""
+          }
           if (existing.trackKey !== role.trackKey)
             patch.trackKey = role.trackKey
           if ((existing.familyId as string | undefined) !== familyId) {

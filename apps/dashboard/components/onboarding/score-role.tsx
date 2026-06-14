@@ -1,6 +1,6 @@
 "use client"
 
-import { AiMagicIcon, ArrowLeft01Icon } from "@hugeicons/core-free-icons"
+import { ArrowLeft01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
@@ -11,16 +11,13 @@ import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
-import { MorphPopover } from "@/components/morph-popover"
 import { RatingResult } from "@/components/rating/rating-result"
 import { RatingStepper } from "@/components/rating/rating-stepper"
-import { RoleAiPanel } from "@/components/roles/role-ai-panel"
 
 // One role's inline scoring inside the wizard: profile capture (the two
-// mandatory fields, with RoleAiPanel hosted in a MorphPopover for a one-click
-// AI draft), then the blind RatingStepper (auto-saves per criterion), then the
-// RatingResult reveal. "Back to your roles" returns to the list. The stepper,
-// result, and AI panel are reused unchanged.
+// mandatory fields), then the blind RatingStepper (auto-saves per criterion),
+// then the RatingResult reveal. "Back to your roles" returns to the list. The
+// stepper and result are reused unchanged.
 export function ScoreRole({
   orgId,
   roleId,
@@ -34,7 +31,6 @@ export function ScoreRole({
   const t = useTranslations("dashboard.onboarding.score")
   const tOnboarding = useTranslations("dashboard.onboarding")
   const tHelp = useTranslations("dashboard.help")
-  const tAi = useTranslations("dashboard.ai")
   const locale = useLocale()
   const role = useQuery(api.assessment.roles.getRole, { orgId, roleId, locale })
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
@@ -51,9 +47,10 @@ export function ScoreRole({
   // during-render (the same idiom the wizard uses for `acked`): the guards go
   // false on the next pass. role.purpose only changes via (a) this component's
   // own updateRole save (local state already equals it, so the re-sync is a
-  // no-op) or (b) an AI accept through the panel (which patches the role and
-  // we WANT the textarea to follow the accepted value). A user who typed
-  // locally without saving is never clobbered: role.purpose has not moved.
+  // no-op) or (b) an external AI prefill (the families step generates the
+  // profile from the title and patches the role, and we WANT the textarea to
+  // follow the prefilled value). A user who typed locally without saving is
+  // never clobbered: role.purpose has not moved.
   const [lastSyncedPurpose, setLastSyncedPurpose] = useState<string | null>(
     null
   )
@@ -92,7 +89,9 @@ export function ScoreRole({
   }
 
   // The profile gate: the role needs purpose + responsibilities before the
-  // blind stepper. A starter role opens empty, so capture comes first.
+  // blind stepper. Profiles are prefilled on the families step, so this manual
+  // capture is now a fallback for the rare case where a role's profile is still
+  // empty here (e.g. a generation failure).
   if (!role.profileComplete && !savedProfile) {
     const canContinue =
       purpose.trim().length > 0 && responsibilities.trim().length > 0
@@ -107,22 +106,6 @@ export function ScoreRole({
           </HelpMorphButton>
         </div>
         <p className="text-muted-foreground text-sm">{t("captureHint")}</p>
-        <div className="flex justify-end">
-          {/* The AI draft popover keeps the provenance line always visible
-              (ADR-0003). MorphPopover owns its own Radix open state, so typing
-              in the capture fields never collapses it. */}
-          <MorphPopover
-            triggerLabel={tAi("openDraftCta")}
-            triggerIcon={AiMagicIcon}
-            title={tAi("heading")}
-            description={tAi("provenance")}
-            closeLabel={tAi("closeLabel")}
-          >
-            {(close) => (
-              <RoleAiPanel orgId={orgId} roleId={role.roleId} onDone={close} />
-            )}
-          </MorphPopover>
-        </div>
         <div className="space-y-2">
           <Label htmlFor="score-role-purpose">{t("purposeLabel")}</Label>
           <Textarea
