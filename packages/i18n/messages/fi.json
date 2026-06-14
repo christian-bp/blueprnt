@@ -380,6 +380,7 @@
         "scoreRoleCta": "Arvioi tämä rooli",
         "resumeRoleCta": "Jatka arviointia",
         "roleDoneLabel": "Arvioitu",
+        "ungroupedFamily": "Muut roolit",
         "captureHeading": "Kuvaile ensin <brand>{title}</brand>",
         "captureHeadingPrefilled": "Tarkista ensin <brand>{title}</brand>",
         "captureHint": "Taso tarvitsee lyhyen kirjallisen perustan. Täytä tarkoitus ja vastuut jatkaaksesi.",

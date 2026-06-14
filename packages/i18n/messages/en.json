@@ -380,6 +380,7 @@
         "scoreRoleCta": "Evaluate this role",
         "resumeRoleCta": "Continue evaluating",
         "roleDoneLabel": "Evaluated",
+        "ungroupedFamily": "Other roles",
         "captureHeading": "First, describe <brand>{title}</brand>",
         "captureHeadingPrefilled": "First, review <brand>{title}</brand>",
         "captureHint": "A band needs a short written basis. Fill in the purpose and responsibilities to continue.",

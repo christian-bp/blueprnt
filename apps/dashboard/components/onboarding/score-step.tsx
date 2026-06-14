@@ -12,6 +12,7 @@ import { HelpMorphButton } from "@/components/help-morph-button"
 import { OptionCard } from "@/components/onboarding/option-card"
 import { ScoreRole } from "@/components/onboarding/score-role"
 import { ScreenShell } from "@/components/onboarding/screen-shell"
+import { groupRowsByFamily } from "@/lib/group-roles-by-family"
 
 // The final onboarding step: opt-in scoring with a save-and-exit escape on
 // every path. The fork screen shows only when no role is started; otherwise
@@ -95,6 +96,54 @@ export function ScoreStep({
           ? "list"
           : "fork"
 
+  // Group the scoring list by role family (header-only): families A-Z, any
+  // family-less roles under a trailing "Other roles" header. With no families
+  // at all the list renders flat, exactly as before.
+  const roleGroups = groupRowsByFamily(rows, locale)
+  const hasFamilies = roleGroups.some((group) => group.familyName !== null)
+
+  function renderRoleRow(row: (typeof rows)[number]) {
+    return (
+      <li
+        key={row.roleId}
+        className="flex items-center justify-between gap-3 rounded-md border p-3"
+      >
+        <div className="min-w-0 flex-1 space-y-1">
+          <p className="truncate font-medium text-sm">{row.title}</p>
+          <p className="text-muted-foreground text-sm">
+            {t("roleProgress", {
+              rated: row.ratedCount,
+              total: row.totalCriteria,
+            })}
+          </p>
+          {/* Brand-rose indicator, matching the drafting bar; the shared
+              Progress (other bars) stays neutral. */}
+          <Progress
+            value={
+              row.totalCriteria === 0
+                ? 0
+                : (row.ratedCount / row.totalCriteria) * 100
+            }
+            className="[&>[data-slot=progress-indicator]]:bg-brand"
+          />
+        </div>
+        {row.complete ? (
+          <span className="text-muted-foreground text-sm">
+            {t("roleDoneLabel")}
+          </span>
+        ) : (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setOpenRoleId(row.roleId)}
+          >
+            {row.ratedCount > 0 ? t("resumeRoleCta") : t("scoreRoleCta")}
+          </Button>
+        )}
+      </li>
+    )
+  }
+
   return (
     <AnimatePresence mode="wait" initial={false}>
       <motion.div
@@ -156,49 +205,22 @@ export function ScoreStep({
             {/* Persistent reassurance line, in its own slot so opting in does
                 not reflow the list below it. */}
             <p className="text-muted-foreground text-sm">{t("saveExitLine")}</p>
-            <ul className="space-y-2">
-              {rows.map((row) => (
-                <li
-                  key={row.roleId}
-                  className="flex items-center justify-between gap-3 rounded-md border p-3"
-                >
-                  <div className="min-w-0 flex-1 space-y-1">
-                    <p className="truncate font-medium text-sm">{row.title}</p>
-                    <p className="text-muted-foreground text-sm">
-                      {t("roleProgress", {
-                        rated: row.ratedCount,
-                        total: row.totalCriteria,
-                      })}
-                    </p>
-                    {/* Brand-rose indicator, matching the drafting bar; the
-                        shared Progress (other bars) stays neutral. */}
-                    <Progress
-                      value={
-                        row.totalCriteria === 0
-                          ? 0
-                          : (row.ratedCount / row.totalCriteria) * 100
-                      }
-                      className="[&>[data-slot=progress-indicator]]:bg-brand"
-                    />
+            {hasFamilies ? (
+              <div className="space-y-5">
+                {roleGroups.map((group) => (
+                  <div key={group.key} className="space-y-2">
+                    <h3 className="font-medium text-muted-foreground text-sm">
+                      {group.familyName ?? t("ungroupedFamily")}
+                    </h3>
+                    <ul className="space-y-2">
+                      {group.rows.map(renderRoleRow)}
+                    </ul>
                   </div>
-                  {row.complete ? (
-                    <span className="text-muted-foreground text-sm">
-                      {t("roleDoneLabel")}
-                    </span>
-                  ) : (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setOpenRoleId(row.roleId)}
-                    >
-                      {row.ratedCount > 0
-                        ? t("resumeRoleCta")
-                        : t("scoreRoleCta")}
-                    </Button>
-                  )}
-                </li>
-              ))}
-            </ul>
+                ))}
+              </div>
+            ) : (
+              <ul className="space-y-2">{rows.map(renderRoleRow)}</ul>
+            )}
             <div className="flex justify-end">
               <Button
                 type="button"

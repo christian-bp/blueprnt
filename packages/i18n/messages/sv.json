@@ -380,6 +380,7 @@
         "scoreRoleCta": "Värdera den här rollen",
         "resumeRoleCta": "Fortsätt värdera",
         "roleDoneLabel": "Värderad",
+        "ungroupedFamily": "Övriga roller",
         "captureHeading": "Beskriv först <brand>{title}</brand>",
         "captureHeadingPrefilled": "Granska först <brand>{title}</brand>",
         "captureHint": "En nivå behöver ett kort skriftligt underlag. Fyll i syfte och ansvar för att fortsätta.",

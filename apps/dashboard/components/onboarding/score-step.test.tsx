@@ -256,4 +256,39 @@ describe("ScoreStep", () => {
     })
     expect(await screen.findByText(t.saveExitLine)).toBeDefined()
   })
+
+  it("groups the scoring list by family in A-Z order", () => {
+    currentResults = resultsFixture([
+      {
+        roleId: "r1",
+        title: "Account Manager",
+        familyId: "f-sales",
+        familyName: "Sales",
+      },
+      {
+        roleId: "r2",
+        title: "Backend Engineer",
+        familyId: "f-eng",
+        familyName: "Engineering",
+      },
+    ])
+    currentRoles = listRolesFixture([
+      {
+        roleId: "r1",
+        title: "Account Manager",
+        profileComplete: true,
+        ratedCount: 0,
+      },
+    ])
+    renderStep()
+    const headers = screen.getAllByRole("heading", { level: 3 })
+    expect(headers.map((header) => header.textContent)).toEqual([
+      "Engineering",
+      "Sales",
+    ])
+    expect(screen.getByText("Account Manager")).toBeDefined()
+    expect(screen.getByText("Backend Engineer")).toBeDefined()
+    // Every role has a family, so there is no "Other roles" group.
+    expect(screen.queryByText(t.ungroupedFamily)).toBeNull()
+  })
 })

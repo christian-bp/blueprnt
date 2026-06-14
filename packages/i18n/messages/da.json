@@ -380,6 +380,7 @@
         "scoreRoleCta": "Vurder denne rolle",
         "resumeRoleCta": "Fortsæt vurderingen",
         "roleDoneLabel": "Vurderet",
+        "ungroupedFamily": "Andre roller",
         "captureHeading": "Beskriv først <brand>{title}</brand>",
         "captureHeadingPrefilled": "Gennemgå først <brand>{title}</brand>",
         "captureHint": "Et niveau kræver et kort skriftligt grundlag. Udfyld formål og ansvar for at fortsætte.",
