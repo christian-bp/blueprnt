@@ -1,0 +1,23 @@
+packages/backend/convex/ai/generate.ts
+  s_288cc0dfb82db8::t_61268688bce9c2 379-385
+packages/backend/convex/ai/prefill.ts
+  s_288cc0dfb82db8::t_2e07d0e3ad6d22 45-52
+apps/dashboard/components/onboarding/families-step.tsx
+  s_288cc0dfb82db8::t_89d3083918a9cd 215-220
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "ba17a911094770feb4dc663681bd425d5db8e05f",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
