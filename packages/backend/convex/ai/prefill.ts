@@ -26,6 +26,12 @@ interface PrefillContext {
   country: string
 }
 
+// One model call per role, so cap how many run at once: a full starter set
+// fired in parallel bursts past the EU model's rate limit. Small sequential
+// waves keep us under it (and once template roles ship with predefined
+// profiles, only the few renamed/new/pasted roles ever reach here).
+const PREFILL_CONCURRENCY = 3
+
 // Auto-applies AI-drafted job profiles for an org's roles whose profile is
 // still empty, during onboarding. For each empty-profile role it generates a
 // { purpose, responsibilities } from the role TITLE with the SAME logic the
@@ -40,8 +46,9 @@ interface PrefillContext {
 // role.updated audit row.
 //
 // Roles with a non-empty profile are SKIPPED with no model call, so revisiting
-// onboarding with no new empty roles costs nothing. Generations run in
-// PARALLEL and are independent: one role's failure leaves that role empty
+// onboarding with no new empty roles costs nothing. Generations run in small
+// throttled waves (PREFILL_CONCURRENCY) so a full set never bursts the model's
+// rate limit; each is independent, so one role's failure leaves that role empty
 // (the frontend offers a manual fallback) without aborting the others.
 export const prefillRoleProfiles = action({
   args: { orgId: v.string() },
@@ -62,16 +69,23 @@ export const prefillRoleProfiles = action({
       { orgId, userId: identity.subject }
     )
 
-    const results = await Promise.allSettled(
-      targets.map((target) =>
-        prefillOne(ctx, { orgId, actorId, target, context })
-      )
-    )
+    // Throttle into sequential waves of PREFILL_CONCURRENCY so we never fire
+    // the whole starter set at the model at once (the rate-limit cause). Each
+    // role is independent; a failure within a wave leaves that role empty
+    // without aborting the rest.
     let generated = 0
     let failed = 0
-    for (const result of results) {
-      if (result.status === "fulfilled" && result.value) generated += 1
-      else failed += 1
+    for (let i = 0; i < targets.length; i += PREFILL_CONCURRENCY) {
+      const wave = targets.slice(i, i + PREFILL_CONCURRENCY)
+      const results = await Promise.allSettled(
+        wave.map((target) =>
+          prefillOne(ctx, { orgId, actorId, target, context })
+        )
+      )
+      for (const result of results) {
+        if (result.status === "fulfilled" && result.value) generated += 1
+        else failed += 1
+      }
     }
     return { generated, failed }
   },
