@@ -1,0 +1,39 @@
+apps/dashboard/components/onboarding/families-step.tsx
+  s_288cc0dfb82db8::t_c510ddf3a10798 12
+  s_288cc0dfb82db8::t_b475c32346bcc1 53
+  s_288cc0dfb82db8::t_7a8e28fa6018bf 230-241,243-251
+packages/i18n/messages/da.json
+  s_288cc0dfb82db8::t_75d5da9b192eb2 356-357
+apps/dashboard/hooks/use-families-draft-flow.ts
+  s_288cc0dfb82db8::t_cd50d49440ecaf 63-67
+  s_288cc0dfb82db8::t_567f025a977f84 479
+  s_288cc0dfb82db8::t_5666f0e7850461 279-286,288
+packages/i18n/messages/nb.json
+  s_288cc0dfb82db8::t_044e29ea3e7ef6 356-357
+packages/i18n/messages/fi.json
+  s_288cc0dfb82db8::t_17214d9148da5f 356-357
+packages/i18n/messages/sv.json
+  s_288cc0dfb82db8::t_49c24ad6006c80 356-357
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_288cc0dfb82db8::t_30dd24f4274329 781-820
+  s_288cc0dfb82db8::t_bf5e43f1b60376 731-734
+  s_288cc0dfb82db8::t_dc1a3c8984e14c 412-413,415-417
+packages/i18n/messages/en.json
+  s_288cc0dfb82db8::t_911d12bfa4b8ec 356-357
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "a87b91793b27a92783354f30f5c7ebeed21a5a17",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
