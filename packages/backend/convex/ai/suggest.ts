@@ -14,7 +14,7 @@ import {
 import { AUDIT_EVENTS, logAudit } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
-import { AI_MODEL_ID, AI_PROVIDER } from "./config"
+import { AI_MODEL_ID, AI_PROFILE_MODEL_ID, AI_PROVIDER } from "./config"
 import { repairDraftWeights } from "./weights"
 
 interface SettingsContext {
@@ -415,7 +415,9 @@ export const requestRoleProfileDraft = orgMutation({
       suggestedValue: null,
       source: "ai",
       status: "generating",
-      model: { provider: AI_PROVIDER, model: AI_MODEL_ID },
+      // Role-profile drafting runs on the faster profile model (the other
+      // three suggestion kinds stay on the quality-defining default).
+      model: { provider: AI_PROVIDER, model: AI_PROFILE_MODEL_ID },
       requestedBy: ctx.authUserId,
     })
     await ctx.scheduler.runAfter(

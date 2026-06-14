@@ -23,4 +23,11 @@ describe("estimateCostNanos", () => {
       outNanosPerToken: 1500,
     })
   })
+
+  it("pins the mistral-small-latest snapshot price (the fast profile model)", () => {
+    expect(MODEL_PRICING["mistral-small-latest"]).toEqual({
+      inNanosPerToken: 100,
+      outNanosPerToken: 300,
+    })
+  })
 })

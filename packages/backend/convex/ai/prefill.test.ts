@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { api, components, internal } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
 import { initConvexTest } from "../testing.helpers"
+import { AI_PROFILE_MODEL_ID } from "./config"
 
 // convex-test cannot reach the real EU model, so the "ai" module's
 // generateText is mocked: the action's prompt building and the surrounding
@@ -185,6 +186,9 @@ describe("prefillRoleProfiles", () => {
       expect(usage[0]?.kind).toBe("role.profile")
       expect(usage[0]?.actorId).toBe(userId)
       expect(usage[0]?.totalTokens).toBe(30)
+      // Prefill runs on the fast profile model: the recorded provenance must
+      // match the model actually used for the batch.
+      expect(usage[0]?.model).toBe(AI_PROFILE_MODEL_ID)
       // The monthly rollup folded the single call in.
       const monthly = await ctx.db
         .query("aiUsageMonthly")

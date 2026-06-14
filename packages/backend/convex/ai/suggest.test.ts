@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { api, components, internal } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
+import { AI_MODEL_ID, AI_PROFILE_MODEL_ID } from "./config"
 
 async function seedRoleOrganization(t: ReturnType<typeof initConvexTest>) {
   const { orgId, userId } = await t.mutation(
@@ -82,6 +83,8 @@ describe("AI suggestion lifecycle", () => {
       expect(suggestion?.source).toBe("ai")
       expect(suggestion?.target.kind).toBe("model.draft")
       expect(suggestion?.model?.provider).toBe("mistral")
+      // The model draft stays on the quality-defining default model.
+      expect(suggestion?.model?.model).toBe(AI_MODEL_ID)
     })
   })
 
@@ -334,6 +337,12 @@ describe("AI suggestion lifecycle", () => {
       api.ai.suggest.requestWeightReview,
       { orgId }
     )
+    // Weight review stays on the quality-defining default model, not the
+    // faster role-profile model (provenance regression guard for the split).
+    await t.run(async (ctx) => {
+      const suggestion = await ctx.db.get(suggestionId)
+      expect(suggestion?.model?.model).toBe(AI_MODEL_ID)
+    })
     // saveWeightReview types the ids as v.string(): foreign ids, malformed
     // ids, and bound-breaching moves all pass persist and must be neutralized
     // at confirm.
@@ -684,6 +693,9 @@ describe("role profile drafts", () => {
       expect(suggestion?.status).toBe("generating")
       expect(suggestion?.target.kind).toBe("role.profile")
       expect(suggestion?.target.roleId).toBe(roleId)
+      // Role-profile drafting runs on the faster profile model.
+      expect(suggestion?.model?.provider).toBe("mistral")
+      expect(suggestion?.model?.model).toBe(AI_PROFILE_MODEL_ID)
     })
     // getOpenSuggestions must expose roleId so the role page can filter.
     const open = await asAdmin.query(api.ai.suggest.getOpenSuggestions, {
@@ -841,6 +853,8 @@ describe("starter import", () => {
       expect(suggestion?.source).toBe("ai")
       expect(suggestion?.target.kind).toBe("starter.import")
       expect(suggestion?.model?.provider).toBe("mistral")
+      // The starter import stays on the quality-defining default model.
+      expect(suggestion?.model?.model).toBe(AI_MODEL_ID)
       expect(suggestion?.requestedBy).toBeTruthy()
     })
   })

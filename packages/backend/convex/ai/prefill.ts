@@ -6,7 +6,7 @@ import { internal } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
 import { type ActionCtx, action } from "../_generated/server"
 import { ERROR_CODES } from "../lib/errors"
-import { AI_MODEL_ID, AI_PROVIDER } from "./config"
+import { AI_PROFILE_MODEL_ID, AI_PROVIDER } from "./config"
 import { generateRoleProfileBatch } from "./generate"
 
 // One role that needs prefilling, resolved by the internal query: the title +
@@ -171,7 +171,7 @@ async function prefillChunk(
         orgId,
         kind: SUGGESTION_KINDS.roleProfile,
         provider: AI_PROVIDER,
-        model: AI_MODEL_ID,
+        model: AI_PROFILE_MODEL_ID,
         actorId,
         inputTokens: usage.inputTokens ?? 0,
         outputTokens: usage.outputTokens ?? 0,

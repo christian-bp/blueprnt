@@ -40,6 +40,7 @@ const LANGUAGE_NAMES: Record<string, string> = {
   fi: "Finnish",
 }
 import { ERROR_CODES } from "../lib/errors"
+import { AI_PROFILE_MODEL_ID } from "./config"
 import { aiModel } from "./provider"
 import { sanitizeStarterImport } from "./starterImport"
 import { applicableMoves, distinctMoves, repairDraftWeights } from "./weights"
@@ -320,7 +321,7 @@ export async function generateRoleProfile(
   suggestionId: Id<"suggestions">,
   args: RoleProfileInput
 ): Promise<GeneratedRoleProfile> {
-  const model = aiModel()
+  const model = aiModel(AI_PROFILE_MODEL_ID)
   if (model === null) {
     throw new Error(ERROR_CODES.aiUnavailable)
   }
@@ -369,7 +370,7 @@ export async function generateRoleProfileBatch(
   context: CompanyContext,
   roles: RoleProfileInput[]
 ): Promise<{ profiles: GeneratedRoleProfile[]; usage: LanguageModelUsage }> {
-  const model = aiModel()
+  const model = aiModel(AI_PROFILE_MODEL_ID)
   if (model === null) {
     throw new Error(ERROR_CODES.aiUnavailable)
   }

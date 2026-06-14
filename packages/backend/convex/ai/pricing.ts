@@ -3,8 +3,9 @@
 // per token. Raw tokens are the source of truth; this estimate is snapshotted
 // onto each usage event (ai/usage.ts) so a later price change never rewrites
 // historical cost. To change a price, edit this map; do not mutate stored
-// rows. Verified for mistral-large-latest against mistral.ai/pricing on
-// 2026-06-10 (Mistral Large 3: $0.50/1M input, $1.50/1M output).
+// rows. Verified against mistral.ai/pricing on 2026-06-10 (Mistral Large 3:
+// $0.50/1M input, $1.50/1M output; Mistral Small 3: $0.10/1M input,
+// $0.30/1M output). Flag for re-verification at launch.
 interface ModelPrice {
   inNanosPerToken: number
   outNanosPerToken: number
@@ -15,6 +16,7 @@ interface ModelPrice {
 // undefined and the guard below is type-meaningful rather than a dead check.
 export const MODEL_PRICING: Record<string, ModelPrice | undefined> = {
   "mistral-large-latest": { inNanosPerToken: 500, outNanosPerToken: 1500 },
+  "mistral-small-latest": { inNanosPerToken: 100, outNanosPerToken: 300 },
 }
 
 // Returns integer nano-USD, or null when the model has no pricing entry (the
