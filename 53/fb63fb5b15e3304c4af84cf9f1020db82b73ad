@@ -1,0 +1,38 @@
+packages/i18n/messages/en.json
+  s_288cc0dfb82db8::t_87c238e9cf7604 379-381
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_288cc0dfb82db8::t_0a8a1ded2cdcaa 992-1037
+packages/i18n/messages/fi.json
+  s_288cc0dfb82db8::t_a92f8680572b08 379-381
+apps/dashboard/components/onboarding/score-role.test.tsx
+  s_288cc0dfb82db8::t_2903b48058a25a 149-151
+  s_288cc0dfb82db8::t_c125779b94af8d 187-208,215-217,219-241
+  s_288cc0dfb82db8::t_38809a2074f20f 280-282
+apps/dashboard/hooks/use-families-draft-flow.ts
+  s_288cc0dfb82db8::t_3e3e8a30c874d2 388,394-407
+apps/dashboard/components/onboarding/score-role.tsx
+  s_288cc0dfb82db8::t_1ea3541ba3a343 153-164,171-172
+  s_288cc0dfb82db8::t_9be4c6cc0a6181 91-98,105-107,113-115
+packages/i18n/messages/da.json
+  s_288cc0dfb82db8::t_9f11c17ca1733b 379-381
+packages/i18n/messages/nb.json
+  s_288cc0dfb82db8::t_3adb43c112822c 379-381
+packages/i18n/messages/sv.json
+  s_288cc0dfb82db8::t_85c5f324ddd377 379-381
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "53fb63fb5b15e3304c4af84cf9f1020db82b73ad",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
