@@ -1,0 +1,21 @@
+apps/dashboard/components/onboarding/families-step.tsx
+  s_288cc0dfb82db8::t_723fac16f088a0 5,18,25-27,43-69,72,80-84,173,181
+apps/dashboard/hooks/use-families-draft-flow.ts
+  s_288cc0dfb82db8::t_c1e50760f90f0b 1-477
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "e181fcdc1de575f2c1d24b657a024d42eb4ebc57",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
