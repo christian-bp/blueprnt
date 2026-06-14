@@ -2,7 +2,6 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
 import {
   Card,
   CardContent,
@@ -14,7 +13,6 @@ import { useQuery } from "convex/react"
 import { motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
-import Link from "next/link"
 import { SPRING } from "@/lib/motion"
 
 // The reveal step after the last criterion: the FIRST place score and band
@@ -133,9 +131,6 @@ export function RatingResult({
                 )}
               </div>
             )}
-            <Button asChild>
-              <Link href={`/roles/${roleId}`}>{t("backToRole")}</Link>
-            </Button>
           </CardContent>
         </Card>
       </motion.div>

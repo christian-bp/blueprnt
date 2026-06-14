@@ -129,9 +129,13 @@ describe("RoleAiPanel", () => {
       // Label from assessment.role.*
       expect(screen.getByText(roleLabels.purpose)).toBeDefined()
       expect(screen.getByText(roleLabels.responsibilities)).toBeDefined()
-      // Suggested text values
+      // Purpose stays prose.
       expect(screen.getByText("Build reliable software")).toBeDefined()
-      expect(screen.getByText("Code review and feature delivery")).toBeDefined()
+      // Responsibilities preview as a bulleted list (one item per line).
+      const items = screen.getAllByRole("listitem")
+      expect(items.map((li) => li.textContent)).toContain(
+        "Code review and feature delivery"
+      )
     })
 
     it("defaults all checkboxes to checked", () => {

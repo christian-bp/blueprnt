@@ -11,6 +11,7 @@ import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
+import { ResponsibilitiesList } from "@/components/roles/responsibilities-list"
 import { useSuggestionFlow } from "@/hooks/use-suggestion-flow"
 import { useSuggestionSelection } from "@/hooks/use-suggestion-selection"
 import { roleProfileValueSchema } from "@/lib/suggestion-schemas"
@@ -107,9 +108,21 @@ export function RoleAiPanel({
                   />
                   <div className="min-w-0 space-y-1">
                     <Label htmlFor={checkboxId}>{tRole(field)}</Label>
-                    <p className="whitespace-pre-line text-muted-foreground text-sm">
-                      {profile[field]}
-                    </p>
+                    {/* Responsibilities are one-per-line: preview them as a
+                        bulleted list, the same as the read-only profile. */}
+                    {field === "responsibilities" ? (
+                      // suggestedFields already filters to string values; the
+                      // fallback only satisfies the indexed-access type.
+                      // Muted to match the purpose row below (both are drafts).
+                      <ResponsibilitiesList
+                        value={profile[field] ?? ""}
+                        className="text-muted-foreground"
+                      />
+                    ) : (
+                      <p className="whitespace-pre-line text-muted-foreground text-sm">
+                        {profile[field]}
+                      </p>
+                    )}
                   </div>
                 </li>
               )

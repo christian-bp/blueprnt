@@ -18,6 +18,7 @@ import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { MorphPopover } from "@/components/morph-popover"
 import { FamilyPicker } from "@/components/roles/family-picker"
+import { ResponsibilitiesList } from "@/components/roles/responsibilities-list"
 import { RoleAiPanel } from "@/components/roles/role-ai-panel"
 
 // Structural subset of getRole used by this card.
@@ -218,12 +219,21 @@ export function RoleProfileCard({
                 onChange={(event) => setField(row.key, event.target.value)}
               />
             ) : row.value.trim().length > 0 ? (
-              <p
-                id={`profile-${row.key}`}
-                className="whitespace-pre-line text-sm"
-              >
-                {row.value}
-              </p>
+              // Responsibilities are one-per-line, so render them as a real
+              // bulleted list; purpose stays prose in a pre-line paragraph.
+              row.key === "responsibilities" ? (
+                <ResponsibilitiesList
+                  id={`profile-${row.key}`}
+                  value={row.value}
+                />
+              ) : (
+                <p
+                  id={`profile-${row.key}`}
+                  className="whitespace-pre-line text-sm"
+                >
+                  {row.value}
+                </p>
+              )
             ) : (
               <p
                 id={`profile-${row.key}`}

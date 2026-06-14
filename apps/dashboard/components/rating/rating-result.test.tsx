@@ -100,12 +100,6 @@ describe("RatingResult", () => {
     expect(screen.getByText(labels.bandHighest)).toBeDefined()
   })
 
-  it("renders the back-to-role link with the correct href", () => {
-    renderResult("org-1", "role-abc")
-    const link = screen.getByRole("link", { name: labels.backToRole })
-    expect(link.getAttribute("href")).toBe("/roles/role-abc")
-  })
-
   it("hides the anchor comparison when there are no active anchors", () => {
     anchorList = [
       { roleId: "a-1", title: "Retired", expectedBand: 2, status: "replaced" },

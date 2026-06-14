@@ -1,6 +1,7 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
+import { Button } from "@workspace/ui/components/button"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
@@ -59,8 +60,17 @@ export default function RatePage(props: {
     )
   }
 
+  // RatingResult is a pure reveal; this host owns the back-to-role nav below
+  // it (the onboarding host owns its own back-to-your-roles button instead).
   if (finished) {
-    return <RatingResult orgId={orgId} roleId={roleId} />
+    return (
+      <div className="mx-auto w-full max-w-2xl space-y-4">
+        <RatingResult orgId={orgId} roleId={roleId} />
+        <Button asChild variant="outline">
+          <Link href={`/roles/${roleId}`}>{t("result.backToRole")}</Link>
+        </Button>
+      </div>
+    )
   }
 
   return (

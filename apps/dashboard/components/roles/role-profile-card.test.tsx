@@ -71,10 +71,13 @@ describe("RoleProfileCard", () => {
     cleanup()
   })
 
-  it("renders read mode with the purpose and responsibilities text, no inputs", () => {
+  it("renders read mode with the purpose text and responsibilities list, no inputs", () => {
     renderCard(makeRole())
     expect(screen.getByText("Builds the product")).toBeDefined()
-    expect(screen.getByText("Implementation")).toBeDefined()
+    // Responsibilities render as a bulleted list (one item per line), not a
+    // paragraph.
+    const items = screen.getAllByRole("listitem")
+    expect(items.map((li) => li.textContent)).toContain("Implementation")
     // No textbox inputs in read mode.
     expect(
       screen.queryByRole("textbox", { name: roleLabels.purpose })
