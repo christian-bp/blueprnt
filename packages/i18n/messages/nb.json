@@ -48,7 +48,7 @@
     "assessment": "Vurdering",
     "rating": "Karakter",
     "motivation": "Begrunnelse",
-    "score": "Totalpoeng",
+    "score": "Vekting",
     "band": "Bånd",
     "anchorRole": "Ankerrolle",
     "aiSuggestion": "AI-forslag",
@@ -221,7 +221,7 @@
       "saveError": "Vurderingen kunne ikke lagres. Prøv igjen.",
       "result": {
         "heading": "Resultat",
-        "scoreLabel": "Totalpoeng",
+        "scoreLabel": "Vekting",
         "bandLabel": "Bånd",
         "bandHighest": "Bånd 1 er det høyeste båndet.",
         "computing": "Beregner resultatet",
@@ -235,7 +235,7 @@
     },
     "results": {
       "heading": "Resultater",
-      "description": "Totalpoeng og båndutfall beregnes alltid direkte fra gjeldende modell og vurderinger.",
+      "description": "Vekting og båndutfall beregnes alltid direkte fra gjeldende modell og vurderinger.",
       "bandsHeading": "Båndoversikt",
       "bandHighest": "Bånd 1 er det høyeste båndet.",
       "bandRow": "Bånd {band}",
@@ -244,7 +244,7 @@
         "title": "Tittel",
         "track": "Track",
         "status": "Status",
-        "score": "Totalpoeng",
+        "score": "Vekting",
         "band": "Bånd",
         "progress": "{rated} av {total} vurdert"
       },
@@ -472,7 +472,7 @@
     },
     "help": {
       "criterionLabel": "Hva er et kriterium?",
-      "criterionBody": "Et kriterium er noe hver rolle vurderes mot, for eksempel omfang eller kompleksitet. Ankertekster beskriver hva vurderingene 0 til 5 betyr for det, og vektpoengene avgjør hvor mye det teller i totalpoengsummen.",
+      "criterionBody": "Et kriterium er noe hver rolle vurderes mot, for eksempel omfang eller kompleksitet. Ankertekster beskriver hva vurderingene 0 til 5 betyr for det, og vektpoengene avgjør hvor mye det teller i den samlede vektingen.",
       "anchorsLabel": "Hvordan fungerer vurderingsnivåer?",
       "anchorsBody": "Dette er de seks nivåene, 0 til 5, for dette kriteriet. Hvert nivå beskriver hvordan en rolle ser ut på det nivået: skriv dem konkrete og rollefokuserte, tydelig stigende fra 0 (forekommer ikke) til 5 (det sterkeste rimelige uttrykket), slik at to vurderere som leser samme jobbprofil lander på samme karakter. Vurderingsnivåer er tekster på ett enkelt kriterium; en ankerrolle er en hel referanserolle som brukes til å sammenligne vurderinger.",
       "anchorRoleLabel": "Hva er en ankerrolle?",
@@ -480,19 +480,19 @@
       "trackLabel": "Hva er en track?",
       "trackBody": "En track er typen jobb, for eksempel individuell spesialist eller leder. Den settes på rollen og grupperer roller med samme slags ansvar. Den sier ingenting om senioritet eller hvor høyt rollen havner.",
       "familyLabel": "Hva er en rollefamilie?",
-      "familyBody": "En rollefamilie grupperer roller som deler samme slags arbeid, som Teknologi eller Salg. Familier organiserer rolleregisteret og resultatfilteret; de påvirker aldri poengsummen.",
+      "familyBody": "En rollefamilie grupperer roller som deler samme slags arbeid, som Teknologi eller Salg. Familier organiserer rolleregisteret og resultatfilteret; de påvirker aldri vektingen.",
       "weightPointsLabel": "Hvordan fungerer vektpoeng?",
       "weightPointsBody": "Hvert kriterium får 1 til 5 vektpoeng fra ett fast budsjett for hele modellen, og prosentandelen beregnes fra poengene. Å gi ett kriterium mer vekt betyr derfor at andre teller relativt mindre. Nye kriterier starter på nøytrale 3.",
-      "scoreLabel": "Hvordan beregnes poengsum og bånd?",
-      "scoreBody": "Hvert kriterium vurderes 0 til 5 og vektes med sine vektpoeng; totalen normaliseres til en fast skala fra 0 til 100. Båndet følger deretter automatisk av poengsummen via modellens båndterskler, der bånd 1 er høyest. Ingen av dem kan settes manuelt.",
+      "scoreLabel": "Hvordan beregnes vekting og bånd?",
+      "scoreBody": "Hvert kriterium vurderes 0 til 5 og vektes med sine vektpoeng; totalen normaliseres til en fast skala fra 0 til 100, vektingen. Båndet følger deretter automatisk av vektingen via modellens båndterskler, der bånd 1 er høyest. Ingen av dem kan settes manuelt.",
       "blindRatingLabel": "Hvordan fungerer vurderingen?",
-      "blindRatingBody": "Velg ankerteksten som best matcher hva rollen krever, ikke hvordan den nåværende medarbeideren presterer. Vurderinger, poengsum og bånd holdes skjult til siste kriterium slik at hvert kriterium vurderes for seg; resultatet vises så snart alle kriterier er vurdert.",
+      "blindRatingBody": "Velg ankerteksten som best matcher hva rollen krever, ikke hvordan den nåværende medarbeideren presterer. Vurderinger, vekting og bånd holdes skjult til siste kriterium slik at hvert kriterium vurderes for seg; resultatet vises så snart alle kriterier er vurdert.",
       "onboardingScoreLabel": "Hva gjør en vurdering av en rolle?",
       "onboardingScoreBody": "Vurderingen bedømmer rollen mot hvert kriterium i modellen din. Nivået utledes fra vurderingene på en fast skala og settes aldri for hånd, så roller forblir sammenlignbare. Du vurderer ett kriterium om gangen uten å se det løpende resultatet.",
       "statusLabel": "Hva betyr statusene?",
       "statusBody": "En rolle går fra utkast til under gjennomgang til godkjent. Godkjenningen låser profilen og vurderingene som gjennomgått; gjenåpne rollen for å endre dem igjen. Statusen påvirker aldri det beregnede resultatet.",
       "familiesReviewLabel": "Hva er familier og tracks?",
-      "familiesReviewBody": "En rollefamilie grupperer roller som deler samme slags arbeid, som Teknologi eller Salg; familier organiserer registeret og påvirker aldri poengsummen. En track er typen jobb, for eksempel individuell spesialist eller leder; den sier ingenting om senioritet."
+      "familiesReviewBody": "En rollefamilie grupperer roller som deler samme slags arbeid, som Teknologi eller Salg; familier organiserer registeret og påvirker aldri vektingen. En track er typen jobb, for eksempel individuell spesialist eller leder; den sier ingenting om senioritet."
     }
   },
   "errors": {

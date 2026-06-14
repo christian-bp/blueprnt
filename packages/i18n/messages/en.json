@@ -48,7 +48,7 @@
     "assessment": "Assessment",
     "rating": "Rating",
     "motivation": "Motivation",
-    "score": "Score",
+    "score": "Weighting",
     "band": "Band",
     "anchorRole": "Anchor role",
     "aiSuggestion": "AI suggestion",
@@ -95,8 +95,8 @@
       "goModel": "View the model",
       "goResults": "View results",
       "continueScoring": {
-        "title": "Continue scoring",
-        "progress": "{scored} of {total} roles scored",
+        "title": "Continue evaluating",
+        "progress": "{scored} of {total} roles evaluated",
         "cta": "Go to roles"
       }
     },
@@ -221,7 +221,7 @@
       "saveError": "The rating could not be saved. Try again.",
       "result": {
         "heading": "Result",
-        "scoreLabel": "Score",
+        "scoreLabel": "Weighting",
         "bandLabel": "Band",
         "bandHighest": "Band 1 is the highest band.",
         "computing": "Deriving the result",
@@ -235,7 +235,7 @@
     },
     "results": {
       "heading": "Results",
-      "description": "Score and band outcome are always derived live from the current model and ratings.",
+      "description": "Weighting and band outcome are always derived live from the current model and ratings.",
       "bandsHeading": "Band overview",
       "bandHighest": "Band 1 is the highest band.",
       "bandRow": "Band {band}",
@@ -244,7 +244,7 @@
         "title": "Title",
         "track": "Track",
         "status": "Status",
-        "score": "Score",
+        "score": "Weighting",
         "band": "Band",
         "progress": "{rated} of {total} rated"
       },
@@ -330,7 +330,7 @@
         "industry": "Industry",
         "model": "Evaluation model",
         "families": "Role families",
-        "score": "Score your roles"
+        "score": "Evaluate your roles"
       },
       "families": {
         "heading": "Role families and roles at {name}",
@@ -363,27 +363,27 @@
         "ungroupedFamilyName": "Other roles"
       },
       "score": {
-        "forkHeading": "Your roles are ready. Want to score them now?",
-        "scoreNowCta": "Score now",
+        "forkHeading": "Your roles are ready. Want to evaluate them now?",
+        "scoreNowCta": "Evaluate now",
         "laterCta": "I'll do this later",
-        "scoreNowDescription": "Rate your roles now and see their results.",
+        "scoreNowDescription": "Evaluate your roles now and see their results.",
         "laterDescription": "Go to your dashboard and pick this up anytime.",
         "saveExitLine": "You can save and exit anytime and continue in your dashboard.",
         "saveExitCta": "Save and exit",
         "rolesHeading": "Your roles",
         "roleProgress": "{rated} of {total} criteria rated",
-        "scoreRoleCta": "Score this role",
-        "resumeRoleCta": "Continue scoring",
-        "roleDoneLabel": "Scored",
+        "scoreRoleCta": "Evaluate this role",
+        "resumeRoleCta": "Continue evaluating",
+        "roleDoneLabel": "Evaluated",
         "captureHeading": "First, describe {title}",
         "captureHeadingPrefilled": "First, review {title}",
         "captureHint": "A band needs a short written basis. Fill in the purpose and responsibilities to continue.",
-        "captureHintPrefilled": "We drafted this purpose and these responsibilities from the role name. Edit anything before you score.",
+        "captureHintPrefilled": "We drafted this purpose and these responsibilities from the role name. Edit anything before you evaluate.",
         "purposeLabel": "Purpose",
         "responsibilitiesLabel": "Responsibilities",
-        "captureContinueCta": "Continue to scoring",
-        "doneHeading": "All roles scored",
-        "doneBody": "You have scored every role. You can refine them anytime in your dashboard.",
+        "captureContinueCta": "Continue to evaluation",
+        "doneHeading": "All roles evaluated",
+        "doneBody": "You have evaluated every role. You can refine them anytime in your dashboard.",
         "doneCta": "Go to the dashboard",
         "backToRolesCta": "Back to your roles",
         "saveError": "Something went wrong. Try again."
@@ -472,7 +472,7 @@
     },
     "help": {
       "criterionLabel": "What is a criterion?",
-      "criterionBody": "A criterion is something every role is rated against, like scope or complexity. Anchor texts describe what the ratings 0 to 5 mean for it, and its weight points decide how much it counts in the total score.",
+      "criterionBody": "A criterion is something every role is rated against, like scope or complexity. Anchor texts describe what the ratings 0 to 5 mean for it, and its weight points decide how much it counts in the overall weighting.",
       "anchorsLabel": "How do assessment levels work?",
       "anchorsBody": "These are the six levels, 0 to 5, for this criterion. Each one describes what a role looks like at that level: write them concrete and role-focused, clearly increasing from 0 (not present) to 5 (the strongest reasonable expression), so two assessors reading the same job profile land on the same rating. Assessment levels are texts on a single criterion; an anchor role is a whole reference role used to compare assessments.",
       "anchorRoleLabel": "What is an anchor role?",
@@ -480,19 +480,19 @@
       "trackLabel": "What is a track?",
       "trackBody": "A track is the kind of job, for example individual contributor or manager. It is set on the role and groups roles with the same kind of responsibility. It says nothing about seniority or how high the role lands.",
       "familyLabel": "What is a role family?",
-      "familyBody": "A role family groups roles that share the same kind of work, like Engineering or Sales. Families organize the role register and the results filter; they never affect the score.",
+      "familyBody": "A role family groups roles that share the same kind of work, like Engineering or Sales. Families organize the role register and the results filter; they never affect the weighting.",
       "weightPointsLabel": "How do weight points work?",
       "weightPointsBody": "Every criterion gets 1 to 5 weight points from one fixed budget for the whole model, and the percentage share is computed from the points. Giving one criterion more weight therefore means others count relatively less. New criteria start at the neutral 3.",
-      "scoreLabel": "How are the score and band computed?",
-      "scoreBody": "Every criterion is rated 0 to 5 and weighted by its weight points; the total is normalized to a fixed 0 to 100 scale. The band then follows automatically from the score via the model's band thresholds, where band 1 is the highest. Neither can be set by hand.",
+      "scoreLabel": "How are the weighting and band computed?",
+      "scoreBody": "Every criterion is rated 0 to 5 and weighted by its weight points; the total is normalized to a fixed 0 to 100 scale, the weighting. The band then follows automatically from the weighting via the model's band thresholds, where band 1 is the highest. Neither can be set by hand.",
       "blindRatingLabel": "How does rating work?",
-      "blindRatingBody": "Pick the anchor text that best matches what the role requires, not how the current employee performs. Ratings, score, and band stay hidden until the last criterion so each one is judged on its own; the result appears as soon as every criterion is rated.",
-      "onboardingScoreLabel": "What does scoring a role do?",
-      "onboardingScoreBody": "Scoring rates the role against each criterion in your model. The band is derived from those ratings on a fixed scale, never set by hand, so roles stay comparable. You rate one criterion at a time without seeing the running result.",
+      "blindRatingBody": "Pick the anchor text that best matches what the role requires, not how the current employee performs. Ratings, weighting, and band stay hidden until the last criterion so each one is judged on its own; the result appears as soon as every criterion is rated.",
+      "onboardingScoreLabel": "What does evaluating a role do?",
+      "onboardingScoreBody": "Evaluating rates the role against each criterion in your model. The band is derived from those ratings on a fixed scale, never set by hand, so roles stay comparable. You rate one criterion at a time without seeing the running result.",
       "statusLabel": "What do the statuses mean?",
       "statusBody": "A role moves from draft to in review to approved. Approving locks the profile and the ratings as reviewed; reopen the role to change them again. The status never affects the computed result.",
       "familiesReviewLabel": "What are families and tracks?",
-      "familiesReviewBody": "A role family groups roles that share the same kind of work, like Engineering or Sales; families organize the register and never affect the score. A track is the kind of job, for example individual contributor or manager; it says nothing about seniority."
+      "familiesReviewBody": "A role family groups roles that share the same kind of work, like Engineering or Sales; families organize the register and never affect the weighting. A track is the kind of job, for example individual contributor or manager; it says nothing about seniority."
     }
   },
   "errors": {

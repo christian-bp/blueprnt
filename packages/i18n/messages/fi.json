@@ -48,7 +48,7 @@
     "assessment": "Arviointi",
     "rating": "Arvosana",
     "motivation": "Perustelu",
-    "score": "Kokonaispisteet",
+    "score": "Painotus",
     "band": "Vaativuusluokka",
     "anchorRole": "Ankkurirooli",
     "aiSuggestion": "Tekoälyehdotus",
@@ -221,7 +221,7 @@
       "saveError": "Arviota ei voitu tallentaa. Yritä uudelleen.",
       "result": {
         "heading": "Tulos",
-        "scoreLabel": "Kokonaispisteet",
+        "scoreLabel": "Painotus",
         "bandLabel": "Vaativuusluokka",
         "bandHighest": "Luokka 1 on korkein luokka.",
         "computing": "Lasketaan tulosta",
@@ -235,7 +235,7 @@
     },
     "results": {
       "heading": "Tulokset",
-      "description": "Kokonaispisteet ja luokkatulos lasketaan aina reaaliajassa nykyisen mallin ja arvioiden perusteella.",
+      "description": "Painotus ja luokkatulos lasketaan aina reaaliajassa nykyisen mallin ja arvioiden perusteella.",
       "bandsHeading": "Luokkayhteenveto",
       "bandHighest": "Luokka 1 on korkein luokka.",
       "bandRow": "Luokka {band}",
@@ -244,7 +244,7 @@
         "title": "Tehtävänimike",
         "track": "Track",
         "status": "Tila",
-        "score": "Kokonaispisteet",
+        "score": "Painotus",
         "band": "Vaativuusluokka",
         "progress": "{rated} / {total} arvioitu"
       },
@@ -472,7 +472,7 @@
     },
     "help": {
       "criterionLabel": "Mikä kriteeri on?",
-      "criterionBody": "Kriteeri on asia, jota vasten jokainen rooli arvioidaan, esimerkiksi laajuus tai monimutkaisuus. Ankkuritekstit kuvaavat, mitä arviot 0-5 sen kohdalla tarkoittavat, ja sen painopisteet ratkaisevat, kuinka paljon se painaa kokonaispisteissä.",
+      "criterionBody": "Kriteeri on asia, jota vasten jokainen rooli arvioidaan, esimerkiksi laajuus tai monimutkaisuus. Ankkuritekstit kuvaavat, mitä arviot 0-5 sen kohdalla tarkoittavat, ja sen painopisteet ratkaisevat, kuinka paljon se painaa kokonaispainotuksessa.",
       "anchorsLabel": "Miten arviointitasot toimivat?",
       "anchorsBody": "Nämä ovat tämän kriteerin kuusi tasoa, 0:sta 5:een. Jokainen taso kuvaa, miltä rooli näyttää sillä tasolla: kirjoita niistä konkreettisia ja rooliin keskittyviä, selvästi nousevia arvosta 0 (ei esiinny) arvoon 5 (vahvin kohtuullinen ilmentymä), jotta kaksi arvioijaa, jotka lukevat saman tehtäväprofiilin, päätyvät samaan arvosanaan. Arviointitasot ovat yhden kriteerin tekstejä; ankkurirooli on kokonainen vertailurooli, jota käytetään arviointien vertaamiseen.",
       "anchorRoleLabel": "Mikä on ankkurirooli?",
@@ -480,19 +480,19 @@
       "trackLabel": "Mikä on track?",
       "trackBody": "Track on työn tyyppi, esimerkiksi yksilöasiantuntija tai esihenkilö. Se asetetaan roolille ja ryhmittelee roolit, joilla on samanlainen vastuu. Se ei kerro mitään senioriteetista tai siitä, kuinka korkealle rooli sijoittuu.",
       "familyLabel": "Mikä on rooliperhe?",
-      "familyBody": "Rooliperhe ryhmittelee roolit, jotka jakavat samanlaisen työn, kuten Teknologia tai Myynti. Perheet järjestävät rooliluettelon ja tulosten suodattimen; ne eivät koskaan vaikuta pisteisiin.",
+      "familyBody": "Rooliperhe ryhmittelee roolit, jotka jakavat samanlaisen työn, kuten Teknologia tai Myynti. Perheet järjestävät rooliluettelon ja tulosten suodattimen; ne eivät koskaan vaikuta painotukseen.",
       "weightPointsLabel": "Miten painopisteet toimivat?",
       "weightPointsBody": "Jokainen kriteeri saa 1-5 painopistettä koko mallin yhteisestä kiinteästä budjetista, ja prosenttiosuus lasketaan pisteistä. Yhden kriteerin painon nostaminen tarkoittaa siksi, että muut painavat suhteessa vähemmän. Uudet kriteerit alkavat neutraalista 3:sta.",
-      "scoreLabel": "Miten pisteet ja luokka lasketaan?",
-      "scoreBody": "Jokainen kriteeri arvioidaan 0-5 ja painotetaan painopisteillään; summa normalisoidaan kiinteälle asteikolle 0-100. Luokka seuraa sitten automaattisesti pisteistä mallin luokkarajojen kautta, ja luokka 1 on korkein. Kumpaakaan ei voi asettaa käsin.",
+      "scoreLabel": "Miten painotus ja luokka lasketaan?",
+      "scoreBody": "Jokainen kriteeri arvioidaan 0-5 ja painotetaan painopisteillään; summa normalisoidaan kiinteälle asteikolle 0-100, painotukseksi. Luokka seuraa sitten automaattisesti painotuksesta mallin luokkarajojen kautta, ja luokka 1 on korkein. Kumpaakaan ei voi asettaa käsin.",
       "blindRatingLabel": "Miten arviointi toimii?",
-      "blindRatingBody": "Valitse ankkuriteksti, joka parhaiten vastaa roolin vaatimuksia, ei nykyisen työntekijän suoriutumista. Arviot, pisteet ja luokka pysyvät piilossa viimeiseen kriteeriin asti, jotta jokainen kriteeri arvioidaan erikseen; tulos näkyy heti, kun kaikki kriteerit on arvioitu.",
+      "blindRatingBody": "Valitse ankkuriteksti, joka parhaiten vastaa roolin vaatimuksia, ei nykyisen työntekijän suoriutumista. Arviot, painotus ja luokka pysyvät piilossa viimeiseen kriteeriin asti, jotta jokainen kriteeri arvioidaan erikseen; tulos näkyy heti, kun kaikki kriteerit on arvioitu.",
       "onboardingScoreLabel": "Mitä roolin arviointi tekee?",
       "onboardingScoreBody": "Arviointi vertaa roolia mallisi jokaiseen kriteeriin. Taso johdetaan arvioinneista kiinteällä asteikolla, eikä sitä koskaan aseteta käsin, joten roolit pysyvät vertailukelpoisina. Arvioit yhden kriteerin kerrallaan näkemättä juoksevaa tulosta.",
       "statusLabel": "Mitä tilat tarkoittavat?",
       "statusBody": "Rooli etenee luonnoksesta tarkistettavaksi ja hyväksytyksi. Hyväksyminen lukitsee profiilin ja arviot tarkistettuina; avaa rooli uudelleen muuttaaksesi niitä. Tila ei koskaan vaikuta laskettuun tulokseen.",
       "familiesReviewLabel": "Mitä perheet ja trackit ovat?",
-      "familiesReviewBody": "Rooliperhe ryhmittelee roolit, jotka jakavat samanlaisen työn, kuten Teknologia tai Myynti; perheet järjestävät luettelon eivätkä koskaan vaikuta pisteisiin. Track on työn tyyppi, esimerkiksi yksilöasiantuntija tai esihenkilö; se ei kerro mitään senioriteetista."
+      "familiesReviewBody": "Rooliperhe ryhmittelee roolit, jotka jakavat samanlaisen työn, kuten Teknologia tai Myynti; perheet järjestävät luettelon eivätkä koskaan vaikuta painotukseen. Track on työn tyyppi, esimerkiksi yksilöasiantuntija tai esihenkilö; se ei kerro mitään senioriteetista."
     }
   },
   "errors": {

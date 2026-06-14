@@ -48,7 +48,7 @@
     "assessment": "Vurdering",
     "rating": "Karakter",
     "motivation": "Begrundelse",
-    "score": "Samlet score",
+    "score": "Vægtning",
     "band": "Bånd",
     "anchorRole": "Ankerrolle",
     "aiSuggestion": "AI-forslag",
@@ -221,7 +221,7 @@
       "saveError": "Vurderingen kunne ikke gemmes. Prøv igen.",
       "result": {
         "heading": "Resultat",
-        "scoreLabel": "Samlet score",
+        "scoreLabel": "Vægtning",
         "bandLabel": "Bånd",
         "bandHighest": "Bånd 1 er det højeste bånd.",
         "computing": "Beregner resultatet",
@@ -235,7 +235,7 @@
     },
     "results": {
       "heading": "Resultater",
-      "description": "Samlet score og båndresultat beregnes altid direkte fra den aktuelle model og vurderinger.",
+      "description": "Vægtning og båndresultat beregnes altid direkte fra den aktuelle model og vurderinger.",
       "bandsHeading": "Båndoversigt",
       "bandHighest": "Bånd 1 er det højeste bånd.",
       "bandRow": "Bånd {band}",
@@ -244,7 +244,7 @@
         "title": "Titel",
         "track": "Track",
         "status": "Status",
-        "score": "Samlet score",
+        "score": "Vægtning",
         "band": "Bånd",
         "progress": "{rated} af {total} vurderet"
       },
@@ -472,7 +472,7 @@
     },
     "help": {
       "criterionLabel": "Hvad er et kriterium?",
-      "criterionBody": "Et kriterium er noget, hver rolle vurderes imod, for eksempel omfang eller kompleksitet. Ankertekster beskriver, hvad vurderingerne 0 til 5 betyder for det, og dets vægtpoint afgør, hvor meget det tæller i den samlede score.",
+      "criterionBody": "Et kriterium er noget, hver rolle vurderes imod, for eksempel omfang eller kompleksitet. Ankertekster beskriver, hvad vurderingerne 0 til 5 betyder for det, og dets vægtpoint afgør, hvor meget det tæller i den samlede vægtning.",
       "anchorsLabel": "Hvordan fungerer bedømmelsesniveauer?",
       "anchorsBody": "Dette er de seks niveauer, 0 til 5, for netop dette kriterium. Hvert niveau beskriver, hvordan en rolle ser ud på det niveau: skriv dem konkrete og rollefokuserede, tydeligt stigende fra 0 (forekommer ikke) til 5 (det stærkeste rimelige udtryk), så to bedømmere, der læser samme jobprofil, lander på samme karakter. Bedømmelsesniveauer er tekster på et enkelt kriterium; en ankerrolle er en hel referencerolle, der bruges til at sammenligne vurderinger.",
       "anchorRoleLabel": "Hvad er en ankerrolle?",
@@ -480,19 +480,19 @@
       "trackLabel": "Hvad er en track?",
       "trackBody": "En track er typen af job, for eksempel individuel specialist eller leder. Den sættes på rollen og grupperer roller med samme slags ansvar. Den siger intet om senioritet eller hvor højt rollen lander.",
       "familyLabel": "Hvad er en rollefamilie?",
-      "familyBody": "En rollefamilie grupperer roller, der deler samme slags arbejde, som Teknologi eller Salg. Familier organiserer rolleregisteret og resultatfilteret; de påvirker aldrig pointtallet.",
+      "familyBody": "En rollefamilie grupperer roller, der deler samme slags arbejde, som Teknologi eller Salg. Familier organiserer rolleregisteret og resultatfilteret; de påvirker aldrig vægtningen.",
       "weightPointsLabel": "Hvordan fungerer vægtpoint?",
       "weightPointsBody": "Hvert kriterium får 1 til 5 vægtpoint fra ét fast budget for hele modellen, og procentandelen beregnes ud fra pointene. At give ét kriterium mere vægt betyder derfor, at andre tæller relativt mindre. Nye kriterier starter på neutrale 3.",
-      "scoreLabel": "Hvordan beregnes pointtal og bånd?",
-      "scoreBody": "Hvert kriterium vurderes 0 til 5 og vægtes med sine vægtpoint; totalen normaliseres til en fast skala fra 0 til 100. Båndet følger derefter automatisk af pointtallet via modellens båndtærskler, hvor bånd 1 er højest. Ingen af dem kan sættes manuelt.",
+      "scoreLabel": "Hvordan beregnes vægtning og bånd?",
+      "scoreBody": "Hvert kriterium vurderes 0 til 5 og vægtes med sine vægtpoint; totalen normaliseres til en fast skala fra 0 til 100, vægtningen. Båndet følger derefter automatisk af vægtningen via modellens båndtærskler, hvor bånd 1 er højest. Ingen af dem kan sættes manuelt.",
       "blindRatingLabel": "Hvordan fungerer vurderingen?",
-      "blindRatingBody": "Vælg ankerteksten, der bedst matcher hvad rollen kræver, ikke hvordan den nuværende medarbejder præsterer. Vurderinger, pointtal og bånd holdes skjult indtil sidste kriterium, så hvert kriterium bedømmes for sig; resultatet vises, så snart alle kriterier er vurderet.",
+      "blindRatingBody": "Vælg ankerteksten, der bedst matcher hvad rollen kræver, ikke hvordan den nuværende medarbejder præsterer. Vurderinger, vægtning og bånd holdes skjult indtil sidste kriterium, så hvert kriterium bedømmes for sig; resultatet vises, så snart alle kriterier er vurderet.",
       "onboardingScoreLabel": "Hvad gør en vurdering af en rolle?",
       "onboardingScoreBody": "Vurderingen bedømmer rollen ud fra hvert kriterium i din model. Niveauet udledes af vurderingerne på en fast skala og sættes aldrig i hånden, så roller forbliver sammenlignelige. Du vurderer ét kriterium ad gangen uden at se det løbende resultat.",
       "statusLabel": "Hvad betyder statusserne?",
       "statusBody": "En rolle går fra udkast til under gennemsyn til godkendt. Godkendelsen låser profilen og vurderingerne som gennemgået; genåbn rollen for at ændre dem igen. Statussen påvirker aldrig det beregnede resultat.",
       "familiesReviewLabel": "Hvad er familier og tracks?",
-      "familiesReviewBody": "En rollefamilie grupperer roller, der deler samme slags arbejde, som Teknologi eller Salg; familier organiserer registeret og påvirker aldrig pointtallet. En track er typen af job, for eksempel individuel specialist eller leder; den siger intet om senioritet."
+      "familiesReviewBody": "En rollefamilie grupperer roller, der deler samme slags arbejde, som Teknologi eller Salg; familier organiserer registeret og påvirker aldrig vægtningen. En track er typen af job, for eksempel individuel specialist eller leder; den siger intet om senioritet."
     }
   },
   "errors": {

@@ -26,7 +26,7 @@ En kort fritextförklaring till ett betyg. **Frivillig** — aldrig obligatorisk
 _Undvik_: Kommentar (ok beskrivande), Anteckning
 
 **Poäng** *(kod: Score)*:
-Den viktade totalen för en roll, normaliserad till 0 till 100: 20 × Σ(betyg × viktpoäng) / Σ(viktpoäng), avrundad nedåt (ADR-0004). Max är alltid 100 oavsett antal kriterier. Mappas till ett band via bandtrösklarna. UI-etiketten är "Totalpoäng" (i18n); kanonisk term i tal och kod är Poäng/Score.
+Den viktade totalen för en roll, normaliserad till 0 till 100: 20 × Σ(betyg × viktpoäng) / Σ(viktpoäng), avrundad nedåt (ADR-0004). Max är alltid 100 oavsett antal kriterier. Mappas till ett band via bandtrösklarna. UI-etiketten är "Viktning" (en: Weighting; i18n); kanonisk term i tal och kod är Poäng/Score. UI-etiketten "Viktning" överlappar medvetet med "viktning", processen att vikta kriterierna med viktpoäng (se evaluation-model/viktning-poangbudget.md): ett produktbeslut, inte en sammanblandning av begreppen.
 _Undvik_: Total, Betyg, Viktpoäng (kriteriets vikt, se Värderingsmodell-ordlistan)
 
 **Bandutfall** *(kod: Band outcome)*:
@@ -55,7 +55,7 @@ _Undvik_: AI-svar, Automatiskt värde (det är ett *förslag* tills HR bekräfta
 | `assessment.assessment` | Värdering | Assessment |
 | `assessment.rating` | Betyg | Rating |
 | `assessment.motivation` | Motivering | Motivation |
-| `assessment.score` | Totalpoäng | Score |
+| `assessment.score` | Viktning | Weighting |
 | `assessment.band` | Band | Band |
 | `assessment.anchorRole` | Ankarroll | Anchor role |
 | `assessment.aiSuggestion` | AI-förslag | AI suggestion |

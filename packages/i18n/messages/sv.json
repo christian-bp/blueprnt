@@ -48,7 +48,7 @@
     "assessment": "Värdering",
     "rating": "Betyg",
     "motivation": "Motivering",
-    "score": "Totalpoäng",
+    "score": "Viktning",
     "band": "Band",
     "anchorRole": "Ankarroll",
     "aiSuggestion": "AI-förslag",
@@ -221,7 +221,7 @@
       "saveError": "Betyget kunde inte sparas. Försök igen.",
       "result": {
         "heading": "Resultat",
-        "scoreLabel": "Totalpoäng",
+        "scoreLabel": "Viktning",
         "bandLabel": "Band",
         "bandHighest": "Band 1 är det högsta bandet.",
         "computing": "Räknar fram resultatet",
@@ -235,7 +235,7 @@
     },
     "results": {
       "heading": "Resultat",
-      "description": "Totalpoäng och bandutfall räknas alltid fram live från aktuell modell och aktuella betyg.",
+      "description": "Viktning och bandutfall räknas alltid fram live från aktuell modell och aktuella betyg.",
       "bandsHeading": "Bandöversikt",
       "bandHighest": "Band 1 är det högsta bandet.",
       "bandRow": "Band {band}",
@@ -244,7 +244,7 @@
         "title": "Titel",
         "track": "Track",
         "status": "Status",
-        "score": "Totalpoäng",
+        "score": "Viktning",
         "band": "Band",
         "progress": "{rated} av {total} betygsatta"
       },
@@ -472,7 +472,7 @@
     },
     "help": {
       "criterionLabel": "Vad är ett kriterium?",
-      "criterionBody": "Ett kriterium är något varje roll betygsätts mot, till exempel omfång eller komplexitet. Ankartexter beskriver vad betygen 0 till 5 betyder för det, och dess viktpoäng avgör hur mycket det väger i totalpoängen.",
+      "criterionBody": "Ett kriterium är något varje roll betygsätts mot, till exempel omfång eller komplexitet. Ankartexter beskriver vad betygen 0 till 5 betyder för det, och dess viktpoäng avgör hur mycket det väger i den samlade viktningen.",
       "anchorsLabel": "Hur fungerar bedömningsnivåer?",
       "anchorsBody": "Det här är de sex nivåerna, 0 till 5, för det här kriteriet. Varje nivå beskriver hur en roll ser ut på den nivån: skriv dem konkreta och rollfokuserade, tydligt stigande från 0 (förekommer inte) till 5 (det starkaste rimliga uttrycket), så att två bedömare som läser samma jobbprofil landar i samma betyg. Bedömningsnivåer är texter på ett enskilt kriterium; en ankarroll är en hel referensroll som används för att jämföra bedömningar.",
       "anchorRoleLabel": "Vad är en ankarroll?",
@@ -480,19 +480,19 @@
       "trackLabel": "Vad är en track?",
       "trackBody": "En track är typen av jobb, till exempel individuell specialist eller chef. Den sätts på rollen och grupperar roller med samma slags ansvar. Den säger inget om senioritet eller hur högt rollen hamnar.",
       "familyLabel": "Vad är en rollfamilj?",
-      "familyBody": "En rollfamilj grupperar roller som delar samma slags arbete, som Teknik eller Sälj. Familjer organiserar rollregistret och resultatfiltret; de påverkar aldrig poängen.",
+      "familyBody": "En rollfamilj grupperar roller som delar samma slags arbete, som Teknik eller Sälj. Familjer organiserar rollregistret och resultatfiltret; de påverkar aldrig viktningen.",
       "weightPointsLabel": "Hur fungerar viktpoäng?",
       "weightPointsBody": "Varje kriterium får 1 till 5 viktpoäng ur en fast budget för hela modellen, och procentandelen beräknas från poängen. Att ge ett kriterium mer vikt innebär därför att andra räknas relativt mindre. Nya kriterier börjar på neutrala 3.",
-      "scoreLabel": "Hur beräknas poäng och band?",
-      "scoreBody": "Varje kriterium betygsätts 0 till 5 och viktas med sina viktpoäng; totalen normaliseras till en fast skala 0 till 100. Bandet följer sedan automatiskt av poängen via modellens bandtrösklar, där band 1 är högst. Inget av dem kan sättas för hand.",
+      "scoreLabel": "Hur beräknas viktning och band?",
+      "scoreBody": "Varje kriterium betygsätts 0 till 5 och viktas med sina viktpoäng; totalen normaliseras till en fast skala 0 till 100, viktningen. Bandet följer sedan automatiskt av viktningen via modellens bandtrösklar, där band 1 är högst. Inget av dem kan sättas för hand.",
       "blindRatingLabel": "Hur fungerar betygsättningen?",
-      "blindRatingBody": "Välj ankartexten som bäst matchar vad rollen kräver, inte hur nuvarande medarbetare presterar. Betyg, poäng och band hålls dolda till sista kriteriet så att varje kriterium bedöms för sig; resultatet visas så snart alla kriterier är betygsatta.",
+      "blindRatingBody": "Välj ankartexten som bäst matchar vad rollen kräver, inte hur nuvarande medarbetare presterar. Betyg, viktning och band hålls dolda till sista kriteriet så att varje kriterium bedöms för sig; resultatet visas så snart alla kriterier är betygsatta.",
       "onboardingScoreLabel": "Vad gör en värdering av en roll?",
       "onboardingScoreBody": "Värderingen bedömer rollen mot varje kriterium i din modell. Nivån härleds från bedömningarna på en fast skala och sätts aldrig för hand, så roller förblir jämförbara. Du bedömer ett kriterium i taget utan att se det löpande resultatet.",
       "statusLabel": "Vad betyder statusarna?",
       "statusBody": "En roll går från utkast till under granskning till godkänd. Godkännandet låser profilen och betygen som granskade; återöppna rollen för att ändra dem igen. Statusen påverkar aldrig det beräknade resultatet.",
       "familiesReviewLabel": "Vad är familjer och tracks?",
-      "familiesReviewBody": "En rollfamilj grupperar roller som delar samma slags arbete, som Teknik eller Sälj; familjer organiserar registret och påverkar aldrig poängen. En track är typen av jobb, till exempel individuell specialist eller chef; den säger inget om senioritet."
+      "familiesReviewBody": "En rollfamilj grupperar roller som delar samma slags arbete, som Teknik eller Sälj; familjer organiserar registret och påverkar aldrig viktningen. En track är typen av jobb, till exempel individuell specialist eller chef; den säger inget om senioritet."
     }
   },
   "errors": {
