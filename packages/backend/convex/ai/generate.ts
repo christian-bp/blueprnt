@@ -376,7 +376,13 @@ export async function generateRoleProfileBatch(
   const result = await generateText({
     model,
     output: Output.object({ schema: roleProfileBatchSchema }),
-    abortSignal: AbortSignal.timeout(60_000),
+    // Onboarding prefill runs several of these chunked calls close together, so
+    // the EU model's rate limit is the main failure mode. Let the SDK ride out
+    // a 429 with its exponential backoff (more attempts than the default 2),
+    // and give the call a longer abort window so the backoff can complete (each
+    // call is small, ~5 profiles, so the extra ceiling is only there for retries).
+    maxRetries: 5,
+    abortSignal: AbortSignal.timeout(120_000),
     prompt: [
       ...companyLines(context),
       `Draft a job profile for EACH of the following ${roles.length} roles. They share the company profile above; each line gives the role identity and an index:`,

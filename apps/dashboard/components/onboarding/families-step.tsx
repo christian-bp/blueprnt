@@ -211,9 +211,13 @@ export function FamiliesStep({
     const percent = total > 0 ? Math.round((done / total) * 100) : 0
     return (
       <div className="flex w-full max-w-md flex-col items-center gap-4 text-center">
-        <Spinner />
         <div className="space-y-1">
-          <p className="font-medium text-base">{t("prefillingHeading")}</p>
+          {/* Spinner sits on the same row as the heading, not on a line of its
+              own (which read as a stray loose dot above the title). */}
+          <p className="flex items-center justify-center gap-2 font-medium text-base">
+            <Spinner />
+            {t("prefillingHeading")}
+          </p>
           <p className="text-muted-foreground text-sm">{t("prefillingBody")}</p>
         </div>
         <Progress value={percent} />
