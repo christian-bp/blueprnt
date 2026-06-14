@@ -1,0 +1,79 @@
+packages/i18n/messages/da.json
+  s_288cc0dfb82db8::t_b2386624a27ef0 486-487
+  s_288cc0dfb82db8::t_d9930423d130dc 475
+  s_288cc0dfb82db8::t_e96a27b10b5325 247
+  s_288cc0dfb82db8::t_c25f1f3229e08f 238
+  s_288cc0dfb82db8::t_97ab9aa76dd70b 224
+  s_288cc0dfb82db8::t_3fc712c9b51b2e 489
+  s_288cc0dfb82db8::t_5efd7b5edf86a1 51
+  s_288cc0dfb82db8::t_55d4ed7cbf2832 495
+  s_288cc0dfb82db8::t_d63d8d18a66c1a 483
+docs/contexts/assessment/CONTEXT.md
+  s_288cc0dfb82db8::t_706a5af5d91ba7 58
+  s_288cc0dfb82db8::t_2fe121375b4c52 29
+packages/i18n/messages/en.json
+  s_288cc0dfb82db8::t_b8ea6a9e4e2636 384
+  s_288cc0dfb82db8::t_573af8d0351858 489
+  s_288cc0dfb82db8::t_23832d2d593da6 366-367,369
+  s_288cc0dfb82db8::t_ccd4d117444dda 99
+  s_288cc0dfb82db8::t_b009b451eaa5a1 486-487
+  s_288cc0dfb82db8::t_f8f4ccb2c6b0ef 495
+  s_288cc0dfb82db8::t_f07110361b7521 98,376
+  s_288cc0dfb82db8::t_7ff096908c5a6d 238
+  s_288cc0dfb82db8::t_1d2d14682216ac 51
+  s_288cc0dfb82db8::t_c835f5a2f2e1eb 247
+  s_288cc0dfb82db8::t_0e5fd4594b632b 333
+  s_288cc0dfb82db8::t_49132b6bfb4975 475
+  s_288cc0dfb82db8::t_14a7535190788c 483
+  s_288cc0dfb82db8::t_43b4438f2f8045 385-386
+  s_288cc0dfb82db8::t_08131b5827433f 224
+  s_288cc0dfb82db8::t_5a289caf4538f6 490-491
+  s_288cc0dfb82db8::t_38c0f1ae7cea1e 375,377
+  s_288cc0dfb82db8::t_b7312dfb946b84 381
+packages/i18n/messages/sv.json
+  s_288cc0dfb82db8::t_8e92fb5d3c2629 238
+  s_288cc0dfb82db8::t_9688375992997b 483
+  s_288cc0dfb82db8::t_330b7f7f653eaa 495
+  s_288cc0dfb82db8::t_4f84407758a29f 51
+  s_288cc0dfb82db8::t_ad67db9986fa15 224
+  s_288cc0dfb82db8::t_b65d723a83127c 475
+  s_288cc0dfb82db8::t_3ce93f2d2e8bc4 486-487
+  s_288cc0dfb82db8::t_d1de8ae0e80cb2 247
+  s_288cc0dfb82db8::t_854c9a1e671293 489
+packages/i18n/messages/fi.json
+  s_288cc0dfb82db8::t_c737332c5cab25 247
+  s_288cc0dfb82db8::t_522c96312c3fd7 489
+  s_288cc0dfb82db8::t_78607d379e1c6c 486-487
+  s_288cc0dfb82db8::t_476e7f5c788f70 475
+  s_288cc0dfb82db8::t_55c89af3a3948a 224
+  s_288cc0dfb82db8::t_e91ab18254d1ec 51
+  s_288cc0dfb82db8::t_e2ee0d46a30b8b 238
+  s_288cc0dfb82db8::t_641ed787192569 483
+  s_288cc0dfb82db8::t_2e07fa211364a6 495
+packages/i18n/messages/nb.json
+  s_288cc0dfb82db8::t_1feecba38342ef 486-487
+  s_288cc0dfb82db8::t_35bd223708c32a 238
+  s_288cc0dfb82db8::t_4ff7357d5bec0d 483
+  s_288cc0dfb82db8::t_098d6443540dbd 495
+  s_288cc0dfb82db8::t_cca973a3e3587c 51
+  s_288cc0dfb82db8::t_3ad48f231210db 224
+  s_288cc0dfb82db8::t_1208c1bd40a68f 475
+  s_288cc0dfb82db8::t_fe061e4ce617e6 247
+  s_288cc0dfb82db8::t_2d6d8de4bb050b 489
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "586b2bccb2d8c810ac49383e3c6349613179340e",
+  "prompts": {},
+  "sessions": {
+    "s_288cc0dfb82db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4cb94eba-32b9-492e-8afe-035e167f6824",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
