@@ -69,6 +69,31 @@ must also be visible on keyboard focus (`focus-visible:`/`focus-within:`) and
 must force visibility while armed or busy (the component appends
 `opacity-100` itself). A control must never fade out mid-interaction.
 
+## 6. Removed items that hold layout stall a sibling FLIP
+
+**Symptom:** toggling "group by family" OFF in the Overview, the role chips
+moved part of the way, paused, then continued; toggling it ON was fluid.
+(`band-ladder.tsx` / `band-matrix.tsx`, 2026-06-15.)
+
+**Cause:** the family labels are full-width rows in the same `AnimatePresence`
+as the chips. With an `exit` fade, `AnimatePresence` keeps a removed label
+mounted (still occupying its row) for the length of the fade. The chips'
+`layout` FLIP therefore runs in two phases: first against the layout that
+still includes the fading label, then again when the label finally unmounts
+and its row collapses. Entering is single-phase because a freshly mounted
+element reserves its space at once, so the siblings FLIP only once. That
+enter/exit asymmetry is why grouping looked smooth but ungrouping stuttered.
+
+**Rule:** when a layout change is driven by items being REMOVED and the
+surviving items should reflow in one smooth pass, do not give the removed item
+an `exit` that lets it linger in the flow. Either unmount it immediately (no
+`exit`), or set `AnimatePresence mode="popLayout"` so the exiting item is
+popped out of flow (position absolute) and the siblings reflow at once. The
+trade-off of dropping `exit` is that the removed item disappears instantly
+instead of fading; use `popLayout` when you need both the fade and the smooth
+reflow, but check it does not disturb any shared-element (`layoutId`)
+transitions in the same tree.
+
 ## Standing conventions
 
 - The shared spring lives in `apps/dashboard/lib/motion.ts`; reuse it so
