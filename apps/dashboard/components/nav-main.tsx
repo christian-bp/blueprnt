@@ -8,6 +8,13 @@ import {
   CollapsibleTrigger,
 } from "@workspace/ui/components/collapsible"
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu"
+import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
@@ -16,11 +23,12 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@workspace/ui/components/sidebar"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
-// A nav entry is either a leaf link (url) or a collapsible group (items).
+// A nav entry is either a leaf link (url) or a parent group (items).
 export type NavItem = {
   title: string
   url?: string
@@ -34,10 +42,15 @@ const RAIL_CLASSES =
   "group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-1.5! [&_svg]:size-5 group-data-[collapsible=icon]:[&_span]:hidden"
 
 // Primary navigation. A leaf is active when its URL prefixes the path ("/"
-// matches exactly); a group is active (and open by default) when any child
-// is active.
+// matches exactly); a group is active when any child is active. A group keeps
+// its submenu reachable in BOTH sidebar states: inline (Collapsible) when the
+// rail is expanded, and as a flyout dropdown off the icon when the rail is
+// collapsed (the inline SidebarMenuSub is hidden in the icon rail, so a
+// submenu alone would leave the children unreachable there).
 export function NavMain({ items }: { items: NavItem[] }) {
   const pathname = usePathname()
+  const { state } = useSidebar()
+  const collapsed = state === "collapsed"
   const isActive = (url: string) =>
     url === "/" ? pathname === "/" : pathname.startsWith(url)
 
@@ -45,32 +58,73 @@ export function NavMain({ items }: { items: NavItem[] }) {
     <SidebarGroup>
       <SidebarGroupContent>
         <SidebarMenu>
-          {items.map((item) =>
-            item.items === undefined ? (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={item.url !== undefined && isActive(item.url)}
-                  tooltip={item.title}
-                  className={RAIL_CLASSES}
-                >
-                  <Link href={item.url ?? "#"}>
-                    {item.icon}
-                    <span>{item.title}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ) : (
+          {items.map((item) => {
+            if (item.items === undefined) {
+              return (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={item.url !== undefined && isActive(item.url)}
+                    tooltip={item.title}
+                    className={RAIL_CLASSES}
+                  >
+                    <Link href={item.url ?? "#"}>
+                      {item.icon}
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )
+            }
+
+            const subItems = item.items
+            const groupActive = subItems.some((sub) => isActive(sub.url))
+
+            // Collapsed icon rail: the inline submenu is hidden, so the parent
+            // icon opens a flyout dropdown with the children instead.
+            if (collapsed) {
+              return (
+                <SidebarMenuItem key={item.title}>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <SidebarMenuButton
+                        aria-label={item.title}
+                        isActive={groupActive}
+                        className={RAIL_CLASSES}
+                      >
+                        {item.icon}
+                        <span>{item.title}</span>
+                      </SidebarMenuButton>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      side="right"
+                      align="start"
+                      className="min-w-44"
+                    >
+                      <DropdownMenuLabel>{item.title}</DropdownMenuLabel>
+                      {subItems.map((sub) => (
+                        <DropdownMenuItem key={sub.title} asChild>
+                          <Link href={sub.url}>{sub.title}</Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </SidebarMenuItem>
+              )
+            }
+
+            // Expanded rail: inline collapsible submenu, open when active.
+            return (
               <Collapsible
                 key={item.title}
                 asChild
-                defaultOpen={item.items.some((sub) => isActive(sub.url))}
+                defaultOpen={groupActive}
                 className="group/collapsible"
               >
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton
-                      isActive={item.items.some((sub) => isActive(sub.url))}
+                      isActive={groupActive}
                       tooltip={item.title}
                       className={RAIL_CLASSES}
                     >
@@ -85,7 +139,7 @@ export function NavMain({ items }: { items: NavItem[] }) {
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <SidebarMenuSub>
-                      {item.items.map((sub) => (
+                      {subItems.map((sub) => (
                         <SidebarMenuSubItem key={sub.title}>
                           <SidebarMenuSubButton
                             asChild
@@ -102,7 +156,7 @@ export function NavMain({ items }: { items: NavItem[] }) {
                 </SidebarMenuItem>
               </Collapsible>
             )
-          )}
+          })}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

@@ -39,6 +39,9 @@ describe("RoleChip", () => {
     expect(link.getAttribute("href")).toBe("/roles/r1")
     // Weighting numbers are intentionally not shown on the Overview.
     expect(screen.queryByText("78")).toBeNull()
+    // The track renders as the short key, not the full name.
+    expect(screen.getByText("IC")).toBeDefined()
+    expect(screen.queryByText("Individual contributor")).toBeNull()
   })
 
   it("flags an anchor whose computed band deviates from the agreed band", () => {

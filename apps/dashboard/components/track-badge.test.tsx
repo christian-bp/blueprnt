@@ -29,6 +29,13 @@ describe("TrackBadge", () => {
     expect(screen.getByText("IC").className).toContain("md:hidden")
   })
 
+  it("renders only the short key when `short` is set", () => {
+    render(<TrackBadge trackKey="IC" name="Individual contributor" short />)
+    expect(screen.getByText("IC")).toBeDefined()
+    // The full name is only the title attribute, never visible text.
+    expect(screen.queryByText("Individual contributor")).toBeNull()
+  })
+
   it("falls back to the plain outline badge for unknown keys", () => {
     render(<TrackBadge trackKey="Specialist" name="Specialist Name" />)
     const badge = badgeAround("Specialist Name")

@@ -40,9 +40,10 @@ export function BandMatrix({
               <th
                 key={track.key}
                 scope="col"
+                title={track.name}
                 className="text-left font-medium text-muted-foreground text-xs uppercase tracking-wide"
               >
-                {track.name}
+                {track.key}
               </th>
             ))}
           </tr>
@@ -51,7 +52,7 @@ export function BandMatrix({
           {ranges.map((range) => (
             <tr key={range.band}>
               <th scope="row" className="text-left align-middle font-normal">
-                <div className="font-semibold text-sm">
+                <div className="whitespace-nowrap font-semibold text-sm">
                   {t("bandRow", { band: range.band })}
                 </div>
               </th>

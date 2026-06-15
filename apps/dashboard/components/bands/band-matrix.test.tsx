@@ -50,8 +50,8 @@ describe("BandMatrix", () => {
     const headers = screen
       .getAllByRole("columnheader")
       .map((h) => h.textContent)
-    // Empty corner cell first, then IC before M.
-    expect(headers).toEqual(["", "Individual contributor", "Manager"])
+    // Empty corner cell first, then IC before M (short track keys).
+    expect(headers).toEqual(["", "IC", "M"])
   })
 
   it("places a role in the cell where its band meets its track", () => {

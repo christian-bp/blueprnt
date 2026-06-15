@@ -35,7 +35,7 @@ export function RoleChip({ role }: { role: BandRoleRow }) {
         />
       )}
       <span className="truncate font-medium">{role.title}</span>
-      <TrackBadge trackKey={role.trackKey} name={role.trackName} />
+      <TrackBadge trackKey={role.trackKey} name={role.trackName} short />
       {deviates && role.anchor !== null && (
         <Badge
           variant="destructive"
