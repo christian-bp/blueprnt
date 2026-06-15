@@ -47,6 +47,11 @@ export function BandLadder({
     </motion.div>
   )
 
+  // No exit on the label: a full-width label that lingered (fading) while it
+  // still occupied its row would make the chips below it reflow in two phases
+  // on ungroup (move, pause, finish). Unmounting it instantly lets the chips
+  // do a single smooth FLIP to their flat positions. It still fades in on
+  // group, where a freshly mounted row reserves its space immediately.
   const familyLabel = (key: string, name: string) => (
     <motion.div
       key={`fam-${key}`}
@@ -54,7 +59,6 @@ export function BandLadder({
       transition={SPRING}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
       className="w-full pt-1 text-muted-foreground text-xs"
     >
       {name}

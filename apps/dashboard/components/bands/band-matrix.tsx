@@ -50,6 +50,8 @@ export function BandMatrix({
     </motion.div>
   )
 
+  // No exit on the label (see BandLadder): unmounting it instantly on ungroup
+  // lets the cell's chips reflow in a single smooth FLIP instead of two phases.
   const familyLabel = (key: string, name: string) => (
     <motion.div
       key={`fam-${key}`}
@@ -57,7 +59,6 @@ export function BandMatrix({
       transition={SPRING}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
       className="text-[10px] text-muted-foreground uppercase tracking-wide"
     >
       {name}
