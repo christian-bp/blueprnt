@@ -243,7 +243,7 @@
       "groupByFamily": "Grupper etter familie",
       "familiesShown": "{shown} av {total} familier",
       "selectAll": "Velg alle",
-      "clearAll": "TÃ¸m",
+      "clearAll": "Tøm",
       "bandRow": "Band {band}",
       "roleCount": "{count, plural, =1 {1 rolle} other {# roller}}",
       "bandEmpty": "Ingen roller i dette bandet",
