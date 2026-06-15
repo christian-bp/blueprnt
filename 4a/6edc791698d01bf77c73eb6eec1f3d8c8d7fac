@@ -1,0 +1,32 @@
+apps/dashboard/components/bands/band-matrix.tsx
+  s_22ed539ec698c7::t_0b0486243403d6 11-16,20,25
+apps/dashboard/lib/bands.test.ts
+  s_22ed539ec698c7::t_7f8e209ea97226 2
+  s_22ed539ec698c7::t_9e9a17da7226e6 38-56
+apps/dashboard/lib/bands.ts
+  s_22ed539ec698c7::t_df28e26dc47d54 42-59
+apps/dashboard/app/(app)/work/page.tsx
+  s_22ed539ec698c7::t_5168a50325ffb9 85-90
+  s_22ed539ec698c7::t_d3cddbd914bf25 155
+  s_22ed539ec698c7::t_fe380dd91db3d0 30
+apps/dashboard/components/bands/band-matrix.test.tsx
+  s_22ed539ec698c7::t_d2767ca7c44b4f 30-34,37-42
+  s_22ed539ec698c7::t_a5364b8f0377dc 6
+  s_22ed539ec698c7::t_552ccbaaf153dd 114-129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "4a6edc791698d01bf77c73eb6eec1f3d8c8d7fac",
+  "prompts": {},
+  "sessions": {
+    "s_22ed539ec698c7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdb6c602-6aa0-4ee1-b382-fc4b5e888ce4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
