@@ -1,0 +1,90 @@
+packages/i18n/messages/sv.json
+  s_22ed539ec698c7::t_da3a0cf180ba99 97
+  s_22ed539ec698c7::t_6e9650cef5bc04 237-241,243,245-252
+  s_22ed539ec698c7::t_3261bc394cc228 254
+  s_22ed539ec698c7::t_6fee21dc0cd937 73,75
+  s_22ed539ec698c7::t_a17ef1ff1d2d8c 498-500
+apps/dashboard/components/app-sidebar.tsx
+  s_22ed539ec698c7::t_ea09515bf6dd6a 17,23-26,28,33,35-38,50
+apps/dashboard/components/bands/role-chip.tsx
+  s_22ed539ec698c7::t_dceab0cf9659a1 1-54
+apps/dashboard/app/(app)/work/page.test.tsx
+  s_22ed539ec698c7::t_6e81774321e095 1-86
+apps/dashboard/components/bands/band-ladder.test.tsx
+  s_22ed539ec698c7::t_786dc3892b4501 1-58
+packages/backend/convex/assessment/results.ts
+  s_22ed539ec698c7::t_58d121719e3a51 29-35
+  s_22ed539ec698c7::t_742727f3645870 72-76
+  s_22ed539ec698c7::t_4549c0abae6855 93
+packages/i18n/messages/da.json
+  s_22ed539ec698c7::t_df9b19867798a3 73,75
+  s_22ed539ec698c7::t_36291073089e80 498-500
+  s_22ed539ec698c7::t_0de40d20520303 97
+  s_22ed539ec698c7::t_b57d085d720867 237-243,245-252
+  s_22ed539ec698c7::t_dac10a0dc206e6 254
+apps/dashboard/components/nav-main.tsx
+  s_22ed539ec698c7::t_4f938454e0a7ce 3-9,16-18,23-39,41-43,48-49,53,55,57,63-103,105
+apps/dashboard/lib/bands.ts
+  s_22ed539ec698c7::t_0cfc9693bae18e 1-32,41
+  s_22ed539ec698c7::t_37800605be4c99 33-37,39-40
+  s_22ed539ec698c7::t_c4c4898ca84d9e 38
+apps/dashboard/components/site-header.tsx
+  s_22ed539ec698c7::t_0fc410d5519c37 134-135
+  s_22ed539ec698c7::t_480e99c0251f09 51,53-54
+  s_22ed539ec698c7::t_17f6990dca0e90 30-31
+packages/i18n/messages/nb.json
+  s_22ed539ec698c7::t_dbefaf96c9edbf 254
+  s_22ed539ec698c7::t_bcc33117d4e697 97
+  s_22ed539ec698c7::t_01a418e22ca045 237-243,245-252
+  s_22ed539ec698c7::t_7d44ec0380fc67 73,75
+  s_22ed539ec698c7::t_8c98745b8b9a04 498-500
+apps/dashboard/components/site-header.test.tsx
+  s_22ed539ec698c7::t_76dafe5325e986 7-8
+  s_22ed539ec698c7::t_0e173c84962dae 42,45-46
+  s_22ed539ec698c7::t_64bdca90bb1750 140
+apps/dashboard/components/bands/band-matrix.test.tsx
+  s_22ed539ec698c7::t_aefb7f6a6b43ae 1-61,77
+  s_22ed539ec698c7::t_30cecbdec4b7b8 62-76
+apps/dashboard/components/bands/pending-roles.test.tsx
+  s_22ed539ec698c7::t_2b23f15fa25eb1 1-60
+packages/backend/convex/assessment/results.test.ts
+  s_22ed539ec698c7::t_f3c898cc9e9843 117,119-136,138-140,144,172
+  s_22ed539ec698c7::t_4401893937fa89 118,137,141-143,145-171
+apps/dashboard/app/(app)/page.tsx
+  s_22ed539ec698c7::t_6819c520a928bc 53-54,61-62
+apps/dashboard/components/bands/band-matrix.tsx
+  s_22ed539ec698c7::t_e92567812b1ea3 53,60
+  s_22ed539ec698c7::t_20a8a2378c3373 1-37,39-41,43-52,54-59,61-96
+  s_22ed539ec698c7::t_119aca6a2cb1b7 38,42
+packages/i18n/messages/fi.json
+  s_22ed539ec698c7::t_91c816ec59021b 97
+  s_22ed539ec698c7::t_483f4d13a80533 73,75
+  s_22ed539ec698c7::t_a67494c7e642a6 254
+  s_22ed539ec698c7::t_ec283385c9124a 498-500
+  s_22ed539ec698c7::t_5cfaf4a48d7be0 237-243,245-252
+packages/i18n/messages/en.json
+  s_22ed539ec698c7::t_28a13a37b88457 237-241,243,245-252
+  s_22ed539ec698c7::t_c2a734eb05711f 498-500
+  s_22ed539ec698c7::t_da84e464eaa574 97
+  s_22ed539ec698c7::t_d27dc63b2e8fb8 254
+  s_22ed539ec698c7::t_0b443c43592f87 73,75
+apps/dashboard/app/(app)/roles/families/[familyId]/page.tsx
+  s_22ed539ec698c7::t_9015b7432ca4a2 33
+  s_22ed539ec698c7::t_f8999a15e8b0b4 84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "c143ee1fa93372aac0d2a0703f2fedae5e70462d",
+  "prompts": {},
+  "sessions": {
+    "s_22ed539ec698c7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdb6c602-6aa0-4ee1-b382-fc4b5e888ce4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
