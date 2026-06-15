@@ -1,0 +1,42 @@
+packages/i18n/messages/fi.json
+  s_22ed539ec698c7::t_aaa20a0edcd336 243
+apps/dashboard/components/bands/band-ladder.test.tsx
+  s_22ed539ec698c7::t_9f91d2b3c05b17 30,33
+  s_22ed539ec698c7::t_70e412c530ece1 59-84
+apps/dashboard/components/bands/band-matrix.test.tsx
+  s_22ed539ec698c7::t_a1bb41ac725916 30,33
+  s_22ed539ec698c7::t_b8fe0605e2132f 77-104
+apps/dashboard/app/(app)/work/page.test.tsx
+  s_22ed539ec698c7::t_22755e419cf05e 86-97
+apps/dashboard/app/(app)/work/page.tsx
+  s_22ed539ec698c7::t_c13f6e4170b1c4 11,20,41-45,54,134-148,151-155,159-163
+packages/i18n/messages/en.json
+  s_22ed539ec698c7::t_aaa20a0edcd336 243
+packages/i18n/messages/sv.json
+  s_22ed539ec698c7::t_aaa20a0edcd336 243
+packages/i18n/messages/nb.json
+  s_22ed539ec698c7::t_aaa20a0edcd336 243
+apps/dashboard/components/bands/band-ladder.tsx
+  s_22ed539ec698c7::t_3b6535fa9917b6 8,25,29,32,36-38,40-49,81
+  s_22ed539ec698c7::t_2aca09529dbc12 10-21,39,50-63,79,86-94
+apps/dashboard/components/bands/band-matrix.tsx
+  s_22ed539ec698c7::t_2f4df5395ecb19 8,17-19,23,27,30,39-66,104-112
+packages/i18n/messages/da.json
+  s_22ed539ec698c7::t_aaa20a0edcd336 243
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "cb24dd07ef9fc0cadf25aef6ac58757541fc92ff",
+  "prompts": {},
+  "sessions": {
+    "s_22ed539ec698c7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdb6c602-6aa0-4ee1-b382-fc4b5e888ce4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
