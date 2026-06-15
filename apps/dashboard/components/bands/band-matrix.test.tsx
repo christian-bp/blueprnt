@@ -3,7 +3,7 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import { BandMatrix } from "@/components/bands/band-matrix"
-import type { BandRoleRow } from "@/lib/bands"
+import { type BandRoleRow, trackColumns } from "@/lib/bands"
 
 const BANDS = [
   { band: 1, minScore: 80 },
@@ -27,10 +27,19 @@ function role(overrides: Partial<BandRoleRow>): BandRoleRow {
   }
 }
 
-function renderMatrix(rows: BandRoleRow[], groupByFamily = false) {
+function renderMatrix(
+  rows: BandRoleRow[],
+  groupByFamily = false,
+  tracks = trackColumns(rows.filter((row) => row.band !== null))
+) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <BandMatrix bands={BANDS} rows={rows} groupByFamily={groupByFamily} />
+      <BandMatrix
+        bands={BANDS}
+        rows={rows}
+        tracks={tracks}
+        groupByFamily={groupByFamily}
+      />
     </NextIntlClientProvider>
   )
 }
@@ -101,5 +110,21 @@ describe("BandMatrix", () => {
     )
     expect(screen.getByText("Engineering")).toBeDefined()
     expect(screen.getByText("Sales")).toBeDefined()
+  })
+
+  it("keeps the columns and hatches every cell when all roles are filtered out", () => {
+    // The family filter can hide every role; the matrix must still show the
+    // grid (hatched), not collapse to nothing. Columns come from the
+    // unfiltered roles, so they survive an empty `rows`.
+    renderMatrix([], false, [
+      { key: "IC", name: "Individual contributor" },
+      { key: "M", name: "Manager" },
+    ])
+    const headers = screen
+      .getAllByRole("columnheader")
+      .map((h) => h.textContent)
+    expect(headers).toEqual(["", "IC", "M"])
+    // No roles to place: every cell is the hatched placeholder, no links.
+    expect(screen.queryByRole("link")).toBeNull()
   })
 })

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { bandRanges } from "./bands"
+import { bandRanges, trackColumns } from "./bands"
 
 describe("bandRanges", () => {
   it("derives [min,max] per band with band 1 topping out at 100", () => {
@@ -32,6 +32,25 @@ describe("bandRanges", () => {
     ).toEqual([
       { band: 1, min: 80, max: 100 },
       { band: 2, min: 50, max: 79 },
+    ])
+  })
+})
+
+describe("trackColumns", () => {
+  it("returns distinct tracks in IC, Lead, M order with unknowns last", () => {
+    expect(
+      trackColumns([
+        { trackKey: "M", trackName: "Manager" },
+        { trackKey: "IC", trackName: "Individual contributor" },
+        { trackKey: "M", trackName: "Manager" },
+        { trackKey: "X", trackName: "Other" },
+        { trackKey: "Lead", trackName: "Lead" },
+      ])
+    ).toEqual([
+      { key: "IC", name: "Individual contributor" },
+      { key: "Lead", name: "Lead" },
+      { key: "M", name: "Manager" },
+      { key: "X", name: "Other" },
     ])
   })
 })

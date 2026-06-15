@@ -39,3 +39,21 @@ export function bandRanges(
     }
   })
 }
+
+// Fixed V1 track order (ADR-0006); unknown future keys sort last.
+const TRACK_ORDER: Record<string, number> = { IC: 0, Lead: 1, M: 2 }
+
+// The matrix track columns, as { key, name }, sorted by the fixed track order.
+// Derive these from the UNFILTERED roles so the grid stays stable while the
+// family filter changes: hidden families leave hatched empty cells instead of
+// collapsing the column set (and an all-hidden filter still shows the full
+// hatched grid rather than nothing). Pure so it stays unit-testable.
+export function trackColumns(
+  rows: { trackKey: string; trackName: string }[]
+): { key: string; name: string }[] {
+  return [
+    ...new Map(rows.map((row) => [row.trackKey, row.trackName])).entries(),
+  ]
+    .sort((a, b) => (TRACK_ORDER[a[0]] ?? 99) - (TRACK_ORDER[b[0]] ?? 99))
+    .map(([key, name]) => ({ key, name }))
+}

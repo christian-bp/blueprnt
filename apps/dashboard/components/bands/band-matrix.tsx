@@ -7,34 +7,28 @@ import { type BandRoleRow, bandRanges } from "@/lib/bands"
 import { SPRING } from "@/lib/motion"
 import { groupByFamily as groupRowsByFamily } from "@/lib/role-groups"
 
-// The fixed V1 track order (ADR-0006). Columns are the tracks PRESENT in the
-// filtered rows, sorted by this order; unknown future keys sort last.
-const TRACK_ORDER: Record<string, number> = { IC: 0, Lead: 1, M: 2 }
-
 // Band x track matrix: bands down (Band 1 on top), tracks across. Each role
-// sits in the cell where its band meets its track, so the view shows how far
-// each track reaches. Same neutral-ink chips and inline anchor treatment as
-// the ladder. With groupByFamily on, the roles inside each cell cluster by
-// family (label + that family's chips); the chips keep their keys across the
-// toggle and flip to their new positions (layout="position"), labels fade.
+// sits in the cell where its band meets its track. The track columns are
+// passed in (derived from the UNFILTERED roles) so the grid stays stable as
+// the family filter changes: hidden families just leave hatched empty cells
+// rather than collapsing the grid (and an all-hidden filter still shows the
+// full hatched grid). Same neutral-ink chips, inline anchor treatment, and
+// group-by-family clustering as the ladder.
 export function BandMatrix({
   bands,
   rows,
+  tracks,
   groupByFamily = false,
 }: {
   bands: { band: number; minScore: number }[]
   rows: BandRoleRow[]
+  tracks: { key: string; name: string }[]
   groupByFamily?: boolean
 }) {
   const t = useTranslations("dashboard.bands")
   const tFamily = useTranslations("dashboard.roles.family")
   const ranges = bandRanges(bands)
   const placed = rows.filter((row) => row.band !== null)
-  const tracks = [
-    ...new Map(placed.map((row) => [row.trackKey, row.trackName])).entries(),
-  ]
-    .sort((a, b) => (TRACK_ORDER[a[0]] ?? 99) - (TRACK_ORDER[b[0]] ?? 99))
-    .map(([key, name]) => ({ key, name }))
 
   const renderChip = (role: BandRoleRow) => (
     <motion.div

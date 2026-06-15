@@ -27,6 +27,7 @@ import { FamilyFilter } from "@/components/bands/family-filter"
 import { PendingRoles } from "@/components/bands/pending-roles"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
+import { trackColumns } from "@/lib/bands"
 
 // Filter key for roles with no family (the "No family" option).
 const NO_FAMILY = "__none__"
@@ -81,6 +82,12 @@ export default function WorkOverviewPage() {
       : results.rows.filter(
           (row) => !hidden.has((row.familyId as string | null) ?? NO_FAMILY)
         )
+  // Matrix columns come from the UNFILTERED placed roles, so the grid stays
+  // put when families are filtered (hidden families leave hatched empty cells
+  // rather than collapsing the columns, even when everything is hidden).
+  const trackCols = trackColumns(
+    results.rows.filter((row) => row.band !== null)
+  )
 
   return (
     <div className="space-y-6">
@@ -145,6 +152,7 @@ export default function WorkOverviewPage() {
             <BandMatrix
               bands={results.bands}
               rows={filteredRows}
+              tracks={trackCols}
               groupByFamily={grouped}
             />
             <PendingRoles rows={filteredRows} />
