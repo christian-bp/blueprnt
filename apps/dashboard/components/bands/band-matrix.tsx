@@ -102,16 +102,23 @@ export function BandMatrix({
                   >
                     {cell.length === 0 ? (
                       // Empty cell: the same diagonal-hatch placeholder as the
-                      // ladder's empty bands. Decorative here (the row and
-                      // column headers carry the band and track), so
-                      // aria-hidden to avoid per-cell screen-reader noise.
+                      // ladder's empty bands. h-full so it matches the row's
+                      // tallest cell (a table cell stretches to the row height)
+                      // instead of a short strip; min-h-8 keeps a visible fill
+                      // when the whole band row is empty. Decorative (the row
+                      // and column headers carry the band and track), so
+                      // aria-hidden.
                       <div
                         aria-hidden="true"
-                        className="h-8 w-full rounded-md bg-[repeating-linear-gradient(-60deg,var(--border),var(--border)_1px,transparent_1px,transparent_6px)]"
+                        className="h-full min-h-8 w-full rounded-md bg-[repeating-linear-gradient(-60deg,var(--border),var(--border)_1px,transparent_1px,transparent_6px)]"
                       />
                     ) : (
-                      <div className="flex flex-col gap-2">
-                        <AnimatePresence initial={false}>
+                      // popLayout: chips the family filter removes pop out of
+                      // flow so the survivors reflow in a single pass instead
+                      // of two (docs/ui-animation.md rule 6); relative anchors
+                      // the popped chips within the cell.
+                      <div className="relative flex flex-col gap-2">
+                        <AnimatePresence initial={false} mode="popLayout">
                           {groupByFamily
                             ? groupRowsByFamily(cell).flatMap((group) => [
                                 familyLabel(
