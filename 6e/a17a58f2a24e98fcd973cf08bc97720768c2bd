@@ -1,0 +1,22 @@
+apps/dashboard/components/bands/band-matrix.test.tsx
+  s_22ed539ec698c7::t_30cecbdec4b7b8 62-76
+apps/dashboard/components/bands/band-matrix.tsx
+  s_22ed539ec698c7::t_e92567812b1ea3 53,60
+  s_22ed539ec698c7::t_119aca6a2cb1b7 38,42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "6ea17a58f2a24e98fcd973cf08bc97720768c2bd",
+  "prompts": {},
+  "sessions": {
+    "s_22ed539ec698c7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdb6c602-6aa0-4ee1-b382-fc4b5e888ce4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
