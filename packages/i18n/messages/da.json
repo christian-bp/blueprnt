@@ -70,10 +70,11 @@
   "dashboard": {
     "title": "blueprnt",
     "nav": {
+      "home": "Hjem",
       "overview": "Oversigt",
+      "work": "Arbejde",
       "roles": "Roller",
       "model": "Model",
-      "results": "Resultater",
       "signOut": "Log ud"
     },
     "breadcrumb": {
@@ -93,7 +94,7 @@
       "criteriaCard": "Kriterier i modellen",
       "goRoles": "Gå til roller",
       "goModel": "Vis modellen",
-      "goResults": "Vis resultater",
+      "goOverview": "Se oversigten",
       "continueScoring": {
         "title": "Fortsæt vurderingen",
         "progress": "{scored} af {total} roller vurderet",
@@ -233,29 +234,24 @@
       },
       "lockedExplanation": "Vurderingen er låst, fordi rollen er godkendt eller arkiveret. Genåbn rollen fra rollesiden for at vurdere igen."
     },
-    "results": {
-      "heading": "Resultater",
-      "description": "Vægtning og båndresultat beregnes altid direkte fra den aktuelle model og vurderinger.",
-      "bandsHeading": "Båndoversigt",
-      "bandHighest": "Bånd 1 er det højeste bånd.",
-      "bandRow": "Bånd {band}",
+    "bands": {
+      "heading": "Oversigt",
+      "description": "Bånd og rollerne i hvert bånd, udledt live fra den aktuelle model og vurderinger.",
+      "viewLadder": "Stige",
+      "viewMatrix": "Matrix",
+      "bandRow": "Band {band}",
+      "bandRange": "{min}–{max}",
       "roleCount": "{count, plural, =1 {1 rolle} other {# roller}}",
-      "table": {
-        "title": "Titel",
-        "track": "Track",
-        "status": "Status",
-        "score": "Vægtning",
-        "band": "Bånd",
-        "progress": "{rated} af {total} vurderet"
-      },
-      "empty": "Ingen roller at vise endnu. Opret en rolle og vurder den for at se resultater.",
+      "bandEmpty": "Ingen roller i dette bånd",
+      "pendingHeading": "Endnu ikke vurderet",
+      "pendingDescription": "Disse roller har intet bånd, før deres vurdering er fuldført.",
+      "pendingProgress": "{rated}/{total} vurderet",
+      "anchorLabel": "Ankerrolle",
+      "deviation": "≠ Band {band}",
+      "deviationLabel": "Det beregnede bånd afviger fra det aftalte bånd {band}",
+      "empty": "Ingen roller at vise endnu. Opret en rolle og vurder den for at se oversigten.",
       "emptyCta": "Opret en rolle",
-      "anchors": {
-        "heading": "Ankerroller",
-        "expectedBand": "Aftalt bånd",
-        "computedBand": "Beregnet bånd",
-        "mismatch": "Afviger fra det aftalte bånd"
-      }
+      "bandHighest": "Bånd 1 er det højeste bånd."
     },
     "auth": {
       "loading": "Kontrollerer din session",
@@ -499,7 +495,9 @@
       "statusLabel": "Hvad betyder statusserne?",
       "statusBody": "En rolle går fra udkast til under gennemsyn til godkendt. Godkendelsen låser profilen og vurderingerne som gennemgået; genåbn rollen for at ændre dem igen. Statussen påvirker aldrig det beregnede resultat.",
       "familiesReviewLabel": "Hvad er familier og tracks?",
-      "familiesReviewBody": "En rollefamilie grupperer roller, der deler samme slags arbejde, som Teknologi eller Salg; familier organiserer registeret og påvirker aldrig vægtningen. En track er typen af job, for eksempel individuel specialist eller leder; den siger intet om senioritet."
+      "familiesReviewBody": "En rollefamilie grupperer roller, der deler samme slags arbejde, som Teknologi eller Salg; familier organiserer registeret og påvirker aldrig vægtningen. En track er typen af job, for eksempel individuel specialist eller leder; den siger intet om senioritet.",
+      "pendingBandLabel": "Hvorfor har en rolle endnu intet bånd?",
+      "pendingBandBody": "En rolle får først et bånd, når alle kriterier er vurderet. Indtil vurderingen er fuldført har den ingen vægtning og intet bånd, så den venter på denne liste."
     }
   },
   "errors": {

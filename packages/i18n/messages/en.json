@@ -70,10 +70,11 @@
   "dashboard": {
     "title": "blueprnt",
     "nav": {
+      "home": "Home",
       "overview": "Overview",
+      "work": "Work",
       "roles": "Roles",
       "model": "Model",
-      "results": "Results",
       "signOut": "Sign out"
     },
     "breadcrumb": {
@@ -93,7 +94,7 @@
       "criteriaCard": "Criteria in the model",
       "goRoles": "Go to roles",
       "goModel": "View the model",
-      "goResults": "View results",
+      "goOverview": "View the overview",
       "continueScoring": {
         "title": "Continue evaluating",
         "progress": "{scored} of {total} roles evaluated",
@@ -233,29 +234,24 @@
       },
       "lockedExplanation": "The rating is locked because the role is approved or archived. Reopen the role from the role page to rate it again."
     },
-    "results": {
-      "heading": "Results",
-      "description": "Weighting and band outcome are always derived live from the current model and ratings.",
-      "bandsHeading": "Band overview",
-      "bandHighest": "Band 1 is the highest band.",
+    "bands": {
+      "heading": "Overview",
+      "description": "The bands and the roles in each, derived live from the current model and ratings.",
+      "viewLadder": "Ladder",
+      "viewMatrix": "Matrix",
       "bandRow": "Band {band}",
+      "bandRange": "{min}–{max}",
       "roleCount": "{count, plural, =1 {1 role} other {# roles}}",
-      "table": {
-        "title": "Title",
-        "track": "Track",
-        "status": "Status",
-        "score": "Weighting",
-        "band": "Band",
-        "progress": "{rated} of {total} rated"
-      },
-      "empty": "No roles to show yet. Create a role and rate it to see results.",
+      "bandEmpty": "No roles in this band",
+      "pendingHeading": "Not yet evaluated",
+      "pendingDescription": "These roles have no band until their assessment is complete.",
+      "pendingProgress": "{rated}/{total} rated",
+      "anchorLabel": "Anchor role",
+      "deviation": "≠ Band {band}",
+      "deviationLabel": "Computed band deviates from the agreed band {band}",
+      "empty": "No roles to show yet. Create a role and evaluate it to see the overview.",
       "emptyCta": "Create a role",
-      "anchors": {
-        "heading": "Anchor roles",
-        "expectedBand": "Agreed band",
-        "computedBand": "Computed band",
-        "mismatch": "Deviates from the agreed band"
-      }
+      "bandHighest": "Band 1 is the highest band."
     },
     "auth": {
       "loading": "Checking your session",
@@ -499,7 +495,9 @@
       "statusLabel": "What do the statuses mean?",
       "statusBody": "A role moves from draft to in review to approved. Approving locks the profile and the ratings as reviewed; reopen the role to change them again. The status never affects the computed result.",
       "familiesReviewLabel": "What are families and tracks?",
-      "familiesReviewBody": "A role family groups roles that share the same kind of work, like Engineering or Sales; families organize the register and never affect the weighting. A track is the kind of job, for example individual contributor or manager; it says nothing about seniority."
+      "familiesReviewBody": "A role family groups roles that share the same kind of work, like Engineering or Sales; families organize the register and never affect the weighting. A track is the kind of job, for example individual contributor or manager; it says nothing about seniority.",
+      "pendingBandLabel": "Why does a role have no band yet?",
+      "pendingBandBody": "A role gets a band only after every criterion is rated. Until the assessment is complete it has no weighting and no band, so it waits in this list."
     }
   },
   "errors": {

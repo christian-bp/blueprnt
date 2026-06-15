@@ -30,7 +30,7 @@ export default function FamilyPage(props: {
   const tFamily = useTranslations("dashboard.roles.family")
   const tStatus = useTranslations("assessment.status")
   const tAssessment = useTranslations("assessment")
-  const tResults = useTranslations("dashboard.results")
+  const tBands = useTranslations("dashboard.bands")
   const { orgId } = useOrganization()
   const locale = useLocale()
 
@@ -81,7 +81,7 @@ export default function FamilyPage(props: {
       <FamilyHeader familyId={familyId} name={family.name} orgId={orgId} />
       {/* The only band column outside the results surfaces: carry the same
           band-1-is-highest note its siblings show (guidance convention). */}
-      <p className="text-muted-foreground text-sm">{tResults("bandHighest")}</p>
+      <p className="text-muted-foreground text-sm">{tBands("bandHighest")}</p>
       {trackKeys.map((track) => {
         const trackRoles = familyRoles
           .filter((role) => role.trackKey === track.key)

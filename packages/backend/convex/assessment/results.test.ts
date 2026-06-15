@@ -114,6 +114,62 @@ describe("getResults", () => {
       totalCriteria: 9,
     })
   })
+
+  it("includes anchor info per row, and excludes non-anchor and replaced anchors", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
+    // Fully rated => complete => band 1 (value 5 on every criterion).
+    const topId = await createRatedRole({
+      orgId,
+      asAdmin,
+      model,
+      title: "Top",
+      value: 5,
+    })
+    await createRatedRole({ orgId, asAdmin, model, title: "Plain", value: 0 })
+    await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
+      orgId,
+      roleId: topId,
+      expectedBand: 2,
+      motivation: "reference point",
+    })
+
+    const active = await asAdmin.query(api.assessment.results.getResults, {
+      orgId,
+      locale: "sv",
+    })
+    const top = active.rows.find((row) => row.roleId === topId)
+    // The computed band (1) and the agreed band (2) diverge by design.
+    expect(top?.band).toBe(1)
+    expect(top?.anchor).toEqual({ expectedBand: 2, status: "active" })
+    expect(active.rows.find((row) => row.title === "Plain")?.anchor).toBeNull()
+
+    // underReview passes through; replaced reads as null (calibration history).
+    await asAdmin.mutation(api.assessment.anchorRoles.updateAnchorRole, {
+      orgId,
+      roleId: topId,
+      status: "underReview",
+    })
+    const review = await asAdmin.query(api.assessment.results.getResults, {
+      orgId,
+      locale: "sv",
+    })
+    expect(review.rows.find((row) => row.roleId === topId)?.anchor).toEqual({
+      expectedBand: 2,
+      status: "underReview",
+    })
+
+    await asAdmin.mutation(api.assessment.anchorRoles.updateAnchorRole, {
+      orgId,
+      roleId: topId,
+      status: "replaced",
+    })
+    const replaced = await asAdmin.query(api.assessment.results.getResults, {
+      orgId,
+      locale: "sv",
+    })
+    expect(replaced.rows.find((row) => row.roleId === topId)?.anchor).toBeNull()
+  })
 })
 
 describe("getRoleResult", () => {

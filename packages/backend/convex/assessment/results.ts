@@ -26,6 +26,13 @@ export const getResults = orgQuery({
         band: v.union(v.number(), v.null()),
         familyId: v.union(v.id("roleFamilies"), v.null()),
         familyName: v.union(v.string(), v.null()),
+        anchor: v.union(
+          v.null(),
+          v.object({
+            expectedBand: v.number(),
+            status: v.union(v.literal("active"), v.literal("underReview")),
+          })
+        ),
       })
     ),
     bands: v.array(v.object({ band: v.number(), minScore: v.number() })),
@@ -62,6 +69,11 @@ export const getResults = orgQuery({
     for (const role of active) {
       const result = resultByRole.get(role._id as string)
       const track = names.get(role.trackKey)
+      const anchorRole = role.anchorRole
+      const anchor =
+        anchorRole === undefined || anchorRole.status === "replaced"
+          ? null
+          : { expectedBand: anchorRole.expectedBand, status: anchorRole.status }
       rows.push({
         roleId: role._id,
         title: role.title,
@@ -78,6 +90,7 @@ export const getResults = orgQuery({
           role.familyId !== undefined
             ? (families.get(role.familyId as string) ?? null)
             : null,
+        anchor,
       })
     }
     const sortLocale = clampLocale(locale)

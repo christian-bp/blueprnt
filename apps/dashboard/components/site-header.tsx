@@ -27,10 +27,10 @@ export type Crumb = { label: string; href?: string; loading?: boolean }
 // Section labels resolved by the caller (the typed next-intl translator) so
 // the builder stays a plain, easily tested function.
 export type BreadcrumbLabels = {
-  overview: string
+  home: string
+  workOverview: string
   roles: string
   model: string
-  results: string
   rate: string
 }
 
@@ -48,10 +48,10 @@ export function buildBreadcrumbs(
 ): Crumb[] {
   const [section, second, third] = pathname.split("/").filter(Boolean)
 
-  if (section === undefined) return [{ label: labels.overview }]
+  if (section === undefined) return [{ label: labels.home }]
   if (section === "model") return [{ label: labels.model }]
-  if (section === "results") return [{ label: labels.results }]
-  if (section !== "roles") return [{ label: labels.overview }]
+  if (section === "work") return [{ label: labels.workOverview }]
+  if (section !== "roles") return [{ label: labels.home }]
 
   // Roles section and everything nested under it.
   if (second === undefined) return [{ label: labels.roles }]
@@ -131,10 +131,10 @@ export function SiteHeader() {
   const crumbs = buildBreadcrumbs(
     pathname,
     {
-      overview: t("nav.overview"),
+      home: t("nav.home"),
+      workOverview: t("nav.overview"),
       roles: t("nav.roles"),
       model: t("nav.model"),
-      results: t("nav.results"),
       rate: t("breadcrumb.rate"),
     },
     { roleTitle, familyName }

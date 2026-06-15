@@ -4,10 +4,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 
 const LABELS = {
-  overview: "Overview",
+  home: "Home",
+  workOverview: "Overview",
   roles: "Roles",
   model: "Model",
-  results: "Results",
   rate: "Rate",
 }
 
@@ -39,11 +39,11 @@ import { buildBreadcrumbs, SiteHeader } from "@/components/site-header"
 
 describe("buildBreadcrumbs", () => {
   it("renders a single current-page crumb for each top-level section", () => {
-    expect(buildBreadcrumbs("/", LABELS, {})).toEqual([{ label: "Overview" }])
+    expect(buildBreadcrumbs("/", LABELS, {})).toEqual([{ label: "Home" }])
     expect(buildBreadcrumbs("/roles", LABELS, {})).toEqual([{ label: "Roles" }])
     expect(buildBreadcrumbs("/model", LABELS, {})).toEqual([{ label: "Model" }])
-    expect(buildBreadcrumbs("/results", LABELS, {})).toEqual([
-      { label: "Results" },
+    expect(buildBreadcrumbs("/work", LABELS, {})).toEqual([
+      { label: "Overview" },
     ])
   })
 
@@ -137,9 +137,7 @@ describe("SiteHeader", () => {
   it("shows the section as a non-link current page on a top-level route", () => {
     pathState.current = "/"
     renderHeader()
-    expect(screen.getByText("Overview").getAttribute("aria-current")).toBe(
-      "page"
-    )
+    expect(screen.getByText("Home").getAttribute("aria-current")).toBe("page")
     // No real anchors: the lone crumb is the current page.
     expect(document.querySelector("a")).toBeNull()
   })

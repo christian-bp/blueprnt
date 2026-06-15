@@ -70,10 +70,11 @@
   "dashboard": {
     "title": "blueprnt",
     "nav": {
+      "home": "Hjem",
       "overview": "Oversikt",
+      "work": "Arbeid",
       "roles": "Roller",
       "model": "Modell",
-      "results": "Resultater",
       "signOut": "Logg ut"
     },
     "breadcrumb": {
@@ -93,7 +94,7 @@
       "criteriaCard": "Kriterier i modellen",
       "goRoles": "Gå til roller",
       "goModel": "Vis modellen",
-      "goResults": "Vis resultater",
+      "goOverview": "Vis oversikten",
       "continueScoring": {
         "title": "Fortsett vurderingen",
         "progress": "{scored} av {total} roller vurdert",
@@ -233,29 +234,24 @@
       },
       "lockedExplanation": "Vurderingen er låst fordi rollen er godkjent eller arkivert. Gjenåpne rollen fra rollesiden for å vurdere igjen."
     },
-    "results": {
-      "heading": "Resultater",
-      "description": "Vekting og båndutfall beregnes alltid direkte fra gjeldende modell og vurderinger.",
-      "bandsHeading": "Båndoversikt",
-      "bandHighest": "Bånd 1 er det høyeste båndet.",
-      "bandRow": "Bånd {band}",
+    "bands": {
+      "heading": "Oversikt",
+      "description": "Bandene og rollene i hvert band, utledet live fra gjeldende modell og vurderinger.",
+      "viewLadder": "Stige",
+      "viewMatrix": "Matrise",
+      "bandRow": "Band {band}",
+      "bandRange": "{min}–{max}",
       "roleCount": "{count, plural, =1 {1 rolle} other {# roller}}",
-      "table": {
-        "title": "Tittel",
-        "track": "Track",
-        "status": "Status",
-        "score": "Vekting",
-        "band": "Bånd",
-        "progress": "{rated} av {total} vurdert"
-      },
-      "empty": "Ingen roller å vise ennå. Opprett en rolle og vurder den for å se resultater.",
+      "bandEmpty": "Ingen roller i dette bandet",
+      "pendingHeading": "Ikke vurdert ennå",
+      "pendingDescription": "Disse rollene har ikke band før vurderingen er fullført.",
+      "pendingProgress": "{rated}/{total} vurdert",
+      "anchorLabel": "Ankerrolle",
+      "deviation": "≠ Band {band}",
+      "deviationLabel": "Beregnet band avviker fra det avtalte bandet {band}",
+      "empty": "Ingen roller å vise ennå. Opprett en rolle og vurder den for å se oversikten.",
       "emptyCta": "Opprett en rolle",
-      "anchors": {
-        "heading": "Ankerroller",
-        "expectedBand": "Avtalt bånd",
-        "computedBand": "Beregnet bånd",
-        "mismatch": "Avviker fra avtalt bånd"
-      }
+      "bandHighest": "Bånd 1 er det høyeste båndet."
     },
     "auth": {
       "loading": "Sjekker økten din",
@@ -499,7 +495,9 @@
       "statusLabel": "Hva betyr statusene?",
       "statusBody": "En rolle går fra utkast til under gjennomgang til godkjent. Godkjenningen låser profilen og vurderingene som gjennomgått; gjenåpne rollen for å endre dem igjen. Statusen påvirker aldri det beregnede resultatet.",
       "familiesReviewLabel": "Hva er familier og tracks?",
-      "familiesReviewBody": "En rollefamilie grupperer roller som deler samme slags arbeid, som Teknologi eller Salg; familier organiserer registeret og påvirker aldri vektingen. En track er typen jobb, for eksempel individuell spesialist eller leder; den sier ingenting om senioritet."
+      "familiesReviewBody": "En rollefamilie grupperer roller som deler samme slags arbeid, som Teknologi eller Salg; familier organiserer registeret og påvirker aldri vektingen. En track er typen jobb, for eksempel individuell spesialist eller leder; den sier ingenting om senioritet.",
+      "pendingBandLabel": "Hvorfor har en rolle ikke band ennå?",
+      "pendingBandBody": "En rolle får band først når alle kriterier er vurdert. Inntil vurderingen er fullført har den ingen vekting og intet band, så den venter i denne listen."
     }
   },
   "errors": {

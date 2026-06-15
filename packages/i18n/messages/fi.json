@@ -70,10 +70,11 @@
   "dashboard": {
     "title": "blueprnt",
     "nav": {
+      "home": "Etusivu",
       "overview": "Yleiskatsaus",
+      "work": "Työ",
       "roles": "Roolit",
       "model": "Malli",
-      "results": "Tulokset",
       "signOut": "Kirjaudu ulos"
     },
     "breadcrumb": {
@@ -93,7 +94,7 @@
       "criteriaCard": "Kriteerit mallissa",
       "goRoles": "Siirry rooleihin",
       "goModel": "Näytä malli",
-      "goResults": "Näytä tulokset",
+      "goOverview": "Näytä yleiskatsaus",
       "continueScoring": {
         "title": "Jatka arviointia",
         "progress": "{scored}/{total} roolia arvioitu",
@@ -233,29 +234,24 @@
       },
       "lockedExplanation": "Arviointi on lukittu, koska rooli on hyväksytty tai arkistoitu. Avaa rooli uudelleen roolisivulta arvioidaksesi uudestaan."
     },
-    "results": {
-      "heading": "Tulokset",
-      "description": "Painotus ja luokkatulos lasketaan aina reaaliajassa nykyisen mallin ja arvioiden perusteella.",
-      "bandsHeading": "Luokkayhteenveto",
-      "bandHighest": "Luokka 1 on korkein luokka.",
-      "bandRow": "Luokka {band}",
+    "bands": {
+      "heading": "Yleiskatsaus",
+      "description": "Bandit ja kunkin bandin roolit, johdettu reaaliaikaisesti nykyisestä mallista ja arvioinneista.",
+      "viewLadder": "Tikkaat",
+      "viewMatrix": "Matriisi",
+      "bandRow": "Band {band}",
+      "bandRange": "{min}–{max}",
       "roleCount": "{count, plural, =1 {1 rooli} other {# roolia}}",
-      "table": {
-        "title": "Tehtävänimike",
-        "track": "Track",
-        "status": "Tila",
-        "score": "Painotus",
-        "band": "Vaativuusluokka",
-        "progress": "{rated} / {total} arvioitu"
-      },
-      "empty": "Ei vielä näytettäviä rooleja. Luo rooli ja arvioi se nähdäksesi tulokset.",
+      "bandEmpty": "Ei rooleja tässä bandissa",
+      "pendingHeading": "Ei vielä arvioitu",
+      "pendingDescription": "Näillä rooleilla ei ole bandia ennen kuin arviointi on valmis.",
+      "pendingProgress": "{rated}/{total} arvioitu",
+      "anchorLabel": "Ankkurirooli",
+      "deviation": "≠ Band {band}",
+      "deviationLabel": "Laskettu band poikkeaa sovitusta bandista {band}",
+      "empty": "Ei vielä näytettäviä rooleja. Luo rooli ja arvioi se nähdäksesi yleiskatsauksen.",
       "emptyCta": "Luo rooli",
-      "anchors": {
-        "heading": "Ankkuriroolit",
-        "expectedBand": "Sovittu luokka",
-        "computedBand": "Laskettu luokka",
-        "mismatch": "Poikkeaa sovitusta luokasta"
-      }
+      "bandHighest": "Luokka 1 on korkein luokka."
     },
     "auth": {
       "loading": "Tarkistetaan istuntoasi",
@@ -499,7 +495,9 @@
       "statusLabel": "Mitä tilat tarkoittavat?",
       "statusBody": "Rooli etenee luonnoksesta tarkistettavaksi ja hyväksytyksi. Hyväksyminen lukitsee profiilin ja arviot tarkistettuina; avaa rooli uudelleen muuttaaksesi niitä. Tila ei koskaan vaikuta laskettuun tulokseen.",
       "familiesReviewLabel": "Mitä perheet ja trackit ovat?",
-      "familiesReviewBody": "Rooliperhe ryhmittelee roolit, jotka jakavat samanlaisen työn, kuten Teknologia tai Myynti; perheet järjestävät luettelon eivätkä koskaan vaikuta painotukseen. Track on työn tyyppi, esimerkiksi yksilöasiantuntija tai esihenkilö; se ei kerro mitään senioriteetista."
+      "familiesReviewBody": "Rooliperhe ryhmittelee roolit, jotka jakavat samanlaisen työn, kuten Teknologia tai Myynti; perheet järjestävät luettelon eivätkä koskaan vaikuta painotukseen. Track on työn tyyppi, esimerkiksi yksilöasiantuntija tai esihenkilö; se ei kerro mitään senioriteetista.",
+      "pendingBandLabel": "Miksi roolilla ei vielä ole bandia?",
+      "pendingBandBody": "Rooli saa bandin vasta, kun jokainen kriteeri on arvioitu. Kunnes arviointi on valmis, sillä ei ole painotusta eikä bandia, joten se odottaa tässä luettelossa."
     }
   },
   "errors": {
