@@ -54,9 +54,6 @@ export function BandMatrix({
                 <div className="font-semibold text-sm">
                   {t("bandRow", { band: range.band })}
                 </div>
-                <div className="text-muted-foreground text-xs tabular-nums">
-                  {t("bandRange", { min: range.min, max: range.max })}
-                </div>
               </th>
               {tracks.map((track) => {
                 const cell = placed.filter(

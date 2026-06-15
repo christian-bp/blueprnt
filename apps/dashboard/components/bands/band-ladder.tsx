@@ -33,9 +33,6 @@ export function BandLadder({
                 <div className="font-semibold text-sm">
                   {t("bandRow", { band: range.band })}
                 </div>
-                <div className="text-muted-foreground text-xs tabular-nums">
-                  {t("bandRange", { min: range.min, max: range.max })}
-                </div>
                 <div className="text-muted-foreground text-xs">
                   {t("roleCount", { count: inBand.length })}
                 </div>

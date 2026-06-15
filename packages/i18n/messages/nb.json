@@ -240,7 +240,6 @@
       "viewLadder": "Stige",
       "viewMatrix": "Matrise",
       "bandRow": "Band {band}",
-      "bandRange": "{min}–{max}",
       "roleCount": "{count, plural, =1 {1 rolle} other {# roller}}",
       "bandEmpty": "Ingen roller i dette bandet",
       "pendingHeading": "Ikke vurdert ennå",

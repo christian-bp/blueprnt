@@ -240,7 +240,6 @@
       "viewLadder": "Ladder",
       "viewMatrix": "Matrix",
       "bandRow": "Band {band}",
-      "bandRange": "{min}–{max}",
       "roleCount": "{count, plural, =1 {1 role} other {# roles}}",
       "bandEmpty": "No roles in this band",
       "pendingHeading": "Not yet evaluated",

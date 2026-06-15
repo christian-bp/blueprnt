@@ -240,7 +240,6 @@
       "viewLadder": "Tikkaat",
       "viewMatrix": "Matriisi",
       "bandRow": "Band {band}",
-      "bandRange": "{min}–{max}",
       "roleCount": "{count, plural, =1 {1 rooli} other {# roolia}}",
       "bandEmpty": "Ei rooleja tässä bandissa",
       "pendingHeading": "Ei vielä arvioitu",

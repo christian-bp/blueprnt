@@ -240,7 +240,6 @@
       "viewLadder": "Stege",
       "viewMatrix": "Matris",
       "bandRow": "Band {band}",
-      "bandRange": "{min}–{max}",
       "roleCount": "{count, plural, =1 {1 roll} other {# roller}}",
       "bandEmpty": "Inga roller i detta band",
       "pendingHeading": "Inte utvärderade ännu",

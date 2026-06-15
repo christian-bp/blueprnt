@@ -33,11 +33,12 @@ function renderChip(r: BandRoleRow) {
 describe("RoleChip", () => {
   afterEach(() => cleanup())
 
-  it("links to the role and shows the title and weighting", () => {
+  it("links to the role and shows the title, not a weighting number", () => {
     renderChip(row({}))
     const link = screen.getByRole("link", { name: /Staff Engineer/ })
     expect(link.getAttribute("href")).toBe("/roles/r1")
-    expect(screen.getByText("78")).toBeDefined()
+    // Weighting numbers are intentionally not shown on the Overview.
+    expect(screen.queryByText("78")).toBeNull()
   })
 
   it("flags an anchor whose computed band deviates from the agreed band", () => {

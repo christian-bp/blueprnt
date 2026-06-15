@@ -38,11 +38,12 @@ function renderLadder(rows: BandRoleRow[]) {
 describe("BandLadder", () => {
   afterEach(() => cleanup())
 
-  it("renders a lane per band with the band 1 range topping at 100", () => {
+  it("renders a lane per band without weighting numbers", () => {
     renderLadder([role({})])
     expect(screen.getByText("Band 1")).toBeDefined()
     expect(screen.getByText("Band 2")).toBeDefined()
-    expect(screen.getByText("80–100")).toBeDefined()
+    // The band weighting range is intentionally not shown.
+    expect(screen.queryByText("80–100")).toBeNull()
   })
 
   it("places a role in its band and shows the empty note for empty bands", () => {
