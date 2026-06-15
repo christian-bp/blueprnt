@@ -100,19 +100,30 @@ export function BandMatrix({
                     key={track.key}
                     className="min-w-32 rounded-lg border p-2 align-top"
                   >
-                    <div className="flex flex-col gap-2">
-                      <AnimatePresence initial={false}>
-                        {groupByFamily
-                          ? groupRowsByFamily(cell).flatMap((group) => [
-                              familyLabel(
-                                group.familyId ?? "none",
-                                group.familyName ?? tFamily("none")
-                              ),
-                              ...group.rows.map(renderChip),
-                            ])
-                          : cell.map(renderChip)}
-                      </AnimatePresence>
-                    </div>
+                    {cell.length === 0 ? (
+                      // Empty cell: the same diagonal-hatch placeholder as the
+                      // ladder's empty bands. Decorative here (the row and
+                      // column headers carry the band and track), so
+                      // aria-hidden to avoid per-cell screen-reader noise.
+                      <div
+                        aria-hidden="true"
+                        className="h-8 w-full rounded-md bg-[repeating-linear-gradient(-60deg,var(--border),var(--border)_1px,transparent_1px,transparent_6px)]"
+                      />
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        <AnimatePresence initial={false}>
+                          {groupByFamily
+                            ? groupRowsByFamily(cell).flatMap((group) => [
+                                familyLabel(
+                                  group.familyId ?? "none",
+                                  group.familyName ?? tFamily("none")
+                                ),
+                                ...group.rows.map(renderChip),
+                              ])
+                            : cell.map(renderChip)}
+                        </AnimatePresence>
+                      </div>
+                    )}
                   </td>
                 )
               })}
