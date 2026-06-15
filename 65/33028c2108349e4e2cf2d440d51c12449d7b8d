@@ -1,0 +1,21 @@
+apps/dashboard/components/bands/role-chip.test.tsx
+  s_22ed539ec698c7::t_0834687ed80490 1-54
+apps/dashboard/components/bands/role-chip.tsx
+  s_22ed539ec698c7::t_dceab0cf9659a1 1-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "6533028c2108349e4e2cf2d440d51c12449d7b8d",
+  "prompts": {},
+  "sessions": {
+    "s_22ed539ec698c7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdb6c602-6aa0-4ee1-b382-fc4b5e888ce4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
