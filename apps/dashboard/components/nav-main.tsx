@@ -25,7 +25,6 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "@workspace/ui/components/sidebar"
-import { cn } from "@workspace/ui/lib/utils"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -41,14 +40,6 @@ export type NavItem = {
 // trigger: 20px icon, centered square, label hidden when collapsed.
 const RAIL_CLASSES =
   "group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-1.5! [&_svg]:size-5 group-data-[collapsible=icon]:[&_span]:hidden"
-
-// The active nav item reads with a subtle brand-pink background instead of the
-// neutral sidebar accent (active page = a selection accent, an allowed brand
-// use). Background only: the label/icon keep the default high-contrast
-// foreground. Overrides the vendor's data-active:bg-sidebar-accent at the call
-// site so packages/ui sidebar stays diffable against upstream.
-const ACTIVE_BRAND =
-  "data-active:bg-brand/10 data-active:hover:bg-brand/15"
 
 // Primary navigation. A leaf is active when its URL prefixes the path ("/"
 // matches exactly); a group is active when any child is active. A group keeps
@@ -75,7 +66,7 @@ export function NavMain({ items }: { items: NavItem[] }) {
                     asChild
                     isActive={item.url !== undefined && isActive(item.url)}
                     tooltip={item.title}
-                    className={cn(RAIL_CLASSES, ACTIVE_BRAND)}
+                    className={RAIL_CLASSES}
                   >
                     <Link href={item.url ?? "#"}>
                       {item.icon}
@@ -99,7 +90,7 @@ export function NavMain({ items }: { items: NavItem[] }) {
                       <SidebarMenuButton
                         aria-label={item.title}
                         isActive={groupActive}
-                        className={cn(RAIL_CLASSES, ACTIVE_BRAND)}
+                        className={RAIL_CLASSES}
                       >
                         {item.icon}
                         <span>{item.title}</span>
@@ -135,7 +126,7 @@ export function NavMain({ items }: { items: NavItem[] }) {
                     <SidebarMenuButton
                       isActive={groupActive}
                       tooltip={item.title}
-                      className={cn(RAIL_CLASSES, ACTIVE_BRAND)}
+                      className={RAIL_CLASSES}
                     >
                       {item.icon}
                       <span>{item.title}</span>
@@ -153,7 +144,6 @@ export function NavMain({ items }: { items: NavItem[] }) {
                           <SidebarMenuSubButton
                             asChild
                             isActive={isActive(sub.url)}
-                            className={ACTIVE_BRAND}
                           >
                             <Link href={sub.url}>
                               <span>{sub.title}</span>
