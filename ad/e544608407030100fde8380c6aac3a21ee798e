@@ -1,0 +1,30 @@
+packages/i18n/messages/da.json
+  s_22ed539ec698c7::t_dac10a0dc206e6 253-254
+packages/i18n/messages/fi.json
+  s_22ed539ec698c7::t_a67494c7e642a6 253-254
+packages/i18n/messages/nb.json
+  s_22ed539ec698c7::t_dbefaf96c9edbf 253-254
+apps/dashboard/app/(app)/roles/families/[familyId]/page.tsx
+  s_22ed539ec698c7::t_9015b7432ca4a2 33
+  s_22ed539ec698c7::t_f8999a15e8b0b4 84
+packages/i18n/messages/en.json
+  s_22ed539ec698c7::t_d27dc63b2e8fb8 253-254
+packages/i18n/messages/sv.json
+  s_22ed539ec698c7::t_3261bc394cc228 253-254
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "ade544608407030100fde8380c6aac3a21ee798e",
+  "prompts": {},
+  "sessions": {
+    "s_22ed539ec698c7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdb6c602-6aa0-4ee1-b382-fc4b5e888ce4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
