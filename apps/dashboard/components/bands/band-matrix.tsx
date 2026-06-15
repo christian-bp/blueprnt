@@ -92,20 +92,27 @@ export function BandMatrix({
                 return (
                   <td
                     key={track.key}
-                    className="min-w-32 rounded-lg border p-2 align-top"
+                    // relative so the empty-cell hatch can fill the cell via
+                    // absolute positioning: a percentage height on a <td> child
+                    // does not resolve, but `absolute inset-*` against the
+                    // relative cell does, so the hatch stretches to the full row
+                    // height set by the tallest sibling cell.
+                    className="relative min-w-32 rounded-lg border p-2 align-top"
                   >
                     {cell.length === 0 ? (
-                      // Empty cell: the same diagonal-hatch placeholder as the
-                      // ladder's empty bands. h-full so it matches the row's
-                      // tallest cell (a table cell stretches to the row height)
-                      // instead of a short strip; min-h-8 keeps a visible fill
-                      // when the whole band row is empty. Decorative (the row
-                      // and column headers carry the band and track), so
-                      // aria-hidden.
-                      <div
-                        aria-hidden="true"
-                        className="h-full min-h-8 w-full rounded-md bg-[repeating-linear-gradient(-60deg,var(--border),var(--border)_1px,transparent_1px,transparent_6px)]"
-                      />
+                      // Empty cell: a diagonal-hatch placeholder that fills the
+                      // whole cell (matching a tall sibling, e.g. a 3-role
+                      // track). The spacer floors the row height when the entire
+                      // band row is empty; the absolute hatch then stretches to
+                      // whatever height the row ends up being. Decorative (the
+                      // row and column headers carry the band and track).
+                      <>
+                        <div aria-hidden="true" className="min-h-8" />
+                        <div
+                          aria-hidden="true"
+                          className="absolute inset-2 rounded-md bg-[repeating-linear-gradient(-60deg,var(--border),var(--border)_1px,transparent_1px,transparent_6px)]"
+                        />
+                      </>
                     ) : (
                       // popLayout: chips the family filter removes pop out of
                       // flow so the survivors reflow in a single pass instead
