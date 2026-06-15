@@ -1,0 +1,21 @@
+docs/superpowers/specs/2026-06-15-band-role-overview-design.md
+  s_22ed539ec698c7::t_9bae00ed6d279b 1-193
+.gitignore
+  s_22ed539ec698c7::t_2a4cb0cf7734ac 49-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "cd3fb0b16e86fe15b9a37905c0e826eec3cadbb5",
+  "prompts": {},
+  "sessions": {
+    "s_22ed539ec698c7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdb6c602-6aa0-4ee1-b382-fc4b5e888ce4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
