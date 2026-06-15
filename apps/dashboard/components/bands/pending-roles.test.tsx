@@ -33,12 +33,13 @@ function renderPending(rows: BandRoleRow[]) {
 describe("PendingRoles", () => {
   afterEach(() => cleanup())
 
-  it("lists roles without a band, with rating progress and a link", () => {
+  it("lists roles without a band and a link, with no rating count", () => {
     renderPending([role({})])
     expect(
       screen.getByText(messages.dashboard.bands.pendingHeading)
     ).toBeDefined()
-    expect(screen.getByText("3/9 rated")).toBeDefined()
+    // The per-role rating count is intentionally not shown.
+    expect(screen.queryByText("3/9 rated")).toBeNull()
     expect(
       screen.getByRole("link", { name: /Data Analyst/ }).getAttribute("href")
     ).toBe("/roles/r1")

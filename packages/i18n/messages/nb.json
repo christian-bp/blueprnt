@@ -106,12 +106,14 @@
       "description": "Jobbprofiler som vurderes mot modellen deres. Roller, aldri personer.",
       "newCta": "Opprett rolle",
       "empty": "Ingen roller ennå. Opprett den første rollen for å begynne å vurdere.",
+      "evaluated": "Vurdert",
+      "notEvaluated": "Ikke vurdert ennå",
       "table": {
         "title": "Tittel",
         "track": "Track",
         "team": "Team",
         "status": "Status",
-        "rated": "Vurdert"
+        "evaluation": "Vurdering"
       },
       "create": {
         "title": "Ny rolle",
@@ -150,7 +152,6 @@
         "saveError": "Kunne ikke lagre. Prøv igjen.",
         "profileIncomplete": "Fyll inn formål og ansvarsområder før vurdering.",
         "ratingHeading": "Vurdering",
-        "ratingProgress": "{rated} av {total} kriterier vurdert",
         "rateCta": "Vurder rolle",
         "resumeRateCta": "Fortsett vurderingen",
         "adjustRateCta": "Juster vurderinger",
@@ -244,7 +245,6 @@
       "bandEmpty": "Ingen roller i dette bandet",
       "pendingHeading": "Ikke vurdert ennå",
       "pendingDescription": "Disse rollene har ikke band før vurderingen er fullført.",
-      "pendingProgress": "{rated}/{total} vurdert",
       "anchorLabel": "Ankerrolle",
       "deviation": "≠ Band {band}",
       "deviationLabel": "Beregnet band avviker fra det avtalte bandet {band}",
@@ -371,7 +371,6 @@
         "saveExitLine": "Du kan lagre og avslutte når som helst og fortsette i dashbordet.",
         "saveExitCta": "Lagre og avslutt",
         "rolesHeading": "Rollene dine",
-        "roleProgress": "{rated} av {total} kriterier vurdert",
         "scoreRoleCta": "Vurder denne rollen",
         "resumeRoleCta": "Fortsett vurderingen",
         "roleDoneLabel": "Vurdert",

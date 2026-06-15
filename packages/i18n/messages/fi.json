@@ -106,12 +106,14 @@
       "description": "Tehtäväprofiilit, joita arvioidaan mallinne perusteella. Roolit, ei koskaan henkilöt.",
       "newCta": "Luo rooli",
       "empty": "Ei vielä rooleja. Luo ensimmäinen rooli aloittaaksesi arvioinnin.",
+      "evaluated": "Arvioitu",
+      "notEvaluated": "Ei vielä arvioitu",
       "table": {
         "title": "Tehtävänimike",
         "track": "Track",
         "team": "Tiimi",
         "status": "Tila",
-        "rated": "Arvioitu"
+        "evaluation": "Arviointi"
       },
       "create": {
         "title": "Uusi rooli",
@@ -150,7 +152,6 @@
         "saveError": "Tallennus epäonnistui. Yritä uudelleen.",
         "profileIncomplete": "Täytä tarkoitus ja vastuualueet ennen arviointia.",
         "ratingHeading": "Arviointi",
-        "ratingProgress": "{rated} / {total} kriteeriä arvioitu",
         "rateCta": "Arvioi rooli",
         "resumeRateCta": "Jatka arviointia",
         "adjustRateCta": "Muuta arvioita",
@@ -244,7 +245,6 @@
       "bandEmpty": "Ei rooleja tässä bandissa",
       "pendingHeading": "Ei vielä arvioitu",
       "pendingDescription": "Näillä rooleilla ei ole bandia ennen kuin arviointi on valmis.",
-      "pendingProgress": "{rated}/{total} arvioitu",
       "anchorLabel": "Ankkurirooli",
       "deviation": "≠ Band {band}",
       "deviationLabel": "Laskettu band poikkeaa sovitusta bandista {band}",
@@ -371,7 +371,6 @@
         "saveExitLine": "Voit tallentaa ja poistua milloin tahansa ja jatkaa hallintapaneelissa.",
         "saveExitCta": "Tallenna ja poistu",
         "rolesHeading": "Roolisi",
-        "roleProgress": "{rated}/{total} kriteeriä arvioitu",
         "scoreRoleCta": "Arvioi tämä rooli",
         "resumeRoleCta": "Jatka arviointia",
         "roleDoneLabel": "Arvioitu",

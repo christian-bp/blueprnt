@@ -124,10 +124,7 @@ export default function FamilyPage(props: {
                           <Badge>{result.band}</Badge>
                         ) : (
                           <span className="text-muted-foreground text-sm">
-                            {t("detail.ratingProgress", {
-                              rated: role.ratedCount,
-                              total: role.totalCriteria,
-                            })}
+                            {t("notEvaluated")}
                           </span>
                         )}
                       </TableCell>

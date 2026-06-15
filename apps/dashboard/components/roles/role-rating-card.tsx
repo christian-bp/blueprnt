@@ -7,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
-import { Progress } from "@workspace/ui/components/progress"
 import { useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import Link from "next/link"
@@ -31,8 +30,10 @@ export function RoleRatingCard({
   totalCriteria: number
 }) {
   const t = useTranslations("dashboard.roles.detail")
+  const tRoles = useTranslations("dashboard.roles")
   const tHelp = useTranslations("dashboard.help")
   const locked = status === "approved" || archived
+  const evaluated = totalCriteria > 0 && ratedCount === totalCriteria
   const ctaLabel =
     ratedCount === 0
       ? t("rateCta")
@@ -52,11 +53,8 @@ export function RoleRatingCard({
       </CardHeader>
       <CardContent className="space-y-3">
         <p className="text-muted-foreground text-sm">
-          {t("ratingProgress", { rated: ratedCount, total: totalCriteria })}
+          {evaluated ? tRoles("evaluated") : tRoles("notEvaluated")}
         </p>
-        <Progress
-          value={totalCriteria === 0 ? 0 : (ratedCount / totalCriteria) * 100}
-        />
         {!locked &&
           (profileComplete ? (
             <Button asChild>

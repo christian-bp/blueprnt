@@ -7,9 +7,9 @@ import { TrackBadge } from "@/components/track-badge"
 import type { BandRoleRow } from "@/lib/bands"
 
 // The "not yet evaluated" zone: roles whose assessment is incomplete have no
-// band (band null) and wait here with their rating progress. Clicking opens
-// the role, where the assessment can be continued. Disappears entirely when
-// every role has a band.
+// band (band null) and wait here. Clicking opens the role, where the
+// assessment can be continued. How far the rating has progressed is
+// deliberately not shown. Disappears entirely when every role has a band.
 export function PendingRoles({ rows }: { rows: BandRoleRow[] }) {
   const t = useTranslations("dashboard.bands")
   const tHelp = useTranslations("dashboard.help")
@@ -36,12 +36,6 @@ export function PendingRoles({ rows }: { rows: BandRoleRow[] }) {
           >
             <span className="truncate font-medium">{role.title}</span>
             <TrackBadge trackKey={role.trackKey} name={role.trackName} />
-            <span className="text-xs tabular-nums">
-              {t("pendingProgress", {
-                rated: role.ratedCount,
-                total: role.totalCriteria,
-              })}
-            </span>
           </Link>
         ))}
       </div>

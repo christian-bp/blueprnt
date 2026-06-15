@@ -106,12 +106,14 @@
       "description": "Job profiles evaluated against your model. Roles, never persons.",
       "newCta": "Create role",
       "empty": "No roles yet. Create your first role to start evaluating.",
+      "evaluated": "Evaluated",
+      "notEvaluated": "Not yet evaluated",
       "table": {
         "title": "Title",
         "track": "Track",
         "team": "Team",
         "status": "Status",
-        "rated": "Rated"
+        "evaluation": "Evaluation"
       },
       "create": {
         "title": "New role",
@@ -150,7 +152,6 @@
         "saveError": "Could not save. Try again.",
         "profileIncomplete": "Fill in purpose and responsibilities before rating.",
         "ratingHeading": "Rating",
-        "ratingProgress": "{rated} of {total} criteria rated",
         "rateCta": "Rate role",
         "resumeRateCta": "Continue rating",
         "adjustRateCta": "Adjust ratings",
@@ -244,7 +245,6 @@
       "bandEmpty": "No roles in this band",
       "pendingHeading": "Not yet evaluated",
       "pendingDescription": "These roles have no band until their assessment is complete.",
-      "pendingProgress": "{rated}/{total} rated",
       "anchorLabel": "Anchor role",
       "deviation": "≠ Band {band}",
       "deviationLabel": "Computed band deviates from the agreed band {band}",
@@ -371,7 +371,6 @@
         "saveExitLine": "You can save and exit anytime and continue in your dashboard.",
         "saveExitCta": "Save and exit",
         "rolesHeading": "Your roles",
-        "roleProgress": "{rated} of {total} criteria rated",
         "scoreRoleCta": "Evaluate this role",
         "resumeRoleCta": "Continue evaluating",
         "roleDoneLabel": "Evaluated",

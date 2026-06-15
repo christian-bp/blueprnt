@@ -184,4 +184,16 @@ describe("RolesTable", () => {
     fireEvent.click(within(rowEl).getByText("Core"))
     expect(pushMock).toHaveBeenCalledWith("/roles/r1")
   })
+
+  it("shows a binary evaluation state instead of a rating count", () => {
+    renderTable([
+      row({ roleId: "r1", title: "Done Role", ratedCount: 9, totalCriteria: 9 }),
+      row({ roleId: "r2", title: "Todo Role", ratedCount: 0, totalCriteria: 9 }),
+    ])
+    expect(screen.getByText(messages.dashboard.roles.evaluated)).toBeDefined()
+    expect(screen.getByText(messages.dashboard.roles.notEvaluated)).toBeDefined()
+    // No fractional rating count anywhere.
+    expect(screen.queryByText("9/9")).toBeNull()
+    expect(screen.queryByText("0/9")).toBeNull()
+  })
 })

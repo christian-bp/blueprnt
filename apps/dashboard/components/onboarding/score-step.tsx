@@ -2,7 +2,6 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
-import { Progress } from "@workspace/ui/components/progress"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { useMutation, useQuery } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
@@ -108,24 +107,8 @@ export function ScoreStep({
         key={row.roleId}
         className="flex items-center justify-between gap-3 rounded-md border p-3"
       >
-        <div className="min-w-0 flex-1 space-y-1">
+        <div className="min-w-0 flex-1">
           <p className="truncate font-medium text-sm">{row.title}</p>
-          <p className="text-muted-foreground text-sm">
-            {t("roleProgress", {
-              rated: row.ratedCount,
-              total: row.totalCriteria,
-            })}
-          </p>
-          {/* Brand-rose indicator, matching the drafting bar; the shared
-              Progress (other bars) stays neutral. */}
-          <Progress
-            value={
-              row.totalCriteria === 0
-                ? 0
-                : (row.ratedCount / row.totalCriteria) * 100
-            }
-            className="[&>[data-slot=progress-indicator]]:bg-brand"
-          />
         </div>
         {row.complete ? (
           <span className="text-muted-foreground text-sm">

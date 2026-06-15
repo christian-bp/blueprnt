@@ -186,16 +186,23 @@ export function RolesTable({
         ),
       },
       {
-        id: "rated",
-        header: () => (
-          <span className="block text-right">{t("table.rated")}</span>
-        ),
+        id: "evaluation",
+        header: t("table.evaluation"),
         enableGlobalFilter: false,
-        cell: ({ row }) => (
-          <span className="block text-right tabular-nums">
-            {row.original.ratedCount}/{row.original.totalCriteria}
-          </span>
-        ),
+        // Binary state, not a rating count: a role is evaluated once every
+        // criterion is rated. The fractional progress is deliberately not
+        // shown (it is noise; an incomplete role just reads "not yet
+        // evaluated", like the Overview).
+        cell: ({ row }) => {
+          const evaluated =
+            row.original.totalCriteria > 0 &&
+            row.original.ratedCount === row.original.totalCriteria
+          return (
+            <Badge variant={evaluated ? "secondary" : "outline"}>
+              {evaluated ? t("evaluated") : t("notEvaluated")}
+            </Badge>
+          )
+        },
       },
     ],
     [t, tStatus]

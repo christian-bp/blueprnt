@@ -106,12 +106,14 @@
       "description": "Jobbprofiler som värderas mot er modell. Roller, aldrig personer.",
       "newCta": "Skapa roll",
       "empty": "Inga roller ännu. Skapa din första roll för att börja värdera.",
+      "evaluated": "Utvärderad",
+      "notEvaluated": "Inte utvärderad ännu",
       "table": {
         "title": "Titel",
         "track": "Track",
         "team": "Team",
         "status": "Status",
-        "rated": "Betygsatt"
+        "evaluation": "Utvärdering"
       },
       "create": {
         "title": "Ny roll",
@@ -150,7 +152,6 @@
         "saveError": "Kunde inte spara. Försök igen.",
         "profileIncomplete": "Fyll i syfte och ansvarsområden innan betygsättning.",
         "ratingHeading": "Betygsättning",
-        "ratingProgress": "{rated} av {total} kriterier betygsatta",
         "rateCta": "Betygsätt roll",
         "resumeRateCta": "Fortsätt betygsätta",
         "adjustRateCta": "Justera betyg",
@@ -244,7 +245,6 @@
       "bandEmpty": "Inga roller i detta band",
       "pendingHeading": "Inte utvärderade ännu",
       "pendingDescription": "Dessa roller saknar band tills deras bedömning är klar.",
-      "pendingProgress": "{rated}/{total} bedömda",
       "anchorLabel": "Ankarroll",
       "deviation": "≠ Band {band}",
       "deviationLabel": "Beräknat band avviker från det överenskomna bandet {band}",
@@ -371,7 +371,6 @@
         "saveExitLine": "Du kan spara och avsluta när som helst och fortsätta i din instrumentpanel.",
         "saveExitCta": "Spara och avsluta",
         "rolesHeading": "Dina roller",
-        "roleProgress": "{rated} av {total} kriterier värderade",
         "scoreRoleCta": "Värdera den här rollen",
         "resumeRoleCta": "Fortsätt värdera",
         "roleDoneLabel": "Värderad",
