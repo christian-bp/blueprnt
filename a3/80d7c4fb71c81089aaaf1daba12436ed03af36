@@ -1,0 +1,20 @@
+docs/superpowers/plans/2026-06-15-band-role-overview.md
+  s_22ed539ec698c7::t_6861ce6b848d87 1-25,29,31,33,35,37-39,48-58,60-284,286-1416,1418-1427,1429-1729,1731-1798
+  s_22ed539ec698c7::t_0be5e4cfacbe02 26-28,30,32,34,36,40-47,59,285,1417,1428,1730
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "a380d7c4fb71c81089aaaf1daba12436ed03af36",
+  "prompts": {},
+  "sessions": {
+    "s_22ed539ec698c7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdb6c602-6aa0-4ee1-b382-fc4b5e888ce4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
