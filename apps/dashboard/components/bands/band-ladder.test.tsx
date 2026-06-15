@@ -46,10 +46,13 @@ describe("BandLadder", () => {
     expect(screen.queryByText("80–100")).toBeNull()
   })
 
-  it("places a role in its band and shows the empty note for empty bands", () => {
+  it("places a role in its band and hatches empty bands", () => {
     renderLadder([role({ roleId: "r1", title: "CTO", band: 1 })])
     expect(screen.getByRole("link", { name: /CTO/ })).toBeDefined()
-    expect(screen.getByText(messages.dashboard.bands.bandEmpty)).toBeDefined()
+    // Band 2 is empty: a diagonal-hatch placeholder, labelled for a11y.
+    expect(
+      screen.getByRole("img", { name: messages.dashboard.bands.bandEmpty })
+    ).toBeDefined()
   })
 
   it("ignores roles without a band (they belong in the pending zone)", () => {

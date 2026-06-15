@@ -82,9 +82,15 @@ export function BandLadder({
               </div>
               <div className="flex flex-1 flex-wrap items-start gap-2">
                 {inBand.length === 0 ? (
-                  <span className="text-muted-foreground text-sm italic">
-                    {t("bandEmpty")}
-                  </span>
+                  // Empty band: a subtle diagonal-hatch placeholder (the
+                  // band's "0 roles" count in the rail carries the wording).
+                  // var(--border) adapts per theme, so one class covers light
+                  // and dark.
+                  <div
+                    role="img"
+                    aria-label={t("bandEmpty")}
+                    className="h-8 w-full rounded-md bg-[repeating-linear-gradient(-60deg,var(--border),var(--border)_1px,transparent_1px,transparent_6px)]"
+                  />
                 ) : (
                   <AnimatePresence initial={false}>
                     {groupByFamily
