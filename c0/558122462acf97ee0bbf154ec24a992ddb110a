@@ -1,0 +1,21 @@
+apps/dashboard/components/bands/pending-roles.tsx
+  s_22ed539ec698c7::t_b75fb8cd592815 1-50
+apps/dashboard/components/bands/pending-roles.test.tsx
+  s_22ed539ec698c7::t_2b23f15fa25eb1 1-48,50-60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "c0558122462acf97ee0bbf154ec24a992ddb110a",
+  "prompts": {},
+  "sessions": {
+    "s_22ed539ec698c7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdb6c602-6aa0-4ee1-b382-fc4b5e888ce4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
