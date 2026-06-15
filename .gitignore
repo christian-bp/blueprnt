@@ -46,3 +46,6 @@ next-env.d.ts
 
 # Claude Code harness state (lock files etc.)
 .claude/
+
+# Superpowers brainstorm visual-companion scratch dir
+.superpowers/
