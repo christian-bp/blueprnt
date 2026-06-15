@@ -1,0 +1,19 @@
+packages/backend/convex/assessment/results.test.ts
+  s_22ed539ec698c7::t_4401893937fa89 118,137,141-143,145-171
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "eefb95f557f8d24e2ba96f374c722efe8b87d834",
+  "prompts": {},
+  "sessions": {
+    "s_22ed539ec698c7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdb6c602-6aa0-4ee1-b382-fc4b5e888ce4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
