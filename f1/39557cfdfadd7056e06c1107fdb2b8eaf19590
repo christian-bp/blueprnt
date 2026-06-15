@@ -1,0 +1,23 @@
+apps/dashboard/lib/bands.test.ts
+  s_22ed539ec698c7::t_e797a64d6e28b8 1-37
+apps/dashboard/lib/bands.ts
+  s_22ed539ec698c7::t_37800605be4c99 33-37,39-40
+  s_22ed539ec698c7::t_0cfc9693bae18e 1-32,41
+  s_22ed539ec698c7::t_c4c4898ca84d9e 38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "f139557cfdfadd7056e06c1107fdb2b8eaf19590",
+  "prompts": {},
+  "sessions": {
+    "s_22ed539ec698c7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdb6c602-6aa0-4ee1-b382-fc4b5e888ce4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
