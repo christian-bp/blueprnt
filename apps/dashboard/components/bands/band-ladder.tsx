@@ -5,22 +5,61 @@ import { useTranslations } from "next-intl"
 import { RoleChip } from "@/components/bands/role-chip"
 import { type BandRoleRow, bandRanges } from "@/lib/bands"
 import { SPRING } from "@/lib/motion"
+import { groupByFamily as groupRowsByFamily } from "@/lib/role-groups"
 
-// Vertical band ladder: one lane per band, Band 1 (highest) on top. Roles
-// wrap as chips inside their lane, ordered by the incoming order (getResults
-// already sorts by weighting desc within a band). Empty bands stay visible so
-// the full band structure always reads. Chips animate to their new lane when
-// a role's band changes (layoutId), per docs/ui-animation.md.
+// Vertical band ladder: one lane per band, Band 1 (highest) on top. Roles wrap
+// as chips inside their lane (getResults already sorts by weighting desc within
+// a band). Empty bands stay visible so the full band structure always reads.
+//
+// With groupByFamily on, the chips inside each band lane cluster by family: a
+// full-width family label (family A-Z, family-less last) precedes that family's
+// chips. The chips live in ONE container per lane and keep their keys across
+// the toggle, so flipping the grouping re-flows them to their new positions
+// with a layout animation while the labels fade in/out. Chips use
+// layout="position" so the move never scales/warps their text (ui-animation.md
+// rule 1); the shared layoutId also animates a role between lanes when its band
+// changes.
 export function BandLadder({
   bands,
   rows,
+  groupByFamily = false,
 }: {
   bands: { band: number; minScore: number }[]
   rows: BandRoleRow[]
+  groupByFamily?: boolean
 }) {
   const t = useTranslations("dashboard.bands")
+  const tFamily = useTranslations("dashboard.roles.family")
   const ranges = bandRanges(bands)
   const placed = rows.filter((row) => row.band !== null)
+
+  const renderChip = (role: BandRoleRow) => (
+    <motion.div
+      key={role.roleId}
+      layout="position"
+      layoutId={`ladder-${role.roleId}`}
+      transition={SPRING}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <RoleChip role={role} />
+    </motion.div>
+  )
+
+  const familyLabel = (key: string, name: string) => (
+    <motion.div
+      key={`fam-${key}`}
+      layout="position"
+      transition={SPRING}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="w-full pt-1 text-muted-foreground text-xs"
+    >
+      {name}
+    </motion.div>
+  )
 
   return (
     <ul className="space-y-2">
@@ -37,26 +76,22 @@ export function BandLadder({
                   {t("roleCount", { count: inBand.length })}
                 </div>
               </div>
-              <div className="flex flex-1 flex-wrap gap-2">
+              <div className="flex flex-1 flex-wrap items-start gap-2">
                 {inBand.length === 0 ? (
-                  <span className="self-center text-muted-foreground text-sm italic">
+                  <span className="text-muted-foreground text-sm italic">
                     {t("bandEmpty")}
                   </span>
                 ) : (
                   <AnimatePresence initial={false}>
-                    {inBand.map((role) => (
-                      <motion.div
-                        key={role.roleId}
-                        layout
-                        layoutId={`ladder-${role.roleId}`}
-                        transition={SPRING}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                      >
-                        <RoleChip role={role} />
-                      </motion.div>
-                    ))}
+                    {groupByFamily
+                      ? groupRowsByFamily(inBand).flatMap((group) => [
+                          familyLabel(
+                            group.familyId ?? "none",
+                            group.familyName ?? tFamily("none")
+                          ),
+                          ...group.rows.map(renderChip),
+                        ])
+                      : inBand.map(renderChip)}
                   </AnimatePresence>
                 )}
               </div>

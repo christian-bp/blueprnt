@@ -27,10 +27,10 @@ function role(overrides: Partial<BandRoleRow>): BandRoleRow {
   }
 }
 
-function renderLadder(rows: BandRoleRow[]) {
+function renderLadder(rows: BandRoleRow[], groupByFamily = false) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <BandLadder bands={BANDS} rows={rows} />
+      <BandLadder bands={BANDS} rows={rows} groupByFamily={groupByFamily} />
     </NextIntlClientProvider>
   )
 }
@@ -55,5 +55,31 @@ describe("BandLadder", () => {
   it("ignores roles without a band (they belong in the pending zone)", () => {
     renderLadder([role({ roleId: "r9", title: "Draftee", band: null })])
     expect(screen.queryByRole("link", { name: /Draftee/ })).toBeNull()
+  })
+
+  it("clusters roles by family within a band when grouping is on", () => {
+    renderLadder(
+      [
+        role({
+          roleId: "a",
+          title: "CTO",
+          band: 1,
+          familyId: "f1",
+          familyName: "Engineering",
+        }),
+        role({
+          roleId: "b",
+          title: "VP Sales",
+          band: 1,
+          familyId: "f2",
+          familyName: "Sales",
+        }),
+      ],
+      true
+    )
+    expect(screen.getByText("Engineering")).toBeDefined()
+    expect(screen.getByText("Sales")).toBeDefined()
+    expect(screen.getByRole("link", { name: /CTO/ })).toBeDefined()
+    expect(screen.getByRole("link", { name: /VP Sales/ })).toBeDefined()
   })
 })

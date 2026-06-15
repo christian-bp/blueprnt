@@ -240,6 +240,7 @@
       "description": "Bandene og rollene i hvert band, utledet live fra gjeldende modell og vurderinger.",
       "viewLadder": "Stige",
       "viewMatrix": "Matrise",
+      "groupByFamily": "Grupper etter familie",
       "bandRow": "Band {band}",
       "roleCount": "{count, plural, =1 {1 rolle} other {# roller}}",
       "bandEmpty": "Ingen roller i dette bandet",

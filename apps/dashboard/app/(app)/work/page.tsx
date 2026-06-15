@@ -8,6 +8,7 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
+import { Label } from "@workspace/ui/components/label"
 import {
   Select,
   SelectContent,
@@ -16,6 +17,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 import { Spinner } from "@workspace/ui/components/spinner"
+import { Switch } from "@workspace/ui/components/switch"
 import {
   Tabs,
   TabsContent,
@@ -36,8 +38,11 @@ import { useOrganization } from "@/components/org-context"
 const ALL_FAMILIES = "__all__"
 
 // Work > Overview: the band ladder (default) and a band-by-track matrix
-// toggle, scoped by an optional family filter. Score and band recompute
-// reactively from the model and ratings (ADR-0002: never stored).
+// toggle, scoped by an optional family filter. An optional "group by family"
+// switch clusters the roles by family inside each band (ladder) or cell
+// (matrix); toggling it animates the roles into and out of their groups.
+// Score and band recompute reactively from the model and ratings (ADR-0002:
+// never stored).
 export default function WorkOverviewPage() {
   const t = useTranslations("dashboard.bands")
   const tHelp = useTranslations("dashboard.help")
@@ -46,6 +51,7 @@ export default function WorkOverviewPage() {
   const locale = useLocale()
   const results = useQuery(api.assessment.results.getResults, { orgId, locale })
   const [familyFilter, setFamilyFilter] = useState<string | null>(null)
+  const [grouped, setGrouped] = useState(false)
 
   if (results === undefined) {
     return (
@@ -125,13 +131,36 @@ export default function WorkOverviewPage() {
                 </SelectContent>
               </Select>
             )}
+            {hasAnyFamily && (
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="group-by-family"
+                  checked={grouped}
+                  onCheckedChange={setGrouped}
+                />
+                <Label
+                  htmlFor="group-by-family"
+                  className="text-muted-foreground text-sm"
+                >
+                  {t("groupByFamily")}
+                </Label>
+              </div>
+            )}
           </div>
           <TabsContent value="ladder" className="space-y-4">
-            <BandLadder bands={results.bands} rows={filteredRows} />
+            <BandLadder
+              bands={results.bands}
+              rows={filteredRows}
+              groupByFamily={grouped}
+            />
             <PendingRoles rows={filteredRows} />
           </TabsContent>
           <TabsContent value="matrix" className="space-y-4">
-            <BandMatrix bands={results.bands} rows={filteredRows} />
+            <BandMatrix
+              bands={results.bands}
+              rows={filteredRows}
+              groupByFamily={grouped}
+            />
             <PendingRoles rows={filteredRows} />
           </TabsContent>
         </Tabs>

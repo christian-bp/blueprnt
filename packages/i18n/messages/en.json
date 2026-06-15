@@ -240,6 +240,7 @@
       "description": "The bands and the roles in each, derived live from the current model and ratings.",
       "viewLadder": "Ladder",
       "viewMatrix": "Matrix",
+      "groupByFamily": "Group by family",
       "bandRow": "Band {band}",
       "roleCount": "{count, plural, =1 {1 role} other {# roles}}",
       "bandEmpty": "No roles in this band",

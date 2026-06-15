@@ -83,4 +83,16 @@ describe("WorkOverviewPage", () => {
     expect(screen.getByRole("link", { name: /CTO/ })).toBeDefined()
     expect(screen.getByText("Band 1")).toBeDefined()
   })
+
+  it("offers a group-by-family toggle when roles have families", () => {
+    useQueryMock.mockImplementation((ref: string) =>
+      ref === "assessment.results.getResults"
+        ? results([bandRow({ familyId: "f1", familyName: "Engineering" })])
+        : undefined
+    )
+    renderPage()
+    expect(
+      screen.getByText(messages.dashboard.bands.groupByFamily)
+    ).toBeDefined()
+  })
 })

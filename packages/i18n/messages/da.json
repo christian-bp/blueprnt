@@ -240,6 +240,7 @@
       "description": "Bånd og rollerne i hvert bånd, udledt live fra den aktuelle model og vurderinger.",
       "viewLadder": "Stige",
       "viewMatrix": "Matrix",
+      "groupByFamily": "GruppÃ©r efter familie",
       "bandRow": "Band {band}",
       "roleCount": "{count, plural, =1 {1 rolle} other {# roller}}",
       "bandEmpty": "Ingen roller i dette bånd",

@@ -240,6 +240,7 @@
       "description": "Bandit ja kunkin bandin roolit, johdettu reaaliaikaisesti nykyisestä mallista ja arvioinneista.",
       "viewLadder": "Tikkaat",
       "viewMatrix": "Matriisi",
+      "groupByFamily": "Ryhmittele perheittÃ¤in",
       "bandRow": "Band {band}",
       "roleCount": "{count, plural, =1 {1 rooli} other {# roolia}}",
       "bandEmpty": "Ei rooleja tässä bandissa",

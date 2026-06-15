@@ -27,10 +27,10 @@ function role(overrides: Partial<BandRoleRow>): BandRoleRow {
   }
 }
 
-function renderMatrix(rows: BandRoleRow[]) {
+function renderMatrix(rows: BandRoleRow[], groupByFamily = false) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <BandMatrix bands={BANDS} rows={rows} />
+      <BandMatrix bands={BANDS} rows={rows} groupByFamily={groupByFamily} />
     </NextIntlClientProvider>
   )
 }
@@ -73,5 +73,33 @@ describe("BandMatrix", () => {
     ])
     expect(screen.getByRole("link", { name: /CTO/ })).toBeDefined()
     expect(screen.queryByRole("link", { name: /Draftee/ })).toBeNull()
+  })
+
+  it("clusters cell roles by family when grouping is on", () => {
+    renderMatrix(
+      [
+        role({
+          roleId: "a",
+          title: "CTO",
+          band: 1,
+          trackKey: "M",
+          trackName: "Manager",
+          familyId: "f1",
+          familyName: "Engineering",
+        }),
+        role({
+          roleId: "b",
+          title: "VP Sales",
+          band: 1,
+          trackKey: "M",
+          trackName: "Manager",
+          familyId: "f2",
+          familyName: "Sales",
+        }),
+      ],
+      true
+    )
+    expect(screen.getByText("Engineering")).toBeDefined()
+    expect(screen.getByText("Sales")).toBeDefined()
   })
 })
