@@ -1,0 +1,34 @@
+apps/dashboard/components/bands/band-matrix.tsx
+  s_22ed539ec698c7::t_59a9b41c28e90b 55
+  s_22ed539ec698c7::t_0429a3f6b085ea 43,46
+apps/dashboard/components/nav-main.test.tsx
+  s_22ed539ec698c7::t_0a0b15ce942764 1-129
+apps/dashboard/components/bands/role-chip.test.tsx
+  s_22ed539ec698c7::t_962d48c80855ca 42-44
+apps/dashboard/components/bands/band-matrix.test.tsx
+  s_22ed539ec698c7::t_3df4bba5b0ceb2 53-54
+apps/dashboard/components/track-badge.tsx
+  s_22ed539ec698c7::t_e455ad5f35c6a3 21,26-29,35,41-48
+apps/dashboard/components/nav-main.tsx
+  s_22ed539ec698c7::t_4f392498f3cbce 11-16,26,31,45-49,52-53,61-117,121,127,142,159
+apps/dashboard/components/bands/role-chip.tsx
+  s_22ed539ec698c7::t_309762ea2815d6 38
+apps/dashboard/components/track-badge.test.tsx
+  s_22ed539ec698c7::t_18eed36c816d03 32-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "fe5c7ba958308890d49a21cbb745c4433055a0fb",
+  "prompts": {},
+  "sessions": {
+    "s_22ed539ec698c7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdb6c602-6aa0-4ee1-b382-fc4b5e888ce4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
