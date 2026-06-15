@@ -9,13 +9,6 @@ import {
   EmptyTitle,
 } from "@workspace/ui/components/empty"
 import { Label } from "@workspace/ui/components/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { Switch } from "@workspace/ui/components/switch"
 import {
@@ -30,19 +23,19 @@ import Link from "next/link"
 import { useState } from "react"
 import { BandLadder } from "@/components/bands/band-ladder"
 import { BandMatrix } from "@/components/bands/band-matrix"
+import { FamilyFilter } from "@/components/bands/family-filter"
 import { PendingRoles } from "@/components/bands/pending-roles"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
 
-// Sentinel for "show all families" in the Select.
-const ALL_FAMILIES = "__all__"
+// Filter key for roles with no family (the "No family" option).
+const NO_FAMILY = "__none__"
 
 // Work > Overview: the band ladder (default) and a band-by-track matrix
-// toggle, scoped by an optional family filter. An optional "group by family"
-// switch clusters the roles by family inside each band (ladder) or cell
-// (matrix); toggling it animates the roles into and out of their groups.
-// Score and band recompute reactively from the model and ratings (ADR-0002:
-// never stored).
+// toggle. A multi-select family filter shows/hides families, and a "group by
+// family" switch clusters roles by family inside each band (ladder) or cell
+// (matrix), animating them into and out of their groups. Score and band
+// recompute reactively from the model and ratings (ADR-0002: never stored).
 export default function WorkOverviewPage() {
   const t = useTranslations("dashboard.bands")
   const tHelp = useTranslations("dashboard.help")
@@ -50,7 +43,8 @@ export default function WorkOverviewPage() {
   const { orgId } = useOrganization()
   const locale = useLocale()
   const results = useQuery(api.assessment.results.getResults, { orgId, locale })
-  const [familyFilter, setFamilyFilter] = useState<string | null>(null)
+  // Families turned OFF; empty means all are shown.
+  const [hidden, setHidden] = useState<Set<string>>(new Set())
   const [grouped, setGrouped] = useState(false)
 
   if (results === undefined) {
@@ -75,12 +69,17 @@ export default function WorkOverviewPage() {
       .sort((a, b) => a.name.localeCompare(b.name))
   })()
   const hasAnyFamily = familiesInResults.length > 0
+  // "No family" joins the filter options only when some roles are unassigned.
+  const hasNoFamily = results.rows.some((row) => row.familyId === null)
+  const familyOptions = hasNoFamily
+    ? [...familiesInResults, { id: NO_FAMILY, name: tFamily("none") }]
+    : familiesInResults
 
   const filteredRows =
-    familyFilter === null
+    hidden.size === 0
       ? results.rows
       : results.rows.filter(
-          (row) => (row.familyId as string | null) === familyFilter
+          (row) => !hidden.has((row.familyId as string | null) ?? NO_FAMILY)
         )
 
   return (
@@ -112,24 +111,11 @@ export default function WorkOverviewPage() {
               <TabsTrigger value="matrix">{t("viewMatrix")}</TabsTrigger>
             </TabsList>
             {hasAnyFamily && (
-              <Select
-                value={familyFilter ?? ALL_FAMILIES}
-                onValueChange={(next) =>
-                  setFamilyFilter(next === ALL_FAMILIES ? null : next)
-                }
-              >
-                <SelectTrigger className="w-48">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={ALL_FAMILIES}>{tFamily("all")}</SelectItem>
-                  {familiesInResults.map((family) => (
-                    <SelectItem key={family.id} value={family.id}>
-                      {family.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FamilyFilter
+                options={familyOptions}
+                hidden={hidden}
+                onHiddenChange={setHidden}
+              />
             )}
             {hasAnyFamily && (
               <div className="flex items-center gap-2">
