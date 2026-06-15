@@ -39,6 +39,8 @@ export function RoleChip({ role }: { role: BandRoleRow }) {
       {deviates && role.anchor !== null && (
         <Badge
           variant="destructive"
+          // Screen readers get the full meaning, not just the "≠ Band n" glyph.
+          aria-label={t("deviationLabel", { band: role.anchor.expectedBand })}
           title={t("deviationLabel", { band: role.anchor.expectedBand })}
         >
           {t("deviation", { band: role.anchor.expectedBand })}

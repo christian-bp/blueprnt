@@ -69,6 +69,10 @@ export function BandMatrix({
               <th
                 key={track.key}
                 scope="col"
+                // The visible header is the short key (IC / Lead / M); give
+                // screen readers the full track name as the accessible name
+                // (title alone is not reliably announced).
+                aria-label={track.name}
                 title={track.name}
                 className="text-left font-medium text-muted-foreground text-xs uppercase tracking-wide"
               >

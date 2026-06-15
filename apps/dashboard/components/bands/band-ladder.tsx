@@ -80,7 +80,7 @@ export function BandLadder({
                   {t("roleCount", { count: inBand.length })}
                 </div>
               </div>
-              <div className="flex flex-1 flex-wrap items-start gap-2">
+              <div className="relative flex flex-1 flex-wrap items-start gap-2">
                 {inBand.length === 0 ? (
                   // Empty band: a subtle diagonal-hatch placeholder (the
                   // band's "0 roles" count in the rail carries the wording).
@@ -92,7 +92,7 @@ export function BandLadder({
                     className="h-8 w-full rounded-md bg-[repeating-linear-gradient(-60deg,var(--border),var(--border)_1px,transparent_1px,transparent_6px)]"
                   />
                 ) : (
-                  <AnimatePresence initial={false}>
+                  <AnimatePresence initial={false} mode="popLayout">
                     {groupByFamily
                       ? groupRowsByFamily(inBand).flatMap((group) => [
                           familyLabel(
