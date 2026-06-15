@@ -1,0 +1,24 @@
+apps/dashboard/components/bands/band-ladder.tsx
+  s_22ed539ec698c7::t_a0811b71415cbd 83
+  s_22ed539ec698c7::t_9296f99d8b179a 95
+apps/dashboard/components/bands/role-chip.tsx
+  s_22ed539ec698c7::t_56e68abc4eaf87 42-43
+apps/dashboard/components/bands/band-matrix.tsx
+  s_22ed539ec698c7::t_c5c040e3ac95b4 72-75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "c09feb40a3812a1870e33c43d7985064056f7acf",
+  "prompts": {},
+  "sessions": {
+    "s_22ed539ec698c7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fdb6c602-6aa0-4ee1-b382-fc4b5e888ce4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
