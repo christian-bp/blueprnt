@@ -41,8 +41,9 @@ export type NavItem = {
 const RAIL_CLASSES =
   "group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-1.5! [&_svg]:size-5 group-data-[collapsible=icon]:[&_span]:hidden"
 
-// Primary navigation. A leaf is active when its URL prefixes the path ("/"
-// matches exactly); a group is active when any child is active. A group keeps
+// Primary navigation. A leaf is active on an exact URL match or a sub-path
+// ("/" matches exactly; the trailing-slash guard stops /work matching
+// /workspace); a group is active when any child is active. A group keeps
 // its submenu reachable in BOTH sidebar states: inline (Collapsible) when the
 // rail is expanded, and as a flyout dropdown off the icon when the rail is
 // collapsed (the inline SidebarMenuSub is hidden in the icon rail, so a
@@ -52,7 +53,9 @@ export function NavMain({ items }: { items: NavItem[] }) {
   const { state } = useSidebar()
   const collapsed = state === "collapsed"
   const isActive = (url: string) =>
-    url === "/" ? pathname === "/" : pathname.startsWith(url)
+    url === "/"
+      ? pathname === "/"
+      : pathname === url || pathname.startsWith(`${url}/`)
 
   return (
     <SidebarGroup>

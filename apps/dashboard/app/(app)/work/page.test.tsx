@@ -84,6 +84,18 @@ describe("WorkOverviewPage", () => {
     expect(screen.getByText("Band 1")).toBeDefined()
   })
 
+  it("shows the anchor legend when a role is an anchor", () => {
+    useQueryMock.mockImplementation((ref: string) =>
+      ref === "assessment.results.getResults"
+        ? results([bandRow({ anchor: { expectedBand: 1, status: "active" } })])
+        : undefined
+    )
+    renderPage()
+    // The legend's visible "Anchor role" text (the chip uses it as an icon
+    // aria-label, which getByText does not match).
+    expect(screen.getByText(messages.dashboard.bands.anchorLabel)).toBeDefined()
+  })
+
   it("offers a group-by-family toggle when roles have families", () => {
     useQueryMock.mockImplementation((ref: string) =>
       ref === "assessment.results.getResults"
