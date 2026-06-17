@@ -7,6 +7,7 @@
     "dev": "convex dev",
     "setup": "convex dev --until-success",
     "db:reset": "convex run seed:resetDatabase",
+    "db:reset:onboarding": "convex run seed:resetDatabaseForOnboarding",
     "lint": "biome lint .",
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit -p convex",

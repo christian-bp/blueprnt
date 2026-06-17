@@ -4,13 +4,13 @@
 // Guarded so it can never run against a deployment whose SITE_URL is not
 // localhost (i.e. production).
 //
-// Full database reset (seed:resetDatabase): run from the repo root with
-//   bun db:reset
-// or from packages/backend with
-//   bunx convex run seed:resetDatabase
-// Everything is deleted: the signed-in browser session dies (sign in again
-// with the seeded user, hej@blueprnt.se / abc123) and onboarding restarts from
-// scratch. The dev user is re-seeded at the end so local sign-in works again.
+// Full database reset: run from the repo root with one of
+//   bun db:reset              lands on the dashboard (dev user + two ready companies)
+//   bun db:reset:onboarding   lands in the onboarding wizard (dev user only, no company)
+// or from packages/backend with `bunx convex run seed:resetDatabase` /
+// `bunx convex run seed:resetDatabaseForOnboarding`. Everything is deleted: the
+// signed-in browser session dies (sign in again with the seeded user,
+// hej@blueprnt.se / abc123). The dev user is re-seeded so local sign-in works again.
 import { v } from "convex/values"
 import { hashPassword } from "better-auth/crypto"
 import { type ActionCtx, internalAction } from "./_generated/server"
@@ -300,38 +300,59 @@ export const seedDevOrganization = internalAction({
   },
 })
 
-// Dev-only full reset: wipes every app table and every Better Auth table
-// (except jwks), then re-seeds the dev user. Run from the repo root with
-// `bun db:reset` (or from packages/backend with
-// `bunx convex run seed:resetDatabase`). See the file header for what this
-// deletes and how to recover.
+// Stricter than the sibling guards (substring match): the reset actions wipe
+// EVERYTHING, so the hostname must BE localhost, not merely contain it.
+function assertResettable(actionName: string) {
+  const siteUrl = process.env.SITE_URL ?? ""
+  let hostname = ""
+  try {
+    hostname = new URL(siteUrl).hostname
+  } catch {
+    hostname = ""
+  }
+  if (hostname !== "localhost" && hostname !== "127.0.0.1") {
+    throw new Error(
+      `${actionName} only runs on dev deployments (SITE_URL must contain 'localhost')`
+    )
+  }
+}
+
+// Wipe everything, then re-seed the dev user (defaults hej@blueprnt.se / abc123
+// / "Hej"). Shared by both reset variants.
+async function wipeAndSeedDevUser(ctx: ActionCtx): Promise<string> {
+  await wipeAllData(ctx)
+  const result: { userId: string; created: boolean } = await ctx.runAction(
+    internal.seed.seedDevUser,
+    {}
+  )
+  return result.userId
+}
+
+// Dev-only full reset to a READY state: wipes every app table and every Better
+// Auth table (except jwks), re-seeds the dev user, AND seeds two fully onboarded
+// companies, so sign-in lands straight on the dashboard with the company switcher
+// ready. Run from the repo root with `bun db:reset`. Use
+// resetDatabaseForOnboarding instead to land in the onboarding wizard.
 export const resetDatabase = internalAction({
   args: {},
   returns: v.object({ userId: v.string() }),
   handler: async (ctx) => {
-    // Stricter than the sibling guards (substring match): this action wipes
-    // EVERYTHING, so the hostname must BE localhost, not merely contain it.
-    const siteUrl = process.env.SITE_URL ?? ""
-    let hostname = ""
-    try {
-      hostname = new URL(siteUrl).hostname
-    } catch {
-      hostname = ""
-    }
-    if (hostname !== "localhost" && hostname !== "127.0.0.1") {
-      throw new Error(
-        "resetDatabase only runs on dev deployments (SITE_URL must contain 'localhost')"
-      )
-    }
+    assertResettable("resetDatabase")
+    const userId = await wipeAndSeedDevUser(ctx)
+    await ctx.runAction(internal.seed.seedDevOrganization, {})
+    return { userId }
+  },
+})
 
-    await wipeAllData(ctx)
-
-    // Re-seed the dev user (reuses the defaults hej@blueprnt.se / abc123 / "Hej").
-    const result: { userId: string; created: boolean } = await ctx.runAction(
-      internal.seed.seedDevUser,
-      {}
-    )
-
-    return { userId: result.userId }
+// Dev-only reset to the ONBOARDING state: wipes everything and re-seeds only the
+// dev user (no companies), so sign-in starts the onboarding wizard from step 1.
+// Run from the repo root with `bun db:reset:onboarding`.
+export const resetDatabaseForOnboarding = internalAction({
+  args: {},
+  returns: v.object({ userId: v.string() }),
+  handler: async (ctx) => {
+    assertResettable("resetDatabaseForOnboarding")
+    const userId = await wipeAndSeedDevUser(ctx)
+    return { userId }
   },
 })

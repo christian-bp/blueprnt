@@ -10,6 +10,7 @@
     "typecheck": "turbo typecheck",
     "test": "turbo test",
     "db:reset": "bun run --cwd packages/backend db:reset",
+    "db:reset:onboarding": "bun run --cwd packages/backend db:reset:onboarding",
     "prepare": "git config core.hooksPath .githooks"
   },
   "devDependencies": {

@@ -489,6 +489,9 @@ describe("seed.seedDevUser guard", () => {
     await expect(t.action(internal.seed.resetDatabase, {})).rejects.toThrow(
       "resetDatabase only runs on dev deployments"
     )
+    await expect(
+      t.action(internal.seed.resetDatabaseForOnboarding, {})
+    ).rejects.toThrow("resetDatabaseForOnboarding only runs on dev deployments")
   })
 })
 
