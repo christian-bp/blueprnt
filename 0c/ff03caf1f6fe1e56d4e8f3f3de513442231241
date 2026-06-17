@@ -1,0 +1,25 @@
+packages/backend/convex/accounts/onboarding.test.ts
+  s_fee3972340d93b::t_46474b79dbafac 149-206
+packages/backend/convex/accounts/onboarding.ts
+  s_fee3972340d93b::t_97af6801d3024a 9-10,17,35,42-46,55,58,68,72,76-78
+apps/dashboard/components/onboarding/onboarding-gate.tsx
+  s_fee3972340d93b::t_d66985b8a2fa69 29
+packages/backend/convex/betterAuth/testing.ts
+  s_fee3972340d93b::t_e9783526f1b728 64-87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "0cff03caf1f6fe1e56d4e8f3f3de513442231241",
+  "prompts": {},
+  "sessions": {
+    "s_fee3972340d93b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0f95938c-1b77-4bd5-b00d-90b2923adb03",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
