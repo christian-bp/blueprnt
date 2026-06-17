@@ -290,7 +290,6 @@ export const seedDevOrganization = internalAction({
         )
         await ctx.runMutation(internal.assessment.seed.seedRatedRoles, {
           orgId: result.orgId,
-          locale: org.language,
         })
       }
 

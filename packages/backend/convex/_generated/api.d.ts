@@ -28,6 +28,7 @@ import type * as ai_usage from "../ai/usage.js";
 import type * as ai_weights from "../ai/weights.js";
 import type * as assessment_anchorRoles from "../assessment/anchorRoles.js";
 import type * as assessment_compute from "../assessment/compute.js";
+import type * as assessment_devCompany from "../assessment/devCompany.js";
 import type * as assessment_families from "../assessment/families.js";
 import type * as assessment_industryStarters from "../assessment/industryStarters.js";
 import type * as assessment_names from "../assessment/names.js";
@@ -81,6 +82,7 @@ declare const fullApi: ApiFromModules<{
   "ai/weights": typeof ai_weights;
   "assessment/anchorRoles": typeof assessment_anchorRoles;
   "assessment/compute": typeof assessment_compute;
+  "assessment/devCompany": typeof assessment_devCompany;
   "assessment/families": typeof assessment_families;
   "assessment/industryStarters": typeof assessment_industryStarters;
   "assessment/names": typeof assessment_names;
