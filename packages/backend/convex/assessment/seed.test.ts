@@ -69,21 +69,20 @@ describe("assessment/seed.seedRatedRoles", () => {
             templateKeyById.get(r.criterionId) === templateKey
         )?.value
       }
-      // CEO is M3 -> all 5s (band 1).
+      // CEO (EXEC_CEO): broad leader, deliberately low on the technical criteria.
       expect(cell("CEO", "scope")).toBe(5)
+      expect(cell("CEO", "complexity")).toBe(3)
       expect(cell("CEO", "people")).toBe(5)
-      expect(cell("CEO", "formal")).toBe(5)
-      // Software Developer is IC3 -> all 3s (band 5).
-      expect(cell("Software Developer", "scope")).toBe(3)
-      expect(cell("Software Developer", "people")).toBe(3)
-      // Technical Solutions Architect is M2 -> [5,5,4,5,5,4,5,4,4] (band 2).
-      expect(cell("Technical Solutions Architect", "scope")).toBe(5)
-      expect(cell("Technical Solutions Architect", "financial")).toBe(5)
-      expect(cell("Technical Solutions Architect", "people")).toBe(4)
-      // Order & Indoor Sales is IC2 -> [3,3,2,2,3,2,2,2,2] (band 6).
-      expect(cell("Order & Indoor Sales", "scope")).toBe(3)
-      expect(cell("Order & Indoor Sales", "autonomy")).toBe(2)
-      expect(cell("Order & Indoor Sales", "people")).toBe(2)
+      // Software Developer (DEV): peaks on the technical criteria, low on people.
+      expect(cell("Software Developer", "complexity")).toBe(5)
+      expect(cell("Software Developer", "knowledge")).toBe(5)
+      expect(cell("Software Developer", "people")).toBe(1)
+      // Technical Solutions Architect (ARCHITECT): deep technical leader.
+      expect(cell("Technical Solutions Architect", "complexity")).toBe(5)
+      expect(cell("Technical Solutions Architect", "knowledge")).toBe(5)
+      // Order & Indoor Sales (JR_IC): junior, low magnitude.
+      expect(cell("Order & Indoor Sales", "scope")).toBe(2)
+      expect(cell("Order & Indoor Sales", "people")).toBe(1)
     })
 
     // Idempotent: any existing role short-circuits the whole seed.

@@ -3,7 +3,7 @@ import { internalMutation } from "../_generated/server"
 import { isCriterionKey } from "../evaluationModel/localize"
 import { CRITERION_KEYS } from "../evaluationModel/standardTemplate"
 import { AUDIT_EVENTS, logAudit } from "../lib/audit"
-import { DEV_COMPANY, RATINGS_BY_LEVEL } from "./devCompany"
+import { DEV_COMPANY, RATINGS_BY_TITLE } from "./devCompany"
 import { insertStarterSet } from "./starters"
 
 // Dev/seed-only: give an org the blueprnt demo company (DEV_COMPANY: ~40 roles
@@ -40,14 +40,6 @@ export const seedRatedRoles = internalMutation({
       source: "starter",
     })
 
-    // Level per title (drives the rating -> band), matched by trimmed title.
-    const levelByTitle = new Map<string, keyof typeof RATINGS_BY_LEVEL>()
-    for (const family of DEV_COMPANY) {
-      for (const role of family.roles) {
-        levelByTitle.set(role.title.trim(), role.level)
-      }
-    }
-
     const criteria = await ctx.db
       .query("criteria")
       .withIndex("by_org", (q) => q.eq("orgId", orgId))
@@ -59,11 +51,10 @@ export const seedRatedRoles = internalMutation({
 
     let ratingCount = 0
     for (const role of roles) {
-      const level = levelByTitle.get(role.title.trim())
-      if (level === undefined) {
-        throw new Error(`seedRatedRoles: no level for role "${role.title}"`)
+      const ratingRow = RATINGS_BY_TITLE[role.title.trim()]
+      if (ratingRow === undefined) {
+        throw new Error(`seedRatedRoles: no ratings for role "${role.title}"`)
       }
-      const ratingRow = RATINGS_BY_LEVEL[level]
       await ctx.db.patch(role._id, { status: "approved" })
       await logAudit(ctx, {
         orgId,
