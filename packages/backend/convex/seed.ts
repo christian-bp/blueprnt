@@ -42,6 +42,90 @@ async function wipeAllData(ctx: ActionCtx): Promise<void> {
   }
 }
 
+// The demo companies seeded into a fresh deployment (dev reset AND production
+// seed). blueprnt is a FULLY onboarded, rated company (settings + standard model
+// + the ~40-role demo company, every role rated so the results/band view is
+// populated). Acme AB is left BARE (membership only), so switching to it opens
+// the onboarding wizard. Idempotent (orgs keyed by slug; settings/model/roles
+// seeding skip on re-run).
+const SEED_ORGANIZATIONS = [
+  {
+    name: "blueprnt",
+    slug: "blueprnt",
+    onboarded: true,
+    country: "se",
+    currency: "SEK",
+    language: "sv",
+    industry: "itTelecom",
+  },
+  { name: "Acme AB", slug: "acme-ab", onboarded: false },
+] as const
+
+// Seeds SEED_ORGANIZATIONS for the already-existing user identified by email.
+// Shared by seedDevOrganization (dev) and seedProduction (prod); the callers own
+// the guard (localhost / confirm sentinel), so this helper is unguarded and is
+// never exposed as a callable function.
+async function seedDemoCompaniesForUser(
+  ctx: ActionCtx,
+  email: string
+): Promise<
+  {
+    orgId: string
+    userId: string
+    createdOrg: boolean
+    createdMember: boolean
+  }[]
+> {
+  const results: {
+    orgId: string
+    userId: string
+    createdOrg: boolean
+    createdMember: boolean
+  }[] = []
+  for (const org of SEED_ORGANIZATIONS) {
+    const result = await ctx.runMutation(
+      components.betterAuth.seed.insertOrganization,
+      { name: org.name, slug: org.slug, email, role: "admin" }
+    )
+
+    // Direct component inserts bypass the Better Auth triggers; seed the
+    // app-side organization row + membership audit (always, even when bare).
+    await ctx.runMutation(internal.accounts.mirrors.mirrorSeededOrganization, {
+      orgId: result.orgId,
+      memberUserId: result.userId,
+      role: "admin",
+      auditMember: result.createdMember,
+    })
+
+    // Onboarded org: fill settings + mark complete, create the standard model,
+    // then seed rated roles so it lands on a populated dashboard. A bare org
+    // (onboarded: false) gets none of this, so switching to it opens the wizard.
+    if (org.onboarded) {
+      await ctx.runMutation(
+        internal.accounts.mirrors.seedOrganizationSettings,
+        {
+          orgId: result.orgId,
+          country: org.country,
+          currency: org.currency,
+          language: org.language,
+          industry: org.industry,
+          completeOnboarding: true,
+        }
+      )
+      await ctx.runMutation(internal.evaluationModel.model.seedStandardModel, {
+        orgId: result.orgId,
+        locale: org.language,
+      })
+      await ctx.runMutation(internal.assessment.seed.seedRatedRoles, {
+        orgId: result.orgId,
+      })
+    }
+
+    results.push(result)
+  }
+  return results
+}
+
 // TODO(go-live): remove this action (and this whole wipe-capable surface)
 // before real customer data exists; tracked in packages/backend/README.md
 // under "Before go-live".
@@ -51,7 +135,8 @@ async function wipeAllData(ctx: ActionCtx): Promise<void> {
 // localhost-guarded, so this internalAction (never callable from clients)
 // is the admin path to a clean demo state: it wipes EVERY app table and
 // EVERY Better Auth table (except jwks) on the target deployment, then
-// creates the single explicit account. There are NO defaults; the
+// creates the single explicit account and seeds the same demo companies as a
+// dev reset (blueprnt rated + Acme AB bare) for it. There are NO defaults; the
 // destructive step is gated by the confirm sentinel instead of a hostname
 // guard, and the password hash is computed BEFORE the wipe so nothing can
 // fail after the data is gone. Run from packages/backend with:
@@ -99,6 +184,9 @@ export const seedProduction = internalAction({
       email,
       name: name.trim(),
     })
+    // Seed the demo companies for the new account so production lands on the same
+    // populated state as a dev reset (blueprnt rated + Acme AB bare).
+    await seedDemoCompaniesForUser(ctx, email)
     return result
   },
 })
@@ -205,26 +293,10 @@ export const removeDevOrganizations = internalAction({
   },
 })
 
-// Dev-only organization seed. blueprnt is a FULLY onboarded, rated SaaS company
-// (settings + standard model + the itTelecom starter roles, every role rated so
-// the results/band view is populated). Acme AB is left BARE (membership only, no
-// settings/model), so switching to it drops the user into the onboarding wizard:
-// that is how to test onboarding, and why there is no separate onboarding reset.
-// Idempotent (orgs keyed by slug; settings/model/roles seeding skip on re-run).
+// Dev-only organization seed: seeds the demo companies (blueprnt rated + Acme AB
+// bare) for the dev user. Localhost-guarded; the shared seeding lives in
+// seedDemoCompaniesForUser (also used by seedProduction). Idempotent.
 // Run with: bunx convex run seed:seedDevOrganization
-const DEV_ORGANIZATIONS = [
-  {
-    name: "blueprnt",
-    slug: "blueprnt",
-    onboarded: true,
-    country: "se",
-    currency: "SEK",
-    language: "sv",
-    industry: "itTelecom",
-  },
-  { name: "Acme AB", slug: "acme-ab", onboarded: false },
-] as const
-
 export const seedDevOrganization = internalAction({
   args: { email: v.optional(v.string()) },
   returns: v.array(
@@ -242,61 +314,7 @@ export const seedDevOrganization = internalAction({
         "seedDevOrganization only runs on dev deployments (SITE_URL must contain 'localhost')"
       )
     }
-
-    const email = args.email ?? "hej@blueprnt.se"
-
-    const results: {
-      orgId: string
-      userId: string
-      createdOrg: boolean
-      createdMember: boolean
-    }[] = []
-    for (const org of DEV_ORGANIZATIONS) {
-      const result = await ctx.runMutation(
-        components.betterAuth.seed.insertOrganization,
-        { name: org.name, slug: org.slug, email, role: "admin" }
-      )
-
-      // Direct component inserts bypass the Better Auth triggers; seed the
-      // app-side organization row + membership audit (always, even when bare).
-      await ctx.runMutation(
-        internal.accounts.mirrors.mirrorSeededOrganization,
-        {
-          orgId: result.orgId,
-          memberUserId: result.userId,
-          role: "admin",
-          auditMember: result.createdMember,
-        }
-      )
-
-      // Onboarded org: fill settings + mark complete, create the standard model,
-      // then seed rated roles so it lands on a populated dashboard. A bare org
-      // (onboarded: false) gets none of this, so switching to it opens the wizard.
-      if (org.onboarded) {
-        await ctx.runMutation(
-          internal.accounts.mirrors.seedOrganizationSettings,
-          {
-            orgId: result.orgId,
-            country: org.country,
-            currency: org.currency,
-            language: org.language,
-            industry: org.industry,
-            completeOnboarding: true,
-          }
-        )
-        await ctx.runMutation(
-          internal.evaluationModel.model.seedStandardModel,
-          { orgId: result.orgId, locale: org.language }
-        )
-        await ctx.runMutation(internal.assessment.seed.seedRatedRoles, {
-          orgId: result.orgId,
-        })
-      }
-
-      results.push(result)
-    }
-
-    return results
+    return await seedDemoCompaniesForUser(ctx, args.email ?? "hej@blueprnt.se")
   },
 })
 
