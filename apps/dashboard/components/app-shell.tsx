@@ -27,7 +27,9 @@ export function AppShell(props: {
           defaultOpen={false}
           style={
             {
-              "--sidebar-width": "calc(var(--spacing) * 72)",
+              // Narrower than the shadcn default: the nav is three short
+              // top-level items, so 15rem is plenty and the footer still fits.
+              "--sidebar-width": "calc(var(--spacing) * 60)",
               "--header-height": "calc(var(--spacing) * 12)",
             } as CSSProperties
           }
