@@ -13,6 +13,7 @@ import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import { LanguageMenuSub } from "@/components/language-menu"
 import { Logo } from "@/components/logo"
+import { OrgSwitchMenuSub } from "@/components/org-switch-menu"
 
 // Derive at most two initials from the display name, or fall back to the
 // first letter of the email address, or "?" if neither is available.
@@ -60,6 +61,9 @@ export function OnboardingHeader() {
           </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          {/* Lets the user switch away from a bare company's onboarding to an
+              onboarded one; renders nothing with fewer than two companies. */}
+          <OrgSwitchMenuSub />
           <LanguageMenuSub />
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleSignOut}>

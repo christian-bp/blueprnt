@@ -30,6 +30,11 @@ vi.mock("@/lib/auth-client", () => ({
       data: { user: { name: "HR Person", email: "hr@acme.se" } },
     }),
     signOut: signOutMock,
+    // OrgSwitchMenuSub (embedded in the menu) reads these; with fewer than two
+    // companies it renders nothing, so the header tests are unaffected.
+    useListOrganizations: () => ({ data: [] }),
+    useActiveOrganization: () => ({ data: null }),
+    organization: { setActive: () => {} },
   },
 }))
 
