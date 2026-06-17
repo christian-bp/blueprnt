@@ -206,14 +206,29 @@ export const removeDevOrganizations = internalAction({
   },
 })
 
-// Dev-only organization seed: gives the seeded user an admin membership in a
-// couple of organizations, so local sign-in lands in a realistic tenant AND the
-// company switcher (active-company scoping) is exercisable out of the box.
-// Idempotent (orgs keyed by slug, membership per (org, user)). Run with:
+// Dev-only organization seed: gives the seeded user admin membership in a couple
+// of FULLY ONBOARDED organizations (settings filled, a standard model created,
+// onboarding marked complete), so local sign-in lands straight on the dashboard
+// and the company switcher is usable between two ready companies out of the box.
+// Idempotent (orgs keyed by slug; settings/model seeding skip on re-run). Run with:
 //   bunx convex run seed:seedDevOrganization
 const DEV_ORGANIZATIONS = [
-  { name: "blueprnt", slug: "blueprnt" },
-  { name: "Acme AB", slug: "acme-ab" },
+  {
+    name: "blueprnt",
+    slug: "blueprnt",
+    country: "se",
+    currency: "SEK",
+    language: "sv",
+    industry: "itTelecom",
+  },
+  {
+    name: "Acme AB",
+    slug: "acme-ab",
+    country: "se",
+    currency: "SEK",
+    language: "sv",
+    industry: "manufacturing",
+  },
 ] as const
 
 export const seedDevOrganization = internalAction({
@@ -259,6 +274,24 @@ export const seedDevOrganization = internalAction({
           auditMember: result.createdMember,
         }
       )
+
+      // Fill settings + mark onboarding complete, then create the standard
+      // model, so the org reads as fully onboarded (no wizard on sign-in).
+      await ctx.runMutation(
+        internal.accounts.mirrors.seedOrganizationSettings,
+        {
+          orgId: result.orgId,
+          country: org.country,
+          currency: org.currency,
+          language: org.language,
+          industry: org.industry,
+          completeOnboarding: true,
+        }
+      )
+      await ctx.runMutation(internal.evaluationModel.model.seedStandardModel, {
+        orgId: result.orgId,
+        locale: org.language,
+      })
 
       results.push(result)
     }

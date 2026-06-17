@@ -1,5 +1,5 @@
 import { v } from "convex/values"
-import type { MutationCtx } from "../_generated/server"
+import { internalMutation, type MutationCtx } from "../_generated/server"
 import { AUDIT_EVENTS, logAudit } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgQuery } from "../lib/functions"
@@ -83,6 +83,56 @@ export const createModelFromTemplate = adminMutation({
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.modelCreated,
       actorId: ctx.authUserId,
+      payload: { modelId, templateKey: STANDARD_TEMPLATE_KEY },
+    })
+    return modelId
+  },
+})
+
+// Dev/seed-only twin of createModelFromTemplate that takes an explicit orgId and
+// locale instead of an auth context. The dev seed runs in a "use node" action
+// with no identity, so it cannot call the adminMutation above. The insert loop
+// and template constants are shared; the only behavioural difference is that
+// this is idempotent (it skips when the org already has a model) rather than
+// throwing modelExists.
+export const seedStandardModel = internalMutation({
+  args: { orgId: v.string(), locale: v.optional(v.string()) },
+  returns: v.union(v.id("models"), v.null()),
+  handler: async (ctx, { orgId, locale }) => {
+    const existing = await ctx.db
+      .query("models")
+      .withIndex("by_org", (q) => q.eq("orgId", orgId))
+      .first()
+    if (existing !== null) return null
+
+    const content = templateContent(clampLocale(locale))
+    const modelId = await ctx.db.insert("models", {
+      orgId,
+      name: content.modelName,
+      templateKey: STANDARD_TEMPLATE_KEY,
+      bandThresholds: defaultBandThresholds(),
+    })
+
+    for (const [index, key] of CRITERION_KEYS.entries()) {
+      const criterion = content.criteria[key]
+      await ctx.db.insert("criteria", {
+        orgId,
+        modelId,
+        name: criterion.name,
+        description: criterion.description,
+        helpText: criterion.helpText,
+        anchors: criterion.anchors.map((text, level) => ({ level, text })),
+        templateKey: key,
+        weightPoints: DEFAULT_WEIGHT_POINTS[key],
+        order: index + 1,
+        isCustom: false,
+      })
+    }
+
+    await logAudit(ctx, {
+      orgId,
+      type: AUDIT_EVENTS.modelCreated,
+      actorId: "system",
       payload: { modelId, templateKey: STANDARD_TEMPLATE_KEY },
     })
     return modelId

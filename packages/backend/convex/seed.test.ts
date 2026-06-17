@@ -491,3 +491,105 @@ describe("seed.seedDevUser guard", () => {
     )
   })
 })
+
+describe("accounts/mirrors.seedOrganizationSettings", () => {
+  it("fills settings + stamps completion, preserving the first timestamp", async () => {
+    const t = initConvexTest()
+    const orgId = "ba_org_settings_seed"
+    // The bare row the seed creates first via mirrorSeededOrganization.
+    await t.run(async (ctx) => {
+      await ctx.db.insert("organizations", { orgId })
+    })
+
+    await t.mutation(internal.accounts.mirrors.seedOrganizationSettings, {
+      orgId,
+      country: "se",
+      currency: "SEK",
+      language: "sv",
+      industry: "itTelecom",
+      completeOnboarding: true,
+    })
+
+    let stampedAt: number | undefined
+    await t.run(async (ctx) => {
+      const row = await ctx.db
+        .query("organizations")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      expect(row?.country).toBe("se")
+      expect(row?.currency).toBe("SEK")
+      expect(row?.language).toBe("sv")
+      expect(row?.industry).toBe("itTelecom")
+      expect(typeof row?.onboardingCompletedAt).toBe("number")
+      stampedAt = row?.onboardingCompletedAt
+    })
+
+    // Re-run keeps the first completion timestamp and updates settings; audit
+    // rows are written only on the first seed.
+    await t.mutation(internal.accounts.mirrors.seedOrganizationSettings, {
+      orgId,
+      country: "se",
+      currency: "SEK",
+      language: "sv",
+      industry: "manufacturing",
+      completeOnboarding: true,
+    })
+    await t.run(async (ctx) => {
+      const row = await ctx.db
+        .query("organizations")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      expect(row?.onboardingCompletedAt).toBe(stampedAt)
+      expect(row?.industry).toBe("manufacturing")
+
+      const settingsAudit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "organization.settingsUpdated")
+        )
+        .collect()
+      expect(settingsAudit).toHaveLength(1)
+      const completedAudit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "organization.onboardingCompleted")
+        )
+        .collect()
+      expect(completedAudit).toHaveLength(1)
+    })
+  })
+
+  it("makes getOnboardingStatus report the org as fully complete", async () => {
+    const t = initConvexTest()
+    const { orgId, userId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "dev@blueprnt.se", name: "Dev", role: "admin" }
+    )
+    // The dev seed sequence: bare org row, then settings + completion, then model.
+    await t.mutation(internal.accounts.mirrors.mirrorSeededOrganization, {
+      orgId,
+      memberUserId: userId,
+      role: "admin",
+      auditMember: true,
+    })
+    await t.mutation(internal.accounts.mirrors.seedOrganizationSettings, {
+      orgId,
+      country: "se",
+      currency: "SEK",
+      language: "sv",
+      industry: "itTelecom",
+      completeOnboarding: true,
+    })
+    await t.mutation(internal.evaluationModel.model.seedStandardModel, {
+      orgId,
+      locale: "sv",
+    })
+
+    const status = await t
+      .withIdentity({ subject: userId })
+      .query(api.accounts.onboarding.getOnboardingStatus, { orgId })
+    expect(status?.settingsComplete).toBe(true)
+    expect(status?.hasModel).toBe(true)
+    expect(status?.completed).toBe(true)
+  })
+})

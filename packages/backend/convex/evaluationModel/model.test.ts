@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { api, components } from "../_generated/api"
+import { api, components, internal } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
 import { STANDARD_TEMPLATE_KEY } from "./standardTemplate"
 
@@ -433,5 +433,90 @@ describe("getModel", () => {
     // The user-chosen name is not localized.
     expect(en?.name).toBe("Vår modell")
     expect(en?.tracks.find((track) => track.key === "M")?.name).toBe("Manager")
+  })
+})
+
+describe("evaluationModel/model.seedStandardModel", () => {
+  it("creates one standard model with nine criteria and is idempotent", async () => {
+    const t = initConvexTest()
+    const orgId = "org_seed_model"
+
+    const modelId = await t.mutation(
+      internal.evaluationModel.model.seedStandardModel,
+      { orgId, locale: "sv" }
+    )
+    expect(modelId).not.toBeNull()
+
+    await t.run(async (ctx) => {
+      const models = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(models).toHaveLength(1)
+      expect(models[0]?.templateKey).toBe(STANDARD_TEMPLATE_KEY)
+      expect(models[0]?.bandThresholds).toHaveLength(7)
+
+      const criteria = await ctx.db
+        .query("criteria")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(criteria).toHaveLength(9)
+      // Point budget is exactly criteria count x 3 (ADR-0004).
+      expect(criteria.reduce((sum, c) => sum + c.weightPoints, 0)).toBe(27)
+      // Anchors are mapped to { level, text } objects, not raw strings.
+      for (const criterion of criteria) {
+        expect(criterion.anchors.length).toBeGreaterThan(0)
+        expect(criterion.anchors[0]).toHaveProperty("level")
+        expect(criterion.anchors[0]).toHaveProperty("text")
+        expect(criterion.isCustom).toBe(false)
+      }
+    })
+
+    // Re-run is a no-op: returns null and does not duplicate the model/criteria.
+    const second = await t.mutation(
+      internal.evaluationModel.model.seedStandardModel,
+      { orgId, locale: "sv" }
+    )
+    expect(second).toBeNull()
+    await t.run(async (ctx) => {
+      const models = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(models).toHaveLength(1)
+      const criteria = await ctx.db
+        .query("criteria")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(criteria).toHaveLength(9)
+    })
+  })
+
+  it("falls back to English content for an unsupported locale", async () => {
+    const t = initConvexTest()
+    await t.mutation(internal.evaluationModel.model.seedStandardModel, {
+      orgId: "org_seed_xx",
+      locale: "xx",
+    })
+    await t.mutation(internal.evaluationModel.model.seedStandardModel, {
+      orgId: "org_seed_en",
+      locale: "en",
+    })
+    await t.run(async (ctx) => {
+      const criterionNames = async (orgId: string) =>
+        (
+          await ctx.db
+            .query("criteria")
+            .withIndex("by_org", (q) => q.eq("orgId", orgId))
+            .collect()
+        )
+          .sort((a, b) => a.order - b.order)
+          .map((criterion) => criterion.name)
+      const unsupported = await criterionNames("org_seed_xx")
+      const english = await criterionNames("org_seed_en")
+      expect(unsupported).toHaveLength(9)
+      // clampLocale("xx") resolves to "en", so the content matches the en seed.
+      expect(unsupported).toEqual(english)
+    })
   })
 })

@@ -155,6 +155,67 @@ export const mirrorSeededOrganization = internalMutation({
   },
 })
 
+// Dev/seed-only: fill an org's settings and (optionally) mark onboarding
+// complete without an auth context. updateOrganizationSettings and
+// completeOnboarding are admin mutations (they need an identity), which the
+// "use node" dev seed action does not have. This patches the bare
+// organizations row mirrorSeededOrganization already created. Idempotent: the
+// first onboardingCompletedAt timestamp is preserved across re-runs, and the
+// audit rows are written only on the first seed.
+export const seedOrganizationSettings = internalMutation({
+  args: {
+    orgId: v.string(),
+    country: v.string(),
+    currency: v.string(),
+    language: v.string(),
+    industry: v.string(),
+    completeOnboarding: v.boolean(),
+  },
+  returns: v.null(),
+  handler: async (
+    ctx,
+    { orgId, country, currency, language, industry, completeOnboarding }
+  ) => {
+    const row = await ctx.db
+      .query("organizations")
+      .withIndex("by_org", (q) => q.eq("orgId", orgId))
+      .unique()
+    const firstSettings = row === null || !row.country
+    const stampCompletion =
+      completeOnboarding &&
+      (row === null || typeof row.onboardingCompletedAt !== "number")
+    const fields = {
+      country,
+      currency,
+      language,
+      industry,
+      ...(stampCompletion ? { onboardingCompletedAt: Date.now() } : {}),
+    }
+    if (row === null) {
+      await ctx.db.insert("organizations", { orgId, ...fields })
+    } else {
+      await ctx.db.patch(row._id, fields)
+    }
+    if (firstSettings) {
+      await logAudit(ctx, {
+        orgId,
+        type: AUDIT_EVENTS.organizationSettingsUpdated,
+        actorId: "system",
+        payload: { changed: ["country", "currency", "language", "industry"] },
+      })
+    }
+    if (stampCompletion) {
+      await logAudit(ctx, {
+        orgId,
+        type: AUDIT_EVENTS.onboardingCompleted,
+        actorId: "system",
+        payload: {},
+      })
+    }
+    return null
+  },
+})
+
 export async function onUserUpdate(
   ctx: Ctx,
   newDoc: AuthUserDoc,
