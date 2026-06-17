@@ -1,0 +1,49 @@
+packages/i18n/messages/en.json
+  s_fee3972340d93b::t_2cd588389edab3 80-83
+packages/i18n/messages/nb.json
+  s_fee3972340d93b::t_2cd588389edab3 80-83
+packages/i18n/messages/da.json
+  s_fee3972340d93b::t_2cd588389edab3 80-83
+apps/dashboard/lib/active-org.ts
+  s_fee3972340d93b::t_2cd588389edab3 1-17
+apps/dashboard/components/nav-organization.test.tsx
+  s_fee3972340d93b::t_2cd588389edab3 1-113
+apps/dashboard/components/nav-organization.tsx
+  s_fee3972340d93b::t_2cd588389edab3 1-116
+apps/dashboard/components/onboarding/onboarding-gate.tsx
+  s_fee3972340d93b::t_2cd588389edab3 5,11-12,14-28,31-78,82-85
+packages/backend/convex/accounts/onboarding.test.ts
+  s_fee3972340d93b::t_2cd588389edab3 149-206
+packages/backend/convex/betterAuth/testing.ts
+  s_fee3972340d93b::t_2cd588389edab3 64-87
+packages/i18n/messages/fi.json
+  s_fee3972340d93b::t_2cd588389edab3 80-83
+packages/backend/convex/accounts/onboarding.ts
+  s_fee3972340d93b::t_2cd588389edab3 9-10,17,35,42-46,55,58,68,72,76-78
+apps/dashboard/components/onboarding/onboarding-gate.test.tsx
+  s_fee3972340d93b::t_2cd588389edab3 3,10-22,45-50
+apps/dashboard/lib/active-org.test.ts
+  s_fee3972340d93b::t_2cd588389edab3 1-30
+packages/backend/convex/betterAuth/_generated/component.ts
+  s_fee3972340d93b::t_2cd588389edab3 1601-1607
+apps/dashboard/components/app-sidebar.tsx
+  s_fee3972340d93b::t_2cd588389edab3 13,19,53-55
+packages/i18n/messages/sv.json
+  s_fee3972340d93b::t_2cd588389edab3 80-83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "f803fd8f44d312eeb26b063f1ed9f67c12280556",
+  "prompts": {},
+  "sessions": {
+    "s_fee3972340d93b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0f95938c-1b77-4bd5-b00d-90b2923adb03",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
