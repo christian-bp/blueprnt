@@ -19,11 +19,9 @@ Convex backend (EU West / Ireland deployment, project quantumlabs/blueprnt).
 - Dev organization reset (removes all organizations for the seeded user to retest onboarding from step 1): `bunx convex run seed:removeDevOrganizations`
   Same localhost guard. Pass `'{"email":"..."}'` to target a different address.
 - Dev organizations (admin membership for the seeded user): `bunx convex run seed:seedDevOrganization`
-  Creates two fully onboarded organizations, "blueprnt" (slug `blueprnt`) and "Acme AB" (slug `acme-ab`), with the seeded user as admin in both: settings filled, a standard model, and onboarding marked complete, so the dashboard and the company switcher are ready out of the box. Idempotent; same localhost guard. `bun db:reset` already runs this; run it directly only to (re)seed companies without a full wipe.
-- Full reset (from the repo root):
-  - `bun db:reset` wipes everything, then re-seeds the dev user AND the two ready companies (sign-in lands on the dashboard).
-  - `bun db:reset:onboarding` wipes everything, then re-seeds only the dev user (no company, sign-in starts the onboarding wizard from step 1).
-  Stricter guard than the other seeds: `SITE_URL`'s hostname must BE `localhost` or `127.0.0.1`.
+  Creates "blueprnt" (slug `blueprnt`) as a fully onboarded, rated SaaS company (settings + standard model + the itTelecom starter roles, every role rated so the results/band view is populated) and "Acme AB" (slug `acme-ab`) as a bare company (membership only, no settings/model). The seeded user is admin in both. Switching to Acme AB opens the onboarding wizard, which is how to test onboarding. Idempotent; same localhost guard. `bun db:reset` already runs this; run it directly only to (re)seed companies without a full wipe.
+- Full reset (from the repo root): `bunx convex run seed:resetDatabase`, or `bun db:reset`.
+  Wipes everything, then re-seeds the dev user plus the two companies above. Sign-in lands on blueprnt's populated dashboard; switch to Acme AB to test onboarding. Stricter guard than the other seeds: `SITE_URL`'s hostname must BE `localhost` or `127.0.0.1`.
 - Email verification is disabled until the Scaleway TEM env vars
   (`SCW_SECRET_KEY`, `SCW_PROJECT_ID`, `SCW_REGION`, `EMAIL_FROM`) are set
   and the sending domain is verified. When configuring them, also flip

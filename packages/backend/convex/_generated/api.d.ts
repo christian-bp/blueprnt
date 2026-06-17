@@ -34,6 +34,7 @@ import type * as assessment_names from "../assessment/names.js";
 import type * as assessment_ratings from "../assessment/ratings.js";
 import type * as assessment_results from "../assessment/results.js";
 import type * as assessment_roles from "../assessment/roles.js";
+import type * as assessment_seed from "../assessment/seed.js";
 import type * as assessment_starters from "../assessment/starters.js";
 import type * as assessment_tables from "../assessment/tables.js";
 import type * as auth from "../auth.js";
@@ -86,6 +87,7 @@ declare const fullApi: ApiFromModules<{
   "assessment/ratings": typeof assessment_ratings;
   "assessment/results": typeof assessment_results;
   "assessment/roles": typeof assessment_roles;
+  "assessment/seed": typeof assessment_seed;
   "assessment/starters": typeof assessment_starters;
   "assessment/tables": typeof assessment_tables;
   auth: typeof auth;

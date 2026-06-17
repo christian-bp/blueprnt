@@ -4,13 +4,12 @@
 // Guarded so it can never run against a deployment whose SITE_URL is not
 // localhost (i.e. production).
 //
-// Full database reset: run from the repo root with one of
-//   bun db:reset              lands on the dashboard (dev user + two ready companies)
-//   bun db:reset:onboarding   lands in the onboarding wizard (dev user only, no company)
-// or from packages/backend with `bunx convex run seed:resetDatabase` /
-// `bunx convex run seed:resetDatabaseForOnboarding`. Everything is deleted: the
-// signed-in browser session dies (sign in again with the seeded user,
-// hej@blueprnt.se / abc123). The dev user is re-seeded so local sign-in works again.
+// Full database reset: run from the repo root with `bun db:reset` (or from
+// packages/backend with `bunx convex run seed:resetDatabase`). Everything is
+// deleted, then the dev user, the onboarded+rated blueprnt company, and the bare
+// Acme AB company are re-seeded. The signed-in browser session dies (sign in
+// again with the seeded user, hej@blueprnt.se / abc123). To test onboarding,
+// switch to Acme AB (it is intentionally left un-onboarded).
 import { v } from "convex/values"
 import { hashPassword } from "better-auth/crypto"
 import { type ActionCtx, internalAction } from "./_generated/server"
@@ -206,29 +205,24 @@ export const removeDevOrganizations = internalAction({
   },
 })
 
-// Dev-only organization seed: gives the seeded user admin membership in a couple
-// of FULLY ONBOARDED organizations (settings filled, a standard model created,
-// onboarding marked complete), so local sign-in lands straight on the dashboard
-// and the company switcher is usable between two ready companies out of the box.
-// Idempotent (orgs keyed by slug; settings/model seeding skip on re-run). Run with:
-//   bunx convex run seed:seedDevOrganization
+// Dev-only organization seed. blueprnt is a FULLY onboarded, rated SaaS company
+// (settings + standard model + the itTelecom starter roles, every role rated so
+// the results/band view is populated). Acme AB is left BARE (membership only, no
+// settings/model), so switching to it drops the user into the onboarding wizard:
+// that is how to test onboarding, and why there is no separate onboarding reset.
+// Idempotent (orgs keyed by slug; settings/model/roles seeding skip on re-run).
+// Run with: bunx convex run seed:seedDevOrganization
 const DEV_ORGANIZATIONS = [
   {
     name: "blueprnt",
     slug: "blueprnt",
+    onboarded: true,
     country: "se",
     currency: "SEK",
     language: "sv",
     industry: "itTelecom",
   },
-  {
-    name: "Acme AB",
-    slug: "acme-ab",
-    country: "se",
-    currency: "SEK",
-    language: "sv",
-    industry: "manufacturing",
-  },
+  { name: "Acme AB", slug: "acme-ab", onboarded: false },
 ] as const
 
 export const seedDevOrganization = internalAction({
@@ -264,7 +258,7 @@ export const seedDevOrganization = internalAction({
       )
 
       // Direct component inserts bypass the Better Auth triggers; seed the
-      // organization settings row and audit entries explicitly (idempotently).
+      // app-side organization row + membership audit (always, even when bare).
       await ctx.runMutation(
         internal.accounts.mirrors.mirrorSeededOrganization,
         {
@@ -275,23 +269,30 @@ export const seedDevOrganization = internalAction({
         }
       )
 
-      // Fill settings + mark onboarding complete, then create the standard
-      // model, so the org reads as fully onboarded (no wizard on sign-in).
-      await ctx.runMutation(
-        internal.accounts.mirrors.seedOrganizationSettings,
-        {
+      // Onboarded org: fill settings + mark complete, create the standard model,
+      // then seed rated roles so it lands on a populated dashboard. A bare org
+      // (onboarded: false) gets none of this, so switching to it opens the wizard.
+      if (org.onboarded) {
+        await ctx.runMutation(
+          internal.accounts.mirrors.seedOrganizationSettings,
+          {
+            orgId: result.orgId,
+            country: org.country,
+            currency: org.currency,
+            language: org.language,
+            industry: org.industry,
+            completeOnboarding: true,
+          }
+        )
+        await ctx.runMutation(
+          internal.evaluationModel.model.seedStandardModel,
+          { orgId: result.orgId, locale: org.language }
+        )
+        await ctx.runMutation(internal.assessment.seed.seedRatedRoles, {
           orgId: result.orgId,
-          country: org.country,
-          currency: org.currency,
-          language: org.language,
-          industry: org.industry,
-          completeOnboarding: true,
-        }
-      )
-      await ctx.runMutation(internal.evaluationModel.model.seedStandardModel, {
-        orgId: result.orgId,
-        locale: org.language,
-      })
+          locale: org.language,
+        })
+      }
 
       results.push(result)
     }
@@ -328,11 +329,11 @@ async function wipeAndSeedDevUser(ctx: ActionCtx): Promise<string> {
   return result.userId
 }
 
-// Dev-only full reset to a READY state: wipes every app table and every Better
-// Auth table (except jwks), re-seeds the dev user, AND seeds two fully onboarded
-// companies, so sign-in lands straight on the dashboard with the company switcher
-// ready. Run from the repo root with `bun db:reset`. Use
-// resetDatabaseForOnboarding instead to land in the onboarding wizard.
+// Dev-only full reset: wipes every app table and every Better Auth table (except
+// jwks), re-seeds the dev user, then seeds the onboarded+rated blueprnt company
+// and the bare Acme AB company. Sign-in lands on blueprnt's populated dashboard;
+// switch to Acme AB to test onboarding (it is intentionally left un-onboarded).
+// Run from the repo root with `bun db:reset`.
 export const resetDatabase = internalAction({
   args: {},
   returns: v.object({ userId: v.string() }),
@@ -340,19 +341,6 @@ export const resetDatabase = internalAction({
     assertResettable("resetDatabase")
     const userId = await wipeAndSeedDevUser(ctx)
     await ctx.runAction(internal.seed.seedDevOrganization, {})
-    return { userId }
-  },
-})
-
-// Dev-only reset to the ONBOARDING state: wipes everything and re-seeds only the
-// dev user (no companies), so sign-in starts the onboarding wizard from step 1.
-// Run from the repo root with `bun db:reset:onboarding`.
-export const resetDatabaseForOnboarding = internalAction({
-  args: {},
-  returns: v.object({ userId: v.string() }),
-  handler: async (ctx) => {
-    assertResettable("resetDatabaseForOnboarding")
-    const userId = await wipeAndSeedDevUser(ctx)
     return { userId }
   },
 })
