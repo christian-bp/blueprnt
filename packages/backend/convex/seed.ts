@@ -207,20 +207,25 @@ export const removeDevOrganizations = internalAction({
 })
 
 // Dev-only organization seed: gives the seeded user an admin membership in a
-// organization so local sign-in lands in a realistic tenant. Run with:
+// couple of organizations, so local sign-in lands in a realistic tenant AND the
+// company switcher (active-company scoping) is exercisable out of the box.
+// Idempotent (orgs keyed by slug, membership per (org, user)). Run with:
 //   bunx convex run seed:seedDevOrganization
+const DEV_ORGANIZATIONS = [
+  { name: "blueprnt dev", slug: "blueprnt-dev" },
+  { name: "Acme AB", slug: "acme-ab" },
+] as const
+
 export const seedDevOrganization = internalAction({
-  args: {
-    name: v.optional(v.string()),
-    slug: v.optional(v.string()),
-    email: v.optional(v.string()),
-  },
-  returns: v.object({
-    orgId: v.string(),
-    userId: v.string(),
-    createdOrg: v.boolean(),
-    createdMember: v.boolean(),
-  }),
+  args: { email: v.optional(v.string()) },
+  returns: v.array(
+    v.object({
+      orgId: v.string(),
+      userId: v.string(),
+      createdOrg: v.boolean(),
+      createdMember: v.boolean(),
+    })
+  ),
   handler: async (ctx, args) => {
     const siteUrl = process.env.SITE_URL ?? ""
     if (!siteUrl.includes("localhost")) {
@@ -229,26 +234,36 @@ export const seedDevOrganization = internalAction({
       )
     }
 
-    const result = await ctx.runMutation(
-      components.betterAuth.seed.insertOrganization,
-      {
-        name: args.name ?? "blueprnt dev",
-        slug: args.slug ?? "blueprnt-dev",
-        email: args.email ?? "hej@blueprnt.se",
-        role: "admin",
-      }
-    )
+    const email = args.email ?? "hej@blueprnt.se"
 
-    // Direct component inserts bypass the Better Auth triggers; seed the
-    // organization settings row and audit entries explicitly (idempotently).
-    await ctx.runMutation(internal.accounts.mirrors.mirrorSeededOrganization, {
-      orgId: result.orgId,
-      memberUserId: result.userId,
-      role: "admin",
-      auditMember: result.createdMember,
-    })
+    const results: {
+      orgId: string
+      userId: string
+      createdOrg: boolean
+      createdMember: boolean
+    }[] = []
+    for (const org of DEV_ORGANIZATIONS) {
+      const result = await ctx.runMutation(
+        components.betterAuth.seed.insertOrganization,
+        { name: org.name, slug: org.slug, email, role: "admin" }
+      )
 
-    return result
+      // Direct component inserts bypass the Better Auth triggers; seed the
+      // organization settings row and audit entries explicitly (idempotently).
+      await ctx.runMutation(
+        internal.accounts.mirrors.mirrorSeededOrganization,
+        {
+          orgId: result.orgId,
+          memberUserId: result.userId,
+          role: "admin",
+          auditMember: result.createdMember,
+        }
+      )
+
+      results.push(result)
+    }
+
+    return results
   },
 })
 
