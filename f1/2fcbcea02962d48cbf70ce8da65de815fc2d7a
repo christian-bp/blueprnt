@@ -1,0 +1,31 @@
+packages/backend/convex/accounts/mirrors.ts
+  s_fee3972340d93b::t_84a4b8718d8524 158-218
+packages/backend/convex/evaluationModel/model.ts
+  s_fee3972340d93b::t_760947c028e0a9 92-136
+  s_fee3972340d93b::t_1c48d63c7ab76d 2
+packages/backend/convex/seed.test.ts
+  s_fee3972340d93b::t_71122e9c1bb125 494-560,595
+  s_fee3972340d93b::t_c1c28f35edd813 561-594
+packages/backend/convex/seed.ts
+  s_fee3972340d93b::t_381370ab3d1031 278-295
+  s_fee3972340d93b::t_1af596672d6037 209-213,216-231
+packages/backend/convex/evaluationModel/model.test.ts
+  s_fee3972340d93b::t_554d7ab764900f 438-510
+  s_fee3972340d93b::t_1a85ffceb681a0 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "f12fcbcea02962d48cbf70ce8da65de815fc2d7a",
+  "prompts": {},
+  "sessions": {
+    "s_fee3972340d93b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0f95938c-1b77-4bd5-b00d-90b2923adb03",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
