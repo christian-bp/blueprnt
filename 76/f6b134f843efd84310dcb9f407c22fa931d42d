@@ -1,0 +1,26 @@
+apps/dashboard/components/org-switch-menu.tsx
+  s_fee3972340d93b::t_fe9ac3ae335348 1-88
+apps/dashboard/components/org-switch-menu.test.tsx
+  s_fee3972340d93b::t_5c49aa71317dbe 1-86
+apps/dashboard/components/onboarding/onboarding-header.tsx
+  s_fee3972340d93b::t_9f8b06ea0f59fb 64-66
+  s_fee3972340d93b::t_dd9664bfcaa235 16
+apps/dashboard/components/onboarding/onboarding-header.test.tsx
+  s_fee3972340d93b::t_a6a9ce34950b82 33-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "76f6b134f843efd84310dcb9f407c22fa931d42d",
+  "prompts": {},
+  "sessions": {
+    "s_fee3972340d93b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0f95938c-1b77-4bd5-b00d-90b2923adb03",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
