@@ -19,10 +19,14 @@ export type NavItem = {
   match?: string[]
 }
 
-// The collapsed icon-rail tweaks: 20px icon, centered square, label hidden when
-// the rail is collapsed.
-const RAIL_CLASSES =
-  "group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-1.5! [&_svg]:size-5 group-data-[collapsible=icon]:[&_span]:hidden"
+// Icons are 20px (size-5), so the collapsed button tightens its padding to
+// p-1.5 to fit the glyph in the 32px icon-rail square (symmetric padding also
+// centers it, no mx-auto needed). Everything else about the collapse, the
+// centering and hiding the label, is intentionally left to the vendored
+// SidebarMenuButton: it animates width/padding and truncates the label so the
+// rail closes smoothly. Overriding with mx-auto / justify-center / [&_span]:hidden
+// breaks that (the icon jumps to center and the text blanks instantly).
+const RAIL_CLASSES = "group-data-[collapsible=icon]:p-1.5! [&_svg]:size-5"
 
 // Primary navigation: flat leaf links. A leaf is active on an exact URL match
 // or a sub-path (so /work does not match /workspace); the optional `match`
