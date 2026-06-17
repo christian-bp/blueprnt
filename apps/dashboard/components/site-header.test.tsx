@@ -134,15 +134,30 @@ describe("SiteHeader", () => {
     cleanup()
   })
 
-  it("shows the section as a non-link current page on a top-level route", () => {
+  it("shows a plain section title and no breadcrumb trail on a top-level non-Work route", () => {
     pathState.current = "/"
     renderHeader()
-    expect(screen.getByText("Home").getAttribute("aria-current")).toBe("page")
-    // No real anchors: the lone crumb is the current page.
+    expect(screen.getByText("Home")).toBeDefined()
+    // No section tabs and no breadcrumb trail on Home -> no links at all.
     expect(document.querySelector("a")).toBeNull()
   })
 
-  it("links the section and names the current role on a role page", () => {
+  it("shows the Work section tabs on a Work route", () => {
+    pathState.current = "/work"
+    renderHeader()
+    expect(
+      screen
+        .getByRole("link", { name: messages.dashboard.nav.overview })
+        .getAttribute("href")
+    ).toBe("/work")
+    expect(
+      screen
+        .getByRole("link", { name: messages.dashboard.nav.roles })
+        .getAttribute("href")
+    ).toBe("/roles")
+  })
+
+  it("adds the breadcrumb trail naming the current role on a deep role page", () => {
     pathState.current = "/roles/r1"
     onQuery((ref) =>
       ref === "assessment.roles.getRole"
@@ -150,9 +165,13 @@ describe("SiteHeader", () => {
         : undefined
     )
     renderHeader()
+    // Section tabs still render (Overview is uniquely named) ...
     expect(
-      screen.getByRole("link", { name: "Roles" }).getAttribute("href")
-    ).toBe("/roles")
+      screen
+        .getByRole("link", { name: messages.dashboard.nav.overview })
+        .getAttribute("href")
+    ).toBe("/work")
+    // ... and the demoted trail names the current role.
     expect(
       screen.getByText("Senior Engineer").getAttribute("aria-current")
     ).toBe("page")
@@ -162,7 +181,6 @@ describe("SiteHeader", () => {
     pathState.current = "/roles/r1"
     onQuery(() => undefined)
     renderHeader()
-    expect(screen.getByRole("link", { name: "Roles" })).toBeDefined()
     expect(document.querySelector('[data-slot="skeleton"]')).not.toBeNull()
     expect(screen.queryByText("Senior Engineer")).toBeNull()
   })

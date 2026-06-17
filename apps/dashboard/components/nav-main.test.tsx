@@ -1,18 +1,14 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import { cleanup, render, screen } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 const pathState = vi.hoisted(() => ({ current: "/" }))
-const sidebarState = vi.hoisted(
-  () => ({ current: "expanded" }) as { current: "expanded" | "collapsed" }
-)
 
 vi.mock("next/navigation", () => ({
   usePathname: () => pathState.current,
 }))
 
-// Pass the sidebar structure through as plain elements and drive the
-// expanded/collapsed branch from the mocked useSidebar state. Real radix
-// DropdownMenu and Collapsible stay in place.
+// Pass the sidebar structure through as plain elements, and expose isActive as
+// a data attribute so the active-section logic is assertable.
 vi.mock("@workspace/ui/components/sidebar", () => ({
   SidebarGroup: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
@@ -36,49 +32,18 @@ vi.mock("@workspace/ui/components/sidebar", () => ({
   }) => {
     const { asChild, isActive, tooltip, ...rest } = props
     return (
-      <button type="button" {...rest}>
+      <button type="button" data-active={isActive ? "true" : "false"} {...rest}>
         {children}
       </button>
     )
   },
-  SidebarMenuSub: ({ children }: { children: React.ReactNode }) => (
-    <ul>{children}</ul>
-  ),
-  SidebarMenuSubItem: ({ children }: { children: React.ReactNode }) => (
-    <li>{children}</li>
-  ),
-  SidebarMenuSubButton: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
-  useSidebar: () => ({ state: sidebarState.current, isMobile: false }),
-}))
-
-// Collapsible passthrough so the expanded submenu content renders
-// deterministically in the test (the real radix open/close is not the unit
-// under test here).
-vi.mock("@workspace/ui/components/collapsible", () => ({
-  Collapsible: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-  CollapsibleTrigger: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
-  CollapsibleContent: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
 }))
 
 import { NavMain, type NavItem } from "@/components/nav-main"
 
 const ITEMS: NavItem[] = [
   { title: "Home", url: "/" },
-  {
-    title: "Work",
-    items: [
-      { title: "Overview", url: "/work" },
-      { title: "Roles", url: "/roles" },
-    ],
-  },
+  { title: "Work", url: "/work", match: ["/roles"] },
   { title: "Model", url: "/model" },
 ]
 
@@ -86,44 +51,41 @@ function renderNav() {
   return render(<NavMain items={ITEMS} />)
 }
 
-// Radix menus open on pointerdown + click (the idiom from nav-user.test).
-function openMenu(trigger: HTMLElement) {
-  fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false })
-  fireEvent.click(trigger)
+function activeOf(name: string) {
+  return screen.getByText(name).closest("button")?.getAttribute("data-active")
 }
 
 describe("NavMain", () => {
   beforeEach(() => {
     pathState.current = "/"
-    sidebarState.current = "expanded"
   })
   afterEach(() => cleanup())
 
-  it("renders the Work submenu inline when the sidebar is expanded", () => {
-    sidebarState.current = "expanded"
-    pathState.current = "/work"
+  it("renders each item as a single leaf link", () => {
     renderNav()
     expect(
-      screen.getByRole("link", { name: "Overview" }).getAttribute("href")
+      screen.getByRole("link", { name: "Home" }).getAttribute("href")
+    ).toBe("/")
+    expect(
+      screen.getByRole("link", { name: "Work" }).getAttribute("href")
     ).toBe("/work")
     expect(
-      screen.getByRole("link", { name: "Roles" }).getAttribute("href")
-    ).toBe("/roles")
+      screen.getByRole("link", { name: "Model" }).getAttribute("href")
+    ).toBe("/model")
   })
 
-  it("exposes the submenu via a flyout when the sidebar is collapsed", async () => {
-    sidebarState.current = "collapsed"
+  it("marks Home active only on the root", () => {
     pathState.current = "/"
     renderNav()
-    // The inline submenu is gone; children are not in the DOM until the
-    // flyout opens (this is the bug the flyout fixes).
-    expect(screen.queryByRole("link", { name: "Roles" })).toBeNull()
+    expect(activeOf("Home")).toBe("true")
+    expect(activeOf("Work")).toBe("false")
+  })
 
-    openMenu(screen.getByRole("button", { name: "Work" }))
-
-    const roles = await screen.findByRole("menuitem", { name: "Roles" })
-    expect(roles.getAttribute("href")).toBe("/roles")
-    const overview = await screen.findByRole("menuitem", { name: "Overview" })
-    expect(overview.getAttribute("href")).toBe("/work")
+  it("keeps Work active across /work and any nested /roles path", () => {
+    pathState.current = "/roles/r1"
+    renderNav()
+    expect(activeOf("Work")).toBe("true")
+    expect(activeOf("Home")).toBe("false")
+    expect(activeOf("Model")).toBe("false")
   })
 })

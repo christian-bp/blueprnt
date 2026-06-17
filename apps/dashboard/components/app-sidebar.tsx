@@ -20,9 +20,10 @@ import { NavUser } from "@/components/nav-user"
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations("dashboard")
 
-  // Home is the dashboard landing. Work groups the role world: the band
-  // Overview and the role register. Results was removed; its band view moved
-  // into Work > Overview.
+  // Home is the dashboard landing. Work owns the role world (the band Overview
+  // at /work and the role register at /roles); its two sub-pages are switched
+  // from header tabs (SectionTabs), so Work is a single flat item here that
+  // stays active across both paths. Model edits the assessment model.
   const navMain: NavItem[] = [
     {
       title: t("nav.home"),
@@ -31,11 +32,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     {
       title: t("nav.work"),
+      url: "/work",
+      match: ["/roles"],
       icon: <HugeiconsIcon icon={Briefcase01Icon} strokeWidth={2} />,
-      items: [
-        { title: t("nav.overview"), url: "/work" },
-        { title: t("nav.roles"), url: "/roles" },
-      ],
     },
     {
       title: t("nav.model"),

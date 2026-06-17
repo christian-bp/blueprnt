@@ -18,6 +18,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Fragment } from "react"
 import { useOrganization } from "@/components/org-context"
+import { SectionTabs } from "@/components/section-tabs"
 
 // One breadcrumb. `href` set => a link to an ancestor; omitted => the current
 // page. `loading` => a dynamic label that has not resolved yet; rendered as a
@@ -140,45 +141,71 @@ export function SiteHeader() {
     { roleTitle, familyName }
   )
 
+  // The header carries the section identity: the Work section (/work, /roles)
+  // gets switchable tabs; the other top-level sections get a plain title. The
+  // breadcrumb is demoted to a sub-row that appears only when there is a deeper
+  // trail (a role, a family, or the rate flow), i.e. more than one crumb, so it
+  // never just echoes the active tab. The header keeps its bottom border on
+  // top-level pages; on deep pages the trail row carries it instead, so there
+  // is always a single divider under the header area.
+  const inWorkSection = section === "work" || section === "roles"
+  const sectionTitle = section === "model" ? t("nav.model") : t("nav.home")
+  const showTrail = crumbs.length > 1
+
   return (
-    <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
-      <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
-        <SidebarTrigger className="-ml-1" />
-        <Separator
-          orientation="vertical"
-          // The vendored separator sizes its vertical variant with
-          // data-vertical:self-stretch; with our fixed h-4 (a definite cross
-          // size) that resolves to align-self:flex-start and pins the divider
-          // to the top of the row. Re-center it with the matching variant so
-          // it stays a 16px centered rule.
-          className="mx-2 data-[orientation=vertical]:h-4 data-vertical:self-center"
-        />
-        <Breadcrumb>
-          <BreadcrumbList>
-            {crumbs.map((crumb, index) => {
-              const isLast = index === crumbs.length - 1
-              // Hrefs are unique within a trail and only the final crumb has
-              // none, so this is a stable key without leaning on the index.
-              return (
-                <Fragment key={crumb.href ?? "current"}>
-                  <BreadcrumbItem>
-                    {crumb.loading ? (
-                      <Skeleton className="h-4 w-24" />
-                    ) : crumb.href === undefined ? (
-                      <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
-                    ) : (
-                      <BreadcrumbLink asChild>
-                        <Link href={crumb.href}>{crumb.label}</Link>
-                      </BreadcrumbLink>
-                    )}
-                  </BreadcrumbItem>
-                  {!isLast && <BreadcrumbSeparator />}
-                </Fragment>
-              )
-            })}
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
-    </header>
+    <>
+      <header
+        className={`flex h-(--header-height) shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) ${
+          showTrail ? "" : "border-b"
+        }`}
+      >
+        <div className="flex h-full w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
+          <SidebarTrigger className="-ml-1" />
+          <Separator
+            orientation="vertical"
+            // The vendored separator sizes its vertical variant with
+            // data-vertical:self-stretch; with our fixed h-4 (a definite cross
+            // size) that resolves to align-self:flex-start and pins the divider
+            // to the top of the row. Re-center it with the matching variant so
+            // it stays a 16px centered rule.
+            className="mx-2 data-[orientation=vertical]:h-4 data-vertical:self-center"
+          />
+          {inWorkSection ? (
+            <SectionTabs />
+          ) : (
+            <span className="font-medium text-sm">{sectionTitle}</span>
+          )}
+        </div>
+      </header>
+      {showTrail && (
+        <div className="flex items-center border-b px-4 py-2.5 lg:px-6">
+          <Breadcrumb>
+            <BreadcrumbList>
+              {crumbs.map((crumb, index) => {
+                const isLast = index === crumbs.length - 1
+                // Hrefs are unique within a trail and only the final crumb has
+                // none, so this is a stable key without leaning on the index.
+                return (
+                  <Fragment key={crumb.href ?? "current"}>
+                    <BreadcrumbItem>
+                      {crumb.loading ? (
+                        <Skeleton className="h-4 w-24" />
+                      ) : crumb.href === undefined ? (
+                        <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                      ) : (
+                        <BreadcrumbLink asChild>
+                          <Link href={crumb.href}>{crumb.label}</Link>
+                        </BreadcrumbLink>
+                      )}
+                    </BreadcrumbItem>
+                    {!isLast && <BreadcrumbSeparator />}
+                  </Fragment>
+                )
+              })}
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+      )}
+    </>
   )
 }
