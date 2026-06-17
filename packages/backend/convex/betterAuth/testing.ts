@@ -61,3 +61,27 @@ export const seedDuplicateMember = mutation({
     return null
   },
 })
+
+// Test-only: attach an EXISTING user to a SECOND organisation, so multi-company
+// switching can be exercised. Mirrors seedMembership but reuses the userId
+// instead of creating a new user.
+export const seedOrgForUser = mutation({
+  args: { userId: v.string(), orgName: v.string(), role: v.string() },
+  returns: v.object({ orgId: v.string() }),
+  handler: async (ctx, { userId, orgName, role }) => {
+    assertTestEnv()
+    const now = Date.now()
+    const orgId = await ctx.db.insert("organization", {
+      name: orgName,
+      slug: `${orgName.toLowerCase()}-${now}`,
+      createdAt: now,
+    })
+    await ctx.db.insert("member", {
+      organizationId: orgId,
+      userId,
+      role,
+      createdAt: now,
+    })
+    return { orgId }
+  },
+})

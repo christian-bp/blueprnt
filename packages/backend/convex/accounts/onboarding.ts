@@ -6,14 +6,15 @@ import { ERROR_CODES, appError } from "../lib/errors"
 // First-run gate for the dashboard. NOT org-scoped: it exists precisely to
 // find the user's organization (or its absence) before any org-scoped call is
 // possible. Returns null when signed out so the client gate can no-op.
-// V1 assumption: one organization per user; the first membership wins.
+// Active company aware: uses the requested orgId when the caller is a member,
+// else the first membership (covers no-arg callers and a stale active org).
 //
 // `completed` is explicit, persisted state (onboardingCompletedAt set by
 // completeOnboarding when the wizard finishes); the gate trusts it and never
 // infers "done" from hasModel. organization/settingsComplete/hasModel still
 // drive which step the wizard resumes at.
 export const getOnboardingStatus = query({
-  args: {},
+  args: { orgId: v.optional(v.string()) },
   returns: v.union(
     v.null(),
     v.object({
@@ -31,15 +32,18 @@ export const getOnboardingStatus = query({
       completed: v.boolean(),
     })
   ),
-  handler: async (ctx) => {
+  handler: async (ctx, { orgId }) => {
     const identity = await ctx.auth.getUserIdentity()
     if (identity === null) return null
     const memberships = await ctx.runQuery(
       components.betterAuth.membership.listMembershipsForUser,
       { userId: identity.subject }
     )
-    const first = memberships[0]
-    if (first === undefined) {
+    const selected =
+      (orgId !== undefined
+        ? memberships.find((m) => m.organizationId === orgId)
+        : undefined) ?? memberships[0]
+    if (selected === undefined) {
       return {
         organization: null,
         settingsComplete: false,
@@ -48,10 +52,10 @@ export const getOnboardingStatus = query({
         completed: false,
       }
     }
-    const orgId = first.organizationId
+    const resolvedOrgId = selected.organizationId
     const settings = await ctx.db
       .query("organizations")
-      .withIndex("by_org", (q) => q.eq("orgId", orgId))
+      .withIndex("by_org", (q) => q.eq("orgId", resolvedOrgId))
       .unique()
     const settingsComplete =
       settings !== null &&
@@ -61,17 +65,17 @@ export const getOnboardingStatus = query({
       !!settings.industry
     const model = await ctx.db
       .query("models")
-      .withIndex("by_org", (q) => q.eq("orgId", orgId))
+      .withIndex("by_org", (q) => q.eq("orgId", resolvedOrgId))
       .first()
     const firstRole = await ctx.db
       .query("roles")
-      .withIndex("by_org", (q) => q.eq("orgId", orgId))
+      .withIndex("by_org", (q) => q.eq("orgId", resolvedOrgId))
       .first()
     return {
       organization: {
-        orgId,
-        name: first.organizationName,
-        role: first.role,
+        orgId: resolvedOrgId,
+        name: selected.organizationName,
+        role: selected.role,
       },
       settingsComplete,
       hasModel: model !== null,

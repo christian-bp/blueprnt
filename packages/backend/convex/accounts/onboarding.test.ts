@@ -146,6 +146,64 @@ describe("getOnboardingStatus", () => {
     })
   })
 
+  it("selects the requested company when the caller belongs to several", async () => {
+    const t = initConvexTest()
+    const { orgId: orgA, userId } = await seedAdmin(t) // org "Acme"
+    const { orgId: orgB } = await t.mutation(
+      components.betterAuth.testing.seedOrgForUser,
+      { userId, orgName: "Beta", role: "editor" }
+    )
+    const asUser = t.withIdentity({ subject: userId })
+
+    const statusB = await asUser.query(
+      api.accounts.onboarding.getOnboardingStatus,
+      { orgId: orgB }
+    )
+    expect(statusB?.organization).toEqual({
+      orgId: orgB,
+      name: "Beta",
+      role: "editor",
+    })
+    // Beta has no settings/model: it reads as not yet onboarded.
+    expect(statusB?.settingsComplete).toBe(false)
+    expect(statusB?.hasModel).toBe(false)
+
+    const statusA = await asUser.query(
+      api.accounts.onboarding.getOnboardingStatus,
+      { orgId: orgA }
+    )
+    expect(statusA?.organization).toEqual({
+      orgId: orgA,
+      name: "Acme",
+      role: "admin",
+    })
+  })
+
+  it("falls back to the first membership for a stale or absent orgId", async () => {
+    const t = initConvexTest()
+    const { orgId: orgA, userId } = await seedAdmin(t)
+    await t.mutation(components.betterAuth.testing.seedOrgForUser, {
+      userId,
+      orgName: "Beta",
+      role: "editor",
+    })
+    const asUser = t.withIdentity({ subject: userId })
+
+    // No arg: first membership (Acme).
+    const noArg = await asUser.query(
+      api.accounts.onboarding.getOnboardingStatus,
+      {}
+    )
+    expect(noArg?.organization?.orgId).toBe(orgA)
+
+    // Unknown orgId (not a membership): same fallback, never a foreign company.
+    const stale = await asUser.query(
+      api.accounts.onboarding.getOnboardingStatus,
+      { orgId: "nonexistent" }
+    )
+    expect(stale?.organization?.orgId).toBe(orgA)
+  })
+
   it("reports hasRoles once the org has at least one role", async () => {
     const t = initConvexTest()
     const { orgId, userId } = await seedAdmin(t)

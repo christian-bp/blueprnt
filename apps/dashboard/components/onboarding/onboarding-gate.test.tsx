@@ -1,11 +1,24 @@
 import { render, screen, cleanup } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
-import { describe, expect, it, vi, afterEach } from "vitest"
+import { beforeEach, describe, expect, it, vi, afterEach } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 
 const useQueryMock = vi.fn()
 vi.mock("convex/react", () => ({
   useQuery: (...args: unknown[]) => useQueryMock(...args),
+}))
+// The gate now resolves the active company through Better Auth before it
+// queries: a membership and an active org must be present for it to reach the
+// status query. With no active org it would only auto-pick one and spin.
+let orgsData: { id: string; name: string }[] = []
+let activeData: { id: string; name: string } | null = null
+const setActiveMock = vi.fn()
+vi.mock("@/lib/auth-client", () => ({
+  authClient: {
+    useListOrganizations: () => ({ data: orgsData }),
+    useActiveOrganization: () => ({ data: activeData }),
+    organization: { setActive: (...a: unknown[]) => setActiveMock(...a) },
+  },
 }))
 vi.mock("@/components/app-shell", () => ({
   AppShell: (props: { children?: React.ReactNode }) => (
@@ -29,6 +42,12 @@ function renderGate() {
 }
 
 describe("OnboardingGate", () => {
+  beforeEach(() => {
+    orgsData = [{ id: "o1", name: "Acme" }]
+    activeData = { id: "o1", name: "Acme" }
+    setActiveMock.mockReset()
+    setActiveMock.mockResolvedValue(undefined)
+  })
   afterEach(() => {
     cleanup()
   })

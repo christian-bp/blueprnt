@@ -77,6 +77,10 @@
       "model": "Modell",
       "signOut": "Logga ut"
     },
+    "orgSwitcher": {
+      "label": "Företag",
+      "switch": "Byt företag"
+    },
     "breadcrumb": {
       "rate": "Betygsätt"
     },

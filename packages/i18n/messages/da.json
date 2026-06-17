@@ -77,6 +77,10 @@
       "model": "Model",
       "signOut": "Log ud"
     },
+    "orgSwitcher": {
+      "label": "Virksomhed",
+      "switch": "Skift virksomhed"
+    },
     "breadcrumb": {
       "rate": "Vurder"
     },

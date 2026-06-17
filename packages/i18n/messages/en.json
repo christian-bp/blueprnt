@@ -77,6 +77,10 @@
       "model": "Model",
       "signOut": "Sign out"
     },
+    "orgSwitcher": {
+      "label": "Company",
+      "switch": "Switch company"
+    },
     "breadcrumb": {
       "rate": "Rate"
     },

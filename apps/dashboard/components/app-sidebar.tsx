@@ -10,11 +10,13 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarHeader,
   SidebarRail,
 } from "@workspace/ui/components/sidebar"
 import { useTranslations } from "next-intl"
 import type * as React from "react"
 import { type NavItem, NavMain } from "@/components/nav-main"
+import { NavOrganization } from "@/components/nav-organization"
 import { NavUser } from "@/components/nav-user"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -48,6 +50,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     // sidebar to an icon rail instead of removing it. The inset variant set
     // by AppShell keeps the rounded content panel in both states.
     <Sidebar collapsible="icon" {...props}>
+      <SidebarHeader>
+        <NavOrganization />
+      </SidebarHeader>
       <SidebarContent>
         <NavMain items={navMain} />
       </SidebarContent>

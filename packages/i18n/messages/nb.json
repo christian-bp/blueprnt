@@ -77,6 +77,10 @@
       "model": "Modell",
       "signOut": "Logg ut"
     },
+    "orgSwitcher": {
+      "label": "Selskap",
+      "switch": "Bytt selskap"
+    },
     "breadcrumb": {
       "rate": "Vurder"
     },

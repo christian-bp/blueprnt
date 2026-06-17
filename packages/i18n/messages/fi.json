@@ -77,6 +77,10 @@
       "model": "Malli",
       "signOut": "Kirjaudu ulos"
     },
+    "orgSwitcher": {
+      "label": "Yritys",
+      "switch": "Vaihda yritystä"
+    },
     "breadcrumb": {
       "rate": "Arvioi"
     },

@@ -1598,5 +1598,12 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         { orgId: string; userId: string },
         Name
       >;
+      seedOrgForUser: FunctionReference<
+        "mutation",
+        "internal",
+        { orgName: string; role: string; userId: string },
+        { orgId: string },
+        Name
+      >;
     };
   };
