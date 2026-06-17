@@ -212,7 +212,7 @@ export const removeDevOrganizations = internalAction({
 // Idempotent (orgs keyed by slug, membership per (org, user)). Run with:
 //   bunx convex run seed:seedDevOrganization
 const DEV_ORGANIZATIONS = [
-  { name: "blueprnt dev", slug: "blueprnt-dev" },
+  { name: "blueprnt", slug: "blueprnt" },
   { name: "Acme AB", slug: "acme-ab" },
 ] as const
 

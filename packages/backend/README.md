@@ -19,7 +19,7 @@ Convex backend (EU West / Ireland deployment, project quantumlabs/blueprnt).
 - Dev organization reset (removes all organizations for the seeded user to retest onboarding from step 1): `bunx convex run seed:removeDevOrganizations`
   Same localhost guard. Pass `'{"email":"..."}'` to target a different address.
 - Dev organizations (admin membership for the seeded user): `bunx convex run seed:seedDevOrganization`
-  Creates two organizations, "blueprnt dev" (slug `blueprnt-dev`) and "Acme AB" (slug `acme-ab`), with the seeded user as admin in both, plus their profile rows and audit entries. Two companies so the sidebar company switcher is exercisable out of the box. Idempotent; same localhost guard.
+  Creates two organizations, "blueprnt" (slug `blueprnt`) and "Acme AB" (slug `acme-ab`), with the seeded user as admin in both, plus their profile rows and audit entries. Two companies so the sidebar company switcher is exercisable out of the box. Idempotent; same localhost guard.
 - Email verification is disabled until the Scaleway TEM env vars
   (`SCW_SECRET_KEY`, `SCW_PROJECT_ID`, `SCW_REGION`, `EMAIL_FROM`) are set
   and the sending domain is verified. When configuring them, also flip
