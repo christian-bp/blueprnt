@@ -75,9 +75,6 @@
       "label": "Company",
       "switch": "Switch company"
     },
-    "breadcrumb": {
-      "rate": "Rate"
-    },
     "languages": {
       "sv": "Svenska",
       "en": "English",
@@ -490,8 +487,8 @@
       "familiesReviewBody": "A role family groups roles that share the same kind of work, like Engineering or Sales; families organize the register and never affect the weighting. A track is the kind of job, for example individual contributor or manager; it says nothing about seniority.",
       "pendingBandLabel": "Why does a role have no band yet?",
       "pendingBandBody": "A role gets a band only after every criterion is rated. Until the assessment is complete it has no weighting and no band, so it waits in this list.",
-      "contributionLabel": "What does the contribution bar show?",
-      "contributionBody": "Each criterion's share of this role's weighting: your rating times the criterion's weight in the model. The bars are relative to the biggest contributor."
+      "contributionLabel": "What do the bars and percentages show?",
+      "contributionBody": "The percentage is each criterion's share of this role's total weighting (your rating times the criterion's weight in the model), so the criteria add up to 100%. The bars are scaled to the biggest contributor, so the top one fills the row."
     }
   },
   "errors": {

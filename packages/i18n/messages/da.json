@@ -75,9 +75,6 @@
       "label": "Virksomhed",
       "switch": "Skift virksomhed"
     },
-    "breadcrumb": {
-      "rate": "Vurder"
-    },
     "languages": {
       "sv": "Svenska",
       "en": "English",
@@ -490,8 +487,8 @@
       "familiesReviewBody": "En rollefamilie grupperer roller, der deler samme slags arbejde, som Teknologi eller Salg; familier organiserer registeret og påvirker aldrig vægtningen. En track er typen af job, for eksempel individuel specialist eller leder; den siger intet om senioritet.",
       "pendingBandLabel": "Hvorfor har en rolle endnu intet bånd?",
       "pendingBandBody": "En rolle får først et bånd, når alle kriterier er vurderet. Indtil vurderingen er fuldført har den ingen vægtning og intet bånd, så den venter på denne liste.",
-      "contributionLabel": "Hvad viser bidragssøjlen?",
-      "contributionBody": "Hvert kriteriums andel af rollens vægtning: din vurdering gange kriteriets vægt i modellen. Søjlerne er relative til det største bidrag."
+      "contributionLabel": "Hvad viser søjlerne og procenterne?",
+      "contributionBody": "Procenten er hvert kriteriums andel af rollens samlede vægtning (din vurdering gange kriteriets vægt i modellen), så kriterierne summerer til 100 %. Søjlerne skaleres efter det største bidrag, så den øverste fylder rækken."
     }
   },
   "errors": {

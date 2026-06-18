@@ -75,9 +75,6 @@
       "label": "Företag",
       "switch": "Byt företag"
     },
-    "breadcrumb": {
-      "rate": "Betygsätt"
-    },
     "languages": {
       "sv": "Svenska",
       "en": "English",
@@ -490,8 +487,8 @@
       "familiesReviewBody": "En rollfamilj grupperar roller som delar samma slags arbete, som Teknik eller Sälj; familjer organiserar registret och påverkar aldrig viktningen. En track är typen av jobb, till exempel individuell specialist eller chef; den säger inget om senioritet.",
       "pendingBandLabel": "Varför har en roll inget band ännu?",
       "pendingBandBody": "En roll får ett band först när alla kriterier är bedömda. Tills bedömningen är klar har den ingen viktning och inget band, så den väntar i den här listan.",
-      "contributionLabel": "Vad visar bidragsstapeln?",
-      "contributionBody": "Varje kriteriums andel av rollens viktning: din bedömning gånger kriteriets vikt i modellen. Staplarna är relativa till det största bidraget."
+      "contributionLabel": "Vad visar staplarna och procenten?",
+      "contributionBody": "Procenten är varje kriteriums andel av rollens totala viktning (din bedömning gånger kriteriets vikt i modellen), så kriterierna summerar till 100 %. Staplarna skalas efter det största bidraget, så den översta fyller raden."
     }
   },
   "errors": {

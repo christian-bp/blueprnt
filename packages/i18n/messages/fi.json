@@ -75,9 +75,6 @@
       "label": "Yritys",
       "switch": "Vaihda yritystä"
     },
-    "breadcrumb": {
-      "rate": "Arvioi"
-    },
     "languages": {
       "sv": "Svenska",
       "en": "English",
@@ -490,8 +487,8 @@
       "familiesReviewBody": "Rooliperhe ryhmittelee roolit, jotka jakavat samanlaisen työn, kuten Teknologia tai Myynti; perheet järjestävät luettelon eivätkä koskaan vaikuta painotukseen. Track on työn tyyppi, esimerkiksi yksilöasiantuntija tai esihenkilö; se ei kerro mitään senioriteetista.",
       "pendingBandLabel": "Miksi roolilla ei vielä ole bandia?",
       "pendingBandBody": "Rooli saa bandin vasta, kun jokainen kriteeri on arvioitu. Kunnes arviointi on valmis, sillä ei ole painotusta eikä bandia, joten se odottaa tässä luettelossa.",
-      "contributionLabel": "Mitä osuuspalkki näyttää?",
-      "contributionBody": "Kunkin kriteerin osuus roolin painotuksesta: arviosi kerrottuna kriteerin painolla mallissa. Palkit ovat suhteessa suurimpaan osuuteen."
+      "contributionLabel": "Mitä palkit ja prosentit näyttävät?",
+      "contributionBody": "Prosentti on kunkin kriteerin osuus roolin kokonaispainotuksesta (arviosi kerrottuna kriteerin painolla mallissa), joten kriteerit ovat yhteensä 100 %. Palkit skaalataan suurimman osuuden mukaan, joten ylin täyttää rivin."
     }
   },
   "errors": {

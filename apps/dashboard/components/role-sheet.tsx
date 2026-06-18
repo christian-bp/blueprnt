@@ -24,7 +24,6 @@ import {
   useContext,
   useState,
 } from "react"
-import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
 import { RoleCriterionBreakdown } from "@/components/roles/role-criterion-breakdown"
 import { ResponsibilitiesList } from "@/components/roles/responsibilities-list"
@@ -86,7 +85,6 @@ function RoleSheetContent({
   const tDetail = useTranslations("dashboard.roles.detail")
   const tRole = useTranslations("assessment.role")
   const tAssessment = useTranslations("assessment")
-  const tHelp = useTranslations("dashboard.help")
   const tFamily = useTranslations("dashboard.roles.family")
   const tModel = useTranslations("model")
   const { orgId } = useOrganization()
@@ -97,6 +95,15 @@ function RoleSheetContent({
     roleId,
     locale,
   })
+
+  // Function and team join into the subtitle, dropping empties so an unset
+  // pair never renders as a stray "·" separator.
+  const subtitle = role
+    ? [role.function, role.team]
+        .map((part) => part.trim())
+        .filter((part) => part.length > 0)
+        .join(" · ")
+    : ""
 
   return (
     <SheetContent className="gap-0 overflow-y-auto">
@@ -114,15 +121,34 @@ function RoleSheetContent({
       ) : (
         <>
           <SheetHeader>
-            <SheetTitle>{role.title}</SheetTitle>
-            <SheetDescription>{`${role.function} · ${role.team}`}</SheetDescription>
-            <div className="mt-1 flex flex-wrap items-center gap-2">
+            {/* Title and track sit on one line, matching the role detail
+                header. The text-lg override is deliberate: the vendored
+                SheetTitle inherits the content's text-sm, too small for the
+                primary heading. */}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <SheetTitle className="text-lg">{role.title}</SheetTitle>
               <TrackBadge
                 trackKey={role.trackKey}
                 name={role.trackName}
                 short
               />
-              {role.anchorRole !== null && (
+              {/* Band sits with the title once the role is fully evaluated,
+                  matching the role page result badge. */}
+              {result?.complete && result.band !== null && (
+                <Badge>{`${tAssessment("band")} ${result.band}`}</Badge>
+              )}
+            </div>
+            {subtitle.length > 0 ? (
+              <SheetDescription>{subtitle}</SheetDescription>
+            ) : (
+              // Keep a description node for accessibility even when function
+              // and team are unset, but render nothing visible.
+              <SheetDescription className="sr-only">
+                {role.title}
+              </SheetDescription>
+            )}
+            {role.anchorRole !== null && (
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="flex items-center gap-1 text-muted-foreground text-xs">
                   <HugeiconsIcon
                     icon={AnchorIcon}
@@ -132,68 +158,30 @@ function RoleSheetContent({
                   />
                   {tBands("anchorLabel")}
                 </span>
-              )}
-              {role.anchorRole !== null &&
-                result !== undefined &&
-                result !== null &&
-                result.band !== null &&
-                result.band !== role.anchorRole.expectedBand && (
-                  <Badge
-                    variant="destructive"
-                    title={tBands("deviationLabel", {
-                      band: role.anchorRole.expectedBand,
-                    })}
-                  >
-                    {tBands("deviation", {
-                      band: role.anchorRole.expectedBand,
-                    })}
-                  </Badge>
-                )}
-            </div>
+                {result !== undefined &&
+                  result !== null &&
+                  result.band !== null &&
+                  result.band !== role.anchorRole.expectedBand && (
+                    <Badge
+                      variant="destructive"
+                      title={tBands("deviationLabel", {
+                        band: role.anchorRole.expectedBand,
+                      })}
+                    >
+                      {tBands("deviation", {
+                        band: role.anchorRole.expectedBand,
+                      })}
+                    </Badge>
+                  )}
+              </div>
+            )}
           </SheetHeader>
 
           <div className="flex-1 space-y-6 px-4 pb-4">
-            {/* Result: weighting + band + breakdown when complete, else progress. */}
-            <section className="space-y-3">
-              {result === undefined ? (
-                <div className="flex justify-center py-4">
-                  <Spinner aria-label={t("loading")} />
-                </div>
-              ) : result?.complete ? (
-                <>
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-lg">
-                      {`${tAssessment("band")} ${result.band}`}
-                    </span>
-                    <HelpMorphButton label={tHelp("scoreLabel")}>
-                      {tHelp("scoreBody")}
-                    </HelpMorphButton>
-                  </div>
-                  <RoleCriterionBreakdown
-                    criteria={result.criteria}
-                    variant="compact"
-                  />
-                </>
-              ) : (
-                <div className="space-y-1">
-                  <p className="text-muted-foreground text-sm">
-                    {tRoles("notEvaluated")}
-                  </p>
-                  <p className="text-muted-foreground text-sm tabular-nums">
-                    {t("progress", {
-                      rated: role.ratedCount,
-                      total: role.totalCriteria,
-                    })}
-                  </p>
-                </div>
-              )}
-            </section>
-
-            {/* Profile (read-only). */}
+            {/* The job profile leads the sheet: it is what the reader came for;
+                the evaluation result (band + breakdown) follows below. No
+                heading: as the first section, the profile needs no label. */}
             <section className="space-y-4">
-              <h3 className="font-medium text-sm">
-                {tDetail("profileHeading")}
-              </h3>
               {role.purpose.trim().length > 0 && (
                 <div className="space-y-1">
                   <p className="text-muted-foreground text-xs">
@@ -216,6 +204,34 @@ function RoleSheetContent({
                 </p>
                 <p className="text-sm">{role.familyName ?? tFamily("none")}</p>
               </div>
+            </section>
+
+            {/* Result: weighting + band + breakdown when complete, else progress. */}
+            <section className="space-y-3">
+              {result === undefined ? (
+                <div className="flex justify-center py-4">
+                  <Spinner aria-label={t("loading")} />
+                </div>
+              ) : result?.complete ? (
+                // Band now lives in the header; the body carries only the
+                // per-criterion contribution breakdown.
+                <RoleCriterionBreakdown
+                  criteria={result.criteria}
+                  variant="compact"
+                />
+              ) : (
+                <div className="space-y-1">
+                  <p className="text-muted-foreground text-sm">
+                    {tRoles("notEvaluated")}
+                  </p>
+                  <p className="text-muted-foreground text-sm tabular-nums">
+                    {t("progress", {
+                      rated: role.ratedCount,
+                      total: role.totalCriteria,
+                    })}
+                  </p>
+                </div>
+              )}
             </section>
           </div>
 

@@ -62,8 +62,12 @@ export function RoleCriterionBreakdown({
   const maxShare = rows.reduce((max, row) => Math.max(max, row.share), 0)
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
+    // space-y-1 so the label hugs its rows like the other section labels
+    // (Purpose, Responsibilities, Role family) rather than floating above them.
+    <div className="space-y-1">
+      {/* Caption tier (text-xs), matching the other section labels (Purpose,
+          Responsibilities, Role family) so the label scale is unified. */}
+      <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
         {tResult("breakdownLabel")}
         <HelpMorphButton label={tHelp("contributionLabel")}>
           {tHelp("contributionBody")}

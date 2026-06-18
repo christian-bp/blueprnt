@@ -75,9 +75,6 @@
       "label": "Selskap",
       "switch": "Bytt selskap"
     },
-    "breadcrumb": {
-      "rate": "Vurder"
-    },
     "languages": {
       "sv": "Svenska",
       "en": "English",
@@ -490,8 +487,8 @@
       "familiesReviewBody": "En rollefamilie grupperer roller som deler samme slags arbeid, som Teknologi eller Salg; familier organiserer registeret og påvirker aldri vektingen. En track er typen jobb, for eksempel individuell spesialist eller leder; den sier ingenting om senioritet.",
       "pendingBandLabel": "Hvorfor har en rolle ikke band ennå?",
       "pendingBandBody": "En rolle får band først når alle kriterier er vurdert. Inntil vurderingen er fullført har den ingen vekting og intet band, så den venter i denne listen.",
-      "contributionLabel": "Hva viser bidragssøylen?",
-      "contributionBody": "Hvert kriteriums andel av rollens vekting: din vurdering ganger kriteriets vekt i modellen. Søylene er relative til det største bidraget."
+      "contributionLabel": "Hva viser søylene og prosentene?",
+      "contributionBody": "Prosenten er hvert kriteriums andel av rollens totale vekting (din vurdering ganger kriteriets vekt i modellen), så kriteriene summerer til 100 %. Søylene skaleres etter det største bidraget, så den øverste fyller raden."
     }
   },
   "errors": {
