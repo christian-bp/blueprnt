@@ -9,7 +9,7 @@ import { insertStarterSet } from "./starters"
 // across 8 families) and rate every role so the results/band view is populated.
 // Creates the families + roles via the shared insertStarterSet helper, then
 // rates each role against all nine criteria using RATINGS_BY_LEVEL keyed by the
-// role's level (seniority -> band), and marks the roles approved. Idempotent:
+// role's level (seniority -> band). Idempotent:
 // skips entirely if the org already has a role. The standard model must exist
 // first (seedStandardModel), since ratings reference the seeded criteria by id.
 // No auth context (the dev seed is "use node"), so this is an internalMutation
