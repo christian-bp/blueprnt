@@ -1,0 +1,29 @@
+apps/dashboard/components/bands/band-matrix.tsx
+  s_dcadef150fedfa::t_1f2de2b87eaf75 118
+  s_dcadef150fedfa::t_51c6c1822ca1da 6
+apps/dashboard/components/bands/band-ladder.test.tsx
+  s_dcadef150fedfa::t_94c8e03f14b8f2 58-70
+apps/dashboard/components/bands/band-matrix.test.tsx
+  s_dcadef150fedfa::t_3469ef677e353f 115-131
+apps/dashboard/components/bands/hatch.ts
+  s_dcadef150fedfa::t_9fc42bcdceb38a 1-15
+apps/dashboard/components/bands/band-ladder.tsx
+  s_dcadef150fedfa::t_4a7dbb63d7cba0 5
+  s_dcadef150fedfa::t_83f04402584a74 91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "433767296e67843dd868752ec98233dbbc5f8e01",
+  "prompts": {},
+  "sessions": {
+    "s_dcadef150fedfa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5f66fc7b-ac5a-4f47-a3f9-de4518c09abb",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
