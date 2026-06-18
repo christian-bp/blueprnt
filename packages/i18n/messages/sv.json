@@ -235,7 +235,10 @@
         "scoreOutOf": "{score} / 100",
         "anchorsHeading": "Jämfört med era ankarroller",
         "anchorBand": "Band {band}",
-        "farFromAnchors": "Resultatet ligger minst två band från närmaste ankarroll. Validera bedömningen manuellt innan godkännande."
+        "farFromAnchors": "Resultatet ligger minst två band från närmaste ankarroll. Validera bedömningen manuellt innan godkännande.",
+        "ratingOutOf": "bedömd {value} / 5",
+        "contributionShare": "{share}%",
+        "breakdownLabel": "Bidrag"
       },
       "lockedExplanation": "Betygsättningen är låst eftersom rollen är godkänd eller arkiverad. Återöppna rollen från rollsidan för att betygsätta igen."
     },
@@ -503,7 +506,9 @@
       "familiesReviewLabel": "Vad är familjer och tracks?",
       "familiesReviewBody": "En rollfamilj grupperar roller som delar samma slags arbete, som Teknik eller Sälj; familjer organiserar registret och påverkar aldrig viktningen. En track är typen av jobb, till exempel individuell specialist eller chef; den säger inget om senioritet.",
       "pendingBandLabel": "Varför har en roll inget band ännu?",
-      "pendingBandBody": "En roll får ett band först när alla kriterier är bedömda. Tills bedömningen är klar har den ingen viktning och inget band, så den väntar i den här listan."
+      "pendingBandBody": "En roll får ett band först när alla kriterier är bedömda. Tills bedömningen är klar har den ingen viktning och inget band, så den väntar i den här listan.",
+      "contributionLabel": "Vad visar bidragsstapeln?",
+      "contributionBody": "Varje kriteriums andel av rollens viktning: din bedömning gånger kriteriets vikt i modellen. Staplarna är relativa till det största bidraget."
     }
   },
   "errors": {

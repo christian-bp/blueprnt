@@ -235,7 +235,10 @@
         "scoreOutOf": "{score} / 100",
         "anchorsHeading": "Sammenlignet med ankerrollene deres",
         "anchorBand": "Bånd {band}",
-        "farFromAnchors": "Resultatet ligger minst to bånd fra nærmeste ankerrolle. Valider vurderingen manuelt før godkjenning."
+        "farFromAnchors": "Resultatet ligger minst to bånd fra nærmeste ankerrolle. Valider vurderingen manuelt før godkjenning.",
+        "ratingOutOf": "vurdert {value} / 5",
+        "contributionShare": "{share}%",
+        "breakdownLabel": "Bidrag"
       },
       "lockedExplanation": "Vurderingen er låst fordi rollen er godkjent eller arkivert. Gjenåpne rollen fra rollesiden for å vurdere igjen."
     },
@@ -503,7 +506,9 @@
       "familiesReviewLabel": "Hva er familier og tracks?",
       "familiesReviewBody": "En rollefamilie grupperer roller som deler samme slags arbeid, som Teknologi eller Salg; familier organiserer registeret og påvirker aldri vektingen. En track er typen jobb, for eksempel individuell spesialist eller leder; den sier ingenting om senioritet.",
       "pendingBandLabel": "Hvorfor har en rolle ikke band ennå?",
-      "pendingBandBody": "En rolle får band først når alle kriterier er vurdert. Inntil vurderingen er fullført har den ingen vekting og intet band, så den venter i denne listen."
+      "pendingBandBody": "En rolle får band først når alle kriterier er vurdert. Inntil vurderingen er fullført har den ingen vekting og intet band, så den venter i denne listen.",
+      "contributionLabel": "Hva viser bidragssøylen?",
+      "contributionBody": "Hvert kriteriums andel av rollens vekting: din vurdering ganger kriteriets vekt i modellen. Søylene er relative til det største bidraget."
     }
   },
   "errors": {

@@ -235,7 +235,10 @@
         "scoreOutOf": "{score} / 100",
         "anchorsHeading": "Compared with your anchor roles",
         "anchorBand": "Band {band}",
-        "farFromAnchors": "This result is at least two bands from the nearest anchor role. Validate the assessment manually before approving."
+        "farFromAnchors": "This result is at least two bands from the nearest anchor role. Validate the assessment manually before approving.",
+        "ratingOutOf": "rated {value} / 5",
+        "contributionShare": "{share}%",
+        "breakdownLabel": "Contribution"
       },
       "lockedExplanation": "The rating is locked because the role is approved or archived. Reopen the role from the role page to rate it again."
     },
@@ -503,7 +506,9 @@
       "familiesReviewLabel": "What are families and tracks?",
       "familiesReviewBody": "A role family groups roles that share the same kind of work, like Engineering or Sales; families organize the register and never affect the weighting. A track is the kind of job, for example individual contributor or manager; it says nothing about seniority.",
       "pendingBandLabel": "Why does a role have no band yet?",
-      "pendingBandBody": "A role gets a band only after every criterion is rated. Until the assessment is complete it has no weighting and no band, so it waits in this list."
+      "pendingBandBody": "A role gets a band only after every criterion is rated. Until the assessment is complete it has no weighting and no band, so it waits in this list.",
+      "contributionLabel": "What does the contribution bar show?",
+      "contributionBody": "Each criterion's share of this role's weighting: your rating times the criterion's weight in the model. The bars are relative to the biggest contributor."
     }
   },
   "errors": {
