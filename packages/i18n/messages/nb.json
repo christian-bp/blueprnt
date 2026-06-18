@@ -59,11 +59,6 @@
       "team": "Team",
       "purpose": "Formål",
       "responsibilities": "Ansvarsområder"
-    },
-    "status": {
-      "draft": "Utkast",
-      "inReview": "Til gjennomgang",
-      "approved": "Godkjent"
     }
   },
   "dashboard": {
@@ -92,7 +87,6 @@
     },
     "overview": {
       "rolesCard": "Roller",
-      "approvedCard": "Godkjente roller",
       "ratedCard": "Fullstendig vurderte roller",
       "criteriaCard": "Kriterier i modellen",
       "goRoles": "Gå til roller",
@@ -120,7 +114,6 @@
         "title": "Tittel",
         "track": "Track",
         "team": "Team",
-        "status": "Status",
         "evaluation": "Vurdering"
       },
       "create": {
@@ -170,17 +163,6 @@
         "archivedBadge": "Arkivert",
         "archivedHint": "Rollen er arkivert og skrivebeskyttet. Historikken beholdes."
       },
-      "status": {
-        "submitCta": "Send til gjennomgang",
-        "approveCta": "Godkjenn",
-        "withdrawCta": "Trekk tilbake fra gjennomgang",
-        "reopenCta": "Åpne igjen",
-        "reopenConfirm": "Åpne igjen og lås opp",
-        "cancel": "Avbryt",
-        "lockedHint": "Godkjente roller er låst. Åpne igjen for å endre profilen eller vurderingene.",
-        "incompleteHint": "Rollen må være fullstendig vurdert før gjennomgang eller godkjenning.",
-        "error": "Statusen kunne ikke endres. Prøv igjen."
-      },
       "archive": {
         "cta": "Arkiver rolle",
         "confirm": "Ja, arkiver",
@@ -212,7 +194,6 @@
       },
       "toolbar": {
         "searchPlaceholder": "Søk på tittel, team eller funksjon",
-        "statusAll": "Alle statuser",
         "trackAll": "Alle tracks",
         "resultCount": "{shown} av {total} roller",
         "noMatches": "Ingen roller matcher søket eller filtrene.",
@@ -505,8 +486,6 @@
       "blindRatingBody": "Velg ankerteksten som best matcher hva rollen krever, ikke hvordan den nåværende medarbeideren presterer. Vurderinger, vekting og bånd holdes skjult til siste kriterium slik at hvert kriterium vurderes for seg; resultatet vises så snart alle kriterier er vurdert.",
       "onboardingScoreLabel": "Hva gjør en vurdering av en rolle?",
       "onboardingScoreBody": "Vurderingen bedømmer rollen mot hvert kriterium i modellen din. Nivået utledes fra vurderingene på en fast skala og settes aldri for hånd, så roller forblir sammenlignbare. Du vurderer ett kriterium om gangen uten å se det løpende resultatet.",
-      "statusLabel": "Hva betyr statusene?",
-      "statusBody": "En rolle går fra utkast til under gjennomgang til godkjent. Godkjenningen låser profilen og vurderingene som gjennomgått; gjenåpne rollen for å endre dem igjen. Statusen påvirker aldri det beregnede resultatet.",
       "familiesReviewLabel": "Hva er familier og tracks?",
       "familiesReviewBody": "En rollefamilie grupperer roller som deler samme slags arbeid, som Teknologi eller Salg; familier organiserer registeret og påvirker aldri vektingen. En track er typen jobb, for eksempel individuell spesialist eller leder; den sier ingenting om senioritet.",
       "pendingBandLabel": "Hvorfor har en rolle ikke band ennå?",

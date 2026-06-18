@@ -42,7 +42,6 @@ describe("deriveResults", () => {
         trackKey: "IC",
         purpose: "p",
         responsibilities: "r",
-        status: "draft",
       })
       for (const criterion of model.criteria) {
         await ctx.db.insert("ratings", {
@@ -76,7 +75,6 @@ describe("deriveResults", () => {
         trackKey: "IC",
         purpose: "p",
         responsibilities: "r",
-        status: "draft",
       })
       const firstCriterion = model.criteria[0]
       if (firstCriterion === undefined) throw new Error("seed")
@@ -94,7 +92,6 @@ describe("deriveResults", () => {
         trackKey: "IC",
         purpose: "p",
         responsibilities: "r",
-        status: "draft",
         archivedAt: Date.now(),
       })
       const derived = await deriveResults(ctx, orgId)

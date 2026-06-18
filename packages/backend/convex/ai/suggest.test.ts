@@ -808,13 +808,13 @@ describe("role profile drafts", () => {
     })
   })
 
-  it("locks drafts for approved roles", async () => {
+  it("locks drafts for archived roles", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, roleId } = await seedRoleOrganization(t)
     await t.run(async (ctx) => {
       const docId = ctx.db.normalizeId("roles", roleId)
       if (docId === null) throw new Error("bad id")
-      await ctx.db.patch(docId, { status: "approved" })
+      await ctx.db.patch(docId, { archivedAt: Date.now() })
     })
     await expect(
       asAdmin.mutation(api.ai.suggest.requestRoleProfileDraft, {

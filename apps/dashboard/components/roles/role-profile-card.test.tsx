@@ -49,7 +49,6 @@ function makeRole(overrides?: Partial<RoleProfile>): RoleProfile {
     familyName: null,
     purpose: "Builds the product",
     responsibilities: "Implementation",
-    status: "draft",
     archived: false,
     ...overrides,
   }
@@ -150,10 +149,7 @@ describe("RoleProfileCard", () => {
     })
   })
 
-  it("hides the edit button for approved and archived roles", () => {
-    renderCard(makeRole({ status: "approved" }))
-    expect(screen.queryByRole("button", { name: labels.editCta })).toBeNull()
-    cleanup()
+  it("hides the edit button for archived roles", () => {
     renderCard(makeRole({ archived: true }))
     expect(screen.queryByRole("button", { name: labels.editCta })).toBeNull()
   })

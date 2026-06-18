@@ -179,7 +179,7 @@ describe("setRating", () => {
       })
     ).rejects.toThrow(/errors.invalidInput/)
 
-    // Approved role: rating is locked.
+    // Archived role: rating is locked.
     for (const item of model.criteria) {
       await asAdmin.mutation(api.assessment.ratings.setRating, {
         orgId,
@@ -188,10 +188,10 @@ describe("setRating", () => {
         value: 3,
       })
     }
-    await asAdmin.mutation(api.assessment.roles.setRoleStatus, {
-      orgId,
-      roleId,
-      to: "approved",
+    await t.run(async (ctx) => {
+      const docId = ctx.db.normalizeId("roles", roleId)
+      if (docId === null) throw new Error("bad id")
+      await ctx.db.patch(docId, { archivedAt: Date.now() })
     })
     await expect(
       asAdmin.mutation(api.assessment.ratings.setRating, {

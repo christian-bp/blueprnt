@@ -59,11 +59,6 @@
       "team": "Tiimi",
       "purpose": "Tarkoitus",
       "responsibilities": "Vastuualueet"
-    },
-    "status": {
-      "draft": "Luonnos",
-      "inReview": "Tarkastettavana",
-      "approved": "Hyväksytty"
     }
   },
   "dashboard": {
@@ -92,7 +87,6 @@
     },
     "overview": {
       "rolesCard": "Roolit",
-      "approvedCard": "Hyväksytyt roolit",
       "ratedCard": "Täysin arvioidut roolit",
       "criteriaCard": "Kriteerit mallissa",
       "goRoles": "Siirry rooleihin",
@@ -120,7 +114,6 @@
         "title": "Tehtävänimike",
         "track": "Track",
         "team": "Tiimi",
-        "status": "Tila",
         "evaluation": "Arviointi"
       },
       "create": {
@@ -170,17 +163,6 @@
         "archivedBadge": "Arkistoitu",
         "archivedHint": "Rooli on arkistoitu ja vain luku -tilassa. Historia säilyy."
       },
-      "status": {
-        "submitCta": "Lähetä tarkistettavaksi",
-        "approveCta": "Hyväksy",
-        "withdrawCta": "Peruuta tarkistus",
-        "reopenCta": "Avaa uudelleen",
-        "reopenConfirm": "Avaa uudelleen ja poista lukitus",
-        "cancel": "Peruuta",
-        "lockedHint": "Hyväksytyt roolit ovat lukittuja. Avaa uudelleen muuttaaksesi profiilia tai arvioita.",
-        "incompleteHint": "Rooli on arvioitava kokonaan ennen tarkistusta tai hyväksyntää.",
-        "error": "Tilaa ei voitu muuttaa. Yritä uudelleen."
-      },
       "archive": {
         "cta": "Arkistoi rooli",
         "confirm": "Kyllä, arkistoi",
@@ -212,7 +194,6 @@
       },
       "toolbar": {
         "searchPlaceholder": "Hae nimikkeellä, tiimillä tai toiminnolla",
-        "statusAll": "Kaikki tilat",
         "trackAll": "Kaikki trackit",
         "resultCount": "{shown}/{total} roolia",
         "noMatches": "Yksikään rooli ei vastaa hakua tai suodattimia.",
@@ -505,8 +486,6 @@
       "blindRatingBody": "Valitse ankkuriteksti, joka parhaiten vastaa roolin vaatimuksia, ei nykyisen työntekijän suoriutumista. Arviot, painotus ja luokka pysyvät piilossa viimeiseen kriteeriin asti, jotta jokainen kriteeri arvioidaan erikseen; tulos näkyy heti, kun kaikki kriteerit on arvioitu.",
       "onboardingScoreLabel": "Mitä roolin arviointi tekee?",
       "onboardingScoreBody": "Arviointi vertaa roolia mallisi jokaiseen kriteeriin. Taso johdetaan arvioinneista kiinteällä asteikolla, eikä sitä koskaan aseteta käsin, joten roolit pysyvät vertailukelpoisina. Arvioit yhden kriteerin kerrallaan näkemättä juoksevaa tulosta.",
-      "statusLabel": "Mitä tilat tarkoittavat?",
-      "statusBody": "Rooli etenee luonnoksesta tarkistettavaksi ja hyväksytyksi. Hyväksyminen lukitsee profiilin ja arviot tarkistettuina; avaa rooli uudelleen muuttaaksesi niitä. Tila ei koskaan vaikuta laskettuun tulokseen.",
       "familiesReviewLabel": "Mitä perheet ja trackit ovat?",
       "familiesReviewBody": "Rooliperhe ryhmittelee roolit, jotka jakavat samanlaisen työn, kuten Teknologia tai Myynti; perheet järjestävät luettelon eivätkä koskaan vaikuta painotukseen. Track on työn tyyppi, esimerkiksi yksilöasiantuntija tai esihenkilö; se ei kerro mitään senioriteetista.",
       "pendingBandLabel": "Miksi roolilla ei vielä ole bandia?",

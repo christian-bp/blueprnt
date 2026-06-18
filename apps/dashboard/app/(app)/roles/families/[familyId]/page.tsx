@@ -17,7 +17,6 @@ import Link from "next/link"
 import { use } from "react"
 import { useOrganization } from "@/components/org-context"
 import { FamilyHeader } from "@/components/roles/family-header"
-import { statusBadgeVariant } from "@/lib/role-status"
 
 // Per-family progression: the family's roles grouped per track (by track
 // order), sorted by level within each track. Band outcomes appear only for
@@ -28,7 +27,6 @@ export default function FamilyPage(props: {
   const { familyId } = use(props.params)
   const t = useTranslations("dashboard.roles")
   const tFamily = useTranslations("dashboard.roles.family")
-  const tStatus = useTranslations("assessment.status")
   const tAssessment = useTranslations("assessment")
   const tBands = useTranslations("dashboard.bands")
   const { orgId } = useOrganization()
@@ -93,7 +91,6 @@ export default function FamilyPage(props: {
               <TableHeader>
                 <TableRow>
                   <TableHead>{t("table.title")}</TableHead>
-                  <TableHead>{t("table.status")}</TableHead>
                   <TableHead className="text-right">
                     {tAssessment("band")}
                   </TableHead>
@@ -111,13 +108,6 @@ export default function FamilyPage(props: {
                         >
                           {role.title}
                         </Link>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={statusBadgeVariant(role.status)}>
-                          {tStatus(
-                            role.status as "draft" | "inReview" | "approved"
-                          )}
-                        </Badge>
                       </TableCell>
                       <TableCell className="text-right">
                         {result?.band != null ? (

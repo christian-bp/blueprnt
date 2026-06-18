@@ -110,7 +110,6 @@ describe("createStarterSet", () => {
       title: "Software Developer",
       familyName: "Engineering",
       trackKey: "IC",
-      status: "draft",
       profileComplete: false,
     })
     await t.run(async (ctx) => {
@@ -307,7 +306,6 @@ describe("reconcileStarterSet", () => {
       title: "Software Developer",
       familyName: "Engineering",
       trackKey: "IC",
-      status: "draft",
       profileComplete: false,
     })
     const familyCreated = await auditOfType(t, orgId, "roleFamily.created")
@@ -781,116 +779,6 @@ describe("reconcileStarterSet", () => {
       { orgId }
     )
     expect(after.map((f) => f.name).sort()).toEqual(["Design", "Engineering"])
-  })
-
-  it("rejects modifying an approved role", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin } = await seedTemplateOrganization(t)
-    await asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
-      orgId,
-      families: [
-        {
-          name: "Engineering",
-          roles: [{ title: "Developer", trackKey: "IC" }],
-        },
-      ],
-    })
-    const family = (
-      await asAdmin.query(api.assessment.families.listRoleFamilies, { orgId })
-    )[0]
-    const developer = (
-      await asAdmin.query(api.assessment.roles.listRoles, { orgId })
-    ).find((r) => r.title === "Developer")
-    if (family === undefined || developer === undefined) throw new Error("seed")
-
-    // Lock the role by approving it directly (the status machine's gates are
-    // out of scope here; we only need a role in the approved state).
-    await t.run(async (ctx) => {
-      const docId = ctx.db.normalizeId("roles", developer.roleId)
-      if (docId === null) throw new Error("bad id")
-      await ctx.db.patch(docId, { status: "approved" })
-    })
-
-    // A payload that renames/retracks the approved role must be rejected.
-    await expect(
-      asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
-        orgId,
-        families: [
-          {
-            familyId: family.familyId,
-            name: "Engineering",
-            roles: [
-              {
-                roleId: developer.roleId,
-                title: "Senior Developer",
-                trackKey: "M",
-              },
-            ],
-          },
-        ],
-      })
-    ).rejects.toThrow(/errors.roleLocked/)
-    // The approved role is untouched.
-    const after = (
-      await asAdmin.query(api.assessment.roles.listRoles, { orgId })
-    ).find((r) => r.roleId === developer.roleId)
-    expect(after).toMatchObject({
-      title: "Developer",
-      trackKey: "IC",
-      status: "approved",
-    })
-  })
-
-  it("rejects archiving an approved role by omission", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin } = await seedTemplateOrganization(t)
-    await asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
-      orgId,
-      families: [
-        {
-          name: "Engineering",
-          roles: [
-            { title: "Keeper", trackKey: "IC" },
-            { title: "Approved", trackKey: "IC" },
-          ],
-        },
-      ],
-    })
-    const family = (
-      await asAdmin.query(api.assessment.families.listRoleFamilies, { orgId })
-    )[0]
-    const roles = await asAdmin.query(api.assessment.roles.listRoles, { orgId })
-    const keeper = roles.find((r) => r.title === "Keeper")
-    const approved = roles.find((r) => r.title === "Approved")
-    if (
-      family === undefined ||
-      keeper === undefined ||
-      approved === undefined
-    ) {
-      throw new Error("seed")
-    }
-    await t.run(async (ctx) => {
-      const docId = ctx.db.normalizeId("roles", approved.roleId)
-      if (docId === null) throw new Error("bad id")
-      await ctx.db.patch(docId, { status: "approved" })
-    })
-
-    // Omitting the approved role would archive it: that must be rejected.
-    await expect(
-      asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
-        orgId,
-        families: [
-          {
-            familyId: family.familyId,
-            name: "Engineering",
-            roles: [{ roleId: keeper.roleId, title: "Keeper", trackKey: "IC" }],
-          },
-        ],
-      })
-    ).rejects.toThrow(/errors.roleLocked/)
-    // Nothing was archived.
-    const after = await asAdmin.query(api.assessment.roles.listRoles, { orgId })
-    expect(after.map((r) => r.title).sort()).toEqual(["Approved", "Keeper"])
   })
 
   it("still archives a draft role by omission", async () => {

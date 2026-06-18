@@ -59,11 +59,6 @@
       "team": "Team",
       "purpose": "Purpose",
       "responsibilities": "Responsibilities"
-    },
-    "status": {
-      "draft": "Draft",
-      "inReview": "In review",
-      "approved": "Approved"
     }
   },
   "dashboard": {
@@ -92,7 +87,6 @@
     },
     "overview": {
       "rolesCard": "Roles",
-      "approvedCard": "Approved roles",
       "ratedCard": "Fully rated roles",
       "criteriaCard": "Criteria in the model",
       "goRoles": "Go to roles",
@@ -120,7 +114,6 @@
         "title": "Title",
         "track": "Track",
         "team": "Team",
-        "status": "Status",
         "evaluation": "Evaluation"
       },
       "create": {
@@ -170,17 +163,6 @@
         "archivedBadge": "Archived",
         "archivedHint": "This role is archived and read-only. Its history is kept."
       },
-      "status": {
-        "submitCta": "Submit for review",
-        "approveCta": "Approve",
-        "withdrawCta": "Withdraw from review",
-        "reopenCta": "Reopen",
-        "reopenConfirm": "Reopen and unlock",
-        "cancel": "Cancel",
-        "lockedHint": "Approved roles are locked. Reopen to change the profile or ratings.",
-        "incompleteHint": "The role must be fully rated before review or approval.",
-        "error": "The status could not be changed. Try again."
-      },
       "archive": {
         "cta": "Archive role",
         "confirm": "Yes, archive",
@@ -212,7 +194,6 @@
       },
       "toolbar": {
         "searchPlaceholder": "Search by title, team, or function",
-        "statusAll": "All statuses",
         "trackAll": "All tracks",
         "resultCount": "{shown} of {total} roles",
         "noMatches": "No roles match the search or filters.",
@@ -505,8 +486,6 @@
       "blindRatingBody": "Pick the anchor text that best matches what the role requires, not how the current employee performs. Ratings, weighting, and band stay hidden until the last criterion so each one is judged on its own; the result appears as soon as every criterion is rated.",
       "onboardingScoreLabel": "What does evaluating a role do?",
       "onboardingScoreBody": "Evaluating rates the role against each criterion in your model. The band is derived from those ratings on a fixed scale, never set by hand, so roles stay comparable. You rate one criterion at a time without seeing the running result.",
-      "statusLabel": "What do the statuses mean?",
-      "statusBody": "A role moves from draft to in review to approved. Approving locks the profile and the ratings as reviewed; reopen the role to change them again. The status never affects the computed result.",
       "familiesReviewLabel": "What are families and tracks?",
       "familiesReviewBody": "A role family groups roles that share the same kind of work, like Engineering or Sales; families organize the register and never affect the weighting. A track is the kind of job, for example individual contributor or manager; it says nothing about seniority.",
       "pendingBandLabel": "Why does a role have no band yet?",

@@ -385,7 +385,7 @@ export const requestRoleProfileDraft = orgMutation({
     if (role === null || role.orgId !== ctx.orgId) {
       throw appError(ERROR_CODES.notFound)
     }
-    if (role.archivedAt !== undefined || role.status === "approved") {
+    if (role.archivedAt !== undefined) {
       throw appError(ERROR_CODES.roleLocked)
     }
     // Tracks are fixed constants (ADR-0006): the prompt's track name is a
@@ -459,7 +459,7 @@ export const confirmRoleProfileDraft = orgMutation({
     if (role === null || role.orgId !== ctx.orgId) {
       throw appError(ERROR_CODES.notFound)
     }
-    if (role.archivedAt !== undefined || role.status === "approved") {
+    if (role.archivedAt !== undefined) {
       throw appError(ERROR_CODES.roleLocked)
     }
     const value = suggestion.suggestedValue as {

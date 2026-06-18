@@ -25,9 +25,8 @@ export const setRating = orgMutation({
     if (role === null || role.orgId !== ctx.orgId) {
       throw appError(ERROR_CODES.notFound)
     }
-    // Ratings are editable in draft and inReview; approved or archived roles
-    // require an explicit reopen first.
-    if (role.archivedAt !== undefined || role.status === "approved") {
+    // Ratings are editable until the role is archived.
+    if (role.archivedAt !== undefined) {
       throw appError(ERROR_CODES.roleLocked)
     }
     // The job profile is the standardized input that makes ratings

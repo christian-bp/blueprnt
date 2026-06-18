@@ -26,7 +26,6 @@ function baseRole() {
     trackName: "Individual contributor",
     purpose: "Builds the platform.",
     responsibilities: "Ship features\nReview code",
-    status: "inReview",
     archived: false,
     profileComplete: true,
     ratedCount: 2,

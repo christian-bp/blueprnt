@@ -43,14 +43,13 @@ import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { TrackBadge } from "@/components/track-badge"
 import { groupByFamily } from "@/lib/role-groups"
-import { statusBadgeVariant } from "@/lib/role-status"
 
 // The role register as ONE grouped data table (shadcn data table recipe on
 // @tanstack/react-table), per the 2026-06-12 design spec: a hidden family
 // column carries the grouping, the pipeline filters BEFORE grouping so
 // families without matches disappear, and expansion is pinned open (the
 // groups are organization, not disclosure). Search is the exported pure
-// matcher below; status/track filter through column filters.
+// matcher below; the track filter goes through a column filter.
 
 // Structural subset of listRoles rows (same precedent as CreateRoleDialog's
 // TrackOption): the table needs no convex types of its own.
@@ -61,7 +60,6 @@ export interface RolesTableRow {
   team: string
   trackKey: string
   trackName: string
-  status: string
   ratedCount: number
   totalCriteria: number
   familyId: string | null
@@ -88,8 +86,6 @@ export function matchesRoleQuery(
   )
 }
 
-const ROLE_STATUSES = ["draft", "inReview", "approved"] as const
-
 // MODULE-LEVEL constant: state.grouping keys the grouped-row-model memo, and
 // every recompute of that memo queues TanStack's auto-resets, whose
 // resetPageIndex setState re-renders the table. An inline ["family"] array
@@ -97,7 +93,6 @@ const ROLE_STATUSES = ["draft", "inReview", "approved"] as const
 // Select opening inside this tree) into an infinite render loop that
 // freezes the page. Keep the identity stable and the auto-resets off.
 const GROUPING = ["family"]
-type RoleStatus = (typeof ROLE_STATUSES)[number]
 
 const exactString = (
   row: Row<RolesTableRow>,
@@ -115,7 +110,6 @@ export function RolesTable({
   const t = useTranslations("dashboard.roles")
   const tToolbar = useTranslations("dashboard.roles.toolbar")
   const tFamily = useTranslations("dashboard.roles.family")
-  const tStatus = useTranslations("assessment.status")
   const router = useRouter()
 
   const [globalFilter, setGlobalFilter] = useState("")
@@ -174,18 +168,6 @@ export function RolesTable({
         ),
       },
       {
-        id: "status",
-        accessorFn: (row) => row.status,
-        header: t("table.status"),
-        filterFn: exactString,
-        enableGlobalFilter: false,
-        cell: ({ row }) => (
-          <Badge variant={statusBadgeVariant(row.original.status)}>
-            {tStatus(row.original.status as RoleStatus)}
-          </Badge>
-        ),
-      },
-      {
         id: "evaluation",
         header: t("table.evaluation"),
         enableGlobalFilter: false,
@@ -205,7 +187,7 @@ export function RolesTable({
         },
       },
     ],
-    [t, tStatus]
+    [t]
   )
 
   const table = useReactTable({
@@ -249,14 +231,12 @@ export function RolesTable({
     setColumnFilters([])
   }
 
-  const statusFilter =
-    (table.getColumn("status")?.getFilterValue() as string | undefined) ?? "all"
   const trackFilter =
     (table.getColumn("track")?.getFilterValue() as string | undefined) ?? "all"
 
   return (
     <div className="space-y-4">
-      {/* Toolbar: search + the two filters; the counter appears only while
+      {/* Toolbar: search + the track filter; the counter appears only while
           something is narrowing the table. */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative">
@@ -275,26 +255,6 @@ export function RolesTable({
             className="w-64 pl-8"
           />
         </div>
-        <Select
-          value={statusFilter}
-          onValueChange={(value) =>
-            table
-              .getColumn("status")
-              ?.setFilterValue(value === "all" ? undefined : value)
-          }
-        >
-          <SelectTrigger aria-label={t("table.status")}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{tToolbar("statusAll")}</SelectItem>
-            {ROLE_STATUSES.map((status) => (
-              <SelectItem key={status} value={status}>
-                {tStatus(status)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
         <Select
           value={trackFilter}
           onValueChange={(value) =>

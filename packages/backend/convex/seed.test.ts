@@ -339,7 +339,6 @@ describe("devReset.wipeAppTables", () => {
         trackKey: "IC",
         purpose: "Build things",
         responsibilities: "Ship code",
-        status: "draft",
       })
     })
 

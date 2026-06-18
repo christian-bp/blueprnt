@@ -42,7 +42,7 @@ export default function RatePage(props: {
   }
   // Locked or not ready to rate: state the precondition here and send the
   // user back to the role page where the controls live.
-  if (role.status === "approved" || role.archived || !role.profileComplete) {
+  if (role.archived || !role.profileComplete) {
     return (
       <div className="space-y-2">
         <p className="text-muted-foreground text-sm">

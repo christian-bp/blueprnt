@@ -151,7 +151,6 @@ export async function insertStarterSet(
         familyId,
         purpose: role.purpose ?? "",
         responsibilities: role.responsibilities ?? "",
-        status: "draft",
       })
       await logAudit(ctx, {
         orgId,
@@ -284,10 +283,9 @@ export const reconcileStarterSet = orgMutation({
     //   collision with roleFamilyExists. This covers create, rename onto
     //   another family, and keep-by-id + new-with-same-name alike.
     //
-    //   Role lock (roleLocked, like updateRole/archiveRole): an approved or
-    //   archived role may not be modified (title/trackKey/familyId change),
-    //   and an approved role may not be archived by omission. Archiving a
-    //   draft/inReview role by omission stays allowed (the onboarding edit).
+    //   Role lock (roleLocked, like updateRole/archiveRole): an archived role
+    //   may not be modified (title/trackKey/familyId change). Archiving an
+    //   active role by omission stays allowed (the onboarding edit).
     const resultingFamilyNames = new Set<string>()
     for (const family of families) {
       const name = normalizeFamilyName(family.name)
@@ -314,34 +312,16 @@ export const reconcileStarterSet = orgMutation({
         if (role.roleId === undefined) continue
         const existing = activeRoleById.get(role.roleId as string)
         if (existing === undefined) throw appError(ERROR_CODES.notFound)
-        // A kept approved/archived role may not be modified.
+        // A kept archived role may not be modified.
         const wouldModify =
           existing.title !== title ||
           existing.trackKey !== role.trackKey ||
           (existing.familyId as string | undefined) !== targetFamilyId
-        if (
-          wouldModify &&
-          (existing.status === "approved" || existing.archivedAt !== undefined)
-        ) {
+        if (wouldModify && existing.archivedAt !== undefined) {
           throw appError(ERROR_CODES.roleLocked)
         }
       }
     }
-    // An approved role omitted from the payload would be archived: refuse.
-    // (Only active roles can be omitted; archived ones are already gone.)
-    const keptRoleIdsForLockCheck = new Set<string>()
-    for (const family of families) {
-      for (const role of family.roles) {
-        if (role.roleId !== undefined) {
-          keptRoleIdsForLockCheck.add(role.roleId as string)
-        }
-      }
-    }
-    for (const role of activeRoles) {
-      if (keptRoleIdsForLockCheck.has(role._id as string)) continue
-      if (role.status === "approved") throw appError(ERROR_CODES.roleLocked)
-    }
-
     // 3 + 4. Reconcile families, then their roles.
     for (const family of families) {
       const name = normalizeFamilyName(family.name)
@@ -426,7 +406,6 @@ export const reconcileStarterSet = orgMutation({
             familyId,
             purpose: "",
             responsibilities: "",
-            status: "draft",
           })
           await logAudit(ctx, {
             orgId,

@@ -7,14 +7,12 @@ import { RoleRatingCard } from "@/components/roles/role-rating-card"
 function renderCard(over: {
   ratedCount: number
   totalCriteria: number
-  status?: string
   profileComplete?: boolean
 }) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <RoleRatingCard
         roleId="r1"
-        status={over.status ?? "draft"}
         archived={false}
         profileComplete={over.profileComplete ?? true}
         ratedCount={over.ratedCount}

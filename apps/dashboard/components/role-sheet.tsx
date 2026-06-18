@@ -29,7 +29,6 @@ import { useOrganization } from "@/components/org-context"
 import { RoleCriterionBreakdown } from "@/components/roles/role-criterion-breakdown"
 import { ResponsibilitiesList } from "@/components/roles/responsibilities-list"
 import { TrackBadge } from "@/components/track-badge"
-import { statusBadgeVariant } from "@/lib/role-status"
 
 interface RoleSheetContextValue {
   openRole: (roleId: string) => void
@@ -86,7 +85,6 @@ function RoleSheetContent({
   const tRoles = useTranslations("dashboard.roles")
   const tDetail = useTranslations("dashboard.roles.detail")
   const tRole = useTranslations("assessment.role")
-  const tStatus = useTranslations("assessment.status")
   const tAssessment = useTranslations("assessment")
   const tHelp = useTranslations("dashboard.help")
   const tFamily = useTranslations("dashboard.roles.family")
@@ -119,9 +117,6 @@ function RoleSheetContent({
             <SheetTitle>{role.title}</SheetTitle>
             <SheetDescription>{`${role.function} · ${role.team}`}</SheetDescription>
             <div className="mt-1 flex flex-wrap items-center gap-2">
-              <Badge variant={statusBadgeVariant(role.status)}>
-                {tStatus(role.status as "draft" | "inReview" | "approved")}
-              </Badge>
               <TrackBadge
                 trackKey={role.trackKey}
                 name={role.trackName}

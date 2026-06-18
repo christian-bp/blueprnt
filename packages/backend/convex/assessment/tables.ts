@@ -11,8 +11,8 @@ export const roleFamilies = defineTable({
   name: v.string(),
 }).index("by_org", ["orgId"])
 
-// Role identity is permanent: never hard-delete a role with ratings or
-// approved status, never reuse ids (V2 equal-work grouping depends on it).
+// Role identity is permanent: never hard-delete a role with ratings, never
+// reuse ids (V2 equal-work grouping depends on it).
 // Role/rating tables NEVER carry person, salary, or performance fields.
 export const roles = defineTable({
   orgId: v.string(),
@@ -25,11 +25,6 @@ export const roles = defineTable({
   familyId: v.optional(v.id("roleFamilies")),
   purpose: v.string(),
   responsibilities: v.string(),
-  status: v.union(
-    v.literal("draft"),
-    v.literal("inReview"),
-    v.literal("approved")
-  ),
   archivedAt: v.optional(v.number()),
   // Anchor-role designation (ankarroll): the role as a calibration reference
   // point (2-5 per org is the guideline). An aggregate of the role
@@ -51,9 +46,7 @@ export const roles = defineTable({
       reviewedAt: v.number(),
     })
   ),
-})
-  .index("by_org", ["orgId"])
-  .index("by_org_status", ["orgId", "status"])
+}).index("by_org", ["orgId"])
 
 // The stored truth (ADR-0002): ratings persist, score/band derive.
 export const ratings = defineTable({

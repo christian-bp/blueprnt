@@ -47,7 +47,7 @@ packages/ui       shadcn/ui (finns)
 - *Viktpoängskalan (1–5) och poängbudgeten (antal kriterier × 3) är **fasta** → konstanter i `packages/core`, ingen tabell (ADR-0004).*
 
 **assessment**:
-- `role` — orgId; **jobbprofil**: obligatorisk kärna (titel, funktion/avdelning, team, track, syfte, ansvarsområden) + valfria strukturerade fält (beslutsmandat, intressenter, kunskapskrav, finansiellt ansvar, personalansvar, risk/konsekvens, leverabler); status (draft/inReview/approved). Ingen nivå på rollen (ADR-0005: nivån är individdata, V2); kodfältet för titeln heter `title`.
+- `role` — orgId; **jobbprofil**: obligatorisk kärna (titel, funktion/avdelning, team, track, syfte, ansvarsområden) + valfria strukturerade fält (beslutsmandat, intressenter, kunskapskrav, finansiellt ansvar, personalansvar, risk/konsekvens, leverabler). Ingen nivå på rollen (ADR-0005: nivån är individdata, V2); kodfältet för titeln heter `title`.
 - `rating` — orgId, roleId, criterionId, value (0–5), ev. motivering (frivillig). **(Sanningskällan.)**
 - `anchorRole` — orgId, roleId, förväntat band. (Kalibrering; ev. senare.)
 
@@ -65,7 +65,7 @@ packages/ui       shadcn/ui (finns)
 
 - **E1 — Konton & organisation:** Better Auth-org (= organisation), HR-only, roller Admin/Editor, org-scoping i alla funktioner, samt grundläggande företagssetup (namn, land, valuta, språk, antal anställda, bransch).
 - **E2 — Modellkonfiguration:** kriterier + ankare + hjälptexter, viktpoäng med poängbudget (1–5, summa = antal kriterier × 3; ADR-0004), bandtrösklar, track-schema, **standardmall** (förifylld), egna kriterier, samt **kriterieurvalsprotokoll** & **bias-granskning** per kriterium (lätt compliance-ställning, nivå 2).
-- **E3 — Roller & värdering:** rollregister/jobbprofil, **blindat** betygsflöde mot ankare, status (utkast → granskning → godkänd), frivillig motivering.
+- **E3 — Roller & värdering:** rollregister/jobbprofil, **blindat** betygsflöde mot ankare, frivillig motivering.
 - **E4 — Poäng & band-motor:** `packages/core`, live-omräkning, bandutfall (alltid uträknat — ingen manuell override).
 - **E5 — Resultat & analys:** resultatvy (poäng + band), bandöversikt, **progressionsvy** (roller skapade / bedömda / bandade — briefens §8), grundläggande analys (**överlapp, avvikare, bandfördelning** — briefens 4.4), jämförelse av roller, export CSV/Excel, samt exporterbar **metodbilaga** (kriterier, betydelser, kriterieurvalsprotokoll, bias-granskning; formulering: "biasreducerande", aldrig "biasfri").
 - **E6 — Revisionslogg & spårbarhet:** modelländringar + band-shiftar (tvärgående, vävs in i E2/E4).
@@ -76,7 +76,7 @@ packages/ui       shadcn/ui (finns)
 
 1. **Fas 1 — Fundament:** monorepo-paket (`backend`, `core`, `dashboard`), Convex EU-deploy, Better Auth, organisation + Admin/Editor. (E1)
 2. **Fas 2 — Modellmotor & mall:** kriterier/ankare/betydelser, bandtrösklar, standardmall, `packages/core` grundläggande. (E2 + E4-kärna)
-3. **Fas 3 — Roller & värdering:** rollregister, blindat betygsflöde, status. (E3)
+3. **Fas 3 — Roller & värdering:** rollregister, blindat betygsflöde. (E3)
 4. **Fas 4 — Poäng & band:** full motor, bandutfall, revisionslogg. (E4 + E6)
 5. **Fas 5 — Resultat & export:** översikts-/jämförelsevyer, CSV/Excel-export. (E5)
 6. **Fas 6 — Förbättringar:** bulkimport, kalibrering, rapporter, fler roller. (E7)
@@ -95,7 +95,7 @@ Tunnast möjliga end-to-end som bevisar kärnloopen *modell → roller → poän
 
 Detta motsvarar briefens "definition av en lyckad första version" i minsta körbara form.
 
-**Status (juni 2026):** alfa-loopen levererad i evaluation-loop-skivan: motor i `packages/core` (scoreRole, assignBand, computeResults, checkGuardrails), rollregister med AI-jobbprofilutkast, blind betygsättning (stegvis, ett kriterium i taget, ankartexterna som val), resultatvy med bandöversikt och riktig dashboardnavigering (Översikt/Roller/Modell/Resultat). Skivan levererade mer än minsta form: betydelse- och kriterieredigering, statusmaskin med godkännande/återöppning, arkivering och band.shift-revisionslogg kom med. Ankarroller levererades i ankarrollsskivan (juni 2026): admin utser en fullbedömd roll till ankarroll på rollsidan (överenskommet band + motivering, status aktiv/under översyn/ersatt, revisionslogg), resultatvyn jämför överenskommet mot beräknat band per ankare, och betygsavslöjandet flaggar resultat som ligger två band eller mer från närmaste ankare. Kriteriets ankartexter heter "bedömningsnivå" i UI (de sex nivåerna 0 till 5; sedan 2026-06-13, tidigare "bedömningsankare"); `nivå` här är kriteriets 0–5-skala, skild från V2:s individuella senioritetsnivå (ADR-0005). Kanonisk kodterm är fortsatt `ankare` (`criteria.anchors`). Övrig kalibrering och import återstår. Onboardingen gjordes konversationell (en fråga per skärm, animerad punktnavigering) med ett avslutande steg där rollfamiljer och roller sätts upp, förifyllda från branschvisa startuppsättningar (juni 2026).
+**Status (juni 2026):** alfa-loopen levererad i evaluation-loop-skivan: motor i `packages/core` (scoreRole, assignBand, computeResults, checkGuardrails), rollregister med AI-jobbprofilutkast, blind betygsättning (stegvis, ett kriterium i taget, ankartexterna som val), resultatvy med bandöversikt och riktig dashboardnavigering (Översikt/Roller/Modell/Resultat). Skivan levererade mer än minsta form: betydelse- och kriterieredigering, arkivering och band.shift-revisionslogg kom med. (Rollstatus-arbetsflödet (utkast → granskning → godkänd) togs bort före lansering som onödigt: HR-only, och bedömningens färdigställande är signalen för att en roll är klar.) Ankarroller levererades i ankarrollsskivan (juni 2026): admin utser en fullbedömd roll till ankarroll på rollsidan (överenskommet band + motivering, status aktiv/under översyn/ersatt, revisionslogg), resultatvyn jämför överenskommet mot beräknat band per ankare, och betygsavslöjandet flaggar resultat som ligger två band eller mer från närmaste ankare. Kriteriets ankartexter heter "bedömningsnivå" i UI (de sex nivåerna 0 till 5; sedan 2026-06-13, tidigare "bedömningsankare"); `nivå` här är kriteriets 0–5-skala, skild från V2:s individuella senioritetsnivå (ADR-0005). Kanonisk kodterm är fortsatt `ankare` (`criteria.anchors`). Övrig kalibrering och import återstår. Onboardingen gjordes konversationell (en fråga per skärm, animerad punktnavigering) med ett avslutande steg där rollfamiljer och roller sätts upp, förifyllda från branschvisa startuppsättningar (juni 2026).
 
 ## 7. Icke-funktionellt
 
@@ -117,7 +117,7 @@ Avancerad marknads-benchmarking; komplex kompmodellering (bonus/equity/TCC); sto
 
 1. ~~**Bandschema**~~ → **Avgjort (default):** 7 band, trösklar konfigurerbara, Band 1 högst.
 2. ~~**HR-roller**~~ → **Avgjort (default):** Admin + Editor.
-3. ~~**Värderingsstatus & motivering**~~ → **Avgjort:** status utkast → under granskning → godkänd; **motivering frivillig** (aldrig obligatorisk). *(Medveten avvikelse från HR-kritikens fyra obligatoriska triggers — betyg 0/4/5, utanför track-intervall, nära bandgräns — motiverad av HR-only + blindning. Ev. icke-blockerande uppmaning att motivera är en UX-idé för E3.)* **Ingen manuell bandöverride** — band är alltid det uträknade utfallet (avviker från briefen; vill man ändra justerar man betyg eller modell).
+3. ~~**Värderingsstatus & motivering**~~ → **Avgjort:** **motivering frivillig** (aldrig obligatorisk). **Rollstatus-arbetsflödet (utkast → under granskning → godkänd) togs bort före lansering** som onödigt: HR-only, och bedömningens färdigställande (completeness) är signalen för att en roll är klar. *(Medveten avvikelse från HR-kritikens fyra obligatoriska triggers — betyg 0/4/5, utanför track-intervall, nära bandgräns — motiverad av HR-only + blindning. Ev. icke-blockerande uppmaning att motivera är en UX-idé för E3.)* **Ingen manuell bandöverride** — band är alltid det uträknade utfallet (avviker från briefen; vill man ändra justerar man betyg eller modell).
 4. ~~**Roll-fält / jobbprofil**~~ → **Avgjort: nivå (2).** Obligatorisk kärna (titel, funktion/avdelning, team, track, syfte, ansvarsområden) + strukturerade valfria fält (beslutsmandat, intressenter, kunskapskrav, finansiellt ansvar, personalansvar, risk/konsekvens, leverabler). *(Mappning mot briefen 4.3: "beskrivning" → syfte; "ansvarstext" → ansvarsområden.)* **Uppdaterat 2026-06:** fältet heter **titel** (kod `title`), inte namn. **Uppdaterat 2026-06-07 (ADR-0005):** nivåfältet utgår ur jobbprofilen; nivån sätts på individen i V2.
 5. ~~**Kalibrering/ankarroller**~~ → **Avgjort:** senare (fast-follow), enligt #8-beslutet (compliance-nivå 2); se E7.
 6. ~~**Track-schema**~~ → **Avgjort:** fast (IC/Lead/M) i V1, konfigurerbart senare. Nivåer: **IC1–5, Lead 1–3, M1–3** (definitioner + guardrail-referensdata i standardmall.md). **Uppdaterat 2026-06-07 (ADR-0005):** nivåerna sätts på individen (V2-rollplaceringen), inte på rollen; guardrails pensionerade ur V1:s betygsflöde.

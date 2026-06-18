@@ -16,14 +16,12 @@ import Link from "next/link"
 // after completion, never here (blindness).
 export function RoleRatingCard({
   roleId,
-  status,
   archived,
   profileComplete,
   ratedCount,
   totalCriteria,
 }: {
   roleId: string
-  status: string
   archived: boolean
   profileComplete: boolean
   ratedCount: number
@@ -32,7 +30,7 @@ export function RoleRatingCard({
   const t = useTranslations("dashboard.roles.detail")
   const tRoles = useTranslations("dashboard.roles")
   const tHelp = useTranslations("dashboard.help")
-  const locked = status === "approved" || archived
+  const locked = archived
   const evaluated = totalCriteria > 0 && ratedCount === totalCriteria
   const ctaLabel =
     ratedCount === 0

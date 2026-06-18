@@ -33,7 +33,6 @@ describe("domain schema skeleton", () => {
         trackKey: "IC",
         purpose: "p",
         responsibilities: "r",
-        status: "draft",
       })
       await ctx.db.insert("ratings", {
         orgId: "org1",

@@ -15,8 +15,6 @@ import { AnchorRoleCard } from "@/components/roles/anchor-role-card"
 import { RoleProfileCard } from "@/components/roles/role-profile-card"
 import { RoleRatingCard } from "@/components/roles/role-rating-card"
 import { RoleResultCard } from "@/components/roles/role-result-card"
-import { RoleStatusActions } from "@/components/roles/role-status-actions"
-import { statusBadgeVariant } from "@/lib/role-status"
 
 export default function RolePage(props: {
   params: Promise<{ roleId: string }>
@@ -24,7 +22,6 @@ export default function RolePage(props: {
   const { roleId } = use(props.params)
   const t = useTranslations("dashboard.roles.detail")
   const tArchive = useTranslations("dashboard.roles.archive")
-  const tStatus = useTranslations("assessment.status")
   const { orgId, role: orgRole } = useOrganization()
   const router = useRouter()
   const archiveRole = useMutation(api.assessment.roles.archiveRole)
@@ -57,9 +54,6 @@ export default function RolePage(props: {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
         <h2 className="font-medium text-lg">{role.title}</h2>
-        <Badge variant={statusBadgeVariant(role.status)}>
-          {tStatus(role.status as "draft" | "inReview" | "approved")}
-        </Badge>
         {role.archived && <Badge variant="outline">{t("archivedBadge")}</Badge>}
         <TrackBadge trackKey={role.trackKey} name={role.trackName} />
         <span className="text-muted-foreground text-sm">
@@ -93,21 +87,10 @@ export default function RolePage(props: {
         <div className="space-y-6">
           <RoleRatingCard
             roleId={role.roleId}
-            status={role.status}
             archived={role.archived}
             profileComplete={role.profileComplete}
             ratedCount={role.ratedCount}
             totalCriteria={role.totalCriteria}
-          />
-          <RoleStatusActions
-            orgId={orgId}
-            roleId={role.roleId}
-            status={role.status}
-            canComplete={
-              role.profileComplete &&
-              role.totalCriteria > 0 &&
-              role.ratedCount === role.totalCriteria
-            }
           />
           <RoleResultCard orgId={orgId} roleId={roleId} />
           <AnchorRoleCard

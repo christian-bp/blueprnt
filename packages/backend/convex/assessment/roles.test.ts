@@ -46,7 +46,6 @@ describe("createRole", () => {
     await t.run(async (ctx) => {
       const role = await ctx.db.get(roleId)
       expect(role?.title).toBe("Junior Software Developer")
-      expect(role?.status).toBe("draft")
       expect(role?.purpose).toBe("")
       expect(role?.responsibilities).toBe("")
       const audit = await ctx.db
@@ -107,7 +106,6 @@ describe("listRoles and getRole", () => {
     expect(list[0]).toMatchObject({
       roleId,
       title: "Developer",
-      status: "draft",
       ratedCount: 1,
       totalCriteria: 9,
       profileComplete: true,
@@ -185,7 +183,7 @@ async function rateAll(
 }
 
 describe("updateRole", () => {
-  it("patches profile fields, audits the field names, and locks approved roles", async () => {
+  it("patches profile fields, audits the field names, and locks archived roles", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
     const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
@@ -226,12 +224,12 @@ describe("updateRole", () => {
       })
     })
 
-    // Approve (admin shortcut from draft once fully rated), then verify lock.
+    // Archive the role (the only lock), then verify editing is rejected.
     await rateAll(t, orgId, roleId as string, model.criteria, 3)
-    await asAdmin.mutation(api.assessment.roles.setRoleStatus, {
-      orgId,
-      roleId,
-      to: "approved",
+    await t.run(async (ctx) => {
+      const docId = ctx.db.normalizeId("roles", roleId as string)
+      if (docId === null) throw new Error("bad id")
+      await ctx.db.patch(docId, { archivedAt: Date.now() })
     })
     await expect(
       asAdmin.mutation(api.assessment.roles.updateRole, {
@@ -263,109 +261,6 @@ describe("updateRole", () => {
       const role = await ctx.db.get(roleId)
       expect(role?.trackKey).toBe(otherTrack.key)
     })
-  })
-})
-
-describe("setRoleStatus", () => {
-  it("walks draft -> inReview -> approved -> draft with permission checks", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
-    const asEditor = await addEditor(t, orgId, "editor@acme.se")
-    const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
-      orgId,
-      title: "Developer",
-      function: "Engineering",
-      team: "Core",
-      trackKey: track.key,
-      purpose: "p",
-      responsibilities: "r",
-    })
-
-    // Incomplete ratings block submission.
-    await expect(
-      asEditor.mutation(api.assessment.roles.setRoleStatus, {
-        orgId,
-        roleId,
-        to: "inReview",
-      })
-    ).rejects.toThrow(/errors.ratingsIncomplete/)
-
-    await rateAll(t, orgId, roleId as string, model.criteria, 3)
-
-    await asEditor.mutation(api.assessment.roles.setRoleStatus, {
-      orgId,
-      roleId,
-      to: "inReview",
-    })
-    // Editors cannot approve.
-    await expect(
-      asEditor.mutation(api.assessment.roles.setRoleStatus, {
-        orgId,
-        roleId,
-        to: "approved",
-      })
-    ).rejects.toThrow(/errors.adminRequired/)
-    await asAdmin.mutation(api.assessment.roles.setRoleStatus, {
-      orgId,
-      roleId,
-      to: "approved",
-    })
-    // Reopen is admin-only and unlocks editing again.
-    await expect(
-      asEditor.mutation(api.assessment.roles.setRoleStatus, {
-        orgId,
-        roleId,
-        to: "draft",
-      })
-    ).rejects.toThrow(/errors.adminRequired/)
-    await asAdmin.mutation(api.assessment.roles.setRoleStatus, {
-      orgId,
-      roleId,
-      to: "draft",
-    })
-
-    await t.run(async (ctx) => {
-      const audit = await ctx.db
-        .query("auditLog")
-        .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "role.statusChange")
-        )
-        .collect()
-      expect(audit.map((row) => row.payload)).toEqual([
-        { roleId, from: "draft", to: "inReview" },
-        { roleId, from: "inReview", to: "approved" },
-        { roleId, from: "approved", to: "draft" },
-      ])
-    })
-  })
-
-  it("rejects unknown transitions and incomplete profiles", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
-    const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
-      orgId,
-      title: "Developer",
-      function: "Engineering",
-      team: "Core",
-      trackKey: track.key,
-    })
-    await rateAll(t, orgId, roleId as string, model.criteria, 3)
-    // Profile incomplete (purpose/responsibilities empty) blocks submission.
-    await expect(
-      asAdmin.mutation(api.assessment.roles.setRoleStatus, {
-        orgId,
-        roleId,
-        to: "inReview",
-      })
-    ).rejects.toThrow(/errors.profileIncomplete/)
-    // Same-status transition is invalid.
-    await expect(
-      asAdmin.mutation(api.assessment.roles.setRoleStatus, {
-        orgId,
-        roleId,
-        to: "draft",
-      })
-    ).rejects.toThrow(/errors.invalidTransition/)
   })
 })
 

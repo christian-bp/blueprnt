@@ -14,7 +14,7 @@ _Undvik (fältet titel)_: Namn (säg "titel"; beslutat 2026-06)
 _Undvik_: Rollbeskrivning (ok beskrivande; "jobbprofil" är den strukturerade mallen)
 
 **Värdering** *(kod: Assessment)*:
-Posten över att värdera en roll mot modellen — dess betyg, beräknade poäng och tilldelade band, plus status och motiveringar.
+Posten över att värdera en roll mot modellen — dess betyg, beräknade poäng och tilldelade band, plus motiveringar.
 _Undvik_: Bedömning (godtagbar synonym), Granskning
 
 **Betyg** *(kod: Rating)*:
@@ -59,9 +59,6 @@ _Undvik_: AI-svar, Automatiskt värde (det är ett *förslag* tills HR bekräfta
 | `assessment.band` | Band | Band |
 | `assessment.anchorRole` | Ankarroll | Anchor role |
 | `assessment.aiSuggestion` | AI-förslag | AI suggestion |
-| `assessment.status.draft` | Utkast | Draft |
-| `assessment.status.inReview` | Under granskning | In review |
-| `assessment.status.approved` | Godkänd | Approved |
 
 ## Flaggade oklarheter
 

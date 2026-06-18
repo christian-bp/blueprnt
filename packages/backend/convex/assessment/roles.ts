@@ -37,7 +37,7 @@ function assertFieldLength(value: string): void {
   if (value.length > MAX_FIELD_LENGTH) throw appError(ERROR_CODES.invalidInput)
 }
 
-// Used by Task 8 mutations (updateRole, archiveRole, setRoleStatus).
+// Used by Task 8 mutations (updateRole, archiveRole).
 export async function requireOwnRole(
   ctx: QueryCtx & { orgId: string },
   roleId: Id<"roles">
@@ -96,7 +96,6 @@ export const createRole = orgMutation({
       // start empty and gate the rating flow via profileComplete.
       purpose: optional.purpose ?? "",
       responsibilities: optional.responsibilities ?? "",
-      status: "draft",
     })
     await logAudit(ctx, {
       orgId: ctx.orgId,
@@ -118,7 +117,6 @@ export const listRoles = orgQuery({
       team: v.string(),
       trackKey: v.string(),
       trackName: v.string(),
-      status: v.string(),
       ratedCount: v.number(),
       totalCriteria: v.number(),
       profileComplete: v.boolean(),
@@ -151,7 +149,6 @@ export const listRoles = orgQuery({
         team: role.team,
         trackKey: track?.key ?? "",
         trackName: track?.name ?? "",
-        status: role.status,
         ratedCount: result?.ratedCount ?? 0,
         totalCriteria: derived.totalCriteria,
         profileComplete: isProfileComplete(role),
@@ -188,7 +185,6 @@ export const getRole = orgQuery({
       trackName: v.string(),
       purpose: v.string(),
       responsibilities: v.string(),
-      status: v.string(),
       archived: v.boolean(),
       profileComplete: v.boolean(),
       ratedCount: v.number(),
@@ -258,7 +254,6 @@ export const getRole = orgQuery({
       trackName: track?.name ?? role.trackKey,
       purpose: role.purpose,
       responsibilities: role.responsibilities,
-      status: role.status,
       archived: role.archivedAt !== undefined,
       profileComplete: isProfileComplete(role),
       ratedCount: ratings.length,
@@ -287,7 +282,7 @@ export const updateRole = orgMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const role = await requireOwnRole(ctx, args.roleId)
-    if (role.archivedAt !== undefined || role.status === "approved") {
+    if (role.archivedAt !== undefined) {
       throw appError(ERROR_CODES.roleLocked)
     }
     const patch: Record<string, unknown> = {}
@@ -337,66 +332,6 @@ export const updateRole = orgMutation({
       type: AUDIT_EVENTS.roleUpdated,
       actorId: ctx.authUserId,
       payload: { roleId: args.roleId, fields: Object.keys(patch) },
-    })
-    return null
-  },
-})
-
-type RoleStatus = "draft" | "inReview" | "approved"
-
-// Status machine (spec): draft -> inReview (member, requires complete),
-// draft -> approved (admin shortcut, requires complete), inReview ->
-// approved (admin), inReview -> draft (member withdraw), approved -> draft
-// (admin reopen). Everything else is invalid.
-export const setRoleStatus = orgMutation({
-  args: {
-    roleId: v.id("roles"),
-    to: v.union(
-      v.literal("draft"),
-      v.literal("inReview"),
-      v.literal("approved")
-    ),
-  },
-  returns: v.null(),
-  handler: async (ctx, { roleId, to }) => {
-    const role = await requireOwnRole(ctx, roleId)
-    if (role.archivedAt !== undefined) throw appError(ERROR_CODES.roleLocked)
-    const from = role.status as RoleStatus
-
-    const adminOnly =
-      to === "approved" || (from === "approved" && to === "draft")
-    const valid =
-      (from === "draft" && to === "inReview") ||
-      (from === "draft" && to === "approved") ||
-      (from === "inReview" && to === "approved") ||
-      (from === "inReview" && to === "draft") ||
-      (from === "approved" && to === "draft")
-    if (!valid) throw appError(ERROR_CODES.invalidTransition)
-    if (adminOnly && ctx.role !== "admin") {
-      throw appError(ERROR_CODES.adminRequired)
-    }
-
-    // Moving forward (into review or approval) requires the mandatory job
-    // profile core and a fully rated role; moving back never does.
-    if (to === "inReview" || to === "approved") {
-      if (!isProfileComplete(role)) {
-        throw appError(ERROR_CODES.profileIncomplete)
-      }
-      const derived = await deriveResults(ctx, ctx.orgId)
-      const result = derived.results.find(
-        (row) => row.roleId === (roleId as string)
-      )
-      if (result === undefined || !result.complete) {
-        throw appError(ERROR_CODES.ratingsIncomplete)
-      }
-    }
-
-    await ctx.db.patch(roleId, { status: to })
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
-      type: AUDIT_EVENTS.roleStatusChanged,
-      actorId: ctx.authUserId,
-      payload: { roleId, from, to },
     })
     return null
   },

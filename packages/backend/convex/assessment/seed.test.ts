@@ -31,7 +31,6 @@ describe("assessment/seed.seedRatedRoles", () => {
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .collect()
       expect(roles).toHaveLength(EXPECTED_ROLES)
-      expect(roles.every((role) => role.status === "approved")).toBe(true)
       expect(roles.every((role) => role.familyId !== undefined)).toBe(true)
 
       const families = await ctx.db

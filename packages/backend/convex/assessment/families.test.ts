@@ -48,7 +48,6 @@ describe("role families", () => {
         trackKey: "IC",
         purpose: "p",
         responsibilities: "r",
-        status: "draft",
         familyId: docId,
       })
     })
@@ -145,7 +144,6 @@ describe("role families", () => {
         trackKey: "IC",
         purpose: "p",
         responsibilities: "r",
-        status: "draft",
         familyId: docId,
       })
     })

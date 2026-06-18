@@ -226,7 +226,6 @@ describe("getOnboardingStatus", () => {
         trackKey: "IC",
         purpose: "",
         responsibilities: "",
-        status: "draft",
       })
     })
     status = await asUser.query(api.accounts.onboarding.getOnboardingStatus, {})

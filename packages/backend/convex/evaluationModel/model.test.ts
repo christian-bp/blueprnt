@@ -279,7 +279,6 @@ describe("discardModel", () => {
         trackKey: "IC",
         purpose: "",
         responsibilities: "",
-        status: "draft",
       })
     })
     await expect(

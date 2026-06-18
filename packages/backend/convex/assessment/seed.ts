@@ -2,7 +2,6 @@ import { v } from "convex/values"
 import { internalMutation } from "../_generated/server"
 import { isCriterionKey } from "../evaluationModel/localize"
 import { CRITERION_KEYS } from "../evaluationModel/standardTemplate"
-import { AUDIT_EVENTS, logAudit } from "../lib/audit"
 import { DEV_COMPANY, RATINGS_BY_TITLE } from "./devCompany"
 import { insertStarterSet } from "./starters"
 
@@ -55,13 +54,6 @@ export const seedRatedRoles = internalMutation({
       if (ratingRow === undefined) {
         throw new Error(`seedRatedRoles: no ratings for role "${role.title}"`)
       }
-      await ctx.db.patch(role._id, { status: "approved" })
-      await logAudit(ctx, {
-        orgId,
-        type: AUDIT_EVENTS.roleStatusChanged,
-        actorId: "system",
-        payload: { roleId: role._id, status: "approved" },
-      })
       // Ratings key on criterionId (the criteria row id); the rating column comes
       // from the criterion's templateKey position in CRITERION_KEYS, never the
       // query order. Custom criteria (no templateKey) are skipped.

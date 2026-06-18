@@ -98,7 +98,6 @@ async function insertRole(
       trackKey: "IC",
       purpose: fields.purpose ?? "",
       responsibilities: fields.responsibilities ?? "",
-      status: "draft",
       ...(fields.familyId !== undefined ? { familyId: fields.familyId } : {}),
     })
   )

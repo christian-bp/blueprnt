@@ -154,7 +154,7 @@ export const collectPrefillTargets = internalQuery({
 //
 // The LLM output crosses a trust boundary here (same gate as
 // confirmRoleProfileDraft): require strings, trim, enforce the length bounds.
-// A role concurrently archived/approved between collect and apply is skipped
+// A role concurrently archived between collect and apply is skipped
 // without an error. Org scope is re-checked against the stored role. Returns
 // whether the profile was applied so the caller can count it.
 export const applyPrefill = internalMutation({
@@ -168,10 +168,7 @@ export const applyPrefill = internalMutation({
   handler: async (ctx, { orgId, roleId, actorId, profile }) => {
     const role = await ctx.db.get(roleId)
     const locked =
-      role === null ||
-      role.orgId !== orgId ||
-      role.archivedAt !== undefined ||
-      role.status === "approved"
+      role === null || role.orgId !== orgId || role.archivedAt !== undefined
 
     const patch: Record<string, string> = {}
     const appliedFields: string[] = []

@@ -32,13 +32,12 @@ export interface RoleProfile {
   familyName: string | null
   purpose: string
   responsibilities: string
-  status: string
   archived: boolean
 }
 
 // Read-first job profile: an Edit toggle swaps the texts for inputs, Save
-// patches only what changed. Approved or archived roles never enter edit
-// mode (the backend rejects both with errors.roleLocked anyway).
+// patches only what changed. Archived roles never enter edit
+// mode (the backend rejects them with errors.roleLocked anyway).
 export function RoleProfileCard({
   orgId,
   role,
@@ -59,7 +58,7 @@ export function RoleProfileCard({
   const [draft, setDraft] = useState<Record<string, string>>({})
   const [draftFamilyId, setDraftFamilyId] = useState<string | null>(null)
 
-  const locked = role.status === "approved" || role.archived
+  const locked = role.archived
 
   function currentValues(): Record<string, string> {
     return {

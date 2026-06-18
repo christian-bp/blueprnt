@@ -31,7 +31,6 @@ export default function OverviewPage() {
   const showContinueScoring = totalRoles > 0 && scoredCount < totalRoles
 
   const loading = roles === undefined || model === undefined
-  const approved = roles?.filter((role) => role.status === "approved") ?? []
   const rated =
     roles?.filter(
       (role) => role.totalCriteria > 0 && role.ratedCount === role.totalCriteria
@@ -45,14 +44,6 @@ export default function OverviewPage() {
       href: "/roles",
       linkLabel: t("goRoles"),
       help: undefined,
-    },
-    {
-      key: "approved",
-      label: t("approvedCard"),
-      value: approved.length,
-      href: "/work",
-      linkLabel: t("goOverview"),
-      help: { label: tHelp("statusLabel"), body: tHelp("statusBody") },
     },
     {
       key: "rated",
@@ -90,7 +81,7 @@ export default function OverviewPage() {
           </CardHeader>
         </Card>
       )}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((card) => (
           <Card key={card.key}>
             <CardHeader>

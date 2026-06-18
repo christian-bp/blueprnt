@@ -45,7 +45,6 @@ function row(overrides: Partial<RolesTableRow>): RolesTableRow {
     team: "Core",
     trackKey: "IC",
     trackName: "Individual contributor",
-    status: "draft",
     ratedCount: 3,
     totalCriteria: 9,
     familyId: "f-eng",
@@ -56,7 +55,7 @@ function row(overrides: Partial<RolesTableRow>): RolesTableRow {
 
 const ROLES: RolesTableRow[] = [
   row({ roleId: "r1", title: "Senior Engineer" }),
-  row({ roleId: "r2", title: "Staff Engineer", status: "approved" }),
+  row({ roleId: "r2", title: "Staff Engineer" }),
   row({
     roleId: "r3",
     title: "Account Executive",
@@ -94,7 +93,7 @@ function renderTable(roles: RolesTableRow[] = ROLES) {
   )
 }
 
-// The two toolbar selects in DOM order: status first, then track.
+// The toolbar's only select: the track filter.
 function hiddenSelects(): HTMLSelectElement[] {
   return [...document.querySelectorAll("select")]
 }
@@ -108,7 +107,7 @@ describe("RolesTable", () => {
   it("renders one table with family group rows, counts, and links", () => {
     renderTable()
     // One single column header row set.
-    expect(screen.getAllByRole("columnheader")).toHaveLength(5)
+    expect(screen.getAllByRole("columnheader")).toHaveLength(4)
     // Family groups in name order, family-less last.
     const engineering = screen.getByRole("link", { name: "Engineering" })
     expect(engineering.getAttribute("href")).toBe("/roles/families/f-eng")
@@ -134,19 +133,9 @@ describe("RolesTable", () => {
     ).toBeDefined()
   })
 
-  it("filters by status via the select", () => {
-    renderTable()
-    const statusSelect = hiddenSelects()[0]
-    if (statusSelect === undefined) throw new Error("status select missing")
-    fireEvent.change(statusSelect, { target: { value: "approved" } })
-    expect(screen.getByText("Staff Engineer")).toBeDefined()
-    expect(screen.queryByText("Senior Engineer")).toBeNull()
-    expect(screen.queryByText("Account Executive")).toBeNull()
-  })
-
   it("filters by track via the select", () => {
     renderTable()
-    const trackSelect = hiddenSelects()[1]
+    const trackSelect = hiddenSelects()[0]
     if (trackSelect === undefined) throw new Error("track select missing")
     fireEvent.change(trackSelect, { target: { value: "M" } })
     expect(screen.getByText("Account Executive")).toBeDefined()
@@ -187,11 +176,23 @@ describe("RolesTable", () => {
 
   it("shows a binary evaluation state instead of a rating count", () => {
     renderTable([
-      row({ roleId: "r1", title: "Done Role", ratedCount: 9, totalCriteria: 9 }),
-      row({ roleId: "r2", title: "Todo Role", ratedCount: 0, totalCriteria: 9 }),
+      row({
+        roleId: "r1",
+        title: "Done Role",
+        ratedCount: 9,
+        totalCriteria: 9,
+      }),
+      row({
+        roleId: "r2",
+        title: "Todo Role",
+        ratedCount: 0,
+        totalCriteria: 9,
+      }),
     ])
     expect(screen.getByText(messages.dashboard.roles.evaluated)).toBeDefined()
-    expect(screen.getByText(messages.dashboard.roles.notEvaluated)).toBeDefined()
+    expect(
+      screen.getByText(messages.dashboard.roles.notEvaluated)
+    ).toBeDefined()
     // No fractional rating count anywhere.
     expect(screen.queryByText("9/9")).toBeNull()
     expect(screen.queryByText("0/9")).toBeNull()
