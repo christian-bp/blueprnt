@@ -104,6 +104,11 @@
         "cta": "Go to roles"
       }
     },
+    "roleSheet": {
+      "openRole": "Open role",
+      "loading": "Loading role",
+      "progress": "{rated} / {total} criteria assessed"
+    },
     "roles": {
       "heading": "Roles",
       "description": "Job profiles evaluated against your model. Roles, never persons.",

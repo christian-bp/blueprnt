@@ -104,6 +104,11 @@
         "cta": "Rooleihin"
       }
     },
+    "roleSheet": {
+      "openRole": "Avaa rooli",
+      "loading": "Ladataan roolia",
+      "progress": "{rated} / {total} kriteeriä arvioitu"
+    },
     "roles": {
       "heading": "Roolit",
       "description": "Tehtäväprofiilit, joita arvioidaan mallinne perusteella. Roolit, ei koskaan henkilöt.",

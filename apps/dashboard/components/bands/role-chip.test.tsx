@@ -3,6 +3,7 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import { RoleChip } from "@/components/bands/role-chip"
+import { RoleSheetProvider } from "@/components/role-sheet"
 import type { BandRoleRow } from "@/lib/bands"
 
 function row(overrides: Partial<BandRoleRow>): BandRoleRow {
@@ -42,6 +43,21 @@ describe("RoleChip", () => {
     // The track renders as the short key, not the full name.
     expect(screen.getByText("IC")).toBeDefined()
     expect(screen.queryByText("Individual contributor")).toBeNull()
+  })
+
+  it("opens the sheet (renders a button, not a link) inside a provider", () => {
+    // With a RoleSheetProvider in the tree the chip opens the quick-look sheet
+    // instead of navigating, so it is a button. The link fallback above proves
+    // the no-provider case.
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <RoleSheetProvider>
+          <RoleChip role={row({})} />
+        </RoleSheetProvider>
+      </NextIntlClientProvider>
+    )
+    expect(screen.getByRole("button", { name: /Staff Engineer/ })).toBeTruthy()
+    expect(screen.queryByRole("link", { name: /Staff Engineer/ })).toBeNull()
   })
 
   it("flags an anchor whose computed band deviates from the agreed band", () => {

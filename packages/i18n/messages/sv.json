@@ -104,6 +104,11 @@
         "cta": "Till roller"
       }
     },
+    "roleSheet": {
+      "openRole": "Öppna rollen",
+      "loading": "Laddar rollen",
+      "progress": "{rated} / {total} kriterier bedömda"
+    },
     "roles": {
       "heading": "Roller",
       "description": "Jobbprofiler som värderas mot er modell. Roller, aldrig personer.",

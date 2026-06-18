@@ -87,76 +87,25 @@ describe("RoleResultCard", () => {
   })
   afterEach(() => cleanup())
 
-  it("renders criteria sorted by contribution, biggest driver first", () => {
+  // The per-criterion breakdown (sort, shares, values, motivation) is owned and
+  // tested by RoleCriterionBreakdown; the card test covers the card's own
+  // chrome (weighting, band, and the complete-only gate).
+
+  it("shows the weighting and band when complete", () => {
     renderCard()
-    const names = screen
-      .getAllByText(/^(Scope|Complexity|People)$/)
-      .map((el) => el.textContent)
-    expect(names).toEqual(["Complexity", "Scope", "People"])
+    expect(screen.getByText("71 / 100")).toBeTruthy()
+    expect(screen.getByText("Band 3")).toBeTruthy()
   })
 
-  it("shows the true contribution share per criterion (total 37)", () => {
+  it("renders the criterion breakdown when complete", () => {
     renderCard()
-    // 20/37 = 54%, 15/37 = 41%, 2/37 = 5%
+    expect(screen.getByText("Complexity")).toBeTruthy()
     expect(screen.getByText("54%")).toBeTruthy()
-    expect(screen.getByText("41%")).toBeTruthy()
-    expect(screen.getByText("5%")).toBeTruthy()
-  })
-
-  it("shows each role's assessed value and drops the model-weight column", () => {
-    renderCard()
-    expect(screen.getByText("rated 5 / 5")).toBeTruthy()
-    expect(screen.queryByText("Weight points")).toBeNull()
   })
 
   it("renders nothing until the assessment is complete", () => {
     setResult({ ...result, complete: false })
     const { container } = renderCard()
     expect(container.textContent).toBe("")
-  })
-
-  it("renders a criterion's motivation when present", () => {
-    setResult({
-      ...result,
-      criteria: [
-        {
-          criterionId: "scope",
-          name: "Scope",
-          weightPoints: 5,
-          value: 3,
-          motivation: "Owns the whole platform.",
-        },
-      ],
-    })
-    renderCard()
-    expect(screen.getByText("Owns the whole platform.")).toBeTruthy()
-  })
-
-  it("gives a single rated criterion a 100% share", () => {
-    setResult({
-      ...result,
-      ratedCount: 1,
-      totalCriteria: 1,
-      criteria: [
-        {
-          criterionId: "scope",
-          name: "Scope",
-          weightPoints: 5,
-          value: 3,
-          motivation: null,
-        },
-      ],
-    })
-    renderCard()
-    expect(screen.getByText("100%")).toBeTruthy()
-  })
-
-  it("shows 0% for every criterion when all ratings are 0", () => {
-    setResult({
-      ...result,
-      criteria: result.criteria.map((c) => ({ ...c, value: 0 })),
-    })
-    renderCard()
-    expect(screen.getAllByText("0%")).toHaveLength(3)
   })
 })

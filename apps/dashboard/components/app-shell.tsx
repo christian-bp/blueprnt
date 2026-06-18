@@ -8,6 +8,7 @@ import {
   type OrganizationInfo,
   OrganizationProvider,
 } from "@/components/org-context"
+import { RoleSheetProvider } from "@/components/role-sheet"
 import { SiteHeader } from "@/components/site-header"
 
 // The signed-in, onboarded application frame: sidebar + header + page
@@ -40,7 +41,10 @@ export function AppShell(props: {
             <div className="flex flex-1 flex-col">
               <div className="@container/main flex flex-1 flex-col gap-2">
                 <div className="flex flex-col gap-4 px-4 py-4 md:gap-6 md:py-6 lg:px-6">
-                  {props.children}
+                  {/* Role quick-look sheet, openable from any role chip in the
+                      app (e.g. the Overview); renders nothing and runs no
+                      queries until a role is opened. */}
+                  <RoleSheetProvider>{props.children}</RoleSheetProvider>
                 </div>
               </div>
             </div>
