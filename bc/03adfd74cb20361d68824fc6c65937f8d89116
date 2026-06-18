@@ -1,0 +1,23 @@
+apps/dashboard/components/site-header.tsx
+  s_5c7140b1e3affe::t_502eec316f17df 5,13,21-39
+  s_5c7140b1e3affe::t_37b10fa76bb646 16
+apps/dashboard/components/site-header.test.tsx
+  s_5c7140b1e3affe::t_e5d25d56271793 19,24,38,42,61,70
+  s_5c7140b1e3affe::t_e49069609336ef 64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "bc03adfd74cb20361d68824fc6c65937f8d89116",
+  "prompts": {},
+  "sessions": {
+    "s_5c7140b1e3affe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "172fc416-5107-4f36-804e-55babbd3985f",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
