@@ -1,0 +1,22 @@
+apps/dashboard/components/bands/role-chip.test.tsx
+  s_dcadef150fedfa::t_4ba818359fde1a 6
+  s_dcadef150fedfa::t_353d31e84723a7 48-62
+apps/dashboard/components/bands/role-chip.tsx
+  s_dcadef150fedfa::t_ad0b0f6200efb9 8,12-14,16-20,23,29-30,52-69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "edba4df29094975de0e98cc521db0adeed669dfc",
+  "prompts": {},
+  "sessions": {
+    "s_dcadef150fedfa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5f66fc7b-ac5a-4f47-a3f9-de4518c09abb",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
