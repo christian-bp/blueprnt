@@ -1,0 +1,22 @@
+apps/dashboard/components/role-sheet.test.tsx
+  s_dcadef150fedfa::t_8aa11400839c0b 1-115,117-164
+apps/dashboard/components/role-sheet.tsx
+  s_dcadef150fedfa::t_db4ecd418cd569 166
+  s_dcadef150fedfa::t_d168cb814517de 1-151,153-165,167-230
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "7fcfb9767571688cc8b452b421b03282e5da4f07",
+  "prompts": {},
+  "sessions": {
+    "s_dcadef150fedfa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5f66fc7b-ac5a-4f47-a3f9-de4518c09abb",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
