@@ -35,6 +35,7 @@ See also: `AGENTS.md` (Next.js version warning + agent-skills config) · `docs/P
 
 - `packages/core` is **pure and deterministic**: no Convex/Next imports, no side effects. Score/band are always derived by the engine and never stored (ADR-0002).
 - **AI never touches the deterministic score/band path** and never auto-decides. AI output is a suggestion with provenance that HR confirms (ADR-0003). AI calls happen only in Convex actions, only against EU-hosted models.
+- **Never send personal data to the AI.** Prompts carry only role-level and organization-level content (job profiles, criteria, the model, company context such as industry, country, size). Never include an individual's name, salary, performance, contact details, or any other PII (Role ≠ Person; GDPR). A feature that would need person data to prompt does not call the AI.
 - **Role ≠ Person:** the `role`/`rating` tables must never carry person, salary, or performance fields. Role ids are permanent and never reused.
 - **Weights are 1-5 weight points under a fixed point budget** (criteria count x 3, exact sum; ADR-0004). Percent shares are derived display values; free percentages or arbitrary weight numbers are never entered. Role scores are normalized to the fixed 0-100 scale.
 - Every Convex function is **org-scoped** (tenant isolation). No band override.
