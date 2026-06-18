@@ -1,0 +1,25 @@
+apps/dashboard/components/roles/role-result-card.tsx
+  s_fee3972340d93b::t_2e0fa0639c0270 133-135
+  s_fee3972340d93b::t_657a626b80839f 4-8,17,20,22-28,49-74,91,95-132,136-139
+apps/dashboard/components/roles/role-result-card.test.tsx
+  s_fee3972340d93b::t_cd7852543b9f61 1-6,10,14-63,85-117
+  s_fee3972340d93b::t_2e0fa0639c0270 7-9,11-13,64-84
+packages/backend/convex/assessment/results.ts
+  s_fee3972340d93b::t_610254667a908a 115-117
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "ba7f2ec0b26b28b26f0242268c4ffb237980d001",
+  "prompts": {},
+  "sessions": {
+    "s_fee3972340d93b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0f95938c-1b77-4bd5-b00d-90b2923adb03",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
