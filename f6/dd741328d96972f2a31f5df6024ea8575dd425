@@ -1,0 +1,19 @@
+CLAUDE.md
+  s_dcadef150fedfa::t_8dfc1660142c16 38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "f6dd741328d96972f2a31f5df6024ea8575dd425",
+  "prompts": {},
+  "sessions": {
+    "s_dcadef150fedfa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5f66fc7b-ac5a-4f47-a3f9-de4518c09abb",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
