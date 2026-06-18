@@ -1,0 +1,27 @@
+packages/i18n/messages/fi.json
+  s_dcadef150fedfa::t_bc0f4898044611 107-111
+packages/i18n/messages/da.json
+  s_dcadef150fedfa::t_07340eab2b1281 107-111
+packages/i18n/messages/nb.json
+  s_dcadef150fedfa::t_d295aa1f9cc148 107-111
+packages/i18n/messages/sv.json
+  s_dcadef150fedfa::t_2127255215ca95 107-111
+packages/i18n/messages/en.json
+  s_dcadef150fedfa::t_a31fc00140842d 107-111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "67f494e038e4d36cdb3aae340c5591c97b4369fd",
+  "prompts": {},
+  "sessions": {
+    "s_dcadef150fedfa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5f66fc7b-ac5a-4f47-a3f9-de4518c09abb",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
