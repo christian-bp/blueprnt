@@ -1,0 +1,20 @@
+apps/dashboard/components/app-shell.tsx
+  s_dcadef150fedfa::t_aaa47ea70a5f10 44-47
+  s_dcadef150fedfa::t_6568f81009565e 11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "1dbb853c44918d4ffaa5d3e05db7cca9ba0472e1",
+  "prompts": {},
+  "sessions": {
+    "s_dcadef150fedfa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5f66fc7b-ac5a-4f47-a3f9-de4518c09abb",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
