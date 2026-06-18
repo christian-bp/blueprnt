@@ -1,0 +1,25 @@
+apps/dashboard/components/roles/role-result-card.test.tsx
+  s_dcadef150fedfa::t_d28179e323b84b 90-92,94,96-97,100,102-103
+apps/dashboard/components/roles/role-criterion-breakdown.test.tsx
+  s_dcadef150fedfa::t_e36f871fa13fe9 1-73
+apps/dashboard/components/roles/role-result-card.tsx
+  s_dcadef150fedfa::t_fc98b363592c03 14,16-20,58-59
+apps/dashboard/components/roles/role-criterion-breakdown.tsx
+  s_dcadef150fedfa::t_e6e7211c9ed85a 1-106
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "c2ec79621ac18a36a7edcc305213bfa29ffe6506",
+  "prompts": {},
+  "sessions": {
+    "s_dcadef150fedfa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5f66fc7b-ac5a-4f47-a3f9-de4518c09abb",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
