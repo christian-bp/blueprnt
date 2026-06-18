@@ -1,0 +1,53 @@
+apps/dashboard/app/(app)/page.tsx
+  s_dcadef150fedfa::t_21fb4e2469b887 84
+packages/backend/convex/assessment/starters.ts
+  s_dcadef150fedfa::t_21fb4e2469b887 286-288,315,320
+apps/dashboard/components/roles/role-rating-card.tsx
+  s_dcadef150fedfa::t_21fb4e2469b887 33
+apps/dashboard/components/roles/roles-table.test.tsx
+  s_dcadef150fedfa::t_21fb4e2469b887 58,96,110,138,179-190,193-195
+packages/backend/convex/assessment/roles.test.ts
+  s_dcadef150fedfa::t_21fb4e2469b887 186,227,229-232
+packages/backend/convex/ai/suggest.test.ts
+  s_dcadef150fedfa::t_21fb4e2469b887 811,817
+docs/PLAN-V1.md
+  s_dcadef150fedfa::t_21fb4e2469b887 50,68,79,98,120
+packages/backend/convex/assessment/tables.ts
+  s_dcadef150fedfa::t_21fb4e2469b887 14-15,49
+apps/dashboard/components/roles/roles-table.tsx
+  s_dcadef150fedfa::t_21fb4e2469b887 52,190,239
+apps/dashboard/components/roles/role-profile-card.tsx
+  s_dcadef150fedfa::t_21fb4e2469b887 39-40,61
+packages/backend/convex/ai/prefillData.ts
+  s_dcadef150fedfa::t_21fb4e2469b887 157,171
+packages/backend/convex/ai/suggest.ts
+  s_dcadef150fedfa::t_21fb4e2469b887 388,462
+docs/contexts/assessment/CONTEXT.md
+  s_dcadef150fedfa::t_21fb4e2469b887 17
+apps/dashboard/components/roles/role-profile-card.test.tsx
+  s_dcadef150fedfa::t_21fb4e2469b887 152
+packages/backend/convex/assessment/ratings.test.ts
+  s_dcadef150fedfa::t_21fb4e2469b887 182,191-194
+packages/backend/convex/assessment/roles.ts
+  s_dcadef150fedfa::t_21fb4e2469b887 40,285
+packages/backend/convex/assessment/ratings.ts
+  s_dcadef150fedfa::t_21fb4e2469b887 28-29
+apps/dashboard/app/(app)/roles/[roleId]/rate/page.tsx
+  s_dcadef150fedfa::t_21fb4e2469b887 45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "211e10ee9defeb933fd73e194f9ced9494e7be95",
+  "prompts": {},
+  "sessions": {
+    "s_dcadef150fedfa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5f66fc7b-ac5a-4f47-a3f9-de4518c09abb",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
