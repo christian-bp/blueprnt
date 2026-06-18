@@ -112,10 +112,9 @@ export const getResults = orgQuery({
 
 // Per-role result: score (normalized 0-100), band outcome, and the
 // per-criterion breakdown (localized criterion name, weight points, rating
-// value, motivation). Weighted per-criterion contributions are deliberately
-// absent: the breakdown reads as ratings against criteria, not as an
-// arithmetic worksheet (ADR-0004 keeps the derived percent shares in the
-// model view, not here).
+// value, motivation). The role view derives each criterion's contribution
+// share from value * weightPoints client-side (packages/core criterionShares),
+// so this payload stays unchanged: weightPoints and value are all it needs.
 export const getRoleResult = orgQuery({
   args: { roleId: v.string(), locale: v.optional(v.string()) },
   returns: v.union(
