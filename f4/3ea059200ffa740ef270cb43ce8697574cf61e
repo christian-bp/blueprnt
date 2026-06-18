@@ -1,0 +1,19 @@
+packages/backend/convex/assessment/seed.ts
+  s_5c7140b1e3affe::t_40e5b8c7a1d13d 12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "f43ea059200ffa740ef270cb43ce8697574cf61e",
+  "prompts": {},
+  "sessions": {
+    "s_5c7140b1e3affe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "172fc416-5107-4f36-804e-55babbd3985f",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
