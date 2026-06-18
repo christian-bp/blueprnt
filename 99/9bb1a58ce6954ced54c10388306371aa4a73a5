@@ -1,0 +1,49 @@
+apps/dashboard/components/app-shell.tsx
+  s_dcadef150fedfa::t_61c7b9908a4efa 11,44-47
+packages/i18n/messages/da.json
+  s_dcadef150fedfa::t_61c7b9908a4efa 107-111
+docs/superpowers/plans/2026-06-18-role-sheet.md
+  s_dcadef150fedfa::t_61c7b9908a4efa 1-950
+apps/dashboard/components/role-sheet.tsx
+  s_dcadef150fedfa::t_61c7b9908a4efa 1-236
+packages/i18n/messages/nb.json
+  s_dcadef150fedfa::t_61c7b9908a4efa 107-111
+apps/dashboard/components/roles/role-criterion-breakdown.test.tsx
+  s_dcadef150fedfa::t_61c7b9908a4efa 1-96
+packages/i18n/messages/sv.json
+  s_dcadef150fedfa::t_61c7b9908a4efa 107-111
+apps/dashboard/components/roles/role-criterion-breakdown.tsx
+  s_dcadef150fedfa::t_61c7b9908a4efa 1-113
+packages/i18n/messages/fi.json
+  s_dcadef150fedfa::t_61c7b9908a4efa 107-111
+apps/dashboard/components/role-sheet.test.tsx
+  s_dcadef150fedfa::t_61c7b9908a4efa 1-168
+docs/superpowers/specs/2026-06-18-role-sheet-design.md
+  s_dcadef150fedfa::t_61c7b9908a4efa 1-117
+apps/dashboard/components/bands/role-chip.test.tsx
+  s_dcadef150fedfa::t_61c7b9908a4efa 6,48-60
+apps/dashboard/components/roles/role-result-card.test.tsx
+  s_dcadef150fedfa::t_61c7b9908a4efa 90-92,94,96-97,100,102-103
+apps/dashboard/components/bands/role-chip.tsx
+  s_dcadef150fedfa::t_61c7b9908a4efa 8,12-14,16-20,23,29-30,52-69
+apps/dashboard/components/roles/role-result-card.tsx
+  s_dcadef150fedfa::t_61c7b9908a4efa 14,16-20,61
+packages/i18n/messages/en.json
+  s_dcadef150fedfa::t_61c7b9908a4efa 107-111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "999bb1a58ce6954ced54c10388306371aa4a73a5",
+  "prompts": {},
+  "sessions": {
+    "s_dcadef150fedfa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5f66fc7b-ac5a-4f47-a3f9-de4518c09abb",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
