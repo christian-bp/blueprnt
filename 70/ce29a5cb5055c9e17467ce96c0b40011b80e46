@@ -1,0 +1,67 @@
+packages/backend/convex/ai/prefillData.ts
+  s_dcadef150fedfa::t_127fcc08cf2f89 157
+  s_dcadef150fedfa::t_a404327a969198 171
+packages/backend/convex/ai/suggest.ts
+  s_dcadef150fedfa::t_5bf14a1abaf782 388,462
+docs/contexts/assessment/CONTEXT.md
+  s_dcadef150fedfa::t_b0d1b45f7c6ba7 17
+packages/backend/convex/ai/suggest.test.ts
+  s_dcadef150fedfa::t_0ba498d0558609 811,817
+apps/dashboard/components/roles/role-profile-card.tsx
+  s_dcadef150fedfa::t_fedc32b3f7a6e1 61
+  s_dcadef150fedfa::t_7e3755abd7eb80 39-40
+apps/dashboard/components/roles/roles-table.tsx
+  s_dcadef150fedfa::t_4af5d8aefac7cd 190
+  s_dcadef150fedfa::t_a22d50d5b5f4d2 52
+  s_dcadef150fedfa::t_35d039a266fd16 239
+apps/dashboard/app/(app)/roles/[roleId]/rate/page.tsx
+  s_dcadef150fedfa::t_9d4236d8557f98 45
+apps/dashboard/components/roles/role-rating-card.tsx
+  s_dcadef150fedfa::t_e6d7fc416779cb 33
+apps/dashboard/app/(app)/page.tsx
+  s_dcadef150fedfa::t_c949086accc002 84
+apps/dashboard/components/roles/roles-table.test.tsx
+  s_dcadef150fedfa::t_8da3d4b1225fbe 96
+  s_dcadef150fedfa::t_c0b2ceabba6f03 138
+  s_dcadef150fedfa::t_ebafd339772001 58
+  s_dcadef150fedfa::t_7d9e7484d7948e 110
+packages/backend/convex/assessment/roles.ts
+  s_dcadef150fedfa::t_c918e13ca0e69d 40
+  s_dcadef150fedfa::t_16d5dd6e53469e 285
+packages/backend/convex/assessment/starters.ts
+  s_dcadef150fedfa::t_d2d0386374732b 315,320
+  s_dcadef150fedfa::t_a7e61946e861f8 286-288
+apps/dashboard/components/roles/role-profile-card.test.tsx
+  s_dcadef150fedfa::t_6bf4b29e875b52 152
+packages/backend/convex/assessment/ratings.test.ts
+  s_dcadef150fedfa::t_abce0ee664cddc 182,191-194
+docs/PLAN-V1.md
+  s_dcadef150fedfa::t_4016d9dfe5f848 120
+  s_dcadef150fedfa::t_83c2b7f5cba376 79
+  s_dcadef150fedfa::t_692930cd854884 68
+  s_dcadef150fedfa::t_e06dde505aaf4c 50
+  s_dcadef150fedfa::t_19d562c1ddb366 98
+packages/backend/convex/assessment/tables.ts
+  s_dcadef150fedfa::t_f3fd5a7ef2cb3b 14-15
+packages/backend/convex/assessment/roles.test.ts
+  s_dcadef150fedfa::t_0f4daff3d58286 186
+  s_dcadef150fedfa::t_258894aed251ca 227,229-232
+packages/backend/convex/assessment/ratings.ts
+  s_dcadef150fedfa::t_334124036e3712 28-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "70ce29a5cb5055c9e17467ce96c0b40011b80e46",
+  "prompts": {},
+  "sessions": {
+    "s_dcadef150fedfa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5f66fc7b-ac5a-4f47-a3f9-de4518c09abb",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
