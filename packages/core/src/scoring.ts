@@ -2,6 +2,7 @@ import { isWeightPoints } from "./weighting"
 import type {
   BandThreshold,
   ComputeInput,
+  CriterionShare,
   CriterionWeight,
   RatingInput,
   RoleResult,
@@ -68,6 +69,40 @@ export function scoreRole(
     raw += rating.value * points
   }
   return Math.floor((20 * raw) / totalPoints)
+}
+
+// Per-criterion share of the weighted total that produces the score (ADR-0002
+// derivation; never stored). contribution_i = value_i * weightPoints_i;
+// share_i = contribution_i / sum(contribution). When the total is 0 (every
+// rating is 0) every share is 0, so there is no division by zero. A criterion
+// with no rating contributes 0. Output order follows the criteria order; the
+// last value wins for a duplicated rating (display leniency, unlike scoreRole).
+export function criterionShares(
+  ratings: RatingInput[],
+  criteria: CriterionWeight[]
+): CriterionShare[] {
+  assertUniqueCriteria(criteria)
+  const valueById = new Map<string, number>()
+  for (const rating of ratings) {
+    assertValidRating(rating.value)
+    valueById.set(rating.criterionId, rating.value)
+  }
+  const contributions = criteria.map((criterion) => {
+    if (!isWeightPoints(criterion.weightPoints)) {
+      throw new Error(`invalid weight points: ${criterion.weightPoints}`)
+    }
+    const value = valueById.get(criterion.criterionId) ?? 0
+    return {
+      criterionId: criterion.criterionId,
+      contribution: value * criterion.weightPoints,
+    }
+  })
+  const total = contributions.reduce((sum, c) => sum + c.contribution, 0)
+  return contributions.map((c) => ({
+    criterionId: c.criterionId,
+    contribution: c.contribution,
+    share: total === 0 ? 0 : c.contribution / total,
+  }))
 }
 
 // Band 1 is highest; minScore is the inclusive lower bound of a band. Picks

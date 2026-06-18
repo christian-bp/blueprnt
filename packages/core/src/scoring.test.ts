@@ -1,11 +1,17 @@
 import { describe, expect, it } from "vitest"
-import { assignBand, computeResults, scoreRole } from "./scoring"
+import {
+  assignBand,
+  computeResults,
+  criterionShares,
+  scoreRole,
+} from "./scoring"
 import {
   STANDARD_CRITERIA,
   STANDARD_THRESHOLDS,
   allRated,
 } from "./scoring.fixtures"
 import type { CriterionWeight, RatingInput, RoleRatings } from "./types"
+import type { WeightPoints } from "./weighting"
 
 describe("scoreRole", () => {
   it("scores uniform ratings at exactly 20 x rating, regardless of allocation", () => {
@@ -256,5 +262,131 @@ describe("computeResults", () => {
       score: null,
       band: null,
     })
+  })
+})
+
+describe("criterionShares", () => {
+  it("splits an all-equal rating purely by weight points", () => {
+    // every value 3 => contribution_i = 3 * w_i => share_i = w_i / sum(w).
+    const shares = criterionShares(allRated(3), STANDARD_CRITERIA)
+    const byId = new Map(shares.map((s) => [s.criterionId, s]))
+    expect(byId.get("scope")?.share).toBeCloseTo(5 / 27, 10)
+    expect(byId.get("formal")?.share).toBeCloseTo(1 / 27, 10)
+    const total = shares.reduce((sum, s) => sum + s.share, 0)
+    expect(total).toBeCloseTo(1, 10)
+  })
+
+  it("returns one entry per criterion, in input order", () => {
+    const shares = criterionShares(allRated(4), STANDARD_CRITERIA)
+    expect(shares.map((s) => s.criterionId)).toEqual(
+      STANDARD_CRITERIA.map((c) => c.criterionId)
+    )
+  })
+
+  it("gives a higher share to a higher value * weight", () => {
+    const criteria: CriterionWeight[] = [
+      { criterionId: "a", weightPoints: 2 },
+      { criterionId: "b", weightPoints: 4 },
+    ]
+    const ratings: RatingInput[] = [
+      { criterionId: "a", value: 5 }, // contribution 10
+      { criterionId: "b", value: 5 }, // contribution 20
+    ]
+    const byId = new Map(
+      criterionShares(ratings, criteria).map((s) => [s.criterionId, s])
+    )
+    expect(byId.get("a")?.share).toBeCloseTo(10 / 30, 10)
+    expect(byId.get("b")?.share).toBeCloseTo(20 / 30, 10)
+  })
+
+  it("gives equal shares to equal contributions", () => {
+    const criteria: CriterionWeight[] = [
+      { criterionId: "a", weightPoints: 3 },
+      { criterionId: "b", weightPoints: 3 },
+    ]
+    const shares = criterionShares(
+      [
+        { criterionId: "a", value: 4 },
+        { criterionId: "b", value: 4 },
+      ],
+      criteria
+    )
+    expect(shares[0]?.share).toBeCloseTo(0.5, 10)
+    expect(shares[1]?.share).toBeCloseTo(0.5, 10)
+  })
+
+  it("zeroes a zero rating's share and leaves the rest summing to 1", () => {
+    const criteria: CriterionWeight[] = [
+      { criterionId: "a", weightPoints: 3 },
+      { criterionId: "b", weightPoints: 3 },
+      { criterionId: "c", weightPoints: 3 },
+    ]
+    const byId = new Map(
+      criterionShares(
+        [
+          { criterionId: "a", value: 0 },
+          { criterionId: "b", value: 4 },
+          { criterionId: "c", value: 4 },
+        ],
+        criteria
+      ).map((s) => [s.criterionId, s])
+    )
+    expect(byId.get("a")?.share).toBe(0)
+    expect(byId.get("b")?.share).toBeCloseTo(0.5, 10)
+    expect(byId.get("c")?.share).toBeCloseTo(0.5, 10)
+  })
+
+  it("returns all-zero shares (no division by zero) when every rating is 0", () => {
+    const shares = criterionShares(allRated(0), STANDARD_CRITERIA)
+    expect(shares.every((s) => s.share === 0)).toBe(true)
+    expect(shares.every((s) => s.contribution === 0)).toBe(true)
+  })
+
+  it("treats a criterion with no rating as a zero contribution", () => {
+    const criteria: CriterionWeight[] = [
+      { criterionId: "a", weightPoints: 3 },
+      { criterionId: "b", weightPoints: 3 },
+    ]
+    const byId = new Map(
+      criterionShares([{ criterionId: "a", value: 4 }], criteria).map((s) => [
+        s.criterionId,
+        s,
+      ])
+    )
+    expect(byId.get("a")?.share).toBe(1)
+    expect(byId.get("b")?.share).toBe(0)
+  })
+
+  it("throws on weight points outside the 1-5 scale", () => {
+    expect(() =>
+      criterionShares(
+        [{ criterionId: "a", value: 3 }],
+        [{ criterionId: "a", weightPoints: 0 as WeightPoints }]
+      )
+    ).toThrow(/invalid weight points/)
+  })
+
+  it("gives a single rated criterion a 100% share", () => {
+    const byId = new Map(
+      criterionShares(
+        [{ criterionId: "a", value: 4 }],
+        [{ criterionId: "a", weightPoints: 3 }]
+      ).map((s) => [s.criterionId, s])
+    )
+    expect(byId.get("a")?.contribution).toBe(12)
+    expect(byId.get("a")?.share).toBe(1)
+  })
+
+  it("keeps the last value on a duplicated rating (display leniency)", () => {
+    const shares = criterionShares(
+      [
+        { criterionId: "a", value: 1 },
+        { criterionId: "a", value: 5 },
+      ],
+      [{ criterionId: "a", weightPoints: 3 }]
+    )
+    expect(shares).toHaveLength(1)
+    expect(shares[0]?.contribution).toBe(15)
+    expect(shares[0]?.share).toBe(1)
   })
 })

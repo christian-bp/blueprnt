@@ -14,6 +14,15 @@ export interface CriterionWeight {
   weightPoints: WeightPoints
 }
 
+// Per-criterion contribution to a role's score. contribution = value *
+// weightPoints; share is its fraction (0..1) of the role's total
+// contribution. Derived for display (ADR-0002), never stored.
+export interface CriterionShare {
+  criterionId: string
+  contribution: number
+  share: number
+}
+
 // A single hand-entered rating for one criterion. criterionId stays an opaque
 // string (Convex ids stringify into it); never tighten to a Convex type.
 export interface RatingInput {
