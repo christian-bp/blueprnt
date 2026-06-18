@@ -55,6 +55,19 @@ describe("BandLadder", () => {
     ).toBeDefined()
   })
 
+  it("pins the empty-band hatch to a fixed background-size (WebKit #94795 guard)", () => {
+    // The hatch must keep a fixed background-size so WebKit rasterizes one small
+    // tile and repeats it. Without it Safari samples the gradient across the
+    // whole paint box and renders the hatch sparse and faint in tall areas;
+    // Chrome is unaffected. jsdom cannot paint, so we guard the class instead.
+    renderLadder([role({ roleId: "r1", band: 1 })])
+    const hatch = screen.getByRole("img", {
+      name: messages.dashboard.bands.bandEmpty,
+    })
+    expect(hatch.className).toContain("repeating-linear-gradient")
+    expect(hatch.className).toContain("background-size:")
+  })
+
   it("ignores roles without a band (they belong in the pending zone)", () => {
     renderLadder([role({ roleId: "r9", title: "Draftee", band: null })])
     expect(screen.queryByRole("link", { name: /Draftee/ })).toBeNull()

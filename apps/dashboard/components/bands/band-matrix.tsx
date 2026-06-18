@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import { RoleChip } from "@/components/bands/role-chip"
+import { HATCH_CLASS } from "@/components/bands/hatch"
 import { type BandRoleRow, bandRanges } from "@/lib/bands"
 import { SPRING } from "@/lib/motion"
 import { groupByFamily as groupRowsByFamily } from "@/lib/role-groups"
@@ -114,7 +115,7 @@ export function BandMatrix({
                         <div aria-hidden="true" className="min-h-8" />
                         <div
                           aria-hidden="true"
-                          className="absolute inset-2 rounded-md bg-[repeating-linear-gradient(-60deg,var(--border),var(--border)_1px,transparent_1px,transparent_6px)]"
+                          className={`absolute inset-2 rounded-md ${HATCH_CLASS}`}
                         />
                       </>
                     ) : (

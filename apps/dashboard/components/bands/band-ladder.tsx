@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
+import { HATCH_CLASS } from "@/components/bands/hatch"
 import { RoleChip } from "@/components/bands/role-chip"
 import { type BandRoleRow, bandRanges } from "@/lib/bands"
 import { SPRING } from "@/lib/motion"
@@ -84,12 +85,10 @@ export function BandLadder({
                 {inBand.length === 0 ? (
                   // Empty band: a subtle diagonal-hatch placeholder (the
                   // band's "0 roles" count in the rail carries the wording).
-                  // var(--border) adapts per theme, so one class covers light
-                  // and dark.
                   <div
                     role="img"
                     aria-label={t("bandEmpty")}
-                    className="h-8 w-full rounded-md bg-[repeating-linear-gradient(-60deg,var(--border),var(--border)_1px,transparent_1px,transparent_6px)]"
+                    className={`h-8 w-full rounded-md ${HATCH_CLASS}`}
                   />
                 ) : (
                   <AnimatePresence initial={false} mode="popLayout">

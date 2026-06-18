@@ -112,6 +112,23 @@ describe("BandMatrix", () => {
     expect(screen.getByText("Sales")).toBeDefined()
   })
 
+  it("pins every empty-cell hatch to a fixed background-size (WebKit #94795 guard)", () => {
+    // See BandLadder: a fixed background-size keeps the hatch crisp in tall
+    // cells in Safari (WebKit #94795). The matrix is where this actually bites,
+    // because a cell stretches to the tallest sibling. jsdom cannot paint, so we
+    // guard the class: every empty cell must carry the size-pinned hatch.
+    const { container } = renderMatrix([], false, [
+      { key: "IC", name: "Individual contributor" },
+      { key: "M", name: "Manager" },
+    ])
+    const hatches = container.querySelectorAll('[class*="background-size:"]')
+    // 2 bands x 2 tracks, every cell empty and hatched.
+    expect(hatches.length).toBe(4)
+    for (const hatch of hatches) {
+      expect(hatch.className).toContain("repeating-linear-gradient")
+    }
+  })
+
   it("keeps the columns and hatches every cell when all roles are filtered out", () => {
     // The family filter can hide every role; the matrix must still show the
     // grid (hatched), not collapse to nothing. Columns come from the
