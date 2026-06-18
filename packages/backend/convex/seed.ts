@@ -6,10 +6,10 @@
 //
 // Full database reset: run from the repo root with `bun db:reset` (or from
 // packages/backend with `bunx convex run seed:resetDatabase`). Everything is
-// deleted, then the dev user, the onboarded+rated blueprnt company, and the bare
-// Acme AB company are re-seeded. The signed-in browser session dies (sign in
-// again with the seeded user, hej@blueprnt.se / abc123). To test onboarding,
-// switch to Acme AB (it is intentionally left un-onboarded).
+// deleted, then the dev user, the onboarded+rated Blueprnt AB company, and the
+// bare Blueprnt Nordic AB company are re-seeded. The signed-in browser session
+// dies (sign in again with the seeded user, hej@blueprnt.se / abc123). To test
+// onboarding, switch to Blueprnt Nordic AB (left intentionally un-onboarded).
 import { v } from "convex/values"
 import { hashPassword } from "better-auth/crypto"
 import { type ActionCtx, internalAction } from "./_generated/server"
@@ -43,22 +43,23 @@ async function wipeAllData(ctx: ActionCtx): Promise<void> {
 }
 
 // The demo companies seeded into a fresh deployment (dev reset AND production
-// seed). blueprnt is a FULLY onboarded, rated company (settings + standard model
-// + the ~40-role demo company, every role rated so the results/band view is
-// populated). Acme AB is left BARE (membership only), so switching to it opens
-// the onboarding wizard. Idempotent (orgs keyed by slug; settings/model/roles
-// seeding skip on re-run).
+// seed). Blueprnt AB is a FULLY onboarded, rated company (settings + standard
+// model + the ~40-role demo company, every role rated so the results/band view
+// is populated). Blueprnt Nordic AB is left BARE (membership only), so switching
+// to it opens the onboarding wizard. They model a real group: Blueprnt AB is the
+// operating company, Blueprnt Nordic AB a sister entity. Idempotent (orgs keyed
+// by slug; settings/model/roles seeding skip on re-run).
 const SEED_ORGANIZATIONS = [
   {
-    name: "blueprnt",
-    slug: "blueprnt",
+    name: "Blueprnt AB",
+    slug: "blueprnt-ab",
     onboarded: true,
     country: "se",
     currency: "SEK",
     language: "sv",
     industry: "itTelecom",
   },
-  { name: "Acme AB", slug: "acme-ab", onboarded: false },
+  { name: "Blueprnt Nordic AB", slug: "blueprnt-nordic-ab", onboarded: false },
 ] as const
 
 // Seeds SEED_ORGANIZATIONS for the already-existing user identified by email.
@@ -136,7 +137,8 @@ async function seedDemoCompaniesForUser(
 // is the admin path to a clean demo state: it wipes EVERY app table and
 // EVERY Better Auth table (except jwks) on the target deployment, then
 // creates the single explicit account and seeds the same demo companies as a
-// dev reset (blueprnt rated + Acme AB bare) for it. There are NO defaults; the
+// dev reset (Blueprnt AB rated + Blueprnt Nordic AB bare) for it. There are NO
+// defaults; the
 // destructive step is gated by the confirm sentinel instead of a hostname
 // guard, and the password hash is computed BEFORE the wipe so nothing can
 // fail after the data is gone. Run from packages/backend with:
@@ -185,7 +187,7 @@ export const seedProduction = internalAction({
       name: name.trim(),
     })
     // Seed the demo companies for the new account so production lands on the same
-    // populated state as a dev reset (blueprnt rated + Acme AB bare).
+    // populated state as a dev reset (Blueprnt AB rated + Blueprnt Nordic AB bare).
     await seedDemoCompaniesForUser(ctx, email)
     return result
   },
@@ -293,8 +295,9 @@ export const removeDevOrganizations = internalAction({
   },
 })
 
-// Dev-only organization seed: seeds the demo companies (blueprnt rated + Acme AB
-// bare) for the dev user. Localhost-guarded; the shared seeding lives in
+// Dev-only organization seed: seeds the demo companies (Blueprnt AB rated +
+// Blueprnt Nordic AB bare) for the dev user. Localhost-guarded; the shared
+// seeding lives in
 // seedDemoCompaniesForUser (also used by seedProduction). Idempotent.
 // Run with: bunx convex run seed:seedDevOrganization
 export const seedDevOrganization = internalAction({
@@ -347,10 +350,10 @@ async function wipeAndSeedDevUser(ctx: ActionCtx): Promise<string> {
 }
 
 // Dev-only full reset: wipes every app table and every Better Auth table (except
-// jwks), re-seeds the dev user, then seeds the onboarded+rated blueprnt company
-// and the bare Acme AB company. Sign-in lands on blueprnt's populated dashboard;
-// switch to Acme AB to test onboarding (it is intentionally left un-onboarded).
-// Run from the repo root with `bun db:reset`.
+// jwks), re-seeds the dev user, then seeds the onboarded+rated Blueprnt AB
+// company and the bare Blueprnt Nordic AB company. Sign-in lands on Blueprnt AB's
+// populated dashboard; switch to Blueprnt Nordic AB to test onboarding (it is
+// intentionally left un-onboarded). Run from the repo root with `bun db:reset`.
 export const resetDatabase = internalAction({
   args: {},
   returns: v.object({ userId: v.string() }),
