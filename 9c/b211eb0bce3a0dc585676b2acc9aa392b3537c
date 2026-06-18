@@ -1,0 +1,19 @@
+docs/superpowers/plans/2026-06-18-role-sheet.md
+  s_dcadef150fedfa::t_78ac04525ebc55 1-950
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "9cb211eb0bce3a0dc585676b2acc9aa392b3537c",
+  "prompts": {},
+  "sessions": {
+    "s_dcadef150fedfa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5f66fc7b-ac5a-4f47-a3f9-de4518c09abb",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
