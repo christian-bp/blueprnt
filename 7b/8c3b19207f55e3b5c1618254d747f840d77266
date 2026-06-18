@@ -1,0 +1,19 @@
+docs/superpowers/plans/2026-06-18-role-result-contribution-breakdown.md
+  s_fee3972340d93b::t_e8fb5efa9ad992 1-672
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "7b8c3b19207f55e3b5c1618254d747f840d77266",
+  "prompts": {},
+  "sessions": {
+    "s_fee3972340d93b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0f95938c-1b77-4bd5-b00d-90b2923adb03",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
