@@ -84,6 +84,15 @@
         "action": "Action",
         "details": "Details"
       },
+      "who": {
+        "system": "System",
+        "unknown": "Unknown"
+      },
+      "details": {
+        "deletedRole": "Deleted role",
+        "deletedFamily": "Deleted family",
+        "deletedUser": "Deleted user"
+      },
       "events": {
         "organizationCreated": "Organization created",
         "organizationSettingsUpdated": "Settings updated",
@@ -636,6 +645,7 @@
         "heading": "Audit log",
         "description": "Every platform-admin action across the installation.",
         "empty": "No admin actions recorded yet.",
+        "systemActor": "System",
         "table": {
           "when": "When",
           "operator": "Operator",

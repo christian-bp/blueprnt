@@ -84,6 +84,15 @@
         "action": "Toimi",
         "details": "Tiedot"
       },
+      "who": {
+        "system": "Järjestelmä",
+        "unknown": "Tuntematon"
+      },
+      "details": {
+        "deletedRole": "Poistettu rooli",
+        "deletedFamily": "Poistettu perhe",
+        "deletedUser": "Poistettu käyttäjä"
+      },
       "events": {
         "organizationCreated": "Organisaatio luotu",
         "organizationSettingsUpdated": "Asetukset päivitetty",
@@ -636,6 +645,7 @@
         "heading": "Tapahtumaloki",
         "description": "Jokainen alustan järjestelmänvalvojan toimi koko asennuksessa.",
         "empty": "Järjestelmänvalvojan toimia ei ole vielä kirjattu.",
+        "systemActor": "Järjestelmä",
         "table": {
           "when": "Milloin",
           "operator": "Operaattori",

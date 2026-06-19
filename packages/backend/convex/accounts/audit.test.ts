@@ -23,10 +23,20 @@ async function setup(t: ReturnType<typeof initConvexTest>) {
 }
 
 describe("accounts.audit.listAuditLog", () => {
-  it("returns the org's own rows newest-first for an admin", async () => {
+  it("returns the org's own rows newest-first for an admin, with names resolved", async () => {
     const t = initConvexTest()
     const { orgId, adminId } = await setup(t)
-    await t.run(async (ctx) => {
+    // A real seeded role so the names map can resolve its id to a title.
+    const roleId = await t.run(async (ctx) => {
+      const id = await ctx.db.insert("roles", {
+        orgId,
+        title: "System Developer",
+        function: "engineering",
+        team: "",
+        trackKey: "IC",
+        purpose: "",
+        responsibilities: "",
+      })
       await ctx.db.insert("auditLog", {
         orgId,
         type: "organization.created",
@@ -37,20 +47,24 @@ describe("accounts.audit.listAuditLog", () => {
       await ctx.db.insert("auditLog", {
         orgId,
         type: "role.created",
-        actorId: adminId,
-        actorName: "Admin Person",
-        payload: { roleId: "r1" },
+        actorId: "system",
+        actorName: "unknown",
+        payload: { roleId: id, source: "starter" },
       })
+      return id
     })
-    const rows = await t
+    const { rows, names } = await t
       .withIdentity({ subject: adminId })
       .query(api.accounts.audit.listAuditLog, { orgId })
     expect(rows).toHaveLength(2)
     // Newest first: the role.created row was inserted after organization.created.
     expect(rows[0]?.type).toBe("role.created")
     expect(rows[1]?.type).toBe("organization.created")
-    expect(rows[0]?.actorName).toBe("Admin Person")
+    expect(rows[0]?.actorId).toBe("system")
+    expect(rows[1]?.actorName).toBe("Admin Person")
     expect(rows[0]?.at).toBeGreaterThanOrEqual(rows[1]?.at ?? 0)
+    // The seeded role's id resolves to its title in the names map.
+    expect(names[roleId.toString()]).toBe("System Developer")
   })
 
   it("only returns rows for the caller's org (tenant isolation)", async () => {
@@ -73,7 +87,7 @@ describe("accounts.audit.listAuditLog", () => {
         payload: {},
       })
     })
-    const rows = await t
+    const { rows } = await t
       .withIdentity({ subject: adminId })
       .query(api.accounts.audit.listAuditLog, { orgId })
     expect(rows).toHaveLength(1)

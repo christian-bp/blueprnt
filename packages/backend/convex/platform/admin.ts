@@ -279,6 +279,7 @@ export const listAuditLog = platformQuery({
     v.object({
       id: v.string(),
       at: v.number(),
+      actorId: v.string(),
       actorName: v.string(),
       type: v.string(),
       targetUser: v.union(v.null(), v.string()),
@@ -301,6 +302,7 @@ export const listAuditLog = platformQuery({
     return rows.map((r) => ({
       id: r._id.toString(),
       at: r._creationTime,
+      actorId: r.actorId,
       actorName: r.actorName,
       type: r.type,
       targetUser:

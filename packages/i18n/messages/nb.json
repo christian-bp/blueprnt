@@ -84,6 +84,15 @@
         "action": "Handling",
         "details": "Detaljer"
       },
+      "who": {
+        "system": "System",
+        "unknown": "Ukjent"
+      },
+      "details": {
+        "deletedRole": "Slettet rolle",
+        "deletedFamily": "Slettet familie",
+        "deletedUser": "Slettet bruker"
+      },
       "events": {
         "organizationCreated": "Organisasjon opprettet",
         "organizationSettingsUpdated": "Innstillinger oppdatert",
@@ -636,6 +645,7 @@
         "heading": "Hendelseslogg",
         "description": "Hver plattformadministratorhandling i hele installasjonen.",
         "empty": "Ingen administratorhandlinger er registrert ennå.",
+        "systemActor": "System",
         "table": {
           "when": "Når",
           "operator": "Operatør",

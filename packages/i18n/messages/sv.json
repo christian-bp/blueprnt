@@ -84,6 +84,15 @@
         "action": "Åtgärd",
         "details": "Detaljer"
       },
+      "who": {
+        "system": "System",
+        "unknown": "Okänd"
+      },
+      "details": {
+        "deletedRole": "Borttagen roll",
+        "deletedFamily": "Borttagen familj",
+        "deletedUser": "Borttagen användare"
+      },
       "events": {
         "organizationCreated": "Organisation skapad",
         "organizationSettingsUpdated": "Inställningar uppdaterade",
@@ -636,6 +645,7 @@
         "heading": "Händelselogg",
         "description": "Varje plattformsadministratörsåtgärd i hela installationen.",
         "empty": "Inga administratörsåtgärder har registrerats ännu.",
+        "systemActor": "System",
         "table": {
           "when": "När",
           "operator": "Operatör",

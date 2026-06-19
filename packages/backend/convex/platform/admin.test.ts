@@ -518,6 +518,9 @@ describe("listAuditLog", () => {
     const userRow = rows.find((r) => r.type === "platform.userCreated")
     expect(userRow?.targetUser).toBe("logged@acme.se")
     expect(userRow?.targetOrg).toBeNull()
+    // The actorId is returned so the section can label the system actor; a real
+    // admin action carries the admin's id, not a "system" sentinel.
+    expect(userRow?.actorId).toBe(adminId)
   })
 
   it("rejects a non-admin caller", async () => {

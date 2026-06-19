@@ -18,6 +18,7 @@ import {
 import { useQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
 import { useOrganization } from "@/components/org-context"
+import { formatAuditDetail } from "@/lib/audit-detail"
 
 // Derive the i18n key from an event type value by camelCasing across dots, so
 // "organization.created" -> "organizationCreated", "ai.suggestionConfirmed" ->
@@ -31,26 +32,13 @@ function eventKey(type: string): string {
     .join("")
 }
 
-// Render the payload compactly as plain text: "key: value" pairs joined with
-// commas, arrays joined with commas. No raw JSON braces. Payloads carry IDs and
-// codes only (never PII), so this is safe to surface verbatim.
-function formatPayload(payload: unknown): string {
-  if (payload === null || typeof payload !== "object") return ""
-  return Object.entries(payload as Record<string, unknown>)
-    .map(([key, value]) => {
-      const text = Array.isArray(value) ? value.join(", ") : String(value)
-      return `${key}: ${text}`
-    })
-    .join(", ")
-}
-
 export function OrgAuditLogSection() {
   const t = useTranslations("dashboard.auditLog")
   const format = useFormatter()
   const { orgId, role } = useOrganization()
   // Editors never call the query: the adminQuery would reject them. The cosmetic
   // guard keeps the page graceful (the sidebar item is hidden for them anyway).
-  const rows = useQuery(
+  const data = useQuery(
     api.accounts.audit.listAuditLog,
     role === "admin" ? { orgId } : "skip"
   )
@@ -61,6 +49,16 @@ export function OrgAuditLogSection() {
   function actionLabel(type: string): string {
     const key = `events.${eventKey(type)}` as Parameters<typeof t.has>[0]
     return t.has(key) ? t(key) : type
+  }
+
+  // The "who" column: seeded/system-generated rows carry a "system" sentinel
+  // actorId (and an "unknown" snapshotted name); show a localized System label
+  // for them, the real name when we have one, and Unknown otherwise.
+  function actorLabel(actorId: string, actorName: string): string {
+    if (actorId === "system" || actorId.startsWith("system")) {
+      return t("who.system")
+    }
+    return actorName && actorName !== "unknown" ? actorName : t("who.unknown")
   }
 
   if (role !== "admin") {
@@ -79,7 +77,8 @@ export function OrgAuditLogSection() {
     )
   }
 
-  if (rows === undefined) return null
+  if (data === undefined) return null
+  const { rows, names } = data
 
   return (
     <section className="space-y-4">
@@ -113,10 +112,16 @@ export function OrgAuditLogSection() {
                     timeStyle: "short",
                   })}
                 </TableCell>
-                <TableCell className="font-medium">{row.actorName}</TableCell>
+                <TableCell className="font-medium">
+                  {actorLabel(row.actorId, row.actorName)}
+                </TableCell>
                 <TableCell>{actionLabel(row.type)}</TableCell>
                 <TableCell className="text-muted-foreground">
-                  {formatPayload(row.payload)}
+                  {formatAuditDetail(row.type, row.payload, names, {
+                    deletedRole: t("details.deletedRole"),
+                    deletedFamily: t("details.deletedFamily"),
+                    deletedUser: t("details.deletedUser"),
+                  })}
                 </TableCell>
               </TableRow>
             ))}

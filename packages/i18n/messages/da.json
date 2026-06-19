@@ -84,6 +84,15 @@
         "action": "Handling",
         "details": "Detaljer"
       },
+      "who": {
+        "system": "System",
+        "unknown": "Ukendt"
+      },
+      "details": {
+        "deletedRole": "Slettet rolle",
+        "deletedFamily": "Slettet familie",
+        "deletedUser": "Slettet bruger"
+      },
       "events": {
         "organizationCreated": "Organisation oprettet",
         "organizationSettingsUpdated": "Indstillinger opdateret",
@@ -636,6 +645,7 @@
         "heading": "Hændelseslog",
         "description": "Hver platformadministratorhandling i hele installationen.",
         "empty": "Ingen administratorhandlinger er registreret endnu.",
+        "systemActor": "System",
         "table": {
           "when": "Hvornår",
           "operator": "Operatør",

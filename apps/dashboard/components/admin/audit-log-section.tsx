@@ -58,6 +58,12 @@ export function AuditLogSection() {
     return t.has(key) ? t(key) : type
   }
 
+  // Out-of-band rows (e.g. the CLI bootstrap path) carry a "system:cli"
+  // sentinel actorId rather than a real operator; show a localized System label.
+  function operatorLabel(actorId: string, actorName: string): string {
+    return actorId.startsWith("system") ? t("systemActor") : actorName
+  }
+
   if (rows === undefined) return null
 
   return (
@@ -93,7 +99,9 @@ export function AuditLogSection() {
                     timeStyle: "short",
                   })}
                 </TableCell>
-                <TableCell className="font-medium">{row.actorName}</TableCell>
+                <TableCell className="font-medium">
+                  {operatorLabel(row.actorId, row.actorName)}
+                </TableCell>
                 <TableCell>{actionLabel(row.type)}</TableCell>
                 <TableCell className="text-muted-foreground">
                   {composeTarget(row.targetUser, row.targetOrg)}
