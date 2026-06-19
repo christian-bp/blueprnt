@@ -1,0 +1,41 @@
+packages/i18n/messages/en.json
+  s_4d14ac8ce42bf2::t_b82dd349a340aa 582
+apps/dashboard/components/currency-select.tsx
+  s_4d14ac8ce42bf2::t_5fd340e2b1a22c 1-44
+packages/i18n/messages/da.json
+  s_4d14ac8ce42bf2::t_a04d03279b5962 582
+packages/constants/src/countries.ts
+  s_4d14ac8ce42bf2::t_29d75a9089123c 17-21
+packages/constants/src/countries.test.ts
+  s_4d14ac8ce42bf2::t_f21a10ccc5b4bc 5
+  s_4d14ac8ce42bf2::t_c8c94c5875014b 28-34
+apps/dashboard/components/admin/manage-organization-dialog.tsx
+  s_4d14ac8ce42bf2::t_7bee47dd0d6c58 257,260-262
+  s_4d14ac8ce42bf2::t_ef1c1e8b79dac8 30
+packages/i18n/messages/nb.json
+  s_4d14ac8ce42bf2::t_4e07405f219cc1 582
+apps/dashboard/components/currency-select.test.tsx
+  s_4d14ac8ce42bf2::t_ac0956fba916b7 1-61
+packages/i18n/messages/sv.json
+  s_4d14ac8ce42bf2::t_f12d6e141dd057 582
+packages/constants/src/index.ts
+  s_4d14ac8ce42bf2::t_e75c6a9f1ab5cb 5-6
+packages/i18n/messages/fi.json
+  s_4d14ac8ce42bf2::t_b1e6ce94c05497 582
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "85d40bae57ab0a2cf635c6af60f71c0fcdfac50d",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
