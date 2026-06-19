@@ -1,8 +1,16 @@
 "use client"
 
+import { MoreVerticalIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu"
 import {
   Empty,
   EmptyDescription,
@@ -32,6 +40,11 @@ export function UsersSection() {
   const [resendFeedback, setResendFeedback] = useState<{
     email: string
     ok: boolean
+  } | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<{
+    authId: string
+    name: string
+    email: string
   } | null>(null)
 
   const filtered = useMemo(() => {
@@ -113,20 +126,40 @@ export function UsersSection() {
                   )}
                 </TableCell>
                 <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => resend(user.email)}
-                    >
-                      {t("resendInvite")}
-                    </Button>
-                    <DeleteUserDialog
-                      authId={user.authId}
-                      name={user.name}
-                      email={user.email}
-                    />
+                  <div className="flex justify-end">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          aria-label={t("rowActions", { name: user.name })}
+                          className="shrink-0 text-muted-foreground hover:text-foreground"
+                        >
+                          <HugeiconsIcon
+                            icon={MoreVerticalIcon}
+                            strokeWidth={2}
+                          />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onSelect={() => resend(user.email)}>
+                          {t("resendInvite")}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          variant="destructive"
+                          onSelect={() =>
+                            setDeleteTarget({
+                              authId: user.authId,
+                              name: user.name,
+                              email: user.email,
+                            })
+                          }
+                        >
+                          {t("deleteCta")}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </TableCell>
               </TableRow>
@@ -134,6 +167,15 @@ export function UsersSection() {
           </TableBody>
         </Table>
       )}
+      <DeleteUserDialog
+        open={deleteTarget !== null}
+        onOpenChange={(o) => {
+          if (!o) setDeleteTarget(null)
+        }}
+        authId={deleteTarget?.authId ?? ""}
+        name={deleteTarget?.name ?? ""}
+        email={deleteTarget?.email ?? ""}
+      />
     </section>
   )
 }

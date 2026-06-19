@@ -522,6 +522,7 @@
         "resendDone": "Kutsu lähetetty.",
         "resendError": "Kutsua ei voitu lähettää. Yritä uudelleen.",
         "deleteCta": "Poista käyttäjä",
+        "rowActions": "Toiminnot käyttäjälle {name}",
         "create": {
           "title": "Luo käyttäjä",
           "description": "Käyttäjä saa sähköpostilinkin oman salasanansa asettamiseen.",
@@ -555,6 +556,7 @@
         "onboardedYes": "Kyllä",
         "onboardedNo": "Ei",
         "manageCta": "Hallitse",
+        "rowActions": "Toiminnot: {name}",
         "create": {
           "title": "Luo organisaatio",
           "description": "Nimi ja yksilöllinen slug. Asetuksia voi muokata myöhemmin.",
@@ -574,6 +576,7 @@
           "roleLabel": "Rooli",
           "addCta": "Lisää jäsen",
           "removeCta": "Poista",
+          "memberActions": "Toiminnot jäsenelle {name}",
           "roleAdmin": "Admin",
           "roleEditor": "Muokkaaja",
           "settingsHeading": "Asetukset",

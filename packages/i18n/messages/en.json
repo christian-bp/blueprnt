@@ -522,6 +522,7 @@
         "resendDone": "Invitation sent.",
         "resendError": "The invitation could not be sent. Try again.",
         "deleteCta": "Delete user",
+        "rowActions": "Actions for {name}",
         "create": {
           "title": "Create user",
           "description": "The user gets an email link to set their own password.",
@@ -555,6 +556,7 @@
         "onboardedYes": "Yes",
         "onboardedNo": "No",
         "manageCta": "Manage",
+        "rowActions": "Actions for {name}",
         "create": {
           "title": "Create organization",
           "description": "A name and a unique slug. Settings can be edited after.",
@@ -574,6 +576,7 @@
           "roleLabel": "Role",
           "addCta": "Add member",
           "removeCta": "Remove",
+          "memberActions": "Actions for {name}",
           "roleAdmin": "Admin",
           "roleEditor": "Editor",
           "settingsHeading": "Settings",

@@ -522,6 +522,7 @@
         "resendDone": "Inbjudan skickad.",
         "resendError": "Inbjudan kunde inte skickas. Försök igen.",
         "deleteCta": "Ta bort användare",
+        "rowActions": "Åtgärder för {name}",
         "create": {
           "title": "Skapa användare",
           "description": "Användaren får en e-postlänk för att ange sitt lösenord.",
@@ -555,6 +556,7 @@
         "onboardedYes": "Ja",
         "onboardedNo": "Nej",
         "manageCta": "Hantera",
+        "rowActions": "Åtgärder för {name}",
         "create": {
           "title": "Skapa organisation",
           "description": "Ett namn och en unik slug. Inställningar kan ändras efteråt.",
@@ -574,6 +576,7 @@
           "roleLabel": "Roll",
           "addCta": "Lägg till medlem",
           "removeCta": "Ta bort",
+          "memberActions": "Åtgärder för {name}",
           "roleAdmin": "Admin",
           "roleEditor": "Redaktör",
           "settingsHeading": "Inställningar",

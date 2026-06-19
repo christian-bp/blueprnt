@@ -522,6 +522,7 @@
         "resendDone": "Invitasjon sendt.",
         "resendError": "Invitasjonen kunne ikke sendes. Prøv igjen.",
         "deleteCta": "Slett bruker",
+        "rowActions": "Handlinger for {name}",
         "create": {
           "title": "Opprett bruker",
           "description": "Brukeren får en e-postlenke for å angi sitt eget passord.",
@@ -555,6 +556,7 @@
         "onboardedYes": "Ja",
         "onboardedNo": "Nei",
         "manageCta": "Administrer",
+        "rowActions": "Handlinger for {name}",
         "create": {
           "title": "Opprett organisasjon",
           "description": "Et navn og en unik slug. Innstillinger kan endres etterpå.",
@@ -574,6 +576,7 @@
           "roleLabel": "Rolle",
           "addCta": "Legg til medlem",
           "removeCta": "Fjern",
+          "memberActions": "Handlinger for {name}",
           "roleAdmin": "Admin",
           "roleEditor": "Redaktør",
           "settingsHeading": "Innstillinger",
