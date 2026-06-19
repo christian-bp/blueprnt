@@ -1,6 +1,7 @@
 "use client"
 
 import { authClient } from "@/lib/auth-client"
+import { api } from "@workspace/backend/convex/_generated/api"
 import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar"
 import {
   DropdownMenu,
@@ -20,8 +21,11 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Logout01Icon,
   MoreVerticalCircle01Icon,
+  Settings01Icon,
 } from "@hugeicons/core-free-icons"
+import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { LanguageMenuSub } from "@/components/language-menu"
 
@@ -30,6 +34,7 @@ export function NavUser() {
   const t = useTranslations("dashboard")
   const router = useRouter()
   const { data: session } = authClient.useSession()
+  const isPlatformAdmin = useQuery(api.platform.admin.isPlatformAdmin)
 
   const name = session?.user?.name ?? ""
   const email = session?.user?.email ?? ""
@@ -101,6 +106,14 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <LanguageMenuSub />
+            {isPlatformAdmin === true && (
+              <DropdownMenuItem asChild>
+                <Link href="/admin">
+                  <HugeiconsIcon icon={Settings01Icon} strokeWidth={2} />
+                  {t("nav.admin")}
+                </Link>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut}>
               <HugeiconsIcon icon={Logout01Icon} strokeWidth={2} />

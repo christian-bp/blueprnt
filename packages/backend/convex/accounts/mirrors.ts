@@ -10,6 +10,7 @@ interface AuthUserDoc {
   _id: string
   email: string
   name: string
+  isPlatformAdmin?: boolean
 }
 
 interface AuthOrgDoc {
@@ -50,6 +51,7 @@ export async function onUserCreate(ctx: Ctx, doc: AuthUserDoc) {
     authId: doc._id,
     name: doc.name,
     email: doc.email,
+    ...(doc.isPlatformAdmin === true ? { isPlatformAdmin: true } : {}),
   })
 }
 
@@ -57,10 +59,15 @@ export async function onUserCreate(ctx: Ctx, doc: AuthUserDoc) {
 // bypass the Better Auth triggers, so the app-side mirror row is created
 // explicitly. Idempotent via onUserCreate.
 export const mirrorSeededUser = internalMutation({
-  args: { authId: v.string(), email: v.string(), name: v.string() },
+  args: {
+    authId: v.string(),
+    email: v.string(),
+    name: v.string(),
+    isPlatformAdmin: v.optional(v.boolean()),
+  },
   returns: v.null(),
-  handler: async (ctx, { authId, email, name }) => {
-    await onUserCreate(ctx, { _id: authId, email, name })
+  handler: async (ctx, { authId, email, name, isPlatformAdmin }) => {
+    await onUserCreate(ctx, { _id: authId, email, name, isPlatformAdmin })
     return null
   },
 })

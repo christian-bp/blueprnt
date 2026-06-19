@@ -4,7 +4,7 @@ import { aiUsageEvents, aiUsageMonthly } from "./ai/tables"
 import { roleFamilies, roles, ratings } from "./assessment/tables"
 import { models, criteria } from "./evaluationModel/tables"
 import { emails } from "./email/tables"
-import { auditLog, suggestions } from "./shared/tables"
+import { auditLog, suggestions, platformAuditLog } from "./shared/tables"
 
 // Nine domain tables by design (ADR-0006): aggregates (anchors, band
 // thresholds) live on their parent documents and the fixed V1 track schema is
@@ -17,6 +17,7 @@ export default defineSchema({
   organizations,
   emails,
   auditLog,
+  platformAuditLog,
   models,
   criteria,
   roleFamilies,

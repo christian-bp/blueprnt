@@ -7,6 +7,7 @@ export const ERROR_CODES = {
   notAuthenticated: "errors.notAuthenticated",
   notAMember: "errors.notAMember",
   adminRequired: "errors.adminRequired",
+  platformAdminRequired: "errors.platformAdminRequired",
   membershipConflict: "errors.membershipConflict",
   notFound: "errors.notFound",
   invalidInput: "errors.invalidInput",

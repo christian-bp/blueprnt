@@ -69,6 +69,7 @@
       "work": "Arbeid",
       "roles": "Roller",
       "model": "Modell",
+      "admin": "Admin",
       "signOut": "Logg ut"
     },
     "orgSwitcher": {
@@ -258,6 +259,14 @@
         "title": "Organisasjonsinvitasjon",
         "accept": "Aksepter invitasjon",
         "signInFirst": "Logg inn for å akseptere denne invitasjonen."
+      },
+      "resetPassword": {
+        "title": "Angi passordet ditt",
+        "description": "Velg et passord for å fullføre kontoen din.",
+        "passwordLabel": "Nytt passord",
+        "cta": "Lagre passord",
+        "missingToken": "Lenken er ugyldig eller har utløpt. Be en administrator sende invitasjonen på nytt.",
+        "error": "Noe gikk galt. Prøv igjen."
       },
       "error": "Noe gikk galt. Prøv igjen."
     },
@@ -489,12 +498,100 @@
       "pendingBandBody": "En rolle får band først når alle kriterier er vurdert. Inntil vurderingen er fullført har den ingen vekting og intet band, så den venter i denne listen.",
       "contributionLabel": "Hva viser søylene og prosentene?",
       "contributionBody": "Prosenten er hvert kriteriums andel av rollens totale vekting (din vurdering ganger kriteriets vekt i modellen), så kriteriene summerer til 100 %. Søylene skaleres etter det største bidraget, så den øverste fyller raden."
+    },
+    "admin": {
+      "heading": "Plattformsadministrasjon",
+      "description": "Opprett og administrer organisasjoner, brukere og medlemskap i hele installasjonen.",
+      "platformAdminLabel": "Plattformadmin",
+      "backToApp": "Tilbake til appen",
+      "notAuthorized": "Du har ikke tilgang til denne siden.",
+      "users": {
+        "heading": "Brukere",
+        "description": "Alle med en konto, i alle organisasjoner.",
+        "empty": "Ingen brukere ennå.",
+        "searchPlaceholder": "Søk på navn eller e-post",
+        "table": {
+          "name": "Navn",
+          "email": "E-post",
+          "platformAdmin": "Plattformadmin",
+          "actions": "Handlinger"
+        },
+        "platformAdminBadge": "Plattformadmin",
+        "resendInvite": "Send invitasjon på nytt",
+        "resendDone": "Invitasjon sendt.",
+        "resendError": "Invitasjonen kunne ikke sendes. Prøv igjen.",
+        "deleteCta": "Slett bruker",
+        "create": {
+          "title": "Opprett bruker",
+          "description": "Brukeren får en e-postlenke for å angi sitt eget passord.",
+          "nameLabel": "Navn",
+          "emailLabel": "E-post",
+          "cta": "Opprett bruker",
+          "cancel": "Avbryt",
+          "error": "Brukeren kunne ikke opprettes. Prøv igjen."
+        },
+        "delete": {
+          "title": "Slette {name}?",
+          "description": "Dette sletter kontoen permanent og fjerner den fra alle organisasjoner. Dette kan ikke angres. Skriv e-postadressen for å bekrefte.",
+          "confirmLabel": "Skriv {email} for å bekrefte",
+          "confirm": "Slett permanent",
+          "cancel": "Avbryt",
+          "error": "Brukeren kunne ikke slettes. Prøv igjen."
+        }
+      },
+      "orgs": {
+        "heading": "Organisasjoner",
+        "description": "Alle organisasjoner i installasjonen.",
+        "empty": "Ingen organisasjoner ennå.",
+        "searchPlaceholder": "Søk på navn eller slug",
+        "table": {
+          "name": "Navn",
+          "slug": "Slug",
+          "country": "Land",
+          "onboarded": "Onboardet",
+          "actions": "Handlinger"
+        },
+        "onboardedYes": "Ja",
+        "onboardedNo": "Nei",
+        "manageCta": "Administrer",
+        "create": {
+          "title": "Opprett organisasjon",
+          "description": "Et navn og en unik slug. Innstillinger kan endres etterpå.",
+          "nameLabel": "Navn",
+          "slugLabel": "Slug",
+          "cta": "Opprett organisasjon",
+          "cancel": "Avbryt",
+          "error": "Organisasjonen kunne ikke opprettes. Prøv igjen."
+        },
+        "manage": {
+          "title": "Administrer {name}",
+          "membersHeading": "Medlemmer",
+          "noMembers": "Ingen medlemmer ennå.",
+          "addMemberHeading": "Legg til et medlem",
+          "userLabel": "Bruker",
+          "userPlaceholder": "Velg en bruker",
+          "roleLabel": "Rolle",
+          "addCta": "Legg til medlem",
+          "removeCta": "Fjern",
+          "roleAdmin": "Admin",
+          "roleEditor": "Redaktør",
+          "settingsHeading": "Innstillinger",
+          "countryLabel": "Land",
+          "currencyLabel": "Valuta",
+          "languageLabel": "Språk",
+          "industryLabel": "Bransje",
+          "saveSettings": "Lagre innstillinger",
+          "close": "Lukk",
+          "error": "Noe gikk galt. Prøv igjen."
+        }
+      }
     }
   },
   "errors": {
     "notAuthenticated": "Du må logge inn.",
     "notAMember": "Du er ikke medlem av denne organisasjonen.",
     "adminRequired": "Bare organisasjonsadministratorer kan gjøre dette.",
+    "platformAdminRequired": "Du har ikke plattformadmin-tilgang.",
     "membershipConflict": "Medlemskapet ditt kunne ikke bekreftes. Kontakt støtte.",
     "notFound": "Ikke funnet.",
     "invalidInput": "Ugyldig inndata.",

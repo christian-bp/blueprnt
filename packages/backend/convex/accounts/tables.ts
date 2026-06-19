@@ -3,11 +3,16 @@ import { v } from "convex/values"
 
 // Thin mirror of Better Auth users (authId = Better Auth user id). Holds
 // app-side per-user settings (locale) and gives audit log a join target.
+// isPlatformAdmin is the cross-org operator flag (see docs/adr): it is the
+// ONLY authorization source for the platform admin page and is written ONLY
+// by the out-of-band bootstrap path (internal mutation / dev seed), never by
+// any client-callable or org-scoped mutation.
 export const users = defineTable({
   authId: v.string(),
   name: v.string(),
   email: v.string(),
   locale: v.optional(v.string()),
+  isPlatformAdmin: v.optional(v.boolean()),
 }).index("by_auth_id", ["authId"])
 
 // App-side organization settings (country, currency, language, industry,

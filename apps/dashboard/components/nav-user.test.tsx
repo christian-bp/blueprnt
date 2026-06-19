@@ -28,12 +28,17 @@ vi.mock("next/navigation", () => ({
 
 vi.mock("convex/react", () => ({
   useMutation: () => setUiLocaleMock,
+  // undefined keeps the platform-admin link hidden for this non-admin user.
+  useQuery: () => undefined,
 }))
 
 vi.mock("@workspace/backend/convex/_generated/api", () => ({
   api: {
     accounts: {
       onboarding: { setUiLocale: "accounts.onboarding.setUiLocale" },
+    },
+    platform: {
+      admin: { isPlatformAdmin: "platform.admin.isPlatformAdmin" },
     },
   },
 }))

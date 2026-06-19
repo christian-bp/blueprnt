@@ -69,6 +69,7 @@
       "work": "Work",
       "roles": "Roles",
       "model": "Model",
+      "admin": "Admin",
       "signOut": "Sign out"
     },
     "orgSwitcher": {
@@ -258,6 +259,14 @@
         "title": "Organization invitation",
         "accept": "Accept invitation",
         "signInFirst": "Sign in to accept this invitation."
+      },
+      "resetPassword": {
+        "title": "Set your password",
+        "description": "Choose a password to finish setting up your account.",
+        "passwordLabel": "New password",
+        "cta": "Set password",
+        "missingToken": "This link is invalid or has expired. Ask an administrator to resend your invitation.",
+        "error": "Something went wrong. Try again."
       },
       "error": "Something went wrong. Please try again."
     },
@@ -489,12 +498,100 @@
       "pendingBandBody": "A role gets a band only after every criterion is rated. Until the assessment is complete it has no weighting and no band, so it waits in this list.",
       "contributionLabel": "What do the bars and percentages show?",
       "contributionBody": "The percentage is each criterion's share of this role's total weighting (your rating times the criterion's weight in the model), so the criteria add up to 100%. The bars are scaled to the biggest contributor, so the top one fills the row."
+    },
+    "admin": {
+      "heading": "Platform administration",
+      "description": "Create and manage organizations, users, and memberships across the whole installation.",
+      "platformAdminLabel": "Platform admin",
+      "backToApp": "Back to app",
+      "notAuthorized": "You do not have access to this page.",
+      "users": {
+        "heading": "Users",
+        "description": "Everyone with an account, across all organizations.",
+        "empty": "No users yet.",
+        "searchPlaceholder": "Search by name or email",
+        "table": {
+          "name": "Name",
+          "email": "Email",
+          "platformAdmin": "Platform admin",
+          "actions": "Actions"
+        },
+        "platformAdminBadge": "Platform admin",
+        "resendInvite": "Resend invitation",
+        "resendDone": "Invitation sent.",
+        "resendError": "The invitation could not be sent. Try again.",
+        "deleteCta": "Delete user",
+        "create": {
+          "title": "Create user",
+          "description": "The user gets an email link to set their own password.",
+          "nameLabel": "Name",
+          "emailLabel": "Email",
+          "cta": "Create user",
+          "cancel": "Cancel",
+          "error": "The user could not be created. Try again."
+        },
+        "delete": {
+          "title": "Delete {name}?",
+          "description": "This permanently erases the account and removes it from every organization. This cannot be undone. Type the email to confirm.",
+          "confirmLabel": "Type {email} to confirm",
+          "confirm": "Permanently delete",
+          "cancel": "Cancel",
+          "error": "The user could not be deleted. Try again."
+        }
+      },
+      "orgs": {
+        "heading": "Organizations",
+        "description": "Every tenant in the installation.",
+        "empty": "No organizations yet.",
+        "searchPlaceholder": "Search by name or slug",
+        "table": {
+          "name": "Name",
+          "slug": "Slug",
+          "country": "Country",
+          "onboarded": "Onboarded",
+          "actions": "Actions"
+        },
+        "onboardedYes": "Yes",
+        "onboardedNo": "No",
+        "manageCta": "Manage",
+        "create": {
+          "title": "Create organization",
+          "description": "A name and a unique slug. Settings can be edited after.",
+          "nameLabel": "Name",
+          "slugLabel": "Slug",
+          "cta": "Create organization",
+          "cancel": "Cancel",
+          "error": "The organization could not be created. Try again."
+        },
+        "manage": {
+          "title": "Manage {name}",
+          "membersHeading": "Members",
+          "noMembers": "No members yet.",
+          "addMemberHeading": "Add a member",
+          "userLabel": "User",
+          "userPlaceholder": "Select a user",
+          "roleLabel": "Role",
+          "addCta": "Add member",
+          "removeCta": "Remove",
+          "roleAdmin": "Admin",
+          "roleEditor": "Editor",
+          "settingsHeading": "Settings",
+          "countryLabel": "Country",
+          "currencyLabel": "Currency",
+          "languageLabel": "Language",
+          "industryLabel": "Industry",
+          "saveSettings": "Save settings",
+          "close": "Close",
+          "error": "Something went wrong. Try again."
+        }
+      }
     }
   },
   "errors": {
     "notAuthenticated": "You need to sign in.",
     "notAMember": "You are not a member of this organization.",
     "adminRequired": "Only organization admins can do this.",
+    "platformAdminRequired": "You do not have platform admin access.",
     "membershipConflict": "Your membership could not be verified. Contact support.",
     "notFound": "Not found.",
     "invalidInput": "Invalid input.",

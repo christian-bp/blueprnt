@@ -41,6 +41,7 @@ See also: `AGENTS.md` (Next.js version warning + agent-skills config) · `docs/P
 - Every Convex function is **org-scoped** (tenant isolation). No band override.
 - **Every state-changing mutation writes an audit row** via `logAudit` with an `AUDIT_EVENTS` key (`lib/audit.ts`). Adding a new auditable operation means adding its event key; result-affecting changes additionally log a `band.shift` diff. Scope: this governs user-initiated changes to auditable domain state. Append-only telemetry logs (e.g. AI usage events in `ai/usage.ts`) are outside it: they are not user-initiated domain changes and the event table is itself the record.
 - All data stays within the **EU** (Convex eu-west-1; ADR-0001).
+- **A person is erasable; keep PII minimal.** Deleting a person is a true hard delete (GDPR right to erasure), never a soft "deactivated" flag: remove every identity row (Better Auth `user`/`account`/`session`, all `member` rows, the `users` mirror). Residual PII in append-only logs is anonymized, not retained (on erasure, replace the audit `actorName` snapshot with a tombstone and keep the row for the trail's legitimate-interest basis). PII lives only in the `users` mirror and the Better Auth tables; never add it to domain tables (Role ≠ Person).
 
 ## Testing
 

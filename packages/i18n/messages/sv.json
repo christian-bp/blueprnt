@@ -69,6 +69,7 @@
       "work": "Arbete",
       "roles": "Roller",
       "model": "Modell",
+      "admin": "Admin",
       "signOut": "Logga ut"
     },
     "orgSwitcher": {
@@ -258,6 +259,14 @@
         "title": "Organisationsinbjudan",
         "accept": "Acceptera inbjudan",
         "signInFirst": "Logga in för att acceptera inbjudan."
+      },
+      "resetPassword": {
+        "title": "Ange ditt lösenord",
+        "description": "Välj ett lösenord för att slutföra ditt konto.",
+        "passwordLabel": "Nytt lösenord",
+        "cta": "Spara lösenord",
+        "missingToken": "Länken är ogiltig eller har gått ut. Be en administratör skicka inbjudan igen.",
+        "error": "Något gick fel. Försök igen."
       },
       "error": "Något gick fel. Försök igen."
     },
@@ -489,12 +498,100 @@
       "pendingBandBody": "En roll får ett band först när alla kriterier är bedömda. Tills bedömningen är klar har den ingen viktning och inget band, så den väntar i den här listan.",
       "contributionLabel": "Vad visar staplarna och procenten?",
       "contributionBody": "Procenten är varje kriteriums andel av rollens totala viktning (din bedömning gånger kriteriets vikt i modellen), så kriterierna summerar till 100 %. Staplarna skalas efter det största bidraget, så den översta fyller raden."
+    },
+    "admin": {
+      "heading": "Plattformsadministration",
+      "description": "Skapa och hantera organisationer, användare och medlemskap i hela installationen.",
+      "platformAdminLabel": "Plattformsadmin",
+      "backToApp": "Tillbaka till appen",
+      "notAuthorized": "Du har inte åtkomst till den här sidan.",
+      "users": {
+        "heading": "Användare",
+        "description": "Alla med ett konto, i alla organisationer.",
+        "empty": "Inga användare än.",
+        "searchPlaceholder": "Sök på namn eller e-post",
+        "table": {
+          "name": "Namn",
+          "email": "E-post",
+          "platformAdmin": "Plattformsadmin",
+          "actions": "Åtgärder"
+        },
+        "platformAdminBadge": "Plattformsadmin",
+        "resendInvite": "Skicka inbjudan igen",
+        "resendDone": "Inbjudan skickad.",
+        "resendError": "Inbjudan kunde inte skickas. Försök igen.",
+        "deleteCta": "Ta bort användare",
+        "create": {
+          "title": "Skapa användare",
+          "description": "Användaren får en e-postlänk för att ange sitt lösenord.",
+          "nameLabel": "Namn",
+          "emailLabel": "E-post",
+          "cta": "Skapa användare",
+          "cancel": "Avbryt",
+          "error": "Användaren kunde inte skapas. Försök igen."
+        },
+        "delete": {
+          "title": "Ta bort {name}?",
+          "description": "Detta raderar kontot permanent och tar bort det från alla organisationer. Detta kan inte ångras. Skriv e-postadressen för att bekräfta.",
+          "confirmLabel": "Skriv {email} för att bekräfta",
+          "confirm": "Ta bort permanent",
+          "cancel": "Avbryt",
+          "error": "Användaren kunde inte tas bort. Försök igen."
+        }
+      },
+      "orgs": {
+        "heading": "Organisationer",
+        "description": "Alla organisationer i installationen.",
+        "empty": "Inga organisationer än.",
+        "searchPlaceholder": "Sök på namn eller slug",
+        "table": {
+          "name": "Namn",
+          "slug": "Slug",
+          "country": "Land",
+          "onboarded": "Onboardad",
+          "actions": "Åtgärder"
+        },
+        "onboardedYes": "Ja",
+        "onboardedNo": "Nej",
+        "manageCta": "Hantera",
+        "create": {
+          "title": "Skapa organisation",
+          "description": "Ett namn och en unik slug. Inställningar kan ändras efteråt.",
+          "nameLabel": "Namn",
+          "slugLabel": "Slug",
+          "cta": "Skapa organisation",
+          "cancel": "Avbryt",
+          "error": "Organisationen kunde inte skapas. Försök igen."
+        },
+        "manage": {
+          "title": "Hantera {name}",
+          "membersHeading": "Medlemmar",
+          "noMembers": "Inga medlemmar än.",
+          "addMemberHeading": "Lägg till en medlem",
+          "userLabel": "Användare",
+          "userPlaceholder": "Välj en användare",
+          "roleLabel": "Roll",
+          "addCta": "Lägg till medlem",
+          "removeCta": "Ta bort",
+          "roleAdmin": "Admin",
+          "roleEditor": "Redaktör",
+          "settingsHeading": "Inställningar",
+          "countryLabel": "Land",
+          "currencyLabel": "Valuta",
+          "languageLabel": "Språk",
+          "industryLabel": "Bransch",
+          "saveSettings": "Spara inställningar",
+          "close": "Stäng",
+          "error": "Något gick fel. Försök igen."
+        }
+      }
     }
   },
   "errors": {
     "notAuthenticated": "Du behöver logga in.",
     "notAMember": "Du är inte medlem i den här organisationen.",
     "adminRequired": "Endast organisationens administratörer kan göra detta.",
+    "platformAdminRequired": "Du har inte plattformsadminbehörighet.",
     "membershipConflict": "Ditt medlemskap kunde inte verifieras. Kontakta supporten.",
     "notFound": "Hittades inte.",
     "invalidInput": "Ogiltig indata.",

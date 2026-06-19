@@ -1541,6 +1541,78 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         Name
       >;
     };
+    provisioning: {
+      addMember: FunctionReference<
+        "mutation",
+        "internal",
+        { organizationId: string; role: string; userId: string },
+        { created: boolean },
+        Name
+      >;
+      eraseUser: FunctionReference<
+        "mutation",
+        "internal",
+        { userId: string },
+        { orgIds: Array<string> },
+        Name
+      >;
+      listAllOrganizations: FunctionReference<
+        "query",
+        "internal",
+        {},
+        Array<{ name: string; orgId: string; slug: string }>,
+        Name
+      >;
+      listAllUsers: FunctionReference<
+        "query",
+        "internal",
+        {},
+        Array<{ email: string; name: string; userId: string }>,
+        Name
+      >;
+      listMembers: FunctionReference<
+        "query",
+        "internal",
+        { organizationId: string },
+        Array<{ email: string; name: string; role: string; userId: string }>,
+        Name
+      >;
+      provisionOrganization: FunctionReference<
+        "mutation",
+        "internal",
+        { name: string; slug: string },
+        { created: boolean; orgId: string },
+        Name
+      >;
+      provisionUser: FunctionReference<
+        "mutation",
+        "internal",
+        { email: string; name: string },
+        { created: boolean; userId: string },
+        Name
+      >;
+      removeMember: FunctionReference<
+        "mutation",
+        "internal",
+        { organizationId: string; userId: string },
+        null | { role: string },
+        Name
+      >;
+      setMemberRole: FunctionReference<
+        "mutation",
+        "internal",
+        { organizationId: string; role: string; userId: string },
+        null | { from: string },
+        Name
+      >;
+      updateOrganizationIdentity: FunctionReference<
+        "mutation",
+        "internal",
+        { name?: string; orgId: string; slug?: string },
+        null,
+        Name
+      >;
+    };
     seed: {
       insertCredentialUser: FunctionReference<
         "mutation",

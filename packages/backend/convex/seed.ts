@@ -181,10 +181,16 @@ export const seedProduction = internalAction({
     )
     // Same mirror step as the dev seed: direct component inserts bypass the
     // Better Auth triggers, so the app-side users row is created explicitly.
+    // PRE-LAUNCH BOOTSTRAP: this account is flagged as a platform admin so the
+    // founder can reach /admin without an out-of-band grant while we build V1.
+    // seedProduction as a whole is throwaway scaffolding: when we move to a real
+    // production it gets deleted entirely, and real platform admins are granted
+    // via internal.platform.bootstrap.grantPlatformAdminByEmail instead.
     await ctx.runMutation(internal.accounts.mirrors.mirrorSeededUser, {
       authId: result.userId,
       email,
       name: name.trim(),
+      isPlatformAdmin: true,
     })
     // Seed the demo companies for the new account so production lands on the same
     // populated state as a dev reset (Blueprnt AB rated + Blueprnt Nordic AB bare).
@@ -230,6 +236,7 @@ export const seedDevUser = internalAction({
       authId: result.userId,
       email,
       name,
+      isPlatformAdmin: true,
     })
 
     return result

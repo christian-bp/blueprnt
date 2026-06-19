@@ -52,6 +52,8 @@ import type * as http from "../http.js";
 import type * as lib_audit from "../lib/audit.js";
 import type * as lib_errors from "../lib/errors.js";
 import type * as lib_functions from "../lib/functions.js";
+import type * as platform_admin from "../platform/admin.js";
+import type * as platform_bootstrap from "../platform/bootstrap.js";
 import type * as seed from "../seed.js";
 import type * as shared_tables from "../shared/tables.js";
 
@@ -106,6 +108,8 @@ declare const fullApi: ApiFromModules<{
   "lib/audit": typeof lib_audit;
   "lib/errors": typeof lib_errors;
   "lib/functions": typeof lib_functions;
+  "platform/admin": typeof platform_admin;
+  "platform/bootstrap": typeof platform_bootstrap;
   seed: typeof seed;
   "shared/tables": typeof shared_tables;
 }>;

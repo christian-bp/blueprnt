@@ -69,6 +69,7 @@
       "work": "Työ",
       "roles": "Roolit",
       "model": "Malli",
+      "admin": "Admin",
       "signOut": "Kirjaudu ulos"
     },
     "orgSwitcher": {
@@ -258,6 +259,14 @@
         "title": "Organisaatiokutsu",
         "accept": "Hyväksy kutsu",
         "signInFirst": "Kirjaudu sisään hyväksyäksesi tämän kutsun."
+      },
+      "resetPassword": {
+        "title": "Aseta salasanasi",
+        "description": "Valitse salasana viimeistelläksesi tilisi.",
+        "passwordLabel": "Uusi salasana",
+        "cta": "Tallenna salasana",
+        "missingToken": "Linkki on virheellinen tai vanhentunut. Pyydä järjestelmänvalvojaa lähettämään kutsu uudelleen.",
+        "error": "Jokin meni pieleen. Yritä uudelleen."
       },
       "error": "Jokin meni pieleen. Yritä uudelleen."
     },
@@ -489,12 +498,100 @@
       "pendingBandBody": "Rooli saa bandin vasta, kun jokainen kriteeri on arvioitu. Kunnes arviointi on valmis, sillä ei ole painotusta eikä bandia, joten se odottaa tässä luettelossa.",
       "contributionLabel": "Mitä palkit ja prosentit näyttävät?",
       "contributionBody": "Prosentti on kunkin kriteerin osuus roolin kokonaispainotuksesta (arviosi kerrottuna kriteerin painolla mallissa), joten kriteerit ovat yhteensä 100 %. Palkit skaalataan suurimman osuuden mukaan, joten ylin täyttää rivin."
+    },
+    "admin": {
+      "heading": "Alustan hallinta",
+      "description": "Luo ja hallitse organisaatioita, käyttäjiä ja jäsenyyksiä koko asennuksessa.",
+      "platformAdminLabel": "Alustan ylläpitäjä",
+      "backToApp": "Takaisin sovellukseen",
+      "notAuthorized": "Sinulla ei ole pääsyä tälle sivulle.",
+      "users": {
+        "heading": "Käyttäjät",
+        "description": "Kaikki, joilla on tili, kaikissa organisaatioissa.",
+        "empty": "Ei käyttäjiä vielä.",
+        "searchPlaceholder": "Hae nimellä tai sähköpostilla",
+        "table": {
+          "name": "Nimi",
+          "email": "Sähköposti",
+          "platformAdmin": "Alustan ylläpitäjä",
+          "actions": "Toiminnot"
+        },
+        "platformAdminBadge": "Alustan ylläpitäjä",
+        "resendInvite": "Lähetä kutsu uudelleen",
+        "resendDone": "Kutsu lähetetty.",
+        "resendError": "Kutsua ei voitu lähettää. Yritä uudelleen.",
+        "deleteCta": "Poista käyttäjä",
+        "create": {
+          "title": "Luo käyttäjä",
+          "description": "Käyttäjä saa sähköpostilinkin oman salasanansa asettamiseen.",
+          "nameLabel": "Nimi",
+          "emailLabel": "Sähköposti",
+          "cta": "Luo käyttäjä",
+          "cancel": "Peruuta",
+          "error": "Käyttäjää ei voitu luoda. Yritä uudelleen."
+        },
+        "delete": {
+          "title": "Poistetaanko {name}?",
+          "description": "Tämä poistaa tilin pysyvästi ja poistaa sen kaikista organisaatioista. Tätä ei voi peruuttaa. Kirjoita sähköpostiosoite vahvistaaksesi.",
+          "confirmLabel": "Kirjoita {email} vahvistaaksesi",
+          "confirm": "Poista pysyvästi",
+          "cancel": "Peruuta",
+          "error": "Käyttäjää ei voitu poistaa. Yritä uudelleen."
+        }
+      },
+      "orgs": {
+        "heading": "Organisaatiot",
+        "description": "Kaikki organisaatiot asennuksessa.",
+        "empty": "Ei organisaatioita vielä.",
+        "searchPlaceholder": "Hae nimellä tai slugilla",
+        "table": {
+          "name": "Nimi",
+          "slug": "Slug",
+          "country": "Maa",
+          "onboarded": "Käyttöönotettu",
+          "actions": "Toiminnot"
+        },
+        "onboardedYes": "Kyllä",
+        "onboardedNo": "Ei",
+        "manageCta": "Hallitse",
+        "create": {
+          "title": "Luo organisaatio",
+          "description": "Nimi ja yksilöllinen slug. Asetuksia voi muokata myöhemmin.",
+          "nameLabel": "Nimi",
+          "slugLabel": "Slug",
+          "cta": "Luo organisaatio",
+          "cancel": "Peruuta",
+          "error": "Organisaatiota ei voitu luoda. Yritä uudelleen."
+        },
+        "manage": {
+          "title": "Hallitse organisaatiota {name}",
+          "membersHeading": "Jäsenet",
+          "noMembers": "Ei jäseniä vielä.",
+          "addMemberHeading": "Lisää jäsen",
+          "userLabel": "Käyttäjä",
+          "userPlaceholder": "Valitse käyttäjä",
+          "roleLabel": "Rooli",
+          "addCta": "Lisää jäsen",
+          "removeCta": "Poista",
+          "roleAdmin": "Admin",
+          "roleEditor": "Muokkaaja",
+          "settingsHeading": "Asetukset",
+          "countryLabel": "Maa",
+          "currencyLabel": "Valuutta",
+          "languageLabel": "Kieli",
+          "industryLabel": "Toimiala",
+          "saveSettings": "Tallenna asetukset",
+          "close": "Sulje",
+          "error": "Jokin meni pieleen. Yritä uudelleen."
+        }
+      }
     }
   },
   "errors": {
     "notAuthenticated": "Sinun täytyy kirjautua sisään.",
     "notAMember": "Et ole tämän organisaation jäsen.",
     "adminRequired": "Vain organisaation ylläpitäjät voivat tehdä tämän.",
+    "platformAdminRequired": "Sinulla ei ole alustan ylläpito-oikeuksia.",
     "membershipConflict": "Jäsenyyttäsi ei voitu vahvistaa. Ota yhteyttä tukeen.",
     "notFound": "Ei löydy.",
     "invalidInput": "Virheellinen syöte.",

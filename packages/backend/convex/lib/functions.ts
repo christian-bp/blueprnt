@@ -97,3 +97,42 @@ export const adminMutation = customMutation(mutation, {
     return { ctx: org, args: {} }
   },
 })
+
+// Resolves the caller's Better Auth id from the JWT and asserts they are a
+// platform admin (the cross-org operator flag on the app users mirror, set
+// out-of-band). Deliberately NOT org-scoped: platform functions act across
+// every tenant. Returns the operator's auth id for audit attribution.
+async function requirePlatformAdmin(
+  ctx: QueryCtx | MutationCtx
+): Promise<string> {
+  const identity = await ctx.auth.getUserIdentity()
+  if (identity === null) throw appError(ERROR_CODES.notAuthenticated)
+  const user = await ctx.db
+    .query("users")
+    .withIndex("by_auth_id", (q) => q.eq("authId", identity.subject))
+    .unique()
+  if (user === null || user.isPlatformAdmin !== true) {
+    throw appError(ERROR_CODES.platformAdminRequired)
+  }
+  return identity.subject
+}
+
+// Platform-admin read. Injects ctx.authUserId. Takes NO orgId: the absence of
+// the org arg is the structural guard that keeps these distinct from the
+// org-scoped builders.
+export const platformQuery = customQuery(query, {
+  args: {},
+  input: async (ctx) => {
+    const authUserId = await requirePlatformAdmin(ctx)
+    return { ctx: { authUserId }, args: {} }
+  },
+})
+
+// Platform-admin write (cross-org). Injects ctx.authUserId. No orgId.
+export const platformMutation = customMutation(mutation, {
+  args: {},
+  input: async (ctx) => {
+    const authUserId = await requirePlatformAdmin(ctx)
+    return { ctx: { authUserId }, args: {} }
+  },
+})
