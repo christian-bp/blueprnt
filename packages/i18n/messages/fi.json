@@ -500,8 +500,10 @@
       "contributionBody": "Prosentti on kunkin kriteerin osuus roolin kokonaispainotuksesta (arviosi kerrottuna kriteerin painolla mallissa), joten kriteerit ovat yhteensä 100 %. Palkit skaalataan suurimman osuuden mukaan, joten ylin täyttää rivin."
     },
     "admin": {
-      "heading": "Alustan hallinta",
-      "description": "Luo ja hallitse organisaatioita, käyttäjiä ja jäsenyyksiä koko asennuksessa.",
+      "tabs": {
+        "users": "Käyttäjät",
+        "organizations": "Organisaatiot"
+      },
       "notAuthorized": "Sinulla ei ole pääsyä tälle sivulle.",
       "users": {
         "heading": "Käyttäjät",

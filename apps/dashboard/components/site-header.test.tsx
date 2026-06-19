@@ -69,4 +69,21 @@ describe("SiteHeader", () => {
     ).toBe("/work")
     expect(document.querySelector('nav[aria-label="breadcrumb"]')).toBeNull()
   })
+
+  it("shows the admin section tabs on an admin route", () => {
+    pathState.current = "/admin"
+    renderHeader()
+    expect(
+      screen
+        .getByRole("link", { name: messages.dashboard.admin.tabs.users })
+        .getAttribute("href")
+    ).toBe("/admin")
+    expect(
+      screen
+        .getByRole("link", {
+          name: messages.dashboard.admin.tabs.organizations,
+        })
+        .getAttribute("href")
+    ).toBe("/admin/organizations")
+  })
 })

@@ -500,8 +500,10 @@
       "contributionBody": "The percentage is each criterion's share of this role's total weighting (your rating times the criterion's weight in the model), so the criteria add up to 100%. The bars are scaled to the biggest contributor, so the top one fills the row."
     },
     "admin": {
-      "heading": "Platform administration",
-      "description": "Create and manage organizations, users, and memberships across the whole installation.",
+      "tabs": {
+        "users": "Users",
+        "organizations": "Organizations"
+      },
       "notAuthorized": "You do not have access to this page.",
       "users": {
         "heading": "Users",

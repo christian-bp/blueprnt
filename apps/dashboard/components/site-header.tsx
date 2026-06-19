@@ -4,6 +4,7 @@ import { Separator } from "@workspace/ui/components/separator"
 import { SidebarTrigger } from "@workspace/ui/components/sidebar"
 import { useTranslations } from "next-intl"
 import { usePathname } from "next/navigation"
+import { AdminTabs } from "@/components/admin/admin-tabs"
 import { SectionTabs } from "@/components/section-tabs"
 
 export function SiteHeader() {
@@ -15,6 +16,7 @@ export function SiteHeader() {
   // The header carries the section identity: the Work section (/work, /roles)
   // gets switchable tabs; the other top-level sections get a plain title.
   const inWorkSection = section === "work" || section === "roles"
+  const inAdminSection = section === "admin"
   const sectionTitle = section === "model" ? t("nav.model") : t("nav.home")
 
   return (
@@ -32,6 +34,8 @@ export function SiteHeader() {
         />
         {inWorkSection ? (
           <SectionTabs />
+        ) : inAdminSection ? (
+          <AdminTabs />
         ) : (
           <span className="font-medium text-sm">{sectionTitle}</span>
         )}

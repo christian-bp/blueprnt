@@ -500,8 +500,10 @@
       "contributionBody": "Prosenten er hvert kriteriums andel av rollens totale vekting (din vurdering ganger kriteriets vekt i modellen), så kriteriene summerer til 100 %. Søylene skaleres etter det største bidraget, så den øverste fyller raden."
     },
     "admin": {
-      "heading": "Plattformsadministrasjon",
-      "description": "Opprett og administrer organisasjoner, brukere og medlemskap i hele installasjonen.",
+      "tabs": {
+        "users": "Brukere",
+        "organizations": "Organisasjoner"
+      },
       "notAuthorized": "Du har ikke tilgang til denne siden.",
       "users": {
         "heading": "Brukere",
