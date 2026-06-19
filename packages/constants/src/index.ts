@@ -11,6 +11,7 @@ export {
   defaultLanguageFor,
 } from "./countries"
 export { INDUSTRY_KEYS, type IndustryKey, clampIndustry } from "./industries"
+export { SLUG_PATTERN, isValidSlug } from "./slug"
 export {
   MAX_STARTER_IMPORT_TEXT,
   SUGGESTION_KINDS,

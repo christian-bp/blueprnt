@@ -1545,7 +1545,7 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
       addMember: FunctionReference<
         "mutation",
         "internal",
-        { organizationId: string; role: string; userId: string },
+        { organizationId: string; role: "admin" | "editor"; userId: string },
         { created: boolean },
         Name
       >;
@@ -1601,7 +1601,7 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
       setMemberRole: FunctionReference<
         "mutation",
         "internal",
-        { organizationId: string; role: string; userId: string },
+        { organizationId: string; role: "admin" | "editor"; userId: string },
         null | { from: string },
         Name
       >;

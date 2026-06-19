@@ -196,6 +196,39 @@ describe("createUser / createOrganization", () => {
     )
     expect(orgAudit.every((r) => r.actorId !== adminId)).toBe(true)
   })
+
+  it("rejects createOrganization with an invalid slug", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    await expect(
+      asAdmin.mutation(api.platform.admin.createOrganization, {
+        name: "Acme",
+        slug: "Acme AB",
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+  })
+
+  it("normalizes createUser email to lowercase (idempotent across case)", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    const first = await asAdmin.mutation(api.platform.admin.createUser, {
+      name: "Mixed",
+      email: "Mixed.Case@Acme.SE",
+    })
+    expect(first.created).toBe(true)
+    // A different-case variant resolves to the SAME user (no duplicate).
+    const second = await asAdmin.mutation(api.platform.admin.createUser, {
+      name: "Mixed",
+      email: "mixed.case@acme.se",
+    })
+    expect(second.created).toBe(false)
+    expect(second.authId).toBe(first.authId)
+    const users = await asAdmin.query(api.platform.admin.listUsers, {})
+    expect(users.some((u) => u.email === "mixed.case@acme.se")).toBe(true)
+    expect(users.some((u) => u.email === "Mixed.Case@Acme.SE")).toBe(false)
+  })
 })
 
 describe("membership management", () => {
@@ -408,6 +441,50 @@ describe("platform queries + updateOrganization", () => {
     expect(row?.currency).toBeNull()
     expect(row?.language).toBeNull()
     expect(row?.industry).toBeNull()
+  })
+
+  it("rejects updateOrganization with an invalid slug", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    const { orgId } = await asAdmin.mutation(
+      api.platform.admin.createOrganization,
+      { name: "Acme", slug: "acme-slug-1" }
+    )
+    await expect(
+      asAdmin.mutation(api.platform.admin.updateOrganization, {
+        orgId,
+        slug: "Not A Slug",
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+  })
+
+  it("rejects updateOrganization when the slug is taken by another org", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    await asAdmin.mutation(api.platform.admin.createOrganization, {
+      name: "First",
+      slug: "taken-slug",
+    })
+    const { orgId: secondId } = await asAdmin.mutation(
+      api.platform.admin.createOrganization,
+      { name: "Second", slug: "free-slug" }
+    )
+    // Renaming the second org onto the first's slug aliases two orgs: reject.
+    await expect(
+      asAdmin.mutation(api.platform.admin.updateOrganization, {
+        orgId: secondId,
+        slug: "taken-slug",
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+    // Re-applying its OWN slug is fine (same org, no alias).
+    await asAdmin.mutation(api.platform.admin.updateOrganization, {
+      orgId: secondId,
+      slug: "free-slug",
+    })
+    const orgs = await asAdmin.query(api.platform.admin.listOrganizations, {})
+    expect(orgs.find((o) => o.orgId === secondId)?.slug).toBe("free-slug")
   })
 })
 

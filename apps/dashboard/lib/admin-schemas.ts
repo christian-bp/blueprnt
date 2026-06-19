@@ -1,3 +1,4 @@
+import { SLUG_PATTERN } from "@workspace/constants"
 import { z } from "zod"
 
 // Client gates for the platform-admin forms. The backend re-validates with
@@ -6,19 +7,16 @@ import { z } from "zod"
 
 export const createUserSchema = z.object({
   name: z.string().trim().min(1),
-  email: z.string().trim().email(),
+  email: z.string().trim().toLowerCase().email(),
 })
 export type CreateUserValues = z.infer<typeof createUserSchema>
 
 // Lowercase letters, digits, hyphens: the slug doubles as the org's unique
-// Better Auth identifier.
+// Better Auth identifier. The pattern is the shared SLUG_PATTERN from
+// @workspace/constants, so client and server enforce one rule.
 export const createOrgSchema = z.object({
   name: z.string().trim().min(1),
-  slug: z
-    .string()
-    .trim()
-    .min(1)
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  slug: z.string().trim().min(1).regex(SLUG_PATTERN),
 })
 export type CreateOrgValues = z.infer<typeof createOrgSchema>
 

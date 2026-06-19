@@ -1,5 +1,9 @@
-import { v } from "convex/values"
+import { ConvexError, v } from "convex/values"
 import { mutation, query } from "./_generated/server"
+
+// The member role enum, enforced at the component boundary so it matches the
+// public platform boundary's roleArg (admin/editor).
+const memberRoleArg = v.union(v.literal("admin"), v.literal("editor"))
 
 // Provision a Better Auth user with NO credential account. The account is
 // created later by resetPassword when the invited user sets their password
@@ -10,14 +14,17 @@ export const provisionUser = mutation({
   args: { email: v.string(), name: v.string() },
   returns: v.object({ userId: v.string(), created: v.boolean() }),
   handler: async (ctx, { email, name }) => {
+    // Canonicalize the email so the lookup and the insert agree, and a
+    // case-variant of an existing email cannot create a duplicate user.
+    const normalizedEmail = email.trim().toLowerCase()
     const existing = await ctx.db
       .query("user")
-      .withIndex("email_name", (q) => q.eq("email", email))
+      .withIndex("email_name", (q) => q.eq("email", normalizedEmail))
       .first()
     if (existing) return { userId: existing._id.toString(), created: false }
     const now = Date.now()
     const id = await ctx.db.insert("user", {
-      email,
+      email: normalizedEmail,
       name,
       emailVerified: true,
       createdAt: now,
@@ -52,7 +59,7 @@ export const addMember = mutation({
   args: {
     organizationId: v.string(),
     userId: v.string(),
-    role: v.string(),
+    role: memberRoleArg,
   },
   returns: v.object({ created: v.boolean() }),
   handler: async (ctx, { organizationId, userId, role }) => {
@@ -79,7 +86,7 @@ export const setMemberRole = mutation({
   args: {
     organizationId: v.string(),
     userId: v.string(),
-    role: v.string(),
+    role: memberRoleArg,
   },
   returns: v.union(v.null(), v.object({ from: v.string() })),
   handler: async (ctx, { organizationId, userId, role }) => {
@@ -114,7 +121,12 @@ export const removeMember = mutation({
   },
 })
 
-// Patch organization identity (name/slug). Both optional.
+// Patch organization identity (name/slug). Both optional. When a slug is
+// provided, guard uniqueness: only the update path can alias two orgs onto the
+// same slug (createOrganization is idempotent-by-slug), so reject if a
+// DIFFERENT organization already holds it. The code maps to errors.invalidInput
+// in lib/errors.ts (this component cannot import it; the boundary throws the
+// code directly and the frontend translates).
 export const updateOrganizationIdentity = mutation({
   args: {
     orgId: v.string(),
@@ -125,6 +137,15 @@ export const updateOrganizationIdentity = mutation({
   handler: async (ctx, { orgId, name, slug }) => {
     const id = ctx.db.normalizeId("organization", orgId)
     if (id === null) return null
+    if (slug !== undefined) {
+      const holder = await ctx.db
+        .query("organization")
+        .withIndex("slug", (q) => q.eq("slug", slug))
+        .first()
+      if (holder !== null && holder._id !== id) {
+        throw new ConvexError({ code: "errors.invalidInput" })
+      }
+    }
     await ctx.db.patch(id, {
       ...(name !== undefined ? { name } : {}),
       ...(slug !== undefined ? { slug } : {}),

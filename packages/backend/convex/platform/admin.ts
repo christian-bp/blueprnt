@@ -1,3 +1,4 @@
+import { isValidSlug } from "@workspace/constants"
 import { v } from "convex/values"
 import { components } from "../_generated/api"
 import { query } from "../_generated/server"
@@ -33,7 +34,9 @@ export const createUser = platformMutation({
   returns: v.object({ authId: v.string(), created: v.boolean() }),
   handler: async (ctx, { name, email }) => {
     const trimmedName = name.trim()
-    const trimmedEmail = email.trim()
+    // Lowercase the email so the mirror, the component user row, and the
+    // idempotency check all key off one canonical form.
+    const trimmedEmail = email.trim().toLowerCase()
     if (trimmedName === "" || trimmedEmail === "") {
       throw appError(ERROR_CODES.invalidInput)
     }
@@ -65,13 +68,19 @@ export const createOrganization = platformMutation({
   returns: v.object({ orgId: v.string(), created: v.boolean() }),
   handler: async (ctx, { name, slug }) => {
     const trimmedName = name.trim()
-    const trimmedSlug = slug.trim()
-    if (trimmedName === "" || trimmedSlug === "") {
+    const normalizedSlug = slug.trim().toLowerCase()
+    if (trimmedName === "" || normalizedSlug === "") {
+      throw appError(ERROR_CODES.invalidInput)
+    }
+    // Server-side slug rule (shared with the client Zod gate): reject anything
+    // that is not a clean lowercase hyphenated slug before it reaches the
+    // component.
+    if (!isValidSlug(normalizedSlug)) {
       throw appError(ERROR_CODES.invalidInput)
     }
     const result = await ctx.runMutation(
       components.betterAuth.provisioning.provisionOrganization,
-      { name: trimmedName, slug: trimmedSlug }
+      { name: trimmedName, slug: normalizedSlug }
     )
     // Mirror the app organizations row. onOrganizationCreate also writes the
     // org's own organization.created lifecycle row (actor "system"), exactly
@@ -308,16 +317,21 @@ export const updateOrganization = platformMutation({
     // frontend sends all fields from controlled inputs, often "". An empty
     // value is not a meaningful setting, so it is ignored rather than written.
     const trimmedName = name?.trim()
-    const trimmedSlug = slug?.trim()
+    const normalizedSlug = slug?.trim().toLowerCase()
     const hasName = trimmedName !== undefined && trimmedName !== ""
-    const hasSlug = trimmedSlug !== undefined && trimmedSlug !== ""
+    const hasSlug = normalizedSlug !== undefined && normalizedSlug !== ""
+    // Validate the slug server-side when one is provided (shared rule with the
+    // client Zod gate); the component then guards uniqueness on the update.
+    if (hasSlug && !isValidSlug(normalizedSlug)) {
+      throw appError(ERROR_CODES.invalidInput)
+    }
     if (hasName || hasSlug) {
       await ctx.runMutation(
         components.betterAuth.provisioning.updateOrganizationIdentity,
         {
           orgId,
           ...(hasName ? { name: trimmedName } : {}),
-          ...(hasSlug ? { slug: trimmedSlug } : {}),
+          ...(hasSlug ? { slug: normalizedSlug } : {}),
         }
       )
     }
