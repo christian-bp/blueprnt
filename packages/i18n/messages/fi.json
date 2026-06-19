@@ -582,6 +582,7 @@
           "languageLabel": "Kieli",
           "languagePlaceholder": "Valitse kieli",
           "industryLabel": "Toimiala",
+          "industryPlaceholder": "Valitse toimiala",
           "saveSettings": "Tallenna asetukset",
           "close": "Sulje",
           "error": "Jokin meni pieleen. Yritä uudelleen."

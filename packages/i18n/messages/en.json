@@ -582,6 +582,7 @@
           "languageLabel": "Language",
           "languagePlaceholder": "Select a language",
           "industryLabel": "Industry",
+          "industryPlaceholder": "Select an industry",
           "saveSettings": "Save settings",
           "close": "Close",
           "error": "Something went wrong. Try again."

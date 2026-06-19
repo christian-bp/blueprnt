@@ -582,6 +582,7 @@
           "languageLabel": "Språk",
           "languagePlaceholder": "Välj ett språk",
           "industryLabel": "Bransch",
+          "industryPlaceholder": "Välj en bransch",
           "saveSettings": "Spara inställningar",
           "close": "Stäng",
           "error": "Något gick fel. Försök igen."

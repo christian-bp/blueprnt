@@ -582,6 +582,7 @@
           "languageLabel": "Sprog",
           "languagePlaceholder": "Vælg et sprog",
           "industryLabel": "Branche",
+          "industryPlaceholder": "Vælg en branche",
           "saveSettings": "Gem indstillinger",
           "close": "Luk",
           "error": "Noget gik galt. Prøv igen."

@@ -582,6 +582,7 @@
           "languageLabel": "Språk",
           "languagePlaceholder": "Velg et språk",
           "industryLabel": "Bransje",
+          "industryPlaceholder": "Velg en bransje",
           "saveSettings": "Lagre innstillinger",
           "close": "Lukk",
           "error": "Noe gikk galt. Prøv igjen."

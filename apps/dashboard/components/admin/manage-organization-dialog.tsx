@@ -28,6 +28,7 @@ import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { CountrySelect } from "@/components/country-select"
+import { IndustrySelect } from "@/components/industry-select"
 import { type MembershipRole, orgSettingsSchema } from "@/lib/admin-schemas"
 
 interface AdminUser {
@@ -273,10 +274,12 @@ export function ManageOrganizationDialog(props: {
             </div>
             <div className="space-y-2">
               <Label htmlFor="org-industry">{t("industryLabel")}</Label>
-              <Input
+              <IndustrySelect
                 id="org-industry"
                 value={industry}
-                onChange={(event) => setIndustry(event.target.value)}
+                onValueChange={setIndustry}
+                placeholder={t("industryPlaceholder")}
+                aria-label={t("industryLabel")}
               />
             </div>
           </div>
