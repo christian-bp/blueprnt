@@ -1,0 +1,41 @@
+packages/constants/src/index.ts
+  s_4d14ac8ce42bf2::t_909d577e484a37 14
+packages/constants/src/slug.test.ts
+  s_4d14ac8ce42bf2::t_002bcc1ce3b7ac 1-26
+packages/backend/convex/platform/admin.test.ts
+  s_4d14ac8ce42bf2::t_21b831e4af2489 199-231
+  s_4d14ac8ce42bf2::t_901dd68b7b073a 445-488
+packages/backend/convex/platform/admin.ts
+  s_4d14ac8ce42bf2::t_c5eaf1977a2bce 37-39
+  s_4d14ac8ce42bf2::t_a1f5759a088cd8 320,322-327,334
+  s_4d14ac8ce42bf2::t_1d438a6189506c 71-78,83
+  s_4d14ac8ce42bf2::t_33431233cf5fd7 1
+packages/backend/convex/betterAuth/provisioning.ts
+  s_4d14ac8ce42bf2::t_6b85bab855d39a 62
+  s_4d14ac8ce42bf2::t_0c85dd24e4db40 124-129,140-148
+  s_4d14ac8ce42bf2::t_24429d4a6fe444 4-7
+  s_4d14ac8ce42bf2::t_8f31b7e4401507 1
+  s_4d14ac8ce42bf2::t_a3a4310b6f25d3 17-19,22,27
+  s_4d14ac8ce42bf2::t_fe5d079c5a9bf3 89
+apps/dashboard/lib/admin-schemas.ts
+  s_4d14ac8ce42bf2::t_a5f73b2bae4981 1,15-16,19
+  s_4d14ac8ce42bf2::t_ad10f4e7f991ac 10
+packages/constants/src/slug.ts
+  s_4d14ac8ce42bf2::t_dd9468b6c64ea9 1-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "d39b7701c1fbc295e99b537e905a08aa3a93e090",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
