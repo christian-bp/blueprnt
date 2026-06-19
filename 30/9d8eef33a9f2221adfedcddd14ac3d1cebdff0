@@ -1,0 +1,37 @@
+apps/dashboard/components/admin/manage-organization-dialog.tsx
+  s_4d14ac8ce42bf2::t_debfbdd4a8b3f9 67,72-93,96,105-106,113-123,126-128
+  s_4d14ac8ce42bf2::t_c3e233a2dcc43d 25
+  s_4d14ac8ce42bf2::t_960c7e95787dff 181
+  s_4d14ac8ce42bf2::t_83bf793454ced1 273-278
+  s_4d14ac8ce42bf2::t_89d371d0564f28 161
+packages/i18n/messages/fi.json
+  s_4d14ac8ce42bf2::t_07a4e40b665c7a 524
+apps/dashboard/components/admin/users-section.tsx
+  s_4d14ac8ce42bf2::t_8b5ac254d5e056 48-57
+  s_4d14ac8ce42bf2::t_49e7261f95117a 32-35
+  s_4d14ac8ce42bf2::t_076672d0bfb0e6 76-85
+packages/i18n/messages/en.json
+  s_4d14ac8ce42bf2::t_e51cdf3a28ed21 524
+packages/i18n/messages/sv.json
+  s_4d14ac8ce42bf2::t_4adefaff9ac87a 524
+packages/i18n/messages/nb.json
+  s_4d14ac8ce42bf2::t_b277642a84afd2 524
+packages/i18n/messages/da.json
+  s_4d14ac8ce42bf2::t_b5a29cd342fc2e 524
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "309d8eef33a9f2221adfedcddd14ac3d1cebdff0",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
