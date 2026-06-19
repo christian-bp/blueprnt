@@ -502,8 +502,6 @@
     "admin": {
       "heading": "Platformsadministration",
       "description": "Opret og administrer organisationer, brugere og medlemskaber i hele installationen.",
-      "platformAdminLabel": "Platformadmin",
-      "backToApp": "Tilbage til appen",
       "notAuthorized": "Du har ikke adgang til denne side.",
       "users": {
         "heading": "Brugere",

@@ -502,8 +502,6 @@
     "admin": {
       "heading": "Alustan hallinta",
       "description": "Luo ja hallitse organisaatioita, käyttäjiä ja jäsenyyksiä koko asennuksessa.",
-      "platformAdminLabel": "Alustan ylläpitäjä",
-      "backToApp": "Takaisin sovellukseen",
       "notAuthorized": "Sinulla ei ole pääsyä tälle sivulle.",
       "users": {
         "heading": "Käyttäjät",

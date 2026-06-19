@@ -502,8 +502,6 @@
     "admin": {
       "heading": "Platform administration",
       "description": "Create and manage organizations, users, and memberships across the whole installation.",
-      "platformAdminLabel": "Platform admin",
-      "backToApp": "Back to app",
       "notAuthorized": "You do not have access to this page.",
       "users": {
         "heading": "Users",
