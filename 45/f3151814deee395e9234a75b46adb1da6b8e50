@@ -1,0 +1,28 @@
+apps/dashboard/app/reset-password/page.tsx
+  s_4d14ac8ce42bf2::t_f2b7a2c286357f 90-95
+  s_4d14ac8ce42bf2::t_834a5c0219b0b9 29-32,35
+packages/backend/convex/auth.ts
+  s_4d14ac8ce42bf2::t_96b54773b70c1f 94-106
+  s_4d14ac8ce42bf2::t_024d265edf87eb 118-123
+apps/dashboard/app/reset-password/reset-password.test.tsx
+  s_4d14ac8ce42bf2::t_4405f72870dcf1 2,4-12,18,20-23,26,28-31,33-34,37,40-41,47-49,54-67,71-77
+  s_4d14ac8ce42bf2::t_ab4bf90b3b8e18 13-17
+  s_4d14ac8ce42bf2::t_e3dc25135470c4 1,3,24-25,27,32,35-36,38-39,42-46,50-53,68-70
+  s_4d14ac8ce42bf2::t_f6ba58f9a4635a 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "45f3151814deee395e9234a75b46adb1da6b8e50",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
