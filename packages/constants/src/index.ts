@@ -4,6 +4,7 @@ export {
   CURRENCY_BY_COUNTRY,
   LANGUAGE_BY_COUNTRY,
   clampCountry,
+  countryForLanguage,
   defaultCurrencyFor,
   defaultLanguageFor,
 } from "./countries"

@@ -41,3 +41,18 @@ export const LANGUAGE_BY_COUNTRY = {
 export function defaultLanguageFor(country: string | undefined): string {
   return LANGUAGE_BY_COUNTRY[clampCountry(country)]
 }
+
+// Inverse of LANGUAGE_BY_COUNTRY: the country key whose default language is the
+// given code (sv -> se, nb -> no, da -> dk, fi -> fi, en -> other). Returns
+// undefined for an unset or unknown language, so a picker shows no selection
+// rather than defaulting to a country. Used where one CountrySelect drives both
+// the country and the (country-derived) language field.
+export function countryForLanguage(
+  language: string | undefined
+): CountryKey | undefined {
+  if (language === undefined) return undefined
+  const entry = COUNTRY_KEYS.find(
+    (key) => LANGUAGE_BY_COUNTRY[key] === language
+  )
+  return entry
+}

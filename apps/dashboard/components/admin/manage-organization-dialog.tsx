@@ -19,11 +19,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import {
+  type CountryKey,
+  LANGUAGE_BY_COUNTRY,
+  countryForLanguage,
+} from "@workspace/constants"
 import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { CountrySelect } from "@/components/country-select"
-import { LanguageSelect } from "@/components/language-select"
 import { type MembershipRole, orgSettingsSchema } from "@/lib/admin-schemas"
 
 interface AdminUser {
@@ -244,6 +248,7 @@ export function ManageOrganizationDialog(props: {
                 value={country}
                 onValueChange={setCountry}
                 placeholder={t("countryPlaceholder")}
+                aria-label={t("countryLabel")}
               />
             </div>
             <div className="space-y-2">
@@ -256,11 +261,14 @@ export function ManageOrganizationDialog(props: {
             </div>
             <div className="space-y-2">
               <Label htmlFor="org-language">{t("languageLabel")}</Label>
-              <LanguageSelect
+              <CountrySelect
                 id="org-language"
-                value={language}
-                onValueChange={setLanguage}
+                value={countryForLanguage(language) ?? ""}
+                onValueChange={(code) =>
+                  setLanguage(LANGUAGE_BY_COUNTRY[code as CountryKey])
+                }
                 placeholder={t("languagePlaceholder")}
+                aria-label={t("languageLabel")}
               />
             </div>
             <div className="space-y-2">
