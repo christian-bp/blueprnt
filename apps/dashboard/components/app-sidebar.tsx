@@ -1,10 +1,10 @@
 "use client"
 
 import {
+  Audit02Icon,
   Briefcase01Icon,
   Home01Icon,
   Layers01Icon,
-  Time04Icon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
@@ -54,7 +54,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     navMain.push({
       title: t("nav.auditLog"),
       url: "/audit-log",
-      icon: <HugeiconsIcon icon={Time04Icon} strokeWidth={2} />,
+      icon: <HugeiconsIcon icon={Audit02Icon} strokeWidth={2} />,
     })
   }
 
