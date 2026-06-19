@@ -1,0 +1,20 @@
+apps/dashboard/components/app-sidebar.tsx
+  s_4d14ac8ce42bf2::t_c474dbc6583d40 4
+  s_4d14ac8ce42bf2::t_fb34635eac9aa6 57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "dddd1e21e60692533b40c7dc92539f60b485d58c",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
