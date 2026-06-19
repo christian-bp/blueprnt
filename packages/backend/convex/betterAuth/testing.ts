@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values"
-import { mutation } from "./_generated/server"
+import { mutation, query } from "./_generated/server"
 
 // Fail closed outside tests. convex-test sets CONVEX_TEST=true via the
 // backend vitest config (test.env); the live Convex deployment never sets it,
@@ -83,5 +83,43 @@ export const seedOrgForUser = mutation({
       createdAt: now,
     })
     return { orgId }
+  },
+})
+
+// Test-only: seed an invitation row directly in the component, so the erasure
+// path (provisioning.eraseUser) can be exercised against a populated invitation
+// table. No product code creates invitations yet; this future-proofs erasure.
+export const seedInvitation = mutation({
+  args: {
+    organizationId: v.string(),
+    email: v.string(),
+    inviterId: v.string(),
+  },
+  returns: v.object({ invitationId: v.string() }),
+  handler: async (ctx, { organizationId, email, inviterId }) => {
+    assertTestEnv()
+    const now = Date.now()
+    const invitationId = await ctx.db.insert("invitation", {
+      organizationId,
+      email,
+      role: null,
+      status: "pending",
+      expiresAt: now + 1000 * 60 * 60 * 24,
+      createdAt: now,
+      inviterId,
+    })
+    return { invitationId: invitationId.toString() }
+  },
+})
+
+// Test-only: list invitation rows (email + inviterId) so erasure can assert
+// which invitations remain after a purge.
+export const listInvitations = query({
+  args: {},
+  returns: v.array(v.object({ email: v.string(), inviterId: v.string() })),
+  handler: async (ctx) => {
+    assertTestEnv()
+    const rows = await ctx.db.query("invitation").collect()
+    return rows.map((r) => ({ email: r.email, inviterId: r.inviterId }))
   },
 })

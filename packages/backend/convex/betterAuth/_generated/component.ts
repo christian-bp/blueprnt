@@ -1656,11 +1656,25 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
       >;
     };
     testing: {
+      listInvitations: FunctionReference<
+        "query",
+        "internal",
+        {},
+        Array<{ email: string; inviterId: string }>,
+        Name
+      >;
       seedDuplicateMember: FunctionReference<
         "mutation",
         "internal",
         { orgId: string; role: string; userId: string },
         null,
+        Name
+      >;
+      seedInvitation: FunctionReference<
+        "mutation",
+        "internal",
+        { email: string; inviterId: string; organizationId: string },
+        { invitationId: string },
         Name
       >;
       seedMembership: FunctionReference<

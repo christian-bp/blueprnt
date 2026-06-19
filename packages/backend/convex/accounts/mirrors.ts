@@ -308,7 +308,9 @@ export async function onInvitationCreate(ctx: Ctx, doc: AuthInvitationDoc) {
     orgId: doc.organizationId,
     type: AUDIT_EVENTS.invitationCreated,
     actorId: doc.inviterId,
-    payload: { email: doc.email },
+    // IDs only, never the invitee email: keeps PII out of the per-org log so
+    // erasure stays complete (see auditLog table comment).
+    payload: { invitationId: doc._id },
   })
 }
 
@@ -329,6 +331,8 @@ export async function onInvitationUpdate(
     orgId: newDoc.organizationId,
     type,
     actorId: newDoc.inviterId,
-    payload: { email: newDoc.email, status: newDoc.status },
+    // IDs/codes only, never the invitee email; status preserves the
+    // declined-vs-canceled distinction for future reporting.
+    payload: { invitationId: newDoc._id, status: newDoc.status },
   })
 }

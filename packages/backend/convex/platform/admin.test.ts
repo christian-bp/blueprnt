@@ -378,6 +378,47 @@ describe("deleteUser (erasure)", () => {
       asAdmin.mutation(api.platform.admin.deleteUser, { authId: adminId })
     ).rejects.toThrow(/errors.invalidInput/)
   })
+
+  it("purges invitations the user received and sent, leaving others", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    const { authId } = await asAdmin.mutation(api.platform.admin.createUser, {
+      name: "Erase Me",
+      email: "erase@acme.se",
+    })
+    const { orgId } = await asAdmin.mutation(
+      api.platform.admin.createOrganization,
+      { name: "Acme", slug: "acme-inv" }
+    )
+    // Invitation addressed TO the erased user (invitee email).
+    await t.mutation(components.betterAuth.testing.seedInvitation, {
+      organizationId: orgId,
+      email: "erase@acme.se",
+      inviterId: adminId,
+    })
+    // Invitation SENT BY the erased user (inviterId).
+    await t.mutation(components.betterAuth.testing.seedInvitation, {
+      organizationId: orgId,
+      email: "someone-else@acme.se",
+      inviterId: authId,
+    })
+    // Unrelated invitation that must survive.
+    await t.mutation(components.betterAuth.testing.seedInvitation, {
+      organizationId: orgId,
+      email: "keep@acme.se",
+      inviterId: adminId,
+    })
+
+    await asAdmin.mutation(api.platform.admin.deleteUser, { authId })
+
+    const remaining = await t.query(
+      components.betterAuth.testing.listInvitations,
+      {}
+    )
+    // Only the unrelated invitation is left.
+    expect(remaining).toEqual([{ email: "keep@acme.se", inviterId: adminId }])
+  })
 })
 
 describe("admin audit log coverage (every action is logged, separately)", () => {

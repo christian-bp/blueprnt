@@ -351,12 +351,13 @@ export const updateOrganization = platformMutation({
 // Tombstone replacing a deleted person's snapshotted name in append-only logs.
 const ERASED_ACTOR_NAME = "deleted user"
 
-// GDPR erasure. Deletes every identity/membership row (via the component),
-// the app users mirror, and anonymizes the person's snapshotted actorName in
-// both audit logs (the rows are kept for the trail's legitimate-interest
-// basis). The erasure itself is recorded in the ADMIN log only; nothing is
-// written to any org's auditLog. Self-delete is blocked. The admin-log payload
-// carries a non-identifying org count, never the erased name/email.
+// GDPR erasure. Deletes every identity/membership/invitation row (via the
+// component), the app users mirror, and anonymizes the person's snapshotted
+// actorName in both audit logs (the rows are kept for the trail's legitimate-
+// interest basis, and their payloads carry IDs/codes only, never PII). The
+// erasure itself is recorded in the ADMIN log only; nothing is written to any
+// org's auditLog. Self-delete is blocked. The admin-log payload carries a
+// non-identifying org count, never the erased name/email.
 export const deleteUser = platformMutation({
   args: { authId: v.string() },
   returns: v.null(),

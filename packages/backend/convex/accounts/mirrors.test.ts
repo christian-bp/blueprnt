@@ -200,7 +200,8 @@ describe("lifecycle audit triggers", () => {
         )
         .collect()
       expect(rows).toHaveLength(1)
-      expect(rows[0].payload).toMatchObject({ email: "new@acme.se" })
+      // IDs only: the invitee email must never land in the per-org log.
+      expect(rows[0].payload).toEqual({ invitationId: "ba_inv_1" })
     })
   })
 
@@ -237,6 +238,11 @@ describe("lifecycle audit triggers", () => {
         )
         .collect()
       expect(rows).toHaveLength(1)
+      // IDs/codes only: invitationId + status, never the invitee email.
+      expect(rows[0].payload).toEqual({
+        invitationId: "ba_inv_1",
+        status: "revoked",
+      })
     })
   })
 
