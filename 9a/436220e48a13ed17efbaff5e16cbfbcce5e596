@@ -1,0 +1,22 @@
+apps/dashboard/app/(app)/admin/page.tsx
+  s_4d14ac8ce42bf2::t_fe21963257540a 3-5,12-22,24
+  s_4d14ac8ce42bf2::t_0c6a2182c140d2 23
+docs/adr/0009-platform-admin.md
+  s_4d14ac8ce42bf2::t_05c4448a690b37 36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "9a436220e48a13ed17efbaff5e16cbfbcce5e596",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
