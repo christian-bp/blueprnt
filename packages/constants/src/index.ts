@@ -2,6 +2,8 @@ export {
   COUNTRY_KEYS,
   type CountryKey,
   CURRENCY_BY_COUNTRY,
+  CURRENCY_KEYS,
+  type CurrencyKey,
   LANGUAGE_BY_COUNTRY,
   clampCountry,
   countryForLanguage,

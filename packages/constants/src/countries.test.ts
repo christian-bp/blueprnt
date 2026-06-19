@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 import {
   COUNTRY_KEYS,
   CURRENCY_BY_COUNTRY,
+  CURRENCY_KEYS,
   LANGUAGE_BY_COUNTRY,
   clampCountry,
   countryForLanguage,
@@ -22,6 +23,13 @@ describe("countries", () => {
     expect(defaultCurrencyFor("dk")).toBe("DKK")
     expect(defaultCurrencyFor("fi")).toBe("EUR")
     expect(defaultCurrencyFor("other")).toBe("EUR")
+  })
+
+  it("CURRENCY_KEYS is exactly the distinct currencies, with no duplicates", () => {
+    expect(new Set(CURRENCY_KEYS)).toEqual(
+      new Set(Object.values(CURRENCY_BY_COUNTRY))
+    )
+    expect(CURRENCY_KEYS.length).toBe(new Set(CURRENCY_KEYS).size)
   })
 
   it("unknown or missing countries fall back to EUR", () => {

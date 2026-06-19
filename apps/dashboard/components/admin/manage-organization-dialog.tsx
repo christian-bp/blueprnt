@@ -10,7 +10,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@workspace/ui/components/dialog"
-import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import {
   Select,
@@ -28,6 +27,7 @@ import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { CountrySelect } from "@/components/country-select"
+import { CurrencySelect } from "@/components/currency-select"
 import { IndustrySelect } from "@/components/industry-select"
 import { type MembershipRole, orgSettingsSchema } from "@/lib/admin-schemas"
 
@@ -254,10 +254,12 @@ export function ManageOrganizationDialog(props: {
             </div>
             <div className="space-y-2">
               <Label htmlFor="org-currency">{t("currencyLabel")}</Label>
-              <Input
+              <CurrencySelect
                 id="org-currency"
                 value={currency}
-                onChange={(event) => setCurrency(event.target.value)}
+                onValueChange={setCurrency}
+                placeholder={t("currencyPlaceholder")}
+                aria-label={t("currencyLabel")}
               />
             </div>
             <div className="space-y-2">

@@ -14,6 +14,11 @@ export const CURRENCY_BY_COUNTRY = {
   other: "EUR",
 } as const satisfies Record<CountryKey, string>
 
+// The distinct currencies an organization can use (the set of CURRENCY_BY_COUNTRY
+// values). Drives the currency picker. Order: the Nordic krona currencies, then EUR.
+export const CURRENCY_KEYS = ["SEK", "NOK", "DKK", "EUR"] as const
+export type CurrencyKey = (typeof CURRENCY_KEYS)[number]
+
 const COUNTRY_KEY_SET = new Set<string>(COUNTRY_KEYS)
 
 export function clampCountry(country: string | undefined): CountryKey {

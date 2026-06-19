@@ -579,6 +579,7 @@
           "countryLabel": "Country",
           "countryPlaceholder": "Select a country",
           "currencyLabel": "Currency",
+          "currencyPlaceholder": "Select a currency",
           "languageLabel": "Language",
           "languagePlaceholder": "Select a language",
           "industryLabel": "Industry",

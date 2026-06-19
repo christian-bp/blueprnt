@@ -579,6 +579,7 @@
           "countryLabel": "Maa",
           "countryPlaceholder": "Valitse maa",
           "currencyLabel": "Valuutta",
+          "currencyPlaceholder": "Valitse valuutta",
           "languageLabel": "Kieli",
           "languagePlaceholder": "Valitse kieli",
           "industryLabel": "Toimiala",
