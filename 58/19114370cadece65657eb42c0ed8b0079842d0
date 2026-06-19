@@ -1,0 +1,97 @@
+packages/backend/convex/seed.ts
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 184-188,193,239
+packages/backend/convex/accounts/tables.ts
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 6-9,15
+packages/backend/convex/lib/audit.test.ts
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-28
+apps/dashboard/lib/admin-schemas.test.ts
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-37
+docs/adr/0009-platform-admin.md
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-36
+apps/dashboard/components/admin/organizations-section.tsx
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-120
+CLAUDE.md
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 44
+packages/i18n/messages/sv.json
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 72,263-270,501-587,594
+apps/dashboard/components/nav-user.tsx
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 4,24,26,28,37,109-116
+packages/backend/convex/platform/bootstrap.ts
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-35
+apps/dashboard/components/admin/create-user-dialog.tsx
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-113
+packages/backend/convex/_generated/api.d.ts
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 55-56,111-112
+apps/dashboard/app/reset-password/page.tsx
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-106
+packages/backend/convex/betterAuth/_generated/component.ts
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1544-1615
+packages/backend/convex/platform/admin.ts
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-398
+packages/backend/convex/accounts/mirrors.ts
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 13,54,62-67,69-70
+packages/backend/convex/betterAuth/provisioning.ts
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-235
+docs/superpowers/plans/2026-06-18-platform-admin-page.md
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-3358
+packages/backend/convex/betterAuth/_generated/api.ts
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 16,33
+packages/backend/convex/platform/admin.test.ts
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-448
+apps/dashboard/components/admin/delete-user-dialog.tsx
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-111
+apps/dashboard/components/admin/create-organization-dialog.tsx
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-105
+packages/i18n/messages/da.json
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 72,263-270,501-587,594
+packages/i18n/messages/fi.json
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 72,263-270,501-587,594
+packages/i18n/messages/en.json
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 72,263-270,501-587,594
+apps/dashboard/components/admin/manage-organization-dialog.tsx
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-294
+apps/dashboard/app/(admin)/admin/page.tsx
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-19
+apps/dashboard/components/admin/users-section.tsx
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-139
+apps/dashboard/components/admin/admin-shell.tsx
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-45
+apps/dashboard/components/nav-user.test.tsx
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 31-32,40-41
+docs/superpowers/specs/2026-06-18-platform-admin-page-design.md
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-197
+apps/dashboard/components/admin/platform-admin-guard.tsx
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-33
+packages/backend/convex/schema.ts
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 7,20
+packages/backend/convex/lib/functions.ts
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 100-138
+packages/backend/convex/lib/audit.ts
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 33-48,82-120
+packages/i18n/messages/nb.json
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 72,263-270,501-587,594
+packages/backend/convex/lib/errors.ts
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 10
+apps/dashboard/lib/admin-schemas.ts
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-34
+packages/backend/convex/shared/tables.ts
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 5-6,16-32
+apps/dashboard/app/(admin)/layout.tsx
+  s_4d14ac8ce42bf2::t_f619b0c55dfb78 1-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "5819114370cadece65657eb42c0ed8b0079842d0",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
