@@ -31,6 +31,7 @@ import { useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
 import { CreateOrganizationDialog } from "@/components/admin/create-organization-dialog"
 import { ManageOrganizationDialog } from "@/components/admin/manage-organization-dialog"
+import { CountryDisplay } from "@/components/country-display"
 
 export function OrganizationsSection() {
   const t = useTranslations("dashboard.admin.orgs")
@@ -92,7 +93,9 @@ export function OrganizationsSection() {
                 <TableCell className="text-muted-foreground">
                   {org.slug}
                 </TableCell>
-                <TableCell>{org.country ?? ""}</TableCell>
+                <TableCell>
+                  <CountryDisplay code={org.country} />
+                </TableCell>
                 <TableCell>
                   <Badge variant={org.onboarded ? "secondary" : "outline"}>
                     {org.onboarded ? t("onboardedYes") : t("onboardedNo")}
