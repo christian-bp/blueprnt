@@ -91,6 +91,19 @@ export const createAuthOptions = (
   return {
     baseURL: resolvedBaseUrl,
     database: authComponent.adapter(ctx),
+    // Persist reset-throttle counters in the component's rateLimit table so
+    // they survive across Convex isolates (in-memory counters reset per
+    // isolate and would not throttle reliably). Verified against the installed
+    // better-auth 1.6.17 (storage accepts "database") and
+    // @convex-dev/better-auth 0.12.3 (its component schema provides a
+    // rateLimit table). Tight caps on the password-reset request endpoints.
+    rateLimit: {
+      storage: "database",
+      customRules: {
+        "/request-password-reset": { window: 60, max: 3 },
+        "/forget-password": { window: 60, max: 3 },
+      },
+    },
     emailAndPassword: {
       enabled: true,
       // No self-serve account creation: accounts are provisioned by an
@@ -102,6 +115,12 @@ export const createAuthOptions = (
       // account (the manual path is reading props.url from the emails row
       // in the Convex dashboard). Tracked in packages/backend/README.md.
       requireEmailVerification: false,
+      // A password reset invalidates every existing session for that user, so
+      // a leaked/old session cannot survive the reset.
+      revokeSessionsOnPasswordReset: true,
+      // Minimum password length, enforced server-side (the reset form mirrors
+      // this as a client gate; the server is authoritative).
+      minPasswordLength: 8,
       sendResetPassword: async (data) => {
         // No per-account locale yet (Task 12 slice); reset emails go out in en.
         await requireRunMutationCtx(ctx).runMutation(

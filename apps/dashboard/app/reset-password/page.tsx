@@ -26,9 +26,13 @@ function ResetPasswordForm() {
   const [pending, setPending] = useState(false)
   const [error, setError] = useState(false)
 
+  // Mirror the server's minPasswordLength (better-auth emailAndPassword); the
+  // server stays authoritative, this only blocks an obviously-too-short submit.
+  const MIN_PASSWORD_LENGTH = 8
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (token === null || password.length === 0) return
+    if (token === null || password.length < MIN_PASSWORD_LENGTH) return
     setPending(true)
     setError(false)
     try {
@@ -83,7 +87,12 @@ function ResetPasswordForm() {
                     </p>
                   )}
                   <Field>
-                    <Button type="submit" disabled={pending}>
+                    <Button
+                      type="submit"
+                      disabled={
+                        pending || password.length < MIN_PASSWORD_LENGTH
+                      }
+                    >
                       {t("cta")}
                     </Button>
                   </Field>
