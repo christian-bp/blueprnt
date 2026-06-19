@@ -1,0 +1,53 @@
+apps/dashboard/components/admin/delete-user-dialog.tsx
+  s_4d14ac8ce42bf2::t_123c56d2441b25 64-66
+  s_4d14ac8ce42bf2::t_f3b9ae7779c9ac 20-22,27-28,43,61-63,67-100
+packages/i18n/messages/nb.json
+  s_4d14ac8ce42bf2::t_4b70a777302c4b 559
+  s_4d14ac8ce42bf2::t_046fd7b4bca058 579
+  s_4d14ac8ce42bf2::t_e1df983ad6e954 525
+CLAUDE.md
+  s_4d14ac8ce42bf2::t_2e7dcac4ce3fd8 69
+packages/i18n/messages/en.json
+  s_4d14ac8ce42bf2::t_d8bfe8a900db1f 559
+  s_4d14ac8ce42bf2::t_31548fe04c47de 579
+  s_4d14ac8ce42bf2::t_6e2126293d315e 525
+packages/i18n/messages/da.json
+  s_4d14ac8ce42bf2::t_e54a4a51f66c78 559
+  s_4d14ac8ce42bf2::t_3255b5cd4274ed 525
+  s_4d14ac8ce42bf2::t_9b0bb4c11a1508 579
+apps/dashboard/components/admin/organizations-section.tsx
+  s_4d14ac8ce42bf2::t_cb171c3b908436 102-126
+  s_4d14ac8ce42bf2::t_505a672a614bf8 3-4,8-13
+packages/i18n/messages/fi.json
+  s_4d14ac8ce42bf2::t_4f3d72ba8d7871 525
+  s_4d14ac8ce42bf2::t_245031980ce7b3 559
+  s_4d14ac8ce42bf2::t_04ca8c18fd47e9 579
+apps/dashboard/components/admin/manage-organization-dialog.tsx
+  s_4d14ac8ce42bf2::t_0eff49330723ea 192-215
+  s_4d14ac8ce42bf2::t_ca287d74576608 3-4,15-20
+apps/dashboard/components/admin/users-section.tsx
+  s_4d14ac8ce42bf2::t_364deeb7010eac 129-162
+  s_4d14ac8ce42bf2::t_a743955bed8c1a 170-178
+  s_4d14ac8ce42bf2::t_4a0fdcf1f26e63 44-48
+  s_4d14ac8ce42bf2::t_c28e3508f03e55 3-4,8-13
+packages/i18n/messages/sv.json
+  s_4d14ac8ce42bf2::t_50b8e629839820 525
+  s_4d14ac8ce42bf2::t_cbdfde0b27a529 559
+  s_4d14ac8ce42bf2::t_d4f17120667d72 579
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "cc1fe625901f568b88b7296d273588ca62e10a73",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
