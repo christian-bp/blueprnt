@@ -1,0 +1,33 @@
+apps/dashboard/components/admin/create-user-dialog.tsx
+  s_4d14ac8ce42bf2::t_ed3d27cb2a44e8 1-113
+apps/dashboard/components/admin/manage-organization-dialog.tsx
+  s_4d14ac8ce42bf2::t_992c65108639d6 1-261
+apps/dashboard/components/admin/users-section.tsx
+  s_4d14ac8ce42bf2::t_21db8fc21d577b 1-119
+apps/dashboard/components/admin/create-organization-dialog.tsx
+  s_4d14ac8ce42bf2::t_3a5e684772b532 1-105
+apps/dashboard/app/reset-password/page.tsx
+  s_4d14ac8ce42bf2::t_7466b692c7c40c 1-106
+apps/dashboard/app/(admin)/admin/page.tsx
+  s_4d14ac8ce42bf2::t_9829db8f739cb4 4-5,10-16
+apps/dashboard/components/admin/organizations-section.tsx
+  s_4d14ac8ce42bf2::t_0f8110e88aa4e0 1-120
+apps/dashboard/components/admin/delete-user-dialog.tsx
+  s_4d14ac8ce42bf2::t_ca6d4694f04364 1-111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "61a412cfd989b69e7e3f5472dbc212567c20cea7",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
