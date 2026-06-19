@@ -1,0 +1,48 @@
+packages/backend/convex/lib/functions.ts
+  s_4d14ac8ce42bf2::t_f92d084028d92b 101-110
+packages/i18n/messages/da.json
+  s_4d14ac8ce42bf2::t_808f4849848e6a 636
+  s_4d14ac8ce42bf2::t_10aba4d444c44b 73,76-112
+  s_4d14ac8ce42bf2::t_90ad5e13cf3ddd 545
+packages/backend/convex/accounts/audit.ts
+  s_4d14ac8ce42bf2::t_6d587b26949966 1-31
+apps/dashboard/components/org-audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_7745357a9efdda 1-128
+packages/i18n/messages/en.json
+  s_4d14ac8ce42bf2::t_c434aeea14a329 73,76-112
+apps/dashboard/components/app-sidebar.tsx
+  s_4d14ac8ce42bf2::t_5f4021265b208d 7,22,26
+  s_4d14ac8ce42bf2::t_b9ff0cfa8522b5 51-60
+packages/i18n/messages/sv.json
+  s_4d14ac8ce42bf2::t_15ce7000d5ce7c 636
+  s_4d14ac8ce42bf2::t_b7d3e0d284d454 73,76-112
+  s_4d14ac8ce42bf2::t_1435d77f1c0d93 545
+apps/dashboard/app/(app)/audit-log/page.tsx
+  s_4d14ac8ce42bf2::t_812f8410b310c3 1-7
+packages/i18n/messages/nb.json
+  s_4d14ac8ce42bf2::t_1a09f5e15f3f50 545
+  s_4d14ac8ce42bf2::t_d493e16b61a1af 73,76-112
+  s_4d14ac8ce42bf2::t_3574a725581cca 636
+packages/i18n/messages/fi.json
+  s_4d14ac8ce42bf2::t_3a247b186a7e24 545
+  s_4d14ac8ce42bf2::t_ceff4b0f820c8b 636
+  s_4d14ac8ce42bf2::t_9572576056bd2d 73,76-112
+packages/backend/convex/accounts/audit.test.ts
+  s_4d14ac8ce42bf2::t_475c7c750453f0 1-100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "578c4aa824b403113bd7271f825b66d766d84d96",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
