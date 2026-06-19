@@ -70,7 +70,46 @@
       "roles": "Roles",
       "model": "Model",
       "admin": "Admin",
+      "auditLog": "Audit log",
       "signOut": "Sign out"
+    },
+    "auditLog": {
+      "heading": "Audit log",
+      "description": "Every change in your organization, who made it and when.",
+      "empty": "No activity recorded yet.",
+      "notAuthorized": "Only organization admins can view the audit log.",
+      "table": {
+        "when": "When",
+        "who": "Who",
+        "action": "Action",
+        "details": "Details"
+      },
+      "events": {
+        "organizationCreated": "Organization created",
+        "organizationSettingsUpdated": "Settings updated",
+        "organizationOnboardingCompleted": "Onboarding completed",
+        "memberAdded": "Member added",
+        "memberRoleChanged": "Member role changed",
+        "memberRemoved": "Member removed",
+        "invitationCreated": "Invitation sent",
+        "invitationAccepted": "Invitation accepted",
+        "invitationRevoked": "Invitation revoked",
+        "modelCreated": "Model created",
+        "modelUpdated": "Model updated",
+        "modelDiscarded": "Model discarded",
+        "aiSuggestionConfirmed": "AI suggestion applied",
+        "aiSuggestionRejected": "AI suggestion dismissed",
+        "roleCreated": "Role created",
+        "roleUpdated": "Role updated",
+        "roleArchived": "Role archived",
+        "ratingChange": "Rating changed",
+        "bandShift": "Band recalibrated",
+        "anchorRoleDesignated": "Anchor role designated",
+        "anchorRoleUpdated": "Anchor role updated",
+        "roleFamilyCreated": "Role family created",
+        "roleFamilyRenamed": "Role family renamed",
+        "roleFamilyRemoved": "Role family removed"
+      }
     },
     "orgSwitcher": {
       "label": "Company",

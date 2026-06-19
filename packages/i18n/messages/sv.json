@@ -70,7 +70,46 @@
       "roles": "Roller",
       "model": "Modell",
       "admin": "Admin",
+      "auditLog": "Händelselogg",
       "signOut": "Logga ut"
+    },
+    "auditLog": {
+      "heading": "Händelselogg",
+      "description": "Varje ändring i din organisation, vem som gjorde den och när.",
+      "empty": "Ingen aktivitet har registrerats ännu.",
+      "notAuthorized": "Endast organisationsadministratörer kan se händelseloggen.",
+      "table": {
+        "when": "När",
+        "who": "Vem",
+        "action": "Åtgärd",
+        "details": "Detaljer"
+      },
+      "events": {
+        "organizationCreated": "Organisation skapad",
+        "organizationSettingsUpdated": "Inställningar uppdaterade",
+        "organizationOnboardingCompleted": "Introduktion slutförd",
+        "memberAdded": "Medlem tillagd",
+        "memberRoleChanged": "Medlemsroll ändrad",
+        "memberRemoved": "Medlem borttagen",
+        "invitationCreated": "Inbjudan skickad",
+        "invitationAccepted": "Inbjudan accepterad",
+        "invitationRevoked": "Inbjudan återkallad",
+        "modelCreated": "Modell skapad",
+        "modelUpdated": "Modell uppdaterad",
+        "modelDiscarded": "Modell kasserad",
+        "aiSuggestionConfirmed": "AI-förslag tillämpat",
+        "aiSuggestionRejected": "AI-förslag avfärdat",
+        "roleCreated": "Roll skapad",
+        "roleUpdated": "Roll uppdaterad",
+        "roleArchived": "Roll arkiverad",
+        "ratingChange": "Bedömning ändrad",
+        "bandShift": "Band omkalibrerat",
+        "anchorRoleDesignated": "Ankarroll utsedd",
+        "anchorRoleUpdated": "Ankarroll uppdaterad",
+        "roleFamilyCreated": "Rollfamilj skapad",
+        "roleFamilyRenamed": "Rollfamilj omdöpt",
+        "roleFamilyRemoved": "Rollfamilj borttagen"
+      }
     },
     "orgSwitcher": {
       "label": "Företag",
@@ -503,7 +542,7 @@
       "tabs": {
         "users": "Användare",
         "organizations": "Organisationer",
-        "auditLog": "Granskningslogg"
+        "auditLog": "Händelselogg"
       },
       "notAuthorized": "Du har inte åtkomst till den här sidan.",
       "users": {
@@ -594,7 +633,7 @@
         }
       },
       "auditLog": {
-        "heading": "Granskningslogg",
+        "heading": "Händelselogg",
         "description": "Varje plattformsadministratörsåtgärd i hela installationen.",
         "empty": "Inga administratörsåtgärder har registrerats ännu.",
         "table": {

@@ -98,6 +98,16 @@ export const adminMutation = customMutation(mutation, {
   },
 })
 
+// Admin-only read (org admin). Same gate as adminMutation.
+export const adminQuery = customQuery(query, {
+  args: orgArgs,
+  input: async (ctx, { orgId }) => {
+    const org = await resolveOrgContext(ctx, orgId)
+    if (org.role !== "admin") throw appError(ERROR_CODES.adminRequired)
+    return { ctx: org, args: {} }
+  },
+})
+
 // Resolves the caller's Better Auth id from the JWT and asserts they are a
 // platform admin (the cross-org operator flag on the app users mirror, set
 // out-of-band). Deliberately NOT org-scoped: platform functions act across

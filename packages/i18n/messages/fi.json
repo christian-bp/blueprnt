@@ -70,7 +70,46 @@
       "roles": "Roolit",
       "model": "Malli",
       "admin": "Admin",
+      "auditLog": "Tapahtumaloki",
       "signOut": "Kirjaudu ulos"
+    },
+    "auditLog": {
+      "heading": "Tapahtumaloki",
+      "description": "Jokainen muutos organisaatiossasi, kuka sen teki ja milloin.",
+      "empty": "Toimintaa ei ole vielä kirjattu.",
+      "notAuthorized": "Vain organisaation järjestelmänvalvojat voivat nähdä tapahtumalokin.",
+      "table": {
+        "when": "Milloin",
+        "who": "Kuka",
+        "action": "Toimi",
+        "details": "Tiedot"
+      },
+      "events": {
+        "organizationCreated": "Organisaatio luotu",
+        "organizationSettingsUpdated": "Asetukset päivitetty",
+        "organizationOnboardingCompleted": "Käyttöönotto valmis",
+        "memberAdded": "Jäsen lisätty",
+        "memberRoleChanged": "Jäsenen rooli muutettu",
+        "memberRemoved": "Jäsen poistettu",
+        "invitationCreated": "Kutsu lähetetty",
+        "invitationAccepted": "Kutsu hyväksytty",
+        "invitationRevoked": "Kutsu peruutettu",
+        "modelCreated": "Malli luotu",
+        "modelUpdated": "Malli päivitetty",
+        "modelDiscarded": "Malli hylätty",
+        "aiSuggestionConfirmed": "Tekoälyehdotus otettu käyttöön",
+        "aiSuggestionRejected": "Tekoälyehdotus hylätty",
+        "roleCreated": "Rooli luotu",
+        "roleUpdated": "Rooli päivitetty",
+        "roleArchived": "Rooli arkistoitu",
+        "ratingChange": "Arviointi muutettu",
+        "bandShift": "Luokka kalibroitu uudelleen",
+        "anchorRoleDesignated": "Ankkurirooli nimetty",
+        "anchorRoleUpdated": "Ankkurirooli päivitetty",
+        "roleFamilyCreated": "Rooliperhe luotu",
+        "roleFamilyRenamed": "Rooliperhe nimetty uudelleen",
+        "roleFamilyRemoved": "Rooliperhe poistettu"
+      }
     },
     "orgSwitcher": {
       "label": "Yritys",
@@ -503,7 +542,7 @@
       "tabs": {
         "users": "Käyttäjät",
         "organizations": "Organisaatiot",
-        "auditLog": "Tarkastusloki"
+        "auditLog": "Tapahtumaloki"
       },
       "notAuthorized": "Sinulla ei ole pääsyä tälle sivulle.",
       "users": {
@@ -594,7 +633,7 @@
         }
       },
       "auditLog": {
-        "heading": "Tarkastusloki",
+        "heading": "Tapahtumaloki",
         "description": "Jokainen alustan järjestelmänvalvojan toimi koko asennuksessa.",
         "empty": "Järjestelmänvalvojan toimia ei ole vielä kirjattu.",
         "table": {

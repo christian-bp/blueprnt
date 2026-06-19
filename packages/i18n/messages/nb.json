@@ -70,7 +70,46 @@
       "roles": "Roller",
       "model": "Modell",
       "admin": "Admin",
+      "auditLog": "Hendelseslogg",
       "signOut": "Logg ut"
+    },
+    "auditLog": {
+      "heading": "Hendelseslogg",
+      "description": "Hver endring i organisasjonen din, hvem som gjorde den og når.",
+      "empty": "Ingen aktivitet er registrert ennå.",
+      "notAuthorized": "Bare organisasjonsadministratorer kan se hendelsesloggen.",
+      "table": {
+        "when": "Når",
+        "who": "Hvem",
+        "action": "Handling",
+        "details": "Detaljer"
+      },
+      "events": {
+        "organizationCreated": "Organisasjon opprettet",
+        "organizationSettingsUpdated": "Innstillinger oppdatert",
+        "organizationOnboardingCompleted": "Onboarding fullført",
+        "memberAdded": "Medlem lagt til",
+        "memberRoleChanged": "Medlemsrolle endret",
+        "memberRemoved": "Medlem fjernet",
+        "invitationCreated": "Invitasjon sendt",
+        "invitationAccepted": "Invitasjon akseptert",
+        "invitationRevoked": "Invitasjon tilbakekalt",
+        "modelCreated": "Modell opprettet",
+        "modelUpdated": "Modell oppdatert",
+        "modelDiscarded": "Modell forkastet",
+        "aiSuggestionConfirmed": "AI-forslag tatt i bruk",
+        "aiSuggestionRejected": "AI-forslag avvist",
+        "roleCreated": "Rolle opprettet",
+        "roleUpdated": "Rolle oppdatert",
+        "roleArchived": "Rolle arkivert",
+        "ratingChange": "Vurdering endret",
+        "bandShift": "Bånd rekalibrert",
+        "anchorRoleDesignated": "Ankerrolle utpekt",
+        "anchorRoleUpdated": "Ankerrolle oppdatert",
+        "roleFamilyCreated": "Rollefamilie opprettet",
+        "roleFamilyRenamed": "Rollefamilie omdøpt",
+        "roleFamilyRemoved": "Rollefamilie fjernet"
+      }
     },
     "orgSwitcher": {
       "label": "Selskap",
@@ -503,7 +542,7 @@
       "tabs": {
         "users": "Brukere",
         "organizations": "Organisasjoner",
-        "auditLog": "Revisjonslogg"
+        "auditLog": "Hendelseslogg"
       },
       "notAuthorized": "Du har ikke tilgang til denne siden.",
       "users": {
@@ -594,7 +633,7 @@
         }
       },
       "auditLog": {
-        "heading": "Revisjonslogg",
+        "heading": "Hendelseslogg",
         "description": "Hver plattformadministratorhandling i hele installasjonen.",
         "empty": "Ingen administratorhandlinger er registrert ennå.",
         "table": {

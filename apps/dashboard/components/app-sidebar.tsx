@@ -4,6 +4,7 @@ import {
   Briefcase01Icon,
   Home01Icon,
   Layers01Icon,
+  Time04Icon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
@@ -18,9 +19,11 @@ import type * as React from "react"
 import { type NavItem, NavMain } from "@/components/nav-main"
 import { NavOrganization } from "@/components/nav-organization"
 import { NavUser } from "@/components/nav-user"
+import { useOrganization } from "@/components/org-context"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations("dashboard")
+  const { role } = useOrganization()
 
   // Home is the dashboard landing. Work owns the role world (the band Overview
   // at /work and the role register at /roles); its two sub-pages are switched
@@ -44,6 +47,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       icon: <HugeiconsIcon icon={Layers01Icon} strokeWidth={2} />,
     },
   ]
+
+  // The org's own event trail is admin-only. The adminQuery is the real gate;
+  // hiding the nav item just keeps the affordance out of editors' sight.
+  if (role === "admin") {
+    navMain.push({
+      title: t("nav.auditLog"),
+      url: "/audit-log",
+      icon: <HugeiconsIcon icon={Time04Icon} strokeWidth={2} />,
+    })
+  }
 
   return (
     // collapsible="icon" (the sidebar-07 pattern): collapsing shrinks the
