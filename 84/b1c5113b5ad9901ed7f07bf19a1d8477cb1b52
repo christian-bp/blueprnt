@@ -1,0 +1,29 @@
+packages/constants/src/countries.ts
+  s_4d14ac8ce42bf2::t_425db6d506cf95 54-56
+  s_4d14ac8ce42bf2::t_1c63cc38ad30a6 44-53,57-58
+packages/constants/src/countries.test.ts
+  s_4d14ac8ce42bf2::t_7763b6de9babba 7
+  s_4d14ac8ce42bf2::t_69459660212468 46-65
+apps/dashboard/components/admin/manage-organization-dialog.tsx
+  s_4d14ac8ce42bf2::t_57cfb3fba6164d 251
+  s_4d14ac8ce42bf2::t_b789b8ca06e508 22-26
+  s_4d14ac8ce42bf2::t_2499ebd1f1e9e8 264,266-269,271
+packages/constants/src/index.ts
+  s_4d14ac8ce42bf2::t_f80a7cb47f93b0 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "84b1c5113b5ad9901ed7f07bf19a1d8477cb1b52",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
