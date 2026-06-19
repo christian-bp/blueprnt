@@ -337,6 +337,46 @@ describe("platform queries + updateOrganization", () => {
     )
     const updated = plat.find((r) => r.type === "platform.orgUpdated")
     expect(updated?.payload).toEqual({ changed: ["country", "currency"] })
+
+    // Re-submitting the SAME values is a no-op: no second orgUpdated row.
+    await asAdmin.mutation(api.platform.admin.updateOrganization, {
+      orgId,
+      country: "se",
+      currency: "SEK",
+    })
+    const platAfter = await t.run(async (ctx) =>
+      ctx.db.query("platformAuditLog").collect()
+    )
+    expect(
+      platAfter.filter((r) => r.type === "platform.orgUpdated")
+    ).toHaveLength(1)
+  })
+
+  it("audits only the settings that actually change", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    const { orgId } = await asAdmin.mutation(
+      api.platform.admin.createOrganization,
+      { name: "Acme", slug: "acme-partial" }
+    )
+    await asAdmin.mutation(api.platform.admin.updateOrganization, {
+      orgId,
+      country: "se",
+      currency: "SEK",
+    })
+    // country unchanged, currency changed: only currency is audited.
+    await asAdmin.mutation(api.platform.admin.updateOrganization, {
+      orgId,
+      country: "se",
+      currency: "NOK",
+    })
+    const plat = await t.run(async (ctx) =>
+      ctx.db.query("platformAuditLog").collect()
+    )
+    const updates = plat.filter((r) => r.type === "platform.orgUpdated")
+    expect(updates).toHaveLength(2)
+    expect(updates[1]?.payload).toEqual({ changed: ["currency"] })
   })
 
   it("skips the audit on an all-empty no-op update", async () => {

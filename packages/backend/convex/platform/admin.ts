@@ -321,10 +321,18 @@ export const updateOrganization = platformMutation({
         }
       )
     }
+    // Only entries whose trimmed value DIFFERS from the current mirror value
+    // are a real change. Empty/undefined values are "not provided", and a value
+    // equal to the current one is a no-op: both are excluded so the
+    // changed.length === 0 guard suppresses the redundant write and audit row.
+    const mirrorValues = mirror as Record<string, unknown>
     const settingsPatch = Object.fromEntries(
       Object.entries(settings)
         .map(([key, val]) => [key, val?.trim()] as const)
-        .filter(([, val]) => val !== undefined && val !== "")
+        .filter(
+          ([key, val]) =>
+            val !== undefined && val !== "" && val !== mirrorValues[key]
+        )
     )
     if (Object.keys(settingsPatch).length > 0) {
       await ctx.db.patch(mirror._id, settingsPatch)
