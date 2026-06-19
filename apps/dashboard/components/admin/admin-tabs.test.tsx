@@ -13,6 +13,7 @@ import { AdminTabs } from "@/components/admin/admin-tabs"
 
 const USERS = messages.dashboard.admin.tabs.users
 const ORGANIZATIONS = messages.dashboard.admin.tabs.organizations
+const AUDIT_LOG = messages.dashboard.admin.tabs.auditLog
 
 function renderTabs() {
   return render(
@@ -28,7 +29,7 @@ describe("AdminTabs", () => {
   })
   afterEach(() => cleanup())
 
-  it("links Users and Organizations to their pages", () => {
+  it("links Users, Organizations and Audit log to their pages", () => {
     renderTabs()
     expect(screen.getByRole("link", { name: USERS }).getAttribute("href")).toBe(
       "/admin"
@@ -36,6 +37,9 @@ describe("AdminTabs", () => {
     expect(
       screen.getByRole("link", { name: ORGANIZATIONS }).getAttribute("href")
     ).toBe("/admin/organizations")
+    expect(
+      screen.getByRole("link", { name: AUDIT_LOG }).getAttribute("href")
+    ).toBe("/admin/audit-log")
   })
 
   it("marks Users as current on /admin", () => {
@@ -48,6 +52,9 @@ describe("AdminTabs", () => {
       screen
         .getByRole("link", { name: ORGANIZATIONS })
         .getAttribute("aria-current")
+    ).toBeNull()
+    expect(
+      screen.getByRole("link", { name: AUDIT_LOG }).getAttribute("aria-current")
     ).toBeNull()
   })
 
@@ -74,6 +81,25 @@ describe("AdminTabs", () => {
     ).toBe("page")
     expect(
       screen.getByRole("link", { name: USERS }).getAttribute("aria-current")
+    ).toBeNull()
+    expect(
+      screen.getByRole("link", { name: AUDIT_LOG }).getAttribute("aria-current")
+    ).toBeNull()
+  })
+
+  it("marks Audit log as current on /admin/audit-log", () => {
+    pathState.current = "/admin/audit-log"
+    renderTabs()
+    expect(
+      screen.getByRole("link", { name: AUDIT_LOG }).getAttribute("aria-current")
+    ).toBe("page")
+    expect(
+      screen.getByRole("link", { name: USERS }).getAttribute("aria-current")
+    ).toBeNull()
+    expect(
+      screen
+        .getByRole("link", { name: ORGANIZATIONS })
+        .getAttribute("aria-current")
     ).toBeNull()
   })
 })

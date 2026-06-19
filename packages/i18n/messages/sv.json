@@ -502,7 +502,8 @@
     "admin": {
       "tabs": {
         "users": "Användare",
-        "organizations": "Organisationer"
+        "organizations": "Organisationer",
+        "auditLog": "Granskningslogg"
       },
       "notAuthorized": "Du har inte åtkomst till den här sidan.",
       "users": {
@@ -587,6 +588,29 @@
           "saveSettings": "Spara inställningar",
           "close": "Stäng",
           "error": "Något gick fel. Försök igen."
+        }
+      },
+      "auditLog": {
+        "heading": "Granskningslogg",
+        "description": "Varje plattformsadministratörsåtgärd i hela installationen.",
+        "empty": "Inga administratörsåtgärder har registrerats ännu.",
+        "table": {
+          "when": "När",
+          "operator": "Operatör",
+          "action": "Åtgärd",
+          "target": "Mål",
+          "details": "Detaljer"
+        },
+        "events": {
+          "userCreated": "Användare skapad",
+          "userDeleted": "Användare borttagen",
+          "orgCreated": "Organisation skapad",
+          "orgUpdated": "Organisation uppdaterad",
+          "membershipGranted": "Medlemskap tilldelat",
+          "membershipRoleChanged": "Roll ändrad",
+          "membershipRevoked": "Medlemskap borttaget",
+          "adminGranted": "Plattformsadministratör tilldelad",
+          "adminRevoked": "Plattformsadministratör återkallad"
         }
       }
     }

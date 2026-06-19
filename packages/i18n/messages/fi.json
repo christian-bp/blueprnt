@@ -502,7 +502,8 @@
     "admin": {
       "tabs": {
         "users": "Käyttäjät",
-        "organizations": "Organisaatiot"
+        "organizations": "Organisaatiot",
+        "auditLog": "Tarkastusloki"
       },
       "notAuthorized": "Sinulla ei ole pääsyä tälle sivulle.",
       "users": {
@@ -587,6 +588,29 @@
           "saveSettings": "Tallenna asetukset",
           "close": "Sulje",
           "error": "Jokin meni pieleen. Yritä uudelleen."
+        }
+      },
+      "auditLog": {
+        "heading": "Tarkastusloki",
+        "description": "Jokainen alustan järjestelmänvalvojan toimi koko asennuksessa.",
+        "empty": "Järjestelmänvalvojan toimia ei ole vielä kirjattu.",
+        "table": {
+          "when": "Milloin",
+          "operator": "Operaattori",
+          "action": "Toimi",
+          "target": "Kohde",
+          "details": "Tiedot"
+        },
+        "events": {
+          "userCreated": "Käyttäjä luotu",
+          "userDeleted": "Käyttäjä poistettu",
+          "orgCreated": "Organisaatio luotu",
+          "orgUpdated": "Organisaatio päivitetty",
+          "membershipGranted": "Jäsenyys myönnetty",
+          "membershipRoleChanged": "Rooli muutettu",
+          "membershipRevoked": "Jäsenyys poistettu",
+          "adminGranted": "Alustan järjestelmänvalvoja myönnetty",
+          "adminRevoked": "Alustan järjestelmänvalvoja peruutettu"
         }
       }
     }

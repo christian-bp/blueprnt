@@ -14,6 +14,7 @@ import { SPRING } from "@/lib/motion"
 const TABS = [
   { labelKey: "users", href: "/admin" },
   { labelKey: "organizations", href: "/admin/organizations" },
+  { labelKey: "auditLog", href: "/admin/audit-log" },
 ] as const
 
 export function AdminTabs() {
@@ -21,14 +22,19 @@ export function AdminTabs() {
   const tNav = useTranslations("dashboard.nav")
   const pathname = usePathname()
   const onOrganizations = pathname.startsWith("/admin/organizations")
+  const onAuditLog = pathname.startsWith("/admin/audit-log")
 
   return (
     <nav aria-label={tNav("admin")} className="flex h-full items-stretch gap-1">
       {TABS.map((tab) => {
+        // Users is the index, active for any admin path that is neither the
+        // organizations nor the audit-log sub-route.
         const active =
           tab.href === "/admin/organizations"
             ? onOrganizations
-            : !onOrganizations
+            : tab.href === "/admin/audit-log"
+              ? onAuditLog
+              : !onOrganizations && !onAuditLog
         return (
           <Link
             key={tab.href}

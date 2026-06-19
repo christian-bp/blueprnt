@@ -488,6 +488,48 @@ describe("platform queries + updateOrganization", () => {
   })
 })
 
+describe("listAuditLog", () => {
+  it("returns the admin trail newest-first after admin actions", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    await asAdmin.mutation(api.platform.admin.createUser, {
+      name: "Logged",
+      email: "logged@acme.se",
+    })
+    await asAdmin.mutation(api.platform.admin.createOrganization, {
+      name: "Logged Org",
+      slug: "logged-org",
+    })
+    const rows = await asAdmin.query(api.platform.admin.listAuditLog, {})
+    const types = rows.map((r) => r.type)
+    expect(types).toContain("platform.userCreated")
+    expect(types).toContain("platform.orgCreated")
+    // Newest first: the org creation came after the user creation.
+    const userAt = rows.find((r) => r.type === "platform.userCreated")?.at ?? 0
+    const orgAt = rows.find((r) => r.type === "platform.orgCreated")?.at ?? 0
+    expect(orgAt).toBeGreaterThanOrEqual(userAt)
+    expect(rows[0]?.at).toBeGreaterThanOrEqual(rows[rows.length - 1]?.at ?? 0)
+    // Targets resolve to human labels: org name for the org-created row.
+    const orgRow = rows.find((r) => r.type === "platform.orgCreated")
+    expect(orgRow?.targetOrg).toBe("Logged Org")
+    expect(orgRow?.targetUser).toBeNull()
+    // The user-created row carries the email label and no org.
+    const userRow = rows.find((r) => r.type === "platform.userCreated")
+    expect(userRow?.targetUser).toBe("logged@acme.se")
+    expect(userRow?.targetOrg).toBeNull()
+  })
+
+  it("rejects a non-admin caller", async () => {
+    const t = initConvexTest()
+    const userId = await seedMirroredUser(t, "nobody-log@acme.se")
+    const asUser = t.withIdentity({ subject: userId })
+    await expect(
+      asUser.query(api.platform.admin.listAuditLog, {})
+    ).rejects.toThrow(/errors.platformAdminRequired/)
+  })
+})
+
 describe("deleteUser (erasure)", () => {
   it("removes identity, mirror, memberships and anonymizes audit", async () => {
     const t = initConvexTest()

@@ -502,7 +502,8 @@
     "admin": {
       "tabs": {
         "users": "Brugere",
-        "organizations": "Organisationer"
+        "organizations": "Organisationer",
+        "auditLog": "Revisionslog"
       },
       "notAuthorized": "Du har ikke adgang til denne side.",
       "users": {
@@ -587,6 +588,29 @@
           "saveSettings": "Gem indstillinger",
           "close": "Luk",
           "error": "Noget gik galt. Prøv igen."
+        }
+      },
+      "auditLog": {
+        "heading": "Revisionslog",
+        "description": "Hver platformadministratorhandling i hele installationen.",
+        "empty": "Ingen administratorhandlinger er registreret endnu.",
+        "table": {
+          "when": "Hvornår",
+          "operator": "Operatør",
+          "action": "Handling",
+          "target": "Mål",
+          "details": "Detaljer"
+        },
+        "events": {
+          "userCreated": "Bruger oprettet",
+          "userDeleted": "Bruger slettet",
+          "orgCreated": "Organisation oprettet",
+          "orgUpdated": "Organisation opdateret",
+          "membershipGranted": "Medlemskab tildelt",
+          "membershipRoleChanged": "Rolle ændret",
+          "membershipRevoked": "Medlemskab fjernet",
+          "adminGranted": "Platformadministrator tildelt",
+          "adminRevoked": "Platformadministrator tilbagekaldt"
         }
       }
     }

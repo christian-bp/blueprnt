@@ -269,6 +269,53 @@ export const listOrganizations = platformQuery({
   },
 })
 
+// The admin audit trail, newest first. Target ids are resolved to human labels
+// (user email, org name) best-effort; an erased or unknown target falls back to
+// its raw id. V1 like the other list queries: a 200-row cap and a 500-row
+// enrichment cap (the component list helpers .take(500)), no pagination.
+export const listAuditLog = platformQuery({
+  args: {},
+  returns: v.array(
+    v.object({
+      id: v.string(),
+      at: v.number(),
+      actorName: v.string(),
+      type: v.string(),
+      targetUser: v.union(v.null(), v.string()),
+      targetOrg: v.union(v.null(), v.string()),
+      payload: v.any(),
+    })
+  ),
+  handler: async (ctx) => {
+    const rows = await ctx.db.query("platformAuditLog").order("desc").take(200)
+    const users = await ctx.runQuery(
+      components.betterAuth.provisioning.listAllUsers,
+      {}
+    )
+    const orgs = await ctx.runQuery(
+      components.betterAuth.provisioning.listAllOrganizations,
+      {}
+    )
+    const userLabel = new Map(users.map((u) => [u.userId, u.email]))
+    const orgLabel = new Map(orgs.map((o) => [o.orgId, o.name]))
+    return rows.map((r) => ({
+      id: r._id.toString(),
+      at: r._creationTime,
+      actorName: r.actorName,
+      type: r.type,
+      targetUser:
+        r.targetUserId !== undefined
+          ? (userLabel.get(r.targetUserId) ?? r.targetUserId)
+          : null,
+      targetOrg:
+        r.targetOrgId !== undefined
+          ? (orgLabel.get(r.targetOrgId) ?? r.targetOrgId)
+          : null,
+      payload: r.payload,
+    }))
+  },
+})
+
 // One org's members (identity + role), for the manage view.
 export const listOrganizationMembers = platformQuery({
   args: { orgId: v.string() },

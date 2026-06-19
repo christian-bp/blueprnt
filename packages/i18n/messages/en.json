@@ -502,7 +502,8 @@
     "admin": {
       "tabs": {
         "users": "Users",
-        "organizations": "Organizations"
+        "organizations": "Organizations",
+        "auditLog": "Audit log"
       },
       "notAuthorized": "You do not have access to this page.",
       "users": {
@@ -587,6 +588,29 @@
           "saveSettings": "Save settings",
           "close": "Close",
           "error": "Something went wrong. Try again."
+        }
+      },
+      "auditLog": {
+        "heading": "Audit log",
+        "description": "Every platform-admin action across the installation.",
+        "empty": "No admin actions recorded yet.",
+        "table": {
+          "when": "When",
+          "operator": "Operator",
+          "action": "Action",
+          "target": "Target",
+          "details": "Details"
+        },
+        "events": {
+          "userCreated": "User created",
+          "userDeleted": "User deleted",
+          "orgCreated": "Organization created",
+          "orgUpdated": "Organization updated",
+          "membershipGranted": "Membership granted",
+          "membershipRoleChanged": "Role changed",
+          "membershipRevoked": "Membership removed",
+          "adminGranted": "Platform admin granted",
+          "adminRevoked": "Platform admin revoked"
         }
       }
     }
