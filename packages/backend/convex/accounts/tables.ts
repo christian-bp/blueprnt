@@ -13,7 +13,13 @@ export const users = defineTable({
   email: v.string(),
   locale: v.optional(v.string()),
   isPlatformAdmin: v.optional(v.boolean()),
-}).index("by_auth_id", ["authId"])
+})
+  .index("by_auth_id", ["authId"])
+  // Lookup index for the rare out-of-band bootstrap path that resolves a user
+  // by email. Email UNIQUENESS is still enforced in Better Auth, not here; this
+  // is only a non-scanning lookup so the bootstrap mutations avoid a full table
+  // scan.
+  .index("by_email", ["email"])
 
 // App-side organization settings (country, currency, language, industry,
 // employeeCount, onboardingCompletedAt, ...). Identity (name/slug/members) lives

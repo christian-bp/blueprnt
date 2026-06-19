@@ -55,6 +55,45 @@ describe("isPlatformAdmin", () => {
       false
     )
   })
+
+  it("audits a successful grant and revoke, not a no-match email", async () => {
+    const t = initConvexTest()
+    const userId = await seedMirroredUser(t, "ops@blueprnt.se")
+    // No-match email: returns false and writes nothing.
+    const missed = await t.mutation(
+      internal.platform.bootstrap.grantPlatformAdminByEmail,
+      { email: "nobody@blueprnt.se" }
+    )
+    expect(missed).toBe(false)
+    let plat = await t.run(async (ctx) =>
+      ctx.db.query("platformAuditLog").collect()
+    )
+    expect(plat).toHaveLength(0)
+
+    // Successful grant: one platform.adminGranted row, attributed out-of-band.
+    await t.mutation(internal.platform.bootstrap.grantPlatformAdminByEmail, {
+      email: "ops@blueprnt.se",
+    })
+    plat = await t.run(async (ctx) =>
+      ctx.db.query("platformAuditLog").collect()
+    )
+    const granted = plat.find((r) => r.type === "platform.adminGranted")
+    expect(granted?.actorId).toBe("system:cli")
+    expect(granted?.targetUserId).toBe(userId)
+    expect(granted?.payload).toEqual({})
+
+    // Successful revoke: one platform.adminRevoked row.
+    await t.mutation(internal.platform.bootstrap.revokePlatformAdminByEmail, {
+      email: "ops@blueprnt.se",
+    })
+    plat = await t.run(async (ctx) =>
+      ctx.db.query("platformAuditLog").collect()
+    )
+    const revoked = plat.find((r) => r.type === "platform.adminRevoked")
+    expect(revoked?.actorId).toBe("system:cli")
+    expect(revoked?.targetUserId).toBe(userId)
+    expect(revoked?.payload).toEqual({})
+  })
 })
 
 async function seedPlatformAdmin(t: ReturnType<typeof initConvexTest>) {
@@ -194,7 +233,15 @@ describe("membership management", () => {
     expect(types).toContain("platform.membershipGranted")
     expect(types).toContain("platform.membershipRoleChanged")
     expect(types).toContain("platform.membershipRevoked")
-    for (const e of events) expect(e.actorId).toBe(adminId)
+    // Every admin-page action is operator-attributed. The seeded grant in
+    // setup is the only out-of-band row (actorId "system:cli").
+    for (const e of events) {
+      if (e.type === "platform.adminGranted") {
+        expect(e.actorId).toBe("system:cli")
+      } else {
+        expect(e.actorId).toBe(adminId)
+      }
+    }
     // The org's own auditLog received NO operator-attributed rows (the two
     // logs stay separate).
     const orgEvents = await t.run(async (ctx) =>
@@ -459,9 +506,11 @@ describe("admin audit log coverage (every action is logged, separately)", () => 
     const plat = await t.run(async (ctx) =>
       ctx.db.query("platformAuditLog").collect()
     )
-    // Every recorded admin action is a platform.* event attributed to the
-    // operator (the seeded grant in setup is out-of-band and not logged here).
-    const types = plat.map((r) => r.type).sort()
+    // The seeded grant in setup is out-of-band (actorId "system:cli"); it is a
+    // real platform.adminGranted row but not an admin-page action, so it is
+    // excluded from the operator-attributed coverage assertions below.
+    const operatorRows = plat.filter((r) => r.actorId === adminId)
+    const types = operatorRows.map((r) => r.type).sort()
     expect(types).toEqual(
       [
         "platform.membershipGranted",
@@ -475,8 +524,16 @@ describe("admin audit log coverage (every action is logged, separately)", () => 
     )
     for (const r of plat) {
       expect(r.type.startsWith("platform.")).toBe(true)
+    }
+    for (const r of operatorRows) {
       expect(r.actorId).toBe(adminId)
     }
+    // The out-of-band seeded grant is recorded, attributed to the CLI sentinel.
+    expect(
+      plat.some(
+        (r) => r.type === "platform.adminGranted" && r.actorId === "system:cli"
+      )
+    ).toBe(true)
     // No operator-attributed rows leaked into ANY org's audit log.
     const orgRows = await t.run(async (ctx) =>
       ctx.db

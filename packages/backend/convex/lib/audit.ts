@@ -41,6 +41,8 @@ export const PLATFORM_AUDIT_EVENTS = {
   membershipGranted: "platform.membershipGranted",
   membershipRoleChanged: "platform.membershipRoleChanged",
   membershipRevoked: "platform.membershipRevoked",
+  adminGranted: "platform.adminGranted",
+  adminRevoked: "platform.adminRevoked",
 } as const
 
 export type PlatformAuditEvent =
