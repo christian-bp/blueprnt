@@ -13,25 +13,7 @@ import {
 import { useMutation } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useSetPreviewLocale } from "@/components/locale-provider"
-
-// Language names are autonyms (each language in itself), identical across
-// the message files, so the picker is readable whatever the active locale.
-const LANGUAGE_LABEL_KEYS = {
-  sv: "languages.sv",
-  en: "languages.en",
-  nb: "languages.nb",
-  da: "languages.da",
-  fi: "languages.fi",
-} as const satisfies Record<Locale, string>
-
-// Representative flag per language (decorative; the autonym is the label).
-const FLAG_BY_LOCALE = {
-  sv: "SE",
-  en: "GB",
-  nb: "NO",
-  da: "DK",
-  fi: "FI",
-} as const satisfies Record<Locale, string>
+import { FLAG_BY_LOCALE, LANGUAGE_LABEL_KEYS } from "@/lib/locales"
 
 // The language picker submenu shared by every avatar/user menu (the
 // onboarding header and the sidebar user menu). Render it inside a

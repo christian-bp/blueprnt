@@ -22,6 +22,8 @@ import {
 import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
+import { CountrySelect } from "@/components/country-select"
+import { LanguageSelect } from "@/components/language-select"
 import { type MembershipRole, orgSettingsSchema } from "@/lib/admin-schemas"
 
 interface AdminUser {
@@ -237,10 +239,11 @@ export function ManageOrganizationDialog(props: {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="org-country">{t("countryLabel")}</Label>
-              <Input
+              <CountrySelect
                 id="org-country"
                 value={country}
-                onChange={(event) => setCountry(event.target.value)}
+                onValueChange={setCountry}
+                placeholder={t("countryPlaceholder")}
               />
             </div>
             <div className="space-y-2">
@@ -253,10 +256,11 @@ export function ManageOrganizationDialog(props: {
             </div>
             <div className="space-y-2">
               <Label htmlFor="org-language">{t("languageLabel")}</Label>
-              <Input
+              <LanguageSelect
                 id="org-language"
                 value={language}
-                onChange={(event) => setLanguage(event.target.value)}
+                onValueChange={setLanguage}
+                placeholder={t("languagePlaceholder")}
               />
             </div>
             <div className="space-y-2">
