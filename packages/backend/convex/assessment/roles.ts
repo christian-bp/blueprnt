@@ -7,13 +7,12 @@ import {
   AUDIT_EVENTS,
   buildChanges,
   buildCreateChanges,
-  logAudit,
   ROLE_CREATE_FIELDS,
 } from "../lib/audit"
 import { familyNames, trackNames } from "./names"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
-import { deriveResults, logBandShifts } from "./compute"
+import { deriveResults } from "./compute"
 
 // The job profile text fields (assessment glossary). purpose and
 // responsibilities are the mandatory core (required before rating).
@@ -103,10 +102,8 @@ export const createRole = orgMutation({
       purpose: optional.purpose ?? "",
       responsibilities: optional.responsibilities ?? "",
     })
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.roleCreated,
-      actorId: ctx.authUserId,
       payload: {
         roleId,
         changes: buildCreateChanges(
@@ -347,10 +344,8 @@ export const updateRole = orgMutation({
     }
     if (Object.keys(patch).length === 0) return null
     await ctx.db.patch(args.roleId, patch)
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.roleUpdated,
-      actorId: ctx.authUserId,
       payload: {
         roleId: args.roleId,
         changes: buildChanges(role, patch, Object.keys(patch)),
@@ -389,18 +384,14 @@ export const archiveRole = adminMutation({
       ...(retiredAnchor !== undefined ? { anchorRole: retiredAnchor } : {}),
     })
     const after = await deriveResults(ctx, ctx.orgId)
-    await logBandShifts(ctx, {
-      orgId: ctx.orgId,
-      actorId: ctx.authUserId,
+    await ctx.audit.bandShifts({
       before: before.results,
       after: after.results,
       cause: { event: AUDIT_EVENTS.roleArchived, roleId },
     })
     if (retiredAnchor !== undefined) {
-      await logAudit(ctx, {
-        orgId: ctx.orgId,
+      await ctx.audit.log({
         type: AUDIT_EVENTS.anchorRoleUpdated,
-        actorId: ctx.authUserId,
         payload: {
           roleId,
           viaArchive: true,
@@ -416,10 +407,8 @@ export const archiveRole = adminMutation({
         },
       })
     }
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.roleArchived,
-      actorId: ctx.authUserId,
       payload: {
         roleId,
         title: role.title,

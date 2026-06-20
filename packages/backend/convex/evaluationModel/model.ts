@@ -105,10 +105,8 @@ export const createModelFromTemplate = adminMutation({
       )
     }
 
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.modelCreated,
-      actorId: ctx.authUserId,
       payload: {
         modelId,
         source: "template",
@@ -232,10 +230,8 @@ export const createEmptyModel = adminMutation({
       name: name.trim(),
       bandThresholds: defaultBandThresholds(),
     })
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.modelCreated,
-      actorId: ctx.authUserId,
       payload: {
         modelId,
         source: "scratch",
@@ -316,10 +312,8 @@ export const discardModel = adminMutation({
       await ctx.db.delete(suggestion._id)
     }
 
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.modelDiscarded,
-      actorId: ctx.authUserId,
       payload: {
         modelId: model._id,
         name: model.name,

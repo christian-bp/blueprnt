@@ -7,7 +7,7 @@ import {
 import { v } from "convex/values"
 import type { Id } from "../_generated/dataModel"
 import { repairDraftWeights } from "../ai/weights"
-import { deriveResults, logBandShifts } from "../assessment/compute"
+import { deriveResults } from "../assessment/compute"
 import {
   anchorDiff,
   AUDIT_EVENTS,
@@ -15,7 +15,6 @@ import {
   buildCreateChanges,
   buildDeleteChanges,
   CRITERION_AUDIT_FIELDS,
-  logAudit,
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation } from "../lib/functions"
@@ -70,17 +69,13 @@ export const addCriterion = adminMutation({
       isCustom: true,
     })
     const after = await deriveResults(ctx, ctx.orgId)
-    await logBandShifts(ctx, {
-      orgId: ctx.orgId,
-      actorId: ctx.authUserId,
+    await ctx.audit.bandShifts({
       before: before.results,
       after: after.results,
       cause: { event: AUDIT_EVENTS.modelUpdated, criterionId },
     })
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.modelUpdated,
-      actorId: ctx.authUserId,
       payload: {
         change: "criterion.added",
         criterionId,
@@ -142,10 +137,8 @@ export const updateCriterion = adminMutation({
       anchors: newAnchors,
       templateKey: undefined,
     })
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.modelUpdated,
-      actorId: ctx.authUserId,
       payload: {
         change: "criterion.updated",
         criterionId: args.criterionId,
@@ -232,17 +225,13 @@ export const rebalanceWeights = adminMutation({
       await ctx.db.patch(criterion._id, { weightPoints })
     }
     const after = await deriveResults(ctx, ctx.orgId)
-    await logBandShifts(ctx, {
-      orgId: ctx.orgId,
-      actorId: ctx.authUserId,
+    await ctx.audit.bandShifts({
       before: before.results,
       after: after.results,
       cause: { event: AUDIT_EVENTS.modelUpdated, entityId: model._id },
     })
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.modelUpdated,
-      actorId: ctx.authUserId,
       payload: {
         change: "weights.rebalanced",
         modelId: model._id,
@@ -349,17 +338,13 @@ export const removeCriterion = adminMutation({
       })
     }
     const after = await deriveResults(ctx, ctx.orgId)
-    await logBandShifts(ctx, {
-      orgId: ctx.orgId,
-      actorId: ctx.authUserId,
+    await ctx.audit.bandShifts({
       before: before.results,
       after: after.results,
       cause: { event: AUDIT_EVENTS.modelUpdated, criterionId },
     })
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.modelUpdated,
-      actorId: ctx.authUserId,
       payload: {
         change: "criterion.removed",
         modelId: criterion.modelId,

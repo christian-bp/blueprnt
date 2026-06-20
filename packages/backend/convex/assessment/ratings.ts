@@ -1,8 +1,8 @@
 import { v } from "convex/values"
-import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
+import { AUDIT_EVENTS, buildChanges } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation } from "../lib/functions"
-import { deriveResults, logBandShifts } from "./compute"
+import { deriveResults } from "./compute"
 import { isProfileComplete } from "./roles"
 
 // The only hand-entered value in the whole loop (assessment glossary): a
@@ -82,9 +82,7 @@ export const setRating = orgMutation({
     const after = await deriveResults(ctx, ctx.orgId)
     // Thread the triggering event so each resulting band.shift records what
     // moved it (the role + criterion that was rated).
-    await logBandShifts(ctx, {
-      orgId: ctx.orgId,
-      actorId: ctx.authUserId,
+    await ctx.audit.bandShifts({
       before: before.results,
       after: after.results,
       cause: { event: AUDIT_EVENTS.ratingChanged, roleId, criterionId },
@@ -105,10 +103,8 @@ export const setRating = orgMutation({
           ? beforeRating.motivation
           : (nextMotivation ?? null),
     }
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.ratingChanged,
-      actorId: ctx.authUserId,
       payload: {
         roleId,
         criterionId,

@@ -1,12 +1,7 @@
 import { MIN_CRITERIA } from "@workspace/core"
 import { v } from "convex/values"
 import { internalQuery } from "../_generated/server"
-import {
-  AUDIT_EVENTS,
-  buildChanges,
-  logAudit,
-  SETTINGS_AUDIT_FIELDS,
-} from "../lib/audit"
+import { AUDIT_EVENTS, buildChanges, SETTINGS_AUDIT_FIELDS } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgQuery } from "../lib/functions"
 
@@ -61,10 +56,8 @@ export const updateOrganizationSettings = adminMutation({
     } else {
       await ctx.db.patch(settings._id, args)
     }
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.organizationSettingsUpdated,
-      actorId: ctx.authUserId,
       // `settings` is read before the write, so it is the correct before-state.
       // `created` flags the upsert-insert path; employeeCount is included so a
       // changed headcount is captured in the diff.
@@ -119,10 +112,8 @@ export const completeOnboarding = adminMutation({
       if (typeof settings.onboardingCompletedAt === "number") return null
       await ctx.db.patch(settings._id, { onboardingCompletedAt: completedAt })
     }
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.onboardingCompleted,
-      actorId: ctx.authUserId,
       // The early-return guard means a re-stamp never reaches here, so `from` is
       // structurally null: this is a one-time completion stamp, not an edit.
       payload: {

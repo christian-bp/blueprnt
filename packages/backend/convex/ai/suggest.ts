@@ -3,7 +3,7 @@ import { isWeightPoints } from "@workspace/core"
 import { v } from "convex/values"
 import { internal } from "../_generated/api"
 import type { MutationCtx } from "../_generated/server"
-import { deriveResults, logBandShifts } from "../assessment/compute"
+import { deriveResults } from "../assessment/compute"
 import { PROFILE_TEXT_FIELDS, type ProfileTextField } from "../assessment/roles"
 import { insertStarterSet, starterFamilyShape } from "../assessment/starters"
 import {
@@ -15,12 +15,7 @@ import {
   TRACK_KEYS,
   templateContent,
 } from "../evaluationModel/standardTemplate"
-import {
-  AUDIT_EVENTS,
-  buildChanges,
-  buildCreateChanges,
-  logAudit,
-} from "../lib/audit"
+import { AUDIT_EVENTS, buildChanges, buildCreateChanges } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
 import { AI_MODEL_ID, AI_PROFILE_MODEL_ID, AI_PROVIDER } from "./config"
@@ -281,9 +276,7 @@ export const confirmModelDraft = adminMutation({
     if (insertedCount > 0) {
       // New criteria flip fully rated roles to incomplete: log the shifts.
       const after = await deriveResults(ctx, ctx.orgId)
-      await logBandShifts(ctx, {
-        orgId: ctx.orgId,
-        actorId: ctx.authUserId,
+      await ctx.audit.bandShifts({
         before: before.results,
         after: after.results,
         cause: {
@@ -296,10 +289,8 @@ export const confirmModelDraft = adminMutation({
       status: insertedCount > 0 ? "confirmed" : "rejected",
       confirmedBy: ctx.authUserId,
     })
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.aiSuggestionConfirmed,
-      actorId: ctx.authUserId,
       payload: {
         suggestionId,
         kind: SUGGESTION_KINDS.modelDraft,
@@ -445,9 +436,7 @@ export const confirmWeightReview = adminMutation({
     }))
     if (appliedCount > 0) {
       const after = await deriveResults(ctx, ctx.orgId)
-      await logBandShifts(ctx, {
-        orgId: ctx.orgId,
-        actorId: ctx.authUserId,
+      await ctx.audit.bandShifts({
         before: before.results,
         after: after.results,
         cause: {
@@ -460,10 +449,8 @@ export const confirmWeightReview = adminMutation({
       status: appliedCount > 0 ? "confirmed" : "rejected",
       confirmedBy: ctx.authUserId,
     })
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.aiSuggestionConfirmed,
-      actorId: ctx.authUserId,
       payload: {
         suggestionId,
         kind: SUGGESTION_KINDS.weightReview,
@@ -611,10 +598,8 @@ export const confirmRoleProfileDraft = orgMutation({
       // source/suggestionId mark this as the applied AI suggestion.
       const changes = buildChanges(role, patch, appliedFields)
       await ctx.db.patch(roleId, patch)
-      await logAudit(ctx, {
-        orgId: ctx.orgId,
+      await ctx.audit.log({
         type: AUDIT_EVENTS.roleUpdated,
-        actorId: ctx.authUserId,
         payload: { roleId, source: "aiSuggestion", suggestionId, changes },
       })
     }
@@ -625,10 +610,8 @@ export const confirmRoleProfileDraft = orgMutation({
     // Field NAMES only on the AI row: the values live on the companion
     // role.updated row above, never duplicated here (one source of truth, and
     // it keeps this row a pure provenance record of WHICH fields were applied).
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.aiSuggestionConfirmed,
-      actorId: ctx.authUserId,
       payload: {
         suggestionId,
         kind: SUGGESTION_KINDS.roleProfile,
@@ -726,10 +709,8 @@ export const confirmStarterImport = orgMutation({
     // The created tree (families -> roles) from insertStarterSet, so the AI row
     // records exactly what landed. The per-row role.created/roleFamily.created
     // rows carry the field-level snapshots; this is the import-level summary.
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.aiSuggestionConfirmed,
-      actorId: ctx.authUserId,
       payload: {
         suggestionId,
         kind: SUGGESTION_KINDS.starterImport,
@@ -780,10 +761,8 @@ export const rejectSuggestion = orgMutation({
     })
     // status before->after plus only the target ids that exist (no null id keys,
     // never the suggestedValue: a dismissed suggestion was never applied).
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.aiSuggestionRejected,
-      actorId: ctx.authUserId,
       payload: {
         suggestionId,
         kind: suggestion.target.kind,

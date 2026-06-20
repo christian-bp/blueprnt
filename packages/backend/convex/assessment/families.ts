@@ -2,7 +2,7 @@ import { v } from "convex/values"
 import type { Id } from "../_generated/dataModel"
 import type { MutationCtx } from "../_generated/server"
 import { clampLocale } from "../evaluationModel/localize"
-import { AUDIT_EVENTS, logAudit } from "../lib/audit"
+import { AUDIT_EVENTS } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 
@@ -48,10 +48,8 @@ export const createRoleFamily = orgMutation({
       orgId: ctx.orgId,
       name,
     })
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.roleFamilyCreated,
-      actorId: ctx.authUserId,
       payload: {
         familyId,
         changes: { name: { from: null, to: name } },
@@ -74,10 +72,8 @@ export const renameRoleFamily = orgMutation({
     if (name === family.name) return null
     await assertUniqueName(ctx, name, args.familyId)
     await ctx.db.patch(args.familyId, { name })
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.roleFamilyRenamed,
-      actorId: ctx.authUserId,
       payload: {
         familyId: args.familyId,
         changes: { name: { from: family.name, to: name } },
@@ -119,10 +115,8 @@ export const removeRoleFamily = orgMutation({
       })
     }
     await ctx.db.delete(familyId)
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.roleFamilyRemoved,
-      actorId: ctx.authUserId,
       payload: {
         familyId,
         // The table renderer reads p.name for this event, so keep it top-level.

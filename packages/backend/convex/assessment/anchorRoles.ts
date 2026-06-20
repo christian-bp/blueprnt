@@ -5,7 +5,6 @@ import {
   AUDIT_EVENTS,
   buildChanges,
   buildCreateChanges,
-  logAudit,
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgQuery } from "../lib/functions"
@@ -96,10 +95,8 @@ export const designateAnchorRole = adminMutation({
         reviewedAt,
       },
     })
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.anchorRoleDesignated,
-      actorId: ctx.authUserId,
       payload: {
         roleId,
         computedBand: result.band,
@@ -175,10 +172,8 @@ export const updateAnchorRole = adminMutation({
       reviewedAt,
     }
     await ctx.db.patch(roleId, { anchorRole: after })
-    await logAudit(ctx, {
-      orgId: ctx.orgId,
+    await ctx.audit.log({
       type: AUDIT_EVENTS.anchorRoleUpdated,
-      actorId: ctx.authUserId,
       payload: {
         roleId,
         computedBand,

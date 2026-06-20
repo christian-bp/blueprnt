@@ -1,3 +1,4 @@
+import type { RoleResult } from "@workspace/core"
 import {
   customMutation,
   customQuery,
@@ -10,6 +11,9 @@ import {
   query,
   type QueryCtx,
 } from "../_generated/server"
+import { logBandShifts } from "../assessment/compute"
+import { logAudit } from "./audit"
+import type { AuditPayloads, BandCause } from "./auditPayloads"
 import { appError, ERROR_CODES } from "./errors"
 
 export type OrganizationRole = "admin" | "editor"
@@ -18,6 +22,35 @@ interface OrgContext {
   orgId: string
   role: OrganizationRole
   authUserId: string
+}
+
+// A ctx-bound audit writer pre-bound to the org-scoped ctx's orgId/actorId, so
+// org/admin call sites stop repeating `orgId: ctx.orgId, actorId: ctx.authUserId`
+// on every audit row. The contents are identical to the free `logAudit`/
+// `logBandShifts`; this is sugar over the same writers.
+interface AuditWriter {
+  log: <E extends keyof AuditPayloads>(entry: {
+    type: E
+    payload: AuditPayloads[E]
+  }) => Promise<void>
+  bandShifts: (entry: {
+    before: RoleResult[]
+    after: RoleResult[]
+    cause: BandCause
+  }) => Promise<void>
+}
+
+// Builds the ctx-bound audit writer for an org-scoped mutation ctx.
+function makeAuditWriter(
+  ctx: MutationCtx,
+  orgId: string,
+  authUserId: string
+): AuditWriter {
+  return {
+    log: (entry) => logAudit(ctx, { orgId, actorId: authUserId, ...entry }),
+    bandShifts: (entry) =>
+      logBandShifts(ctx, { orgId, actorId: authUserId, ...entry }),
+  }
 }
 
 // Resolves identity from the JWT (subject = Better Auth user id) and checks
@@ -84,7 +117,8 @@ export const orgMutation = customMutation(mutation, {
   args: orgArgs,
   input: async (ctx, { orgId }) => {
     const org = await resolveOrgContext(ctx, orgId)
-    return { ctx: org, args: {} }
+    const audit = makeAuditWriter(ctx, org.orgId, org.authUserId)
+    return { ctx: { ...org, audit }, args: {} }
   },
 })
 
@@ -94,7 +128,8 @@ export const adminMutation = customMutation(mutation, {
   input: async (ctx, { orgId }) => {
     const org = await resolveOrgContext(ctx, orgId)
     if (org.role !== "admin") throw appError(ERROR_CODES.adminRequired)
-    return { ctx: org, args: {} }
+    const audit = makeAuditWriter(ctx, org.orgId, org.authUserId)
+    return { ctx: { ...org, audit }, args: {} }
   },
 })
 
