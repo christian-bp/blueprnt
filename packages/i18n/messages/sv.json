@@ -92,8 +92,8 @@
         "capped": "Visar de första {count} träffarna",
         "empty": "Inga händelser matchar din sökning."
       },
-      "loadMore": "Visa fler",
-      "loadingMore": "Laddar...",
+      "previous": "Föregående",
+      "next": "Nästa",
       "detail": {
         "who": "Vem",
         "when": "När",
@@ -768,8 +768,8 @@
           "capped": "Visar de första {count} träffarna",
           "empty": "Inga händelser matchar din sökning."
         },
-        "loadMore": "Visa fler",
-        "loadingMore": "Laddar...",
+        "previous": "Föregående",
+        "next": "Nästa",
         "table": {
           "when": "När",
           "operator": "Operatör",

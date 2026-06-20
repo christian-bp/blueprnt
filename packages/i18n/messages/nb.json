@@ -92,8 +92,8 @@
         "capped": "Viser de første {count} treffene",
         "empty": "Ingen hendelser samsvarer med søket ditt."
       },
-      "loadMore": "Vis flere",
-      "loadingMore": "Laster...",
+      "previous": "Forrige",
+      "next": "Neste",
       "detail": {
         "who": "Hvem",
         "when": "Når",
@@ -768,8 +768,8 @@
           "capped": "Viser de første {count} treffene",
           "empty": "Ingen hendelser samsvarer med søket ditt."
         },
-        "loadMore": "Vis flere",
-        "loadingMore": "Laster...",
+        "previous": "Forrige",
+        "next": "Neste",
         "table": {
           "when": "Når",
           "operator": "Operatør",

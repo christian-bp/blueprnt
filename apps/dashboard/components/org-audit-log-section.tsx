@@ -39,8 +39,10 @@ import {
 import { usePaginatedQuery, useQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
 import { useState } from "react"
+import { AuditPagination } from "@/components/audit/audit-pagination"
 import { ChangeEntryRow, KV_GRID } from "@/components/audit/change-entry-row"
 import { useOrganization } from "@/components/org-context"
+import { useAuditPagination } from "@/hooks/use-audit-pagination"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import {
   aiAuditDetail,
@@ -115,7 +117,7 @@ export function OrgAuditLogSection() {
     role === "admin" && !isSearching
       ? { orgId, category: categoryArg }
       : "skip",
-    { initialNumItems: 50 }
+    { initialNumItems: 25 }
   )
   const searchResult = useQuery(
     api.accounts.audit.searchAuditLog,
@@ -127,6 +129,15 @@ export function OrgAuditLogSection() {
   const rows: AuditRow[] = isSearching
     ? (searchResult?.rows ?? [])
     : browse.results
+
+  const pager = useAuditPagination({
+    rows,
+    pageSize: 25,
+    canLoadMore: !isSearching && browse.status === "CanLoadMore",
+    isLoadingMore: !isSearching && browse.status === "LoadingMore",
+    loadMore: browse.loadMore,
+    resetKey: `${selectedCategory}|${isSearching}|${debouncedSearch}`,
+  })
 
   // Translate an event type to its label, falling back to the raw type when no
   // key exists (a future event added before its string). t.has guards the
@@ -268,18 +279,18 @@ export function OrgAuditLogSection() {
           </EmptyHeader>
         </Empty>
       ) : (
-        <Table>
+        <Table className="table-fixed">
           <TableHeader>
             <TableRow>
-              <TableHead>{t("table.when")}</TableHead>
-              <TableHead>{t("table.who")}</TableHead>
-              <TableHead>{t("table.category")}</TableHead>
-              <TableHead>{t("table.action")}</TableHead>
+              <TableHead className="w-44">{t("table.when")}</TableHead>
+              <TableHead className="w-40">{t("table.who")}</TableHead>
+              <TableHead className="w-32">{t("table.category")}</TableHead>
+              <TableHead className="w-48">{t("table.action")}</TableHead>
               <TableHead>{t("table.details")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rows.map((row) => (
+            {pager.pageRows.map((row) => (
               <TableRow
                 key={row.id}
                 role="button"
@@ -294,13 +305,13 @@ export function OrgAuditLogSection() {
                   }
                 }}
               >
-                <TableCell className="text-muted-foreground">
+                <TableCell className="truncate text-muted-foreground">
                   {format.dateTime(new Date(row.at), {
                     dateStyle: "medium",
                     timeStyle: "short",
                   })}
                 </TableCell>
-                <TableCell className="font-medium">
+                <TableCell className="truncate font-medium">
                   {actorLabel(row.actorId, row.actorName)}
                 </TableCell>
                 <TableCell>
@@ -310,11 +321,11 @@ export function OrgAuditLogSection() {
                     </Badge>
                   ) : null}
                 </TableCell>
-                <TableCell>{actionLabel(row.type)}</TableCell>
-                <TableCell className="text-muted-foreground">
-                  <span className="line-clamp-1">
-                    {detailText(row.type, row.payload, row.names)}
-                  </span>
+                <TableCell className="truncate">
+                  {actionLabel(row.type)}
+                </TableCell>
+                <TableCell className="truncate text-muted-foreground">
+                  {detailText(row.type, row.payload, row.names)}
                 </TableCell>
               </TableRow>
             ))}
@@ -322,19 +333,22 @@ export function OrgAuditLogSection() {
         </Table>
       )}
 
-      {/* Pagination slot: fixed-height so toggling browse/search does not
-          reflow the table. Load more while browsing; a truncation note while
-          searching (search is capped, not paginated). */}
-      <div className="flex h-9 items-center justify-center">
-        {!isSearching && browse.status === "CanLoadMore" ? (
-          <Button variant="outline" onClick={() => browse.loadMore(50)}>
-            {t("loadMore")}
-          </Button>
-        ) : !isSearching && browse.status === "LoadingMore" ? (
-          <Button variant="outline" disabled>
-            {t("loadingMore")}
-          </Button>
-        ) : isSearching && rows.length === 50 ? (
+      {/* Pagination slot: stable container so toggling browse/search does not
+          reflow the table. Previous/Next page control plus a truncation note
+          while searching (search is capped, not paginated). */}
+      <div className="flex flex-col items-center gap-1.5">
+        {rows.length > 0 ? (
+          <AuditPagination
+            page={pager.page}
+            canPrev={pager.canPrev}
+            canNext={pager.canNext}
+            onPrev={pager.goPrev}
+            onNext={pager.goNext}
+            previousLabel={t("previous")}
+            nextLabel={t("next")}
+          />
+        ) : null}
+        {isSearching && rows.length === 50 ? (
           <p className="text-muted-foreground text-sm">
             {t("search.capped", { count: 50 })}
           </p>

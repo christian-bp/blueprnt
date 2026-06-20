@@ -92,8 +92,8 @@
         "capped": "Showing the first {count} matches",
         "empty": "No events match your search."
       },
-      "loadMore": "Load more",
-      "loadingMore": "Loading...",
+      "previous": "Previous",
+      "next": "Next",
       "detail": {
         "who": "Who",
         "when": "When",
@@ -768,8 +768,8 @@
           "capped": "Showing the first {count} matches",
           "empty": "No events match your search."
         },
-        "loadMore": "Load more",
-        "loadingMore": "Loading...",
+        "previous": "Previous",
+        "next": "Next",
         "table": {
           "when": "When",
           "operator": "Operator",

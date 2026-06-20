@@ -92,8 +92,8 @@
         "capped": "Näytetään ensimmäiset {count} osumaa",
         "empty": "Mikään tapahtuma ei vastaa hakuasi."
       },
-      "loadMore": "Näytä lisää",
-      "loadingMore": "Ladataan...",
+      "previous": "Edellinen",
+      "next": "Seuraava",
       "detail": {
         "who": "Kuka",
         "when": "Milloin",
@@ -768,8 +768,8 @@
           "capped": "Näytetään ensimmäiset {count} osumaa",
           "empty": "Mikään tapahtuma ei vastaa hakuasi."
         },
-        "loadMore": "Näytä lisää",
-        "loadingMore": "Ladataan...",
+        "previous": "Edellinen",
+        "next": "Seuraava",
         "table": {
           "when": "Milloin",
           "operator": "Operaattori",

@@ -92,8 +92,8 @@
         "capped": "Viser de første {count} resultater",
         "empty": "Ingen hændelser matcher din søgning."
       },
-      "loadMore": "Vis flere",
-      "loadingMore": "Indlæser...",
+      "previous": "Forrige",
+      "next": "Næste",
       "detail": {
         "who": "Hvem",
         "when": "Hvornår",
@@ -768,8 +768,8 @@
           "capped": "Viser de første {count} resultater",
           "empty": "Ingen hændelser matcher din søgning."
         },
-        "loadMore": "Vis flere",
-        "loadingMore": "Indlæser...",
+        "previous": "Forrige",
+        "next": "Næste",
         "table": {
           "when": "Hvornår",
           "operator": "Operatør",
