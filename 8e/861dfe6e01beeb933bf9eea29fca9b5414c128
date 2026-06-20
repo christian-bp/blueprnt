@@ -1,0 +1,32 @@
+packages/backend/convex/assessment/roles.test.ts
+  s_4d14ac8ce42bf2::t_071b349762c14a 359-407
+packages/backend/convex/shared/tables.ts
+  s_4d14ac8ce42bf2::t_06cfe0a7a0f2a9 6-11
+packages/backend/convex/assessment/starters.ts
+  s_4d14ac8ce42bf2::t_7ee936af2794a8 552
+  s_4d14ac8ce42bf2::t_c82f142fc2cf95 583-587
+  s_4d14ac8ce42bf2::t_11266086ea32ac 545-551
+  s_4d14ac8ce42bf2::t_591e880a8b0617 14
+packages/backend/convex/assessment/starters.test.ts
+  s_4d14ac8ce42bf2::t_384f75b702071d 1282-1368
+packages/backend/convex/assessment/roles.ts
+  s_4d14ac8ce42bf2::t_247bbb4686cb33 415-418
+CLAUDE.md
+  s_4d14ac8ce42bf2::t_84319c2354bd01 42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "8e861dfe6e01beeb933bf9eea29fca9b5414c128",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
