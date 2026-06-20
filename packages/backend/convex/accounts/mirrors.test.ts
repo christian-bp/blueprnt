@@ -12,6 +12,16 @@ import {
   onUserUpdate,
 } from "./mirrors"
 
+// Recursively checks whether an object/array contains a given key anywhere.
+// Used to assert PII (the invitee email) never lands in an audit payload.
+function hasKeyDeep(value: unknown, key: string): boolean {
+  if (value === null || typeof value !== "object") return false
+  if (Array.isArray(value)) return value.some((item) => hasKeyDeep(item, key))
+  const record = value as Record<string, unknown>
+  if (key in record) return true
+  return Object.values(record).some((item) => hasKeyDeep(item, key))
+}
+
 const authUser = {
   _id: "ba_user_1",
   _creationTime: 0,
@@ -88,6 +98,10 @@ describe("user mirror triggers", () => {
         .collect()
       expect(auditRows).toHaveLength(1)
       expect(auditRows[0].actorId).toBe("system")
+      // Intentional id-only marker: changes.orgId goes from null to the org id.
+      expect(auditRows[0].payload).toEqual({
+        changes: { orgId: { from: null, to: "ba_org_1" } },
+      })
     })
   })
 })
@@ -126,9 +140,11 @@ describe("lifecycle audit triggers", () => {
         .collect()
       expect(rows).toHaveLength(1)
       expect(rows[0].actorId).toBe("system")
-      expect(rows[0].payload).toMatchObject({
+      // Id + role only (never name/email); role goes from null to the new role.
+      expect(rows[0].payload).toEqual({
         memberUserId: "ba_user_1",
-        role: "editor",
+        memberId: "ba_member_1",
+        changes: { role: { from: null, to: "editor" } },
       })
     })
   })
@@ -165,8 +181,9 @@ describe("lifecycle audit triggers", () => {
         .collect()
       expect(rows).toHaveLength(1)
       expect(rows[0].actorId).toBe("system")
-      expect(rows[0].payload).toMatchObject({
+      expect(rows[0].payload).toEqual({
         memberUserId: "ba_user_1",
+        memberId: "ba_member_1",
         changes: { role: { from: "editor", to: "admin" } },
       })
     })
@@ -184,7 +201,12 @@ describe("lifecycle audit triggers", () => {
         .collect()
       expect(rows).toHaveLength(1)
       expect(rows[0].actorId).toBe("system")
-      expect(rows[0].payload).toMatchObject({ memberUserId: "ba_user_1" })
+      // Id + role only; the removed role goes from its value to null.
+      expect(rows[0].payload).toEqual({
+        memberUserId: "ba_user_1",
+        memberId: "ba_member_1",
+        changes: { role: { from: "editor", to: null } },
+      })
     })
   })
 
@@ -200,7 +222,36 @@ describe("lifecycle audit triggers", () => {
         .collect()
       expect(rows).toHaveLength(1)
       // IDs only: the invitee email must never land in the per-org log.
-      expect(rows[0].payload).toEqual({ invitationId: "ba_inv_1" })
+      // Carries role/status/expiresAt as a created before/after snapshot.
+      expect(rows[0].payload).toEqual({
+        invitationId: "ba_inv_1",
+        changes: {
+          role: { from: null, to: null },
+          status: { from: null, to: "pending" },
+          expiresAt: { from: null, to: 9999999999999 },
+        },
+      })
+      // PII regression: the invitee email must not appear anywhere in the
+      // payload, at any depth.
+      expect(hasKeyDeep(rows[0].payload, "email")).toBe(false)
+      expect(JSON.stringify(rows[0].payload)).not.toContain("new@acme.se")
+    })
+  })
+
+  it("onInvitationCreate captures a non-null role in the snapshot", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      await onInvitationCreate(ctx, { ...invitation, role: "admin" })
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", "ba_org_1").eq("type", "invitation.created")
+        )
+        .collect()
+      expect(rows[0].payload).toMatchObject({
+        changes: { role: { from: null, to: "admin" } },
+      })
+      expect(hasKeyDeep(rows[0].payload, "email")).toBe(false)
     })
   })
 
@@ -219,6 +270,13 @@ describe("lifecycle audit triggers", () => {
         )
         .collect()
       expect(rows).toHaveLength(1)
+      // status transition captured as before/after; top-level status kept.
+      expect(rows[0].payload).toEqual({
+        invitationId: "ba_inv_1",
+        status: "accepted",
+        changes: { status: { from: "pending", to: "accepted" } },
+      })
+      expect(hasKeyDeep(rows[0].payload, "email")).toBe(false)
     })
   })
 
@@ -237,11 +295,14 @@ describe("lifecycle audit triggers", () => {
         )
         .collect()
       expect(rows).toHaveLength(1)
-      // IDs/codes only: invitationId + status, never the invitee email.
+      // IDs/codes only: invitationId + top-level status + status from/to,
+      // never the invitee email.
       expect(rows[0].payload).toEqual({
         invitationId: "ba_inv_1",
         status: "revoked",
+        changes: { status: { from: "pending", to: "revoked" } },
       })
+      expect(hasKeyDeep(rows[0].payload, "email")).toBe(false)
     })
   })
 

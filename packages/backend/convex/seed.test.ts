@@ -172,10 +172,13 @@ describe("accounts/mirrors.mirrorSeededOrganization", () => {
       expect(added).toHaveLength(1)
       expect(added[0].actorId).toBe("ba_user_seed")
       expect(added[0].actorName).toBe("Founder")
+      // Id + role only; the seed passes the "seeded" sentinel _id, which is not
+      // a real member id, so memberId is omitted. Role goes from null to admin.
       expect(added[0].payload).toMatchObject({
         memberUserId: "ba_user_seed",
-        role: "admin",
+        changes: { role: { from: null, to: "admin" } },
       })
+      expect(added[0].payload).not.toHaveProperty("memberId")
     })
   })
 })
@@ -588,6 +591,13 @@ describe("accounts/mirrors.seedOrganizationSettings", () => {
       expect(completedAudit).toHaveLength(1)
       expect(completedAudit[0].actorId).toBe(founderAuthId)
       expect(completedAudit[0].actorName).toBe("Founder")
+      // Seed-path timestamp hoist regression: the audited `to` is the same
+      // value that was stamped on the row (single Date.now()).
+      const completedPayload = completedAudit[0].payload as {
+        changes: { onboardingCompletedAt: { from: unknown; to: unknown } }
+      }
+      expect(completedPayload.changes.onboardingCompletedAt.from).toBe(null)
+      expect(completedPayload.changes.onboardingCompletedAt.to).toBe(stampedAt)
     })
   })
 

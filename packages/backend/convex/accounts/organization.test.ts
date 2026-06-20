@@ -81,6 +81,7 @@ describe("organization settings", () => {
         country: "SE",
         currency: "SEK",
         language: "sv",
+        employeeCount: 42,
       }
     )
     await t.run(async (ctx) => {
@@ -104,6 +105,59 @@ describe("organization settings", () => {
       expect(audit[0].searchText).toContain("organization.settingsupdated")
       // A changed value (the country code) is searchable.
       expect(audit[0].searchText).toContain("se")
+      // The row was pre-seeded (setup inserts an empty organizations row), so
+      // this is an update, not an upsert-insert.
+      const payload = audit[0].payload as {
+        created: boolean
+        changes: Record<string, { from: unknown; to: unknown }>
+      }
+      expect(payload.created).toBe(false)
+      // employeeCount is captured in the diff (regression for the prior
+      // omission of employeeCount from the buildChanges field list).
+      expect(payload.changes).toMatchObject({
+        country: { from: null, to: "SE" },
+        currency: { from: null, to: "SEK" },
+        language: { from: null, to: "sv" },
+        employeeCount: { from: null, to: 42 },
+      })
+    })
+  })
+
+  it("updateOrganizationSettings marks created on the upsert-insert path", async () => {
+    // No pre-seeded organizations row: the upsert inserts, so created is true.
+    const t = initConvexTest()
+    const { orgId, userId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "admin3@acme.se", name: "Admin Three", role: "admin" }
+    )
+    await t.run(async (ctx) => {
+      await onUserCreate(ctx, {
+        _id: userId,
+        email: "admin3@acme.se",
+        name: "Admin Three",
+      })
+    })
+    const asAdmin = t.withIdentity({ subject: userId })
+    await asAdmin.mutation(
+      api.accounts.organization.updateOrganizationSettings,
+      { orgId, country: "NO", employeeCount: 7 }
+    )
+    await t.run(async (ctx) => {
+      const audit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "organization.settingsUpdated")
+        )
+        .collect()
+      const payload = audit[0].payload as {
+        created: boolean
+        changes: Record<string, { from: unknown; to: unknown }>
+      }
+      expect(payload.created).toBe(true)
+      expect(payload.changes).toMatchObject({
+        country: { from: null, to: "NO" },
+        employeeCount: { from: null, to: 7 },
+      })
     })
   })
 
@@ -138,6 +192,64 @@ describe("organization settings", () => {
         .collect()
       expect(audit).toHaveLength(1)
       expect(audit[0].actorName).toBe("HR Person")
+      const payload = audit[0].payload as {
+        created: boolean
+        criteriaCount: number | null
+        hadModel: boolean
+        changes: { onboardingCompletedAt: { from: unknown; to: unknown } }
+      }
+      // Timestamp hoist regression: the stamped value and the audited `to` are
+      // the same number (not two separate Date.now() calls).
+      expect(payload.changes.onboardingCompletedAt.to).toBe(
+        profile?.onboardingCompletedAt
+      )
+      expect(payload.changes.onboardingCompletedAt.from).toBe(null)
+      // No model in this setup: hadModel false, criteriaCount null.
+      expect(payload.hadModel).toBe(false)
+      expect(payload.criteriaCount).toBe(null)
+      expect(payload.created).toBe(false)
+    })
+  })
+
+  it("completeOnboarding records criteriaCount and hadModel when a model exists", async () => {
+    const { t, orgId, userId } = await setup("admin")
+    await t.run(async (ctx) => {
+      const modelId = await ctx.db.insert("models", {
+        orgId,
+        name: "Standard",
+        bandThresholds: [],
+      })
+      for (let index = 0; index < 5; index++) {
+        await ctx.db.insert("criteria", {
+          orgId,
+          modelId,
+          name: `Criterion ${index + 1}`,
+          description: "",
+          helpText: "",
+          anchors: [],
+          weightPoints: 3,
+          order: index + 1,
+          isCustom: true,
+        })
+      }
+    })
+    const asAdmin = t.withIdentity({ subject: userId })
+    await asAdmin.mutation(api.accounts.organization.completeOnboarding, {
+      orgId,
+    })
+    await t.run(async (ctx) => {
+      const audit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "organization.onboardingCompleted")
+        )
+        .collect()
+      const payload = audit[0].payload as {
+        criteriaCount: number | null
+        hadModel: boolean
+      }
+      expect(payload.hadModel).toBe(true)
+      expect(payload.criteriaCount).toBe(5)
     })
   })
 

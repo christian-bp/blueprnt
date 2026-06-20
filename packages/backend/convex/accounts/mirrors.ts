@@ -210,12 +210,14 @@ export const seedOrganizationSettings = internalMutation({
     const stampCompletion =
       completeOnboarding &&
       (row === null || typeof row.onboardingCompletedAt !== "number")
+    // Hoisted so the patched/inserted value and the audited `to` are identical.
+    const completedAt = Date.now()
     const fields = {
       country,
       currency,
       language,
       industry,
-      ...(stampCompletion ? { onboardingCompletedAt: Date.now() } : {}),
+      ...(stampCompletion ? { onboardingCompletedAt: completedAt } : {}),
     }
     if (row === null) {
       await ctx.db.insert("organizations", { orgId, ...fields })
@@ -241,7 +243,14 @@ export const seedOrganizationSettings = internalMutation({
         orgId,
         type: AUDIT_EVENTS.onboardingCompleted,
         actorId,
-        payload: {},
+        payload: {
+          changes: {
+            onboardingCompletedAt: {
+              from: row?.onboardingCompletedAt ?? null,
+              to: completedAt,
+            },
+          },
+        },
       })
     }
     return null
@@ -289,11 +298,13 @@ export async function onOrganizationCreate(
   if (existing !== null) return
   await ctx.db.insert("organizations", { orgId: doc._id })
   // Audit only on first creation so the row is not duplicated on re-fire.
+  // Intentional id-only marker: the substantive before/after is the following
+  // settingsUpdated row. No founder name/email (Role != Person; PII).
   await logAudit(ctx, {
     orgId: doc._id,
     type: AUDIT_EVENTS.organizationCreated,
     actorId,
-    payload: {},
+    payload: { changes: { orgId: { from: null, to: doc._id } } },
   })
 }
 
@@ -315,7 +326,13 @@ export async function onMemberCreate(
     orgId: doc.organizationId,
     type: AUDIT_EVENTS.memberAdded,
     actorId,
-    payload: { memberUserId: doc.userId, role: doc.role },
+    // Id + role only, NEVER name/email (Role != Person; PII). The seed passes
+    // a sentinel "seeded" _id, which is not a real member id, so it is omitted.
+    payload: {
+      memberUserId: doc.userId,
+      ...(doc._id !== "seeded" ? { memberId: doc._id } : {}),
+      changes: { role: { from: null, to: doc.role } },
+    },
   })
 }
 
@@ -329,8 +346,10 @@ export async function onMemberUpdate(
     orgId: newDoc.organizationId,
     type: AUDIT_EVENTS.memberRoleChanged,
     actorId: "system",
+    // Id + role only, never name/email.
     payload: {
       memberUserId: newDoc.userId,
+      memberId: newDoc._id,
       changes: { role: { from: oldDoc.role, to: newDoc.role } },
     },
   })
@@ -341,7 +360,12 @@ export async function onMemberDelete(ctx: Ctx, doc: AuthMemberDoc) {
     orgId: doc.organizationId,
     type: AUDIT_EVENTS.memberRemoved,
     actorId: "system",
-    payload: { memberUserId: doc.userId },
+    // Id + role only, never name/email. The removed role goes to null.
+    payload: {
+      memberUserId: doc.userId,
+      ...(doc._id !== "seeded" ? { memberId: doc._id } : {}),
+      changes: { role: { from: doc.role, to: null } },
+    },
   })
 }
 
@@ -351,8 +375,16 @@ export async function onInvitationCreate(ctx: Ctx, doc: AuthInvitationDoc) {
     type: AUDIT_EVENTS.invitationCreated,
     actorId: doc.inviterId,
     // IDs only, never the invitee email: keeps PII out of the per-org log so
-    // erasure stays complete (see auditLog table comment).
-    payload: { invitationId: doc._id },
+    // erasure stays complete (see auditLog table comment). Captures the
+    // invitation's created state (role/status/expiry) as before/after.
+    payload: {
+      invitationId: doc._id,
+      changes: {
+        role: { from: null, to: doc.role ?? null },
+        status: { from: null, to: doc.status },
+        expiresAt: { from: null, to: doc.expiresAt },
+      },
+    },
   })
 }
 
@@ -373,8 +405,13 @@ export async function onInvitationUpdate(
     orgId: newDoc.organizationId,
     type,
     actorId: newDoc.inviterId,
-    // IDs/codes only, never the invitee email; status preserves the
-    // declined-vs-canceled distinction for future reporting.
-    payload: { invitationId: newDoc._id, status: newDoc.status },
+    // IDs/codes only, never the invitee email; top-level status preserves the
+    // declined-vs-canceled distinction for future reporting, and changes
+    // records the status transition as before/after.
+    payload: {
+      invitationId: newDoc._id,
+      status: newDoc.status,
+      changes: { status: { from: oldDoc.status, to: newDoc.status } },
+    },
   })
 }

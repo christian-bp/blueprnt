@@ -60,11 +60,16 @@ export const updateOrganizationSettings = adminMutation({
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.organizationSettingsUpdated,
       actorId: ctx.authUserId,
+      // `settings` is read before the write, so it is the correct before-state.
+      // `created` flags the upsert-insert path; employeeCount is included so a
+      // changed headcount is captured in the diff.
       payload: {
+        created: settings === null,
         changes: buildChanges(settings ?? {}, args, [
           "country",
           "currency",
           "language",
+          "employeeCount",
           "industry",
         ]),
       },
@@ -89,8 +94,10 @@ export const completeOnboarding = adminMutation({
       .query("models")
       .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
       .unique()
+    // Lifted to outer scope so the audit payload can report the criteria count.
+    let count: number | null = null
     if (model !== null) {
-      const count = (
+      count = (
         await ctx.db
           .query("criteria")
           .withIndex("by_model", (q) => q.eq("modelId", model._id))
@@ -102,20 +109,34 @@ export const completeOnboarding = adminMutation({
       .query("organizations")
       .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
       .unique()
+    // Hoisted so the stamped value and the audited `to` are identical.
+    const completedAt = Date.now()
     if (settings === null) {
       await ctx.db.insert("organizations", {
         orgId: ctx.orgId,
-        onboardingCompletedAt: Date.now(),
+        onboardingCompletedAt: completedAt,
       })
     } else {
       if (typeof settings.onboardingCompletedAt === "number") return null
-      await ctx.db.patch(settings._id, { onboardingCompletedAt: Date.now() })
+      await ctx.db.patch(settings._id, { onboardingCompletedAt: completedAt })
     }
     await logAudit(ctx, {
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.onboardingCompleted,
       actorId: ctx.authUserId,
-      payload: {},
+      // The early-return guard means a re-stamp never reaches here, so `from` is
+      // structurally null: this is a one-time completion stamp, not an edit.
+      payload: {
+        created: settings === null,
+        criteriaCount: count ?? null,
+        hadModel: model !== null,
+        changes: {
+          onboardingCompletedAt: {
+            from: settings?.onboardingCompletedAt ?? null,
+            to: completedAt,
+          },
+        },
+      },
     })
     return null
   },
