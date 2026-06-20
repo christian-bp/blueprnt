@@ -30,6 +30,86 @@ export const AUDIT_EVENTS = {
 
 export type AuditEvent = (typeof AUDIT_EVENTS)[keyof typeof AUDIT_EVENTS]
 
+// Audit categories: the part of the app an action touches, for filtering the log.
+export const AUDIT_CATEGORIES = [
+  "model",
+  "role",
+  "organization",
+  "member",
+  "ai",
+] as const
+export type AuditCategory = (typeof AUDIT_CATEGORIES)[number]
+
+// Maps an event type to its category by prefix. Unknown types fall back to "role"
+// only if role-ish; otherwise return undefined so they are simply uncategorized.
+export function categoryForEvent(type: string): AuditCategory | undefined {
+  if (type.startsWith("model.")) return "model"
+  if (
+    type.startsWith("role.") ||
+    type.startsWith("roleFamily.") ||
+    type.startsWith("rating.") ||
+    type.startsWith("band.") ||
+    type.startsWith("anchorRole.")
+  )
+    return "role"
+  if (type.startsWith("organization.")) return "organization"
+  if (type.startsWith("member.") || type.startsWith("invitation."))
+    return "member"
+  if (type.startsWith("ai.")) return "ai"
+  return undefined
+}
+
+// Collects scalar string/number leaves from an audit payload for the search text.
+// Recurses one level into the `changes` object's { from, to } values (those carry
+// the actual changed values, e.g. country codes), but otherwise stays shallow so
+// the result is bounded. Booleans, nulls, ids-as-objects, and deeper nesting are
+// ignored on purpose.
+function collectPayloadLeaves(payload: Record<string, unknown>): string[] {
+  const leaves: string[] = []
+  const pushScalar = (value: unknown) => {
+    if (typeof value === "string") leaves.push(value)
+    else if (typeof value === "number") leaves.push(String(value))
+  }
+  for (const [key, value] of Object.entries(payload)) {
+    if (
+      key === "changes" &&
+      value !== null &&
+      typeof value === "object" &&
+      !Array.isArray(value)
+    ) {
+      for (const change of Object.values(value as Record<string, unknown>)) {
+        if (
+          change !== null &&
+          typeof change === "object" &&
+          !Array.isArray(change)
+        ) {
+          const { from, to } = change as { from?: unknown; to?: unknown }
+          pushScalar(from)
+          pushScalar(to)
+        }
+      }
+      continue
+    }
+    pushScalar(value)
+  }
+  return leaves
+}
+
+// Builds the denormalized, lowercased search text for an audit row from the bits
+// available at write time: the resolved actorName, the event type, and the
+// scalar leaves of the payload (including nested changes from/to values). Role
+// titles and other names are NOT available here, only ids; that is an accepted
+// limitation. Pure and bounded so it is directly unit-testable.
+export function buildSearchText(
+  actorName: string,
+  type: string,
+  payload: Record<string, unknown>
+): string {
+  return [actorName, type, ...collectPayloadLeaves(payload)]
+    .join(" ")
+    .toLowerCase()
+}
+
 // The ADMIN audit log's event vocabulary. Deliberately separate from
 // AUDIT_EVENTS (the per-org log) so the two trails are never conflated. These
 // values only ever go to platformAuditLog via logPlatformAudit.
@@ -97,6 +177,8 @@ export async function logAudit(
     actorId: entry.actorId,
     actorName,
     payload: entry.payload,
+    category: categoryForEvent(entry.type),
+    searchText: buildSearchText(actorName, entry.type, entry.payload),
   })
 }
 

@@ -7,16 +7,30 @@ import { v } from "convex/values"
 // and codes only, never personal data (a name or email), so erasure leaves no
 // PII in the trail and the rows can be kept under their legitimate-interest
 // basis. Anonymizing actorName then completes erasure for this table.
+// category and searchText are derived in logAudit from the event type and
+// payload: category is the action's app area (model/role/...) for filtering;
+// searchText is denormalized lowercase text (actor + action + payload values)
+// for full-text search. by_org_category supports category-filtered, time-ordered
+// pagination; the search_text search index backs full-text search filterable by
+// org and category. Both fields are optional so a schema push against
+// pre-existing rows does not fail; logAudit always sets them going forward.
 export const auditLog = defineTable({
   orgId: v.string(),
   type: v.string(),
   actorId: v.string(),
   actorName: v.string(),
   payload: v.any(),
+  category: v.optional(v.string()),
+  searchText: v.optional(v.string()),
 })
   .index("by_org", ["orgId"])
   .index("by_org_type", ["orgId", "type"])
+  .index("by_org_category", ["orgId", "category"])
   .index("by_actor", ["actorId"])
+  .searchIndex("search_text", {
+    searchField: "searchText",
+    filterFields: ["orgId", "category"],
+  })
 
 // The ADMIN audit log: the complete, authoritative record of every platform
 // (admin page) action. Deliberately SEPARATE from the per-org auditLog above

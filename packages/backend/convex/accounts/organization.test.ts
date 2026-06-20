@@ -97,6 +97,13 @@ describe("organization settings", () => {
         .collect()
       expect(audit).toHaveLength(1)
       expect(audit[0].actorName).toBe("HR Person")
+      // logAudit derives the category from the event prefix and a lowercased
+      // searchText from the actor, type, and the changed payload values.
+      expect(audit[0].category).toBe("organization")
+      expect(audit[0].searchText).toContain("hr person")
+      expect(audit[0].searchText).toContain("organization.settingsupdated")
+      // A changed value (the country code) is searchable.
+      expect(audit[0].searchText).toContain("se")
     })
   })
 
