@@ -322,7 +322,7 @@ describe("archiveRole", () => {
         roleId,
         changes: { band: { from: 1, to: null } },
         // The archive band.shift threads the triggering cause.
-        cause: { event: "role.updated", roleId },
+        cause: { event: "role.archived", roleId },
       })
 
       // role.archived snapshots the identity fields so the archived entity is

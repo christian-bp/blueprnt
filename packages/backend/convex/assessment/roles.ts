@@ -401,7 +401,7 @@ export const archiveRole = adminMutation({
       actorId: ctx.authUserId,
       before: before.results,
       after: after.results,
-      cause: { event: AUDIT_EVENTS.roleUpdated, roleId },
+      cause: { event: AUDIT_EVENTS.roleArchived, roleId },
     })
     if (retiredAnchor !== undefined) {
       await logAudit(ctx, {
