@@ -1,0 +1,40 @@
+apps/dashboard/components/org-audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_b760344b2ef42b 139-145
+  s_4d14ac8ce42bf2::t_35b0323e6e882a 316
+  s_4d14ac8ce42bf2::t_eeaf9911fb22dc 118-125
+packages/i18n/messages/fi.json
+  s_4d14ac8ce42bf2::t_81c0379b0d7cbf 98-99,780-781
+packages/i18n/messages/nb.json
+  s_4d14ac8ce42bf2::t_81c0379b0d7cbf 98-99,780-781
+apps/dashboard/components/admin/audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_c77fa59ca9412f 154-160
+  s_4d14ac8ce42bf2::t_8808e869316d73 287
+  s_4d14ac8ce42bf2::t_62780c04281b1e 133-140
+apps/dashboard/components/date-range-picker.tsx
+  s_4d14ac8ce42bf2::t_2f2bfc21e547bd 15-17
+  s_4d14ac8ce42bf2::t_ab48e747e3ac17 29,36
+  s_4d14ac8ce42bf2::t_14a6903253392a 22-23
+  s_4d14ac8ce42bf2::t_e1c46cd32ebb37 68-88
+packages/i18n/messages/da.json
+  s_4d14ac8ce42bf2::t_81c0379b0d7cbf 98-99,780-781
+packages/i18n/messages/en.json
+  s_4d14ac8ce42bf2::t_81c0379b0d7cbf 98-99,780-781
+packages/i18n/messages/sv.json
+  s_4d14ac8ce42bf2::t_81c0379b0d7cbf 98-99,780-781
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "181e3a98066424abc26531466e74d4d9870218ff",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
