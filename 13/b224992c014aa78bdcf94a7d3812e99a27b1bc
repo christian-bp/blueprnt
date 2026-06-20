@@ -1,0 +1,69 @@
+packages/backend/convex/accounts/organization.ts
+  s_4d14ac8ce42bf2::t_c6cf53e7b3bd80 63-70
+  s_4d14ac8ce42bf2::t_cc3e398eedae7b 4
+packages/i18n/messages/en.json
+  s_4d14ac8ce42bf2::t_b3ad5d3c43dd18 96-110
+apps/dashboard/components/org-audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_95874c4fdc05cd 120-133
+packages/backend/convex/assessment/families.ts
+  s_4d14ac8ce42bf2::t_77aad933030214 78-81
+apps/dashboard/components/admin/audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_2275dc97258625 20
+  s_4d14ac8ce42bf2::t_c7565cf83dfe4e 138
+  s_4d14ac8ce42bf2::t_1d818fb384b830 49,53-77
+packages/i18n/messages/sv.json
+  s_4d14ac8ce42bf2::t_26c227a79adfe1 96-110
+packages/i18n/messages/da.json
+  s_4d14ac8ce42bf2::t_57aad9f94f72e6 96-110
+packages/backend/convex/assessment/families.test.ts
+  s_4d14ac8ce42bf2::t_26b08ab7b0018b 126-129
+apps/dashboard/lib/audit-detail.ts
+  s_4d14ac8ce42bf2::t_a9fa00046e4082 1-29,36-37,44,53-58,72-82,88-90,94
+packages/i18n/messages/fi.json
+  s_4d14ac8ce42bf2::t_2d4ff72a629930 96-110
+packages/backend/convex/accounts/mirrors.test.ts
+  s_4d14ac8ce42bf2::t_2678560726e87b 170
+packages/backend/convex/lib/audit.ts
+  s_4d14ac8ce42bf2::t_4fe5fa1c88579b 51-68
+packages/backend/convex/platform/admin.ts
+  s_4d14ac8ce42bf2::t_b75c13b7246274 419-429
+  s_4d14ac8ce42bf2::t_acc3973f8c975a 6-10
+packages/backend/convex/assessment/roles.test.ts
+  s_4d14ac8ce42bf2::t_f94b47e6c99a95 369
+  s_4d14ac8ce42bf2::t_b13bb59f84b2b4 228
+  s_4d14ac8ce42bf2::t_ee7fe1ea1ca0e8 220,223-227,229
+packages/backend/convex/platform/admin.test.ts
+  s_4d14ac8ce42bf2::t_d3e3666187d6c1 372-377
+  s_4d14ac8ce42bf2::t_866bdd5ee5dbaa 417-419
+packages/backend/convex/lib/audit.test.ts
+  s_4d14ac8ce42bf2::t_3638721ea7602e 2
+  s_4d14ac8ce42bf2::t_7a08f7243ab83b 29-67
+packages/backend/convex/accounts/mirrors.ts
+  s_4d14ac8ce42bf2::t_4a37195f633f50 5
+  s_4d14ac8ce42bf2::t_6fed1be38d91df 230-236
+  s_4d14ac8ce42bf2::t_bb1c93495b0521 334
+packages/backend/convex/assessment/roles.ts
+  s_4d14ac8ce42bf2::t_9550f6bb4ab5b7 6
+  s_4d14ac8ce42bf2::t_68a913869414c6 334-337
+packages/i18n/messages/nb.json
+  s_4d14ac8ce42bf2::t_74142698189968 96-110
+apps/dashboard/lib/audit-detail.test.ts
+  s_4d14ac8ce42bf2::t_b99dab198b341c 116-119
+  s_4d14ac8ce42bf2::t_5068fafca7797f 2,10-48,62-80,83-90,111-115,120-126,139,144-147,149-150,152,167,171-176,178-179,181
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "13b224992c014aa78bdcf94a7d3812e99a27b1bc",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
