@@ -510,11 +510,11 @@ function AuditDetailSheet({
 
         {hasGroups ? (
           <div className="flex flex-col gap-5">
-            {/* Top-level field changes, same key/value grid as the meta. */}
+            {/* Top-level field changes, as a bordered record. */}
             {entries.length > 0 ? (
               <section className="space-y-2">
                 <h3 className="font-medium text-sm">{sectionHeading}</h3>
-                <dl className={KV_GRID}>
+                <ul className="divide-y divide-border overflow-hidden rounded-lg border">
                   {entries.map((entry) => (
                     <ChangeEntryRow
                       key={entry.field}
@@ -527,11 +527,11 @@ function AuditDetailSheet({
                       }
                     />
                   ))}
-                </dl>
+                </ul>
               </section>
             ) : null}
 
-            {/* Bulk group: a titled key/value record per item. */}
+            {/* Bulk group: one bordered record per item. */}
             {items && items.items.length > 0 ? (
               <section className="space-y-3">
                 <h3 className="font-medium text-sm">
@@ -544,7 +544,7 @@ function AuditDetailSheet({
                         {item.title || t("detail.unnamedItem")}
                       </div>
                       {item.entries.length > 0 ? (
-                        <dl className={KV_GRID}>
+                        <ul className="divide-y divide-border overflow-hidden rounded-lg border">
                           {orderEntries(item.entries).map((entry) => (
                             <ChangeEntryRow
                               key={entry.field}
@@ -552,7 +552,7 @@ function AuditDetailSheet({
                               t={t}
                             />
                           ))}
-                        </dl>
+                        </ul>
                       ) : null}
                     </li>
                   ))}
@@ -696,9 +696,9 @@ function ChangeEntryRow({
   annotateCleared?: boolean
 }) {
   return (
-    <>
-      <dt className="text-muted-foreground">{entry.label}</dt>
-      <dd className="min-w-0">
+    <li className="px-3 py-2.5 text-sm">
+      <div className="text-muted-foreground text-xs">{entry.label}</div>
+      <div className="mt-0.5">
         {entry.isComplex ? (
           <pre className="overflow-x-auto rounded bg-muted p-2 font-mono text-xs">
             {entry.isSet ? entry.to : `${entry.from}\n→ ${entry.to}`}
@@ -720,12 +720,12 @@ function ChangeEntryRow({
             )}
           </span>
         )}
-        {annotateCleared ? (
-          <div className="mt-1 text-muted-foreground text-xs">
-            {t("detail.clearedOnRename")}
-          </div>
-        ) : null}
-      </dd>
-    </>
+      </div>
+      {annotateCleared ? (
+        <div className="mt-1 text-muted-foreground text-xs">
+          {t("detail.clearedOnRename")}
+        </div>
+      ) : null}
+    </li>
   )
 }
