@@ -412,6 +412,10 @@ export const archiveRole = adminMutation({
           roleId,
           viaArchive: true,
           expectedBand: role.anchorRole?.expectedBand,
+          // The live computed band of this role just before it leaves the
+          // results set, sourced from the pre-archive derive (`before`).
+          computedBand:
+            before.results.find((r) => r.roleId === roleId)?.band ?? null,
           changes: buildChanges(role.anchorRole ?? {}, retiredAnchor, [
             "status",
             "reviewedAt",

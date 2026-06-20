@@ -11,6 +11,7 @@ import {
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
+import { deriveResults } from "./compute"
 import { clampIndustry, starterContent } from "./industryStarters"
 
 // One created family with its created roles, returned by insertStarterSet so a
@@ -541,6 +542,14 @@ export const reconcileStarterSet = orgMutation({
     // 5. Removed roles: any existing non-archived role not kept by the payload
     // is archived (never hard-deleted). No band-shift wrap: reconcile never
     // changes ratings or the model, and an archived role simply leaves results.
+    // A retired anchor's audit row captures the role's live computed band just
+    // before it leaves the results set. Derive ONCE here, before any patch in
+    // the loop (so every band is pre-archive), and only when something will
+    // actually be archived (cheap guard: skip the derive on a no-op reconcile).
+    const willArchive = activeRoles.some(
+      (role) => !keptRoleIds.has(role._id as string)
+    )
+    const reconcileBefore = willArchive ? await deriveResults(ctx, orgId) : null
     for (const role of activeRoles) {
       if (keptRoleIds.has(role._id as string)) continue
       // Hoist the archive timestamp so the logged archivedAt `to` is the exact
@@ -571,6 +580,11 @@ export const reconcileStarterSet = orgMutation({
             viaReconcile: true,
             batchId,
             expectedBand: role.anchorRole.expectedBand,
+            // The live computed band of this role just before it leaves the
+            // results set, sourced from the single pre-loop derive.
+            computedBand:
+              reconcileBefore?.results.find((r) => r.roleId === role._id)
+                ?.band ?? null,
             changes: buildChanges(role.anchorRole, retiredAnchor, [
               "status",
               "reviewedAt",

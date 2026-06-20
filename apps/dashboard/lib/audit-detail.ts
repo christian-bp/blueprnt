@@ -320,7 +320,6 @@ export function formatAuditDetail(
   switch (type) {
     case "role.created":
     case "role.archived":
-    case "role.statusChange":
     case "rating.change":
     case "anchorRole.designated":
     case "anchorRole.updated":

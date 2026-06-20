@@ -356,6 +356,55 @@ describe("archiveRole", () => {
     const list = await asAdmin.query(api.assessment.roles.listRoles, { orgId })
     expect(list).toHaveLength(0)
   })
+
+  it("captures computedBand on the via-archive anchorRole.updated row", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
+    const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Anchor Developer",
+      function: "Engineering",
+      team: "Core",
+      trackKey: track.key,
+      purpose: "p",
+      responsibilities: "r",
+    })
+    // All ratings 5, so the computed band is the top band (1).
+    await rateAll(t, orgId, roleId as string, model.criteria, 5)
+    await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
+      orgId,
+      roleId,
+      expectedBand: 1,
+      motivation: "Reference role for engineering.",
+    })
+
+    await asAdmin.mutation(api.assessment.roles.archiveRole, { orgId, roleId })
+
+    await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "anchorRole.updated")
+        )
+        .collect()
+      const viaArchive = rows.find(
+        (row) => (row.payload as { viaArchive?: boolean }).viaArchive === true
+      )
+      expect(viaArchive).toBeDefined()
+      const payload = viaArchive?.payload as {
+        roleId?: string
+        viaArchive?: boolean
+        computedBand?: number | null
+        changes?: Record<string, { from: unknown; to: unknown }>
+      }
+      expect(payload.roleId).toBe(roleId)
+      // The live pre-archive band (top band, all ratings 5), captured before
+      // the role leaves the results set.
+      expect(payload.computedBand).toBe(1)
+      // The retire diff is still recorded alongside the new field.
+      expect(payload.changes?.status).toMatchObject({ to: "replaced" })
+    })
+  })
 })
 
 describe("role family membership", () => {

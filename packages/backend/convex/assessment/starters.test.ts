@@ -1279,6 +1279,93 @@ describe("reconcileStarterSet audit before/after", () => {
     expect(payload.changes.archivedAt?.to).toBe(storedArchivedAt)
   })
 
+  it("captures computedBand on the via-reconcile anchorRole.updated row", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedTemplateOrganization(t)
+    await asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
+      orgId,
+      families: [
+        {
+          name: "Engineering",
+          roles: [
+            { title: "Keeper", trackKey: "IC" },
+            { title: "Anchor", trackKey: "IC" },
+          ],
+        },
+      ],
+    })
+    const family = (
+      await asAdmin.query(api.assessment.families.listRoleFamilies, { orgId })
+    )[0]
+    const roles = await asAdmin.query(api.assessment.roles.listRoles, { orgId })
+    const keeper = roles.find((r) => r.title === "Keeper")
+    const anchor = roles.find((r) => r.title === "Anchor")
+    if (family === undefined || keeper === undefined || anchor === undefined) {
+      throw new Error("seed")
+    }
+
+    // Fully rate the soon-archived role (all 5 -> top band) so it has a
+    // complete assessment and can be designated as a calibration anchor.
+    await t.run(async (ctx) => {
+      const model = await ctx.db
+        .query("models")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (model === null) throw new Error("model")
+      const criteria = await ctx.db
+        .query("criteria")
+        .withIndex("by_model", (q) => q.eq("modelId", model._id))
+        .collect()
+      const roleDocId = ctx.db.normalizeId("roles", anchor.roleId)
+      if (roleDocId === null) throw new Error("bad id")
+      for (const criterion of criteria) {
+        await ctx.db.insert("ratings", {
+          orgId,
+          roleId: roleDocId,
+          criterionId: criterion._id,
+          value: 5,
+        })
+      }
+    })
+    await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
+      orgId,
+      roleId: anchor.roleId,
+      expectedBand: 1,
+      motivation: "Reference role for engineering.",
+    })
+
+    // Drop the anchored role by omission: reconcile retires its anchor.
+    await asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
+      orgId,
+      families: [
+        {
+          familyId: family.familyId,
+          name: "Engineering",
+          roles: [{ roleId: keeper.roleId, title: "Keeper", trackKey: "IC" }],
+        },
+      ],
+    })
+
+    const rows = await auditOfType(t, orgId, "anchorRole.updated")
+    const viaReconcile = rows.find(
+      (row) => (row.payload as { viaReconcile?: boolean }).viaReconcile === true
+    )
+    expect(viaReconcile).toBeDefined()
+    const payload = viaReconcile?.payload as {
+      roleId: string
+      viaReconcile: boolean
+      computedBand: number | null
+      changes: Changes
+    }
+    expect(payload.roleId).toBe(anchor.roleId)
+    expect(payload.viaReconcile).toBe(true)
+    // The live pre-archive band (top band, all ratings 5), captured before
+    // the role leaves the results set, sourced from the single pre-loop derive.
+    expect(payload.computedBand).toBe(1)
+    // The retire diff is still recorded alongside the new field.
+    expect(payload.changes.status).toMatchObject({ to: "replaced" })
+  })
+
   it("records a removed family's cleared roles as items with familyId from/to", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedTemplateOrganization(t)

@@ -3,10 +3,12 @@ import { v } from "convex/values"
 
 // Append-only. actorName is snapshotted at write time so audit rows stay
 // truthful if a user is later renamed or deleted. by_actor lets erasure find
-// and anonymize a user's authored rows without a full scan. Payloads carry IDs
-// and codes only, never personal data (a name or email), so erasure leaves no
-// PII in the trail and the rows can be kept under their legitimate-interest
-// basis. Anonymizing actorName then completes erasure for this table.
+// and anonymize a user's authored rows without a full scan. Payloads carry IDs,
+// codes, and role/org/model domain content (including role-level free text such
+// as motivation, purpose, and responsibilities), never person identity, salary,
+// performance, or contact data, so erasure leaves no person PII in the trail and
+// the rows can be kept under their legitimate-interest basis. Anonymizing
+// actorName then completes erasure for this table.
 // category and searchText are derived in logAudit from the event type and
 // payload: category is the action's app area (model/role/...) for filtering;
 // searchText is denormalized lowercase text (actor + action + payload values)
