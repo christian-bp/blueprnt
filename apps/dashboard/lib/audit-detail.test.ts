@@ -24,6 +24,15 @@ describe("formatChanges", () => {
     ).toBe("Country: se")
   })
 
+  it("treats an empty/blank from as a set (no leading arrow)", () => {
+    expect(
+      formatChanges(
+        { responsibilities: { from: "", to: "Lead the team" } },
+        fieldLabel
+      )
+    ).toBe("Responsibilities: Lead the team")
+  })
+
   it("joins multiple entries with '; '", () => {
     expect(
       formatChanges(

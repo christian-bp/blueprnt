@@ -1,7 +1,7 @@
 // Renders a structured before->after `changes` object as plain text. Each entry
 // is "<fieldLabel>: <from> -> <to>" (a real right-arrow glyph), or just
-// "<fieldLabel>: <to>" when `from` is null/undefined (a set, not a change).
-// Entries are joined with "; ".
+// "<fieldLabel>: <to>" when `from` is empty (null/undefined/blank), which reads
+// as a first-time set rather than a change. Entries are joined with "; ".
 export function formatChanges(
   changes: Record<string, { from: unknown; to: unknown }>,
   fieldLabel: (field: string) => string
@@ -9,10 +9,11 @@ export function formatChanges(
   return Object.entries(changes)
     .map(([field, { from, to }]) => {
       const label = fieldLabel(field)
+      const fromText = from == null ? "" : String(from)
       const toText = to == null ? "" : String(to)
-      return from == null
+      return fromText.trim() === ""
         ? `${label}: ${toText}`
-        : `${label}: ${String(from)} → ${toText}`
+        : `${label}: ${fromText} → ${toText}`
     })
     .join("; ")
 }
