@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
-import { useQuery } from "convex/react"
+import { usePaginatedQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
 import { useOrganization } from "@/components/org-context"
 import { aiAuditDetail, formatAuditDetail } from "@/lib/audit-detail"
@@ -38,9 +38,12 @@ export function OrgAuditLogSection() {
   const { orgId, role } = useOrganization()
   // Editors never call the query: the adminQuery would reject them. The cosmetic
   // guard keeps the page graceful (the sidebar item is hidden for them anyway).
-  const data = useQuery(
+  // Unit 3 replaces this with the full paginated browse + search UI; for now the
+  // first page is rendered so the section keeps working against the new query.
+  const { results, status } = usePaginatedQuery(
     api.accounts.audit.listAuditLog,
-    role === "admin" ? { orgId } : "skip"
+    role === "admin" ? { orgId } : "skip",
+    { initialNumItems: 50 }
   )
 
   // Translate an event type to its label, falling back to the raw type when no
@@ -77,12 +80,18 @@ export function OrgAuditLogSection() {
     )
   }
 
-  if (data === undefined) return null
-  const { rows, names } = data
+  if (status === "LoadingFirstPage") return null
+  const rows = results
 
   // The Details cell: AI suggestion events render from their own payload
   // (counts), everything else through the shared structured-change formatter.
-  function detailText(type: string, payload: unknown): string {
+  // names is now per row (the paginated query enriches each row with only the
+  // ids it references).
+  function detailText(
+    type: string,
+    payload: unknown,
+    names: Record<string, string>
+  ): string {
     if (type === "ai.suggestionConfirmed" || type === "ai.suggestionRejected") {
       // aiAuditDetail builds key paths at runtime (ai.<kind>); widen t to a
       // plain (key, params) signature so the runtime keys are accepted.
@@ -143,7 +152,7 @@ export function OrgAuditLogSection() {
                 </TableCell>
                 <TableCell>{actionLabel(row.type)}</TableCell>
                 <TableCell className="text-muted-foreground">
-                  {detailText(row.type, row.payload)}
+                  {detailText(row.type, row.payload, row.names)}
                 </TableCell>
               </TableRow>
             ))}
