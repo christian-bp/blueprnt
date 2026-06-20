@@ -1,0 +1,39 @@
+packages/i18n/messages/nb.json
+  s_4d14ac8ce42bf2::t_82ecaba41a2826 756-770,774,779-791
+packages/i18n/messages/fi.json
+  s_4d14ac8ce42bf2::t_7fd742e7c1b6e8 756-770,774,779-791
+apps/dashboard/components/audit/change-entry-row.tsx
+  s_4d14ac8ce42bf2::t_47113f0e0fefe2 1-56
+packages/i18n/messages/sv.json
+  s_4d14ac8ce42bf2::t_3258e08d9091cc 756-770,774,779-791
+apps/dashboard/components/admin/audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_d685eb8539744b 367,369,371
+  s_4d14ac8ce42bf2::t_6458e6f929d362 3-4,6-7,14-30,39,41-72,87,101-102,105-121,124,127-130,132-134,137,152-176,184-224,228-230,239,247-260,270-276,282,289-328,332-366,368,370,372-440,444-455,459-474
+  s_4d14ac8ce42bf2::t_92508ee24f5a96 441-443,456-458
+apps/dashboard/components/org-audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_5847a0a43ad8c5 518-519,523-524
+  s_4d14ac8ce42bf2::t_560d8e92efcf35 550
+  s_4d14ac8ce42bf2::t_0628658c724609 42
+packages/i18n/messages/da.json
+  s_4d14ac8ce42bf2::t_5453e6b2971de0 756-770,774,779-791
+packages/i18n/messages/en.json
+  s_4d14ac8ce42bf2::t_24bb5941d90e4a 756-770,774,779-791
+docs/superpowers/specs/2026-06-20-admin-audit-log-parity.md
+  s_4d14ac8ce42bf2::t_ca7ffc293284b3 1-62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "b0000fd104ffd92d546f7e91ab41926d7858ca0b",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
