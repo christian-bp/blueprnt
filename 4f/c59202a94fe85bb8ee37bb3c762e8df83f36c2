@@ -1,0 +1,43 @@
+apps/dashboard/lib/audit-detail.ts
+  s_4d14ac8ce42bf2::t_338f14fcd5d325 31-69
+apps/dashboard/components/org-audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_6b89bef8da501c 83-86,92-107
+  s_4d14ac8ce42bf2::t_c0fadea8edceab 87-91
+  s_4d14ac8ce42bf2::t_ad5fc12d919d2b 21
+  s_4d14ac8ce42bf2::t_3d206d21030e98 146
+packages/backend/convex/ai/suggest.test.ts
+  s_4d14ac8ce42bf2::t_a620017b6f3848 745-746,749-754
+packages/i18n/messages/nb.json
+  s_4d14ac8ce42bf2::t_f8e6d0534cd0a5 136-147
+packages/i18n/messages/da.json
+  s_4d14ac8ce42bf2::t_2465682a5f2d49 136-147
+packages/i18n/messages/fi.json
+  s_4d14ac8ce42bf2::t_e7e7ada982eb4a 136-147
+packages/i18n/messages/en.json
+  s_4d14ac8ce42bf2::t_5a1d6bd633d4ca 136-147
+packages/backend/convex/ai/suggest.ts
+  s_4d14ac8ce42bf2::t_db1862097bbcda 486-488,494
+  s_4d14ac8ce42bf2::t_527199917c210c 18
+packages/i18n/messages/sv.json
+  s_4d14ac8ce42bf2::t_6f251b01477255 136-147
+apps/dashboard/lib/audit-detail.test.ts
+  s_4d14ac8ce42bf2::t_a2f505bd0a26a5 204-272,274-288
+  s_4d14ac8ce42bf2::t_ee0db1f13e12ab 2
+  s_4d14ac8ce42bf2::t_2071b0aa85986c 273
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "4fc59202a94fe85bb8ee37bb3c762e8df83f36c2",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
