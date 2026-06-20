@@ -13,6 +13,13 @@ import {
 } from "@workspace/ui/components/empty"
 import { Input } from "@workspace/ui/components/input"
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
+import {
   Sheet,
   SheetClose,
   SheetContent,
@@ -29,10 +36,6 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@workspace/ui/components/toggle-group"
 import { usePaginatedQuery, useQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
 import { useState } from "react"
@@ -215,25 +218,8 @@ export function OrgAuditLogSection() {
         <p className="text-muted-foreground text-sm">{t("description")}</p>
       </div>
 
-      {/* Toolbar: category filter + search on one row. Empty toggle selection
-          coerces back to "all" so there is always exactly one active filter. */}
+      {/* Toolbar: search on the left, category filter dropdown to its right. */}
       <div className="flex flex-wrap items-center gap-2">
-        <ToggleGroup
-          type="single"
-          variant="outline"
-          value={selectedCategory}
-          onValueChange={(value) =>
-            setSelectedCategory((value as Category | "") || "all")
-          }
-          aria-label={t("categoryFilterLabel")}
-        >
-          <ToggleGroupItem value="all">{t("categories.all")}</ToggleGroupItem>
-          {CATEGORIES.map((category) => (
-            <ToggleGroupItem key={category} value={category}>
-              {categoryLabel(category)}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
         <div className="relative">
           <HugeiconsIcon
             icon={Search01Icon}
@@ -251,6 +237,24 @@ export function OrgAuditLogSection() {
             className="w-64 pl-8"
           />
         </div>
+        <Select
+          value={selectedCategory}
+          onValueChange={(value) =>
+            setSelectedCategory(value as Category | "all")
+          }
+        >
+          <SelectTrigger className="w-44" aria-label={t("categoryFilterLabel")}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("categories.all")}</SelectItem>
+            {CATEGORIES.map((category) => (
+              <SelectItem key={category} value={category}>
+                {categoryLabel(category)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {loadingFirst ? null : rows.length === 0 ? (
@@ -268,6 +272,7 @@ export function OrgAuditLogSection() {
             <TableRow>
               <TableHead>{t("table.when")}</TableHead>
               <TableHead>{t("table.who")}</TableHead>
+              <TableHead>{t("table.category")}</TableHead>
               <TableHead>{t("table.action")}</TableHead>
               <TableHead>{t("table.details")}</TableHead>
             </TableRow>
@@ -296,6 +301,13 @@ export function OrgAuditLogSection() {
                 </TableCell>
                 <TableCell className="font-medium">
                   {actorLabel(row.actorId, row.actorName)}
+                </TableCell>
+                <TableCell>
+                  {row.category ? (
+                    <Badge variant="secondary">
+                      {categoryLabel(row.category)}
+                    </Badge>
+                  ) : null}
                 </TableCell>
                 <TableCell>{actionLabel(row.type)}</TableCell>
                 <TableCell className="text-muted-foreground">
@@ -463,28 +475,28 @@ function AuditDetailSheet({
   return (
     <>
       <SheetHeader className="gap-1.5">
-        <div className="flex items-start justify-between gap-3">
-          <SheetTitle className="text-balance">
-            {actionLabel(row.type)}
-          </SheetTitle>
-          {row.category ? (
-            <Badge variant="secondary" className="mt-0.5 shrink-0">
-              {categoryLabel(row.category)}
-            </Badge>
-          ) : null}
-        </div>
+        {/* pr-8 keeps a long title clear of the sheet's absolute close button. */}
+        <SheetTitle className="pr-8 text-balance">
+          {actionLabel(row.type)}
+        </SheetTitle>
         <SheetDescription className="text-balance">
           {subject || dateLong}
         </SheetDescription>
       </SheetHeader>
 
       <div className="flex flex-col gap-5 overflow-y-auto px-4 pb-4">
-        {/* Byline: who did it, and when. */}
-        <p className="text-muted-foreground text-sm">
-          {t("detail.by", { who: actorLabel(row.actorId, row.actorName) })}
-          {" · "}
-          {dateLong}
-        </p>
+        {/* Byline: category, who did it, and when. The category badge lives here
+            (not the header) so it never collides with the close button. */}
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground text-sm">
+          {row.category ? (
+            <Badge variant="secondary">{categoryLabel(row.category)}</Badge>
+          ) : null}
+          <span>
+            {t("detail.by", { who: actorLabel(row.actorId, row.actorName) })}
+            {" · "}
+            {dateLong}
+          </span>
+        </div>
 
         {hasGroups ? (
           <div className="flex flex-col gap-5">

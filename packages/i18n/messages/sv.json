@@ -131,6 +131,7 @@
       "table": {
         "when": "När",
         "who": "Vem",
+        "category": "Kategori",
         "action": "Åtgärd",
         "details": "Detaljer"
       },

@@ -131,6 +131,7 @@
       "table": {
         "when": "When",
         "who": "Who",
+        "category": "Category",
         "action": "Action",
         "details": "Details"
       },

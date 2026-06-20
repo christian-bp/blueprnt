@@ -131,6 +131,7 @@
       "table": {
         "when": "Milloin",
         "who": "Kuka",
+        "category": "Luokka",
         "action": "Toimi",
         "details": "Tiedot"
       },

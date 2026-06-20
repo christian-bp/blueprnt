@@ -131,6 +131,7 @@
       "table": {
         "when": "Når",
         "who": "Hvem",
+        "category": "Kategori",
         "action": "Handling",
         "details": "Detaljer"
       },
