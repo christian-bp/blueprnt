@@ -1,0 +1,20 @@
+apps/dashboard/components/org-audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_dda910f608386b 513,517,530,534,547,555
+  s_4d14ac8ce42bf2::t_ca524699e07059 699-701,723-729
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "1a4b2a7b1a977334691dd85c89d2afc75cfdaed2",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
