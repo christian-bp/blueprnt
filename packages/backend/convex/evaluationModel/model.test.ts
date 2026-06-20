@@ -436,13 +436,16 @@ describe("getModel", () => {
 })
 
 describe("evaluationModel/model.seedStandardModel", () => {
+  // The founder authId the dev/prod seed threads as actorId on model.created.
+  const SEED_ACTOR_ID = "ba_user_founder"
+
   it("creates one standard model with nine criteria and is idempotent", async () => {
     const t = initConvexTest()
     const orgId = "org_seed_model"
 
     const modelId = await t.mutation(
       internal.evaluationModel.model.seedStandardModel,
-      { orgId, locale: "sv" }
+      { orgId, locale: "sv", actorId: SEED_ACTOR_ID }
     )
     expect(modelId).not.toBeNull()
 
@@ -474,7 +477,7 @@ describe("evaluationModel/model.seedStandardModel", () => {
     // Re-run is a no-op: returns null and does not duplicate the model/criteria.
     const second = await t.mutation(
       internal.evaluationModel.model.seedStandardModel,
-      { orgId, locale: "sv" }
+      { orgId, locale: "sv", actorId: SEED_ACTOR_ID }
     )
     expect(second).toBeNull()
     await t.run(async (ctx) => {
@@ -496,10 +499,12 @@ describe("evaluationModel/model.seedStandardModel", () => {
     await t.mutation(internal.evaluationModel.model.seedStandardModel, {
       orgId: "org_seed_xx",
       locale: "xx",
+      actorId: SEED_ACTOR_ID,
     })
     await t.mutation(internal.evaluationModel.model.seedStandardModel, {
       orgId: "org_seed_en",
       locale: "en",
+      actorId: SEED_ACTOR_ID,
     })
     await t.run(async (ctx) => {
       const criterionNames = async (orgId: string) =>

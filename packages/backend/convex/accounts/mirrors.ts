@@ -145,18 +145,26 @@ export const mirrorSeededOrganization = internalMutation({
     memberUserId: v.string(),
     role: v.string(),
     auditMember: v.boolean(),
+    // The founder account the seed creates the org for. Threaded into the
+    // organization.created and member.added audit rows so the seeded org's
+    // log reads as that account having set it up, not the "system" sentinel.
+    actorId: v.string(),
   },
   returns: v.null(),
-  handler: async (ctx, { orgId, memberUserId, role, auditMember }) => {
-    await onOrganizationCreate(ctx, { _id: orgId })
+  handler: async (ctx, { orgId, memberUserId, role, auditMember, actorId }) => {
+    await onOrganizationCreate(ctx, { _id: orgId }, actorId)
     if (auditMember) {
-      await onMemberCreate(ctx, {
-        _id: "seeded",
-        organizationId: orgId,
-        userId: memberUserId,
-        role,
-        createdAt: Date.now(),
-      })
+      await onMemberCreate(
+        ctx,
+        {
+          _id: "seeded",
+          organizationId: orgId,
+          userId: memberUserId,
+          role,
+          createdAt: Date.now(),
+        },
+        actorId
+      )
     }
     return null
   },
@@ -177,11 +185,22 @@ export const seedOrganizationSettings = internalMutation({
     language: v.string(),
     industry: v.string(),
     completeOnboarding: v.boolean(),
+    // The founder account the seed runs for: attributed on the
+    // settingsUpdated and onboardingCompleted audit rows.
+    actorId: v.string(),
   },
   returns: v.null(),
   handler: async (
     ctx,
-    { orgId, country, currency, language, industry, completeOnboarding }
+    {
+      orgId,
+      country,
+      currency,
+      language,
+      industry,
+      completeOnboarding,
+      actorId,
+    }
   ) => {
     const row = await ctx.db
       .query("organizations")
@@ -207,7 +226,7 @@ export const seedOrganizationSettings = internalMutation({
       await logAudit(ctx, {
         orgId,
         type: AUDIT_EVENTS.organizationSettingsUpdated,
-        actorId: "system",
+        actorId,
         payload: { changed: ["country", "currency", "language", "industry"] },
       })
     }
@@ -215,7 +234,7 @@ export const seedOrganizationSettings = internalMutation({
       await logAudit(ctx, {
         orgId,
         type: AUDIT_EVENTS.onboardingCompleted,
-        actorId: "system",
+        actorId,
         payload: {},
       })
     }
@@ -247,7 +266,16 @@ export async function onUserDelete(ctx: Ctx, doc: AuthUserDoc) {
   if (row !== null) await ctx.db.delete(row._id)
 }
 
-export async function onOrganizationCreate(ctx: Ctx, doc: AuthOrgDoc) {
+// actorId defaults to the "system" sentinel for the identity-less caller paths
+// (the Better Auth organization.onCreate trigger and the platform-admin org
+// provisioning, which attributes the operator to the platform log instead). The
+// dev/prod seed passes the founder authId so the seeded org's log reads as that
+// account having created it.
+export async function onOrganizationCreate(
+  ctx: Ctx,
+  doc: AuthOrgDoc,
+  actorId = "system"
+) {
   const existing = await ctx.db
     .query("organizations")
     .withIndex("by_org", (q) => q.eq("orgId", doc._id))
@@ -258,7 +286,7 @@ export async function onOrganizationCreate(ctx: Ctx, doc: AuthOrgDoc) {
   await logAudit(ctx, {
     orgId: doc._id,
     type: AUDIT_EVENTS.organizationCreated,
-    actorId: "system",
+    actorId,
     payload: {},
   })
 }
@@ -266,12 +294,21 @@ export async function onOrganizationCreate(ctx: Ctx, doc: AuthOrgDoc) {
 // Triggers carry no caller identity; actor attribution for member events
 // is "system" until a server-side member-management mutation logs the real
 // admin actor (future slice). payload.memberUserId identifies the subject.
+//
+// onMemberCreate takes an optional actorId (default "system") because the seed
+// reuses it to record the founder as the actor on member.added; the trigger
+// caller keeps the default. onMemberUpdate/onMemberDelete are trigger-only and
+// stay "system".
 
-export async function onMemberCreate(ctx: Ctx, doc: AuthMemberDoc) {
+export async function onMemberCreate(
+  ctx: Ctx,
+  doc: AuthMemberDoc,
+  actorId = "system"
+) {
   await logAudit(ctx, {
     orgId: doc.organizationId,
     type: AUDIT_EVENTS.memberAdded,
-    actorId: "system",
+    actorId,
     payload: { memberUserId: doc.userId, role: doc.role },
   })
 }

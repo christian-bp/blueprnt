@@ -116,14 +116,24 @@ describe("betterAuth/seed.insertOrganization", () => {
 })
 
 describe("accounts/mirrors.mirrorSeededOrganization", () => {
-  it("seeds the profile and audits org plus member exactly once", async () => {
+  it("seeds the profile and audits org plus member exactly once, attributed to the founder", async () => {
     const t = initConvexTest()
+
+    // The founder mirror row so audit actorName snapshots resolve to a name.
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
+        authId: "ba_user_seed",
+        email: "founder@blueprnt.se",
+        name: "Founder",
+      })
+    })
 
     await t.mutation(internal.accounts.mirrors.mirrorSeededOrganization, {
       orgId: "ba_org_seed",
       memberUserId: "ba_user_seed",
       role: "admin",
       auditMember: true,
+      actorId: "ba_user_seed",
     })
     // Re-run as the idempotent path: no second profile, no second audit.
     await t.mutation(internal.accounts.mirrors.mirrorSeededOrganization, {
@@ -131,6 +141,7 @@ describe("accounts/mirrors.mirrorSeededOrganization", () => {
       memberUserId: "ba_user_seed",
       role: "admin",
       auditMember: false,
+      actorId: "ba_user_seed",
     })
 
     await t.run(async (ctx) => {
@@ -147,6 +158,10 @@ describe("accounts/mirrors.mirrorSeededOrganization", () => {
         )
         .collect()
       expect(created).toHaveLength(1)
+      // The seed attributes the org's lifecycle rows to the founder account,
+      // not the "system" sentinel, and they resolve to the founder's name.
+      expect(created[0].actorId).toBe("ba_user_seed")
+      expect(created[0].actorName).toBe("Founder")
 
       const added = await ctx.db
         .query("auditLog")
@@ -155,6 +170,8 @@ describe("accounts/mirrors.mirrorSeededOrganization", () => {
         )
         .collect()
       expect(added).toHaveLength(1)
+      expect(added[0].actorId).toBe("ba_user_seed")
+      expect(added[0].actorName).toBe("Founder")
       expect(added[0].payload).toMatchObject({
         memberUserId: "ba_user_seed",
         role: "admin",
@@ -192,6 +209,7 @@ describe("betterAuth/seed.removeOrganizationsForUserEmail + accounts/mirrors.rem
       memberUserId: userId,
       role: "admin",
       auditMember: true,
+      actorId: userId,
     })
 
     return { orgId, userId }
@@ -495,9 +513,16 @@ describe("accounts/mirrors.seedOrganizationSettings", () => {
   it("fills settings + stamps completion, preserving the first timestamp", async () => {
     const t = initConvexTest()
     const orgId = "ba_org_settings_seed"
-    // The bare row the seed creates first via mirrorSeededOrganization.
+    const founderAuthId = "ba_user_settings_seed"
+    // The bare row the seed creates first via mirrorSeededOrganization, plus the
+    // founder mirror row so audit actorName snapshots resolve to a name.
     await t.run(async (ctx) => {
       await ctx.db.insert("organizations", { orgId })
+      await ctx.db.insert("users", {
+        authId: founderAuthId,
+        email: "founder@blueprnt.se",
+        name: "Founder",
+      })
     })
 
     await t.mutation(internal.accounts.mirrors.seedOrganizationSettings, {
@@ -507,6 +532,7 @@ describe("accounts/mirrors.seedOrganizationSettings", () => {
       language: "sv",
       industry: "itTelecom",
       completeOnboarding: true,
+      actorId: founderAuthId,
     })
 
     let stampedAt: number | undefined
@@ -532,6 +558,7 @@ describe("accounts/mirrors.seedOrganizationSettings", () => {
       language: "sv",
       industry: "manufacturing",
       completeOnboarding: true,
+      actorId: founderAuthId,
     })
     await t.run(async (ctx) => {
       const row = await ctx.db
@@ -548,6 +575,10 @@ describe("accounts/mirrors.seedOrganizationSettings", () => {
         )
         .collect()
       expect(settingsAudit).toHaveLength(1)
+      // Both seeded settings/completion rows are attributed to the founder
+      // account, not the "system" sentinel, and resolve to the founder's name.
+      expect(settingsAudit[0].actorId).toBe(founderAuthId)
+      expect(settingsAudit[0].actorName).toBe("Founder")
       const completedAudit = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
@@ -555,6 +586,8 @@ describe("accounts/mirrors.seedOrganizationSettings", () => {
         )
         .collect()
       expect(completedAudit).toHaveLength(1)
+      expect(completedAudit[0].actorId).toBe(founderAuthId)
+      expect(completedAudit[0].actorName).toBe("Founder")
     })
   })
 
@@ -564,12 +597,15 @@ describe("accounts/mirrors.seedOrganizationSettings", () => {
       components.betterAuth.testing.seedMembership,
       { email: "dev@blueprnt.se", name: "Dev", role: "admin" }
     )
-    // The dev seed sequence: bare org row, then settings + completion, then model.
+    // The dev seed sequence: bare org row, then settings + completion, then
+    // model. The founder is the actor on the seeded audit rows (the seedMembership
+    // helper already created the matching users mirror row).
     await t.mutation(internal.accounts.mirrors.mirrorSeededOrganization, {
       orgId,
       memberUserId: userId,
       role: "admin",
       auditMember: true,
+      actorId: userId,
     })
     await t.mutation(internal.accounts.mirrors.seedOrganizationSettings, {
       orgId,
@@ -578,10 +614,12 @@ describe("accounts/mirrors.seedOrganizationSettings", () => {
       language: "sv",
       industry: "itTelecom",
       completeOnboarding: true,
+      actorId: userId,
     })
     await t.mutation(internal.evaluationModel.model.seedStandardModel, {
       orgId,
       locale: "sv",
+      actorId: userId,
     })
 
     const status = await t

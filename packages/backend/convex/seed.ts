@@ -89,6 +89,11 @@ async function seedDemoCompaniesForUser(
       { name: org.name, slug: org.slug, email, role: "admin" }
     )
 
+    // The founder's Better Auth id, threaded as actorId into every
+    // audit-writing seed mutation below so the seeded org's audit log reads as
+    // that account having set it up rather than the "system" sentinel.
+    const actorId = result.userId
+
     // Direct component inserts bypass the Better Auth triggers; seed the
     // app-side organization row + membership audit (always, even when bare).
     await ctx.runMutation(internal.accounts.mirrors.mirrorSeededOrganization, {
@@ -96,6 +101,7 @@ async function seedDemoCompaniesForUser(
       memberUserId: result.userId,
       role: "admin",
       auditMember: result.createdMember,
+      actorId,
     })
 
     // Onboarded org: fill settings + mark complete, create the standard model,
@@ -111,14 +117,17 @@ async function seedDemoCompaniesForUser(
           language: org.language,
           industry: org.industry,
           completeOnboarding: true,
+          actorId,
         }
       )
       await ctx.runMutation(internal.evaluationModel.model.seedStandardModel, {
         orgId: result.orgId,
         locale: org.language,
+        actorId,
       })
       await ctx.runMutation(internal.assessment.seed.seedRatedRoles, {
         orgId: result.orgId,
+        actorId,
       })
     }
 

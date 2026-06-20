@@ -89,16 +89,22 @@ export const createModelFromTemplate = adminMutation({
   },
 })
 
-// Dev/seed-only twin of createModelFromTemplate that takes an explicit orgId and
-// locale instead of an auth context. The dev seed runs in a "use node" action
-// with no identity, so it cannot call the adminMutation above. The insert loop
-// and template constants are shared; the only behavioural difference is that
+// Dev/seed-only twin of createModelFromTemplate that takes an explicit orgId,
+// locale, and actorId instead of an auth context. The dev seed runs in a "use
+// node" action with no identity, so it cannot call the adminMutation above; the
+// founder authId is passed in as actorId so the model.created audit row is
+// attributed to the seeded account rather than the "system" sentinel. The insert
+// loop and template constants are shared; the only behavioural difference is that
 // this is idempotent (it skips when the org already has a model) rather than
 // throwing modelExists.
 export const seedStandardModel = internalMutation({
-  args: { orgId: v.string(), locale: v.optional(v.string()) },
+  args: {
+    orgId: v.string(),
+    locale: v.optional(v.string()),
+    actorId: v.string(),
+  },
   returns: v.union(v.id("models"), v.null()),
-  handler: async (ctx, { orgId, locale }) => {
+  handler: async (ctx, { orgId, locale, actorId }) => {
     const existing = await ctx.db
       .query("models")
       .withIndex("by_org", (q) => q.eq("orgId", orgId))
@@ -132,7 +138,7 @@ export const seedStandardModel = internalMutation({
     await logAudit(ctx, {
       orgId,
       type: AUDIT_EVENTS.modelCreated,
-      actorId: "system",
+      actorId,
       payload: { modelId, templateKey: STANDARD_TEMPLATE_KEY },
     })
     return modelId

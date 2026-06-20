@@ -7,18 +7,34 @@ const EXPECTED_ROLES = DEV_COMPANY.reduce((sum, f) => sum + f.roles.length, 0)
 const EXPECTED_FAMILIES = DEV_COMPANY.length
 const EXPECTED_RATINGS = EXPECTED_ROLES * 9
 
+// The founder account the seed runs for: its authId is threaded as actorId so
+// seeded audit rows resolve to this account instead of the "system" sentinel.
+const FOUNDER_AUTH_ID = "ba_user_founder"
+const FOUNDER_NAME = "Founder"
+
 describe("assessment/seed.seedRatedRoles", () => {
   it("seeds the dev company, rates every role, and is idempotent", async () => {
     const t = initConvexTest()
     const orgId = "org_rated"
+    // The founder mirror row so audit actorName snapshots resolve to a real
+    // name rather than "unknown".
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
+        authId: FOUNDER_AUTH_ID,
+        email: "founder@blueprnt.se",
+        name: FOUNDER_NAME,
+      })
+    })
     // Ratings reference the seeded criteria, so the model must exist first.
     await t.mutation(internal.evaluationModel.model.seedStandardModel, {
       orgId,
       locale: "sv",
+      actorId: FOUNDER_AUTH_ID,
     })
 
     const result = await t.mutation(internal.assessment.seed.seedRatedRoles, {
       orgId,
+      actorId: FOUNDER_AUTH_ID,
     })
     expect(result).toEqual({
       roleCount: EXPECTED_ROLES,
@@ -82,11 +98,40 @@ describe("assessment/seed.seedRatedRoles", () => {
       // Order & Indoor Sales (JR_IC): junior, low magnitude.
       expect(cell("Order & Indoor Sales", "scope")).toBe(2)
       expect(cell("Order & Indoor Sales", "people")).toBe(1)
+
+      // Seeded role.created (and roleFamily.created) rows are attributed to the
+      // founder account, not the "system" sentinel, and resolve to the
+      // founder's name rather than "unknown".
+      const roleCreated = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "role.created")
+        )
+        .collect()
+      expect(roleCreated).toHaveLength(EXPECTED_ROLES)
+      expect(roleCreated.every((row) => row.actorId === FOUNDER_AUTH_ID)).toBe(
+        true
+      )
+      expect(roleCreated.every((row) => row.actorName === FOUNDER_NAME)).toBe(
+        true
+      )
+
+      const familyCreated = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "roleFamily.created")
+        )
+        .collect()
+      expect(familyCreated).toHaveLength(EXPECTED_FAMILIES)
+      expect(
+        familyCreated.every((row) => row.actorId === FOUNDER_AUTH_ID)
+      ).toBe(true)
     })
 
     // Idempotent: any existing role short-circuits the whole seed.
     const second = await t.mutation(internal.assessment.seed.seedRatedRoles, {
       orgId,
+      actorId: FOUNDER_AUTH_ID,
     })
     expect(second).toEqual({ roleCount: 0, ratingCount: 0 })
     await t.run(async (ctx) => {
@@ -105,6 +150,7 @@ describe("assessment/seed.seedRatedRoles", () => {
     // creates the roles with zero ratings.
     const result = await t.mutation(internal.assessment.seed.seedRatedRoles, {
       orgId,
+      actorId: FOUNDER_AUTH_ID,
     })
     expect(result.roleCount).toBe(EXPECTED_ROLES)
     expect(result.ratingCount).toBe(0)
