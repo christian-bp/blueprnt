@@ -1,0 +1,14 @@
+AGENTS.md
+  h_86bcd1ca8b2945 2,6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "58ece5bf8cb5c811830a7b8a2e6b5c35691b85e5",
+  "prompts": {},
+  "humans": {
+    "h_86bcd1ca8b2945": {
+      "author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
