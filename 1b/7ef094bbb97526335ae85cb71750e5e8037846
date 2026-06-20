@@ -1,0 +1,43 @@
+packages/backend/convex/assessment/compute.test.ts
+  s_4d14ac8ce42bf2::t_fb3c4f160708f6 177,179-249,251
+packages/backend/convex/assessment/compute.ts
+  s_4d14ac8ce42bf2::t_0fcf1af7969919 91-94,102-107,110-112,125-127,129,134-136,138-140
+  s_4d14ac8ce42bf2::t_22436744249547 13-18
+  s_4d14ac8ce42bf2::t_973ae362995c9b 113-123,128,137
+packages/backend/convex/lib/audit.ts
+  s_4d14ac8ce42bf2::t_22436744249547 79-82,300-302
+  s_4d14ac8ce42bf2::t_7acccc98d423cb 195-299,303-322
+  s_4d14ac8ce42bf2::t_d44cd3e4bef371 2
+  s_4d14ac8ce42bf2::t_3663dab5283994 63-70,77,83-131,133-135
+packages/backend/convex/lib/audit.test.ts
+  s_4d14ac8ce42bf2::t_22436744249547 101-105,141-145
+  s_4d14ac8ce42bf2::t_3091afd880b2b2 81-100,106-140,146-289
+  s_4d14ac8ce42bf2::t_26468b716f9786 2,5,7-8,11-12
+  s_4d14ac8ce42bf2::t_6382685c651bc1 359-429
+packages/backend/convex/assessment/roles.test.ts
+  s_4d14ac8ce42bf2::t_3bc4561ad84dca 303-306,308
+packages/backend/convex/assessment/ratings.test.ts
+  s_4d14ac8ce42bf2::t_38e535ebbd0b36 82-86
+  s_4d14ac8ce42bf2::t_147e767e78c4fb 112-120
+packages/backend/convex/evaluationModel/criteria.test.ts
+  s_4d14ac8ce42bf2::t_3e972fa0e2d9a5 553-558
+  s_4d14ac8ce42bf2::t_c26f5508d61e66 436-441
+  s_4d14ac8ce42bf2::t_56badde74e2d99 170-172,199-201
+  s_4d14ac8ce42bf2::t_04bb8bb79dbe99 397-402
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "1b7ef094bbb97526335ae85cb71750e5e8037846",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
