@@ -43,6 +43,7 @@ import type { DateRange } from "react-day-picker"
 import { AuditPagination } from "@/components/audit/audit-pagination"
 import { ChangeEntryRow, KV_GRID } from "@/components/audit/change-entry-row"
 import { DateRangePicker } from "@/components/date-range-picker"
+import { TableSkeleton } from "@/components/table-skeleton"
 import { useAuditPagination } from "@/hooks/use-audit-pagination"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { endOfDay, startOfDay } from "@/lib/date-bounds"
@@ -232,11 +233,25 @@ export function AuditLogSection() {
     return changes ? formatChanges(changes, fieldLabel) : formatPayload(payload)
   }
 
-  // First-data loading for whichever query is active renders nothing (matches
-  // the prior behavior); the toolbar still mounts so it does not flash in.
+  // First-data loading for whichever query is active shows a skeleton table; the
+  // toolbar still mounts so it does not flash in.
   const loadingFirst = isSearching
     ? searchResult === undefined
     : browse.status === "LoadingFirstPage"
+
+  // Shared header for the data and skeleton tables (same columns, no reflow).
+  const auditTableHeader = (
+    <TableHeader>
+      <TableRow>
+        <TableHead className="w-44">{t("table.when")}</TableHead>
+        <TableHead className="w-40">{t("table.operator")}</TableHead>
+        <TableHead className="w-32">{t("table.category")}</TableHead>
+        <TableHead className="w-44">{t("table.action")}</TableHead>
+        <TableHead className="w-40">{t("table.target")}</TableHead>
+        <TableHead>{t("table.details")}</TableHead>
+      </TableRow>
+    </TableHeader>
+  )
 
   return (
     <section className="space-y-4">
@@ -292,7 +307,22 @@ export function AuditLogSection() {
         />
       </div>
 
-      {loadingFirst ? null : rows.length === 0 ? (
+      {loadingFirst ? (
+        <Table className="table-fixed">
+          {auditTableHeader}
+          <TableSkeleton
+            rows={8}
+            columns={[
+              { className: "w-28" },
+              { className: "w-24" },
+              { className: "h-5 w-16 rounded-full" },
+              { className: "w-28" },
+              { className: "w-28" },
+              {},
+            ]}
+          />
+        </Table>
+      ) : rows.length === 0 ? (
         <Empty>
           <EmptyHeader>
             <EmptyTitle>{t("heading")}</EmptyTitle>
@@ -303,16 +333,7 @@ export function AuditLogSection() {
         </Empty>
       ) : (
         <Table className="table-fixed">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-44">{t("table.when")}</TableHead>
-              <TableHead className="w-40">{t("table.operator")}</TableHead>
-              <TableHead className="w-32">{t("table.category")}</TableHead>
-              <TableHead className="w-44">{t("table.action")}</TableHead>
-              <TableHead className="w-40">{t("table.target")}</TableHead>
-              <TableHead>{t("table.details")}</TableHead>
-            </TableRow>
-          </TableHeader>
+          {auditTableHeader}
           <TableBody>
             {pager.pageRows.map((row) => (
               <TableRow
