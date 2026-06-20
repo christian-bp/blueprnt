@@ -15,6 +15,7 @@ import { AnchorRoleCard } from "@/components/roles/anchor-role-card"
 import { RoleProfileCard } from "@/components/roles/role-profile-card"
 import { RoleRatingCard } from "@/components/roles/role-rating-card"
 import { RoleResultCard } from "@/components/roles/role-result-card"
+import { usePageTitle } from "@/hooks/use-page-title"
 
 export default function RolePage(props: {
   params: Promise<{ roleId: string }>
@@ -31,6 +32,7 @@ export default function RolePage(props: {
     roleId,
     locale,
   })
+  usePageTitle(role?.title)
 
   if (role === undefined) {
     return (

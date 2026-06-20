@@ -14,11 +14,13 @@ import { useTranslations } from "next-intl"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useState } from "react"
 import { Logo } from "@/components/logo"
+import { usePageTitle } from "@/hooks/use-page-title"
 import { authClient } from "@/lib/auth-client"
 
 function ResetPasswordForm() {
   const t = useTranslations("dashboard.auth.resetPassword")
   const tApp = useTranslations("dashboard")
+  usePageTitle(t("title"))
   const router = useRouter()
   const params = useSearchParams()
   const token = params.get("token")

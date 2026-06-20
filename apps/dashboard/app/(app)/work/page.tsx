@@ -29,6 +29,7 @@ import { FamilyFilter } from "@/components/bands/family-filter"
 import { PendingRoles } from "@/components/bands/pending-roles"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
+import { usePageTitle } from "@/hooks/use-page-title"
 import { trackColumns } from "@/lib/bands"
 
 // Filter key for roles with no family (the "No family" option).
@@ -43,6 +44,8 @@ export default function WorkOverviewPage() {
   const t = useTranslations("dashboard.bands")
   const tHelp = useTranslations("dashboard.help")
   const tFamily = useTranslations("dashboard.roles.family")
+  const tNav = useTranslations("dashboard.nav")
+  usePageTitle(tNav("work"))
   const { orgId } = useOrganization()
   const locale = useLocale()
   const results = useQuery(api.assessment.results.getResults, { orgId, locale })

@@ -8,6 +8,7 @@ import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { use, useState } from "react"
 import { useOrganization } from "@/components/org-context"
+import { usePageTitle } from "@/hooks/use-page-title"
 import { RatingResult } from "@/components/rating/rating-result"
 import { RatingStepper } from "@/components/rating/rating-stepper"
 
@@ -22,6 +23,7 @@ export default function RatePage(props: {
   const role = useQuery(api.assessment.roles.getRole, { orgId, roleId, locale })
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
   const [finished, setFinished] = useState(false)
+  usePageTitle([role?.title, t("title")])
 
   if (role === undefined || model === undefined) {
     return (

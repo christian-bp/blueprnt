@@ -1,8 +1,10 @@
 "use client"
 
 import { MIN_CRITERIA } from "@workspace/core"
+import { useTranslations } from "next-intl"
 import { ModelEditor } from "@/components/model/model-editor"
 import { useOrganization } from "@/components/org-context"
+import { usePageTitle } from "@/hooks/use-page-title"
 
 // The evaluation model page: the shared criteria editor plus the AI weight
 // review. The finished model never drops below the composition floor, so
@@ -11,5 +13,7 @@ import { useOrganization } from "@/components/org-context"
 // come later.
 export default function ModelPage() {
   const { orgId } = useOrganization()
+  const tNav = useTranslations("dashboard.nav")
+  usePageTitle(tNav("model"))
   return <ModelEditor orgId={orgId} withAiReview removalFloor={MIN_CRITERIA} />
 }

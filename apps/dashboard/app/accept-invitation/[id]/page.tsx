@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { useState } from "react"
+import { usePageTitle } from "@/hooks/use-page-title"
 import { authClient } from "@/lib/auth-client"
 
 export default function AcceptInvitationPage() {
@@ -13,6 +14,7 @@ export default function AcceptInvitationPage() {
   const params = useParams<{ id: string }>()
   const router = useRouter()
   const [error, setError] = useState(false)
+  usePageTitle(t("invitation.title"))
 
   return (
     <main>

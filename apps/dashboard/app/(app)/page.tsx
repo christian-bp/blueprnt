@@ -14,12 +14,15 @@ import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
+import { usePageTitle } from "@/hooks/use-page-title"
 
 // Start page: real derived counts, no stored aggregates. Each card links to
 // its section. Numbers here are counts, never scores or weights.
 export default function OverviewPage() {
   const t = useTranslations("dashboard.overview")
   const tHelp = useTranslations("dashboard.help")
+  const tNav = useTranslations("dashboard.nav")
+  usePageTitle(tNav("home"))
   const { orgId } = useOrganization()
   const locale = useLocale()
   const roles = useQuery(api.assessment.roles.listRoles, { orgId, locale })

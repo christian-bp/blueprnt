@@ -16,6 +16,7 @@ import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { use } from "react"
 import { useOrganization } from "@/components/org-context"
+import { usePageTitle } from "@/hooks/use-page-title"
 import { FamilyHeader } from "@/components/roles/family-header"
 
 // Per-family progression: the family's roles grouped per track (by track
@@ -38,6 +39,8 @@ export default function FamilyPage(props: {
   })
   const roles = useQuery(api.assessment.roles.listRoles, { orgId, locale })
   const results = useQuery(api.assessment.results.getResults, { orgId, locale })
+  const family = families?.find((entry) => entry.familyId === familyId)
+  usePageTitle(family?.name)
 
   if (families === undefined || roles === undefined || results === undefined) {
     return (
@@ -47,7 +50,6 @@ export default function FamilyPage(props: {
     )
   }
 
-  const family = families.find((entry) => entry.familyId === familyId)
   if (family === undefined) {
     return (
       <div className="space-y-2">

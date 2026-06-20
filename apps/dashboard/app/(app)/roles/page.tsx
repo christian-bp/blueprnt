@@ -13,12 +13,15 @@ import { useLocale, useTranslations } from "next-intl"
 import { useOrganization } from "@/components/org-context"
 import { CreateRoleDialog } from "@/components/roles/create-role-dialog"
 import { RolesTable } from "@/components/roles/roles-table"
+import { usePageTitle } from "@/hooks/use-page-title"
 
 // The role register: header + create CTA, then the grouped data table
 // (search, filters, family group rows) in components/roles/roles-table.tsx.
 // This page owns only the queries and the zero-roles empty state.
 export default function RolesPage() {
   const t = useTranslations("dashboard.roles")
+  const tNav = useTranslations("dashboard.nav")
+  usePageTitle(tNav("roles"))
   const { orgId } = useOrganization()
   const locale = useLocale()
   const roles = useQuery(api.assessment.roles.listRoles, { orgId, locale })
