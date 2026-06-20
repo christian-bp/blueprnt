@@ -1,0 +1,31 @@
+packages/i18n/messages/fi.json
+  s_4d14ac8ce42bf2::t_86c92f8bbc691b 98-100
+apps/dashboard/components/org-audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_e951b9a398f380 493-500,502-507,509,513,517,530,534,536,547,555
+  s_4d14ac8ce42bf2::t_0111b7982245de 78-82
+  s_4d14ac8ce42bf2::t_7bde0d341ffff5 699-701,714-720,723-729
+packages/i18n/messages/sv.json
+  s_4d14ac8ce42bf2::t_86c92f8bbc691b 98-100
+packages/i18n/messages/nb.json
+  s_4d14ac8ce42bf2::t_86c92f8bbc691b 98-100
+packages/i18n/messages/da.json
+  s_4d14ac8ce42bf2::t_86c92f8bbc691b 98-100
+packages/i18n/messages/en.json
+  s_4d14ac8ce42bf2::t_86c92f8bbc691b 98-100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "51ce74adee21b48996aeb899bf9a084ad4815faa",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
