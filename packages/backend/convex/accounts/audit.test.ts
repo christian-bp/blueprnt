@@ -445,6 +445,37 @@ describe("accounts.audit.listAuditLog (date range)", () => {
   })
 })
 
+describe("accounts.audit.auditLogBounds", () => {
+  it("returns earliest === null for an empty log", async () => {
+    const t = initConvexTest()
+    const { orgId, adminId } = await setup(t)
+    const bounds = await t
+      .withIdentity({ subject: adminId })
+      .query(api.accounts.audit.auditLogBounds, { orgId })
+    expect(bounds.earliest).toBeNull()
+  })
+
+  it("returns the oldest row's creation time after inserting rows", async () => {
+    const t = initConvexTest()
+    const { orgId, adminId } = await setup(t)
+    const times = await seedAuditRows(t, orgId, adminId, 3)
+    const bounds = await t
+      .withIdentity({ subject: adminId })
+      .query(api.accounts.audit.auditLogBounds, { orgId })
+    expect(bounds.earliest).toBe(times[0])
+  })
+
+  it("rejects an editor with errors.adminRequired", async () => {
+    const t = initConvexTest()
+    const { orgId, editorId } = await setup(t)
+    await expect(
+      t
+        .withIdentity({ subject: editorId })
+        .query(api.accounts.audit.auditLogBounds, { orgId })
+    ).rejects.toThrow(/errors.adminRequired/)
+  })
+})
+
 describe("accounts.audit.searchAuditLog", () => {
   it("returns rows matching a term present in searchText", async () => {
     const t = initConvexTest()

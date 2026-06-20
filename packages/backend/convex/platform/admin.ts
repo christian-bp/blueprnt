@@ -365,6 +365,19 @@ async function resolvePlatformTargets(
   })
 }
 
+// The earliest admin audit row's creation time, or null when the trail is
+// empty. Used by the client to default the date-range picker to the full span
+// (earliest entry to today). The earliest entry is the first platform action.
+// The default order is by _creationTime, so ascending + first = the oldest row.
+export const auditLogBounds = platformQuery({
+  args: {},
+  returns: v.object({ earliest: v.union(v.null(), v.number()) }),
+  handler: async (ctx) => {
+    const oldest = await ctx.db.query("platformAuditLog").order("asc").first()
+    return { earliest: oldest?._creationTime ?? null }
+  },
+})
+
 // The admin audit trail (platform-admin only), paginated and newest-first. When
 // `category` is a known PLATFORM_AUDIT_CATEGORIES value the by_category index
 // scopes the page to that area; otherwise the by_creation_time index pages the

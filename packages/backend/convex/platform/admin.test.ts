@@ -754,6 +754,50 @@ describe("listAuditLog (date range)", () => {
   })
 })
 
+describe("platform.admin.auditLogBounds", () => {
+  it("returns earliest === null for an empty log", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    // seedPlatformAdmin writes a baseline grant row; clear the log so it is
+    // genuinely empty for this assertion.
+    await t.run(async (ctx) => {
+      for (const row of await ctx.db.query("platformAuditLog").collect()) {
+        await ctx.db.delete(row._id)
+      }
+    })
+    const bounds = await t
+      .withIdentity({ subject: adminId })
+      .query(api.platform.admin.auditLogBounds, {})
+    expect(bounds.earliest).toBeNull()
+  })
+
+  it("returns the oldest row's creation time after inserting rows", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    // Clear the baseline grant row so the oldest row is deterministically the
+    // first one we insert.
+    await t.run(async (ctx) => {
+      for (const row of await ctx.db.query("platformAuditLog").collect()) {
+        await ctx.db.delete(row._id)
+      }
+    })
+    const times = await seedPlatformRows(t, 3)
+    const bounds = await t
+      .withIdentity({ subject: adminId })
+      .query(api.platform.admin.auditLogBounds, {})
+    expect(bounds.earliest).toBe(times[0])
+  })
+
+  it("rejects a non-admin caller", async () => {
+    const t = initConvexTest()
+    const userId = await seedMirroredUser(t, "nobody-bounds@acme.se")
+    const asUser = t.withIdentity({ subject: userId })
+    await expect(
+      asUser.query(api.platform.admin.auditLogBounds, {})
+    ).rejects.toThrow(/errors.platformAdminRequired/)
+  })
+})
+
 describe("searchAuditLog (date range)", () => {
   it("applies a date range in memory over the matched rows", async () => {
     const t = initConvexTest()

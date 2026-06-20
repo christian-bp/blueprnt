@@ -38,7 +38,7 @@ import {
 } from "@workspace/ui/components/table"
 import { usePaginatedQuery, useQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import type { DateRange } from "react-day-picker"
 import { AuditPagination } from "@/components/audit/audit-pagination"
 import { ChangeEntryRow, KV_GRID } from "@/components/audit/change-entry-row"
@@ -107,14 +107,35 @@ export function OrgAuditLogSection() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const debouncedSearch = useDebouncedValue(search, 300)
 
+  // The earliest audit row's time (admin-gated like the other queries), used to
+  // default the picker to the full span. The full default range is memoized on
+  // the earliest value; `new Date()` is "today" at memo time, which is what we
+  // want for the open-ended upper bound (no effect, no flash).
+  const bounds = useQuery(
+    api.accounts.audit.auditLogBounds,
+    role === "admin" ? { orgId } : "skip"
+  )
+  const defaultRange = useMemo<DateRange | undefined>(
+    () =>
+      bounds?.earliest != null
+        ? { from: new Date(bounds.earliest), to: new Date() }
+        : undefined,
+    [bounds?.earliest]
+  )
+
   // Row whose detail sheet is open, or null when the sheet is closed.
   const [selectedRow, setSelectedRow] = useState<AuditRow | null>(null)
+
+  // The effective range: the user's pick when set, otherwise the full default
+  // span. The picker's Clear calls onChange(undefined), which falls back here
+  // to the default span again.
+  const range = dateRange ?? defaultRange
 
   const isSearching = debouncedSearch.trim().length > 0
   const categoryArg = selectedCategory === "all" ? undefined : selectedCategory
   // Inclusive epoch-ms bounds. A picked "from" without a "to" stays open-ended.
-  const startArg = dateRange?.from ? startOfDay(dateRange.from) : undefined
-  const endArg = dateRange?.to ? endOfDay(dateRange.to) : undefined
+  const startArg = range?.from ? startOfDay(range.from) : undefined
+  const endArg = range?.to ? endOfDay(range.to) : undefined
 
   // Editors never call either query: the adminQuery would reject them. The
   // cosmetic guard keeps the page graceful (the sidebar item is hidden for them
@@ -281,7 +302,7 @@ export function OrgAuditLogSection() {
           </SelectContent>
         </Select>
         <DateRangePicker
-          value={dateRange}
+          value={range}
           onChange={setDateRange}
           placeholder={t("dateRange.placeholder")}
           clearLabel={t("dateRange.clear")}

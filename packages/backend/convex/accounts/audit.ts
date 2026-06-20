@@ -200,6 +200,24 @@ export const listAuditLog = adminQuery({
   },
 })
 
+// The earliest audit row's creation time for this org, or null when the trail
+// is empty. Used by the client to default the date-range picker to the full
+// span (earliest entry to today). The earliest entry is effectively the org's
+// creation (the organization.created lifecycle row). by_org ordered ascending +
+// first = the oldest row.
+export const auditLogBounds = adminQuery({
+  args: {},
+  returns: v.object({ earliest: v.union(v.null(), v.number()) }),
+  handler: async (ctx) => {
+    const oldest = await ctx.db
+      .query("auditLog")
+      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
+      .order("asc")
+      .first()
+    return { earliest: oldest?._creationTime ?? null }
+  },
+})
+
 // Full-text search over the org's audit trail (admin-only). Search results are
 // relevance-ranked, capped, and NOT paginated (Convex search indexes are not
 // .order()-able and have no cursor), so this is a separate query the client
