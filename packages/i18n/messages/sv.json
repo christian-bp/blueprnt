@@ -95,7 +95,8 @@
       "dateRange": {
         "label": "Filtrera på datum",
         "placeholder": "Datumintervall",
-        "clear": "Rensa"
+        "clear": "Rensa",
+        "today": "Idag"
       },
       "previous": "Föregående",
       "next": "Nästa",
@@ -776,7 +777,8 @@
         "dateRange": {
           "label": "Filtrera på datum",
           "placeholder": "Datumintervall",
-          "clear": "Rensa"
+          "clear": "Rensa",
+          "today": "Idag"
         },
         "previous": "Föregående",
         "next": "Nästa",

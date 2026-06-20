@@ -95,7 +95,8 @@
       "dateRange": {
         "label": "Filtrer på dato",
         "placeholder": "Datointerval",
-        "clear": "Ryd"
+        "clear": "Ryd",
+        "today": "I dag"
       },
       "previous": "Forrige",
       "next": "Næste",
@@ -776,7 +777,8 @@
         "dateRange": {
           "label": "Filtrer på dato",
           "placeholder": "Datointerval",
-          "clear": "Ryd"
+          "clear": "Ryd",
+          "today": "I dag"
         },
         "previous": "Forrige",
         "next": "Næste",

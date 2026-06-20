@@ -130,11 +130,14 @@ export function AuditLogSection() {
   // is memoized on the earliest value; `new Date()` is "today" at memo time,
   // which is what we want for the open-ended upper bound (no effect, no flash).
   const bounds = useQuery(api.platform.admin.auditLogBounds, {})
-  const defaultRange = useMemo<DateRange | undefined>(
-    () =>
-      bounds?.earliest != null
-        ? { from: new Date(bounds.earliest), to: new Date() }
-        : undefined,
+  // Until bounds resolve we fall back to today so the trigger always shows a
+  // date (never a loader); the query bounds stay open until then (startArg/
+  // endArg) so no rows hide.
+  const defaultRange = useMemo<DateRange>(
+    () => ({
+      from: bounds?.earliest != null ? new Date(bounds.earliest) : new Date(),
+      to: new Date(),
+    }),
     [bounds?.earliest]
   )
 
@@ -148,9 +151,13 @@ export function AuditLogSection() {
 
   const isSearching = debouncedSearch.trim().length > 0
   const categoryArg = selectedCategory === "all" ? undefined : selectedCategory
-  // Inclusive epoch-ms bounds. A picked "from" without a "to" stays open-ended.
-  const startArg = range?.from ? startOfDay(range.from) : undefined
-  const endArg = range?.to ? endOfDay(range.to) : undefined
+  // Inclusive epoch-ms bounds, held open until the earliest is known so the
+  // brief today-only default does not filter the data; a picked "from" without
+  // a "to" stays open-ended.
+  const startArg =
+    bounds !== undefined && range.from ? startOfDay(range.from) : undefined
+  const endArg =
+    bounds !== undefined && range.to ? endOfDay(range.to) : undefined
 
   // Only one query is ever active at a time (browse XOR search). The page is
   // already platform-admin gated, so there is no extra role gate here.
@@ -277,8 +284,8 @@ export function AuditLogSection() {
           onChange={setDateRange}
           placeholder={t("dateRange.placeholder")}
           clearLabel={t("dateRange.clear")}
+          todayLabel={t("dateRange.today")}
           ariaLabel={t("dateRange.label")}
-          loading={bounds === undefined}
         />
       </div>
 

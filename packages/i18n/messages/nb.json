@@ -95,7 +95,8 @@
       "dateRange": {
         "label": "Filtrer på dato",
         "placeholder": "Datointervall",
-        "clear": "Tøm"
+        "clear": "Tøm",
+        "today": "I dag"
       },
       "previous": "Forrige",
       "next": "Neste",
@@ -776,7 +777,8 @@
         "dateRange": {
           "label": "Filtrer på dato",
           "placeholder": "Datointervall",
-          "clear": "Tøm"
+          "clear": "Tøm",
+          "today": "I dag"
         },
         "previous": "Forrige",
         "next": "Neste",

@@ -115,11 +115,14 @@ export function OrgAuditLogSection() {
     api.accounts.audit.auditLogBounds,
     role === "admin" ? { orgId } : "skip"
   )
-  const defaultRange = useMemo<DateRange | undefined>(
-    () =>
-      bounds?.earliest != null
-        ? { from: new Date(bounds.earliest), to: new Date() }
-        : undefined,
+  // Default span: earliest entry (org creation) -> today. Until bounds resolve
+  // we fall back to today so the trigger always shows a date (never a loader);
+  // the query bounds stay open until then (startArg/endArg) so no rows hide.
+  const defaultRange = useMemo<DateRange>(
+    () => ({
+      from: bounds?.earliest != null ? new Date(bounds.earliest) : new Date(),
+      to: new Date(),
+    }),
     [bounds?.earliest]
   )
 
@@ -133,9 +136,13 @@ export function OrgAuditLogSection() {
 
   const isSearching = debouncedSearch.trim().length > 0
   const categoryArg = selectedCategory === "all" ? undefined : selectedCategory
-  // Inclusive epoch-ms bounds. A picked "from" without a "to" stays open-ended.
-  const startArg = range?.from ? startOfDay(range.from) : undefined
-  const endArg = range?.to ? endOfDay(range.to) : undefined
+  // Inclusive epoch-ms bounds, held open until the earliest is known so the
+  // brief today-only default does not filter the data; a picked "from" without
+  // a "to" stays open-ended.
+  const startArg =
+    bounds !== undefined && range.from ? startOfDay(range.from) : undefined
+  const endArg =
+    bounds !== undefined && range.to ? endOfDay(range.to) : undefined
 
   // Editors never call either query: the adminQuery would reject them. The
   // cosmetic guard keeps the page graceful (the sidebar item is hidden for them
@@ -306,8 +313,8 @@ export function OrgAuditLogSection() {
           onChange={setDateRange}
           placeholder={t("dateRange.placeholder")}
           clearLabel={t("dateRange.clear")}
+          todayLabel={t("dateRange.today")}
           ariaLabel={t("dateRange.label")}
-          loading={bounds === undefined}
         />
       </div>
 

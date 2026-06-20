@@ -95,7 +95,8 @@
       "dateRange": {
         "label": "Suodata päivämäärän mukaan",
         "placeholder": "Aikaväli",
-        "clear": "Tyhjennä"
+        "clear": "Tyhjennä",
+        "today": "Tänään"
       },
       "previous": "Edellinen",
       "next": "Seuraava",
@@ -776,7 +777,8 @@
         "dateRange": {
           "label": "Suodata päivämäärän mukaan",
           "placeholder": "Aikaväli",
-          "clear": "Tyhjennä"
+          "clear": "Tyhjennä",
+          "today": "Tänään"
         },
         "previous": "Edellinen",
         "next": "Seuraava",

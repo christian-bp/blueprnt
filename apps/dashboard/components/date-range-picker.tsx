@@ -9,48 +9,34 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
-import { Spinner } from "@workspace/ui/components/spinner"
 import { useFormatter } from "next-intl"
 import type { DateRange } from "react-day-picker"
 
-// A stable trigger width so the spinner (loading) and the formatted full-span
-// range render at the same size: no layout shift when the default resolves.
-const TRIGGER_CLASS = "min-w-64 justify-center"
+// The trigger sizes to its content (a single date or a full range). font-normal
+// so the date value does not render bold.
+const TRIGGER_CLASS = "font-normal"
 
 // A reusable date-range picker: an outline trigger button whose label is the
 // formatted range (locale output, via next-intl's formatter), opening a
 // two-month range calendar with a Clear action once a start date is picked.
-// While `loading` (e.g. the default span is still resolving), the trigger shows
-// a spinner instead of the placeholder so it never flashes a bare label.
+// Callers pass a default value so the trigger always shows a date, never a
+// loader or a bare placeholder.
 export function DateRangePicker({
   value,
   onChange,
   placeholder,
   clearLabel,
+  todayLabel,
   ariaLabel,
-  loading = false,
 }: {
   value: DateRange | undefined
   onChange: (range: DateRange | undefined) => void
   placeholder: string
   clearLabel: string
+  todayLabel: string
   ariaLabel: string
-  loading?: boolean
 }) {
   const format = useFormatter()
-
-  if (loading) {
-    return (
-      <Button
-        variant="outline"
-        disabled
-        aria-label={ariaLabel}
-        className={TRIGGER_CLASS}
-      >
-        <Spinner />
-      </Button>
-    )
-  }
 
   const label =
     value?.from && value.to
@@ -79,18 +65,27 @@ export function DateRangePicker({
           numberOfMonths={2}
           autoFocus
         />
-        {value?.from ? (
-          <div className="border-border border-t p-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full"
-              onClick={() => onChange(undefined)}
-            >
-              {clearLabel}
-            </Button>
-          </div>
-        ) : null}
+        <div className="flex gap-2 border-border border-t p-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex-1"
+            onClick={() => {
+              const today = new Date()
+              onChange({ from: today, to: today })
+            }}
+          >
+            {todayLabel}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex-1"
+            onClick={() => onChange(undefined)}
+          >
+            {clearLabel}
+          </Button>
+        </div>
       </PopoverContent>
     </Popover>
   )

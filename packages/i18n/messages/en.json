@@ -95,7 +95,8 @@
       "dateRange": {
         "label": "Filter by date",
         "placeholder": "Date range",
-        "clear": "Clear"
+        "clear": "Clear",
+        "today": "Today"
       },
       "previous": "Previous",
       "next": "Next",
@@ -776,7 +777,8 @@
         "dateRange": {
           "label": "Filter by date",
           "placeholder": "Date range",
-          "clear": "Clear"
+          "clear": "Clear",
+          "today": "Today"
         },
         "previous": "Previous",
         "next": "Next",
