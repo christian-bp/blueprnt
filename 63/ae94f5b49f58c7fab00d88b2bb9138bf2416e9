@@ -1,0 +1,37 @@
+packages/i18n/messages/nb.json
+  s_4d14ac8ce42bf2::t_362ecadd355187 756-757
+packages/i18n/messages/da.json
+  s_4d14ac8ce42bf2::t_362ecadd355187 756-757
+packages/backend/convex/platform/admin.ts
+  s_4d14ac8ce42bf2::t_306780e1def7ed 290-294,296,298
+  s_4d14ac8ce42bf2::t_09875680cd95ac 325-330,343,345-346,348-362
+apps/dashboard/components/admin/audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_cdea53198ad413 70,72,77-79,81-86,88-91
+  s_4d14ac8ce42bf2::t_b7d14660efd478 287
+  s_4d14ac8ce42bf2::t_2524c3b2d42d3e 363
+packages/i18n/messages/en.json
+  s_4d14ac8ce42bf2::t_362ecadd355187 756-757
+packages/i18n/messages/fi.json
+  s_4d14ac8ce42bf2::t_362ecadd355187 756-757
+packages/i18n/messages/sv.json
+  s_4d14ac8ce42bf2::t_362ecadd355187 756-757
+packages/backend/convex/platform/admin.test.ts
+  s_4d14ac8ce42bf2::t_9659eb4187c6f0 577-603
+  s_4d14ac8ce42bf2::t_1fceb14b61f8b9 559-560,563-564
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "63ae94f5b49f58c7fab00d88b2bb9138bf2416e9",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
