@@ -124,11 +124,129 @@ describe("setRating", () => {
           q.eq("orgId", orgId).eq("type", "rating.change")
         )
         .collect()
+      // The scope criterion was first rated 5 (create) then re-rated to 0
+      // (update). The update row carries created:false and a value from/to,
+      // with no motivation entry (motivation was never passed for it).
       expect(changes.map((row) => row.payload)).toContainEqual({
         roleId,
         criterionId: scopeCriterion.criterionId,
-        oldValue: 5,
-        newValue: 0,
+        created: false,
+        changes: { value: { from: 5, to: 0 } },
+      })
+      // The completing rating supplied a motivation, so its create row records
+      // both value and motivation as created (from null).
+      expect(changes.map((row) => row.payload)).toContainEqual({
+        roleId,
+        criterionId: lastCriterion.criterionId,
+        created: true,
+        changes: {
+          value: { from: null, to: 5 },
+          motivation: { from: null, to: "Top of the scale" },
+        },
+      })
+    })
+
+    // band.shift cause: the last shift was triggered by re-rating the scope
+    // criterion, so its payload records the rating.change cause with the role
+    // and criterion that moved it.
+    await t.run(async (ctx) => {
+      const shifts = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "band.shift")
+        )
+        .collect()
+      const lastShift = shifts[shifts.length - 1]
+      expect(lastShift?.payload).toMatchObject({
+        roleId,
+        cause: {
+          event: "rating.change",
+          roleId,
+          criterionId: scopeCriterion.criterionId,
+        },
+      })
+    })
+  })
+
+  it("records value-only updates without a motivation entry (leave-untouched)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model, roleId } = await seedTemplateOrganization(t)
+    const criterion = model.criteria[0]
+    if (criterion === undefined) throw new Error("seed")
+    // Create with a value only (no motivation arg).
+    await asAdmin.mutation(api.assessment.ratings.setRating, {
+      orgId,
+      roleId,
+      criterionId: criterion.criterionId,
+      value: 3,
+    })
+    // Update the value only; motivation arg omitted.
+    await asAdmin.mutation(api.assessment.ratings.setRating, {
+      orgId,
+      roleId,
+      criterionId: criterion.criterionId,
+      value: 4,
+    })
+    await t.run(async (ctx) => {
+      const changes = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "rating.change")
+        )
+        .collect()
+      expect(changes).toHaveLength(2)
+      // Create: value from null, no motivation key.
+      expect(changes[0]?.payload).toEqual({
+        roleId,
+        criterionId: criterion.criterionId,
+        created: true,
+        changes: { value: { from: null, to: 3 } },
+      })
+      // Update: value from/to, motivation untouched -> no motivation key.
+      expect(changes[1]?.payload).toEqual({
+        roleId,
+        criterionId: criterion.criterionId,
+        created: false,
+        changes: { value: { from: 3, to: 4 } },
+      })
+    })
+  })
+
+  it("records a motivation change as a from/to entry", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model, roleId } = await seedTemplateOrganization(t)
+    const criterion = model.criteria[0]
+    if (criterion === undefined) throw new Error("seed")
+    await asAdmin.mutation(api.assessment.ratings.setRating, {
+      orgId,
+      roleId,
+      criterionId: criterion.criterionId,
+      value: 3,
+      motivation: "First reason",
+    })
+    // Same value, new motivation.
+    await asAdmin.mutation(api.assessment.ratings.setRating, {
+      orgId,
+      roleId,
+      criterionId: criterion.criterionId,
+      value: 3,
+      motivation: "Revised reason",
+    })
+    await t.run(async (ctx) => {
+      const changes = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "rating.change")
+        )
+        .collect()
+      expect(changes).toHaveLength(2)
+      expect(changes[1]?.payload).toEqual({
+        roleId,
+        criterionId: criterion.criterionId,
+        created: false,
+        changes: {
+          motivation: { from: "First reason", to: "Revised reason" },
+        },
       })
     })
   })

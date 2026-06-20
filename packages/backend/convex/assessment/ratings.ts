@@ -1,5 +1,5 @@
 import { v } from "convex/values"
-import { AUDIT_EVENTS, logAudit } from "../lib/audit"
+import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation } from "../lib/functions"
 import { deriveResults, logBandShifts } from "./compute"
@@ -80,12 +80,31 @@ export const setRating = orgMutation({
       })
     }
     const after = await deriveResults(ctx, ctx.orgId)
+    // Thread the triggering event so each resulting band.shift records what
+    // moved it (the role + criterion that was rated).
     await logBandShifts(ctx, {
       orgId: ctx.orgId,
       actorId: ctx.authUserId,
       before: before.results,
       after: after.results,
+      cause: { event: AUDIT_EVENTS.ratingChanged, roleId, criterionId },
     })
+    // Structured before/after over value + motivation. `existing` was read
+    // before the insert/patch, so it is the true before-state. motivation is
+    // role-scoped free text and is captured (the PII decision treats it as
+    // role content). The `motivation === undefined` guard leaves the motivation
+    // entry out entirely when the caller did not touch motivation.
+    const beforeRating = {
+      value: existing?.value ?? null,
+      motivation: existing?.motivation ?? null,
+    }
+    const afterRating = {
+      value,
+      motivation:
+        motivation === undefined
+          ? beforeRating.motivation
+          : (nextMotivation ?? null),
+    }
     await logAudit(ctx, {
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.ratingChanged,
@@ -93,8 +112,11 @@ export const setRating = orgMutation({
       payload: {
         roleId,
         criterionId,
-        oldValue: existing?.value ?? null,
-        newValue: value,
+        created: existing === null,
+        changes: buildChanges(beforeRating, afterRating, [
+          "value",
+          "motivation",
+        ]),
       },
     })
     return null

@@ -74,6 +74,10 @@ describe("role families", () => {
         )
         .collect()
       expect(audit).toHaveLength(1)
+      expect(audit[0]?.payload).toEqual({
+        familyId,
+        changes: { name: { from: null, to: "Software Engineering" } },
+      })
     })
   })
 
@@ -175,8 +179,21 @@ describe("role families", () => {
       expect(audit[0]?.payload).toEqual({
         familyId,
         name: "Tech",
-        clearedRoleIds: [roleId],
+        changes: { name: { from: "Tech", to: null } },
+        count: 1,
+        items: [
+          {
+            roleId,
+            changes: { familyId: { from: familyId, to: null } },
+          },
+        ],
       })
+      // Binding correction #15: each item's `from` is the removed family id,
+      // captured before the patch, never null/undefined.
+      const payload = audit[0]?.payload as {
+        items: Array<{ changes: { familyId: { from: string; to: null } } }>
+      }
+      expect(payload.items[0]?.changes.familyId.from).toBe(familyId)
     })
   })
 })

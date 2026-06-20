@@ -52,7 +52,10 @@ export const createRoleFamily = orgMutation({
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.roleFamilyCreated,
       actorId: ctx.authUserId,
-      payload: { familyId, name },
+      payload: {
+        familyId,
+        changes: { name: { from: null, to: name } },
+      },
     })
     return familyId
   },
@@ -99,19 +102,35 @@ export const removeRoleFamily = orgMutation({
       .query("roles")
       .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
       .collect()
-    const clearedRoleIds: Id<"roles">[] = []
+    // Each cleared role records its own familyId before/after. The `from` is the
+    // known family-id constant, captured in this loop BEFORE the delete, never a
+    // post-patch read of the role (the patch has already removed the field).
+    const items: Array<{
+      roleId: Id<"roles">
+      changes: { familyId: { from: Id<"roleFamilies">; to: null } }
+    }> = []
     for (const role of roles) {
       if (role.familyId !== familyId) continue
       // Patching to undefined removes the field.
       await ctx.db.patch(role._id, { familyId: undefined })
-      clearedRoleIds.push(role._id)
+      items.push({
+        roleId: role._id,
+        changes: { familyId: { from: familyId, to: null } },
+      })
     }
     await ctx.db.delete(familyId)
     await logAudit(ctx, {
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.roleFamilyRemoved,
       actorId: ctx.authUserId,
-      payload: { familyId, name: family.name, clearedRoleIds },
+      payload: {
+        familyId,
+        // The table renderer reads p.name for this event, so keep it top-level.
+        name: family.name,
+        changes: { name: { from: family.name, to: null } },
+        count: items.length,
+        items,
+      },
     })
     return null
   },
