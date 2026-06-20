@@ -1,0 +1,23 @@
+apps/dashboard/components/admin/audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_ae7296ed7a0afe 281
+apps/dashboard/components/date-range-picker.tsx
+  s_4d14ac8ce42bf2::t_16462dc1a9aa29 12,19-20,27,34,38-44
+apps/dashboard/components/org-audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_a152172bdd5f05 310
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "05ec8d3201a3514f2024b57942e65fa6d4785e61",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
