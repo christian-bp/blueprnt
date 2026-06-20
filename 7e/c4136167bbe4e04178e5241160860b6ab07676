@@ -1,0 +1,19 @@
+docs/superpowers/specs/2026-06-19-audit-before-after.md
+  s_4d14ac8ce42bf2::t_194ff4db981cfa 1-101
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "7ec4136167bbe4e04178e5241160860b6ab07676",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
