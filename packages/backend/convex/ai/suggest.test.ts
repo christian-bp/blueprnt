@@ -183,6 +183,33 @@ describe("AI suggestion lifecycle", () => {
         )
         .collect()
       expect(audit).toHaveLength(1)
+      const payload = audit[0]?.payload as {
+        kind: string
+        acceptedCount: number
+        totalProposed: number
+        count: number
+        items: Array<{
+          criterionId: string
+          label: string
+          changes: Record<string, { from: null; to: unknown }>
+        }>
+      }
+      // One valid criterion landed out of two proposed.
+      expect(payload.kind).toBe("model.draft")
+      expect(payload.acceptedCount).toBe(1)
+      expect(payload.totalProposed).toBe(2)
+      expect(payload.count).toBe(1)
+      expect(payload.items).toHaveLength(1)
+      const item = payload.items[0]
+      if (item === undefined) throw new Error("missing item")
+      // The retained insert id matches the criterion that actually landed.
+      expect(item.criterionId).toBe(criteria[0]?._id)
+      expect(item.label).toBe("Komplexitet")
+      // originalWeightPoints is the AI's proposed value (5); weightPoints is the
+      // repaired/applied value (a single-criterion subset repairs to 3).
+      expect(item.changes.originalWeightPoints).toEqual({ from: null, to: 5 })
+      expect(item.changes.weightPoints).toEqual({ from: null, to: 3 })
+      expect(item.changes.isCustom).toEqual({ from: null, to: true })
     })
   })
 
@@ -401,8 +428,257 @@ describe("AI suggestion lifecycle", () => {
         )
         .collect()
       expect(audit).toHaveLength(1)
-      expect((audit[0]?.payload as Record<string, unknown>).appliedCount).toBe(
-        1
+      const payload = audit[0]?.payload as {
+        appliedCount: number
+        totalMoves: number
+        skippedCount: number
+        appliedMoveIndexes: number[]
+        count: number
+        items: Array<{
+          criterionId: string
+          label?: string
+          changes: { weightPoints: { from: number; to: number } }
+        }>
+        moves: Array<{
+          fromCriterionId: string
+          fromLabel?: string
+          toCriterionId: string
+          toLabel?: string
+          points: number
+          applied: boolean
+          motivation: string
+        }>
+      }
+      expect(payload.appliedCount).toBe(1)
+      // Four accepted indexes were sent; only the first applied.
+      expect(payload.totalMoves).toBe(4)
+      expect(payload.skippedCount).toBe(3)
+      expect(payload.appliedMoveIndexes).toEqual([0])
+
+      // CRITICAL (binding correction #4): ownA is touched by move 0 (3->2) AND
+      // move 3 (which is SKIPPED by the 1-5 floor: 2-2=0). The recorded `to`
+      // must be the ACTUAL stored value (2), never an accumulated 3-1-2=0, and
+      // the `from` must be the true pre-any-patch value (3).
+      const aItem = payload.items.find((i) => i.criterionId === ownA)
+      const bItem = payload.items.find((i) => i.criterionId === ownB)
+      expect(aItem?.changes.weightPoints).toEqual({ from: 3, to: 2 })
+      expect(bItem?.changes.weightPoints).toEqual({ from: 3, to: 4 })
+      expect(aItem?.label).toBe("Own A")
+      expect(bItem?.label).toBe("Own B")
+      // Only the two genuinely-changed criteria appear (no zero-delta entries).
+      expect(payload.items).toHaveLength(2)
+      expect(payload.count).toBe(2)
+
+      // moves[] preserves every accepted move with its applied flag + motivation.
+      expect(payload.moves).toHaveLength(4)
+      expect(payload.moves[0]).toMatchObject({
+        fromCriterionId: ownA,
+        toCriterionId: ownB,
+        points: 1,
+        applied: true,
+        motivation: "Fits the company profile.",
+      })
+      // The skipped duplicate-touch move keeps applied: false (struck in the UI).
+      expect(payload.moves[3]).toMatchObject({
+        fromCriterionId: ownA,
+        toCriterionId: ownB,
+        points: 2,
+        applied: false,
+        motivation: "Jointly breaches the floor.",
+      })
+      // The foreign and malformed moves are also recorded as not applied.
+      expect(payload.moves[1]?.applied).toBe(false)
+      expect(payload.moves[2]?.applied).toBe(false)
+    })
+  })
+
+  it("confirmWeightReview records net per-criterion items across a normal multi-move chain", async () => {
+    const t = initConvexTest()
+    const anchors = ["a0", "a1", "a2", "a3", "a4", "a5"]
+    const { orgId, asAdmin } = await seedScratchOrganization(t)
+    // Three criteria at the neutral 3 each (budget 9).
+    const a = await asAdmin.mutation(
+      api.evaluationModel.criteria.addCriterion,
+      {
+        orgId,
+        name: "Alpha",
+        description: "d",
+        helpText: "h",
+        anchors,
+      }
+    )
+    const b = await asAdmin.mutation(
+      api.evaluationModel.criteria.addCriterion,
+      {
+        orgId,
+        name: "Beta",
+        description: "d",
+        helpText: "h",
+        anchors,
+      }
+    )
+    const c = await asAdmin.mutation(
+      api.evaluationModel.criteria.addCriterion,
+      {
+        orgId,
+        name: "Gamma",
+        description: "d",
+        helpText: "h",
+        anchors,
+      }
+    )
+
+    const suggestionId = await asAdmin.mutation(
+      api.ai.suggest.requestWeightReview,
+      { orgId }
+    )
+    // Two moves both touch Beta: A->B (+1) then B->C (-1). Beta nets to 3 again,
+    // so it must NOT appear in items (zero net change is filtered out). Alpha
+    // ends at 2, Gamma at 4.
+    await t.mutation(internal.ai.persist.saveWeightReview, {
+      suggestionId,
+      moves: [
+        {
+          fromCriterionId: a,
+          toCriterionId: b,
+          points: 1,
+          motivation: "Shift toward Beta.",
+        },
+        {
+          fromCriterionId: b,
+          toCriterionId: c,
+          points: 1,
+          motivation: "Then on to Gamma.",
+        },
+      ],
+    })
+    await asAdmin.mutation(api.ai.suggest.confirmWeightReview, {
+      orgId,
+      suggestionId,
+      acceptedMoveIndexes: [0, 1],
+    })
+
+    await t.run(async (ctx) => {
+      expect((await ctx.db.get(a))?.weightPoints).toBe(2)
+      expect((await ctx.db.get(b))?.weightPoints).toBe(3)
+      expect((await ctx.db.get(c))?.weightPoints).toBe(4)
+      const audit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "ai.suggestionConfirmed")
+        )
+        .collect()
+      const payload = audit[0]?.payload as {
+        appliedCount: number
+        appliedMoveIndexes: number[]
+        items: Array<{
+          criterionId: string
+          changes: { weightPoints: { from: number; to: number } }
+        }>
+        moves: Array<{ applied: boolean }>
+      }
+      expect(payload.appliedCount).toBe(2)
+      expect(payload.appliedMoveIndexes).toEqual([0, 1])
+      // Beta nets to its original 3 -> filtered out. Only Alpha and Gamma move.
+      expect(payload.items).toHaveLength(2)
+      const alpha = payload.items.find((i) => i.criterionId === a)
+      const gamma = payload.items.find((i) => i.criterionId === c)
+      const beta = payload.items.find((i) => i.criterionId === b)
+      expect(alpha?.changes.weightPoints).toEqual({ from: 3, to: 2 })
+      expect(gamma?.changes.weightPoints).toEqual({ from: 3, to: 4 })
+      expect(beta).toBeUndefined()
+      expect(payload.moves.every((m) => m.applied)).toBe(true)
+    })
+  })
+
+  it("confirmModelDraft band.shift rows carry the AI-confirm cause", async () => {
+    const t = initConvexTest()
+    const anchors = ["a0", "a1", "a2", "a3", "a4", "a5"]
+    const { orgId, asAdmin, roleId } = await seedRoleOrganization(t)
+    // setRating requires a complete profile; the seeded role has none, so give
+    // it one before rating.
+    await t.run(async (ctx) => {
+      const docId = ctx.db.normalizeId("roles", roleId)
+      if (docId === null) throw new Error("bad id")
+      await ctx.db.patch(docId, {
+        purpose: "Builds the core product.",
+        responsibilities: "Ships features",
+      })
+    })
+    // Fully rate the role against the seeded template so it has a complete band.
+    const criteria = await t.run(async (ctx) =>
+      ctx.db
+        .query("criteria")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+    )
+    for (const criterion of criteria) {
+      await asAdmin.mutation(api.assessment.ratings.setRating, {
+        orgId,
+        roleId,
+        criterionId: criterion._id,
+        value: 5,
+      })
+    }
+    // A confirmed model draft adds a new criterion, which flips the fully-rated
+    // role to incomplete (band -> null): a deterministic band.shift. The shift
+    // rows must be traceable back to the suggestion that caused them.
+    const suggestionId = await asAdmin.mutation(
+      api.ai.suggest.requestModelDraft,
+      { orgId }
+    )
+    await t.run(async (ctx) => {
+      await ctx.db.patch(suggestionId, {
+        status: "suggested",
+        suggestedValue: {
+          criteria: [
+            {
+              name: "Ny aspekt",
+              description: "d",
+              helpText: "h",
+              weightPoints: 3,
+              anchors,
+            },
+          ],
+        },
+      })
+    })
+    await asAdmin.mutation(api.ai.suggest.confirmModelDraft, {
+      orgId,
+      suggestionId,
+      acceptedIndexes: [0],
+    })
+
+    await t.run(async (ctx) => {
+      const shifts = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "band.shift")
+        )
+        .collect()
+      // The earlier setRating calls also emit band.shift rows (cause:
+      // rating.change). Isolate the rows the confirm produced via their cause:
+      // they must point back to THIS suggestion with the AI-confirm event.
+      const fromConfirm = shifts.filter((shift) => {
+        const cause = (shift.payload as { cause?: Record<string, unknown> })
+          .cause
+        return (
+          cause?.event === "ai.suggestionConfirmed" &&
+          cause?.entityId === suggestionId
+        )
+      })
+      expect(fromConfirm.length).toBeGreaterThan(0)
+      // No confirm-time band.shift may be missing the cause (the threading is
+      // applied at the logBandShifts call, so every row from this confirm has
+      // it). The rating-change rows are the only OTHER cause present.
+      const causeEvents = new Set(
+        shifts.map(
+          (shift) =>
+            (shift.payload as { cause?: { event?: string } }).cause?.event
+        )
+      )
+      expect(causeEvents).toEqual(
+        new Set(["rating.change", "ai.suggestionConfirmed"])
       )
     })
   })
@@ -537,9 +813,35 @@ describe("AI suggestion lifecycle", () => {
         )
         .collect()
       expect(audit).toHaveLength(1)
-      expect((audit[0]?.payload as Record<string, unknown>).kind).toBe(
-        "model.draft"
-      )
+      const payload = audit[0]?.payload as {
+        kind: string
+        changes: { status: { from: string; to: string } }
+        modelId?: string
+        roleId?: string
+      }
+      expect(payload.kind).toBe("model.draft")
+      // status before->after: saveDraft moved the row to "suggested", the
+      // dismissal flips it to "rejected".
+      expect(payload.changes.status).toEqual({
+        from: "suggested",
+        to: "rejected",
+      })
+      // model.draft targets a model: the id-only target carries modelId, never
+      // a null roleId/criterionId key.
+      expect(payload.modelId).toBeTruthy()
+      expect("roleId" in payload).toBe(false)
+      expect("criterionId" in payload).toBe(false)
+      // A dismissed suggestion was never applied: the suggestedValue must NOT
+      // appear anywhere in the payload (recursive scan for the key).
+      const hasSuggestedValue = (value: unknown): boolean => {
+        if (value === null || typeof value !== "object") return false
+        if (Array.isArray(value))
+          return value.some((entry) => hasSuggestedValue(entry))
+        const record = value as Record<string, unknown>
+        if ("suggestedValue" in record) return true
+        return Object.values(record).some((entry) => hasSuggestedValue(entry))
+      }
+      expect(hasSuggestedValue(payload)).toBe(false)
     })
   })
 
@@ -742,10 +1044,20 @@ describe("role profile drafts", () => {
           q.eq("orgId", orgId).eq("type", "role.updated")
         )
         .collect()
-      // Structured diff like a manual edit: the seeded purpose was "" and the
-      // accepted draft is the trimmed value.
-      expect(updated.map((row) => row.payload)).toContainEqual({
+      // The companion role.updated row carries the VALUES plus provenance:
+      // source "aiSuggestion" + the suggestionId it came from. Structured diff
+      // like a manual edit: the seeded purpose was "" and the accepted draft is
+      // the trimmed value.
+      const updatedRow = updated.find(
+        (row) =>
+          (row.payload as Record<string, unknown>).roleId === docId &&
+          (row.payload as { changes?: { purpose?: unknown } }).changes
+            ?.purpose !== undefined
+      )
+      expect(updatedRow?.payload).toMatchObject({
         roleId: docId,
+        source: "aiSuggestion",
+        suggestionId,
         changes: {
           purpose: {
             from: "",
@@ -753,6 +1065,38 @@ describe("role profile drafts", () => {
           },
         },
       })
+
+      // The AI confirm row is NAMES-only: it lists which fields were applied,
+      // but never embeds the purpose/responsibilities TEXT (the values live on
+      // the companion role.updated row above). Recursively assert no value text.
+      const aiConfirm = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "ai.suggestionConfirmed")
+        )
+        .collect()
+      expect(aiConfirm).toHaveLength(1)
+      const aiPayload = aiConfirm[0]?.payload as Record<string, unknown>
+      expect(aiPayload).toMatchObject({
+        kind: "role.profile",
+        roleId: docId,
+        appliedCount: 1,
+        appliedFields: ["purpose"],
+        confirmed: true,
+      })
+      // requestedFields is the human's accepted set; offeredFields the AI's keys.
+      expect(aiPayload.requestedFields).toEqual([
+        "purpose",
+        "responsibilities",
+        "title",
+        "nonsense",
+      ])
+      expect(aiPayload.offeredFields).toEqual(
+        expect.arrayContaining(["purpose", "responsibilities"])
+      )
+      // The applied purpose value must NOT appear anywhere on the AI row.
+      const serialized = JSON.stringify(aiPayload)
+      expect(serialized).not.toContain("Bygger och underhåller kärnprodukten.")
     })
   })
 
@@ -955,6 +1299,34 @@ describe("starter import", () => {
         familyCount: 1,
         roleCount: 2,
       })
+      // The confirm row carries the created tree (families -> roles) so the
+      // import reconstructs without a follow-up query.
+      const importPayload = audit[0]?.payload as {
+        families: Array<{
+          familyId: string
+          name: string
+          roles: Array<{ roleId: string; title: string; trackKey: string }>
+        }>
+      }
+      expect(importPayload.families).toHaveLength(1)
+      const family = importPayload.families[0]
+      if (family === undefined) throw new Error("missing family")
+      expect(family.name).toBe("Engineering")
+      // The captured familyId matches the actually-created family doc.
+      expect(family.familyId).toBe(families[0]?._id)
+      expect(family.roles).toHaveLength(2)
+      expect(family.roles.map((r) => r.title).sort()).toEqual([
+        "Engineering Manager",
+        "Software Developer",
+      ])
+      // Each captured roleId resolves to a real created role in the family.
+      const roleIds = new Set(roles.map((r) => r._id))
+      for (const role of family.roles) {
+        expect(roleIds.has(role.roleId as (typeof roles)[number]["_id"])).toBe(
+          true
+        )
+        expect(typeof role.trackKey).toBe("string")
+      }
       const created = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>

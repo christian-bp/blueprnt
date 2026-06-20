@@ -5,7 +5,7 @@ import { familyNames } from "../assessment/names"
 import { PROFILE_TEXT_FIELDS, isProfileComplete } from "../assessment/roles"
 import { clampLocale, promptLocale } from "../evaluationModel/localize"
 import { templateContent } from "../evaluationModel/standardTemplate"
-import { AUDIT_EVENTS, logAudit } from "../lib/audit"
+import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 
 // The DB side of the role-profile prefill (ai/prefill). Split out of the
@@ -187,14 +187,19 @@ export const applyPrefill = internalMutation({
       }
     }
 
-    if (appliedFields.length === 0) return false
+    if (appliedFields.length === 0 || role === null) return false
 
+    // Structured before->after diff over the applied fields: `role` is the
+    // pre-patch in-memory doc read above, `patch` is what we apply (Convex
+    // patch does not mutate the already-read doc). source/via mark this as the
+    // onboarding AI prefill so the Sheet can attribute it.
+    const changes = buildChanges(role, patch, appliedFields)
     await ctx.db.patch(roleId, patch)
     await logAudit(ctx, {
       orgId,
       type: AUDIT_EVENTS.roleUpdated,
       actorId,
-      payload: { roleId, fields: appliedFields },
+      payload: { roleId, source: "ai", via: "onboardingPrefill", changes },
     })
     return true
   },

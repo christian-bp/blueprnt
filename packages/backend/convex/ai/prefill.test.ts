@@ -204,6 +204,34 @@ describe("prefillRoleProfiles", () => {
         )
         .collect()
       expect(updated).toHaveLength(3)
+      // Each prefill role.updated row carries the onboarding-prefill provenance
+      // and a structured before->after over the applied profile fields. The old
+      // bare `fields` array is gone.
+      const devRow = updated.find(
+        (row) => (row.payload as Record<string, unknown>).roleId === empty1
+      )
+      const devPayload = devRow?.payload as {
+        roleId: string
+        source: string
+        via: string
+        fields?: unknown
+        changes: Record<string, { from: unknown; to: unknown }>
+      }
+      expect(devPayload.source).toBe("ai")
+      expect(devPayload.via).toBe("onboardingPrefill")
+      // The seeded profile was empty; the AI filled both fields.
+      expect(devPayload.changes.purpose).toEqual({
+        from: "",
+        to: "Drives the Software Developer.",
+      })
+      expect(devPayload.changes.responsibilities).toEqual({
+        from: "",
+        to: "Owns Software Developer delivery\nMentors peers",
+      })
+      // The retired `fields` array must not survive on any prefill row.
+      for (const row of updated) {
+        expect("fields" in (row.payload as Record<string, unknown>)).toBe(false)
+      }
       // The per-role role.profile suggestion rows are gone.
       const suggestions = await ctx.db
         .query("suggestions")

@@ -15,7 +15,12 @@ import {
   TRACK_KEYS,
   templateContent,
 } from "../evaluationModel/standardTemplate"
-import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
+import {
+  AUDIT_EVENTS,
+  buildChanges,
+  buildCreateChanges,
+  logAudit,
+} from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
 import { AI_MODEL_ID, AI_PROFILE_MODEL_ID, AI_PROVIDER } from "./config"
@@ -221,9 +226,21 @@ export const confirmModelDraft = adminMutation({
       toInsert.map((entry) => entry.criterion.weightPoints)
     )
     const before = await deriveResults(ctx, ctx.orgId)
+    // The created criteria, as bulk audit `items`: each retains its inserted id
+    // and a create-snapshot diff. originalWeightPoints is the AI's proposed
+    // value; weightPoints is the repaired/applied value (see the subset repair
+    // above), so the trail shows both what the AI suggested and what landed.
+    const created: Array<{
+      criterionId: string
+      label: string
+      changes: Record<string, { from: null; to: unknown }>
+    }> = []
     for (const [position, entry] of toInsert.entries()) {
       order += 1
-      await ctx.db.insert("criteria", {
+      const weightPoints =
+        repairedPoints[position] ?? entry.criterion.weightPoints
+      const originalWeightPoints = entry.criterion.weightPoints
+      const criterionId = await ctx.db.insert("criteria", {
         orgId: ctx.orgId,
         modelId: model._id,
         name: entry.name,
@@ -233,9 +250,31 @@ export const confirmModelDraft = adminMutation({
           level,
           text,
         })),
-        weightPoints: repairedPoints[position] ?? entry.criterion.weightPoints,
+        weightPoints,
         order,
         isCustom: true,
+      })
+      created.push({
+        criterionId,
+        label: entry.name,
+        changes: buildCreateChanges(
+          {
+            name: entry.name,
+            order,
+            weightPoints,
+            originalWeightPoints,
+            anchorCount: entry.criterion.anchors.length,
+            isCustom: true,
+          },
+          [
+            "name",
+            "order",
+            "weightPoints",
+            "originalWeightPoints",
+            "anchorCount",
+            "isCustom",
+          ]
+        ),
       })
     }
     const insertedCount = toInsert.length
@@ -247,6 +286,10 @@ export const confirmModelDraft = adminMutation({
         actorId: ctx.authUserId,
         before: before.results,
         after: after.results,
+        cause: {
+          event: AUDIT_EVENTS.aiSuggestionConfirmed,
+          entityId: suggestionId,
+        },
       })
     }
     await ctx.db.patch(suggestionId, {
@@ -261,6 +304,9 @@ export const confirmModelDraft = adminMutation({
         suggestionId,
         kind: SUGGESTION_KINDS.modelDraft,
         acceptedCount: insertedCount,
+        totalProposed: draft.criteria.length,
+        count: created.length,
+        items: created,
       },
     })
     return null
@@ -297,17 +343,37 @@ export const confirmWeightReview = adminMutation({
         motivation: string
       }[]
     }
+    // Resolve criterion id -> name up front for the audit labels. The confirm
+    // path has no locale, so this uses the stored names (custom/edited rows are
+    // exact; pristine template rows read their stored localized name). The model
+    // is one per org, so the org-scoped criteria collect covers every move's id.
+    const orgCriteria = await ctx.db
+      .query("criteria")
+      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
+      .collect()
+    const nameById = new Map<string, string>(
+      orgCriteria.map((criterion) => [criterion._id as string, criterion.name])
+    )
     const accepted = [...new Set(acceptedMoveIndexes)]
       .filter(
         (index) =>
           Number.isInteger(index) && index >= 0 && index < value.moves.length
       )
       .sort((a, b) => a - b)
+      .map((index) => value.moves[index])
+      .filter(
+        (move): move is (typeof value.moves)[number] => move !== undefined
+      )
     const before = await deriveResults(ctx, ctx.orgId)
     let appliedCount = 0
-    for (const index of accepted) {
-      const move = value.moves[index]
-      if (move === undefined) continue
+    // First-touch pre-any-patch weightPoints per touched criterion id. Captured
+    // AFTER the null/org guards (so the doc is real and same-org) and BEFORE the
+    // bound check / any patch, so it is the true value before ANYTHING moved.
+    const originalPoints = new Map<string, number>()
+    // The indexes (into `accepted`) whose patch actually applied. Tracked as we
+    // go so the per-move audit group can flag applied vs skipped moves.
+    const appliedMoveIndexes: number[] = []
+    for (const [index, move] of accepted.entries()) {
       if (!Number.isInteger(move.points) || move.points < 1) continue
       const fromDocId = ctx.db.normalizeId("criteria", move.fromCriterionId)
       const toDocId = ctx.db.normalizeId("criteria", move.toCriterionId)
@@ -320,6 +386,14 @@ export const confirmWeightReview = adminMutation({
       const to = await ctx.db.get(toDocId)
       if (from === null || from.orgId !== ctx.orgId) continue
       if (to === null || to.orgId !== ctx.orgId) continue
+      // First-touch original capture: this iteration's freshly-read docs are the
+      // true pre-any-patch value for an id not yet seen. Never overwrite on a
+      // later touch (a later read already reflects earlier patches).
+      const fromId = fromDocId as string
+      const toId = toDocId as string
+      if (!originalPoints.has(fromId))
+        originalPoints.set(fromId, from.weightPoints)
+      if (!originalPoints.has(toId)) originalPoints.set(toId, to.weightPoints)
       if (
         !isWeightPoints(from.weightPoints - move.points) ||
         !isWeightPoints(to.weightPoints + move.points)
@@ -332,8 +406,43 @@ export const confirmWeightReview = adminMutation({
       await ctx.db.patch(toDocId, {
         weightPoints: to.weightPoints + move.points,
       })
+      appliedMoveIndexes.push(index)
       appliedCount += 1
     }
+    // Net per-criterion "after": re-read each touched id ONCE now (read-your-
+    // writes reflects exactly the applied patches). NOT accumulated from deltas,
+    // so a skipped move never corrupts the recorded final value.
+    const finalPoints = new Map<string, number>()
+    for (const id of originalPoints.keys()) {
+      const docId = ctx.db.normalizeId("criteria", id)
+      if (docId === null) continue
+      const doc = await ctx.db.get(docId)
+      if (doc !== null) finalPoints.set(id, doc.weightPoints)
+    }
+    const criteriaChangeItems = [...originalPoints.keys()]
+      .map((id) => ({
+        criterionId: id,
+        label: nameById.get(id),
+        changes: {
+          weightPoints: {
+            from: originalPoints.get(id),
+            to: finalPoints.get(id),
+          },
+        },
+      }))
+      .filter(
+        (item) =>
+          item.changes.weightPoints.from !== item.changes.weightPoints.to
+      )
+    const moveDetails = accepted.map((move, idx) => ({
+      fromCriterionId: move.fromCriterionId,
+      fromLabel: nameById.get(move.fromCriterionId),
+      toCriterionId: move.toCriterionId,
+      toLabel: nameById.get(move.toCriterionId),
+      points: move.points,
+      applied: appliedMoveIndexes.includes(idx),
+      motivation: move.motivation,
+    }))
     if (appliedCount > 0) {
       const after = await deriveResults(ctx, ctx.orgId)
       await logBandShifts(ctx, {
@@ -341,6 +450,10 @@ export const confirmWeightReview = adminMutation({
         actorId: ctx.authUserId,
         before: before.results,
         after: after.results,
+        cause: {
+          event: AUDIT_EVENTS.aiSuggestionConfirmed,
+          entityId: suggestionId,
+        },
       })
     }
     await ctx.db.patch(suggestionId, {
@@ -355,6 +468,12 @@ export const confirmWeightReview = adminMutation({
         suggestionId,
         kind: SUGGESTION_KINDS.weightReview,
         appliedCount,
+        totalMoves: value.moves.length,
+        skippedCount: accepted.length - appliedCount,
+        appliedMoveIndexes,
+        count: criteriaChangeItems.length,
+        items: criteriaChangeItems,
+        moves: moveDetails,
       },
     })
     return null
@@ -482,22 +601,30 @@ export const confirmRoleProfileDraft = orgMutation({
       patch[field] = trimmed
       appliedFields.push(field)
     }
+    // The field names the AI offered (the profile keys it returned), captured
+    // for the confirm row's names-only provenance. The values live only on the
+    // companion role.updated row below (never duplicated on the AI row).
+    const offeredFields = Object.keys(profile)
     if (appliedFields.length > 0) {
       // Structured before->after diff, exactly like manual role edits log:
       // `role` is the pre-patch doc read above, `patch` is what we apply.
+      // source/suggestionId mark this as the applied AI suggestion.
       const changes = buildChanges(role, patch, appliedFields)
       await ctx.db.patch(roleId, patch)
       await logAudit(ctx, {
         orgId: ctx.orgId,
         type: AUDIT_EVENTS.roleUpdated,
         actorId: ctx.authUserId,
-        payload: { roleId, changes },
+        payload: { roleId, source: "aiSuggestion", suggestionId, changes },
       })
     }
     await ctx.db.patch(suggestionId, {
       status: appliedFields.length > 0 ? "confirmed" : "rejected",
       confirmedBy: ctx.authUserId,
     })
+    // Field NAMES only on the AI row: the values live on the companion
+    // role.updated row above, never duplicated here (one source of truth, and
+    // it keeps this row a pure provenance record of WHICH fields were applied).
     await logAudit(ctx, {
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.aiSuggestionConfirmed,
@@ -505,7 +632,12 @@ export const confirmRoleProfileDraft = orgMutation({
       payload: {
         suggestionId,
         kind: SUGGESTION_KINDS.roleProfile,
+        roleId,
         appliedCount: appliedFields.length,
+        appliedFields,
+        requestedFields: acceptedFields,
+        offeredFields,
+        confirmed: appliedFields.length > 0,
       },
     })
     return null
@@ -580,16 +712,20 @@ export const confirmStarterImport = orgMutation({
     ) {
       throw appError(ERROR_CODES.notFound)
     }
-    const { familyCount, roleCount } = await insertStarterSet(ctx, {
+    const result = await insertStarterSet(ctx, {
       orgId: ctx.orgId,
       actorId: ctx.authUserId,
       families,
       source: "aiImport",
     })
+    const { familyCount, roleCount } = result
     await ctx.db.patch(suggestionId, {
       status: familyCount > 0 ? "confirmed" : "rejected",
       confirmedBy: ctx.authUserId,
     })
+    // The created tree (families -> roles) from insertStarterSet, so the AI row
+    // records exactly what landed. The per-row role.created/roleFamily.created
+    // rows carry the field-level snapshots; this is the import-level summary.
     await logAudit(ctx, {
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.aiSuggestionConfirmed,
@@ -599,6 +735,7 @@ export const confirmStarterImport = orgMutation({
         kind: SUGGESTION_KINDS.starterImport,
         familyCount,
         roleCount,
+        families: result.families,
       },
     })
     return null
@@ -634,15 +771,33 @@ export const rejectSuggestion = orgMutation({
     if (suggestion.status !== "suggested" && suggestion.status !== "failed") {
       throw appError(ERROR_CODES.invalidTransition)
     }
+    // Snapshot the prior status BEFORE the patch (Convex patch does not mutate
+    // the already-read doc, but reading it once keeps intent explicit).
+    const priorStatus = suggestion.status
     await ctx.db.patch(suggestionId, {
       status: "rejected",
       rejectedBy: ctx.authUserId,
     })
+    // status before->after plus only the target ids that exist (no null id keys,
+    // never the suggestedValue: a dismissed suggestion was never applied).
     await logAudit(ctx, {
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.aiSuggestionRejected,
       actorId: ctx.authUserId,
-      payload: { suggestionId, kind: suggestion.target.kind },
+      payload: {
+        suggestionId,
+        kind: suggestion.target.kind,
+        changes: { status: { from: priorStatus, to: "rejected" } },
+        ...(suggestion.target.roleId
+          ? { roleId: suggestion.target.roleId }
+          : {}),
+        ...(suggestion.target.modelId
+          ? { modelId: suggestion.target.modelId }
+          : {}),
+        ...(suggestion.target.criterionId
+          ? { criterionId: suggestion.target.criterionId }
+          : {}),
+      },
     })
     return null
   },
