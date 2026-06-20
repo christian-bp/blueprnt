@@ -39,6 +39,7 @@ import {
 import { usePaginatedQuery, useQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
 import { useState } from "react"
+import { ChangeEntryRow, KV_GRID } from "@/components/audit/change-entry-row"
 import { useOrganization } from "@/components/org-context"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import {
@@ -74,11 +75,6 @@ type AuditRow = {
   payload: unknown
   names: Record<string, string>
 }
-
-// One shared key/value grid for every block in the detail sheet (meta and each
-// change group), so they all read the same way: label left, value right, on a
-// fixed-width key column that keeps values aligned across blocks.
-const KV_GRID = "grid grid-cols-[8rem_1fr] gap-x-4 gap-y-2.5 text-sm"
 
 // Derive the i18n key from an event type value by camelCasing across dots, so
 // "organization.created" -> "organizationCreated", "ai.suggestionConfirmed" ->
@@ -519,11 +515,13 @@ function AuditDetailSheet({
                     <ChangeEntryRow
                       key={entry.field}
                       entry={entry}
-                      t={t}
-                      annotateCleared={
+                      emptyLabel={t("detail.emptyValue")}
+                      clearedNote={
                         clearedByRename &&
                         (entry.field === "purpose" ||
                           entry.field === "responsibilities")
+                          ? t("detail.clearedOnRename")
+                          : undefined
                       }
                     />
                   ))}
@@ -549,7 +547,7 @@ function AuditDetailSheet({
                             <ChangeEntryRow
                               key={entry.field}
                               entry={entry}
-                              t={t}
+                              emptyLabel={t("detail.emptyValue")}
                             />
                           ))}
                         </ul>
@@ -679,53 +677,5 @@ function AuditDetailSheet({
         </SheetClose>
       </SheetFooter>
     </>
-  )
-}
-
-// One before/after row, shared by the top-level changes list and each bulk
-// item's nested list. A complex (object/array) value renders its compact JSON
-// in a horizontally scrollable mono block so the sheet body never scrolls
-// sideways; a scalar shows "from -> to" (struck old) or just the new value.
-function ChangeEntryRow({
-  entry,
-  t,
-  annotateCleared = false,
-}: {
-  entry: ReturnType<typeof changeEntries>[number]
-  t: ReturnType<typeof useTranslations<"dashboard.auditLog">>
-  annotateCleared?: boolean
-}) {
-  return (
-    <li className="px-3 py-2.5 text-sm">
-      <div className="text-muted-foreground text-xs">{entry.label}</div>
-      <div className="mt-0.5">
-        {entry.isComplex ? (
-          <pre className="overflow-x-auto rounded bg-muted p-2 font-mono text-xs">
-            {entry.isSet ? entry.to : `${entry.from}\n→ ${entry.to}`}
-          </pre>
-        ) : entry.isSet ? (
-          <span className="break-words">{entry.to}</span>
-        ) : (
-          <span className="break-words">
-            <span className="text-muted-foreground line-through">
-              {entry.from}
-            </span>
-            <span className="px-2 text-muted-foreground">→</span>
-            {entry.to.trim() === "" ? (
-              <span className="text-muted-foreground italic">
-                {t("detail.emptyValue")}
-              </span>
-            ) : (
-              entry.to
-            )}
-          </span>
-        )}
-      </div>
-      {annotateCleared ? (
-        <div className="mt-1 text-muted-foreground text-xs">
-          {t("detail.clearedOnRename")}
-        </div>
-      ) : null}
-    </li>
   )
 }

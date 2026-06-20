@@ -753,12 +753,41 @@
         "description": "Every platform-admin action across the installation.",
         "empty": "No admin actions recorded yet.",
         "systemActor": "System",
+        "categories": {
+          "all": "All",
+          "user": "User",
+          "organization": "Organization",
+          "membership": "Membership",
+          "admin": "Admin"
+        },
+        "categoryFilterLabel": "Filter by category",
+        "search": {
+          "placeholder": "Search the log",
+          "capped": "Showing the first {count} matches",
+          "empty": "No events match your search."
+        },
+        "loadMore": "Load more",
+        "loadingMore": "Loading...",
         "table": {
           "when": "When",
           "operator": "Operator",
+          "category": "Category",
           "action": "Action",
           "target": "Target",
           "details": "Details"
+        },
+        "detail": {
+          "operator": "Operator",
+          "target": "Target",
+          "when": "When",
+          "category": "Category",
+          "changes": "What changed",
+          "detailsHeading": "Details",
+          "removedHeading": "Removed",
+          "emptyValue": "Empty",
+          "noChanges": "No further details.",
+          "close": "Close",
+          "viewDetails": "View details"
         },
         "events": {
           "userCreated": "User created",

@@ -753,12 +753,41 @@
         "description": "Hver plattformadministratorhandling i hele installasjonen.",
         "empty": "Ingen administratorhandlinger er registrert ennå.",
         "systemActor": "System",
+        "categories": {
+          "all": "Alle",
+          "user": "Bruker",
+          "organization": "Organisasjon",
+          "membership": "Medlemskap",
+          "admin": "Administrator"
+        },
+        "categoryFilterLabel": "Filtrer etter kategori",
+        "search": {
+          "placeholder": "Søk i loggen",
+          "capped": "Viser de første {count} treffene",
+          "empty": "Ingen hendelser samsvarer med søket ditt."
+        },
+        "loadMore": "Vis flere",
+        "loadingMore": "Laster...",
         "table": {
           "when": "Når",
           "operator": "Operatør",
+          "category": "Kategori",
           "action": "Handling",
           "target": "Mål",
           "details": "Detaljer"
+        },
+        "detail": {
+          "operator": "Operatør",
+          "target": "Mål",
+          "when": "Når",
+          "category": "Kategori",
+          "changes": "Hva ble endret",
+          "detailsHeading": "Detaljer",
+          "removedHeading": "Fjernet",
+          "emptyValue": "Tomt",
+          "noChanges": "Ingen ytterligere detaljer.",
+          "close": "Lukk",
+          "viewDetails": "Vis detaljer"
         },
         "events": {
           "userCreated": "Bruker opprettet",

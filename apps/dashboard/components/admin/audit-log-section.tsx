@@ -1,12 +1,33 @@
 "use client"
 
+import { Search01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
+import { Badge } from "@workspace/ui/components/badge"
+import { Button } from "@workspace/ui/components/button"
 import {
   Empty,
   EmptyDescription,
   EmptyHeader,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
+import { Input } from "@workspace/ui/components/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@workspace/ui/components/sheet"
 import {
   Table,
   TableBody,
@@ -15,9 +36,40 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
-import { usePaginatedQuery } from "convex/react"
+import { usePaginatedQuery, useQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
-import { formatChanges } from "@/lib/audit-detail"
+import { useState } from "react"
+import { ChangeEntryRow, KV_GRID } from "@/components/audit/change-entry-row"
+import { useDebouncedValue } from "@/hooks/use-debounced-value"
+import {
+  changeEntries,
+  formatChanges,
+  orderEntries,
+  payloadChanges,
+  sectionKind,
+} from "@/lib/audit-detail"
+
+// The four filterable platform categories. Kept as local literals rather than
+// importing the backend constant so we do not pull backend internals into the
+// bundle; the query ignores any value outside this set (no filter), so "all"
+// maps to undefined below.
+const CATEGORIES = ["user", "organization", "membership", "admin"] as const
+type Category = (typeof CATEGORIES)[number]
+
+// A single enriched platform-audit row, as returned by both the browse and
+// search queries. targetUser/targetOrg are resolved display labels (or null);
+// payloads carry ids and codes only, never PII.
+type AuditRow = {
+  id: string
+  at: number
+  actorId: string
+  actorName: string
+  type: string
+  category?: string
+  targetUser: string | null
+  targetOrg: string | null
+  payload: unknown
+}
 
 // Compose the human-readable target from the resolved user/org labels: user,
 // org, "user @ org" when both, or "" when neither.
@@ -32,7 +84,7 @@ function composeTarget(
 }
 
 // Render the payload compactly as plain text: "key: value" pairs joined with
-// commas, arrays joined with commas. No raw JSON braces. Payloads carry IDs and
+// commas, arrays joined with commas. No raw JSON braces. Payloads carry ids and
 // codes only (never PII), so this is safe to surface verbatim.
 function formatPayload(payload: unknown): string {
   if (payload === null || typeof payload !== "object") return ""
@@ -46,46 +98,43 @@ function formatPayload(payload: unknown): string {
 
 export function AuditLogSection() {
   const t = useTranslations("dashboard.admin.auditLog")
+  // Change-field labels reuse the org namespace: the same domain fields appear
+  // in platform payload diffs (e.g. platform.orgUpdated changes).
   const tFields = useTranslations("dashboard.auditLog")
   const format = useFormatter()
-  // listAuditLog is now paginated. Unit 2 layers on the toolbar, category
-  // filter, search, and detail sheet; for now we browse the newest-first page
-  // and surface a Load more control via the paginated query's status.
+
+  // Toolbar state. The visible input is immediate; the debounced value drives
+  // the search query so we do not fire on every keystroke.
+  const [search, setSearch] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState<Category | "all">(
+    "all"
+  )
+  const debouncedSearch = useDebouncedValue(search, 300)
+
+  // Row whose detail sheet is open, or null when the sheet is closed.
+  const [selectedRow, setSelectedRow] = useState<AuditRow | null>(null)
+
+  const isSearching = debouncedSearch.trim().length > 0
+  const categoryArg = selectedCategory === "all" ? undefined : selectedCategory
+
+  // Only one query is ever active at a time (browse XOR search). The page is
+  // already platform-admin gated, so there is no extra role gate here.
   const browse = usePaginatedQuery(
     api.platform.admin.listAuditLog,
-    {},
+    !isSearching ? { category: categoryArg } : "skip",
     { initialNumItems: 50 }
   )
-  const rows = browse.results
+  const searchResult = useQuery(
+    api.platform.admin.searchAuditLog,
+    isSearching ? { search: debouncedSearch, category: categoryArg } : "skip"
+  )
 
-  // Resolve a change field name to its localized label, falling back to the raw
-  // field name when no key exists.
-  function fieldLabel(field: string): string {
-    const key = `fields.${field}` as Parameters<typeof tFields.has>[0]
-    return tFields.has(key) ? tFields(key) : field
-  }
-
-  // Structured before->after diffs (e.g. platform.orgUpdated) render via
-  // formatChanges; everything else keeps the flat "key: value" rendering.
-  function detail(payload: unknown): string {
-    if (
-      payload !== null &&
-      typeof payload === "object" &&
-      "changes" in payload &&
-      (payload as { changes: unknown }).changes !== null &&
-      typeof (payload as { changes: unknown }).changes === "object"
-    ) {
-      return formatChanges(
-        (payload as { changes: Record<string, { from: unknown; to: unknown }> })
-          .changes,
-        fieldLabel
-      )
-    }
-    return formatPayload(payload)
-  }
+  const rows: AuditRow[] = isSearching
+    ? (searchResult?.rows ?? [])
+    : browse.results
 
   // Translate an event type to its label, falling back to the raw type when no
-  // key exists (e.g. a future event added before its string). t.has guards the
+  // key exists (a future event added before its string). t.has guards the
   // lookup so a missing key never logs an error or renders the raw key path.
   function actionLabel(type: string): string {
     const key = `events.${type.replace("platform.", "")}` as Parameters<
@@ -100,7 +149,31 @@ export function AuditLogSection() {
     return actorId.startsWith("system") ? t("systemActor") : actorName
   }
 
-  if (browse.status === "LoadingFirstPage") return null
+  function categoryLabel(category: string): string {
+    const key = `categories.${category}` as Parameters<typeof t.has>[0]
+    return t.has(key) ? t(key) : category
+  }
+
+  // Resolve a change field name to its localized label, falling back to the raw
+  // field name when no key exists.
+  function fieldLabel(field: string): string {
+    const key = `fields.${field}` as Parameters<typeof tFields.has>[0]
+    return tFields.has(key) ? tFields(key) : field
+  }
+
+  // The short one-line summary for the table cell: structured before->after
+  // diffs (e.g. platform.orgUpdated) render via formatChanges; everything else
+  // keeps the flat "key: value" rendering.
+  function detail(payload: unknown): string {
+    const changes = payloadChanges(payload)
+    return changes ? formatChanges(changes, fieldLabel) : formatPayload(payload)
+  }
+
+  // First-data loading for whichever query is active renders nothing (matches
+  // the prior behavior); the toolbar still mounts so it does not flash in.
+  const loadingFirst = isSearching
+    ? searchResult === undefined
+    : browse.status === "LoadingFirstPage"
 
   return (
     <section className="space-y-4">
@@ -108,11 +181,53 @@ export function AuditLogSection() {
         <h2 className="font-medium text-lg">{t("heading")}</h2>
         <p className="text-muted-foreground text-sm">{t("description")}</p>
       </div>
-      {rows.length === 0 ? (
+
+      {/* Toolbar: search on the left, category filter dropdown to its right. */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative">
+          <HugeiconsIcon
+            icon={Search01Icon}
+            size={16}
+            strokeWidth={2}
+            aria-hidden="true"
+            className="absolute top-1/2 left-2.5 -translate-y-1/2 text-muted-foreground"
+          />
+          <Input
+            type="search"
+            value={search}
+            placeholder={t("search.placeholder")}
+            aria-label={t("search.placeholder")}
+            onChange={(event) => setSearch(event.target.value)}
+            className="w-64 pl-8"
+          />
+        </div>
+        <Select
+          value={selectedCategory}
+          onValueChange={(value) =>
+            setSelectedCategory(value as Category | "all")
+          }
+        >
+          <SelectTrigger className="w-44" aria-label={t("categoryFilterLabel")}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("categories.all")}</SelectItem>
+            {CATEGORIES.map((category) => (
+              <SelectItem key={category} value={category}>
+                {categoryLabel(category)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {loadingFirst ? null : rows.length === 0 ? (
         <Empty>
           <EmptyHeader>
             <EmptyTitle>{t("heading")}</EmptyTitle>
-            <EmptyDescription>{t("empty")}</EmptyDescription>
+            <EmptyDescription>
+              {isSearching ? t("search.empty") : t("empty")}
+            </EmptyDescription>
           </EmptyHeader>
         </Empty>
       ) : (
@@ -121,6 +236,7 @@ export function AuditLogSection() {
             <TableRow>
               <TableHead>{t("table.when")}</TableHead>
               <TableHead>{t("table.operator")}</TableHead>
+              <TableHead>{t("table.category")}</TableHead>
               <TableHead>{t("table.action")}</TableHead>
               <TableHead>{t("table.target")}</TableHead>
               <TableHead>{t("table.details")}</TableHead>
@@ -128,7 +244,20 @@ export function AuditLogSection() {
           </TableHeader>
           <TableBody>
             {rows.map((row) => (
-              <TableRow key={row.id}>
+              <TableRow
+                key={row.id}
+                role="button"
+                tabIndex={0}
+                aria-label={t("detail.viewDetails")}
+                className="cursor-pointer hover:bg-muted/50"
+                onClick={() => setSelectedRow(row)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault()
+                    setSelectedRow(row)
+                  }
+                }}
+              >
                 <TableCell className="text-muted-foreground">
                   {format.dateTime(new Date(row.at), {
                     dateStyle: "medium",
@@ -138,18 +267,208 @@ export function AuditLogSection() {
                 <TableCell className="font-medium">
                   {operatorLabel(row.actorId, row.actorName)}
                 </TableCell>
+                <TableCell>
+                  {row.category ? (
+                    <Badge variant="secondary">
+                      {categoryLabel(row.category)}
+                    </Badge>
+                  ) : null}
+                </TableCell>
                 <TableCell>{actionLabel(row.type)}</TableCell>
                 <TableCell className="text-muted-foreground">
                   {composeTarget(row.targetUser, row.targetOrg)}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {detail(row.payload)}
+                  <span className="line-clamp-1">{detail(row.payload)}</span>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       )}
+
+      {/* Pagination slot: fixed-height so toggling browse/search does not
+          reflow the table. Load more while browsing; a truncation note while
+          searching (search is capped, not paginated). */}
+      <div className="flex h-9 items-center justify-center">
+        {!isSearching && browse.status === "CanLoadMore" ? (
+          <Button variant="outline" onClick={() => browse.loadMore(50)}>
+            {t("loadMore")}
+          </Button>
+        ) : !isSearching && browse.status === "LoadingMore" ? (
+          <Button variant="outline" disabled>
+            {t("loadingMore")}
+          </Button>
+        ) : isSearching && rows.length === 50 ? (
+          <p className="text-muted-foreground text-sm">
+            {t("search.capped", { count: 50 })}
+          </p>
+        ) : null}
+      </div>
+
+      <Sheet
+        open={selectedRow !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedRow(null)
+        }}
+      >
+        <SheetContent side="right" className="gap-0">
+          {selectedRow ? (
+            <AuditDetailSheet
+              row={selectedRow}
+              t={t}
+              format={format}
+              operatorLabel={operatorLabel}
+              actionLabel={actionLabel}
+              categoryLabel={categoryLabel}
+              fieldLabel={fieldLabel}
+            />
+          ) : null}
+        </SheetContent>
+      </Sheet>
     </section>
+  )
+}
+
+// The full-detail sheet body. Split out so its hooks-free render only mounts
+// when a row is selected; all helpers are passed in from the section. Platform
+// payloads carry no items/moves/suggestions/provenance, so this is simpler than
+// the org sheet: a KV meta block, the framed change record (or a flat payload
+// scalar list), and the raw event type in the footer.
+function AuditDetailSheet({
+  row,
+  t,
+  format,
+  operatorLabel,
+  actionLabel,
+  categoryLabel,
+  fieldLabel,
+}: {
+  row: AuditRow
+  t: ReturnType<typeof useTranslations<"dashboard.admin.auditLog">>
+  format: ReturnType<typeof useFormatter>
+  operatorLabel: (actorId: string, actorName: string) => string
+  actionLabel: (type: string) => string
+  categoryLabel: (category: string) => string
+  fieldLabel: (field: string) => string
+}) {
+  const target = composeTarget(row.targetUser, row.targetOrg)
+  const dateLong = format.dateTime(new Date(row.at), {
+    dateStyle: "long",
+    timeStyle: "short",
+  })
+
+  // Structured before->after field changes, identity-ordered. When the payload
+  // carries no `changes` map, we fall back to its remaining scalars below.
+  const changes = payloadChanges(row.payload)
+  const entries = changes
+    ? orderEntries(changeEntries(changes, fieldLabel))
+    : []
+  const kind = sectionKind(row.type, entries)
+  const sectionHeading =
+    kind === "create"
+      ? t("detail.detailsHeading")
+      : kind === "remove"
+        ? t("detail.removedHeading")
+        : t("detail.changes")
+
+  // No `changes`: surface the payload's own scalar fields as a framed flat list
+  // (id/code "key: value" rows). `changes` itself is skipped (handled above).
+  const p = (row.payload ?? {}) as Record<string, unknown>
+  const flatEntries =
+    entries.length > 0
+      ? []
+      : Object.entries(p)
+          .filter(
+            ([key, value]) =>
+              key !== "changes" &&
+              (typeof value === "string" || typeof value === "number")
+          )
+          .map(([key, value]) => ({ key, value: String(value) }))
+
+  return (
+    <>
+      <SheetHeader className="gap-1.5">
+        {/* pr-8 keeps a long title clear of the sheet's absolute close button. */}
+        <SheetTitle className="pr-8 text-balance">
+          {actionLabel(row.type)}
+        </SheetTitle>
+        <SheetDescription className="text-balance">
+          {target || dateLong}
+        </SheetDescription>
+      </SheetHeader>
+
+      <div className="flex flex-col gap-5 overflow-y-auto px-4 pb-4">
+        {/* Meta, as key/value rows: operator, when, category, target. */}
+        <dl className={KV_GRID}>
+          <dt className="text-muted-foreground">{t("detail.operator")}</dt>
+          <dd className="min-w-0 break-words">
+            {operatorLabel(row.actorId, row.actorName)}
+          </dd>
+          <dt className="text-muted-foreground">{t("detail.when")}</dt>
+          <dd className="min-w-0 break-words">{dateLong}</dd>
+          {row.category ? (
+            <>
+              <dt className="text-muted-foreground">{t("detail.category")}</dt>
+              <dd className="min-w-0">
+                <Badge variant="secondary">{categoryLabel(row.category)}</Badge>
+              </dd>
+            </>
+          ) : null}
+          {target ? (
+            <>
+              <dt className="text-muted-foreground">{t("detail.target")}</dt>
+              <dd className="min-w-0 break-words">{target}</dd>
+            </>
+          ) : null}
+        </dl>
+
+        {entries.length > 0 ? (
+          <section className="space-y-2">
+            <h3 className="font-medium text-sm">{sectionHeading}</h3>
+            <ul className="divide-y divide-border overflow-hidden rounded-lg border">
+              {entries.map((entry) => (
+                <ChangeEntryRow
+                  key={entry.field}
+                  entry={entry}
+                  emptyLabel={t("detail.emptyValue")}
+                />
+              ))}
+            </ul>
+          </section>
+        ) : flatEntries.length > 0 ? (
+          <section className="space-y-2">
+            <h3 className="font-medium text-sm">
+              {t("detail.detailsHeading")}
+            </h3>
+            <ul className="divide-y divide-border overflow-hidden rounded-lg border">
+              {flatEntries.map((entry) => (
+                <li key={entry.key} className="px-3 py-2.5 text-sm">
+                  <div className="text-muted-foreground text-xs">
+                    {fieldLabel(entry.key)}
+                  </div>
+                  <div className="mt-0.5 break-words">{entry.value}</div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            {t("detail.noChanges")}
+          </p>
+        )}
+
+        {/* Footer meta: the raw event key, for traceability. */}
+        <div className="border-border border-t pt-3 text-muted-foreground text-xs">
+          <p className="font-mono">{row.type}</p>
+        </div>
+      </div>
+
+      <SheetFooter>
+        <SheetClose asChild>
+          <Button variant="outline">{t("detail.close")}</Button>
+        </SheetClose>
+      </SheetFooter>
+    </>
   )
 }

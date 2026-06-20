@@ -753,12 +753,41 @@
         "description": "Varje plattformsadministratörsåtgärd i hela installationen.",
         "empty": "Inga administratörsåtgärder har registrerats ännu.",
         "systemActor": "System",
+        "categories": {
+          "all": "Alla",
+          "user": "Användare",
+          "organization": "Organisation",
+          "membership": "Medlemskap",
+          "admin": "Administratör"
+        },
+        "categoryFilterLabel": "Filtrera efter kategori",
+        "search": {
+          "placeholder": "Sök i loggen",
+          "capped": "Visar de första {count} träffarna",
+          "empty": "Inga händelser matchar din sökning."
+        },
+        "loadMore": "Visa fler",
+        "loadingMore": "Laddar...",
         "table": {
           "when": "När",
           "operator": "Operatör",
+          "category": "Kategori",
           "action": "Åtgärd",
           "target": "Mål",
           "details": "Detaljer"
+        },
+        "detail": {
+          "operator": "Operatör",
+          "target": "Mål",
+          "when": "När",
+          "category": "Kategori",
+          "changes": "Vad ändrades",
+          "detailsHeading": "Detaljer",
+          "removedHeading": "Borttaget",
+          "emptyValue": "Tomt",
+          "noChanges": "Inga ytterligare detaljer.",
+          "close": "Stäng",
+          "viewDetails": "Visa detaljer"
         },
         "events": {
           "userCreated": "Användare skapad",

@@ -753,12 +753,41 @@
         "description": "Jokainen alustan järjestelmänvalvojan toimi koko asennuksessa.",
         "empty": "Järjestelmänvalvojan toimia ei ole vielä kirjattu.",
         "systemActor": "Järjestelmä",
+        "categories": {
+          "all": "Kaikki",
+          "user": "Käyttäjä",
+          "organization": "Organisaatio",
+          "membership": "Jäsenyys",
+          "admin": "Järjestelmänvalvoja"
+        },
+        "categoryFilterLabel": "Suodata luokan mukaan",
+        "search": {
+          "placeholder": "Hae lokista",
+          "capped": "Näytetään ensimmäiset {count} osumaa",
+          "empty": "Mikään tapahtuma ei vastaa hakuasi."
+        },
+        "loadMore": "Näytä lisää",
+        "loadingMore": "Ladataan...",
         "table": {
           "when": "Milloin",
           "operator": "Operaattori",
+          "category": "Luokka",
           "action": "Toimi",
           "target": "Kohde",
           "details": "Tiedot"
+        },
+        "detail": {
+          "operator": "Operaattori",
+          "target": "Kohde",
+          "when": "Milloin",
+          "category": "Luokka",
+          "changes": "Mikä muuttui",
+          "detailsHeading": "Tiedot",
+          "removedHeading": "Poistettu",
+          "emptyValue": "Tyhjä",
+          "noChanges": "Ei lisätietoja.",
+          "close": "Sulje",
+          "viewDetails": "Näytä tiedot"
         },
         "events": {
           "userCreated": "Käyttäjä luotu",
