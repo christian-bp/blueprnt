@@ -1,6 +1,11 @@
 import { v } from "convex/values"
 import { trackKeyValidator } from "../evaluationModel/tables"
-import { AUDIT_EVENTS, logAudit } from "../lib/audit"
+import {
+  AUDIT_EVENTS,
+  buildChanges,
+  buildCreateChanges,
+  logAudit,
+} from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgQuery } from "../lib/functions"
 import { deriveResults } from "./compute"
@@ -81,19 +86,32 @@ export const designateAnchorRole = adminMutation({
       throw appError(ERROR_CODES.ratingsIncomplete)
     }
 
+    const reviewedAt = Date.now()
     await ctx.db.patch(roleId, {
       anchorRole: {
         expectedBand,
         motivation: trimmedMotivation,
         status: "active",
-        reviewedAt: Date.now(),
+        reviewedAt,
       },
     })
     await logAudit(ctx, {
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.anchorRoleDesignated,
       actorId: ctx.authUserId,
-      payload: { roleId, expectedBand, computedBand: result.band },
+      payload: {
+        roleId,
+        computedBand: result.band,
+        changes: buildCreateChanges(
+          {
+            expectedBand,
+            motivation: trimmedMotivation,
+            status: "active",
+            reviewedAt,
+          },
+          ["expectedBand", "motivation", "status", "reviewedAt"]
+        ),
+      },
     })
     return null
   },
@@ -127,32 +145,48 @@ export const updateAnchorRole = adminMutation({
     }
     const trimmedMotivation =
       motivation !== undefined ? validateMotivation(motivation) : undefined
+    // The role's current derived band is the value the designation is
+    // calibrated against, so it is always captured in the audit row (binding
+    // correction #5), not only on reactivation. The same single-role band
+    // derivation also gates reactivation (the assessment must still be
+    // complete). Derived once and reused for both.
+    const derived = await deriveResults(ctx, ctx.orgId)
+    const computedBand =
+      derived.results.find((row) => row.roleId === roleId)?.band ?? null
     if (status === "active" && role.anchorRole.status !== "active") {
       if (role.archivedAt !== undefined) throw appError(ERROR_CODES.roleLocked)
-      const derived = await deriveResults(ctx, ctx.orgId)
-      const result = derived.results.find((row) => row.roleId === roleId)
-      if (result === undefined || result.band === null) {
+      if (computedBand === null) {
         throw appError(ERROR_CODES.ratingsIncomplete)
       }
     }
 
-    await ctx.db.patch(roleId, {
-      anchorRole: {
-        expectedBand: expectedBand ?? role.anchorRole.expectedBand,
-        motivation: trimmedMotivation ?? role.anchorRole.motivation,
-        status: status ?? role.anchorRole.status,
-        reviewedAt: Date.now(),
-      },
-    })
+    const reviewedAt = Date.now()
+    const before = {
+      expectedBand: role.anchorRole.expectedBand,
+      motivation: role.anchorRole.motivation,
+      status: role.anchorRole.status,
+      reviewedAt: role.anchorRole.reviewedAt,
+    }
+    const after = {
+      expectedBand: expectedBand ?? before.expectedBand,
+      motivation: trimmedMotivation ?? before.motivation,
+      status: status ?? before.status,
+      reviewedAt,
+    }
+    await ctx.db.patch(roleId, { anchorRole: after })
     await logAudit(ctx, {
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.anchorRoleUpdated,
       actorId: ctx.authUserId,
       payload: {
         roleId,
-        ...(expectedBand !== undefined ? { expectedBand } : {}),
-        ...(status !== undefined ? { status } : {}),
-        ...(trimmedMotivation !== undefined ? { motivationChanged: true } : {}),
+        computedBand,
+        changes: buildChanges(before, after, [
+          "expectedBand",
+          "motivation",
+          "status",
+          "reviewedAt",
+        ]),
       },
     })
     return null

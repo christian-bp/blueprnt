@@ -91,6 +91,22 @@ describe("designateAnchorRole", () => {
         )
         .collect()
       expect(audit).toHaveLength(1)
+      // Create-snapshot of all 4 anchor fields, every entry from null, plus
+      // the live computed band the designation is calibrated against. The
+      // reviewedAt captured in the payload equals what was stored (hoist).
+      expect(audit[0]?.payload).toEqual({
+        roleId,
+        computedBand: 1,
+        changes: {
+          expectedBand: { from: null, to: 1 },
+          motivation: {
+            from: null,
+            to: "Stable, well-understood reference for engineering.",
+          },
+          status: { from: null, to: "active" },
+          reviewedAt: { from: null, to: role?.anchorRole?.reviewedAt },
+        },
+      })
     })
 
     const anchors = await asAdmin.query(
@@ -206,9 +222,16 @@ describe("updateAnchorRole", () => {
       expectedBand: 3,
       motivation: "first",
     })
-    const before = await t.run(async (ctx) => {
+    // Pin the stored reviewedAt to a known past value so the update's bump is
+    // deterministically observable (designate and update can otherwise land in
+    // the same millisecond, making buildChanges omit the unchanged timestamp).
+    const before = 1_000
+    await t.run(async (ctx) => {
       const role = await ctx.db.get(roleId)
-      return role?.anchorRole?.reviewedAt ?? 0
+      if (role?.anchorRole === undefined) throw new Error("seed")
+      await ctx.db.patch(roleId, {
+        anchorRole: { ...role.anchorRole, reviewedAt: before },
+      })
     })
 
     await asAdmin.mutation(api.assessment.anchorRoles.updateAnchorRole, {
@@ -234,10 +257,82 @@ describe("updateAnchorRole", () => {
         )
         .collect()
       expect(audit).toHaveLength(1)
-      expect(audit[0]?.payload).toMatchObject({
-        expectedBand: 4,
-        status: "underReview",
-        motivationChanged: true,
+      const payload = audit[0]?.payload as {
+        roleId?: string
+        computedBand?: number | null
+        motivationChanged?: unknown
+        changes?: Record<string, { from: unknown; to: unknown }>
+      }
+      // The lossy boolean is gone; the actual before/after is captured.
+      expect(payload.motivationChanged).toBeUndefined()
+      // computedBand is always captured (the live derived band).
+      expect(typeof payload.computedBand).toBe("number")
+      expect(payload.changes).toEqual({
+        expectedBand: { from: 3, to: 4 },
+        motivation: { from: "first", to: "second" },
+        status: { from: "active", to: "underReview" },
+        reviewedAt: { from: before, to: role?.anchorRole?.reviewedAt },
+      })
+    })
+  })
+
+  it("captures only changed fields and always the computed band on a plain edit", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
+    const roleId = await createRatedRole({
+      orgId,
+      asAdmin,
+      model,
+      title: "Ref",
+      value: 3,
+    })
+    await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
+      orgId,
+      roleId,
+      expectedBand: 3,
+      motivation: "first",
+    })
+
+    // Pin reviewedAt to the past so the update's bump is deterministic (see the
+    // sibling test): every update is a review, so reviewedAt always changes.
+    await t.run(async (ctx) => {
+      const role = await ctx.db.get(roleId)
+      if (role?.anchorRole === undefined) throw new Error("seed")
+      await ctx.db.patch(roleId, {
+        anchorRole: { ...role.anchorRole, reviewedAt: 1_000 },
+      })
+    })
+
+    // A plain motivation-only edit (no reactivation): the always-capture fix
+    // means computedBand is still present, and only motivation + reviewedAt
+    // appear in changes (no expectedBand/status, no motivationChanged key).
+    await asAdmin.mutation(api.assessment.anchorRoles.updateAnchorRole, {
+      orgId,
+      roleId,
+      motivation: "reworded",
+    })
+
+    await t.run(async (ctx) => {
+      const audit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "anchorRole.updated")
+        )
+        .collect()
+      expect(audit).toHaveLength(1)
+      const payload = audit[0]?.payload as {
+        computedBand?: number | null
+        motivationChanged?: unknown
+        changes?: Record<string, { from: unknown; to: unknown }>
+      }
+      expect(payload.motivationChanged).toBeUndefined()
+      // computedBand captured on a non-reactivation path too.
+      expect(typeof payload.computedBand).toBe("number")
+      const changeKeys = Object.keys(payload.changes ?? {}).sort()
+      expect(changeKeys).toEqual(["motivation", "reviewedAt"])
+      expect(payload.changes?.motivation).toEqual({
+        from: "first",
+        to: "reworded",
       })
     })
   })
@@ -269,6 +364,27 @@ describe("updateAnchorRole", () => {
       orgId,
       roleId,
       status: "active",
+    })
+    // The reactivation row also captures the live computed band (the path that
+    // already derives results), confirming always-capture there too.
+    await t.run(async (ctx) => {
+      const audit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "anchorRole.updated")
+        )
+        .collect()
+      const reactivation = audit.find((row) => {
+        const c = (row.payload as { changes?: Record<string, unknown> }).changes
+        const status = (c?.status ?? undefined) as
+          | { from: unknown; to: unknown }
+          | undefined
+        return status?.from === "replaced" && status?.to === "active"
+      })
+      expect(
+        typeof (reactivation?.payload as { computedBand?: number | null })
+          .computedBand
+      ).toBe("number")
     })
     await asAdmin.mutation(api.assessment.anchorRoles.updateAnchorRole, {
       orgId,
@@ -325,10 +441,25 @@ describe("updateAnchorRole", () => {
         )
         .collect()
       expect(audit).toHaveLength(1)
+      // Via archive: the status transition to "replaced" is now captured as a
+      // before/after change, with the pre-patch expectedBand as a scalar.
       expect(audit[0]?.payload).toMatchObject({
-        status: "replaced",
+        roleId,
         viaArchive: true,
+        expectedBand: 3,
+        changes: {
+          status: { from: "active", to: "replaced" },
+        },
       })
+      const payload = audit[0]?.payload as {
+        changes?: { reviewedAt?: { from: unknown; to: unknown } }
+      }
+      // When reviewedAt was bumped (designation and archive landed in
+      // different ticks), the captured `to` equals the role's stored value;
+      // buildChanges legitimately omits it when the timestamps coincide.
+      if (payload.changes?.reviewedAt !== undefined) {
+        expect(payload.changes.reviewedAt.to).toBe(role?.anchorRole?.reviewedAt)
+      }
     })
 
     const anchors = await asAdmin.query(

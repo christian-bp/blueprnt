@@ -3,7 +3,12 @@ import type { Doc, Id } from "../_generated/dataModel"
 import type { QueryCtx } from "../_generated/server"
 import { clampLocale } from "../evaluationModel/localize"
 import { trackKeyValidator } from "../evaluationModel/tables"
-import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
+import {
+  AUDIT_EVENTS,
+  buildChanges,
+  buildCreateChanges,
+  logAudit,
+} from "../lib/audit"
 import { familyNames, trackNames } from "./names"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
@@ -101,7 +106,29 @@ export const createRole = orgMutation({
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.roleCreated,
       actorId: ctx.authUserId,
-      payload: { roleId },
+      payload: {
+        roleId,
+        changes: buildCreateChanges(
+          {
+            title,
+            function: roleFunction,
+            team,
+            trackKey: args.trackKey,
+            familyId: args.familyId ?? null,
+            purpose: optional.purpose ?? "",
+            responsibilities: optional.responsibilities ?? "",
+          },
+          [
+            "title",
+            "function",
+            "team",
+            "trackKey",
+            "familyId",
+            "purpose",
+            "responsibilities",
+          ]
+        ),
+      },
     })
     return roleId
   },
@@ -355,16 +382,17 @@ export const archiveRole = adminMutation({
     // the designation would silently vanish from the calibration surfaces
     // while the role page kept showing it as active. Archiving retires the
     // anchor explicitly (status "replaced") with its own audit row.
+    const archivedAt = Date.now()
     const retiredAnchor =
       role.anchorRole !== undefined && role.anchorRole.status !== "replaced"
         ? {
             ...role.anchorRole,
             status: "replaced" as const,
-            reviewedAt: Date.now(),
+            reviewedAt: archivedAt,
           }
         : undefined
     await ctx.db.patch(roleId, {
-      archivedAt: Date.now(),
+      archivedAt,
       ...(retiredAnchor !== undefined ? { anchorRole: retiredAnchor } : {}),
     })
     const after = await deriveResults(ctx, ctx.orgId)
@@ -373,20 +401,38 @@ export const archiveRole = adminMutation({
       actorId: ctx.authUserId,
       before: before.results,
       after: after.results,
+      cause: { event: AUDIT_EVENTS.roleUpdated, roleId },
     })
     if (retiredAnchor !== undefined) {
       await logAudit(ctx, {
         orgId: ctx.orgId,
         type: AUDIT_EVENTS.anchorRoleUpdated,
         actorId: ctx.authUserId,
-        payload: { roleId, status: "replaced", viaArchive: true },
+        payload: {
+          roleId,
+          viaArchive: true,
+          expectedBand: role.anchorRole?.expectedBand,
+          changes: buildChanges(role.anchorRole ?? {}, retiredAnchor, [
+            "status",
+            "reviewedAt",
+          ]),
+        },
       })
     }
     await logAudit(ctx, {
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.roleArchived,
       actorId: ctx.authUserId,
-      payload: { roleId },
+      payload: {
+        roleId,
+        title: role.title,
+        trackKey: role.trackKey,
+        function: role.function,
+        team: role.team,
+        familyId: role.familyId ?? null,
+        anchorRetired: retiredAnchor !== undefined,
+        changes: { archivedAt: { from: null, to: archivedAt } },
+      },
     })
     return null
   },

@@ -55,6 +55,21 @@ describe("createRole", () => {
         )
         .collect()
       expect(audit).toHaveLength(1)
+      // role.created captures a complete create-snapshot of all 7 fields,
+      // every entry from null. Empty strings (purpose/responsibilities here)
+      // are still recorded (buildCreateChanges keeps them).
+      expect(audit[0]?.payload).toEqual({
+        roleId,
+        changes: {
+          title: { from: null, to: "Junior Software Developer" },
+          function: { from: null, to: "Engineering" },
+          team: { from: null, to: "Core" },
+          trackKey: { from: null, to: track.key },
+          familyId: { from: null, to: null },
+          purpose: { from: null, to: "" },
+          responsibilities: { from: null, to: "" },
+        },
+      })
     })
   })
 
@@ -306,7 +321,37 @@ describe("archiveRole", () => {
       expect(shift?.payload).toMatchObject({
         roleId,
         changes: { band: { from: 1, to: null } },
+        // The archive band.shift threads the triggering cause.
+        cause: { event: "role.updated", roleId },
       })
+
+      // role.archived snapshots the identity fields so the archived entity is
+      // fully described, and its archivedAt change matches the value actually
+      // stored on the role (timestamp hoist regression guard).
+      const archived = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "role.archived")
+        )
+        .collect()
+      expect(archived).toHaveLength(1)
+      const payload = archived[0]?.payload as {
+        title?: string
+        trackKey?: string
+        function?: string
+        team?: string
+        familyId?: string | null
+        anchorRetired?: boolean
+        changes?: { archivedAt?: { from: unknown; to: unknown } }
+      }
+      expect(payload.title).toBe("Developer")
+      expect(payload.trackKey).toBe(track.key)
+      expect(payload.function).toBe("Engineering")
+      expect(payload.team).toBe("Core")
+      expect(payload.familyId).toBeNull()
+      expect(payload.anchorRetired).toBe(false)
+      expect(payload.changes?.archivedAt?.from).toBeNull()
+      expect(payload.changes?.archivedAt?.to).toBe(role?.archivedAt)
     })
     const list = await asAdmin.query(api.assessment.roles.listRoles, { orgId })
     expect(list).toHaveLength(0)
