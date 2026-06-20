@@ -167,7 +167,9 @@ describe("rebalanceWeights", () => {
       expect(docB?.weightPoints).toBe(2)
       const auditRows = await ctx.db
         .query("auditLog")
-        .filter((q) => q.eq(q.field("type"), "model.updated"))
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.updated")
+        )
         .collect()
       const rebalanceRow = auditRows.find(
         (row) =>
@@ -194,7 +196,9 @@ describe("rebalanceWeights", () => {
     await t.run(async (ctx) => {
       const auditRows = await ctx.db
         .query("auditLog")
-        .filter((q) => q.eq(q.field("type"), "model.updated"))
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.updated")
+        )
         .collect()
       const rebalanceRows = auditRows.filter(
         (row) =>
@@ -390,11 +394,12 @@ describe("model edits shift bands live", () => {
           q.eq("orgId", orgId).eq("type", "band.shift")
         )
         .collect()
-      expect(shifts.map((row) => row.payload)).toContainEqual({
-        roleId,
-        fromBand: 4,
-        toBand: 5,
-      })
+      expect(shifts.map((row) => row.payload)).toContainEqual(
+        expect.objectContaining({
+          roleId,
+          changes: expect.objectContaining({ band: { from: 4, to: 5 } }),
+        })
+      )
     })
   })
 
@@ -428,11 +433,12 @@ describe("model edits shift bands live", () => {
           q.eq("orgId", orgId).eq("type", "band.shift")
         )
         .collect()
-      expect(shifts.map((row) => row.payload)).toContainEqual({
-        roleId,
-        fromBand: 5,
-        toBand: 4,
-      })
+      expect(shifts.map((row) => row.payload)).toContainEqual(
+        expect.objectContaining({
+          roleId,
+          changes: expect.objectContaining({ band: { from: 5, to: 4 } }),
+        })
+      )
     })
   })
 
@@ -544,11 +550,12 @@ describe("model edits shift bands live", () => {
           q.eq("orgId", orgId).eq("type", "band.shift")
         )
         .collect()
-      expect(shifts.map((row) => row.payload)).toContainEqual({
-        roleId,
-        fromBand: 1,
-        toBand: null,
-      })
+      expect(shifts.map((row) => row.payload)).toContainEqual(
+        expect.objectContaining({
+          roleId,
+          changes: expect.objectContaining({ band: { from: 1, to: null } }),
+        })
+      )
     })
   })
 })

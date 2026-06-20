@@ -1,5 +1,5 @@
 import type { GenericMutationCtx } from "convex/server"
-import type { DataModel } from "../_generated/dataModel"
+import type { DataModel, Doc } from "../_generated/dataModel"
 
 export const AUDIT_EVENTS = {
   organizationCreated: "organization.created",
@@ -60,33 +60,79 @@ export function categoryForEvent(type: string): AuditCategory | undefined {
 }
 
 // Collects scalar string/number leaves from an audit payload for the search text.
-// Recurses one level into the `changes` object's { from, to } values (those carry
-// the actual changed values, e.g. country codes), but otherwise stays shallow so
-// the result is bounded. Booleans, nulls, ids-as-objects, and deeper nesting are
-// ignored on purpose.
+// Stays shallow so the result is bounded, but recurses one level into the nested
+// shapes that carry the actual changed values: the top-level `changes` map's
+// { from, to } values (e.g. country codes); each `items[]` entry's `label` plus
+// its own `changes.*.{from,to}` (bulk children like created/removed criteria);
+// each `suggestions[]` element's scalar values (dropped AI suggestions); and each
+// `moves[]` element's `fromLabel`, `toLabel`, and `motivation` (AI weight-move
+// rationales). Booleans, nulls, object-valued from/to (anchors, bandThresholds),
+// and any deeper nesting are ignored on purpose; pushScalar drops non-scalars.
 function collectPayloadLeaves(payload: Record<string, unknown>): string[] {
   const leaves: string[] = []
   const pushScalar = (value: unknown) => {
     if (typeof value === "string") leaves.push(value)
     else if (typeof value === "number") leaves.push(String(value))
   }
-  for (const [key, value] of Object.entries(payload)) {
+  const pushChanges = (changes: unknown) => {
     if (
-      key === "changes" &&
-      value !== null &&
-      typeof value === "object" &&
-      !Array.isArray(value)
-    ) {
-      for (const change of Object.values(value as Record<string, unknown>)) {
-        if (
-          change !== null &&
-          typeof change === "object" &&
-          !Array.isArray(change)
-        ) {
-          const { from, to } = change as { from?: unknown; to?: unknown }
-          pushScalar(from)
-          pushScalar(to)
+      changes === null ||
+      typeof changes !== "object" ||
+      Array.isArray(changes)
+    )
+      return
+    for (const change of Object.values(changes as Record<string, unknown>)) {
+      if (
+        change !== null &&
+        typeof change === "object" &&
+        !Array.isArray(change)
+      ) {
+        const { from, to } = change as { from?: unknown; to?: unknown }
+        pushScalar(from)
+        pushScalar(to)
+      }
+    }
+  }
+  const pushScalarsOf = (entry: unknown) => {
+    if (entry === null || typeof entry !== "object" || Array.isArray(entry))
+      return
+    for (const value of Object.values(entry as Record<string, unknown>))
+      pushScalar(value)
+  }
+  for (const [key, value] of Object.entries(payload)) {
+    if (key === "changes") {
+      pushChanges(value)
+      continue
+    }
+    if (key === "items" && Array.isArray(value)) {
+      for (const item of value) {
+        if (item === null || typeof item !== "object" || Array.isArray(item))
+          continue
+        const { label, changes } = item as {
+          label?: unknown
+          changes?: unknown
         }
+        pushScalar(label)
+        pushChanges(changes)
+      }
+      continue
+    }
+    if (key === "suggestions" && Array.isArray(value)) {
+      for (const suggestion of value) pushScalarsOf(suggestion)
+      continue
+    }
+    if (key === "moves" && Array.isArray(value)) {
+      for (const move of value) {
+        if (move === null || typeof move !== "object" || Array.isArray(move))
+          continue
+        const { fromLabel, toLabel, motivation } = move as {
+          fromLabel?: unknown
+          toLabel?: unknown
+          motivation?: unknown
+        }
+        pushScalar(fromLabel)
+        pushScalar(toLabel)
+        pushScalar(motivation)
       }
       continue
     }
@@ -144,6 +190,134 @@ export function buildChanges(
     if (from !== to) changes[field] = { from, to }
   }
   return changes
+}
+
+// Create-time changes: every listed field present on `after` becomes
+// { from: null, to: value }. Unlike buildChanges this is unconditional (the
+// created value is the change), so it KEEPS fields whose value is an empty
+// string (a legitimate created value). Fields absent from `after` are skipped;
+// undefined/null values collapse to to: null.
+export function buildCreateChanges(
+  after: Record<string, unknown>,
+  fields: readonly string[]
+): Record<string, { from: null; to: unknown }> {
+  const changes: Record<string, { from: null; to: unknown }> = {}
+  for (const field of fields) {
+    if (!(field in after)) continue
+    changes[field] = { from: null, to: after[field] ?? null }
+  }
+  return changes
+}
+
+// Delete-time changes: mirror of buildCreateChanges. Every listed field present
+// on the removed entity becomes { from: value, to: null }. Fields absent from
+// `before` are skipped; undefined/null values collapse to from: null.
+export function buildDeleteChanges(
+  before: Record<string, unknown>,
+  fields: readonly string[]
+): Record<string, { from: unknown; to: null }> {
+  const changes: Record<string, { from: unknown; to: null }> = {}
+  for (const field of fields) {
+    if (!(field in before)) continue
+    changes[field] = { from: before[field] ?? null, to: null }
+  }
+  return changes
+}
+
+// Returns { anchors: { from, to } } only when any level-ordered anchor text
+// differs between before and after, else {}. Needed because buildChanges
+// compares arrays by reference and would always flag anchors as changed. The
+// arrays are compared positionally (already stored ordered by level): a length
+// change or any differing level/text at a position counts as a difference.
+export function anchorDiff(
+  before: Array<{ level: number; text: string }>,
+  after: Array<{ level: number; text: string }>
+): Record<"anchors", { from: unknown; to: unknown }> | Record<string, never> {
+  let differs = before.length !== after.length
+  if (!differs) {
+    for (let i = 0; i < before.length; i++) {
+      const a = before[i]
+      const b = after[i]
+      if (a === undefined || b === undefined) {
+        differs = true
+        break
+      }
+      if (a.level !== b.level || a.text !== b.text) {
+        differs = true
+        break
+      }
+    }
+  }
+  return differs ? { anchors: { from: before, to: after } } : {}
+}
+
+// The audit field set captured for a criterion, identical for create and delete
+// so criterion.added and criterion.removed (and model.discarded) stay symmetric.
+// INCLUDES templateKey on purpose (a pristine template criterion records which
+// template row it came from).
+const CRITERION_AUDIT_FIELDS = [
+  "name",
+  "description",
+  "helpText",
+  "anchors",
+  "weightPoints",
+  "order",
+  "isCustom",
+  "templateKey",
+] as const
+
+// One bulk `items` entry for a freshly created criterion (template/scratch/AI).
+// Wraps buildCreateChanges over CRITERION_AUDIT_FIELDS; the human label is the
+// criterion name (ids in items are NOT resolved at read time). The optional
+// fields default to the schema's stored shape so the captured snapshot is
+// complete even when a caller omits them.
+export function criterionCreateItem(args: {
+  criterionId?: string
+  templateKey?: string | null
+  name: string
+  order: number
+  description?: string
+  helpText?: string
+  weightPoints: number
+  isCustom: boolean
+  anchors?: Array<{ level: number; text: string }>
+}): {
+  criterionId?: string
+  label: string
+  changes: Record<string, { from: null; to: unknown }>
+} {
+  const after: Record<string, unknown> = {
+    name: args.name,
+    description: args.description ?? "",
+    helpText: args.helpText ?? "",
+    anchors: args.anchors ?? [],
+    weightPoints: args.weightPoints,
+    order: args.order,
+    isCustom: args.isCustom,
+    templateKey: args.templateKey ?? null,
+  }
+  return {
+    ...(args.criterionId !== undefined
+      ? { criterionId: args.criterionId }
+      : {}),
+    label: args.name,
+    changes: buildCreateChanges(after, CRITERION_AUDIT_FIELDS),
+  }
+}
+
+// One bulk `items` entry for a criterion being hard-deleted. Wraps
+// buildDeleteChanges over the same CRITERION_AUDIT_FIELDS; the human label is
+// the criterion name.
+export function criterionDeleteItem(criterion: Doc<"criteria">): {
+  criterionId: string
+  label: string
+  changes: Record<string, { from: unknown; to: null }>
+} {
+  return {
+    criterionId: criterion._id,
+    label: criterion.name,
+    changes: buildDeleteChanges(criterion, CRITERION_AUDIT_FIELDS),
+  }
 }
 
 // Called inside the same mutation transaction as the change it records.

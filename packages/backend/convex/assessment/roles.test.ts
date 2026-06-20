@@ -300,10 +300,12 @@ describe("archiveRole", () => {
           q.eq("orgId", orgId).eq("type", "band.shift")
         )
         .collect()
-      expect(shifts.map((row) => row.payload)).toContainEqual({
+      const shift = shifts.find(
+        (row) => (row.payload as { roleId?: string }).roleId === roleId
+      )
+      expect(shift?.payload).toMatchObject({
         roleId,
-        fromBand: 1,
-        toBand: null,
+        changes: { band: { from: 1, to: null } },
       })
     })
     const list = await asAdmin.query(api.assessment.roles.listRoles, { orgId })

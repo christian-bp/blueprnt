@@ -79,9 +79,11 @@ describe("setRating", () => {
           q.eq("orgId", orgId).eq("type", "band.shift")
         )
         .collect()
-      expect(shifts.map((row) => row.payload)).toEqual([
-        { roleId, fromBand: null, toBand: 1 },
-      ])
+      expect(shifts).toHaveLength(1)
+      expect(shifts[0]?.payload).toMatchObject({
+        roleId,
+        changes: { band: { from: null, to: 1 } },
+      })
     })
 
     // Re-rating the scope criterion (5 weight points) from 5 to 0 drops the
@@ -107,10 +109,15 @@ describe("setRating", () => {
           q.eq("orgId", orgId).eq("type", "band.shift")
         )
         .collect()
-      expect(shifts.map((row) => row.payload)).toEqual([
-        { roleId, fromBand: null, toBand: 1 },
-        { roleId, fromBand: 1, toBand: 3 },
-      ])
+      expect(shifts).toHaveLength(2)
+      expect(shifts[0]?.payload).toMatchObject({
+        roleId,
+        changes: { band: { from: null, to: 1 } },
+      })
+      expect(shifts[1]?.payload).toMatchObject({
+        roleId,
+        changes: { band: { from: 1, to: 3 } },
+      })
       const changes = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>

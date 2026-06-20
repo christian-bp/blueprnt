@@ -174,14 +174,81 @@ describe("logBandShifts", () => {
           q.eq("orgId", orgId).eq("type", "band.shift")
         )
         .collect()
-      const payloads = rows.map((row) => row.payload)
+      const payloads = rows.map((row) => row.payload as Record<string, unknown>)
       expect(payloads).toHaveLength(2)
-      expect(payloads).toContainEqual({ roleId: "a", fromBand: 1, toBand: 2 })
-      expect(payloads).toContainEqual({
-        roleId: "gone",
-        fromBand: 7,
-        toBand: null,
+
+      // Role "a": band 1 -> 2 and score 100 -> 90 changed; complete and
+      // ratedCount unchanged so they are absent. No cause was threaded.
+      const a = payloads.find((p) => p.roleId === "a")
+      expect(a).toBeDefined()
+      expect(a).not.toHaveProperty("cause")
+      expect(a?.totalCriteria).toBe(9)
+      expect(a?.changes).toEqual({
+        band: { from: 1, to: 2 },
+        score: { from: 100, to: 90 },
       })
+
+      // Role "gone": present before, absent after. band 7 -> null gates the row;
+      // score/complete/ratedCount also flip to their null/zero-ish absent values.
+      const gone = payloads.find((p) => p.roleId === "gone")
+      expect(gone).toBeDefined()
+      expect(gone?.totalCriteria).toBe(9)
+      expect(gone?.changes).toMatchObject({
+        band: { from: 7, to: null },
+        score: { from: 0, to: null },
+        complete: { from: true, to: null },
+        ratedCount: { from: 9, to: null },
+      })
+    })
+  })
+
+  it("threads an optional cause into the band.shift payload", async () => {
+    const t = initConvexTest()
+    const { orgId, userId } = await seedTemplateOrganization(t)
+    await t.run(async (ctx) => {
+      await logBandShifts(ctx, {
+        orgId,
+        actorId: userId,
+        before: [
+          {
+            roleId: "a",
+            ratedCount: 9,
+            totalCriteria: 9,
+            complete: true,
+            score: 100,
+            band: 1,
+          },
+        ],
+        after: [
+          {
+            roleId: "a",
+            ratedCount: 9,
+            totalCriteria: 9,
+            complete: true,
+            score: 80,
+            band: 3,
+          },
+        ],
+        cause: {
+          event: "rating.change",
+          roleId: "a",
+          criterionId: "crit-1",
+        },
+      })
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "band.shift")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+      const payload = rows[0]?.payload as Record<string, unknown>
+      expect(payload.cause).toEqual({
+        event: "rating.change",
+        roleId: "a",
+        criterionId: "crit-1",
+      })
+      expect(payload.changes).toMatchObject({ band: { from: 1, to: 3 } })
     })
   })
 })
