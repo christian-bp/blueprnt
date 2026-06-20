@@ -51,6 +51,7 @@ import type * as evaluationModel_standardTemplate from "../evaluationModel/stand
 import type * as evaluationModel_tables from "../evaluationModel/tables.js";
 import type * as http from "../http.js";
 import type * as lib_audit from "../lib/audit.js";
+import type * as lib_auditPayloads from "../lib/auditPayloads.js";
 import type * as lib_errors from "../lib/errors.js";
 import type * as lib_functions from "../lib/functions.js";
 import type * as platform_admin from "../platform/admin.js";
@@ -108,6 +109,7 @@ declare const fullApi: ApiFromModules<{
   "evaluationModel/tables": typeof evaluationModel_tables;
   http: typeof http;
   "lib/audit": typeof lib_audit;
+  "lib/auditPayloads": typeof lib_auditPayloads;
   "lib/errors": typeof lib_errors;
   "lib/functions": typeof lib_functions;
   "platform/admin": typeof platform_admin;

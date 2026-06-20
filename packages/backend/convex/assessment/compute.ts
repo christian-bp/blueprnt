@@ -10,12 +10,8 @@ import {
 import type { GenericMutationCtx } from "convex/server"
 import type { DataModel } from "../_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
-import {
-  AUDIT_EVENTS,
-  type AuditEvent,
-  buildChanges,
-  logAudit,
-} from "../lib/audit"
+import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
+import type { BandCause } from "../lib/auditPayloads"
 
 export interface DerivedResults {
   results: RoleResult[]
@@ -88,10 +84,9 @@ export async function deriveResults(
 // Compares two derived result sets and logs one band.shift audit row per role
 // whose band changed; a role missing on one side counts as band null. Runs in
 // the same transaction as the mutation that caused the shift, so the audit
-// trail can never drift from the data (ADR-0002 live derivation). The optional
+// trail can never drift from the data (ADR-0002 live derivation). The required
 // `cause` records the triggering domain event (and the role/criterion/entity it
-// touched) so a band.shift can be traced back to what moved it; callers that do
-// not thread it yet simply omit it.
+// touched) so a band.shift can always be traced back to what moved it.
 export async function logBandShifts(
   ctx: GenericMutationCtx<DataModel>,
   args: {
@@ -99,12 +94,7 @@ export async function logBandShifts(
     actorId: string
     before: RoleResult[]
     after: RoleResult[]
-    cause?: {
-      event: AuditEvent
-      roleId?: string
-      criterionId?: string
-      entityId?: string
-    }
+    cause: BandCause
   }
 ) {
   const beforeByRole = new Map(args.before.map((r) => [r.roleId, r]))
@@ -133,7 +123,7 @@ export async function logBandShifts(
       actorId: args.actorId,
       payload: {
         roleId,
-        ...(args.cause ? { cause: args.cause } : {}),
+        cause: args.cause,
         changes: buildChanges(pick(beforeResult), pick(afterResult), FIELDS),
         totalCriteria:
           afterResult?.totalCriteria ?? beforeResult?.totalCriteria,

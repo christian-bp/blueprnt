@@ -115,6 +115,7 @@ describe("logBandShifts", () => {
       await logBandShifts(ctx, {
         orgId,
         actorId: userId,
+        cause: { event: "model.updated" },
         before: [
           {
             roleId: "a",
@@ -178,10 +179,10 @@ describe("logBandShifts", () => {
       expect(payloads).toHaveLength(2)
 
       // Role "a": band 1 -> 2 and score 100 -> 90 changed; complete and
-      // ratedCount unchanged so they are absent. No cause was threaded.
+      // ratedCount unchanged so they are absent. The cause is always recorded.
       const a = payloads.find((p) => p.roleId === "a")
       expect(a).toBeDefined()
-      expect(a).not.toHaveProperty("cause")
+      expect(a?.cause).toEqual({ event: "model.updated" })
       expect(a?.totalCriteria).toBe(9)
       expect(a?.changes).toEqual({
         band: { from: 1, to: 2 },
@@ -202,7 +203,7 @@ describe("logBandShifts", () => {
     })
   })
 
-  it("threads an optional cause into the band.shift payload", async () => {
+  it("threads the cause into the band.shift payload", async () => {
     const t = initConvexTest()
     const { orgId, userId } = await seedTemplateOrganization(t)
     await t.run(async (ctx) => {

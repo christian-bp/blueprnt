@@ -14,6 +14,7 @@ import {
   buildChanges,
   buildCreateChanges,
   buildDeleteChanges,
+  CRITERION_AUDIT_FIELDS,
   logAudit,
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
@@ -96,15 +97,10 @@ export const addCriterion = adminMutation({
             order: maxOrder + 1,
             isCustom: true,
           },
-          [
-            "name",
-            "description",
-            "helpText",
-            "anchors",
-            "weightPoints",
-            "order",
-            "isCustom",
-          ]
+          // The full criterion field set; templateKey is absent from `after`
+          // here (a fresh custom criterion has none) so buildCreateChanges skips
+          // it, yielding the same change set as the 7-field inline list did.
+          CRITERION_AUDIT_FIELDS
         ),
       },
     })
@@ -374,16 +370,7 @@ export const removeCriterion = adminMutation({
         budget: { from: (remaining.length + 1) * 3, to: remaining.length * 3 },
         // The removed criterion as a full delete-snapshot (all fields to:null),
         // `criterion` read before the delete.
-        changes: buildDeleteChanges(criterion, [
-          "name",
-          "description",
-          "helpText",
-          "anchors",
-          "weightPoints",
-          "order",
-          "isCustom",
-          "templateKey",
-        ]),
+        changes: buildDeleteChanges(criterion, CRITERION_AUDIT_FIELDS),
         // Survivors whose weight was repaired onto the shrunken budget.
         count: rebalancedSurvivors.length,
         items: rebalancedSurvivors,

@@ -1,5 +1,6 @@
 import type { GenericMutationCtx } from "convex/server"
 import type { DataModel, Doc } from "../_generated/dataModel"
+import type { AuditPayloads, PlatformAuditPayloads } from "./auditPayloads"
 
 export const AUDIT_EVENTS = {
   organizationCreated: "organization.created",
@@ -255,7 +256,7 @@ export function anchorDiff(
 // so criterion.added and criterion.removed (and model.discarded) stay symmetric.
 // INCLUDES templateKey on purpose (a pristine template criterion records which
 // template row it came from).
-const CRITERION_AUDIT_FIELDS = [
+export const CRITERION_AUDIT_FIELDS = [
   "name",
   "description",
   "helpText",
@@ -264,6 +265,44 @@ const CRITERION_AUDIT_FIELDS = [
   "order",
   "isCustom",
   "templateKey",
+] as const
+
+// The anchor-role designation fields diffed by anchorRoles.ts (designate/update).
+// roles.ts and starters.ts archive paths diff only the status/reviewedAt subset.
+export const ANCHOR_AUDIT_FIELDS = [
+  "expectedBand",
+  "motivation",
+  "status",
+  "reviewedAt",
+] as const
+
+// The model document fields diffed on create/discard (anchors and band
+// thresholds ride on the model row, ADR-0006).
+export const MODEL_AUDIT_FIELDS = [
+  "name",
+  "templateKey",
+  "bandThresholds",
+] as const
+
+// The organization settings fields diffed on settingsUpdated.
+export const SETTINGS_AUDIT_FIELDS = [
+  "country",
+  "currency",
+  "language",
+  "employeeCount",
+  "industry",
+] as const
+
+// The job profile fields captured when a role is created (createRole and the
+// starter/import/reconcile create paths share this list).
+export const ROLE_CREATE_FIELDS = [
+  "title",
+  "function",
+  "team",
+  "trackKey",
+  "familyId",
+  "purpose",
+  "responsibilities",
 ] as const
 
 // One bulk `items` entry for a freshly created criterion (template/scratch/AI).
@@ -320,39 +359,56 @@ export function criterionDeleteItem(criterion: Doc<"criteria">): {
   }
 }
 
-// Called inside the same mutation transaction as the change it records.
-// Uses GenericMutationCtx<DataModel> so both MutationCtx (from _generated/server)
-// and trigger handler contexts (GenericMutationCtx<DataModel>) are assignable.
-export async function logAudit(
+// Snapshots the actor's display name at write time by looking up the users
+// mirror by auth id. Returns "unknown" when no mirror row matches (sentinel
+// actors like "system"/"seeded"/"system:cli") or when the lookup throws.
+// Shared by both audit writers so the snapshot rule cannot drift between them.
+async function resolveActorName(
   ctx: GenericMutationCtx<DataModel>,
-  entry: {
-    orgId: string
-    type: AuditEvent
-    actorId: string
-    payload: Record<string, unknown>
-  }
-) {
-  let actorName = "unknown"
+  actorId: string
+): Promise<string> {
   try {
     const actor = await ctx.db
       .query("users")
-      .withIndex("by_auth_id", (q) => q.eq("authId", entry.actorId))
+      .withIndex("by_auth_id", (q) => q.eq("authId", actorId))
       .first()
-    if (actor !== null) actorName = actor.name
+    if (actor !== null) return actor.name
   } catch (error) {
     console.error("audit actor lookup failed", {
-      actorId: entry.actorId,
+      actorId,
       error: error instanceof Error ? error.message : String(error),
     })
   }
+  return "unknown"
+}
+
+// Called inside the same mutation transaction as the change it records.
+// Uses GenericMutationCtx<DataModel> so both MutationCtx (from _generated/server)
+// and trigger handler contexts (GenericMutationCtx<DataModel>) are assignable.
+// Generic over the event type so the payload is type-checked against
+// AuditPayloads[E] (the per-event envelope contract).
+export async function logAudit<E extends keyof AuditPayloads>(
+  ctx: GenericMutationCtx<DataModel>,
+  entry: {
+    orgId: string
+    type: E
+    actorId: string
+    payload: AuditPayloads[E]
+  }
+) {
+  const actorName = await resolveActorName(ctx, entry.actorId)
   await ctx.db.insert("auditLog", {
     orgId: entry.orgId,
     type: entry.type,
     actorId: entry.actorId,
     actorName,
-    payload: entry.payload,
+    payload: entry.payload as Record<string, unknown>,
     category: categoryForEvent(entry.type),
-    searchText: buildSearchText(actorName, entry.type, entry.payload),
+    searchText: buildSearchText(
+      actorName,
+      entry.type,
+      entry.payload as Record<string, unknown>
+    ),
   })
 }
 
@@ -361,29 +417,17 @@ export async function logAudit(
 // carries IDs only (targetUserId/targetOrgId) and a payload that must never
 // include the affected person's name or email, so erasure leaves no PII. The
 // type is constrained to PlatformAuditEvent so org event keys cannot leak in.
-export async function logPlatformAudit(
+export async function logPlatformAudit<E extends keyof PlatformAuditPayloads>(
   ctx: GenericMutationCtx<DataModel>,
   entry: {
     actorId: string
-    type: PlatformAuditEvent
+    type: E
     targetUserId?: string
     targetOrgId?: string
-    payload: Record<string, unknown>
+    payload: PlatformAuditPayloads[E]
   }
 ) {
-  let actorName = "unknown"
-  try {
-    const actor = await ctx.db
-      .query("users")
-      .withIndex("by_auth_id", (q) => q.eq("authId", entry.actorId))
-      .first()
-    if (actor !== null) actorName = actor.name
-  } catch (error) {
-    console.error("platform audit actor lookup failed", {
-      actorId: entry.actorId,
-      error: error instanceof Error ? error.message : String(error),
-    })
-  }
+  const actorName = await resolveActorName(ctx, entry.actorId)
   await ctx.db.insert("platformAuditLog", {
     actorId: entry.actorId,
     actorName,
@@ -394,6 +438,6 @@ export async function logPlatformAudit(
     ...(entry.targetOrgId !== undefined
       ? { targetOrgId: entry.targetOrgId }
       : {}),
-    payload: entry.payload,
+    payload: entry.payload as Record<string, unknown>,
   })
 }

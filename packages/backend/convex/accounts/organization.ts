@@ -1,7 +1,12 @@
 import { MIN_CRITERIA } from "@workspace/core"
 import { v } from "convex/values"
 import { internalQuery } from "../_generated/server"
-import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
+import {
+  AUDIT_EVENTS,
+  buildChanges,
+  logAudit,
+  SETTINGS_AUDIT_FIELDS,
+} from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgQuery } from "../lib/functions"
 
@@ -65,13 +70,7 @@ export const updateOrganizationSettings = adminMutation({
       // changed headcount is captured in the diff.
       payload: {
         created: settings === null,
-        changes: buildChanges(settings ?? {}, args, [
-          "country",
-          "currency",
-          "language",
-          "employeeCount",
-          "industry",
-        ]),
+        changes: buildChanges(settings ?? {}, args, SETTINGS_AUDIT_FIELDS),
       },
     })
     return null

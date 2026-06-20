@@ -1,6 +1,7 @@
 import { v } from "convex/values"
 import { trackKeyValidator } from "../evaluationModel/tables"
 import {
+  ANCHOR_AUDIT_FIELDS,
   AUDIT_EVENTS,
   buildChanges,
   buildCreateChanges,
@@ -109,7 +110,7 @@ export const designateAnchorRole = adminMutation({
             status: "active",
             reviewedAt,
           },
-          ["expectedBand", "motivation", "status", "reviewedAt"]
+          ANCHOR_AUDIT_FIELDS
         ),
       },
     })
@@ -181,12 +182,7 @@ export const updateAnchorRole = adminMutation({
       payload: {
         roleId,
         computedBand,
-        changes: buildChanges(before, after, [
-          "expectedBand",
-          "motivation",
-          "status",
-          "reviewedAt",
-        ]),
+        changes: buildChanges(before, after, ANCHOR_AUDIT_FIELDS),
       },
     })
     return null

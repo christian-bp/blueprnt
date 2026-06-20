@@ -7,6 +7,7 @@ import {
   criterionCreateItem,
   criterionDeleteItem,
   logAudit,
+  MODEL_AUDIT_FIELDS,
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgQuery } from "../lib/functions"
@@ -120,7 +121,7 @@ export const createModelFromTemplate = adminMutation({
             templateKey: STANDARD_TEMPLATE_KEY,
             bandThresholds: defaultBandThresholds(),
           },
-          ["name", "templateKey", "bandThresholds"]
+          MODEL_AUDIT_FIELDS
         ),
         count: CRITERION_KEYS.length,
         items: criteriaSnapshots,
@@ -210,7 +211,7 @@ export const seedStandardModel = internalMutation({
             templateKey: STANDARD_TEMPLATE_KEY,
             bandThresholds: defaultBandThresholds(),
           },
-          ["name", "templateKey", "bandThresholds"]
+          MODEL_AUDIT_FIELDS
         ),
         count: CRITERION_KEYS.length,
         items: criteriaSnapshots,
@@ -323,11 +324,7 @@ export const discardModel = adminMutation({
         modelId: model._id,
         name: model.name,
         // The discarded model as a full delete-snapshot (all fields to:null).
-        changes: buildDeleteChanges(model, [
-          "name",
-          "templateKey",
-          "bandThresholds",
-        ]),
+        changes: buildDeleteChanges(model, MODEL_AUDIT_FIELDS),
         // Every removed criterion as a delete-snapshot item (incl. templateKey).
         count: criteria.length,
         items: criteria.map(criterionDeleteItem),

@@ -8,6 +8,7 @@ import {
   buildChanges,
   buildCreateChanges,
   logAudit,
+  ROLE_CREATE_FIELDS,
 } from "../lib/audit"
 import { familyNames, trackNames } from "./names"
 import { appError, ERROR_CODES } from "../lib/errors"
@@ -118,15 +119,7 @@ export const createRole = orgMutation({
             purpose: optional.purpose ?? "",
             responsibilities: optional.responsibilities ?? "",
           },
-          [
-            "title",
-            "function",
-            "team",
-            "trackKey",
-            "familyId",
-            "purpose",
-            "responsibilities",
-          ]
+          ROLE_CREATE_FIELDS
         ),
       },
     })
