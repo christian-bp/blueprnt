@@ -1,0 +1,48 @@
+packages/backend/convex/accounts/audit.test.ts
+  s_4d14ac8ce42bf2::t_cc51b5f0fab2b0 192-239
+packages/backend/convex/accounts/audit.ts
+  s_4d14ac8ce42bf2::t_361ad95b1e5f37 79
+  s_4d14ac8ce42bf2::t_87be50f9eea984 111-118
+  s_4d14ac8ce42bf2::t_2398809ed8e775 56-57,69-78,80-82
+packages/i18n/messages/da.json
+  s_4d14ac8ce42bf2::t_a2fc025ac59f37 106-133,148-151,166-190
+packages/i18n/messages/en.json
+  s_4d14ac8ce42bf2::t_a2fc025ac59f37 106-133,148-151,166-190
+apps/dashboard/lib/audit-detail.ts
+  s_4d14ac8ce42bf2::t_2657798f2b7673 242-243
+  s_4d14ac8ce42bf2::t_3c2bb21878dd15 212-214,224,227-228,235-237
+  s_4d14ac8ce42bf2::t_1f8248c00f0bd9 281-292,294-295,300,308-309,311-319,330-338,342-344,378,381-396,404
+  s_4d14ac8ce42bf2::t_b9970393645fa2 70-209
+  s_4d14ac8ce42bf2::t_1015d9fb8e796f 1-21,26-28,31-32,37-42
+packages/i18n/messages/fi.json
+  s_4d14ac8ce42bf2::t_a2fc025ac59f37 106-133,148-151,166-190
+packages/i18n/messages/sv.json
+  s_4d14ac8ce42bf2::t_a2fc025ac59f37 106-133,148-151,166-190
+apps/dashboard/components/org-audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_be427a0a3e0f4e 394,396-397
+  s_4d14ac8ce42bf2::t_24b66fc2e31493 379-393,395,398-417,420-433,469-479,481-482,486-544,548-551,554-560,562-615,617-638,649-686
+  s_4d14ac8ce42bf2::t_84f8a19255fbe4 434,545-547
+  s_4d14ac8ce42bf2::t_4d8e59dfbc79d6 174-176
+  s_4d14ac8ce42bf2::t_47efe46703f219 43,47-50
+packages/i18n/messages/nb.json
+  s_4d14ac8ce42bf2::t_a2fc025ac59f37 106-133,148-151,166-190
+apps/dashboard/lib/audit-detail.test.ts
+  s_4d14ac8ce42bf2::t_8096a2accf8063 6,9-12,19-23,30-56,99-108,143-161,236,241,243-244,249-263,265-334,360-372,377,387,396-403,408-415,422-445,464,472,496-637
+  s_4d14ac8ce42bf2::t_84f8a19255fbe4 264
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "d0b577312e5360c1a336a9e95b8c44d51b7e8512",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
