@@ -78,6 +78,33 @@
       "description": "Hver endring i organisasjonen din, hvem som gjorde den og når.",
       "empty": "Ingen aktivitet er registrert ennå.",
       "notAuthorized": "Bare organisasjonsadministratorer kan se hendelsesloggen.",
+      "categories": {
+        "all": "Alle",
+        "model": "Modell",
+        "role": "Rolle",
+        "organization": "Organisasjon",
+        "member": "Medlem",
+        "ai": "KI"
+      },
+      "categoryFilterLabel": "Filtrer etter kategori",
+      "search": {
+        "placeholder": "Søk i loggen",
+        "capped": "Viser de første {count} treffene",
+        "empty": "Ingen hendelser samsvarer med søket ditt."
+      },
+      "loadMore": "Vis flere",
+      "loadingMore": "Laster...",
+      "detail": {
+        "who": "Hvem",
+        "category": "Kategori",
+        "event": "Hendelse",
+        "changes": "Hva ble endret",
+        "from": "Fra",
+        "to": "Til",
+        "noChanges": "Ingen endringer på feltnivå registrert.",
+        "close": "Lukk",
+        "viewDetails": "Vis detaljer"
+      },
       "table": {
         "when": "Når",
         "who": "Hvem",

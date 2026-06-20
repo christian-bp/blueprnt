@@ -78,6 +78,33 @@
       "description": "Hver ændring i din organisation, hvem der foretog den og hvornår.",
       "empty": "Ingen aktivitet er registreret endnu.",
       "notAuthorized": "Kun organisationsadministratorer kan se hændelsesloggen.",
+      "categories": {
+        "all": "Alle",
+        "model": "Model",
+        "role": "Rolle",
+        "organization": "Organisation",
+        "member": "Medlem",
+        "ai": "AI"
+      },
+      "categoryFilterLabel": "Filtrer efter kategori",
+      "search": {
+        "placeholder": "Søg i loggen",
+        "capped": "Viser de første {count} resultater",
+        "empty": "Ingen hændelser matcher din søgning."
+      },
+      "loadMore": "Vis flere",
+      "loadingMore": "Indlæser...",
+      "detail": {
+        "who": "Hvem",
+        "category": "Kategori",
+        "event": "Hændelse",
+        "changes": "Hvad blev ændret",
+        "from": "Fra",
+        "to": "Til",
+        "noChanges": "Ingen ændringer på feltniveau registreret.",
+        "close": "Luk",
+        "viewDetails": "Vis detaljer"
+      },
       "table": {
         "when": "Hvornår",
         "who": "Hvem",

@@ -78,6 +78,33 @@
       "description": "Jokainen muutos organisaatiossasi, kuka sen teki ja milloin.",
       "empty": "Toimintaa ei ole vielä kirjattu.",
       "notAuthorized": "Vain organisaation järjestelmänvalvojat voivat nähdä tapahtumalokin.",
+      "categories": {
+        "all": "Kaikki",
+        "model": "Malli",
+        "role": "Rooli",
+        "organization": "Organisaatio",
+        "member": "Jäsen",
+        "ai": "Tekoäly"
+      },
+      "categoryFilterLabel": "Suodata luokan mukaan",
+      "search": {
+        "placeholder": "Hae lokista",
+        "capped": "Näytetään ensimmäiset {count} osumaa",
+        "empty": "Mikään tapahtuma ei vastaa hakuasi."
+      },
+      "loadMore": "Näytä lisää",
+      "loadingMore": "Ladataan...",
+      "detail": {
+        "who": "Kuka",
+        "category": "Luokka",
+        "event": "Tapahtuma",
+        "changes": "Mikä muuttui",
+        "from": "Mistä",
+        "to": "Mihin",
+        "noChanges": "Kenttätason muutoksia ei kirjattu.",
+        "close": "Sulje",
+        "viewDetails": "Näytä tiedot"
+      },
       "table": {
         "when": "Milloin",
         "who": "Kuka",

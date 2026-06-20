@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest"
-import { aiAuditDetail, formatAuditDetail, formatChanges } from "./audit-detail"
+import {
+  aiAuditDetail,
+  changeEntries,
+  formatAuditDetail,
+  formatChanges,
+  payloadChanges,
+} from "./audit-detail"
 
 const labels = {
   deletedRole: "Deleted role",
@@ -199,6 +205,86 @@ describe("formatAuditDetail", () => {
         labels
       )
     ).toBe("status: active, count: 3")
+  })
+})
+
+describe("changeEntries", () => {
+  it("renders a real change as { from, to, isSet: false }", () => {
+    expect(
+      changeEntries({ country: { from: "se", to: "no" } }, fieldLabel)
+    ).toEqual([
+      {
+        field: "country",
+        label: "Country",
+        from: "se",
+        to: "no",
+        isSet: false,
+      },
+    ])
+  })
+
+  it("marks a null/empty from as isSet: true", () => {
+    expect(
+      changeEntries({ country: { from: null, to: "se" } }, fieldLabel)
+    ).toEqual([
+      { field: "country", label: "Country", from: "", to: "se", isSet: true },
+    ])
+    expect(
+      changeEntries({ team: { from: "", to: "Core" } }, fieldLabel)
+    ).toEqual([
+      { field: "team", label: "Team", from: "", to: "Core", isSet: true },
+    ])
+  })
+
+  it("treats undefined from as isSet: true and undefined to as empty", () => {
+    expect(
+      changeEntries({ team: { from: undefined, to: undefined } }, fieldLabel)
+    ).toEqual([{ field: "team", label: "Team", from: "", to: "", isSet: true }])
+  })
+
+  it("preserves multiple fields in order", () => {
+    expect(
+      changeEntries(
+        {
+          title: { from: "Dev", to: "Senior Dev" },
+          team: { from: "Core", to: "Platform" },
+        },
+        fieldLabel
+      )
+    ).toEqual([
+      {
+        field: "title",
+        label: "Title",
+        from: "Dev",
+        to: "Senior Dev",
+        isSet: false,
+      },
+      {
+        field: "team",
+        label: "Team",
+        from: "Core",
+        to: "Platform",
+        isSet: false,
+      },
+    ])
+  })
+})
+
+describe("payloadChanges", () => {
+  it("returns the changes map when present and non-empty", () => {
+    expect(
+      payloadChanges({
+        roleId: "r1",
+        changes: { title: { from: "a", to: "b" } },
+      })
+    ).toEqual({ title: { from: "a", to: "b" } })
+  })
+
+  it("returns null when there is no changes field or it is empty", () => {
+    expect(payloadChanges({ roleId: "r1" })).toBeNull()
+    expect(payloadChanges({ changes: {} })).toBeNull()
+    expect(payloadChanges(null)).toBeNull()
+    expect(payloadChanges(undefined)).toBeNull()
   })
 })
 

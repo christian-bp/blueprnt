@@ -28,6 +28,42 @@ function asChanges(
   return value as Record<string, { from: unknown; to: unknown }>
 }
 
+// Reads the structured `changes` map off an audit payload, or null when the
+// payload carries no field-level changes. Public wrapper over `asChanges` for
+// the detail sheet, which renders changes per field rather than as one string.
+export function payloadChanges(
+  payload: unknown
+): Record<string, { from: unknown; to: unknown }> | null {
+  const p = (payload ?? {}) as Record<string, unknown>
+  return asChanges(p.changes)
+}
+
+// One row per changed field, for rendering a structured before/after list.
+// `isSet` is true when there was no prior value (first-time set), so the UI can
+// show just the new value instead of "<empty> -> value".
+export function changeEntries(
+  changes: Record<string, { from: unknown; to: unknown }>,
+  fieldLabel: (field: string) => string
+): Array<{
+  field: string
+  label: string
+  from: string
+  to: string
+  isSet: boolean
+}> {
+  return Object.entries(changes).map(([field, { from, to }]) => {
+    const fromText = from == null ? "" : String(from)
+    const toText = to == null ? "" : String(to)
+    return {
+      field,
+      label: fieldLabel(field),
+      from: fromText,
+      to: toText,
+      isSet: fromText.trim() === "",
+    }
+  })
+}
+
 // Maps "model.draft" -> "modelDraft", etc., for i18n keys.
 const AI_KIND_KEY: Record<string, string> = {
   "model.draft": "modelDraft",

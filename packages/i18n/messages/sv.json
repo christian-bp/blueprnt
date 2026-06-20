@@ -78,6 +78,33 @@
       "description": "Varje ändring i din organisation, vem som gjorde den och när.",
       "empty": "Ingen aktivitet har registrerats ännu.",
       "notAuthorized": "Endast organisationsadministratörer kan se händelseloggen.",
+      "categories": {
+        "all": "Alla",
+        "model": "Modell",
+        "role": "Roll",
+        "organization": "Organisation",
+        "member": "Medlem",
+        "ai": "AI"
+      },
+      "categoryFilterLabel": "Filtrera efter kategori",
+      "search": {
+        "placeholder": "Sök i loggen",
+        "capped": "Visar de första {count} träffarna",
+        "empty": "Inga händelser matchar din sökning."
+      },
+      "loadMore": "Visa fler",
+      "loadingMore": "Laddar...",
+      "detail": {
+        "who": "Vem",
+        "category": "Kategori",
+        "event": "Händelse",
+        "changes": "Vad ändrades",
+        "from": "Från",
+        "to": "Till",
+        "noChanges": "Inga ändringar på fältnivå registrerade.",
+        "close": "Stäng",
+        "viewDetails": "Visa detaljer"
+      },
       "table": {
         "when": "När",
         "who": "Vem",

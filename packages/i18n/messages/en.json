@@ -78,6 +78,33 @@
       "description": "Every change in your organization, who made it and when.",
       "empty": "No activity recorded yet.",
       "notAuthorized": "Only organization admins can view the audit log.",
+      "categories": {
+        "all": "All",
+        "model": "Model",
+        "role": "Role",
+        "organization": "Organization",
+        "member": "Member",
+        "ai": "AI"
+      },
+      "categoryFilterLabel": "Filter by category",
+      "search": {
+        "placeholder": "Search the log",
+        "capped": "Showing the first {count} matches",
+        "empty": "No events match your search."
+      },
+      "loadMore": "Load more",
+      "loadingMore": "Loading...",
+      "detail": {
+        "who": "Who",
+        "category": "Category",
+        "event": "Event",
+        "changes": "What changed",
+        "from": "From",
+        "to": "To",
+        "noChanges": "No field-level changes recorded.",
+        "close": "Close",
+        "viewDetails": "View details"
+      },
       "table": {
         "when": "When",
         "who": "Who",
