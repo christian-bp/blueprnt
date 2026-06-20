@@ -39,11 +39,14 @@ import {
 import { usePaginatedQuery, useQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
 import { useState } from "react"
+import type { DateRange } from "react-day-picker"
 import { AuditPagination } from "@/components/audit/audit-pagination"
 import { ChangeEntryRow, KV_GRID } from "@/components/audit/change-entry-row"
+import { DateRangePicker } from "@/components/date-range-picker"
 import { useOrganization } from "@/components/org-context"
 import { useAuditPagination } from "@/hooks/use-audit-pagination"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
+import { endOfDay, startOfDay } from "@/lib/date-bounds"
 import {
   aiAuditDetail,
   AI_KIND_KEY,
@@ -101,6 +104,7 @@ export function OrgAuditLogSection() {
   const [selectedCategory, setSelectedCategory] = useState<Category | "all">(
     "all"
   )
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const debouncedSearch = useDebouncedValue(search, 300)
 
   // Row whose detail sheet is open, or null when the sheet is closed.
@@ -108,6 +112,9 @@ export function OrgAuditLogSection() {
 
   const isSearching = debouncedSearch.trim().length > 0
   const categoryArg = selectedCategory === "all" ? undefined : selectedCategory
+  // Inclusive epoch-ms bounds. A picked "from" without a "to" stays open-ended.
+  const startArg = dateRange?.from ? startOfDay(dateRange.from) : undefined
+  const endArg = dateRange?.to ? endOfDay(dateRange.to) : undefined
 
   // Editors never call either query: the adminQuery would reject them. The
   // cosmetic guard keeps the page graceful (the sidebar item is hidden for them
@@ -115,14 +122,20 @@ export function OrgAuditLogSection() {
   const browse = usePaginatedQuery(
     api.accounts.audit.listAuditLog,
     role === "admin" && !isSearching
-      ? { orgId, category: categoryArg }
+      ? { orgId, category: categoryArg, start: startArg, end: endArg }
       : "skip",
     { initialNumItems: 25 }
   )
   const searchResult = useQuery(
     api.accounts.audit.searchAuditLog,
     role === "admin" && isSearching
-      ? { orgId, search: debouncedSearch, category: categoryArg }
+      ? {
+          orgId,
+          search: debouncedSearch,
+          category: categoryArg,
+          start: startArg,
+          end: endArg,
+        }
       : "skip"
   )
 
@@ -136,7 +149,7 @@ export function OrgAuditLogSection() {
     canLoadMore: !isSearching && browse.status === "CanLoadMore",
     isLoadingMore: !isSearching && browse.status === "LoadingMore",
     loadMore: browse.loadMore,
-    resetKey: `${selectedCategory}|${isSearching}|${debouncedSearch}`,
+    resetKey: `${selectedCategory}|${isSearching}|${debouncedSearch}|${startArg ?? ""}|${endArg ?? ""}`,
   })
 
   // Translate an event type to its label, falling back to the raw type when no
@@ -267,6 +280,13 @@ export function OrgAuditLogSection() {
             ))}
           </SelectContent>
         </Select>
+        <DateRangePicker
+          value={dateRange}
+          onChange={setDateRange}
+          placeholder={t("dateRange.placeholder")}
+          clearLabel={t("dateRange.clear")}
+          ariaLabel={t("dateRange.label")}
+        />
       </div>
 
       {loadingFirst ? null : rows.length === 0 ? (
@@ -340,10 +360,13 @@ export function OrgAuditLogSection() {
         {rows.length > 0 ? (
           <AuditPagination
             page={pager.page}
+            pageCount={pager.pageCount}
+            hasMore={pager.hasMore}
             canPrev={pager.canPrev}
             canNext={pager.canNext}
             onPrev={pager.goPrev}
             onNext={pager.goNext}
+            onSelect={pager.goTo}
             previousLabel={t("previous")}
             nextLabel={t("next")}
           />

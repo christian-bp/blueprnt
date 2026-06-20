@@ -25,6 +25,9 @@ describe("useAuditPagination", () => {
     expect(result.current.pageRows).toEqual([0, 1, 2, 3])
     expect(result.current.canPrev).toBe(false)
     expect(result.current.canNext).toBe(true)
+    // 10 rows / 4 per page = 3 pages; nothing more to load.
+    expect(result.current.pageCount).toBe(3)
+    expect(result.current.hasMore).toBe(false)
 
     act(() => result.current.goNext())
     expect(result.current.page).toBe(1)
@@ -58,10 +61,38 @@ describe("useAuditPagination", () => {
     // Sitting on the last loaded page; canNext is true because more can load.
     expect(result.current.page).toBe(0)
     expect(result.current.canNext).toBe(true)
+    // One loaded page, but more cursor pages may exist.
+    expect(result.current.pageCount).toBe(1)
+    expect(result.current.hasMore).toBe(true)
 
     act(() => result.current.goNext())
     expect(loadMore).toHaveBeenCalledWith(4)
     expect(result.current.page).toBe(1)
+  })
+
+  it("goTo jumps to a loaded page and clamps out-of-range targets", () => {
+    const loadMore = vi.fn()
+    const { result } = renderHook(() =>
+      useAuditPagination({
+        rows: rows10,
+        pageSize: 4,
+        canLoadMore: false,
+        isLoadingMore: false,
+        loadMore,
+        resetKey: "k",
+      })
+    )
+
+    act(() => result.current.goTo(2))
+    expect(result.current.page).toBe(2)
+    expect(result.current.pageRows).toEqual([8, 9])
+
+    // Past the last page clamps to the last; negative clamps to the first.
+    act(() => result.current.goTo(9))
+    expect(result.current.page).toBe(2)
+    act(() => result.current.goTo(-1))
+    expect(result.current.page).toBe(0)
+    expect(loadMore).not.toHaveBeenCalled()
   })
 
   it("does not call loadMore while a page is already loading", () => {

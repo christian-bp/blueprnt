@@ -92,6 +92,11 @@
         "capped": "Viser de første {count} resultater",
         "empty": "Ingen hændelser matcher din søgning."
       },
+      "dateRange": {
+        "label": "Filtrer på dato",
+        "placeholder": "Datointerval",
+        "clear": "Ryd"
+      },
       "previous": "Forrige",
       "next": "Næste",
       "detail": {
@@ -767,6 +772,11 @@
           "placeholder": "Søg i loggen",
           "capped": "Viser de første {count} resultater",
           "empty": "Ingen hændelser matcher din søgning."
+        },
+        "dateRange": {
+          "label": "Filtrer på dato",
+          "placeholder": "Datointerval",
+          "clear": "Ryd"
         },
         "previous": "Forrige",
         "next": "Næste",

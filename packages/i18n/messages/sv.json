@@ -92,6 +92,11 @@
         "capped": "Visar de första {count} träffarna",
         "empty": "Inga händelser matchar din sökning."
       },
+      "dateRange": {
+        "label": "Filtrera på datum",
+        "placeholder": "Datumintervall",
+        "clear": "Rensa"
+      },
       "previous": "Föregående",
       "next": "Nästa",
       "detail": {
@@ -767,6 +772,11 @@
           "placeholder": "Sök i loggen",
           "capped": "Visar de första {count} träffarna",
           "empty": "Inga händelser matchar din sökning."
+        },
+        "dateRange": {
+          "label": "Filtrera på datum",
+          "placeholder": "Datumintervall",
+          "clear": "Rensa"
         },
         "previous": "Föregående",
         "next": "Nästa",

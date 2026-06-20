@@ -15,10 +15,13 @@ export function useAuditPagination<T>(opts: {
 }): {
   pageRows: T[]
   page: number
+  pageCount: number
+  hasMore: boolean
   canPrev: boolean
   canNext: boolean
   goPrev: () => void
   goNext: () => void
+  goTo: (page0: number) => void
 } {
   const { rows, pageSize, canLoadMore, isLoadingMore, loadMore, resetKey } =
     opts
@@ -27,6 +30,10 @@ export function useAuditPagination<T>(opts: {
   useEffect(() => setPage(0), [resetKey])
   const start = page * pageSize
   const pageRows = rows.slice(start, start + pageSize)
+  // Pages over the currently-loaded rows (at least one, even when empty); more,
+  // not-yet-loaded cursor pages may still exist (hasMore).
+  const pageCount = Math.max(1, Math.ceil(rows.length / pageSize))
+  const hasMore = canLoadMore
   const canPrev = page > 0
   const canNext = start + pageSize < rows.length || canLoadMore
   const goPrev = () => setPage((p) => Math.max(0, p - 1))
@@ -39,5 +46,19 @@ export function useAuditPagination<T>(opts: {
       setPage((p) => p + 1)
     }
   }
-  return { pageRows, page, canPrev, canNext, goPrev, goNext }
+  // Jump to a loaded page (clamped). Only loaded pages are ever offered, so this
+  // never targets an unloaded cursor page.
+  const goTo = (page0: number) =>
+    setPage(Math.max(0, Math.min(pageCount - 1, page0)))
+  return {
+    pageRows,
+    page,
+    pageCount,
+    hasMore,
+    canPrev,
+    canNext,
+    goPrev,
+    goNext,
+    goTo,
+  }
 }

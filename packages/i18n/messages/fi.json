@@ -92,6 +92,11 @@
         "capped": "Näytetään ensimmäiset {count} osumaa",
         "empty": "Mikään tapahtuma ei vastaa hakuasi."
       },
+      "dateRange": {
+        "label": "Suodata päivämäärän mukaan",
+        "placeholder": "Aikaväli",
+        "clear": "Tyhjennä"
+      },
       "previous": "Edellinen",
       "next": "Seuraava",
       "detail": {
@@ -767,6 +772,11 @@
           "placeholder": "Hae lokista",
           "capped": "Näytetään ensimmäiset {count} osumaa",
           "empty": "Mikään tapahtuma ei vastaa hakuasi."
+        },
+        "dateRange": {
+          "label": "Suodata päivämäärän mukaan",
+          "placeholder": "Aikaväli",
+          "clear": "Tyhjennä"
         },
         "previous": "Edellinen",
         "next": "Seuraava",

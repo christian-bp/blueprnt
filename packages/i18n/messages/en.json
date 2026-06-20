@@ -92,6 +92,11 @@
         "capped": "Showing the first {count} matches",
         "empty": "No events match your search."
       },
+      "dateRange": {
+        "label": "Filter by date",
+        "placeholder": "Date range",
+        "clear": "Clear"
+      },
       "previous": "Previous",
       "next": "Next",
       "detail": {
@@ -767,6 +772,11 @@
           "placeholder": "Search the log",
           "capped": "Showing the first {count} matches",
           "empty": "No events match your search."
+        },
+        "dateRange": {
+          "label": "Filter by date",
+          "placeholder": "Date range",
+          "clear": "Clear"
         },
         "previous": "Previous",
         "next": "Next",

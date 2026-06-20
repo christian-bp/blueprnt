@@ -92,6 +92,11 @@
         "capped": "Viser de første {count} treffene",
         "empty": "Ingen hendelser samsvarer med søket ditt."
       },
+      "dateRange": {
+        "label": "Filtrer på dato",
+        "placeholder": "Datointervall",
+        "clear": "Tøm"
+      },
       "previous": "Forrige",
       "next": "Neste",
       "detail": {
@@ -767,6 +772,11 @@
           "placeholder": "Søk i loggen",
           "capped": "Viser de første {count} treffene",
           "empty": "Ingen hendelser samsvarer med søket ditt."
+        },
+        "dateRange": {
+          "label": "Filtrer på dato",
+          "placeholder": "Datointervall",
+          "clear": "Tøm"
         },
         "previous": "Forrige",
         "next": "Neste",
