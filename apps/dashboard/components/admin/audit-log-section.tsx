@@ -166,7 +166,10 @@ export function AuditLogSection() {
     !isSearching
       ? { category: categoryArg, start: startArg, end: endArg }
       : "skip",
-    { initialNumItems: 25 }
+    // Load up to 9 pages (25 each) up front so their numbers are real and
+    // jumpable in the pager; beyond that the pager collapses to an ellipsis and
+    // Next loads more.
+    { initialNumItems: 225 }
   )
   const searchResult = useQuery(
     api.platform.admin.searchAuditLog,
@@ -371,7 +374,6 @@ export function AuditLogSection() {
             onPrev={pager.goPrev}
             onNext={pager.goNext}
             onSelect={pager.goTo}
-            onLoadNext={pager.loadNext}
             previousLabel={t("previous")}
             nextLabel={t("next")}
           />

@@ -22,7 +22,6 @@ export function useAuditPagination<T>(opts: {
   goPrev: () => void
   goNext: () => void
   goTo: (page0: number) => void
-  loadNext: () => void
 } {
   const { rows, pageSize, canLoadMore, isLoadingMore, loadMore, resetKey } =
     opts
@@ -51,15 +50,6 @@ export function useAuditPagination<T>(opts: {
   // never targets an unloaded cursor page.
   const goTo = (page0: number) =>
     setPage(Math.max(0, Math.min(pageCount - 1, page0)))
-  // Load the next cursor page and jump to it. Cursor pagination only reveals one
-  // page ahead at a time, so the next-loadable page (index = pageCount) is the
-  // farthest reachable in one step.
-  const loadNext = () => {
-    if (canLoadMore && !isLoadingMore) {
-      loadMore(pageSize)
-      setPage(pageCount)
-    }
-  }
   return {
     pageRows,
     page,
@@ -70,6 +60,5 @@ export function useAuditPagination<T>(opts: {
     goPrev,
     goNext,
     goTo,
-    loadNext,
   }
 }

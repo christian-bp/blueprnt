@@ -10,43 +10,45 @@ import {
   PaginationPrevious,
 } from "@workspace/ui/components/pagination"
 
-// Build the windowed list of 1-based page numbers (and ellipsis gaps) to render
-// for the current page. The window spans 1..maxPage, where maxPage is the last
-// loaded page plus one when more, not-yet-loaded cursor pages may exist
-// (hasMore): cursor pagination can only reveal one page ahead at a time, so the
-// extra number is the single next-loadable page. Always shows the first and the
-// maxPage, plus the current page and its immediate neighbors; "ellipsis" marks a
-// gap > 1 between consecutive shown pages (there is no standalone trailing
-// ellipsis). Exported for testing.
+// How many page numbers to show before collapsing to ellipses.
+const MAX_NUMBERS = 9
+
+// Build the list of 1-based page numbers (and ellipsis gaps) to render. Every
+// number is a loaded, directly-jumpable page. When there are at most MAX_NUMBERS
+// loaded pages they are all shown; beyond that, the first and last loaded page
+// are kept and a window around the current page is shown, with "ellipsis" for the
+// gaps. A trailing "ellipsis" is appended when more, not-yet-loaded cursor pages
+// may still exist (hasMore), so the control reads e.g. "1 2 3 4 5 6 7 8 9 ...".
+// Exported for testing.
 export function paginationItems(
   current0: number,
   pageCount: number,
   hasMore: boolean
 ): Array<number | "ellipsis"> {
   const current = current0 + 1 // 1-based for display
-  const maxPage = pageCount + (hasMore ? 1 : 0)
-  const shown = new Set<number>()
-  shown.add(1)
-  shown.add(maxPage)
-  for (const page of [current - 1, current, current + 1]) {
-    if (page >= 1 && page <= maxPage) shown.add(page)
-  }
-  const pages = Array.from(shown).sort((a, b) => a - b)
   const items: Array<number | "ellipsis"> = []
-  for (let i = 0; i < pages.length; i++) {
-    const page = pages[i] as number
-    if (i > 0) {
-      const prev = pages[i - 1] as number
-      if (page - prev > 1) items.push("ellipsis")
-    }
-    items.push(page)
+  if (pageCount <= MAX_NUMBERS) {
+    for (let page = 1; page <= pageCount; page++) items.push(page)
+  } else {
+    const siblings = 2
+    const start = Math.max(2, current - siblings)
+    const end = Math.min(pageCount - 1, current + siblings)
+    items.push(1)
+    if (start > 2) items.push("ellipsis")
+    for (let page = start; page <= end; page++) items.push(page)
+    if (end < pageCount - 1) items.push("ellipsis")
+    items.push(pageCount)
   }
+  // More cursor pages may exist beyond the last loaded one; the Next arrow loads
+  // them. The trailing ellipsis signals there is more than what is numbered.
+  if (hasMore) items.push("ellipsis")
   return items
 }
 
 // Numbered page control over the audit pagination hook. Page is 0-based in
-// props, rendered 1-based. Previous/Next are icon-only; disabled links are inert
-// (pointer-events-none).
+// props, rendered 1-based. Every number is a loaded page (jump via onSelect);
+// Previous/Next are icon-only and load the next cursor page when needed. Disabled
+// links are inert (pointer-events-none).
 export function AuditPagination({
   page,
   pageCount,
@@ -56,7 +58,6 @@ export function AuditPagination({
   onPrev,
   onNext,
   onSelect,
-  onLoadNext,
   previousLabel,
   nextLabel,
 }: {
@@ -68,7 +69,6 @@ export function AuditPagination({
   onPrev: () => void
   onNext: () => void
   onSelect: (page0: number) => void
-  onLoadNext: () => void
   previousLabel: string
   nextLabel: string
 }) {
@@ -96,15 +96,8 @@ export function AuditPagination({
               <PaginationLink
                 isActive={item - 1 === page}
                 aria-current={item - 1 === page ? "page" : undefined}
-                // A number above pageCount is the single next-loadable cursor
-                // page: clicking it loads one more page and jumps there. Loaded
-                // numbers jump directly via onSelect.
                 onClick={
-                  item - 1 === page
-                    ? undefined
-                    : item > pageCount
-                      ? onLoadNext
-                      : () => onSelect(item - 1)
+                  item - 1 === page ? undefined : () => onSelect(item - 1)
                 }
                 className={
                   item - 1 === page ? "pointer-events-none" : "cursor-pointer"

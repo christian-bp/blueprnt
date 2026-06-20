@@ -70,62 +70,6 @@ describe("useAuditPagination", () => {
     expect(result.current.page).toBe(1)
   })
 
-  it("loadNext loads the next cursor page and jumps to it", () => {
-    const loadMore = vi.fn()
-    const { result } = renderHook(() =>
-      useAuditPagination({
-        rows: rows10,
-        pageSize: 4,
-        canLoadMore: true,
-        isLoadingMore: false,
-        loadMore,
-        resetKey: "k",
-      })
-    )
-
-    // 10 rows / 4 per page = 3 loaded pages; the next loadable page is index 3.
-    expect(result.current.pageCount).toBe(3)
-    act(() => result.current.loadNext())
-    expect(loadMore).toHaveBeenCalledWith(4)
-    expect(result.current.page).toBe(3)
-  })
-
-  it("loadNext is a no-op when nothing more can load", () => {
-    const loadMore = vi.fn()
-    const { result } = renderHook(() =>
-      useAuditPagination({
-        rows: rows10,
-        pageSize: 4,
-        canLoadMore: false,
-        isLoadingMore: false,
-        loadMore,
-        resetKey: "k",
-      })
-    )
-
-    act(() => result.current.loadNext())
-    expect(loadMore).not.toHaveBeenCalled()
-    expect(result.current.page).toBe(0)
-  })
-
-  it("loadNext is a no-op while a page is already loading", () => {
-    const loadMore = vi.fn()
-    const { result } = renderHook(() =>
-      useAuditPagination({
-        rows: rows10,
-        pageSize: 4,
-        canLoadMore: true,
-        isLoadingMore: true,
-        loadMore,
-        resetKey: "k",
-      })
-    )
-
-    act(() => result.current.loadNext())
-    expect(loadMore).not.toHaveBeenCalled()
-    expect(result.current.page).toBe(0)
-  })
-
   it("goTo jumps to a loaded page and clamps out-of-range targets", () => {
     const loadMore = vi.fn()
     const { result } = renderHook(() =>
