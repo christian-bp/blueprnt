@@ -3,19 +3,56 @@ import {
   aiAuditDetail,
   changeEntries,
   formatAuditDetail,
+  formatAuditValue,
   formatChanges,
   payloadChanges,
+  payloadItems,
+  payloadMoves,
+  payloadProvenance,
+  payloadSuggestions,
 } from "./audit-detail"
 
 const labels = {
   deletedRole: "Deleted role",
   deletedFamily: "Deleted family",
   deletedUser: "Deleted user",
+  // Stub count formatters: echo "<count> items"/"<count> fields" so tests can
+  // assert the summary without the i18n catalog.
+  itemsChanged: (count: number) => `${count} items`,
+  fieldsChanged: (count: number) => `${count} fields`,
+  createdMarker: "Created",
 }
 
 // Stub resolver: upper-cases the field name so tests can tell labels apart from
 // raw field keys without depending on the i18n catalog.
 const fieldLabel = (f: string) => f.charAt(0).toUpperCase() + f.slice(1)
+
+describe("formatAuditValue", () => {
+  it("passes scalars through as strings", () => {
+    expect(formatAuditValue("se")).toBe("se")
+    expect(formatAuditValue(3)).toBe("3")
+    expect(formatAuditValue(true)).toBe("true")
+  })
+
+  it("collapses null and undefined to an empty string", () => {
+    expect(formatAuditValue(null)).toBe("")
+    expect(formatAuditValue(undefined)).toBe("")
+  })
+
+  it("compact-JSON stringifies objects and arrays (never [object Object])", () => {
+    expect(formatAuditValue({ band: 2, score: 88 })).toBe(
+      '{"band":2,"score":88}'
+    )
+    expect(formatAuditValue([1, 2, 3])).toBe("[1,2,3]")
+    expect(formatAuditValue({ a: 1 })).not.toContain("[object Object]")
+  })
+
+  it("returns an empty string when stringify throws (circular)", () => {
+    const circular: Record<string, unknown> = {}
+    circular.self = circular
+    expect(formatAuditValue(circular)).toBe("")
+  })
+})
 
 describe("formatChanges", () => {
   it("renders a real change as 'label: from -> to'", () => {
@@ -59,6 +96,16 @@ describe("formatChanges", () => {
       formatChanges({ team: { from: "Core", to: undefined } }, fieldLabel)
     ).toBe("Team: Core → ")
   })
+
+  it("renders a complex value as label + placeholder, never [object Object]", () => {
+    const out = formatChanges(
+      { anchors: { from: null, to: [{ level: 0, text: "x" }] } },
+      fieldLabel,
+      "…"
+    )
+    expect(out).toBe("Anchors: …")
+    expect(out).not.toContain("[object Object]")
+  })
 })
 
 describe("formatAuditDetail", () => {
@@ -91,6 +138,25 @@ describe("formatAuditDetail", () => {
         fieldLabel
       )
     ).toBe("System Developer: Title: Dev → Senior Dev; Team: Core → Platform")
+  })
+
+  it("summarizes a role.updated with only complex diffs as a field count", () => {
+    const names = { r1: "System Developer" }
+    const out = formatAuditDetail(
+      "role.updated",
+      {
+        roleId: "r1",
+        changes: {
+          anchors: { from: null, to: [{ level: 0, text: "x" }] },
+          bandThresholds: { from: [{ band: 1 }], to: [{ band: 2 }] },
+        },
+      },
+      names,
+      labels,
+      fieldLabel
+    )
+    expect(out).toBe("System Developer: 2 fields")
+    expect(out).not.toContain("[object Object]")
   })
 
   it("falls back to the deleted-role label when the role id is unknown", () => {
@@ -167,16 +233,103 @@ describe("formatAuditDetail", () => {
     ).toBe("Jane Doe: Role: editor → admin")
   })
 
-  it("renders band.shift as title (expected -> computed)", () => {
+  it("renders band.shift from the changes.band from/to", () => {
     const names = { r1: "System Developer" }
     expect(
       formatAuditDetail(
         "band.shift",
-        { roleId: "r1", expectedBand: 3, computedBand: 2 },
+        { roleId: "r1", changes: { band: { from: 3, to: 2 } } },
         names,
-        labels
+        labels,
+        fieldLabel
       )
     ).toBe("System Developer (3 → 2)")
+  })
+
+  it("renders band.shift with just the role when no band change is present", () => {
+    const names = { r1: "System Developer" }
+    expect(
+      formatAuditDetail(
+        "band.shift",
+        { roleId: "r1", changes: { score: { from: 80, to: 90 } } },
+        names,
+        labels,
+        fieldLabel
+      )
+    ).toBe("System Developer")
+  })
+
+  it("renders organization.created as the created marker, not an id row", () => {
+    expect(
+      formatAuditDetail("organization.created", { orgId: "org_1" }, {}, labels)
+    ).toBe("Created")
+  })
+
+  it("summarizes a bulk model.created as an item count", () => {
+    expect(
+      formatAuditDetail(
+        "model.created",
+        { modelId: "m1", count: 9, items: [] },
+        {},
+        labels
+      )
+    ).toBe("9 items")
+  })
+
+  it("summarizes a bulk model.updated (rebalanced) as an item count", () => {
+    const out = formatAuditDetail(
+      "model.updated",
+      {
+        modelId: "m1",
+        count: 2,
+        items: [
+          { criterionId: "c1", label: "Scope", changes: {} },
+          { criterionId: "c2", label: "Impact", changes: {} },
+        ],
+      },
+      {},
+      labels,
+      fieldLabel
+    )
+    expect(out).toBe("2 items")
+    expect(out).not.toContain("[object Object]")
+  })
+
+  it("renders a non-bulk model.updated as criterion label + field count", () => {
+    const names = { c1: "Scope of responsibility" }
+    expect(
+      formatAuditDetail(
+        "model.updated",
+        {
+          modelId: "m1",
+          criterionId: "c1",
+          change: "criterion.updated",
+          changes: {
+            weightPoints: { from: 3, to: 4 },
+            order: { from: 0, to: 1 },
+          },
+        },
+        names,
+        labels,
+        fieldLabel
+      )
+    ).toBe("Scope of responsibility: 2 fields")
+  })
+
+  it("renders a non-bulk model.updated using changes.name when no id resolves", () => {
+    expect(
+      formatAuditDetail(
+        "model.updated",
+        {
+          modelId: "m1",
+          change: "criterion.added",
+          changes: { name: { from: null, to: "New criterion" } },
+        },
+        {},
+        labels,
+        fieldLabel
+      )
+    ).toBe("New criterion: 1 fields")
   })
 
   it("renders settingsUpdated changes", () => {
@@ -204,12 +357,24 @@ describe("formatAuditDetail", () => {
         {},
         labels
       )
-    ).toBe("status: active, count: 3")
+      // count is present so this is treated as a bulk event.
+    ).toBe("3 items")
+  })
+
+  it("falls back to scalar fields when there is no bulk count", () => {
+    expect(
+      formatAuditDetail(
+        "future.event",
+        { roleId: "r1", source: "starter", status: "active" },
+        {},
+        labels
+      )
+    ).toBe("status: active")
   })
 })
 
 describe("changeEntries", () => {
-  it("renders a real change as { from, to, isSet: false }", () => {
+  it("renders a real change as { from, to, isSet: false, isComplex: false }", () => {
     expect(
       changeEntries({ country: { from: "se", to: "no" } }, fieldLabel)
     ).toEqual([
@@ -219,6 +384,7 @@ describe("changeEntries", () => {
         from: "se",
         to: "no",
         isSet: false,
+        isComplex: false,
       },
     ])
   })
@@ -227,19 +393,56 @@ describe("changeEntries", () => {
     expect(
       changeEntries({ country: { from: null, to: "se" } }, fieldLabel)
     ).toEqual([
-      { field: "country", label: "Country", from: "", to: "se", isSet: true },
+      {
+        field: "country",
+        label: "Country",
+        from: "",
+        to: "se",
+        isSet: true,
+        isComplex: false,
+      },
     ])
     expect(
       changeEntries({ team: { from: "", to: "Core" } }, fieldLabel)
     ).toEqual([
-      { field: "team", label: "Team", from: "", to: "Core", isSet: true },
+      {
+        field: "team",
+        label: "Team",
+        from: "",
+        to: "Core",
+        isSet: true,
+        isComplex: false,
+      },
     ])
   })
 
   it("treats undefined from as isSet: true and undefined to as empty", () => {
     expect(
       changeEntries({ team: { from: undefined, to: undefined } }, fieldLabel)
-    ).toEqual([{ field: "team", label: "Team", from: "", to: "", isSet: true }])
+    ).toEqual([
+      {
+        field: "team",
+        label: "Team",
+        from: "",
+        to: "",
+        isSet: true,
+        isComplex: false,
+      },
+    ])
+  })
+
+  it("marks isComplex true when either side is a non-null object", () => {
+    const out = changeEntries(
+      {
+        anchors: { from: null, to: [{ level: 0, text: "x" }] },
+        title: { from: "a", to: "b" },
+      },
+      fieldLabel
+    )
+    expect(out[0]?.isComplex).toBe(true)
+    expect(out[0]?.to).toBe('[{"level":0,"text":"x"}]')
+    expect(out[0]?.to).not.toContain("[object Object]")
+    expect(out[1]?.isComplex).toBe(false)
   })
 
   it("preserves multiple fields in order", () => {
@@ -258,6 +461,7 @@ describe("changeEntries", () => {
         from: "Dev",
         to: "Senior Dev",
         isSet: false,
+        isComplex: false,
       },
       {
         field: "team",
@@ -265,6 +469,7 @@ describe("changeEntries", () => {
         from: "Core",
         to: "Platform",
         isSet: false,
+        isComplex: false,
       },
     ])
   })
@@ -285,6 +490,149 @@ describe("payloadChanges", () => {
     expect(payloadChanges({ changes: {} })).toBeNull()
     expect(payloadChanges(null)).toBeNull()
     expect(payloadChanges(undefined)).toBeNull()
+  })
+})
+
+describe("payloadItems", () => {
+  it("narrows the items array into render-ready entries", () => {
+    const out = payloadItems(
+      {
+        count: 2,
+        items: [
+          {
+            criterionId: "c1",
+            label: "Scope",
+            changes: { weightPoints: { from: 3, to: 4 } },
+          },
+          { roleId: "r1", label: "Dev", changes: {} },
+        ],
+      },
+      fieldLabel
+    )
+    expect(out?.count).toBe(2)
+    expect(out?.items).toHaveLength(2)
+    expect(out?.items[0]).toEqual({
+      key: "c1",
+      title: "Scope",
+      entries: [
+        {
+          field: "weightPoints",
+          label: "WeightPoints",
+          from: "3",
+          to: "4",
+          isSet: false,
+          isComplex: false,
+        },
+      ],
+    })
+    expect(out?.items[1]).toEqual({ key: "r1", title: "Dev", entries: [] })
+  })
+
+  it("defaults count to the item count and title to '' when absent", () => {
+    const out = payloadItems(
+      { items: [{ familyId: "f1", changes: {} }] },
+      fieldLabel
+    )
+    expect(out?.count).toBe(1)
+    expect(out?.items[0]?.title).toBe("")
+    expect(out?.items[0]?.key).toBe("f1")
+  })
+
+  it("returns null when there is no items array", () => {
+    expect(payloadItems({ count: 3 }, fieldLabel)).toBeNull()
+    expect(payloadItems(null, fieldLabel)).toBeNull()
+  })
+})
+
+describe("payloadMoves", () => {
+  it("narrows the moves array, defaulting applied to true", () => {
+    const out = payloadMoves({
+      moves: [
+        {
+          criterionId: "c1",
+          fromLabel: "3",
+          toLabel: "4",
+          points: 4,
+          motivation: "More scope",
+        },
+        {
+          criterionId: "c2",
+          fromLabel: "3",
+          toLabel: "2",
+          points: 2,
+          applied: false,
+          motivation: "Breaches budget",
+        },
+      ],
+    })
+    expect(out?.count).toBe(2)
+    expect(out?.moves[0]).toEqual({
+      key: "c1",
+      fromLabel: "3",
+      toLabel: "4",
+      points: "4",
+      applied: true,
+      motivation: "More scope",
+    })
+    expect(out?.moves[1]?.applied).toBe(false)
+  })
+
+  it("returns null when there is no moves array", () => {
+    expect(payloadMoves({ count: 1 })).toBeNull()
+    expect(payloadMoves(null)).toBeNull()
+  })
+})
+
+describe("payloadSuggestions", () => {
+  it("narrows the suggestions array into id/kind/status entries", () => {
+    const out = payloadSuggestions({
+      suggestions: [
+        { suggestionId: "s1", kind: "model.draft", status: "open" },
+        { suggestionId: "s2", kind: "role.profile", status: "dismissed" },
+      ],
+    })
+    expect(out?.count).toBe(2)
+    expect(out?.items[0]).toEqual({
+      key: "s1",
+      kind: "model.draft",
+      status: "open",
+    })
+  })
+
+  it("returns null when there is no suggestions array", () => {
+    expect(payloadSuggestions({ count: 1 })).toBeNull()
+    expect(payloadSuggestions(null)).toBeNull()
+  })
+})
+
+describe("payloadProvenance", () => {
+  it("reads present meta keys in order, unwrapping cause to its event", () => {
+    expect(
+      payloadProvenance({
+        source: "ai",
+        via: "onboardingPrefill",
+        seeded: true,
+        batchId: "batch-1",
+        cause: { event: "rating.change", roleId: "r1" },
+      })
+    ).toEqual([
+      { key: "source", value: "ai" },
+      { key: "via", value: "onboardingPrefill" },
+      { key: "seeded", value: "true" },
+      { key: "batchId", value: "batch-1" },
+      { key: "cause", value: "rating.change" },
+    ])
+  })
+
+  it("skips absent and nullish meta keys", () => {
+    expect(payloadProvenance({ source: "template", via: null })).toEqual([
+      { key: "source", value: "template" },
+    ])
+  })
+
+  it("returns an empty array when no meta keys are present", () => {
+    expect(payloadProvenance({ roleId: "r1" })).toEqual([])
+    expect(payloadProvenance(null)).toEqual([])
   })
 })
 

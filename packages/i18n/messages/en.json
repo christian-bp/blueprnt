@@ -103,7 +103,34 @@
         "to": "To",
         "noChanges": "No field-level changes recorded.",
         "close": "Close",
-        "viewDetails": "View details"
+        "viewDetails": "View details",
+        "itemsHeading": "{count, plural, one {# item changed} other {# items changed}}",
+        "unnamedItem": "Unnamed item",
+        "movesHeading": "Weight moves",
+        "moveApplied": "Applied",
+        "moveSkipped": "Skipped",
+        "suggestionsHeading": "{count, plural, one {# dropped suggestion} other {# dropped suggestions}}",
+        "complexValue": "Value",
+        "entity": "Subject",
+        "createdMarker": "Created",
+        "clearedOnRename": "Cleared when the title changed",
+        "provenance": {
+          "source": "Source",
+          "via": "Via",
+          "viaArchive": "Via archive",
+          "viaReconcile": "Via reconcile",
+          "seeded": "Seeded",
+          "batch": "Batch",
+          "cause": "Triggered by",
+          "sourceValues": {
+            "ai": "AI",
+            "template": "Template",
+            "scratch": "From scratch",
+            "starter": "Starter set",
+            "aiImport": "AI import",
+            "aiSuggestion": "AI suggestion"
+          }
+        }
       },
       "table": {
         "when": "When",
@@ -118,7 +145,10 @@
       "details": {
         "deletedRole": "Deleted role",
         "deletedFamily": "Deleted family",
-        "deletedUser": "Deleted user"
+        "deletedUser": "Deleted user",
+        "itemsChanged": "{count, plural, one {# item changed} other {# items changed}}",
+        "fieldsChanged": "{count, plural, one {# field changed} other {# fields changed}}",
+        "complexValue": "Complex value"
       },
       "fields": {
         "title": "Title",
@@ -133,7 +163,31 @@
         "name": "Name",
         "slug": "Slug",
         "role": "Role",
-        "status": "Status"
+        "status": "Status",
+        "purpose": "Purpose",
+        "responsibilities": "Responsibilities",
+        "description": "Description",
+        "helpText": "Help text",
+        "anchors": "Anchors",
+        "weightPoints": "Weight points",
+        "order": "Order",
+        "isCustom": "Custom",
+        "templateKey": "Template",
+        "value": "Rating",
+        "motivation": "Motivation",
+        "expectedBand": "Expected band",
+        "reviewedAt": "Reviewed",
+        "archivedAt": "Archived",
+        "bandThresholds": "Band thresholds",
+        "band": "Band",
+        "score": "Weighting",
+        "complete": "Complete",
+        "ratedCount": "Evaluated criteria",
+        "onboardingCompletedAt": "Onboarding completed",
+        "employeeCount": "Employees",
+        "expiresAt": "Expires",
+        "orgId": "Organization",
+        "archived": "Archived"
       },
       "events": {
         "organizationCreated": "Organization created",

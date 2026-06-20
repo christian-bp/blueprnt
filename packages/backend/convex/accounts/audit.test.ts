@@ -189,6 +189,54 @@ describe("accounts.audit.listAuditLog (browse)", () => {
     expect(row?.names[memberAuthId]).toBe("Mary Member")
   })
 
+  it("enriches a model row's names with criterionId and modelId", async () => {
+    const t = initConvexTest()
+    const { orgId, adminId } = await setup(t)
+    // A model + criterion in this org, plus an audit row that references both
+    // by their top-level payload ids (as the model-editing mutations write).
+    const { modelId, criterionId } = await t.run(async (ctx) => {
+      const modelId = await ctx.db.insert("models", {
+        orgId,
+        name: "Standard model",
+        bandThresholds: [],
+      })
+      const criterionId = await ctx.db.insert("criteria", {
+        orgId,
+        modelId,
+        name: "Scope of responsibility",
+        description: "",
+        helpText: "",
+        anchors: [],
+        weightPoints: 3,
+        order: 0,
+        isCustom: false,
+      })
+      await ctx.db.insert("auditLog", {
+        orgId,
+        type: "model.updated",
+        actorId: adminId,
+        actorName: "Admin Person",
+        payload: { modelId, criterionId, change: "criterion.updated" },
+        category: categoryForEvent("model.updated"),
+        searchText: buildSearchText("Admin Person", "model.updated", {
+          modelId,
+          criterionId,
+        }),
+      })
+      return { modelId, criterionId }
+    })
+    const result = await t
+      .withIdentity({ subject: adminId })
+      .query(api.accounts.audit.listAuditLog, {
+        orgId,
+        category: "model",
+        paginationOpts: { numItems: 50, cursor: null },
+      })
+    const row = result.page.find((r) => r.type === "model.updated")
+    expect(row?.names[modelId.toString()]).toBe("Standard model")
+    expect(row?.names[criterionId.toString()]).toBe("Scope of responsibility")
+  })
+
   it("only returns rows for the caller's org (tenant isolation)", async () => {
     const t = initConvexTest()
     const { orgId, adminId } = await setup(t)

@@ -103,7 +103,34 @@
         "to": "Til",
         "noChanges": "Ingen ændringer på feltniveau registreret.",
         "close": "Luk",
-        "viewDetails": "Vis detaljer"
+        "viewDetails": "Vis detaljer",
+        "itemsHeading": "{count, plural, one {# element ændret} other {# elementer ændret}}",
+        "unnamedItem": "Element uden navn",
+        "movesHeading": "Vægtændringer",
+        "moveApplied": "Anvendt",
+        "moveSkipped": "Sprunget over",
+        "suggestionsHeading": "{count, plural, one {# kasseret forslag} other {# kasserede forslag}}",
+        "complexValue": "Værdi",
+        "entity": "Objekt",
+        "createdMarker": "Oprettet",
+        "clearedOnRename": "Ryddet da titlen blev ændret",
+        "provenance": {
+          "source": "Kilde",
+          "via": "Via",
+          "viaArchive": "Via arkivering",
+          "viaReconcile": "Via afstemning",
+          "seeded": "Forudindlæst",
+          "batch": "Batch",
+          "cause": "Udløst af",
+          "sourceValues": {
+            "ai": "AI",
+            "template": "Skabelon",
+            "scratch": "Fra bunden",
+            "starter": "Startsæt",
+            "aiImport": "AI-import",
+            "aiSuggestion": "AI-forslag"
+          }
+        }
       },
       "table": {
         "when": "Hvornår",
@@ -118,7 +145,10 @@
       "details": {
         "deletedRole": "Slettet rolle",
         "deletedFamily": "Slettet familie",
-        "deletedUser": "Slettet bruger"
+        "deletedUser": "Slettet bruger",
+        "itemsChanged": "{count, plural, one {# element ændret} other {# elementer ændret}}",
+        "fieldsChanged": "{count, plural, one {# felt ændret} other {# felter ændret}}",
+        "complexValue": "Sammensat værdi"
       },
       "fields": {
         "title": "Titel",
@@ -133,7 +163,31 @@
         "name": "Navn",
         "slug": "Slug",
         "role": "Rolle",
-        "status": "Status"
+        "status": "Status",
+        "purpose": "Formål",
+        "responsibilities": "Ansvar",
+        "description": "Beskrivelse",
+        "helpText": "Hjælpetekst",
+        "anchors": "Ankre",
+        "weightPoints": "Vægtpoint",
+        "order": "Rækkefølge",
+        "isCustom": "Tilpasset",
+        "templateKey": "Skabelon",
+        "value": "Vurdering",
+        "motivation": "Begrundelse",
+        "expectedBand": "Forventet band",
+        "reviewedAt": "Gennemgået",
+        "archivedAt": "Arkiveret",
+        "bandThresholds": "Bandgrænser",
+        "band": "Band",
+        "score": "Vægtning",
+        "complete": "Fuldført",
+        "ratedCount": "Vurderede kriterier",
+        "onboardingCompletedAt": "Onboarding fuldført",
+        "employeeCount": "Medarbejdere",
+        "expiresAt": "Udløber",
+        "orgId": "Organisation",
+        "archived": "Arkiveret"
       },
       "events": {
         "organizationCreated": "Organisation oprettet",

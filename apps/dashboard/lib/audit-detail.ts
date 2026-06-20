@@ -1,16 +1,45 @@
+// Stringifies any audit-payload value for display. Scalars pass through (via
+// String); null/undefined collapse to "". Objects/arrays are compact-JSON
+// stringified so a complex before/after never leaks as "[object Object]". Any
+// throw (e.g. a circular structure) falls back to "" rather than crashing the
+// row.
+export function formatAuditValue(value: unknown): string {
+  if (value == null) return ""
+  if (typeof value === "object") {
+    try {
+      return JSON.stringify(value)
+    } catch {
+      return ""
+    }
+  }
+  try {
+    return String(value)
+  } catch {
+    return ""
+  }
+}
+
 // Renders a structured before->after `changes` object as plain text. Each entry
 // is "<fieldLabel>: <from> -> <to>" (a real right-arrow glyph), or just
 // "<fieldLabel>: <to>" when `from` is empty (null/undefined/blank), which reads
 // as a first-time set rather than a change. Entries are joined with "; ".
+// Complex (object/array) values are not dumped inline; the entry shows the
+// field label plus a `complexValue` placeholder so the dense table cell stays
+// readable (the detail sheet renders the full JSON instead).
 export function formatChanges(
   changes: Record<string, { from: unknown; to: unknown }>,
-  fieldLabel: (field: string) => string
+  fieldLabel: (field: string) => string,
+  complexPlaceholder = "…"
 ): string {
   return Object.entries(changes)
     .map(([field, { from, to }]) => {
       const label = fieldLabel(field)
-      const fromText = from == null ? "" : String(from)
-      const toText = to == null ? "" : String(to)
+      const isComplex =
+        (typeof from === "object" && from !== null) ||
+        (typeof to === "object" && to !== null)
+      if (isComplex) return `${label}: ${complexPlaceholder}`
+      const fromText = formatAuditValue(from)
+      const toText = formatAuditValue(to)
       return fromText.trim() === ""
         ? `${label}: ${toText}`
         : `${label}: ${fromText} → ${toText}`
@@ -38,9 +67,151 @@ export function payloadChanges(
   return asChanges(p.changes)
 }
 
+// The id fields a bulk/dropped item may carry, in resolution order. Exactly one
+// is expected per item; the first present is used as the React key.
+const ITEM_ID_FIELDS = [
+  "criterionId",
+  "roleId",
+  "familyId",
+  "memberUserId",
+  "suggestionId",
+] as const
+
+function firstItemId(item: Record<string, unknown>, index: number): string {
+  for (const field of ITEM_ID_FIELDS) {
+    const value = item[field]
+    if (typeof value === "string" && value.length > 0) return value
+  }
+  return `item-${index}`
+}
+
+// Narrows an audit payload's bulk `items` array (the single canonical bulk
+// shape: `{ count, items: [{ <oneId>, label?, changes }] }`) into a render-ready
+// group, or null when there is no items array. Ids inside items are NOT resolved
+// at read time; the title comes from the captured `label`. `count` prefers the
+// explicit `payload.count`, else the item count.
+export function payloadItems(
+  payload: unknown,
+  fieldLabel: (field: string) => string
+): {
+  count: number
+  items: Array<{
+    key: string
+    title: string
+    entries: ReturnType<typeof changeEntries>
+  }>
+} | null {
+  const p = (payload ?? {}) as Record<string, unknown>
+  const raw = p.items
+  if (!Array.isArray(raw)) return null
+  const items = raw.map((entry, index) => {
+    const item = (entry ?? {}) as Record<string, unknown>
+    const changes = asChanges(item.changes)
+    return {
+      key: firstItemId(item, index),
+      title: typeof item.label === "string" ? item.label : "",
+      entries: changes ? changeEntries(changes, fieldLabel) : [],
+    }
+  })
+  const count = typeof p.count === "number" ? p.count : items.length
+  return { count, items }
+}
+
+// Narrows an audit payload's AI `moves` array (weightReview): each move records
+// a per-criterion weight shift `fromLabel -> toLabel`, the resulting points, an
+// `applied` flag (false when a guard skipped it), and the AI motivation.
+export function payloadMoves(payload: unknown): {
+  count: number
+  moves: Array<{
+    key: string
+    fromLabel: string
+    toLabel: string
+    points: string
+    applied: boolean
+    motivation: string
+  }>
+} | null {
+  const p = (payload ?? {}) as Record<string, unknown>
+  const raw = p.moves
+  if (!Array.isArray(raw)) return null
+  const moves = raw.map((entry, index) => {
+    const move = (entry ?? {}) as Record<string, unknown>
+    return {
+      key: firstItemId(move, index),
+      fromLabel: typeof move.fromLabel === "string" ? move.fromLabel : "",
+      toLabel: typeof move.toLabel === "string" ? move.toLabel : "",
+      points: formatAuditValue(move.points),
+      // Default to applied; only an explicit false marks a skipped move.
+      applied: move.applied !== false,
+      motivation: typeof move.motivation === "string" ? move.motivation : "",
+    }
+  })
+  return { count: moves.length, moves }
+}
+
+// Narrows an audit payload's dropped `suggestions` array (model.discarded):
+// each entry is an id + kind + status of a suggestion that went away with the
+// discarded draft.
+export function payloadSuggestions(payload: unknown): {
+  count: number
+  items: Array<{ key: string; kind: string; status: string }>
+} | null {
+  const p = (payload ?? {}) as Record<string, unknown>
+  const raw = p.suggestions
+  if (!Array.isArray(raw)) return null
+  const items = raw.map((entry, index) => {
+    const suggestion = (entry ?? {}) as Record<string, unknown>
+    return {
+      key: firstItemId(suggestion, index),
+      kind: typeof suggestion.kind === "string" ? suggestion.kind : "",
+      status: typeof suggestion.status === "string" ? suggestion.status : "",
+    }
+  })
+  return { count: items.length, items }
+}
+
+// The provenance meta keys, in display order. `cause` resolves to its nested
+// `event` so the footer reads the triggering event, not "[object Object]".
+const PROVENANCE_KEYS = [
+  "source",
+  "via",
+  "viaArchive",
+  "viaReconcile",
+  "seeded",
+  "batchId",
+  "cause",
+] as const
+
+// Reads the present provenance meta scalars off a payload into an ordered
+// key/value list for the sheet's muted footer. `cause` is unwrapped to its
+// `event`. Returns an empty array when none are present.
+export function payloadProvenance(
+  payload: unknown
+): Array<{ key: string; value: string }> {
+  const p = (payload ?? {}) as Record<string, unknown>
+  const out: Array<{ key: string; value: string }> = []
+  for (const key of PROVENANCE_KEYS) {
+    if (!(key in p)) continue
+    const raw = p[key]
+    if (raw == null) continue
+    if (key === "cause") {
+      const cause = raw as Record<string, unknown>
+      const event = cause?.event
+      if (typeof event === "string" && event.length > 0) {
+        out.push({ key, value: event })
+      }
+      continue
+    }
+    out.push({ key, value: formatAuditValue(raw) })
+  }
+  return out
+}
+
 // One row per changed field, for rendering a structured before/after list.
 // `isSet` is true when there was no prior value (first-time set), so the UI can
-// show just the new value instead of "<empty> -> value".
+// show just the new value instead of "<empty> -> value". `isComplex` is true
+// when either side is a non-null object/array, so the sheet can render the
+// (compact-JSON) value in a scrollable mono block instead of inline.
 export function changeEntries(
   changes: Record<string, { from: unknown; to: unknown }>,
   fieldLabel: (field: string) => string
@@ -50,22 +221,26 @@ export function changeEntries(
   from: string
   to: string
   isSet: boolean
+  isComplex: boolean
 }> {
   return Object.entries(changes).map(([field, { from, to }]) => {
-    const fromText = from == null ? "" : String(from)
-    const toText = to == null ? "" : String(to)
+    const fromText = formatAuditValue(from)
+    const toText = formatAuditValue(to)
     return {
       field,
       label: fieldLabel(field),
       from: fromText,
       to: toText,
       isSet: fromText.trim() === "",
+      isComplex:
+        (typeof from === "object" && from !== null) ||
+        (typeof to === "object" && to !== null),
     }
   })
 }
 
-// Maps "model.draft" -> "modelDraft", etc., for i18n keys.
-const AI_KIND_KEY: Record<string, string> = {
+// Maps "model.draft" -> "modelDraft", etc., for i18n keys (ai.kind.<key>).
+export const AI_KIND_KEY: Record<string, string> = {
   "model.draft": "modelDraft",
   "model.weightReview": "weightReview",
   "role.profile": "roleProfile",
@@ -103,13 +278,26 @@ export function aiAuditDetail(
   }
 }
 
+// Strings/formatters the (pure, testable) table-cell formatter needs. The
+// deleted-* fallbacks name a vanished subject; the count formatters and the
+// created marker localize the bulk/marker summaries.
+export type AuditDetailLabels = {
+  deletedRole: string
+  deletedFamily: string
+  deletedUser: string
+  itemsChanged: (count: number) => string
+  fieldsChanged: (count: number) => string
+  createdMarker: string
+}
+
 // Pure, testable: turns an audit event + its (id-resolved) names into a
-// human-readable detail string. Drops raw Convex ids and internal "source".
+// human-readable detail string. Drops raw Convex ids and internal "source",
+// and never emits "[object Object]" (complex values are summarized as counts).
 export function formatAuditDetail(
   type: string,
   payload: unknown,
   names: Record<string, string>,
-  labels: { deletedRole: string; deletedFamily: string; deletedUser: string },
+  labels: AuditDetailLabels,
   fieldLabel: (field: string) => string = (f) => f
 ): string {
   const p = (payload ?? {}) as Record<string, unknown>
@@ -117,7 +305,18 @@ export function formatAuditDetail(
     typeof id === "string" ? (names[id] ?? labels.deletedRole) : ""
   const memberName = (id: unknown) =>
     typeof id === "string" ? (names[id] ?? labels.deletedUser) : ""
+  const criterionName = (id: unknown) =>
+    typeof id === "string" ? names[id] : undefined
   const changes = asChanges(p.changes)
+  // A bulk event carries an `items` array and/or a `count`. The summary names
+  // how many children changed rather than dumping nested JSON.
+  const isBulk = Array.isArray(p.items) || typeof p.count === "number"
+  const bulkCount =
+    typeof p.count === "number"
+      ? p.count
+      : Array.isArray(p.items)
+        ? p.items.length
+        : 0
   switch (type) {
     case "role.created":
     case "role.archived":
@@ -128,14 +327,21 @@ export function formatAuditDetail(
       return roleName(p.roleId)
     case "role.updated": {
       const base = roleName(p.roleId)
-      return changes !== null
-        ? `${base}: ${formatChanges(changes, fieldLabel)}`
-        : base
+      if (changes === null) return base
+      // When every changed field is a complex object, dumping JSON in the dense
+      // cell is unreadable; summarize as a field count instead.
+      const entries = changeEntries(changes, fieldLabel)
+      const allComplex =
+        entries.length > 0 && entries.every((entry) => entry.isComplex)
+      return allComplex
+        ? `${base}: ${labels.fieldsChanged(entries.length)}`
+        : `${base}: ${formatChanges(changes, fieldLabel)}`
     }
     case "band.shift": {
       const base = roleName(p.roleId)
-      return p.expectedBand != null && p.computedBand != null
-        ? `${base} (${p.expectedBand} → ${p.computedBand})`
+      const band = changes?.band
+      return band != null && (band.from != null || band.to != null)
+        ? `${base} (${formatAuditValue(band.from)} → ${formatAuditValue(band.to)})`
         : base
     }
     case "roleFamily.created":
@@ -169,10 +375,25 @@ export function formatAuditDetail(
     case "organization.settingsUpdated":
       return changes !== null ? formatChanges(changes, fieldLabel) : ""
     case "organization.created":
-    case "organization.onboardingCompleted":
+      return labels.createdMarker
     case "model.created":
-    case "model.updated":
     case "model.discarded":
+      // Bulk model events: how many criteria came/went.
+      return isBulk ? labels.itemsChanged(bulkCount) : ""
+    case "model.updated": {
+      // Bulk model.updated (weights.rebalanced, criterion.removed): item count.
+      if (isBulk) return labels.itemsChanged(bulkCount)
+      // Non-bulk model.updated (criterion.added/updated, keyed on
+      // `payload.change`): the criterion label + how many fields changed, so
+      // the cell is never blank.
+      const label =
+        criterionName(p.criterionId) ??
+        (changes?.name?.to != null ? formatAuditValue(changes.name.to) : "")
+      const fieldCount = changes ? Object.keys(changes).length : 0
+      const summary = labels.fieldsChanged(fieldCount)
+      return label ? `${label}: ${summary}` : summary
+    }
+    case "organization.onboardingCompleted":
     case "ai.suggestionConfirmed":
     case "ai.suggestionRejected":
     case "invitation.created":
@@ -180,6 +401,7 @@ export function formatAuditDetail(
     case "invitation.revoked":
       return ""
     default:
+      if (isBulk) return labels.itemsChanged(bulkCount)
       // Clean fallback: scalar fields only, never raw ids or "source".
       return Object.entries(p)
         .filter(

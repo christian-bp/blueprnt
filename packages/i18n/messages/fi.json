@@ -103,7 +103,34 @@
         "to": "Mihin",
         "noChanges": "Kenttätason muutoksia ei kirjattu.",
         "close": "Sulje",
-        "viewDetails": "Näytä tiedot"
+        "viewDetails": "Näytä tiedot",
+        "itemsHeading": "{count, plural, one {# kohde muuttui} other {# kohdetta muuttui}}",
+        "unnamedItem": "Nimetön kohde",
+        "movesHeading": "Painotusmuutokset",
+        "moveApplied": "Käytetty",
+        "moveSkipped": "Ohitettu",
+        "suggestionsHeading": "{count, plural, one {# hylätty ehdotus} other {# hylättyä ehdotusta}}",
+        "complexValue": "Arvo",
+        "entity": "Kohde",
+        "createdMarker": "Luotu",
+        "clearedOnRename": "Tyhjennetty, kun otsikko muuttui",
+        "provenance": {
+          "source": "Lähde",
+          "via": "Kautta",
+          "viaArchive": "Arkistoinnin kautta",
+          "viaReconcile": "Täsmäytyksen kautta",
+          "seeded": "Esiladattu",
+          "batch": "Erä",
+          "cause": "Laukaisi",
+          "sourceValues": {
+            "ai": "Tekoäly",
+            "template": "Malli",
+            "scratch": "Alusta",
+            "starter": "Aloituspaketti",
+            "aiImport": "Tekoälytuonti",
+            "aiSuggestion": "Tekoälyehdotus"
+          }
+        }
       },
       "table": {
         "when": "Milloin",
@@ -118,7 +145,10 @@
       "details": {
         "deletedRole": "Poistettu rooli",
         "deletedFamily": "Poistettu perhe",
-        "deletedUser": "Poistettu käyttäjä"
+        "deletedUser": "Poistettu käyttäjä",
+        "itemsChanged": "{count, plural, one {# kohde muuttui} other {# kohdetta muuttui}}",
+        "fieldsChanged": "{count, plural, one {# kenttä muuttui} other {# kenttää muuttui}}",
+        "complexValue": "Koostettu arvo"
       },
       "fields": {
         "title": "Otsikko",
@@ -133,7 +163,31 @@
         "name": "Nimi",
         "slug": "Slug",
         "role": "Rooli",
-        "status": "Tila"
+        "status": "Tila",
+        "purpose": "Tarkoitus",
+        "responsibilities": "Vastuut",
+        "description": "Kuvaus",
+        "helpText": "Ohjeteksti",
+        "anchors": "Ankkurit",
+        "weightPoints": "Painopisteet",
+        "order": "Järjestys",
+        "isCustom": "Mukautettu",
+        "templateKey": "Malli",
+        "value": "Arviointi",
+        "motivation": "Perustelu",
+        "expectedBand": "Odotettu kaista",
+        "reviewedAt": "Tarkistettu",
+        "archivedAt": "Arkistoitu",
+        "bandThresholds": "Kaistarajat",
+        "band": "Kaista",
+        "score": "Painotus",
+        "complete": "Valmis",
+        "ratedCount": "Arvioidut kriteerit",
+        "onboardingCompletedAt": "Käyttöönotto valmis",
+        "employeeCount": "Työntekijät",
+        "expiresAt": "Vanhenee",
+        "orgId": "Organisaatio",
+        "archived": "Arkistoitu"
       },
       "events": {
         "organizationCreated": "Organisaatio luotu",

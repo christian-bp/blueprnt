@@ -53,6 +53,8 @@ async function enrichRows(
 ): Promise<Array<typeof auditRow.type>> {
   const roleTitles = new Map<string, string>()
   const familyNames = new Map<string, string>()
+  const criterionNames = new Map<string, string>()
+  const modelNames = new Map<string, string>()
   const roles = await ctx.db
     .query("roles")
     .withIndex("by_org", (q) => q.eq("orgId", orgId))
@@ -64,6 +66,20 @@ async function enrichRows(
     .collect()
   for (const family of families)
     familyNames.set(family._id.toString(), family.name)
+  // Criteria and the org's model(s) are bounded per org, so they are collected
+  // wholesale (like roles/families) to resolve top-level payload.criterionId /
+  // payload.modelId into the names map for the detail sheet's context line.
+  const criteria = await ctx.db
+    .query("criteria")
+    .withIndex("by_org", (q) => q.eq("orgId", orgId))
+    .collect()
+  for (const criterion of criteria)
+    criterionNames.set(criterion._id.toString(), criterion.name)
+  const models = await ctx.db
+    .query("models")
+    .withIndex("by_org", (q) => q.eq("orgId", orgId))
+    .collect()
+  for (const model of models) modelNames.set(model._id.toString(), model.name)
 
   // Member identities live in the users mirror (keyed by authId), not the org
   // tables. Resolve only the auth ids actually referenced across these rows.
@@ -92,6 +108,14 @@ async function enrichRows(
     const familyId = payload.familyId
     if (typeof familyId === "string" && familyNames.has(familyId)) {
       names[familyId] = familyNames.get(familyId) as string
+    }
+    const criterionId = payload.criterionId
+    if (typeof criterionId === "string" && criterionNames.has(criterionId)) {
+      names[criterionId] = criterionNames.get(criterionId) as string
+    }
+    const modelId = payload.modelId
+    if (typeof modelId === "string" && modelNames.has(modelId)) {
+      names[modelId] = modelNames.get(modelId) as string
     }
     const memberUserId = payload.memberUserId
     if (typeof memberUserId === "string" && memberNames.has(memberUserId)) {

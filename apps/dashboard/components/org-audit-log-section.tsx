@@ -40,9 +40,14 @@ import { useOrganization } from "@/components/org-context"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import {
   aiAuditDetail,
+  AI_KIND_KEY,
   changeEntries,
   formatAuditDetail,
   payloadChanges,
+  payloadItems,
+  payloadMoves,
+  payloadProvenance,
+  payloadSuggestions,
 } from "@/lib/audit-detail"
 
 // The five filterable categories. Kept as local literals rather than importing
@@ -166,6 +171,9 @@ export function OrgAuditLogSection() {
         deletedRole: t("details.deletedRole"),
         deletedFamily: t("details.deletedFamily"),
         deletedUser: t("details.deletedUser"),
+        itemsChanged: (count) => t("details.itemsChanged", { count }),
+        fieldsChanged: (count) => t("details.fieldsChanged", { count }),
+        createdMarker: t("detail.createdMarker"),
       },
       fieldLabel
     )
@@ -368,10 +376,62 @@ function AuditDetailSheet({
     names: Record<string, string>
   ) => string
 }) {
+  const p = (row.payload ?? {}) as Record<string, unknown>
+
+  // The always-on entity-context line: the subject of the event. We pick
+  // whichever ids the row resolved (role, then criterion/family/model, then
+  // member), falling back to the captured `name` for renamed/removed families.
+  // Invitation rows have no resolvable subject id (email is PII), so their
+  // subject is role + status + expiry instead.
+  function contextLine(): string {
+    const parts: string[] = []
+    const named = (id: unknown) =>
+      typeof id === "string" ? row.names[id] : undefined
+    const roleName = named(p.roleId)
+    if (roleName) parts.push(roleName)
+    const criterionName = named(p.criterionId)
+    if (criterionName) parts.push(criterionName)
+    const familyName = named(p.familyId)
+    if (familyName) parts.push(familyName)
+    else if (typeof p.name === "string" && row.type.startsWith("roleFamily.")) {
+      // A renamed/removed family resolves no id; use the captured name.
+      parts.push(p.name)
+    }
+    const modelName = named(p.modelId)
+    if (modelName) parts.push(modelName)
+    const memberName = named(p.memberUserId)
+    if (memberName) parts.push(memberName)
+    if (row.type.startsWith("invitation.")) {
+      if (typeof p.role === "string") parts.push(String(p.role))
+      if (typeof p.status === "string") parts.push(String(p.status))
+      if (typeof p.expiresAt === "number") {
+        parts.push(
+          format.dateTime(new Date(p.expiresAt), { dateStyle: "medium" })
+        )
+      }
+    }
+    return parts.join(" · ")
+  }
+
+  const subject = contextLine()
+
   const changes = payloadChanges(row.payload)
   const entries = changes ? changeEntries(changes, fieldLabel) : []
-  const summary =
-    changes === null ? detailText(row.type, row.payload, row.names) : ""
+  // Annotate the role profile fields when a rename auto-cleared them.
+  const clearedByRename = p.profileClearedByRename === true
+  const items = payloadItems(row.payload, fieldLabel)
+  const moves = payloadMoves(row.payload)
+  const suggestions = payloadSuggestions(row.payload)
+  const provenance = payloadProvenance(row.payload)
+
+  // Whether any of the structured groups produced renderable content; the
+  // one-line summary / no-changes note is only a final fallback when not.
+  const hasGroups =
+    entries.length > 0 ||
+    (items?.items.length ?? 0) > 0 ||
+    (moves?.moves.length ?? 0) > 0 ||
+    (suggestions?.items.length ?? 0) > 0
+  const summary = hasGroups ? "" : detailText(row.type, row.payload, row.names)
 
   return (
     <>
@@ -406,39 +466,176 @@ function AuditDetailSheet({
           </dd>
         </dl>
 
-        {/* What changed: per-field before/after, or the one-line summary, or a
-            muted no-changes note. */}
-        <div className="space-y-2">
+        {/* Always-on entity-context line: the subject of the event. */}
+        {subject ? (
+          <p className="break-words text-muted-foreground text-sm">
+            <span className="text-muted-foreground text-xs">
+              {t("detail.entity")}:
+            </span>{" "}
+            <span className="text-foreground">{subject}</span>
+          </p>
+        ) : null}
+
+        <div className="space-y-4">
           <h3 className="font-medium text-sm">{t("detail.changes")}</h3>
+
+          {/* Top-level field changes. */}
           {entries.length > 0 ? (
             <ul className="space-y-3">
               {entries.map((entry) => (
-                <li key={entry.field} className="text-sm">
-                  <div className="text-muted-foreground text-xs">
-                    {entry.label}
-                  </div>
-                  {entry.isSet ? (
-                    <div className="break-words">{entry.to}</div>
-                  ) : (
-                    <div className="break-words">
-                      <span className="text-muted-foreground line-through">
-                        {entry.from}
-                      </span>
-                      <span className="px-2 text-muted-foreground">→</span>
-                      <span>{entry.to}</span>
-                    </div>
-                  )}
-                </li>
+                <ChangeEntryRow
+                  key={entry.field}
+                  entry={entry}
+                  t={t}
+                  annotateCleared={
+                    clearedByRename &&
+                    (entry.field === "purpose" ||
+                      entry.field === "responsibilities")
+                  }
+                />
               ))}
             </ul>
-          ) : summary ? (
-            <p className="break-words text-sm">{summary}</p>
-          ) : (
-            <p className="text-muted-foreground text-sm">
-              {t("detail.noChanges")}
-            </p>
-          )}
+          ) : null}
+
+          {/* Bulk group: nested per-item before/after. */}
+          {items && items.items.length > 0 ? (
+            <div className="space-y-3">
+              <h4 className="font-medium text-muted-foreground text-xs">
+                {t("detail.itemsHeading", { count: items.count })}
+              </h4>
+              <ul className="space-y-4">
+                {items.items.map((item) => (
+                  <li key={item.key} className="space-y-2">
+                    <div className="font-medium text-sm">
+                      {item.title || t("detail.unnamedItem")}
+                    </div>
+                    {item.entries.length > 0 ? (
+                      <ul className="space-y-3">
+                        {item.entries.map((entry) => (
+                          <ChangeEntryRow
+                            key={entry.field}
+                            entry={entry}
+                            t={t}
+                          />
+                        ))}
+                      </ul>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          {/* AI weight-moves group. */}
+          {moves && moves.moves.length > 0 ? (
+            <div className="space-y-3">
+              <h4 className="font-medium text-muted-foreground text-xs">
+                {t("detail.movesHeading")}
+              </h4>
+              <ul className="space-y-3">
+                {moves.moves.map((move) => (
+                  <li
+                    key={move.key}
+                    className={
+                      move.applied ? "text-sm" : "text-muted-foreground text-sm"
+                    }
+                  >
+                    <div
+                      className={
+                        move.applied
+                          ? "break-words"
+                          : "break-words line-through"
+                      }
+                    >
+                      <span className="text-muted-foreground">
+                        {move.fromLabel}
+                      </span>
+                      <span className="px-2 text-muted-foreground">→</span>
+                      <span>{move.toLabel}</span>
+                      {move.points ? (
+                        <span className="text-muted-foreground">
+                          {" "}
+                          ({move.points})
+                        </span>
+                      ) : null}
+                    </div>
+                    {move.motivation ? (
+                      <div className="break-words text-muted-foreground text-xs">
+                        {move.motivation}
+                      </div>
+                    ) : null}
+                    {move.applied ? null : (
+                      <div className="text-muted-foreground text-xs">
+                        {t("detail.moveSkipped")}
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          {/* Dropped-suggestions group. */}
+          {suggestions && suggestions.items.length > 0 ? (
+            <div className="space-y-3">
+              <h4 className="font-medium text-muted-foreground text-xs">
+                {t("detail.suggestionsHeading", { count: suggestions.count })}
+              </h4>
+              <ul className="space-y-2">
+                {suggestions.items.map((item) => {
+                  const kindKey = AI_KIND_KEY[item.kind]
+                  const kindLabel = kindKey
+                    ? t(`ai.kind.${kindKey}` as Parameters<typeof t>[0])
+                    : item.kind
+                  return (
+                    <li key={item.key} className="break-words text-sm">
+                      <span>{kindLabel}</span>
+                      {item.status ? (
+                        <span className="text-muted-foreground">
+                          {" "}
+                          {item.status}
+                        </span>
+                      ) : null}
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          ) : null}
+
+          {/* Final fallback: the one-line summary or a muted no-changes note. */}
+          {!hasGroups ? (
+            summary ? (
+              <p className="break-words text-sm">{summary}</p>
+            ) : (
+              <p className="text-muted-foreground text-sm">
+                {t("detail.noChanges")}
+              </p>
+            )
+          ) : null}
         </div>
+
+        {/* Provenance footer: where the change came from. */}
+        {provenance.length > 0 ? (
+          <p className="break-words text-muted-foreground text-xs">
+            {provenance
+              .map(({ key, value }) => {
+                const label = t(
+                  `detail.provenance.${key === "batchId" ? "batch" : key}` as Parameters<
+                    typeof t
+                  >[0]
+                )
+                const valueKey =
+                  `detail.provenance.sourceValues.${value}` as Parameters<
+                    typeof t.has
+                  >[0]
+                const displayValue =
+                  key === "source" && t.has(valueKey) ? t(valueKey) : value
+                return `${label}: ${displayValue}`
+              })
+              .join(" · ")}
+          </p>
+        ) : null}
       </div>
 
       <SheetFooter>
@@ -447,5 +644,45 @@ function AuditDetailSheet({
         </SheetClose>
       </SheetFooter>
     </>
+  )
+}
+
+// One before/after row, shared by the top-level changes list and each bulk
+// item's nested list. A complex (object/array) value renders its compact JSON
+// in a horizontally scrollable mono block so the sheet body never scrolls
+// sideways; a scalar shows "from -> to" (struck old) or just the new value.
+function ChangeEntryRow({
+  entry,
+  t,
+  annotateCleared = false,
+}: {
+  entry: ReturnType<typeof changeEntries>[number]
+  t: ReturnType<typeof useTranslations<"dashboard.auditLog">>
+  annotateCleared?: boolean
+}) {
+  return (
+    <li className="text-sm">
+      <div className="text-muted-foreground text-xs">{entry.label}</div>
+      {entry.isComplex ? (
+        <pre className="overflow-x-auto rounded bg-muted p-2 font-mono text-xs">
+          {entry.isSet ? entry.to : `${entry.from}\n→ ${entry.to}`}
+        </pre>
+      ) : entry.isSet ? (
+        <div className="break-words">{entry.to}</div>
+      ) : (
+        <div className="break-words">
+          <span className="text-muted-foreground line-through">
+            {entry.from}
+          </span>
+          <span className="px-2 text-muted-foreground">→</span>
+          <span>{entry.to}</span>
+        </div>
+      )}
+      {annotateCleared ? (
+        <div className="text-muted-foreground text-xs">
+          {t("detail.clearedOnRename")}
+        </div>
+      ) : null}
+    </li>
   )
 }

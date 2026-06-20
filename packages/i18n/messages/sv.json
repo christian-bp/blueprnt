@@ -103,7 +103,34 @@
         "to": "Till",
         "noChanges": "Inga ändringar på fältnivå registrerade.",
         "close": "Stäng",
-        "viewDetails": "Visa detaljer"
+        "viewDetails": "Visa detaljer",
+        "itemsHeading": "{count, plural, one {# objekt ändrat} other {# objekt ändrade}}",
+        "unnamedItem": "Namnlöst objekt",
+        "movesHeading": "Viktändringar",
+        "moveApplied": "Tillämpad",
+        "moveSkipped": "Hoppades över",
+        "suggestionsHeading": "{count, plural, one {# borttaget förslag} other {# borttagna förslag}}",
+        "complexValue": "Värde",
+        "entity": "Objekt",
+        "createdMarker": "Skapad",
+        "clearedOnRename": "Rensad när titeln ändrades",
+        "provenance": {
+          "source": "Källa",
+          "via": "Via",
+          "viaArchive": "Via arkivering",
+          "viaReconcile": "Via avstämning",
+          "seeded": "Förinläst",
+          "batch": "Batch",
+          "cause": "Utlöst av",
+          "sourceValues": {
+            "ai": "AI",
+            "template": "Mall",
+            "scratch": "Från grunden",
+            "starter": "Startuppsättning",
+            "aiImport": "AI-import",
+            "aiSuggestion": "AI-förslag"
+          }
+        }
       },
       "table": {
         "when": "När",
@@ -118,7 +145,10 @@
       "details": {
         "deletedRole": "Borttagen roll",
         "deletedFamily": "Borttagen familj",
-        "deletedUser": "Borttagen användare"
+        "deletedUser": "Borttagen användare",
+        "itemsChanged": "{count, plural, one {# objekt ändrat} other {# objekt ändrade}}",
+        "fieldsChanged": "{count, plural, one {# fält ändrat} other {# fält ändrade}}",
+        "complexValue": "Sammansatt värde"
       },
       "fields": {
         "title": "Titel",
@@ -133,7 +163,31 @@
         "name": "Namn",
         "slug": "Slug",
         "role": "Roll",
-        "status": "Status"
+        "status": "Status",
+        "purpose": "Syfte",
+        "responsibilities": "Ansvar",
+        "description": "Beskrivning",
+        "helpText": "Hjälptext",
+        "anchors": "Ankare",
+        "weightPoints": "Viktpoäng",
+        "order": "Ordning",
+        "isCustom": "Anpassad",
+        "templateKey": "Mall",
+        "value": "Bedömning",
+        "motivation": "Motivering",
+        "expectedBand": "Förväntat band",
+        "reviewedAt": "Granskad",
+        "archivedAt": "Arkiverad",
+        "bandThresholds": "Bandgränser",
+        "band": "Band",
+        "score": "Viktning",
+        "complete": "Klar",
+        "ratedCount": "Bedömda kriterier",
+        "onboardingCompletedAt": "Onboarding klar",
+        "employeeCount": "Anställda",
+        "expiresAt": "Upphör",
+        "orgId": "Organisation",
+        "archived": "Arkiverad"
       },
       "events": {
         "organizationCreated": "Organisation skapad",
