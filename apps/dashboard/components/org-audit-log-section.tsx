@@ -307,6 +307,7 @@ export function OrgAuditLogSection() {
           placeholder={t("dateRange.placeholder")}
           clearLabel={t("dateRange.clear")}
           ariaLabel={t("dateRange.label")}
+          loading={bounds === undefined}
         />
       </div>
 
