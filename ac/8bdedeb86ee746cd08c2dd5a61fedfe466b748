@@ -1,0 +1,25 @@
+apps/dashboard/components/org-audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_2df27dcbde2206 155-158
+apps/dashboard/components/audit/audit-pagination.test.tsx
+  s_4d14ac8ce42bf2::t_ff7dc9882c1de5 5,7-8,11-31,35,39,46-47,50,59,63
+apps/dashboard/components/audit/audit-pagination.tsx
+  s_4d14ac8ce42bf2::t_c2771a19c5c913 13-22,30-40,42-44,49-51,100
+apps/dashboard/components/admin/audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_4f14962174315c 169-172
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "ac8bdedeb86ee746cd08c2dd5a61fedfe466b748",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
