@@ -137,30 +137,60 @@ async function enrichRows(
 // The organization's own event trail (admin-only), paginated and newest-first.
 // When `category` is a known AUDIT_CATEGORIES value the by_org_category index
 // scopes the page to that area; otherwise the full by_org trail is paged. The
-// returned page is enriched with per-row names. The Convex pagination result
-// shape carries optional fields (splitCursor/pageStatus) the framework adds, so
-// no explicit `returns` validator is set here (per the pagination guideline,
-// which documents the shape but shows no returns validator on paginated
-// queries): a hand-written object validator would reject those framework fields.
+// optional `start`/`end` epoch-ms bounds restrict `_creationTime` inclusively
+// (start <= _creationTime <= end) via the index range, applied after the eq
+// fields (orgId, plus category on by_org_category). The returned page is
+// enriched with per-row names. The Convex pagination result shape carries
+// optional fields (splitCursor/pageStatus) the framework adds, so no explicit
+// `returns` validator is set here (per the pagination guideline, which documents
+// the shape but shows no returns validator on paginated queries): a hand-written
+// object validator would reject those framework fields.
 export const listAuditLog = adminQuery({
   args: {
     paginationOpts: paginationOptsValidator,
     category: v.optional(v.string()),
+    start: v.optional(v.number()),
+    end: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const category = validCategory(args.category)
+    const { start, end } = args
     const result =
       category !== null
         ? await ctx.db
             .query("auditLog")
-            .withIndex("by_org_category", (q) =>
-              q.eq("orgId", ctx.orgId).eq("category", category)
-            )
+            .withIndex("by_org_category", (q) => {
+              // The _creationTime range follows the eq fields (orgId, category).
+              // Explicit branches: the builder's type narrows after the first
+              // .gte/.lte, so a `let r = ...; r = r.gte(...)` reassignment would
+              // not typecheck.
+              const base = q.eq("orgId", ctx.orgId).eq("category", category)
+              if (start !== undefined && end !== undefined) {
+                return base
+                  .gte("_creationTime", start)
+                  .lte("_creationTime", end)
+              }
+              if (start !== undefined) return base.gte("_creationTime", start)
+              if (end !== undefined) return base.lte("_creationTime", end)
+              return base
+            })
             .order("desc")
             .paginate(args.paginationOpts)
         : await ctx.db
             .query("auditLog")
-            .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
+            .withIndex("by_org", (q) => {
+              // The _creationTime range follows the orgId eq field. Same
+              // explicit-branch pattern (the builder type narrows after .gte).
+              const base = q.eq("orgId", ctx.orgId)
+              if (start !== undefined && end !== undefined) {
+                return base
+                  .gte("_creationTime", start)
+                  .lte("_creationTime", end)
+              }
+              if (start !== undefined) return base.gte("_creationTime", start)
+              if (end !== undefined) return base.lte("_creationTime", end)
+              return base
+            })
             .order("desc")
             .paginate(args.paginationOpts)
     return {
@@ -180,12 +210,15 @@ export const searchAuditLog = adminQuery({
   args: {
     search: v.string(),
     category: v.optional(v.string()),
+    start: v.optional(v.number()),
+    end: v.optional(v.number()),
   },
   returns: v.object({ rows: v.array(auditRow) }),
   handler: async (ctx, args) => {
     const search = args.search.trim()
     if (search.length === 0) return { rows: [] }
     const category = validCategory(args.category)
+    const { start, end } = args
     const rows = await ctx.db
       .query("auditLog")
       .withSearchIndex("search_text", (q) => {
@@ -194,6 +227,15 @@ export const searchAuditLog = adminQuery({
         return s
       })
       .take(50)
-    return { rows: await enrichRows(ctx, ctx.orgId, rows) }
+    // The search index filterFields are equality-only, so the date range cannot
+    // be an index filter: apply it in memory over the top-50 relevance results.
+    // A date-filtered search may therefore return fewer than 50 rows (the range
+    // is intersected with the relevance cap, not applied before it).
+    const inRange = rows.filter(
+      (r) =>
+        (start === undefined || r._creationTime >= start) &&
+        (end === undefined || r._creationTime <= end)
+    )
+    return { rows: await enrichRows(ctx, ctx.orgId, inRange) }
   },
 })

@@ -643,6 +643,145 @@ describe("listAuditLog (paginated browse)", () => {
   })
 })
 
+// Inserts `count` platform audit rows directly (each insert gets a strictly
+// increasing _creationTime under convex-test), returning their observed creation
+// times in insertion order (oldest first). Range-test bounds are derived from
+// these real times, never from Date.now(), so the partitions are deterministic.
+// searchText carries the actor name so the search range test can match a term.
+async function seedPlatformRows(
+  t: ReturnType<typeof initConvexTest>,
+  count: number,
+  category = "user",
+  type = "platform.userCreated"
+): Promise<number[]> {
+  return await t.run(async (ctx) => {
+    const times: number[] = []
+    for (let i = 0; i < count; i++) {
+      const id = await ctx.db.insert("platformAuditLog", {
+        actorId: "operator-id",
+        actorName: "operator",
+        type,
+        category,
+        searchText: `operator ${type.toLowerCase()}`,
+        payload: {},
+      })
+      const row = await ctx.db.get(id)
+      times.push(row?._creationTime ?? 0)
+    }
+    return times
+  })
+}
+
+describe("listAuditLog (date range)", () => {
+  it("no range returns all rows; a range before all rows returns none", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    // The seeded grant adds one baseline row; add four more of our own.
+    const times = await seedPlatformRows(t, 4)
+
+    const all = await asAdmin.query(api.platform.admin.listAuditLog, {
+      paginationOpts: { numItems: 50, cursor: null },
+    })
+    // Four seeded plus the one out-of-band grant row.
+    expect(all.page.length).toBe(5)
+
+    // A window strictly before our oldest seeded row also excludes the grant
+    // row, which is older still, so nothing comes back.
+    const before = await asAdmin.query(api.platform.admin.listAuditLog, {
+      start: times[0] - 1_000_000,
+      end: times[0] - 1,
+      paginationOpts: { numItems: 50, cursor: null },
+    })
+    expect(before.page).toHaveLength(0)
+  })
+
+  it("start-only keeps rows at or after the bound, newest-first (by_creation_time)", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    const times = await seedPlatformRows(t, 4)
+    const fromThird = times[2] as number
+    const result = await asAdmin.query(api.platform.admin.listAuditLog, {
+      start: fromThird,
+      paginationOpts: { numItems: 50, cursor: null },
+    })
+    expect(result.page).toHaveLength(2)
+    expect(result.page.every((r) => r.at >= fromThird)).toBe(true)
+    expect(result.page[0]?.at).toBeGreaterThanOrEqual(result.page[1]?.at ?? 0)
+  })
+
+  it("start+end keeps only the inclusive window (no category)", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    const times = await seedPlatformRows(t, 5)
+    const lo = times[1] as number
+    const hi = times[3] as number
+    const result = await asAdmin.query(api.platform.admin.listAuditLog, {
+      start: lo,
+      end: hi,
+      paginationOpts: { numItems: 50, cursor: null },
+    })
+    expect(result.page).toHaveLength(3)
+    expect(result.page.every((r) => r.at >= lo && r.at <= hi)).toBe(true)
+  })
+
+  it("category and date range compose (by_category)", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    // Three user rows, then two organization rows (newer).
+    const userTimes = await seedPlatformRows(
+      t,
+      3,
+      "user",
+      "platform.userCreated"
+    )
+    await seedPlatformRows(t, 2, "organization", "platform.orgCreated")
+    // Range covering only the two newest user rows; category pins to user, so
+    // the newer organization rows are excluded by the category filter and the
+    // oldest user row is excluded by the lower bound.
+    const lo = userTimes[1] as number
+    const result = await asAdmin.query(api.platform.admin.listAuditLog, {
+      category: "user",
+      start: lo,
+      paginationOpts: { numItems: 50, cursor: null },
+    })
+    expect(result.page).toHaveLength(2)
+    expect(result.page.every((r) => r.category === "user")).toBe(true)
+    expect(result.page.every((r) => r.at >= lo)).toBe(true)
+  })
+})
+
+describe("searchAuditLog (date range)", () => {
+  it("applies a date range in memory over the matched rows", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    // Four rows all matching "operator" via searchText, strictly increasing.
+    const times = await seedPlatformRows(t, 4)
+
+    const all = await asAdmin.query(api.platform.admin.searchAuditLog, {
+      search: "operator",
+    })
+    // Four seeded plus the seeded-grant row (its searchText also has "operator").
+    expect(all.rows.length).toBeGreaterThanOrEqual(4)
+
+    // end = the second seeded row's time: the two newer seeded rows are excluded
+    // by the in-memory filter even though they match the term.
+    const untilSecond = times[1] as number
+    const ranged = await asAdmin.query(api.platform.admin.searchAuditLog, {
+      search: "operator",
+      end: untilSecond,
+    })
+    expect(ranged.rows.every((r) => r.at <= untilSecond)).toBe(true)
+    // The two newest seeded rows (times[2], times[3]) must not appear.
+    expect(ranged.rows.some((r) => r.at === times[2])).toBe(false)
+    expect(ranged.rows.some((r) => r.at === times[3])).toBe(false)
+  })
+})
+
 describe("searchAuditLog", () => {
   it("hits a term in searchText (actor name) and misses an unrelated term", async () => {
     const t = initConvexTest()

@@ -286,6 +286,165 @@ describe("accounts.audit.listAuditLog (browse)", () => {
   })
 })
 
+// Inserts `count` role.created rows for `orgId` directly (each insert gets a
+// strictly increasing _creationTime under convex-test), returning their
+// observed creation times in insertion order (oldest first). Bounds in the
+// range tests are derived from these real times, never from Date.now(), so the
+// partitions are deterministic.
+async function seedAuditRows(
+  t: ReturnType<typeof initConvexTest>,
+  orgId: string,
+  adminId: string,
+  count: number,
+  category = "role",
+  type = "role.created"
+): Promise<number[]> {
+  return await t.run(async (ctx) => {
+    const times: number[] = []
+    for (let i = 0; i < count; i++) {
+      const id = await ctx.db.insert("auditLog", {
+        orgId,
+        type,
+        actorId: adminId,
+        actorName: "Admin Person",
+        payload: {},
+        category,
+        searchText: buildSearchText("Admin Person", type, {}),
+      })
+      const row = await ctx.db.get(id)
+      times.push(row?._creationTime ?? 0)
+    }
+    return times
+  })
+}
+
+describe("accounts.audit.listAuditLog (date range)", () => {
+  it("no range returns all rows; a range before all rows returns none", async () => {
+    const t = initConvexTest()
+    const { orgId, adminId } = await setup(t)
+    const times = await seedAuditRows(t, orgId, adminId, 4)
+    const asAdmin = t.withIdentity({ subject: adminId })
+
+    const all = await asAdmin.query(api.accounts.audit.listAuditLog, {
+      orgId,
+      paginationOpts: { numItems: 50, cursor: null },
+    })
+    expect(all.page).toHaveLength(4)
+
+    // A window strictly before the oldest row excludes everything.
+    const before = await asAdmin.query(api.accounts.audit.listAuditLog, {
+      orgId,
+      start: times[0] - 1000,
+      end: times[0] - 1,
+      paginationOpts: { numItems: 50, cursor: null },
+    })
+    expect(before.page).toHaveLength(0)
+  })
+
+  it("start-only keeps rows at or after the bound, newest-first", async () => {
+    const t = initConvexTest()
+    const { orgId, adminId } = await setup(t)
+    const times = await seedAuditRows(t, orgId, adminId, 4)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    // start = the third row's time: rows 3 and 4 remain (inclusive lower bound).
+    const fromThird = times[2] as number
+    const result = await asAdmin.query(api.accounts.audit.listAuditLog, {
+      orgId,
+      start: fromThird,
+      paginationOpts: { numItems: 50, cursor: null },
+    })
+    expect(result.page).toHaveLength(2)
+    expect(result.page.every((r) => r.at >= fromThird)).toBe(true)
+    // Newest-first ordering is preserved under the range.
+    expect(result.page[0]?.at).toBeGreaterThanOrEqual(result.page[1]?.at ?? 0)
+  })
+
+  it("end-only keeps rows at or before the bound (inclusive)", async () => {
+    const t = initConvexTest()
+    const { orgId, adminId } = await setup(t)
+    const times = await seedAuditRows(t, orgId, adminId, 4)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    // end = the second row's time: rows 1 and 2 remain, the newer two drop.
+    const untilSecond = times[1] as number
+    const result = await asAdmin.query(api.accounts.audit.listAuditLog, {
+      orgId,
+      end: untilSecond,
+      paginationOpts: { numItems: 50, cursor: null },
+    })
+    expect(result.page).toHaveLength(2)
+    expect(result.page.every((r) => r.at <= untilSecond)).toBe(true)
+  })
+
+  it("start+end keeps only the inclusive window", async () => {
+    const t = initConvexTest()
+    const { orgId, adminId } = await setup(t)
+    const times = await seedAuditRows(t, orgId, adminId, 5)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    // [row2, row4] inclusive: exactly rows 2, 3, 4 (drops the oldest and newest).
+    const lo = times[1] as number
+    const hi = times[3] as number
+    const result = await asAdmin.query(api.accounts.audit.listAuditLog, {
+      orgId,
+      start: lo,
+      end: hi,
+      paginationOpts: { numItems: 50, cursor: null },
+    })
+    expect(result.page).toHaveLength(3)
+    expect(result.page.every((r) => r.at >= lo && r.at <= hi)).toBe(true)
+  })
+
+  it("paginates within a range (newest-first across two pages)", async () => {
+    const t = initConvexTest()
+    const { orgId, adminId } = await setup(t)
+    const times = await seedAuditRows(t, orgId, adminId, 5)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    // Window covering the newest four rows (rows 2..5).
+    const lo = times[1] as number
+    const page1 = await asAdmin.query(api.accounts.audit.listAuditLog, {
+      orgId,
+      start: lo,
+      paginationOpts: { numItems: 2, cursor: null },
+    })
+    expect(page1.page).toHaveLength(2)
+    expect(page1.isDone).toBe(false)
+    const page2 = await asAdmin.query(api.accounts.audit.listAuditLog, {
+      orgId,
+      start: lo,
+      paginationOpts: { numItems: 2, cursor: page1.continueCursor },
+    })
+    expect(page2.page).toHaveLength(2)
+    expect(page2.isDone).toBe(true)
+    // All four are in range and globally newest-first across the two pages.
+    const ats = [...page1.page, ...page2.page].map((r) => r.at)
+    expect(ats.every((at) => at >= lo)).toBe(true)
+    for (let i = 1; i < ats.length; i++) {
+      expect(ats[i - 1]).toBeGreaterThanOrEqual(ats[i] as number)
+    }
+  })
+
+  it("category and date range compose", async () => {
+    const t = initConvexTest()
+    const { orgId, adminId } = await setup(t)
+    // Three role rows, then two member rows (all newer than the role rows).
+    const roleTimes = await seedAuditRows(t, orgId, adminId, 3, "role")
+    await seedAuditRows(t, orgId, adminId, 2, "member", "member.roleChanged")
+    const asAdmin = t.withIdentity({ subject: adminId })
+    // Range covering only the two newest role rows; category pins to role, so
+    // the (newer, in-range) member rows are excluded by the category filter and
+    // the oldest role row is excluded by the lower bound.
+    const lo = roleTimes[1] as number
+    const result = await asAdmin.query(api.accounts.audit.listAuditLog, {
+      orgId,
+      category: "role",
+      start: lo,
+      paginationOpts: { numItems: 50, cursor: null },
+    })
+    expect(result.page).toHaveLength(2)
+    expect(result.page.every((r) => r.category === "role")).toBe(true)
+    expect(result.page.every((r) => r.at >= lo)).toBe(true)
+  })
+})
+
 describe("accounts.audit.searchAuditLog", () => {
   it("returns rows matching a term present in searchText", async () => {
     const t = initConvexTest()
@@ -384,6 +543,33 @@ describe("accounts.audit.searchAuditLog", () => {
       .query(api.accounts.audit.searchAuditLog, { orgId, search: "admin" })
     const created = result.rows.find((r) => r.type === "role.created")
     expect(created?.names[roleId.toString()]).toBe("System Developer")
+  })
+
+  it("applies a date range in memory over the matched rows", async () => {
+    const t = initConvexTest()
+    const { orgId, adminId } = await setup(t)
+    // Four rows all matching "admin" (the actor name is in searchText), with
+    // strictly increasing creation times.
+    const times = await seedAuditRows(t, orgId, adminId, 4)
+    const asAdmin = t.withIdentity({ subject: adminId })
+
+    // No range: all four match.
+    const all = await asAdmin.query(api.accounts.audit.searchAuditLog, {
+      orgId,
+      search: "admin",
+    })
+    expect(all.rows).toHaveLength(4)
+
+    // end = the second row's time: a matching term outside the range (the two
+    // newer rows) is excluded by the in-memory filter.
+    const untilSecond = times[1] as number
+    const ranged = await asAdmin.query(api.accounts.audit.searchAuditLog, {
+      orgId,
+      search: "admin",
+      end: untilSecond,
+    })
+    expect(ranged.rows).toHaveLength(2)
+    expect(ranged.rows.every((r) => r.at <= untilSecond)).toBe(true)
   })
 
   it("rejects an editor with errors.adminRequired", async () => {

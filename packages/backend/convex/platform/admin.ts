@@ -367,27 +367,58 @@ async function resolvePlatformTargets(
 
 // The admin audit trail (platform-admin only), paginated and newest-first. When
 // `category` is a known PLATFORM_AUDIT_CATEGORIES value the by_category index
-// scopes the page to that area; otherwise the full table is paged. Each page row
-// has its target ids resolved to display labels. The Convex pagination result
-// shape carries optional framework fields (splitCursor/pageStatus), so no
-// explicit `returns` validator is set here (mirroring the org listAuditLog): a
+// scopes the page to that area; otherwise the by_creation_time index pages the
+// full table (so the optional date range can ride an index in either branch).
+// The optional `start`/`end` epoch-ms bounds restrict `_creationTime` inclusively
+// (start <= _creationTime <= end): in the category branch after the category eq,
+// in the no-category branch directly on by_creation_time. Each page row has its
+// target ids resolved to display labels. The Convex pagination result shape
+// carries optional framework fields (splitCursor/pageStatus), so no explicit
+// `returns` validator is set here (mirroring the org listAuditLog): a
 // hand-written object validator would reject those framework fields.
 export const listAuditLog = platformQuery({
   args: {
     paginationOpts: paginationOptsValidator,
     category: v.optional(v.string()),
+    start: v.optional(v.number()),
+    end: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const category = validPlatformCategory(args.category)
+    const { start, end } = args
     const result =
       category !== null
         ? await ctx.db
             .query("platformAuditLog")
-            .withIndex("by_category", (q) => q.eq("category", category))
+            .withIndex("by_category", (q) => {
+              // The _creationTime range follows the category eq field. Explicit
+              // branches: the builder's type narrows after the first .gte/.lte,
+              // so a reassignment would not typecheck.
+              const base = q.eq("category", category)
+              if (start !== undefined && end !== undefined) {
+                return base
+                  .gte("_creationTime", start)
+                  .lte("_creationTime", end)
+              }
+              if (start !== undefined) return base.gte("_creationTime", start)
+              if (end !== undefined) return base.lte("_creationTime", end)
+              return base
+            })
             .order("desc")
             .paginate(args.paginationOpts)
         : await ctx.db
             .query("platformAuditLog")
+            // No category eq, so the range goes directly on the built-in
+            // by_creation_time index. With both bounds absent this is equivalent
+            // to a full table scan (the prior bare-table behavior).
+            .withIndex("by_creation_time", (q) => {
+              if (start !== undefined && end !== undefined) {
+                return q.gte("_creationTime", start).lte("_creationTime", end)
+              }
+              if (start !== undefined) return q.gte("_creationTime", start)
+              if (end !== undefined) return q.lte("_creationTime", end)
+              return q
+            })
             .order("desc")
             .paginate(args.paginationOpts)
     return {
@@ -408,12 +439,15 @@ export const searchAuditLog = platformQuery({
   args: {
     search: v.string(),
     category: v.optional(v.string()),
+    start: v.optional(v.number()),
+    end: v.optional(v.number()),
   },
   returns: v.object({ rows: v.array(platformAuditRow) }),
   handler: async (ctx, args) => {
     const search = args.search.trim()
     if (search.length === 0) return { rows: [] }
     const category = validPlatformCategory(args.category)
+    const { start, end } = args
     const rows = await ctx.db
       .query("platformAuditLog")
       .withSearchIndex("search_text", (q) => {
@@ -422,7 +456,16 @@ export const searchAuditLog = platformQuery({
         return s
       })
       .take(50)
-    return { rows: await resolvePlatformTargets(ctx, rows) }
+    // The search index filterFields are equality-only, so the date range cannot
+    // be an index filter: apply it in memory over the top-50 relevance results.
+    // A date-filtered search may therefore return fewer than 50 rows (the range
+    // is intersected with the relevance cap, not applied before it).
+    const inRange = rows.filter(
+      (r) =>
+        (start === undefined || r._creationTime >= start) &&
+        (end === undefined || r._creationTime <= end)
+    )
+    return { rows: await resolvePlatformTargets(ctx, inRange) }
   },
 })
 
