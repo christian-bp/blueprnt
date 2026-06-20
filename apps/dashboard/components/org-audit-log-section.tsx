@@ -339,7 +339,7 @@ export function OrgAuditLogSection() {
         <Table className="table-fixed">
           {auditTableHeader}
           <TableSkeleton
-            rows={8}
+            rows={25}
             columns={[
               { className: "w-28" },
               { className: "w-24" },
