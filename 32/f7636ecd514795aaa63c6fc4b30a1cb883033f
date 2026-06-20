@@ -1,0 +1,62 @@
+apps/dashboard/app/(app)/roles/[roleId]/page.tsx
+  s_4d3e6ca252fbcf::t_65143aa1350ce4 18
+  s_4d3e6ca252fbcf::t_3323d302a025e5 35
+apps/dashboard/lib/page-title.ts
+  s_4d3e6ca252fbcf::t_c5a378d4470675 1-17
+apps/dashboard/app/(app)/audit-log/page.tsx
+  s_4d3e6ca252fbcf::t_0e8cb258e367bf 3,5,8-9
+apps/dashboard/app/(app)/roles/families/[familyId]/page.tsx
+  s_4d3e6ca252fbcf::t_2d5ae26063ba4a 19
+  s_4d3e6ca252fbcf::t_a4c47e9cc0b488 42-43
+apps/dashboard/app/(app)/roles/page.tsx
+  s_4d3e6ca252fbcf::t_d596542578d2f7 23-24
+  s_4d3e6ca252fbcf::t_94abb778b24c80 16
+apps/dashboard/app/(app)/roles/[roleId]/rate/page.tsx
+  s_4d3e6ca252fbcf::t_12becd36d4ed9a 11
+  s_4d3e6ca252fbcf::t_a4a30cb40dcf9a 26
+apps/dashboard/app/(app)/page.tsx
+  s_4d3e6ca252fbcf::t_929d043b98bf59 24-25
+  s_4d3e6ca252fbcf::t_ee83b95047fae3 17
+apps/dashboard/app/layout.tsx
+  s_4d3e6ca252fbcf::t_29a5084abc9c99 5-6,12-25
+apps/dashboard/app/(app)/work/page.tsx
+  s_4d3e6ca252fbcf::t_8b4c54bff4389d 32
+  s_4d3e6ca252fbcf::t_6a8b43035dbed6 47-48
+apps/dashboard/app/(app)/admin/audit-log/page.tsx
+  s_4d3e6ca252fbcf::t_150322b94493cf 3,5,8-10
+apps/dashboard/app/(app)/admin/page.tsx
+  s_4d3e6ca252fbcf::t_8dd1df257560f5 3,5,8-10
+apps/dashboard/app/(app)/model/page.tsx
+  s_4d3e6ca252fbcf::t_9b3c04216f2901 4,7
+  s_4d3e6ca252fbcf::t_3e8072ee964cf3 16-17
+apps/dashboard/app/reset-password/page.tsx
+  s_4d3e6ca252fbcf::t_dfca664dbed61f 17
+  s_4d3e6ca252fbcf::t_033e23a9a42528 23
+apps/dashboard/lib/page-title.test.ts
+  s_4d3e6ca252fbcf::t_a9aa71d8345111 1-30
+apps/dashboard/hooks/use-page-title.ts
+  s_4d3e6ca252fbcf::t_4f3c46b52e88cd 1-27
+apps/dashboard/app/accept-invitation/[id]/page.tsx
+  s_4d3e6ca252fbcf::t_0b59c5d8696a0d 9
+  s_4d3e6ca252fbcf::t_cd8cff43969336 17
+apps/dashboard/hooks/use-page-title.test.tsx
+  s_4d3e6ca252fbcf::t_6e9bb56dea9a43 1-53
+apps/dashboard/app/(app)/admin/organizations/page.tsx
+  s_4d3e6ca252fbcf::t_bab504af6e0815 3,5,8-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "32f7636ecd514795aaa63c6fc4b30a1cb883033f",
+  "prompts": {},
+  "sessions": {
+    "s_4d3e6ca252fbcf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3010eb37-dc9e-446d-93c9-0553ad385d15",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
