@@ -43,11 +43,13 @@ import {
   AI_KIND_KEY,
   changeEntries,
   formatAuditDetail,
+  orderEntries,
   payloadChanges,
   payloadItems,
   payloadMoves,
   payloadProvenance,
   payloadSuggestions,
+  sectionKind,
 } from "@/lib/audit-detail"
 
 // The five filterable categories. Kept as local literals rather than importing
@@ -415,8 +417,29 @@ function AuditDetailSheet({
 
   const subject = contextLine()
 
+  // Resolve a payload id (e.g. a role's familyId value) to its display name, so
+  // change rows show "Produkt", not the raw id.
+  const resolveName = (id: string) => row.names[id]
+
   const changes = payloadChanges(row.payload)
-  const entries = changes ? changeEntries(changes, fieldLabel) : []
+  const rawEntries = changes
+    ? changeEntries(changes, fieldLabel, resolveName)
+    : []
+  const kind = sectionKind(row.type, rawEntries)
+  // On a creation snapshot, fields set to nothing (e.g. an unset function/team)
+  // carry no information, so drop them; on an update a cleared field is a real
+  // change and stays. Then order identity-first regardless of stored key order.
+  const entries = orderEntries(
+    kind === "create"
+      ? rawEntries.filter((entry) => !(entry.isSet && entry.to.trim() === ""))
+      : rawEntries
+  )
+  const sectionHeading =
+    kind === "create"
+      ? t("detail.detailsHeading")
+      : kind === "remove"
+        ? t("detail.removedHeading")
+        : t("detail.changes")
   // Annotate the role profile fields when a rename auto-cleared them.
   const clearedByRename = p.profileClearedByRename === true
   const items = payloadItems(row.payload, fieldLabel)
@@ -432,210 +455,200 @@ function AuditDetailSheet({
     (moves?.moves.length ?? 0) > 0 ||
     (suggestions?.items.length ?? 0) > 0
   const summary = hasGroups ? "" : detailText(row.type, row.payload, row.names)
+  const dateLong = format.dateTime(new Date(row.at), {
+    dateStyle: "long",
+    timeStyle: "short",
+  })
 
   return (
     <>
-      <SheetHeader>
-        <SheetTitle>{actionLabel(row.type)}</SheetTitle>
-        <SheetDescription>
-          {format.dateTime(new Date(row.at), {
-            dateStyle: "long",
-            timeStyle: "medium",
-          })}
+      <SheetHeader className="gap-1.5">
+        <div className="flex items-start justify-between gap-3">
+          <SheetTitle className="text-balance">
+            {actionLabel(row.type)}
+          </SheetTitle>
+          {row.category ? (
+            <Badge variant="secondary" className="mt-0.5 shrink-0">
+              {categoryLabel(row.category)}
+            </Badge>
+          ) : null}
+        </div>
+        <SheetDescription className="text-balance">
+          {subject || dateLong}
         </SheetDescription>
       </SheetHeader>
 
-      <div className="flex flex-col gap-4 overflow-y-auto px-4">
-        {/* Meta: who, category, raw event key. */}
-        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-          <dt className="text-muted-foreground">{t("detail.who")}</dt>
-          <dd className="font-medium">
-            {actorLabel(row.actorId, row.actorName)}
-          </dd>
-          {row.category ? (
-            <>
-              <dt className="text-muted-foreground">{t("detail.category")}</dt>
-              <dd>
-                <Badge variant="secondary">{categoryLabel(row.category)}</Badge>
-              </dd>
-            </>
-          ) : null}
-          <dt className="text-muted-foreground">{t("detail.event")}</dt>
-          <dd className="font-mono text-muted-foreground text-xs">
-            {row.type}
-          </dd>
-        </dl>
+      <div className="flex flex-col gap-5 overflow-y-auto px-4 pb-4">
+        {/* Byline: who did it, and when. */}
+        <p className="text-muted-foreground text-sm">
+          {t("detail.by", { who: actorLabel(row.actorId, row.actorName) })}
+          {" · "}
+          {dateLong}
+        </p>
 
-        {/* Always-on entity-context line: the subject of the event. */}
-        {subject ? (
-          <p className="break-words text-muted-foreground text-sm">
-            <span className="text-muted-foreground text-xs">
-              {t("detail.entity")}:
-            </span>{" "}
-            <span className="text-foreground">{subject}</span>
-          </p>
-        ) : null}
-
-        <div className="space-y-4">
-          <h3 className="font-medium text-sm">{t("detail.changes")}</h3>
-
-          {/* Top-level field changes. */}
-          {entries.length > 0 ? (
-            <ul className="space-y-3">
-              {entries.map((entry) => (
-                <ChangeEntryRow
-                  key={entry.field}
-                  entry={entry}
-                  t={t}
-                  annotateCleared={
-                    clearedByRename &&
-                    (entry.field === "purpose" ||
-                      entry.field === "responsibilities")
-                  }
-                />
-              ))}
-            </ul>
-          ) : null}
-
-          {/* Bulk group: nested per-item before/after. */}
-          {items && items.items.length > 0 ? (
-            <div className="space-y-3">
-              <h4 className="font-medium text-muted-foreground text-xs">
-                {t("detail.itemsHeading", { count: items.count })}
-              </h4>
-              <ul className="space-y-4">
-                {items.items.map((item) => (
-                  <li key={item.key} className="space-y-2">
-                    <div className="font-medium text-sm">
-                      {item.title || t("detail.unnamedItem")}
-                    </div>
-                    {item.entries.length > 0 ? (
-                      <ul className="space-y-3">
-                        {item.entries.map((entry) => (
-                          <ChangeEntryRow
-                            key={entry.field}
-                            entry={entry}
-                            t={t}
-                          />
-                        ))}
-                      </ul>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-
-          {/* AI weight-moves group. */}
-          {moves && moves.moves.length > 0 ? (
-            <div className="space-y-3">
-              <h4 className="font-medium text-muted-foreground text-xs">
-                {t("detail.movesHeading")}
-              </h4>
-              <ul className="space-y-3">
-                {moves.moves.map((move) => (
-                  <li
-                    key={move.key}
-                    className={
-                      move.applied ? "text-sm" : "text-muted-foreground text-sm"
-                    }
-                  >
-                    <div
-                      className={
-                        move.applied
-                          ? "break-words"
-                          : "break-words line-through"
+        {hasGroups ? (
+          <div className="flex flex-col gap-5">
+            {/* Top-level field changes, as a bordered record. */}
+            {entries.length > 0 ? (
+              <section className="space-y-2">
+                <h3 className="font-medium text-sm">{sectionHeading}</h3>
+                <ul className="divide-y divide-border overflow-hidden rounded-lg border">
+                  {entries.map((entry) => (
+                    <ChangeEntryRow
+                      key={entry.field}
+                      entry={entry}
+                      t={t}
+                      annotateCleared={
+                        clearedByRename &&
+                        (entry.field === "purpose" ||
+                          entry.field === "responsibilities")
                       }
-                    >
-                      <span className="text-muted-foreground">
-                        {move.fromLabel}
-                      </span>
-                      <span className="px-2 text-muted-foreground">→</span>
-                      <span>{move.toLabel}</span>
-                      {move.points ? (
-                        <span className="text-muted-foreground">
-                          {" "}
-                          ({move.points})
-                        </span>
-                      ) : null}
-                    </div>
-                    {move.motivation ? (
-                      <div className="break-words text-muted-foreground text-xs">
-                        {move.motivation}
-                      </div>
-                    ) : null}
-                    {move.applied ? null : (
-                      <div className="text-muted-foreground text-xs">
-                        {t("detail.moveSkipped")}
-                      </div>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
+                    />
+                  ))}
+                </ul>
+              </section>
+            ) : null}
 
-          {/* Dropped-suggestions group. */}
-          {suggestions && suggestions.items.length > 0 ? (
-            <div className="space-y-3">
-              <h4 className="font-medium text-muted-foreground text-xs">
-                {t("detail.suggestionsHeading", { count: suggestions.count })}
-              </h4>
-              <ul className="space-y-2">
-                {suggestions.items.map((item) => {
-                  const kindKey = AI_KIND_KEY[item.kind]
-                  const kindLabel = kindKey
-                    ? t(`ai.kind.${kindKey}` as Parameters<typeof t>[0])
-                    : item.kind
-                  return (
-                    <li key={item.key} className="break-words text-sm">
-                      <span>{kindLabel}</span>
-                      {item.status ? (
-                        <span className="text-muted-foreground">
-                          {" "}
-                          {item.status}
-                        </span>
+            {/* Bulk group: one bordered record per item. */}
+            {items && items.items.length > 0 ? (
+              <section className="space-y-2">
+                <h3 className="font-medium text-sm">
+                  {t("detail.itemsHeading", { count: items.count })}
+                </h3>
+                <ul className="space-y-3">
+                  {items.items.map((item) => (
+                    <li key={item.key} className="space-y-1.5">
+                      <div className="font-medium text-sm">
+                        {item.title || t("detail.unnamedItem")}
+                      </div>
+                      {item.entries.length > 0 ? (
+                        <ul className="divide-y divide-border overflow-hidden rounded-lg border">
+                          {orderEntries(item.entries).map((entry) => (
+                            <ChangeEntryRow
+                              key={entry.field}
+                              entry={entry}
+                              t={t}
+                            />
+                          ))}
+                        </ul>
                       ) : null}
                     </li>
-                  )
-                })}
-              </ul>
-            </div>
-          ) : null}
+                  ))}
+                </ul>
+              </section>
+            ) : null}
 
-          {/* Final fallback: the one-line summary or a muted no-changes note. */}
-          {!hasGroups ? (
-            summary ? (
-              <p className="break-words text-sm">{summary}</p>
-            ) : (
-              <p className="text-muted-foreground text-sm">
-                {t("detail.noChanges")}
-              </p>
-            )
-          ) : null}
-        </div>
+            {/* AI weight-moves group. */}
+            {moves && moves.moves.length > 0 ? (
+              <section className="space-y-2">
+                <h3 className="font-medium text-sm">
+                  {t("detail.movesHeading")}
+                </h3>
+                <ul className="space-y-3">
+                  {moves.moves.map((move) => (
+                    <li
+                      key={move.key}
+                      className={
+                        move.applied
+                          ? "text-sm"
+                          : "text-muted-foreground text-sm"
+                      }
+                    >
+                      <div
+                        className={
+                          move.applied
+                            ? "break-words"
+                            : "break-words line-through"
+                        }
+                      >
+                        <span className="text-muted-foreground">
+                          {move.fromLabel}
+                        </span>
+                        <span className="px-2 text-muted-foreground">→</span>
+                        <span>{move.toLabel}</span>
+                        {move.points ? (
+                          <span className="text-muted-foreground">
+                            {" "}
+                            ({move.points})
+                          </span>
+                        ) : null}
+                      </div>
+                      {move.motivation ? (
+                        <div className="break-words text-muted-foreground text-xs">
+                          {move.motivation}
+                        </div>
+                      ) : null}
+                      {move.applied ? null : (
+                        <div className="text-muted-foreground text-xs">
+                          {t("detail.moveSkipped")}
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
 
-        {/* Provenance footer: where the change came from. */}
-        {provenance.length > 0 ? (
-          <p className="break-words text-muted-foreground text-xs">
-            {provenance
-              .map(({ key, value }) => {
-                const label = t(
-                  `detail.provenance.${key === "batchId" ? "batch" : key}` as Parameters<
-                    typeof t
-                  >[0]
-                )
-                const valueKey =
-                  `detail.provenance.sourceValues.${value}` as Parameters<
-                    typeof t.has
-                  >[0]
-                const displayValue =
-                  key === "source" && t.has(valueKey) ? t(valueKey) : value
-                return `${label}: ${displayValue}`
-              })
-              .join(" · ")}
+            {/* Dropped-suggestions group. */}
+            {suggestions && suggestions.items.length > 0 ? (
+              <section className="space-y-2">
+                <h3 className="font-medium text-sm">
+                  {t("detail.suggestionsHeading", { count: suggestions.count })}
+                </h3>
+                <ul className="space-y-2">
+                  {suggestions.items.map((item) => {
+                    const kindKey = AI_KIND_KEY[item.kind]
+                    const kindLabel = kindKey
+                      ? t(`ai.kind.${kindKey}` as Parameters<typeof t>[0])
+                      : item.kind
+                    return (
+                      <li key={item.key} className="break-words text-sm">
+                        <span>{kindLabel}</span>
+                        {item.status ? (
+                          <span className="text-muted-foreground">
+                            {" "}
+                            {item.status}
+                          </span>
+                        ) : null}
+                      </li>
+                    )
+                  })}
+                </ul>
+              </section>
+            ) : null}
+          </div>
+        ) : summary ? (
+          <p className="break-words text-sm">{summary}</p>
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            {t("detail.noChanges")}
           </p>
-        ) : null}
+        )}
+
+        {/* Footer meta: provenance and the raw event key, for traceability. */}
+        <div className="space-y-1 border-border border-t pt-3 text-muted-foreground text-xs">
+          {provenance.length > 0 ? (
+            <p className="break-words">
+              {provenance
+                .map(({ key, value }) => {
+                  const label = t(
+                    `detail.provenance.${key === "batchId" ? "batch" : key}` as Parameters<
+                      typeof t
+                    >[0]
+                  )
+                  const valueKey =
+                    `detail.provenance.sourceValues.${value}` as Parameters<
+                      typeof t.has
+                    >[0]
+                  const displayValue =
+                    key === "source" && t.has(valueKey) ? t(valueKey) : value
+                  return `${label}: ${displayValue}`
+                })
+                .join(" · ")}
+            </p>
+          ) : null}
+          <p className="font-mono">{row.type}</p>
+        </div>
       </div>
 
       <SheetFooter>
@@ -661,25 +674,35 @@ function ChangeEntryRow({
   annotateCleared?: boolean
 }) {
   return (
-    <li className="text-sm">
+    <li className="px-3 py-2.5 text-sm">
       <div className="text-muted-foreground text-xs">{entry.label}</div>
-      {entry.isComplex ? (
-        <pre className="overflow-x-auto rounded bg-muted p-2 font-mono text-xs">
-          {entry.isSet ? entry.to : `${entry.from}\n→ ${entry.to}`}
-        </pre>
-      ) : entry.isSet ? (
-        <div className="break-words">{entry.to}</div>
-      ) : (
-        <div className="break-words">
-          <span className="text-muted-foreground line-through">
-            {entry.from}
+      <div className="mt-0.5">
+        {entry.isComplex ? (
+          <pre className="overflow-x-auto rounded bg-muted p-2 font-mono text-xs">
+            {entry.isSet ? entry.to : `${entry.from}\n→ ${entry.to}`}
+          </pre>
+        ) : entry.isSet ? (
+          <span className="break-words">{entry.to}</span>
+        ) : (
+          <span className="break-words">
+            <span className="text-muted-foreground line-through">
+              {entry.from}
+            </span>
+            <span className="px-2 text-muted-foreground">→</span>
+            <span>
+              {entry.to.trim() === "" ? (
+                <span className="text-muted-foreground italic">
+                  {t("detail.emptyValue")}
+                </span>
+              ) : (
+                entry.to
+              )}
+            </span>
           </span>
-          <span className="px-2 text-muted-foreground">→</span>
-          <span>{entry.to}</span>
-        </div>
-      )}
+        )}
+      </div>
       {annotateCleared ? (
-        <div className="text-muted-foreground text-xs">
+        <div className="mt-1 text-muted-foreground text-xs">
           {t("detail.clearedOnRename")}
         </div>
       ) : null}

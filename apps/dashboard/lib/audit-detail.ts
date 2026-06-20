@@ -212,9 +212,14 @@ export function payloadProvenance(
 // show just the new value instead of "<empty> -> value". `isComplex` is true
 // when either side is a non-null object/array, so the sheet can render the
 // (compact-JSON) value in a scrollable mono block instead of inline.
+//
+// `resolveName` (optional) turns an id-valued field into a human name: when a
+// from/to value is a string that resolves to a name, the name is shown instead
+// of the raw id (e.g. a role's `familyId` renders as the family name).
 export function changeEntries(
   changes: Record<string, { from: unknown; to: unknown }>,
-  fieldLabel: (field: string) => string
+  fieldLabel: (field: string) => string,
+  resolveName?: (id: string) => string | undefined
 ): Array<{
   field: string
   label: string
@@ -223,9 +228,16 @@ export function changeEntries(
   isSet: boolean
   isComplex: boolean
 }> {
+  const display = (value: unknown): string => {
+    if (typeof value === "string" && resolveName) {
+      const name = resolveName(value)
+      if (name) return name
+    }
+    return formatAuditValue(value)
+  }
   return Object.entries(changes).map(([field, { from, to }]) => {
-    const fromText = formatAuditValue(from)
-    const toText = formatAuditValue(to)
+    const fromText = display(from)
+    const toText = display(to)
     return {
       field,
       label: fieldLabel(field),
@@ -237,6 +249,93 @@ export function changeEntries(
         (typeof to === "object" && to !== null),
     }
   })
+}
+
+// Display order for change-entry fields in the detail sheet, so a snapshot reads
+// identity-first (title, track, family, ...) then profile/criterion/rating/etc.,
+// regardless of how the stored payload's keys come back (Convex does not
+// guarantee object key order on read of a v.any() payload). Unknown fields keep
+// their original relative order, after the known ones.
+export const FIELD_DISPLAY_ORDER = [
+  "title",
+  "name",
+  "trackKey",
+  "familyId",
+  "function",
+  "team",
+  "purpose",
+  "responsibilities",
+  "description",
+  "helpText",
+  "anchors",
+  "weightPoints",
+  "order",
+  "isCustom",
+  "templateKey",
+  "value",
+  "motivation",
+  "expectedBand",
+  "status",
+  "reviewedAt",
+  "band",
+  "score",
+  "complete",
+  "ratedCount",
+  "country",
+  "currency",
+  "language",
+  "industry",
+  "employeeCount",
+  "onboardingCompletedAt",
+  "role",
+  "expiresAt",
+  "archivedAt",
+  "orgId",
+  "bandThresholds",
+] as const
+
+// Sorts change entries into FIELD_DISPLAY_ORDER. Stable: unknown fields keep
+// their input order, placed after all known ones.
+export function orderEntries<T extends { field: string }>(entries: T[]): T[] {
+  const rank = (field: string): number => {
+    const index = (FIELD_DISPLAY_ORDER as readonly string[]).indexOf(field)
+    return index === -1 ? FIELD_DISPLAY_ORDER.length : index
+  }
+  return entries
+    .map((entry, index) => ({ entry, index }))
+    .sort(
+      (a, b) => rank(a.entry.field) - rank(b.entry.field) || a.index - b.index
+    )
+    .map(({ entry }) => entry)
+}
+
+// Classifies a change section for its heading: a "create" snapshot (every field
+// set from nothing), a "remove" snapshot (every field cleared to nothing), or an
+// "update". Event type takes precedence for the unambiguous create/remove events
+// (so e.g. role.archived, whose only change is archivedAt set from null, is not
+// mislabeled "created"); otherwise the shape of the entries decides.
+export function sectionKind(
+  type: string,
+  entries: Array<{ isSet: boolean; to: string }>
+): "create" | "remove" | "update" {
+  if (type.endsWith(".removed") || type.endsWith(".discarded")) return "remove"
+  if (type === "role.archived") return "update"
+  if (
+    type.endsWith(".created") ||
+    type === "anchorRole.designated" ||
+    type === "member.added"
+  ) {
+    return "create"
+  }
+  if (entries.length > 0 && entries.every((entry) => entry.isSet))
+    return "create"
+  if (
+    entries.length > 0 &&
+    entries.every((entry) => !entry.isSet && entry.to.trim() === "")
+  ) {
+    return "remove"
+  }
+  return "update"
 }
 
 // Maps "model.draft" -> "modelDraft", etc., for i18n keys (ai.kind.<key>).

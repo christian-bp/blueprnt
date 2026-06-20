@@ -5,11 +5,13 @@ import {
   formatAuditDetail,
   formatAuditValue,
   formatChanges,
+  orderEntries,
   payloadChanges,
   payloadItems,
   payloadMoves,
   payloadProvenance,
   payloadSuggestions,
+  sectionKind,
 } from "./audit-detail"
 
 const labels = {
@@ -718,5 +720,93 @@ describe("aiAuditDetail", () => {
     expect(
       aiAuditDetail("ai.suggestionRejected", { suggestionId: "s1" }, t)
     ).toBe("")
+  })
+})
+
+describe("changeEntries resolveName", () => {
+  const fieldLabel = (f: string) => f
+
+  it("resolves an id-valued field to its name", () => {
+    const [entry] = changeEntries(
+      { familyId: { from: null, to: "fam1" } },
+      fieldLabel,
+      (id) => (id === "fam1" ? "Product" : undefined)
+    )
+    expect(entry?.to).toBe("Product")
+    expect(entry?.isSet).toBe(true)
+  })
+
+  it("falls back to the raw value when no name resolves", () => {
+    const [entry] = changeEntries(
+      { trackKey: { from: null, to: "IC" } },
+      fieldLabel,
+      () => undefined
+    )
+    expect(entry?.to).toBe("IC")
+  })
+
+  it("resolves both sides of a real change", () => {
+    const [entry] = changeEntries(
+      { familyId: { from: "fam1", to: "fam2" } },
+      fieldLabel,
+      (id) => ({ fam1: "Old", fam2: "New" })[id]
+    )
+    expect(entry?.from).toBe("Old")
+    expect(entry?.to).toBe("New")
+    expect(entry?.isSet).toBe(false)
+  })
+})
+
+describe("orderEntries", () => {
+  const make = (fields: string[]) =>
+    fields.map((field) => ({ field, label: field }))
+
+  it("sorts known fields into the display order (identity first)", () => {
+    const ordered = orderEntries(
+      make(["responsibilities", "familyId", "title", "trackKey"])
+    )
+    expect(ordered.map((e) => e.field)).toEqual([
+      "title",
+      "trackKey",
+      "familyId",
+      "responsibilities",
+    ])
+  })
+
+  it("keeps unknown fields after known ones, in their original order", () => {
+    const ordered = orderEntries(make(["zeta", "title", "alpha"]))
+    expect(ordered.map((e) => e.field)).toEqual(["title", "zeta", "alpha"])
+  })
+})
+
+describe("sectionKind", () => {
+  const created = [
+    { isSet: true, to: "x" },
+    { isSet: true, to: "y" },
+  ]
+  const updated = [{ isSet: false, to: "y" }]
+  const removed = [{ isSet: false, to: "" }]
+
+  it("uses the event type for unambiguous create/remove events", () => {
+    expect(sectionKind("role.created", updated)).toBe("create")
+    expect(sectionKind("member.added", updated)).toBe("create")
+    expect(sectionKind("anchorRole.designated", updated)).toBe("create")
+    expect(sectionKind("roleFamily.removed", created)).toBe("remove")
+    expect(sectionKind("model.discarded", created)).toBe("remove")
+  })
+
+  it("treats role.archived as an update, not a creation", () => {
+    // Its only change is archivedAt set from null, which would otherwise infer
+    // as a creation.
+    expect(
+      sectionKind("role.archived", [{ isSet: true, to: "2026-01-01" }])
+    ).toBe("update")
+  })
+
+  it("infers from the entries for other events", () => {
+    expect(sectionKind("organization.settingsUpdated", created)).toBe("create")
+    expect(sectionKind("organization.settingsUpdated", updated)).toBe("update")
+    expect(sectionKind("rating.change", removed)).toBe("remove")
+    expect(sectionKind("rating.change", [])).toBe("update")
   })
 })
