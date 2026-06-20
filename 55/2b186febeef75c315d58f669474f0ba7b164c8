@@ -1,0 +1,31 @@
+apps/dashboard/components/table-skeleton.tsx
+  s_4d14ac8ce42bf2::t_98fee4c923cf98 1,4,10-12,15-19,21,26-33,35-38,40-46
+  s_4d14ac8ce42bf2::t_ff91e7ac0c2c94 2-3,5-9,13-14,20,22-25,34,39
+apps/dashboard/components/org-audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_f6ce6838971917 47
+  s_4d14ac8ce42bf2::t_c424e5008d03ca 338-340,351-352,363
+  s_4d14ac8ce42bf2::t_4a16f04f19376d 265-266,271-282
+  s_4d14ac8ce42bf2::t_671d4d83fa2ef9 341-350
+apps/dashboard/components/table-skeleton.test.tsx
+  s_4d14ac8ce42bf2::t_7c48f261358a14 1-33
+apps/dashboard/components/admin/audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_5a1613c9c2996c 310-325,336
+  s_4d14ac8ce42bf2::t_059ca65de7a103 46
+  s_4d14ac8ce42bf2::t_44b99d5d59e4c7 236-237,242-254
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "552b186febeef75c315d58f669474f0ba7b164c8",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
