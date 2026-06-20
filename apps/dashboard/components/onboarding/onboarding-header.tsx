@@ -54,7 +54,7 @@ export function OnboardingHeader() {
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label={t("onboarding.accountMenu")}
-          className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <Avatar className="h-8 w-8">
             <AvatarFallback>{initials}</AvatarFallback>

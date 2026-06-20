@@ -66,9 +66,6 @@ export function NavUser() {
               // column (1px overhang each side).
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground group-data-[collapsible=icon]:-mx-px group-data-[collapsible=icon]:size-9! group-data-[collapsible=icon]:justify-center"
             >
-              {/* Default avatar radius (rounded-full): the component's border
-                  ring is always round, so a rounded-lg override makes the
-                  fallback poke outside it. */}
               <Avatar className="shrink-0 grayscale group-data-[collapsible=icon]:size-9">
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
