@@ -13,6 +13,10 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { useFormatter } from "next-intl"
 import type { DateRange } from "react-day-picker"
 
+// A stable trigger width so the spinner (loading) and the formatted full-span
+// range render at the same size: no layout shift when the default resolves.
+const TRIGGER_CLASS = "min-w-64 justify-center"
+
 // A reusable date-range picker: an outline trigger button whose label is the
 // formatted range (locale output, via next-intl's formatter), opening a
 // two-month range calendar with a Clear action once a start date is picked.
@@ -37,7 +41,12 @@ export function DateRangePicker({
 
   if (loading) {
     return (
-      <Button variant="outline" disabled aria-label={ariaLabel}>
+      <Button
+        variant="outline"
+        disabled
+        aria-label={ariaLabel}
+        className={TRIGGER_CLASS}
+      >
         <Spinner />
       </Button>
     )
@@ -53,7 +62,11 @@ export function DateRangePicker({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" aria-label={ariaLabel}>
+        <Button
+          variant="outline"
+          aria-label={ariaLabel}
+          className={TRIGGER_CLASS}
+        >
           <HugeiconsIcon icon={Calendar01Icon} strokeWidth={2} />
           {label}
         </Button>
