@@ -1,0 +1,53 @@
+apps/dashboard/app/(app)/roles/[roleId]/rate/page.tsx
+  s_4d3e6ca252fbcf::t_73febfabf8c41c 11,26
+apps/dashboard/app/(app)/audit-log/page.tsx
+  s_4d3e6ca252fbcf::t_73febfabf8c41c 3,5,8-9
+apps/dashboard/app/(app)/roles/page.tsx
+  s_4d3e6ca252fbcf::t_73febfabf8c41c 16,23-24
+apps/dashboard/app/(app)/admin/audit-log/page.tsx
+  s_4d3e6ca252fbcf::t_73febfabf8c41c 3,5,8-10
+apps/dashboard/app/(app)/work/page.tsx
+  s_4d3e6ca252fbcf::t_73febfabf8c41c 32,47-48
+apps/dashboard/app/(app)/roles/[roleId]/page.tsx
+  s_4d3e6ca252fbcf::t_73febfabf8c41c 18,35
+apps/dashboard/app/(app)/model/page.tsx
+  s_4d3e6ca252fbcf::t_73febfabf8c41c 4,7,16-17
+apps/dashboard/app/(app)/page.tsx
+  s_4d3e6ca252fbcf::t_73febfabf8c41c 17,24-25
+apps/dashboard/app/accept-invitation/[id]/page.tsx
+  s_4d3e6ca252fbcf::t_73febfabf8c41c 9,17
+apps/dashboard/app/layout.tsx
+  s_4d3e6ca252fbcf::t_73febfabf8c41c 5-6,12-25
+apps/dashboard/app/reset-password/page.tsx
+  s_4d3e6ca252fbcf::t_73febfabf8c41c 17,23
+apps/dashboard/lib/page-title.ts
+  s_4d3e6ca252fbcf::t_73febfabf8c41c 1-17
+apps/dashboard/app/(app)/roles/families/[familyId]/page.tsx
+  s_4d3e6ca252fbcf::t_73febfabf8c41c 19,42-43
+apps/dashboard/lib/page-title.test.ts
+  s_4d3e6ca252fbcf::t_73febfabf8c41c 1-30
+apps/dashboard/app/(app)/admin/organizations/page.tsx
+  s_4d3e6ca252fbcf::t_73febfabf8c41c 3,5,8-10
+apps/dashboard/app/(app)/admin/page.tsx
+  s_4d3e6ca252fbcf::t_73febfabf8c41c 3,5,8-10
+apps/dashboard/hooks/use-page-title.test.tsx
+  s_4d3e6ca252fbcf::t_73febfabf8c41c 1-53
+apps/dashboard/hooks/use-page-title.ts
+  s_4d3e6ca252fbcf::t_73febfabf8c41c 1-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "c4e974ebeb12cd7867465b38f3ab938518c2981b",
+  "prompts": {},
+  "sessions": {
+    "s_4d3e6ca252fbcf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3010eb37-dc9e-446d-93c9-0553ad385d15",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
