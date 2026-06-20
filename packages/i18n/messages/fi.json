@@ -753,6 +753,8 @@
         "description": "Jokainen alustan järjestelmänvalvojan toimi koko asennuksessa.",
         "empty": "Järjestelmänvalvojan toimia ei ole vielä kirjattu.",
         "systemActor": "Järjestelmä",
+        "deletedUser": "Poistettu käyttäjä",
+        "deletedOrg": "Poistettu organisaatio",
         "categories": {
           "all": "Kaikki",
           "user": "Käyttäjä",

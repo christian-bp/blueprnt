@@ -753,6 +753,8 @@
         "description": "Varje plattformsadministratörsåtgärd i hela installationen.",
         "empty": "Inga administratörsåtgärder har registrerats ännu.",
         "systemActor": "System",
+        "deletedUser": "Borttagen användare",
+        "deletedOrg": "Borttagen organisation",
         "categories": {
           "all": "Alla",
           "user": "Användare",

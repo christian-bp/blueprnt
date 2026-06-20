@@ -753,6 +753,8 @@
         "description": "Hver platformadministratorhandling i hele installationen.",
         "empty": "Ingen administratorhandlinger er registreret endnu.",
         "systemActor": "System",
+        "deletedUser": "Slettet bruger",
+        "deletedOrg": "Slettet organisation",
         "categories": {
           "all": "Alle",
           "user": "Bruger",

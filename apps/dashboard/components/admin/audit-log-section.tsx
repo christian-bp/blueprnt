@@ -67,20 +67,28 @@ type AuditRow = {
   type: string
   category?: string
   targetUser: string | null
+  targetUserMissing: boolean
   targetOrg: string | null
+  targetOrgMissing: boolean
   payload: unknown
 }
 
 // Compose the human-readable target from the resolved user/org labels: user,
-// org, "user @ org" when both, or "" when neither.
+// org, "user @ org" when both, or "" when neither. A target that was deleted
+// (resolved to null but its id was present) shows the localized "deleted" label,
+// never a raw id.
 function composeTarget(
-  targetUser: string | null,
-  targetOrg: string | null
+  row: Pick<
+    AuditRow,
+    "targetUser" | "targetUserMissing" | "targetOrg" | "targetOrgMissing"
+  >,
+  deletedUser: string,
+  deletedOrg: string
 ): string {
-  if (targetUser !== null && targetOrg !== null) {
-    return `${targetUser} @ ${targetOrg}`
-  }
-  return targetUser ?? targetOrg ?? ""
+  const user = row.targetUser ?? (row.targetUserMissing ? deletedUser : null)
+  const org = row.targetOrg ?? (row.targetOrgMissing ? deletedOrg : null)
+  if (user !== null && org !== null) return `${user} @ ${org}`
+  return user ?? org ?? ""
 }
 
 // Render the payload compactly as plain text: "key: value" pairs joined with
@@ -276,7 +284,7 @@ export function AuditLogSection() {
                 </TableCell>
                 <TableCell>{actionLabel(row.type)}</TableCell>
                 <TableCell className="text-muted-foreground">
-                  {composeTarget(row.targetUser, row.targetOrg)}
+                  {composeTarget(row, t("deletedUser"), t("deletedOrg"))}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   <span className="line-clamp-1">{detail(row.payload)}</span>
@@ -352,7 +360,7 @@ function AuditDetailSheet({
   categoryLabel: (category: string) => string
   fieldLabel: (field: string) => string
 }) {
-  const target = composeTarget(row.targetUser, row.targetOrg)
+  const target = composeTarget(row, t("deletedUser"), t("deletedOrg"))
   const dateLong = format.dateTime(new Date(row.at), {
     dateStyle: "long",
     timeStyle: "short",

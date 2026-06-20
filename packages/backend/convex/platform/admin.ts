@@ -287,8 +287,15 @@ const platformAuditRow = v.object({
   actorName: v.string(),
   type: v.string(),
   category: v.optional(v.string()),
+  // The resolved target name (user name, or org name), or null when the row has
+  // no such target OR the target was since deleted. The *Missing flags
+  // distinguish "no target" (false) from "target deleted" (true) so the client
+  // can show a localized "deleted" label instead of a raw id. We never return
+  // the raw id as display text.
   targetUser: v.union(v.null(), v.string()),
+  targetUserMissing: v.boolean(),
   targetOrg: v.union(v.null(), v.string()),
+  targetOrgMissing: v.boolean(),
   payload: v.any(),
 })
 
@@ -315,10 +322,12 @@ function validPlatformCategory(category: string | undefined): string | null {
 }
 
 // Shared target resolution for both audit queries. Fetches the cross-org user
-// and org lists from the Better Auth component, builds id -> label maps, and
-// maps each page/result row to the display shape (resolving targetUserId ->
-// email, targetOrgId -> name; unresolved ids fall back to the raw id). The
-// labels are display-only and never persisted, so the stored rows stay id-only.
+// and org lists from the Better Auth component, builds id -> name maps, and maps
+// each page/result row to the display shape: targetUserId -> user name (else
+// email), targetOrgId -> org name. A target that no longer resolves (the user or
+// org was deleted) yields a null label and a *Missing flag, so the client shows
+// a localized "deleted" label, never the raw id. The labels are display-only and
+// never persisted, so the stored rows stay id-only.
 async function resolvePlatformTargets(
   ctx: QueryCtx,
   rows: PlatformAuditRowDoc[]
@@ -331,25 +340,29 @@ async function resolvePlatformTargets(
     components.betterAuth.provisioning.listAllOrganizations,
     {}
   )
-  const userLabel = new Map(users.map((u) => [u.userId, u.email]))
+  const userLabel = new Map(users.map((u) => [u.userId, u.name || u.email]))
   const orgLabel = new Map(orgs.map((o) => [o.orgId, o.name]))
-  return rows.map((r) => ({
-    id: r._id.toString(),
-    at: r._creationTime,
-    actorId: r.actorId,
-    actorName: r.actorName,
-    type: r.type,
-    ...(r.category !== undefined ? { category: r.category } : {}),
-    targetUser:
+  return rows.map((r) => {
+    const targetUser =
       r.targetUserId !== undefined
-        ? (userLabel.get(r.targetUserId) ?? r.targetUserId)
-        : null,
-    targetOrg:
-      r.targetOrgId !== undefined
-        ? (orgLabel.get(r.targetOrgId) ?? r.targetOrgId)
-        : null,
-    payload: r.payload,
-  }))
+        ? (userLabel.get(r.targetUserId) ?? null)
+        : null
+    const targetOrg =
+      r.targetOrgId !== undefined ? (orgLabel.get(r.targetOrgId) ?? null) : null
+    return {
+      id: r._id.toString(),
+      at: r._creationTime,
+      actorId: r.actorId,
+      actorName: r.actorName,
+      type: r.type,
+      ...(r.category !== undefined ? { category: r.category } : {}),
+      targetUser,
+      targetUserMissing: r.targetUserId !== undefined && targetUser === null,
+      targetOrg,
+      targetOrgMissing: r.targetOrgId !== undefined && targetOrg === null,
+      payload: r.payload,
+    }
+  })
 }
 
 // The admin audit trail (platform-admin only), paginated and newest-first. When

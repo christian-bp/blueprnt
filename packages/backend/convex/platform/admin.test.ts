@@ -556,10 +556,12 @@ describe("listAuditLog (paginated browse)", () => {
     // Newest-first: timestamps are non-increasing down the page.
     expect(page1.page[0]?.at).toBeGreaterThanOrEqual(page1.page[1]?.at ?? 0)
     expect(page1.page[1]?.at).toBeGreaterThanOrEqual(page1.page[2]?.at ?? 0)
-    // The newest row resolves its target label (the last action created U3).
+    // The newest row resolves its target to the user's NAME (falling back to
+    // email), and is not flagged as a deleted target.
     const newest = page1.page[0]
     expect(newest?.type).toBe("platform.userCreated")
-    expect(newest?.targetUser).toBe("u3@acme.se")
+    expect(newest?.targetUser).toBe("U3")
+    expect(newest?.targetUserMissing).toBe(false)
     expect(newest?.category).toBe("user")
 
     const page2 = await asAdmin.query(api.platform.admin.listAuditLog, {
@@ -570,6 +572,33 @@ describe("listAuditLog (paginated browse)", () => {
     // The oldest row on page 1 is newer than the newest row on page 2.
     const lastOfPage1 = page1.page[page1.page.length - 1]?.at ?? 0
     expect(lastOfPage1).toBeGreaterThanOrEqual(page2.page[0]?.at ?? 0)
+  })
+
+  it("flags a deleted target instead of returning its raw id", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    // A row whose target user no longer exists (e.g. erased): the resolver must
+    // return a null label + a missing flag, never the raw id.
+    await t.run(async (ctx) => {
+      await ctx.db.insert("platformAuditLog", {
+        actorId: "system:cli",
+        actorName: "system",
+        type: "platform.userCreated",
+        targetUserId: "deleted-user-id",
+        category: "user",
+        searchText: "system platform.usercreated",
+        payload: {},
+      })
+    })
+    const result = await asAdmin.query(api.platform.admin.listAuditLog, {
+      paginationOpts: { numItems: 50, cursor: null },
+    })
+    const ghost = result.page.find(
+      (r) => r.actorId === "system:cli" && r.type === "platform.userCreated"
+    )
+    expect(ghost?.targetUser).toBeNull()
+    expect(ghost?.targetUserMissing).toBe(true)
   })
 
   it("filters by category: organization narrows to org rows", async () => {

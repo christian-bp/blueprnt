@@ -753,6 +753,8 @@
         "description": "Every platform-admin action across the installation.",
         "empty": "No admin actions recorded yet.",
         "systemActor": "System",
+        "deletedUser": "Deleted user",
+        "deletedOrg": "Deleted organization",
         "categories": {
           "all": "All",
           "user": "User",

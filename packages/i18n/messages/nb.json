@@ -753,6 +753,8 @@
         "description": "Hver plattformadministratorhandling i hele installasjonen.",
         "empty": "Ingen administratorhandlinger er registrert ennå.",
         "systemActor": "System",
+        "deletedUser": "Slettet bruker",
+        "deletedOrg": "Slettet organisasjon",
         "categories": {
           "all": "Alle",
           "user": "Bruker",
