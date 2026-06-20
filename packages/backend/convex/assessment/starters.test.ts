@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
+import { insertStarterSet } from "./starters"
 import { initConvexTest } from "../testing.helpers"
+
+// A from/to change entry as stored in audit payloads.
+type Change = { from: unknown; to: unknown }
+type Changes = Record<string, Change>
 
 async function seedTemplateOrganization(
   t: ReturnType<typeof initConvexTest>,
@@ -24,7 +29,7 @@ async function seedTemplateOrganization(
   await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
     orgId,
   })
-  return { orgId, asAdmin }
+  return { orgId, asAdmin, userId }
 }
 
 describe("getIndustryStarter", () => {
@@ -245,6 +250,130 @@ describe("createStarterSet", () => {
     )
     expect(families).toEqual([])
   })
+
+  it("threads one batchId across every emitted row and carries full role create-changes", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedTemplateOrganization(t)
+    await asAdmin.mutation(api.assessment.starters.createStarterSet, {
+      orgId,
+      families: [
+        {
+          name: "Engineering",
+          roles: [
+            { title: "Software Developer", trackKey: "IC" },
+            { title: "Tech Lead", trackKey: "Lead" },
+          ],
+        },
+        { name: "Design", roles: [] },
+      ],
+    })
+    const rows = await t.run(async (ctx) =>
+      ctx.db
+        .query("auditLog")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+    )
+    // Only the rows this import wrote (families + roles); the template-model
+    // seed wrote earlier rows with no batchId.
+    const importRows = rows.filter(
+      (row) => (row.payload as { batchId?: string }).batchId !== undefined
+    )
+    // 2 families + 2 roles = 4 rows, all sharing ONE batchId.
+    expect(importRows).toHaveLength(4)
+    const batchIds = new Set(
+      importRows.map((row) => (row.payload as { batchId: string }).batchId)
+    )
+    expect(batchIds.size).toBe(1)
+
+    // roleFamily.created rows carry name from null.
+    const familyRows = importRows.filter(
+      (row) => row.type === "roleFamily.created"
+    )
+    expect(familyRows).toHaveLength(2)
+    for (const row of familyRows) {
+      const { changes } = row.payload as { changes: Changes }
+      expect(changes.name?.from).toBeNull()
+      expect(typeof changes.name?.to).toBe("string")
+    }
+
+    // role.created rows carry the full create-changes incl. title/trackKey/familyId.
+    const roleRows = importRows.filter((row) => row.type === "role.created")
+    expect(roleRows).toHaveLength(2)
+    const devRow = roleRows.find(
+      (row) =>
+        ((row.payload as { changes: Changes }).changes.title?.to as string) ===
+        "Software Developer"
+    )
+    const devPayload = devRow?.payload as {
+      roleId: string
+      familyId: string
+      source: string
+      changes: Changes
+    }
+    expect(devPayload.source).toBe("starter")
+    expect(typeof devPayload.familyId).toBe("string")
+    expect(devPayload.changes.title).toEqual({
+      from: null,
+      to: "Software Developer",
+    })
+    expect(devPayload.changes.trackKey).toEqual({ from: null, to: "IC" })
+    expect(devPayload.changes.familyId).toEqual({
+      from: null,
+      to: devPayload.familyId,
+    })
+    expect(devPayload.changes.function).toEqual({ from: null, to: "" })
+    expect(devPayload.changes.purpose).toEqual({ from: null, to: "" })
+  })
+
+  it("returns the created families tree (ids/names + role ids/titles/tracks)", async () => {
+    const t = initConvexTest()
+    const { orgId, userId } = await seedTemplateOrganization(t)
+    const result = await t.run(async (ctx) =>
+      insertStarterSet(ctx, {
+        orgId,
+        actorId: userId,
+        source: "aiImport",
+        families: [
+          {
+            name: "Engineering",
+            roles: [
+              { title: "Software Developer", trackKey: "IC" },
+              { title: "Tech Lead", trackKey: "Lead" },
+            ],
+          },
+          { name: "Design", roles: [] },
+        ],
+      })
+    )
+    expect(result.familyCount).toBe(2)
+    expect(result.roleCount).toBe(2)
+    expect(result.families).toHaveLength(2)
+    const engineering = result.families.find((f) => f.name === "Engineering")
+    expect(engineering).toBeDefined()
+    expect(typeof engineering?.familyId).toBe("string")
+    expect(engineering?.roles).toHaveLength(2)
+    expect(engineering?.roles[0]).toMatchObject({
+      title: "Software Developer",
+      trackKey: "IC",
+    })
+    expect(typeof engineering?.roles[0]?.roleId).toBe("string")
+    expect(engineering?.roles[1]).toMatchObject({
+      title: "Tech Lead",
+      trackKey: "Lead",
+    })
+    const design = result.families.find((f) => f.name === "Design")
+    expect(design?.roles).toEqual([])
+    // The returned ids resolve to real role docs.
+    await t.run(async (ctx) => {
+      const docId = ctx.db.normalizeId(
+        "roles",
+        engineering?.roles[0]?.roleId ?? ""
+      )
+      if (docId === null) throw new Error("bad id")
+      const doc = await ctx.db.get(docId)
+      expect(doc?.title).toBe("Software Developer")
+    })
+  })
 })
 
 // Counts every audit row in the org (any type). Used to assert that an
@@ -395,22 +524,24 @@ describe("reconcileStarterSet", () => {
     // No role was archived.
     const archived = await auditOfType(t, orgId, "role.archived")
     expect(archived).toHaveLength(0)
-    // role.updated audit rows carry the changed field names.
+    // role.updated audit rows carry the before/after of the changed fields.
     const updated = await auditOfType(t, orgId, "role.updated")
     expect(updated).toHaveLength(2)
     const devUpdate = updated.find(
       (row) => (row.payload as { roleId: string }).roleId === developer.roleId
     )
-    expect((devUpdate?.payload as { fields: string[] }).fields.sort()).toEqual([
-      "title",
-      "trackKey",
-    ])
+    const devChanges = (devUpdate?.payload as { changes: Changes }).changes
+    expect(Object.keys(devChanges).sort()).toEqual(["title", "trackKey"])
+    expect(devChanges.title).toEqual({
+      from: "Developer",
+      to: "Senior Developer",
+    })
+    expect(devChanges.trackKey).toEqual({ from: "IC", to: "M" })
     const leadUpdate = updated.find(
       (row) => (row.payload as { roleId: string }).roleId === lead.roleId
     )
-    expect((leadUpdate?.payload as { fields: string[] }).fields).toEqual([
-      "familyId",
-    ])
+    const leadChanges = (leadUpdate?.payload as { changes: Changes }).changes
+    expect(Object.keys(leadChanges)).toEqual(["familyId"])
     // The family was renamed (not removed/created anew).
     const renamed = await auditOfType(t, orgId, "roleFamily.renamed")
     expect(renamed).toHaveLength(1)
@@ -898,12 +1029,33 @@ describe("reconcileStarterSet", () => {
       const profile = await readProfile(t, role.roleId)
       expect(profile.purpose).toBe("")
       expect(profile.responsibilities).toBe("")
-      // The cleared fields ride along on the same role.updated audit row.
+      // The cleared fields ride along on the same role.updated audit row, and
+      // the row is flagged as a rename-driven clear so the Sheet annotates the
+      // emptied profile entries as cleared-on-rename, not a manual deletion.
       const updated = await auditOfType(t, orgId, "role.updated")
       expect(updated).toHaveLength(1)
-      expect(
-        (updated[0]?.payload as { fields: string[] }).fields.sort()
-      ).toEqual(["purpose", "responsibilities", "title"])
+      const payload = updated[0]?.payload as {
+        profileClearedByRename?: boolean
+        changes: Changes
+      }
+      expect(payload.profileClearedByRename).toBe(true)
+      expect(Object.keys(payload.changes).sort()).toEqual([
+        "purpose",
+        "responsibilities",
+        "title",
+      ])
+      expect(payload.changes.title).toEqual({
+        from: "Developer",
+        to: "Senior Developer",
+      })
+      expect(payload.changes.purpose).toEqual({
+        from: "Builds the core product.",
+        to: "",
+      })
+      expect(payload.changes.responsibilities).toEqual({
+        from: "Implements features",
+        to: "",
+      })
     })
 
     it("a track-only change keeps the profile", async () => {
@@ -926,9 +1078,13 @@ describe("reconcileStarterSet", () => {
       expect(profile.purpose).toBe("Builds the core product.")
       expect(profile.responsibilities).toBe("Implements features")
       const updated = await auditOfType(t, orgId, "role.updated")
-      expect((updated[0]?.payload as { fields: string[] }).fields).toEqual([
-        "trackKey",
-      ])
+      const payload = updated[0]?.payload as {
+        profileClearedByRename?: boolean
+        changes: Changes
+      }
+      expect(Object.keys(payload.changes)).toEqual(["trackKey"])
+      // A track-only edit did not rename the role, so no clear flag.
+      expect(payload.profileClearedByRename).toBeUndefined()
     })
 
     it("a family-only change keeps the profile", async () => {
@@ -951,9 +1107,12 @@ describe("reconcileStarterSet", () => {
       expect(profile.purpose).toBe("Builds the core product.")
       expect(profile.responsibilities).toBe("Implements features")
       const updated = await auditOfType(t, orgId, "role.updated")
-      expect((updated[0]?.payload as { fields: string[] }).fields).toEqual([
-        "familyId",
-      ])
+      const payload = updated[0]?.payload as {
+        profileClearedByRename?: boolean
+        changes: Changes
+      }
+      expect(Object.keys(payload.changes)).toEqual(["familyId"])
+      expect(payload.profileClearedByRename).toBeUndefined()
     })
 
     it("an unchanged role keeps its profile and writes nothing", async () => {
@@ -977,6 +1136,220 @@ describe("reconcileStarterSet", () => {
       // No field changed: no role.updated audit row at all.
       const updated = await auditOfType(t, orgId, "role.updated")
       expect(updated).toHaveLength(0)
+    })
+  })
+})
+
+describe("reconcileStarterSet audit before/after", () => {
+  it("threads one batchId across the reconcile and records family rename from/to", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedTemplateOrganization(t)
+    // Seed an existing family + role (its own batch).
+    await asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
+      orgId,
+      families: [
+        {
+          name: "Engineering",
+          roles: [{ title: "Developer", trackKey: "IC" }],
+        },
+      ],
+    })
+    const seedRows = await t.run(async (ctx) =>
+      ctx.db
+        .query("auditLog")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+    )
+    const seedBatchIds = new Set(
+      seedRows
+        .map((row) => (row.payload as { batchId?: string }).batchId)
+        .filter((id): id is string => id !== undefined)
+    )
+    expect(seedBatchIds.size).toBe(1)
+
+    const family = (
+      await asAdmin.query(api.assessment.families.listRoleFamilies, { orgId })
+    )[0]
+    const role = (
+      await asAdmin.query(api.assessment.roles.listRoles, { orgId })
+    )[0]
+    if (family === undefined || role === undefined) throw new Error("seed")
+
+    // Second reconcile: rename the family AND retrack the role -> 2 audit rows.
+    await asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
+      orgId,
+      families: [
+        {
+          familyId: family.familyId,
+          name: "Platform",
+          roles: [{ roleId: role.roleId, title: "Developer", trackKey: "M" }],
+        },
+      ],
+    })
+
+    const renamed = await auditOfType(t, orgId, "roleFamily.renamed")
+    expect(renamed).toHaveLength(1)
+    const renamePayload = renamed[0]?.payload as {
+      batchId: string
+      source: string
+      changes: Changes
+    }
+    expect(renamePayload.source).toBe("starter")
+    expect(renamePayload.changes.name).toEqual({
+      from: "Engineering",
+      to: "Platform",
+    })
+
+    // The rename + the role.updated share ONE reconcile batchId, distinct from
+    // the seed batch.
+    const updated = await auditOfType(t, orgId, "role.updated")
+    expect(updated).toHaveLength(1)
+    const updatePayload = updated[0]?.payload as { batchId: string }
+    expect(updatePayload.batchId).toBe(renamePayload.batchId)
+    expect(seedBatchIds.has(renamePayload.batchId)).toBe(false)
+  })
+
+  it("logs role.archived with archivedAt to === the stored value and identity scalars", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedTemplateOrganization(t)
+    await asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
+      orgId,
+      families: [
+        {
+          name: "Engineering",
+          roles: [
+            { title: "Keeper", trackKey: "IC" },
+            { title: "Goner", trackKey: "IC" },
+          ],
+        },
+      ],
+    })
+    const family = (
+      await asAdmin.query(api.assessment.families.listRoleFamilies, { orgId })
+    )[0]
+    const roles = await asAdmin.query(api.assessment.roles.listRoles, { orgId })
+    const keeper = roles.find((r) => r.title === "Keeper")
+    const goner = roles.find((r) => r.title === "Goner")
+    if (family === undefined || keeper === undefined || goner === undefined) {
+      throw new Error("seed")
+    }
+
+    await asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
+      orgId,
+      families: [
+        {
+          familyId: family.familyId,
+          name: "Engineering",
+          roles: [{ roleId: keeper.roleId, title: "Keeper", trackKey: "IC" }],
+        },
+      ],
+    })
+
+    const archived = await auditOfType(t, orgId, "role.archived")
+    expect(archived).toHaveLength(1)
+    const payload = archived[0]?.payload as {
+      roleId: string
+      title: string
+      trackKey: string
+      function: string
+      team: string
+      familyId: string | null
+      viaReconcile: boolean
+      anchorRetired: boolean
+      changes: Changes
+    }
+    expect(payload.roleId).toBe(goner.roleId)
+    // Identity scalars are captured (binding correction #7).
+    expect(payload.title).toBe("Goner")
+    expect(payload.trackKey).toBe("IC")
+    expect(payload.function).toBe("")
+    expect(payload.team).toBe("")
+    expect(payload.familyId).toBe(family.familyId)
+    expect(payload.viaReconcile).toBe(true)
+    expect(payload.anchorRetired).toBe(false)
+    // The logged archivedAt `to` equals the value actually stored (hoist
+    // regression: same Date.now() in the patch and the payload).
+    expect(payload.changes.archivedAt?.from).toBeNull()
+    const storedArchivedAt = await t.run(async (ctx) => {
+      const docId = ctx.db.normalizeId("roles", goner.roleId)
+      if (docId === null) throw new Error("bad id")
+      const doc = await ctx.db.get(docId)
+      return doc?.archivedAt
+    })
+    expect(payload.changes.archivedAt?.to).toBe(storedArchivedAt)
+  })
+
+  it("records a removed family's cleared roles as items with familyId from/to", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedTemplateOrganization(t)
+    await asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
+      orgId,
+      families: [
+        {
+          name: "Engineering",
+          roles: [{ title: "Developer", trackKey: "IC" }],
+        },
+        { name: "Doomed", roles: [{ title: "Temp", trackKey: "IC" }] },
+      ],
+    })
+    const families = await asAdmin.query(
+      api.assessment.families.listRoleFamilies,
+      { orgId }
+    )
+    const engineering = families.find((f) => f.name === "Engineering")
+    const doomed = families.find((f) => f.name === "Doomed")
+    const roles = await asAdmin.query(api.assessment.roles.listRoles, { orgId })
+    const developer = roles.find((r) => r.title === "Developer")
+    const temp = roles.find((r) => r.title === "Temp")
+    if (
+      engineering === undefined ||
+      doomed === undefined ||
+      developer === undefined ||
+      temp === undefined
+    ) {
+      throw new Error("seed")
+    }
+
+    // Drop the Doomed family (and its role) by omission.
+    await asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
+      orgId,
+      families: [
+        {
+          familyId: engineering.familyId,
+          name: "Engineering",
+          roles: [
+            { roleId: developer.roleId, title: "Developer", trackKey: "IC" },
+          ],
+        },
+      ],
+    })
+
+    const removed = await auditOfType(t, orgId, "roleFamily.removed")
+    expect(removed).toHaveLength(1)
+    const payload = removed[0]?.payload as {
+      familyId: string
+      name: string
+      viaReconcile: boolean
+      batchId: string
+      changes: Changes
+      count: number
+      items: Array<{ roleId: string; changes: Changes }>
+    }
+    expect(payload.familyId).toBe(doomed.familyId)
+    expect(payload.name).toBe("Doomed")
+    expect(payload.viaReconcile).toBe(true)
+    expect(typeof payload.batchId).toBe("string")
+    // The family's own diff: name removed.
+    expect(payload.changes.name).toEqual({ from: "Doomed", to: null })
+    // The cleared (archived) role rides along in items with the family-id
+    // constant as `from` (binding correction #15), never a post-patch get.
+    expect(payload.count).toBe(1)
+    expect(payload.items).toHaveLength(1)
+    const item = payload.items[0]
+    expect(item?.roleId).toBe(temp.roleId)
+    expect(item?.changes.familyId).toEqual({
+      from: doomed.familyId,
+      to: null,
     })
   })
 })

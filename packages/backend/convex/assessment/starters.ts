@@ -3,10 +3,24 @@ import type { Id } from "../_generated/dataModel"
 import type { MutationCtx } from "../_generated/server"
 import { isTrackKey } from "../evaluationModel/localize"
 import { trackKeyValidator } from "../evaluationModel/tables"
-import { AUDIT_EVENTS, logAudit } from "../lib/audit"
+import {
+  AUDIT_EVENTS,
+  buildChanges,
+  buildCreateChanges,
+  logAudit,
+} from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 import { clampIndustry, starterContent } from "./industryStarters"
+
+// One created family with its created roles, returned by insertStarterSet so a
+// caller (the AI starter-import confirm path) can report what landed without a
+// follow-up query. Ids/titles are accumulated at the insert sites.
+export interface InsertedStarterFamily {
+  familyId: string
+  name: string
+  roles: { roleId: string; title: string; trackKey: string }[]
+}
 
 // The starter-set contract, shared with the AI import path (ai/suggest,
 // ai/starterImport): one source of truth for the size limits.
@@ -91,9 +105,14 @@ export async function insertStarterSet(
     families: StarterFamilyInput[]
     source: "starter" | "aiImport"
   }
-): Promise<{ familyCount: number; roleCount: number }> {
+): Promise<{
+  familyCount: number
+  roleCount: number
+  families: InsertedStarterFamily[]
+}> {
   const { orgId, actorId, families, source } = args
-  if (families.length === 0) return { familyCount: 0, roleCount: 0 }
+  if (families.length === 0)
+    return { familyCount: 0, roleCount: 0, families: [] }
   if (families.length > MAX_FAMILIES) {
     throw appError(ERROR_CODES.invalidInput)
   }
@@ -103,6 +122,10 @@ export async function insertStarterSet(
   )
   if (totalRoles > MAX_ROLES) throw appError(ERROR_CODES.invalidInput)
 
+  // One correlation id per import so every audit row this writer emits (the
+  // families and all their roles) reconstructs as a single import unit.
+  const batchId = crypto.randomUUID()
+
   // Uniqueness: against the org's existing families AND within the payload.
   const existing = await ctx.db
     .query("roleFamilies")
@@ -110,6 +133,9 @@ export async function insertStarterSet(
     .collect()
   const taken = new Set(existing.map((family) => family.name.toLowerCase()))
 
+  // The created tree, accumulated at the insert sites and returned so the
+  // AI starter-import confirm path can report what landed.
+  const created: InsertedStarterFamily[] = []
   let roleCount = 0
   for (const family of families) {
     const name = family.name.trim()
@@ -128,8 +154,14 @@ export async function insertStarterSet(
       orgId,
       type: AUDIT_EVENTS.roleFamilyCreated,
       actorId,
-      payload: { familyId, name, source },
+      payload: {
+        familyId,
+        source,
+        batchId,
+        changes: { name: { from: null, to: name } },
+      },
     })
+    const createdRoles: InsertedStarterFamily["roles"] = []
 
     for (const role of family.roles) {
       const title = role.title.trim()
@@ -142,6 +174,8 @@ export async function insertStarterSet(
       if (!isTrackKey(role.trackKey)) {
         throw appError(ERROR_CODES.invalidInput)
       }
+      const purpose = role.purpose ?? ""
+      const responsibilities = role.responsibilities ?? ""
       const roleId = await ctx.db.insert("roles", {
         orgId,
         title,
@@ -149,19 +183,46 @@ export async function insertStarterSet(
         team: "",
         trackKey: role.trackKey,
         familyId,
-        purpose: role.purpose ?? "",
-        responsibilities: role.responsibilities ?? "",
+        purpose,
+        responsibilities,
       })
       await logAudit(ctx, {
         orgId,
         type: AUDIT_EVENTS.roleCreated,
         actorId,
-        payload: { roleId, source },
+        payload: {
+          roleId,
+          familyId,
+          source,
+          batchId,
+          changes: buildCreateChanges(
+            {
+              title,
+              trackKey: role.trackKey,
+              familyId,
+              function: "",
+              team: "",
+              purpose,
+              responsibilities,
+            },
+            [
+              "title",
+              "trackKey",
+              "familyId",
+              "function",
+              "team",
+              "purpose",
+              "responsibilities",
+            ]
+          ),
+        },
       })
+      createdRoles.push({ roleId, title, trackKey: role.trackKey })
       roleCount += 1
     }
+    created.push({ familyId, name, roles: createdRoles })
   }
-  return { familyCount: families.length, roleCount }
+  return { familyCount: families.length, roleCount, families: created }
 }
 
 // Creates the adjusted starter set from the template/manual onboarding path.
@@ -226,6 +287,11 @@ export const reconcileStarterSet = orgMutation({
   returns: v.null(),
   handler: async (ctx, { families }) => {
     const { orgId, authUserId: actorId } = ctx
+
+    // One correlation id per reconcile (a fresh id, distinct from any import):
+    // every audit row this writer emits carries it, so a single reconcile run
+    // reconstructs as one unit across renames, updates, archives, and removals.
+    const batchId = crypto.randomUUID()
 
     // 1. Re-validate the payload shape, exactly like insertStarterSet.
     if (families.length > MAX_FAMILIES) throw appError(ERROR_CODES.invalidInput)
@@ -333,14 +399,20 @@ export const reconcileStarterSet = orgMutation({
         familyId = existing._id
         keptFamilyIds.add(familyId as string)
         // Rename only when the name actually changed (no-op otherwise:
-        // no write, no audit row).
+        // no write, no audit row). `existing` is the pre-patch family from the
+        // lookup map, so it is the correct before for the diff.
         if (existing.name !== name) {
           await ctx.db.patch(familyId, { name })
           await logAudit(ctx, {
             orgId,
             type: AUDIT_EVENTS.roleFamilyRenamed,
             actorId,
-            payload: { familyId, name },
+            payload: {
+              familyId,
+              source: "starter",
+              batchId,
+              changes: buildChanges(existing, { name }, ["name"]),
+            },
           })
         }
       } else {
@@ -350,7 +422,12 @@ export const reconcileStarterSet = orgMutation({
           orgId,
           type: AUDIT_EVENTS.roleFamilyCreated,
           actorId,
-          payload: { familyId, name, source: "starter" },
+          payload: {
+            familyId,
+            source: "starter",
+            batchId,
+            changes: { name: { from: null, to: name } },
+          },
         })
       }
 
@@ -386,12 +463,31 @@ export const reconcileStarterSet = orgMutation({
             patch.familyId = familyId
           }
           if (Object.keys(patch).length > 0) {
+            // A title change auto-clears purpose/responsibilities to "" (the
+            // name-derived profile no longer fits). Flag that so the Sheet
+            // annotates those entries as cleared-on-rename, not a manual
+            // deletion. Detect it from the patch the reconcile actually built:
+            // the title changed and at least one profile field was cleared.
+            const profileClearedByRename =
+              "title" in patch &&
+              ("purpose" in patch || "responsibilities" in patch)
             await ctx.db.patch(existing._id, patch)
             await logAudit(ctx, {
               orgId,
               type: AUDIT_EVENTS.roleUpdated,
               actorId,
-              payload: { roleId: existing._id, fields: Object.keys(patch) },
+              payload: {
+                roleId: existing._id,
+                source: "starter",
+                batchId,
+                ...(profileClearedByRename
+                  ? { profileClearedByRename: true }
+                  : {}),
+                // `existing` is the pre-patch in-memory role; patch over the
+                // changed fields (title, trackKey, familyId, purpose,
+                // responsibilities). Convex patch does not mutate the read doc.
+                changes: buildChanges(existing, patch, Object.keys(patch)),
+              },
             })
           }
         } else {
@@ -411,7 +507,32 @@ export const reconcileStarterSet = orgMutation({
             orgId,
             type: AUDIT_EVENTS.roleCreated,
             actorId,
-            payload: { roleId, source: "starter" },
+            payload: {
+              roleId,
+              familyId,
+              source: "starter",
+              batchId,
+              changes: buildCreateChanges(
+                {
+                  title,
+                  trackKey: role.trackKey,
+                  familyId,
+                  function: "",
+                  team: "",
+                  purpose: "",
+                  responsibilities: "",
+                },
+                [
+                  "title",
+                  "trackKey",
+                  "familyId",
+                  "function",
+                  "team",
+                  "purpose",
+                  "responsibilities",
+                ]
+              ),
+            },
           })
         }
       }
@@ -422,6 +543,9 @@ export const reconcileStarterSet = orgMutation({
     // changes ratings or the model, and an archived role simply leaves results.
     for (const role of activeRoles) {
       if (keptRoleIds.has(role._id as string)) continue
+      // Hoist the archive timestamp so the logged archivedAt `to` is the exact
+      // value written to the doc (binding correction #14).
+      const archivedAt = Date.now()
       // An archived role cannot stay an active calibration reference, so retire
       // the anchor with its own audit row (mirrors archiveRole).
       const retiredAnchor =
@@ -429,26 +553,47 @@ export const reconcileStarterSet = orgMutation({
           ? {
               ...role.anchorRole,
               status: "replaced" as const,
-              reviewedAt: Date.now(),
+              reviewedAt: archivedAt,
             }
           : undefined
       await ctx.db.patch(role._id, {
-        archivedAt: Date.now(),
+        archivedAt,
         ...(retiredAnchor !== undefined ? { anchorRole: retiredAnchor } : {}),
       })
-      if (retiredAnchor !== undefined) {
+      if (retiredAnchor !== undefined && role.anchorRole !== undefined) {
+        // `role.anchorRole` is the pre-patch in-memory anchor (before).
         await logAudit(ctx, {
           orgId,
           type: AUDIT_EVENTS.anchorRoleUpdated,
           actorId,
-          payload: { roleId: role._id, status: "replaced", viaArchive: true },
+          payload: {
+            roleId: role._id,
+            viaReconcile: true,
+            batchId,
+            expectedBand: role.anchorRole.expectedBand,
+            changes: buildChanges(role.anchorRole, retiredAnchor, [
+              "status",
+              "reviewedAt",
+            ]),
+          },
         })
       }
       await logAudit(ctx, {
         orgId,
         type: AUDIT_EVENTS.roleArchived,
         actorId,
-        payload: { roleId: role._id },
+        payload: {
+          roleId: role._id,
+          title: role.title,
+          trackKey: role.trackKey,
+          function: role.function,
+          team: role.team,
+          familyId: role.familyId ?? null,
+          viaReconcile: true,
+          batchId,
+          anchorRetired: retiredAnchor !== undefined,
+          changes: { archivedAt: { from: null, to: archivedAt } },
+        },
       })
     }
 
@@ -457,18 +602,35 @@ export const reconcileStarterSet = orgMutation({
     // non-archived roles; clear any remaining (archived) membership and delete.
     for (const family of existingFamilies) {
       if (keptFamilyIds.has(family._id as string)) continue
-      const clearedRoleIds: Id<"roles">[] = []
+      // Build each cleared role's item BEFORE the patch/delete, using the
+      // family-id constant as the `from` (binding correction #15): a post-patch
+      // get would read familyId: undefined and lose the before.
+      const items: Array<{
+        roleId: string
+        changes: Record<string, { from: unknown; to: unknown }>
+      }> = []
       for (const role of allRoles) {
         if (role.familyId !== family._id) continue
+        items.push({
+          roleId: role._id,
+          changes: { familyId: { from: family._id, to: null } },
+        })
         await ctx.db.patch(role._id, { familyId: undefined })
-        clearedRoleIds.push(role._id)
       }
       await ctx.db.delete(family._id)
       await logAudit(ctx, {
         orgId,
         type: AUDIT_EVENTS.roleFamilyRemoved,
         actorId,
-        payload: { familyId: family._id, name: family.name, clearedRoleIds },
+        payload: {
+          familyId: family._id,
+          name: family.name,
+          viaReconcile: true,
+          batchId,
+          changes: { name: { from: family.name, to: null } },
+          count: items.length,
+          items,
+        },
       })
     }
 
