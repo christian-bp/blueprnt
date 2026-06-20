@@ -95,10 +95,12 @@
       "loadMore": "Load more",
       "loadingMore": "Loading...",
       "detail": {
+        "who": "Who",
+        "when": "When",
+        "category": "Category",
         "changes": "What changed",
         "detailsHeading": "Details",
         "removedHeading": "Removed",
-        "by": "By {who}",
         "emptyValue": "Empty",
         "noChanges": "No field-level changes recorded.",
         "close": "Close",

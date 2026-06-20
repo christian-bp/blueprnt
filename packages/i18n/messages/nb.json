@@ -95,10 +95,12 @@
       "loadMore": "Vis flere",
       "loadingMore": "Laster...",
       "detail": {
+        "who": "Hvem",
+        "when": "Når",
+        "category": "Kategori",
         "changes": "Hva ble endret",
         "detailsHeading": "Detaljer",
         "removedHeading": "Fjernet",
-        "by": "Av {who}",
         "emptyValue": "Tomt",
         "noChanges": "Ingen endringer på feltnivå registrert.",
         "close": "Lukk",

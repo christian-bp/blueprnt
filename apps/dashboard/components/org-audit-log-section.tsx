@@ -75,6 +75,11 @@ type AuditRow = {
   names: Record<string, string>
 }
 
+// One shared key/value grid for every block in the detail sheet (meta and each
+// change group), so they all read the same way: label left, value right, on a
+// fixed-width key column that keeps values aligned across blocks.
+const KV_GRID = "grid grid-cols-[8rem_1fr] gap-x-4 gap-y-2.5 text-sm"
+
 // Derive the i18n key from an event type value by camelCasing across dots, so
 // "organization.created" -> "organizationCreated", "ai.suggestionConfirmed" ->
 // "aiSuggestionConfirmed". The keys under dashboard.auditLog.events mirror this.
@@ -485,26 +490,31 @@ function AuditDetailSheet({
       </SheetHeader>
 
       <div className="flex flex-col gap-5 overflow-y-auto px-4 pb-4">
-        {/* Byline: category, who did it, and when. The category badge lives here
-            (not the header) so it never collides with the close button. */}
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground text-sm">
+        {/* Meta, as key/value rows: who, when, and the category. */}
+        <dl className={KV_GRID}>
+          <dt className="text-muted-foreground">{t("detail.who")}</dt>
+          <dd className="min-w-0 break-words">
+            {actorLabel(row.actorId, row.actorName)}
+          </dd>
+          <dt className="text-muted-foreground">{t("detail.when")}</dt>
+          <dd className="min-w-0 break-words">{dateLong}</dd>
           {row.category ? (
-            <Badge variant="secondary">{categoryLabel(row.category)}</Badge>
+            <>
+              <dt className="text-muted-foreground">{t("detail.category")}</dt>
+              <dd className="min-w-0">
+                <Badge variant="secondary">{categoryLabel(row.category)}</Badge>
+              </dd>
+            </>
           ) : null}
-          <span>
-            {t("detail.by", { who: actorLabel(row.actorId, row.actorName) })}
-            {" · "}
-            {dateLong}
-          </span>
-        </div>
+        </dl>
 
         {hasGroups ? (
           <div className="flex flex-col gap-5">
-            {/* Top-level field changes, as a bordered record. */}
+            {/* Top-level field changes, same key/value grid as the meta. */}
             {entries.length > 0 ? (
               <section className="space-y-2">
                 <h3 className="font-medium text-sm">{sectionHeading}</h3>
-                <ul className="divide-y divide-border overflow-hidden rounded-lg border">
+                <dl className={KV_GRID}>
                   {entries.map((entry) => (
                     <ChangeEntryRow
                       key={entry.field}
@@ -517,13 +527,13 @@ function AuditDetailSheet({
                       }
                     />
                   ))}
-                </ul>
+                </dl>
               </section>
             ) : null}
 
-            {/* Bulk group: one bordered record per item. */}
+            {/* Bulk group: a titled key/value record per item. */}
             {items && items.items.length > 0 ? (
-              <section className="space-y-2">
+              <section className="space-y-3">
                 <h3 className="font-medium text-sm">
                   {t("detail.itemsHeading", { count: items.count })}
                 </h3>
@@ -534,7 +544,7 @@ function AuditDetailSheet({
                         {item.title || t("detail.unnamedItem")}
                       </div>
                       {item.entries.length > 0 ? (
-                        <ul className="divide-y divide-border overflow-hidden rounded-lg border">
+                        <dl className={KV_GRID}>
                           {orderEntries(item.entries).map((entry) => (
                             <ChangeEntryRow
                               key={entry.field}
@@ -542,7 +552,7 @@ function AuditDetailSheet({
                               t={t}
                             />
                           ))}
-                        </ul>
+                        </dl>
                       ) : null}
                     </li>
                   ))}
@@ -686,9 +696,9 @@ function ChangeEntryRow({
   annotateCleared?: boolean
 }) {
   return (
-    <li className="px-3 py-2.5 text-sm">
-      <div className="text-muted-foreground text-xs">{entry.label}</div>
-      <div className="mt-0.5">
+    <>
+      <dt className="text-muted-foreground">{entry.label}</dt>
+      <dd className="min-w-0">
         {entry.isComplex ? (
           <pre className="overflow-x-auto rounded bg-muted p-2 font-mono text-xs">
             {entry.isSet ? entry.to : `${entry.from}\n→ ${entry.to}`}
@@ -701,23 +711,21 @@ function ChangeEntryRow({
               {entry.from}
             </span>
             <span className="px-2 text-muted-foreground">→</span>
-            <span>
-              {entry.to.trim() === "" ? (
-                <span className="text-muted-foreground italic">
-                  {t("detail.emptyValue")}
-                </span>
-              ) : (
-                entry.to
-              )}
-            </span>
+            {entry.to.trim() === "" ? (
+              <span className="text-muted-foreground italic">
+                {t("detail.emptyValue")}
+              </span>
+            ) : (
+              entry.to
+            )}
           </span>
         )}
-      </div>
-      {annotateCleared ? (
-        <div className="mt-1 text-muted-foreground text-xs">
-          {t("detail.clearedOnRename")}
-        </div>
-      ) : null}
-    </li>
+        {annotateCleared ? (
+          <div className="mt-1 text-muted-foreground text-xs">
+            {t("detail.clearedOnRename")}
+          </div>
+        ) : null}
+      </dd>
+    </>
   )
 }

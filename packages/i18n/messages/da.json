@@ -95,10 +95,12 @@
       "loadMore": "Vis flere",
       "loadingMore": "Indlæser...",
       "detail": {
+        "who": "Hvem",
+        "when": "Hvornår",
+        "category": "Kategori",
         "changes": "Hvad blev ændret",
         "detailsHeading": "Detaljer",
         "removedHeading": "Fjernet",
-        "by": "Af {who}",
         "emptyValue": "Tomt",
         "noChanges": "Ingen ændringer på feltniveau registreret.",
         "close": "Luk",

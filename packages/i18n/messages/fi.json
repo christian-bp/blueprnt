@@ -95,10 +95,12 @@
       "loadMore": "Näytä lisää",
       "loadingMore": "Ladataan...",
       "detail": {
+        "who": "Kuka",
+        "when": "Milloin",
+        "category": "Luokka",
         "changes": "Mikä muuttui",
         "detailsHeading": "Tiedot",
         "removedHeading": "Poistettu",
-        "by": "Tekijä: {who}",
         "emptyValue": "Tyhjä",
         "noChanges": "Kenttätason muutoksia ei kirjattu.",
         "close": "Sulje",

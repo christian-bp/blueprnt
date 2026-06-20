@@ -95,10 +95,12 @@
       "loadMore": "Visa fler",
       "loadingMore": "Laddar...",
       "detail": {
+        "who": "Vem",
+        "when": "När",
+        "category": "Kategori",
         "changes": "Vad ändrades",
         "detailsHeading": "Detaljer",
         "removedHeading": "Borttaget",
-        "by": "Av {who}",
         "emptyValue": "Tomt",
         "noChanges": "Inga ändringar på fältnivå registrerade.",
         "close": "Stäng",
