@@ -78,7 +78,7 @@ export function DateRangePicker({
             {todayLabel}
           </Button>
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             className="flex-1"
             onClick={() => onChange(undefined)}
