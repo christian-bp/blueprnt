@@ -15,7 +15,7 @@ import {
   TRACK_KEYS,
   templateContent,
 } from "../evaluationModel/standardTemplate"
-import { AUDIT_EVENTS, logAudit } from "../lib/audit"
+import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
 import { AI_MODEL_ID, AI_PROFILE_MODEL_ID, AI_PROVIDER } from "./config"
@@ -483,12 +483,15 @@ export const confirmRoleProfileDraft = orgMutation({
       appliedFields.push(field)
     }
     if (appliedFields.length > 0) {
+      // Structured before->after diff, exactly like manual role edits log:
+      // `role` is the pre-patch doc read above, `patch` is what we apply.
+      const changes = buildChanges(role, patch, appliedFields)
       await ctx.db.patch(roleId, patch)
       await logAudit(ctx, {
         orgId: ctx.orgId,
         type: AUDIT_EVENTS.roleUpdated,
         actorId: ctx.authUserId,
-        payload: { roleId, fields: appliedFields },
+        payload: { roleId, changes },
       })
     }
     await ctx.db.patch(suggestionId, {

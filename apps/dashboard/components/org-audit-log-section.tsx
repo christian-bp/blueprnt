@@ -18,7 +18,7 @@ import {
 import { useQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
 import { useOrganization } from "@/components/org-context"
-import { formatAuditDetail } from "@/lib/audit-detail"
+import { aiAuditDetail, formatAuditDetail } from "@/lib/audit-detail"
 
 // Derive the i18n key from an event type value by camelCasing across dots, so
 // "organization.created" -> "organizationCreated", "ai.suggestionConfirmed" ->
@@ -80,6 +80,32 @@ export function OrgAuditLogSection() {
   if (data === undefined) return null
   const { rows, names } = data
 
+  // The Details cell: AI suggestion events render from their own payload
+  // (counts), everything else through the shared structured-change formatter.
+  function detailText(type: string, payload: unknown): string {
+    if (type === "ai.suggestionConfirmed" || type === "ai.suggestionRejected") {
+      // aiAuditDetail builds key paths at runtime (ai.<kind>); widen t to a
+      // plain (key, params) signature so the runtime keys are accepted.
+      return aiAuditDetail(type, payload, (key, params) =>
+        t(key as Parameters<typeof t>[0], params)
+      )
+    }
+    return formatAuditDetail(
+      type,
+      payload,
+      names,
+      {
+        deletedRole: t("details.deletedRole"),
+        deletedFamily: t("details.deletedFamily"),
+        deletedUser: t("details.deletedUser"),
+      },
+      (f) => {
+        const key = `fields.${f}` as Parameters<typeof t.has>[0]
+        return t.has(key) ? t(key) : f
+      }
+    )
+  }
+
   return (
     <section className="space-y-4">
       <div>
@@ -117,20 +143,7 @@ export function OrgAuditLogSection() {
                 </TableCell>
                 <TableCell>{actionLabel(row.type)}</TableCell>
                 <TableCell className="text-muted-foreground">
-                  {formatAuditDetail(
-                    row.type,
-                    row.payload,
-                    names,
-                    {
-                      deletedRole: t("details.deletedRole"),
-                      deletedFamily: t("details.deletedFamily"),
-                      deletedUser: t("details.deletedUser"),
-                    },
-                    (f) => {
-                      const key = `fields.${f}` as Parameters<typeof t.has>[0]
-                      return t.has(key) ? t(key) : f
-                    }
-                  )}
+                  {detailText(row.type, row.payload)}
                 </TableCell>
               </TableRow>
             ))}

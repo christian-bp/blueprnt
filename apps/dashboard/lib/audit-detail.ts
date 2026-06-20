@@ -28,6 +28,45 @@ function asChanges(
   return value as Record<string, { from: unknown; to: unknown }>
 }
 
+// Maps "model.draft" -> "modelDraft", etc., for i18n keys.
+const AI_KIND_KEY: Record<string, string> = {
+  "model.draft": "modelDraft",
+  "model.weightReview": "weightReview",
+  "role.profile": "roleProfile",
+  "starter.import": "starterImport",
+}
+
+// Human-readable detail for ai.suggestionConfirmed / ai.suggestionRejected.
+// `t` is injected (next-intl) so this stays pure/testable.
+export function aiAuditDetail(
+  type: string,
+  payload: unknown,
+  t: (key: string, params?: Record<string, string | number>) => string
+): string {
+  const p = (payload ?? {}) as Record<string, unknown>
+  const kind = typeof p.kind === "string" ? p.kind : ""
+  const kindKey = AI_KIND_KEY[kind]
+  if (type === "ai.suggestionRejected") {
+    return kindKey ? t(`ai.kind.${kindKey}`) : ""
+  }
+  const num = (v: unknown) => (typeof v === "number" ? v : 0)
+  switch (kind) {
+    case "model.draft":
+      return t("ai.modelDraft", { count: num(p.acceptedCount) })
+    case "model.weightReview":
+      return t("ai.weightReview", { count: num(p.appliedCount) })
+    case "role.profile":
+      return t("ai.roleProfile", { count: num(p.appliedCount) })
+    case "starter.import":
+      return t("ai.starterImport", {
+        families: num(p.familyCount),
+        roles: num(p.roleCount),
+      })
+    default:
+      return ""
+  }
+}
+
 // Pure, testable: turns an audit event + its (id-resolved) names into a
 // human-readable detail string. Drops raw Convex ids and internal "source".
 export function formatAuditDetail(

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { formatAuditDetail, formatChanges } from "./audit-detail"
+import { aiAuditDetail, formatAuditDetail, formatChanges } from "./audit-detail"
 
 const labels = {
   deletedRole: "Deleted role",
@@ -199,5 +199,90 @@ describe("formatAuditDetail", () => {
         labels
       )
     ).toBe("status: active, count: 3")
+  })
+})
+
+describe("aiAuditDetail", () => {
+  // Stub translator: echoes the key + the JSON params so tests can assert the
+  // exact i18n key and the params it would be called with, without the catalog.
+  const t = (key: string, params?: Record<string, string | number>) =>
+    `${key} ${JSON.stringify(params ?? {})}`
+
+  it("renders a confirmed model.draft with its accepted count", () => {
+    expect(
+      aiAuditDetail(
+        "ai.suggestionConfirmed",
+        { suggestionId: "s1", kind: "model.draft", acceptedCount: 4 },
+        t
+      )
+    ).toBe('ai.modelDraft {"count":4}')
+  })
+
+  it("renders a confirmed model.weightReview with its applied count", () => {
+    expect(
+      aiAuditDetail(
+        "ai.suggestionConfirmed",
+        { suggestionId: "s1", kind: "model.weightReview", appliedCount: 2 },
+        t
+      )
+    ).toBe('ai.weightReview {"count":2}')
+  })
+
+  it("renders a confirmed role.profile with its applied field count", () => {
+    expect(
+      aiAuditDetail(
+        "ai.suggestionConfirmed",
+        { suggestionId: "s1", kind: "role.profile", appliedCount: 3 },
+        t
+      )
+    ).toBe('ai.roleProfile {"count":3}')
+  })
+
+  it("renders a confirmed starter.import with family and role counts", () => {
+    expect(
+      aiAuditDetail(
+        "ai.suggestionConfirmed",
+        {
+          suggestionId: "s1",
+          kind: "starter.import",
+          familyCount: 5,
+          roleCount: 12,
+        },
+        t
+      )
+    ).toBe('ai.starterImport {"families":5,"roles":12}')
+  })
+
+  it("falls back to 0 counts when the payload is missing them", () => {
+    expect(
+      aiAuditDetail(
+        "ai.suggestionConfirmed",
+        { suggestionId: "s1", kind: "model.draft" },
+        t
+      )
+    ).toBe('ai.modelDraft {"count":0}')
+  })
+
+  it("renders a rejected suggestion as its kind label", () => {
+    expect(
+      aiAuditDetail(
+        "ai.suggestionRejected",
+        { suggestionId: "s1", kind: "role.profile" },
+        t
+      )
+    ).toBe("ai.kind.roleProfile {}")
+  })
+
+  it("returns empty for an unknown kind", () => {
+    expect(
+      aiAuditDetail(
+        "ai.suggestionConfirmed",
+        { suggestionId: "s1", kind: "mystery.thing" },
+        t
+      )
+    ).toBe("")
+    expect(
+      aiAuditDetail("ai.suggestionRejected", { suggestionId: "s1" }, t)
+    ).toBe("")
   })
 })

@@ -742,9 +742,16 @@ describe("role profile drafts", () => {
           q.eq("orgId", orgId).eq("type", "role.updated")
         )
         .collect()
+      // Structured diff like a manual edit: the seeded purpose was "" and the
+      // accepted draft is the trimmed value.
       expect(updated.map((row) => row.payload)).toContainEqual({
         roleId: docId,
-        fields: ["purpose"],
+        changes: {
+          purpose: {
+            from: "",
+            to: "Bygger och underhåller kärnprodukten.",
+          },
+        },
       })
     })
   })
