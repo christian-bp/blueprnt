@@ -1,0 +1,57 @@
+packages/i18n/messages/nb.json
+  s_4d14ac8ce42bf2::t_5a4493dd5bd0dc 95-99
+  s_4d14ac8ce42bf2::t_4587a52ad15dac 776-780
+apps/dashboard/lib/date-bounds.ts
+  s_4d14ac8ce42bf2::t_c72a0ab76719a8 1-15
+packages/i18n/messages/en.json
+  s_4d14ac8ce42bf2::t_86a74a5d613505 95-99
+  s_4d14ac8ce42bf2::t_fd9ea7325c6bc0 776-780
+apps/dashboard/components/org-audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_3e489aad1e1bef 283-289
+  s_4d14ac8ce42bf2::t_844b262511c80b 42,45,49
+  s_4d14ac8ce42bf2::t_fcd553865b6e93 363-364,369
+  s_4d14ac8ce42bf2::t_a93a8533ab7758 107,115-117,125,132-138,152
+apps/dashboard/components/date-range-picker.tsx
+  s_4d14ac8ce42bf2::t_0699d1ae4c3ad5 1-71
+packages/i18n/messages/da.json
+  s_4d14ac8ce42bf2::t_57df2e0b6f0575 95-99
+  s_4d14ac8ce42bf2::t_a988b4fe0a4025 776-780
+apps/dashboard/components/admin/audit-log-section.tsx
+  s_4d14ac8ce42bf2::t_3933539b432a8a 257-263
+  s_4d14ac8ce42bf2::t_852012c3a8c34f 341-342,347
+  s_4d14ac8ce42bf2::t_5bf8a23496c1e6 42,45,48
+  s_4d14ac8ce42bf2::t_78411c0c0542bd 125,133-135,141-143,148-155,168
+packages/i18n/messages/fi.json
+  s_4d14ac8ce42bf2::t_c4b126121e8961 776-780
+  s_4d14ac8ce42bf2::t_417e7738a3f16e 95-99
+apps/dashboard/components/audit/audit-pagination.test.tsx
+  s_4d14ac8ce42bf2::t_032638d3f38a80 35-36,45
+  s_4d14ac8ce42bf2::t_c84817309f4499 1-24,26-29,31-34,37-44,46-55
+  s_4d14ac8ce42bf2::t_d9e99cbbd9d588 25,30
+packages/i18n/messages/sv.json
+  s_4d14ac8ce42bf2::t_8a81ea3a1b78af 95-99
+  s_4d14ac8ce42bf2::t_567002bde22624 776-780
+apps/dashboard/hooks/use-audit-pagination.test.tsx
+  s_4d14ac8ce42bf2::t_7a002285ad7401 28-30
+  s_4d14ac8ce42bf2::t_5f6cfc0e82f5bb 64-66,73-95
+apps/dashboard/hooks/use-audit-pagination.ts
+  s_4d14ac8ce42bf2::t_1c7569163a0563 18-19,24,33-36,49-63
+apps/dashboard/components/audit/audit-pagination.tsx
+  s_4d14ac8ce42bf2::t_ef6b822f7b6c23 6,13-46,49-50,55,60-61,66,76,83-105,108
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "a14292164d79aa8e4088e8ec2bac69eb34632275",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
