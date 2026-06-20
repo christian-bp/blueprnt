@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { api, components, internal } from "../_generated/api"
+import { categoryForPlatformEvent } from "../lib/audit"
 import { initConvexTest } from "../testing.helpers"
 
 async function seedMirroredUser(
@@ -495,39 +496,110 @@ describe("platform queries + updateOrganization", () => {
   })
 })
 
-describe("listAuditLog", () => {
-  it("returns the admin trail newest-first after admin actions", async () => {
+describe("categoryForPlatformEvent", () => {
+  it("maps each platform.* event to its category, unknowns to undefined", () => {
+    expect(categoryForPlatformEvent("platform.userCreated")).toBe("user")
+    expect(categoryForPlatformEvent("platform.userDeleted")).toBe("user")
+    expect(categoryForPlatformEvent("platform.orgCreated")).toBe("organization")
+    expect(categoryForPlatformEvent("platform.orgUpdated")).toBe("organization")
+    expect(categoryForPlatformEvent("platform.membershipGranted")).toBe(
+      "membership"
+    )
+    expect(categoryForPlatformEvent("platform.membershipRoleChanged")).toBe(
+      "membership"
+    )
+    expect(categoryForPlatformEvent("platform.membershipRevoked")).toBe(
+      "membership"
+    )
+    expect(categoryForPlatformEvent("platform.adminGranted")).toBe("admin")
+    expect(categoryForPlatformEvent("platform.adminRevoked")).toBe("admin")
+    // Unknown / org-log event types are uncategorized, never misfiled.
+    expect(categoryForPlatformEvent("platform.unknown")).toBeUndefined()
+    expect(categoryForPlatformEvent("role.created")).toBeUndefined()
+    expect(categoryForPlatformEvent("")).toBeUndefined()
+  })
+})
+
+describe("listAuditLog (paginated browse)", () => {
+  it("paginates the admin trail newest-first across two pages", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    // Five audited admin actions across categories.
+    await asAdmin.mutation(api.platform.admin.createUser, {
+      name: "U1",
+      email: "u1@acme.se",
+    })
+    await asAdmin.mutation(api.platform.admin.createUser, {
+      name: "U2",
+      email: "u2@acme.se",
+    })
+    await asAdmin.mutation(api.platform.admin.createOrganization, {
+      name: "Org One",
+      slug: "org-one",
+    })
+    await asAdmin.mutation(api.platform.admin.createOrganization, {
+      name: "Org Two",
+      slug: "org-two",
+    })
+    await asAdmin.mutation(api.platform.admin.createUser, {
+      name: "U3",
+      email: "u3@acme.se",
+    })
+    // Six rows total (the seeded grant plus the five above).
+    const page1 = await asAdmin.query(api.platform.admin.listAuditLog, {
+      paginationOpts: { numItems: 3, cursor: null },
+    })
+    expect(page1.page).toHaveLength(3)
+    expect(page1.isDone).toBe(false)
+    expect(typeof page1.continueCursor).toBe("string")
+    // Newest-first: timestamps are non-increasing down the page.
+    expect(page1.page[0]?.at).toBeGreaterThanOrEqual(page1.page[1]?.at ?? 0)
+    expect(page1.page[1]?.at).toBeGreaterThanOrEqual(page1.page[2]?.at ?? 0)
+    // The newest row resolves its target label (the last action created U3).
+    const newest = page1.page[0]
+    expect(newest?.type).toBe("platform.userCreated")
+    expect(newest?.targetUser).toBe("u3@acme.se")
+    expect(newest?.category).toBe("user")
+
+    const page2 = await asAdmin.query(api.platform.admin.listAuditLog, {
+      paginationOpts: { numItems: 3, cursor: page1.continueCursor },
+    })
+    expect(page2.page).toHaveLength(3)
+    expect(page2.isDone).toBe(true)
+    // The oldest row on page 1 is newer than the newest row on page 2.
+    const lastOfPage1 = page1.page[page1.page.length - 1]?.at ?? 0
+    expect(lastOfPage1).toBeGreaterThanOrEqual(page2.page[0]?.at ?? 0)
+  })
+
+  it("filters by category: organization narrows to org rows", async () => {
     const t = initConvexTest()
     const adminId = await seedPlatformAdmin(t)
     const asAdmin = t.withIdentity({ subject: adminId })
     await asAdmin.mutation(api.platform.admin.createUser, {
-      name: "Logged",
-      email: "logged@acme.se",
+      name: "Plain",
+      email: "plain@acme.se",
     })
     await asAdmin.mutation(api.platform.admin.createOrganization, {
-      name: "Logged Org",
-      slug: "logged-org",
+      name: "Filtered Org",
+      slug: "filtered-org",
     })
-    const rows = await asAdmin.query(api.platform.admin.listAuditLog, {})
-    const types = rows.map((r) => r.type)
-    expect(types).toContain("platform.userCreated")
-    expect(types).toContain("platform.orgCreated")
-    // Newest first: the org creation came after the user creation.
-    const userAt = rows.find((r) => r.type === "platform.userCreated")?.at ?? 0
-    const orgAt = rows.find((r) => r.type === "platform.orgCreated")?.at ?? 0
-    expect(orgAt).toBeGreaterThanOrEqual(userAt)
-    expect(rows[0]?.at).toBeGreaterThanOrEqual(rows[rows.length - 1]?.at ?? 0)
-    // Targets resolve to human labels: org name for the org-created row.
-    const orgRow = rows.find((r) => r.type === "platform.orgCreated")
-    expect(orgRow?.targetOrg).toBe("Logged Org")
-    expect(orgRow?.targetUser).toBeNull()
-    // The user-created row carries the email label and no org.
-    const userRow = rows.find((r) => r.type === "platform.userCreated")
-    expect(userRow?.targetUser).toBe("logged@acme.se")
-    expect(userRow?.targetOrg).toBeNull()
-    // The actorId is returned so the section can label the system actor; a real
-    // admin action carries the admin's id, not a "system" sentinel.
-    expect(userRow?.actorId).toBe(adminId)
+
+    const orgOnly = await asAdmin.query(api.platform.admin.listAuditLog, {
+      category: "organization",
+      paginationOpts: { numItems: 50, cursor: null },
+    })
+    expect(orgOnly.page).toHaveLength(1)
+    expect(orgOnly.page[0]?.type).toBe("platform.orgCreated")
+    expect(orgOnly.page[0]?.category).toBe("organization")
+    expect(orgOnly.page.every((r) => r.category === "organization")).toBe(true)
+
+    // An invalid category falls back to the full trail.
+    const all = await asAdmin.query(api.platform.admin.listAuditLog, {
+      category: "not-a-real-category",
+      paginationOpts: { numItems: 50, cursor: null },
+    })
+    expect(all.page.length).toBeGreaterThanOrEqual(2)
   })
 
   it("rejects a non-admin caller", async () => {
@@ -535,8 +607,143 @@ describe("listAuditLog", () => {
     const userId = await seedMirroredUser(t, "nobody-log@acme.se")
     const asUser = t.withIdentity({ subject: userId })
     await expect(
-      asUser.query(api.platform.admin.listAuditLog, {})
+      asUser.query(api.platform.admin.listAuditLog, {
+        paginationOpts: { numItems: 10, cursor: null },
+      })
     ).rejects.toThrow(/errors.platformAdminRequired/)
+  })
+})
+
+describe("searchAuditLog", () => {
+  it("hits a term in searchText (actor name) and misses an unrelated term", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    await asAdmin.mutation(api.platform.admin.createOrganization, {
+      name: "Searchable Org",
+      slug: "searchable-org",
+    })
+    // searchText includes the actor name ("operator", from seedPlatformAdmin).
+    const hit = await asAdmin.query(api.platform.admin.searchAuditLog, {
+      search: "operator",
+    })
+    expect(hit.rows.length).toBeGreaterThanOrEqual(1)
+    expect(hit.rows.some((r) => r.type === "platform.orgCreated")).toBe(true)
+
+    const miss = await asAdmin.query(api.platform.admin.searchAuditLog, {
+      search: "zzzznomatch",
+    })
+    expect(miss.rows).toHaveLength(0)
+  })
+
+  it("hits a payload code in searchText (a membership role)", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    const { authId } = await asAdmin.mutation(api.platform.admin.createUser, {
+      name: "Coded",
+      email: "coded@acme.se",
+    })
+    const { orgId } = await asAdmin.mutation(
+      api.platform.admin.createOrganization,
+      { name: "Coded Org", slug: "coded-org" }
+    )
+    // membershipGranted carries { role: "editor" } in its id-only payload, so
+    // the role code lands in searchText (a non-PII payload scalar).
+    await asAdmin.mutation(api.platform.admin.addMembership, {
+      authId,
+      orgId,
+      role: "editor",
+    })
+    const result = await asAdmin.query(api.platform.admin.searchAuditLog, {
+      search: "editor",
+    })
+    expect(
+      result.rows.some((r) => r.type === "platform.membershipGranted")
+    ).toBe(true)
+  })
+
+  it("narrows search results by category", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    // Both rows share the actor name "operator" but live in different
+    // categories.
+    await asAdmin.mutation(api.platform.admin.createUser, {
+      name: "U",
+      email: "u@acme.se",
+    })
+    await asAdmin.mutation(api.platform.admin.createOrganization, {
+      name: "O",
+      slug: "o-org",
+    })
+    const orgOnly = await asAdmin.query(api.platform.admin.searchAuditLog, {
+      search: "operator",
+      category: "organization",
+    })
+    expect(orgOnly.rows.length).toBeGreaterThanOrEqual(1)
+    expect(orgOnly.rows.every((r) => r.category === "organization")).toBe(true)
+    expect(orgOnly.rows.some((r) => r.type === "platform.userCreated")).toBe(
+      false
+    )
+  })
+
+  it("returns no rows for an empty / whitespace search", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    await asAdmin.mutation(api.platform.admin.createUser, {
+      name: "U",
+      email: "u@acme.se",
+    })
+    expect(
+      (await asAdmin.query(api.platform.admin.searchAuditLog, { search: "" }))
+        .rows
+    ).toHaveLength(0)
+    expect(
+      (
+        await asAdmin.query(api.platform.admin.searchAuditLog, {
+          search: "   ",
+        })
+      ).rows
+    ).toHaveLength(0)
+  })
+
+  it("rejects a non-admin caller", async () => {
+    const t = initConvexTest()
+    const userId = await seedMirroredUser(t, "nobody-search@acme.se")
+    const asUser = t.withIdentity({ subject: userId })
+    await expect(
+      asUser.query(api.platform.admin.searchAuditLog, { search: "x" })
+    ).rejects.toThrow(/errors.platformAdminRequired/)
+  })
+})
+
+describe("platform audit row: stored category + PII-free searchText", () => {
+  it("stores the production category and a PII-free searchText", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    const { authId } = await asAdmin.mutation(api.platform.admin.createUser, {
+      name: "Target Person",
+      email: "target.person@acme.se",
+    })
+    const stored = await t.run(async (ctx) =>
+      ctx.db.query("platformAuditLog").collect()
+    )
+    const row = stored.find((r) => r.type === "platform.userCreated")
+    // Category is derived on insert.
+    expect(row?.category).toBe("user")
+    // searchText carries the actor name and the event type.
+    expect(row?.searchText).toContain("operator")
+    expect(row?.searchText).toContain("platform.usercreated")
+    // PII regression guard: the target's email/name is NOT in searchText (it is
+    // resolved at READ time for display only). The id-only payload here is {},
+    // so the target identity never reaches the stored search text.
+    expect(row?.searchText).not.toContain("target.person@acme.se")
+    expect(row?.searchText).not.toContain("target person")
+    // And the target id stays on the row only as an id.
+    expect(row?.targetUserId).toBe(authId)
   })
 })
 

@@ -1,10 +1,13 @@
 import { isValidSlug } from "@workspace/constants"
+import { paginationOptsValidator } from "convex/server"
 import { v } from "convex/values"
 import { components } from "../_generated/api"
 import { query } from "../_generated/server"
+import type { QueryCtx } from "../_generated/server"
 import { onOrganizationCreate, onUserCreate } from "../accounts/mirrors"
 import {
   buildChanges,
+  PLATFORM_AUDIT_CATEGORIES,
   PLATFORM_AUDIT_EVENTS,
   logPlatformAudit,
 } from "../lib/audit"
@@ -273,52 +276,140 @@ export const listOrganizations = platformQuery({
   },
 })
 
-// The admin audit trail, newest first. Target ids are resolved to human labels
-// (user email, org name) best-effort; an erased or unknown target falls back to
-// its raw id. V1 like the other list queries: a 200-row cap and a 500-row
-// enrichment cap (the component list helpers .take(500)), no pagination.
+// One admin audit row with its target ids resolved to human labels (user email,
+// org name) for display. The labels are resolved at READ time only and never
+// stored, keeping the platformAuditLog table id-only/PII-free; an erased or
+// unknown target falls back to its raw id. category rides along for filtering.
+const platformAuditRow = v.object({
+  id: v.string(),
+  at: v.number(),
+  actorId: v.string(),
+  actorName: v.string(),
+  type: v.string(),
+  category: v.optional(v.string()),
+  targetUser: v.union(v.null(), v.string()),
+  targetOrg: v.union(v.null(), v.string()),
+  payload: v.any(),
+})
+
+type PlatformAuditRowDoc = {
+  _id: { toString(): string }
+  _creationTime: number
+  actorId: string
+  actorName: string
+  type: string
+  category?: string
+  targetUserId?: string
+  targetOrgId?: string
+  payload: unknown
+}
+
+// Narrows an incoming category arg to a known PLATFORM_AUDIT_CATEGORIES value,
+// or null when it is absent/invalid (the browse query then falls back to the
+// full table, and the search query drops the category filter).
+function validPlatformCategory(category: string | undefined): string | null {
+  if (category === undefined) return null
+  return (PLATFORM_AUDIT_CATEGORIES as readonly string[]).includes(category)
+    ? category
+    : null
+}
+
+// Shared target resolution for both audit queries. Fetches the cross-org user
+// and org lists from the Better Auth component, builds id -> label maps, and
+// maps each page/result row to the display shape (resolving targetUserId ->
+// email, targetOrgId -> name; unresolved ids fall back to the raw id). The
+// labels are display-only and never persisted, so the stored rows stay id-only.
+async function resolvePlatformTargets(
+  ctx: QueryCtx,
+  rows: PlatformAuditRowDoc[]
+): Promise<Array<typeof platformAuditRow.type>> {
+  const users = await ctx.runQuery(
+    components.betterAuth.provisioning.listAllUsers,
+    {}
+  )
+  const orgs = await ctx.runQuery(
+    components.betterAuth.provisioning.listAllOrganizations,
+    {}
+  )
+  const userLabel = new Map(users.map((u) => [u.userId, u.email]))
+  const orgLabel = new Map(orgs.map((o) => [o.orgId, o.name]))
+  return rows.map((r) => ({
+    id: r._id.toString(),
+    at: r._creationTime,
+    actorId: r.actorId,
+    actorName: r.actorName,
+    type: r.type,
+    ...(r.category !== undefined ? { category: r.category } : {}),
+    targetUser:
+      r.targetUserId !== undefined
+        ? (userLabel.get(r.targetUserId) ?? r.targetUserId)
+        : null,
+    targetOrg:
+      r.targetOrgId !== undefined
+        ? (orgLabel.get(r.targetOrgId) ?? r.targetOrgId)
+        : null,
+    payload: r.payload,
+  }))
+}
+
+// The admin audit trail (platform-admin only), paginated and newest-first. When
+// `category` is a known PLATFORM_AUDIT_CATEGORIES value the by_category index
+// scopes the page to that area; otherwise the full table is paged. Each page row
+// has its target ids resolved to display labels. The Convex pagination result
+// shape carries optional framework fields (splitCursor/pageStatus), so no
+// explicit `returns` validator is set here (mirroring the org listAuditLog): a
+// hand-written object validator would reject those framework fields.
 export const listAuditLog = platformQuery({
-  args: {},
-  returns: v.array(
-    v.object({
-      id: v.string(),
-      at: v.number(),
-      actorId: v.string(),
-      actorName: v.string(),
-      type: v.string(),
-      targetUser: v.union(v.null(), v.string()),
-      targetOrg: v.union(v.null(), v.string()),
-      payload: v.any(),
-    })
-  ),
-  handler: async (ctx) => {
-    const rows = await ctx.db.query("platformAuditLog").order("desc").take(200)
-    const users = await ctx.runQuery(
-      components.betterAuth.provisioning.listAllUsers,
-      {}
-    )
-    const orgs = await ctx.runQuery(
-      components.betterAuth.provisioning.listAllOrganizations,
-      {}
-    )
-    const userLabel = new Map(users.map((u) => [u.userId, u.email]))
-    const orgLabel = new Map(orgs.map((o) => [o.orgId, o.name]))
-    return rows.map((r) => ({
-      id: r._id.toString(),
-      at: r._creationTime,
-      actorId: r.actorId,
-      actorName: r.actorName,
-      type: r.type,
-      targetUser:
-        r.targetUserId !== undefined
-          ? (userLabel.get(r.targetUserId) ?? r.targetUserId)
-          : null,
-      targetOrg:
-        r.targetOrgId !== undefined
-          ? (orgLabel.get(r.targetOrgId) ?? r.targetOrgId)
-          : null,
-      payload: r.payload,
-    }))
+  args: {
+    paginationOpts: paginationOptsValidator,
+    category: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const category = validPlatformCategory(args.category)
+    const result =
+      category !== null
+        ? await ctx.db
+            .query("platformAuditLog")
+            .withIndex("by_category", (q) => q.eq("category", category))
+            .order("desc")
+            .paginate(args.paginationOpts)
+        : await ctx.db
+            .query("platformAuditLog")
+            .order("desc")
+            .paginate(args.paginationOpts)
+    return {
+      ...result,
+      page: await resolvePlatformTargets(ctx, result.page),
+    }
+  },
+})
+
+// Full-text search over the admin audit trail (platform-admin only). Like the
+// org search, results are relevance-ranked, capped, and NOT paginated (search
+// indexes are not .order()-able), so this is a separate query the client uses
+// while a search term is active; an empty term returns no rows. A known category
+// further constrains the search via the index filter field. searchText is built
+// PII-free (actor + type + payload codes), so search covers the operator, the
+// action, and payload codes, NOT resolved target names/emails.
+export const searchAuditLog = platformQuery({
+  args: {
+    search: v.string(),
+    category: v.optional(v.string()),
+  },
+  returns: v.object({ rows: v.array(platformAuditRow) }),
+  handler: async (ctx, args) => {
+    const search = args.search.trim()
+    if (search.length === 0) return { rows: [] }
+    const category = validPlatformCategory(args.category)
+    const rows = await ctx.db
+      .query("platformAuditLog")
+      .withSearchIndex("search_text", (q) => {
+        let s = q.search("searchText", search)
+        if (category !== null) s = s.eq("category", category)
+        return s
+      })
+      .take(50)
+    return { rows: await resolvePlatformTargets(ctx, rows) }
   },
 })
 

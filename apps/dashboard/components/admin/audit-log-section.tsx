@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
-import { useQuery } from "convex/react"
+import { usePaginatedQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
 import { formatChanges } from "@/lib/audit-detail"
 
@@ -48,7 +48,15 @@ export function AuditLogSection() {
   const t = useTranslations("dashboard.admin.auditLog")
   const tFields = useTranslations("dashboard.auditLog")
   const format = useFormatter()
-  const rows = useQuery(api.platform.admin.listAuditLog, {})
+  // listAuditLog is now paginated. Unit 2 layers on the toolbar, category
+  // filter, search, and detail sheet; for now we browse the newest-first page
+  // and surface a Load more control via the paginated query's status.
+  const browse = usePaginatedQuery(
+    api.platform.admin.listAuditLog,
+    {},
+    { initialNumItems: 50 }
+  )
+  const rows = browse.results
 
   // Resolve a change field name to its localized label, falling back to the raw
   // field name when no key exists.
@@ -92,7 +100,7 @@ export function AuditLogSection() {
     return actorId.startsWith("system") ? t("systemActor") : actorName
   }
 
-  if (rows === undefined) return null
+  if (browse.status === "LoadingFirstPage") return null
 
   return (
     <section className="space-y-4">

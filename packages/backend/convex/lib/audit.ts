@@ -175,6 +175,40 @@ export const PLATFORM_AUDIT_EVENTS = {
 export type PlatformAuditEvent =
   (typeof PLATFORM_AUDIT_EVENTS)[keyof typeof PLATFORM_AUDIT_EVENTS]
 
+// Platform audit categories: the area an admin action touches, for filtering the
+// admin log. Mirrors AUDIT_CATEGORIES for the per-org log.
+export const PLATFORM_AUDIT_CATEGORIES = [
+  "user",
+  "organization",
+  "membership",
+  "admin",
+] as const
+export type PlatformAuditCategory = (typeof PLATFORM_AUDIT_CATEGORIES)[number]
+
+// Maps a platform.* event type to its category. Unknown types return undefined
+// so they stay uncategorized rather than misfiled.
+export function categoryForPlatformEvent(
+  type: string
+): PlatformAuditCategory | undefined {
+  switch (type) {
+    case PLATFORM_AUDIT_EVENTS.userCreated:
+    case PLATFORM_AUDIT_EVENTS.userDeleted:
+      return "user"
+    case PLATFORM_AUDIT_EVENTS.orgCreated:
+    case PLATFORM_AUDIT_EVENTS.orgUpdated:
+      return "organization"
+    case PLATFORM_AUDIT_EVENTS.membershipGranted:
+    case PLATFORM_AUDIT_EVENTS.membershipRoleChanged:
+    case PLATFORM_AUDIT_EVENTS.membershipRevoked:
+      return "membership"
+    case PLATFORM_AUDIT_EVENTS.adminGranted:
+    case PLATFORM_AUDIT_EVENTS.adminRevoked:
+      return "admin"
+    default:
+      return undefined
+  }
+}
+
 // Builds a structured before->after diff for audit payloads. Only includes
 // fields whose value actually changed; undefined collapses to null so the
 // shape stays JSON-clean.
@@ -428,6 +462,7 @@ export async function logPlatformAudit<E extends keyof PlatformAuditPayloads>(
   }
 ) {
   const actorName = await resolveActorName(ctx, entry.actorId)
+  const payload = entry.payload as Record<string, unknown>
   await ctx.db.insert("platformAuditLog", {
     actorId: entry.actorId,
     actorName,
@@ -438,6 +473,11 @@ export async function logPlatformAudit<E extends keyof PlatformAuditPayloads>(
     ...(entry.targetOrgId !== undefined
       ? { targetOrgId: entry.targetOrgId }
       : {}),
-    payload: entry.payload as Record<string, unknown>,
+    payload,
+    category: categoryForPlatformEvent(entry.type),
+    // Built ONLY from actorName + type + id-only payload scalars. The target
+    // email/name are deliberately NOT included (they are resolved at read time
+    // for display): keeping searchText PII-free is what lets erasure stay clean.
+    searchText: buildSearchText(actorName, entry.type, payload),
   })
 }

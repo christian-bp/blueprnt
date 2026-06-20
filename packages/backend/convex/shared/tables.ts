@@ -41,6 +41,17 @@ export const auditLog = defineTable({
 // only, never the affected person's name or email, so an erased user leaves no
 // PII here. by_actor lets erasure anonymize the operator's snapshotted name if
 // the operator is themselves later erased.
+// category and searchText are derived in logPlatformAudit from the event type
+// and payload: category is the action's area (user/organization/membership/
+// admin) for filtering; searchText is denormalized lowercase text for full-text
+// search. Critically, searchText carries NO PII (no target email or user name,
+// which are resolved at read time for display only): it is built from the actor
+// name, the event type, and the id-only payload codes only, so erasure stays
+// clean (anonymizing actorName is enough). by_category supports category-
+// filtered, time-ordered pagination; the search_text search index backs full-
+// text search filterable by category. Both fields are optional so a schema push
+// against pre-existing rows does not fail; logPlatformAudit always sets them
+// going forward.
 export const platformAuditLog = defineTable({
   actorId: v.string(),
   actorName: v.string(),
@@ -48,7 +59,15 @@ export const platformAuditLog = defineTable({
   targetUserId: v.optional(v.string()),
   targetOrgId: v.optional(v.string()),
   payload: v.any(),
-}).index("by_actor", ["actorId"])
+  category: v.optional(v.string()),
+  searchText: v.optional(v.string()),
+})
+  .index("by_actor", ["actorId"])
+  .index("by_category", ["category"])
+  .searchIndex("search_text", {
+    searchField: "searchText",
+    filterFields: ["category"],
+  })
 
 // AI suggestion layer (ADR-0003): suggestions with provenance, separate from
 // confirmed values. status lifecycle: generating -> suggested -> confirmed |
