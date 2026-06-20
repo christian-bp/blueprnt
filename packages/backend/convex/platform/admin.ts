@@ -3,7 +3,11 @@ import { v } from "convex/values"
 import { components } from "../_generated/api"
 import { query } from "../_generated/server"
 import { onOrganizationCreate, onUserCreate } from "../accounts/mirrors"
-import { PLATFORM_AUDIT_EVENTS, logPlatformAudit } from "../lib/audit"
+import {
+  buildChanges,
+  PLATFORM_AUDIT_EVENTS,
+  logPlatformAudit,
+} from "../lib/audit"
 import { ERROR_CODES, appError } from "../lib/errors"
 import { platformMutation, platformQuery } from "../lib/functions"
 
@@ -412,8 +416,17 @@ export const updateOrganization = platformMutation({
       actorId: ctx.authUserId,
       type: PLATFORM_AUDIT_EVENTS.orgUpdated,
       targetOrgId: orgId,
-      // Field names only (no values), so no settings value lands in the log.
-      payload: { changed },
+      // Structured before->after diff for the settings fields. Name/slug old
+      // values live in the BA component and the manage UI does not send them,
+      // so they stay out of `changes` for now.
+      payload: {
+        changes: buildChanges(mirror, settingsPatch, [
+          "country",
+          "currency",
+          "language",
+          "industry",
+        ]),
+      },
     })
     return null
   },

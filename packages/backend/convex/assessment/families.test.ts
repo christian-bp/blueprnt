@@ -123,6 +123,10 @@ describe("role families", () => {
         )
         .collect()
       expect(audit).toHaveLength(1)
+      expect(audit[0]?.payload).toEqual({
+        familyId,
+        changes: { name: { from: "Tech", to: "Teknik" } },
+      })
     })
   })
 

@@ -369,7 +369,12 @@ describe("platform queries + updateOrganization", () => {
       ctx.db.query("platformAuditLog").collect()
     )
     const updated = plat.find((r) => r.type === "platform.orgUpdated")
-    expect(updated?.payload).toEqual({ changed: ["country", "currency"] })
+    expect(updated?.payload).toEqual({
+      changes: {
+        country: { from: null, to: "se" },
+        currency: { from: null, to: "SEK" },
+      },
+    })
 
     // Re-submitting the SAME values is a no-op: no second orgUpdated row.
     await asAdmin.mutation(api.platform.admin.updateOrganization, {
@@ -409,7 +414,9 @@ describe("platform queries + updateOrganization", () => {
     )
     const updates = plat.filter((r) => r.type === "platform.orgUpdated")
     expect(updates).toHaveLength(2)
-    expect(updates[1]?.payload).toEqual({ changed: ["currency"] })
+    expect(updates[1]?.payload).toEqual({
+      changes: { currency: { from: "SEK", to: "NOK" } },
+    })
   })
 
   it("skips the audit on an all-empty no-op update", async () => {

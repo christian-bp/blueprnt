@@ -48,6 +48,24 @@ export const PLATFORM_AUDIT_EVENTS = {
 export type PlatformAuditEvent =
   (typeof PLATFORM_AUDIT_EVENTS)[keyof typeof PLATFORM_AUDIT_EVENTS]
 
+// Builds a structured before->after diff for audit payloads. Only includes
+// fields whose value actually changed; undefined collapses to null so the
+// shape stays JSON-clean.
+export function buildChanges(
+  before: Record<string, unknown>,
+  after: Record<string, unknown>,
+  fields: readonly string[]
+): Record<string, { from: unknown; to: unknown }> {
+  const changes: Record<string, { from: unknown; to: unknown }> = {}
+  for (const field of fields) {
+    if (!(field in after)) continue
+    const from = before[field] ?? null
+    const to = after[field] ?? null
+    if (from !== to) changes[field] = { from, to }
+  }
+  return changes
+}
+
 // Called inside the same mutation transaction as the change it records.
 // Uses GenericMutationCtx<DataModel> so both MutationCtx (from _generated/server)
 // and trigger handler contexts (GenericMutationCtx<DataModel>) are assignable.

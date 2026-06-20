@@ -1,11 +1,50 @@
 import { describe, expect, it } from "vitest"
-import { formatAuditDetail } from "./audit-detail"
+import { formatAuditDetail, formatChanges } from "./audit-detail"
 
 const labels = {
   deletedRole: "Deleted role",
   deletedFamily: "Deleted family",
   deletedUser: "Deleted user",
 }
+
+// Stub resolver: upper-cases the field name so tests can tell labels apart from
+// raw field keys without depending on the i18n catalog.
+const fieldLabel = (f: string) => f.charAt(0).toUpperCase() + f.slice(1)
+
+describe("formatChanges", () => {
+  it("renders a real change as 'label: from -> to'", () => {
+    expect(
+      formatChanges({ country: { from: "se", to: "no" } }, fieldLabel)
+    ).toBe("Country: se → no")
+  })
+
+  it("renders a set (from null) as just 'label: to'", () => {
+    expect(
+      formatChanges({ country: { from: null, to: "se" } }, fieldLabel)
+    ).toBe("Country: se")
+  })
+
+  it("joins multiple entries with '; '", () => {
+    expect(
+      formatChanges(
+        {
+          country: { from: "se", to: "no" },
+          currency: { from: null, to: "SEK" },
+        },
+        fieldLabel
+      )
+    ).toBe("Country: se → no; Currency: SEK")
+  })
+
+  it("treats undefined like null on either side", () => {
+    expect(
+      formatChanges({ team: { from: undefined, to: "Core" } }, fieldLabel)
+    ).toBe("Team: Core")
+    expect(
+      formatChanges({ team: { from: "Core", to: undefined } }, fieldLabel)
+    ).toBe("Team: Core → ")
+  })
+})
 
 describe("formatAuditDetail", () => {
   it("resolves a role id to its title", () => {
@@ -20,10 +59,35 @@ describe("formatAuditDetail", () => {
     ).toBe("System Developer")
   })
 
+  it("renders role.updated as 'title: <changes>'", () => {
+    const names = { r1: "System Developer" }
+    expect(
+      formatAuditDetail(
+        "role.updated",
+        {
+          roleId: "r1",
+          changes: {
+            title: { from: "Dev", to: "Senior Dev" },
+            team: { from: "Core", to: "Platform" },
+          },
+        },
+        names,
+        labels,
+        fieldLabel
+      )
+    ).toBe("System Developer: Title: Dev → Senior Dev; Team: Core → Platform")
+  })
+
   it("falls back to the deleted-role label when the role id is unknown", () => {
     expect(
-      formatAuditDetail("role.updated", { roleId: "gone" }, {}, labels)
-    ).toBe("Deleted role")
+      formatAuditDetail(
+        "role.updated",
+        { roleId: "gone", changes: { title: { from: "a", to: "b" } } },
+        {},
+        labels,
+        fieldLabel
+      )
+    ).toBe("Deleted role: Title: a → b")
   })
 
   it("uses the family name from the payload", () => {
@@ -44,6 +108,22 @@ describe("formatAuditDetail", () => {
     ).toBe("Engineering")
   })
 
+  it("renders roleFamily.renamed as 'family: <changes>'", () => {
+    const names = { f1: "Engineering" }
+    expect(
+      formatAuditDetail(
+        "roleFamily.renamed",
+        {
+          familyId: "f1",
+          changes: { name: { from: "Eng", to: "Engineering" } },
+        },
+        names,
+        labels,
+        fieldLabel
+      )
+    ).toBe("Engineering: Name: Eng → Engineering")
+  })
+
   it("renders member.added as name (role)", () => {
     const names = { u1: "Jane Doe" }
     expect(
@@ -56,16 +136,20 @@ describe("formatAuditDetail", () => {
     ).toBe("Jane Doe (editor)")
   })
 
-  it("renders member.roleChanged as name: from -> to", () => {
+  it("renders member.roleChanged as 'name: <changes>'", () => {
     const names = { u1: "Jane Doe" }
     expect(
       formatAuditDetail(
         "member.roleChanged",
-        { memberUserId: "u1", from: "editor", to: "admin" },
+        {
+          memberUserId: "u1",
+          changes: { role: { from: "editor", to: "admin" } },
+        },
         names,
-        labels
+        labels,
+        fieldLabel
       )
-    ).toBe("Jane Doe: editor → admin")
+    ).toBe("Jane Doe: Role: editor → admin")
   })
 
   it("renders band.shift as title (expected -> computed)", () => {
@@ -80,15 +164,21 @@ describe("formatAuditDetail", () => {
     ).toBe("System Developer (3 → 2)")
   })
 
-  it("joins the changed fields for settingsUpdated", () => {
+  it("renders settingsUpdated changes", () => {
     expect(
       formatAuditDetail(
         "organization.settingsUpdated",
-        { changed: ["currency", "country"] },
+        {
+          changes: {
+            currency: { from: "SEK", to: "NOK" },
+            country: { from: null, to: "no" },
+          },
+        },
         {},
-        labels
+        labels,
+        fieldLabel
       )
-    ).toBe("currency, country")
+    ).toBe("Currency: SEK → NOK; Country: no")
   })
 
   it("falls back cleanly, dropping *Id and source", () => {

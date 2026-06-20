@@ -117,11 +117,20 @@ export function OrgAuditLogSection() {
                 </TableCell>
                 <TableCell>{actionLabel(row.type)}</TableCell>
                 <TableCell className="text-muted-foreground">
-                  {formatAuditDetail(row.type, row.payload, names, {
-                    deletedRole: t("details.deletedRole"),
-                    deletedFamily: t("details.deletedFamily"),
-                    deletedUser: t("details.deletedUser"),
-                  })}
+                  {formatAuditDetail(
+                    row.type,
+                    row.payload,
+                    names,
+                    {
+                      deletedRole: t("details.deletedRole"),
+                      deletedFamily: t("details.deletedFamily"),
+                      deletedUser: t("details.deletedUser"),
+                    },
+                    (f) => {
+                      const key = `fields.${f}` as Parameters<typeof t.has>[0]
+                      return t.has(key) ? t(key) : f
+                    }
+                  )}
                 </TableCell>
               </TableRow>
             ))}

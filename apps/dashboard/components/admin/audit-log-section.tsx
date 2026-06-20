@@ -17,6 +17,7 @@ import {
 } from "@workspace/ui/components/table"
 import { useQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
+import { formatChanges } from "@/lib/audit-detail"
 
 // Compose the human-readable target from the resolved user/org labels: user,
 // org, "user @ org" when both, or "" when neither.
@@ -45,8 +46,35 @@ function formatPayload(payload: unknown): string {
 
 export function AuditLogSection() {
   const t = useTranslations("dashboard.admin.auditLog")
+  const tFields = useTranslations("dashboard.auditLog")
   const format = useFormatter()
   const rows = useQuery(api.platform.admin.listAuditLog, {})
+
+  // Resolve a change field name to its localized label, falling back to the raw
+  // field name when no key exists.
+  function fieldLabel(field: string): string {
+    const key = `fields.${field}` as Parameters<typeof tFields.has>[0]
+    return tFields.has(key) ? tFields(key) : field
+  }
+
+  // Structured before->after diffs (e.g. platform.orgUpdated) render via
+  // formatChanges; everything else keeps the flat "key: value" rendering.
+  function detail(payload: unknown): string {
+    if (
+      payload !== null &&
+      typeof payload === "object" &&
+      "changes" in payload &&
+      (payload as { changes: unknown }).changes !== null &&
+      typeof (payload as { changes: unknown }).changes === "object"
+    ) {
+      return formatChanges(
+        (payload as { changes: Record<string, { from: unknown; to: unknown }> })
+          .changes,
+        fieldLabel
+      )
+    }
+    return formatPayload(payload)
+  }
 
   // Translate an event type to its label, falling back to the raw type when no
   // key exists (e.g. a future event added before its string). t.has guards the
@@ -107,7 +135,7 @@ export function AuditLogSection() {
                   {composeTarget(row.targetUser, row.targetOrg)}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {formatPayload(row.payload)}
+                  {detail(row.payload)}
                 </TableCell>
               </TableRow>
             ))}

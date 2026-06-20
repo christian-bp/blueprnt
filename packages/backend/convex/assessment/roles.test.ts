@@ -217,10 +217,16 @@ describe("updateRole", () => {
         .collect()
       expect(audit).toHaveLength(1)
       // updateRole iterates PROFILE_TEXT_FIELDS (purpose before
-      // responsibilities), so the audited field order is fixed.
+      // responsibilities), so the audited change order is fixed.
       expect(audit[0]?.payload).toEqual({
         roleId,
-        fields: ["purpose", "responsibilities"],
+        changes: {
+          purpose: {
+            from: "Builds the core product",
+            to: "Builds and ships the core product",
+          },
+          responsibilities: { from: "", to: "Implementation and reviews" },
+        },
       })
     })
 
@@ -360,7 +366,7 @@ describe("role family membership", () => {
         .collect()
       expect(updated.map((row) => row.payload)).toContainEqual({
         roleId,
-        fields: ["familyId"],
+        changes: { familyId: { from: salesId, to: null } },
       })
     })
 

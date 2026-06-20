@@ -167,8 +167,7 @@ describe("lifecycle audit triggers", () => {
       expect(rows[0].actorId).toBe("system")
       expect(rows[0].payload).toMatchObject({
         memberUserId: "ba_user_1",
-        from: "editor",
-        to: "admin",
+        changes: { role: { from: "editor", to: "admin" } },
       })
     })
   })

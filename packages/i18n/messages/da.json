@@ -93,6 +93,21 @@
         "deletedFamily": "Slettet familie",
         "deletedUser": "Slettet bruger"
       },
+      "fields": {
+        "title": "Titel",
+        "function": "Funktion",
+        "team": "Team",
+        "trackKey": "Spor",
+        "familyId": "Familie",
+        "country": "Land",
+        "currency": "Valuta",
+        "language": "Sprog",
+        "industry": "Branche",
+        "name": "Navn",
+        "slug": "Slug",
+        "role": "Rolle",
+        "status": "Status"
+      },
       "events": {
         "organizationCreated": "Organisation oprettet",
         "organizationSettingsUpdated": "Indstillinger opdateret",

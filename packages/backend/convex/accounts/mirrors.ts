@@ -2,7 +2,7 @@ import type { GenericMutationCtx } from "convex/server"
 import { v } from "convex/values"
 import type { DataModel } from "../_generated/dataModel"
 import { internalMutation } from "../_generated/server"
-import { AUDIT_EVENTS, logAudit } from "../lib/audit"
+import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
 
 type Ctx = GenericMutationCtx<DataModel>
 
@@ -227,7 +227,13 @@ export const seedOrganizationSettings = internalMutation({
         orgId,
         type: AUDIT_EVENTS.organizationSettingsUpdated,
         actorId,
-        payload: { changed: ["country", "currency", "language", "industry"] },
+        payload: {
+          changes: buildChanges(
+            row ?? {},
+            { country, currency, language, industry },
+            ["country", "currency", "language", "industry"]
+          ),
+        },
       })
     }
     if (stampCompletion) {
@@ -325,8 +331,7 @@ export async function onMemberUpdate(
     actorId: "system",
     payload: {
       memberUserId: newDoc.userId,
-      from: oldDoc.role,
-      to: newDoc.role,
+      changes: { role: { from: oldDoc.role, to: newDoc.role } },
     },
   })
 }

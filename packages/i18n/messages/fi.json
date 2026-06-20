@@ -93,6 +93,21 @@
         "deletedFamily": "Poistettu perhe",
         "deletedUser": "Poistettu käyttäjä"
       },
+      "fields": {
+        "title": "Otsikko",
+        "function": "Toiminto",
+        "team": "Tiimi",
+        "trackKey": "Ura",
+        "familyId": "Perhe",
+        "country": "Maa",
+        "currency": "Valuutta",
+        "language": "Kieli",
+        "industry": "Toimiala",
+        "name": "Nimi",
+        "slug": "Slug",
+        "role": "Rooli",
+        "status": "Tila"
+      },
       "events": {
         "organizationCreated": "Organisaatio luotu",
         "organizationSettingsUpdated": "Asetukset päivitetty",

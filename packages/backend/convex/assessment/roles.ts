@@ -3,7 +3,7 @@ import type { Doc, Id } from "../_generated/dataModel"
 import type { QueryCtx } from "../_generated/server"
 import { clampLocale } from "../evaluationModel/localize"
 import { trackKeyValidator } from "../evaluationModel/tables"
-import { AUDIT_EVENTS, logAudit } from "../lib/audit"
+import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
 import { familyNames, trackNames } from "./names"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
@@ -331,7 +331,10 @@ export const updateRole = orgMutation({
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.roleUpdated,
       actorId: ctx.authUserId,
-      payload: { roleId: args.roleId, fields: Object.keys(patch) },
+      payload: {
+        roleId: args.roleId,
+        changes: buildChanges(role, patch, Object.keys(patch)),
+      },
     })
     return null
   },

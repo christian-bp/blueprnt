@@ -93,6 +93,21 @@
         "deletedFamily": "Borttagen familj",
         "deletedUser": "Borttagen användare"
       },
+      "fields": {
+        "title": "Titel",
+        "function": "Funktion",
+        "team": "Team",
+        "trackKey": "Spår",
+        "familyId": "Familj",
+        "country": "Land",
+        "currency": "Valuta",
+        "language": "Språk",
+        "industry": "Bransch",
+        "name": "Namn",
+        "slug": "Slug",
+        "role": "Roll",
+        "status": "Status"
+      },
       "events": {
         "organizationCreated": "Organisation skapad",
         "organizationSettingsUpdated": "Inställningar uppdaterade",

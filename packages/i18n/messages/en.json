@@ -93,6 +93,21 @@
         "deletedFamily": "Deleted family",
         "deletedUser": "Deleted user"
       },
+      "fields": {
+        "title": "Title",
+        "function": "Function",
+        "team": "Team",
+        "trackKey": "Track",
+        "familyId": "Family",
+        "country": "Country",
+        "currency": "Currency",
+        "language": "Language",
+        "industry": "Industry",
+        "name": "Name",
+        "slug": "Slug",
+        "role": "Role",
+        "status": "Status"
+      },
       "events": {
         "organizationCreated": "Organization created",
         "organizationSettingsUpdated": "Settings updated",

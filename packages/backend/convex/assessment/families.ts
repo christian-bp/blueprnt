@@ -75,7 +75,10 @@ export const renameRoleFamily = orgMutation({
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.roleFamilyRenamed,
       actorId: ctx.authUserId,
-      payload: { familyId: args.familyId, name },
+      payload: {
+        familyId: args.familyId,
+        changes: { name: { from: family.name, to: name } },
+      },
     })
     return null
   },

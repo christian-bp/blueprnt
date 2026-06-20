@@ -1,7 +1,7 @@
 import { MIN_CRITERIA } from "@workspace/core"
 import { v } from "convex/values"
 import { internalQuery } from "../_generated/server"
-import { AUDIT_EVENTS, logAudit } from "../lib/audit"
+import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgQuery } from "../lib/functions"
 
@@ -60,7 +60,14 @@ export const updateOrganizationSettings = adminMutation({
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.organizationSettingsUpdated,
       actorId: ctx.authUserId,
-      payload: { changed: Object.keys(args) },
+      payload: {
+        changes: buildChanges(settings ?? {}, args, [
+          "country",
+          "currency",
+          "language",
+          "industry",
+        ]),
+      },
     })
     return null
   },
