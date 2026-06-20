@@ -367,6 +367,7 @@ export function OrgAuditLogSection() {
             onPrev={pager.goPrev}
             onNext={pager.goNext}
             onSelect={pager.goTo}
+            onLoadNext={pager.loadNext}
             previousLabel={t("previous")}
             nextLabel={t("next")}
           />

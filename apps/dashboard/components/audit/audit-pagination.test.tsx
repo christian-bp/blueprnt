@@ -30,11 +30,19 @@ describe("paginationItems", () => {
     expect(paginationItems(10, 12, false)).toEqual([1, "ellipsis", 10, 11, 12])
   })
 
-  it("appends a trailing ellipsis when more pages may exist", () => {
-    expect(paginationItems(0, 3, true)).toEqual([1, 2, 3, "ellipsis"])
-    // The windowing ellipsis before page 12 plus a further trailing ellipsis
-    // for the unknown not-yet-loaded pages.
-    expect(paginationItems(4, 12, true)).toEqual([
+  it("shows the next loadable page as a number when more pages may exist", () => {
+    // One loaded page with more to load: maxPage = 2, so "1 2" (no ellipsis,
+    // no standalone trailing ellipsis).
+    expect(paginationItems(0, 1, true)).toEqual([1, 2])
+    // No more to load: just the loaded page.
+    expect(paginationItems(0, 1, false)).toEqual([1])
+    // Three loaded pages with more to load, sitting on page 1: maxPage = 4.
+    // Window is page 1 and its neighbors (1, 2) plus maxPage (4); the 2->4 gap
+    // shows an ellipsis: 1 2 … 4.
+    expect(paginationItems(0, 3, true)).toEqual([1, 2, "ellipsis", 4])
+    // 11 loaded pages with more to load: maxPage = 12. Window around page 5:
+    // 1 … 4 5 6 … 12 (12 is the next loadable page, shown as a number).
+    expect(paginationItems(4, 11, true)).toEqual([
       1,
       "ellipsis",
       4,
@@ -42,7 +50,6 @@ describe("paginationItems", () => {
       6,
       "ellipsis",
       12,
-      "ellipsis",
     ])
   })
 

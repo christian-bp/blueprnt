@@ -11,21 +11,25 @@ import {
 } from "@workspace/ui/components/pagination"
 
 // Build the windowed list of 1-based page numbers (and ellipsis gaps) to render
-// for the current page. Always shows the first and the last loaded page, plus
-// the current page and its immediate neighbors; "ellipsis" marks a gap > 1
-// between consecutive shown pages. A trailing "ellipsis" is appended when more,
-// not-yet-loaded pages may exist (hasMore). Exported for testing.
+// for the current page. The window spans 1..maxPage, where maxPage is the last
+// loaded page plus one when more, not-yet-loaded cursor pages may exist
+// (hasMore): cursor pagination can only reveal one page ahead at a time, so the
+// extra number is the single next-loadable page. Always shows the first and the
+// maxPage, plus the current page and its immediate neighbors; "ellipsis" marks a
+// gap > 1 between consecutive shown pages (there is no standalone trailing
+// ellipsis). Exported for testing.
 export function paginationItems(
   current0: number,
   pageCount: number,
   hasMore: boolean
 ): Array<number | "ellipsis"> {
   const current = current0 + 1 // 1-based for display
+  const maxPage = pageCount + (hasMore ? 1 : 0)
   const shown = new Set<number>()
   shown.add(1)
-  shown.add(pageCount)
+  shown.add(maxPage)
   for (const page of [current - 1, current, current + 1]) {
-    if (page >= 1 && page <= pageCount) shown.add(page)
+    if (page >= 1 && page <= maxPage) shown.add(page)
   }
   const pages = Array.from(shown).sort((a, b) => a - b)
   const items: Array<number | "ellipsis"> = []
@@ -37,7 +41,6 @@ export function paginationItems(
     }
     items.push(page)
   }
-  if (hasMore) items.push("ellipsis")
   return items
 }
 
@@ -53,6 +56,7 @@ export function AuditPagination({
   onPrev,
   onNext,
   onSelect,
+  onLoadNext,
   previousLabel,
   nextLabel,
 }: {
@@ -64,6 +68,7 @@ export function AuditPagination({
   onPrev: () => void
   onNext: () => void
   onSelect: (page0: number) => void
+  onLoadNext: () => void
   previousLabel: string
   nextLabel: string
 }) {
@@ -91,8 +96,15 @@ export function AuditPagination({
               <PaginationLink
                 isActive={item - 1 === page}
                 aria-current={item - 1 === page ? "page" : undefined}
+                // A number above pageCount is the single next-loadable cursor
+                // page: clicking it loads one more page and jumps there. Loaded
+                // numbers jump directly via onSelect.
                 onClick={
-                  item - 1 === page ? undefined : () => onSelect(item - 1)
+                  item - 1 === page
+                    ? undefined
+                    : item > pageCount
+                      ? onLoadNext
+                      : () => onSelect(item - 1)
                 }
                 className={
                   item - 1 === page ? "pointer-events-none" : "cursor-pointer"
