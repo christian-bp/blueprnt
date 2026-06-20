@@ -1,0 +1,19 @@
+docs/superpowers/specs/2026-06-20-audit-api-ergonomics.md
+  s_4d14ac8ce42bf2::t_cd0e3c36aa5a7f 1-81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "ca2fa55132efdbbb51d2386b36e4d0078190517d",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
