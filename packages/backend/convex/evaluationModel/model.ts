@@ -1,6 +1,13 @@
 import { v } from "convex/values"
 import { internalMutation, type MutationCtx } from "../_generated/server"
-import { AUDIT_EVENTS, logAudit } from "../lib/audit"
+import {
+  AUDIT_EVENTS,
+  buildCreateChanges,
+  buildDeleteChanges,
+  criterionCreateItem,
+  criterionDeleteItem,
+  logAudit,
+} from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgQuery } from "../lib/functions"
 import {
@@ -61,15 +68,20 @@ export const createModelFromTemplate = adminMutation({
       bandThresholds: defaultBandThresholds(),
     })
 
+    // Capture each inserted criterion as a bulk create-snapshot item; the
+    // criterionId and field values come from the same insert loop, so the
+    // audit `items` mirror exactly what was written.
+    const criteriaSnapshots = []
     for (const [index, key] of CRITERION_KEYS.entries()) {
       const criterion = content.criteria[key]
-      await ctx.db.insert("criteria", {
+      const anchors = criterion.anchors.map((text, level) => ({ level, text }))
+      const criterionId = await ctx.db.insert("criteria", {
         orgId: ctx.orgId,
         modelId,
         name: criterion.name,
         description: criterion.description,
         helpText: criterion.helpText,
-        anchors: criterion.anchors.map((text, level) => ({ level, text })),
+        anchors,
         // The standard template key keeps this row pristine-localizable in getModel.
         // E2 editing MUST clear it when any text field changes.
         templateKey: key,
@@ -77,13 +89,42 @@ export const createModelFromTemplate = adminMutation({
         order: index + 1,
         isCustom: false,
       })
+      criteriaSnapshots.push(
+        criterionCreateItem({
+          criterionId,
+          name: criterion.name,
+          description: criterion.description,
+          helpText: criterion.helpText,
+          anchors,
+          weightPoints: DEFAULT_WEIGHT_POINTS[key],
+          order: index + 1,
+          isCustom: false,
+          templateKey: key,
+        })
+      )
     }
 
     await logAudit(ctx, {
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.modelCreated,
       actorId: ctx.authUserId,
-      payload: { modelId, templateKey: STANDARD_TEMPLATE_KEY },
+      payload: {
+        modelId,
+        source: "template",
+        templateKey: STANDARD_TEMPLATE_KEY,
+        locale,
+        name: content.modelName,
+        changes: buildCreateChanges(
+          {
+            name: content.modelName,
+            templateKey: STANDARD_TEMPLATE_KEY,
+            bandThresholds: defaultBandThresholds(),
+          },
+          ["name", "templateKey", "bandThresholds"]
+        ),
+        count: CRITERION_KEYS.length,
+        items: criteriaSnapshots,
+      },
     })
     return modelId
   },
@@ -111,7 +152,8 @@ export const seedStandardModel = internalMutation({
       .first()
     if (existing !== null) return null
 
-    const content = templateContent(clampLocale(locale))
+    const seedLocale = clampLocale(locale)
+    const content = templateContent(seedLocale)
     const modelId = await ctx.db.insert("models", {
       orgId,
       name: content.modelName,
@@ -119,27 +161,60 @@ export const seedStandardModel = internalMutation({
       bandThresholds: defaultBandThresholds(),
     })
 
+    // Same per-criterion create-snapshot building as createModelFromTemplate.
+    const criteriaSnapshots = []
     for (const [index, key] of CRITERION_KEYS.entries()) {
       const criterion = content.criteria[key]
-      await ctx.db.insert("criteria", {
+      const anchors = criterion.anchors.map((text, level) => ({ level, text }))
+      const criterionId = await ctx.db.insert("criteria", {
         orgId,
         modelId,
         name: criterion.name,
         description: criterion.description,
         helpText: criterion.helpText,
-        anchors: criterion.anchors.map((text, level) => ({ level, text })),
+        anchors,
         templateKey: key,
         weightPoints: DEFAULT_WEIGHT_POINTS[key],
         order: index + 1,
         isCustom: false,
       })
+      criteriaSnapshots.push(
+        criterionCreateItem({
+          criterionId,
+          name: criterion.name,
+          description: criterion.description,
+          helpText: criterion.helpText,
+          anchors,
+          weightPoints: DEFAULT_WEIGHT_POINTS[key],
+          order: index + 1,
+          isCustom: false,
+          templateKey: key,
+        })
+      )
     }
 
     await logAudit(ctx, {
       orgId,
       type: AUDIT_EVENTS.modelCreated,
       actorId,
-      payload: { modelId, templateKey: STANDARD_TEMPLATE_KEY },
+      payload: {
+        modelId,
+        source: "template",
+        seeded: true,
+        templateKey: STANDARD_TEMPLATE_KEY,
+        locale: seedLocale,
+        name: content.modelName,
+        changes: buildCreateChanges(
+          {
+            name: content.modelName,
+            templateKey: STANDARD_TEMPLATE_KEY,
+            bandThresholds: defaultBandThresholds(),
+          },
+          ["name", "templateKey", "bandThresholds"]
+        ),
+        count: CRITERION_KEYS.length,
+        items: criteriaSnapshots,
+      },
     })
     return modelId
   },
@@ -160,7 +235,18 @@ export const createEmptyModel = adminMutation({
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.modelCreated,
       actorId: ctx.authUserId,
-      payload: { modelId, templateKey: null },
+      payload: {
+        modelId,
+        source: "scratch",
+        templateKey: null,
+        name: name.trim(),
+        changes: buildCreateChanges(
+          { name: name.trim(), bandThresholds: defaultBandThresholds() },
+          ["name", "bandThresholds"]
+        ),
+        count: 0,
+        items: [],
+      },
     })
     return modelId
   },
@@ -204,33 +290,55 @@ export const discardModel = adminMutation({
       .query("criteria")
       .withIndex("by_model", (q) => q.eq("modelId", model._id))
       .collect()
+
+    // Drop the org's model-scoped AI suggestions so a stale draft cannot be
+    // confirmed against a new model. Suggestion counts are tiny, so a by_org
+    // collect with an in-code filter is fine. Capture the dropped set BEFORE
+    // the delete loop so the audit reads in-memory docs.
+    const suggestions = await ctx.db
+      .query("suggestions")
+      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
+      .collect()
+    const droppedSuggestions = suggestions.filter(
+      (suggestion) =>
+        suggestion.target.kind === "model.draft" ||
+        suggestion.target.kind === "model.weightReview"
+    )
+
     for (const criterion of criteria) {
       await ctx.db.delete(criterion._id)
     }
 
     await ctx.db.delete(model._id)
 
-    // Drop the org's model-scoped AI suggestions so a stale draft cannot be
-    // confirmed against a new model. Suggestion counts are tiny, so a by_org
-    // collect with an in-code filter is fine.
-    const suggestions = await ctx.db
-      .query("suggestions")
-      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
-      .collect()
-    for (const suggestion of suggestions) {
-      if (
-        suggestion.target.kind === "model.draft" ||
-        suggestion.target.kind === "model.weightReview"
-      ) {
-        await ctx.db.delete(suggestion._id)
-      }
+    for (const suggestion of droppedSuggestions) {
+      await ctx.db.delete(suggestion._id)
     }
 
     await logAudit(ctx, {
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.modelDiscarded,
       actorId: ctx.authUserId,
-      payload: { modelId: model._id, templateKey: model.templateKey ?? null },
+      payload: {
+        modelId: model._id,
+        name: model.name,
+        // The discarded model as a full delete-snapshot (all fields to:null).
+        changes: buildDeleteChanges(model, [
+          "name",
+          "templateKey",
+          "bandThresholds",
+        ]),
+        // Every removed criterion as a delete-snapshot item (incl. templateKey).
+        count: criteria.length,
+        items: criteria.map(criterionDeleteItem),
+        // Dropped suggestions: id + kind + status only (never suggestedValue).
+        suggestionCount: droppedSuggestions.length,
+        suggestions: droppedSuggestions.map((suggestion) => ({
+          suggestionId: suggestion._id,
+          kind: suggestion.target.kind,
+          status: suggestion.status,
+        })),
+      },
     })
     return null
   },

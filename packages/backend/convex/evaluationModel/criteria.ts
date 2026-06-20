@@ -8,7 +8,14 @@ import { v } from "convex/values"
 import type { Id } from "../_generated/dataModel"
 import { repairDraftWeights } from "../ai/weights"
 import { deriveResults, logBandShifts } from "../assessment/compute"
-import { AUDIT_EVENTS, logAudit } from "../lib/audit"
+import {
+  anchorDiff,
+  AUDIT_EVENTS,
+  buildChanges,
+  buildCreateChanges,
+  buildDeleteChanges,
+  logAudit,
+} from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation } from "../lib/functions"
 
@@ -67,12 +74,39 @@ export const addCriterion = adminMutation({
       actorId: ctx.authUserId,
       before: before.results,
       after: after.results,
+      cause: { event: AUDIT_EVENTS.modelUpdated, criterionId },
     })
     await logAudit(ctx, {
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.modelUpdated,
       actorId: ctx.authUserId,
-      payload: { change: "criterion.added", criterionId },
+      payload: {
+        change: "criterion.added",
+        criterionId,
+        modelId: model._id,
+        // A freshly created criterion: every field is a from:null -> to:value
+        // create-change, including the anchors array and the neutral weight.
+        changes: buildCreateChanges(
+          {
+            name: args.name.trim(),
+            description: args.description,
+            helpText: args.helpText,
+            anchors: args.anchors.map((text, level) => ({ level, text })),
+            weightPoints: NEUTRAL_WEIGHT_POINTS,
+            order: maxOrder + 1,
+            isCustom: true,
+          },
+          [
+            "name",
+            "description",
+            "helpText",
+            "anchors",
+            "weightPoints",
+            "order",
+            "isCustom",
+          ]
+        ),
+      },
     })
     return criterionId
   },
@@ -102,18 +136,42 @@ export const updateCriterion = adminMutation({
     if (criterion === null || criterion.orgId !== ctx.orgId) {
       throw appError(ERROR_CODES.notFound)
     }
+    const newAnchors = args.anchors.map((text, level) => ({ level, text }))
+    // `criterion` is the pre-patch in-memory doc: Convex patch does not mutate
+    // the already-read object, so it is safe to diff against the new values.
     await ctx.db.patch(args.criterionId, {
       name: args.name.trim(),
       description: args.description,
       helpText: args.helpText,
-      anchors: args.anchors.map((text, level) => ({ level, text })),
+      anchors: newAnchors,
       templateKey: undefined,
     })
     await logAudit(ctx, {
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.modelUpdated,
       actorId: ctx.authUserId,
-      payload: { change: "criterion.updated", criterionId: args.criterionId },
+      payload: {
+        change: "criterion.updated",
+        criterionId: args.criterionId,
+        modelId: criterion.modelId,
+        // Only changed text fields are recorded. `templateKey: undefined` in
+        // `after` makes buildChanges emit key -> null when a custom edit
+        // detaches a template-seeded criterion; anchorDiff adds the anchors
+        // entry only when the level-ordered texts actually differ.
+        changes: {
+          ...buildChanges(
+            criterion,
+            {
+              name: args.name.trim(),
+              description: args.description,
+              helpText: args.helpText,
+              templateKey: undefined,
+            },
+            ["name", "description", "helpText", "templateKey"]
+          ),
+          ...anchorDiff(criterion.anchors, newAnchors),
+        },
+      },
     })
     return null
   },
@@ -183,6 +241,7 @@ export const rebalanceWeights = adminMutation({
       actorId: ctx.authUserId,
       before: before.results,
       after: after.results,
+      cause: { event: AUDIT_EVENTS.modelUpdated, entityId: model._id },
     })
     await logAudit(ctx, {
       orgId: ctx.orgId,
@@ -190,10 +249,21 @@ export const rebalanceWeights = adminMutation({
       actorId: ctx.authUserId,
       payload: {
         change: "weights.rebalanced",
-        changes: changed.map((criterion) => ({
+        modelId: model._id,
+        budget: criteria.length * 3,
+        count: changed.length,
+        // Bulk shape: one item per criterion whose weight actually moved. The
+        // `from` is the in-memory pre-patch weightPoints (the patch loop does
+        // not mutate the already-read docs); the `to` is the new allocation.
+        items: changed.map((criterion) => ({
           criterionId: criterion._id,
-          from: criterion.weightPoints,
-          to: pointsById.get(criterion._id as string),
+          label: criterion.name,
+          changes: {
+            weightPoints: {
+              from: criterion.weightPoints,
+              to: pointsById.get(criterion._id as string),
+            },
+          },
         })),
       },
     })
@@ -263,10 +333,10 @@ export const removeCriterion = adminMutation({
     const repaired = repairDraftWeights(
       remaining.map((row) => row.weightPoints)
     )
-    const rebalanced: {
+    const rebalancedSurvivors: {
       criterionId: Id<"criteria">
-      from: number
-      to: number
+      label: string
+      changes: { weightPoints: { from: number; to: number } }
     }[] = []
     for (const [index, row] of remaining.entries()) {
       const weightPoints = repaired[index]
@@ -274,10 +344,12 @@ export const removeCriterion = adminMutation({
         continue
       }
       await ctx.db.patch(row._id, { weightPoints })
-      rebalanced.push({
+      // `row` is the in-memory pre-patch survivor: `row.weightPoints` is the
+      // repaired criterion's `from`, `weightPoints` the repaired `to`.
+      rebalancedSurvivors.push({
         criterionId: row._id,
-        from: row.weightPoints,
-        to: weightPoints,
+        label: row.name,
+        changes: { weightPoints: { from: row.weightPoints, to: weightPoints } },
       })
     }
     const after = await deriveResults(ctx, ctx.orgId)
@@ -286,12 +358,36 @@ export const removeCriterion = adminMutation({
       actorId: ctx.authUserId,
       before: before.results,
       after: after.results,
+      cause: { event: AUDIT_EVENTS.modelUpdated, criterionId },
     })
     await logAudit(ctx, {
       orgId: ctx.orgId,
       type: AUDIT_EVENTS.modelUpdated,
       actorId: ctx.authUserId,
-      payload: { change: "criterion.removed", criterionId, rebalanced },
+      payload: {
+        change: "criterion.removed",
+        modelId: criterion.modelId,
+        // Ratings are COUNT-ONLY: never embed a rating value or notes anywhere
+        // in the payload (no person/role-rating data on the model trail).
+        deletedRatingCount: ratings.length,
+        // The budget shrinks by 3 (one criterion fewer).
+        budget: { from: (remaining.length + 1) * 3, to: remaining.length * 3 },
+        // The removed criterion as a full delete-snapshot (all fields to:null),
+        // `criterion` read before the delete.
+        changes: buildDeleteChanges(criterion, [
+          "name",
+          "description",
+          "helpText",
+          "anchors",
+          "weightPoints",
+          "order",
+          "isCustom",
+          "templateKey",
+        ]),
+        // Survivors whose weight was repaired onto the shrunken budget.
+        count: rebalancedSurvivors.length,
+        items: rebalancedSurvivors,
+      },
     })
     return null
   },

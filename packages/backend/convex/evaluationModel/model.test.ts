@@ -237,7 +237,12 @@ describe("discardModel", () => {
         )
         .collect()
       expect(audit).toHaveLength(1)
-      expect(audit[0]?.payload.templateKey).toBe(STANDARD_TEMPLATE_KEY)
+      // templateKey is now captured in the delete-snapshot changes (from:value
+      // -> to:null), not as a top-level scalar.
+      expect(
+        (audit[0]?.payload as { changes: { templateKey?: unknown } }).changes
+          .templateKey
+      ).toEqual({ from: STANDARD_TEMPLATE_KEY, to: null })
     })
   })
 
@@ -522,5 +527,175 @@ describe("evaluationModel/model.seedStandardModel", () => {
       // clampLocale("xx") resolves to "en", so the content matches the en seed.
       expect(unsupported).toEqual(english)
     })
+  })
+})
+
+// Collects every scalar leaf anywhere in a value tree, so a test can assert
+// that a forbidden value (e.g. a suggestion's suggestedValue) never leaks.
+function allScalars(value: unknown, out: unknown[] = []): unknown[] {
+  if (value === null || value === undefined) return out
+  if (typeof value === "object") {
+    for (const child of Object.values(value as Record<string, unknown>)) {
+      allScalars(child, out)
+    }
+  } else {
+    out.push(value)
+  }
+  return out
+}
+
+describe("model.created / model.discarded audit payloads (before/after)", () => {
+  async function modelCreatedPayload(
+    t: ReturnType<typeof initConvexTest>,
+    orgId: string
+  ) {
+    return await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.created")
+        )
+        .collect()
+      return rows[0]?.payload as Record<string, unknown> | undefined
+    })
+  }
+
+  it("model.created (template) captures model create-changes and 9 criteria items", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedReadyOrganization(t)
+    await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
+      orgId,
+    })
+    const payload = await modelCreatedPayload(t, orgId)
+    expect(payload?.source).toBe("template")
+    expect(payload?.templateKey).toBe(STANDARD_TEMPLATE_KEY)
+    expect(payload?.seeded).toBeUndefined()
+    const changes = payload?.changes as Record<
+      string,
+      { from: unknown; to: unknown }
+    >
+    expect(changes.name).toEqual({ from: null, to: payload?.name })
+    expect(changes.templateKey).toEqual({
+      from: null,
+      to: STANDARD_TEMPLATE_KEY,
+    })
+    expect(changes.bandThresholds.from).toBeNull()
+    // count == criteria count == items length, each with a label + create-changes.
+    expect(payload?.count).toBe(9)
+    const items = payload?.items as Array<{
+      criterionId: string
+      label: string
+      changes: Record<string, { from: unknown; to: unknown }>
+    }>
+    expect(items).toHaveLength(9)
+    for (const item of items) {
+      expect(item.criterionId).toBeDefined()
+      expect(item.label).toBeTypeOf("string")
+      // Create-snapshot: name comes in as from:null -> to:label.
+      expect(item.changes.name).toEqual({ from: null, to: item.label })
+      expect(item.changes.weightPoints.from).toBeNull()
+    }
+  })
+
+  it("model.created (seed) carries seeded:true and the clamped locale", async () => {
+    const t = initConvexTest()
+    await t.mutation(internal.evaluationModel.model.seedStandardModel, {
+      orgId: "org_seed_payload",
+      locale: "xx",
+      actorId: "ba_user_founder",
+    })
+    const payload = await modelCreatedPayload(t, "org_seed_payload")
+    expect(payload?.source).toBe("template")
+    expect(payload?.seeded).toBe(true)
+    // clampLocale("xx") -> "en".
+    expect(payload?.locale).toBe("en")
+    expect(payload?.count).toBe(9)
+    expect((payload?.items as unknown[]).length).toBe(9)
+  })
+
+  it("model.created (scratch) has zero items and a 2-field create-change", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedReadyOrganization(t)
+    await asAdmin.mutation(api.evaluationModel.model.createEmptyModel, {
+      orgId,
+      name: "  Vår modell  ",
+    })
+    const payload = await modelCreatedPayload(t, orgId)
+    expect(payload?.source).toBe("scratch")
+    expect(payload?.templateKey).toBeNull()
+    expect(payload?.name).toBe("Vår modell")
+    const changes = payload?.changes as Record<
+      string,
+      { from: unknown; to: unknown }
+    >
+    expect(changes.name).toEqual({ from: null, to: "Vår modell" })
+    expect(changes.bandThresholds.from).toBeNull()
+    expect(changes.templateKey).toBeUndefined()
+    expect(payload?.count).toBe(0)
+    expect(payload?.items).toEqual([])
+  })
+
+  it("model.discarded records delete-changes, criteria items, and id-only suggestions", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedReadyOrganization(t)
+    const modelId = await asAdmin.mutation(
+      api.evaluationModel.model.createModelFromTemplate,
+      { orgId }
+    )
+    await t.run(async (ctx) => {
+      await ctx.db.insert("suggestions", {
+        orgId,
+        target: { kind: "model.draft", modelId },
+        // A non-trivial suggestedValue that must NEVER reach the payload.
+        suggestedValue: { secret: "do-not-leak" },
+        source: "ai",
+        status: "suggested",
+      })
+    })
+    await asAdmin.mutation(api.evaluationModel.model.discardModel, { orgId })
+    const payload = await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.discarded")
+        )
+        .collect()
+      return rows[0]?.payload as Record<string, unknown> | undefined
+    })
+    // Model delete-snapshot: every field collapses to:null, incl. templateKey.
+    const changes = payload?.changes as Record<
+      string,
+      { from: unknown; to: unknown }
+    >
+    for (const field of ["name", "templateKey", "bandThresholds"]) {
+      expect(changes[field]).toBeDefined()
+      expect(changes[field]?.to).toBeNull()
+    }
+    // Criteria items: full delete-changes incl. templateKey, all to:null.
+    expect(payload?.count).toBe(9)
+    const items = payload?.items as Array<{
+      criterionId: string
+      label: string
+      changes: Record<string, { from: unknown; to: unknown }>
+    }>
+    expect(items).toHaveLength(9)
+    for (const item of items) {
+      expect(item.label).toBeTypeOf("string")
+      expect(item.changes.templateKey).toBeDefined()
+      expect(item.changes.templateKey.to).toBeNull()
+      expect(item.changes.name.to).toBeNull()
+    }
+    // Suggestions: id + kind + status only, never the suggestedValue.
+    const suggestions = payload?.suggestions as Array<{
+      suggestionId: string
+      kind: string
+      status: string
+    }>
+    expect(suggestions).toHaveLength(1)
+    expect(suggestions[0]?.kind).toBe("model.draft")
+    expect(suggestions[0]?.status).toBe("suggested")
+    expect(suggestions[0]?.suggestionId).toBeDefined()
+    // The secret suggestedValue must not appear anywhere in the payload.
+    expect(allScalars(payload)).not.toContain("do-not-leak")
   })
 })

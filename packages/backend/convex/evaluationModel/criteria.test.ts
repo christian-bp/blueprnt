@@ -177,9 +177,28 @@ describe("rebalanceWeights", () => {
           "weights.rebalanced"
       )
       expect(rebalanceRow).toBeDefined()
-      const changes = (rebalanceRow?.payload as { changes: unknown[] }).changes
-      expect(changes).toContainEqual({ criterionId: a, from: 3, to: 4 })
-      expect(changes).toContainEqual({ criterionId: b, from: 3, to: 2 })
+      const payload = rebalanceRow?.payload as {
+        budget: number
+        count: number
+        items: Array<{
+          criterionId: string
+          label: string
+          changes: { weightPoints: { from: number; to: number } }
+        }>
+      }
+      // Bulk items: one per moved criterion, with label + weightPoints from/to.
+      expect(payload.budget).toBe(6)
+      expect(payload.count).toBe(2)
+      expect(payload.items).toContainEqual({
+        criterionId: a,
+        label: "A",
+        changes: { weightPoints: { from: 3, to: 4 } },
+      })
+      expect(payload.items).toContainEqual({
+        criterionId: b,
+        label: "B",
+        changes: { weightPoints: { from: 3, to: 2 } },
+      })
     })
   })
 
@@ -490,11 +509,27 @@ describe("model edits shift bands live", () => {
           "criterion.removed"
       )
       expect(removal).toBeDefined()
+      const removalPayload = removal?.payload as {
+        count: number
+        items: Array<{
+          criterionId: string
+          label: string
+          changes: { weightPoints: { from: number; to: number } }
+        }>
+      }
+      // Survivor bulk items: repaired weightPoints from/to, in repair order.
+      expect(removalPayload.count).toBe(2)
       expect(
-        (removal?.payload as { rebalanced: unknown[] }).rebalanced
+        removalPayload.items.map((item) => ({
+          criterionId: item.criterionId,
+          weightPoints: item.changes.weightPoints,
+        }))
       ).toEqual([
-        { criterionId: financial.criterionId, from: 2, to: 3 },
-        { criterionId: formal.criterionId, from: 1, to: 2 },
+        {
+          criterionId: financial.criterionId,
+          weightPoints: { from: 2, to: 3 },
+        },
+        { criterionId: formal.criterionId, weightPoints: { from: 1, to: 2 } },
       ])
     })
   })
@@ -671,5 +706,349 @@ describe("updateCriterion", () => {
         anchors: VALID_ANCHORS.slice(0, 5),
       })
     ).rejects.toThrow(/errors.invalidInput/)
+  })
+})
+
+// Collects every object key anywhere in a value tree. Used to assert that no
+// rating-shaped key (value/motivation/notes) ever leaks into a criterion audit
+// payload: ratings are count-only on the model trail.
+function allKeys(value: unknown, out: string[] = []): string[] {
+  if (value === null || typeof value !== "object") return out
+  for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+    out.push(key)
+    allKeys(child, out)
+  }
+  return out
+}
+
+describe("criteria audit payloads (before/after)", () => {
+  async function latestModelUpdated(
+    t: ReturnType<typeof initConvexTest>,
+    orgId: string,
+    change: string
+  ) {
+    return await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "model.updated")
+        )
+        .collect()
+      const matching = rows.filter(
+        (row) => (row.payload as Record<string, unknown>).change === change
+      )
+      return matching[matching.length - 1]?.payload as
+        | Record<string, unknown>
+        | undefined
+    })
+  }
+
+  it("criterion.added records full create-changes incl. anchors and weightPoints", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedScratchModel(t)
+    const criterionId = await asAdmin.mutation(
+      api.evaluationModel.criteria.addCriterion,
+      {
+        orgId,
+        name: "  Komplexitet  ",
+        description: "Hur svåra problem rollen hanterar.",
+        helpText: "Bedöm mot ankartexterna.",
+        anchors: VALID_ANCHORS,
+      }
+    )
+    const payload = await latestModelUpdated(t, orgId, "criterion.added")
+    expect(payload?.criterionId).toBe(criterionId)
+    expect(payload?.modelId).toBeDefined()
+    const changes = payload?.changes as Record<
+      string,
+      { from: unknown; to: unknown }
+    >
+    expect(changes.name).toEqual({ from: null, to: "Komplexitet" })
+    expect(changes.description).toEqual({
+      from: null,
+      to: "Hur svåra problem rollen hanterar.",
+    })
+    expect(changes.helpText).toEqual({
+      from: null,
+      to: "Bedöm mot ankartexterna.",
+    })
+    expect(changes.weightPoints).toEqual({ from: null, to: 3 })
+    expect(changes.order).toEqual({ from: null, to: 1 })
+    expect(changes.isCustom).toEqual({ from: null, to: true })
+    // The anchors array is captured level-ordered with from:null.
+    expect(changes.anchors).toEqual({
+      from: null,
+      to: VALID_ANCHORS.map((text, level) => ({ level, text })),
+    })
+  })
+
+  it("criterion.updated records only changed text fields and clears templateKey", async () => {
+    const t = initConvexTest()
+    // A template-seeded criterion: editing one text field detaches the key.
+    const { orgId, userId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "hr-upd@acme.se", name: "HR", role: "admin" }
+    )
+    await t.run(async (ctx) => {
+      await ctx.db.insert("organizations", {
+        orgId,
+        country: "se",
+        currency: "SEK",
+        language: "sv",
+        industry: "itTelecom",
+      })
+    })
+    const asAdmin = t.withIdentity({ subject: userId })
+    await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
+      orgId,
+    })
+    const model = await asAdmin.query(api.evaluationModel.model.getModel, {
+      orgId,
+      locale: "sv",
+    })
+    const target = model?.criteria[0]
+    if (target === undefined) throw new Error("seed")
+    // Read the stored anchors so we can edit the name only, keeping anchors
+    // unchanged (anchorDiff should NOT emit an entry then).
+    const storedAnchors = await t.run(async (ctx) => {
+      const row = (await ctx.db.get(target.criterionId)) as Doc<"criteria">
+      return [...row.anchors]
+        .sort((a, b) => a.level - b.level)
+        .map((anchor) => anchor.text)
+    })
+
+    await asAdmin.mutation(api.evaluationModel.criteria.updateCriterion, {
+      orgId,
+      criterionId: target.criterionId,
+      name: "Anpassad",
+      description: target.description,
+      helpText: target.helpText,
+      anchors: storedAnchors,
+    })
+    const payload = await latestModelUpdated(t, orgId, "criterion.updated")
+    const changes = payload?.changes as Record<
+      string,
+      { from: unknown; to: unknown }
+    >
+    // Only the name moved; description/helpText unchanged -> omitted.
+    expect(changes.name).toEqual({ from: target.name, to: "Anpassad" })
+    expect(changes.description).toBeUndefined()
+    expect(changes.helpText).toBeUndefined()
+    // templateKey was set on the template row and is cleared -> key -> null.
+    expect(changes.templateKey).toEqual({
+      from: "scope",
+      to: null,
+    })
+    // Anchors did not change -> no anchors entry.
+    expect(changes.anchors).toBeUndefined()
+  })
+
+  it("criterion.updated records an anchors entry only when the texts differ", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedScratchModel(t)
+    const criterionId = await asAdmin.mutation(
+      api.evaluationModel.criteria.addCriterion,
+      addArgs(orgId, "Custom")
+    )
+    const changedAnchors = ["b0", "b1", "b2", "b3", "b4", "b5"]
+    await asAdmin.mutation(api.evaluationModel.criteria.updateCriterion, {
+      orgId,
+      criterionId,
+      name: "Custom",
+      description: "d",
+      helpText: "h",
+      anchors: changedAnchors,
+    })
+    const payload = await latestModelUpdated(t, orgId, "criterion.updated")
+    const changes = payload?.changes as Record<
+      string,
+      { from: unknown; to: unknown }
+    >
+    // Name/description/helpText unchanged -> omitted; only anchors moved.
+    expect(changes.name).toBeUndefined()
+    expect(changes.anchors).toEqual({
+      from: VALID_ANCHORS.map((text, level) => ({ level, text })),
+      to: changedAnchors.map((text, level) => ({ level, text })),
+    })
+  })
+
+  it("weights.rebalanced records bulk items, budget, and count", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedScratchModel(t)
+    const a = await asAdmin.mutation(
+      api.evaluationModel.criteria.addCriterion,
+      addArgs(orgId, "Alpha")
+    )
+    const b = await asAdmin.mutation(
+      api.evaluationModel.criteria.addCriterion,
+      addArgs(orgId, "Beta")
+    )
+    await asAdmin.mutation(api.evaluationModel.criteria.rebalanceWeights, {
+      orgId,
+      allocations: [
+        { criterionId: a, weightPoints: 5 },
+        { criterionId: b, weightPoints: 1 },
+      ],
+    })
+    const payload = await latestModelUpdated(t, orgId, "weights.rebalanced")
+    expect(payload?.budget).toBe(6)
+    expect(payload?.count).toBe(2)
+    const items = payload?.items as Array<{
+      criterionId: string
+      label: string
+      changes: { weightPoints: { from: number; to: number } }
+    }>
+    expect(items).toContainEqual({
+      criterionId: a,
+      label: "Alpha",
+      changes: { weightPoints: { from: 3, to: 5 } },
+    })
+    expect(items).toContainEqual({
+      criterionId: b,
+      label: "Beta",
+      changes: { weightPoints: { from: 3, to: 1 } },
+    })
+  })
+
+  it("criterion.removed records delete-changes, budget, survivors, and counts ratings only", async () => {
+    const t = initConvexTest()
+    // A rated template org so the removed criterion has ratings; assert the
+    // count is captured but no rating value leaks.
+    const { orgId, asAdmin, model } = await seedRatedTemplateOrganization(
+      t,
+      (index) => (index === 0 ? 4 : 3)
+    )
+    const scope = model.criteria[0]
+    if (scope === undefined) throw new Error("seed")
+    await asAdmin.mutation(api.evaluationModel.criteria.removeCriterion, {
+      orgId,
+      criterionId: scope.criterionId,
+    })
+    const payload = await latestModelUpdated(t, orgId, "criterion.removed")
+    expect(payload?.modelId).toBeDefined()
+    // One role was rated on the removed criterion: count present, value absent.
+    expect(payload?.deletedRatingCount).toBe(1)
+    // Budget shrinks from 9*3 to 8*3.
+    expect(payload?.budget).toEqual({ from: 27, to: 24 })
+    // Delete-snapshot: every field collapses to:null.
+    const changes = payload?.changes as Record<
+      string,
+      { from: unknown; to: unknown }
+    >
+    for (const field of [
+      "name",
+      "description",
+      "helpText",
+      "anchors",
+      "weightPoints",
+      "order",
+      "isCustom",
+      "templateKey",
+    ]) {
+      expect(changes[field]).toBeDefined()
+      expect(changes[field]?.to).toBeNull()
+    }
+    // Survivor bulk items repaired onto the shrunken budget.
+    const items = payload?.items as Array<{
+      criterionId: string
+      label: string
+      changes: { weightPoints: { from: number; to: number } }
+    }>
+    expect(payload?.count).toBe(items.length)
+    for (const item of items) {
+      expect(item.label).toBeDefined()
+      expect(item.changes.weightPoints.from).toBeTypeOf("number")
+      expect(item.changes.weightPoints.to).toBeTypeOf("number")
+    }
+    // Ratings are count-only: no rating value/notes keys anywhere in the
+    // payload. A bare number cannot be distinguished from a weight/order, so
+    // assert structurally that no rating-shaped keys leaked.
+    expect(allKeys(payload)).not.toContain("value")
+    expect(allKeys(payload)).not.toContain("motivation")
+    expect(allKeys(payload)).not.toContain("notes")
+  })
+
+  it("threads cause.event = model.updated + criterionId onto add/remove band shifts", async () => {
+    const t = initConvexTest()
+    // Seeding the ratings produces rating.change-caused band shifts; the
+    // criterion mutations below add model.updated-caused ones. We only assert
+    // about the model.updated shifts.
+    const { orgId, asAdmin, roleId } = await seedRatedTemplateOrganization(
+      t,
+      (index) => (index === 0 ? 5 : 3)
+    )
+    // addCriterion flips the role to incomplete -> band.shift with cause.
+    await asAdmin.mutation(api.evaluationModel.criteria.addCriterion, {
+      orgId,
+      name: "Collaboration",
+      description: "d",
+      helpText: "h",
+      anchors: VALID_ANCHORS,
+    })
+    await t.run(async (ctx) => {
+      const shifts = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "band.shift")
+        )
+        .collect()
+      const modelShifts = shifts.filter(
+        (shift) =>
+          (shift.payload as { cause?: { event?: string } }).cause?.event ===
+          "model.updated"
+      )
+      expect(modelShifts.length).toBeGreaterThan(0)
+      // The add path threads the new criterionId on the cause.
+      expect(
+        modelShifts.some(
+          (shift) =>
+            (shift.payload as { cause?: { criterionId?: string } }).cause
+              ?.criterionId !== undefined &&
+            (shift.payload as { roleId?: string }).roleId === roleId
+        )
+      ).toBe(true)
+    })
+  })
+
+  it("threads cause.entityId = modelId for weights.rebalanced band shifts", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model } = await seedRatedTemplateOrganization(
+      t,
+      (index) => (index === 0 ? 5 : 3)
+    )
+    const scope = model.criteria[0]
+    const formal = model.criteria[8]
+    if (scope === undefined || formal === undefined) throw new Error("seed")
+    await asAdmin.mutation(api.evaluationModel.criteria.rebalanceWeights, {
+      orgId,
+      allocations: model.criteria.map((criterion) => ({
+        criterionId: criterion.criterionId,
+        weightPoints:
+          criterion.criterionId === scope.criterionId
+            ? 1
+            : criterion.criterionId === formal.criterionId
+              ? 5
+              : criterion.weightPoints,
+      })),
+    })
+    await t.run(async (ctx) => {
+      const shifts = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "band.shift")
+        )
+        .collect()
+      const rebalanceShifts = shifts.filter(
+        (shift) =>
+          (shift.payload as { cause?: { event?: string } }).cause?.event ===
+          "model.updated"
+      )
+      expect(rebalanceShifts.length).toBeGreaterThan(0)
+      for (const shift of rebalanceShifts) {
+        const cause = (shift.payload as { cause?: { entityId?: string } }).cause
+        // weights.rebalanced threads the model id as entityId, no criterionId.
+        expect(cause?.entityId).toBe(model.modelId)
+      }
+    })
   })
 })
