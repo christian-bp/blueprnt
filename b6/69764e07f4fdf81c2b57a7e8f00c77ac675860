@@ -1,0 +1,21 @@
+apps/dashboard/components/date-range-picker.tsx
+  s_4d14ac8ce42bf2::t_81d536f6fcab85 16-19
+  s_4d14ac8ce42bf2::t_3082f8f879c57d 65
+  s_4d14ac8ce42bf2::t_2d1d2aa8d756cc 44-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "b669764e07f4fdf81c2b57a7e8f00c77ac675860",
+  "prompts": {},
+  "sessions": {
+    "s_4d14ac8ce42bf2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "038c55e6-1a70-485b-b911-762f7d617ef0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
