@@ -1,0 +1,40 @@
+apps/dashboard/components/admin/audit-log-section.tsx
+  s_f293654d606693::t_b558201dddb47a 231
+  s_f293654d606693::t_33f2e0cebfe98d 41
+apps/dashboard/components/org-audit-log-section.tsx
+  s_f293654d606693::t_f6e3a85e67821d 677
+  s_f293654d606693::t_a51fba6c3dbbd0 482
+  s_f293654d606693::t_ffcbd109597f40 221
+  s_f293654d606693::t_65240d6df8f823 41
+  s_f293654d606693::t_bcc1a70b374b96 44
+apps/dashboard/lib/audit-detail.tsx
+  s_f293654d606693::t_6a83e34308a393 416-426
+  s_f293654d606693::t_ff9a69b20f96d9 226,492-512,552
+  s_f293654d606693::t_8fe20010c6d2bb 459-478
+  s_f293654d606693::t_9d160321c689e2 16,25-71,138-139,171-172,192-193,228,259,274-275,332,479,535
+  s_f293654d606693::t_5cd48e5b1e1231 1-3
+apps/dashboard/components/audit/change-arrow.tsx
+  s_f293654d606693::t_faef3102f0a19e 1-28
+apps/dashboard/components/audit/change-entry-row.tsx
+  s_f293654d606693::t_43c3443b43de49 15-16
+  s_f293654d606693::t_f53911b82ff9b1 1
+  s_f293654d606693::t_6f4c9dee0f2fc2 35-44,53
+apps/dashboard/lib/audit-detail.test.tsx
+  s_f293654d606693::t_540e185fbf36b9 1-55,66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "f181ec01140dca9fbf62fca7befe3ec764fca86f",
+  "prompts": {},
+  "sessions": {
+    "s_f293654d606693": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b137e6c8-7cfe-4098-9c03-21daf482a8af",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
