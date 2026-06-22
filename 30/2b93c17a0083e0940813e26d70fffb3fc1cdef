@@ -1,0 +1,19 @@
+apps/dashboard/public/email/blueprnt-wordmark.svg
+  s_d9d5976c59712a::t_4d4da3878089ed 1-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "302b93c17a0083e0940813e26d70fffb3fc1cdef",
+  "prompts": {},
+  "sessions": {
+    "s_d9d5976c59712a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "705e8dd4-4248-4771-9b7a-48a7c6cab6a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
