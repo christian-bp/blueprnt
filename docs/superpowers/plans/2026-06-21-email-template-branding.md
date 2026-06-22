@@ -4,38 +4,38 @@
 
 **Goal:** Redesign the three transactional email templates (`invitation`, `verifyEmail`, `resetPassword`) onto a polished, on-brand shared layout inspired by polyform's email system.
 
-**Architecture:** Add a shared email design system to `packages/email` — a `theme.tsx` (color tokens, fonts, `EmailThemeProvider`, hosted-logo URL helper), a `BaseEmailTemplate` (wordmark header → title → content → footer), a `CtaButton`, and a `Footer` — then rebuild the three templates on top of it. Styling uses `@react-email/tailwind` (utility classes for layout/spacing, inline `style` for brand colors). The blueprnt wordmark is shipped as a hosted PNG on the dashboard origin. All copy flows through the existing `email.*` i18n keys in five locales.
+**Architecture:** Add a shared email design system to `packages/email`, a `theme.tsx` (color tokens, fonts, `EmailThemeProvider`, hosted-logo URL helper), a `BaseEmailTemplate` (wordmark header → title → content → footer), a `CtaButton`, and a `Footer`, then rebuild the three templates on top of it. Styling uses `@react-email/tailwind` (utility classes for layout/spacing, inline `style` for brand colors). The blueprnt wordmark is shipped as a hosted PNG on the dashboard origin. All copy flows through the existing `email.*` i18n keys in five locales.
 
-**Tech Stack:** React Email (`@react-email/components` 1.0.12, `@react-email/render` 2.0.8, `react-email` 6.6.0 — all already installed), `@react-email/tailwind` (re-exported by `@react-email/components`; no new dependency), `next-intl`/`@workspace/i18n`, Vitest 4, `rsvg-convert` for the one-time SVG→PNG.
+**Tech Stack:** React Email (`@react-email/components` 1.0.12, `@react-email/render` 2.0.8, `react-email` 6.6.0, all already installed), `@react-email/tailwind` (re-exported by `@react-email/components`; no new dependency), `next-intl`/`@workspace/i18n`, Vitest 4, `rsvg-convert` for the one-time SVG→PNG.
 
 ## Global Constraints
 
 - **i18n, English-first:** every new string is added to `packages/i18n/messages/en.json` first (the `Messages`/`EmailMessages` type derives from `en`), then mirrored to `sv.json`, `nb.json`, `da.json`, `fi.json`. The i18n parity test fails if any locale's key set differs from `en`.
 - **No hardcoded user-facing text.** All display copy comes from `email.*` keys.
-- **Machine-translated locale strings are drafts** — flag the new sv/nb/da/fi strings for native review in the commit body; check the footer tagline against the Swedish domain glossary (`docs/contexts/`) for the canonical rendering of "job architecture".
+- **Machine-translated locale strings are drafts**, flag the new sv/nb/da/fi strings for native review in the commit body; check the footer tagline against the Swedish domain glossary (`docs/contexts/`) for the canonical rendering of "job architecture".
 - **Never use em dashes** in any copy (UI, comments, commits). Use a period, comma, colon, or parentheses.
 - **No AI/Claude attribution** in commits or code. Write as the author.
 - **Conventional Commits:** `type(scope): summary`, lowercase, imperative, no trailing period, ≤ ~72 chars.
 - **New code ships with tests in the same commit.** The pre-commit hook runs Biome on staged files, a full `turbo run typecheck`, and the full `turbo run test` (cache-backed). All must pass. Never `--no-verify`.
 - **Tests run with Vitest** via `bun run test` (never `bun test`). Per-package `vitest.config.ts` already exists for `@workspace/email`.
 - **Brand color values:** `--brand` = `#eb3e5d` (rose), `--brand-foreground` = `#fafafa`. Radius token `--radius` = `0.625rem` = `10px`.
-- **CTA button uses the brand rose** — a deliberate, spec-recorded exception to the app's "primary buttons stay neutral" rule (emails are a marketing-adjacent surface).
+- **CTA button uses the brand rose**, a deliberate, spec-recorded exception to the app's "primary buttons stay neutral" rule (emails are a marketing-adjacent surface).
 - **Do not push.** Commit locally only; the user pushes after explicit approval.
 
 ## File Structure
 
-- `apps/dashboard/public/email/blueprnt-wordmark.svg` — **create**: brand-rose wordmark source (regeneration source, also servable).
-- `apps/dashboard/public/email/blueprnt-wordmark.png` — **create**: the email-referenced logo, generated from the SVG.
-- `packages/i18n/messages/{en,sv,nb,da,fi}.json` — **modify**: add `email.*.note`, `email.footer.copyright`, `email.footer.tagline`, `email.logoAlt`.
-- `packages/email/src/components/theme.tsx` — **create**: `colors`, `FONT_FAMILY`, `LOGO_PATH`, `logoUrl()`, `EmailThemeProvider`.
-- `packages/email/src/components/theme.test.ts` — **create**: `logoUrl()` unit tests.
-- `packages/email/src/components/button.tsx` — **create**: `CtaButton`.
-- `packages/email/src/components/footer.tsx` — **create**: `Footer`.
-- `packages/email/src/components/base-email.tsx` — **create**: `BaseEmailTemplate`.
-- `packages/email/src/components/base-email.test.tsx` — **create**: layout-chrome render test.
-- `packages/email/src/templates/{invitation,verify-email,reset-password}.tsx` — **modify**: rebuild on `BaseEmailTemplate`; add `PreviewProps` + default export.
-- `packages/email/src/render.test.ts` — **modify**: add branded-output assertions.
-- `packages/email/src/render.ts` — **unchanged** (it calls the named template exports and computes subjects; both stay stable). Do not edit.
+- `apps/dashboard/public/email/blueprnt-wordmark.svg`, **create**: brand-rose wordmark source (regeneration source, also servable).
+- `apps/dashboard/public/email/blueprnt-wordmark.png`, **create**: the email-referenced logo, generated from the SVG.
+- `packages/i18n/messages/{en,sv,nb,da,fi}.json`, **modify**: add `email.*.note`, `email.footer.copyright`, `email.footer.tagline`, `email.logoAlt`.
+- `packages/email/src/components/theme.tsx`, **create**: `colors`, `FONT_FAMILY`, `LOGO_PATH`, `logoUrl()`, `EmailThemeProvider`.
+- `packages/email/src/components/theme.test.ts`, **create**: `logoUrl()` unit tests.
+- `packages/email/src/components/button.tsx`, **create**: `CtaButton`.
+- `packages/email/src/components/footer.tsx`, **create**: `Footer`.
+- `packages/email/src/components/base-email.tsx`, **create**: `BaseEmailTemplate`.
+- `packages/email/src/components/base-email.test.tsx`, **create**: layout-chrome render test.
+- `packages/email/src/templates/{invitation,verify-email,reset-password}.tsx`, **modify**: rebuild on `BaseEmailTemplate`; add `PreviewProps` + default export.
+- `packages/email/src/render.test.ts`, **modify**: add branded-output assertions.
+- `packages/email/src/render.ts`, **unchanged** (it calls the named template exports and computes subjects; both stay stable). Do not edit.
 
 ---
 
@@ -568,7 +568,7 @@ git commit -m "feat(email): add branded base layout, footer, and CTA button"
 
 **Interfaces:**
 - Consumes (Task 4): `BaseEmailTemplate`, `CtaButton`. (Task 3): `colors`. (Task 2): `email.*.note`.
-- Produces: same named exports (`InvitationEmail`, `VerifyEmail`, `ResetPasswordEmail`) with the same prop types — `render.ts` is unaffected.
+- Produces: same named exports (`InvitationEmail`, `VerifyEmail`, `ResetPasswordEmail`) with the same prop types, `render.ts` is unaffected.
 
 - [ ] **Step 1: Write the failing render assertions.** Add these `it` blocks to `packages/email/src/render.test.ts` (keep the existing four tests):
 
@@ -754,7 +754,7 @@ ResetPasswordEmail.PreviewProps = {
 export default ResetPasswordEmail
 ```
 
-Note: `render.ts` imports `ResetPasswordEmail` and `VerifyEmail` as named exports and calls them as functions — unchanged. The new `default` export and `PreviewProps` are additive (TS "expando" function properties; the `satisfies` checks the shape). If the strict config rejects the property assignment, wrap with `Object.assign(function X(){...}, { PreviewProps: {...} })` instead.
+Note: `render.ts` imports `ResetPasswordEmail` and `VerifyEmail` as named exports and calls them as functions, unchanged. The new `default` export and `PreviewProps` are additive (TS "expando" function properties; the `satisfies` checks the shape). If the strict config rejects the property assignment, wrap with `Object.assign(function X(){...}, { PreviewProps: {...} })` instead.
 
 - [ ] **Step 6: Run the full email test suite to verify all pass.**
 
@@ -786,11 +786,11 @@ git commit -m "feat(email): rebuild transactional templates on the branded layou
 - [ ] **Step 1: Start the preview server.**
 
 Run: `bun run --filter @workspace/email preview`
-Expected: the React Email dev server starts and lists `invitation`, `verify-email`, and `reset-password`. (If a workspace import fails to resolve in the preview bundler, that is a preview-only limitation; the templates and tests are unaffected. Note it and move on — do not block the deliverable.)
+Expected: the React Email dev server starts and lists `invitation`, `verify-email`, and `reset-password`. (If a workspace import fails to resolve in the preview bundler, that is a preview-only limitation; the templates and tests are unaffected. Note it and move on, do not block the deliverable.)
 
 - [ ] **Step 2: Stop the server** (Ctrl-C) once the three templates render with the wordmark, brand-rose CTA, and footer.
 
-- [ ] **Step 3 (only if any tracked file changed — e.g. a small import tweak to make preview resolve): Commit.**
+- [ ] **Step 3 (only if any tracked file changed, e.g. a small import tweak to make preview resolve): Commit.**
 
 ```bash
 git add -A packages/email
@@ -808,7 +808,7 @@ If nothing changed, skip the commit; the preview already worked from Task 5.
 Run: `bun run typecheck && bun run test`
 Expected: all packages PASS. In particular `@workspace/i18n` (parity), `@workspace/email` (render/theme/base-email), and `dashboard`/`@workspace/backend` typecheck (they consume `@workspace/email` / `EmailMessages`).
 
-- [ ] **Confirm `render.ts` was not modified** (`git log --oneline -p -- packages/email/src/render.ts` shows no change in this branch) — the render API and subjects stayed stable.
+- [ ] **Confirm `render.ts` was not modified** (`git log --oneline -p -- packages/email/src/render.ts` shows no change in this branch), the render API and subjects stayed stable.
 
 ## Self-Review
 

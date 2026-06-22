@@ -117,12 +117,12 @@ Each becomes: title -> body `<Text>` -> `CtaButton` -> a muted helper/security
 into `BaseEmailTemplate`; templates shrink to content. Named exports stay
 (`render.ts` imports them unchanged); subjects are unchanged.
 
-- **invitation** — title `email.invitation.heading` (`Join {organizationName}`),
+- **invitation**, title `email.invitation.heading` (`Join {organizationName}`),
   body `email.invitation.body` (unchanged; the subject and wordmark already carry
   the "on blueprnt" branding), CTA `email.invitation.cta`, note
   `email.invitation.note`.
-- **verifyEmail** — title/body/cta unchanged keys, note `email.verifyEmail.note`.
-- **resetPassword** — title/body/cta unchanged keys, note `email.resetPassword.note`.
+- **verifyEmail**, title/body/cta unchanged keys, note `email.verifyEmail.note`.
+- **resetPassword**, title/body/cta unchanged keys, note `email.resetPassword.note`.
 
 ### render.ts
 
@@ -205,7 +205,7 @@ runs the full `turbo run test`.
 - No new email types (welcome, receipts, notifications, etc.).
 - No change to send/delivery, the Sweego component, or the admin email log.
 - No per-account locale work (still `en` for verify/reset; org locale for
-  invitation) — that is the separate Task 12 slice.
+  invitation), that is the separate Task 12 slice.
 
 ## Footer tagline (resolved)
 
