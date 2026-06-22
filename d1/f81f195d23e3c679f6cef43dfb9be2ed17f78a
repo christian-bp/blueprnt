@@ -1,0 +1,25 @@
+packages/email/src/components/theme.tsx
+  s_d9d5976c59712a::t_2bf7b5b966ecf9 1-72
+packages/email/package.json
+  s_d9d5976c59712a::t_cf074f5d2306a9 25
+packages/email/tsconfig.json
+  s_d9d5976c59712a::t_4fc4787c2f735b 5-6
+packages/email/src/components/theme.test.ts
+  s_d9d5976c59712a::t_d85d791ebb53b6 1-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "d1f81f195d23e3c679f6cef43dfb9be2ed17f78a",
+  "prompts": {},
+  "sessions": {
+    "s_d9d5976c59712a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "705e8dd4-4248-4771-9b7a-48a7c6cab6a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
