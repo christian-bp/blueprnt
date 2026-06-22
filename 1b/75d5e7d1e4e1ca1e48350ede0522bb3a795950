@@ -1,0 +1,25 @@
+docs/superpowers/specs/2026-06-21-email-template-branding-design.md
+  s_d9d5976c59712a::t_07a5bae799a434 100-104
+  s_d9d5976c59712a::t_159149066ca3b8 36-38
+  s_d9d5976c59712a::t_115965f2a5e984 138-139
+  s_d9d5976c59712a::t_e6bcf2db84c726 207-215
+  s_d9d5976c59712a::t_4b15366d327431 70-74,87-98
+  s_d9d5976c59712a::t_f6a381e31ada8a 54-60
+  s_d9d5976c59712a::t_cecf79d26d1036 1-35,39-53,61-69,75-86,99,105-137,140-206
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "1b75d5e7d1e4e1ca1e48350ede0522bb3a795950",
+  "prompts": {},
+  "sessions": {
+    "s_d9d5976c59712a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "705e8dd4-4248-4771-9b7a-48a7c6cab6a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
