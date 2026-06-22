@@ -1,0 +1,25 @@
+packages/email/src/components/base-email.test.tsx
+  s_d9d5976c59712a::t_66f18121e9e255 1-24
+packages/email/src/components/button.tsx
+  s_d9d5976c59712a::t_d07a46f62092b5 1-28
+packages/email/src/components/footer.tsx
+  s_d9d5976c59712a::t_278b343d6a16c3 1-25
+packages/email/src/components/base-email.tsx
+  s_d9d5976c59712a::t_648cba3eb0c34f 1-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "356a434f5cc81137f78c09c30fc3b19e498ae68b",
+  "prompts": {},
+  "sessions": {
+    "s_d9d5976c59712a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "705e8dd4-4248-4771-9b7a-48a7c6cab6a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
