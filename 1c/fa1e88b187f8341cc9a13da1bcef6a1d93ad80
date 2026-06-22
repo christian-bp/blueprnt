@@ -1,0 +1,26 @@
+packages/email/src/templates/invitation.tsx
+  s_d9d5976c59712a::t_f3ec1f303892bf 1-4,23-41,44-52
+packages/email/src/templates/reset-password.tsx
+  s_d9d5976c59712a::t_2671e5aa824b16 1-4,15-29,32-38
+packages/email/src/templates/verify-email.tsx
+  s_d9d5976c59712a::t_247d3d64f001c9 1-4,15-29,32-38
+packages/email/src/render.test.ts
+  s_d9d5976c59712a::t_17b624f38c3104 47-76,78
+  s_d9d5976c59712a::t_d2113279a73cf1 77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "1cfa1e88b187f8341cc9a13da1bcef6a1d93ad80",
+  "prompts": {},
+  "sessions": {
+    "s_d9d5976c59712a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "705e8dd4-4248-4771-9b7a-48a7c6cab6a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
