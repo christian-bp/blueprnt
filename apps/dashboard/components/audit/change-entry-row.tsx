@@ -1,4 +1,4 @@
-import { ChangeArrow } from "@/components/audit/change-arrow"
+import { ChangeArrow } from "@/components/change-arrow"
 import type { changeEntries } from "@/lib/audit-detail"
 
 // One shared key/value grid for every block in a detail sheet (the meta block

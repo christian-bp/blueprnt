@@ -1,5 +1,5 @@
 import { Fragment, type ReactNode } from "react"
-import { ChangeArrow } from "@/components/audit/change-arrow"
+import { ChangeArrow } from "@/components/change-arrow"
 
 // Stringifies any audit-payload value for display. Scalars pass through (via
 // String); null/undefined collapse to "". Objects/arrays are compact-JSON

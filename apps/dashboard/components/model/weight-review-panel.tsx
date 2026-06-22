@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowDown01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons"
+import { ArrowDown01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
@@ -13,6 +13,7 @@ import { useMutation } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useEffect, useRef, useState } from "react"
+import { ChangeArrow } from "@/components/change-arrow"
 import { useSuggestionFlow } from "@/hooks/use-suggestion-flow"
 import { useSuggestionSelection } from "@/hooks/use-suggestion-selection"
 import { SPRING } from "@/lib/motion"
@@ -377,13 +378,8 @@ function TransferRow({
       <span className="flex shrink-0 items-center gap-2 tabular-nums">
         <span className="flex items-center gap-1 text-muted-foreground">
           {before}
-          <HugeiconsIcon
-            icon={ArrowRight01Icon}
-            size={14}
-            strokeWidth={2}
-            aria-hidden="true"
-            className="shrink-0"
-          />
+          {/* mx-0: the flex row's gap-1 already spaces the arrow. */}
+          <ChangeArrow className="mx-0" />
           <span className="font-medium text-foreground">{after}</span>
         </span>
         <span className="rounded bg-muted px-1.5 py-0.5 font-medium text-muted-foreground text-xs">
