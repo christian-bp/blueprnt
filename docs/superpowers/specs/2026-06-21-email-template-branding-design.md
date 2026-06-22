@@ -51,13 +51,14 @@ blueprnt gets its own wordmark, font, accent color, and footer copy.
    here so a future reader does not "correct" it back to neutral. Button text
    uses `--brand-foreground` (near-white), matching the app's brand/foreground
    pairing.
-3. **Styling: `@react-email/tailwind`, matching polyform.** The package gains
-   `tailwindcss` + `@react-email/tailwind`, and templates are wrapped in
-   `<Tailwind>` with the `pixelBasedPreset`. Layout and spacing use Tailwind
-   utility classes (`text-[16px]`, `leading-[26px]`, `mt-[32px]`, etc.); colors
-   come from the shared `colors` theme via inline `style`. Tailwind (over one-off
-   inline styles) is chosen because more email templates are coming, and the
-   utility classes keep them consistent and fast to author.
+3. **Styling: `@react-email/tailwind`, matching polyform.** Templates are wrapped
+   in `<Tailwind>` with the `pixelBasedPreset`, both imported from
+   `@react-email/components` (already a dependency; it bundles
+   `@react-email/tailwind`) so no new package is added. Layout and spacing use
+   Tailwind utility classes (`text-[16px]`, `leading-[26px]`, `mt-[32px]`, etc.);
+   colors come from the shared `colors` theme via inline `style`. Tailwind (over
+   one-off inline styles) is chosen because more email templates are coming, and
+   the utility classes keep them consistent and fast to author.
 4. **Font: Source Sans 3 (the brand font), 400/600**, loaded via the React
    Email `<Font>` component with Google Fonts woff2 URLs and a system-sans
    fallback stack. Most clients ignore web fonts and use the fallback; the
@@ -93,9 +94,10 @@ New shared building blocks under `packages/email/src/components/`:
   `<Heading className="text-[24px] text-center font-normal" style={{ color: colors.text }}>`,
   the `children` content slot, then `<Footer locale={locale} />`.
 
-Dependencies added to `packages/email`: `@react-email/tailwind` and
-`tailwindcss` (peer of the Tailwind component). `@react-email/components`,
-`@react-email/render`, and `react-email` are already present.
+No new dependencies: `@react-email/components` (already present) re-exports
+`Tailwind` and `pixelBasedPreset` (it bundles `@react-email/tailwind`) plus the
+`<Font>`/`<Img>` primitives. `@react-email/render` and `react-email` are also
+already present.
 
 - **`button.tsx`** -> `CtaButton({ href, children })`. A centered `<Section
   className="text-center my-[32px]">` wrapping React Email `<Button
