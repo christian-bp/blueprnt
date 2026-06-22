@@ -1,0 +1,19 @@
+docs/superpowers/specs/2026-06-21-email-template-branding-design.md
+  s_d9d5976c59712a::t_ff155c4c43d847 121-123
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "6895deec5593746c04cf32f47ace62abc972d4d1",
+  "prompts": {},
+  "sessions": {
+    "s_d9d5976c59712a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "705e8dd4-4248-4771-9b7a-48a7c6cab6a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
