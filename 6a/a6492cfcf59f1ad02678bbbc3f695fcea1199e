@@ -1,0 +1,26 @@
+packages/email/src/components/theme.tsx
+  s_d9d5976c59712a::t_2bf7b5b966ecf9 1-72
+packages/email/tsconfig.json
+  s_d9d5976c59712a::t_6dac412b7c887c 6-9
+  s_d9d5976c59712a::t_f226756c8d1373 5,10
+packages/email/src/components/theme.test.ts
+  s_d9d5976c59712a::t_d85d791ebb53b6 1-25
+packages/email/package.json
+  s_d9d5976c59712a::t_4c08727848c0d2 25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "6aa6492cfcf59f1ad02678bbbc3f695fcea1199e",
+  "prompts": {},
+  "sessions": {
+    "s_d9d5976c59712a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "705e8dd4-4248-4771-9b7a-48a7c6cab6a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
