@@ -1,0 +1,149 @@
+packages/backend/convex/http.ts
+  s_b6c79f799de4b2::t_cf8c324f85c806 3-4,10-12,14-16
+  s_b6c79f799de4b2::t_2455aa98847721 13
+packages/ui/src/styles/globals.css
+  s_e7cbd560f37ecd::t_2ea97a1c5ac970 103-104
+  s_e7cbd560f37ecd::t_5725655e07503b 28-29
+  s_e7cbd560f37ecd::t_8fc8a4b1378fbf 67-68
+packages/i18n/messages/en.json
+  s_e7cbd560f37ecd::t_39c20755c14255 860
+packages/backend/convex/email/outbox.ts
+  s_b6c79f799de4b2::t_81a28ecf45eb01 5,8-9,12-13,15-22,32,34-35,40-41,43-46,48-55
+  s_0072acc2d2999d::t_292eba14cf088f 6,14,23-30
+apps/dashboard/app/(app)/admin/email-log/page.tsx
+  s_b6c79f799de4b2::t_8d7d2f21421626 1-12
+packages/backend/convex/email/cleanup.test.ts
+  s_0072acc2d2999d::t_29eb00c6233400 1-28
+packages/backend/convex/email/outbox.test.ts
+  s_b6c79f799de4b2::t_dfcbfe2bcd0557 1,16-18,20,23-24,26-27
+packages/backend/convex/betterAuth/provisioning.ts
+  s_0072acc2d2999d::t_3c94051bd51970 158-163,166-169
+  s_0072acc2d2999d::t_2a2fcb716fad85 193,207
+packages/backend/convex/email/cleanup.ts
+  s_b6c79f799de4b2::t_09a9d9580103f3 1-26
+packages/ui/src/components/badge.tsx
+  s_e7cbd560f37ecd::t_14944274223a53 17-18
+docs/adr/0009-platform-admin.md
+  s_0072acc2d2999d::t_11e0d56de10138 35-36
+  s_0072acc2d2999d::t_66f5a7e01311e5 22
+packages/backend/convex/platform/admin.ts
+  s_e7cbd560f37ecd::t_a4d261fd1f8de5 4
+  s_0072acc2d2999d::t_0d03c6310ba77e 612,616-621,625
+  s_e7cbd560f37ecd::t_737e544b4fe7c7 622-624,626-627
+  s_e7cbd560f37ecd::t_ce1bcd4a7fbea6 599-606
+packages/backend/convex/email/templates.ts
+  s_0072acc2d2999d::t_76cdae401cfd05 1-10
+packages/backend/convex/crons.ts
+  s_b6c79f799de4b2::t_62d99d161b3194 6,8,10-11
+packages/constants/src/index.ts
+  s_0072acc2d2999d::t_662d944d8a35bd 13
+packages/backend/package.json
+  s_e7cbd560f37ecd::t_ea77f72723bf63 18
+packages/backend/convex/convex.config.ts
+  s_b6c79f799de4b2::t_d84ea8d79cd029 1,7
+packages/email/package.json
+  s_0072acc2d2999d::t_fcc25f7235aa38 20
+packages/i18n/messages/da.json
+  s_e7cbd560f37ecd::t_d0d1b6f65b8b03 860
+apps/dashboard/components/admin/email-log-section.tsx
+  s_0072acc2d2999d::t_46abb6b6d7ef5a 365-367,373-377
+  s_e7cbd560f37ecd::t_c10d31278fa05c 62
+  s_b6c79f799de4b2::t_760ca91c06c0e7 333-334,336
+  s_0072acc2d2999d::t_6517afb3696aa0 6-9
+  s_b6c79f799de4b2::t_6415477c26005d 1-2,5,10-17,19-43,45,54,58-61,67,74-76,80-82,84-86,88-93,97,115,142,144-146,159-177,179,202-207,225-228,237-238,240-242,244-255,259-264,266-269,273-294,296-302,326-332,337-344,347-353,362-364,368,379-381,383-386,388,397-400,403-407,409-416,418-457,459-487,489,491,494-515
+  s_e7cbd560f37ecd::t_50ef484261bb9c 458
+  s_e7cbd560f37ecd::t_eac28885488365 128
+  s_0072acc2d2999d::t_211ebc4cede706 87
+  s_e7cbd560f37ecd::t_0c9d0343689adb 417
+  s_0072acc2d2999d::t_b3af124a468da7 63-66
+  s_b6c79f799de4b2::t_6a32dcd4797a75 335
+  s_b6c79f799de4b2::t_fddef519b1bd69 3-4,18,44,46-47,52-53,55-57,68,72-73,77-79,83,94-96,98-114,116-127,129-141,143,147-158,178,180-201,208-224,229-236,239,243,256-258,265,270-272,303-325,345-346,354-361,369-372,378,382,387,389-396,401,488,490,492-493
+  s_e7cbd560f37ecd::t_f2fe2689df8091 295
+  s_e7cbd560f37ecd::t_e6667601632a34 69-71
+  s_b6c79f799de4b2::t_38a03f4dac789c 402
+  s_e7cbd560f37ecd::t_6ac83d4838c10c 48-51
+  s_e7cbd560f37ecd::t_c15282220b6d87 408
+packages/backend/convex/auth.ts
+  s_b6c79f799de4b2::t_72c26a7beb42e9 113-117
+packages/backend/convex/email/erasure.ts
+  s_e7cbd560f37ecd::t_3ac451a6f80eba 1-20
+packages/backend/convex/platform/emailLog.test.ts
+  s_0072acc2d2999d::t_04a6e53f50e124 1-57
+docs/adr/0001-convex-eu-better-auth.md
+  s_0072acc2d2999d::t_073c09fe44dc49 21
+packages/backend/README.md
+  s_b6c79f799de4b2::t_c7ff77d85f0ded 51-52
+  s_0072acc2d2999d::t_ce4d63e2bfde19 33-37,39-43
+  s_e7cbd560f37ecd::t_f9625440a00e32 38
+  s_b6c79f799de4b2::t_4cb754e596ea24 12-16
+  s_b6c79f799de4b2::t_9f9bfb9d7463c1 28-32
+packages/backend/convex/platform/emailLog.ts
+  s_b6c79f799de4b2::t_739b49f7ca7832 1,4,6-9,14-35,41-52,75,102,104,108,120,128-208
+  s_e7cbd560f37ecd::t_8f0892d2bc106c 3
+  s_e7cbd560f37ecd::t_345cca2472487d 54-56
+  s_b6c79f799de4b2::t_00e85515118661 57-60
+  s_b6c79f799de4b2::t_e58f2845f01fe8 88-90
+  s_0072acc2d2999d::t_1f5ac194b059d8 5
+  s_b6c79f799de4b2::t_db6dda8c8ed949 111-118
+  s_0072acc2d2999d::t_4c838faecc1ce7 36-39
+  s_b6c79f799de4b2::t_0c2c6a0f893e14 2
+  s_b6c79f799de4b2::t_a2a06585b807c6 53
+  s_b6c79f799de4b2::t_2eeb5a37b30a60 10-13,40,61-74,76-83,85-87,91-92,94-101,103,105-107,109-110,119,121-127
+  s_b6c79f799de4b2::t_3f790e1c3a5105 84,93
+packages/i18n/messages/nb.json
+  s_e7cbd560f37ecd::t_1e637b8443819e 860
+packages/backend/convex/platform/admin.test.ts
+  s_e7cbd560f37ecd::t_c2e74178a2160e 1057-1073,1075-1077
+  s_e7cbd560f37ecd::t_a789decf0634c9 1074
+packages/constants/src/email.ts
+  s_0072acc2d2999d::t_a59202c5c394f7 1-12
+apps/dashboard/components/admin/admin-tabs.tsx
+  s_b6c79f799de4b2::t_44de6b499a1e19 34-35,37-39
+  s_b6c79f799de4b2::t_b326d91c957fe7 18,21-24
+packages/i18n/messages/sv.json
+  s_e7cbd560f37ecd::t_1ba2f28d844523 860
+apps/dashboard/components/admin/email-status-badge.tsx
+  s_e7cbd560f37ecd::t_60be16ffe501b6 1-44
+packages/email/src/render.ts
+  s_0072acc2d2999d::t_e4b70ef503cfc3 11-14
+  s_0072acc2d2999d::t_4f017cc9a8d75a 2
+packages/backend/convex/email/client.ts
+  s_e7cbd560f37ecd::t_2e7058a4cfae20 6
+  s_b6c79f799de4b2::t_883352ed0ca78f 1-5,7-9
+packages/backend/convex/schema.ts
+  s_0072acc2d2999d::t_1dc06cfa2dd045 8,11-16
+packages/i18n/messages/fi.json
+  s_e7cbd560f37ecd::t_a0a78712493683 860
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "fac91615d53216e127de11cddf4c3aaa19027873",
+  "prompts": {},
+  "sessions": {
+    "s_0072acc2d2999d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ba2f84b3-0e38-4935-b33c-cef32637be85",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_b6c79f799de4b2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ebc9d645-0380-4487-8614-2de91f5e5479",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_e7cbd560f37ecd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6148a49a-78ae-4214-9bfd-b56dede43bea",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
