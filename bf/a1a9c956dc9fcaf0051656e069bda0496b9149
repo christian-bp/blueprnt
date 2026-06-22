@@ -1,0 +1,30 @@
+apps/dashboard/components/change-arrow.tsx
+  s_f293654d606693::t_379880808fbccf 1,19
+  s_f293654d606693::t_92b1b2d7638ce5 5-15
+apps/dashboard/components/model/weight-review-panel.tsx
+  s_f293654d606693::t_7103c23aa110fc 381-382
+  s_f293654d606693::t_4e67004b1ac78c 3
+  s_f293654d606693::t_e417a207112b9d 16
+apps/dashboard/lib/audit-detail.tsx
+  s_f293654d606693::t_542faa8c84bfc1 2
+apps/dashboard/components/audit/change-entry-row.tsx
+  s_f293654d606693::t_d5c68b322672b4 1
+apps/dashboard/components/org-audit-log-section.tsx
+  s_f293654d606693::t_b82d00d8bef73d 45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "bfa1a9c956dc9fcaf0051656e069bda0496b9149",
+  "prompts": {},
+  "sessions": {
+    "s_f293654d606693": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b137e6c8-7cfe-4098-9c03-21daf482a8af",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
