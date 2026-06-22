@@ -1,5 +1,6 @@
 import { MIN_CRITERIA } from "@workspace/core"
 import { v } from "convex/values"
+import { components } from "../_generated/api"
 import { internalQuery } from "../_generated/server"
 import { AUDIT_EVENTS, buildChanges, SETTINGS_AUDIT_FIELDS } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
@@ -145,6 +146,32 @@ export const getLanguageForOrg = internalQuery({
     const settings = await ctx.db
       .query("organizations")
       .withIndex("by_org", (q) => q.eq("orgId", orgId))
+      .unique()
+    if (settings === null) return null
+    return { language: settings.language ?? null }
+  },
+})
+
+// Used by the auth password-reset callback to resolve the user's org language
+// so reset emails go out in the org's locale. Maps via the user's first
+// membership (users have exactly one org in V1). Not org-scoped: the caller is
+// Better Auth (no app session), and it only exposes the language.
+export const getLanguageForUser = internalQuery({
+  args: { userId: v.string() },
+  returns: v.union(
+    v.null(),
+    v.object({ language: v.union(v.string(), v.null()) })
+  ),
+  handler: async (ctx, { userId }) => {
+    const memberships = await ctx.runQuery(
+      components.betterAuth.membership.listMembershipsForUser,
+      { userId }
+    )
+    const selected = memberships[0]
+    if (selected === undefined) return null
+    const settings = await ctx.db
+      .query("organizations")
+      .withIndex("by_org", (q) => q.eq("orgId", selected.organizationId))
       .unique()
     if (settings === null) return null
     return { language: settings.language ?? null }

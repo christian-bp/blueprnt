@@ -11,14 +11,14 @@
     "invitation": {
       "subject": "{inviterName} kutsui sinut organisaatioon {organizationName} blueprntissä",
       "heading": "Liity organisaatioon {organizationName}",
-      "body": "{inviterName} on kutsunut sinut organisaatioon {organizationName}.",
+      "body": "{inviterName} on kutsunut sinut organisaatioon {organizationName} blueprntissä. Hyväksy kutsu alta luodaksesi tilisi ja päästäksesi alkuun.",
       "cta": "Hyväksy kutsu",
       "note": "Jos et odottanut tätä kutsua, voit jättää tämän viestin huomiotta."
     },
     "resetPassword": {
       "subject": "Nollaa salasanasi",
       "heading": "Nollaa salasanasi",
-      "body": "Napsauta alla olevaa painiketta valitaksesi uuden salasanan.",
+      "body": "Saimme pyynnön nollata blueprnt-tilisi salasanan. Napsauta alla olevaa painiketta valitaksesi uuden salasanan.",
       "cta": "Nollaa salasana",
       "note": "Jos et pyytänyt tätä, voit jättää viestin huomiotta. Salasanasi ei muutu."
     },

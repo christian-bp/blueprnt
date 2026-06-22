@@ -117,16 +117,19 @@ export const createAuthOptions = (
       // this as a client gate; the server is authoritative).
       minPasswordLength: 8,
       sendResetPassword: async (data) => {
-        // No per-account locale yet (Task 12 slice); reset emails go out in en.
-        await requireRunMutationCtx(ctx).runMutation(
-          internal.email.outbox.enqueueEmail,
-          {
-            to: data.user.email,
-            templateKey: "resetPassword",
-            props: { url: data.url },
-            locale: "en",
-          }
+        const mctx = requireRunMutationCtx(ctx)
+        // Resolve the user's org language so the reset email goes out in the
+        // org's locale; fall back to en if no membership or language is set.
+        const settings = await mctx.runQuery(
+          internal.accounts.organization.getLanguageForUser,
+          { userId: data.user.id }
         )
+        await mctx.runMutation(internal.email.outbox.enqueueEmail, {
+          to: data.user.email,
+          templateKey: "resetPassword",
+          props: { url: data.url },
+          locale: settings?.language ?? "en",
+        })
       },
     },
     plugins: [

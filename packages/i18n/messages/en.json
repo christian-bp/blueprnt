@@ -11,14 +11,14 @@
     "invitation": {
       "subject": "{inviterName} invited you to {organizationName} on blueprnt",
       "heading": "Join {organizationName}",
-      "body": "{inviterName} has invited you to the organization {organizationName}.",
+      "body": "{inviterName} has invited you to {organizationName} on blueprnt. Accept the invitation below to set up your account and get started.",
       "cta": "Accept invitation",
       "note": "If you weren't expecting this invitation, you can ignore this email."
     },
     "resetPassword": {
       "subject": "Reset your password",
       "heading": "Reset your password",
-      "body": "Click the button below to choose a new password.",
+      "body": "We received a request to reset the password for your blueprnt account. Click the button below to choose a new password.",
       "cta": "Reset password",
       "note": "If you didn't request this, you can safely ignore this email; your password won't change."
     },

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { api, components } from "../_generated/api"
+import { api, components, internal } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
 import { onUserCreate } from "./mirrors"
 
@@ -386,5 +386,32 @@ describe("organization settings", () => {
         .withIdentity({ subject: editorId })
         .mutation(api.accounts.organization.completeOnboarding, { orgId })
     ).rejects.toThrow(/errors.adminRequired/)
+  })
+})
+
+describe("getLanguageForUser", () => {
+  it("returns the org language for a user with a membership", async () => {
+    const t = initConvexTest()
+    const { orgId, userId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "hr@acme.se", name: "HR Person", role: "admin" }
+    )
+    await t.run(async (ctx) => {
+      await ctx.db.insert("organizations", { orgId, language: "sv" })
+    })
+    const result = await t.query(
+      internal.accounts.organization.getLanguageForUser,
+      { userId }
+    )
+    expect(result).toEqual({ language: "sv" })
+  })
+
+  it("returns null for a user with no membership", async () => {
+    const t = initConvexTest()
+    const result = await t.query(
+      internal.accounts.organization.getLanguageForUser,
+      { userId: "no-such-user" }
+    )
+    expect(result).toBeNull()
   })
 })

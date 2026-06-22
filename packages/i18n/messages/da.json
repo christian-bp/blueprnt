@@ -11,14 +11,14 @@
     "invitation": {
       "subject": "{inviterName} har inviteret dig til {organizationName} på blueprnt",
       "heading": "Bliv medlem af {organizationName}",
-      "body": "{inviterName} har inviteret dig til organisationen {organizationName}.",
+      "body": "{inviterName} har inviteret dig til {organizationName} på blueprnt. Accepter invitationen nedenfor for at oprette din konto og komme i gang.",
       "cta": "Accepter invitation",
       "note": "Hvis du ikke forventede denne invitation, kan du ignorere denne e-mail."
     },
     "resetPassword": {
       "subject": "Nulstil din adgangskode",
       "heading": "Nulstil din adgangskode",
-      "body": "Klik på knappen nedenfor for at vælge en ny adgangskode.",
+      "body": "Vi har modtaget en anmodning om at nulstille adgangskoden til din blueprnt-konto. Klik på knappen nedenfor for at vælge en ny adgangskode.",
       "cta": "Nulstil adgangskode",
       "note": "Hvis du ikke har anmodet om dette, kan du roligt ignorere e-mailen. Din adgangskode ændres ikke."
     },
