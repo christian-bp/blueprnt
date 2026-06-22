@@ -1,0 +1,58 @@
+apps/dashboard/public/email/blueprnt-wordmark.svg
+  s_d9d5976c59712a::t_4d4da3878089ed 1-10
+packages/i18n/messages/nb.json
+  s_d9d5976c59712a::t_707ced29825ee8 15-16,22-23,29-36
+packages/i18n/messages/fi.json
+  s_d9d5976c59712a::t_b60ffb3d079bd5 15-16,22-23,29-36
+packages/i18n/messages/sv.json
+  s_d9d5976c59712a::t_cea4249a5f9e29 15-16,22-23,29-36
+packages/i18n/messages/da.json
+  s_d9d5976c59712a::t_f1410a26d2d839 15-16,22-23,29-36
+packages/i18n/messages/en.json
+  s_d9d5976c59712a::t_8a101d64759b8c 15-16,22-23
+  s_d9d5976c59712a::t_c15feeffec84e4 29-36
+packages/email/src/components/theme.tsx
+  s_d9d5976c59712a::t_2bf7b5b966ecf9 1-72
+packages/email/tsconfig.json
+  s_d9d5976c59712a::t_6dac412b7c887c 6-9
+  s_d9d5976c59712a::t_f226756c8d1373 5,10
+packages/email/src/components/theme.test.ts
+  s_d9d5976c59712a::t_d85d791ebb53b6 1-25
+packages/email/package.json
+  s_d9d5976c59712a::t_4c08727848c0d2 25
+packages/email/src/components/base-email.test.tsx
+  s_d9d5976c59712a::t_66f18121e9e255 1-24
+packages/email/src/components/button.tsx
+  s_d9d5976c59712a::t_d07a46f62092b5 1-28
+packages/email/src/components/footer.tsx
+  s_d9d5976c59712a::t_278b343d6a16c3 1-25
+packages/email/src/components/base-email.tsx
+  s_d9d5976c59712a::t_648cba3eb0c34f 1-56
+packages/email/src/templates/invitation.tsx
+  s_d9d5976c59712a::t_f3ec1f303892bf 1-4,23-41,44-52
+packages/email/src/templates/reset-password.tsx
+  s_d9d5976c59712a::t_2671e5aa824b16 1-4,15-29,32-38
+packages/email/src/templates/verify-email.tsx
+  s_d9d5976c59712a::t_247d3d64f001c9 1-4,15-29,32-38
+packages/email/src/render.test.ts
+  s_d9d5976c59712a::t_17b624f38c3104 47-76,78
+  s_d9d5976c59712a::t_d2113279a73cf1 77
+docs/superpowers/specs/2026-06-21-email-template-branding-design.md
+  s_d9d5976c59712a::t_ff155c4c43d847 121-123
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "478436a6b3d9377942d762a924be6b5f0d2563be",
+  "prompts": {},
+  "sessions": {
+    "s_d9d5976c59712a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "705e8dd4-4248-4771-9b7a-48a7c6cab6a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
