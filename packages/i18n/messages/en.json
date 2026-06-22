@@ -12,20 +12,28 @@
       "subject": "{inviterName} invited you to {organizationName} on blueprnt",
       "heading": "Join {organizationName}",
       "body": "{inviterName} has invited you to the organization {organizationName}.",
-      "cta": "Accept invitation"
+      "cta": "Accept invitation",
+      "note": "If you weren't expecting this invitation, you can ignore this email."
     },
     "verifyEmail": {
       "subject": "Verify your email address",
       "heading": "Verify your email",
       "body": "Confirm your email address to activate your blueprnt account.",
-      "cta": "Verify email"
+      "cta": "Verify email",
+      "note": "If you didn't create a blueprnt account, you can ignore this email."
     },
     "resetPassword": {
       "subject": "Reset your password",
       "heading": "Reset your password",
       "body": "Click the button below to choose a new password.",
-      "cta": "Reset password"
-    }
+      "cta": "Reset password",
+      "note": "If you didn't request this, you can safely ignore this email; your password won't change."
+    },
+    "footer": {
+      "copyright": "© {year} Blueprnt Nordic AB",
+      "tagline": "The job architecture that creates value."
+    },
+    "logoAlt": "blueprnt"
   },
   "model": {
     "roleFamily": "Role family",

@@ -118,8 +118,9 @@ into `BaseEmailTemplate`; templates shrink to content. Named exports stay
 (`render.ts` imports them unchanged); subjects are unchanged.
 
 - **invitation** — title `email.invitation.heading` (`Join {organizationName}`),
-  body `email.invitation.body` (extended to `... on blueprnt.`), CTA
-  `email.invitation.cta`, note `email.invitation.note`.
+  body `email.invitation.body` (unchanged; the subject and wordmark already carry
+  the "on blueprnt" branding), CTA `email.invitation.cta`, note
+  `email.invitation.note`.
 - **verifyEmail** — title/body/cta unchanged keys, note `email.verifyEmail.note`.
 - **resetPassword** — title/body/cta unchanged keys, note `email.resetPassword.note`.
 

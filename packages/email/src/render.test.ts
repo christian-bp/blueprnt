@@ -44,4 +44,36 @@ describe("renderEmail", () => {
     )
     expect(new Set(subjects).size).toBe(EMAIL_LOCALES.length)
   })
+
+  it("renders the branded layout for the reset email", async () => {
+    const result = await renderEmail("resetPassword", {
+      url: "https://x.example/reset",
+      locale: "en",
+    })
+    expect(result.html).toContain("/email/blueprnt-wordmark.png")
+    expect(result.html).toContain('alt="blueprnt"')
+    expect(result.html.toLowerCase()).toContain("#eb3e5d")
+    expect(result.html).toContain("https://x.example/reset")
+    expect(result.html).toContain("you can safely ignore")
+    expect(result.html).toContain("Blueprnt Nordic AB")
+    expect(result.html).toContain(String(new Date().getFullYear()))
+  })
+
+  it("includes the CTA href and security note for verify and invitation", async () => {
+    const verify = await renderEmail("verifyEmail", {
+      url: "https://x.example/verify",
+      locale: "en",
+    })
+    expect(verify.html).toContain("https://x.example/verify")
+    expect(verify.html).toContain("you can ignore this email")
+
+    const invite = await renderEmail("invitation", {
+      inviterName: "Anna",
+      organizationName: "Acme",
+      acceptUrl: "https://x.example/accept-invitation/inv_1",
+      locale: "en",
+    })
+    expect(invite.html).toContain("accept-invitation/inv_1")
+    expect(invite.html).toContain("expecting this invitation")
+  })
 })

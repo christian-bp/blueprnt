@@ -12,20 +12,28 @@
       "subject": "{inviterName} kutsui sinut organisaatioon {organizationName} blueprntissä",
       "heading": "Liity organisaatioon {organizationName}",
       "body": "{inviterName} on kutsunut sinut organisaatioon {organizationName}.",
-      "cta": "Hyväksy kutsu"
+      "cta": "Hyväksy kutsu",
+      "note": "Jos et odottanut tätä kutsua, voit jättää tämän viestin huomiotta."
     },
     "verifyEmail": {
       "subject": "Vahvista sähköpostiosoitteesi",
       "heading": "Vahvista sähköpostisi",
       "body": "Vahvista sähköpostiosoitteesi aktivoidaksesi blueprnt-tilisi.",
-      "cta": "Vahvista sähköposti"
+      "cta": "Vahvista sähköposti",
+      "note": "Jos et luonut blueprnt-tiliä, voit jättää tämän viestin huomiotta."
     },
     "resetPassword": {
       "subject": "Nollaa salasanasi",
       "heading": "Nollaa salasanasi",
       "body": "Napsauta alla olevaa painiketta valitaksesi uuden salasanan.",
-      "cta": "Nollaa salasana"
-    }
+      "cta": "Nollaa salasana",
+      "note": "Jos et pyytänyt tätä, voit jättää viestin huomiotta. Salasanasi ei muutu."
+    },
+    "footer": {
+      "copyright": "© {year} Blueprnt Nordic AB",
+      "tagline": "Työarkkitehtuuri, joka luo arvoa."
+    },
+    "logoAlt": "blueprnt"
   },
   "model": {
     "roleFamily": "Rooliperhe",

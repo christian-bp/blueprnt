@@ -12,20 +12,28 @@
       "subject": "{inviterName} har bjudit in dig till {organizationName} på blueprnt",
       "heading": "Gå med i {organizationName}",
       "body": "{inviterName} har bjudit in dig till organisationen {organizationName}.",
-      "cta": "Acceptera inbjudan"
+      "cta": "Acceptera inbjudan",
+      "note": "Om du inte väntade dig den här inbjudan kan du ignorera det här mejlet."
     },
     "verifyEmail": {
       "subject": "Verifiera din e-postadress",
       "heading": "Verifiera din e-post",
       "body": "Bekräfta din e-postadress för att aktivera ditt blueprnt-konto.",
-      "cta": "Verifiera e-post"
+      "cta": "Verifiera e-post",
+      "note": "Om du inte skapade ett blueprnt-konto kan du ignorera det här mejlet."
     },
     "resetPassword": {
       "subject": "Återställ ditt lösenord",
       "heading": "Återställ ditt lösenord",
       "body": "Klicka på knappen nedan för att välja ett nytt lösenord.",
-      "cta": "Återställ lösenord"
-    }
+      "cta": "Återställ lösenord",
+      "note": "Om du inte begärde detta kan du ignorera mejlet. Ditt lösenord ändras inte."
+    },
+    "footer": {
+      "copyright": "© {year} Blueprnt Nordic AB",
+      "tagline": "Jobbarkitekturen som skapar värde."
+    },
+    "logoAlt": "blueprnt"
   },
   "model": {
     "roleFamily": "Rollfamilj",

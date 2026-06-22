@@ -12,20 +12,28 @@
       "subject": "{inviterName} har inviteret dig til {organizationName} på blueprnt",
       "heading": "Bliv medlem af {organizationName}",
       "body": "{inviterName} har inviteret dig til organisationen {organizationName}.",
-      "cta": "Accepter invitation"
+      "cta": "Accepter invitation",
+      "note": "Hvis du ikke forventede denne invitation, kan du ignorere denne e-mail."
     },
     "verifyEmail": {
       "subject": "Bekræft din e-mailadresse",
       "heading": "Bekræft din e-mail",
       "body": "Bekræft din e-mailadresse for at aktivere din blueprnt-konto.",
-      "cta": "Bekræft e-mail"
+      "cta": "Bekræft e-mail",
+      "note": "Hvis du ikke oprettede en blueprnt-konto, kan du ignorere denne e-mail."
     },
     "resetPassword": {
       "subject": "Nulstil din adgangskode",
       "heading": "Nulstil din adgangskode",
       "body": "Klik på knappen nedenfor for at vælge en ny adgangskode.",
-      "cta": "Nulstil adgangskode"
-    }
+      "cta": "Nulstil adgangskode",
+      "note": "Hvis du ikke har anmodet om dette, kan du roligt ignorere e-mailen. Din adgangskode ændres ikke."
+    },
+    "footer": {
+      "copyright": "© {year} Blueprnt Nordic AB",
+      "tagline": "Jobarkitekturen der skaber værdi."
+    },
+    "logoAlt": "blueprnt"
   },
   "model": {
     "roleFamily": "Rollefamilie",

@@ -2,7 +2,12 @@
   "extends": "@workspace/typescript-config/react-library.json",
   "compilerOptions": {
     "module": "ESNext",
-    "moduleResolution": "Bundler"
+    "moduleResolution": "Bundler",
+    // Bun hoists @types to the workspace root; this package has no local
+    // node_modules/@types, so TS auto-inclusion finds nothing. Naming "node"
+    // explicitly forces upward resolution to the root @types/node (needed for
+    // process.env in logoUrl). Removing this breaks typecheck (TS2591).
+    "types": ["node"]
   },
   "include": ["src"],
   "exclude": ["node_modules"]
