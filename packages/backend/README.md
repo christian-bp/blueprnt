@@ -25,11 +25,10 @@ Convex backend (EU West / Ireland deployment, project quantumlabs/blueprnt).
   Creates "Blueprnt AB" (slug `blueprnt-ab`) as a fully onboarded, rated SaaS company (settings + standard model + the itTelecom starter roles, every role rated so the results/band view is populated) and "Blueprnt Nordic AB" (slug `blueprnt-nordic-ab`) as a bare company (membership only, no settings/model). The seeded user is admin in both. Switching to Blueprnt Nordic AB opens the onboarding wizard, which is how to test onboarding. Idempotent; same localhost guard. `bun db:reset` already runs this; run it directly only to (re)seed companies without a full wipe.
 - Full reset (from the repo root): `bunx convex run seed:resetDatabase`, or `bun db:reset`.
   Wipes everything, then re-seeds the dev user plus the two companies above. Sign-in lands on Blueprnt AB's populated dashboard; switch to Blueprnt Nordic AB to test onboarding. Stricter guard than the other seeds: `SITE_URL`'s hostname must BE `localhost` or `127.0.0.1`.
-- Email verification is disabled until the Sweego sender is live
-  (`SWEEGO_API_KEY` set and the `EMAIL_FROM` domain verified at Sweego). Once
-  it is, flip `requireEmailVerification` to `true` in `convex/auth.ts`. Manual
-  verify fallback: open the message in the Sweego delivery log and visit its
-  verification link.
+- Email sending requires the Sweego sender to be live (`SWEEGO_API_KEY` set
+  and the `EMAIL_FROM` domain verified at Sweego). Transactional emails
+  (invitation, password reset) are delivered through the `@christian-ek/sweego`
+  component; check the Sweego delivery log to confirm delivery.
 - Email PII (recipient address + body) lives in the Sweego component and is
   sent through Sweego, the EU email subprocessor (recipient address + body are
   processed there under the same EU-residency bar as Convex; see ADR-0001). It
@@ -48,8 +47,6 @@ Convex backend (EU West / Ireland deployment, project quantumlabs/blueprnt).
   `devReset.wipeAppTables`, `betterAuth/seed.wipeAuthData`). They exist for
   the demo phase; once real customer data exists there must be no admin
   action that can erase a production deployment in one call.
-- Flip `requireEmailVerification` to `true` once the Sweego sender is live
-  (see above).
 
 ## AI environment variables
 

@@ -15,13 +15,6 @@
       "cta": "Hyväksy kutsu",
       "note": "Jos et odottanut tätä kutsua, voit jättää tämän viestin huomiotta."
     },
-    "verifyEmail": {
-      "subject": "Vahvista sähköpostiosoitteesi",
-      "heading": "Vahvista sähköpostisi",
-      "body": "Vahvista sähköpostiosoitteesi aktivoidaksesi blueprnt-tilisi.",
-      "cta": "Vahvista sähköposti",
-      "note": "Jos et luonut blueprnt-tiliä, voit jättää tämän viestin huomiotta."
-    },
     "resetPassword": {
       "subject": "Nollaa salasanasi",
       "heading": "Nollaa salasanasi",
@@ -838,7 +831,6 @@
         },
         "templates": {
           "invitation": "Kutsu",
-          "verifyEmail": "Sähköpostin vahvistus",
           "resetPassword": "Salasanan palautus",
           "all": "Kaikki tyypit"
         },

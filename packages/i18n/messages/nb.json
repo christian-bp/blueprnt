@@ -15,13 +15,6 @@
       "cta": "Aksepter invitasjon",
       "note": "Hvis du ikke ventet denne invitasjonen, kan du ignorere denne e-posten."
     },
-    "verifyEmail": {
-      "subject": "Bekreft e-postadressen din",
-      "heading": "Bekreft e-posten din",
-      "body": "Bekreft e-postadressen din for å aktivere blueprnt-kontoen din.",
-      "cta": "Bekreft e-post",
-      "note": "Hvis du ikke opprettet en blueprnt-konto, kan du ignorere denne e-posten."
-    },
     "resetPassword": {
       "subject": "Tilbakestill passordet ditt",
       "heading": "Tilbakestill passordet ditt",
@@ -838,7 +831,6 @@
         },
         "templates": {
           "invitation": "Invitasjon",
-          "verifyEmail": "E-postverifisering",
           "resetPassword": "Tilbakestilling av passord",
           "all": "Alle typer"
         },

@@ -110,12 +110,6 @@ export const createAuthOptions = (
       // admin (dev seed today, invitation flow later). This closes the
       // public sign-up endpoint, not just the UI.
       disableSignUp: true,
-      // Flip to true once the Sweego sender is live (SWEEGO_API_KEY set +
-      // the EMAIL_FROM domain verified at Sweego): with no working sender,
-      // required verification strands every new account. The manual fallback
-      // is reading the message in the Sweego delivery log. Tracked in
-      // packages/backend/README.md.
-      requireEmailVerification: false,
       // A password reset invalidates every existing session for that user, so
       // a leaked/old session cannot survive the reset.
       revokeSessionsOnPasswordReset: true,
@@ -129,20 +123,6 @@ export const createAuthOptions = (
           {
             to: data.user.email,
             templateKey: "resetPassword",
-            props: { url: data.url },
-            locale: "en",
-          }
-        )
-      },
-    },
-    emailVerification: {
-      sendVerificationEmail: async (data) => {
-        // No per-account locale yet (Task 12 slice); verify emails go out in en.
-        await requireRunMutationCtx(ctx).runMutation(
-          internal.email.outbox.enqueueEmail,
-          {
-            to: data.user.email,
-            templateKey: "verifyEmail",
             props: { url: data.url },
             locale: "en",
           }

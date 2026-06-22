@@ -24,7 +24,7 @@ export const insertCredentialUser = mutation({
     const userDocId = await ctx.db.insert("user", {
       email,
       name,
-      emailVerified: true, // Pre-verified so a future requireEmailVerification flip does not lock this account.
+      emailVerified: true, // Accounts are provisioned pre-verified (invitation/admin-only; no self-serve sign-up).
       createdAt: now,
       updatedAt: now,
     })

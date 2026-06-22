@@ -15,13 +15,6 @@
       "cta": "Accept invitation",
       "note": "If you weren't expecting this invitation, you can ignore this email."
     },
-    "verifyEmail": {
-      "subject": "Verify your email address",
-      "heading": "Verify your email",
-      "body": "Confirm your email address to activate your blueprnt account.",
-      "cta": "Verify email",
-      "note": "If you didn't create a blueprnt account, you can ignore this email."
-    },
     "resetPassword": {
       "subject": "Reset your password",
       "heading": "Reset your password",
@@ -838,7 +831,6 @@
         },
         "templates": {
           "invitation": "Invitation",
-          "verifyEmail": "Email verification",
           "resetPassword": "Password reset",
           "all": "All types"
         },

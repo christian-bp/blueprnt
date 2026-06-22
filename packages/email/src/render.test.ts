@@ -16,11 +16,11 @@ describe("renderEmail", () => {
   })
 
   it("renders Swedish when locale is sv", async () => {
-    const result = await renderEmail("verifyEmail", {
-      url: "https://x.example/verify",
+    const result = await renderEmail("resetPassword", {
+      url: "https://x.example/reset",
       locale: "sv",
     })
-    expect(result.subject).not.toBe("Verify your email address")
+    expect(result.subject).not.toBe("Reset your password")
   })
 
   it("falls back to English for unknown locales", async () => {
@@ -35,8 +35,8 @@ describe("renderEmail", () => {
   it("every EMAIL_LOCALES entry has its own translations (no silent fallback)", async () => {
     const subjects = await Promise.all(
       EMAIL_LOCALES.map(async (locale) => {
-        const result = await renderEmail("verifyEmail", {
-          url: "https://x.example/verify",
+        const result = await renderEmail("resetPassword", {
+          url: "https://x.example/reset",
           locale,
         })
         return result.subject
@@ -59,14 +59,7 @@ describe("renderEmail", () => {
     expect(result.html).toContain(String(new Date().getFullYear()))
   })
 
-  it("includes the CTA href and security note for verify and invitation", async () => {
-    const verify = await renderEmail("verifyEmail", {
-      url: "https://x.example/verify",
-      locale: "en",
-    })
-    expect(verify.html).toContain("https://x.example/verify")
-    expect(verify.html).toContain("you can ignore this email")
-
+  it("includes the CTA href and security note for the invitation email", async () => {
     const invite = await renderEmail("invitation", {
       inviterName: "Anna",
       organizationName: "Acme",

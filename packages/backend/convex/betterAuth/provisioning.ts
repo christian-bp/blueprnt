@@ -8,8 +8,8 @@ const memberRoleArg = v.union(v.literal("admin"), v.literal("editor"))
 // Provision a Better Auth user with NO credential account. The account is
 // created later by resetPassword when the invited user sets their password
 // (better-auth 1.6.17 creates the credential row on reset if absent).
-// emailVerified is true so a future requireEmailVerification flip cannot lock
-// the account. Idempotent by email.
+// emailVerified is true because accounts are provisioned pre-verified
+// (invitation/admin-only; no self-serve sign-up). Idempotent by email.
 export const provisionUser = mutation({
   args: { email: v.string(), name: v.string() },
   returns: v.object({ userId: v.string(), created: v.boolean() }),

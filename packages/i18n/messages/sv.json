@@ -15,13 +15,6 @@
       "cta": "Acceptera inbjudan",
       "note": "Om du inte väntade dig den här inbjudan kan du ignorera det här mejlet."
     },
-    "verifyEmail": {
-      "subject": "Verifiera din e-postadress",
-      "heading": "Verifiera din e-post",
-      "body": "Bekräfta din e-postadress för att aktivera ditt blueprnt-konto.",
-      "cta": "Verifiera e-post",
-      "note": "Om du inte skapade ett blueprnt-konto kan du ignorera det här mejlet."
-    },
     "resetPassword": {
       "subject": "Återställ ditt lösenord",
       "heading": "Återställ ditt lösenord",
@@ -838,7 +831,6 @@
         },
         "templates": {
           "invitation": "Inbjudan",
-          "verifyEmail": "E-postverifiering",
           "resetPassword": "Återställning av lösenord",
           "all": "Alla typer"
         },
