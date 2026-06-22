@@ -3,19 +3,20 @@ import { users, organizations } from "./accounts/tables"
 import { aiUsageEvents, aiUsageMonthly } from "./ai/tables"
 import { roleFamilies, roles, ratings } from "./assessment/tables"
 import { models, criteria } from "./evaluationModel/tables"
-import { emails } from "./email/tables"
 import { auditLog, suggestions, platformAuditLog } from "./shared/tables"
 
-// Nine domain tables by design (ADR-0006): aggregates (anchors, band
+// Minimal domain tables by design (ADR-0006): aggregates (anchors, band
 // thresholds) live on their parent documents and the fixed V1 track schema is
 // constants, so only entities with external references or independent write
-// paths get a table of their own. The two aiUsage* tables are append-only
-// telemetry / rollup for AI cost tracking (spec 2026-06-10), outside that
-// domain count.
+// paths get a table of their own. Since ADR-0006 the set shifted: the operator
+// log `platformAuditLog` was added (ADR-0009), and the former `emails` outbox
+// table was retired when email moved to the Sweego component (its records live
+// in that component now, not in the app schema). The two aiUsage* tables are
+// append-only telemetry / rollup for AI cost tracking (spec 2026-06-10),
+// outside that domain count.
 export default defineSchema({
   users,
   organizations,
-  emails,
   auditLog,
   platformAuditLog,
   models,

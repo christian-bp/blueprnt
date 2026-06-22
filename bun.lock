@@ -68,6 +68,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@ai-sdk/mistral": "^3.0.38",
+        "@christian-ek/sweego": "0.4.0",
         "@convex-dev/better-auth": "0.12.3",
         "@workspace/constants": "workspace:*",
         "@workspace/core": "workspace:*",
@@ -113,6 +114,7 @@
       "dependencies": {
         "@react-email/components": "1.0.12",
         "@react-email/render": "2.0.8",
+        "@workspace/constants": "workspace:*",
         "@workspace/i18n": "workspace:*",
         "react": "19.2.7",
       },
@@ -319,7 +321,11 @@
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.4.16", "", { "os": "win32", "cpu": "x64" }, "sha512-Kp85jgoBHa05gix6UIRjfCDiUV3w/8VIdZ247VyyO2gEjaw12WEVhdIjlxp/AMzXxqxQwbxNTDVZ3Mwd2RG5rw=="],
 
+    "@christian-ek/sweego": ["@christian-ek/sweego@0.4.0", "", { "dependencies": { "@convex-dev/workpool": "^0.4.6" }, "peerDependencies": { "convex": "^1.31.7", "convex-helpers": "^0.1.106" } }, "sha512-0T7ZqNTGaWVnixT+t9mU6wUQoF7jR5R1tahFvBk4bXqrBiz60of4TFVvVNVn9dSHkK6kTVBfag87Aqxbnr6gpA=="],
+
     "@convex-dev/better-auth": ["@convex-dev/better-auth@0.12.3", "", { "dependencies": { "@better-fetch/fetch": "^1.1.18", "common-tags": "^1.8.2", "convex-helpers": "^0.1.95", "jose": "^6.1.0", "remeda": "^2.32.0", "semver": "^7.7.3", "type-fest": "^5.0.0", "zod": "^4.0.0" }, "peerDependencies": { "better-auth": ">=1.6.11 <1.7.0", "convex": "^1.25.0", "react": "^18.3.1 || ^19.0.0" } }, "sha512-OIgky1NDJRnojgxGXT78eCcDYNR3Z8a6dEXCpsvw0I/7DApp7Qn/QpnBU3/O4yoQ4+r3y+aotEEJYHda0HoZ8Q=="],
+
+    "@convex-dev/workpool": ["@convex-dev/workpool@0.4.7", "", { "peerDependencies": { "convex": "^1.31.7", "convex-helpers": "^0.1.94" } }, "sha512-4O3VKcJXqYZ9icDgKdVPxjDGUAFK3oG0hbUwLcyYMYgsvVKlZDhvZRmczqSBZHLyrCGPpf925byh0dBigCfAGA=="],
 
     "@date-fns/tz": ["@date-fns/tz@1.5.0", "", {}, "sha512-lwYN/vDPeNRULcepoE/LO2Pgx+7/RV+S9ARfbc9lr2DtGkOD7pAiruHvbR1RX3Qyf6ja47EWJDMsNK5vK08DJg=="],
 

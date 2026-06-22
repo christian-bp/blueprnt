@@ -42,8 +42,11 @@ import type * as assessment_tables from "../assessment/tables.js";
 import type * as auth from "../auth.js";
 import type * as crons from "../crons.js";
 import type * as devReset from "../devReset.js";
+import type * as email_cleanup from "../email/cleanup.js";
+import type * as email_client from "../email/client.js";
+import type * as email_erasure from "../email/erasure.js";
 import type * as email_outbox from "../email/outbox.js";
-import type * as email_tables from "../email/tables.js";
+import type * as email_templates from "../email/templates.js";
 import type * as evaluationModel_criteria from "../evaluationModel/criteria.js";
 import type * as evaluationModel_localize from "../evaluationModel/localize.js";
 import type * as evaluationModel_model from "../evaluationModel/model.js";
@@ -56,6 +59,7 @@ import type * as lib_errors from "../lib/errors.js";
 import type * as lib_functions from "../lib/functions.js";
 import type * as platform_admin from "../platform/admin.js";
 import type * as platform_bootstrap from "../platform/bootstrap.js";
+import type * as platform_emailLog from "../platform/emailLog.js";
 import type * as seed from "../seed.js";
 import type * as shared_tables from "../shared/tables.js";
 
@@ -100,8 +104,11 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   crons: typeof crons;
   devReset: typeof devReset;
+  "email/cleanup": typeof email_cleanup;
+  "email/client": typeof email_client;
+  "email/erasure": typeof email_erasure;
   "email/outbox": typeof email_outbox;
-  "email/tables": typeof email_tables;
+  "email/templates": typeof email_templates;
   "evaluationModel/criteria": typeof evaluationModel_criteria;
   "evaluationModel/localize": typeof evaluationModel_localize;
   "evaluationModel/model": typeof evaluationModel_model;
@@ -114,6 +121,7 @@ declare const fullApi: ApiFromModules<{
   "lib/functions": typeof lib_functions;
   "platform/admin": typeof platform_admin;
   "platform/bootstrap": typeof platform_bootstrap;
+  "platform/emailLog": typeof platform_emailLog;
   seed: typeof seed;
   "shared/tables": typeof shared_tables;
 }>;
@@ -146,4 +154,5 @@ export declare const internal: FilterApi<
 
 export declare const components: {
   betterAuth: import("../betterAuth/_generated/component.js").ComponentApi<"betterAuth">;
+  sweego: import("@christian-ek/sweego/_generated/component.js").ComponentApi<"sweego">;
 };

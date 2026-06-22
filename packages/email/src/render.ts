@@ -1,4 +1,5 @@
 import { render } from "@react-email/render"
+import type { EmailTemplateKey } from "@workspace/constants"
 import { emailMessages, fillTemplate } from "./messages"
 import {
   InvitationEmail,
@@ -7,7 +8,10 @@ import {
 import { ResetPasswordEmail } from "./templates/reset-password"
 import { VerifyEmail } from "./templates/verify-email"
 
-export type EmailTemplateKey = "invitation" | "verifyEmail" | "resetPassword"
+// The template-key set is owned by @workspace/constants (the single source the
+// backend validators and the admin-log UI also derive from); re-exported here so
+// existing importers of @workspace/email keep their type.
+export type { EmailTemplateKey }
 
 export interface RenderedEmail {
   subject: string

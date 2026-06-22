@@ -664,7 +664,8 @@
       "tabs": {
         "users": "Käyttäjät",
         "organizations": "Organisaatiot",
-        "auditLog": "Tapahtumaloki"
+        "auditLog": "Tapahtumaloki",
+        "emailLog": "Sähköpostiloki"
       },
       "notAuthorized": "Sinulla ei ole pääsyä tälle sivulle.",
       "users": {
@@ -813,6 +814,77 @@
           "membershipRevoked": "Jäsenyys poistettu",
           "adminGranted": "Alustan järjestelmänvalvoja myönnetty",
           "adminRevoked": "Alustan järjestelmänvalvoja peruutettu"
+        }
+      },
+      "emailLog": {
+        "heading": "Sähköpostiloki",
+        "description": "Kaikki alustan kautta lähetetyt sähköpostit.",
+        "empty": "Sähköposteja ei ole vielä lähetetty.",
+        "statusFilterLabel": "Suodata tilan mukaan",
+        "statuses": {
+          "all": "Kaikki tilat",
+          "queued": "Jonossa",
+          "sent": "Lähetetty",
+          "failed": "Epäonnistui",
+          "cancelled": "Peruutettu"
+        },
+        "templates": {
+          "invitation": "Kutsu",
+          "verifyEmail": "Sähköpostin vahvistus",
+          "resetPassword": "Salasanan palautus",
+          "all": "Kaikki tyypit"
+        },
+        "previous": "Edellinen",
+        "next": "Seuraava",
+        "noSubject": "(ei aihetta)",
+        "table": {
+          "when": "Lähetetty",
+          "subject": "Aihe",
+          "template": "Tyyppi",
+          "status": "Tila"
+        },
+        "detail": {
+          "to": "Vastaanottaja",
+          "from": "Lähettäjä",
+          "status": "Tila",
+          "template": "Tyyppi",
+          "transactionId": "Tapahtumatunnus",
+          "error": "Virhe",
+          "deliveriesHeading": "Toimitus",
+          "previewHeading": "Esikatselu",
+          "noPreview": "Esikatselua ei ole saatavilla tälle viestille.",
+          "close": "Sulje",
+          "loading": "Ladataan",
+          "notFound": "Viestiä ei löytynyt.",
+          "viewDetailsFor": "Näytä tiedot: {subject}",
+          "previewOf": "Esikatselu: {subject}"
+        },
+        "delivery": {
+          "status": {
+            "pending": "Odottaa",
+            "sent": "Lähetetty",
+            "delivered": "Toimitettu",
+            "soft_bounced": "Tilapäinen palautus",
+            "bounced": "Palautunut",
+            "undelivered": "Ei toimitettu",
+            "stopped": "Pysäytetty"
+          },
+          "opened": "Avattu",
+          "clicked": "Klikattu",
+          "complained": "Roskapostivalitus",
+          "unsubscribed": "Tilaus peruttu"
+        },
+        "typeFilterLabel": "Suodata tyypin mukaan",
+        "search": {
+          "placeholder": "Hae sähköposteja",
+          "capped": "Näytetään {count} ensimmäistä osumaa",
+          "empty": "Yksikään sähköposti ei vastaa hakuasi."
+        },
+        "dateRange": {
+          "label": "Suodata päivämäärän mukaan",
+          "placeholder": "Aikaväli",
+          "clear": "Tyhjennä",
+          "today": "Tänään"
         }
       }
     }

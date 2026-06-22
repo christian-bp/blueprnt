@@ -155,13 +155,18 @@ export const updateOrganizationIdentity = mutation({
 })
 
 // GDPR erasure: delete every identity/membership/invitation row for a user.
-// Returns the distinct org ids the user was a member of; the caller uses only
-// the count for its admin-log entry. Per-org org-auditLog rows are intentionally
-// not written, keeping operator actions out of tenants' logs. Bounded reads are
-// fine at V1 scale.
+// Returns the distinct org ids the user was a member of (the caller uses only
+// the count for its admin-log entry) and the user's email (the authoritative
+// address, so the caller can purge the person's email PII even if the app
+// `users` mirror is missing). Per-org org-auditLog rows are intentionally not
+// written, keeping operator actions out of tenants' logs. Bounded reads are fine
+// at V1 scale.
 export const eraseUser = mutation({
   args: { userId: v.string() },
-  returns: v.object({ orgIds: v.array(v.string()) }),
+  returns: v.object({
+    orgIds: v.array(v.string()),
+    email: v.union(v.string(), v.null()),
+  }),
   handler: async (ctx, { userId }) => {
     const members = await ctx.db
       .query("member")
@@ -185,6 +190,7 @@ export const eraseUser = mutation({
     // (inviterId index).
     const uid = ctx.db.normalizeId("user", userId)
     const user = uid === null ? null : await ctx.db.get(uid)
+    const email = user?.email ?? null
     if (user !== null) {
       const invitedTo = await ctx.db
         .query("invitation")
@@ -198,7 +204,7 @@ export const eraseUser = mutation({
       .collect()
     for (const inv of invitedBy) await ctx.db.delete(inv._id)
     if (uid !== null) await ctx.db.delete(uid)
-    return { orgIds }
+    return { orgIds, email }
   },
 })
 

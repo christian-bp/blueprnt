@@ -664,7 +664,8 @@
       "tabs": {
         "users": "Brukere",
         "organizations": "Organisasjoner",
-        "auditLog": "Hendelseslogg"
+        "auditLog": "Hendelseslogg",
+        "emailLog": "E-postlogg"
       },
       "notAuthorized": "Du har ikke tilgang til denne siden.",
       "users": {
@@ -813,6 +814,77 @@
           "membershipRevoked": "Medlemskap fjernet",
           "adminGranted": "Plattformadministrator tildelt",
           "adminRevoked": "Plattformadministrator tilbakekalt"
+        }
+      },
+      "emailLog": {
+        "heading": "E-postlogg",
+        "description": "Alle e-poster som er sendt via plattformen.",
+        "empty": "Ingen e-poster er sendt ennå.",
+        "statusFilterLabel": "Filtrer etter status",
+        "statuses": {
+          "all": "Alle statuser",
+          "queued": "I kø",
+          "sent": "Sendt",
+          "failed": "Mislyktes",
+          "cancelled": "Avbrutt"
+        },
+        "templates": {
+          "invitation": "Invitasjon",
+          "verifyEmail": "E-postverifisering",
+          "resetPassword": "Tilbakestilling av passord",
+          "all": "Alle typer"
+        },
+        "previous": "Forrige",
+        "next": "Neste",
+        "noSubject": "(uten emne)",
+        "table": {
+          "when": "Sendt",
+          "subject": "Emne",
+          "template": "Type",
+          "status": "Status"
+        },
+        "detail": {
+          "to": "Til",
+          "from": "Fra",
+          "status": "Status",
+          "template": "Type",
+          "transactionId": "Transaksjons-ID",
+          "error": "Feil",
+          "deliveriesHeading": "Levering",
+          "previewHeading": "Forhåndsvisning",
+          "noPreview": "Ingen forhåndsvisning tilgjengelig for denne meldingen.",
+          "close": "Lukk",
+          "loading": "Laster",
+          "notFound": "Meldingen ble ikke funnet.",
+          "viewDetailsFor": "Vis detaljer for {subject}",
+          "previewOf": "Forhåndsvisning av {subject}"
+        },
+        "delivery": {
+          "status": {
+            "pending": "Venter",
+            "sent": "Sendt",
+            "delivered": "Levert",
+            "soft_bounced": "Midlertidig retur",
+            "bounced": "Returnert",
+            "undelivered": "Ikke levert",
+            "stopped": "Stoppet"
+          },
+          "opened": "Åpnet",
+          "clicked": "Klikket",
+          "complained": "Spamklage",
+          "unsubscribed": "Avmeldt"
+        },
+        "typeFilterLabel": "Filtrer etter type",
+        "search": {
+          "placeholder": "Søk i e-poster",
+          "capped": "Viser de første {count} treffene",
+          "empty": "Ingen e-poster samsvarer med søket ditt."
+        },
+        "dateRange": {
+          "label": "Filtrer etter dato",
+          "placeholder": "Datointervall",
+          "clear": "Tøm",
+          "today": "I dag"
         }
       }
     }

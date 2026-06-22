@@ -9,8 +9,11 @@ Convex backend (EU West / Ireland deployment, project quantumlabs/blueprnt).
 - If file watching misbehaves during `convex dev`, set `CONVEX_TMPDIR` to a
   directory on the same filesystem as the repo (macOS: /tmp is a different
   filesystem than /Volumes).
-- Deployment env vars: `BETTER_AUTH_SECRET`, `SITE_URL` (and later Scaleway
-  TEM credentials). Set via `bunx convex env set`.
+- Deployment env vars: `BETTER_AUTH_SECRET`, `SITE_URL`, and the Sweego email
+  vars (`SWEEGO_API_KEY`, `SWEEGO_WEBHOOK_SECRET`, `EMAIL_FROM`). Set via
+  `bunx convex env set`. Email is sent through the `@christian-ek/sweego`
+  Convex component; register the delivery webhook in the Sweego dashboard at
+  `<convex-site-url>/webhooks/sweego` (verified with `SWEEGO_WEBHOOK_SECRET`).
 - No self-serve sign-up: `emailAndPassword.disableSignUp` is set in
   `convex/auth.ts`; accounts are provisioned by an admin (the dev seed
   today, the invitation flow later).
@@ -22,12 +25,22 @@ Convex backend (EU West / Ireland deployment, project quantumlabs/blueprnt).
   Creates "Blueprnt AB" (slug `blueprnt-ab`) as a fully onboarded, rated SaaS company (settings + standard model + the itTelecom starter roles, every role rated so the results/band view is populated) and "Blueprnt Nordic AB" (slug `blueprnt-nordic-ab`) as a bare company (membership only, no settings/model). The seeded user is admin in both. Switching to Blueprnt Nordic AB opens the onboarding wizard, which is how to test onboarding. Idempotent; same localhost guard. `bun db:reset` already runs this; run it directly only to (re)seed companies without a full wipe.
 - Full reset (from the repo root): `bunx convex run seed:resetDatabase`, or `bun db:reset`.
   Wipes everything, then re-seeds the dev user plus the two companies above. Sign-in lands on Blueprnt AB's populated dashboard; switch to Blueprnt Nordic AB to test onboarding. Stricter guard than the other seeds: `SITE_URL`'s hostname must BE `localhost` or `127.0.0.1`.
-- Email verification is disabled until the Scaleway TEM env vars
-  (`SCW_SECRET_KEY`, `SCW_PROJECT_ID`, `SCW_REGION`, `EMAIL_FROM`) are set
-  and the sending domain is verified. When configuring them, also flip
-  `requireEmailVerification` to `true` in `convex/auth.ts`. Manual verify
-  fallback: open the `emails` row in the Convex dashboard and visit
-  `props.url`.
+- Email verification is disabled until the Sweego sender is live
+  (`SWEEGO_API_KEY` set and the `EMAIL_FROM` domain verified at Sweego). Once
+  it is, flip `requireEmailVerification` to `true` in `convex/auth.ts`. Manual
+  verify fallback: open the message in the Sweego delivery log and visit its
+  verification link.
+- Email PII (recipient address + body) lives in the Sweego component and is
+  sent through Sweego, the EU email subprocessor (recipient address + body are
+  processed there under the same EU-residency bar as Convex; see ADR-0001). It
+  is bounded two ways: a daily retention cron prunes history (`email/cleanup.ts`,
+  1 week), and erasing a person purges their email history point-in-time:
+  `platform/admin.deleteUser` schedules `email/erasure.purgeRecipientEmails`,
+  which deletes every message addressed to them (deliveries + events included)
+  via the component's `purgeRecipient`. The purge is keyed on the person's
+  current address, the only address V1 records (there is no email-change flow;
+  adding one must also purge prior addresses, see ADR-0009). So GDPR erasure
+  leaves no residual email PII.
 
 ## Before go-live
 
@@ -35,8 +48,8 @@ Convex backend (EU West / Ireland deployment, project quantumlabs/blueprnt).
   `devReset.wipeAppTables`, `betterAuth/seed.wipeAuthData`). They exist for
   the demo phase; once real customer data exists there must be no admin
   action that can erase a production deployment in one call.
-- Flip `requireEmailVerification` to `true` together with the Scaleway TEM
-  env vars (see above).
+- Flip `requireEmailVerification` to `true` once the Sweego sender is live
+  (see above).
 
 ## AI environment variables
 

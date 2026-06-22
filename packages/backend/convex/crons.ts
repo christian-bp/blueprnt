@@ -3,21 +3,12 @@ import { internal } from "./_generated/api"
 
 const crons = cronJobs()
 
-const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000
-const FIFTEEN_MINUTES_MS = 15 * 60 * 1000
-
+// Sweego owns email delivery + retention; this prunes its history daily.
 crons.interval(
-  "cleanup old outbox emails",
+  "prune Sweego email history",
   { hours: 24 },
-  internal.email.outbox.cleanupOldEmails,
-  { olderThanMs: THIRTY_DAYS_MS }
-)
-
-crons.interval(
-  "sweep stale outbox emails",
-  { minutes: 15 },
-  internal.email.outbox.sweepStaleEmails,
-  { olderThanMs: FIFTEEN_MINUTES_MS }
+  internal.email.cleanup.run,
+  {}
 )
 
 export default crons

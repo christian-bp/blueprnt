@@ -17,6 +17,7 @@
   "dependencies": {
     "@react-email/components": "1.0.12",
     "@react-email/render": "2.0.8",
+    "@workspace/constants": "workspace:*",
     "@workspace/i18n": "workspace:*",
     "react": "19.2.7"
   },

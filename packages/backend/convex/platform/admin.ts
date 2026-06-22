@@ -1,7 +1,7 @@
 import { isValidSlug } from "@workspace/constants"
 import { paginationOptsValidator } from "convex/server"
 import { v } from "convex/values"
-import { components } from "../_generated/api"
+import { components, internal } from "../_generated/api"
 import { query } from "../_generated/server"
 import type { QueryCtx } from "../_generated/server"
 import { onOrganizationCreate, onUserCreate } from "../accounts/mirrors"
@@ -596,21 +596,35 @@ export const updateOrganization = platformMutation({
 const ERASED_ACTOR_NAME = "deleted user"
 
 // GDPR erasure. Deletes every identity/membership/invitation row (via the
-// component), the app users mirror, and anonymizes the person's snapshotted
-// actorName in both audit logs (the rows are kept for the trail's legitimate-
-// interest basis, and their payloads carry IDs/codes only, never PII). The
-// erasure itself is recorded in the ADMIN log only; nothing is written to any
-// org's auditLog. Self-delete is blocked. The admin-log payload carries a
-// non-identifying org count, never the erased name/email.
+// component), the app users mirror, the person's email history in the Sweego
+// component (messages + deliveries + events addressed to them), and anonymizes
+// the person's snapshotted actorName in both audit logs (the rows are kept for
+// the trail's legitimate-interest basis, and their payloads carry IDs/codes
+// only, never PII). The erasure itself is recorded in the ADMIN log only;
+// nothing is written to any org's auditLog. Self-delete is blocked. The
+// admin-log payload carries a non-identifying org count, never the erased
+// name/email.
 export const deleteUser = platformMutation({
   args: { authId: v.string() },
   returns: v.null(),
   handler: async (ctx, { authId }) => {
     if (authId === ctx.authUserId) throw appError(ERROR_CODES.invalidInput)
-    const { orgIds } = await ctx.runMutation(
+    const { orgIds, email } = await ctx.runMutation(
       components.betterAuth.provisioning.eraseUser,
       { userId: authId }
     )
+    // GDPR erasure of the person's email PII: purge every message addressed to
+    // them (with its deliveries + events) from the Sweego email component, via
+    // the email module. Scheduled so it commits with the erasure. Keyed on the
+    // Better Auth address returned by eraseUser (the authoritative source the
+    // mirror only mirrors), so the purge runs even if the app mirror is missing.
+    if (email !== null) {
+      await ctx.scheduler.runAfter(
+        0,
+        internal.email.erasure.purgeRecipientEmails,
+        { email }
+      )
+    }
     // App mirror.
     const mirror = await ctx.db
       .query("users")

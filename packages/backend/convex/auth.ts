@@ -110,10 +110,11 @@ export const createAuthOptions = (
       // admin (dev seed today, invitation flow later). This closes the
       // public sign-up endpoint, not just the UI.
       disableSignUp: true,
-      // Flip to true together with configuring the Scaleway TEM env vars:
-      // with no working sender, required verification strands every new
-      // account (the manual path is reading props.url from the emails row
-      // in the Convex dashboard). Tracked in packages/backend/README.md.
+      // Flip to true once the Sweego sender is live (SWEEGO_API_KEY set +
+      // the EMAIL_FROM domain verified at Sweego): with no working sender,
+      // required verification strands every new account. The manual fallback
+      // is reading the message in the Sweego delivery log. Tracked in
+      // packages/backend/README.md.
       requireEmailVerification: false,
       // A password reset invalidates every existing session for that user, so
       // a leaked/old session cannot survive the reset.

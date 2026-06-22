@@ -664,7 +664,8 @@
       "tabs": {
         "users": "Brugere",
         "organizations": "Organisationer",
-        "auditLog": "Hændelseslog"
+        "auditLog": "Hændelseslog",
+        "emailLog": "E-maillog"
       },
       "notAuthorized": "Du har ikke adgang til denne side.",
       "users": {
@@ -813,6 +814,77 @@
           "membershipRevoked": "Medlemskab fjernet",
           "adminGranted": "Platformadministrator tildelt",
           "adminRevoked": "Platformadministrator tilbagekaldt"
+        }
+      },
+      "emailLog": {
+        "heading": "E-maillog",
+        "description": "Alle e-mails sendt via platformen.",
+        "empty": "Der er endnu ikke sendt nogen e-mails.",
+        "statusFilterLabel": "Filtrer efter status",
+        "statuses": {
+          "all": "Alle statusser",
+          "queued": "I kø",
+          "sent": "Sendt",
+          "failed": "Mislykkedes",
+          "cancelled": "Annulleret"
+        },
+        "templates": {
+          "invitation": "Invitation",
+          "verifyEmail": "E-mailbekræftelse",
+          "resetPassword": "Nulstilling af adgangskode",
+          "all": "Alle typer"
+        },
+        "previous": "Forrige",
+        "next": "Næste",
+        "noSubject": "(intet emne)",
+        "table": {
+          "when": "Sendt",
+          "subject": "Emne",
+          "template": "Type",
+          "status": "Status"
+        },
+        "detail": {
+          "to": "Til",
+          "from": "Fra",
+          "status": "Status",
+          "template": "Type",
+          "transactionId": "Transaktions-ID",
+          "error": "Fejl",
+          "deliveriesHeading": "Levering",
+          "previewHeading": "Forhåndsvisning",
+          "noPreview": "Ingen forhåndsvisning tilgængelig for denne besked.",
+          "close": "Luk",
+          "loading": "Indlæser",
+          "notFound": "Beskeden blev ikke fundet.",
+          "viewDetailsFor": "Vis detaljer for {subject}",
+          "previewOf": "Forhåndsvisning af {subject}"
+        },
+        "delivery": {
+          "status": {
+            "pending": "Afventer",
+            "sent": "Sendt",
+            "delivered": "Leveret",
+            "soft_bounced": "Midlertidigt afvist",
+            "bounced": "Afvist",
+            "undelivered": "Ikke leveret",
+            "stopped": "Stoppet"
+          },
+          "opened": "Åbnet",
+          "clicked": "Klikket",
+          "complained": "Spamklage",
+          "unsubscribed": "Afmeldt"
+        },
+        "typeFilterLabel": "Filtrer efter type",
+        "search": {
+          "placeholder": "Søg i e-mails",
+          "capped": "Viser de første {count} match",
+          "empty": "Ingen e-mails matcher din søgning."
+        },
+        "dateRange": {
+          "label": "Filtrer efter dato",
+          "placeholder": "Datointerval",
+          "clear": "Ryd",
+          "today": "I dag"
         }
       }
     }

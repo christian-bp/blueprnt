@@ -1054,6 +1054,27 @@ describe("deleteUser (erasure)", () => {
     // Only the unrelated invitation is left.
     expect(remaining).toEqual([{ email: "keep@acme.se", inviterId: adminId }])
   })
+
+  it("schedules a Sweego purge of the erased person's email history", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    const { authId } = await asAdmin.mutation(api.platform.admin.createUser, {
+      name: "Purge Me",
+      email: "purge@acme.se",
+    })
+    await asAdmin.mutation(api.platform.admin.deleteUser, { authId })
+    // deleteUser schedules components.sweego.lib.purgeRecipient with the erased
+    // person's address so their sent-email history (recipient + body) is removed
+    // point-in-time, not just by retention. The purge behavior itself is tested
+    // in the Sweego component.
+    const scheduled = await t.run((ctx) =>
+      ctx.db.system.query("_scheduled_functions").collect()
+    )
+    const purge = scheduled.find((s) => s.name.includes("purgeRecipientEmails"))
+    expect(purge).toBeDefined()
+    expect(purge?.args).toEqual([{ email: "purge@acme.se" }])
+  })
 })
 
 describe("admin audit log coverage (every action is logged, separately)", () => {

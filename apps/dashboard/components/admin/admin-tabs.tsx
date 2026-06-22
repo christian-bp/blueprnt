@@ -15,26 +15,28 @@ const TABS = [
   { labelKey: "users", href: "/admin" },
   { labelKey: "organizations", href: "/admin/organizations" },
   { labelKey: "auditLog", href: "/admin/audit-log" },
+  { labelKey: "emailLog", href: "/admin/email-log" },
 ] as const
+
+// The index tab (Users, /admin) is active only when no sub-route matches.
+const SUB_ROUTES = TABS.filter((tab) => tab.href !== "/admin").map(
+  (tab) => tab.href
+)
 
 export function AdminTabs() {
   const t = useTranslations("dashboard.admin.tabs")
   const tNav = useTranslations("dashboard.nav")
   const pathname = usePathname()
-  const onOrganizations = pathname.startsWith("/admin/organizations")
-  const onAuditLog = pathname.startsWith("/admin/audit-log")
 
   return (
     <nav aria-label={tNav("admin")} className="flex h-full items-stretch gap-1">
       {TABS.map((tab) => {
-        // Users is the index, active for any admin path that is neither the
-        // organizations nor the audit-log sub-route.
+        // The index tab (Users, /admin) is active for any admin path that is
+        // not one of the sub-routes; each sub-route tab matches by prefix.
         const active =
-          tab.href === "/admin/organizations"
-            ? onOrganizations
-            : tab.href === "/admin/audit-log"
-              ? onAuditLog
-              : !onOrganizations && !onAuditLog
+          tab.href === "/admin"
+            ? !SUB_ROUTES.some((route) => pathname.startsWith(route))
+            : pathname.startsWith(tab.href)
         return (
           <Link
             key={tab.href}

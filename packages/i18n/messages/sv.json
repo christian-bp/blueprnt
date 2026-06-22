@@ -664,7 +664,8 @@
       "tabs": {
         "users": "Användare",
         "organizations": "Organisationer",
-        "auditLog": "Händelselogg"
+        "auditLog": "Händelselogg",
+        "emailLog": "E-postlogg"
       },
       "notAuthorized": "Du har inte åtkomst till den här sidan.",
       "users": {
@@ -813,6 +814,77 @@
           "membershipRevoked": "Medlemskap borttaget",
           "adminGranted": "Plattformsadministratör tilldelad",
           "adminRevoked": "Plattformsadministratör återkallad"
+        }
+      },
+      "emailLog": {
+        "heading": "E-postlogg",
+        "description": "Alla e-postmeddelanden som skickats via plattformen.",
+        "empty": "Inga e-postmeddelanden har skickats ännu.",
+        "statusFilterLabel": "Filtrera efter status",
+        "statuses": {
+          "all": "Alla statusar",
+          "queued": "I kö",
+          "sent": "Skickad",
+          "failed": "Misslyckad",
+          "cancelled": "Avbruten"
+        },
+        "templates": {
+          "invitation": "Inbjudan",
+          "verifyEmail": "E-postverifiering",
+          "resetPassword": "Återställning av lösenord",
+          "all": "Alla typer"
+        },
+        "previous": "Föregående",
+        "next": "Nästa",
+        "noSubject": "(inget ämne)",
+        "table": {
+          "when": "Skickad",
+          "subject": "Ämne",
+          "template": "Typ",
+          "status": "Status"
+        },
+        "detail": {
+          "to": "Till",
+          "from": "Från",
+          "status": "Status",
+          "template": "Typ",
+          "transactionId": "Transaktions-ID",
+          "error": "Fel",
+          "deliveriesHeading": "Leverans",
+          "previewHeading": "Förhandsvisning",
+          "noPreview": "Ingen förhandsvisning tillgänglig för detta meddelande.",
+          "close": "Stäng",
+          "loading": "Läser in",
+          "notFound": "Meddelandet hittades inte.",
+          "viewDetailsFor": "Visa detaljer för {subject}",
+          "previewOf": "Förhandsvisning av {subject}"
+        },
+        "delivery": {
+          "status": {
+            "pending": "Väntar",
+            "sent": "Skickad",
+            "delivered": "Levererad",
+            "soft_bounced": "Tillfällig studs",
+            "bounced": "Studsad",
+            "undelivered": "Ej levererad",
+            "stopped": "Stoppad"
+          },
+          "opened": "Öppnad",
+          "clicked": "Klickad",
+          "complained": "Spamanmälan",
+          "unsubscribed": "Avregistrerad"
+        },
+        "typeFilterLabel": "Filtrera efter typ",
+        "search": {
+          "placeholder": "Sök e-post",
+          "capped": "Visar de första {count} träffarna",
+          "empty": "Inga e-postmeddelanden matchar din sökning."
+        },
+        "dateRange": {
+          "label": "Filtrera efter datum",
+          "placeholder": "Datumintervall",
+          "clear": "Rensa",
+          "today": "Idag"
         }
       }
     }

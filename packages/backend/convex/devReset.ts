@@ -12,7 +12,6 @@ import { internalMutation } from "./_generated/server"
 const APP_TABLES = [
   "users",
   "organizations",
-  "emails",
   "auditLog",
   "models",
   "criteria",

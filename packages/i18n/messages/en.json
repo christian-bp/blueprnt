@@ -664,7 +664,8 @@
       "tabs": {
         "users": "Users",
         "organizations": "Organizations",
-        "auditLog": "Audit log"
+        "auditLog": "Audit log",
+        "emailLog": "Email log"
       },
       "notAuthorized": "You do not have access to this page.",
       "users": {
@@ -813,6 +814,77 @@
           "membershipRevoked": "Membership removed",
           "adminGranted": "Platform admin granted",
           "adminRevoked": "Platform admin revoked"
+        }
+      },
+      "emailLog": {
+        "heading": "Email log",
+        "description": "Every email sent through the platform.",
+        "empty": "No emails sent yet.",
+        "statusFilterLabel": "Filter by status",
+        "statuses": {
+          "all": "All statuses",
+          "queued": "Queued",
+          "sent": "Sent",
+          "failed": "Failed",
+          "cancelled": "Cancelled"
+        },
+        "templates": {
+          "invitation": "Invitation",
+          "verifyEmail": "Email verification",
+          "resetPassword": "Password reset",
+          "all": "All types"
+        },
+        "previous": "Previous",
+        "next": "Next",
+        "noSubject": "(no subject)",
+        "table": {
+          "when": "Sent",
+          "subject": "Subject",
+          "template": "Type",
+          "status": "Status"
+        },
+        "detail": {
+          "to": "To",
+          "from": "From",
+          "status": "Status",
+          "template": "Type",
+          "transactionId": "Transaction ID",
+          "error": "Error",
+          "deliveriesHeading": "Delivery",
+          "previewHeading": "Preview",
+          "noPreview": "No preview available for this message.",
+          "close": "Close",
+          "loading": "Loading",
+          "notFound": "Message not found.",
+          "viewDetailsFor": "View details for {subject}",
+          "previewOf": "Preview of {subject}"
+        },
+        "delivery": {
+          "status": {
+            "pending": "Pending",
+            "sent": "Sent",
+            "delivered": "Delivered",
+            "soft_bounced": "Soft bounce",
+            "bounced": "Bounced",
+            "undelivered": "Undelivered",
+            "stopped": "Stopped"
+          },
+          "opened": "Opened",
+          "clicked": "Clicked",
+          "complained": "Spam complaint",
+          "unsubscribed": "Unsubscribed"
+        },
+        "typeFilterLabel": "Filter by type",
+        "search": {
+          "placeholder": "Search emails",
+          "capped": "Showing the first {count} matches",
+          "empty": "No emails match your search."
+        },
+        "dateRange": {
+          "label": "Filter by date",
+          "placeholder": "Date range",
+          "clear": "Clear",
+          "today": "Today"
         }
       }
     }

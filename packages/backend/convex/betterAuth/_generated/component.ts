@@ -1553,7 +1553,7 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         "mutation",
         "internal",
         { userId: string },
-        { orgIds: Array<string> },
+        { email: string | null; orgIds: Array<string> },
         Name
       >;
       listAllOrganizations: FunctionReference<
