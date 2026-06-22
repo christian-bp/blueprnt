@@ -1,10 +1,12 @@
+import { cleanup, render } from "@testing-library/react"
+import type { ReactNode } from "react"
 import { describe, expect, it } from "vitest"
 import {
   aiAuditDetail,
   changeEntries,
-  formatAuditDetail,
+  formatAuditDetail as rawFormatAuditDetail,
+  formatChanges as rawFormatChanges,
   formatAuditValue,
-  formatChanges,
   orderEntries,
   payloadChanges,
   payloadItems,
@@ -13,6 +15,44 @@ import {
   payloadSuggestions,
   sectionKind,
 } from "./audit-detail"
+
+// formatChanges/formatAuditDetail now return ReactNode (the before->after arrow
+// is a ChangeArrow icon, not a "→" glyph). Render the node to its visible text,
+// rewriting each arrow icon back to " → ", so the one-line expectations below
+// read exactly like the summary a user sees. The icon contributes no text of its
+// own, so without this rewrite "se → no" would collapse to "seno".
+function arrowToText(node: Node): string {
+  let out = ""
+  for (const child of Array.from(node.childNodes)) {
+    if (child.nodeType === Node.TEXT_NODE) {
+      out += child.textContent ?? ""
+    } else if (
+      child.nodeType === Node.ELEMENT_NODE &&
+      (child as Element).tagName.toLowerCase() === "svg"
+    ) {
+      out += " → "
+    } else {
+      out += arrowToText(child)
+    }
+  }
+  return out
+}
+
+function summaryText(node: ReactNode): string {
+  const { container } = render(<span>{node}</span>)
+  const text = arrowToText(container)
+  cleanup()
+  return text
+}
+
+// Test-only wrappers that render the node formatters to text, so every existing
+// one-line assertion keeps working unchanged. The other helpers are pure and
+// imported directly.
+const formatChanges = (...args: Parameters<typeof rawFormatChanges>): string =>
+  summaryText(rawFormatChanges(...args))
+const formatAuditDetail = (
+  ...args: Parameters<typeof rawFormatAuditDetail>
+): string => summaryText(rawFormatAuditDetail(...args))
 
 const labels = {
   deletedRole: "Deleted role",

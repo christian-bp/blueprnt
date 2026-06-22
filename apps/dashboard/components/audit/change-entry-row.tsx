@@ -1,3 +1,4 @@
+import { ChangeArrow } from "@/components/audit/change-arrow"
 import type { changeEntries } from "@/lib/audit-detail"
 
 // One shared key/value grid for every block in a detail sheet (the meta block
@@ -11,7 +12,8 @@ export const KV_GRID = "grid grid-cols-[8rem_1fr] gap-x-4 gap-y-2.5 text-sm"
 // takes plain strings rather than a scoped translator, so any caller passes its
 // own localized labels. A complex (object/array) value renders its compact JSON
 // in a horizontally scrollable mono block so the sheet body never scrolls
-// sideways; a scalar shows "from -> to" (struck old) or just the new value.
+// sideways; a scalar shows "from [→] to" (struck old, ChangeArrow icon) or just
+// the new value.
 export function ChangeEntryRow({
   entry,
   emptyLabel,
@@ -30,7 +32,16 @@ export function ChangeEntryRow({
       <div className="mt-0.5">
         {entry.isComplex ? (
           <pre className="overflow-x-auto rounded bg-muted p-2 font-mono text-xs">
-            {entry.isSet ? entry.to : `${entry.from}\n→ ${entry.to}`}
+            {entry.isSet ? (
+              entry.to
+            ) : (
+              <>
+                {entry.from}
+                {"\n"}
+                <ChangeArrow className="mx-0 mr-1" />
+                {entry.to}
+              </>
+            )}
           </pre>
         ) : entry.isSet ? (
           <span className="break-words">{entry.to}</span>
@@ -39,7 +50,7 @@ export function ChangeEntryRow({
             <span className="text-muted-foreground line-through">
               {entry.from}
             </span>
-            <span className="px-2 text-muted-foreground">→</span>
+            <ChangeArrow />
             {entry.to.trim() === "" ? (
               <span className="text-muted-foreground italic">{emptyLabel}</span>
             ) : (

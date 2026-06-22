@@ -1,3 +1,6 @@
+import { Fragment, type ReactNode } from "react"
+import { ChangeArrow } from "@/components/audit/change-arrow"
+
 // Stringifies any audit-payload value for display. Scalars pass through (via
 // String); null/undefined collapse to "". Objects/arrays are compact-JSON
 // stringified so a complex before/after never leaks as "[object Object]". Any
@@ -19,32 +22,53 @@ export function formatAuditValue(value: unknown): string {
   }
 }
 
-// Renders a structured before->after `changes` object as plain text. Each entry
-// is "<fieldLabel>: <from> -> <to>" (a real right-arrow glyph), or just
-// "<fieldLabel>: <to>" when `from` is empty (null/undefined/blank), which reads
-// as a first-time set rather than a change. Entries are joined with "; ".
-// Complex (object/array) values are not dumped inline; the entry shows the
-// field label plus a `complexValue` placeholder so the dense table cell stays
-// readable (the detail sheet renders the full JSON instead).
+// Renders a structured before->after `changes` object as a one-line node. Each
+// entry is "<fieldLabel>: <from> [→] <to>" (the arrow is a ChangeArrow icon, not
+// a glyph), or just "<fieldLabel>: <to>" when `from` is empty (null/undefined/
+// blank), which reads as a first-time set rather than a change. Entries are
+// joined with "; ". Complex (object/array) values are not dumped inline; the
+// entry shows the field label plus a `complexValue` placeholder so the dense
+// table cell stays readable (the detail sheet renders the full JSON instead).
 export function formatChanges(
   changes: Record<string, { from: unknown; to: unknown }>,
   fieldLabel: (field: string) => string,
   complexPlaceholder = "…"
-): string {
-  return Object.entries(changes)
-    .map(([field, { from, to }]) => {
-      const label = fieldLabel(field)
-      const isComplex =
-        (typeof from === "object" && from !== null) ||
-        (typeof to === "object" && to !== null)
-      if (isComplex) return `${label}: ${complexPlaceholder}`
-      const fromText = formatAuditValue(from)
-      const toText = formatAuditValue(to)
-      return fromText.trim() === ""
-        ? `${label}: ${toText}`
-        : `${label}: ${fromText} → ${toText}`
-    })
-    .join("; ")
+): ReactNode {
+  return Object.entries(changes).map(([field, { from, to }], index) => {
+    const label = fieldLabel(field)
+    const isComplex =
+      (typeof from === "object" && from !== null) ||
+      (typeof to === "object" && to !== null)
+    // The separator leads every entry after the first, so the fragments read as
+    // one "a; b; c" line.
+    const sep = index > 0 ? "; " : ""
+    if (isComplex) {
+      return (
+        <Fragment key={field}>
+          {sep}
+          {label}: {complexPlaceholder}
+        </Fragment>
+      )
+    }
+    const fromText = formatAuditValue(from)
+    const toText = formatAuditValue(to)
+    if (fromText.trim() === "") {
+      return (
+        <Fragment key={field}>
+          {sep}
+          {label}: {toText}
+        </Fragment>
+      )
+    }
+    return (
+      <Fragment key={field}>
+        {sep}
+        {label}: {fromText}
+        <ChangeArrow />
+        {toText}
+      </Fragment>
+    )
+  })
 }
 
 // Narrows an unknown payload field to a non-empty `changes` map.
@@ -389,16 +413,17 @@ export type AuditDetailLabels = {
   createdMarker: string
 }
 
-// Pure, testable: turns an audit event + its (id-resolved) names into a
-// human-readable detail string. Drops raw Convex ids and internal "source",
-// and never emits "[object Object]" (complex values are summarized as counts).
+// Turns an audit event + its (id-resolved) names into a human-readable one-line
+// detail node. Drops raw Convex ids and internal "source", and never emits
+// "[object Object]" (complex values are summarized as counts). Mostly plain text;
+// the before->after cases render a ChangeArrow icon rather than a "→" glyph.
 export function formatAuditDetail(
   type: string,
   payload: unknown,
   names: Record<string, string>,
   labels: AuditDetailLabels,
   fieldLabel: (field: string) => string = (f) => f
-): string {
+): ReactNode {
   const p = (payload ?? {}) as Record<string, unknown>
   const roleName = (id: unknown) =>
     typeof id === "string" ? (names[id] ?? labels.deletedRole) : ""
@@ -431,16 +456,26 @@ export function formatAuditDetail(
       const entries = changeEntries(changes, fieldLabel)
       const allComplex =
         entries.length > 0 && entries.every((entry) => entry.isComplex)
-      return allComplex
-        ? `${base}: ${labels.fieldsChanged(entries.length)}`
-        : `${base}: ${formatChanges(changes, fieldLabel)}`
+      return allComplex ? (
+        `${base}: ${labels.fieldsChanged(entries.length)}`
+      ) : (
+        <>
+          {base}: {formatChanges(changes, fieldLabel)}
+        </>
+      )
     }
     case "band.shift": {
       const base = roleName(p.roleId)
       const band = changes?.band
-      return band != null && (band.from != null || band.to != null)
-        ? `${base} (${formatAuditValue(band.from)} → ${formatAuditValue(band.to)})`
-        : base
+      return band != null && (band.from != null || band.to != null) ? (
+        <>
+          {base} ({formatAuditValue(band.from)}
+          <ChangeArrow />
+          {formatAuditValue(band.to)})
+        </>
+      ) : (
+        base
+      )
     }
     case "roleFamily.created":
     case "roleFamily.removed":
@@ -454,20 +489,27 @@ export function formatAuditDetail(
         typeof p.familyId === "string"
           ? (names[p.familyId] ?? labels.deletedFamily)
           : ""
-      return changes !== null
-        ? `${base}: ${formatChanges(changes, fieldLabel)}`
-        : typeof p.name === "string"
-          ? p.name
-          : base
+      if (changes !== null) {
+        return (
+          <>
+            {base}: {formatChanges(changes, fieldLabel)}
+          </>
+        )
+      }
+      return typeof p.name === "string" ? p.name : base
     }
     case "member.added":
       return p.role
         ? `${memberName(p.memberUserId)} (${String(p.role)})`
         : memberName(p.memberUserId)
     case "member.roleChanged":
-      return changes !== null
-        ? `${memberName(p.memberUserId)}: ${formatChanges(changes, fieldLabel)}`
-        : memberName(p.memberUserId)
+      return changes !== null ? (
+        <>
+          {memberName(p.memberUserId)}: {formatChanges(changes, fieldLabel)}
+        </>
+      ) : (
+        memberName(p.memberUserId)
+      )
     case "member.removed":
       return memberName(p.memberUserId)
     case "organization.settingsUpdated":

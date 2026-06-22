@@ -38,7 +38,7 @@ import {
 } from "@workspace/ui/components/table"
 import { usePaginatedQuery, useQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
-import { useMemo, useState } from "react"
+import { type ReactNode, useMemo, useState } from "react"
 import type { DateRange } from "react-day-picker"
 import { AuditPagination } from "@/components/audit/audit-pagination"
 import { ChangeEntryRow, KV_GRID } from "@/components/audit/change-entry-row"
@@ -228,7 +228,7 @@ export function AuditLogSection() {
   // The short one-line summary for the table cell: structured before->after
   // diffs (e.g. platform.orgUpdated) render via formatChanges; everything else
   // keeps the flat "key: value" rendering.
-  function detail(payload: unknown): string {
+  function detail(payload: unknown): ReactNode {
     const changes = payloadChanges(payload)
     return changes ? formatChanges(changes, fieldLabel) : formatPayload(payload)
   }

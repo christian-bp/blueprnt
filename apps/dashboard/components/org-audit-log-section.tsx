@@ -38,9 +38,10 @@ import {
 } from "@workspace/ui/components/table"
 import { usePaginatedQuery, useQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
-import { useMemo, useState } from "react"
+import { type ReactNode, useMemo, useState } from "react"
 import type { DateRange } from "react-day-picker"
 import { AuditPagination } from "@/components/audit/audit-pagination"
+import { ChangeArrow } from "@/components/audit/change-arrow"
 import { ChangeEntryRow, KV_GRID } from "@/components/audit/change-entry-row"
 import { DateRangePicker } from "@/components/date-range-picker"
 import { useOrganization } from "@/components/org-context"
@@ -217,7 +218,7 @@ export function OrgAuditLogSection() {
     type: string,
     payload: unknown,
     names: Record<string, string>
-  ): string {
+  ): ReactNode {
     if (type === "ai.suggestionConfirmed" || type === "ai.suggestionRejected") {
       // aiAuditDetail builds key paths at runtime (ai.<kind>); widen t to a
       // plain (key, params) signature so the runtime keys are accepted.
@@ -478,7 +479,7 @@ function AuditDetailSheet({
     type: string,
     payload: unknown,
     names: Record<string, string>
-  ) => string
+  ) => ReactNode
 }) {
   const p = (row.payload ?? {}) as Record<string, unknown>
 
@@ -673,7 +674,7 @@ function AuditDetailSheet({
                         <span className="text-muted-foreground">
                           {move.fromLabel}
                         </span>
-                        <span className="px-2 text-muted-foreground">→</span>
+                        <ChangeArrow />
                         <span>{move.toLabel}</span>
                         {move.points ? (
                           <span className="text-muted-foreground">
