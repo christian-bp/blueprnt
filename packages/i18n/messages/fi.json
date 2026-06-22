@@ -79,7 +79,7 @@
       "empty": "Toimintaa ei ole vielä kirjattu.",
       "notAuthorized": "Vain organisaation järjestelmänvalvojat voivat nähdä tapahtumalokin.",
       "categories": {
-        "all": "Kaikki",
+        "all": "Kaikki kategoriat",
         "model": "Malli",
         "role": "Rooli",
         "organization": "Organisaatio",
@@ -763,7 +763,7 @@
         "deletedUser": "Poistettu käyttäjä",
         "deletedOrg": "Poistettu organisaatio",
         "categories": {
-          "all": "Kaikki",
+          "all": "Kaikki kategoriat",
           "user": "Käyttäjä",
           "organization": "Organisaatio",
           "membership": "Jäsenyys",

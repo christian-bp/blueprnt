@@ -79,7 +79,7 @@
       "empty": "Ingen aktivitet har registrerats ännu.",
       "notAuthorized": "Endast organisationsadministratörer kan se händelseloggen.",
       "categories": {
-        "all": "Alla",
+        "all": "Alla kategorier",
         "model": "Modell",
         "role": "Roll",
         "organization": "Organisation",
@@ -763,7 +763,7 @@
         "deletedUser": "Borttagen användare",
         "deletedOrg": "Borttagen organisation",
         "categories": {
-          "all": "Alla",
+          "all": "Alla kategorier",
           "user": "Användare",
           "organization": "Organisation",
           "membership": "Medlemskap",

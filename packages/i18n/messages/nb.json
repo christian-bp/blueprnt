@@ -79,7 +79,7 @@
       "empty": "Ingen aktivitet er registrert ennå.",
       "notAuthorized": "Bare organisasjonsadministratorer kan se hendelsesloggen.",
       "categories": {
-        "all": "Alle",
+        "all": "Alle kategorier",
         "model": "Modell",
         "role": "Rolle",
         "organization": "Organisasjon",
@@ -763,7 +763,7 @@
         "deletedUser": "Slettet bruker",
         "deletedOrg": "Slettet organisasjon",
         "categories": {
-          "all": "Alle",
+          "all": "Alle kategorier",
           "user": "Bruker",
           "organization": "Organisasjon",
           "membership": "Medlemskap",
