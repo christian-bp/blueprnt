@@ -10,8 +10,8 @@
   "email": {
     "invitation": {
       "subject": "{inviterName} kutsui sinut organisaatioon {organizationName} blueprntissä",
-      "heading": "Liity organisaatioon {organizationName}",
-      "body": "{inviterName} on kutsunut sinut organisaatioon {organizationName} blueprntissä. Hyväksy kutsu alta luodaksesi tilisi ja päästäksesi alkuun.",
+      "heading": "Liity organisaatioon <b>{organizationName}</b> blueprntissä",
+      "body": "<b>{inviterName}</b> on kutsunut sinut organisaatioon <b>{organizationName}</b> blueprntissä. Hyväksy kutsu alta luodaksesi tilisi ja päästäksesi alkuun.",
       "cta": "Hyväksy kutsu",
       "note": "Jos et odottanut tätä kutsua, voit jättää tämän viestin huomiotta."
     },
@@ -23,7 +23,7 @@
       "note": "Jos et pyytänyt tätä, voit jättää viestin huomiotta. Salasanasi ei muutu."
     },
     "footer": {
-      "copyright": "© {year} Blueprnt Nordic AB",
+      "copyright": "© {year} blueprnt",
       "tagline": "Työarkkitehtuuri, joka luo arvoa."
     },
     "logoAlt": "blueprnt"

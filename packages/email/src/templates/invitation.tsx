@@ -1,6 +1,7 @@
 import { Text } from "@react-email/components"
 import { BaseEmailTemplate } from "../components/base-email"
 import { CtaButton } from "../components/button"
+import { renderRich } from "../components/rich"
 import { colors } from "../components/theme"
 import { emailMessages, fillTemplate } from "../messages"
 
@@ -22,14 +23,14 @@ export function InvitationEmail({
   return (
     <BaseEmailTemplate
       preview={fillTemplate(m.subject, params)}
-      title={fillTemplate(m.heading, params)}
+      title={renderRich(m.heading, params)}
       locale={locale}
     >
       <Text
         className="m-0 text-[16px] leading-[26px]"
         style={{ color: colors.text }}
       >
-        {fillTemplate(m.body, params)}
+        {renderRich(m.body, params)}
       </Text>
       <CtaButton href={acceptUrl}>{m.cta}</CtaButton>
       <Text

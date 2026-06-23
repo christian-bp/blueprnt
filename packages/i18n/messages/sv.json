@@ -10,8 +10,8 @@
   "email": {
     "invitation": {
       "subject": "{inviterName} har bjudit in dig till {organizationName} på blueprnt",
-      "heading": "Gå med i {organizationName}",
-      "body": "{inviterName} har bjudit in dig till {organizationName} på blueprnt. Acceptera inbjudan nedan för att skapa ditt konto och komma igång.",
+      "heading": "Gå med i <b>{organizationName}</b> på blueprnt",
+      "body": "<b>{inviterName}</b> har bjudit in dig till <b>{organizationName}</b> på blueprnt. Acceptera inbjudan nedan för att skapa ditt konto och komma igång.",
       "cta": "Acceptera inbjudan",
       "note": "Om du inte väntade dig den här inbjudan kan du ignorera det här mejlet."
     },
@@ -23,7 +23,7 @@
       "note": "Om du inte begärde detta kan du ignorera mejlet. Ditt lösenord ändras inte."
     },
     "footer": {
-      "copyright": "© {year} Blueprnt Nordic AB",
+      "copyright": "© {year} blueprnt",
       "tagline": "Jobbarkitekturen som skapar värde."
     },
     "logoAlt": "blueprnt"

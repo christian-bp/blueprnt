@@ -17,7 +17,7 @@ describe("BaseEmailTemplate", () => {
     expect(html).toContain('alt="blueprnt"')
     expect(html).toContain("A title")
     expect(html).toContain("Body content")
-    expect(html).toContain("Blueprnt Nordic AB")
+    expect(html).toContain(`${new Date().getFullYear()} blueprnt`)
     expect(html).toContain(String(new Date().getFullYear()))
     expect(html).toContain("The job architecture that creates value.")
   })

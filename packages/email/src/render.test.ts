@@ -55,7 +55,7 @@ describe("renderEmail", () => {
     expect(result.html.toLowerCase()).toContain("#eb3e5d")
     expect(result.html).toContain("https://x.example/reset")
     expect(result.html).toContain("you can safely ignore")
-    expect(result.html).toContain("Blueprnt Nordic AB")
+    expect(result.html).toContain(`${new Date().getFullYear()} blueprnt`)
     expect(result.html).toContain(String(new Date().getFullYear()))
   })
 
@@ -68,5 +68,6 @@ describe("renderEmail", () => {
     })
     expect(invite.html).toContain("accept-invitation/inv_1")
     expect(invite.html).toContain("expecting this invitation")
+    expect(invite.html).toMatch(/#eb3e5d[^>]*>\s*Acme/)
   })
 })
