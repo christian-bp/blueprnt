@@ -13,6 +13,7 @@ import {
 } from "@workspace/ui/components/dialog"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
+import { slugify } from "@workspace/constants"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
@@ -24,6 +25,7 @@ export function CreateOrganizationDialog() {
   const [open, setOpen] = useState(false)
   const [name, setName] = useState("")
   const [slug, setSlug] = useState("")
+  const [slugEdited, setSlugEdited] = useState(false)
   const [pending, setPending] = useState(false)
   const [failed, setFailed] = useState(false)
 
@@ -35,6 +37,7 @@ export function CreateOrganizationDialog() {
     if (!next) {
       setName("")
       setSlug("")
+      setSlugEdited(false)
       setFailed(false)
     }
   }
@@ -70,7 +73,11 @@ export function CreateOrganizationDialog() {
             <Input
               id="org-name"
               value={name}
-              onChange={(event) => setName(event.target.value)}
+              onChange={(event) => {
+                const v = event.target.value
+                setName(v)
+                if (!slugEdited) setSlug(slugify(v))
+              }}
             />
           </div>
           <div className="space-y-2">
@@ -78,7 +85,10 @@ export function CreateOrganizationDialog() {
             <Input
               id="org-slug"
               value={slug}
-              onChange={(event) => setSlug(event.target.value)}
+              onChange={(event) => {
+                setSlug(event.target.value)
+                setSlugEdited(true)
+              }}
             />
           </div>
           {failed && (
