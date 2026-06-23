@@ -6,8 +6,10 @@ import { sweego } from "./client"
 import { vTemplateKey } from "./templates"
 
 // Domain configured at Sweego; the founder sets EMAIL_FROM. The default keeps
-// the sender working once the domain is verified without a code change.
-const FROM_EMAIL = process.env.EMAIL_FROM ?? "no-reply@blueprnt.se"
+// the sender working once the domain is verified without a code change. The
+// "Name <addr>" form is parsed by the Sweego client into a display name +
+// address, and hello@ is a replyable mailbox (not no-reply).
+const FROM_EMAIL = process.env.EMAIL_FROM ?? "blueprnt <hello@blueprnt.se>"
 
 const deliverArgs = {
   to: v.string(),
