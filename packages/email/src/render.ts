@@ -6,6 +6,7 @@ import {
   type InvitationEmailProps,
 } from "./templates/invitation"
 import { ResetPasswordEmail } from "./templates/reset-password"
+import { WelcomeEmail } from "./templates/welcome"
 
 // The template-key set is owned by @workspace/constants (the single source the
 // backend validators and the admin-log UI also derive from); re-exported here so
@@ -26,6 +27,7 @@ interface LinkEmailProps {
 export type EmailProps = {
   invitation: InvitationEmailProps
   resetPassword: LinkEmailProps
+  welcome: LinkEmailProps
 }
 
 export async function renderEmail<K extends EmailTemplateKey>(
@@ -42,6 +44,14 @@ export async function renderEmail<K extends EmailTemplateKey>(
           inviterName: p.inviterName,
           organizationName: p.organizationName,
         }),
+        html: await render(element),
+        text: await render(element, { plainText: true }),
+      }
+    }
+    case "welcome": {
+      const element = WelcomeEmail(props as LinkEmailProps)
+      return {
+        subject: m.welcome.subject,
         html: await render(element),
         text: await render(element, { plainText: true }),
       }

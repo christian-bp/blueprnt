@@ -1556,6 +1556,13 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         { email: string | null; orgIds: Array<string> },
         Name
       >;
+      hasPassword: FunctionReference<
+        "query",
+        "internal",
+        { userId: string },
+        boolean,
+        Name
+      >;
       listAllOrganizations: FunctionReference<
         "query",
         "internal",
@@ -1661,6 +1668,13 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         "internal",
         {},
         Array<{ email: string; inviterId: string }>,
+        Name
+      >;
+      seedAccount: FunctionReference<
+        "mutation",
+        "internal",
+        { userId: string },
+        null,
         Name
       >;
       seedDuplicateMember: FunctionReference<

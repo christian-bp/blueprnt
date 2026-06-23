@@ -133,6 +133,15 @@ export const completeOnboarding = adminMutation({
   },
 })
 
+// Thin app-boundary wrapper so the auth hook can branch the reset/welcome email
+// on whether the user has set a password yet.
+export const userHasPassword = internalQuery({
+  args: { userId: v.string() },
+  returns: v.boolean(),
+  handler: async (ctx, { userId }) =>
+    ctx.runQuery(components.betterAuth.provisioning.hasPassword, { userId }),
+})
+
 // Used by the auth invitation callback to resolve the organization's language so
 // the invite email goes out in the org's locale. Not org-scoped: the caller is
 // Better Auth (no app session), and it only exposes the language.

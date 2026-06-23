@@ -112,6 +112,25 @@ export const seedInvitation = mutation({
   },
 })
 
+// Test-only: insert a credential account row for a user so hasPassword tests can
+// exercise the true branch without going through the real resetPassword flow.
+export const seedAccount = mutation({
+  args: { userId: v.string() },
+  returns: v.null(),
+  handler: async (ctx, { userId }) => {
+    assertTestEnv()
+    const now = Date.now()
+    await ctx.db.insert("account", {
+      accountId: userId,
+      providerId: "credential",
+      userId,
+      createdAt: now,
+      updatedAt: now,
+    })
+    return null
+  },
+})
+
 // Test-only: list invitation rows (email + inviterId) so erasure can assert
 // which invitations remain after a purge.
 export const listInvitations = query({

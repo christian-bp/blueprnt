@@ -45,6 +45,16 @@ describe("renderEmail", () => {
     expect(new Set(subjects).size).toBe(EMAIL_LOCALES.length)
   })
 
+  it("renders the welcome email with the set-password link", async () => {
+    const result = await renderEmail("welcome", {
+      url: "https://x.example/reset?token=t",
+      locale: "en",
+    })
+    expect(result.subject).toBe("Welcome to blueprnt")
+    expect(result.html).toContain("https://x.example/reset?token=t")
+    expect(result.html).toContain("Set your password")
+  })
+
   it("renders the branded layout for the reset email", async () => {
     const result = await renderEmail("resetPassword", {
       url: "https://x.example/reset",

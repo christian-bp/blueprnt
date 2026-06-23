@@ -22,6 +22,13 @@
       "cta": "Återställ lösenord",
       "note": "Om du inte begärde detta kan du ignorera mejlet. Ditt lösenord ändras inte."
     },
+    "welcome": {
+      "subject": "Välkommen till blueprnt",
+      "heading": "Välkommen till blueprnt",
+      "body": "Ett konto har skapats åt dig på blueprnt. Välj ett lösenord nedan för att komma igång.",
+      "cta": "Välj ditt lösenord",
+      "note": "Om du inte väntade dig detta kan du ignorera det här mejlet."
+    },
     "footer": {
       "copyright": "© {year} blueprnt",
       "tagline": "Jobbarkitekturen som skapar värde."
@@ -699,6 +706,9 @@
           "description": "Användaren får en e-postlänk för att ange sitt lösenord.",
           "nameLabel": "Namn",
           "emailLabel": "E-post",
+          "orgLabel": "Organisation",
+          "orgPlaceholder": "Välj en organisation",
+          "roleLabel": "Roll",
           "cta": "Skapa användare",
           "cancel": "Avbryt",
           "error": "Användaren kunde inte skapas. Försök igen."
@@ -840,6 +850,7 @@
         "templates": {
           "invitation": "Inbjudan",
           "resetPassword": "Återställning av lösenord",
+          "welcome": "Välkommen",
           "all": "Alla typer"
         },
         "previous": "Föregående",

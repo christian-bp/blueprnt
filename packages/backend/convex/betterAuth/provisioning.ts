@@ -34,6 +34,21 @@ export const provisionUser = mutation({
   },
 })
 
+// True iff the user has a credential account (i.e. has set a password). A
+// provisioned user has no account row until resetPassword creates one; the app
+// is email/password-only, so any account row means a password is set.
+export const hasPassword = query({
+  args: { userId: v.string() },
+  returns: v.boolean(),
+  handler: async (ctx, { userId }) => {
+    const account = await ctx.db
+      .query("account")
+      .withIndex("userId", (q) => q.eq("userId", userId))
+      .first()
+    return account !== null
+  },
+})
+
 // Idempotent by slug.
 export const provisionOrganization = mutation({
   args: { name: v.string(), slug: v.string() },

@@ -8,6 +8,8 @@ import { z } from "zod"
 export const createUserSchema = z.object({
   name: z.string().trim().min(1),
   email: z.string().trim().toLowerCase().email(),
+  orgId: z.string().min(1),
+  role: z.enum(["admin", "editor"]),
 })
 export type CreateUserValues = z.infer<typeof createUserSchema>
 

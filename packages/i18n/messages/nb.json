@@ -22,6 +22,13 @@
       "cta": "Tilbakestill passord",
       "note": "Hvis du ikke ba om dette, kan du trygt ignorere e-posten. Passordet ditt endres ikke."
     },
+    "welcome": {
+      "subject": "Velkommen til blueprnt",
+      "heading": "Velkommen til blueprnt",
+      "body": "En konto er opprettet for deg på blueprnt. Velg et passord nedenfor for å komme i gang.",
+      "cta": "Velg passordet ditt",
+      "note": "Hvis du ikke ventet dette, kan du ignorere denne e-posten."
+    },
     "footer": {
       "copyright": "© {year} blueprnt",
       "tagline": "Jobbarkitekturen som skaper verdi."
@@ -699,6 +706,9 @@
           "description": "Brukeren får en e-postlenke for å angi sitt eget passord.",
           "nameLabel": "Navn",
           "emailLabel": "E-post",
+          "orgLabel": "Organisasjon",
+          "orgPlaceholder": "Velg en organisasjon",
+          "roleLabel": "Rolle",
           "cta": "Opprett bruker",
           "cancel": "Avbryt",
           "error": "Brukeren kunne ikke opprettes. Prøv igjen."
@@ -840,6 +850,7 @@
         "templates": {
           "invitation": "Invitasjon",
           "resetPassword": "Tilbakestilling av passord",
+          "welcome": "Velkommen",
           "all": "Alle typer"
         },
         "previous": "Forrige",

@@ -22,6 +22,13 @@
       "cta": "Nulstil adgangskode",
       "note": "Hvis du ikke har anmodet om dette, kan du roligt ignorere e-mailen. Din adgangskode ændres ikke."
     },
+    "welcome": {
+      "subject": "Velkommen til blueprnt",
+      "heading": "Velkommen til blueprnt",
+      "body": "Der er oprettet en konto til dig på blueprnt. Vælg en adgangskode nedenfor for at komme i gang.",
+      "cta": "Vælg din adgangskode",
+      "note": "Hvis du ikke forventede dette, kan du ignorere denne e-mail."
+    },
     "footer": {
       "copyright": "© {year} blueprnt",
       "tagline": "Jobarkitekturen der skaber værdi."
@@ -699,6 +706,9 @@
           "description": "Brugeren får et e-maillink til at angive sin egen adgangskode.",
           "nameLabel": "Navn",
           "emailLabel": "E-mail",
+          "orgLabel": "Organisation",
+          "orgPlaceholder": "Vælg en organisation",
+          "roleLabel": "Rolle",
           "cta": "Opret bruger",
           "cancel": "Annuller",
           "error": "Brugeren kunne ikke oprettes. Prøv igen."
@@ -840,6 +850,7 @@
         "templates": {
           "invitation": "Invitation",
           "resetPassword": "Nulstilling af adgangskode",
+          "welcome": "Velkommen",
           "all": "Alle typer"
         },
         "previous": "Forrige",

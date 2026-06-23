@@ -118,15 +118,21 @@ export const createAuthOptions = (
       minPasswordLength: 8,
       sendResetPassword: async (data) => {
         const mctx = requireRunMutationCtx(ctx)
-        // Resolve the user's org language so the reset email goes out in the
-        // org's locale; fall back to en if no membership or language is set.
+        const userId = data.user.id
+        // A provisioned user with no password yet gets the welcome / set-password
+        // email; a user who already has a password gets the reset email. Same
+        // link, different framing.
         const settings = await mctx.runQuery(
           internal.accounts.organization.getLanguageForUser,
-          { userId: data.user.id }
+          { userId }
+        )
+        const hasPassword = await mctx.runQuery(
+          internal.accounts.organization.userHasPassword,
+          { userId }
         )
         await mctx.runMutation(internal.email.outbox.enqueueEmail, {
           to: data.user.email,
-          templateKey: "resetPassword",
+          templateKey: hasPassword ? "resetPassword" : "welcome",
           props: { url: data.url },
           locale: settings?.language ?? "en",
         })

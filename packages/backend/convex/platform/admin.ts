@@ -33,16 +33,21 @@ export const isPlatformAdmin = query({
   },
 })
 
-// Create a Better Auth user (no password yet) plus the app users mirror, and
-// record the operator action. The new user receives a set-password email from
-// the client (authClient.requestPasswordReset) after this resolves.
+// Create a Better Auth user (no password yet) plus the app users mirror,
+// attach them to the given org, and record both operator actions. The new
+// user receives a welcome (set-password) email from the client
+// (authClient.requestPasswordReset) after this resolves. A user is never
+// created without an organization: the membership is added atomically.
 export const createUser = platformMutation({
-  args: { name: v.string(), email: v.string() },
+  args: {
+    name: v.string(),
+    email: v.string(),
+    orgId: v.string(),
+    role: roleArg,
+  },
   returns: v.object({ authId: v.string(), created: v.boolean() }),
-  handler: async (ctx, { name, email }) => {
+  handler: async (ctx, { name, email, orgId, role }) => {
     const trimmedName = name.trim()
-    // Lowercase the email so the mirror, the component user row, and the
-    // idempotency check all key off one canonical form.
     const trimmedEmail = email.trim().toLowerCase()
     if (trimmedName === "" || trimmedEmail === "") {
       throw appError(ERROR_CODES.invalidInput)
@@ -64,6 +69,23 @@ export const createUser = platformMutation({
         type: PLATFORM_AUDIT_EVENTS.userCreated,
         targetUserId: result.userId,
         payload: {},
+      })
+    }
+    // Require + attach the org membership in the same mutation so a user is
+    // never created without an organization. assertUserAndOrg throws notFound
+    // if the org does not exist.
+    await assertUserAndOrg(ctx, result.userId, orgId)
+    const membership = await ctx.runMutation(
+      components.betterAuth.provisioning.addMember,
+      { organizationId: orgId, userId: result.userId, role }
+    )
+    if (membership.created) {
+      await logPlatformAudit(ctx, {
+        actorId: ctx.authUserId,
+        type: PLATFORM_AUDIT_EVENTS.membershipGranted,
+        targetUserId: result.userId,
+        targetOrgId: orgId,
+        payload: { role },
       })
     }
     return { authId: result.userId, created: result.created }

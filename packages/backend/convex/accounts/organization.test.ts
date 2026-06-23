@@ -389,6 +389,23 @@ describe("organization settings", () => {
   })
 })
 
+describe("userHasPassword", () => {
+  it("is false for a provisioned user with no account, true once an account exists", async () => {
+    const t = initConvexTest()
+    const { userId } = await t.mutation(
+      components.betterAuth.provisioning.provisionUser,
+      { email: "new@acme.se", name: "New User" }
+    )
+    expect(
+      await t.query(internal.accounts.organization.userHasPassword, { userId })
+    ).toBe(false)
+    await t.mutation(components.betterAuth.testing.seedAccount, { userId })
+    expect(
+      await t.query(internal.accounts.organization.userHasPassword, { userId })
+    ).toBe(true)
+  })
+})
+
 describe("getLanguageForUser", () => {
   it("returns the org language for a user with a membership", async () => {
     const t = initConvexTest()

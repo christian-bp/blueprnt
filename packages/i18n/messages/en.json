@@ -22,6 +22,13 @@
       "cta": "Reset password",
       "note": "If you didn't request this, you can safely ignore this email; your password won't change."
     },
+    "welcome": {
+      "subject": "Welcome to blueprnt",
+      "heading": "Welcome to blueprnt",
+      "body": "An account was created for you on blueprnt. Set your password below to get started.",
+      "cta": "Set your password",
+      "note": "If you weren't expecting this, you can ignore this email."
+    },
     "footer": {
       "copyright": "© {year} blueprnt",
       "tagline": "The job architecture that creates value."
@@ -699,6 +706,9 @@
           "description": "The user gets an email link to set their own password.",
           "nameLabel": "Name",
           "emailLabel": "Email",
+          "orgLabel": "Organization",
+          "orgPlaceholder": "Select an organization",
+          "roleLabel": "Role",
           "cta": "Create user",
           "cancel": "Cancel",
           "error": "The user could not be created. Try again."
@@ -840,6 +850,7 @@
         "templates": {
           "invitation": "Invitation",
           "resetPassword": "Password reset",
+          "welcome": "Welcome",
           "all": "All types"
         },
         "previous": "Previous",
