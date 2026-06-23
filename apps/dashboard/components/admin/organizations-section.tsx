@@ -36,7 +36,6 @@ import { CountryDisplay } from "@/components/country-display"
 export function OrganizationsSection() {
   const t = useTranslations("dashboard.admin.orgs")
   const orgs = useQuery(api.platform.admin.listOrganizations, {})
-  const users = useQuery(api.platform.admin.listUsers, {})
   const [query, setQuery] = useState("")
   const [manageOrgId, setManageOrgId] = useState<string | null>(null)
 
@@ -136,7 +135,6 @@ export function OrganizationsSection() {
       {manageOrg !== null && (
         <ManageOrganizationDialog
           org={manageOrg}
-          users={users ?? []}
           open={manageOrgId !== null}
           onOpenChange={(next) => {
             if (!next) setManageOrgId(null)

@@ -700,7 +700,23 @@
         "resendDone": "Invitation sent.",
         "resendError": "The invitation could not be sent. Try again.",
         "deleteCta": "Delete user",
+        "organizationsCta": "Organizations",
         "rowActions": "Actions for {name}",
+        "organizations": {
+          "title": "Organizations for {name}",
+          "currentHeading": "Member of",
+          "noMemberships": "Not a member of any organization yet.",
+          "addHeading": "Add to organization",
+          "orgLabel": "Organization",
+          "orgPlaceholder": "Select an organization",
+          "roleLabel": "Role",
+          "addCta": "Add",
+          "removeCta": "Remove",
+          "memberActions": "Actions for {name}",
+          "close": "Close",
+          "error": "Something went wrong. Try again.",
+          "noOrgsAvailable": "There are no other organizations to add."
+        },
         "create": {
           "title": "Create user",
           "description": "The user gets an email link to set their own password.",

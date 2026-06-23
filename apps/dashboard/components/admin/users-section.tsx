@@ -31,6 +31,7 @@ import { useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
 import { CreateUserDialog } from "@/components/admin/create-user-dialog"
 import { DeleteUserDialog } from "@/components/admin/delete-user-dialog"
+import { ManageUserOrganizationsDialog } from "@/components/admin/manage-user-organizations-dialog"
 import { authClient } from "@/lib/auth-client"
 
 export function UsersSection() {
@@ -42,6 +43,11 @@ export function UsersSection() {
     ok: boolean
   } | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<{
+    authId: string
+    name: string
+    email: string
+  } | null>(null)
+  const [orgTarget, setOrgTarget] = useState<{
     authId: string
     name: string
     email: string
@@ -147,6 +153,17 @@ export function UsersSection() {
                           {t("resendInvite")}
                         </DropdownMenuItem>
                         <DropdownMenuItem
+                          onSelect={() =>
+                            setOrgTarget({
+                              authId: user.authId,
+                              name: user.name,
+                              email: user.email,
+                            })
+                          }
+                        >
+                          {t("organizationsCta")}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
                           variant="destructive"
                           onSelect={() =>
                             setDeleteTarget({
@@ -176,6 +193,15 @@ export function UsersSection() {
         name={deleteTarget?.name ?? ""}
         email={deleteTarget?.email ?? ""}
       />
+      {orgTarget !== null && (
+        <ManageUserOrganizationsDialog
+          user={orgTarget}
+          open={orgTarget !== null}
+          onOpenChange={(o) => {
+            if (!o) setOrgTarget(null)
+          }}
+        />
+      )}
     </section>
   )
 }

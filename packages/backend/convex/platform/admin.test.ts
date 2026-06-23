@@ -562,6 +562,57 @@ describe("platform queries + updateOrganization", () => {
   })
 })
 
+describe("listOrganizationsForUser", () => {
+  it("returns the membership's orgId, name, and role for a user in one org", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    const orgId = await seedOrg(t, adminId, "org-for-user")
+    const { authId } = await asAdmin.mutation(api.platform.admin.createUser, {
+      name: "Member",
+      email: "member@org-for-user.se",
+      orgId,
+      role: "editor",
+    })
+    const result = await asAdmin.query(
+      api.platform.admin.listOrganizationsForUser,
+      { authId }
+    )
+    expect(result).toHaveLength(1)
+    expect(result[0]?.orgId).toBe(orgId)
+    expect(typeof result[0]?.name).toBe("string")
+    expect(result[0]?.name.length).toBeGreaterThan(0)
+    expect(result[0]?.role).toBe("editor")
+  })
+
+  it("returns [] for a user with no memberships", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    // Provision a user without attaching to any org (direct BA provision, no
+    // createUser which always grants membership). We use seedMirroredUser for
+    // the BA user row but that also grants a membership via seedMembership, so
+    // instead provision via betterAuth directly and check with a known authId.
+    // The simplest approach: use an authId that has never been given a membership.
+    const result = await asAdmin.query(
+      api.platform.admin.listOrganizationsForUser,
+      { authId: "user-with-no-memberships" }
+    )
+    expect(result).toEqual([])
+  })
+
+  it("rejects a non-platform-admin caller", async () => {
+    const t = initConvexTest()
+    const userId = await seedMirroredUser(t, "non-admin@acme.se")
+    const asUser = t.withIdentity({ subject: userId })
+    await expect(
+      asUser.query(api.platform.admin.listOrganizationsForUser, {
+        authId: userId,
+      })
+    ).rejects.toThrow(/errors.platformAdminRequired/)
+  })
+})
+
 describe("categoryForPlatformEvent", () => {
   it("maps each platform.* event to its category, unknowns to undefined", () => {
     expect(categoryForPlatformEvent("platform.userCreated")).toBe("user")

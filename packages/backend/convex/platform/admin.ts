@@ -504,6 +504,31 @@ export const searchAuditLog = platformQuery({
   },
 })
 
+// All organizations the user belongs to, with the org name and role. Used by
+// the per-user Organizations dialog. The betterAuth membership component already
+// returns organizationName, so no extra join is needed.
+export const listOrganizationsForUser = platformQuery({
+  args: { authId: v.string() },
+  returns: v.array(
+    v.object({
+      orgId: v.string(),
+      name: v.string(),
+      role: v.string(),
+    })
+  ),
+  handler: async (ctx, { authId }) => {
+    const memberships = await ctx.runQuery(
+      components.betterAuth.membership.listMembershipsForUser,
+      { userId: authId }
+    )
+    return memberships.map((m) => ({
+      orgId: m.organizationId,
+      name: m.organizationName,
+      role: m.role,
+    }))
+  },
+})
+
 // One org's members (identity + role), for the manage view.
 export const listOrganizationMembers = platformQuery({
   args: { orgId: v.string() },

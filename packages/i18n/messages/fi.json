@@ -700,7 +700,23 @@
         "resendDone": "Kutsu lähetetty.",
         "resendError": "Kutsua ei voitu lähettää. Yritä uudelleen.",
         "deleteCta": "Poista käyttäjä",
+        "organizationsCta": "Organisaatiot",
         "rowActions": "Toiminnot käyttäjälle {name}",
+        "organizations": {
+          "title": "Organisaatiot: {name}",
+          "currentHeading": "Jäsen organisaatioissa",
+          "noMemberships": "Ei vielä jäsen missään organisaatiossa.",
+          "addHeading": "Lisää organisaatioon",
+          "orgLabel": "Organisaatio",
+          "orgPlaceholder": "Valitse organisaatio",
+          "roleLabel": "Rooli",
+          "addCta": "Lisää",
+          "removeCta": "Poista",
+          "memberActions": "Toiminnot: {name}",
+          "close": "Sulje",
+          "error": "Jokin meni pieleen. Yritä uudelleen.",
+          "noOrgsAvailable": "Ei muita organisaatioita lisättäväksi."
+        },
         "create": {
           "title": "Luo käyttäjä",
           "description": "Käyttäjä saa sähköpostilinkin oman salasanansa asettamiseen.",

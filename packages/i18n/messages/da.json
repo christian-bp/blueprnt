@@ -700,7 +700,23 @@
         "resendDone": "Invitation sendt.",
         "resendError": "Invitationen kunne ikke sendes. Prøv igen.",
         "deleteCta": "Slet bruger",
+        "organizationsCta": "Organisationer",
         "rowActions": "Handlinger for {name}",
+        "organizations": {
+          "title": "Organisationer for {name}",
+          "currentHeading": "Medlem af",
+          "noMemberships": "Ikke medlem af nogen organisation endnu.",
+          "addHeading": "Tilføj til organisation",
+          "orgLabel": "Organisation",
+          "orgPlaceholder": "Vælg en organisation",
+          "roleLabel": "Rolle",
+          "addCta": "Tilføj",
+          "removeCta": "Fjern",
+          "memberActions": "Handlinger for {name}",
+          "close": "Luk",
+          "error": "Noget gik galt. Prøv igen.",
+          "noOrgsAvailable": "Der er ingen andre organisationer at tilføje."
+        },
         "create": {
           "title": "Opret bruger",
           "description": "Brugeren får et e-maillink til at angive sin egen adgangskode.",

@@ -39,12 +39,6 @@ import { CurrencySelect } from "@/components/currency-select"
 import { IndustrySelect } from "@/components/industry-select"
 import { type MembershipRole, orgSettingsSchema } from "@/lib/admin-schemas"
 
-interface AdminUser {
-  authId: string
-  name: string
-  email: string
-}
-
 interface AdminOrg {
   orgId: string
   name: string
@@ -57,32 +51,25 @@ interface AdminOrg {
 
 export function ManageOrganizationDialog(props: {
   org: AdminOrg
-  users: AdminUser[]
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
-  const { org, users, open, onOpenChange } = props
+  const { org, open, onOpenChange } = props
   const t = useTranslations("dashboard.admin.orgs.manage")
   const members = useQuery(
     api.platform.admin.listOrganizationMembers,
     open ? { orgId: org.orgId } : "skip"
   )
-  const addMembership = useMutation(api.platform.admin.addMembership)
   const setRole = useMutation(api.platform.admin.setMembershipRole)
   const removeMembership = useMutation(api.platform.admin.removeMembership)
   const updateOrg = useMutation(api.platform.admin.updateOrganization)
 
-  const [addUserId, setAddUserId] = useState("")
-  const [addRole, setAddRole] = useState<MembershipRole>("editor")
   const [country, setCountry] = useState(org.country ?? "")
   const [currency, setCurrency] = useState(org.currency ?? "")
   const [language, setLanguage] = useState(org.language ?? "")
   const [industry, setIndustry] = useState(org.industry ?? "")
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(false)
-
-  const memberIds = new Set((members ?? []).map((m) => m.authId))
-  const addableUsers = users.filter((u) => !memberIds.has(u.authId))
 
   async function handleRoleChange(authId: string, value: string) {
     setError(false)
@@ -103,24 +90,6 @@ export function ManageOrganizationDialog(props: {
       await removeMembership({ authId, orgId: org.orgId })
     } catch {
       setError(true)
-    }
-  }
-
-  async function handleAdd() {
-    if (addUserId === "") return
-    setError(false)
-    setBusy(true)
-    try {
-      await addMembership({
-        authId: addUserId,
-        orgId: org.orgId,
-        role: addRole,
-      })
-      setAddUserId("")
-    } catch {
-      setError(true)
-    } finally {
-      setBusy(false)
     }
   }
 
@@ -218,49 +187,6 @@ export function ManageOrganizationDialog(props: {
               ))}
             </ul>
           )}
-        </section>
-
-        <section className="space-y-3 border-t pt-4">
-          <h3 className="font-medium text-sm">{t("addMemberHeading")}</h3>
-          <div className="flex flex-wrap items-end gap-2">
-            <div className="min-w-48 flex-1 space-y-2">
-              <Label>{t("userLabel")}</Label>
-              <Select value={addUserId} onValueChange={setAddUserId}>
-                <SelectTrigger aria-label={t("userLabel")}>
-                  <SelectValue placeholder={t("userPlaceholder")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {addableUsers.map((u) => (
-                    <SelectItem key={u.authId} value={u.authId}>
-                      {u.name} ({u.email})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="w-36 space-y-2">
-              <Label>{t("roleLabel")}</Label>
-              <Select
-                value={addRole}
-                onValueChange={(value) => setAddRole(value as MembershipRole)}
-              >
-                <SelectTrigger aria-label={t("roleLabel")}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="admin">{t("roleAdmin")}</SelectItem>
-                  <SelectItem value="editor">{t("roleEditor")}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button
-              type="button"
-              onClick={handleAdd}
-              disabled={addUserId === "" || busy}
-            >
-              {t("addCta")}
-            </Button>
-          </div>
         </section>
 
         <section className="space-y-3 border-t pt-4">

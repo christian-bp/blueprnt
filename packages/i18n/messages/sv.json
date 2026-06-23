@@ -700,7 +700,23 @@
         "resendDone": "Inbjudan skickad.",
         "resendError": "Inbjudan kunde inte skickas. Försök igen.",
         "deleteCta": "Ta bort användare",
+        "organizationsCta": "Organisationer",
         "rowActions": "Åtgärder för {name}",
+        "organizations": {
+          "title": "Organisationer för {name}",
+          "currentHeading": "Medlem i",
+          "noMemberships": "Inte medlem i någon organisation ännu.",
+          "addHeading": "Lägg till i organisation",
+          "orgLabel": "Organisation",
+          "orgPlaceholder": "Välj en organisation",
+          "roleLabel": "Roll",
+          "addCta": "Lägg till",
+          "removeCta": "Ta bort",
+          "memberActions": "Åtgärder för {name}",
+          "close": "Stäng",
+          "error": "Något gick fel. Försök igen.",
+          "noOrgsAvailable": "Det finns inga andra organisationer att lägga till."
+        },
         "create": {
           "title": "Skapa användare",
           "description": "Användaren får en e-postlänk för att ange sitt lösenord.",

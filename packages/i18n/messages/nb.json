@@ -700,7 +700,23 @@
         "resendDone": "Invitasjon sendt.",
         "resendError": "Invitasjonen kunne ikke sendes. Prøv igjen.",
         "deleteCta": "Slett bruker",
+        "organizationsCta": "Organisasjoner",
         "rowActions": "Handlinger for {name}",
+        "organizations": {
+          "title": "Organisasjoner for {name}",
+          "currentHeading": "Medlem av",
+          "noMemberships": "Ikke medlem av noen organisasjon ennå.",
+          "addHeading": "Legg til i organisasjon",
+          "orgLabel": "Organisasjon",
+          "orgPlaceholder": "Velg en organisasjon",
+          "roleLabel": "Rolle",
+          "addCta": "Legg til",
+          "removeCta": "Fjern",
+          "memberActions": "Handlinger for {name}",
+          "close": "Lukk",
+          "error": "Noe gikk galt. Prøv igjen.",
+          "noOrgsAvailable": "Det finnes ingen andre organisasjoner å legge til."
+        },
         "create": {
           "title": "Opprett bruker",
           "description": "Brukeren får en e-postlenke for å angi sitt eget passord.",
