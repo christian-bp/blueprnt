@@ -412,10 +412,18 @@
       "loading": "Sjekker økten din",
       "email": "E-post",
       "password": "Passord",
+      "forgotPasswordLink": "Glemt passordet?",
       "signIn": {
         "title": "Logg inn",
         "cta": "Logg inn",
         "description": "Skriv inn e-posten din nedenfor for å logge på organisasjonen din"
+      },
+      "forgotPassword": {
+        "title": "Tilbakestill passordet ditt",
+        "description": "Skriv inn e-posten til kontoen din, så sender vi deg en lenke for å velge et nytt passord.",
+        "cta": "Send tilbakestillingslenke",
+        "confirmation": "Hvis det finnes en konto for den e-posten, er en tilbakestillingslenke på vei. Sjekk innboksen din.",
+        "backToSignIn": "Tilbake til innlogging"
       },
       "invitation": {
         "title": "Organisasjonsinvitasjon",

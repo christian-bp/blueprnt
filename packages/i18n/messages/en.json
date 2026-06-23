@@ -412,10 +412,18 @@
       "loading": "Checking your session",
       "email": "Email",
       "password": "Password",
+      "forgotPasswordLink": "Forgot your password?",
       "signIn": {
         "title": "Sign in",
         "cta": "Sign in",
         "description": "Enter your email below to sign in to your organization"
+      },
+      "forgotPassword": {
+        "title": "Reset your password",
+        "description": "Enter your account email and we'll send you a link to choose a new password.",
+        "cta": "Send reset link",
+        "confirmation": "If an account exists for that email, a reset link is on its way. Check your inbox.",
+        "backToSignIn": "Back to sign in"
       },
       "invitation": {
         "title": "Organization invitation",

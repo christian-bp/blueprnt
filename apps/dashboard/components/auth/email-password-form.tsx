@@ -11,6 +11,7 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@workspace/ui/components/field"
 import { Input } from "@workspace/ui/components/input"
 import { useTranslations } from "next-intl"
+import Link from "next/link"
 import { type FormEvent, useState } from "react"
 
 export interface EmailPasswordValues {
@@ -62,6 +63,12 @@ export function EmailPasswordForm(props: {
               <FieldLabel htmlFor="password">{t("password")}</FieldLabel>
               <Input id="password" name="password" type="password" required />
             </Field>
+            <Link
+              href="/forgot-password"
+              className="text-muted-foreground text-sm underline-offset-4 hover:underline"
+            >
+              {t("forgotPasswordLink")}
+            </Link>
             {error ? (
               <p role="alert" className="text-destructive text-sm">
                 {t("error")}

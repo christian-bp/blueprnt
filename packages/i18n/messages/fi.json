@@ -412,10 +412,18 @@
       "loading": "Tarkistetaan istuntoasi",
       "email": "Sähköposti",
       "password": "Salasana",
+      "forgotPasswordLink": "Unohditko salasanasi?",
       "signIn": {
         "title": "Kirjaudu sisään",
         "cta": "Kirjaudu sisään",
         "description": "Kirjoita sähköpostiosoitteesi alle kirjautuaksesi organisaatioosi"
+      },
+      "forgotPassword": {
+        "title": "Nollaa salasanasi",
+        "description": "Anna tilisi sähköpostiosoite, niin lähetämme linkin uuden salasanan valitsemiseen.",
+        "cta": "Lähetä palautuslinkki",
+        "confirmation": "Jos kyseiselle sähköpostille on tili, palautuslinkki on tulossa. Tarkista postilaatikkosi.",
+        "backToSignIn": "Takaisin kirjautumiseen"
       },
       "invitation": {
         "title": "Organisaatiokutsu",

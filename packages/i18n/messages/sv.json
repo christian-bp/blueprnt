@@ -412,10 +412,18 @@
       "loading": "Kontrollerar din session",
       "email": "E-post",
       "password": "Lösenord",
+      "forgotPasswordLink": "Glömt lösenordet?",
       "signIn": {
         "title": "Logga in",
         "cta": "Logga in",
         "description": "Ange din e-post nedan för att logga in på din organisation"
+      },
+      "forgotPassword": {
+        "title": "Återställ ditt lösenord",
+        "description": "Ange din konto-e-post så skickar vi en länk för att välja ett nytt lösenord.",
+        "cta": "Skicka återställningslänk",
+        "confirmation": "Om ett konto finns för den e-postadressen är en återställningslänk på väg. Kolla din inkorg.",
+        "backToSignIn": "Tillbaka till inloggning"
       },
       "invitation": {
         "title": "Organisationsinbjudan",

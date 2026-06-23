@@ -412,10 +412,18 @@
       "loading": "Kontrollerer din session",
       "email": "E-mail",
       "password": "Adgangskode",
+      "forgotPasswordLink": "Glemt din adgangskode?",
       "signIn": {
         "title": "Log ind",
         "cta": "Log ind",
         "description": "Indtast din e-mail nedenfor for at logge ind på din organisation"
+      },
+      "forgotPassword": {
+        "title": "Nulstil din adgangskode",
+        "description": "Indtast e-mailen til din konto, så sender vi dig et link til at vælge en ny adgangskode.",
+        "cta": "Send nulstillingslink",
+        "confirmation": "Hvis der findes en konto for den e-mail, er et nulstillingslink på vej. Tjek din indbakke.",
+        "backToSignIn": "Tilbage til login"
       },
       "invitation": {
         "title": "Organisationsinvitation",
