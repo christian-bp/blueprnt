@@ -1,0 +1,19 @@
+docs/superpowers/specs/2026-06-23-admin-membership-and-slug-design.md
+  s_d9d5976c59712a::t_c398b136e0da5d 1-108
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.10",
+  "base_commit_sha": "ab82d32d8325ea8dc9203ef68a72629444330291",
+  "prompts": {},
+  "sessions": {
+    "s_d9d5976c59712a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "705e8dd4-4248-4771-9b7a-48a7c6cab6a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
