@@ -1,0 +1,40 @@
+packages/email/src/components/rich.tsx
+  s_d9d5976c59712a::t_5c0ac88655bf92 1-25
+packages/email/src/templates/invitation.tsx
+  s_d9d5976c59712a::t_5c0ac88655bf92 4,26,33
+packages/i18n/messages/sv.json
+  s_d9d5976c59712a::t_c86e1a34cb893e 13
+  s_d9d5976c59712a::t_5c0ac88655bf92 14,26
+packages/i18n/messages/nb.json
+  s_d9d5976c59712a::t_e771bd11fcf189 13
+  s_d9d5976c59712a::t_5c0ac88655bf92 14,26
+packages/i18n/messages/en.json
+  s_d9d5976c59712a::t_5c0ac88655bf92 14,26
+  s_d9d5976c59712a::t_267a25a1833b0c 13
+packages/i18n/messages/fi.json
+  s_d9d5976c59712a::t_f78e05de1383a4 13
+  s_d9d5976c59712a::t_5c0ac88655bf92 14,26
+packages/email/src/render.test.ts
+  s_d9d5976c59712a::t_5c0ac88655bf92 58,71
+packages/i18n/messages/da.json
+  s_d9d5976c59712a::t_53b8c4f16b3785 13
+  s_d9d5976c59712a::t_5c0ac88655bf92 14,26
+packages/email/src/components/base-email.test.tsx
+  s_d9d5976c59712a::t_5c0ac88655bf92 20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.10",
+  "base_commit_sha": "db4df2ec15e24d34cfb9f938253d1268a0bb926f",
+  "prompts": {},
+  "sessions": {
+    "s_d9d5976c59712a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "705e8dd4-4248-4771-9b7a-48a7c6cab6a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
