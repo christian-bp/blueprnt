@@ -1,0 +1,67 @@
+packages/i18n/messages/nb.json
+  s_d9d5976c59712a::t_35673b82dd2dc6 706
+  s_d9d5976c59712a::t_189d2a904d90af 717-718
+  s_d9d5976c59712a::t_fe624cf0e358f8 703,705,707-716,719
+apps/dashboard/components/admin/users-section.tsx
+  s_d9d5976c59712a::t_404016d301a239 50-54
+  s_d9d5976c59712a::t_683f1d8c5e5e4f 156-165
+  s_d9d5976c59712a::t_dcc6a549795866 34
+  s_d9d5976c59712a::t_f1c01fa60d85fa 196-204
+packages/i18n/messages/en.json
+  s_d9d5976c59712a::t_379a82b5d7e4eb 717-718
+  s_d9d5976c59712a::t_f51e3898729c84 706
+  s_d9d5976c59712a::t_ba0cdcd81b9b16 703,705,707-716,719
+packages/backend/convex/platform/admin.test.ts
+  s_d9d5976c59712a::t_a1e14d289d77a4 565-615
+apps/dashboard/components/admin/manage-user-organizations-dialog.test.tsx
+  s_d9d5976c59712a::t_3e1e87f1921aaa 25-28,30-31,41
+  s_d9d5976c59712a::t_956acfa05509b3 97-105
+  s_d9d5976c59712a::t_d039f13f6ed800 81
+  s_d9d5976c59712a::t_3fb516d88b037b 89
+  s_d9d5976c59712a::t_de91ea23af79c0 50
+  s_d9d5976c59712a::t_2711451a3eb646 1-24,29,32-40,42-49,51-80,82-88,90-96,106-109,118,123-124,127-136
+  s_d9d5976c59712a::t_53c69dd0d869a5 119
+  s_d9d5976c59712a::t_49740aa57e1ef5 110-117,120-122,125-126
+apps/dashboard/components/admin/manage-organization-dialog.tsx
+  s_d9d5976c59712a::t_9ea0d20ade7fc4 57
+packages/i18n/messages/da.json
+  s_d9d5976c59712a::t_7c05efcd4aad87 703,705,707-716,719
+  s_d9d5976c59712a::t_3481847dcee863 706
+  s_d9d5976c59712a::t_65a20265bd351e 717-718
+packages/backend/convex/platform/admin.ts
+  s_d9d5976c59712a::t_768f9d91058b90 507-531
+apps/dashboard/components/admin/manage-user-organizations-dialog.tsx
+  s_d9d5976c59712a::t_f3429eaab0ecb3 1-31,33-84,87-107,109-128,132-139,141-178,234-254
+  s_d9d5976c59712a::t_de91ea23af79c0 32,129-131,140
+  s_d9d5976c59712a::t_382088758ce2e0 85-86
+  s_d9d5976c59712a::t_db1e53a7558fe0 231
+  s_d9d5976c59712a::t_ee9cc2fcda472f 108
+  s_d9d5976c59712a::t_3433574c6304a8 179-230,232-233
+packages/i18n/messages/fi.json
+  s_d9d5976c59712a::t_ccbd88fc7f6ae1 717-718
+  s_d9d5976c59712a::t_d0cad728105273 703,705,707-716,719
+  s_d9d5976c59712a::t_d2725317e8c032 706
+packages/i18n/messages/sv.json
+  s_d9d5976c59712a::t_e5621bee372504 703,705,707-716,719
+  s_d9d5976c59712a::t_f8c88e0c1887a9 706
+  s_d9d5976c59712a::t_6a35983418c1fb 717-718
+apps/dashboard/components/admin/manage-organization-dialog.test.tsx
+  s_d9d5976c59712a::t_5827b4f909ea24 1-52,54-64,66-69,71-74,76-77
+  s_d9d5976c59712a::t_de91ea23af79c0 53,65,70,75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.10",
+  "base_commit_sha": "a5bd25d5a64e6530b995adaeeb26167f8e749eca",
+  "prompts": {},
+  "sessions": {
+    "s_d9d5976c59712a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "705e8dd4-4248-4771-9b7a-48a7c6cab6a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
