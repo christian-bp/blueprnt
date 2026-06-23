@@ -1,0 +1,38 @@
+apps/dashboard/components/auth/email-password-form.tsx
+  s_d9d5976c59712a::t_8ae97d53542c30 14
+  s_d9d5976c59712a::t_bd28ca34b5c7b2 66-71
+packages/i18n/messages/en.json
+  s_d9d5976c59712a::t_d0674b4feaf2db 415,421-426
+apps/dashboard/app/forgot-password/page.tsx
+  s_d9d5976c59712a::t_a696eec623d477 74-76
+  s_d9d5976c59712a::t_a2b33d9c10d69c 1-73,77-98
+packages/i18n/messages/da.json
+  s_d9d5976c59712a::t_5020597a5dafb5 415,421-426
+packages/i18n/messages/sv.json
+  s_d9d5976c59712a::t_c4024c7c866c3d 415,421-426
+packages/i18n/messages/fi.json
+  s_d9d5976c59712a::t_519da61c8a9690 415,421-426
+apps/dashboard/components/auth/email-password-form.test.tsx
+  s_d9d5976c59712a::t_7cb7cdea820c10 1,3-4,8-14,23-28,36-42
+packages/i18n/messages/nb.json
+  s_d9d5976c59712a::t_df9af9881de9db 415,421-426
+apps/dashboard/app/forgot-password/forgot-password.test.tsx
+  s_d9d5976c59712a::t_b565a56dd7727c 4,9-11
+  s_d9d5976c59712a::t_e459a09e4b2e1a 1-3,5-8,12-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.10",
+  "base_commit_sha": "7df60539e3044dfd0b57519a03ad5aa95f402ee9",
+  "prompts": {},
+  "sessions": {
+    "s_d9d5976c59712a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "705e8dd4-4248-4771-9b7a-48a7c6cab6a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
