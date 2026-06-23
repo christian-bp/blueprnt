@@ -1,0 +1,22 @@
+docs/superpowers/plans/2026-06-22-forgot-password.md
+  s_d9d5976c59712a::t_e8cb64214a967f 1-481
+docs/superpowers/specs/2026-06-22-forgot-password-design.md
+  s_d9d5976c59712a::t_d47988bf0f8296 68-70
+  s_d9d5976c59712a::t_dff5907dd18113 1-67,71-127
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.10",
+  "base_commit_sha": "afecf9c80863d3eb38acb24259aec36e574c4ffb",
+  "prompts": {},
+  "sessions": {
+    "s_d9d5976c59712a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "705e8dd4-4248-4771-9b7a-48a7c6cab6a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
