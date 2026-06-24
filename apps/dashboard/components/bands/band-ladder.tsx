@@ -81,7 +81,13 @@ export function BandLadder({
                   {t("roleCount", { count: inBand.length })}
                 </div>
               </div>
-              <div className="relative flex flex-1 flex-wrap items-start gap-2">
+              {/* self-center (not stretch) so a short content block (an empty
+                  hatch or a single chip row) sits vertically centered against
+                  the taller two-line rail, giving equal padding above and
+                  below. items-start still top-aligns chips within a multi-row
+                  band, where the column is the taller side and self-center is a
+                  no-op. */}
+              <div className="relative flex flex-1 flex-wrap items-start gap-2 self-center">
                 {inBand.length === 0 ? (
                   // Empty band: a subtle diagonal-hatch placeholder (the
                   // band's "0 roles" count in the rail carries the wording).
