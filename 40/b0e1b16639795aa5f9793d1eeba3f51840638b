@@ -1,0 +1,19 @@
+apps/dashboard/components/bands/band-ladder.tsx
+  s_b43c16d858e2cf::t_b848868351567b 84-90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "40b0e1b16639795aa5f9793d1eeba3f51840638b",
+  "prompts": {},
+  "sessions": {
+    "s_b43c16d858e2cf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "688799cc-5925-4eb0-88be-70a8f25a84a6",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
