@@ -59,7 +59,10 @@ export function NavOrganization() {
               aria-label={t("orgSwitcher.switch")}
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground group-data-[collapsible=icon]:-mx-px group-data-[collapsible=icon]:size-9! group-data-[collapsible=icon]:justify-center"
             >
-              <Avatar className="shrink-0 group-data-[collapsible=icon]:size-9">
+              <Avatar
+                variant="brand"
+                className="shrink-0 group-data-[collapsible=icon]:size-9"
+              >
                 <AvatarFallback>{initialsOf(current.name)}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
@@ -94,7 +97,7 @@ export function NavOrganization() {
                   aria-current={isActive ? "true" : undefined}
                   onClick={() => handleSelect(org.id)}
                 >
-                  <Avatar className="size-6 shrink-0">
+                  <Avatar variant="brand" className="size-6 shrink-0">
                     <AvatarFallback>{initialsOf(org.name)}</AvatarFallback>
                   </Avatar>
                   <span className="truncate">{org.name}</span>

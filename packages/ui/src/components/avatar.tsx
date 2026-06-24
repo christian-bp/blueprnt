@@ -8,20 +8,30 @@ import { cn } from "@workspace/ui/lib/utils"
 function Avatar({
   className,
   size = "default",
+  variant = "default",
   ...props
 }: React.ComponentProps<typeof AvatarPrimitive.Root> & {
   size?: "default" | "sm" | "lg"
+  // Local deviation from upstream shadcn: the "brand" variant tints the avatar
+  // with the brand color (ring + initials fallback) for branded identity
+  // avatars such as the organization/company; "default" keeps the neutral
+  // theme treatment. The variant lives on the root and drives the fallback via
+  // the group/avatar selector below, so a single prop styles the whole avatar.
+  variant?: "default" | "brand"
 }) {
   return (
     <AvatarPrimitive.Root
       data-slot="avatar"
       data-size={size}
+      data-variant={variant}
       // Local deviation from upstream shadcn: avatars use the theme's rounded
       // radius (rounded-md), not a full circle, for both org and user avatars.
       // The after: ring radius must match the root radius or the image/fallback
-      // pokes past it.
+      // pokes past it. The ring uses the brand color in the "brand" variant so
+      // those identity avatars read as branded; the mix-blend keeps it sitting
+      // naturally over an uploaded image in either theme.
       className={cn(
-        "group/avatar relative flex size-8 shrink-0 rounded-md select-none after:absolute after:inset-0 after:rounded-md after:border after:border-border after:mix-blend-darken data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten",
+        "group/avatar relative flex size-8 shrink-0 rounded-md select-none after:absolute after:inset-0 after:rounded-md after:border after:border-border after:mix-blend-darken data-[variant=brand]:after:border-brand data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten",
         className
       )}
       {...props}
@@ -52,8 +62,12 @@ function AvatarFallback({
   return (
     <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"
+      // Local deviation from upstream shadcn: the initials fallback defaults to
+      // the neutral muted gray; under the root's "brand" variant it switches to
+      // a soft brand tint (pale brand fill + brand initials) so branded identity
+      // avatars (e.g. the organization) read as branded.
       className={cn(
-        "flex size-full items-center justify-center rounded-md bg-muted text-sm text-muted-foreground group-data-[size=sm]/avatar:text-xs",
+        "flex size-full items-center justify-center rounded-md bg-muted text-sm text-muted-foreground group-data-[variant=brand]/avatar:bg-brand/10 group-data-[variant=brand]/avatar:text-brand group-data-[size=sm]/avatar:text-xs",
         className
       )}
       {...props}

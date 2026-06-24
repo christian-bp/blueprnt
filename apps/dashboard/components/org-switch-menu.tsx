@@ -46,7 +46,7 @@ export function OrgSwitchMenuSub() {
   return (
     <DropdownMenuSub>
       <DropdownMenuSubTrigger className="gap-2">
-        <Avatar className="size-5 shrink-0">
+        <Avatar variant="brand" className="size-5 shrink-0">
           <AvatarFallback className="text-xs">
             {initialsOf(current.name)}
           </AvatarFallback>
@@ -66,7 +66,7 @@ export function OrgSwitchMenuSub() {
               className="gap-2"
               onClick={() => handleSelect(org.id)}
             >
-              <Avatar className="size-5 shrink-0">
+              <Avatar variant="brand" className="size-5 shrink-0">
                 <AvatarFallback className="text-xs">
                   {initialsOf(org.name)}
                 </AvatarFallback>
