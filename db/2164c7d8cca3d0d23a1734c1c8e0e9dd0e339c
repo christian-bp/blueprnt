@@ -1,0 +1,24 @@
+packages/ui/src/components/form.tsx
+  s_d9d5976c59712a::t_deefcd9fde8bed 1-162
+packages/ui/src/components/form.test.tsx
+  s_d9d5976c59712a::t_754e58b8d956fb 1-3,5-11,13-47
+  s_d9d5976c59712a::t_4835aa5c40deac 4,12
+packages/ui/package.json
+  s_d9d5976c59712a::t_7449d8650dcf95 33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.10",
+  "base_commit_sha": "db2164c7d8cca3d0d23a1734c1c8e0e9dd0e339c",
+  "prompts": {},
+  "sessions": {
+    "s_d9d5976c59712a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "705e8dd4-4248-4771-9b7a-48a7c6cab6a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
