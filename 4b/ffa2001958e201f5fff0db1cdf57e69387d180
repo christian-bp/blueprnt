@@ -1,0 +1,25 @@
+CLAUDE.md
+  s_d9d5976c59712a::t_52534e13558361 62
+docs/superpowers/plans/2026-06-23-form-validation.md
+  s_d9d5976c59712a::t_0633c4303f7be6 1-71,85-1476
+  s_d9d5976c59712a::t_ac64b2539aac4f 72-84
+docs/superpowers/specs/2026-06-23-form-validation-design.md
+  s_d9d5976c59712a::t_b6b13972385e13 1-64,79-122
+  s_d9d5976c59712a::t_e4bc34f2001282 65-78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.10",
+  "base_commit_sha": "4bffa2001958e201f5fff0db1cdf57e69387d180",
+  "prompts": {},
+  "sessions": {
+    "s_d9d5976c59712a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "705e8dd4-4248-4771-9b7a-48a7c6cab6a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
