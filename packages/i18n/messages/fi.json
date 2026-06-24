@@ -71,6 +71,12 @@
   },
   "dashboard": {
     "title": "blueprnt",
+    "validation": {
+      "required": "Tämä kenttä on pakollinen.",
+      "invalidEmail": "Anna kelvollinen sähköpostiosoite.",
+      "minLength": "Vähintään {min} merkkiä.",
+      "slug": "Käytä pieniä kirjaimia, numeroita ja väliviivoja."
+    },
     "nav": {
       "home": "Etusivu",
       "overview": "Yleiskatsaus",

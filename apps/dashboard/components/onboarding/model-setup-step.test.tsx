@@ -214,7 +214,7 @@ describe("ModelSetupStep", () => {
     ).toBeDefined()
   })
 
-  it("selecting scratch reveals the name form; Next stays disabled until a name is typed", () => {
+  it("selecting scratch reveals the name form and fades (disables) the template card", () => {
     renderStep()
     // Select the scratch card; the name form is revealed below the cards and
     // the template card fades away (disabled while faded).
@@ -222,16 +222,27 @@ describe("ModelSetupStep", () => {
     expect(
       screen.getByRole("button", { name: /Start from the standard template/ })
     ).toHaveProperty("disabled", true)
-    const nextCta = screen.getByRole("button", {
-      name: messages.dashboard.onboarding.screens.nextCta,
-    })
-    expect(nextCta).toHaveProperty("disabled", true)
+    // The name input appears below the cards.
+    expect(
+      screen.getByLabelText(messages.dashboard.model.scratch.nameLabel)
+    ).toBeDefined()
+  })
 
+  it("submitting an empty scratch name shows the required error and does not create", async () => {
+    renderStep()
+    fireEvent.click(screen.getByRole("button", { name: /Build from scratch/ }))
     const input = screen.getByLabelText(
       messages.dashboard.model.scratch.nameLabel
     )
-    fireEvent.change(input, { target: { value: "My model" } })
-    expect(nextCta).toHaveProperty("disabled", false)
+    const form = input.closest("form")
+    if (!form) throw new Error("form not found")
+    fireEvent.submit(form)
+    await waitFor(() => {
+      expect(
+        screen.getByText(messages.dashboard.validation.required)
+      ).toBeDefined()
+      expect(createEmptyMock).not.toHaveBeenCalled()
+    })
   })
 
   it("clicking the scratch card again deselects it and brings the template card back", () => {
@@ -287,6 +298,15 @@ describe("ModelSetupStep", () => {
     fireEvent.change(input, { target: { value: "My model" } })
     const form = input.closest("form")
     if (!form) throw new Error("form not found")
+    // Let isValid settle (the Next button enables) before submitting, as a real
+    // user would; this also asserts the disable-until-valid gate releases.
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", {
+          name: messages.dashboard.onboarding.screens.nextCta,
+        })
+      ).toHaveProperty("disabled", false)
+    })
     fireEvent.submit(form)
 
     await waitFor(() => {
@@ -297,6 +317,7 @@ describe("ModelSetupStep", () => {
     expect(
       screen.queryByText(messages.dashboard.model.editor.heading)
     ).toBeNull()
+    // The scratch name is still valid, so the retry button stays enabled.
     expect(
       screen.getByRole("button", {
         name: messages.dashboard.onboarding.screens.nextCta,

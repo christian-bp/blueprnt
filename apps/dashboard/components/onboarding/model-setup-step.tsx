@@ -1,12 +1,21 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Label } from "@workspace/ui/components/label"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@workspace/ui/components/form"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { useMutation, useQuery } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
-import { useState } from "react"
+import { useMemo, useState } from "react"
+import { useForm } from "react-hook-form"
 import { CriterionEditor } from "@/components/onboarding/criterion-editor"
 import { ModelReview } from "@/components/onboarding/model-review"
 import { NextButton } from "@/components/onboarding/next-button"
@@ -15,6 +24,10 @@ import { ScreenShell } from "@/components/onboarding/screen-shell"
 import { OptionCard } from "@/components/onboarding/option-card"
 import { OPTION_FADE_MS } from "@/hooks/use-auto-advance"
 import { advanceDelay } from "@/hooks/use-auto-advance"
+import {
+  makeScratchNameSchema,
+  type ScratchNameValues,
+} from "@/lib/onboarding-schemas"
 
 type Mode = "choice" | "template-review" | "scratch-editor"
 type Choice = "template" | "scratch" | null
@@ -48,6 +61,7 @@ export function ModelSetupStep({
 }) {
   const t = useTranslations("dashboard.model")
   const tOnboarding = useTranslations("dashboard.onboarding")
+  const tv = useTranslations("dashboard.validation")
   const createFromTemplate = useMutation(
     api.evaluationModel.model.createModelFromTemplate
   )
@@ -60,9 +74,15 @@ export function ModelSetupStep({
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
   const [mode, setMode] = useState<Mode>("choice")
   const [choice, setChoice] = useState<Choice>(null)
-  const [scratchName, setScratchName] = useState("")
   const [pending, setPending] = useState(false)
   const [failed, setFailed] = useState(false)
+
+  const scratchSchema = useMemo(() => makeScratchNameSchema(tv), [tv])
+  const scratchForm = useForm<ScratchNameValues>({
+    resolver: zodResolver(scratchSchema),
+    mode: "onTouched",
+    defaultValues: { scratchName: "" },
+  })
   // Resume: if a model already exists when we are still on the choice screen
   // (a reload mid-setup), jump to the screen the model belongs to. Seed-once
   // during render keyed on the model id so the jump happens exactly once and
@@ -145,25 +165,24 @@ export function ModelSetupStep({
   }
 
   // Scratch needs a name first, so it cannot auto-advance: selecting reveals
-  // the name form below; clicking the card again deselects it.
+  // the name form below; clicking the card again deselects it (and clears the
+  // name field so a reopen starts clean).
   const pickScratch = () => {
     if (pending) return
     setFailed(false)
-    setChoice(choice === "scratch" ? null : "scratch")
+    const next = choice === "scratch" ? null : "scratch"
+    setChoice(next)
+    if (next === null) scratchForm.reset()
   }
 
-  const confirmScratch = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    if (pending || scratchName.trim().length === 0) return
-    setPending(true)
+  const confirmScratch = async (values: ScratchNameValues) => {
     setFailed(false)
     try {
-      await createEmpty({ orgId, name: scratchName.trim() })
-      setPending(false)
+      // The schema already trimmed the name.
+      await createEmpty({ orgId, name: values.scratchName })
       setMode("scratch-editor")
     } catch {
       setFailed(true)
-      setPending(false)
     }
   }
 
@@ -199,22 +218,34 @@ export function ModelSetupStep({
             transition={{ duration: OPTION_FADE_MS / 1000, ease: "easeOut" }}
             className="w-full max-w-xs overflow-hidden"
           >
-            <form
-              className="flex flex-col gap-2 px-1 pb-1"
-              onSubmit={confirmScratch}
-            >
-              <Label htmlFor="model-name">{t("scratch.nameLabel")}</Label>
-              <OnboardingInput
-                id="model-name"
-                value={scratchName}
-                onChange={(event) => setScratchName(event.target.value)}
-              />
-              <NextButton
-                type="submit"
-                className="mt-2 self-end"
-                disabled={pending || scratchName.trim().length === 0}
-              />
-            </form>
+            <Form {...scratchForm}>
+              <form
+                className="flex flex-col gap-2 px-1 pb-1"
+                onSubmit={scratchForm.handleSubmit(confirmScratch)}
+              >
+                <FormField
+                  control={scratchForm.control}
+                  name="scratchName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("scratch.nameLabel")}</FormLabel>
+                      <FormControl>
+                        <OnboardingInput {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <NextButton
+                  type="submit"
+                  className="mt-2 self-end"
+                  disabled={
+                    !scratchForm.formState.isValid ||
+                    scratchForm.formState.isSubmitting
+                  }
+                />
+              </form>
+            </Form>
           </motion.div>
         )}
       </AnimatePresence>

@@ -43,15 +43,19 @@ describe("CriterionForm", () => {
     cleanup()
   })
 
-  it("disables the submit button until a name is typed", () => {
+  it("keeps submit disabled until a name is typed", async () => {
     renderForm()
-    const submit = screen.getByRole("button", { name: "Submit" })
-    expect(submit).toHaveProperty("disabled", true)
-
+    const submit = screen.getByRole("button", {
+      name: "Submit",
+    }) as HTMLButtonElement
+    expect(submit.disabled).toBe(true)
     fireEvent.change(screen.getByLabelText(editor.name), {
       target: { value: "Problem solving" },
     })
-    expect(submit).toHaveProperty("disabled", false)
+    await waitFor(() => {
+      expect(submit.disabled).toBe(false)
+    })
+    expect(onSubmitMock).not.toHaveBeenCalled()
   })
 
   it("submits trimmed values with all six anchors and resets in add mode", async () => {
@@ -64,7 +68,9 @@ describe("CriterionForm", () => {
       screen.getByLabelText(editor.anchorLevel.replace("{level}", "0")),
       { target: { value: "None" } }
     )
-    fireEvent.click(screen.getByRole("button", { name: "Submit" }))
+    fireEvent.submit(
+      screen.getByLabelText(editor.name).closest("form") as HTMLFormElement
+    )
 
     await waitFor(() => {
       expect(onSubmitMock).toHaveBeenCalledWith({
@@ -96,7 +102,9 @@ describe("CriterionForm", () => {
       ).value
     ).toBe("a5")
 
-    fireEvent.click(screen.getByRole("button", { name: "Submit" }))
+    fireEvent.submit(
+      screen.getByLabelText(editor.name).closest("form") as HTMLFormElement
+    )
     await waitFor(() => {
       expect(onSubmitMock).toHaveBeenCalledWith(PREFILL)
     })
@@ -108,7 +116,9 @@ describe("CriterionForm", () => {
   it("shows the error line when the submit rejects", async () => {
     onSubmitMock.mockRejectedValue(new Error("errors.invalidInput"))
     renderForm(PREFILL)
-    fireEvent.click(screen.getByRole("button", { name: "Submit" }))
+    fireEvent.submit(
+      screen.getByLabelText(editor.name).closest("form") as HTMLFormElement
+    )
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeDefined()
     })

@@ -71,6 +71,12 @@
   },
   "dashboard": {
     "title": "blueprnt",
+    "validation": {
+      "required": "Det här fältet är obligatoriskt.",
+      "invalidEmail": "Ange en giltig e-postadress.",
+      "minLength": "Måste vara minst {min} tecken.",
+      "slug": "Använd små bokstäver, siffror och bindestreck."
+    },
     "nav": {
       "home": "Hem",
       "overview": "Översikt",

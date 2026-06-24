@@ -27,10 +27,14 @@ export function FamilyPicker({
   orgId,
   value,
   onChange,
+  id,
 }: {
   orgId: string
   value: string | null
   onChange: (familyId: string | null) => void
+  // Optional id applied to the picker's trigger so a FormLabel/FormControl can
+  // associate its label with the control (like CountrySelect et al.).
+  id?: string
 }) {
   const t = useTranslations("dashboard.roles.family")
   const tErrors = useTranslations("errors")
@@ -113,7 +117,7 @@ export function FamilyPicker({
         onChange(next === NONE ? null : next)
       }}
     >
-      <SelectTrigger className="w-full">
+      <SelectTrigger id={id} className="w-full">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

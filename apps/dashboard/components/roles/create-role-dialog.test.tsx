@@ -121,4 +121,19 @@ describe("CreateRoleDialog", () => {
     })
     expect(screen.getByLabelText(labels.titleLabel)).toBeDefined()
   })
+
+  it("blocks submit and shows required errors when the basics are empty", async () => {
+    renderDialog()
+    fireEvent.click(screen.getByRole("button", { name: labels.title }))
+    const form = screen
+      .getByLabelText(labels.titleLabel)
+      .closest("form") as HTMLFormElement
+    fireEvent.submit(form)
+    await waitFor(() => {
+      expect(
+        screen.getAllByText(messages.dashboard.validation.required).length
+      ).toBeGreaterThan(0)
+      expect(createRoleMock).not.toHaveBeenCalled()
+    })
+  })
 })

@@ -1,19 +1,27 @@
-import { fireEvent, render, within } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import en from "@workspace/i18n/messages/en.json"
 
 // The page reads the reset token from the URL and talks to the auth client;
-// stub both so we can exercise the client-side min-length gate in isolation.
-vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push: vi.fn() }),
-  useSearchParams: () => new URLSearchParams("token=tok"),
+// stub both so we can exercise the client-side validation in isolation.
+const { resetPassword, push } = vi.hoisted(() => ({
+  resetPassword: vi.fn(
+    async (): Promise<{ error: { message: string } | null }> => ({
+      error: null,
+    })
+  ),
+  push: vi.fn(),
 }))
-
-// vi.mock is hoisted above imports, so the spy must be created via vi.hoisted
-// to exist when the factory runs.
-const { resetPassword } = vi.hoisted(() => ({
-  resetPassword: vi.fn(async () => ({ error: null })),
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push }),
+  useSearchParams: () => new URLSearchParams("token=tok"),
 }))
 vi.mock("@/lib/auth-client", () => ({
   authClient: { resetPassword },
@@ -21,57 +29,73 @@ vi.mock("@/lib/auth-client", () => ({
 
 import ResetPasswordPage from "./page"
 
-// No global RTL auto-cleanup is configured in this repo, so scope queries to
-// each render's container and unmount between tests.
+const passwordLabel = en.dashboard.auth.resetPassword.passwordLabel
+const minLen = en.dashboard.validation.minLength.replace("{min}", "8")
+
 function renderPage() {
-  const { container, unmount } = render(
+  return render(
     <NextIntlClientProvider locale="en" messages={en}>
       <ResetPasswordPage />
     </NextIntlClientProvider>
   )
-  return { scope: within(container), unmount }
 }
 
-const passwordLabel = en.dashboard.auth.resetPassword.passwordLabel
+function submit() {
+  const input = screen.getByLabelText(passwordLabel)
+  fireEvent.submit(input.closest("form") as HTMLFormElement)
+}
 
 describe("ResetPasswordPage", () => {
-  let cleanup: (() => void) | undefined
-
   beforeEach(() => {
-    resetPassword.mockClear()
+    resetPassword.mockReset()
+    resetPassword.mockResolvedValue({ error: null })
+    push.mockReset()
   })
-
   afterEach(() => {
-    cleanup?.()
-    cleanup = undefined
+    cleanup()
   })
 
-  it("disables submit until the password reaches the minimum length", () => {
-    const { scope, unmount } = renderPage()
-    cleanup = unmount
-    const button = scope.getByRole("button") as HTMLButtonElement
-    const input = scope.getByLabelText(passwordLabel) as HTMLInputElement
-
-    // Empty: disabled.
-    expect(button.disabled).toBe(true)
-
-    // 7 chars (below the minimum of 8): still disabled.
-    fireEvent.change(input, { target: { value: "short77" } })
-    expect(button.disabled).toBe(true)
-
-    // 8 chars: enabled.
-    fireEvent.change(input, { target: { value: "longeno8" } })
-    expect(button.disabled).toBe(false)
+  it("shows the min-length error and does not call reset when the password is too short", async () => {
+    renderPage()
+    fireEvent.change(screen.getByLabelText(passwordLabel), {
+      target: { value: "short77" },
+    })
+    submit()
+    await waitFor(() => {
+      expect(screen.getByText(minLen)).toBeDefined()
+      expect(resetPassword).not.toHaveBeenCalled()
+    })
   })
 
-  it("does not call the auth client when the password is too short", () => {
-    const { scope, unmount } = renderPage()
-    cleanup = unmount
-    const input = scope.getByLabelText(passwordLabel) as HTMLInputElement
-    const form = input.closest("form") as HTMLFormElement
+  it("resets the password and navigates home when long enough", async () => {
+    renderPage()
+    fireEvent.change(screen.getByLabelText(passwordLabel), {
+      target: { value: "longeno8" },
+    })
+    submit()
+    await waitFor(() => {
+      expect(resetPassword).toHaveBeenCalledWith({
+        newPassword: "longeno8",
+        token: "tok",
+      })
+    })
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith("/")
+    })
+  })
 
-    fireEvent.change(input, { target: { value: "short77" } })
-    fireEvent.submit(form)
-    expect(resetPassword).not.toHaveBeenCalled()
+  it("shows the error alert when reset returns an error", async () => {
+    resetPassword.mockResolvedValue({ error: { message: "bad" } })
+    renderPage()
+    fireEvent.change(screen.getByLabelText(passwordLabel), {
+      target: { value: "longeno8" },
+    })
+    submit()
+    await waitFor(() => {
+      expect(
+        screen.getByText(en.dashboard.auth.resetPassword.error)
+      ).toBeDefined()
+      expect(push).not.toHaveBeenCalled()
+    })
   })
 })

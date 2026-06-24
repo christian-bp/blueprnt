@@ -1,5 +1,6 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -11,8 +12,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@workspace/ui/components/dialog"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@workspace/ui/components/form"
 import { Input } from "@workspace/ui/components/input"
-import { Label } from "@workspace/ui/components/label"
 import {
   Select,
   SelectContent,
@@ -23,14 +31,19 @@ import {
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useMemo, useState } from "react"
+import { useForm } from "react-hook-form"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { FamilyPicker } from "@/components/roles/family-picker"
+import { SubmitButton } from "@/components/submit-button"
+import { type CreateRoleValues, makeCreateRoleSchema } from "@/lib/role-schemas"
 
-// Structural subset of getModel's tracks: the stable key (typed as the fixed
-// V1 literal union, ADR-0006) flows through to the mutation untouched.
+// Structural subset of getModel's tracks: the stable key flows through to the
+// mutation untouched. The key type is sourced from the schema's track union so
+// the dialog and the client gate share one definition (the schema in turn
+// mirrors the backend trackKeyValidator, ADR-0006).
 export interface TrackOption {
-  key: "IC" | "Lead" | "M"
+  key: CreateRoleValues["trackKey"]
   name: string
   order: number
 }
@@ -49,62 +62,53 @@ export function CreateRoleDialog({
   const t = useTranslations("dashboard.roles.create")
   const tHelp = useTranslations("dashboard.help")
   const tModel = useTranslations("model")
+  const tv = useTranslations("dashboard.validation")
   const createRole = useMutation(api.assessment.roles.createRole)
   const router = useRouter()
 
   const [open, setOpen] = useState(false)
-  const [title, setTitle] = useState("")
-  const [roleFunction, setRoleFunction] = useState("")
-  const [team, setTeam] = useState("")
-  const firstTrack = tracks[0]
-  const [trackKey, setTrackKey] = useState<TrackOption["key"] | "">(
-    firstTrack?.key ?? ""
-  )
-  const [familyId, setFamilyId] = useState<string | null>(null)
-  const [pending, setPending] = useState(false)
   const [failed, setFailed] = useState(false)
+  const firstTrack = tracks[0]
 
-  const canSubmit =
-    title.trim().length > 0 &&
-    roleFunction.trim().length > 0 &&
-    team.trim().length > 0 &&
-    trackKey !== "" &&
-    !pending
+  const schema = useMemo(() => makeCreateRoleSchema(tv), [tv])
+  const form = useForm<CreateRoleValues>({
+    resolver: zodResolver(schema),
+    mode: "onTouched",
+    defaultValues: {
+      title: "",
+      roleFunction: "",
+      team: "",
+      trackKey: firstTrack?.key ?? "IC",
+      familyId: null,
+    },
+  })
 
   function handleOpenChange(nextOpen: boolean) {
     setOpen(nextOpen)
     // Closing discards the draft: a reopened dialog always starts clean.
     if (!nextOpen) {
-      setTitle("")
-      setRoleFunction("")
-      setTeam("")
-      setTrackKey(firstTrack?.key ?? "")
-      setFamilyId(null)
+      form.reset()
       setFailed(false)
     }
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    // canSubmit aliases trackKey !== "", so trackKey narrows to the union.
-    if (!canSubmit) return
-    setPending(true)
+  async function onSubmit(values: CreateRoleValues) {
     setFailed(false)
     try {
       const roleId = await createRole({
         orgId,
-        title: title.trim(),
-        function: roleFunction.trim(),
-        team: team.trim(),
-        trackKey,
-        ...(familyId !== null ? { familyId: familyId as never } : {}),
+        title: values.title,
+        function: values.roleFunction,
+        team: values.team,
+        trackKey: values.trackKey,
+        ...(values.familyId !== null
+          ? { familyId: values.familyId as never }
+          : {}),
       })
       setOpen(false)
       router.push(`/roles/${roleId}`)
     } catch {
       setFailed(true)
-    } finally {
-      setPending(false)
     }
   }
 
@@ -118,92 +122,126 @@ export function CreateRoleDialog({
           <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="role-title">{t("titleLabel")}</Label>
-            <Input
-              id="role-title"
-              value={title}
-              placeholder={t("titlePlaceholder")}
-              onChange={(event) => setTitle(event.target.value)}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("titleLabel")}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t("titlePlaceholder")} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="role-function">{t("functionLabel")}</Label>
-              <Input
-                id="role-function"
-                value={roleFunction}
-                onChange={(event) => setRoleFunction(event.target.value)}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="roleFunction"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("functionLabel")}</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="team"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("teamLabel")}</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="role-team">{t("teamLabel")}</Label>
-              <Input
-                id="role-team"
-                value={team}
-                onChange={(event) => setTeam(event.target.value)}
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center gap-1.5">
-              <Label htmlFor="role-track">{t("trackLabel")}</Label>
-              <HelpMorphButton label={tHelp("trackLabel")}>
-                {tHelp("trackBody")}
-              </HelpMorphButton>
-            </div>
-            <Select
-              value={trackKey}
-              // The Select's values are our own SelectItems below, so the
-              // string narrows safely back to the track key union.
-              onValueChange={(value) =>
-                setTrackKey(value as TrackOption["key"])
-              }
-            >
-              <SelectTrigger id="role-track" className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {tracks.map((track) => (
-                  <SelectItem key={track.key} value={track.key}>
-                    {track.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center gap-1.5">
-              <Label>{tModel("roleFamily")}</Label>
-              <HelpMorphButton label={tHelp("familyLabel")}>
-                {tHelp("familyBody")}
-              </HelpMorphButton>
-            </div>
-            <FamilyPicker
-              orgId={orgId}
-              value={familyId}
-              onChange={setFamilyId}
+            <FormField
+              control={form.control}
+              name="trackKey"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-1.5">
+                    <FormLabel>{t("trackLabel")}</FormLabel>
+                    <HelpMorphButton label={tHelp("trackLabel")}>
+                      {tHelp("trackBody")}
+                    </HelpMorphButton>
+                  </div>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger
+                        ref={field.ref}
+                        onBlur={field.onBlur}
+                        className="w-full"
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {tracks.map((track) => (
+                        <SelectItem key={track.key} value={track.key}>
+                          {track.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          {failed && (
-            <p role="alert" className="text-destructive text-sm">
-              {t("error")}
-            </p>
-          )}
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => handleOpenChange(false)}
-            >
-              {t("cancel")}
-            </Button>
-            <Button type="submit" disabled={!canSubmit}>
-              {t("cta")}
-            </Button>
-          </DialogFooter>
-        </form>
+            <FormField
+              control={form.control}
+              name="familyId"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-1.5">
+                    <FormLabel>{tModel("roleFamily")}</FormLabel>
+                    <HelpMorphButton label={tHelp("familyLabel")}>
+                      {tHelp("familyBody")}
+                    </HelpMorphButton>
+                  </div>
+                  <FormControl>
+                    <FamilyPicker
+                      orgId={orgId}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            {failed && (
+              <p role="alert" className="text-destructive text-sm">
+                {t("error")}
+              </p>
+            )}
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handleOpenChange(false)}
+              >
+                {t("cancel")}
+              </Button>
+              <SubmitButton
+                type="submit"
+                isSubmitting={form.formState.isSubmitting}
+                disabled={!form.formState.isValid}
+              >
+                {t("cta")}
+              </SubmitButton>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   )

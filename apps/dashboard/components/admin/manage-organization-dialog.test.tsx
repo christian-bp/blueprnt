@@ -1,10 +1,21 @@
-import { cleanup, render, screen } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 
+const { updateOrgMock } = vi.hoisted(() => ({ updateOrgMock: vi.fn() }))
+
 vi.mock("convex/react", () => ({
-  useMutation: () => vi.fn(),
+  useMutation: (ref: unknown) => {
+    if (ref === "platform.admin.updateOrganization") return updateOrgMock
+    return vi.fn()
+  },
   useQuery: () => [],
 }))
 
@@ -26,8 +37,23 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
 vi.mock("@/components/country-select", () => ({
   CountrySelect: () => null,
 }))
+// Interactive stub so a test can change a setting (making the form dirty).
 vi.mock("@/components/currency-select", () => ({
-  CurrencySelect: () => null,
+  CurrencySelect: ({
+    onValueChange,
+    "aria-label": ariaLabel,
+  }: {
+    onValueChange: (value: string) => void
+    "aria-label"?: string
+  }) => (
+    <button
+      type="button"
+      aria-label={ariaLabel}
+      onClick={() => onValueChange("USD")}
+    >
+      currency
+    </button>
+  ),
 }))
 vi.mock("@/components/industry-select", () => ({
   IndustrySelect: () => null,
@@ -56,6 +82,9 @@ function renderDialog() {
 }
 
 describe("ManageOrganizationDialog", () => {
+  beforeEach(() => {
+    updateOrgMock.mockReset()
+  })
   afterEach(() => {
     cleanup()
   })
@@ -73,5 +102,42 @@ describe("ManageOrganizationDialog", () => {
   it("renders the settings heading", () => {
     renderDialog()
     expect(screen.getByText(manageLabels.settingsHeading)).toBeDefined()
+  })
+
+  it("keeps Save disabled until a setting is changed", () => {
+    renderDialog()
+    const save = screen.getByRole("button", {
+      name: manageLabels.saveSettings,
+    }) as HTMLButtonElement
+    // Pristine (valid but unchanged) stays disabled: no no-op save.
+    expect(save.disabled).toBe(true)
+  })
+
+  it("saves the settings through updateOrganization on submit", async () => {
+    updateOrgMock.mockResolvedValue(undefined)
+    renderDialog()
+    // Change a setting so the form is dirty (Save is gated on a change).
+    fireEvent.click(
+      screen.getByRole("button", { name: manageLabels.currencyLabel })
+    )
+    // Click the actual Save button (in the footer, outside the <form>) so the
+    // form="org-settings-form" association is what is exercised, not a direct
+    // form submit.
+    const save = screen.getByRole("button", {
+      name: manageLabels.saveSettings,
+    }) as HTMLButtonElement
+    await waitFor(() => {
+      expect(save.disabled).toBe(false)
+    })
+    fireEvent.click(save)
+    await waitFor(() => {
+      expect(updateOrgMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        country: "",
+        currency: "USD",
+        language: "",
+        industry: "",
+      })
+    })
   })
 })

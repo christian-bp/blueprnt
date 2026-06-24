@@ -1,4 +1,10 @@
-import { cleanup, render, screen } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import type { ReactNode } from "react"
 import { afterEach, describe, expect, it, vi } from "vitest"
@@ -12,12 +18,22 @@ vi.mock("next/link", () => ({
   ),
 }))
 
-function renderForm() {
+function renderForm(
+  onSubmit: (v: {
+    email: string
+    password: string
+  }) => Promise<void> = async () => {}
+) {
   return render(
     <NextIntlClientProvider locale="en" messages={en}>
-      <EmailPasswordForm onSubmit={async () => {}} />
+      <EmailPasswordForm onSubmit={onSubmit} />
     </NextIntlClientProvider>
   )
+}
+
+function submitForm() {
+  const form = screen.getByLabelText("Email").closest("form") as HTMLFormElement
+  fireEvent.submit(form)
 }
 
 // No global RTL auto-cleanup is configured in this repo; clean up between
@@ -40,5 +56,55 @@ describe("EmailPasswordForm", () => {
       name: en.dashboard.auth.forgotPasswordLink,
     }) as HTMLAnchorElement
     expect(link.getAttribute("href")).toBe("/forgot-password")
+  })
+
+  it("shows the invalid-email error and does not submit on a malformed email", async () => {
+    const onSubmit = vi.fn(async () => {})
+    renderForm(onSubmit)
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "not-an-email" },
+    })
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "secret" },
+    })
+    submitForm()
+    await waitFor(() => {
+      expect(
+        screen.getByText(en.dashboard.validation.invalidEmail)
+      ).toBeDefined()
+      expect(onSubmit).not.toHaveBeenCalled()
+    })
+  })
+
+  it("shows the required error and does not submit when the password is empty", async () => {
+    const onSubmit = vi.fn(async () => {})
+    renderForm(onSubmit)
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "user@example.com" },
+    })
+    // Leave the password empty.
+    submitForm()
+    await waitFor(() => {
+      expect(screen.getByText(en.dashboard.validation.required)).toBeDefined()
+      expect(onSubmit).not.toHaveBeenCalled()
+    })
+  })
+
+  it("submits the email and password when valid", async () => {
+    const onSubmit = vi.fn(async () => {})
+    renderForm(onSubmit)
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "user@example.com" },
+    })
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "secret" },
+    })
+    submitForm()
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalledWith({
+        email: "user@example.com",
+        password: "secret",
+      })
+    })
   })
 })

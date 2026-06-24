@@ -66,7 +66,7 @@ describe("EditCriterionDialog", () => {
     expect(nameInput.value).toBe("Scope")
 
     fireEvent.change(nameInput, { target: { value: "Adapted scope" } })
-    fireEvent.click(screen.getByRole("button", { name: editor.editSaveCta }))
+    fireEvent.submit(nameInput.closest("form") as HTMLFormElement)
 
     await waitFor(() => {
       expect(updateMock).toHaveBeenCalledWith({

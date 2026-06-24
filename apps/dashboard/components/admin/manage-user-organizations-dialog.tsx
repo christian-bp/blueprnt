@@ -1,5 +1,6 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
 import { MoreVerticalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
@@ -18,6 +19,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@workspace/ui/components/form"
 import { Label } from "@workspace/ui/components/label"
 import {
   Select,
@@ -28,8 +37,14 @@ import {
 } from "@workspace/ui/components/select"
 import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
-import { useState } from "react"
-import type { MembershipRole } from "@/lib/admin-schemas"
+import { useMemo, useState } from "react"
+import { useForm } from "react-hook-form"
+import { SubmitButton } from "@/components/submit-button"
+import {
+  type AddMembershipValues,
+  makeAddMembershipSchema,
+  type MembershipRole,
+} from "@/lib/admin-schemas"
 
 export function ManageUserOrganizationsDialog(props: {
   user: { authId: string; name: string; email: string }
@@ -39,6 +54,7 @@ export function ManageUserOrganizationsDialog(props: {
   const { user, open, onOpenChange } = props
   const t = useTranslations("dashboard.admin.users.organizations")
   const tRole = useTranslations("accounts.role")
+  const tv = useTranslations("dashboard.validation")
 
   const memberships = useQuery(
     api.platform.admin.listOrganizationsForUser,
@@ -52,10 +68,14 @@ export function ManageUserOrganizationsDialog(props: {
   const setMembershipRole = useMutation(api.platform.admin.setMembershipRole)
   const removeMembership = useMutation(api.platform.admin.removeMembership)
 
-  const [addOrgId, setAddOrgId] = useState("")
-  const [addRole, setAddRole] = useState<MembershipRole>("editor")
-  const [busy, setBusy] = useState(false)
   const [error, setError] = useState(false)
+
+  const schema = useMemo(() => makeAddMembershipSchema(tv), [tv])
+  const form = useForm<AddMembershipValues>({
+    resolver: zodResolver(schema),
+    mode: "onTouched",
+    defaultValues: { orgId: "", role: "editor" },
+  })
 
   const memberOrgIds = new Set((memberships ?? []).map((m) => m.orgId))
   const addableOrgs = (allOrgs ?? []).filter((o) => !memberOrgIds.has(o.orgId))
@@ -82,22 +102,17 @@ export function ManageUserOrganizationsDialog(props: {
     }
   }
 
-  async function handleAdd(e: React.FormEvent) {
-    e.preventDefault()
-    if (addOrgId === "") return
+  async function onAdd(values: AddMembershipValues) {
     setError(false)
-    setBusy(true)
     try {
       await addMembership({
         authId: user.authId,
-        orgId: addOrgId,
-        role: addRole,
+        orgId: values.orgId,
+        role: values.role,
       })
-      setAddOrgId("")
+      form.reset({ orgId: "", role: "editor" })
     } catch {
       setError(true)
-    } finally {
-      setBusy(false)
     }
   }
 
@@ -181,55 +196,86 @@ export function ManageUserOrganizationsDialog(props: {
               {t("noOrgsAvailable")}
             </p>
           ) : (
-            <form onSubmit={handleAdd}>
-              <div className="flex flex-wrap items-end gap-2">
-                <div className="min-w-48 flex-1 space-y-2">
-                  <Label>{t("orgLabel")}</Label>
-                  <Select
-                    value={addOrgId}
-                    onValueChange={setAddOrgId}
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onAdd)}>
+                <div className="flex flex-wrap items-end gap-2">
+                  <FormField
+                    control={form.control}
                     name="orgId"
-                  >
-                    <SelectTrigger aria-label={t("orgLabel")}>
-                      <SelectValue placeholder={t("orgPlaceholder")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {addableOrgs.map((o) => (
-                        <SelectItem key={o.orgId} value={o.orgId}>
-                          {o.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="w-36 space-y-2">
-                  <Label>{t("roleLabel")}</Label>
-                  <Select
-                    value={addRole}
-                    onValueChange={(value) =>
-                      setAddRole(value as MembershipRole)
-                    }
+                    render={({ field }) => (
+                      <FormItem className="min-w-48 flex-1">
+                        <FormLabel>{t("orgLabel")}</FormLabel>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <FormControl>
+                            <SelectTrigger
+                              ref={field.ref}
+                              onBlur={field.onBlur}
+                              aria-label={t("orgLabel")}
+                            >
+                              <SelectValue placeholder={t("orgPlaceholder")} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {addableOrgs.map((o) => (
+                              <SelectItem key={o.orgId} value={o.orgId}>
+                                {o.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
                     name="role"
-                  >
-                    <SelectTrigger aria-label={t("roleLabel")}>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="admin">{tRole("admin")}</SelectItem>
-                      <SelectItem value="editor">{tRole("editor")}</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    render={({ field }) => (
+                      <FormItem className="w-36">
+                        <FormLabel>{t("roleLabel")}</FormLabel>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <FormControl>
+                            <SelectTrigger
+                              ref={field.ref}
+                              onBlur={field.onBlur}
+                              aria-label={t("roleLabel")}
+                            >
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="admin">
+                              {tRole("admin")}
+                            </SelectItem>
+                            <SelectItem value="editor">
+                              {tRole("editor")}
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+                  <div className="space-y-2">
+                    <Label aria-hidden className="invisible">
+                      {t("addCta")}
+                    </Label>
+                    <SubmitButton
+                      type="submit"
+                      isSubmitting={form.formState.isSubmitting}
+                      disabled={!form.formState.isValid}
+                    >
+                      {t("addCta")}
+                    </SubmitButton>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label aria-hidden className="invisible">
-                    {t("addCta")}
-                  </Label>
-                  <Button type="submit" disabled={addOrgId === "" || busy}>
-                    {t("addCta")}
-                  </Button>
-                </div>
-              </div>
-            </form>
+              </form>
+            </Form>
           )}
         </section>
 

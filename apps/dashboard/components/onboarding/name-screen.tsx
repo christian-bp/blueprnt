@@ -1,11 +1,21 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@workspace/ui/components/form"
 import { useTranslations } from "next-intl"
-import { useState } from "react"
+import { useMemo, useState } from "react"
+import { useForm } from "react-hook-form"
 import { NextButton } from "@/components/onboarding/next-button"
-import { ScreenShell } from "@/components/onboarding/screen-shell"
 import { OnboardingInput } from "@/components/onboarding/onboarding-input"
+import { ScreenShell } from "@/components/onboarding/screen-shell"
 import { authClient } from "@/lib/auth-client"
+import { makeOrgNameSchema, type OrgNameValues } from "@/lib/onboarding-schemas"
 import { organizationSlug } from "@/lib/slug"
 
 // Screen 1: the organization name. Create mode (existing null) creates the
@@ -24,26 +34,29 @@ export function NameScreen({
 }) {
   const t = useTranslations("dashboard.onboarding.organization")
   const tScreens = useTranslations("dashboard.onboarding.screens")
-  const [name, setName] = useState(existing?.name ?? "")
-  const [pending, setPending] = useState(false)
+  const tv = useTranslations("dashboard.validation")
   const [failed, setFailed] = useState(false)
 
-  async function handleContinue(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const trimmed = name.trim()
-    if (trimmed.length < 2 || pending) return
-    setPending(true)
+  const schema = useMemo(() => makeOrgNameSchema(tv), [tv])
+  const form = useForm<OrgNameValues>({
+    resolver: zodResolver(schema),
+    mode: "onTouched",
+    defaultValues: { name: existing?.name ?? "" },
+  })
+
+  async function onValid(values: OrgNameValues) {
+    // The schema already trimmed the name.
+    const name = values.name
     setFailed(false)
     try {
       if (existing) {
-        if (trimmed !== existing.name) {
+        if (name !== existing.name) {
           const { error } = await authClient.organization.update({
             organizationId: existing.orgId,
-            data: { name: trimmed },
+            data: { name },
           })
           if (error) {
             setFailed(true)
-            setPending(false)
             return
           }
         }
@@ -51,44 +64,54 @@ export function NameScreen({
         return
       }
       const { data, error } = await authClient.organization.create({
-        name: trimmed,
-        slug: organizationSlug(trimmed),
+        name,
+        slug: organizationSlug(name),
       })
       if (error || !data) {
         setFailed(true)
-        setPending(false)
         return
       }
       onAdvance()
     } catch {
       setFailed(true)
-      setPending(false)
     }
   }
 
   return (
     <ScreenShell heading={tScreens("name.heading")}>
-      <form
-        className="flex w-full flex-col items-center gap-6"
-        onSubmit={handleContinue}
-      >
-        <OnboardingInput
-          aria-label={t("nameLabel")}
-          value={name}
-          placeholder={t("namePlaceholder")}
-          className="max-w-sm text-center"
-          onChange={(event) => setName(event.target.value)}
-        />
-        {failed && (
-          <p role="alert" className="text-destructive text-sm">
-            {t("error")}
-          </p>
-        )}
-        <NextButton
-          type="submit"
-          disabled={pending || name.trim().length < 2}
-        />
-      </form>
+      <Form {...form}>
+        <form
+          className="flex w-full flex-col items-center gap-6"
+          onSubmit={form.handleSubmit(onValid)}
+        >
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem className="flex w-full max-w-sm flex-col">
+                <FormControl>
+                  <OnboardingInput
+                    aria-label={t("nameLabel")}
+                    placeholder={t("namePlaceholder")}
+                    className="text-center"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-center" />
+              </FormItem>
+            )}
+          />
+          {failed && (
+            <p role="alert" className="text-destructive text-sm">
+              {t("error")}
+            </p>
+          )}
+          <NextButton
+            type="submit"
+            disabled={!form.formState.isValid || form.formState.isSubmitting}
+          />
+        </form>
+      </Form>
     </ScreenShell>
   )
 }

@@ -1,22 +1,34 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@workspace/ui/components/button"
 import { DialogFooter } from "@workspace/ui/components/dialog"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@workspace/ui/components/form"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { useTranslations } from "next-intl"
-import { useState } from "react"
+import { useMemo, useState } from "react"
+import { useForm } from "react-hook-form"
 import { HelpMorphButton } from "@/components/help-morph-button"
+import { SubmitButton } from "@/components/submit-button"
+import {
+  type CriterionFormValues,
+  makeCriterionSchema,
+} from "@/lib/criterion-schemas"
 
 const EMPTY_ANCHORS = ["", "", "", "", "", ""]
 
-export interface CriterionFormValues {
-  name: string
-  description: string
-  helpText: string
-  anchors: string[]
-}
+// Re-exported so the host dialogs (add/edit) and tests keep importing the
+// criterion value type from the form, while it stays schema-derived.
+export type { CriterionFormValues }
 
 // The shared criterion form: name, description, help text, and six anchor
 // inputs, used by both the add and the edit dialog. There is no weight
@@ -44,155 +56,166 @@ export function CriterionForm({
   const tEditor = useTranslations("dashboard.model.editor")
   const t = useTranslations("dashboard.model")
   const tHelp = useTranslations("dashboard.help")
+  const tv = useTranslations("dashboard.validation")
 
-  const [name, setName] = useState(initialValues?.name ?? "")
-  const [description, setDescription] = useState(
-    initialValues?.description ?? ""
-  )
-  const [helpText, setHelpText] = useState(initialValues?.helpText ?? "")
-  const [anchors, setAnchors] = useState<string[]>(
-    initialValues?.anchors ?? EMPTY_ANCHORS
-  )
-  const [pending, setPending] = useState(false)
+  const schema = useMemo(() => makeCriterionSchema(tv), [tv])
+  const form = useForm<CriterionFormValues>({
+    resolver: zodResolver(schema),
+    mode: "onTouched",
+    defaultValues: initialValues ?? {
+      name: "",
+      description: "",
+      helpText: "",
+      anchors: EMPTY_ANCHORS,
+    },
+  })
+  const anchors = form.getValues("anchors")
+  // Destructure so all three are READ every render: RHF's formState proxy only
+  // tracks/updates fields that are accessed, and a short-circuiting
+  // `!isValid || !isDirty` would never read isDirty on the first render.
+  const { isValid, isDirty, isSubmitting } = form.formState
   const [failed, setFailed] = useState(false)
 
+  async function handleValid(values: CriterionFormValues) {
+    setFailed(false)
+    try {
+      await onSubmit(values)
+      // Add mode (no initialValues): clear the fields for the next criterion.
+      if (initialValues === undefined) {
+        form.reset({
+          name: "",
+          description: "",
+          helpText: "",
+          anchors: ["", "", "", "", "", ""],
+        })
+      }
+    } catch {
+      setFailed(true)
+    }
+  }
+
   return (
-    <form
-      className="space-y-4"
-      onSubmit={async (event) => {
-        event.preventDefault()
-        setPending(true)
-        setFailed(false)
-        try {
-          await onSubmit({ name: name.trim(), description, helpText, anchors })
-          if (initialValues === undefined) {
-            setName("")
-            setDescription("")
-            setHelpText("")
-            setAnchors(EMPTY_ANCHORS)
-          }
-        } catch {
-          setFailed(true)
-        } finally {
-          setPending(false)
-        }
-      }}
-    >
-      <div className="space-y-2">
-        <Label htmlFor="criterion-name">{tEditor("name")}</Label>
-        <Input
-          id="criterion-name"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          required
+    <Form {...form}>
+      <form className="space-y-4" onSubmit={form.handleSubmit(handleValid)}>
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{tEditor("name")}</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="criterion-description">{tEditor("description")}</Label>
-        <Textarea
-          id="criterion-description"
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="criterion-help-text">{tEditor("helpText")}</Label>
-        <Textarea
-          id="criterion-help-text"
-          value={helpText}
-          onChange={(event) => setHelpText(event.target.value)}
-        />
-      </div>
-      <fieldset className="space-y-2">
-        <legend className="font-medium text-sm">
-          <span className="flex items-center gap-1.5">
-            {tEditor("anchors")}
-            <HelpMorphButton label={tHelp("anchorsLabel")}>
-              {tHelp("anchorsBody")}
-            </HelpMorphButton>
-          </span>
-        </legend>
-        {/* Static helper line: states the 0-to-5 direction in plain language
-            so the six inputs read as the levels of the scale, not as a list
-            of names. Always present (no state-triggered reveal), so the
-            layout never shifts. */}
-        <p className="text-muted-foreground text-sm">
-          {tEditor("levelsIntro")}
-        </p>
-        {anchors.map((anchor, index) => {
-          const isLowest = index === 0
-          const isHighest = index === anchors.length - 1
-          const levelLabel = tEditor("anchorLevel", { level: index })
-          return (
-            <div
-              // The anchor list is fixed-length and positional, so the index
-              // is a stable key here.
-              // biome-ignore lint/suspicious/noArrayIndexKey: positional fixed-length list
-              key={index}
-              className="space-y-1"
-            >
-              <Label
-                htmlFor={`criterion-anchor-${index}`}
-                className="flex items-center gap-2"
+        <div className="space-y-2">
+          <Label htmlFor="criterion-description">
+            {tEditor("description")}
+          </Label>
+          <Textarea
+            id="criterion-description"
+            {...form.register("description")}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="criterion-help-text">{tEditor("helpText")}</Label>
+          <Textarea id="criterion-help-text" {...form.register("helpText")} />
+        </div>
+        <fieldset className="space-y-2">
+          <legend className="font-medium text-sm">
+            <span className="flex items-center gap-1.5">
+              {tEditor("anchors")}
+              <HelpMorphButton label={tHelp("anchorsLabel")}>
+                {tHelp("anchorsBody")}
+              </HelpMorphButton>
+            </span>
+          </legend>
+          {/* Static helper line: states the 0-to-5 direction in plain language
+              so the six inputs read as the levels of the scale, not as a list
+              of names. Always present (no state-triggered reveal), so the
+              layout never shifts. */}
+          <p className="text-muted-foreground text-sm">
+            {tEditor("levelsIntro")}
+          </p>
+          {anchors.map((_anchor, index) => {
+            const isLowest = index === 0
+            const isHighest = index === anchors.length - 1
+            const levelLabel = tEditor("anchorLevel", { level: index })
+            return (
+              <div
+                // The anchor list is fixed-length and positional, so the index
+                // is a stable key here.
+                // biome-ignore lint/suspicious/noArrayIndexKey: positional fixed-length list
+                key={index}
+                className="space-y-1"
               >
-                {/* Fixed-width numeric badge so the number reads as scale
-                    position, not part of the label text. */}
-                <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground text-xs tabular-nums">
-                  {index}
-                </span>
-                {levelLabel}
-                {isLowest && (
-                  <span className="text-muted-foreground text-xs">
-                    {tEditor("levelEndpointLowest")}
+                <Label
+                  htmlFor={`criterion-anchor-${index}`}
+                  className="flex items-center gap-2"
+                >
+                  {/* Fixed-width numeric badge so the number reads as scale
+                      position, not part of the label text. */}
+                  <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground text-xs tabular-nums">
+                    {index}
                   </span>
-                )}
-                {isHighest && (
-                  <span className="text-muted-foreground text-xs">
-                    {tEditor("levelEndpointHighest")}
-                  </span>
-                )}
-              </Label>
-              <Input
-                id={`criterion-anchor-${index}`}
-                // Explicit accessible name so the input is "Level N" even
-                // though the visible Label also holds the badge and endpoint
-                // tag; aria-label overrides the associated label text in the
-                // accessible-name computation. Keeps getByLabelText("Level N")
-                // working.
-                aria-label={levelLabel}
-                value={anchor}
-                placeholder={
-                  isLowest
-                    ? tEditor("levelPlaceholderLowest")
-                    : isHighest
-                      ? tEditor("levelPlaceholderHighest")
-                      : undefined
-                }
-                onChange={(event) => {
-                  const next = [...anchors]
-                  next[index] = event.target.value
-                  setAnchors(next)
-                }}
-              />
-            </div>
-          )
-        })}
-      </fieldset>
-      {failed && (
-        <p role="alert" className="text-destructive text-sm">
-          {t("error")}
-        </p>
-      )}
-      <DialogFooter>
-        {onCancel !== undefined && (
-          <Button type="button" variant="outline" onClick={onCancel}>
-            {tEditor("cancelCta")}
-          </Button>
+                  {levelLabel}
+                  {isLowest && (
+                    <span className="text-muted-foreground text-xs">
+                      {tEditor("levelEndpointLowest")}
+                    </span>
+                  )}
+                  {isHighest && (
+                    <span className="text-muted-foreground text-xs">
+                      {tEditor("levelEndpointHighest")}
+                    </span>
+                  )}
+                </Label>
+                <Input
+                  id={`criterion-anchor-${index}`}
+                  // Explicit accessible name so the input is "Level N" even
+                  // though the visible Label also holds the badge and endpoint
+                  // tag; aria-label overrides the associated label text in the
+                  // accessible-name computation. Keeps getByLabelText("Level N")
+                  // working.
+                  aria-label={levelLabel}
+                  placeholder={
+                    isLowest
+                      ? tEditor("levelPlaceholderLowest")
+                      : isHighest
+                        ? tEditor("levelPlaceholderHighest")
+                        : undefined
+                  }
+                  {...form.register(`anchors.${index}` as const)}
+                />
+              </div>
+            )
+          })}
+        </fieldset>
+        {failed && (
+          <p role="alert" className="text-destructive text-sm">
+            {t("error")}
+          </p>
         )}
-        <Button type="submit" disabled={pending || name.trim().length === 0}>
-          {submitLabel}
-        </Button>
-      </DialogFooter>
-    </form>
+        <DialogFooter>
+          {onCancel !== undefined && (
+            <Button type="button" variant="outline" onClick={onCancel}>
+              {tEditor("cancelCta")}
+            </Button>
+          )}
+          <SubmitButton
+            type="submit"
+            isSubmitting={isSubmitting}
+            // Also require a change: in edit mode (prefilled) this blocks a no-op
+            // save; in add mode isValid already implies a change (the name is
+            // required), so this only ever matters for edits.
+            disabled={!isValid || !isDirty}
+          >
+            {submitLabel}
+          </SubmitButton>
+        </DialogFooter>
+      </form>
+    </Form>
   )
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@workspace/ui/components/button"
+import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Card,
   CardContent,
@@ -8,11 +8,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
-import { Field, FieldGroup, FieldLabel } from "@workspace/ui/components/field"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@workspace/ui/components/form"
 import { Input } from "@workspace/ui/components/input"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
-import { type FormEvent, useState } from "react"
+import { useMemo, useState } from "react"
+import { useForm } from "react-hook-form"
+import { SubmitButton } from "@/components/submit-button"
+import { makeSignInSchema, type SignInValues } from "@/lib/auth-schemas"
 
 export interface EmailPasswordValues {
   email: string
@@ -26,23 +36,22 @@ export function EmailPasswordForm(props: {
   onSubmit: (values: EmailPasswordValues) => Promise<void>
 }) {
   const t = useTranslations("dashboard.auth")
+  const tv = useTranslations("dashboard.validation")
   const [error, setError] = useState(false)
-  const [pending, setPending] = useState(false)
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const data = new FormData(event.currentTarget)
-    setPending(true)
+  const schema = useMemo(() => makeSignInSchema(tv), [tv])
+  const form = useForm<SignInValues>({
+    resolver: zodResolver(schema),
+    mode: "onTouched",
+    defaultValues: { email: "", password: "" },
+  })
+
+  async function onSubmit(values: SignInValues) {
     setError(false)
     try {
-      await props.onSubmit({
-        email: String(data.get("email") ?? ""),
-        password: String(data.get("password") ?? ""),
-      })
+      await props.onSubmit(values)
     } catch {
       setError(true)
-    } finally {
-      setPending(false)
     }
   }
 
@@ -53,16 +62,34 @@ export function EmailPasswordForm(props: {
         <CardDescription>{t("signIn.description")}</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit}>
-          <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="email">{t("email")}</FieldLabel>
-              <Input id="email" name="email" type="email" required />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="password">{t("password")}</FieldLabel>
-              <Input id="password" name="password" type="password" required />
-            </Field>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("email")}</FormLabel>
+                  <FormControl>
+                    <Input type="email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("password")}</FormLabel>
+                  <FormControl>
+                    <Input type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <Link
               href="/forgot-password"
               className="text-muted-foreground text-sm underline-offset-4 hover:underline"
@@ -74,13 +101,16 @@ export function EmailPasswordForm(props: {
                 {t("error")}
               </p>
             ) : null}
-            <Field>
-              <Button type="submit" disabled={pending}>
-                {t("signIn.cta")}
-              </Button>
-            </Field>
-          </FieldGroup>
-        </form>
+            <SubmitButton
+              type="submit"
+              className="w-full"
+              isSubmitting={form.formState.isSubmitting}
+              disabled={!form.formState.isValid}
+            >
+              {t("signIn.cta")}
+            </SubmitButton>
+          </form>
+        </Form>
       </CardContent>
     </Card>
   )

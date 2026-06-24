@@ -71,6 +71,12 @@
   },
   "dashboard": {
     "title": "blueprnt",
+    "validation": {
+      "required": "Dette felt er påkrævet.",
+      "invalidEmail": "Indtast en gyldig e-mailadresse.",
+      "minLength": "Skal være mindst {min} tegn.",
+      "slug": "Brug små bogstaver, tal og bindestreger."
+    },
     "nav": {
       "home": "Hjem",
       "overview": "Oversigt",

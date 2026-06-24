@@ -1,9 +1,16 @@
 import { describe, expect, it } from "vitest"
 import {
-  createOrgSchema,
-  createUserSchema,
+  makeCreateOrgSchema,
+  makeCreateUserSchema,
   orgSettingsSchema,
 } from "./admin-schemas"
+import type { ValidationT } from "./validation"
+
+// The schema factories take the validation translator; behavior does not depend
+// on the message text, so a key-echoing stub is enough for these unit checks.
+const t = ((key: string) => key) as unknown as ValidationT
+const createUserSchema = makeCreateUserSchema(t)
+const createOrgSchema = makeCreateOrgSchema(t)
 
 describe("admin-schemas", () => {
   it("createUserSchema requires name, email, organization, and role", () => {

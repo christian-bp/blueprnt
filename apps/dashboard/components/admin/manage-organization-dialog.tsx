@@ -1,8 +1,14 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
 import { MoreVerticalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
+import {
+  type CountryKey,
+  countryForLanguage,
+  LANGUAGE_BY_COUNTRY,
+} from "@workspace/constants"
 import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
@@ -18,7 +24,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
-import { Label } from "@workspace/ui/components/label"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@workspace/ui/components/form"
 import {
   Select,
   SelectContent,
@@ -26,18 +38,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import {
-  type CountryKey,
-  LANGUAGE_BY_COUNTRY,
-  countryForLanguage,
-} from "@workspace/constants"
 import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
+import { useForm } from "react-hook-form"
 import { CountrySelect } from "@/components/country-select"
 import { CurrencySelect } from "@/components/currency-select"
 import { IndustrySelect } from "@/components/industry-select"
-import { type MembershipRole, orgSettingsSchema } from "@/lib/admin-schemas"
+import { SubmitButton } from "@/components/submit-button"
+import {
+  type MembershipRole,
+  type OrgSettingsValues,
+  orgSettingsSchema,
+} from "@/lib/admin-schemas"
 
 interface AdminOrg {
   orgId: string
@@ -48,6 +61,8 @@ interface AdminOrg {
   language: string | null
   industry: string | null
 }
+
+const SETTINGS_FORM_ID = "org-settings-form"
 
 export function ManageOrganizationDialog(props: {
   org: AdminOrg
@@ -64,12 +79,25 @@ export function ManageOrganizationDialog(props: {
   const removeMembership = useMutation(api.platform.admin.removeMembership)
   const updateOrg = useMutation(api.platform.admin.updateOrganization)
 
-  const [country, setCountry] = useState(org.country ?? "")
-  const [currency, setCurrency] = useState(org.currency ?? "")
-  const [language, setLanguage] = useState(org.language ?? "")
-  const [industry, setIndustry] = useState(org.industry ?? "")
-  const [busy, setBusy] = useState(false)
   const [error, setError] = useState(false)
+
+  // The settings fields are all optional (no per-field messages), so the form
+  // exists for state + a single submit; the org settings schema stays a plain
+  // static schema.
+  const form = useForm<OrgSettingsValues>({
+    resolver: zodResolver(orgSettingsSchema),
+    mode: "onTouched",
+    defaultValues: {
+      country: org.country ?? "",
+      currency: org.currency ?? "",
+      language: org.language ?? "",
+      industry: org.industry ?? "",
+    },
+  })
+  // Destructure so isValid and isDirty are both READ every render (RHF's
+  // formState proxy only tracks accessed fields; a short-circuiting
+  // `!isValid || !isDirty` would never read isDirty).
+  const { isValid, isDirty, isSubmitting } = form.formState
 
   async function handleRoleChange(authId: string, value: string) {
     setError(false)
@@ -93,25 +121,12 @@ export function ManageOrganizationDialog(props: {
     }
   }
 
-  async function handleSaveSettings() {
+  async function onSubmitSettings(values: OrgSettingsValues) {
     setError(false)
-    const parsed = orgSettingsSchema.safeParse({
-      country,
-      currency,
-      language,
-      industry,
-    })
-    if (!parsed.success) {
-      setError(true)
-      return
-    }
-    setBusy(true)
     try {
-      await updateOrg({ orgId: org.orgId, ...parsed.data })
+      await updateOrg({ orgId: org.orgId, ...values })
     } catch {
       setError(true)
-    } finally {
-      setBusy(false)
     }
   }
 
@@ -189,53 +204,89 @@ export function ManageOrganizationDialog(props: {
           )}
         </section>
 
-        <section className="space-y-3 border-t pt-4">
-          <h3 className="font-medium text-sm">{t("settingsHeading")}</h3>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="org-country">{t("countryLabel")}</Label>
-              <CountrySelect
-                id="org-country"
-                value={country}
-                onValueChange={setCountry}
-                placeholder={t("countryPlaceholder")}
-                aria-label={t("countryLabel")}
+        <Form {...form}>
+          <form
+            id={SETTINGS_FORM_ID}
+            onSubmit={form.handleSubmit(onSubmitSettings)}
+            className="space-y-3 border-t pt-4"
+          >
+            <h3 className="font-medium text-sm">{t("settingsHeading")}</h3>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="country"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("countryLabel")}</FormLabel>
+                    <FormControl>
+                      <CountrySelect
+                        value={field.value ?? ""}
+                        onValueChange={field.onChange}
+                        placeholder={t("countryPlaceholder")}
+                        aria-label={t("countryLabel")}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="currency"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("currencyLabel")}</FormLabel>
+                    <FormControl>
+                      <CurrencySelect
+                        value={field.value ?? ""}
+                        onValueChange={field.onChange}
+                        placeholder={t("currencyPlaceholder")}
+                        aria-label={t("currencyLabel")}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="language"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("languageLabel")}</FormLabel>
+                    <FormControl>
+                      <CountrySelect
+                        value={countryForLanguage(field.value ?? "") ?? ""}
+                        onValueChange={(code) =>
+                          field.onChange(
+                            LANGUAGE_BY_COUNTRY[code as CountryKey]
+                          )
+                        }
+                        placeholder={t("languagePlaceholder")}
+                        aria-label={t("languageLabel")}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="industry"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("industryLabel")}</FormLabel>
+                    <FormControl>
+                      <IndustrySelect
+                        value={field.value ?? ""}
+                        onValueChange={field.onChange}
+                        placeholder={t("industryPlaceholder")}
+                        aria-label={t("industryLabel")}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="org-currency">{t("currencyLabel")}</Label>
-              <CurrencySelect
-                id="org-currency"
-                value={currency}
-                onValueChange={setCurrency}
-                placeholder={t("currencyPlaceholder")}
-                aria-label={t("currencyLabel")}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="org-language">{t("languageLabel")}</Label>
-              <CountrySelect
-                id="org-language"
-                value={countryForLanguage(language) ?? ""}
-                onValueChange={(code) =>
-                  setLanguage(LANGUAGE_BY_COUNTRY[code as CountryKey])
-                }
-                placeholder={t("languagePlaceholder")}
-                aria-label={t("languageLabel")}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="org-industry">{t("industryLabel")}</Label>
-              <IndustrySelect
-                id="org-industry"
-                value={industry}
-                onValueChange={setIndustry}
-                placeholder={t("industryPlaceholder")}
-                aria-label={t("industryLabel")}
-              />
-            </div>
-          </div>
-        </section>
+          </form>
+        </Form>
 
         {error && (
           <p role="alert" className="text-destructive text-sm">
@@ -251,9 +302,17 @@ export function ManageOrganizationDialog(props: {
           >
             {t("close")}
           </Button>
-          <Button type="button" onClick={handleSaveSettings} disabled={busy}>
+          <SubmitButton
+            type="submit"
+            form={SETTINGS_FORM_ID}
+            isSubmitting={isSubmitting}
+            // Pre-filled settings form: also require a change, so opening it and
+            // pressing Save cannot fire a no-op updateOrganization (which would
+            // still write an audit row).
+            disabled={!isValid || !isDirty}
+          >
             {t("saveSettings")}
-          </Button>
+          </SubmitButton>
         </DialogFooter>
       </DialogContent>
     </Dialog>

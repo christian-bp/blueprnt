@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@workspace/ui/components/button"
+import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Card,
   CardContent,
@@ -8,38 +8,51 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
-import { Field, FieldGroup, FieldLabel } from "@workspace/ui/components/field"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@workspace/ui/components/form"
 import { Input } from "@workspace/ui/components/input"
 import { useTranslations } from "next-intl"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Suspense, useState } from "react"
+import { Suspense, useMemo, useState } from "react"
+import { useForm } from "react-hook-form"
 import { Logo } from "@/components/logo"
-import { usePageTitle } from "@/hooks/use-page-title"
+import { SubmitButton } from "@/components/submit-button"
+import {
+  makeResetPasswordSchema,
+  type ResetPasswordValues,
+} from "@/lib/auth-schemas"
 import { authClient } from "@/lib/auth-client"
+import { usePageTitle } from "@/hooks/use-page-title"
 
 function ResetPasswordForm() {
   const t = useTranslations("dashboard.auth.resetPassword")
   const tApp = useTranslations("dashboard")
+  const tv = useTranslations("dashboard.validation")
   usePageTitle(t("title"))
   const router = useRouter()
   const params = useSearchParams()
   const token = params.get("token")
-  const [password, setPassword] = useState("")
-  const [pending, setPending] = useState(false)
   const [error, setError] = useState(false)
 
-  // Mirror the server's minPasswordLength (better-auth emailAndPassword); the
-  // server stays authoritative, this only blocks an obviously-too-short submit.
-  const MIN_PASSWORD_LENGTH = 8
+  const schema = useMemo(() => makeResetPasswordSchema(tv), [tv])
+  const form = useForm<ResetPasswordValues>({
+    resolver: zodResolver(schema),
+    mode: "onTouched",
+    defaultValues: { password: "" },
+  })
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    if (token === null || password.length < MIN_PASSWORD_LENGTH) return
-    setPending(true)
+  async function onSubmit(values: ResetPasswordValues) {
+    if (token === null) return
     setError(false)
     try {
       const { error: resetError } = await authClient.resetPassword({
-        newPassword: password,
+        newPassword: values.password,
         token,
       })
       if (resetError) {
@@ -49,8 +62,6 @@ function ResetPasswordForm() {
       router.push("/")
     } catch {
       setError(true)
-    } finally {
-      setPending(false)
     }
   }
 
@@ -69,37 +80,39 @@ function ResetPasswordForm() {
                 {t("missingToken")}
               </p>
             ) : (
-              <form onSubmit={handleSubmit}>
-                <FieldGroup>
-                  <Field>
-                    <FieldLabel htmlFor="new-password">
-                      {t("passwordLabel")}
-                    </FieldLabel>
-                    <Input
-                      id="new-password"
-                      type="password"
-                      value={password}
-                      onChange={(event) => setPassword(event.target.value)}
-                      required
-                    />
-                  </Field>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("passwordLabel")}</FormLabel>
+                        <FormControl>
+                          <Input type="password" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   {error && (
                     <p role="alert" className="text-destructive text-sm">
                       {t("error")}
                     </p>
                   )}
-                  <Field>
-                    <Button
-                      type="submit"
-                      disabled={
-                        pending || password.length < MIN_PASSWORD_LENGTH
-                      }
-                    >
-                      {t("cta")}
-                    </Button>
-                  </Field>
-                </FieldGroup>
-              </form>
+                  <SubmitButton
+                    type="submit"
+                    className="w-full"
+                    isSubmitting={form.formState.isSubmitting}
+                    disabled={!form.formState.isValid}
+                  >
+                    {t("cta")}
+                  </SubmitButton>
+                </form>
+              </Form>
             )}
           </CardContent>
         </Card>

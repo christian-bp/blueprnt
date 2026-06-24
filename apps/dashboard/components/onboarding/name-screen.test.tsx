@@ -72,16 +72,24 @@ describe("NameScreen", () => {
     expect(orgUpdateMock).not.toHaveBeenCalled()
   })
 
-  it("create mode: the CTA is disabled for a too-short name", () => {
-    renderScreen({ existing: null, onAdvance: vi.fn() })
+  it("create mode: shows the min-length error and does not create for a too-short name", async () => {
+    const onAdvance = vi.fn()
+    renderScreen({ existing: null, onAdvance })
     const input = screen.getByLabelText(labels.nameLabel)
-    const button = screen.getByRole("button", { name: nextCta })
-
-    expect(button).toHaveProperty("disabled", true)
     fireEvent.change(input, { target: { value: "a" } })
-    expect(button).toHaveProperty("disabled", true)
-    fireEvent.change(input, { target: { value: "ab" } })
-    expect(button).toHaveProperty("disabled", false)
+    const form = input.closest("form")
+    if (!form) throw new Error("form not found")
+    fireEvent.submit(form)
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          messages.dashboard.validation.minLength.replace("{min}", "2")
+        )
+      ).toBeDefined()
+      expect(createMock).not.toHaveBeenCalled()
+    })
+    expect(onAdvance).not.toHaveBeenCalled()
   })
 
   it("existing mode: an unchanged name calls onAdvance without renaming", async () => {
@@ -139,12 +147,21 @@ describe("NameScreen", () => {
 
     const form = input.closest("form")
     if (!form) throw new Error("form not found")
+    // Let isValid settle (the button enables) before submitting, as a real
+    // user would; this also asserts the disable-until-valid gate releases.
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: nextCta })).toHaveProperty(
+        "disabled",
+        false
+      )
+    })
     fireEvent.submit(form)
 
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeDefined()
     })
     expect(onAdvance).not.toHaveBeenCalled()
+    // The name is still valid, so the retry button stays enabled.
     expect(screen.getByRole("button", { name: nextCta })).toHaveProperty(
       "disabled",
       false

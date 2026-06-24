@@ -1,5 +1,6 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
   AlertDialog,
@@ -15,11 +16,21 @@ import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
-import { useState } from "react"
+import { useMemo, useState } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 
 // Controlled type-to-confirm dialog: the owning section drives open state and
 // supplies the target user. The row-actions menu carries the "Delete user"
 // label, so this component renders only the AlertDialog (no trigger button).
+//
+// This is a confirmation GATE, not a data-entry form: RHF + a refine on the
+// runtime email exist only so form.formState.isValid tracks "the typed text
+// equals the email", which gates the destructive action. The input is bound via
+// register and rendered as a plain field (no FormControl) on purpose: routing
+// it through FormControl would set aria-invalid while the user types a partial
+// (not-yet-matching) email, glowing the field destructive-red, which is exactly
+// the nagging a confirm gate must not do.
 export function DeleteUserDialog(props: {
   authId: string
   name: string
@@ -29,15 +40,29 @@ export function DeleteUserDialog(props: {
 }) {
   const t = useTranslations("dashboard.admin.users.delete")
   const deleteUser = useMutation(api.platform.admin.deleteUser)
-  const [confirmText, setConfirmText] = useState("")
   const [busy, setBusy] = useState(false)
   const [failed, setFailed] = useState(false)
+  const inputId = `confirm-${props.authId}`
 
-  const confirmed = confirmText.trim() === props.email
+  // The schema closes over the runtime email, so it is built inline (not a
+  // shared factory). No message: the gate shows no inline error.
+  const schema = useMemo(
+    () =>
+      z.object({
+        confirmText: z.string().refine((v) => v.trim() === props.email),
+      }),
+    [props.email]
+  )
+  const form = useForm<{ confirmText: string }>({
+    resolver: zodResolver(schema),
+    mode: "onChange",
+    defaultValues: { confirmText: "" },
+  })
+  const confirmed = form.formState.isValid
 
   function handleOpenChange(next: boolean) {
     if (!next) {
-      setConfirmText("")
+      form.reset({ confirmText: "" })
       setFailed(false)
     }
     props.onOpenChange(next)
@@ -67,21 +92,20 @@ export function DeleteUserDialog(props: {
           <AlertDialogDescription>{t("description")}</AlertDialogDescription>
         </AlertDialogHeader>
         <div className="space-y-2">
-          <Label htmlFor={`confirm-${props.authId}`}>
+          <Label htmlFor={inputId}>
             {t("confirmLabel", { email: props.email })}
           </Label>
           <Input
-            id={`confirm-${props.authId}`}
-            value={confirmText}
-            onChange={(event) => setConfirmText(event.target.value)}
+            id={inputId}
             autoComplete="off"
+            {...form.register("confirmText")}
           />
-          {failed && (
-            <p role="alert" className="text-destructive text-sm">
-              {t("error")}
-            </p>
-          )}
         </div>
+        {failed && (
+          <p role="alert" className="text-destructive text-sm">
+            {t("error")}
+          </p>
+        )}
         <AlertDialogFooter>
           <AlertDialogCancel disabled={busy}>{t("cancel")}</AlertDialogCancel>
           <AlertDialogAction
