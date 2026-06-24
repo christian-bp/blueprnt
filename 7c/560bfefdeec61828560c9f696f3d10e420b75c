@@ -1,0 +1,144 @@
+apps/dashboard/components/admin/create-user-dialog.tsx
+  s_d9d5976c59712a::t_f82d481374322d 37-40
+  s_d9d5976c59712a::t_47eed12ecc5eff 133
+  s_d9d5976c59712a::t_60b118b9a0c52f 157
+  s_d9d5976c59712a::t_63a7e06f7fa74a 129
+  s_d9d5976c59712a::t_645db7b3d7d95e 190
+  s_d9d5976c59712a::t_abd66c385b9f53 3,15-22,33-35,46,52-57,62,67,70,74,93-128,130-132,134-147,149-156,158-172,174-189,191-196
+packages/i18n/messages/en.json
+  s_d9d5976c59712a::t_9ae3de38d85b8e 74-79
+apps/dashboard/package.json
+  s_d9d5976c59712a::t_b0bfdc21a34a8b 20
+apps/dashboard/lib/role-schemas.ts
+  s_d9d5976c59712a::t_46a59056946525 5-7
+  s_d9d5976c59712a::t_03b0478d3b1b9b 1-4,8-17
+apps/dashboard/app/reset-password/page.tsx
+  s_d9d5976c59712a::t_714c9947bbefb8 3,11-18,22-23,25-29,31,36,43-48,50-51,55,83-100,106-109,111-115
+  s_d9d5976c59712a::t_3d5172dbf1c46a 110
+apps/dashboard/components/model/edit-criterion-dialog.test.tsx
+  s_d9d5976c59712a::t_70f11fe0dfcc03 69
+apps/dashboard/app/forgot-password/forgot-password.test.tsx
+  s_d9d5976c59712a::t_dfd68d15fd5605 1-7,10,34,41-44,46,48-49,52,55-67,69-72,74,76-82,88-92,94
+packages/i18n/messages/fi.json
+  s_d9d5976c59712a::t_54aed89dcf491a 74-79
+apps/dashboard/lib/admin-schemas.ts
+  s_d9d5976c59712a::t_699708dbcc26f8 3,6-8,10-18,21-43,45
+packages/i18n/messages/nb.json
+  s_d9d5976c59712a::t_e68e4f11fad63e 74-79
+apps/dashboard/components/model/criterion-form.tsx
+  s_d9d5976c59712a::t_7c3f261aecc49c 209,213
+  s_d9d5976c59712a::t_d37ac37e34aa3a 210-212
+  s_d9d5976c59712a::t_0c6ee1c787c107 22-25,29-31
+  s_d9d5976c59712a::t_43254e8582ca78 73-76
+  s_d9d5976c59712a::t_38781e8b3bb251 3,6-13,18-19,21,59,61-72,79-96,98-111,113-152,154-161,163-199,201-208,214-219
+apps/dashboard/lib/criterion-schemas.ts
+  s_d9d5976c59712a::t_d9edc8b5089368 15-17
+  s_d9d5976c59712a::t_1d9616a75930ba 1-14,18-19
+apps/dashboard/components/onboarding/name-screen.test.tsx
+  s_d9d5976c59712a::t_44378bd148f4c2 150-151,164
+  s_d9d5976c59712a::t_da0ed3d7e49d24 75-77,80-92
+  s_d9d5976c59712a::t_a0bd4ee7436d43 152-157
+apps/dashboard/components/roles/family-picker.tsx
+  s_d9d5976c59712a::t_f070bb714bd391 120
+  s_d9d5976c59712a::t_d9fea7ee4492cd 30,35-37
+apps/dashboard/components/onboarding/model-setup-step.test.tsx
+  s_d9d5976c59712a::t_8b877e0f866ddc 301-309,320
+  s_d9d5976c59712a::t_25026e37f61708 217,225-229,231-233,237-245
+apps/dashboard/components/roles/create-role-dialog.test.tsx
+  s_d9d5976c59712a::t_f8b943462e0980 124-138
+apps/dashboard/components/admin/manage-user-organizations-dialog.tsx
+  s_d9d5976c59712a::t_89e450321442b9 271
+  s_d9d5976c59712a::t_d8178cce8b9af5 3,22-29,40-47,57,73-79,105,110-111,113,199-203,205-234,236-270,272-275,277-278
+apps/dashboard/components/auth/email-password-form.tsx
+  s_d9d5976c59712a::t_0e12702816f803 3,11-18,22-25,39,42-49,52,65-92,104-107,109-113
+  s_d9d5976c59712a::t_fb28c7b2dd6eaa 108
+apps/dashboard/lib/auth-schemas.ts
+  s_d9d5976c59712a::t_fe04735bd46a5e 1-33
+packages/i18n/messages/sv.json
+  s_d9d5976c59712a::t_7638dc5e438a2f 74-79
+apps/dashboard/components/auth/email-password-form.test.tsx
+  s_d9d5976c59712a::t_fae4c68da98ffa 1-7,29,34-38,60-78,93-108
+  s_d9d5976c59712a::t_c5cf616a097867 79-92,109
+  s_d9d5976c59712a::t_3d8321931388be 21-26
+apps/dashboard/components/model/criterion-form.test.tsx
+  s_d9d5976c59712a::t_3feea73d1d3c98 71-73,105-107,119-121
+  s_d9d5976c59712a::t_90059155739703 46,48-51,56-58
+  s_d9d5976c59712a::t_7b3d5b1f3fdc66 55
+apps/dashboard/components/onboarding/name-screen.tsx
+  s_d9d5976c59712a::t_c9035dac36eea9 109-112
+  s_d9d5976c59712a::t_08270da51d58e7 3-10,12-13,16,18,37,40-49,53,56,67-68,82-108,113-114
+apps/dashboard/app/reset-password/reset-password.test.tsx
+  s_d9d5976c59712a::t_40c9c3e4b1b461 15-19
+  s_d9d5976c59712a::t_39b14459783958 1-7,13-14,20-21,23,32-34,36,43-46,50-52,55,58-67,70-85,87-99
+apps/dashboard/components/onboarding/model-setup-step.tsx
+  s_d9d5976c59712a::t_5db4cd702b9a0e 3,5-12,17-18,27-30,64,79-85,168-169,173-175,178,181-182,221-241,246-248
+  s_d9d5976c59712a::t_34a64a3b6047f4 242-245
+packages/i18n/messages/da.json
+  s_d9d5976c59712a::t_5256d0025834ad 74-79
+apps/dashboard/components/admin/delete-user-dialog.tsx
+  s_d9d5976c59712a::t_ea8c6c2a90e9d2 27-33,45,95,99,101
+  s_d9d5976c59712a::t_22ea43d031c179 3,19-21,26,47-61,65,104-108
+apps/dashboard/lib/validation.ts
+  s_d9d5976c59712a::t_9a6d4de4536884 4,6-11
+  s_d9d5976c59712a::t_7dcdc856459c90 1-3,5,12-14
+apps/dashboard/components/admin/manage-organization-dialog.tsx
+  s_d9d5976c59712a::t_417e55c1c31cc9 309-311
+  s_d9d5976c59712a::t_a2031977acc5cd 308,312
+  s_d9d5976c59712a::t_69abe110d7aeaf 97-100
+  s_d9d5976c59712a::t_3d8321931388be 259-261
+  s_d9d5976c59712a::t_e94bcb05c245be 3,7-11,27-33,44,48-53,65-66,84-96,124,127,207-230,232-247,249-258,262-268,270-285,288-289,305-307,313,315
+apps/dashboard/components/admin/manage-organization-dialog.test.tsx
+  s_d9d5976c59712a::t_cea7f125682a7e 1-7,9,12-13,15-18,85-87,106,116-118,133-136,138-141
+  s_d9d5976c59712a::t_4aacf7829be4a7 123-124
+  s_d9d5976c59712a::t_b07a3649b95c7e 40,42-56
+  s_d9d5976c59712a::t_7f48f808aee1b2 107-115,119-122,125,137,142
+  s_d9d5976c59712a::t_bdd5ffe8814e78 126-132
+apps/dashboard/lib/admin-schemas.test.ts
+  s_d9d5976c59712a::t_a98cefcfdaaaf4 3-4,7-13
+apps/dashboard/components/admin/create-user-dialog.test.tsx
+  s_d9d5976c59712a::t_f70369e8b2a4a9 115,121-132,135,142-146
+  s_d9d5976c59712a::t_5c7ddccb08e5fe 241-244
+  s_d9d5976c59712a::t_8fcd4e7d679f01 70-76,147-152,156,163-170,185-187,215-216,238-239
+  s_d9d5976c59712a::t_100acb1b84c5c3 96-113
+  s_d9d5976c59712a::t_f8dfaf1b500575 77-85
+apps/dashboard/components/roles/create-role-dialog.tsx
+  s_d9d5976c59712a::t_67946c066b8dd2 238
+  s_d9d5976c59712a::t_f09b02baa2df94 41-44,46
+  s_d9d5976c59712a::t_bf459eec8bffc6 3,15-22,34-35,38-39,65,71,73-84,90,95,100-106,125-138,140-152,154-165,168-211,219-220,222-237,239-244
+  s_d9d5976c59712a::t_675e0f50d9d64e 212-218
+apps/dashboard/components/admin/delete-user-dialog.test.tsx
+  s_d9d5976c59712a::t_dbeaf184d0f235 68-72
+  s_d9d5976c59712a::t_3d8321931388be 45-47
+  s_d9d5976c59712a::t_0198ce141d438d 1-44,48-67,73-105
+apps/dashboard/lib/onboarding-schemas.ts
+  s_d9d5976c59712a::t_3d8321931388be 10-13
+  s_d9d5976c59712a::t_0d426ee3dde7e7 1-9,14-18,20-23
+  s_d9d5976c59712a::t_db8ce4ed584915 19
+apps/dashboard/components/admin/create-organization-dialog.tsx
+  s_d9d5976c59712a::t_aac3020dd9fc17 97
+  s_d9d5976c59712a::t_e8d2349bc3b840 3,5,16-23,27-31,35,41-46,51,57,60,77-92,99-106,108-125,127-142,144-149
+  s_d9d5976c59712a::t_d84554dab2c10b 143
+  s_d9d5976c59712a::t_b86773a197f8ab 93-96,98
+apps/dashboard/components/admin/create-organization-dialog.test.tsx
+  s_d9d5976c59712a::t_e56580aa11a40d 116-128,139
+  s_d9d5976c59712a::t_eaedfeb9111a22 1-7,9,12-13,15-18,45-51,53-55,96-115,129-138
+apps/dashboard/app/forgot-password/page.tsx
+  s_d9d5976c59712a::t_05db76a6266331 108
+  s_d9d5976c59712a::t_d45ea35f0af973 3,11-18,22-23,25-29,31,36,40-47,53,74,84,86-107,109-111,114,118-119
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.10",
+  "base_commit_sha": "7c560bfefdeec61828560c9f696f3d10e420b75c",
+  "prompts": {},
+  "sessions": {
+    "s_d9d5976c59712a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "705e8dd4-4248-4771-9b7a-48a7c6cab6a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
