@@ -1,0 +1,248 @@
+apps/dashboard/components/onboarding/next-button.tsx
+  s_56fccdccb91ff2::t_adeae2719c8ae8 16,18-22,26
+apps/dashboard/components/model/model-tabs.test.tsx
+  s_56fccdccb91ff2::t_880acfe24c36d4 1-62
+docs/contexts/assessment/CONTEXT.md
+  s_56fccdccb91ff2::t_ec980403ba06a3 37
+  s_56fccdccb91ff2::t_002fd17e2d0736 66
+apps/dashboard/app/(app)/model/page.tsx
+  s_56fccdccb91ff2::t_2f55907209f8c7 20,30
+  s_56fccdccb91ff2::t_6f9d5e26d4a60c 21,28-29
+  s_56fccdccb91ff2::t_956c28d5540200 5
+  s_56fccdccb91ff2::t_ca2a23e2c2a7a9 18,22-27
+  s_56fccdccb91ff2::t_49d33aecc035b8 6,10-15,17,19
+packages/i18n/messages/en.json
+  s_56fccdccb91ff2::t_f6360e09ee9438 633
+  s_56fccdccb91ff2::t_c38c9e0606a826 638-639
+  s_56fccdccb91ff2::t_13371a0f158e9b 585
+  s_56fccdccb91ff2::t_c30bfc87abe3e4 511
+  s_56fccdccb91ff2::t_59ae99d9c7b0c9 601-605
+  s_56fccdccb91ff2::t_8e07d459026d71 558
+  s_56fccdccb91ff2::t_c66cc0206412a2 594-598,606
+  s_56fccdccb91ff2::t_8e565de54b8c2a 629-631
+  s_56fccdccb91ff2::t_cf355f3cfe3c90 551-554
+  s_56fccdccb91ff2::t_3bc47ca03232e8 600
+  s_56fccdccb91ff2::t_1e4daf64309ed2 599
+  s_56fccdccb91ff2::t_7f5dc1f762038b 565,567-568
+docs/contexts/evaluation-model/CONTEXT.md
+  s_56fccdccb91ff2::t_253905f047b635 30
+apps/dashboard/components/site-header.tsx
+  s_56fccdccb91ff2::t_c44f6e5de0ae0c 42-43
+  s_56fccdccb91ff2::t_0638729fad56dc 8
+  s_56fccdccb91ff2::t_50876d16910529 17-19,22-23
+packages/i18n/messages/da.json
+  s_56fccdccb91ff2::t_5450e830a44ac0 638-639
+  s_56fccdccb91ff2::t_db61505bfcd9c6 585
+  s_56fccdccb91ff2::t_ba9250e65d46ec 511
+  s_56fccdccb91ff2::t_a05a60f9ecfd2e 600
+  s_56fccdccb91ff2::t_8b5069e061c626 601-605
+  s_56fccdccb91ff2::t_547990eed0d7f9 558
+  s_56fccdccb91ff2::t_4cf1dee2e61d3b 594-598,606
+  s_56fccdccb91ff2::t_fdc4012cf0fa1c 633
+  s_56fccdccb91ff2::t_03f3ee346d72fd 629-631
+  s_56fccdccb91ff2::t_107f14ae236455 565,567-568
+  s_56fccdccb91ff2::t_c90b844f57ff25 599
+  s_56fccdccb91ff2::t_893452595c505c 551-554
+packages/i18n/messages/fi.json
+  s_56fccdccb91ff2::t_ce38351807ac7c 629-631
+  s_56fccdccb91ff2::t_e4ca212557618f 599
+  s_56fccdccb91ff2::t_6102e71dfed989 601-605
+  s_56fccdccb91ff2::t_39137281c0e21c 511
+  s_56fccdccb91ff2::t_e16480d56199a4 594-598,606
+  s_56fccdccb91ff2::t_194cb2baef6389 633
+  s_56fccdccb91ff2::t_bb7d82771601aa 638-639
+  s_56fccdccb91ff2::t_55b2cf7b58234b 551-554
+  s_56fccdccb91ff2::t_dc62acbad5e765 558
+  s_56fccdccb91ff2::t_01f43daf5129b4 565,567-568
+  s_56fccdccb91ff2::t_41fbccaaaeea99 600
+  s_56fccdccb91ff2::t_740cf34f48fb24 585
+packages/i18n/messages/sv.json
+  s_56fccdccb91ff2::t_490c8c774c3587 511
+  s_56fccdccb91ff2::t_19066bf422103e 551-554
+  s_56fccdccb91ff2::t_a8eeea02921e38 585
+  s_56fccdccb91ff2::t_3ffb38537f30e1 601-605
+  s_56fccdccb91ff2::t_875bbe335df317 600
+  s_56fccdccb91ff2::t_a1816f43837f1f 594-598,606
+  s_56fccdccb91ff2::t_1ddaae24af61bd 565,567-568
+  s_56fccdccb91ff2::t_10cda2e466b099 629-631
+  s_56fccdccb91ff2::t_8e89021e461bdf 633
+  s_56fccdccb91ff2::t_cbb5401452fb07 599
+  s_56fccdccb91ff2::t_759954fd0a4616 558
+  s_56fccdccb91ff2::t_28396da76aab32 638-639
+packages/i18n/messages/nb.json
+  s_56fccdccb91ff2::t_8c5c4728926f99 629-631
+  s_56fccdccb91ff2::t_517ddd2c5b76ad 511
+  s_56fccdccb91ff2::t_f0b45f70267d32 551-554
+  s_56fccdccb91ff2::t_cfed532ecc2308 565,567-568
+  s_56fccdccb91ff2::t_05ad83537a38cd 585
+  s_56fccdccb91ff2::t_80f5f21eade629 599
+  s_56fccdccb91ff2::t_256ae5ba05a42a 601-605
+  s_56fccdccb91ff2::t_c4b38afa30334f 558
+  s_56fccdccb91ff2::t_5f6283d7801896 600
+  s_56fccdccb91ff2::t_0034475f3f5a27 594-598,606
+  s_56fccdccb91ff2::t_6b38586fe90a7e 633
+  s_56fccdccb91ff2::t_e1a63518926dc7 638-639
+apps/dashboard/components/model/model-tabs.tsx
+  s_56fccdccb91ff2::t_b8aae0a9eb97d1 1-59
+apps/dashboard/components/onboarding/ensure-default-model.tsx
+  s_56fccdccb91ff2::t_bae2ac844aa8e5 54-55
+  s_56fccdccb91ff2::t_82d35f46c84950 4,8,10-17,19,22,26-27,32,34-35,41-53,56-63,71
+  s_56fccdccb91ff2::t_a3613e45e0e29b 36-37,39
+packages/backend/convex/evaluationModel/standardTemplate.content.da.ts
+  s_56fccdccb91ff2::t_9eab5f6d13c6f8 60-61,63
+  s_56fccdccb91ff2::t_00f97e8651b5e4 7-10
+  s_56fccdccb91ff2::t_edd86c1d619e4c 94-100
+  s_56fccdccb91ff2::t_d097ae8d6b2696 126-127,129
+  s_56fccdccb91ff2::t_65b640df131213 148-149,151
+  s_56fccdccb91ff2::t_2a1d50ce201c2b 138-144
+  s_56fccdccb91ff2::t_6ecdc4fec98863 193,195
+  s_56fccdccb91ff2::t_2762a0673cb2b4 28-34
+  s_56fccdccb91ff2::t_71b36730f93b5a 160-166
+  s_56fccdccb91ff2::t_c3cd00497ff72b 72-78
+  s_56fccdccb91ff2::t_4659a210568682 170-171,173
+  s_56fccdccb91ff2::t_7cc483d58ef760 182-188
+  s_56fccdccb91ff2::t_38d4b6a01dfe54 38-39,41
+  s_56fccdccb91ff2::t_d2d5f06c528052 204-210
+  s_56fccdccb91ff2::t_e3dc37a05723b7 82-83,85
+  s_56fccdccb91ff2::t_cc837c0e6e838e 104-105,107
+  s_56fccdccb91ff2::t_64271ca71e1909 16-17,19
+  s_56fccdccb91ff2::t_eb38434147ccef 50-56
+  s_56fccdccb91ff2::t_7b7cabcbb97d67 116-122
+packages/backend/convex/evaluationModel/standardTemplate.content.sv.ts
+  s_56fccdccb91ff2::t_2fe3003a0d4b49 7-8,17-18,20,39-40,42,61-62,64,83-84,86,105-106,108,127-128,130,149-150,152,171-172,174,194,196
+  s_56fccdccb91ff2::t_deea433531e9e2 9-11,29-35,51-57,73-79,95-101,117-123,139-145,161-167,183-189,205-211
+apps/dashboard/components/model/weight-review-panel.tsx
+  s_56fccdccb91ff2::t_753a108e771c08 23
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_56fccdccb91ff2::t_e816546c024e4e 5,11
+  s_56fccdccb91ff2::t_fe037b19d94d7f 97-100,104-113
+  s_56fccdccb91ff2::t_2fb239bb3e04ee 167-170
+  s_56fccdccb91ff2::t_553e697f6bb99c 215-223
+  s_56fccdccb91ff2::t_314c1689d7e632 137-139
+  s_56fccdccb91ff2::t_4b76d2d0deb666 39-40
+apps/dashboard/components/onboarding/onboarding-wizard.test.tsx
+  s_56fccdccb91ff2::t_683ce36b7e564d 9,14-16,18,21,71-76,139-140,155,184,188,193,195-196,199,203,208,210-211,214,223,225-227,244,260,271-278,307,316,322,336,338,345,365,371,377,379,388,395-401
+apps/dashboard/components/onboarding/ensure-default-model.test.tsx
+  s_56fccdccb91ff2::t_6e12e25e2e4bcc 19-20
+  s_56fccdccb91ff2::t_799f7a6326884e 1-18,21-92
+apps/dashboard/hooks/use-auto-advance.ts
+  s_56fccdccb91ff2::t_2f09e335c6e247 12,14-16
+apps/dashboard/components/onboarding/onboarding-gate.tsx
+  s_56fccdccb91ff2::t_a6d8587b4041e5 72-77
+packages/backend/convex/evaluationModel/model.ts
+  s_56fccdccb91ff2::t_5a2c3009cbdc1c 424-427
+  s_56fccdccb91ff2::t_b9f3092e53798b 366-369
+packages/backend/convex/evaluationModel/standardTemplate.test.ts
+  s_56fccdccb91ff2::t_a2747c6efe0044 51-55
+packages/backend/convex/evaluationModel/standardTemplate.content.en.ts
+  s_56fccdccb91ff2::t_db0c5bcf0917dd 155-161
+  s_56fccdccb91ff2::t_b094fcc710a540 177-183
+  s_56fccdccb91ff2::t_161e6f7d96b522 45-51
+  s_56fccdccb91ff2::t_376c6404bc00fe 67-73
+  s_56fccdccb91ff2::t_4a768741df90fb 89-95
+  s_56fccdccb91ff2::t_f36d81be1aa841 221-227
+  s_56fccdccb91ff2::t_573e62de141e61 25-27,33-34,36,55-56,58,77-78,80,99-100,102,122,124,144,146,165-166,168,187-188,190,210,212
+  s_56fccdccb91ff2::t_8694916e8e6b7f 133-139
+  s_56fccdccb91ff2::t_1ee4437b59a295 111-117
+  s_56fccdccb91ff2::t_1aadbc6841ddda 9-13
+  s_56fccdccb91ff2::t_f10e13676831e1 199-205
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_56fccdccb91ff2::t_475fe9ebaf55f3 1167
+  s_56fccdccb91ff2::t_78cf223b2a3554 588
+packages/backend/convex/evaluationModel/standardTemplate.content.nb.ts
+  s_56fccdccb91ff2::t_66e3d7adf7e753 59-60,62
+  s_56fccdccb91ff2::t_6acb0f6746a8c7 147-148,150
+  s_56fccdccb91ff2::t_279a1f680999fb 192,194
+  s_56fccdccb91ff2::t_09ae5975ab54b7 169-170,172
+  s_56fccdccb91ff2::t_fe077835e98d13 15-16,18
+  s_56fccdccb91ff2::t_54dee9b364f110 181-187
+  s_56fccdccb91ff2::t_edc235401077e5 103-104,106
+  s_56fccdccb91ff2::t_4f2818f9ec801e 7-9
+  s_56fccdccb91ff2::t_5873f4582da2db 159-165
+  s_56fccdccb91ff2::t_8a9c210efa8dc1 49-55
+  s_56fccdccb91ff2::t_963d98aab9f4ca 125-126,128
+  s_56fccdccb91ff2::t_603e0963b7c239 37-38,40
+  s_56fccdccb91ff2::t_b9c6401fae38e4 81-82,84
+  s_56fccdccb91ff2::t_812cd631aa0cca 27-33
+  s_56fccdccb91ff2::t_899be20f7b8807 71-77
+  s_56fccdccb91ff2::t_d1c9aacc2dfe82 93-99
+  s_56fccdccb91ff2::t_d66926e90d9381 115-121
+  s_56fccdccb91ff2::t_a8d97aca3c247b 137-143
+  s_56fccdccb91ff2::t_a5de5e409d8b7f 203-209
+apps/dashboard/app/(app)/model/weighting/page.tsx
+  s_56fccdccb91ff2::t_8a69ae1508028a 4
+  s_56fccdccb91ff2::t_8350a3f35b5515 1-3,5-14,16,28
+  s_56fccdccb91ff2::t_663753cdcc1f7c 17-18,25-27
+  s_56fccdccb91ff2::t_f426179ef12469 15,19-24
+packages/backend/convex/evaluationModel/standardTemplate.content.fi.ts
+  s_56fccdccb91ff2::t_1fb657df79cf8e 170-171,173
+  s_56fccdccb91ff2::t_ed9b778786db33 127,129
+  s_56fccdccb91ff2::t_9bf081bec41e8b 60-61,63
+  s_56fccdccb91ff2::t_c957dcb9178ad4 7-10
+  s_56fccdccb91ff2::t_22fbc51449356d 82-83,85
+  s_56fccdccb91ff2::t_8f369c84e093a8 160-166
+  s_56fccdccb91ff2::t_8ebe7c43469a82 138-144
+  s_56fccdccb91ff2::t_5a7fd0eb3e6ebe 28-34
+  s_56fccdccb91ff2::t_9c335a2aa02f49 204-210
+  s_56fccdccb91ff2::t_0e7258b7e83274 148-149,151
+  s_56fccdccb91ff2::t_6a4c42bb04bace 38-39,41
+  s_56fccdccb91ff2::t_9fa9bff3d1a238 116-122
+  s_56fccdccb91ff2::t_3569d0b7cd8688 72-78
+  s_56fccdccb91ff2::t_941c20051b3cd9 94-100
+  s_56fccdccb91ff2::t_0f8ece1a643a8e 50-56
+  s_56fccdccb91ff2::t_cebd08ee86b89b 16-17,19
+  s_56fccdccb91ff2::t_947a5d95fe75aa 182-188
+  s_56fccdccb91ff2::t_a00d97d58e6730 105,107
+  s_56fccdccb91ff2::t_11b94eefc5544c 192-193,195
+apps/dashboard/components/model/model-builder.test.tsx
+  s_56fccdccb91ff2::t_3b961a09fd9a0b 162-164,166,168
+  s_56fccdccb91ff2::t_99402f334b7930 84,94,104,114,127-130,171,190-196,261-262
+  s_56fccdccb91ff2::t_1e8ebbf2a2c33c 68
+  s_56fccdccb91ff2::t_ba886686b4f3c0 13,16,20,26,34,37-38,53,55-56,58-59,72-79,126,131-138,140,143,150,153,155-157,159,161,169-170,172,175-181,183-186,188-189,197,199,203-208,210-212,214-216,218,223,235-237,239,243,245-246,251,257-259,264-265
+apps/dashboard/components/model/criterion-item.tsx
+  s_56fccdccb91ff2::t_6a29fce9994380 164-168,173-175
+  s_56fccdccb91ff2::t_3199070777baa3 27
+  s_56fccdccb91ff2::t_58d1ba67a12012 38-44
+  s_56fccdccb91ff2::t_e3ce8284fe5777 163,170-172,176-177
+  s_56fccdccb91ff2::t_3dba958397446e 241,243-244
+  s_56fccdccb91ff2::t_0733f9fc778441 238-240,242
+  s_56fccdccb91ff2::t_8c8569ac533a1d 312-316
+  s_56fccdccb91ff2::t_64fe4a03c48c7a 91,103-106
+  s_56fccdccb91ff2::t_9b72dae53203f0 185-193
+  s_56fccdccb91ff2::t_aa9ce89c817b85 79-85,93,95,107-111,115-116
+apps/dashboard/components/model/model-builder.tsx
+  s_56fccdccb91ff2::t_0a9e2d7d9003dd 10
+  s_56fccdccb91ff2::t_e633f8d065cafc 324
+  s_56fccdccb91ff2::t_597d0a9a71c3de 59-64,74
+  s_56fccdccb91ff2::t_cfb8b3f50fb7cc 159-161,163
+  s_56fccdccb91ff2::t_00d646eb01d6e7 1-2,9,12-13,20-58,65-73,75-158,183,219-235,306-307,313-323,325-395
+  s_56fccdccb91ff2::t_594e7d9406848c 236-256,260-295,298-305
+  s_56fccdccb91ff2::t_86aa9da37be4f7 296-297
+  s_56fccdccb91ff2::t_93ed42cd55627c 162,164-182,184-210,216-217
+  s_56fccdccb91ff2::t_42a28608f23060 308-312
+  s_56fccdccb91ff2::t_66acd1aa661b8c 257-259
+  s_56fccdccb91ff2::t_fcd2a35a74cf7f 15-19
+  s_56fccdccb91ff2::t_f107a5a5ad1175 14
+  s_56fccdccb91ff2::t_f18b646653de70 211-215,218
+  s_56fccdccb91ff2::t_608f9cb4e14a2e 3-8,11
+packages/backend/convex/evaluationModel/model.test.ts
+  s_56fccdccb91ff2::t_4ac6c81f76b692 370-373
+  s_56fccdccb91ff2::t_5962c0adc69e07 425-427
+  s_56fccdccb91ff2::t_8040ae93e69876 355-358
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "bf49276957645591de57faf8b9d5f38f76442a3c",
+  "prompts": {},
+  "sessions": {
+    "s_56fccdccb91ff2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c1e16e97-f807-4c70-9add-59df7caf7f3f",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
