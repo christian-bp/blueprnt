@@ -16,11 +16,13 @@ import { useState } from "react"
 import { CriterionForm } from "@/components/model/criterion-form"
 
 // Wraps the shared CriterionForm in a dialog so the tall form does not push
-// the criteria list down. The trigger reuses the existing addCta button
-// styling; a successful add closes the dialog. Open state is controlled so
-// the close is driven from the add result, not a stray click. The new
-// criterion animates into the parent list (AnimatePresence) once the
-// reactive getModel query picks it up; the list stays mounted throughout.
+// the criteria list down. The trigger is the default primary button, the same
+// kind as the "Add role" action on the roles page (a section's standalone
+// primary action stays a plain button). A successful add closes the dialog.
+// Open state is controlled so the close is driven from the add result, not a
+// stray click. The new criterion animates into the parent list
+// (AnimatePresence) once the reactive getModel query picks it up; the list
+// stays mounted throughout.
 export function AddCriterionDialog({ orgId }: { orgId: string }) {
   const tEditor = useTranslations("dashboard.model.editor")
   const addCriterion = useMutation(api.evaluationModel.criteria.addCriterion)
@@ -29,9 +31,7 @@ export function AddCriterionDialog({ orgId }: { orgId: string }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button type="button" variant="outline" size="sm">
-          {tEditor("addCta")}
-        </Button>
+        <Button type="button">{tEditor("addCta")}</Button>
       </DialogTrigger>
       {/* The form is tall; cap the height and scroll inside so the dialog stays
           centered and the overlay shifts nothing behind it. */}

@@ -24,7 +24,6 @@ import { AnimatePresence } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { MorphPopover } from "@/components/morph-popover"
-import { AddCriterionDialog } from "@/components/model/add-criterion-dialog"
 import { CriterionItem } from "@/components/model/criterion-item"
 import {
   EditCriterionDialog,
@@ -360,24 +359,20 @@ export function ModelBuilder({
         </ul>
       )}
 
-      {!onWeight && (
-        <div className="space-y-2">
-          {/* Reserved slot: the floor hint toggles with opacity because
-              removalAllowed flips mid-edit (removing down to the floor), and
-              mounting the line would push the add button (zero layout shift). */}
-          {removalFloor !== undefined && (
-            <p
-              aria-hidden={removalAllowed}
-              className={cn(
-                "text-muted-foreground text-xs",
-                removalAllowed && "opacity-0"
-              )}
-            >
-              {tEditor("removalFloorHint", { min: removalFloor })}
-            </p>
+      {!onWeight && removalFloor !== undefined && (
+        // The floor hint toggles with opacity (not conditional mounting) so it
+        // never shifts the list when removalAllowed flips mid-edit (removing
+        // down to the floor). The Add action lives in the page header, the same
+        // placement as "Add role" on the roles page.
+        <p
+          aria-hidden={removalAllowed}
+          className={cn(
+            "text-muted-foreground text-xs",
+            removalAllowed && "opacity-0"
           )}
-          <AddCriterionDialog orgId={orgId} />
-        </div>
+        >
+          {tEditor("removalFloorHint", { min: removalFloor })}
+        </p>
       )}
 
       {errorKey !== null && (

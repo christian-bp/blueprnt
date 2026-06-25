@@ -152,13 +152,15 @@ describe("ModelBuilder", () => {
   })
   afterEach(() => cleanup())
 
-  it("Define phase: criteria + descriptions + Add, no weighting", () => {
+  it("Define phase: criteria + descriptions, no weighting", () => {
     renderBuilder("define", { removalFloor: 5 })
     expect(screen.getByText("Problem solving")).toBeDefined()
     expect(
       screen.getByText("How the role breaks down and resolves hard problems.")
     ).toBeDefined()
-    expect(screen.getByRole("button", { name: editor.addCta })).toBeDefined()
+    // The Add action lives in the page header (like "Add role"), not the
+    // builder itself.
+    expect(screen.queryByRole("button", { name: editor.addCta })).toBeNull()
     // The extended description sits behind the morph help button next to the
     // name, whose accessible name is the criterion name (c1 has helpText); a
     // criterion without helpText (c2) has no help trigger.
