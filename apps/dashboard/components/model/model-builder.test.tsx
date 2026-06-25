@@ -158,16 +158,16 @@ describe("ModelBuilder", () => {
     expect(
       screen.getByText("How the role breaks down and resolves hard problems.")
     ).toBeDefined()
-    // The Add action lives in the page header (like "Add role"), not the
-    // builder itself.
-    expect(screen.queryByRole("button", { name: editor.addCta })).toBeNull()
-    // The extended description sits behind the morph help button next to the
-    // name, whose accessible name is the criterion name (c1 has helpText); a
-    // criterion without helpText (c2) has no help trigger.
+    // The extended description sits behind a morph help icon next to the name,
+    // titled by the criterion name (c1 has helpText); a criterion without
+    // helpText (c2) has no help icon.
     expect(
       screen.getByRole("button", { name: "Problem solving" })
     ).toBeDefined()
     expect(screen.queryByRole("button", { name: "Autonomy" })).toBeNull()
+    // The Add action lives in the page header (like "Add role"), not the
+    // builder itself.
+    expect(screen.queryByRole("button", { name: editor.addCta })).toBeNull()
     // No weighting on Define: no share, no Save, no budget meter.
     expect(screen.queryByText(/26\.7%/)).toBeNull()
     expect(screen.queryByRole("button", { name: editor.saveCta })).toBeNull()
@@ -183,6 +183,10 @@ describe("ModelBuilder", () => {
     // c1 (4 of 15) shows its share with the labelled suffix.
     expect(screen.getByText(/26\.7%/)).toBeDefined()
     expect(screen.getAllByText(builder.shareOfTotal).length).toBeGreaterThan(0)
+    // The morph help icon is on the weight page too (c1 has helpText).
+    expect(
+      screen.getByRole("button", { name: "Problem solving" })
+    ).toBeDefined()
     // The 1-5 control (options 5..1) with the current allocation (4) pressed.
     const group = screen.getByRole("group", {
       name: editor.setWeightPoints.replace("{name}", "Problem solving"),

@@ -230,6 +230,7 @@ export function ModelBuilder({
                     key={criterion.criterionId}
                     name={criterion.name}
                     description={criterion.description || undefined}
+                    extendedDescription={criterion.helpText || undefined}
                     editable={false}
                     importanceNode={
                       // Each weight button is its own hover trigger, so hovering

@@ -99,10 +99,11 @@ export function CriterionItem({
   removing,
 }: {
   name: string
+  // Optional muted subtitle (the short description).
   description?: string
-  // The criterion's extended description: when given, an info icon next to the
-  // name reveals it on hover. The short `description` stays inline as the
-  // subtitle (File A: kort beskrivning inline, utökad behind the info icon).
+  // The criterion's extended description: when given, a morph help icon next to
+  // the name reveals it (the panel is titled by the criterion name). The short
+  // `description` stays inline as the subtitle.
   extendedDescription?: string
   // The weight control for the Weight phase; undefined on the Define phase, so
   // the 0-5 evaluation scale and the 1-5 weight control are never co-rendered.
@@ -160,12 +161,12 @@ export function CriterionItem({
           unchanged from the consumer's perspective. */}
       <div className="group relative rounded-md border p-3">
         <div className="flex min-h-9 items-center gap-3">
-          {/* Name + description take all remaining space and stay truncation-safe.
-              The extended description sits behind the signature morph help button
-              next to the name (always present when given, so it adds no layout
-              shift); the short description stays inline as the subtitle. The help
-              panel uses the criterion name as its title, like the concept help on
-              the page heading. */}
+          {/* Name + description take all remaining space and stay
+              truncation-safe. The extended description sits behind the morph
+              help icon next to the name (always present when given, so it adds
+              no layout shift); the short description stays inline as the
+              subtitle. The help panel is titled by the criterion name, like the
+              concept help on the page heading. */}
           <span className="flex min-w-0 flex-1 flex-col">
             <span className="flex min-w-0 items-center gap-1">
               <span className="truncate">{name}</span>
