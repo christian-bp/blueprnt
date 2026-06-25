@@ -9,12 +9,11 @@ import { useEffect, useRef, useState } from "react"
 // OPTION_FADE_MS (the card imports it from here), then the screen holds for
 // ADVANCE_PAUSE_MS before advancing.
 export const OPTION_FADE_MS = 300
-export const ADVANCE_PAUSE_MS = 450
+const ADVANCE_PAUSE_MS = 450
 
-// The full auto-advance wait: the fade of the non-chosen options plus the
-// rest beat. Shared with the model step's template path so every choice
-// screen advances with the same rhythm.
-export function advanceDelay(): Promise<void> {
+// The full auto-advance wait: the fade of the non-chosen options plus the rest
+// beat. Internal to the choice-screen rhythm (used by useAutoAdvance below).
+function advanceDelay(): Promise<void> {
   return new Promise((resolve) =>
     setTimeout(resolve, OPTION_FADE_MS + ADVANCE_PAUSE_MS)
   )

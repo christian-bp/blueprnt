@@ -585,7 +585,7 @@ describe("FamiliesStep", () => {
     // Template creates on pick, then deleting all role-family names empties the
     // list; Next reconciles to an empty set (archives every created role,
     // removes every family) rather than re-creating. Onboarding is NOT
-    // completed here (the score step owns completion).
+    // completed here (the wizard completes onboarding when families finishes).
     reconcileStarterSetMock.mockResolvedValue(null)
     completeOnboardingMock.mockResolvedValue(null)
     const onFinished = vi.fn()
@@ -1164,7 +1164,7 @@ describe("FamiliesStep", () => {
 
   it("advances even when the best-effort prefill retry rejects", async () => {
     // The retry is swallowed: a second miss must not block onboarding, because
-    // the score step's manual capture is the final fallback for an empty role.
+    // roles can still be added and evaluated later in the app.
     currentFamilies = existingFamiliesFixture()
     currentRoles = existingRolesFixture()
     reconcileStarterSetMock.mockResolvedValue(null)

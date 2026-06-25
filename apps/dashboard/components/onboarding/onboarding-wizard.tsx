@@ -2,18 +2,17 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Spinner } from "@workspace/ui/components/spinner"
-import { useQuery } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import { type ReactNode, useState } from "react"
 import { OnboardingDots } from "@/components/onboarding/onboarding-dots"
 import { CountryScreen } from "@/components/onboarding/country-screen"
+import { EnsureDefaultModel } from "@/components/onboarding/ensure-default-model"
 import { FamiliesStep } from "@/components/onboarding/families-step"
 import { IndustryScreen } from "@/components/onboarding/industry-screen"
-import { ModelSetupStep } from "@/components/onboarding/model-setup-step"
 import { NameScreen } from "@/components/onboarding/name-screen"
 import { OnboardingHeader } from "@/components/onboarding/onboarding-header"
-import { ScoreStep } from "@/components/onboarding/score-step"
 
 export interface OnboardingStatus {
   organization: { orgId: string; name: string; role: string } | null
@@ -37,10 +36,8 @@ interface StepContext {
   settings: SettingsSlice | null | undefined
   // Standard forward move: acknowledges the next screen.
   advance: () => void
-  // The model/families continue: additionally raises the session latch so
-  // the next step (not yet server-complete this session) becomes reachable.
-  latchNext: () => void
-  // The last step's exit: hands control back to the onboarding gate.
+  // The last step's exit: completes onboarding and hands control back to the
+  // onboarding gate.
   finish: () => void
 }
 
@@ -95,52 +92,25 @@ const STEPS = [
       ),
   },
   {
-    key: "model",
-    dotLabelKey: "dots.model",
-    // No server signal distinguishes "in the model review" from "model done",
-    // so the model step owns its internal choice -> review sub-flow and is
-    // reached/passed only via the session latch (a reload mid-flow resumes at
-    // the model review). hasRoles is the exception: roles can only exist once
-    // the model is finished, so once the org has a role the model is
-    // definitively complete and the server-derived resume can skip past it to
-    // the score step.
-    isComplete: (status: OnboardingStatus) => status.hasRoles,
-    render: (ctx: StepContext) =>
-      ctx.status.organization === null ? null : (
-        <ModelSetupStep
-          orgId={ctx.status.organization.orgId}
-          organizationName={ctx.status.organization.name}
-          onAdvance={ctx.latchNext}
-        />
-      ),
-  },
-  {
     key: "families",
     dotLabelKey: "dots.families",
-    // Server-derived: once the org has at least one role, families is
-    // complete, so a reload mid-scoring resumes on the score step.
-    isComplete: (status: OnboardingStatus) => status.hasRoles,
-    render: (ctx: StepContext) =>
-      ctx.status.organization === null ? null : (
-        <FamiliesStep
-          orgId={ctx.status.organization.orgId}
-          organizationName={ctx.status.organization.name}
-          onAdvance={ctx.latchNext}
-        />
-      ),
-  },
-  {
-    key: "score",
-    dotLabelKey: "dots.score",
-    // Complete exactly when onboarding is complete: leaving the score step by
-    // any path stamps onboardingCompletedAt and flips this true.
+    // The last step: complete exactly when onboarding is complete. Finishing
+    // families (create the role register, then complete) stamps
+    // onboardingCompletedAt and flips this true; a reload mid-families resumes
+    // here until then.
     isComplete: (status: OnboardingStatus) => status.completed,
     render: (ctx: StepContext) =>
       ctx.status.organization === null ? null : (
-        <ScoreStep
-          orgId={ctx.status.organization.orgId}
-          onFinish={ctx.finish}
-        />
+        // The model step was removed, so seed the default model here: the
+        // families flow creates roles against it, and the country step has
+        // already set the org language for the right locale.
+        <EnsureDefaultModel orgId={ctx.status.organization.orgId}>
+          <FamiliesStep
+            orgId={ctx.status.organization.orgId}
+            organizationName={ctx.status.organization.name}
+            onAdvance={ctx.finish}
+          />
+        </EnsureDefaultModel>
       ),
   },
 ] as const satisfies readonly {
@@ -164,10 +134,10 @@ export function OnboardingWizard({
     api.accounts.organization.getOrganizationSettings,
     orgId !== null ? { orgId } : "skip"
   )
+  const completeOnboarding = useMutation(
+    api.accounts.organization.completeOnboarding
+  )
 
-  // Session-local forward progress past the model review (no persisted flag:
-  // a reload resumes at the review, whose continue is an idempotent no-op).
-  const [sessionStep, setSessionStep] = useState<number | null>(null)
   // Back-navigation from the dots; cleared when a revisited screen saves.
   const [backTo, setBackTo] = useState<number | null>(null)
   // The highest screen index the UI may show. Settings save reactively the
@@ -194,13 +164,10 @@ export function OnboardingWizard({
   if (acked === null && derived !== -1) {
     setAcked(derived)
   }
-  // The session latch only counts while the model still exists: discarding
-  // the model from a revisited model step retracts the families dot, which
-  // would otherwise stay reachable and dead-end on its loading spinner.
-  const frontier = Math.max(
-    derived,
-    sessionStep !== null && status.hasModel ? sessionStep : 0
-  )
+  // Every step now has a server-derived completion signal (org, settings,
+  // onboardingCompletedAt), so the resume index is the frontier directly: no
+  // session latch is needed.
+  const frontier = derived
   const current =
     backTo !== null && backTo < frontier
       ? backTo
@@ -245,13 +212,16 @@ export function OnboardingWizard({
     orgId,
     settings,
     advance,
-    latchNext: () => {
-      const next = current + 1
-      setSessionStep(next)
-      setBackTo(null)
-      setAcked((prev) => Math.max(prev ?? 0, next))
+    finish: async () => {
+      if (orgId === null) return
+      try {
+        await completeOnboarding({ orgId })
+        onFinished()
+      } catch {
+        // completeOnboarding is idempotent; on failure the gate stays on the
+        // families step so the user can retry.
+      }
     },
-    finish: onFinished,
   }
 
   return (

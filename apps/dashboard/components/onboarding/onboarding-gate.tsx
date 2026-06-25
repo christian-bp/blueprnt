@@ -69,11 +69,12 @@ export function OnboardingGate(props: { children: ReactNode }) {
 }
 
 // First-run gate for one company: holds the user in the wizard until the
-// organization, its settings, and model exist AND setup was explicitly
-// finished. The wizard OWNS the session once started (it stays mounted even
-// after hasModel flips, so the model review and AI panels are not skipped)
-// until it calls onFinished. Completion is explicit server state
-// (status.completed), never inferred from hasModel.
+// organization and its settings exist AND setup was explicitly finished. The
+// wizard OWNS the session once started so it stays mounted to the end even as
+// derived signals flip mid-flow, until it calls onFinished. Completion is
+// explicit server state (status.completed), never inferred. hasModel is a
+// defensive guard: the default model is seeded during the families step, so a
+// completed org always has one; the check only bites if that ever failed.
 function OnboardingSession(props: { status: Status; children: ReactNode }) {
   const { status } = props
   const [sessionStarted, setSessionStarted] = useState(false)

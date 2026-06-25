@@ -14,10 +14,3 @@ export function makeOrgNameSchema(t: ValidationT) {
   })
 }
 export type OrgNameValues = z.infer<ReturnType<typeof makeOrgNameSchema>>
-
-export function makeScratchNameSchema(t: ValidationT) {
-  return z.object({ scratchName: z.string().trim().min(1, t("required")) })
-}
-export type ScratchNameValues = z.infer<
-  ReturnType<typeof makeScratchNameSchema>
->

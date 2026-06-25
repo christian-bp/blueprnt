@@ -363,6 +363,10 @@ export const getModel = orgQuery({
           order: v.number(),
           isCustom: v.boolean(),
           anchors: v.array(anchorShape),
+          // Per-criterion weighting explanations (for weight points 1..5),
+          // localized, for pristine template criteria; null for custom or
+          // edited rows, where the UI falls back to the generic level meanings.
+          weightLevels: v.union(v.array(v.string()), v.null()),
         })
       ),
       tracks: v.array(
@@ -417,6 +421,10 @@ export const getModel = orgQuery({
                 text: localized.anchors[a.level] ?? a.text,
               }))
             : anchors.map((a) => ({ level: a.level, text: a.text })),
+        // Pristine template criteria serve their localized per-criterion
+        // weighting explanations; custom/edited rows return null so the UI
+        // falls back to the generic weight-level meanings.
+        weightLevels: localized?.weightLevels ?? null,
       })
     }
 

@@ -352,6 +352,10 @@ describe("getModel", () => {
     expect(en?.name).toBe("Standard model")
     expect(en?.criteria[0]?.name).toBe("Scope & Impact")
     expect(en?.criteria[0]?.anchors[0]?.text).toMatch(/Responsible for own/)
+    // Pristine template criteria carry their localized per-criterion weighting
+    // texts (weight points 1..5), not the Swedish source.
+    expect(en?.criteria[0]?.weightLevels).toHaveLength(5)
+    expect(en?.criteria[0]?.weightLevels?.[0]).not.toMatch(/Företaget/)
     const enIc = en?.tracks.find((track) => track.key === "IC")
     expect(enIc?.name).toBe("Individual Contributor")
 
@@ -363,6 +367,10 @@ describe("getModel", () => {
     expect(sv?.name).toBe("Standardmodell")
     expect(sv?.criteria[0]?.name).toBe("Scope & Påverkan")
     expect(sv?.criteria[0]?.anchors[0]?.text).toMatch(/Ansvar för egna/)
+    expect(sv?.criteria[0]?.weightLevels).toHaveLength(5)
+    expect(sv?.criteria[0]?.weightLevels?.[0]).toMatch(
+      /Företaget vill att omfattningen/
+    )
   })
 
   it("localizes a supported template locale", async () => {
@@ -414,6 +422,9 @@ describe("getModel", () => {
     expect(custom?.name).toBe("Custom criterion")
     expect(custom?.description).toBe("Stored description")
     expect(custom?.anchors[0]?.text).toBe("a0")
+    // A custom criterion has no per-criterion weighting text: null, so the UI
+    // falls back to the generic level meanings.
+    expect(custom?.weightLevels).toBeNull()
     const sv = await asAdmin.query(api.evaluationModel.model.getModel, {
       orgId,
       locale: "sv",

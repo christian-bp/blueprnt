@@ -13,12 +13,17 @@ import { useTranslations } from "next-intl"
 // reduced motion.
 export function NextButton({
   className,
+  label,
   ...props
-}: Omit<React.ComponentProps<typeof Button>, "children">) {
+}: Omit<React.ComponentProps<typeof Button>, "children"> & {
+  // Override the default "Next" label (e.g. "Continue to weighting" for the
+  // first phase of the model builder). The hover-nudge arrow is unchanged.
+  label?: string
+}) {
   const t = useTranslations("dashboard.onboarding.screens")
   return (
     <Button {...props} className={cn("group/next", className)}>
-      {t("nextCta")}
+      {label ?? t("nextCta")}
       <HugeiconsIcon
         icon={ArrowRight01Icon}
         aria-hidden="true"

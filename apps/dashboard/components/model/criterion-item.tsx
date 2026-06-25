@@ -24,6 +24,7 @@ import { AnimatePresence, motion } from "motion/react"
 import type { Variants } from "motion/react"
 import { useTranslations } from "next-intl"
 import { type ReactNode, useId, useState } from "react"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { SPRING } from "@/lib/motion"
 
 // Shared criterion row used by both the model review screen (editable or
@@ -34,10 +35,13 @@ import { SPRING } from "@/lib/motion"
 // and edit mode. State changes reveal controls outside the row's layout box;
 // nothing resizes its neighbors.
 //
-//   - The importance slot is a fixed-size right-aligned container that renders
-//     the static label (read mode) or the weight control filling the slot
-//     (edit mode). Identical outer dimensions either way: toggling edit
-//     shifts nothing.
+//   - The weight slot is a fixed-size right-aligned container that renders the
+//     weight control filling the slot. It is omitted entirely on the Define
+//     phase (importanceNode undefined), where weighting is not shown at all.
+//   - The note slot is a reserved-height block below the main row, used by the
+//     Weight phase for the selected level's meaning and share. Its height is
+//     reserved so changing the weight (and its meaning text) never reflows
+//     neighboring rows.
 //   - The remove affordance is the shared RemoveConfirm (ghost trashcan that
 //     morphs to an inline confirm pill, same as the onboarding family rows),
 //     sitting in an ALWAYS-reserved fixed slot right of the importance slot,
@@ -72,16 +76,23 @@ const rowVariants: Variants = {
 // Props:
 //   name             - criterion display name
 //   description      - optional muted subtitle
-//   importanceNode   - static label span (read-only) or a Select node (edit)
-//   editable         - when false: no remove button; importanceNode is static
+//   importanceNode   - the weight control (Weight phase); omit to hide the
+//                      weight slot entirely (Define phase)
+//   note             - optional reserved-height block below the row (Weight
+//                      phase: the selected level's meaning and share)
+//   anchorsCaption   - optional caption shown inside the expanded scale, tying
+//                      the 0-5 scale to the act of evaluating a role
+//   editable         - when false: no row menu (Edit/Remove)
 //   onRemove         - called with no args after the user confirms inline
 //   removing         - disables the button while the delete mutation is in flight
-//   removeLabel      - accessible aria-label for the idle cross button (e.g. "Remove Problem solving")
 export function CriterionItem({
   name,
   description,
+  extendedDescription,
   importanceNode,
+  note,
   anchors,
+  anchorsCaption,
   editable,
   onEdit,
   onRemove,
@@ -89,10 +100,20 @@ export function CriterionItem({
 }: {
   name: string
   description?: string
-  importanceNode: ReactNode
+  // The criterion's extended description: when given, an info icon next to the
+  // name reveals it on hover. The short `description` stays inline as the
+  // subtitle (File A: kort beskrivning inline, utökad behind the info icon).
+  extendedDescription?: string
+  // The weight control for the Weight phase; undefined on the Define phase, so
+  // the 0-5 evaluation scale and the 1-5 weight control are never co-rendered.
+  importanceNode?: ReactNode
+  // Reserved-height content below the main row (Weight phase meaning + share).
+  note?: ReactNode
   // The criterion's 0-5 anchor scale; when given, the row gets a collapsible
   // section revealing the texts (shared by onboarding and the model page).
   anchors?: { level: number; text: string }[]
+  // Optional caption rendered inside the expanded scale.
+  anchorsCaption?: string
   editable: boolean
   // Row actions, rendered as one dropdown menu while editable: onEdit opens
   // the text editor, onRemove (behind an AlertDialog confirmation) deletes
@@ -139,9 +160,21 @@ export function CriterionItem({
           unchanged from the consumer's perspective. */}
       <div className="group relative rounded-md border p-3">
         <div className="flex min-h-9 items-center gap-3">
-          {/* Name + description take all remaining space and stay truncation-safe. */}
+          {/* Name + description take all remaining space and stay truncation-safe.
+              The extended description sits behind the signature morph help button
+              next to the name (always present when given, so it adds no layout
+              shift); the short description stays inline as the subtitle. The help
+              panel uses the criterion name as its title, like the concept help on
+              the page heading. */}
           <span className="flex min-w-0 flex-1 flex-col">
-            <span className="truncate">{name}</span>
+            <span className="flex min-w-0 items-center gap-1">
+              <span className="truncate">{name}</span>
+              {extendedDescription && (
+                <HelpMorphButton label={name}>
+                  {extendedDescription}
+                </HelpMorphButton>
+              )}
+            </span>
             {description && (
               <span className="truncate text-muted-foreground text-sm">
                 {description}
@@ -149,13 +182,15 @@ export function CriterionItem({
             )}
           </span>
 
-          {/* Fixed-size importance slot (w-52): identical outer box for the
-              read-mode label "Importance 5 · 20%" and the edit-mode ButtonGroup
-              (w-full), so toggling edit shifts nothing. The node fills the slot
-              via its parent. */}
-          <span className="flex h-9 w-52 shrink-0 items-center justify-end">
-            {importanceNode}
-          </span>
+          {/* Fixed-size weight slot (w-52): holds the Weight phase's 1-5
+              control. Omitted on the Define phase (importanceNode undefined) so
+              the row is identity plus the evaluation-scale disclosure, with no
+              weighting in sight. */}
+          {importanceNode !== undefined && (
+            <span className="flex h-9 w-52 shrink-0 items-center justify-end">
+              {importanceNode}
+            </span>
+          )}
 
           {/* Actions slot, rendered only while editable so the importance
               column sits flush with the row edge in read mode. Entering
@@ -199,6 +234,13 @@ export function CriterionItem({
               <span aria-hidden="true" className="size-9 shrink-0" />
             ))}
         </div>
+
+        {/* Optional below-row note (Weight phase: the derived share). A single
+            constant-height line, so no reserved height is needed: changing the
+            weight only changes the percentage in place, never the line count. */}
+        {note !== undefined && (
+          <div className="mt-1 text-muted-foreground text-xs">{note}</div>
+        )}
 
         {/* Destructive confirmation in an AlertDialog (the standard pattern
             for irreversible actions): removal deletes the criterion's
@@ -267,6 +309,11 @@ export function CriterionItem({
                   transition={SPRING}
                   className="overflow-hidden"
                 >
+                  {anchorsCaption !== undefined && (
+                    <p className="pt-2 text-muted-foreground text-xs">
+                      {anchorsCaption}
+                    </p>
+                  )}
                   <ol className="space-y-1.5 pt-2">
                     {anchors.map((anchor) => (
                       <li key={anchor.level} className="flex gap-2 text-sm">

@@ -6,15 +6,19 @@ import {
   waitFor,
 } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
+import type { ReactNode } from "react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import type { OnboardingStatus } from "@/components/onboarding/onboarding-wizard"
 
-// The wizard reads getOrganizationSettings via convex/react useQuery; each case
-// supplies the settings fixture (or undefined for the loading state).
+// The wizard reads getOrganizationSettings via useQuery and completeOnboarding
+// via useMutation. Each case supplies the settings fixture; the single mutation
+// is captured so the families-finish test can assert completion.
 const useQueryMock = vi.fn()
+const completeOnboardingMock = vi.fn()
 vi.mock("convex/react", () => ({
   useQuery: (...args: unknown[]) => useQueryMock(...args),
+  useMutation: () => completeOnboardingMock,
 }))
 
 // Each screen is mocked as a marker plus its onAdvance callback, so the tests
@@ -64,14 +68,12 @@ vi.mock("@/components/onboarding/industry-screen", () => ({
   ),
 }))
 
-vi.mock("@/components/onboarding/model-setup-step", () => ({
-  ModelSetupStep: (props: { orgId: string; onAdvance: () => void }) => (
-    <div data-testid="model-step">
-      <span data-testid="model-orgid">{props.orgId}</span>
-      <button type="button" onClick={() => props.onAdvance()}>
-        model-continue
-      </button>
-    </div>
+// EnsureDefaultModel wraps the families step; here it is a pass-through so the
+// wizard's step logic is tested in isolation (its own behavior is covered by
+// ensure-default-model.test.tsx).
+vi.mock("@/components/onboarding/ensure-default-model", () => ({
+  EnsureDefaultModel: ({ children }: { children: ReactNode }) => (
+    <>{children}</>
   ),
 }))
 
@@ -81,17 +83,6 @@ vi.mock("@/components/onboarding/families-step", () => ({
       <span data-testid="families-orgid">{props.orgId}</span>
       <button type="button" onClick={() => props.onAdvance()}>
         families-finished
-      </button>
-    </div>
-  ),
-}))
-
-vi.mock("@/components/onboarding/score-step", () => ({
-  ScoreStep: (props: { orgId: string; onFinish: () => void }) => (
-    <div data-testid="score-step">
-      <span data-testid="score-orgid">{props.orgId}</span>
-      <button type="button" onClick={() => props.onFinish()}>
-        score-finished
       </button>
     </div>
   ),
@@ -145,6 +136,8 @@ const fullSettings = {
   industry: "itTelecom",
 }
 
+// Steps are now: name(0), country(1), industry(2), families(3). Families is the
+// last step and completes onboarding (model + score steps were removed).
 function renderWizard(status: OnboardingStatus, settings: unknown = undefined) {
   useQueryMock.mockReturnValue(settings)
   return render(
@@ -159,6 +152,7 @@ describe("OnboardingWizard", () => {
     cleanup()
     dotsProps = null
     useQueryMock.mockReset()
+    completeOnboardingMock.mockReset()
   })
 
   it("renders the name screen in fresh mode when no organization exists", () => {
@@ -187,22 +181,6 @@ describe("OnboardingWizard", () => {
     expect(screen.queryByTestId("name-screen")).toBeNull()
   })
 
-  it("a missing language never gates the resume (it derives at creation)", () => {
-    renderWizard(
-      {
-        organization: admin,
-        settingsComplete: true,
-        hasModel: false,
-        hasRoles: false,
-        completed: false,
-      },
-      { ...fullSettings, language: null }
-    )
-    // Every screen-gated setting is present, so the model step shows even
-    // though language is null.
-    expect(screen.getByTestId("model-step")).toBeDefined()
-  })
-
   it("renders the industry screen when country and currency are set but no industry is chosen", () => {
     renderWizard(
       {
@@ -218,7 +196,7 @@ describe("OnboardingWizard", () => {
     expect(screen.queryByTestId("country-screen")).toBeNull()
   })
 
-  it("renders the model step when every setting is present", () => {
+  it("renders the families step when every setting is present and onboarding is not complete", () => {
     renderWizard(
       {
         organization: admin,
@@ -229,8 +207,24 @@ describe("OnboardingWizard", () => {
       },
       fullSettings
     )
-    expect(screen.getByTestId("model-step")).toBeDefined()
-    expect(screen.getByTestId("model-orgid").textContent).toBe("org-1")
+    expect(screen.getByTestId("families-step")).toBeDefined()
+    expect(screen.getByTestId("families-orgid").textContent).toBe("org-1")
+  })
+
+  it("a missing language never gates the resume (it derives at creation)", () => {
+    renderWizard(
+      {
+        organization: admin,
+        settingsComplete: true,
+        hasModel: false,
+        hasRoles: false,
+        completed: false,
+      },
+      { ...fullSettings, language: null }
+    )
+    // Every screen-gated setting is present, so the families step shows even
+    // though language is null.
+    expect(screen.getByTestId("families-step")).toBeDefined()
   })
 
   it("shows a spinner while settings are still loading", () => {
@@ -247,7 +241,7 @@ describe("OnboardingWizard", () => {
     expect(
       screen.getByLabelText(messages.dashboard.onboarding.loading)
     ).toBeDefined()
-    expect(screen.queryByTestId("model-step")).toBeNull()
+    expect(screen.queryByTestId("families-step")).toBeNull()
   })
 
   it("shows the waiting message to non-admin members", () => {
@@ -263,7 +257,7 @@ describe("OnboardingWizard", () => {
     ).toBeDefined()
   })
 
-  it("gates the dots at the derived frontier (the model step before continue)", () => {
+  it("gates the dots at the derived frontier (families is the last step)", () => {
     renderWizard(
       {
         organization: admin,
@@ -274,37 +268,16 @@ describe("OnboardingWizard", () => {
       },
       fullSettings
     )
-    // Frontier is the model screen (index 3); the gate follows the frontier, so
-    // the families dot (index 4) stays unreachable until the model continues.
+    // Frontier is the families screen (index 3); the four dots are name,
+    // country, industry, families.
+    expect(dotsProps?.steps.map((s) => s.key)).toEqual([
+      "name",
+      "country",
+      "industry",
+      "families",
+    ])
     expect(dotsProps?.activeIndex).toBe(3)
     expect(dotsProps?.maxReachedIndex).toBe(3)
-  })
-
-  it("the model continue advances to the families screen and opens its dot", async () => {
-    renderWizard(
-      {
-        organization: admin,
-        settingsComplete: true,
-        hasModel: true,
-        hasRoles: false,
-        completed: false,
-      },
-      fullSettings
-    )
-    expect(screen.getByTestId("model-step")).toBeDefined()
-    expect(dotsProps?.maxReachedIndex).toBe(3)
-
-    // onAdvance sets the session step to the families index (4). The step
-    // crossfade mounts the next screen only after the old one has faded out.
-    fireEvent.click(screen.getByText("model-continue"))
-
-    expect(await screen.findByTestId("families-step")).toBeDefined()
-    expect(screen.getByTestId("families-orgid").textContent).toBe("org-1")
-    await waitFor(() => {
-      expect(screen.queryByTestId("model-step")).toBeNull()
-    })
-    expect(dotsProps?.activeIndex).toBe(4)
-    expect(dotsProps?.maxReachedIndex).toBe(4)
   })
 
   it("a reactive settings update never yanks the frontier screen before it advances", async () => {
@@ -331,7 +304,7 @@ describe("OnboardingWizard", () => {
     )
     expect(screen.getByTestId("country-screen")).toBeDefined()
 
-    // The pick persisted: settings now complete, derived jumps to the model
+    // The pick persisted: settings now complete, derived jumps to the families
     // step, but the country screen must stay until its onAdvance fires.
     useQueryMock.mockReturnValue(fullSettings)
     view.rerender(
@@ -340,13 +313,13 @@ describe("OnboardingWizard", () => {
       </NextIntlClientProvider>
     )
     expect(screen.getByTestId("country-screen")).toBeDefined()
-    expect(screen.queryByTestId("model-step")).toBeNull()
+    expect(screen.queryByTestId("families-step")).toBeNull()
 
     // onAdvance acknowledges the move: one step forward, not to the frontier.
     fireEvent.click(screen.getByText("country-done"))
     expect(await screen.findByTestId("industry-screen")).toBeDefined()
     fireEvent.click(screen.getByText("industry-done"))
-    expect(await screen.findByTestId("model-step")).toBeDefined()
+    expect(await screen.findByTestId("families-step")).toBeDefined()
   })
 
   it("completing a revisited screen advances one step, not to the frontier", async () => {
@@ -360,61 +333,22 @@ describe("OnboardingWizard", () => {
       },
       fullSettings
     )
-    // Frontier is the model screen (index 3); jump back to the country
+    // Frontier is the families screen (index 3); jump back to the country
     // screen (index 1) via its dot.
-    expect(screen.getByTestId("model-step")).toBeDefined()
+    expect(screen.getByTestId("families-step")).toBeDefined()
     fireEvent.click(screen.getByTestId("dot-1"))
     expect(await screen.findByTestId("country-screen")).toBeDefined()
 
     // Completing it lands on the industry screen (index 2), not the frontier.
     fireEvent.click(screen.getByText("country-done"))
     expect(await screen.findByTestId("industry-screen")).toBeDefined()
-    expect(screen.queryByTestId("model-step")).toBeNull()
+    expect(screen.queryByTestId("families-step")).toBeNull()
     expect(dotsProps?.activeIndex).toBe(2)
 
     // Walking the last step returns to the frontier and clears the back-state.
     fireEvent.click(screen.getByText("industry-done"))
-    expect(await screen.findByTestId("model-step")).toBeDefined()
-    expect(dotsProps?.activeIndex).toBe(3)
-  })
-
-  it("discarding the model retracts the families dot and returns to the model step", async () => {
-    // The session latch (model continue) must only count while the model still
-    // exists: after a discard the families screen would dead-end on its
-    // spinner, so the dot may not stay reachable.
-    useQueryMock.mockReturnValue(fullSettings)
-    const status = {
-      organization: admin,
-      settingsComplete: true,
-      hasModel: true,
-      hasRoles: false,
-      completed: false,
-    }
-    const view = render(
-      <NextIntlClientProvider locale="en" messages={messages}>
-        <OnboardingWizard status={status} onFinished={() => {}} />
-      </NextIntlClientProvider>
-    )
-    fireEvent.click(screen.getByText("model-continue"))
     expect(await screen.findByTestId("families-step")).toBeDefined()
-    expect(dotsProps?.maxReachedIndex).toBe(4)
-
-    // The model is discarded (change-choice inside the model step); the status
-    // query updates reactively and hasModel flips to false.
-    view.rerender(
-      <NextIntlClientProvider locale="en" messages={messages}>
-        <OnboardingWizard
-          status={{ ...status, hasModel: false }}
-          onFinished={() => {}}
-        />
-      </NextIntlClientProvider>
-    )
-    expect(await screen.findByTestId("model-step")).toBeDefined()
-    await waitFor(() => {
-      expect(screen.queryByTestId("families-step")).toBeNull()
-    })
     expect(dotsProps?.activeIndex).toBe(3)
-    expect(dotsProps?.maxReachedIndex).toBe(3)
   })
 
   it("clicking a previous dot navigates back to that screen", async () => {
@@ -428,56 +362,21 @@ describe("OnboardingWizard", () => {
       },
       fullSettings
     )
-    expect(screen.getByTestId("model-step")).toBeDefined()
+    expect(screen.getByTestId("families-step")).toBeDefined()
 
     // Drive back-navigation through the dot button (index 1 = country).
     fireEvent.click(screen.getByTestId("dot-1"))
 
     expect(await screen.findByTestId("country-screen")).toBeDefined()
-    expect(screen.queryByTestId("model-step")).toBeNull()
+    expect(screen.queryByTestId("families-step")).toBeNull()
     // The active dot follows the revisited screen; the gate is unchanged.
     expect(dotsProps?.activeIndex).toBe(1)
     expect(dotsProps?.maxReachedIndex).toBe(3)
   })
 
-  it("resumes on the score step when families is server-complete but onboarding is not", () => {
-    renderWizard(
-      {
-        organization: admin,
-        settingsComplete: true,
-        hasModel: true,
-        hasRoles: true,
-        completed: false,
-      },
-      fullSettings
-    )
-    // families.isComplete follows hasRoles (true), score.isComplete follows
-    // completed (false), so the first incomplete step is the score step.
-    expect(screen.getByTestId("score-step")).toBeDefined()
-    expect(screen.getByTestId("score-orgid").textContent).toBe("org-1")
-  })
-
-  it("the families continue advances to the score step", async () => {
-    renderWizard(
-      {
-        organization: admin,
-        settingsComplete: true,
-        hasModel: true,
-        hasRoles: false,
-        completed: false,
-      },
-      fullSettings
-    )
-    // hasRoles is false, so families is the frontier. Continue from model,
-    // then from families, landing on the score step.
-    fireEvent.click(screen.getByText("model-continue"))
-    expect(await screen.findByTestId("families-step")).toBeDefined()
-    fireEvent.click(screen.getByText("families-finished"))
-    expect(await screen.findByTestId("score-step")).toBeDefined()
-  })
-
-  it("the score step's finish hands control back to the gate", async () => {
+  it("the families finish completes onboarding and hands control back to the gate", async () => {
     const onFinished = vi.fn()
+    completeOnboardingMock.mockResolvedValue(null)
     useQueryMock.mockReturnValue(fullSettings)
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
@@ -486,14 +385,19 @@ describe("OnboardingWizard", () => {
             organization: admin,
             settingsComplete: true,
             hasModel: true,
-            hasRoles: true,
+            hasRoles: false,
             completed: false,
           }}
           onFinished={onFinished}
         />
       </NextIntlClientProvider>
     )
-    fireEvent.click(screen.getByText("score-finished"))
-    expect(onFinished).toHaveBeenCalledTimes(1)
+    fireEvent.click(screen.getByText("families-finished"))
+    await waitFor(() => {
+      expect(completeOnboardingMock).toHaveBeenCalledWith({ orgId: "org-1" })
+    })
+    await waitFor(() => {
+      expect(onFinished).toHaveBeenCalledTimes(1)
+    })
   })
 })

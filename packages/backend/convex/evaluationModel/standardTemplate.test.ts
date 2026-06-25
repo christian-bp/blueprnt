@@ -48,6 +48,11 @@ describe("standard template structure", () => {
         for (const anchor of criterion.anchors) {
           expect(anchor.length).toBeGreaterThan(0)
         }
+        // The per-criterion weighting explanations (weight points 1..5).
+        expect(criterion.weightLevels).toHaveLength(5)
+        for (const level of criterion.weightLevels) {
+          expect(level.length).toBeGreaterThan(0)
+        }
       }
       for (const key of TRACK_KEYS) {
         expect(content.trackNames[key].length).toBeGreaterThan(0)

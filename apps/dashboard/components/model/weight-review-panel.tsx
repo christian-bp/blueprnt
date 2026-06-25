@@ -20,7 +20,7 @@ import { SPRING } from "@/lib/motion"
 import { weightReviewValueSchema } from "@/lib/suggestion-schemas"
 
 // The review panel only needs each criterion's id, name, and current weight
-// points. ModelEditor passes the full getModel result, which structurally
+// points. ModelBuilder passes the full getModel result, which structurally
 // satisfies this.
 interface ReviewModel {
   criteria: {

@@ -2,18 +2,30 @@
 
 import { MIN_CRITERIA } from "@workspace/core"
 import { useTranslations } from "next-intl"
-import { ModelEditor } from "@/components/model/model-editor"
+import { HelpMorphButton } from "@/components/help-morph-button"
+import { ModelBuilder } from "@/components/model/model-builder"
 import { useOrganization } from "@/components/org-context"
 import { usePageTitle } from "@/hooks/use-page-title"
 
-// The evaluation model page: the shared criteria editor plus the AI weight
-// review. The finished model never drops below the composition floor, so
-// removal hides at MIN_CRITERIA here (unlike during onboarding, where a model
-// under construction removes freely). Band thresholds and deeper E2 editing
-// come later.
-export default function ModelPage() {
+// The model's Criteria page (the Define phase): identity + the 0-5 evaluation
+// scale. Weighting lives on its own page (/model/weighting), reached via the
+// header ModelTabs, so the role-facing 0-5 scale and the model-facing 1-5
+// weighting are never shown together. Removal hides at MIN_CRITERIA (a finished
+// model never drops below the composition floor).
+export default function ModelCriteriaPage() {
   const { orgId } = useOrganization()
-  const tNav = useTranslations("dashboard.nav")
-  usePageTitle(tNav("model"))
-  return <ModelEditor orgId={orgId} withAiReview removalFloor={MIN_CRITERIA} />
+  const t = useTranslations("dashboard.model.tabs")
+  const tHelp = useTranslations("dashboard.help")
+  usePageTitle(t("criteria"))
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-1.5">
+        <h2 className="font-medium text-lg">{t("criteria")}</h2>
+        <HelpMorphButton label={tHelp("criterionLabel")}>
+          {tHelp("criterionBody")}
+        </HelpMorphButton>
+      </div>
+      <ModelBuilder orgId={orgId} phase="define" removalFloor={MIN_CRITERIA} />
+    </div>
+  )
 }

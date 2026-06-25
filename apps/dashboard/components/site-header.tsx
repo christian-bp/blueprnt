@@ -5,6 +5,7 @@ import { SidebarTrigger } from "@workspace/ui/components/sidebar"
 import { useTranslations } from "next-intl"
 import { usePathname } from "next/navigation"
 import { AdminTabs } from "@/components/admin/admin-tabs"
+import { ModelTabs } from "@/components/model/model-tabs"
 import { SectionTabs } from "@/components/section-tabs"
 
 export function SiteHeader() {
@@ -13,11 +14,13 @@ export function SiteHeader() {
 
   const [section] = pathname.split("/").filter(Boolean)
 
-  // The header carries the section identity: the Work section (/work, /roles)
-  // gets switchable tabs; the other top-level sections get a plain title.
+  // The header carries the section identity: the Work section (/work, /roles),
+  // the Admin section, and the Model section (/model, /model/weighting) get
+  // switchable tabs; the other top-level sections get a plain title.
   const inWorkSection = section === "work" || section === "roles"
   const inAdminSection = section === "admin"
-  const sectionTitle = section === "model" ? t("nav.model") : t("nav.home")
+  const inModelSection = section === "model"
+  const sectionTitle = t("nav.home")
 
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
@@ -36,6 +39,8 @@ export function SiteHeader() {
           <SectionTabs />
         ) : inAdminSection ? (
           <AdminTabs />
+        ) : inModelSection ? (
+          <ModelTabs />
         ) : (
           <span className="font-medium text-sm">{sectionTitle}</span>
         )}

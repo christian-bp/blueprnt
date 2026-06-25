@@ -27,7 +27,7 @@ En sak en roll värderas på (t.ex. Scope & Påverkan, Komplexitet, Finansiellt 
 _Undvik_: Faktor ("faktor" finns i källdokumenten; "kriterium" är kanoniskt, "faktor" är alias)
 
 **Ankare** *(kod: Anchor)*:
-Texten som beskriver vad varje poäng 0–5 betyder för ett kriterium (t.ex. Autonomi 1 = "följer instruktioner", 5 = "sätter riktning för andra funktioner"). Konfigurerbar per kriterium. Kanonisk term i tal och kod är **ankare** (fältet `criteria.anchors`); i UI heter kriteriets texter "bedömningsnivå" (de sex nivåerna 0 till 5), så att numreringen läses som skalans position. Obs: detta `nivå` är kriteriets 0–5-skala och är INTE samma som individens senioritetsnivå inom ett track (V2-term, ADR-0005).
+Texten som beskriver vad varje poäng 0–5 betyder för ett kriterium (t.ex. Autonomi 1 = "följer instruktioner", 5 = "sätter riktning för andra funktioner"). Konfigurerbar per kriterium. Kanonisk term i tal och kod är **ankare** (fältet `criteria.anchors`); i UI heter kriteriets texter "bedömningsskala" (de sex nivåerna 0 till 5; tidigare "bedömningsnivå", omdöpt 2026-06-24), så att de läses som skalan för HUR en roll bedöms och inte förväxlas med kriteriets VIKT (1–5 viktpoäng) i viktningssteget. Modellbyggaren håller dessa isär i två steg: "Definiera" (bedömningsskalan) och "Vikta" (viktpoängen), som aldrig visas samtidigt. Obs: denna 0–5-skala är kriteriets bedömningsskala och är INTE samma som individens senioritetsnivå inom ett track (V2-term, ADR-0005).
 _Undvik_: Ankarroll (en annan sak, se Värdering), Skalbeskrivning
 
 **Viktpoäng** *(kod: Weight points)*:
