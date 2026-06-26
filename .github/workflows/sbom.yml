@@ -1,4 +1,4 @@
-name: SBOM
+name: "📦 Supply Chain: SBOM"
 
 on:
   push:

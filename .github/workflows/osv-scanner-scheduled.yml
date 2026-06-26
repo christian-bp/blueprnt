@@ -1,7 +1,7 @@
 # Full repository vulnerability scan weekly and on pushes to main. Uploads SARIF
 # to GitHub Security > Code Scanning. NOTE: on a private repo, SARIF upload needs
 # GitHub Advanced Security; if not enabled, add `with: { upload-sarif: false }`.
-name: OSV-Scanner Scheduled Scan
+name: "🛡️ Security: CVE Scan (Scheduled)"
 
 on:
   schedule:

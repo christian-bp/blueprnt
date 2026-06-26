@@ -1,4 +1,4 @@
-name: Renovate
+name: "📦 Supply Chain: Dependencies"
 
 on:
   schedule:
