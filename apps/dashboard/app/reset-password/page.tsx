@@ -30,6 +30,17 @@ import {
 import { authClient } from "@/lib/auth-client"
 import { usePageTitle } from "@/hooks/use-page-title"
 
+// Better Auth's haveIBeenPwned plugin rejects a breached password with a 400
+// carrying code "PASSWORD_COMPROMISED"; surface a specific message for it.
+function isPasswordCompromised(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: unknown }).code === "PASSWORD_COMPROMISED"
+  )
+}
+
 function ResetPasswordForm() {
   const t = useTranslations("dashboard.auth.resetPassword")
   const tApp = useTranslations("dashboard")
@@ -38,7 +49,7 @@ function ResetPasswordForm() {
   const router = useRouter()
   const params = useSearchParams()
   const token = params.get("token")
-  const [error, setError] = useState(false)
+  const [error, setError] = useState<"generic" | "compromised" | null>(null)
 
   const schema = useMemo(() => makeResetPasswordSchema(tv), [tv])
   const form = useForm<ResetPasswordValues>({
@@ -49,19 +60,19 @@ function ResetPasswordForm() {
 
   async function onSubmit(values: ResetPasswordValues) {
     if (token === null) return
-    setError(false)
+    setError(null)
     try {
       const { error: resetError } = await authClient.resetPassword({
         newPassword: values.password,
         token,
       })
       if (resetError) {
-        setError(true)
+        setError(isPasswordCompromised(resetError) ? "compromised" : "generic")
         return
       }
       router.push("/")
     } catch {
-      setError(true)
+      setError("generic")
     }
   }
 
@@ -100,7 +111,7 @@ function ResetPasswordForm() {
                   />
                   {error && (
                     <p role="alert" className="text-destructive text-sm">
-                      {t("error")}
+                      {t(error === "compromised" ? "compromised" : "error")}
                     </p>
                   )}
                   <SubmitButton

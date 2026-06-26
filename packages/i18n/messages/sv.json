@@ -455,7 +455,8 @@
         "passwordLabel": "Nytt lösenord",
         "cta": "Spara lösenord",
         "missingToken": "Länken är ogiltig eller har gått ut. Be en administratör skicka inbjudan igen.",
-        "error": "Något gick fel. Försök igen."
+        "error": "Något gick fel. Försök igen.",
+        "compromised": "Det här lösenordet har förekommit i en dataläcka. Välj ett annat."
       },
       "error": "Något gick fel. Försök igen.",
       "rateLimited": "För många inloggningsförsök. Vänta en minut och försök igen.",

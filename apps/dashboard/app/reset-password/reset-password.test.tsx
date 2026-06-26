@@ -13,7 +13,9 @@ import en from "@workspace/i18n/messages/en.json"
 // stub both so we can exercise the client-side validation in isolation.
 const { resetPassword, push } = vi.hoisted(() => ({
   resetPassword: vi.fn(
-    async (): Promise<{ error: { message: string } | null }> => ({
+    async (): Promise<{
+      error: { message: string; code?: string } | null
+    }> => ({
       error: null,
     })
   ),
@@ -94,6 +96,23 @@ describe("ResetPasswordPage", () => {
     await waitFor(() => {
       expect(
         screen.getByText(en.dashboard.auth.resetPassword.error)
+      ).toBeDefined()
+      expect(push).not.toHaveBeenCalled()
+    })
+  })
+
+  it("shows the compromised-password message when the password is breached", async () => {
+    resetPassword.mockResolvedValue({
+      error: { message: "compromised", code: "PASSWORD_COMPROMISED" },
+    })
+    renderPage()
+    fireEvent.change(screen.getByLabelText(passwordLabel), {
+      target: { value: "longeno8" },
+    })
+    submit()
+    await waitFor(() => {
+      expect(
+        screen.getByText(en.dashboard.auth.resetPassword.compromised)
       ).toBeDefined()
       expect(push).not.toHaveBeenCalled()
     })

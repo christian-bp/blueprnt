@@ -455,7 +455,8 @@
         "passwordLabel": "Uusi salasana",
         "cta": "Tallenna salasana",
         "missingToken": "Linkki on virheellinen tai vanhentunut. Pyydä järjestelmänvalvojaa lähettämään kutsu uudelleen.",
-        "error": "Jokin meni pieleen. Yritä uudelleen."
+        "error": "Jokin meni pieleen. Yritä uudelleen.",
+        "compromised": "Tämä salasana on esiintynyt tietomurrossa. Valitse toinen."
       },
       "error": "Jokin meni pieleen. Yritä uudelleen.",
       "rateLimited": "Liian monta kirjautumisyritystä. Odota hetki ja yritä uudelleen.",

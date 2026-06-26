@@ -455,7 +455,8 @@
         "passwordLabel": "New password",
         "cta": "Set password",
         "missingToken": "This link is invalid or has expired. Ask an administrator to resend your invitation.",
-        "error": "Something went wrong. Try again."
+        "error": "Something went wrong. Try again.",
+        "compromised": "This password has appeared in a data breach. Please choose a different one."
       },
       "error": "Something went wrong. Please try again.",
       "rateLimited": "Too many sign-in attempts. Please wait a minute and try again.",

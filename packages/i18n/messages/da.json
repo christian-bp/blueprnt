@@ -455,7 +455,8 @@
         "passwordLabel": "Ny adgangskode",
         "cta": "Gem adgangskode",
         "missingToken": "Linket er ugyldigt eller udløbet. Bed en administrator om at sende invitationen igen.",
-        "error": "Noget gik galt. Prøv igen."
+        "error": "Noget gik galt. Prøv igen.",
+        "compromised": "Denne adgangskode er forekommet i et databrud. Vælg en anden."
       },
       "error": "Noget gik galt. Prøv igen.",
       "rateLimited": "For mange loginforsøg. Vent et minut, og prøv igen.",

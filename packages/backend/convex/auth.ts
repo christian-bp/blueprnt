@@ -6,7 +6,7 @@ import {
 import { convex } from "@convex-dev/better-auth/plugins"
 import { requireRunMutationCtx } from "@convex-dev/better-auth/utils"
 import { type BetterAuthOptions, betterAuth } from "better-auth/minimal"
-import { organization, twoFactor } from "better-auth/plugins"
+import { haveIBeenPwned, organization, twoFactor } from "better-auth/plugins"
 import { components, internal } from "./_generated/api"
 import type { DataModel } from "./_generated/dataModel"
 import authConfig from "./auth.config"
@@ -231,6 +231,14 @@ export const createAuthOptions = (
           },
         },
       }),
+      // Reject passwords found in the Have I Been Pwned breach corpus at
+      // set/reset time (NIST 800-63B's recommended control over composition
+      // rules: a never-leaked short password beats a complex breached one).
+      // k-anonymity: only a 5-char SHA-1 prefix is sent to the HIBP range API,
+      // never the password or any PII. On a hit it rejects with a 400 carrying
+      // code "PASSWORD_COMPROMISED"; the frontend translates it, so no
+      // hardcoded message here. Default paths cover /reset-password.
+      haveIBeenPwned(),
       convex({ authConfig }),
     ],
   } satisfies BetterAuthOptions
