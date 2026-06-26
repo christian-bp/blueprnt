@@ -7,6 +7,10 @@ import {
 } from "./templates/invitation"
 import { ResetPasswordEmail } from "./templates/reset-password"
 import { WelcomeEmail } from "./templates/welcome"
+import {
+  TwoFactorCodeEmail,
+  type TwoFactorCodeEmailProps,
+} from "./templates/two-factor-code"
 
 // The template-key set is owned by @workspace/constants (the single source the
 // backend validators and the admin-log UI also derive from); re-exported here so
@@ -28,6 +32,7 @@ export type EmailProps = {
   invitation: InvitationEmailProps
   resetPassword: LinkEmailProps
   welcome: LinkEmailProps
+  twoFactorCode: TwoFactorCodeEmailProps
 }
 
 export async function renderEmail<K extends EmailTemplateKey>(
@@ -52,6 +57,15 @@ export async function renderEmail<K extends EmailTemplateKey>(
       const element = WelcomeEmail(props as LinkEmailProps)
       return {
         subject: m.welcome.subject,
+        html: await render(element),
+        text: await render(element, { plainText: true }),
+      }
+    }
+    case "twoFactorCode": {
+      const p = props as TwoFactorCodeEmailProps
+      const element = TwoFactorCodeEmail(p)
+      return {
+        subject: m.twoFactorCode.subject,
         html: await render(element),
         text: await render(element, { plainText: true }),
       }

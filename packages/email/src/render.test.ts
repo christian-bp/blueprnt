@@ -80,4 +80,26 @@ describe("renderEmail", () => {
     expect(invite.html).toContain("expecting this invitation")
     expect(invite.html).toMatch(/#eb3e5d[^>]*>\s*Acme/)
   })
+
+  it("renders the two-factor code email with the code and branded layout", async () => {
+    const result = await renderEmail("twoFactorCode", {
+      code: "123456",
+      email: "user@example.com",
+      locale: "en",
+    })
+    expect(result.subject).toBe("Your blueprnt verification code")
+    expect(result.html).toContain("123456")
+    expect(result.html).toContain("/email/blueprnt-wordmark.png")
+    expect(result.text).toContain("123456")
+  })
+
+  it("renders the two-factor code email in Swedish", async () => {
+    const result = await renderEmail("twoFactorCode", {
+      code: "654321",
+      email: "user@example.com",
+      locale: "sv",
+    })
+    expect(result.subject).not.toBe("Your blueprnt verification code")
+    expect(result.html).toContain("654321")
+  })
 })
