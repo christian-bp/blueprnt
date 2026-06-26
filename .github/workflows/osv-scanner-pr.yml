@@ -1,0 +1,18 @@
+# Scans each PR and annotates ONLY vulnerabilities the PR newly introduces
+# (diffs the base branch against the PR branch). Reads the root bun.lock
+# statically via the default scan-args "-r ./". Pinned to the current action
+# tag v2.3.8 (the osv-scanner-action repo is versioned separately from the CLI).
+name: OSV-Scanner PR Scan
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
+jobs:
+  scan-pr:
+    uses: "google/osv-scanner-action/.github/workflows/osv-scanner-reusable-pr.yml@v2.3.8"
