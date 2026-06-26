@@ -6,9 +6,10 @@
 //
 // Full database reset: run from the repo root with `bun db:reset` (or from
 // packages/backend with `bunx convex run seed:resetDatabase`). Everything is
-// deleted, then the dev user, the onboarded+rated Blueprnt AB company, and the
-// bare Blueprnt Nordic AB company are re-seeded. The signed-in browser session
-// dies (sign in again with the seeded user, hej@blueprnt.se / abc123). To test
+// deleted, then the two team accounts (Karl + Christian, the same as
+// seedProduction), the onboarded+rated Blueprnt AB company, and the bare Blueprnt
+// Nordic AB company are re-seeded. The signed-in browser session dies (sign in
+// again with a seeded account, e.g. karl@blueprnt.se / abc123). To test
 // onboarding, switch to Blueprnt Nordic AB (left intentionally un-onboarded).
 import { v } from "convex/values"
 import { hashPassword } from "better-auth/crypto"
@@ -136,15 +137,23 @@ async function seedDemoCompaniesForUser(
   return results
 }
 
-// The production team accounts seeded into a fresh deployment (pre-launch). Both
-// are platform admins (V1 bootstrap so they reach /admin without an out-of-band
-// grant) and members of the seeded demo orgs. They sign in with the bootstrap
-// password, then enrol in REAL email 2FA (the OTP goes to these real inboxes;
-// there is no 2FA exemption). Throwaway scaffolding, removed before go-live.
-const SEED_PRODUCTION_USERS = [
+// The team accounts seeded into a fresh deployment, used by BOTH the dev reset
+// and seedProduction so the two environments match. Both are platform admins (V1
+// bootstrap so they reach /admin without an out-of-band grant) and members of
+// the seeded demo orgs. They sign in with the seed password, then enrol in real
+// email 2FA: in prod the OTP goes to these real inboxes; locally it is printed to
+// the dev console (sendOTP logs it when NODE_ENV !== "production"). There is no
+// 2FA exemption. Throwaway scaffolding, removed before go-live.
+const SEED_TEAM_USERS = [
   { email: "karl@blueprnt.se", name: "Karl Stolt" },
   { email: "christian@blueprnt.se", name: "Christian Ek" },
 ] as const
+
+// The local-dev password for the seeded team accounts (sign in with any
+// SEED_TEAM_USERS email + this). Dev only; production uses the password passed to
+// seedProduction. The dev seed inserts the hash directly, so Better Auth's
+// minimum-length endpoint check does not apply.
+const DEV_PASSWORD = "abc123"
 
 // Adds an already-provisioned user as an admin member of every seeded org (the
 // orgs must already exist via seedDemoCompaniesForUser). insertOrganization is
@@ -169,6 +178,45 @@ async function addUserToSeededOrganizations(
   }
 }
 
+// Creates every SEED_TEAM_USERS account with the given password hash (each
+// flagged platform admin), then seeds the demo companies for the first account
+// and adds the rest as members of the same orgs so the whole team shares them.
+// Shared by the dev reset and seedProduction; the caller owns the wipe and the
+// guard. Returns the created Better Auth user ids.
+//
+// PRE-LAUNCH BOOTSTRAP: the platform-admin flag lets the founders reach /admin
+// without an out-of-band grant while we build V1. At real go-live this whole
+// surface is deleted and platform admins are granted via
+// internal.platform.bootstrap.grantPlatformAdminByEmail instead.
+async function seedTeamAccounts(
+  ctx: ActionCtx,
+  passwordHash: string
+): Promise<string[]> {
+  // Direct component inserts bypass the Better Auth triggers, so each app-side
+  // users row is mirrored explicitly.
+  const userIds: string[] = []
+  for (const u of SEED_TEAM_USERS) {
+    const result = await ctx.runMutation(
+      components.betterAuth.seed.insertCredentialUser,
+      { email: u.email, name: u.name, passwordHash }
+    )
+    await ctx.runMutation(internal.accounts.mirrors.mirrorSeededUser, {
+      authId: result.userId,
+      email: u.email,
+      name: u.name,
+      isPlatformAdmin: true,
+    })
+    userIds.push(result.userId)
+  }
+
+  const [first, ...rest] = SEED_TEAM_USERS
+  await seedDemoCompaniesForUser(ctx, first.email)
+  for (const u of rest) {
+    await addUserToSeededOrganizations(ctx, u.email)
+  }
+  return userIds
+}
+
 // TODO(go-live): remove this action (and this whole wipe-capable surface)
 // before real customer data exists; tracked in packages/backend/README.md
 // under "Before go-live".
@@ -178,12 +226,11 @@ async function addUserToSeededOrganizations(
 // localhost-guarded, so this internalAction (never callable from clients)
 // is the admin path to a clean demo state: it wipes EVERY app table and
 // EVERY Better Auth table (except jwks) on the target deployment, then
-// creates the two team accounts (SEED_PRODUCTION_USERS) and seeds the same demo
-// companies as a dev reset (Blueprnt AB rated + Blueprnt Nordic AB bare), with
-// both founders as members. The destructive step is gated by the confirm
-// sentinel instead of a hostname guard, and the password hash is computed BEFORE
-// the wipe so nothing can fail after the data is gone. Run from packages/backend
-// with:
+// creates the team accounts (SEED_TEAM_USERS) and seeds the same demo companies
+// as a dev reset (Blueprnt AB rated + Blueprnt Nordic AB bare), with both
+// founders as members. The destructive step is gated by the confirm sentinel
+// instead of a hostname guard, and the password hash is computed BEFORE the wipe
+// so nothing can fail after the data is gone. Run from packages/backend with:
 //   bunx convex run seed:seedProduction '{"password":"...","confirm":"wipe-and-seed"}' --prod
 export const seedProduction = internalAction({
   args: {
@@ -207,39 +254,8 @@ export const seedProduction = internalAction({
     // still intact. Both accounts share this bootstrap password; each then
     // enrols in real email 2FA on first sign-in.
     const passwordHash = await hashPassword(password)
-
     await wipeAllData(ctx)
-
-    // Create both team accounts. Direct component inserts bypass the Better Auth
-    // triggers, so each app-side users row is mirrored explicitly. PRE-LAUNCH
-    // BOOTSTRAP: both are flagged platform admin so the founders reach /admin
-    // without an out-of-band grant while we build V1. seedProduction as a whole
-    // is throwaway scaffolding: at real go-live it is deleted, and platform
-    // admins are granted via internal.platform.bootstrap.grantPlatformAdminByEmail.
-    const userIds: string[] = []
-    for (const u of SEED_PRODUCTION_USERS) {
-      const result = await ctx.runMutation(
-        components.betterAuth.seed.insertCredentialUser,
-        { email: u.email, name: u.name, passwordHash }
-      )
-      await ctx.runMutation(internal.accounts.mirrors.mirrorSeededUser, {
-        authId: result.userId,
-        email: u.email,
-        name: u.name,
-        isPlatformAdmin: true,
-      })
-      userIds.push(result.userId)
-    }
-
-    // Seed the demo companies for the first account (creates the orgs +
-    // settings/model/roles + its membership), then add the rest as members of
-    // the same orgs so the whole team shares them.
-    const [first, ...rest] = SEED_PRODUCTION_USERS
-    await seedDemoCompaniesForUser(ctx, first.email)
-    for (const u of rest) {
-      await addUserToSeededOrganizations(ctx, u.email)
-    }
-
+    const userIds = await seedTeamAccounts(ctx, passwordHash)
     return { userIds }
   },
 })
@@ -390,29 +406,24 @@ function assertResettable(actionName: string) {
   }
 }
 
-// Wipe everything, then re-seed the dev user (defaults hej@blueprnt.se / abc123
-// / "Hej"). Shared by both reset variants.
-async function wipeAndSeedDevUser(ctx: ActionCtx): Promise<string> {
-  await wipeAllData(ctx)
-  const result: { userId: string; created: boolean } = await ctx.runAction(
-    internal.seed.seedDevUser,
-    {}
-  )
-  return result.userId
-}
-
 // Dev-only full reset: wipes every app table and every Better Auth table (except
-// jwks), re-seeds the dev user, then seeds the onboarded+rated Blueprnt AB
-// company and the bare Blueprnt Nordic AB company. Sign-in lands on Blueprnt AB's
-// populated dashboard; switch to Blueprnt Nordic AB to test onboarding (it is
-// intentionally left un-onboarded). Run from the repo root with `bun db:reset`.
+// jwks), then re-seeds the SAME team accounts as production (Karl + Christian,
+// password DEV_PASSWORD) and the demo companies (Blueprnt AB rated + Blueprnt
+// Nordic AB bare), with both founders as members. Sign-in (e.g. karl@blueprnt.se
+// / abc123) lands on Blueprnt AB's populated dashboard, then the mandatory 2FA
+// setup (read the OTP from the dev console); switch to Blueprnt Nordic AB to test
+// onboarding (it is intentionally left un-onboarded). Run from the repo root with
+// `bun db:reset`.
 export const resetDatabase = internalAction({
   args: {},
-  returns: v.object({ userId: v.string() }),
+  returns: v.object({ userIds: v.array(v.string()) }),
   handler: async (ctx) => {
     assertResettable("resetDatabase")
-    const userId = await wipeAndSeedDevUser(ctx)
-    await ctx.runAction(internal.seed.seedDevOrganization, {})
-    return { userId }
+    await wipeAllData(ctx)
+    const userIds = await seedTeamAccounts(
+      ctx,
+      await hashPassword(DEV_PASSWORD)
+    )
+    return { userIds }
   },
 })
