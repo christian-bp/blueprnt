@@ -1,0 +1,29 @@
+.github/workflows/ci.yml
+  s_8002f078352748::t_f6b8064df4d6b6 1
+.github/workflows/sbom.yml
+  s_8002f078352748::t_af67e0219b0269 1
+.github/workflows/osv-scanner-scheduled.yml
+  s_8002f078352748::t_46d8d69f6180e0 4
+.github/workflows/renovate.yml
+  s_8002f078352748::t_fb5a6e5d4231fa 1
+.github/workflows/secret-scan.yml
+  s_8002f078352748::t_f0f4ebdfaa19e2 1
+.github/workflows/osv-scanner-pr.yml
+  s_8002f078352748::t_4e2052fdd7a0e9 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "66bb19fbff317adf131b2cd805b4ab7cf4431be4",
+  "prompts": {},
+  "sessions": {
+    "s_8002f078352748": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b9696e04-1bda-40df-a239-db86813d4e7a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
