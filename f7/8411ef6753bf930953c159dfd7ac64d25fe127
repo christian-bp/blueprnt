@@ -1,0 +1,20 @@
+packages/backend/convex/auth.ts
+  s_8002f078352748::t_8995380d4ebfb0 146-169
+  s_8002f078352748::t_9deaf60b99ab1e 105-109
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "f78411ef6753bf930953c159dfd7ac64d25fe127",
+  "prompts": {},
+  "sessions": {
+    "s_8002f078352748": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b9696e04-1bda-40df-a239-db86813d4e7a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
