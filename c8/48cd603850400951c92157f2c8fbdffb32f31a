@@ -1,0 +1,22 @@
+renovate.json
+  s_8002f078352748::t_b0d9a77f246f31 3
+  s_8002f078352748::t_ce467764253c15 1-2,4-34
+.github/workflows/renovate.yml
+  s_8002f078352748::t_a7e057d75c3035 1-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "c848cd603850400951c92157f2c8fbdffb32f31a",
+  "prompts": {},
+  "sessions": {
+    "s_8002f078352748": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b9696e04-1bda-40df-a239-db86813d4e7a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
