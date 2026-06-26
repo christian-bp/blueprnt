@@ -1,0 +1,21 @@
+.github/workflows/osv-scanner-scheduled.yml
+  s_8002f078352748::t_0c55ce369e9d1c 1-19
+.github/workflows/osv-scanner-pr.yml
+  s_8002f078352748::t_9605ae864741e7 1-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "3872b540e96585b7ca1be644e8af74215845268a",
+  "prompts": {},
+  "sessions": {
+    "s_8002f078352748": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b9696e04-1bda-40df-a239-db86813d4e7a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
