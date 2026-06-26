@@ -29,6 +29,12 @@
       "cta": "Velg passordet ditt",
       "note": "Hvis du ikke ventet dette, kan du ignorere denne e-posten."
     },
+    "twoFactorCode": {
+      "subject": "Din verifiseringskode for blueprnt",
+      "heading": "Bekreft at det er deg",
+      "body": "Skriv inn denne koden for å fullføre innloggingen på blueprnt:",
+      "note": "Koden utløper snart. Hvis du ikke prøvde å logge inn, kan du ignorere denne e-posten, og kontoen din forblir sikker."
+    },
     "footer": {
       "copyright": "© {year} blueprnt",
       "tagline": "Jobbarkitekturen som skaper verdi."
@@ -452,7 +458,54 @@
         "error": "Noe gikk galt. Prøv igjen."
       },
       "error": "Noe gikk galt. Prøv igjen.",
-      "rateLimited": "For mange innloggingsforsøk. Vent ett minutt og prøv igjen."
+      "rateLimited": "For mange innloggingsforsøk. Vent ett minutt og prøv igjen.",
+      "twoFactor": {
+        "title": "Bekreft at det er deg",
+        "totpPrompt": "Skriv inn den 6-sifrede koden fra autentiseringsappen.",
+        "emailPrompt": "Vi sendte en 6-sifret kode til e-posten din. Skriv den inn nedenfor.",
+        "codeLabel": "6-sifret kode",
+        "cta": "Bekreft",
+        "useEmail": "Send meg en kode på e-post i stedet",
+        "useAuthenticator": "Bruk autentiseringsappen i stedet",
+        "resend": "Fikk du ingen kode? Send på nytt",
+        "error": "Koden fungerte ikke. Prøv igjen."
+      }
+    },
+    "twoFactorSetup": {
+      "heading": "Sikre kontoen din",
+      "intro": "Tostegsbekreftelse er påkrevd. Velg hvordan du vil bekrefte at det er deg når du logger inn.",
+      "methodTotp": {
+        "label": "Autentiseringsapp",
+        "description": "Bruk en app som Google Authenticator eller 1Password. Anbefales."
+      },
+      "methodEmail": {
+        "label": "E-postkoder",
+        "description": "Vi sender deg en kode på e-post hver gang du logger inn."
+      },
+      "continue": "Fortsett",
+      "password": {
+        "heading": "Bekreft passordet ditt",
+        "description": "Skriv inn passordet ditt på nytt for å slå på tostegsbekreftelse.",
+        "label": "Passord",
+        "cta": "Slå på",
+        "error": "Passordet er feil. Prøv igjen."
+      },
+      "totp": {
+        "heading": "Skann QR-koden",
+        "description": "Skann den med autentiseringsappen, og skriv deretter inn den 6-sifrede koden som vises.",
+        "manualKey": "Kan du ikke skanne? Skriv inn denne nøkkelen manuelt:",
+        "qrAlt": "QR-kode for autentiseringsappen"
+      },
+      "email": {
+        "heading": "Sjekk e-posten din",
+        "description": "Vi sendte en 6-sifret kode til {email}. Skriv den inn nedenfor.",
+        "resend": "Send koden på nytt",
+        "resent": "En ny kode er på vei."
+      },
+      "codeLabel": "6-sifret kode",
+      "verify": "Bekreft",
+      "verifyError": "Koden fungerte ikke. Prøv igjen.",
+      "changeMethod": "Velg en annen metode"
     },
     "onboarding": {
       "accountMenu": "Kontomeny",
@@ -647,7 +700,9 @@
       "pendingBandLabel": "Hvorfor har en rolle ikke band ennå?",
       "pendingBandBody": "En rolle får band først når alle kriterier er vurdert. Inntil vurderingen er fullført har den ingen vekting og intet band, så den venter i denne listen.",
       "contributionLabel": "Hva viser søylene og prosentene?",
-      "contributionBody": "Prosenten er hvert kriteriums andel av rollens totale vekting (din vurdering ganger kriteriets vekt i modellen), så kriteriene summerer til 100 %. Søylene skaleres etter det største bidraget, så den øverste fyller raden."
+      "contributionBody": "Prosenten er hvert kriteriums andel av rollens totale vekting (din vurdering ganger kriteriets vekt i modellen), så kriteriene summerer til 100 %. Søylene skaleres etter det største bidraget, så den øverste fyller raden.",
+      "twoFactorLabel": "Hva er tostegsbekreftelse?",
+      "twoFactorBody": "Tostegsbekreftelse legger til en ekstra kontroll når du logger inn, i tillegg til passordet: en kode fra en autentiseringsapp eller sendt til e-posten din. Et stjålet passord alene kan da ikke åpne kontoen din. Det kreves for alle på blueprnt."
     },
     "admin": {
       "tabs": {

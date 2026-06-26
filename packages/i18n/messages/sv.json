@@ -29,6 +29,12 @@
       "cta": "Välj ditt lösenord",
       "note": "Om du inte väntade dig detta kan du ignorera det här mejlet."
     },
+    "twoFactorCode": {
+      "subject": "Din verifieringskod för blueprnt",
+      "heading": "Verifiera att det är du",
+      "body": "Ange den här koden för att slutföra inloggningen på blueprnt:",
+      "note": "Koden upphör snart. Om du inte försökte logga in kan du ignorera detta mejl och ditt konto förblir säkert."
+    },
     "footer": {
       "copyright": "© {year} blueprnt",
       "tagline": "Jobbarkitekturen som skapar värde."
@@ -452,7 +458,54 @@
         "error": "Något gick fel. Försök igen."
       },
       "error": "Något gick fel. Försök igen.",
-      "rateLimited": "För många inloggningsförsök. Vänta en minut och försök igen."
+      "rateLimited": "För många inloggningsförsök. Vänta en minut och försök igen.",
+      "twoFactor": {
+        "title": "Verifiera att det är du",
+        "totpPrompt": "Ange den 6-siffriga koden från din autentiseringsapp.",
+        "emailPrompt": "Vi har skickat en 6-siffrig kod till din e-post. Ange den nedan.",
+        "codeLabel": "6-siffrig kod",
+        "cta": "Verifiera",
+        "useEmail": "Skicka en kod till min e-post i stället",
+        "useAuthenticator": "Använd din autentiseringsapp i stället",
+        "resend": "Fick du ingen kod? Skicka igen",
+        "error": "Koden fungerade inte. Försök igen."
+      }
+    },
+    "twoFactorSetup": {
+      "heading": "Säkra ditt konto",
+      "intro": "Tvåstegsverifiering krävs. Välj hur du vill bekräfta att det är du när du loggar in.",
+      "methodTotp": {
+        "label": "Autentiseringsapp",
+        "description": "Använd en app som Google Authenticator eller 1Password. Rekommenderas."
+      },
+      "methodEmail": {
+        "label": "E-postkoder",
+        "description": "Vi mejlar dig en kod varje gång du loggar in."
+      },
+      "continue": "Fortsätt",
+      "password": {
+        "heading": "Bekräfta ditt lösenord",
+        "description": "Ange ditt lösenord igen för att aktivera tvåstegsverifiering.",
+        "label": "Lösenord",
+        "cta": "Aktivera",
+        "error": "Lösenordet är felaktigt. Försök igen."
+      },
+      "totp": {
+        "heading": "Skanna QR-koden",
+        "description": "Skanna den med din autentiseringsapp och ange sedan den 6-siffriga koden som visas.",
+        "manualKey": "Kan du inte skanna? Ange den här nyckeln manuellt:",
+        "qrAlt": "QR-kod för din autentiseringsapp"
+      },
+      "email": {
+        "heading": "Kolla din e-post",
+        "description": "Vi har skickat en 6-siffrig kod till {email}. Ange den nedan.",
+        "resend": "Skicka koden igen",
+        "resent": "En ny kod är på väg."
+      },
+      "codeLabel": "6-siffrig kod",
+      "verify": "Verifiera",
+      "verifyError": "Koden fungerade inte. Försök igen.",
+      "changeMethod": "Välj en annan metod"
     },
     "onboarding": {
       "accountMenu": "Kontomeny",
@@ -647,7 +700,9 @@
       "pendingBandLabel": "Varför har en roll inget band ännu?",
       "pendingBandBody": "En roll får ett band först när alla kriterier är bedömda. Tills bedömningen är klar har den ingen viktning och inget band, så den väntar i den här listan.",
       "contributionLabel": "Vad visar staplarna och procenten?",
-      "contributionBody": "Procenten är varje kriteriums andel av rollens totala viktning (din bedömning gånger kriteriets vikt i modellen), så kriterierna summerar till 100 %. Staplarna skalas efter det största bidraget, så den översta fyller raden."
+      "contributionBody": "Procenten är varje kriteriums andel av rollens totala viktning (din bedömning gånger kriteriets vikt i modellen), så kriterierna summerar till 100 %. Staplarna skalas efter det största bidraget, så den översta fyller raden.",
+      "twoFactorLabel": "Vad är tvåstegsverifiering?",
+      "twoFactorBody": "Tvåstegsverifiering lägger till en andra kontroll vid inloggning, utöver ditt lösenord: en kod från en autentiseringsapp eller skickad till din e-post. Ett stulet lösenord ensamt kan då inte öppna ditt konto. Det krävs för alla på blueprnt."
     },
     "admin": {
       "tabs": {

@@ -29,6 +29,12 @@
       "cta": "Set your password",
       "note": "If you weren't expecting this, you can ignore this email."
     },
+    "twoFactorCode": {
+      "subject": "Your blueprnt verification code",
+      "heading": "Verify it's you",
+      "body": "Enter this code to finish signing in to blueprnt:",
+      "note": "This code expires shortly. If you didn't try to sign in, you can ignore this email and your account stays secure."
+    },
     "footer": {
       "copyright": "© {year} blueprnt",
       "tagline": "The job architecture that creates value."
@@ -452,7 +458,54 @@
         "error": "Something went wrong. Try again."
       },
       "error": "Something went wrong. Please try again.",
-      "rateLimited": "Too many sign-in attempts. Please wait a minute and try again."
+      "rateLimited": "Too many sign-in attempts. Please wait a minute and try again.",
+      "twoFactor": {
+        "title": "Verify it's you",
+        "totpPrompt": "Enter the 6-digit code from your authenticator app.",
+        "emailPrompt": "We sent a 6-digit code to your email. Enter it below.",
+        "codeLabel": "6-digit code",
+        "cta": "Verify",
+        "useEmail": "Email me a code instead",
+        "useAuthenticator": "Use your authenticator app instead",
+        "resend": "Didn't receive it? Resend",
+        "error": "That code didn't work. Try again."
+      }
+    },
+    "twoFactorSetup": {
+      "heading": "Secure your account",
+      "intro": "Two-step verification is required. Choose how you'll confirm it's you when you sign in.",
+      "methodTotp": {
+        "label": "Authenticator app",
+        "description": "Use an app like Google Authenticator or 1Password. Recommended."
+      },
+      "methodEmail": {
+        "label": "Email codes",
+        "description": "We email you a code each time you sign in."
+      },
+      "continue": "Continue",
+      "password": {
+        "heading": "Confirm your password",
+        "description": "Re-enter your password to turn on two-step verification.",
+        "label": "Password",
+        "cta": "Turn on",
+        "error": "That password is incorrect. Try again."
+      },
+      "totp": {
+        "heading": "Scan the QR code",
+        "description": "Scan this with your authenticator app, then enter the 6-digit code it shows.",
+        "manualKey": "Can't scan? Enter this key manually:",
+        "qrAlt": "QR code for your authenticator app"
+      },
+      "email": {
+        "heading": "Check your email",
+        "description": "We sent a 6-digit code to {email}. Enter it below.",
+        "resend": "Resend code",
+        "resent": "A new code is on its way."
+      },
+      "codeLabel": "6-digit code",
+      "verify": "Verify",
+      "verifyError": "That code didn't work. Try again.",
+      "changeMethod": "Choose a different method"
     },
     "onboarding": {
       "accountMenu": "Account menu",
@@ -647,7 +700,9 @@
       "pendingBandLabel": "Why does a role have no band yet?",
       "pendingBandBody": "A role gets a band only after every criterion is rated. Until the assessment is complete it has no weighting and no band, so it waits in this list.",
       "contributionLabel": "What do the bars and percentages show?",
-      "contributionBody": "The percentage is each criterion's share of this role's total weighting (your rating times the criterion's weight in the model), so the criteria add up to 100%. The bars are scaled to the biggest contributor, so the top one fills the row."
+      "contributionBody": "The percentage is each criterion's share of this role's total weighting (your rating times the criterion's weight in the model), so the criteria add up to 100%. The bars are scaled to the biggest contributor, so the top one fills the row.",
+      "twoFactorLabel": "What is two-step verification?",
+      "twoFactorBody": "Two-step verification adds a second check when you sign in, on top of your password: a code from an authenticator app or sent to your email. A stolen password alone then can't open your account. It is required for everyone on blueprnt."
     },
     "admin": {
       "tabs": {

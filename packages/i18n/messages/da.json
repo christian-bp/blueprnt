@@ -29,6 +29,12 @@
       "cta": "Vælg din adgangskode",
       "note": "Hvis du ikke forventede dette, kan du ignorere denne e-mail."
     },
+    "twoFactorCode": {
+      "subject": "Din verifikationskode til blueprnt",
+      "heading": "Bekræft, at det er dig",
+      "body": "Indtast denne kode for at fuldføre login på blueprnt:",
+      "note": "Koden udløber snart. Hvis du ikke forsøgte at logge ind, kan du ignorere denne e-mail, og din konto forbliver sikker."
+    },
     "footer": {
       "copyright": "© {year} blueprnt",
       "tagline": "Jobarkitekturen der skaber værdi."
@@ -452,7 +458,54 @@
         "error": "Noget gik galt. Prøv igen."
       },
       "error": "Noget gik galt. Prøv igen.",
-      "rateLimited": "For mange loginforsøg. Vent et minut, og prøv igen."
+      "rateLimited": "For mange loginforsøg. Vent et minut, og prøv igen.",
+      "twoFactor": {
+        "title": "Bekræft, at det er dig",
+        "totpPrompt": "Indtast den 6-cifrede kode fra din godkendelsesapp.",
+        "emailPrompt": "Vi sendte en 6-cifret kode til din e-mail. Indtast den nedenfor.",
+        "codeLabel": "6-cifret kode",
+        "cta": "Bekræft",
+        "useEmail": "Send mig en kode på e-mail i stedet",
+        "useAuthenticator": "Brug din godkendelsesapp i stedet",
+        "resend": "Fik du ingen kode? Send igen",
+        "error": "Koden virkede ikke. Prøv igen."
+      }
+    },
+    "twoFactorSetup": {
+      "heading": "Sikr din konto",
+      "intro": "Totrinsbekræftelse er påkrævet. Vælg, hvordan du vil bekræfte, at det er dig, når du logger ind.",
+      "methodTotp": {
+        "label": "Godkendelsesapp",
+        "description": "Brug en app som Google Authenticator eller 1Password. Anbefales."
+      },
+      "methodEmail": {
+        "label": "E-mailkoder",
+        "description": "Vi sender dig en kode på e-mail, hver gang du logger ind."
+      },
+      "continue": "Fortsæt",
+      "password": {
+        "heading": "Bekræft din adgangskode",
+        "description": "Indtast din adgangskode igen for at slå totrinsbekræftelse til.",
+        "label": "Adgangskode",
+        "cta": "Slå til",
+        "error": "Adgangskoden er forkert. Prøv igen."
+      },
+      "totp": {
+        "heading": "Scan QR-koden",
+        "description": "Scan den med din godkendelsesapp, og indtast derefter den 6-cifrede kode, den viser.",
+        "manualKey": "Kan du ikke scanne? Indtast denne nøgle manuelt:",
+        "qrAlt": "QR-kode til din godkendelsesapp"
+      },
+      "email": {
+        "heading": "Tjek din e-mail",
+        "description": "Vi sendte en 6-cifret kode til {email}. Indtast den nedenfor.",
+        "resend": "Send koden igen",
+        "resent": "En ny kode er på vej."
+      },
+      "codeLabel": "6-cifret kode",
+      "verify": "Bekræft",
+      "verifyError": "Koden virkede ikke. Prøv igen.",
+      "changeMethod": "Vælg en anden metode"
     },
     "onboarding": {
       "accountMenu": "Kontomenu",
@@ -647,7 +700,9 @@
       "pendingBandLabel": "Hvorfor har en rolle endnu intet bånd?",
       "pendingBandBody": "En rolle får først et bånd, når alle kriterier er vurderet. Indtil vurderingen er fuldført har den ingen vægtning og intet bånd, så den venter på denne liste.",
       "contributionLabel": "Hvad viser søjlerne og procenterne?",
-      "contributionBody": "Procenten er hvert kriteriums andel af rollens samlede vægtning (din vurdering gange kriteriets vægt i modellen), så kriterierne summerer til 100 %. Søjlerne skaleres efter det største bidrag, så den øverste fylder rækken."
+      "contributionBody": "Procenten er hvert kriteriums andel af rollens samlede vægtning (din vurdering gange kriteriets vægt i modellen), så kriterierne summerer til 100 %. Søjlerne skaleres efter det største bidrag, så den øverste fylder rækken.",
+      "twoFactorLabel": "Hvad er totrinsbekræftelse?",
+      "twoFactorBody": "Totrinsbekræftelse tilføjer et ekstra tjek, når du logger ind, ud over din adgangskode: en kode fra en godkendelsesapp eller sendt til din e-mail. En stjålet adgangskode alene kan så ikke åbne din konto. Det kræves for alle på blueprnt."
     },
     "admin": {
       "tabs": {
