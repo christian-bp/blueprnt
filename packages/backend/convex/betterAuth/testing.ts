@@ -43,6 +43,26 @@ export const seedMembership = mutation({
   },
 })
 
+// Test-only: provision a user with two-factor already enabled, so app-side
+// tests can exercise the confirm path. Mirrors seedMembership's shape.
+export const seedUserWithTwoFactor = mutation({
+  args: { email: v.string(), name: v.string() },
+  returns: v.object({ userId: v.string() }),
+  handler: async (ctx, { email, name }) => {
+    assertTestEnv()
+    const now = Date.now()
+    const id = await ctx.db.insert("user", {
+      email: email.trim().toLowerCase(),
+      name,
+      emailVerified: true,
+      twoFactorEnabled: true,
+      createdAt: now,
+      updatedAt: now,
+    })
+    return { userId: id.toString() }
+  },
+})
+
 // Test-only: insert a SECOND member row for an existing (org, user) pair to
 // exercise the fail-closed contract. getMembership uses .unique() on the
 // organizationId_userId index, so a duplicate makes it throw, and the

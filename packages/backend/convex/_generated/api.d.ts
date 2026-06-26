@@ -14,6 +14,7 @@ import type * as accounts_mirrors from "../accounts/mirrors.js";
 import type * as accounts_onboarding from "../accounts/onboarding.js";
 import type * as accounts_organization from "../accounts/organization.js";
 import type * as accounts_tables from "../accounts/tables.js";
+import type * as accounts_twoFactor from "../accounts/twoFactor.js";
 import type * as ai_config from "../ai/config.js";
 import type * as ai_generate from "../ai/generate.js";
 import type * as ai_persist from "../ai/persist.js";
@@ -76,6 +77,7 @@ declare const fullApi: ApiFromModules<{
   "accounts/onboarding": typeof accounts_onboarding;
   "accounts/organization": typeof accounts_organization;
   "accounts/tables": typeof accounts_tables;
+  "accounts/twoFactor": typeof accounts_twoFactor;
   "ai/config": typeof ai_config;
   "ai/generate": typeof ai_generate;
   "ai/persist": typeof ai_persist;

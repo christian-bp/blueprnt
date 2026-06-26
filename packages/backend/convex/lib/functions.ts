@@ -181,3 +181,28 @@ export const platformMutation = customMutation(mutation, {
     return { ctx: { authUserId }, args: {} }
   },
 })
+
+// Authenticated but NOT org-scoped: injects ctx.authUserId from the JWT
+// subject. For per-user account state (e.g. 2FA) that is independent of any
+// organization. Mirrors requirePlatformAdmin minus the platform-admin check.
+async function requireAuth(ctx: QueryCtx | MutationCtx): Promise<string> {
+  const identity = await ctx.auth.getUserIdentity()
+  if (identity === null) throw appError(ERROR_CODES.notAuthenticated)
+  return identity.subject
+}
+
+export const authedQuery = customQuery(query, {
+  args: {},
+  input: async (ctx) => {
+    const authUserId = await requireAuth(ctx)
+    return { ctx: { authUserId }, args: {} }
+  },
+})
+
+export const authedMutation = customMutation(mutation, {
+  args: {},
+  input: async (ctx) => {
+    const authUserId = await requireAuth(ctx)
+    return { ctx: { authUserId }, args: {} }
+  },
+})

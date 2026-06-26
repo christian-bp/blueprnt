@@ -49,6 +49,21 @@ export const hasPassword = query({
   },
 })
 
+// True iff Better Auth has two-factor enabled for the user. With
+// skipVerificationOnEnable, twoFactorEnabled is set at enable() (which is
+// password-gated), so this is the security backstop the app uses before
+// stamping its own mfaConfirmedAt marker.
+export const hasTwoFactorEnabled = query({
+  args: { userId: v.string() },
+  returns: v.boolean(),
+  handler: async (ctx, { userId }) => {
+    const id = ctx.db.normalizeId("user", userId)
+    if (id === null) return false
+    const user = await ctx.db.get(id)
+    return user?.twoFactorEnabled === true
+  },
+})
+
 // Idempotent by slug.
 export const provisionOrganization = mutation({
   args: { name: v.string(), slug: v.string() },

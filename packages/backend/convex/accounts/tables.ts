@@ -13,6 +13,12 @@ export const users = defineTable({
   email: v.string(),
   locale: v.optional(v.string()),
   isPlatformAdmin: v.optional(v.boolean()),
+  // Account-level 2FA state (per-person, independent of any org). The method
+  // the user chose; mfaConfirmedAt is the authoritative "setup complete" signal
+  // (Better Auth's twoFactorEnabled flips early under skipVerificationOnEnable).
+  // Removed with the rest of the mirror row on GDPR erasure.
+  mfaMethod: v.optional(v.union(v.literal("totp"), v.literal("email"))),
+  mfaConfirmedAt: v.optional(v.number()),
 })
   .index("by_auth_id", ["authId"])
   // Lookup index for the rare out-of-band bootstrap path that resolves a user
