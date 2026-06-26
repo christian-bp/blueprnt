@@ -1,0 +1,19 @@
+docs/superpowers/specs/2026-06-26-mandatory-2fa-design.md
+  s_c216811bbb1bb1::t_5b38ee322b2062 1-336
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "96e24a166b0ab8945c924913f8e1d4139ceec68f",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
