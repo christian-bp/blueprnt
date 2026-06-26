@@ -16,19 +16,19 @@
   },
   "dependencies": {
     "@react-email/components": "1.0.12",
-    "@react-email/render": "2.0.8",
+    "@react-email/render": "2.0.9",
     "@workspace/constants": "workspace:*",
     "@workspace/i18n": "workspace:*",
     "react": "19.2.7"
   },
   "devDependencies": {
-    "@react-email/ui": "6.6.0",
-    "@types/node": "^25",
+    "@react-email/ui": "6.6.5",
+    "@types/node": "^26",
     "@types/react": "^19",
     "@workspace/typescript-config": "workspace:*",
     "@workspace/vitest-config": "workspace:*",
-    "react-email": "6.6.0",
+    "react-email": "6.6.5",
     "typescript": "^6",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.9"
   }
 }

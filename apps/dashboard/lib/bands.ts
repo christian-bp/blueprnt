@@ -35,7 +35,7 @@ export function bandRanges(
     return {
       band: threshold.band,
       min: threshold.minScore,
-      max: index === 0 ? 100 : prevBand!.minScore - 1,
+      max: prevBand ? prevBand.minScore - 1 : 100,
     }
   })
 }

@@ -8,7 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import { useTranslations } from "next-intl"
 import { CountryDisplay } from "@/components/country-display"
 
 // Reusable country picker over the product's whole country set (Nordic +

@@ -45,10 +45,15 @@ describe("HelpMorphButton", () => {
     )
     fireEvent.click(screen.getByRole("button", { name: "Help label" }))
     expect(screen.getByText("Body text.")).toBeDefined()
-    // Radix attaches its document pointerdown listener in a setTimeout(0),
-    // so the outside click needs a tick after opening.
+    // Radix attaches its document pointerdown listener in a setTimeout(0), so
+    // the outside interaction needs a tick after opening. radix-ui 1.6 also
+    // defers a primary-button outside dismissal to the following click (so a
+    // text-selection drag never closes the layer), so fire the full pointerdown
+    // + click, not pointerdown alone.
     await new Promise((resolve) => setTimeout(resolve, 20))
-    fireEvent.pointerDown(screen.getByRole("button", { name: "elsewhere" }))
+    const elsewhere = screen.getByRole("button", { name: "elsewhere" })
+    fireEvent.pointerDown(elsewhere)
+    fireEvent.click(elsewhere)
     await waitFor(() => {
       expect(screen.queryByText("Body text.")).toBeNull()
     })
