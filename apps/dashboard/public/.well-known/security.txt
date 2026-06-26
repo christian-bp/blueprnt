@@ -1,0 +1,6 @@
+# blueprnt security contact (RFC 9116)
+Contact: mailto:hej@blueprnt.se
+Expires: 2027-06-26T00:00:00.000Z
+Preferred-Languages: en, sv
+# Canonical: https://<production-domain>/.well-known/security.txt
+# Set the Canonical line once the production domain is fixed.
