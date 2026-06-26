@@ -1,0 +1,28 @@
+docs/go-live-checklist.md
+  s_c216811bbb1bb1::t_5dab3aea807566 13-22
+  s_c216811bbb1bb1::t_f4764cdd993a57 1-12,23-47
+docs/superpowers/plans/2026-06-26-mandatory-2fa.md
+  s_c216811bbb1bb1::t_ddbad10c37bd03 849-864,866-868,880-882
+  s_c216811bbb1bb1::t_2fb9ef72bef83b 917
+  s_c216811bbb1bb1::t_fe962b0416983f 35
+  s_c216811bbb1bb1::t_5e9bbe43759781 525-530
+  s_c216811bbb1bb1::t_2b8e2246030b43 734,738-740
+  s_c216811bbb1bb1::t_b945f5f41a9ab8 768-783
+  s_c216811bbb1bb1::t_7d75afaf8c405d 741
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "930a7a484315b7f02ceb92a3e52fb2bc11195250",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
