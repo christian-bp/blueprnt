@@ -1,0 +1,19 @@
+apps/dashboard/next.config.ts
+  s_8002f078352748::t_bc0ed5bbd44e1f 6-49,52-59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "a4efe161020e15e53ec84aada5879a0bcdacea62",
+  "prompts": {},
+  "sessions": {
+    "s_8002f078352748": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b9696e04-1bda-40df-a239-db86813d4e7a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
