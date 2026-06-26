@@ -151,9 +151,9 @@ const SEED_TEAM_USERS = [
 
 // The local-dev password for the seeded team accounts (sign in with any
 // SEED_TEAM_USERS email + this). Dev only; production uses the password passed to
-// seedProduction. The dev seed inserts the hash directly, so Better Auth's
-// minimum-length endpoint check does not apply.
-const DEV_PASSWORD = "abc123"
+// seedProduction. 8 chars so it also satisfies the prod minimum
+// (minPasswordLength 8); the dev seed inserts the hash directly either way.
+const DEV_PASSWORD = "abcd1234"
 
 // Adds an already-provisioned user as an admin member of every seeded org (the
 // orgs must already exist via seedDemoCompaniesForUser). insertOrganization is
