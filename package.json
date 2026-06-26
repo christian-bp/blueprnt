@@ -27,6 +27,8 @@
     "packages/*"
   ],
   "overrides": {
-    "vitest": "4.1.8"
+    "vitest": "4.1.8",
+    "ws": "^8.21.0",
+    "hono": "^4.12.25"
   }
 }
