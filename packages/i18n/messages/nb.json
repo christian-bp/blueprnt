@@ -464,7 +464,6 @@
         "totpPrompt": "Skriv inn den 6-sifrede koden fra autentiseringsappen.",
         "emailPrompt": "Vi sendte en 6-sifret kode til e-posten din. Skriv den inn nedenfor.",
         "codeLabel": "6-sifret kode",
-        "cta": "Bekreft",
         "useEmail": "Send meg en kode på e-post i stedet",
         "useAuthenticator": "Bruk autentiseringsappen i stedet",
         "resend": "Fikk du ingen kode? Send på nytt",
@@ -499,11 +498,9 @@
       "email": {
         "heading": "Sjekk e-posten din",
         "description": "Vi sendte en 6-sifret kode til {email}. Skriv den inn nedenfor.",
-        "resend": "Send koden på nytt",
-        "resent": "En ny kode er på vei."
+        "resend": "Send koden på nytt"
       },
       "codeLabel": "6-sifret kode",
-      "verify": "Bekreft",
       "verifyError": "Koden fungerte ikke. Prøv igjen.",
       "changeMethod": "Velg en annen metode"
     },

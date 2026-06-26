@@ -464,7 +464,6 @@
         "totpPrompt": "Enter the 6-digit code from your authenticator app.",
         "emailPrompt": "We sent a 6-digit code to your email. Enter it below.",
         "codeLabel": "6-digit code",
-        "cta": "Verify",
         "useEmail": "Email me a code instead",
         "useAuthenticator": "Use your authenticator app instead",
         "resend": "Didn't receive it? Resend",
@@ -499,11 +498,9 @@
       "email": {
         "heading": "Check your email",
         "description": "We sent a 6-digit code to {email}. Enter it below.",
-        "resend": "Resend code",
-        "resent": "A new code is on its way."
+        "resend": "Resend code"
       },
       "codeLabel": "6-digit code",
-      "verify": "Verify",
       "verifyError": "That code didn't work. Try again.",
       "changeMethod": "Choose a different method"
     },

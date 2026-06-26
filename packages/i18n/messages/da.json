@@ -464,7 +464,6 @@
         "totpPrompt": "Indtast den 6-cifrede kode fra din godkendelsesapp.",
         "emailPrompt": "Vi sendte en 6-cifret kode til din e-mail. Indtast den nedenfor.",
         "codeLabel": "6-cifret kode",
-        "cta": "Bekræft",
         "useEmail": "Send mig en kode på e-mail i stedet",
         "useAuthenticator": "Brug din godkendelsesapp i stedet",
         "resend": "Fik du ingen kode? Send igen",
@@ -499,11 +498,9 @@
       "email": {
         "heading": "Tjek din e-mail",
         "description": "Vi sendte en 6-cifret kode til {email}. Indtast den nedenfor.",
-        "resend": "Send koden igen",
-        "resent": "En ny kode er på vej."
+        "resend": "Send koden igen"
       },
       "codeLabel": "6-cifret kode",
-      "verify": "Bekræft",
       "verifyError": "Koden virkede ikke. Prøv igen.",
       "changeMethod": "Vælg en anden metode"
     },

@@ -464,7 +464,6 @@
         "totpPrompt": "Anna 6-numeroinen koodi todennussovelluksestasi.",
         "emailPrompt": "Lähetimme 6-numeroisen koodin sähköpostiisi. Anna se alla.",
         "codeLabel": "6-numeroinen koodi",
-        "cta": "Vahvista",
         "useEmail": "Lähetä koodi sähköpostiini sen sijaan",
         "useAuthenticator": "Käytä todennussovellusta sen sijaan",
         "resend": "Etkö saanut koodia? Lähetä uudelleen",
@@ -499,11 +498,9 @@
       "email": {
         "heading": "Tarkista sähköpostisi",
         "description": "Lähetimme 6-numeroisen koodin osoitteeseen {email}. Anna se alla.",
-        "resend": "Lähetä koodi uudelleen",
-        "resent": "Uusi koodi on tulossa."
+        "resend": "Lähetä koodi uudelleen"
       },
       "codeLabel": "6-numeroinen koodi",
-      "verify": "Vahvista",
       "verifyError": "Koodi ei toiminut. Yritä uudelleen.",
       "changeMethod": "Valitse toinen tapa"
     },

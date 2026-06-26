@@ -65,6 +65,8 @@ export const confirmMfaSetup = authedMutation({
       mfaMethod: method,
       mfaConfirmedAt: Date.now(),
     })
+    // No audit row: account-security state is per-user, not org-domain,
+    // so it stays out of the org-scoped audit log (same carve-out as telemetry).
     return null
   },
 })

@@ -464,7 +464,6 @@
         "totpPrompt": "Ange den 6-siffriga koden från din autentiseringsapp.",
         "emailPrompt": "Vi har skickat en 6-siffrig kod till din e-post. Ange den nedan.",
         "codeLabel": "6-siffrig kod",
-        "cta": "Verifiera",
         "useEmail": "Skicka en kod till min e-post i stället",
         "useAuthenticator": "Använd din autentiseringsapp i stället",
         "resend": "Fick du ingen kod? Skicka igen",
@@ -499,11 +498,9 @@
       "email": {
         "heading": "Kolla din e-post",
         "description": "Vi har skickat en 6-siffrig kod till {email}. Ange den nedan.",
-        "resend": "Skicka koden igen",
-        "resent": "En ny kod är på väg."
+        "resend": "Skicka koden igen"
       },
       "codeLabel": "6-siffrig kod",
-      "verify": "Verifiera",
       "verifyError": "Koden fungerade inte. Försök igen.",
       "changeMethod": "Välj en annan metod"
     },
