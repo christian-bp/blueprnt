@@ -49,3 +49,6 @@ next-env.d.ts
 
 # Superpowers brainstorm visual-companion scratch dir
 .superpowers/
+
+# CycloneDX SBOM artifact
+sbom.json
