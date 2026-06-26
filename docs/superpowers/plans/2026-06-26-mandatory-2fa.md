@@ -32,6 +32,7 @@ Copied verbatim from the spec and project rules. Every task's requirements impli
 - **`skipVerificationOnEnable: true`** is required so an email-method user can finish enrollment without ever owning an authenticator (Better Auth's enable flow is otherwise TOTP-centric). Consequence: `user.twoFactorEnabled` becomes true at `enable()`, before the method is confirmed, so the gate keys on our `mfaConfirmedAt`, not on `twoFactorEnabled`.
 - **Re-authentication before enabling 2FA:** the setup flow re-confirms the user's password at the `enable()` step (OWASP/NIST: factor enrollment is high-risk, must not rely on session alone). The password is passed straight to `enable()` and never retained in React state across steps.
 - **No device trust** (`trustDevice` is never passed): the second factor is required on every sign-in.
+- **Pre-launch test affordances (Tasks 3 and 4):** two env-gated conveniences, both tracked in `docs/go-live-checklist.md` for removal at go-live. (1) `sendOTP` logs the real 6-digit code to the Convex console when `NODE_ENV !== "production"` (never on a production build), so local testing needs no inbox. (2) Accounts whose email is in the backend env var `TWO_FACTOR_EXEMPT_EMAILS` (comma-separated) are exempt from mandatory 2FA: `getMyMfaStatus` returns `confirmed: true` for them so the gate passes, and since they never enable 2FA, Better Auth signs them in with just email + password. This is scoped to known test identities (not a guessable global code) and is removed by unsetting the var + deleting the test account.
 - **Audit (deviation from the spec, see Task 4):** the spec proposed an `mfa.enabled` org-scoped audit event. This plan does NOT add one in V1. MFA is per-user account-security state, not org-domain state; the org-scoped audit log is chartered for org domain changes, and a per-user MFA method in a tenant log is a poor fit (which org for a multi-org user?) and edges toward person-data. The record of MFA state is `mfaConfirmedAt` on the `users` mirror plus Better Auth's `twoFactor` table. Revisit if a dedicated account-security audit surface is added. **If the reviewer wants the audit event, it is a small add (Task 4 notes how).**
 
 ---
@@ -521,6 +522,12 @@ In the `plugins` array, insert `twoFactor(...)` between `organization(...)` and 
         otpOptions: {
           sendOTP: async ({ user, otp }) => {
             const mctx = requireRunMutationCtx(ctx)
+            // Pre-launch dev convenience: surface the code in the Convex logs so
+            // local testing needs no inbox. NODE_ENV gates it OFF on production
+            // builds. Tracked in docs/go-live-checklist.md.
+            if (process.env.NODE_ENV !== "production") {
+              console.log(`[dev] 2FA OTP for ${user.email}: ${otp}`)
+            }
             // Resolve the recipient's stored language so the code email goes out
             // in their locale, mirroring sendResetPassword. Falls back to en.
             const settings = await mctx.runQuery(
@@ -724,9 +731,13 @@ export const seedUserWithTwoFactor = mutation({
 
 Create `packages/backend/convex/accounts/twoFactor.test.ts`:
 ```typescript
-import { describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 import { api, components } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
+
+afterEach(() => {
+  vi.unstubAllEnvs()
+})
 
 describe("accounts.twoFactor.getMyMfaStatus", () => {
   it("reports unconfirmed for a user with no mirror row", async () => {
@@ -752,6 +763,22 @@ describe("accounts.twoFactor.getMyMfaStatus", () => {
       .withIdentity({ subject: "user-1" })
       .query(api.accounts.twoFactor.getMyMfaStatus, {})
     expect(status).toEqual({ confirmed: true, method: "totp" })
+  })
+
+  it("reports confirmed for an email in TWO_FACTOR_EXEMPT_EMAILS (test affordance)", async () => {
+    vi.stubEnv("TWO_FACTOR_EXEMPT_EMAILS", "test@blueprnt.se")
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
+        authId: "user-x",
+        name: "Test",
+        email: "test@blueprnt.se",
+      })
+    })
+    const status = await t
+      .withIdentity({ subject: "user-x" })
+      .query(api.accounts.twoFactor.getMyMfaStatus, {})
+    expect(status).toEqual({ confirmed: true, method: null })
   })
 
   it("throws when unauthenticated", async () => {
@@ -819,8 +846,26 @@ import { components } from "../_generated/api"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { authedMutation, authedQuery } from "../lib/functions"
 
+// Pre-launch test affordance: accounts listed in TWO_FACTOR_EXEMPT_EMAILS skip
+// mandatory 2FA so the team can sign in to the test deployment without a second
+// factor. Removed at go-live (unset the var + delete the test account); see
+// docs/go-live-checklist.md. Scoped to known identities, not a guessable code.
+function isTwoFactorExempt(email: string): boolean {
+  const list = process.env.TWO_FACTOR_EXEMPT_EMAILS
+  if (!list) return false
+  const exempt = new Set(
+    list
+      .split(",")
+      .map((e) => e.trim().toLowerCase())
+      .filter((e) => e.length > 0)
+  )
+  return exempt.has(email.trim().toLowerCase())
+}
+
 // The caller's account-level 2FA state. confirmed (mfaConfirmedAt set) is the
-// app's authoritative "setup complete" signal; the gate keys on it.
+// app's authoritative "setup complete" signal; the gate keys on it. An exempt
+// email reports confirmed so the gate passes (it never enables 2FA, so Better
+// Auth signs it in with just email + password).
 export const getMyMfaStatus = authedQuery({
   args: {},
   returns: v.object({
@@ -832,6 +877,9 @@ export const getMyMfaStatus = authedQuery({
       .query("users")
       .withIndex("by_auth_id", (q) => q.eq("authId", ctx.authUserId))
       .unique()
+    if (row !== null && isTwoFactorExempt(row.email)) {
+      return { confirmed: true, method: null }
+    }
     return {
       confirmed: row?.mfaConfirmedAt != null,
       method: row?.mfaMethod ?? null,
@@ -866,7 +914,7 @@ Audit note (deviation): no `logAudit` call here. See the Global Constraints audi
 - [ ] **Step 8: Run the tests, expect PASS**
 
 Run: `cd /Volumes/development/blueprnt/frontend && bun run --filter @workspace/backend test -- twoFactor`
-Expected: PASS (5 tests).
+Expected: PASS (6 tests).
 
 - [ ] **Step 9: Typecheck + commit**
 
