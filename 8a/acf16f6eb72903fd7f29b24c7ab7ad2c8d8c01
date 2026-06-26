@@ -1,0 +1,26 @@
+apps/dashboard/components/auth/two-factor-gate.tsx
+  s_c216811bbb1bb1::t_b6829e0be5d527 1-31
+apps/dashboard/components/auth/two-factor-gate.test.tsx
+  s_c216811bbb1bb1::t_f82f50132702cd 1-49
+apps/dashboard/components/auth/two-factor-setup.tsx
+  s_c216811bbb1bb1::t_655eadca8c6e9a 1-9
+apps/dashboard/app/(app)/layout.tsx
+  s_c216811bbb1bb1::t_8e3c46ee0a8420 27-29
+  s_c216811bbb1bb1::t_ad1fa11b355d2b 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "8aacf16f6eb72903fd7f29b24c7ab7ad2c8d8c01",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
