@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { api, components } from "../_generated/api"
+import { ERROR_CODES } from "../lib/errors"
 import { initConvexTest } from "../testing.helpers"
 
 afterEach(() => {
@@ -52,7 +53,7 @@ describe("accounts.twoFactor.getMyMfaStatus", () => {
     const t = initConvexTest()
     await expect(
       t.query(api.accounts.twoFactor.getMyMfaStatus, {})
-    ).rejects.toThrow()
+    ).rejects.toMatchObject({ data: { code: ERROR_CODES.notAuthenticated } })
   })
 })
 
@@ -70,7 +71,20 @@ describe("accounts.twoFactor.confirmMfaSetup", () => {
       t
         .withIdentity({ subject: "user-1" })
         .mutation(api.accounts.twoFactor.confirmMfaSetup, { method: "email" })
-    ).rejects.toThrow()
+    ).rejects.toMatchObject({ data: { code: ERROR_CODES.invalidInput } })
+  })
+
+  it("rejects with notFound when Better Auth has 2FA but there is no mirror row", async () => {
+    const t = initConvexTest()
+    const { userId } = await t.mutation(
+      components.betterAuth.testing.seedUserWithTwoFactor,
+      { email: "hr@acme.se", name: "HR Person" }
+    )
+    await expect(
+      t
+        .withIdentity({ subject: userId })
+        .mutation(api.accounts.twoFactor.confirmMfaSetup, { method: "totp" })
+    ).rejects.toMatchObject({ data: { code: ERROR_CODES.notFound } })
   })
 
   it("stamps the mirror once 2FA is genuinely enabled", async () => {
