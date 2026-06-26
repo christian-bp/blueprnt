@@ -102,6 +102,11 @@ export const createAuthOptions = (
       customRules: {
         "/request-password-reset": { window: 60, max: 3 },
         "/forget-password": { window: 60, max: 3 },
+        // Credential email sign-in: throttle brute-force / credential stuffing.
+        // Key is the base-path-stripped route ("/api/auth" prefix is removed
+        // before matching). Verified against better-auth 1.6.17:
+        // createAuthEndpoint("/sign-in/email", ...).
+        "/sign-in/email": { window: 60, max: 5 },
       },
     },
     emailAndPassword: {
@@ -138,6 +143,30 @@ export const createAuthOptions = (
         })
       },
     },
+    // Session lifetime hardening. All values in SECONDS (verified against
+    // @better-auth/core 1.6.17 types). Defaults are 7d / 1d / 1d; kept explicit
+    // so the posture is reviewable and pinned against future default changes.
+    session: {
+      expiresIn: 60 * 60 * 24 * 7,
+      updateAge: 60 * 60 * 24,
+      freshAge: 60 * 60 * 24,
+    },
+    advanced: {
+      // Force the Secure attribute (and __Secure- prefix) in production. Gated
+      // so local http://localhost sign-in is not broken (browsers drop Secure
+      // cookies on http). The Convex Next proxy forwards x-forwarded-proto, so
+      // this makes the secure posture deterministic behind Vercel.
+      useSecureCookies: process.env.NODE_ENV === "production",
+      defaultCookieAttributes: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+      },
+    },
+    // Origins better-auth trusts for CSRF / redirect validation (checked
+    // server-side in Convex against the forwarded host/origin). Use the
+    // dashboard's public origin, NOT the .convex.site backend URL.
+    trustedOrigins: [resolvedBaseUrl],
     plugins: [
       organization({
         ac,
