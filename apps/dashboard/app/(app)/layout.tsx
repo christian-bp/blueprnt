@@ -5,6 +5,7 @@ import { Authenticated, AuthLoading, Unauthenticated } from "convex/react"
 import { useTranslations } from "next-intl"
 import type { ReactNode } from "react"
 import { SignInScreen } from "@/components/auth/sign-in-screen"
+import { TwoFactorGate } from "@/components/auth/two-factor-gate"
 import { OnboardingGate } from "@/components/onboarding/onboarding-gate"
 
 // Every page in the (app) group sits behind the same three gates: auth
@@ -23,7 +24,9 @@ export default function AppLayout(props: { children: ReactNode }) {
         <SignInScreen />
       </Unauthenticated>
       <Authenticated>
-        <OnboardingGate>{props.children}</OnboardingGate>
+        <TwoFactorGate>
+          <OnboardingGate>{props.children}</OnboardingGate>
+        </TwoFactorGate>
       </Authenticated>
     </>
   )
