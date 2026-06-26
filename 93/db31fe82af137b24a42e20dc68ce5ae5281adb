@@ -1,0 +1,27 @@
+apps/dashboard/components/auth/two-factor-challenge.test.tsx
+  s_c216811bbb1bb1::t_b5aff218fccb7c 8-39,42-49,52-64,68-69,72-84,87-89,93-96
+  s_c216811bbb1bb1::t_18e1d02c789bbd 1-7,50-51,65-67,70-71,85-86,90-92
+  s_c216811bbb1bb1::t_c2adba98f93090 40-41
+apps/dashboard/components/auth/two-factor-challenge.tsx
+  s_c216811bbb1bb1::t_9f57e8f7728ddb 1-68,70-87,93-96,102-107
+  s_c216811bbb1bb1::t_61a153fd0aed94 69
+  s_c216811bbb1bb1::t_18e1d02c789bbd 88-92,97-101
+apps/dashboard/components/auth/sign-in-screen.tsx
+  s_c216811bbb1bb1::t_38636911d5f0a0 5,7,11-14,18-19,24-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "93db31fe82af137b24a42e20dc68ce5ae5281adb",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
