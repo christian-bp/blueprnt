@@ -1,9 +1,251 @@
 "use client"
 
-// Placeholder; the full setup wizard is implemented in the next task. The gate
-// only relies on the onConfirmed prop and on getMyMfaStatus flipping reactively
-// after confirmMfaSetup runs.
+import { zodResolver } from "@hookform/resolvers/zod"
+import { api } from "@workspace/backend/convex/_generated/api"
+import { Button } from "@workspace/ui/components/button"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@workspace/ui/components/form"
+import { Input } from "@workspace/ui/components/input"
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@workspace/ui/components/input-otp"
+import { useMutation } from "convex/react"
+import { useTranslations } from "next-intl"
+import QRCode from "qrcode"
+import { useEffect, useMemo, useState } from "react"
+import { useForm } from "react-hook-form"
+import { HelpMorphButton } from "@/components/help-morph-button"
+import { Logo } from "@/components/logo"
+import { SubmitButton } from "@/components/submit-button"
+import { authClient } from "@/lib/auth-client"
+import {
+  type ConfirmPasswordValues,
+  makeConfirmPasswordSchema,
+} from "@/lib/two-factor-schemas"
+
+type Method = "totp" | "email"
+type Step = "choose" | "password" | "confirm"
+
+function Shell({ children }: { children: React.ReactNode }) {
+  const t = useTranslations("dashboard")
+  return (
+    <main className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+      <div className="flex w-full max-w-sm flex-col gap-8">
+        <Logo label={t("title")} className="h-10 self-center text-brand" />
+        {children}
+      </div>
+    </main>
+  )
+}
+
 export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
-  void onConfirmed
-  return null
+  const t = useTranslations("dashboard.twoFactorSetup")
+  const tHelp = useTranslations("dashboard.help")
+  const tv = useTranslations("dashboard.validation")
+  const confirmMfaSetup = useMutation(api.accounts.twoFactor.confirmMfaSetup)
+  const session = authClient.useSession()
+  const email = session.data?.user.email ?? ""
+
+  const [step, setStep] = useState<Step>("choose")
+  const [method, setMethod] = useState<Method>("totp")
+  const [totpUri, setTotpUri] = useState<string | null>(null)
+  const [qr, setQr] = useState<string | null>(null)
+  const [code, setCode] = useState("")
+  const [codeError, setCodeError] = useState(false)
+  const [pwError, setPwError] = useState(false)
+
+  const pwSchema = useMemo(() => makeConfirmPasswordSchema(tv), [tv])
+  const pwForm = useForm<ConfirmPasswordValues>({
+    resolver: zodResolver(pwSchema),
+    mode: "onTouched",
+    defaultValues: { password: "" },
+  })
+
+  // Render the otpauth URI to a QR data URL for the authenticator method.
+  useEffect(() => {
+    if (totpUri === null) return
+    void QRCode.toDataURL(totpUri).then(setQr)
+  }, [totpUri])
+
+  async function onConfirmPassword(values: ConfirmPasswordValues) {
+    setPwError(false)
+    const { data, error } = await authClient.twoFactor.enable({
+      password: values.password,
+    })
+    if (error || !data) {
+      setPwError(true)
+      return
+    }
+    setTotpUri(data.totpURI)
+    if (method === "email") await authClient.twoFactor.sendOtp()
+    setStep("confirm")
+  }
+
+  async function onCodeComplete(value: string) {
+    setCodeError(false)
+    const verify =
+      method === "totp"
+        ? authClient.twoFactor.verifyTotp({ code: value })
+        : authClient.twoFactor.verifyOtp({ code: value })
+    const { error } = await verify
+    if (error) {
+      setCode("")
+      setCodeError(true)
+      return
+    }
+    await confirmMfaSetup({ method })
+    onConfirmed()
+  }
+
+  if (step === "choose") {
+    return (
+      <Shell>
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-center gap-1.5">
+            <h1 className="text-center font-medium text-lg">{t("heading")}</h1>
+            <HelpMorphButton label={tHelp("twoFactorLabel")}>
+              {tHelp("twoFactorBody")}
+            </HelpMorphButton>
+          </div>
+          <p className="text-center text-muted-foreground text-sm">
+            {t("intro")}
+          </p>
+          {(["totp", "email"] as const).map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => setMethod(m)}
+              aria-pressed={method === m}
+              className="rounded-lg border p-4 text-left aria-pressed:border-ring aria-pressed:ring-2 aria-pressed:ring-ring/50"
+            >
+              <div className="font-medium text-sm">
+                {t(m === "totp" ? "methodTotp.label" : "methodEmail.label")}
+              </div>
+              <div className="text-muted-foreground text-sm">
+                {t(
+                  m === "totp"
+                    ? "methodTotp.description"
+                    : "methodEmail.description"
+                )}
+              </div>
+            </button>
+          ))}
+          <Button onClick={() => setStep("password")}>{t("continue")}</Button>
+        </div>
+      </Shell>
+    )
+  }
+
+  if (step === "password") {
+    return (
+      <Shell>
+        <div className="flex flex-col gap-4">
+          <h1 className="text-center font-medium text-lg">
+            {t("password.heading")}
+          </h1>
+          <p className="text-center text-muted-foreground text-sm">
+            {t("password.description")}
+          </p>
+          <Form {...pwForm}>
+            <form
+              onSubmit={pwForm.handleSubmit(onConfirmPassword)}
+              className="space-y-6"
+            >
+              <FormField
+                control={pwForm.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("password.label")}</FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {pwError && (
+                <p role="alert" className="text-destructive text-sm">
+                  {t("password.error")}
+                </p>
+              )}
+              <SubmitButton
+                type="submit"
+                className="w-full"
+                isSubmitting={pwForm.formState.isSubmitting}
+                disabled={!pwForm.formState.isValid}
+              >
+                {t("password.cta")}
+              </SubmitButton>
+            </form>
+          </Form>
+        </div>
+      </Shell>
+    )
+  }
+
+  // step === "confirm"
+  return (
+    <Shell>
+      <div className="flex flex-col items-center gap-4">
+        <h1 className="text-center font-medium text-lg">
+          {t(method === "totp" ? "totp.heading" : "email.heading")}
+        </h1>
+        <p className="text-center text-muted-foreground text-sm">
+          {method === "totp"
+            ? t("totp.description")
+            : t("email.description", { email })}
+        </p>
+        {method === "totp" && qr && (
+          // biome-ignore lint/performance/noImgElement: src is a data URL; Next/Image adds no value here
+          <img src={qr} alt={t("totp.qrAlt")} className="size-44" />
+        )}
+        {method === "totp" && totpUri && (
+          <p className="break-all text-center text-muted-foreground text-xs">
+            {t("totp.manualKey")} {new URL(totpUri).searchParams.get("secret")}
+          </p>
+        )}
+        <InputOTP
+          maxLength={6}
+          value={code}
+          onChange={setCode}
+          onComplete={onCodeComplete}
+          autoFocus
+          aria-label={t("codeLabel")}
+        >
+          <InputOTPGroup>
+            {Array.from({ length: 6 }).map((_, i) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: slots are positional
+              <InputOTPSlot key={i} index={i} />
+            ))}
+          </InputOTPGroup>
+        </InputOTP>
+        {codeError && (
+          <p role="alert" className="text-destructive text-sm">
+            {t("verifyError")}
+          </p>
+        )}
+        {method === "email" && (
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => void authClient.twoFactor.sendOtp()}
+          >
+            {t("email.resend")}
+          </Button>
+        )}
+        <Button type="button" variant="ghost" onClick={() => setStep("choose")}>
+          {t("changeMethod")}
+        </Button>
+      </div>
+    </Shell>
+  )
 }
