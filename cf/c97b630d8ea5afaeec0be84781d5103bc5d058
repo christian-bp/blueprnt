@@ -1,0 +1,35 @@
+packages/backend/convex/_generated/api.d.ts
+  s_c216811bbb1bb1::t_d6f9dc62c8dcb3 17,80
+packages/backend/convex/accounts/twoFactor.ts
+  s_c216811bbb1bb1::t_afab5c4235088f 1-63,68-70
+  s_c216811bbb1bb1::t_d21ea9c90d1945 64-67
+packages/backend/convex/accounts/tables.ts
+  s_c216811bbb1bb1::t_fe1553806584e5 16-21
+packages/backend/convex/betterAuth/provisioning.ts
+  s_c216811bbb1bb1::t_2aa0a34067a86f 52-66
+packages/backend/convex/lib/functions.ts
+  s_c216811bbb1bb1::t_e87fbbcdb3769d 184-208
+packages/backend/convex/accounts/twoFactor.test.ts
+  s_c216811bbb1bb1::t_3df80569ee0f77 1-99
+packages/backend/convex/betterAuth/testing.ts
+  s_c216811bbb1bb1::t_980071765c5970 46-65
+packages/backend/convex/betterAuth/_generated/component.ts
+  s_c216811bbb1bb1::t_d6f9dc62c8dcb3 39,116-124,133-136,160,394-425,457-483,514,748-779,811-837,858-860,913-915,958,971,1258-1295,1333-1360,1388,1401,1688-1725,1763-1790,1840-1846,1989-1993
+  s_c216811bbb1bb1::t_b15aca07d9029f 1994-1995
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "cfc97b630d8ea5afaeec0be84781d5103bc5d058",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
