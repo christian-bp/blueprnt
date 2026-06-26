@@ -107,4 +107,38 @@ describe("EmailPasswordForm", () => {
       })
     })
   })
+
+  it("shows the rate-limit message when sign-in is throttled (429)", async () => {
+    const onSubmit = vi.fn(async () => {
+      throw Object.assign(new Error("rate limited"), { status: 429 })
+    })
+    renderForm(onSubmit)
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "user@example.com" },
+    })
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "secret" },
+    })
+    submitForm()
+    await waitFor(() => {
+      expect(screen.getByText(en.dashboard.auth.rateLimited)).toBeDefined()
+    })
+  })
+
+  it("shows the generic error for a non-rate-limit failure", async () => {
+    const onSubmit = vi.fn(async () => {
+      throw new Error("nope")
+    })
+    renderForm(onSubmit)
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "user@example.com" },
+    })
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "secret" },
+    })
+    submitForm()
+    await waitFor(() => {
+      expect(screen.getByText(en.dashboard.auth.error)).toBeDefined()
+    })
+  })
 })

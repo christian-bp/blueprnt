@@ -451,7 +451,8 @@
         "missingToken": "This link is invalid or has expired. Ask an administrator to resend your invitation.",
         "error": "Something went wrong. Try again."
       },
-      "error": "Something went wrong. Please try again."
+      "error": "Something went wrong. Please try again.",
+      "rateLimited": "Too many sign-in attempts. Please wait a minute and try again."
     },
     "onboarding": {
       "accountMenu": "Account menu",

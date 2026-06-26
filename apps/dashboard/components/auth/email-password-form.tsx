@@ -24,6 +24,18 @@ import { useForm } from "react-hook-form"
 import { SubmitButton } from "@/components/submit-button"
 import { makeSignInSchema, type SignInValues } from "@/lib/auth-schemas"
 
+// Better Auth surfaces a rate-limited request as HTTP 429 (the Convex auth
+// proxy passes the status through verbatim). Detect it so a throttled user
+// gets a distinct message instead of the generic failure.
+function isRateLimitError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "status" in error &&
+    (error as { status?: unknown }).status === 429
+  )
+}
+
 export interface EmailPasswordValues {
   email: string
   password: string
@@ -37,7 +49,7 @@ export function EmailPasswordForm(props: {
 }) {
   const t = useTranslations("dashboard.auth")
   const tv = useTranslations("dashboard.validation")
-  const [error, setError] = useState(false)
+  const [error, setError] = useState<"generic" | "rateLimited" | null>(null)
 
   const schema = useMemo(() => makeSignInSchema(tv), [tv])
   const form = useForm<SignInValues>({
@@ -47,11 +59,11 @@ export function EmailPasswordForm(props: {
   })
 
   async function onSubmit(values: SignInValues) {
-    setError(false)
+    setError(null)
     try {
       await props.onSubmit(values)
-    } catch {
-      setError(true)
+    } catch (e) {
+      setError(isRateLimitError(e) ? "rateLimited" : "generic")
     }
   }
 
@@ -98,7 +110,7 @@ export function EmailPasswordForm(props: {
             </Link>
             {error ? (
               <p role="alert" className="text-destructive text-sm">
-                {t("error")}
+                {error === "rateLimited" ? t("rateLimited") : t("error")}
               </p>
             ) : null}
             <SubmitButton

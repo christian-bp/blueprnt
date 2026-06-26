@@ -451,7 +451,8 @@
         "missingToken": "Linket er ugyldigt eller udløbet. Bed en administrator om at sende invitationen igen.",
         "error": "Noget gik galt. Prøv igen."
       },
-      "error": "Noget gik galt. Prøv igen."
+      "error": "Noget gik galt. Prøv igen.",
+      "rateLimited": "For mange loginforsøg. Vent et minut, og prøv igen."
     },
     "onboarding": {
       "accountMenu": "Kontomenu",

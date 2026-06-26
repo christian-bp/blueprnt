@@ -451,7 +451,8 @@
         "missingToken": "Linkki on virheellinen tai vanhentunut. Pyydä järjestelmänvalvojaa lähettämään kutsu uudelleen.",
         "error": "Jokin meni pieleen. Yritä uudelleen."
       },
-      "error": "Jokin meni pieleen. Yritä uudelleen."
+      "error": "Jokin meni pieleen. Yritä uudelleen.",
+      "rateLimited": "Liian monta kirjautumisyritystä. Odota hetki ja yritä uudelleen."
     },
     "onboarding": {
       "accountMenu": "Tilivalikko",
