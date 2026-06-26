@@ -88,4 +88,10 @@ describe("NavMain", () => {
     expect(activeOf("Home")).toBe("false")
     expect(activeOf("Model")).toBe("false")
   })
+
+  it("wires the active-page brand color onto the icon", () => {
+    renderNav()
+    const homeButton = screen.getByText("Home").closest("button")
+    expect(homeButton?.className).toContain("data-active:[&_svg]:text-brand")
+  })
 })

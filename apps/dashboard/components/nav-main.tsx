@@ -28,6 +28,12 @@ export type NavItem = {
 // breaks that (the icon jumps to center and the text blanks instantly).
 const RAIL_CLASSES = "group-data-[collapsible=icon]:p-1.5! [&_svg]:size-5"
 
+// The active page brands its icon in the identity rose (--brand) so the current
+// section reads at a glance, even in the collapsed icon rail. data-active is set
+// from isActive by SidebarMenuButton; the label keeps the accent foreground and
+// only the glyph takes the brand color.
+const ACTIVE_ICON_CLASSES = "data-active:[&_svg]:text-brand"
+
 // Primary navigation: flat leaf links. A leaf is active on an exact URL match
 // or a sub-path (so /work does not match /workspace); the optional `match`
 // prefixes extend that (Work is active across /work and /roles). Sub-navigation
@@ -52,7 +58,7 @@ export function NavMain({ items }: { items: NavItem[] }) {
                 asChild
                 isActive={itemActive(item)}
                 tooltip={item.title}
-                className={RAIL_CLASSES}
+                className={`${RAIL_CLASSES} ${ACTIVE_ICON_CLASSES}`}
               >
                 <Link href={item.url}>
                   {item.icon}
