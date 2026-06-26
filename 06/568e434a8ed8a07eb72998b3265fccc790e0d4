@@ -1,0 +1,22 @@
+apps/dashboard/components/nav-main.test.tsx
+  s_42175fe5d279c2::t_c1292bc8634dfa 91-96
+apps/dashboard/components/nav-main.tsx
+  s_42175fe5d279c2::t_66bc2087ed6bec 31-36
+  s_42175fe5d279c2::t_0f1ece57325eb7 61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.13",
+  "base_commit_sha": "06568e434a8ed8a07eb72998b3265fccc790e0d4",
+  "prompts": {},
+  "sessions": {
+    "s_42175fe5d279c2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8f9e3104-9e39-4138-8b67-0a301e138dce",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
