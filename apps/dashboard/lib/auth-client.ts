@@ -4,12 +4,13 @@ import {
   admin,
   editor,
 } from "@workspace/backend/convex/betterAuth/permissions"
-import { organizationClient } from "better-auth/client/plugins"
+import { organizationClient, twoFactorClient } from "better-auth/client/plugins"
 import { createAuthClient } from "better-auth/react"
 
 export const authClient = createAuthClient({
   plugins: [
     organizationClient({ ac, roles: { admin, editor } }),
+    twoFactorClient(),
     convexClient(),
   ],
 })

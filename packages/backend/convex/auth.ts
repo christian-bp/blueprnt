@@ -6,7 +6,7 @@ import {
 import { convex } from "@convex-dev/better-auth/plugins"
 import { requireRunMutationCtx } from "@convex-dev/better-auth/utils"
 import { type BetterAuthOptions, betterAuth } from "better-auth/minimal"
-import { organization } from "better-auth/plugins"
+import { organization, twoFactor } from "better-auth/plugins"
 import { components, internal } from "./_generated/api"
 import type { DataModel } from "./_generated/dataModel"
 import authConfig from "./auth.config"
@@ -107,6 +107,9 @@ export const createAuthOptions = (
         // before matching). Verified against better-auth 1.6.17:
         // createAuthEndpoint("/sign-in/email", ...).
         "/sign-in/email": { window: 60, max: 5 },
+        "/two-factor/send-otp": { window: 60, max: 3 },
+        "/two-factor/verify-otp": { window: 60, max: 5 },
+        "/two-factor/verify-totp": { window: 60, max: 5 },
       },
     },
     emailAndPassword: {
@@ -194,6 +197,38 @@ export const createAuthOptions = (
             },
             locale: settings?.language ?? "en",
           })
+        },
+      }),
+      twoFactor({
+        issuer: "blueprnt",
+        // Required so an email-method user can complete enrollment without ever
+        // owning an authenticator: Better Auth's enable flow is otherwise
+        // TOTP-verification-centric. Consequence: user.twoFactorEnabled flips
+        // true at enable(), before the method is confirmed, so the app gate
+        // keys on our own users.mfaConfirmedAt marker, not on twoFactorEnabled.
+        skipVerificationOnEnable: true,
+        otpOptions: {
+          sendOTP: async ({ user, otp }) => {
+            const mctx = requireRunMutationCtx(ctx)
+            // Pre-launch dev convenience: surface the code in the Convex logs so
+            // local testing needs no inbox. NODE_ENV gates it OFF on production
+            // builds. Tracked in docs/go-live-checklist.md.
+            if (process.env.NODE_ENV !== "production") {
+              console.log(`[dev] 2FA OTP for ${user.email}: ${otp}`)
+            }
+            // Resolve the recipient's stored language so the code email goes out
+            // in their locale, mirroring sendResetPassword. Falls back to en.
+            const settings = await mctx.runQuery(
+              internal.accounts.organization.getLanguageForUser,
+              { userId: user.id }
+            )
+            await mctx.runMutation(internal.email.outbox.enqueueEmail, {
+              to: user.email,
+              templateKey: "twoFactorCode",
+              props: { code: otp, email: user.email },
+              locale: settings?.language ?? "en",
+            })
+          },
         },
       }),
       convex({ authConfig }),
