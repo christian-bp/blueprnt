@@ -1,0 +1,21 @@
+.gitignore
+  s_8002f078352748::t_90d7d7e38de9ee 52-54
+.github/workflows/sbom.yml
+  s_8002f078352748::t_06256427ffcb82 1-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "44acfc92ca82c7470787c0c52997d2f3012887fa",
+  "prompts": {},
+  "sessions": {
+    "s_8002f078352748": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b9696e04-1bda-40df-a239-db86813d4e7a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
