@@ -1,0 +1,27 @@
+packages/email/src/render.ts
+  s_c216811bbb1bb1::t_ae5ba3bdb3de4f 35
+  s_c216811bbb1bb1::t_e337da67e8084f 10-13
+  s_c216811bbb1bb1::t_c8af4cdb90c547 64-72
+packages/email/src/render.test.ts
+  s_c216811bbb1bb1::t_b60f5dfc4744c1 83-104
+packages/email/src/templates/two-factor-code.tsx
+  s_c216811bbb1bb1::t_832f10f1d4fa19 1-46
+packages/constants/src/email.ts
+  s_c216811bbb1bb1::t_d87f9cf06d0c6b 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "ddee8ef4be201d631c67eec83365c87f3841be80",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
