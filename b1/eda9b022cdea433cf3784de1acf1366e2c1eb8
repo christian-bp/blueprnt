@@ -1,0 +1,19 @@
+docs/superpowers/plans/2026-06-26-mandatory-2fa.md
+  s_c216811bbb1bb1::t_ae82d3faae8f12 1-1797
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "b1eda9b022cdea433cf3784de1acf1366e2c1eb8",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "unknown"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
