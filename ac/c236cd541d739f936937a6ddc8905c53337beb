@@ -1,0 +1,31 @@
+docs/superpowers/specs/2026-06-26-cra-hardening-design.md
+  s_8002f078352748::t_f99d5fb709fc6a 230-232
+  s_8002f078352748::t_e39f5aa8fdfafe 1-31,37-229,233-234
+  s_8002f078352748::t_ab20d75d197010 32-36
+docs/superpowers/plans/2026-06-26-cra-hardening.md
+  s_8002f078352748::t_c0840ac1822890 41
+  s_8002f078352748::t_f7b9dc0b384a69 740
+  s_8002f078352748::t_3df9ed6a1fbd8a 783-785,791,794-797
+  s_8002f078352748::t_98fc05b188fe85 541
+  s_8002f078352748::t_1aad06ac303166 282-362
+  s_8002f078352748::t_1ecab96d45808d 638
+  s_8002f078352748::t_485e04a3573dff 426
+  s_8002f078352748::t_13137f600aa2e4 30
+  s_8002f078352748::t_36cf0366307eb2 1-29,31-40,42-281,363-425,427-540,542-637,639-739,741-782,786-790,792-793,798-801
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "acc236cd541d739f936937a6ddc8905c53337beb",
+  "prompts": {},
+  "sessions": {
+    "s_8002f078352748": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b9696e04-1bda-40df-a239-db86813d4e7a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
