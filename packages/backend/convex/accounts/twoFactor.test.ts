@@ -1,11 +1,7 @@
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import { ERROR_CODES } from "../lib/errors"
 import { initConvexTest } from "../testing.helpers"
-
-afterEach(() => {
-  vi.unstubAllEnvs()
-})
 
 describe("accounts.twoFactor.getMyMfaStatus", () => {
   it("reports unconfirmed for a user with no mirror row", async () => {
@@ -31,22 +27,6 @@ describe("accounts.twoFactor.getMyMfaStatus", () => {
       .withIdentity({ subject: "user-1" })
       .query(api.accounts.twoFactor.getMyMfaStatus, {})
     expect(status).toEqual({ confirmed: true, method: "totp" })
-  })
-
-  it("reports confirmed for an email in TWO_FACTOR_EXEMPT_EMAILS (test affordance)", async () => {
-    vi.stubEnv("TWO_FACTOR_EXEMPT_EMAILS", "test@blueprnt.se")
-    const t = initConvexTest()
-    await t.run(async (ctx) => {
-      await ctx.db.insert("users", {
-        authId: "user-x",
-        name: "Test",
-        email: "test@blueprnt.se",
-      })
-    })
-    const status = await t
-      .withIdentity({ subject: "user-x" })
-      .query(api.accounts.twoFactor.getMyMfaStatus, {})
-    expect(status).toEqual({ confirmed: true, method: null })
   })
 
   it("throws when unauthenticated", async () => {

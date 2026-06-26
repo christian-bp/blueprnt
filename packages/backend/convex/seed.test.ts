@@ -425,9 +425,7 @@ describe("seed.seedProduction validation", () => {
 
     await expect(
       t.action(internal.seed.seedProduction, {
-        email: "demo@blueprnt.se",
         password: "longenough1",
-        name: "Demo",
         confirm: "yes",
       })
     ).rejects.toThrow('pass confirm: "wipe-and-seed"')
@@ -445,40 +443,14 @@ describe("seed.seedProduction validation", () => {
     expect(again.userId).toBe(existing.userId)
   })
 
-  it("rejects an invalid email", async () => {
-    const t = initConvexTest()
-    await expect(
-      t.action(internal.seed.seedProduction, {
-        email: "not-an-email",
-        password: "longenough1",
-        name: "Demo",
-        confirm: "wipe-and-seed",
-      })
-    ).rejects.toThrow("email must be a valid address")
-  })
-
   it("rejects a too-short password", async () => {
     const t = initConvexTest()
     await expect(
       t.action(internal.seed.seedProduction, {
-        email: "demo@blueprnt.se",
         password: "short",
-        name: "Demo",
         confirm: "wipe-and-seed",
       })
     ).rejects.toThrow("password must be at least 8 characters")
-  })
-
-  it("rejects an empty name", async () => {
-    const t = initConvexTest()
-    await expect(
-      t.action(internal.seed.seedProduction, {
-        email: "demo@blueprnt.se",
-        password: "longenough1",
-        name: "   ",
-        confirm: "wipe-and-seed",
-      })
-    ).rejects.toThrow("name must not be empty")
   })
 })
 

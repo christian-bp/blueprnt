@@ -136,6 +136,39 @@ async function seedDemoCompaniesForUser(
   return results
 }
 
+// The production team accounts seeded into a fresh deployment (pre-launch). Both
+// are platform admins (V1 bootstrap so they reach /admin without an out-of-band
+// grant) and members of the seeded demo orgs. They sign in with the bootstrap
+// password, then enrol in REAL email 2FA (the OTP goes to these real inboxes;
+// there is no 2FA exemption). Throwaway scaffolding, removed before go-live.
+const SEED_PRODUCTION_USERS = [
+  { email: "karl@blueprnt.se", name: "Karl Stolt" },
+  { email: "christian@blueprnt.se", name: "Christian Ek" },
+] as const
+
+// Adds an already-provisioned user as an admin member of every seeded org (the
+// orgs must already exist via seedDemoCompaniesForUser). insertOrganization is
+// idempotent by slug and per (org, user), so this only inserts the membership;
+// the mirror writes that member's app-side row + the member.added audit.
+async function addUserToSeededOrganizations(
+  ctx: ActionCtx,
+  email: string
+): Promise<void> {
+  for (const org of SEED_ORGANIZATIONS) {
+    const result = await ctx.runMutation(
+      components.betterAuth.seed.insertOrganization,
+      { name: org.name, slug: org.slug, email, role: "admin" }
+    )
+    await ctx.runMutation(internal.accounts.mirrors.mirrorSeededOrganization, {
+      orgId: result.orgId,
+      memberUserId: result.userId,
+      role: "admin",
+      auditMember: result.createdMember,
+      actorId: result.userId,
+    })
+  }
+}
+
 // TODO(go-live): remove this action (and this whole wipe-capable surface)
 // before real customer data exists; tracked in packages/backend/README.md
 // under "Before go-live".
@@ -145,66 +178,69 @@ async function seedDemoCompaniesForUser(
 // localhost-guarded, so this internalAction (never callable from clients)
 // is the admin path to a clean demo state: it wipes EVERY app table and
 // EVERY Better Auth table (except jwks) on the target deployment, then
-// creates the single explicit account and seeds the same demo companies as a
-// dev reset (Blueprnt AB rated + Blueprnt Nordic AB bare) for it. There are NO
-// defaults; the
-// destructive step is gated by the confirm sentinel instead of a hostname
-// guard, and the password hash is computed BEFORE the wipe so nothing can
-// fail after the data is gone. Run from packages/backend with:
-//   bunx convex run seed:seedProduction '{"email":"...","password":"...","name":"...","confirm":"wipe-and-seed"}' --prod
+// creates the two team accounts (SEED_PRODUCTION_USERS) and seeds the same demo
+// companies as a dev reset (Blueprnt AB rated + Blueprnt Nordic AB bare), with
+// both founders as members. The destructive step is gated by the confirm
+// sentinel instead of a hostname guard, and the password hash is computed BEFORE
+// the wipe so nothing can fail after the data is gone. Run from packages/backend
+// with:
+//   bunx convex run seed:seedProduction '{"password":"...","confirm":"wipe-and-seed"}' --prod
 export const seedProduction = internalAction({
   args: {
-    email: v.string(),
     password: v.string(),
-    name: v.string(),
     confirm: v.string(),
   },
-  returns: v.object({ userId: v.string(), created: v.boolean() }),
-  handler: async (ctx, { email, password, name, confirm }) => {
+  returns: v.object({ userIds: v.array(v.string()) }),
+  handler: async (ctx, { password, confirm }) => {
     if (confirm !== "wipe-and-seed") {
       throw new Error(
         'seedProduction: pass confirm: "wipe-and-seed" to acknowledge that this deletes ALL data on the deployment'
       )
     }
-    if (!email.includes("@")) {
-      throw new Error("seedProduction: email must be a valid address")
-    }
-    // Matches Better Auth's default minimum password length so the account
-    // is consistent with what the auth endpoints would accept.
+    // Matches Better Auth's default minimum password length so the accounts
+    // are consistent with what the auth endpoints would accept.
     if (password.length < 8) {
       throw new Error("seedProduction: password must be at least 8 characters")
     }
-    if (name.trim().length === 0) {
-      throw new Error("seedProduction: name must not be empty")
-    }
 
-    // Hash before the wipe: the only Node-only call happens while the data
-    // is still intact.
+    // Hash before the wipe: the only Node-only call happens while the data is
+    // still intact. Both accounts share this bootstrap password; each then
+    // enrols in real email 2FA on first sign-in.
     const passwordHash = await hashPassword(password)
 
     await wipeAllData(ctx)
 
-    const result = await ctx.runMutation(
-      components.betterAuth.seed.insertCredentialUser,
-      { email, name: name.trim(), passwordHash }
-    )
-    // Same mirror step as the dev seed: direct component inserts bypass the
-    // Better Auth triggers, so the app-side users row is created explicitly.
-    // PRE-LAUNCH BOOTSTRAP: this account is flagged as a platform admin so the
-    // founder can reach /admin without an out-of-band grant while we build V1.
-    // seedProduction as a whole is throwaway scaffolding: when we move to a real
-    // production it gets deleted entirely, and real platform admins are granted
-    // via internal.platform.bootstrap.grantPlatformAdminByEmail instead.
-    await ctx.runMutation(internal.accounts.mirrors.mirrorSeededUser, {
-      authId: result.userId,
-      email,
-      name: name.trim(),
-      isPlatformAdmin: true,
-    })
-    // Seed the demo companies for the new account so production lands on the same
-    // populated state as a dev reset (Blueprnt AB rated + Blueprnt Nordic AB bare).
-    await seedDemoCompaniesForUser(ctx, email)
-    return result
+    // Create both team accounts. Direct component inserts bypass the Better Auth
+    // triggers, so each app-side users row is mirrored explicitly. PRE-LAUNCH
+    // BOOTSTRAP: both are flagged platform admin so the founders reach /admin
+    // without an out-of-band grant while we build V1. seedProduction as a whole
+    // is throwaway scaffolding: at real go-live it is deleted, and platform
+    // admins are granted via internal.platform.bootstrap.grantPlatformAdminByEmail.
+    const userIds: string[] = []
+    for (const u of SEED_PRODUCTION_USERS) {
+      const result = await ctx.runMutation(
+        components.betterAuth.seed.insertCredentialUser,
+        { email: u.email, name: u.name, passwordHash }
+      )
+      await ctx.runMutation(internal.accounts.mirrors.mirrorSeededUser, {
+        authId: result.userId,
+        email: u.email,
+        name: u.name,
+        isPlatformAdmin: true,
+      })
+      userIds.push(result.userId)
+    }
+
+    // Seed the demo companies for the first account (creates the orgs +
+    // settings/model/roles + its membership), then add the rest as members of
+    // the same orgs so the whole team shares them.
+    const [first, ...rest] = SEED_PRODUCTION_USERS
+    await seedDemoCompaniesForUser(ctx, first.email)
+    for (const u of rest) {
+      await addUserToSeededOrganizations(ctx, u.email)
+    }
+
+    return { userIds }
   },
 })
 

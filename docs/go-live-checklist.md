@@ -10,20 +10,22 @@ in the same change.
 
 ## Auth and access
 
-- [ ] **Remove the 2FA test-user exemption.** Unset `TWO_FACTOR_EXEMPT_EMAILS`
-  on the production deployment and delete the exempt test account(s). With the
-  var empty, `getMyMfaStatus` enforces setup for everyone. Verify a fresh
-  sign-in for a previously-exempt email now requires 2FA setup.
-  (Added with the mandatory-2FA work; see
-  `docs/superpowers/plans/2026-06-26-mandatory-2fa.md`.)
+- [ ] **Remove the seeded founder accounts.** `seedProduction` creates two
+  pre-launch bootstrap accounts (`karl@blueprnt.se` / Karl Stolt and
+  `christian@blueprnt.se` / Christian Ek), both flagged `isPlatformAdmin` and
+  sharing a bootstrap password. Before go-live, delete or re-provision them
+  properly (real per-person passwords, platform-admin granted out-of-band via
+  `internal.platform.bootstrap.grantPlatformAdminByEmail`), and rotate the
+  bootstrap password. There is no 2FA exemption: these accounts use real email
+  2FA like everyone else.
 - [ ] **Confirm the dev OTP log is inert in production.** The `sendOTP` callback
   logs the code only when `NODE_ENV !== "production"`, so a real production
   build never logs it. Confirm the production deployment runs with
   `NODE_ENV=production` and grep the logs to be sure no OTP is printed.
-- [ ] **Lock down seed / reset surfaces.** `packages/backend/convex/seed.ts` and
-  `packages/backend/convex/devReset.ts` (e.g. `resetDatabase`) must not be
-  runnable against production data. Remove them or guard them behind an
-  environment check that is impossible to satisfy in production.
+- [ ] **Lock down seed / reset surfaces.** `packages/backend/convex/seed.ts`
+  (`seedProduction`) and `packages/backend/convex/devReset.ts` (`resetDatabase`)
+  must not be runnable against production data. Remove them or guard them behind
+  an environment check that is impossible to satisfy in production.
 - [ ] **Reset pre-launch data.** Clear dev/demo organizations, users, and seeded
   content from the production deployment so launch starts clean.
 
