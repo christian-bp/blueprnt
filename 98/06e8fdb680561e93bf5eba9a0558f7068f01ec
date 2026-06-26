@@ -1,0 +1,23 @@
+packages/backend/convex/accounts/twoFactor.test.ts
+  s_c216811bbb1bb1::t_0cb48538b7018e 74
+  s_c216811bbb1bb1::t_257bca0cc254c3 3
+  s_c216811bbb1bb1::t_49e6589e8b35f1 56
+  s_c216811bbb1bb1::t_03f2f46f2ff254 77-87
+  s_c216811bbb1bb1::t_a677250cc26557 75-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "9806e8fdb680561e93bf5eba9a0558f7068f01ec",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
