@@ -12,12 +12,14 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 const verifyTotp = vi.fn()
 const sendOtp = vi.fn()
 const verifyOtp = vi.fn()
+const verifyBackupCode = vi.fn()
 vi.mock("@/lib/auth-client", () => ({
   authClient: {
     twoFactor: {
       verifyTotp: (...a: unknown[]) => verifyTotp(...a),
       sendOtp: (...a: unknown[]) => sendOtp(...a),
       verifyOtp: (...a: unknown[]) => verifyOtp(...a),
+      verifyBackupCode: (...a: unknown[]) => verifyBackupCode(...a),
     },
   },
 }))
@@ -37,6 +39,7 @@ afterEach(() => {
   verifyTotp.mockReset()
   sendOtp.mockReset()
   verifyOtp.mockReset()
+  verifyBackupCode.mockReset()
   // Clear the method hint so tests start from a clean state.
   window.localStorage.removeItem("blueprnt.2fa.method")
 })
@@ -91,6 +94,28 @@ describe("TwoFactorChallenge", () => {
         screen.getByText(messages.dashboard.auth.twoFactor.error)
       ).toBeDefined()
       expect(onVerified).not.toHaveBeenCalled()
+    })
+  })
+
+  it("redeems a backup code through the separate text input", async () => {
+    verifyBackupCode.mockResolvedValue({ data: {}, error: null })
+    const onVerified = vi.fn()
+    renderChallenge(onVerified)
+    fireEvent.click(
+      screen.getByText(messages.dashboard.auth.twoFactor.useBackupCode)
+    )
+    const input = screen.getByLabelText(
+      messages.dashboard.auth.twoFactor.backupLabel
+    )
+    fireEvent.change(input, { target: { value: "UYols-9RDpX" } })
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: messages.dashboard.auth.twoFactor.verify,
+      })
+    )
+    await waitFor(() => {
+      expect(verifyBackupCode).toHaveBeenCalledWith({ code: "UYols-9RDpX" })
+      expect(onVerified).toHaveBeenCalled()
     })
   })
 })

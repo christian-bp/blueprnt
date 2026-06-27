@@ -471,6 +471,10 @@
         "useEmail": "Lähetä koodi sähköpostiini sen sijaan",
         "useAuthenticator": "Käytä todennussovellusta sen sijaan",
         "resend": "Etkö saanut koodia? Lähetä uudelleen",
+        "useBackupCode": "Käytä varakoodia",
+        "backupPrompt": "Syötä jokin varakoodeistasi.",
+        "backupLabel": "Varakoodi",
+        "verify": "Vahvista",
         "error": "Koodi ei toiminut. Yritä uudelleen."
       }
     },

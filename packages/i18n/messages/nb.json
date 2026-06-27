@@ -471,6 +471,10 @@
         "useEmail": "Send meg en kode på e-post i stedet",
         "useAuthenticator": "Bruk autentiseringsappen i stedet",
         "resend": "Fikk du ingen kode? Send på nytt",
+        "useBackupCode": "Bruk en sikkerhetskode",
+        "backupPrompt": "Skriv inn en av sikkerhetskodene dine.",
+        "backupLabel": "Sikkerhetskode",
+        "verify": "Bekreft",
         "error": "Koden fungerte ikke. Prøv igjen."
       }
     },

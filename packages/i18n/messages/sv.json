@@ -471,6 +471,10 @@
         "useEmail": "Skicka en kod till min e-post i stället",
         "useAuthenticator": "Använd din autentiseringsapp i stället",
         "resend": "Fick du ingen kod? Skicka igen",
+        "useBackupCode": "Använd en reservkod",
+        "backupPrompt": "Ange en av dina reservkoder.",
+        "backupLabel": "Reservkod",
+        "verify": "Verifiera",
         "error": "Koden fungerade inte. Försök igen."
       }
     },

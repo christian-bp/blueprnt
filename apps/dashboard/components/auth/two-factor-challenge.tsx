@@ -1,19 +1,22 @@
 "use client"
 
 import { Button } from "@workspace/ui/components/button"
+import { Input } from "@workspace/ui/components/input"
 import { useTranslations } from "next-intl"
-import { useEffect, useState } from "react"
+import { type FormEvent, useEffect, useState } from "react"
 import { OtpField } from "@/components/auth/otp-field"
+import { SubmitButton } from "@/components/submit-button"
 import { authClient } from "@/lib/auth-client"
 
 const METHOD_HINT_KEY = "blueprnt.2fa.method"
 
-type Method = "totp" | "email"
+type Method = "totp" | "email" | "backup"
 
-// The sign-in second-factor screen. Defaults to the device-remembered method
-// (written on a successful setup/login) and always offers the other as a
-// fallback. Email is reachable for everyone (it is the universal recovery
-// channel), so a lost authenticator is never a dead end.
+// The sign-in second-factor screen. Defaults to the device-remembered method and
+// always offers email (the universal recovery channel) and a single-use backup
+// code as fallbacks, so a lost authenticator is never a dead end. TOTP and email
+// use the 6-digit code field; a backup code is alphanumeric and verified through
+// a separate endpoint, so it has its own free-text input.
 export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
   const t = useTranslations("dashboard.auth.twoFactor")
   const [method, setMethod] = useState<Method>(() => {
@@ -23,12 +26,22 @@ export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
       : "totp"
   })
   const [code, setCode] = useState("")
+  const [backupCode, setBackupCode] = useState("")
+  const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(false)
 
   // When the email method is active, request a code on entry / on switch.
   useEffect(() => {
     if (method === "email") void authClient.twoFactor.sendOtp()
   }, [method])
+
+  // Switching clears the inputs and error so a stale value never carries over.
+  function switchTo(next: Method) {
+    setError(false)
+    setCode("")
+    setBackupCode("")
+    setMethod(next)
+  }
 
   async function onComplete(value: string) {
     setError(false)
@@ -46,25 +59,97 @@ export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
     onVerified()
   }
 
+  async function onBackupSubmit(e: FormEvent) {
+    e.preventDefault()
+    if (submitting) return
+    const value = backupCode.trim()
+    if (value === "") return
+    setError(false)
+    setSubmitting(true)
+    const { error: verifyError } = await authClient.twoFactor.verifyBackupCode({
+      code: value,
+    })
+    setSubmitting(false)
+    if (verifyError) {
+      setBackupCode("")
+      setError(true)
+      return
+    }
+    // Don't remember "backup" as the device method (each code is single-use);
+    // the prior hint stays so next sign-in defaults to a reusable method.
+    onVerified()
+  }
+
   return (
     <div className="flex flex-col items-center gap-4">
       <h1 className="text-center font-medium text-lg">{t("title")}</h1>
       <p className="text-center text-muted-foreground text-sm">
-        {method === "totp" ? t("totpPrompt") : t("emailPrompt")}
+        {method === "totp"
+          ? t("totpPrompt")
+          : method === "email"
+            ? t("emailPrompt")
+            : t("backupPrompt")}
       </p>
-      <OtpField
-        value={code}
-        onChange={setCode}
-        onComplete={onComplete}
-        ariaLabel={t("codeLabel")}
-        autoFocus
-      />
+
+      {method === "backup" ? (
+        <form onSubmit={onBackupSubmit} className="flex w-full flex-col gap-4">
+          <Input
+            value={backupCode}
+            onChange={(e) => setBackupCode(e.target.value)}
+            aria-label={t("backupLabel")}
+            // Backup codes are case-sensitive and alphanumeric: keep mobile
+            // keyboards from auto-capitalizing/correcting and mangling them.
+            autoComplete="off"
+            autoCapitalize="off"
+            autoCorrect="off"
+            spellCheck={false}
+            autoFocus
+            className="text-center"
+          />
+          <SubmitButton
+            type="submit"
+            className="w-full"
+            isSubmitting={submitting}
+            disabled={backupCode.trim() === ""}
+          >
+            {t("verify")}
+          </SubmitButton>
+        </form>
+      ) : (
+        <OtpField
+          value={code}
+          onChange={setCode}
+          onComplete={onComplete}
+          ariaLabel={t("codeLabel")}
+          autoFocus
+        />
+      )}
+
       {error && (
-        <p role="alert" className="text-destructive text-sm">
+        <p role="alert" className="text-center text-destructive text-sm">
           {t("error")}
         </p>
       )}
-      {method === "email" ? (
+
+      {method === "totp" && (
+        <>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => switchTo("email")}
+          >
+            {t("useEmail")}
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => switchTo("backup")}
+          >
+            {t("useBackupCode")}
+          </Button>
+        </>
+      )}
+      {method === "email" && (
         <>
           <Button
             type="button"
@@ -76,18 +161,22 @@ export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
           <Button
             type="button"
             variant="ghost"
-            onClick={() => setMethod("totp")}
+            onClick={() => switchTo("totp")}
           >
             {t("useAuthenticator")}
           </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => switchTo("backup")}
+          >
+            {t("useBackupCode")}
+          </Button>
         </>
-      ) : (
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={() => setMethod("email")}
-        >
-          {t("useEmail")}
+      )}
+      {method === "backup" && (
+        <Button type="button" variant="ghost" onClick={() => switchTo("totp")}>
+          {t("useAuthenticator")}
         </Button>
       )}
     </div>
