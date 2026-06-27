@@ -477,9 +477,10 @@
     "twoFactorSetup": {
       "heading": "Sikre kontoen din",
       "intro": "Tostegsbekreftelse er påkrevd. Velg hvordan du vil bekrefte at det er deg når du logger inn.",
+      "recommended": "Anbefalt",
       "methodTotp": {
         "label": "Autentiseringsapp",
-        "description": "Bruk en app som Google Authenticator eller 1Password. Anbefales."
+        "description": "Bruk en app som Google Authenticator eller 1Password."
       },
       "methodEmail": {
         "label": "E-postkoder",

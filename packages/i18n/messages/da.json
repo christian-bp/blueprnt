@@ -477,9 +477,10 @@
     "twoFactorSetup": {
       "heading": "Sikr din konto",
       "intro": "Totrinsbekræftelse er påkrævet. Vælg, hvordan du vil bekræfte, at det er dig, når du logger ind.",
+      "recommended": "Anbefales",
       "methodTotp": {
         "label": "Godkendelsesapp",
-        "description": "Brug en app som Google Authenticator eller 1Password. Anbefales."
+        "description": "Brug en app som Google Authenticator eller 1Password."
       },
       "methodEmail": {
         "label": "E-mailkoder",

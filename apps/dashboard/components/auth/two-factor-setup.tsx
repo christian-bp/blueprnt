@@ -20,6 +20,7 @@ import { useForm } from "react-hook-form"
 import { AuthShell } from "@/components/auth/auth-shell"
 import { SuccessCheck } from "@/components/auth/success-check"
 import { HelpMorphButton } from "@/components/help-morph-button"
+import { OptionCard } from "@/components/option-card"
 import { PasswordInput } from "@/components/password-input"
 import { SubmitButton } from "@/components/submit-button"
 import { authClient } from "@/lib/auth-client"
@@ -115,24 +116,18 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
             {t("intro")}
           </p>
           {(["totp", "email"] as const).map((m) => (
-            <button
+            <OptionCard
               key={m}
-              type="button"
-              onClick={() => setMethod(m)}
-              aria-pressed={method === m}
-              className="rounded-lg border p-4 text-left aria-pressed:border-ring aria-pressed:ring-2 aria-pressed:ring-ring/50"
-            >
-              <div className="font-medium text-sm">
-                {t(m === "totp" ? "methodTotp.label" : "methodEmail.label")}
-              </div>
-              <div className="text-muted-foreground text-sm">
-                {t(
-                  m === "totp"
-                    ? "methodTotp.description"
-                    : "methodEmail.description"
-                )}
-              </div>
-            </button>
+              title={t(m === "totp" ? "methodTotp.label" : "methodEmail.label")}
+              description={t(
+                m === "totp"
+                  ? "methodTotp.description"
+                  : "methodEmail.description"
+              )}
+              badge={m === "totp" ? t("recommended") : undefined}
+              selected={method === m}
+              onSelect={() => setMethod(m)}
+            />
           ))}
           <Button onClick={() => setStep("password")}>{t("continue")}</Button>
         </div>

@@ -477,9 +477,10 @@
     "twoFactorSetup": {
       "heading": "Suojaa tilisi",
       "intro": "Kaksivaiheinen vahvistus vaaditaan. Valitse, miten vahvistat henkilöllisyytesi kirjautuessasi.",
+      "recommended": "Suositeltu",
       "methodTotp": {
         "label": "Todennussovellus",
-        "description": "Käytä sovellusta kuten Google Authenticator tai 1Password. Suositeltu."
+        "description": "Käytä sovellusta kuten Google Authenticator tai 1Password."
       },
       "methodEmail": {
         "label": "Sähköpostikoodit",

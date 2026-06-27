@@ -477,9 +477,10 @@
     "twoFactorSetup": {
       "heading": "Säkra ditt konto",
       "intro": "Tvåstegsverifiering krävs. Välj hur du vill bekräfta att det är du när du loggar in.",
+      "recommended": "Rekommenderas",
       "methodTotp": {
         "label": "Autentiseringsapp",
-        "description": "Använd en app som Google Authenticator eller 1Password. Rekommenderas."
+        "description": "Använd en app som Google Authenticator eller 1Password."
       },
       "methodEmail": {
         "label": "E-postkoder",
