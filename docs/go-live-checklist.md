@@ -29,13 +29,6 @@ in the same change.
 - [ ] **Reset pre-launch data.** Clear dev/demo organizations, users, and seeded
   content from the production deployment so launch starts clean.
 
-## Dev preview routes
-
-- [ ] **Remove the `app/dev/` preview routes.** `app/dev/success-check` renders
-  the 2FA success badge with a Replay button so the animation can be reviewed
-  without running 2FA setup. It is not auth-gated and uses hardcoded text. Delete
-  the `app/dev/` directory before launch.
-
 ## Content and localization
 
 - [ ] **Native review of machine-translated locale drafts.** The 2FA strings in
