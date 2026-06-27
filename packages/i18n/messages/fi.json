@@ -1038,6 +1038,17 @@
           "regenerateCta": "Luo",
           "wrongPassword": "Tämä salasana on virheellinen. Yritä uudelleen.",
           "cancel": "Peruuta"
+        },
+        "delete": {
+          "title": "Poista tili",
+          "body": "Poista tilisi ja kaikki siihen liittyvät tiedot pysyvästi. Tätä ei voi kumota.",
+          "confirmLabel": "Kirjoita sähköpostiosoitteesi vahvistaaksesi: {email}",
+          "passwordLabel": "Vahvista salasanasi",
+          "cta": "Poista tilini",
+          "lastAdmin": "Olet viimeinen ylläpitäjä seuraavissa organisaatioissa: {orgs}. Siirrä tai poista nämä organisaatiot ennen tilin poistamista tai ota yhteyttä tukeen.",
+          "lastAdminUnknown": "Olet viimeinen ylläpitäjä yhdessä tai useammassa organisaatiossa. Siirrä tai poista nämä organisaatiot ennen tilin poistamista tai ota yhteyttä tukeen.",
+          "wrongPassword": "Tämä salasana on virheellinen. Yritä uudelleen.",
+          "error": "Tiliäsi ei voitu poistaa. Yritä uudelleen."
         }
       }
     }

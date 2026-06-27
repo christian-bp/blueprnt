@@ -1038,6 +1038,17 @@
           "regenerateCta": "Regenerate",
           "wrongPassword": "That password is incorrect. Try again.",
           "cancel": "Cancel"
+        },
+        "delete": {
+          "title": "Delete account",
+          "body": "Permanently delete your account and all associated data. This cannot be undone.",
+          "confirmLabel": "Type your email address to confirm: {email}",
+          "passwordLabel": "Confirm your password",
+          "cta": "Delete my account",
+          "lastAdmin": "You are the last administrator of: {orgs}. Transfer or delete those organizations before deleting your account, or contact support.",
+          "lastAdminUnknown": "You are the last administrator of one or more organizations. Transfer or delete those organizations before deleting your account, or contact support.",
+          "wrongPassword": "That password is incorrect. Try again.",
+          "error": "Your account could not be deleted. Please try again."
         }
       }
     }

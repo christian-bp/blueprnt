@@ -1038,6 +1038,17 @@
           "regenerateCta": "Generer",
           "wrongPassword": "Det passordet er feil. Prøv igjen.",
           "cancel": "Avbryt"
+        },
+        "delete": {
+          "title": "Slett konto",
+          "body": "Slett kontoen din og alle tilknyttede data permanent. Dette kan ikke angres.",
+          "confirmLabel": "Skriv inn e-postadressen din for å bekrefte: {email}",
+          "passwordLabel": "Bekreft passordet ditt",
+          "cta": "Slett kontoen min",
+          "lastAdmin": "Du er den siste administratoren for: {orgs}. Overfør eller slett disse organisasjonene før du sletter kontoen din, eller kontakt support.",
+          "lastAdminUnknown": "Du er den siste administratoren for en eller flere organisasjoner. Overfør eller slett disse organisasjonene før du sletter kontoen din, eller kontakt support.",
+          "wrongPassword": "Det passordet er feil. Prøv igjen.",
+          "error": "Kontoen din kunne ikke slettes. Prøv igjen."
         }
       }
     }
