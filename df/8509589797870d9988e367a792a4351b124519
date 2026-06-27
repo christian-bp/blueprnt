@@ -1,0 +1,41 @@
+apps/dashboard/components/option-card.test.tsx
+  s_c216811bbb1bb1::t_78eacf9db9d507 3
+packages/i18n/messages/nb.json
+  s_c216811bbb1bb1::t_d92c2d5edf4b02 480
+  s_c216811bbb1bb1::t_1a78956c3d0ee3 483
+packages/i18n/messages/da.json
+  s_c216811bbb1bb1::t_abc3551fd81ebb 483
+  s_c216811bbb1bb1::t_97a03e82321de8 480
+packages/i18n/messages/en.json
+  s_c216811bbb1bb1::t_84fadfbd092488 480
+  s_c216811bbb1bb1::t_aca9378be9a78c 483
+packages/i18n/messages/fi.json
+  s_c216811bbb1bb1::t_4bef05369a8fd2 480
+  s_c216811bbb1bb1::t_06370804b58567 483
+apps/dashboard/components/auth/two-factor-setup.tsx
+  s_c216811bbb1bb1::t_deed15e7a38305 23
+  s_c216811bbb1bb1::t_990a820b11f840 119,121-130
+packages/i18n/messages/sv.json
+  s_c216811bbb1bb1::t_a7a8c14760b565 483
+  s_c216811bbb1bb1::t_cbcde1a5a40aba 480
+apps/dashboard/components/onboarding/country-screen.tsx
+  s_c216811bbb1bb1::t_79e5e07f7c1b26 15
+apps/dashboard/components/onboarding/industry-screen.tsx
+  s_c216811bbb1bb1::t_127dcd045b6527 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "df8509589797870d9988e367a792a4351b124519",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
