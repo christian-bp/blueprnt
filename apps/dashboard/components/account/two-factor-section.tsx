@@ -115,49 +115,53 @@ export function TwoFactorSection() {
           </span>
         </div>
 
-        {/* Change method button with AlertDialog confirmation */}
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="outline" size="sm">
-              {t("changeMethod")}
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                {t("changeMethodConfirmTitle")}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                {t("changeMethodConfirmBody")}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={async () => {
-                  await clearMfaConfirmed()
-                }}
-              >
-                {t("changeMethodConfirmCta")}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        {/* Change method + regenerate actions share a row with a gap (they are
+            inline-flex, so the CardContent space-y does not separate them). */}
+        <div className="flex flex-wrap gap-2">
+          {/* Change method button with AlertDialog confirmation */}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                {t("changeMethod")}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  {t("changeMethodConfirmTitle")}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t("changeMethodConfirmBody")}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={async () => {
+                    await clearMfaConfirmed()
+                  }}
+                >
+                  {t("changeMethodConfirmCta")}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
 
-        {/* Regenerate backup codes (inline collapsible form) */}
-        {!regenerateOpen && backupCodes.length === 0 && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setPwError(false)
-              form.reset()
-              setRegenerateOpen(true)
-            }}
-          >
-            {t("regenerate")}
-          </Button>
-        )}
+          {/* Regenerate backup codes (inline collapsible form) */}
+          {!regenerateOpen && backupCodes.length === 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setPwError(false)
+                form.reset()
+                setRegenerateOpen(true)
+              }}
+            >
+              {t("regenerate")}
+            </Button>
+          )}
+        </div>
 
         {regenerateOpen && backupCodes.length === 0 && (
           <div className="rounded-lg border p-4">
