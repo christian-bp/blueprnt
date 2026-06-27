@@ -1,0 +1,19 @@
+apps/dashboard/components/auth/two-factor-setup.tsx
+  s_c216811bbb1bb1::t_b0d1906077523d 181-187
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "2554ca6387253a860f1cf374479ecb87d98a0ee2",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
