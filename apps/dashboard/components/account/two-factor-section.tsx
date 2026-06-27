@@ -100,16 +100,18 @@ export function TwoFactorSection() {
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Current method row */}
-        <div className="flex items-center justify-between gap-2">
+        {/* Label with its concept help, and the value stacked directly under it
+            so they read as one pair (not split to opposite edges). */}
+        <div className="space-y-0.5">
           <div className="flex items-center gap-1.5">
             <span className="font-medium text-sm">{t("currentMethod")}</span>
             <HelpMorphButton label={tHelp("twoFactorLabel")}>
               {tHelp("twoFactorBody")}
             </HelpMorphButton>
           </div>
-          <span className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-sm">
             {methodLabel(mfaMethod)}
-          </span>
+          </p>
         </div>
 
         {/* Change method + regenerate actions share a row with a gap (they are
