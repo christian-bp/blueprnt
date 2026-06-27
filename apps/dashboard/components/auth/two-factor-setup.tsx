@@ -193,8 +193,12 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
             : t("email.description", { email })}
         </p>
         {method === "totp" && qr && (
-          // biome-ignore lint/performance/noImgElement: src is a data URL; Next/Image adds no value here
-          <img src={qr} alt={t("totp.qrAlt")} className="size-44" />
+          // White, bordered, padded frame: presents the code like a scannable
+          // card and gives the QR its quiet-zone margin so phones lock on faster.
+          <div className="rounded-xl border bg-white p-4">
+            {/* biome-ignore lint/performance/noImgElement: src is a data URL; Next/Image adds no value here */}
+            <img src={qr} alt={t("totp.qrAlt")} className="size-40" />
+          </div>
         )}
         {method === "totp" && totpUri && (
           <p className="break-all text-center text-muted-foreground text-xs">
