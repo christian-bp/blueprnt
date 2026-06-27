@@ -1,0 +1,21 @@
+docs/go-live-checklist.md
+  s_c216811bbb1bb1::t_6798c923a504b1 32-38
+apps/dashboard/app/dev/success-check/page.tsx
+  s_c216811bbb1bb1::t_af326a7590a763 1-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "424afce3a594db640144445779262b121f126894",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
