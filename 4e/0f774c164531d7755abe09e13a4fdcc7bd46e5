@@ -1,0 +1,52 @@
+packages/i18n/messages/en.json
+  s_c216811bbb1bb1::t_abe5c3970d744a 1004,1010
+  s_c216811bbb1bb1::t_15d0b28d2c1743 1023
+apps/dashboard/app/(app)/account/profile/page.tsx
+  s_c216811bbb1bb1::t_ee78580b8b6b6e 4,15-19
+apps/dashboard/components/account/change-email-form.test.tsx
+  s_c216811bbb1bb1::t_2d35ac773d7133 62-66
+  s_c216811bbb1bb1::t_f5045fee886c2f 30
+apps/dashboard/components/account/profile-name-form.tsx
+  s_c216811bbb1bb1::t_46685c0034f5c0 5-11,68-106,109,115-116
+  s_c216811bbb1bb1::t_5f711a37b473bc 4
+packages/i18n/messages/fi.json
+  s_c216811bbb1bb1::t_d5620026e0260f 1004,1010
+  s_c216811bbb1bb1::t_68e27e2304f9df 1023
+apps/dashboard/components/account/change-email-form.tsx
+  s_c216811bbb1bb1::t_d97bdf50dd2848 86-88
+  s_c216811bbb1bb1::t_2625a47ddd9b0b 5-11,79-85,89-90,95-154
+  s_c216811bbb1bb1::t_babc4c9253463e 4
+apps/dashboard/components/account/profile-name-form.test.tsx
+  s_c216811bbb1bb1::t_6c6808d26e9fd3 57-61
+  s_c216811bbb1bb1::t_2452c9667fd12b 30
+apps/dashboard/components/account/language-section.test.tsx
+  s_c216811bbb1bb1::t_9ea5ceaaf28552 96-102
+packages/i18n/messages/da.json
+  s_c216811bbb1bb1::t_2a196665a9b217 1023
+  s_c216811bbb1bb1::t_de341a739661a0 1004,1010
+apps/dashboard/components/account/language-section.tsx
+  s_c216811bbb1bb1::t_d2206cdff0fd83 6-11,50-77
+  s_c216811bbb1bb1::t_965b6942fdde09 5
+packages/i18n/messages/sv.json
+  s_c216811bbb1bb1::t_d913fe185afbe3 1004,1010
+  s_c216811bbb1bb1::t_6e7975bde481d7 1023
+packages/i18n/messages/nb.json
+  s_c216811bbb1bb1::t_16afaef2986724 1004,1010
+  s_c216811bbb1bb1::t_675b3588ea3e91 1023
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "4e0f774c164531d7755abe09e13a4fdcc7bd46e5",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
