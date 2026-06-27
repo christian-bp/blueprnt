@@ -14,6 +14,7 @@ import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
+import { AuthHeading } from "@/components/auth/auth-heading"
 import { PasswordInput } from "@/components/password-input"
 import { SubmitButton } from "@/components/submit-button"
 import { makeSignInSchema, type SignInValues } from "@/lib/auth-schemas"
@@ -63,12 +64,10 @@ export function EmailPasswordForm(props: {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2 text-center">
-        <h1 className="font-semibold text-xl">{t("signIn.title")}</h1>
-        <p className="text-muted-foreground text-sm">
-          {t("signIn.description")}
-        </p>
-      </div>
+      <AuthHeading
+        title={t("signIn.title")}
+        description={t("signIn.description")}
+      />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
@@ -76,11 +75,11 @@ export function EmailPasswordForm(props: {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("email")}</FormLabel>
+                <FormLabel className="justify-center">{t("email")}</FormLabel>
                 <FormControl>
-                  <Input type="email" {...field} />
+                  <Input type="email" className="text-center" {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-center" />
               </FormItem>
             )}
           />
@@ -89,22 +88,24 @@ export function EmailPasswordForm(props: {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("password")}</FormLabel>
+                <FormLabel className="justify-center">
+                  {t("password")}
+                </FormLabel>
                 <FormControl>
-                  <PasswordInput {...field} />
+                  <PasswordInput className="text-center" {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-center" />
               </FormItem>
             )}
           />
           <Link
             href="/forgot-password"
-            className="text-muted-foreground text-sm underline-offset-4 hover:underline"
+            className="block text-center text-muted-foreground text-sm underline-offset-4 hover:underline"
           >
             {t("forgotPasswordLink")}
           </Link>
           {error ? (
-            <p role="alert" className="text-destructive text-sm">
+            <p role="alert" className="text-center text-destructive text-sm">
               {error === "rateLimited" ? t("rateLimited") : t("error")}
             </p>
           ) : null}

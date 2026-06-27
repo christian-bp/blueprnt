@@ -13,6 +13,7 @@ import { useTranslations } from "next-intl"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
+import { AuthHeading } from "@/components/auth/auth-heading"
 import { AuthShell } from "@/components/auth/auth-shell"
 import { PasswordInput } from "@/components/password-input"
 import { SubmitButton } from "@/components/submit-button"
@@ -71,12 +72,9 @@ function ResetPasswordForm() {
   return (
     <AuthShell>
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-2 text-center">
-          <h1 className="font-semibold text-xl">{t("title")}</h1>
-          <p className="text-muted-foreground text-sm">{t("description")}</p>
-        </div>
+        <AuthHeading title={t("title")} description={t("description")} />
         {token === null ? (
-          <p role="alert" className="text-destructive text-sm">
+          <p role="alert" className="text-center text-destructive text-sm">
             {t("missingToken")}
           </p>
         ) : (
@@ -87,16 +85,21 @@ function ResetPasswordForm() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("passwordLabel")}</FormLabel>
+                    <FormLabel className="justify-center">
+                      {t("passwordLabel")}
+                    </FormLabel>
                     <FormControl>
-                      <PasswordInput {...field} />
+                      <PasswordInput className="text-center" {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-center" />
                   </FormItem>
                 )}
               />
               {error && (
-                <p role="alert" className="text-destructive text-sm">
+                <p
+                  role="alert"
+                  className="text-center text-destructive text-sm"
+                >
                   {t(error === "compromised" ? "compromised" : "error")}
                 </p>
               )}

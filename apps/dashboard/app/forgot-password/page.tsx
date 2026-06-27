@@ -14,6 +14,7 @@ import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
+import { AuthHeading } from "@/components/auth/auth-heading"
 import { AuthShell } from "@/components/auth/auth-shell"
 import { SubmitButton } from "@/components/submit-button"
 import {
@@ -56,12 +57,9 @@ export default function ForgotPasswordPage() {
   return (
     <AuthShell>
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-2 text-center">
-          <h1 className="font-semibold text-xl">{t("title")}</h1>
-          <p className="text-muted-foreground text-sm">{t("description")}</p>
-        </div>
+        <AuthHeading title={t("title")} description={t("description")} />
         {submitted ? (
-          <div className="space-y-6">
+          <div className="space-y-6 text-center">
             <p className="text-muted-foreground text-sm" role="status">
               {t("confirmation")}
             </p>
@@ -80,11 +78,13 @@ export default function ForgotPasswordPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{tApp("auth.email")}</FormLabel>
+                    <FormLabel className="justify-center">
+                      {tApp("auth.email")}
+                    </FormLabel>
                     <FormControl>
-                      <Input type="email" {...field} />
+                      <Input type="email" className="text-center" {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-center" />
                   </FormItem>
                 )}
               />
@@ -98,7 +98,7 @@ export default function ForgotPasswordPage() {
               </SubmitButton>
               <Link
                 href="/"
-                className="block text-muted-foreground text-sm underline-offset-4 hover:underline"
+                className="block text-center text-muted-foreground text-sm underline-offset-4 hover:underline"
               >
                 {t("backToSignIn")}
               </Link>
