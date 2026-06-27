@@ -101,4 +101,32 @@ describe("AuthGate", () => {
     expect(screen.getByTestId("signin")).toBeDefined()
     expect(screen.queryByTestId("app")).toBeNull()
   })
+
+  it("keeps the sign-in screen mounted across a transient blip during sign-in", () => {
+    // Signed out, then a transient loading blip during the sign-in /
+    // 2FA-challenge sequence. SignInScreen must stay mounted (not flip to the
+    // loading spinner), or its phase state resets and the user is bounced back
+    // to the credentials screen.
+    useConvexAuthMock.mockReturnValue({
+      isLoading: false,
+      isAuthenticated: false,
+    })
+    const { rerender } = renderGate()
+    expect(screen.getByTestId("signin")).toBeDefined()
+
+    useConvexAuthMock.mockReturnValue({
+      isLoading: true,
+      isAuthenticated: false,
+    })
+    rerender(
+      <AuthGate
+        loading={<div data-testid="loading" />}
+        unauthenticated={<div data-testid="signin" />}
+      >
+        <div data-testid="app" />
+      </AuthGate>
+    )
+    expect(screen.getByTestId("signin")).toBeDefined()
+    expect(screen.queryByTestId("loading")).toBeNull()
+  })
 })
