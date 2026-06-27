@@ -1,0 +1,22 @@
+apps/dashboard/components/auth/auth-gate.tsx
+  s_c216811bbb1bb1::t_8b59b9575e169b 33-34
+  s_c216811bbb1bb1::t_8768a7501b5074 7-10,12-20,27-31
+apps/dashboard/components/auth/auth-gate.test.tsx
+  s_c216811bbb1bb1::t_74d6bfa24811cf 104-131
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "99c55bda864801f4612e8c9bcc09cb6620538779",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
