@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as accounts_account from "../accounts/account.js";
 import type * as accounts_audit from "../accounts/audit.js";
 import type * as accounts_context from "../accounts/context.js";
 import type * as accounts_mirrors from "../accounts/mirrors.js";
@@ -71,6 +72,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  "accounts/account": typeof accounts_account;
   "accounts/audit": typeof accounts_audit;
   "accounts/context": typeof accounts_context;
   "accounts/mirrors": typeof accounts_mirrors;
