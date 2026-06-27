@@ -1,0 +1,41 @@
+packages/i18n/messages/nb.json
+  s_c216811bbb1bb1::t_2b3d07c7f77793 995-996
+packages/backend/convex/accounts/account.test.ts
+  s_c216811bbb1bb1::t_efe6a6a06b6499 250-295,299-428
+  s_c216811bbb1bb1::t_4aad766357c4aa 2
+  s_c216811bbb1bb1::t_3dc1e1526ec0ee 296-298
+packages/i18n/messages/da.json
+  s_c216811bbb1bb1::t_809f93fe1f2526 995-996
+packages/i18n/messages/fi.json
+  s_c216811bbb1bb1::t_32388e4b2228b2 995-996
+packages/backend/vitest.config.ts
+  s_c216811bbb1bb1::t_87a671ce40f69f 14-17
+packages/backend/convex/lib/errors.ts
+  s_c216811bbb1bb1::t_ce3d42f98482ca 24
+packages/i18n/messages/sv.json
+  s_c216811bbb1bb1::t_6fa1acf2f0eb59 995-996
+packages/backend/convex/accounts/account.ts
+  s_c216811bbb1bb1::t_e5deec6108beed 2-13,16-46
+  s_c216811bbb1bb1::t_73de1d53d4bd74 77-80
+  s_c216811bbb1bb1::t_95d911a9771e7a 111-196,205,207-217
+  s_c216811bbb1bb1::t_c3177e47fb24e2 197-204,206
+  s_c216811bbb1bb1::t_ddb5ae021a8012 47
+packages/i18n/messages/en.json
+  s_c216811bbb1bb1::t_a53052d8e28075 995-996
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "cee8eaa8011eb14325af24eb31e33de1c04c74e1",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
