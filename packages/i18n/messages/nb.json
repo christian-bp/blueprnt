@@ -993,7 +993,6 @@
       }
     },
     "account": {
-      "title": "Kontoinnstillinger",
       "tabs": {
         "profile": "Profil",
         "security": "Sikkerhet"
@@ -1066,7 +1065,6 @@
         "delete": {
           "title": "Slett konto",
           "description": "Slett kontoen din og alle tilknyttede data permanent. Dette kan ikke angres.",
-          "body": "Slett kontoen din og alle tilknyttede data permanent. Dette kan ikke angres.",
           "confirmLabel": "Skriv inn e-postadressen din for å bekrefte: {email}",
           "passwordLabel": "Bekreft passordet ditt",
           "cta": "Slett kontoen min",

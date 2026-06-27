@@ -993,7 +993,6 @@
       }
     },
     "account": {
-      "title": "Tiliasetukset",
       "tabs": {
         "profile": "Profiili",
         "security": "Turvallisuus"
@@ -1066,7 +1065,6 @@
         "delete": {
           "title": "Poista tili",
           "description": "Poista tilisi ja kaikki siihen liittyvät tiedot pysyvästi. Tätä ei voi kumota.",
-          "body": "Poista tilisi ja kaikki siihen liittyvät tiedot pysyvästi. Tätä ei voi kumota.",
           "confirmLabel": "Kirjoita sähköpostiosoitteesi vahvistaaksesi: {email}",
           "passwordLabel": "Vahvista salasanasi",
           "cta": "Poista tilini",

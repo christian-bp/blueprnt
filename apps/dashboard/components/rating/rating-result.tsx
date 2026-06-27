@@ -70,7 +70,7 @@ export function RatingResult({
       : null
 
   return (
-    <div className="mx-auto w-full max-w-2xl">
+    <div className="w-full max-w-2xl">
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}

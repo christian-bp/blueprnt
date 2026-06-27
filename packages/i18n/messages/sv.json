@@ -993,7 +993,6 @@
       }
     },
     "account": {
-      "title": "Kontoinställningar",
       "tabs": {
         "profile": "Profil",
         "security": "Säkerhet"
@@ -1066,7 +1065,6 @@
         "delete": {
           "title": "Ta bort konto",
           "description": "Ta bort ditt konto och all tillhörande data permanent. Det går inte att ångra.",
-          "body": "Ta bort ditt konto och all tillhörande data permanent. Det går inte att ångra.",
           "confirmLabel": "Skriv din e-postadress för att bekräfta: {email}",
           "passwordLabel": "Bekräfta ditt lösenord",
           "cta": "Ta bort mitt konto",

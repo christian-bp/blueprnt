@@ -66,7 +66,7 @@ export default function RatePage(props: {
   // it (the onboarding host owns its own back-to-your-roles button instead).
   if (finished) {
     return (
-      <div className="mx-auto w-full max-w-2xl space-y-4">
+      <div className="w-full max-w-2xl space-y-4">
         <RatingResult orgId={orgId} roleId={roleId} />
         <Button asChild variant="outline">
           <Link href={`/roles/${roleId}`}>{t("result.backToRole")}</Link>

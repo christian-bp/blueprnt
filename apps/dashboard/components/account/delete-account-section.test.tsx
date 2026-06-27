@@ -140,7 +140,7 @@ describe("DeleteAccountSection", () => {
   it("renders the danger zone card when lastAdminOrgs is empty", () => {
     renderSection()
     expect(screen.getByText(t.title)).toBeDefined()
-    expect(screen.getByText(t.body)).toBeDefined()
+    expect(screen.getByText(t.description)).toBeDefined()
   })
 
   it("keeps the delete button disabled until the email matches and password is filled", async () => {
