@@ -26,7 +26,10 @@ export function TwoFactorGate(props: { children: ReactNode }) {
   const [done, setDone] = useState(false)
   const needsSetup = status != null && !status.confirmed
   useEffect(() => {
-    if (needsSetup) setSetupStarted(true)
+    if (needsSetup) {
+      setSetupStarted(true)
+      setDone(false)
+    }
   }, [needsSetup])
 
   // Enter the app once the wizard's completion screen is acknowledged this

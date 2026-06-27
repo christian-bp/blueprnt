@@ -15,7 +15,7 @@ const { setUiLocale, setPreviewLocale } = vi.hoisted(() => ({
   setPreviewLocale: vi.fn(),
 }))
 
-// Mock convex/react — useMutation returns the spy directly.
+// Mock convex/react: useMutation returns the spy directly.
 vi.mock("convex/react", () => ({
   useMutation: () => setUiLocale,
 }))

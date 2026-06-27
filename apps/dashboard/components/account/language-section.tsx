@@ -41,11 +41,17 @@ export function LanguageSection() {
 
   return (
     <div className="space-y-2">
-      <p className="font-medium text-sm leading-none">
+      <p
+        id="language-section-label"
+        className="font-medium text-sm leading-none"
+      >
         {t("account.profile.languageLabel")}
       </p>
       <Select value={active} onValueChange={handleLocaleChange}>
-        <SelectTrigger className="w-full">
+        <SelectTrigger
+          aria-labelledby="language-section-label"
+          className="w-full"
+        >
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

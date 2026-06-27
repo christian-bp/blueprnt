@@ -113,11 +113,11 @@ describe("DeleteAccountSection", () => {
     // The password field may not exist yet (lastAdminOrgs guard), but if the
     // card renders, the button must be disabled regardless of what is typed.
     // When account is undefined the component falls through to the card because
-    // lastAdminOrgs defaults to [] — so the card is shown but email is "".
+    // lastAdminOrgs defaults to [] so the card is shown but email is "".
     const btn = ctaButton()
     expect(btn.disabled).toBe(true)
 
-    // Type any non-empty password — button must STILL be disabled because the
+    // Type any non-empty password: button must STILL be disabled because the
     // email confirm field can never match "" without also being empty.
     fireEvent.change(screen.getByLabelText(t.passwordLabel), {
       target: { value: "somepassword" },

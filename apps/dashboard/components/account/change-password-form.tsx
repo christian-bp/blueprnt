@@ -22,7 +22,7 @@ import {
 import { isPasswordPwned } from "@/lib/pwned-password"
 
 // Better Auth surfaces a wrong current password as INVALID_PASSWORD (see
-// dist/api/routes/update-user.mjs — it verifyPassword on the current password
+// dist/api/routes/update-user.mjs: it verifyPassword on the current password
 // before hashing the new one).
 function isWrongPassword(error: unknown): boolean {
   return (

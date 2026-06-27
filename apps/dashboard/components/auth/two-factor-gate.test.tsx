@@ -120,4 +120,90 @@ describe("TwoFactorGate", () => {
     expect(screen.getByTestId("setup")).toBeDefined()
     expect(screen.queryByTestId("children")).toBeNull()
   })
+
+  it("re-engages the wizard on a second 'change method' in the same session", () => {
+    // clearMfaConfirmed nulls mfaConfirmedAt, making needsSetup true again.
+    // The done latch must reset so the gate shows the wizard instead of the app.
+    // Setup phase one: setup needed, user completes the wizard.
+    useQueryMock.mockReturnValue({ confirmed: false, method: null })
+    const { rerender } = renderGate()
+    expect(screen.getByTestId("setup")).toBeDefined()
+
+    // Wizard completion: status flips confirmed, then user clicks through.
+    useQueryMock.mockReturnValue({ confirmed: true, method: "totp" })
+    rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <TwoFactorGate>
+          <div data-testid="children" />
+        </TwoFactorGate>
+      </NextIntlClientProvider>
+    )
+    fireEvent.click(screen.getByTestId("setup"))
+    expect(screen.getByTestId("children")).toBeDefined()
+    expect(screen.queryByTestId("setup")).toBeNull()
+
+    // "Change method" in account settings: clearMfaConfirmed runs, server
+    // nulls mfaConfirmedAt, status query returns needsSetup true again.
+    useQueryMock.mockReturnValue({ confirmed: false, method: null })
+    rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <TwoFactorGate>
+          <div data-testid="children" />
+        </TwoFactorGate>
+      </NextIntlClientProvider>
+    )
+    // The bug: done was still true, so children kept rendering.
+    // The fix: needsSetup resets done, so the wizard re-engages.
+    expect(screen.getByTestId("setup")).toBeDefined()
+    expect(screen.queryByTestId("children")).toBeNull()
+
+    // Complete the second setup round.
+    fireEvent.click(screen.getByTestId("setup"))
+    expect(screen.getByTestId("children")).toBeDefined()
+    expect(screen.queryByTestId("setup")).toBeNull()
+  })
+
+  it("does NOT reset done during the token-refresh blip (status null/undefined) after completion", () => {
+    // After wizard completion (done=true), the auth token may briefly refresh
+    // causing status to become null/undefined. done must stay true so the app
+    // keeps rendering without bouncing back to the wizard.
+    useQueryMock.mockReturnValue({ confirmed: false, method: null })
+    const { rerender } = renderGate()
+
+    useQueryMock.mockReturnValue({ confirmed: true, method: "totp" })
+    rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <TwoFactorGate>
+          <div data-testid="children" />
+        </TwoFactorGate>
+      </NextIntlClientProvider>
+    )
+    fireEvent.click(screen.getByTestId("setup"))
+    expect(screen.getByTestId("children")).toBeDefined()
+
+    // Blip: status goes null (needsSetup = false because status is null, not
+    // because confirmed flipped). done must NOT reset here.
+    useQueryMock.mockReturnValue(null)
+    rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <TwoFactorGate>
+          <div data-testid="children" />
+        </TwoFactorGate>
+      </NextIntlClientProvider>
+    )
+    expect(screen.getByTestId("children")).toBeDefined()
+    expect(screen.queryByTestId("setup")).toBeNull()
+
+    // Blip: status undefined (same reasoning).
+    useQueryMock.mockReturnValue(undefined)
+    rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <TwoFactorGate>
+          <div data-testid="children" />
+        </TwoFactorGate>
+      </NextIntlClientProvider>
+    )
+    expect(screen.getByTestId("children")).toBeDefined()
+    expect(screen.queryByTestId("setup")).toBeNull()
+  })
 })

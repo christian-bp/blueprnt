@@ -27,6 +27,7 @@ export function ProfileNameForm() {
   const currentName = session.data?.user.name ?? ""
 
   const [error, setError] = useState(false)
+  const [saved, setSaved] = useState(false)
 
   const schema = useMemo(() => makeProfileNameSchema(tv), [tv])
   const form = useForm<ProfileNameValues>({
@@ -37,6 +38,7 @@ export function ProfileNameForm() {
 
   async function onSubmit(values: ProfileNameValues) {
     setError(false)
+    setSaved(false)
     try {
       const { error: updateError } = await authClient.updateUser({
         name: values.name,
@@ -46,6 +48,7 @@ export function ProfileNameForm() {
         return
       }
       form.reset({ name: values.name })
+      setSaved(true)
     } catch {
       setError(true)
     }
@@ -76,6 +79,9 @@ export function ProfileNameForm() {
         >
           {t("saveName")}
         </SubmitButton>
+        {saved && (
+          <p className="text-muted-foreground text-sm">{t("nameSaved")}</p>
+        )}
         {error && (
           <p role="alert" className="text-destructive text-sm">
             {t("error")}

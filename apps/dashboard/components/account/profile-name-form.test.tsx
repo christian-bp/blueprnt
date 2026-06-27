@@ -30,6 +30,7 @@ import { ProfileNameForm } from "./profile-name-form"
 const nameLabel = en.dashboard.account.profile.nameLabel
 const saveName = en.dashboard.account.profile.saveName
 const errorMsg = en.dashboard.account.profile.error
+const nameSaved = en.dashboard.account.profile.nameSaved
 
 function renderForm() {
   return render(
@@ -125,6 +126,59 @@ describe("ProfileNameForm", () => {
     await waitFor(() => {
       const button = screen.getByRole("button", { name: saveName })
       expect((button as HTMLButtonElement).disabled).toBe(true)
+    })
+  })
+
+  it("shows the nameSaved confirmation after a successful save", async () => {
+    renderForm()
+    const input = screen.getByLabelText(nameLabel)
+    fireEvent.change(input, { target: { value: "John Smith" } })
+    await waitFor(() => {
+      expect(
+        (screen.getByRole("button", { name: saveName }) as HTMLButtonElement)
+          .disabled
+      ).toBe(false)
+    })
+    fireEvent.submit(input.closest("form") as HTMLFormElement)
+    await waitFor(() => {
+      expect(screen.getByText(nameSaved)).toBeDefined()
+    })
+    // Error alert must not be shown alongside the success line.
+    expect(screen.queryByRole("alert")).toBeNull()
+  })
+
+  it("clears the nameSaved confirmation on the next submit", async () => {
+    renderForm()
+    const input = screen.getByLabelText(nameLabel)
+
+    // First save.
+    fireEvent.change(input, { target: { value: "John Smith" } })
+    await waitFor(() => {
+      expect(
+        (screen.getByRole("button", { name: saveName }) as HTMLButtonElement)
+          .disabled
+      ).toBe(false)
+    })
+    fireEvent.submit(input.closest("form") as HTMLFormElement)
+    await waitFor(() => {
+      expect(screen.getByText(nameSaved)).toBeDefined()
+    })
+
+    // Edit and submit again: confirmation clears during the second submit.
+    fireEvent.change(input, { target: { value: "Jane Smith" } })
+    await waitFor(() => {
+      expect(
+        (screen.getByRole("button", { name: saveName }) as HTMLButtonElement)
+          .disabled
+      ).toBe(false)
+    })
+    fireEvent.submit(input.closest("form") as HTMLFormElement)
+    await waitFor(() => {
+      expect(updateUser).toHaveBeenCalledTimes(2)
+    })
+    // After the second save completes the confirmation reappears (saved again).
+    await waitFor(() => {
+      expect(screen.getByText(nameSaved)).toBeDefined()
     })
   })
 })
