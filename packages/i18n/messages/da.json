@@ -472,11 +472,6 @@
         "useAuthenticator": "Brug din godkendelsesapp i stedet",
         "resend": "Fik du ingen kode? Send igen",
         "error": "Koden virkede ikke. Prøv igen."
-      },
-      "brand": {
-        "value1": "Vurder roller, ikke personer.",
-        "value2": "Lønbeslutninger, du kan forsvare.",
-        "value3": "Bygget til EU's løngennemsigtighed."
       }
     },
     "twoFactorSetup": {

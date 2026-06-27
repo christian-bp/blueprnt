@@ -472,11 +472,6 @@
         "useAuthenticator": "Använd din autentiseringsapp i stället",
         "resend": "Fick du ingen kod? Skicka igen",
         "error": "Koden fungerade inte. Försök igen."
-      },
-      "brand": {
-        "value1": "Värdera roller, inte personer.",
-        "value2": "Lönebeslut du kan försvara.",
-        "value3": "Byggd för EU:s lönetransparens."
       }
     },
     "twoFactorSetup": {
