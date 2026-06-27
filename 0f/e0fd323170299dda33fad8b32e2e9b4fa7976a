@@ -1,0 +1,34 @@
+apps/dashboard/app/reset-password/page.tsx
+  s_c216811bbb1bb1::t_0a1bb4c443ef3a 16
+  s_c216811bbb1bb1::t_60bef6fa6e40f7 75,77,88-90,92,94,99
+  s_c216811bbb1bb1::t_1c787705b61c0b 100-102
+apps/dashboard/app/forgot-password/page.tsx
+  s_c216811bbb1bb1::t_ed2db49b3bbc10 17
+  s_c216811bbb1bb1::t_6b5c1f81a692a1 60,62,81-83,85,87,101
+apps/dashboard/components/auth/auth-heading.test.tsx
+  s_c216811bbb1bb1::t_3d6d8c7b85e313 1-9,15-18,20-26
+  s_c216811bbb1bb1::t_631656b0959066 10,19
+  s_c216811bbb1bb1::t_ce93e8d570e600 11-14
+apps/dashboard/components/auth/email-password-form.tsx
+  s_c216811bbb1bb1::t_5bd0ebea364c1f 67-70,78,80,82,91-93,95
+  s_c216811bbb1bb1::t_f5978509986d29 17
+  s_c216811bbb1bb1::t_3e89d8e6bab48a 97,103,108
+apps/dashboard/components/auth/auth-heading.tsx
+  s_c216811bbb1bb1::t_ff09a02b326b51 1-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "0fe0fd323170299dda33fad8b32e2e9b4fa7976a",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
