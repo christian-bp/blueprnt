@@ -102,4 +102,18 @@ describe("renderEmail", () => {
     expect(result.subject).not.toBe("Your blueprnt verification code")
     expect(result.html).toContain("654321")
   })
+
+  it("every EMAIL_LOCALES entry has its own twoFactorCode subject (no silent fallback)", async () => {
+    const subjects = await Promise.all(
+      EMAIL_LOCALES.map(async (locale) => {
+        const result = await renderEmail("twoFactorCode", {
+          code: "123456",
+          email: "user@example.com",
+          locale,
+        })
+        return result.subject
+      })
+    )
+    expect(new Set(subjects).size).toBe(EMAIL_LOCALES.length)
+  })
 })

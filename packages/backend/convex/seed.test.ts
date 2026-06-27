@@ -113,6 +113,50 @@ describe("betterAuth/seed.insertOrganization", () => {
       })
     ).rejects.toThrow(/run seed:seedDevUser first/)
   })
+
+  // seedTeamAccounts seeds the first founder via seedDemoCompaniesForUser, then
+  // wires every subsequent founder into the existing demo orgs (insertOrganization
+  // existing-org / new-member branch). This exercises that second-founder path.
+  it("adds a second founder as admin to each existing seeded org", async () => {
+    const t = initConvexTest()
+    const { userId: first } = await t.mutation(
+      components.betterAuth.seed.insertCredentialUser,
+      { email: "karl@blueprnt.se", name: "Karl", passwordHash: "s:h" }
+    )
+    const { userId: second } = await t.mutation(
+      components.betterAuth.seed.insertCredentialUser,
+      { email: "christian@blueprnt.se", name: "Christian", passwordHash: "s:h" }
+    )
+
+    const orgIds: string[] = []
+    for (const slug of ["acme", "globex"]) {
+      const created = await t.mutation(
+        components.betterAuth.seed.insertOrganization,
+        { name: slug, slug, email: "karl@blueprnt.se", role: "admin" }
+      )
+      expect(created.createdOrg).toBe(true)
+      // The second founder joins the same org via the existing-org branch.
+      const joined = await t.mutation(
+        components.betterAuth.seed.insertOrganization,
+        { name: slug, slug, email: "christian@blueprnt.se", role: "admin" }
+      )
+      expect(joined.createdOrg).toBe(false)
+      expect(joined.createdMember).toBe(true)
+      expect(joined.orgId).toBe(created.orgId)
+      orgIds.push(created.orgId)
+    }
+
+    // Both founders are admins of both seeded orgs.
+    for (const organizationId of orgIds) {
+      for (const userId of [first, second]) {
+        const membership = await t.query(
+          components.betterAuth.membership.getMembership,
+          { organizationId, userId }
+        )
+        expect(membership).toEqual({ organizationId, userId, role: "admin" })
+      }
+    }
+  })
 })
 
 describe("accounts/mirrors.mirrorSeededOrganization", () => {
