@@ -1,0 +1,31 @@
+apps/dashboard/components/auth/email-password-form.tsx
+  s_c216811bbb1bb1::t_12c7f45a1c83f6 65-121
+apps/dashboard/components/auth/sign-in-screen.tsx
+  s_c216811bbb1bb1::t_26fbdaa6afb9b1 5,19-43
+apps/dashboard/app/reset-password/page.tsx
+  s_c216811bbb1bb1::t_a54129a8bc41e1 84
+  s_c216811bbb1bb1::t_8c98d54729c2a2 16,72-83,85-113,115
+apps/dashboard/app/forgot-password/page.tsx
+  s_c216811bbb1bb1::t_1fa1685b0a44f0 17,57-76,78-107,109
+  s_c216811bbb1bb1::t_a54129a8bc41e1 77
+apps/dashboard/components/auth/two-factor-setup.tsx
+  s_c216811bbb1bb1::t_0edd0739cb28d7 98,137,185
+  s_c216811bbb1bb1::t_e06e0915d2797b 24
+  s_c216811bbb1bb1::t_2e171ab8ede297 131,179,237
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "8ce7a6fc1bf17d05c373be103b398f63658edd4c",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
