@@ -992,6 +992,7 @@
     "invalidTransition": "That status change is not allowed.",
     "roleFamilyExists": "A family with that name already exists.",
     "weightsUnbalanced": "The weighting must match the point budget.",
-    "tooFewCriteria": "A model needs at least 5 criteria."
+    "tooFewCriteria": "A model needs at least 5 criteria.",
+    "lastAdmin": "You're the last administrator of an organization. Contact support to delete your account."
   }
 }

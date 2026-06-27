@@ -1,7 +1,49 @@
 import { v } from "convex/values"
-import { components } from "../_generated/api"
-import { query } from "../_generated/server"
+import { components, internal } from "../_generated/api"
+import {
+  type ActionCtx,
+  action,
+  internalMutation,
+  type MutationCtx,
+  query,
+  type QueryCtx,
+} from "../_generated/server"
+import { authComponent, createAuth } from "../auth"
+import { PLATFORM_AUDIT_EVENTS, logPlatformAudit } from "../lib/audit"
+import { ERROR_CODES, appError } from "../lib/errors"
 import { authedMutation } from "../lib/functions"
+
+// Tombstone replacing a deleted person's snapshotted name in append-only logs.
+// Mirrors platform/admin.ts ERASED_ACTOR_NAME (the value must match so the
+// admin and self-service erasure paths leave an identical trail).
+const ERASED_ACTOR_NAME = "deleted user"
+
+// The orgs where `authUserId` is the SOLE admin. Shared by getMyAccount (drives
+// the delete-account guard UI) and eraseSelf (re-validates server-side before
+// erasing, never trusting the client). listMembershipsForUser returns the org
+// display name, so no extra org-name lookup is needed.
+async function soleAdminOrgs(
+  ctx: QueryCtx | MutationCtx,
+  authUserId: string
+): Promise<{ orgId: string; name: string }[]> {
+  const memberships = await ctx.runQuery(
+    components.betterAuth.membership.listMembershipsForUser,
+    { userId: authUserId }
+  )
+  const adminMemberships = memberships.filter((m) => m.role === "admin")
+  const result: { orgId: string; name: string }[] = []
+  for (const m of adminMemberships) {
+    const members = await ctx.runQuery(
+      components.betterAuth.provisioning.listMembers,
+      { organizationId: m.organizationId }
+    )
+    const adminCount = members.filter((mem) => mem.role === "admin").length
+    if (adminCount === 1) {
+      result.push({ orgId: m.organizationId, name: m.organizationName })
+    }
+  }
+  return result
+}
 
 // The caller's account profile: name, email, locale, current 2FA method, and
 // the set of orgs where they are the SOLE admin. The sole-admin list drives
@@ -32,31 +74,10 @@ export const getMyAccount = query({
       .unique()
     if (row === null) return null
 
-    // Get all memberships for this user, then find orgs where they are the
-    // sole admin. listMembershipsForUser already returns the org display name,
-    // so no extra org-name lookup is needed.
-    const memberships = await ctx.runQuery(
-      components.betterAuth.membership.listMembershipsForUser,
-      { userId: identity.subject }
-    )
-    const adminMemberships = memberships.filter((m) => m.role === "admin")
-
-    const lastAdminOrgs: { orgId: string; name: string }[] = []
-    for (const m of adminMemberships) {
-      // Count the admins in this org. provisioning.listMembers returns all
-      // members with their roles; filter to admins only.
-      const members = await ctx.runQuery(
-        components.betterAuth.provisioning.listMembers,
-        { organizationId: m.organizationId }
-      )
-      const adminCount = members.filter((mem) => mem.role === "admin").length
-      if (adminCount === 1) {
-        lastAdminOrgs.push({
-          orgId: m.organizationId,
-          name: m.organizationName,
-        })
-      }
-    }
+    // Orgs where this user is the sole admin. Drives the delete-account guard
+    // UI (blocking deletion when it would leave an org admin-less). eraseSelf
+    // re-derives the same set server-side, so the guard cannot be bypassed.
+    const lastAdminOrgs = await soleAdminOrgs(ctx, identity.subject)
 
     return {
       name: row.name,
@@ -84,6 +105,113 @@ export const clearMfaConfirmed = authedMutation({
       .unique()
     if (row === null) return null
     await ctx.db.patch(row._id, { mfaConfirmedAt: undefined })
+    return null
+  },
+})
+
+// GDPR self-service erasure. The internal mutation mirrors platform/admin.ts
+// deleteUser for the CURRENT caller, with the platform-admin gate and the
+// self-delete block removed (self-delete is the whole point), and a last-admin
+// guard added FIRST. Only ever called by deleteMyAccount after the password
+// check, and given the caller's id resolved from the JWT (never the client), so
+// a user can only ever erase themselves. Like the admin path, the erasure is
+// recorded in the ADMIN log only; nothing is written to any org's auditLog.
+export const eraseSelf = internalMutation({
+  args: { authUserId: v.string() },
+  returns: v.null(),
+  handler: async (ctx, { authUserId }) => {
+    // Last-admin guard FIRST: re-validate server-side and erase NOTHING if the
+    // caller is the sole admin of any org (leaving it admin-less). The client
+    // surfaces this from getMyAccount, but the server is authoritative.
+    const lastAdminOrgs = await soleAdminOrgs(ctx, authUserId)
+    if (lastAdminOrgs.length > 0) throw appError(ERROR_CODES.lastAdmin)
+
+    // Identity/membership/invitation rows + the person's email (from the
+    // authoritative Better Auth record).
+    const { orgIds, email } = await ctx.runMutation(
+      components.betterAuth.provisioning.eraseUser,
+      { userId: authUserId }
+    )
+    // GDPR erasure of the person's email PII: purge every message addressed to
+    // them from the Sweego component. Scheduled so it commits with the erasure;
+    // keyed on the Better Auth address (the authoritative source the mirror only
+    // mirrors), so the purge runs even if the app mirror is missing.
+    if (email !== null) {
+      await ctx.scheduler.runAfter(
+        0,
+        internal.email.erasure.purgeRecipientEmails,
+        { email }
+      )
+    }
+    // App mirror.
+    const mirror = await ctx.db
+      .query("users")
+      .withIndex("by_auth_id", (q) => q.eq("authId", authUserId))
+      .unique()
+    if (mirror !== null) await ctx.db.delete(mirror._id)
+    // Anonymize this person's snapshotted name in both audit logs (rows kept for
+    // the trail's legitimate-interest basis; their payloads carry IDs/codes only).
+    const orgAuthored = await ctx.db
+      .query("auditLog")
+      .withIndex("by_actor", (q) => q.eq("actorId", authUserId))
+      .collect()
+    for (const row of orgAuthored) {
+      await ctx.db.patch(row._id, { actorName: ERASED_ACTOR_NAME })
+    }
+    const platformAuthored = await ctx.db
+      .query("platformAuditLog")
+      .withIndex("by_actor", (q) => q.eq("actorId", authUserId))
+      .collect()
+    for (const row of platformAuthored) {
+      await ctx.db.patch(row._id, { actorName: ERASED_ACTOR_NAME })
+    }
+    // The erasure is self-attributed (actor === target): the person deleted
+    // their own account. Non-identifying org count only, never name/email.
+    await logPlatformAudit(ctx, {
+      actorId: authUserId,
+      type: PLATFORM_AUDIT_EVENTS.userDeleted,
+      targetUserId: authUserId,
+      payload: { orgCount: orgIds.length },
+    })
+    return null
+  },
+})
+
+// Self-service account deletion (GDPR hard delete). An ACTION because it must
+// re-authenticate the caller against Better Auth's server API before erasing:
+// authComponent.getAuth returns the auth object plus a Headers carrying the
+// current session as a Bearer token (Convex functions have no request headers),
+// and auth.api.verifyPassword re-checks the caller's password server-side. On a
+// wrong password Better Auth throws (INVALID_PASSWORD), which we map to
+// invalidInput so the UI can show it inline; we never reach the erasure. The
+// caller id comes from the JWT subject, never the client, so a user can only
+// erase themselves. The actual erasure (cascade + last-admin guard) runs in the
+// eraseSelf internal mutation.
+export const deleteMyAccount = action({
+  args: { password: v.string() },
+  returns: v.null(),
+  handler: async (ctx: ActionCtx, { password }) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (identity === null) throw appError(ERROR_CODES.notAuthenticated)
+
+    // Server-side re-auth, fail-closed. getAuth builds the session headers from
+    // the current identity's sessionId; verifyPassword validates `password`
+    // against the signed-in user's credential and throws INVALID_PASSWORD on a
+    // mismatch. ANY failure here (wrong password, no credential, or a session
+    // that cannot be resolved into headers) means we could not confirm the
+    // caller's password, so we reject with invalidInput and erase nothing. The
+    // whole boundary is wrapped so a missing/expired session is treated exactly
+    // like a wrong password, never silently bypassing the gate.
+    try {
+      const { auth, headers } = await authComponent.getAuth(createAuth, ctx)
+      await auth.api.verifyPassword({ body: { password }, headers })
+    } catch {
+      throw appError(ERROR_CODES.invalidInput)
+    }
+
+    await ctx.runMutation(internal.accounts.account.eraseSelf, {
+      authUserId: identity.subject,
+    })
     return null
   },
 })

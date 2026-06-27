@@ -21,6 +21,7 @@ export const ERROR_CODES = {
   ratingsIncomplete: "errors.ratingsIncomplete",
   invalidTransition: "errors.invalidTransition",
   roleFamilyExists: "errors.roleFamilyExists",
+  lastAdmin: "errors.lastAdmin",
 } as const
 
 export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES]
