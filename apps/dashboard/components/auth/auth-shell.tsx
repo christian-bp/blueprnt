@@ -23,9 +23,13 @@ export function AuthShell({
 }) {
   const t = useTranslations("dashboard")
   return (
-    <div className="flex min-h-svh">
+    <div className="flex min-h-svh bg-background">
       <BrandPanel />
-      <div className="relative flex min-h-svh w-full flex-col lg:w-1/2">
+      {/* Right side: a bordered, rounded, inset card on lg (the polyform login
+          treatment); full-bleed and borderless on mobile. The lg margins reveal
+          the light base, and the column stretches to the inset height via the
+          flex parent (so no min-h-svh is needed here). */}
+      <div className="relative flex w-full flex-col lg:my-2 lg:mr-2 lg:w-1/2 lg:rounded-2xl lg:border lg:border-border lg:bg-card">
         {headerRight ? (
           <div className="absolute top-4 right-4 z-10">{headerRight}</div>
         ) : null}
