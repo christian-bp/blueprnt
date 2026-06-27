@@ -1,0 +1,38 @@
+apps/dashboard/app/(app)/account/email-verified/page.tsx
+  s_c216811bbb1bb1::t_25a32f1b299d7c 1-58
+apps/dashboard/components/account/change-email-form.test.tsx
+  s_c216811bbb1bb1::t_415f5fcca8f85e 1-117
+packages/i18n/messages/en.json
+  s_c216811bbb1bb1::t_6629dd32fe1a56 743-745
+  s_c216811bbb1bb1::t_4fae5cf6adad27 1000-1012
+packages/i18n/messages/sv.json
+  s_c216811bbb1bb1::t_b9913b59e5f6cc 1000-1012
+  s_c216811bbb1bb1::t_f7bfb73a03bdfb 743-745
+packages/i18n/messages/da.json
+  s_c216811bbb1bb1::t_fcf9e770478e5e 1000-1012
+  s_c216811bbb1bb1::t_35e2ea74c72431 743-745
+packages/i18n/messages/fi.json
+  s_c216811bbb1bb1::t_1504d36dfacc06 743-745
+  s_c216811bbb1bb1::t_e85b3785d5afda 1000-1012
+packages/i18n/messages/nb.json
+  s_c216811bbb1bb1::t_d9189fe8b287ca 743-745
+  s_c216811bbb1bb1::t_6b082dd009696d 1000-1012
+apps/dashboard/components/account/change-email-form.tsx
+  s_c216811bbb1bb1::t_647d38b706f66f 1-120
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "626bde3425cf974c641cc1882a8d97d2b329b505",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
