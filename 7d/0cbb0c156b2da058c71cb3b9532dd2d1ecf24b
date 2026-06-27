@@ -1,0 +1,22 @@
+apps/dashboard/components/auth/background-aurora.tsx
+  s_c216811bbb1bb1::t_ed233b92f5f197 64-65
+docs/go-live-checklist.md
+  s_c216811bbb1bb1::t_dffcb2987b76c6 38-45
+  s_c216811bbb1bb1::t_4f64cc69bf9404 26-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "7d0cbb0c156b2da058c71cb3b9532dd2d1ecf24b",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
