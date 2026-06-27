@@ -512,6 +512,13 @@
         "heading": "Alt klart",
         "description": "Tofaktorautentisering er på. Kontoen din er beskyttet.",
         "cta": "Fortsett"
+      },
+      "backup": {
+        "heading": "Sikkerhetskoder",
+        "intro": "Lagre disse et trygt sted. Hver kode fungerer én gang hvis du mister tilgang til autentiseringsappen og e-posten.",
+        "copy": "Kopier",
+        "copied": "Kopiert",
+        "saved": "Jeg har lagret sikkerhetskodene mine"
       }
     },
     "onboarding": {

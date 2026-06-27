@@ -512,6 +512,13 @@
         "heading": "You're all set",
         "description": "Two-factor authentication is on. Your account is protected.",
         "cta": "Continue"
+      },
+      "backup": {
+        "heading": "Backup codes",
+        "intro": "Save these somewhere safe. Each code works once if you lose access to your authenticator and email.",
+        "copy": "Copy",
+        "copied": "Copied",
+        "saved": "I've saved my backup codes"
       }
     },
     "onboarding": {

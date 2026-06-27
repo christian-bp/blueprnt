@@ -512,6 +512,13 @@
         "heading": "Allt klart",
         "description": "Tvåstegsverifiering är på. Ditt konto är skyddat.",
         "cta": "Fortsätt"
+      },
+      "backup": {
+        "heading": "Reservkoder",
+        "intro": "Spara dessa på ett säkert ställe. Varje kod fungerar en gång om du förlorar åtkomst till din autentiseringsapp och e-post.",
+        "copy": "Kopiera",
+        "copied": "Kopierat",
+        "saved": "Jag har sparat mina reservkoder"
       }
     },
     "onboarding": {

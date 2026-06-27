@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
+import { Checkbox } from "@workspace/ui/components/checkbox"
 import {
   Form,
   FormControl,
@@ -47,6 +48,12 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
   const [code, setCode] = useState("")
   const [codeError, setCodeError] = useState(false)
   const [pwError, setPwError] = useState(false)
+  // Backup codes are returned once by enable(); shown on the completion screen
+  // for the user to save. savedAck gates the finish so they cannot skip past
+  // without acknowledging. copied is transient copy-button feedback.
+  const [backupCodes, setBackupCodes] = useState<string[]>([])
+  const [savedAck, setSavedAck] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   const pwSchema = useMemo(() => makeConfirmPasswordSchema(tv), [tv])
   const pwForm = useForm<ConfirmPasswordValues>({
@@ -80,6 +87,7 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
       return
     }
     setTotpUri(data.totpURI)
+    setBackupCodes(data.backupCodes ?? [])
     if (method === "email") await authClient.twoFactor.sendOtp()
     setStep("confirm")
   }
@@ -100,6 +108,16 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
     // Show the completion screen; onConfirmed (which advances to the app) fires
     // when the user continues from it, not the instant the code verifies.
     setStep("done")
+  }
+
+  async function onCopyBackup() {
+    try {
+      await navigator.clipboard.writeText(backupCodes.join("\n"))
+      setCopied(true)
+    } catch {
+      // Clipboard can be unavailable (insecure context / denied). The codes are
+      // visible on screen to copy by hand, so just skip the confirmation.
+    }
   }
 
   if (step === "choose") {
@@ -199,7 +217,49 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
           <p className="text-muted-foreground text-sm">
             {t("complete.description")}
           </p>
-          <Button className="w-full" onClick={() => onConfirmed()}>
+          {backupCodes.length > 0 && (
+            <div className="w-full rounded-lg border p-4 text-left">
+              <div className="flex items-center justify-between gap-2">
+                <h2 className="font-medium text-sm">{t("backup.heading")}</h2>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={onCopyBackup}
+                >
+                  {copied ? t("backup.copied") : t("backup.copy")}
+                </Button>
+              </div>
+              <p className="mt-1 text-muted-foreground text-sm">
+                {t("backup.intro")}
+              </p>
+              <ul className="mt-3 grid grid-cols-2 gap-2 font-mono text-sm">
+                {backupCodes.map((c) => (
+                  <li
+                    key={c}
+                    className="rounded bg-muted px-2 py-1 text-center tracking-wider"
+                  >
+                    {c}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-4 flex items-center gap-2">
+                <Checkbox
+                  id="backup-ack"
+                  checked={savedAck}
+                  onCheckedChange={(v) => setSavedAck(v === true)}
+                />
+                <label htmlFor="backup-ack" className="text-sm">
+                  {t("backup.saved")}
+                </label>
+              </div>
+            </div>
+          )}
+          <Button
+            className="w-full"
+            onClick={() => onConfirmed()}
+            disabled={backupCodes.length > 0 && !savedAck}
+          >
             {t("complete.cta")}
           </Button>
         </div>

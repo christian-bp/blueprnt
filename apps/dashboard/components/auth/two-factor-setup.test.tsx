@@ -68,7 +68,10 @@ describe("TwoFactorSetup", () => {
 
   it("enables and confirms via authenticator, then calls onConfirmed", async () => {
     enable.mockResolvedValue({
-      data: { totpURI: "otpauth://totp/blueprnt:hr@acme.se?secret=ABC" },
+      data: {
+        totpURI: "otpauth://totp/blueprnt:hr@acme.se?secret=ABC",
+        backupCodes: ["ABCD-1234", "EFGH-5678"],
+      },
       error: null,
     })
     verifyTotp.mockResolvedValue({ data: {}, error: null })
@@ -104,16 +107,18 @@ describe("TwoFactorSetup", () => {
       inputs.length > 0 ? inputs[0] : container.querySelector("input")
     if (!otpInput) throw new Error("OTP input not found")
     fireEvent.change(otpInput, { target: { value: "123456" } })
-    // 4. the completion screen appears; onConfirmed fires only on Continue.
+    // 4. completion screen shows the backup codes; Continue is gated on
+    //    acknowledging they're saved, and onConfirmed fires only on Continue.
     const continueButton = await screen.findByRole("button", {
       name: messages.dashboard.twoFactorSetup.complete.cta,
     })
     expect(verifyTotp).toHaveBeenCalledWith({ code: "123456" })
     expect(confirmMfaSetup).toHaveBeenCalledWith({ method: "totp" })
-    expect(
-      screen.getByText(messages.dashboard.twoFactorSetup.complete.heading)
-    ).toBeDefined()
+    expect(screen.getByText("ABCD-1234")).toBeDefined()
+    expect(screen.getByText("EFGH-5678")).toBeDefined()
+    expect((continueButton as HTMLButtonElement).disabled).toBe(true)
     expect(onConfirmed).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole("checkbox"))
     fireEvent.click(continueButton)
     expect(onConfirmed).toHaveBeenCalled()
   })

@@ -512,6 +512,13 @@
         "heading": "Så er du klar",
         "description": "Tofaktorgodkendelse er slået til. Din konto er beskyttet.",
         "cta": "Fortsæt"
+      },
+      "backup": {
+        "heading": "Sikkerhedskoder",
+        "intro": "Gem disse et sikkert sted. Hver kode virker én gang, hvis du mister adgang til din godkendelsesapp og e-mail.",
+        "copy": "Kopiér",
+        "copied": "Kopieret",
+        "saved": "Jeg har gemt mine sikkerhedskoder"
       }
     },
     "onboarding": {

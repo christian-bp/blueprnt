@@ -512,6 +512,13 @@
         "heading": "Valmista tuli",
         "description": "Kaksivaiheinen vahvistus on käytössä. Tilisi on suojattu.",
         "cta": "Jatka"
+      },
+      "backup": {
+        "heading": "Varakoodit",
+        "intro": "Tallenna nämä turvalliseen paikkaan. Kukin koodi toimii kerran, jos menetät pääsyn todennussovellukseen ja sähköpostiin.",
+        "copy": "Kopioi",
+        "copied": "Kopioitu",
+        "saved": "Olen tallentanut varakoodini"
       }
     },
     "onboarding": {
