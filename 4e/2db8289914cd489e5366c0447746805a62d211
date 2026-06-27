@@ -1,0 +1,52 @@
+apps/dashboard/components/account/delete-account-section.test.tsx
+  s_c216811bbb1bb1::t_e45b6f8692c897 189,191-193,205-207
+  s_c216811bbb1bb1::t_ba6b3b5de3d588 31-32,38-39
+  s_c216811bbb1bb1::t_76d0252e4fe2ad 274,276-278
+  s_c216811bbb1bb1::t_52222d53c8b788 222,224-226
+  s_c216811bbb1bb1::t_0db7f27b1027b2 177-178
+  s_c216811bbb1bb1::t_d43a8464937be0 249,251-253
+  s_c216811bbb1bb1::t_884ed6681de9e3 1-30,33-37,40-105,130-142,145,147-154,156-166,168-176,179-188,190,194-204,208-221,223,227-248,250,254-273,275,279-294
+  s_c216811bbb1bb1::t_62f72cf6f6fd25 106-129
+  s_c216811bbb1bb1::t_9e222afdc9d12d 143-144,146,155,167
+packages/i18n/messages/sv.json
+  s_c216811bbb1bb1::t_f1fd1563f26867 1049
+  s_c216811bbb1bb1::t_e6be5a9eeda8d6 1041-1048,1050-1051
+packages/i18n/messages/da.json
+  s_c216811bbb1bb1::t_acc70796fd9178 1049
+  s_c216811bbb1bb1::t_91c7af6698b7e6 1041-1048,1050-1051
+packages/i18n/messages/en.json
+  s_c216811bbb1bb1::t_b14445321e06b3 1041-1048,1050-1051
+  s_c216811bbb1bb1::t_82281eaf61dd1e 1049
+apps/dashboard/components/account/delete-account-section.tsx
+  s_c216811bbb1bb1::t_afe9a6980ef1c3 148
+  s_c216811bbb1bb1::t_2dfa04f2ea823f 1-23,25-29,34,40-110,113-116,118-123,125-147,149-162,164-171
+  s_c216811bbb1bb1::t_45bd834e7660ce 24,33
+  s_c216811bbb1bb1::t_0a49ef9e61effb 124
+  s_c216811bbb1bb1::t_e51f034b94fd52 35-36
+  s_c216811bbb1bb1::t_4586a01c829156 111-112
+  s_c216811bbb1bb1::t_300c47467bda98 117
+  s_c216811bbb1bb1::t_2d0a40c555a9dc 163
+  s_c216811bbb1bb1::t_6c52320606c781 30-32,37-39
+packages/i18n/messages/fi.json
+  s_c216811bbb1bb1::t_a0844d3b54d494 1049
+  s_c216811bbb1bb1::t_ce3330c5eee24a 1041-1048,1050-1051
+packages/i18n/messages/nb.json
+  s_c216811bbb1bb1::t_a42c2b63d5b8d5 1041-1048,1050-1051
+  s_c216811bbb1bb1::t_efa63b6ec00e32 1049
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "4e2db8289914cd489e5366c0447746805a62d211",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
