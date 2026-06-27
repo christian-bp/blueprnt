@@ -1,0 +1,19 @@
+docs/superpowers/plans/2026-06-27-account-settings.md
+  s_c216811bbb1bb1::t_452ae26342bba1 1-402
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "3e73ea4bb7e8acfd8c0b4c41eca92d5bae3b5f17",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
