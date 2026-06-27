@@ -1,0 +1,49 @@
+packages/i18n/messages/nb.json
+  s_c216811bbb1bb1::t_c9a5f3cd9e968e 1037
+  s_c216811bbb1bb1::t_60f0aeebba2ebe 995-1003
+apps/dashboard/components/account/change-email-form.test.tsx
+  s_c216811bbb1bb1::t_29ba9689dba3c5 81
+apps/dashboard/app/change-email/change-email.test.tsx
+  s_c216811bbb1bb1::t_cea68cd0a6cf8a 1-70,72-85,87-101,103-111,113-139,141-150
+  s_c216811bbb1bb1::t_50e8cb0705f112 71
+  s_c216811bbb1bb1::t_946a16d4d92c19 140
+  s_c216811bbb1bb1::t_00f45067dfd472 112
+  s_c216811bbb1bb1::t_3e5a67d1a277b7 102
+  s_c216811bbb1bb1::t_6cbd921a2b6e87 86
+packages/i18n/messages/sv.json
+  s_c216811bbb1bb1::t_2c6b95aaa2000e 995-1003
+  s_c216811bbb1bb1::t_b041490261d055 1037
+apps/dashboard/components/account/change-email-form.tsx
+  s_c216811bbb1bb1::t_9a3822cff602c0 63
+packages/backend/convex/auth.ts
+  s_c216811bbb1bb1::t_fdae344377dc42 176-177,185-186,190
+packages/i18n/messages/en.json
+  s_c216811bbb1bb1::t_ee7904910b287c 1037
+  s_c216811bbb1bb1::t_a7d1424457e6a9 995-1003
+packages/i18n/messages/da.json
+  s_c216811bbb1bb1::t_ab077abf348198 1037
+  s_c216811bbb1bb1::t_f96e59e5578b42 995-1003
+packages/i18n/messages/fi.json
+  s_c216811bbb1bb1::t_059cb3ba9b0efd 1037
+  s_c216811bbb1bb1::t_e7d01114089175 995-1003
+apps/dashboard/app/change-email/page.tsx
+  s_c216811bbb1bb1::t_9981aa48f34458 48-50
+  s_c216811bbb1bb1::t_007c481d2be936 1-39,43-47,51-86
+  s_c216811bbb1bb1::t_16e09c89e7e6cc 40-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "0f48a642d50f8ab01e79445820a54abe7ee48a65",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
