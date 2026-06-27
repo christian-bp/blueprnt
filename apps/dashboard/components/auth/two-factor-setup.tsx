@@ -19,7 +19,7 @@ import {
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import QRCode from "qrcode"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { AuthShell } from "@/components/auth/auth-shell"
 import { SuccessCheck } from "@/components/auth/success-check"
@@ -63,6 +63,15 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
     if (totpUri === null) return
     void QRCode.toDataURL(totpUri).then(setQr)
   }, [totpUri])
+
+  // Focus the code field when the confirm step opens. A bare autoFocus is
+  // unreliable here: the step mounts right after enable()'s token refresh, whose
+  // re-render churn can swallow it. Focusing from an effect keyed on the step is
+  // robust.
+  const otpRef = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    if (step === "confirm") otpRef.current?.focus()
+  }, [step])
 
   async function onConfirmPassword(values: ConfirmPasswordValues) {
     setPwError(false)
@@ -226,11 +235,11 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
           </p>
         )}
         <InputOTP
+          ref={otpRef}
           maxLength={6}
           value={code}
           onChange={setCode}
           onComplete={onCodeComplete}
-          autoFocus
           aria-label={t("codeLabel")}
         >
           <InputOTPGroup>
