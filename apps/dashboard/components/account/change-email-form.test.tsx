@@ -78,7 +78,7 @@ describe("ChangeEmailForm", () => {
     await waitFor(() => {
       expect(changeEmail).toHaveBeenCalledWith({
         newEmail: "new@example.com",
-        callbackURL: "/account/email-verified",
+        callbackURL: "/change-email?step=confirmed",
       })
     })
   })

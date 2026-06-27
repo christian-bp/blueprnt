@@ -992,6 +992,15 @@
         }
       }
     },
+    "changeEmail": {
+      "confirmedTitle": "E-mailskift bekræftet",
+      "confirmedBody": "Vi har sendt et verificeringslink til din nye adresse. Klik på det for at gennemføre skiftet.",
+      "doneTitle": "E-mail opdateret",
+      "doneBody": "Din e-mailadresse er opdateret. Du kan nu logge ind med den nye adresse.",
+      "invalidTitle": "Linket er ugyldigt eller udløbet",
+      "invalidBody": "Dette link er ikke længere gyldigt. Anmod om et nyt e-mailskift fra dine kontoindstillinger.",
+      "closeHint": "Du kan lukke dette vindue."
+    },
     "account": {
       "tabs": {
         "profile": "Profil",
@@ -1025,12 +1034,7 @@
         "change": "Skift e-mail",
         "confirmationTitle": "Tjek din indbakke",
         "confirmationBody": "Et bekræftelseslink er sendt til din nuværende e-mailadresse. Klik på det for at godkende ændringen, og klik derefter på verificeringslinket sendt til din nye adresse for at fuldføre det.",
-        "error": "Kunne ikke anmode om e-mailskiftet. Prøv igen.",
-        "verifiedTitle": "E-mail verificeret",
-        "verifiedBody": "Din nye e-mailadresse er verificeret. Du kan nu logge ind med den.",
-        "invalidTitle": "Linket er ugyldigt eller udløbet",
-        "invalidBody": "Dette verificeringslink er ikke længere gyldigt. Anmod om et nyt e-mailskift fra dine kontoindstillinger.",
-        "backToProfile": "Tilbage til kontoindstillinger"
+        "error": "Kunne ikke anmode om e-mailskiftet. Prøv igen."
       },
       "security": {
         "password": {

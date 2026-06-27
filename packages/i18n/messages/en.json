@@ -992,6 +992,15 @@
         }
       }
     },
+    "changeEmail": {
+      "confirmedTitle": "Email change confirmed",
+      "confirmedBody": "We've sent a verification link to your new address. Click it to complete the change.",
+      "doneTitle": "Email updated",
+      "doneBody": "Your email address has been updated. You can now sign in with your new address.",
+      "invalidTitle": "Link invalid or expired",
+      "invalidBody": "This link is no longer valid. Request a new email change from your account settings.",
+      "closeHint": "You can close this window."
+    },
     "account": {
       "tabs": {
         "profile": "Profile",
@@ -1025,12 +1034,7 @@
         "change": "Change email",
         "confirmationTitle": "Check your inbox",
         "confirmationBody": "A confirmation link has been sent to your current email address. Click it to authorise the change, then click the verification link sent to your new address to complete it.",
-        "error": "Could not request the email change. Please try again.",
-        "verifiedTitle": "Email verified",
-        "verifiedBody": "Your new email address has been verified. You can now sign in with it.",
-        "invalidTitle": "Link invalid or expired",
-        "invalidBody": "This verification link is no longer valid. Please request a new email change from your account settings.",
-        "backToProfile": "Back to account settings"
+        "error": "Could not request the email change. Please try again."
       },
       "security": {
         "password": {

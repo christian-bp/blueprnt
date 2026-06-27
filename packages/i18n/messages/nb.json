@@ -992,6 +992,15 @@
         }
       }
     },
+    "changeEmail": {
+      "confirmedTitle": "E-postendring bekreftet",
+      "confirmedBody": "Vi har sendt en verifiseringslenke til den nye adressen din. Klikk på den for å fullføre endringen.",
+      "doneTitle": "E-post oppdatert",
+      "doneBody": "E-postadressen din er oppdatert. Du kan nå logge inn med den nye adressen.",
+      "invalidTitle": "Lenken er ugyldig eller utløpt",
+      "invalidBody": "Denne lenken er ikke lenger gyldig. Be om et nytt e-postbytte fra kontoinnstillingene dine.",
+      "closeHint": "Du kan lukke dette vinduet."
+    },
     "account": {
       "tabs": {
         "profile": "Profil",
@@ -1025,12 +1034,7 @@
         "change": "Bytt e-post",
         "confirmationTitle": "Sjekk innboksen din",
         "confirmationBody": "En bekreftelseslenke er sendt til din gjeldende e-postadresse. Klikk den for å godkjenne endringen, og klikk deretter verifiseringslenken sendt til din nye adresse for å fullføre.",
-        "error": "Kunne ikke be om e-postbytte. Prøv igjen.",
-        "verifiedTitle": "E-post verifisert",
-        "verifiedBody": "Din nye e-postadresse er verifisert. Du kan nå logge inn med den.",
-        "invalidTitle": "Lenken er ugyldig eller utløpt",
-        "invalidBody": "Denne verifiseringslenken er ikke lenger gyldig. Be om et nytt e-postbytte fra kontoinnstillingene dine.",
-        "backToProfile": "Tilbake til kontoinnstillinger"
+        "error": "Kunne ikke be om e-postbytte. Prøv igjen."
       },
       "security": {
         "password": {

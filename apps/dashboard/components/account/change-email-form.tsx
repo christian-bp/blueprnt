@@ -60,7 +60,7 @@ export function ChangeEmailForm() {
     try {
       const { error: changeError } = await authClient.changeEmail({
         newEmail: values.email,
-        callbackURL: "/account/email-verified",
+        callbackURL: "/change-email?step=confirmed",
       })
       if (changeError) {
         setError(true)

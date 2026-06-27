@@ -992,6 +992,15 @@
         }
       }
     },
+    "changeEmail": {
+      "confirmedTitle": "E-postbyte bekräftat",
+      "confirmedBody": "Vi har skickat en verifieringslänk till din nya adress. Klicka på den för att slutföra bytet.",
+      "doneTitle": "E-post uppdaterad",
+      "doneBody": "Din e-postadress har uppdaterats. Du kan nu logga in med din nya adress.",
+      "invalidTitle": "Länken är ogiltig eller har gått ut",
+      "invalidBody": "Den här länken är inte längre giltig. Begär ett nytt e-postbyte från dina kontoinställningar.",
+      "closeHint": "Du kan stänga det här fönstret."
+    },
     "account": {
       "tabs": {
         "profile": "Profil",
@@ -1025,12 +1034,7 @@
         "change": "Byt e-post",
         "confirmationTitle": "Kolla din inkorg",
         "confirmationBody": "En bekräftelselänk har skickats till din nuvarande e-postadress. Klicka på den för att godkänna bytet, och klicka sedan på verifieringslänken som skickats till din nya adress för att slutföra det.",
-        "error": "Det gick inte att begära e-postbytet. Försök igen.",
-        "verifiedTitle": "E-post verifierad",
-        "verifiedBody": "Din nya e-postadress har verifierats. Du kan nu logga in med den.",
-        "invalidTitle": "Länken är ogiltig eller har gått ut",
-        "invalidBody": "Den här verifieringslänken är inte längre giltig. Begär ett nytt e-postbyte från dina kontoinställningar.",
-        "backToProfile": "Tillbaka till kontoinställningar"
+        "error": "Det gick inte att begära e-postbytet. Försök igen."
       },
       "security": {
         "password": {

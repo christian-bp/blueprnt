@@ -173,6 +173,8 @@ export const createAuthOptions = (
     // delivers the verify link to the right inbox. Also used by Better Auth
     // for any other email verification flow (required by BA when changeEmail
     // is enabled, otherwise BA throws "Verification email isn't enabled").
+    // Rewrite the callbackURL so the hop-2 link lands on its own page with
+    // accurate "email updated" copy, not the hop-1 "check your inbox" copy.
     emailVerification: {
       sendVerificationEmail: async ({ user, url }) => {
         const mctx = requireRunMutationCtx(ctx)
@@ -180,10 +182,12 @@ export const createAuthOptions = (
           internal.accounts.organization.getLanguageForUser,
           { userId: user.id }
         )
+        const u = new URL(url)
+        u.searchParams.set("callbackURL", "/change-email?step=done")
         await mctx.runMutation(internal.email.outbox.enqueueEmail, {
           to: user.email,
           templateKey: "verifyEmail",
-          props: { url },
+          props: { url: u.toString() },
           locale: settings?.language ?? "en",
         })
       },

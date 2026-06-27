@@ -992,6 +992,15 @@
         }
       }
     },
+    "changeEmail": {
+      "confirmedTitle": "Sähköpostin vaihto vahvistettu",
+      "confirmedBody": "Olemme lähettäneet vahvistuslinkin uuteen osoitteeseesi. Klikkaa sitä viimeistelläksesi vaihdon.",
+      "doneTitle": "Sähköposti päivitetty",
+      "doneBody": "Sähköpostiosoitteesi on päivitetty. Voit nyt kirjautua sisään uudella osoitteellasi.",
+      "invalidTitle": "Linkki on virheellinen tai vanhentunut",
+      "invalidBody": "Tämä linkki ei ole enää voimassa. Pyydä uutta sähköpostin vaihtoa tilisi asetuksista.",
+      "closeHint": "Voit sulkea tämän ikkunan."
+    },
     "account": {
       "tabs": {
         "profile": "Profiili",
@@ -1025,12 +1034,7 @@
         "change": "Vaihda sähköposti",
         "confirmationTitle": "Tarkista saapuneet",
         "confirmationBody": "Vahvistuslinkki on lähetetty nykyiseen sähköpostiosoitteeseesi. Klikkaa sitä hyväksyäksesi muutoksen, ja klikkaa sitten uuteen osoitteeseesi lähetettyä vahvistuslinkkiä viimeistelläksesi se.",
-        "error": "Sähköpostin vaihtoa ei voitu pyytää. Yritä uudelleen.",
-        "verifiedTitle": "Sähköposti vahvistettu",
-        "verifiedBody": "Uusi sähköpostiosoitteesi on vahvistettu. Voit nyt kirjautua sisään sillä.",
-        "invalidTitle": "Linkki on virheellinen tai vanhentunut",
-        "invalidBody": "Tämä vahvistuslinkki ei ole enää voimassa. Pyydä uutta sähköpostin vaihtoa tilisi asetuksista.",
-        "backToProfile": "Takaisin tiliasetuksiin"
+        "error": "Sähköpostin vaihtoa ei voitu pyytää. Yritä uudelleen."
       },
       "security": {
         "password": {
