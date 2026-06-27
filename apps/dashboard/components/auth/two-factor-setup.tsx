@@ -187,11 +187,6 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
                   </FormItem>
                 )}
               />
-              {pwError && (
-                <p role="alert" className="text-destructive text-sm">
-                  {t("password.error")}
-                </p>
-              )}
               <SubmitButton
                 type="submit"
                 className="w-full"
@@ -200,6 +195,11 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
               >
                 {t("password.cta")}
               </SubmitButton>
+              {pwError && (
+                <p role="alert" className="text-destructive text-sm">
+                  {t("password.error")}
+                </p>
+              )}
             </form>
           </Form>
           <Button
@@ -261,11 +261,6 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
               </div>
             </div>
           )}
-          {finishError && (
-            <p role="alert" className="text-destructive text-sm">
-              {tAuth("error")}
-            </p>
-          )}
           <SubmitButton
             type="button"
             className="w-full"
@@ -275,6 +270,11 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
           >
             {t("complete.cta")}
           </SubmitButton>
+          {finishError && (
+            <p role="alert" className="text-destructive text-sm">
+              {tAuth("error")}
+            </p>
+          )}
         </div>
       </AuthShell>
     )

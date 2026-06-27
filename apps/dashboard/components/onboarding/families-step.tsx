@@ -262,11 +262,6 @@ export function FamiliesStep({
           claimId={draft.claimId}
           trackOptions={trackOptions}
         />
-        {failure !== null && (
-          <p role="alert" className="text-destructive text-sm">
-            {failure === "duplicate" ? tErrors("roleFamilyExists") : t("error")}
-          </p>
-        )}
         {/* This step cannot be skipped: emptying the list and finishing is the
             explicit way to start without families. Start over is always shown in
             review, but its weight matches what it does. When a role set is
@@ -313,6 +308,13 @@ export function FamiliesStep({
             />
           </Button>
         </WizardFooter>
+        {/* Alert below the CTA so nothing on screen reflows (matches the paste
+            view). A failed finish/family create surfaces here. */}
+        {failure !== null && (
+          <p role="alert" className="text-destructive text-sm">
+            {failure === "duplicate" ? tErrors("roleFamilyExists") : t("error")}
+          </p>
+        )}
       </>
     )
   }

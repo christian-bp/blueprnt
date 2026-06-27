@@ -93,11 +93,6 @@ function ResetPasswordForm() {
                   </FormItem>
                 )}
               />
-              {error && (
-                <p role="alert" className="text-destructive text-sm">
-                  {t(error === "compromised" ? "compromised" : "error")}
-                </p>
-              )}
               <SubmitButton
                 type="submit"
                 className="w-full"
@@ -106,6 +101,11 @@ function ResetPasswordForm() {
               >
                 {t("cta")}
               </SubmitButton>
+              {error && (
+                <p role="alert" className="text-destructive text-sm">
+                  {t(error === "compromised" ? "compromised" : "error")}
+                </p>
+              )}
             </form>
           </Form>
         )}

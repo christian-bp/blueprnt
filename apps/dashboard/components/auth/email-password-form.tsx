@@ -127,11 +127,6 @@ export function EmailPasswordForm(props: {
               </FormItem>
             )}
           />
-          {error ? (
-            <p role="alert" className="text-destructive text-sm">
-              {t(error)}
-            </p>
-          ) : null}
           <SubmitButton
             type="submit"
             className="w-full"
@@ -140,6 +135,11 @@ export function EmailPasswordForm(props: {
           >
             {t("signIn.cta")}
           </SubmitButton>
+          {error ? (
+            <p role="alert" className="text-destructive text-sm">
+              {t(error)}
+            </p>
+          ) : null}
         </form>
       </Form>
     </div>

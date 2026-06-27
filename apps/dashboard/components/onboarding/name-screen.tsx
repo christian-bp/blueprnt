@@ -101,15 +101,15 @@ export function NameScreen({
               </FormItem>
             )}
           />
+          <NextButton
+            type="submit"
+            disabled={!form.formState.isValid || form.formState.isSubmitting}
+          />
           {failed && (
             <p role="alert" className="text-destructive text-sm">
               {t("error")}
             </p>
           )}
-          <NextButton
-            type="submit"
-            disabled={!form.formState.isValid || form.formState.isSubmitting}
-          />
         </form>
       </Form>
     </ScreenShell>
