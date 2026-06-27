@@ -1,6 +1,8 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Key01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -301,9 +303,21 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
           </div>
         )}
         {method === "totp" && totpUri && (
-          <p className="break-all text-center text-muted-foreground text-xs">
-            {t("totp.manualKey")} {new URL(totpUri).searchParams.get("secret")}
-          </p>
+          <div className="flex w-full flex-col items-center gap-1.5">
+            <p className="text-center text-muted-foreground text-xs">
+              {t("totp.manualKey")}
+            </p>
+            <div className="flex w-full items-center gap-2 rounded-lg border p-3">
+              <HugeiconsIcon
+                icon={Key01Icon}
+                className="size-4 shrink-0 text-muted-foreground"
+                aria-hidden
+              />
+              <code className="break-all font-mono text-muted-foreground text-xs">
+                {new URL(totpUri).searchParams.get("secret")}
+              </code>
+            </div>
+          </div>
         )}
         <OtpField
           inputRef={otpRef}
