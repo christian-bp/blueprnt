@@ -1014,7 +1014,7 @@
           "remove": "Poista avatar",
           "tooLarge": "Kuvan on oltava alle 5 Mt.",
           "invalidType": "Valitse kuvatiedosto.",
-          "error": "Avatarin paivittaminen epaonnistui. Yrita uudelleen."
+          "error": "Avatarin päivittäminen epäonnistui. Yritä uudelleen."
         }
       },
       "email": {

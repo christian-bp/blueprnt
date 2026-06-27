@@ -1014,7 +1014,7 @@
           "remove": "Fjern avatar",
           "tooLarge": "Billedet skal være mindre end 5 MB.",
           "invalidType": "Vælg venligst en billedfil.",
-          "error": "Kunne ikke opdatere din avatar. Prov igen."
+          "error": "Kunne ikke opdatere din avatar. Prøv igen."
         }
       },
       "email": {
