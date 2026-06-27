@@ -506,7 +506,12 @@
       },
       "codeLabel": "6-sifret kode",
       "verifyError": "Koden fungerte ikke. Prøv igjen.",
-      "changeMethod": "Velg en annen metode"
+      "changeMethod": "Velg en annen metode",
+      "complete": {
+        "heading": "Alt klart",
+        "description": "Tofaktorautentisering er på. Kontoen din er beskyttet.",
+        "cta": "Fortsett"
+      }
     },
     "onboarding": {
       "accountMenu": "Kontomeny",

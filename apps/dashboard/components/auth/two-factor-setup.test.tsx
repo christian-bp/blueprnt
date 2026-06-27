@@ -104,11 +104,18 @@ describe("TwoFactorSetup", () => {
       inputs.length > 0 ? inputs[0] : container.querySelector("input")
     if (!otpInput) throw new Error("OTP input not found")
     fireEvent.change(otpInput, { target: { value: "123456" } })
-    await waitFor(() => {
-      expect(verifyTotp).toHaveBeenCalledWith({ code: "123456" })
-      expect(confirmMfaSetup).toHaveBeenCalledWith({ method: "totp" })
-      expect(onConfirmed).toHaveBeenCalled()
+    // 4. the completion screen appears; onConfirmed fires only on Continue.
+    const continueButton = await screen.findByRole("button", {
+      name: messages.dashboard.twoFactorSetup.complete.cta,
     })
+    expect(verifyTotp).toHaveBeenCalledWith({ code: "123456" })
+    expect(confirmMfaSetup).toHaveBeenCalledWith({ method: "totp" })
+    expect(
+      screen.getByText(messages.dashboard.twoFactorSetup.complete.heading)
+    ).toBeDefined()
+    expect(onConfirmed).not.toHaveBeenCalled()
+    fireEvent.click(continueButton)
+    expect(onConfirmed).toHaveBeenCalled()
   })
 
   it("sends and verifies an email code when the email method is chosen", async () => {
@@ -141,10 +148,13 @@ describe("TwoFactorSetup", () => {
       inputs.length > 0 ? inputs[0] : container.querySelector("input")
     if (!otpInput) throw new Error("OTP input not found")
     fireEvent.change(otpInput, { target: { value: "654321" } })
-    await waitFor(() => {
-      expect(verifyOtp).toHaveBeenCalledWith({ code: "654321" })
-      expect(confirmMfaSetup).toHaveBeenCalledWith({ method: "email" })
-      expect(onConfirmed).toHaveBeenCalled()
+    const continueButton = await screen.findByRole("button", {
+      name: messages.dashboard.twoFactorSetup.complete.cta,
     })
+    expect(verifyOtp).toHaveBeenCalledWith({ code: "654321" })
+    expect(confirmMfaSetup).toHaveBeenCalledWith({ method: "email" })
+    expect(onConfirmed).not.toHaveBeenCalled()
+    fireEvent.click(continueButton)
+    expect(onConfirmed).toHaveBeenCalled()
   })
 })

@@ -506,7 +506,12 @@
       },
       "codeLabel": "6-cifret kode",
       "verifyError": "Koden virkede ikke. Prøv igen.",
-      "changeMethod": "Vælg en anden metode"
+      "changeMethod": "Vælg en anden metode",
+      "complete": {
+        "heading": "Så er du klar",
+        "description": "Tofaktorgodkendelse er slået til. Din konto er beskyttet.",
+        "cta": "Fortsæt"
+      }
     },
     "onboarding": {
       "accountMenu": "Kontomenu",

@@ -506,7 +506,12 @@
       },
       "codeLabel": "6-siffrig kod",
       "verifyError": "Koden fungerade inte. Försök igen.",
-      "changeMethod": "Välj en annan metod"
+      "changeMethod": "Välj en annan metod",
+      "complete": {
+        "heading": "Allt klart",
+        "description": "Tvåstegsverifiering är på. Ditt konto är skyddat.",
+        "cta": "Fortsätt"
+      }
     },
     "onboarding": {
       "accountMenu": "Kontomeny",

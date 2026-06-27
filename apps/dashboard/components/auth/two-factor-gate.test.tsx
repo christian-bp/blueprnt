@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react"
+import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
@@ -7,8 +7,13 @@ const useQueryMock = vi.fn()
 vi.mock("convex/react", () => ({
   useQuery: (...args: unknown[]) => useQueryMock(...args),
 }))
+// Stub the wizard as a button that fires onConfirmed (its completion handoff).
 vi.mock("@/components/auth/two-factor-setup", () => ({
-  TwoFactorSetup: () => <div data-testid="setup" />,
+  TwoFactorSetup: ({ onConfirmed }: { onConfirmed: () => void }) => (
+    <button type="button" data-testid="setup" onClick={onConfirmed}>
+      setup
+    </button>
+  ),
 }))
 
 import { TwoFactorGate } from "@/components/auth/two-factor-gate"
@@ -76,6 +81,35 @@ describe("TwoFactorGate", () => {
     expect(screen.getByTestId("setup")).toBeDefined()
 
     useQueryMock.mockReturnValue(null)
+    rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <TwoFactorGate>
+          <div data-testid="children" />
+        </TwoFactorGate>
+      </NextIntlClientProvider>
+    )
+    expect(screen.getByTestId("setup")).toBeDefined()
+    expect(screen.queryByTestId("children")).toBeNull()
+  })
+
+  it("enters the app once the wizard signals completion", () => {
+    useQueryMock.mockReturnValue({ confirmed: false, method: null })
+    renderGate()
+    // Continuing from the wizard's completion screen calls onConfirmed.
+    fireEvent.click(screen.getByTestId("setup"))
+    expect(screen.getByTestId("children")).toBeDefined()
+    expect(screen.queryByTestId("setup")).toBeNull()
+  })
+
+  it("keeps the wizard until completion even when status flips to confirmed mid-setup", () => {
+    // After the code verifies, confirmMfaSetup flips status to confirmed
+    // server-side. The gate must keep showing the wizard (its completion screen)
+    // rather than jumping straight to the app.
+    useQueryMock.mockReturnValue({ confirmed: false, method: null })
+    const { rerender } = renderGate()
+    expect(screen.getByTestId("setup")).toBeDefined()
+
+    useQueryMock.mockReturnValue({ confirmed: true, method: "totp" })
     rerender(
       <NextIntlClientProvider locale="en" messages={messages}>
         <TwoFactorGate>

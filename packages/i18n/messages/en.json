@@ -506,7 +506,12 @@
       },
       "codeLabel": "6-digit code",
       "verifyError": "That code didn't work. Try again.",
-      "changeMethod": "Choose a different method"
+      "changeMethod": "Choose a different method",
+      "complete": {
+        "heading": "You're all set",
+        "description": "Two-factor authentication is on. Your account is protected.",
+        "cta": "Continue"
+      }
     },
     "onboarding": {
       "accountMenu": "Account menu",

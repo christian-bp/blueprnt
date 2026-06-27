@@ -506,7 +506,12 @@
       },
       "codeLabel": "6-numeroinen koodi",
       "verifyError": "Koodi ei toiminut. Yritä uudelleen.",
-      "changeMethod": "Valitse toinen tapa"
+      "changeMethod": "Valitse toinen tapa",
+      "complete": {
+        "heading": "Valmista tuli",
+        "description": "Kaksivaiheinen vahvistus on käytössä. Tilisi on suojattu.",
+        "cta": "Jatka"
+      }
     },
     "onboarding": {
       "accountMenu": "Tilivalikko",

@@ -22,6 +22,7 @@ import QRCode from "qrcode"
 import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { AuthShell } from "@/components/auth/auth-shell"
+import { SuccessCheck } from "@/components/auth/success-check"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { PasswordInput } from "@/components/password-input"
 import { SubmitButton } from "@/components/submit-button"
@@ -32,7 +33,7 @@ import {
 } from "@/lib/two-factor-schemas"
 
 type Method = "totp" | "email"
-type Step = "choose" | "password" | "confirm"
+type Step = "choose" | "password" | "confirm" | "done"
 
 export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
   const t = useTranslations("dashboard.twoFactorSetup")
@@ -90,7 +91,9 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
       return
     }
     await confirmMfaSetup({ method })
-    onConfirmed()
+    // Show the completion screen; onConfirmed (which advances to the app) fires
+    // when the user continues from it, not the instant the code verifies.
+    setStep("done")
   }
 
   if (step === "choose") {
@@ -175,6 +178,23 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
               </SubmitButton>
             </form>
           </Form>
+        </div>
+      </AuthShell>
+    )
+  }
+
+  if (step === "done") {
+    return (
+      <AuthShell>
+        <div className="flex flex-col items-center gap-4 text-center">
+          <SuccessCheck />
+          <h1 className="font-medium text-lg">{t("complete.heading")}</h1>
+          <p className="text-muted-foreground text-sm">
+            {t("complete.description")}
+          </p>
+          <Button className="w-full" onClick={() => onConfirmed()}>
+            {t("complete.cta")}
+          </Button>
         </div>
       </AuthShell>
     )

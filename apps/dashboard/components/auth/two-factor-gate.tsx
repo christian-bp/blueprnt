@@ -15,26 +15,31 @@ export function TwoFactorGate(props: { children: ReactNode }) {
   const t = useTranslations("dashboard.auth")
   const status = useQuery(api.accounts.twoFactor.getMyMfaStatus, {})
 
-  // Once setup is needed, the wizard OWNS the screen until 2FA is confirmed.
-  // twoFactor.enable() changes the session's 2FA state, which makes the Convex
-  // auth token refresh; during that blip getMyMfaStatus reloads to undefined
-  // (loading) or null (the query returns null rather than throwing while the
-  // identity is momentarily absent). Without this latch the gate would flip to
-  // the spinner, unmount TwoFactorSetup, and reset its step back to method-choice
-  // (a visible bounce). Mirrors OnboardingGate's session latch. onConfirmed is a
-  // no-op: confirmMfaSetup updates server state and getMyMfaStatus re-runs
-  // reactively to confirmed.
+  // Once setup is needed, the wizard OWNS the screen until the user continues
+  // from its completion screen (onConfirmed -> done). twoFactor.enable() changes
+  // the session's 2FA state, which makes the Convex auth token refresh; during
+  // that blip getMyMfaStatus reloads to undefined (loading) or null (the query
+  // returns null rather than throwing while the identity is momentarily absent).
+  // Without the setupStarted latch the gate would flip to the spinner, unmount
+  // TwoFactorSetup, and reset its step (a visible bounce). Mirrors OnboardingGate.
   const [setupStarted, setSetupStarted] = useState(false)
+  const [done, setDone] = useState(false)
   const needsSetup = status != null && !status.confirmed
   useEffect(() => {
     if (needsSetup) setSetupStarted(true)
   }, [needsSetup])
 
-  if (status?.confirmed) {
+  // Enter the app once the wizard's completion screen is acknowledged this
+  // session (done), or when 2FA was already confirmed before this session (a
+  // returning user who never started setup).
+  if (done || (status?.confirmed && !setupStarted)) {
     return <>{props.children}</>
   }
+  // Setup needed or in progress: the wizard owns the screen. status flips to
+  // confirmed the instant the code verifies, so entering on status alone here
+  // would skip the completion screen; we wait for onConfirmed instead.
   if (needsSetup || setupStarted) {
-    return <TwoFactorSetup onConfirmed={() => {}} />
+    return <TwoFactorSetup onConfirmed={() => setDone(true)} />
   }
   // First load only (never started): wait for the initial status to resolve.
   return (
