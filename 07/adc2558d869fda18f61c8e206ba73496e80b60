@@ -1,0 +1,40 @@
+packages/backend/convex/auth.ts
+  s_c216811bbb1bb1::t_570a57f1e1b30a 150-190
+packages/email/src/render.test.ts
+  s_c216811bbb1bb1::t_215a963efcc190 119-142
+packages/email/src/templates/change-email-confirm.tsx
+  s_c216811bbb1bb1::t_f88831ec70e018 1-44
+packages/i18n/messages/sv.json
+  s_c216811bbb1bb1::t_fcb294a1668138 37-50
+packages/i18n/messages/fi.json
+  s_c216811bbb1bb1::t_6dc1c3ec5388c4 38-51
+packages/email/src/render.ts
+  s_c216811bbb1bb1::t_9b2b65e4faff8d 5-7,13,41-42,80-97
+  s_c216811bbb1bb1::t_b60c541c91faa1 4
+packages/constants/src/email.ts
+  s_c216811bbb1bb1::t_ba00c5374bc128 11-12
+packages/i18n/messages/nb.json
+  s_c216811bbb1bb1::t_d72cc4b27fc97a 38-51
+packages/i18n/messages/en.json
+  s_c216811bbb1bb1::t_c259b9fa18ace5 38-51
+packages/i18n/messages/da.json
+  s_c216811bbb1bb1::t_176116543961b0 38-51
+packages/email/src/templates/verify-email.tsx
+  s_c216811bbb1bb1::t_70d87c8e3fc71e 1-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "07adc2558d869fda18f61c8e206ba73496e80b60",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
