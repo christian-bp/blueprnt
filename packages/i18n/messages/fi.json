@@ -1075,7 +1075,8 @@
           "lastAdmin": "Olet viimeinen ylläpitäjä seuraavissa organisaatioissa: {orgs}. Siirrä tai poista nämä organisaatiot ennen tilin poistamista tai ota yhteyttä tukeen.",
           "lastAdminUnknown": "Olet viimeinen ylläpitäjä yhdessä tai useammassa organisaatiossa. Siirrä tai poista nämä organisaatiot ennen tilin poistamista tai ota yhteyttä tukeen.",
           "wrongPassword": "Tämä salasana on virheellinen. Yritä uudelleen.",
-          "error": "Tiliäsi ei voitu poistaa. Yritä uudelleen."
+          "error": "Tiliäsi ei voitu poistaa. Yritä uudelleen.",
+          "cancel": "Peruuta"
         }
       }
     }

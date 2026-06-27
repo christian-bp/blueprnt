@@ -3,10 +3,19 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@workspace/ui/components/alert-dialog"
+import { Button } from "@workspace/ui/components/button"
+import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
@@ -61,9 +70,10 @@ function isWrongPasswordError(error: unknown): boolean {
   return error instanceof Error && error.message.includes("errors.invalidInput")
 }
 
-// Danger zone card: renders a type-to-confirm gate (type email) plus a password
-// field. If the account is the sole admin of any org, only a support note is
-// shown. On success, signs the user out and redirects to /.
+// Danger zone card: a destructive trigger button opens a controlled AlertDialog
+// containing the type-to-confirm gate (type email) plus a password field.
+// If the account is the sole admin of any org, only a support note is shown.
+// On success, signs the user out and redirects to /.
 export function DeleteAccountSection() {
   const t = useTranslations("dashboard.account.security.delete")
   const tv = useTranslations("dashboard.validation")
@@ -72,6 +82,7 @@ export function DeleteAccountSection() {
   const deleteMyAccount = useAction(api.accounts.account.deleteMyAccount)
   const router = useRouter()
 
+  const [open, setOpen] = useState(false)
   const [errorState, setErrorState] = useState<ErrorState>(null)
   const confirmInputId = "delete-account-confirm"
 
@@ -86,6 +97,15 @@ export function DeleteAccountSection() {
   })
 
   const { isValid, isSubmitting } = form.formState
+
+  function handleOpenChange(next: boolean) {
+    if (!next) {
+      // Dialog closing (cancel or backdrop): reset form and clear errors.
+      form.reset()
+      setErrorState(null)
+    }
+    setOpen(next)
+  }
 
   // If the user is the last admin of any org, show only the support note.
   if (lastAdminOrgs.length > 0) {
@@ -109,10 +129,13 @@ export function DeleteAccountSection() {
     setErrorState(null)
     try {
       await deleteMyAccount({ password: values.password })
+      // Success: redirect unmounts the dialog.
       await authClient.signOut()
       router.push("/")
     } catch (error) {
       if (isLastAdminError(error)) {
+        // Race condition: close the dialog and show the support note on the card.
+        setOpen(false)
         setErrorState("lastAdmin")
       } else if (isWrongPasswordError(error)) {
         setErrorState("wrongPassword")
@@ -123,9 +146,8 @@ export function DeleteAccountSection() {
   }
 
   // When the race condition produces a lastAdmin error on submit, show the note
-  // inline in the card (no delete button visible state needed).
-  // lastAdminOrgs may still be [] (reactive query hasn't refetched), so fall
-  // back to a message without the org list when it is empty.
+  // in the card (dialog has been closed above; lastAdminOrgs may still be []
+  // because the reactive query hasn't refetched yet).
   if (errorState === "lastAdmin") {
     const orgNames = lastAdminOrgs.map((o) => o.name).join(", ")
     return (
@@ -146,65 +168,90 @@ export function DeleteAccountSection() {
   }
 
   return (
-    <Card className="border-destructive">
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-        <CardDescription>{t("description")}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form
-            id="delete-account-form"
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
-          >
-            {/* Type-to-confirm: plain Label + Input, no FormControl, so no
-                aria-invalid while partially typed (confirm gate pattern). */}
-            <div className="space-y-2">
-              <Label htmlFor={confirmInputId}>
-                {t("confirmLabel", { email })}
-              </Label>
-              <Input
-                id={confirmInputId}
-                autoComplete="off"
-                {...form.register("confirmText")}
+    <>
+      <Card className="border-destructive">
+        <CardHeader>
+          <CardTitle>{t("title")}</CardTitle>
+          <CardDescription>{t("description")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button variant="destructive" onClick={() => setOpen(true)}>
+            {t("cta")}
+          </Button>
+        </CardContent>
+      </Card>
+
+      <AlertDialog open={open} onOpenChange={handleOpenChange}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("title")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("description")}</AlertDialogDescription>
+          </AlertDialogHeader>
+
+          {/* Form body: type-to-confirm + password */}
+          <Form {...form}>
+            <form
+              id="delete-account-form"
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-4"
+            >
+              {/* Type-to-confirm: plain Label + Input, no FormControl, so no
+                  aria-invalid while partially typed (confirm gate pattern). */}
+              <div className="space-y-2">
+                <Label htmlFor={confirmInputId}>
+                  {t("confirmLabel", { email })}
+                </Label>
+                <Input
+                  id={confirmInputId}
+                  autoComplete="off"
+                  {...form.register("confirmText")}
+                />
+              </div>
+              {/* Password field: routed through FormControl for inline errors. */}
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("passwordLabel")}</FormLabel>
+                    <FormControl>
+                      <PasswordInput
+                        autoComplete="current-password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            {/* Password field: routed through FormControl for inline errors. */}
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("passwordLabel")}</FormLabel>
-                  <FormControl>
-                    <PasswordInput autoComplete="current-password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+              {/* Inline error alert: stays inside the open dialog on failure. */}
+              {(errorState === "wrongPassword" || errorState === "generic") && (
+                <p role="alert" className="text-destructive text-sm">
+                  {t(
+                    errorState === "wrongPassword" ? "wrongPassword" : "error"
+                  )}
+                </p>
               )}
-            />
-          </form>
-        </Form>
-      </CardContent>
-      <CardFooter className="flex items-center justify-between">
-        <div>
-          {(errorState === "wrongPassword" || errorState === "generic") && (
-            <p role="alert" className="text-destructive text-sm">
-              {t(errorState === "wrongPassword" ? "wrongPassword" : "error")}
-            </p>
-          )}
-        </div>
-        <SubmitButton
-          type="submit"
-          form="delete-account-form"
-          variant="destructive"
-          isSubmitting={isSubmitting}
-          disabled={!isValid || !email}
-        >
-          {t("cta")}
-        </SubmitButton>
-      </CardFooter>
-    </Card>
+            </form>
+          </Form>
+
+          <AlertDialogFooter>
+            {/* Cancel resets the form and clears errors (via handleOpenChange). */}
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+            {/* Destructive submit: does NOT use AlertDialogAction to avoid
+                auto-close before the async result is known. */}
+            <SubmitButton
+              type="submit"
+              form="delete-account-form"
+              variant="destructive"
+              isSubmitting={isSubmitting}
+              disabled={!isValid || !email}
+            >
+              {t("cta")}
+            </SubmitButton>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }

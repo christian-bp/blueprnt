@@ -1075,7 +1075,8 @@
           "lastAdmin": "Du er den sidste administrator af: {orgs}. Overfør eller slet disse organisationer, før du sletter din konto, eller kontakt support.",
           "lastAdminUnknown": "Du er den sidste administrator af en eller flere organisationer. Overfør eller slet disse organisationer, før du sletter din konto, eller kontakt support.",
           "wrongPassword": "Den adgangskode er forkert. Prøv igen.",
-          "error": "Din konto kunne ikke slettes. Prøv igen."
+          "error": "Din konto kunne ikke slettes. Prøv igen.",
+          "cancel": "Annuller"
         }
       }
     }

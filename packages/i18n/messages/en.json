@@ -1075,7 +1075,8 @@
           "lastAdmin": "You are the last administrator of: {orgs}. Transfer or delete those organizations before deleting your account, or contact support.",
           "lastAdminUnknown": "You are the last administrator of one or more organizations. Transfer or delete those organizations before deleting your account, or contact support.",
           "wrongPassword": "That password is incorrect. Try again.",
-          "error": "Your account could not be deleted. Please try again."
+          "error": "Your account could not be deleted. Please try again.",
+          "cancel": "Cancel"
         }
       }
     }

@@ -1075,7 +1075,8 @@
           "lastAdmin": "Du är den sista administratören för: {orgs}. Överför eller ta bort de organisationerna innan du tar bort ditt konto, eller kontakta support.",
           "lastAdminUnknown": "Du är den sista administratören för en eller flera organisationer. Överför eller ta bort de organisationerna innan du tar bort ditt konto, eller kontakta support.",
           "wrongPassword": "Det lösenordet är felaktigt. Försök igen.",
-          "error": "Ditt konto kunde inte tas bort. Försök igen."
+          "error": "Ditt konto kunde inte tas bort. Försök igen.",
+          "cancel": "Avbryt"
         }
       }
     }
