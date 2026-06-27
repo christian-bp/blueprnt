@@ -81,7 +81,8 @@
       "required": "Dette felt er påkrævet.",
       "invalidEmail": "Indtast en gyldig e-mailadresse.",
       "minLength": "Skal være mindst {min} tegn.",
-      "slug": "Brug små bogstaver, tal og bindestreger."
+      "slug": "Brug små bogstaver, tal og bindestreger.",
+      "passwordsMatch": "Adgangskoderne skal være ens."
     },
     "nav": {
       "home": "Hjem",
@@ -458,7 +459,10 @@
         "cta": "Gem adgangskode",
         "missingToken": "Linket er ugyldigt eller udløbet. Bed en administrator om at sende invitationen igen.",
         "error": "Noget gik galt. Prøv igen.",
-        "compromised": "Denne adgangskode er forekommet i et databrud. Vælg en anden."
+        "compromised": "Denne adgangskode er forekommet i et databrud. Vælg en anden.",
+        "confirmLabel": "Gentag adgangskoden",
+        "expired": "Dette link er udløbet eller allerede brugt.",
+        "requestNew": "Anmod om et nyt link"
       },
       "error": "Noget gik galt. Prøv igen.",
       "rateLimited": "For mange loginforsøg. Vent et minut, og prøv igen.",

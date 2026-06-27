@@ -81,7 +81,8 @@
       "required": "Tämä kenttä on pakollinen.",
       "invalidEmail": "Anna kelvollinen sähköpostiosoite.",
       "minLength": "Vähintään {min} merkkiä.",
-      "slug": "Käytä pieniä kirjaimia, numeroita ja väliviivoja."
+      "slug": "Käytä pieniä kirjaimia, numeroita ja väliviivoja.",
+      "passwordsMatch": "Salasanojen on täsmättävä."
     },
     "nav": {
       "home": "Etusivu",
@@ -458,7 +459,10 @@
         "cta": "Tallenna salasana",
         "missingToken": "Linkki on virheellinen tai vanhentunut. Pyydä järjestelmänvalvojaa lähettämään kutsu uudelleen.",
         "error": "Jokin meni pieleen. Yritä uudelleen.",
-        "compromised": "Tämä salasana on esiintynyt tietomurrossa. Valitse toinen."
+        "compromised": "Tämä salasana on esiintynyt tietomurrossa. Valitse toinen.",
+        "confirmLabel": "Toista salasana",
+        "expired": "Tämä linkki on vanhentunut tai jo käytetty.",
+        "requestNew": "Pyydä uusi linkki"
       },
       "error": "Jokin meni pieleen. Yritä uudelleen.",
       "rateLimited": "Liian monta kirjautumisyritystä. Odota hetki ja yritä uudelleen.",

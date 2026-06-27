@@ -81,7 +81,8 @@
       "required": "This field is required.",
       "invalidEmail": "Enter a valid email address.",
       "minLength": "Must be at least {min} characters.",
-      "slug": "Use lowercase letters, numbers, and hyphens."
+      "slug": "Use lowercase letters, numbers, and hyphens.",
+      "passwordsMatch": "Passwords must match."
     },
     "nav": {
       "home": "Home",
@@ -458,7 +459,10 @@
         "cta": "Set password",
         "missingToken": "This link is invalid or has expired. Ask an administrator to resend your invitation.",
         "error": "Something went wrong. Try again.",
-        "compromised": "This password has appeared in a data breach. Please choose a different one."
+        "compromised": "This password has appeared in a data breach. Please choose a different one.",
+        "confirmLabel": "Repeat password",
+        "expired": "This link has expired or was already used.",
+        "requestNew": "Request a new link"
       },
       "error": "Something went wrong. Please try again.",
       "rateLimited": "Too many sign-in attempts. Please wait a minute and try again.",

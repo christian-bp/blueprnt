@@ -32,6 +32,7 @@ vi.mock("@/lib/auth-client", () => ({
 import ResetPasswordPage from "./page"
 
 const passwordLabel = en.dashboard.auth.resetPassword.passwordLabel
+const confirmLabel = en.dashboard.auth.resetPassword.confirmLabel
 const minLen = en.dashboard.validation.minLength.replace("{min}", "8")
 
 function renderPage() {
@@ -40,6 +41,12 @@ function renderPage() {
       <ResetPasswordPage />
     </NextIntlClientProvider>
   )
+}
+
+// The form gates on a matching confirm field, so fill both.
+function fillPasswords(value: string) {
+  fireEvent.change(screen.getByLabelText(passwordLabel), { target: { value } })
+  fireEvent.change(screen.getByLabelText(confirmLabel), { target: { value } })
 }
 
 function submit() {
@@ -59,9 +66,7 @@ describe("ResetPasswordPage", () => {
 
   it("shows the min-length error and does not call reset when the password is too short", async () => {
     renderPage()
-    fireEvent.change(screen.getByLabelText(passwordLabel), {
-      target: { value: "short77" },
-    })
+    fillPasswords("short77")
     submit()
     await waitFor(() => {
       expect(screen.getByText(minLen)).toBeDefined()
@@ -71,9 +76,7 @@ describe("ResetPasswordPage", () => {
 
   it("resets the password and navigates home when long enough", async () => {
     renderPage()
-    fireEvent.change(screen.getByLabelText(passwordLabel), {
-      target: { value: "longeno8" },
-    })
+    fillPasswords("longeno8")
     submit()
     await waitFor(() => {
       expect(resetPassword).toHaveBeenCalledWith({
@@ -89,9 +92,7 @@ describe("ResetPasswordPage", () => {
   it("shows the error alert when reset returns an error", async () => {
     resetPassword.mockResolvedValue({ error: { message: "bad" } })
     renderPage()
-    fireEvent.change(screen.getByLabelText(passwordLabel), {
-      target: { value: "longeno8" },
-    })
+    fillPasswords("longeno8")
     submit()
     await waitFor(() => {
       expect(
@@ -106,9 +107,7 @@ describe("ResetPasswordPage", () => {
       error: { message: "compromised", code: "PASSWORD_COMPROMISED" },
     })
     renderPage()
-    fireEvent.change(screen.getByLabelText(passwordLabel), {
-      target: { value: "longeno8" },
-    })
+    fillPasswords("longeno8")
     submit()
     await waitFor(() => {
       expect(

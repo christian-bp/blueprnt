@@ -22,11 +22,17 @@ export type ForgotPasswordValues = z.infer<
 // Mirrors better-auth's minPasswordLength (the server stays authoritative).
 export const MIN_PASSWORD_LENGTH = 8
 export function makeResetPasswordSchema(t: ValidationT) {
-  return z.object({
-    password: z
-      .string()
-      .min(MIN_PASSWORD_LENGTH, t("minLength", { min: MIN_PASSWORD_LENGTH })),
-  })
+  return z
+    .object({
+      password: z
+        .string()
+        .min(MIN_PASSWORD_LENGTH, t("minLength", { min: MIN_PASSWORD_LENGTH })),
+      confirmPassword: z.string(),
+    })
+    .refine((v) => v.password === v.confirmPassword, {
+      message: t("passwordsMatch"),
+      path: ["confirmPassword"],
+    })
 }
 export type ResetPasswordValues = z.infer<
   ReturnType<typeof makeResetPasswordSchema>

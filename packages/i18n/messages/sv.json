@@ -81,7 +81,8 @@
       "required": "Det här fältet är obligatoriskt.",
       "invalidEmail": "Ange en giltig e-postadress.",
       "minLength": "Måste vara minst {min} tecken.",
-      "slug": "Använd små bokstäver, siffror och bindestreck."
+      "slug": "Använd små bokstäver, siffror och bindestreck.",
+      "passwordsMatch": "Lösenorden måste matcha."
     },
     "nav": {
       "home": "Hem",
@@ -458,7 +459,10 @@
         "cta": "Spara lösenord",
         "missingToken": "Länken är ogiltig eller har gått ut. Be en administratör skicka inbjudan igen.",
         "error": "Något gick fel. Försök igen.",
-        "compromised": "Det här lösenordet har förekommit i en dataläcka. Välj ett annat."
+        "compromised": "Det här lösenordet har förekommit i en dataläcka. Välj ett annat.",
+        "confirmLabel": "Upprepa lösenordet",
+        "expired": "Den här länken har gått ut eller har redan använts.",
+        "requestNew": "Begär en ny länk"
       },
       "error": "Något gick fel. Försök igen.",
       "rateLimited": "För många inloggningsförsök. Vänta en minut och försök igen.",

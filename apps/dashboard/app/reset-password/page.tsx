@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from "@workspace/ui/components/form"
 import { useTranslations } from "next-intl"
+import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -35,6 +36,19 @@ function isPasswordCompromised(error: unknown): boolean {
   )
 }
 
+// Better Auth burns the one-time reset token before hashing the new password, so
+// a rejected attempt (e.g. a breached password) leaves the token spent and a
+// retry 400s with code "INVALID_TOKEN". Surface a clear "request a new link"
+// message rather than the generic failure.
+function isInvalidToken(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: unknown }).code === "INVALID_TOKEN"
+  )
+}
+
 function ResetPasswordForm() {
   const t = useTranslations("dashboard.auth.resetPassword")
   const tv = useTranslations("dashboard.validation")
@@ -42,13 +56,15 @@ function ResetPasswordForm() {
   const router = useRouter()
   const params = useSearchParams()
   const token = params.get("token")
-  const [error, setError] = useState<"generic" | "compromised" | null>(null)
+  const [error, setError] = useState<
+    "generic" | "compromised" | "invalidToken" | null
+  >(null)
 
   const schema = useMemo(() => makeResetPasswordSchema(tv), [tv])
   const form = useForm<ResetPasswordValues>({
     resolver: zodResolver(schema),
     mode: "onTouched",
-    defaultValues: { password: "" },
+    defaultValues: { password: "", confirmPassword: "" },
   })
 
   async function onSubmit(values: ResetPasswordValues) {
@@ -60,7 +76,13 @@ function ResetPasswordForm() {
         token,
       })
       if (resetError) {
-        setError(isPasswordCompromised(resetError) ? "compromised" : "generic")
+        setError(
+          isPasswordCompromised(resetError)
+            ? "compromised"
+            : isInvalidToken(resetError)
+              ? "invalidToken"
+              : "generic"
+        )
         return
       }
       router.push("/")
@@ -93,6 +115,19 @@ function ResetPasswordForm() {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("confirmLabel")}</FormLabel>
+                    <FormControl>
+                      <PasswordInput {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <SubmitButton
                 type="submit"
                 className="w-full"
@@ -101,11 +136,21 @@ function ResetPasswordForm() {
               >
                 {t("cta")}
               </SubmitButton>
-              {error && (
+              {error === "invalidToken" ? (
+                <p role="alert" className="text-destructive text-sm">
+                  {t("expired")}{" "}
+                  <Link
+                    href="/forgot-password"
+                    className="underline underline-offset-4"
+                  >
+                    {t("requestNew")}
+                  </Link>
+                </p>
+              ) : error ? (
                 <p role="alert" className="text-destructive text-sm">
                   {t(error === "compromised" ? "compromised" : "error")}
                 </p>
-              )}
+              ) : null}
             </form>
           </Form>
         )}

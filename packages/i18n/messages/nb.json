@@ -81,7 +81,8 @@
       "required": "Dette feltet er påkrevd.",
       "invalidEmail": "Skriv inn en gyldig e-postadresse.",
       "minLength": "Må være minst {min} tegn.",
-      "slug": "Bruk små bokstaver, tall og bindestrek."
+      "slug": "Bruk små bokstaver, tall og bindestrek.",
+      "passwordsMatch": "Passordene må være like."
     },
     "nav": {
       "home": "Hjem",
@@ -458,7 +459,10 @@
         "cta": "Lagre passord",
         "missingToken": "Lenken er ugyldig eller har utløpt. Be en administrator sende invitasjonen på nytt.",
         "error": "Noe gikk galt. Prøv igjen.",
-        "compromised": "Dette passordet har dukket opp i en datalekkasje. Velg et annet."
+        "compromised": "Dette passordet har dukket opp i en datalekkasje. Velg et annet.",
+        "confirmLabel": "Gjenta passordet",
+        "expired": "Denne lenken er utløpt eller allerede brukt.",
+        "requestNew": "Be om en ny lenke"
       },
       "error": "Noe gikk galt. Prøv igjen.",
       "rateLimited": "For mange innloggingsforsøk. Vent ett minutt og prøv igjen.",
