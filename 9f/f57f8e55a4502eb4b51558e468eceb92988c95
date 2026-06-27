@@ -1,0 +1,23 @@
+apps/dashboard/app/reset-password/page.tsx
+  s_c216811bbb1bb1::t_9c099a348e4e16 77,88,90,92,97
+apps/dashboard/app/forgot-password/page.tsx
+  s_c216811bbb1bb1::t_637bef1141889f 62,81,83,85,99
+apps/dashboard/components/auth/email-password-form.tsx
+  s_c216811bbb1bb1::t_c7c5fa3fbb5448 78,80,82,91-101,103,105,110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "9ff57f8e55a4502eb4b51558e468eceb92988c95",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
