@@ -159,60 +159,64 @@ export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
         </p>
       )}
 
-      {method === "totp" && (
-        <>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => switchTo("email")}
-          >
-            {t("useEmail")}
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => switchTo("backup")}
-          >
-            {t("useBackupCode")}
-          </Button>
-        </>
-      )}
-      {method === "email" && (
-        <>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => void authClient.twoFactor.sendOtp()}
-          >
-            {t("resend")}
-          </Button>
-          {hasAuthenticator && (
+      {/* The fallback switches sit in their own tighter group, set apart from
+          the code input above. */}
+      <div className="flex w-full flex-col items-center gap-1">
+        {method === "totp" && (
+          <>
             <Button
               type="button"
               variant="ghost"
-              onClick={() => switchTo("totp")}
+              onClick={() => switchTo("email")}
             >
-              {t("useAuthenticator")}
+              {t("useEmail")}
             </Button>
-          )}
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => switchTo("backup")}
+            >
+              {t("useBackupCode")}
+            </Button>
+          </>
+        )}
+        {method === "email" && (
+          <>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => void authClient.twoFactor.sendOtp()}
+            >
+              {t("resend")}
+            </Button>
+            {hasAuthenticator && (
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => switchTo("totp")}
+              >
+                {t("useAuthenticator")}
+              </Button>
+            )}
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => switchTo("backup")}
+            >
+              {t("useBackupCode")}
+            </Button>
+          </>
+        )}
+        {method === "backup" && (
           <Button
             type="button"
             variant="ghost"
-            onClick={() => switchTo("backup")}
+            onClick={() => switchTo(hasAuthenticator ? "totp" : "email")}
           >
-            {t("useBackupCode")}
+            {hasAuthenticator ? t("useAuthenticator") : t("useEmail")}
           </Button>
-        </>
-      )}
-      {method === "backup" && (
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={() => switchTo(hasAuthenticator ? "totp" : "email")}
-        >
-          {hasAuthenticator ? t("useAuthenticator") : t("useEmail")}
-        </Button>
-      )}
+        )}
+      </div>
     </div>
   )
 }
