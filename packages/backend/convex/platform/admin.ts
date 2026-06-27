@@ -677,7 +677,12 @@ export const deleteUser = platformMutation({
       .query("users")
       .withIndex("by_auth_id", (q) => q.eq("authId", authId))
       .unique()
-    if (mirror !== null) await ctx.db.delete(mirror._id)
+    if (mirror !== null) {
+      // GDPR erasure of the avatar PII: delete the stored file BEFORE the row,
+      // so the personal image is gone from storage, not just dereferenced.
+      if (mirror.imageId != null) await ctx.storage.delete(mirror.imageId)
+      await ctx.db.delete(mirror._id)
+    }
     // Anonymize this person's snapshotted name in both audit logs.
     const orgAuthored = await ctx.db
       .query("auditLog")

@@ -19,6 +19,12 @@ export const users = defineTable({
   // Removed with the rest of the mirror row on GDPR erasure.
   mfaMethod: v.optional(v.union(v.literal("totp"), v.literal("email"))),
   mfaConfirmedAt: v.optional(v.number()),
+  // The uploaded avatar's file-storage id. The avatar is PERSONAL DATA, so it
+  // lives ONLY here on the per-person mirror and is deleted (file + field) when
+  // the person is erased, by both the self-service (eraseSelf) and admin
+  // (platform/admin.ts deleteUser) erase paths. Never copied to any domain
+  // table (Role != Person).
+  imageId: v.optional(v.id("_storage")),
 })
   .index("by_auth_id", ["authId"])
   // Lookup index for the rare out-of-band bootstrap path that resolves a user

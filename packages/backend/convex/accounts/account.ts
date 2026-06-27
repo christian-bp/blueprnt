@@ -109,6 +109,62 @@ export const clearMfaConfirmed = authedMutation({
   },
 })
 
+// A one-shot upload URL the client POSTs the avatar image to directly (Convex
+// file storage). The returned storageId is then passed to setMyAvatar. No audit
+// row: the avatar is per-person account state, not org-domain content (same
+// carve-out as the other account mutations).
+export const generateAvatarUploadUrl = authedMutation({
+  args: {},
+  returns: v.string(),
+  handler: async (ctx) => {
+    return await ctx.storage.generateUploadUrl()
+  },
+})
+
+// Sets the caller's avatar to a freshly uploaded file and returns its served
+// URL (the client then mirrors it onto Better Auth via updateUser({ image })).
+// Replacing an existing avatar deletes the previous file first, so storage never
+// accumulates orphaned blobs. The avatar is PERSONAL DATA stored only on the
+// per-person mirror; it is erased with the row + file on account deletion. No
+// audit row (per-person account state).
+export const setMyAvatar = authedMutation({
+  args: { storageId: v.id("_storage") },
+  returns: v.string(),
+  handler: async (ctx, { storageId }) => {
+    const row = await ctx.db
+      .query("users")
+      .withIndex("by_auth_id", (q) => q.eq("authId", ctx.authUserId))
+      .unique()
+    if (row === null) throw appError(ERROR_CODES.notFound)
+    // Replace: drop the previous file before pointing at the new one.
+    if (row.imageId != null) await ctx.storage.delete(row.imageId)
+    await ctx.db.patch(row._id, { imageId: storageId })
+    const url = await ctx.storage.getUrl(storageId)
+    if (url === null) throw appError(ERROR_CODES.notFound)
+    return url
+  },
+})
+
+// Removes the caller's avatar: deletes the stored file and clears the mirror
+// field. A no-op when there is no avatar. The client then clears the Better Auth
+// image via updateUser({ image: "" }). No audit row (per-person account state).
+export const removeMyAvatar = authedMutation({
+  args: {},
+  returns: v.null(),
+  handler: async (ctx) => {
+    const row = await ctx.db
+      .query("users")
+      .withIndex("by_auth_id", (q) => q.eq("authId", ctx.authUserId))
+      .unique()
+    if (row === null) return null
+    if (row.imageId != null) {
+      await ctx.storage.delete(row.imageId)
+      await ctx.db.patch(row._id, { imageId: undefined })
+    }
+    return null
+  },
+})
+
 // GDPR self-service erasure. The internal mutation mirrors platform/admin.ts
 // deleteUser for the CURRENT caller, with the platform-admin gate and the
 // self-delete block removed (self-delete is the whole point), and a last-admin
@@ -148,7 +204,12 @@ export const eraseSelf = internalMutation({
       .query("users")
       .withIndex("by_auth_id", (q) => q.eq("authId", authUserId))
       .unique()
-    if (mirror !== null) await ctx.db.delete(mirror._id)
+    if (mirror !== null) {
+      // GDPR erasure of the avatar PII: delete the stored file BEFORE the row,
+      // so the personal image is gone from storage, not just dereferenced.
+      if (mirror.imageId != null) await ctx.storage.delete(mirror.imageId)
+      await ctx.db.delete(mirror._id)
+    }
     // Anonymize this person's snapshotted name in both audit logs (rows kept for
     // the trail's legitimate-interest basis; their payloads carry IDs/codes only).
     const orgAuthored = await ctx.db

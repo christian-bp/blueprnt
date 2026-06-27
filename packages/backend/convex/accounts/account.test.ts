@@ -342,6 +342,50 @@ describe("accounts.account.eraseSelf", () => {
     expect(del?.payload).toEqual({ orgCount: 1 })
   })
 
+  it("deletes the caller's stored avatar file as part of erasure", async () => {
+    const t = initConvexTest()
+    // Seed the caller with a SECOND admin so the last-admin guard does not block.
+    const { orgId, userId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "erase-avatar@acme.se", name: "Erase Avatar", role: "admin" }
+    )
+    const { userId: otherId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "keep2@acme.se", name: "Keep", role: "editor" }
+    )
+    await t.mutation(components.betterAuth.testing.seedDuplicateMember, {
+      orgId,
+      userId: otherId,
+      role: "admin",
+    })
+    const storageId = await t.run((ctx) =>
+      ctx.storage.store(new Blob(["avatar-bytes"]))
+    )
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
+        authId: userId,
+        name: "Erase Avatar",
+        email: "erase-avatar@acme.se",
+        imageId: storageId,
+      })
+    })
+
+    await t.mutation(internal.accounts.account.eraseSelf, {
+      authUserId: userId,
+    })
+
+    // The avatar file is gone from storage, alongside the mirror row.
+    const url = await t.run((ctx) => ctx.storage.getUrl(storageId))
+    expect(url).toBeNull()
+    const mirror = await t.run((ctx) =>
+      ctx.db
+        .query("users")
+        .withIndex("by_auth_id", (q) => q.eq("authId", userId))
+        .unique()
+    )
+    expect(mirror).toBeNull()
+  })
+
   it("throws lastAdmin and erases nothing when the caller is the sole admin of an org", async () => {
     const t = initConvexTest()
     const { userId } = await t.mutation(
@@ -377,6 +421,157 @@ describe("accounts.account.eraseSelf", () => {
       ctx.db.query("platformAuditLog").collect()
     )
     expect(plat.some((r) => r.type === "platform.userDeleted")).toBe(false)
+  })
+})
+
+describe("accounts.account avatar storage", () => {
+  it("setMyAvatar stores the storage id on the mirror and returns a url", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
+        authId: "user-1",
+        name: "Alice",
+        email: "alice@acme.se",
+      })
+    })
+    // Seed a stored blob and grab its storage id (convex-test exposes the
+    // action-style StorageActionWriter inside t.run).
+    const storageId = await t.run((ctx) =>
+      ctx.storage.store(new Blob(["avatar-bytes"]))
+    )
+
+    const url = await t
+      .withIdentity({ subject: "user-1" })
+      .mutation(api.accounts.account.setMyAvatar, { storageId })
+    expect(typeof url).toBe("string")
+    expect(url.length).toBeGreaterThan(0)
+
+    const row = await t.run((ctx) =>
+      ctx.db
+        .query("users")
+        .withIndex("by_auth_id", (q) => q.eq("authId", "user-1"))
+        .unique()
+    )
+    expect(row?.imageId).toBe(storageId)
+  })
+
+  it("setMyAvatar called again deletes the previous file and stores the new id", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
+        authId: "user-1",
+        name: "Alice",
+        email: "alice@acme.se",
+      })
+    })
+    const oldId = await t.run((ctx) =>
+      ctx.storage.store(new Blob(["old-avatar"]))
+    )
+    const newId = await t.run((ctx) =>
+      ctx.storage.store(new Blob(["new-avatar"]))
+    )
+
+    const asUser = t.withIdentity({ subject: "user-1" })
+    await asUser.mutation(api.accounts.account.setMyAvatar, {
+      storageId: oldId,
+    })
+    await asUser.mutation(api.accounts.account.setMyAvatar, {
+      storageId: newId,
+    })
+
+    // The old file is gone from storage; the new one remains.
+    const oldUrl = await t.run((ctx) => ctx.storage.getUrl(oldId))
+    const newUrl = await t.run((ctx) => ctx.storage.getUrl(newId))
+    expect(oldUrl).toBeNull()
+    expect(newUrl).not.toBeNull()
+    // The mirror points at the new id.
+    const row = await t.run((ctx) =>
+      ctx.db
+        .query("users")
+        .withIndex("by_auth_id", (q) => q.eq("authId", "user-1"))
+        .unique()
+    )
+    expect(row?.imageId).toBe(newId)
+  })
+
+  it("removeMyAvatar deletes the stored file and clears imageId", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
+        authId: "user-1",
+        name: "Alice",
+        email: "alice@acme.se",
+      })
+    })
+    const storageId = await t.run((ctx) =>
+      ctx.storage.store(new Blob(["avatar"]))
+    )
+    const asUser = t.withIdentity({ subject: "user-1" })
+    await asUser.mutation(api.accounts.account.setMyAvatar, { storageId })
+
+    const result = await asUser.mutation(
+      api.accounts.account.removeMyAvatar,
+      {}
+    )
+    expect(result).toBeNull()
+
+    const url = await t.run((ctx) => ctx.storage.getUrl(storageId))
+    expect(url).toBeNull()
+    const row = await t.run((ctx) =>
+      ctx.db
+        .query("users")
+        .withIndex("by_auth_id", (q) => q.eq("authId", "user-1"))
+        .unique()
+    )
+    expect(row?.imageId).toBeUndefined()
+  })
+
+  it("removeMyAvatar is a no-op when there is no avatar", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
+        authId: "user-1",
+        name: "Alice",
+        email: "alice@acme.se",
+      })
+    })
+    const result = await t
+      .withIdentity({ subject: "user-1" })
+      .mutation(api.accounts.account.removeMyAvatar, {})
+    expect(result).toBeNull()
+  })
+
+  it("generateAvatarUploadUrl returns a string for an authed caller", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
+        authId: "user-1",
+        name: "Alice",
+        email: "alice@acme.se",
+      })
+    })
+    const url = await t
+      .withIdentity({ subject: "user-1" })
+      .mutation(api.accounts.account.generateAvatarUploadUrl, {})
+    expect(typeof url).toBe("string")
+    expect(url.length).toBeGreaterThan(0)
+  })
+
+  it("generateAvatarUploadUrl rejects when unauthenticated", async () => {
+    const t = initConvexTest()
+    await expect(
+      t.mutation(api.accounts.account.generateAvatarUploadUrl, {})
+    ).rejects.toThrow(/errors\.notAuthenticated/)
+  })
+
+  it("setMyAvatar rejects when unauthenticated", async () => {
+    const t = initConvexTest()
+    const storageId = await t.run((ctx) =>
+      ctx.storage.store(new Blob(["avatar"]))
+    )
+    await expect(
+      t.mutation(api.accounts.account.setMyAvatar, { storageId })
+    ).rejects.toThrow(/errors\.notAuthenticated/)
   })
 })
 

@@ -1123,6 +1123,38 @@ describe("deleteUser (erasure)", () => {
     expect(del?.payload).toEqual({ orgCount: 1 })
   })
 
+  it("deletes the erased person's stored avatar file", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    const orgId = await seedOrg(t, adminId, "acme-avatar")
+    const { authId } = await asAdmin.mutation(api.platform.admin.createUser, {
+      name: "Avatar Person",
+      email: "avatar@acme.se",
+      orgId,
+      role: "editor",
+    })
+    // Attach an avatar to the user's mirror by seeding a stored file and
+    // patching imageId directly (the avatar is personal data on the mirror).
+    const storageId = await t.run((ctx) =>
+      ctx.storage.store(new Blob(["avatar-bytes"]))
+    )
+    await t.run(async (ctx) => {
+      const mirror = await ctx.db
+        .query("users")
+        .withIndex("by_auth_id", (q) => q.eq("authId", authId))
+        .unique()
+      if (mirror === null) throw new Error("mirror not found")
+      await ctx.db.patch(mirror._id, { imageId: storageId })
+    })
+
+    await asAdmin.mutation(api.platform.admin.deleteUser, { authId })
+
+    // The avatar file is gone from storage as part of the erasure.
+    const url = await t.run((ctx) => ctx.storage.getUrl(storageId))
+    expect(url).toBeNull()
+  })
+
   it("blocks self-deletion", async () => {
     const t = initConvexTest()
     const adminId = await seedPlatformAdmin(t)
