@@ -13,7 +13,13 @@ export function BrandPanel() {
   return (
     <div className="relative hidden flex-col justify-between overflow-hidden bg-background p-12 lg:flex lg:w-1/2">
       <BackgroundAurora />
-      <Logo label={t("title")} className="relative z-10 h-8 text-brand" />
+      {/* self-start so the SVG keeps its intrinsic width instead of being
+          stretched full-width by the column's align-items (which would center
+          the wordmark via preserveAspectRatio). */}
+      <Logo
+        label={t("title")}
+        className="relative z-10 h-8 self-start text-brand"
+      />
       <div className="relative z-10 flex flex-col gap-3">
         <RotatingValueLine />
         <p className="text-muted-foreground text-sm">
