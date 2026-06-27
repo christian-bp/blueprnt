@@ -50,7 +50,7 @@ export function IndustryScreen({
 
   return (
     <ScreenShell heading={tScreens("industry.heading")}>
-      <div className="grid w-full max-w-2xl grid-cols-2 gap-3 sm:grid-cols-3">
+      <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3">
         {INDUSTRY_KEYS.map((code) => (
           <OptionCard
             key={code}

@@ -25,6 +25,7 @@ export function SignInScreen() {
               password,
             })
             if (error) throw error
+            // 2FA-enabled users get twoFactorRedirect instead of a session.
             if (
               data !== null &&
               typeof data === "object" &&

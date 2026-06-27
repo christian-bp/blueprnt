@@ -79,8 +79,7 @@ function renderNavUser() {
   )
 }
 
-// Radix menus open on pointerdown + click (the established idiom from
-// onboarding-header.test.tsx).
+// Radix menus open on pointerdown + click (the established Radix dropdown idiom).
 function openMenu() {
   const trigger = screen.getByText("HR Person").closest("button")
   if (!trigger) throw new Error("trigger not found")
