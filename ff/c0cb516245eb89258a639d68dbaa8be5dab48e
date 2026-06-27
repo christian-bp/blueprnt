@@ -1,0 +1,26 @@
+apps/dashboard/components/auth/two-factor-setup.tsx
+  s_c216811bbb1bb1::t_c7125c40530685 110-113,117-126
+  s_c216811bbb1bb1::t_60dd5e18b5ec6b 58-59
+  s_c216811bbb1bb1::t_f2b7613fd755ea 40
+  s_c216811bbb1bb1::t_7352d88784d723 274-280,282-283,287
+  s_c216811bbb1bb1::t_552eb22897ff2a 127-128
+apps/dashboard/components/auth/two-factor-setup.test.tsx
+  s_c216811bbb1bb1::t_0b2c61c840a4ed 111-113,120,124-127
+  s_c216811bbb1bb1::t_19867b4a65b20d 160-161,166,169-172
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "ffc0cb516245eb89258a639d68dbaa8be5dab48e",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
