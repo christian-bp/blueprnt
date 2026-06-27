@@ -1011,6 +1011,18 @@
         "invalidTitle": "Linkki on virheellinen tai vanhentunut",
         "invalidBody": "Tämä vahvistuslinkki ei ole enää voimassa. Pyydä uutta sähköpostin vaihtoa tilisi asetuksista.",
         "backToProfile": "Takaisin tiliasetuksiin"
+      },
+      "security": {
+        "password": {
+          "currentLabel": "Nykyinen salasana",
+          "newLabel": "Uusi salasana",
+          "confirmLabel": "Vahvista uusi salasana",
+          "cta": "Vaihda salasana",
+          "saved": "Salasana vaihdettu.",
+          "error": "Salasanaa ei voitu vaihtaa. Yritä uudelleen.",
+          "wrongPassword": "Nykyinen salasana on virheellinen.",
+          "compromised": "Tämä salasana on esiintynyt tietomurrossa. Valitse toinen salasana."
+        }
       }
     }
   },

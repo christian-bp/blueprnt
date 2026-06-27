@@ -1011,6 +1011,18 @@
         "invalidTitle": "Linket er ugyldigt eller udløbet",
         "invalidBody": "Dette verificeringslink er ikke længere gyldigt. Anmod om et nyt e-mailskift fra dine kontoindstillinger.",
         "backToProfile": "Tilbage til kontoindstillinger"
+      },
+      "security": {
+        "password": {
+          "currentLabel": "Nuværende adgangskode",
+          "newLabel": "Ny adgangskode",
+          "confirmLabel": "Bekræft ny adgangskode",
+          "cta": "Skift adgangskode",
+          "saved": "Adgangskode ændret.",
+          "error": "Kunne ikke skifte din adgangskode. Prøv igen.",
+          "wrongPassword": "Nuværende adgangskode er forkert.",
+          "compromised": "Denne adgangskode er dukket op i et databrud. Vælg en anden adgangskode."
+        }
       }
     }
   },

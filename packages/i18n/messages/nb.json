@@ -1011,6 +1011,18 @@
         "invalidTitle": "Lenken er ugyldig eller utløpt",
         "invalidBody": "Denne verifiseringslenken er ikke lenger gyldig. Be om et nytt e-postbytte fra kontoinnstillingene dine.",
         "backToProfile": "Tilbake til kontoinnstillinger"
+      },
+      "security": {
+        "password": {
+          "currentLabel": "Gjeldende passord",
+          "newLabel": "Nytt passord",
+          "confirmLabel": "Bekreft nytt passord",
+          "cta": "Bytt passord",
+          "saved": "Passord endret.",
+          "error": "Kunne ikke endre passordet ditt. Prøv igjen.",
+          "wrongPassword": "Gjeldende passord er feil.",
+          "compromised": "Dette passordet har dukket opp i et datainnbrudd. Velg et annet passord."
+        }
       }
     }
   },

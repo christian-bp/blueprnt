@@ -1011,6 +1011,18 @@
         "invalidTitle": "Länken är ogiltig eller har gått ut",
         "invalidBody": "Den här verifieringslänken är inte längre giltig. Begär ett nytt e-postbyte från dina kontoinställningar.",
         "backToProfile": "Tillbaka till kontoinställningar"
+      },
+      "security": {
+        "password": {
+          "currentLabel": "Nuvarande lösenord",
+          "newLabel": "Nytt lösenord",
+          "confirmLabel": "Bekräfta nytt lösenord",
+          "cta": "Byt lösenord",
+          "saved": "Lösenord ändrat.",
+          "error": "Det gick inte att byta lösenord. Försök igen.",
+          "wrongPassword": "Det nuvarande lösenordet är felaktigt.",
+          "compromised": "Det här lösenordet har förekommit i ett dataintrång. Välj ett annat lösenord."
+        }
       }
     }
   },

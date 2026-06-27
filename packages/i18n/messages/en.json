@@ -1011,6 +1011,18 @@
         "invalidTitle": "Link invalid or expired",
         "invalidBody": "This verification link is no longer valid. Please request a new email change from your account settings.",
         "backToProfile": "Back to account settings"
+      },
+      "security": {
+        "password": {
+          "currentLabel": "Current password",
+          "newLabel": "New password",
+          "confirmLabel": "Confirm new password",
+          "cta": "Change password",
+          "saved": "Password changed.",
+          "error": "Could not change your password. Please try again.",
+          "wrongPassword": "Current password is incorrect.",
+          "compromised": "This password has appeared in a data breach. Please choose a different password."
+        }
       }
     }
   },
