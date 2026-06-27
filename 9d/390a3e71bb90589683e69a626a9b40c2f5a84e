@@ -1,0 +1,23 @@
+apps/dashboard/components/auth/brand-panel.tsx
+  s_c216811bbb1bb1::t_4e0b11b3af7ffe 1-20
+apps/dashboard/components/auth/auth-shell.tsx
+  s_c216811bbb1bb1::t_ddd87fc95a3a34 1-50
+apps/dashboard/components/auth/auth-shell.test.tsx
+  s_c216811bbb1bb1::t_d908efa77ac98e 1-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "9d390a3e71bb90589683e69a626a9b40c2f5a84e",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
