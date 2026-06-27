@@ -11,11 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@workspace/ui/components/form"
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@workspace/ui/components/input-otp"
+import { OtpField } from "@/components/auth/otp-field"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import QRCode from "qrcode"
@@ -234,21 +230,13 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
             {t("totp.manualKey")} {new URL(totpUri).searchParams.get("secret")}
           </p>
         )}
-        <InputOTP
-          ref={otpRef}
-          maxLength={6}
+        <OtpField
+          inputRef={otpRef}
           value={code}
           onChange={setCode}
           onComplete={onCodeComplete}
-          aria-label={t("codeLabel")}
-        >
-          <InputOTPGroup>
-            {Array.from({ length: 6 }).map((_, i) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: slots are positional
-              <InputOTPSlot key={i} index={i} />
-            ))}
-          </InputOTPGroup>
-        </InputOTP>
+          ariaLabel={t("codeLabel")}
+        />
         {codeError && (
           <p role="alert" className="text-destructive text-sm">
             {t("verifyError")}

@@ -1,13 +1,9 @@
 "use client"
 
 import { Button } from "@workspace/ui/components/button"
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@workspace/ui/components/input-otp"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
+import { OtpField } from "@/components/auth/otp-field"
 import { authClient } from "@/lib/auth-client"
 
 const METHOD_HINT_KEY = "blueprnt.2fa.method"
@@ -56,21 +52,13 @@ export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
       <p className="text-center text-muted-foreground text-sm">
         {method === "totp" ? t("totpPrompt") : t("emailPrompt")}
       </p>
-      <InputOTP
-        maxLength={6}
+      <OtpField
         value={code}
         onChange={setCode}
         onComplete={onComplete}
+        ariaLabel={t("codeLabel")}
         autoFocus
-        aria-label={t("codeLabel")}
-      >
-        <InputOTPGroup>
-          {Array.from({ length: 6 }).map((_, i) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: slots are positional
-            <InputOTPSlot key={i} index={i} />
-          ))}
-        </InputOTPGroup>
-      </InputOTP>
+      />
       {error && (
         <p role="alert" className="text-destructive text-sm">
           {t("error")}
