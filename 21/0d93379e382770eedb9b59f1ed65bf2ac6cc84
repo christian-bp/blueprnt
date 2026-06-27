@@ -1,0 +1,42 @@
+packages/i18n/messages/da.json
+  s_c216811bbb1bb1::t_91c7af6698b7e6 1041-1050
+packages/i18n/messages/en.json
+  s_c216811bbb1bb1::t_b14445321e06b3 1041-1050
+packages/i18n/messages/sv.json
+  s_c216811bbb1bb1::t_e6be5a9eeda8d6 1041-1050
+apps/dashboard/components/account/delete-account-section.tsx
+  s_c216811bbb1bb1::t_45bd834e7660ce 24,30
+  s_c216811bbb1bb1::t_2dfa04f2ea823f 1-23,25-29,31,35-116,118-140,142-164
+  s_c216811bbb1bb1::t_0a49ef9e61effb 117
+  s_c216811bbb1bb1::t_e51f034b94fd52 32-34
+  s_c216811bbb1bb1::t_afe9a6980ef1c3 141
+apps/dashboard/components/account/delete-account-section.test.tsx
+  s_c216811bbb1bb1::t_9e222afdc9d12d 119-120,122,131,143
+  s_c216811bbb1bb1::t_76d0252e4fe2ad 250,252-254
+  s_c216811bbb1bb1::t_d43a8464937be0 225,227-229
+  s_c216811bbb1bb1::t_e45b6f8692c897 165,167-169,181-183
+  s_c216811bbb1bb1::t_52222d53c8b788 198,200-202
+  s_c216811bbb1bb1::t_ba6b3b5de3d588 31-32,38-39
+  s_c216811bbb1bb1::t_0db7f27b1027b2 153-154
+  s_c216811bbb1bb1::t_884ed6681de9e3 1-30,33-37,40-118,121,123-130,132-142,144-152,155-164,166,170-180,184-197,199,203-224,226,230-249,251,255-270
+packages/i18n/messages/fi.json
+  s_c216811bbb1bb1::t_ce3330c5eee24a 1041-1050
+packages/i18n/messages/nb.json
+  s_c216811bbb1bb1::t_a42c2b63d5b8d5 1041-1050
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "210d93379e382770eedb9b59f1ed65bf2ac6cc84",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
