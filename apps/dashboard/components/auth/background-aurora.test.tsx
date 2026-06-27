@@ -9,7 +9,7 @@ describe("BackgroundAurora", () => {
     const { container } = render(<BackgroundAurora />)
     const layer = container.querySelector('[aria-hidden="true"]')
     expect(layer).not.toBeNull()
-    // The three drifting blobs.
-    expect(layer?.children.length).toBe(3)
+    // The four drifting glow blobs.
+    expect(layer?.children.length).toBe(4)
   })
 })
