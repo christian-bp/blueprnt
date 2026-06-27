@@ -61,6 +61,8 @@ export function BackgroundAurora() {
           style={{
             background: `radial-gradient(circle at center, ${blob.color} 0%, transparent 70%)`,
           }}
+          // Start at the first opacity keyframe so there is no 1 -> 0.7 tween on mount.
+          initial={reduce ? undefined : { opacity: 0.7 }}
           animate={
             reduce ? undefined : { ...blob.drift, opacity: [0.7, 1, 0.85, 0.7] }
           }

@@ -23,9 +23,10 @@ in the same change.
   build never logs it. Confirm the production deployment runs with
   `NODE_ENV=production` and grep the logs to be sure no OTP is printed.
 - [ ] **Lock down seed / reset surfaces.** `packages/backend/convex/seed.ts`
-  (`seedProduction`) and `packages/backend/convex/devReset.ts` (`resetDatabase`)
-  must not be runnable against production data. Remove them or guard them behind
-  an environment check that is impossible to satisfy in production.
+  (`seedProduction` and `resetDatabase`) and `packages/backend/convex/devReset.ts`
+  (`wipeAppTables`) must not be runnable against production data. Remove them or
+  guard them behind an environment check that is impossible to satisfy in
+  production.
 - [ ] **Reset pre-launch data.** Clear dev/demo organizations, users, and seeded
   content from the production deployment so launch starts clean.
 
@@ -34,7 +35,14 @@ in the same change.
 - [ ] **Native review of machine-translated locale drafts.** The 2FA strings in
   `sv.json`, `nb.json`, `da.json`, `fi.json` (and any other drafts flagged in
   commits) were machine-drafted from English. Have a native speaker review
-  before launch.
+  before launch. Specific items flagged in review to check:
+  - nb/da use a different 2FA term in `twoFactorSetup.complete.description`
+    (`Tofaktorautentisering`/`Tofaktorgodkendelse`) than the rest of the flow
+    (`Tostegsbekreftelse`/`Totrinsbekræftelse`); pick one term per locale.
+  - sv `email.twoFactorCode.note` "upphör" reads stiff; consider "går ut".
+  - fi `twoFactorSetup.complete.heading` "Valmista tuli" is too colloquial for a
+    security screen.
+  - sv mixes "mejl" and "e-post" across the new keys; standardize.
 
 ## Security and compliance
 
