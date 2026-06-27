@@ -178,6 +178,13 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
               </SubmitButton>
             </form>
           </Form>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setStep("choose")}
+          >
+            {t("changeMethod")}
+          </Button>
         </div>
       </AuthShell>
     )
