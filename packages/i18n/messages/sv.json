@@ -1022,6 +1022,22 @@
           "error": "Det gick inte att byta lösenord. Försök igen.",
           "wrongPassword": "Det nuvarande lösenordet är felaktigt.",
           "compromised": "Det här lösenordet har förekommit i ett dataintrång. Välj ett annat lösenord."
+        },
+        "twoFactor": {
+          "title": "Tvåstegsverifiering",
+          "currentMethod": "Aktuell metod",
+          "methodTotp": "Autentiseringsapp",
+          "methodEmail": "E-postkoder",
+          "methodNone": "Ingen",
+          "changeMethod": "Byt metod",
+          "changeMethodConfirmTitle": "Byt tvåstegsmetod?",
+          "changeMethodConfirmBody": "Detta startar om tvåstegskonfigurationen. Din nuvarande metod fungerar tills du är klar.",
+          "changeMethodConfirmCta": "Fortsätt",
+          "regenerate": "Skapa nya reservkoder",
+          "regeneratePasswordLabel": "Bekräfta ditt lösenord",
+          "regenerateCta": "Skapa",
+          "wrongPassword": "Det lösenordet är felaktigt. Försök igen.",
+          "cancel": "Avbryt"
         }
       }
     }

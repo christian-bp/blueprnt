@@ -1022,6 +1022,22 @@
           "error": "Could not change your password. Please try again.",
           "wrongPassword": "Current password is incorrect.",
           "compromised": "This password has appeared in a data breach. Please choose a different password."
+        },
+        "twoFactor": {
+          "title": "Two-step verification",
+          "currentMethod": "Current method",
+          "methodTotp": "Authenticator app",
+          "methodEmail": "Email codes",
+          "methodNone": "None",
+          "changeMethod": "Change method",
+          "changeMethodConfirmTitle": "Change two-step method?",
+          "changeMethodConfirmBody": "This restarts two-step setup. Your current method keeps working until you finish.",
+          "changeMethodConfirmCta": "Continue",
+          "regenerate": "Regenerate backup codes",
+          "regeneratePasswordLabel": "Confirm your password",
+          "regenerateCta": "Regenerate",
+          "wrongPassword": "That password is incorrect. Try again.",
+          "cancel": "Cancel"
         }
       }
     }

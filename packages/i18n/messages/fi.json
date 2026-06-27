@@ -1022,6 +1022,22 @@
           "error": "Salasanaa ei voitu vaihtaa. Yritä uudelleen.",
           "wrongPassword": "Nykyinen salasana on virheellinen.",
           "compromised": "Tämä salasana on esiintynyt tietomurrossa. Valitse toinen salasana."
+        },
+        "twoFactor": {
+          "title": "Kaksivaiheinen vahvistus",
+          "currentMethod": "Nykyinen menetelmä",
+          "methodTotp": "Todennusohjelma",
+          "methodEmail": "Sähköpostikoodit",
+          "methodNone": "Ei mitään",
+          "changeMethod": "Vaihda menetelmä",
+          "changeMethodConfirmTitle": "Vaihdetaanko kaksivaiheinen menetelmä?",
+          "changeMethodConfirmBody": "Tämä käynnistää kaksivaiheisen määrityksen uudelleen. Nykyinen menetelmäsi toimii, kunnes olet valmis.",
+          "changeMethodConfirmCta": "Jatka",
+          "regenerate": "Luo uudet varmuuskoodit",
+          "regeneratePasswordLabel": "Vahvista salasanasi",
+          "regenerateCta": "Luo",
+          "wrongPassword": "Tämä salasana on virheellinen. Yritä uudelleen.",
+          "cancel": "Peruuta"
         }
       }
     }

@@ -1022,6 +1022,22 @@
           "error": "Kunne ikke endre passordet ditt. Prøv igjen.",
           "wrongPassword": "Gjeldende passord er feil.",
           "compromised": "Dette passordet har dukket opp i et datainnbrudd. Velg et annet passord."
+        },
+        "twoFactor": {
+          "title": "To-trinns bekreftelse",
+          "currentMethod": "Gjeldende metode",
+          "methodTotp": "Autentiseringsapp",
+          "methodEmail": "E-postkoder",
+          "methodNone": "Ingen",
+          "changeMethod": "Bytt metode",
+          "changeMethodConfirmTitle": "Bytte to-trinnsmétode?",
+          "changeMethodConfirmBody": "Dette starter to-trinnsoppsettet på nytt. Din gjeldende metode fungerer til du er ferdig.",
+          "changeMethodConfirmCta": "Fortsett",
+          "regenerate": "Generer nye sikkerhetskoder",
+          "regeneratePasswordLabel": "Bekreft passordet ditt",
+          "regenerateCta": "Generer",
+          "wrongPassword": "Det passordet er feil. Prøv igjen.",
+          "cancel": "Avbryt"
         }
       }
     }

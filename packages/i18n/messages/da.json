@@ -1022,6 +1022,22 @@
           "error": "Kunne ikke skifte din adgangskode. Prøv igen.",
           "wrongPassword": "Nuværende adgangskode er forkert.",
           "compromised": "Denne adgangskode er dukket op i et databrud. Vælg en anden adgangskode."
+        },
+        "twoFactor": {
+          "title": "To-trins-bekræftelse",
+          "currentMethod": "Aktuel metode",
+          "methodTotp": "Autentificeringsapp",
+          "methodEmail": "E-mailkoder",
+          "methodNone": "Ingen",
+          "changeMethod": "Skift metode",
+          "changeMethodConfirmTitle": "Skift to-trins-metode?",
+          "changeMethodConfirmBody": "Dette genstarter opsætningen af to-trins-bekræftelse. Din nuværende metode virker, indtil du er færdig.",
+          "changeMethodConfirmCta": "Fortsæt",
+          "regenerate": "Generer nye backupkoder",
+          "regeneratePasswordLabel": "Bekræft din adgangskode",
+          "regenerateCta": "Generer",
+          "wrongPassword": "Den adgangskode er forkert. Prøv igen.",
+          "cancel": "Annuller"
         }
       }
     }
