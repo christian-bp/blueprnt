@@ -1,0 +1,46 @@
+packages/i18n/messages/en.json
+  s_c216811bbb1bb1::t_5ae5ec91af4ec7 462-465
+  s_c216811bbb1bb1::t_8c7ac41877e97f 84-85
+apps/dashboard/app/reset-password/reset-password.test.tsx
+  s_c216811bbb1bb1::t_922b4ea834e99f 35,46-49
+  s_c216811bbb1bb1::t_f77c4ca7e7fa23 69
+  s_c216811bbb1bb1::t_98df9b45948c4c 79,95,110
+  s_c216811bbb1bb1::t_6516ebf17e0e29 50-51
+packages/i18n/messages/fi.json
+  s_c216811bbb1bb1::t_ae7798b89cb873 84-85
+  s_c216811bbb1bb1::t_113c03eddeda8b 462-465
+packages/i18n/messages/sv.json
+  s_c216811bbb1bb1::t_c7be17d0a74e01 462-465
+  s_c216811bbb1bb1::t_1f1a1f61340d05 84-85
+packages/i18n/messages/da.json
+  s_c216811bbb1bb1::t_b6c36c0208572b 462-465
+  s_c216811bbb1bb1::t_6e919a15c81b04 84-85
+apps/dashboard/app/reset-password/page.tsx
+  s_c216811bbb1bb1::t_25853cedbe1709 118-130
+  s_c216811bbb1bb1::t_61047ee7dac262 13
+  s_c216811bbb1bb1::t_a6e8f82cedc730 79-85
+  s_c216811bbb1bb1::t_9e05523fbbe2d7 39-51
+  s_c216811bbb1bb1::t_13b1ab90f585e4 59-61,67
+  s_c216811bbb1bb1::t_f8efc0ad688791 139-149,153
+packages/i18n/messages/nb.json
+  s_c216811bbb1bb1::t_c2fd042abe5afc 84-85
+  s_c216811bbb1bb1::t_af565eede1793d 462-465
+apps/dashboard/lib/auth-schemas.ts
+  s_c216811bbb1bb1::t_471bd1e33af36c 25-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "a3d718d31838e15379f8921aa09b1283a8cbad0f",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
