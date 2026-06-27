@@ -988,6 +988,14 @@
           "today": "Idag"
         }
       }
+    },
+    "account": {
+      "profile": {
+        "nameLabel": "Visningsnamn",
+        "saveName": "Spara namn",
+        "nameSaved": "Namn sparat.",
+        "error": "Det gick inte att spara ditt namn. Försök igen."
+      }
     }
   },
   "errors": {

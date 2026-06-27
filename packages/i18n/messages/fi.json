@@ -988,6 +988,14 @@
           "today": "Tänään"
         }
       }
+    },
+    "account": {
+      "profile": {
+        "nameLabel": "Näyttönimi",
+        "saveName": "Tallenna nimi",
+        "nameSaved": "Nimi tallennettu.",
+        "error": "Nimeä ei voitu tallentaa. Yritä uudelleen."
+      }
     }
   },
   "errors": {

@@ -988,6 +988,14 @@
           "today": "I dag"
         }
       }
+    },
+    "account": {
+      "profile": {
+        "nameLabel": "Visningsnavn",
+        "saveName": "Lagre navn",
+        "nameSaved": "Navn lagret.",
+        "error": "Kunne ikke lagre navnet ditt. Prøv igjen."
+      }
     }
   },
   "errors": {
