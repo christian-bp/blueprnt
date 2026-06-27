@@ -6,8 +6,8 @@ import { motion, useReducedMotion } from "motion/react"
 // a soft ring pulsing out once behind it), then the tick DRAWS itself across the
 // circle (stroke pathLength). Static under reduced motion (appears fully drawn,
 // no pulse). Decorative (aria-hidden); the heading beside it carries the meaning.
-// Emerald reads as "secured" here; we have no success token and this is a one-off
-// confirmation affordance, not a judgement value.
+// Brand-colored: this is a one-off celebratory confirmation, not a judgement
+// value, so the brand accent is appropriate here.
 export function SuccessCheck() {
   const reduce = useReducedMotion()
   return (
@@ -17,14 +17,14 @@ export function SuccessCheck() {
     >
       {!reduce && (
         <motion.span
-          className="absolute inset-0 rounded-full bg-emerald-500/30"
+          className="absolute inset-0 rounded-full bg-brand/30"
           initial={{ scale: 0.6, opacity: 0.5 }}
           animate={{ scale: 1.9, opacity: 0 }}
           transition={{ duration: 0.9, ease: "easeOut" }}
         />
       )}
       <motion.span
-        className="flex size-16 items-center justify-center rounded-full bg-emerald-500 text-white"
+        className="flex size-16 items-center justify-center rounded-full bg-brand text-brand-foreground"
         initial={reduce ? false : { scale: 0 }}
         animate={{ scale: 1 }}
         transition={
