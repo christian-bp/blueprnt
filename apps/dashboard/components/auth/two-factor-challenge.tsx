@@ -45,6 +45,10 @@ export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
   // two codes (and only the second is valid, since each send replaces the last).
   // Switching away from email resets it so re-entering re-sends.
   const otpSentRef = useRef(false)
+  // Resend feedback: a spinner while sending, then a brief "Code sent".
+  const [resending, setResending] = useState(false)
+  const [resent, setResent] = useState(false)
+  const resentTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   // When the email method is active, request a code on entry / on switch.
   useEffect(() => {
@@ -57,12 +61,28 @@ export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
     void authClient.twoFactor.sendOtp()
   }, [method])
 
-  // Switching clears the inputs and error so a stale value never carries over.
+  // Clear the pending "Code sent" reset if the screen unmounts mid-timeout.
+  useEffect(() => () => clearTimeout(resentTimer.current), [])
+
+  // Switching clears the inputs, error, and resend feedback so nothing stale
+  // carries over.
   function switchTo(next: Method) {
     setError(false)
     setCode("")
     setBackupCode("")
+    setResent(false)
     setMethod(next)
+  }
+
+  async function onResend() {
+    if (resending) return
+    setResending(true)
+    const { error: sendError } = await authClient.twoFactor.sendOtp()
+    setResending(false)
+    if (sendError) return
+    setResent(true)
+    clearTimeout(resentTimer.current)
+    resentTimer.current = setTimeout(() => setResent(false), 3000)
   }
 
   async function onComplete(value: string) {
@@ -182,13 +202,14 @@ export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
         )}
         {method === "email" && (
           <>
-            <Button
+            <SubmitButton
               type="button"
               variant="ghost"
-              onClick={() => void authClient.twoFactor.sendOtp()}
+              isSubmitting={resending}
+              onClick={onResend}
             >
-              {t("resend")}
-            </Button>
+              {resent ? t("resent") : t("resend")}
+            </SubmitButton>
             {hasAuthenticator && (
               <Button
                 type="button"

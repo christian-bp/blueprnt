@@ -475,6 +475,7 @@
         "useEmail": "Lähetä koodi sähköpostiini sen sijaan",
         "useAuthenticator": "Käytä todennussovellusta sen sijaan",
         "resend": "Etkö saanut koodia? Lähetä uudelleen",
+        "resent": "Koodi lähetetty",
         "useBackupCode": "Käytä varakoodia",
         "backupPrompt": "Syötä jokin varakoodeistasi.",
         "backupLabel": "Varakoodi",

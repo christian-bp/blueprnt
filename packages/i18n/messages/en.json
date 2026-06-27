@@ -475,6 +475,7 @@
         "useEmail": "Email me a code instead",
         "useAuthenticator": "Use your authenticator app instead",
         "resend": "Didn't receive it? Resend",
+        "resent": "Code sent",
         "useBackupCode": "Use a backup code",
         "backupPrompt": "Enter one of your backup codes.",
         "backupLabel": "Backup code",

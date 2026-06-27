@@ -475,6 +475,7 @@
         "useEmail": "Send meg en kode på e-post i stedet",
         "useAuthenticator": "Bruk autentiseringsappen i stedet",
         "resend": "Fikk du ingen kode? Send på nytt",
+        "resent": "Koden sendt",
         "useBackupCode": "Bruk en sikkerhetskode",
         "backupPrompt": "Skriv inn en av sikkerhetskodene dine.",
         "backupLabel": "Sikkerhetskode",
