@@ -1,0 +1,40 @@
+packages/i18n/messages/sv.json
+  s_c216811bbb1bb1::t_9a4f4fe8f291b9 434-435
+packages/i18n/messages/da.json
+  s_c216811bbb1bb1::t_4120cdb58ee1b3 434-435
+apps/dashboard/components/password-input.test.tsx
+  s_c216811bbb1bb1::t_bd61863b10588c 1-61
+apps/dashboard/components/password-input.tsx
+  s_c216811bbb1bb1::t_f384539f59d87d 1-48
+packages/i18n/messages/fi.json
+  s_c216811bbb1bb1::t_85b156414e7066 434-435
+apps/dashboard/app/reset-password/page.tsx
+  s_c216811bbb1bb1::t_0656e633a8bfb5 24
+  s_c216811bbb1bb1::t_c7e3bc062d4787 106
+apps/dashboard/components/auth/two-factor-setup.tsx
+  s_c216811bbb1bb1::t_d8d93d3122d39c 26
+  s_c216811bbb1bb1::t_fd47defd6afdaa 169
+packages/i18n/messages/nb.json
+  s_c216811bbb1bb1::t_364f04589f43f1 434-435
+packages/i18n/messages/en.json
+  s_c216811bbb1bb1::t_5179749b3523fb 434-435
+apps/dashboard/components/auth/email-password-form.tsx
+  s_c216811bbb1bb1::t_7fc217adef97bd 24
+  s_c216811bbb1bb1::t_00762789d54344 100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "0402c8818b38e0a85a2e10637b8f3b9538fb64c7",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
