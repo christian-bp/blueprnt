@@ -34,7 +34,7 @@ export function SuccessCheck() {
         <svg
           aria-hidden="true"
           viewBox="0 0 24 24"
-          className="size-8"
+          className="size-10"
           fill="none"
           stroke="currentColor"
           strokeWidth={3}
