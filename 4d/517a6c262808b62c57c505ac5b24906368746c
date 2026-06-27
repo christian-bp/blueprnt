@@ -1,0 +1,36 @@
+packages/i18n/messages/sv.json
+  s_c216811bbb1bb1::t_278a6c0f96dac7 515-521
+packages/i18n/messages/fi.json
+  s_c216811bbb1bb1::t_827cbd412f9922 515-521
+apps/dashboard/components/auth/two-factor-setup.tsx
+  s_c216811bbb1bb1::t_818e3a0fc57061 113-122
+  s_c216811bbb1bb1::t_69e77034f25d5d 51-56
+  s_c216811bbb1bb1::t_368875e6b9ad1d 90
+  s_c216811bbb1bb1::t_8b198e54e4f9a0 220-262
+  s_c216811bbb1bb1::t_013dc98182698e 6
+packages/i18n/messages/en.json
+  s_c216811bbb1bb1::t_a5a029f618bcdd 515-521
+packages/i18n/messages/nb.json
+  s_c216811bbb1bb1::t_73730be3f04916 515-521
+apps/dashboard/components/auth/two-factor-setup.test.tsx
+  s_c216811bbb1bb1::t_b3925cc65bca3a 71-74
+  s_c216811bbb1bb1::t_326443ce4f2495 110-111,117-119,121
+packages/i18n/messages/da.json
+  s_c216811bbb1bb1::t_18f93aa0565320 515-521
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "4d517a6c262808b62c57c505ac5b24906368746c",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
