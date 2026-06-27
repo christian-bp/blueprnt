@@ -1,0 +1,56 @@
+packages/i18n/messages/en.json
+  s_c216811bbb1bb1::t_ef94de1f8a2f7b 1051
+  s_c216811bbb1bb1::t_fd758a6a62b67f 1039
+  s_c216811bbb1bb1::t_5973fb43b6b27d 1068
+packages/i18n/messages/nb.json
+  s_c216811bbb1bb1::t_c0d8e152f5b47e 1039
+  s_c216811bbb1bb1::t_30e5ab86696222 1051
+  s_c216811bbb1bb1::t_616682990c2686 1068
+apps/dashboard/components/account/change-password-form.tsx
+  s_c216811bbb1bb1::t_e43af0b1aa7379 5-11
+  s_c216811bbb1bb1::t_5ff0becb473e1a 111-168,170-179,181,184,190-191
+  s_c216811bbb1bb1::t_5d8d9c2adca8cf 4
+apps/dashboard/components/account/delete-account-section.tsx
+  s_c216811bbb1bb1::t_0dce314b014a17 6-12
+  s_c216811bbb1bb1::t_6f6d858cfb5be9 94-104,132-144,149-185,187-191,197-208
+  s_c216811bbb1bb1::t_3830a22a4b8009 5
+apps/dashboard/app/(app)/account/security/page.tsx
+  s_c216811bbb1bb1::t_3a4f0e6a9c9325 14-16
+apps/dashboard/components/account/change-password-form.test.tsx
+  s_c216811bbb1bb1::t_e34d7d37f2d13a 80-85
+apps/dashboard/components/account/delete-account-section.test.tsx
+  s_c216811bbb1bb1::t_7dab4856d3f131 96-103
+packages/i18n/messages/fi.json
+  s_c216811bbb1bb1::t_d23f6457125b9e 1068
+  s_c216811bbb1bb1::t_836c6f447e762c 1039
+  s_c216811bbb1bb1::t_ed50d9c6cd453d 1051
+packages/i18n/messages/da.json
+  s_c216811bbb1bb1::t_8a3823a83a5af3 1068
+  s_c216811bbb1bb1::t_6dcc0b041472c0 1039
+  s_c216811bbb1bb1::t_a2694727ea5dbd 1051
+apps/dashboard/components/account/two-factor-section.test.tsx
+  s_c216811bbb1bb1::t_619711c56c755d 79-84
+apps/dashboard/components/account/two-factor-section.tsx
+  s_c216811bbb1bb1::t_66a2e3e72755ee 17-23
+  s_c216811bbb1bb1::t_c707a8e96cddb8 99-115,118-145,147-160,162-188,190-209,211-222,224-263,265-267
+packages/i18n/messages/sv.json
+  s_c216811bbb1bb1::t_c6965b02d4d71d 1051
+  s_c216811bbb1bb1::t_ee97060d3b2035 1039
+  s_c216811bbb1bb1::t_7785e9225b91ef 1068
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "b8127a16445545a279213f5788e85d9eb3280989",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
