@@ -1,0 +1,35 @@
+packages/i18n/messages/en.json
+  s_c216811bbb1bb1::t_f77dab71948924 474-479
+packages/i18n/messages/sv.json
+  s_c216811bbb1bb1::t_0c9ee192e068d1 474-479
+packages/i18n/messages/nb.json
+  s_c216811bbb1bb1::t_f692daa47dc6fc 474-479
+packages/i18n/messages/fi.json
+  s_c216811bbb1bb1::t_d2f8e80eb8100a 474-479
+packages/i18n/messages/da.json
+  s_c216811bbb1bb1::t_e4e6217ece81d5 474-479
+apps/dashboard/components/auth/rotating-value-line.test.tsx
+  s_c216811bbb1bb1::t_7c2c7136939552 1-15,17-18
+  s_c216811bbb1bb1::t_c4db0ea5bf5938 16
+apps/dashboard/components/auth/rotating-value-line.tsx
+  s_c216811bbb1bb1::t_f5f1c86552e646 1-27,33-36,38-43,45-49
+  s_c216811bbb1bb1::t_0b483e77470833 29-31
+  s_c216811bbb1bb1::t_d87f786cb2c23e 28
+  s_c216811bbb1bb1::t_0b93735a8c394b 32,37,44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "558dd3733dd64fcb29e957015dc310bea0b800ad",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
