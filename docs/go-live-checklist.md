@@ -43,6 +43,21 @@ in the same change.
   - fi `twoFactorSetup.complete.heading` "Valmista tuli" is too colloquial for a
     security screen.
   - sv mixes "mejl" and "e-post" across the new keys; standardize.
+- [ ] **Native review of account-settings machine-translated strings.** The
+  account-settings feature (Tasks 2-11) added new Nordic (sv/nb/da/fi) strings
+  that were machine-drafted from English. Have a native speaker review before
+  launch. Affected key namespaces:
+  - `dashboard.account.*` (sub-keys: profile, email, security.password,
+    security.twoFactor, security.delete, tabs, title)
+  - `dashboard.nav.accountSettings`
+  - `dashboard.accountMenu`
+  - `dashboard.help.changeEmailLabel` / `dashboard.help.changeEmailBody`
+  - `dashboard.validation.emailUnchanged`
+  - `errors.lastAdmin`
+  - `email.changeEmailConfirm.*`
+  - `email.verifyEmail.*`
+  - Note: the nb `changeMethodConfirmTitle` typo (`to-trinnsmétode` with an
+    accented e) was fixed in the same commit that flagged this item.
 
 ## Security and compliance
 

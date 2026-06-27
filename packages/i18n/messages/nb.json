@@ -1040,7 +1040,7 @@
           "methodEmail": "E-postkoder",
           "methodNone": "Ingen",
           "changeMethod": "Bytt metode",
-          "changeMethodConfirmTitle": "Bytte to-trinnsmétode?",
+          "changeMethodConfirmTitle": "Bytte to-trinnsmetode?",
           "changeMethodConfirmBody": "Dette starter to-trinnsoppsettet på nytt. Din gjeldende metode fungerer til du er ferdig.",
           "changeMethodConfirmCta": "Fortsett",
           "regenerate": "Generer nye sikkerhetskoder",
