@@ -1,0 +1,26 @@
+apps/dashboard/app/reset-password/page.tsx
+  s_c216811bbb1bb1::t_1dc9471e3f0aea 74-80
+  s_c216811bbb1bb1::t_bf43e7b67464c7 26
+apps/dashboard/lib/pwned-password.ts
+  s_c216811bbb1bb1::t_7019df2f21c06e 1-30
+apps/dashboard/app/reset-password/reset-password.test.tsx
+  s_c216811bbb1bb1::t_413c17dd606921 70-71
+  s_c216811bbb1bb1::t_6be60a45259569 129-178
+  s_c216811bbb1bb1::t_57c855c4a5aa60 9,15,24,30-34,38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "98234416ca9acb2210eabb405195661732022df0",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
