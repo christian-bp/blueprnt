@@ -1,0 +1,21 @@
+apps/dashboard/components/auth/success-check.tsx
+  s_c216811bbb1bb1::t_6b8393084ae7d1 3-4,7-12,16,18,20-31,33,35-38
+apps/dashboard/components/auth/success-check.test.tsx
+  s_c216811bbb1bb1::t_e260e3b46f2136 8,10-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "163499ad1ce72e35c04f89fb52719d1fdd77be2c",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
