@@ -23,6 +23,7 @@ import {
   type ResetPasswordValues,
 } from "@/lib/auth-schemas"
 import { authClient } from "@/lib/auth-client"
+import { isPasswordPwned } from "@/lib/pwned-password"
 import { usePageTitle } from "@/hooks/use-page-title"
 
 // Better Auth's haveIBeenPwned plugin rejects a breached password with a 400
@@ -70,6 +71,13 @@ function ResetPasswordForm() {
   async function onSubmit(values: ResetPasswordValues) {
     if (token === null) return
     setError(null)
+    // Catch a breached password BEFORE submitting: Better Auth consumes the
+    // one-time token before its own breach check, so submitting a breached
+    // password would burn the link. The server plugin stays the backstop.
+    if (await isPasswordPwned(values.password)) {
+      setError("compromised")
+      return
+    }
     try {
       const { error: resetError } = await authClient.resetPassword({
         newPassword: values.password,
