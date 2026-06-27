@@ -33,6 +33,12 @@ export function AuthShell({
         {headerRight ? (
           <div className="absolute top-4 right-4 z-10">{headerRight}</div>
         ) : null}
+        {/* Mobile-only wordmark, pinned top-left (on desktop the BrandPanel
+            carries the wordmark, also top-left). */}
+        <Logo
+          label={t("title")}
+          className="relative z-10 m-6 h-8 self-start text-brand lg:hidden"
+        />
         <main className="flex flex-1 flex-col items-center justify-center p-6 md:p-10">
           <div
             className={cn(
@@ -40,10 +46,6 @@ export function AuthShell({
               contentClassName
             )}
           >
-            <Logo
-              label={t("title")}
-              className="h-10 self-center text-brand lg:hidden"
-            />
             {children}
           </div>
         </main>
