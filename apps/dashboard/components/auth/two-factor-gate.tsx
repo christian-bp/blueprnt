@@ -1,11 +1,11 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Spinner } from "@workspace/ui/components/spinner"
 import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { type ReactNode, useEffect, useState } from "react"
 import { TwoFactorSetup } from "@/components/auth/two-factor-setup"
+import { LoadingScreen } from "@/components/loading-screen"
 
 // Mandatory-2FA gate. Sits above OnboardingGate in the (app) layout: an
 // authenticated user without a confirmed second factor is held in setup before
@@ -42,9 +42,5 @@ export function TwoFactorGate(props: { children: ReactNode }) {
     return <TwoFactorSetup onConfirmed={() => setDone(true)} />
   }
   // First load only (never started): wait for the initial status to resolve.
-  return (
-    <main className="flex min-h-svh items-center justify-center">
-      <Spinner aria-label={t("loading")} />
-    </main>
-  )
+  return <LoadingScreen label={t("loading")} />
 }

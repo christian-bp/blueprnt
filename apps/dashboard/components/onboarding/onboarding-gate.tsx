@@ -1,12 +1,12 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Spinner } from "@workspace/ui/components/spinner"
 import type { FunctionReturnType } from "convex/server"
 import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { type ReactNode, useEffect, useState } from "react"
 import { AppShell } from "@/components/app-shell"
+import { LoadingScreen } from "@/components/loading-screen"
 import { OnboardingWizard } from "@/components/onboarding/onboarding-wizard"
 import { authClient } from "@/lib/auth-client"
 import { resolveActiveOrgId } from "@/lib/active-org"
@@ -14,14 +14,6 @@ import { resolveActiveOrgId } from "@/lib/active-org"
 type Status = NonNullable<
   FunctionReturnType<typeof api.accounts.onboarding.getOnboardingStatus>
 >
-
-function GateSpinner(props: { label: string }) {
-  return (
-    <main className="flex min-h-svh items-center justify-center">
-      <Spinner aria-label={props.label} />
-    </main>
-  )
-}
 
 // Resolves the active company (Better Auth's session.activeOrganizationId) and
 // scopes the gate to it. Switching companies re-runs getOnboardingStatus and,
@@ -51,13 +43,13 @@ export function OnboardingGate(props: { children: ReactNode }) {
   )
 
   // Memberships still loading.
-  if (orgList === null) return <GateSpinner label={t("loading")} />
+  if (orgList === null) return <LoadingScreen label={t("loading")} />
   // Signed in but provisioned into no company yet (rare: provisioning is
   // back-office and signup is disabled). Nothing to render.
   if (orgList.length === 0) return null
   // Active company resolved, its status query still loading.
   if (status === undefined || status === null) {
-    return <GateSpinner label={t("loading")} />
+    return <LoadingScreen label={t("loading")} />
   }
 
   // Keyed by the active company so switching resets the wizard-ownership state.
