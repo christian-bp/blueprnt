@@ -37,6 +37,7 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
   const t = useTranslations("dashboard.twoFactorSetup")
   const tHelp = useTranslations("dashboard.help")
   const tv = useTranslations("dashboard.validation")
+  const tAuth = useTranslations("dashboard.auth")
   const confirmMfaSetup = useMutation(api.accounts.twoFactor.confirmMfaSetup)
   const session = authClient.useSession()
   const email = session.data?.user.email ?? ""
@@ -54,6 +55,8 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
   const [backupCodes, setBackupCodes] = useState<string[]>([])
   const [savedAck, setSavedAck] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [finishing, setFinishing] = useState(false)
+  const [finishError, setFinishError] = useState(false)
 
   const pwSchema = useMemo(() => makeConfirmPasswordSchema(tv), [tv])
   const pwForm = useForm<ConfirmPasswordValues>({
@@ -104,10 +107,23 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
       setCodeError(true)
       return
     }
-    await confirmMfaSetup({ method })
-    // Show the completion screen; onConfirmed (which advances to the app) fires
-    // when the user continues from it, not the instant the code verifies.
+    // Show the completion screen. Setup is marked complete (confirmMfaSetup) only
+    // when the user continues past the backup codes (onFinish), not here, so a
+    // reload before then keeps them gated in setup and they restart with fresh
+    // codes rather than landing in the app without having saved any.
     setStep("done")
+  }
+
+  async function onFinish() {
+    setFinishError(false)
+    setFinishing(true)
+    try {
+      await confirmMfaSetup({ method })
+      onConfirmed()
+    } catch {
+      setFinishing(false)
+      setFinishError(true)
+    }
   }
 
   async function onCopyBackup() {
@@ -255,13 +271,20 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
               </div>
             </div>
           )}
-          <Button
+          {finishError && (
+            <p role="alert" className="text-destructive text-sm">
+              {tAuth("error")}
+            </p>
+          )}
+          <SubmitButton
+            type="button"
             className="w-full"
-            onClick={() => onConfirmed()}
+            isSubmitting={finishing}
+            onClick={onFinish}
             disabled={backupCodes.length > 0 && !savedAck}
           >
             {t("complete.cta")}
-          </Button>
+          </SubmitButton>
         </div>
       </AuthShell>
     )

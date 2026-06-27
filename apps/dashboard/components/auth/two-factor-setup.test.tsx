@@ -108,19 +108,23 @@ describe("TwoFactorSetup", () => {
     if (!otpInput) throw new Error("OTP input not found")
     fireEvent.change(otpInput, { target: { value: "123456" } })
     // 4. completion screen shows the backup codes; Continue is gated on
-    //    acknowledging they're saved, and onConfirmed fires only on Continue.
+    //    acknowledging they're saved. confirmMfaSetup (which marks setup complete)
+    //    and onConfirmed fire only on Continue, so a reload before then keeps the
+    //    user gated in setup rather than landing in the app without saved codes.
     const continueButton = await screen.findByRole("button", {
       name: messages.dashboard.twoFactorSetup.complete.cta,
     })
     expect(verifyTotp).toHaveBeenCalledWith({ code: "123456" })
-    expect(confirmMfaSetup).toHaveBeenCalledWith({ method: "totp" })
     expect(screen.getByText("ABCD-1234")).toBeDefined()
     expect(screen.getByText("EFGH-5678")).toBeDefined()
+    expect(confirmMfaSetup).not.toHaveBeenCalled()
     expect((continueButton as HTMLButtonElement).disabled).toBe(true)
-    expect(onConfirmed).not.toHaveBeenCalled()
     fireEvent.click(screen.getByRole("checkbox"))
     fireEvent.click(continueButton)
-    expect(onConfirmed).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(confirmMfaSetup).toHaveBeenCalledWith({ method: "totp" })
+      expect(onConfirmed).toHaveBeenCalled()
+    })
   })
 
   it("sends and verifies an email code when the email method is chosen", async () => {
@@ -153,13 +157,18 @@ describe("TwoFactorSetup", () => {
       inputs.length > 0 ? inputs[0] : container.querySelector("input")
     if (!otpInput) throw new Error("OTP input not found")
     fireEvent.change(otpInput, { target: { value: "654321" } })
+    // No backup codes returned here, so Continue is not gated; confirmMfaSetup
+    // and onConfirmed still fire only on Continue, not at verify.
     const continueButton = await screen.findByRole("button", {
       name: messages.dashboard.twoFactorSetup.complete.cta,
     })
     expect(verifyOtp).toHaveBeenCalledWith({ code: "654321" })
-    expect(confirmMfaSetup).toHaveBeenCalledWith({ method: "email" })
+    expect(confirmMfaSetup).not.toHaveBeenCalled()
     expect(onConfirmed).not.toHaveBeenCalled()
     fireEvent.click(continueButton)
-    expect(onConfirmed).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(confirmMfaSetup).toHaveBeenCalledWith({ method: "email" })
+      expect(onConfirmed).toHaveBeenCalled()
+    })
   })
 })
