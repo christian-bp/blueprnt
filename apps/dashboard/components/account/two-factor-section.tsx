@@ -21,7 +21,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
-import { Checkbox } from "@workspace/ui/components/checkbox"
 import {
   Form,
   FormControl,
@@ -62,7 +61,6 @@ export function TwoFactorSection() {
 
   const [regenerateOpen, setRegenerateOpen] = useState(false)
   const [backupCodes, setBackupCodes] = useState<string[]>([])
-  const [savedAck, setSavedAck] = useState(false)
   const [pwError, setPwError] = useState(false)
 
   const schema = useMemo(() => makeRegenerateSchema(tv), [tv])
@@ -90,7 +88,6 @@ export function TwoFactorSection() {
       return
     }
     setBackupCodes(data.backupCodes ?? [])
-    setSavedAck(false)
     form.reset()
     setRegenerateOpen(false)
   }
@@ -241,30 +238,6 @@ export function TwoFactorSection() {
                 </li>
               ))}
             </ul>
-            <div className="mt-4 flex items-center gap-2">
-              <Checkbox
-                id="regen-backup-ack"
-                checked={savedAck}
-                onCheckedChange={(v) => setSavedAck(v === true)}
-              />
-              <label htmlFor="regen-backup-ack" className="text-sm">
-                {tBackup("saved")}
-              </label>
-            </div>
-            {savedAck && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="mt-3"
-                onClick={() => {
-                  setBackupCodes([])
-                  setSavedAck(false)
-                }}
-              >
-                {t("regenerate")}
-              </Button>
-            )}
           </div>
         )}
       </CardContent>
