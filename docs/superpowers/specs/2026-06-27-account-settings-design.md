@@ -64,9 +64,10 @@ The pages are thin shells; each section is its own client component in `apps/das
 
 ### Email
 - Shows the current email (read-only) and a "Change email" form: new email + current password (`makeChangeEmailSchema(t)`: valid email, not equal to current, password required).
-- On submit: trigger Better Auth `changeEmail` so a verification link is emailed to the **new** address; show a "Check your new inbox" confirmation state. The change only applies after the link is clicked.
-- Verification landing: a callback page shows success ("Your email has been updated") and an expired/invalid state, mirroring the reset-password page's states.
-- New email template `changeEmail` (subject + body with the verification link), authored in `en` and mirrored to all locales.
+- On submit: `authClient.changeEmail({ newEmail, callbackURL })`. Better Auth 1.6.17 runs a **double opt-in** for a verified user (our case): a confirmation link goes to the **current** mailbox first (approve the change); clicking it then sends a verification link to the **new** mailbox; clicking that finally applies the change and marks the new email verified. This satisfies "verify the new mailbox" and additionally makes the current mailbox approve, which is strictly more secure than a single-hop flow and is the supported, low-code path. (Decision 3 stands; the exact flow is BA's two-hop default.)
+- UI: after submit, show a "We've emailed your current address to confirm, then your new address to verify" state. The current password is verified before the flow starts (see backend).
+- Verification landing: a `callbackURL` page shows success ("Your email has been updated") and a generic invalid/expired state, mirroring the reset-password page. The link is clickable from any browser (the BA token is self-contained; an unrelated logged-in session is rejected).
+- Email templates: enabling `user.changeEmail` in 1.6.17 also requires a top-level `emailVerification.sendVerificationEmail` sender. So we add **two** localized email flows: a `changeEmailConfirm` (sent to the current address, hop 1) and a `verifyEmail` (sent to the new address, hop 2), both via `enqueueEmail` with the user's locale. Authored in `en`, mirrored to all locales.
 
 ### Display language
 - Surfaces the existing locale switcher on the page (reuses the `LanguageMenuSub` mechanism / `users.locale`), so users find language where they expect it. Selecting a language updates the stored locale and re-renders in that language.
@@ -96,15 +97,16 @@ The pages are thin shells; each section is its own client component in `apps/das
 
 ### `account.ts` (new)
 - `getMyAccount` (query): returns `{ name, email, locale, mfaMethod }` for the current user from the `users` mirror (+ a `lastAdminOrgNames: string[]` field, or a sibling query, listing org names where the user is the sole admin, for the delete guard).
-- `deleteMyAccount` (mutation, authed): 
-  1. Re-auth check: require the current password (verified before any destructive work) — exact verification mechanism confirmed in planning (see below).
-  2. Last-admin guard: query `member` rows for `ctx.authUserId`; for each org where the user's role is `admin`, count other admins; if any org has zero other admins, throw `appError(ERROR_CODES.lastAdmin)` (new code) so the client can show the support note. (The UI also pre-checks via `getMyAccount`, but the mutation re-validates.)
-  3. Erase: reuse `components.betterAuth.provisioning.eraseUser({ userId: ctx.authUserId })` (member/account/session/invitation/user rows), schedule `internal.email.erasure.purgeRecipientEmails` for the returned email, delete the `users` mirror row, and anonymize `auditLog`/`platformAuditLog` `actorName` to the existing `ERASED_ACTOR_NAME` tombstone. This mirrors the existing platform `deleteUser` exactly, minus the platform-admin gate and minus the self-delete block.
-  4. Log a platform-audit erasure row (org count only, no PII), consistent with the existing flow.
+- `deleteMyAccount` (**action**, authed): an action (not a plain mutation) because the password is verified through Better Auth's server API.
+  1. Re-auth check: verify the current password server-side via `createAuth(ctx).api.verifyPassword({ body: { password }, headers })` (BA's `/verify-password`; valid-session-gated). Mismatch -> error code shown inline.
+  2. Then `ctx.runMutation` an internal erasure mutation that:
+     - Last-admin guard: query `member` rows for `ctx.authUserId`; for each org where the user's role is `admin`, count other admins; if any org has zero other admins, throw `appError(ERROR_CODES.lastAdmin)` (new code) so the client can show the support note. (The UI also pre-checks via `getMyAccount`, but the mutation re-validates.)
+     - Erase: reuse `components.betterAuth.provisioning.eraseUser({ userId: ctx.authUserId })` (member/account/session/invitation/user rows), schedule `internal.email.erasure.purgeRecipientEmails` for the returned email, delete the `users` mirror row, and anonymize `auditLog`/`platformAuditLog` `actorName` to the existing `ERASED_ACTOR_NAME` tombstone. This mirrors the existing platform `deleteUser`, minus the platform-admin gate and self-delete block.
+     - Log a platform-audit erasure row (org count only, no PII).
 
 ### `twoFactor.ts` (extend)
-- A password-gated backup-code regeneration path (server confirm if needed; the actual minting is a Better Auth client call — confirm in planning).
-- `confirmMfaSetup` already updates `mfaMethod` + `mfaConfirmedAt`, so re-enrollment reuses it as-is.
+- Backup-code regeneration is a pure client call (`authClient.twoFactor.generateBackupCodes({ password })` -> `{ status, backupCodes }`); no new backend needed.
+- Re-enrollment ("change method") reuses `enable({ password })` (-> `{ totpURI, backupCodes }`, which **re-mints** the secret + codes and deletes the old row) -> verify the new method's code -> `confirmMfaSetup({ method })` (already updates `mfaMethod` + `mfaConfirmedAt`). See the re-enroll safety note in Risks.
 
 ### `auth.ts` (extend)
 - Enable Better Auth `changeEmail` with `sendChangeEmailVerification` configured to `enqueueEmail` the verification link to the **new** address (template `changeEmail`, locale from the user's stored language).
@@ -118,13 +120,11 @@ The pages are thin shells; each section is its own client component in `apps/das
 
 ---
 
-## Better Auth specifics to confirm in planning
+## Better Auth specifics (resolved from installed 1.6.17 source)
 
-These are the only API-level unknowns; resolve them first in the plan (convex-expert + Better Auth 1.6.17 source/docs), then implement:
-
-1. **changeEmail flow:** confirm `user.changeEmail` config shape and that emailing the BA-generated verification `url` to `newEmail` completes the change when clicked; confirm whether the verification click needs the initiating session (it is opened from the new mailbox, possibly unauthenticated) and design the callback landing page accordingly.
-2. **Server-side password re-auth for delete:** confirm how to verify the current password before erasing (a BA verify call, BA `deleteUser({ password })` semantics, or fall back to BA's `sendDeleteAccountVerification` email confirmation). The delete must be re-authenticated; pick the mechanism BA actually supports.
-3. **2FA client methods:** confirm `authClient.twoFactor.generateBackupCodes`/`disable` are exposed by `twoFactorClient()` (they should be by default); if not, expose them.
+1. **changeEmail:** config is `user.changeEmail.enabled = true` + `sendChangeEmailConfirmation({ user, newEmail, url, token }, request)` (NOT `sendChangeEmailVerification`), and it additionally requires a top-level `emailVerification.sendVerificationEmail` sender or the call throws "Verification email isn't enabled". For a verified user it's the two-hop double opt-in described in the Email section (current mailbox confirms -> new mailbox verifies -> applied). Client: `authClient.changeEmail({ newEmail, callbackURL? })`. Tokens are self-contained signed JWTs; the link works in any browser (a mismatched logged-in session is rejected). If `newEmail` already belongs to another user, BA silently no-ops (no enumeration leak).
+2. **Password re-auth:** Better Auth exposes `/verify-password` (`auth.api.verifyPassword({ body: { password }, headers })`), valid-session gated (not fresh-session). Call it from a Convex action, then run the erasure mutation. (Sensitive ops in BA use `sensitiveSessionMiddleware` = valid session only; freshness is not auto-enforced, so we gate explicitly on the password.)
+3. **2FA client methods:** `authClient.twoFactor.enable({ password }) -> { totpURI, backupCodes }`, `disable({ password }) -> { status }`, `generateBackupCodes({ password }) -> { status, backupCodes }` all exist. `enable` is destructive: every call rotates the secret and backup codes and deletes the prior row, and (with `skipVerificationOnEnable`) flips `twoFactorEnabled`/`verified` immediately. We never call `disable` (2FA mandatory); we use `enable` for re-enroll and `generateBackupCodes` for regeneration.
 
 ---
 
@@ -168,6 +168,6 @@ New code ships with tests in the same commit:
 
 ## Risks / notes
 
-- The email-change verification is the only genuinely new subsystem (config + template + landing page + token semantics); plan it first and verify the BA flow before building the UI.
-- Server-side password re-auth for deletion may require a fallback to BA's email-confirmation delete if BA can't verify a password inline; the plan resolves this before the delete UI is built.
-- Reusing `TwoFactorSetup` for re-enrollment must keep mandatory 2FA intact (never leave `mfaConfirmedAt` cleared without an immediate re-confirm).
+- The email-change flow is the one genuinely new subsystem (BA `changeEmail` + `emailVerification.sendVerificationEmail` config + two email templates + callback landing page). Build it as its own task with backend wiring verified before the UI.
+- **2FA re-enroll footgun:** `enable({ password })` immediately rotates the secret and invalidates the old authenticator/backup codes, and `skipVerificationOnEnable` flips `twoFactorEnabled` at once. If a user starts "change method" and abandons before verifying the new method, their old method is already dead while `mfaConfirmedAt` still points at the old state, so the gate would let them in but the next sign-in challenge expects the new (unscanned) secret. The change-method flow MUST clear `mfaConfirmedAt` at the moment it calls `enable` (forcing the TwoFactorGate to hold them in setup until they re-confirm), and only re-stamp it via `confirmMfaSetup` after the new method verifies. Backup-code regeneration uses `generateBackupCodes` (does NOT rotate the TOTP secret), so it is safe and needs no gate change.
+- Account deletion runs through a Convex action (password verify) + internal mutation (cascade); test the cascade and the last-admin guard with convex-test.
