@@ -996,7 +996,8 @@
         "nameLabel": "Visningsnamn",
         "saveName": "Spara namn",
         "nameSaved": "Namn sparat.",
-        "error": "Det gick inte att spara ditt namn. Försök igen."
+        "error": "Det gick inte att spara ditt namn. Försök igen.",
+        "languageLabel": "Visningsspråk"
       },
       "email": {
         "currentLabel": "Nuvarande e-post",

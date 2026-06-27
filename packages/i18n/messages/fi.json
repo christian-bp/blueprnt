@@ -996,7 +996,8 @@
         "nameLabel": "Näyttönimi",
         "saveName": "Tallenna nimi",
         "nameSaved": "Nimi tallennettu.",
-        "error": "Nimeä ei voitu tallentaa. Yritä uudelleen."
+        "error": "Nimeä ei voitu tallentaa. Yritä uudelleen.",
+        "languageLabel": "Näyttökieli"
       },
       "email": {
         "currentLabel": "Nykyinen sähköposti",

@@ -996,7 +996,8 @@
         "nameLabel": "Display name",
         "saveName": "Save name",
         "nameSaved": "Name saved.",
-        "error": "Could not save your name. Please try again."
+        "error": "Could not save your name. Please try again.",
+        "languageLabel": "Display language"
       },
       "email": {
         "currentLabel": "Current email",

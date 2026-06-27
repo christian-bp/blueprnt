@@ -996,7 +996,8 @@
         "nameLabel": "Visningsnavn",
         "saveName": "Gem navn",
         "nameSaved": "Navn gemt.",
-        "error": "Kunne ikke gemme dit navn. Prøv igen."
+        "error": "Kunne ikke gemme dit navn. Prøv igen.",
+        "languageLabel": "Visningssprog"
       },
       "email": {
         "currentLabel": "Nuværende e-mail",
