@@ -1,0 +1,29 @@
+apps/dashboard/components/async-action-button.tsx
+  s_c216811bbb1bb1::t_42649c3da27141 34
+  s_c216811bbb1bb1::t_9e9595ac1cd97e 1-33,35-91
+apps/dashboard/components/auth/two-factor-challenge.tsx
+  s_c216811bbb1bb1::t_fcf9e3f45a8561 186,188-193,195-196
+  s_c216811bbb1bb1::t_1a217e7237b11f 7
+  s_c216811bbb1bb1::t_62b2420e6064a4 61
+apps/dashboard/components/async-action-button.test.tsx
+  s_c216811bbb1bb1::t_d6b545ff0b0032 52-53
+  s_c216811bbb1bb1::t_7d1b9f698feb68 1-51,54-69
+apps/dashboard/components/copy-button.tsx
+  s_c216811bbb1bb1::t_cb89341bd0947f 3,5-7,10-12,23-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "3f1d2f3e24f78e4081d903a5216ca33d3793f8f0",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
