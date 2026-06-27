@@ -13,7 +13,7 @@ export function SuccessCheck() {
   return (
     <div
       aria-hidden
-      className="relative flex size-20 items-center justify-center"
+      className="relative flex size-18 items-center justify-center"
     >
       {!reduce && (
         <motion.span
@@ -24,7 +24,7 @@ export function SuccessCheck() {
         />
       )}
       <motion.span
-        className="flex size-20 items-center justify-center rounded-full bg-brand text-brand-foreground"
+        className="flex size-18 items-center justify-center rounded-full bg-brand text-brand-foreground"
         initial={reduce ? false : { scale: 0 }}
         animate={{ scale: 1 }}
         transition={
@@ -34,7 +34,7 @@ export function SuccessCheck() {
         <svg
           aria-hidden="true"
           viewBox="0 0 24 24"
-          className="size-12"
+          className="size-11"
           fill="none"
           stroke="currentColor"
           strokeWidth={3}
