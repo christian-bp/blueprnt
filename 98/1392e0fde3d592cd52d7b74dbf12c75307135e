@@ -1,0 +1,21 @@
+packages/i18n/messages/fi.json
+  s_c216811bbb1bb1::t_c868985debd3db 1017
+packages/i18n/messages/da.json
+  s_c216811bbb1bb1::t_88ce5bdc42d20b 1017
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "981392e0fde3d592cd52d7b74dbf12c75307135e",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
