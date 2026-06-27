@@ -86,4 +86,19 @@ describe("SiteHeader", () => {
         .getAttribute("href")
     ).toBe("/admin/organizations")
   })
+
+  it("shows the account section tabs on an account route", () => {
+    pathState.current = "/account/profile"
+    renderHeader()
+    expect(
+      screen
+        .getByRole("link", { name: messages.dashboard.account.tabs.profile })
+        .getAttribute("href")
+    ).toBe("/account/profile")
+    expect(
+      screen
+        .getByRole("link", { name: messages.dashboard.account.tabs.security })
+        .getAttribute("href")
+    ).toBe("/account/security")
+  })
 })
