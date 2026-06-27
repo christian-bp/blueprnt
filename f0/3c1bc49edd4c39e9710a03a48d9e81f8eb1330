@@ -1,0 +1,36 @@
+packages/i18n/messages/fi.json
+  s_c216811bbb1bb1::t_a9c8737e39aad6 474-477
+apps/dashboard/components/auth/two-factor-challenge.tsx
+  s_c216811bbb1bb1::t_42ab0712ec244d 64
+  s_c216811bbb1bb1::t_5fc85f307cf432 4,6,8,13,15-19,29-30,38-45,62-63,65-82,87-91,93-99,102,106-128,130,134-153,165,169-175,177-180
+  s_c216811bbb1bb1::t_0d4b17442a8e37 100-101,103-105
+packages/i18n/messages/en.json
+  s_c216811bbb1bb1::t_984236c8b540b5 474-477
+apps/dashboard/components/auth/two-factor-challenge.test.tsx
+  s_c216811bbb1bb1::t_f3a945e399dd3b 99-118
+  s_c216811bbb1bb1::t_60cbe5fdb4943f 42
+  s_c216811bbb1bb1::t_ebc00c2adebefc 15,22
+  s_c216811bbb1bb1::t_85d64d42b9b650 119-120
+packages/i18n/messages/da.json
+  s_c216811bbb1bb1::t_e00422ec68ce6d 474-477
+packages/i18n/messages/nb.json
+  s_c216811bbb1bb1::t_868afd7e16ee02 474-477
+packages/i18n/messages/sv.json
+  s_c216811bbb1bb1::t_67142e8871e9d7 474-477
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "f03c1bc49edd4c39e9710a03a48d9e81f8eb1330",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
