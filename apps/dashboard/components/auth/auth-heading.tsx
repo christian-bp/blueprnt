@@ -1,12 +1,8 @@
-"use client"
-
-import { TextEffect } from "@workspace/ui/text-effect"
 import type { ReactNode } from "react"
 
-// The shared auth heading: the title reveals word by word with the same blur
-// TextEffect the onboarding screens use, centered, with an optional muted
-// description beneath. Used by the sign-in, password, and forgot screens so
-// every auth surface reads like the onboarding wizard.
+// The shared auth heading: a centered title with an optional muted description
+// beneath. Used by the sign-in, password, and forgot screens. The title is not
+// animated (the animated brand statement lives in the BrandPanel's value line).
 export function AuthHeading({
   title,
   description,
@@ -16,14 +12,7 @@ export function AuthHeading({
 }) {
   return (
     <div className="flex flex-col items-center gap-2">
-      <TextEffect
-        as="h1"
-        preset="blur"
-        per="word"
-        className="text-center font-semibold text-2xl"
-      >
-        {title}
-      </TextEffect>
+      <h1 className="text-center font-semibold text-xl">{title}</h1>
       {description !== undefined ? (
         <p className="text-center text-muted-foreground text-sm">
           {description}

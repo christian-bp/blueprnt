@@ -8,10 +8,7 @@ describe("AuthHeading", () => {
   it("renders the title as a level-1 heading", () => {
     render(<AuthHeading title="Sign in" />)
     const heading = screen.getByRole("heading", { level: 1 })
-    // TextEffect splits the title into per-word spans (and renders an a11y
-    // full-text copy), so assert the words are present with whitespace
-    // stripped rather than relying on a single, unduplicated text node.
-    expect(heading.textContent?.replace(/\s/g, "")).toContain("Signin")
+    expect(heading.textContent).toBe("Sign in")
   })
 
   it("renders an optional description", () => {
