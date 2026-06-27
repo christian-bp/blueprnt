@@ -31,10 +31,21 @@ export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
   const [error, setError] = useState(false)
   // Guards against a double verify if InputOTP re-fires onComplete (paste / remount).
   const verifyingRef = useRef(false)
+  // Guards the email-OTP auto-send so we send exactly once per entry into email
+  // mode. Without it, React StrictMode's double-invoked mount effect (dev) sends
+  // two codes (and only the second is valid, since each send replaces the last).
+  // Switching away from email resets it so re-entering re-sends.
+  const otpSentRef = useRef(false)
 
   // When the email method is active, request a code on entry / on switch.
   useEffect(() => {
-    if (method === "email") void authClient.twoFactor.sendOtp()
+    if (method !== "email") {
+      otpSentRef.current = false
+      return
+    }
+    if (otpSentRef.current) return
+    otpSentRef.current = true
+    void authClient.twoFactor.sendOtp()
   }, [method])
 
   // Switching clears the inputs and error so a stale value never carries over.
