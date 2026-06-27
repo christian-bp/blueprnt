@@ -96,7 +96,8 @@
       "invalidEmail": "Indtast en gyldig e-mailadresse.",
       "minLength": "Skal være mindst {min} tegn.",
       "slug": "Brug små bogstaver, tal og bindestreger.",
-      "passwordsMatch": "Adgangskoderne skal være ens."
+      "passwordsMatch": "Adgangskoderne skal være ens.",
+      "emailUnchanged": "Indtast en anden e-mailadresse."
     },
     "nav": {
       "home": "Hjem",

@@ -96,7 +96,8 @@
       "invalidEmail": "Ange en giltig e-postadress.",
       "minLength": "Måste vara minst {min} tecken.",
       "slug": "Använd små bokstäver, siffror och bindestreck.",
-      "passwordsMatch": "Lösenorden måste matcha."
+      "passwordsMatch": "Lösenorden måste matcha.",
+      "emailUnchanged": "Ange en annan e-postadress."
     },
     "nav": {
       "home": "Hem",

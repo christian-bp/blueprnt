@@ -96,7 +96,8 @@
       "invalidEmail": "Skriv inn en gyldig e-postadresse.",
       "minLength": "Må være minst {min} tegn.",
       "slug": "Bruk små bokstaver, tall og bindestrek.",
-      "passwordsMatch": "Passordene må være like."
+      "passwordsMatch": "Passordene må være like.",
+      "emailUnchanged": "Skriv inn en annen e-postadresse."
     },
     "nav": {
       "home": "Hjem",

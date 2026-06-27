@@ -96,7 +96,8 @@
       "invalidEmail": "Anna kelvollinen sähköpostiosoite.",
       "minLength": "Vähintään {min} merkkiä.",
       "slug": "Käytä pieniä kirjaimia, numeroita ja väliviivoja.",
-      "passwordsMatch": "Salasanojen on täsmättävä."
+      "passwordsMatch": "Salasanojen on täsmättävä.",
+      "emailUnchanged": "Anna eri sähköpostiosoite."
     },
     "nav": {
       "home": "Etusivu",
