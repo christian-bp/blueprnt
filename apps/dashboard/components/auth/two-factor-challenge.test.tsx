@@ -118,4 +118,17 @@ describe("TwoFactorChallenge", () => {
       expect(onVerified).toHaveBeenCalled()
     })
   })
+
+  it("hides the authenticator option when the device enrolled email", () => {
+    window.localStorage.setItem("blueprnt.2fa.method", "email")
+    renderChallenge()
+    // Starts in email mode and offers no authenticator switch (an email-enrolled
+    // user has no scanned authenticator).
+    expect(
+      screen.getByText(messages.dashboard.auth.twoFactor.emailPrompt)
+    ).toBeDefined()
+    expect(
+      screen.queryByText(messages.dashboard.auth.twoFactor.useAuthenticator)
+    ).toBeNull()
+  })
 })

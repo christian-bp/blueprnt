@@ -19,12 +19,21 @@ type Method = "totp" | "email" | "backup"
 // a separate endpoint, so it has its own free-text input.
 export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
   const t = useTranslations("dashboard.auth.twoFactor")
-  const [method, setMethod] = useState<Method>(() => {
-    if (typeof window === "undefined") return "totp"
-    return window.localStorage.getItem(METHOD_HINT_KEY) === "email"
-      ? "email"
-      : "totp"
+  // The method this device last enrolled/used (written on a successful
+  // setup/login). In V1 a user has exactly one enrolled method, so an
+  // email-enrolled device means the user never scanned an authenticator: hide
+  // the "use authenticator" fallback for them. Only hide it when the hint is
+  // explicitly "email"; a totp device or an unknown (new) device keeps it, so we
+  // never hide it from a real authenticator user.
+  const [enrolled] = useState<Method | null>(() => {
+    if (typeof window === "undefined") return null
+    const hint = window.localStorage.getItem(METHOD_HINT_KEY)
+    return hint === "email" || hint === "totp" ? hint : null
   })
+  const hasAuthenticator = enrolled !== "email"
+  const [method, setMethod] = useState<Method>(
+    enrolled === "email" ? "email" : "totp"
+  )
   const [code, setCode] = useState("")
   const [backupCode, setBackupCode] = useState("")
   const [submitting, setSubmitting] = useState(false)
@@ -177,13 +186,15 @@ export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
           >
             {t("resend")}
           </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => switchTo("totp")}
-          >
-            {t("useAuthenticator")}
-          </Button>
+          {hasAuthenticator && (
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => switchTo("totp")}
+            >
+              {t("useAuthenticator")}
+            </Button>
+          )}
           <Button
             type="button"
             variant="ghost"
@@ -194,8 +205,12 @@ export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
         </>
       )}
       {method === "backup" && (
-        <Button type="button" variant="ghost" onClick={() => switchTo("totp")}>
-          {t("useAuthenticator")}
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => switchTo(hasAuthenticator ? "totp" : "email")}
+        >
+          {hasAuthenticator ? t("useAuthenticator") : t("useEmail")}
         </Button>
       )}
     </div>
