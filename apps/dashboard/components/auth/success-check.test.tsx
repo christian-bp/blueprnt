@@ -5,8 +5,10 @@ import { SuccessCheck } from "./success-check"
 afterEach(() => cleanup())
 
 describe("SuccessCheck", () => {
-  it("renders a decorative (aria-hidden) checkmark", () => {
+  it("renders a decorative (aria-hidden) success badge with a check icon", () => {
     const { container } = render(<SuccessCheck />)
-    expect(container.querySelector('svg[aria-hidden="true"]')).not.toBeNull()
+    const badge = container.querySelector('[aria-hidden="true"]')
+    expect(badge).not.toBeNull()
+    expect(badge?.querySelector("svg")).not.toBeNull()
   })
 })

@@ -1,42 +1,40 @@
 "use client"
 
+import { Tick02Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { motion, useReducedMotion } from "motion/react"
 
-// Animated success checkmark: the ring draws itself in, then the tick (pathLength),
-// a brief, satisfying confirmation. Static under reduced motion (appears fully
-// drawn, no animation). Decorative (aria-hidden); the heading beside it carries
-// the meaning. Emerald reads as "secured" here; we have no success token and this
-// is a one-off confirmation affordance, not a judgement value.
+// Success badge for the 2FA completion screen: a filled circle with a white tick
+// that springs in, with a soft ring pulsing out once behind it for a moment of
+// delight. Static under reduced motion (appears in place, no pulse). Decorative
+// (aria-hidden); the heading beside it carries the meaning. Emerald reads as
+// "secured" here; we have no success token and this is a one-off confirmation
+// affordance, not a judgement value.
 export function SuccessCheck() {
   const reduce = useReducedMotion()
   return (
-    <motion.svg
-      viewBox="0 0 52 52"
-      className="size-16 text-emerald-600"
-      fill="none"
-      stroke="currentColor"
+    <div
       aria-hidden
+      className="relative flex size-16 items-center justify-center"
     >
-      <motion.circle
-        cx="26"
-        cy="26"
-        r="23"
-        strokeWidth="2"
-        initial={reduce ? false : { pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={reduce ? undefined : { duration: 0.5, ease: "easeInOut" }}
-      />
-      <motion.path
-        d="M15 27 L23 35 L38 17"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        initial={reduce ? false : { pathLength: 0 }}
-        animate={{ pathLength: 1 }}
+      {!reduce && (
+        <motion.span
+          className="absolute inset-0 rounded-full bg-emerald-500/30"
+          initial={{ scale: 0.6, opacity: 0.5 }}
+          animate={{ scale: 1.9, opacity: 0 }}
+          transition={{ duration: 0.9, ease: "easeOut" }}
+        />
+      )}
+      <motion.span
+        className="flex size-16 items-center justify-center rounded-full bg-emerald-500 text-white"
+        initial={reduce ? false : { scale: 0 }}
+        animate={{ scale: 1 }}
         transition={
-          reduce ? undefined : { delay: 0.4, duration: 0.3, ease: "easeOut" }
+          reduce ? undefined : { type: "spring", stiffness: 360, damping: 18 }
         }
-      />
-    </motion.svg>
+      >
+        <HugeiconsIcon icon={Tick02Icon} className="size-8" strokeWidth={3} />
+      </motion.span>
+    </div>
   )
 }
