@@ -213,9 +213,9 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
             : t("email.description", { email })}
         </p>
         {method === "totp" && qr && (
-          // White, bordered, padded frame: presents the code like a scannable
-          // card and gives the QR its quiet-zone margin so phones lock on faster.
-          <div className="rounded-xl border bg-white p-4">
+          // White, bordered frame around the code. The QR PNG already carries
+          // its own quiet-zone margin, so a small padding is enough.
+          <div className="rounded-xl border bg-white p-2">
             {/* biome-ignore lint/performance/noImgElement: src is a data URL; Next/Image adds no value here */}
             <img src={qr} alt={t("totp.qrAlt")} className="size-40" />
           </div>
