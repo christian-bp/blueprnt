@@ -1,15 +1,13 @@
 "use client"
 
-import { Tick02Icon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
 import { motion, useReducedMotion } from "motion/react"
 
-// Success badge for the 2FA completion screen: a filled circle with a white tick
-// that springs in, with a soft ring pulsing out once behind it for a moment of
-// delight. Static under reduced motion (appears in place, no pulse). Decorative
-// (aria-hidden); the heading beside it carries the meaning. Emerald reads as
-// "secured" here; we have no success token and this is a one-off confirmation
-// affordance, not a judgement value.
+// Success badge for the 2FA completion screen: a filled circle springs in (with
+// a soft ring pulsing out once behind it), then the tick DRAWS itself across the
+// circle (stroke pathLength). Static under reduced motion (appears fully drawn,
+// no pulse). Decorative (aria-hidden); the heading beside it carries the meaning.
+// Emerald reads as "secured" here; we have no success token and this is a one-off
+// confirmation affordance, not a judgement value.
 export function SuccessCheck() {
   const reduce = useReducedMotion()
   return (
@@ -33,7 +31,27 @@ export function SuccessCheck() {
           reduce ? undefined : { type: "spring", stiffness: 360, damping: 18 }
         }
       >
-        <HugeiconsIcon icon={Tick02Icon} className="size-8" strokeWidth={3} />
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          className="size-8"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={3}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <motion.path
+            d="M6 12.5 L10 16.5 L18 7.5"
+            initial={reduce ? false : { pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={
+              reduce
+                ? undefined
+                : { delay: 0.25, duration: 0.3, ease: "easeOut" }
+            }
+          />
+        </svg>
       </motion.span>
     </div>
   )
