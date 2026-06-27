@@ -66,4 +66,24 @@ describe("TwoFactorGate", () => {
     )
     expect(screen.getByTestId("setup")).toBeDefined()
   })
+
+  it("keeps the wizard mounted when the status query returns null (token-refresh blip)", () => {
+    // getMyMfaStatus returns null (not a throw) while the auth identity is
+    // momentarily absent during the enable() token refresh. The latched wizard
+    // must stay mounted, never flip to the spinner or children.
+    useQueryMock.mockReturnValue({ confirmed: false, method: null })
+    const { rerender } = renderGate()
+    expect(screen.getByTestId("setup")).toBeDefined()
+
+    useQueryMock.mockReturnValue(null)
+    rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <TwoFactorGate>
+          <div data-testid="children" />
+        </TwoFactorGate>
+      </NextIntlClientProvider>
+    )
+    expect(screen.getByTestId("setup")).toBeDefined()
+    expect(screen.queryByTestId("children")).toBeNull()
+  })
 })

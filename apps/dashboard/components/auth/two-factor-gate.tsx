@@ -17,13 +17,15 @@ export function TwoFactorGate(props: { children: ReactNode }) {
 
   // Once setup is needed, the wizard OWNS the screen until 2FA is confirmed.
   // twoFactor.enable() changes the session's 2FA state, which makes the Convex
-  // auth token refresh; during that blip getMyMfaStatus reloads to undefined.
-  // Without this latch the gate would flip to the spinner, unmount
-  // TwoFactorSetup, and reset its step back to method-choice (a visible bounce).
-  // Mirrors OnboardingGate's session latch. onConfirmed is a no-op: confirmMfaSetup
-  // updates server state and getMyMfaStatus re-runs reactively to confirmed.
+  // auth token refresh; during that blip getMyMfaStatus reloads to undefined
+  // (loading) or null (the query returns null rather than throwing while the
+  // identity is momentarily absent). Without this latch the gate would flip to
+  // the spinner, unmount TwoFactorSetup, and reset its step back to method-choice
+  // (a visible bounce). Mirrors OnboardingGate's session latch. onConfirmed is a
+  // no-op: confirmMfaSetup updates server state and getMyMfaStatus re-runs
+  // reactively to confirmed.
   const [setupStarted, setSetupStarted] = useState(false)
-  const needsSetup = status !== undefined && !status.confirmed
+  const needsSetup = status != null && !status.confirmed
   useEffect(() => {
     if (needsSetup) setSetupStarted(true)
   }, [needsSetup])

@@ -29,11 +29,13 @@ describe("accounts.twoFactor.getMyMfaStatus", () => {
     expect(status).toEqual({ confirmed: true, method: "totp" })
   })
 
-  it("throws when unauthenticated", async () => {
+  it("returns null when unauthenticated (transient token blip, not a throw)", async () => {
+    // The gate polls this through the auth-token refresh that enable() triggers;
+    // it must return null rather than throw, or useQuery re-throws and unmounts
+    // the setup wizard. See the comment on getMyMfaStatus.
     const t = initConvexTest()
-    await expect(
-      t.query(api.accounts.twoFactor.getMyMfaStatus, {})
-    ).rejects.toMatchObject({ data: { code: ERROR_CODES.notAuthenticated } })
+    const status = await t.query(api.accounts.twoFactor.getMyMfaStatus, {})
+    expect(status).toBeNull()
   })
 })
 
@@ -87,7 +89,6 @@ describe("accounts.twoFactor.confirmMfaSetup", () => {
     const status = await t
       .withIdentity({ subject: userId })
       .query(api.accounts.twoFactor.getMyMfaStatus, {})
-    expect(status.confirmed).toBe(true)
-    expect(status.method).toBe("totp")
+    expect(status).toEqual({ confirmed: true, method: "totp" })
   })
 })
