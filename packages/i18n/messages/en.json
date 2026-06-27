@@ -35,6 +35,20 @@
       "body": "Enter this code to finish signing in to blueprnt:",
       "note": "This code expires shortly. If you didn't try to sign in, you can ignore this email and your account stays secure."
     },
+    "changeEmailConfirm": {
+      "subject": "Confirm your email change",
+      "heading": "Confirm your email change",
+      "body": "We received a request to change your blueprnt account email to {newEmail}. Click the button below to confirm the change from your current address.",
+      "cta": "Confirm email change",
+      "note": "If you didn't request this change, you can safely ignore this email. Your email address will not be changed."
+    },
+    "verifyEmail": {
+      "subject": "Verify your new email address",
+      "heading": "Verify your new email address",
+      "body": "You're almost done. Click the button below to verify this address and complete your email change on blueprnt.",
+      "cta": "Verify email address",
+      "note": "If you weren't expecting this, you can ignore this email. No changes will be made to your account."
+    },
     "footer": {
       "copyright": "© {year} blueprnt",
       "tagline": "The job architecture that creates value."

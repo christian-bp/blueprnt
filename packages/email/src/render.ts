@@ -2,10 +2,15 @@ import { render } from "@react-email/render"
 import type { EmailTemplateKey } from "@workspace/constants"
 import { emailMessages, fillTemplate } from "./messages"
 import {
+  ChangeEmailConfirmEmail,
+  type ChangeEmailConfirmEmailProps,
+} from "./templates/change-email-confirm"
+import {
   InvitationEmail,
   type InvitationEmailProps,
 } from "./templates/invitation"
 import { ResetPasswordEmail } from "./templates/reset-password"
+import { VerifyEmail, type VerifyEmailProps } from "./templates/verify-email"
 import { WelcomeEmail } from "./templates/welcome"
 import {
   TwoFactorCodeEmail,
@@ -33,6 +38,8 @@ export type EmailProps = {
   resetPassword: LinkEmailProps
   welcome: LinkEmailProps
   twoFactorCode: TwoFactorCodeEmailProps
+  changeEmailConfirm: ChangeEmailConfirmEmailProps
+  verifyEmail: VerifyEmailProps
 }
 
 export async function renderEmail<K extends EmailTemplateKey>(
@@ -66,6 +73,24 @@ export async function renderEmail<K extends EmailTemplateKey>(
       const element = TwoFactorCodeEmail(p)
       return {
         subject: m.twoFactorCode.subject,
+        html: await render(element),
+        text: await render(element, { plainText: true }),
+      }
+    }
+    case "changeEmailConfirm": {
+      const p = props as ChangeEmailConfirmEmailProps
+      const element = ChangeEmailConfirmEmail(p)
+      return {
+        subject: m.changeEmailConfirm.subject,
+        html: await render(element),
+        text: await render(element, { plainText: true }),
+      }
+    }
+    case "verifyEmail": {
+      const p = props as VerifyEmailProps
+      const element = VerifyEmail(p)
+      return {
+        subject: m.verifyEmail.subject,
         html: await render(element),
         text: await render(element, { plainText: true }),
       }

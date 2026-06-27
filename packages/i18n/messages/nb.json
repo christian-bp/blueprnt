@@ -35,6 +35,20 @@
       "body": "Skriv inn denne koden for å fullføre innloggingen på blueprnt:",
       "note": "Koden utløper snart. Hvis du ikke prøvde å logge inn, kan du ignorere denne e-posten, og kontoen din forblir sikker."
     },
+    "changeEmailConfirm": {
+      "subject": "Bekreft endringen av e-postadressen din",
+      "heading": "Bekreft endringen av e-postadressen din",
+      "body": "Vi mottok en forespørsel om å endre e-postadressen for blueprnt-kontoen din til {newEmail}. Klikk på knappen nedenfor for å bekrefte endringen fra gjeldende adresse.",
+      "cta": "Bekreft e-postadresseendring",
+      "note": "Hvis du ikke ba om denne endringen, kan du trygt ignorere denne e-posten. E-postadressen din vil ikke bli endret."
+    },
+    "verifyEmail": {
+      "subject": "Bekreft den nye e-postadressen din",
+      "heading": "Bekreft den nye e-postadressen din",
+      "body": "Du er nesten ferdig. Klikk på knappen nedenfor for å bekrefte denne adressen og fullføre e-postadresseendringen din på blueprnt.",
+      "cta": "Bekreft e-postadresse",
+      "note": "Hvis du ikke forventet dette, kan du ignorere denne e-posten. Ingen endringer vil bli gjort på kontoen din."
+    },
     "footer": {
       "copyright": "© {year} blueprnt",
       "tagline": "Jobbarkitekturen som skaper verdi."

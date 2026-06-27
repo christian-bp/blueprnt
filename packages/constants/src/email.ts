@@ -8,6 +8,8 @@ export const EMAIL_TEMPLATE_KEYS = [
   "resetPassword",
   "welcome",
   "twoFactorCode",
+  "changeEmailConfirm",
+  "verifyEmail",
 ] as const
 
 export type EmailTemplateKey = (typeof EMAIL_TEMPLATE_KEYS)[number]

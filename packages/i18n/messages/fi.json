@@ -35,6 +35,20 @@
       "body": "Anna tämä koodi viimeistelläksesi kirjautumisen blueprntiin:",
       "note": "Koodi vanhenee pian. Jos et yrittänyt kirjautua sisään, voit jättää tämän viestin huomiotta, ja tilisi pysyy turvassa."
     },
+    "changeEmailConfirm": {
+      "subject": "Vahvista sähköpostiosoitteesi vaihto",
+      "heading": "Vahvista sähköpostiosoitteesi vaihto",
+      "body": "Saimme pyynnön vaihtaa blueprnt-tilisi sähköpostiosoite osoitteeseen {newEmail}. Napsauta alla olevaa painiketta vahvistaaksesi muutos nykyisestä osoitteestasi.",
+      "cta": "Vahvista sähköpostiosoitteen vaihto",
+      "note": "Jos et pyytänyt tätä muutosta, voit jättää tämän viestin huomiotta. Sähköpostiosoitettasi ei vaihdeta."
+    },
+    "verifyEmail": {
+      "subject": "Vahvista uusi sähköpostiosoitteesi",
+      "heading": "Vahvista uusi sähköpostiosoitteesi",
+      "body": "Olet melkein valmis. Napsauta alla olevaa painiketta vahvistaaksesi tämän osoitteen ja viimeistelläksesi sähköpostiosoitteen vaihdon blueprntissä.",
+      "cta": "Vahvista sähköpostiosoite",
+      "note": "Jos et odottanut tätä, voit jättää tämän viestin huomiotta. Tiliisi ei tehdä muutoksia."
+    },
     "footer": {
       "copyright": "© {year} blueprnt",
       "tagline": "Työarkkitehtuuri, joka luo arvoa."

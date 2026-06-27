@@ -147,6 +147,47 @@ export const createAuthOptions = (
         })
       },
     },
+    // Double opt-in email change: hop 1 sends a confirmation link to the
+    // CURRENT address; hop 2 (via emailVerification.sendVerificationEmail)
+    // sends a verify link to the NEW address once the user clicks hop 1.
+    user: {
+      changeEmail: {
+        enabled: true,
+        sendChangeEmailConfirmation: async ({ user, newEmail, url }) => {
+          const mctx = requireRunMutationCtx(ctx)
+          const settings = await mctx.runQuery(
+            internal.accounts.organization.getLanguageForUser,
+            { userId: user.id }
+          )
+          await mctx.runMutation(internal.email.outbox.enqueueEmail, {
+            to: user.email,
+            templateKey: "changeEmailConfirm",
+            props: { url, newEmail },
+            locale: settings?.language ?? "en",
+          })
+        },
+      },
+    },
+    // Hop 2 of the email change flow: Better Auth calls this with
+    // user.email already set to the NEW address, so enqueuing to user.email
+    // delivers the verify link to the right inbox. Also used by Better Auth
+    // for any other email verification flow (required by BA when changeEmail
+    // is enabled, otherwise BA throws "Verification email isn't enabled").
+    emailVerification: {
+      sendVerificationEmail: async ({ user, url }) => {
+        const mctx = requireRunMutationCtx(ctx)
+        const settings = await mctx.runQuery(
+          internal.accounts.organization.getLanguageForUser,
+          { userId: user.id }
+        )
+        await mctx.runMutation(internal.email.outbox.enqueueEmail, {
+          to: user.email,
+          templateKey: "verifyEmail",
+          props: { url },
+          locale: settings?.language ?? "en",
+        })
+      },
+    },
     // Session lifetime hardening. All values in SECONDS (verified against
     // @better-auth/core 1.6.17 types). Defaults are 7d / 1d / 1d; kept explicit
     // so the posture is reviewable and pinned against future default changes.

@@ -35,6 +35,20 @@
       "body": "Indtast denne kode for at fuldføre login på blueprnt:",
       "note": "Koden udløber snart. Hvis du ikke forsøgte at logge ind, kan du ignorere denne e-mail, og din konto forbliver sikker."
     },
+    "changeEmailConfirm": {
+      "subject": "Bekræft din e-mailadresseændring",
+      "heading": "Bekræft din e-mailadresseændring",
+      "body": "Vi har modtaget en anmodning om at ændre e-mailadressen for din blueprnt-konto til {newEmail}. Klik på knappen nedenfor for at bekræfte ændringen fra din nuværende adresse.",
+      "cta": "Bekræft e-mailadresseændring",
+      "note": "Hvis du ikke anmodede om denne ændring, kan du roligt ignorere denne e-mail. Din e-mailadresse ændres ikke."
+    },
+    "verifyEmail": {
+      "subject": "Bekræft din nye e-mailadresse",
+      "heading": "Bekræft din nye e-mailadresse",
+      "body": "Du er næsten færdig. Klik på knappen nedenfor for at bekræfte denne adresse og fuldføre din e-mailadresseændring på blueprnt.",
+      "cta": "Bekræft e-mailadresse",
+      "note": "Hvis du ikke forventede dette, kan du ignorere denne e-mail. Der foretages ingen ændringer på din konto."
+    },
     "footer": {
       "copyright": "© {year} blueprnt",
       "tagline": "Jobarkitekturen der skaber værdi."
