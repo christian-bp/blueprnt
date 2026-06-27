@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import { useTranslations } from "next-intl"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { LanguageMenuSub } from "@/components/language-menu"
 import { OrgSwitchMenuSub } from "@/components/org-switch-menu"
@@ -52,7 +53,7 @@ export function AccountMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label={t("onboarding.accountMenu")}
+        aria-label={t("accountMenu")}
         className="rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <Avatar className="h-8 w-8">
@@ -64,6 +65,9 @@ export function AccountMenu() {
             onboarded one; renders nothing with fewer than two companies. */}
         <OrgSwitchMenuSub />
         <LanguageMenuSub />
+        <DropdownMenuItem asChild>
+          <Link href="/account">{t("nav.accountSettings")}</Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>
           {t("nav.signOut")}

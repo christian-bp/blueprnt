@@ -99,6 +99,7 @@
       "passwordsMatch": "Passordene må være like.",
       "emailUnchanged": "Skriv inn en annen e-postadresse."
     },
+    "accountMenu": "Kontomeny",
     "nav": {
       "home": "Hjem",
       "overview": "Oversikt",
@@ -107,6 +108,7 @@
       "model": "Modell",
       "admin": "Admin",
       "auditLog": "Hendelseslogg",
+      "accountSettings": "Kontoinnstillinger",
       "signOut": "Logg ut"
     },
     "auditLog": {
@@ -546,7 +548,6 @@
       }
     },
     "onboarding": {
-      "accountMenu": "Kontomeny",
       "title": "Kom i gang med organisasjonen din",
       "loading": "Laster organisasjonen din",
       "waitingForAdmin": "Organisasjonen din holder fortsatt på å bli satt opp av en administrator.",
@@ -992,14 +993,22 @@
       }
     },
     "account": {
+      "title": "Kontoinnstillinger",
+      "tabs": {
+        "profile": "Profil",
+        "security": "Sikkerhet"
+      },
       "profile": {
+        "title": "Profil",
         "nameLabel": "Visningsnavn",
         "saveName": "Lagre navn",
         "nameSaved": "Navn lagret.",
         "error": "Kunne ikke lagre navnet ditt. Prøv igjen.",
-        "languageLabel": "Visningsspråk"
+        "languageLabel": "Visningsspråk",
+        "languageTitle": "Språk"
       },
       "email": {
+        "title": "E-post",
         "currentLabel": "Gjeldende e-post",
         "newLabel": "Ny e-postadresse",
         "change": "Bytt e-post",
@@ -1014,6 +1023,7 @@
       },
       "security": {
         "password": {
+          "title": "Passord",
           "currentLabel": "Gjeldende passord",
           "newLabel": "Nytt passord",
           "confirmLabel": "Bekreft nytt passord",

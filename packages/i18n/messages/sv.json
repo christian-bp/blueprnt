@@ -99,6 +99,7 @@
       "passwordsMatch": "Lösenorden måste matcha.",
       "emailUnchanged": "Ange en annan e-postadress."
     },
+    "accountMenu": "Kontomeny",
     "nav": {
       "home": "Hem",
       "overview": "Översikt",
@@ -107,6 +108,7 @@
       "model": "Modell",
       "admin": "Admin",
       "auditLog": "Händelselogg",
+      "accountSettings": "Kontoinställningar",
       "signOut": "Logga ut"
     },
     "auditLog": {
@@ -546,7 +548,6 @@
       }
     },
     "onboarding": {
-      "accountMenu": "Kontomeny",
       "title": "Kom igång med din organisation",
       "loading": "Laddar din organisation",
       "waitingForAdmin": "Din organisation håller fortfarande på att sättas upp av en administratör.",
@@ -992,14 +993,22 @@
       }
     },
     "account": {
+      "title": "Kontoinställningar",
+      "tabs": {
+        "profile": "Profil",
+        "security": "Säkerhet"
+      },
       "profile": {
+        "title": "Profil",
         "nameLabel": "Visningsnamn",
         "saveName": "Spara namn",
         "nameSaved": "Namn sparat.",
         "error": "Det gick inte att spara ditt namn. Försök igen.",
-        "languageLabel": "Visningsspråk"
+        "languageLabel": "Visningsspråk",
+        "languageTitle": "Språk"
       },
       "email": {
+        "title": "E-post",
         "currentLabel": "Nuvarande e-post",
         "newLabel": "Ny e-postadress",
         "change": "Byt e-post",
@@ -1014,6 +1023,7 @@
       },
       "security": {
         "password": {
+          "title": "Lösenord",
           "currentLabel": "Nuvarande lösenord",
           "newLabel": "Nytt lösenord",
           "confirmLabel": "Bekräfta nytt lösenord",

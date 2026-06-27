@@ -22,6 +22,7 @@ import {
   Logout01Icon,
   MoreVerticalCircle01Icon,
   Settings01Icon,
+  UserCircle02Icon,
 } from "@hugeicons/core-free-icons"
 import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
@@ -111,6 +112,12 @@ export function NavUser() {
                 </Link>
               </DropdownMenuItem>
             )}
+            <DropdownMenuItem asChild>
+              <Link href="/account">
+                <HugeiconsIcon icon={UserCircle02Icon} strokeWidth={2} />
+                {t("nav.accountSettings")}
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut}>
               <HugeiconsIcon icon={Logout01Icon} strokeWidth={2} />

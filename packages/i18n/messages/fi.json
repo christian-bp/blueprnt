@@ -99,6 +99,7 @@
       "passwordsMatch": "Salasanojen on täsmättävä.",
       "emailUnchanged": "Anna eri sähköpostiosoite."
     },
+    "accountMenu": "Tilivalikko",
     "nav": {
       "home": "Etusivu",
       "overview": "Yleiskatsaus",
@@ -107,6 +108,7 @@
       "model": "Malli",
       "admin": "Admin",
       "auditLog": "Tapahtumaloki",
+      "accountSettings": "Tiliasetukset",
       "signOut": "Kirjaudu ulos"
     },
     "auditLog": {
@@ -546,7 +548,6 @@
       }
     },
     "onboarding": {
-      "accountMenu": "Tilivalikko",
       "title": "Aloita organisaatiosi käyttö",
       "loading": "Ladataan organisaatiotasi",
       "waitingForAdmin": "Järjestelmänvalvoja viimeistelee vielä organisaatiosi määritystä.",
@@ -992,14 +993,22 @@
       }
     },
     "account": {
+      "title": "Tiliasetukset",
+      "tabs": {
+        "profile": "Profiili",
+        "security": "Turvallisuus"
+      },
       "profile": {
+        "title": "Profiili",
         "nameLabel": "Näyttönimi",
         "saveName": "Tallenna nimi",
         "nameSaved": "Nimi tallennettu.",
         "error": "Nimeä ei voitu tallentaa. Yritä uudelleen.",
-        "languageLabel": "Näyttökieli"
+        "languageLabel": "Näyttökieli",
+        "languageTitle": "Kieli"
       },
       "email": {
+        "title": "Sähköposti",
         "currentLabel": "Nykyinen sähköposti",
         "newLabel": "Uusi sähköpostiosoite",
         "change": "Vaihda sähköposti",
@@ -1014,6 +1023,7 @@
       },
       "security": {
         "password": {
+          "title": "Salasana",
           "currentLabel": "Nykyinen salasana",
           "newLabel": "Uusi salasana",
           "confirmLabel": "Vahvista uusi salasana",

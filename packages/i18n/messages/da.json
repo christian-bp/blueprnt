@@ -99,6 +99,7 @@
       "passwordsMatch": "Adgangskoderne skal være ens.",
       "emailUnchanged": "Indtast en anden e-mailadresse."
     },
+    "accountMenu": "Kontomenu",
     "nav": {
       "home": "Hjem",
       "overview": "Oversigt",
@@ -107,6 +108,7 @@
       "model": "Model",
       "admin": "Admin",
       "auditLog": "Hændelseslog",
+      "accountSettings": "Kontoindstillinger",
       "signOut": "Log ud"
     },
     "auditLog": {
@@ -546,7 +548,6 @@
       }
     },
     "onboarding": {
-      "accountMenu": "Kontomenu",
       "title": "Kom i gang med din organisation",
       "loading": "Indlæser din organisation",
       "waitingForAdmin": "Din organisation er stadig ved at blive sat op af en administrator.",
@@ -992,14 +993,22 @@
       }
     },
     "account": {
+      "title": "Kontoindstillinger",
+      "tabs": {
+        "profile": "Profil",
+        "security": "Sikkerhed"
+      },
       "profile": {
+        "title": "Profil",
         "nameLabel": "Visningsnavn",
         "saveName": "Gem navn",
         "nameSaved": "Navn gemt.",
         "error": "Kunne ikke gemme dit navn. Prøv igen.",
-        "languageLabel": "Visningssprog"
+        "languageLabel": "Visningssprog",
+        "languageTitle": "Sprog"
       },
       "email": {
+        "title": "E-mail",
         "currentLabel": "Nuværende e-mail",
         "newLabel": "Ny e-mailadresse",
         "change": "Skift e-mail",
@@ -1014,6 +1023,7 @@
       },
       "security": {
         "password": {
+          "title": "Adgangskode",
           "currentLabel": "Nuværende adgangskode",
           "newLabel": "Ny adgangskode",
           "confirmLabel": "Bekræft ny adgangskode",

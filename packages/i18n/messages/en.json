@@ -99,6 +99,7 @@
       "passwordsMatch": "Passwords must match.",
       "emailUnchanged": "Enter a different email address."
     },
+    "accountMenu": "Account menu",
     "nav": {
       "home": "Home",
       "overview": "Overview",
@@ -107,6 +108,7 @@
       "model": "Model",
       "admin": "Admin",
       "auditLog": "Audit log",
+      "accountSettings": "Account settings",
       "signOut": "Sign out"
     },
     "auditLog": {
@@ -546,7 +548,6 @@
       }
     },
     "onboarding": {
-      "accountMenu": "Account menu",
       "title": "Set up your organization",
       "loading": "Loading your organization",
       "waitingForAdmin": "Your organization is still being set up by an administrator.",
@@ -992,14 +993,22 @@
       }
     },
     "account": {
+      "title": "Account settings",
+      "tabs": {
+        "profile": "Profile",
+        "security": "Security"
+      },
       "profile": {
+        "title": "Profile",
         "nameLabel": "Display name",
         "saveName": "Save name",
         "nameSaved": "Name saved.",
         "error": "Could not save your name. Please try again.",
-        "languageLabel": "Display language"
+        "languageLabel": "Display language",
+        "languageTitle": "Language"
       },
       "email": {
+        "title": "Email",
         "currentLabel": "Current email",
         "newLabel": "New email address",
         "change": "Change email",
@@ -1014,6 +1023,7 @@
       },
       "security": {
         "password": {
+          "title": "Password",
           "currentLabel": "Current password",
           "newLabel": "New password",
           "confirmLabel": "Confirm new password",

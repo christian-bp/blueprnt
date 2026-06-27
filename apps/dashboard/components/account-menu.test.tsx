@@ -30,7 +30,7 @@ describe("AccountMenu", () => {
     )
     expect(
       screen.getByRole("button", {
-        name: messages.dashboard.onboarding.accountMenu,
+        name: messages.dashboard.accountMenu,
       })
     ).toBeDefined()
     expect(screen.getByText("KS")).toBeDefined()
