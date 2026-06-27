@@ -76,6 +76,12 @@ describe("TwoFactorSection", () => {
     vi.clearAllMocks()
   })
 
+  it("renders inside a Card with the section title and description", () => {
+    renderSection()
+    expect(screen.getByText(t.title)).toBeDefined()
+    expect(screen.getByText(t.description)).toBeDefined()
+  })
+
   it("shows the current method from the mocked query (totp)", () => {
     renderSection()
     expect(screen.getByText(t.methodTotp)).toBeDefined()

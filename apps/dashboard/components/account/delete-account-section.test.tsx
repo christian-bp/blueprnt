@@ -93,6 +93,14 @@ describe("DeleteAccountSection", () => {
     vi.clearAllMocks()
   })
 
+  // --- Card structure ---
+
+  it("renders inside a destructive Card with the section title and description", () => {
+    renderSection()
+    expect(screen.getByText(t.title)).toBeDefined()
+    expect(screen.getByText(t.description)).toBeDefined()
+  })
+
   // --- Last-admin branch ---
 
   it("shows the support note and no delete button when lastAdminOrgs is non-empty", () => {

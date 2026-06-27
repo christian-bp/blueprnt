@@ -1036,6 +1036,7 @@
       "security": {
         "password": {
           "title": "Passord",
+          "description": "Bytt passordet du bruker for å logge inn.",
           "currentLabel": "Gjeldende passord",
           "newLabel": "Nytt passord",
           "confirmLabel": "Bekreft nytt passord",
@@ -1047,6 +1048,7 @@
         },
         "twoFactor": {
           "title": "To-trinns bekreftelse",
+          "description": "Administrer to-trinns bekreftelsesmetoden og sikkerhetskodene dine.",
           "currentMethod": "Gjeldende metode",
           "methodTotp": "Autentiseringsapp",
           "methodEmail": "E-postkoder",
@@ -1063,6 +1065,7 @@
         },
         "delete": {
           "title": "Slett konto",
+          "description": "Slett kontoen din og alle tilknyttede data permanent. Dette kan ikke angres.",
           "body": "Slett kontoen din og alle tilknyttede data permanent. Dette kan ikke angres.",
           "confirmLabel": "Skriv inn e-postadressen din for å bekrefte: {email}",
           "passwordLabel": "Bekreft passordet ditt",

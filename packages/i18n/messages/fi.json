@@ -1036,6 +1036,7 @@
       "security": {
         "password": {
           "title": "Salasana",
+          "description": "Vaihda salasana, jota käytät kirjautumiseen.",
           "currentLabel": "Nykyinen salasana",
           "newLabel": "Uusi salasana",
           "confirmLabel": "Vahvista uusi salasana",
@@ -1047,6 +1048,7 @@
         },
         "twoFactor": {
           "title": "Kaksivaiheinen vahvistus",
+          "description": "Hallitse kaksivaiheista vahvistusmenetelmää ja varmuuskoodeja.",
           "currentMethod": "Nykyinen menetelmä",
           "methodTotp": "Todennusohjelma",
           "methodEmail": "Sähköpostikoodit",
@@ -1063,6 +1065,7 @@
         },
         "delete": {
           "title": "Poista tili",
+          "description": "Poista tilisi ja kaikki siihen liittyvät tiedot pysyvästi. Tätä ei voi kumota.",
           "body": "Poista tilisi ja kaikki siihen liittyvät tiedot pysyvästi. Tätä ei voi kumota.",
           "confirmLabel": "Kirjoita sähköpostiosoitteesi vahvistaaksesi: {email}",
           "passwordLabel": "Vahvista salasanasi",

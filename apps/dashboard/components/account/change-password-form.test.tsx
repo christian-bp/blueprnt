@@ -77,6 +77,12 @@ describe("ChangePasswordForm", () => {
     cleanup()
   })
 
+  it("renders inside a Card with the section title and description", () => {
+    renderForm()
+    expect(screen.getByText(t.title)).toBeDefined()
+    expect(screen.getByText(t.description)).toBeDefined()
+  })
+
   it("blocks submit and shows min-length error when the new password is too short", async () => {
     renderForm()
     fill("current123", "short77")

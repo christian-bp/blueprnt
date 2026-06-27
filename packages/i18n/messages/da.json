@@ -1036,6 +1036,7 @@
       "security": {
         "password": {
           "title": "Adgangskode",
+          "description": "Skift den adgangskode, du bruger til at logge ind.",
           "currentLabel": "Nuværende adgangskode",
           "newLabel": "Ny adgangskode",
           "confirmLabel": "Bekræft ny adgangskode",
@@ -1047,6 +1048,7 @@
         },
         "twoFactor": {
           "title": "To-trins-bekræftelse",
+          "description": "Administrer din to-trins-bekræftelsesmetode og backupkoder.",
           "currentMethod": "Aktuel metode",
           "methodTotp": "Autentificeringsapp",
           "methodEmail": "E-mailkoder",
@@ -1063,6 +1065,7 @@
         },
         "delete": {
           "title": "Slet konto",
+          "description": "Slet din konto og alle tilknyttede data permanent. Dette kan ikke fortrydes.",
           "body": "Slet din konto og alle tilknyttede data permanent. Dette kan ikke fortrydes.",
           "confirmLabel": "Skriv din e-mailadresse for at bekræfte: {email}",
           "passwordLabel": "Bekræft din adgangskode",

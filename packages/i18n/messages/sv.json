@@ -1036,6 +1036,7 @@
       "security": {
         "password": {
           "title": "Lösenord",
+          "description": "Byt det lösenord du använder för att logga in.",
           "currentLabel": "Nuvarande lösenord",
           "newLabel": "Nytt lösenord",
           "confirmLabel": "Bekräfta nytt lösenord",
@@ -1047,6 +1048,7 @@
         },
         "twoFactor": {
           "title": "Tvåstegsverifiering",
+          "description": "Hantera din tvåstegsverifieringsmetod och reservkoder.",
           "currentMethod": "Aktuell metod",
           "methodTotp": "Autentiseringsapp",
           "methodEmail": "E-postkoder",
@@ -1063,6 +1065,7 @@
         },
         "delete": {
           "title": "Ta bort konto",
+          "description": "Ta bort ditt konto och all tillhörande data permanent. Det går inte att ångra.",
           "body": "Ta bort ditt konto och all tillhörande data permanent. Det går inte att ångra.",
           "confirmLabel": "Skriv din e-postadress för att bekräfta: {email}",
           "passwordLabel": "Bekräfta ditt lösenord",

@@ -1036,6 +1036,7 @@
       "security": {
         "password": {
           "title": "Password",
+          "description": "Change the password you use to sign in.",
           "currentLabel": "Current password",
           "newLabel": "New password",
           "confirmLabel": "Confirm new password",
@@ -1047,6 +1048,7 @@
         },
         "twoFactor": {
           "title": "Two-step verification",
+          "description": "Manage your two-step verification method and backup codes.",
           "currentMethod": "Current method",
           "methodTotp": "Authenticator app",
           "methodEmail": "Email codes",
@@ -1063,6 +1065,7 @@
         },
         "delete": {
           "title": "Delete account",
+          "description": "Permanently delete your account and all associated data. This cannot be undone.",
           "body": "Permanently delete your account and all associated data. This cannot be undone.",
           "confirmLabel": "Type your email address to confirm: {email}",
           "passwordLabel": "Confirm your password",

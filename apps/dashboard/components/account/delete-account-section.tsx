@@ -3,6 +3,14 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card"
+import {
   Form,
   FormControl,
   FormField,
@@ -83,9 +91,17 @@ export function DeleteAccountSection() {
   if (lastAdminOrgs.length > 0) {
     const orgNames = lastAdminOrgs.map((o) => o.name).join(", ")
     return (
-      <p className="text-muted-foreground text-sm">
-        {t("lastAdmin", { orgs: orgNames })}
-      </p>
+      <Card className="border-destructive">
+        <CardHeader>
+          <CardTitle>{t("title")}</CardTitle>
+          <CardDescription>{t("description")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground text-sm">
+            {t("lastAdmin", { orgs: orgNames })}
+          </p>
+        </CardContent>
+      </Card>
     )
   }
 
@@ -113,59 +129,82 @@ export function DeleteAccountSection() {
   if (errorState === "lastAdmin") {
     const orgNames = lastAdminOrgs.map((o) => o.name).join(", ")
     return (
-      <p className="text-muted-foreground text-sm">
-        {orgNames ? t("lastAdmin", { orgs: orgNames }) : t("lastAdminUnknown")}
-      </p>
+      <Card className="border-destructive">
+        <CardHeader>
+          <CardTitle>{t("title")}</CardTitle>
+          <CardDescription>{t("description")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground text-sm">
+            {orgNames
+              ? t("lastAdmin", { orgs: orgNames })
+              : t("lastAdminUnknown")}
+          </p>
+        </CardContent>
+      </Card>
     )
   }
 
   return (
-    <div className="rounded-lg border border-destructive/40 p-4">
-      <h3 className="font-medium text-destructive text-sm">{t("title")}</h3>
-      <p className="mt-1 text-muted-foreground text-sm">{t("body")}</p>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 space-y-4">
-          {/* Type-to-confirm: plain Label + Input, no FormControl, so no
-              aria-invalid while partially typed (confirm gate pattern). */}
-          <div className="space-y-2">
-            <Label htmlFor={confirmInputId}>
-              {t("confirmLabel", { email })}
-            </Label>
-            <Input
-              id={confirmInputId}
-              autoComplete="off"
-              {...form.register("confirmText")}
+    <Card className="border-destructive">
+      <CardHeader>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form
+            id="delete-account-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+          >
+            {/* Type-to-confirm: plain Label + Input, no FormControl, so no
+                aria-invalid while partially typed (confirm gate pattern). */}
+            <div className="space-y-2">
+              <Label htmlFor={confirmInputId}>
+                {t("confirmLabel", { email })}
+              </Label>
+              <Input
+                id={confirmInputId}
+                autoComplete="off"
+                {...form.register("confirmText")}
+              />
+            </div>
+            {/* Password field: routed through FormControl for inline errors. */}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("passwordLabel")}</FormLabel>
+                  <FormControl>
+                    <PasswordInput autoComplete="current-password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          {/* Password field: routed through FormControl for inline errors. */}
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("passwordLabel")}</FormLabel>
-                <FormControl>
-                  <PasswordInput autoComplete="current-password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          </form>
+        </Form>
+      </CardContent>
+      <CardFooter className="flex items-center justify-between">
+        <div>
           {(errorState === "wrongPassword" || errorState === "generic") && (
             <p role="alert" className="text-destructive text-sm">
               {t(errorState === "wrongPassword" ? "wrongPassword" : "error")}
             </p>
           )}
-          <SubmitButton
-            type="submit"
-            variant="destructive"
-            isSubmitting={isSubmitting}
-            disabled={!isValid || !email}
-          >
-            {t("cta")}
-          </SubmitButton>
-        </form>
-      </Form>
-    </div>
+        </div>
+        <SubmitButton
+          type="submit"
+          form="delete-account-form"
+          variant="destructive"
+          isSubmitting={isSubmitting}
+          disabled={!isValid || !email}
+        >
+          {t("cta")}
+        </SubmitButton>
+      </CardFooter>
+    </Card>
   )
 }
