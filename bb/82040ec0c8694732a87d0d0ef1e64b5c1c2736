@@ -1,0 +1,37 @@
+apps/dashboard/components/account/profile-name-form.test.tsx
+  s_c216811bbb1bb1::t_708ce0e4579e46 131-183
+  s_c216811bbb1bb1::t_16c19af869f379 33
+apps/dashboard/components/account/delete-account-section.test.tsx
+  s_c216811bbb1bb1::t_7bb513415cb3d3 116
+  s_c216811bbb1bb1::t_d56ac49c01685c 120
+apps/dashboard/components/account/language-section.tsx
+  s_c216811bbb1bb1::t_aa09bbeb37a80b 44-47,51-54
+apps/dashboard/components/auth/two-factor-gate.tsx
+  s_c216811bbb1bb1::t_26783961df54e4 29-32
+apps/dashboard/components/account/change-password-form.tsx
+  s_c216811bbb1bb1::t_2a9cb478e86a29 25
+apps/dashboard/components/account/language-section.test.tsx
+  s_c216811bbb1bb1::t_b9b37def1d3c5f 18
+apps/dashboard/components/account/profile-name-form.tsx
+  s_c216811bbb1bb1::t_f680df1ec2d50f 30
+  s_c216811bbb1bb1::t_f1408e198cd25b 82-84
+  s_c216811bbb1bb1::t_54ba01def14d0c 41,51
+apps/dashboard/components/auth/two-factor-gate.test.tsx
+  s_c216811bbb1bb1::t_06566375387c35 123-208
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "bb82040ec0c8694732a87d0d0ef1e64b5c1c2736",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
