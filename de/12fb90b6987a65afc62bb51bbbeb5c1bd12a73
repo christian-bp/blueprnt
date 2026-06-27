@@ -1,0 +1,28 @@
+apps/dashboard/app/reset-password/page.tsx
+  s_c216811bbb1bb1::t_4e74aff0fa3160 104-108
+apps/dashboard/components/auth/two-factor-setup.tsx
+  s_c216811bbb1bb1::t_81147da7262965 198-202
+  s_c216811bbb1bb1::t_2efaf67a4eb198 273-277
+apps/dashboard/components/onboarding/families-step.tsx
+  s_c216811bbb1bb1::t_768d97ae7772eb 311-317
+apps/dashboard/components/onboarding/name-screen.tsx
+  s_c216811bbb1bb1::t_c7a9a00c76b3df 104-107
+apps/dashboard/components/auth/email-password-form.tsx
+  s_c216811bbb1bb1::t_fe5f51697096a0 138-142
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "de12fb90b6987a65afc62bb51bbbeb5c1bd12a73",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
