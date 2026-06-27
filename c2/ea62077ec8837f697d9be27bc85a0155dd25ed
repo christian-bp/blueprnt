@@ -1,0 +1,26 @@
+packages/backend/convex/accounts/twoFactor.ts
+  s_c216811bbb1bb1::t_4d088ce5144758 3,5,11-19,21-27,29-30,33
+apps/dashboard/components/auth/two-factor-gate.tsx
+  s_c216811bbb1bb1::t_fed8d4fbbea9a7 20-26,28
+apps/dashboard/components/auth/two-factor-gate.test.tsx
+  s_c216811bbb1bb1::t_5ab5254c149a5c 69-88
+packages/backend/convex/accounts/twoFactor.test.ts
+  s_c216811bbb1bb1::t_3a116eb8635eef 32-35,37-38
+  s_c216811bbb1bb1::t_ad1ea0cf7a2d64 92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "c2ea62077ec8837f697d9be27bc85a0155dd25ed",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
