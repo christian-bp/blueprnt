@@ -27,6 +27,7 @@ vi.mock("@/lib/auth-client", () => ({
 
 import { ProfileNameForm } from "./profile-name-form"
 
+const cardTitle = en.dashboard.account.profile.title
 const nameLabel = en.dashboard.account.profile.nameLabel
 const saveName = en.dashboard.account.profile.saveName
 const errorMsg = en.dashboard.account.profile.error
@@ -51,6 +52,11 @@ describe("ProfileNameForm", () => {
   })
   afterEach(() => {
     cleanup()
+  })
+
+  it("renders the card title as the section heading", () => {
+    renderForm()
+    expect(screen.getByText(cardTitle)).toBeDefined()
   })
 
   it("renders the current name pre-filled in the input", () => {

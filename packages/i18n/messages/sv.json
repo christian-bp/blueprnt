@@ -1001,11 +1001,13 @@
       "profile": {
         "title": "Profil",
         "nameLabel": "Visningsnamn",
+        "nameDescription": "Det här namnet syns för dina kollegor i arbetsytan.",
         "saveName": "Spara namn",
         "nameSaved": "Namn sparat.",
         "error": "Det gick inte att spara ditt namn. Försök igen.",
         "languageLabel": "Visningsspråk",
         "languageTitle": "Språk",
+        "languageDescription": "Välj vilket språk som används i instrumentpanelen.",
         "avatar": {
           "title": "Profilbild",
           "description": "Klicka på profilbilden för att ladda upp en bild från dina filer.",
@@ -1018,6 +1020,7 @@
       },
       "email": {
         "title": "E-post",
+        "description": "Att byta e-post kräver bekräftelse från både din nuvarande och nya adress.",
         "currentLabel": "Nuvarande e-post",
         "newLabel": "Ny e-postadress",
         "change": "Byt e-post",

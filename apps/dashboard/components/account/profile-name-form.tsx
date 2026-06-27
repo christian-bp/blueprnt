@@ -2,6 +2,14 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card"
+import {
   Form,
   FormControl,
   FormField,
@@ -57,37 +65,54 @@ export function ProfileNameForm() {
   const { isValid, isDirty, isSubmitting } = form.formState
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("nameLabel")}</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("nameDescription")}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form
+            id="profile-name-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+          >
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("nameLabel")}</FormLabel>
+                  <FormControl>
+                    <Input className="max-w-sm" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {error && (
+              <p role="alert" className="text-destructive text-sm">
+                {t("error")}
+              </p>
+            )}
+          </form>
+        </Form>
+      </CardContent>
+      <CardFooter className="flex items-center justify-between">
+        {saved ? (
+          <p className="text-muted-foreground text-sm">{t("nameSaved")}</p>
+        ) : (
+          <span />
+        )}
         <SubmitButton
           type="submit"
+          form="profile-name-form"
           isSubmitting={isSubmitting}
           disabled={!isValid || !isDirty}
         >
           {t("saveName")}
         </SubmitButton>
-        {saved && (
-          <p className="text-muted-foreground text-sm">{t("nameSaved")}</p>
-        )}
-        {error && (
-          <p role="alert" className="text-destructive text-sm">
-            {t("error")}
-          </p>
-        )}
-      </form>
-    </Form>
+      </CardFooter>
+    </Card>
   )
 }

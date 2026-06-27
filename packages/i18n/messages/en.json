@@ -1001,11 +1001,13 @@
       "profile": {
         "title": "Profile",
         "nameLabel": "Display name",
+        "nameDescription": "This name is visible to your colleagues in the workspace.",
         "saveName": "Save name",
         "nameSaved": "Name saved.",
         "error": "Could not save your name. Please try again.",
         "languageLabel": "Display language",
         "languageTitle": "Language",
+        "languageDescription": "Choose the language used across the dashboard.",
         "avatar": {
           "title": "Avatar",
           "description": "Click on the avatar to upload an image from your files.",
@@ -1018,6 +1020,7 @@
       },
       "email": {
         "title": "Email",
+        "description": "Changing your email requires confirmation from both your current and new address.",
         "currentLabel": "Current email",
         "newLabel": "New email address",
         "change": "Change email",

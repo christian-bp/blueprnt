@@ -93,6 +93,13 @@ describe("LanguageSection", () => {
     cleanup()
   })
 
+  it("renders the card title as the section heading", () => {
+    renderSection()
+    expect(
+      screen.getByText(en.dashboard.account.profile.languageLabel)
+    ).toBeDefined()
+  })
+
   it("renders the section label", () => {
     renderSection()
     expect(

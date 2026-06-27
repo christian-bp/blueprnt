@@ -3,6 +3,13 @@
 import { api } from "@workspace/backend/convex/_generated/api"
 import { type Locale, routing } from "@workspace/i18n/routing"
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card"
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -40,31 +47,33 @@ export function LanguageSection() {
   const active = locale as Locale
 
   return (
-    <div className="space-y-2">
-      <p
-        id="language-section-label"
-        className="font-medium text-sm leading-none"
-      >
-        {t("account.profile.languageLabel")}
-      </p>
-      <Select value={active} onValueChange={handleLocaleChange}>
-        <SelectTrigger
-          aria-labelledby="language-section-label"
-          className="w-full"
-        >
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {routing.locales.map((code) => (
-            <SelectItem key={code} value={code}>
-              <span className="flex items-center gap-2">
-                <Flag code={FLAG_BY_LOCALE[code]} alt="" size="S" />
-                {t(LANGUAGE_LABEL_KEYS[code])}
-              </span>
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("account.profile.languageLabel")}</CardTitle>
+        <CardDescription>
+          {t("account.profile.languageDescription")}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Select value={active} onValueChange={handleLocaleChange}>
+          <SelectTrigger
+            aria-label={t("account.profile.languageLabel")}
+            className="max-w-sm"
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {routing.locales.map((code) => (
+              <SelectItem key={code} value={code}>
+                <span className="flex items-center gap-2">
+                  <Flag code={FLAG_BY_LOCALE[code]} alt="" size="S" />
+                  {t(LANGUAGE_LABEL_KEYS[code])}
+                </span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </CardContent>
+    </Card>
   )
 }

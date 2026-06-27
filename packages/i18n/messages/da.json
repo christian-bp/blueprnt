@@ -1001,11 +1001,13 @@
       "profile": {
         "title": "Profil",
         "nameLabel": "Visningsnavn",
+        "nameDescription": "Dette navn er synligt for dine kolleger i arbejdsområdet.",
         "saveName": "Gem navn",
         "nameSaved": "Navn gemt.",
         "error": "Kunne ikke gemme dit navn. Prøv igen.",
         "languageLabel": "Visningssprog",
         "languageTitle": "Sprog",
+        "languageDescription": "Vælg det sprog, der bruges i dashboardet.",
         "avatar": {
           "title": "Avatar",
           "description": "Klik på avataren for at uploade et billede fra dine filer.",
@@ -1018,6 +1020,7 @@
       },
       "email": {
         "title": "E-mail",
+        "description": "Skift af e-mail kræver bekræftelse fra både din nuværende og nye adresse.",
         "currentLabel": "Nuværende e-mail",
         "newLabel": "Ny e-mailadresse",
         "change": "Skift e-mail",

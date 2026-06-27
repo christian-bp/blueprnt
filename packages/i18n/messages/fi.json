@@ -1001,11 +1001,13 @@
       "profile": {
         "title": "Profiili",
         "nameLabel": "Näyttönimi",
+        "nameDescription": "Tämä nimi näkyy työtovereillesi työtilassa.",
         "saveName": "Tallenna nimi",
         "nameSaved": "Nimi tallennettu.",
         "error": "Nimeä ei voitu tallentaa. Yritä uudelleen.",
         "languageLabel": "Näyttökieli",
         "languageTitle": "Kieli",
+        "languageDescription": "Valitse kieli, jota käytetään kojelaudassa.",
         "avatar": {
           "title": "Avatar",
           "description": "Napsauta avataria ladataksesi kuvan tiedostoistasi.",
@@ -1018,6 +1020,7 @@
       },
       "email": {
         "title": "Sähköposti",
+        "description": "Sähköpostin vaihtaminen edellyttää vahvistusta sekä nykyisestä että uudesta osoitteesta.",
         "currentLabel": "Nykyinen sähköposti",
         "newLabel": "Uusi sähköpostiosoite",
         "change": "Vaihda sähköposti",

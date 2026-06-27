@@ -27,6 +27,7 @@ vi.mock("@/lib/auth-client", () => ({
 
 import { ChangeEmailForm } from "./change-email-form"
 
+const cardTitle = en.dashboard.account.email.title
 const newLabel = en.dashboard.account.email.newLabel
 const changeBtn = en.dashboard.account.email.change
 const confirmTitle = en.dashboard.account.email.confirmationTitle
@@ -56,6 +57,11 @@ describe("ChangeEmailForm", () => {
   })
   afterEach(() => {
     cleanup()
+  })
+
+  it("renders the card title as the section heading", () => {
+    renderForm()
+    expect(screen.getByText(cardTitle)).toBeDefined()
   })
 
   it("renders the current email as a read-only value", () => {

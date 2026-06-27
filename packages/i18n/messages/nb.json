@@ -1001,11 +1001,13 @@
       "profile": {
         "title": "Profil",
         "nameLabel": "Visningsnavn",
+        "nameDescription": "Dette navnet er synlig for kollegene dine i arbeidsområdet.",
         "saveName": "Lagre navn",
         "nameSaved": "Navn lagret.",
         "error": "Kunne ikke lagre navnet ditt. Prøv igjen.",
         "languageLabel": "Visningsspråk",
         "languageTitle": "Språk",
+        "languageDescription": "Velg språket som brukes i dashbordet.",
         "avatar": {
           "title": "Avatar",
           "description": "Klikk på avataren for å laste opp et bilde fra filene dine.",
@@ -1018,6 +1020,7 @@
       },
       "email": {
         "title": "E-post",
+        "description": "Å bytte e-post krever bekreftelse fra både din nåværende og nye adresse.",
         "currentLabel": "Gjeldende e-post",
         "newLabel": "Ny e-postadresse",
         "change": "Bytt e-post",
