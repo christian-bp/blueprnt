@@ -431,6 +431,8 @@
       "loading": "Sjekker økten din",
       "email": "E-post",
       "password": "Passord",
+      "showPassword": "Vis passord",
+      "hidePassword": "Skjul passord",
       "forgotPasswordLink": "Glemt passordet?",
       "signIn": {
         "title": "Logg inn",

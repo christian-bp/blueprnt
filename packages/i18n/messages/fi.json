@@ -431,6 +431,8 @@
       "loading": "Tarkistetaan istuntoasi",
       "email": "Sähköposti",
       "password": "Salasana",
+      "showPassword": "Näytä salasana",
+      "hidePassword": "Piilota salasana",
       "forgotPasswordLink": "Unohditko salasanasi?",
       "signIn": {
         "title": "Kirjaudu sisään",

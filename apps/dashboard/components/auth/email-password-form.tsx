@@ -21,6 +21,7 @@ import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
+import { PasswordInput } from "@/components/password-input"
 import { SubmitButton } from "@/components/submit-button"
 import { makeSignInSchema, type SignInValues } from "@/lib/auth-schemas"
 
@@ -96,7 +97,7 @@ export function EmailPasswordForm(props: {
                 <FormItem>
                   <FormLabel>{t("password")}</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <PasswordInput {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

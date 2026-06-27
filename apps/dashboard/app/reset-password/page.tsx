@@ -16,12 +16,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@workspace/ui/components/form"
-import { Input } from "@workspace/ui/components/input"
 import { useTranslations } from "next-intl"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { Logo } from "@/components/logo"
+import { PasswordInput } from "@/components/password-input"
 import { SubmitButton } from "@/components/submit-button"
 import {
   makeResetPasswordSchema,
@@ -103,7 +103,7 @@ function ResetPasswordForm() {
                       <FormItem>
                         <FormLabel>{t("passwordLabel")}</FormLabel>
                         <FormControl>
-                          <Input type="password" {...field} />
+                          <PasswordInput {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

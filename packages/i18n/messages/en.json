@@ -431,6 +431,8 @@
       "loading": "Checking your session",
       "email": "Email",
       "password": "Password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
       "forgotPasswordLink": "Forgot your password?",
       "signIn": {
         "title": "Sign in",

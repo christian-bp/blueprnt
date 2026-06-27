@@ -431,6 +431,8 @@
       "loading": "Kontrollerar din session",
       "email": "E-post",
       "password": "Lösenord",
+      "showPassword": "Visa lösenord",
+      "hidePassword": "Dölj lösenord",
       "forgotPasswordLink": "Glömt lösenordet?",
       "signIn": {
         "title": "Logga in",

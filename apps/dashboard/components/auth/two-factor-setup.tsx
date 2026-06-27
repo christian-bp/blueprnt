@@ -11,7 +11,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@workspace/ui/components/form"
-import { Input } from "@workspace/ui/components/input"
 import {
   InputOTP,
   InputOTPGroup,
@@ -24,6 +23,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { Logo } from "@/components/logo"
+import { PasswordInput } from "@/components/password-input"
 import { SubmitButton } from "@/components/submit-button"
 import { authClient } from "@/lib/auth-client"
 import {
@@ -166,7 +166,7 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
                   <FormItem>
                     <FormLabel>{t("password.label")}</FormLabel>
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <PasswordInput {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

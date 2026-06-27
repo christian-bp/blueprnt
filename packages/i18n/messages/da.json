@@ -431,6 +431,8 @@
       "loading": "Kontrollerer din session",
       "email": "E-mail",
       "password": "Adgangskode",
+      "showPassword": "Vis adgangskode",
+      "hidePassword": "Skjul adgangskode",
       "forgotPasswordLink": "Glemt din adgangskode?",
       "signIn": {
         "title": "Log ind",
