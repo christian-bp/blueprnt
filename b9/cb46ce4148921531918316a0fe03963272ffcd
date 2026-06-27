@@ -1,0 +1,26 @@
+apps/dashboard/components/auth/rotating-value-line.tsx
+  s_c216811bbb1bb1::t_77095450889f88 3,8-13,35,37,40,42-50
+apps/dashboard/components/auth/brand-panel.tsx
+  s_c216811bbb1bb1::t_4c08db5a403421 7-10,14,18,20,22
+apps/dashboard/components/auth/background-aurora.tsx
+  s_c216811bbb1bb1::t_f049c134247aa3 5-13,16-19,22-29,32-45,61-65
+  s_c216811bbb1bb1::t_4847a80d4516f3 66,73
+apps/dashboard/components/auth/background-aurora.test.tsx
+  s_c216811bbb1bb1::t_944628e962e33f 12-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "b9cb46ce4148921531918316a0fe03963272ffcd",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
