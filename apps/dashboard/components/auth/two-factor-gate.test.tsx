@@ -46,4 +46,24 @@ describe("TwoFactorGate", () => {
     expect(screen.getByTestId("children")).toBeDefined()
     expect(screen.queryByTestId("setup")).toBeNull()
   })
+
+  it("keeps the wizard mounted across a transient status reload (the enable() auth blip)", () => {
+    // twoFactor.enable() changes the session's 2FA state, so the Convex auth
+    // token refreshes and getMyMfaStatus briefly reloads to undefined. The
+    // wizard must stay mounted, not flip back to the spinner, or its step state
+    // resets and the user is bounced to the method-choice screen.
+    useQueryMock.mockReturnValue({ confirmed: false, method: null })
+    const { rerender } = renderGate()
+    expect(screen.getByTestId("setup")).toBeDefined()
+
+    useQueryMock.mockReturnValue(undefined)
+    rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <TwoFactorGate>
+          <div data-testid="children" />
+        </TwoFactorGate>
+      </NextIntlClientProvider>
+    )
+    expect(screen.getByTestId("setup")).toBeDefined()
+  })
 })
