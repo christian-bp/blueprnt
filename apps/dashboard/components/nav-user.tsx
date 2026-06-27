@@ -2,7 +2,11 @@
 
 import { authClient } from "@/lib/auth-client"
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@workspace/ui/components/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -67,7 +71,13 @@ export function NavUser() {
               // column (1px overhang each side).
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground group-data-[collapsible=icon]:-mx-px group-data-[collapsible=icon]:size-9! group-data-[collapsible=icon]:justify-center"
             >
-              <Avatar className="shrink-0 group-data-[collapsible=icon]:size-9">
+              <Avatar
+                key={session?.user?.image || "no-avatar"}
+                className="shrink-0 group-data-[collapsible=icon]:size-9"
+              >
+                {session?.user?.image ? (
+                  <AvatarImage src={session.user.image} alt={name} />
+                ) : null}
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
@@ -91,7 +101,10 @@ export function NavUser() {
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar>
+                <Avatar key={session?.user?.image || "no-avatar"}>
+                  {session?.user?.image ? (
+                    <AvatarImage src={session.user.image} alt={name} />
+                  ) : null}
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">

@@ -1,6 +1,10 @@
 "use client"
 
-import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@workspace/ui/components/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,7 +60,10 @@ export function AccountMenu() {
         aria-label={t("accountMenu")}
         className="rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <Avatar className="h-8 w-8">
+        <Avatar key={session?.user?.image || "no-avatar"} className="h-8 w-8">
+          {session?.user?.image ? (
+            <AvatarImage src={session.user.image} alt={name} />
+          ) : null}
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>

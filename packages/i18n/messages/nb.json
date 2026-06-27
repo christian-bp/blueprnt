@@ -1005,7 +1005,16 @@
         "nameSaved": "Navn lagret.",
         "error": "Kunne ikke lagre navnet ditt. Prøv igjen.",
         "languageLabel": "Visningsspråk",
-        "languageTitle": "Språk"
+        "languageTitle": "Språk",
+        "avatar": {
+          "title": "Avatar",
+          "description": "Klikk på avataren for å laste opp et bilde fra filene dine.",
+          "helper": "En avatar er valgfri, men anbefales.",
+          "remove": "Fjern avatar",
+          "tooLarge": "Bildet må være mindre enn 5 MB.",
+          "invalidType": "Velg en bildefil.",
+          "error": "Kunne ikke oppdatere avataren. Prøv igjen."
+        }
       },
       "email": {
         "title": "E-post",

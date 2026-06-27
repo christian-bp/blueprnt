@@ -1005,7 +1005,16 @@
         "nameSaved": "Name saved.",
         "error": "Could not save your name. Please try again.",
         "languageLabel": "Display language",
-        "languageTitle": "Language"
+        "languageTitle": "Language",
+        "avatar": {
+          "title": "Avatar",
+          "description": "Click on the avatar to upload an image from your files.",
+          "helper": "An avatar is optional but strongly recommended.",
+          "remove": "Remove avatar",
+          "tooLarge": "Image must be smaller than 5 MB.",
+          "invalidType": "Please select an image file.",
+          "error": "Could not update your avatar. Try again."
+        }
       },
       "email": {
         "title": "Email",

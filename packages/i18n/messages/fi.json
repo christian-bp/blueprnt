@@ -1005,7 +1005,16 @@
         "nameSaved": "Nimi tallennettu.",
         "error": "Nimeä ei voitu tallentaa. Yritä uudelleen.",
         "languageLabel": "Näyttökieli",
-        "languageTitle": "Kieli"
+        "languageTitle": "Kieli",
+        "avatar": {
+          "title": "Avatar",
+          "description": "Napsauta avataria ladataksesi kuvan tiedostoistasi.",
+          "helper": "Avatar on valinnainen, mutta suositeltava.",
+          "remove": "Poista avatar",
+          "tooLarge": "Kuvan on oltava alle 5 Mt.",
+          "invalidType": "Valitse kuvatiedosto.",
+          "error": "Avatarin paivittaminen epaonnistui. Yrita uudelleen."
+        }
       },
       "email": {
         "title": "Sähköposti",

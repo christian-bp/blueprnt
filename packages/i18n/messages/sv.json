@@ -1005,7 +1005,16 @@
         "nameSaved": "Namn sparat.",
         "error": "Det gick inte att spara ditt namn. Försök igen.",
         "languageLabel": "Visningsspråk",
-        "languageTitle": "Språk"
+        "languageTitle": "Språk",
+        "avatar": {
+          "title": "Profilbild",
+          "description": "Klicka på profilbilden för att ladda upp en bild från dina filer.",
+          "helper": "En profilbild är valfri men rekommenderas.",
+          "remove": "Ta bort profilbild",
+          "tooLarge": "Bilden måste vara mindre än 5 MB.",
+          "invalidType": "Välj en bildfil.",
+          "error": "Det gick inte att uppdatera profilbilden. Försök igen."
+        }
       },
       "email": {
         "title": "E-post",

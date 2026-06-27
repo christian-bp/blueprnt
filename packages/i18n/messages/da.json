@@ -1005,7 +1005,16 @@
         "nameSaved": "Navn gemt.",
         "error": "Kunne ikke gemme dit navn. Prøv igen.",
         "languageLabel": "Visningssprog",
-        "languageTitle": "Sprog"
+        "languageTitle": "Sprog",
+        "avatar": {
+          "title": "Avatar",
+          "description": "Klik på avataren for at uploade et billede fra dine filer.",
+          "helper": "En avatar er valgfri, men anbefales.",
+          "remove": "Fjern avatar",
+          "tooLarge": "Billedet skal være mindre end 5 MB.",
+          "invalidType": "Vælg venligst en billedfil.",
+          "error": "Kunne ikke opdatere din avatar. Prov igen."
+        }
       },
       "email": {
         "title": "E-mail",
