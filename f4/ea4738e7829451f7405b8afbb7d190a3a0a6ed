@@ -1,0 +1,34 @@
+packages/i18n/messages/fi.json
+  s_c216811bbb1bb1::t_c0353fae39d310 465
+packages/i18n/messages/en.json
+  s_c216811bbb1bb1::t_2d42124d0b9232 465
+packages/i18n/messages/da.json
+  s_c216811bbb1bb1::t_34a60b4e3c9034 465
+apps/dashboard/components/auth/email-password-form.test.tsx
+  s_c216811bbb1bb1::t_374d683f8d9db0 128-149
+packages/i18n/messages/nb.json
+  s_c216811bbb1bb1::t_a860350175f30e 465
+apps/dashboard/components/auth/email-password-form.tsx
+  s_c216811bbb1bb1::t_f13c17c931ac8b 82
+  s_c216811bbb1bb1::t_efb2df11d0742d 34-52
+  s_c216811bbb1bb1::t_19902a954e67af 132
+  s_c216811bbb1bb1::t_f6df70b0bf11e3 66-68
+packages/i18n/messages/sv.json
+  s_c216811bbb1bb1::t_04d7e02534bb28 465
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "f4ea4738e7829451f7405b8afbb7d190a3a0a6ed",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
