@@ -1,0 +1,26 @@
+apps/dashboard/components/copy-button.tsx
+  s_c216811bbb1bb1::t_a7f5dc7f5406a8 1-67
+apps/dashboard/components/copy-button.test.tsx
+  s_c216811bbb1bb1::t_a5ce574ee52607 8-36
+  s_c216811bbb1bb1::t_fa8b6828e4c6fa 1-7
+apps/dashboard/components/auth/two-factor-setup.tsx
+  s_c216811bbb1bb1::t_62b8ae377289fb 55
+  s_c216811bbb1bb1::t_f6653ffe919d3a 23
+  s_c216811bbb1bb1::t_368dfb95f1e782 230-231,234,236-237
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "81cfb8ee418387b3d022300588929e772a34ec72",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
