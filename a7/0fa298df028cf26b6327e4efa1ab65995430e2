@@ -1,0 +1,27 @@
+apps/dashboard/components/rating/rating-stepper.tsx
+  s_c216811bbb1bb1::t_446bb105af63ba 194
+apps/dashboard/app/(app)/account/layout.tsx
+  s_c216811bbb1bb1::t_20305abc7c312f 7
+apps/dashboard/components/account/delete-account-section.test.tsx
+  s_c216811bbb1bb1::t_d37572bf7b8218 143
+apps/dashboard/components/rating/rating-result.tsx
+  s_c216811bbb1bb1::t_18ad469c031ac2 73
+apps/dashboard/app/(app)/roles/[roleId]/rate/page.tsx
+  s_c216811bbb1bb1::t_453eb1c5ecf112 69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "a70fa298df028cf26b6327e4efa1ab65995430e2",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
