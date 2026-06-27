@@ -110,6 +110,7 @@ export const createAuthOptions = (
         "/two-factor/send-otp": { window: 60, max: 3 },
         "/two-factor/verify-otp": { window: 60, max: 5 },
         "/two-factor/verify-totp": { window: 60, max: 5 },
+        "/two-factor/verify-backup-code": { window: 60, max: 5 },
       },
     },
     emailAndPassword: {

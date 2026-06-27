@@ -78,6 +78,8 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
   // re-render churn can swallow it. Focusing from an effect keyed on the step is
   // robust.
   const otpRef = useRef<HTMLInputElement>(null)
+  // Guards against a double verify if InputOTP re-fires onComplete (paste / remount).
+  const verifyingRef = useRef(false)
   useEffect(() => {
     if (step === "confirm") otpRef.current?.focus()
   }, [step])
@@ -98,22 +100,41 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
   }
 
   async function onCodeComplete(value: string) {
+    if (verifyingRef.current) return
+    verifyingRef.current = true
     setCodeError(false)
-    const verify =
-      method === "totp"
-        ? authClient.twoFactor.verifyTotp({ code: value })
-        : authClient.twoFactor.verifyOtp({ code: value })
-    const { error } = await verify
-    if (error) {
-      setCode("")
-      setCodeError(true)
-      return
+    try {
+      const verify =
+        method === "totp"
+          ? authClient.twoFactor.verifyTotp({ code: value })
+          : authClient.twoFactor.verifyOtp({ code: value })
+      const { error } = await verify
+      if (error) {
+        setCode("")
+        setCodeError(true)
+        return
+      }
+      // Show the completion screen. Setup is marked complete (confirmMfaSetup)
+      // only when the user continues past the backup codes (onFinish), not here,
+      // so a reload before then keeps them gated in setup; restarting re-runs
+      // enable() (minting fresh codes) and re-requires the save acknowledgment.
+      setStep("done")
+    } finally {
+      verifyingRef.current = false
     }
-    // Show the completion screen. Setup is marked complete (confirmMfaSetup) only
-    // when the user continues past the backup codes (onFinish), not here, so a
-    // reload before then keeps them gated in setup and they restart with fresh
-    // codes rather than landing in the app without having saved any.
-    setStep("done")
+  }
+
+  // Going back to method choice resets the in-progress enrollment so a stale QR
+  // or previously-shown backup codes never linger into a fresh attempt.
+  function goToChoose() {
+    setTotpUri(null)
+    setQr(null)
+    setCode("")
+    setCodeError(false)
+    setBackupCodes([])
+    setSavedAck(false)
+    setPwError(false)
+    setStep("choose")
   }
 
   async function onFinish() {
@@ -204,11 +225,7 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
               )}
             </form>
           </Form>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => setStep("choose")}
-          >
+          <Button type="button" variant="ghost" onClick={goToChoose}>
             {t("changeMethod")}
           </Button>
         </div>
@@ -340,7 +357,7 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
             {t("email.resend")}
           </Button>
         )}
-        <Button type="button" variant="ghost" onClick={() => setStep("choose")}>
+        <Button type="button" variant="ghost" onClick={goToChoose}>
           {t("changeMethod")}
         </Button>
       </div>

@@ -3,7 +3,7 @@
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { useTranslations } from "next-intl"
-import { type FormEvent, useEffect, useState } from "react"
+import { type FormEvent, useEffect, useRef, useState } from "react"
 import { OtpField } from "@/components/auth/otp-field"
 import { SubmitButton } from "@/components/submit-button"
 import { authClient } from "@/lib/auth-client"
@@ -29,6 +29,8 @@ export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
   const [backupCode, setBackupCode] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(false)
+  // Guards against a double verify if InputOTP re-fires onComplete (paste / remount).
+  const verifyingRef = useRef(false)
 
   // When the email method is active, request a code on entry / on switch.
   useEffect(() => {
@@ -44,19 +46,25 @@ export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
   }
 
   async function onComplete(value: string) {
+    if (verifyingRef.current) return
+    verifyingRef.current = true
     setError(false)
-    const verify =
-      method === "totp"
-        ? authClient.twoFactor.verifyTotp({ code: value })
-        : authClient.twoFactor.verifyOtp({ code: value })
-    const { error: verifyError } = await verify
-    if (verifyError) {
-      setCode("")
-      setError(true)
-      return
+    try {
+      const verify =
+        method === "totp"
+          ? authClient.twoFactor.verifyTotp({ code: value })
+          : authClient.twoFactor.verifyOtp({ code: value })
+      const { error: verifyError } = await verify
+      if (verifyError) {
+        setCode("")
+        setError(true)
+        return
+      }
+      window.localStorage.setItem(METHOD_HINT_KEY, method)
+      onVerified()
+    } finally {
+      verifyingRef.current = false
     }
-    window.localStorage.setItem(METHOD_HINT_KEY, method)
-    onVerified()
   }
 
   async function onBackupSubmit(e: FormEvent) {
