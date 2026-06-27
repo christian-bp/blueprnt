@@ -21,8 +21,8 @@ import { useTranslations } from "next-intl"
 import QRCode from "qrcode"
 import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
+import { AuthShell } from "@/components/auth/auth-shell"
 import { HelpMorphButton } from "@/components/help-morph-button"
-import { Logo } from "@/components/logo"
 import { PasswordInput } from "@/components/password-input"
 import { SubmitButton } from "@/components/submit-button"
 import { authClient } from "@/lib/auth-client"
@@ -33,18 +33,6 @@ import {
 
 type Method = "totp" | "email"
 type Step = "choose" | "password" | "confirm"
-
-function Shell({ children }: { children: React.ReactNode }) {
-  const t = useTranslations("dashboard")
-  return (
-    <main className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="flex w-full max-w-sm flex-col gap-8">
-        <Logo label={t("title")} className="h-10 self-center text-brand" />
-        {children}
-      </div>
-    </main>
-  )
-}
 
 export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
   const t = useTranslations("dashboard.twoFactorSetup")
@@ -107,7 +95,7 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
 
   if (step === "choose") {
     return (
-      <Shell>
+      <AuthShell>
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-center gap-1.5">
             <h1 className="text-center font-medium text-lg">{t("heading")}</h1>
@@ -140,13 +128,13 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
           ))}
           <Button onClick={() => setStep("password")}>{t("continue")}</Button>
         </div>
-      </Shell>
+      </AuthShell>
     )
   }
 
   if (step === "password") {
     return (
-      <Shell>
+      <AuthShell>
         <div className="flex flex-col gap-4">
           <h1 className="text-center font-medium text-lg">
             {t("password.heading")}
@@ -188,13 +176,13 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
             </form>
           </Form>
         </div>
-      </Shell>
+      </AuthShell>
     )
   }
 
   // step === "confirm"
   return (
-    <Shell>
+    <AuthShell>
       <div className="flex flex-col items-center gap-4">
         <h1 className="text-center font-medium text-lg">
           {t(method === "totp" ? "totp.heading" : "email.heading")}
@@ -246,6 +234,6 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
           {t("changeMethod")}
         </Button>
       </div>
-    </Shell>
+    </AuthShell>
   )
 }

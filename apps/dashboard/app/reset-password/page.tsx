@@ -2,13 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
-import {
   Form,
   FormControl,
   FormField,
@@ -20,7 +13,7 @@ import { useTranslations } from "next-intl"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
-import { Logo } from "@/components/logo"
+import { AuthShell } from "@/components/auth/auth-shell"
 import { PasswordInput } from "@/components/password-input"
 import { SubmitButton } from "@/components/submit-button"
 import {
@@ -43,7 +36,6 @@ function isPasswordCompromised(error: unknown): boolean {
 
 function ResetPasswordForm() {
   const t = useTranslations("dashboard.auth.resetPassword")
-  const tApp = useTranslations("dashboard")
   const tv = useTranslations("dashboard.validation")
   usePageTitle(t("title"))
   const router = useRouter()
@@ -77,58 +69,50 @@ function ResetPasswordForm() {
   }
 
   return (
-    <main className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="flex w-full max-w-sm flex-col gap-8">
-        <Logo label={tApp("title")} className="h-10 self-center text-brand" />
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("title")}</CardTitle>
-            <CardDescription>{t("description")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {token === null ? (
-              <p role="alert" className="text-destructive text-sm">
-                {t("missingToken")}
-              </p>
-            ) : (
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-6"
-                >
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t("passwordLabel")}</FormLabel>
-                        <FormControl>
-                          <PasswordInput {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {error && (
-                    <p role="alert" className="text-destructive text-sm">
-                      {t(error === "compromised" ? "compromised" : "error")}
-                    </p>
-                  )}
-                  <SubmitButton
-                    type="submit"
-                    className="w-full"
-                    isSubmitting={form.formState.isSubmitting}
-                    disabled={!form.formState.isValid}
-                  >
-                    {t("cta")}
-                  </SubmitButton>
-                </form>
-              </Form>
-            )}
-          </CardContent>
-        </Card>
+    <AuthShell>
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2 text-center">
+          <h1 className="font-semibold text-xl">{t("title")}</h1>
+          <p className="text-muted-foreground text-sm">{t("description")}</p>
+        </div>
+        {token === null ? (
+          <p role="alert" className="text-destructive text-sm">
+            {t("missingToken")}
+          </p>
+        ) : (
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("passwordLabel")}</FormLabel>
+                    <FormControl>
+                      <PasswordInput {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {error && (
+                <p role="alert" className="text-destructive text-sm">
+                  {t(error === "compromised" ? "compromised" : "error")}
+                </p>
+              )}
+              <SubmitButton
+                type="submit"
+                className="w-full"
+                isSubmitting={form.formState.isSubmitting}
+                disabled={!form.formState.isValid}
+              >
+                {t("cta")}
+              </SubmitButton>
+            </form>
+          </Form>
+        )}
       </div>
-    </main>
+    </AuthShell>
   )
 }
 

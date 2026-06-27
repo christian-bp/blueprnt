@@ -2,13 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
-import {
   Form,
   FormControl,
   FormField,
@@ -69,62 +62,62 @@ export function EmailPasswordForm(props: {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("signIn.title")}</CardTitle>
-        <CardDescription>{t("signIn.description")}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("email")}</FormLabel>
-                  <FormControl>
-                    <Input type="email" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("password")}</FormLabel>
-                  <FormControl>
-                    <PasswordInput {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Link
-              href="/forgot-password"
-              className="text-muted-foreground text-sm underline-offset-4 hover:underline"
-            >
-              {t("forgotPasswordLink")}
-            </Link>
-            {error ? (
-              <p role="alert" className="text-destructive text-sm">
-                {error === "rateLimited" ? t("rateLimited") : t("error")}
-              </p>
-            ) : null}
-            <SubmitButton
-              type="submit"
-              className="w-full"
-              isSubmitting={form.formState.isSubmitting}
-              disabled={!form.formState.isValid}
-            >
-              {t("signIn.cta")}
-            </SubmitButton>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-2 text-center">
+        <h1 className="font-semibold text-xl">{t("signIn.title")}</h1>
+        <p className="text-muted-foreground text-sm">
+          {t("signIn.description")}
+        </p>
+      </div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("email")}</FormLabel>
+                <FormControl>
+                  <Input type="email" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("password")}</FormLabel>
+                <FormControl>
+                  <PasswordInput {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Link
+            href="/forgot-password"
+            className="text-muted-foreground text-sm underline-offset-4 hover:underline"
+          >
+            {t("forgotPasswordLink")}
+          </Link>
+          {error ? (
+            <p role="alert" className="text-destructive text-sm">
+              {error === "rateLimited" ? t("rateLimited") : t("error")}
+            </p>
+          ) : null}
+          <SubmitButton
+            type="submit"
+            className="w-full"
+            isSubmitting={form.formState.isSubmitting}
+            disabled={!form.formState.isValid}
+          >
+            {t("signIn.cta")}
+          </SubmitButton>
+        </form>
+      </Form>
+    </div>
   )
 }
