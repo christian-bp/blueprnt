@@ -75,11 +75,11 @@ export function EmailPasswordForm(props: {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="justify-center">{t("email")}</FormLabel>
+                <FormLabel>{t("email")}</FormLabel>
                 <FormControl>
-                  <Input type="email" className="text-center" {...field} />
+                  <Input type="email" {...field} />
                 </FormControl>
-                <FormMessage className="text-center" />
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -88,24 +88,26 @@ export function EmailPasswordForm(props: {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="justify-center">
-                  {t("password")}
-                </FormLabel>
+                {/* Forgot-password link sits inline with the label, pushed to
+                    the right (the shadcn login layout). */}
+                <div className="flex items-center">
+                  <FormLabel>{t("password")}</FormLabel>
+                  <Link
+                    href="/forgot-password"
+                    className="ml-auto text-sm underline-offset-4 hover:underline"
+                  >
+                    {t("forgotPasswordLink")}
+                  </Link>
+                </div>
                 <FormControl>
-                  <PasswordInput className="text-center" {...field} />
+                  <PasswordInput {...field} />
                 </FormControl>
-                <FormMessage className="text-center" />
+                <FormMessage />
               </FormItem>
             )}
           />
-          <Link
-            href="/forgot-password"
-            className="block text-center text-muted-foreground text-sm underline-offset-4 hover:underline"
-          >
-            {t("forgotPasswordLink")}
-          </Link>
           {error ? (
-            <p role="alert" className="text-center text-destructive text-sm">
+            <p role="alert" className="text-destructive text-sm">
               {error === "rateLimited" ? t("rateLimited") : t("error")}
             </p>
           ) : null}

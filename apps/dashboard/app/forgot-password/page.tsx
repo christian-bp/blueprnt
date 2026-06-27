@@ -59,7 +59,7 @@ export default function ForgotPasswordPage() {
       <div className="flex flex-col gap-6">
         <AuthHeading title={t("title")} description={t("description")} />
         {submitted ? (
-          <div className="space-y-6 text-center">
+          <div className="space-y-6">
             <p className="text-muted-foreground text-sm" role="status">
               {t("confirmation")}
             </p>
@@ -78,13 +78,11 @@ export default function ForgotPasswordPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="justify-center">
-                      {tApp("auth.email")}
-                    </FormLabel>
+                    <FormLabel>{tApp("auth.email")}</FormLabel>
                     <FormControl>
-                      <Input type="email" className="text-center" {...field} />
+                      <Input type="email" {...field} />
                     </FormControl>
-                    <FormMessage className="text-center" />
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -98,7 +96,7 @@ export default function ForgotPasswordPage() {
               </SubmitButton>
               <Link
                 href="/"
-                className="block text-center text-muted-foreground text-sm underline-offset-4 hover:underline"
+                className="block text-muted-foreground text-sm underline-offset-4 hover:underline"
               >
                 {t("backToSignIn")}
               </Link>

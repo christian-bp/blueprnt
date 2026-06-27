@@ -74,7 +74,7 @@ function ResetPasswordForm() {
       <div className="flex flex-col gap-6">
         <AuthHeading title={t("title")} description={t("description")} />
         {token === null ? (
-          <p role="alert" className="text-center text-destructive text-sm">
+          <p role="alert" className="text-destructive text-sm">
             {t("missingToken")}
           </p>
         ) : (
@@ -85,21 +85,16 @@ function ResetPasswordForm() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="justify-center">
-                      {t("passwordLabel")}
-                    </FormLabel>
+                    <FormLabel>{t("passwordLabel")}</FormLabel>
                     <FormControl>
-                      <PasswordInput className="text-center" {...field} />
+                      <PasswordInput {...field} />
                     </FormControl>
-                    <FormMessage className="text-center" />
+                    <FormMessage />
                   </FormItem>
                 )}
               />
               {error && (
-                <p
-                  role="alert"
-                  className="text-center text-destructive text-sm"
-                >
+                <p role="alert" className="text-destructive text-sm">
                   {t(error === "compromised" ? "compromised" : "error")}
                 </p>
               )}
