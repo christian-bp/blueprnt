@@ -471,6 +471,12 @@
         "useAuthenticator": "Käytä todennussovellusta sen sijaan",
         "resend": "Etkö saanut koodia? Lähetä uudelleen",
         "error": "Koodi ei toiminut. Yritä uudelleen."
+      },
+      "brand": {
+        "tagline": "Työarkkitehtuuri, joka luo arvoa.",
+        "value1": "Arvioi rooleja, älä ihmisiä.",
+        "value2": "Palkkapäätökset, jotka voit perustella.",
+        "value3": "Rakennettu EU:n palkka-avoimuutta varten."
       }
     },
     "twoFactorSetup": {

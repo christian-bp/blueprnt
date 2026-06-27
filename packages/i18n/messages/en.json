@@ -471,6 +471,12 @@
         "useAuthenticator": "Use your authenticator app instead",
         "resend": "Didn't receive it? Resend",
         "error": "That code didn't work. Try again."
+      },
+      "brand": {
+        "tagline": "The job architecture that creates value.",
+        "value1": "Evaluate roles, not people.",
+        "value2": "Pay decisions you can defend.",
+        "value3": "Built for EU pay transparency."
       }
     },
     "twoFactorSetup": {
