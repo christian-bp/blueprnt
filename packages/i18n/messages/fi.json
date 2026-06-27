@@ -462,6 +462,7 @@
       },
       "error": "Jokin meni pieleen. Yritä uudelleen.",
       "rateLimited": "Liian monta kirjautumisyritystä. Odota hetki ja yritä uudelleen.",
+      "invalidCredentials": "Virheellinen sähköposti tai salasana.",
       "twoFactor": {
         "title": "Vahvista henkilöllisyytesi",
         "totpPrompt": "Anna 6-numeroinen koodi todennussovelluksestasi.",

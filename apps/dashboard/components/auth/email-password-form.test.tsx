@@ -125,6 +125,28 @@ describe("EmailPasswordForm", () => {
     })
   })
 
+  it("shows the invalid-credentials message on a 401", async () => {
+    const onSubmit = vi.fn(async () => {
+      throw Object.assign(new Error("unauthorized"), {
+        status: 401,
+        code: "INVALID_EMAIL_OR_PASSWORD",
+      })
+    })
+    renderForm(onSubmit)
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "user@example.com" },
+    })
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "wrong-password" },
+    })
+    submitForm()
+    await waitFor(() => {
+      expect(
+        screen.getByText(en.dashboard.auth.invalidCredentials)
+      ).toBeDefined()
+    })
+  })
+
   it("shows the generic error for a non-rate-limit failure", async () => {
     const onSubmit = vi.fn(async () => {
       throw new Error("nope")

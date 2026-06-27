@@ -31,6 +31,25 @@ function isRateLimitError(error: unknown): boolean {
   )
 }
 
+// Better Auth rejects bad credentials with HTTP 401 and the code
+// INVALID_EMAIL_OR_PASSWORD (the same code for a wrong password and an unknown
+// email, so the message stays enumeration-safe). Surface a credentials message
+// rather than the generic "something went wrong".
+function isInvalidCredentials(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) return false
+  const e = error as { code?: unknown; status?: unknown }
+  return e.code === "INVALID_EMAIL_OR_PASSWORD" || e.status === 401
+}
+
+// Maps a sign-in failure to its message key under dashboard.auth.
+function signInErrorKey(
+  error: unknown
+): "error" | "rateLimited" | "invalidCredentials" {
+  if (isRateLimitError(error)) return "rateLimited"
+  if (isInvalidCredentials(error)) return "invalidCredentials"
+  return "error"
+}
+
 export interface EmailPasswordValues {
   email: string
   password: string
@@ -44,7 +63,9 @@ export function EmailPasswordForm(props: {
 }) {
   const t = useTranslations("dashboard.auth")
   const tv = useTranslations("dashboard.validation")
-  const [error, setError] = useState<"generic" | "rateLimited" | null>(null)
+  const [error, setError] = useState<
+    "error" | "rateLimited" | "invalidCredentials" | null
+  >(null)
 
   const schema = useMemo(() => makeSignInSchema(tv), [tv])
   const form = useForm<SignInValues>({
@@ -58,7 +79,7 @@ export function EmailPasswordForm(props: {
     try {
       await props.onSubmit(values)
     } catch (e) {
-      setError(isRateLimitError(e) ? "rateLimited" : "generic")
+      setError(signInErrorKey(e))
     }
   }
 
@@ -108,7 +129,7 @@ export function EmailPasswordForm(props: {
           />
           {error ? (
             <p role="alert" className="text-destructive text-sm">
-              {error === "rateLimited" ? t("rateLimited") : t("error")}
+              {t(error)}
             </p>
           ) : null}
           <SubmitButton

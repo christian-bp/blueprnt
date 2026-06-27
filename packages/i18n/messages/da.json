@@ -462,6 +462,7 @@
       },
       "error": "Noget gik galt. Prøv igen.",
       "rateLimited": "For mange loginforsøg. Vent et minut, og prøv igen.",
+      "invalidCredentials": "Forkert e-mailadresse eller adgangskode.",
       "twoFactor": {
         "title": "Bekræft, at det er dig",
         "totpPrompt": "Indtast den 6-cifrede kode fra din godkendelsesapp.",

@@ -462,6 +462,7 @@
       },
       "error": "Något gick fel. Försök igen.",
       "rateLimited": "För många inloggningsförsök. Vänta en minut och försök igen.",
+      "invalidCredentials": "Fel e-postadress eller lösenord.",
       "twoFactor": {
         "title": "Verifiera att det är du",
         "totpPrompt": "Ange den 6-siffriga koden från din autentiseringsapp.",

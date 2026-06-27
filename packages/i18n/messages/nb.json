@@ -462,6 +462,7 @@
       },
       "error": "Noe gikk galt. Prøv igjen.",
       "rateLimited": "For mange innloggingsforsøk. Vent ett minutt og prøv igjen.",
+      "invalidCredentials": "Feil e-postadresse eller passord.",
       "twoFactor": {
         "title": "Bekreft at det er deg",
         "totpPrompt": "Skriv inn den 6-sifrede koden fra autentiseringsappen.",
