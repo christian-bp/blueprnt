@@ -740,7 +740,9 @@
       "contributionLabel": "What do the bars and percentages show?",
       "contributionBody": "The percentage is each criterion's share of this role's total weighting (your rating times the criterion's weight in the model), so the criteria add up to 100%. The bars are scaled to the biggest contributor, so the top one fills the row.",
       "twoFactorLabel": "What is two-step verification?",
-      "twoFactorBody": "Two-step verification adds a second check when you sign in, on top of your password: a code from an authenticator app or sent to your email. A stolen password alone then can't open your account. It is required for everyone on blueprnt."
+      "twoFactorBody": "Two-step verification adds a second check when you sign in, on top of your password: a code from an authenticator app or sent to your email. A stolen password alone then can't open your account. It is required for everyone on blueprnt.",
+      "changeEmailLabel": "How does changing your email work?",
+      "changeEmailBody": "Changing your email is a two-step process to keep your account secure. First, a confirmation link goes to your current address so only you can authorise the change. Then a verification link goes to your new address to confirm you own it. The change only takes effect once both links are clicked."
     },
     "admin": {
       "tabs": {
@@ -995,6 +997,19 @@
         "saveName": "Save name",
         "nameSaved": "Name saved.",
         "error": "Could not save your name. Please try again."
+      },
+      "email": {
+        "currentLabel": "Current email",
+        "newLabel": "New email address",
+        "change": "Change email",
+        "confirmationTitle": "Check your inbox",
+        "confirmationBody": "A confirmation link has been sent to your current email address. Click it to authorise the change, then click the verification link sent to your new address to complete it.",
+        "error": "Could not request the email change. Please try again.",
+        "verifiedTitle": "Email verified",
+        "verifiedBody": "Your new email address has been verified. You can now sign in with it.",
+        "invalidTitle": "Link invalid or expired",
+        "invalidBody": "This verification link is no longer valid. Please request a new email change from your account settings.",
+        "backToProfile": "Back to account settings"
       }
     }
   },

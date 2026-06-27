@@ -740,7 +740,9 @@
       "contributionLabel": "Vad visar staplarna och procenten?",
       "contributionBody": "Procenten är varje kriteriums andel av rollens totala viktning (din bedömning gånger kriteriets vikt i modellen), så kriterierna summerar till 100 %. Staplarna skalas efter det största bidraget, så den översta fyller raden.",
       "twoFactorLabel": "Vad är tvåstegsverifiering?",
-      "twoFactorBody": "Tvåstegsverifiering lägger till en andra kontroll vid inloggning, utöver ditt lösenord: en kod från en autentiseringsapp eller skickad till din e-post. Ett stulet lösenord ensamt kan då inte öppna ditt konto. Det krävs för alla på blueprnt."
+      "twoFactorBody": "Tvåstegsverifiering lägger till en andra kontroll vid inloggning, utöver ditt lösenord: en kod från en autentiseringsapp eller skickad till din e-post. Ett stulet lösenord ensamt kan då inte öppna ditt konto. Det krävs för alla på blueprnt.",
+      "changeEmailLabel": "Hur fungerar e-postbyte?",
+      "changeEmailBody": "Att byta e-post är en tvåstegsprocess för att skydda ditt konto. Först skickas en bekräftelselänk till din nuvarande adress så att bara du kan godkänna bytet. Sedan skickas en verifieringslänk till din nya adress för att bekräfta att du äger den. Bytet träder i kraft först när båda länkarna har klickats."
     },
     "admin": {
       "tabs": {
@@ -995,6 +997,19 @@
         "saveName": "Spara namn",
         "nameSaved": "Namn sparat.",
         "error": "Det gick inte att spara ditt namn. Försök igen."
+      },
+      "email": {
+        "currentLabel": "Nuvarande e-post",
+        "newLabel": "Ny e-postadress",
+        "change": "Byt e-post",
+        "confirmationTitle": "Kolla din inkorg",
+        "confirmationBody": "En bekräftelselänk har skickats till din nuvarande e-postadress. Klicka på den för att godkänna bytet, och klicka sedan på verifieringslänken som skickats till din nya adress för att slutföra det.",
+        "error": "Det gick inte att begära e-postbytet. Försök igen.",
+        "verifiedTitle": "E-post verifierad",
+        "verifiedBody": "Din nya e-postadress har verifierats. Du kan nu logga in med den.",
+        "invalidTitle": "Länken är ogiltig eller har gått ut",
+        "invalidBody": "Den här verifieringslänken är inte längre giltig. Begär ett nytt e-postbyte från dina kontoinställningar.",
+        "backToProfile": "Tillbaka till kontoinställningar"
       }
     }
   },

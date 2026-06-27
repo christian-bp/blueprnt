@@ -740,7 +740,9 @@
       "contributionLabel": "Hva viser søylene og prosentene?",
       "contributionBody": "Prosenten er hvert kriteriums andel av rollens totale vekting (din vurdering ganger kriteriets vekt i modellen), så kriteriene summerer til 100 %. Søylene skaleres etter det største bidraget, så den øverste fyller raden.",
       "twoFactorLabel": "Hva er tostegsbekreftelse?",
-      "twoFactorBody": "Tostegsbekreftelse legger til en ekstra kontroll når du logger inn, i tillegg til passordet: en kode fra en autentiseringsapp eller sendt til e-posten din. Et stjålet passord alene kan da ikke åpne kontoen din. Det kreves for alle på blueprnt."
+      "twoFactorBody": "Tostegsbekreftelse legger til en ekstra kontroll når du logger inn, i tillegg til passordet: en kode fra en autentiseringsapp eller sendt til e-posten din. Et stjålet passord alene kan da ikke åpne kontoen din. Det kreves for alle på blueprnt.",
+      "changeEmailLabel": "Hvordan fungerer e-postbytte?",
+      "changeEmailBody": "Det er en tostegs prosess for å bytte e-post og holde kontoen sikker. Først sendes en bekreftelseslenke til din nåværende adresse slik at bare du kan godkjenne endringen. Deretter sendes en verifiseringslenke til din nye adresse for å bekrefte at du eier den. Endringen trer i kraft først når begge lenkene er klikket."
     },
     "admin": {
       "tabs": {
@@ -995,6 +997,19 @@
         "saveName": "Lagre navn",
         "nameSaved": "Navn lagret.",
         "error": "Kunne ikke lagre navnet ditt. Prøv igjen."
+      },
+      "email": {
+        "currentLabel": "Gjeldende e-post",
+        "newLabel": "Ny e-postadresse",
+        "change": "Bytt e-post",
+        "confirmationTitle": "Sjekk innboksen din",
+        "confirmationBody": "En bekreftelseslenke er sendt til din gjeldende e-postadresse. Klikk den for å godkjenne endringen, og klikk deretter verifiseringslenken sendt til din nye adresse for å fullføre.",
+        "error": "Kunne ikke be om e-postbytte. Prøv igjen.",
+        "verifiedTitle": "E-post verifisert",
+        "verifiedBody": "Din nye e-postadresse er verifisert. Du kan nå logge inn med den.",
+        "invalidTitle": "Lenken er ugyldig eller utløpt",
+        "invalidBody": "Denne verifiseringslenken er ikke lenger gyldig. Be om et nytt e-postbytte fra kontoinnstillingene dine.",
+        "backToProfile": "Tilbake til kontoinnstillinger"
       }
     }
   },

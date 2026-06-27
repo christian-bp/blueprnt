@@ -740,7 +740,9 @@
       "contributionLabel": "Hvad viser søjlerne og procenterne?",
       "contributionBody": "Procenten er hvert kriteriums andel af rollens samlede vægtning (din vurdering gange kriteriets vægt i modellen), så kriterierne summerer til 100 %. Søjlerne skaleres efter det største bidrag, så den øverste fylder rækken.",
       "twoFactorLabel": "Hvad er totrinsbekræftelse?",
-      "twoFactorBody": "Totrinsbekræftelse tilføjer et ekstra tjek, når du logger ind, ud over din adgangskode: en kode fra en godkendelsesapp eller sendt til din e-mail. En stjålet adgangskode alene kan så ikke åbne din konto. Det kræves for alle på blueprnt."
+      "twoFactorBody": "Totrinsbekræftelse tilføjer et ekstra tjek, når du logger ind, ud over din adgangskode: en kode fra en godkendelsesapp eller sendt til din e-mail. En stjålet adgangskode alene kan så ikke åbne din konto. Det kræves for alle på blueprnt.",
+      "changeEmailLabel": "Hvordan fungerer e-mailskift?",
+      "changeEmailBody": "At skifte e-mail er en totrinsproces for at holde din konto sikker. Først sendes et bekræftelseslink til din nuværende adresse, så kun du kan godkende ændringen. Derefter sendes et verificeringslink til din nye adresse for at bekræfte, at du ejer den. Ændringen træder kun i kraft, når begge links er klikket."
     },
     "admin": {
       "tabs": {
@@ -995,6 +997,19 @@
         "saveName": "Gem navn",
         "nameSaved": "Navn gemt.",
         "error": "Kunne ikke gemme dit navn. Prøv igen."
+      },
+      "email": {
+        "currentLabel": "Nuværende e-mail",
+        "newLabel": "Ny e-mailadresse",
+        "change": "Skift e-mail",
+        "confirmationTitle": "Tjek din indbakke",
+        "confirmationBody": "Et bekræftelseslink er sendt til din nuværende e-mailadresse. Klik på det for at godkende ændringen, og klik derefter på verificeringslinket sendt til din nye adresse for at fuldføre det.",
+        "error": "Kunne ikke anmode om e-mailskiftet. Prøv igen.",
+        "verifiedTitle": "E-mail verificeret",
+        "verifiedBody": "Din nye e-mailadresse er verificeret. Du kan nu logge ind med den.",
+        "invalidTitle": "Linket er ugyldigt eller udløbet",
+        "invalidBody": "Dette verificeringslink er ikke længere gyldigt. Anmod om et nyt e-mailskift fra dine kontoindstillinger.",
+        "backToProfile": "Tilbage til kontoindstillinger"
       }
     }
   },

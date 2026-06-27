@@ -740,7 +740,9 @@
       "contributionLabel": "Mitä palkit ja prosentit näyttävät?",
       "contributionBody": "Prosentti on kunkin kriteerin osuus roolin kokonaispainotuksesta (arviosi kerrottuna kriteerin painolla mallissa), joten kriteerit ovat yhteensä 100 %. Palkit skaalataan suurimman osuuden mukaan, joten ylin täyttää rivin.",
       "twoFactorLabel": "Mitä kaksivaiheinen vahvistus tarkoittaa?",
-      "twoFactorBody": "Kaksivaiheinen vahvistus lisää kirjautumiseen toisen tarkistuksen salasanan lisäksi: koodin todennussovelluksesta tai sähköpostiisi lähetettynä. Varastettu salasana yksin ei silloin avaa tiliäsi. Se vaaditaan kaikilta blueprntissä."
+      "twoFactorBody": "Kaksivaiheinen vahvistus lisää kirjautumiseen toisen tarkistuksen salasanan lisäksi: koodin todennussovelluksesta tai sähköpostiisi lähetettynä. Varastettu salasana yksin ei silloin avaa tiliäsi. Se vaaditaan kaikilta blueprntissä.",
+      "changeEmailLabel": "Miten sähköpostiosoitteen vaihto toimii?",
+      "changeEmailBody": "Sähköpostiosoitteen vaihto on kaksivaiheinen prosessi tilisi suojaamiseksi. Ensin vahvistuslinkki lähetetään nykyiseen osoitteeseesi, jotta vain sinä voit hyväksyä muutoksen. Sen jälkeen vahvistuslinkki lähetetään uuteen osoitteeseesi sen omistajuuden vahvistamiseksi. Muutos astuu voimaan vasta kun molemmat linkit on klikattu."
     },
     "admin": {
       "tabs": {
@@ -995,6 +997,19 @@
         "saveName": "Tallenna nimi",
         "nameSaved": "Nimi tallennettu.",
         "error": "Nimeä ei voitu tallentaa. Yritä uudelleen."
+      },
+      "email": {
+        "currentLabel": "Nykyinen sähköposti",
+        "newLabel": "Uusi sähköpostiosoite",
+        "change": "Vaihda sähköposti",
+        "confirmationTitle": "Tarkista saapuneet",
+        "confirmationBody": "Vahvistuslinkki on lähetetty nykyiseen sähköpostiosoitteeseesi. Klikkaa sitä hyväksyäksesi muutoksen, ja klikkaa sitten uuteen osoitteeseesi lähetettyä vahvistuslinkkiä viimeistelläksesi se.",
+        "error": "Sähköpostin vaihtoa ei voitu pyytää. Yritä uudelleen.",
+        "verifiedTitle": "Sähköposti vahvistettu",
+        "verifiedBody": "Uusi sähköpostiosoitteesi on vahvistettu. Voit nyt kirjautua sisään sillä.",
+        "invalidTitle": "Linkki on virheellinen tai vanhentunut",
+        "invalidBody": "Tämä vahvistuslinkki ei ole enää voimassa. Pyydä uutta sähköpostin vaihtoa tilisi asetuksista.",
+        "backToProfile": "Takaisin tiliasetuksiin"
       }
     }
   },
