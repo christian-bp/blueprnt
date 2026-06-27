@@ -20,6 +20,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { AuthShell } from "@/components/auth/auth-shell"
 import { SuccessCheck } from "@/components/auth/success-check"
+import { CopyButton } from "@/components/copy-button"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { OptionCard } from "@/components/option-card"
 import { PasswordInput } from "@/components/password-input"
@@ -51,10 +52,9 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
   const [pwError, setPwError] = useState(false)
   // Backup codes are returned once by enable(); shown on the completion screen
   // for the user to save. savedAck gates the finish so they cannot skip past
-  // without acknowledging. copied is transient copy-button feedback.
+  // without acknowledging.
   const [backupCodes, setBackupCodes] = useState<string[]>([])
   const [savedAck, setSavedAck] = useState(false)
-  const [copied, setCopied] = useState(false)
   const [finishing, setFinishing] = useState(false)
   const [finishError, setFinishError] = useState(false)
 
@@ -123,16 +123,6 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
     } catch {
       setFinishing(false)
       setFinishError(true)
-    }
-  }
-
-  async function onCopyBackup() {
-    try {
-      await navigator.clipboard.writeText(backupCodes.join("\n"))
-      setCopied(true)
-    } catch {
-      // Clipboard can be unavailable (insecure context / denied). The codes are
-      // visible on screen to copy by hand, so just skip the confirmation.
     }
   }
 
@@ -237,14 +227,14 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
             <div className="w-full rounded-lg border p-4 text-left">
               <div className="flex items-center justify-between gap-2">
                 <h2 className="font-medium text-sm">{t("backup.heading")}</h2>
-                <Button
-                  type="button"
+                <CopyButton
+                  value={backupCodes.join("\n")}
                   variant="ghost"
                   size="sm"
-                  onClick={onCopyBackup}
+                  copiedLabel={t("backup.copied")}
                 >
-                  {copied ? t("backup.copied") : t("backup.copy")}
-                </Button>
+                  {t("backup.copy")}
+                </CopyButton>
               </div>
               <p className="mt-1 text-muted-foreground text-sm">
                 {t("backup.intro")}
