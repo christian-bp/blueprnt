@@ -6,13 +6,14 @@ import { useMutation, useQuery } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import { type ReactNode, useState } from "react"
+import { AccountMenu } from "@/components/account-menu"
+import { AuthShell } from "@/components/auth/auth-shell"
 import { OnboardingDots } from "@/components/onboarding/onboarding-dots"
 import { CountryScreen } from "@/components/onboarding/country-screen"
 import { EnsureDefaultModel } from "@/components/onboarding/ensure-default-model"
 import { FamiliesStep } from "@/components/onboarding/families-step"
 import { IndustryScreen } from "@/components/onboarding/industry-screen"
 import { NameScreen } from "@/components/onboarding/name-screen"
-import { OnboardingHeader } from "@/components/onboarding/onboarding-header"
 
 export interface OnboardingStatus {
   organization: { orgId: string; name: string; role: string } | null
@@ -176,23 +177,19 @@ export function OnboardingWizard({
   // Members who are not admins cannot run setup mutations; tell them to wait.
   if (status.organization !== null && status.organization.role !== "admin") {
     return (
-      <>
-        <OnboardingHeader />
-        <main className="flex min-h-[calc(100svh-3.5rem)] items-center justify-center p-6">
-          <p className="text-muted-foreground">{t("waitingForAdmin")}</p>
-        </main>
-      </>
+      <AuthShell headerRight={<AccountMenu />}>
+        <p className="text-center text-muted-foreground">
+          {t("waitingForAdmin")}
+        </p>
+      </AuthShell>
     )
   }
 
   if (derived === -1) {
     return (
-      <>
-        <OnboardingHeader />
-        <main className="flex min-h-[calc(100svh-3.5rem)] items-center justify-center p-6">
-          <Spinner aria-label={t("loading")} />
-        </main>
-      </>
+      <AuthShell headerRight={<AccountMenu />}>
+        <Spinner aria-label={t("loading")} />
+      </AuthShell>
     )
   }
 
@@ -225,46 +222,42 @@ export function OnboardingWizard({
   }
 
   return (
-    <>
-      <OnboardingHeader />
-      <main className="flex min-h-[calc(100svh-3.5rem)] flex-col">
-        <div className="flex flex-1 flex-col justify-center">
-          <div className="mx-auto w-full max-w-2xl p-6 md:p-10">
-            {/* Step crossfade (the polyform onboarding pattern): the old
-                screen fades out before the new one fades in. initial={false}
-                keeps the very first screen from fading on page load; its
-                heading still plays the TextEffect reveal. */}
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={step.key}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                {step.render(ctx)}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
-        <div className="pb-8">
-          <OnboardingDots
-            steps={STEPS.map(({ key, dotLabelKey }) => ({
-              key,
-              label: t(dotLabelKey),
-            }))}
-            activeIndex={current}
-            maxReachedIndex={frontier}
-            navLabel={t("dots.navLabel")}
-            onSelect={(index) => {
-              setBackTo(index < frontier ? index : null)
-              // A forward dot click is also an acknowledgement (the dots
-              // only offer indices up to the frontier).
-              setAcked((prev) => Math.max(prev ?? 0, index))
-            }}
-          />
-        </div>
-      </main>
-    </>
+    <AuthShell
+      headerRight={<AccountMenu />}
+      contentClassName="max-w-xl"
+      footer={
+        <OnboardingDots
+          steps={STEPS.map(({ key, dotLabelKey }) => ({
+            key,
+            label: t(dotLabelKey),
+          }))}
+          activeIndex={current}
+          maxReachedIndex={frontier}
+          navLabel={t("dots.navLabel")}
+          onSelect={(index) => {
+            setBackTo(index < frontier ? index : null)
+            // A forward dot click is also an acknowledgement (the dots
+            // only offer indices up to the frontier).
+            setAcked((prev) => Math.max(prev ?? 0, index))
+          }}
+        />
+      }
+    >
+      {/* Step crossfade (the polyform onboarding pattern): the old
+          screen fades out before the new one fades in. initial={false}
+          keeps the very first screen from fading on page load; its
+          heading still plays the TextEffect reveal. */}
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={step.key}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {step.render(ctx)}
+        </motion.div>
+      </AnimatePresence>
+    </AuthShell>
   )
 }

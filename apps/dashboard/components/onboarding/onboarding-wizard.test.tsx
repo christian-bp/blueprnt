@@ -21,10 +21,24 @@ vi.mock("convex/react", () => ({
   useMutation: () => completeOnboardingMock,
 }))
 
-// Each screen is mocked as a marker plus its onAdvance callback, so the tests
-// assert which screen the machine selected without pulling in real screens.
-vi.mock("@/components/onboarding/onboarding-header", () => ({
-  OnboardingHeader: () => <div data-testid="header" />,
+// The shell renders children, headerRight, and footer so that step/dots
+// assertions resolve without needing the real split-screen layout.
+vi.mock("@/components/auth/auth-shell", () => ({
+  AuthShell: (p: {
+    children: ReactNode
+    headerRight?: ReactNode
+    footer?: ReactNode
+  }) => (
+    <div>
+      {p.headerRight}
+      {p.children}
+      {p.footer}
+    </div>
+  ),
+}))
+
+vi.mock("@/components/account-menu", () => ({
+  AccountMenu: () => null,
 }))
 
 vi.mock("@/components/onboarding/name-screen", () => ({
