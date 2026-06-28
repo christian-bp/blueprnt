@@ -129,9 +129,6 @@ export function DeleteAccountSection() {
     setErrorState(null)
     try {
       await deleteMyAccount({ password: values.password })
-      // Success: redirect unmounts the dialog.
-      await authClient.signOut()
-      router.push("/")
     } catch (error) {
       if (isLastAdminError(error)) {
         // Race condition: close the dialog and show the support note on the card.
@@ -142,7 +139,12 @@ export function DeleteAccountSection() {
       } else {
         setErrorState("generic")
       }
+      return
     }
+    // Account deleted. Best-effort sign-out: the session is already invalidated
+    // server-side so a signOut failure must not block the redirect.
+    await authClient.signOut().catch(() => {})
+    router.push("/")
   }
 
   // When the race condition produces a lastAdmin error on submit, show the note

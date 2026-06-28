@@ -288,6 +288,32 @@ describe("DeleteAccountSection", () => {
     })
   })
 
+  it("still redirects to '/' even when signOut throws after a successful deletion", async () => {
+    signOutMock.mockRejectedValueOnce(new Error("network error"))
+    renderSection()
+    const dialog = openDialog()
+    const confirmLabel = t.confirmLabel.replace("{email}", EMAIL)
+
+    fireEvent.change(within(dialog).getByLabelText(confirmLabel), {
+      target: { value: EMAIL },
+    })
+    fireEvent.change(within(dialog).getByLabelText(t.passwordLabel), {
+      target: { value: "correct-pass" },
+    })
+
+    await waitFor(() => {
+      expect(submitButton(dialog).disabled).toBe(false)
+    })
+
+    fireEvent.click(submitButton(dialog))
+
+    await waitFor(() => {
+      expect(pushMock).toHaveBeenCalledWith("/")
+    })
+    // Must not show the generic error even though signOut threw.
+    expect(screen.queryByRole("alert")).toBeNull()
+  })
+
   // --- Error cases ---
 
   it("shows the wrong-password error inside the dialog on invalidInput and does not sign out", async () => {
