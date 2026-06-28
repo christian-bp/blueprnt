@@ -4,14 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -59,6 +57,8 @@ export function TwoFactorSection() {
   const account = useQuery(api.accounts.account.getMyAccount, {})
   const clearMfaConfirmed = useMutation(api.accounts.account.clearMfaConfirmed)
 
+  const [changeMethodOpen, setChangeMethodOpen] = useState(false)
+  const [changeMethodError, setChangeMethodError] = useState(false)
   const [regenerateOpen, setRegenerateOpen] = useState(false)
   const [backupCodes, setBackupCodes] = useState<string[]>([])
   const [pwError, setPwError] = useState(false)
@@ -117,13 +117,27 @@ export function TwoFactorSection() {
         {/* Change method + regenerate actions share a row with a gap (they are
             inline-flex, so the CardContent space-y does not separate them). */}
         <div className="flex flex-wrap gap-2">
-          {/* Change method button with AlertDialog confirmation */}
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="outline" size="sm">
-                {t("changeMethod")}
-              </Button>
-            </AlertDialogTrigger>
+          {/* Change method: controlled AlertDialog so errors can be surfaced
+              and the dialog stays open on failure. AlertDialogAction auto-closes
+              synchronously, so a plain Button is used for the confirm action
+              instead. */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setChangeMethodError(false)
+              setChangeMethodOpen(true)
+            }}
+          >
+            {t("changeMethod")}
+          </Button>
+          <AlertDialog
+            open={changeMethodOpen}
+            onOpenChange={(next) => {
+              if (!next) setChangeMethodError(false)
+              setChangeMethodOpen(next)
+            }}
+          >
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>
@@ -133,15 +147,29 @@ export function TwoFactorSection() {
                   {t("changeMethodConfirmBody")}
                 </AlertDialogDescription>
               </AlertDialogHeader>
+              {changeMethodError && (
+                <p role="alert" className="text-destructive text-sm">
+                  {t("changeMethodError")}
+                </p>
+              )}
               <AlertDialogFooter>
                 <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-                <AlertDialogAction
+                <Button
+                  variant="destructive"
                   onClick={async () => {
-                    await clearMfaConfirmed()
+                    setChangeMethodError(false)
+                    try {
+                      await clearMfaConfirmed()
+                      // On success the reactive query updates mfaMethod;
+                      // close the dialog so the setup flow takes over.
+                      setChangeMethodOpen(false)
+                    } catch {
+                      setChangeMethodError(true)
+                    }
                   }}
                 >
                   {t("changeMethodConfirmCta")}
-                </AlertDialogAction>
+                </Button>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>

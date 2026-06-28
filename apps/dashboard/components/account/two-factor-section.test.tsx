@@ -111,7 +111,7 @@ describe("TwoFactorSection", () => {
     expect(screen.getByText(t.methodNone)).toBeDefined()
   })
 
-  it("confirming the change-method dialog calls clearMfaConfirmed", async () => {
+  it("confirming the change-method dialog calls clearMfaConfirmed and closes the dialog", async () => {
     renderSection()
 
     // Open the AlertDialog
@@ -123,7 +123,7 @@ describe("TwoFactorSection", () => {
     expect(dialog).toBeDefined()
     expect(within(dialog).getByText(t.changeMethodConfirmTitle)).toBeDefined()
 
-    // Click the confirm action
+    // Click the confirm button (a plain Button, not AlertDialogAction)
     const confirmBtn = within(dialog).getByRole("button", {
       name: t.changeMethodConfirmCta,
     })
@@ -131,6 +131,10 @@ describe("TwoFactorSection", () => {
 
     await waitFor(() => {
       expect(clearMfaConfirmedMock).toHaveBeenCalledTimes(1)
+    })
+    // Dialog closes on success
+    await waitFor(() => {
+      expect(screen.queryByRole("alertdialog")).toBeNull()
     })
   })
 
@@ -148,6 +152,28 @@ describe("TwoFactorSection", () => {
       expect(screen.queryByRole("alertdialog")).toBeNull()
     })
     expect(clearMfaConfirmedMock).not.toHaveBeenCalled()
+  })
+
+  it("shows the error message and keeps the dialog open when clearMfaConfirmed fails", async () => {
+    clearMfaConfirmedMock.mockRejectedValueOnce(new Error("network failure"))
+    renderSection()
+
+    const changeBtn = screen.getByRole("button", { name: t.changeMethod })
+    fireEvent.click(changeBtn)
+
+    const dialog = screen.getByRole("alertdialog")
+    const confirmBtn = within(dialog).getByRole("button", {
+      name: t.changeMethodConfirmCta,
+    })
+    fireEvent.click(confirmBtn)
+
+    await waitFor(() => {
+      expect(within(dialog).getByRole("alert").textContent).toBe(
+        en.dashboard.account.security.twoFactor.changeMethodError
+      )
+    })
+    // Dialog stays open so the user can retry or cancel.
+    expect(screen.getByRole("alertdialog")).toBeDefined()
   })
 
   it("submitting the regenerate password calls generateBackupCodes and renders the returned codes", async () => {
