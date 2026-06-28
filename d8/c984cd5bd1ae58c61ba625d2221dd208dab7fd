@@ -1,0 +1,28 @@
+apps/dashboard/components/auth/otp-field.test.tsx
+  s_c216811bbb1bb1::t_9fe0cf4f76f80f 3,6-9
+apps/dashboard/components/auth/two-factor-setup.test.tsx
+  s_c216811bbb1bb1::t_00f93655d2b78c 11
+  s_c216811bbb1bb1::t_013275650192df 50,52
+apps/dashboard/test/otp-timers.ts
+  s_c216811bbb1bb1::t_7de1d49a56448a 1-11
+apps/dashboard/components/auth/two-factor-challenge.test.tsx
+  s_c216811bbb1bb1::t_8a78f78a261ce4 38
+  s_c216811bbb1bb1::t_6c01ce7dd0df8a 11
+  s_c216811bbb1bb1::t_d385424ae53b56 40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "d8c984cd5bd1ae58c61ba625d2221dd208dab7fd",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
