@@ -1,0 +1,178 @@
+apps/dashboard/components/organization/organization-tabs.tsx
+  s_c216811bbb1bb1::t_703e5766084ae0 1-54
+packages/backend/convex/accounts/tables.ts
+  s_c216811bbb1bb1::t_85b47034dc8f98 51-53
+apps/dashboard/app/(app)/organization/general/page.tsx
+  s_c216811bbb1bb1::t_4cd7ced3f64bc9 9
+  s_c216811bbb1bb1::t_6f3c013926351c 1-8,10-13,15-22,24-37
+  s_c216811bbb1bb1::t_f3ff0653daade1 23
+  s_c216811bbb1bb1::t_cecb991187d979 14
+apps/dashboard/app/(app)/organization/layout.tsx
+  s_c216811bbb1bb1::t_49fc2ec9d5d5f9 1-15,17-20,22
+  s_c216811bbb1bb1::t_1e69c741f3fb2e 16,21
+apps/dashboard/components/organization/invite-member-dialog.tsx
+  s_c216811bbb1bb1::t_9437cc12daf120 1-144,150-164
+  s_c216811bbb1bb1::t_91e911f127894d 145-149
+apps/dashboard/app/(app)/organization/members/page.tsx
+  s_c216811bbb1bb1::t_f85ae2ef77b148 21-30
+  s_c216811bbb1bb1::t_48e762ff6601ed 5-6,12-16,20
+  s_c216811bbb1bb1::t_5e960b1332d683 1-3,7,9-11,19,32-34
+  s_c216811bbb1bb1::t_9abd3d4771c0b6 4,17-18
+  s_c216811bbb1bb1::t_a0153363cd6c3f 8
+  s_c216811bbb1bb1::t_192b0bf3a54883 31
+apps/dashboard/components/organization/organization-profile-form.test.tsx
+  s_c216811bbb1bb1::t_91e911f127894d 73-75
+  s_c216811bbb1bb1::t_79e1440073b2c7 1-72,76-86
+packages/backend/convex/lib/functions.ts
+  s_c216811bbb1bb1::t_a998f753842f7d 147-164
+  s_c216811bbb1bb1::t_121da4afd3c467 9
+  s_c216811bbb1bb1::t_aa5a463919ec86 165
+packages/backend/convex/betterAuth/provisioning.ts
+  s_c216811bbb1bb1::t_b04363b881d2e9 187-201
+apps/dashboard/components/organization/organization-profile-form.tsx
+  s_c216811bbb1bb1::t_1836a8ccc37109 116-118
+  s_c216811bbb1bb1::t_91e911f127894d 206-208
+  s_c216811bbb1bb1::t_7d1dd869ea3da0 1-11,19-115,119-205,209-260
+  s_c216811bbb1bb1::t_048342b7c904b0 12-18
+packages/i18n/messages/da.json
+  s_c216811bbb1bb1::t_f3be2d1491aa3a 1129-1134
+  s_c216811bbb1bb1::t_fcc39d7707c30f 1128
+  s_c216811bbb1bb1::t_20a02846420680 1094-1114,1116-1127,1135-1137,1139-1161,1163-1168
+  s_c216811bbb1bb1::t_15bca608ae84e5 112
+  s_c216811bbb1bb1::t_00a06f80ba7069 1115
+  s_c216811bbb1bb1::t_5fc1b0d0d823fb 241-243
+  s_c216811bbb1bb1::t_fdf6c1ae513894 751-755
+  s_c216811bbb1bb1::t_e6f730c4e6371b 1162
+  s_c216811bbb1bb1::t_5ce46694a99bf8 1138
+  s_c216811bbb1bb1::t_b0b658597e0bae 1169
+packages/i18n/messages/fi.json
+  s_c216811bbb1bb1::t_77b3fe6c481f1f 751-755
+  s_c216811bbb1bb1::t_1c19c279c278f4 1115
+  s_c216811bbb1bb1::t_f01b7e3192ab42 1138
+  s_c216811bbb1bb1::t_c28f89f6c469dc 1162
+  s_c216811bbb1bb1::t_0f6ed7366f19ae 1094-1114,1116-1127,1135-1137,1139-1161,1163-1168
+  s_c216811bbb1bb1::t_5714a502ff4816 112
+  s_c216811bbb1bb1::t_fd8c76c6ce856a 241-243
+  s_c216811bbb1bb1::t_ddc89ddb3bd816 1129-1134
+  s_c216811bbb1bb1::t_568f53df9290b4 1128
+  s_c216811bbb1bb1::t_33d210c8add0f4 1169
+apps/dashboard/components/nav-organization.test.tsx
+  s_c216811bbb1bb1::t_33427f02c1884c 24-36
+apps/dashboard/components/organization/organization-members-section.test.tsx
+  s_c216811bbb1bb1::t_6a12c04ab52dce 1-16,34-36,42-57,61-65,73-77,79-82,84-102,104-106,111-132,150-151
+  s_c216811bbb1bb1::t_5bc10d8c28567b 17-33,37-41,66-72,78,83,103,107-110,133-149
+  s_c216811bbb1bb1::t_91e911f127894d 58-60
+apps/dashboard/components/organization/organization-logo-section.tsx
+  s_c216811bbb1bb1::t_45b1af24b67da5 1-79
+apps/dashboard/components/organization/organization-members-section.tsx
+  s_c216811bbb1bb1::t_bcdbef707705d6 1-14,16-22,31-32,34-36,51,53-58,61-65,89-91,93,100-101,103-105,107-111,113-117,119-123,141,185,207,209,216,218,287-311,339-342,344-345
+  s_c216811bbb1bb1::t_bd20c1966b4eeb 15,23-30,142,144-172,174-184,186-206,208,210,215,217,219-225,271-276,278-281,343
+  s_c216811bbb1bb1::t_5ba9064ef6c1c9 33,37-50,52,59-60,66-88,92,94-99,102,106,112,118,124-140,143,173,211-214,226-270,277,282-286,312-338
+apps/dashboard/components/app-sidebar.tsx
+  s_c216811bbb1bb1::t_2cb2ccfcb88c5d 62
+  s_c216811bbb1bb1::t_2ff3090bbda594 61
+  s_c216811bbb1bb1::t_b379be08466580 59-60
+  s_c216811bbb1bb1::t_0d2b5e72621e8d 8
+  s_c216811bbb1bb1::t_7e4982042c0e75 53-56,58,63
+  s_c216811bbb1bb1::t_ae9a51f9d700de 17
+  s_c216811bbb1bb1::t_c78fa1b412a361 80-85
+docs/go-live-checklist.md
+  s_c216811bbb1bb1::t_18ba5bb57ac242 96-107
+  s_c216811bbb1bb1::t_fb1680a3052f44 61-74
+packages/i18n/messages/nb.json
+  s_c216811bbb1bb1::t_308f37b3d7debb 241-243
+  s_c216811bbb1bb1::t_8d925b9f7e6075 1162
+  s_c216811bbb1bb1::t_7521237e2c2fb3 1128
+  s_c216811bbb1bb1::t_2ec0afc75b2cf0 112
+  s_c216811bbb1bb1::t_7dc54cdcde27ee 1115
+  s_c216811bbb1bb1::t_213b0362eb4948 1138
+  s_c216811bbb1bb1::t_2e71f48c4cf788 1094-1114,1116-1127,1135-1137,1139-1161,1163-1168
+  s_c216811bbb1bb1::t_72e876a6a8fe7f 751-755
+  s_c216811bbb1bb1::t_9390702bf63ead 1129-1134
+  s_c216811bbb1bb1::t_1aa97fa6b4464b 1169
+packages/backend/convex/accounts/organization.ts
+  s_c216811bbb1bb1::t_43905fd907121b 18-23
+  s_c216811bbb1bb1::t_98763bb2671509 3-16
+  s_c216811bbb1bb1::t_90404185bd7bee 32
+  s_c216811bbb1bb1::t_91e911f127894d 45-47,224-231
+  s_c216811bbb1bb1::t_82a99134d38552 315-406
+  s_c216811bbb1bb1::t_af96f9c055453a 285-314
+  s_c216811bbb1bb1::t_bcef39390aa1f4 44,55
+  s_c216811bbb1bb1::t_0fdb99cb8a02f2 211-223,232-284
+packages/i18n/messages/en.json
+  s_c216811bbb1bb1::t_d264f64410b934 1128
+  s_c216811bbb1bb1::t_03ae088f7d4fcd 1115
+  s_c216811bbb1bb1::t_89d49bfb27f880 1129-1134
+  s_c216811bbb1bb1::t_061499e310ec43 112
+  s_c216811bbb1bb1::t_c85e3890ffae51 751-755
+  s_c216811bbb1bb1::t_bb3093cd91bb7a 1138
+  s_c216811bbb1bb1::t_b1c155c0c64622 241-243
+  s_c216811bbb1bb1::t_41480adf52b8e3 1162
+  s_c216811bbb1bb1::t_085ce7ed47df56 1094-1114,1116-1127,1135-1137,1139-1161,1163-1168
+  s_c216811bbb1bb1::t_143d946f29187f 1169
+packages/backend/convex/accounts/organization.test.ts
+  s_c216811bbb1bb1::t_f29630c0f6742c 617-756
+  s_c216811bbb1bb1::t_f88338d88dfca3 546-616,757
+  s_c216811bbb1bb1::t_32b8bbb4bd6559 34-43
+  s_c216811bbb1bb1::t_3515182b2a64aa 445-545
+packages/i18n/messages/sv.json
+  s_c216811bbb1bb1::t_6f3b6d5f0357bf 1128
+  s_c216811bbb1bb1::t_5f76b7ac55e53f 1162
+  s_c216811bbb1bb1::t_b8b52bc565185d 751-755
+  s_c216811bbb1bb1::t_b4f0722b34efe1 112
+  s_c216811bbb1bb1::t_2366b7204db06b 1138
+  s_c216811bbb1bb1::t_461feac1e50203 1129-1134
+  s_c216811bbb1bb1::t_a483084ec02aea 1115
+  s_c216811bbb1bb1::t_375e326647b214 241-243
+  s_c216811bbb1bb1::t_887fdcfcd8cbd1 1094-1114,1116-1127,1135-1137,1139-1161,1163-1168
+  s_c216811bbb1bb1::t_95817a031e5e51 1169
+packages/backend/convex/lib/audit.ts
+  s_c216811bbb1bb1::t_21503cc2d67ed9 5-9
+  s_c216811bbb1bb1::t_7aa46107519a22 14-15
+  s_c216811bbb1bb1::t_ec85a09bf01cda 16
+apps/dashboard/components/nav-organization.tsx
+  s_c216811bbb1bb1::t_8eee7ba7782aff 48-56
+  s_c216811bbb1bb1::t_4932258776f3ec 8,10-15
+  s_c216811bbb1bb1::t_aea055061996a0 78,82-84
+  s_c216811bbb1bb1::t_940423e77a2e43 120-122
+apps/dashboard/components/organization/organization-tabs.test.tsx
+  s_c216811bbb1bb1::t_91e911f127894d 6-8
+  s_c216811bbb1bb1::t_18f955676417e6 1-5,9-28
+apps/dashboard/lib/organization-schemas.ts
+  s_c216811bbb1bb1::t_e66d902c7f6d65 1-29
+apps/dashboard/app/(app)/organization/page.tsx
+  s_c216811bbb1bb1::t_127a878b125dff 1-6
+apps/dashboard/lib/audit-labels.test.ts
+  s_c216811bbb1bb1::t_2920e903ab0699 1-40
+apps/dashboard/components/site-header.tsx
+  s_c216811bbb1bb1::t_d1f507408a271f 26
+  s_c216811bbb1bb1::t_e9941c5269d24a 50-51
+  s_c216811bbb1bb1::t_24183576d4c29c 10
+packages/backend/convex/lib/auditPayloads.ts
+  s_c216811bbb1bb1::t_3847d4e68a4e88 149
+  s_c216811bbb1bb1::t_aa12e2442b0bac 147-148
+apps/dashboard/components/organization/invite-member-dialog.test.tsx
+  s_c216811bbb1bb1::t_91e911f127894d 48-50
+  s_c216811bbb1bb1::t_3fae1b1929811a 12-15
+  s_c216811bbb1bb1::t_9dba86c521f959 1-11,16-47,51-61
+CLAUDE.md
+  s_c216811bbb1bb1::t_f4caab4ced22fc 42
+packages/backend/convex/betterAuth/_generated/component.ts
+  s_c216811bbb1bb1::t_a589bc156ff42e 1833-1839
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "7204f191e30cb780a7a9c712fcfd495da6be9cf8",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
