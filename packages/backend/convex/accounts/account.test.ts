@@ -643,29 +643,6 @@ describe("accounts.account avatar storage", () => {
     expect(result).toBeNull()
   })
 
-  it("generateAvatarUploadUrl returns a string for an authed caller", async () => {
-    const t = initConvexTest()
-    await t.run(async (ctx) => {
-      await ctx.db.insert("users", {
-        authId: "user-1",
-        name: "Alice",
-        email: "alice@acme.se",
-      })
-    })
-    const url = await t
-      .withIdentity({ subject: "user-1" })
-      .mutation(api.accounts.account.generateAvatarUploadUrl, {})
-    expect(typeof url).toBe("string")
-    expect(url.length).toBeGreaterThan(0)
-  })
-
-  it("generateAvatarUploadUrl rejects when unauthenticated", async () => {
-    const t = initConvexTest()
-    await expect(
-      t.mutation(api.accounts.account.generateAvatarUploadUrl, {})
-    ).rejects.toThrow(/errors\.notAuthenticated/)
-  })
-
   it("setMyAvatar rejects when unauthenticated", async () => {
     const t = initConvexTest()
     const storageId = await t.run((ctx) =>

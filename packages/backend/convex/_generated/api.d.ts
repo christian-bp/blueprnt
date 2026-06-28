@@ -54,6 +54,7 @@ import type * as evaluationModel_localize from "../evaluationModel/localize.js";
 import type * as evaluationModel_model from "../evaluationModel/model.js";
 import type * as evaluationModel_standardTemplate from "../evaluationModel/standardTemplate.js";
 import type * as evaluationModel_tables from "../evaluationModel/tables.js";
+import type * as files from "../files.js";
 import type * as http from "../http.js";
 import type * as lib_audit from "../lib/audit.js";
 import type * as lib_auditPayloads from "../lib/auditPayloads.js";
@@ -118,6 +119,7 @@ declare const fullApi: ApiFromModules<{
   "evaluationModel/model": typeof evaluationModel_model;
   "evaluationModel/standardTemplate": typeof evaluationModel_standardTemplate;
   "evaluationModel/tables": typeof evaluationModel_tables;
+  files: typeof files;
   http: typeof http;
   "lib/audit": typeof lib_audit;
   "lib/auditPayloads": typeof lib_auditPayloads;
