@@ -1,0 +1,30 @@
+packages/i18n/messages/nb.json
+  s_2b4fc4d121fc48::t_2020a786951058 142
+packages/i18n/messages/da.json
+  s_2b4fc4d121fc48::t_131988b1ae90d5 142
+packages/i18n/messages/sv.json
+  s_2b4fc4d121fc48::t_b859e200d5b5c6 142
+packages/i18n/messages/fi.json
+  s_2b4fc4d121fc48::t_094396b6d84b00 142
+packages/i18n/messages/en.json
+  s_2b4fc4d121fc48::t_5be9680f358674 142
+apps/dashboard/components/org-audit-log-section.tsx
+  s_2b4fc4d121fc48::t_480a26ee939e12 577,579-584
+  s_2b4fc4d121fc48::t_8e51d37a277507 573
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "4b73080d8ebe538beb45b6dec9985245d98dcf47",
+  "prompts": {},
+  "sessions": {
+    "s_2b4fc4d121fc48": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3daeecaf-b02f-40a7-a8a1-47ff5278abe9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
