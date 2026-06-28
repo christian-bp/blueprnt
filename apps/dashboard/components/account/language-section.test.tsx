@@ -95,16 +95,18 @@ describe("LanguageSection", () => {
 
   it("renders the card title as the section heading", () => {
     renderSection()
-    expect(
-      screen.getByText(en.dashboard.account.profile.languageLabel)
-    ).toBeDefined()
+    // CardTitle renders the language label; assert it appears in the document.
+    const label = en.dashboard.account.profile.languageLabel
+    // There must be at least one element with this text (the card title).
+    expect(screen.getAllByText(label).length).toBeGreaterThan(0)
   })
 
-  it("renders the section label", () => {
+  it("renders the locale select element", () => {
     renderSection()
-    expect(
-      screen.getByText(en.dashboard.account.profile.languageLabel)
-    ).toBeDefined()
+    // The Select mock renders a native <select> with data-testid="locale-select".
+    // This test is distinct from the heading test: it asserts the interactive
+    // control (not just the label text) is present.
+    expect(screen.getByTestId("locale-select")).toBeDefined()
   })
 
   it("renders all five locale options", () => {

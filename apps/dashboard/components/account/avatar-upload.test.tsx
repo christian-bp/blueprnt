@@ -10,10 +10,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import en from "@workspace/i18n/messages/en.json"
 
 // --- Convex hook mocks (vi.hoisted so they are defined before vi.mock) ---
-// The component calls useMutation twice in order (generateAvatarUploadUrl,
-// removeMyAvatar) and useAction once (setMyAvatar, an action because it deletes
-// a rejected upload's blob). useMutation is routed by call count; useAction
-// always returns the setMyAvatar mock.
+// useMutation is discriminated by the api reference passed to it so reordering
+// hooks cannot silently mis-route. useAction always returns the setMyAvatar mock
+// (setMyAvatar is an action because it validates and deletes rejected blobs).
 const { generateAvatarUploadUrlMock, setMyAvatarMock, removeMyAvatarMock } =
   vi.hoisted(() => {
     const generateAvatarUploadUrlMock = vi.fn(
@@ -31,12 +30,24 @@ const { generateAvatarUploadUrlMock, setMyAvatarMock, removeMyAvatarMock } =
     }
   })
 
-let useMutationCallCount = 0
+vi.mock("@workspace/backend/convex/_generated/api", () => ({
+  api: {
+    accounts: {
+      account: {
+        generateAvatarUploadUrl: "accounts.account.generateAvatarUploadUrl",
+        setMyAvatar: "accounts.account.setMyAvatar",
+        removeMyAvatar: "accounts.account.removeMyAvatar",
+      },
+    },
+  },
+}))
+
 vi.mock("convex/react", () => ({
-  useMutation: () => {
-    const idx = useMutationCallCount++
-    if (idx === 0) return generateAvatarUploadUrlMock
-    return removeMyAvatarMock
+  useMutation: (ref: string) => {
+    if (ref === "accounts.account.generateAvatarUploadUrl")
+      return generateAvatarUploadUrlMock
+    if (ref === "accounts.account.removeMyAvatar") return removeMyAvatarMock
+    return vi.fn()
   },
   useAction: () => setMyAvatarMock,
 }))
@@ -99,7 +110,6 @@ function makeImageFile(overrides?: { size?: number; type?: string }) {
 
 describe("AvatarUpload", () => {
   beforeEach(() => {
-    useMutationCallCount = 0
     generateAvatarUploadUrlMock.mockResolvedValue(
       "https://example.com/upload-url"
     )
