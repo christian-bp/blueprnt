@@ -999,7 +999,9 @@
       "doneBody": "Din e-mailadresse er opdateret. Du kan nu logge ind med den nye adresse.",
       "invalidTitle": "Linket er ugyldigt eller udløbet",
       "invalidBody": "Dette link er ikke længere gyldigt. Anmod om et nyt e-mailskift fra dine kontoindstillinger.",
-      "closeHint": "Du kan lukke dette vindue."
+      "closeHint": "Du kan lukke dette vindue.",
+      "fallbackTitle": "Linket er ugyldigt eller udløbet",
+      "fallbackBody": "Dette link er ikke længere gyldigt. Anmod om et nyt e-mailskift fra dine kontoindstillinger."
     },
     "account": {
       "tabs": {
@@ -1064,7 +1066,8 @@
           "regeneratePasswordLabel": "Bekræft din adgangskode",
           "regenerateCta": "Generer",
           "wrongPassword": "Den adgangskode er forkert. Prøv igen.",
-          "cancel": "Annuller"
+          "cancel": "Annuller",
+          "changeMethodError": "Noget gik galt. Prøv igen."
         },
         "delete": {
           "title": "Slet konto",

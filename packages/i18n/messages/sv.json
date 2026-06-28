@@ -999,7 +999,9 @@
       "doneBody": "Din e-postadress har uppdaterats. Du kan nu logga in med din nya adress.",
       "invalidTitle": "Länken är ogiltig eller har gått ut",
       "invalidBody": "Den här länken är inte längre giltig. Begär ett nytt e-postbyte från dina kontoinställningar.",
-      "closeHint": "Du kan stänga det här fönstret."
+      "closeHint": "Du kan stänga det här fönstret.",
+      "fallbackTitle": "Länken är ogiltig eller har gått ut",
+      "fallbackBody": "Den här länken är inte längre giltig. Begär ett nytt e-postbyte från dina kontoinställningar."
     },
     "account": {
       "tabs": {
@@ -1064,7 +1066,8 @@
           "regeneratePasswordLabel": "Bekräfta ditt lösenord",
           "regenerateCta": "Skapa",
           "wrongPassword": "Det lösenordet är felaktigt. Försök igen.",
-          "cancel": "Avbryt"
+          "cancel": "Avbryt",
+          "changeMethodError": "Något gick fel. Försök igen."
         },
         "delete": {
           "title": "Ta bort konto",

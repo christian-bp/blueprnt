@@ -999,7 +999,9 @@
       "doneBody": "Sähköpostiosoitteesi on päivitetty. Voit nyt kirjautua sisään uudella osoitteellasi.",
       "invalidTitle": "Linkki on virheellinen tai vanhentunut",
       "invalidBody": "Tämä linkki ei ole enää voimassa. Pyydä uutta sähköpostin vaihtoa tilisi asetuksista.",
-      "closeHint": "Voit sulkea tämän ikkunan."
+      "closeHint": "Voit sulkea tämän ikkunan.",
+      "fallbackTitle": "Linkki on virheellinen tai vanhentunut",
+      "fallbackBody": "Tämä linkki ei ole enää voimassa. Pyydä uutta sähköpostin vaihtoa tilisi asetuksista."
     },
     "account": {
       "tabs": {
@@ -1064,7 +1066,8 @@
           "regeneratePasswordLabel": "Vahvista salasanasi",
           "regenerateCta": "Luo",
           "wrongPassword": "Tämä salasana on virheellinen. Yritä uudelleen.",
-          "cancel": "Peruuta"
+          "cancel": "Peruuta",
+          "changeMethodError": "Jokin meni pieleen. Yritä uudelleen."
         },
         "delete": {
           "title": "Poista tili",

@@ -999,7 +999,9 @@
       "doneBody": "Your email address has been updated. You can now sign in with your new address.",
       "invalidTitle": "Link invalid or expired",
       "invalidBody": "This link is no longer valid. Request a new email change from your account settings.",
-      "closeHint": "You can close this window."
+      "closeHint": "You can close this window.",
+      "fallbackTitle": "Link invalid or expired",
+      "fallbackBody": "This link is no longer valid. Request a new email change from your account settings."
     },
     "account": {
       "tabs": {
@@ -1064,7 +1066,8 @@
           "regeneratePasswordLabel": "Confirm your password",
           "regenerateCta": "Regenerate",
           "wrongPassword": "That password is incorrect. Try again.",
-          "cancel": "Cancel"
+          "cancel": "Cancel",
+          "changeMethodError": "Something went wrong. Please try again."
         },
         "delete": {
           "title": "Delete account",

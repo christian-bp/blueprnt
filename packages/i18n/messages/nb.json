@@ -999,7 +999,9 @@
       "doneBody": "E-postadressen din er oppdatert. Du kan nå logge inn med den nye adressen.",
       "invalidTitle": "Lenken er ugyldig eller utløpt",
       "invalidBody": "Denne lenken er ikke lenger gyldig. Be om et nytt e-postbytte fra kontoinnstillingene dine.",
-      "closeHint": "Du kan lukke dette vinduet."
+      "closeHint": "Du kan lukke dette vinduet.",
+      "fallbackTitle": "Lenken er ugyldig eller utløpt",
+      "fallbackBody": "Denne lenken er ikke lenger gyldig. Be om et nytt e-postbytte fra kontoinnstillingene dine."
     },
     "account": {
       "tabs": {
@@ -1064,7 +1066,8 @@
           "regeneratePasswordLabel": "Bekreft passordet ditt",
           "regenerateCta": "Generer",
           "wrongPassword": "Det passordet er feil. Prøv igjen.",
-          "cancel": "Avbryt"
+          "cancel": "Avbryt",
+          "changeMethodError": "Noe gikk galt. Prøv igjen."
         },
         "delete": {
           "title": "Slett konto",
