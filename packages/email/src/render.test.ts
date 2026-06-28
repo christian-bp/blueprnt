@@ -117,6 +117,33 @@ describe("renderEmail", () => {
     expect(new Set(subjects).size).toBe(EMAIL_LOCALES.length)
   })
 
+  it("every EMAIL_LOCALES entry has its own changeEmailConfirm subject (no silent fallback)", async () => {
+    const subjects = await Promise.all(
+      EMAIL_LOCALES.map(async (locale) => {
+        const result = await renderEmail("changeEmailConfirm", {
+          url: "https://x.example/confirm-email-change",
+          newEmail: "new@example.com",
+          locale,
+        })
+        return result.subject
+      })
+    )
+    expect(new Set(subjects).size).toBe(EMAIL_LOCALES.length)
+  })
+
+  it("every EMAIL_LOCALES entry has its own verifyEmail subject (no silent fallback)", async () => {
+    const subjects = await Promise.all(
+      EMAIL_LOCALES.map(async (locale) => {
+        const result = await renderEmail("verifyEmail", {
+          url: "https://x.example/verify-email",
+          locale,
+        })
+        return result.subject
+      })
+    )
+    expect(new Set(subjects).size).toBe(EMAIL_LOCALES.length)
+  })
+
   it("renders the changeEmailConfirm email with subject, html, and text", async () => {
     const result = await renderEmail("changeEmailConfirm", {
       url: "https://app.blueprnt.se/confirm-email-change?token=preview",
