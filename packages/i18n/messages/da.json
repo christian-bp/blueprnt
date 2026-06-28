@@ -1053,7 +1053,7 @@
         },
         "twoFactor": {
           "title": "To-trins-bekræftelse",
-          "description": "Administrer din to-trins-bekræftelsesmetode og backupkoder.",
+          "description": "Administrer din to-trins-bekræftelsesmetode og sikkerhedskoder.",
           "currentMethod": "Aktuel metode",
           "methodTotp": "Autentificeringsapp",
           "methodEmail": "E-mailkoder",
@@ -1062,7 +1062,7 @@
           "changeMethodConfirmTitle": "Skift to-trins-metode?",
           "changeMethodConfirmBody": "Dette genstarter opsætningen af to-trins-bekræftelse. Din nuværende metode virker, indtil du er færdig.",
           "changeMethodConfirmCta": "Fortsæt",
-          "regenerate": "Generer nye backupkoder",
+          "regenerate": "Generer nye sikkerhedskoder",
           "regeneratePasswordLabel": "Bekræft din adgangskode",
           "regenerateCta": "Generer",
           "wrongPassword": "Den adgangskode er forkert. Prøv igen.",

@@ -1053,7 +1053,7 @@
         },
         "twoFactor": {
           "title": "Kaksivaiheinen vahvistus",
-          "description": "Hallitse kaksivaiheista vahvistusmenetelmää ja varmuuskoodeja.",
+          "description": "Hallitse kaksivaiheista vahvistusmenetelmää ja varakoodit.",
           "currentMethod": "Nykyinen menetelmä",
           "methodTotp": "Todennusohjelma",
           "methodEmail": "Sähköpostikoodit",
@@ -1062,7 +1062,7 @@
           "changeMethodConfirmTitle": "Vaihdetaanko kaksivaiheinen menetelmä?",
           "changeMethodConfirmBody": "Tämä käynnistää kaksivaiheisen määrityksen uudelleen. Nykyinen menetelmäsi toimii, kunnes olet valmis.",
           "changeMethodConfirmCta": "Jatka",
-          "regenerate": "Luo uudet varmuuskoodit",
+          "regenerate": "Luo uudet varakoodit",
           "regeneratePasswordLabel": "Vahvista salasanasi",
           "regenerateCta": "Luo",
           "wrongPassword": "Tämä salasana on virheellinen. Yritä uudelleen.",
