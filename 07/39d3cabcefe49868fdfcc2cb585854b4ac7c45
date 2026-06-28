@@ -1,0 +1,25 @@
+packages/backend/convex/auth.test.ts
+  s_c216811bbb1bb1::t_5a33068dcaaf83 1-83
+packages/backend/convex/auth.ts
+  s_c216811bbb1bb1::t_67dc3180f643c4 37-61
+  s_c216811bbb1bb1::t_e4cab6f5a8aeef 178-186
+  s_c216811bbb1bb1::t_31c62161dacc34 222
+docs/go-live-checklist.md
+  s_c216811bbb1bb1::t_cff689e5649fef 68-82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "0739d3cabcefe49868fdfcc2cb585854b4ac7c45",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
