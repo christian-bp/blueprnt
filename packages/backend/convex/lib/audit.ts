@@ -175,6 +175,12 @@ export const PLATFORM_AUDIT_EVENTS = {
 export type PlatformAuditEvent =
   (typeof PLATFORM_AUDIT_EVENTS)[keyof typeof PLATFORM_AUDIT_EVENTS]
 
+// Tombstone that replaces a deleted person's snapshotted name in append-only
+// logs (GDPR erasure). Shared by both erasure paths (platform/admin.ts
+// deleteUser and accounts/account.ts eraseSelf) so the value cannot drift: the
+// admin and self-service erasures must leave an identical trail.
+export const ERASED_ACTOR_NAME = "deleted user"
+
 // Platform audit categories: the area an admin action touches, for filtering the
 // admin log. Mirrors AUDIT_CATEGORIES for the per-org log.
 export const PLATFORM_AUDIT_CATEGORIES = [

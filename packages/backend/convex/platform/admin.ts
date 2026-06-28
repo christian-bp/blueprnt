@@ -7,6 +7,7 @@ import type { QueryCtx } from "../_generated/server"
 import { onOrganizationCreate, onUserCreate } from "../accounts/mirrors"
 import {
   buildChanges,
+  ERASED_ACTOR_NAME,
   PLATFORM_AUDIT_CATEGORIES,
   PLATFORM_AUDIT_EVENTS,
   logPlatformAudit,
@@ -638,9 +639,6 @@ export const updateOrganization = platformMutation({
     return null
   },
 })
-
-// Tombstone replacing a deleted person's snapshotted name in append-only logs.
-const ERASED_ACTOR_NAME = "deleted user"
 
 // GDPR erasure. Deletes every identity/membership/invitation row (via the
 // component), the app users mirror, the person's email history in the Sweego

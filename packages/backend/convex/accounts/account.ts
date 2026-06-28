@@ -9,14 +9,13 @@ import {
   type QueryCtx,
 } from "../_generated/server"
 import { authComponent, createAuth } from "../auth"
-import { PLATFORM_AUDIT_EVENTS, logPlatformAudit } from "../lib/audit"
+import {
+  ERASED_ACTOR_NAME,
+  PLATFORM_AUDIT_EVENTS,
+  logPlatformAudit,
+} from "../lib/audit"
 import { ERROR_CODES, appError } from "../lib/errors"
 import { authedMutation } from "../lib/functions"
-
-// Tombstone replacing a deleted person's snapshotted name in append-only logs.
-// Mirrors platform/admin.ts ERASED_ACTOR_NAME (the value must match so the
-// admin and self-service erasure paths leave an identical trail).
-const ERASED_ACTOR_NAME = "deleted user"
 
 // The orgs where `authUserId` is the SOLE admin. Shared by getMyAccount (drives
 // the delete-account guard UI) and eraseSelf (re-validates server-side before
