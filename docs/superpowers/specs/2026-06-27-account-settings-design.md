@@ -26,7 +26,7 @@
 
 1. **Layout:** tabbed sections that are real sub-routes (`/account/profile`, `/account/security`), bookmarkable, with a tab bar.
 2. **Route name:** `/account`.
-3. **Email change:** the verification link is sent to the **new** email address; clicking it (proving control of the new mailbox) completes the switch. Gated by the current password.
+3. **Email change:** a double opt-in. A confirmation link first goes to the **current** mailbox (re-authorizing the change); clicking it then sends a verification link to the **new** mailbox; clicking that completes the switch. The current-mailbox confirmation IS the re-auth gate, so there is **no separate password step** (Better Auth's `changeEmail` takes no password, and the current-mailbox approval already blocks a session-only takeover).
 4. **2FA controls:** change method + regenerate backup codes. No full disable.
 5. **Last-admin delete guard:** if the user is the only `admin` of any organization, self-deletion is blocked and the UI shows a note to **contact support** for more information (no transfer UI in V1). Editors, and admins where another admin exists, delete freely.
 6. **Audit/PII:** profile/email/password/2FA changes are per-person account state and write **no org audit rows** (same carve-out as the existing per-user 2FA state). Account deletion keeps the existing platform-audit log + `actorName` tombstone behavior.
@@ -63,9 +63,9 @@ The pages are thin shells; each section is its own client component in `apps/das
 - Validation messages under `dashboard.validation.*`.
 
 ### Email
-- Shows the current email (read-only) and a "Change email" form: new email + current password (`makeChangeEmailSchema(t)`: valid email, not equal to current, password required).
+- Shows the current email (read-only) and a "Change email" form: just the new email (`makeChangeEmailSchema(t, currentEmail)`: valid email, not equal to current). No password field: the double opt-in's current-mailbox confirmation is the re-auth gate, and Better Auth's `changeEmail` accepts no password.
 - On submit: `authClient.changeEmail({ newEmail, callbackURL })`. Better Auth 1.6.17 runs a **double opt-in** for a verified user (our case): a confirmation link goes to the **current** mailbox first (approve the change); clicking it then sends a verification link to the **new** mailbox; clicking that finally applies the change and marks the new email verified. This satisfies "verify the new mailbox" and additionally makes the current mailbox approve, which is strictly more secure than a single-hop flow and is the supported, low-code path. (Decision 3 stands; the exact flow is BA's two-hop default.)
-- UI: after submit, show a "We've emailed your current address to confirm, then your new address to verify" state. The current password is verified before the flow starts (see backend).
+- UI: after submit, show a "We've emailed your current address to confirm, then your new address to verify" state.
 - Verification landing: a `callbackURL` page shows success ("Your email has been updated") and a generic invalid/expired state, mirroring the reset-password page. The link is clickable from any browser (the BA token is self-contained; an unrelated logged-in session is rejected).
 - Email templates: enabling `user.changeEmail` in 1.6.17 also requires a top-level `emailVerification.sendVerificationEmail` sender. So we add **two** localized email flows: a `changeEmailConfirm` (sent to the current address, hop 1) and a `verifyEmail` (sent to the new address, hop 2), both via `enqueueEmail` with the user's locale. Authored in `en`, mirrored to all locales.
 
@@ -130,7 +130,7 @@ The pages are thin shells; each section is its own client component in `apps/das
 
 ## Cross-cutting conventions
 
-- **Forms:** every data-entry form uses RHF + `zodResolver(makeXSchema(t))` + shadcn `Form` components + `SubmitButton`; pre-filled forms gate on `isValid && isDirty`; sensitive actions (email, password, 2FA, delete) require the current password; errors render below the submit button. Backend re-validates independently with `appError` codes.
+- **Forms:** every data-entry form uses RHF + `zodResolver(makeXSchema(t))` + shadcn `Form` components + `SubmitButton`; pre-filled forms gate on `isValid && isDirty`; sensitive actions (password, 2FA, delete) require the current password (email change is instead gated by the double opt-in's current-mailbox confirmation); errors render below the submit button. Backend re-validates independently with `appError` codes.
 - **i18n:** new `dashboard.account.*` namespace (tab labels, section titles, field labels, help, confirmations, the support note) plus needed `dashboard.validation.*` additions, authored in `en.json` first and mirrored to sv/nb/da/fi (parity test guards it). New Nordic strings flagged for native review in the go-live checklist. The `changeEmail` email template copy is localized in all five locales.
 - **Guidance:** each domain concept gets inline help (`HelpMorphButton` + `dashboard.help.*`): why we email a verification link to the new address, what backup codes are, what "last administrator" means. One help popover per row.
 - **Layout shift:** reveal inline confirmations/spinners in pre-reserved slots; the tab bar stays put; new content extends below. Reuse `AsyncActionButton`/`SubmitButton` patterns.
