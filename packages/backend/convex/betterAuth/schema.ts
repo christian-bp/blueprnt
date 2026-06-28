@@ -12,4 +12,11 @@ export default defineSchema({
     "organizationId",
     "userId",
   ]),
+  // The organization plugin looks up invitations by (email, organizationId,
+  // status) when inviting and by (organizationId, status) when listing. The
+  // adapter selects an index by matching the where fields in order, so these
+  // compound indexes keep both lookups off a full table scan.
+  invitation: generatedSchema.tables.invitation
+    .index("email_organizationId_status", ["email", "organizationId", "status"])
+    .index("organizationId_status", ["organizationId", "status"]),
 })

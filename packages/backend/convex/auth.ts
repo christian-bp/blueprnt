@@ -233,6 +233,14 @@ export const createAuthOptions = (
       freshAge: 60 * 60 * 24,
     },
     advanced: {
+      // The Convex adapter uses each document's Convex `_id` as the Better Auth
+      // record id (it maps `_id` <-> `id`) and its generated create validators
+      // never accept a caller-provided id. Better Auth's organization plugin
+      // otherwise calls context.generateId() and passes that id when creating an
+      // invitation (adapter.mjs: `invitationId !== false ? { id } : {}`), which
+      // the component rejects with an ArgumentValidationError. Returning false
+      // here makes generateId() a no-op so Convex assigns the id.
+      database: { generateId: false },
       // Force the Secure attribute (and __Secure- prefix) in production. Gated
       // so local http://localhost sign-in is not broken (browsers drop Secure
       // cookies on http). The Convex Next proxy forwards x-forwarded-proto, so
