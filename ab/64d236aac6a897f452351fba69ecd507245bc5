@@ -1,0 +1,25 @@
+apps/dashboard/app/change-email/change-email.test.tsx
+  s_c216811bbb1bb1::t_1b37133ebd642f 29-34
+  s_c216811bbb1bb1::t_3f50b43f42aaa6 116,119-150
+  s_c216811bbb1bb1::t_d0677f46b35e3e 117-118
+apps/dashboard/app/change-email/page.tsx
+  s_c216811bbb1bb1::t_066ffdddff8a66 49
+  s_c216811bbb1bb1::t_cca49bbd776c25 6,22,31,37-39,44-48,50-60,62-69,71-76,79-82
+  s_c216811bbb1bb1::t_b736e01e1dfbb2 77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "ab64d236aac6a897f452351fba69ecd507245bc5",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
