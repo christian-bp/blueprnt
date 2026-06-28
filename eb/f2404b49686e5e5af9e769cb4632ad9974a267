@@ -1,0 +1,32 @@
+apps/dashboard/components/account/avatar-upload.test.tsx
+  s_c216811bbb1bb1::t_2f34f1a61352fd 12-16,41
+apps/dashboard/components/account/avatar-upload.tsx
+  s_c216811bbb1bb1::t_c114fc3d0a0bb5 13
+  s_c216811bbb1bb1::t_b1610b2703f9a9 33-35
+packages/backend/convex/accounts/account.test.ts
+  s_c216811bbb1bb1::t_db882ac9667852 497-510,512-538,540-553,561-574,576-583,585-598
+  s_c216811bbb1bb1::t_99c7629a527e2f 554-560
+  s_c216811bbb1bb1::t_a02826a19b6761 445,475,478,511,539,575,584,612,675
+packages/backend/convex/accounts/account.ts
+  s_c216811bbb1bb1::t_1aaf3cff7ae53c 21-25
+  s_c216811bbb1bb1::t_e8f35b53f39620 134-139,141-144,146-160,163,175-221
+  s_c216811bbb1bb1::t_8168d34491b061 118-125
+  s_c216811bbb1bb1::t_a7261eeb028480 7
+  s_c216811bbb1bb1::t_87c3090912033f 222
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "ebf2404b49686e5e5af9e769cb4632ad9974a267",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
