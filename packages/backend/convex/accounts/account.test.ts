@@ -442,7 +442,7 @@ describe("accounts.account avatar storage", () => {
 
     const url = await t
       .withIdentity({ subject: "user-1" })
-      .mutation(api.accounts.account.setMyAvatar, { storageId })
+      .action(api.accounts.account.setMyAvatar, { storageId })
     expect(typeof url).toBe("string")
     expect(url.length).toBeGreaterThan(0)
 
@@ -472,10 +472,10 @@ describe("accounts.account avatar storage", () => {
     )
 
     const asUser = t.withIdentity({ subject: "user-1" })
-    await asUser.mutation(api.accounts.account.setMyAvatar, {
+    await asUser.action(api.accounts.account.setMyAvatar, {
       storageId: oldId,
     })
-    await asUser.mutation(api.accounts.account.setMyAvatar, {
+    await asUser.action(api.accounts.account.setMyAvatar, {
       storageId: newId,
     })
 
@@ -494,6 +494,108 @@ describe("accounts.account avatar storage", () => {
     expect(row?.imageId).toBe(newId)
   })
 
+  it("setMyAvatar accepts a valid image blob (image/* content type, under the size cap)", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
+        authId: "user-1",
+        name: "Alice",
+        email: "alice@acme.se",
+      })
+    })
+    const storageId = await t.run((ctx) =>
+      ctx.storage.store(new Blob(["png-bytes"], { type: "image/png" }))
+    )
+    const url = await t
+      .withIdentity({ subject: "user-1" })
+      .action(api.accounts.account.setMyAvatar, { storageId })
+    expect(typeof url).toBe("string")
+    const row = await t.run((ctx) =>
+      ctx.db
+        .query("users")
+        .withIndex("by_auth_id", (q) => q.eq("authId", "user-1"))
+        .unique()
+    )
+    expect(row?.imageId).toBe(storageId)
+  })
+
+  it("setMyAvatar rejects and deletes an oversized blob, leaving the avatar unchanged", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
+        authId: "user-1",
+        name: "Alice",
+        email: "alice@acme.se",
+      })
+    })
+    // One byte over the 5MB cap.
+    const tooBig = await t.run((ctx) =>
+      ctx.storage.store(new Blob(["x".repeat(5 * 1024 * 1024 + 1)]))
+    )
+
+    await expect(
+      t
+        .withIdentity({ subject: "user-1" })
+        .action(api.accounts.account.setMyAvatar, { storageId: tooBig })
+    ).rejects.toThrow(/errors\.invalidInput/)
+
+    // The rejected blob is deleted (not orphaned) and the mirror is untouched.
+    const url = await t.run((ctx) => ctx.storage.getUrl(tooBig))
+    expect(url).toBeNull()
+    const row = await t.run((ctx) =>
+      ctx.db
+        .query("users")
+        .withIndex("by_auth_id", (q) => q.eq("authId", "user-1"))
+        .unique()
+    )
+    expect(row?.imageId).toBeUndefined()
+  })
+
+  // The non-image content-type rejection is NOT unit-testable here: the
+  // convex-test storage runtime does not record a stored blob's contentType (it
+  // stays undefined on the _storage metadata even when the Blob is given a
+  // type), so setMyAvatar's content-type branch never fires under the test
+  // runtime. In production Convex records the upload's Content-Type header, so a
+  // non-image upload is rejected and its blob deleted; that path is covered by
+  // the e2e/Playwright suite. The size cap below IS recorded, so it is tested.
+
+  it("setMyAvatar keeps the EXISTING avatar when a replacement upload is rejected", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      await ctx.db.insert("users", {
+        authId: "user-1",
+        name: "Alice",
+        email: "alice@acme.se",
+      })
+    })
+    const goodId = await t.run((ctx) =>
+      ctx.storage.store(new Blob(["first"], { type: "image/png" }))
+    )
+    const asUser = t.withIdentity({ subject: "user-1" })
+    await asUser.action(api.accounts.account.setMyAvatar, {
+      storageId: goodId,
+    })
+
+    // A bad replacement upload must not drop the current avatar.
+    const badId = await t.run((ctx) =>
+      ctx.storage.store(new Blob(["x".repeat(5 * 1024 * 1024 + 1)]))
+    )
+    await expect(
+      asUser.action(api.accounts.account.setMyAvatar, { storageId: badId })
+    ).rejects.toThrow(/errors\.invalidInput/)
+
+    // Existing avatar still set and its file still present; bad blob deleted.
+    const row = await t.run((ctx) =>
+      ctx.db
+        .query("users")
+        .withIndex("by_auth_id", (q) => q.eq("authId", "user-1"))
+        .unique()
+    )
+    expect(row?.imageId).toBe(goodId)
+    expect(await t.run((ctx) => ctx.storage.getUrl(goodId))).not.toBeNull()
+    expect(await t.run((ctx) => ctx.storage.getUrl(badId))).toBeNull()
+  })
+
   it("removeMyAvatar deletes the stored file and clears imageId", async () => {
     const t = initConvexTest()
     await t.run(async (ctx) => {
@@ -507,7 +609,7 @@ describe("accounts.account avatar storage", () => {
       ctx.storage.store(new Blob(["avatar"]))
     )
     const asUser = t.withIdentity({ subject: "user-1" })
-    await asUser.mutation(api.accounts.account.setMyAvatar, { storageId })
+    await asUser.action(api.accounts.account.setMyAvatar, { storageId })
 
     const result = await asUser.mutation(
       api.accounts.account.removeMyAvatar,
@@ -570,7 +672,7 @@ describe("accounts.account avatar storage", () => {
       ctx.storage.store(new Blob(["avatar"]))
     )
     await expect(
-      t.mutation(api.accounts.account.setMyAvatar, { storageId })
+      t.action(api.accounts.account.setMyAvatar, { storageId })
     ).rejects.toThrow(/errors\.notAuthenticated/)
   })
 })

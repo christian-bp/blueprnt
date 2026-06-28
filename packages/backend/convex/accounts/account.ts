@@ -4,6 +4,7 @@ import {
   type ActionCtx,
   action,
   internalMutation,
+  internalQuery,
   type MutationCtx,
   query,
   type QueryCtx,
@@ -16,6 +17,11 @@ import {
 } from "../lib/audit"
 import { ERROR_CODES, appError } from "../lib/errors"
 import { authedMutation } from "../lib/functions"
+
+// Server-side avatar limit, the authoritative gate mirrored by the client's
+// 5MB/image-mime pre-check. The backend re-validates because the upload URL
+// accepts any blob the client POSTs; the client check is convenience only.
+const AVATAR_MAX_BYTES = 5 * 1024 * 1024
 
 // The orgs where `authUserId` is the SOLE admin. Shared by getMyAccount (drives
 // the delete-account guard UI) and eraseSelf (re-validates server-side before
@@ -109,9 +115,14 @@ export const clearMfaConfirmed = authedMutation({
 })
 
 // A one-shot upload URL the client POSTs the avatar image to directly (Convex
-// file storage). The returned storageId is then passed to setMyAvatar. No audit
-// row: the avatar is per-person account state, not org-domain content (same
-// carve-out as the other account mutations).
+// file storage). The returned storageId is then passed to setMyAvatar, which
+// validates the blob server-side. No audit row: the avatar is per-person
+// account state, not org-domain content (same carve-out as the other account
+// mutations).
+// Inherent residual orphan (out of V1 scope): a client that fetches this URL
+// and POSTs a blob but never calls setMyAvatar leaves an unreferenced blob in
+// storage. Reclaiming it needs a sweep cron over unreferenced _storage rows,
+// deferred to post-V1; not built here.
 export const generateAvatarUploadUrl = authedMutation({
   args: {},
   returns: v.string(),
@@ -120,19 +131,36 @@ export const generateAvatarUploadUrl = authedMutation({
   },
 })
 
-// Sets the caller's avatar to a freshly uploaded file and returns its served
-// URL (the client then mirrors it onto Better Auth via updateUser({ image })).
-// Replacing an existing avatar deletes the previous file first, so storage never
-// accumulates orphaned blobs. The avatar is PERSONAL DATA stored only on the
-// per-person mirror; it is erased with the row + file on account deletion. No
-// audit row (per-person account state).
-export const setMyAvatar = authedMutation({
+// The stored-blob metadata setMyAvatar needs to validate an upload, read from
+// the _storage system table (ctx.storage.getMetadata is deprecated and is not
+// available in actions). Returns null when the storage id does not exist. The
+// content type is the upload's Content-Type header as recorded by Convex; it
+// may be absent (then null), in which case the size cap is the only gate.
+export const avatarBlobMeta = internalQuery({
   args: { storageId: v.id("_storage") },
-  returns: v.string(),
+  returns: v.union(
+    v.null(),
+    v.object({ size: v.number(), contentType: v.union(v.string(), v.null()) })
+  ),
   handler: async (ctx, { storageId }) => {
+    const meta = await ctx.db.system.get(storageId)
+    if (meta === null) return null
+    return { size: meta.size, contentType: meta.contentType ?? null }
+  },
+})
+
+// Associates an already-validated blob as the caller's avatar and returns its
+// served URL. Internal: only setMyAvatar (after validating the blob) calls this,
+// passing the caller's auth id resolved from the JWT. Replacing an existing
+// avatar deletes the previous file first, so storage never accumulates orphaned
+// blobs.
+export const applyAvatar = internalMutation({
+  args: { authUserId: v.string(), storageId: v.id("_storage") },
+  returns: v.string(),
+  handler: async (ctx, { authUserId, storageId }) => {
     const row = await ctx.db
       .query("users")
-      .withIndex("by_auth_id", (q) => q.eq("authId", ctx.authUserId))
+      .withIndex("by_auth_id", (q) => q.eq("authId", authUserId))
       .unique()
     if (row === null) throw appError(ERROR_CODES.notFound)
     // Replace: drop the previous file before pointing at the new one.
@@ -141,6 +169,54 @@ export const setMyAvatar = authedMutation({
     const url = await ctx.storage.getUrl(storageId)
     if (url === null) throw appError(ERROR_CODES.notFound)
     return url
+  },
+})
+
+// Sets the caller's avatar to a freshly uploaded file and returns its served
+// URL (the client then mirrors it onto Better Auth via updateUser({ image })).
+// The avatar is PERSONAL DATA stored only on the per-person mirror; it is erased
+// with the row + file on account deletion. No audit row (per-person account
+// state).
+//
+// An ACTION, not a mutation, because it must DELETE a rejected blob: a mutation
+// runs in a transaction, so throwing would roll back the storage.delete and
+// leave the bad blob orphaned. In an action the delete commits before the throw.
+// The flow is: resolve identity from the JWT (never the client), re-validate the
+// uploaded blob server-side (the client's 5MB/image-mime check is convenience
+// only; the upload URL accepts any blob), and only on success delegate the row
+// write to the internal applyAvatar mutation. A blob that is oversized, has a
+// non-image content type, or has no metadata row is deleted and the call throws
+// invalidInput, so a bad blob is neither associated nor left orphaned.
+// Content-type note: in production Convex records the upload's Content-Type, so
+// a non-image is rejected; when the content type is absent the size cap is the
+// hard guarantee.
+export const setMyAvatar = action({
+  args: { storageId: v.id("_storage") },
+  returns: v.string(),
+  handler: async (ctx: ActionCtx, { storageId }): Promise<string> => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (identity === null) throw appError(ERROR_CODES.notAuthenticated)
+
+    const meta = await ctx.runQuery(internal.accounts.account.avatarBlobMeta, {
+      storageId,
+    })
+    const invalid =
+      meta === null ||
+      meta.size > AVATAR_MAX_BYTES ||
+      (meta.contentType !== null &&
+        meta.contentType !== "" &&
+        !meta.contentType.startsWith("image/"))
+    if (invalid) {
+      // Delete the rejected blob so it does not orphan, THEN reject. In an
+      // action the delete is not rolled back by the throw.
+      await ctx.storage.delete(storageId)
+      throw appError(ERROR_CODES.invalidInput)
+    }
+
+    return await ctx.runMutation(internal.accounts.account.applyAvatar, {
+      authUserId: identity.subject,
+      storageId,
+    })
   },
 })
 

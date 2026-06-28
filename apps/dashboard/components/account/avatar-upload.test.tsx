@@ -9,9 +9,11 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import en from "@workspace/i18n/messages/en.json"
 
-// --- Convex mutation mocks (vi.hoisted so they are defined before vi.mock) ---
-// The component calls useMutation three times in order: generateAvatarUploadUrl,
-// setMyAvatar, removeMyAvatar. We use call count to route to the right mock.
+// --- Convex hook mocks (vi.hoisted so they are defined before vi.mock) ---
+// The component calls useMutation twice in order (generateAvatarUploadUrl,
+// removeMyAvatar) and useAction once (setMyAvatar, an action because it deletes
+// a rejected upload's blob). useMutation is routed by call count; useAction
+// always returns the setMyAvatar mock.
 const { generateAvatarUploadUrlMock, setMyAvatarMock, removeMyAvatarMock } =
   vi.hoisted(() => {
     const generateAvatarUploadUrlMock = vi.fn(
@@ -34,9 +36,9 @@ vi.mock("convex/react", () => ({
   useMutation: () => {
     const idx = useMutationCallCount++
     if (idx === 0) return generateAvatarUploadUrlMock
-    if (idx === 1) return setMyAvatarMock
     return removeMyAvatarMock
   },
+  useAction: () => setMyAvatarMock,
 }))
 
 // --- Auth-client mock ---

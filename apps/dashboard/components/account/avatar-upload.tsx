@@ -10,7 +10,7 @@ import { Button } from "@workspace/ui/components/button"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { Cancel01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { useMutation } from "convex/react"
+import { useAction, useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useRef, useState } from "react"
 import { authClient } from "@/lib/auth-client"
@@ -30,7 +30,9 @@ export function AvatarUpload() {
   const generateAvatarUploadUrl = useMutation(
     api.accounts.account.generateAvatarUploadUrl
   )
-  const setMyAvatar = useMutation(api.accounts.account.setMyAvatar)
+  // setMyAvatar is an action (it validates and deletes a rejected upload's blob,
+  // which a transactional mutation cannot do), so it is called via useAction.
+  const setMyAvatar = useAction(api.accounts.account.setMyAvatar)
   const removeMyAvatar = useMutation(api.accounts.account.removeMyAvatar)
 
   const inputRef = useRef<HTMLInputElement>(null)
