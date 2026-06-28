@@ -12,7 +12,7 @@ export function AuthHeading({
 }) {
   return (
     <div className="flex flex-col items-center gap-2">
-      <h1 className="text-center font-semibold text-xl">{title}</h1>
+      <h1 className="text-center font-semibold text-brand text-xl">{title}</h1>
       {description !== undefined ? (
         <p className="text-center text-muted-foreground text-sm">
           {description}

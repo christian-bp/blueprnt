@@ -10,6 +10,7 @@ import {
 import { Spinner } from "@workspace/ui/components/spinner"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
+import { PageHeader } from "@/components/page-header"
 import { useOrganization } from "@/components/org-context"
 import { CreateRoleDialog } from "@/components/roles/create-role-dialog"
 import { RolesTable } from "@/components/roles/roles-table"
@@ -37,17 +38,17 @@ export default function RolesPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h2 className="font-medium text-lg">{t("heading")}</h2>
-          <p className="text-muted-foreground text-sm">{t("description")}</p>
-        </div>
-        <CreateRoleDialog
-          orgId={orgId}
-          tracks={model.tracks}
-          triggerLabel={t("newCta")}
-        />
-      </div>
+      <PageHeader
+        title={t("heading")}
+        description={t("description")}
+        action={
+          <CreateRoleDialog
+            orgId={orgId}
+            tracks={model.tracks}
+            triggerLabel={t("newCta")}
+          />
+        }
+      />
       {roles.length === 0 ? (
         <Empty>
           <EmptyHeader>

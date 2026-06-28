@@ -32,6 +32,7 @@ import { useMemo, useState } from "react"
 import { CreateUserDialog } from "@/components/admin/create-user-dialog"
 import { DeleteUserDialog } from "@/components/admin/delete-user-dialog"
 import { ManageUserOrganizationsDialog } from "@/components/admin/manage-user-organizations-dialog"
+import { PageHeading } from "@/components/page-heading"
 import { authClient } from "@/lib/auth-client"
 
 export function UsersSection() {
@@ -80,7 +81,7 @@ export function UsersSection() {
     <section className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h2 className="font-medium text-lg">{t("heading")}</h2>
+          <PageHeading>{t("heading")}</PageHeading>
           <p className="text-muted-foreground text-sm">{t("description")}</p>
         </div>
         <CreateUserDialog />

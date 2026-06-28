@@ -154,7 +154,9 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
       <AuthShell>
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-center gap-1.5">
-            <h1 className="text-center font-medium text-lg">{t("heading")}</h1>
+            <h1 className="text-center font-medium text-brand text-lg">
+              {t("heading")}
+            </h1>
             <HelpMorphButton label={tHelp("twoFactorLabel")}>
               {tHelp("twoFactorBody")}
             </HelpMorphButton>
@@ -186,7 +188,7 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
     return (
       <AuthShell>
         <div className="flex flex-col gap-4">
-          <h1 className="text-center font-medium text-lg">
+          <h1 className="text-center font-medium text-brand text-lg">
             {t("password.heading")}
           </h1>
           <p className="text-center text-muted-foreground text-sm">
@@ -238,7 +240,9 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
       <AuthShell>
         <div className="flex flex-col items-center gap-4 text-center">
           <SuccessCheck />
-          <h1 className="font-medium text-lg">{t("complete.heading")}</h1>
+          <h1 className="font-medium text-brand text-lg">
+            {t("complete.heading")}
+          </h1>
           <p className="text-muted-foreground text-sm">
             {t("complete.description")}
           </p>
@@ -303,7 +307,7 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
   return (
     <AuthShell>
       <div className="flex flex-col items-center gap-4">
-        <h1 className="text-center font-medium text-lg">
+        <h1 className="text-center font-medium text-brand text-lg">
           {t(method === "totp" ? "totp.heading" : "email.heading")}
         </h1>
         <p className="text-center text-muted-foreground text-sm">

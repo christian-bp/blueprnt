@@ -32,6 +32,7 @@ import { useMemo, useState } from "react"
 import { CreateOrganizationDialog } from "@/components/admin/create-organization-dialog"
 import { ManageOrganizationDialog } from "@/components/admin/manage-organization-dialog"
 import { CountryDisplay } from "@/components/country-display"
+import { PageHeading } from "@/components/page-heading"
 
 export function OrganizationsSection() {
   const t = useTranslations("dashboard.admin.orgs")
@@ -55,7 +56,7 @@ export function OrganizationsSection() {
     <section className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h2 className="font-medium text-lg">{t("heading")}</h2>
+          <PageHeading>{t("heading")}</PageHeading>
           <p className="text-muted-foreground text-sm">{t("description")}</p>
         </div>
         <CreateOrganizationDialog />

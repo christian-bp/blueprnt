@@ -45,7 +45,9 @@ function ChangeEmailContent() {
       {hasError ? (
         <div className="flex flex-col items-center gap-4 text-center">
           <div className="space-y-2">
-            <h1 className="font-semibold text-xl">{t("invalidTitle")}</h1>
+            <h1 className="font-semibold text-brand text-xl">
+              {t("invalidTitle")}
+            </h1>
             <p className="text-muted-foreground text-sm">{t("invalidBody")}</p>
           </div>
           <p className="text-muted-foreground text-xs">{t("closeHint")}</p>
@@ -54,7 +56,9 @@ function ChangeEmailContent() {
         <div className="flex flex-col items-center gap-4 text-center">
           <SuccessCheck />
           <div className="space-y-2">
-            <h1 className="font-semibold text-xl">{t("confirmedTitle")}</h1>
+            <h1 className="font-semibold text-brand text-xl">
+              {t("confirmedTitle")}
+            </h1>
             <p className="text-muted-foreground text-sm">
               {t("confirmedBody")}
             </p>
@@ -65,7 +69,9 @@ function ChangeEmailContent() {
         <div className="flex flex-col items-center gap-4 text-center">
           <SuccessCheck />
           <div className="space-y-2">
-            <h1 className="font-semibold text-xl">{t("doneTitle")}</h1>
+            <h1 className="font-semibold text-brand text-xl">
+              {t("doneTitle")}
+            </h1>
             <p className="text-muted-foreground text-sm">{t("doneBody")}</p>
           </div>
           <p className="text-muted-foreground text-xs">{t("closeHint")}</p>
@@ -73,7 +79,9 @@ function ChangeEmailContent() {
       ) : (
         <div className="flex flex-col items-center gap-4 text-center">
           <div className="space-y-2">
-            <h1 className="font-semibold text-xl">{t("fallbackTitle")}</h1>
+            <h1 className="font-semibold text-brand text-xl">
+              {t("fallbackTitle")}
+            </h1>
             <p className="text-muted-foreground text-sm">{t("fallbackBody")}</p>
           </div>
           <p className="text-muted-foreground text-xs">{t("closeHint")}</p>

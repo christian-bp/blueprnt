@@ -4,5 +4,5 @@ import type { ReactNode } from "react"
 // The tab bar lives in the site header (AccountTabs); this layout only provides
 // the narrow column that constrains the page content width.
 export default function AccountLayout(props: { children: ReactNode }) {
-  return <div className="w-full max-w-2xl">{props.children}</div>
+  return <div className="w-full">{props.children}</div>
 }

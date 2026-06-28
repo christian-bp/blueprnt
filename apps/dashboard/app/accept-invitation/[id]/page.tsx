@@ -18,7 +18,9 @@ export default function AcceptInvitationPage() {
 
   return (
     <main>
-      <h1>{t("invitation.title")}</h1>
+      <h1 className="font-semibold text-brand text-xl">
+        {t("invitation.title")}
+      </h1>
       <AuthLoading>
         <Spinner aria-label={t("loading")} />
       </AuthLoading>

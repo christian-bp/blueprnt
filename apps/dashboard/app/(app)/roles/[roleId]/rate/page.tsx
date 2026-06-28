@@ -8,6 +8,7 @@ import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { use, useState } from "react"
 import { useOrganization } from "@/components/org-context"
+import { PageHeading } from "@/components/page-heading"
 import { usePageTitle } from "@/hooks/use-page-title"
 import { RatingResult } from "@/components/rating/rating-result"
 import { RatingStepper } from "@/components/rating/rating-stepper"
@@ -77,9 +78,9 @@ export default function RatePage(props: {
 
   return (
     <div className="space-y-4">
-      <h2 className="font-medium text-lg">
-        {t("title")}: <span className="text-brand">{role.title}</span>
-      </h2>
+      <PageHeading>
+        {t("title")}: {role.title}
+      </PageHeading>
       <RatingStepper
         orgId={orgId}
         roleId={role.roleId}

@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation"
 import { use } from "react"
 import { MorphConfirmButton } from "@/components/morph-confirm-button"
 import { useOrganization } from "@/components/org-context"
+import { PageHeading } from "@/components/page-heading"
 import { TrackBadge } from "@/components/track-badge"
 import { AnchorRoleCard } from "@/components/roles/anchor-role-card"
 import { RoleProfileCard } from "@/components/roles/role-profile-card"
@@ -55,7 +56,7 @@ export default function RolePage(props: {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
-        <h2 className="font-medium text-lg">{role.title}</h2>
+        <PageHeading>{role.title}</PageHeading>
         {role.archived && <Badge variant="outline">{t("archivedBadge")}</Badge>}
         <TrackBadge trackKey={role.trackKey} name={role.trackName} />
         <span className="text-muted-foreground text-sm">

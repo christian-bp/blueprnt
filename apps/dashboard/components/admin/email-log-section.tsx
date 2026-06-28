@@ -51,6 +51,7 @@ import {
 } from "@/components/admin/email-status-badge"
 import { AuditPagination } from "@/components/audit/audit-pagination"
 import { DateRangePicker } from "@/components/date-range-picker"
+import { PageHeading } from "@/components/page-heading"
 import { TableSkeleton } from "@/components/table-skeleton"
 import { useAuditPagination } from "@/hooks/use-audit-pagination"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
@@ -171,7 +172,7 @@ export function EmailLogSection() {
   return (
     <section className="space-y-4">
       <div>
-        <h2 className="font-medium text-lg">{t("heading")}</h2>
+        <PageHeading>{t("heading")}</PageHeading>
         <p className="text-muted-foreground text-sm">{t("description")}</p>
       </div>
 

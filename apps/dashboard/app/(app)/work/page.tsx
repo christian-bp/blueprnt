@@ -29,6 +29,7 @@ import { FamilyFilter } from "@/components/bands/family-filter"
 import { PendingRoles } from "@/components/bands/pending-roles"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
+import { PageHeading } from "@/components/page-heading"
 import { usePageTitle } from "@/hooks/use-page-title"
 import { trackColumns } from "@/lib/bands"
 
@@ -100,7 +101,7 @@ export default function WorkOverviewPage() {
     <div className="space-y-6">
       <div>
         <div className="flex items-center gap-1.5">
-          <h2 className="font-medium text-lg">{t("heading")}</h2>
+          <PageHeading>{t("heading")}</PageHeading>
           <HelpMorphButton label={tHelp("scoreLabel")}>
             {tHelp("scoreBody")}
           </HelpMorphButton>

@@ -111,7 +111,9 @@ export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <h1 className="text-center font-medium text-lg">{t("title")}</h1>
+      <h1 className="text-center font-medium text-brand text-lg">
+        {t("title")}
+      </h1>
       <p className="text-center text-muted-foreground text-sm">
         {method === "totp"
           ? t("totpPrompt")

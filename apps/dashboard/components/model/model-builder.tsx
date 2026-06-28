@@ -148,19 +148,36 @@ export function ModelBuilder({
   }
 
   const onWeight = phase === "weight"
-  const description = onWeight
-    ? tBuilder("weightDescription")
-    : tBuilder("defineDescription")
 
   return (
     <div className="space-y-6">
       <div className="space-y-3">
-        {/* Description (left); on the Weight phase the actions (AI review +
-            atomic save) sit on the right. The concept help lives on the page
-            title, not here. */}
-        <div className="flex items-start justify-between gap-3">
-          <p className="text-muted-foreground text-sm">{description}</p>
-          {onWeight && (
+        {/* Weight-only toolbar: the budget status (a check when balanced, an
+            amber heads-up with the remaining/over count otherwise) sits inline
+            on the left, the actions (AI review + atomic save) on the right. The
+            description lives in the page header; the amber tint is a call-site
+            override (Alert has no warning variant). */}
+        {onWeight && (
+          <div className="flex items-center justify-between gap-3">
+            <Alert
+              className={cn(
+                "w-auto",
+                delta !== 0 &&
+                  "border-amber-500/50 text-amber-700 dark:text-amber-400"
+              )}
+            >
+              <HugeiconsIcon
+                icon={delta === 0 ? Tick02Icon : InformationCircleIcon}
+                strokeWidth={2}
+              />
+              <AlertTitle>
+                {delta === 0
+                  ? tEditor("balanced")
+                  : delta < 0
+                    ? tEditor("pointsLeft", { count: -delta })
+                    : tEditor("pointsOver", { count: delta })}
+              </AlertTitle>
+            </Alert>
             <div className="flex shrink-0 items-center gap-2">
               {withAiReview && reviewLocked === false && !dirty && (
                 <MorphPopover
@@ -189,31 +206,7 @@ export function ModelBuilder({
                 {tEditor("saveCta")}
               </Button>
             </div>
-          )}
-        </div>
-        {/* Budget status as an Alert: a check when balanced, an amber heads-up
-            with the remaining/over count otherwise. The amber tint is a
-            call-site override (Alert has no warning variant) because an
-            unbalanced budget is a prompt to act, not an error. */}
-        {onWeight && (
-          <Alert
-            className={cn(
-              delta !== 0 &&
-                "border-amber-500/50 text-amber-700 dark:text-amber-400"
-            )}
-          >
-            <HugeiconsIcon
-              icon={delta === 0 ? Tick02Icon : InformationCircleIcon}
-              strokeWidth={2}
-            />
-            <AlertTitle>
-              {delta === 0
-                ? tEditor("balanced")
-                : delta < 0
-                  ? tEditor("pointsLeft", { count: -delta })
-                  : tEditor("pointsOver", { count: delta })}
-            </AlertTitle>
-          </Alert>
+          </div>
         )}
       </div>
 

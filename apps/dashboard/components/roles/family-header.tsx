@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import { useId, useState } from "react"
 import { MorphConfirmButton } from "@/components/morph-confirm-button"
+import { PageHeading } from "@/components/page-heading"
 import { isDuplicateFamilyError } from "@/lib/family-error"
 
 // Family page header: inline rename (member scope) and a confirmed removal
@@ -89,7 +90,7 @@ export function FamilyHeader({
           </>
         ) : (
           <>
-            <h2 className="font-medium text-lg">{name}</h2>
+            <PageHeading>{name}</PageHeading>
             <Button
               size="sm"
               type="button"
