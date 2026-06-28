@@ -1,0 +1,21 @@
+apps/dashboard/components/account/language-section.test.tsx
+  s_c216811bbb1bb1::t_dd33ecddae8c25 98-101,104,106-109
+apps/dashboard/components/account/avatar-upload.test.tsx
+  s_c216811bbb1bb1::t_87aede250d95f0 13-15,33-44,46-50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "401d968974b576a39237da2b4a5cf6f7246da8c6",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
