@@ -1,0 +1,48 @@
+packages/backend/convex/files.test.ts
+  s_c216811bbb1bb1::t_c0f4390ae8b04c 1-27,32-34,44-56,60-61
+  s_c216811bbb1bb1::t_91e911f127894d 28-31,35-43,57-59
+apps/dashboard/components/avatar-upload.test.tsx
+  s_c216811bbb1bb1::t_91e911f127894d 30-32
+  s_c216811bbb1bb1::t_814c9ca1c5e40d 1-29,33-43
+apps/dashboard/hooks/use-image-upload.ts
+  s_c216811bbb1bb1::t_89384e7c545a48 1-72
+packages/backend/convex/accounts/account.ts
+  s_c216811bbb1bb1::t_3aa03624566480 186
+  s_c216811bbb1bb1::t_afa67bb95b99d7 12-17
+  s_c216811bbb1bb1::t_f3578588ea9785 165
+  s_c216811bbb1bb1::t_41858c72ce9d17 131-134
+apps/dashboard/hooks/use-image-upload.test.ts
+  s_c216811bbb1bb1::t_91e911f127894d 5-9
+  s_c216811bbb1bb1::t_3fcca7f3bbc555 1-4,10-101
+apps/dashboard/components/account/avatar-section.test.tsx
+  s_c216811bbb1bb1::t_e9df248e7d8818 1-174,179-204
+  s_c216811bbb1bb1::t_1189f3cc1fbe3e 175-178
+apps/dashboard/components/avatar-upload.tsx
+  s_c216811bbb1bb1::t_25a77010e8d5bb 1-59,61-80,86-102
+  s_c216811bbb1bb1::t_3b9c8788a4e3eb 60
+  s_c216811bbb1bb1::t_91e911f127894d 81-85
+packages/backend/convex/files.ts
+  s_c216811bbb1bb1::t_84efd9817ed2e0 1-100
+apps/dashboard/components/account/avatar-section.tsx
+  s_c216811bbb1bb1::t_86371f5c0a6988 3,12,14-16,18-20,23-31,36-55,65-76
+  s_c216811bbb1bb1::t_8419962e579e42 32-35
+  s_c216811bbb1bb1::t_ed878d79c0936b 4
+packages/backend/convex/_generated/api.d.ts
+  s_c216811bbb1bb1::t_c4d8a57eaf1e0a 57,122
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "786d9664e48b2344b6b73a8c41ba4b4cd5bcd483",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
