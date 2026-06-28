@@ -2,10 +2,18 @@ import type { GenericMutationCtx } from "convex/server"
 import type { DataModel, Doc } from "../_generated/dataModel"
 import type { AuditPayloads, PlatformAuditPayloads } from "./auditPayloads"
 
+// Every value here needs BOTH a payload entry in AuditPayloads
+// (lib/auditPayloads.ts, compile-time-guarded) AND a readable label under
+// dashboard.auditLog.events in every locale, or the audit log shows the raw
+// event key. The audit-label coverage test (apps/dashboard) guards the labels.
+// PLATFORM_AUDIT_EVENTS labels live under dashboard.admin.auditLog.events.
 export const AUDIT_EVENTS = {
   organizationCreated: "organization.created",
   organizationSettingsUpdated: "organization.settingsUpdated",
   onboardingCompleted: "organization.onboardingCompleted",
+  organizationLogoUpdated: "organization.logoUpdated",
+  organizationLogoRemoved: "organization.logoRemoved",
+  organizationNameUpdated: "organization.nameUpdated",
   memberAdded: "member.added",
   memberRoleChanged: "member.roleChanged",
   memberRemoved: "member.removed",

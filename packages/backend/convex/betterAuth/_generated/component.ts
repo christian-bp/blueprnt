@@ -1830,6 +1830,13 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         { email: string | null; orgIds: Array<string> },
         Name
       >;
+      getOrganization: FunctionReference<
+        "query",
+        "internal",
+        { orgId: string },
+        null | { name: string; slug: string },
+        Name
+      >;
       hasPassword: FunctionReference<
         "query",
         "internal",

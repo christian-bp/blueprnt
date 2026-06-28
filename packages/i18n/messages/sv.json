@@ -109,6 +109,7 @@
       "admin": "Admin",
       "auditLog": "Händelselogg",
       "accountSettings": "Kontoinställningar",
+      "organization": "Organisation",
       "signOut": "Logga ut"
     },
     "auditLog": {
@@ -237,6 +238,9 @@
         "organizationCreated": "Organisation skapad",
         "organizationSettingsUpdated": "Inställningar uppdaterade",
         "organizationOnboardingCompleted": "Introduktion slutförd",
+        "organizationLogoUpdated": "Logotyp uppdaterad",
+        "organizationLogoRemoved": "Logotyp borttagen",
+        "organizationNameUpdated": "Namn uppdaterat",
         "memberAdded": "Medlem tillagd",
         "memberRoleChanged": "Medlemsroll ändrad",
         "memberRemoved": "Medlem borttagen",
@@ -744,7 +748,11 @@
       "twoFactorLabel": "Vad är tvåstegsverifiering?",
       "twoFactorBody": "Tvåstegsverifiering lägger till en andra kontroll vid inloggning, utöver ditt lösenord: en kod från en autentiseringsapp eller skickad till din e-post. Ett stulet lösenord ensamt kan då inte öppna ditt konto. Det krävs för alla på blueprnt.",
       "changeEmailLabel": "Hur fungerar e-postbyte?",
-      "changeEmailBody": "Att byta e-post är en tvåstegsprocess för att skydda ditt konto. Först skickas en bekräftelselänk till din nuvarande adress så att bara du kan godkänna bytet. Sedan skickas en verifieringslänk till din nya adress för att bekräfta att du äger den. Bytet träder i kraft först när båda länkarna har klickats."
+      "changeEmailBody": "Att byta e-post är en tvåstegsprocess för att skydda ditt konto. Först skickas en bekräftelselänk till din nuvarande adress så att bara du kan godkänna bytet. Sedan skickas en verifieringslänk till din nya adress för att bekräfta att du äger den. Bytet träder i kraft först när båda länkarna har klickats.",
+      "orgCurrencyLabel": "Vilken valuta är detta?",
+      "orgCurrencyBody": "Valutan som din organisation använder för lön. Den utgår från ditt land och används överallt där belopp visas. Att ändra den räknar inte om några befintliga värden.",
+      "orgLanguageLabel": "Vad är standardspråket?",
+      "orgLanguageBody": "Organisationens standardspråk, som används för till exempel inbjudningsmejl när en medlem inte har valt ett eget. Varje person kan ändå välja sitt eget visningsspråk."
     },
     "admin": {
       "tabs": {
@@ -1082,6 +1090,82 @@
           "error": "Ditt konto kunde inte tas bort. Försök igen.",
           "cancel": "Avbryt"
         }
+      }
+    },
+    "organization": {
+      "tabs": {
+        "general": "Allmänt",
+        "members": "Medlemmar"
+      },
+      "notAuthorized": "Endast organisationens administratörer kan hantera de här inställningarna.",
+      "general": {
+        "title": "Organisationsprofil",
+        "description": "Uppdatera organisationens namn, logotyp och regionala inställningar.",
+        "nameLabel": "Organisationens namn",
+        "countryLabel": "Land",
+        "countryPlaceholder": "Välj ett land",
+        "currencyLabel": "Valuta",
+        "currencyPlaceholder": "Välj en valuta",
+        "languageLabel": "Standardspråk",
+        "languagePlaceholder": "Välj ett språk",
+        "industryLabel": "Bransch",
+        "industryPlaceholder": "Välj en bransch",
+        "save": "Spara ändringar",
+        "saved": "Ändringarna har sparats.",
+        "error": "Det gick inte att spara organisationen. Försök igen."
+      },
+      "logo": {
+        "title": "Logotyp",
+        "description": "Klicka på logotypen för att ladda upp en bild från dina filer.",
+        "helper": "En logotyp är valfri men hjälper kollegor att känna igen organisationen.",
+        "remove": "Ta bort logotyp",
+        "tooLarge": "Bilden måste vara mindre än 5 MB.",
+        "invalidType": "Välj en bildfil.",
+        "error": "Det gick inte att uppdatera logotypen. Försök igen."
+      },
+      "members": {
+        "title": "Teammedlemmar",
+        "description": "Personer med åtkomst till den här organisationen.",
+        "table": {
+          "name": "Namn",
+          "email": "E-post",
+          "role": "Roll",
+          "actions": "Åtgärder"
+        },
+        "roleAdmin": "Administratör",
+        "roleEditor": "Redigerare",
+        "you": "Du",
+        "pending": "Väntande",
+        "memberActions": "Åtgärder för {name}",
+        "changeRoleAdmin": "Gör till administratör",
+        "changeRoleEditor": "Gör till redigerare",
+        "remove": "Ta bort från organisationen",
+        "removeConfirmTitle": "Ta bort {name}?",
+        "removeConfirmBody": "De förlorar åtkomsten till den här organisationen omedelbart. Detta kan inte ångras.",
+        "removeConfirmCta": "Ta bort",
+        "cancel": "Avbryt",
+        "soleAdminNote": "Den enda administratören kan inte tas bort eller nedgraderas. Lägg till en annan administratör först.",
+        "error": "Något gick fel. Försök igen.",
+        "empty": "Inga medlemmar ännu."
+      },
+      "invite": {
+        "cta": "Bjud in medlem",
+        "title": "Bjud in en medlem",
+        "description": "Skicka en inbjudan via e-post för att gå med i den här organisationen.",
+        "emailLabel": "E-postadress",
+        "roleLabel": "Roll",
+        "submit": "Skicka inbjudan",
+        "error": "Det gick inte att skicka inbjudan. Försök igen.",
+        "success": "Inbjudan har skickats."
+      },
+      "invitations": {
+        "invitationActions": "Åtgärder för {email}",
+        "revoke": "Återkalla",
+        "revokeConfirmTitle": "Återkalla den här inbjudan?",
+        "revokeConfirmBody": "Inbjudningslänken slutar fungera. Du kan bjuda in personen igen senare.",
+        "revokeConfirmCta": "Återkalla inbjudan",
+        "cancel": "Avbryt",
+        "error": "Det gick inte att återkalla inbjudan. Försök igen."
       }
     }
   },

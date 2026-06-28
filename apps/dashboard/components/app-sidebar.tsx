@@ -5,6 +5,7 @@ import {
   Briefcase01Icon,
   Home01Icon,
   Layers01Icon,
+  UserMultipleIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
@@ -13,6 +14,7 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  SidebarSeparator,
 } from "@workspace/ui/components/sidebar"
 import { useTranslations } from "next-intl"
 import type * as React from "react"
@@ -48,10 +50,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
   ]
 
-  // The org's own event trail is admin-only. The adminQuery is the real gate;
-  // hiding the nav item just keeps the affordance out of editors' sight.
+  // Admin-only destinations (team/org settings and the org's event trail),
+  // shown below a separator from the primary work nav. The adminQuery is the
+  // real gate; hiding the items just keeps them out of editors' sight.
+  const navAdmin: NavItem[] = []
   if (role === "admin") {
-    navMain.push({
+    navAdmin.push({
+      title: t("nav.organization"),
+      url: "/organization",
+      icon: <HugeiconsIcon icon={UserMultipleIcon} strokeWidth={2} />,
+    })
+    navAdmin.push({
       title: t("nav.auditLog"),
       url: "/audit-log",
       icon: <HugeiconsIcon icon={Audit02Icon} strokeWidth={2} />,
@@ -68,6 +77,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navMain} />
+        {navAdmin.length > 0 ? (
+          <>
+            <SidebarSeparator />
+            <NavMain items={navAdmin} />
+          </>
+        ) : null}
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

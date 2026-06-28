@@ -109,6 +109,7 @@
       "admin": "Admin",
       "auditLog": "Tapahtumaloki",
       "accountSettings": "Tiliasetukset",
+      "organization": "Organisaatio",
       "signOut": "Kirjaudu ulos"
     },
     "auditLog": {
@@ -237,6 +238,9 @@
         "organizationCreated": "Organisaatio luotu",
         "organizationSettingsUpdated": "Asetukset päivitetty",
         "organizationOnboardingCompleted": "Käyttöönotto valmis",
+        "organizationLogoUpdated": "Logo päivitetty",
+        "organizationLogoRemoved": "Logo poistettu",
+        "organizationNameUpdated": "Nimi päivitetty",
         "memberAdded": "Jäsen lisätty",
         "memberRoleChanged": "Jäsenen rooli muutettu",
         "memberRemoved": "Jäsen poistettu",
@@ -744,7 +748,11 @@
       "twoFactorLabel": "Mitä kaksivaiheinen vahvistus tarkoittaa?",
       "twoFactorBody": "Kaksivaiheinen vahvistus lisää kirjautumiseen toisen tarkistuksen salasanan lisäksi: koodin todennussovelluksesta tai sähköpostiisi lähetettynä. Varastettu salasana yksin ei silloin avaa tiliäsi. Se vaaditaan kaikilta blueprntissä.",
       "changeEmailLabel": "Miten sähköpostiosoitteen vaihto toimii?",
-      "changeEmailBody": "Sähköpostiosoitteen vaihto on kaksivaiheinen prosessi tilisi suojaamiseksi. Ensin vahvistuslinkki lähetetään nykyiseen osoitteeseesi, jotta vain sinä voit hyväksyä muutoksen. Sen jälkeen vahvistuslinkki lähetetään uuteen osoitteeseesi sen omistajuuden vahvistamiseksi. Muutos astuu voimaan vasta kun molemmat linkit on klikattu."
+      "changeEmailBody": "Sähköpostiosoitteen vaihto on kaksivaiheinen prosessi tilisi suojaamiseksi. Ensin vahvistuslinkki lähetetään nykyiseen osoitteeseesi, jotta vain sinä voit hyväksyä muutoksen. Sen jälkeen vahvistuslinkki lähetetään uuteen osoitteeseesi sen omistajuuden vahvistamiseksi. Muutos astuu voimaan vasta kun molemmat linkit on klikattu.",
+      "orgCurrencyLabel": "Mikä valuutta tämä on?",
+      "orgCurrencyBody": "Valuutta, jota organisaationne käyttää palkoissa. Se määräytyy oletuksena maanne mukaan ja sitä käytetään kaikkialla, missä summia näytetään. Sen vaihtaminen ei muunna olemassa olevia arvoja.",
+      "orgLanguageLabel": "Mikä on oletuskieli?",
+      "orgLanguageBody": "Organisaation oletuskieli, jota käytetään esimerkiksi kutsusähköposteissa, kun jäsen ei ole valinnut omaa kieltään. Jokainen voi silti valita oman näyttökielensä."
     },
     "admin": {
       "tabs": {
@@ -1082,6 +1090,82 @@
           "error": "Tiliäsi ei voitu poistaa. Yritä uudelleen.",
           "cancel": "Peruuta"
         }
+      }
+    },
+    "organization": {
+      "tabs": {
+        "general": "Yleiset",
+        "members": "Jäsenet"
+      },
+      "notAuthorized": "Vain organisaation järjestelmänvalvojat voivat hallita näitä asetuksia.",
+      "general": {
+        "title": "Organisaation profiili",
+        "description": "Päivitä organisaationne nimi, logo ja alueelliset asetukset.",
+        "nameLabel": "Organisaation nimi",
+        "countryLabel": "Maa",
+        "countryPlaceholder": "Valitse maa",
+        "currencyLabel": "Valuutta",
+        "currencyPlaceholder": "Valitse valuutta",
+        "languageLabel": "Oletuskieli",
+        "languagePlaceholder": "Valitse kieli",
+        "industryLabel": "Toimiala",
+        "industryPlaceholder": "Valitse toimiala",
+        "save": "Tallenna muutokset",
+        "saved": "Muutokset tallennettu.",
+        "error": "Organisaatiota ei voitu tallentaa. Yritä uudelleen."
+      },
+      "logo": {
+        "title": "Logo",
+        "description": "Napsauta logoa ladataksesi kuvan tiedostoistasi.",
+        "helper": "Logo on valinnainen, mutta auttaa työtovereita tunnistamaan organisaation.",
+        "remove": "Poista logo",
+        "tooLarge": "Kuvan on oltava alle 5 Mt.",
+        "invalidType": "Valitse kuvatiedosto.",
+        "error": "Logon päivittäminen epäonnistui. Yritä uudelleen."
+      },
+      "members": {
+        "title": "Tiimin jäsenet",
+        "description": "Henkilöt, joilla on pääsy tähän organisaatioon.",
+        "table": {
+          "name": "Nimi",
+          "email": "Sähköposti",
+          "role": "Rooli",
+          "actions": "Toiminnot"
+        },
+        "roleAdmin": "Admin",
+        "roleEditor": "Muokkaaja",
+        "you": "Sinä",
+        "pending": "Odottava",
+        "memberActions": "Toiminnot: {name}",
+        "changeRoleAdmin": "Tee adminiksi",
+        "changeRoleEditor": "Tee muokkaajaksi",
+        "remove": "Poista organisaatiosta",
+        "removeConfirmTitle": "Poistetaanko {name}?",
+        "removeConfirmBody": "Hän menettää pääsyn tähän organisaatioon välittömästi. Tätä ei voi kumota.",
+        "removeConfirmCta": "Poista",
+        "cancel": "Peruuta",
+        "soleAdminNote": "Ainoaa adminia ei voi poistaa tai alentaa. Lisää ensin toinen admin.",
+        "error": "Jokin meni pieleen. Yritä uudelleen.",
+        "empty": "Ei jäseniä vielä."
+      },
+      "invite": {
+        "cta": "Kutsu jäsen",
+        "title": "Kutsu jäsen",
+        "description": "Lähetä sähköpostikutsu liittyä tähän organisaatioon.",
+        "emailLabel": "Sähköpostiosoite",
+        "roleLabel": "Rooli",
+        "submit": "Lähetä kutsu",
+        "error": "Kutsua ei voitu lähettää. Yritä uudelleen.",
+        "success": "Kutsu lähetetty."
+      },
+      "invitations": {
+        "invitationActions": "Toiminnot: {email}",
+        "revoke": "Peruuta",
+        "revokeConfirmTitle": "Peruutetaanko tämä kutsu?",
+        "revokeConfirmBody": "Kutsulinkki lakkaa toimimasta. Voit kutsua henkilön uudelleen myöhemmin.",
+        "revokeConfirmCta": "Peruuta kutsu",
+        "cancel": "Peruuta",
+        "error": "Kutsua ei voitu peruuttaa. Yritä uudelleen."
       }
     }
   },

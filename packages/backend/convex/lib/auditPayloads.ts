@@ -144,6 +144,9 @@ export interface AuditPayloads {
     hadModel?: boolean
     changes: Changes
   }
+  "organization.logoUpdated": Record<string, never>
+  "organization.logoRemoved": Record<string, never>
+  "organization.nameUpdated": { changes: Changes }
   "member.added": {
     memberUserId: string
     memberId?: string

@@ -6,6 +6,7 @@ import {
 import { v } from "convex/values"
 import { components } from "../_generated/api"
 import {
+  type ActionCtx,
   mutation,
   type MutationCtx,
   query,
@@ -142,6 +143,25 @@ export const adminQuery = customQuery(query, {
     return { ctx: org, args: {} }
   },
 })
+
+// Action-context admin gate. Actions cannot use the customMutation org wrappers,
+// so this mirrors resolveOrgContext's identity + membership(role === admin)
+// check for an ActionCtx and returns the caller's Better Auth id (the audit
+// actor). Same error codes as the query/mutation path.
+export async function requireOrgAdminAction(
+  ctx: ActionCtx,
+  orgId: string
+): Promise<string> {
+  const identity = await ctx.auth.getUserIdentity()
+  if (identity === null) throw appError(ERROR_CODES.notAuthenticated)
+  const membership = await ctx.runQuery(
+    components.betterAuth.membership.getMembership,
+    { organizationId: orgId, userId: identity.subject }
+  )
+  if (membership === null) throw appError(ERROR_CODES.notAMember)
+  if (membership.role !== "admin") throw appError(ERROR_CODES.adminRequired)
+  return identity.subject
+}
 
 // Resolves the caller's Better Auth id from the JWT and asserts they are a
 // platform admin (the cross-org operator flag on the app users mirror, set

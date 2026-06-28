@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation"
 import { AccountTabs } from "@/components/account/account-tabs"
 import { AdminTabs } from "@/components/admin/admin-tabs"
 import { ModelTabs } from "@/components/model/model-tabs"
+import { OrganizationTabs } from "@/components/organization/organization-tabs"
 import { SectionTabs } from "@/components/section-tabs"
 
 export function SiteHeader() {
@@ -22,6 +23,7 @@ export function SiteHeader() {
   const inAdminSection = section === "admin"
   const inModelSection = section === "model"
   const inAccountSection = section === "account"
+  const inOrganizationSection = section === "organization"
   const sectionTitle = t("nav.home")
 
   return (
@@ -45,6 +47,8 @@ export function SiteHeader() {
           <ModelTabs />
         ) : inAccountSection ? (
           <AccountTabs />
+        ) : inOrganizationSection ? (
+          <OrganizationTabs />
         ) : (
           <span className="font-medium text-sm">{sectionTitle}</span>
         )}

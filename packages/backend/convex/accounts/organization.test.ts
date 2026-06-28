@@ -31,6 +31,16 @@ describe("organization settings", () => {
     expect(profile).toMatchObject({ orgId, country: null })
   })
 
+  it("getOrganizationSettings returns imageUrl null when no logo set", async () => {
+    const { t, orgId, userId } = await setup("editor")
+    const asMember = t.withIdentity({ subject: userId })
+    const profile = await asMember.query(
+      api.accounts.organization.getOrganizationSettings,
+      { orgId }
+    )
+    expect(profile.imageUrl).toBeNull()
+  })
+
   it("updateOrganizationSettings inserts a row when none exists (upsert path)", async () => {
     // Set up a membership without pre-seeding an organizations row so we
     // can verify the upsert inserts instead of throwing notFound.
@@ -430,5 +440,318 @@ describe("getLanguageForUser", () => {
       { userId: "no-such-user" }
     )
     expect(result).toBeNull()
+  })
+})
+
+describe("organization logo", () => {
+  async function setup(role: "admin" | "editor") {
+    const t = initConvexTest()
+    const { orgId, userId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "hr@acme.se", name: "HR Person", role }
+    )
+    await t.run(async (ctx) => {
+      await onUserCreate(ctx, {
+        _id: userId,
+        email: "hr@acme.se",
+        name: "HR Person",
+      })
+      await ctx.db.insert("organizations", { orgId })
+    })
+    return { t, orgId, userId }
+  }
+
+  it("removeOrgAvatar clears the logo and audits logoRemoved (admin only)", async () => {
+    const { t, orgId, userId } = await setup("admin")
+    const storageId = await t.run(async (ctx) => {
+      const id = await ctx.storage.store(
+        new Blob(["img"], { type: "image/png" })
+      )
+      const row = await ctx.db
+        .query("organizations")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      if (row === null) throw new Error("seeded org row missing")
+      await ctx.db.patch(row._id, { imageId: id })
+      return id
+    })
+    await t
+      .withIdentity({ subject: userId })
+      .mutation(api.accounts.organization.removeOrgAvatar, { orgId })
+    await t.run(async (ctx) => {
+      const row = await ctx.db
+        .query("organizations")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      expect(row?.imageId).toBeUndefined()
+      const audit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "organization.logoRemoved")
+        )
+        .collect()
+      expect(audit).toHaveLength(1)
+      expect(await ctx.storage.getUrl(storageId)).toBeNull()
+    })
+  })
+
+  it("removeOrgAvatar is rejected for editors", async () => {
+    const { t, orgId, userId } = await setup("editor")
+    await expect(
+      t
+        .withIdentity({ subject: userId })
+        .mutation(api.accounts.organization.removeOrgAvatar, { orgId })
+    ).rejects.toThrow()
+  })
+
+  it("applyOrgAvatar swaps the stored file and audits logoUpdated", async () => {
+    const { t, orgId, userId } = await setup("admin")
+    const storageId = await t.run((ctx) =>
+      ctx.storage.store(new Blob(["img"], { type: "image/png" }))
+    )
+    await t.mutation(internal.accounts.organization.applyOrgAvatar, {
+      orgId,
+      storageId,
+      actorId: userId,
+    })
+    await t.run(async (ctx) => {
+      const row = await ctx.db
+        .query("organizations")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .unique()
+      expect(row?.imageId).toBe(storageId)
+      const audit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "organization.logoUpdated")
+        )
+        .collect()
+      expect(audit).toHaveLength(1)
+      expect(audit[0].actorName).toBe("HR Person")
+    })
+  })
+
+  it("setOrgAvatar is rejected for editors before any storage write", async () => {
+    const { t, orgId, userId } = await setup("editor")
+    const storageId = await t.run((ctx) =>
+      ctx.storage.store(new Blob(["img"], { type: "image/png" }))
+    )
+    await expect(
+      t
+        .withIdentity({ subject: userId })
+        .action(api.accounts.organization.setOrgAvatar, { orgId, storageId })
+    ).rejects.toThrow()
+  })
+})
+
+describe("organization name", () => {
+  async function setup(role: "admin" | "editor") {
+    const t = initConvexTest()
+    const { orgId, userId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "hr@acme.se", name: "HR Person", role }
+    )
+    await t.run(async (ctx) => {
+      await onUserCreate(ctx, {
+        _id: userId,
+        email: "hr@acme.se",
+        name: "HR Person",
+      })
+      await ctx.db.insert("organizations", { orgId })
+    })
+    return { t, orgId, userId }
+  }
+
+  it("updateOrganizationName renames the org and audits nameUpdated (admin only)", async () => {
+    const { t, orgId, userId } = await setup("admin")
+    await t
+      .withIdentity({ subject: userId })
+      .mutation(api.accounts.organization.updateOrganizationName, {
+        orgId,
+        name: "Renamed AB",
+      })
+    const org = await t.query(
+      components.betterAuth.provisioning.getOrganization,
+      { orgId }
+    )
+    expect(org?.name).toBe("Renamed AB")
+    await t.run(async (ctx) => {
+      const audit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "organization.nameUpdated")
+        )
+        .collect()
+      expect(audit).toHaveLength(1)
+      const payload = audit[0].payload as {
+        changes: Record<string, { from: unknown; to: unknown }>
+      }
+      expect(payload.changes.name.to).toBe("Renamed AB")
+    })
+  })
+
+  it("updateOrganizationName rejects an empty name", async () => {
+    const { t, orgId, userId } = await setup("admin")
+    await expect(
+      t
+        .withIdentity({ subject: userId })
+        .mutation(api.accounts.organization.updateOrganizationName, {
+          orgId,
+          name: "   ",
+        })
+    ).rejects.toThrow()
+  })
+
+  it("updateOrganizationName is admin-only", async () => {
+    const { t, orgId, userId } = await setup("editor")
+    await expect(
+      t
+        .withIdentity({ subject: userId })
+        .mutation(api.accounts.organization.updateOrganizationName, {
+          orgId,
+          name: "Nope AB",
+        })
+    ).rejects.toThrow()
+  })
+})
+
+describe("organization members", () => {
+  async function setupWithSecond(secondRole: "admin" | "editor") {
+    const t = initConvexTest()
+    const { orgId, userId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "admin@acme.se", name: "Admin One", role: "admin" }
+    )
+    const second = await t.mutation(
+      components.betterAuth.provisioning.provisionUser,
+      { email: "two@acme.se", name: "Member Two" }
+    )
+    await t.mutation(components.betterAuth.provisioning.addMember, {
+      organizationId: orgId,
+      userId: second.userId,
+      role: secondRole,
+    })
+    await t.run(async (ctx) => {
+      await onUserCreate(ctx, {
+        _id: userId,
+        email: "admin@acme.se",
+        name: "Admin One",
+      })
+      await onUserCreate(ctx, {
+        _id: second.userId,
+        email: "two@acme.se",
+        name: "Member Two",
+      })
+      await ctx.db.insert("organizations", { orgId })
+    })
+    return { t, orgId, adminId: userId, secondId: second.userId }
+  }
+
+  it("listOrgMembers returns the roster for an admin", async () => {
+    const { t, orgId, adminId } = await setupWithSecond("editor")
+    const rows = await t
+      .withIdentity({ subject: adminId })
+      .query(api.accounts.organization.listOrgMembers, { orgId })
+    expect(rows).toHaveLength(2)
+    expect(rows.map((r) => r.role).sort()).toEqual(["admin", "editor"])
+  })
+
+  it("listOrgMembers is admin-only", async () => {
+    const { t, orgId, secondId } = await setupWithSecond("editor")
+    await expect(
+      t
+        .withIdentity({ subject: secondId })
+        .query(api.accounts.organization.listOrgMembers, { orgId })
+    ).rejects.toThrow()
+  })
+
+  it("updateMemberRole promotes an editor and audits member.roleChanged", async () => {
+    const { t, orgId, adminId, secondId } = await setupWithSecond("editor")
+    await t
+      .withIdentity({ subject: adminId })
+      .mutation(api.accounts.organization.updateMemberRole, {
+        orgId,
+        userId: secondId,
+        role: "admin",
+      })
+    await t.run(async (ctx) => {
+      const audit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "member.roleChanged")
+        )
+        .collect()
+      expect(audit).toHaveLength(1)
+      expect(audit[0].actorName).toBe("Admin One")
+      const p = audit[0].payload as {
+        memberUserId: string
+        changes: { role: { from: unknown; to: unknown } }
+      }
+      expect(p.memberUserId).toBe(secondId)
+      expect(p.changes.role).toEqual({ from: "editor", to: "admin" })
+    })
+  })
+
+  it("updateMemberRole refuses to demote the sole admin", async () => {
+    const { t, orgId, adminId } = await setupWithSecond("editor")
+    await expect(
+      t
+        .withIdentity({ subject: adminId })
+        .mutation(api.accounts.organization.updateMemberRole, {
+          orgId,
+          userId: adminId,
+          role: "editor",
+        })
+    ).rejects.toThrow()
+  })
+
+  it("updateMemberRole allows demoting one admin when two exist", async () => {
+    const { t, orgId, adminId, secondId } = await setupWithSecond("admin")
+    await t
+      .withIdentity({ subject: adminId })
+      .mutation(api.accounts.organization.updateMemberRole, {
+        orgId,
+        userId: secondId,
+        role: "editor",
+      })
+    const rows = await t
+      .withIdentity({ subject: adminId })
+      .query(api.accounts.organization.listOrgMembers, { orgId })
+    expect(rows.find((r) => r.userId === secondId)?.role).toBe("editor")
+  })
+
+  it("removeMember removes a non-sole member and audits member.removed", async () => {
+    const { t, orgId, adminId, secondId } = await setupWithSecond("editor")
+    await t
+      .withIdentity({ subject: adminId })
+      .mutation(api.accounts.organization.removeMember, {
+        orgId,
+        userId: secondId,
+      })
+    await t.run(async (ctx) => {
+      const audit = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "member.removed")
+        )
+        .collect()
+      expect(audit).toHaveLength(1)
+      const p = audit[0].payload as {
+        changes: { role: { from: unknown; to: unknown } }
+      }
+      expect(p.changes.role).toEqual({ from: "editor", to: null })
+    })
+  })
+
+  it("removeMember refuses to remove the sole admin", async () => {
+    const { t, orgId, adminId } = await setupWithSecond("editor")
+    await expect(
+      t
+        .withIdentity({ subject: adminId })
+        .mutation(api.accounts.organization.removeMember, {
+          orgId,
+          userId: adminId,
+        })
+    ).rejects.toThrow()
   })
 })

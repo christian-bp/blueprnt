@@ -58,6 +58,20 @@ in the same change.
   - `email.verifyEmail.*`
   - Note: the nb `changeMethodConfirmTitle` typo (`to-trinnsmétode` with an
     accented e) was fixed in the same commit that flagged this item.
+- [ ] **Native review of organization-settings machine-translated strings.** The
+  organization-settings feature added new Nordic (sv/nb/da/fi) strings that were
+  machine-drafted from English. Have a native speaker review before launch.
+  Affected key namespaces:
+  - `dashboard.organization.*` (tabs, notAuthorized, general, logo, members,
+    invite, invitations)
+  - `dashboard.nav.organization`
+  - `dashboard.help.orgCurrencyLabel` / `orgCurrencyBody` /
+    `orgLanguageLabel` / `orgLanguageBody`
+  - Role-label consistency: the new `organization.members.roleAdmin` /
+    `roleEditor` follow each locale's existing convention, but those conventions
+    are not uniform (e.g. fi pairs "Muokkaaja" with a top-level
+    `accounts.role.editor` of "Editor"; da uses "Redaktør"). Standardize the
+    Admin/Editor terms per locale.
 
 ## Security and compliance
 
@@ -79,6 +93,18 @@ suite covers them before go-live:
   callbackURL rewrite (`rewriteChangeEmailCallback`) is unit-tested in
   `convex/auth.test.ts`; the templateKey + recipient binding inside the senders
   are e2e-only.
+- [ ] **Organization member + invitation flows.** convex-test cannot drive the
+  Better Auth organization client. Confirm the e2e suite covers: inviting a
+  member (`authClient.organization.inviteMember` fires the wired
+  `sendInvitationEmail` + the `invitation.created` audit), listing and revoking
+  pending invitations (`listInvitations` / `cancelInvitation`, the latter firing
+  `invitation.revoked`), and accepting an invite (`/accept-invitation/[id]`
+  creating the member + `member.added`). The Convex `updateMemberRole` /
+  `removeMember` mutations and the last-admin guard ARE unit-tested.
+- [ ] **Org logo content-type rejection (`setOrgAvatar`).** convex-test storage
+  does not record an upload's content type, so the non-image rejection path is
+  e2e-only (the 5 MB size cap and the admin gate ARE unit-tested). Same
+  limitation as the user-avatar `setMyAvatar` path.
 
 ## How to add to this list
 

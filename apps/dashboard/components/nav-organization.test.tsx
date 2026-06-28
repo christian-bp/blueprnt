@@ -21,6 +21,19 @@ vi.mock("@/lib/auth-client", () => ({
   },
 }))
 
+// The switcher resolves the active org's logo via this query; undefined here
+// (no logo) so the avatars fall back to initials.
+vi.mock("convex/react", () => ({
+  useQuery: () => undefined,
+}))
+vi.mock("@workspace/backend/convex/_generated/api", () => ({
+  api: {
+    accounts: {
+      organization: { getOrganizationSettings: "getOrganizationSettings" },
+    },
+  },
+}))
+
 vi.mock("@workspace/ui/components/sidebar", () => ({
   SidebarMenu: ({ children }: { children: React.ReactNode }) => (
     <ul>{children}</ul>

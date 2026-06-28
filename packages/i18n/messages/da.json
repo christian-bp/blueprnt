@@ -109,6 +109,7 @@
       "admin": "Admin",
       "auditLog": "Hændelseslog",
       "accountSettings": "Kontoindstillinger",
+      "organization": "Organisation",
       "signOut": "Log ud"
     },
     "auditLog": {
@@ -237,6 +238,9 @@
         "organizationCreated": "Organisation oprettet",
         "organizationSettingsUpdated": "Indstillinger opdateret",
         "organizationOnboardingCompleted": "Onboarding fuldført",
+        "organizationLogoUpdated": "Logo opdateret",
+        "organizationLogoRemoved": "Logo fjernet",
+        "organizationNameUpdated": "Navn opdateret",
         "memberAdded": "Medlem tilføjet",
         "memberRoleChanged": "Medlemsrolle ændret",
         "memberRemoved": "Medlem fjernet",
@@ -744,7 +748,11 @@
       "twoFactorLabel": "Hvad er totrinsbekræftelse?",
       "twoFactorBody": "Totrinsbekræftelse tilføjer et ekstra tjek, når du logger ind, ud over din adgangskode: en kode fra en godkendelsesapp eller sendt til din e-mail. En stjålet adgangskode alene kan så ikke åbne din konto. Det kræves for alle på blueprnt.",
       "changeEmailLabel": "Hvordan fungerer e-mailskift?",
-      "changeEmailBody": "At skifte e-mail er en totrinsproces for at holde din konto sikker. Først sendes et bekræftelseslink til din nuværende adresse, så kun du kan godkende ændringen. Derefter sendes et verificeringslink til din nye adresse for at bekræfte, at du ejer den. Ændringen træder kun i kraft, når begge links er klikket."
+      "changeEmailBody": "At skifte e-mail er en totrinsproces for at holde din konto sikker. Først sendes et bekræftelseslink til din nuværende adresse, så kun du kan godkende ændringen. Derefter sendes et verificeringslink til din nye adresse for at bekræfte, at du ejer den. Ændringen træder kun i kraft, når begge links er klikket.",
+      "orgCurrencyLabel": "Hvilken valuta er dette?",
+      "orgCurrencyBody": "Den valuta, jeres organisation bruger til løn. Den udfyldes som standard ud fra jeres land og bruges, hvor beløb vises. Hvis du ændrer den, konverteres eksisterende værdier ikke.",
+      "orgLanguageLabel": "Hvad er standardsproget?",
+      "orgLanguageBody": "Organisationens standardsprog, der bruges til ting som invitationsmails, når et medlem ikke har valgt sit eget. Hver person kan stadig vælge sit eget visningssprog."
     },
     "admin": {
       "tabs": {
@@ -1082,6 +1090,82 @@
           "error": "Din konto kunne ikke slettes. Prøv igen.",
           "cancel": "Annuller"
         }
+      }
+    },
+    "organization": {
+      "tabs": {
+        "general": "Generelt",
+        "members": "Medlemmer"
+      },
+      "notAuthorized": "Kun organisationsadministratorer kan administrere disse indstillinger.",
+      "general": {
+        "title": "Organisationsprofil",
+        "description": "Opdater jeres organisations navn, logo og regionale indstillinger.",
+        "nameLabel": "Organisationens navn",
+        "countryLabel": "Land",
+        "countryPlaceholder": "Vælg et land",
+        "currencyLabel": "Valuta",
+        "currencyPlaceholder": "Vælg en valuta",
+        "languageLabel": "Standardsprog",
+        "languagePlaceholder": "Vælg et sprog",
+        "industryLabel": "Branche",
+        "industryPlaceholder": "Vælg en branche",
+        "save": "Gem ændringer",
+        "saved": "Ændringer gemt.",
+        "error": "Kunne ikke gemme organisationen. Prøv igen."
+      },
+      "logo": {
+        "title": "Logo",
+        "description": "Klik på logoet for at uploade et billede fra dine filer.",
+        "helper": "Et logo er valgfrit, men hjælper kolleger med at genkende organisationen.",
+        "remove": "Fjern logo",
+        "tooLarge": "Billedet skal være mindre end 5 MB.",
+        "invalidType": "Vælg venligst en billedfil.",
+        "error": "Kunne ikke opdatere logoet. Prøv igen."
+      },
+      "members": {
+        "title": "Teammedlemmer",
+        "description": "Personer med adgang til denne organisation.",
+        "table": {
+          "name": "Navn",
+          "email": "E-mail",
+          "role": "Rolle",
+          "actions": "Handlinger"
+        },
+        "roleAdmin": "Admin",
+        "roleEditor": "Redaktør",
+        "you": "Dig",
+        "pending": "Afventende",
+        "memberActions": "Handlinger for {name}",
+        "changeRoleAdmin": "Gør til admin",
+        "changeRoleEditor": "Gør til redaktør",
+        "remove": "Fjern fra organisationen",
+        "removeConfirmTitle": "Fjern {name}?",
+        "removeConfirmBody": "De mister adgang til denne organisation med det samme. Dette kan ikke fortrydes.",
+        "removeConfirmCta": "Fjern",
+        "cancel": "Annuller",
+        "soleAdminNote": "Den eneste admin kan ikke fjernes eller nedgraderes. Tilføj en anden admin først.",
+        "error": "Noget gik galt. Prøv igen.",
+        "empty": "Ingen medlemmer endnu."
+      },
+      "invite": {
+        "cta": "Inviter medlem",
+        "title": "Inviter et medlem",
+        "description": "Send en e-mailinvitation til at blive medlem af denne organisation.",
+        "emailLabel": "E-mailadresse",
+        "roleLabel": "Rolle",
+        "submit": "Send invitation",
+        "error": "Kunne ikke sende invitationen. Prøv igen.",
+        "success": "Invitation sendt."
+      },
+      "invitations": {
+        "invitationActions": "Handlinger for {email}",
+        "revoke": "Tilbagekald",
+        "revokeConfirmTitle": "Tilbagekald denne invitation?",
+        "revokeConfirmBody": "Invitationslinket holder op med at virke. Du kan invitere personen igen senere.",
+        "revokeConfirmCta": "Tilbagekald invitation",
+        "cancel": "Annuller",
+        "error": "Kunne ikke tilbagekalde invitationen. Prøv igen."
       }
     }
   },

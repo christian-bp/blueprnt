@@ -109,6 +109,7 @@
       "admin": "Admin",
       "auditLog": "Audit log",
       "accountSettings": "Account settings",
+      "organization": "Organization",
       "signOut": "Sign out"
     },
     "auditLog": {
@@ -237,6 +238,9 @@
         "organizationCreated": "Organization created",
         "organizationSettingsUpdated": "Settings updated",
         "organizationOnboardingCompleted": "Onboarding completed",
+        "organizationLogoUpdated": "Logo updated",
+        "organizationLogoRemoved": "Logo removed",
+        "organizationNameUpdated": "Name updated",
         "memberAdded": "Member added",
         "memberRoleChanged": "Member role changed",
         "memberRemoved": "Member removed",
@@ -744,7 +748,11 @@
       "twoFactorLabel": "What is two-step verification?",
       "twoFactorBody": "Two-step verification adds a second check when you sign in, on top of your password: a code from an authenticator app or sent to your email. A stolen password alone then can't open your account. It is required for everyone on blueprnt.",
       "changeEmailLabel": "How does changing your email work?",
-      "changeEmailBody": "Changing your email is a two-step process to keep your account secure. First, a confirmation link goes to your current address so only you can authorise the change. Then a verification link goes to your new address to confirm you own it. The change only takes effect once both links are clicked."
+      "changeEmailBody": "Changing your email is a two-step process to keep your account secure. First, a confirmation link goes to your current address so only you can authorise the change. Then a verification link goes to your new address to confirm you own it. The change only takes effect once both links are clicked.",
+      "orgCurrencyLabel": "Which currency is this?",
+      "orgCurrencyBody": "The currency your organization uses for pay. It defaults from your country and is used wherever amounts are shown. Changing it does not convert any existing values.",
+      "orgLanguageLabel": "What is the default language?",
+      "orgLanguageBody": "The organization's default language, used for things like invitation emails when a member has not chosen their own. Each person can still pick their own display language."
     },
     "admin": {
       "tabs": {
@@ -1082,6 +1090,82 @@
           "error": "Your account could not be deleted. Please try again.",
           "cancel": "Cancel"
         }
+      }
+    },
+    "organization": {
+      "tabs": {
+        "general": "General",
+        "members": "Members"
+      },
+      "notAuthorized": "Only organization admins can manage these settings.",
+      "general": {
+        "title": "Organization profile",
+        "description": "Update your organization's name, logo, and regional settings.",
+        "nameLabel": "Organization name",
+        "countryLabel": "Country",
+        "countryPlaceholder": "Select a country",
+        "currencyLabel": "Currency",
+        "currencyPlaceholder": "Select a currency",
+        "languageLabel": "Default language",
+        "languagePlaceholder": "Select a language",
+        "industryLabel": "Industry",
+        "industryPlaceholder": "Select an industry",
+        "save": "Save changes",
+        "saved": "Changes saved.",
+        "error": "Could not save the organization. Please try again."
+      },
+      "logo": {
+        "title": "Logo",
+        "description": "Click the logo to upload an image from your files.",
+        "helper": "A logo is optional but helps colleagues recognize the organization.",
+        "remove": "Remove logo",
+        "tooLarge": "Image must be smaller than 5 MB.",
+        "invalidType": "Please select an image file.",
+        "error": "Could not update the logo. Try again."
+      },
+      "members": {
+        "title": "Team members",
+        "description": "People with access to this organization.",
+        "table": {
+          "name": "Name",
+          "email": "Email",
+          "role": "Role",
+          "actions": "Actions"
+        },
+        "roleAdmin": "Admin",
+        "roleEditor": "Editor",
+        "you": "You",
+        "pending": "Pending",
+        "memberActions": "Actions for {name}",
+        "changeRoleAdmin": "Make admin",
+        "changeRoleEditor": "Make editor",
+        "remove": "Remove from organization",
+        "removeConfirmTitle": "Remove {name}?",
+        "removeConfirmBody": "They will lose access to this organization immediately. This cannot be undone.",
+        "removeConfirmCta": "Remove",
+        "cancel": "Cancel",
+        "soleAdminNote": "The only admin cannot be removed or demoted. Add another admin first.",
+        "error": "Something went wrong. Please try again.",
+        "empty": "No members yet."
+      },
+      "invite": {
+        "cta": "Invite member",
+        "title": "Invite a member",
+        "description": "Send an email invitation to join this organization.",
+        "emailLabel": "Email address",
+        "roleLabel": "Role",
+        "submit": "Send invitation",
+        "error": "Could not send the invitation. Please try again.",
+        "success": "Invitation sent."
+      },
+      "invitations": {
+        "invitationActions": "Actions for {email}",
+        "revoke": "Revoke",
+        "revokeConfirmTitle": "Revoke this invitation?",
+        "revokeConfirmBody": "The invitation link will stop working. You can invite the person again later.",
+        "revokeConfirmCta": "Revoke invitation",
+        "cancel": "Cancel",
+        "error": "Could not revoke the invitation. Please try again."
       }
     }
   },

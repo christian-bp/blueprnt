@@ -184,6 +184,21 @@ export const updateOrganizationIdentity = mutation({
   },
 })
 
+// Reads an organization's identity (name/slug) by component org id. Used by the
+// app boundary (updateOrganizationName) to capture the before-state for the
+// audit diff. Returns null when the id does not resolve.
+export const getOrganization = query({
+  args: { orgId: v.string() },
+  returns: v.union(v.null(), v.object({ name: v.string(), slug: v.string() })),
+  handler: async (ctx, { orgId }) => {
+    const id = ctx.db.normalizeId("organization", orgId)
+    if (id === null) return null
+    const org = await ctx.db.get(id)
+    if (org === null) return null
+    return { name: org.name, slug: org.slug }
+  },
+})
+
 // GDPR erasure: delete every identity/membership/invitation row for a user.
 // Returns the distinct org ids the user was a member of (the caller uses only
 // the count for its admin-log entry) and the user's email (the authoritative

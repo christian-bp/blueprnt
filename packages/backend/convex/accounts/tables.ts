@@ -48,4 +48,7 @@ export const organizations = defineTable({
   // Set once by completeOnboarding when the wizard finishes; the gate trusts
   // this, never inferred state.
   onboardingCompletedAt: v.optional(v.number()),
+  // The org logo's file-storage id. Org-domain content (NOT person PII): edited
+  // by org admins, audited, and unaffected by person erasure (Role != Person).
+  imageId: v.optional(v.id("_storage")),
 }).index("by_org", ["orgId"])
