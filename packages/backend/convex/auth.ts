@@ -34,6 +34,31 @@ function requireSiteUrl(): string {
 
 const authFunctions: AuthFunctions = internal.auth
 
+// The landing page the hop-2 verify link returns to after Better Auth applies
+// the email change. We override whatever callbackURL Better Auth put on the
+// link (the hop-1 "check your inbox" page) so the user lands on a page with
+// accurate "email updated" copy instead.
+export const CHANGE_EMAIL_DONE_CALLBACK = "/change-email?step=done"
+
+// Pure, unit-testable rewrite of the hop-2 verify-email link's callbackURL.
+// Better Auth builds the link as the verify endpoint with a self-contained
+// token plus a callbackURL pointing at the hop-1 page; we replace ONLY that
+// callbackURL with the hop-2 "done" page, leaving the token and every other
+// query param untouched. Robust to odd input: a relative or malformed url is
+// parsed against a throwaway base and the path is preserved; a url with no
+// callbackURL simply gains one. Exported so it can be tested directly without
+// driving Better Auth's session-gated endpoint (which convex-test cannot do).
+export function rewriteChangeEmailCallback(url: string): string {
+  // A throwaway base lets us parse relative urls too; we never emit the base.
+  const base = "https://placeholder.invalid"
+  const u = new URL(url, base)
+  u.searchParams.set("callbackURL", CHANGE_EMAIL_DONE_CALLBACK)
+  // Re-serialize relative to the same base so an originally-relative input
+  // comes back relative (path + query), and an absolute input comes back
+  // absolute unchanged apart from the rewritten callbackURL.
+  return u.origin === base ? u.pathname + u.search : u.toString()
+}
+
 export const authComponent = createClient<DataModel, typeof authSchema>(
   components.betterAuth,
   {
@@ -150,6 +175,15 @@ export const createAuthOptions = (
     // Double opt-in email change: hop 1 sends a confirmation link to the
     // CURRENT address; hop 2 (via emailVerification.sendVerificationEmail)
     // sends a verify link to the NEW address once the user clicks hop 1.
+    //
+    // E2E carve-out: the templateKey + recipient binding inside these two
+    // senders run only when Better Auth invokes them from its session-gated
+    // change-email endpoints, which convex-test cannot drive (same documented
+    // limitation that scoped deleteMyAccount's valid-password path to e2e; see
+    // lib/functions.ts and accounts/account.test.ts). They are exercised by the
+    // e2e/Playwright suite, tracked in docs/go-live-checklist.md. The only piece
+    // we can isolate and unit-test is the pure callbackURL rewrite below
+    // (rewriteChangeEmailCallback), so that is tested directly.
     user: {
       changeEmail: {
         enabled: true,
@@ -182,12 +216,10 @@ export const createAuthOptions = (
           internal.accounts.organization.getLanguageForUser,
           { userId: user.id }
         )
-        const u = new URL(url)
-        u.searchParams.set("callbackURL", "/change-email?step=done")
         await mctx.runMutation(internal.email.outbox.enqueueEmail, {
           to: user.email,
           templateKey: "verifyEmail",
-          props: { url: u.toString() },
+          props: { url: rewriteChangeEmailCallback(url) },
           locale: settings?.language ?? "en",
         })
       },

@@ -65,6 +65,21 @@ in the same change.
   `docs/superpowers/specs/2026-06-26-cra-hardening-design.md` and confirm its
   go-live items are done.
 
+## E2E-only coverage to verify before launch
+
+These boundaries cannot be exercised by convex-test (they run only inside Better
+Auth's session-gated endpoints, the same limitation that scoped
+`deleteMyAccount`'s valid-password path to e2e). Make sure the e2e/Playwright
+suite covers them before go-live:
+
+- [ ] **Change-email two-hop senders (`auth.ts`).** Confirm the e2e suite
+  exercises the full double opt-in: hop 1 enqueues `changeEmailConfirm` to the
+  CURRENT address, hop 2 enqueues `verifyEmail` to the NEW address, and clicking
+  hop 2 applies the change and lands on `/change-email?step=done`. The pure
+  callbackURL rewrite (`rewriteChangeEmailCallback`) is unit-tested in
+  `convex/auth.test.ts`; the templateKey + recipient binding inside the senders
+  are e2e-only.
+
 ## How to add to this list
 
 When you introduce anything that is acceptable only because we are pre-launch (a
