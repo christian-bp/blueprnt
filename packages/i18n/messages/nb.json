@@ -139,6 +139,7 @@
       "previous": "Forrige",
       "next": "Neste",
       "detail": {
+        "what": "Hva",
         "who": "Hvem",
         "when": "Når",
         "category": "Kategori",

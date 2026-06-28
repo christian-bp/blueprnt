@@ -139,6 +139,7 @@
       "previous": "Edellinen",
       "next": "Seuraava",
       "detail": {
+        "what": "Mitä",
         "who": "Kuka",
         "when": "Milloin",
         "category": "Luokka",

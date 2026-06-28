@@ -570,14 +570,18 @@ function AuditDetailSheet({
         <SheetTitle className="pr-8 text-balance">
           {actionLabel(row.type)}
         </SheetTitle>
-        <SheetDescription className="text-balance">
-          {subject || dateLong}
-        </SheetDescription>
+        <SheetDescription className="text-balance">{dateLong}</SheetDescription>
       </SheetHeader>
 
       <div className="flex flex-col gap-5 overflow-y-auto px-4 pb-4">
-        {/* Meta, as key/value rows: who, when, and the category. */}
+        {/* Meta, as key/value rows: what (the subject), who, when, category. */}
         <dl className={KV_GRID}>
+          {subject ? (
+            <>
+              <dt className="text-muted-foreground">{t("detail.what")}</dt>
+              <dd className="min-w-0 break-words">{subject}</dd>
+            </>
+          ) : null}
           <dt className="text-muted-foreground">{t("detail.who")}</dt>
           <dd className="min-w-0 break-words">
             {actorLabel(row.actorId, row.actorName)}
