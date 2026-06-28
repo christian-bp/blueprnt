@@ -1,8 +1,12 @@
 import { cleanup, render, screen } from "@testing-library/react"
 import { afterEach, describe, expect, it } from "vitest"
+import { drainOtpMountTimers } from "@/test/otp-timers"
 import { OtpField } from "./otp-field"
 
-afterEach(() => cleanup())
+afterEach(async () => {
+  cleanup()
+  await drainOtpMountTimers()
+})
 
 describe("OtpField", () => {
   it("renders a labelled code input", () => {

@@ -8,6 +8,7 @@ import {
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
+import { drainOtpMountTimers } from "@/test/otp-timers"
 
 const enable = vi.fn()
 const verifyTotp = vi.fn()
@@ -46,8 +47,9 @@ function renderSetup(onConfirmed = () => {}) {
   )
 }
 
-afterEach(() => {
+afterEach(async () => {
   cleanup()
+  await drainOtpMountTimers()
   enable.mockReset()
   verifyTotp.mockReset()
   sendOtp.mockReset()

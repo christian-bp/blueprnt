@@ -8,6 +8,7 @@ import {
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
+import { drainOtpMountTimers } from "@/test/otp-timers"
 
 const verifyTotp = vi.fn()
 const sendOtp = vi.fn()
@@ -34,8 +35,9 @@ function renderChallenge(onVerified = () => {}) {
   )
 }
 
-afterEach(() => {
+afterEach(async () => {
   cleanup()
+  await drainOtpMountTimers()
   verifyTotp.mockReset()
   sendOtp.mockReset()
   verifyOtp.mockReset()
