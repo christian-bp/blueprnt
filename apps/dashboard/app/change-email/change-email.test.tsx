@@ -26,9 +26,12 @@ vi.mock("@/components/auth/success-check", () => ({
   SuccessCheck: () => <div data-testid="success-check" />,
 }))
 
-// Logo is decorative; stub it to avoid SVG rendering in tests.
-vi.mock("@/components/logo", () => ({
-  Logo: () => <div data-testid="logo" />,
+// AuthShell provides the split-screen layout; stub it to a passthrough so
+// tests focus on content, not the shell chrome.
+vi.mock("@/components/auth/auth-shell", () => ({
+  AuthShell: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="auth-shell">{children}</div>
+  ),
 }))
 
 import ChangeEmailPage from "./page"
@@ -110,6 +113,41 @@ describe("ChangeEmailPage", () => {
     it("shows the close hint", () => {
       renderPage("step=done")
       expect(screen.getByText(en.dashboard.changeEmail.closeHint)).toBeDefined()
+    })
+  })
+
+  describe("no recognized param (fallback)", () => {
+    it("shows the fallback heading without claiming success", () => {
+      renderPage("")
+      expect(
+        screen.getByRole("heading", {
+          name: en.dashboard.changeEmail.fallbackTitle,
+        })
+      ).toBeDefined()
+    })
+
+    it("shows the fallback body text", () => {
+      renderPage("")
+      expect(
+        screen.getByText(en.dashboard.changeEmail.fallbackBody)
+      ).toBeDefined()
+    })
+
+    it("does NOT render the SuccessCheck", () => {
+      renderPage("")
+      expect(screen.queryByTestId("success-check")).toBeNull()
+    })
+
+    it("does NOT show the done copy", () => {
+      renderPage("")
+      expect(screen.queryByText(en.dashboard.changeEmail.doneBody)).toBeNull()
+    })
+
+    it("does NOT show the confirmed copy", () => {
+      renderPage("")
+      expect(
+        screen.queryByText(en.dashboard.changeEmail.confirmedBody)
+      ).toBeNull()
     })
   })
 

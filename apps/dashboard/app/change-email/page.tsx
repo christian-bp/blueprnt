@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
 import { Suspense } from "react"
-import { Logo } from "@/components/logo"
+import { AuthShell } from "@/components/auth/auth-shell"
 import { SuccessCheck } from "@/components/auth/success-check"
 import { usePageTitle } from "@/hooks/use-page-title"
 
@@ -19,6 +19,7 @@ import { usePageTitle } from "@/hooks/use-page-title"
 //   Better Auth applies the change. Email is now updated.
 //
 // error param present: link was invalid or expired.
+// No recognized param: show a neutral fallback (do not falsely claim success).
 
 function ChangeEmailContent() {
   const t = useTranslations("dashboard.changeEmail")
@@ -27,53 +28,58 @@ function ChangeEmailContent() {
   const hasError = params.has("error")
 
   const isConfirmed = !hasError && step === "confirmed"
+  const isDone = !hasError && step === "done"
 
   const pageTitle = hasError
     ? t("invalidTitle")
     : isConfirmed
       ? t("confirmedTitle")
-      : t("doneTitle")
+      : isDone
+        ? t("doneTitle")
+        : t("fallbackTitle")
 
   usePageTitle(pageTitle)
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center px-4">
-      <div className="flex w-full max-w-sm flex-col items-center gap-8">
-        <Logo className="h-7 text-brand" />
-
-        {hasError ? (
-          <div className="flex flex-col items-center gap-4 text-center">
-            <div className="space-y-2">
-              <h1 className="font-semibold text-xl">{t("invalidTitle")}</h1>
-              <p className="text-muted-foreground text-sm">
-                {t("invalidBody")}
-              </p>
-            </div>
-            <p className="text-muted-foreground text-xs">{t("closeHint")}</p>
+    <AuthShell>
+      {hasError ? (
+        <div className="flex flex-col items-center gap-4 text-center">
+          <div className="space-y-2">
+            <h1 className="font-semibold text-xl">{t("invalidTitle")}</h1>
+            <p className="text-muted-foreground text-sm">{t("invalidBody")}</p>
           </div>
-        ) : isConfirmed ? (
-          <div className="flex flex-col items-center gap-4 text-center">
-            <SuccessCheck />
-            <div className="space-y-2">
-              <h1 className="font-semibold text-xl">{t("confirmedTitle")}</h1>
-              <p className="text-muted-foreground text-sm">
-                {t("confirmedBody")}
-              </p>
-            </div>
-            <p className="text-muted-foreground text-xs">{t("closeHint")}</p>
+          <p className="text-muted-foreground text-xs">{t("closeHint")}</p>
+        </div>
+      ) : isConfirmed ? (
+        <div className="flex flex-col items-center gap-4 text-center">
+          <SuccessCheck />
+          <div className="space-y-2">
+            <h1 className="font-semibold text-xl">{t("confirmedTitle")}</h1>
+            <p className="text-muted-foreground text-sm">
+              {t("confirmedBody")}
+            </p>
           </div>
-        ) : (
-          <div className="flex flex-col items-center gap-4 text-center">
-            <SuccessCheck />
-            <div className="space-y-2">
-              <h1 className="font-semibold text-xl">{t("doneTitle")}</h1>
-              <p className="text-muted-foreground text-sm">{t("doneBody")}</p>
-            </div>
-            <p className="text-muted-foreground text-xs">{t("closeHint")}</p>
+          <p className="text-muted-foreground text-xs">{t("closeHint")}</p>
+        </div>
+      ) : isDone ? (
+        <div className="flex flex-col items-center gap-4 text-center">
+          <SuccessCheck />
+          <div className="space-y-2">
+            <h1 className="font-semibold text-xl">{t("doneTitle")}</h1>
+            <p className="text-muted-foreground text-sm">{t("doneBody")}</p>
           </div>
-        )}
-      </div>
-    </div>
+          <p className="text-muted-foreground text-xs">{t("closeHint")}</p>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center gap-4 text-center">
+          <div className="space-y-2">
+            <h1 className="font-semibold text-xl">{t("fallbackTitle")}</h1>
+            <p className="text-muted-foreground text-sm">{t("fallbackBody")}</p>
+          </div>
+          <p className="text-muted-foreground text-xs">{t("closeHint")}</p>
+        </div>
+      )}
+    </AuthShell>
   )
 }
 
