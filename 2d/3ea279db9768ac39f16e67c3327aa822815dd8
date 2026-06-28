@@ -1,0 +1,20 @@
+packages/email/src/render.test.ts
+  s_c216811bbb1bb1::t_a4694634ccf6a0 115-118,120-141
+  s_c216811bbb1bb1::t_e7ee6a6112897b 119
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "2d3ea279db9768ac39f16e67c3327aa822815dd8",
+  "prompts": {},
+  "sessions": {
+    "s_c216811bbb1bb1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eb0732d2-490a-4c24-8c10-2da3fb619e51",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
