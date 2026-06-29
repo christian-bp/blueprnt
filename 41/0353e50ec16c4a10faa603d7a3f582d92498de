@@ -1,0 +1,22 @@
+apps/dashboard/components/confirm-delete-dialog.tsx
+  s_6bff98b662648b::t_0e1e716d6cf243 1-47,51-65
+  s_6bff98b662648b::t_14e48ede10e0d8 48-50
+apps/dashboard/components/confirm-delete-dialog.test.tsx
+  s_6bff98b662648b::t_5b26205fcb1aa8 1-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "410353e50ec16c4a10faa603d7a3f582d92498de",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
