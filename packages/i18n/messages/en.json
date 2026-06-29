@@ -460,6 +460,7 @@
     },
     "auth": {
       "loading": "Checking your session",
+      "verifying": "Verifying...",
       "email": "Email",
       "password": "Password",
       "showPassword": "Show password",

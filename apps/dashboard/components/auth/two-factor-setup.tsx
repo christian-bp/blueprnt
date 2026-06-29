@@ -79,6 +79,9 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
   // re-render churn can swallow it. Focusing from an effect keyed on the step is
   // robust.
   const otpRef = useRef<HTMLInputElement>(null)
+  // Drives the in-flight loader on the code field (disabled slots + spinner)
+  // while the code is verified, the way polyform's OTP does.
+  const [verifying, setVerifying] = useState(false)
   // Guards against a double verify if InputOTP re-fires onComplete (paste / remount).
   const verifyingRef = useRef(false)
   useEffect(() => {
@@ -103,6 +106,7 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
   async function onCodeComplete(value: string) {
     if (verifyingRef.current) return
     verifyingRef.current = true
+    setVerifying(true)
     setCodeError(false)
     try {
       const verify =
@@ -122,6 +126,7 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
       setStep("done")
     } finally {
       verifyingRef.current = false
+      setVerifying(false)
     }
   }
 
@@ -347,6 +352,8 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
           onChange={setCode}
           onComplete={onCodeComplete}
           ariaLabel={t("codeLabel")}
+          verifying={verifying}
+          verifyingLabel={tAuth("verifying")}
         />
         {codeError && (
           <p role="alert" className="text-destructive text-sm">

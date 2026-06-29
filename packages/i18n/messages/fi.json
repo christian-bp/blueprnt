@@ -460,6 +460,7 @@
     },
     "auth": {
       "loading": "Tarkistetaan istuntoasi",
+      "verifying": "Vahvistetaan...",
       "email": "Sähköposti",
       "password": "Salasana",
       "showPassword": "Näytä salasana",

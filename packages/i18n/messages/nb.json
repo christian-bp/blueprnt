@@ -460,6 +460,7 @@
     },
     "auth": {
       "loading": "Sjekker økten din",
+      "verifying": "Verifiserer...",
       "email": "E-post",
       "password": "Passord",
       "showPassword": "Vis passord",

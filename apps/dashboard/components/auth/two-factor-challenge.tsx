@@ -20,6 +20,7 @@ type Method = "totp" | "email" | "backup"
 // a separate endpoint, so it has its own free-text input.
 export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
   const t = useTranslations("dashboard.auth.twoFactor")
+  const tAuth = useTranslations("dashboard.auth")
   // The method this device last enrolled/used (written on a successful
   // setup/login). In V1 a user has exactly one enrolled method, so an
   // email-enrolled device means the user never scanned an authenticator: hide
@@ -39,6 +40,9 @@ export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
   const [backupCode, setBackupCode] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(false)
+  // Drives the in-flight loader on the code field (disabled slots + spinner) so
+  // the user sees the code is being verified, the way polyform's OTP does.
+  const [verifying, setVerifying] = useState(false)
   // Guards against a double verify if InputOTP re-fires onComplete (paste / remount).
   const verifyingRef = useRef(false)
   // Guards the email-OTP auto-send so we send exactly once per entry into email
@@ -69,6 +73,7 @@ export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
   async function onComplete(value: string) {
     if (verifyingRef.current) return
     verifyingRef.current = true
+    setVerifying(true)
     setError(false)
     try {
       const verify =
@@ -85,6 +90,7 @@ export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
       onVerified()
     } finally {
       verifyingRef.current = false
+      setVerifying(false)
     }
   }
 
@@ -153,6 +159,8 @@ export function TwoFactorChallenge({ onVerified }: { onVerified: () => void }) {
           onComplete={onComplete}
           ariaLabel={t("codeLabel")}
           autoFocus
+          verifying={verifying}
+          verifyingLabel={tAuth("verifying")}
         />
       )}
 

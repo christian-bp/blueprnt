@@ -133,4 +133,29 @@ describe("TwoFactorChallenge", () => {
       screen.queryByText(messages.dashboard.auth.twoFactor.useAuthenticator)
     ).toBeNull()
   })
+
+  it("shows the spinner and verifying label while a code is verifying", async () => {
+    let resolveVerify: (result: { data: object; error: null }) => void =
+      () => {}
+    verifyTotp.mockReturnValue(
+      new Promise((resolve) => {
+        resolveVerify = resolve
+      })
+    )
+    const onVerified = vi.fn()
+    const { container } = renderChallenge(onVerified)
+    const inputs = screen.getAllByRole("textbox")
+    const otpInput =
+      inputs.length > 0 ? inputs[0] : container.querySelector("input")
+    if (!otpInput) throw new Error("OTP input not found")
+    fireEvent.change(otpInput, { target: { value: "123456" } })
+    // While verification is in flight: the spinner and the "Verifying..." label
+    // are shown, and onVerified has not fired yet.
+    await waitFor(() => expect(screen.getByRole("status")).toBeDefined())
+    expect(screen.getByText(messages.dashboard.auth.verifying)).toBeDefined()
+    expect(onVerified).not.toHaveBeenCalled()
+    // Completing verification clears the loader and proceeds.
+    resolveVerify({ data: {}, error: null })
+    await waitFor(() => expect(onVerified).toHaveBeenCalled())
+  })
 })

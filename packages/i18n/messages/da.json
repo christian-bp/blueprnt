@@ -460,6 +460,7 @@
     },
     "auth": {
       "loading": "Kontrollerer din session",
+      "verifying": "Verificerer...",
       "email": "E-mail",
       "password": "Adgangskode",
       "showPassword": "Vis adgangskode",
