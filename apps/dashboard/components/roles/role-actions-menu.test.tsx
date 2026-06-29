@@ -28,7 +28,14 @@ import { RoleActionsMenu } from "@/components/roles/role-actions-menu"
 const detail = messages.dashboard.roles.detail
 const archive = messages.dashboard.roles.archive
 
-function renderMenu(props: { archived?: boolean; isAdmin?: boolean } = {}) {
+function renderMenu(
+  props: {
+    archived?: boolean
+    isAdmin?: boolean
+    editing?: boolean
+    onEdit?: () => void
+  } = {}
+) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <RoleActionsMenu
@@ -36,9 +43,17 @@ function renderMenu(props: { archived?: boolean; isAdmin?: boolean } = {}) {
         roleId={"role-1" as never}
         archived={props.archived ?? false}
         isAdmin={props.isAdmin ?? true}
+        editing={props.editing ?? false}
+        onEdit={props.onEdit ?? (() => {})}
       />
     </NextIntlClientProvider>
   )
+}
+
+function openMenu() {
+  const trigger = screen.getByRole("button", { name: detail.actionsMenu })
+  fireEvent.pointerDown(trigger)
+  fireEvent.click(trigger)
 }
 
 describe("RoleActionsMenu", () => {
@@ -48,11 +63,14 @@ describe("RoleActionsMenu", () => {
   })
   afterEach(() => cleanup())
 
-  it("renders no trigger for a non-admin", () => {
-    renderMenu({ isAdmin: false })
-    expect(
-      screen.queryByRole("button", { name: detail.actionsMenu })
-    ).toBeNull()
+  it("shows Edit but not Archive for a non-admin, and triggers onEdit", () => {
+    const onEdit = vi.fn()
+    renderMenu({ isAdmin: false, onEdit })
+    openMenu()
+    expect(screen.getByRole("menuitem", { name: detail.editCta })).toBeDefined()
+    expect(screen.queryByRole("menuitem", { name: archive.cta })).toBeNull()
+    fireEvent.click(screen.getByRole("menuitem", { name: detail.editCta }))
+    expect(onEdit).toHaveBeenCalledTimes(1)
   })
 
   it("renders no trigger for an archived role", () => {
@@ -62,12 +80,18 @@ describe("RoleActionsMenu", () => {
     ).toBeNull()
   })
 
-  it("archives through the confirm dialog, then navigates to /roles", async () => {
+  it("renders no trigger for a non-admin while editing", () => {
+    renderMenu({ isAdmin: false, editing: true })
+    expect(
+      screen.queryByRole("button", { name: detail.actionsMenu })
+    ).toBeNull()
+  })
+
+  it("shows both Edit and Archive for an admin and archives via the confirm dialog", async () => {
     archiveRoleMock.mockResolvedValue(null)
     renderMenu()
-    const trigger = screen.getByRole("button", { name: detail.actionsMenu })
-    fireEvent.pointerDown(trigger)
-    fireEvent.click(trigger)
+    openMenu()
+    expect(screen.getByRole("menuitem", { name: detail.editCta })).toBeDefined()
     fireEvent.click(screen.getByRole("menuitem", { name: archive.cta }))
 
     expect(screen.getByRole("alertdialog")).toBeDefined()

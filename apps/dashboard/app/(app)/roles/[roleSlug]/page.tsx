@@ -6,7 +6,7 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
-import { use } from "react"
+import { use, useState } from "react"
 import { type Crumb, PageBreadcrumb } from "@/components/page-breadcrumb"
 import { useOrganization } from "@/components/org-context"
 import { TrackBadge } from "@/components/track-badge"
@@ -25,6 +25,9 @@ export default function RolePage(props: {
   const tNav = useTranslations("dashboard.nav")
   const { orgId, role: orgRole } = useOrganization()
   const locale = useLocale()
+  // Edit mode for the profile card, lifted here so the role actions menu can
+  // open it (the menu owns the Edit item; the card owns Save).
+  const [editing, setEditing] = useState(false)
   const role = useQuery(api.assessment.roles.getRoleBySlug, {
     orgId,
     slug: roleSlug,
@@ -77,6 +80,8 @@ export default function RolePage(props: {
           roleId={role.roleId}
           archived={role.archived}
           isAdmin={orgRole === "admin"}
+          editing={editing}
+          onEdit={() => setEditing(true)}
         />
       </div>
       {/* Archived roles turn read-only everywhere (edit, AI draft, rating);
@@ -87,9 +92,14 @@ export default function RolePage(props: {
       )}
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          {/* The AI draft assistant lives in the profile card's header (a
-              MorphPopover next to Edit), not as a separate card. */}
-          <RoleProfileCard orgId={orgId} role={role} />
+          {/* Edit mode is entered from the role actions menu; the card owns
+              Save and the AI draft assistant (a MorphPopover in its header). */}
+          <RoleProfileCard
+            orgId={orgId}
+            role={role}
+            editing={editing}
+            onEditingChange={setEditing}
+          />
         </div>
         <div className="space-y-6">
           <RoleRatingCard

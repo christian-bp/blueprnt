@@ -26,11 +26,15 @@ export function RoleActionsMenu({
   roleId,
   archived,
   isAdmin,
+  editing,
+  onEdit,
 }: {
   orgId: string
   roleId: Id<"roles">
   archived: boolean
   isAdmin: boolean
+  editing: boolean
+  onEdit: () => void
 }) {
   const t = useTranslations("dashboard.roles.detail")
   const tArchive = useTranslations("dashboard.roles.archive")
@@ -39,7 +43,12 @@ export function RoleActionsMenu({
   const [confirmArchive, setConfirmArchive] = useState(false)
   const [pending, setPending] = useState(false)
 
-  if (!isAdmin || archived) return null
+  // Edit is offered to every member (the profile is member-editable) while the
+  // role is live and not already being edited; Archive is admin-only. When
+  // neither applies, the menu is not rendered (empty-menu rule).
+  const showEdit = !archived && !editing
+  const showArchive = !archived && isAdmin
+  if (!showEdit && !showArchive) return null
 
   return (
     <>
@@ -56,33 +65,42 @@ export function RoleActionsMenu({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            variant="destructive"
-            onSelect={() => setConfirmArchive(true)}
-          >
-            {tArchive("cta")}
-          </DropdownMenuItem>
+          {showEdit && (
+            <DropdownMenuItem onSelect={onEdit}>
+              {t("editCta")}
+            </DropdownMenuItem>
+          )}
+          {showArchive && (
+            <DropdownMenuItem
+              variant="destructive"
+              onSelect={() => setConfirmArchive(true)}
+            >
+              {tArchive("cta")}
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <ConfirmDeleteDialog
-        open={confirmArchive}
-        onOpenChange={setConfirmArchive}
-        title={tArchive("dialogTitle")}
-        description={tArchive("dialogBody")}
-        confirmLabel={tArchive("confirm")}
-        cancelLabel={tArchive("cancel")}
-        pending={pending}
-        onConfirm={async () => {
-          setPending(true)
-          try {
-            await archiveRole({ orgId, roleId })
-            router.push("/roles")
-          } finally {
-            setPending(false)
-          }
-        }}
-      />
+      {showArchive && (
+        <ConfirmDeleteDialog
+          open={confirmArchive}
+          onOpenChange={setConfirmArchive}
+          title={tArchive("dialogTitle")}
+          description={tArchive("dialogBody")}
+          confirmLabel={tArchive("confirm")}
+          cancelLabel={tArchive("cancel")}
+          pending={pending}
+          onConfirm={async () => {
+            setPending(true)
+            try {
+              await archiveRole({ orgId, roleId })
+              router.push("/roles")
+            } finally {
+              setPending(false)
+            }
+          }}
+        />
+      )}
     </>
   )
 }

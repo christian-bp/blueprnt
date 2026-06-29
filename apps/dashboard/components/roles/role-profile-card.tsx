@@ -36,15 +36,21 @@ export interface RoleProfile {
   archived: boolean
 }
 
-// Read-first job profile: an Edit toggle swaps the texts for inputs, Save
-// patches only what changed. Archived roles never enter edit
-// mode (the backend rejects them with errors.roleLocked anyway).
+// Read-first job profile. Edit mode is entered from the role actions menu (the
+// parent owns the `editing` flag and the Edit trigger); this card owns the
+// inputs, Save, and the AI draft assistant. Save patches only what changed.
+// Archived roles never enter edit mode (the backend rejects them with
+// errors.roleLocked anyway).
 export function RoleProfileCard({
   orgId,
   role,
+  editing,
+  onEditingChange,
 }: {
   orgId: string
   role: RoleProfile
+  editing: boolean
+  onEditingChange: (editing: boolean) => void
 }) {
   const t = useTranslations("dashboard.roles.detail")
   const tRole = useTranslations("assessment.role")
@@ -57,13 +63,14 @@ export function RoleProfileCard({
   // (rename or family move) before submitting, so it never throws server-side.
   const allRoles = useQuery(api.assessment.roles.listRoles, { orgId })
 
-  const [editing, setEditing] = useState(false)
   const [pending, setPending] = useState(false)
   const [failure, setFailure] = useState<"duplicate" | "generic" | null>(null)
   const [draft, setDraft] = useState<Record<string, string>>({})
   const [draftFamilyId, setDraftFamilyId] = useState<string | null>(null)
 
   const locked = role.archived
+  // An archived role can never be edited, even if the parent passes editing.
+  const isEditing = editing && !locked
 
   function currentValues(): Record<string, string> {
     return {
@@ -75,11 +82,18 @@ export function RoleProfileCard({
     }
   }
 
-  function startEditing() {
+  // Seed the draft from the live role the moment edit mode opens. This adjusts
+  // state during render on the false->true transition (React's documented
+  // "adjusting state when a prop changes" pattern), so the inputs are populated
+  // before paint with no flash and without an effect.
+  const [seeded, setSeeded] = useState(false)
+  if (isEditing && !seeded) {
+    setSeeded(true)
     setDraft(currentValues())
     setDraftFamilyId(role.familyId ?? null)
     setFailure(null)
-    setEditing(true)
+  } else if (!isEditing && seeded) {
+    setSeeded(false)
   }
 
   async function handleSave() {
@@ -105,7 +119,7 @@ export function RoleProfileCard({
           ...familyChange,
         })
       }
-      setEditing(false)
+      onEditingChange(false)
     } catch (error) {
       setFailure(isDuplicateRoleError(error) ? "duplicate" : "generic")
     } finally {
@@ -122,7 +136,7 @@ export function RoleProfileCard({
   // family. Covers both renaming and moving the role to a different family.
   const draftTitle = (draft.title ?? "").trim().toLowerCase()
   const duplicate =
-    editing &&
+    isEditing &&
     draftTitle !== "" &&
     (allRoles ?? []).some(
       (r) =>
@@ -146,8 +160,9 @@ export function RoleProfileCard({
         <CardTitle>{t("profileHeading")}</CardTitle>
         {!locked && (
           <div className="flex items-center gap-2">
-            {/* The AI draft popover sits next to Edit, the same pattern as
-                the model editor's Review button. */}
+            {/* The AI draft popover stays in the card, next to the content it
+                drafts. Edit is entered from the role actions menu; Save appears
+                here only while editing. */}
             <MorphPopover
               triggerLabel={tAi("openDraftCta")}
               triggerIcon={AiMagicIcon}
@@ -163,15 +178,17 @@ export function RoleProfileCard({
                 />
               )}
             </MorphPopover>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={pending || duplicate}
-              onClick={editing ? handleSave : startEditing}
-            >
-              {editing ? t("saveCta") : t("editCta")}
-            </Button>
+            {isEditing && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={pending || duplicate}
+                onClick={handleSave}
+              >
+                {t("saveCta")}
+              </Button>
+            )}
           </div>
         )}
       </CardHeader>
@@ -191,7 +208,7 @@ export function RoleProfileCard({
               >
                 {label}
               </Label>
-              {editing ? (
+              {isEditing ? (
                 <Input
                   id={`profile-${key}`}
                   value={draft[key] ?? ""}
@@ -209,7 +226,7 @@ export function RoleProfileCard({
           <Label htmlFor="profile-family" className="text-muted-foreground">
             {tModel("roleFamily")}
           </Label>
-          {editing ? (
+          {isEditing ? (
             <FamilyPicker
               orgId={orgId}
               value={draftFamilyId}
@@ -229,7 +246,7 @@ export function RoleProfileCard({
             >
               {row.label}
             </Label>
-            {editing ? (
+            {isEditing ? (
               <Textarea
                 id={`profile-${row.key}`}
                 value={draft[row.key] ?? ""}

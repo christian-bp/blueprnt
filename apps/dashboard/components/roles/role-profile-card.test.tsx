@@ -6,6 +6,7 @@ import {
   waitFor,
 } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
+import { useState } from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 
@@ -54,12 +55,36 @@ function makeRole(overrides?: Partial<RoleProfile>): RoleProfile {
   }
 }
 
+// Edit mode is controlled by the parent (the role actions menu owns the Edit
+// trigger). This harness stands in for that parent: a button enters edit mode,
+// mirroring the menu's Edit item.
+function ControlledCard({ role }: { role: RoleProfile }) {
+  const [editing, setEditing] = useState(false)
+  return (
+    <>
+      <button type="button" onClick={() => setEditing(true)}>
+        start-edit
+      </button>
+      <RoleProfileCard
+        orgId="org-1"
+        role={role}
+        editing={editing}
+        onEditingChange={setEditing}
+      />
+    </>
+  )
+}
+
 function renderCard(role: RoleProfile) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <RoleProfileCard orgId="org-1" role={role} />
+      <ControlledCard role={role} />
     </NextIntlClientProvider>
   )
+}
+
+function startEditing() {
+  fireEvent.click(screen.getByText("start-edit"))
 }
 
 describe("RoleProfileCard", () => {
@@ -81,12 +106,14 @@ describe("RoleProfileCard", () => {
     expect(
       screen.queryByRole("textbox", { name: roleLabels.purpose })
     ).toBeNull()
+    // The card no longer owns an Edit button; editing is entered from the menu.
+    expect(screen.queryByRole("button", { name: labels.editCta })).toBeNull()
   })
 
   it("saves only the changed fields and exits edit mode", async () => {
     updateRoleMock.mockResolvedValue(null)
     renderCard(makeRole())
-    fireEvent.click(screen.getByRole("button", { name: labels.editCta }))
+    startEditing()
     fireEvent.change(
       screen.getByRole("textbox", { name: roleLabels.purpose }),
       {
@@ -101,15 +128,19 @@ describe("RoleProfileCard", () => {
         purpose: "New purpose",
       })
     })
+    // Exits edit mode: the Save control is gone and the field is read-only again.
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: labels.editCta })).toBeDefined()
+      expect(screen.queryByRole("button", { name: labels.saveCta })).toBeNull()
     })
+    expect(
+      screen.queryByRole("textbox", { name: roleLabels.purpose })
+    ).toBeNull()
   })
 
   it("stays in edit mode with an alert when the save fails", async () => {
     updateRoleMock.mockRejectedValue(new Error("ConvexError: roleLocked"))
     renderCard(makeRole())
-    fireEvent.click(screen.getByRole("button", { name: labels.editCta }))
+    startEditing()
     fireEvent.change(screen.getByRole("textbox", { name: roleLabels.team }), {
       target: { value: "Other" },
     })
@@ -131,7 +162,7 @@ describe("RoleProfileCard", () => {
   it("leaves the family untouched when only a text field changes", async () => {
     updateRoleMock.mockResolvedValue(null)
     renderCard(makeRole({ familyId: "f-tech", familyName: "Tech" }))
-    fireEvent.click(screen.getByRole("button", { name: labels.editCta }))
+    startEditing()
     fireEvent.change(
       screen.getByRole("textbox", { name: roleLabels.purpose }),
       {
@@ -149,8 +180,13 @@ describe("RoleProfileCard", () => {
     })
   })
 
-  it("hides the edit button for archived roles", () => {
+  it("an archived role cannot enter edit mode (no Save control)", () => {
     renderCard(makeRole({ archived: true }))
-    expect(screen.queryByRole("button", { name: labels.editCta })).toBeNull()
+    // Even if the parent opens edit mode, a locked role stays read-only.
+    startEditing()
+    expect(screen.queryByRole("button", { name: labels.saveCta })).toBeNull()
+    expect(
+      screen.queryByRole("textbox", { name: roleLabels.purpose })
+    ).toBeNull()
   })
 })
