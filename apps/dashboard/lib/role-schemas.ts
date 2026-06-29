@@ -44,3 +44,14 @@ export function makeCreateRoleSchema(
     })
 }
 export type CreateRoleValues = z.infer<ReturnType<typeof makeCreateRoleSchema>>
+
+// Client gate for renaming a family: a trimmed, non-empty name. The backend
+// re-validates length and case-insensitive uniqueness (the authority).
+export function makeRenameFamilySchema(t: ValidationT) {
+  return z.object({
+    name: z.string().trim().min(1, t("required")),
+  })
+}
+export type RenameFamilyValues = z.infer<
+  ReturnType<typeof makeRenameFamilySchema>
+>
