@@ -151,9 +151,13 @@ The `Delete family` menu item opens an `AlertDialog` that:
   `dashboard.roles.family.removeHint` copy, moved out of the standing header line
   and into the dialog.)
 - Lists the affected roles by title in a scrollable list
-  (`max-h-[200px] overflow-y-auto`), animated in per the motion conventions
-  (`AnimatePresence` + height/opacity), mirroring polyform's
-  `delete-project-modal`.
+  (`max-h-[200px] overflow-y-auto`), mirroring polyform's `delete-project-modal`.
+  The list is rendered statically (no per-item `AnimatePresence`): it never
+  mounts or unmounts independently of the dialog (the role set is passed as a
+  prop and is fixed for the dialog's lifetime), so its only transition is the
+  `AlertDialog`'s own entrance. A per-item animation would add no legitimate
+  transition here and would risk the FLIP/height pitfalls in
+  `docs/ui-animation.md`. (Decision recorded after implementation review.)
 - Empty family: no list, just the confirm.
 
 The role list is free: the family page already loads its roles (it renders them
