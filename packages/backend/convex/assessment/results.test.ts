@@ -39,15 +39,18 @@ async function createRatedRole(args: {
   value: number
   rateCount?: number
 }) {
-  const roleId = await args.asAdmin.mutation(api.assessment.roles.createRole, {
-    orgId: args.orgId,
-    title: args.title,
-    function: "Engineering",
-    team: "Core",
-    trackKey: "IC",
-    purpose: "p",
-    responsibilities: "r",
-  })
+  const { roleId } = await args.asAdmin.mutation(
+    api.assessment.roles.createRole,
+    {
+      orgId: args.orgId,
+      title: args.title,
+      function: "Engineering",
+      team: "Core",
+      trackKey: "IC",
+      purpose: "p",
+      responsibilities: "r",
+    }
+  )
   const count = args.rateCount ?? args.model.criteria.length
   for (const criterion of args.model.criteria.slice(0, count)) {
     await args.asAdmin.mutation(api.assessment.ratings.setRating, {

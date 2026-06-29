@@ -5,6 +5,7 @@
 export interface BandRoleRow {
   roleId: string
   title: string
+  slug: string
   trackKey: string
   trackName: string
   score: number | null

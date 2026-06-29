@@ -40,6 +40,7 @@ const toolbar = messages.dashboard.roles.toolbar
 function row(overrides: Partial<RolesTableRow>): RolesTableRow {
   return {
     roleId: "r1",
+    slug: "r1",
     title: "Senior Engineer",
     function: "Engineering",
     team: "Core",
@@ -49,6 +50,7 @@ function row(overrides: Partial<RolesTableRow>): RolesTableRow {
     totalCriteria: 9,
     familyId: "f-eng",
     familyName: "Engineering",
+    familySlug: "engineering",
     ...overrides,
   }
 }
@@ -65,6 +67,7 @@ const ROLES: RolesTableRow[] = [
     trackName: "Manager",
     familyId: "f-sales",
     familyName: "Sales",
+    familySlug: "sales",
   }),
   row({
     roleId: "r4",
@@ -73,6 +76,7 @@ const ROLES: RolesTableRow[] = [
     function: "Operations",
     familyId: null,
     familyName: null,
+    familySlug: null,
   }),
 ]
 
@@ -110,7 +114,7 @@ describe("RolesTable", () => {
     expect(screen.getAllByRole("columnheader")).toHaveLength(4)
     // Family groups in name order, family-less last.
     const engineering = screen.getByRole("link", { name: "Engineering" })
-    expect(engineering.getAttribute("href")).toBe("/roles/families/f-eng")
+    expect(engineering.getAttribute("href")).toBe("/roles/families/engineering")
     expect(screen.getByRole("link", { name: "Sales" })).toBeDefined()
     expect(screen.getByText(messages.dashboard.roles.family.none)).toBeDefined()
     // Counts per group. next-intl renders the ICU plural: 2 -> "2 roles".

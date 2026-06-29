@@ -399,6 +399,7 @@ describe("devReset.wipeAppTables", () => {
       await ctx.db.insert("roles", {
         orgId: "ba_org_seed",
         title: "Junior Developer",
+        slug: "junior-developer",
         function: "Engineering",
         team: "Platform",
         trackKey: "IC",

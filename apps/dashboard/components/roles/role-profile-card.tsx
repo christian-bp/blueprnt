@@ -20,6 +20,7 @@ import { MorphPopover } from "@/components/morph-popover"
 import { FamilyPicker } from "@/components/roles/family-picker"
 import { ResponsibilitiesList } from "@/components/roles/responsibilities-list"
 import { RoleAiPanel } from "@/components/roles/role-ai-panel"
+import { isDuplicateRoleError } from "@/lib/role-error"
 
 // Structural subset of getRole used by this card.
 export interface RoleProfile {
@@ -50,11 +51,12 @@ export function RoleProfileCard({
   const tFamily = useTranslations("dashboard.roles.family")
   const tModel = useTranslations("model")
   const tAi = useTranslations("dashboard.ai")
+  const tErrors = useTranslations("errors")
   const updateRole = useMutation(api.assessment.roles.updateRole)
 
   const [editing, setEditing] = useState(false)
   const [pending, setPending] = useState(false)
-  const [failed, setFailed] = useState(false)
+  const [failure, setFailure] = useState<"duplicate" | "generic" | null>(null)
   const [draft, setDraft] = useState<Record<string, string>>({})
   const [draftFamilyId, setDraftFamilyId] = useState<string | null>(null)
 
@@ -73,13 +75,13 @@ export function RoleProfileCard({
   function startEditing() {
     setDraft(currentValues())
     setDraftFamilyId(role.familyId ?? null)
-    setFailed(false)
+    setFailure(null)
     setEditing(true)
   }
 
   async function handleSave() {
     setPending(true)
-    setFailed(false)
+    setFailure(null)
     // Patch only changed fields so the audit row names what actually moved.
     const patch: Record<string, string> = {}
     const current = currentValues()
@@ -101,8 +103,8 @@ export function RoleProfileCard({
         })
       }
       setEditing(false)
-    } catch {
-      setFailed(true)
+    } catch (error) {
+      setFailure(isDuplicateRoleError(error) ? "duplicate" : "generic")
     } finally {
       setPending(false)
     }
@@ -243,9 +245,9 @@ export function RoleProfileCard({
             )}
           </div>
         ))}
-        {failed && (
+        {failure !== null && (
           <p role="alert" className="text-destructive text-sm">
-            {t("saveError")}
+            {failure === "duplicate" ? tErrors("roleExists") : t("saveError")}
           </p>
         )}
       </CardContent>

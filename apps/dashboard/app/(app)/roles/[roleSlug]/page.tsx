@@ -19,18 +19,18 @@ import { RoleResultCard } from "@/components/roles/role-result-card"
 import { usePageTitle } from "@/hooks/use-page-title"
 
 export default function RolePage(props: {
-  params: Promise<{ roleId: string }>
+  params: Promise<{ roleSlug: string }>
 }) {
-  const { roleId } = use(props.params)
+  const { roleSlug } = use(props.params)
   const t = useTranslations("dashboard.roles.detail")
   const tArchive = useTranslations("dashboard.roles.archive")
   const { orgId, role: orgRole } = useOrganization()
   const router = useRouter()
   const archiveRole = useMutation(api.assessment.roles.archiveRole)
   const locale = useLocale()
-  const role = useQuery(api.assessment.roles.getRole, {
+  const role = useQuery(api.assessment.roles.getRoleBySlug, {
     orgId,
-    roleId,
+    slug: roleSlug,
     locale,
   })
   usePageTitle(role?.title)
@@ -89,13 +89,13 @@ export default function RolePage(props: {
         </div>
         <div className="space-y-6">
           <RoleRatingCard
-            roleId={role.roleId}
+            slug={role.slug}
             archived={role.archived}
             profileComplete={role.profileComplete}
             ratedCount={role.ratedCount}
             totalCriteria={role.totalCriteria}
           />
-          <RoleResultCard orgId={orgId} roleId={roleId} />
+          <RoleResultCard orgId={orgId} roleId={role.roleId} />
           <AnchorRoleCard
             orgId={orgId}
             roleId={role.roleId}

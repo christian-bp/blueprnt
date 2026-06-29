@@ -279,6 +279,7 @@ describe("discardModel", () => {
       await ctx.db.insert("roles", {
         orgId,
         title: "Junior Developer",
+        slug: "junior-developer",
         function: "Engineering",
         team: "Platform",
         trackKey: "IC",

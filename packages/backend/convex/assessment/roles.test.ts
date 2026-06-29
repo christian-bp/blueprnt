@@ -36,7 +36,7 @@ describe("createRole", () => {
   it("creates a draft role with trimmed core fields and audits", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, track } = await seedTemplateOrganization(t)
-    const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,
       title: "  Junior Software Developer  ",
       function: "Engineering",
@@ -92,7 +92,7 @@ describe("listRoles and getRole", () => {
   it("lists non-archived roles with progress and resolves a role with guardrails", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
-    const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,
       title: "Developer",
       function: "Engineering",
@@ -201,7 +201,7 @@ describe("updateRole", () => {
   it("patches profile fields, audits the field names, and locks archived roles", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
-    const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,
       title: "Developer",
       function: "Engineering",
@@ -264,7 +264,7 @@ describe("updateRole", () => {
   it("changes the track on its own", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
-    const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,
       title: "Developer",
       function: "Engineering",
@@ -290,7 +290,7 @@ describe("archiveRole", () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
     const asEditor = await addEditor(t, orgId, "editor2@acme.se")
-    const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,
       title: "Developer",
       function: "Engineering",
@@ -360,7 +360,7 @@ describe("archiveRole", () => {
   it("captures computedBand on the via-archive anchorRole.updated row", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
-    const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,
       title: "Anchor Developer",
       function: "Engineering",
@@ -419,7 +419,7 @@ describe("role family membership", () => {
       api.assessment.families.createRoleFamily,
       { orgId, name: "Sales" }
     )
-    const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
       orgId,
       title: "Developer",
       function: "Engineering",
@@ -486,5 +486,129 @@ describe("role family membership", () => {
     })
     expect(role?.familyId).toBeNull()
     expect(role?.familyName).toBeNull()
+  })
+})
+
+describe("role slugs", () => {
+  it("sets a slug from the title and resolves it via getRoleBySlug", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, track } = await seedTemplateOrganization(t)
+    const { roleId, slug } = await asAdmin.mutation(
+      api.assessment.roles.createRole,
+      {
+        orgId,
+        title: "System Developer",
+        function: "Eng",
+        team: "Core",
+        trackKey: track.key,
+      }
+    )
+    expect(slug).toBe("system-developer")
+    const role = await asAdmin.query(api.assessment.roles.getRoleBySlug, {
+      orgId,
+      slug: "system-developer",
+    })
+    expect(role?.roleId).toBe(roleId)
+    expect(role?.title).toBe("System Developer")
+  })
+
+  it("getRoleBySlug returns null for an unknown slug (the 404 contract)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedTemplateOrganization(t)
+    expect(
+      await asAdmin.query(api.assessment.roles.getRoleBySlug, {
+        orgId,
+        slug: "does-not-exist",
+      })
+    ).toBeNull()
+  })
+
+  it("getRoleBySlug is org-scoped: another org's slug never resolves", async () => {
+    const t = initConvexTest()
+    const a = await seedTemplateOrganization(t, "a@x.se")
+    const b = await seedTemplateOrganization(t, "b@x.se")
+    await a.asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId: a.orgId,
+      title: "System Developer",
+      function: "Eng",
+      team: "Core",
+      trackKey: a.track.key,
+    })
+    // Org B has no such role; the slug must not leak across the tenant boundary.
+    expect(
+      await b.asAdmin.query(api.assessment.roles.getRoleBySlug, {
+        orgId: b.orgId,
+        slug: "system-developer",
+      })
+    ).toBeNull()
+  })
+
+  it("regenerates the slug on a title change and keeps it otherwise", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, track } = await seedTemplateOrganization(t)
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "System Developer",
+      function: "Eng",
+      team: "Core",
+      trackKey: track.key,
+    })
+    // A non-title change leaves the slug untouched (no URL churn).
+    await asAdmin.mutation(api.assessment.roles.updateRole, {
+      orgId,
+      roleId,
+      team: "Platform",
+    })
+    const before = await asAdmin.query(api.assessment.roles.getRole, {
+      orgId,
+      roleId,
+    })
+    expect(before?.slug).toBe("system-developer")
+    // A title change regenerates it.
+    await asAdmin.mutation(api.assessment.roles.updateRole, {
+      orgId,
+      roleId,
+      title: "Senior Developer",
+    })
+    const after = await asAdmin.query(api.assessment.roles.getRole, {
+      orgId,
+      roleId,
+    })
+    expect(after?.slug).toBe("senior-developer")
+  })
+
+  it("rejects a duplicate title within a family but allows it across families", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, track } = await seedTemplateOrganization(t)
+    const eng = await asAdmin.mutation(
+      api.assessment.families.createRoleFamily,
+      { orgId, name: "Engineering" }
+    )
+    const sales = await asAdmin.mutation(
+      api.assessment.families.createRoleFamily,
+      { orgId, name: "Sales" }
+    )
+    const base = { orgId, function: "F", team: "T", trackKey: track.key }
+    await asAdmin.mutation(api.assessment.roles.createRole, {
+      ...base,
+      title: "Manager",
+      familyId: eng,
+    })
+    // Same title in the same family is rejected (case-insensitive).
+    await expect(
+      asAdmin.mutation(api.assessment.roles.createRole, {
+        ...base,
+        title: "manager",
+        familyId: eng,
+      })
+    ).rejects.toThrow(/errors.roleExists/)
+    // Same title in a different family is allowed; its slug is family-prefixed
+    // to stay org-unique for the route.
+    const { slug } = await asAdmin.mutation(api.assessment.roles.createRole, {
+      ...base,
+      title: "Manager",
+      familyId: sales,
+    })
+    expect(slug).toBe("sales-manager")
   })
 })

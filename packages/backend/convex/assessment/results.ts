@@ -16,6 +16,7 @@ export const getResults = orgQuery({
       v.object({
         roleId: v.id("roles"),
         title: v.string(),
+        slug: v.string(),
         trackKey: v.string(),
         trackName: v.string(),
         complete: v.boolean(),
@@ -76,6 +77,7 @@ export const getResults = orgQuery({
       rows.push({
         roleId: role._id,
         title: role.title,
+        slug: role.slug,
         trackKey: role.trackKey,
         trackName: track?.name ?? role.trackKey,
         complete: result?.complete ?? false,
@@ -86,7 +88,7 @@ export const getResults = orgQuery({
         familyId: role.familyId ?? null,
         familyName:
           role.familyId !== undefined
-            ? (families.get(role.familyId as string) ?? null)
+            ? (families.get(role.familyId as string)?.name ?? null)
             : null,
         anchor,
       })

@@ -56,6 +56,7 @@ import { groupByFamily } from "@/lib/role-groups"
 export interface RolesTableRow {
   roleId: string
   title: string
+  slug: string
   function: string
   team: string
   trackKey: string
@@ -64,6 +65,7 @@ export interface RolesTableRow {
   totalCriteria: number
   familyId: string | null
   familyName: string | null
+  familySlug: string | null
 }
 
 export interface RolesTableTrack {
@@ -138,7 +140,7 @@ export function RolesTable({
         header: t("table.title"),
         cell: ({ row }) => (
           <Link
-            href={`/roles/${row.original.roleId}`}
+            href={`/roles/${row.original.slug}`}
             className="font-medium underline-offset-4 hover:underline"
           >
             {row.original.title}
@@ -324,9 +326,9 @@ export function RolesTable({
                     <TableCell colSpan={visibleColumnCount}>
                       <span className="flex items-baseline gap-2">
                         {firstLeaf !== undefined &&
-                        firstLeaf.familyId !== null ? (
+                        firstLeaf.familySlug !== null ? (
                           <Link
-                            href={`/roles/families/${firstLeaf.familyId}`}
+                            href={`/roles/families/${firstLeaf.familySlug}`}
                             className="font-bold text-sm underline-offset-4 hover:underline"
                           >
                             {firstLeaf.familyName}
@@ -357,7 +359,7 @@ export function RolesTable({
                     // text selection is a copy gesture, not navigation.
                     if ((event.target as HTMLElement).closest("a")) return
                     if (window.getSelection()?.toString()) return
-                    router.push(`/roles/${row.original.roleId}`)
+                    router.push(`/roles/${row.original.slug}`)
                   }}
                 >
                   {row.getVisibleCells().map((cell) => (

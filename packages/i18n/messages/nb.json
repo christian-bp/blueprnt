@@ -1185,6 +1185,7 @@
     "ratingsIncomplete": "Alle kriterier må vurderes først.",
     "invalidTransition": "Den statusendringen er ikke tillatt.",
     "roleFamilyExists": "En familie med det navnet finnes allerede.",
+    "roleExists": "En rolle med det navnet finnes allerede i denne familien.",
     "weightsUnbalanced": "Vektingen må stemme med poengbudsjettet.",
     "tooFewCriteria": "En modell trenger minst 5 kriterier.",
     "lastAdmin": "Du er den siste administratoren i en organisasjon. Kontakt støtte for å slette kontoen din."

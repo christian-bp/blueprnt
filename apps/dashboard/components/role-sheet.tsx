@@ -237,7 +237,7 @@ function RoleSheetContent({
 
           <SheetFooter>
             <Button asChild onClick={onClose}>
-              <Link href={`/roles/${roleId}`}>{t("openRole")}</Link>
+              <Link href={`/roles/${role?.slug ?? ""}`}>{t("openRole")}</Link>
             </Button>
           </SheetFooter>
         </>

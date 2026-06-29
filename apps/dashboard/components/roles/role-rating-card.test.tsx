@@ -12,7 +12,7 @@ function renderCard(over: {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <RoleRatingCard
-        roleId="r1"
+        slug="r1"
         archived={false}
         profileComplete={over.profileComplete ?? true}
         ratedCount={over.ratedCount}
@@ -37,5 +37,10 @@ describe("RoleRatingCard", () => {
   it("reads as evaluated when every criterion is rated", () => {
     renderCard({ ratedCount: 9, totalCriteria: 9 })
     expect(screen.getByText(messages.dashboard.roles.evaluated)).toBeDefined()
+  })
+
+  it("links to the slug-based rate route", () => {
+    renderCard({ ratedCount: 0, totalCriteria: 9 })
+    expect(screen.getByRole("link").getAttribute("href")).toBe("/roles/r1/rate")
   })
 })

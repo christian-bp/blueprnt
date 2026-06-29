@@ -1185,6 +1185,7 @@
     "ratingsIncomplete": "Alla kriterier måste betygsättas först.",
     "invalidTransition": "Den statusändringen är inte tillåten.",
     "roleFamilyExists": "En familj med det namnet finns redan.",
+    "roleExists": "En roll med det namnet finns redan i den här familjen.",
     "weightsUnbalanced": "Viktningen måste stämma med poängbudgeten.",
     "tooFewCriteria": "En modell behöver minst 5 kriterier.",
     "lastAdmin": "Du är den sista administratören i en organisation. Kontakta supporten för att radera ditt konto."

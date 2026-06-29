@@ -5,6 +5,7 @@ import { clampLocale } from "../evaluationModel/localize"
 import { AUDIT_EVENTS } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
+import { uniqueSlug } from "../lib/slug"
 
 const MAX_NAME_LENGTH = 100
 
@@ -47,6 +48,7 @@ export const createRoleFamily = orgMutation({
     const familyId = await ctx.db.insert("roleFamilies", {
       orgId: ctx.orgId,
       name,
+      slug: await uniqueSlug(ctx, "roleFamilies", ctx.orgId, name),
     })
     await ctx.audit.log({
       type: AUDIT_EVENTS.roleFamilyCreated,
@@ -71,7 +73,13 @@ export const renameRoleFamily = orgMutation({
     // Unchanged name is a no-op: no write, no audit row.
     if (name === family.name) return null
     await assertUniqueName(ctx, name, args.familyId)
-    await ctx.db.patch(args.familyId, { name })
+    await ctx.db.patch(args.familyId, {
+      name,
+      // Name changed (unchanged names returned above), so refresh the slug.
+      slug: await uniqueSlug(ctx, "roleFamilies", ctx.orgId, name, {
+        excludeId: args.familyId,
+      }),
+    })
     await ctx.audit.log({
       type: AUDIT_EVENTS.roleFamilyRenamed,
       payload: {
@@ -136,6 +144,7 @@ export const listRoleFamilies = orgQuery({
     v.object({
       familyId: v.id("roleFamilies"),
       name: v.string(),
+      slug: v.string(),
       roleCount: v.number(),
     })
   ),
@@ -161,6 +170,7 @@ export const listRoleFamilies = orgQuery({
     return families.map((family) => ({
       familyId: family._id,
       name: family.name,
+      slug: family.slug,
       roleCount: counts.get(family._id as string) ?? 0,
     }))
   },

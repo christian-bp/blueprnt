@@ -15,13 +15,13 @@ import Link from "next/link"
 // shows progress only: which values were given lives in the result card
 // after completion, never here (blindness).
 export function RoleRatingCard({
-  roleId,
+  slug,
   archived,
   profileComplete,
   ratedCount,
   totalCriteria,
 }: {
-  roleId: string
+  slug: string
   archived: boolean
   profileComplete: boolean
   ratedCount: number
@@ -56,7 +56,7 @@ export function RoleRatingCard({
         {!locked &&
           (profileComplete ? (
             <Button asChild>
-              <Link href={`/roles/${roleId}/rate`}>{ctaLabel}</Link>
+              <Link href={`/roles/${slug}/rate`}>{ctaLabel}</Link>
             </Button>
           ) : (
             <p className="text-muted-foreground text-sm">

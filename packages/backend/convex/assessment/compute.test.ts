@@ -37,6 +37,7 @@ describe("deriveResults", () => {
       const roleId = await ctx.db.insert("roles", {
         orgId,
         title: "Head of Everything",
+        slug: "head-of-everything",
         function: "Engineering",
         team: "Core",
         trackKey: "IC",
@@ -70,6 +71,7 @@ describe("deriveResults", () => {
       const partialId = await ctx.db.insert("roles", {
         orgId,
         title: "Partial",
+        slug: "partial",
         function: "F",
         team: "T",
         trackKey: "IC",
@@ -87,6 +89,7 @@ describe("deriveResults", () => {
       await ctx.db.insert("roles", {
         orgId,
         title: "Archived",
+        slug: "archived",
         function: "F",
         team: "T",
         trackKey: "IC",

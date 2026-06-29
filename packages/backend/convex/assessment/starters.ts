@@ -11,6 +11,7 @@ import {
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
+import { uniqueSlug } from "../lib/slug"
 import { deriveResults } from "./compute"
 import { clampIndustry, starterContent } from "./industryStarters"
 
@@ -150,6 +151,7 @@ export async function insertStarterSet(
     const familyId = await ctx.db.insert("roleFamilies", {
       orgId,
       name,
+      slug: await uniqueSlug(ctx, "roleFamilies", orgId, name),
     })
     await logAudit(ctx, {
       orgId,
@@ -180,6 +182,7 @@ export async function insertStarterSet(
       const roleId = await ctx.db.insert("roles", {
         orgId,
         title,
+        slug: await uniqueSlug(ctx, "roles", orgId, title),
         function: "",
         team: "",
         trackKey: role.trackKey,
@@ -418,7 +421,11 @@ export const reconcileStarterSet = orgMutation({
         }
       } else {
         // New family.
-        familyId = await ctx.db.insert("roleFamilies", { orgId, name })
+        familyId = await ctx.db.insert("roleFamilies", {
+          orgId,
+          name,
+          slug: await uniqueSlug(ctx, "roleFamilies", orgId, name),
+        })
         await logAudit(ctx, {
           orgId,
           type: AUDIT_EVENTS.roleFamilyCreated,
@@ -497,6 +504,7 @@ export const reconcileStarterSet = orgMutation({
           const roleId = await ctx.db.insert("roles", {
             orgId,
             title,
+            slug: await uniqueSlug(ctx, "roles", orgId, title),
             function: "",
             team: "",
             trackKey: role.trackKey,

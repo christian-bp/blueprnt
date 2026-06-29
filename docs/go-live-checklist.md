@@ -29,6 +29,12 @@ in the same change.
   production.
 - [ ] **Reset pre-launch data.** Clear dev/demo organizations, users, and seeded
   content from the production deployment so launch starts clean.
+- [ ] **Clear or backfill before the slug schema deploys.** `roles` and
+  `roleFamilies` carry a required `slug` (the route handle). A required field
+  cannot be pushed against populated tables, so any environment that already has
+  roles/families must have them cleared (the reset above) or backfilled with a
+  one-off mutation before this schema is deployed. A freshly reset deployment
+  needs nothing further: new rows get slugs at creation via `lib/slug.ts`.
 
 ## Content and localization
 
@@ -72,6 +78,9 @@ in the same change.
     are not uniform (e.g. fi pairs "Muokkaaja" with a top-level
     `accounts.role.editor` of "Editor"; da uses "Redaktør"). Standardize the
     Admin/Editor terms per locale.
+- [ ] **Native review of the role-slug error string.** `errors.roleExists`
+  (sv/nb/da/fi) was machine-drafted from English; have a native speaker confirm
+  the "in this family" phrasing matches each locale's role-family term.
 
 ## Security and compliance
 

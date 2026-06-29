@@ -21,6 +21,7 @@ export const ERROR_CODES = {
   ratingsIncomplete: "errors.ratingsIncomplete",
   invalidTransition: "errors.invalidTransition",
   roleFamilyExists: "errors.roleFamilyExists",
+  roleExists: "errors.roleExists",
   lastAdmin: "errors.lastAdmin",
 } as const
 

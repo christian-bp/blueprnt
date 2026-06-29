@@ -65,7 +65,7 @@ export function RoleChip({ role }: { role: BandRoleRow }) {
   }
 
   return (
-    <Link href={`/roles/${role.roleId}`} className={CHIP_CLASS}>
+    <Link href={`/roles/${role.slug}`} className={CHIP_CLASS}>
       {inner}
     </Link>
   )

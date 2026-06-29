@@ -24,15 +24,21 @@ export function trackNames(locale: string | undefined): TrackNames {
   )
 }
 
-// Family name lookup for the org. Families are user-entered names, stored
-// as written; no localization applies.
+// Family lookup for the org, keyed by family id: the user-entered name (stored
+// as written, no localization) plus the URL slug. Callers read `.name` for
+// display and `.slug` to build family route links.
 export async function familyNames(
   ctx: QueryCtx,
   orgId: string
-): Promise<Map<string, string>> {
+): Promise<Map<string, { name: string; slug: string }>> {
   const families = await ctx.db
     .query("roleFamilies")
     .withIndex("by_org", (q) => q.eq("orgId", orgId))
     .collect()
-  return new Map(families.map((family) => [family._id as string, family.name]))
+  return new Map(
+    families.map((family) => [
+      family._id as string,
+      { name: family.name, slug: family.slug },
+    ])
+  )
 }

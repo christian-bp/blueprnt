@@ -13,6 +13,7 @@ const BANDS = [
 function role(overrides: Partial<BandRoleRow>): BandRoleRow {
   return {
     roleId: "r1",
+    slug: "r1",
     title: "CTO",
     trackKey: "M",
     trackName: "Manager",

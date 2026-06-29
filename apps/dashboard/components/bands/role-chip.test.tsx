@@ -9,6 +9,7 @@ import type { BandRoleRow } from "@/lib/bands"
 function row(overrides: Partial<BandRoleRow>): BandRoleRow {
   return {
     roleId: "r1",
+    slug: "r1",
     title: "Staff Engineer",
     trackKey: "IC",
     trackName: "Individual contributor",

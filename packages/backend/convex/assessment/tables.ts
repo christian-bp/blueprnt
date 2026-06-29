@@ -9,7 +9,12 @@ import { trackKeyValidator } from "../evaluationModel/tables"
 export const roleFamilies = defineTable({
   orgId: v.string(),
   name: v.string(),
-}).index("by_org", ["orgId"])
+  // Human-readable, per-org-unique URL handle (see lib/slug.ts); regenerated
+  // when the name changes. Routes resolve a family by (orgId, slug).
+  slug: v.string(),
+})
+  .index("by_org", ["orgId"])
+  .index("by_org_slug", ["orgId", "slug"])
 
 // Role identity is permanent: never hard-delete a role with ratings, never
 // reuse ids (V2 equal-work grouping depends on it).
@@ -17,6 +22,10 @@ export const roleFamilies = defineTable({
 export const roles = defineTable({
   orgId: v.string(),
   title: v.string(), // the role's display title, e.g. "System Developer"
+  // Human-readable, per-org-unique URL handle derived from title (see
+  // lib/slug.ts); regenerated when the title changes. Routes resolve a role by
+  // (orgId, slug). The Convex _id stays the permanent internal key.
+  slug: v.string(),
   function: v.string(),
   team: v.string(),
   // Stable track key (ADR-0006): tracks are fixed V1 constants, so the
@@ -46,7 +55,9 @@ export const roles = defineTable({
       reviewedAt: v.number(),
     })
   ),
-}).index("by_org", ["orgId"])
+})
+  .index("by_org", ["orgId"])
+  .index("by_org_slug", ["orgId", "slug"])
 
 // The stored truth (ADR-0002): ratings persist, score/band derive.
 export const ratings = defineTable({

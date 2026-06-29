@@ -120,7 +120,7 @@ export const collectPrefillTargets = internalQuery({
         // pre-family shape for unfamilied roles (matching v.optional).
         const familyName =
           role.familyId !== undefined
-            ? families.get(role.familyId as string)
+            ? families.get(role.familyId as string)?.name
             : undefined
         return {
           roleId: role._id,

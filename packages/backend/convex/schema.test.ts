@@ -28,6 +28,7 @@ describe("domain schema skeleton", () => {
       const roleId = await ctx.db.insert("roles", {
         orgId: "org1",
         title: "Software Developer",
+        slug: "software-developer",
         function: "Engineering",
         team: "Platform",
         trackKey: "IC",

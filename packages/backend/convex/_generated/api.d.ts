@@ -60,6 +60,7 @@ import type * as lib_audit from "../lib/audit.js";
 import type * as lib_auditPayloads from "../lib/auditPayloads.js";
 import type * as lib_errors from "../lib/errors.js";
 import type * as lib_functions from "../lib/functions.js";
+import type * as lib_slug from "../lib/slug.js";
 import type * as platform_admin from "../platform/admin.js";
 import type * as platform_bootstrap from "../platform/bootstrap.js";
 import type * as platform_emailLog from "../platform/emailLog.js";
@@ -125,6 +126,7 @@ declare const fullApi: ApiFromModules<{
   "lib/auditPayloads": typeof lib_auditPayloads;
   "lib/errors": typeof lib_errors;
   "lib/functions": typeof lib_functions;
+  "lib/slug": typeof lib_slug;
   "platform/admin": typeof platform_admin;
   "platform/bootstrap": typeof platform_bootstrap;
   "platform/emailLog": typeof platform_emailLog;

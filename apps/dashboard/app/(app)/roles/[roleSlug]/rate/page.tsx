@@ -14,14 +14,18 @@ import { RatingResult } from "@/components/rating/rating-result"
 import { RatingStepper } from "@/components/rating/rating-stepper"
 
 export default function RatePage(props: {
-  params: Promise<{ roleId: string }>
+  params: Promise<{ roleSlug: string }>
 }) {
-  const { roleId } = use(props.params)
+  const { roleSlug } = use(props.params)
   const t = useTranslations("dashboard.rating")
   const tDetail = useTranslations("dashboard.roles.detail")
   const { orgId } = useOrganization()
   const locale = useLocale()
-  const role = useQuery(api.assessment.roles.getRole, { orgId, roleId, locale })
+  const role = useQuery(api.assessment.roles.getRoleBySlug, {
+    orgId,
+    slug: roleSlug,
+    locale,
+  })
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
   const [finished, setFinished] = useState(false)
   usePageTitle([role?.title, t("title")])
@@ -54,7 +58,7 @@ export default function RatePage(props: {
             : tDetail("profileIncomplete")}
         </p>
         <Link
-          href={`/roles/${role.roleId}`}
+          href={`/roles/${role.slug}`}
           className="text-sm underline underline-offset-4"
         >
           {t("result.backToRole")}
@@ -68,9 +72,9 @@ export default function RatePage(props: {
   if (finished) {
     return (
       <div className="w-full max-w-2xl space-y-4">
-        <RatingResult orgId={orgId} roleId={roleId} />
+        <RatingResult orgId={orgId} roleId={role.roleId} />
         <Button asChild variant="outline">
-          <Link href={`/roles/${roleId}`}>{t("result.backToRole")}</Link>
+          <Link href={`/roles/${role.slug}`}>{t("result.backToRole")}</Link>
         </Button>
       </div>
     )

@@ -19,6 +19,7 @@ import { RoleSheetProvider, useRoleSheet } from "@/components/role-sheet"
 function baseRole() {
   return {
     roleId: "role_1",
+    slug: "role_1",
     title: "Engineer",
     function: "Backend",
     team: "Platform",

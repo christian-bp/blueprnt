@@ -41,7 +41,7 @@ async function createRole(
   orgId: string,
   title: string
 ) {
-  return await t
+  const { roleId } = await t
     .withIdentity({ subject })
     .mutation(api.assessment.roles.createRole, {
       orgId,
@@ -50,6 +50,7 @@ async function createRole(
       team: "Platform",
       trackKey: "IC",
     })
+  return roleId
 }
 
 describe("accounts.audit.listAuditLog (browse)", () => {

@@ -221,6 +221,7 @@ describe("getOnboardingStatus", () => {
       await ctx.db.insert("roles", {
         orgId,
         title: "Developer",
+        slug: "developer",
         function: "Engineering",
         team: "Core",
         trackKey: "IC",

@@ -26,7 +26,7 @@ async function seedTemplateOrganization(t: ReturnType<typeof initConvexTest>) {
   if (model === null) throw new Error("model not seeded")
   const track = model.tracks[0]
   if (track === undefined) throw new Error("seed")
-  const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
+  const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
     orgId,
     title: "Developer",
     function: "Engineering",
@@ -333,13 +333,16 @@ describe("setRating", () => {
     const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
     const track = model.tracks[0]
     if (track === undefined) throw new Error("seed")
-    const bareRoleId = await asAdmin.mutation(api.assessment.roles.createRole, {
-      orgId,
-      title: "Bare",
-      function: "F",
-      team: "T",
-      trackKey: track.key,
-    })
+    const { roleId: bareRoleId } = await asAdmin.mutation(
+      api.assessment.roles.createRole,
+      {
+        orgId,
+        title: "Bare",
+        function: "F",
+        team: "T",
+        trackKey: track.key,
+      }
+    )
     const criterion = model.criteria[0]
     if (criterion === undefined) throw new Error("seed")
     await expect(

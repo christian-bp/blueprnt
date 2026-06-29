@@ -2,6 +2,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { api, components, internal } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
+import { slugify } from "@workspace/constants"
 import { initConvexTest } from "../testing.helpers"
 import { AI_PROFILE_MODEL_ID } from "./config"
 
@@ -93,6 +94,7 @@ async function insertRole(
     ctx.db.insert("roles", {
       orgId,
       title: fields.title,
+      slug: slugify(fields.title),
       function: "Engineering",
       team: "Core",
       trackKey: "IC",
@@ -110,7 +112,7 @@ async function insertFamily(
   name: string
 ): Promise<Id<"roleFamilies">> {
   return await t.run(async (ctx) =>
-    ctx.db.insert("roleFamilies", { orgId, name })
+    ctx.db.insert("roleFamilies", { orgId, name, slug: slugify(name) })
   )
 }
 

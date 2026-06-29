@@ -36,6 +36,7 @@ import { useForm } from "react-hook-form"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { FamilyPicker } from "@/components/roles/family-picker"
 import { SubmitButton } from "@/components/submit-button"
+import { isDuplicateRoleError } from "@/lib/role-error"
 import { type CreateRoleValues, makeCreateRoleSchema } from "@/lib/role-schemas"
 
 // Structural subset of getModel's tracks: the stable key flows through to the
@@ -63,11 +64,12 @@ export function CreateRoleDialog({
   const tHelp = useTranslations("dashboard.help")
   const tModel = useTranslations("model")
   const tv = useTranslations("dashboard.validation")
+  const tErrors = useTranslations("errors")
   const createRole = useMutation(api.assessment.roles.createRole)
   const router = useRouter()
 
   const [open, setOpen] = useState(false)
-  const [failed, setFailed] = useState(false)
+  const [failure, setFailure] = useState<"duplicate" | "generic" | null>(null)
   const firstTrack = tracks[0]
 
   const schema = useMemo(() => makeCreateRoleSchema(tv), [tv])
@@ -88,14 +90,14 @@ export function CreateRoleDialog({
     // Closing discards the draft: a reopened dialog always starts clean.
     if (!nextOpen) {
       form.reset()
-      setFailed(false)
+      setFailure(null)
     }
   }
 
   async function onSubmit(values: CreateRoleValues) {
-    setFailed(false)
+    setFailure(null)
     try {
-      const roleId = await createRole({
+      const { slug } = await createRole({
         orgId,
         title: values.title,
         function: values.roleFunction,
@@ -105,10 +107,12 @@ export function CreateRoleDialog({
           ? { familyId: values.familyId as never }
           : {}),
       })
+      // createRole returns the stored slug (with any uniqueness suffix), so we
+      // navigate straight to the new role's slug-based route.
       setOpen(false)
-      router.push(`/roles/${roleId}`)
-    } catch {
-      setFailed(true)
+      router.push(`/roles/${slug}`)
+    } catch (error) {
+      setFailure(isDuplicateRoleError(error) ? "duplicate" : "generic")
     }
   }
 
@@ -219,9 +223,9 @@ export function CreateRoleDialog({
                 </FormItem>
               )}
             />
-            {failed && (
+            {failure !== null && (
               <p role="alert" className="text-destructive text-sm">
-                {t("error")}
+                {failure === "duplicate" ? tErrors("roleExists") : t("error")}
               </p>
             )}
             <DialogFooter>

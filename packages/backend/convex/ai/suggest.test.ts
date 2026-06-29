@@ -27,7 +27,7 @@ async function seedRoleOrganization(t: ReturnType<typeof initConvexTest>) {
   if (model === null) throw new Error("model not seeded")
   const track = model.tracks[0]
   if (track === undefined) throw new Error("seed")
-  const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
+  const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
     orgId,
     title: "Junior Software Developer",
     function: "Engineering",
@@ -1108,6 +1108,7 @@ describe("role profile drafts", () => {
       const id = await ctx.db.insert("roleFamilies", {
         orgId,
         name: "Engineering",
+        slug: "engineering",
       })
       const docId = ctx.db.normalizeId("roles", roleId)
       if (docId === null) throw new Error("bad id")

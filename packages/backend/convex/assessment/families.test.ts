@@ -43,6 +43,7 @@ describe("role families", () => {
       await ctx.db.insert("roles", {
         orgId,
         title: "Developer",
+        slug: "developer",
         function: "Engineering",
         team: "Core",
         trackKey: "IC",
@@ -64,7 +65,12 @@ describe("role families", () => {
       { orgId }
     )
     expect(families).toEqual([
-      { familyId, name: "Software Engineering", roleCount: 1 },
+      {
+        familyId,
+        name: "Software Engineering",
+        slug: "software-engineering",
+        roleCount: 1,
+      },
     ])
     await t.run(async (ctx) => {
       const audit = await ctx.db
@@ -118,6 +124,8 @@ describe("role families", () => {
       if (otherDocId === null) throw new Error("bad other id")
       const family = await ctx.db.get(familyDocId)
       expect(family?.name).toBe("Teknik")
+      // Renaming regenerates the slug from the new name.
+      expect(family?.slug).toBe("teknik")
       const other = await ctx.db.get(otherDocId)
       expect(other?.name).toBe("Sales")
       const audit = await ctx.db
@@ -147,6 +155,7 @@ describe("role families", () => {
       return await ctx.db.insert("roles", {
         orgId,
         title: "Developer",
+        slug: "developer",
         function: "Engineering",
         team: "Core",
         trackKey: "IC",

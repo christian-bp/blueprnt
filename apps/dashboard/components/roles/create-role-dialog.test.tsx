@@ -68,7 +68,7 @@ describe("CreateRoleDialog", () => {
   })
 
   it("opens on the trigger and submits the basics, then navigates", async () => {
-    createRoleMock.mockResolvedValue("role-new")
+    createRoleMock.mockResolvedValue({ roleId: "role-new", slug: "role-new" })
     renderDialog()
     fireEvent.click(screen.getByRole("button", { name: labels.title }))
     fireEvent.change(screen.getByLabelText(labels.titleLabel), {

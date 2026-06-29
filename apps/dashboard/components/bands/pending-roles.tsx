@@ -31,7 +31,7 @@ export function PendingRoles({ rows }: { rows: BandRoleRow[] }) {
         {pending.map((role) => (
           <Link
             key={role.roleId}
-            href={`/roles/${role.roleId}`}
+            href={`/roles/${role.slug}`}
             className="inline-flex items-center gap-2 rounded-md border border-dashed px-2.5 py-1.5 text-muted-foreground text-sm hover:bg-accent"
           >
             <span className="truncate font-medium">{role.title}</span>

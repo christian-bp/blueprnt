@@ -23,9 +23,9 @@ import { FamilyHeader } from "@/components/roles/family-header"
 // order), sorted by level within each track. Band outcomes appear only for
 // complete roles, the same visibility rule as the results view.
 export default function FamilyPage(props: {
-  params: Promise<{ familyId: string }>
+  params: Promise<{ familySlug: string }>
 }) {
-  const { familyId } = use(props.params)
+  const { familySlug } = use(props.params)
   const t = useTranslations("dashboard.roles")
   const tFamily = useTranslations("dashboard.roles.family")
   const tAssessment = useTranslations("assessment")
@@ -39,7 +39,7 @@ export default function FamilyPage(props: {
   })
   const roles = useQuery(api.assessment.roles.listRoles, { orgId, locale })
   const results = useQuery(api.assessment.results.getResults, { orgId, locale })
-  const family = families?.find((entry) => entry.familyId === familyId)
+  const family = families?.find((entry) => entry.slug === familySlug)
   usePageTitle(family?.name)
 
   if (families === undefined || roles === undefined || results === undefined) {
@@ -64,7 +64,7 @@ export default function FamilyPage(props: {
   const bandByRole = new Map(
     results.rows.map((row) => [row.roleId as string, row])
   )
-  const familyRoles = roles.filter((role) => role.familyId === familyId)
+  const familyRoles = roles.filter((role) => role.familyId === family.familyId)
 
   // Deduplicate tracks ordered by trackOrder for the progression sections.
   const trackKeys = [
@@ -78,7 +78,11 @@ export default function FamilyPage(props: {
 
   return (
     <div className="space-y-6">
-      <FamilyHeader familyId={familyId} name={family.name} orgId={orgId} />
+      <FamilyHeader
+        familyId={family.familyId}
+        name={family.name}
+        orgId={orgId}
+      />
       {/* The only band column outside the results surfaces: carry the same
           band-1-is-highest note its siblings show (guidance convention). */}
       <p className="text-muted-foreground text-sm">{tBands("bandHighest")}</p>
@@ -106,7 +110,7 @@ export default function FamilyPage(props: {
                       <TableCell>
                         <Link
                           className="font-medium underline-offset-4 hover:underline"
-                          href={`/roles/${role.roleId}`}
+                          href={`/roles/${role.slug}`}
                         >
                           {role.title}
                         </Link>

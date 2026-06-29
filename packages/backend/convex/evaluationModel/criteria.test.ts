@@ -363,7 +363,7 @@ async function seedRatedTemplateOrganization(
     orgId,
   })
   if (model === null) throw new Error("model not seeded")
-  const roleId = await asAdmin.mutation(api.assessment.roles.createRole, {
+  const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
     orgId,
     title: "Anchor",
     function: "Engineering",
