@@ -345,10 +345,16 @@
         "error": "Noe gikk galt. Prøv igjen.",
         "rolesHeading": "Roller i familien",
         "notFound": "Denne familien finnes ikke.",
-        "roleCount": "{count, plural, =1 {1 rolle} other {# roller}}"
+        "roleCount": "{count, plural, =1 {1 rolle} other {# roller}}",
+        "actionsMenu": "Familiehandlinger",
+        "renameDialogTitle": "Gi familien nytt navn",
+        "renameDialogDescription": "Gi familien et nytt navn.",
+        "removeDialogTitle": "Slette familien?",
+        "removeListLabel": "Roller som forlater familien:"
       },
       "detail": {
         "profileHeading": "Jobbprofil",
+        "actionsMenu": "Rollehandlinger",
         "editCta": "Rediger",
         "doneCta": "Ferdig",
         "saveCta": "Lagre",
@@ -369,6 +375,8 @@
         "cta": "Arkiver rolle",
         "confirm": "Ja, arkiver",
         "cancel": "Avbryt",
+        "dialogTitle": "Arkivere rollen?",
+        "dialogBody": "Arkivering fjerner rollen fra den aktive listen og alle resultater. Dataene og historikken beholdes.",
         "error": "Rollen kunne ikke arkiveres. Prøv igjen."
       },
       "ai": {

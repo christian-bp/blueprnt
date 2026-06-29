@@ -345,10 +345,16 @@
         "error": "Jokin meni pieleen. Yritä uudelleen.",
         "rolesHeading": "Roolit perheessä",
         "notFound": "Tätä perhettä ei ole olemassa.",
-        "roleCount": "{count, plural, =1 {1 rooli} other {# roolia}}"
+        "roleCount": "{count, plural, =1 {1 rooli} other {# roolia}}",
+        "actionsMenu": "Perheen toiminnot",
+        "renameDialogTitle": "Nimeä perhe uudelleen",
+        "renameDialogDescription": "Anna perheelle uusi nimi.",
+        "removeDialogTitle": "Poistetaanko perhe?",
+        "removeListLabel": "Roolit, jotka poistuvat perheestä:"
       },
       "detail": {
         "profileHeading": "Tehtäväprofiili",
+        "actionsMenu": "Roolin toiminnot",
         "editCta": "Muokkaa",
         "doneCta": "Valmis",
         "saveCta": "Tallenna",
@@ -369,6 +375,8 @@
         "cta": "Arkistoi rooli",
         "confirm": "Kyllä, arkistoi",
         "cancel": "Peruuta",
+        "dialogTitle": "Arkistoidaanko rooli?",
+        "dialogBody": "Arkistointi poistaa roolin aktiivisesta luettelosta ja kaikista tuloksista. Sen tiedot ja historia säilyvät.",
         "error": "Roolia ei voitu arkistoida. Yritä uudelleen."
       },
       "ai": {

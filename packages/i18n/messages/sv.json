@@ -345,10 +345,16 @@
         "error": "Något gick fel. Försök igen.",
         "rolesHeading": "Roller i familjen",
         "notFound": "Den här familjen finns inte.",
-        "roleCount": "{count, plural, =1 {1 roll} other {# roller}}"
+        "roleCount": "{count, plural, =1 {1 roll} other {# roller}}",
+        "actionsMenu": "Familjeåtgärder",
+        "renameDialogTitle": "Byt namn på familjen",
+        "renameDialogDescription": "Ge familjen ett nytt namn.",
+        "removeDialogTitle": "Ta bort familjen?",
+        "removeListLabel": "Roller som lämnar familjen:"
       },
       "detail": {
         "profileHeading": "Jobbprofil",
+        "actionsMenu": "Rollåtgärder",
         "editCta": "Redigera",
         "doneCta": "Klar",
         "saveCta": "Spara",
@@ -369,6 +375,8 @@
         "cta": "Arkivera roll",
         "confirm": "Ja, arkivera",
         "cancel": "Avbryt",
+        "dialogTitle": "Arkivera rollen?",
+        "dialogBody": "Att arkivera tar bort rollen från den aktiva listan och alla resultat. Dess data och historik sparas.",
         "error": "Rollen kunde inte arkiveras. Försök igen."
       },
       "ai": {

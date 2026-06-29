@@ -345,10 +345,16 @@
         "error": "Something went wrong. Try again.",
         "rolesHeading": "Roles in the family",
         "notFound": "This family does not exist.",
-        "roleCount": "{count, plural, =1 {1 role} other {# roles}}"
+        "roleCount": "{count, plural, =1 {1 role} other {# roles}}",
+        "actionsMenu": "Family actions",
+        "renameDialogTitle": "Rename family",
+        "renameDialogDescription": "Give the family a new name.",
+        "removeDialogTitle": "Delete this family?",
+        "removeListLabel": "Roles that will be unfiled:"
       },
       "detail": {
         "profileHeading": "Job profile",
+        "actionsMenu": "Role actions",
         "editCta": "Edit",
         "doneCta": "Done",
         "saveCta": "Save",
@@ -369,6 +375,8 @@
         "cta": "Archive role",
         "confirm": "Yes, archive",
         "cancel": "Cancel",
+        "dialogTitle": "Archive this role?",
+        "dialogBody": "Archiving removes this role from the active list and all results. Its data and history are kept.",
         "error": "The role could not be archived. Try again."
       },
       "ai": {
