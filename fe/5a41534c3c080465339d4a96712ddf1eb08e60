@@ -1,0 +1,28 @@
+apps/dashboard/app/(app)/roles/[roleSlug]/page.tsx
+  s_6bff98b662648b::t_6893989e6eb695 64-74
+apps/dashboard/components/roles/family-header.tsx
+  s_6bff98b662648b::t_2633039c756f9b 23-26
+  s_6bff98b662648b::t_0fdad29a72d571 8-9
+apps/dashboard/components/roles/role-actions-menu.tsx
+  s_6bff98b662648b::t_1a5b3d61dcc6f1 3
+  s_6bff98b662648b::t_10fd8a233200f5 50,53,55,58
+apps/dashboard/components/roles/family-actions-menu.tsx
+  s_6bff98b662648b::t_32b4c0e3ef11b1 48,51,53,56
+  s_6bff98b662648b::t_74d15cdf920f31 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "fe5a41534c3c080465339d4a96712ddf1eb08e60",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
