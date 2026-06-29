@@ -1,0 +1,25 @@
+apps/dashboard/components/page-breadcrumb.tsx
+  s_6bff98b662648b::t_5933390b2d4e76 37,39
+  s_6bff98b662648b::t_39a6439fd23491 1-5,7-29,31-36,38,40-49
+  s_6bff98b662648b::t_393ee198bd798a 6
+  s_6bff98b662648b::t_51cac1b465d2a6 30
+apps/dashboard/components/page-breadcrumb.test.tsx
+  s_6bff98b662648b::t_1e3f0acac8399e 1-7,9-21,26-27,29-33,37-38
+  s_6bff98b662648b::t_29dbc56e8bed7e 8,22-25,28,34-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "eb43eb9d7d699f6b31c6eb643c3f7922c39773cb",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
