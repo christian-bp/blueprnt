@@ -3,15 +3,14 @@
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Badge } from "@workspace/ui/components/badge"
 import { Spinner } from "@workspace/ui/components/spinner"
-import { useMutation, useQuery } from "convex/react"
+import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { use } from "react"
-import { MorphConfirmButton } from "@/components/morph-confirm-button"
+import { type Crumb, PageBreadcrumb } from "@/components/page-breadcrumb"
 import { useOrganization } from "@/components/org-context"
-import { PageHeading } from "@/components/page-heading"
 import { TrackBadge } from "@/components/track-badge"
+import { RoleActionsMenu } from "@/components/roles/role-actions-menu"
 import { AnchorRoleCard } from "@/components/roles/anchor-role-card"
 import { RoleProfileCard } from "@/components/roles/role-profile-card"
 import { RoleRatingCard } from "@/components/roles/role-rating-card"
@@ -23,10 +22,8 @@ export default function RolePage(props: {
 }) {
   const { roleSlug } = use(props.params)
   const t = useTranslations("dashboard.roles.detail")
-  const tArchive = useTranslations("dashboard.roles.archive")
+  const tNav = useTranslations("dashboard.nav")
   const { orgId, role: orgRole } = useOrganization()
-  const router = useRouter()
-  const archiveRole = useMutation(api.assessment.roles.archiveRole)
   const locale = useLocale()
   const role = useQuery(api.assessment.roles.getRoleBySlug, {
     orgId,
@@ -53,27 +50,30 @@ export default function RolePage(props: {
     )
   }
 
+  const roleCrumbs: Crumb[] = [{ label: tNav("roles"), href: "/roles" }]
+  if (role.familyName !== null && role.familySlug !== null) {
+    roleCrumbs.push({
+      label: role.familyName,
+      href: `/roles/families/${role.familySlug}`,
+    })
+  }
+  roleCrumbs.push({ label: role.title })
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
-        <PageHeading>{role.title}</PageHeading>
+        <RoleActionsMenu
+          orgId={orgId}
+          roleId={role.roleId}
+          archived={role.archived}
+          isAdmin={orgRole === "admin"}
+        />
+        <PageBreadcrumb segments={roleCrumbs} />
         {role.archived && <Badge variant="outline">{t("archivedBadge")}</Badge>}
         <TrackBadge trackKey={role.trackKey} name={role.trackName} />
         <span className="text-muted-foreground text-sm">
           {role.function} · {role.team}
         </span>
-        {orgRole === "admin" && (
-          <MorphConfirmButton
-            className="ml-auto"
-            triggerLabel={tArchive("cta")}
-            confirmLabel={tArchive("confirm")}
-            cancelLabel={tArchive("cancel")}
-            onConfirm={async () => {
-              await archiveRole({ orgId, roleId: role.roleId })
-              router.push("/roles")
-            }}
-          />
-        )}
       </div>
       {/* Archived roles turn read-only everywhere (edit, AI draft, rating);
           state the consequence once instead of letting controls vanish
