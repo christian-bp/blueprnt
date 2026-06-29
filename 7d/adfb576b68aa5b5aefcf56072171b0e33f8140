@@ -1,0 +1,51 @@
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_170e651481ea62 463
+apps/dashboard/components/auth/two-factor-challenge.tsx
+  s_6bff98b662648b::t_55128912aae026 23
+  s_6bff98b662648b::t_ce37f2f850078f 162
+  s_6bff98b662648b::t_c161e2e91ad659 163
+  s_6bff98b662648b::t_ba986d8932ec10 76,93
+  s_6bff98b662648b::t_f9b12b89992de4 43-45
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_2ba94337cbe319 463
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_035b958470891e 463
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_de5efffd59e554 463
+apps/dashboard/components/auth/otp-field.tsx
+  s_6bff98b662648b::t_3673e5e7dcd003 29,33-42,44-50,58-60
+  s_6bff98b662648b::t_a0cd9f88d9ea16 24-28,30,43,51-57
+  s_6bff98b662648b::t_5e1916f3a9a973 8
+  s_6bff98b662648b::t_65e86f8fac53bc 9
+apps/dashboard/components/auth/otp-field.test.tsx
+  s_6bff98b662648b::t_7df5e0476ae9d9 24,32,36
+  s_6bff98b662648b::t_d601b9425ee1d4 23,25-31,33-35,37
+apps/dashboard/components/auth/two-factor-setup.tsx
+  s_6bff98b662648b::t_9df3ca7ea5918d 356
+  s_6bff98b662648b::t_884c1c4ce341e2 109
+  s_6bff98b662648b::t_fbfd60b87c6f35 129
+  s_6bff98b662648b::t_28c9944b30bd1f 355
+  s_6bff98b662648b::t_9e0f718044171f 82-84
+apps/dashboard/components/auth/two-factor-challenge.test.tsx
+  s_6bff98b662648b::t_944399cd17bc64 136-150,153,155-159
+  s_6bff98b662648b::t_6f17a6b93e93fc 151-152,154
+  s_6bff98b662648b::t_8d92a826399aba 160
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_c3d3db40994b0e 463
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "7dadfb576b68aa5b5aefcf56072171b0e33f8140",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
