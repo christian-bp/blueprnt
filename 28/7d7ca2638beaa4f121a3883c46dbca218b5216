@@ -1,0 +1,35 @@
+apps/dashboard/components/roles/rename-family-dialog.test.tsx
+  s_6bff98b662648b::t_296c5fe6a5f89e 1-15,17-47,51-87
+  s_6bff98b662648b::t_7cc1a3584bf69e 48-50
+  s_6bff98b662648b::t_6b2864f431ae1e 16
+apps/dashboard/lib/role-schemas.test.ts
+  s_6bff98b662648b::t_0524f6d398dbee 1-14
+apps/dashboard/lib/role-schemas.ts
+  s_6bff98b662648b::t_fd10b606262f1c 47-57
+apps/dashboard/components/roles/rename-family-dialog.tsx
+  s_6bff98b662648b::t_5af9ff29a34580 79-80,82-83,85,101-108,123,149-150
+  s_6bff98b662648b::t_7fc86dc5113888 110
+  s_6bff98b662648b::t_909154bf0d35cc 142
+  s_6bff98b662648b::t_3ceb02e2e2a0eb 88-91,94-97
+  s_6bff98b662648b::t_3775492b4cd343 3,14-21,25-26,29-32,34-38,54,57-65,75-76,78,81,84,86,92,109,111-122,124-141,143-148
+  s_6bff98b662648b::t_c79514ba613e2a 1-2,4-13,22-24,27-28,33,39-53,55-56,87,98-100,151-152
+  s_6bff98b662648b::t_e02e2cdd74ee56 77
+  s_6bff98b662648b::t_d743d77d7e630a 66-74
+  s_6bff98b662648b::t_dd1fac3c265bec 93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "287d7ca2638beaa4f121a3883c46dbca218b5216",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
