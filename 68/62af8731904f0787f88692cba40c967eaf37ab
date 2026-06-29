@@ -1,0 +1,39 @@
+apps/dashboard/components/roles/family-header.tsx
+  s_6bff98b662648b::t_a55a1b9816fb27 3,17
+apps/dashboard/components/roles/family-header.test.tsx
+  s_6bff98b662648b::t_d07e856a078ce5 4
+  s_6bff98b662648b::t_668f2c98d497af 32
+apps/dashboard/components/roles/rename-family-dialog.test.tsx
+  s_6bff98b662648b::t_6716c20d8b37d6 40
+  s_6bff98b662648b::t_905fe029158b77 10
+apps/dashboard/components/roles/family-actions-menu.tsx
+  s_6bff98b662648b::t_604bd134bfa0ac 31
+  s_6bff98b662648b::t_c88f5402bf3208 88
+  s_6bff98b662648b::t_1eab0e03a4f38d 6
+apps/dashboard/components/roles/rename-family-dialog.tsx
+  s_6bff98b662648b::t_275719b7ab36ba 68-73
+  s_6bff98b662648b::t_d289f46ea7e2e4 50
+  s_6bff98b662648b::t_7601b0c43d5cc9 5
+  s_6bff98b662648b::t_5cb4680e89907f 95
+apps/dashboard/components/confirm-delete-dialog.tsx
+  s_6bff98b662648b::t_da9590160db46d 15-19
+apps/dashboard/components/roles/family-actions-menu.test.tsx
+  s_6bff98b662648b::t_0dec80f788b378 10
+  s_6bff98b662648b::t_df637c81a4452c 47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "6862af8731904f0787f88692cba40c967eaf37ab",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
