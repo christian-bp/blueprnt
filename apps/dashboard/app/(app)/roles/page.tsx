@@ -46,6 +46,7 @@ export default function RolesPage() {
             orgId={orgId}
             tracks={model.tracks}
             triggerLabel={t("newCta")}
+            existing={roles}
           />
         }
       />

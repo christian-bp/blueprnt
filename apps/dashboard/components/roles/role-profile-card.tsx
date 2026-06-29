@@ -13,7 +13,7 @@ import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { AiMagicIcon } from "@hugeicons/core-free-icons"
-import { useMutation } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { MorphPopover } from "@/components/morph-popover"
@@ -53,6 +53,9 @@ export function RoleProfileCard({
   const tAi = useTranslations("dashboard.ai")
   const tErrors = useTranslations("errors")
   const updateRole = useMutation(api.assessment.roles.updateRole)
+  // The org's other roles, to catch a title already taken in the target family
+  // (rename or family move) before submitting, so it never throws server-side.
+  const allRoles = useQuery(api.assessment.roles.listRoles, { orgId })
 
   const [editing, setEditing] = useState(false)
   const [pending, setPending] = useState(false)
@@ -114,6 +117,20 @@ export function RoleProfileCard({
     setDraft((currentDraft) => ({ ...currentDraft, [key]: value }))
   }
 
+  // A duplicate title within the draft's family (excluding this role). Role
+  // titles are unique within a family; the same title may exist in another
+  // family. Covers both renaming and moving the role to a different family.
+  const draftTitle = (draft.title ?? "").trim().toLowerCase()
+  const duplicate =
+    editing &&
+    draftTitle !== "" &&
+    (allRoles ?? []).some(
+      (r) =>
+        r.roleId !== role.roleId &&
+        (r.familyId ?? null) === (draftFamilyId ?? null) &&
+        r.title.toLowerCase() === draftTitle
+    )
+
   const textRows: { key: string; label: string; value: string }[] = [
     { key: "purpose", label: tRole("purpose"), value: role.purpose },
     {
@@ -150,7 +167,7 @@ export function RoleProfileCard({
               type="button"
               variant="outline"
               size="sm"
-              disabled={pending}
+              disabled={pending || duplicate}
               onClick={editing ? handleSave : startEditing}
             >
               {editing ? t("saveCta") : t("editCta")}
@@ -245,11 +262,15 @@ export function RoleProfileCard({
             )}
           </div>
         ))}
-        {failure !== null && (
+        {duplicate || failure === "duplicate" ? (
           <p role="alert" className="text-destructive text-sm">
-            {failure === "duplicate" ? tErrors("roleExists") : t("saveError")}
+            {tErrors("roleExists")}
           </p>
-        )}
+        ) : failure === "generic" ? (
+          <p role="alert" className="text-destructive text-sm">
+            {t("saveError")}
+          </p>
+        ) : null}
       </CardContent>
     </Card>
   )

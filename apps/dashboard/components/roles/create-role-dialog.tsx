@@ -55,10 +55,14 @@ export function CreateRoleDialog({
   orgId,
   tracks,
   triggerLabel,
+  existing,
 }: {
   orgId: string
   tracks: TrackOption[]
   triggerLabel: string
+  // The org's current roles, so the form rejects a title already taken in the
+  // selected family before submitting (the backend stays the authority).
+  existing: { title: string; familyId: string | null }[]
 }) {
   const t = useTranslations("dashboard.roles.create")
   const tHelp = useTranslations("dashboard.help")
@@ -72,7 +76,10 @@ export function CreateRoleDialog({
   const [failure, setFailure] = useState<"duplicate" | "generic" | null>(null)
   const firstTrack = tracks[0]
 
-  const schema = useMemo(() => makeCreateRoleSchema(tv), [tv])
+  const schema = useMemo(
+    () => makeCreateRoleSchema(tv, existing, tErrors("roleExists")),
+    [tv, existing, tErrors]
+  )
   const form = useForm<CreateRoleValues>({
     resolver: zodResolver(schema),
     mode: "onTouched",
@@ -217,7 +224,12 @@ export function CreateRoleDialog({
                     <FamilyPicker
                       orgId={orgId}
                       value={field.value}
-                      onChange={field.onChange}
+                      onChange={(value) => {
+                        field.onChange(value)
+                        // The family is the uniqueness scope, so re-check the
+                        // title against the newly selected family.
+                        void form.trigger("title")
+                      }}
                     />
                   </FormControl>
                 </FormItem>

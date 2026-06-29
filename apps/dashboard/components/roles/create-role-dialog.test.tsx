@@ -46,13 +46,16 @@ const TRACKS = [
   { key: "M", name: "Manager", order: 2 },
 ] as const
 
-function renderDialog() {
+function renderDialog(
+  existing: { title: string; familyId: string | null }[] = []
+) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <CreateRoleDialog
         orgId="org-1"
         tracks={[...TRACKS]}
         triggerLabel={labels.title}
+        existing={existing}
       />
     </NextIntlClientProvider>
   )
@@ -135,5 +138,28 @@ describe("CreateRoleDialog", () => {
       ).toBeGreaterThan(0)
       expect(createRoleMock).not.toHaveBeenCalled()
     })
+  })
+
+  it("blocks a title already taken in the selected family without calling the server", async () => {
+    renderDialog([{ title: "Manager", familyId: null }])
+    fireEvent.click(screen.getByRole("button", { name: labels.title }))
+    fireEvent.change(screen.getByLabelText(labels.titleLabel), {
+      target: { value: "Manager" },
+    })
+    fireEvent.change(screen.getByLabelText(labels.functionLabel), {
+      target: { value: "F" },
+    })
+    fireEvent.change(screen.getByLabelText(labels.teamLabel), {
+      target: { value: "T" },
+    })
+    const form = screen
+      .getByLabelText(labels.titleLabel)
+      .closest("form") as HTMLFormElement
+    fireEvent.submit(form)
+    await waitFor(() => {
+      expect(screen.getByText(messages.errors.roleExists)).toBeDefined()
+    })
+    // The duplicate never reaches the server (no thrown ConvexError).
+    expect(createRoleMock).not.toHaveBeenCalled()
   })
 })
