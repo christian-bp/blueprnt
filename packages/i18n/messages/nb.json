@@ -534,6 +534,7 @@
       "email": {
         "heading": "Sjekk e-posten din",
         "description": "Vi sendte en 6-sifret kode til {email}. Skriv den inn nedenfor.",
+        "resent": "Koden sendt",
         "resend": "Send koden på nytt"
       },
       "codeLabel": "6-sifret kode",

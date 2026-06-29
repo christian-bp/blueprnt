@@ -534,6 +534,7 @@
       "email": {
         "heading": "Tarkista sähköpostisi",
         "description": "Lähetimme 6-numeroisen koodin osoitteeseen {email}. Anna se alla.",
+        "resent": "Koodi lähetetty",
         "resend": "Lähetä koodi uudelleen"
       },
       "codeLabel": "6-numeroinen koodi",

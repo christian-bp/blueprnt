@@ -20,6 +20,7 @@ import { useTranslations } from "next-intl"
 import QRCode from "qrcode"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
+import { AsyncActionButton } from "@/components/async-action-button"
 import { AuthShell } from "@/components/auth/auth-shell"
 import { SuccessCheck } from "@/components/auth/success-check"
 import { CopyButton } from "@/components/copy-button"
@@ -352,18 +353,25 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
             {t("verifyError")}
           </p>
         )}
-        {method === "email" && (
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => void authClient.twoFactor.sendOtp()}
-          >
-            {t("email.resend")}
+        {/* Resend + change-method sit in their own tighter group, set apart
+            from the code field above (matches the sign-in challenge). */}
+        <div className="flex w-full flex-col items-center gap-1">
+          {method === "email" && (
+            <AsyncActionButton
+              variant="ghost"
+              doneLabel={t("email.resent")}
+              action={async () => {
+                const { error } = await authClient.twoFactor.sendOtp()
+                if (error) return false
+              }}
+            >
+              {t("email.resend")}
+            </AsyncActionButton>
+          )}
+          <Button type="button" variant="ghost" onClick={goToChoose}>
+            {t("changeMethod")}
           </Button>
-        )}
-        <Button type="button" variant="ghost" onClick={goToChoose}>
-          {t("changeMethod")}
-        </Button>
+        </div>
       </div>
     </AuthShell>
   )

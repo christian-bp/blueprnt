@@ -534,6 +534,7 @@
       "email": {
         "heading": "Kolla din e-post",
         "description": "Vi har skickat en 6-siffrig kod till {email}. Ange den nedan.",
+        "resent": "Koden skickad",
         "resend": "Skicka koden igen"
       },
       "codeLabel": "6-siffrig kod",

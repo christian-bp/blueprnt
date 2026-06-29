@@ -534,6 +534,7 @@
       "email": {
         "heading": "Check your email",
         "description": "We sent a 6-digit code to {email}. Enter it below.",
+        "resent": "Code sent",
         "resend": "Resend code"
       },
       "codeLabel": "6-digit code",
