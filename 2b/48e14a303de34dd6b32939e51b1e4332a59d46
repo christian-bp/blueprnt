@@ -1,0 +1,20 @@
+docs/superpowers/plans/2026-06-29-role-pages-restructure.md
+  s_6bff98b662648b::t_0d55d847c35387 1399
+  s_6bff98b662648b::t_6022cc2c5eeeb5 1-1398,1400-1489
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "2b48e14a303de34dd6b32939e51b1e4332a59d46",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
