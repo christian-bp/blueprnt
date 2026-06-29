@@ -1,6 +1,6 @@
 "use client"
 
-import { MoreVerticalIcon } from "@hugeicons/core-free-icons"
+import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
@@ -47,15 +47,15 @@ export function RoleActionsMenu({
         <DropdownMenuTrigger asChild>
           <Button
             type="button"
-            variant="ghost"
+            variant="outline"
             size="icon"
             aria-label={t("actionsMenu")}
-            className="shrink-0 text-muted-foreground hover:text-foreground"
+            className="shrink-0"
           >
-            <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
+            <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
+        <DropdownMenuContent align="end">
           <DropdownMenuItem
             variant="destructive"
             onSelect={() => setConfirmArchive(true)}

@@ -61,19 +61,23 @@ export default function RolePage(props: {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <PageBreadcrumb segments={roleCrumbs} />
+          {role.archived && (
+            <Badge variant="outline">{t("archivedBadge")}</Badge>
+          )}
+          <TrackBadge trackKey={role.trackKey} name={role.trackName} />
+          <span className="text-muted-foreground text-sm">
+            {role.function} · {role.team}
+          </span>
+        </div>
         <RoleActionsMenu
           orgId={orgId}
           roleId={role.roleId}
           archived={role.archived}
           isAdmin={orgRole === "admin"}
         />
-        <PageBreadcrumb segments={roleCrumbs} />
-        {role.archived && <Badge variant="outline">{t("archivedBadge")}</Badge>}
-        <TrackBadge trackKey={role.trackKey} name={role.trackName} />
-        <span className="text-muted-foreground text-sm">
-          {role.function} · {role.team}
-        </span>
       </div>
       {/* Archived roles turn read-only everywhere (edit, AI draft, rating);
           state the consequence once instead of letting controls vanish
