@@ -82,6 +82,7 @@ export default function FamilyPage(props: {
         familyId={family.familyId}
         name={family.name}
         orgId={orgId}
+        roleTitles={familyRoles.map((role) => role.title)}
       />
       {/* The only band column outside the results surfaces: carry the same
           band-1-is-highest note its siblings show (guidance convention). */}
