@@ -12,9 +12,11 @@ import {
 } from "@workspace/ui/components/alert-dialog"
 import type { ReactNode } from "react"
 
-// Controlled destructive-confirmation dialog. The menu item that opens it sets
-// `open`; on confirm it runs `onConfirm` then closes. `children` render between
-// the description and the footer (for example, the list of affected roles).
+// Controlled destructive-confirmation dialog. Backs any destructive action that
+// needs a confirmation step (for example: family Delete, role Archive). The menu
+// item that opens it sets `open`; on confirm it runs `onConfirm` then closes.
+// `children` render between the description and the footer (for example, the
+// list of affected roles).
 export function ConfirmDeleteDialog({
   open,
   onOpenChange,

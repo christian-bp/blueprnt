@@ -1,6 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
+import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import messages from "@workspace/i18n/messages/en.json"
 
 vi.mock("convex/react", () => ({ useMutation: () => vi.fn() }))
@@ -28,7 +29,7 @@ describe("FamilyHeader", () => {
       <NextIntlClientProvider locale="en" messages={messages}>
         <FamilyHeader
           orgId="org-1"
-          familyId="fam-1"
+          familyId={"fam-1" as Id<"roleFamilies">}
           name="Tech"
           roleTitles={["Senior Engineer"]}
         />

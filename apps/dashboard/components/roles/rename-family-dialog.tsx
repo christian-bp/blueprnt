@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@workspace/backend/convex/_generated/api"
+import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
@@ -46,7 +47,7 @@ export function RenameFamilyDialog({
   open: boolean
   onOpenChange: (open: boolean) => void
   orgId: string
-  familyId: string
+  familyId: Id<"roleFamilies">
   currentName: string
 }) {
   const tFamily = useTranslations("dashboard.roles.family")
@@ -64,9 +65,12 @@ export function RenameFamilyDialog({
   // Read formState.isSubmitting on every render so the proxy subscription
   // stays active and updates are reflected.
   const { isSubmitting } = form.formState
-  // Use watch() for the disabled gate so it updates synchronously from
-  // RHF's internal store on every change, without waiting for a re-render
-  // triggered by formState.isValid (which only updates after validation runs).
+  // INTENTIONAL deviation from the project's standard disabled={!isValid || !isDirty}
+  // gate: formState.isValid only updates after validation runs (onTouched), so it
+  // lags behind a programmatic reset or a synchronous change. watch() reads RHF's
+  // internal store synchronously on every render, giving accurate no-op and
+  // empty-name protection without that lag. The semantic is identical: the save
+  // button is disabled when the trimmed value is unchanged or blank.
   const watchedName = form.watch("name")
   const isSaveDisabled =
     watchedName.trim() === "" ||
@@ -88,7 +92,7 @@ export function RenameFamilyDialog({
     try {
       await renameFamily({
         orgId,
-        familyId: familyId as never,
+        familyId,
         name: values.name,
       })
       onOpenChange(false)

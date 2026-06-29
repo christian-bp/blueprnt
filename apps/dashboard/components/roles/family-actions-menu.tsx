@@ -3,6 +3,7 @@
 import { MoreVerticalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
+import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Button } from "@workspace/ui/components/button"
 import {
   DropdownMenu,
@@ -27,7 +28,7 @@ export function FamilyActionsMenu({
   roleTitles,
 }: {
   orgId: string
-  familyId: string
+  familyId: Id<"roleFamilies">
   name: string
   roleTitles: string[]
 }) {
@@ -84,7 +85,7 @@ export function FamilyActionsMenu({
         onConfirm={async () => {
           setPending(true)
           try {
-            await removeFamily({ orgId, familyId: familyId as never })
+            await removeFamily({ orgId, familyId })
             router.push("/roles")
           } finally {
             setPending(false)

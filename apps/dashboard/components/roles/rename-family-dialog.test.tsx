@@ -7,6 +7,7 @@ import {
 } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import messages from "@workspace/i18n/messages/en.json"
 
 const renameFamilyMock = vi.fn()
@@ -36,7 +37,7 @@ function renderDialog() {
         open
         onOpenChange={onOpenChange}
         orgId="org-1"
-        familyId="fam-1"
+        familyId={"fam-1" as Id<"roleFamilies">}
         currentName="Tech"
       />
     </NextIntlClientProvider>

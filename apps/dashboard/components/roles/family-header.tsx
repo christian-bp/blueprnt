@@ -1,5 +1,6 @@
 "use client"
 
+import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { useTranslations } from "next-intl"
 import { PageBreadcrumb } from "@/components/page-breadcrumb"
 import { FamilyActionsMenu } from "@/components/roles/family-actions-menu"
@@ -13,7 +14,7 @@ export function FamilyHeader({
   roleTitles,
 }: {
   orgId: string
-  familyId: string
+  familyId: Id<"roleFamilies">
   name: string
   roleTitles: string[]
 }) {
