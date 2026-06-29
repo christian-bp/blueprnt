@@ -611,4 +611,42 @@ describe("role slugs", () => {
     })
     expect(slug).toBe("sales-manager")
   })
+
+  it("getRoleBySlug returns the family slug, or null when unfiled", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, track } = await seedTemplateOrganization(t)
+    const techId = await asAdmin.mutation(
+      api.assessment.families.createRoleFamily,
+      { orgId, name: "Tech" }
+    )
+    const filed = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Platform Engineer",
+      function: "Eng",
+      team: "Core",
+      trackKey: track.key,
+      familyId: techId,
+    })
+    const unfiled = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Office Coordinator",
+      function: "Ops",
+      team: "Ops",
+      trackKey: track.key,
+    })
+
+    const filedDetail = await asAdmin.query(
+      api.assessment.roles.getRoleBySlug,
+      { orgId, slug: filed.slug }
+    )
+    expect(filedDetail?.familyName).toBe("Tech")
+    expect(filedDetail?.familySlug).toBe("tech")
+
+    const unfiledDetail = await asAdmin.query(
+      api.assessment.roles.getRoleBySlug,
+      { orgId, slug: unfiled.slug }
+    )
+    expect(unfiledDetail?.familyName).toBeNull()
+    expect(unfiledDetail?.familySlug).toBeNull()
+  })
 })

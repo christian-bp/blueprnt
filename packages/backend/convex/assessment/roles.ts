@@ -262,6 +262,7 @@ const roleDetailShape = v.object({
   totalCriteria: v.number(),
   familyId: v.union(v.id("roleFamilies"), v.null()),
   familyName: v.union(v.string(), v.null()),
+  familySlug: v.union(v.string(), v.null()),
   // The anchor-role designation, when this role is a calibration anchor.
   anchorRole: v.union(
     v.null(),
@@ -336,6 +337,10 @@ async function buildRoleDetail(
     familyName:
       role.familyId !== undefined
         ? (fNames.get(role.familyId as string)?.name ?? null)
+        : null,
+    familySlug:
+      role.familyId !== undefined
+        ? (fNames.get(role.familyId as string)?.slug ?? null)
         : null,
     anchorRole: role.anchorRole ?? null,
     ratings,
