@@ -6,6 +6,7 @@ import {
   waitFor,
 } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
+import { useState } from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 
@@ -13,10 +14,10 @@ const designateMock = vi.fn()
 const updateMock = vi.fn()
 
 // Radix Select renders its hidden native <select> only when the trigger is
-// inside a <form>. Because this component opens a dialog (whose content is
-// portaled to document.body, outside any <form>), the hidden-select pattern
-// is unavailable for the band field. Mock the Select primitives with simple
-// native elements so fireEvent.change works directly in the dialog tests.
+// inside a <form>. Because the dialog content is portaled to document.body
+// (outside any <form>), the hidden-select pattern is unavailable for the band
+// field. Mock the Select primitives with simple native elements so
+// fireEvent.change works directly in the dialog tests.
 import * as React from "react"
 
 type SelectCtx = {
@@ -133,8 +134,10 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
 }))
 
 import {
+  AnchorDialog,
   type AnchorRoleInfo,
   RoleAnchorControl,
+  RoleAnchorStatus,
 } from "@/components/roles/role-anchor-control"
 
 const anchor = messages.dashboard.roles.anchor
@@ -146,100 +149,91 @@ const designated: AnchorRoleInfo = {
   reviewedAt: 1_700_000_000_000,
 }
 
-function renderControl(props: {
-  anchorRole?: AnchorRoleInfo | null
-  isAdmin?: boolean
-}) {
+function wrap(node: React.ReactNode) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <RoleAnchorControl
-        orgId="org-1"
-        roleId={"role-1" as never}
-        anchorRole={props.anchorRole ?? null}
-        isAdmin={props.isAdmin ?? true}
-      />
+      {node}
     </NextIntlClientProvider>
   )
 }
 
-describe("RoleAnchorControl", () => {
+// A stateful host so AnchorDialog actually unmounts its form when it closes on
+// success (open flips to false via onOpenChange).
+function HostedDialog({ anchorRole }: { anchorRole: AnchorRoleInfo | null }) {
+  const [open, setOpen] = useState(true)
+  return (
+    <AnchorDialog
+      open={open}
+      onOpenChange={setOpen}
+      orgId="org-1"
+      roleId={"role-1" as never}
+      anchorRole={anchorRole}
+    />
+  )
+}
+
+describe("RoleAnchorStatus", () => {
+  afterEach(() => cleanup())
+
+  it("renders the status badge, band, and motivation", () => {
+    wrap(<RoleAnchorStatus anchorRole={designated} />)
+    expect(screen.getByText(anchor.statusActive)).toBeDefined()
+    expect(
+      screen.getByText("Reference role for the platform track")
+    ).toBeDefined()
+  })
+})
+
+describe("RoleAnchorControl (composition)", () => {
+  afterEach(() => cleanup())
+
+  it("renders nothing for a non-admin on a role that is not an anchor", () => {
+    const { container } = wrap(
+      <RoleAnchorControl
+        orgId="org-1"
+        roleId={"role-1" as never}
+        anchorRole={null}
+        isAdmin={false}
+      />
+    )
+    expect(container.textContent).toBe("")
+  })
+
+  it("shows the designate action for an admin on a non-anchor role", () => {
+    wrap(
+      <RoleAnchorControl
+        orgId="org-1"
+        roleId={"role-1" as never}
+        anchorRole={null}
+        isAdmin={true}
+      />
+    )
+    expect(
+      screen.getByRole("button", { name: anchor.designateCta })
+    ).toBeDefined()
+  })
+})
+
+describe("AnchorDialog", () => {
   beforeEach(() => {
     designateMock.mockReset()
     updateMock.mockReset()
   })
   afterEach(() => cleanup())
 
-  it("renders nothing for a non-admin on a role that is not an anchor", () => {
-    const { container } = renderControl({ anchorRole: null, isAdmin: false })
-    expect(container.textContent).toBe("")
-  })
-
-  it("shows the designate action for an admin on a non-anchor role", () => {
-    renderControl({ anchorRole: null, isAdmin: true })
-    expect(
-      screen.getByRole("button", { name: anchor.designateCta })
-    ).toBeDefined()
-  })
-
-  it("shows the read-only status for a non-admin on an anchor role", () => {
-    renderControl({ anchorRole: designated, isAdmin: false })
-    expect(screen.getByText(anchor.statusActive)).toBeDefined()
-    expect(
-      screen.getByText("Reference role for the platform track")
-    ).toBeDefined()
-    expect(screen.queryByRole("button", { name: anchor.manageCta })).toBeNull()
-  })
-
-  it("opens the manage dialog and updates on save for an admin on an anchor role", async () => {
-    updateMock.mockResolvedValue(null)
-    renderControl({ anchorRole: designated, isAdmin: true })
-    fireEvent.click(screen.getByRole("button", { name: anchor.manageCta }))
-    // The dialog shows the editable form (motivation pre-filled).
-    const motivation = screen.getByLabelText(anchor.motivationLabel)
-    fireEvent.change(motivation, { target: { value: "Updated rationale" } })
-    fireEvent.click(screen.getByRole("button", { name: anchor.updateCta }))
-    await waitFor(() => {
-      expect(updateMock).toHaveBeenCalledWith({
-        orgId: "org-1",
-        roleId: "role-1",
-        motivation: "Updated rationale",
-      })
-    })
-    // Dialog closes after a successful update.
-    await waitFor(() =>
-      expect(screen.queryByLabelText(anchor.motivationLabel)).toBeNull()
-    )
-  })
-
-  it("opens the designate dialog, submits, and closes for an admin on a non-anchor role", async () => {
+  it("submits the designate form and closes on success", async () => {
     designateMock.mockResolvedValue(null)
-    renderControl({ anchorRole: null, isAdmin: true })
+    wrap(<HostedDialog anchorRole={null} />)
 
-    // Open the designate dialog via the trigger button.
-    fireEvent.click(screen.getByRole("button", { name: anchor.designateCta }))
-
-    // The Select mock renders a native <select> inside SelectContent so we can
-    // drive the band field with fireEvent.change (happy-dom pattern).
-    const selects = [
+    const bandSelect = [
       ...document.querySelectorAll("select"),
-    ] as HTMLSelectElement[]
-    const bandSelect = selects[0]
+    ][0] as HTMLSelectElement
     if (bandSelect === undefined) throw new Error("band select not found")
     fireEvent.change(bandSelect, { target: { value: "2" } })
-
-    // Fill in a motivation so the submit button becomes enabled.
     fireEvent.change(screen.getByLabelText(anchor.motivationLabel), {
       target: { value: "  Stable reference role.  " },
     })
-
-    // The submit button is the last button named designateCta (the trigger is
-    // outside the dialog; the form's submit button is inside it).
-    const allButtons = screen.getAllByRole("button", {
-      name: anchor.designateCta,
-    })
-    const submitButton = allButtons[allButtons.length - 1]
-    if (submitButton === undefined) throw new Error("submit button not found")
-    fireEvent.click(submitButton)
+    fireEvent.click(screen.getByRole("button", { name: anchor.designateCta }))
 
     await waitFor(() => {
       expect(designateMock).toHaveBeenCalledWith({
@@ -249,7 +243,27 @@ describe("RoleAnchorControl", () => {
         motivation: "Stable reference role.",
       })
     })
-    // Dialog closes after a successful designate.
+    await waitFor(() =>
+      expect(screen.queryByLabelText(anchor.motivationLabel)).toBeNull()
+    )
+  })
+
+  it("submits the edit form and closes on success", async () => {
+    updateMock.mockResolvedValue(null)
+    wrap(<HostedDialog anchorRole={designated} />)
+
+    fireEvent.change(screen.getByLabelText(anchor.motivationLabel), {
+      target: { value: "Updated rationale" },
+    })
+    fireEvent.click(screen.getByRole("button", { name: anchor.updateCta }))
+
+    await waitFor(() => {
+      expect(updateMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        roleId: "role-1",
+        motivation: "Updated rationale",
+      })
+    })
     await waitFor(() =>
       expect(screen.queryByLabelText(anchor.motivationLabel)).toBeNull()
     )

@@ -331,7 +331,7 @@ function EditForm({
 // Loads the band options when open; renders the designate or edit form. The
 // edit form is keyed by reviewedAt so a concurrent admin's update remounts it
 // with fresh values instead of overwriting silently.
-function AnchorDialog({
+export function AnchorDialog({
   open,
   onOpenChange,
   orgId,
@@ -387,6 +387,35 @@ function AnchorDialog({
   )
 }
 
+// The read-only anchor status, shown to everyone once the role is an anchor.
+// Exactly one help morph (it labels the concept); the designate/manage action
+// lives elsewhere (the Evaluation card's actions menu).
+export function RoleAnchorStatus({
+  anchorRole,
+}: {
+  anchorRole: AnchorRoleInfo
+}) {
+  const t = useTranslations("dashboard.roles.anchor")
+  const tHelp = useTranslations("dashboard.help")
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        <span className="font-medium text-sm">{t("heading")}</span>
+        <HelpMorphButton label={tHelp("anchorRoleLabel")}>
+          {tHelp("anchorRoleBody")}
+        </HelpMorphButton>
+        <Badge variant={STATUS_BADGE_VARIANTS[anchorRole.status]}>
+          {t(STATUS_KEYS[anchorRole.status])}
+        </Badge>
+      </div>
+      <Badge variant="outline">
+        {t("bandOption", { band: anchorRole.expectedBand })}
+      </Badge>
+      <p className="text-sm">{anchorRole.motivation}</p>
+    </div>
+  )
+}
+
 export function RoleAnchorControl({
   orgId,
   roleId,
@@ -399,7 +428,6 @@ export function RoleAnchorControl({
   isAdmin: boolean
 }) {
   const t = useTranslations("dashboard.roles.anchor")
-  const tHelp = useTranslations("dashboard.help")
   const [open, setOpen] = useState(false)
 
   // The concept only appears once it is real: a non-anchor role shows nothing
@@ -408,25 +436,7 @@ export function RoleAnchorControl({
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <span className="font-medium text-sm">{t("heading")}</span>
-        <HelpMorphButton label={tHelp("anchorRoleLabel")}>
-          {tHelp("anchorRoleBody")}
-        </HelpMorphButton>
-        {anchorRole !== null && (
-          <Badge variant={STATUS_BADGE_VARIANTS[anchorRole.status]}>
-            {t(STATUS_KEYS[anchorRole.status])}
-          </Badge>
-        )}
-      </div>
-      {anchorRole !== null && (
-        <>
-          <Badge variant="outline">
-            {t("bandOption", { band: anchorRole.expectedBand })}
-          </Badge>
-          <p className="text-sm">{anchorRole.motivation}</p>
-        </>
-      )}
+      {anchorRole !== null && <RoleAnchorStatus anchorRole={anchorRole} />}
       {isAdmin && (
         <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
           {anchorRole === null ? t("designateCta") : t("manageCta")}
