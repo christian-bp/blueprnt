@@ -1,0 +1,26 @@
+apps/dashboard/components/roles/role-evaluation-card.test.tsx
+  s_6bff98b662648b::t_87ab257b3f8f8d 1-99,121-137
+  s_6bff98b662648b::t_a7231f51f904e0 100-120
+apps/dashboard/components/roles/role-evaluation-card.tsx
+  s_6bff98b662648b::t_71e27b48b6eb9f 58
+  s_6bff98b662648b::t_8c499d422c9125 80-82
+  s_6bff98b662648b::t_532b90627abaf6 75
+  s_6bff98b662648b::t_92ee250aa145d2 88
+  s_6bff98b662648b::t_b2709c1a2975bd 1-57,59-74,76-79,83-87,89-123
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "1c834f55d55109bdb2ab60597124f4519a455223",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
