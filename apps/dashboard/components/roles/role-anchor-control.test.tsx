@@ -177,6 +177,7 @@ describe("RoleAnchorStatus", () => {
   it("renders the status badge, band, and motivation", () => {
     wrap(<RoleAnchorStatus anchorRole={designated} />)
     expect(screen.getByText(anchor.statusActive)).toBeDefined()
+    expect(screen.getByText("Band 2")).toBeDefined()
     expect(
       screen.getByText("Reference role for the platform track")
     ).toBeDefined()

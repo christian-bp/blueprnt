@@ -29,9 +29,10 @@ import { HelpMorphButton } from "@/components/help-morph-button"
 // Anchor roles (ankarroller) are the org's 2-5 designated reference roles used
 // to calibrate other assessments; designating/reviewing them is model
 // governance, so all write controls are admin-only. The designation lives as an
-// aggregate on the role. This control lives inside the Evaluation card's result
-// state: a compact status plus (for admins) a button that opens the form in a
-// dialog.
+// aggregate on the role. This module exports two pieces: RoleAnchorStatus (the
+// read-only status display, shown to everyone once a role is an anchor) and
+// AnchorDialog (the designate/edit form in a dialog, admin-only), which
+// consumers (the Evaluation card) compose.
 export interface AnchorRoleInfo {
   expectedBand: number
   motivation: string
