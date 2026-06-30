@@ -21,7 +21,7 @@ export interface BreakdownCriterion {
 
 // The per-criterion contribution list: each criterion's assessed value plus its
 // share of the role's weighting (rating x weight, normalized to the total),
-// sorted biggest-driver-first and animated on reweight. Shared by RoleResultCard
+// sorted biggest-driver-first and animated on reweight. Shared by RoleEvaluationCard
 // (role page) and RoleSheet (overview quick-look) so the animation-sensitive
 // logic lives in exactly one place (docs/ui-animation.md).
 export function RoleCriterionBreakdown({

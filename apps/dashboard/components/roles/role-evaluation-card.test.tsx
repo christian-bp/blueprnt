@@ -134,4 +134,11 @@ describe("RoleEvaluationCard", () => {
     expect(screen.getByText(roles.evaluated)).toBeDefined()
     expect(screen.queryByRole("link")).toBeNull()
   })
+
+  it("shows the computing placeholder while a fully-rated result is still loading", () => {
+    renderCard({ ratedCount: 3, totalCriteria: 3 })
+    expect(
+      screen.getByText(messages.dashboard.rating.result.computing)
+    ).toBeDefined()
+  })
 })
