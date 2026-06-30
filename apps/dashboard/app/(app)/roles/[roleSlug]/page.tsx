@@ -83,26 +83,20 @@ export default function RolePage(props: {
       {role.archived && (
         <p className="text-muted-foreground text-sm">{t("archivedHint")}</p>
       )}
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
-          {/* The AI draft assistant lives in the profile card's header (a
-              MorphPopover next to Edit), not as a separate card. */}
-          <RoleProfileCard orgId={orgId} role={role} />
-        </div>
-        <div className="space-y-6">
-          <RoleEvaluationCard
-            orgId={orgId}
-            roleId={role.roleId}
-            slug={role.slug}
-            archived={role.archived}
-            profileComplete={role.profileComplete}
-            ratedCount={role.ratedCount}
-            totalCriteria={role.totalCriteria}
-            anchorRole={role.anchorRole}
-            isAdmin={orgRole === "admin"}
-          />
-        </div>
-      </div>
+      <RoleEvaluationCard
+        orgId={orgId}
+        roleId={role.roleId}
+        slug={role.slug}
+        archived={role.archived}
+        profileComplete={role.profileComplete}
+        ratedCount={role.ratedCount}
+        totalCriteria={role.totalCriteria}
+        anchorRole={role.anchorRole}
+        isAdmin={orgRole === "admin"}
+      />
+      {/* The AI draft assistant lives in the profile card's header (a
+          MorphPopover next to Edit), not as a separate card. */}
+      <RoleProfileCard orgId={orgId} role={role} />
     </div>
   )
 }
