@@ -2,6 +2,7 @@ import { cleanup, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import type { AnchorRoleInfo } from "@/components/roles/role-anchor-control"
 import { onQuery } from "@/test/convex-mocks"
 
 vi.mock(
@@ -47,18 +48,22 @@ function renderCard(
     profileComplete?: boolean
     ratedCount?: number
     totalCriteria?: number
+    anchorRole?: AnchorRoleInfo | null
+    isAdmin?: boolean
   } = {}
 ) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <RoleEvaluationCard
         orgId="org_1"
-        roleId="role_1"
+        roleId={"role_1" as never}
         slug="r1"
         archived={props.archived ?? false}
         profileComplete={props.profileComplete ?? true}
         ratedCount={props.ratedCount ?? 0}
         totalCriteria={props.totalCriteria ?? 5}
+        anchorRole={props.anchorRole ?? null}
+        isAdmin={props.isAdmin ?? false}
       />
     </NextIntlClientProvider>
   )
@@ -139,6 +144,33 @@ describe("RoleEvaluationCard", () => {
     renderCard({ ratedCount: 3, totalCriteria: 3 })
     expect(
       screen.getByText(messages.dashboard.rating.result.computing)
+    ).toBeDefined()
+  })
+
+  it("shows the anchor control for an admin once complete, not in the progress state", () => {
+    setResult({
+      roleId: "role_1",
+      title: "Engineer",
+      complete: true,
+      ratedCount: 3,
+      totalCriteria: 3,
+      score: 71,
+      band: 3,
+      criteria: [
+        {
+          criterionId: "scope",
+          name: "Scope",
+          weightPoints: 5,
+          value: 3,
+          motivation: null,
+        },
+      ],
+    })
+    renderCard({ ratedCount: 3, totalCriteria: 3, isAdmin: true })
+    expect(
+      screen.getByRole("button", {
+        name: messages.dashboard.roles.anchor.designateCta,
+      })
     ).toBeDefined()
   })
 })

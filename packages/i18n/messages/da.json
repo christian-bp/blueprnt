@@ -392,7 +392,6 @@
         "bandOption": "Bånd {band}",
         "motivationLabel": "Begrundelse",
         "motivationPlaceholder": "Hvorfor er rollen et godt referencepunkt?",
-        "requiresAssessment": "Rollen skal have en afsluttet vurdering, før den kan blive ankerrolle.",
         "countHint": "2 til 5 ankerroller i alt er som regel nok.",
         "tooMany": "I har allerede {count} aktive ankerroller. 2 til 5 i alt er som regel nok.",
         "statusLabel": "Status",

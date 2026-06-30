@@ -12,8 +12,13 @@ import {
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
+import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { RoleCriterionBreakdown } from "@/components/roles/role-criterion-breakdown"
+import {
+  type AnchorRoleInfo,
+  RoleAnchorControl,
+} from "@/components/roles/role-anchor-control"
 
 // One card for the whole evaluation lifecycle. While incomplete it shows the
 // progress and the entry into the blind stepper; once complete it shows the
@@ -28,14 +33,18 @@ export function RoleEvaluationCard({
   profileComplete,
   ratedCount,
   totalCriteria,
+  anchorRole,
+  isAdmin,
 }: {
   orgId: string
-  roleId: string
+  roleId: Id<"roles">
   slug: string
   archived: boolean
   profileComplete: boolean
   ratedCount: number
   totalCriteria: number
+  anchorRole: AnchorRoleInfo | null
+  isAdmin: boolean
 }) {
   const t = useTranslations("dashboard.roles.detail")
   const tRoles = useTranslations("dashboard.roles")
@@ -94,6 +103,12 @@ export function RoleEvaluationCard({
               <Button asChild variant="outline" size="sm">
                 <Link href={`/roles/${slug}/rate`}>{t("adjustRateCta")}</Link>
               </Button>
+              <RoleAnchorControl
+                orgId={orgId}
+                roleId={roleId}
+                anchorRole={anchorRole}
+                isAdmin={isAdmin}
+              />
             </>
           ) : (
             <p className="text-muted-foreground text-sm">

@@ -11,7 +11,6 @@ import { type Crumb, PageBreadcrumb } from "@/components/page-breadcrumb"
 import { useOrganization } from "@/components/org-context"
 import { TrackBadge } from "@/components/track-badge"
 import { RoleActionsMenu } from "@/components/roles/role-actions-menu"
-import { AnchorRoleCard } from "@/components/roles/anchor-role-card"
 import { RoleEvaluationCard } from "@/components/roles/role-evaluation-card"
 import { RoleProfileCard } from "@/components/roles/role-profile-card"
 import { usePageTitle } from "@/hooks/use-page-title"
@@ -99,15 +98,8 @@ export default function RolePage(props: {
             profileComplete={role.profileComplete}
             ratedCount={role.ratedCount}
             totalCriteria={role.totalCriteria}
-          />
-          <AnchorRoleCard
-            orgId={orgId}
-            roleId={role.roleId}
             anchorRole={role.anchorRole}
-            assessmentComplete={
-              role.totalCriteria > 0 && role.ratedCount === role.totalCriteria
-            }
-            archived={role.archived}
+            isAdmin={orgRole === "admin"}
           />
         </div>
       </div>
