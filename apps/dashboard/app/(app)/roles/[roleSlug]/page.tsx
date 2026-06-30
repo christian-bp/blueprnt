@@ -12,9 +12,8 @@ import { useOrganization } from "@/components/org-context"
 import { TrackBadge } from "@/components/track-badge"
 import { RoleActionsMenu } from "@/components/roles/role-actions-menu"
 import { AnchorRoleCard } from "@/components/roles/anchor-role-card"
+import { RoleEvaluationCard } from "@/components/roles/role-evaluation-card"
 import { RoleProfileCard } from "@/components/roles/role-profile-card"
-import { RoleRatingCard } from "@/components/roles/role-rating-card"
-import { RoleResultCard } from "@/components/roles/role-result-card"
 import { usePageTitle } from "@/hooks/use-page-title"
 
 export default function RolePage(props: {
@@ -102,14 +101,15 @@ export default function RolePage(props: {
           />
         </div>
         <div className="space-y-6">
-          <RoleRatingCard
+          <RoleEvaluationCard
+            orgId={orgId}
+            roleId={role.roleId}
             slug={role.slug}
             archived={role.archived}
             profileComplete={role.profileComplete}
             ratedCount={role.ratedCount}
             totalCriteria={role.totalCriteria}
           />
-          <RoleResultCard orgId={orgId} roleId={role.roleId} />
           <AnchorRoleCard
             orgId={orgId}
             roleId={role.roleId}
