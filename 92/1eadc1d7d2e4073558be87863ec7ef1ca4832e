@@ -1,0 +1,19 @@
+apps/dashboard/app/(app)/roles/[roleSlug]/page.tsx
+  s_6bff98b662648b::t_29f0314c58c31d 86-99
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "921eadc1d7d2e4073558be87863ec7ef1ca4832e",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
