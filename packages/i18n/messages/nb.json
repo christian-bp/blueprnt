@@ -386,6 +386,8 @@
       "anchor": {
         "heading": "Ankerrolle",
         "designateCta": "Utnevn til ankerrolle",
+        "manageCta": "Administrer ankerrolle",
+        "cancel": "Avbryt",
         "expectedBandLabel": "Avtalt bånd",
         "bandOption": "Bånd {band}",
         "motivationLabel": "Begrunnelse",

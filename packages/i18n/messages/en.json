@@ -386,6 +386,8 @@
       "anchor": {
         "heading": "Anchor role",
         "designateCta": "Designate as anchor role",
+        "manageCta": "Manage anchor role",
+        "cancel": "Cancel",
         "expectedBandLabel": "Agreed band",
         "bandOption": "Band {band}",
         "motivationLabel": "Motivation",

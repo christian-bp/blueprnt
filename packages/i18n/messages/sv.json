@@ -386,6 +386,8 @@
       "anchor": {
         "heading": "Ankarroll",
         "designateCta": "Utse till ankarroll",
+        "manageCta": "Hantera ankarroll",
+        "cancel": "Avbryt",
         "expectedBandLabel": "Överenskommet band",
         "bandOption": "Band {band}",
         "motivationLabel": "Motivering",

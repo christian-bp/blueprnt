@@ -386,6 +386,8 @@
       "anchor": {
         "heading": "Ankkurirooli",
         "designateCta": "Nimeä ankkurirooliksi",
+        "manageCta": "Hallitse ankkuriroolia",
+        "cancel": "Peruuta",
         "expectedBandLabel": "Sovittu luokka",
         "bandOption": "Luokka {band}",
         "motivationLabel": "Perustelu",

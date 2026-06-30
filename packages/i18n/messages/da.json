@@ -386,6 +386,8 @@
       "anchor": {
         "heading": "Ankerrolle",
         "designateCta": "Udpeg som ankerrolle",
+        "manageCta": "Administrer ankerrolle",
+        "cancel": "Annuller",
         "expectedBandLabel": "Aftalt bånd",
         "bandOption": "Bånd {band}",
         "motivationLabel": "Begrundelse",
