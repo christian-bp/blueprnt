@@ -1,0 +1,21 @@
+docs/superpowers/plans/2026-06-29-role-page-evaluation-layout.md
+  s_6bff98b662648b::t_be3b350596e248 1-1074
+docs/superpowers/specs/2026-06-29-role-page-evaluation-layout-design.md
+  s_6bff98b662648b::t_6f7960b85f6235 1-203
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "23634b1b9805f86a5c2d889c2814874da99258db",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
