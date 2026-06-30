@@ -1,0 +1,27 @@
+apps/dashboard/components/roles/role-evaluation-card.test.tsx
+  s_6bff98b662648b::t_8b8b00d06aded1 5
+  s_6bff98b662648b::t_a988274ad33ae2 149-159,167-175
+  s_6bff98b662648b::t_5238c76fc2016f 160-166
+  s_6bff98b662648b::t_0cd307b35747f6 51-52,59,65-66
+apps/dashboard/app/(app)/roles/[roleSlug]/page.tsx
+  s_6bff98b662648b::t_e2e9ce6aa1aa0e 102
+apps/dashboard/components/roles/role-evaluation-card.tsx
+  s_6bff98b662648b::t_7b8fac950b33bf 15,18-21,36-37,40,46-47
+  s_6bff98b662648b::t_20f0d9d933903d 106-111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "c902397bf751652a2befc99b56733c3b59a4c4d2",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
