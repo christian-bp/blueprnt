@@ -1,6 +1,9 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
+import type { Id } from "@workspace/backend/convex/_generated/dataModel"
+import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -9,22 +12,30 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
-import type { Id } from "@workspace/backend/convex/_generated/dataModel"
+import { useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
-import { RoleCriterionBreakdown } from "@/components/roles/role-criterion-breakdown"
 import {
   type AnchorRoleInfo,
-  RoleAnchorControl,
+  AnchorDialog,
+  RoleAnchorStatus,
 } from "@/components/roles/role-anchor-control"
+import { RoleCriterionBreakdown } from "@/components/roles/role-criterion-breakdown"
 
 // One card for the whole evaluation lifecycle. While incomplete it shows the
 // progress and the entry into the blind stepper; once complete it shows the
-// weighting, band, and per-criterion breakdown. Replaces the separate Rating
-// and Result cards. The result view applies only to a live, fully-evaluated
-// role: an archived role has left the results set, so it stays read-only.
+// weighting, band, and per-criterion breakdown, with the anchor status inline
+// and the two actions (adjust, manage anchor) in a header menu. The result view
+// applies only to a live, fully-evaluated role: an archived role has left the
+// results set, so it stays read-only.
 export function RoleEvaluationCard({
   orgId,
   roleId,
@@ -48,10 +59,13 @@ export function RoleEvaluationCard({
 }) {
   const t = useTranslations("dashboard.roles.detail")
   const tRoles = useTranslations("dashboard.roles")
+  const tAnchor = useTranslations("dashboard.roles.anchor")
   const tHelp = useTranslations("dashboard.help")
   const tResult = useTranslations("dashboard.rating.result")
   const tAssessment = useTranslations("assessment")
   const locale = useLocale()
+
+  const [anchorOpen, setAnchorOpen] = useState(false)
 
   const evaluated = totalCriteria > 0 && ratedCount === totalCriteria
   // The view is chosen from the props so it never flashes; the query only
@@ -89,6 +103,31 @@ export function RoleEvaluationCard({
             {result.band != null && (
               <Badge>{`${tAssessment("band")} ${result.band}`}</Badge>
             )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label={t("evaluationActionsMenu")}
+                  className="shrink-0"
+                >
+                  <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link href={`/roles/${slug}/rate`}>{t("adjustRateCta")}</Link>
+                </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem onSelect={() => setAnchorOpen(true)}>
+                    {anchorRole === null
+                      ? tAnchor("designateCta")
+                      : tAnchor("manageCta")}
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         )}
       </CardHeader>
@@ -100,15 +139,20 @@ export function RoleEvaluationCard({
                 {tResult("bandHighest")}
               </p>
               <RoleCriterionBreakdown criteria={result.criteria} />
-              <Button asChild variant="outline" size="sm">
-                <Link href={`/roles/${slug}/rate`}>{t("adjustRateCta")}</Link>
-              </Button>
-              <RoleAnchorControl
-                orgId={orgId}
-                roleId={roleId}
-                anchorRole={anchorRole}
-                isAdmin={isAdmin}
-              />
+              {anchorRole !== null && (
+                <div className="border-t pt-4">
+                  <RoleAnchorStatus anchorRole={anchorRole} />
+                </div>
+              )}
+              {isAdmin && (
+                <AnchorDialog
+                  open={anchorOpen}
+                  onOpenChange={setAnchorOpen}
+                  orgId={orgId}
+                  roleId={roleId}
+                  anchorRole={anchorRole}
+                />
+              )}
             </>
           ) : (
             <p className="text-muted-foreground text-sm">

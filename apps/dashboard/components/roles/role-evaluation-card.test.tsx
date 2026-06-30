@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react"
+import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -18,6 +18,7 @@ import { RoleEvaluationCard } from "@/components/roles/role-evaluation-card"
 
 const detail = messages.dashboard.roles.detail
 const roles = messages.dashboard.roles
+const anchor = messages.dashboard.roles.anchor
 
 type Result = {
   roleId: string
@@ -36,10 +37,56 @@ type Result = {
   }[]
 }
 
+const completeResult: Result = {
+  roleId: "role_1",
+  title: "Engineer",
+  complete: true,
+  ratedCount: 3,
+  totalCriteria: 3,
+  score: 71,
+  band: 3,
+  criteria: [
+    {
+      criterionId: "scope",
+      name: "Scope",
+      weightPoints: 5,
+      value: 3,
+      motivation: null,
+    },
+    {
+      criterionId: "complexity",
+      name: "Complexity",
+      weightPoints: 4,
+      value: 5,
+      motivation: null,
+    },
+    {
+      criterionId: "people",
+      name: "People",
+      weightPoints: 2,
+      value: 1,
+      motivation: null,
+    },
+  ],
+}
+
+const designated: AnchorRoleInfo = {
+  expectedBand: 2,
+  motivation: "Reference role for the platform track",
+  status: "active",
+  reviewedAt: 1_700_000_000_000,
+}
+
+// getRoleResult drives the view; getModel/listAnchorRoles back the dialog when
+// an admin opens it.
 function setResult(next: Result | null) {
-  onQuery((ref) =>
-    ref === "assessment.results.getRoleResult" ? next : undefined
-  )
+  onQuery((ref) => {
+    if (ref === "assessment.results.getRoleResult") return next
+    if (ref === "evaluationModel.model.getModel")
+      return { bandThresholds: [80, 60, 40, 20] }
+    if (ref === "assessment.anchorRoles.listAnchorRoles") return []
+    return undefined
+  })
 }
 
 function renderCard(
@@ -69,6 +116,14 @@ function renderCard(
   )
 }
 
+function openMenu() {
+  const trigger = screen.getByRole("button", {
+    name: detail.evaluationActionsMenu,
+  })
+  fireEvent.pointerDown(trigger)
+  fireEvent.click(trigger)
+}
+
 describe("RoleEvaluationCard", () => {
   beforeEach(() => setResult(null))
   afterEach(() => cleanup())
@@ -92,52 +147,84 @@ describe("RoleEvaluationCard", () => {
     ).toBeDefined()
   })
 
-  it("shows the weighting, band, breakdown, and Adjust once complete", () => {
-    setResult({
-      roleId: "role_1",
-      title: "Engineer",
-      complete: true,
-      ratedCount: 3,
-      totalCriteria: 3,
-      score: 71,
-      band: 3,
-      criteria: [
-        {
-          criterionId: "scope",
-          name: "Scope",
-          weightPoints: 5,
-          value: 3,
-          motivation: null,
-        },
-        {
-          criterionId: "complexity",
-          name: "Complexity",
-          weightPoints: 4,
-          value: 5,
-          motivation: null,
-        },
-        {
-          criterionId: "people",
-          name: "People",
-          weightPoints: 2,
-          value: 1,
-          motivation: null,
-        },
-      ],
-    })
+  it("shows the weighting, band, and breakdown once complete", () => {
+    setResult(completeResult)
     renderCard({ ratedCount: 3, totalCriteria: 3 })
     expect(screen.getByText("71 / 100")).toBeDefined()
     expect(screen.getByText("Band 3")).toBeDefined()
     expect(screen.getByText("Complexity")).toBeDefined()
+  })
+
+  it("puts Adjust ratings in the actions menu, not as a body button", () => {
+    setResult(completeResult)
+    renderCard({ ratedCount: 3, totalCriteria: 3 })
+    // No standalone Adjust link in the card body.
     expect(
-      screen.getByRole("link", { name: detail.adjustRateCta })
+      screen.queryByRole("link", { name: detail.adjustRateCta })
+    ).toBeNull()
+    openMenu()
+    const adjust = screen.getByRole("menuitem", { name: detail.adjustRateCta })
+    expect(adjust.getAttribute("href")).toBe("/roles/r1/rate")
+  })
+
+  it("offers Designate in the menu for an admin with no anchor, and shows no status row", () => {
+    setResult(completeResult)
+    renderCard({
+      ratedCount: 3,
+      totalCriteria: 3,
+      isAdmin: true,
+      anchorRole: null,
+    })
+    expect(screen.queryByText(anchor.heading)).toBeNull()
+    openMenu()
+    expect(
+      screen.getByRole("menuitem", { name: anchor.designateCta })
     ).toBeDefined()
   })
 
-  it("stays read-only for an archived role (no rate action)", () => {
+  it("shows the anchor status inline and Manage in the menu for an admin on a designated role", () => {
+    setResult(completeResult)
+    renderCard({
+      ratedCount: 3,
+      totalCriteria: 3,
+      isAdmin: true,
+      anchorRole: designated,
+    })
+    expect(screen.getByText(anchor.statusActive)).toBeDefined()
+    expect(
+      screen.getByText("Reference role for the platform track")
+    ).toBeDefined()
+    openMenu()
+    expect(
+      screen.getByRole("menuitem", { name: anchor.manageCta })
+    ).toBeDefined()
+  })
+
+  it("gives a non-admin only Adjust in the menu but still shows a designated anchor's status", () => {
+    setResult(completeResult)
+    renderCard({
+      ratedCount: 3,
+      totalCriteria: 3,
+      isAdmin: false,
+      anchorRole: designated,
+    })
+    expect(screen.getByText(anchor.statusActive)).toBeDefined()
+    openMenu()
+    expect(
+      screen.getByRole("menuitem", { name: detail.adjustRateCta })
+    ).toBeDefined()
+    expect(
+      screen.queryByRole("menuitem", { name: anchor.manageCta })
+    ).toBeNull()
+  })
+
+  it("stays read-only for an archived role (no rate action, no menu)", () => {
     renderCard({ archived: true, ratedCount: 5, totalCriteria: 5 })
     expect(screen.getByText(roles.evaluated)).toBeDefined()
     expect(screen.queryByRole("link")).toBeNull()
+    expect(
+      screen.queryByRole("button", { name: detail.evaluationActionsMenu })
+    ).toBeNull()
   })
 
   it("shows the computing placeholder while a fully-rated result is still loading", () => {
@@ -147,30 +234,10 @@ describe("RoleEvaluationCard", () => {
     ).toBeDefined()
   })
 
-  it("shows the anchor control for an admin once complete, not in the progress state", () => {
-    setResult({
-      roleId: "role_1",
-      title: "Engineer",
-      complete: true,
-      ratedCount: 3,
-      totalCriteria: 3,
-      score: 71,
-      band: 3,
-      criteria: [
-        {
-          criterionId: "scope",
-          name: "Scope",
-          weightPoints: 5,
-          value: 3,
-          motivation: null,
-        },
-      ],
-    })
-    renderCard({ ratedCount: 3, totalCriteria: 3, isAdmin: true })
+  it("renders no actions menu in the progress state", () => {
+    renderCard({ ratedCount: 2, totalCriteria: 5 })
     expect(
-      screen.getByRole("button", {
-        name: messages.dashboard.roles.anchor.designateCta,
-      })
-    ).toBeDefined()
+      screen.queryByRole("button", { name: detail.evaluationActionsMenu })
+    ).toBeNull()
   })
 })

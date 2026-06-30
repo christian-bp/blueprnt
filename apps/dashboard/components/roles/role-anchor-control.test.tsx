@@ -136,7 +136,6 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
 import {
   AnchorDialog,
   type AnchorRoleInfo,
-  RoleAnchorControl,
   RoleAnchorStatus,
 } from "@/components/roles/role-anchor-control"
 
@@ -180,36 +179,6 @@ describe("RoleAnchorStatus", () => {
     expect(screen.getByText(anchor.statusActive)).toBeDefined()
     expect(
       screen.getByText("Reference role for the platform track")
-    ).toBeDefined()
-  })
-})
-
-describe("RoleAnchorControl (composition)", () => {
-  afterEach(() => cleanup())
-
-  it("renders nothing for a non-admin on a role that is not an anchor", () => {
-    const { container } = wrap(
-      <RoleAnchorControl
-        orgId="org-1"
-        roleId={"role-1" as never}
-        anchorRole={null}
-        isAdmin={false}
-      />
-    )
-    expect(container.textContent).toBe("")
-  })
-
-  it("shows the designate action for an admin on a non-anchor role", () => {
-    wrap(
-      <RoleAnchorControl
-        orgId="org-1"
-        roleId={"role-1" as never}
-        anchorRole={null}
-        isAdmin={true}
-      />
-    )
-    expect(
-      screen.getByRole("button", { name: anchor.designateCta })
     ).toBeDefined()
   })
 })
