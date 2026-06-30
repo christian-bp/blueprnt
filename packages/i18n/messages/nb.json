@@ -424,7 +424,6 @@
         "heading": "Resultat",
         "scoreLabel": "Vekting",
         "bandLabel": "Bånd",
-        "bandHighest": "Bånd 1 er det høyeste båndet.",
         "computing": "Beregner resultatet",
         "backToRole": "Tilbake til rollen",
         "scoreOutOf": "{score} / 100",
@@ -455,8 +454,7 @@
       "deviation": "≠ Bånd {band}",
       "deviationLabel": "Beregnet bånd avviker fra det avtalte båndet {band}",
       "empty": "Ingen roller å vise ennå. Opprett en rolle og vurder den for å se oversikten.",
-      "emptyCta": "Opprett en rolle",
-      "bandHighest": "Bånd 1 er det høyeste båndet."
+      "emptyCta": "Opprett en rolle"
     },
     "auth": {
       "loading": "Sjekker økten din",

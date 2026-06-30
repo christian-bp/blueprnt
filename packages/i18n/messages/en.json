@@ -424,7 +424,6 @@
         "heading": "Result",
         "scoreLabel": "Weighting",
         "bandLabel": "Band",
-        "bandHighest": "Band 1 is the highest band.",
         "computing": "Deriving the result",
         "backToRole": "Back to the role",
         "scoreOutOf": "{score} / 100",
@@ -455,8 +454,7 @@
       "deviation": "≠ Band {band}",
       "deviationLabel": "Computed band deviates from the agreed band {band}",
       "empty": "No roles to show yet. Create a role and evaluate it to see the overview.",
-      "emptyCta": "Create a role",
-      "bandHighest": "Band 1 is the highest band."
+      "emptyCta": "Create a role"
     },
     "auth": {
       "loading": "Checking your session",

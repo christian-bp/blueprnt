@@ -87,7 +87,7 @@ describe("RatingResult", () => {
     expect(screen.getByLabelText(labels.computing)).toBeDefined()
   })
 
-  it("shows the score, band badge, and bandHighest note when complete", () => {
+  it("shows the score and band badge when complete", () => {
     renderResult()
 
     // Score (with its fixed 0-100 scale) and band visible.
@@ -95,9 +95,6 @@ describe("RatingResult", () => {
       screen.getByText(labels.scoreOutOf.replace("{score}", "74"))
     ).toBeDefined()
     expect(screen.getByText("2")).toBeDefined()
-
-    // Band-1-is-highest explanation.
-    expect(screen.getByText(labels.bandHighest)).toBeDefined()
   })
 
   it("hides the anchor comparison when there are no active anchors", () => {

@@ -424,7 +424,6 @@
         "heading": "Resultat",
         "scoreLabel": "Viktning",
         "bandLabel": "Band",
-        "bandHighest": "Band 1 är det högsta bandet.",
         "computing": "Räknar fram resultatet",
         "backToRole": "Tillbaka till rollen",
         "scoreOutOf": "{score} / 100",
@@ -455,8 +454,7 @@
       "deviation": "≠ Band {band}",
       "deviationLabel": "Beräknat band avviker från det överenskomna bandet {band}",
       "empty": "Inga roller att visa ännu. Skapa en roll och utvärdera den för att se översikten.",
-      "emptyCta": "Skapa en roll",
-      "bandHighest": "Band 1 är det högsta bandet."
+      "emptyCta": "Skapa en roll"
     },
     "auth": {
       "loading": "Kontrollerar din session",

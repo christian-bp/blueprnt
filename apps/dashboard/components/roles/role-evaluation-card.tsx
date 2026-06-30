@@ -139,9 +139,6 @@ export function RoleEvaluationCard({
                   <Badge>{`${tAssessment("band")} ${result.band}`}</Badge>
                 )}
               </div>
-              <p className="text-muted-foreground text-sm">
-                {tResult("bandHighest")}
-              </p>
               <RoleCriterionBreakdown criteria={result.criteria} />
               {anchorRole !== null && (
                 <div className="border-t pt-4">

@@ -424,7 +424,6 @@
         "heading": "Tulos",
         "scoreLabel": "Painotus",
         "bandLabel": "Vaativuusluokka",
-        "bandHighest": "Luokka 1 on korkein luokka.",
         "computing": "Lasketaan tulosta",
         "backToRole": "Takaisin rooliin",
         "scoreOutOf": "{score} / 100",
@@ -455,8 +454,7 @@
       "deviation": "≠ Luokka {band}",
       "deviationLabel": "Laskettu luokka poikkeaa sovitusta luokasta {band}",
       "empty": "Ei vielä näytettäviä rooleja. Luo rooli ja arvioi se nähdäksesi yleiskatsauksen.",
-      "emptyCta": "Luo rooli",
-      "bandHighest": "Luokka 1 on korkein luokka."
+      "emptyCta": "Luo rooli"
     },
     "auth": {
       "loading": "Tarkistetaan istuntoasi",

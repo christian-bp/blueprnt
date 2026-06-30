@@ -102,7 +102,6 @@ export function RatingResult({
                 <Badge className="text-base">{result.band}</Badge>
               </div>
             </div>
-            <p className="text-muted-foreground text-sm">{t("bandHighest")}</p>
             {activeAnchors.length > 0 && (
               <div className="space-y-2">
                 <span className="flex items-center gap-1.5 text-muted-foreground text-sm">

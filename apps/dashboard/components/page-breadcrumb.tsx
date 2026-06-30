@@ -9,16 +9,17 @@ import {
 import Link from "next/link"
 import { Fragment } from "react"
 
-// One breadcrumb segment. A segment with an href links to that route; the
-// last segment (and any without an href) renders as the current page.
+// One breadcrumb segment. A segment with an href links to that route; the last
+// segment (and any without an href) renders as the current page.
 export interface Crumb {
   label: string
   href?: string
 }
 
-// Shared page breadcrumb that doubles as the page title: the final crumb is
-// the current entity, styled with extra weight so it reads as the title even
-// without a large heading. Used by the role and family pages.
+// Shared page breadcrumb: ancestor crumbs (with an href) link to their route;
+// the final crumb is the current page, rendered non-navigable with aria-current.
+// Used in the PageHeader breadcrumb slot, above the page title, on the role and
+// family pages.
 export function PageBreadcrumb({ segments }: { segments: Crumb[] }) {
   return (
     <Breadcrumb>

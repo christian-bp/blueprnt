@@ -8,6 +8,7 @@ import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { use } from "react"
 import { type Crumb, PageBreadcrumb } from "@/components/page-breadcrumb"
+import { PageHeader } from "@/components/page-header"
 import { useOrganization } from "@/components/org-context"
 import { TrackBadge } from "@/components/track-badge"
 import { RoleEvaluationCard } from "@/components/roles/role-evaluation-card"
@@ -56,16 +57,27 @@ export default function RolePage(props: {
   }
   roleCrumbs.push({ label: role.title })
 
+  // Function and team are optional; join only the parts that are set so an
+  // empty role does not render a lone "·" separator.
+  const roleMeta = [role.function, role.team]
+    .filter((part) => part.trim().length > 0)
+    .join(" · ")
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center gap-3">
-        <PageBreadcrumb segments={roleCrumbs} />
-        {role.archived && <Badge variant="outline">{t("archivedBadge")}</Badge>}
-        <TrackBadge trackKey={role.trackKey} name={role.trackName} />
-        <span className="text-muted-foreground text-sm">
-          {role.function} · {role.team}
-        </span>
-      </div>
+      <PageHeader
+        breadcrumb={<PageBreadcrumb segments={roleCrumbs} />}
+        title={role.title}
+        titleAdornment={
+          <>
+            <TrackBadge trackKey={role.trackKey} name={role.trackName} />
+            {role.archived && (
+              <Badge variant="outline">{t("archivedBadge")}</Badge>
+            )}
+          </>
+        }
+        description={roleMeta || undefined}
+      />
       {/* Archived roles turn read-only everywhere (edit, AI draft, rating);
           state the consequence once instead of letting controls vanish
           silently (guidance convention). */}

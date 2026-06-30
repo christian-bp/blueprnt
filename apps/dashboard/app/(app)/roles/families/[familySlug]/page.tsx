@@ -16,20 +16,23 @@ import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { use } from "react"
 import { useOrganization } from "@/components/org-context"
+import { type Crumb, PageBreadcrumb } from "@/components/page-breadcrumb"
+import { PageHeader } from "@/components/page-header"
+import { FamilyActionsMenu } from "@/components/roles/family-actions-menu"
+import { TrackBadge } from "@/components/track-badge"
 import { usePageTitle } from "@/hooks/use-page-title"
-import { FamilyHeader } from "@/components/roles/family-header"
 
-// Per-family progression: the family's roles grouped per track (by track
-// order), sorted by level within each track. Band outcomes appear only for
+// Per-family progression: the family's roles in one table with a track column,
+// ordered by track (track order) then title. Band outcomes appear only for
 // complete roles, the same visibility rule as the results view.
 export default function FamilyPage(props: {
   params: Promise<{ familySlug: string }>
 }) {
   const { familySlug } = use(props.params)
   const t = useTranslations("dashboard.roles")
+  const tNav = useTranslations("dashboard.nav")
   const tFamily = useTranslations("dashboard.roles.family")
   const tAssessment = useTranslations("assessment")
-  const tBands = useTranslations("dashboard.bands")
   const { orgId } = useOrganization()
   const locale = useLocale()
 
@@ -64,75 +67,70 @@ export default function FamilyPage(props: {
   const bandByRole = new Map(
     results.rows.map((row) => [row.roleId as string, row])
   )
-  const familyRoles = roles.filter((role) => role.familyId === family.familyId)
+  // One flat list, ordered by track (track order) then title.
+  const familyRoles = roles
+    .filter((role) => role.familyId === family.familyId)
+    .sort(
+      (a, b) => a.trackOrder - b.trackOrder || a.title.localeCompare(b.title)
+    )
 
-  // Deduplicate tracks ordered by trackOrder for the progression sections.
-  const trackKeys = [
-    ...new Map(
-      familyRoles.map((role) => [
-        role.trackKey,
-        { key: role.trackKey, name: role.trackName, order: role.trackOrder },
-      ])
-    ).values(),
-  ].sort((a, b) => a.order - b.order)
+  const familyCrumbs: Crumb[] = [
+    { label: tNav("roles"), href: "/roles" },
+    { label: family.name },
+  ]
 
   return (
     <div className="space-y-6">
-      <FamilyHeader
-        familyId={family.familyId}
-        name={family.name}
-        orgId={orgId}
-        roleTitles={familyRoles.map((role) => role.title)}
+      <PageHeader
+        breadcrumb={<PageBreadcrumb segments={familyCrumbs} />}
+        title={family.name}
+        action={
+          <FamilyActionsMenu
+            orgId={orgId}
+            familyId={family.familyId}
+            name={family.name}
+            roleTitles={familyRoles.map((role) => role.title)}
+          />
+        }
       />
-      {/* The only band column outside the results surfaces: carry the same
-          band-1-is-highest note its siblings show (guidance convention). */}
-      <p className="text-muted-foreground text-sm">{tBands("bandHighest")}</p>
-      {trackKeys.map((track) => {
-        const trackRoles = familyRoles
-          .filter((role) => role.trackKey === track.key)
-          .sort((a, b) => a.title.localeCompare(b.title))
-        return (
-          <div key={track.key} className="space-y-2">
-            <h3 className="font-medium text-sm">{track.name}</h3>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t("table.title")}</TableHead>
-                  <TableHead className="text-right">
-                    {tAssessment("band")}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {trackRoles.map((role) => {
-                  const result = bandByRole.get(role.roleId as string)
-                  return (
-                    <TableRow key={role.roleId}>
-                      <TableCell>
-                        <Link
-                          className="font-medium underline-offset-4 hover:underline"
-                          href={`/roles/${role.slug}`}
-                        >
-                          {role.title}
-                        </Link>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {result?.band != null ? (
-                          <Badge>{result.band}</Badge>
-                        ) : (
-                          <span className="text-muted-foreground text-sm">
-                            {t("notEvaluated")}
-                          </span>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
-          </div>
-        )
-      })}
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>{t("table.title")}</TableHead>
+            <TableHead>{t("table.track")}</TableHead>
+            <TableHead className="text-right">{tAssessment("band")}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {familyRoles.map((role) => {
+            const result = bandByRole.get(role.roleId as string)
+            return (
+              <TableRow key={role.roleId}>
+                <TableCell>
+                  <Link
+                    className="font-medium underline-offset-4 hover:underline"
+                    href={`/roles/${role.slug}`}
+                  >
+                    {role.title}
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  <TrackBadge trackKey={role.trackKey} name={role.trackName} />
+                </TableCell>
+                <TableCell className="text-right">
+                  {result?.band != null ? (
+                    <Badge>{result.band}</Badge>
+                  ) : (
+                    <span className="text-muted-foreground text-sm">
+                      {t("notEvaluated")}
+                    </span>
+                  )}
+                </TableCell>
+              </TableRow>
+            )
+          })}
+        </TableBody>
+      </Table>
     </div>
   )
 }
