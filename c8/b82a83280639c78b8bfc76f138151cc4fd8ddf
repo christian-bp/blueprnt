@@ -1,0 +1,21 @@
+apps/dashboard/components/roles/role-anchor-control.tsx
+  s_6bff98b662648b::t_2a01319966683f 32-35
+apps/dashboard/components/roles/role-anchor-control.test.tsx
+  s_6bff98b662648b::t_b5d63fdeedb922 180
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "c8b82a83280639c78b8bfc76f138151cc4fd8ddf",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
