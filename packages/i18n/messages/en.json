@@ -354,6 +354,7 @@
       },
       "detail": {
         "profileHeading": "Job profile",
+        "evaluationHeading": "Evaluation",
         "actionsMenu": "Role actions",
         "editCta": "Edit",
         "doneCta": "Done",
