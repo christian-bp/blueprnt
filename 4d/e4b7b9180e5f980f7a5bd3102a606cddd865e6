@@ -1,0 +1,21 @@
+apps/dashboard/components/roles/role-evaluation-card.test.tsx
+  s_6bff98b662648b::t_99deac019e9bd7 137-143
+apps/dashboard/components/roles/role-criterion-breakdown.tsx
+  s_6bff98b662648b::t_512ec83a23dec1 24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "4de4b7b9180e5f980f7a5bd3102a606cddd865e6",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
