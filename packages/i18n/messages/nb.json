@@ -355,8 +355,7 @@
       "detail": {
         "profileHeading": "Jobbprofil",
         "evaluationHeading": "Evaluering",
-        "actionsMenu": "Rollehandlinger",
-        "evaluationActionsMenu": "Evalueringshandlinger",
+        "manageCta": "Administrer",
         "editCta": "Rediger",
         "doneCta": "Ferdig",
         "saveCta": "Lagre",

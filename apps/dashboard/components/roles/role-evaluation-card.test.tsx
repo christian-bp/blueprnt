@@ -118,7 +118,7 @@ function renderCard(
 
 function openMenu() {
   const trigger = screen.getByRole("button", {
-    name: detail.evaluationActionsMenu,
+    name: detail.manageCta,
   })
   fireEvent.pointerDown(trigger)
   fireEvent.click(trigger)
@@ -222,9 +222,7 @@ describe("RoleEvaluationCard", () => {
     renderCard({ archived: true, ratedCount: 5, totalCriteria: 5 })
     expect(screen.getByText(roles.evaluated)).toBeDefined()
     expect(screen.queryByRole("link")).toBeNull()
-    expect(
-      screen.queryByRole("button", { name: detail.evaluationActionsMenu })
-    ).toBeNull()
+    expect(screen.queryByRole("button", { name: detail.manageCta })).toBeNull()
   })
 
   it("shows the computing placeholder while a fully-rated result is still loading", () => {
@@ -236,8 +234,6 @@ describe("RoleEvaluationCard", () => {
 
   it("renders no actions menu in the progress state", () => {
     renderCard({ ratedCount: 2, totalCriteria: 5 })
-    expect(
-      screen.queryByRole("button", { name: detail.evaluationActionsMenu })
-    ).toBeNull()
+    expect(screen.queryByRole("button", { name: detail.manageCta })).toBeNull()
   })
 })

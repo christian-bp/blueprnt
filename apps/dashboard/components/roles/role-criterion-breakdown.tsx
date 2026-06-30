@@ -81,18 +81,23 @@ export function RoleCriterionBreakdown({
             transition={SPRING}
             className="space-y-1"
           >
+            {/* The section is "Contribution", so the contribution share is the
+                row's headline (next to the name); the assessed rating drops to a
+                caption by the bar. */}
             <div className="flex items-baseline justify-between gap-3">
               <span className="text-sm">{row.name}</span>
-              {variant === "full" && (
-                <span className="shrink-0 text-muted-foreground text-sm tabular-nums">
-                  {tResult("ratingOutOf", { value: row.value ?? 0 })}
-                </span>
-              )}
+              <span className="shrink-0 font-medium text-sm tabular-nums">
+                {tResult("contributionShare", {
+                  share: Math.round(row.share * 100),
+                })}
+              </span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+              {/* Thinner, softer fill (primary/80) so nine rows read calmly in
+                  the rail; the override stays local to the bar. */}
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
                 <motion.div
-                  className="h-full rounded-full bg-primary"
+                  className="h-full rounded-full bg-primary/80"
                   initial={false}
                   animate={{
                     width: `${maxShare > 0 ? (row.share / maxShare) * 100 : 0}%`,
@@ -100,11 +105,11 @@ export function RoleCriterionBreakdown({
                   transition={SPRING}
                 />
               </div>
-              <span className="w-9 shrink-0 text-right text-muted-foreground text-xs tabular-nums">
-                {tResult("contributionShare", {
-                  share: Math.round(row.share * 100),
-                })}
-              </span>
+              {variant === "full" && (
+                <span className="shrink-0 text-right text-muted-foreground text-xs tabular-nums">
+                  {tResult("ratingOutOf", { value: row.value ?? 0 })}
+                </span>
+              )}
             </div>
             {row.motivation !== null && (
               <p className="text-muted-foreground text-xs">{row.motivation}</p>

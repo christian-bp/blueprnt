@@ -10,7 +10,6 @@ import { use } from "react"
 import { type Crumb, PageBreadcrumb } from "@/components/page-breadcrumb"
 import { useOrganization } from "@/components/org-context"
 import { TrackBadge } from "@/components/track-badge"
-import { RoleActionsMenu } from "@/components/roles/role-actions-menu"
 import { RoleEvaluationCard } from "@/components/roles/role-evaluation-card"
 import { RoleProfileCard } from "@/components/roles/role-profile-card"
 import { usePageTitle } from "@/hooks/use-page-title"
@@ -59,23 +58,13 @@ export default function RolePage(props: {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <PageBreadcrumb segments={roleCrumbs} />
-          {role.archived && (
-            <Badge variant="outline">{t("archivedBadge")}</Badge>
-          )}
-          <TrackBadge trackKey={role.trackKey} name={role.trackName} />
-          <span className="text-muted-foreground text-sm">
-            {role.function} · {role.team}
-          </span>
-        </div>
-        <RoleActionsMenu
-          orgId={orgId}
-          roleId={role.roleId}
-          archived={role.archived}
-          isAdmin={orgRole === "admin"}
-        />
+      <div className="flex flex-wrap items-center gap-3">
+        <PageBreadcrumb segments={roleCrumbs} />
+        {role.archived && <Badge variant="outline">{t("archivedBadge")}</Badge>}
+        <TrackBadge trackKey={role.trackKey} name={role.trackName} />
+        <span className="text-muted-foreground text-sm">
+          {role.function} · {role.team}
+        </span>
       </div>
       {/* Archived roles turn read-only everywhere (edit, AI draft, rating);
           state the consequence once instead of letting controls vanish
@@ -83,20 +72,33 @@ export default function RolePage(props: {
       {role.archived && (
         <p className="text-muted-foreground text-sm">{t("archivedHint")}</p>
       )}
-      <RoleEvaluationCard
-        orgId={orgId}
-        roleId={role.roleId}
-        slug={role.slug}
-        archived={role.archived}
-        profileComplete={role.profileComplete}
-        ratedCount={role.ratedCount}
-        totalCriteria={role.totalCriteria}
-        anchorRole={role.anchorRole}
-        isAdmin={orgRole === "admin"}
-      />
-      {/* The AI draft assistant lives in the profile card's header (a
-          MorphPopover next to Edit), not as a separate card. */}
-      <RoleProfileCard orgId={orgId} role={role} />
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          {/* The AI draft assistant lives in the profile card's header (a
+              MorphPopover next to Edit), not as a separate card. */}
+          <RoleProfileCard
+            orgId={orgId}
+            role={role}
+            isAdmin={orgRole === "admin"}
+          />
+        </div>
+        {/* The evaluation rail sticks in view while the taller profile
+            scrolls; self-start keeps it from stretching to the row height so
+            the sticky offset can take effect. */}
+        <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
+          <RoleEvaluationCard
+            orgId={orgId}
+            roleId={role.roleId}
+            slug={role.slug}
+            archived={role.archived}
+            profileComplete={role.profileComplete}
+            ratedCount={role.ratedCount}
+            totalCriteria={role.totalCriteria}
+            anchorRole={role.anchorRole}
+            isAdmin={orgRole === "admin"}
+          />
+        </div>
+      </div>
     </div>
   )
 }

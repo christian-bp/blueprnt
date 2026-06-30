@@ -10,9 +10,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 
 const updateRoleMock = vi.fn()
+const archiveRoleMock = vi.fn()
+const pushMock = vi.fn()
 
 vi.mock("convex/react", () => ({
-  useMutation: () => updateRoleMock,
+  useMutation: (ref: unknown) =>
+    ref === "assessment.roles.archiveRole" ? archiveRoleMock : updateRoleMock,
   // The nested FamilyPicker lists families; none needed for these tests.
   useQuery: () => [],
 }))
@@ -20,7 +23,10 @@ vi.mock("convex/react", () => ({
 vi.mock("@workspace/backend/convex/_generated/api", () => ({
   api: {
     assessment: {
-      roles: { updateRole: "assessment.roles.updateRole" },
+      roles: {
+        updateRole: "assessment.roles.updateRole",
+        archiveRole: "assessment.roles.archiveRole",
+      },
       families: {
         listRoleFamilies: "assessment.families.listRoleFamilies",
         createRoleFamily: "assessment.families.createRoleFamily",
@@ -28,6 +34,8 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
     },
   },
 }))
+
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: pushMock }) }))
 
 import {
   RoleProfileCard,
@@ -37,6 +45,7 @@ import {
 const labels = messages.dashboard.roles.detail
 const roleLabels = messages.assessment.role
 const familyLabels = messages.dashboard.roles.family
+const archiveLabels = messages.dashboard.roles.archive
 
 function makeRole(overrides?: Partial<RoleProfile>): RoleProfile {
   return {
@@ -47,6 +56,7 @@ function makeRole(overrides?: Partial<RoleProfile>): RoleProfile {
     trackName: "Individual contributor",
     familyId: null,
     familyName: null,
+    familySlug: null,
     purpose: "Builds the product",
     responsibilities: "Implementation",
     archived: false,
@@ -54,17 +64,31 @@ function makeRole(overrides?: Partial<RoleProfile>): RoleProfile {
   }
 }
 
-function renderCard(role: RoleProfile) {
+function renderCard(role: RoleProfile, isAdmin = true) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <RoleProfileCard orgId="org-1" role={role} />
+      <RoleProfileCard orgId="org-1" role={role} isAdmin={isAdmin} />
     </NextIntlClientProvider>
   )
+}
+
+function openManageMenu() {
+  const trigger = screen.getByRole("button", { name: labels.manageCta })
+  fireEvent.pointerDown(trigger)
+  fireEvent.click(trigger)
+}
+
+// Read mode -> manage menu -> Edit -> edit mode (fields become inputs).
+function startEditing() {
+  openManageMenu()
+  fireEvent.click(screen.getByRole("menuitem", { name: labels.editCta }))
 }
 
 describe("RoleProfileCard", () => {
   beforeEach(() => {
     updateRoleMock.mockReset()
+    archiveRoleMock.mockReset()
+    pushMock.mockReset()
   })
   afterEach(() => {
     cleanup()
@@ -83,10 +107,10 @@ describe("RoleProfileCard", () => {
     ).toBeNull()
   })
 
-  it("saves only the changed fields and exits edit mode", async () => {
+  it("opens the manage menu, edits, saves only the changed fields, and exits edit mode", async () => {
     updateRoleMock.mockResolvedValue(null)
     renderCard(makeRole())
-    fireEvent.click(screen.getByRole("button", { name: labels.editCta }))
+    startEditing()
     fireEvent.change(
       screen.getByRole("textbox", { name: roleLabels.purpose }),
       {
@@ -101,15 +125,18 @@ describe("RoleProfileCard", () => {
         purpose: "New purpose",
       })
     })
+    // Back to read mode: the manage trigger returns.
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: labels.editCta })).toBeDefined()
+      expect(
+        screen.getByRole("button", { name: labels.manageCta })
+      ).toBeDefined()
     })
   })
 
   it("stays in edit mode with an alert when the save fails", async () => {
     updateRoleMock.mockRejectedValue(new Error("ConvexError: roleLocked"))
     renderCard(makeRole())
-    fireEvent.click(screen.getByRole("button", { name: labels.editCta }))
+    startEditing()
     fireEvent.change(screen.getByRole("textbox", { name: roleLabels.team }), {
       target: { value: "Other" },
     })
@@ -120,9 +147,13 @@ describe("RoleProfileCard", () => {
     expect(screen.getByRole("textbox", { name: roleLabels.team })).toBeDefined()
   })
 
-  it("shows the family name in read mode, or the none label when unset", () => {
-    renderCard(makeRole({ familyId: "f-tech", familyName: "Tech" }))
-    expect(screen.getByText("Tech")).toBeDefined()
+  it("links to the family in read mode, or shows the none label when unset", () => {
+    renderCard(
+      makeRole({ familyId: "f-tech", familyName: "Tech", familySlug: "tech" })
+    )
+    expect(
+      screen.getByRole("link", { name: "Tech" }).getAttribute("href")
+    ).toBe("/roles/families/tech")
     cleanup()
     renderCard(makeRole())
     expect(screen.getByText(familyLabels.none)).toBeDefined()
@@ -131,7 +162,7 @@ describe("RoleProfileCard", () => {
   it("leaves the family untouched when only a text field changes", async () => {
     updateRoleMock.mockResolvedValue(null)
     renderCard(makeRole({ familyId: "f-tech", familyName: "Tech" }))
-    fireEvent.click(screen.getByRole("button", { name: labels.editCta }))
+    startEditing()
     fireEvent.change(
       screen.getByRole("textbox", { name: roleLabels.purpose }),
       {
@@ -149,8 +180,45 @@ describe("RoleProfileCard", () => {
     })
   })
 
-  it("hides the edit button for archived roles", () => {
+  it("offers Edit and Archive in the manage menu for an admin", () => {
+    renderCard(makeRole())
+    openManageMenu()
+    expect(screen.getByRole("menuitem", { name: labels.editCta })).toBeDefined()
+    expect(
+      screen.getByRole("menuitem", { name: archiveLabels.cta })
+    ).toBeDefined()
+  })
+
+  it("hides Archive in the manage menu for a non-admin", () => {
+    renderCard(makeRole(), false)
+    openManageMenu()
+    expect(screen.getByRole("menuitem", { name: labels.editCta })).toBeDefined()
+    expect(
+      screen.queryByRole("menuitem", { name: archiveLabels.cta })
+    ).toBeNull()
+  })
+
+  it("archives through the confirm dialog, then navigates to /roles", async () => {
+    archiveRoleMock.mockResolvedValue(null)
+    renderCard(makeRole())
+    openManageMenu()
+    fireEvent.click(screen.getByRole("menuitem", { name: archiveLabels.cta }))
+
+    expect(screen.getByRole("alertdialog")).toBeDefined()
+    expect(archiveRoleMock).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByRole("button", { name: archiveLabels.confirm }))
+    await waitFor(() => {
+      expect(archiveRoleMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        roleId: "role-1",
+      })
+    })
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith("/roles"))
+  })
+
+  it("hides the manage menu entirely for archived roles", () => {
     renderCard(makeRole({ archived: true }))
-    expect(screen.queryByRole("button", { name: labels.editCta })).toBeNull()
+    expect(screen.queryByRole("button", { name: labels.manageCta })).toBeNull()
   })
 })

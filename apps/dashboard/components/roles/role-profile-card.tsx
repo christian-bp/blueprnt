@@ -9,13 +9,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { Textarea } from "@workspace/ui/components/textarea"
-import { AiMagicIcon } from "@hugeicons/core-free-icons"
+import { AiMagicIcon, MoreHorizontalIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
 import { MorphPopover } from "@/components/morph-popover"
 import { FamilyPicker } from "@/components/roles/family-picker"
 import { ResponsibilitiesList } from "@/components/roles/responsibilities-list"
@@ -31,6 +41,7 @@ export interface RoleProfile {
   trackName: string
   familyId: string | null
   familyName: string | null
+  familySlug: string | null
   purpose: string
   responsibilities: string
   archived: boolean
@@ -42,9 +53,11 @@ export interface RoleProfile {
 export function RoleProfileCard({
   orgId,
   role,
+  isAdmin,
 }: {
   orgId: string
   role: RoleProfile
+  isAdmin: boolean
 }) {
   const t = useTranslations("dashboard.roles.detail")
   const tRole = useTranslations("assessment.role")
@@ -52,7 +65,10 @@ export function RoleProfileCard({
   const tModel = useTranslations("model")
   const tAi = useTranslations("dashboard.ai")
   const tErrors = useTranslations("errors")
+  const tArchive = useTranslations("dashboard.roles.archive")
   const updateRole = useMutation(api.assessment.roles.updateRole)
+  const archiveRole = useMutation(api.assessment.roles.archiveRole)
+  const router = useRouter()
   // The org's other roles, to catch a title already taken in the target family
   // (rename or family move) before submitting, so it never throws server-side.
   const allRoles = useQuery(api.assessment.roles.listRoles, { orgId })
@@ -62,6 +78,8 @@ export function RoleProfileCard({
   const [failure, setFailure] = useState<"duplicate" | "generic" | null>(null)
   const [draft, setDraft] = useState<Record<string, string>>({})
   const [draftFamilyId, setDraftFamilyId] = useState<string | null>(null)
+  const [confirmArchive, setConfirmArchive] = useState(false)
+  const [archivePending, setArchivePending] = useState(false)
 
   const locked = role.archived
 
@@ -146,8 +164,9 @@ export function RoleProfileCard({
         <CardTitle>{t("profileHeading")}</CardTitle>
         {!locked && (
           <div className="flex items-center gap-2">
-            {/* The AI draft popover sits next to Edit, the same pattern as
-                the model editor's Review button. */}
+            {/* AI draft stays a visible morph trigger (not a menu item) so the
+                assist is discoverable; Edit and Archive live in the actions
+                menu beside it. */}
             <MorphPopover
               triggerLabel={tAi("openDraftCta")}
               triggerIcon={AiMagicIcon}
@@ -163,15 +182,44 @@ export function RoleProfileCard({
                 />
               )}
             </MorphPopover>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={pending || duplicate}
-              onClick={editing ? handleSave : startEditing}
-            >
-              {editing ? t("saveCta") : t("editCta")}
-            </Button>
+            {editing ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={pending || duplicate}
+                onClick={handleSave}
+              >
+                {t("saveCta")}
+              </Button>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    aria-label={t("manageCta")}
+                    className="shrink-0"
+                  >
+                    <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onSelect={() => startEditing()}>
+                    {t("editCta")}
+                  </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem
+                      variant="destructive"
+                      onSelect={() => setConfirmArchive(true)}
+                    >
+                      {tArchive("cta")}
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         )}
       </CardHeader>
@@ -215,9 +263,22 @@ export function RoleProfileCard({
               value={draftFamilyId}
               onChange={setDraftFamilyId}
             />
+          ) : role.familyName !== null ? (
+            <p id="profile-family" className="text-sm">
+              {role.familySlug !== null ? (
+                <Link
+                  href={`/roles/families/${role.familySlug}`}
+                  className="underline underline-offset-4"
+                >
+                  {role.familyName}
+                </Link>
+              ) : (
+                role.familyName
+              )}
+            </p>
           ) : (
             <p id="profile-family" className="text-sm">
-              {role.familyName ?? tFamily("none")}
+              {tFamily("none")}
             </p>
           )}
         </div>
@@ -272,6 +333,24 @@ export function RoleProfileCard({
           </p>
         ) : null}
       </CardContent>
+      <ConfirmDeleteDialog
+        open={confirmArchive}
+        onOpenChange={setConfirmArchive}
+        title={tArchive("dialogTitle")}
+        description={tArchive("dialogBody")}
+        confirmLabel={tArchive("confirm")}
+        cancelLabel={tArchive("cancel")}
+        pending={archivePending}
+        onConfirm={async () => {
+          setArchivePending(true)
+          try {
+            await archiveRole({ orgId, roleId: role.roleId })
+            router.push("/roles")
+          } finally {
+            setArchivePending(false)
+          }
+        }}
+      />
     </Card>
   )
 }

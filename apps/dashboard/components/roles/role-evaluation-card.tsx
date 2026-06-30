@@ -96,45 +96,49 @@ export function RoleEvaluationCard({
           )}
         </CardTitle>
         {showResult && result?.complete && (
-          <div className="flex items-center gap-4">
-            <span className="font-semibold text-2xl tabular-nums">
-              {tResult("scoreOutOf", { score: result.score ?? 0 })}
-            </span>
-            {result.band != null && (
-              <Badge>{`${tAssessment("band")} ${result.band}`}</Badge>
-            )}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  aria-label={t("evaluationActionsMenu")}
-                  className="shrink-0"
-                >
-                  <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                  <Link href={`/roles/${slug}/rate`}>{t("adjustRateCta")}</Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                aria-label={t("manageCta")}
+                className="shrink-0"
+              >
+                <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link href={`/roles/${slug}/rate`}>{t("adjustRateCta")}</Link>
+              </DropdownMenuItem>
+              {isAdmin && (
+                <DropdownMenuItem onSelect={() => setAnchorOpen(true)}>
+                  {anchorRole === null
+                    ? tAnchor("designateCta")
+                    : tAnchor("manageCta")}
                 </DropdownMenuItem>
-                {isAdmin && (
-                  <DropdownMenuItem onSelect={() => setAnchorOpen(true)}>
-                    {anchorRole === null
-                      ? tAnchor("designateCta")
-                      : tAnchor("manageCta")}
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </CardHeader>
       <CardContent className="space-y-4">
         {showResult ? (
           result?.complete ? (
             <>
+              {/* The score is the headline, so it gets its own full-width line
+                  (in the narrow rail it wrapped when it shared the header row
+                  with the title and the menu). The number stays nowrap; the
+                  band badge may wrap beneath it on a very tight rail. */}
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span className="whitespace-nowrap font-semibold text-3xl tabular-nums">
+                  {tResult("scoreOutOf", { score: result.score ?? 0 })}
+                </span>
+                {result.band != null && (
+                  <Badge>{`${tAssessment("band")} ${result.band}`}</Badge>
+                )}
+              </div>
               <p className="text-muted-foreground text-sm">
                 {tResult("bandHighest")}
               </p>
