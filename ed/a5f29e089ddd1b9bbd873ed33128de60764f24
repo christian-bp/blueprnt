@@ -1,0 +1,57 @@
+apps/dashboard/components/roles/role-evaluation-card.test.tsx
+  s_6bff98b662648b::t_7e6c88b605cfd4 225,237
+  s_6bff98b662648b::t_f833fd3276d38d 121
+apps/dashboard/app/(app)/roles/[roleSlug]/page.tsx
+  s_6bff98b662648b::t_7e6c88b605cfd4 63
+  s_6bff98b662648b::t_f759b7f9474b81 79-83
+  s_6bff98b662648b::t_f0afd83363bf45 75-78,84-101
+  s_6bff98b662648b::t_8656276f805c99 61-62,64-67
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_4717e825951370 358
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_224a92d7f1c08e 358
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_fd45a90ba54ce2 358
+apps/dashboard/components/roles/role-evaluation-card.tsx
+  s_6bff98b662648b::t_bf920a1eb5cb17 103
+  s_6bff98b662648b::t_ff89a8382a8958 99-102,106-107,109-119,121-123,130-141
+  s_6bff98b662648b::t_6f8225b3f37897 104-105,108
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_a1796dd587d370 358
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_1d63b65bfa3989 358
+apps/dashboard/components/roles/role-profile-card.tsx
+  s_6bff98b662648b::t_6938a020dc02d3 12-17,22,26,28
+  s_6bff98b662648b::t_f9e9fcd744d7f2 25
+  s_6bff98b662648b::t_a1886720d6a963 56,60
+  s_6bff98b662648b::t_b012ea3c12e7b1 81-82
+  s_6bff98b662648b::t_8b803491ea6336 201-202,205
+  s_6bff98b662648b::t_2128742173d3b9 167-169,185-200,203-204,206-222
+  s_6bff98b662648b::t_d8bc4402e58b0b 266-278,281
+  s_6bff98b662648b::t_b698b98b1a3e81 44
+  s_6bff98b662648b::t_a7aabaae8fac0f 21
+  s_6bff98b662648b::t_d6a572e4957ea3 68,70-71
+  s_6bff98b662648b::t_b78c25dc7c4517 336-353
+apps/dashboard/components/roles/role-profile-card.test.tsx
+  s_6bff98b662648b::t_1383fe6cd070b4 150-156
+  s_6bff98b662648b::t_b339577593930d 59
+  s_6bff98b662648b::t_599f356a115794 13-14,17-18,26-29,38-39,48,67,70,75-86,90-91,110,113,128,130-132,139,165,183-220,222
+apps/dashboard/components/roles/role-criterion-breakdown.tsx
+  s_6bff98b662648b::t_bb9e6281bb9f05 84-86,89-93,96-98,100,108-112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "eda5f29e089ddd1b9bbd873ed33128de60764f24",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
