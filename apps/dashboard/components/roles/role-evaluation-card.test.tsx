@@ -150,7 +150,7 @@ describe("RoleEvaluationCard", () => {
   it("shows the weighting, band, and breakdown once complete", () => {
     setResult(completeResult)
     renderCard({ ratedCount: 3, totalCriteria: 3 })
-    expect(screen.getByText("71 / 100")).toBeDefined()
+    expect(screen.getByText("Weighting 71")).toBeDefined()
     expect(screen.getByText("Band 3")).toBeDefined()
     expect(screen.getByText("Complexity")).toBeDefined()
   })

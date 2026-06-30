@@ -58,11 +58,6 @@ describe("RoleCriterionBreakdown", () => {
     expect(screen.getByText("5%")).toBeTruthy()
   })
 
-  it("shows each criterion's assessed value", () => {
-    renderBreakdown()
-    expect(screen.getByText("rated 5 / 5")).toBeTruthy()
-  })
-
   it("gives a single criterion a 100% share", () => {
     renderBreakdown([CRITERIA[0] as BreakdownCriterion])
     expect(screen.getByText("100%")).toBeTruthy()
@@ -81,16 +76,5 @@ describe("RoleCriterionBreakdown", () => {
       },
     ])
     expect(screen.getByText("Owns the whole platform.")).toBeTruthy()
-  })
-
-  it("drops the assessed value in the compact variant but keeps names and shares", () => {
-    render(
-      <NextIntlClientProvider locale="en" messages={messages}>
-        <RoleCriterionBreakdown criteria={CRITERIA} variant="compact" />
-      </NextIntlClientProvider>
-    )
-    expect(screen.queryByText("rated 5 / 5")).toBeNull()
-    expect(screen.getByText("Complexity")).toBeTruthy()
-    expect(screen.getByText("54%")).toBeTruthy()
   })
 })

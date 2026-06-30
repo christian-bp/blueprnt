@@ -4,7 +4,6 @@ import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -127,16 +126,19 @@ export function RoleEvaluationCard({
         {showResult ? (
           result?.complete ? (
             <>
-              {/* The score is the headline, so it gets its own full-width line
-                  (in the narrow rail it wrapped when it shared the header row
-                  with the title and the menu). The number stays nowrap; the
-                  band badge may wrap beneath it on a very tight rail. */}
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                <span className="whitespace-nowrap font-semibold text-3xl tabular-nums">
-                  {tResult("scoreOutOf", { score: result.score ?? 0 })}
-                </span>
+              {/* The band is the outcome, so it leads as the headline; the
+                  weighting is the precise score behind it, shown small and
+                  labeled (not a bare 0-100 number). */}
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                 {result.band != null && (
-                  <Badge>{`${tAssessment("band")} ${result.band}`}</Badge>
+                  <span className="font-semibold text-3xl">
+                    {`${tAssessment("band")} ${result.band}`}
+                  </span>
+                )}
+                {result.score != null && (
+                  <span className="text-muted-foreground text-sm tabular-nums">
+                    {`${tResult("scoreLabel")} ${result.score}`}
+                  </span>
                 )}
               </div>
               <RoleCriterionBreakdown criteria={result.criteria} />

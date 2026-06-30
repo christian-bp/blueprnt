@@ -51,6 +51,7 @@ function row(overrides: Partial<RolesTableRow>): RolesTableRow {
     familyId: "f-eng",
     familyName: "Engineering",
     familySlug: "engineering",
+    band: null,
     ...overrides,
   }
 }
@@ -178,27 +179,14 @@ describe("RolesTable", () => {
     expect(pushMock).toHaveBeenCalledWith("/roles/r1")
   })
 
-  it("shows a binary evaluation state instead of a rating count", () => {
+  it("shows the band for an evaluated role and not-evaluated otherwise", () => {
     renderTable([
-      row({
-        roleId: "r1",
-        title: "Done Role",
-        ratedCount: 9,
-        totalCriteria: 9,
-      }),
-      row({
-        roleId: "r2",
-        title: "Todo Role",
-        ratedCount: 0,
-        totalCriteria: 9,
-      }),
+      row({ roleId: "r1", title: "Done Role", band: 3 }),
+      row({ roleId: "r2", title: "Todo Role", band: null }),
     ])
-    expect(screen.getByText(messages.dashboard.roles.evaluated)).toBeDefined()
+    expect(screen.getByText("3")).toBeDefined()
     expect(
       screen.getByText(messages.dashboard.roles.notEvaluated)
     ).toBeDefined()
-    // No fractional rating count anywhere.
-    expect(screen.queryByText("9/9")).toBeNull()
-    expect(screen.queryByText("0/9")).toBeNull()
   })
 })

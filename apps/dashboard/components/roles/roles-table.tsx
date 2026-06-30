@@ -66,6 +66,7 @@ export interface RolesTableRow {
   familyId: string | null
   familyName: string | null
   familySlug: string | null
+  band: number | null
 }
 
 export interface RolesTableTrack {
@@ -112,6 +113,7 @@ export function RolesTable({
   const t = useTranslations("dashboard.roles")
   const tToolbar = useTranslations("dashboard.roles.toolbar")
   const tFamily = useTranslations("dashboard.roles.family")
+  const tAssessment = useTranslations("assessment")
   const router = useRouter()
 
   const [globalFilter, setGlobalFilter] = useState("")
@@ -171,25 +173,22 @@ export function RolesTable({
       },
       {
         id: "evaluation",
-        header: t("table.evaluation"),
+        header: tAssessment("band"),
         enableGlobalFilter: false,
-        // Binary state, not a rating count: a role is evaluated once every
-        // criterion is rated. The fractional progress is deliberately not
-        // shown (it is noise; an incomplete role just reads "not yet
-        // evaluated", like the Overview).
-        cell: ({ row }) => {
-          const evaluated =
-            row.original.totalCriteria > 0 &&
-            row.original.ratedCount === row.original.totalCriteria
-          return (
-            <Badge variant={evaluated ? "secondary" : "outline"}>
-              {evaluated ? t("evaluated") : t("notEvaluated")}
-            </Badge>
-          )
-        },
+        // The evaluation outcome: a role's band once it is fully evaluated,
+        // otherwise "not evaluated" (an incomplete or still-computing role has
+        // no band yet, the same rule as the family and overview tables).
+        cell: ({ row }) =>
+          row.original.band != null ? (
+            <Badge>{row.original.band}</Badge>
+          ) : (
+            <span className="text-muted-foreground text-sm">
+              {t("notEvaluated")}
+            </span>
+          ),
       },
     ],
-    [t]
+    [t, tAssessment]
   )
 
   const table = useReactTable({

@@ -315,8 +315,7 @@
       "table": {
         "title": "Tehtävänimike",
         "track": "Track",
-        "team": "Tiimi",
-        "evaluation": "Arviointi"
+        "team": "Tiimi"
       },
       "create": {
         "title": "Uusi rooli",
@@ -430,7 +429,6 @@
         "anchorsHeading": "Verrattuna ankkurirooleihinne",
         "anchorBand": "Luokka {band}",
         "farFromAnchors": "Tulos on vähintään kaksi luokkaa lähimmästä ankkuriroolista. Validoi arviointi manuaalisesti ennen hyväksyntää.",
-        "ratingOutOf": "arvioitu {value} / 5",
         "contributionShare": "{share}%",
         "breakdownLabel": "Osuus"
       },

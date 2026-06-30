@@ -315,8 +315,7 @@
       "table": {
         "title": "Title",
         "track": "Track",
-        "team": "Team",
-        "evaluation": "Evaluation"
+        "team": "Team"
       },
       "create": {
         "title": "New role",
@@ -430,7 +429,6 @@
         "anchorsHeading": "Compared with your anchor roles",
         "anchorBand": "Band {band}",
         "farFromAnchors": "This result is at least two bands from the nearest anchor role. Validate the assessment manually before approving.",
-        "ratingOutOf": "rated {value} / 5",
         "contributionShare": "{share}%",
         "breakdownLabel": "Contribution"
       },

@@ -19,20 +19,15 @@ export interface BreakdownCriterion {
   motivation: string | null
 }
 
-// The per-criterion contribution list: each criterion's assessed value plus its
-// share of the role's weighting (rating x weight, normalized to the total),
-// sorted biggest-driver-first and animated on reweight. Shared by RoleEvaluationCard
+// The per-criterion contribution list: each criterion's share of the role's
+// weighting (rating x weight, normalized to the total), sorted
+// biggest-driver-first and animated on reweight. Shared by RoleEvaluationCard
 // (role page) and RoleSheet (overview quick-look) so the animation-sensitive
 // logic lives in exactly one place (docs/ui-animation.md).
 export function RoleCriterionBreakdown({
   criteria,
-  variant = "full",
 }: {
   criteria: BreakdownCriterion[]
-  // "full" shows each criterion's assessed value (rated X / 5) alongside its
-  // contribution; "compact" drops the assessed value, leaving the name, bar,
-  // and share, so a quick-look sheet is not crowded with two numbers per row.
-  variant?: "full" | "compact"
 }) {
   const tHelp = useTranslations("dashboard.help")
   const tResult = useTranslations("dashboard.rating.result")
@@ -82,8 +77,8 @@ export function RoleCriterionBreakdown({
             className="space-y-1"
           >
             {/* The section is "Contribution", so the contribution share is the
-                row's headline (next to the name); the assessed rating drops to a
-                caption by the bar. */}
+                row's headline next to the name; the bar shows it relative to the
+                biggest driver. */}
             <div className="flex items-baseline justify-between gap-3">
               <span className="text-sm">{row.name}</span>
               <span className="shrink-0 font-medium text-sm tabular-nums">
@@ -92,24 +87,17 @@ export function RoleCriterionBreakdown({
                 })}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              {/* Thinner, softer fill (primary/80) so nine rows read calmly in
-                  the rail; the override stays local to the bar. */}
-              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
-                <motion.div
-                  className="h-full rounded-full bg-primary/80"
-                  initial={false}
-                  animate={{
-                    width: `${maxShare > 0 ? (row.share / maxShare) * 100 : 0}%`,
-                  }}
-                  transition={SPRING}
-                />
-              </div>
-              {variant === "full" && (
-                <span className="shrink-0 text-right text-muted-foreground text-xs tabular-nums">
-                  {tResult("ratingOutOf", { value: row.value ?? 0 })}
-                </span>
-              )}
+            {/* Thinner, softer fill (primary/80) so the rows read calmly; the
+                override stays local to the bar. */}
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+              <motion.div
+                className="h-full rounded-full bg-primary/80"
+                initial={false}
+                animate={{
+                  width: `${maxShare > 0 ? (row.share / maxShare) * 100 : 0}%`,
+                }}
+                transition={SPRING}
+              />
             </div>
             {row.motivation !== null && (
               <p className="text-muted-foreground text-xs">{row.motivation}</p>

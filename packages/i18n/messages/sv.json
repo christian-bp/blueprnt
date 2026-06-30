@@ -315,8 +315,7 @@
       "table": {
         "title": "Titel",
         "track": "Track",
-        "team": "Team",
-        "evaluation": "Utvärdering"
+        "team": "Team"
       },
       "create": {
         "title": "Ny roll",
@@ -430,7 +429,6 @@
         "anchorsHeading": "Jämfört med era ankarroller",
         "anchorBand": "Band {band}",
         "farFromAnchors": "Resultatet ligger minst två band från närmaste ankarroll. Validera bedömningen manuellt innan godkännande.",
-        "ratingOutOf": "bedömd {value} / 5",
         "contributionShare": "{share}%",
         "breakdownLabel": "Bidrag"
       },

@@ -315,8 +315,7 @@
       "table": {
         "title": "Tittel",
         "track": "Track",
-        "team": "Team",
-        "evaluation": "Vurdering"
+        "team": "Team"
       },
       "create": {
         "title": "Ny rolle",
@@ -430,7 +429,6 @@
         "anchorsHeading": "Sammenlignet med ankerrollene deres",
         "anchorBand": "Bånd {band}",
         "farFromAnchors": "Resultatet ligger minst to bånd fra nærmeste ankerrolle. Valider vurderingen manuelt før godkjenning.",
-        "ratingOutOf": "vurdert {value} / 5",
         "contributionShare": "{share}%",
         "breakdownLabel": "Bidrag"
       },

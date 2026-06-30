@@ -27,14 +27,33 @@ export default function RolesPage() {
   const locale = useLocale()
   const roles = useQuery(api.assessment.roles.listRoles, { orgId, locale })
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
+  const results = useQuery(api.assessment.results.getResults, { orgId, locale })
 
-  if (roles === undefined || model === undefined || model === null) {
+  if (
+    roles === undefined ||
+    model === undefined ||
+    model === null ||
+    results === undefined
+  ) {
     return (
       <main className="flex items-center justify-center p-6">
         <Spinner aria-label={t("heading")} />
       </main>
     )
   }
+
+  // Band lives in the results query (only complete roles have one); merge it
+  // onto each row so the table can show the outcome.
+  const bandByRole = new Map(
+    results.rows.map((resultRow) => [
+      resultRow.roleId as string,
+      resultRow.band ?? null,
+    ])
+  )
+  const rows = roles.map((role) => ({
+    ...role,
+    band: bandByRole.get(role.roleId as string) ?? null,
+  }))
 
   return (
     <div className="space-y-4">
@@ -58,7 +77,7 @@ export default function RolesPage() {
           </EmptyHeader>
         </Empty>
       ) : (
-        <RolesTable roles={roles} tracks={model.tracks} />
+        <RolesTable roles={rows} tracks={model.tracks} />
       )}
     </div>
   )

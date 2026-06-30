@@ -215,10 +215,7 @@ function RoleSheetContent({
               ) : result?.complete ? (
                 // Band now lives in the header; the body carries only the
                 // per-criterion contribution breakdown.
-                <RoleCriterionBreakdown
-                  criteria={result.criteria}
-                  variant="compact"
-                />
+                <RoleCriterionBreakdown criteria={result.criteria} />
               ) : (
                 <div className="space-y-1">
                   <p className="text-muted-foreground text-sm">
