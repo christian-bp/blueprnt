@@ -115,6 +115,7 @@ export default function FamilyPage(props: {
           <TableRow>
             <TableHead>{t("table.title")}</TableHead>
             <TableHead>{t("table.track")}</TableHead>
+            <TableHead>{t("table.team")}</TableHead>
             <TableHead className="text-right">{tAssessment("band")}</TableHead>
           </TableRow>
         </TableHeader>
@@ -133,6 +134,9 @@ export default function FamilyPage(props: {
                 </TableCell>
                 <TableCell>
                   <TrackBadge trackKey={role.trackKey} name={role.trackName} />
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {role.team}
                 </TableCell>
                 <TableCell className="text-right">
                   {result?.band != null ? <Badge>{result.band}</Badge> : null}
