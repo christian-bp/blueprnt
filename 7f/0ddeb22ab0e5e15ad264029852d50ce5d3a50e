@@ -1,0 +1,27 @@
+docs/superpowers/plans/2026-07-01-model-compliance-evidence.md
+  s_6bff98b662648b::t_4b3ec0de43130a 714,719
+  s_6bff98b662648b::t_c570e7cd903c25 874
+  s_6bff98b662648b::t_c1d5210da9654a 1360
+  s_6bff98b662648b::t_87c9a6633bdd56 990
+  s_6bff98b662648b::t_81d905583ebf75 963-964
+  s_6bff98b662648b::t_d148042f64e03d 948
+  s_6bff98b662648b::t_03c1c93a84c87b 1335
+  s_6bff98b662648b::t_ec72028ec53f9e 32-35,37-40,42,44-47
+  s_6bff98b662648b::t_4a4323787c62bb 1-31,36,41,43,48-713,715-718,720-873,875-947,949-962,965-989,991-1334,1336-1359,1361-1600
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "7f0ddeb22ab0e5e15ad264029852d50ce5d3a50e",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
