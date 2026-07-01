@@ -1,0 +1,24 @@
+packages/backend/convex/evaluationModel/method.ts
+  s_6bff98b662648b::t_9b03aab35a5e97 5-7
+  s_6bff98b662648b::t_96d3d6f21c6d64 173-299
+packages/backend/convex/evaluationModel/method.test.ts
+  s_6bff98b662648b::t_5c22e611610376 154-158,166-168,172,178-181,190-191,195,203-209
+  s_6bff98b662648b::t_8826eac9ecf4a3 159-165,169-171,173-177,182-189,192-194,196-202
+  s_6bff98b662648b::t_d4289197390621 2,14-19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "2566f9f34448996960d28511ac395ae90756d6b4",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
