@@ -367,7 +367,7 @@ describe("getModel", () => {
     })
     expect(sv?.name).toBe("Standardmodell")
     expect(sv?.criteria[0]?.name).toBe("Scope & Påverkan")
-    expect(sv?.criteria[0]?.anchors[0]?.text).toMatch(/Ansvar för egna/)
+    expect(sv?.criteria[0]?.anchors[0]?.text).toMatch(/Ansvarar för egna/)
     expect(sv?.criteria[0]?.weightLevels).toHaveLength(5)
     expect(sv?.criteria[0]?.weightLevels?.[0]).toMatch(
       /Företaget vill att omfattningen/

@@ -19,12 +19,12 @@ export const standardTemplateContentSv: StandardTemplateContent = {
       helpText:
         "Detta kriterium beskriver rollens organisatoriska räckvidd. Det omfattar både omfattningen av ansvaret och hur långt effekterna av rollens arbete, beslut eller prioriteringar sträcker sig. Påverkan kan vara begränsad till ett eget arbetsområde eller ett team, men kan också omfatta flera funktioner eller hela bolaget.",
       anchors: [
-        "Ansvar för egna uppgifter inom ett tydligt begränsat område.",
-        "Påverkan inom det egna teamet; ansvar för avgränsade leveranser.",
-        "Ägarskap för ett delområde eller återkommande process; påverkan inom en mindre funktion.",
-        "Ansvar för ett större område, projekt eller flöde; påverkar flera team/funktioner.",
-        "Påverkar affärs-/funktionsområde; definierar riktning för större delar av organisationen.",
-        "Företagsövergripande påverkan; strategiskt ansvar och direkt effekt på organisationens resultat.",
+        "Ansvarar för egna, avgränsade uppgifter. Resultatet påverkar det omedelbara arbetsflödet.",
+        "Ansvarar för leveranser som direkt stödjer teamets mål. Resultat märks inom teamet.",
+        "Äger en process, ett delområde eller en återkommande leverans. Resultat märks av närliggande funktioner.",
+        "Ansvarar för ett större arbetsområde vars resultat påverkar flera team eller funktioner.",
+        "Sätter riktning och prioriteringar för ett affärs- eller funktionsområde. Resultat påverkar organisationens konkurrensförmåga.",
+        "Bär strategiskt ansvar med direkt effekt på organisationens samlade resultat och långsiktiga position.",
       ],
       weightLevels: [
         "Företaget vill att omfattningen av ansvar och organisatorisk påverkan endast ska ha begränsat genomslag i rollvärderingen. Roller med kortare räckvidd ska alltså inte premieras särskilt starkt på just denna dimension.",
@@ -41,12 +41,12 @@ export const standardTemplateContentSv: StandardTemplateContent = {
       helpText:
         "Detta kriterium beskriver vilka konsekvenser rollen kan ha för verksamheten om något blir fel, missas eller hanteras otillräckligt. Det omfattar påverkan på exempelvis kvalitet, leverans, ekonomi, efterlevnad, säkerhet, kundrelationer och varumärke. Fokus ligger på konsekvensernas omfattning och betydelse för verksamheten.",
       anchors: [
-        "Låg påverkan; fel kan enkelt rättas.",
-        "Påverkar främst eget arbete eller team.",
-        "Fel påverkar leveranser eller kvalitet i mindre skala.",
-        "Fel får märkbara följder för processer, deadlines eller kundrelationer.",
-        "Hög påverkan på ekonomi, rykte eller efterlevnad.",
-        "Kritisk påverkan på organisationens resultat, strategi eller regelefterlevnad.",
+        "Fel upptäcks snabbt och korrigeras utan mätbar kostnad eller påverkan utanför den egna uppgiften.",
+        "Fel påverkar den egna eller teamets effektivitet. Begränsad spridning – korrigering kräver timmar, inte dagar.",
+        "Fel kan påverka kvalitet, tidsplan eller kostnader i mindre skala. Kräver aktiv korrigering men orsakar inte bestående skada.",
+        "Fel får tydliga konsekvenser för processer, kundrelationer eller interna beroenden. Kan kräva eskalering och extern kommunikation.",
+        "Fel kan medföra betydande ekonomisk skada, regulatoriska brister, varumärkesskada eller förlust av strategiska relationer.",
+        "Fel eller underlåtenhet kan hota organisationens fortlevnad, strategiska position eller grundläggande legala ställning.",
       ],
       weightLevels: [
         "Företaget vill att risk och konsekvens endast ska ha begränsad påverkan på rollvärderingen. Roller där fel får större följder ska alltså inte premieras särskilt mycket på denna dimension.",
@@ -63,12 +63,12 @@ export const standardTemplateContentSv: StandardTemplateContent = {
       helpText:
         "Detta kriterium beskriver arbetets svårighetsgrad. Det omfattar teknisk, affärsmässig och organisatorisk komplexitet samt graden av osäkerhet i situationer där information, riktning eller lösning inte är tydlig från början. Kriteriet fångar hur många variabler, beroenden och avvägningar som typiskt finns i rollen.",
       anchors: [
-        "Arbete är rutinmässigt och väl definierat med tydliga instruktioner.",
-        "Hanterar standardiserade uppgifter med låg variation.",
-        "Löser uppgifter med viss variation och behov av egen analys.",
-        "Arbetar med flera beroenden och avvägningar; kräver tolkning och prioritering.",
-        "Hög komplexitet; hanterar motsägande krav och otydliga förutsättningar.",
-        "Extrema komplexa situationer; driver utveckling i okända/innovativa områden med hög osäkerhet.",
+        "Uppgifterna har kända lösningar och tydliga instruktioner. Utfallet är förutsägbart.",
+        "Uppgifterna följer kända mönster. Variation förekommer men hanteras med befintliga metoder.",
+        "Uppgifterna varierar regelbundet. Kräver egen analys och val av tillvägagångssätt bland etablerade metoder.",
+        "Problem innefattar flera beroenden, motstridiga krav eller ofullständig information. Kräver syntes och prioritering.",
+        "Rollen arbetar med oklara förutsättningar, motsägelsefulla krav och hög osäkerhet. Utvecklar nya lösningsmodeller.",
+        "Rollen definierar nya problemställningar i outforskade områden. Etablerad praxis saknas.",
       ],
       weightLevels: [
         "Företaget vill att komplexitet och otydlighet endast ska ha liten påverkan på den samlade rollvärderingen. Roller med mer komplexa och osäkra förutsättningar ska därför inte premieras särskilt mycket på denna dimension.",
@@ -85,12 +85,12 @@ export const standardTemplateContentSv: StandardTemplateContent = {
       helpText:
         "Detta kriterium beskriver rollens handlingsutrymme och beslutsnivå. Det omfattar graden av självständighet, hur mycket styrning rollen arbetar under och vilken typ av beslut som naturligt ligger inom uppdraget. Kriteriet fångar både friheten att agera och det mandat rollen har att påverka riktning, prioriteringar eller utfall.",
       anchors: [
-        "Arbetar nära styrt; följer instruktioner.",
-        "Självständig i vardagliga moment inom definierade ramar.",
-        "Tar egna initiativ och prioriteringar inom sitt område.",
-        "Tar taktiska beslut som påverkar team eller arbetsflöde.",
-        "Fattar strategiska beslut inom domän och sätter riktning för delområde.",
-        "Tar beslut som påverkar flera domäner eller hela organisationen.",
+        "Arbetar enligt givna instruktioner. Beslut fattas av närmaste chef.",
+        "Genomför arbete självständigt inom definierade ramar. Eskalerar vid avvikelse.",
+        "Tar egna initiativ, prioriterar och löser problem inom sitt ansvarsområde utan att invänta instruktioner.",
+        "Fattar beslut som påverkar teamets eller processens riktning, resurser och tidsplan.",
+        "Fattar strategiska beslut inom sin domän. Sätter riktlinjer och ramar som andra följer.",
+        "Fattar beslut som formar flera domäner eller hela organisationens riktning. Definierar styrmodell och delegation.",
       ],
       weightLevels: [
         "Företaget vill att grad av självständighet och beslutsmandat endast ska ha liten påverkan på den samlade rollvärderingen.",
@@ -107,12 +107,12 @@ export const standardTemplateContentSv: StandardTemplateContent = {
       helpText:
         "Detta kriterium beskriver bredden i rollens kontaktytor och samverkansbehov. Det omfattar interna och externa intressenter, tvärfunktionella samarbeten och behovet av att samordna arbete mellan olika personer, team, funktioner eller externa parter. Kriteriet fångar hur varierad och omfattande denna samverkan är.",
       anchors: [
-        "Samarbete främst inom eget team.",
-        "Samarbete inom närliggande funktioner.",
-        "Regelbunden tvärfunktionell samverkan.",
-        "Samordning med externa parter/kunder eller flera interna funktioner.",
-        "Hanterar komplex stakeholder-miljö med konkurrerande intressen.",
-        "Representerar organisationen externt och hanterar strategiska intressenter.",
+        "Samarbete sker inom det egna teamet. Kontaktytan utanför är minimal.",
+        "Regelbunden kontakt med närliggande team för att koordinera den egna leveransen.",
+        "Aktiv samverkan med flera funktioner i organisationen. Rollen är en kontaktpunkt i tvärfunktionella flöden.",
+        "Koordinerar med externa parter (kunder, leverantörer, myndigheter) eller samordnar flera interna intressentgrupper.",
+        "Navigerar en miljö med motstridiga intressen och hög förhandlingskomplexitet. Balanserar krav från flera starka parter.",
+        "Representerar organisationen på strategisk nivå mot styrelse, nyckelkunder, myndigheter eller branschorgan.",
       ],
       weightLevels: [
         "Företaget vill att bredden i samverkan och koordinering endast ska ha liten påverkan på hur roller värderas relativt varandra.",
@@ -129,12 +129,12 @@ export const standardTemplateContentSv: StandardTemplateContent = {
       helpText:
         "Detta kriterium beskriver vilken typ och nivå av kunskap rollen bygger på. Det omfattar specialistdjup, praktisk erfarenhet, metodförståelse och förmåga att arbeta över flera discipliner eller områden. Kriteriet fångar om rollen främst kräver fördjupning inom ett område eller en kombination av flera perspektiv och kompetenser.",
       anchors: [
-        "Rollen kräver grundläggande kunskap. Rollen förutsätter introduktionsnivå inom sitt område och att arbetsuppgifter kan utföras genom etablerade rutiner och instruktioner.",
-        "Rollen kräver stabil yrkeskunskap inom ett avgränsat område. Rollen behöver en tydligt definierad och etablerad kompetens inom sin domän, med förmåga att tillämpa standardiserade arbetssätt.",
-        "Rollen kräver fördjupad kompetens och metodförståelse. Rollen behöver kunna hantera komplexare uppgifter, använda mer avancerade metoder/verktyg och ha god förståelse för hur området fungerar i praktiken.",
-        "Rollen kräver avancerad specialistkompetens. Rollen kräver djupare kunskap inom ett eller flera delområden och förmåga att hantera svårare problem, göra analyser och ta fram lösningar som blir vägledande i det operativa arbetet.",
-        "Rollen kräver expertkompetens inom en komplex domän. Rollen förutsätter att innehavaren definierar metoder, strukturer och arbetssätt inom sin domän och fungerar som intern expert i kvalificerade frågor.",
-        "Rollen kräver domänledande kompetens och kunskapsutveckling. Rollen kräver att innehavaren utvecklar nya arbetssätt, modeller eller tekniker och sätter riktning och principer för organisationens framtida förmågor inom området.",
+        "Rollen kan utföras genom introduktion och handledning. Inga specifika förkunskaper utöver grundläggande arbetsförmåga.",
+        "Kräver stabil kunskap inom ett avgränsat område. Tillämpar standardiserade metoder och verktyg självständigt.",
+        "Kräver förmåga att välja och anpassa metoder, förstå bakomliggande principer och hantera komplexare situationer.",
+        "Kräver djup kunskap inom en eller flera deldomäner. Löser icke-standardiserade problem och designar lösningar som andra förlitar sig på.",
+        "Definierar metoder, standarder och kvalitetsnormer inom domänen. Intern referenspunkt i kvalificerade frågor.",
+        "Utvecklar ny kunskap, metodik eller teknik. Sätter principer som styr organisationens framtida förmåga. Kan påverka branschen externt.",
       ],
       weightLevels: [
         "Företaget vill att krav på djup expertis, erfarenhet eller tvärdisciplinär bredd endast ska ha begränsad påverkan på den samlade rollvärderingen.",
@@ -151,12 +151,12 @@ export const standardTemplateContentSv: StandardTemplateContent = {
       helpText:
         "Detta kriterium beskriver rollens ansvar för ekonomiska resurser eller ekonomiska utfall. Det kan omfatta budget, kostnader, intäkter, lönsamhet, investeringar eller ansvar för ett affärsområde, en portfölj eller andra ekonomiska ramar. Kriteriet fångar hur central den ekonomiska dimensionen är i rollen.",
       anchors: [
-        "Inget budget- eller kostnadsansvar.",
-        "Påverkar kostnader indirekt genom beslut.",
-        "Ansvar för mindre kostnadsram eller projekt/budgetdel.",
-        "Budgetansvar inom eget område/team.",
-        "Ansvar för större budget/affärsområde.",
-        "Ansvar för betydande del av företagets ekonomi eller P&L.",
+        "Rollen har inget ansvar för ekonomiska ramar. Arbetar inom resurser som andra tilldelat.",
+        "Rollens val av metod och tidsanvändning påverkar kostnader – men utan eget budgetmandat.",
+        "Ansvarar för en mindre budget, projektdel eller kostnadsram. Godkänner inköp inom fastställda gränser.",
+        "Tydligt budgetansvar för team eller delverksamhet. Planerar, följer upp och justerar resursanvändning.",
+        "Ansvarar för betydande budget, portfölj eller ett affärsområdes intäkter och kostnader.",
+        "Bär direkt ansvar för väsentlig del av organisationens totala resultat eller finansiella strategi.",
       ],
       weightLevels: [
         "Företaget vill att ekonomiskt ansvar endast ska ha begränsad påverkan på den samlade rollvärderingen. Budget- eller resultatansvar ska alltså inte ges särskilt stor tyngd i modellen.",
@@ -173,12 +173,12 @@ export const standardTemplateContentSv: StandardTemplateContent = {
       helpText:
         "Detta kriterium beskriver rollens ansvar för ledning av andra. Det omfattar formellt personalansvar, operativ arbetsledning, teamledning och ansvar för större organisatoriska enheter eller andra chefer. Kriteriet fångar både omfattningen av ledningsuppdraget och ansvaret för kapacitet, prioritering, utveckling och riktning genom andra.",
       anchors: [
-        "Inget personal- eller ledningsansvar.",
-        "Operativ ledning av arbete, men inget HR-ansvar.",
-        "Personalansvar för medarbetare (M1).",
-        "Chef över flera team eller första linjens chefer (M2).",
-        "Funktionschef med flera chefsled eller större organisation.",
-        "Strategisk ledare på företagsnivå (Head/Director/C-nivå).",
+        "Rollen leder inte andra och har inget personalansvar.",
+        "Fördelar och samordnar arbete i gruppen – utan formellt HR-ansvar.",
+        "Formellt personalansvar: lönesamtal, utvecklingssamtal, arbetsmiljö, rehabilitering.",
+        "Leder chefer med personalansvar. Bygger ledningskapacitet och sätter ramar för chefsskapet i nästa led.",
+        "Leder en hel funktion med flera chefsled. Ansvarar för organisationsdesign och funktionens samlade prestation.",
+        "Del av företagsledningen. Sätter riktning för ledarskap, kultur och organisationsmodell på företagsnivå.",
       ],
       weightLevels: [
         "Företaget vill att personal- och ledningsansvar endast ska ha begränsad påverkan på den samlade rollvärderingen. Formellt ledarskap ska alltså inte i sig driva värderingen särskilt mycket.",
@@ -195,12 +195,12 @@ export const standardTemplateContentSv: StandardTemplateContent = {
       helpText:
         "Detta kriterium beskriver de formella kompetenskrav som typiskt är knutna till rollen. Det kan omfatta utbildningsnivå, examen, certifiering, legitimation eller annan formellt erkänd kompetens som krävs eller vanligtvis efterfrågas. Kriteriet fångar den formella inträdesnivån till rollen, oberoende av den nuvarande individens bakgrund.",
       anchors: [
-        "Inga formella förkunskaper krävs. Rollen kan läras in från grunden via intern introduktion. Kräver ingen särskild teoretisk bas eller yrkesutbildning.",
-        "Grundläggande yrkeskunskap krävs. Rollen kräver viss förkunskap inom området (t.ex. kortare kurser eller praktisk erfarenhet), men ingen eftergymnasial utbildning.",
-        "Eftergymnasial yrkesutbildning eller motsvarande förkunskap krävs. Rollen kräver en yrkeshögskoleutbildning, certifiering eller motsvarande teoretisk grund för att kunna utföra arbetsuppgifterna.",
-        "Högskoleexamen eller motsvarande kvalificerad förkunskap krävs. Rollen kräver kandidatexamen/ingenjör eller motsvarande dokumenterad kompetens för att kunna hantera typiska arbetsuppgifter.",
-        "Fördjupad akademisk nivå eller avancerad specialistcertifiering krävs. Rollen kräver t.ex. masterutbildning, avancerad certifiering (IFRS, TISAX, säkerhetscertifikat, CPA etc.) eller motsvarande hög teoretisk nivå.",
-        "Professionell expertis på högsta nivå krävs. Rollen kräver forskningsnära kompetens, avancerad expertackreditering eller mycket tung domänspecifik expertis som normerar området.",
+        "Rollen kan läras in via introduktion. Ingen utbildning eller certifiering krävs.",
+        "Kräver kortare yrkesutbildning, kurser eller dokumenterad praktisk erfarenhet som styrker grundläggande yrkesskicklighet.",
+        "Kräver yrkeshögskoleutbildning, branschcertifiering eller motsvarande teoretisk/praktisk grund.",
+        "Kräver kandidatexamen, ingenjörsexamen eller motsvarande kvalificerad förkunskap.",
+        "Kräver masterexamen, avancerad professionell certifiering (t.ex. CPA, juristexamen, CISA, PMP avancerad) eller motsvarande.",
+        "Kräver forskningsnivå, doktorsexamen eller unik domänexpertis på en nivå som normerar fältet.",
       ],
       weightLevels: [
         "Företaget vill att krav på formell kompetens endast ska ha begränsad påverkan på den samlade rollvärderingen.",
