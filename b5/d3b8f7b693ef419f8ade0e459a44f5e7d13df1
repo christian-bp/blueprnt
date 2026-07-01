@@ -1,0 +1,27 @@
+packages/backend/convex/evaluationModel/method.test.ts
+  s_6bff98b662648b::t_a0bc524bd0bf99 178
+  s_6bff98b662648b::t_5c22e611610376 156-160,168-170,174,180-183,192-193,197,205-211
+  s_6bff98b662648b::t_8826eac9ecf4a3 161-167,171-173,175-177,179,184-191,194-196,198-204
+  s_6bff98b662648b::t_d4289197390621 2,16-18,21
+  s_6bff98b662648b::t_47ad35a3caed75 6-7,11-12,19-20
+packages/backend/convex/evaluationModel/method.ts
+  s_6bff98b662648b::t_96d3d6f21c6d64 173-254,273-316
+  s_6bff98b662648b::t_3f0f9a0d55b26d 255-272
+  s_6bff98b662648b::t_9b03aab35a5e97 5-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "b5d3b8f7b693ef419f8ade0e459a44f5e7d13df1",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
