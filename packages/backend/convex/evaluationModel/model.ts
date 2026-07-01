@@ -42,7 +42,10 @@ async function contentLocale(
     .query("organizations")
     .withIndex("by_org", (q) => q.eq("orgId", orgId))
     .unique()
-  return settings?.language === "sv" ? "sv" : "en"
+  // Seed criteria in the org's own product locale (all five), not a binary
+  // sv/en split, so an nb/da/fi org's stored rows are not frozen to English the
+  // first time an E2 edit clears a criterion's templateKey.
+  return clampLocale(settings?.language)
 }
 
 // Used by BOTH template and scratch models (thresholds are editable in E2).
