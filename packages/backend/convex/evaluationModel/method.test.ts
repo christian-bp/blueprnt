@@ -1,16 +1,24 @@
 import { describe, expect, it } from "vitest"
-import { api, components } from "../_generated/api"
+import { api, components, internal } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
 
 async function seedReadyOrganization(t: ReturnType<typeof initConvexTest>) {
+  const email = `hr-method-${Math.random()}@acme.se`
+  const name = "HR Person"
   const { orgId, userId } = await t.mutation(
     components.betterAuth.testing.seedMembership,
     {
-      email: `hr-method-${Math.random()}@acme.se`,
-      name: "HR Person",
+      email,
+      name,
       role: "admin",
     }
   )
+  // Seed the users mirror so decidedByName lookups resolve in getMethodModel.
+  await t.mutation(internal.accounts.mirrors.mirrorSeededUser, {
+    authId: userId,
+    email,
+    name,
+  })
   await t.run(async (ctx) => {
     await ctx.db.insert("organizations", {
       orgId,
@@ -143,5 +151,61 @@ describe("criterion compliance write path", () => {
         biasAction: "",
       })
     ).rejects.toThrow(/notFound/)
+  })
+})
+
+describe("getMethodModel", () => {
+  it("returns localized names, shares, status, and aggregate progress", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedReadyOrganization(t)
+    const base = await asAdmin.query(
+      api.evaluationModel.method.getMethodModel,
+      {
+        orgId,
+        locale: "sv",
+      }
+    )
+    expect(base?.criteria.length).toBeGreaterThanOrEqual(5)
+    expect(base?.criteria[0]?.name).toBe("Scope & Påverkan") // localized sv
+    const totalShare = (base?.criteria ?? []).reduce((s, c) => s + c.share, 0)
+    expect(Math.abs(totalShare - 100)).toBeLessThanOrEqual(
+      base?.criteria.length ?? 0
+    ) // rounding
+    expect(base?.criteria.every((c) => c.status === "notStarted")).toBe(true)
+    expect(base?.progress).toEqual({
+      documented: 0,
+      approved: 0,
+      total: 9, // standard template has 9 criteria (CRITERION_KEYS in standardTemplate.ts)
+    })
+
+    const criterionId = base?.criteria[0]?.criterionId
+    if (criterionId === undefined) throw new Error("no criterion")
+    await asAdmin.mutation(api.evaluationModel.method.saveCriterionCompliance, {
+      orgId,
+      criterionId,
+      purpose: "p",
+      whyRelevant: "w",
+      overlapNotes: "",
+      biasRisk: "low",
+      biasComment: "b",
+      biasAction: "",
+    })
+    await asAdmin.mutation(api.evaluationModel.method.setCriterionApproval, {
+      orgId,
+      criterionId,
+      approved: true,
+    })
+    const after = await asAdmin.query(
+      api.evaluationModel.method.getMethodModel,
+      {
+        orgId,
+        locale: "sv",
+      }
+    )
+    const target = after?.criteria.find((c) => c.criterionId === criterionId)
+    expect(target?.status).toBe("approved")
+    expect(target?.decidedByName).not.toBeNull()
+    expect(after?.progress.documented).toBe(1)
+    expect(after?.progress.approved).toBe(1)
   })
 })

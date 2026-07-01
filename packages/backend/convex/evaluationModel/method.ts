@@ -2,7 +2,9 @@ import { v } from "convex/values"
 import type { Doc } from "../_generated/dataModel"
 import { AUDIT_EVENTS, buildChanges } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
-import { adminMutation } from "../lib/functions"
+import { adminMutation, adminQuery } from "../lib/functions"
+import { clampLocale, isCriterionKey } from "./localize"
+import { templateContent } from "./standardTemplate"
 
 // The compliance metadata captured per criterion for the metodbilaga (E2/E5).
 // Documentation only: editing these never moves a score, so no band-shift.
@@ -166,5 +168,149 @@ export const setCriterionApproval = adminMutation({
       },
     })
     return null
+  },
+})
+
+const orderShape = (a: { order: number }, b: { order: number }) =>
+  a.order - b.order
+
+export const getMethodModel = adminQuery({
+  args: { locale: v.optional(v.string()) },
+  returns: v.union(
+    v.null(),
+    v.object({
+      modelName: v.string(),
+      pointBudget: v.number(),
+      criteria: v.array(
+        v.object({
+          criterionId: v.id("criteria"),
+          name: v.string(),
+          description: v.string(),
+          weightPoints: v.number(),
+          share: v.number(),
+          order: v.number(),
+          purpose: v.union(v.string(), v.null()),
+          whyRelevant: v.union(v.string(), v.null()),
+          overlapNotes: v.union(v.string(), v.null()),
+          biasRisk: v.union(
+            v.literal("low"),
+            v.literal("medium"),
+            v.literal("high"),
+            v.null()
+          ),
+          biasComment: v.union(v.string(), v.null()),
+          biasAction: v.union(v.string(), v.null()),
+          status: v.union(
+            v.literal("notStarted"),
+            v.literal("inProgress"),
+            v.literal("documented"),
+            v.literal("approved")
+          ),
+          decidedByName: v.union(v.string(), v.null()),
+          decidedAt: v.union(v.number(), v.null()),
+        })
+      ),
+      bandThresholds: v.array(
+        v.object({ band: v.number(), minScore: v.number() })
+      ),
+      progress: v.object({
+        documented: v.number(),
+        approved: v.number(),
+        total: v.number(),
+      }),
+    })
+  ),
+  handler: async (ctx, { locale }) => {
+    const model = await ctx.db
+      .query("models")
+      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
+      .unique()
+    if (model === null) return null
+
+    const content = templateContent(clampLocale(locale))
+    const isTemplateModel = model.templateKey !== undefined
+
+    const rows = await ctx.db
+      .query("criteria")
+      .withIndex("by_model", (q) => q.eq("modelId", model._id))
+      .collect()
+    rows.sort(orderShape)
+
+    const totalPoints = rows.reduce((sum, r) => sum + r.weightPoints, 0)
+
+    // Resolve decidedBy (Better Auth id) to a display name via the users mirror.
+    // Deduped so N approvals by one admin cost one lookup.
+    const nameCache = new Map<string, string | null>()
+    const resolveName = async (authId: string): Promise<string | null> => {
+      if (nameCache.has(authId)) return nameCache.get(authId) ?? null
+      const user = await ctx.db
+        .query("users")
+        .withIndex("by_auth_id", (q) => q.eq("authId", authId))
+        .first()
+      const name = user?.name ?? null
+      nameCache.set(authId, name)
+      return name
+    }
+
+    type CriterionRow = {
+      criterionId: (typeof rows)[number]["_id"]
+      name: string
+      description: string
+      weightPoints: number
+      share: number
+      order: number
+      purpose: string | null
+      whyRelevant: string | null
+      overlapNotes: string | null
+      biasRisk: "low" | "medium" | "high" | null
+      biasComment: string | null
+      biasAction: string | null
+      status: ComplianceStatus
+      decidedByName: string | null
+      decidedAt: number | null
+    }
+    const criteria: CriterionRow[] = []
+    let documented = 0
+    let approved = 0
+    for (const row of rows) {
+      const localized =
+        row.templateKey !== undefined && isCriterionKey(row.templateKey)
+          ? content.criteria[row.templateKey]
+          : null
+      const status = complianceStatus(row)
+      if (status === "documented" || status === "approved") documented++
+      if (status === "approved") approved++
+      criteria.push({
+        criterionId: row._id,
+        name: localized?.name ?? row.name,
+        description: localized?.description ?? row.description,
+        weightPoints: row.weightPoints,
+        share:
+          totalPoints > 0
+            ? Math.round((row.weightPoints / totalPoints) * 100)
+            : 0,
+        order: row.order,
+        purpose: row.purpose ?? null,
+        whyRelevant: row.whyRelevant ?? null,
+        overlapNotes: row.overlapNotes ?? null,
+        biasRisk: row.biasRisk ?? null,
+        biasComment: row.biasComment ?? null,
+        biasAction: row.biasAction ?? null,
+        status,
+        decidedByName:
+          row.decidedBy !== undefined ? await resolveName(row.decidedBy) : null,
+        decidedAt: row.decidedAt ?? null,
+      })
+    }
+
+    const thresholds = [...model.bandThresholds].sort((a, b) => a.band - b.band)
+
+    return {
+      modelName: isTemplateModel ? content.modelName : model.name,
+      pointBudget: rows.length * 3,
+      criteria,
+      bandThresholds: thresholds,
+      progress: { documented, approved, total: rows.length },
+    }
   },
 })
