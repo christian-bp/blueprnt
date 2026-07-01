@@ -315,12 +315,21 @@ export function RoleProfileCard({
               {row.label}
             </Label>
             {editing ? (
-              <Textarea
-                id={`profile-${row.key}`}
-                value={draft[row.key] ?? ""}
-                rows={3}
-                onChange={(event) => setField(row.key, event.target.value)}
-              />
+              <>
+                <Textarea
+                  id={`profile-${row.key}`}
+                  value={draft[row.key] ?? ""}
+                  rows={3}
+                  onChange={(event) => setField(row.key, event.target.value)}
+                />
+                {/* Responsibilities render one-per-line as a list, so tell the
+                    editor to write one per row. */}
+                {row.key === "responsibilities" && (
+                  <p className="text-muted-foreground text-xs">
+                    {t("responsibilitiesHint")}
+                  </p>
+                )}
+              </>
             ) : row.value.trim().length > 0 ? (
               // Responsibilities are one-per-line, so render them as a real
               // bulleted list; purpose stays prose in a pre-line paragraph.
