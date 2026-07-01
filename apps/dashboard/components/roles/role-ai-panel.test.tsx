@@ -1,3 +1,5 @@
+import { NextIntlClientProvider } from "next-intl"
+import messages from "@workspace/i18n/messages/en.json"
 import {
   cleanup,
   fireEvent,
@@ -5,254 +7,136 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react"
-import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import messages from "@workspace/i18n/messages/en.json"
 
-import { mockMutation, onQuery } from "@/test/convex-mocks"
+// Module-level variable: useAction returns a closure over this so the
+// component always calls the current mock. The describe-level beforeEach
+// reassigns it to a fresh vi.fn() so each test starts from a clean identity.
+// (bun correlates rejected Promises to a specific vi.fn() instance; a fresh
+// identity per test prevents spurious unhandledRejection events when the
+// error test runs after a success test.)
+let draftMock = vi.fn()
 
-const useQueryMock = vi.fn()
-const requestMock = mockMutation("ai.suggest.requestRoleProfileDraft")
-const confirmMock = mockMutation("ai.suggest.confirmRoleProfileDraft")
-const rejectMock = mockMutation("ai.suggest.rejectSuggestion")
-onQuery((ref, args) => useQueryMock(ref, args))
+vi.mock("convex/react", () => ({
+  useAction: () => draftMock,
+}))
 
-vi.mock("convex/react", async () => {
-  return (await import("@/test/convex-mocks")).convexReactModule
-})
-vi.mock("@workspace/backend/convex/_generated/api", async () => {
-  return (await import("@/test/convex-mocks")).apiModule
+vi.mock("@workspace/backend/convex/_generated/api", () => {
+  function pathProxy(path: string): unknown {
+    return new Proxy(
+      {},
+      {
+        get(_target, prop) {
+          if (
+            prop === Symbol.toPrimitive ||
+            prop === "toString" ||
+            prop === "valueOf"
+          )
+            return () => path
+          if (typeof prop !== "string") return undefined
+          return pathProxy(path === "" ? prop : `${path}.${prop}`)
+        },
+      }
+    )
+  }
+  return { api: pathProxy("") }
 })
 
 import { RoleAiPanel } from "@/components/roles/role-ai-panel"
 
-const aiLabels = messages.dashboard.ai
-const roleAiLabels = messages.dashboard.roles.ai
-const roleLabels = messages.assessment.role
-const errorLabels = messages.errors
-
-const ROLE_ID = "role-1" as never
-const ORG_ID = "org-1"
-
-function makeSuggestedRow(overrides?: Record<string, unknown>) {
-  return {
-    suggestionId: "sug-1" as never,
-    kind: "role.profile",
-    status: "suggested",
-    suggestedValue: {
-      profile: {
-        purpose: "Build reliable software",
-        responsibilities: "Code review and feature delivery",
-      },
-    },
-    errorCode: null,
-    createdAt: 1,
-    roleId: ROLE_ID,
-    ...overrides,
-  }
-}
-
-function renderPanel() {
+function wrap(node: React.ReactNode) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <RoleAiPanel orgId={ORG_ID} roleId={ROLE_ID} />
+      {node}
     </NextIntlClientProvider>
   )
 }
 
 describe("RoleAiPanel", () => {
   beforeEach(() => {
-    useQueryMock.mockReset()
-    requestMock.mockReset()
-    confirmMock.mockReset()
-    rejectMock.mockReset()
-    // Default: no open suggestions.
-    useQueryMock.mockReturnValue([])
+    draftMock = vi.fn()
   })
-  afterEach(() => {
-    cleanup()
-  })
+  afterEach(() => cleanup())
 
-  describe("idle state (no open suggestion)", () => {
-    it("renders the description textarea and the draft CTA button", () => {
-      renderPanel()
-      expect(screen.getByLabelText(roleAiLabels.descriptionLabel)).toBeDefined()
-      expect(
-        screen.getByRole("button", { name: roleAiLabels.draftCta })
-      ).toBeDefined()
+  it("generates then fills via onFilled and closes via onDone", async () => {
+    draftMock.mockResolvedValue({
+      purpose: "Runs the platform.",
+      responsibilities: "Owns delivery",
     })
-
-    it("calls requestRoleProfileDraft without description when the textarea is empty", async () => {
-      requestMock.mockResolvedValue(null)
-      renderPanel()
-      fireEvent.click(
-        screen.getByRole("button", { name: roleAiLabels.draftCta })
-      )
-      await waitFor(() => {
-        expect(requestMock).toHaveBeenCalledWith({
-          orgId: ORG_ID,
-          roleId: ROLE_ID,
-          locale: "en",
-        })
+    const onFilled = vi.fn()
+    const onDone = vi.fn()
+    wrap(
+      <RoleAiPanel
+        orgId="org-1"
+        roleId={"role-1" as never}
+        onFilled={onFilled}
+        onDone={onDone}
+      />
+    )
+    fireEvent.click(
+      screen.getByRole("button", { name: messages.dashboard.roles.ai.draftCta })
+    )
+    await waitFor(() =>
+      expect(onFilled).toHaveBeenCalledWith({
+        purpose: "Runs the platform.",
+        responsibilities: "Owns delivery",
       })
-      // The description key must not be present when the textarea is empty.
-      expect(requestMock.mock.calls[0]?.[0]).not.toHaveProperty("description")
-    })
-
-    it("includes description in the request when entered", async () => {
-      requestMock.mockResolvedValue(null)
-      renderPanel()
-      fireEvent.change(screen.getByLabelText(roleAiLabels.descriptionLabel), {
-        target: { value: "Senior backend engineer" },
-      })
-      fireEvent.click(
-        screen.getByRole("button", { name: roleAiLabels.draftCta })
-      )
-      await waitFor(() => {
-        expect(requestMock).toHaveBeenCalledWith({
-          orgId: ORG_ID,
-          roleId: ROLE_ID,
-          locale: "en",
-          description: "Senior backend engineer",
-        })
-      })
+    )
+    expect(onDone).toHaveBeenCalledTimes(1)
+    // The optional guidance is omitted when the description textarea is empty.
+    expect(draftMock).toHaveBeenCalledWith({
+      orgId: "org-1",
+      roleId: "role-1",
+      locale: "en",
     })
   })
 
-  describe("suggested state", () => {
-    beforeEach(() => {
-      useQueryMock.mockReturnValue([makeSuggestedRow()])
-    })
-
-    it("renders a row per suggested field with the field label and content", () => {
-      renderPanel()
-      // Label from assessment.role.*
-      expect(screen.getByText(roleLabels.purpose)).toBeDefined()
-      expect(screen.getByText(roleLabels.responsibilities)).toBeDefined()
-      // Purpose stays prose.
-      expect(screen.getByText("Build reliable software")).toBeDefined()
-      // Responsibilities preview as a bulleted list (one item per line).
-      const items = screen.getAllByRole("listitem")
-      expect(items.map((li) => li.textContent)).toContain(
-        "Code review and feature delivery"
-      )
-    })
-
-    it("defaults all checkboxes to checked", () => {
-      renderPanel()
-      const checkboxes = screen.getAllByRole("checkbox")
-      expect(checkboxes).toHaveLength(2)
-      // Radix Checkbox exposes state via data-state, not the native .checked
-      // property (the underlying button role element carries data-state).
-      for (const cb of checkboxes) {
-        expect((cb as HTMLElement).getAttribute("data-state")).toBe("checked")
-      }
-    })
-
-    it("calls confirmRoleProfileDraft with all accepted fields on apply", async () => {
-      confirmMock.mockResolvedValue(null)
-      renderPanel()
-      fireEvent.click(screen.getByRole("button", { name: aiLabels.applyCta }))
-      await waitFor(() => {
-        expect(confirmMock).toHaveBeenCalledWith({
-          orgId: ORG_ID,
-          suggestionId: "sug-1",
-          acceptedFields: expect.arrayContaining([
-            "purpose",
-            "responsibilities",
-          ]),
-        })
+  it("forwards the optional guidance description", async () => {
+    draftMock.mockResolvedValue({ purpose: "P", responsibilities: "R" })
+    wrap(
+      <RoleAiPanel
+        orgId="org-1"
+        roleId={"role-1" as never}
+        onFilled={vi.fn()}
+      />
+    )
+    fireEvent.change(
+      screen.getByLabelText(messages.dashboard.roles.ai.descriptionLabel),
+      { target: { value: "Owns payments" } }
+    )
+    fireEvent.click(
+      screen.getByRole("button", { name: messages.dashboard.roles.ai.draftCta })
+    )
+    await waitFor(() =>
+      expect(draftMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        roleId: "role-1",
+        locale: "en",
+        description: "Owns payments",
       })
-    })
-
-    it("excludes unchecked fields from acceptedFields", async () => {
-      confirmMock.mockResolvedValue(null)
-      renderPanel()
-      // Uncheck "purpose" (the first checkbox)
-      const checkboxes = screen.getAllByRole("checkbox")
-      const firstCheckbox = checkboxes[0]
-      if (firstCheckbox === undefined) throw new Error("no checkboxes found")
-      fireEvent.click(firstCheckbox)
-      fireEvent.click(screen.getByRole("button", { name: aiLabels.applyCta }))
-      await waitFor(() => {
-        expect(confirmMock).toHaveBeenCalled()
-      })
-      const { acceptedFields } = (confirmMock.mock.calls[0]?.[0] ?? {}) as {
-        acceptedFields: string[]
-      }
-      expect(acceptedFields).not.toContain("purpose")
-      expect(acceptedFields).toContain("responsibilities")
-    })
-
-    it("calls rejectSuggestion on dismiss", async () => {
-      rejectMock.mockResolvedValue(null)
-      renderPanel()
-      fireEvent.click(screen.getByRole("button", { name: aiLabels.rejectCta }))
-      await waitFor(() => {
-        expect(rejectMock).toHaveBeenCalledWith({
-          orgId: ORG_ID,
-          suggestionId: "sug-1",
-        })
-      })
-    })
+    )
   })
 
-  describe("failed state", () => {
-    it("shows the translated error and a retry button for errorCode errors.aiUnavailable", () => {
-      useQueryMock.mockReturnValue([
-        {
-          suggestionId: "sug-2" as never,
-          kind: "role.profile",
-          status: "failed",
-          suggestedValue: null,
-          errorCode: "errors.aiUnavailable",
-          createdAt: 1,
-          roleId: ROLE_ID,
-        },
-      ])
-      renderPanel()
-      expect(screen.getByRole("alert")).toBeDefined()
-      expect(screen.getByText(errorLabels.aiUnavailable)).toBeDefined()
-      expect(
-        screen.getByRole("button", { name: roleAiLabels.draftCta })
-      ).toBeDefined()
+  it("shows an error and stays retryable when generation fails", async () => {
+    draftMock.mockImplementation(async () => {
+      throw new Error("AI unavailable")
     })
-  })
-
-  describe("filtering by roleId and kind", () => {
-    it("ignores suggestions for other roles and stays idle", () => {
-      useQueryMock.mockReturnValue([
-        {
-          suggestionId: "sug-3" as never,
-          kind: "role.profile",
-          status: "suggested",
-          suggestedValue: { profile: { purpose: "Other role purpose" } },
-          errorCode: null,
-          createdAt: 1,
-          roleId: "role-2" as never,
-        },
-      ])
-      renderPanel()
-      // Should remain in idle state, not suggested state.
-      expect(screen.getByLabelText(roleAiLabels.descriptionLabel)).toBeDefined()
-      expect(screen.queryByText("Other role purpose")).toBeNull()
-    })
-
-    it("ignores suggestions with a different kind and stays idle", () => {
-      useQueryMock.mockReturnValue([
-        {
-          suggestionId: "sug-4" as never,
-          kind: "model.draft",
-          status: "suggested",
-          suggestedValue: { profile: { purpose: "Wrong kind purpose" } },
-          errorCode: null,
-          createdAt: 1,
-          roleId: ROLE_ID,
-        },
-      ])
-      renderPanel()
-      expect(screen.getByLabelText(roleAiLabels.descriptionLabel)).toBeDefined()
-      expect(screen.queryByText("Wrong kind purpose")).toBeNull()
-    })
+    const onFilled = vi.fn()
+    wrap(
+      <RoleAiPanel
+        orgId="org-1"
+        roleId={"role-1" as never}
+        onFilled={onFilled}
+      />
+    )
+    fireEvent.click(
+      screen.getByRole("button", { name: messages.dashboard.roles.ai.draftCta })
+    )
+    await waitFor(() => expect(screen.getByRole("alert")).toBeDefined())
+    expect(onFilled).not.toHaveBeenCalled()
+    // The Generate button is still available to retry.
+    expect(
+      screen.getByRole("button", { name: messages.dashboard.roles.ai.draftCta })
+    ).toBeDefined()
   })
 })

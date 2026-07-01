@@ -16,6 +16,8 @@ const pushMock = vi.fn()
 vi.mock("convex/react", () => ({
   useMutation: (ref: unknown) =>
     ref === "assessment.roles.archiveRole" ? archiveRoleMock : updateRoleMock,
+  // The AI panel uses useAction; return a no-op so it never fires in card tests.
+  useAction: () => vi.fn(),
   // The nested FamilyPicker lists families; none needed for these tests.
   useQuery: () => [],
 }))
@@ -220,5 +222,44 @@ describe("RoleProfileCard", () => {
   it("hides the manage menu entirely for archived roles", () => {
     renderCard(makeRole({ archived: true }))
     expect(screen.queryByRole("button", { name: labels.manageCta })).toBeNull()
+  })
+
+  it("hides the AI draft button in read mode and shows it in edit mode", () => {
+    renderCard(makeRole())
+    // The AI draft trigger is inside the edit-mode branch; read mode shows
+    // only the manage menu trigger, not the AI button.
+    expect(
+      screen.queryByRole("button", {
+        name: messages.dashboard.ai.openDraftCta,
+      })
+    ).toBeNull()
+    // Once in edit mode the AI draft trigger becomes visible.
+    startEditing()
+    expect(
+      screen.getByRole("button", {
+        name: messages.dashboard.ai.openDraftCta,
+      })
+    ).toBeDefined()
+  })
+
+  it("cancel discards edits and returns to read mode", () => {
+    renderCard(makeRole())
+    startEditing()
+    // Edit mode: update the purpose textarea.
+    fireEvent.change(
+      screen.getByRole("textbox", { name: roleLabels.purpose }),
+      { target: { value: "Discarded draft" } }
+    )
+    // Cancel without saving.
+    fireEvent.click(screen.getByRole("button", { name: labels.cancelCta }))
+    // Back in read mode: the manage trigger returns, no inputs remain.
+    expect(screen.getByRole("button", { name: labels.manageCta })).toBeDefined()
+    expect(
+      screen.queryByRole("textbox", { name: roleLabels.purpose })
+    ).toBeNull()
+    // The original value is shown unchanged.
+    expect(screen.getByText("Builds the product")).toBeDefined()
+    // The mutation was never called.
+    expect(updateRoleMock).not.toHaveBeenCalled()
   })
 })

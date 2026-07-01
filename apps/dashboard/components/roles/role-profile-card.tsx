@@ -47,9 +47,11 @@ export interface RoleProfile {
   archived: boolean
 }
 
-// Read-first job profile: an Edit toggle swaps the texts for inputs, Save
-// patches only what changed. Archived roles never enter edit
-// mode (the backend rejects them with errors.roleLocked anyway).
+// Read-first job profile: an Edit toggle swaps the texts for inputs. In edit
+// mode the AI panel is available to pre-fill purpose and responsibilities from
+// the role context; the user reviews and edits the draft before saving. Save
+// patches only what changed. Cancel restores the last saved values. Archived
+// roles never enter edit mode (the backend rejects them with roleLocked anyway).
 export function RoleProfileCard({
   orgId,
   role,
@@ -98,6 +100,13 @@ export function RoleProfileCard({
     setDraftFamilyId(role.familyId ?? null)
     setFailure(null)
     setEditing(true)
+  }
+
+  function cancelEditing() {
+    setDraft({})
+    setDraftFamilyId(null)
+    setFailure(null)
+    setEditing(false)
   }
 
   async function handleSave() {
@@ -164,34 +173,48 @@ export function RoleProfileCard({
         <CardTitle>{t("profileHeading")}</CardTitle>
         {!locked && (
           <div className="flex items-center gap-2">
-            {/* AI draft stays a visible morph trigger (not a menu item) so the
-                assist is discoverable; Edit and Archive live in the actions
-                menu beside it. */}
-            <MorphPopover
-              triggerLabel={tAi("openDraftCta")}
-              triggerIcon={AiMagicIcon}
-              title={tAi("heading")}
-              description={tAi("provenance")}
-              closeLabel={tAi("closeLabel")}
-            >
-              {(close) => (
-                <RoleAiPanel
-                  orgId={orgId}
-                  roleId={role.roleId}
-                  onDone={close}
-                />
-              )}
-            </MorphPopover>
             {editing ? (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={pending || duplicate}
-                onClick={handleSave}
-              >
-                {t("saveCta")}
-              </Button>
+              <>
+                {/* AI panel is only available in edit mode so it fills the
+                    draft directly; the user reviews and saves. */}
+                <MorphPopover
+                  triggerLabel={tAi("openDraftCta")}
+                  triggerIcon={AiMagicIcon}
+                  title={tAi("heading")}
+                  description={tAi("provenance")}
+                  closeLabel={tAi("closeLabel")}
+                >
+                  {(close) => (
+                    <RoleAiPanel
+                      orgId={orgId}
+                      roleId={role.roleId}
+                      onFilled={({ purpose, responsibilities }) => {
+                        setField("purpose", purpose)
+                        setField("responsibilities", responsibilities)
+                      }}
+                      onDone={close}
+                    />
+                  )}
+                </MorphPopover>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  disabled={pending}
+                  onClick={cancelEditing}
+                >
+                  {t("cancelCta")}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={pending || duplicate}
+                  onClick={handleSave}
+                >
+                  {t("saveCta")}
+                </Button>
+              </>
             ) : (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
