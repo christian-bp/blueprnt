@@ -1,7 +1,7 @@
 "use client"
 
 import {
-  AiMagicIcon,
+  AiEditingIcon,
   InformationCircleIcon,
   Tick02Icon,
 } from "@hugeicons/core-free-icons"
@@ -182,7 +182,7 @@ export function ModelBuilder({
               {withAiReview && reviewLocked === false && !dirty && (
                 <MorphPopover
                   triggerLabel={tAi("openReviewCta")}
-                  triggerIcon={AiMagicIcon}
+                  triggerIcon={AiEditingIcon}
                   title={tAi("heading")}
                   description={tAi("provenance")}
                   closeLabel={tAi("closeLabel")}

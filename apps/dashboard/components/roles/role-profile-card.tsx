@@ -18,7 +18,7 @@ import {
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { Textarea } from "@workspace/ui/components/textarea"
-import { AiMagicIcon, MoreHorizontalIcon } from "@hugeicons/core-free-icons"
+import { AiEditingIcon, MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
@@ -179,7 +179,7 @@ export function RoleProfileCard({
                     draft directly; the user reviews and saves. */}
                 <MorphPopover
                   triggerLabel={tAi("openDraftCta")}
-                  triggerIcon={AiMagicIcon}
+                  triggerIcon={AiEditingIcon}
                   title={tAi("heading")}
                   description={t("aiProvenance")}
                   closeLabel={tAi("closeLabel")}
