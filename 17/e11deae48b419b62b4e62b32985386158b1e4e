@@ -1,0 +1,44 @@
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_320c43bd2f4f04 394
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_55ff28658d3b38 394
+apps/dashboard/components/roles/role-evaluation-card.test.tsx
+  s_6bff98b662648b::t_ffcc1fb584219b 185,193,195-200,212,220-221
+  s_6bff98b662648b::t_fa6b867e6c3498 194,201
+  s_6bff98b662648b::t_68ae71ddca3983 202
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_1a65f593e5ac64 394
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_0602ab00954b02 394
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_e3389967519123 394
+apps/dashboard/components/roles/role-evaluation-card.tsx
+  s_6bff98b662648b::t_d450837b40db08 140
+  s_6bff98b662648b::t_2540d0f291cf7d 90-91
+  s_6bff98b662648b::t_5a59c0066be322 151,154,156,160-163,167,177,185
+  s_6bff98b662648b::t_024f89ce48a22d 89,92-93
+  s_6bff98b662648b::t_7a8c93bbed582f 192
+  s_6bff98b662648b::t_71065bb027e336 5-9
+  s_6bff98b662648b::t_eee1a39e42889b 194-196
+  s_6bff98b662648b::t_40f5ead61b5843 144-145,159,164-166
+  s_6bff98b662648b::t_0221d93a641534 193,197-199
+  s_6bff98b662648b::t_ea179333504f64 146-149
+apps/dashboard/components/roles/role-anchor-control.tsx
+  s_6bff98b662648b::t_086829500d1494 30-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "17e11deae48b419b62b4e62b32985386158b1e4e",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
