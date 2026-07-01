@@ -57,12 +57,6 @@ export default function RolePage(props: {
   }
   roleCrumbs.push({ label: role.title })
 
-  // Function and team are optional; join only the parts that are set so an
-  // empty role does not render a lone "·" separator.
-  const roleMeta = [role.function, role.team]
-    .filter((part) => part.trim().length > 0)
-    .join(" · ")
-
   return (
     <div className="space-y-6">
       <PageHeader
@@ -76,7 +70,6 @@ export default function RolePage(props: {
             )}
           </>
         }
-        description={roleMeta || undefined}
       />
       {/* Archived roles turn read-only everywhere (edit, AI draft, rating);
           state the consequence once instead of letting controls vanish
