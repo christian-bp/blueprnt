@@ -1,7 +1,5 @@
 "use client"
 
-import { AnchorIcon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -94,9 +92,6 @@ export default function WorkOverviewPage() {
   const trackCols = trackColumns(
     results.rows.filter((row) => row.band !== null)
   )
-  // Show the anchor legend only when some role is an anchor.
-  const hasAnchors = results.rows.some((row) => row.anchor !== null)
-
   return (
     <div className="space-y-6">
       <div>
@@ -107,23 +102,6 @@ export default function WorkOverviewPage() {
           </HelpMorphButton>
         </div>
         <p className="text-muted-foreground text-sm">{t("description")}</p>
-        {hasAnchors && (
-          // Legend: explain the anchor marker where it is used. The deviation
-          // flag carries its own meaning in the chip (title + aria-label).
-          <div className="mt-2 flex items-center gap-1.5 text-muted-foreground text-xs">
-            <HugeiconsIcon
-              icon={AnchorIcon}
-              size={12}
-              strokeWidth={2}
-              className="shrink-0"
-              aria-hidden="true"
-            />
-            <span>{t("anchorLabel")}</span>
-            <HelpMorphButton label={tHelp("anchorRoleLabel")}>
-              {tHelp("anchorRoleBody")}
-            </HelpMorphButton>
-          </div>
-        )}
       </div>
       {results.rows.length === 0 ? (
         <Empty>
