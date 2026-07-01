@@ -1,0 +1,21 @@
+docs/superpowers/specs/2026-07-01-model-compliance-evidence-design.md
+  s_6bff98b662648b::t_bc5990b409c516 50-62
+  s_6bff98b662648b::t_b0b474b669c243 110
+  s_6bff98b662648b::t_5ea65fd7217391 1-49,63-109,111-151
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "bc431297e59e2a280e9e0a655dad7763fc9c8345",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
