@@ -52,6 +52,7 @@ import type * as email_outbox from "../email/outbox.js";
 import type * as email_templates from "../email/templates.js";
 import type * as evaluationModel_criteria from "../evaluationModel/criteria.js";
 import type * as evaluationModel_localize from "../evaluationModel/localize.js";
+import type * as evaluationModel_method from "../evaluationModel/method.js";
 import type * as evaluationModel_model from "../evaluationModel/model.js";
 import type * as evaluationModel_standardTemplate from "../evaluationModel/standardTemplate.js";
 import type * as evaluationModel_tables from "../evaluationModel/tables.js";
@@ -119,6 +120,7 @@ declare const fullApi: ApiFromModules<{
   "email/templates": typeof email_templates;
   "evaluationModel/criteria": typeof evaluationModel_criteria;
   "evaluationModel/localize": typeof evaluationModel_localize;
+  "evaluationModel/method": typeof evaluationModel_method;
   "evaluationModel/model": typeof evaluationModel_model;
   "evaluationModel/standardTemplate": typeof evaluationModel_standardTemplate;
   "evaluationModel/tables": typeof evaluationModel_tables;

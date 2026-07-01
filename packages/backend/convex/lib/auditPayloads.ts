@@ -91,6 +91,18 @@ export type ModelUpdatedPayload =
       count: number
       items: AuditItem[]
     }
+  | {
+      change: "criterion.complianceUpdated"
+      criterionId: string
+      modelId: string
+      changes: Changes
+    }
+  | {
+      change: "criterion.approvalChanged"
+      criterionId: string
+      modelId: string
+      changes: Changes
+    }
 
 // ai.suggestionConfirmed is heterogeneous, keyed on `kind` (one of the four
 // suggestion kinds). Discriminated so each kind's distinct fields stay required.
