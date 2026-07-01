@@ -1,0 +1,27 @@
+packages/backend/convex/ai/prefillData.ts
+  s_6bff98b662648b::t_cba3f9a6fb08ef 155-156
+packages/backend/convex/ai/suggest.test.ts
+  s_6bff98b662648b::t_a8db78687fe3c6 4
+  s_6bff98b662648b::t_6e7424a4857af5 918-932
+packages/backend/convex/ai/suggest.ts
+  s_6bff98b662648b::t_d7e143bd36726e 18
+  s_6bff98b662648b::t_f0274d564fd759 21
+packages/backend/convex/ai/generate.ts
+  s_6bff98b662648b::t_d673a96edf8751 275
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "31e09f5fd29267cda11fe8c64b859b17cef93860",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
