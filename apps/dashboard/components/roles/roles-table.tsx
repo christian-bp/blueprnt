@@ -179,13 +179,7 @@ export function RolesTable({
         // otherwise "not evaluated" (an incomplete or still-computing role has
         // no band yet, the same rule as the family and overview tables).
         cell: ({ row }) =>
-          row.original.band != null ? (
-            <Badge>{row.original.band}</Badge>
-          ) : (
-            <span className="text-muted-foreground text-sm">
-              {t("notEvaluated")}
-            </span>
-          ),
+          row.original.band != null ? <Badge>{row.original.band}</Badge> : null,
       },
     ],
     [t, tAssessment]

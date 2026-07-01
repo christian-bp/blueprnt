@@ -2,7 +2,7 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
+import { MoreHorizontalIcon, Tag01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -17,6 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
+import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
@@ -76,6 +77,12 @@ export function RoleEvaluationCard({
     roleId,
     locale,
   })
+  // The band-position scale needs the band count; only the result view uses it.
+  const model = useQuery(
+    api.evaluationModel.model.getModel,
+    showResult ? { orgId, locale } : "skip"
+  )
+  const bandCount = model?.bandThresholds.length ?? 0
 
   const ctaLabel = ratedCount === 0 ? t("rateCta") : t("resumeRateCta")
 
@@ -126,19 +133,44 @@ export function RoleEvaluationCard({
         {showResult ? (
           result?.complete ? (
             <>
-              {/* The band is the outcome, so it leads as the headline; the
-                  weighting is the precise score behind it, shown small and
-                  labeled (not a bare 0-100 number). */}
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              {/* The band is the outcome: tag + band title + weighting on one
+                  line, with the full-width position scale beneath it (spanning
+                  under the tag, active band in the brand color). Band 1 =
+                  highest; the help explains direction. */}
+              <div className="space-y-2">
                 {result.band != null && (
-                  <span className="font-semibold text-3xl">
-                    {`${tAssessment("band")} ${result.band}`}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <HugeiconsIcon
+                      icon={Tag01Icon}
+                      strokeWidth={2}
+                      className="size-5 shrink-0 text-muted-foreground"
+                    />
+                    <div className="flex flex-1 items-baseline justify-between gap-3">
+                      <span className="font-semibold text-2xl leading-none">
+                        {`${tAssessment("band")} ${result.band}`}
+                      </span>
+                      {result.score != null && (
+                        <span className="text-muted-foreground text-sm tabular-nums">
+                          {`${tResult("scoreLabel")} ${result.score}`}
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 )}
-                {result.score != null && (
-                  <span className="text-muted-foreground text-sm tabular-nums">
-                    {`${tResult("scoreLabel")} ${result.score}`}
-                  </span>
+                {result.band != null && bandCount > 0 && (
+                  <div className="flex gap-1" aria-hidden="true">
+                    {Array.from({ length: bandCount }, (_, i) => i + 1).map(
+                      (b) => (
+                        <div
+                          key={b}
+                          className={cn(
+                            "h-1.5 flex-1 rounded-full",
+                            b === result.band ? "bg-brand" : "bg-muted"
+                          )}
+                        />
+                      )
+                    )}
+                  </div>
                 )}
               </div>
               <RoleCriterionBreakdown criteria={result.criteria} />

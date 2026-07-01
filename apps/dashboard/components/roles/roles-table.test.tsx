@@ -179,14 +179,13 @@ describe("RolesTable", () => {
     expect(pushMock).toHaveBeenCalledWith("/roles/r1")
   })
 
-  it("shows the band for an evaluated role and not-evaluated otherwise", () => {
+  it("shows the band for an evaluated role and nothing for an unevaluated one", () => {
     renderTable([
       row({ roleId: "r1", title: "Done Role", band: 3 }),
       row({ roleId: "r2", title: "Todo Role", band: null }),
     ])
     expect(screen.getByText("3")).toBeDefined()
-    expect(
-      screen.getByText(messages.dashboard.roles.notEvaluated)
-    ).toBeDefined()
+    // An unevaluated role shows no band, not a "not evaluated" label.
+    expect(screen.queryByText(messages.dashboard.roles.notEvaluated)).toBeNull()
   })
 })

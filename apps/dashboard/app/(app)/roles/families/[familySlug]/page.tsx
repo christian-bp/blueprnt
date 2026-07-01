@@ -118,13 +118,7 @@ export default function FamilyPage(props: {
                   <TrackBadge trackKey={role.trackKey} name={role.trackName} />
                 </TableCell>
                 <TableCell className="text-right">
-                  {result?.band != null ? (
-                    <Badge>{result.band}</Badge>
-                  ) : (
-                    <span className="text-muted-foreground text-sm">
-                      {t("notEvaluated")}
-                    </span>
-                  )}
+                  {result?.band != null ? <Badge>{result.band}</Badge> : null}
                 </TableCell>
               </TableRow>
             )

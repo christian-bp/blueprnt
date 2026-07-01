@@ -60,9 +60,9 @@ export function RoleCriterionBreakdown({
     // space-y-1 so the label hugs its rows like the other section labels
     // (Purpose, Responsibilities, Role family) rather than floating above them.
     <div className="space-y-1">
-      {/* Caption tier (text-xs), matching the other section labels (Purpose,
-          Responsibilities, Role family) so the label scale is unified. */}
-      <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+      {/* Section label for the breakdown: text-sm (muted) so it reads as a
+          heading for the rows below rather than a tiny caption. */}
+      <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
         {tResult("breakdownLabel")}
         <HelpMorphButton label={tHelp("contributionLabel")}>
           {tHelp("contributionBody")}
