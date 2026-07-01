@@ -311,17 +311,13 @@ function roleIdentityLine(args: RoleProfileInput): string {
   return `the role "${args.title}" (track ${args.trackName}) in function "${args.roleFunction}", team "${args.team}"${familyClause}`
 }
 
-// Generates a role's { purpose, responsibilities } from its title and HR
-// context against the EU model, and records token usage against the given
-// suggestion for provenance. Throws on an unavailable model or a generation
-// failure so each caller decides how to surface it (the draft flow marks the
-// suggestion failed). This is the single role-profile generation path used by
-// the draft->confirm flow; the onboarding prefill uses generateRoleProfileBatch.
-export async function generateRoleProfile(
-  ctx: ActionCtx,
-  suggestionId: Id<"suggestions">,
+// Pure single-profile generation against the EU model. Returns the profile
+// plus token usage; records nothing itself so each caller attributes usage the
+// way it needs (the interactive draft action logs it per call, like the
+// prefill). Throws on an unavailable model or a generation failure.
+export async function generateRoleProfileText(
   args: RoleProfileInput
-): Promise<GeneratedRoleProfile> {
+): Promise<{ profile: GeneratedRoleProfile; usage: LanguageModelUsage }> {
   const model = aiModel(AI_PROFILE_MODEL_ID)
   if (model === null) {
     throw new Error(ERROR_CODES.aiUnavailable)
@@ -343,11 +339,26 @@ export async function generateRoleProfile(
         .join("\n"),
     })
   )
-  await recordUsage(ctx, suggestionId, result.totalUsage)
   return {
-    purpose: result.output.purpose,
-    responsibilities: result.output.responsibilities,
+    profile: {
+      purpose: result.output.purpose,
+      responsibilities: result.output.responsibilities,
+    },
+    usage: result.totalUsage,
   }
+}
+
+// The draft->confirm flow's single-profile path: generates and records token
+// usage against the given suggestion for provenance. Delegates the model call
+// to generateRoleProfileText so the prompt has ONE home.
+export async function generateRoleProfile(
+  ctx: ActionCtx,
+  suggestionId: Id<"suggestions">,
+  args: RoleProfileInput
+): Promise<GeneratedRoleProfile> {
+  const { profile, usage } = await generateRoleProfileText(args)
+  await recordUsage(ctx, suggestionId, usage)
+  return profile
 }
 
 // Generates profiles for a SET of roles in ONE structured-object call. The
