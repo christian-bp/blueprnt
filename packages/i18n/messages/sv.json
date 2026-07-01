@@ -266,12 +266,10 @@
       "ai": {
         "modelDraft": "Modellkriterier: {count} tillagda",
         "weightReview": "Viktgenomgång: {count} tillämpade",
-        "roleProfile": "Rollprofil: {count} fält",
         "starterImport": "Startimport: {families} familjer, {roles} roller",
         "kind": {
           "modelDraft": "Modellkriterier",
           "weightReview": "Viktgenomgång",
-          "roleProfile": "Rollprofil",
           "starterImport": "Startroller"
         }
       }

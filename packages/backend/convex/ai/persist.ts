@@ -62,24 +62,6 @@ export const saveWeightReview = internalMutation({
   },
 })
 
-export const saveRoleProfileDraft = internalMutation({
-  args: {
-    suggestionId: v.id("suggestions"),
-    profile: v.object({
-      purpose: v.string(),
-      responsibilities: v.string(),
-    }),
-  },
-  returns: v.null(),
-  handler: async (ctx, { suggestionId, profile }) => {
-    await ctx.db.patch(suggestionId, {
-      suggestedValue: { profile },
-      status: "suggested",
-    })
-    return null
-  },
-})
-
 // The action sanitizes the import before calling (ai/starterImport); these
 // gates keep an out-of-contract grouping from ever reaching the suggestion
 // store, so a stored import is always confirmable as-is.

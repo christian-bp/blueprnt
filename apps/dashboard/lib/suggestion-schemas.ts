@@ -34,12 +34,6 @@ export const modelDraftValueSchema = z.object({
 
 export type ModelDraftValue = z.infer<typeof modelDraftValueSchema>
 
-// The role panel additionally whitelists the field NAMES it renders; this
-// schema guards the value shape.
-export const roleProfileValueSchema = z.object({
-  profile: z.record(z.string(), z.string()),
-})
-
 // The onboarding paste-import textarea: client gate for the pasted role
 // list (the backend re-validates with the same shared constant).
 export const starterImportInputSchema = z

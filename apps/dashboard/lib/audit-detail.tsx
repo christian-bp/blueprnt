@@ -366,7 +366,6 @@ export function sectionKind(
 export const AI_KIND_KEY: Record<string, string> = {
   "model.draft": "modelDraft",
   "model.weightReview": "weightReview",
-  "role.profile": "roleProfile",
   "starter.import": "starterImport",
 }
 
@@ -389,8 +388,6 @@ export function aiAuditDetail(
       return t("ai.modelDraft", { count: num(p.acceptedCount) })
     case "model.weightReview":
       return t("ai.weightReview", { count: num(p.appliedCount) })
-    case "role.profile":
-      return t("ai.roleProfile", { count: num(p.appliedCount) })
     case "starter.import":
       return t("ai.starterImport", {
         families: num(p.familyCount),

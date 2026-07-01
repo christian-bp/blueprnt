@@ -266,12 +266,10 @@
       "ai": {
         "modelDraft": "Modelkriterier: {count} tilføjet",
         "weightReview": "Vægtgennemgang: {count} anvendt",
-        "roleProfile": "Rolleprofil: {count} felter",
         "starterImport": "Startimport: {families} familier, {roles} roller",
         "kind": {
           "modelDraft": "Modelkriterier",
           "weightReview": "Vægtgennemgang",
-          "roleProfile": "Rolleprofil",
           "starterImport": "Startroller"
         }
       }

@@ -152,8 +152,8 @@ export const collectPrefillTargets = internalQuery({
 // recordAiUsageDirect), so there is no per-role suggestion row: provenance is
 // the per-call AI usage event plus the role.updated audit row written here.
 //
-// The LLM output crosses a trust boundary here (same gate as
-// confirmRoleProfileDraft): require strings, trim, enforce the length bounds.
+// The LLM output crosses a trust boundary here: whitelist the fields, require
+// strings, trim, and enforce the length bounds before applying.
 // A role concurrently archived between collect and apply is skipped
 // without an error. Org scope is re-checked against the stored role. Returns
 // whether the profile was applied so the caller can count it.

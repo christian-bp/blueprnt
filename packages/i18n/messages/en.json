@@ -266,12 +266,10 @@
       "ai": {
         "modelDraft": "Model criteria: {count} added",
         "weightReview": "Weight review: {count} applied",
-        "roleProfile": "Role profile: {count} fields",
         "starterImport": "Starter import: {families} families, {roles} roles",
         "kind": {
           "modelDraft": "Model criteria",
           "weightReview": "Weight review",
-          "roleProfile": "Role profile",
           "starterImport": "Starter roles"
         }
       }

@@ -272,7 +272,7 @@ const roleProfileBatchSchema = z.object({
 
 // The HR context the model is given for a role profile. Title/track/function/
 // team are prompt INPUT (the model cannot know them); the profile is derived
-// from them. Shared by the draft->confirm flow (generateRoleProfileDraft) and
+// from them. Shared by the interactive draft action (draftRoleProfile) and
 // the auto-apply onboarding prefill (ai/prefill) so the prompt has ONE home.
 export interface RoleProfileInput extends CompanyContext {
   title: string
@@ -346,19 +346,6 @@ export async function generateRoleProfileText(
     },
     usage: result.totalUsage,
   }
-}
-
-// The draft->confirm flow's single-profile path: generates and records token
-// usage against the given suggestion for provenance. Delegates the model call
-// to generateRoleProfileText so the prompt has ONE home.
-export async function generateRoleProfile(
-  ctx: ActionCtx,
-  suggestionId: Id<"suggestions">,
-  args: RoleProfileInput
-): Promise<GeneratedRoleProfile> {
-  const { profile, usage } = await generateRoleProfileText(args)
-  await recordUsage(ctx, suggestionId, usage)
-  return profile
 }
 
 // Generates profiles for a SET of roles in ONE structured-object call. The
@@ -443,61 +430,6 @@ export async function generateRoleProfileBatch(
   }
   return { profiles, usage: result.totalUsage }
 }
-
-export const generateRoleProfileDraft = internalAction({
-  args: {
-    suggestionId: v.id("suggestions"),
-    locale: v.string(),
-    industry: v.string(),
-    employeeCount: v.optional(v.number()),
-    country: v.string(),
-    title: v.string(),
-    trackName: v.string(),
-    roleFunction: v.string(),
-    team: v.string(),
-    // The role's family name, when it belongs to one (ai/suggest resolves it).
-    family: v.optional(v.string()),
-    description: v.optional(v.string()),
-  },
-  returns: v.null(),
-  handler: async (ctx, args) => {
-    // The model-unavailable branch keeps its own error code; any other
-    // failure (generation, schema) is an aiGenerationFailed for the panel.
-    try {
-      const profile = await generateRoleProfile(ctx, args.suggestionId, {
-        locale: args.locale,
-        industry: args.industry,
-        country: args.country,
-        ...(args.employeeCount !== undefined
-          ? { employeeCount: args.employeeCount }
-          : {}),
-        title: args.title,
-        trackName: args.trackName,
-        roleFunction: args.roleFunction,
-        team: args.team,
-        ...(args.family !== undefined ? { family: args.family } : {}),
-        ...(args.description !== undefined
-          ? { description: args.description }
-          : {}),
-      })
-      await ctx.runMutation(internal.ai.persist.saveRoleProfileDraft, {
-        suggestionId: args.suggestionId,
-        profile,
-      })
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error)
-      console.error("role profile draft failed", { error: message })
-      await ctx.runMutation(internal.ai.persist.markFailed, {
-        suggestionId: args.suggestionId,
-        errorCode:
-          message === ERROR_CODES.aiUnavailable
-            ? ERROR_CODES.aiUnavailable
-            : ERROR_CODES.aiGenerationFailed,
-      })
-    }
-    return null
-  },
-})
 
 export const reviewWeights = internalAction({
   args: {

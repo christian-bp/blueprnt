@@ -5,7 +5,6 @@ import { components, internal } from "../_generated/api"
 import type { MutationCtx } from "../_generated/server"
 import { internalQuery } from "../_generated/server"
 import { deriveResults } from "../assessment/compute"
-import { PROFILE_TEXT_FIELDS, type ProfileTextField } from "../assessment/roles"
 import { insertStarterSet, starterFamilyShape } from "../assessment/starters"
 import {
   clampLocale,
@@ -16,10 +15,10 @@ import {
   TRACK_KEYS,
   templateContent,
 } from "../evaluationModel/standardTemplate"
-import { AUDIT_EVENTS, buildChanges, buildCreateChanges } from "../lib/audit"
+import { AUDIT_EVENTS, buildCreateChanges } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
-import { AI_MODEL_ID, AI_PROFILE_MODEL_ID, AI_PROVIDER } from "./config"
+import { AI_MODEL_ID, AI_PROVIDER } from "./config"
 import { repairDraftWeights } from "./weights"
 
 interface SettingsContext {
@@ -462,166 +461,6 @@ export const confirmWeightReview = adminMutation({
         count: criteriaChangeItems.length,
         items: criteriaChangeItems,
         moves: moveDetails,
-      },
-    })
-    return null
-  },
-})
-
-// AI-writable job profile fields: the shared list from the role register.
-// Title, function, and team are HR context the model cannot know; they are
-// prompt INPUT only. Ratings are never AI territory (ADR-0003).
-const ROLE_PROFILE_FIELDS = PROFILE_TEXT_FIELDS
-
-function maxLengthFor(field: ProfileTextField): number {
-  return field === "responsibilities" ? 2000 : 1000
-}
-
-// Role profile work is member scope (unlike model configuration): editors
-// register and describe roles, so request/confirm use orgMutation.
-export const requestRoleProfileDraft = orgMutation({
-  args: {
-    roleId: v.id("roles"),
-    description: v.optional(v.string()),
-    locale: v.optional(v.string()),
-  },
-  returns: v.id("suggestions"),
-  handler: async (ctx, { roleId, description, locale }) => {
-    const settings = await requireCompleteSettings(ctx, ctx.orgId)
-    const role = await ctx.db.get(roleId)
-    if (role === null || role.orgId !== ctx.orgId) {
-      throw appError(ERROR_CODES.notFound)
-    }
-    if (role.archivedAt !== undefined) {
-      throw appError(ERROR_CODES.roleLocked)
-    }
-    // Tracks are fixed constants (ADR-0006): the prompt's track name is a
-    // content lookup in the generation locale, no row to fetch.
-    const resolvedLocale = promptLocale(locale, settings.locale)
-    const trackName = templateContent(clampLocale(resolvedLocale)).trackNames[
-      role.trackKey
-    ]
-    // Resolve the role's family NAME (the user-entered grouping) so the prompt
-    // reflects it. One role -> a direct get is fine (no map needed). The role's
-    // familyId always points to a same-org family (enforced at create/update),
-    // so no extra org check is required. Undefined when the role has no family,
-    // in which case the family arg is omitted and the prompt is unchanged.
-    const family =
-      role.familyId !== undefined
-        ? (await ctx.db.get(role.familyId))?.name
-        : undefined
-    const suggestionId = await ctx.db.insert("suggestions", {
-      orgId: ctx.orgId,
-      target: { kind: SUGGESTION_KINDS.roleProfile, roleId },
-      suggestedValue: null,
-      source: "ai",
-      status: "generating",
-      // Role-profile drafting runs on the faster profile model (the other
-      // three suggestion kinds stay on the quality-defining default).
-      model: { provider: AI_PROVIDER, model: AI_PROFILE_MODEL_ID },
-      requestedBy: ctx.authUserId,
-    })
-    await ctx.scheduler.runAfter(
-      0,
-      internal.ai.generate.generateRoleProfileDraft,
-      {
-        suggestionId,
-        locale: resolvedLocale,
-        industry: settings.industry,
-        country: settings.country,
-        ...(settings.employeeCount !== undefined
-          ? { employeeCount: settings.employeeCount }
-          : {}),
-        title: role.title,
-        trackName,
-        roleFunction: role.function,
-        team: role.team,
-        ...(family !== undefined ? { family } : {}),
-        ...(description !== undefined ? { description } : {}),
-      }
-    )
-    return suggestionId
-  },
-})
-
-export const confirmRoleProfileDraft = orgMutation({
-  args: {
-    suggestionId: v.id("suggestions"),
-    acceptedFields: v.array(v.string()),
-  },
-  returns: v.null(),
-  handler: async (ctx, { suggestionId, acceptedFields }) => {
-    const suggestion = await ctx.db.get(suggestionId)
-    if (
-      suggestion === null ||
-      suggestion.orgId !== ctx.orgId ||
-      suggestion.target.kind !== SUGGESTION_KINDS.roleProfile ||
-      suggestion.status !== "suggested"
-    ) {
-      throw appError(ERROR_CODES.notFound)
-    }
-    const roleId = suggestion.target.roleId
-    if (roleId === undefined) throw appError(ERROR_CODES.notFound)
-    const role = await ctx.db.get(roleId)
-    if (role === null || role.orgId !== ctx.orgId) {
-      throw appError(ERROR_CODES.notFound)
-    }
-    if (role.archivedAt !== undefined) {
-      throw appError(ERROR_CODES.roleLocked)
-    }
-    const value = suggestion.suggestedValue as {
-      profile?: Record<string, unknown>
-    } | null
-    const profile = value?.profile ?? {}
-    // LLM output crosses a trust boundary here: whitelist the field names,
-    // require strings, trim, and re-enforce length bounds before patching.
-    const patch: Record<string, string> = {}
-    const appliedFields: string[] = []
-    const acceptedSet = new Set(acceptedFields)
-    for (const field of ROLE_PROFILE_FIELDS) {
-      if (!acceptedSet.has(field)) continue
-      const raw = profile[field]
-      if (typeof raw !== "string") continue
-      const trimmed = raw.trim()
-      if (trimmed.length === 0 || trimmed.length > maxLengthFor(field)) {
-        continue
-      }
-      patch[field] = trimmed
-      appliedFields.push(field)
-    }
-    // The field names the AI offered (the profile keys it returned), captured
-    // for the confirm row's names-only provenance. The values live only on the
-    // companion role.updated row below (never duplicated on the AI row).
-    const offeredFields = Object.keys(profile)
-    if (appliedFields.length > 0) {
-      // Structured before->after diff, exactly like manual role edits log:
-      // `role` is the pre-patch doc read above, `patch` is what we apply.
-      // source/suggestionId mark this as the applied AI suggestion.
-      const changes = buildChanges(role, patch, appliedFields)
-      await ctx.db.patch(roleId, patch)
-      await ctx.audit.log({
-        type: AUDIT_EVENTS.roleUpdated,
-        payload: { roleId, source: "aiSuggestion", suggestionId, changes },
-      })
-    }
-    await ctx.db.patch(suggestionId, {
-      status: appliedFields.length > 0 ? "confirmed" : "rejected",
-      confirmedBy: ctx.authUserId,
-    })
-    // Field NAMES only on the AI row: the values live on the companion
-    // role.updated row above, never duplicated here (one source of truth, and
-    // it keeps this row a pure provenance record of WHICH fields were applied).
-    await ctx.audit.log({
-      type: AUDIT_EVENTS.aiSuggestionConfirmed,
-      payload: {
-        suggestionId,
-        kind: SUGGESTION_KINDS.roleProfile,
-        roleId,
-        appliedCount: appliedFields.length,
-        appliedFields,
-        requestedFields: acceptedFields,
-        offeredFields,
-        confirmed: appliedFields.length > 0,
       },
     })
     return null

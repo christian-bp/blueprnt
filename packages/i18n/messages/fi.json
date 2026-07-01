@@ -266,12 +266,10 @@
       "ai": {
         "modelDraft": "Mallin kriteerit: {count} lisätty",
         "weightReview": "Painotusten tarkistus: {count} käytetty",
-        "roleProfile": "Rooliprofiili: {count} kenttää",
         "starterImport": "Aloitustuonti: {families} perhettä, {roles} roolia",
         "kind": {
           "modelDraft": "Mallin kriteerit",
           "weightReview": "Painotusten tarkistus",
-          "roleProfile": "Rooliprofiili",
           "starterImport": "Aloitusroolit"
         }
       }

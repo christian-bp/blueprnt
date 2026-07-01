@@ -704,16 +704,6 @@ describe("aiAuditDetail", () => {
     ).toBe('ai.weightReview {"count":2}')
   })
 
-  it("renders a confirmed role.profile with its applied field count", () => {
-    expect(
-      aiAuditDetail(
-        "ai.suggestionConfirmed",
-        { suggestionId: "s1", kind: "role.profile", appliedCount: 3 },
-        t
-      )
-    ).toBe('ai.roleProfile {"count":3}')
-  })
-
   it("renders a confirmed starter.import with family and role counts", () => {
     expect(
       aiAuditDetail(
@@ -737,16 +727,6 @@ describe("aiAuditDetail", () => {
         t
       )
     ).toBe('ai.modelDraft {"count":0}')
-  })
-
-  it("renders a rejected suggestion as its kind label", () => {
-    expect(
-      aiAuditDetail(
-        "ai.suggestionRejected",
-        { suggestionId: "s1", kind: "role.profile" },
-        t
-      )
-    ).toBe("ai.kind.roleProfile {}")
   })
 
   it("returns empty for an unknown kind", () => {

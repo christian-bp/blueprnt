@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { api, components, internal } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
-import { AI_MODEL_ID, AI_PROFILE_MODEL_ID } from "./config"
+import { AI_MODEL_ID } from "./config"
 
 async function seedRoleOrganization(t: ReturnType<typeof initConvexTest>) {
   const { orgId, userId } = await t.mutation(
@@ -915,16 +915,21 @@ describe("AI suggestion lifecycle", () => {
     })
 
     // role.profile is member scope: the editor CAN dismiss it.
-    const roleSuggestionId = await asEditor.mutation(
-      api.ai.suggest.requestRoleProfileDraft,
-      { orgId, roleId }
-    )
-    await t.mutation(internal.ai.persist.saveRoleProfileDraft, {
-      suggestionId: roleSuggestionId,
-      profile: {
-        purpose: "Bygger kärnprodukten.",
-        responsibilities: "Implementerar features",
-      },
+    // Insert a role.profile suggestion directly (the request/confirm path was
+    // removed in Task 3; the scope behaviour under test is rejectSuggestion,
+    // not the now-deleted mutation).
+    const roleSuggestionId = await t.run(async (ctx) => {
+      const docId = ctx.db.normalizeId("roles", roleId)
+      if (docId === null) throw new Error("bad id")
+      return ctx.db.insert("suggestions", {
+        orgId,
+        target: { kind: "role.profile", roleId: docId },
+        suggestedValue: { profile: { purpose: "Bygger kärnprodukten." } },
+        source: "ai",
+        status: "suggested",
+        model: { provider: "mistral", model: "mistral-small-latest" },
+        requestedBy: editorId,
+      })
     })
     await asEditor.mutation(api.ai.suggest.rejectSuggestion, {
       orgId,
@@ -979,201 +984,6 @@ describe("AI suggestion lifecycle", () => {
       const suggestion = await ctx.db.get(suggestionId)
       expect(suggestion?.status).toBe("rejected")
     })
-  })
-})
-
-describe("role profile drafts", () => {
-  it("requestRoleProfileDraft inserts a generating row targeting the role", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin, roleId } = await seedRoleOrganization(t)
-    const suggestionId = await asAdmin.mutation(
-      api.ai.suggest.requestRoleProfileDraft,
-      { orgId, roleId, description: "Bygger kärnprodukten." }
-    )
-    await t.run(async (ctx) => {
-      const suggestion = await ctx.db.get(suggestionId)
-      expect(suggestion?.status).toBe("generating")
-      expect(suggestion?.target.kind).toBe("role.profile")
-      expect(suggestion?.target.roleId).toBe(roleId)
-      // Role-profile drafting runs on the faster profile model.
-      expect(suggestion?.model?.provider).toBe("mistral")
-      expect(suggestion?.model?.model).toBe(AI_PROFILE_MODEL_ID)
-    })
-    // getOpenSuggestions must expose roleId so the role page can filter.
-    const open = await asAdmin.query(api.ai.suggest.getOpenSuggestions, {
-      orgId,
-    })
-    const row = open.find((item) => item.kind === "role.profile")
-    expect(row?.roleId).toBe(roleId)
-  })
-
-  it("confirmRoleProfileDraft applies only accepted, whitelisted, bounded fields", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin, roleId } = await seedRoleOrganization(t)
-    const suggestionId = await asAdmin.mutation(
-      api.ai.suggest.requestRoleProfileDraft,
-      { orgId, roleId }
-    )
-    await t.mutation(internal.ai.persist.saveRoleProfileDraft, {
-      suggestionId,
-      profile: {
-        purpose: "  Bygger och underhåller kärnprodukten.  ",
-        responsibilities: "x".repeat(2001),
-      },
-    })
-    await asAdmin.mutation(api.ai.suggest.confirmRoleProfileDraft, {
-      orgId,
-      suggestionId,
-      acceptedFields: ["purpose", "responsibilities", "title", "nonsense"],
-    })
-    await t.run(async (ctx) => {
-      const docId = ctx.db.normalizeId("roles", roleId)
-      if (docId === null) throw new Error("bad id")
-      const role = await ctx.db.get(docId)
-      // Accepted and valid: purpose (trimmed).
-      expect(role?.purpose).toBe("Bygger och underhåller kärnprodukten.")
-      // Over the length bound (responsibilities cap is 2000): skipped.
-      expect(role?.responsibilities).toBe("")
-      // Whitelist: title is never AI-writable.
-      expect(role?.title).toBe("Junior Software Developer")
-      const suggestion = await ctx.db.get(suggestionId)
-      expect(suggestion?.status).toBe("confirmed")
-      const updated = await ctx.db
-        .query("auditLog")
-        .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "role.updated")
-        )
-        .collect()
-      // The companion role.updated row carries the VALUES plus provenance:
-      // source "aiSuggestion" + the suggestionId it came from. Structured diff
-      // like a manual edit: the seeded purpose was "" and the accepted draft is
-      // the trimmed value.
-      const updatedRow = updated.find(
-        (row) =>
-          (row.payload as Record<string, unknown>).roleId === docId &&
-          (row.payload as { changes?: { purpose?: unknown } }).changes
-            ?.purpose !== undefined
-      )
-      expect(updatedRow?.payload).toMatchObject({
-        roleId: docId,
-        source: "aiSuggestion",
-        suggestionId,
-        changes: {
-          purpose: {
-            from: "",
-            to: "Bygger och underhåller kärnprodukten.",
-          },
-        },
-      })
-
-      // The AI confirm row is NAMES-only: it lists which fields were applied,
-      // but never embeds the purpose/responsibilities TEXT (the values live on
-      // the companion role.updated row above). Recursively assert no value text.
-      const aiConfirm = await ctx.db
-        .query("auditLog")
-        .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "ai.suggestionConfirmed")
-        )
-        .collect()
-      expect(aiConfirm).toHaveLength(1)
-      const aiPayload = aiConfirm[0]?.payload as Record<string, unknown>
-      expect(aiPayload).toMatchObject({
-        kind: "role.profile",
-        roleId: docId,
-        appliedCount: 1,
-        appliedFields: ["purpose"],
-        confirmed: true,
-      })
-      // requestedFields is the human's accepted set; offeredFields the AI's keys.
-      expect(aiPayload.requestedFields).toEqual([
-        "purpose",
-        "responsibilities",
-        "title",
-        "nonsense",
-      ])
-      expect(aiPayload.offeredFields).toEqual(
-        expect.arrayContaining(["purpose", "responsibilities"])
-      )
-      // The applied purpose value must NOT appear anywhere on the AI row.
-      const serialized = JSON.stringify(aiPayload)
-      expect(serialized).not.toContain("Bygger och underhåller kärnprodukten.")
-    })
-  })
-
-  it("schedules generateRoleProfileDraft with the role's family name when it has one", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin, roleId } = await seedRoleOrganization(t)
-    // Attach the seeded role to a family (user-entered grouping name).
-    const familyId = await t.run(async (ctx) => {
-      const id = await ctx.db.insert("roleFamilies", {
-        orgId,
-        name: "Engineering",
-        slug: "engineering",
-      })
-      const docId = ctx.db.normalizeId("roles", roleId)
-      if (docId === null) throw new Error("bad id")
-      await ctx.db.patch(docId, { familyId: id })
-      return id
-    })
-
-    await asAdmin.mutation(api.ai.suggest.requestRoleProfileDraft, {
-      orgId,
-      roleId,
-    })
-
-    // The draft generation runs in a scheduled action; assert the family NAME
-    // (not the id) was threaded into its args. convex-test records pending
-    // scheduled calls in the _scheduled_functions system table.
-    await t.run(async (ctx) => {
-      const scheduled = await ctx.db.system
-        .query("_scheduled_functions")
-        .collect()
-      const draftCall = scheduled.find((row) =>
-        row.name.endsWith("generateRoleProfileDraft")
-      )
-      expect(draftCall).toBeTruthy()
-      const args = draftCall?.args[0] as { family?: string }
-      expect(args.family).toBe("Engineering")
-    })
-    void familyId
-  })
-
-  it("schedules generateRoleProfileDraft with NO family arg for an unfamilied role", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin, roleId } = await seedRoleOrganization(t)
-    // The seeded role has no familyId, so the scheduled args must omit the key
-    // entirely (not pass family: undefined) to stay byte-identical to before.
-    await asAdmin.mutation(api.ai.suggest.requestRoleProfileDraft, {
-      orgId,
-      roleId,
-    })
-    await t.run(async (ctx) => {
-      const scheduled = await ctx.db.system
-        .query("_scheduled_functions")
-        .collect()
-      const draftCall = scheduled.find((row) =>
-        row.name.endsWith("generateRoleProfileDraft")
-      )
-      expect(draftCall).toBeTruthy()
-      const args = draftCall?.args[0] as Record<string, unknown>
-      expect("family" in args).toBe(false)
-    })
-  })
-
-  it("locks drafts for archived roles", async () => {
-    const t = initConvexTest()
-    const { orgId, asAdmin, roleId } = await seedRoleOrganization(t)
-    await t.run(async (ctx) => {
-      const docId = ctx.db.normalizeId("roles", roleId)
-      if (docId === null) throw new Error("bad id")
-      await ctx.db.patch(docId, { archivedAt: Date.now() })
-    })
-    await expect(
-      asAdmin.mutation(api.ai.suggest.requestRoleProfileDraft, {
-        orgId,
-        roleId,
-      })
-    ).rejects.toThrow(/errors.roleLocked/)
   })
 })
 
