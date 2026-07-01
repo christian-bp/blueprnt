@@ -1,0 +1,45 @@
+apps/dashboard/components/roles/role-ai-panel.test.tsx
+  s_6bff98b662648b::t_33e01257b94905 62-64,95-97,99-103,130-134
+  s_6bff98b662648b::t_f7ce73141a3477 50,53,59,61,66-82,84-85,87-90,94,98,104-117,119,122,128-129,135-138,140-144
+  s_6bff98b662648b::t_aa773e0dbe97cf 10-45,86,123-126,139
+  s_6bff98b662648b::t_43e1a065c23ac8 1-2
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_5bda30d16b14d9 358
+apps/dashboard/components/roles/role-ai-panel.tsx
+  s_6bff98b662648b::t_26192d10a0dc7a 76
+  s_6bff98b662648b::t_ad28b05d0ffb6c 9,13-17,21,26-28,33-34,65-75,77-85
+  s_6bff98b662648b::t_35b688012d6f86 11
+  s_6bff98b662648b::t_adfcc2f6b36b99 39-40,42,46,54-56,58,60
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_f60d1e435cf3bf 358
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_7a9d5af34462c7 358
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_72d915274894ca 358
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_226452ffb0781c 358
+apps/dashboard/components/roles/role-profile-card.tsx
+  s_6bff98b662648b::t_9b99ebd8dde980 177-217
+  s_6bff98b662648b::t_c09cc889d59288 105-111
+  s_6bff98b662648b::t_15bd7298b2a5cb 50-54
+apps/dashboard/components/roles/role-profile-card.test.tsx
+  s_6bff98b662648b::t_dac47bc0891cb6 226-248,250-257
+  s_6bff98b662648b::t_fdbfc14f122e96 19-20
+  s_6bff98b662648b::t_33e01257b94905 249
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "2c357585ef158aa536f9691a6eda2068a809c708",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
