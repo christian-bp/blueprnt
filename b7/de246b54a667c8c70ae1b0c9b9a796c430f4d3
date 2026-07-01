@@ -1,0 +1,41 @@
+apps/dashboard/components/deviation-badge.tsx
+  s_6bff98b662648b::t_8d2a5311c9cdf5 1-30,32-35
+  s_6bff98b662648b::t_e851c90f3468be 31
+apps/dashboard/components/bands/role-chip.tsx
+  s_6bff98b662648b::t_55bfd39f174ead 43
+  s_6bff98b662648b::t_9f5c3f127d6e48 7
+apps/dashboard/components/role-sheet.tsx
+  s_6bff98b662648b::t_9cfce54734e038 27
+  s_6bff98b662648b::t_2668899575a33b 166
+apps/dashboard/components/roles/role-evaluation-card.tsx
+  s_6bff98b662648b::t_d6fa1a99697aad 90-98
+  s_6bff98b662648b::t_f5f6569b4e0645 174,178
+  s_6bff98b662648b::t_2e110808a21d2b 149-155
+  s_6bff98b662648b::t_0f295befdd2eda 175-177
+  s_6bff98b662648b::t_016a28f0846aba 29
+apps/dashboard/components/deviation-badge.test.tsx
+  s_6bff98b662648b::t_eb992f08010590 1-27
+  s_6bff98b662648b::t_ea6e2aa9a2112c 28-29
+apps/dashboard/components/roles/role-evaluation-card.test.tsx
+  s_6bff98b662648b::t_a6e3e5dfc9ee08 222-223
+  s_6bff98b662648b::t_5d02d18cbc6dab 185,193-197
+packages/ui/src/components/tooltip.tsx
+  s_6bff98b662648b::t_eb8cdbb3776d13 35-36,38-40,43-45
+  s_6bff98b662648b::t_491ba98ace6572 58-60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "b7de246b54a667c8c70ae1b0c9b9a796c430f4d3",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
