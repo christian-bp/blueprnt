@@ -95,6 +95,7 @@
       "required": "Tämä kenttä on pakollinen.",
       "invalidEmail": "Anna kelvollinen sähköpostiosoite.",
       "minLength": "Vähintään {min} merkkiä.",
+      "maxLength": "Kenttä on liian pitkä.",
       "slug": "Käytä pieniä kirjaimia, numeroita ja väliviivoja.",
       "passwordsMatch": "Salasanojen on täsmättävä.",
       "emailUnchanged": "Anna eri sähköpostiosoite."

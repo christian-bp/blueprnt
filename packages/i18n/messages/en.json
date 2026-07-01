@@ -95,6 +95,7 @@
       "required": "This field is required.",
       "invalidEmail": "Enter a valid email address.",
       "minLength": "Must be at least {min} characters.",
+      "maxLength": "This field is too long.",
       "slug": "Use lowercase letters, numbers, and hyphens.",
       "passwordsMatch": "Passwords must match.",
       "emailUnchanged": "Enter a different email address."

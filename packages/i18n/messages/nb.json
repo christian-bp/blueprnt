@@ -95,6 +95,7 @@
       "required": "Dette feltet er påkrevd.",
       "invalidEmail": "Skriv inn en gyldig e-postadresse.",
       "minLength": "Må være minst {min} tegn.",
+      "maxLength": "Feltet er for langt.",
       "slug": "Bruk små bokstaver, tall og bindestrek.",
       "passwordsMatch": "Passordene må være like.",
       "emailUnchanged": "Skriv inn en annen e-postadresse."

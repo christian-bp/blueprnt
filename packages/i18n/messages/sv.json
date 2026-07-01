@@ -95,6 +95,7 @@
       "required": "Det här fältet är obligatoriskt.",
       "invalidEmail": "Ange en giltig e-postadress.",
       "minLength": "Måste vara minst {min} tecken.",
+      "maxLength": "Fältet är för långt.",
       "slug": "Använd små bokstäver, siffror och bindestreck.",
       "passwordsMatch": "Lösenorden måste matcha.",
       "emailUnchanged": "Ange en annan e-postadress."
