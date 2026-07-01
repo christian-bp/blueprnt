@@ -1,0 +1,31 @@
+packages/backend/convex/ai/suggest.ts
+  s_6bff98b662648b::t_5aae1a79db8736 4,6
+  s_6bff98b662648b::t_1ddb06a6cbc58a 786-872
+packages/backend/convex/ai/generate.ts
+  s_6bff98b662648b::t_82343fae60290c 314-318,320,343-347,351-361
+  s_6bff98b662648b::t_e49608a39d42d5 362-363
+packages/backend/convex/ai/draft.test.ts
+  s_6bff98b662648b::t_4d9a660919b6b3 101-104
+  s_6bff98b662648b::t_0f8822557ad113 161
+  s_6bff98b662648b::t_ac229364978ca3 1-100,105-160,162-184
+packages/backend/convex/ai/draft.ts
+  s_6bff98b662648b::t_ad62faa2e918db 63-81
+  s_6bff98b662648b::t_d846a1f4e5346b 1-42,44-62,82-91
+  s_6bff98b662648b::t_2d2678b8dacaa6 43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "16c86d74f2ea2e5175f9e720f1c29740eb8e1c95",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
