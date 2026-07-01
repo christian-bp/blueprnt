@@ -1,0 +1,21 @@
+docs/superpowers/analysis/2026-07-01-v1-conformance-report.md
+  s_6bff98b662648b::t_1340db495634e6 1-208
+docs/superpowers/analysis/2026-07-01-v2-readiness-report.md
+  s_6bff98b662648b::t_1d6dd917aae949 1-300
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "0b03d54e01d24725883194b2ed07976fa4362e43",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
