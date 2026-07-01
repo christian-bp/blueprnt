@@ -130,6 +130,7 @@ describe("RoleEvaluationCard", () => {
 
   it("states the precondition and offers no rate action when the profile is incomplete", () => {
     renderCard({ profileComplete: false, ratedCount: 0, totalCriteria: 5 })
+    expect(screen.getByText(detail.profileIncompleteTitle)).toBeDefined()
     expect(screen.getByText(detail.profileIncomplete)).toBeDefined()
     expect(screen.queryByRole("link")).toBeNull()
   })

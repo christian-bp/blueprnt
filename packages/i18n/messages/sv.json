@@ -358,6 +358,7 @@
         "doneCta": "Klar",
         "saveCta": "Spara",
         "saveError": "Kunde inte spara. Försök igen.",
+        "profileIncompleteTitle": "Slutför jobbprofilen först",
         "profileIncomplete": "Fyll i syfte och ansvarsområden innan betygsättning.",
         "rateCta": "Betygsätt roll",
         "resumeRateCta": "Fortsätt betygsätta",

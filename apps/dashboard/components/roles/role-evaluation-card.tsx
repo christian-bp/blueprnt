@@ -4,10 +4,16 @@ import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import {
   AnchorIcon,
+  InformationCircleIcon,
   MoreHorizontalIcon,
   Tag01Icon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -225,21 +231,25 @@ export function RoleEvaluationCard({
               {tResult("computing")}
             </p>
           )
+        ) : !archived && !profileComplete ? (
+          // Preconditions in words (guidance convention): a role cannot be
+          // evaluated until its job profile has a purpose and responsibilities,
+          // so the missing step is an alert with focus, not a quiet line.
+          <Alert>
+            <HugeiconsIcon icon={InformationCircleIcon} strokeWidth={2} />
+            <AlertTitle>{t("profileIncompleteTitle")}</AlertTitle>
+            <AlertDescription>{t("profileIncomplete")}</AlertDescription>
+          </Alert>
         ) : (
           <div className="space-y-3">
             <p className="text-muted-foreground text-sm">
               {evaluated ? tRoles("evaluated") : tRoles("notEvaluated")}
             </p>
-            {!archived &&
-              (profileComplete ? (
-                <Button asChild>
-                  <Link href={`/roles/${slug}/rate`}>{ctaLabel}</Link>
-                </Button>
-              ) : (
-                <p className="text-muted-foreground text-sm">
-                  {t("profileIncomplete")}
-                </p>
-              ))}
+            {!archived && profileComplete && (
+              <Button asChild>
+                <Link href={`/roles/${slug}/rate`}>{ctaLabel}</Link>
+              </Button>
+            )}
           </div>
         )}
       </CardContent>

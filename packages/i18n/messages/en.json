@@ -358,6 +358,7 @@
         "doneCta": "Done",
         "saveCta": "Save",
         "saveError": "Could not save. Try again.",
+        "profileIncompleteTitle": "Complete the job profile first",
         "profileIncomplete": "Fill in purpose and responsibilities before rating.",
         "rateCta": "Rate role",
         "resumeRateCta": "Continue rating",

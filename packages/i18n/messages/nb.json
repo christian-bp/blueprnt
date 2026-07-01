@@ -358,6 +358,7 @@
         "doneCta": "Ferdig",
         "saveCta": "Lagre",
         "saveError": "Kunne ikke lagre. Prøv igjen.",
+        "profileIncompleteTitle": "Fullfør jobbprofilen først",
         "profileIncomplete": "Fyll inn formål og ansvarsområder før vurdering.",
         "rateCta": "Vurder rolle",
         "resumeRateCta": "Fortsett vurderingen",

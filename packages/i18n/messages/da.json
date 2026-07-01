@@ -358,6 +358,7 @@
         "doneCta": "Færdig",
         "saveCta": "Gem",
         "saveError": "Kunne ikke gemme. Prøv igen.",
+        "profileIncompleteTitle": "Færdiggør jobprofilen først",
         "profileIncomplete": "Udfyld formål og ansvarsområder inden vurdering.",
         "rateCta": "Vurder rolle",
         "resumeRateCta": "Fortsæt vurderingen",

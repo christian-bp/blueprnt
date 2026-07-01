@@ -358,6 +358,7 @@
         "doneCta": "Valmis",
         "saveCta": "Tallenna",
         "saveError": "Tallennus epäonnistui. Yritä uudelleen.",
+        "profileIncompleteTitle": "Täydennä tehtäväprofiili ensin",
         "profileIncomplete": "Täytä tarkoitus ja vastuualueet ennen arviointia.",
         "rateCta": "Arvioi rooli",
         "resumeRateCta": "Jatka arviointia",
