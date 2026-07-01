@@ -181,7 +181,7 @@ export function RoleProfileCard({
                   triggerLabel={tAi("openDraftCta")}
                   triggerIcon={AiMagicIcon}
                   title={tAi("heading")}
-                  description={tAi("provenance")}
+                  description={t("aiProvenance")}
                   closeLabel={tAi("closeLabel")}
                 >
                   {(close) => (
@@ -189,8 +189,9 @@ export function RoleProfileCard({
                       orgId={orgId}
                       roleId={role.roleId}
                       onFilled={({ purpose, responsibilities }) => {
-                        setField("purpose", purpose)
-                        setField("responsibilities", responsibilities)
+                        if (purpose.trim()) setField("purpose", purpose)
+                        if (responsibilities.trim())
+                          setField("responsibilities", responsibilities)
                       }}
                       onDone={close}
                     />

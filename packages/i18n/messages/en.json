@@ -366,7 +366,8 @@
         "backToRoles": "Back to roles",
         "emptyField": "Not filled in yet",
         "archivedBadge": "Archived",
-        "archivedHint": "This role is archived and read-only. Its history is kept."
+        "archivedHint": "This role is archived and read-only. Its history is kept.",
+        "aiProvenance": "Review and edit the draft, then Save."
       },
       "archive": {
         "cta": "Archive role",

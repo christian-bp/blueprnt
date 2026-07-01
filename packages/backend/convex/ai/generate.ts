@@ -352,7 +352,7 @@ export async function generateRoleProfileText(
 // prompt enumerates the roles as <role index="N">title</role> and instructs
 // the model to return one entry per input role, each echoing its index. Shares
 // the company framing and the { purpose, responsibilities } contract with
-// generateRoleProfile so the prompt has ONE home.
+// generateRoleProfileText so the prompt has ONE home.
 //
 // Returns the profiles ORDERED to match the input `roles` array (so the caller
 // applies profiles[i] to roles[i]'s id) plus the call's total token usage for

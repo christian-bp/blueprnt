@@ -366,7 +366,8 @@
         "backToRoles": "Tillbaka till roller",
         "emptyField": "Inte ifylld ännu",
         "archivedBadge": "Arkiverad",
-        "archivedHint": "Rollen är arkiverad och skrivskyddad. Historiken finns kvar."
+        "archivedHint": "Rollen är arkiverad och skrivskyddad. Historiken finns kvar.",
+        "aiProvenance": "Granska och redigera utkastet, spara sedan."
       },
       "archive": {
         "cta": "Arkivera roll",

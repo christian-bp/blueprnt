@@ -366,7 +366,8 @@
         "backToRoles": "Tilbake til roller",
         "emptyField": "Ikke fylt inn ennå",
         "archivedBadge": "Arkivert",
-        "archivedHint": "Rollen er arkivert og skrivebeskyttet. Historikken beholdes."
+        "archivedHint": "Rollen er arkivert og skrivebeskyttet. Historikken beholdes.",
+        "aiProvenance": "Se gjennom og rediger utkastet, lagre deretter."
       },
       "archive": {
         "cta": "Arkiver rolle",

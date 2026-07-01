@@ -30,12 +30,13 @@ export function RoleAiPanel({
 }) {
   const t = useTranslations("dashboard.roles.ai")
   const tAi = useTranslations("dashboard.ai")
+  const tErrors = useTranslations("errors")
   const locale = useLocale()
   const draftRoleProfile = useAction(api.ai.draft.draftRoleProfile)
 
   const [description, setDescription] = useState("")
   const [pending, setPending] = useState(false)
-  const [failed, setFailed] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   // Guards against state updates after the popover has closed and unmounted us.
   const mounted = useRef(true)
   useEffect(() => {
@@ -47,7 +48,7 @@ export function RoleAiPanel({
 
   async function onGenerate() {
     setPending(true)
-    setFailed(false)
+    setErrorMessage(null)
     try {
       const values = await draftRoleProfile({
         orgId,
@@ -60,8 +61,18 @@ export function RoleAiPanel({
       if (!mounted.current) return
       onFilled(values)
       onDone?.()
-    } catch {
-      if (mounted.current) setFailed(true)
+    } catch (err) {
+      if (!mounted.current) return
+      // ConvexErrors serialize the appError code into the message (e.g.
+      // "errors.aiUnavailable"). Map to a specific message when recognized.
+      const msg = err instanceof Error ? err.message : ""
+      if (msg.includes("errors.aiUnavailable")) {
+        setErrorMessage(tErrors("aiUnavailable"))
+      } else if (msg.includes("errors.aiGenerationFailed")) {
+        setErrorMessage(tErrors("aiGenerationFailed"))
+      } else {
+        setErrorMessage(t("error"))
+      }
     } finally {
       if (mounted.current) setPending(false)
     }
@@ -89,9 +100,9 @@ export function RoleAiPanel({
           t("draftCta")
         )}
       </Button>
-      {failed && (
+      {errorMessage !== null && (
         <p role="alert" className="text-destructive text-sm">
-          {t("error")}
+          {errorMessage}
         </p>
       )}
     </div>

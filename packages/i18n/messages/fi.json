@@ -366,7 +366,8 @@
         "backToRoles": "Takaisin rooleihin",
         "emptyField": "Ei vielä täytetty",
         "archivedBadge": "Arkistoitu",
-        "archivedHint": "Rooli on arkistoitu ja vain luku -tilassa. Historia säilyy."
+        "archivedHint": "Rooli on arkistoitu ja vain luku -tilassa. Historia säilyy.",
+        "aiProvenance": "Tarkista ja muokkaa luonnosta, tallenna sitten."
       },
       "archive": {
         "cta": "Arkistoi rooli",
