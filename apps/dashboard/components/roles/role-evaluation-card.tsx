@@ -26,6 +26,7 @@ import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { useState } from "react"
+import { DeviationBadge } from "@/components/deviation-badge"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import {
   type AnchorRoleInfo,
@@ -86,11 +87,15 @@ export function RoleEvaluationCard({
     showResult ? { orgId, locale } : "skip"
   )
   const bandCount = model?.bandThresholds.length ?? 0
-  // For an anchor role the hero band is the agreed (expected) band; otherwise
-  // the computed band. The anchor's motivation is shown under the scale; the
-  // computed band and its deviation live on the bands overview.
-  const heroBand =
-    anchorRole !== null ? anchorRole.expectedBand : (result?.band ?? null)
+  // The band leads with the engine-computed outcome for every role (ADR-0002).
+  // An anchor role additionally flags a deviation when its computed band
+  // differs from the agreed band: the score is primary, the anchor is a sanity
+  // check (matching the bands overview and the rating flow).
+  const heroBand = result?.band ?? null
+  const anchorDeviates =
+    anchorRole !== null &&
+    result?.band != null &&
+    result.band !== anchorRole.expectedBand
 
   const ctaLabel = ratedCount === 0 ? t("rateCta") : t("resumeRateCta")
 
@@ -141,12 +146,13 @@ export function RoleEvaluationCard({
         {showResult ? (
           result?.complete ? (
             <>
-              {/* The band is the outcome. For an anchor role it is the AGREED
-                  band, marked with the anchor icon + a help morph (the concept
-                  explains anchor roles) and the motivation below the scale; a
-                  normal role shows the computed band with the tag icon. The
-                  full-width scale marks the band in the brand color (Band 1 =
-                  highest, per the help). */}
+              {/* The band is the engine-computed outcome. An anchor role is
+                  marked with the anchor icon + a help morph and, when its
+                  computed band differs from the agreed band, a deviation flag
+                  (the agreed band is the sanity check, not the headline); its
+                  motivation shows below the scale. A normal role uses the tag
+                  icon. The full-width scale marks the computed band in the
+                  brand color (Band 1 = highest, per the help). */}
               <div className="space-y-2">
                 {heroBand != null && (
                   <div className="flex items-center gap-2">
@@ -164,6 +170,11 @@ export function RoleEvaluationCard({
                           <HelpMorphButton label={tHelp("anchorRoleLabel")}>
                             {tHelp("anchorRoleBody")}
                           </HelpMorphButton>
+                        )}
+                        {anchorDeviates && anchorRole !== null && (
+                          <DeviationBadge
+                            agreedBand={anchorRole.expectedBand}
+                          />
                         )}
                       </span>
                       {result.score != null && (

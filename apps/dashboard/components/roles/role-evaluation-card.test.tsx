@@ -182,7 +182,7 @@ describe("RoleEvaluationCard", () => {
     ).toBeDefined()
   })
 
-  it("leads with the agreed band and marks it as an anchor for an anchor role", () => {
+  it("leads with the computed band and flags the anchor deviation", () => {
     setResult(completeResult)
     renderCard({
       ratedCount: 3,
@@ -190,9 +190,11 @@ describe("RoleEvaluationCard", () => {
       isAdmin: true,
       anchorRole: designated,
     })
-    // Hero is the agreed band (2); the computed band (3) is not shown here.
-    expect(screen.getByText("Band 2")).toBeDefined()
-    expect(screen.queryByText("Band 3")).toBeNull()
+    // The computed band (3) is the headline, not the agreed band (2).
+    expect(screen.getByText("Band 3")).toBeDefined()
+    // The agreed band appears only as the deviation flag (score is primary).
+    const deviation = messages.dashboard.bands.deviation.replace("{band}", "2")
+    expect(screen.getByText(deviation)).toBeDefined()
     // The band carries the anchor concept help.
     expect(
       screen.getByRole("button", {
@@ -217,8 +219,8 @@ describe("RoleEvaluationCard", () => {
       isAdmin: false,
       anchorRole: designated,
     })
-    // Agreed band shown, marked as an anchor.
-    expect(screen.getByText("Band 2")).toBeDefined()
+    // The computed band is shown; the role is still marked as an anchor.
+    expect(screen.getByText("Band 3")).toBeDefined()
     openMenu()
     expect(
       screen.getByRole("menuitem", { name: detail.adjustRateCta })

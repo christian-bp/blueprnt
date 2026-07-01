@@ -24,6 +24,7 @@ import {
   useContext,
   useState,
 } from "react"
+import { DeviationBadge } from "@/components/deviation-badge"
 import { useOrganization } from "@/components/org-context"
 import { RoleCriterionBreakdown } from "@/components/roles/role-criterion-breakdown"
 import { ResponsibilitiesList } from "@/components/roles/responsibilities-list"
@@ -162,16 +163,7 @@ function RoleSheetContent({
                   result !== null &&
                   result.band !== null &&
                   result.band !== role.anchorRole.expectedBand && (
-                    <Badge
-                      variant="destructive"
-                      title={tBands("deviationLabel", {
-                        band: role.anchorRole.expectedBand,
-                      })}
-                    >
-                      {tBands("deviation", {
-                        band: role.anchorRole.expectedBand,
-                      })}
-                    </Badge>
+                    <DeviationBadge agreedBand={role.anchorRole.expectedBand} />
                   )}
               </div>
             )}

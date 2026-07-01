@@ -2,9 +2,9 @@
 
 import { AnchorIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Badge } from "@workspace/ui/components/badge"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
+import { DeviationBadge } from "@/components/deviation-badge"
 import { useRoleSheetOptional } from "@/components/role-sheet"
 import { TrackBadge } from "@/components/track-badge"
 import type { BandRoleRow } from "@/lib/bands"
@@ -40,14 +40,7 @@ export function RoleChip({ role }: { role: BandRoleRow }) {
       <span className="truncate font-medium">{role.title}</span>
       <TrackBadge trackKey={role.trackKey} name={role.trackName} short />
       {deviates && role.anchor !== null && (
-        <Badge
-          variant="destructive"
-          // Screen readers get the full meaning, not just the "≠ Band n" glyph.
-          aria-label={t("deviationLabel", { band: role.anchor.expectedBand })}
-          title={t("deviationLabel", { band: role.anchor.expectedBand })}
-        >
-          {t("deviation", { band: role.anchor.expectedBand })}
-        </Badge>
+        <DeviationBadge agreedBand={role.anchor.expectedBand} />
       )}
     </>
   )

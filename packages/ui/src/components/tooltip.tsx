@@ -32,12 +32,17 @@ function TooltipTrigger({
 
 function TooltipContent({
   className,
-  // Local fix: 4px default offset; without the (removed) arrow the pill
-  // otherwise sits flush against its trigger.
+  // Local fix: 4px default offset so the pill (or its optional arrow) does not
+  // sit flush against its trigger.
   sideOffset = 4,
+  // Local fix: tooltips are plain pills by default; opt in to a pointer arrow
+  // per tooltip (small inline triggers where the association is not obvious).
+  arrow = false,
   children,
   ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Content>) {
+}: React.ComponentProps<typeof TooltipPrimitive.Content> & {
+  arrow?: boolean
+}) {
   return (
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Content
@@ -50,7 +55,9 @@ function TooltipContent({
         {...props}
       >
         {children}
-        {/* Local fix: the arrow is removed by design (plain pill tooltips). */}
+        {/* Local fix: no arrow by default; opt in with `arrow` (fills to match
+            the bg-foreground pill). */}
+        {arrow && <TooltipPrimitive.Arrow className="fill-foreground" />}
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
   )
