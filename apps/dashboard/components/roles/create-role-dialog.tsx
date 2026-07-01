@@ -56,6 +56,7 @@ export function CreateRoleDialog({
   tracks,
   triggerLabel,
   existing,
+  defaultFamilyId = null,
 }: {
   orgId: string
   tracks: TrackOption[]
@@ -63,6 +64,9 @@ export function CreateRoleDialog({
   // The org's current roles, so the form rejects a title already taken in the
   // selected family before submitting (the backend stays the authority).
   existing: { title: string; familyId: string | null }[]
+  // When set, the role is created in this family and the family picker is
+  // hidden: used from a family page, where the family is the fixed context.
+  defaultFamilyId?: string | null
 }) {
   const t = useTranslations("dashboard.roles.create")
   const tHelp = useTranslations("dashboard.help")
@@ -88,7 +92,7 @@ export function CreateRoleDialog({
       roleFunction: "",
       team: "",
       trackKey: firstTrack?.key ?? "IC",
-      familyId: null,
+      familyId: defaultFamilyId,
     },
   })
 
@@ -209,32 +213,34 @@ export function CreateRoleDialog({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="familyId"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center gap-1.5">
-                    <FormLabel>{tModel("roleFamily")}</FormLabel>
-                    <HelpMorphButton label={tHelp("familyLabel")}>
-                      {tHelp("familyBody")}
-                    </HelpMorphButton>
-                  </div>
-                  <FormControl>
-                    <FamilyPicker
-                      orgId={orgId}
-                      value={field.value}
-                      onChange={(value) => {
-                        field.onChange(value)
-                        // The family is the uniqueness scope, so re-check the
-                        // title against the newly selected family.
-                        void form.trigger("title")
-                      }}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+            {defaultFamilyId === null && (
+              <FormField
+                control={form.control}
+                name="familyId"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center gap-1.5">
+                      <FormLabel>{tModel("roleFamily")}</FormLabel>
+                      <HelpMorphButton label={tHelp("familyLabel")}>
+                        {tHelp("familyBody")}
+                      </HelpMorphButton>
+                    </div>
+                    <FormControl>
+                      <FamilyPicker
+                        orgId={orgId}
+                        value={field.value}
+                        onChange={(value) => {
+                          field.onChange(value)
+                          // The family is the uniqueness scope, so re-check the
+                          // title against the newly selected family.
+                          void form.trigger("title")
+                        }}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            )}
             {failure !== null && (
               <p role="alert" className="text-destructive text-sm">
                 {failure === "duplicate" ? tErrors("roleExists") : t("error")}

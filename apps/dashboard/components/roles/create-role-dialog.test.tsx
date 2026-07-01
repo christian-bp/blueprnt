@@ -162,4 +162,45 @@ describe("CreateRoleDialog", () => {
     // The duplicate never reaches the server (no thrown ConvexError).
     expect(createRoleMock).not.toHaveBeenCalled()
   })
+
+  it("creates the role in the given family and hides the family picker", async () => {
+    createRoleMock.mockResolvedValue({ roleId: "role-new", slug: "role-new" })
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <CreateRoleDialog
+          orgId="org-1"
+          tracks={[...TRACKS]}
+          triggerLabel={labels.title}
+          existing={[]}
+          defaultFamilyId="fam-1"
+        />
+      </NextIntlClientProvider>
+    )
+    fireEvent.click(screen.getByRole("button", { name: labels.title }))
+    // The family is fixed by context, so the picker is not rendered.
+    expect(screen.queryByText(messages.model.roleFamily)).toBeNull()
+    fireEvent.change(screen.getByLabelText(labels.titleLabel), {
+      target: { value: "Backend Developer" },
+    })
+    fireEvent.change(screen.getByLabelText(labels.functionLabel), {
+      target: { value: "Engineering" },
+    })
+    fireEvent.change(screen.getByLabelText(labels.teamLabel), {
+      target: { value: "Core" },
+    })
+    const form = screen
+      .getByLabelText(labels.titleLabel)
+      .closest("form") as HTMLFormElement
+    fireEvent.submit(form)
+    await waitFor(() => {
+      expect(createRoleMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        title: "Backend Developer",
+        function: "Engineering",
+        team: "Core",
+        trackKey: "IC",
+        familyId: "fam-1",
+      })
+    })
+  })
 })

@@ -18,6 +18,7 @@ import { use } from "react"
 import { useOrganization } from "@/components/org-context"
 import { type Crumb, PageBreadcrumb } from "@/components/page-breadcrumb"
 import { PageHeader } from "@/components/page-header"
+import { CreateRoleDialog } from "@/components/roles/create-role-dialog"
 import { FamilyActionsMenu } from "@/components/roles/family-actions-menu"
 import { TrackBadge } from "@/components/track-badge"
 import { usePageTitle } from "@/hooks/use-page-title"
@@ -42,10 +43,17 @@ export default function FamilyPage(props: {
   })
   const roles = useQuery(api.assessment.roles.listRoles, { orgId, locale })
   const results = useQuery(api.assessment.results.getResults, { orgId, locale })
+  const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
   const family = families?.find((entry) => entry.slug === familySlug)
   usePageTitle(family?.name)
 
-  if (families === undefined || roles === undefined || results === undefined) {
+  if (
+    families === undefined ||
+    roles === undefined ||
+    results === undefined ||
+    model === undefined ||
+    model === null
+  ) {
     return (
       <main className="flex items-center justify-center p-6">
         <Spinner aria-label={tFamily("rolesHeading")} />
@@ -85,12 +93,21 @@ export default function FamilyPage(props: {
         breadcrumb={<PageBreadcrumb segments={familyCrumbs} />}
         title={family.name}
         action={
-          <FamilyActionsMenu
-            orgId={orgId}
-            familyId={family.familyId}
-            name={family.name}
-            roleTitles={familyRoles.map((role) => role.title)}
-          />
+          <div className="flex items-center gap-2">
+            <CreateRoleDialog
+              orgId={orgId}
+              tracks={model.tracks}
+              triggerLabel={t("newCta")}
+              existing={roles}
+              defaultFamilyId={family.familyId}
+            />
+            <FamilyActionsMenu
+              orgId={orgId}
+              familyId={family.familyId}
+              name={family.name}
+              roleTitles={familyRoles.map((role) => role.title)}
+            />
+          </div>
         }
       />
       <Table>
