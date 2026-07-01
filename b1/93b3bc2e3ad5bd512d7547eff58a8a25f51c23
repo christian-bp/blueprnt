@@ -1,0 +1,19 @@
+docs/superpowers/plans/2026-06-30-job-profile-ai-fill.md
+  s_6bff98b662648b::t_74fb7a8de903c0 1-984
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "b193b3bc2e3ad5bd512d7547eff58a8a25f51c23",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
