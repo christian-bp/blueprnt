@@ -136,7 +136,6 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
 import {
   AnchorDialog,
   type AnchorRoleInfo,
-  RoleAnchorStatus,
 } from "@/components/roles/role-anchor-control"
 
 const anchor = messages.dashboard.roles.anchor
@@ -170,19 +169,6 @@ function HostedDialog({ anchorRole }: { anchorRole: AnchorRoleInfo | null }) {
     />
   )
 }
-
-describe("RoleAnchorStatus", () => {
-  afterEach(() => cleanup())
-
-  it("renders the status badge, band, and motivation", () => {
-    wrap(<RoleAnchorStatus anchorRole={designated} />)
-    expect(screen.getByText(anchor.statusActive)).toBeDefined()
-    expect(screen.getByText("Band 2")).toBeDefined()
-    expect(
-      screen.getByText("Reference role for the platform track")
-    ).toBeDefined()
-  })
-})
 
 describe("AnchorDialog", () => {
   beforeEach(() => {

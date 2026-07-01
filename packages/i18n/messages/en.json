@@ -391,6 +391,7 @@
         "bandOption": "Band {band}",
         "motivationLabel": "Motivation",
         "motivationPlaceholder": "Why is this role a good reference point?",
+        "motivationHeading": "Anchor motivation",
         "countHint": "2 to 5 anchor roles in total is usually enough.",
         "tooMany": "You already have {count} active anchor roles. 2 to 5 in total is usually enough.",
         "statusLabel": "Status",

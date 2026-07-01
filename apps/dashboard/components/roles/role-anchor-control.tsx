@@ -2,7 +2,6 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
@@ -24,15 +23,13 @@ import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
-import { HelpMorphButton } from "@/components/help-morph-button"
 
 // Anchor roles (ankarroller) are the org's 2-5 designated reference roles used
 // to calibrate other assessments; designating/reviewing them is model
 // governance, so all write controls are admin-only. The designation lives as an
-// aggregate on the role. This module exports two pieces: RoleAnchorStatus (the
-// read-only status display, shown to everyone once a role is an anchor) and
-// AnchorDialog (the designate/edit form in a dialog, admin-only), which
-// consumers (the Evaluation card) compose.
+// aggregate on the role. This module exports AnchorDialog (the designate/edit
+// form in a dialog, admin-only) and the AnchorRoleInfo type; the Evaluation
+// card shows the anchor band + help inline and opens this dialog to manage it.
 export interface AnchorRoleInfo {
   expectedBand: number
   motivation: string
@@ -44,12 +41,6 @@ const STATUS_KEYS = {
   active: "statusActive",
   underReview: "statusUnderReview",
   replaced: "statusReplaced",
-} as const
-
-const STATUS_BADGE_VARIANTS = {
-  active: "default",
-  underReview: "secondary",
-  replaced: "outline",
 } as const
 
 function BandField({
@@ -385,34 +376,5 @@ export function AnchorDialog({
         )}
       </DialogContent>
     </Dialog>
-  )
-}
-
-// The read-only anchor status, shown to everyone once the role is an anchor.
-// Exactly one help morph (it labels the concept); the designate/manage action
-// lives elsewhere (the Evaluation card's actions menu).
-export function RoleAnchorStatus({
-  anchorRole,
-}: {
-  anchorRole: AnchorRoleInfo
-}) {
-  const t = useTranslations("dashboard.roles.anchor")
-  const tHelp = useTranslations("dashboard.help")
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <span className="font-medium text-sm">{t("heading")}</span>
-        <HelpMorphButton label={tHelp("anchorRoleLabel")}>
-          {tHelp("anchorRoleBody")}
-        </HelpMorphButton>
-        <Badge variant={STATUS_BADGE_VARIANTS[anchorRole.status]}>
-          {t(STATUS_KEYS[anchorRole.status])}
-        </Badge>
-      </div>
-      <Badge variant="outline">
-        {t("bandOption", { band: anchorRole.expectedBand })}
-      </Badge>
-      <p className="text-sm">{anchorRole.motivation}</p>
-    </div>
   )
 }

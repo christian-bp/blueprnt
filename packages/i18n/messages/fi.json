@@ -391,6 +391,7 @@
         "bandOption": "Luokka {band}",
         "motivationLabel": "Perustelu",
         "motivationPlaceholder": "Miksi rooli on hyvä vertailukohta?",
+        "motivationHeading": "Ankkurin perustelu",
         "countHint": "Yhteensä 2-5 ankkuriroolia riittää yleensä.",
         "tooMany": "Teillä on jo {count} aktiivista ankkuriroolia. Yhteensä 2-5 riittää yleensä.",
         "statusLabel": "Tila",

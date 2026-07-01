@@ -182,7 +182,7 @@ describe("RoleEvaluationCard", () => {
     ).toBeDefined()
   })
 
-  it("shows the anchor status inline and Manage in the menu for an admin on a designated role", () => {
+  it("leads with the agreed band and marks it as an anchor for an anchor role", () => {
     setResult(completeResult)
     renderCard({
       ratedCount: 3,
@@ -190,7 +190,16 @@ describe("RoleEvaluationCard", () => {
       isAdmin: true,
       anchorRole: designated,
     })
-    expect(screen.getByText(anchor.statusActive)).toBeDefined()
+    // Hero is the agreed band (2); the computed band (3) is not shown here.
+    expect(screen.getByText("Band 2")).toBeDefined()
+    expect(screen.queryByText("Band 3")).toBeNull()
+    // The band carries the anchor concept help.
+    expect(
+      screen.getByRole("button", {
+        name: messages.dashboard.help.anchorRoleLabel,
+      })
+    ).toBeDefined()
+    // The anchor's motivation is shown under the band.
     expect(
       screen.getByText("Reference role for the platform track")
     ).toBeDefined()
@@ -200,7 +209,7 @@ describe("RoleEvaluationCard", () => {
     ).toBeDefined()
   })
 
-  it("gives a non-admin only Adjust in the menu but still shows a designated anchor's status", () => {
+  it("gives a non-admin only Adjust in the menu for an anchor role", () => {
     setResult(completeResult)
     renderCard({
       ratedCount: 3,
@@ -208,7 +217,8 @@ describe("RoleEvaluationCard", () => {
       isAdmin: false,
       anchorRole: designated,
     })
-    expect(screen.getByText(anchor.statusActive)).toBeDefined()
+    // Agreed band shown, marked as an anchor.
+    expect(screen.getByText("Band 2")).toBeDefined()
     openMenu()
     expect(
       screen.getByRole("menuitem", { name: detail.adjustRateCta })

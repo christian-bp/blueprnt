@@ -2,7 +2,11 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import { MoreHorizontalIcon, Tag01Icon } from "@hugeicons/core-free-icons"
+import {
+  AnchorIcon,
+  MoreHorizontalIcon,
+  Tag01Icon,
+} from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -26,7 +30,6 @@ import { HelpMorphButton } from "@/components/help-morph-button"
 import {
   type AnchorRoleInfo,
   AnchorDialog,
-  RoleAnchorStatus,
 } from "@/components/roles/role-anchor-control"
 import { RoleCriterionBreakdown } from "@/components/roles/role-criterion-breakdown"
 
@@ -83,6 +86,11 @@ export function RoleEvaluationCard({
     showResult ? { orgId, locale } : "skip"
   )
   const bandCount = model?.bandThresholds.length ?? 0
+  // For an anchor role the hero band is the agreed (expected) band; otherwise
+  // the computed band. The anchor's motivation is shown under the scale; the
+  // computed band and its deviation live on the bands overview.
+  const heroBand =
+    anchorRole !== null ? anchorRole.expectedBand : (result?.band ?? null)
 
   const ctaLabel = ratedCount === 0 ? t("rateCta") : t("resumeRateCta")
 
@@ -129,25 +137,34 @@ export function RoleEvaluationCard({
           </DropdownMenu>
         )}
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         {showResult ? (
           result?.complete ? (
             <>
-              {/* The band is the outcome: tag + band title + weighting on one
-                  line, with the full-width position scale beneath it (spanning
-                  under the tag, active band in the brand color). Band 1 =
-                  highest; the help explains direction. */}
+              {/* The band is the outcome. For an anchor role it is the AGREED
+                  band, marked with the anchor icon + a help morph (the concept
+                  explains anchor roles) and the motivation below the scale; a
+                  normal role shows the computed band with the tag icon. The
+                  full-width scale marks the band in the brand color (Band 1 =
+                  highest, per the help). */}
               <div className="space-y-2">
-                {result.band != null && (
+                {heroBand != null && (
                   <div className="flex items-center gap-2">
                     <HugeiconsIcon
-                      icon={Tag01Icon}
+                      icon={anchorRole !== null ? AnchorIcon : Tag01Icon}
                       strokeWidth={2}
-                      className="size-5 shrink-0 text-muted-foreground"
+                      className="size-4 shrink-0 text-muted-foreground"
                     />
                     <div className="flex flex-1 items-baseline justify-between gap-3">
-                      <span className="font-semibold text-2xl leading-none">
-                        {`${tAssessment("band")} ${result.band}`}
+                      <span className="flex items-center gap-1.5">
+                        <span className="font-semibold text-xl leading-none">
+                          {`${tAssessment("band")} ${heroBand}`}
+                        </span>
+                        {anchorRole !== null && (
+                          <HelpMorphButton label={tHelp("anchorRoleLabel")}>
+                            {tHelp("anchorRoleBody")}
+                          </HelpMorphButton>
+                        )}
                       </span>
                       {result.score != null && (
                         <span className="text-muted-foreground text-sm tabular-nums">
@@ -157,7 +174,7 @@ export function RoleEvaluationCard({
                     </div>
                   </div>
                 )}
-                {result.band != null && bandCount > 0 && (
+                {heroBand != null && bandCount > 0 && (
                   <div className="flex gap-1" aria-hidden="true">
                     {Array.from({ length: bandCount }, (_, i) => i + 1).map(
                       (b) => (
@@ -165,20 +182,23 @@ export function RoleEvaluationCard({
                           key={b}
                           className={cn(
                             "h-1.5 flex-1 rounded-full",
-                            b === result.band ? "bg-brand" : "bg-muted"
+                            b === heroBand ? "bg-brand" : "bg-muted"
                           )}
                         />
                       )
                     )}
                   </div>
                 )}
+                {anchorRole?.motivation && (
+                  <p className="text-muted-foreground text-sm">
+                    <span className="font-medium text-foreground">
+                      {`${tAnchor("motivationHeading")}: `}
+                    </span>
+                    {anchorRole.motivation}
+                  </p>
+                )}
               </div>
               <RoleCriterionBreakdown criteria={result.criteria} />
-              {anchorRole !== null && (
-                <div className="border-t pt-4">
-                  <RoleAnchorStatus anchorRole={anchorRole} />
-                </div>
-              )}
               {isAdmin && (
                 <AnchorDialog
                   open={anchorOpen}

@@ -391,6 +391,7 @@
         "bandOption": "Band {band}",
         "motivationLabel": "Motivering",
         "motivationPlaceholder": "Varför är rollen en bra referenspunkt?",
+        "motivationHeading": "Ankarmotivering",
         "countHint": "2 till 5 ankarroller totalt räcker oftast.",
         "tooMany": "Ni har redan {count} aktiva ankarroller. 2 till 5 totalt räcker oftast.",
         "statusLabel": "Status",
