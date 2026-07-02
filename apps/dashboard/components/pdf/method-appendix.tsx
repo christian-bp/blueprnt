@@ -85,7 +85,11 @@ export function MethodAppendix({
         </Section>
         <Section title={labels.rationaleTitle}>
           {doc.criteria.map((c) => (
-            <View key={c.criterionId} style={s.block} wrap={false}>
+            // No wrap={false}: a criterion's rationale + bias review can be long
+            // (free text, AI-drafted), so a single block may exceed a page. A
+            // wrap={false} block taller than the page overlaps in react-pdf, so
+            // the block is allowed to break across pages instead.
+            <View key={c.criterionId} style={s.block}>
               <Text style={s.blockName}>{c.name}</Text>
               <Text style={s.para}>
                 <Text style={s.label}>{labels.purpose}: </Text>

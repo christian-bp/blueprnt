@@ -108,8 +108,10 @@ export function Section({
   children: ReactNode
 }) {
   return (
-    // No wrap={false} here intentionally: sections with many criteria must paginate rather than clip.
-    // Per-item blocks inside keep their own wrap={false} to stay together across pages.
+    // No wrap={false}: a section (and the per-item blocks inside it) must be able
+    // to paginate. A wrap={false} block taller than a page overlaps in react-pdf,
+    // so long content is allowed to break across pages rather than being kept
+    // together.
     <View>
       <Text style={styles.sectionTitle}>{title}</Text>
       {children}
