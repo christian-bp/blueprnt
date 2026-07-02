@@ -1,0 +1,22 @@
+apps/dashboard/components/model/criterion-compliance-dialog.tsx
+  s_6bff98b662648b::t_0ec4376e370083 298-300
+  s_6bff98b662648b::t_5e17b08d3fd6a0 135-139,156-188,190-204,206-223,225-230,232-297,301-310,313-330,332-352,366-370
+apps/dashboard/components/model/criterion-compliance-dialog.test.tsx
+  s_6bff98b662648b::t_63b06b54813de4 162,165,167,216-217,220,227,229-230,235,245,253-255
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "04171b6da8b4e85cbbe3089ab307192066d24908",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
