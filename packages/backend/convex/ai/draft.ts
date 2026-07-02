@@ -6,7 +6,10 @@ import { internal } from "../_generated/api"
 import { action } from "../_generated/server"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { AI_PROFILE_MODEL_ID, AI_PROVIDER } from "./config"
-import { generateRoleProfileText } from "./generate"
+import {
+  generateCriterionComplianceText,
+  generateRoleProfileText,
+} from "./generate"
 
 // The interactive job-profile draft: generates { purpose, responsibilities }
 // from the role's context and RETURNS them to the client (no suggestion row,
@@ -86,6 +89,89 @@ export const draftRoleProfile = action({
     return {
       purpose: profile.purpose.trim(),
       responsibilities: profile.responsibilities.trim(),
+    }
+  },
+})
+
+// The interactive criterion compliance draft: generates the six rationale +
+// bias-review fields from the criterion's context and RETURNS them to the
+// client (no suggestion row, no auto-apply). Admin-only (compliance editing is
+// admin scope). Usage telemetry is recorded per call. Org scope + admin auth
+// are re-checked in collectCriterionComplianceContext before any model call
+// (ADR-0003: AI in actions, EU model, criterion/model/org content only).
+export const draftCriterionCompliance = action({
+  args: {
+    orgId: v.string(),
+    criterionId: v.id("criteria"),
+    locale: v.optional(v.string()),
+  },
+  returns: v.object({
+    purpose: v.string(),
+    whyRelevant: v.string(),
+    overlapNotes: v.string(),
+    biasRisk: v.union(v.literal("low"), v.literal("medium"), v.literal("high")),
+    biasComment: v.string(),
+    biasAction: v.string(),
+  }),
+  handler: async (ctx, { orgId, criterionId, locale }) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (identity === null) throw appError(ERROR_CODES.notAuthenticated)
+
+    const { actorId, input } = await ctx.runQuery(
+      internal.ai.suggest.collectCriterionComplianceContext,
+      {
+        orgId,
+        userId: identity.subject,
+        criterionId,
+        ...(locale !== undefined ? { locale } : {}),
+      }
+    )
+
+    let compliance: Awaited<
+      ReturnType<typeof generateCriterionComplianceText>
+    >["compliance"]
+    let usage: Awaited<
+      ReturnType<typeof generateCriterionComplianceText>
+    >["usage"]
+    try {
+      const generated = await generateCriterionComplianceText(input)
+      compliance = generated.compliance
+      usage = generated.usage
+    } catch (error) {
+      const code =
+        error instanceof Error && error.message === ERROR_CODES.aiUnavailable
+          ? ERROR_CODES.aiUnavailable
+          : ERROR_CODES.aiGenerationFailed
+      throw appError(code)
+    }
+
+    // Best effort: a usage-write failure must not discard the successful generation.
+    try {
+      await ctx.runMutation(internal.ai.usage.recordAiUsageDirect, {
+        orgId,
+        kind: SUGGESTION_KINDS.criterionCompliance,
+        provider: AI_PROVIDER,
+        model: AI_PROFILE_MODEL_ID,
+        actorId,
+        inputTokens: usage.inputTokens ?? 0,
+        outputTokens: usage.outputTokens ?? 0,
+        totalTokens: usage.totalTokens ?? 0,
+        cachedInputTokens: usage.inputTokenDetails?.cacheReadTokens ?? 0,
+      })
+    } catch (error) {
+      console.error("compliance draft usage recording failed", {
+        orgId,
+        error: error instanceof Error ? error.message : String(error),
+      })
+    }
+
+    return {
+      purpose: compliance.purpose.trim(),
+      whyRelevant: compliance.whyRelevant.trim(),
+      overlapNotes: compliance.overlapNotes.trim(),
+      biasRisk: compliance.biasRisk,
+      biasComment: compliance.biasComment.trim(),
+      biasAction: compliance.biasAction.trim(),
     }
   },
 })

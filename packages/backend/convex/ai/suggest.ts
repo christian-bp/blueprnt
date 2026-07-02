@@ -709,6 +709,111 @@ export const collectRoleDraftContext = internalQuery({
   },
 })
 
+// Resolves ONE criterion's prompt context for the compliance draft action, in a
+// single org-scoped read. Membership + admin role are re-checked here (the
+// action only has the caller's identity). A foreign criterion or incomplete
+// org settings is rejected before any model call (ADR-0003).
+export const collectCriterionComplianceContext = internalQuery({
+  args: {
+    orgId: v.string(),
+    userId: v.string(),
+    criterionId: v.id("criteria"),
+    locale: v.optional(v.string()),
+  },
+  returns: v.object({
+    actorId: v.string(),
+    input: v.object({
+      locale: v.string(),
+      industry: v.string(),
+      employeeCount: v.optional(v.number()),
+      country: v.string(),
+      criterionName: v.string(),
+      criterionDescription: v.string(),
+      criterionHelpText: v.string(),
+      anchors: v.array(v.string()),
+      otherCriteriaNames: v.array(v.string()),
+    }),
+  }),
+  handler: async (ctx, { orgId, userId, criterionId, locale }) => {
+    let membership: { role: string } | null
+    try {
+      membership = await ctx.runQuery(
+        components.betterAuth.membership.getMembership,
+        { organizationId: orgId, userId }
+      )
+    } catch {
+      throw appError(ERROR_CODES.membershipConflict)
+    }
+    if (membership === null) throw appError(ERROR_CODES.notAMember)
+    // Compliance is admin-only (same gate as saveCriterionCompliance).
+    if (membership.role !== "admin") throw appError(ERROR_CODES.adminRequired)
+
+    const criterion = await ctx.db.get(criterionId)
+    if (criterion === null || criterion.orgId !== orgId) {
+      throw appError(ERROR_CODES.notFound)
+    }
+
+    const settings = await ctx.db
+      .query("organizations")
+      .withIndex("by_org", (q) => q.eq("orgId", orgId))
+      .unique()
+    if (
+      settings === null ||
+      !settings.country ||
+      !settings.language ||
+      !settings.industry
+    ) {
+      throw appError(ERROR_CODES.profileIncomplete)
+    }
+
+    const generationLocale = promptLocale(locale, settings.language)
+    const content = templateContent(clampLocale(generationLocale))
+
+    // Localize the criterion's text to the generation locale for template rows
+    // (same rule as getModel); custom/edited rows use their stored text.
+    const localized =
+      criterion.templateKey !== undefined &&
+      isCriterionKey(criterion.templateKey)
+        ? content.criteria[criterion.templateKey]
+        : null
+    const anchorsSorted = [...criterion.anchors].sort(
+      (a, b) => a.level - b.level
+    )
+
+    // Sibling criteria names (localized the same way), excluding this one.
+    const siblings = await ctx.db
+      .query("criteria")
+      .withIndex("by_model", (q) => q.eq("modelId", criterion.modelId))
+      .collect()
+    const otherCriteriaNames = siblings
+      .filter((c) => c._id !== criterion._id)
+      .map((c) => {
+        const cl =
+          c.templateKey !== undefined && isCriterionKey(c.templateKey)
+            ? content.criteria[c.templateKey]
+            : null
+        return cl?.name ?? c.name
+      })
+
+    return {
+      actorId: userId,
+      input: {
+        locale: generationLocale,
+        industry: settings.industry,
+        country: settings.country,
+        ...(settings.employeeCount !== undefined
+          ? { employeeCount: settings.employeeCount }
+          : {}),
+        criterionName: localized?.name ?? criterion.name,
+        criterionDescription: localized?.description ?? criterion.description,
+        criterionHelpText: localized?.helpText ?? criterion.helpText,
+        anchors: anchorsSorted.map((a, i) => localized?.anchors[i] ?? a.text),
+        otherCriteriaNames,
+      },
+    }
+  },
+})
+
 // After a confirmed weight review the allocation IS what the AI just
 // reviewed: re-running it immediately would mostly repeat itself and invites
 // spamming the button. The lock holds until the weighting actually changes

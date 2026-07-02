@@ -6,6 +6,7 @@ export const SUGGESTION_KINDS = {
   weightReview: "model.weightReview",
   roleProfile: "role.profile",
   starterImport: "starter.import",
+  criterionCompliance: "criterion.compliance",
 } as const
 
 export type SuggestionKind =
