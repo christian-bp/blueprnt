@@ -1,0 +1,20 @@
+docs/superpowers/specs/2026-07-02-criterion-compliance-ai-fill-design.md
+  s_6bff98b662648b::t_e4f41b3b4445a4 67
+  s_6bff98b662648b::t_e394f3101e86a2 1-66,68-105
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "3fe40f8f9fd6a340607b1fcd66a1a684e5f7d764",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
