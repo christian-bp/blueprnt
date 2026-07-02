@@ -120,6 +120,16 @@ suite covers them before go-live:
   does not record an upload's content type, so the non-image rejection path is
   e2e-only (the 5 MB size cap and the admin gate ARE unit-tested). Same
   limitation as the user-avatar `setMyAvatar` path.
+- [ ] **Metodbilaga PDF visual rendering.** The unit tests cover the PDF only
+  partially: `method-appendix-download.test.tsx` mocks `@react-pdf/renderer`
+  entirely, and `method-appendix-render.test.tsx` renders for real but only
+  asserts a non-trivial blob plus page-number advancement. Neither catches
+  browser-build-only faults (the fixed-footer disappearance and the SVG
+  viewBox-transform crash both surfaced only in `pdf().toBlob()` in a real
+  browser) or silent layout regressions (blank, oversized, or overlapping
+  content that still produces a valid blob). Add an e2e check that generates
+  the PDF in a real browser and rasterizes it to assert the cover, TOC,
+  per-criterion pages, footer page numbers, and logo actually render.
 
 - [ ] **Standard model compliance evidence in nb/da/fi.** The `compliance`
   fields (purpose/whyRelevant/overlapNotes/biasComment/biasAction) on the 9

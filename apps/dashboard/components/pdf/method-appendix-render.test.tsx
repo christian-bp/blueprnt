@@ -4,8 +4,13 @@ import { MethodAppendix } from "@/components/pdf/method-appendix"
 import type { MethodAppendixDoc } from "@/lib/pdf/method-appendix-data"
 
 // Real render test: unlike the download test (which mocks @react-pdf/renderer),
-// this exercises the actual PDF layout, so layout errors (invalid coordinates,
-// oversized SVGs, pagination faults) fail here instead of only in the browser.
+// this renders through the real engine, so a render that THROWS in the
+// node/jsdom path (schema violations, coordinates invalid here) fails the test,
+// and pagination is asserted via the page-ref capture below. It does NOT catch
+// browser-build-only faults (e.g. the fixed-footer / SVG-transform bugs that
+// only surfaced in `pdf().toBlob()` in a real browser) or silent layout issues
+// (blank, oversized, overlapping) that still produce a valid blob. Asserting
+// those needs e2e rasterization, tracked in the go-live checklist.
 
 const DOC: MethodAppendixDoc = {
   status: "draft",
