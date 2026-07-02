@@ -1,0 +1,36 @@
+apps/dashboard/lib/pdf/method-appendix-data.test.ts
+  s_6bff98b662648b::t_93aae9b27766bd 72-74,76,78-84,86,88-92
+  s_6bff98b662648b::t_61170348f90db8 75,77,85,87
+  s_6bff98b662648b::t_b8f63ccc22377e 1,3-7,12,47-52,56-63,68-71,93
+  s_6bff98b662648b::t_15071d0b42d0f3 2
+  s_6bff98b662648b::t_c8acae536554bd 8-11,13-46,53-55,64-67
+apps/dashboard/components/pdf/branded-document.tsx
+  s_6bff98b662648b::t_3aac6edc3f5b53 6
+  s_6bff98b662648b::t_c8acae536554bd 30-35,71-73
+  s_6bff98b662648b::t_905aeb992b710c 111
+  s_6bff98b662648b::t_35da4889634d00 1-5,7-29,36-70,74-110,112-116
+apps/dashboard/lib/pdf/method-appendix-data.ts
+  s_6bff98b662648b::t_09ce00efaec88c 1-9,12-41,43-56
+  s_6bff98b662648b::t_eb3c643d448454 10-11
+  s_6bff98b662648b::t_c8acae536554bd 42
+bun.lock
+  s_6bff98b662648b::t_33f7797bf9f55d 23,768-793,1012-1013,1044-1045,1054-1055,1062-1065,1106-1107,1116-1118,1210-1211,1246-1247,1288-1289,1312-1313,1324-1325,1376-1379,1390-1391,1444-1445,1456-1457,1462-1463,1512-1513,1520-1521,1538-1539,1594-1595,1624-1625,1632-1633,1660-1661,1670-1671,1684-1685,1692-1693,1748-1749,1762-1763,1826-1827,1844-1845,1854-1855,1892-1895,1924-1925,1960-1961,2188-2193,2224-2225,2232-2233,2252-2253,2264-2265,2284-2287
+apps/dashboard/package.json
+  s_6bff98b662648b::t_ecef121f43001f 21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "82ef6c93344a621a8515569f04ad2dfb040e0626",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
