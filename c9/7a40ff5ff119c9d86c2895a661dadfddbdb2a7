@@ -1,0 +1,22 @@
+apps/dashboard/components/overview/roles-per-band-chart.tsx
+  s_6bff98b662648b::t_c80ffbf40ac951 1-56,63-70
+  s_6bff98b662648b::t_f597e7a48a6248 57-62
+apps/dashboard/components/overview/roles-per-band-chart.test.tsx
+  s_6bff98b662648b::t_c36035e283f31d 1-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "c97a40ff5ff119c9d86c2895a661dadfddbdb2a7",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
