@@ -16,7 +16,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@workspace/ui/components/hover-card"
-import { Spinner } from "@workspace/ui/components/spinner"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { useMutation, useQuery } from "convex/react"
 import { ConvexError } from "convex/values"
@@ -25,6 +25,7 @@ import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { MorphPopover } from "@/components/morph-popover"
 import { CriterionItem } from "@/components/model/criterion-item"
+import { CriterionListSkeleton } from "@/components/model/criterion-list-skeleton"
 import {
   EditCriterionDialog,
   type EditCriterionTarget,
@@ -104,10 +105,28 @@ export function ModelBuilder({
   const [errorKey, setErrorKey] = useState<EditorErrorKey | null>(null)
 
   if (model === undefined) {
+    // Content-shaped loading state (never a bare spinner): mirror the phase's
+    // real layout so the page appears instantly and the rows drop in without
+    // reflow. The Weight phase also reserves its budget/actions toolbar.
+    const loadingWeight = phase === "weight"
     return (
-      <main className="flex items-center justify-center p-6">
-        <Spinner aria-label={tBuilder("defineHeading")} />
-      </main>
+      <div className="space-y-4">
+        {loadingWeight && (
+          <div className="flex items-center justify-between gap-3">
+            {/* Reuse the real budget Alert (with its icon) and skeleton only the
+                not-yet-known status text, so the toolbar height is identical to
+                the loaded state and the list below does not shift. */}
+            <Alert className="w-auto">
+              <HugeiconsIcon icon={InformationCircleIcon} strokeWidth={2} />
+              <AlertTitle>
+                <Skeleton className="h-5 w-40" />
+              </AlertTitle>
+            </Alert>
+            <Skeleton className="h-8 w-24" />
+          </div>
+        )}
+        <CriterionListSkeleton variant={loadingWeight ? "weight" : "define"} />
+      </div>
     )
   }
   if (model === null) return null
@@ -150,7 +169,7 @@ export function ModelBuilder({
   const onWeight = phase === "weight"
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="space-y-3">
         {/* Weight-only toolbar: the budget status (a check when balanced, an
             amber heads-up with the remaining/over count otherwise) sits inline

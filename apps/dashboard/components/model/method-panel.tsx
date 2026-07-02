@@ -6,6 +6,7 @@ import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Alert, AlertTitle } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
 import { AnimatePresence } from "motion/react"
@@ -14,6 +15,7 @@ import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { CriterionComplianceDialog } from "@/components/model/criterion-compliance-dialog"
 import { CriterionItem } from "@/components/model/criterion-item"
+import { CriterionListSkeleton } from "@/components/model/criterion-list-skeleton"
 import { MethodStatusBadge } from "@/components/model/method-status-badge"
 
 const MethodAppendixDownload = dynamic(
@@ -40,7 +42,29 @@ export function MethodPanel({ orgId }: { orgId: string }) {
 
   const [targetId, setTargetId] = useState<Id<"criteria"> | null>(null)
 
-  if (data == null) return null // loading or null; keep layout stable
+  if (data === undefined) {
+    // Content-shaped loading state (never a blank panel): reserve the
+    // progress/download toolbar and mirror the criteria rows so the page
+    // appears instantly and nothing reflows when the data arrives.
+    return (
+      <div className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          {/* Reuse the real progress Alert (with its icon) and skeleton only the
+              not-yet-known counts, so the toolbar height is identical to the
+              loaded state and the list below does not shift. */}
+          <Alert className="w-auto">
+            <HugeiconsIcon icon={InformationCircleIcon} strokeWidth={2} />
+            <AlertTitle>
+              <Skeleton className="h-5 w-52" />
+            </AlertTitle>
+          </Alert>
+          <Skeleton className="h-9 w-36" />
+        </div>
+        <CriterionListSkeleton variant="method" />
+      </div>
+    )
+  }
+  if (data === null) return null // no model yet; keep layout stable
 
   const target =
     targetId === null
