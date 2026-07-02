@@ -1,0 +1,20 @@
+docs/superpowers/plans/2026-07-02-dashboard-layout-enrichment.md
+  s_6bff98b662648b::t_664a38129f763b 1-596,598-599,602-603,607-609,611-632
+  s_6bff98b662648b::t_75c353a4b71b15 597,600-601,604-606,610
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "17d092c0d52b379a2c5cc8f172e74639641f197f",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
