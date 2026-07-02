@@ -1,0 +1,72 @@
+packages/backend/convex/evaluationModel/standardTemplate.content.nb.ts
+  s_6bff98b662648b::t_8192f471da5220 104-116
+  s_6bff98b662648b::t_5f71a943b2e949 69-81
+  s_6bff98b662648b::t_630748f1a7f27b 314-326
+  s_6bff98b662648b::t_cf11e4fd7498da 174-186
+  s_6bff98b662648b::t_69df34cb56ba21 279-291
+  s_6bff98b662648b::t_b14cece6d39088 139-151
+  s_6bff98b662648b::t_e1bbd4040835bf 209-221
+  s_6bff98b662648b::t_e04f5519359d2f 244-256
+  s_6bff98b662648b::t_6a96aed37bbd2a 34-46
+packages/backend/convex/evaluationModel/standardTemplate.test.ts
+  s_6bff98b662648b::t_ae52f27ce4debd 56-63
+packages/backend/convex/evaluationModel/standardTemplate.content.fi.ts
+  s_6bff98b662648b::t_ff59bb002abe22 280-292
+  s_6bff98b662648b::t_fed3427b05271f 315-327
+  s_6bff98b662648b::t_1ecbabb925f6b0 35-47
+  s_6bff98b662648b::t_c91dd4ac26b470 70-82
+  s_6bff98b662648b::t_fa1c9cfe6404bf 210-222
+  s_6bff98b662648b::t_843ae98bb42c97 140-152
+  s_6bff98b662648b::t_0af9ae583c208b 245-257
+  s_6bff98b662648b::t_41bb32c0fcb63f 105-117
+  s_6bff98b662648b::t_e25102890cc702 175-187
+packages/backend/convex/evaluationModel/standardTemplate.content.en.ts
+  s_6bff98b662648b::t_05055c747bbee1 14-25
+  s_6bff98b662648b::t_776aeeed6194b2 274-286
+  s_6bff98b662648b::t_bdd391caac6633 169-181
+  s_6bff98b662648b::t_cbcd4f8a338667 344-356
+  s_6bff98b662648b::t_9d81f6f52b80b1 309-321
+  s_6bff98b662648b::t_54fd83e99eb317 204-216
+  s_6bff98b662648b::t_bf4af7ff820851 239-251
+  s_6bff98b662648b::t_254ac489d3132d 64-76
+  s_6bff98b662648b::t_203c99ef83c3cb 99-111
+  s_6bff98b662648b::t_f18d4e8375a5e5 134-146
+docs/go-live-checklist.md
+  s_6bff98b662648b::t_665c9f9ca9a8d4 118-123
+packages/backend/convex/evaluationModel/standardTemplate.content.sv.ts
+  s_6bff98b662648b::t_111c74e57efb20 211-223
+  s_6bff98b662648b::t_fe7fce98f26860 71-83
+  s_6bff98b662648b::t_9859983b66478d 176-188
+  s_6bff98b662648b::t_85eec6fc0b5d29 36-48
+  s_6bff98b662648b::t_dc068ad6b96ca1 281-293
+  s_6bff98b662648b::t_606a64841cf873 316-328
+  s_6bff98b662648b::t_13fd9ad7cfab61 141-153
+  s_6bff98b662648b::t_bf71a913f06b12 106-118
+  s_6bff98b662648b::t_817d0aee580f8d 246-258
+packages/backend/convex/evaluationModel/standardTemplate.content.da.ts
+  s_6bff98b662648b::t_24690aeded85e6 105-117
+  s_6bff98b662648b::t_dc45675f80b7a5 140-152
+  s_6bff98b662648b::t_7fc2148a08cde7 315-327
+  s_6bff98b662648b::t_cd52ce3aafd97b 245-257
+  s_6bff98b662648b::t_588d84da539773 280-292
+  s_6bff98b662648b::t_daee1a5655093a 70-82
+  s_6bff98b662648b::t_ee40000aad8781 175-187
+  s_6bff98b662648b::t_f5a7c7afb0edb0 35-47
+  s_6bff98b662648b::t_992c680194b41a 210-222
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "afa6f19df81269423b5b9d08e79079f882a41b9a",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
