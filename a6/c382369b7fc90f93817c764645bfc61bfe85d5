@@ -1,0 +1,72 @@
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_02e7cad74177ac 769
+apps/dashboard/components/pdf/branded-document.tsx
+  s_6bff98b662648b::t_ef886ad79739d3 38-47,52
+  s_6bff98b662648b::t_643cf737a83b65 134-148
+  s_6bff98b662648b::t_915dddd879612f 118
+  s_6bff98b662648b::t_491651d41afad7 27-30
+  s_6bff98b662648b::t_13802a0237d07c 17
+  s_6bff98b662648b::t_4eb56e48d9006a 81,85,90-91,93-97
+  s_6bff98b662648b::t_51dcd03670c97c 155,159,168-178
+  s_6bff98b662648b::t_a1dee20dc16e59 6-7,9-13
+  s_6bff98b662648b::t_551c064f719da8 65-66
+  s_6bff98b662648b::t_096baef2b41546 70
+  s_6bff98b662648b::t_c31a9863a8387a 133
+  s_6bff98b662648b::t_cc87360683d291 8,15,71-72,92,114-117,119
+  s_6bff98b662648b::t_8a38d987d31f75 120-121
+  s_6bff98b662648b::t_44dba2ec804858 101-102,104
+apps/dashboard/lib/pdf/wordmark.ts
+  s_6bff98b662648b::t_2dbe1433c09e91 1-7
+apps/dashboard/components/pdf/method-appendix.tsx
+  s_6bff98b662648b::t_26afb5525f0b7e 154-157
+  s_6bff98b662648b::t_d6eea24750e699 158-160,162-167
+  s_6bff98b662648b::t_485add59f8162e 161
+  s_6bff98b662648b::t_ca0a00e0362d78 36-37,39-41
+  s_6bff98b662648b::t_bf282dffce40cb 170-173
+  s_6bff98b662648b::t_4bdad24833e9f7 136-137,141-142
+  s_6bff98b662648b::t_7d4f94d0859809 20-23
+  s_6bff98b662648b::t_b3ca2759114a48 3,25-35,38,42-50,52,104-112,220-223,233-250
+  s_6bff98b662648b::t_e00aa305efba0c 224-232
+  s_6bff98b662648b::t_00bd8b5425b9cd 152-153,168-169
+  s_6bff98b662648b::t_0edf341ecdcce1 56-64
+  s_6bff98b662648b::t_e6ca1b76f3e64a 115-130
+  s_6bff98b662648b::t_a17d3b76866b3a 51
+  s_6bff98b662648b::t_3eb513b2283387 53-55,65-73
+  s_6bff98b662648b::t_3e913f618f3819 78
+  s_6bff98b662648b::t_52830d496b35db 174-179,183-188
+  s_6bff98b662648b::t_3f42a45b3897e2 203-208
+  s_6bff98b662648b::t_992cabcc93fd24 113-114
+  s_6bff98b662648b::t_07667611b89437 131-132
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_e1e8494e732392 769
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_88dc46de330ad6 769
+apps/dashboard/components/pdf/method-appendix-render.test.tsx
+  s_6bff98b662648b::t_f47e18c57f3065 1-107,112-113
+  s_6bff98b662648b::t_f0ec59ec1ed289 108-111
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_03c63881129503 769
+apps/dashboard/components/pdf/method-appendix-download.tsx
+  s_6bff98b662648b::t_effc920cd114b8 39
+  s_6bff98b662648b::t_904543b1d7b3e3 74-85,87
+  s_6bff98b662648b::t_c0cd33ba8329bb 14
+  s_6bff98b662648b::t_7b042b6a6896dc 103-106,111
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_5f6027b29b8623 769
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "a6c382369b7fc90f93817c764645bfc61bfe85d5",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
