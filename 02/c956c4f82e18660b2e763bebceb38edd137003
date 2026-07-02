@@ -1,0 +1,64 @@
+apps/dashboard/components/model/model-tabs.tsx
+  s_6bff98b662648b::t_a6ad96f9a40adc 19
+  s_6bff98b662648b::t_1471d3bfca402c 30,34-35
+apps/dashboard/components/model/method-panel.tsx
+  s_6bff98b662648b::t_9b472dbca0cd22 1-26,28-77
+  s_6bff98b662648b::t_fe1e3700627274 27
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_c90cf81fa9d760 662-663
+  s_6bff98b662648b::t_3ded0aed04a450 733-734,738,744-745,747
+  s_6bff98b662648b::t_955f9c9744b47d 718-732,735-737,739-743,746,748
+  s_6bff98b662648b::t_c565e4892dee40 797-800
+  s_6bff98b662648b::t_1b7d5d81d07b7e 801
+apps/dashboard/components/model/criterion-compliance-dialog.tsx
+  s_6bff98b662648b::t_3522a06a58b91a 118-121
+  s_6bff98b662648b::t_e062cbc5b7d47d 1-117,122-288
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_3d00a821588b92 721,723,725-726,728,731,733,735-736,738,740,743-747
+  s_6bff98b662648b::t_ac5ebeeeae923b 718-720,722,724,727,729-730,732,734,737,739,741-742,748
+  s_6bff98b662648b::t_21b7bb9e2d1b75 797-800
+  s_6bff98b662648b::t_3caa3ba8d401dd 662-663
+  s_6bff98b662648b::t_ee22dce3144afc 801
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_4823d9d60e8214 801
+  s_6bff98b662648b::t_807a3e9e3224b0 726
+  s_6bff98b662648b::t_b508d73d619718 738
+  s_6bff98b662648b::t_2fd9e7878282a6 744-745,747
+  s_6bff98b662648b::t_b692705ac096b0 733-734
+  s_6bff98b662648b::t_df4d2d9f30ee3e 718-725,727-732,735-737,739-743,746,748
+  s_6bff98b662648b::t_82f70533061652 797-800
+  s_6bff98b662648b::t_66857caf6a4732 662-663
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_89427a4f07f7c3 662
+  s_6bff98b662648b::t_c55aab0065f783 738-742
+  s_6bff98b662648b::t_31b205021d2d48 802-803,805
+  s_6bff98b662648b::t_725f5ef6c6a6f5 718-719,722,724-725,727,729-732,734-735,737,743,745-746,748
+  s_6bff98b662648b::t_31b15259f8a932 720-721,723,726,728,733,736,744,747,749-752
+  s_6bff98b662648b::t_90e91202102338 801,804
+  s_6bff98b662648b::t_94ae3f6d9de3a1 663
+apps/dashboard/app/(app)/model/method/page.tsx
+  s_6bff98b662648b::t_963a390014abd2 1-31
+apps/dashboard/components/model/method-panel.test.tsx
+  s_6bff98b662648b::t_d9e70f945282aa 1-68,74-75
+  s_6bff98b662648b::t_1fe2826d4b7bdd 69-73
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_0c9068382c5480 718-748
+  s_6bff98b662648b::t_f28c19a1ee5f93 797-801
+  s_6bff98b662648b::t_f9dae7c3b4ff7c 662-663
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "02c956c4f82e18660b2e763bebceb38edd137003",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
