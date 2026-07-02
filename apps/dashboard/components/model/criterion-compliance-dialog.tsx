@@ -105,7 +105,7 @@ function CriterionComplianceForm({
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit(handleValid)}>
         {/* Rationale section */}
-        <p className="flex items-center gap-1.5 font-semibold text-base">
+        <p className="flex items-center gap-1.5 font-semibold text-muted-foreground text-xs uppercase tracking-wide">
           {t("rationaleSection")}
           <HelpMorphButton label={tHelp("criterionRationaleLabel")}>
             {tHelp("criterionRationaleBody")}
@@ -160,7 +160,7 @@ function CriterionComplianceForm({
         />
 
         {/* Bias review section */}
-        <p className="flex items-center gap-1.5 font-semibold text-base">
+        <p className="flex items-center gap-1.5 font-semibold text-muted-foreground text-xs uppercase tracking-wide">
           {t("biasSection")}
           <HelpMorphButton label={tHelp("biasReviewLabel")}>
             {tHelp("biasReviewBody")}
