@@ -1,0 +1,44 @@
+apps/dashboard/components/pdf/method-appendix-download.test.tsx
+  s_6bff98b662648b::t_d7f8433bfb2597 8-15
+  s_6bff98b662648b::t_5bd7387c2053ad 1-7,16-66
+apps/dashboard/components/pdf/method-appendix.tsx
+  s_6bff98b662648b::t_985eb3ab450aaf 1-135
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_95740669e32589 749-775
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_478404b4b55a30 749-775
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_bc82fb51497341 749-775
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_4d6b96f000163a 749-775
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_ae85d5ea16a2f1 753-760,762-779
+  s_6bff98b662648b::t_a903c4b0d7865f 761
+apps/dashboard/components/model/method-panel.tsx
+  s_6bff98b662648b::t_f538e6890503f1 19
+  s_6bff98b662648b::t_4a1f52b54acdcd 7,12-18
+  s_6bff98b662648b::t_b9a2c2d7f58983 24
+  s_6bff98b662648b::t_98f225db81145b 52
+apps/dashboard/components/pdf/method-appendix-download.tsx
+  s_6bff98b662648b::t_dc92e17027bc78 70-72
+  s_6bff98b662648b::t_777370adbddcd1 77,79
+  s_6bff98b662648b::t_ffa65ad0e80059 1-8,13-30,34-69,73-76,78,80-94
+  s_6bff98b662648b::t_b6e47a6c8ec899 9-12
+  s_6bff98b662648b::t_142a29b31bf031 31-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "b866563fe09b74aa3b0b0825bdbb6647e86d1358",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
