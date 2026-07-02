@@ -19,30 +19,16 @@ vi.mock(
 vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "org-1", name: "Acme", role: "admin" }),
 }))
+// WelcomeGreeting reads the session and clock; stub both to keep the test simple.
+vi.mock("@/lib/auth-client", () => ({
+  authClient: {
+    useSession: () => ({ data: { user: { name: "Ada Lovelace" } } }),
+  },
+}))
 
 import OverviewPage from "@/app/(app)/page"
 
-const t = messages.dashboard.overview.continueScoring
-
-function results(rows: Array<{ complete: boolean }>) {
-  return {
-    rows: rows.map((row, index) => ({
-      roleId: `role-${index}`,
-      title: "Role",
-      trackKey: "IC",
-      trackName: "IC",
-      status: "draft",
-      complete: row.complete,
-      ratedCount: row.complete ? 5 : 0,
-      totalCriteria: 5,
-      score: null,
-      band: null,
-      familyId: null,
-      familyName: null,
-    })),
-    bands: [],
-  }
-}
+const tTodo = messages.dashboard.overview.todo
 
 function renderPage() {
   return render(
@@ -52,44 +38,25 @@ function renderPage() {
   )
 }
 
-describe("OverviewPage continue-scoring card", () => {
+describe("OverviewPage", () => {
   beforeEach(() => useQueryMock.mockReset())
   afterEach(() => cleanup())
 
-  it("shows the card with X of Y when some roles are unscored", () => {
-    useQueryMock.mockImplementation((ref: string) => {
-      if (ref === "assessment.results.getResults")
-        return results([{ complete: true }, { complete: false }])
-      if (ref === "assessment.roles.listRoles") return []
-      return { criteria: [] }
-    })
+  it("renders skeletons while queries are loading", () => {
+    // Both queries return undefined (loading state): TodoWidget shows TodoSkeleton.
+    useQueryMock.mockReturnValue(undefined)
     renderPage()
-    expect(screen.getByText(t.title)).toBeDefined()
-    expect(
-      screen.getByText(
-        t.progress.replace("{scored}", "1").replace("{total}", "2")
-      )
-    ).toBeDefined()
+    // Skeleton elements are present (data-slot="skeleton"); no heading text yet.
+    expect(document.querySelector("[data-slot='skeleton']")).not.toBeNull()
   })
 
-  it("hides the card when every role is complete", () => {
+  it("renders the empty-state message when there is nothing to do", () => {
     useQueryMock.mockImplementation((ref: string) => {
-      if (ref === "assessment.results.getResults")
-        return results([{ complete: true }, { complete: true }])
       if (ref === "assessment.roles.listRoles") return []
-      return { criteria: [] }
+      if (ref === "evaluationModel.method.getMethodModel") return null
+      return undefined
     })
     renderPage()
-    expect(screen.queryByText(t.title)).toBeNull()
-  })
-
-  it("hides the card when there are no roles", () => {
-    useQueryMock.mockImplementation((ref: string) => {
-      if (ref === "assessment.results.getResults") return results([])
-      if (ref === "assessment.roles.listRoles") return []
-      return { criteria: [] }
-    })
-    renderPage()
-    expect(screen.queryByText(t.title)).toBeNull()
+    expect(screen.getByText(tTodo.empty.title)).toBeDefined()
   })
 })

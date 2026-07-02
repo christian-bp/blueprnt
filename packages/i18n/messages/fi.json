@@ -295,17 +295,6 @@
       "fi": "Suomi"
     },
     "overview": {
-      "rolesCard": "Roolit",
-      "ratedCard": "Täysin arvioidut roolit",
-      "criteriaCard": "Kriteerit mallissa",
-      "goRoles": "Siirry rooleihin",
-      "goModel": "Näytä malli",
-      "goOverview": "Näytä yleiskatsaus",
-      "continueScoring": {
-        "title": "Jatka arviointia",
-        "progress": "{scored}/{total} roolia arvioitu",
-        "cta": "Rooleihin"
-      },
       "greeting": {
         "morning": "Hyvää huomenta{hasName, select, yes{, {name}} other{}}",
         "afternoon": "Hyvää iltapäivää{hasName, select, yes{, {name}} other{}}",

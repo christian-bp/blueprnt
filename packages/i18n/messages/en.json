@@ -295,17 +295,6 @@
       "fi": "Suomi"
     },
     "overview": {
-      "rolesCard": "Roles",
-      "ratedCard": "Fully rated roles",
-      "criteriaCard": "Criteria in the model",
-      "goRoles": "Go to roles",
-      "goModel": "View the model",
-      "goOverview": "View the overview",
-      "continueScoring": {
-        "title": "Continue evaluating",
-        "progress": "{scored} of {total} roles evaluated",
-        "cta": "Go to roles"
-      },
       "greeting": {
         "morning": "Good morning{hasName, select, yes{, {name}} other{}}",
         "afternoon": "Good afternoon{hasName, select, yes{, {name}} other{}}",

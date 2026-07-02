@@ -295,17 +295,6 @@
       "fi": "Suomi"
     },
     "overview": {
-      "rolesCard": "Roller",
-      "ratedCard": "Färdigbetygsatta roller",
-      "criteriaCard": "Kriterier i modellen",
-      "goRoles": "Gå till roller",
-      "goModel": "Visa modellen",
-      "goOverview": "Visa översikten",
-      "continueScoring": {
-        "title": "Fortsätt värdera",
-        "progress": "{scored} av {total} roller värderade",
-        "cta": "Till roller"
-      },
       "greeting": {
         "morning": "God morgon{hasName, select, yes{, {name}} other{}}",
         "afternoon": "God eftermiddag{hasName, select, yes{, {name}} other{}}",
