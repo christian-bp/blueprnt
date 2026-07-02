@@ -181,6 +181,7 @@ export const getMethodModel = adminQuery({
           criterionId: v.id("criteria"),
           name: v.string(),
           description: v.string(),
+          helpText: v.string(),
           weightPoints: v.number(),
           share: v.number(),
           order: v.number(),
@@ -251,6 +252,7 @@ export const getMethodModel = adminQuery({
       criterionId: (typeof rows)[number]["_id"]
       name: string
       description: string
+      helpText: string
       weightPoints: number
       share: number
       order: number
@@ -279,6 +281,7 @@ export const getMethodModel = adminQuery({
         criterionId: row._id,
         name: localized?.name ?? row.name,
         description: localized?.description ?? row.description,
+        helpText: localized?.helpText ?? row.helpText ?? "",
         weightPoints: row.weightPoints,
         share:
           totalPoints > 0

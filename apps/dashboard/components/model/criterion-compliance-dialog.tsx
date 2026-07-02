@@ -172,6 +172,7 @@ export function CriterionComplianceDialog({
                     <FormControl>
                       <ToggleGroup
                         type="single"
+                        variant="outline"
                         value={field.value ?? ""}
                         onValueChange={(v) =>
                           field.onChange(v === "" ? undefined : v)

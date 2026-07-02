@@ -12,6 +12,7 @@ vi.mock("convex/react", () => ({
         criterionId: "c1",
         name: "Scope",
         description: "",
+        helpText: "",
         weightPoints: 3,
         share: 33,
         order: 1,
@@ -29,6 +30,7 @@ vi.mock("convex/react", () => ({
         criterionId: "c2",
         name: "Risk",
         description: "",
+        helpText: "",
         weightPoints: 3,
         share: 33,
         order: 2,
@@ -71,5 +73,7 @@ describe("MethodPanel", () => {
     expect(screen.getByText(/1\/2 documented/)).toBeDefined()
     expect(screen.getByText("Approved")).toBeDefined()
     expect(screen.getByText("Not started")).toBeDefined()
+    // Share line mirrors the Weighting page format
+    expect(screen.getAllByText(/of the total weight/).length).toBeGreaterThan(0)
   })
 })
