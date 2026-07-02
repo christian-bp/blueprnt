@@ -757,7 +757,7 @@
         "approveHint": "Täytä tarkoitus, miksi relevantti, vinoumariski ja vinoumakomentti hyväksymistä varten.",
         "decidedBy": "Hyväksynyt {name} päivänä {date}",
         "error": "Jotakin meni vikaan. Yritä uudelleen.",
-        "export": "Vie",
+        "downloadPdf": "Lataa PDF-muodossa",
         "rationaleSection": "Perustelu",
         "biasSection": "Vinoumien arviointi",
         "optionalSuffix": " (valinnainen)",

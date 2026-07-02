@@ -1,6 +1,6 @@
 "use client"
 
-import { Download04Icon } from "@hugeicons/core-free-icons"
+import { Download01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Button } from "@workspace/ui/components/button"
@@ -91,8 +91,8 @@ export function MethodAppendixDownload({ orgId }: { orgId: string }) {
       onClick={onExport}
       disabled={data === undefined || data === null || busy}
     >
-      <HugeiconsIcon icon={Download04Icon} strokeWidth={2} />
-      {tButton("export")}
+      <HugeiconsIcon icon={Download01Icon} strokeWidth={2} />
+      {tButton("downloadPdf")}
     </Button>
   )
 }

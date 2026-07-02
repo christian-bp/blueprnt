@@ -757,7 +757,7 @@
         "approveHint": "Fill in purpose, why relevant, bias risk, and a bias comment to approve.",
         "decidedBy": "Approved by {name} on {date}",
         "error": "Something went wrong. Please try again.",
-        "export": "Export",
+        "downloadPdf": "Download as PDF",
         "rationaleSection": "Rationale",
         "biasSection": "Bias review",
         "optionalSuffix": " (optional)",

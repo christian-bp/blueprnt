@@ -757,7 +757,7 @@
         "approveHint": "Udfyld formål, hvorfor relevant, biasrisiko og en biaskommentar for at godkende.",
         "decidedBy": "Godkendt af {name} den {date}",
         "error": "Noget gik galt. Prøv igen.",
-        "export": "Eksporter",
+        "downloadPdf": "Download som PDF",
         "rationaleSection": "Begrundelse",
         "biasSection": "Bias-gennemgang",
         "optionalSuffix": " (valgfrit)",

@@ -757,7 +757,7 @@
         "approveHint": "Fyll i syfte, varför relevant, biasrisk och en biaskommentar för att godkänna.",
         "decidedBy": "Godkänd av {name} den {date}",
         "error": "Något gick fel. Försök igen.",
-        "export": "Exportera",
+        "downloadPdf": "Ladda ner som PDF",
         "rationaleSection": "Motivering",
         "biasSection": "Bias-granskning",
         "optionalSuffix": " (valfritt)",
