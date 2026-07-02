@@ -178,7 +178,7 @@ export function RoleProfileCard({
                 {/* AI panel is only available in edit mode so it fills the
                     draft directly; the user reviews and saves. */}
                 <MorphPopover
-                  triggerLabel={tAi("openDraftCta")}
+                  triggerLabel={tAi("fillCta")}
                   triggerIcon={AiEditingIcon}
                   title={tAi("heading")}
                   description={t("aiProvenance")}

@@ -761,9 +761,8 @@
         "rationaleSection": "Perustelu",
         "biasSection": "Vinoumien arviointi",
         "optionalSuffix": " (valinnainen)",
-        "draftCta": "Luo luonnos tekoälyllä",
         "draftError": "Luonnosta ei voitu luoda. Yritä uudelleen.",
-        "aiDraftedNote": "Tekoälyn luoma luonnos. Tarkista ja muokkaa ennen hyväksymistä."
+        "aiAckLabel": "Tämä sisältö on tekoälyn luoma. Vahvistan, että olen lukenut ja tarkistanut sen."
       },
       "methodAppendix": {
         "docTitle": "Menetelmäliite",
@@ -798,7 +797,7 @@
       "heading": "Tekoälyapu",
       "provenance": "Tekoälyn luoma ehdotus. Tarkista ja vahvista; mitään ei oteta käyttöön automaattisesti.",
       "openReviewCta": "Tarkista",
-      "openDraftCta": "Täytä tekoälyllä",
+      "fillCta": "Täytä tekoälyllä",
       "closeLabel": "Sulje",
       "draftCta": "Luo kriteeriluonnoksia",
       "reviewCta": "Anna tekoälyn tarkistaa painotus",

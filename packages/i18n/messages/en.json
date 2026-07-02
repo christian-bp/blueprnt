@@ -761,9 +761,8 @@
         "rationaleSection": "Rationale",
         "biasSection": "Bias review",
         "optionalSuffix": " (optional)",
-        "draftCta": "Draft with AI",
         "draftError": "The draft could not be generated. Try again.",
-        "aiDraftedNote": "AI-drafted. Review and edit before approving."
+        "aiAckLabel": "This content was AI-generated. I confirm I have read and reviewed it."
       },
       "methodAppendix": {
         "docTitle": "Method appendix",
@@ -798,7 +797,7 @@
       "heading": "AI assistance",
       "provenance": "AI-generated suggestion. Review and confirm; nothing is applied automatically.",
       "openReviewCta": "Review",
-      "openDraftCta": "Fill using AI",
+      "fillCta": "Fill using AI",
       "closeLabel": "Close",
       "draftCta": "Generate criteria drafts",
       "reviewCta": "Let AI review the weighting",

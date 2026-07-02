@@ -761,9 +761,8 @@
         "rationaleSection": "Motivering",
         "biasSection": "Bias-granskning",
         "optionalSuffix": " (valfritt)",
-        "draftCta": "Skapa utkast med AI",
         "draftError": "Utkastet kunde inte genereras. Försök igen.",
-        "aiDraftedNote": "AI-genererat utkast. Granska och redigera innan du godkänner."
+        "aiAckLabel": "Det här innehållet är AI-genererat. Jag intygar att jag har läst igenom och granskat det."
       },
       "methodAppendix": {
         "docTitle": "Metodbilaga",
@@ -798,7 +797,7 @@
       "heading": "AI-assistans",
       "provenance": "AI-genererat förslag. Granska och bekräfta; inget tillämpas automatiskt.",
       "openReviewCta": "Granska",
-      "openDraftCta": "Fyll i med AI",
+      "fillCta": "Fyll i med AI",
       "closeLabel": "Stäng",
       "draftCta": "Generera kriterieutkast",
       "reviewCta": "Låt AI granska viktningen",

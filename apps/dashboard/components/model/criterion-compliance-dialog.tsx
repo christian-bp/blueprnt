@@ -1,9 +1,12 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { AiEditingIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Button } from "@workspace/ui/components/button"
+import { Checkbox } from "@workspace/ui/components/checkbox"
 import {
   Dialog,
   DialogContent,
@@ -79,6 +82,7 @@ function CriterionComplianceForm({
   const [drafting, setDrafting] = useState(false)
   const [aiDrafted, setAiDrafted] = useState(false)
   const [draftError, setDraftError] = useState<string | null>(null)
+  const [aiAcknowledged, setAiAcknowledged] = useState(false)
 
   const schema = useMemo(() => makeCriterionComplianceSchema(tv), [tv])
   const form = useForm<CriterionComplianceValues>({
@@ -134,7 +138,9 @@ function CriterionComplianceForm({
   return (
     <>
       <DialogHeader>
-        <div className="flex items-center justify-between gap-2">
+        {/* pr-8 keeps the AI button clear of the dialog's absolutely-positioned
+            close (X) button, which sits at top-4 right-4 (size-8). */}
+        <div className="flex items-center justify-between gap-2 pr-8">
           <DialogTitle>{t("dialogTitle")}</DialogTitle>
           {!locked && (
             <Button
@@ -145,21 +151,20 @@ function CriterionComplianceForm({
               onClick={onDraft}
             >
               {drafting ? (
-                <span className="flex items-center gap-2">
-                  <Spinner />
-                  {tAi("generating")}
-                </span>
+                <Spinner />
               ) : (
-                t("draftCta")
+                <HugeiconsIcon
+                  icon={AiEditingIcon}
+                  strokeWidth={2}
+                  aria-hidden="true"
+                />
               )}
+              {drafting ? tAi("generating") : tAi("fillCta")}
             </Button>
           )}
         </div>
         <DialogDescription>{t("dialogDescription")}</DialogDescription>
       </DialogHeader>
-      {aiDrafted && draftError === null && (
-        <p className="text-muted-foreground text-sm">{t("aiDraftedNote")}</p>
-      )}
       {draftError !== null && (
         <p role="alert" className="text-destructive text-sm">
           {draftError}
@@ -325,6 +330,21 @@ function CriterionComplianceForm({
           {!locked && !isDirty && !canApprove && (
             <p className="text-muted-foreground text-sm">{t("approveHint")}</p>
           )}
+          {/* When the fields were AI-drafted, saving requires an explicit human
+              acknowledgement of review (ADR-0003: HR confirms AI output). */}
+          {aiDrafted && !locked && (
+            <div className="flex items-start gap-2">
+              <Checkbox
+                id="ai-ack"
+                checked={aiAcknowledged}
+                onCheckedChange={(v) => setAiAcknowledged(v === true)}
+                className="mt-0.5"
+              />
+              <label htmlFor="ai-ack" className="text-sm">
+                {t("aiAckLabel")}
+              </label>
+            </div>
+          )}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               {t("cancelCta")}
@@ -346,7 +366,11 @@ function CriterionComplianceForm({
                 {t("reopenCta")}
               </Button>
             ) : isDirty ? (
-              <SubmitButton type="submit" isSubmitting={isSubmitting}>
+              <SubmitButton
+                type="submit"
+                isSubmitting={isSubmitting}
+                disabled={aiDrafted && !aiAcknowledged}
+              >
                 {t("saveCta")}
               </SubmitButton>
             ) : canApprove ? (

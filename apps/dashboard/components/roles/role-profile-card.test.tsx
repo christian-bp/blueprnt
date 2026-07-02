@@ -230,14 +230,14 @@ describe("RoleProfileCard", () => {
     // only the manage menu trigger, not the AI button.
     expect(
       screen.queryByRole("button", {
-        name: messages.dashboard.ai.openDraftCta,
+        name: messages.dashboard.ai.fillCta,
       })
     ).toBeNull()
     // Once in edit mode the AI draft trigger becomes visible.
     startEditing()
     expect(
       screen.getByRole("button", {
-        name: messages.dashboard.ai.openDraftCta,
+        name: messages.dashboard.ai.fillCta,
       })
     ).toBeDefined()
   })

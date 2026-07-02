@@ -761,9 +761,8 @@
         "rationaleSection": "Begrundelse",
         "biasSection": "Bias-gennemgang",
         "optionalSuffix": " (valgfrit)",
-        "draftCta": "Lav udkast med AI",
         "draftError": "Udkastet kunne ikke genereres. Prøv igen.",
-        "aiDraftedNote": "AI-genereret udkast. Gennemgå og rediger inden du godkender."
+        "aiAckLabel": "Dette indhold er AI-genereret. Jeg bekræfter, at jeg har læst det igennem og vurderet det."
       },
       "methodAppendix": {
         "docTitle": "Metodebilag",
@@ -798,7 +797,7 @@
       "heading": "AI-assistance",
       "provenance": "AI-genereret forslag. Gennemgå og bekræft; intet anvendes automatisk.",
       "openReviewCta": "Gennemgå",
-      "openDraftCta": "Udfyld med AI",
+      "fillCta": "Udfyld med AI",
       "closeLabel": "Luk",
       "draftCta": "Generer kriterieudkast",
       "reviewCta": "Lad AI gennemgå vægtningen",

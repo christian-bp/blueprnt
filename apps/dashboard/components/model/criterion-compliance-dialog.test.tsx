@@ -213,8 +213,8 @@ describe("CriterionComplianceDialog", () => {
     expect(screen.getByRole("button", { name: /reopen/i })).toBeDefined()
     // Cancel button present
     expect(screen.getByRole("button", { name: /cancel/i })).toBeDefined()
-    // No Draft with AI button on a locked criterion
-    expect(screen.queryByRole("button", { name: /Draft with AI/i })).toBeNull()
+    // No Fill using AI button on a locked criterion
+    expect(screen.queryByRole("button", { name: /Fill using AI/i })).toBeNull()
   })
 
   it("renders fields as editable and shows Approve but no Save or Reopen when documented and untouched", () => {
@@ -242,8 +242,8 @@ describe("CriterionComplianceDialog", () => {
       biasAction: "",
     })
     renderDialog({ target: DOCUMENTED_TARGET })
-    // The Draft with AI button is in the dialog header
-    fireEvent.click(screen.getByRole("button", { name: /Draft with AI/i }))
+    // The Fill using AI button is in the dialog header
+    fireEvent.click(screen.getByRole("button", { name: /Fill using AI/i }))
     await waitFor(() => expect(screen.getByDisplayValue("AIP")).toBeDefined())
     expect(screen.getByDisplayValue("AIW")).toBeDefined()
     expect(screen.getByDisplayValue("AIB")).toBeDefined()
@@ -255,8 +255,27 @@ describe("CriterionComplianceDialog", () => {
     expect(screen.queryByRole("button", { name: /approve/i })).toBeNull()
   })
 
-  it("shows no Draft with AI button on an approved (locked) criterion", () => {
+  it("requires acknowledging the AI draft before Save is enabled", async () => {
+    draftMock.mockResolvedValue({
+      purpose: "AIP",
+      whyRelevant: "AIW",
+      overlapNotes: "",
+      biasRisk: "medium",
+      biasComment: "AIB",
+      biasAction: "",
+    })
+    renderDialog({ target: DOCUMENTED_TARGET })
+    fireEvent.click(screen.getByRole("button", { name: /Fill using AI/i }))
+    await waitFor(() => expect(screen.getByDisplayValue("AIP")).toBeDefined())
+    // Save is present but disabled until the AI acknowledgement is checked.
+    const save = screen.getByRole("button", { name: /save/i })
+    expect((save as HTMLButtonElement).disabled).toBe(true)
+    fireEvent.click(screen.getByRole("checkbox"))
+    expect((save as HTMLButtonElement).disabled).toBe(false)
+  })
+
+  it("shows no Fill using AI button on an approved (locked) criterion", () => {
     renderDialog({ target: APPROVED_TARGET })
-    expect(screen.queryByRole("button", { name: /Draft with AI/i })).toBeNull()
+    expect(screen.queryByRole("button", { name: /Fill using AI/i })).toBeNull()
   })
 })

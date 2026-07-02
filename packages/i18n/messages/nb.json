@@ -761,9 +761,8 @@
         "rationaleSection": "Begrunnelse",
         "biasSection": "Biasvurdering",
         "optionalSuffix": " (valgfritt)",
-        "draftCta": "Lag utkast med AI",
         "draftError": "Utkastet kunne ikke genereres. Prøv igjen.",
-        "aiDraftedNote": "AI-generert utkast. Gjennomgå og rediger før du godkjenner."
+        "aiAckLabel": "Dette innholdet er AI-generert. Jeg bekrefter at jeg har lest gjennom og vurdert det."
       },
       "methodAppendix": {
         "docTitle": "Metodevedlegg",
@@ -798,7 +797,7 @@
       "heading": "AI-assistanse",
       "provenance": "AI-generert forslag. Gjennomgå og bekreft; ingenting tas i bruk automatisk.",
       "openReviewCta": "Gjennomgå",
-      "openDraftCta": "Fyll ut med AI",
+      "fillCta": "Fyll ut med AI",
       "closeLabel": "Lukk",
       "draftCta": "Generer kriterieutkast",
       "reviewCta": "La AI gjennomgå vektingen",
