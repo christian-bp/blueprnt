@@ -1,0 +1,27 @@
+packages/backend/convex/evaluationModel/method.ts
+  s_6bff98b662648b::t_5a889d33209ab2 184
+  s_6bff98b662648b::t_48db488ae79fa8 284
+  s_6bff98b662648b::t_1be7cfe16f6683 255
+apps/dashboard/components/model/method-panel.tsx
+  s_6bff98b662648b::t_243e62153ab6cd 10-11,23-26,29,35,58-95
+apps/dashboard/components/model/method-panel.test.tsx
+  s_6bff98b662648b::t_d22f252f231b82 15,33,76-77
+apps/dashboard/components/model/criterion-compliance-dialog.tsx
+  s_6bff98b662648b::t_65ea4005613164 175
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "200a9fe5b4be855068cbe983032cc316cea77eea",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
