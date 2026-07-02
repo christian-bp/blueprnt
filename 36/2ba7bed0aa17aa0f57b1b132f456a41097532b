@@ -1,0 +1,31 @@
+apps/dashboard/components/model/criterion-compliance-dialog.tsx
+  s_6bff98b662648b::t_2582f0478f37bd 181-186
+  s_6bff98b662648b::t_f1c20cae5296ca 216-221,234,237-239
+  s_6bff98b662648b::t_7319836a9259df 118-123,136-141,154,157-159
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_e8d6c86a961e42 844-850
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_d31fbd8532595d 844-850
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_2f59104b2c0479 844-850
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_2706e07ffed732 844-850
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_10434f16c57948 844-850
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "362ba7bed0aa17aa0f57b1b132f456a41097532b",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
