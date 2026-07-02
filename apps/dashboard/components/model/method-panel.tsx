@@ -1,15 +1,19 @@
 "use client"
 
+import { InformationCircleIcon, Tick02Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
+import { Alert, AlertTitle } from "@workspace/ui/components/alert"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
+import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
+import { AnimatePresence } from "motion/react"
 import dynamic from "next/dynamic"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
-import { AnimatePresence } from "motion/react"
-import { CriterionItem } from "@/components/model/criterion-item"
 import { CriterionComplianceDialog } from "@/components/model/criterion-compliance-dialog"
+import { CriterionItem } from "@/components/model/criterion-item"
 
 const MethodAppendixDownload = dynamic(
   () =>
@@ -39,20 +43,39 @@ export function MethodPanel({ orgId }: { orgId: string }) {
 
   if (data == null) return null // loading or null; keep layout stable
 
+  // Mirrors the Weight page's budget status: a check + neutral tint when the
+  // model is fully approved, an amber heads-up while documentation is still
+  // outstanding. Alert has no warning variant, so the amber tint is a
+  // call-site override (same pattern as model-builder.tsx).
+  const allApproved =
+    data.progress.total > 0 && data.progress.approved === data.progress.total
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-muted-foreground text-sm">
-          {t("documented", {
-            documented: data.progress.documented,
-            total: data.progress.total,
-          })}
-          {" · "}
-          {t("approved", {
-            approved: data.progress.approved,
-            total: data.progress.total,
-          })}
-        </p>
+        <Alert
+          className={cn(
+            "w-auto",
+            !allApproved &&
+              "border-amber-500/50 text-amber-700 dark:text-amber-400"
+          )}
+        >
+          <HugeiconsIcon
+            icon={allApproved ? Tick02Icon : InformationCircleIcon}
+            strokeWidth={2}
+          />
+          <AlertTitle>
+            {t("documented", {
+              documented: data.progress.documented,
+              total: data.progress.total,
+            })}
+            {" · "}
+            {t("approved", {
+              approved: data.progress.approved,
+              total: data.progress.total,
+            })}
+          </AlertTitle>
+        </Alert>
         <MethodAppendixDownload orgId={orgId} />
       </div>
       {/* No space-y/gap on the ul: CriterionItem manages its own marginBottom
