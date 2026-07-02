@@ -1,0 +1,21 @@
+docs/superpowers/specs/2026-07-02-standard-model-compliance-seed-design.md
+  s_6bff98b662648b::t_9e81e5c49fa4d0 1-115
+docs/superpowers/plans/2026-07-02-standard-model-compliance-seed.md
+  s_6bff98b662648b::t_d781e8b8081b3c 1-372
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "e7da9c7c78cdc7c9ecb216933411ff00d651b47b",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
