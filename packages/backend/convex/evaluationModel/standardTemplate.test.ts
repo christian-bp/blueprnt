@@ -53,6 +53,14 @@ describe("standard template structure", () => {
         for (const level of criterion.weightLevels) {
           expect(level.length).toBeGreaterThan(0)
         }
+        // Compliance evidence must be documented-complete in every locale
+        // (purpose, whyRelevant, biasComment non-empty; biasRisk set) so a
+        // seeded standard model lands at "documented".
+        const compliance = criterion.compliance
+        expect(compliance.purpose.trim().length).toBeGreaterThan(0)
+        expect(compliance.whyRelevant.trim().length).toBeGreaterThan(0)
+        expect(compliance.biasComment.trim().length).toBeGreaterThan(0)
+        expect(["low", "medium", "high"]).toContain(compliance.biasRisk)
       }
       for (const key of TRACK_KEYS) {
         expect(content.trackNames[key].length).toBeGreaterThan(0)

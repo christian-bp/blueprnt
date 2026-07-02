@@ -32,6 +32,19 @@ export const standardTemplateContentFi: StandardTemplateContent = {
         "Yritys haluaa, että tällä kriteerillä on vahva vaikutus mallissa. Erot laajuudessa, vastuussa ja vaikutuksessa tiimitasolta yritystasolle vaikuttavat selkeästi siihen, miten rooleja arvioidaan suhteessa toisiinsa.",
         "Yritys pitää laajuutta ja vaikutusta yhtenä mallin ratkaisevimmista ulottuvuuksista. Roolit, joiden organisatorinen ulottuvuus on suuri ja vaikutus laaja, arvioidaan siksi selvästi korkeammalle, kun tätä kriteeriä arvioidaan korkeaksi.",
       ],
+      compliance: {
+        purpose:
+          "Mittaa roolin organisatorista ulottuvuutta: kuinka laajaan alueeseen rooli vaikuttaa ja kuinka pitkälle sen työn, päätösten ja priorisointien vaikutukset ulottuvat, riippumatta henkilöstä tai hierarkkisesta tasosta.",
+        whyRelevant:
+          "Ulottuvuus ja vaikutus heijastavat roolin panosta toiminnan tuloksiin. Sitä arvioidaan tosiasiallisen organisatorisen vaikutuksen perusteella, ei tittelin tai näkyvän valtuutuksen perusteella, mikä tekee kriteeristä sukupuolineutraalin.",
+        overlapNotes:
+          "Menee osittain päällekkäin kriteerien Itsenäisyys ja päätösvalta (päätösvalta) sekä Henkilöstö-/esihenkilövastuu kanssa; tässä painopiste on nimenomaan siinä, kuinka pitkälle roolin vaikutukset ulottuvat organisaatiossa.",
+        biasRisk: "low",
+        biasComment:
+          "Biasriski (diagnoosikysymys 3): näkyvän valtuutuksen palkitseminen enemmän kuin tosiasiallisen vaikutuksen voi suosia perinteisesti näkyviä rooleja. Tasokuvaukset lähtevät vaikutuksesta ja vastuusta arvon sijaan ja ovat sukupuolineutraaleja (kysymys 5).",
+        biasAction:
+          "Tasoankkurit kuvaavat tosiasiallista ulottuvuutta ja tuloksia, eivät muodollista asemaa, jotta myös roolit ilman näkyvää titteliä voidaan arvioida korkealle.",
+      },
     },
     risk: {
       name: "Riski ja seuraukset",
@@ -54,6 +67,19 @@ export const standardTemplateContentFi: StandardTemplateContent = {
         "Yritys haluaa, että riskillä ja seurauksilla on vahva vaikutus siihen, miten rooleja arvioidaan. Roolit, joissa virheillä voi olla selkeitä seurauksia toiminnalle, asiakkaalle, taloudelle, vaatimustenmukaisuudelle tai luottamukselle, saavat siksi korkeamman palkkion.",
         "Yritys pitää riskiä ja seurauksia yhtenä mallin ratkaisevimmista tekijöistä. Korkeat roolipisteet tällä ulottuvuudella saavat siksi erittäin suuren painoarvon kokonaisarvioinnissa ja siten normaalisti myös suhteellisessa palkka-asemoinnissa.",
       ],
+      compliance: {
+        purpose:
+          "Mittaa, mitä seurauksia roolin päätöksillä, työllä tai puutteilla voi olla toiminnalle: laatu, toimitukset, talous, vaatimustenmukaisuus, turvallisuus, asiakassuhteet ja brändi.",
+        whyRelevant:
+          "Seurausten laajuus on osa roolin arvoa toiminnalle. Sitä arvioidaan sen perusteella, mikä tosiasiassa on pelissä, ei sen perusteella, kuinka näkyvää tai dramaattista työ on, mikä tekee kriteeristä sukupuolineutraalin.",
+        overlapNotes:
+          "Menee osittain päällekkäin kriteerin Laajuus ja vaikutus kanssa; tässä painopiste on virheiden tai puutteiden seurauksissa itse ulottuvuuden sijaan.",
+        biasRisk: "low",
+        biasComment:
+          "Biasriski (diagnoosikysymykset 1 ja 2): näkyvät operatiiviset tai tekniset riskit voidaan yliarvioida, kun taas hiljainen laatu-, huolenpito- tai vaatimustenmukaisuustyö aliarvioidaan. Tasokuvaukset kattavat myös laadun, vaatimustenmukaisuuden ja suhteet ja ovat sukupuolineutraaleja (kysymys 5).",
+        biasAction:
+          "Ankkuritekstit sisältävät seuraukset laadulle, vaatimustenmukaisuudelle ja asiakassuhteille, eivät vain taloudellisia tai teknisiä virheitä, jotta erilaiset vastuutyypit arvioidaan tasavertaisesti.",
+      },
     },
     complexity: {
       name: "Monimutkaisuus ja epäselvyys",
@@ -76,6 +102,19 @@ export const standardTemplateContentFi: StandardTemplateContent = {
         "Yritys haluaa, että monimutkaisuudella ja epäselvyydellä on vahva vaikutus roolin arviointiin. Roolit, jotka käsittelevät vaikeita, monitulkintaisia tai epävarmoja ongelmia, saavat siksi selvästi korkeamman palkkion mallissa.",
         "Yritys pitää monimutkaisuutta ja epäselvyyttä yhtenä mallin ratkaisevimmista tekijöistä. Tämä tarkoittaa, että roolit, jotka saavat korkeat arviointipisteet tällä kriteerillä, saavat myös suuren painoarvon kokonaisarvioinnissa ja arvioidaan siten normaalisti suhteellisesti korkeammalle palkan osalta.",
       ],
+      compliance: {
+        purpose:
+          "Mittaa työn vaikeusastetta: teknistä, liiketoiminnallista ja organisatorista monimutkaisuutta sekä epävarmuuden astetta, kun tieto, suunta tai ratkaisu ei ole alusta alkaen annettu.",
+        whyRelevant:
+          "Kyky käsitellä monia muuttujia, riippuvuuksia ja kompromisseja on keskeinen osa roolin arvoa. Sitä arvioidaan tehtävien tosiasiallisen monimutkaisuuden perusteella, ei sen perusteella, kuinka tekniseltä työ näyttää, mikä tekee kriteeristä sukupuolineutraalin.",
+        overlapNotes:
+          "Menee osittain päällekkäin kriteerin Osaamisen syvyys/laajuus kanssa; tässä painopiste on ongelmien monimutkaisuudessa ja epävarmuudessa vaaditun tiedon sijaan.",
+        biasRisk: "low",
+        biasComment:
+          "Biasriski (diagnoosikysymys 2): tekninen monimutkaisuus voidaan yliarvioida, kun taas suhteisiin liittyvä, koordinoiva tai monitulkintainen monimutkaisuus aliarvioidaan. Tasokuvaukset kattavat myös organisatorisen ja liiketoiminnallisen monimutkaisuuden ja ovat sukupuolineutraaleja (kysymys 5).",
+        biasAction:
+          "Ankkuritekstit kuvaavat monimutkaisuutta laajasti (tekninen, liiketoiminnallinen ja organisatorinen), jotta myös koordinoivat ja monitulkintaiset yhteydet arvioidaan monimutkaisiksi.",
+      },
     },
     autonomy: {
       name: "Itsenäisyys ja päätösvalta",
@@ -98,6 +137,19 @@ export const standardTemplateContentFi: StandardTemplateContent = {
         "Yritys haluaa, että tällä kriteerillä on vahva vaikutus. Roolit, joilla on suurempi itsenäisyys ja korkeampi päätösvalta, saavat siksi selvästi suuremman painoarvon kokonaisarvioinnissa.",
         "Yritys pitää itsenäisyyttä ja päätösvaltaa yhtenä mallin ratkaisevimmista ulottuvuuksista. Roolit, jotka arvioidaan korkealle itsenäisyyden ja päätöstason osalta, arvioidaan siksi selvästi korkeammalle suhteessa muihin rooleihin.",
       ],
+      compliance: {
+        purpose:
+          "Mittaa roolin liikkumavaraa ja päätöstasoa: itsenäisyyden astetta, kuinka paljon ohjausta rooli toimii alaisena ja millainen valtuutus sillä on vaikuttaa suuntaan, priorisointeihin ja lopputuloksiin.",
+        whyRelevant:
+          "Itsenäisyys ja päätösvalta heijastavat roolin kantamaa vastuuta. Sitä arvioidaan sen perusteella, mitä päätöksiä tosiasiassa tehdään, ei muodollisen tittelin perusteella, mikä tekee kriteeristä sukupuolineutraalin.",
+        overlapNotes:
+          "Menee osittain päällekkäin kriteerien Laajuus ja vaikutus sekä Henkilöstö-/esihenkilövastuu kanssa; tässä painopiste on itsenäisyydessä ja päätösvallassa ulottuvuuden tai muiden johtamisen sijaan.",
+        biasRisk: "medium",
+        biasComment:
+          "Biasriski (diagnoosikysymys 3): näkyvä päätösvalta voidaan yliarvioida suhteessa tosiasialliseen vaikutukseen, mikä voi suosia muodollista valtuutusta kantavia rooleja verrattuna senioriasiantuntijoihin, joilla on todellista vaikutusvaltaa. Tasokuvaukset ovat sukupuolineutraaleja (kysymys 5).",
+        biasAction:
+          "Ankkuritekstit kattavat myös itsenäisen aloitteellisuuden ja ongelmanratkaisun, eivät vain muodollista päätösvaltaa, jotta todellinen vaikutusvalta ilman titteliä voidaan arvioida korkealle.",
+      },
     },
     stakeholders: {
       name: "Sidosryhmien laajuus",
@@ -120,6 +172,19 @@ export const standardTemplateContentFi: StandardTemplateContent = {
         "Yritys haluaa, että tällä kriteerillä on vahva vaikutus. Roolit, jotka vaativat laajaa koordinointia, monia kontaktipintoja ja runsasta yhteistyötä, arvioidaan siksi selvästi korkeammalle.",
         "Yritys pitää sidosryhmien laajuutta yhtenä mallin ratkaisevimmista tekijöistä. Korkeat roolin arviointipisteet tällä ulottuvuudella antavat siksi suuren painoarvon siihen, miten rooleja arvioidaan suhteessa toisiinsa ja asemoidaan.",
       ],
+      compliance: {
+        purpose:
+          "Mittaa roolin kontaktipintojen ja yhteistyötarpeiden laajuutta: sisäiset ja ulkoiset sidosryhmät, toimintorajat ylittävä yhteistyö ja tarve koordinoida työtä henkilöiden, tiimien ja osapuolten välillä.",
+        whyRelevant:
+          "Laaja yhteistyö ja koordinointi ovat todellinen panos toimintaan. Kriteeri tekee näkyväksi suhteisiin liittyvän ja koordinoivan työn, jota arvioidaan yhteistyön tosiasiallisen laajuuden perusteella ja joka on sukupuolineutraali.",
+        overlapNotes:
+          "Menee osittain päällekkäin kriteerin Laajuus ja vaikutus kanssa; tässä painopiste on yhteistyön laajuudessa ja vaihtelevuudessa tuloksen ulottuvuuden sijaan.",
+        biasRisk: "low",
+        biasComment:
+          "Tämä kriteeri vastustaa tunnettua biasia arvottamalla nimenomaisesti suhteisiin liittyvän ja koordinoivan työn (diagnoosikysymys 2). Jäljelle jäävä riski (kysymys 3): ulkoinen, näkyvä edustus voidaan yliarvioida suhteessa sisäiseen koordinointityöhön. Tasokuvaukset ovat sukupuolineutraaleja (kysymys 5).",
+        biasAction:
+          "Ankkuritekstit arvottavat sisäisen toimintorajat ylittävän koordinoinnin tasavertaisesti ulkoisen edustuksen kanssa, jotta näkyvä ulkoinen verkostoituminen ei sinänsä paina enemmän.",
+      },
     },
     knowledge: {
       name: "Osaamisen syvyys/laajuus",
@@ -142,6 +207,19 @@ export const standardTemplateContentFi: StandardTemplateContent = {
         "Yritys haluaa, että tällä kriteerillä on vahva vaikutus. Roolit, jotka vaativat syvää erityisosaamista, laajaa toimialaymmärrystä tai mittavaa kokemusta, arvioidaan siksi selvästi korkeammalle mallissa.",
         "Yritys pitää osaamisen syvyyttä ja laajuutta yhtenä mallin ratkaisevimmista ulottuvuuksista. Korkeat pisteet tällä tekijällä antavat siksi vahvan painoarvon roolin kokonaisarvioinnissa ja vaikuttavat normaalisti korkeampaan suhteelliseen palkka-asemointiin.",
       ],
+      compliance: {
+        purpose:
+          "Mittaa, millaiseen tietoon ja minkä tasoiseen osaamiseen rooli perustuu: asiantuntijasyvyys, käytännön kokemus, menetelmien ymmärtäminen ja kyky työskennellä useiden tieteenalojen tai alueiden poikki.",
+        whyRelevant:
+          "Osaamisen taso ja kokemus ovat osa roolin arvoa. Kriteeri arvioi tosiasiallista osaamista ja sovellettua kyvykkyyttä, ei muodollisia ansioita sinänsä, mikä tekee siitä sukupuolineutraalin.",
+        overlapNotes:
+          "Menee osittain päällekkäin kriteerien Monimutkaisuus ja epäselvyys sekä Muodollinen pätevyys kanssa; tässä painopiste on tosiasiallisessa tiedossa ja kokemuksessa ongelmien monimutkaisuuden tai muodollisten vaatimusten sijaan.",
+        biasRisk: "low",
+        biasComment:
+          "Biasriski (diagnoosikysymykset 1 ja 4): muodollisesti tunnustettu tai näkyvä asiantuntemus voidaan yliarvioida suhteessa hiljaiseen, kokemusperäiseen tietoon. Tasokuvaukset lähtevät sovelletusta osaamisesta, eivät pelkästä tittelistä tai koulutuksesta, ja ovat sukupuolineutraaleja (kysymys 5).",
+        biasAction:
+          "Ankkuritekstit arvottavat käytännön kokemuksen ja sovelletun menetelmäymmärryksen tasavertaisesti muodollisesti tunnustetun erikoistumisen kanssa.",
+      },
     },
     financial: {
       name: "Taloudellinen vastuu",
@@ -164,6 +242,19 @@ export const standardTemplateContentFi: StandardTemplateContent = {
         "Yritys haluaa, että tällä kriteerillä on vahva vaikutus. Roolit, joilla on selkeä vaikutus budjettiin, kustannuksiin, tuottoihin tai taloudellisiin tuloksiin, arvioidaan siksi korkeammalle suhteessa muihin rooleihin.",
         "Yritys pitää taloudellista vastuuta yhtenä mallin ratkaisevimmista ulottuvuuksista. Korkeat pisteet taloudellisessa vastuussa saavat siksi erittäin vahvan painoarvon roolin kokonaisarvioinnissa ja vaikuttavat normaalisti korkeampaan suhteelliseen palkka-asemointiin.",
       ],
+      compliance: {
+        purpose:
+          "Mittaa roolin vastuuta taloudellisista resursseista tai lopputuloksista: budjetti, kustannukset, tuotot, kannattavuus, investoinnit tai vastuu liiketoiminta-alueen taloudesta.",
+        whyRelevant:
+          "Taloudellinen vastuu on osa roolin panosta, mutta sitä arvioidaan talouden tosiasiallisen päätösvastuun asteen perusteella, ei budjetin koon perusteella sinänsä, mikä tekee kriteeristä sukupuolineutraalin.",
+        overlapNotes:
+          "Menee osittain päällekkäin kriteerien Itsenäisyys ja päätösvalta (päätösvalta) sekä Laajuus ja vaikutus kanssa; tässä painopiste on nimenomaan vastuussa taloudellisista raameista ja tuloksista.",
+        biasRisk: "medium",
+        biasComment:
+          "Tunnettu biasriski (diagnoosikysymykset 3 ja 6): suurelle budjetille voidaan antaa liian suuri paino verrattuna monimutkaisuuteen, vastuuseen ja erityisosaamiseen, mikä voi suosia perinteisesti miesvaltaisia budjettia kantavia rooleja. Tasokuvaukset ovat sukupuolineutraaleja (kysymys 5).",
+        biasAction:
+          "Kriteeri pidetään maltillisella painolla mallissa, jotta budjetin koko ei sinänsä hallitse arviointia, ja tasot kuvaavat päätösvastuuta pelkkien summien koon sijaan.",
+      },
     },
     people: {
       name: "Henkilöstö-/esihenkilövastuu",
@@ -186,6 +277,19 @@ export const standardTemplateContentFi: StandardTemplateContent = {
         "Yritys haluaa, että tällä kriteerillä on vahva vaikutus. Roolit, joilla on suurempi esihenkilövastuu, tiimivastuu tai muodollinen johtajuus, arvioidaan siksi selvästi korkeammalle suhteessa muihin rooleihin.",
         "Yritys pitää henkilöstö- ja esihenkilövastuuta yhtenä mallin ratkaisevimmista tekijöistä. Korkeat roolin arviointipisteet tällä ulottuvuudella saavat siksi suuren painoarvon kokonaisarvioinnissa ja normaalisti myös suhteellisessa palkkalogiikassa.",
       ],
+      compliance: {
+        purpose:
+          "Mittaa roolin vastuuta muiden johtamisesta: muodollinen henkilöstövastuu, operatiivinen työnjohto, tiimin johtaminen sekä vastuu kapasiteetista, priorisoinnista ja kehittämisestä muiden ihmisten kautta.",
+        whyRelevant:
+          "Muiden johtaminen on osa roolin panosta toiminnan arvoon. Sitä arvioidaan johtamistehtävän laajuuden ja sisällön perusteella, ei tittelin tai alaisten lukumäärän perusteella, jotta pienen tiimin hyvä johtaminen ja suuren johtaminen arvioidaan tosiasiallisen vastuun eikä näkyvän arvon perusteella.",
+        overlapNotes:
+          "Menee osittain päällekkäin kriteerien Laajuus ja vaikutus (organisatorinen ulottuvuus) sekä Itsenäisyys ja päätösvalta (päätösvalta) kanssa; tässä painopiste on nimenomaan vastuussa, jota käytetään muiden ihmisten kautta.",
+        biasRisk: "medium",
+        biasComment:
+          "Tunnettu biasriski (diagnoosikysymykset 3 ja 6): näkyvän valtuutuksen ja alaisten lukumäärän palkitseminen enemmän kuin tosiasiallisen johtamisvaikutuksen voi yliarvioida perinteisesti miesvaltaisia esihenkilörooleja ja aliarvioida senioriasiantuntijoita ja koordinointipainotteista työtä. Tasokuvaukset sinänsä ovat sukupuolineutraaleja (kysymys 5).",
+        biasAction:
+          "Tasoankkurit kuvaavat johtajuuden sisältöä pelkän alaisten lukumäärän sijaan, ja kriteeri pidetään maltillisella painolla, jotta esihenkilötitteli ei sinänsä hallitse arviointia.",
+      },
     },
     formal: {
       name: "Muodollinen pätevyys",
@@ -208,6 +312,19 @@ export const standardTemplateContentFi: StandardTemplateContent = {
         "Yritys haluaa, että tällä kriteerillä on vahva vaikutus. Roolit, joissa muodollinen pätevyys tai vastaava kokemustaso on erityisen tärkeä, saavat siksi selvästi suuremman painoarvon mallissa.",
         "Yritys pitää muodollista pätevyyttä yhtenä mallin ratkaisevimmista ulottuvuuksista. Korkeat arviointipisteet tällä tekijällä vaikuttavat siksi vahvasti roolin kokonaisarviointiin ja vaikuttavat normaalisti korkeampaan suhteelliseen palkka-asemointiin.",
       ],
+      compliance: {
+        purpose:
+          "Mittaa muodollisia osaamisvaatimuksia, jotka tyypillisesti liittyvät rooliin: koulutustaso, tutkinto, sertifiointi, laillistus tai muu muodollisesti tunnustettu osaaminen, riippumatta nykyisen henkilön taustasta.",
+        whyRelevant:
+          "Muodolliset pätevyysvaatimukset voivat heijastaa roolin edellyttämää tiedon tasoa. Kriteeri kuvaa roolin muodollista sisääntulotasoa, ei yksilöä, ja se pidetään sidottuna tosiasialliseen työn sisältöön pysyäkseen sukupuolineutraalina.",
+        overlapNotes:
+          "Menee osittain päällekkäin kriteerin Osaamisen syvyys/laajuus kanssa; tässä painopiste on muodollisissa vaatimuksissa tosiasiallisesti sovelletun tiedon ja kokemuksen sijaan.",
+        biasRisk: "medium",
+        biasComment:
+          "Tunnettu biasriski (diagnoosikysymys 4): muodolliseen asemaan nojaaminen tosiasiallisen työn sisällön sijaan voi asettaa epäedulliseen asemaan osaamisen, joka on hankittu muita kuin perinteisen koulutuksen kautta. Tasokuvaukset sallivat vastaavan dokumentoidun kokemuksen ja ovat sukupuolineutraaleja (kysymys 5).",
+        biasAction:
+          "Tasot tunnustavat nimenomaisesti vastaavan kokemuksen muodollisen koulutuksen rinnalla, ja kriteeri pidetään matalalla painolla, jotta muodolliset ansiot eivät sinänsä aja arviointia.",
+      },
     },
   },
   trackNames: {

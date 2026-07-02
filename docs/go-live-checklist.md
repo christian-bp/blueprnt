@@ -115,6 +115,12 @@ suite covers them before go-live:
   e2e-only (the 5 MB size cap and the admin gate ARE unit-tested). Same
   limitation as the user-avatar `setMyAvatar` path.
 
+- [ ] **Standard model compliance evidence in nb/da/fi.** The `compliance`
+  fields (purpose/whyRelevant/overlapNotes/biasComment/biasAction) on the 9
+  standard-model criteria in `standardTemplate.content.{nb,da,fi}.ts` are
+  machine-drafted translations of the Swedish source (`sv` is the source, `en`
+  is curated). Have a native speaker review them before go-live.
+
 ## How to add to this list
 
 When you introduce anything that is acceptable only because we are pre-launch (a

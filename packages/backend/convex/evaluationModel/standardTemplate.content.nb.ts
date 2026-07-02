@@ -31,6 +31,19 @@ export const standardTemplateContentNb: StandardTemplateContent = {
         "Selskapet ønsker at dette kriteriet skal ha sterk påvirkning i modellen. Forskjeller i omfang, ansvar og påvirkning fra teamnivå til selskapsnivå skal tydelig påvirke hvordan roller vurderes relativt til hverandre.",
         "Selskapet ser omfang og påvirkning som en av de mest avgjørende dimensjonene i modellen. Roller med stor organisatorisk rekkevidde og omfattende påvirkning skal derfor vurderes tydelig høyere når dette kriteriet vektes høyt.",
       ],
+      compliance: {
+        purpose:
+          "Måler rollens organisatoriske rekkevidde: hvor stort område rollen påvirker og hvor langt effektene av dens arbeid, beslutninger og prioriteringer strekker seg, uavhengig av person eller hierarkisk nivå.",
+        whyRelevant:
+          "Rekkevidde og påvirkning speiler rollens bidrag til virksomhetens resultater. Det vurderes ut fra faktisk organisatorisk gjennomslag, ikke ut fra tittel eller synlig mandat, noe som gjør kriteriet kjønnsnøytralt.",
+        overlapNotes:
+          "Overlapper delvis med Autonomi og beslutningsmyndighet (beslutningsmandat) og Personal-/lederansvar; her ligger fokus spesifikt på hvor langt rollens effekter når i organisasjonen.",
+        biasRisk: "low",
+        biasComment:
+          "Biasrisiko (diagnosespørsmål 3): å belønne synlig mandat mer enn faktisk gjennomslag kan gagne tradisjonelt synlige roller. Nivåbeskrivelsene tar utgangspunkt i effekt og ansvar snarere enn rang og er kjønnsnøytrale (spørsmål 5).",
+        biasAction:
+          "Nivåankrene beskriver faktisk rekkevidde og resultater, ikke formell posisjon, slik at også roller uten synlig tittel kan vurderes høyt.",
+      },
     },
     risk: {
       name: "Risiko og konsekvens",
@@ -53,6 +66,19 @@ export const standardTemplateContentNb: StandardTemplateContent = {
         "Selskapet ønsker at risiko og konsekvens skal ha sterk påvirkning på hvordan roller vurderes. Roller der feil kan få tydelige følger for virksomhet, kunde, økonomi, etterlevelse eller tillit skal derfor premieres høyere.",
         "Selskapet ser risiko og konsekvens som en av de mest avgjørende faktorene i modellen. Høye rollepoeng på denne dimensjonen skal derfor få svært stort gjennomslag i den samlede vurderingen og dermed normalt også i den relative lønnsposisjoneringen.",
       ],
+      compliance: {
+        purpose:
+          "Måler hvilke konsekvenser rollens beslutninger, arbeid eller mangler kan få for virksomheten: kvalitet, leveranse, økonomi, etterlevelse, sikkerhet, kunderelasjoner og omdømme.",
+        whyRelevant:
+          "Konsekvensenes omfang er en del av rollens verdi for virksomheten. Det vurderes ut fra hva som faktisk står på spill, ikke ut fra hvor synlig eller dramatisk arbeidet er, noe som gjør kriteriet kjønnsnøytralt.",
+        overlapNotes:
+          "Overlapper delvis med Omfang og påvirkning; her ligger fokus på konsekvensene av feil eller mangler snarere enn på rekkevidden i seg selv.",
+        biasRisk: "low",
+        biasComment:
+          "Biasrisiko (diagnosespørsmål 1 og 2): synlige operative eller tekniske risikoer kan overvurderes mens stille kvalitets-, omsorgs- eller etterlevelsesarbeid undervurderes. Nivåbeskrivelsene omfatter også kvalitet, etterlevelse og relasjoner og er kjønnsnøytrale (spørsmål 5).",
+        biasAction:
+          "Ankertekstene inkluderer konsekvenser for kvalitet, etterlevelse og kunderelasjoner, ikke bare økonomiske eller tekniske feil, slik at ulike typer ansvar vurderes likeverdig.",
+      },
     },
     complexity: {
       name: "Kompleksitet og tvetydighet",
@@ -75,6 +101,19 @@ export const standardTemplateContentNb: StandardTemplateContent = {
         "Selskapet ønsker at kompleksitet og tvetydighet skal ha sterk påvirkning på rollevurderingen. Roller som håndterer vanskelige, tvetydige eller usikre problemer skal derfor premieres tydelig høyere i modellen.",
         "Selskapet ser kompleksitet og tvetydighet som en av de mest avgjørende faktorene i modellen. Det betyr at roller som får høye rollevurderingspoeng på dette kriteriet også skal få stort gjennomslag i den samlede vurderingen og dermed normalt vurderes relativt høyere lønnsmessig.",
       ],
+      compliance: {
+        purpose:
+          "Måler arbeidets vanskelighetsgrad: teknisk, forretningsmessig og organisatorisk kompleksitet samt graden av usikkerhet når informasjon, retning eller løsning ikke er gitt fra starten.",
+        whyRelevant:
+          "Evnen til å håndtere mange variabler, avhengigheter og avveininger er en sentral del av en rolles verdi. Det vurderes ut fra oppgavenes faktiske kompleksitet, ikke ut fra hvor teknisk arbeidet fremstår, noe som gjør kriteriet kjønnsnøytralt.",
+        overlapNotes:
+          "Overlapper delvis med Kunnskapsdybde/-bredde; her ligger fokus på problemenes kompleksitet og usikkerhet snarere enn på kunnskapen som kreves.",
+        biasRisk: "low",
+        biasComment:
+          "Biasrisiko (diagnosespørsmål 2): teknisk kompleksitet kan overvurderes mens relasjonell, koordinerende eller flertydig kompleksitet undervurderes. Nivåbeskrivelsene omfatter også organisatorisk og forretningsmessig kompleksitet og er kjønnsnøytrale (spørsmål 5).",
+        biasAction:
+          "Ankertekstene beskriver kompleksitet bredt (teknisk, forretningsmessig og organisatorisk) slik at også koordinerende og flertydige sammenhenger vurderes som komplekse.",
+      },
     },
     autonomy: {
       name: "Autonomi og beslutningsmyndighet",
@@ -97,6 +136,19 @@ export const standardTemplateContentNb: StandardTemplateContent = {
         "Selskapet ønsker at dette kriteriet skal ha sterk påvirkning. Roller med større selvstendighet og høyere beslutningsmyndighet skal derfor få tydelig større gjennomslag i den samlede vurderingen.",
         "Selskapet ser autonomi og beslutningsmyndighet som en av de mest avgjørende dimensjonene i modellen. Roller som vurderes høyt på selvstendighet og beslutningsnivå skal derfor vurderes tydelig høyere relativt til andre roller.",
       ],
+      compliance: {
+        purpose:
+          "Måler rollens handlingsrom og beslutningsnivå: grad av selvstendighet, hvor mye styring rollen arbeider under og hvilket mandat den har til å påvirke retning, prioriteringer og utfall.",
+        whyRelevant:
+          "Selvstendighet og beslutningsmyndighet speiler ansvaret rollen bærer. Det vurderes ut fra hvilke beslutninger som faktisk tas, ikke ut fra formell tittel, noe som gjør kriteriet kjønnsnøytralt.",
+        overlapNotes:
+          "Overlapper delvis med Omfang og påvirkning og Personal-/lederansvar; her ligger fokus på selvstendighet og beslutningsmyndighet snarere enn på rekkevidde eller det å lede andre.",
+        biasRisk: "medium",
+        biasComment:
+          "Biasrisiko (diagnosespørsmål 3): synlig beslutningsmandat kan overvurderes sammenlignet med faktisk gjennomslag, noe som kan gagne roller med formelt mandat fremfor seniore spesialister med reell innflytelse. Nivåbeskrivelsene er kjønnsnøytrale (spørsmål 5).",
+        biasAction:
+          "Ankertekstene omfatter også selvstendig initiativ og problemløsning, ikke bare formelt beslutningsmandat, slik at reell innflytelse uten tittel kan vurderes høyt.",
+      },
     },
     stakeholders: {
       name: "Interessentbredde",
@@ -119,6 +171,19 @@ export const standardTemplateContentNb: StandardTemplateContent = {
         "Selskapet ønsker at dette kriteriet skal ha sterk påvirkning. Roller som krever bred koordinering, mange kontaktflater og omfattende samhandling skal derfor vurderes tydelig høyere.",
         "Selskapet ser interessentbredde som en av de mest avgjørende faktorene i modellen. Høye rollevurderingspoeng på denne dimensjonen skal derfor gi stort gjennomslag i hvordan roller relativvurderes og posisjoneres.",
       ],
+      compliance: {
+        purpose:
+          "Måler bredden i rollens kontaktflater og samhandlingsbehov: interne og eksterne interessenter, tverrfunksjonelt samarbeid og behovet for å samordne arbeid mellom personer, team og parter.",
+        whyRelevant:
+          "Bred samhandling og samordning er et reelt bidrag til virksomheten. Kriteriet synliggjør relasjonelt og koordinerende arbeid, som vurderes ut fra samhandlingens faktiske omfang og er kjønnsnøytralt.",
+        overlapNotes:
+          "Overlapper delvis med Omfang og påvirkning; her ligger fokus på bredden og variasjonen i samhandlingen snarere enn på rekkevidden av resultatet.",
+        biasRisk: "low",
+        biasComment:
+          "Dette kriteriet motvirker en kjent bias ved uttrykkelig å verdsette relasjonelt og koordinerende arbeid (diagnosespørsmål 2). Gjenstående risiko (spørsmål 3): ekstern, synlig representasjon kan overvurderes sammenlignet med internt samordningsarbeid. Nivåbeskrivelsene er kjønnsnøytrale (spørsmål 5).",
+        biasAction:
+          "Ankertekstene verdsetter intern tverrfunksjonell samordning likeverdig med ekstern representasjon, slik at synlig ekstern nettverksbygging ikke i seg selv veier tyngre.",
+      },
     },
     knowledge: {
       name: "Kunnskapsdybde/-bredde",
@@ -141,6 +206,19 @@ export const standardTemplateContentNb: StandardTemplateContent = {
         "Selskapet ønsker at dette kriteriet skal ha sterk påvirkning. Roller som krever dyp spesialistkunnskap, bred domeneforståelse eller omfattende erfaring skal derfor vurderes tydelig høyere i modellen.",
         "Selskapet ser kunnskapsdybde og -bredde som en av de mest avgjørende dimensjonene i modellen. Høye poeng på denne faktoren skal derfor gi sterkt gjennomslag i den samlede rollevurderingen og normalt bidra til høyere relativ lønnsposisjonering.",
       ],
+      compliance: {
+        purpose:
+          "Måler hvilken type og hvilket nivå av kunnskap rollen bygger på: spesialistdybde, praktisk erfaring, metodeforståelse og evne til å arbeide på tvers av flere disipliner eller områder.",
+        whyRelevant:
+          "Kunnskapsnivå og erfaring er en del av rollens verdi. Kriteriet vurderer faktisk kompetanse og anvendt evne, ikke formelle meritter i seg selv, noe som gjør det kjønnsnøytralt.",
+        overlapNotes:
+          "Overlapper delvis med Kompleksitet og tvetydighet og Formelle kvalifikasjoner; her ligger fokus på faktisk kunnskap og erfaring snarere enn på problemenes kompleksitet eller formelle krav.",
+        biasRisk: "low",
+        biasComment:
+          "Biasrisiko (diagnosespørsmål 1 og 4): formelt anerkjent eller synlig ekspertise kan overvurderes sammenlignet med stille, erfaringsbasert kunnskap. Nivåbeskrivelsene tar utgangspunkt i anvendt kompetanse, ikke bare tittel eller utdanning, og er kjønnsnøytrale (spørsmål 5).",
+        biasAction:
+          "Ankertekstene verdsetter praktisk erfaring og anvendt metodeforståelse likeverdig med formelt anerkjent spesialisering.",
+      },
     },
     financial: {
       name: "Økonomisk ansvar",
@@ -163,6 +241,19 @@ export const standardTemplateContentNb: StandardTemplateContent = {
         "Selskapet ønsker at dette kriteriet skal ha sterk påvirkning. Roller med tydelig påvirkning på budsjett, kostnader, inntekter eller økonomiske resultater skal derfor vurderes høyere relativt til andre roller.",
         "Selskapet ser økonomisk ansvar som en av de mest avgjørende dimensjonene i modellen. Høye poeng på økonomisk ansvar skal derfor få svært sterkt gjennomslag i den samlede rollevurderingen og normalt bidra til høyere relativ lønnsposisjonering.",
       ],
+      compliance: {
+        purpose:
+          "Måler rollens ansvar for økonomiske ressurser eller utfall: budsjett, kostnader, inntekter, lønnsomhet, investeringer eller ansvar for et forretningsområdes økonomi.",
+        whyRelevant:
+          "Økonomisk ansvar er en del av rollens bidrag, men verdsettes ut fra graden av faktisk beslutningsansvar for økonomien, ikke ut fra budsjettets størrelse i seg selv, noe som gjør kriteriet kjønnsnøytralt.",
+        overlapNotes:
+          "Overlapper delvis med Autonomi og beslutningsmyndighet (beslutningsmandat) og Omfang og påvirkning; her ligger fokus spesifikt på ansvar for økonomiske rammer og resultater.",
+        biasRisk: "medium",
+        biasComment:
+          "Kjent biasrisiko (diagnosespørsmål 3 og 6): stort budsjett kan gis for stor vekt sammenlignet med kompleksitet, ansvar og spesialistkunnskap, noe som kan gagne tradisjonelt mannsdominerte budsjettbærende roller. Nivåbeskrivelsene er kjønnsnøytrale (spørsmål 5).",
+        biasAction:
+          "Kriteriet holdes på en moderat vekt i modellen slik at budsjettstørrelse ikke i seg selv dominerer vurderingen, og nivåene beskriver beslutningsansvar snarere enn bare beløpenes størrelse.",
+      },
     },
     people: {
       name: "Personal-/lederansvar",
@@ -185,6 +276,19 @@ export const standardTemplateContentNb: StandardTemplateContent = {
         "Selskapet ønsker at dette kriteriet skal ha sterk påvirkning. Roller med større lederansvar, teamansvar eller formelt lederskap skal derfor vurderes tydelig høyere relativt til andre roller.",
         "Selskapet ser personal- og lederansvar som en av de mest avgjørende faktorene i modellen. Høye rollevurderingspoeng på denne dimensjonen skal derfor få stort gjennomslag i den samlede vurderingen og normalt også i den relative lønnslogikken.",
       ],
+      compliance: {
+        purpose:
+          "Måler rollens ansvar for å lede andre: formelt personalansvar, operativ arbeidsledelse, teamledelse og ansvar for kapasitet, prioritering og utvikling gjennom andre mennesker.",
+        whyRelevant:
+          "Å lede andre er en del av rollens bidrag til virksomhetens verdi. Det vurderes ut fra lederoppdragets omfang og innhold, ikke ut fra tittel eller antall underordnede, slik at det å lede et lite team godt og det å lede et stort vurderes på faktisk ansvar snarere enn på synlig rang.",
+        overlapNotes:
+          "Overlapper delvis med Omfang og påvirkning (organisatorisk rekkevidde) og Autonomi og beslutningsmyndighet (beslutningsmandat); her ligger fokus spesifikt på ansvar som utøves gjennom andre mennesker.",
+        biasRisk: "medium",
+        biasComment:
+          "Kjent biasrisiko (diagnosespørsmål 3 og 6): å belønne synlig mandat og antall underordnede mer enn faktisk lederpåvirkning kan overvurdere tradisjonelt mannsdominerte lederroller og undervurdere seniore spesialister og koordineringstungt arbeid. Nivåbeskrivelsene i seg selv er kjønnsnøytrale (spørsmål 5).",
+        biasAction:
+          "Nivåankrene beskriver lederskapets innhold snarere enn bare antall underordnede, og kriteriet holdes på en moderat vekt slik at en ledertittel ikke i seg selv dominerer vurderingen.",
+      },
     },
     formal: {
       name: "Formelle kvalifikasjoner",
@@ -207,6 +311,19 @@ export const standardTemplateContentNb: StandardTemplateContent = {
         "Selskapet ønsker at dette kriteriet skal ha sterk påvirkning. Roller der formelle kvalifikasjoner eller tilsvarende erfaringsnivå er spesielt viktig skal derfor få tydelig større gjennomslag i modellen.",
         "Selskapet ser formelle kvalifikasjoner som en av de mest avgjørende dimensjonene i modellen. Høye vurderingspoeng på denne faktoren skal derfor påvirke den samlede rollevurderingen sterkt og normalt bidra til høyere relativ lønnsposisjonering.",
       ],
+      compliance: {
+        purpose:
+          "Måler de formelle kompetansekravene som typisk er knyttet til rollen: utdanningsnivå, eksamen, sertifisering, autorisasjon eller annen formelt anerkjent kompetanse, uavhengig av den nåværende personens bakgrunn.",
+        whyRelevant:
+          "Formelle kvalifikasjonskrav kan speile kunnskapsnivået rollen forutsetter. Kriteriet beskriver rollens formelle inngangsnivå, ikke individet, og holdes knyttet til faktisk arbeidsinnhold for å forbli kjønnsnøytralt.",
+        overlapNotes:
+          "Overlapper delvis med Kunnskapsdybde/-bredde; her ligger fokus på formelle krav snarere enn på faktisk anvendt kunnskap og erfaring.",
+        biasRisk: "medium",
+        biasComment:
+          "Kjent biasrisiko (diagnosespørsmål 4): å hvile på formell status i stedet for faktisk arbeidsinnhold kan misgunstige kompetanse som er ervervet på andre måter enn tradisjonell utdanning. Nivåbeskrivelsene tillater tilsvarende dokumentert erfaring og er kjønnsnøytrale (spørsmål 5).",
+        biasAction:
+          "Nivåene anerkjenner uttrykkelig tilsvarende erfaring ved siden av formell utdanning, og kriteriet holdes på lav vekt slik at formelle meritter ikke i seg selv driver vurderingen.",
+      },
     },
   },
   trackNames: {
