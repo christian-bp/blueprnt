@@ -839,7 +839,9 @@
       "methodAppendixLabel": "Menetelmäliite",
       "methodAppendixBody": "Vietävä asiakirja, jossa on kriteerisi, painot, perustelut ja vinoumien arviointi vaatimustenmukaisuustodisteena.",
       "biasReviewLabel": "Vinoumien arviointi",
-      "biasReviewBody": "Kriteerikohtainen tarkistus sukupuoleen liittyvästä ja muusta vinoumasta lievennystoimenpiteellä. Se osoittaa, että malli on suunniteltu vähentämään vinoumia."
+      "biasReviewBody": "Kriteerikohtainen tarkistus sukupuoleen liittyvästä ja muusta vinoumasta lievennystoimenpiteellä. Se osoittaa, että malli on suunniteltu vähentämään vinoumia.",
+      "criterionRationaleLabel": "Kriteerin perustelu",
+      "criterionRationaleBody": "Miksi kriteeri kuuluu malliin: sen tarkoitus, miksi se on relevantti ja mahdollinen päällekkäisyys muiden kanssa. Se dokumentoi palkka-avoimuusdirektiivin edellyttämän objektiivisen perustan."
     },
     "admin": {
       "tabs": {

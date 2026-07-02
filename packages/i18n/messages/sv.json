@@ -839,7 +839,9 @@
       "methodAppendixLabel": "Metodbilaga",
       "methodAppendixBody": "Ett exporterbart dokument med era kriterier, vikter, motiveringar och biasgranskning som efterlevnadsbevis.",
       "biasReviewLabel": "Biasgranskning",
-      "biasReviewBody": "En kontroll per kriterium av köns- och biasrisk med en åtgärd för att minska den. Den visar att modellen är utformad för att minska bias."
+      "biasReviewBody": "En kontroll per kriterium av köns- och biasrisk med en åtgärd för att minska den. Den visar att modellen är utformad för att minska bias.",
+      "criterionRationaleLabel": "Kriterieurvalsprotokoll",
+      "criterionRationaleBody": "Varför kriteriet hör hemma i modellen: dess syfte, varför det är relevant och eventuell överlappning med andra. Det dokumenterar den saklighet som lönetransparensdirektivet kräver."
     },
     "admin": {
       "tabs": {

@@ -839,7 +839,9 @@
       "methodAppendixLabel": "Metodebilag",
       "methodAppendixBody": "Et eksporterbart dokument med jeres kriterier, vagte, begrundelser og bias-gennemgang som efterlevelsesdokumentation.",
       "biasReviewLabel": "Bias-gennemgang",
-      "biasReviewBody": "En per-kriterie-kontrol af køns- og biasrisiko med en afbødende handling. Den viser, at modellen er udformet for at reducere bias."
+      "biasReviewBody": "En per-kriterie-kontrol af køns- og biasrisiko med en afbødende handling. Den viser, at modellen er udformet for at reducere bias.",
+      "criterionRationaleLabel": "Kriterievalgsdokumentation",
+      "criterionRationaleBody": "Hvorfor kriteriet hører hjemme i modellen: dets formål, hvorfor det er relevant og eventuel overlapning med andre. Det dokumenterer den saglige begrundelse, som løngennemsigtighedsdirektivet kræver."
     },
     "admin": {
       "tabs": {

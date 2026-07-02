@@ -839,7 +839,9 @@
       "methodAppendixLabel": "Method appendix",
       "methodAppendixBody": "An exportable document with your criteria, weights, rationale, and bias review as compliance evidence.",
       "biasReviewLabel": "Bias review",
-      "biasReviewBody": "A per-criterion check of gender and bias risk with a mitigating action. It shows the model is designed to reduce bias."
+      "biasReviewBody": "A per-criterion check of gender and bias risk with a mitigating action. It shows the model is designed to reduce bias.",
+      "criterionRationaleLabel": "Criterion rationale",
+      "criterionRationaleBody": "Why this criterion belongs in the model: its purpose, why it's relevant, and any overlap with others. It documents the objective basis the pay-transparency directive requires."
     },
     "admin": {
       "tabs": {

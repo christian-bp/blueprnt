@@ -63,6 +63,7 @@ function CriterionComplianceForm({
   onClose: () => void
 }) {
   const t = useTranslations("dashboard.model.method")
+  const tHelp = useTranslations("dashboard.help")
   const tv = useTranslations("dashboard.validation")
   const format = useFormatter()
   const save = useMutation(api.evaluationModel.method.saveCriterionCompliance)
@@ -103,7 +104,12 @@ function CriterionComplianceForm({
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit(handleValid)}>
         {/* Rationale section */}
-        <p className="font-semibold text-base">{t("rationaleSection")}</p>
+        <p className="flex items-center gap-1.5 font-semibold text-base">
+          {t("rationaleSection")}
+          <HelpMorphButton label={tHelp("criterionRationaleLabel")}>
+            {tHelp("criterionRationaleBody")}
+          </HelpMorphButton>
+        </p>
         <FormField
           control={form.control}
           name="purpose"
@@ -148,7 +154,12 @@ function CriterionComplianceForm({
         />
 
         {/* Bias review section */}
-        <p className="font-semibold text-base">{t("biasSection")}</p>
+        <p className="flex items-center gap-1.5 font-semibold text-base">
+          {t("biasSection")}
+          <HelpMorphButton label={tHelp("biasReviewLabel")}>
+            {tHelp("biasReviewBody")}
+          </HelpMorphButton>
+        </p>
         <FormField
           control={form.control}
           name="biasRisk"
@@ -285,19 +296,13 @@ export function CriterionComplianceDialog({
   target: Row | null
   onClose: () => void
 }) {
-  const tHelp = useTranslations("dashboard.help")
   const t = useTranslations("dashboard.model.method")
 
   return (
     <Dialog open={target !== null} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-h-[85svh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-1.5">
-            {t("dialogTitle")}
-            <HelpMorphButton label={tHelp("biasReviewLabel")}>
-              {tHelp("biasReviewBody")}
-            </HelpMorphButton>
-          </DialogTitle>
+          <DialogTitle>{t("dialogTitle")}</DialogTitle>
           <DialogDescription>{t("dialogDescription")}</DialogDescription>
         </DialogHeader>
         {target !== null && (

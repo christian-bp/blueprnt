@@ -839,7 +839,9 @@
       "methodAppendixLabel": "Metodevedlegg",
       "methodAppendixBody": "Et eksporterbart dokument med kriteriene, vektene, begrunnelsene og biasvurderingen din som samsvarsdokumentasjon.",
       "biasReviewLabel": "Biasvurdering",
-      "biasReviewBody": "En per-kriterie-sjekk av kjønns- og biasrisiko med et dempende tiltak. Den viser at modellen er utformet for å redusere bias."
+      "biasReviewBody": "En per-kriterie-sjekk av kjønns- og biasrisiko med et dempende tiltak. Den viser at modellen er utformet for å redusere bias.",
+      "criterionRationaleLabel": "Kriterievalgsprotokoll",
+      "criterionRationaleBody": "Hvorfor kriteriet hører hjemme i modellen: dets formål, hvorfor det er relevant og eventuell overlapping med andre. Det dokumenterer den saklighet som lønnstransparensdirektivet krever."
     },
     "admin": {
       "tabs": {
