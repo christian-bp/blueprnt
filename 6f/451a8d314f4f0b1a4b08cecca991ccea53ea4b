@@ -1,0 +1,43 @@
+packages/backend/convex/evaluationModel/method.ts
+  s_6bff98b662648b::t_0fe40f1b058e65 9-11
+  s_6bff98b662648b::t_fe77aff17332b1 162
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_48f4b817841f0d 214-219,744-748,758-761
+apps/dashboard/components/pdf/method-appendix-download.tsx
+  s_6bff98b662648b::t_9460a421f18e00 3-4
+  s_6bff98b662648b::t_d35aa176234ce7 94
+apps/dashboard/lib/audit-detail.tsx
+  s_6bff98b662648b::t_020014eb00b935 291-296
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_8ec33f4ea88880 214-219,744-748,758-761
+packages/backend/convex/evaluationModel/method.test.ts
+  s_6bff98b662648b::t_cb5514ebe8a8f9 126-127,130-132
+  s_6bff98b662648b::t_d497aa10291dd5 117-125,128-129,133-135
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_6b6c20855287f6 214-219,758-761
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_9bd894b0e41018 214-219,744-748,758-761
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_35e6b67a6d3080 214-219,744-748,758-761
+apps/dashboard/components/model/criterion-compliance-dialog.tsx
+  s_6bff98b662648b::t_e4a070d4cf63d8 24-26,119-120,152-155,163-165,172-180,182-183,185-186,188-190,213-216,229-231,233-238,241-263,265-276,278-288
+apps/dashboard/components/model/criterion-compliance-dialog.test.tsx
+  s_6bff98b662648b::t_1411fee4f7d471 1-4,6-13,15-48,50-55,57-77
+  s_6bff98b662648b::t_8baa14bcc01dfd 5,14,49,56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "6f451a8d314f4f0b1a4b08cecca991ccea53ea4b",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
