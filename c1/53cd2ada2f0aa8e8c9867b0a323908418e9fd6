@@ -1,0 +1,25 @@
+apps/dashboard/app/(app)/page.test.tsx
+  s_6bff98b662648b::t_e2f0917d44fe75 45-46,49-50
+  s_6bff98b662648b::t_88698e1869ba9e 22-27,31,41,47,53,56-57,60
+apps/dashboard/app/(app)/page.tsx
+  s_6bff98b662648b::t_b9a8cd1112e339 4-5,7,10-12,18,21-23
+apps/dashboard/hooks/use-todo.ts
+  s_6bff98b662648b::t_8ef0250ae1ca19 12-15
+  s_6bff98b662648b::t_3af6ff25e100ad 1-11,16-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "c153cd2ada2f0aa8e8c9867b0a323908418e9fd6",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
