@@ -1,0 +1,29 @@
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_f09b6e7b694692 308-327
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_90ae815498a93f 308-327
+docs/go-live-checklist.md
+  s_6bff98b662648b::t_c46649ec734ad2 90
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_d6ada1d656bc39 308-327
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_b31e2266c4862e 308-327
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_ea0e90fc7d1f8e 308-327
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "658368c88257ec8fb981c40acfc0ac3a05a18440",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
