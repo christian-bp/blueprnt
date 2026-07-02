@@ -1,0 +1,21 @@
+apps/dashboard/components/overview/getting-started-card.test.tsx
+  s_6bff98b662648b::t_dbff3abdae91c4 1-25
+apps/dashboard/components/overview/getting-started-card.tsx
+  s_6bff98b662648b::t_eabad90e4d1251 1-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "221fb6b676e7c73ffbf2ecc5ece4944c34a3b161",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
