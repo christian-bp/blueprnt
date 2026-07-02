@@ -841,7 +841,13 @@
       "biasReviewLabel": "Bias review",
       "biasReviewBody": "A per-criterion check of gender and bias risk with a mitigating action. It shows the model is designed to reduce bias.",
       "criterionRationaleLabel": "Criterion rationale",
-      "criterionRationaleBody": "Why this criterion belongs in the model: its purpose, why it's relevant, and any overlap with others. It documents the objective basis the pay-transparency directive requires."
+      "criterionRationaleBody": "Why this criterion belongs in the model: its purpose, why it's relevant, and any overlap with others. It documents the objective basis the pay-transparency directive requires.",
+      "methodPurposeBody": "What this criterion measures and the outcome it captures.",
+      "methodWhyRelevantBody": "Why this criterion is relevant to the work's value, and why it is gender-neutral.",
+      "methodOverlapBody": "Any overlap with other criteria, so the same thing is not weighted twice.",
+      "methodBiasRiskBody": "The risk that this criterion over- or under-values gender-coded work, for example favouring visible mandate or budget size over actual complexity and responsibility.",
+      "methodBiasCommentBody": "What you considered in the bias check and what you found.",
+      "methodBiasActionBody": "The mitigating action taken to reduce the risk, such as reworded level descriptions or adjusted weighting."
     },
     "admin": {
       "tabs": {

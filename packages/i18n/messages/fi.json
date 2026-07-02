@@ -841,7 +841,13 @@
       "biasReviewLabel": "Vinoumien arviointi",
       "biasReviewBody": "Kriteerikohtainen tarkistus sukupuoleen liittyvästä ja muusta vinoumasta lievennystoimenpiteellä. Se osoittaa, että malli on suunniteltu vähentämään vinoumia.",
       "criterionRationaleLabel": "Kriteerin perustelu",
-      "criterionRationaleBody": "Miksi kriteeri kuuluu malliin: sen tarkoitus, miksi se on relevantti ja mahdollinen päällekkäisyys muiden kanssa. Se dokumentoi palkka-avoimuusdirektiivin edellyttämän objektiivisen perustan."
+      "criterionRationaleBody": "Miksi kriteeri kuuluu malliin: sen tarkoitus, miksi se on relevantti ja mahdollinen päällekkäisyys muiden kanssa. Se dokumentoi palkka-avoimuusdirektiivin edellyttämän objektiivisen perustan.",
+      "methodPurposeBody": "Mitä tämä kriteeri mittaa ja minkä tuloksen se tallentaa.",
+      "methodWhyRelevantBody": "Miksi tämä kriteeri on relevantti työn arvon kannalta, ja miksi se on sukupuolineutraali.",
+      "methodOverlapBody": "Mahdollinen päällekkäisyys muiden kriteerien kanssa, jotta samaa asiaa ei painoteta kahdesti.",
+      "methodBiasRiskBody": "Riski siitä, että tämä kriteeri yli- tai aliarvioi sukupuolittunutta työtä, esimerkiksi suosimalla näkyvää mandaattia tai budjetin kokoa todellisen monimutkaisuuden ja vastuun sijaan.",
+      "methodBiasCommentBody": "Mitä harkitsit vinouman tarkistuksessa ja mitä löysit.",
+      "methodBiasActionBody": "Lievennystoimenpide riskin vähentämiseksi, kuten uudelleenmuotoillut tasokuvaukset tai mukautettu painotus."
     },
     "admin": {
       "tabs": {

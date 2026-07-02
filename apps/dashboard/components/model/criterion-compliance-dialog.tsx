@@ -115,7 +115,12 @@ function CriterionComplianceForm({
           name="purpose"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("purpose")}</FormLabel>
+              <FormLabel className="flex items-center gap-1.5">
+                {t("purpose")}
+                <HelpMorphButton label={t("purpose")}>
+                  {tHelp("methodPurposeBody")}
+                </HelpMorphButton>
+              </FormLabel>
               <FormControl>
                 <Textarea {...field} />
               </FormControl>
@@ -128,7 +133,12 @@ function CriterionComplianceForm({
           name="whyRelevant"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("whyRelevant")}</FormLabel>
+              <FormLabel className="flex items-center gap-1.5">
+                {t("whyRelevant")}
+                <HelpMorphButton label={t("whyRelevant")}>
+                  {tHelp("methodWhyRelevantBody")}
+                </HelpMorphButton>
+              </FormLabel>
               <FormControl>
                 <Textarea {...field} />
               </FormControl>
@@ -141,9 +151,12 @@ function CriterionComplianceForm({
           name="overlapNotes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
+              <FormLabel className="flex items-center gap-1.5">
                 {t("overlapNotes")}
                 {t("optionalSuffix")}
+                <HelpMorphButton label={t("overlapNotes")}>
+                  {tHelp("methodOverlapBody")}
+                </HelpMorphButton>
               </FormLabel>
               <FormControl>
                 <Textarea {...field} />
@@ -165,7 +178,12 @@ function CriterionComplianceForm({
           name="biasRisk"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("biasRisk")}</FormLabel>
+              <FormLabel className="flex items-center gap-1.5">
+                {t("biasRisk")}
+                <HelpMorphButton label={t("biasRisk")}>
+                  {tHelp("methodBiasRiskBody")}
+                </HelpMorphButton>
+              </FormLabel>
               <FormControl>
                 <ToggleGroup
                   type="single"
@@ -195,7 +213,12 @@ function CriterionComplianceForm({
           name="biasComment"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("biasComment")}</FormLabel>
+              <FormLabel className="flex items-center gap-1.5">
+                {t("biasComment")}
+                <HelpMorphButton label={t("biasComment")}>
+                  {tHelp("methodBiasCommentBody")}
+                </HelpMorphButton>
+              </FormLabel>
               <FormControl>
                 <Textarea {...field} />
               </FormControl>
@@ -208,9 +231,12 @@ function CriterionComplianceForm({
           name="biasAction"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
+              <FormLabel className="flex items-center gap-1.5">
                 {t("biasAction")}
                 {t("optionalSuffix")}
+                <HelpMorphButton label={t("biasAction")}>
+                  {tHelp("methodBiasActionBody")}
+                </HelpMorphButton>
               </FormLabel>
               <FormControl>
                 <Textarea {...field} />

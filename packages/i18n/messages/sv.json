@@ -841,7 +841,13 @@
       "biasReviewLabel": "Biasgranskning",
       "biasReviewBody": "En kontroll per kriterium av köns- och biasrisk med en åtgärd för att minska den. Den visar att modellen är utformad för att minska bias.",
       "criterionRationaleLabel": "Kriterieurvalsprotokoll",
-      "criterionRationaleBody": "Varför kriteriet hör hemma i modellen: dess syfte, varför det är relevant och eventuell överlappning med andra. Det dokumenterar den saklighet som lönetransparensdirektivet kräver."
+      "criterionRationaleBody": "Varför kriteriet hör hemma i modellen: dess syfte, varför det är relevant och eventuell överlappning med andra. Det dokumenterar den saklighet som lönetransparensdirektivet kräver.",
+      "methodPurposeBody": "Vad kriteriet mäter och vilket resultat det fångar.",
+      "methodWhyRelevantBody": "Varför kriteriet är relevant för arbetets värde, och varför det är könsneutralt.",
+      "methodOverlapBody": "Eventuell överlappning med andra kriterier, så att samma sak inte viktas två gånger.",
+      "methodBiasRiskBody": "Risken att kriteriet över- eller undervärderar könskodat arbete, till exempel att synligt mandat eller stor budget premieras framför faktisk komplexitet och ansvar.",
+      "methodBiasCommentBody": "Vad du övervägde i bias-granskningen och vad du kom fram till.",
+      "methodBiasActionBody": "Åtgärden för att minska risken, till exempel omformulerade nivåbeskrivningar eller justerad viktning."
     },
     "admin": {
       "tabs": {

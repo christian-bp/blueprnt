@@ -841,7 +841,13 @@
       "biasReviewLabel": "Bias-gennemgang",
       "biasReviewBody": "En per-kriterie-kontrol af køns- og biasrisiko med en afbødende handling. Den viser, at modellen er udformet for at reducere bias.",
       "criterionRationaleLabel": "Kriterievalgsdokumentation",
-      "criterionRationaleBody": "Hvorfor kriteriet hører hjemme i modellen: dets formål, hvorfor det er relevant og eventuel overlapning med andre. Det dokumenterer den saglige begrundelse, som løngennemsigtighedsdirektivet kræver."
+      "criterionRationaleBody": "Hvorfor kriteriet hører hjemme i modellen: dets formål, hvorfor det er relevant og eventuel overlapning med andre. Det dokumenterer den saglige begrundelse, som løngennemsigtighedsdirektivet kræver.",
+      "methodPurposeBody": "Hvad dette kriterium måler og det resultat, det fanger.",
+      "methodWhyRelevantBody": "Hvorfor dette kriterium er relevant for arbejdets værdi, og hvorfor det er kønsneutralt.",
+      "methodOverlapBody": "Eventuel overlapning med andre kriterier, så det samme ikke vægtes to gange.",
+      "methodBiasRiskBody": "Risikoen for at dette kriterium over- eller undervurderer kønsmærket arbejde, for eksempel ved at favorisere synligt mandat eller budgetstørrelse frem for faktisk kompleksitet og ansvar.",
+      "methodBiasCommentBody": "Hvad du overvejede i bias-tjekket og hvad du fandt.",
+      "methodBiasActionBody": "Den afbødende handling for at reducere risikoen, for eksempel omformulerede niveaubeskrivelser eller justeret vægtning."
     },
     "admin": {
       "tabs": {

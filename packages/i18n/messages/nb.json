@@ -841,7 +841,13 @@
       "biasReviewLabel": "Biasvurdering",
       "biasReviewBody": "En per-kriterie-sjekk av kjønns- og biasrisiko med et dempende tiltak. Den viser at modellen er utformet for å redusere bias.",
       "criterionRationaleLabel": "Kriterievalgsprotokoll",
-      "criterionRationaleBody": "Hvorfor kriteriet hører hjemme i modellen: dets formål, hvorfor det er relevant og eventuell overlapping med andre. Det dokumenterer den saklighet som lønnstransparensdirektivet krever."
+      "criterionRationaleBody": "Hvorfor kriteriet hører hjemme i modellen: dets formål, hvorfor det er relevant og eventuell overlapping med andre. Det dokumenterer den saklighet som lønnstransparensdirektivet krever.",
+      "methodPurposeBody": "Hva dette kriteriet måler og hvilket resultat det fanger.",
+      "methodWhyRelevantBody": "Hvorfor dette kriteriet er relevant for arbeidets verdi, og hvorfor det er kjønnsnøytralt.",
+      "methodOverlapBody": "Eventuell overlapping med andre kriterier, slik at det samme ikke vektes to ganger.",
+      "methodBiasRiskBody": "Risikoen for at dette kriteriet over- eller undervurderer kjønnskodet arbeid, for eksempel ved å favorisere synlig mandat eller budsjettstørrelse fremfor faktisk kompleksitet og ansvar.",
+      "methodBiasCommentBody": "Hva du vurderte i biastjekken og hva du fant.",
+      "methodBiasActionBody": "Det dempende tiltaket for å redusere risikoen, for eksempel omformulerte nivåbeskrivelser eller justert vekting."
     },
     "admin": {
       "tabs": {
