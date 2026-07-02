@@ -1,0 +1,20 @@
+apps/dashboard/components/model/method-panel.tsx
+  s_6bff98b662648b::t_de221d1ec74c1e 3-4,6,9,11,16
+  s_6bff98b662648b::t_197935694e42fb 46-52,56-78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "92ccc3b90745e74193b622fc385720cc8aa13af6",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
