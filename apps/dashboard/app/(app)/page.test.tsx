@@ -59,4 +59,13 @@ describe("OverviewPage", () => {
     renderPage()
     expect(screen.getByText(tTodo.empty.title)).toBeDefined()
   })
+
+  it("renders the sample chart card", () => {
+    // The chart uses static sample data, so it renders regardless of queries.
+    useQueryMock.mockReturnValue(undefined)
+    renderPage()
+    expect(
+      screen.getByText(messages.dashboard.overview.chart.title)
+    ).toBeDefined()
+  })
 })

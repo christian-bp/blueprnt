@@ -42,7 +42,7 @@ export function TodoWidget({ todo }: { todo: Todo | undefined }) {
     <div className="space-y-3">
       <h2 className="flex items-baseline gap-2 font-semibold text-lg">
         {t("heading")}
-        <span className="text-foreground tabular-nums">{todo.total}</span>
+        <span className="text-brand tabular-nums">{todo.total}</span>
       </h2>
       <Accordion type="multiple" defaultValue={[todo.groups[0]?.key ?? ""]}>
         {todo.groups.map((group) => (

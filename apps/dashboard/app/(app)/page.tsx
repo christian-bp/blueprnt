@@ -1,15 +1,19 @@
 "use client"
 
 import { useLocale, useTranslations } from "next-intl"
-import { WelcomeGreeting } from "@/components/overview/welcome-greeting"
+import { GettingStartedCard } from "@/components/overview/getting-started-card"
+import { ModelReadinessCard } from "@/components/overview/model-readiness-card"
+import { RolesPerBandChart } from "@/components/overview/roles-per-band-chart"
 import { TodoWidget } from "@/components/overview/todo-widget"
+import { WelcomeGreeting } from "@/components/overview/welcome-greeting"
 import { useOrganization } from "@/components/org-context"
-import { useTodo } from "@/hooks/use-todo"
 import { usePageTitle } from "@/hooks/use-page-title"
+import { useTodo } from "@/hooks/use-todo"
 
-// Front page: a personal welcome greeting over a single actionable "To do".
-// Both are derived views (no stored aggregates); the greeting reads the session,
-// the to-do derives from the role + method queries via useTodo.
+// Front page: a welcome greeting over a dashboard grid. The To-do fills two of
+// three columns with a supporting side column beside it (model readiness +
+// getting started), and a full-width sample chart sits below. Everything is a
+// derived view; nothing is stored.
 export default function OverviewPage() {
   const tNav = useTranslations("dashboard.nav")
   usePageTitle(tNav("home"))
@@ -20,7 +24,16 @@ export default function OverviewPage() {
   return (
     <div className="space-y-6">
       <WelcomeGreeting />
-      <TodoWidget todo={todo} />
+      <div className="grid gap-4 md:gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <TodoWidget todo={todo} />
+        </div>
+        <div className="space-y-4 md:space-y-6">
+          <ModelReadinessCard orgId={orgId} />
+          <GettingStartedCard />
+        </div>
+      </div>
+      <RolesPerBandChart />
     </div>
   )
 }
