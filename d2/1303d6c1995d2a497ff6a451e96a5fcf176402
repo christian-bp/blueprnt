@@ -1,0 +1,21 @@
+apps/dashboard/components/pdf/method-appendix.tsx
+  s_6bff98b662648b::t_151459b1996c22 88-92
+apps/dashboard/components/pdf/branded-document.tsx
+  s_6bff98b662648b::t_b27e6a9cc7689e 111-114
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "d21303d6c1995d2a497ff6a451e96a5fcf176402",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
