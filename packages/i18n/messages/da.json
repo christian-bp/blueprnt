@@ -314,6 +314,22 @@
           "documentCriteria": "Dokumentér kriterier",
           "approveCriteria": "Godkend kriterier"
         }
+      },
+      "chart": {
+        "title": "Roller per band",
+        "sampleBadge": "Eksempel",
+        "roles": "Roller"
+      },
+      "modelReadiness": {
+        "title": "Metode",
+        "documented": "{documented}/{total} dokumenteret",
+        "approved": "{approved}/{total} godkendt",
+        "cta": "Åbn metoden"
+      },
+      "gettingStarted": {
+        "title": "Kom godt i gang",
+        "body": "Byg din model, beskriv dine roller, og vurder dem mod kriterierne.",
+        "cta": "Gå til modellen"
       }
     },
     "roleSheet": {

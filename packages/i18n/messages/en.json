@@ -314,6 +314,22 @@
           "documentCriteria": "Document criteria",
           "approveCriteria": "Approve criteria"
         }
+      },
+      "chart": {
+        "title": "Roles per band",
+        "sampleBadge": "Sample",
+        "roles": "Roles"
+      },
+      "modelReadiness": {
+        "title": "Method",
+        "documented": "{documented}/{total} documented",
+        "approved": "{approved}/{total} approved",
+        "cta": "Open the method"
+      },
+      "gettingStarted": {
+        "title": "Getting started",
+        "body": "Build your model, describe your roles, then evaluate them against the criteria.",
+        "cta": "Go to the model"
       }
     },
     "roleSheet": {

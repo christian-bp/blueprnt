@@ -314,6 +314,22 @@
           "documentCriteria": "Dokumentoi kriteerit",
           "approveCriteria": "Hyväksy kriteerit"
         }
+      },
+      "chart": {
+        "title": "Roolit bändeittäin",
+        "sampleBadge": "Esimerkki",
+        "roles": "Roolit"
+      },
+      "modelReadiness": {
+        "title": "Menetelmä",
+        "documented": "{documented}/{total} dokumentoitu",
+        "approved": "{approved}/{total} hyväksytty",
+        "cta": "Avaa menetelmä"
+      },
+      "gettingStarted": {
+        "title": "Aloitus",
+        "body": "Rakenna mallisi, kuvaa roolisi ja arvioi ne kriteerien mukaan.",
+        "cta": "Siirry malliin"
       }
     },
     "roleSheet": {

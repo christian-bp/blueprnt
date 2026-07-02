@@ -88,6 +88,7 @@ in the same change.
   formal sign-off, so the wording must read unambiguously as an attestation in
   each locale. Have a native speaker review before launch.
 - [ ] **Native review of the overview greeting + to-do strings.** `dashboard.overview.greeting.*` and `dashboard.overview.todo.*` (sv/nb/da/fi) were machine-drafted from English. Have a native speaker review before launch, and confirm the "evaluate" term matches each locale's existing usage (`dashboard.roles.evaluated`).
+- [ ] **Native review of the dashboard side-card + chart strings.** `dashboard.overview.chart.*`, `dashboard.overview.modelReadiness.*`, and `dashboard.overview.gettingStarted.*` (sv/nb/da/fi) were machine-drafted from English. Have a native speaker review before launch.
 
 ## Security and compliance
 
