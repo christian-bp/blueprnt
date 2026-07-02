@@ -760,7 +760,10 @@
         "export": "Export",
         "rationaleSection": "Rationale",
         "biasSection": "Bias review",
-        "optionalSuffix": " (optional)"
+        "optionalSuffix": " (optional)",
+        "draftCta": "Draft with AI",
+        "draftError": "The draft could not be generated. Try again.",
+        "aiDraftedNote": "AI-drafted. Review and edit before approving."
       },
       "methodAppendix": {
         "docTitle": "Method appendix",

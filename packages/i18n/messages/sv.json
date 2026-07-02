@@ -760,7 +760,10 @@
         "export": "Exportera",
         "rationaleSection": "Motivering",
         "biasSection": "Bias-granskning",
-        "optionalSuffix": " (valfritt)"
+        "optionalSuffix": " (valfritt)",
+        "draftCta": "Skapa utkast med AI",
+        "draftError": "Utkastet kunde inte genereras. Försök igen.",
+        "aiDraftedNote": "AI-genererat utkast. Granska och redigera innan du godkänner."
       },
       "methodAppendix": {
         "docTitle": "Metodbilaga",

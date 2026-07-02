@@ -760,7 +760,10 @@
         "export": "Vie",
         "rationaleSection": "Perustelu",
         "biasSection": "Vinoumien arviointi",
-        "optionalSuffix": " (valinnainen)"
+        "optionalSuffix": " (valinnainen)",
+        "draftCta": "Luo luonnos tekoälyllä",
+        "draftError": "Luonnosta ei voitu luoda. Yritä uudelleen.",
+        "aiDraftedNote": "Tekoälyn luoma luonnos. Tarkista ja muokkaa ennen hyväksymistä."
       },
       "methodAppendix": {
         "docTitle": "Menetelmäliite",

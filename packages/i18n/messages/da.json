@@ -760,7 +760,10 @@
         "export": "Eksporter",
         "rationaleSection": "Begrundelse",
         "biasSection": "Bias-gennemgang",
-        "optionalSuffix": " (valgfrit)"
+        "optionalSuffix": " (valgfrit)",
+        "draftCta": "Lav udkast med AI",
+        "draftError": "Udkastet kunne ikke genereres. Prøv igen.",
+        "aiDraftedNote": "AI-genereret udkast. Gennemgå og rediger inden du godkender."
       },
       "methodAppendix": {
         "docTitle": "Metodebilag",
