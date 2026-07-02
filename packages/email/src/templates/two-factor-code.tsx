@@ -21,7 +21,7 @@ export function TwoFactorCodeEmail({ code, locale }: TwoFactorCodeEmailProps) {
       </Text>
       <Section className="my-[32px] text-center">
         <Text
-          className="m-0 inline-block rounded-[8px] bg-[#f5f5f5] px-[28px] py-[18px] text-center font-mono text-[30px] font-bold tracking-[8px]"
+          className="m-0 inline-block rounded-[8px] bg-[#f5f5f5] px-[28px] py-[18px] text-center font-bold font-mono text-[30px] tracking-[8px]"
           style={{ color: colors.text }}
         >
           {code}

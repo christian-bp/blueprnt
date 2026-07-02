@@ -568,7 +568,7 @@ function AuditDetailSheet({
     <>
       <SheetHeader className="gap-1.5">
         {/* pr-8 keeps a long title clear of the sheet's absolute close button. */}
-        <SheetTitle className="pr-8 text-balance">
+        <SheetTitle className="text-balance pr-8">
           {actionLabel(row.type)}
         </SheetTitle>
         <SheetDescription className="text-balance">{dateLong}</SheetDescription>

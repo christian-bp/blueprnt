@@ -54,7 +54,7 @@ export function OrgSwitchMenuSub() {
         <span className="truncate">{current.name}</span>
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent>
-        <DropdownMenuLabel className="text-xs text-muted-foreground">
+        <DropdownMenuLabel className="text-muted-foreground text-xs">
           {t("orgSwitcher.label")}
         </DropdownMenuLabel>
         {list.map((org) => {
