@@ -215,8 +215,14 @@ function CriterionComplianceForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {t("overlapNotes")}
-                  {t("optionalSuffix")}
+                  {/* One span keeps the label a single flex item so the muted
+                      suffix sits inline, not gap-2 separated from the name. */}
+                  <span>
+                    {t("overlapNotes")}
+                    <span className="font-normal text-muted-foreground">
+                      {t("optionalSuffix")}
+                    </span>
+                  </span>
                 </FormLabel>
                 <FormDescription>{tHelp("methodOverlapBody")}</FormDescription>
                 <FormControl>
@@ -297,8 +303,12 @@ function CriterionComplianceForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {t("biasAction")}
-                  {t("optionalSuffix")}
+                  <span>
+                    {t("biasAction")}
+                    <span className="font-normal text-muted-foreground">
+                      {t("optionalSuffix")}
+                    </span>
+                  </span>
                 </FormLabel>
                 <FormDescription>
                   {tHelp("methodBiasActionBody")}
