@@ -1,0 +1,21 @@
+apps/dashboard/components/overview/model-readiness-card.test.tsx
+  s_6bff98b662648b::t_7438c95111a76e 1-43
+apps/dashboard/components/overview/model-readiness-card.tsx
+  s_6bff98b662648b::t_d905a1a9de2c47 1-74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "d690287fdca52a71db9b93d3dfa9baafcd7ebc8d",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
