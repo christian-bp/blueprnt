@@ -1,0 +1,67 @@
+packages/backend/convex/evaluationModel/standardTemplate.content.nb.ts
+  s_6bff98b662648b::t_424b154fd7eed4 78
+  s_6bff98b662648b::t_79d8a1fc767b75 183
+  s_6bff98b662648b::t_2f24a4c8d39529 323
+  s_6bff98b662648b::t_4036bde50603eb 253
+  s_6bff98b662648b::t_7e9efc421a49f2 218
+  s_6bff98b662648b::t_64328d06be5b10 148
+  s_6bff98b662648b::t_cd90e27f1491a5 43
+  s_6bff98b662648b::t_c418fb65a55655 288
+  s_6bff98b662648b::t_974db5a4eb5102 113
+packages/backend/convex/evaluationModel/standardTemplate.content.en.ts
+  s_6bff98b662648b::t_faba889a2cf93c 73
+  s_6bff98b662648b::t_d2a1eca6179c7f 108
+  s_6bff98b662648b::t_5e207180396a80 318
+  s_6bff98b662648b::t_5a11141d83b41e 353
+  s_6bff98b662648b::t_a81cccbdd7a114 178
+  s_6bff98b662648b::t_f3c65eb648fe03 213
+  s_6bff98b662648b::t_9e0e7df8f51dab 283
+  s_6bff98b662648b::t_60061478036970 143
+  s_6bff98b662648b::t_93f09c78eb862c 248
+packages/backend/convex/evaluationModel/standardTemplate.content.sv.ts
+  s_6bff98b662648b::t_1ce059cb24d4d6 150
+  s_6bff98b662648b::t_335e04cfaccb10 45
+  s_6bff98b662648b::t_e2ee00071d2889 185
+  s_6bff98b662648b::t_7c85b339821fd7 80
+  s_6bff98b662648b::t_f34e9e8dd494ae 290
+  s_6bff98b662648b::t_1bfe83ce277725 325
+  s_6bff98b662648b::t_ff698213980410 255
+  s_6bff98b662648b::t_ed26aa59fe1845 115
+  s_6bff98b662648b::t_c506eb9c8175f2 220
+packages/backend/convex/evaluationModel/standardTemplate.content.fi.ts
+  s_6bff98b662648b::t_51b1bfb0947926 79
+  s_6bff98b662648b::t_ef9e1c0f9cc741 114
+  s_6bff98b662648b::t_0140a980e8cc3d 184
+  s_6bff98b662648b::t_709f7a71088e15 254
+  s_6bff98b662648b::t_6fab60f81ff333 149
+  s_6bff98b662648b::t_a861a19494e1ef 44
+  s_6bff98b662648b::t_ad0febf3f9471c 219
+  s_6bff98b662648b::t_5f0e74bedb71e7 324
+  s_6bff98b662648b::t_c19e53f046a2c5 289
+packages/backend/convex/evaluationModel/standardTemplate.content.da.ts
+  s_6bff98b662648b::t_85bbdd4dc4b873 184
+  s_6bff98b662648b::t_0394a92d1bb75b 219
+  s_6bff98b662648b::t_30ec0a446810aa 324
+  s_6bff98b662648b::t_28825455df6b96 114
+  s_6bff98b662648b::t_91efc72a43251d 149
+  s_6bff98b662648b::t_555bb521366b4a 44
+  s_6bff98b662648b::t_2bec8c258ab30f 254
+  s_6bff98b662648b::t_1ae9e8fd6bfde7 289
+  s_6bff98b662648b::t_d43609cb636856 79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "3f750595372c68e06d1b447c8f7a56b3a1df833d",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
