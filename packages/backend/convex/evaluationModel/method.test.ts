@@ -118,24 +118,21 @@ describe("criterion compliance write path", () => {
     expect(typeof docAfterApproval?.decidedBy).toBe("string")
     expect(typeof docAfterApproval?.decidedAt).toBe("number")
 
-    // The approval audit row must NOT contain decidedBy or decidedAt in changes.
+    // The approve action must emit a dedicated criterion.approved audit row.
     const rows = await t.run(async (ctx) =>
       ctx.db
         .query("auditLog")
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .collect()
     )
-    const approvalRow = rows.find(
-      (r) =>
-        (r.payload as { change?: string }).change ===
-        "criterion.approvalChanged"
-    )
+    const approvalRow = rows.find((r) => r.type === "criterion.approved")
     expect(approvalRow).toBeDefined()
-    const changes =
-      (approvalRow?.payload as { changes?: Record<string, unknown> }).changes ??
-      {}
-    expect("decidedBy" in changes).toBe(false)
-    expect("decidedAt" in changes).toBe(false)
+    const approvalPayload = approvalRow?.payload as {
+      criterionId?: string
+      modelId?: string
+    }
+    expect(approvalPayload.criterionId).toBe(criterionId)
+    expect(typeof approvalPayload.modelId).toBe("string")
 
     // Editing content while approved must be rejected (criterionLocked).
     await expect(
@@ -164,6 +161,24 @@ describe("criterion compliance write path", () => {
     const docReopened = await t.run(async (ctx) => ctx.db.get(criterionId))
     expect(docReopened?.approved).toBeUndefined()
     expect(docReopened?.decidedBy).toBeUndefined()
+
+    // The reopen action must emit a dedicated criterion.reopened audit row.
+    const rowsAfterReopen = await t.run(async (ctx) =>
+      ctx.db
+        .query("auditLog")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+    )
+    const reopenRow = rowsAfterReopen.find(
+      (r) => r.type === "criterion.reopened"
+    )
+    expect(reopenRow).toBeDefined()
+    const reopenPayload = reopenRow?.payload as {
+      criterionId?: string
+      modelId?: string
+    }
+    expect(reopenPayload.criterionId).toBe(criterionId)
+    expect(typeof reopenPayload.modelId).toBe("string")
 
     // Now saveCriterionCompliance succeeds again.
     await asAdmin.mutation(api.evaluationModel.method.saveCriterionCompliance, {

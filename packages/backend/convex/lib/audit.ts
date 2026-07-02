@@ -35,6 +35,8 @@ export const AUDIT_EVENTS = {
   roleFamilyCreated: "roleFamily.created",
   roleFamilyRenamed: "roleFamily.renamed",
   roleFamilyRemoved: "roleFamily.removed",
+  criterionApproved: "criterion.approved",
+  criterionReopened: "criterion.reopened",
 } as const
 
 export type AuditEvent = (typeof AUDIT_EVENTS)[keyof typeof AUDIT_EVENTS]
@@ -52,6 +54,7 @@ export type AuditCategory = (typeof AUDIT_CATEGORIES)[number]
 // Maps an event type to its category by prefix. Unknown types fall back to "role"
 // only if role-ish; otherwise return undefined so they are simply uncategorized.
 export function categoryForEvent(type: string): AuditCategory | undefined {
+  if (type.startsWith("criterion.")) return "model"
   if (type.startsWith("model.")) return "model"
   if (
     type.startsWith("role.") ||

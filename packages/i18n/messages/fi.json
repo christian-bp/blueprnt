@@ -268,7 +268,9 @@
         "anchorRoleUpdated": "Ankkurirooli päivitetty",
         "roleFamilyCreated": "Rooliperhe luotu",
         "roleFamilyRenamed": "Rooliperhe nimetty uudelleen",
-        "roleFamilyRemoved": "Rooliperhe poistettu"
+        "roleFamilyRemoved": "Rooliperhe poistettu",
+        "criterionApproved": "Kriteeri hyväksytty",
+        "criterionReopened": "Kriteeri avattu uudelleen"
       },
       "ai": {
         "modelDraft": "Mallin kriteerit: {count} lisätty",

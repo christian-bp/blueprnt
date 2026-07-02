@@ -523,6 +523,9 @@ export function formatAuditDetail(
     case "model.discarded":
       // Bulk model events: how many criteria came/went.
       return isBulk ? labels.itemsChanged(bulkCount) : ""
+    case "criterion.approved":
+    case "criterion.reopened":
+      return criterionName(p.criterionId) ?? ""
     case "model.updated": {
       // Bulk model.updated (weights.rebalanced, criterion.removed): item count.
       if (isBulk) return labels.itemsChanged(bulkCount)

@@ -268,7 +268,9 @@
         "anchorRoleUpdated": "Ankarroll uppdaterad",
         "roleFamilyCreated": "Rollfamilj skapad",
         "roleFamilyRenamed": "Rollfamilj omdöpt",
-        "roleFamilyRemoved": "Rollfamilj borttagen"
+        "roleFamilyRemoved": "Rollfamilj borttagen",
+        "criterionApproved": "Kriterium godkänt",
+        "criterionReopened": "Kriterium återöppnat"
       },
       "ai": {
         "modelDraft": "Modellkriterier: {count} tillagda",

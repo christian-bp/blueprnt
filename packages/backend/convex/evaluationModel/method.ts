@@ -141,12 +141,12 @@ export const setCriterionApproval = adminMutation({
       : { approved: undefined, decidedBy: undefined, decidedAt: undefined }
     await ctx.db.patch(args.criterionId, patch)
     await ctx.audit.log({
-      type: AUDIT_EVENTS.modelUpdated,
+      type: args.approved
+        ? AUDIT_EVENTS.criterionApproved
+        : AUDIT_EVENTS.criterionReopened,
       payload: {
-        change: "criterion.approvalChanged",
         criterionId: args.criterionId,
         modelId: criterion.modelId,
-        changes: buildChanges(criterion, patch, ["approved"]),
       },
     })
     return null

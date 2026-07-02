@@ -268,7 +268,9 @@
         "anchorRoleUpdated": "Anchor role updated",
         "roleFamilyCreated": "Role family created",
         "roleFamilyRenamed": "Role family renamed",
-        "roleFamilyRemoved": "Role family removed"
+        "roleFamilyRemoved": "Role family removed",
+        "criterionApproved": "Criterion approved",
+        "criterionReopened": "Criterion reopened"
       },
       "ai": {
         "modelDraft": "Model criteria: {count} added",
