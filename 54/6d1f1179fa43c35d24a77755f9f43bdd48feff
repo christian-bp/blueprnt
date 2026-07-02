@@ -1,0 +1,33 @@
+apps/dashboard/components/model/criterion-compliance-dialog.test.tsx
+  s_6bff98b662648b::t_1ab33236ce55fe 120-123,127-139
+  s_6bff98b662648b::t_5f82770399e446 124-126
+apps/dashboard/components/model/criterion-compliance-dialog.tsx
+  s_6bff98b662648b::t_6b585014cbfb40 119-120
+  s_6bff98b662648b::t_b4bf116843a435 153
+  s_6bff98b662648b::t_a4104b969b272c 174-175
+  s_6bff98b662648b::t_4da2df5b1ff289 214
+  s_6bff98b662648b::t_f1baa35d0ed4f8 234
+  s_6bff98b662648b::t_b3db07efa56163 18
+  s_6bff98b662648b::t_778f7cec350be8 149
+  s_6bff98b662648b::t_cf59e7605617d4 133
+  s_6bff98b662648b::t_cba87176ce2f3b 134-136
+  s_6bff98b662648b::t_81af4b0a594337 185-188,191-194,197-200
+  s_6bff98b662648b::t_82f836a98d9a85 215-217
+  s_6bff98b662648b::t_7fa59da6ee280f 230
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "546d1f1179fa43c35d24a77755f9f43bdd48feff",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
