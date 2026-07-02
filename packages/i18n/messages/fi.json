@@ -750,6 +750,33 @@
         "decidedBy": "Hyväksynyt {name} päivänä {date}",
         "error": "Jotakin meni vikaan. Yritä uudelleen.",
         "export": "Vie menetelmäliite (PDF)"
+      },
+      "methodAppendix": {
+        "docTitle": "Menetelmäliite",
+        "generatedOn": "Luotu {date}",
+        "model": "Malli: {name}",
+        "draft": "LUONNOS: kaikkia kriteereitä ei ole tarkastettu ja hyväksytty",
+        "final": "LOPULLINEN",
+        "methodologyTitle": "Menetelmä",
+        "methodologyBody": "Rooleja arvioidaan kriteeri kerrallaan asteikolla 0–5. Kriteerien painot summautuvat kiinteäksi pistebudjetiksi; roolin pistemäärä normalisoidaan välille 0–100 ja vyöhyke johdetaan automaattisesti, ei koskaan asetettu käsin. Arvosanat ovat piilossa, kunnes kaikki kriteerit on pisteytetty. Jokainen muutos kirjataan tarkastuslokiin. Roolit kuvaavat työtä, eivät henkilöä.",
+        "biasStatement": "Tämä malli on suunniteltu vähentämään vinoumaa. Se on vinoumaa vähentävä, ei koskaan vinoumaton.",
+        "criteriaTitle": "Kriteerit ja painot",
+        "rationaleTitle": "Kriteeriperustelu ja vinoumaarviointi",
+        "bandsTitle": "Vyöhykekynnykset",
+        "colCriterion": "Kriteeri",
+        "colWeight": "Paino",
+        "colShare": "Osuus",
+        "colBand": "Vyöhyke",
+        "colMinScore": "Minipisteet",
+        "purpose": "Tarkoitus",
+        "whyRelevant": "Miksi relevantti",
+        "overlap": "Päällekkäisyys",
+        "biasRisk": "Vinoumariskit",
+        "biasComment": "Vinoumakommentti",
+        "biasAction": "Vinoumanvähennystoimenpide",
+        "approvedBy": "Hyväksynyt {name} päivänä {date}",
+        "notApproved": "Ei vielä hyväksytty",
+        "notDocumented": "Ei dokumentoitu"
       }
     },
     "ai": {

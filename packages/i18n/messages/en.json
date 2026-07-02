@@ -746,6 +746,33 @@
         "decidedBy": "Approved by {name} on {date}",
         "error": "Something went wrong. Please try again.",
         "export": "Export method appendix (PDF)"
+      },
+      "methodAppendix": {
+        "docTitle": "Method appendix",
+        "generatedOn": "Generated on {date}",
+        "model": "Model: {name}",
+        "draft": "DRAFT: not all criteria are reviewed and approved",
+        "final": "FINAL",
+        "methodologyTitle": "Methodology",
+        "methodologyBody": "Roles are evaluated criterion by criterion on a 0 to 5 scale. Criterion weights sum to a fixed point budget; the role score is normalized to 0 to 100 and the band is derived, never set by hand. Ratings are hidden until every criterion is scored. Every change is recorded in the audit log. Roles describe work, never a person.",
+        "biasStatement": "This model is designed to reduce bias. It is bias-reducing, never bias-free.",
+        "criteriaTitle": "Criteria and weights",
+        "rationaleTitle": "Criterion rationale and bias review",
+        "bandsTitle": "Band thresholds",
+        "colCriterion": "Criterion",
+        "colWeight": "Weight",
+        "colShare": "Share",
+        "colBand": "Band",
+        "colMinScore": "Min score",
+        "purpose": "Purpose",
+        "whyRelevant": "Why relevant",
+        "overlap": "Overlap",
+        "biasRisk": "Bias risk",
+        "biasComment": "Bias comment",
+        "biasAction": "Bias mitigation",
+        "approvedBy": "Approved by {name} on {date}",
+        "notApproved": "Not yet approved",
+        "notDocumented": "Not documented"
       }
     },
     "ai": {

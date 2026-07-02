@@ -746,6 +746,33 @@
         "decidedBy": "Godkjent av {name} den {date}",
         "error": "Noe gikk galt. Prøv igjen.",
         "export": "Eksporter metodevedlegg (PDF)"
+      },
+      "methodAppendix": {
+        "docTitle": "Metodevedlegg",
+        "generatedOn": "Generert den {date}",
+        "model": "Modell: {name}",
+        "draft": "UTKAST: ikke alle kriterier er gjennomgått og godkjent",
+        "final": "ENDELIG",
+        "methodologyTitle": "Metodikk",
+        "methodologyBody": "Roller vurderes kriterium for kriterium på en skala fra 0 til 5. Kriterievektene summeres til et fast poengbudsjett; rollens poengsum normaliseres til 0 til 100 og bandet utledes automatisk, aldri satt for hånd. Karakterer er skjult til alle kriterier er vurdert. Hver endring registreres i revisjonsloggen. Roller beskriver arbeid, aldri en person.",
+        "biasStatement": "Denne modellen er utformet for å redusere bias. Den er biasreduserende, aldri biasfri.",
+        "criteriaTitle": "Kriterier og vekter",
+        "rationaleTitle": "Kriterierationale og biasvurdering",
+        "bandsTitle": "Bandterskler",
+        "colCriterion": "Kriterium",
+        "colWeight": "Vekt",
+        "colShare": "Andel",
+        "colBand": "Band",
+        "colMinScore": "Minimumspoeng",
+        "purpose": "Formål",
+        "whyRelevant": "Hvorfor relevant",
+        "overlap": "Overlapp",
+        "biasRisk": "Biasrisiko",
+        "biasComment": "Biaskommentar",
+        "biasAction": "Biasreduserende tiltak",
+        "approvedBy": "Godkjent av {name} den {date}",
+        "notApproved": "Ikke godkjent ennå",
+        "notDocumented": "Ikke dokumentert"
       }
     },
     "ai": {

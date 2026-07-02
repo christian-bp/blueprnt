@@ -746,6 +746,33 @@
         "decidedBy": "Godkänd av {name} den {date}",
         "error": "Något gick fel. Försök igen.",
         "export": "Exportera metodbilaga (PDF)"
+      },
+      "methodAppendix": {
+        "docTitle": "Metodbilaga",
+        "generatedOn": "Genererad den {date}",
+        "model": "Modell: {name}",
+        "draft": "UTKAST: alla kriterier är inte granskade och godkända",
+        "final": "SLUTGILTIG",
+        "methodologyTitle": "Metodik",
+        "methodologyBody": "Roller utvärderas kriterium för kriterium på en skala 0 till 5. Kriterievikterna summerar till en fast poängbudget; rollens poäng normaliseras till 0 till 100 och bandet härleds automatiskt, aldrig satt för hand. Betyg är dolda tills alla kriterier är bedömda. Varje förändring registreras i revisionsloggen. Roller beskriver arbete, aldrig en person.",
+        "biasStatement": "Den här modellen är utformad för att vara biasreducerande. Den är aldrig biasfri.",
+        "criteriaTitle": "Kriterier och vikter",
+        "rationaleTitle": "Kriterierationale och biasgranskning",
+        "bandsTitle": "Bandtrösklar",
+        "colCriterion": "Kriterium",
+        "colWeight": "Vikt",
+        "colShare": "Andel",
+        "colBand": "Band",
+        "colMinScore": "Minpoäng",
+        "purpose": "Syfte",
+        "whyRelevant": "Varför relevant",
+        "overlap": "Överlapp",
+        "biasRisk": "Biasrisk",
+        "biasComment": "Biaskommentar",
+        "biasAction": "Biasreducerande åtgärd",
+        "approvedBy": "Godkänd av {name} den {date}",
+        "notApproved": "Inte godkänd ännu",
+        "notDocumented": "Inte dokumenterad"
       }
     },
     "ai": {

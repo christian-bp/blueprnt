@@ -4,15 +4,24 @@ import { api } from "@workspace/backend/convex/_generated/api"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { useQuery } from "convex/react"
+import dynamic from "next/dynamic"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { CriterionComplianceDialog } from "@/components/model/criterion-compliance-dialog"
+
+const MethodAppendixDownload = dynamic(
+  () =>
+    import("@/components/pdf/method-appendix-download").then(
+      (m) => m.MethodAppendixDownload
+    ),
+  { ssr: false }
+)
 
 // The Method tab panel. Queries the method model and renders a list of
 // criteria with their compliance status pill and a Document button.
 // A single per-row action stays as a button (not a dropdown) per the
 // convention: row-action dropdown is for two or more actions.
-// Export button slot is reserved here for Task 6 (renders nothing yet).
+// MethodAppendixDownload renders the PDF export button above the list.
 export function MethodPanel({ orgId }: { orgId: string }) {
   const t = useTranslations("dashboard.model.method")
   const locale = useLocale()
@@ -40,7 +49,7 @@ export function MethodPanel({ orgId }: { orgId: string }) {
             total: data.progress.total,
           })}
         </p>
-        {/* Export button slot (filled in Task 6). */}
+        <MethodAppendixDownload orgId={orgId} />
       </div>
       <ul className="space-y-2">
         {data.criteria.map((c) => (
