@@ -6,8 +6,9 @@ import { adminMutation, adminQuery } from "../lib/functions"
 import { clampLocale, isCriterionKey } from "./localize"
 import { templateContent } from "./standardTemplate"
 
-// The compliance metadata captured per criterion for the metodbilaga (E2/E5).
-// Documentation only: editing these never moves a score, so no band-shift.
+// The compliance content fields logged in the audit diff. decidedBy/decidedAt
+// are intentionally excluded: they are redundant with the audit row's own actor
+// + timestamp and render as ugly raw values in the detail sheet.
 export const COMPLIANCE_AUDIT_FIELDS = [
   "purpose",
   "whyRelevant",
@@ -16,8 +17,6 @@ export const COMPLIANCE_AUDIT_FIELDS = [
   "biasComment",
   "biasAction",
   "approved",
-  "decidedBy",
-  "decidedAt",
 ] as const
 
 const biasRiskValidator = v.union(
@@ -160,11 +159,7 @@ export const setCriterionApproval = adminMutation({
         change: "criterion.approvalChanged",
         criterionId: args.criterionId,
         modelId: criterion.modelId,
-        changes: buildChanges(criterion, patch, [
-          "approved",
-          "decidedBy",
-          "decidedAt",
-        ]),
+        changes: buildChanges(criterion, patch, ["approved"]),
       },
     })
     return null

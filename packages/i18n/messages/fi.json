@@ -211,6 +211,12 @@
         "role": "Rooli",
         "status": "Tila",
         "purpose": "Tarkoitus",
+        "whyRelevant": "Miksi relevantti",
+        "overlapNotes": "Päällekkäisyysmuistiinpanot",
+        "biasRisk": "Vinoumariski",
+        "biasComment": "Vinoumakomentti",
+        "biasAction": "Vinoumien lieventäminen",
+        "approved": "Hyväksytty",
         "responsibilities": "Vastuut",
         "description": "Kuvaus",
         "helpText": "Ohjeteksti",
@@ -749,7 +755,10 @@
         "approveHint": "Täytä tarkoitus, miksi relevantti, vinoumariski ja vinoumakomentti hyväksymistä varten.",
         "decidedBy": "Hyväksynyt {name} päivänä {date}",
         "error": "Jotakin meni vikaan. Yritä uudelleen.",
-        "export": "Vie menetelmäliite (PDF)"
+        "export": "Vie",
+        "rationaleSection": "Perustelu",
+        "biasSection": "Vinoumien arviointi",
+        "optionalSuffix": " (valinnainen)"
       },
       "methodAppendix": {
         "docTitle": "Menetelmäliite",

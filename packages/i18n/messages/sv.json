@@ -211,6 +211,12 @@
         "role": "Roll",
         "status": "Status",
         "purpose": "Syfte",
+        "whyRelevant": "Varför relevant",
+        "overlapNotes": "Överlappningsnoteringar",
+        "biasRisk": "Biasrisk",
+        "biasComment": "Biaskommentar",
+        "biasAction": "Biasåtgärd",
+        "approved": "Godkänd",
         "responsibilities": "Ansvar",
         "description": "Beskrivning",
         "helpText": "Hjälptext",
@@ -735,7 +741,11 @@
         "whyRelevant": "Varför relevant",
         "overlapNotes": "Överlappning med andra kriterier",
         "biasRisk": "Biasrisk",
-        "biasRiskOption": { "low": "Låg", "medium": "Medel", "high": "Hög" },
+        "biasRiskOption": {
+          "low": "Låg",
+          "medium": "Medel",
+          "high": "Hög"
+        },
         "biasComment": "Biaskommentar",
         "biasAction": "Biasåtgärd",
         "saveCta": "Spara",
@@ -745,7 +755,10 @@
         "approveHint": "Fyll i syfte, varför relevant, biasrisk och en biaskommentar för att godkänna.",
         "decidedBy": "Godkänd av {name} den {date}",
         "error": "Något gick fel. Försök igen.",
-        "export": "Exportera metodbilaga (PDF)"
+        "export": "Exportera",
+        "rationaleSection": "Motivering",
+        "biasSection": "Bias-granskning",
+        "optionalSuffix": " (valfritt)"
       },
       "methodAppendix": {
         "docTitle": "Metodbilaga",

@@ -21,12 +21,9 @@ import {
   FormMessage,
 } from "@workspace/ui/components/form"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select"
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@workspace/ui/components/toggle-group"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
@@ -119,6 +116,8 @@ export function CriterionComplianceDialog({
               className="space-y-4"
               onSubmit={form.handleSubmit(handleValid)}
             >
+              {/* Rationale section */}
+              <p className="font-medium text-sm">{t("rationaleSection")}</p>
               <FormField
                 control={form.control}
                 name="purpose"
@@ -150,7 +149,10 @@ export function CriterionComplianceDialog({
                 name="overlapNotes"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("overlapNotes")}</FormLabel>
+                    <FormLabel>
+                      {t("overlapNotes")}
+                      {t("optionalSuffix")}
+                    </FormLabel>
                     <FormControl>
                       <Textarea {...field} />
                     </FormControl>
@@ -158,30 +160,34 @@ export function CriterionComplianceDialog({
                   </FormItem>
                 )}
               />
+
+              {/* Bias review section */}
+              <p className="font-medium text-sm">{t("biasSection")}</p>
               <FormField
                 control={form.control}
                 name="biasRisk"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t("biasRisk")}</FormLabel>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="low">
+                    <FormControl>
+                      <ToggleGroup
+                        type="single"
+                        value={field.value ?? ""}
+                        onValueChange={(v) =>
+                          field.onChange(v === "" ? undefined : v)
+                        }
+                      >
+                        <ToggleGroupItem value="low">
                           {t("biasRiskOption.low")}
-                        </SelectItem>
-                        <SelectItem value="medium">
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="medium">
                           {t("biasRiskOption.medium")}
-                        </SelectItem>
-                        <SelectItem value="high">
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="high">
                           {t("biasRiskOption.high")}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                        </ToggleGroupItem>
+                      </ToggleGroup>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -204,7 +210,10 @@ export function CriterionComplianceDialog({
                 name="biasAction"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("biasAction")}</FormLabel>
+                    <FormLabel>
+                      {t("biasAction")}
+                      {t("optionalSuffix")}
+                    </FormLabel>
                     <FormControl>
                       <Textarea {...field} />
                     </FormControl>
@@ -217,68 +226,66 @@ export function CriterionComplianceDialog({
                   {t("error")}
                 </p>
               )}
-              <div className="space-y-2">
-                {isApproved &&
-                  target.decidedByName !== null &&
-                  target.decidedAt !== null && (
-                    <p className="text-muted-foreground text-sm">
-                      {t("decidedBy", {
-                        name: target.decidedByName,
-                        date: format.dateTime(new Date(target.decidedAt), {
-                          dateStyle: "medium",
-                        }),
-                      })}
-                    </p>
-                  )}
-                {!isApproved && !canApprove && (
+              {isApproved &&
+                target.decidedByName !== null &&
+                target.decidedAt !== null && (
                   <p className="text-muted-foreground text-sm">
-                    {t("approveHint")}
+                    {t("decidedBy", {
+                      name: target.decidedByName,
+                      date: format.dateTime(new Date(target.decidedAt), {
+                        dateStyle: "medium",
+                      }),
+                    })}
                   </p>
                 )}
-                <DialogFooter>
-                  <Button type="button" variant="outline" onClick={onClose}>
-                    {t("cancelCta")}
-                  </Button>
-                  {isApproved ? (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={async () => {
-                        await setApproval({
-                          orgId,
-                          criterionId: target.criterionId,
-                          approved: false,
-                        })
-                        onClose()
-                      }}
-                    >
-                      {t("reopenCta")}
-                    </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      disabled={!canApprove}
-                      onClick={async () => {
-                        await setApproval({
-                          orgId,
-                          criterionId: target.criterionId,
-                          approved: true,
-                        })
-                        onClose()
-                      }}
-                    >
-                      {t("approveCta")}
-                    </Button>
-                  )}
-                  <SubmitButton
-                    type="submit"
-                    isSubmitting={isSubmitting}
-                    disabled={!isDirty}
+              {!isApproved && !canApprove && (
+                <p className="text-muted-foreground text-sm">
+                  {t("approveHint")}
+                </p>
+              )}
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={onClose}>
+                  {t("cancelCta")}
+                </Button>
+                {isApproved ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={async () => {
+                      await setApproval({
+                        orgId,
+                        criterionId: target.criterionId,
+                        approved: false,
+                      })
+                      onClose()
+                    }}
                   >
-                    {t("saveCta")}
-                  </SubmitButton>
-                </DialogFooter>
-              </div>
+                    {t("reopenCta")}
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    disabled={!canApprove}
+                    onClick={async () => {
+                      await setApproval({
+                        orgId,
+                        criterionId: target.criterionId,
+                        approved: true,
+                      })
+                      onClose()
+                    }}
+                  >
+                    {t("approveCta")}
+                  </Button>
+                )}
+                <SubmitButton
+                  type="submit"
+                  isSubmitting={isSubmitting}
+                  disabled={!isDirty}
+                >
+                  {t("saveCta")}
+                </SubmitButton>
+              </DialogFooter>
             </form>
           </Form>
         )}

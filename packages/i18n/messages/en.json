@@ -211,6 +211,12 @@
         "role": "Role",
         "status": "Status",
         "purpose": "Purpose",
+        "whyRelevant": "Why relevant",
+        "overlapNotes": "Overlap notes",
+        "biasRisk": "Bias risk",
+        "biasComment": "Bias comment",
+        "biasAction": "Bias mitigation",
+        "approved": "Approved",
         "responsibilities": "Responsibilities",
         "description": "Description",
         "helpText": "Help text",
@@ -735,7 +741,11 @@
         "whyRelevant": "Why relevant",
         "overlapNotes": "Overlap with other criteria",
         "biasRisk": "Bias risk",
-        "biasRiskOption": { "low": "Low", "medium": "Medium", "high": "High" },
+        "biasRiskOption": {
+          "low": "Low",
+          "medium": "Medium",
+          "high": "High"
+        },
         "biasComment": "Bias comment",
         "biasAction": "Bias mitigation",
         "saveCta": "Save",
@@ -745,7 +755,10 @@
         "approveHint": "Fill in purpose, why relevant, bias risk, and a bias comment to approve.",
         "decidedBy": "Approved by {name} on {date}",
         "error": "Something went wrong. Please try again.",
-        "export": "Export method appendix (PDF)"
+        "export": "Export",
+        "rationaleSection": "Rationale",
+        "biasSection": "Bias review",
+        "optionalSuffix": " (optional)"
       },
       "methodAppendix": {
         "docTitle": "Method appendix",

@@ -114,6 +114,25 @@ describe("criterion compliance write path", () => {
     expect(typeof doc?.decidedBy).toBe("string")
     expect(typeof doc?.decidedAt).toBe("number")
 
+    // The approval audit row must NOT contain decidedBy or decidedAt in changes.
+    const rows = await t.run(async (ctx) =>
+      ctx.db
+        .query("auditLog")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+    )
+    const approvalRow = rows.find(
+      (r) =>
+        (r.payload as { change?: string }).change ===
+        "criterion.approvalChanged"
+    )
+    expect(approvalRow).toBeDefined()
+    const changes =
+      (approvalRow?.payload as { changes?: Record<string, unknown> }).changes ??
+      {}
+    expect("decidedBy" in changes).toBe(false)
+    expect("decidedAt" in changes).toBe(false)
+
     // Editing content reopens the sign-off.
     await asAdmin.mutation(api.evaluationModel.method.saveCriterionCompliance, {
       orgId,

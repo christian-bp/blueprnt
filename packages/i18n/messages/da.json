@@ -211,6 +211,12 @@
         "role": "Rolle",
         "status": "Status",
         "purpose": "Formål",
+        "whyRelevant": "Hvorfor relevant",
+        "overlapNotes": "Overlapsnoter",
+        "biasRisk": "Biasrisiko",
+        "biasComment": "Biaskommentar",
+        "biasAction": "Biasforebyggelse",
+        "approved": "Godkendt",
         "responsibilities": "Ansvar",
         "description": "Beskrivelse",
         "helpText": "Hjælpetekst",
@@ -735,7 +741,11 @@
         "whyRelevant": "Hvorfor relevant",
         "overlapNotes": "Overlap med andre kriterier",
         "biasRisk": "Biasrisiko",
-        "biasRiskOption": { "low": "Lav", "medium": "Middel", "high": "Høj" },
+        "biasRiskOption": {
+          "low": "Lav",
+          "medium": "Middel",
+          "high": "Høj"
+        },
         "biasComment": "Biaskommentar",
         "biasAction": "Biasforebyggelse",
         "saveCta": "Gem",
@@ -745,7 +755,10 @@
         "approveHint": "Udfyld formål, hvorfor relevant, biasrisiko og en biaskommentar for at godkende.",
         "decidedBy": "Godkendt af {name} den {date}",
         "error": "Noget gik galt. Prøv igen.",
-        "export": "Eksporter metodebilag (PDF)"
+        "export": "Eksporter",
+        "rationaleSection": "Begrundelse",
+        "biasSection": "Bias-gennemgang",
+        "optionalSuffix": " (valgfrit)"
       },
       "methodAppendix": {
         "docTitle": "Metodebilag",

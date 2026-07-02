@@ -211,6 +211,12 @@
         "role": "Rolle",
         "status": "Status",
         "purpose": "Formål",
+        "whyRelevant": "Hvorfor relevant",
+        "overlapNotes": "Overlappnotater",
+        "biasRisk": "Biasrisiko",
+        "biasComment": "Biaskommentar",
+        "biasAction": "Biastiltak",
+        "approved": "Godkjent",
         "responsibilities": "Ansvar",
         "description": "Beskrivelse",
         "helpText": "Hjelpetekst",
@@ -735,7 +741,11 @@
         "whyRelevant": "Hvorfor relevant",
         "overlapNotes": "Overlapp med andre kriterier",
         "biasRisk": "Biasrisiko",
-        "biasRiskOption": { "low": "Lav", "medium": "Middels", "high": "Høy" },
+        "biasRiskOption": {
+          "low": "Lav",
+          "medium": "Middels",
+          "high": "Høy"
+        },
         "biasComment": "Biaskommentar",
         "biasAction": "Biastiltak",
         "saveCta": "Lagre",
@@ -745,7 +755,10 @@
         "approveHint": "Fyll ut formål, hvorfor relevant, biasrisiko og en biaskommentar for å godkjenne.",
         "decidedBy": "Godkjent av {name} den {date}",
         "error": "Noe gikk galt. Prøv igjen.",
-        "export": "Eksporter metodevedlegg (PDF)"
+        "export": "Eksporter",
+        "rationaleSection": "Begrunnelse",
+        "biasSection": "Biasvurdering",
+        "optionalSuffix": " (valgfritt)"
       },
       "methodAppendix": {
         "docTitle": "Metodevedlegg",
