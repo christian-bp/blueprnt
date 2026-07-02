@@ -348,13 +348,16 @@ export async function generateRoleProfileText(
   }
 }
 
+// Concise caps (well under the form's 2000 limit): the fields render in a PDF
+// appendix, so a runaway multi-paragraph answer reads badly. The prompt asks
+// for short plain prose; these maxes are the safety ceiling.
 const complianceSchema = z.object({
-  purpose: z.string().min(1).max(2000),
-  whyRelevant: z.string().min(1).max(2000),
-  overlapNotes: z.string().max(2000),
+  purpose: z.string().min(1).max(500),
+  whyRelevant: z.string().min(1).max(600),
+  overlapNotes: z.string().max(500),
   biasRisk: z.enum(["low", "medium", "high"]),
-  biasComment: z.string().min(1).max(2000),
-  biasAction: z.string().max(2000),
+  biasComment: z.string().min(1).max(800),
+  biasAction: z.string().max(500),
 })
 
 // The criterion + model context the model is given to document one criterion.
@@ -416,6 +419,7 @@ export async function generateCriterionComplianceText(
         "Produce a criterion rationale and a bias review.",
         "Rationale: purpose (what the criterion measures), whyRelevant (why it is relevant to the work's value and why it is gender-neutral), overlapNotes (any overlap with the other criteria so the same thing is not weighted twice; empty string if none).",
         `Bias review: assess the criterion against these questions: ${JSON.stringify(BIAS_CHECKLIST)}. Return biasRisk (one of "low", "medium", "high"), biasComment (your reasoning, noting which questions apply), and biasAction (a concrete mitigation such as rewording a level description or adjusting weighting; empty string if none needed).`,
+        "Format: write every field as short, plain prose in the output language. No markdown, no bullet points, no numbered lists, no headings. Keep purpose and whyRelevant to one or two sentences each, overlapNotes to at most one sentence (or empty), biasComment to two or three sentences, and biasAction to one sentence (or empty).",
       ]
         .filter((line) => line !== "")
         .join("\n"),
