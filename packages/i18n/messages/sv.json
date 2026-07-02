@@ -766,6 +766,7 @@
       },
       "methodAppendix": {
         "docTitle": "Metodbilaga",
+        "contentsTitle": "Innehåll",
         "generatedOn": "Genererad den {date}",
         "model": "Modell: {name}",
         "draft": "UTKAST: alla kriterier är inte granskade och godkända",

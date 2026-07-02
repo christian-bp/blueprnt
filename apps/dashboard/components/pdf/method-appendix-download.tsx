@@ -3,7 +3,6 @@
 import { Download01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Button } from "@workspace/ui/components/button"
 import { pdf } from "@react-pdf/renderer"
 import { useQuery } from "convex/react"
 import { useFormatter, useLocale, useTranslations } from "next-intl"
@@ -12,6 +11,7 @@ import {
   MethodAppendix,
   type MethodAppendixLabels,
 } from "@/components/pdf/method-appendix"
+import { SubmitButton } from "@/components/submit-button"
 import { assembleMethodAppendix } from "@/lib/pdf/method-appendix-data"
 
 export function MethodAppendixDownload({ orgId }: { orgId: string }) {
@@ -36,6 +36,7 @@ export function MethodAppendixDownload({ orgId }: { orgId: string }) {
       const now = format.dateTime(new Date(), { dateStyle: "medium" })
       const labels: MethodAppendixLabels = {
         docTitle: t("docTitle"),
+        contentsTitle: t("contentsTitle"),
         generatedOn: t("generatedOn", { date: now }),
         model: t("model", { name: data.modelName }),
         statusTag: doc.status === "final" ? t("final") : t("draft"),
@@ -70,8 +71,20 @@ export function MethodAppendixDownload({ orgId }: { orgId: string }) {
               ? t("notApproved")
               : t("notDocumented"),
       }
+      // Two-pass render: pass 1 records where each section and criterion lands,
+      // pass 2 renders the final PDF with those page numbers in the contents.
+      const pageRefs: Record<string, number> = {}
+      await pdf(
+        <MethodAppendix
+          doc={doc}
+          labels={labels}
+          onResolvePage={(id, page) => {
+            pageRefs[id] = page
+          }}
+        />
+      ).toBlob()
       const blob = await pdf(
-        <MethodAppendix doc={doc} labels={labels} />
+        <MethodAppendix doc={doc} labels={labels} pageRefs={pageRefs} />
       ).toBlob()
       const url = URL.createObjectURL(blob)
       const a = document.createElement("a")
@@ -87,12 +100,14 @@ export function MethodAppendixDownload({ orgId }: { orgId: string }) {
   }
 
   return (
-    <Button
+    <SubmitButton
+      type="button"
+      isSubmitting={busy}
+      disabled={data === undefined || data === null}
       onClick={onExport}
-      disabled={data === undefined || data === null || busy}
     >
       <HugeiconsIcon icon={Download01Icon} strokeWidth={2} />
       {tButton("downloadPdf")}
-    </Button>
+    </SubmitButton>
   )
 }

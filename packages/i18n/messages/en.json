@@ -766,6 +766,7 @@
       },
       "methodAppendix": {
         "docTitle": "Method appendix",
+        "contentsTitle": "Contents",
         "generatedOn": "Generated on {date}",
         "model": "Model: {name}",
         "draft": "DRAFT: not all criteria are reviewed and approved",

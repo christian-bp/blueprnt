@@ -766,6 +766,7 @@
       },
       "methodAppendix": {
         "docTitle": "Menetelmäliite",
+        "contentsTitle": "Sisältö",
         "generatedOn": "Luotu {date}",
         "model": "Malli: {name}",
         "draft": "LUONNOS: kaikkia kriteereitä ei ole tarkastettu ja hyväksytty",

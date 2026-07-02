@@ -766,6 +766,7 @@
       },
       "methodAppendix": {
         "docTitle": "Metodebilag",
+        "contentsTitle": "Indhold",
         "generatedOn": "Genereret den {date}",
         "model": "Model: {name}",
         "draft": "UDKAST: ikke alle kriterier er gennemgået og godkendt",

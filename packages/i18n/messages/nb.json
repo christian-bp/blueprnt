@@ -766,6 +766,7 @@
       },
       "methodAppendix": {
         "docTitle": "Metodevedlegg",
+        "contentsTitle": "Innhold",
         "generatedOn": "Generert den {date}",
         "model": "Modell: {name}",
         "draft": "UTKAST: ikke alle kriterier er gjennomgått og godkjent",
