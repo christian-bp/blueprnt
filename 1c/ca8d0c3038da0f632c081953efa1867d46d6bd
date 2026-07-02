@@ -1,0 +1,21 @@
+docs/superpowers/plans/2026-07-02-dashboard-todo-and-welcome.md
+  s_6bff98b662648b::t_a2d0b65fa71fc8 529,535
+  s_6bff98b662648b::t_32aa1e830bbd15 1-506,511,513-528,530-534,536-958
+  s_6bff98b662648b::t_e8b5d23a39936c 507-510,512
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "1cca8d0c3038da0f632c081953efa1867d46d6bd",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
