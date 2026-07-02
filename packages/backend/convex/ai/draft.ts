@@ -55,7 +55,13 @@ export const draftRoleProfile = action({
       usage = generated.usage
     } catch (error) {
       // The unavailable-model branch keeps its own code; any other failure
-      // (generation, schema) is a generation failure for the panel.
+      // (generation, schema) is a generation failure for the panel. Log the
+      // underlying cause first: the appError below carries only the mapped code,
+      // so without this the real error (e.g. a schema miss) is invisible.
+      console.error("role profile draft generation failed", {
+        name: error instanceof Error ? error.name : "",
+        error: error instanceof Error ? error.message : String(error),
+      })
       const code =
         error instanceof Error && error.message === ERROR_CODES.aiUnavailable
           ? ERROR_CODES.aiUnavailable
@@ -138,6 +144,13 @@ export const draftCriterionCompliance = action({
       compliance = generated.compliance
       usage = generated.usage
     } catch (error) {
+      // Log the underlying cause first: the appError below carries only the
+      // mapped code, so without this the real error (e.g. a schema miss when a
+      // field exceeds its cap) is invisible in the logs.
+      console.error("compliance draft generation failed", {
+        name: error instanceof Error ? error.name : "",
+        error: error instanceof Error ? error.message : String(error),
+      })
       const code =
         error instanceof Error && error.message === ERROR_CODES.aiUnavailable
           ? ERROR_CODES.aiUnavailable

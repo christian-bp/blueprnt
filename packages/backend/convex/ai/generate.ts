@@ -348,16 +348,23 @@ export async function generateRoleProfileText(
   }
 }
 
-// Concise caps (well under the form's 2000 limit): the fields render in a PDF
-// appendix, so a runaway multi-paragraph answer reads badly. The prompt asks
-// for short plain prose; these maxes are the safety ceiling.
+// The generation ceiling equals the compliance form's per-field storage limit
+// (2000; see apps/dashboard/lib/criterion-compliance-schemas.ts), so any draft
+// that validates here can always be saved. Brevity is driven by the prompt
+// below (short plain prose), NOT by a tight Zod cap: Output.object validates the
+// model's text against this schema and withSchemaRetry only retries schema
+// misses, so a ceiling set near the expected length rejected otherwise-valid
+// drafts on every attempt and surfaced as aiGenerationFailed. The PDF appendix
+// paginates long text, so length is a style concern, not a correctness one.
+// min(1) marks the fields the prompt always fills.
+const COMPLIANCE_FIELD_MAX = 2000
 const complianceSchema = z.object({
-  purpose: z.string().min(1).max(500),
-  whyRelevant: z.string().min(1).max(600),
-  overlapNotes: z.string().max(500),
+  purpose: z.string().min(1).max(COMPLIANCE_FIELD_MAX),
+  whyRelevant: z.string().min(1).max(COMPLIANCE_FIELD_MAX),
+  overlapNotes: z.string().max(COMPLIANCE_FIELD_MAX),
   biasRisk: z.enum(["low", "medium", "high"]),
-  biasComment: z.string().min(1).max(800),
-  biasAction: z.string().max(500),
+  biasComment: z.string().min(1).max(COMPLIANCE_FIELD_MAX),
+  biasAction: z.string().max(COMPLIANCE_FIELD_MAX),
 })
 
 // The criterion + model context the model is given to document one criterion.
