@@ -44,6 +44,7 @@ export type MethodAppendixLabels = {
   biasComment: string
   biasAction: string
   footer: string
+  pointBudget: string
   riskLabel: (r: "low" | "medium" | "high") => string
   approval: (c: MethodAppendixDoc["criteria"][number]) => string
 }
@@ -68,6 +69,7 @@ export function MethodAppendix({
           <Text style={s.para}>{doc.biasStatement}</Text>
         </Section>
         <Section title={labels.criteriaTitle}>
+          <Text style={s.para}>{labels.pointBudget}</Text>
           <View style={s.row}>
             <Text style={[s.cellName, s.label]}>{labels.colCriterion}</Text>
             <Text style={[s.cellNum, s.label]}>{labels.colWeight}</Text>

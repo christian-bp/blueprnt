@@ -772,7 +772,8 @@
         "biasAction": "Bias mitigation",
         "approvedBy": "Approved by {name} on {date}",
         "notApproved": "Not yet approved",
-        "notDocumented": "Not documented"
+        "notDocumented": "Not documented",
+        "pointBudget": "Point budget: {points}"
       }
     },
     "ai": {

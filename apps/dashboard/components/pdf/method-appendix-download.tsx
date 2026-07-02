@@ -54,6 +54,7 @@ export function MethodAppendixDownload({ orgId }: { orgId: string }) {
         biasComment: t("biasComment"),
         biasAction: t("biasAction"),
         footer: t("docTitle"),
+        pointBudget: t("pointBudget", { points: doc.pointBudget }),
         riskLabel: (r) => tRisk(r),
         approval: (c) =>
           c.status === "approved" && c.decidedByName && c.decidedAt

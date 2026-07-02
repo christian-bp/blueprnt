@@ -772,7 +772,8 @@
         "biasAction": "Biasreduserende tiltak",
         "approvedBy": "Godkjent av {name} den {date}",
         "notApproved": "Ikke godkjent ennå",
-        "notDocumented": "Ikke dokumentert"
+        "notDocumented": "Ikke dokumentert",
+        "pointBudget": "Poengbudsjett: {points}"
       }
     },
     "ai": {

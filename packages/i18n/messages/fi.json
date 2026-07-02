@@ -776,7 +776,8 @@
         "biasAction": "Vinoumanvähennystoimenpide",
         "approvedBy": "Hyväksynyt {name} päivänä {date}",
         "notApproved": "Ei vielä hyväksytty",
-        "notDocumented": "Ei dokumentoitu"
+        "notDocumented": "Ei dokumentoitu",
+        "pointBudget": "Pistebudjetti: {points}"
       }
     },
     "ai": {

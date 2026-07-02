@@ -108,6 +108,8 @@ export function Section({
   children: ReactNode
 }) {
   return (
+    // No wrap={false} here intentionally: sections with many criteria must paginate rather than clip.
+    // Per-item blocks inside keep their own wrap={false} to stay together across pages.
     <View>
       <Text style={styles.sectionTitle}>{title}</Text>
       {children}
