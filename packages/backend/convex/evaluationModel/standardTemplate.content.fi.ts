@@ -41,7 +41,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
           "Menee osittain päällekkäin kriteerien Itsenäisyys ja päätösvalta (päätösvalta) sekä Henkilöstö-/esihenkilövastuu kanssa; tässä painopiste on nimenomaan siinä, kuinka pitkälle roolin vaikutukset ulottuvat organisaatiossa.",
         biasRisk: "low",
         biasComment:
-          "Biasriski (diagnoosikysymys 3): näkyvän valtuutuksen palkitseminen enemmän kuin tosiasiallisen vaikutuksen voi suosia perinteisesti näkyviä rooleja. Tasokuvaukset lähtevät vaikutuksesta ja vastuusta arvon sijaan ja ovat sukupuolineutraaleja (kysymys 5).",
+          "Näkyvän valtuutuksen palkitseminen enemmän kuin tosiasiallisen vaikutuksen voi suosia perinteisesti näkyviä rooleja. Tasokuvaukset lähtevät vaikutuksesta ja vastuusta arvon sijaan ja ovat sukupuolineutraaleja.",
         biasAction:
           "Tasoankkurit kuvaavat tosiasiallista ulottuvuutta ja tuloksia, eivät muodollista asemaa, jotta myös roolit ilman näkyvää titteliä voidaan arvioida korkealle.",
       },
@@ -76,7 +76,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
           "Menee osittain päällekkäin kriteerin Laajuus ja vaikutus kanssa; tässä painopiste on virheiden tai puutteiden seurauksissa itse ulottuvuuden sijaan.",
         biasRisk: "low",
         biasComment:
-          "Biasriski (diagnoosikysymykset 1 ja 2): näkyvät operatiiviset tai tekniset riskit voidaan yliarvioida, kun taas hiljainen laatu-, huolenpito- tai vaatimustenmukaisuustyö aliarvioidaan. Tasokuvaukset kattavat myös laadun, vaatimustenmukaisuuden ja suhteet ja ovat sukupuolineutraaleja (kysymys 5).",
+          "Näkyvät operatiiviset tai tekniset riskit voidaan yliarvioida, kun taas hiljainen laatu-, huolenpito- tai vaatimustenmukaisuustyö aliarvioidaan. Tasokuvaukset kattavat myös laadun, vaatimustenmukaisuuden ja suhteet ja ovat sukupuolineutraaleja.",
         biasAction:
           "Ankkuritekstit sisältävät seuraukset laadulle, vaatimustenmukaisuudelle ja asiakassuhteille, eivät vain taloudellisia tai teknisiä virheitä, jotta erilaiset vastuutyypit arvioidaan tasavertaisesti.",
       },
@@ -111,7 +111,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
           "Menee osittain päällekkäin kriteerin Osaamisen syvyys/laajuus kanssa; tässä painopiste on ongelmien monimutkaisuudessa ja epävarmuudessa vaaditun tiedon sijaan.",
         biasRisk: "low",
         biasComment:
-          "Biasriski (diagnoosikysymys 2): tekninen monimutkaisuus voidaan yliarvioida, kun taas suhteisiin liittyvä, koordinoiva tai monitulkintainen monimutkaisuus aliarvioidaan. Tasokuvaukset kattavat myös organisatorisen ja liiketoiminnallisen monimutkaisuuden ja ovat sukupuolineutraaleja (kysymys 5).",
+          "Tekninen monimutkaisuus voidaan yliarvioida, kun taas suhteisiin liittyvä, koordinoiva tai monitulkintainen monimutkaisuus aliarvioidaan. Tasokuvaukset kattavat myös organisatorisen ja liiketoiminnallisen monimutkaisuuden ja ovat sukupuolineutraaleja.",
         biasAction:
           "Ankkuritekstit kuvaavat monimutkaisuutta laajasti (tekninen, liiketoiminnallinen ja organisatorinen), jotta myös koordinoivat ja monitulkintaiset yhteydet arvioidaan monimutkaisiksi.",
       },
@@ -146,7 +146,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
           "Menee osittain päällekkäin kriteerien Laajuus ja vaikutus sekä Henkilöstö-/esihenkilövastuu kanssa; tässä painopiste on itsenäisyydessä ja päätösvallassa ulottuvuuden tai muiden johtamisen sijaan.",
         biasRisk: "medium",
         biasComment:
-          "Biasriski (diagnoosikysymys 3): näkyvä päätösvalta voidaan yliarvioida suhteessa tosiasialliseen vaikutukseen, mikä voi suosia muodollista valtuutusta kantavia rooleja verrattuna senioriasiantuntijoihin, joilla on todellista vaikutusvaltaa. Tasokuvaukset ovat sukupuolineutraaleja (kysymys 5).",
+          "Näkyvä päätösvalta voidaan yliarvioida suhteessa tosiasialliseen vaikutukseen, mikä voi suosia muodollista valtuutusta kantavia rooleja verrattuna senioriasiantuntijoihin, joilla on todellista vaikutusvaltaa. Tasokuvaukset ovat sukupuolineutraaleja.",
         biasAction:
           "Ankkuritekstit kattavat myös itsenäisen aloitteellisuuden ja ongelmanratkaisun, eivät vain muodollista päätösvaltaa, jotta todellinen vaikutusvalta ilman titteliä voidaan arvioida korkealle.",
       },
@@ -181,7 +181,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
           "Menee osittain päällekkäin kriteerin Laajuus ja vaikutus kanssa; tässä painopiste on yhteistyön laajuudessa ja vaihtelevuudessa tuloksen ulottuvuuden sijaan.",
         biasRisk: "low",
         biasComment:
-          "Tämä kriteeri vastustaa tunnettua biasia arvottamalla nimenomaisesti suhteisiin liittyvän ja koordinoivan työn (diagnoosikysymys 2). Jäljelle jäävä riski (kysymys 3): ulkoinen, näkyvä edustus voidaan yliarvioida suhteessa sisäiseen koordinointityöhön. Tasokuvaukset ovat sukupuolineutraaleja (kysymys 5).",
+          "Tämä kriteeri vastustaa tunnettua biasia arvottamalla nimenomaisesti suhteisiin liittyvän ja koordinoivan työn. Jäljelle jäävä riski: ulkoinen, näkyvä edustus voidaan yliarvioida suhteessa sisäiseen koordinointityöhön. Tasokuvaukset ovat sukupuolineutraaleja.",
         biasAction:
           "Ankkuritekstit arvottavat sisäisen toimintorajat ylittävän koordinoinnin tasavertaisesti ulkoisen edustuksen kanssa, jotta näkyvä ulkoinen verkostoituminen ei sinänsä paina enemmän.",
       },
@@ -216,7 +216,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
           "Menee osittain päällekkäin kriteerien Monimutkaisuus ja epäselvyys sekä Muodollinen pätevyys kanssa; tässä painopiste on tosiasiallisessa tiedossa ja kokemuksessa ongelmien monimutkaisuuden tai muodollisten vaatimusten sijaan.",
         biasRisk: "low",
         biasComment:
-          "Biasriski (diagnoosikysymykset 1 ja 4): muodollisesti tunnustettu tai näkyvä asiantuntemus voidaan yliarvioida suhteessa hiljaiseen, kokemusperäiseen tietoon. Tasokuvaukset lähtevät sovelletusta osaamisesta, eivät pelkästä tittelistä tai koulutuksesta, ja ovat sukupuolineutraaleja (kysymys 5).",
+          "Muodollisesti tunnustettu tai näkyvä asiantuntemus voidaan yliarvioida suhteessa hiljaiseen, kokemusperäiseen tietoon. Tasokuvaukset lähtevät sovelletusta osaamisesta, eivät pelkästä tittelistä tai koulutuksesta, ja ovat sukupuolineutraaleja.",
         biasAction:
           "Ankkuritekstit arvottavat käytännön kokemuksen ja sovelletun menetelmäymmärryksen tasavertaisesti muodollisesti tunnustetun erikoistumisen kanssa.",
       },
@@ -251,7 +251,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
           "Menee osittain päällekkäin kriteerien Itsenäisyys ja päätösvalta (päätösvalta) sekä Laajuus ja vaikutus kanssa; tässä painopiste on nimenomaan vastuussa taloudellisista raameista ja tuloksista.",
         biasRisk: "medium",
         biasComment:
-          "Tunnettu biasriski (diagnoosikysymykset 3 ja 6): suurelle budjetille voidaan antaa liian suuri paino verrattuna monimutkaisuuteen, vastuuseen ja erityisosaamiseen, mikä voi suosia perinteisesti miesvaltaisia budjettia kantavia rooleja. Tasokuvaukset ovat sukupuolineutraaleja (kysymys 5).",
+          "Suurelle budjetille voidaan antaa liian suuri paino verrattuna monimutkaisuuteen, vastuuseen ja erityisosaamiseen, mikä voi suosia perinteisesti miesvaltaisia budjettia kantavia rooleja. Tasokuvaukset ovat sukupuolineutraaleja.",
         biasAction:
           "Kriteeri pidetään maltillisella painolla mallissa, jotta budjetin koko ei sinänsä hallitse arviointia, ja tasot kuvaavat päätösvastuuta pelkkien summien koon sijaan.",
       },
@@ -286,7 +286,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
           "Menee osittain päällekkäin kriteerien Laajuus ja vaikutus (organisatorinen ulottuvuus) sekä Itsenäisyys ja päätösvalta (päätösvalta) kanssa; tässä painopiste on nimenomaan vastuussa, jota käytetään muiden ihmisten kautta.",
         biasRisk: "medium",
         biasComment:
-          "Tunnettu biasriski (diagnoosikysymykset 3 ja 6): näkyvän valtuutuksen ja alaisten lukumäärän palkitseminen enemmän kuin tosiasiallisen johtamisvaikutuksen voi yliarvioida perinteisesti miesvaltaisia esihenkilörooleja ja aliarvioida senioriasiantuntijoita ja koordinointipainotteista työtä. Tasokuvaukset sinänsä ovat sukupuolineutraaleja (kysymys 5).",
+          "Näkyvän valtuutuksen ja alaisten lukumäärän palkitseminen enemmän kuin tosiasiallisen johtamisvaikutuksen voi yliarvioida perinteisesti miesvaltaisia esihenkilörooleja ja aliarvioida senioriasiantuntijoita ja koordinointipainotteista työtä. Tasokuvaukset sinänsä ovat sukupuolineutraaleja.",
         biasAction:
           "Tasoankkurit kuvaavat johtajuuden sisältöä pelkän alaisten lukumäärän sijaan, ja kriteeri pidetään maltillisella painolla, jotta esihenkilötitteli ei sinänsä hallitse arviointia.",
       },
@@ -321,7 +321,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
           "Menee osittain päällekkäin kriteerin Osaamisen syvyys/laajuus kanssa; tässä painopiste on muodollisissa vaatimuksissa tosiasiallisesti sovelletun tiedon ja kokemuksen sijaan.",
         biasRisk: "medium",
         biasComment:
-          "Tunnettu biasriski (diagnoosikysymys 4): muodolliseen asemaan nojaaminen tosiasiallisen työn sisällön sijaan voi asettaa epäedulliseen asemaan osaamisen, joka on hankittu muita kuin perinteisen koulutuksen kautta. Tasokuvaukset sallivat vastaavan dokumentoidun kokemuksen ja ovat sukupuolineutraaleja (kysymys 5).",
+          "Muodolliseen asemaan nojaaminen tosiasiallisen työn sisällön sijaan voi asettaa epäedulliseen asemaan osaamisen, joka on hankittu muita kuin perinteisen koulutuksen kautta. Tasokuvaukset sallivat vastaavan dokumentoidun kokemuksen ja ovat sukupuolineutraaleja.",
         biasAction:
           "Tasot tunnustavat nimenomaisesti vastaavan kokemuksen muodollisen koulutuksen rinnalla, ja kriteeri pidetään matalalla painolla, jotta muodolliset ansiot eivät sinänsä aja arviointia.",
       },

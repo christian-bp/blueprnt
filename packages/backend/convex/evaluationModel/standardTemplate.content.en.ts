@@ -70,7 +70,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
           "Overlaps partly with Autonomy (decision authority) and People/Management Responsibility; here the focus is specifically how far the role's effects reach in the organization.",
         biasRisk: "low",
         biasComment:
-          "Bias risk (diagnostic question 3): rewarding visible mandate more than actual impact can favour traditionally visible roles. The level descriptions are based on effect and responsibility rather than rank, and are gender-neutral (question 5).",
+          "Rewarding visible mandate more than actual impact can favour traditionally visible roles. The level descriptions are based on effect and responsibility rather than rank, and are gender-neutral.",
         biasAction:
           "The level anchors describe actual reach and results rather than formal position, so roles without a visible title can still be rated high.",
       },
@@ -105,7 +105,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
           "Overlaps partly with Scope & Impact; here the focus is the consequences of errors or shortcomings rather than reach itself.",
         biasRisk: "low",
         biasComment:
-          "Bias risk (diagnostic questions 1 and 2): visible operational or technical risk can be over-valued while quiet quality, care or compliance work is under-valued. The level descriptions also cover quality, compliance and relationships, and are gender-neutral (question 5).",
+          "Visible operational or technical risk can be over-valued while quiet quality, care or compliance work is under-valued. The level descriptions also cover quality, compliance and relationships, and are gender-neutral.",
         biasAction:
           "The anchors include consequences for quality, compliance and customer relations, not only financial or technical failures, so different kinds of responsibility are judged on equal terms.",
       },
@@ -140,7 +140,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
           "Overlaps partly with Knowledge Depth/Breadth; here the focus is the complexity and uncertainty of the problems rather than the knowledge required.",
         biasRisk: "low",
         biasComment:
-          "Bias risk (diagnostic question 2): technical complexity can be over-valued while relational, coordinating or ambiguous complexity is under-valued. The level descriptions also cover organizational and business complexity, and are gender-neutral (question 5).",
+          "Technical complexity can be over-valued while relational, coordinating or ambiguous complexity is under-valued. The level descriptions also cover organizational and business complexity, and are gender-neutral.",
         biasAction:
           "The anchors describe complexity broadly (technical, business and organizational) so that coordinating and ambiguous contexts also count as complex.",
       },
@@ -175,7 +175,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
           "Overlaps partly with Scope & Impact and People/Management Responsibility; here the focus is independence and decision authority rather than reach or leading others.",
         biasRisk: "medium",
         biasComment:
-          "Bias risk (diagnostic question 3): visible decision mandate can be over-valued relative to actual impact, which can favour formally mandated roles over senior specialists with real influence. The level descriptions are gender-neutral (question 5).",
+          "Visible decision mandate can be over-valued relative to actual impact, which can favour formally mandated roles over senior specialists with real influence. The level descriptions are gender-neutral.",
         biasAction:
           "The anchors also cover independent initiative and problem solving, not only formal decision mandate, so real influence without a title can be rated high.",
       },
@@ -210,7 +210,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
           "Overlaps partly with Scope & Impact; here the focus is the breadth and variety of collaboration rather than the reach of the outcome.",
         biasRisk: "low",
         biasComment:
-          "This criterion counters a known bias by explicitly valuing relational and coordinating work (diagnostic question 2). Residual risk (question 3): external, visible representation can be over-valued relative to internal coordination. The level descriptions are gender-neutral (question 5).",
+          "This criterion counters a known bias by explicitly valuing relational and coordinating work. Residual risk: external, visible representation can be over-valued relative to internal coordination. The level descriptions are gender-neutral.",
         biasAction:
           "The anchors value internal cross-functional coordination on a par with external representation, so visible external networking does not by itself weigh more.",
       },
@@ -245,7 +245,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
           "Overlaps partly with Complexity & Ambiguity and Formal Qualifications; here the focus is actual knowledge and experience rather than the complexity of the problems or formal requirements.",
         biasRisk: "low",
         biasComment:
-          "Bias risk (diagnostic questions 1 and 4): formally recognized or visible expertise can be over-valued relative to quiet, experience-based knowledge. The level descriptions are based on applied competence, not title or education alone, and are gender-neutral (question 5).",
+          "Formally recognized or visible expertise can be over-valued relative to quiet, experience-based knowledge. The level descriptions are based on applied competence, not title or education alone, and are gender-neutral.",
         biasAction:
           "The anchors value practical experience and applied methodological understanding on a par with formally recognized specialization.",
       },
@@ -280,7 +280,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
           "Overlaps partly with Autonomy (decision authority) and Scope & Impact; here the focus is specifically responsibility for financial frames and results.",
         biasRisk: "medium",
         biasComment:
-          "Known bias risk (diagnostic questions 3 and 6): a large budget can be given too much weight relative to complexity, responsibility and specialist knowledge, which can favour traditionally male-dominated budget-holding roles. The level descriptions are gender-neutral (question 5).",
+          "A large budget can be given too much weight relative to complexity, responsibility and specialist knowledge, which can favour traditionally male-dominated budget-holding roles. The level descriptions are gender-neutral.",
         biasAction:
           "The criterion is kept at a moderate weight in the model so that budget size does not by itself dominate the evaluation, and the levels describe decision responsibility rather than amount alone.",
       },
@@ -315,7 +315,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
           "Overlaps partly with Scope & Impact (organizational reach) and Autonomy (decision authority); here the focus is specifically responsibility exercised through other people.",
         biasRisk: "medium",
         biasComment:
-          "Known bias risk (diagnostic questions 3 and 6): rewarding visible mandate and number of direct reports more than actual leadership impact can over-value traditionally male-coded manager roles and under-value senior individual contributors and coordination-heavy work. The level descriptions themselves are gender-neutral (question 5).",
+          "Rewarding visible mandate and number of direct reports more than actual leadership impact can over-value traditionally male-coded manager roles and under-value senior individual contributors and coordination-heavy work. The level descriptions themselves are gender-neutral.",
         biasAction:
           "The level anchors describe leadership content rather than headcount alone, and the criterion is kept at a moderate weight so a manager title does not by itself dominate the evaluation.",
       },
@@ -350,7 +350,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
           "Overlaps partly with Knowledge Depth/Breadth; here the focus is formal requirements rather than actual applied knowledge and experience.",
         biasRisk: "medium",
         biasComment:
-          "Known bias risk (diagnostic question 4): resting on formal status instead of actual work content can disadvantage competence acquired outside traditional education. The level descriptions allow equivalent documented experience and are gender-neutral (question 5).",
+          "Resting on formal status instead of actual work content can disadvantage competence acquired outside traditional education. The level descriptions allow equivalent documented experience and are gender-neutral.",
         biasAction:
           "The levels explicitly recognize equivalent experience alongside formal education, and the criterion is kept at a low weight so formal credentials do not by themselves drive the evaluation.",
       },

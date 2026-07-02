@@ -40,7 +40,7 @@ export const standardTemplateContentNb: StandardTemplateContent = {
           "Overlapper delvis med Autonomi og beslutningsmyndighet (beslutningsmandat) og Personal-/lederansvar; her ligger fokus spesifikt på hvor langt rollens effekter når i organisasjonen.",
         biasRisk: "low",
         biasComment:
-          "Biasrisiko (diagnosespørsmål 3): å belønne synlig mandat mer enn faktisk gjennomslag kan gagne tradisjonelt synlige roller. Nivåbeskrivelsene tar utgangspunkt i effekt og ansvar snarere enn rang og er kjønnsnøytrale (spørsmål 5).",
+          "Å belønne synlig mandat mer enn faktisk gjennomslag kan gagne tradisjonelt synlige roller. Nivåbeskrivelsene tar utgangspunkt i effekt og ansvar snarere enn rang og er kjønnsnøytrale.",
         biasAction:
           "Nivåankrene beskriver faktisk rekkevidde og resultater, ikke formell posisjon, slik at også roller uten synlig tittel kan vurderes høyt.",
       },
@@ -75,7 +75,7 @@ export const standardTemplateContentNb: StandardTemplateContent = {
           "Overlapper delvis med Omfang og påvirkning; her ligger fokus på konsekvensene av feil eller mangler snarere enn på rekkevidden i seg selv.",
         biasRisk: "low",
         biasComment:
-          "Biasrisiko (diagnosespørsmål 1 og 2): synlige operative eller tekniske risikoer kan overvurderes mens stille kvalitets-, omsorgs- eller etterlevelsesarbeid undervurderes. Nivåbeskrivelsene omfatter også kvalitet, etterlevelse og relasjoner og er kjønnsnøytrale (spørsmål 5).",
+          "Synlige operative eller tekniske risikoer kan overvurderes mens stille kvalitets-, omsorgs- eller etterlevelsesarbeid undervurderes. Nivåbeskrivelsene omfatter også kvalitet, etterlevelse og relasjoner og er kjønnsnøytrale.",
         biasAction:
           "Ankertekstene inkluderer konsekvenser for kvalitet, etterlevelse og kunderelasjoner, ikke bare økonomiske eller tekniske feil, slik at ulike typer ansvar vurderes likeverdig.",
       },
@@ -110,7 +110,7 @@ export const standardTemplateContentNb: StandardTemplateContent = {
           "Overlapper delvis med Kunnskapsdybde/-bredde; her ligger fokus på problemenes kompleksitet og usikkerhet snarere enn på kunnskapen som kreves.",
         biasRisk: "low",
         biasComment:
-          "Biasrisiko (diagnosespørsmål 2): teknisk kompleksitet kan overvurderes mens relasjonell, koordinerende eller flertydig kompleksitet undervurderes. Nivåbeskrivelsene omfatter også organisatorisk og forretningsmessig kompleksitet og er kjønnsnøytrale (spørsmål 5).",
+          "Teknisk kompleksitet kan overvurderes mens relasjonell, koordinerende eller flertydig kompleksitet undervurderes. Nivåbeskrivelsene omfatter også organisatorisk og forretningsmessig kompleksitet og er kjønnsnøytrale.",
         biasAction:
           "Ankertekstene beskriver kompleksitet bredt (teknisk, forretningsmessig og organisatorisk) slik at også koordinerende og flertydige sammenhenger vurderes som komplekse.",
       },
@@ -145,7 +145,7 @@ export const standardTemplateContentNb: StandardTemplateContent = {
           "Overlapper delvis med Omfang og påvirkning og Personal-/lederansvar; her ligger fokus på selvstendighet og beslutningsmyndighet snarere enn på rekkevidde eller det å lede andre.",
         biasRisk: "medium",
         biasComment:
-          "Biasrisiko (diagnosespørsmål 3): synlig beslutningsmandat kan overvurderes sammenlignet med faktisk gjennomslag, noe som kan gagne roller med formelt mandat fremfor seniore spesialister med reell innflytelse. Nivåbeskrivelsene er kjønnsnøytrale (spørsmål 5).",
+          "Synlig beslutningsmandat kan overvurderes sammenlignet med faktisk gjennomslag, noe som kan gagne roller med formelt mandat fremfor seniore spesialister med reell innflytelse. Nivåbeskrivelsene er kjønnsnøytrale.",
         biasAction:
           "Ankertekstene omfatter også selvstendig initiativ og problemløsning, ikke bare formelt beslutningsmandat, slik at reell innflytelse uten tittel kan vurderes høyt.",
       },
@@ -180,7 +180,7 @@ export const standardTemplateContentNb: StandardTemplateContent = {
           "Overlapper delvis med Omfang og påvirkning; her ligger fokus på bredden og variasjonen i samhandlingen snarere enn på rekkevidden av resultatet.",
         biasRisk: "low",
         biasComment:
-          "Dette kriteriet motvirker en kjent bias ved uttrykkelig å verdsette relasjonelt og koordinerende arbeid (diagnosespørsmål 2). Gjenstående risiko (spørsmål 3): ekstern, synlig representasjon kan overvurderes sammenlignet med internt samordningsarbeid. Nivåbeskrivelsene er kjønnsnøytrale (spørsmål 5).",
+          "Dette kriteriet motvirker en kjent bias ved uttrykkelig å verdsette relasjonelt og koordinerende arbeid. Gjenstående risiko: ekstern, synlig representasjon kan overvurderes sammenlignet med internt samordningsarbeid. Nivåbeskrivelsene er kjønnsnøytrale.",
         biasAction:
           "Ankertekstene verdsetter intern tverrfunksjonell samordning likeverdig med ekstern representasjon, slik at synlig ekstern nettverksbygging ikke i seg selv veier tyngre.",
       },
@@ -215,7 +215,7 @@ export const standardTemplateContentNb: StandardTemplateContent = {
           "Overlapper delvis med Kompleksitet og tvetydighet og Formelle kvalifikasjoner; her ligger fokus på faktisk kunnskap og erfaring snarere enn på problemenes kompleksitet eller formelle krav.",
         biasRisk: "low",
         biasComment:
-          "Biasrisiko (diagnosespørsmål 1 og 4): formelt anerkjent eller synlig ekspertise kan overvurderes sammenlignet med stille, erfaringsbasert kunnskap. Nivåbeskrivelsene tar utgangspunkt i anvendt kompetanse, ikke bare tittel eller utdanning, og er kjønnsnøytrale (spørsmål 5).",
+          "Formelt anerkjent eller synlig ekspertise kan overvurderes sammenlignet med stille, erfaringsbasert kunnskap. Nivåbeskrivelsene tar utgangspunkt i anvendt kompetanse, ikke bare tittel eller utdanning, og er kjønnsnøytrale.",
         biasAction:
           "Ankertekstene verdsetter praktisk erfaring og anvendt metodeforståelse likeverdig med formelt anerkjent spesialisering.",
       },
@@ -250,7 +250,7 @@ export const standardTemplateContentNb: StandardTemplateContent = {
           "Overlapper delvis med Autonomi og beslutningsmyndighet (beslutningsmandat) og Omfang og påvirkning; her ligger fokus spesifikt på ansvar for økonomiske rammer og resultater.",
         biasRisk: "medium",
         biasComment:
-          "Kjent biasrisiko (diagnosespørsmål 3 og 6): stort budsjett kan gis for stor vekt sammenlignet med kompleksitet, ansvar og spesialistkunnskap, noe som kan gagne tradisjonelt mannsdominerte budsjettbærende roller. Nivåbeskrivelsene er kjønnsnøytrale (spørsmål 5).",
+          "Stort budsjett kan gis for stor vekt sammenlignet med kompleksitet, ansvar og spesialistkunnskap, noe som kan gagne tradisjonelt mannsdominerte budsjettbærende roller. Nivåbeskrivelsene er kjønnsnøytrale.",
         biasAction:
           "Kriteriet holdes på en moderat vekt i modellen slik at budsjettstørrelse ikke i seg selv dominerer vurderingen, og nivåene beskriver beslutningsansvar snarere enn bare beløpenes størrelse.",
       },
@@ -285,7 +285,7 @@ export const standardTemplateContentNb: StandardTemplateContent = {
           "Overlapper delvis med Omfang og påvirkning (organisatorisk rekkevidde) og Autonomi og beslutningsmyndighet (beslutningsmandat); her ligger fokus spesifikt på ansvar som utøves gjennom andre mennesker.",
         biasRisk: "medium",
         biasComment:
-          "Kjent biasrisiko (diagnosespørsmål 3 og 6): å belønne synlig mandat og antall underordnede mer enn faktisk lederpåvirkning kan overvurdere tradisjonelt mannsdominerte lederroller og undervurdere seniore spesialister og koordineringstungt arbeid. Nivåbeskrivelsene i seg selv er kjønnsnøytrale (spørsmål 5).",
+          "Å belønne synlig mandat og antall underordnede mer enn faktisk lederpåvirkning kan overvurdere tradisjonelt mannsdominerte lederroller og undervurdere seniore spesialister og koordineringstungt arbeid. Nivåbeskrivelsene i seg selv er kjønnsnøytrale.",
         biasAction:
           "Nivåankrene beskriver lederskapets innhold snarere enn bare antall underordnede, og kriteriet holdes på en moderat vekt slik at en ledertittel ikke i seg selv dominerer vurderingen.",
       },
@@ -320,7 +320,7 @@ export const standardTemplateContentNb: StandardTemplateContent = {
           "Overlapper delvis med Kunnskapsdybde/-bredde; her ligger fokus på formelle krav snarere enn på faktisk anvendt kunnskap og erfaring.",
         biasRisk: "medium",
         biasComment:
-          "Kjent biasrisiko (diagnosespørsmål 4): å hvile på formell status i stedet for faktisk arbeidsinnhold kan misgunstige kompetanse som er ervervet på andre måter enn tradisjonell utdanning. Nivåbeskrivelsene tillater tilsvarende dokumentert erfaring og er kjønnsnøytrale (spørsmål 5).",
+          "Å hvile på formell status i stedet for faktisk arbeidsinnhold kan misgunstige kompetanse som er ervervet på andre måter enn tradisjonell utdanning. Nivåbeskrivelsene tillater tilsvarende dokumentert erfaring og er kjønnsnøytrale.",
         biasAction:
           "Nivåene anerkjenner uttrykkelig tilsvarende erfaring ved siden av formell utdanning, og kriteriet holdes på lav vekt slik at formelle meritter ikke i seg selv driver vurderingen.",
       },

@@ -42,7 +42,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
           "Överlappar delvis med Autonomi (beslutsmandat) och Personal-/Ledningsansvar; här ligger fokus specifikt på hur långt rollens effekter når i organisationen.",
         biasRisk: "low",
         biasComment:
-          "Biasrisk (diagnosfråga 3): att belöna synligt mandat mer än faktiskt genomslag kan gynna traditionellt synliga roller. Nivåbeskrivningarna utgår från effekt och ansvar snarare än rang och är könsneutrala (fråga 5).",
+          "Att belöna synligt mandat mer än faktiskt genomslag kan gynna traditionellt synliga roller. Nivåbeskrivningarna utgår från effekt och ansvar snarare än rang och är könsneutrala.",
         biasAction:
           "Nivåankarna beskriver faktisk räckvidd och resultat, inte formell position, så att även roller utan synlig titel kan bedömas högt.",
       },
@@ -77,7 +77,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
           "Överlappar delvis med Scope & Påverkan; här ligger fokus på konsekvenserna av fel eller brister snarare än på räckvidden i sig.",
         biasRisk: "low",
         biasComment:
-          "Biasrisk (diagnosfrågorna 1 och 2): synliga operativa eller tekniska risker kan övervärderas medan tyst kvalitets-, omsorgs- eller efterlevnadsarbete undervärderas. Nivåbeskrivningarna omfattar även kvalitet, efterlevnad och relationer och är könsneutrala (fråga 5).",
+          "Synliga operativa eller tekniska risker kan övervärderas medan tyst kvalitets-, omsorgs- eller efterlevnadsarbete undervärderas. Nivåbeskrivningarna omfattar även kvalitet, efterlevnad och relationer och är könsneutrala.",
         biasAction:
           "Ankartexterna inkluderar konsekvenser för kvalitet, efterlevnad och kundrelationer, inte bara ekonomiska eller tekniska fel, så att olika typer av ansvar bedöms likvärdigt.",
       },
@@ -112,7 +112,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
           "Överlappar delvis med Kunskapsdjup/Bredd; här ligger fokus på problemens komplexitet och osäkerhet snarare än på den kunskap som krävs.",
         biasRisk: "low",
         biasComment:
-          "Biasrisk (diagnosfråga 2): teknisk komplexitet kan övervärderas medan relationell, samordnande eller mångtydig komplexitet undervärderas. Nivåbeskrivningarna omfattar även organisatorisk och affärsmässig komplexitet och är könsneutrala (fråga 5).",
+          "Teknisk komplexitet kan övervärderas medan relationell, samordnande eller mångtydig komplexitet undervärderas. Nivåbeskrivningarna omfattar även organisatorisk och affärsmässig komplexitet och är könsneutrala.",
         biasAction:
           "Ankartexterna beskriver komplexitet brett (teknisk, affärsmässig och organisatorisk) så att även samordnande och tvetydiga sammanhang bedöms som komplexa.",
       },
@@ -147,7 +147,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
           "Överlappar delvis med Scope & Påverkan och Personal-/Ledningsansvar; här ligger fokus på självständighet och beslutsmandat snarare än på räckvidd eller att leda andra.",
         biasRisk: "medium",
         biasComment:
-          "Biasrisk (diagnosfråga 3): synligt beslutsmandat kan övervärderas jämfört med faktiskt genomslag, vilket kan gynna formellt mandatbärande roller framför seniora specialister med reellt inflytande. Nivåbeskrivningarna är könsneutrala (fråga 5).",
+          "Synligt beslutsmandat kan övervärderas jämfört med faktiskt genomslag, vilket kan gynna formellt mandatbärande roller framför seniora specialister med reellt inflytande. Nivåbeskrivningarna är könsneutrala.",
         biasAction:
           "Ankartexterna omfattar även självständigt initiativ och problemlösning, inte bara formellt beslutsmandat, så att reellt inflytande utan titel kan bedömas högt.",
       },
@@ -182,7 +182,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
           "Överlappar delvis med Scope & Påverkan; här ligger fokus på bredden och variationen i samverkan snarare än på räckvidden av resultatet.",
         biasRisk: "low",
         biasComment:
-          "Detta kriterium motverkar en känd bias genom att uttryckligen värdera relationellt och samordnande arbete (diagnosfråga 2). Kvarstående risk (fråga 3): extern, synlig representation kan övervärderas jämfört med internt samordningsarbete. Nivåbeskrivningarna är könsneutrala (fråga 5).",
+          "Detta kriterium motverkar en känd bias genom att uttryckligen värdera relationellt och samordnande arbete. Kvarstående risk: extern, synlig representation kan övervärderas jämfört med internt samordningsarbete. Nivåbeskrivningarna är könsneutrala.",
         biasAction:
           "Ankartexterna värderar intern tvärfunktionell samordning likvärdigt med extern representation, så att synligt externt nätverkande inte i sig väger tyngre.",
       },
@@ -217,7 +217,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
           "Överlappar delvis med Komplexitet & Otydlighet och Formell kompetens; här ligger fokus på faktisk kunskap och erfarenhet snarare än på problemens komplexitet eller formella krav.",
         biasRisk: "low",
         biasComment:
-          "Biasrisk (diagnosfrågorna 1 och 4): formellt erkänd eller synlig expertis kan övervärderas jämfört med tyst, erfarenhetsbaserad kunskap. Nivåbeskrivningarna utgår från tillämpad kompetens, inte enbart titel eller utbildning, och är könsneutrala (fråga 5).",
+          "Formellt erkänd eller synlig expertis kan övervärderas jämfört med tyst, erfarenhetsbaserad kunskap. Nivåbeskrivningarna utgår från tillämpad kompetens, inte enbart titel eller utbildning, och är könsneutrala.",
         biasAction:
           "Ankartexterna värderar praktisk erfarenhet och tillämpad metodförståelse likvärdigt med formellt erkänd specialisering.",
       },
@@ -252,7 +252,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
           "Överlappar delvis med Autonomi (beslutsmandat) och Scope & Påverkan; här ligger fokus specifikt på ansvar för ekonomiska ramar och resultat.",
         biasRisk: "medium",
         biasComment:
-          "Känd biasrisk (diagnosfrågorna 3 och 6): stor budget kan ges för stor vikt jämfört med komplexitet, ansvar och specialistkunskap, vilket kan gynna traditionellt mansdominerade budgetbärande roller. Nivåbeskrivningarna är könsneutrala (fråga 5).",
+          "Stor budget kan ges för stor vikt jämfört med komplexitet, ansvar och specialistkunskap, vilket kan gynna traditionellt mansdominerade budgetbärande roller. Nivåbeskrivningarna är könsneutrala.",
         biasAction:
           "Kriteriet hålls på en måttlig vikt i modellen så att budgetstorlek inte i sig dominerar värderingen, och nivåerna beskriver beslutsansvar snarare än enbart beloppens storlek.",
       },
@@ -287,7 +287,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
           "Överlappar delvis med Scope & Påverkan (organisatorisk räckvidd) och Autonomi (beslutsmandat); här ligger fokus specifikt på ansvar som utövas genom andra människor.",
         biasRisk: "medium",
         biasComment:
-          "Känd biasrisk (diagnosfrågorna 3 och 6): att belöna synligt mandat och antal underställda mer än faktisk ledarpåverkan kan övervärdera traditionellt mansdominerade chefsroller och undervärdera seniora specialister och samordningstungt arbete. Nivåbeskrivningarna i sig är könsneutrala (fråga 5).",
+          "Att belöna synligt mandat och antal underställda mer än faktisk ledarpåverkan kan övervärdera traditionellt mansdominerade chefsroller och undervärdera seniora specialister och samordningstungt arbete. Nivåbeskrivningarna i sig är könsneutrala.",
         biasAction:
           "Nivåankarna beskriver ledarskapets innehåll snarare än enbart antal underställda, och kriteriet hålls på en måttlig vikt så att en chefstitel inte i sig dominerar utvärderingen.",
       },
@@ -322,7 +322,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
           "Överlappar delvis med Kunskapsdjup/Bredd; här ligger fokus på formella krav snarare än på faktisk tillämpad kunskap och erfarenhet.",
         biasRisk: "medium",
         biasComment:
-          "Känd biasrisk (diagnosfråga 4): att vila på formell status i stället för faktiskt arbetsinnehåll kan missgynna kompetens som förvärvats på andra vägar än traditionell utbildning. Nivåbeskrivningarna tillåter motsvarande dokumenterad erfarenhet och är könsneutrala (fråga 5).",
+          "Att vila på formell status i stället för faktiskt arbetsinnehåll kan missgynna kompetens som förvärvats på andra vägar än traditionell utbildning. Nivåbeskrivningarna tillåter motsvarande dokumenterad erfarenhet och är könsneutrala.",
         biasAction:
           "Nivåerna erkänner uttryckligen motsvarande erfarenhet vid sidan av formell utbildning, och kriteriet hålls på låg vikt så att formella meriter inte i sig driver värderingen.",
       },
