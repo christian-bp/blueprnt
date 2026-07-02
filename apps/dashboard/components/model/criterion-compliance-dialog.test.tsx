@@ -1,12 +1,49 @@
-import { cleanup, render, screen, act } from "@testing-library/react"
+import {
+  cleanup,
+  render,
+  screen,
+  act,
+  fireEvent,
+  waitFor,
+} from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 
+// Module-level variable: useAction returns a closure over this so the
+// component always calls the current mock. The describe-level beforeEach
+// reassigns it to a fresh vi.fn() so each test starts from a clean identity.
+// (bun correlates rejected Promises to a specific vi.fn() instance; a fresh
+// identity per test prevents spurious unhandledRejection events when the
+// error test runs after a success test.)
+let draftMock = vi.fn()
+
 vi.mock("convex/react", () => ({
   useMutation: () => vi.fn(),
+  useAction: () => draftMock,
 }))
+
+vi.mock("@workspace/backend/convex/_generated/api", () => {
+  function pathProxy(path: string): unknown {
+    return new Proxy(
+      {},
+      {
+        get(_target, prop) {
+          if (
+            prop === Symbol.toPrimitive ||
+            prop === "toString" ||
+            prop === "valueOf"
+          )
+            return () => path
+          if (typeof prop !== "string") return undefined
+          return pathProxy(path === "" ? prop : `${path}.${prop}`)
+        },
+      }
+    )
+  }
+  return { api: pathProxy("") }
+})
 
 import { CriterionComplianceDialog } from "@/components/model/criterion-compliance-dialog"
 
@@ -22,21 +59,6 @@ const TARGET = {
   status: "documented" as const,
   decidedByName: null,
   decidedAt: null,
-}
-
-function renderDialog(
-  target: Parameters<typeof CriterionComplianceDialog>[0]["target"] = TARGET,
-  onClose = vi.fn()
-) {
-  return render(
-    <NextIntlClientProvider locale="en" messages={messages}>
-      <CriterionComplianceDialog
-        orgId="org1"
-        target={target}
-        onClose={onClose}
-      />
-    </NextIntlClientProvider>
-  )
 }
 
 const DOCUMENTED_TARGET = {
@@ -67,7 +89,26 @@ const APPROVED_TARGET = {
   decidedAt: 1700000000000,
 }
 
+function renderDialog({
+  target = TARGET as Parameters<typeof CriterionComplianceDialog>[0]["target"],
+  onClose = vi.fn(),
+} = {}) {
+  return render(
+    <NextIntlClientProvider locale="en" messages={messages}>
+      <CriterionComplianceDialog
+        orgId="org1"
+        target={target}
+        onClose={onClose}
+      />
+    </NextIntlClientProvider>
+  )
+}
+
 describe("CriterionComplianceDialog", () => {
+  beforeEach(() => {
+    draftMock = vi.fn()
+  })
+
   afterEach(() => {
     cleanup()
   })
@@ -152,12 +193,12 @@ describe("CriterionComplianceDialog", () => {
   })
 
   it("renders nothing when target is null", () => {
-    renderDialog(null)
+    renderDialog({ target: null })
     expect(screen.queryByText("Rationale")).toBeNull()
   })
 
   it("renders fields as disabled and shows Reopen but no Save when status is approved", () => {
-    renderDialog(APPROVED_TARGET)
+    renderDialog({ target: APPROVED_TARGET })
     // All textareas must be disabled
     const textareas = screen.getAllByRole("textbox")
     for (const textarea of textareas) {
@@ -174,7 +215,7 @@ describe("CriterionComplianceDialog", () => {
   })
 
   it("renders fields as editable and shows Save and Approve but no Reopen when status is documented", () => {
-    renderDialog(DOCUMENTED_TARGET)
+    renderDialog({ target: DOCUMENTED_TARGET })
     // Textareas must be enabled
     const textareas = screen.getAllByRole("textbox")
     for (const textarea of textareas) {
@@ -186,5 +227,29 @@ describe("CriterionComplianceDialog", () => {
     expect(screen.getByRole("button", { name: /approve/i })).toBeDefined()
     // Reopen button must not be present
     expect(screen.queryByRole("button", { name: /reopen/i })).toBeNull()
+  })
+
+  it("fills all six fields from the AI draft on a documented criterion", async () => {
+    draftMock.mockResolvedValue({
+      purpose: "AIP",
+      whyRelevant: "AIW",
+      overlapNotes: "",
+      biasRisk: "medium",
+      biasComment: "AIB",
+      biasAction: "",
+    })
+    renderDialog({ target: DOCUMENTED_TARGET })
+    fireEvent.click(screen.getByRole("button", { name: /Draft with AI/i }))
+    await waitFor(() => expect(screen.getByDisplayValue("AIP")).toBeDefined())
+    expect(screen.getByDisplayValue("AIW")).toBeDefined()
+    expect(screen.getByDisplayValue("AIB")).toBeDefined()
+    // The "medium" bias-risk toggle should be pressed
+    const mediumBtn = screen.getByRole("radio", { name: /medium/i })
+    expect(mediumBtn.getAttribute("data-state")).toBe("on")
+  })
+
+  it("shows no Draft with AI button on an approved (locked) criterion", () => {
+    renderDialog({ target: APPROVED_TARGET })
+    expect(screen.queryByRole("button", { name: /Draft with AI/i })).toBeNull()
   })
 })

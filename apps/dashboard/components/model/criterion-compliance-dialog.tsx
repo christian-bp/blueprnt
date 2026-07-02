@@ -26,10 +26,11 @@ import {
   ToggleGroupItem,
 } from "@workspace/ui/components/toggle-group"
 import { Textarea } from "@workspace/ui/components/textarea"
-import { useMutation } from "convex/react"
-import { useFormatter, useTranslations } from "next-intl"
+import { useAction, useMutation } from "convex/react"
+import { useFormatter, useLocale, useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
+import { Spinner } from "@workspace/ui/components/spinner"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SubmitButton } from "@/components/submit-button"
 import {
@@ -65,13 +66,19 @@ function CriterionComplianceForm({
 }) {
   const t = useTranslations("dashboard.model.method")
   const tHelp = useTranslations("dashboard.help")
+  const tAi = useTranslations("dashboard.ai")
   const tv = useTranslations("dashboard.validation")
   const format = useFormatter()
+  const locale = useLocale()
   const save = useMutation(api.evaluationModel.method.saveCriterionCompliance)
   const setApproval = useMutation(
     api.evaluationModel.method.setCriterionApproval
   )
+  const draftCompliance = useAction(api.ai.draft.draftCriterionCompliance)
   const [failed, setFailed] = useState(false)
+  const [drafting, setDrafting] = useState(false)
+  const [aiDrafted, setAiDrafted] = useState(false)
+  const [draftError, setDraftError] = useState<string | null>(null)
 
   const schema = useMemo(() => makeCriterionComplianceSchema(tv), [tv])
   const form = useForm<CriterionComplianceValues>({
@@ -91,6 +98,29 @@ function CriterionComplianceForm({
   const locked = target.status === "approved"
   const canApprove = target.status === "documented"
 
+  async function onDraft() {
+    setDrafting(true)
+    setDraftError(null)
+    try {
+      const values = await draftCompliance({
+        orgId,
+        criterionId: target.criterionId,
+        locale,
+      })
+      form.setValue("purpose", values.purpose, { shouldDirty: true })
+      form.setValue("whyRelevant", values.whyRelevant, { shouldDirty: true })
+      form.setValue("overlapNotes", values.overlapNotes, { shouldDirty: true })
+      form.setValue("biasRisk", values.biasRisk, { shouldDirty: true })
+      form.setValue("biasComment", values.biasComment, { shouldDirty: true })
+      form.setValue("biasAction", values.biasAction, { shouldDirty: true })
+      setAiDrafted(true)
+    } catch {
+      setDraftError(t("draftError"))
+    } finally {
+      setDrafting(false)
+    }
+  }
+
   async function handleValid(values: CriterionComplianceValues) {
     setFailed(false)
     try {
@@ -104,6 +134,36 @@ function CriterionComplianceForm({
   return (
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit(handleValid)}>
+        {!locked && (
+          <div className="space-y-1">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={drafting}
+              onClick={onDraft}
+            >
+              {drafting ? (
+                <span className="flex items-center gap-2">
+                  <Spinner />
+                  {tAi("generating")}
+                </span>
+              ) : (
+                t("draftCta")
+              )}
+            </Button>
+            {aiDrafted && !draftError && (
+              <p className="text-muted-foreground text-sm">
+                {t("aiDraftedNote")}
+              </p>
+            )}
+            {draftError !== null && (
+              <p role="alert" className="text-destructive text-sm">
+                {draftError}
+              </p>
+            )}
+          </div>
+        )}
         {/* Rationale section */}
         <p className="flex items-center gap-1.5 font-semibold text-muted-foreground text-xs uppercase tracking-wide">
           {t("rationaleSection")}
