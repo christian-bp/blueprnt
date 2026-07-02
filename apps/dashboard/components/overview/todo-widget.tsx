@@ -1,6 +1,8 @@
 // apps/dashboard/components/overview/todo-widget.tsx
 "use client"
 
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Accordion,
   AccordionContent,
@@ -40,13 +42,31 @@ export function TodoWidget({ todo }: { todo: Todo | undefined }) {
 
   return (
     <div className="space-y-3">
-      <h2 className="flex items-baseline gap-2 font-semibold text-lg">
+      <h2 className="flex items-center gap-2 font-semibold text-lg">
         {t("heading")}
         <span className="text-brand tabular-nums">{todo.total}</span>
+        {/* Decorative flourish matching the reference; becomes a link to the
+            dedicated to-do page in V2. */}
+        <HugeiconsIcon
+          icon={ArrowRight01Icon}
+          strokeWidth={2}
+          aria-hidden="true"
+          className="size-5 text-brand"
+        />
       </h2>
-      <Accordion type="multiple" defaultValue={[todo.groups[0]?.key ?? ""]}>
+      {/* Each group is its own outlined card (rounded border + px), spaced by
+          gap-3, rather than the accordion's default divider lines. */}
+      <Accordion
+        type="multiple"
+        defaultValue={[todo.groups[0]?.key ?? ""]}
+        className="gap-3"
+      >
         {todo.groups.map((group) => (
-          <AccordionItem key={group.key} value={group.key}>
+          <AccordionItem
+            key={group.key}
+            value={group.key}
+            className="rounded-lg border px-4"
+          >
             <AccordionTrigger>
               <span className="flex flex-1 items-center justify-between pr-2">
                 {t(`groups.${group.key}`)}
