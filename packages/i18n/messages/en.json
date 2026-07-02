@@ -755,6 +755,7 @@
         "approveCta": "Approve",
         "reopenCta": "Reopen",
         "approveHint": "Fill in purpose, why relevant, bias risk, and a bias comment to approve.",
+        "saveBeforeApprove": "Save your changes before you can approve.",
         "decidedBy": "Approved by {name} on {date}",
         "error": "Something went wrong. Please try again.",
         "export": "Export",

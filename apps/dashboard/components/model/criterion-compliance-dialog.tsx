@@ -317,7 +317,12 @@ function CriterionComplianceForm({
               })}
             </p>
           )}
-        {!locked && !canApprove && (
+        {!locked && isDirty && (
+          <p className="text-muted-foreground text-sm">
+            {t("saveBeforeApprove")}
+          </p>
+        )}
+        {!locked && !isDirty && !canApprove && (
           <p className="text-muted-foreground text-sm">{t("approveHint")}</p>
         )}
         <DialogFooter>
@@ -345,7 +350,13 @@ function CriterionComplianceForm({
             <>
               <Button
                 type="button"
-                disabled={!canApprove}
+                variant="secondary"
+                // Cannot approve with unsaved changes: approval attests to the
+                // SAVED content, so Save (enabled while dirty) and Approve
+                // (enabled once saved) are mutually exclusive. This stops an
+                // accidental Approve from signing off stale content and
+                // discarding an unsaved (e.g. AI-drafted) edit.
+                disabled={!canApprove || isDirty}
                 onClick={async () => {
                   await setApproval({
                     orgId,

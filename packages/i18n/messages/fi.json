@@ -755,6 +755,7 @@
         "approveCta": "Hyväksy",
         "reopenCta": "Avaa uudelleen",
         "approveHint": "Täytä tarkoitus, miksi relevantti, vinoumariski ja vinoumakomentti hyväksymistä varten.",
+        "saveBeforeApprove": "Tallenna muutoksesi ennen kuin voit hyväksyä.",
         "decidedBy": "Hyväksynyt {name} päivänä {date}",
         "error": "Jotakin meni vikaan. Yritä uudelleen.",
         "export": "Vie",

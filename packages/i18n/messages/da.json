@@ -755,6 +755,7 @@
         "approveCta": "Godkend",
         "reopenCta": "Åbne igen",
         "approveHint": "Udfyld formål, hvorfor relevant, biasrisiko og en biaskommentar for at godkende.",
+        "saveBeforeApprove": "Gem dine ændringer, før du kan godkende.",
         "decidedBy": "Godkendt af {name} den {date}",
         "error": "Noget gik galt. Prøv igen.",
         "export": "Eksporter",

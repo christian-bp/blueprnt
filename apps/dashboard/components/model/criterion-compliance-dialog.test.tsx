@@ -246,6 +246,14 @@ describe("CriterionComplianceDialog", () => {
     // The "medium" bias-risk toggle should be pressed
     const mediumBtn = screen.getByRole("radio", { name: /medium/i })
     expect(mediumBtn.getAttribute("data-state")).toBe("on")
+    // The draft made the form dirty, so Approve is disabled (Save first): this
+    // prevents an accidental Approve from signing off stale content and
+    // discarding the unsaved draft. The "save first" hint explains why.
+    const approve = screen.getByRole("button", { name: /approve/i })
+    expect(approve.hasAttribute("disabled")).toBe(true)
+    expect(
+      screen.getByText(/Save your changes before you can approve/i)
+    ).toBeDefined()
   })
 
   it("shows no Draft with AI button on an approved (locked) criterion", () => {
