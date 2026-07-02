@@ -762,7 +762,8 @@
         "biasSection": "Vinoumien arviointi",
         "optionalSuffix": " (valinnainen)",
         "draftError": "Luonnosta ei voitu luoda. Yritä uudelleen.",
-        "aiAckLabel": "Tämä sisältö on tekoälyn luoma. Vahvistan, että olen lukenut ja tarkistanut sen."
+        "aiAckLabel": "Tämä sisältö on tekoälyn luoma. Vahvistan, että olen lukenut ja tarkistanut sen.",
+        "approveAckLabel": "Olen tarkistanut tämän dokumentaation ja vahvistan, että se on oikein."
       },
       "methodAppendix": {
         "docTitle": "Menetelmäliite",

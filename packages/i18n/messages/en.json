@@ -762,7 +762,8 @@
         "biasSection": "Bias review",
         "optionalSuffix": " (optional)",
         "draftError": "The draft could not be generated. Try again.",
-        "aiAckLabel": "This content was AI-generated. I confirm I have read and reviewed it."
+        "aiAckLabel": "This content was AI-generated. I confirm I have read and reviewed it.",
+        "approveAckLabel": "I have reviewed this documentation and confirm it is accurate."
       },
       "methodAppendix": {
         "docTitle": "Method appendix",

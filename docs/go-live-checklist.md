@@ -81,6 +81,12 @@ in the same change.
 - [ ] **Native review of the role-slug error string.** `errors.roleExists`
   (sv/nb/da/fi) was machine-drafted from English; have a native speaker confirm
   the "in this family" phrasing matches each locale's role-family term.
+- [ ] **Native review of the compliance-dialog acknowledgement strings.**
+  `dashboard.model.method.aiAckLabel` (confirm the AI draft was reviewed) and
+  `dashboard.model.method.approveAckLabel` (confirm the documentation before
+  approval) were machine-drafted into sv/nb/da/fi from English. Both gate a
+  formal sign-off, so the wording must read unambiguously as an attestation in
+  each locale. Have a native speaker review before launch.
 
 ## Security and compliance
 

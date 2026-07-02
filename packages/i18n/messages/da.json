@@ -762,7 +762,8 @@
         "biasSection": "Bias-gennemgang",
         "optionalSuffix": " (valgfrit)",
         "draftError": "Udkastet kunne ikke genereres. Prøv igen.",
-        "aiAckLabel": "Dette indhold er AI-genereret. Jeg bekræfter, at jeg har læst det igennem og vurderet det."
+        "aiAckLabel": "Dette indhold er AI-genereret. Jeg bekræfter, at jeg har læst det igennem og vurderet det.",
+        "approveAckLabel": "Jeg har gennemgået denne dokumentation og bekræfter, at den er korrekt."
       },
       "methodAppendix": {
         "docTitle": "Metodebilag",

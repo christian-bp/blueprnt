@@ -83,6 +83,7 @@ function CriterionComplianceForm({
   const [aiDrafted, setAiDrafted] = useState(false)
   const [draftError, setDraftError] = useState<string | null>(null)
   const [aiAcknowledged, setAiAcknowledged] = useState(false)
+  const [approveAcknowledged, setApproveAcknowledged] = useState(false)
 
   const schema = useMemo(() => makeCriterionComplianceSchema(tv), [tv])
   const form = useForm<CriterionComplianceValues>({
@@ -355,6 +356,22 @@ function CriterionComplianceForm({
               </label>
             </div>
           )}
+          {/* Approval is a formal sign-off: gate it on an explicit confirmation
+              that the documentation was reviewed. Shown only when the Approve
+              action is available (documented, no unsaved edits). */}
+          {!locked && !isDirty && canApprove && (
+            <div className="flex items-start gap-2">
+              <Checkbox
+                id="approve-ack"
+                checked={approveAcknowledged}
+                onCheckedChange={(v) => setApproveAcknowledged(v === true)}
+                className="mt-0.5"
+              />
+              <label htmlFor="approve-ack" className="text-sm">
+                {t("approveAckLabel")}
+              </label>
+            </div>
+          )}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               {t("cancelCta")}
@@ -386,6 +403,7 @@ function CriterionComplianceForm({
             ) : canApprove ? (
               <Button
                 type="button"
+                disabled={!approveAcknowledged}
                 onClick={async () => {
                   await setApproval({
                     orgId,

@@ -762,7 +762,8 @@
         "biasSection": "Biasvurdering",
         "optionalSuffix": " (valgfritt)",
         "draftError": "Utkastet kunne ikke genereres. Prøv igjen.",
-        "aiAckLabel": "Dette innholdet er AI-generert. Jeg bekrefter at jeg har lest gjennom og vurdert det."
+        "aiAckLabel": "Dette innholdet er AI-generert. Jeg bekrefter at jeg har lest gjennom og vurdert det.",
+        "approveAckLabel": "Jeg har gjennomgått denne dokumentasjonen og bekrefter at den er korrekt."
       },
       "methodAppendix": {
         "docTitle": "Metodevedlegg",

@@ -762,7 +762,8 @@
         "biasSection": "Bias-granskning",
         "optionalSuffix": " (valfritt)",
         "draftError": "Utkastet kunde inte genereras. Försök igen.",
-        "aiAckLabel": "Det här innehållet är AI-genererat. Jag intygar att jag har läst igenom och granskat det."
+        "aiAckLabel": "Det här innehållet är AI-genererat. Jag intygar att jag har läst igenom och granskat det.",
+        "approveAckLabel": "Jag har granskat den här dokumentationen och intygar att den är korrekt."
       },
       "methodAppendix": {
         "docTitle": "Metodbilaga",

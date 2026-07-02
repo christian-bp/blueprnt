@@ -274,6 +274,18 @@ describe("CriterionComplianceDialog", () => {
     expect((save as HTMLButtonElement).disabled).toBe(false)
   })
 
+  it("requires acknowledging the documentation before Approve is enabled", () => {
+    // Documented + untouched: Approve is shown but gated on an explicit
+    // sign-off. The only checkbox on screen here is that acknowledgement
+    // (the AI-draft checkbox appears only after an AI fill, which makes the
+    // form dirty and swaps Approve for Save).
+    renderDialog({ target: DOCUMENTED_TARGET })
+    const approve = screen.getByRole("button", { name: /approve/i })
+    expect((approve as HTMLButtonElement).disabled).toBe(true)
+    fireEvent.click(screen.getByRole("checkbox"))
+    expect((approve as HTMLButtonElement).disabled).toBe(false)
+  })
+
   it("shows no Fill using AI button on an approved (locked) criterion", () => {
     renderDialog({ target: APPROVED_TARGET })
     expect(screen.queryByRole("button", { name: /Fill using AI/i })).toBeNull()
