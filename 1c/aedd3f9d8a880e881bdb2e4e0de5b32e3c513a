@@ -1,0 +1,27 @@
+packages/email/src/templates/two-factor-code.tsx
+  s_6bff98b662648b::t_8840d84f8e4e62 24
+apps/dashboard/components/org-switch-menu.tsx
+  s_6bff98b662648b::t_8840d84f8e4e62 57
+apps/dashboard/components/admin/audit-log-section.tsx
+  s_6bff98b662648b::t_8840d84f8e4e62 494
+apps/dashboard/components/org-audit-log-section.tsx
+  s_6bff98b662648b::t_8840d84f8e4e62 571
+apps/dashboard/components/nav-organization.tsx
+  s_6bff98b662648b::t_8840d84f8e4e62 89,108
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "1caedd3f9d8a880e881bdb2e4e0de5b32e3c513a",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
