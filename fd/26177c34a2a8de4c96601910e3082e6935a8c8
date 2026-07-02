@@ -1,0 +1,35 @@
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_dc272929efff8e 765-766
+apps/dashboard/components/model/criterion-compliance-dialog.tsx
+  s_6bff98b662648b::t_64d0fcbb1ce8f8 359-374
+  s_6bff98b662648b::t_4a1a65979da031 406
+  s_6bff98b662648b::t_85c2efe2b8f353 86
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_7decb7df62b60f 765-766
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_6de54315d42e7c 765-766
+apps/dashboard/components/model/criterion-compliance-dialog.test.tsx
+  s_6bff98b662648b::t_fe3434a59ecff0 277-288
+docs/go-live-checklist.md
+  s_6bff98b662648b::t_20a0e4f802591f 84-89
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_b4c6b61c94100b 765-766
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_2fcd2fde5559ad 765-766
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "fd26177c34a2a8de4c96601910e3082e6935a8c8",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
