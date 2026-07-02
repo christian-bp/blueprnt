@@ -1,0 +1,40 @@
+packages/backend/convex/lib/auditPayloads.ts
+  s_6bff98b662648b::t_f15463feb3a0b9 287-288
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_ae94df37c61ab1 271-273
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_b7b65f1f66ba3f 271-273
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_b17466e15f6116 271-273
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_0611bc2a578c15 271-273
+packages/backend/convex/lib/audit.ts
+  s_6bff98b662648b::t_a6bf2696cb9f63 57
+  s_6bff98b662648b::t_e894f0178ec9be 38-39
+apps/dashboard/lib/audit-detail.tsx
+  s_6bff98b662648b::t_327a1264032c68 526-528
+packages/backend/convex/evaluationModel/method.ts
+  s_6bff98b662648b::t_e558b43fe9e2ba 144-146
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_06124c3bcfaf7e 271-273
+packages/backend/convex/evaluationModel/method.test.ts
+  s_6bff98b662648b::t_5fed623e1c2714 121,128,130-135
+  s_6bff98b662648b::t_f6e6ea61508442 165-171,175-182
+  s_6bff98b662648b::t_5af716ce9bd37e 172-174
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "c6e539056425fd39499b4e845ea10c5d478853c3",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
