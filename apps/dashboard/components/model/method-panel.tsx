@@ -4,7 +4,6 @@ import { InformationCircleIcon, Tick02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Alert, AlertTitle } from "@workspace/ui/components/alert"
-import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
@@ -14,6 +13,7 @@ import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { CriterionComplianceDialog } from "@/components/model/criterion-compliance-dialog"
 import { CriterionItem } from "@/components/model/criterion-item"
+import { MethodStatusBadge } from "@/components/model/method-status-badge"
 
 const MethodAppendixDownload = dynamic(
   () =>
@@ -99,11 +99,10 @@ export function MethodPanel({ orgId }: { orgId: string }) {
               }
               importanceNode={
                 <span className="flex items-center gap-2">
-                  <Badge
-                    variant={c.status === "approved" ? "default" : "secondary"}
-                  >
-                    {t(`status.${c.status}`)}
-                  </Badge>
+                  <MethodStatusBadge
+                    status={c.status}
+                    label={t(`status.${c.status}`)}
+                  />
                   <Button
                     variant="ghost"
                     size="sm"
