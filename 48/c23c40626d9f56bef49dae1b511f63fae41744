@@ -1,0 +1,34 @@
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_26fcfc9a17b879 775-776
+apps/dashboard/components/pdf/method-appendix-download.tsx
+  s_6bff98b662648b::t_def6e0327e7bca 57
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_b61c27f537e904 775-776
+apps/dashboard/components/pdf/method-appendix.tsx
+  s_6bff98b662648b::t_9b884e2100d49e 72
+  s_6bff98b662648b::t_8e0cb82fbc45e2 47
+apps/dashboard/components/pdf/branded-document.tsx
+  s_6bff98b662648b::t_1416fa1c43e818 111-112
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_09a11f683dc51c 775-776
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_f7405f5bb7b775 775-776
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_d69fde72f41b44 779-780
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "48c23c40626d9f56bef49dae1b511f63fae41744",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
