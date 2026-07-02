@@ -1,0 +1,23 @@
+apps/dashboard/components/model/method-panel.tsx
+  s_6bff98b662648b::t_b411fc3f6ba695 102-105
+  s_6bff98b662648b::t_80e1b81828ee82 16
+apps/dashboard/components/model/method-status-badge.tsx
+  s_6bff98b662648b::t_fa8252f5b6bca9 39
+  s_6bff98b662648b::t_17c2dfbb1f5f6b 1-38,40-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "cf2a62be1b25be542767037800cec10b1716e0ef",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
