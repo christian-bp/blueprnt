@@ -103,7 +103,7 @@ function CriterionComplianceForm({
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit(handleValid)}>
         {/* Rationale section */}
-        <p className="font-medium text-sm">{t("rationaleSection")}</p>
+        <p className="font-semibold text-base">{t("rationaleSection")}</p>
         <FormField
           control={form.control}
           name="purpose"
@@ -148,7 +148,7 @@ function CriterionComplianceForm({
         />
 
         {/* Bias review section */}
-        <p className="font-medium text-sm">{t("biasSection")}</p>
+        <p className="font-semibold text-base">{t("biasSection")}</p>
         <FormField
           control={form.control}
           name="biasRisk"
