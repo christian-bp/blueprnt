@@ -305,6 +305,26 @@
         "title": "Jatka arviointia",
         "progress": "{scored}/{total} roolia arvioitu",
         "cta": "Rooleihin"
+      },
+      "greeting": {
+        "morning": "Hyvää huomenta{hasName, select, yes{, {name}} other{}}",
+        "afternoon": "Hyvää iltapäivää{hasName, select, yes{, {name}} other{}}",
+        "evening": "Hyvää iltaa{hasName, select, yes{, {name}} other{}}"
+      },
+      "todo": {
+        "heading": "Tehtävät",
+        "viewAll": "Näytä kaikki {count}",
+        "evaluateProgress": "{rated}/{total} arvioitu",
+        "empty": {
+          "title": "Kaikki on ajan tasalla",
+          "body": "Mikään rooli tai kriteeri ei vaadi huomiotasi juuri nyt."
+        },
+        "groups": {
+          "describeRoles": "Kuvaa nämä roolit",
+          "evaluateRoles": "Arvioi nämä roolit",
+          "documentCriteria": "Dokumentoi kriteerit",
+          "approveCriteria": "Hyväksy kriteerit"
+        }
       }
     },
     "roleSheet": {

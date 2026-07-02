@@ -305,6 +305,26 @@
         "title": "Fortsæt vurderingen",
         "progress": "{scored} af {total} roller vurderet",
         "cta": "Til roller"
+      },
+      "greeting": {
+        "morning": "Godmorgen{hasName, select, yes{, {name}} other{}}",
+        "afternoon": "God eftermiddag{hasName, select, yes{, {name}} other{}}",
+        "evening": "God aften{hasName, select, yes{, {name}} other{}}"
+      },
+      "todo": {
+        "heading": "At gøre",
+        "viewAll": "Vis alle {count}",
+        "evaluateProgress": "{rated}/{total} vurderet",
+        "empty": {
+          "title": "Du er ajour",
+          "body": "Ingen roller eller kriterier kræver din opmærksomhed lige nu."
+        },
+        "groups": {
+          "describeRoles": "Beskriv disse roller",
+          "evaluateRoles": "Vurder disse roller",
+          "documentCriteria": "Dokumentér kriterier",
+          "approveCriteria": "Godkend kriterier"
+        }
       }
     },
     "roleSheet": {

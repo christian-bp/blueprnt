@@ -87,6 +87,7 @@ in the same change.
   approval) were machine-drafted into sv/nb/da/fi from English. Both gate a
   formal sign-off, so the wording must read unambiguously as an attestation in
   each locale. Have a native speaker review before launch.
+- [ ] **Native review of the overview greeting + to-do strings.** `dashboard.overview.greeting.*` and `dashboard.overview.todo.*` (sv/nb/da/fi) were machine-drafted from English. Have a native speaker review before launch, and confirm the "evaluate" term matches each locale's existing usage (`dashboard.roles.evaluated`).
 
 ## Security and compliance
 
