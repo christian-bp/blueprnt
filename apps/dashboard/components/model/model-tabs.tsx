@@ -16,6 +16,7 @@ import { SPRING } from "@/lib/motion"
 const TABS = [
   { labelKey: "criteria", href: "/model" },
   { labelKey: "weighting", href: "/model/weighting" },
+  { labelKey: "method", href: "/model/method" },
 ] as const
 
 export function ModelTabs() {
@@ -26,11 +27,12 @@ export function ModelTabs() {
   return (
     <nav aria-label={tNav("model")} className="flex h-full items-stretch gap-1">
       {TABS.map((tab) => {
-        // The index tab (Criteria, /model) is active unless the weighting
+        // The index tab (Criteria, /model) is active unless a nested
         // sub-route matches.
         const active =
           tab.href === "/model"
-            ? !pathname.startsWith("/model/weighting")
+            ? !pathname.startsWith("/model/weighting") &&
+              !pathname.startsWith("/model/method")
             : pathname.startsWith(tab.href)
         return (
           <Link

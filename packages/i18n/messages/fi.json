@@ -659,7 +659,8 @@
       "retry": "Yritä uudelleen",
       "tabs": {
         "criteria": "Kriteerit",
-        "weighting": "Painotus"
+        "weighting": "Painotus",
+        "method": "Menetelmä"
       },
       "review": {
         "heading": "Organisaation {name} malli",
@@ -714,6 +715,41 @@
       },
       "change": {
         "cancel": "Peruuta"
+      },
+      "method": {
+        "title": "Menetelmä",
+        "description": "Dokumentoi, miksi kukin kriteeri on olemassa ja sen vinoumien arviointi, ja vie sitten menetelmäliite.",
+        "documented": "{documented}/{total} dokumentoitu",
+        "approved": "{approved}/{total} hyväksytty",
+        "status": {
+          "notStarted": "Ei aloitettu",
+          "inProgress": "Käynnissä",
+          "documented": "Dokumentoitu",
+          "approved": "Hyväksytty"
+        },
+        "openCta": "Dokumentoi",
+        "rowMenu": "Kriteerin toiminnot",
+        "dialogTitle": "Perustelu ja vinoumien arviointi",
+        "dialogDescription": "Kirjaa, miksi tämä kriteeri kuuluu malliin, ja sen vinoumien arviointi. Tämä on todiste, ei takuu.",
+        "purpose": "Tarkoitus",
+        "whyRelevant": "Miksi relevantti",
+        "overlapNotes": "Päällekkäinen muiden kriteerien kanssa",
+        "biasRisk": "Vinoumariski",
+        "biasRiskOption": {
+          "low": "Matala",
+          "medium": "Keskitaso",
+          "high": "Korkea"
+        },
+        "biasComment": "Vinoumakomentti",
+        "biasAction": "Vinoumien lieventäminen",
+        "saveCta": "Tallenna",
+        "cancelCta": "Peruuta",
+        "approveCta": "Hyväksy",
+        "reopenCta": "Avaa uudelleen",
+        "approveHint": "Täytä tarkoitus, miksi relevantti, vinoumariski ja vinoumakomentti hyväksymistä varten.",
+        "decidedBy": "Hyväksynyt {name} päivänä {date}",
+        "error": "Jotakin meni vikaan. Yritä uudelleen.",
+        "export": "Vie menetelmäliite (PDF)"
       }
     },
     "ai": {
@@ -762,7 +798,11 @@
       "orgCurrencyLabel": "Mikä valuutta tämä on?",
       "orgCurrencyBody": "Valuutta, jota organisaationne käyttää palkoissa. Se määräytyy oletuksena maanne mukaan ja sitä käytetään kaikkialla, missä summia näytetään. Sen vaihtaminen ei muunna olemassa olevia arvoja.",
       "orgLanguageLabel": "Mikä on oletuskieli?",
-      "orgLanguageBody": "Organisaation oletuskieli, jota käytetään esimerkiksi kutsusähköposteissa, kun jäsen ei ole valinnut omaa kieltään. Jokainen voi silti valita oman näyttökielensä."
+      "orgLanguageBody": "Organisaation oletuskieli, jota käytetään esimerkiksi kutsusähköposteissa, kun jäsen ei ole valinnut omaa kieltään. Jokainen voi silti valita oman näyttökielensä.",
+      "methodAppendixLabel": "Menetelmäliite",
+      "methodAppendixBody": "Vietävä asiakirja, jossa on kriteerisi, painot, perustelut ja vinoumien arviointi vaatimustenmukaisuustodisteena.",
+      "biasReviewLabel": "Vinoumien arviointi",
+      "biasReviewBody": "Kriteerikohtainen tarkistus sukupuoleen liittyvästä ja muusta vinoumasta lievennystoimenpiteellä. Se osoittaa, että malli on suunniteltu vähentämään vinoumia."
     },
     "admin": {
       "tabs": {

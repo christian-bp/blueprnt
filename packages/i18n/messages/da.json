@@ -659,7 +659,8 @@
       "retry": "Prøv igen",
       "tabs": {
         "criteria": "Kriterier",
-        "weighting": "Vægtning"
+        "weighting": "Vægtning",
+        "method": "Metode"
       },
       "review": {
         "heading": "Modellen for {name}",
@@ -714,6 +715,37 @@
       },
       "change": {
         "cancel": "Annuller"
+      },
+      "method": {
+        "title": "Metode",
+        "description": "Dokumenter, hvorfor hvert kriterium findes, og dets bias-gennemgang, og eksporter derefter metodebilag.",
+        "documented": "{documented}/{total} dokumenteret",
+        "approved": "{approved}/{total} godkendt",
+        "status": {
+          "notStarted": "Ikke startet",
+          "inProgress": "I gang",
+          "documented": "Dokumenteret",
+          "approved": "Godkendt"
+        },
+        "openCta": "Dokumenter",
+        "rowMenu": "Kriteriehandlinger",
+        "dialogTitle": "Begrundelse og bias-gennemgang",
+        "dialogDescription": "Registrer, hvorfor dette kriterium hør hjemme i modellen, og dets bias-gennemgang. Dette er dokumentation, ikke en garanti.",
+        "purpose": "Formål",
+        "whyRelevant": "Hvorfor relevant",
+        "overlapNotes": "Overlap med andre kriterier",
+        "biasRisk": "Biasrisiko",
+        "biasRiskOption": { "low": "Lav", "medium": "Middel", "high": "Høj" },
+        "biasComment": "Biaskommentar",
+        "biasAction": "Biasforebyggelse",
+        "saveCta": "Gem",
+        "cancelCta": "Annuller",
+        "approveCta": "Godkend",
+        "reopenCta": "Åbne igen",
+        "approveHint": "Udfyld formål, hvorfor relevant, biasrisiko og en biaskommentar for at godkende.",
+        "decidedBy": "Godkendt af {name} den {date}",
+        "error": "Noget gik galt. Prøv igen.",
+        "export": "Eksporter metodebilag (PDF)"
       }
     },
     "ai": {
@@ -762,7 +794,11 @@
       "orgCurrencyLabel": "Hvilken valuta er dette?",
       "orgCurrencyBody": "Den valuta, jeres organisation bruger til løn. Den udfyldes som standard ud fra jeres land og bruges, hvor beløb vises. Hvis du ændrer den, konverteres eksisterende værdier ikke.",
       "orgLanguageLabel": "Hvad er standardsproget?",
-      "orgLanguageBody": "Organisationens standardsprog, der bruges til ting som invitationsmails, når et medlem ikke har valgt sit eget. Hver person kan stadig vælge sit eget visningssprog."
+      "orgLanguageBody": "Organisationens standardsprog, der bruges til ting som invitationsmails, når et medlem ikke har valgt sit eget. Hver person kan stadig vælge sit eget visningssprog.",
+      "methodAppendixLabel": "Metodebilag",
+      "methodAppendixBody": "Et eksporterbart dokument med jeres kriterier, vagte, begrundelser og bias-gennemgang som efterlevelsesdokumentation.",
+      "biasReviewLabel": "Bias-gennemgang",
+      "biasReviewBody": "En per-kriterie-kontrol af køns- og biasrisiko med en afbødende handling. Den viser, at modellen er udformet for at reducere bias."
     },
     "admin": {
       "tabs": {

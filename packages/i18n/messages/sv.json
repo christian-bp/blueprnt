@@ -659,7 +659,8 @@
       "retry": "Försök igen",
       "tabs": {
         "criteria": "Kriterier",
-        "weighting": "Viktning"
+        "weighting": "Viktning",
+        "method": "Metod"
       },
       "review": {
         "heading": "Modellen för {name}",
@@ -714,6 +715,37 @@
       },
       "change": {
         "cancel": "Avbryt"
+      },
+      "method": {
+        "title": "Metod",
+        "description": "Dokumentera varför varje kriterium finns och dess biasgranskning, exportera sedan metodbilagan.",
+        "documented": "{documented}/{total} dokumenterade",
+        "approved": "{approved}/{total} godkända",
+        "status": {
+          "notStarted": "Ej påbörjad",
+          "inProgress": "Pågår",
+          "documented": "Dokumenterad",
+          "approved": "Godkänd"
+        },
+        "openCta": "Dokumentera",
+        "rowMenu": "Kriterieåtgärder",
+        "dialogTitle": "Motivering och biasgranskning",
+        "dialogDescription": "Dokumentera varför detta kriterium hör hemma i modellen och dess bias-granskning. Detta är bevis, inte en garanti.",
+        "purpose": "Syfte",
+        "whyRelevant": "Varför relevant",
+        "overlapNotes": "Överlappning med andra kriterier",
+        "biasRisk": "Biasrisk",
+        "biasRiskOption": { "low": "Låg", "medium": "Medel", "high": "Hög" },
+        "biasComment": "Biaskommentar",
+        "biasAction": "Biasåtgärd",
+        "saveCta": "Spara",
+        "cancelCta": "Avbryt",
+        "approveCta": "Godkänn",
+        "reopenCta": "Öppna igen",
+        "approveHint": "Fyll i syfte, varför relevant, biasrisk och en biaskommentar för att godkänna.",
+        "decidedBy": "Godkänd av {name} den {date}",
+        "error": "Något gick fel. Försök igen.",
+        "export": "Exportera metodbilaga (PDF)"
       }
     },
     "ai": {
@@ -762,7 +794,11 @@
       "orgCurrencyLabel": "Vilken valuta är detta?",
       "orgCurrencyBody": "Valutan som din organisation använder för lön. Den utgår från ditt land och används överallt där belopp visas. Att ändra den räknar inte om några befintliga värden.",
       "orgLanguageLabel": "Vad är standardspråket?",
-      "orgLanguageBody": "Organisationens standardspråk, som används för till exempel inbjudningsmejl när en medlem inte har valt ett eget. Varje person kan ändå välja sitt eget visningsspråk."
+      "orgLanguageBody": "Organisationens standardspråk, som används för till exempel inbjudningsmejl när en medlem inte har valt ett eget. Varje person kan ändå välja sitt eget visningsspråk.",
+      "methodAppendixLabel": "Metodbilaga",
+      "methodAppendixBody": "Ett exporterbart dokument med era kriterier, vikter, motiveringar och biasgranskning som efterlevnadsbevis.",
+      "biasReviewLabel": "Biasgranskning",
+      "biasReviewBody": "En kontroll per kriterium av köns- och biasrisk med en åtgärd för att minska den. Den visar att modellen är utformad för att minska bias."
     },
     "admin": {
       "tabs": {

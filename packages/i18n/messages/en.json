@@ -659,7 +659,8 @@
       "retry": "Try again",
       "tabs": {
         "criteria": "Criteria",
-        "weighting": "Weighting"
+        "weighting": "Weighting",
+        "method": "Method"
       },
       "review": {
         "heading": "{name}'s model",
@@ -714,6 +715,37 @@
       },
       "change": {
         "cancel": "Cancel"
+      },
+      "method": {
+        "title": "Method",
+        "description": "Document why each criterion exists and its bias review, then export the method appendix.",
+        "documented": "{documented}/{total} documented",
+        "approved": "{approved}/{total} approved",
+        "status": {
+          "notStarted": "Not started",
+          "inProgress": "In progress",
+          "documented": "Documented",
+          "approved": "Approved"
+        },
+        "openCta": "Document",
+        "rowMenu": "Criterion actions",
+        "dialogTitle": "Rationale and bias review",
+        "dialogDescription": "Record why this criterion belongs in the model and its bias review. This is evidence, not a guarantee.",
+        "purpose": "Purpose",
+        "whyRelevant": "Why relevant",
+        "overlapNotes": "Overlap with other criteria",
+        "biasRisk": "Bias risk",
+        "biasRiskOption": { "low": "Low", "medium": "Medium", "high": "High" },
+        "biasComment": "Bias comment",
+        "biasAction": "Bias mitigation",
+        "saveCta": "Save",
+        "cancelCta": "Cancel",
+        "approveCta": "Approve",
+        "reopenCta": "Reopen",
+        "approveHint": "Fill in purpose, why relevant, bias risk, and a bias comment to approve.",
+        "decidedBy": "Approved by {name} on {date}",
+        "error": "Something went wrong. Please try again.",
+        "export": "Export method appendix (PDF)"
       }
     },
     "ai": {
@@ -762,7 +794,11 @@
       "orgCurrencyLabel": "Which currency is this?",
       "orgCurrencyBody": "The currency your organization uses for pay. It defaults from your country and is used wherever amounts are shown. Changing it does not convert any existing values.",
       "orgLanguageLabel": "What is the default language?",
-      "orgLanguageBody": "The organization's default language, used for things like invitation emails when a member has not chosen their own. Each person can still pick their own display language."
+      "orgLanguageBody": "The organization's default language, used for things like invitation emails when a member has not chosen their own. Each person can still pick their own display language.",
+      "methodAppendixLabel": "Method appendix",
+      "methodAppendixBody": "An exportable document with your criteria, weights, rationale, and bias review as compliance evidence.",
+      "biasReviewLabel": "Bias review",
+      "biasReviewBody": "A per-criterion check of gender and bias risk with a mitigating action. It shows the model is designed to reduce bias."
     },
     "admin": {
       "tabs": {

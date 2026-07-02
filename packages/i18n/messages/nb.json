@@ -659,7 +659,8 @@
       "retry": "Prøv igjen",
       "tabs": {
         "criteria": "Kriterier",
-        "weighting": "Vekting"
+        "weighting": "Vekting",
+        "method": "Metode"
       },
       "review": {
         "heading": "Modellen til {name}",
@@ -714,6 +715,37 @@
       },
       "change": {
         "cancel": "Avbryt"
+      },
+      "method": {
+        "title": "Metode",
+        "description": "Dokumenter hvorfor hvert kriterium finnes og dets biasvurdering, og eksporter deretter metodevedlegget.",
+        "documented": "{documented}/{total} dokumentert",
+        "approved": "{approved}/{total} godkjent",
+        "status": {
+          "notStarted": "Ikke startet",
+          "inProgress": "Pågår",
+          "documented": "Dokumentert",
+          "approved": "Godkjent"
+        },
+        "openCta": "Dokumenter",
+        "rowMenu": "Kriteriehandlinger",
+        "dialogTitle": "Begrunnelse og biasvurdering",
+        "dialogDescription": "Registrer hvorfor dette kriteriet hører hjemme i modellen og dets biasvurdering. Dette er bevis, ikke en garanti.",
+        "purpose": "Formål",
+        "whyRelevant": "Hvorfor relevant",
+        "overlapNotes": "Overlapp med andre kriterier",
+        "biasRisk": "Biasrisiko",
+        "biasRiskOption": { "low": "Lav", "medium": "Middels", "high": "Høy" },
+        "biasComment": "Biaskommentar",
+        "biasAction": "Biastiltak",
+        "saveCta": "Lagre",
+        "cancelCta": "Avbryt",
+        "approveCta": "Godkjenn",
+        "reopenCta": "Åpne igjen",
+        "approveHint": "Fyll ut formål, hvorfor relevant, biasrisiko og en biaskommentar for å godkjenne.",
+        "decidedBy": "Godkjent av {name} den {date}",
+        "error": "Noe gikk galt. Prøv igjen.",
+        "export": "Eksporter metodevedlegg (PDF)"
       }
     },
     "ai": {
@@ -762,7 +794,11 @@
       "orgCurrencyLabel": "Hvilken valuta er dette?",
       "orgCurrencyBody": "Valutaen organisasjonen din bruker for lønn. Den settes som standard ut fra landet ditt og brukes overalt hvor beløp vises. Å endre den konverterer ingen eksisterende verdier.",
       "orgLanguageLabel": "Hva er standardspråket?",
-      "orgLanguageBody": "Organisasjonens standardspråk, brukt til ting som invitasjons-e-poster når et medlem ikke har valgt sitt eget. Hver person kan fortsatt velge sitt eget visningsspråk."
+      "orgLanguageBody": "Organisasjonens standardspråk, brukt til ting som invitasjons-e-poster når et medlem ikke har valgt sitt eget. Hver person kan fortsatt velge sitt eget visningsspråk.",
+      "methodAppendixLabel": "Metodevedlegg",
+      "methodAppendixBody": "Et eksporterbart dokument med kriteriene, vektene, begrunnelsene og biasvurderingen din som samsvarsdokumentasjon.",
+      "biasReviewLabel": "Biasvurdering",
+      "biasReviewBody": "En per-kriterie-sjekk av kjønns- og biasrisiko med et dempende tiltak. Den viser at modellen er utformet for å redusere bias."
     },
     "admin": {
       "tabs": {
