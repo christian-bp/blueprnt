@@ -75,7 +75,11 @@ export function TodoWidget({ todo }: { todo: Todo | undefined }) {
                 </span>
               </span>
             </AccordionTrigger>
-            <AccordionContent>
+            {/* Override the accordion's prose default (`[&_a]:underline`): the
+                item rows are whole-row links, not text links, so they should not
+                be underlined. The "view all" link opts back into hover-underline
+                itself. */}
+            <AccordionContent className="[&_a]:no-underline">
               <TodoGroupItems group={group} />
             </AccordionContent>
           </AccordionItem>
