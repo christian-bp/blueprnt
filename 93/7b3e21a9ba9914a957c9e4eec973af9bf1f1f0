@@ -1,0 +1,25 @@
+.github/workflows/secret-scan.yml
+  s_6bff98b662648b::t_9e63373fe2f224 15
+.github/workflows/sbom.yml
+  s_6bff98b662648b::t_3347d87b997543 13
+.github/workflows/ci.yml
+  s_6bff98b662648b::t_439a1d4d82ffdf 12
+.github/workflows/renovate.yml
+  s_6bff98b662648b::t_65ab3ac44d3ddd 20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "937b3e21a9ba9914a957c9e4eec973af9bf1f1f0",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
