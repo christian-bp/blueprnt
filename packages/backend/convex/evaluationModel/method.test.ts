@@ -86,6 +86,19 @@ describe("criterion compliance write path", () => {
     const criterionId = model?.criteria[0]?.criterionId
     if (criterionId === undefined) throw new Error("no criterion")
 
+    // A seeded standard-model criterion starts documented; clear it to a
+    // not-documented state to exercise the approval guard.
+    await asAdmin.mutation(api.evaluationModel.method.saveCriterionCompliance, {
+      orgId,
+      criterionId,
+      purpose: "",
+      whyRelevant: "",
+      overlapNotes: "",
+      biasRisk: undefined,
+      biasComment: "",
+      biasAction: "",
+    })
+
     // Cannot approve until documented.
     await expect(
       asAdmin.mutation(api.evaluationModel.method.setCriterionApproval, {
@@ -237,9 +250,11 @@ describe("getMethodModel", () => {
     expect(Math.abs(totalShare - 100)).toBeLessThanOrEqual(
       base?.criteria.length ?? 0
     ) // rounding
-    expect(base?.criteria.every((c) => c.status === "notStarted")).toBe(true)
+    // A seeded standard model ships pre-documented (compliance evidence on
+    // every criterion), so all 9 start "documented", none approved.
+    expect(base?.criteria.every((c) => c.status === "documented")).toBe(true)
     expect(base?.progress).toEqual({
-      documented: 0,
+      documented: 9,
       approved: 0,
       total: 9, // standard template has 9 criteria (CRITERION_KEYS in standardTemplate.ts)
     })
@@ -271,7 +286,56 @@ describe("getMethodModel", () => {
     const target = after?.criteria.find((c) => c.criterionId === criterionId)
     expect(target?.status).toBe("approved")
     expect(target?.decidedByName).not.toBeNull()
-    expect(after?.progress.documented).toBe(1)
+    // All 9 seeded criteria are documented; one is now also approved.
+    expect(after?.progress.documented).toBe(9)
     expect(after?.progress.approved).toBe(1)
+  })
+
+  it("re-localizes seeded compliance to the requested locale", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedReadyOrganization(t)
+    const sv = await asAdmin.query(api.evaluationModel.method.getMethodModel, {
+      orgId,
+      locale: "sv",
+    })
+    const en = await asAdmin.query(api.evaluationModel.method.getMethodModel, {
+      orgId,
+      locale: "en",
+    })
+    const svPurpose = sv?.criteria[0]?.purpose ?? ""
+    const enPurpose = en?.criteria[0]?.purpose ?? ""
+    expect(svPurpose.length).toBeGreaterThan(0)
+    expect(enPurpose.length).toBeGreaterThan(0)
+    // Template compliance re-localizes like the name: sv and en prose differ.
+    expect(enPurpose).not.toBe(svPurpose)
+  })
+
+  it("stops re-localizing seeded compliance once HR edits it", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedReadyOrganization(t)
+    const before = await asAdmin.query(
+      api.evaluationModel.method.getMethodModel,
+      { orgId, locale: "sv" }
+    )
+    const criterionId = before?.criteria[0]?.criterionId
+    if (criterionId === undefined) throw new Error("no criterion")
+    await asAdmin.mutation(api.evaluationModel.method.saveCriterionCompliance, {
+      orgId,
+      criterionId,
+      purpose: "HR authored purpose",
+      whyRelevant: "HR authored why",
+      overlapNotes: "",
+      biasRisk: "high",
+      biasComment: "HR authored bias",
+      biasAction: "",
+    })
+    // Requesting en no longer re-localizes: the stored HR text wins.
+    const en = await asAdmin.query(api.evaluationModel.method.getMethodModel, {
+      orgId,
+      locale: "en",
+    })
+    const edited = en?.criteria.find((c) => c.criterionId === criterionId)
+    expect(edited?.purpose).toBe("HR authored purpose")
+    expect(edited?.biasRisk).toBe("high")
   })
 })

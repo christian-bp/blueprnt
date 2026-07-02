@@ -46,6 +46,10 @@ export const criteria = defineTable({
   ),
   biasComment: v.optional(v.string()),
   biasAction: v.optional(v.string()),
+  // true once HR edits compliance via saveCriterionCompliance: the row's stored
+  // compliance is then authored, not template, so getMethodModel stops
+  // re-localizing it. undefined/false = template content (re-localizes at read).
+  complianceEdited: v.optional(v.boolean()),
   approved: v.optional(v.boolean()),
   decidedBy: v.optional(v.string()),
   decidedAt: v.optional(v.number()),

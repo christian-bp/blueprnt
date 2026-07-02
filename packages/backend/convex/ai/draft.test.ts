@@ -239,9 +239,11 @@ describe("draftCriterionCompliance", () => {
     expect(generateTextMock).toHaveBeenCalledTimes(1)
 
     await t.run(async (ctx) => {
-      // The criterion is untouched: the action returns text, it does not persist.
+      // The action returns text, it does not persist: a standard-model criterion
+      // ships pre-documented, so the row keeps its seeded compliance and the
+      // AI-drafted value must NOT have been written to it.
       const criterion = await ctx.db.get(criterionId)
-      expect(criterion?.purpose).toBeUndefined()
+      expect(criterion?.purpose).not.toBe("Measures the scope of impact.")
       // Usage telemetry was recorded for the org + caller.
       const usage = await ctx.db
         .query("aiUsageEvents")

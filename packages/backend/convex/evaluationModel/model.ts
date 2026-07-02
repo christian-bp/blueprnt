@@ -57,6 +57,30 @@ function defaultBandThresholds() {
   }))
 }
 
+// Seed-time compliance fields from the localized template, so a fresh standard
+// model lands at "documented" (complianceStatus reads these stored fields).
+// Empty optional text becomes undefined so the optional stays clean (matches
+// saveCriterionCompliance's norm). complianceEdited is left unset = template
+// content, so getMethodModel re-localizes it to the viewer's locale.
+function seededCompliance(compliance: {
+  purpose: string
+  whyRelevant: string
+  overlapNotes: string
+  biasRisk: "low" | "medium" | "high"
+  biasComment: string
+  biasAction: string
+}) {
+  const norm = (s: string) => (s.trim().length === 0 ? undefined : s.trim())
+  return {
+    purpose: norm(compliance.purpose),
+    whyRelevant: norm(compliance.whyRelevant),
+    overlapNotes: norm(compliance.overlapNotes),
+    biasRisk: compliance.biasRisk,
+    biasComment: norm(compliance.biasComment),
+    biasAction: norm(compliance.biasAction),
+  }
+}
+
 export const createModelFromTemplate = adminMutation({
   args: {},
   returns: v.id("models"),
@@ -92,6 +116,7 @@ export const createModelFromTemplate = adminMutation({
         weightPoints: DEFAULT_WEIGHT_POINTS[key],
         order: index + 1,
         isCustom: false,
+        ...seededCompliance(criterion.compliance),
       })
       criteriaSnapshots.push(
         criterionCreateItem({
@@ -179,6 +204,7 @@ export const seedStandardModel = internalMutation({
         weightPoints: DEFAULT_WEIGHT_POINTS[key],
         order: index + 1,
         isCustom: false,
+        ...seededCompliance(criterion.compliance),
       })
       criteriaSnapshots.push(
         criterionCreateItem({

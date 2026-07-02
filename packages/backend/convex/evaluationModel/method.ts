@@ -107,6 +107,8 @@ export const saveCriterionCompliance = adminMutation({
       biasRisk: args.biasRisk,
       biasComment: norm(args.biasComment),
       biasAction: norm(args.biasAction),
+      // HR now owns the compliance text; getMethodModel stops re-localizing it.
+      complianceEdited: true,
     }
     await ctx.db.patch(args.criterionId, patch)
     await ctx.audit.log({
@@ -261,6 +263,13 @@ export const getMethodModel = adminQuery({
         row.templateKey !== undefined && isCriterionKey(row.templateKey)
           ? content.criteria[row.templateKey]
           : null
+      // Seeded template compliance re-localizes to the requested locale like the
+      // name/description, until HR edits it (complianceEdited). status is still
+      // read from the stored row (the seed filled it), so it stays "documented".
+      const comp =
+        localized !== null && row.complianceEdited !== true
+          ? localized.compliance
+          : null
       const status = complianceStatus(row)
       if (status === "documented" || status === "approved") documented++
       if (status === "approved") approved++
@@ -275,12 +284,14 @@ export const getMethodModel = adminQuery({
             ? Math.round((row.weightPoints / totalPoints) * 100)
             : 0,
         order: row.order,
-        purpose: row.purpose ?? null,
-        whyRelevant: row.whyRelevant ?? null,
-        overlapNotes: row.overlapNotes ?? null,
-        biasRisk: row.biasRisk ?? null,
-        biasComment: row.biasComment ?? null,
-        biasAction: row.biasAction ?? null,
+        purpose: comp ? comp.purpose : (row.purpose ?? null),
+        whyRelevant: comp ? comp.whyRelevant : (row.whyRelevant ?? null),
+        overlapNotes: comp
+          ? comp.overlapNotes || null
+          : (row.overlapNotes ?? null),
+        biasRisk: comp ? comp.biasRisk : (row.biasRisk ?? null),
+        biasComment: comp ? comp.biasComment : (row.biasComment ?? null),
+        biasAction: comp ? comp.biasAction || null : (row.biasAction ?? null),
         status,
         decidedByName:
           row.decidedBy !== undefined ? await resolveName(row.decidedBy) : null,
