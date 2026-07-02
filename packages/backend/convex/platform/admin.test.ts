@@ -811,11 +811,14 @@ describe("listAuditLog (date range)", () => {
     // Four seeded plus the one out-of-band grant row.
     expect(all.page.length).toBe(5)
 
-    // A window strictly before our oldest seeded row also excludes the grant
-    // row, which is older still, so nothing comes back.
+    // A window that ends well before the oldest row returns nothing. The grant
+    // row precedes times[0] by only milliseconds, so the window must sit clearly
+    // before times[0] (both bounds a large offset earlier), not merely below it
+    // with an end of times[0] - 1: otherwise the grant row lands inside the
+    // range whenever it is created 1+ ms before times[0], a timing flake.
     const before = await asAdmin.query(api.platform.admin.listAuditLog, {
-      start: times[0] - 1_000_000,
-      end: times[0] - 1,
+      start: times[0] - 2_000_000,
+      end: times[0] - 1_000_000,
       paginationOpts: { numItems: 50, cursor: null },
     })
     expect(before.page).toHaveLength(0)
