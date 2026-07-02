@@ -295,9 +295,20 @@ describe("draftCriterionCompliance", () => {
     // Positive: the prompt carries org and criterion content from the model.
     // The org was seeded with industry "itTelecom" and country "se".
     expect(capturedPrompt).toContain("itTelecom")
-    // The criterion name from the template must be present (role/model content
-    // only, never person data).
-    expect(capturedPrompt.length).toBeGreaterThan(0)
+    // The criterion's own (localized) name must be present. Resolve it the same
+    // way the prompt builder does (no locale passed => org language "sv") rather
+    // than hardcode a template string, then assert it appears verbatim: this is
+    // role/model content only, never person data. Guards against a refactor
+    // silently dropping the criterion content while the prompt stays non-empty.
+    const method = await asUser.query(
+      api.evaluationModel.method.getMethodModel,
+      { orgId, locale: "sv" }
+    )
+    const criterionName = method?.criteria.find(
+      (c) => c.criterionId === criterionId
+    )?.name
+    expect(criterionName).toBeTruthy()
+    expect(capturedPrompt).toContain(criterionName as string)
     // PII boundary (ADR-0003): even though "Zelda Testperson" exists in the
     // users mirror, no person name must reach the AI prompt.
     expect(capturedPrompt).not.toContain("Zelda Testperson")
