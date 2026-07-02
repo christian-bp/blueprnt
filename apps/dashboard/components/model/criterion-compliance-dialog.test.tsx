@@ -117,6 +117,26 @@ describe("CriterionComplianceDialog", () => {
     expect(screen.getByText("Bias review")).toBeDefined()
   })
 
+  it("renders inline field descriptions instead of per-field help icons", () => {
+    renderDialog()
+    // Each field shows its help text as a FormDescription (inline, no popover button)
+    expect(
+      screen.getByText(
+        "What this criterion measures and the outcome it captures."
+      )
+    ).toBeDefined()
+    expect(
+      screen.getByText(
+        "Why this criterion is relevant to the work's value, and why it is gender-neutral."
+      )
+    ).toBeDefined()
+    expect(
+      screen.getByText(
+        "The risk that this criterion over- or under-values gender-coded work, for example favouring visible mandate or budget size over actual complexity and responsibility."
+      )
+    ).toBeDefined()
+  })
+
   it("renders nothing when target is null", () => {
     renderDialog(null)
     expect(screen.queryByText("Rationale")).toBeNull()
