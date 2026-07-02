@@ -1277,6 +1277,7 @@
     "aiUnavailable": "AI är inte konfigurerat i den här miljön.",
     "aiGenerationFailed": "AI-förslaget kunde inte genereras.",
     "roleLocked": "Rollen är godkänd och låst. Öppna den igen först.",
+    "criterionLocked": "Kriteriet är godkänt och låst. Öppna det igen först.",
     "ratingsIncomplete": "Alla kriterier måste betygsättas först.",
     "invalidTransition": "Den statusändringen är inte tillåten.",
     "roleFamilyExists": "En familj med det namnet finns redan.",

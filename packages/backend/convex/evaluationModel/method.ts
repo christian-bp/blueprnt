@@ -8,7 +8,9 @@ import { templateContent } from "./standardTemplate"
 
 // The compliance content fields logged in the audit diff. decidedBy/decidedAt
 // are intentionally excluded: they are redundant with the audit row's own actor
-// + timestamp and render as ugly raw values in the detail sheet.
+// + timestamp and render as ugly raw values in the detail sheet. approved is
+// excluded too: it no longer changes via save (reopen is a separate explicit
+// action via setCriterionApproval).
 export const COMPLIANCE_AUDIT_FIELDS = [
   "purpose",
   "whyRelevant",
@@ -16,7 +18,6 @@ export const COMPLIANCE_AUDIT_FIELDS = [
   "biasRisk",
   "biasComment",
   "biasAction",
-  "approved",
 ] as const
 
 const biasRiskValidator = v.union(
@@ -67,9 +68,8 @@ export function complianceStatus(c: Doc<"criteria">): ComplianceStatus {
 }
 
 // Saves rationale + bias texts. Empty strings clear a field (stored as
-// undefined so the optional stays clean). Reopen-on-edit: if any content field
-// changed and the criterion was approved, the sign-off no longer attests to the
-// current text, so approval/decidedBy/decidedAt are cleared. No band-shift.
+// undefined so the optional stays clean). Approved criteria are locked: editing
+// requires an explicit reopen via setCriterionApproval first. No band-shift.
 export const saveCriterionCompliance = adminMutation({
   args: {
     criterionId: v.id("criteria"),
@@ -86,6 +86,9 @@ export const saveCriterionCompliance = adminMutation({
     if (criterion === null || criterion.orgId !== ctx.orgId) {
       throw appError(ERROR_CODES.notFound)
     }
+    if (criterion.approved === true) {
+      throw appError(ERROR_CODES.criterionLocked)
+    }
     for (const text of [
       args.purpose,
       args.whyRelevant,
@@ -97,27 +100,13 @@ export const saveCriterionCompliance = adminMutation({
         throw appError(ERROR_CODES.invalidInput)
     }
     const norm = (s: string) => (s.trim().length === 0 ? undefined : s.trim())
-    const next = {
+    const patch = {
       purpose: norm(args.purpose),
       whyRelevant: norm(args.whyRelevant),
       overlapNotes: norm(args.overlapNotes),
       biasRisk: args.biasRisk,
       biasComment: norm(args.biasComment),
       biasAction: norm(args.biasAction),
-    }
-    const contentChanged =
-      next.purpose !== criterion.purpose ||
-      next.whyRelevant !== criterion.whyRelevant ||
-      next.overlapNotes !== criterion.overlapNotes ||
-      next.biasRisk !== criterion.biasRisk ||
-      next.biasComment !== criterion.biasComment ||
-      next.biasAction !== criterion.biasAction
-    const reopen = contentChanged && criterion.approved === true
-    const patch = {
-      ...next,
-      ...(reopen
-        ? { approved: undefined, decidedBy: undefined, decidedAt: undefined }
-        : {}),
     }
     await ctx.db.patch(args.criterionId, patch)
     await ctx.audit.log({
@@ -126,8 +115,6 @@ export const saveCriterionCompliance = adminMutation({
         change: "criterion.complianceUpdated",
         criterionId: args.criterionId,
         modelId: criterion.modelId,
-        // buildChanges skips fields absent from `patch`, so approved/decidedBy/
-        // decidedAt only appear when reopen added them.
         changes: buildChanges(criterion, patch, COMPLIANCE_AUDIT_FIELDS),
       },
     })

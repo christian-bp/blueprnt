@@ -1277,6 +1277,7 @@
     "aiUnavailable": "Tekoälyä ei ole määritetty tässä ympäristössä.",
     "aiGenerationFailed": "Tekoälyehdotusta ei voitu luoda.",
     "roleLocked": "Tämä rooli on hyväksytty ja lukittu. Avaa se ensin uudelleen.",
+    "criterionLocked": "Tämä kriteeri on hyväksytty ja lukittu. Avaa se ensin uudelleen.",
     "ratingsIncomplete": "Kaikki kriteerit on arvioitava ensin.",
     "invalidTransition": "Kyseinen tilamuutos ei ole sallittu.",
     "roleFamilyExists": "Samanniminen perhe on jo olemassa.",

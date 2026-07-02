@@ -18,6 +18,7 @@ export const ERROR_CODES = {
   aiUnavailable: "errors.aiUnavailable",
   aiGenerationFailed: "errors.aiGenerationFailed",
   roleLocked: "errors.roleLocked",
+  criterionLocked: "errors.criterionLocked",
   ratingsIncomplete: "errors.ratingsIncomplete",
   invalidTransition: "errors.invalidTransition",
   roleFamilyExists: "errors.roleFamilyExists",

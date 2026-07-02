@@ -1277,6 +1277,7 @@
     "aiUnavailable": "AI is not configured for this environment.",
     "aiGenerationFailed": "The AI suggestion could not be generated.",
     "roleLocked": "This role is approved and locked. Reopen it first.",
+    "criterionLocked": "This criterion is approved and locked. Reopen it first.",
     "ratingsIncomplete": "All criteria must be rated first.",
     "invalidTransition": "That status change is not allowed.",
     "roleFamilyExists": "A family with that name already exists.",

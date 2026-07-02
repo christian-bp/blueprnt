@@ -25,7 +25,7 @@ const TARGET = {
 }
 
 function renderDialog(
-  target: typeof TARGET | null = TARGET,
+  target: Parameters<typeof CriterionComplianceDialog>[0]["target"] = TARGET,
   onClose = vi.fn()
 ) {
   return render(
@@ -51,6 +51,20 @@ const DOCUMENTED_TARGET = {
   status: "documented" as const,
   decidedByName: null,
   decidedAt: null,
+}
+
+const APPROVED_TARGET = {
+  criterionId: "c3" as Id<"criteria">,
+  name: "Scope",
+  purpose: "Measure scope",
+  whyRelevant: "Distinguishes seniority",
+  overlapNotes: null,
+  biasRisk: "low" as const,
+  biasComment: "Checked",
+  biasAction: null,
+  status: "approved" as const,
+  decidedByName: "Alex",
+  decidedAt: 1700000000000,
 }
 
 describe("CriterionComplianceDialog", () => {
@@ -140,5 +154,37 @@ describe("CriterionComplianceDialog", () => {
   it("renders nothing when target is null", () => {
     renderDialog(null)
     expect(screen.queryByText("Rationale")).toBeNull()
+  })
+
+  it("renders fields as disabled and shows Reopen but no Save when status is approved", () => {
+    renderDialog(APPROVED_TARGET)
+    // All textareas must be disabled
+    const textareas = screen.getAllByRole("textbox")
+    for (const textarea of textareas) {
+      expect((textarea as HTMLTextAreaElement).disabled).toBe(true)
+    }
+    // Save button must not be present
+    expect(screen.queryByRole("button", { name: /save/i })).toBeNull()
+    // Approve button must not be present
+    expect(screen.queryByRole("button", { name: /approve/i })).toBeNull()
+    // Reopen button must be present
+    expect(screen.getByRole("button", { name: /reopen/i })).toBeDefined()
+    // Cancel button present
+    expect(screen.getByRole("button", { name: /cancel/i })).toBeDefined()
+  })
+
+  it("renders fields as editable and shows Save and Approve but no Reopen when status is documented", () => {
+    renderDialog(DOCUMENTED_TARGET)
+    // Textareas must be enabled
+    const textareas = screen.getAllByRole("textbox")
+    for (const textarea of textareas) {
+      expect((textarea as HTMLTextAreaElement).disabled).toBe(false)
+    }
+    // Save button present
+    expect(screen.getByRole("button", { name: /save/i })).toBeDefined()
+    // Approve button present
+    expect(screen.getByRole("button", { name: /approve/i })).toBeDefined()
+    // Reopen button must not be present
+    expect(screen.queryByRole("button", { name: /reopen/i })).toBeNull()
   })
 })

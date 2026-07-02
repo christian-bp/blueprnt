@@ -1277,6 +1277,7 @@
     "aiUnavailable": "AI er ikke konfigureret i dette miljø.",
     "aiGenerationFailed": "AI-forslaget kunne ikke genereres.",
     "roleLocked": "Denne rolle er godkendt og låst. Åbn den igen først.",
+    "criterionLocked": "Dette kriterium er godkendt og låst. Åbn det igen først.",
     "ratingsIncomplete": "Alle kriterier skal vurderes først.",
     "invalidTransition": "Den statusændring er ikke tilladt.",
     "roleFamilyExists": "En familie med det navn findes allerede.",

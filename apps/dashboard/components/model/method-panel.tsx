@@ -3,6 +3,7 @@
 import { InformationCircleIcon, Tick02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
+import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Alert, AlertTitle } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
@@ -37,11 +38,14 @@ export function MethodPanel({ orgId }: { orgId: string }) {
     locale,
   })
 
-  const [target, setTarget] = useState<
-    NonNullable<typeof data>["criteria"][number] | null
-  >(null)
+  const [targetId, setTargetId] = useState<Id<"criteria"> | null>(null)
 
   if (data == null) return null // loading or null; keep layout stable
+
+  const target =
+    targetId === null
+      ? null
+      : (data.criteria.find((c) => c.criterionId === targetId) ?? null)
 
   // Mirrors the Weight page's budget status: a check + neutral tint when the
   // model is fully approved, an amber heads-up while documentation is still
@@ -106,7 +110,7 @@ export function MethodPanel({ orgId }: { orgId: string }) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setTarget(c)}
+                    onClick={() => setTargetId(c.criterionId)}
                   >
                     {t("openCta")}
                   </Button>
@@ -119,7 +123,7 @@ export function MethodPanel({ orgId }: { orgId: string }) {
       <CriterionComplianceDialog
         orgId={orgId}
         target={target}
-        onClose={() => setTarget(null)}
+        onClose={() => setTargetId(null)}
       />
     </div>
   )

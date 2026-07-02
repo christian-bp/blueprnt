@@ -77,7 +77,7 @@ describe("criterion compliance write path", () => {
     expect(bandShifts).toHaveLength(0)
   })
 
-  it("blocks approval until documented, then stamps and reopens on edit", async () => {
+  it("blocks approval until documented, then locks on approval and requires explicit reopen to edit", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedReadyOrganization(t)
     const model = await asAdmin.query(api.evaluationModel.model.getModel, {
@@ -86,6 +86,7 @@ describe("criterion compliance write path", () => {
     const criterionId = model?.criteria[0]?.criterionId
     if (criterionId === undefined) throw new Error("no criterion")
 
+    // Cannot approve until documented.
     await expect(
       asAdmin.mutation(api.evaluationModel.method.setCriterionApproval, {
         orgId,
@@ -94,6 +95,7 @@ describe("criterion compliance write path", () => {
       })
     ).rejects.toThrow(/invalidInput/)
 
+    // Document the criterion.
     await asAdmin.mutation(api.evaluationModel.method.saveCriterionCompliance, {
       orgId,
       criterionId,
@@ -104,15 +106,17 @@ describe("criterion compliance write path", () => {
       biasComment: "b",
       biasAction: "",
     })
+
+    // Approve it.
     await asAdmin.mutation(api.evaluationModel.method.setCriterionApproval, {
       orgId,
       criterionId,
       approved: true,
     })
-    let doc = await t.run(async (ctx) => ctx.db.get(criterionId))
-    expect(doc?.approved).toBe(true)
-    expect(typeof doc?.decidedBy).toBe("string")
-    expect(typeof doc?.decidedAt).toBe("number")
+    const docAfterApproval = await t.run(async (ctx) => ctx.db.get(criterionId))
+    expect(docAfterApproval?.approved).toBe(true)
+    expect(typeof docAfterApproval?.decidedBy).toBe("string")
+    expect(typeof docAfterApproval?.decidedAt).toBe("number")
 
     // The approval audit row must NOT contain decidedBy or decidedAt in changes.
     const rows = await t.run(async (ctx) =>
@@ -133,7 +137,35 @@ describe("criterion compliance write path", () => {
     expect("decidedBy" in changes).toBe(false)
     expect("decidedAt" in changes).toBe(false)
 
-    // Editing content reopens the sign-off.
+    // Editing content while approved must be rejected (criterionLocked).
+    await expect(
+      asAdmin.mutation(api.evaluationModel.method.saveCriterionCompliance, {
+        orgId,
+        criterionId,
+        purpose: "p2",
+        whyRelevant: "w",
+        overlapNotes: "",
+        biasRisk: "medium",
+        biasComment: "b",
+        biasAction: "",
+      })
+    ).rejects.toThrow(/criterionLocked/)
+
+    // Criterion remains approved (no implicit reopen).
+    const docStillApproved = await t.run(async (ctx) => ctx.db.get(criterionId))
+    expect(docStillApproved?.approved).toBe(true)
+
+    // Explicit reopen via setCriterionApproval(false) clears the approval.
+    await asAdmin.mutation(api.evaluationModel.method.setCriterionApproval, {
+      orgId,
+      criterionId,
+      approved: false,
+    })
+    const docReopened = await t.run(async (ctx) => ctx.db.get(criterionId))
+    expect(docReopened?.approved).toBeUndefined()
+    expect(docReopened?.decidedBy).toBeUndefined()
+
+    // Now saveCriterionCompliance succeeds again.
     await asAdmin.mutation(api.evaluationModel.method.saveCriterionCompliance, {
       orgId,
       criterionId,
@@ -144,9 +176,9 @@ describe("criterion compliance write path", () => {
       biasComment: "b",
       biasAction: "",
     })
-    doc = await t.run(async (ctx) => ctx.db.get(criterionId))
-    expect(doc?.approved).toBeUndefined()
-    expect(doc?.decidedBy).toBeUndefined()
+    const docEdited = await t.run(async (ctx) => ctx.db.get(criterionId))
+    expect(docEdited?.purpose).toBe("p2")
+    expect(docEdited?.approved).toBeUndefined()
   })
 
   it("rejects a criterion from another org", async () => {

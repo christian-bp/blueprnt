@@ -88,6 +88,9 @@ function CriterionComplianceForm({
   })
   const { isDirty, isSubmitting } = form.formState
 
+  const locked = target.status === "approved"
+  const canApprove = target.status === "documented"
+
   async function handleValid(values: CriterionComplianceValues) {
     setFailed(false)
     try {
@@ -97,9 +100,6 @@ function CriterionComplianceForm({
       setFailed(true)
     }
   }
-
-  const canApprove = target.status === "documented"
-  const isApproved = target.status === "approved"
 
   return (
     <Form {...form}>
@@ -119,7 +119,7 @@ function CriterionComplianceForm({
               <FormLabel>{t("purpose")}</FormLabel>
               <FormDescription>{tHelp("methodPurposeBody")}</FormDescription>
               <FormControl>
-                <Textarea {...field} />
+                <Textarea {...field} disabled={locked} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -135,7 +135,7 @@ function CriterionComplianceForm({
                 {tHelp("methodWhyRelevantBody")}
               </FormDescription>
               <FormControl>
-                <Textarea {...field} />
+                <Textarea {...field} disabled={locked} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -152,7 +152,7 @@ function CriterionComplianceForm({
               </FormLabel>
               <FormDescription>{tHelp("methodOverlapBody")}</FormDescription>
               <FormControl>
-                <Textarea {...field} />
+                <Textarea {...field} disabled={locked} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -177,6 +177,7 @@ function CriterionComplianceForm({
                 <ToggleGroup
                   type="single"
                   variant="outline"
+                  disabled={locked}
                   value={field.value ?? ""}
                   onValueChange={(v) =>
                     field.onChange(v === "" ? undefined : v)
@@ -216,7 +217,7 @@ function CriterionComplianceForm({
                 {tHelp("methodBiasCommentBody")}
               </FormDescription>
               <FormControl>
-                <Textarea {...field} />
+                <Textarea {...field} disabled={locked} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -233,7 +234,7 @@ function CriterionComplianceForm({
               </FormLabel>
               <FormDescription>{tHelp("methodBiasActionBody")}</FormDescription>
               <FormControl>
-                <Textarea {...field} />
+                <Textarea {...field} disabled={locked} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -244,7 +245,7 @@ function CriterionComplianceForm({
             {t("error")}
           </p>
         )}
-        {isApproved &&
+        {locked &&
           target.decidedByName !== null &&
           target.decidedAt !== null && (
             <p className="text-muted-foreground text-sm">
@@ -256,14 +257,17 @@ function CriterionComplianceForm({
               })}
             </p>
           )}
-        {!isApproved && !canApprove && (
+        {!locked && !canApprove && (
           <p className="text-muted-foreground text-sm">{t("approveHint")}</p>
         )}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onClose}>
             {t("cancelCta")}
           </Button>
-          {isApproved ? (
+          {locked ? (
+            // Reopen does NOT call onClose: the query updates, the derived
+            // target.status becomes "documented", locked becomes false, and
+            // the fields become editable in place without remounting.
             <Button
               type="button"
               variant="outline"
@@ -273,34 +277,35 @@ function CriterionComplianceForm({
                   criterionId: target.criterionId,
                   approved: false,
                 })
-                onClose()
               }}
             >
               {t("reopenCta")}
             </Button>
           ) : (
-            <Button
-              type="button"
-              disabled={!canApprove}
-              onClick={async () => {
-                await setApproval({
-                  orgId,
-                  criterionId: target.criterionId,
-                  approved: true,
-                })
-                onClose()
-              }}
-            >
-              {t("approveCta")}
-            </Button>
+            <>
+              <Button
+                type="button"
+                disabled={!canApprove}
+                onClick={async () => {
+                  await setApproval({
+                    orgId,
+                    criterionId: target.criterionId,
+                    approved: true,
+                  })
+                  onClose()
+                }}
+              >
+                {t("approveCta")}
+              </Button>
+              <SubmitButton
+                type="submit"
+                isSubmitting={isSubmitting}
+                disabled={!isDirty}
+              >
+                {t("saveCta")}
+              </SubmitButton>
+            </>
           )}
-          <SubmitButton
-            type="submit"
-            isSubmitting={isSubmitting}
-            disabled={!isDirty}
-          >
-            {t("saveCta")}
-          </SubmitButton>
         </DialogFooter>
       </form>
     </Form>
