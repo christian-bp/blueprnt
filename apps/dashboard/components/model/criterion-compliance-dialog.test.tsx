@@ -159,11 +159,12 @@ describe("CriterionComplianceDialog", () => {
     expect(screen.queryByRole("combobox")).toBeNull()
   })
 
-  it("renders the footer action buttons", () => {
+  it("renders Cancel and Approve (not Save) for a documented, untouched criterion", () => {
     renderDialog()
     expect(screen.getByRole("button", { name: /cancel/i })).toBeDefined()
+    // Undirty documented target: Approve is shown, Save is not
     expect(screen.getByRole("button", { name: /approve/i })).toBeDefined()
-    expect(screen.getByRole("button", { name: /save/i })).toBeDefined()
+    expect(screen.queryByRole("button", { name: /save/i })).toBeNull()
   })
 
   it("renders the section headings for Rationale and Bias review", () => {
@@ -212,24 +213,26 @@ describe("CriterionComplianceDialog", () => {
     expect(screen.getByRole("button", { name: /reopen/i })).toBeDefined()
     // Cancel button present
     expect(screen.getByRole("button", { name: /cancel/i })).toBeDefined()
+    // No Draft with AI button on a locked criterion
+    expect(screen.queryByRole("button", { name: /Draft with AI/i })).toBeNull()
   })
 
-  it("renders fields as editable and shows Save and Approve but no Reopen when status is documented", () => {
+  it("renders fields as editable and shows Approve but no Save or Reopen when documented and untouched", () => {
     renderDialog({ target: DOCUMENTED_TARGET })
     // Textareas must be enabled
     const textareas = screen.getAllByRole("textbox")
     for (const textarea of textareas) {
       expect((textarea as HTMLTextAreaElement).disabled).toBe(false)
     }
-    // Save button present
-    expect(screen.getByRole("button", { name: /save/i })).toBeDefined()
-    // Approve button present
+    // Approve is present (untouched documented target)
     expect(screen.getByRole("button", { name: /approve/i })).toBeDefined()
+    // Save is NOT present (only shown when dirty)
+    expect(screen.queryByRole("button", { name: /save/i })).toBeNull()
     // Reopen button must not be present
     expect(screen.queryByRole("button", { name: /reopen/i })).toBeNull()
   })
 
-  it("fills all six fields from the AI draft on a documented criterion", async () => {
+  it("fills all six fields from the AI draft, hides Approve, and shows Save when dirty", async () => {
     draftMock.mockResolvedValue({
       purpose: "AIP",
       whyRelevant: "AIW",
@@ -239,6 +242,7 @@ describe("CriterionComplianceDialog", () => {
       biasAction: "",
     })
     renderDialog({ target: DOCUMENTED_TARGET })
+    // The Draft with AI button is in the dialog header
     fireEvent.click(screen.getByRole("button", { name: /Draft with AI/i }))
     await waitFor(() => expect(screen.getByDisplayValue("AIP")).toBeDefined())
     expect(screen.getByDisplayValue("AIW")).toBeDefined()
@@ -246,14 +250,9 @@ describe("CriterionComplianceDialog", () => {
     // The "medium" bias-risk toggle should be pressed
     const mediumBtn = screen.getByRole("radio", { name: /medium/i })
     expect(mediumBtn.getAttribute("data-state")).toBe("on")
-    // The draft made the form dirty, so Approve is disabled (Save first): this
-    // prevents an accidental Approve from signing off stale content and
-    // discarding the unsaved draft. The "save first" hint explains why.
-    const approve = screen.getByRole("button", { name: /approve/i })
-    expect(approve.hasAttribute("disabled")).toBe(true)
-    expect(
-      screen.getByText(/Save your changes before you can approve/i)
-    ).toBeDefined()
+    // Form is now dirty: Save is shown, Approve is not
+    expect(screen.getByRole("button", { name: /save/i })).toBeDefined()
+    expect(screen.queryByRole("button", { name: /approve/i })).toBeNull()
   })
 
   it("shows no Draft with AI button on an approved (locked) criterion", () => {

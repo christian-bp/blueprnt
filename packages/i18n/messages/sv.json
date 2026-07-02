@@ -755,7 +755,6 @@
         "approveCta": "Godkänn",
         "reopenCta": "Öppna igen",
         "approveHint": "Fyll i syfte, varför relevant, biasrisk och en biaskommentar för att godkänna.",
-        "saveBeforeApprove": "Spara dina ändringar innan du kan godkänna.",
         "decidedBy": "Godkänd av {name} den {date}",
         "error": "Något gick fel. Försök igen.",
         "export": "Exportera",
