@@ -1,0 +1,54 @@
+apps/dashboard/components/account/two-factor-section.tsx
+  s_6bff98b662648b::t_1c5ba2a0e4b104 32
+  s_6bff98b662648b::t_b4917bbfeb7135 54
+  s_6bff98b662648b::t_24cb059a780313 168
+apps/dashboard/components/account/two-factor-section.test.tsx
+  s_6bff98b662648b::t_814e195caf8fcd 13-14
+apps/dashboard/components/auth/two-factor-setup.test.tsx
+  s_6bff98b662648b::t_574b321daf765a 13-14
+apps/dashboard/components/account/avatar-section.tsx
+  s_6bff98b662648b::t_1628a01d6fa638 24
+  s_6bff98b662648b::t_251843dfc8f49b 41-42
+  s_6bff98b662648b::t_3a8ad23ad06753 14
+apps/dashboard/components/account/language-section.tsx
+  s_6bff98b662648b::t_94741a41ed2384 44
+  s_6bff98b662648b::t_6b0d8fc446b118 22
+  s_6bff98b662648b::t_b3cdc5662b26a6 32
+apps/dashboard/components/auth/two-factor-setup.tsx
+  s_6bff98b662648b::t_439f83ea7db194 43
+  s_6bff98b662648b::t_d7bd52caa30b3d 153
+  s_6bff98b662648b::t_81a284dccba43a 20
+apps/dashboard/components/account/avatar-section.test.tsx
+  s_6bff98b662648b::t_07e5a712ae3dd2 159-163
+  s_6bff98b662648b::t_aef33d421d9c92 218-222
+  s_6bff98b662648b::t_db1b4b9d12cc30 16-18
+  s_6bff98b662648b::t_efd84a4ef65fa5 19
+  s_6bff98b662648b::t_a2cae2bd8a1d33 12-15
+  s_6bff98b662648b::t_21a6a9bd6ae377 129-130
+apps/dashboard/components/language-menu.tsx
+  s_6bff98b662648b::t_2498a2a4263bff 27
+  s_6bff98b662648b::t_8ba49234a1a739 39
+  s_6bff98b662648b::t_b3869fbea4542b 15
+apps/dashboard/components/account/language-section.test.tsx
+  s_6bff98b662648b::t_e8f998cb4d6a27 12-13
+apps/dashboard/hooks/use-image-upload.ts
+  s_6bff98b662648b::t_66fbbb483bd6b6 51
+  s_6bff98b662648b::t_8bc6ad60fc60f4 67
+  s_6bff98b662648b::t_bf59b4b6d64432 16-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "1bc717ec41cb33f29e5197b8fd952a56d81e2878",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
