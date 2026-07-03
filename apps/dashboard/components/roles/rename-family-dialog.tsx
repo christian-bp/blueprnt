@@ -24,6 +24,7 @@ import { Input } from "@workspace/ui/components/input"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useEffect, useMemo, useState } from "react"
+import { toast } from "sonner"
 import { useForm } from "react-hook-form"
 import { SubmitButton } from "@/components/submit-button"
 import { isDuplicateFamilyError } from "@/lib/family-error"
@@ -53,6 +54,7 @@ export function RenameFamilyDialog({
   const tFamily = useTranslations("dashboard.roles.family")
   const tErrors = useTranslations("errors")
   const tv = useTranslations("dashboard.validation")
+  const tToast = useTranslations("dashboard.toast")
   const renameFamily = useMutation(api.assessment.families.renameRoleFamily)
 
   const schema = useMemo(() => makeRenameFamilySchema(tv), [tv])
@@ -95,6 +97,7 @@ export function RenameFamilyDialog({
         familyId,
         name: values.name,
       })
+      toast.success(tToast("familyRenamed"))
       onOpenChange(false)
     } catch (error: unknown) {
       setFailure(isDuplicateFamilyError(error) ? "duplicate" : "generic")

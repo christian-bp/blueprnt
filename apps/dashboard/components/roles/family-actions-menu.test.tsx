@@ -6,9 +6,14 @@ import {
   waitFor,
 } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
+import { toast } from "sonner"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import messages from "@workspace/i18n/messages/en.json"
+
+vi.mock("sonner", () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
+}))
 
 const renameFamilyMock = vi.fn()
 const removeFamilyMock = vi.fn()
@@ -60,6 +65,8 @@ function openMenu() {
 
 describe("FamilyActionsMenu", () => {
   beforeEach(() => {
+    vi.mocked(toast.success).mockReset()
+    vi.mocked(toast.error).mockReset()
     renameFamilyMock.mockReset()
     removeFamilyMock.mockReset()
     pushMock.mockReset()
@@ -95,6 +102,9 @@ describe("FamilyActionsMenu", () => {
       })
     })
     await waitFor(() => expect(pushMock).toHaveBeenCalledWith("/roles"))
+    expect(vi.mocked(toast.success)).toHaveBeenCalledWith(
+      messages.dashboard.toast.familyDeleted
+    )
   })
 
   it("omits the affected-roles list for an empty family", () => {

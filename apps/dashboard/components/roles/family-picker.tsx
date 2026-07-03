@@ -14,6 +14,7 @@ import {
 import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useId, useState } from "react"
+import { toast } from "sonner"
 import { isDuplicateFamilyError } from "@/lib/family-error"
 
 // Sentinel item values: real family ids never collide with these.
@@ -38,6 +39,7 @@ export function FamilyPicker({
 }) {
   const t = useTranslations("dashboard.roles.family")
   const tErrors = useTranslations("errors")
+  const tToast = useTranslations("dashboard.toast")
   const families = useQuery(api.assessment.families.listRoleFamilies, {
     orgId,
   })
@@ -59,6 +61,7 @@ export function FamilyPicker({
       setCreating(false)
       setName("")
       onChange(familyId as string)
+      toast.success(tToast("familyCreated"))
     } catch (error) {
       setFailure(isDuplicateFamilyError(error) ? "duplicate" : "generic")
     } finally {

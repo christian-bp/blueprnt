@@ -15,6 +15,7 @@ import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { toast } from "sonner"
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
 import { RenameFamilyDialog } from "@/components/roles/rename-family-dialog"
 
@@ -33,6 +34,7 @@ export function FamilyActionsMenu({
   roleTitles: string[]
 }) {
   const tFamily = useTranslations("dashboard.roles.family")
+  const tToast = useTranslations("dashboard.toast")
   const removeFamily = useMutation(api.assessment.families.removeRoleFamily)
   const router = useRouter()
   const [renameOpen, setRenameOpen] = useState(false)
@@ -86,7 +88,10 @@ export function FamilyActionsMenu({
           setPending(true)
           try {
             await removeFamily({ orgId, familyId })
+            toast.success(tToast("familyDeleted"))
             router.push("/roles")
+          } catch {
+            toast.error(tToast("error"))
           } finally {
             setPending(false)
           }
