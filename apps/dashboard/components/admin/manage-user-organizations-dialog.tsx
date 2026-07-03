@@ -38,6 +38,7 @@ import {
 import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
+import { toast } from "sonner"
 import { useForm } from "react-hook-form"
 import { SubmitButton } from "@/components/submit-button"
 import {
@@ -55,6 +56,7 @@ export function ManageUserOrganizationsDialog(props: {
   const t = useTranslations("dashboard.admin.users.organizations")
   const tRole = useTranslations("accounts.role")
   const tv = useTranslations("dashboard.validation")
+  const tToast = useTranslations("dashboard.toast")
 
   const memberships = useQuery(
     api.platform.admin.listOrganizationsForUser,
@@ -88,6 +90,7 @@ export function ManageUserOrganizationsDialog(props: {
         orgId,
         role: value as MembershipRole,
       })
+      toast.success(tToast("membershipUpdated"))
     } catch {
       setError(true)
     }
@@ -97,6 +100,7 @@ export function ManageUserOrganizationsDialog(props: {
     setError(false)
     try {
       await removeMembership({ authId: user.authId, orgId })
+      toast.success(tToast("membershipRemoved"))
     } catch {
       setError(true)
     }
@@ -110,6 +114,7 @@ export function ManageUserOrganizationsDialog(props: {
         orgId: values.orgId,
         role: values.role,
       })
+      toast.success(tToast("membershipAdded"))
       form.reset({ orgId: "", role: "editor" })
     } catch {
       setError(true)

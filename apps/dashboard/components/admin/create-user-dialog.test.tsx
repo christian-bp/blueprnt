@@ -9,9 +9,15 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 
-const { createUserMock, requestPasswordResetMock } = vi.hoisted(() => ({
-  createUserMock: vi.fn(),
-  requestPasswordResetMock: vi.fn(async () => ({ error: null })),
+const { createUserMock, requestPasswordResetMock, toastSuccessMock } =
+  vi.hoisted(() => ({
+    createUserMock: vi.fn(),
+    requestPasswordResetMock: vi.fn(async () => ({ error: null })),
+    toastSuccessMock: vi.fn(),
+  }))
+
+vi.mock("sonner", () => ({
+  toast: { success: toastSuccessMock, error: vi.fn() },
 }))
 
 vi.mock("convex/react", () => ({
@@ -87,6 +93,7 @@ describe("CreateUserDialog", () => {
   beforeEach(() => {
     createUserMock.mockReset()
     requestPasswordResetMock.mockReset()
+    toastSuccessMock.mockReset()
     requestPasswordResetMock.mockResolvedValue({ error: null })
   })
   afterEach(() => {
@@ -221,6 +228,26 @@ describe("CreateUserDialog", () => {
         orgId: "org-2",
         role: "editor",
       })
+    })
+  })
+
+  it("fires toast.success with userCreated on successful submission", async () => {
+    createUserMock.mockResolvedValue({ authId: "user-1", created: true })
+    renderDialog()
+    openDialog()
+    fireEvent.change(screen.getByLabelText(labels.nameLabel), {
+      target: { value: "Alice" },
+    })
+    fireEvent.change(screen.getByLabelText(labels.emailLabel), {
+      target: { value: "alice@example.com" },
+    })
+    const selects = hiddenSelects()
+    if (selects[0]) fireEvent.change(selects[0], { target: { value: "org-1" } })
+    submitForm()
+    await waitFor(() => {
+      expect(toastSuccessMock).toHaveBeenCalledWith(
+        messages.dashboard.toast.userCreated
+      )
     })
   })
 

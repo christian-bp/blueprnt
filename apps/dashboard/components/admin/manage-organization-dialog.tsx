@@ -41,6 +41,7 @@ import {
 import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
+import { toast } from "sonner"
 import { useForm } from "react-hook-form"
 import { CountrySelect } from "@/components/country-select"
 import { CurrencySelect } from "@/components/currency-select"
@@ -71,6 +72,7 @@ export function ManageOrganizationDialog(props: {
 }) {
   const { org, open, onOpenChange } = props
   const t = useTranslations("dashboard.admin.orgs.manage")
+  const tToast = useTranslations("dashboard.toast")
   const members = useQuery(
     api.platform.admin.listOrganizationMembers,
     open ? { orgId: org.orgId } : "skip"
@@ -107,6 +109,7 @@ export function ManageOrganizationDialog(props: {
         orgId: org.orgId,
         role: value as MembershipRole,
       })
+      toast.success(tToast("membershipUpdated"))
     } catch {
       setError(true)
     }
@@ -116,6 +119,7 @@ export function ManageOrganizationDialog(props: {
     setError(false)
     try {
       await removeMembership({ authId, orgId: org.orgId })
+      toast.success(tToast("membershipRemoved"))
     } catch {
       setError(true)
     }
@@ -125,6 +129,7 @@ export function ManageOrganizationDialog(props: {
     setError(false)
     try {
       await updateOrg({ orgId: org.orgId, ...values })
+      toast.success(tToast("orgSaved"))
     } catch {
       setError(true)
     }

@@ -17,6 +17,7 @@ import { Label } from "@workspace/ui/components/label"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
+import { toast } from "sonner"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -39,6 +40,7 @@ export function DeleteUserDialog(props: {
   onOpenChange: (open: boolean) => void
 }) {
   const t = useTranslations("dashboard.admin.users.delete")
+  const tToast = useTranslations("dashboard.toast")
   const deleteUser = useMutation(api.platform.admin.deleteUser)
   const [busy, setBusy] = useState(false)
   const [failed, setFailed] = useState(false)
@@ -74,6 +76,7 @@ export function DeleteUserDialog(props: {
     setFailed(false)
     try {
       await deleteUser({ authId: props.authId })
+      toast.success(tToast("userDeleted"))
       handleOpenChange(false)
     } catch {
       setFailed(true)

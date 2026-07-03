@@ -31,6 +31,7 @@ import {
 import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
+import { toast } from "sonner"
 import { useForm } from "react-hook-form"
 import type { z } from "zod"
 import { SubmitButton } from "@/components/submit-button"
@@ -44,6 +45,7 @@ export function CreateUserDialog() {
   const t = useTranslations("dashboard.admin.users.create")
   const tAccounts = useTranslations("accounts")
   const tv = useTranslations("dashboard.validation")
+  const tToast = useTranslations("dashboard.toast")
   const createUser = useMutation(api.platform.admin.createUser)
   const organizations = useQuery(api.platform.admin.listOrganizations)
   const [open, setOpen] = useState(false)
@@ -74,6 +76,7 @@ export function CreateUserDialog() {
         email: values.email,
         redirectTo: "/reset-password",
       })
+      toast.success(tToast("userCreated"))
       handleOpenChange(false)
     } catch {
       setFailed(true)

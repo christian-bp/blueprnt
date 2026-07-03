@@ -25,6 +25,7 @@ import { Input } from "@workspace/ui/components/input"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
+import { toast } from "sonner"
 import { useForm } from "react-hook-form"
 import type { z } from "zod"
 import { SubmitButton } from "@/components/submit-button"
@@ -33,6 +34,7 @@ import { type CreateOrgValues, makeCreateOrgSchema } from "@/lib/admin-schemas"
 export function CreateOrganizationDialog() {
   const t = useTranslations("dashboard.admin.orgs.create")
   const tv = useTranslations("dashboard.validation")
+  const tToast = useTranslations("dashboard.toast")
   const createOrg = useMutation(api.platform.admin.createOrganization)
   const [open, setOpen] = useState(false)
   const [slugEdited, setSlugEdited] = useState(false)
@@ -58,6 +60,7 @@ export function CreateOrganizationDialog() {
     setFailed(false)
     try {
       await createOrg(values)
+      toast.success(tToast("organizationCreated"))
       handleOpenChange(false)
     } catch {
       setFailed(true)
