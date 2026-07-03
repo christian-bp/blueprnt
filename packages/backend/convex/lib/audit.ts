@@ -368,15 +368,19 @@ export const ROLE_CREATE_FIELDS = [
   "responsibilities",
 ] as const
 
-// The person fields captured for create/update/archive/erase diffs. EXCLUDES
-// name, email, and any other PII per ADR-0003 (Role != Person; GDPR). Only
-// structural and assignment-relevant fields are recorded.
+// The person fields captured for create/update/archive diffs. EXCLUDES
+// displayName, gender, and birthDate (PII; GDPR / Role != Person) so audit
+// changes diffs never carry personal data. Only structural and
+// HR-operational fields are recorded.
 export const PERSON_AUDIT_FIELDS = [
-  "personId",
-  "status",
-  "trackKey",
-  "familyId",
-  "roleId",
+  "externalRef",
+  "employmentStartDate",
+  "ftePercent",
+  "country",
+  "isManager",
+  "statisticalCode",
+  "department",
+  "archivedAt",
 ] as const
 
 // One bulk `items` entry for a freshly created criterion (template/scratch/AI).
