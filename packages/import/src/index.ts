@@ -9,3 +9,6 @@ export type {
 export { tokenizeCsv } from "./tokenize.js"
 
 export { classifyColumn } from "./shape.js"
+
+export { detectColumns } from "./detect.js"
+export type { DetectedMapping } from "./detect.js"
