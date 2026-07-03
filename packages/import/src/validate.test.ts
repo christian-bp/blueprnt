@@ -1,0 +1,336 @@
+// Tests for validateImport: readiness + data-quality validation.
+import { describe, expect, it } from "vitest"
+import type { DetectedMapping } from "./detect.js"
+import type { CanonicalFieldKey } from "./fields.js"
+import { validateImport } from "./validate.js"
+
+// Real-derived 16-column Swedish payroll fixture.
+// Headers match the detect.test.ts SWEDISH_HEADERS fixture.
+const HEADERS =
+  "Anstallningsdatum;Fornamn;Efternamn;Chef;Kon;Land;Löneår;Födelsedatum;Befattning;Statistikkod;Månadslön;Tjänstebil;Målbonus;Valuta;Anstnr;Sysselssättningsgrad".split(
+    ";"
+  )
+
+// Column index helper.
+const col = (name: string) => HEADERS.indexOf(name)
+
+// Full mapping (all detected columns present).
+const FULL_MAPPING: DetectedMapping = {
+  map: {
+    employmentStartDate: {
+      columnIndex: col("Anstallningsdatum"),
+      confidence: 1.0,
+    },
+    firstName: { columnIndex: col("Fornamn"), confidence: 1.0 },
+    lastName: { columnIndex: col("Efternamn"), confidence: 1.0 },
+    isManager: { columnIndex: col("Chef"), confidence: 1.0 },
+    gender: { columnIndex: col("Kon"), confidence: 1.0 },
+    country: { columnIndex: col("Land"), confidence: 1.0 },
+    payYear: { columnIndex: col("Löneår"), confidence: 1.0 },
+    birthDate: { columnIndex: col("Födelsedatum"), confidence: 1.0 },
+    title: { columnIndex: col("Befattning"), confidence: 1.0 },
+    statisticalCode: { columnIndex: col("Statistikkod"), confidence: 1.0 },
+    basicMonthly: { columnIndex: col("Månadslön"), confidence: 1.0 },
+    benefitInKind: { columnIndex: col("Tjänstebil"), confidence: 1.0 },
+    variable: { columnIndex: col("Målbonus"), confidence: 1.0 },
+    currency: { columnIndex: col("Valuta"), confidence: 1.0 },
+    externalRef: { columnIndex: col("Anstnr"), confidence: 1.0 },
+    ftePercent: { columnIndex: col("Sysselssättningsgrad"), confidence: 1.0 },
+  },
+  unmappedColumns: [],
+}
+
+// Data rows (index = row in data array, 0-based).
+// Row 0: Anna Svensson — clean
+// Row 1: Erik Lindqvist — clean
+// Row 2: duplicate Anstnr 114 (same as row 0)
+// Row 3: non-numeric Statistikkod
+const ROWS: string[][] = [
+  // row 0
+  "2019-03-01;Anna;Svensson;Nej;Kvinna;Sverige;2024;1985-06-12;Senior Analyst;1231;49788;0;5000;SEK;114;100".split(
+    ";"
+  ),
+  // row 1
+  "2021-08-15;Erik;Lindqvist;Ja;Man;Sverige;2024;1990-11-30;Product Manager;1232;65000;3500;8000;SEK;115;80".split(
+    ";"
+  ),
+  // row 2 — duplicate Anstnr 114
+  "2022-01-01;Sara;Berg;Nej;Kvinna;Sverige;2024;1988-04-20;Analyst;1231;52000;0;0;SEK;114;100".split(
+    ";"
+  ),
+  // row 3 — non-numeric Statistikkod
+  "2020-06-01;Lars;Ek;Nej;Man;Sverige;2024;1982-09-05;Developer;INVALID;58000;0;3000;SEK;116;100".split(
+    ";"
+  ),
+]
+
+describe("validateImport — readiness", () => {
+  it("readiness covers all canonical fields", () => {
+    const result = validateImport(
+      { headers: HEADERS, rows: ROWS },
+      FULL_MAPPING,
+      {}
+    )
+    const keys = result.readiness.map((r) => r.key)
+    // Must have an entry for every canonical field.
+    const requiredKeys: CanonicalFieldKey[] = [
+      "externalRef",
+      "title",
+      "gender",
+      "basicMonthly",
+      "firstName",
+      "lastName",
+      "ftePercent",
+      "payYear",
+      "birthDate",
+      "employmentStartDate",
+      "statisticalCode",
+      "variable",
+      "benefitInKind",
+      "currency",
+      "country",
+      "department",
+      "isManager",
+    ]
+    for (const k of requiredKeys) {
+      expect(keys).toContain(k)
+    }
+  })
+
+  it("mapped fields report mapped: true", () => {
+    const result = validateImport(
+      { headers: HEADERS, rows: ROWS },
+      FULL_MAPPING,
+      {}
+    )
+    const entry = result.readiness.find((r) => r.key === "externalRef")
+    expect(entry?.mapped).toBe(true)
+    expect(entry?.tier).toBe("required")
+  })
+
+  it("unmapped fields report mapped: false", () => {
+    const mapping: DetectedMapping = {
+      map: { ...FULL_MAPPING.map, department: undefined },
+      unmappedColumns: [],
+    }
+    const result = validateImport({ headers: HEADERS, rows: ROWS }, mapping, {})
+    const entry = result.readiness.find((r) => r.key === "department")
+    expect(entry?.mapped).toBe(false)
+    expect(entry?.tier).toBe("optional")
+  })
+})
+
+describe("validateImport — blocking (required fields missing)", () => {
+  it("blocking is empty when all required fields are mapped", () => {
+    const result = validateImport(
+      { headers: HEADERS, rows: ROWS },
+      FULL_MAPPING,
+      {}
+    )
+    expect(result.blocking).toHaveLength(0)
+  })
+
+  it("blocking contains basicMonthly when salary mapping is dropped", () => {
+    const mapping: DetectedMapping = {
+      map: { ...FULL_MAPPING.map, basicMonthly: undefined },
+      unmappedColumns: [col("Månadslön")],
+    }
+    const result = validateImport({ headers: HEADERS, rows: ROWS }, mapping, {})
+    expect(result.blocking).toContain("basicMonthly")
+  })
+
+  it("blocking contains all unresolved required fields", () => {
+    const mapping: DetectedMapping = {
+      map: {},
+      unmappedColumns: [],
+    }
+    const result = validateImport({ headers: HEADERS, rows: ROWS }, mapping, {})
+    expect(result.blocking).toContain("externalRef")
+    expect(result.blocking).toContain("title")
+    expect(result.blocking).toContain("gender")
+    expect(result.blocking).toContain("basicMonthly")
+  })
+})
+
+describe("validateImport — warnings (recommended fields missing)", () => {
+  it("warnings is empty when all recommended fields are mapped", () => {
+    const result = validateImport(
+      { headers: HEADERS, rows: ROWS },
+      FULL_MAPPING,
+      {}
+    )
+    expect(result.warnings).toHaveLength(0)
+  })
+
+  it("warnings contains ftePercent when FTE mapping is dropped", () => {
+    const mapping: DetectedMapping = {
+      map: { ...FULL_MAPPING.map, ftePercent: undefined },
+      unmappedColumns: [col("Sysselssättningsgrad")],
+    }
+    const result = validateImport({ headers: HEADERS, rows: ROWS }, mapping, {})
+    expect(result.warnings).toContain("ftePercent")
+  })
+
+  it("warnings does not contain optional fields", () => {
+    const mapping: DetectedMapping = {
+      map: { ...FULL_MAPPING.map, currency: undefined, variable: undefined },
+      unmappedColumns: [],
+    }
+    const result = validateImport({ headers: HEADERS, rows: ROWS }, mapping, {})
+    expect(result.warnings).not.toContain("currency")
+    expect(result.warnings).not.toContain("variable")
+  })
+})
+
+describe("validateImport — issues: duplicateId", () => {
+  it("reports duplicateId for rows with the same externalRef value", () => {
+    const result = validateImport(
+      { headers: HEADERS, rows: ROWS },
+      FULL_MAPPING,
+      {}
+    )
+    const dupes = result.issues.filter((i) => i.code === "duplicateId")
+    // Both row 0 (first seen) and row 2 (duplicate) should be flagged.
+    // At minimum, the second occurrence (row 2) must appear.
+    expect(dupes.length).toBeGreaterThanOrEqual(1)
+    const dupeRows = dupes.map((i) => i.row)
+    expect(dupeRows).toContain(2)
+  })
+
+  it("no duplicateId when externalRef is not mapped", () => {
+    const mapping: DetectedMapping = {
+      map: { ...FULL_MAPPING.map, externalRef: undefined },
+      unmappedColumns: [],
+    }
+    const result = validateImport({ headers: HEADERS, rows: ROWS }, mapping, {})
+    expect(result.issues.filter((i) => i.code === "duplicateId")).toHaveLength(
+      0
+    )
+  })
+})
+
+describe("validateImport — issues: nonNumericCode", () => {
+  it("reports nonNumericCode at row 3 (INVALID Statistikkod)", () => {
+    const result = validateImport(
+      { headers: HEADERS, rows: ROWS },
+      FULL_MAPPING,
+      {}
+    )
+    const bad = result.issues.filter((i) => i.code === "nonNumericCode")
+    expect(bad.length).toBeGreaterThanOrEqual(1)
+    expect(bad.map((i) => i.row)).toContain(3)
+  })
+
+  it("no nonNumericCode when statisticalCode is not mapped", () => {
+    const mapping: DetectedMapping = {
+      map: { ...FULL_MAPPING.map, statisticalCode: undefined },
+      unmappedColumns: [],
+    }
+    const result = validateImport({ headers: HEADERS, rows: ROWS }, mapping, {})
+    expect(
+      result.issues.filter((i) => i.code === "nonNumericCode")
+    ).toHaveLength(0)
+  })
+})
+
+describe("validateImport — issues: unparsableMoney", () => {
+  it("reports unparsableMoney for a row with a bad salary cell", () => {
+    const rows: string[][] = [
+      ...ROWS,
+      // row 4: bad money value
+      "2023-01-01;Test;User;Nej;Man;Sverige;2024;1990-01-01;Analyst;1234;NOT_A_NUMBER;0;0;SEK;117;100".split(
+        ";"
+      ),
+    ]
+    const result = validateImport({ headers: HEADERS, rows }, FULL_MAPPING, {})
+    const bad = result.issues.filter((i) => i.code === "unparsableMoney")
+    expect(bad.length).toBeGreaterThanOrEqual(1)
+    expect(bad.map((i) => i.row)).toContain(4)
+  })
+
+  it("no unparsableMoney when basicMonthly is not mapped", () => {
+    const mapping: DetectedMapping = {
+      map: { ...FULL_MAPPING.map, basicMonthly: undefined },
+      unmappedColumns: [],
+    }
+    const result = validateImport({ headers: HEADERS, rows: ROWS }, mapping, {})
+    expect(
+      result.issues.filter((i) => i.code === "unparsableMoney")
+    ).toHaveLength(0)
+  })
+})
+
+describe("validateImport — issues: blankGender", () => {
+  it("reports blankGender for a row with a blank gender cell", () => {
+    const rows: string[][] = [
+      ...ROWS,
+      // row 4: blank gender
+      "2023-01-01;Test;User;Nej;;Sverige;2024;1990-01-01;Analyst;1234;55000;0;0;SEK;118;100".split(
+        ";"
+      ),
+    ]
+    const result = validateImport({ headers: HEADERS, rows }, FULL_MAPPING, {})
+    const bad = result.issues.filter((i) => i.code === "blankGender")
+    expect(bad.length).toBeGreaterThanOrEqual(1)
+    expect(bad.map((i) => i.row)).toContain(4)
+  })
+})
+
+describe("validateImport — issues: genderNameMismatch", () => {
+  it("reports genderNameMismatch when firstName conflicts with gender (via opts.knownNames)", () => {
+    const rows: string[][] = [
+      // row 0: firstName 'Anna' but gender 'Man' — mismatch if Anna is a known female name
+      "2019-03-01;Anna;Svensson;Nej;Man;Sverige;2024;1985-06-12;Senior Analyst;1231;49788;0;5000;SEK;119;100".split(
+        ";"
+      ),
+    ]
+    const result = validateImport({ headers: HEADERS, rows }, FULL_MAPPING, {
+      knownNames: { Anna: "Kvinna" },
+    })
+    const mismatches = result.issues.filter(
+      (i) => i.code === "genderNameMismatch"
+    )
+    expect(mismatches.length).toBeGreaterThanOrEqual(1)
+    expect(mismatches[0]?.row).toBe(0)
+  })
+
+  it("does not report genderNameMismatch when opts.knownNames is absent", () => {
+    const rows: string[][] = [
+      "2019-03-01;Anna;Svensson;Nej;Man;Sverige;2024;1985-06-12;Senior Analyst;1231;49788;0;5000;SEK;119;100".split(
+        ";"
+      ),
+    ]
+    const result = validateImport({ headers: HEADERS, rows }, FULL_MAPPING, {})
+    expect(
+      result.issues.filter((i) => i.code === "genderNameMismatch")
+    ).toHaveLength(0)
+  })
+
+  it("does not report genderNameMismatch when name is not in knownNames list", () => {
+    const rows: string[][] = [
+      "2019-03-01;Zyx;Person;Nej;Man;Sverige;2024;1985-06-12;Senior Analyst;1231;49788;0;5000;SEK;120;100".split(
+        ";"
+      ),
+    ]
+    const result = validateImport({ headers: HEADERS, rows }, FULL_MAPPING, {
+      knownNames: { Anna: "Kvinna" },
+    })
+    expect(
+      result.issues.filter((i) => i.code === "genderNameMismatch")
+    ).toHaveLength(0)
+  })
+})
+
+describe("validateImport — clean fixture produces no issues", () => {
+  it("rows 0 and 1 from the clean fixture have no issues", () => {
+    const cleanRows = ROWS.slice(0, 2) // only Anna and Erik, no duplicates
+    const result = validateImport(
+      { headers: HEADERS, rows: cleanRows },
+      FULL_MAPPING,
+      {}
+    )
+    expect(result.issues).toHaveLength(0)
+    expect(result.blocking).toHaveLength(0)
+    expect(result.warnings).toHaveLength(0)
+  })
+})
