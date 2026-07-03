@@ -20,6 +20,7 @@
     "@workspace/constants": "workspace:*",
     "@workspace/core": "workspace:*",
     "@workspace/email": "workspace:*",
+    "@workspace/import": "workspace:*",
     "ai": "^7.0.2",
     "better-auth": "1.6.17",
     "convex": "^1.42.0",

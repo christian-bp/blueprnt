@@ -3,6 +3,12 @@ import { users, organizations } from "./accounts/tables"
 import { aiUsageEvents, aiUsageMonthly } from "./ai/tables"
 import { roleFamilies, roles, ratings } from "./assessment/tables"
 import { models, criteria } from "./evaluationModel/tables"
+import {
+  people,
+  personAssignments,
+  payRecords,
+  importMappingProfiles,
+} from "./people/tables"
 import { auditLog, suggestions, platformAuditLog } from "./shared/tables"
 
 // Minimal domain tables by design (ADR-0006): aggregates (anchors, band
@@ -27,4 +33,9 @@ export default defineSchema({
   suggestions,
   aiUsageEvents,
   aiUsageMonthly,
+  // people/pay bounded context (Plan 2, Task 1)
+  people,
+  personAssignments,
+  payRecords,
+  importMappingProfiles,
 })
