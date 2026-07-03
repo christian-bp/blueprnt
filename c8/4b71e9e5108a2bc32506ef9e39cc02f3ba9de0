@@ -1,0 +1,41 @@
+apps/dashboard/components/admin/manage-organization-dialog.tsx
+  s_6bff98b662648b::t_f563b94899c838 44
+  s_6bff98b662648b::t_cd04dfd23f6e11 75
+  s_6bff98b662648b::t_ba80b365a36903 112,122,132
+apps/dashboard/components/admin/create-user-dialog.tsx
+  s_6bff98b662648b::t_0a53a87d11512c 79
+  s_6bff98b662648b::t_bc8754c9a3d061 48
+  s_6bff98b662648b::t_223ead96155326 34
+apps/dashboard/components/admin/create-organization-dialog.tsx
+  s_6bff98b662648b::t_a39b2395effe02 37
+  s_6bff98b662648b::t_a80b59dc47f6ad 63
+  s_6bff98b662648b::t_fe66e5589b9c65 28
+apps/dashboard/components/admin/manage-user-organizations-dialog.tsx
+  s_6bff98b662648b::t_633c0ea1ae8c2a 41
+  s_6bff98b662648b::t_23cc7627e9ecaf 59
+  s_6bff98b662648b::t_578d771ab40947 93,103,117
+apps/dashboard/components/admin/create-user-dialog.test.tsx
+  s_6bff98b662648b::t_2f9d6327b396ab 96
+  s_6bff98b662648b::t_9de5aec8f95965 234-253
+  s_6bff98b662648b::t_c30d9b0ae66956 12-20
+apps/dashboard/components/admin/delete-user-dialog.tsx
+  s_6bff98b662648b::t_eecf107f551383 43
+  s_6bff98b662648b::t_4cddf27be4a5ec 79
+  s_6bff98b662648b::t_c9cb6b83d3ceca 20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "c84b71e9e5108a2bc32506ef9e39cc02f3ba9de0",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
