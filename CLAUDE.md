@@ -33,7 +33,7 @@ See also: `AGENTS.md` (Next.js version warning + agent-skills config) · `docs/P
 
 ## Architecture invariants (never break without a new ADR)
 
-- `packages/core` is **pure and deterministic**: no Convex/Next imports, no side effects. Score/band are always derived by the engine and never stored (ADR-0002).
+- `packages/core` is **pure and deterministic**: no Convex/Next/React imports, no side effects, no non-determinism (no clock, network, or randomness in its logic), so the engine runs identically on client and server. Score/band are always derived by the engine and never stored (ADR-0002). "Pure" does **not** mean dependency-free: a pure, deterministic, side-effect-free dependency is fine, and a well-tested library is preferred over reinventing it. The invariant is no framework coupling and no side effects, not an empty dependency list. This purity requirement is specific to `packages/core`; it is not a repo-wide rule.
 - **AI never touches the deterministic score/band path** and never auto-decides. AI output is a suggestion with provenance that HR confirms (ADR-0003). AI calls happen only in Convex actions, only against EU-hosted models.
 - **Never send personal data to the AI.** Prompts carry only role-level and organization-level content (job profiles, criteria, the model, company context such as industry, country, size). Never include an individual's name, salary, performance, contact details, or any other PII (Role ≠ Person; GDPR). A feature that would need person data to prompt does not call the AI.
 - **Role ≠ Person:** the `role`/`rating` tables must never carry person, salary, or performance fields. Role ids are permanent and never reused.
