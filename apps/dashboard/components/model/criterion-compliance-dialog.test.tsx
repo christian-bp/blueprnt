@@ -11,6 +11,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 
+vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
+
+import { toast } from "sonner"
+
 // Module-level variable: useAction returns a closure over this so the
 // component always calls the current mock. The describe-level beforeEach
 // reassigns it to a fresh vi.fn() so each test starts from a clean identity.
@@ -289,5 +293,36 @@ describe("CriterionComplianceDialog", () => {
   it("shows no Fill using AI button on an approved (locked) criterion", () => {
     renderDialog({ target: APPROVED_TARGET })
     expect(screen.queryByRole("button", { name: /Fill using AI/i })).toBeNull()
+  })
+
+  it("fires toast.success with complianceSaved key after a successful save", async () => {
+    // Use an inProgress target so the form is editable and Save appears once dirty
+    const inProgressTarget = {
+      criterionId: "c4" as Id<"criteria">,
+      name: "Scope",
+      purpose: "Existing purpose",
+      whyRelevant: "Existing relevance",
+      overlapNotes: null,
+      biasRisk: "low" as const,
+      biasComment: "Checked",
+      biasAction: null,
+      status: "inProgress" as const,
+      decidedByName: null,
+      decidedAt: null,
+    }
+    vi.mocked(toast.success).mockClear()
+    renderDialog({ target: inProgressTarget })
+    // Dirty a field to reveal the Save button
+    const purpose = screen.getByDisplayValue("Existing purpose")
+    fireEvent.change(purpose, { target: { value: "Updated purpose" } })
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /save/i })).toBeDefined()
+    )
+    fireEvent.click(screen.getByRole("button", { name: /save/i }))
+    await waitFor(() =>
+      expect(vi.mocked(toast.success)).toHaveBeenCalledWith(
+        messages.dashboard.toast.complianceSaved
+      )
+    )
   })
 })

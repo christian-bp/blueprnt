@@ -31,6 +31,7 @@ import {
 import { Textarea } from "@workspace/ui/components/textarea"
 import { useAction, useMutation } from "convex/react"
 import { useFormatter, useLocale, useTranslations } from "next-intl"
+import { toast } from "sonner"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { Spinner } from "@workspace/ui/components/spinner"
@@ -70,6 +71,7 @@ function CriterionComplianceForm({
   const t = useTranslations("dashboard.model.method")
   const tHelp = useTranslations("dashboard.help")
   const tAi = useTranslations("dashboard.ai")
+  const tToast = useTranslations("dashboard.toast")
   const tv = useTranslations("dashboard.validation")
   const format = useFormatter()
   const locale = useLocale()
@@ -130,6 +132,7 @@ function CriterionComplianceForm({
     setFailed(false)
     try {
       await save({ orgId, criterionId: target.criterionId, ...values })
+      toast.success(tToast("complianceSaved"))
       onClose()
     } catch {
       setFailed(true)
@@ -388,6 +391,7 @@ function CriterionComplianceForm({
                     criterionId: target.criterionId,
                     approved: false,
                   })
+                  toast.success(tToast("criterionReopened"))
                 }}
               >
                 {t("reopenCta")}
@@ -410,6 +414,7 @@ function CriterionComplianceForm({
                     criterionId: target.criterionId,
                     approved: true,
                   })
+                  toast.success(tToast("criterionApproved"))
                   onClose()
                 }}
               >
