@@ -17,8 +17,10 @@ function renderWidget(todo: Todo | undefined) {
 describe("TodoWidget", () => {
   afterEach(cleanup)
 
-  it("shows the empty state when there is nothing to do", () => {
+  it("keeps the heading with a zero count and an all-caught-up card when there is nothing to do", () => {
     renderWidget({ groups: [], total: 0 })
+    expect(screen.getByText("To do:")).toBeDefined()
+    expect(screen.getByText("0")).toBeDefined()
     expect(screen.getByText("You're all caught up")).toBeDefined()
   })
 
