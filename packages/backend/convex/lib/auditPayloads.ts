@@ -286,6 +286,14 @@ export interface AuditPayloads {
   }
   "criterion.approved": { criterionId: string; modelId: string }
   "criterion.reopened": { criterionId: string; modelId: string }
+  "person.created": { personId: string; changes: Changes }
+  "person.updated": { personId: string; changes: Changes }
+  "person.archived": { personId: string; changes: Changes }
+  // GDPR: no name/email in the erased payload; personId is the internal key only.
+  "person.erased": { personId: string; changes: Changes }
+  "assignment.set": { personId: string; roleId: string; changes: Changes }
+  "pay.salarySet": { personId: string; changes: Changes }
+  "pay.mappingSaved": { orgId: string; changes: Changes }
 }
 
 // Admin audit payloads, keyed 1:1 by every PLATFORM_AUDIT_EVENTS value. Also

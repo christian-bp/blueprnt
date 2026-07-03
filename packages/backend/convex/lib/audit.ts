@@ -37,6 +37,13 @@ export const AUDIT_EVENTS = {
   roleFamilyRemoved: "roleFamily.removed",
   criterionApproved: "criterion.approved",
   criterionReopened: "criterion.reopened",
+  personCreated: "person.created",
+  personUpdated: "person.updated",
+  personArchived: "person.archived",
+  personErased: "person.erased",
+  assignmentSet: "assignment.set",
+  salarySet: "pay.salarySet",
+  mappingProfileSaved: "pay.mappingSaved",
 } as const
 
 export type AuditEvent = (typeof AUDIT_EVENTS)[keyof typeof AUDIT_EVENTS]
@@ -48,6 +55,8 @@ export const AUDIT_CATEGORIES = [
   "organization",
   "member",
   "ai",
+  "people",
+  "pay",
 ] as const
 export type AuditCategory = (typeof AUDIT_CATEGORIES)[number]
 
@@ -68,6 +77,9 @@ export function categoryForEvent(type: string): AuditCategory | undefined {
   if (type.startsWith("member.") || type.startsWith("invitation."))
     return "member"
   if (type.startsWith("ai.")) return "ai"
+  if (type.startsWith("person.") || type.startsWith("assignment."))
+    return "people"
+  if (type.startsWith("pay.")) return "pay"
   return undefined
 }
 
@@ -354,6 +366,17 @@ export const ROLE_CREATE_FIELDS = [
   "familyId",
   "purpose",
   "responsibilities",
+] as const
+
+// The person fields captured for create/update/archive/erase diffs. EXCLUDES
+// name, email, and any other PII per ADR-0003 (Role != Person; GDPR). Only
+// structural and assignment-relevant fields are recorded.
+export const PERSON_AUDIT_FIELDS = [
+  "personId",
+  "status",
+  "trackKey",
+  "familyId",
+  "roleId",
 ] as const
 
 // One bulk `items` entry for a freshly created criterion (template/scratch/AI).

@@ -159,7 +159,9 @@
         "role": "Rooli",
         "organization": "Organisaatio",
         "member": "Jäsen",
-        "ai": "Tekoäly"
+        "ai": "Tekoäly",
+        "people": "Henkilot",
+        "pay": "Palkka"
       },
       "categoryFilterLabel": "Suodata luokan mukaan",
       "search": {
@@ -305,7 +307,14 @@
         "roleFamilyRenamed": "Rooliperhe nimetty uudelleen",
         "roleFamilyRemoved": "Rooliperhe poistettu",
         "criterionApproved": "Kriteeri hyväksytty",
-        "criterionReopened": "Kriteeri avattu uudelleen"
+        "criterionReopened": "Kriteeri avattu uudelleen",
+        "personCreated": "Henkilö lisatty",
+        "personUpdated": "Henkilö paivitetty",
+        "personArchived": "Henkilö arkistoitu",
+        "personErased": "Henkilö poistettu",
+        "assignmentSet": "Tehtava paivitetty",
+        "paySalarySet": "Palkka kirjattu",
+        "payMappingSaved": "Palkkakartoitus tallennettu"
       },
       "ai": {
         "modelDraft": "Mallin kriteerit: {count} lisätty",

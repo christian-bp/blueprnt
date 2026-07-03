@@ -159,7 +159,9 @@
         "role": "Rolle",
         "organization": "Organisation",
         "member": "Medlem",
-        "ai": "AI"
+        "ai": "AI",
+        "people": "Personer",
+        "pay": "Løn"
       },
       "categoryFilterLabel": "Filtrer efter kategori",
       "search": {
@@ -305,7 +307,14 @@
         "roleFamilyRenamed": "Rollefamilie omdøbt",
         "roleFamilyRemoved": "Rollefamilie fjernet",
         "criterionApproved": "Kriterium godkendt",
-        "criterionReopened": "Kriterium genåbnet"
+        "criterionReopened": "Kriterium genåbnet",
+        "personCreated": "Person tilføjet",
+        "personUpdated": "Person opdateret",
+        "personArchived": "Person arkiveret",
+        "personErased": "Person slettet",
+        "assignmentSet": "Tildeling opdateret",
+        "paySalarySet": "Lønning registreret",
+        "payMappingSaved": "Lønoversigt gemt"
       },
       "ai": {
         "modelDraft": "Modelkriterier: {count} tilføjet",

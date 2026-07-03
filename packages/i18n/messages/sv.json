@@ -159,7 +159,9 @@
         "role": "Roll",
         "organization": "Organisation",
         "member": "Medlem",
-        "ai": "AI"
+        "ai": "AI",
+        "people": "Personer",
+        "pay": "Lön"
       },
       "categoryFilterLabel": "Filtrera efter kategori",
       "search": {
@@ -305,7 +307,14 @@
         "roleFamilyRenamed": "Rollfamilj omdöpt",
         "roleFamilyRemoved": "Rollfamilj borttagen",
         "criterionApproved": "Kriterium godkänt",
-        "criterionReopened": "Kriterium återöppnat"
+        "criterionReopened": "Kriterium återöppnat",
+        "personCreated": "Person tillagd",
+        "personUpdated": "Person uppdaterad",
+        "personArchived": "Person arkiverad",
+        "personErased": "Person raderad",
+        "assignmentSet": "Tilldelning uppdaterad",
+        "paySalarySet": "Lön registrerad",
+        "payMappingSaved": "Lönemappning sparad"
       },
       "ai": {
         "modelDraft": "Modellkriterier: {count} tillagda",

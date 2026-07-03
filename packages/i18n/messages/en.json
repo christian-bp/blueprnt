@@ -159,7 +159,9 @@
         "role": "Role",
         "organization": "Organization",
         "member": "Member",
-        "ai": "AI"
+        "ai": "AI",
+        "people": "People",
+        "pay": "Pay"
       },
       "categoryFilterLabel": "Filter by category",
       "search": {
@@ -305,7 +307,14 @@
         "roleFamilyRenamed": "Role family renamed",
         "roleFamilyRemoved": "Role family removed",
         "criterionApproved": "Criterion approved",
-        "criterionReopened": "Criterion reopened"
+        "criterionReopened": "Criterion reopened",
+        "personCreated": "Person added",
+        "personUpdated": "Person updated",
+        "personArchived": "Person archived",
+        "personErased": "Person erased",
+        "assignmentSet": "Assignment updated",
+        "paySalarySet": "Salary recorded",
+        "payMappingSaved": "Pay mapping saved"
       },
       "ai": {
         "modelDraft": "Model criteria: {count} added",
