@@ -1,0 +1,39 @@
+apps/dashboard/components/roles/create-role-dialog.test.tsx
+  s_6bff98b662648b::t_99d42f3acfbf98 73-74
+  s_6bff98b662648b::t_9258778e9d8e82 12,14-15
+  s_6bff98b662648b::t_191960150bd828 13
+  s_6bff98b662648b::t_38ffbac541cbae 110
+  s_6bff98b662648b::t_9307de2c4b799d 111-112
+  s_6bff98b662648b::t_339b2db92447d1 44
+apps/dashboard/components/roles/create-role-dialog.tsx
+  s_6bff98b662648b::t_8b23d79e7286e6 125
+  s_6bff98b662648b::t_f6872c3156f5bf 77
+  s_6bff98b662648b::t_797e5faba9a1f4 34
+apps/dashboard/components/roles/role-profile-card.tsx
+  s_6bff98b662648b::t_b764307a6f5a00 27
+  s_6bff98b662648b::t_473636b54c9ec0 137
+  s_6bff98b662648b::t_eb7dc90a3ffa9e 72
+  s_6bff98b662648b::t_e07c97894e1043 384,386-387
+apps/dashboard/components/roles/role-anchor-control.tsx
+  s_6bff98b662648b::t_178268d487cc46 259
+  s_6bff98b662648b::t_926aeaa5ba95e4 229
+  s_6bff98b662648b::t_51229b2503e6d6 26
+  s_6bff98b662648b::t_ef6e4cc6029399 143
+  s_6bff98b662648b::t_8826f23eb6c65c 167
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "bfc4dbc2daa7e87cd4784a17bc44b2e651df57c1",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
