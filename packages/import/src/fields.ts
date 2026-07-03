@@ -116,7 +116,6 @@ const FIELDS = [
       "fte",
       "ftepercent",
       "sysselsattning",
-      "tjanstgoringsgrad",
     ],
   },
   {

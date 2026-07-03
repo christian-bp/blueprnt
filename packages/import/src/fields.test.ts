@@ -70,4 +70,14 @@ describe("CANONICAL_FIELDS", () => {
     expect(byKey.ftePercent).toContain("sysselsattningsgrad")
     expect(byKey.ftePercent).toContain("sysselssattningsgrad")
   })
+
+  it("each field's synonym list has no duplicates", () => {
+    for (const field of CANONICAL_FIELDS) {
+      const unique = new Set(field.synonyms)
+      expect(
+        unique.size,
+        `${field.key} has duplicate synonyms: ${field.synonyms.filter((s, i) => field.synonyms.indexOf(s) !== i).join(", ")}`
+      ).toBe(field.synonyms.length)
+    }
+  })
 })

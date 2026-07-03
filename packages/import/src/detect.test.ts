@@ -127,3 +127,29 @@ describe("detectColumns — shape-only fallback", () => {
     expect(result.map.gender?.confidence).toBeLessThan(0.7)
   })
 })
+
+describe("detectColumns — unmapped columns", () => {
+  it("reports the index of a junk column that has no synonym or shape match", () => {
+    // Build a header set that explicitly covers every canonical field (including department
+    // via 'Avdelning'), then append a junk column 'Notes' at index 17. With all fields
+    // claimed by named headers, the extra column has no field to absorb it and must land
+    // in unmappedColumns.
+    const headers = [
+      ...SWEDISH_HEADERS, // 16 known columns (indices 0-15)
+      "Avdelning", // index 16: maps department, leaving no unassigned text field
+      "Notes", // index 17: truly junk — no synonym and no unassigned field for shape-only
+    ]
+    const rows = SWEDISH_ROWS.map((row) => [
+      ...row,
+      "IT", // Avdelning value
+      "some free text", // Notes value
+    ])
+    const result = detectColumns({ headers, rows })
+    // The junk column must appear in unmappedColumns.
+    expect(result.unmappedColumns).toContain(17)
+    // Core mappings must still be correct.
+    expect(result.map.externalRef?.columnIndex).toBe(idx("Anstnr"))
+    expect(result.map.gender?.columnIndex).toBe(idx("Kon"))
+    expect(result.map.department?.columnIndex).toBe(16)
+  })
+})
