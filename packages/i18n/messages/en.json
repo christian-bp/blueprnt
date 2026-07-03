@@ -301,7 +301,7 @@
         "evening": "Good evening{hasName, select, yes{, {name}} other{}}"
       },
       "todo": {
-        "heading": "To do",
+        "heading": "To do:",
         "viewAll": "View all {count}",
         "evaluateProgress": "{rated}/{total} evaluated",
         "empty": {

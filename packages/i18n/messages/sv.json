@@ -301,7 +301,7 @@
         "evening": "God kväll{hasName, select, yes{, {name}} other{}}"
       },
       "todo": {
-        "heading": "Att göra",
+        "heading": "Att göra:",
         "viewAll": "Visa alla {count}",
         "evaluateProgress": "{rated}/{total} utvärderade",
         "empty": {

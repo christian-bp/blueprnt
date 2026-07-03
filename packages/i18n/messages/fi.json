@@ -301,7 +301,7 @@
         "evening": "Hyvää iltaa{hasName, select, yes{, {name}} other{}}"
       },
       "todo": {
-        "heading": "Tehtävät",
+        "heading": "Tehtävät:",
         "viewAll": "Näytä kaikki {count}",
         "evaluateProgress": "{rated}/{total} arvioitu",
         "empty": {

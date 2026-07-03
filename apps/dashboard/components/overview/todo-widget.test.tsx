@@ -62,7 +62,7 @@ describe("TodoWidget", () => {
     }
     renderWidget(todo)
     // Heading + total
-    expect(screen.getByText("To do")).toBeDefined()
+    expect(screen.getByText("To do:")).toBeDefined()
     expect(screen.getByText("7")).toBeDefined()
     // Group labels
     expect(screen.getByText("Evaluate these roles")).toBeDefined()
