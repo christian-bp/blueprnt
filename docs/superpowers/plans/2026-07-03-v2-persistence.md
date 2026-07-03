@@ -108,15 +108,17 @@ Also add `"@workspace/import": "workspace:*"` to `packages/backend/package.json`
 
 ---
 
-### Task 7: GDPR erasure + dev-teardown wiring
+### Task 7: GDPR erasure (admin erase-person) + dev-teardown wiring
 
-**Files:** Modify `convex/accounts/account.ts` (`eraseSelf`), `convex/platform/admin.ts` (`deleteUser`), `convex/accounts/mirrors.ts` (`removeSeededOrganization`). Test: extend `convex/accounts/account.test.ts` (mirror `eraseSelf` test 260-343) + a platform `deleteUser` test.
+**Decision (confirmed with the owner):** imported employees are payroll DATA, not app users, so erasure is a dedicated **admin action on a `personId`** — NOT the self-service `eraseSelf` / platform `deleteUser` flows (those erase app-user identities, which `people` rows are not linked to in V2). If a `people`↔app-user link is ever added, `eraseSelf` should then cascade to it (future, out of scope).
 
-**Pattern:** `platform/admin.ts:652-707` (cascade child deletes then parent then audit), `accounts/mirrors.ts:90-136` (dev teardown loop). Per `admin.ts:645`, erasure is recorded in the platform/admin log only; do NOT write org `auditLog` rows for the cascade deletes.
+**Files:** Create `convex/people/erase.ts` (the `erasePerson` mutation); Modify `convex/accounts/mirrors.ts` (`removeSeededOrganization`). Test: `convex/people/erase.test.ts` + extend the mirrors dev-teardown test.
 
-- In both erasure entry points, after the `users` mirror deletion and before the audit anonymization pass: for the erased person, hard-delete their `payRecords` → `personAssignments` → `people` rows (child-first), scoped by the person's org(s). (A `people` row is keyed to a person; resolve which `people` row(s) correspond to the erased identity — by the same identifier the flow already has, e.g. authUserId/email, or a `people.authUserId` link if we add one. If people are import-only and not app users, erasure by admin targets a `personId`; document the linkage: app-user erasure removes any `people` rows linked to that user; import-only people are erased via a dedicated admin path, out of scope here — note it.)
-- Extend `removeSeededOrganization`'s table loop to include `payRecords`, `personAssignments`, `people`, `importMappingProfiles` in child-first order.
-- [ ] Steps: TDD (seed person + assignment + pay via `t.run`; call `eraseSelf`; assert all three tables have no rows for that person and audit `actorName` is the tombstone; dev-teardown removes the new tables). Commit (`feat(people): hard-delete people/pay data on erasure and dev teardown`).
+**Pattern:** `platform/admin.ts:652-707` (cascade child deletes → parent → audit), `accounts/mirrors.ts:90-136` (dev-teardown table loop).
+
+- `erasePerson` (`adminMutation`): args `personId`; assert the person belongs to `ctx.orgId`; hard-delete child-first — all `payRecords`, then `personAssignments` (via `by_person`), then the `people` row (`ctx.db.delete`); audit `personErased` with IDs only (no name/email — GDPR). Returns `v.null()`. A true hard delete (right to erasure), not an archive.
+- Extend `removeSeededOrganization`'s table loop to also delete `payRecords`, `personAssignments`, `people`, `importMappingProfiles` (child-first order).
+- [ ] Steps: TDD (seed person + assignment + pay via `t.run`; call `erasePerson`; assert all three tables have no rows for that person and the `person.erased` audit payload carries only ids; cross-org — cannot erase another org's person; dev-teardown removes the four new tables). Commit (`feat(people): admin erase-person hard delete + dev teardown`).
 
 ---
 
@@ -124,7 +126,7 @@ Also add `"@workspace/import": "workspace:*"` to `packages/backend/package.json`
 - Spec coverage: implements spec §4.1-4.3 + §4.6 (the `people`/`personAssignments`/`payRecords`/`importMappingProfile` tables), the manual-salary path (§ decision 8), effective-dated history (§ decisions 7/8), audit (§4.5 multi-actor groundwork), and erasure/§9. Excludes the import ACTION (tokenize+validate+upsert+employeeCount — Plan 3), the wizard UI (Plan 4), and classification/level suggestion (Plan 5).
 - Invariants: Role ≠ Person (new context only), org-scoped, audit-every-mutation, hard-delete erasure, effective-dated-never-cached — all in Global Constraints and each task.
 - Open item to resolve during Task 4: the exact per-track level ladder (Lead 1-2 vs 1-3; reconcile against V1's live model, flagged in the spec §10). If undefined, accept a documented level-string set and leave a TODO referencing the spec open item.
-- Open item Task 7: the person↔app-user linkage for erasure (import-only people vs app users). Document the chosen linkage; a dedicated admin erase-person path for import-only people can be Plan 3+.
+- Task 7 erasure model (RESOLVED with the owner): imported people are data, not app users; erasure is a dedicated admin `erasePerson(personId)` + dev teardown, with no `eraseSelf` cascade (no people↔user link in V2).
 
 ## Follow-on plans
 3. **Import action + employeeCount:** a `"use node"` action that tokenizes + validates via `@workspace/import`, upserts people/assignments/pay (via Tasks 3-5 internal mutations), saves the mapping profile, and patches authoritative `organizations.employeeCount`; audit `import.completed`.

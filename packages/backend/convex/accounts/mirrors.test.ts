@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import { api, components, internal } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
 import {
   onInvitationCreate,
@@ -311,6 +312,136 @@ describe("lifecycle audit triggers", () => {
     await t.run(async (ctx) => {
       await onInvitationUpdate(ctx, invitation, invitation)
       expect(await ctx.db.query("auditLog").collect()).toHaveLength(0)
+    })
+  })
+})
+
+describe("removeSeededOrganization", () => {
+  // Seeds a minimal org with an admin, a person, an assignment, a pay record,
+  // and an import mapping profile; then tears it down and verifies every row
+  // is gone from all four people/pay tables.
+  it("clears payRecords, personAssignments, people, and importMappingProfiles for the org", async () => {
+    const t = initConvexTest()
+    const { orgId, userId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "hr@acme.se", name: "HR Person", role: "admin" }
+    )
+    await t.run(async (ctx) => {
+      await ctx.db.insert("organizations", {
+        orgId,
+        country: "se",
+        currency: "SEK",
+        language: "sv",
+        industry: "itTelecom",
+      })
+    })
+
+    const asAdmin = t.withIdentity({ subject: userId })
+
+    // Seed a person.
+    const personId = await asAdmin.mutation(api.people.people.createPerson, {
+      orgId,
+      displayName: "Anna Svensson",
+      gender: "Kvinna",
+      country: "SE",
+    })
+
+    // Seed a role (required for the assignment).
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Software Engineer",
+      function: "Engineering",
+      team: "Platform",
+      trackKey: "IC",
+    })
+
+    // Seed an assignment.
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId,
+      roleId,
+      level: "IC2",
+      levelSource: "confirmed",
+    })
+
+    // Seed a pay record.
+    await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId,
+      payYear: 2024,
+      basicMonthly: 50000,
+      currency: "SEK",
+      components: [],
+    })
+
+    // Seed an import mapping profile.
+    await t.run(async (ctx) => {
+      await ctx.db.insert("importMappingProfiles", {
+        orgId,
+        columnMap: { displayName: "Namn" },
+        updatedAt: Date.now(),
+      })
+    })
+
+    // Verify rows exist before teardown.
+    await t.run(async (ctx) => {
+      expect(
+        await ctx.db
+          .query("people")
+          .withIndex("by_org", (q) => q.eq("orgId", orgId))
+          .collect()
+      ).toHaveLength(1)
+      expect(
+        await ctx.db
+          .query("personAssignments")
+          .withIndex("by_org", (q) => q.eq("orgId", orgId))
+          .collect()
+      ).toHaveLength(1)
+      expect(
+        await ctx.db
+          .query("payRecords")
+          .withIndex("by_org", (q) => q.eq("orgId", orgId))
+          .collect()
+      ).toHaveLength(1)
+      expect(
+        await ctx.db
+          .query("importMappingProfiles")
+          .withIndex("by_org", (q) => q.eq("orgId", orgId))
+          .collect()
+      ).toHaveLength(1)
+    })
+
+    // Run the teardown.
+    await t.mutation(internal.accounts.mirrors.removeSeededOrganization, {
+      orgId,
+    })
+
+    // Every people/pay row must be gone.
+    await t.run(async (ctx) => {
+      expect(
+        await ctx.db
+          .query("people")
+          .withIndex("by_org", (q) => q.eq("orgId", orgId))
+          .collect()
+      ).toHaveLength(0)
+      expect(
+        await ctx.db
+          .query("personAssignments")
+          .withIndex("by_org", (q) => q.eq("orgId", orgId))
+          .collect()
+      ).toHaveLength(0)
+      expect(
+        await ctx.db
+          .query("payRecords")
+          .withIndex("by_org", (q) => q.eq("orgId", orgId))
+          .collect()
+      ).toHaveLength(0)
+      expect(
+        await ctx.db
+          .query("importMappingProfiles")
+          .withIndex("by_org", (q) => q.eq("orgId", orgId))
+          .collect()
+      ).toHaveLength(0)
     })
   })
 })

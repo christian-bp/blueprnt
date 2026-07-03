@@ -120,6 +120,24 @@ export const removeSeededOrganization = internalMutation({
       }
     }
 
+    // People/pay bounded context: payRecords and personAssignments are children
+    // of people rows; delete them first (child-first order), then people, then
+    // the import mapping profile. importMappingProfiles has no children.
+    for (const table of [
+      "payRecords",
+      "personAssignments",
+      "people",
+      "importMappingProfiles",
+    ] as const) {
+      const rows = await ctx.db
+        .query(table)
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      for (const row of rows) {
+        await ctx.db.delete(row._id)
+      }
+    }
+
     // Suggestions, organizations, auditLog.
     for (const table of ["suggestions", "organizations", "auditLog"] as const) {
       const rows = await ctx.db
