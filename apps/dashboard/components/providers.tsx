@@ -2,6 +2,7 @@
 
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react"
 import { ConvexReactClient } from "convex/react"
+import { Toaster } from "@workspace/ui/components/sonner"
 import { MotionConfig } from "motion/react"
 import type { ReactNode } from "react"
 import { authClient } from "@/lib/auth-client"
@@ -21,6 +22,8 @@ export function Providers(props: {
       {/* Honour the OS-level prefers-reduced-motion preference for all motion
           components in this app. */}
       <MotionConfig reducedMotion="user">{props.children}</MotionConfig>
+      {/* App-wide toast host: CRUD success/error notifications render here. */}
+      <Toaster />
     </ConvexBetterAuthProvider>
   )
 }
