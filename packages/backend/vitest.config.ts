@@ -7,6 +7,10 @@ export default mergeConfig(
     test: {
       environment: "edge-runtime",
       server: { deps: { inline: ["convex-test"] } },
+      // Drain in-flight scheduled functions after each test (see test.setup.ts)
+      // so background work (the unregistered Sweego deliver) does not log during
+      // worker teardown and fail the run with an unhandled rpc-teardown error.
+      setupFiles: ["./convex/test.setup.ts"],
       // Test-only flag read by component seed functions (betterAuth/testing.ts)
       // to fail closed on the real deployment. convex-test runs functions in
       // this same process, so process.env.CONVEX_TEST is visible to them here;
