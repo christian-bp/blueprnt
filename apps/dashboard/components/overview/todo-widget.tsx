@@ -65,12 +65,14 @@ export function TodoWidget({ todo }: { todo: Todo | undefined }) {
           <AccordionItem
             key={group.key}
             value={group.key}
-            className="rounded-lg border px-4"
+            className="rounded-xl border px-4"
           >
-            {/* A brand chevron at the START of the row: hide the accordion's
-                built-in right chevron (`[&>svg]:hidden` hits its direct-child
-                icons, not our nested one) and render our own, rotating on open. */}
-            <AccordionTrigger className="[&>svg]:hidden">
+            {/* A brand chevron at the START of the row: force-hide the built-in
+                right chevron with `[&>svg]:hidden!` (the `!` beats its
+                expanded-state `group-aria-expanded:inline`; `>` targets only its
+                direct-child icons, not our nested one) and render our own,
+                rotating 90deg on open. */}
+            <AccordionTrigger className="[&>svg]:hidden!">
               <span className="flex flex-1 items-center gap-2">
                 <HugeiconsIcon
                   icon={ArrowRight01Icon}
