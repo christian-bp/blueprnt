@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@ai-sdk/mistral": "^4.0.0",
-    "@christian-ek/sweego": "0.4.0",
+    "@christian-ek/sweego": "0.4.1",
     "@convex-dev/better-auth": "0.12.4",
     "@workspace/constants": "workspace:*",
     "@workspace/core": "workspace:*",

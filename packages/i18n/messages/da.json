@@ -1107,6 +1107,9 @@
           "invitation": "Invitation",
           "resetPassword": "Nulstilling af adgangskode",
           "welcome": "Velkommen",
+          "twoFactorCode": "Tofaktorkode",
+          "changeEmailConfirm": "Ændring af e-mail",
+          "verifyEmail": "E-mailbekræftelse",
           "all": "Alle typer"
         },
         "previous": "Forrige",
@@ -1114,6 +1117,7 @@
         "noSubject": "(intet emne)",
         "table": {
           "when": "Sendt",
+          "recipient": "Modtager",
           "subject": "Emne",
           "template": "Type",
           "status": "Status"

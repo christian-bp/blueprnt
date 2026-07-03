@@ -162,6 +162,7 @@ export function EmailLogSection() {
     <TableHeader>
       <TableRow>
         <TableHead className="w-44">{t("table.when")}</TableHead>
+        <TableHead className="w-52">{t("table.recipient")}</TableHead>
         <TableHead>{t("table.subject")}</TableHead>
         <TableHead className="w-36">{t("table.template")}</TableHead>
         <TableHead className="w-28">{t("table.status")}</TableHead>
@@ -244,6 +245,7 @@ export function EmailLogSection() {
             rows={PAGE_SIZE}
             columns={[
               { className: "w-28" },
+              { className: "w-40" },
               {},
               { className: "w-24" },
               { className: "h-5 w-16 rounded-full" },
@@ -285,6 +287,9 @@ export function EmailLogSection() {
                     dateStyle: "medium",
                     timeStyle: "short",
                   })}
+                </TableCell>
+                <TableCell className="truncate text-muted-foreground">
+                  {row.recipients.join(", ")}
                 </TableCell>
                 <TableCell className="truncate font-medium">
                   {row.subject ?? t("noSubject")}

@@ -1107,6 +1107,9 @@
           "invitation": "Kutsu",
           "resetPassword": "Salasanan palautus",
           "welcome": "Tervetuloa",
+          "twoFactorCode": "Kaksivaiheinen koodi",
+          "changeEmailConfirm": "Sähköpostin vaihto",
+          "verifyEmail": "Sähköpostin vahvistus",
           "all": "Kaikki tyypit"
         },
         "previous": "Edellinen",
@@ -1114,6 +1117,7 @@
         "noSubject": "(ei aihetta)",
         "table": {
           "when": "Lähetetty",
+          "recipient": "Vastaanottaja",
           "subject": "Aihe",
           "template": "Tyyppi",
           "status": "Tila"

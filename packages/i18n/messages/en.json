@@ -1107,6 +1107,9 @@
           "invitation": "Invitation",
           "resetPassword": "Password reset",
           "welcome": "Welcome",
+          "twoFactorCode": "Two-factor code",
+          "changeEmailConfirm": "Email change",
+          "verifyEmail": "Email verification",
           "all": "All types"
         },
         "previous": "Previous",
@@ -1114,6 +1117,7 @@
         "noSubject": "(no subject)",
         "table": {
           "when": "Sent",
+          "recipient": "Recipient",
           "subject": "Subject",
           "template": "Type",
           "status": "Status"

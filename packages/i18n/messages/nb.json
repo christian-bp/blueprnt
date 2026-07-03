@@ -1107,6 +1107,9 @@
           "invitation": "Invitasjon",
           "resetPassword": "Tilbakestilling av passord",
           "welcome": "Velkommen",
+          "twoFactorCode": "Tofaktorkode",
+          "changeEmailConfirm": "Endring av e-post",
+          "verifyEmail": "E-postbekreftelse",
           "all": "Alle typer"
         },
         "previous": "Forrige",
@@ -1114,6 +1117,7 @@
         "noSubject": "(uten emne)",
         "table": {
           "when": "Sendt",
+          "recipient": "Mottaker",
           "subject": "Emne",
           "template": "Type",
           "status": "Status"

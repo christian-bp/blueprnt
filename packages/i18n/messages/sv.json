@@ -1107,6 +1107,9 @@
           "invitation": "Inbjudan",
           "resetPassword": "Återställning av lösenord",
           "welcome": "Välkommen",
+          "twoFactorCode": "Tvåfaktorskod",
+          "changeEmailConfirm": "Ändring av e-post",
+          "verifyEmail": "Verifiering av e-post",
           "all": "Alla typer"
         },
         "previous": "Föregående",
@@ -1114,6 +1117,7 @@
         "noSubject": "(inget ämne)",
         "table": {
           "when": "Skickad",
+          "recipient": "Mottagare",
           "subject": "Ämne",
           "template": "Typ",
           "status": "Status"
