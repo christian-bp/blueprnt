@@ -319,12 +319,11 @@ describe("getSalaryHistory", () => {
 })
 
 describe("getCurrentSalary", () => {
-  it("returns the row with the greatest effectiveAt <= now", async () => {
+  it("returns the row with the greatest effectiveAt <= asOf", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
     const personId = await seedPerson(orgId, asAdmin)
 
-    // Past records: effectiveAt well in the past.
     await asAdmin.mutation(api.people.pay.setSalary, {
       orgId,
       personId,
@@ -342,13 +341,50 @@ describe("getCurrentSalary", () => {
       effectiveAt: 2_000,
     })
 
+    // asOf=3_000: both records are <= asOf, so the 2023 record wins.
     const current = await asAdmin.query(api.people.pay.getCurrentSalary, {
       orgId,
       personId,
+      asOf: 3_000,
     })
 
     expect(current).not.toBeNull()
-    // Greatest effectiveAt <= now is the 2023 record (effectiveAt=2000).
+    expect(current?.basicMonthly).toBe(45000)
+    expect(current?.payYear).toBe(2023)
+  })
+
+  it("excludes a record whose effectiveAt is strictly after asOf", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const personId = await seedPerson(orgId, asAdmin)
+
+    await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId,
+      payYear: 2023,
+      basicMonthly: 45000,
+      currency: "SEK",
+      effectiveAt: 1_000,
+    })
+    // This record is future-dated relative to the asOf we will use below.
+    await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId,
+      payYear: 2024,
+      basicMonthly: 60000,
+      currency: "SEK",
+      effectiveAt: 5_000,
+    })
+
+    // asOf=2_000 precedes the 2024 record (effectiveAt=5_000), so only the
+    // 2023 record qualifies.
+    const current = await asAdmin.query(api.people.pay.getCurrentSalary, {
+      orgId,
+      personId,
+      asOf: 2_000,
+    })
+
+    expect(current).not.toBeNull()
     expect(current?.basicMonthly).toBe(45000)
     expect(current?.payYear).toBe(2023)
   })
@@ -361,6 +397,7 @@ describe("getCurrentSalary", () => {
     const current = await asAdmin.query(api.people.pay.getCurrentSalary, {
       orgId,
       personId,
+      asOf: Date.now(),
     })
     expect(current).toBeNull()
   })
@@ -383,6 +420,7 @@ describe("getCurrentSalary", () => {
     const result = await asAdminB.query(api.people.pay.getCurrentSalary, {
       orgId: orgB,
       personId: personAId,
+      asOf: Date.now(),
     })
     expect(result).toBeNull()
   })

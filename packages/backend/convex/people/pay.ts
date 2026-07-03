@@ -198,17 +198,17 @@ export const getSalaryHistory = orgQuery({
   },
 })
 
-// Returns the pay record with the greatest effectiveAt <= now, i.e. the
-// currently active salary. Returns null when no records exist for this person
-// or when the person does not belong to this org.
+// Returns the pay record with the greatest effectiveAt <= asOf, i.e. the
+// salary active at the given reference timestamp. The caller supplies asOf
+// (live UI passes its current client time; a report passes its as-of date).
+// Returns null when no records exist for this person or when the person does
+// not belong to this org.
 export const getCurrentSalary = orgQuery({
-  args: { personId: v.id("people") },
+  args: { personId: v.id("people"), asOf: v.number() },
   returns: v.union(payRecordShape, v.null()),
-  handler: async (ctx, { personId }) => {
+  handler: async (ctx, { personId, asOf }) => {
     const person = await ctx.db.get(personId)
     if (person === null || person.orgId !== ctx.orgId) return null
-
-    const now = Date.now()
 
     const rows = await ctx.db
       .query("payRecords")
@@ -217,10 +217,10 @@ export const getCurrentSalary = orgQuery({
       )
       .collect()
 
-    // Find the row with the greatest effectiveAt that is <= now.
+    // Find the row with the greatest effectiveAt that is <= asOf.
     let current: Doc<"payRecords"> | null = null
     for (const row of rows) {
-      if (row.effectiveAt <= now) {
+      if (row.effectiveAt <= asOf) {
         if (current === null || row.effectiveAt > current.effectiveAt) {
           current = row
         }
