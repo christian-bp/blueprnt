@@ -7,3 +7,5 @@ export type {
 } from "./fields.js"
 
 export { tokenizeCsv } from "./tokenize.js"
+
+export { classifyColumn } from "./shape.js"
