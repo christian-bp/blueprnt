@@ -1,0 +1,27 @@
+docs/superpowers/specs/2026-07-03-v2-salary-import-design.md
+  s_6bff98b662648b::t_c13816723fee54 16
+  s_6bff98b662648b::t_fafeae398d4833 1-15,17-81,85-86,119-146,148-174
+  s_6bff98b662648b::t_34f3b7f0e44310 82-84
+  s_6bff98b662648b::t_7b57e27b9fc737 87-118
+  s_6bff98b662648b::t_6a35614664e175 147
+docs/superpowers/analysis/2026-07-01-v1-conformance-report.md
+  s_6bff98b662648b::t_48adad6db6bcff 10-11
+docs/go-live-checklist.md
+  s_6bff98b662648b::t_772652cfbcb41f 100-129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "e7564ab9e0375a117506e1ff132be842780b6345",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
