@@ -1,0 +1,39 @@
+packages/backend/convex/lib/auditPayloads.ts
+  s_6bff98b662648b::t_07603fdaf7ba8c 289-296
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_bd396fce112f41 162-164
+  s_6bff98b662648b::t_84eba7c216dabf 310-317
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_453da34f68cd1a 310-317
+  s_6bff98b662648b::t_afbb6256b390a2 162-164
+packages/backend/convex/lib/audit.ts
+  s_6bff98b662648b::t_74cd5da42be64d 371-381
+  s_6bff98b662648b::t_6b44ac88c6c7d5 40-46
+  s_6bff98b662648b::t_e55da738f1aa18 58-59
+  s_6bff98b662648b::t_2d05602e714cae 80-82
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_45d567d30758f4 310-317
+  s_6bff98b662648b::t_774a339f212031 162-164
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_02702b7281aa6c 162-164
+  s_6bff98b662648b::t_1a420bc4613b79 310-317
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_096952bf4e336d 162-164
+  s_6bff98b662648b::t_841167778f4265 310-317
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "031d70bc42997cbb46354cc84ebe8121ed095135",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
