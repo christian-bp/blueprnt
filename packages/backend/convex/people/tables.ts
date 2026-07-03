@@ -41,7 +41,7 @@ export const personAssignments = defineTable({
   orgId: v.string(),
   personId: v.id("people"),
   roleId: v.id("roles"),
-  // Per-individual seniority level within the role's track, e.g. "L3".
+  // Per-individual seniority level within the role's track, e.g. "IC3", "Lead-2", "M1".
   level: v.string(),
   // Whether the level was set by AI suggestion or confirmed by HR.
   levelSource: v.union(v.literal("suggested"), v.literal("confirmed")),

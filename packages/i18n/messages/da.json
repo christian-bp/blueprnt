@@ -1363,6 +1363,8 @@
     "roleExists": "En rolle med det navn findes allerede i denne familie.",
     "weightsUnbalanced": "Vægtningen skal stemme med pointbudgettet.",
     "tooFewCriteria": "En model skal have mindst 5 kriterier.",
-    "lastAdmin": "Du er den sidste administrator i en organisation. Kontakt support for at slette din konto."
+    "lastAdmin": "Du er den sidste administrator i en organisation. Kontakt support for at slette din konto.",
+    "invalidLevel": "Det niveau er ikke gyldigt for rollens spor.",
+    "invalidEffectiveDate": "Ikrafttrædelsesdatoen skal være efter den aktuelle tildelnings startdato."
   }
 }

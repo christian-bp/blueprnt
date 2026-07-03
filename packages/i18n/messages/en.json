@@ -1363,6 +1363,8 @@
     "roleExists": "A role with that name already exists in this family.",
     "weightsUnbalanced": "The weighting must match the point budget.",
     "tooFewCriteria": "A model needs at least 5 criteria.",
-    "lastAdmin": "You're the last administrator of an organization. Contact support to delete your account."
+    "lastAdmin": "You're the last administrator of an organization. Contact support to delete your account.",
+    "invalidLevel": "That level is not valid for this role's track.",
+    "invalidEffectiveDate": "The effective date must be after the current assignment's start date."
   }
 }

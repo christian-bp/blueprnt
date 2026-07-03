@@ -1363,6 +1363,8 @@
     "roleExists": "Samanniminen rooli on jo tässä perheessä.",
     "weightsUnbalanced": "Painotuksen on vastattava pistebudjettia.",
     "tooFewCriteria": "Malli tarvitsee vähintään 5 kriteeriä.",
-    "lastAdmin": "Olet organisaation viimeinen ylläpitäjä. Ota yhteyttä tukeen poistaaksesi tilisi."
+    "lastAdmin": "Olet organisaation viimeinen ylläpitäjä. Ota yhteyttä tukeen poistaaksesi tilisi.",
+    "invalidLevel": "Taso ei ole kelvollinen tämän roolin polulle.",
+    "invalidEffectiveDate": "Voimaantulopäivän on oltava nykyisen tehtävän alkamispäivän jälkeen."
   }
 }

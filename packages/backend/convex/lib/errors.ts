@@ -25,6 +25,7 @@ export const ERROR_CODES = {
   roleExists: "errors.roleExists",
   lastAdmin: "errors.lastAdmin",
   invalidLevel: "errors.invalidLevel",
+  invalidEffectiveDate: "errors.invalidEffectiveDate",
 } as const
 
 export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES]

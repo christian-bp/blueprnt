@@ -92,6 +92,16 @@ export const assignPersonToRole = orgMutation({
     const all = await loadPersonAssignments(ctx, ctx.orgId, args.personId)
     const openAssignment = all.find((a) => a.endedAt === undefined) ?? null
 
+    // Guard: assignments must be strictly chronological. If the new effectiveAt
+    // is <= the current open assignment's effectiveAt, closing the open row
+    // would set its endedAt <= its own effectiveAt, producing a broken interval
+    // (zero-length or inverted). Proper out-of-order timeline insertion
+    // (inserting a past assignment into the middle of the history) is deferred
+    // to V2-core; V1 assumes each new assignment is always the latest.
+    if (openAssignment !== null && effectiveAt <= openAssignment.effectiveAt) {
+      throw appError(ERROR_CODES.invalidEffectiveDate)
+    }
+
     const prevSnapshot: Record<string, unknown> = {
       roleId: null,
       level: null,

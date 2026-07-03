@@ -142,6 +142,48 @@ describe("assignPersonToRole", () => {
     ).rejects.toThrow(/errors.invalidLevel/)
   })
 
+  it("rejects a new assignment whose effectiveAt is <= the current open assignment's effectiveAt", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const { personId, roleId } = await seedPersonAndRole(orgId, asAdmin)
+
+    // First assignment at t=100.
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId,
+      roleId,
+      level: "IC1",
+      levelSource: "confirmed",
+      effectiveAt: 100,
+    })
+
+    // Re-assign at t=50 (retroactive): must be rejected because closing the
+    // open row at t=50 would set endedAt(50) <= effectiveAt(100), breaking
+    // the interval. Out-of-order insertion is deferred to V2-core.
+    await expect(
+      asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+        orgId,
+        personId,
+        roleId,
+        level: "IC2",
+        levelSource: "confirmed",
+        effectiveAt: 50,
+      })
+    ).rejects.toThrow(/errors.invalidEffectiveDate/)
+
+    // Also reject an equal timestamp (zero-length interval is also broken).
+    await expect(
+      asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+        orgId,
+        personId,
+        roleId,
+        level: "IC2",
+        levelSource: "confirmed",
+        effectiveAt: 100,
+      })
+    ).rejects.toThrow(/errors.invalidEffectiveDate/)
+  })
+
   it("closes the prior open assignment and opens a new one on re-assign", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
