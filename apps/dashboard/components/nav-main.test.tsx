@@ -89,9 +89,12 @@ describe("NavMain", () => {
     expect(activeOf("Model")).toBe("false")
   })
 
-  it("wires the active-page brand color onto the icon", () => {
+  it("fills the active page with the brand via --sidebar-primary", () => {
     renderNav()
     const homeButton = screen.getByText("Home").closest("button")
-    expect(homeButton?.className).toContain("data-active:[&_svg]:text-brand")
+    expect(homeButton?.className).toContain("data-active:bg-sidebar-primary")
+    expect(homeButton?.className).toContain(
+      "data-active:text-sidebar-primary-foreground"
+    )
   })
 })

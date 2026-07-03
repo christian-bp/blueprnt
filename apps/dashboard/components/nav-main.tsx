@@ -28,11 +28,13 @@ export type NavItem = {
 // breaks that (the icon jumps to center and the text blanks instantly).
 const RAIL_CLASSES = "group-data-[collapsible=icon]:p-1.5! [&_svg]:size-5"
 
-// The active page brands its icon in the identity rose (--brand) so the current
-// section reads at a glance, even in the collapsed icon rail. data-active is set
-// from isActive by SidebarMenuButton; the label keeps the accent foreground and
-// only the glyph takes the brand color.
-const ACTIVE_ICON_CLASSES = "data-active:[&_svg]:text-brand"
+// The active page fills its row with the brand via the --sidebar-primary token
+// (a proper filled "primary" treatment), rather than forcing the icon color.
+// data-active is set from isActive by SidebarMenuButton; we override its default
+// sidebar-accent active + hover styles to the sidebar-primary pair, so the label
+// and glyph sit in brand-foreground on a brand pill (also on hover).
+const ACTIVE_CLASSES =
+  "data-active:bg-sidebar-primary data-active:text-sidebar-primary-foreground data-active:hover:bg-sidebar-primary data-active:hover:text-sidebar-primary-foreground"
 
 // Primary navigation: flat leaf links. A leaf is active on an exact URL match
 // or a sub-path (so /work does not match /workspace); the optional `match`
@@ -58,7 +60,7 @@ export function NavMain({ items }: { items: NavItem[] }) {
                 asChild
                 isActive={itemActive(item)}
                 tooltip={item.title}
-                className={`${RAIL_CLASSES} ${ACTIVE_ICON_CLASSES}`}
+                className={`${RAIL_CLASSES} ${ACTIVE_CLASSES}`}
               >
                 <Link href={item.url}>
                   {item.icon}
