@@ -1,0 +1,29 @@
+docs/go-live-checklist.md
+  s_6bff98b662648b::t_24132674742050 92
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_9afd5303e0e58b 103-137
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_9fda53d6f107d5 103-137
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_6c103bb574253b 103-137
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_1c5292473038f0 103-137
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_d35319ac53b4f3 103-137
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "d8e9db910c1e233d647308b0e4a6db751b070228",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
