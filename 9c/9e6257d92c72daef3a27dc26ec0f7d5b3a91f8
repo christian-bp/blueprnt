@@ -1,0 +1,23 @@
+apps/dashboard/components/overview/todo-widget.tsx
+  s_6bff98b662648b::t_cad7327d115661 30,37
+  s_6bff98b662648b::t_1b5988c7c21daf 29,31-36,38-47,50-64,70
+  s_6bff98b662648b::t_357aaa30c9f672 4-7
+apps/dashboard/components/overview/todo-widget.test.tsx
+  s_6bff98b662648b::t_a15562b60eab65 20,22-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "9c9e6257d92c72daef3a27dc26ec0f7d5b3a91f8",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
