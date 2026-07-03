@@ -1,0 +1,19 @@
+apps/dashboard/components/overview/todo-widget.tsx
+  s_6bff98b662648b::t_1cad85b43a3cad 4,51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "92bb89db27a8f3e1d48983db64b31def14fe6d84",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
