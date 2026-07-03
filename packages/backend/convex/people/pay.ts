@@ -1,4 +1,5 @@
 import { v } from "convex/values"
+import { totalMonthlyComp } from "@workspace/constants"
 import type { Doc, Id } from "../_generated/dataModel"
 import type { QueryCtx } from "../_generated/server"
 import { internalMutation } from "../_generated/server"
@@ -7,9 +8,9 @@ import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 
 // The pay audit fields: ONLY non-sensitive fields are captured in the audit
-// trail. Salary amounts (basicMonthly, variable, benefitInKind) are NEVER
-// included (GDPR / Role != Person). The audit records THAT a salary was set
-// for a person/year/source, never the value.
+// trail. Salary amounts (basicMonthly, components) are NEVER included
+// (GDPR / Role != Person). The audit records THAT a salary was set for a
+// person/year/source, never the value.
 const PAY_AUDIT_FIELDS = ["payYear", "source", "currency"] as const
 
 // Tenant-isolation assert for a point-read: throws notFound when the person
@@ -25,6 +26,12 @@ async function requireOwnPerson(
   return person
 }
 
+// Validator for a single compensation component.
+const payComponentValidator = v.object({
+  kind: v.string(),
+  monthlyAmount: v.number(),
+})
+
 // Wire shape returned by getSalaryHistory and getCurrentSalary.
 const payRecordShape = v.object({
   payRecordId: v.id("payRecords"),
@@ -33,8 +40,10 @@ const payRecordShape = v.object({
   source: v.union(v.literal("import"), v.literal("manual")),
   basicMonthly: v.number(),
   currency: v.string(),
-  variable: v.union(v.number(), v.null()),
-  benefitInKind: v.union(v.number(), v.null()),
+  components: v.array(payComponentValidator),
+  // Derived: basicMonthly + sum(components[*].monthlyAmount). Computed on read,
+  // never stored, so it stays consistent without a migration.
+  totalMonthlyComp: v.number(),
   effectiveAt: v.number(),
   createdAt: v.number(),
 })
@@ -47,8 +56,8 @@ function toPayRecordShape(doc: Doc<"payRecords">) {
     source: doc.source,
     basicMonthly: doc.basicMonthly,
     currency: doc.currency,
-    variable: doc.variable ?? null,
-    benefitInKind: doc.benefitInKind ?? null,
+    components: doc.components,
+    totalMonthlyComp: totalMonthlyComp(doc.basicMonthly, doc.components),
     effectiveAt: doc.effectiveAt,
     createdAt: doc.createdAt,
   }
@@ -66,8 +75,7 @@ export const setSalary = orgMutation({
     payYear: v.number(),
     basicMonthly: v.number(),
     currency: v.string(),
-    variable: v.optional(v.number()),
-    benefitInKind: v.optional(v.number()),
+    components: v.array(payComponentValidator),
     effectiveAt: v.optional(v.number()),
   },
   returns: v.id("payRecords"),
@@ -85,16 +93,13 @@ export const setSalary = orgMutation({
       source: "manual",
       basicMonthly: args.basicMonthly,
       currency: args.currency,
-      ...(args.variable !== undefined ? { variable: args.variable } : {}),
-      ...(args.benefitInKind !== undefined
-        ? { benefitInKind: args.benefitInKind }
-        : {}),
+      components: args.components,
       effectiveAt,
       createdAt,
     })
 
     // GDPR: the audit payload contains ONLY non-sensitive fields. Salary
-    // amounts are never stored in the audit trail.
+    // amounts (basicMonthly, components) are never stored in the audit trail.
     const snapshot: Record<string, unknown> = {
       payYear: args.payYear,
       source: "manual",
@@ -124,8 +129,7 @@ export const appendSalary = internalMutation({
     payYear: v.number(),
     basicMonthly: v.number(),
     currency: v.string(),
-    variable: v.optional(v.number()),
-    benefitInKind: v.optional(v.number()),
+    components: v.array(payComponentValidator),
     effectiveAt: v.optional(v.number()),
   },
   returns: v.id("payRecords"),
@@ -146,10 +150,7 @@ export const appendSalary = internalMutation({
       source: "import",
       basicMonthly: args.basicMonthly,
       currency: args.currency,
-      ...(args.variable !== undefined ? { variable: args.variable } : {}),
-      ...(args.benefitInKind !== undefined
-        ? { benefitInKind: args.benefitInKind }
-        : {}),
+      components: args.components,
       effectiveAt,
       createdAt,
     })

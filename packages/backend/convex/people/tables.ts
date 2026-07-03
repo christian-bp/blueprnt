@@ -54,9 +54,10 @@ export const personAssignments = defineTable({
   .index("by_person", ["orgId", "personId"])
   .index("by_role", ["orgId", "roleId"])
 
-// Annual pay record per person. One row per (person, payYear, source). The
-// combination of basicMonthly + variable + benefitInKind gives total cash
-// compensation for pay-gap analysis under the EU Pay Transparency Directive.
+// Annual pay record per person. One row per (person, payYear, source). Total
+// compensation for pay-gap analysis under the EU Pay Transparency Directive
+// is derived as basicMonthly + sum(components[*].monthlyAmount); the derived
+// value is never stored (computed on read by totalMonthlyComp in pay.ts).
 export const payRecords = defineTable({
   orgId: v.string(),
   personId: v.id("people"),
@@ -64,14 +65,19 @@ export const payRecords = defineTable({
   payYear: v.number(),
   // Whether this record came from a payroll import or was entered manually.
   source: v.union(v.literal("import"), v.literal("manual")),
-  // Monthly basic salary (fast lön) in the org's currency.
+  // Monthly basic salary (fast lön) in the org's currency. This is the Art. 9
+  // basic-salary component, distinct from variable/bonus/benefit components.
   basicMonthly: v.number(),
   // ISO 4217 currency code, e.g. "SEK".
   currency: v.string(),
-  // Annual variable pay (rörlig lön), if any.
-  variable: v.optional(v.number()),
-  // Annual benefit-in-kind value (förmåner), if any.
-  benefitInKind: v.optional(v.number()),
+  // Extensible list of additional monthly compensation components beyond basic
+  // salary. Each component carries a kind (free string, drawn from
+  // PAY_COMPONENT_KINDS in @workspace/constants but not schema-constrained so
+  // new kinds can be added without a migration) and its monthly amount.
+  // An empty array is valid (basic salary only).
+  components: v.array(
+    v.object({ kind: v.string(), monthlyAmount: v.number() })
+  ),
   // Epoch ms: when this pay record became effective.
   effectiveAt: v.number(),
   // Epoch ms: when this record was created in the system (for audit trail).

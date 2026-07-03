@@ -48,6 +48,7 @@ describe("setSalary", () => {
       payYear: 2024,
       basicMonthly: 50000,
       currency: "SEK",
+      components: [],
     })
 
     await t.run(async (ctx) => {
@@ -59,8 +60,7 @@ describe("setSalary", () => {
       expect(row?.source).toBe("manual")
       expect(row?.basicMonthly).toBe(50000)
       expect(row?.currency).toBe("SEK")
-      expect(row?.variable).toBeUndefined()
-      expect(row?.benefitInKind).toBeUndefined()
+      expect(row?.components).toEqual([])
       expect(row?.effectiveAt).toBeTypeOf("number")
       expect(row?.createdAt).toBeTypeOf("number")
 
@@ -76,15 +76,19 @@ describe("setSalary", () => {
 
       // GDPR: the audit payload must NEVER contain salary amounts.
       expect(payload?.basicMonthly).toBeUndefined()
-      expect(payload?.variable).toBeUndefined()
-      expect(payload?.benefitInKind).toBeUndefined()
+      expect(payload?.components).toBeUndefined()
     })
   })
 
-  it("stores optional variable and benefitInKind when provided", async () => {
+  it("stores components when provided and round-trips them correctly", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
     const personId = await seedPerson(orgId, asAdmin)
+
+    const inputComponents = [
+      { kind: "variable", monthlyAmount: 1000 },
+      { kind: "benefitInKind", monthlyAmount: 500 },
+    ]
 
     const payRecordId = await asAdmin.mutation(api.people.pay.setSalary, {
       orgId,
@@ -92,14 +96,12 @@ describe("setSalary", () => {
       payYear: 2024,
       basicMonthly: 60000,
       currency: "SEK",
-      variable: 12000,
-      benefitInKind: 3000,
+      components: inputComponents,
     })
 
     await t.run(async (ctx) => {
       const row = await ctx.db.get(payRecordId)
-      expect(row?.variable).toBe(12000)
-      expect(row?.benefitInKind).toBe(3000)
+      expect(row?.components).toEqual(inputComponents)
     })
   })
 
@@ -115,6 +117,7 @@ describe("setSalary", () => {
       payYear: 2023,
       basicMonthly: 45000,
       currency: "SEK",
+      components: [],
       effectiveAt: ts,
     })
 
@@ -135,6 +138,7 @@ describe("setSalary", () => {
       payYear: 2023,
       basicMonthly: 45000,
       currency: "SEK",
+      components: [],
       effectiveAt: 1_000,
     })
 
@@ -144,6 +148,7 @@ describe("setSalary", () => {
       payYear: 2024,
       basicMonthly: 50000,
       currency: "SEK",
+      components: [],
       effectiveAt: 2_000,
     })
 
@@ -176,6 +181,7 @@ describe("setSalary", () => {
         payYear: 2024,
         basicMonthly: 50000,
         currency: "SEK",
+        components: [],
       })
     ).rejects.toThrow(/errors.notFound/)
   })
@@ -194,6 +200,7 @@ describe("appendSalary (internal, import path)", () => {
       payYear: 2024,
       basicMonthly: 55000,
       currency: "SEK",
+      components: [],
       effectiveAt: 1_700_000_000_000,
     })
 
@@ -215,8 +222,7 @@ describe("appendSalary (internal, import path)", () => {
 
       // GDPR: no salary amounts in the audit trail.
       expect(payload?.basicMonthly).toBeUndefined()
-      expect(payload?.variable).toBeUndefined()
-      expect(payload?.benefitInKind).toBeUndefined()
+      expect(payload?.components).toBeUndefined()
     })
   })
 
@@ -235,6 +241,7 @@ describe("appendSalary (internal, import path)", () => {
         payYear: 2024,
         basicMonthly: 50000,
         currency: "SEK",
+        components: [],
       })
     ).rejects.toThrow(/errors.notFound/)
   })
@@ -252,6 +259,7 @@ describe("getSalaryHistory", () => {
       payYear: 2022,
       basicMonthly: 40000,
       currency: "SEK",
+      components: [],
       effectiveAt: 1_000,
     })
     await asAdmin.mutation(api.people.pay.setSalary, {
@@ -260,6 +268,7 @@ describe("getSalaryHistory", () => {
       payYear: 2024,
       basicMonthly: 50000,
       currency: "SEK",
+      components: [{ kind: "variable", monthlyAmount: 2000 }],
       effectiveAt: 3_000,
     })
     await asAdmin.mutation(api.people.pay.setSalary, {
@@ -268,6 +277,7 @@ describe("getSalaryHistory", () => {
       payYear: 2023,
       basicMonthly: 45000,
       currency: "SEK",
+      components: [],
       effectiveAt: 2_000,
     })
 
@@ -280,7 +290,11 @@ describe("getSalaryHistory", () => {
     // Most recent effectiveAt first.
     expect(history[0]?.effectiveAt).toBe(3_000)
     expect(history[0]?.basicMonthly).toBe(50000)
+    // Derived totalMonthlyComp: 50000 + 2000.
+    expect(history[0]?.totalMonthlyComp).toBe(52000)
     expect(history[1]?.effectiveAt).toBe(2_000)
+    // No components: totalMonthlyComp equals basicMonthly.
+    expect(history[1]?.totalMonthlyComp).toBe(45000)
     expect(history[2]?.effectiveAt).toBe(1_000)
   })
 
@@ -308,6 +322,7 @@ describe("getSalaryHistory", () => {
       payYear: 2024,
       basicMonthly: 50000,
       currency: "SEK",
+      components: [],
     })
 
     const result = await asAdminB.query(api.people.pay.getSalaryHistory, {
@@ -330,6 +345,7 @@ describe("getCurrentSalary", () => {
       payYear: 2022,
       basicMonthly: 40000,
       currency: "SEK",
+      components: [],
       effectiveAt: 1_000,
     })
     await asAdmin.mutation(api.people.pay.setSalary, {
@@ -338,6 +354,7 @@ describe("getCurrentSalary", () => {
       payYear: 2023,
       basicMonthly: 45000,
       currency: "SEK",
+      components: [{ kind: "bonus", monthlyAmount: 3000 }],
       effectiveAt: 2_000,
     })
 
@@ -351,6 +368,8 @@ describe("getCurrentSalary", () => {
     expect(current).not.toBeNull()
     expect(current?.basicMonthly).toBe(45000)
     expect(current?.payYear).toBe(2023)
+    // Derived totalMonthlyComp: 45000 + 3000.
+    expect(current?.totalMonthlyComp).toBe(48000)
   })
 
   it("excludes a record whose effectiveAt is strictly after asOf", async () => {
@@ -364,6 +383,7 @@ describe("getCurrentSalary", () => {
       payYear: 2023,
       basicMonthly: 45000,
       currency: "SEK",
+      components: [],
       effectiveAt: 1_000,
     })
     // This record is future-dated relative to the asOf we will use below.
@@ -373,6 +393,7 @@ describe("getCurrentSalary", () => {
       payYear: 2024,
       basicMonthly: 60000,
       currency: "SEK",
+      components: [],
       effectiveAt: 5_000,
     })
 
@@ -387,6 +408,7 @@ describe("getCurrentSalary", () => {
     expect(current).not.toBeNull()
     expect(current?.basicMonthly).toBe(45000)
     expect(current?.payYear).toBe(2023)
+    expect(current?.totalMonthlyComp).toBe(45000)
   })
 
   it("returns null when no pay records exist", async () => {
@@ -414,6 +436,7 @@ describe("getCurrentSalary", () => {
       payYear: 2024,
       basicMonthly: 50000,
       currency: "SEK",
+      components: [],
       effectiveAt: 1_000,
     })
 
@@ -427,7 +450,7 @@ describe("getCurrentSalary", () => {
 })
 
 describe("GDPR: pay.salarySet audit payload is amount-free", () => {
-  it("setSalary audit row contains no basicMonthly, variable, or benefitInKind", async () => {
+  it("setSalary audit row contains no basicMonthly or components amounts", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
     const personId = await seedPerson(orgId, asAdmin)
@@ -438,8 +461,10 @@ describe("GDPR: pay.salarySet audit payload is amount-free", () => {
       payYear: 2024,
       basicMonthly: 99999,
       currency: "SEK",
-      variable: 20000,
-      benefitInKind: 5000,
+      components: [
+        { kind: "variable", monthlyAmount: 20000 },
+        { kind: "benefitInKind", monthlyAmount: 5000 },
+      ],
     })
 
     await t.run(async (ctx) => {
@@ -456,13 +481,13 @@ describe("GDPR: pay.salarySet audit payload is amount-free", () => {
 
       // Top-level payload must not expose amounts.
       expect(payload).not.toHaveProperty("basicMonthly")
-      expect(payload).not.toHaveProperty("variable")
-      expect(payload).not.toHaveProperty("benefitInKind")
+      expect(payload).not.toHaveProperty("components")
+      expect(payload).not.toHaveProperty("totalMonthlyComp")
 
       // The changes diff must not expose amounts either.
       expect(changes).not.toHaveProperty("basicMonthly")
-      expect(changes).not.toHaveProperty("variable")
-      expect(changes).not.toHaveProperty("benefitInKind")
+      expect(changes).not.toHaveProperty("components")
+      expect(changes).not.toHaveProperty("totalMonthlyComp")
 
       // Non-sensitive fields are captured.
       expect(changes).toHaveProperty("payYear")
@@ -483,8 +508,10 @@ describe("GDPR: pay.salarySet audit payload is amount-free", () => {
       payYear: 2024,
       basicMonthly: 88888,
       currency: "EUR",
-      variable: 15000,
-      benefitInKind: 2000,
+      components: [
+        { kind: "variable", monthlyAmount: 15000 },
+        { kind: "benefitInKind", monthlyAmount: 2000 },
+      ],
     })
 
     await t.run(async (ctx) => {
@@ -500,11 +527,11 @@ describe("GDPR: pay.salarySet audit payload is amount-free", () => {
       const changes = payload?.changes as Record<string, unknown> | undefined
 
       expect(payload).not.toHaveProperty("basicMonthly")
-      expect(payload).not.toHaveProperty("variable")
-      expect(payload).not.toHaveProperty("benefitInKind")
+      expect(payload).not.toHaveProperty("components")
+      expect(payload).not.toHaveProperty("totalMonthlyComp")
       expect(changes).not.toHaveProperty("basicMonthly")
-      expect(changes).not.toHaveProperty("variable")
-      expect(changes).not.toHaveProperty("benefitInKind")
+      expect(changes).not.toHaveProperty("components")
+      expect(changes).not.toHaveProperty("totalMonthlyComp")
     })
   })
 })

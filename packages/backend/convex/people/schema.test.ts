@@ -67,6 +67,7 @@ describe("people schema", () => {
         source: "import",
         basicMonthly: 45_000,
         currency: "SEK",
+        components: [],
         effectiveAt: 1_700_000_000_000,
         createdAt: 1_700_000_000_000,
       })

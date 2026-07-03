@@ -19,3 +19,8 @@ export {
   type SuggestionKind,
 } from "./suggestions"
 export { TRACK_LEVELS, isValidLevelForTrack } from "./trackLevels"
+export {
+  PAY_COMPONENT_KINDS,
+  type PayComponentKind,
+  totalMonthlyComp,
+} from "./pay"
