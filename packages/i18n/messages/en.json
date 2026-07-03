@@ -302,6 +302,7 @@
       },
       "todo": {
         "heading": "To do:",
+        "groupCount": "{count, plural, one {# item} other {# items}}",
         "viewAll": "View all {count}",
         "evaluateProgress": "{rated}/{total} evaluated",
         "empty": {

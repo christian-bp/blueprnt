@@ -302,6 +302,7 @@
       },
       "todo": {
         "heading": "Å gjøre:",
+        "groupCount": "{count} stk",
         "viewAll": "Vis alle {count}",
         "evaluateProgress": "{rated}/{total} vurdert",
         "empty": {

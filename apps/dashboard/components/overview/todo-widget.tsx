@@ -1,7 +1,7 @@
 // apps/dashboard/components/overview/todo-widget.tsx
 "use client"
 
-import { ArrowDown02Icon } from "@hugeicons/core-free-icons"
+import { ArrowDown02Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Accordion,
@@ -67,11 +67,20 @@ export function TodoWidget({ todo }: { todo: Todo | undefined }) {
             value={group.key}
             className="rounded-lg border px-4"
           >
-            <AccordionTrigger>
-              <span className="flex flex-1 items-center justify-between pr-2">
-                {t(`groups.${group.key}`)}
-                <span className="text-muted-foreground tabular-nums">
-                  {group.count}
+            {/* A brand chevron at the START of the row: hide the accordion's
+                built-in right chevron (`[&>svg]:hidden` hits its direct-child
+                icons, not our nested one) and render our own, rotating on open. */}
+            <AccordionTrigger className="[&>svg]:hidden">
+              <span className="flex flex-1 items-center gap-2">
+                <HugeiconsIcon
+                  icon={ArrowRight01Icon}
+                  strokeWidth={2}
+                  aria-hidden="true"
+                  className="size-4 shrink-0 text-brand transition-transform group-aria-expanded/accordion-trigger:rotate-90"
+                />
+                <span>{t(`groups.${group.key}`)}</span>
+                <span className="ml-auto text-muted-foreground tabular-nums">
+                  {t("groupCount", { count: group.count })}
                 </span>
               </span>
             </AccordionTrigger>

@@ -72,5 +72,7 @@ describe("TodoWidget", () => {
     expect(screen.getByText("3/9 evaluated")).toBeDefined()
     // Over-cap -> "View all 6"
     expect(screen.getByText("View all 6")).toBeDefined()
+    // Group count carries a unit (en pluralizes; Nordic use st/stk/kpl).
+    expect(screen.getByText("6 items")).toBeDefined()
   })
 })

@@ -302,6 +302,7 @@
       },
       "todo": {
         "heading": "Tehtävät:",
+        "groupCount": "{count} kpl",
         "viewAll": "Näytä kaikki {count}",
         "evaluateProgress": "{rated}/{total} arvioitu",
         "empty": {
