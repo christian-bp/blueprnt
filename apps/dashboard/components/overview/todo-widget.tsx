@@ -1,7 +1,7 @@
 // apps/dashboard/components/overview/todo-widget.tsx
 "use client"
 
-import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
+import { ArrowRight02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Accordion,
@@ -48,7 +48,7 @@ export function TodoWidget({ todo }: { todo: Todo | undefined }) {
         {/* Decorative flourish matching the reference; becomes a link to the
             dedicated to-do page in V2. */}
         <HugeiconsIcon
-          icon={ArrowRight01Icon}
+          icon={ArrowRight02Icon}
           strokeWidth={2}
           aria-hidden="true"
           className="size-5 text-brand"
