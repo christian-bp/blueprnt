@@ -1,0 +1,32 @@
+packages/backend/convex/people/assignments.ts
+  s_6bff98b662648b::t_e1537b545145e6 1-171
+packages/constants/src/trackLevels.ts
+  s_6bff98b662648b::t_d7df2396bf57b6 1-17
+packages/backend/convex/people/assignments.test.ts
+  s_6bff98b662648b::t_69a0ea7bcfb831 1-36,44-50,52-90,92-114,116-131,133-147,149-189,191-223,225-258,260-271,274-307,310-343,346,348-365,368,370-384
+  s_6bff98b662648b::t_183b255eac787c 51,91,115,132,148,190,224,259
+  s_6bff98b662648b::t_7b5eacd5b7a8ec 37-43,272-273,308-309,344-345,366-367
+  s_6bff98b662648b::t_a9d86e9e2025d4 347,369
+packages/constants/src/trackLevels.test.ts
+  s_6bff98b662648b::t_a52502995a783c 1-62
+packages/backend/convex/lib/errors.ts
+  s_6bff98b662648b::t_91b473960b67cb 27
+packages/constants/src/index.ts
+  s_6bff98b662648b::t_ddced55de0acb9 21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "789c4013c433c540efb9fd1d5d855e4405afb5f5",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
