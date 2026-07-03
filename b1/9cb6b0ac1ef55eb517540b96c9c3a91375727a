@@ -1,0 +1,27 @@
+packages/backend/convex/lib/audit.ts
+  s_6bff98b662648b::t_04bebedd233c0a 371-374,376-383
+packages/backend/convex/people/people.ts
+  s_6bff98b662648b::t_9023bb880dd479 1-42,44-322
+  s_6bff98b662648b::t_2ec31a51dcdc0c 43
+packages/backend/convex/people/people.test.ts
+  s_6bff98b662648b::t_2ec31a51dcdc0c 163-164,213-214,316-319,396-399,440-441
+  s_6bff98b662648b::t_df2ba9e795b8aa 1-162,165-212,215-315,320-395,400-439,442-457
+packages/backend/convex/_generated/api.d.ts
+  s_6bff98b662648b::t_df90a75e80f764 66-67,136-137
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "b19cb6b0ac1ef55eb517540b96c9c3a91375727a",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
