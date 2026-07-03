@@ -13,6 +13,8 @@ export function useImageUpload(opts: {
   setImage: (storageId: string) => Promise<string>
   removeImage: () => Promise<void>
   onMirror?: (url: string | null) => Promise<void>
+  onUploadSuccess?: () => void
+  onRemoveSuccess?: () => void
   labels: { invalidType: string; tooLarge: string; error: string }
   maxBytes?: number
 }) {
@@ -46,6 +48,7 @@ export function useImageUpload(opts: {
       const { storageId } = await res.json()
       const served = await opts.setImage(storageId)
       if (opts.onMirror) await opts.onMirror(served)
+      opts.onUploadSuccess?.()
     } catch {
       setError(opts.labels.error)
     } finally {
@@ -61,6 +64,7 @@ export function useImageUpload(opts: {
     try {
       await opts.removeImage()
       if (opts.onMirror) await opts.onMirror(null)
+      opts.onRemoveSuccess?.()
     } catch {
       setError(opts.labels.error)
     } finally {

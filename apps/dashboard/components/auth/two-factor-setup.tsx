@@ -17,6 +17,7 @@ import {
 import { OtpField } from "@/components/auth/otp-field"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
+import { toast } from "sonner"
 import QRCode from "qrcode"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -39,6 +40,7 @@ type Step = "choose" | "password" | "confirm" | "done"
 
 export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
   const t = useTranslations("dashboard.twoFactorSetup")
+  const tToast = useTranslations("dashboard.toast")
   const tHelp = useTranslations("dashboard.help")
   const tv = useTranslations("dashboard.validation")
   const tAuth = useTranslations("dashboard.auth")
@@ -148,6 +150,7 @@ export function TwoFactorSetup({ onConfirmed }: { onConfirmed: () => void }) {
     setFinishing(true)
     try {
       await confirmMfaSetup({ method })
+      toast.success(tToast("twoFactorEnabled"))
       onConfirmed()
     } catch {
       setFinishing(false)

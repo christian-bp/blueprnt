@@ -10,6 +10,8 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { drainOtpMountTimers } from "@/test/otp-timers"
 
+vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
+
 const enable = vi.fn()
 const verifyTotp = vi.fn()
 const sendOtp = vi.fn()

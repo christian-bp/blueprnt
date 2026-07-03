@@ -11,6 +11,7 @@ import {
 } from "@workspace/ui/components/card"
 import { useAction, useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
+import { toast } from "sonner"
 import { AvatarUpload } from "@/components/avatar-upload"
 import { useImageUpload } from "@/hooks/use-image-upload"
 import { authClient } from "@/lib/auth-client"
@@ -20,6 +21,7 @@ import { authClient } from "@/lib/auth-client"
 // the shared AvatarUpload via the shared useImageUpload hook.
 export function AvatarSection() {
   const t = useTranslations("dashboard.account.profile.avatar")
+  const tToast = useTranslations("dashboard.toast")
   const { data: session } = authClient.useSession()
   const generateUploadUrl = useMutation(api.files.generateImageUploadUrl)
   // setMyAvatar is an action (it validates and deletes a rejected upload's blob,
@@ -36,6 +38,8 @@ export function AvatarSection() {
     removeImage: async () => {
       await removeMyAvatar({})
     },
+    onUploadSuccess: () => toast.success(tToast("avatarUpdated")),
+    onRemoveSuccess: () => toast.success(tToast("avatarRemoved")),
     onMirror: async (url) => {
       await authClient.updateUser({ image: url ?? "" })
     },

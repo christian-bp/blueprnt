@@ -19,6 +19,7 @@ import {
 import { Flag } from "@workspace/ui/flag"
 import { useMutation } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
+import { toast } from "sonner"
 import { useSetPreviewLocale } from "@/components/locale-provider"
 import { FLAG_BY_LOCALE, LANGUAGE_LABEL_KEYS } from "@/lib/locales"
 
@@ -28,6 +29,7 @@ import { FLAG_BY_LOCALE, LANGUAGE_LABEL_KEYS } from "@/lib/locales"
 // a locale persists it via the setUiLocale mutation with no submit button.
 export function LanguageSection() {
   const t = useTranslations("dashboard")
+  const tToast = useTranslations("dashboard.toast")
   const locale = useLocale()
   const setUiLocale = useMutation(api.accounts.onboarding.setUiLocale)
   const setPreviewLocale = useSetPreviewLocale()
@@ -39,6 +41,7 @@ export function LanguageSection() {
     setPreviewLocale(value)
     try {
       await setUiLocale({ locale: value })
+      toast.success(tToast("languageUpdated"))
     } catch {
       setPreviewLocale(null)
     }

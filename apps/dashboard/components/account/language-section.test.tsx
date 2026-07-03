@@ -9,6 +9,8 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import en from "@workspace/i18n/messages/en.json"
 
+vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
+
 // Hoist mocks so vi.mock factory closures can reference them.
 const { setUiLocale, setPreviewLocale } = vi.hoisted(() => ({
   setUiLocale: vi.fn(async () => {}),

@@ -12,6 +12,7 @@ import {
 } from "@workspace/ui/components/dropdown-menu"
 import { useMutation } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
+import { toast } from "sonner"
 import { useSetPreviewLocale } from "@/components/locale-provider"
 import { FLAG_BY_LOCALE, LANGUAGE_LABEL_KEYS } from "@/lib/locales"
 
@@ -23,6 +24,7 @@ import { FLAG_BY_LOCALE, LANGUAGE_LABEL_KEYS } from "@/lib/locales"
 // chain, beating the browser fallback) optimistically.
 export function LanguageMenuSub() {
   const t = useTranslations("dashboard")
+  const tToast = useTranslations("dashboard.toast")
   const locale = useLocale()
   const setUiLocale = useMutation(api.accounts.onboarding.setUiLocale)
   const setPreviewLocale = useSetPreviewLocale()
@@ -34,6 +36,7 @@ export function LanguageMenuSub() {
     setPreviewLocale(value)
     try {
       await setUiLocale({ locale: value })
+      toast.success(tToast("languageUpdated"))
     } catch {
       setPreviewLocale(null)
     }

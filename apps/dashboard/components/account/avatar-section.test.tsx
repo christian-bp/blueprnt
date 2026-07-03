@@ -9,6 +9,14 @@ import en from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
+const { toastSuccess, toastError } = vi.hoisted(() => ({
+  toastSuccess: vi.fn(),
+  toastError: vi.fn(),
+}))
+vi.mock("sonner", () => ({
+  toast: { success: toastSuccess, error: toastError },
+}))
+
 // Flow-level coverage of the account avatar's account-specific wiring (the
 // Better Auth image mirror), re-homed from the old avatar-upload.test.tsx after
 // the upload flow moved into the shared useImageUpload hook + AvatarUpload.
@@ -118,6 +126,8 @@ describe("AvatarSection", () => {
   afterEach(() => {
     cleanup()
     vi.clearAllMocks()
+    toastSuccess.mockReset()
+    toastError.mockReset()
   })
 
   it("selecting a valid image runs the full upload flow and mirrors the served url", async () => {
@@ -145,6 +155,11 @@ describe("AvatarSection", () => {
       expect(updateUser).toHaveBeenCalledWith({
         image: "https://example.com/avatar/served.jpg",
       })
+    )
+    await waitFor(() =>
+      expect(toastSuccess).toHaveBeenCalledWith(
+        en.dashboard.toast.avatarUpdated
+      )
     )
   })
 
@@ -200,5 +215,10 @@ describe("AvatarSection", () => {
     fireEvent.click(screen.getByRole("button", { name: t.remove }))
     await waitFor(() => expect(removeMyAvatarMock).toHaveBeenCalledWith({}))
     await waitFor(() => expect(updateUser).toHaveBeenCalledWith({ image: "" }))
+    await waitFor(() =>
+      expect(toastSuccess).toHaveBeenCalledWith(
+        en.dashboard.toast.avatarRemoved
+      )
+    )
   })
 })

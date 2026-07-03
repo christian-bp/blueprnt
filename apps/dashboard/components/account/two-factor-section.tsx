@@ -29,6 +29,7 @@ import {
 } from "@workspace/ui/components/form"
 import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
+import { toast } from "sonner"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -50,6 +51,7 @@ type RegenerateValues = { password: string }
 
 export function TwoFactorSection() {
   const t = useTranslations("dashboard.account.security.twoFactor")
+  const tToast = useTranslations("dashboard.toast")
   const tHelp = useTranslations("dashboard.help")
   const tv = useTranslations("dashboard.validation")
   const tBackup = useTranslations("dashboard.twoFactorSetup.backup")
@@ -163,6 +165,7 @@ export function TwoFactorSection() {
                       // On success the reactive query updates mfaMethod;
                       // close the dialog so the setup flow takes over.
                       setChangeMethodOpen(false)
+                      toast.success(tToast("twoFactorReset"))
                     } catch {
                       setChangeMethodError(true)
                     }

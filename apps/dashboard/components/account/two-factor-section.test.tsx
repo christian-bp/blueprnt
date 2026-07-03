@@ -10,6 +10,8 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import en from "@workspace/i18n/messages/en.json"
 
+vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
+
 // --- Convex mocks (vi.hoisted so they are available before vi.mock factory runs) ---
 const { clearMfaConfirmedMock, useQueryMock, generateBackupCodesMock } =
   vi.hoisted(() => {
