@@ -9,6 +9,10 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 
+vi.mock("sonner", () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
+}))
+
 const createRoleMock = vi.fn()
 const pushMock = vi.fn()
 
@@ -37,6 +41,7 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: pushMock }),
 }))
 
+import { toast } from "sonner"
 import { CreateRoleDialog } from "@/components/roles/create-role-dialog"
 
 const labels = messages.dashboard.roles.create
@@ -65,6 +70,8 @@ describe("CreateRoleDialog", () => {
   beforeEach(() => {
     createRoleMock.mockReset()
     pushMock.mockReset()
+    vi.mocked(toast.success).mockReset()
+    vi.mocked(toast.error).mockReset()
   })
   afterEach(() => {
     cleanup()
@@ -100,6 +107,9 @@ describe("CreateRoleDialog", () => {
     await waitFor(() => {
       expect(pushMock).toHaveBeenCalledWith("/roles/role-new")
     })
+    expect(vi.mocked(toast.success)).toHaveBeenCalledWith(
+      messages.dashboard.toast.roleCreated
+    )
   })
 
   it("keeps the dialog open and shows an alert when create fails", async () => {

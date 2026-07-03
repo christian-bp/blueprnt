@@ -23,6 +23,7 @@ import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
+import { toast } from "sonner"
 
 // Anchor roles (ankarroller) are the org's 2-5 designated reference roles used
 // to calibrate other assessments; designating/reviewing them is model
@@ -139,6 +140,7 @@ function DesignateForm({
   onClose: () => void
 }) {
   const t = useTranslations("dashboard.roles.anchor")
+  const tToast = useTranslations("dashboard.toast")
   const designate = useMutation(api.assessment.anchorRoles.designateAnchorRole)
   const anchors = useQuery(api.assessment.anchorRoles.listAnchorRoles, {
     orgId,
@@ -162,6 +164,7 @@ function DesignateForm({
         expectedBand: Number(band),
         motivation: trimmedMotivation,
       })
+      toast.success(tToast("anchorSet"))
       onClose()
     } catch {
       setFailed(true)
@@ -223,6 +226,7 @@ function EditForm({
   onClose: () => void
 }) {
   const t = useTranslations("dashboard.roles.anchor")
+  const tToast = useTranslations("dashboard.toast")
   const update = useMutation(api.assessment.anchorRoles.updateAnchorRole)
   const [band, setBand] = useState(String(anchorRole.expectedBand))
   const [motivation, setMotivation] = useState(anchorRole.motivation)
@@ -252,6 +256,7 @@ function EditForm({
           : {}),
         ...(status !== anchorRole.status ? { status } : {}),
       })
+      toast.success(tToast("anchorUpdated"))
       onClose()
     } catch {
       setFailed(true)

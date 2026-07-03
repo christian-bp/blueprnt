@@ -24,6 +24,7 @@ import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { useState } from "react"
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
 import { MorphPopover } from "@/components/morph-popover"
@@ -68,6 +69,7 @@ export function RoleProfileCard({
   const tAi = useTranslations("dashboard.ai")
   const tErrors = useTranslations("errors")
   const tArchive = useTranslations("dashboard.roles.archive")
+  const tToast = useTranslations("dashboard.toast")
   const updateRole = useMutation(api.assessment.roles.updateRole)
   const archiveRole = useMutation(api.assessment.roles.archiveRole)
   const router = useRouter()
@@ -132,6 +134,7 @@ export function RoleProfileCard({
           ...familyChange,
         })
       }
+      toast.success(tToast("roleUpdated"))
       setEditing(false)
     } catch (error) {
       setFailure(isDuplicateRoleError(error) ? "duplicate" : "generic")
@@ -378,7 +381,10 @@ export function RoleProfileCard({
           setArchivePending(true)
           try {
             await archiveRole({ orgId, roleId: role.roleId })
+            toast.success(tToast("roleArchived"))
             router.push("/roles")
+          } catch {
+            toast.error(tToast("error"))
           } finally {
             setArchivePending(false)
           }

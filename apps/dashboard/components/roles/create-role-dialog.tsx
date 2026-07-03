@@ -31,6 +31,7 @@ import {
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { HelpMorphButton } from "@/components/help-morph-button"
@@ -73,6 +74,7 @@ export function CreateRoleDialog({
   const tModel = useTranslations("model")
   const tv = useTranslations("dashboard.validation")
   const tErrors = useTranslations("errors")
+  const tToast = useTranslations("dashboard.toast")
   const createRole = useMutation(api.assessment.roles.createRole)
   const router = useRouter()
 
@@ -120,6 +122,7 @@ export function CreateRoleDialog({
       })
       // createRole returns the stored slug (with any uniqueness suffix), so we
       // navigate straight to the new role's slug-based route.
+      toast.success(tToast("roleCreated"))
       setOpen(false)
       router.push(`/roles/${slug}`)
     } catch (error) {
