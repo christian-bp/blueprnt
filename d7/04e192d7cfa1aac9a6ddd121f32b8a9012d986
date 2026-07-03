@@ -1,0 +1,23 @@
+packages/backend/convex/people/pay.ts
+  s_6bff98b662648b::t_76aeb7190e6cd2 1-4,6-232
+  s_6bff98b662648b::t_987d71443654d2 5
+packages/backend/convex/people/pay.test.ts
+  s_6bff98b662648b::t_50f075ce6bc23d 1,3-10,12-13,15-26,46,50,81-82
+  s_6bff98b662648b::t_7eadba8b4b197a 2,11,14,27-45,47-49,51-80,83-472
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "d704e192d7cfa1aac9a6ddd121f32b8a9012d986",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
