@@ -1,0 +1,26 @@
+{
+  "name": "@workspace/import",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "papaparse": "^5.5.3"
+  },
+  "devDependencies": {
+    "@types/papaparse": "^5.3.15",
+    "@workspace/typescript-config": "workspace:*",
+    "@workspace/vitest-config": "workspace:*",
+    "typescript": "^6",
+    "vitest": "^4.1.9"
+  }
+}

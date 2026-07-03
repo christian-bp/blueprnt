@@ -151,6 +151,20 @@
         "vitest": "^4.1.9",
       },
     },
+    "packages/import": {
+      "name": "@workspace/import",
+      "version": "0.0.0",
+      "dependencies": {
+        "papaparse": "^5.5.3",
+      },
+      "devDependencies": {
+        "@types/papaparse": "^5.3.15",
+        "@workspace/typescript-config": "workspace:*",
+        "@workspace/vitest-config": "workspace:*",
+        "typescript": "^6",
+        "vitest": "^4.1.9",
+      },
+    },
     "packages/typescript-config": {
       "name": "@workspace/typescript-config",
       "version": "0.0.0",
@@ -958,6 +972,8 @@
 
     "@types/node": ["@types/node@26.0.1", "", { "dependencies": { "undici-types": "~8.3.0" } }, "sha512-fc3KiUoBt6kie0N9bIW3E47vZsuaMf0PM2AaUpLCLT0s/LvX1nxAim6Fc049cNxODPpGm6qRAuUOB86SkRuPQw=="],
 
+    "@types/papaparse": ["@types/papaparse@5.5.2", "", { "dependencies": { "@types/node": "*" } }, "sha512-gFnFp/JMzLHCwRf7tQHrNnfhN4eYBVYYI897CGX4MY1tzY9l2aLkVyx2IlKZ/SAqDbB3I1AOZW5gTMGGsqWliA=="],
+
     "@types/qrcode": ["@types/qrcode@1.5.6", "", { "dependencies": { "@types/node": "*" } }, "sha512-te7NQcV2BOvdj2b1hCAHzAoMNuj65kNBMz0KBaxM6c3VGBOhU0dURQKOtH8CFNI/dsKkwlv32p26qYQTWoB5bw=="],
 
     "@types/react": ["@types/react@19.2.16", "", { "dependencies": { "csstype": "^3.2.2" } }, "sha512-esJiCAnl0kfpNdE69f3So4WJUXy95dLZydX0KwK46riIHDzHM7O9Vtf9xCHW0PXIqvgqNrswl522kA/5yx+F4w=="],
@@ -1003,6 +1019,8 @@
     "@workspace/email": ["@workspace/email@workspace:packages/email"],
 
     "@workspace/i18n": ["@workspace/i18n@workspace:packages/i18n"],
+
+    "@workspace/import": ["@workspace/import@workspace:packages/import"],
 
     "@workspace/typescript-config": ["@workspace/typescript-config@workspace:packages/typescript-config"],
 
@@ -1623,6 +1641,8 @@
     "p-try": ["p-try@2.2.0", "", {}, "sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ=="],
 
     "pako": ["pako@1.0.11", "", {}, "sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw=="],
+
+    "papaparse": ["papaparse@5.5.4", "", {}, "sha512-SwzWD9gl/ElwYLCI0nUja1mFJzjq2D8ziShfNBa7zCHzkOozeOGDwHWQ+tvCzEZcewecWZ5U7kUopDnG+DFYEQ=="],
 
     "parent-module": ["parent-module@1.0.1", "", { "dependencies": { "callsites": "^3.0.0" } }, "sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g=="],
 
