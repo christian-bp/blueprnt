@@ -31,6 +31,7 @@ import {
 import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useCallback, useEffect, useState } from "react"
+import { toast } from "sonner"
 import { useOrganization } from "@/components/org-context"
 import { authClient } from "@/lib/auth-client"
 
@@ -50,6 +51,7 @@ type InvitationItem = NonNullable<ListResult["data"]>[number]
 export function OrganizationMembersSection(props: { refreshKey: number }) {
   const t = useTranslations("dashboard.organization.members")
   const ti = useTranslations("dashboard.organization.invitations")
+  const tToast = useTranslations("dashboard.toast")
   const { orgId } = useOrganization()
   const { data: session } = authClient.useSession()
   const members = useQuery(api.accounts.organization.listOrgMembers, { orgId })
@@ -102,6 +104,7 @@ export function OrganizationMembersSection(props: { refreshKey: number }) {
     setError(null)
     try {
       await updateRole({ orgId, userId, role })
+      toast.success(tToast("memberRoleUpdated"))
     } catch {
       setError("member")
     }
@@ -114,6 +117,7 @@ export function OrganizationMembersSection(props: { refreshKey: number }) {
     try {
       await removeMember({ orgId, userId: removeTarget.userId })
       setRemoveTarget(null)
+      toast.success(tToast("memberRemoved"))
     } catch {
       setError("member")
     } finally {
@@ -135,6 +139,7 @@ export function OrganizationMembersSection(props: { refreshKey: number }) {
       return
     }
     setRevokeTarget(null)
+    toast.success(tToast("invitationRevoked"))
     void refreshInvitations()
   }
 

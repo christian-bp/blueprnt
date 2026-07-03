@@ -9,6 +9,15 @@ import en from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
+const { toastSuccess, toastError } = vi.hoisted(() => ({
+  toastSuccess: vi.fn(),
+  toastError: vi.fn(),
+}))
+
+vi.mock("sonner", () => ({
+  toast: { success: toastSuccess, error: toastError },
+}))
+
 const updateName = vi.fn(async () => null)
 const updateSettings = vi.fn(async () => null)
 
@@ -53,6 +62,8 @@ afterEach(() => {
   cleanup()
   updateName.mockClear()
   updateSettings.mockClear()
+  toastSuccess.mockClear()
+  toastError.mockClear()
 })
 
 describe("OrganizationProfileForm", () => {
@@ -82,5 +93,19 @@ describe("OrganizationProfileForm", () => {
     )
     // Name-only change must not fire a settings write.
     expect(updateSettings).not.toHaveBeenCalled()
+  })
+
+  it("fires toast.success(orgSaved) after a successful save", async () => {
+    renderForm()
+    const nameInput = screen.getByLabelText(t.nameLabel)
+    fireEvent.change(nameInput, { target: { value: "Toast AB" } })
+    fireEvent.blur(nameInput)
+    const save = screen.getByRole("button", { name: t.save })
+    await waitFor(() =>
+      expect((save as HTMLButtonElement).disabled).toBe(false)
+    )
+    fireEvent.click(save)
+    await waitFor(() => expect(toastSuccess).toHaveBeenCalledOnce())
+    expect(toastSuccess).toHaveBeenCalledWith(en.dashboard.toast.orgSaved)
   })
 })

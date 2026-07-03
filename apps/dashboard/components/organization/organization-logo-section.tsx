@@ -11,6 +11,7 @@ import {
 } from "@workspace/ui/components/card"
 import { useAction, useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
+import { toast } from "sonner"
 import { AvatarUpload } from "@/components/avatar-upload"
 import { useOrganization } from "@/components/org-context"
 import { useImageUpload } from "@/hooks/use-image-upload"
@@ -21,6 +22,7 @@ import { useImageUpload } from "@/hooks/use-image-upload"
 // org settings once) so the section does not re-query.
 export function OrganizationLogoSection(props: { imageUrl: string | null }) {
   const t = useTranslations("dashboard.organization.logo")
+  const tToast = useTranslations("dashboard.toast")
   const { orgId, name } = useOrganization()
   const generateUploadUrl = useMutation(api.files.generateImageUploadUrl)
   const setOrgAvatar = useAction(api.accounts.organization.setOrgAvatar)
@@ -30,10 +32,17 @@ export function OrganizationLogoSection(props: { imageUrl: string | null }) {
     generateUploadUrl: () => generateUploadUrl({}),
     // The storage id from the upload response is a valid _storage id string;
     // Convex's generated arg type is the branded Id, so narrow it here.
-    setImage: (storageId) =>
-      setOrgAvatar({ orgId, storageId: storageId as Id<"_storage"> }),
+    setImage: async (storageId) => {
+      const url = await setOrgAvatar({
+        orgId,
+        storageId: storageId as Id<"_storage">,
+      })
+      toast.success(tToast("logoUpdated"))
+      return url
+    },
     removeImage: async () => {
       await removeOrgAvatar({ orgId })
+      toast.success(tToast("logoRemoved"))
     },
     labels: {
       invalidType: t("invalidType"),

@@ -10,6 +10,15 @@ import en from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
+const { toastSuccess, toastError } = vi.hoisted(() => ({
+  toastSuccess: vi.fn(),
+  toastError: vi.fn(),
+}))
+
+vi.mock("sonner", () => ({
+  toast: { success: toastSuccess, error: toastError },
+}))
+
 const roster = [
   { userId: "u1", name: "Admin One", email: "a@x.se", role: "admin" },
   { userId: "u2", name: "Editor Two", email: "e@x.se", role: "editor" },
@@ -110,7 +119,7 @@ describe("OrganizationMembersSection", () => {
     expect(screen.getByText(t.pending)).toBeDefined()
   })
 
-  it("removing an editor confirms then calls removeMember", async () => {
+  it("removing an editor confirms then calls removeMember and fires memberRemoved toast", async () => {
     renderSection()
     openRowMenu("Editor Two")
     fireEvent.click(await screen.findByText(t.remove))
@@ -120,6 +129,11 @@ describe("OrganizationMembersSection", () => {
     )
     await waitFor(() =>
       expect(removeMember).toHaveBeenCalledWith({ orgId: "o1", userId: "u2" })
+    )
+    await waitFor(() =>
+      expect(toastSuccess).toHaveBeenCalledWith(
+        en.dashboard.toast.memberRemoved
+      )
     )
   })
 
@@ -132,7 +146,7 @@ describe("OrganizationMembersSection", () => {
     ).toBe("true")
   })
 
-  it("revoking a pending invitation calls cancelInvitation", async () => {
+  it("revoking a pending invitation calls cancelInvitation and fires invitationRevoked toast", async () => {
     renderSection()
     const trigger = await screen.findByRole("button", {
       name: ti.invitationActions.replace("{email}", "pending@x.se"),
@@ -146,6 +160,11 @@ describe("OrganizationMembersSection", () => {
     )
     await waitFor(() =>
       expect(cancelInvitation).toHaveBeenCalledWith({ invitationId: "inv1" })
+    )
+    await waitFor(() =>
+      expect(toastSuccess).toHaveBeenCalledWith(
+        en.dashboard.toast.invitationRevoked
+      )
     )
   })
 })

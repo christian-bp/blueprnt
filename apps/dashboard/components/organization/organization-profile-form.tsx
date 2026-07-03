@@ -29,6 +29,7 @@ import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 import { CountrySelect } from "@/components/country-select"
 import { CurrencySelect } from "@/components/currency-select"
 import { HelpMorphButton } from "@/components/help-morph-button"
@@ -56,6 +57,7 @@ export function OrganizationProfileForm(props: {
   const t = useTranslations("dashboard.organization.general")
   const tv = useTranslations("dashboard.validation")
   const tHelp = useTranslations("dashboard.help")
+  const tToast = useTranslations("dashboard.toast")
   const { orgId, name } = useOrganization()
   const updateName = useMutation(
     api.accounts.organization.updateOrganizationName
@@ -65,7 +67,6 @@ export function OrganizationProfileForm(props: {
   )
 
   const [error, setError] = useState(false)
-  const [saved, setSaved] = useState(false)
 
   const schema = useMemo(() => makeOrganizationProfileSchema(tv), [tv])
   const form = useForm<OrganizationProfileValues>({
@@ -85,7 +86,6 @@ export function OrganizationProfileForm(props: {
 
   async function onSubmit(values: OrganizationProfileValues) {
     setError(false)
-    setSaved(false)
     try {
       if (values.name !== name) {
         await updateName({ orgId, name: values.name })
@@ -105,7 +105,7 @@ export function OrganizationProfileForm(props: {
         })
       }
       form.reset(values)
-      setSaved(true)
+      toast.success(tToast("orgSaved"))
     } catch {
       setError(true)
     }
@@ -240,12 +240,7 @@ export function OrganizationProfileForm(props: {
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="flex items-center justify-between">
-        {saved ? (
-          <p className="text-muted-foreground text-sm">{t("saved")}</p>
-        ) : (
-          <span />
-        )}
+      <CardFooter className="flex justify-end">
         <SubmitButton
           type="submit"
           form="organization-profile-form"
