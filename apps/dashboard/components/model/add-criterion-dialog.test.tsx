@@ -9,7 +9,16 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 
+const { toastSuccessMock, toastErrorMock } = vi.hoisted(() => ({
+  toastSuccessMock: vi.fn(),
+  toastErrorMock: vi.fn(),
+}))
+
 const addCriterionMock = vi.fn()
+
+vi.mock("sonner", () => ({
+  toast: { success: toastSuccessMock, error: toastErrorMock },
+}))
 
 vi.mock("convex/react", () => ({
   useMutation: (ref: unknown) => {
@@ -41,6 +50,8 @@ function renderDialog(orgId = "org-123") {
 describe("AddCriterionDialog", () => {
   beforeEach(() => {
     addCriterionMock.mockReset()
+    toastSuccessMock.mockReset()
+    toastErrorMock.mockReset()
   })
 
   afterEach(() => {
@@ -80,6 +91,25 @@ describe("AddCriterionDialog", () => {
     // A successful submit closes the controlled dialog, so the form unmounts.
     await waitFor(() => {
       expect(screen.queryByLabelText(editor.name)).toBeNull()
+    })
+  })
+
+  it("fires toast.success(criterionAdded) after a successful add", async () => {
+    addCriterionMock.mockResolvedValue("c-new")
+    renderDialog("org-toast")
+
+    fireEvent.click(screen.getByRole("button", { name: editor.addCta }))
+    const nameInput = screen.getByLabelText(editor.name)
+    fireEvent.change(nameInput, { target: { value: "Communication" } })
+
+    const form = nameInput.closest("form")
+    if (!form) throw new Error("form not found")
+    fireEvent.submit(form)
+
+    await waitFor(() => {
+      expect(toastSuccessMock).toHaveBeenCalledWith(
+        messages.dashboard.toast.criterionAdded
+      )
     })
   })
 

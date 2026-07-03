@@ -23,6 +23,7 @@ import { ConvexError } from "convex/values"
 import { AnimatePresence } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
+import { toast } from "sonner"
 import { MorphPopover } from "@/components/morph-popover"
 import { CriterionItem } from "@/components/model/criterion-item"
 import { CriterionListSkeleton } from "@/components/model/criterion-list-skeleton"
@@ -83,6 +84,7 @@ export function ModelBuilder({
   const tEditor = useTranslations("dashboard.model.editor")
   const tBuilder = useTranslations("dashboard.model.builder")
   const tAi = useTranslations("dashboard.ai")
+  const tToast = useTranslations("dashboard.toast")
   const locale = useLocale()
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
   // True right after a confirmed weight review, until the weighting changes
@@ -159,6 +161,7 @@ export function ModelBuilder({
         })),
       })
       setDraft({})
+      toast.success(tToast("weightsSaved"))
     } catch (error) {
       setErrorKey(errorKeyFor(error))
     } finally {
@@ -356,6 +359,7 @@ export function ModelBuilder({
                               orgId,
                               criterionId: criterion.criterionId,
                             })
+                            toast.success(tToast("criterionRemoved"))
                           } catch (error) {
                             setErrorKey(errorKeyFor(error))
                           } finally {

@@ -11,6 +11,7 @@ import {
 } from "@workspace/ui/components/dialog"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
+import { toast } from "sonner"
 import {
   CriterionForm,
   type CriterionFormValues,
@@ -36,6 +37,7 @@ export function EditCriterionDialog({
   onClose: () => void
 }) {
   const tEditor = useTranslations("dashboard.model.editor")
+  const tToast = useTranslations("dashboard.toast")
   const updateCriterion = useMutation(
     api.evaluationModel.criteria.updateCriterion
   )
@@ -63,6 +65,7 @@ export function EditCriterionDialog({
                 criterionId: target.criterionId,
                 ...values,
               })
+              toast.success(tToast("criterionUpdated"))
               onClose()
             }}
           />

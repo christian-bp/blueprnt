@@ -13,6 +13,7 @@ import {
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
+import { toast } from "sonner"
 import { CriterionForm } from "@/components/model/criterion-form"
 
 // Wraps the shared CriterionForm in a dialog so the tall form does not push
@@ -25,6 +26,7 @@ import { CriterionForm } from "@/components/model/criterion-form"
 // stays mounted throughout.
 export function AddCriterionDialog({ orgId }: { orgId: string }) {
   const tEditor = useTranslations("dashboard.model.editor")
+  const tToast = useTranslations("dashboard.toast")
   const addCriterion = useMutation(api.evaluationModel.criteria.addCriterion)
   const [open, setOpen] = useState(false)
 
@@ -47,6 +49,7 @@ export function AddCriterionDialog({ orgId }: { orgId: string }) {
           onCancel={() => setOpen(false)}
           onSubmit={async (values) => {
             await addCriterion({ orgId, ...values })
+            toast.success(tToast("criterionAdded"))
             setOpen(false)
           }}
         />
