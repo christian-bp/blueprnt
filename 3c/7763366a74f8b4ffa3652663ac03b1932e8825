@@ -1,0 +1,19 @@
+apps/dashboard/components/roles/role-profile-card.tsx
+  s_6bff98b662648b::t_0934495772cab1 136
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "3c7763366a74f8b4ffa3652663ac03b1932e8825",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
