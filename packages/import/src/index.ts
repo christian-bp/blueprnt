@@ -12,3 +12,13 @@ export { classifyColumn } from "./shape.js"
 
 export { detectColumns } from "./detect.js"
 export type { DetectedMapping } from "./detect.js"
+
+export {
+  parseMoney,
+  parseCurrency,
+  parsePercent,
+  parseGender,
+  parseDate,
+  parseBool,
+  parseIntId,
+} from "./parse.js"
