@@ -1,0 +1,23 @@
+apps/dashboard/app/(app)/page.tsx
+  s_6bff98b662648b::t_070a1ee5f446be 31-34
+apps/dashboard/components/overview/welcome-greeting.tsx
+  s_6bff98b662648b::t_be0bcb04ae6408 31-33,39,44
+  s_6bff98b662648b::t_8f257d5379eb02 9-11
+  s_6bff98b662648b::t_dbaab4a34bee2b 12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "765b08818e4df52d771c58dcfa014c0e654f0e81",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
