@@ -1,0 +1,31 @@
+apps/dashboard/components/overview/todo-widget.tsx
+  s_6bff98b662648b::t_ac83fcb44fe933 4,51
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_c23e7e59c92b33 304
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_4919a57f2ce52f 304
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_8e15ffb7a29c5c 304
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_4ae26683a19db8 304
+apps/dashboard/components/overview/todo-widget.test.tsx
+  s_6bff98b662648b::t_3114b6b0dd42d0 65
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_2f1925ef8b2cad 304
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "e95e2ef02296f43e10fd7af76b3e12a888f834c5",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
