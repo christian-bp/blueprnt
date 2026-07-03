@@ -1,0 +1,35 @@
+packages/import/vitest.config.ts
+  s_6bff98b662648b::t_e96b95661b0bb7 1-18
+packages/import/package.json
+  s_6bff98b662648b::t_20a73ca28b89df 1-26
+packages/import/src/fields.ts
+  s_6bff98b662648b::t_15ea365641d0e1 218
+  s_6bff98b662648b::t_c489ba2e368ee5 1-74,76-98,100-104,106-138,140-211,213-217,219-232
+  s_6bff98b662648b::t_b1e55866e09cfc 75,99,105,139,212
+packages/import/src/fields.test.ts
+  s_6bff98b662648b::t_ab746c837233b9 1-22,24-25,27-36,41-49,51-52,54-59,63-73
+  s_6bff98b662648b::t_b1e55866e09cfc 23,26,37-40,50,53,60-62
+packages/import/tsconfig.json
+  s_6bff98b662648b::t_087e4212b8a804 1-9
+packages/import/src/index.ts
+  s_6bff98b662648b::t_b1e55866e09cfc 2-7
+  s_6bff98b662648b::t_3f843917905f91 1
+bun.lock
+  s_6bff98b662648b::t_563dd2b7f7dcd6 154-167,975-976,1023-1024,1645-1646
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "7f10d810569f6a3b5b33081f69fccc4528d18253",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
