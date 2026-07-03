@@ -1,0 +1,29 @@
+apps/dashboard/components/providers.test.tsx
+  s_6bff98b662648b::t_a4ad0c587466e2 29
+  s_6bff98b662648b::t_30c39529f1ddf1 26-28,30
+  s_6bff98b662648b::t_de82e5d55bd339 1-25,31-32
+CLAUDE.md
+  s_6bff98b662648b::t_93a2e86c20045f 72
+apps/dashboard/components/providers.tsx
+  s_6bff98b662648b::t_bf3198231b5d77 5,25-26
+apps/dashboard/package.json
+  s_6bff98b662648b::t_f1252fc8fc7826 35
+bun.lock
+  s_6bff98b662648b::t_6df55f4578d2f2 37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "8e973bdc76ba8d10979219c0dd691e0510b72d37",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
