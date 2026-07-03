@@ -5,3 +5,5 @@ export type {
   ValueShape,
   FieldDef,
 } from "./fields.js"
+
+export { tokenizeCsv } from "./tokenize.js"
