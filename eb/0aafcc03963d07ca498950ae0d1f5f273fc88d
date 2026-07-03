@@ -1,0 +1,36 @@
+apps/dashboard/components/roles/family-picker.tsx
+  s_6bff98b662648b::t_22ab65bf84e4e3 42
+  s_6bff98b662648b::t_0a9d76126c97eb 64
+  s_6bff98b662648b::t_24c203112f9913 17
+apps/dashboard/components/roles/family-actions-menu.tsx
+  s_6bff98b662648b::t_b23037869699c5 18
+  s_6bff98b662648b::t_d402832f2d3fb2 37
+  s_6bff98b662648b::t_22bd6a277a3595 91,93-94
+apps/dashboard/components/roles/rename-family-dialog.tsx
+  s_6bff98b662648b::t_3a21dc0c34207e 27
+  s_6bff98b662648b::t_0df5b243fc1804 57
+  s_6bff98b662648b::t_a8ddbf78be961c 100
+apps/dashboard/components/roles/family-actions-menu.test.tsx
+  s_6bff98b662648b::t_5fceacc98907fb 68-69
+  s_6bff98b662648b::t_f1846d6128a6be 106-107
+  s_6bff98b662648b::t_e89173a6bb6359 15
+  s_6bff98b662648b::t_3f47809b3cf50d 105
+  s_6bff98b662648b::t_307d067cd28fe4 14,16-17
+  s_6bff98b662648b::t_0d71536d5f0605 9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "eb0aafcc03963d07ca498950ae0d1f5f273fc88d",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
