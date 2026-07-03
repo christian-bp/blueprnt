@@ -1,0 +1,24 @@
+packages/backend/vitest.config.ts
+  s_6bff98b662648b::t_78f55c036603c4 10-13
+packages/backend/convex/test.setup.ts
+  s_6bff98b662648b::t_71a81c1e74b6d2 1-11
+packages/backend/convex/testing.helpers.ts
+  s_6bff98b662648b::t_ea1625c2efbd0c 6-15,26,29-42
+  s_6bff98b662648b::t_415432518b430b 43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "002607943396690ff89d9bd7e8d8b2d8ce050942",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
