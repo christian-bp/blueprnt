@@ -41,6 +41,26 @@ describe("parseMoney", () => {
   it("returns null for currency-only string", () => {
     expect(parseMoney("SEK")).toBeNull()
   })
+
+  it("returns null for unknown trailing word", () => {
+    expect(parseMoney("94 500 bad")).toBeNull()
+  })
+
+  it("parses with trailing sek (lowercase, known currency)", () => {
+    expect(parseMoney("94 500 sek")).toBe(94500)
+  })
+
+  it("returns null for mixed alphanumeric (12abc)", () => {
+    expect(parseMoney("12abc")).toBeNull()
+  })
+
+  it("returns null for negative value", () => {
+    expect(parseMoney("-500")).toBeNull()
+  })
+
+  it("parses zero", () => {
+    expect(parseMoney("0")).toBe(0)
+  })
 })
 
 describe("parseCurrency", () => {
@@ -89,6 +109,10 @@ describe("parsePercent", () => {
   it("returns null for non-numeric input", () => {
     expect(parsePercent("abc")).toBeNull()
   })
+
+  it("accepts a decimal value (fractional FTE like 87.5)", () => {
+    expect(parsePercent("87.5")).toBe(87.5)
+  })
 })
 
 describe("parseGender", () => {
@@ -128,11 +152,8 @@ describe("parseGender", () => {
     expect(parseGender("k")).toBe("Kvinna")
   })
 
-  it("handles diacritics via fold (e.g. Kön header value)", () => {
-    // 'Kön' folded is 'kon' which is not a gender value synonym,
-    // but the cell value 'kvinna' with a diacritic context should work
-    // The relevant case: actual cell value with diacritics is unusual,
-    // test that ordinary case-folding applies
+  it("maps 'MALE' (all caps) -> Man via case-folding", () => {
+    // fold() lowercases the input, so 'MALE' -> 'male' which matches the 'male' synonym.
     expect(parseGender("MALE")).toBe("Man")
   })
 

@@ -3,21 +3,31 @@
 
 import { fold } from "./fields.js"
 
+// Known currency words that may appear as a trailing suffix in a money cell.
+// Any other trailing word is treated as an error and makes the value unparseable.
+const KNOWN_CURRENCY_WORDS = /\s+(kr|sek|nok|dkk|eur|gbp|usd)$/i
+
 /**
  * Parse a raw money string to a plain number.
- * Strips space group separators and an optional trailing currency word (kr, sek).
+ * Strips space group separators and an optional trailing KNOWN currency word
+ * (kr, sek, nok, dkk, eur, gbp, usd). An unknown trailing word makes the
+ * value unparseable and returns null.
  * Examples: "94 500 kr" -> 94500, "52000" -> 52000
  */
 export function parseMoney(v: string): number | null {
   const trimmed = v.trim()
   if (!trimmed) return null
 
-  // Remove trailing currency word (kr, sek, nok, dkk, eur, etc.) case-insensitively.
-  // Then remove all space separators and try parseInt.
-  const stripped = trimmed
-    .replace(/\s+[a-z]{2,4}$/i, "")
-    .replace(/\s+/g, "")
-    .trim()
+  // Strip a trailing known currency word, if present.
+  // If the input ends with a word that is NOT in the known set, reject it.
+  let working = trimmed
+  if (/\s+[a-z]+$/i.test(working)) {
+    if (!KNOWN_CURRENCY_WORDS.test(working)) return null
+    working = working.replace(KNOWN_CURRENCY_WORDS, "")
+  }
+
+  // Remove all space separators and try to parse.
+  const stripped = working.replace(/\s+/g, "").trim()
 
   if (!stripped) return null
 
@@ -41,6 +51,7 @@ export function parseCurrency(v: string): string | null {
 /**
  * Parse a percentage string to a number in [0, 100].
  * Accepts an optional trailing "%" character.
+ * Decimals are accepted (e.g. "87.5" for a fractional FTE); range [0, 100] is enforced.
  * Returns null if out of range or unparseable.
  */
 export function parsePercent(v: string): number | null {
