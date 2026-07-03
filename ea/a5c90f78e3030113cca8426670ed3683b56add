@@ -1,0 +1,37 @@
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_23d7b6df84c712 1366-1368
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_cc2be19aebcc96 1366-1368
+packages/backend/convex/_generated/api.d.ts
+  s_6bff98b662648b::t_8727936ca5560e 66,137
+packages/backend/convex/people/tables.ts
+  s_6bff98b662648b::t_e6e20b079f3131 44
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_14b753eeb9bfd5 1366-1368
+packages/backend/convex/lib/errors.ts
+  s_6bff98b662648b::t_605f254536598c 28
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_68eaa964d94ca3 1366-1368
+packages/backend/convex/people/assignments.test.ts
+  s_6bff98b662648b::t_e21ec2a85cfd85 145-186
+packages/backend/convex/people/assignments.ts
+  s_6bff98b662648b::t_eae0769dae3dac 95-104
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_1acb72db825534 1366-1368
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "eaa5c90f78e3030113cca8426670ed3683b56add",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
