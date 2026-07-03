@@ -1273,7 +1273,6 @@
         "industryLabel": "Industry",
         "industryPlaceholder": "Select an industry",
         "save": "Save changes",
-        "saved": "Changes saved.",
         "error": "Could not save the organization. Please try again."
       },
       "logo": {

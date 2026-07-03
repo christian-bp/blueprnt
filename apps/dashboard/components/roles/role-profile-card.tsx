@@ -133,8 +133,8 @@ export function RoleProfileCard({
           ...patch,
           ...familyChange,
         })
+        toast.success(tToast("roleUpdated"))
       }
-      toast.success(tToast("roleUpdated"))
       setEditing(false)
     } catch (error) {
       setFailure(isDuplicateRoleError(error) ? "duplicate" : "generic")
