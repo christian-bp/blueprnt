@@ -28,7 +28,10 @@ export default function OverviewPage() {
         <div className="lg:col-span-2">
           <TodoWidget todo={todo} />
         </div>
-        <div className="space-y-4 md:space-y-6">
+        {/* On large screens, drop the side column by the To-do heading's height
+            (text-lg, 28px) + its 12px gap (lg:mt-10 = 40px) so the first card
+            lines up with the first to-do group card. No offset when stacked. */}
+        <div className="space-y-4 md:space-y-6 lg:mt-10">
           <ModelReadinessCard orgId={orgId} />
           <GettingStartedCard />
         </div>
