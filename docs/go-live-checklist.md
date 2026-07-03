@@ -97,6 +97,36 @@ in the same change.
   `docs/superpowers/specs/2026-06-26-cra-hardening-design.md` and confirm its
   go-live items are done.
 
+## V1 conformance follow-ups (from the 2026-07-01 audit)
+
+Re-verified 2026-07-03: the audit's build/copy/doc gaps (the rationale +
+bias-review UI, the metodbilaga export, the verbatim anchor texts, the
+`PLAN-V1.md` four-factor prose) are closed. These remain, and none of them block
+starting V2:
+
+- [ ] **Band-threshold editing (E2 configurability).** The schema supports
+  per-org `bandThresholds`, but no mutation patches them after model creation
+  (all creation paths call `defaultBandThresholds()`) and there is no editing
+  UI. The docs promise per-org configurability; add the set-mutation + UI.
+- [ ] **Calibrate the default band thresholds against real data.** The defaults
+  were translated from the Excel prototype at a different weight spread
+  (`docs/contexts/evaluation-model/standardmall.md`); uncalibrated thresholds
+  yield unreliable comparable-work groupings. Best done with the real salary
+  data the V2 import brings.
+- [ ] **Rename the compliance fields to spec** (`overlapNotes`→`overlapWithOthers`,
+  `decidedBy`→`decisionMaker`, `decidedAt`→`date`). The Method UI now uses the
+  current names, so the rename touches `evaluationModel/tables.ts`, `method.ts`,
+  the compliance dialog, and the PDF. Cosmetic, non-blocking.
+- [ ] **Azure OpenAI EU Data Zone fallback.** `ai/provider.ts` wires only Mistral
+  (EU-hosted, so residency is fine); implement the documented Azure fallback so
+  Mistral is not a single point of failure, or explicitly de-scope it in the
+  spec + ADR-0003.
+- [ ] **Aggregate anchor-comparison panel.** The bands/work overview shows
+  per-role deviation chips (`getResults`) but not the agreed-vs-computed table
+  (`listAnchorRoles`); the data seam exists, the panel is not built.
+- [ ] **Doc housekeeping.** Fix the stale "with guardrails" test description in
+  `roles.test.ts` and add `starter.import` to the spec's V1 AI-scope list.
+
 ## E2E-only coverage to verify before launch
 
 These boundaries cannot be exercised by convex-test (they run only inside Better

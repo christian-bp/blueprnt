@@ -7,6 +7,8 @@
 
 ---
 
+> **Update (2026-07-03) — re-verified against HEAD `a0165c6`.** Four of the six Important items below are now closed: (1) the criterion rationale / bias-review write path + UI (the Method page: `saveCriterionCompliance` / `setCriterionApproval`, the compliance dialog, audit events), (2) the exportable methodology annex (the metodbilaga PDF: `method-appendix.tsx` + "Download as PDF", tested), (3) the standard-template anchor texts (replaced with the approved "NYA texter" v3 verbatim, commit `fbb4323`), and (4) the `PLAN-V1.md` four-factor overclaim (prose corrected). The Minor nb/da/fi seeding bug (#7) is also fixed (`clampLocale`). Remaining: band-threshold editing (E2) + calibration (items #5/#6) and the smaller Minors (compliance field renames, Azure fallback, aggregate anchor panel, stale test), now tracked in `go-live-checklist.md`. None of the remaining items block starting V2.
+
 ## 1. Executive Summary and Overall Verdict
 
 **Overall verdict: CONFORMANT (with a small set of scoped, non-critical gaps).**
