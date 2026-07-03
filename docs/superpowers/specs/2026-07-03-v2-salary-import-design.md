@@ -15,7 +15,7 @@
 **In scope (initial V2 build): the core lönekartläggning loop.**
 1. CSV payroll import via a full-screen column-mapping wizard that adapts any company's file, auto-detects columns, and warns on missing data (§5).
 2. Classify each employee to a standardized V1 role, track, and level (level suggested from title / `Statistikkod` / tenure, HR-confirmed).
-3. Normalize pay to a comparable FTE-adjusted monthly basic figure; separate basic from variable/benefit components.
+3. Persist salaries as effective-dated history (import + manual entry, append-on-change); normalize to a comparable FTE-adjusted monthly basic figure; separate basic from variable/benefit components.
 4. Form comparison groups: equal work (same role) and work of equal value (score-tolerance, see §6).
 5. Gap analysis per group × gender (median, mean, quartiles, gender-dominance flag) with small-group masking.
 6. Freeze a report run (ADR-0008) and export the lönekartläggning report.
@@ -38,8 +38,8 @@
 | 4 | Level (per-individual, on `personAssignments`, validated against the role's `trackKey`): **suggested** from `Befattning` + `Statistikkod` + tenure via the suggestion layer, **HR-confirmed**. | Per ADR-0005 (level is per-individual, set in V2). Reconciles the source explainer's "level-role" framing against the accepted ADR. |
 | 5 | Equal-value grouping: **score-tolerance** on the 0-100 role score, independent of band boundaries. | Reverses an earlier "use bands" choice after the docs (`PLAN-V1 §11`: "likvärdigt arbete ≠ band rakt av") flagged band-direct grouping as legally fragile. Tolerance width is a documented, HR/Legal-tunable parameter. |
 | 6 | Small-group masking: hide any group with fewer than **3** people. | Parametrized (configurable default), flagged for HR/Legal sign-off; several regimes use 5. |
-| 7 | Re-import: **upsert on `Anstnr`**; archive leavers (never hard-delete on re-import); pay stored per `Löneår`; frozen report runs untouched. | |
-| 8 | Pay: store **raw** components (basic monthly + variable + benefit, currency, FTE); derive the FTE-adjusted comparator **live** and freeze it in the report run. Never store the derived figure. | Consistent with ADR-0002/0008. Pay is component-based and extensible (Art. 9 split). |
+| 7 | Re-import: **upsert on `Anstnr`**; archive leavers (never hard-delete on re-import). Pay is **effective-dated history**: a re-import, a raise, or a manual edit APPENDS a new salary record, never overwrites; frozen report runs are untouched. | |
+| 8 | Pay is an **effective-dated history table** of its own: each record carries an `effectiveFrom` and a `source` (`import` \| `manual`); stored **raw** (basic monthly + variable + benefit, currency, FTE), with the FTE-adjusted comparator derived **live** and frozen in the report run (never stored). **Manual entry/editing is supported from the start**, alongside import. | Consistent with ADR-0002/0008. Component-based + extensible (Art. 9 split). History is retained (a raise appends); current salary = latest effective; a report as-of a date uses the record effective then. |
 
 Legal basis: **legal obligation** (Swedish Discrimination Act annual lönekartläggning, in force today for 10+ employers; Directive 2023/970 layered on top). Erasure = **true hard delete** (mirrors the `users` erasure). Report runs freeze ratings + full model config (ADR-0008).
 
@@ -69,8 +69,9 @@ All tables org-scoped (`by_org`). New contexts: `people`, `pay`.
 - Rationale: neither `roles` nor `people` absorbs the other's fields; the assignment is where they meet. Level is per-individual (ADR-0005), so it lands here.
 - Build-time reconciliation: confirm the track/level ladder against V1's live model (the sources disagree on **Lead 1-3 vs Lead-1..2**).
 
-### 4.3 `payRecords` (compensation per person per pay year)
-- `orgId`, `personId`, `payYear` (`Löneår`), `basicMonthly` (`Månadslön`, the primary comparator, parsed from `"94 500 kr"`), `currency` (`Valuta`, trimmed), plus **components** (extensible, Art. 9 split): `variable` (`Målbonus`), `benefitInKind` (`Tjänstebil`), and room for fixed supplements. Store the annual/monthly basis per component.
+### 4.3 `payRecords` (effective-dated salary history; the `pay` context)
+- One record per person per compensation period: `orgId`, `personId`, `effectiveFrom` (the date the salary takes effect), `payYear` (`Löneår`, the analysis-period tag), `source` (`"import" | "manual"`), `basicMonthly` (`Månadslön`, the primary comparator, parsed from `"94 500 kr"`), `currency` (`Valuta`, trimmed), plus **components** (extensible, Art. 9 split): `variable` (`Målbonus`), `benefitInKind` (`Tjänstebil`), and room for fixed supplements; store the amount + its basis (monthly/annual) per component. `createdAt`.
+- **History, not overwrite.** A raise, a correction, a re-import, or a manual entry appends a new record; prior records are retained. The current salary is the latest `effectiveFrom`; a report as-of a date uses the record effective at that date. An erasure hard-deletes all of a person's records (§9).
 - **No stored FTE-adjusted figure.** The gap engine computes `fteAdjustedBasicMonthly = basicMonthly / (ftePercent/100)` live and freezes it in the report run.
 
 ### 4.4 `payGapReportRun` (frozen snapshot, ADR-0008)
@@ -145,7 +146,7 @@ Flag for HR resolution (never a silent import): a duplicate identifier in a batc
 ## 8. Build phasing
 
 1. **Import wizard + people/assignment:** the full-screen column-mapping wizard (upload → deterministic auto-map → readiness check → review, §5) on the onboarding frame; deterministic CSV parse + validation (client-side preview, Convex action of record); `people`, `personAssignments`, `importMappingProfile`; the title→role mapping + level-suggestion UI; erasure hard-delete wired into the GDPR flow; authoritative `employeeCount`. Tests + i18n in the same commit.
-2. **Pay import + normalization:** `payRecords` with the component split; FTE-adjust logic (engine).
+2. **Salary history (import + manual) + normalization:** the effective-dated `payRecords` table (source import/manual, append-on-change); a manual add/adjust salary form; the component split; FTE-adjust logic (engine).
 3. **Grouping + gap engine (`packages/core`, pure, deterministic):** equal-work + score-tolerance equal-value groups; dominance flag; median/mean/quartiles; masking baked into the query layer.
 4. **Frozen report runs (ADR-0008):** `payGapReportRun`; multi-actor audit events + payloads + locale labels.
 5. **Reporting UI + export:** the lönekartläggning report view + PDF export; threshold-driven cadence display.
