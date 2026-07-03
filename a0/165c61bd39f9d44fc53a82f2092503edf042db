@@ -1,0 +1,45 @@
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_7d0e39aa445e95 1110-1112
+  s_6bff98b662648b::t_629a315bab2740 1120
+apps/dashboard/lib/email-template-labels.test.ts
+  s_6bff98b662648b::t_1aac80824ffac9 1-23
+apps/dashboard/components/admin/email-log-section.tsx
+  s_6bff98b662648b::t_d25a948ce88184 165
+  s_6bff98b662648b::t_70cf592cc5297d 248
+  s_6bff98b662648b::t_750c289c2f71b4 291-293
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_15b5786bb18606 1120
+  s_6bff98b662648b::t_1bfed35f0b6acd 1110-1112
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_5635b635f3b3ec 1110-1112
+  s_6bff98b662648b::t_63abae051f3098 1120
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_29667bad9ea312 1110-1112
+  s_6bff98b662648b::t_36dcdc40ee4e6e 1120
+packages/backend/convex/platform/emailLog.ts
+  s_6bff98b662648b::t_7b66c04c23665d 48
+  s_6bff98b662648b::t_1a3cad27c99ea5 68
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_807daaa943b17b 1120
+  s_6bff98b662648b::t_ede377a759e5a0 1110-1112
+packages/backend/package.json
+  s_6bff98b662648b::t_8e5d189a3bb620 18
+bun.lock
+  s_6bff98b662648b::t_505efde7599219 77,337
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "a0165c61bd39f9d44fc53a82f2092503edf042db",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
