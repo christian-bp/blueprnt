@@ -1,0 +1,24 @@
+packages/import/src/tokenize.test.ts
+  s_6bff98b662648b::t_fc46a407f5ddfe 1-37,39-44
+  s_6bff98b662648b::t_db1cce55e35b0d 38
+packages/import/src/index.ts
+  s_6bff98b662648b::t_e66229e195d0cd 8-9
+packages/import/src/tokenize.ts
+  s_6bff98b662648b::t_0e5a6acc7ed732 1-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "71b3de2231cd031fa125a15e1ccdb0ed1d36052e",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
