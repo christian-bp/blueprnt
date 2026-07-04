@@ -274,3 +274,122 @@ describe("runClassificationSuggestions", () => {
     expect(current?.levelSource).toBe("suggested")
   })
 })
+
+describe("listPeopleByTitle", () => {
+  it("groups people by title with their current assignment", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Software Engineer",
+      function: "Engineering",
+      team: "Platform",
+      trackKey: "IC",
+    })
+    const anna = await seedPerson(t, orgId, {
+      displayName: "Anna Svensson",
+      title: "Software Engineer",
+      employmentStartDate: "2020-01-01",
+    })
+    await seedPerson(t, orgId, {
+      displayName: "Bo Karlsson",
+      title: "Software Engineer",
+    })
+    await seedPerson(t, orgId, { displayName: "No Title Nils" })
+
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId: anna,
+      roleId,
+      level: "IC3",
+      levelSource: "confirmed",
+    })
+
+    const groups = await asAdmin.query(
+      api.people.classificationQueries.listPeopleByTitle,
+      { orgId }
+    )
+
+    // Two groups: "Software Engineer" (2 people) and the null group (1).
+    expect(groups).toHaveLength(2)
+    const seGroup = groups.find((g) => g.title === "Software Engineer")
+    expect(seGroup?.personCount).toBe(2)
+    // The query runs the engines: the exact-title match is high confidence and
+    // points at the created role.
+    expect(seGroup?.confidence).toBe("high")
+    expect(seGroup?.suggestedRoleId).toBe(roleId)
+    const annaRow = seGroup?.people.find((p) => p.personId === anna)
+    expect(annaRow?.currentAssignment?.level).toBe("IC3")
+    expect(annaRow?.currentAssignment?.levelSource).toBe("confirmed")
+    expect(annaRow?.employmentStartDate).toBe("2020-01-01")
+    // Each matched person carries an engine level suggestion for the role's track.
+    expect(annaRow?.suggestedLevel?.startsWith("IC")).toBe(true)
+    const boRow = seGroup?.people.find((p) => p.displayName === "Bo Karlsson")
+    expect(boRow?.currentAssignment).toBeNull()
+    expect(boRow?.suggestedLevel?.startsWith("IC")).toBe(true)
+
+    // The null-title group is last, with no role suggestion.
+    const nullGroup = groups[groups.length - 1]
+    expect(nullGroup?.title).toBeNull()
+    expect(nullGroup?.suggestedRoleId).toBeNull()
+    expect(nullGroup?.confidence).toBe("unmatched")
+    expect(nullGroup?.people[0]?.suggestedLevel).toBeNull()
+  })
+
+  it("marks a title that matches no role as unmatched", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Software Engineer",
+      function: "Engineering",
+      team: "Platform",
+      trackKey: "IC",
+    })
+    await seedPerson(t, orgId, {
+      displayName: "Bo Karlsson",
+      title: "Rocket Scientist",
+    })
+
+    const groups = await asAdmin.query(
+      api.people.classificationQueries.listPeopleByTitle,
+      { orgId }
+    )
+    const rsGroup = groups.find((g) => g.title === "Rocket Scientist")
+    expect(rsGroup?.confidence).toBe("unmatched")
+    expect(rsGroup?.suggestedRoleId).toBeNull()
+    expect(rsGroup?.people[0]?.suggestedLevel).toBeNull()
+  })
+
+  it("returns an empty array for an org with no people", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const groups = await asAdmin.query(
+      api.people.classificationQueries.listPeopleByTitle,
+      { orgId }
+    )
+    expect(groups).toHaveLength(0)
+  })
+
+  it("does not leak another org's people", async () => {
+    const t = initConvexTest()
+    const { orgId: orgA, asAdmin: asAdminA } = await seedOrg(t, "a@acme.se")
+    const { orgId: orgB, asAdmin: asAdminB } = await seedOrg(t, "b@beta.se")
+    await seedPerson(t, orgA, {
+      displayName: "Anna A",
+      title: "Engineer",
+    })
+
+    const groupsB = await asAdminB.query(
+      api.people.classificationQueries.listPeopleByTitle,
+      { orgId: orgB }
+    )
+    expect(groupsB).toHaveLength(0)
+    // Sanity: org A does see its own person.
+    const groupsA = await asAdminA.query(
+      api.people.classificationQueries.listPeopleByTitle,
+      { orgId: orgA }
+    )
+    expect(groupsA).toHaveLength(1)
+  })
+})
