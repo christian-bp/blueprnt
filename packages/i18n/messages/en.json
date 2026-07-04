@@ -193,7 +193,11 @@
           "sample": "Sample value",
           "confidence": "Confidence",
           "notMapped": "Not mapped",
-          "unmappedRequired": "{count, plural, one {# required field is not mapped} other {# required fields are not mapped}}"
+          "unmappedRequired": "{count, plural, one {# required field is not mapped} other {# required fields are not mapped}}",
+          "column": "CSV column",
+          "mappedTo": "Mapped to",
+          "ignore": "Ignore",
+          "detected": "Detected"
         },
         "tier": {
           "required": "Required",

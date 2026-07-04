@@ -196,13 +196,12 @@ describe("ImportWizard — mapping reset on header change", () => {
       screen.getByText(messages.dashboard.people.import.map.title)
     ).toBeDefined()
 
-    // The map row for "externalRef" should now show "StaffNumber" (file B's
-    // first column auto-detected, if the synonym matches) OR "Not mapped"
-    // rather than "EmployeeID" (file A's header). Either way, "EmployeeID"
-    // must not appear in the select trigger for externalRef since it comes
-    // from a file with different headers.
-    const externalRefRow = screen.getByTestId("map-row-externalRef")
-    expect(externalRefRow.textContent).not.toContain("EmployeeID")
+    // File B has completely different column headers. The column-first table
+    // shows one row per CSV column, so "EmployeeID" (File A's header) must
+    // not appear anywhere in the map step — File B's column "StaffNumber"
+    // should be shown instead.
+    expect(screen.queryByTestId("map-col-EmployeeID")).toBeNull()
+    expect(screen.getByTestId("map-col-StaffNumber")).toBeDefined()
   })
 
   it("preserves the mapping when a re-upload has the SAME headers", async () => {
@@ -230,9 +229,9 @@ describe("ImportWizard — mapping reset on header change", () => {
     // Advance to map step again.
     clickNext()
 
-    // The map step should still show the original header "EmployeeID"
-    // for the externalRef row (mapping was preserved because headers matched).
-    const externalRefRow = screen.getByTestId("map-row-externalRef")
-    expect(externalRefRow.textContent).toContain("EmployeeID")
+    // The map step should still show "EmployeeID" as a column row (mapping
+    // was preserved because headers matched). In the column-first layout,
+    // the row is keyed on the column header, not the field name.
+    expect(screen.getByTestId("map-col-EmployeeID")).toBeDefined()
   })
 })

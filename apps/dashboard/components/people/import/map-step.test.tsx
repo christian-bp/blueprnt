@@ -108,61 +108,53 @@ describe("MapStep — auto-detection", () => {
 })
 
 // ---------------------------------------------------------------------------
-// MapStep — table rendering
+// MapStep — column-first rendering
 // ---------------------------------------------------------------------------
-describe("MapStep — table rendering", () => {
+describe("MapStep — column-first rendering", () => {
   afterEach(() => {
     cleanup()
   })
 
-  it("renders a row for each canonical field", () => {
+  it("renders a row for each CSV column header", () => {
     renderMapStep({
       mapping: { externalRef: 0, title: 1, gender: 2, basicMonthly: 3 },
     })
-
-    const fields = m.fields
-    // Use getAllByText because some field labels (e.g. "Gender") also appear
-    // as the selected value in the Select trigger.
-    expect(screen.getAllByText(fields.externalRef).length).toBeGreaterThan(0)
-    expect(screen.getAllByText(fields.title).length).toBeGreaterThan(0)
-    expect(screen.getAllByText(fields.gender).length).toBeGreaterThan(0)
-    expect(screen.getAllByText(fields.basicMonthly).length).toBeGreaterThan(0)
-    expect(screen.getAllByText(fields.isManager).length).toBeGreaterThan(0)
-    expect(screen.getAllByText(fields.variable).length).toBeGreaterThan(0)
+    // Each CSV column header should appear as a row header in the table.
+    for (const header of TEST_HEADERS) {
+      expect(screen.getByTestId(`map-col-${header}`)).toBeDefined()
+    }
   })
 
-  it("shows tier badges for required, recommended, and optional fields", () => {
+  it("shows sample values from the first data rows", () => {
     renderMapStep({
       mapping: { externalRef: 0, title: 1, gender: 2, basicMonthly: 3 },
     })
-
-    const tier = m.tier
-    const requiredBadges = screen.getAllByText(tier.required)
-    expect(requiredBadges.length).toBeGreaterThanOrEqual(4)
-    const recommendedBadges = screen.getAllByText(tier.recommended)
-    expect(recommendedBadges.length).toBeGreaterThanOrEqual(1)
-    const optionalBadges = screen.getAllByText(tier.optional)
-    expect(optionalBadges.length).toBeGreaterThanOrEqual(1)
+    // Sample values are joined across multiple rows per column.
+    // EmployeeID column shows both row samples.
+    const externalRefRow = screen.getByTestId("map-col-EmployeeID")
+    expect(externalRefRow.textContent).toContain("E001")
+    const genderRow = screen.getByTestId("map-col-Gender")
+    expect(genderRow.textContent).toContain("Kvinna")
+    const salaryRow = screen.getByTestId("map-col-MonthlySalary")
+    expect(salaryRow.textContent).toContain("55000")
   })
 
-  it("shows sample values from the first data row for mapped columns", () => {
+  it("shows the detected canonical field label for auto-mapped columns", () => {
     renderMapStep({
       mapping: { externalRef: 0, title: 1, gender: 2, basicMonthly: 3 },
     })
-    // First row values for mapped columns.
-    expect(screen.getByText("E001")).toBeDefined()
-    expect(screen.getByText("Software Engineer")).toBeDefined()
-    expect(screen.getByText("Kvinna")).toBeDefined()
-    expect(screen.getByText("55000")).toBeDefined()
+    // The row for EmployeeID (col 0) should reference the externalRef field label.
+    const row = screen.getByTestId("map-col-EmployeeID")
+    expect(row.textContent).toContain(m.fields.externalRef)
   })
 
-  it("shows column header names as select options (visible in the trigger)", () => {
+  it("shows Ignore option label in each select", () => {
     renderMapStep({
       mapping: { externalRef: 0, title: 1, gender: 2, basicMonthly: 3 },
     })
-    // The selected column header for externalRef (index 0) should appear in the row.
-    const row = screen.getByTestId("map-row-externalRef")
-    expect(row.textContent).toContain("EmployeeID")
+    // The map.ignore key should appear somewhere in the rendered output.
+    // (Rendered inside each Select's content but visible in DOM via jsdom)
+    expect(screen.getAllByText(m.map.ignore).length).toBeGreaterThan(0)
   })
 })
 
@@ -206,7 +198,7 @@ describe("MapStep — unmapped required count", () => {
 // MapStep exposes onColumnChange on each row's data-testid for testability.
 // We use the exported updateMapping helper to verify pure mapping logic.
 // ---------------------------------------------------------------------------
-import { updateMapping } from "./map-step"
+import { assignColumnToField, columnToField, updateMapping } from "./map-step"
 
 describe("updateMapping", () => {
   it("sets the canonical field to the new column index", () => {
@@ -221,6 +213,77 @@ describe("updateMapping", () => {
     const prev = { externalRef: 0, title: 1, gender: 2, basicMonthly: 3 }
     const next = updateMapping(prev, "externalRef", -1)
     expect("externalRef" in next).toBe(false)
+    expect(next.title).toBe(1)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// columnToField
+// ---------------------------------------------------------------------------
+describe("columnToField", () => {
+  it("returns the field key pointing at the given column index", () => {
+    const mapping = { externalRef: 0, title: 1, gender: 2, basicMonthly: 3 }
+    expect(columnToField(mapping, 0)).toBe("externalRef")
+    expect(columnToField(mapping, 1)).toBe("title")
+    expect(columnToField(mapping, 2)).toBe("gender")
+    expect(columnToField(mapping, 3)).toBe("basicMonthly")
+  })
+
+  it("returns null when no field points at the given column index", () => {
+    const mapping = { externalRef: 0, title: 1, gender: 2, basicMonthly: 3 }
+    expect(columnToField(mapping, 4)).toBeNull()
+    expect(columnToField(mapping, 99)).toBeNull()
+  })
+
+  it("returns null for an empty mapping", () => {
+    expect(columnToField({}, 0)).toBeNull()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// assignColumnToField
+// ---------------------------------------------------------------------------
+describe("assignColumnToField", () => {
+  it("assigns a column to a field", () => {
+    const prev = { externalRef: 0, title: 1 }
+    const next = assignColumnToField(prev, 2, "gender")
+    expect(next.gender).toBe(2)
+    expect(next.externalRef).toBe(0)
+    expect(next.title).toBe(1)
+  })
+
+  it("frees the old field when reassigning a column (last-wins collision on field)", () => {
+    // col 0 is externalRef; reassign col 0 to title -> externalRef freed
+    const prev = { externalRef: 0, title: 1, gender: 2, basicMonthly: 3 }
+    const next = assignColumnToField(prev, 0, "title")
+    expect(next.title).toBe(0)
+    expect("externalRef" in next).toBe(false)
+    // original title col 1 is freed (col 1 is no longer held by title)
+    expect(Object.values(next)).not.toContain(1)
+  })
+
+  it("frees the previous field mapping for this column when assigning to a new field", () => {
+    // col 4 is unassigned; col 3 is basicMonthly
+    // assign col 3 to variable -> basicMonthly freed
+    const prev = { externalRef: 0, title: 1, gender: 2, basicMonthly: 3 }
+    const next = assignColumnToField(prev, 3, "variable")
+    expect(next.variable).toBe(3)
+    expect("basicMonthly" in next).toBe(false)
+  })
+
+  it("ignores the column (removes it from mapping) when fieldKey is null", () => {
+    const prev = { externalRef: 0, title: 1, gender: 2, basicMonthly: 3 }
+    const next = assignColumnToField(prev, 0, null)
+    expect("externalRef" in next).toBe(false)
+    // Other entries unchanged.
+    expect(next.title).toBe(1)
+  })
+
+  it("handles assigning an already-ignored column to a field", () => {
+    const prev = { title: 1, gender: 2, basicMonthly: 3 }
+    // col 0 is not in mapping; assign to externalRef
+    const next = assignColumnToField(prev, 0, "externalRef")
+    expect(next.externalRef).toBe(0)
     expect(next.title).toBe(1)
   })
 })

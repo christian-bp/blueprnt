@@ -3,10 +3,8 @@
 import {
   CANONICAL_FIELDS,
   type CanonicalFieldKey,
-  type FieldTier,
   detectColumns,
 } from "@workspace/import"
-import { Badge } from "@workspace/ui/components/badge"
 import {
   Select,
   SelectContent,
@@ -29,6 +27,9 @@ import type { ParsedCsv } from "./import-wizard"
 // Sentinel value used in the Select to represent "not mapped".
 // A string is required by Radix Select; we convert to/from the number -1.
 const NOT_MAPPED_VALUE = "__not_mapped__"
+
+// Sentinel value used in the Select to represent "ignore this column".
+const IGNORE_VALUE = "__ignore__"
 
 // ---------------------------------------------------------------------------
 // Pure helpers (exported for testing)
@@ -66,21 +67,54 @@ export function updateMapping(
   return { ...prev, [fieldKey]: columnIndex }
 }
 
-// ---------------------------------------------------------------------------
-// Badge variant per tier
-// ---------------------------------------------------------------------------
-
-function tierBadgeVariant(
-  tier: FieldTier
-): "destructive" | "secondary" | "outline" {
-  switch (tier) {
-    case "required":
-      return "destructive"
-    case "recommended":
-      return "secondary"
-    case "optional":
-      return "outline"
+/**
+ * Invert the mapping lookup: return the field key that currently points at
+ * the given column index, or null if no field is assigned to it.
+ */
+export function columnToField(
+  mapping: Record<string, number>,
+  columnIndex: number
+): CanonicalFieldKey | null {
+  for (const [key, idx] of Object.entries(mapping)) {
+    if (idx === columnIndex) {
+      return key as CanonicalFieldKey
+    }
   }
+  return null
+}
+
+/**
+ * Assign a column to a field (last-wins collision).
+ * - If fieldKey is null, the column is ignored (any field that pointed at it
+ *   is freed).
+ * - Assigning col C to field X frees any other column already holding X, AND
+ *   frees any field already assigned to col C.
+ */
+export function assignColumnToField(
+  prev: Record<string, number>,
+  columnIndex: number,
+  fieldKey: CanonicalFieldKey | null
+): Record<string, number> {
+  const next = { ...prev }
+
+  // Free any field that currently points at this column.
+  for (const [key, idx] of Object.entries(next)) {
+    if (idx === columnIndex) {
+      delete next[key]
+    }
+  }
+
+  if (fieldKey === null) {
+    // Ignore this column — we already freed it above.
+    return next
+  }
+
+  // Free any column that the target field currently holds.
+  delete next[fieldKey]
+
+  // Assign the column to the field.
+  next[fieldKey] = columnIndex
+  return next
 }
 
 // ---------------------------------------------------------------------------
@@ -98,7 +132,6 @@ export interface MapStepProps {
 export function MapStep({ parsed, mapping, onMappingChange }: MapStepProps) {
   const tMap = useTranslations("dashboard.people.import.map")
   const tFields = useTranslations("dashboard.people.import.fields")
-  const tTier = useTranslations("dashboard.people.import.tier")
 
   // On first entry (mapping === null), run auto-detection and seed the wizard.
   // This effect only fires once because we check mapping === null as the guard.
@@ -118,43 +151,34 @@ export function MapStep({ parsed, mapping, onMappingChange }: MapStepProps) {
     (f) => f.tier === "required" && !(f.key in activeMapping)
   ).length
 
-  // Confidence hint from the last detectColumns run, indexed by field key.
-  // Re-compute from the current parsed data so the hint reflects the mapping.
-  const confidenceMap: Partial<Record<CanonicalFieldKey, number>> = (() => {
-    const { map } = detectColumns({
-      headers: parsed.headers,
-      rows: parsed.rows,
-    })
-    const out: Partial<Record<CanonicalFieldKey, number>> = {}
-    for (const [key, entry] of Object.entries(map)) {
-      if (entry !== undefined) {
-        out[key as CanonicalFieldKey] = entry.confidence
-      }
+  // Handle a column's field assignment changing via the Select.
+  function handleColumnFieldChange(columnIndex: number, value: string) {
+    if (value === IGNORE_VALUE || value === NOT_MAPPED_VALUE) {
+      onMappingChange(assignColumnToField(activeMapping, columnIndex, null))
+    } else {
+      onMappingChange(
+        assignColumnToField(
+          activeMapping,
+          columnIndex,
+          value as CanonicalFieldKey
+        )
+      )
     }
-    return out
-  })()
-
-  function handleSelectChange(fieldKey: CanonicalFieldKey, value: string) {
-    const columnIndex = value === NOT_MAPPED_VALUE ? -1 : Number(value)
-    onMappingChange(updateMapping(activeMapping, fieldKey, columnIndex))
   }
 
-  function selectValue(fieldKey: CanonicalFieldKey): string {
-    const idx = activeMapping[fieldKey]
-    return idx !== undefined ? String(idx) : NOT_MAPPED_VALUE
+  // The current Select value for a column: the field key it is assigned to,
+  // or IGNORE_VALUE if the column is not mapped.
+  function columnSelectValue(columnIndex: number): string {
+    const fieldKey = columnToField(activeMapping, columnIndex)
+    return fieldKey ?? IGNORE_VALUE
   }
 
-  // Sample value: first data row's cell at the mapped column.
-  function sampleValue(fieldKey: CanonicalFieldKey): string {
-    const idx = activeMapping[fieldKey]
-    if (idx === undefined) return ""
-    return parsed.rows[0]?.[idx] ?? ""
-  }
-
-  function confidencePercent(fieldKey: CanonicalFieldKey): string {
-    const c = confidenceMap[fieldKey]
-    if (c === undefined) return ""
-    return `${Math.round(c * 100)}%`
+  // Sample values from the first data row for a given column index.
+  function columnSamples(columnIndex: number): string[] {
+    return parsed.rows
+      .slice(0, 3)
+      .map((row) => row[columnIndex] ?? "")
+      .filter((v) => v !== "")
   }
 
   return (
@@ -172,76 +196,72 @@ export function MapStep({ parsed, mapping, onMappingChange }: MapStepProps) {
         </p>
       )}
 
-      {/* Mapping table */}
+      {/* Mapping table — one row per CSV column */}
       <div className="overflow-x-auto rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{tMap("field")}</TableHead>
-              <TableHead>{tMap("source")}</TableHead>
+              <TableHead>{tMap("column")}</TableHead>
               <TableHead>{tMap("sample")}</TableHead>
-              <TableHead>{tMap("confidence")}</TableHead>
+              <TableHead>{tMap("mappedTo")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {CANONICAL_FIELDS.map((field) => {
-              const fieldLabel = tFields(
-                field.key as Parameters<typeof tFields>[0]
-              )
-              const tierLabel = tTier(field.tier)
+            {parsed.headers.map((header, columnIndex) => {
+              const samples = columnSamples(columnIndex)
+              const currentValue = columnSelectValue(columnIndex)
+              const currentFieldKey = columnToField(activeMapping, columnIndex)
+              const currentFieldLabel = currentFieldKey
+                ? tFields(currentFieldKey as Parameters<typeof tFields>[0])
+                : null
+
               return (
-                <TableRow key={field.key} data-testid={`map-row-${field.key}`}>
-                  {/* Field name + tier badge */}
+                <TableRow key={header} data-testid={`map-col-${header}`}>
+                  {/* CSV column header name */}
                   <TableCell>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-medium text-sm">{fieldLabel}</span>
-                      <Badge variant={tierBadgeVariant(field.tier)}>
-                        {tierLabel}
-                      </Badge>
-                    </div>
+                    <span className="font-medium text-sm">{header}</span>
+                    {currentFieldLabel !== null && (
+                      <span className="ml-2 text-muted-foreground text-xs">
+                        {currentFieldLabel}
+                      </span>
+                    )}
                   </TableCell>
 
-                  {/* Source column selector */}
+                  {/* Sample values from first few data rows */}
+                  <TableCell>
+                    <span className="font-mono text-muted-foreground text-sm">
+                      {samples.join(", ")}
+                    </span>
+                  </TableCell>
+
+                  {/* Field assignment selector */}
                   <TableCell>
                     <Select
-                      value={selectValue(field.key)}
+                      value={currentValue}
                       onValueChange={(value) =>
-                        handleSelectChange(field.key, value)
+                        handleColumnFieldChange(columnIndex, value)
                       }
                     >
                       <SelectTrigger
                         size="sm"
                         className="min-w-[160px]"
-                        aria-label={fieldLabel}
+                        aria-label={header}
                       >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value={NOT_MAPPED_VALUE}>
-                          {tMap("notMapped")}
+                        <SelectItem value={IGNORE_VALUE}>
+                          {tMap("ignore")}
                         </SelectItem>
-                        {parsed.headers.map((header, idx) => (
-                          // biome-ignore lint/suspicious/noArrayIndexKey: column index is the correct stable key here — it IS the value stored in the mapping
-                          <SelectItem key={idx} value={String(idx)}>
-                            {header}
+                        {CANONICAL_FIELDS.map((field) => (
+                          <SelectItem key={field.key} value={field.key}>
+                            {tFields(
+                              field.key as Parameters<typeof tFields>[0]
+                            )}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                  </TableCell>
-
-                  {/* Sample value from first data row */}
-                  <TableCell>
-                    <span className="font-mono text-muted-foreground text-sm">
-                      {sampleValue(field.key)}
-                    </span>
-                  </TableCell>
-
-                  {/* Confidence hint */}
-                  <TableCell>
-                    <span className="text-muted-foreground text-xs">
-                      {confidencePercent(field.key)}
-                    </span>
                   </TableCell>
                 </TableRow>
               )

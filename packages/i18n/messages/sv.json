@@ -193,7 +193,11 @@
           "sample": "Exempelvärde",
           "confidence": "Konfidens",
           "notMapped": "Inte mappad",
-          "unmappedRequired": "{count, plural, one {# obligatoriskt fält är inte mappat} other {# obligatoriska fält är inte mappade}}"
+          "unmappedRequired": "{count, plural, one {# obligatoriskt fält är inte mappat} other {# obligatoriska fält är inte mappade}}",
+          "column": "CSV-kolumn",
+          "mappedTo": "Mappas till",
+          "ignore": "Ignorera",
+          "detected": "Detekterat"
         },
         "check": {
           "title": "Kontrollera beredskap",
