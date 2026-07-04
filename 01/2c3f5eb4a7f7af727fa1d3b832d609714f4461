@@ -1,0 +1,24 @@
+apps/dashboard/components/organization/pseudonymize-section.tsx
+  s_6bff98b662648b::t_3b8e8106d33d26 34-42,57-59,62
+apps/dashboard/components/organization/pseudonymize-section.test.tsx
+  s_6bff98b662648b::t_2c08283f35620e 84-92
+  s_6bff98b662648b::t_2666e1cb0f30e2 52
+  s_6bff98b662648b::t_a49f2eccf4de27 12,14,18
+  s_6bff98b662648b::t_b94166821d500b 93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "012c3f5eb4a7f7af727fa1d3b832d609714f4461",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
