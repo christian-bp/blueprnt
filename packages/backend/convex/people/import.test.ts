@@ -22,6 +22,20 @@ const SAP_NUMERIC_GENDER_CSV = readFileSync(
   "utf8"
 )
 
+const DATE_FORMS_CSV = readFileSync(
+  join(import.meta.dirname, "__fixtures__", "date-forms.csv"),
+  "utf8"
+)
+
+const DATE_FORMS_MAP: string[][] = [
+  ["Id", "externalRef"],
+  ["Fornamn", "firstName"],
+  ["Kon", "gender"],
+  ["Manadslon", "basicMonthly"],
+  ["Befattning", "title"],
+  ["Fodelsedatum", "birthDate"],
+]
+
 // columnMap is string[][] (array of [sourceHeader, canonicalFieldKey] pairs)
 // because Convex forbids non-ASCII characters in v.record() object field names
 // at serialization time. Swedish CSV headers like "Månadslön" and "Födelsedatum"
@@ -500,6 +514,37 @@ describe("importPayroll (row-skip triage)", () => {
       const p2 = people.find((p) => p.externalRef === "00010002")
       expect(p1?.gender).toBe("Man")
       expect(p2?.gender).toBe("Kvinna")
+    })
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Date form expansion: compact YYYYMMDD, Excel serial, short personnummer, ISO
+// ---------------------------------------------------------------------------
+
+describe("importPayroll (date forms)", () => {
+  it("parses compact, Excel-serial, short-personnummer, and ISO birth dates", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: DATE_FORMS_CSV,
+      columnMap: DATE_FORMS_MAP,
+      payYear: 2026,
+    })
+
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      const byRef = (ref: string) => people.find((p) => p.externalRef === ref)
+
+      expect(byRef("E1")?.birthDate).toBe("1987-05-12") // compact YYYYMMDD
+      expect(byRef("E2")?.birthDate).toBe("2023-01-01") // Excel serial 44927
+      expect(byRef("E3")?.birthDate).toBe("1987-05-12") // short personnummer + refYear 2026
+      expect(byRef("E4")?.birthDate).toBe("1990-11-03") // plain ISO
     })
   })
 })

@@ -182,6 +182,10 @@ export const importPayroll = action({
     const benefitInKindCol = colOf("benefitInKind")
     const payYearCol = colOf("payYear")
 
+    // The engine never reads the clock; the action supplies the reference year
+    // for short-personnummer century expansion (explicit payYear arg > now).
+    const referenceYear = args.payYear ?? new Date().getFullYear()
+
     let peopleImported = 0
     let salariesImported = 0
 
@@ -214,11 +218,15 @@ export const importPayroll = action({
       // Optional person fields.
       const birthDateRaw = cell(birthDateCol)
       const birthDate = birthDateRaw
-        ? (parseDate(birthDateRaw) ?? undefined)
+        ? (parseDate(birthDateRaw, { headerGated: true, referenceYear }) ??
+          undefined)
         : undefined
       const employmentStartDateRaw = cell(employmentStartDateCol)
       const employmentStartDate = employmentStartDateRaw
-        ? (parseDate(employmentStartDateRaw) ?? undefined)
+        ? (parseDate(employmentStartDateRaw, {
+            headerGated: true,
+            referenceYear,
+          }) ?? undefined)
         : undefined
       const ftePercentRaw = cell(ftePercentCol)
       const ftePercent = ftePercentRaw
