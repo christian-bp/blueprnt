@@ -198,6 +198,23 @@
           "recommended": "Recommended",
           "optional": "Optional"
         },
+        "check": {
+          "title": "Check readiness",
+          "description": "Review field coverage and data quality before importing.",
+          "ready": "Ready",
+          "blocking": "The following required fields are not mapped. Return to the mapping step to fix them before continuing.",
+          "warnings": "Some recommended fields are not mapped. You can still import, but coverage will be limited.",
+          "issuesHeading": "Data quality issues",
+          "issue": {
+            "duplicateId": "Duplicate employee ID",
+            "unparsableMoney": "Unreadable salary value",
+            "nonNumericCode": "Non-numeric statistical code",
+            "blankGender": "Blank or unrecognized gender",
+            "genderNameMismatch": "Gender and name mismatch"
+          },
+          "rowsAffected": "{count, plural, one {# row} other {# rows}} affected",
+          "cannotProceed": "Fix the required fields above to continue."
+        },
         "fields": {
           "externalRef": "Employee ID",
           "title": "Job title",

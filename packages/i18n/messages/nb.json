@@ -193,6 +193,23 @@
           "notMapped": "Ikke tilordnet",
           "unmappedRequired": "{count, plural, one {# obligatorisk felt er ikke tilordnet} other {# obligatoriske felt er ikke tilordnet}}"
         },
+        "check": {
+          "title": "Kontroller beredskap",
+          "description": "Se gjennom feltdekning og datakvalitet for import.",
+          "ready": "Klar",
+          "blocking": "Folgende obligatoriske felt er ikke tilordnet. Ga tilbake til tilordningssteget og fiks dem for du fortsetter.",
+          "warnings": "Noen anbefalte felt er ikke tilordnet. Du kan fortsatt importere, men dekningen vil vaere begrenset.",
+          "issuesHeading": "Datakvalitetsproblemer",
+          "issue": {
+            "duplicateId": "Duplikat av ansatt-ID",
+            "unparsableMoney": "Uleselig lonnverdi",
+            "nonNumericCode": "Ikke-numerisk statistikkode",
+            "blankGender": "Tomt eller ukjent kjonn",
+            "genderNameMismatch": "Kjonn og navn stemmer ikke"
+          },
+          "rowsAffected": "{count, plural, one {# rad} other {# rader}} pavirket",
+          "cannotProceed": "Fiks de obligatoriske feltene ovenfor for a fortsette."
+        },
         "tier": {
           "required": "Obligatorisk",
           "recommended": "Anbefalt",

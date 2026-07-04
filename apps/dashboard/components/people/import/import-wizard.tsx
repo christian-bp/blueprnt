@@ -10,6 +10,7 @@ import { ScreenShell } from "@/components/onboarding/screen-shell"
 import { WizardFooter } from "@/components/onboarding/wizard-footer"
 import { NextButton } from "@/components/onboarding/next-button"
 import { Button } from "@workspace/ui/components/button"
+import { CheckStep } from "./check-step"
 import { MapStep } from "./map-step"
 import { UploadStep } from "./upload-step"
 
@@ -19,14 +20,16 @@ export interface ParsedCsv {
   rows: string[][]
 }
 
-// Wizard flow state. Steps 3-5 (Map, Check, Review) are placeholders that will
-// be filled in by Tasks 3-5.
+// Wizard flow state.
 interface WizardState {
   step: number
   parsed: ParsedCsv | null
   // Raw CSV text retained so Task 5's importPayroll action can receive it.
   csvText: string | null
   mapping: Record<string, number> | null
+  // Whether the check step has reported blocking required fields.
+  // null = not yet validated (check step not yet reached).
+  checkBlocking: boolean | null
   validation: unknown | null
   result: unknown | null
 }
@@ -47,6 +50,7 @@ export function ImportWizard() {
     parsed: null,
     csvText: null,
     mapping: null,
+    checkBlocking: null,
     validation: null,
     result: null,
   })
@@ -79,9 +83,13 @@ export function ImportWizard() {
     switch (state.step) {
       case STEP_UPLOAD:
         return state.parsed !== null
-      // Placeholder steps: always allow advancing.
       case STEP_MAP:
+        return true
       case STEP_CHECK:
+        // Block advancing when validation has detected missing required fields.
+        // null means validation has not yet run (should not happen in practice
+        // since CheckStep runs validateImport on mount).
+        return state.checkBlocking === false
       case STEP_REVIEW:
         return true
       default:
@@ -139,13 +147,28 @@ export function ImportWizard() {
         )
       case STEP_CHECK:
         return (
-          <ScreenShell heading={t("steps.check")}>
-            {/* Placeholder: replaced by Task 4 */}
+          <ScreenShell
+            heading={t("check.title")}
+            description={t("check.description")}
+          >
+            {state.parsed !== null && state.mapping !== null && (
+              <CheckStep
+                parsed={state.parsed}
+                mapping={state.mapping}
+                onValidated={(isBlocking) =>
+                  setState((prev) => ({ ...prev, checkBlocking: isBlocking }))
+                }
+              />
+            )}
             <WizardFooter>
               <Button variant="outline" onClick={goBack}>
                 {t("back")}
               </Button>
-              <NextButton label={t("next")} onClick={advance} />
+              <NextButton
+                label={t("next")}
+                disabled={!canAdvance}
+                onClick={advance}
+              />
             </WizardFooter>
           </ScreenShell>
         )

@@ -193,6 +193,23 @@
           "notMapped": "Ei yhdistetty",
           "unmappedRequired": "{count, plural, one {# pakollinen kentta ei ole yhdistetty} other {# pakollista kenttaa ei ole yhdistetty}}"
         },
+        "check": {
+          "title": "Tarkista valmius",
+          "description": "Tarkista kenttien kattavuus ja tietolaatu ennen tuontia.",
+          "ready": "Valmis",
+          "blocking": "Seuraavia pakollisia kentia ei ole yhdistetty. Palaa yhdistamisvaiheeseen ja korjaa ne ennen jatkamista.",
+          "warnings": "Joitakin suositeltuja kentia ei ole yhdistetty. Voit silti tuoda, mutta kattavuus jaa rajalliseksi.",
+          "issuesHeading": "Tietolaadun ongelmat",
+          "issue": {
+            "duplicateId": "Tyontekija-ID on kahdennettu",
+            "unparsableMoney": "Palkkaarvoa ei voi lukea",
+            "nonNumericCode": "Ei-numeerinen tilastokoodi",
+            "blankGender": "Tyhja tai tunnistamaton sukupuoli",
+            "genderNameMismatch": "Sukupuoli ja nimi eivat taysmaa"
+          },
+          "rowsAffected": "{count, plural, one {# rivi} other {# rivia}} vaikutettu",
+          "cannotProceed": "Korjaa yllaolevat pakolliset kentat jatkaaksesi."
+        },
         "tier": {
           "required": "Pakollinen",
           "recommended": "Suositeltu",

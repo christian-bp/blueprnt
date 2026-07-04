@@ -193,6 +193,23 @@
           "notMapped": "Ikke tilknyttet",
           "unmappedRequired": "{count, plural, one {# obligatorisk felt er ikke tilknyttet} other {# obligatoriske felter er ikke tilknyttet}}"
         },
+        "check": {
+          "title": "Kontroller beredskab",
+          "description": "Gennemse feltdaekning og datakvalitet inden import.",
+          "ready": "Klar",
+          "blocking": "Folgende obligatoriske felter er ikke tilknyttet. Ga tilbage til tilknytningstrinnet og ret dem, inden du fortsaetter.",
+          "warnings": "Nogle anbefalede felter er ikke tilknyttet. Du kan stadig importere, men daekningen vil vaere begraenset.",
+          "issuesHeading": "Datakvalitetsproblemer",
+          "issue": {
+            "duplicateId": "Duplikeret medarbejder-ID",
+            "unparsableMoney": "Ulaeselig loenvaerdi",
+            "nonNumericCode": "Ikke-numerisk statistisk kode",
+            "blankGender": "Tomt eller ukendt kon",
+            "genderNameMismatch": "Kon og navn stemmer ikke overens"
+          },
+          "rowsAffected": "{count, plural, one {# raekke} other {# raekker}} berort",
+          "cannotProceed": "Ret de obligatoriske felter ovenfor for at fortsaette."
+        },
         "tier": {
           "required": "Obligatorisk",
           "recommended": "Anbefalet",
