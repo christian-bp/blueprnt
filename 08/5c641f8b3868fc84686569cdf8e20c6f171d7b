@@ -1,0 +1,21 @@
+packages/backend/convex/people/assignments.ts
+  s_6bff98b662648b::t_925d5a497aeb63 4-5
+  s_6bff98b662648b::t_2c40fb8ab17bdc 65-146,152-157,174,176,178,183
+  s_6bff98b662648b::t_b8b711481b1349 147-151
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "085c641f8b3868fc84686569cdf8e20c6f171d7b",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
