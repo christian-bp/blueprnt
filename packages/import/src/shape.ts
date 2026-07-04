@@ -1,7 +1,7 @@
 // Value-shape heuristics: classify a column of raw CSV strings into a ValueShape.
 
-import { type ValueShape, fold } from "./fields.js"
-import { parseDate, parseMoney, parsePercent } from "./parse.js"
+import { type ValueShape, fold } from "./fields"
+import { parseDate, parseMoney, parsePercent } from "./parse"
 
 // Detectors operate on a single trimmed cell string.
 

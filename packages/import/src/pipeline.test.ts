@@ -5,9 +5,9 @@ import { readFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import { describe, expect, it } from "vitest"
-import { detectColumns } from "./detect.js"
-import { tokenizeCsv } from "./tokenize.js"
-import { validateFile, validateImport } from "./validate.js"
+import { detectColumns } from "./detect"
+import { tokenizeCsv } from "./tokenize"
+import { validateFile, validateImport } from "./validate"
 
 const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), "..", "fixtures")
 const read = (name: string) => readFileSync(join(FIXTURES, name), "utf8")

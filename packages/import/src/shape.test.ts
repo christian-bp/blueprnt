@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { classifyColumn } from "./shape.js"
+import { classifyColumn } from "./shape"
 
 describe("classifyColumn money vs postal-code / grouped-number (Plan A)", () => {
   it("classifies Swedish 3+2 postal codes as id, not money (SC-05)", () => {

@@ -1,7 +1,7 @@
 // Value parsers / normalizers for the salary import engine.
 // All functions are total: they return null on unparseable input and never throw.
 
-import { fold } from "./fields.js"
+import { fold } from "./fields"
 
 // Known currency markers that may appear as a prefix or suffix in a money cell.
 // The suffix match uses \s* (not \s+) so a run-on suffix like "52000kr" parses (M41).

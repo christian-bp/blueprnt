@@ -1,16 +1,16 @@
 // Data-quality and readiness validation for the salary import engine.
 // Consumes the output of detectColumns and the raw parsed rows.
 
-import type { DetectedMapping } from "./detect.js"
+import type { DetectedMapping } from "./detect"
 import {
   CANONICAL_FIELDS,
   type CanonicalFieldKey,
   type FieldTier,
-} from "./fields.js"
-import { isAmbiguousDate, parseGender, parseMoney } from "./parse.js"
-import { classifyColumn } from "./shape.js"
-import { ImportFormatError, tokenizeCsv } from "./tokenize.js"
-import type { TokenizeResult, TokenizeSignals } from "./tokenize.js"
+} from "./fields"
+import { isAmbiguousDate, parseGender, parseMoney } from "./parse"
+import { classifyColumn } from "./shape"
+import { ImportFormatError, tokenizeCsv } from "./tokenize"
+import type { TokenizeResult, TokenizeSignals } from "./tokenize"
 
 // ---------------------------------------------------------------------------
 // Public types

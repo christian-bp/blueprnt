@@ -4,7 +4,7 @@ import {
   fold,
   matchesSynonym,
   SUBSTRING_MIN_LENGTH,
-} from "./fields.js"
+} from "./fields"
 
 describe("fold", () => {
   it("lowercases, strips accents, strips non-alphanumerics", () => {

@@ -6,8 +6,8 @@ import {
   CANONICAL_FIELDS,
   fold,
   matchesSynonym,
-} from "./fields.js"
-import { classifyColumn } from "./shape.js"
+} from "./fields"
+import { classifyColumn } from "./shape"
 
 export type DetectedMapping = {
   map: Partial<

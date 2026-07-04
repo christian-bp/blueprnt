@@ -1,6 +1,6 @@
 // Tests for detectColumns: column auto-detection via header synonyms + shape heuristics.
 import { describe, expect, it } from "vitest"
-import { detectColumns } from "./detect.js"
+import { detectColumns } from "./detect"
 
 // Real 16-column Swedish payroll export (Sysselssättningsgrad has the known typo).
 const SWEDISH_HEADERS =

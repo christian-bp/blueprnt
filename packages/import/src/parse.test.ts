@@ -9,7 +9,7 @@ import {
   parseBool,
   parseIntId,
   parseStringId,
-} from "./parse.js"
+} from "./parse"
 
 describe("parseMoney", () => {
   it("parses a Swedish-formatted salary with space separators and trailing kr", () => {

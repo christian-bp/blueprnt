@@ -3,7 +3,7 @@ import type {
   BlockingIssueCode,
   FileWarningCode,
   RowIssueCode,
-} from "./validate.js"
+} from "./validate"
 
 // Compile-time + runtime lock: the exhaustive set of codes the wizard must
 // provide labels for. If a code is added without updating this list, the

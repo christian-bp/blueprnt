@@ -1,9 +1,9 @@
 // Tests for validateImport: readiness + data-quality validation.
 import { describe, expect, it } from "vitest"
-import type { DetectedMapping } from "./detect.js"
-import type { CanonicalFieldKey } from "./fields.js"
-import { tokenizeCsv } from "./tokenize.js"
-import { validateFile, validateImport } from "./validate.js"
+import type { DetectedMapping } from "./detect"
+import type { CanonicalFieldKey } from "./fields"
+import { tokenizeCsv } from "./tokenize"
+import { validateFile, validateImport } from "./validate"
 
 // Real-derived 16-column Swedish payroll fixture.
 // Headers match the detect.test.ts SWEDISH_HEADERS fixture.

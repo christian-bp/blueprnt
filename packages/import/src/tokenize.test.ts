@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { tokenizeCsv, ImportFormatError } from "./tokenize.js"
+import { tokenizeCsv, ImportFormatError } from "./tokenize"
 
 // Real 16-column header from a Swedish HR export.
 const HEADER =
