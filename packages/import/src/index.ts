@@ -12,6 +12,7 @@ export type {
 } from "./fields.js"
 
 export { tokenizeCsv } from "./tokenize.js"
+export type { TokenizeResult, TokenizeSignals } from "./tokenize.js"
 
 export { classifyColumn } from "./shape.js"
 
