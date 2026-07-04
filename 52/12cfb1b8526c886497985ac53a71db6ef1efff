@@ -1,0 +1,39 @@
+packages/backend/convex/people/classification.test.ts
+  s_6bff98b662648b::t_22bce07dd30c6b 1-176,184-247
+  s_6bff98b662648b::t_5dd55283ddc54c 177-183
+packages/backend/convex/people/classification.ts
+  s_6bff98b662648b::t_4e51cf41e8bf06 1-124
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_4d2fd897f532e9 431
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_bee66ff3567d96 431
+packages/backend/convex/lib/auditPayloads.ts
+  s_6bff98b662648b::t_09c400a851ace6 295-299
+packages/backend/convex/people/classificationShared.ts
+  s_6bff98b662648b::t_326a4f090d03ba 1-113
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_5a8387b52f1519 431
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_ba950493e9dd13 431
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_f1b43f63871406 431
+packages/backend/convex/lib/audit.ts
+  s_6bff98b662648b::t_c1aecfb068645a 45
+  s_6bff98b662648b::t_5cc01a0b1f1bca 85-86
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "5212cfb1b8526c886497985ac53a71db6ef1efff",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
