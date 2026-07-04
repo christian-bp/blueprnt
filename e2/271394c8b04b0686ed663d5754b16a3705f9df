@@ -1,0 +1,38 @@
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_066672f4aa4252 214-221
+  s_6bff98b662648b::t_e2e59618e2aa9b 185-186
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_bddce6dcfce03d 209-216
+  s_6bff98b662648b::t_760da5dcf2c502 185-186
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_6f8a93e0fbf5b0 209-216
+  s_6bff98b662648b::t_59fd7e601dd38c 185-186
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_064d388f92b3c4 209-216
+  s_6bff98b662648b::t_11756658464b37 185-186
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_624725ef1c6850 209-216
+  s_6bff98b662648b::t_3d8dc2cd7dca57 185-186
+apps/dashboard/components/people/import/upload-step.tsx
+  s_6bff98b662648b::t_874918c2e319bc 16,21-29
+  s_6bff98b662648b::t_2f32aef3d5ece8 3
+  s_6bff98b662648b::t_29859b49b1c713 47-49
+packages/import/src/issue-codes.test.ts
+  s_6bff98b662648b::t_28f88bc2078864 1-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "e2271394c8b04b0686ed663d5754b16a3705f9df",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
