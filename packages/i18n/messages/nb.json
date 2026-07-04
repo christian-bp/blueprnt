@@ -211,12 +211,14 @@
             "fractionScaled": "Stillingsprosent tolket som andel og skalert til prosent",
             "ambiguousDate": "Tvetydig dato (tolket som dag/måned)",
             "negativeValue": "Negativ lønnsverdi",
-            "raggedRow": "Raden har feil antall kolonner",
-            "noDelimiter": "Ingen kolonneskiller funnet",
-            "mojibake": "Overskriftsteksten ser ødelagt ut (feil filkoding)"
+            "raggedRow": "Raden har feil antall kolonner"
           },
           "rowsAffected": "{count, plural, one {# rad} other {# rader}} pavirket",
-          "cannotProceed": "Fiks de obligatoriske feltene ovenfor for a fortsette."
+          "cannotProceed": "Fiks de obligatoriske feltene ovenfor for a fortsette.",
+          "fileWarning": {
+            "noDelimiter": "Ingen kolonneskiller funnet",
+            "mojibake": "Overskriftsteksten ser ødelagt ut (feil filkoding)"
+          }
         },
         "tier": {
           "required": "Obligatorisk",

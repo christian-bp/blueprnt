@@ -456,6 +456,21 @@ describe("validateImport — issues: ambiguousDate (date-04)", () => {
       result.issues.filter((i) => i.code === "ambiguousDate")
     ).toHaveLength(0)
   })
+
+  it("does not flag a calendar-invalid date even when both components are <= 12 (date-04-calendar-guard)", () => {
+    // 11/11/0000: both components <= 12 so the old local helper returned true,
+    // but parseDate("11/11/0000") returns null (year 0 fails toIsoDate via Date.UTC
+    // normalization), so isAmbiguousDate correctly returns false.
+    const rows: string[][] = [
+      "11/11/0000;Anna;Svensson;Nej;Kvinna;Sverige;2024;1985-06-12;Analyst;1231;49788;0;0;SEK;114;100".split(
+        ";"
+      ),
+    ]
+    const result = validateImport({ headers: HEADERS, rows }, FULL_MAPPING, {})
+    expect(
+      result.issues.filter((i) => i.code === "ambiguousDate")
+    ).toHaveLength(0)
+  })
 })
 
 describe("validateImport — issues: negativeValue (ENC-24)", () => {

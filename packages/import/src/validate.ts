@@ -7,7 +7,8 @@ import {
   type CanonicalFieldKey,
   type FieldTier,
 } from "./fields.js"
-import { parseGender, parseMoney } from "./parse.js"
+import { isAmbiguousDate, parseGender, parseMoney } from "./parse.js"
+import { classifyColumn } from "./shape.js"
 import { ImportFormatError, tokenizeCsv } from "./tokenize.js"
 import type { TokenizeResult, TokenizeSignals } from "./tokenize.js"
 
@@ -79,6 +80,13 @@ export type ValidateOpts = {
 }
 
 // ---------------------------------------------------------------------------
+// Module-scope constants
+// ---------------------------------------------------------------------------
+
+// Double-encoded UTF-8 sequences that indicate a mojibake header (ENC-04).
+const MOJIBAKE = /Ã¥|Ã¶|Ã¤|Ã¸|Ã¦/
+
+// ---------------------------------------------------------------------------
 // Pure helpers (not exported)
 // ---------------------------------------------------------------------------
 
@@ -96,35 +104,14 @@ function isNegativeMoney(raw: string): boolean {
 }
 
 /**
- * A slash/dot date is ambiguous when both the first and second numeric
- * components are in 1..12 (either DD/MM or MM/DD is a valid calendar day).
- * Deterministic and reference-year-free: ambiguity depends only on the
- * two components, not the year.
- */
-function isAmbiguousSlashDotDate(raw: string): boolean {
-  const m = raw.trim().match(/^(\d{1,2})[./](\d{1,2})[./]\d{4}$/)
-  if (!m) return false
-  const a = Number(m[1])
-  const b = Number(m[2])
-  return a >= 1 && a <= 12 && b >= 1 && b <= 12
-}
-
-/**
- * A column is fractional when it has at least one non-blank cell and every
- * non-blank cell parses to a finite number <= 1.0 (comma or dot decimal).
- * Mirrors the fraction heuristic Plan B applies in classifyColumn/parsePercent.
+ * A column is fractional when classifyColumn reports fraction: true, meaning
+ * every non-blank cell parsed to a finite number <= 1.0. Delegates to the
+ * engine's own column classifier so this check and classifyColumn can never
+ * diverge.
  */
 function isFractionColumn(rows: string[][], col: number): boolean {
-  let sawValue = false
-  for (const row of rows) {
-    const raw = (row[col] ?? "").trim()
-    if (raw === "") continue
-    const n = Number(raw.replace(",", "."))
-    if (!Number.isFinite(n)) return false
-    if (n > 1) return false
-    sawValue = true
-  }
-  return sawValue
+  const result = classifyColumn(rows.map((r) => r[col] ?? ""))
+  return result.fraction === true
 }
 
 // ---------------------------------------------------------------------------
@@ -151,7 +138,6 @@ export function validateImport(
   const { map } = mapping
 
   // Mojibake detection: flag when 2+ headers contain double-encoded UTF-8 sequences.
-  const MOJIBAKE = /Ã¥|Ã¶|Ã¤|Ã¸|Ã¦/
   const mojibakeCount = headers.filter((h) => MOJIBAKE.test(h)).length
   const fileWarnings: FileWarningCode[] = []
   if (mojibakeCount >= 2) fileWarnings.push("mojibake")
@@ -315,7 +301,7 @@ export function validateImport(
     for (const dateCol of [employmentStartDateCol, birthDateCol]) {
       if (dateCol === undefined) continue
       const raw = cell(dateCol)
-      if (raw !== "" && isAmbiguousSlashDotDate(raw)) {
+      if (raw !== "" && isAmbiguousDate(raw)) {
         issues.push({
           row: rowIdx,
           code: "ambiguousDate",

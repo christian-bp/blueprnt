@@ -216,12 +216,14 @@
             "fractionScaled": "FTE read as a fraction and scaled to a percentage",
             "ambiguousDate": "Ambiguous date (read as day/month)",
             "negativeValue": "Negative salary value",
-            "raggedRow": "Row has the wrong number of columns",
-            "noDelimiter": "No column separator detected",
-            "mojibake": "Header text looks garbled (wrong file encoding)"
+            "raggedRow": "Row has the wrong number of columns"
           },
           "rowsAffected": "{count, plural, one {# row} other {# rows}} affected",
-          "cannotProceed": "Fix the required fields above to continue."
+          "cannotProceed": "Fix the required fields above to continue.",
+          "fileWarning": {
+            "noDelimiter": "No column separator detected",
+            "mojibake": "Header text looks garbled (wrong file encoding)"
+          }
         },
         "fields": {
           "externalRef": "Employee ID",

@@ -211,12 +211,14 @@
             "fractionScaled": "Beskæftigelsesgrad tolket som andel og skaleret til procent",
             "ambiguousDate": "Tvetydig dato (tolket som dag/måned)",
             "negativeValue": "Negativ lønværdi",
-            "raggedRow": "Rækken har det forkerte antal kolonner",
-            "noDelimiter": "Ingen kolonneadskiller fundet",
-            "mojibake": "Overskriftsteksten ser ødelagt ud (forkert filkodning)"
+            "raggedRow": "Rækken har det forkerte antal kolonner"
           },
           "rowsAffected": "{count, plural, one {# raekke} other {# raekker}} berort",
-          "cannotProceed": "Ret de obligatoriske felter ovenfor for at fortsaette."
+          "cannotProceed": "Ret de obligatoriske felter ovenfor for at fortsaette.",
+          "fileWarning": {
+            "noDelimiter": "Ingen kolonneadskiller fundet",
+            "mojibake": "Overskriftsteksten ser ødelagt ud (forkert filkodning)"
+          }
         },
         "tier": {
           "required": "Obligatorisk",

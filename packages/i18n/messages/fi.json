@@ -211,12 +211,14 @@
             "fractionScaled": "Työaika tulkittiin osuutena ja skaalattiin prosenteiksi",
             "ambiguousDate": "Monitulkintainen päivämäärä (tulkittu muodossa päivä/kuukausi)",
             "negativeValue": "Negatiivinen palkka-arvo",
-            "raggedRow": "Rivillä on väärä määrä sarakkeita",
-            "noDelimiter": "Sarake-erotinta ei löytynyt",
-            "mojibake": "Otsikkoteksti näyttää vioittuneelta (väärä tiedostokoodaus)"
+            "raggedRow": "Rivillä on väärä määrä sarakkeita"
           },
           "rowsAffected": "{count, plural, one {# rivi} other {# rivia}} vaikutettu",
-          "cannotProceed": "Korjaa yllaolevat pakolliset kentat jatkaaksesi."
+          "cannotProceed": "Korjaa yllaolevat pakolliset kentat jatkaaksesi.",
+          "fileWarning": {
+            "noDelimiter": "Sarake-erotinta ei löytynyt",
+            "mojibake": "Otsikkoteksti näyttää vioittuneelta (väärä tiedostokoodaus)"
+          }
         },
         "tier": {
           "required": "Pakollinen",

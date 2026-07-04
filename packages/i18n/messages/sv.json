@@ -211,12 +211,14 @@
             "fractionScaled": "Sysselsättningsgrad tolkad som andel och skalad till procent",
             "ambiguousDate": "Tvetydigt datum (tolkat som dag/månad)",
             "negativeValue": "Negativt lönevärde",
-            "raggedRow": "Raden har fel antal kolumner",
-            "noDelimiter": "Ingen kolumnavgränsare hittades",
-            "mojibake": "Rubriktexten ser skadad ut (fel filkodning)"
+            "raggedRow": "Raden har fel antal kolumner"
           },
           "rowsAffected": "{count, plural, one {# rad} other {# rader}} berörda",
-          "cannotProceed": "Åtgärda de obligatoriska fälten ovan för att fortsätta."
+          "cannotProceed": "Åtgärda de obligatoriska fälten ovan för att fortsätta.",
+          "fileWarning": {
+            "noDelimiter": "Ingen kolumnavgränsare hittades",
+            "mojibake": "Rubriktexten ser skadad ut (fel filkodning)"
+          }
         },
         "tier": {
           "required": "Obligatorisk",
