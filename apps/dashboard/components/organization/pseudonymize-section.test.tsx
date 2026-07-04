@@ -9,12 +9,13 @@ import en from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
-const { toastSuccess } = vi.hoisted(() => ({
+const { toastSuccess, toastError } = vi.hoisted(() => ({
   toastSuccess: vi.fn(),
+  toastError: vi.fn(),
 }))
 
 vi.mock("sonner", () => ({
-  toast: { success: toastSuccess },
+  toast: { success: toastSuccess, error: toastError },
 }))
 
 vi.mock(
@@ -48,6 +49,7 @@ afterEach(() => {
   cleanup()
   updateSettings.mockClear()
   toastSuccess.mockClear()
+  toastError.mockClear()
 })
 
 describe("PseudonymizeSection", () => {
@@ -78,5 +80,15 @@ describe("PseudonymizeSection", () => {
     fireEvent.click(toggle)
     await waitFor(() => expect(toastSuccess).toHaveBeenCalledOnce())
     expect(toastSuccess).toHaveBeenCalledWith(en.dashboard.toast.orgSaved)
+  })
+
+  it("fires toast.error when the mutation rejects and does not call toast.success", async () => {
+    updateSettings.mockRejectedValueOnce(new Error("forbidden"))
+    renderSection(false)
+    const toggle = screen.getByRole("switch")
+    fireEvent.click(toggle)
+    await waitFor(() => expect(toastError).toHaveBeenCalledOnce())
+    expect(toastError).toHaveBeenCalledWith(en.dashboard.toast.error)
+    expect(toastSuccess).not.toHaveBeenCalled()
   })
 })

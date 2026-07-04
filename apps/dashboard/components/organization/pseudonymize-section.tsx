@@ -31,8 +31,15 @@ export function PseudonymizeSection({
   )
 
   async function onToggle(next: boolean) {
-    await updateSettings({ orgId, pseudonymizeNames: next })
-    toast.success(tToast("orgSaved"))
+    try {
+      await updateSettings({ orgId, pseudonymizeNames: next })
+      toast.success(tToast("orgSaved"))
+    } catch {
+      // On failure: surface the error via toast; the Switch is controlled
+      // (checked={pseudonymizeNames}) so it auto-reverts to the last persisted
+      // value without any manual state reset.
+      toast.error(tToast("error"))
+    }
   }
 
   return (
@@ -47,9 +54,12 @@ export function PseudonymizeSection({
         >
           {t("pseudonymizeDescription")}
         </Label>
+        {/* FIX 4: controlled switch (checked= not defaultChecked=) so the
+            component reflects the actual persisted prop and auto-reverts
+            if the backend write fails. */}
         <Switch
           id="pseudonymize-toggle"
-          defaultChecked={pseudonymizeNames}
+          checked={pseudonymizeNames}
           onCheckedChange={onToggle}
         />
       </CardContent>
