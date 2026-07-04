@@ -1,0 +1,24 @@
+packages/constants/src/index.ts
+  s_6bff98b662648b::t_41ea060e86f52b 25
+packages/constants/src/pay.ts
+  s_6bff98b662648b::t_985ec0701e9db3 25-40
+packages/constants/src/pay.test.ts
+  s_6bff98b662648b::t_bd6d45013ac44b 2-6,53-55,73-75
+  s_6bff98b662648b::t_26a5ec6c13294d 49-52,56-72,76-77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "d80be1d4b815d2276531de2829e985b54a4f9f4e",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
