@@ -1,0 +1,33 @@
+packages/import/src/validate.ts
+  s_6bff98b662648b::t_a1ebca32775a68 10-11
+  s_6bff98b662648b::t_1c1605c77f2bd6 82-88,107-110,113-114
+  s_6bff98b662648b::t_59015c03e6b9ce 304
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_3ac59cd0b9a349 219,222-226
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_3ac59cd0b9a349 214,217-221
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_3ac59cd0b9a349 214,217-221
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_3ac59cd0b9a349 214,217-221
+packages/import/src/validate.test.ts
+  s_6bff98b662648b::t_a6084c13b356cc 459-473
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_3ac59cd0b9a349 214,217-221
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "1095fcb233fc5c2add0428420662461073c83784",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
