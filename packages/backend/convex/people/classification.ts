@@ -1,4 +1,3 @@
-import { suggestLevelForPerson } from "@workspace/core"
 import { v } from "convex/values"
 import type { MutationCtx } from "../_generated/server"
 import { AUDIT_EVENTS, logAudit } from "../lib/audit"
@@ -69,13 +68,17 @@ export async function classifyOrg(
             .collect()
         ).find((a) => a.endedAt === undefined) ?? null
 
-      // buildTitleGroups already computed the per-person level for a matched
-      // group; fall back to the engine's low level defensively so it is never
-      // null when role !== undefined.
-      const level =
-        group.suggestedLevelByPerson.get(person._id as string) ??
-        suggestLevelForPerson({ trackKey: role.trackKey, today: now })
-          .suggestedLevel
+      // buildTitleGroups always populates suggestedLevelByPerson for every
+      // person in a matched group (role is defined here). A miss means the
+      // shared helper and this write path have diverged; fail loud rather than
+      // silently recompute with different engine inputs (which would disagree
+      // with listPeopleByTitle).
+      const level = group.suggestedLevelByPerson.get(person._id as string)
+      if (level === null || level === undefined) {
+        throw new Error(
+          `classifyOrg invariant: no suggested level for person ${person._id}`
+        )
+      }
 
       if (
         open !== null &&
