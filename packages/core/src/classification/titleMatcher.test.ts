@@ -82,12 +82,9 @@ describe("suggestRoleForTitles", () => {
   })
 
   it("breaks a remaining tie by lexically earliest role title", () => {
-    const _tieRoles: RoleCandidate[] = [
-      { roleId: "role_b", title: "Zeta Analyst", trackKey: "IC" },
-      { roleId: "role_a", title: "Alpha Analyst", trackKey: "IC" },
-    ]
-    // "Analyst" fuzzy-ties both (∩1 ∪2 = 0.5, NOT above 0.5) -> below threshold.
-    // Use exact-tie titles to force the lexical tiebreaker deterministically:
+    // Note: "Analyst" vs {analyst, zeta} or {analyst, alpha} gives Jaccard 0.5,
+    // which is NOT strictly above the default threshold, so those would be
+    // unmatched. Use exact-tie titles instead to force the lexical tiebreaker:
     const exactTie: RoleCandidate[] = [
       { roleId: "role_z", title: "Analyst", trackKey: "IC" },
       { roleId: "role_a2", title: "Analyst", trackKey: "IC" },
@@ -98,6 +95,36 @@ describe("suggestRoleForTitles", () => {
     const [again] = suggestRoleForTitles([title("Analyst")], exactTie)
     expect(out?.suggestedRoleId).toBe(again?.suggestedRoleId)
     expect(out?.confidence).toBe("high")
+  })
+
+  it("returns unmatched when Jaccard is exactly 0.5 (threshold is strictly above)", () => {
+    // importedTitle "Analyst" normalizes to tokens {analyst}.
+    // Role "Company Analyst" normalizes to tokens {company, analyst}.
+    // Jaccard = |{analyst}| / |{company, analyst}| = 1/2 = 0.5, which is NOT
+    // strictly above the default threshold of 0.5, so the result must be unmatched.
+    // This test would fail if the threshold guard were changed from > to >=.
+    const boundaryRoles: RoleCandidate[] = [
+      { roleId: "role_ca", title: "Company Analyst", trackKey: "IC" },
+    ]
+    const [out] = suggestRoleForTitles([title("Analyst")], boundaryRoles)
+    expect(out).toEqual({
+      importedTitle: "Analyst",
+      personCount: 1,
+      suggestedRoleId: null,
+      confidence: "unmatched",
+    })
+  })
+
+  it("returns unmatched for an empty importedTitle", () => {
+    // An empty string normalizes to an empty token set, so Jaccard against any
+    // role is 0 (no intersection, non-zero union). Nothing clears the threshold.
+    const [out] = suggestRoleForTitles([title("")], ROLES)
+    expect(out).toEqual({
+      importedTitle: "",
+      personCount: 1,
+      suggestedRoleId: null,
+      confidence: "unmatched",
+    })
   })
 
   it("is deterministic across repeated calls", () => {

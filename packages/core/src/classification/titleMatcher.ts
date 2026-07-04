@@ -130,7 +130,7 @@ function pickWinner(
         managerRank(b.role.trackKey) - managerRank(a.role.trackKey)
       if (rankDiff !== 0) return rankDiff
     }
-    return a.role.title.localeCompare(b.role.title)
+    return a.role.title.localeCompare(b.role.title, "en")
   })
   // sorted[0] is always defined here: pickWinner is only called with a non-empty
   // candidates array.
