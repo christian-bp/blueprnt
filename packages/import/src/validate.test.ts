@@ -400,6 +400,93 @@ describe("validateImport — clean fixture produces no issues", () => {
   })
 })
 
+describe("validateImport — issues: fractionScaled (pp-07)", () => {
+  it("flags every row of a fractional FTE column", () => {
+    // ftePercent column (index 15) holds fractions 0.8 / 1.0 / 0,5
+    const rows: string[][] = [
+      "2019-03-01;Anna;Svensson;Nej;Kvinna;Sverige;2024;1985-06-12;Analyst;1231;49788;0;5000;SEK;114;0.8".split(
+        ";"
+      ),
+      "2021-08-15;Erik;Lindqvist;Ja;Man;Sverige;2024;1990-11-30;PM;1232;65000;0;0;SEK;115;1.0".split(
+        ";"
+      ),
+      "2022-01-01;Sara;Berg;Nej;Kvinna;Sverige;2024;1988-04-20;Analyst;1233;52000;0;0;SEK;116;0,5".split(
+        ";"
+      ),
+    ]
+    const result = validateImport({ headers: HEADERS, rows }, FULL_MAPPING, {})
+    const scaled = result.issues.filter((i) => i.code === "fractionScaled")
+    expect(scaled.map((i) => i.row).sort()).toEqual([0, 1, 2])
+  })
+
+  it("does not flag a normal 0-100 FTE column", () => {
+    // ROWS ftePercent cells are 100 / 80 / 100 / 100 -> not a fraction column
+    const result = validateImport(
+      { headers: HEADERS, rows: ROWS },
+      FULL_MAPPING,
+      {}
+    )
+    expect(
+      result.issues.filter((i) => i.code === "fractionScaled")
+    ).toHaveLength(0)
+  })
+})
+
+describe("validateImport — issues: ambiguousDate (date-04)", () => {
+  it("flags a DD/MM date whose MM/DD reading is also valid (01/06/2023)", () => {
+    // employmentStartDate column (index 0) holds an ambiguous slash date.
+    const rows: string[][] = [
+      "01/06/2023;Anna;Svensson;Nej;Kvinna;Sverige;2024;1985-06-12;Analyst;1231;49788;0;0;SEK;114;100".split(
+        ";"
+      ),
+    ]
+    const result = validateImport({ headers: HEADERS, rows }, FULL_MAPPING, {})
+    const amb = result.issues.filter((i) => i.code === "ambiguousDate")
+    expect(amb.map((i) => i.row)).toContain(0)
+  })
+
+  it("does not flag an unambiguous date (15/06/2023, day > 12)", () => {
+    const rows: string[][] = [
+      "15/06/2023;Anna;Svensson;Nej;Kvinna;Sverige;2024;1985-06-12;Analyst;1231;49788;0;0;SEK;114;100".split(
+        ";"
+      ),
+    ]
+    const result = validateImport({ headers: HEADERS, rows }, FULL_MAPPING, {})
+    expect(
+      result.issues.filter((i) => i.code === "ambiguousDate")
+    ).toHaveLength(0)
+  })
+})
+
+describe("validateImport — issues: negativeValue (ENC-24)", () => {
+  it("flags a negative money cell as negativeValue, not unparsableMoney", () => {
+    const rows: string[][] = [
+      "2019-03-01;Anna;Svensson;Nej;Kvinna;Sverige;2024;1985-06-12;Analyst;1231;-45000;0;0;SEK;114;100".split(
+        ";"
+      ),
+    ]
+    const result = validateImport({ headers: HEADERS, rows }, FULL_MAPPING, {})
+    expect(
+      result.issues.filter((i) => i.code === "negativeValue").map((i) => i.row)
+    ).toContain(0)
+    expect(
+      result.issues.filter((i) => i.code === "unparsableMoney")
+    ).toHaveLength(0)
+  })
+
+  it("flags a parenthesized-negative money cell as negativeValue", () => {
+    const rows: string[][] = [
+      "2019-03-01;Anna;Svensson;Nej;Kvinna;Sverige;2024;1985-06-12;Analyst;1231;(500);0;0;SEK;114;100".split(
+        ";"
+      ),
+    ]
+    const result = validateImport({ headers: HEADERS, rows }, FULL_MAPPING, {})
+    expect(
+      result.issues.filter((i) => i.code === "negativeValue").map((i) => i.row)
+    ).toContain(0)
+  })
+})
+
 describe("validateFile — invalidFileFormat (A1, A4)", () => {
   // XLSX / ODS ZIP local-file header.
   const XLSX_MAGIC = "PK\x03\x04\x14\x00\x06\x00"

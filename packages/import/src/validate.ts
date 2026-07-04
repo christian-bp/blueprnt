@@ -21,6 +21,9 @@ export type RowIssueCode =
   | "nonNumericCode"
   | "unresolvedGender"
   | "genderNameMismatch"
+  | "fractionScaled"
+  | "ambiguousDate"
+  | "negativeValue"
 
 export type RowIssue = {
   /** 0-based index into the data rows array. */
@@ -68,6 +71,55 @@ export type ImportValidation = {
  */
 export type ValidateOpts = {
   knownNames?: Record<string, "Man" | "Kvinna">
+}
+
+// ---------------------------------------------------------------------------
+// Pure helpers (not exported)
+// ---------------------------------------------------------------------------
+
+/**
+ * A money cell is negative when it starts with a minus or is fully
+ * parenthesized (accounting convention). Negative money is unsupported
+ * for V1 (parseMoney returns null); this lets validate name it instead
+ * of reporting an opaque unparsableMoney.
+ */
+function isNegativeMoney(raw: string): boolean {
+  const t = raw.trim()
+  if (t === "") return false
+  if (/^\(\s*\d[\d\s.,]*\)$/.test(t)) return true
+  return /^-\s*\d/.test(t)
+}
+
+/**
+ * A slash/dot date is ambiguous when both the first and second numeric
+ * components are in 1..12 (either DD/MM or MM/DD is a valid calendar day).
+ * Deterministic and reference-year-free: ambiguity depends only on the
+ * two components, not the year.
+ */
+function isAmbiguousSlashDotDate(raw: string): boolean {
+  const m = raw.trim().match(/^(\d{1,2})[./](\d{1,2})[./]\d{4}$/)
+  if (!m) return false
+  const a = Number(m[1])
+  const b = Number(m[2])
+  return a >= 1 && a <= 12 && b >= 1 && b <= 12
+}
+
+/**
+ * A column is fractional when it has at least one non-blank cell and every
+ * non-blank cell parses to a finite number <= 1.0 (comma or dot decimal).
+ * Mirrors the fraction heuristic Plan B applies in classifyColumn/parsePercent.
+ */
+function isFractionColumn(rows: string[][], col: number): boolean {
+  let sawValue = false
+  for (const row of rows) {
+    const raw = (row[col] ?? "").trim()
+    if (raw === "") continue
+    const n = Number(raw.replace(",", "."))
+    if (!Number.isFinite(n)) return false
+    if (n > 1) return false
+    sawValue = true
+  }
+  return sawValue
 }
 
 // ---------------------------------------------------------------------------
@@ -119,6 +171,13 @@ export function validateImport(
   const statisticalCodeCol = colOf("statisticalCode")
   const genderCol = colOf("gender")
   const firstNameCol = colOf("firstName")
+  const ftePercentCol = colOf("ftePercent")
+  const employmentStartDateCol = colOf("employmentStartDate")
+  const birthDateCol = colOf("birthDate")
+
+  // Determine once whether the ftePercent column is a fraction (0..1) column.
+  const fteIsFraction =
+    ftePercentCol !== undefined && isFractionColumn(rows, ftePercentCol)
 
   // Track seen externalRef values for duplicate detection.
   const seenRefs = new Map<string, number>() // value -> first row index
@@ -156,15 +215,23 @@ export function validateImport(
       }
     }
 
-    // unparsableMoney: non-blank basicMonthly cell that parseMoney returns null for.
+    // unparsableMoney / negativeValue: non-blank basicMonthly cell.
     if (basicMonthlyCol !== undefined) {
       const raw = cell(basicMonthlyCol)
-      if (raw !== "" && parseMoney(raw) === null) {
-        issues.push({
-          row: rowIdx,
-          code: "unparsableMoney",
-          detail: `basicMonthly cell "${raw}" is not a parseable money value`,
-        })
+      if (raw !== "") {
+        if (isNegativeMoney(raw)) {
+          issues.push({
+            row: rowIdx,
+            code: "negativeValue",
+            detail: `basicMonthly cell "${raw}" is a negative or parenthesized value`,
+          })
+        } else if (parseMoney(raw) === null) {
+          issues.push({
+            row: rowIdx,
+            code: "unparsableMoney",
+            detail: `basicMonthly cell "${raw}" is not a parseable money value`,
+          })
+        }
       }
     }
 
@@ -214,6 +281,31 @@ export function validateImport(
             detail: `firstName "${firstName}" is typically "${expectedGender}" but gender cell is "${parsedGender}"`,
           })
         }
+      }
+    }
+
+    // fractionScaled: FTE column normalized x100 by the fraction heuristic.
+    if (fteIsFraction && ftePercentCol !== undefined) {
+      const raw = cell(ftePercentCol)
+      if (raw !== "") {
+        issues.push({
+          row: rowIdx,
+          code: "fractionScaled",
+          detail: `ftePercent cell "${raw}" was scaled x100 (fraction column)`,
+        })
+      }
+    }
+
+    // ambiguousDate: slash/dot date parsed DD/MM while MM/DD was also valid.
+    for (const dateCol of [employmentStartDateCol, birthDateCol]) {
+      if (dateCol === undefined) continue
+      const raw = cell(dateCol)
+      if (raw !== "" && isAmbiguousSlashDotDate(raw)) {
+        issues.push({
+          row: rowIdx,
+          code: "ambiguousDate",
+          detail: `date cell "${raw}" is ambiguous (DD/MM assumed)`,
+        })
       }
     }
   }
