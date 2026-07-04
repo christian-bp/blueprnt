@@ -3,6 +3,7 @@
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Badge } from "@workspace/ui/components/badge"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   Table,
   TableBody,
@@ -64,24 +65,53 @@ export function PersonDetail({ personId }: { personId: string }) {
     assignment === undefined ||
     roles === undefined
   ) {
+    // Mirror the full loaded layout so nothing reflows when data arrives.
+    // The breadcrumb crumbs already has an empty label for the person name
+    // position; the PageHeader title uses a Skeleton bar to avoid a text swap.
     return (
       <div className="space-y-6">
         <PageHeader
           breadcrumb={<PageBreadcrumb segments={crumbs} />}
-          title={t("identityHeading")}
+          title={<Skeleton className="h-6 w-48" />}
         />
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t("salaryColumns.payYear")}</TableHead>
-              <TableHead>{t("salaryColumns.basicMonthly")}</TableHead>
-              <TableHead>{t("salaryColumns.total")}</TableHead>
-              <TableHead>{t("salaryColumns.currency")}</TableHead>
-              <TableHead>{t("salaryColumns.source")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableSkeleton rows={3} columns={5} />
-        </Table>
+
+        {/* Identity block skeleton: same 4-column grid as the loaded state */}
+        <dl className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton placeholders
+            <div key={i} className="space-y-1">
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+          ))}
+        </dl>
+
+        {/* Classification block skeleton: same section wrapper as loaded state */}
+        <section className="space-y-2">
+          <Skeleton className="h-4 w-32" />
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-4 w-28" />
+            <Skeleton className="h-5 w-10 rounded-full" />
+            <Skeleton className="h-4 w-20" />
+          </div>
+        </section>
+
+        {/* Salary block skeleton: same section + h2 + table wrapper as loaded state */}
+        <section className="space-y-2">
+          <Skeleton className="h-4 w-28" />
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("salaryColumns.payYear")}</TableHead>
+                <TableHead>{t("salaryColumns.basicMonthly")}</TableHead>
+                <TableHead>{t("salaryColumns.total")}</TableHead>
+                <TableHead>{t("salaryColumns.currency")}</TableHead>
+                <TableHead>{t("salaryColumns.source")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableSkeleton rows={3} columns={5} />
+          </Table>
+        </section>
       </div>
     )
   }
