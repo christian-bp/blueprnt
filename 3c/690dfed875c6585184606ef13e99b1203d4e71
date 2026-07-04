@@ -1,0 +1,29 @@
+packages/backend/convex/people/__fixtures__/personec-fraction.csv
+  s_6bff98b662648b::t_be16205a97d527 1-3
+packages/backend/convex/people/__fixtures__/sap-numeric-gender.csv
+  s_6bff98b662648b::t_f638970f3cf936 1-3
+packages/backend/convex/people/import.ts
+  s_6bff98b662648b::t_25cdc70d4066d0 13
+  s_6bff98b662648b::t_71e68367b7d5d0 148-155
+  s_6bff98b662648b::t_6dd1f1de8983c3 49-64
+packages/backend/convex/people/import.test.ts
+  s_6bff98b662648b::t_a20efbd7675151 16-24
+  s_6bff98b662648b::t_8031095b08b533 434-446,448-494
+  s_6bff98b662648b::t_8c02556d9cc281 447
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "3c690dfed875c6585184606ef13e99b1203d4e71",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
