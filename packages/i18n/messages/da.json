@@ -182,6 +182,40 @@
           "detected": "{rows, plural, one {# række} other {# rækker}}, {columns} kolonner fundet.",
           "errorNotCsv": "Kun CSV-filer understøttes. Vælg en .csv-fil.",
           "errorEmpty": "Filen er tom. Vælg en CSV-fil med mindst én datalinje."
+        },
+        "map": {
+          "title": "Tilknyt kolonner",
+          "description": "Knyt hvert felt til en kolonne i din CSV-fil. Obligatoriske felter skal tilknyttes, for du kan fortsaette.",
+          "field": "Felt",
+          "source": "CSV-kolonne",
+          "sample": "Eksempelvaerdi",
+          "confidence": "Konfidens",
+          "notMapped": "Ikke tilknyttet",
+          "unmappedRequired": "{count, plural, one {# obligatorisk felt er ikke tilknyttet} other {# obligatoriske felter er ikke tilknyttet}}"
+        },
+        "tier": {
+          "required": "Obligatorisk",
+          "recommended": "Anbefalet",
+          "optional": "Valgfrit"
+        },
+        "fields": {
+          "externalRef": "Medarbejder-ID",
+          "title": "Stillingsbetegnelse",
+          "gender": "Kon",
+          "basicMonthly": "Manedlig grundlon",
+          "firstName": "Fornavn",
+          "lastName": "Efternavn",
+          "ftePercent": "Stilling %",
+          "payYear": "Lonar",
+          "birthDate": "Fodselsdato",
+          "employmentStartDate": "Ansaettelsesdato",
+          "statisticalCode": "Statistisk kode",
+          "variable": "Variabel lon",
+          "benefitInKind": "Naturalydelse",
+          "currency": "Valuta",
+          "country": "Land",
+          "department": "Afdeling",
+          "isManager": "Leder"
         }
       }
     },

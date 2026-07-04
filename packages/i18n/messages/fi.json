@@ -182,6 +182,40 @@
           "detected": "{rows, plural, one {# rivi} other {# rivia}}, {columns} saraketta tunnistettu.",
           "errorNotCsv": "Vain CSV-tiedostot ovat tuettuja. Valitse .csv-tiedosto.",
           "errorEmpty": "Tiedosto on tyhja. Valitse CSV-tiedosto, jossa on vahintaan yksi datarivi."
+        },
+        "map": {
+          "title": "Yhdista sarakkeet",
+          "description": "Yhdista jokainen kentta CSV-tiedoston sarakkeeseen. Pakolliset kentat on yhdistettava ennen jatkamista.",
+          "field": "Kentta",
+          "source": "CSV-sarake",
+          "sample": "Esimerkkiarvo",
+          "confidence": "Luottamus",
+          "notMapped": "Ei yhdistetty",
+          "unmappedRequired": "{count, plural, one {# pakollinen kentta ei ole yhdistetty} other {# pakollista kenttaa ei ole yhdistetty}}"
+        },
+        "tier": {
+          "required": "Pakollinen",
+          "recommended": "Suositeltu",
+          "optional": "Valinnainen"
+        },
+        "fields": {
+          "externalRef": "Tyontekija-ID",
+          "title": "Tehtavanimike",
+          "gender": "Sukupuoli",
+          "basicMonthly": "Kuukausipalkka",
+          "firstName": "Etunimi",
+          "lastName": "Sukunimi",
+          "ftePercent": "Tyoaika %",
+          "payYear": "Palkkausvuosi",
+          "birthDate": "Syntymaaika",
+          "employmentStartDate": "Tyosuhteen alkamispaiva",
+          "statisticalCode": "Tilastokoodi",
+          "variable": "Muuttuva palkka",
+          "benefitInKind": "Luontaisetu",
+          "currency": "Valuutta",
+          "country": "Maa",
+          "department": "Osasto",
+          "isManager": "Esimies"
         }
       }
     },

@@ -182,6 +182,40 @@
           "detected": "{rows, plural, one {# rad} other {# rader}}, {columns} kolonner oppdaget.",
           "errorNotCsv": "Bare CSV-filer støttes. Velg en .csv-fil.",
           "errorEmpty": "Filen er tom. Velg en CSV-fil med minst én datarad."
+        },
+        "map": {
+          "title": "Tilordne kolonner",
+          "description": "Koble hvert felt til en kolonne i CSV-filen. Obligatoriske felt ma tilordnes for du kan ga videre.",
+          "field": "Felt",
+          "source": "CSV-kolonne",
+          "sample": "Eksempelverdi",
+          "confidence": "Konfidensgrad",
+          "notMapped": "Ikke tilordnet",
+          "unmappedRequired": "{count, plural, one {# obligatorisk felt er ikke tilordnet} other {# obligatoriske felt er ikke tilordnet}}"
+        },
+        "tier": {
+          "required": "Obligatorisk",
+          "recommended": "Anbefalt",
+          "optional": "Valgfritt"
+        },
+        "fields": {
+          "externalRef": "Ansatt-ID",
+          "title": "Stillingstittel",
+          "gender": "Kjonn",
+          "basicMonthly": "Manedlig grunnlonn",
+          "firstName": "Fornavn",
+          "lastName": "Etternavn",
+          "ftePercent": "Stilling %",
+          "payYear": "Lonnar",
+          "birthDate": "Fodselsdato",
+          "employmentStartDate": "Ansettelsesdato",
+          "statisticalCode": "Statistikkode",
+          "variable": "Variabel lonn",
+          "benefitInKind": "Naturalytelse",
+          "currency": "Valuta",
+          "country": "Land",
+          "department": "Avdeling",
+          "isManager": "Leder"
         }
       }
     },

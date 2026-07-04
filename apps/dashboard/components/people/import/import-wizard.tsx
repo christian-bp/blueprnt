@@ -10,6 +10,7 @@ import { ScreenShell } from "@/components/onboarding/screen-shell"
 import { WizardFooter } from "@/components/onboarding/wizard-footer"
 import { NextButton } from "@/components/onboarding/next-button"
 import { Button } from "@workspace/ui/components/button"
+import { MapStep } from "./map-step"
 import { UploadStep } from "./upload-step"
 
 // The parsed output from tokenizeCsv that the wizard threads through steps.
@@ -118,8 +119,16 @@ export function ImportWizard() {
         )
       case STEP_MAP:
         return (
-          <ScreenShell heading={t("steps.map")}>
-            {/* Placeholder: replaced by Task 3 */}
+          <ScreenShell heading={t("map.title")}>
+            {state.parsed !== null && (
+              <MapStep
+                parsed={state.parsed}
+                mapping={state.mapping}
+                onMappingChange={(mapping) =>
+                  setState((prev) => ({ ...prev, mapping }))
+                }
+              />
+            )}
             <WizardFooter>
               <Button variant="outline" onClick={goBack}>
                 {t("back")}

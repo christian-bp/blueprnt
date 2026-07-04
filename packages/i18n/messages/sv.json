@@ -182,6 +182,40 @@
           "detected": "{rows, plural, one {# rad} other {# rader}}, {columns} kolumner identifierade.",
           "errorNotCsv": "Endast CSV-filer stöds. Välj en .csv-fil.",
           "errorEmpty": "Filen är tom. Välj en CSV-fil med minst en rad med data."
+        },
+        "map": {
+          "title": "Mappa kolumner",
+          "description": "Koppla varje fält till en kolumn i din CSV-fil. Obligatoriska fält måste mappas innan du kan fortsätta.",
+          "field": "Fält",
+          "source": "CSV-kolumn",
+          "sample": "Exempelvärde",
+          "confidence": "Konfidens",
+          "notMapped": "Inte mappad",
+          "unmappedRequired": "{count, plural, one {# obligatoriskt fält är inte mappat} other {# obligatoriska fält är inte mappade}}"
+        },
+        "tier": {
+          "required": "Obligatorisk",
+          "recommended": "Rekommenderad",
+          "optional": "Valfri"
+        },
+        "fields": {
+          "externalRef": "Anställnings-ID",
+          "title": "Befattning",
+          "gender": "Kön",
+          "basicMonthly": "Månadslön",
+          "firstName": "Förnamn",
+          "lastName": "Efternamn",
+          "ftePercent": "Sysselsättningsgrad",
+          "payYear": "Lönear",
+          "birthDate": "Födelsedatum",
+          "employmentStartDate": "Anställningsdatum",
+          "statisticalCode": "Statistikkod",
+          "variable": "Rörlig lön",
+          "benefitInKind": "Förmåner",
+          "currency": "Valuta",
+          "country": "Land",
+          "department": "Avdelning",
+          "isManager": "Chef"
         }
       }
     },
