@@ -134,7 +134,9 @@
       "membershipAdded": "Tilføjet til organisationen",
       "membershipUpdated": "Medlemskab opdateret",
       "membershipRemoved": "Fjernet fra organisationen",
-      "peopleImported": "Medarbejdere importeret"
+      "peopleImported": "Medarbejdere importeret",
+      "classificationConfirmed": "Klassificering bekræftet",
+      "settingsSaved": "Indstillinger gemt"
     },
     "accountMenu": "Kontomenu",
     "nav": {
@@ -158,8 +160,15 @@
         "name": "Navn",
         "gender": "Køn",
         "department": "Afdeling",
-        "fte": "Stilling"
+        "fte": "Stilling",
+        "classification": "Klassificering"
       },
+      "badge": {
+        "confirmed": "Bekræftet",
+        "pending": "Afventer",
+        "unclassified": "Uklassificeret"
+      },
+      "classifyCta": "Klassificér medarbejdere",
       "gender": {
         "Man": "Mand",
         "Kvinna": "Kvinde"
@@ -261,6 +270,56 @@
           "Man": "Mand",
           "Kvinna": "Kvinde"
         }
+      }
+    },
+    "classify": {
+      "heading": "Klassificér medarbejdere",
+      "description": "Tildel hver medarbejder en rolle og et niveau i jobbarkitekturen.",
+      "pageTitle": "Klassificering",
+      "columns": {
+        "title": "Jobtitel",
+        "people": "Medarbejdere",
+        "suggestedRole": "Foreslået rolle",
+        "confidence": "Sikkerhed",
+        "state": "Status",
+        "actions": "Handlinger"
+      },
+      "confidence": {
+        "high": "Høj",
+        "medium": "Foreslået",
+        "unmatched": "Intet match"
+      },
+      "state": {
+        "confirmed": "Bekræftet",
+        "pending": "Afventer",
+        "unclassified": "Uklassificeret"
+      },
+      "noTitle": "Uklassificeret / ingen titel",
+      "selectRolePlaceholder": "Vælg en rolle",
+      "assignCta": "Bekræft klassificering",
+      "expandLabel": "Udvid gruppe",
+      "collapseLabel": "Skjul gruppe",
+      "levelLabel": "Niveau",
+      "tenureLabel": "Anciennitet",
+      "tenureYears": "{years, plural, one {# år} other {# år}}",
+      "unmatchedHint": "Ingen rolle matchede. Tildel en manuelt.",
+      "createRoleCta": "Opret ny rolle",
+      "mapExistingCta": "Knyt til eksisterende rolle",
+      "empty": "Ingen medarbejdere importeret endnu. Importér løndata for at starte klassificering.",
+      "summary": "{classified} af {total} klassificeret",
+      "runningSuggestions": "Beregner forslag",
+      "entryCta": "Klassificér medarbejdere",
+      "entryHint": "{count, plural, one {# medarbejder mangler klassificering} other {# medarbejdere mangler klassificering}}",
+      "createRole": {
+        "title": "Opret rolle",
+        "description": "Opret en ny rolle og tildel den til disse medarbejdere.",
+        "titleLabel": "Titel",
+        "functionLabel": "Funktion/afdeling",
+        "teamLabel": "Team",
+        "trackLabel": "Spor",
+        "cancel": "Annuller",
+        "cta": "Opret og tildel",
+        "error": "Rollen kunne ikke oprettes. Prøv igen."
       }
     },
     "auditLog": {
@@ -1040,7 +1099,11 @@
       "methodOverlapBody": "Eventuel overlapning med andre kriterier, så det samme ikke vægtes to gange.",
       "methodBiasRiskBody": "Risikoen for at dette kriterium over- eller undervurderer kønsmærket arbejde, for eksempel ved at favorisere synligt mandat eller budgetstørrelse frem for faktisk kompleksitet og ansvar.",
       "methodBiasCommentBody": "Hvad du overvejede i bias-tjekket og hvad du fandt.",
-      "methodBiasActionBody": "Den afbødende handling for at reducere risikoen, for eksempel omformulerede niveaubeskrivelser eller justeret vægtning."
+      "methodBiasActionBody": "Den afbødende handling for at reducere risikoen, for eksempel omformulerede niveaubeskrivelser eller justeret vægtning.",
+      "classifyConfidenceLabel": "Hvad betyder sikkerhedsniveauerne?",
+      "classifyConfidenceBody": "Høj betyder, at medarbejderens jobtitel nært svarer til en rolle i arkitekturen. Foreslået betyder, at matchet er sandsynligt, men ikke sikkert. Intet match betyder, at der ikke blev fundet en egnet rolle, og du skal tildele en manuelt.",
+      "classifyLevelLabel": "Hvad er niveau?",
+      "classifyLevelBody": "Niveau er individets anciennitet inden for rollens spor, for eksempel Senior eller Lead. Det angives per person, ikke på rollen, og bruges i lønkortlægning til at sammenligne personer i tilsvarende stillinger."
     },
     "admin": {
       "tabs": {
@@ -1403,7 +1466,10 @@
         "industryLabel": "Branche",
         "industryPlaceholder": "Vælg en branche",
         "save": "Gem ændringer",
-        "error": "Kunne ikke gemme organisationen. Prøv igen."
+        "error": "Kunne ikke gemme organisationen. Prøv igen.",
+        "pseudonymizeLabel": "Pseudonymiser medarbejdernavne",
+        "pseudonymizeDescription": "Erstat medarbejdernavne med et referencenummer i alle visninger. Dataene ændres ikke; kun visningen maskeres.",
+        "pseudonymTemplate": "Medarbejder #{ref}"
       },
       "logo": {
         "title": "Logo",

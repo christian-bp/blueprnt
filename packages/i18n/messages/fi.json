@@ -134,7 +134,9 @@
       "membershipAdded": "Lisätty organisaatioon",
       "membershipUpdated": "Jäsenyys päivitetty",
       "membershipRemoved": "Poistettu organisaatiosta",
-      "peopleImported": "Henkilot tuotu"
+      "peopleImported": "Henkilot tuotu",
+      "classificationConfirmed": "Luokittelu vahvistettu",
+      "settingsSaved": "Asetukset tallennettu"
     },
     "accountMenu": "Tilivalikko",
     "nav": {
@@ -158,8 +160,15 @@
         "name": "Nimi",
         "gender": "Sukupuoli",
         "department": "Osasto",
-        "fte": "Työsuhde"
+        "fte": "Työsuhde",
+        "classification": "Luokittelu"
       },
+      "badge": {
+        "confirmed": "Vahvistettu",
+        "pending": "Odottaa",
+        "unclassified": "Luokittelematon"
+      },
+      "classifyCta": "Luokittele työntekijät",
       "gender": {
         "Man": "Mies",
         "Kvinna": "Nainen"
@@ -261,6 +270,56 @@
           "Man": "Mies",
           "Kvinna": "Nainen"
         }
+      }
+    },
+    "classify": {
+      "heading": "Luokittele työntekijät",
+      "description": "Määritä jokaiselle työntekijälle rooli ja taso työrooliarkkitehtuurissa.",
+      "pageTitle": "Luokittelu",
+      "columns": {
+        "title": "Toimenkuva",
+        "people": "Työntekijät",
+        "suggestedRole": "Ehdotettu rooli",
+        "confidence": "Varmuus",
+        "state": "Tila",
+        "actions": "Toiminnot"
+      },
+      "confidence": {
+        "high": "Korkea",
+        "medium": "Ehdotettu",
+        "unmatched": "Ei vastaavuutta"
+      },
+      "state": {
+        "confirmed": "Vahvistettu",
+        "pending": "Odottaa",
+        "unclassified": "Luokittelematon"
+      },
+      "noTitle": "Luokittelematon / ei toimenkuvaa",
+      "selectRolePlaceholder": "Valitse rooli",
+      "assignCta": "Vahvista luokittelu",
+      "expandLabel": "Laajenna ryhmä",
+      "collapseLabel": "Tiivistä ryhmä",
+      "levelLabel": "Taso",
+      "tenureLabel": "Työsuhteen kesto",
+      "tenureYears": "{years, plural, one {# vuosi} other {# vuotta}}",
+      "unmatchedHint": "Yhtään roolia ei löytynyt. Määritä rooli manuaalisesti.",
+      "createRoleCta": "Luo uusi rooli",
+      "mapExistingCta": "Yhdistä olemassa olevaan rooliin",
+      "empty": "Ei tuotuja työntekijöitä vielä. Tuo palkkatiedot aloittaaksesi luokittelun.",
+      "summary": "{classified} / {total} luokiteltu",
+      "runningSuggestions": "Lasketaan ehdotuksia",
+      "entryCta": "Luokittele työntekijät",
+      "entryHint": "{count, plural, one {# työntekijä tarvitsee luokittelun} other {# työntekijää tarvitsee luokittelun}}",
+      "createRole": {
+        "title": "Luo rooli",
+        "description": "Luo uusi rooli ja määritä se näille työntekijöille.",
+        "titleLabel": "Nimike",
+        "functionLabel": "Toiminto/osasto",
+        "teamLabel": "Tiimi",
+        "trackLabel": "Ura-polku",
+        "cancel": "Peruuta",
+        "cta": "Luo ja määritä",
+        "error": "Roolia ei voitu luoda. Yritä uudelleen."
       }
     },
     "auditLog": {
@@ -1040,7 +1099,11 @@
       "methodOverlapBody": "Mahdollinen päällekkäisyys muiden kriteerien kanssa, jotta samaa asiaa ei painoteta kahdesti.",
       "methodBiasRiskBody": "Riski siitä, että tämä kriteeri yli- tai aliarvioi sukupuolittunutta työtä, esimerkiksi suosimalla näkyvää mandaattia tai budjetin kokoa todellisen monimutkaisuuden ja vastuun sijaan.",
       "methodBiasCommentBody": "Mitä harkitsit vinouman tarkistuksessa ja mitä löysit.",
-      "methodBiasActionBody": "Lievennystoimenpide riskin vähentämiseksi, kuten uudelleenmuotoillut tasokuvaukset tai mukautettu painotus."
+      "methodBiasActionBody": "Lievennystoimenpide riskin vähentämiseksi, kuten uudelleenmuotoillut tasokuvaukset tai mukautettu painotus.",
+      "classifyConfidenceLabel": "Mitä varmuustasot tarkoittavat?",
+      "classifyConfidenceBody": "Korkea tarkoittaa, että työntekijän toimenkuva vastaa läheisesti roolia arkkitehtuurissa. Ehdotettu tarkoittaa, että vastaavuus on todennäköinen mutta ei varma. Ei vastaavuutta tarkoittaa, että sopivaa roolia ei löytynyt ja sinun täytyy määrittää se manuaalisesti.",
+      "classifyLevelLabel": "Mikä on taso?",
+      "classifyLevelBody": "Taso on yksilön senioriteetti roolin ura-polun sisällä, esimerkiksi Senior tai Lead. Se asetetaan per henkilö, ei roolille, ja sitä käytetään tasa-arvoanalyysissä vertaamaan vastaavissa tehtävissä olevia henkilöitä."
     },
     "admin": {
       "tabs": {
@@ -1403,7 +1466,10 @@
         "industryLabel": "Toimiala",
         "industryPlaceholder": "Valitse toimiala",
         "save": "Tallenna muutokset",
-        "error": "Organisaatiota ei voitu tallentaa. Yritä uudelleen."
+        "error": "Organisaatiota ei voitu tallentaa. Yritä uudelleen.",
+        "pseudonymizeLabel": "Pseudonymisoi työntekijöiden nimet",
+        "pseudonymizeDescription": "Korvaa työntekijöiden nimet viitenumerolla kaikissa näkymissä. Tiedot eivät muutu; vain näyttö peitetään.",
+        "pseudonymTemplate": "Työntekijä #{ref}"
       },
       "logo": {
         "title": "Logo",

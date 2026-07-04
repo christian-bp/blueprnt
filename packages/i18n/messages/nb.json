@@ -134,7 +134,9 @@
       "membershipAdded": "Lagt til i organisasjonen",
       "membershipUpdated": "Medlemskap oppdatert",
       "membershipRemoved": "Fjernet fra organisasjonen",
-      "peopleImported": "Ansatte importert"
+      "peopleImported": "Ansatte importert",
+      "classificationConfirmed": "Klassifisering bekreftet",
+      "settingsSaved": "Innstillinger lagret"
     },
     "accountMenu": "Kontomeny",
     "nav": {
@@ -158,8 +160,15 @@
         "name": "Navn",
         "gender": "Kjønn",
         "department": "Avdeling",
-        "fte": "Stilling"
+        "fte": "Stilling",
+        "classification": "Klassifisering"
       },
+      "badge": {
+        "confirmed": "Bekreftet",
+        "pending": "Venter",
+        "unclassified": "Uklassifisert"
+      },
+      "classifyCta": "Klassifiser ansatte",
       "gender": {
         "Man": "Mann",
         "Kvinna": "Kvinne"
@@ -261,6 +270,56 @@
           "Man": "Mann",
           "Kvinna": "Kvinne"
         }
+      }
+    },
+    "classify": {
+      "heading": "Klassifiser ansatte",
+      "description": "Tildel hver ansatt en rolle og nivå i jobbarkitekturen.",
+      "pageTitle": "Klassifisering",
+      "columns": {
+        "title": "Jobbtittel",
+        "people": "Ansatte",
+        "suggestedRole": "Foreslått rolle",
+        "confidence": "Sikkerhet",
+        "state": "Status",
+        "actions": "Handlinger"
+      },
+      "confidence": {
+        "high": "Høy",
+        "medium": "Foreslått",
+        "unmatched": "Ingen treff"
+      },
+      "state": {
+        "confirmed": "Bekreftet",
+        "pending": "Venter",
+        "unclassified": "Uklassifisert"
+      },
+      "noTitle": "Uklassifisert / ingen tittel",
+      "selectRolePlaceholder": "Velg en rolle",
+      "assignCta": "Bekreft klassifisering",
+      "expandLabel": "Utvid gruppe",
+      "collapseLabel": "Skjul gruppe",
+      "levelLabel": "Nivå",
+      "tenureLabel": "Ansiennitet",
+      "tenureYears": "{years, plural, one {# år} other {# år}}",
+      "unmatchedHint": "Ingen rolle matchet. Tildel en manuelt.",
+      "createRoleCta": "Opprett ny rolle",
+      "mapExistingCta": "Koble til eksisterende rolle",
+      "empty": "Ingen ansatte importert ennå. Importer lønnsdata for å starte klassifisering.",
+      "summary": "{classified} av {total} klassifisert",
+      "runningSuggestions": "Beregner forslag",
+      "entryCta": "Klassifiser ansatte",
+      "entryHint": "{count, plural, one {# ansatt trenger klassifisering} other {# ansatte trenger klassifisering}}",
+      "createRole": {
+        "title": "Opprett rolle",
+        "description": "Opprett en ny rolle og tildel den til disse ansatte.",
+        "titleLabel": "Tittel",
+        "functionLabel": "Funksjon/avdeling",
+        "teamLabel": "Team",
+        "trackLabel": "Spor",
+        "cancel": "Avbryt",
+        "cta": "Opprett og tildel",
+        "error": "Rollen kunne ikke opprettes. Prøv igjen."
       }
     },
     "auditLog": {
@@ -1040,7 +1099,11 @@
       "methodOverlapBody": "Eventuell overlapping med andre kriterier, slik at det samme ikke vektes to ganger.",
       "methodBiasRiskBody": "Risikoen for at dette kriteriet over- eller undervurderer kjønnskodet arbeid, for eksempel ved å favorisere synlig mandat eller budsjettstørrelse fremfor faktisk kompleksitet og ansvar.",
       "methodBiasCommentBody": "Hva du vurderte i biastjekken og hva du fant.",
-      "methodBiasActionBody": "Det dempende tiltaket for å redusere risikoen, for eksempel omformulerte nivåbeskrivelser eller justert vekting."
+      "methodBiasActionBody": "Det dempende tiltaket for å redusere risikoen, for eksempel omformulerte nivåbeskrivelser eller justert vekting.",
+      "classifyConfidenceLabel": "Hva betyr sikkerhetsnivåene?",
+      "classifyConfidenceBody": "Høy betyr at den ansattes jobbtittel nært samsvarer med en rolle i arkitekturen. Foreslått betyr at treffet er sannsynlig, men ikke sikkert. Ingen treff betyr at ingen egnet rolle ble funnet og du må tildele en manuelt.",
+      "classifyLevelLabel": "Hva er nivå?",
+      "classifyLevelBody": "Nivå er individets ansiennitet innen rollens spor, for eksempel Senior eller Lead. Det angis per person, ikke på rollen, og brukes i lønnskartlegging for å sammenligne personer i tilsvarende stillinger."
     },
     "admin": {
       "tabs": {
@@ -1403,7 +1466,10 @@
         "industryLabel": "Bransje",
         "industryPlaceholder": "Velg en bransje",
         "save": "Lagre endringer",
-        "error": "Kunne ikke lagre organisasjonen. Prøv igjen."
+        "error": "Kunne ikke lagre organisasjonen. Prøv igjen.",
+        "pseudonymizeLabel": "Pseudonymiser ansattes navn",
+        "pseudonymizeDescription": "Erstatt ansattes navn med et referansenummer i alle visninger. Dataene endres ikke; bare visningen maskeres.",
+        "pseudonymTemplate": "Ansatt #{ref}"
       },
       "logo": {
         "title": "Logo",
