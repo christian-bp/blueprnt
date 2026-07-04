@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react"
+import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import React from "react"
@@ -99,11 +99,15 @@ function renderCheckStep({
   parsed = FULL_PARSED,
   mapping = FULL_MAPPING,
   csvText,
+  genderOverrides = {},
+  onGenderOverridesChange = vi.fn(),
   onValidated = vi.fn(),
 }: {
   parsed?: ParsedCsv
   mapping?: Record<string, number>
   csvText?: string
+  genderOverrides?: Record<string, "Man" | "Kvinna">
+  onGenderOverridesChange?: (next: Record<string, "Man" | "Kvinna">) => void
   onValidated?: (isBlocking: boolean, issueCount: number) => void
 } = {}) {
   const text =
@@ -115,6 +119,8 @@ function renderCheckStep({
         parsed={parsed}
         mapping={mapping}
         csvText={text}
+        genderOverrides={genderOverrides}
+        onGenderOverridesChange={onGenderOverridesChange}
         onValidated={onValidated}
       />
     </NextIntlClientProvider>
@@ -289,5 +295,59 @@ describe("CheckStep — file warnings", () => {
   it("shows no file-warnings section for a clean CSV", () => {
     renderCheckStep({ mapping: FULL_MAPPING })
     expect(screen.queryByTestId("file-warnings-section")).toBeNull()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Rows with a blank gender cell -> unresolvedGender flag -> assign UI
+// ---------------------------------------------------------------------------
+
+const BLANK_GENDER_PARSED: ParsedCsv = {
+  headers: ["EmployeeID", "JobTitle", "Gender", "MonthlySalary"],
+  rows: [
+    ["E001", "Engineer", "", "55000"],
+    ["E002", "Manager", "Man", "70000"],
+  ],
+}
+const BLANK_GENDER_MAPPING: Record<string, number> = {
+  externalRef: 0,
+  title: 1,
+  gender: 2,
+  basicMonthly: 3,
+}
+
+describe("CheckStep — assign gender", () => {
+  afterEach(() => {
+    cleanup()
+  })
+
+  it("renders the assign-gender UI for a row with a blank gender cell", () => {
+    renderCheckStep({
+      parsed: BLANK_GENDER_PARSED,
+      mapping: BLANK_GENDER_MAPPING,
+    })
+    expect(screen.getByTestId("assign-gender")).toBeDefined()
+    // The flagged row is identified by its externalRef E001.
+    expect(screen.getByTestId("assign-gender-E001")).toBeDefined()
+  })
+
+  it("lifts the chosen gender via onGenderOverridesChange", () => {
+    const onGenderOverridesChange = vi.fn()
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <CheckStep
+          parsed={BLANK_GENDER_PARSED}
+          mapping={BLANK_GENDER_MAPPING}
+          csvText={
+            "EmployeeID,JobTitle,Gender,MonthlySalary\nE001,Engineer,,55000\nE002,Manager,Man,70000"
+          }
+          genderOverrides={{}}
+          onGenderOverridesChange={onGenderOverridesChange}
+          onValidated={vi.fn()}
+        />
+      </NextIntlClientProvider>
+    )
+    fireEvent.click(screen.getByTestId("assign-gender-E001-Kvinna"))
+    expect(onGenderOverridesChange).toHaveBeenCalledWith({ E001: "Kvinna" })
   })
 })

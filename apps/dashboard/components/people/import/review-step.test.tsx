@@ -104,11 +104,13 @@ function renderReviewStep({
   mapping = MAPPING,
   csvText = CSV_TEXT,
   flaggedCount = 0,
+  genderOverrides = {},
 }: {
   parsed?: ParsedCsv
   mapping?: Record<string, number>
   csvText?: string
   flaggedCount?: number
+  genderOverrides?: Record<string, "Man" | "Kvinna">
 } = {}) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
@@ -117,6 +119,7 @@ function renderReviewStep({
         mapping={mapping}
         csvText={csvText}
         flaggedCount={flaggedCount}
+        genderOverrides={genderOverrides}
       />
     </NextIntlClientProvider>
   )
@@ -414,5 +417,50 @@ describe("ReviewStep — confirm (failure)", () => {
       expect(screen.getByTestId("blocking-error")).toBeDefined()
     })
     expect(pushMock).not.toHaveBeenCalled()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Gender overrides
+// ---------------------------------------------------------------------------
+
+describe("ReviewStep — gender overrides", () => {
+  afterEach(() => {
+    cleanup()
+    vi.clearAllMocks()
+  })
+
+  it("passes genderOverrides as [ref, choice] pairs to importPayroll", async () => {
+    importPayrollMock.mockResolvedValueOnce(OK_RESULT)
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <ReviewStep
+          parsed={PARSED}
+          mapping={MAPPING}
+          csvText={CSV_TEXT}
+          flaggedCount={1}
+          genderOverrides={{ E001: "Kvinna" }}
+        />
+      </NextIntlClientProvider>
+    )
+    fireEvent.click(screen.getByTestId("confirm-button"))
+    await waitFor(() => {
+      expect(importPayrollMock).toHaveBeenCalledOnce()
+    })
+    const call = importPayrollMock.mock.calls[0]?.[0] as {
+      genderOverrides: Array<[string, string]>
+    }
+    expect(call.genderOverrides).toEqual([["E001", "Kvinna"]])
+  })
+
+  it("omits genderOverrides when the record is empty", async () => {
+    importPayrollMock.mockResolvedValueOnce(OK_RESULT)
+    renderReviewStep({ flaggedCount: 0 })
+    fireEvent.click(screen.getByTestId("confirm-button"))
+    await waitFor(() => {
+      expect(importPayrollMock).toHaveBeenCalledOnce()
+    })
+    const call = importPayrollMock.mock.calls[0]?.[0] as Record<string, unknown>
+    expect("genderOverrides" in call).toBe(false)
   })
 })

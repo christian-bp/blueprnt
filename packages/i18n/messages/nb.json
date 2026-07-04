@@ -218,6 +218,10 @@
           "fileWarning": {
             "noDelimiter": "Ingen kolonneskiller funnet",
             "mojibake": "Overskriftsteksten ser ødelagt ut (feil filkoding)"
+          },
+          "assignGender": {
+            "heading": "Angi kjønn for disse radene",
+            "help": "Vi kunne ikke lese kjønn for disse ansatte. Velg ett for hver av dem så de kan importeres. Radene vises med ansattnummer; ingen andre personopplysninger sendes til importen."
           }
         },
         "tier": {
@@ -252,6 +256,10 @@
           "confirm": "Bekreft import",
           "importing": "Importerer...",
           "blockingTitle": "Obligatoriske felt er ikke tilordnet"
+        },
+        "gender": {
+          "Man": "Mann",
+          "Kvinna": "Kvinne"
         }
       }
     },

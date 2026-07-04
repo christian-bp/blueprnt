@@ -218,6 +218,10 @@
           "fileWarning": {
             "noDelimiter": "Ingen kolonneadskiller fundet",
             "mojibake": "Overskriftsteksten ser ødelagt ud (forkert filkodning)"
+          },
+          "assignGender": {
+            "heading": "Angiv køn for disse rækker",
+            "help": "Vi kunne ikke aflæse køn for disse medarbejdere. Vælg et for hver, så de kan importeres. Rækkerne vises med medarbejdernummer; ingen andre personoplysninger sendes til importen."
           }
         },
         "tier": {
@@ -252,6 +256,10 @@
           "confirm": "Bekræft import",
           "importing": "Importerer...",
           "blockingTitle": "Obligatoriske felter er ikke tilknyttet"
+        },
+        "gender": {
+          "Man": "Mand",
+          "Kvinna": "Kvinde"
         }
       }
     },

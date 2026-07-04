@@ -223,7 +223,15 @@
           "fileWarning": {
             "noDelimiter": "No column separator detected",
             "mojibake": "Header text looks garbled (wrong file encoding)"
+          },
+          "assignGender": {
+            "heading": "Assign gender for these rows",
+            "help": "We could not read a gender for these employees. Choose one for each so they can be imported. Rows are shown by employee ID; no other personal data is sent to import."
           }
+        },
+        "gender": {
+          "Man": "Man",
+          "Kvinna": "Woman"
         },
         "fields": {
           "externalRef": "Employee ID",

@@ -18,6 +18,7 @@ import { Badge } from "@workspace/ui/components/badge"
 import { useTranslations } from "next-intl"
 import { useEffect, useMemo, useRef } from "react"
 import type { ParsedCsv } from "./import-wizard"
+import { AssignGender } from "./assign-gender"
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -48,6 +49,9 @@ export interface CheckStepProps {
   mapping: Record<string, number>
   /** Raw CSV text, re-tokenized here to recover structural signals. */
   csvText: string
+  /** Current per-row gender overrides (controlled), keyed by trimmed externalRef. */
+  genderOverrides: Record<string, "Man" | "Kvinna">
+  onGenderOverridesChange: (next: Record<string, "Man" | "Kvinna">) => void
   /**
    * Called after validation runs.
    * @param isBlocking - true when required fields are missing (Next must be disabled).
@@ -60,6 +64,8 @@ export function CheckStep({
   parsed,
   mapping,
   csvText,
+  genderOverrides,
+  onGenderOverridesChange,
   onValidated,
 }: CheckStepProps) {
   const tCheck = useTranslations("dashboard.people.import.check")
@@ -110,6 +116,24 @@ export function CheckStep({
     }
     return groups
   }, [validation.issues])
+
+  // Rows flagged unresolvedGender, identified by their externalRef cell so the
+  // HR admin can assign Man/Kvinna manually. The externalRef column is required
+  // (validation would block without it), so it is present when we reach here.
+  const flaggedGenderRows = useMemo(() => {
+    const externalRefCol = mapping.externalRef
+    if (externalRefCol === undefined) return []
+    const out: Array<{ externalRef: string; rowIndex: number }> = []
+    const seen = new Set<string>()
+    for (const issue of validation.issues) {
+      if (issue.code !== "unresolvedGender") continue
+      const ref = (parsed.rows[issue.row]?.[externalRefCol] ?? "").trim()
+      if (ref === "" || seen.has(ref)) continue
+      seen.add(ref)
+      out.push({ externalRef: ref, rowIndex: issue.row })
+    }
+    return out
+  }, [validation.issues, mapping, parsed.rows])
 
   return (
     <div className="flex w-full flex-col gap-6">
@@ -260,6 +284,15 @@ export function CheckStep({
             )}
           </div>
         </div>
+      )}
+
+      {/* Per-row gender assignment for unresolvedGender rows */}
+      {flaggedGenderRows.length > 0 && (
+        <AssignGender
+          flagged={flaggedGenderRows}
+          value={genderOverrides}
+          onChange={onGenderOverridesChange}
+        />
       )}
     </div>
   )

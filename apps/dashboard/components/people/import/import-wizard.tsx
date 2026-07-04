@@ -33,6 +33,9 @@ interface WizardState {
   checkBlocking: boolean | null
   // Number of per-row data-quality issues from the check step (used by ReviewStep).
   checkIssueCount: number
+  // Per-row manual gender assignments collected on the check step,
+  // keyed by trimmed externalRef. Forwarded to importPayroll as genderOverrides.
+  genderOverrides: Record<string, "Man" | "Kvinna">
   validation: unknown | null
   result: unknown | null
 }
@@ -55,6 +58,7 @@ export function ImportWizard() {
     mapping: null,
     checkBlocking: null,
     checkIssueCount: 0,
+    genderOverrides: {},
     validation: null,
     result: null,
   })
@@ -129,6 +133,7 @@ export function ImportWizard() {
                           mapping: null,
                           checkBlocking: null,
                           checkIssueCount: 0,
+                          genderOverrides: {},
                         }
                       : {}),
                   }
@@ -182,6 +187,10 @@ export function ImportWizard() {
                   parsed={state.parsed}
                   mapping={state.mapping}
                   csvText={state.csvText}
+                  genderOverrides={state.genderOverrides}
+                  onGenderOverridesChange={(genderOverrides) =>
+                    setState((prev) => ({ ...prev, genderOverrides }))
+                  }
                   onValidated={(isBlocking, issueCount) =>
                     setState((prev) => ({
                       ...prev,
@@ -217,6 +226,7 @@ export function ImportWizard() {
                   mapping={state.mapping}
                   csvText={state.csvText}
                   flaggedCount={state.checkIssueCount}
+                  genderOverrides={state.genderOverrides}
                 />
               )}
             <WizardFooter>

@@ -133,6 +133,8 @@ export interface ReviewStepProps {
   csvText: string
   /** Number of rows that the check step flagged with issues. */
   flaggedCount: number
+  /** Per-row manual gender assignments, keyed by trimmed externalRef. */
+  genderOverrides: Record<string, "Man" | "Kvinna">
 }
 
 export function ReviewStep({
@@ -140,6 +142,7 @@ export function ReviewStep({
   mapping,
   csvText,
   flaggedCount,
+  genderOverrides,
 }: ReviewStepProps) {
   const t = useTranslations("dashboard.people.import.review")
   const tFields = useTranslations("dashboard.people.import.fields")
@@ -160,7 +163,19 @@ export function ReviewStep({
     setIsSubmitting(true)
     setBlockingError(null)
     try {
-      const result = await importPayroll({ orgId, csvText, columnMap })
+      // Convert the ergonomic record to the Convex array-of-pairs Plan D expects.
+      // Omit the arg entirely when there is nothing to override.
+      const genderOverridePairs = Object.entries(genderOverrides) as Array<
+        [string, "Man" | "Kvinna"]
+      >
+      const result = await importPayroll({
+        orgId,
+        csvText,
+        columnMap,
+        ...(genderOverridePairs.length > 0
+          ? { genderOverrides: genderOverridePairs }
+          : {}),
+      })
       if (result.ok) {
         toast.success(tToast("peopleImported"))
         router.push("/people")

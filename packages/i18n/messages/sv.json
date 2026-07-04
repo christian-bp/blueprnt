@@ -218,6 +218,10 @@
           "fileWarning": {
             "noDelimiter": "Ingen kolumnavgränsare hittades",
             "mojibake": "Rubriktexten ser skadad ut (fel filkodning)"
+          },
+          "assignGender": {
+            "heading": "Ange kön för dessa rader",
+            "help": "Vi kunde inte läsa av kön för dessa anställda. Välj ett för var och en så att de kan importeras. Raderna visas med anställningsnummer; inga andra personuppgifter skickas till importen."
           }
         },
         "tier": {
@@ -252,6 +256,10 @@
           "confirm": "Bekräfta import",
           "importing": "Importerar...",
           "blockingTitle": "Obligatoriska fält är inte mappade"
+        },
+        "gender": {
+          "Man": "Man",
+          "Kvinna": "Kvinna"
         }
       }
     },

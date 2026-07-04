@@ -218,6 +218,10 @@
           "fileWarning": {
             "noDelimiter": "Sarake-erotinta ei löytynyt",
             "mojibake": "Otsikkoteksti näyttää vioittuneelta (väärä tiedostokoodaus)"
+          },
+          "assignGender": {
+            "heading": "Määritä sukupuoli näille riveille",
+            "help": "Emme voineet lukea sukupuolta näille työntekijöille. Valitse kullekin yksi, jotta heidät voidaan tuoda. Rivit näytetään henkilönumerolla; muita henkilötietoja ei lähetetä tuontiin."
           }
         },
         "tier": {
@@ -252,6 +256,10 @@
           "confirm": "Vahvista tuonti",
           "importing": "Tuodaan...",
           "blockingTitle": "Pakolliset kentat eivat ole yhdistettyna"
+        },
+        "gender": {
+          "Man": "Mies",
+          "Kvinna": "Nainen"
         }
       }
     },
