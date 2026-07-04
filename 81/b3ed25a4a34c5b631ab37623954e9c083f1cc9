@@ -1,0 +1,30 @@
+packages/import/src/tokenize.ts
+  s_6bff98b662648b::t_2282721a43c127 12-21,26-43
+  s_6bff98b662648b::t_c43604d3fe36f6 22-25
+  s_6bff98b662648b::t_84a8871f74ba7d 84-87
+  s_6bff98b662648b::t_a5f8a9346ee589 11
+packages/import/src/index.ts
+  s_6bff98b662648b::t_b8bd0b5d85c7da 14
+packages/import/src/tokenize.test.ts
+  s_6bff98b662648b::t_29f4e25ab647f5 2
+  s_6bff98b662648b::t_0da3f75ee8065b 186-187,189-201,203-213,215-218,220-222
+  s_6bff98b662648b::t_bf6b4a2c873eb4 202
+  s_6bff98b662648b::t_99e37dc1afeb4f 214,219
+  s_6bff98b662648b::t_eb914433f1fdd1 188
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "81b3ed25a4a34c5b631ab37623954e9c083f1cc9",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
