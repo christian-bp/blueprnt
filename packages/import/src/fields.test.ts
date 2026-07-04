@@ -15,6 +15,23 @@ describe("fold", () => {
     expect(fold("first name")).toBe("firstname")
     expect(fold("last-name")).toBe("lastname")
   })
+
+  it("folds Norwegian o-slash to o so nb headers survive (ENC-05, DC-13)", () => {
+    expect(fold("Kjønn")).toBe("kjonn")
+    expect(fold("Grunnlønn")).toBe("grunnlonn")
+    expect(fold("Fødselsdato")).toBe("fodselsdato")
+  })
+
+  it("folds Danish ae ligature to ae so da headers survive (ENC-05, DC-14)", () => {
+    // ø (o-slash) -> "o", so Danish Køn folds to "kon" (which is a gender synonym)
+    expect(fold("Køn")).toBe("kon")
+    expect(fold("Beskæftigelsesgrad")).toBe("beskaeftigelsesgrad")
+  })
+
+  it("uppercase o-slash and AE ligature fold identically", () => {
+    expect(fold("KJØNN")).toBe("kjonn")
+    expect(fold("ÆRE")).toBe("aere")
+  })
 })
 
 describe("CANONICAL_FIELDS", () => {
@@ -78,6 +95,79 @@ describe("CANONICAL_FIELDS", () => {
         unique.size,
         `${field.key} has duplicate synonyms: ${field.synonyms.filter((s, i) => field.synonyms.indexOf(s) !== i).join(", ")}`
       ).toBe(field.synonyms.length)
+    }
+  })
+})
+
+describe("CANONICAL_FIELDS synonyms after Plan A additions", () => {
+  const byKey = Object.fromEntries(
+    CANONICAL_FIELDS.map((f) => [f.key, f.synonyms])
+  )
+
+  it("removes the bare lon substring landmine from basicMonthly (DC-25)", () => {
+    expect(byKey.basicMonthly).not.toContain("lon")
+  })
+
+  it("adds Finnish person-number and SAP pernr to externalRef (DC-15, D7)", () => {
+    expect(byKey.externalRef).toContain("henkilonro")
+    expect(byKey.externalRef).toContain("pernr")
+  })
+
+  it("adds fi/nb/da/Workday/SAP salary synonyms to basicMonthly (DC-15, DC-13, DC-14, DC-17, D5, D7)", () => {
+    for (const syn of [
+      "peruspalkka",
+      "kuukausipalkka",
+      "grunnlonn",
+      "grundlonn",
+      "manadsarvode",
+      "arvode",
+      "basepay",
+      "salary",
+      "annualsalary",
+      "grosssalary",
+      "ansal",
+    ]) {
+      expect(byKey.basicMonthly, `basicMonthly missing ${syn}`).toContain(syn)
+    }
+  })
+
+  it("adds fi/Personec/SAP title synonyms (DC-15, DC-17, D7)", () => {
+    for (const syn of [
+      "tehtavanimike",
+      "nimike",
+      "tjanstebenamning",
+      "benamning",
+      "plans",
+    ]) {
+      expect(byKey.title, `title missing ${syn}`).toContain(syn)
+    }
+  })
+
+  it("adds SAP gesch header synonym to gender (D7)", () => {
+    expect(byKey.gender).toContain("gesch")
+  })
+
+  it("adds Agda tj.grad synonyms to ftePercent (DC-03)", () => {
+    for (const syn of ["tjgrad", "tjgradprocent", "tjanstggrad"]) {
+      expect(byKey.ftePercent, `ftePercent missing ${syn}`).toContain(syn)
+    }
+  })
+
+  it("adds Norwegian fodselsdato to birthDate (D3, B4)", () => {
+    expect(byKey.birthDate).toContain("fodselsdato")
+  })
+
+  it("adds Norwegian first/last name synonyms (D3)", () => {
+    expect(byKey.firstName).toContain("fornavn")
+    expect(byKey.lastName).toContain("etternavn")
+  })
+
+  it("adds Agda/Personec employment-start synonyms (DC-06, DC-23)", () => {
+    for (const syn of ["anstdag", "anstdatum", "mandag"]) {
+      expect(
+        byKey.employmentStartDate,
+        `employmentStartDate missing ${syn}`
+      ).toContain(syn)
     }
   })
 })

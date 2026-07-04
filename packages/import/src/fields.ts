@@ -19,12 +19,25 @@ export type FieldDef = {
   synonyms: string[]
 }
 
+// Letters that NFD does not decompose to a base ASCII letter. Substituted
+// before NFD so they survive the combining-diacritic and non-alphanumeric
+// strips below. Fixed table, locale-independent, keeps fold pure.
+const PRE_NFD_SUBSTITUTIONS: ReadonlyArray<readonly [RegExp, string]> = [
+  [/[øØ]/g, "o"], // o-slash (Norwegian/Danish) -> o
+  [/[æÆ]/g, "ae"], // ae ligature (Danish/Norwegian) -> ae
+]
+
 /**
  * Normalize a raw CSV header for synonym lookup:
- * lowercase, NFD-decompose, strip combining diacritics, strip non-alphanumerics.
+ * pre-NFD substitute the letters NFD cannot decompose (o-slash, ae ligature),
+ * then lowercase, NFD-decompose, strip combining diacritics, strip non-alphanumerics.
  */
 export function fold(s: string): string {
-  return s
+  let out = s
+  for (const [pattern, replacement] of PRE_NFD_SUBSTITUTIONS) {
+    out = out.replace(pattern, replacement)
+  }
+  return out
     .toLowerCase()
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
@@ -50,6 +63,8 @@ const FIELDS = [
       "extref",
       "externalref",
       "externalid",
+      "henkilonro",
+      "pernr",
     ],
   },
   {
@@ -66,13 +81,18 @@ const FIELDS = [
       "title",
       "jobposition",
       "jobroll",
+      "tehtavanimike",
+      "nimike",
+      "tjanstebenamning",
+      "benamning",
+      "plans",
     ],
   },
   {
     key: "gender",
     tier: "required",
     shape: "gender",
-    synonyms: ["kon", "gender", "sex", "kjonn", "koen", "sukupuoli"],
+    synonyms: ["kon", "gender", "sex", "kjonn", "koen", "sukupuoli", "gesch"],
   },
   {
     key: "basicMonthly",
@@ -84,11 +104,21 @@ const FIELDS = [
       "fastmanadslon",
       "monthlysalary",
       "basesalary",
-      "lon",
       "basicmonthly",
       "basemonthly",
       "fixedmonthly",
       "grundlonmanadslon",
+      "peruspalkka",
+      "kuukausipalkka",
+      "grunnlonn",
+      "grundlonn",
+      "manadsarvode",
+      "arvode",
+      "basepay",
+      "salary",
+      "annualsalary",
+      "grosssalary",
+      "ansal",
     ],
   },
   // Recommended fields
@@ -96,13 +126,20 @@ const FIELDS = [
     key: "firstName",
     tier: "recommended",
     shape: "text",
-    synonyms: ["fornamn", "firstname", "givenname", "fname"],
+    synonyms: ["fornamn", "firstname", "givenname", "fname", "fornavn"],
   },
   {
     key: "lastName",
     tier: "recommended",
     shape: "text",
-    synonyms: ["efternamn", "lastname", "surname", "familyname", "lname"],
+    synonyms: [
+      "efternamn",
+      "lastname",
+      "surname",
+      "familyname",
+      "lname",
+      "etternavn",
+    ],
   },
   {
     key: "ftePercent",
@@ -116,6 +153,9 @@ const FIELDS = [
       "fte",
       "ftepercent",
       "sysselsattning",
+      "tjgrad",
+      "tjgradprocent",
+      "tjanstggrad",
     ],
   },
   {
@@ -135,7 +175,14 @@ const FIELDS = [
     key: "birthDate",
     tier: "recommended",
     shape: "date",
-    synonyms: ["fodelsedatum", "birthdate", "dob", "dateofbirth", "birthyear"],
+    synonyms: [
+      "fodelsedatum",
+      "birthdate",
+      "dob",
+      "dateofbirth",
+      "birthyear",
+      "fodselsdato",
+    ],
   },
   {
     key: "employmentStartDate",
@@ -148,6 +195,9 @@ const FIELDS = [
       "employmentstartdate",
       "anstallningsdag",
       "joiningdate",
+      "anstdag",
+      "anstdatum",
+      "mandag",
     ],
   },
   {
