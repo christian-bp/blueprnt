@@ -474,9 +474,7 @@ describe("importPayroll (row-skip triage)", () => {
     expect(result.salariesImported).toBe(2)
   })
 
-  // SAP numeric gender (GESCH 1/2) requires Task 2 to wire allowNumericCodes
-  // in the import action. Skipped until that task lands.
-  it.skip("does NOT skip numeric-gender rows (SAP GESCH 1/2)", async () => {
+  it("does NOT skip numeric-gender rows (SAP GESCH 1/2)", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
 
@@ -490,5 +488,18 @@ describe("importPayroll (row-skip triage)", () => {
     expect(result.ok).toBe(true)
     expect(result.skippedRows).toBe(0)
     expect(result.peopleImported).toBe(2)
+
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(people).toHaveLength(2)
+
+      const p1 = people.find((p) => p.externalRef === "00010001")
+      const p2 = people.find((p) => p.externalRef === "00010002")
+      expect(p1?.gender).toBe("Man")
+      expect(p2?.gender).toBe("Kvinna")
+    })
   })
 })

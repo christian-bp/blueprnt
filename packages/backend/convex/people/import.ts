@@ -196,9 +196,13 @@ export const importPayroll = action({
       const externalRef = cell(externalRefCol)
       if (!externalRef) continue
 
-      // gender: parse; skip row if null (blankGender issue would have been
-      // caught by validation, but guard defensively).
-      const parsedGender = parseGender(cell(genderCol))
+      // gender: parse with numeric-code support so SAP/SCB codes 1/2 resolve,
+      // matching validateImport (which uses allowNumericCodes). Rows whose gender
+      // still cannot resolve carry the unresolvedGender HARD issue and were
+      // already dropped by skippedRowIndices; this null guard is defensive.
+      const parsedGender = parseGender(cell(genderCol), {
+        allowNumericCodes: true,
+      })
       if (parsedGender === null) continue
 
       // displayName: join first + last names; fall back to externalRef if blank.
