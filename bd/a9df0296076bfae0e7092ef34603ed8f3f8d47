@@ -1,0 +1,22 @@
+docs/superpowers/specs/2026-07-03-import-robustness-catalog.md
+  s_6bff98b662648b::t_04e86ce3e9e288 1-355
+docs/superpowers/specs/2026-07-03-import-robustness-design.md
+  s_6bff98b662648b::t_ab45fe26cb70a0 1-251,255-306
+  s_6bff98b662648b::t_be2bbaeb145865 252-254
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "bda9df0296076bfae0e7092ef34603ed8f3f8d47",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
