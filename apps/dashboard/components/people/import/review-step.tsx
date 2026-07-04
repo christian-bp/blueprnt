@@ -2,6 +2,7 @@
 
 import {
   type CanonicalFieldKey,
+  classifyColumn,
   parseCurrency,
   parseGender,
   parseMoney,
@@ -95,6 +96,16 @@ function buildPreviewRows(
   const ftePercentCol = col("ftePercent")
   const genderCol = col("gender")
 
+  // Determine once whether the FTE column is fractional (values <= 1.0). The
+  // backend classifies the whole column and scales x100; mirror that here so the
+  // preview value matches the imported value (classifyColumn over ALL rows, not
+  // just the previewed slice, so the fraction verdict is the column's, not the
+  // preview window's).
+  const fteIsFraction =
+    ftePercentCol !== undefined &&
+    classifyColumn(parsed.rows.map((r) => r[ftePercentCol] ?? "")).fraction ===
+      true
+
   const rows = parsed.rows.slice(0, PREVIEW_ROW_COUNT)
 
   return rows.map((row) => {
@@ -114,7 +125,9 @@ function buildPreviewRows(
     const currency = currencyRaw ? parseCurrency(currencyRaw) : null
 
     const ftePercentRaw = cell(ftePercentCol)
-    const ftePercent = ftePercentRaw ? parsePercent(ftePercentRaw) : null
+    const ftePercent = ftePercentRaw
+      ? parsePercent(ftePercentRaw, { fraction: fteIsFraction })
+      : null
 
     const genderRaw = cell(genderCol)
     const gender = genderRaw ? parseGender(genderRaw) : null

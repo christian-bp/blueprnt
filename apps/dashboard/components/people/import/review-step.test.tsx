@@ -421,6 +421,55 @@ describe("ReviewStep — confirm (failure)", () => {
 })
 
 // ---------------------------------------------------------------------------
+// Fractional FTE preview
+// ---------------------------------------------------------------------------
+
+describe("ReviewStep — fractional FTE preview", () => {
+  afterEach(() => {
+    cleanup()
+    vi.clearAllMocks()
+  })
+
+  it("shows a fractional FTE column scaled to a percentage (0.8 -> 80)", () => {
+    const fracHeaders = [
+      "EmployeeID",
+      "JobTitle",
+      "Gender",
+      "MonthlySalary",
+      "FTE",
+    ]
+    const fracRows: string[][] = [
+      ["E001", "Engineer", "Kvinna", "55000", "0.8"],
+      ["E002", "Manager", "Man", "70000", "1.0"],
+    ]
+    const fracParsed: ParsedCsv = { headers: fracHeaders, rows: fracRows }
+    const fracMapping: Record<string, number> = {
+      externalRef: 0,
+      title: 1,
+      gender: 2,
+      basicMonthly: 3,
+      ftePercent: 4,
+    }
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <ReviewStep
+          parsed={fracParsed}
+          mapping={fracMapping}
+          csvText={`${fracHeaders.join(",")}\n${fracRows.map((r) => r.join(",")).join("\n")}`}
+          flaggedCount={0}
+          genderOverrides={{}}
+        />
+      </NextIntlClientProvider>
+    )
+    // 0.8 scaled x100 -> "80%", not "0.8%".
+    expect(screen.getByTestId("preview-row-0").textContent).toContain("80%")
+    expect(screen.getByTestId("preview-row-0").textContent).not.toContain(
+      "0.8%"
+    )
+  })
+})
+
+// ---------------------------------------------------------------------------
 // Gender overrides
 // ---------------------------------------------------------------------------
 
