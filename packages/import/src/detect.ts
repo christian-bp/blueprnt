@@ -22,7 +22,8 @@ export type DetectedMapping = {
  *   0.7 — folded header contains a synonym of at least SUBSTRING_MIN_LENGTH chars
  *   0.0 — no match
  * The minimum-length substring guard lives in matchesSynonym (fields.ts) so
- * short synonyms (e.g. removed bare "lon") never fire inside longer words.
+ * short synonyms (e.g. bare "lon", 3 chars) never fire inside longer words
+ * (the >= 5-char substring rule applies; short synonyms match by exact only).
  */
 function headerScore(raw: string, synonyms: readonly string[]): number {
   const { exact, substring } = matchesSynonym(fold(raw), synonyms)

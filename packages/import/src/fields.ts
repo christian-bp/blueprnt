@@ -122,7 +122,7 @@ const FIELDS = [
     key: "gender",
     tier: "required",
     shape: "gender",
-    synonyms: ["kon", "gender", "sex", "kjonn", "koen", "sukupuoli", "gesch"],
+    synonyms: ["kon", "gender", "sex", "kjonn", "sukupuoli", "gesch"],
   },
   {
     key: "basicMonthly",
@@ -187,6 +187,8 @@ const FIELDS = [
       "tjgrad",
       "tjgradprocent",
       "tjanstggrad",
+      "stillingsprosent",
+      "beskaeftigelsesgrad",
     ],
   },
   {

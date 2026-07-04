@@ -204,6 +204,35 @@ describe("detectColumns — Plan A restrictions and Nordic mappings", () => {
   })
 })
 
+describe("detectColumns — Norwegian and Danish FTE synonyms (Plan A parity)", () => {
+  it("maps Stillingsprosent (nb FTE) to ftePercent, not title via 'stilling' substring (MUST-FIX 1)", () => {
+    // "Stillingsprosent" folds to "stillingsprosent" which is an exact synonym for
+    // ftePercent. The title field has "stilling" as a synonym (5 chars, qualifies for
+    // substring), but exact beats substring, so ftePercent must win.
+    const headers = ["Ansattnr", "Grunnlonn", "Stilling", "Stillingsprosent"]
+    const rows = [
+      ["10042", "52 000", "Utvikler", "100"],
+      ["10043", "61 000", "Leder", "80"],
+    ]
+    const result = detectColumns({ headers, rows })
+    expect(result.map.ftePercent?.columnIndex).toBe(3)
+    // title maps to the actual "Stilling" column, not the FTE column
+    expect(result.map.title?.columnIndex).toBe(2)
+  })
+
+  it("maps Beskæftigelsesgrad (da FTE) to ftePercent (MUST-FIX 1)", () => {
+    // "Beskæftigelsesgrad" folds to "beskaeftigelsesgrad" (æ -> ae, o-slash handled).
+    // It is an exact synonym for ftePercent.
+    const headers = ["Ansattnr", "Grunnlonn", "Beskæftigelsesgrad"]
+    const rows = [
+      ["10042", "52 000", "100"],
+      ["10043", "61 000", "80"],
+    ]
+    const result = detectColumns({ headers, rows })
+    expect(result.map.ftePercent?.columnIndex).toBe(2)
+  })
+})
+
 describe("detectColumns — unmapped columns", () => {
   it("reports the index of a junk column that has no synonym or shape match", () => {
     // Build a header set that explicitly covers every canonical field (including department

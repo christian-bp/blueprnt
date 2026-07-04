@@ -171,8 +171,11 @@ export function parseBool(v: string): boolean | null {
 
 /**
  * True when v is an id-shaped value: pure integer, personnummer (\d{8}-\d{4}
- * or \d{6}-\d{4}), or a short alphanumeric code containing a digit. Mirrors
- * shape.ts isId so the string parser and the shape detector agree.
+ * or \d{6}-\d{4}), or a short alphanumeric code containing a digit.
+ * Intentionally stricter than shape.ts isId: this function does NOT accept
+ * space-grouped non-thousands digit strings (e.g. "114 77") that shape.ts
+ * isId accepts for shape classification. The parser requires a fully
+ * id-shaped token; ambiguous space-grouped values are rejected here.
  */
 function isIdShaped(t: string): boolean {
   if (/^\d+$/.test(t)) return true

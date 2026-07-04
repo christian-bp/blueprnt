@@ -29,9 +29,14 @@ export class ImportFormatError extends Error {
 }
 
 // Leading code units of known binary spreadsheet signatures.
-// ZIP local-file header PK\x03\x04 covers XLSX and ODS; OLE2 compound-file
-// magic covers legacy XLS. These survive as leading code units in the common
-// decoded-string cases; byte-level encoding recovery stays the caller's job.
+// ZIP local-file header PK\x03\x04 covers XLSX and ODS; its bytes are ASCII
+// printable so the signature survives File.text() (UTF-8 decode) intact.
+// OLE2 compound-file magic covers legacy XLS; this detection is effective only
+// when the input was decoded as Latin-1 or binary (the literal byte sequence
+// 0xD0 0xCF 0xE1 0xA1 0xB1 0xA1 maps to those Unicode code points under
+// Latin-1). When File.text() decodes the file as UTF-8, the high bytes yield
+// replacement characters (U+FFFD) and the OLE2 branch will NOT fire.
+// OLE2 detection via ArrayBuffer sniffing is deferred to the consumer layer.
 const ZIP_SIGNATURE = "PK\x03\x04"
 const OLE2_SIGNATURE = "ÐÏà¡±á"
 
@@ -70,7 +75,6 @@ export type TokenizeResult = {
 function directiveDelimiter(line: string): string | null {
   const m = /^sep=(.)$/i.exec(line)
   if (m) return m[1] ?? null
-  if (/^sep=\t$/i.test(line)) return "\t"
   // Excel writes the literal word TAB in some locales.
   if (/^sep=tab$/i.test(line)) return "\t"
   return null
@@ -228,24 +232,50 @@ function chooseHeaderRow(rows: string[][]): number {
   return start
 }
 
-// Suffix duplicate header names (_2, _3, ...) so no two columns collapse.
+/**
+ * Suffix duplicate header names (_2, _3, ...) so no two columns share a name.
+ *
+ * Guarantee: the returned headers array contains NO duplicate non-blank names.
+ * When generating a suffix for a duplicate, the counter is incremented until
+ * the candidate name is not already used by any column (original or
+ * already-assigned), so an explicit column named "salary_2" in the source will
+ * not collide with a disambiguated duplicate.
+ * Blank headers are left as-is and are never disambiguated.
+ */
 function disambiguateHeaders(headers: string[]): {
   headers: string[]
   duplicateHeaders: string[]
 } {
+  // Build the full set of all names that appear in the original header list
+  // (excluding blanks). This prevents us from assigning a suffixed name that
+  // already exists as an original column.
+  const allOriginalNames = new Set<string>(headers.filter((h) => h.length > 0))
+  // Track names that have already been assigned in the output so far.
+  const assignedNames = new Set<string>()
   const seen = new Map<string, number>()
   const duplicates = new Set<string>()
   const out = headers.map((h) => {
     if (h.length === 0) return h // blank headers stay blank (not disambiguated)
-    const prior = seen.get(h)
-    if (prior === undefined) {
+    if (!assignedNames.has(h)) {
+      // First occurrence: claim it.
       seen.set(h, 1)
+      assignedNames.add(h)
       return h
     }
-    const next = prior + 1
-    seen.set(h, next)
+    // Duplicate: find the next suffix that is not already taken by any column
+    // (original or already-assigned).
     duplicates.add(h)
-    return `${h}_${next}`
+    let counter = (seen.get(h) ?? 1) + 1
+    while (
+      allOriginalNames.has(`${h}_${counter}`) ||
+      assignedNames.has(`${h}_${counter}`)
+    ) {
+      counter++
+    }
+    seen.set(h, counter)
+    const suffixed = `${h}_${counter}`
+    assignedNames.add(suffixed)
+    return suffixed
   })
   return { headers: out, duplicateHeaders: [...duplicates] }
 }

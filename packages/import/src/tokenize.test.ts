@@ -220,6 +220,27 @@ describe("tokenizeCsv binary-signature guard (A1, A2, A3)", () => {
   })
 })
 
+describe("tokenizeCsv disambiguation collision-proof (CORRECTNESS FIX 2)", () => {
+  it("produces three distinct names when 'salary','salary','salary_2' appear together", () => {
+    // Input: salary (col 0), salary (col 1, duplicate), salary_2 (col 2, explicit).
+    // Naive _2 suffix would collide with the explicit salary_2 column.
+    // The fix must skip _2 (already taken) and use _3 for the disambiguated duplicate.
+    const { headers, signals } = tokenizeCsv(
+      "salary,salary,salary_2\n50000,55000,52000"
+    )
+    // All three names must be distinct.
+    const unique = new Set(headers)
+    expect(unique.size).toBe(3)
+    // The original explicit salary_2 must be preserved at its position (index 2).
+    expect(headers[2]).toBe("salary_2")
+    // The duplicate (index 1) must have been given a different suffix.
+    expect(headers[1]).not.toBe("salary_2")
+    expect(headers[1]).not.toBe("salary") // must have been renamed
+    // The duplicate signal must still record the original collision name.
+    expect(signals.duplicateHeaders).toContain("salary")
+  })
+})
+
 describe("tokenizeCsv single-column signal (T38)", () => {
   it("flags a space-only pseudo-CSV as noDelimiter", () => {
     const { headers, signals } = tokenizeCsv(
