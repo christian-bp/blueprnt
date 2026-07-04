@@ -5,6 +5,7 @@ import {
   parsePercent,
   parseGender,
   parseDate,
+  isAmbiguousDate,
   parseBool,
   parseIntId,
   parseStringId,
@@ -301,8 +302,8 @@ describe("parseDate", () => {
     expect(parseDate("2023-02-30")).toBeNull()
   })
 
-  it("returns null for wrong format", () => {
-    expect(parseDate("15/01/2023")).toBeNull()
+  it("parses DD/MM/YYYY slash date (was wrong-format, now supported per ADR-0010)", () => {
+    expect(parseDate("15/01/2023")).toBe("2023-01-15")
   })
 
   it("returns null for blank string", () => {
@@ -319,6 +320,100 @@ describe("parseDate", () => {
 
   it("accepts a real birth date", () => {
     expect(parseDate("1990-05-20")).toBe("1990-05-20")
+  })
+
+  it("parses DD.MM.YYYY dot date (date-05)", () => {
+    expect(parseDate("15.01.2023")).toBe("2023-01-15")
+  })
+
+  it("parses D.M.YYYY without leading zeros (date-06)", () => {
+    expect(parseDate("5.1.2023")).toBe("2023-01-05")
+  })
+
+  it("parses DD/MM/YYYY slash date as Nordic day-first (date-02)", () => {
+    // 15 > 12 so the first component is unambiguously the day.
+    expect(parseDate("15/01/2023")).toBe("2023-01-15")
+  })
+
+  it("parses MM/DD/YYYY when the second component > 12 (date-03)", () => {
+    // 01/15: first (01) <= 12, second (15) > 12, so 15 is the day (US reading).
+    expect(parseDate("01/15/2023")).toBe("2023-01-15")
+  })
+
+  it("parses an ambiguous slash date as Nordic day-first (date-04)", () => {
+    // 01/06: both <= 12; day-first reading is 01 June.
+    expect(parseDate("01/06/2023")).toBe("2023-06-01")
+  })
+
+  it("strips a space-separated time (date-11)", () => {
+    expect(parseDate("2023-01-15 00:00:00")).toBe("2023-01-15")
+  })
+
+  it("strips a T-separated time (date-12)", () => {
+    expect(parseDate("2023-01-15T00:00:00")).toBe("2023-01-15")
+  })
+
+  it("parses YYYY/MM/DD year-first slash (date-25)", () => {
+    expect(parseDate("2023/01/15")).toBe("2023-01-15")
+  })
+
+  it("parses a full personnummer prefix without a reference year (date-14)", () => {
+    // Full 8-digit birth prefix needs no century expansion.
+    expect(parseDate("19850612-1234")).toBe("1985-06-12")
+  })
+
+  it("rejects an invalid dot date (bad day)", () => {
+    expect(parseDate("32.01.2023")).toBeNull()
+  })
+
+  it("parses compact YYYYMMDD only when header-gated (date-07, date-08)", () => {
+    expect(parseDate("20230115", { headerGated: true })).toBe("2023-01-15")
+    // Without the gate a bare 8-digit number is an id, not a date.
+    expect(parseDate("20230115")).toBeNull()
+  })
+
+  it("parses an Excel serial only when header-gated (date-18)", () => {
+    // 44941 = 2023-01-15 with the Excel epoch (25569 = 1970-01-01 in Excel serials).
+    expect(parseDate("44941", { headerGated: true })).toBe("2023-01-15")
+    expect(parseDate("44941")).toBeNull()
+    // A salary-magnitude integer is out of the plausible serial range.
+    expect(parseDate("52000", { headerGated: true })).toBeNull()
+  })
+
+  it("expands a short personnummer with the caller reference year (date-15)", () => {
+    // 850612 with referenceYear 2026: 26 -> 2026, so 85 -> 1985 (past century).
+    expect(parseDate("850612-1234", { referenceYear: 2026 })).toBe("1985-06-12")
+  })
+
+  it("disables short-personnummer expansion without a reference year (determinism)", () => {
+    expect(parseDate("850612-1234")).toBeNull()
+  })
+})
+
+describe("isAmbiguousDate", () => {
+  it("flags a slash date with day <= 12 as ambiguous (date-04)", () => {
+    // 01/06/2023: both components <= 12, so MM/DD was also calendar-valid.
+    expect(isAmbiguousDate("01/06/2023")).toBe(true)
+  })
+
+  it("flags a dot date with day <= 12 as ambiguous", () => {
+    expect(isAmbiguousDate("05.01.2023")).toBe(true)
+  })
+
+  it("does not flag when the first component > 12 (date-02)", () => {
+    expect(isAmbiguousDate("15/01/2023")).toBe(false)
+  })
+
+  it("does not flag when the second component > 12 (date-03)", () => {
+    expect(isAmbiguousDate("01/15/2023")).toBe(false)
+  })
+
+  it("does not flag an ISO date", () => {
+    expect(isAmbiguousDate("2023-01-15")).toBe(false)
+  })
+
+  it("does not flag an unparseable value", () => {
+    expect(isAmbiguousDate("not a date")).toBe(false)
   })
 })
 

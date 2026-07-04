@@ -195,39 +195,167 @@ export function parseGender(
 }
 
 /**
- * Parse a date string to a validated YYYY-MM-DD string.
- * Returns null if the format is wrong or the date is not a real calendar date.
+ * Build a calendar-validated YYYY-MM-DD string from numeric parts, or null.
+ * Month must be 1..12 and the day must exist in that month (no Feb 30).
  */
-export function parseDate(v: string): string | null {
-  const trimmed = v.trim()
-  if (!trimmed) return null
-
-  // Strict YYYY-MM-DD format check.
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return null
-
-  const [yearStr, monthStr, dayStr] = trimmed.split("-") as [
-    string,
-    string,
-    string,
-  ]
-  const year = Number(yearStr)
-  const month = Number(monthStr)
-  const day = Number(dayStr)
-
-  // Month must be 1..12.
+function toIsoDate(year: number, month: number, day: number): string | null {
   if (month < 1 || month > 12) return null
-
-  // Use Date to validate the day-in-month. Month is 0-indexed in Date.
-  const date = new Date(year, month - 1, day)
+  if (day < 1 || day > 31) return null
+  const date = new Date(Date.UTC(year, month - 1, day))
   if (
-    date.getFullYear() !== year ||
-    date.getMonth() !== month - 1 ||
-    date.getDate() !== day
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
   ) {
     return null
   }
+  const mm = String(month).padStart(2, "0")
+  const dd = String(day).padStart(2, "0")
+  return `${year}-${mm}-${dd}`
+}
 
-  return trimmed
+/**
+ * Resolve a two-part day/month pair (slash or dot date) to [day, month] using
+ * the Nordic day-first ambiguity policy (ADR-0010):
+ *   - first component > 12  -> first is the day (day-first, unambiguous).
+ *   - second component > 12 -> second is the day (US MM/DD reading).
+ *   - both <= 12            -> day-first (a=day, b=month); ambiguous, flagged by
+ *                             isAmbiguousDate so validate can warn.
+ * Returns null when neither reading is a valid day/month split.
+ */
+function resolveDayMonth(a: number, b: number): [number, number] | null {
+  if (a > 12 && b > 12) return null
+  if (b > 12) return [b, a] // US MM/DD: a is month, b is day
+  return [a, b] // Nordic day-first: a is day, b is month
+}
+
+// Excel date serials use the 1899-12-30 epoch. The plausible range keeps a
+// salary-magnitude integer from being read as a date; ~40000-50000 spans
+// roughly 2009-2036. Header-gated (only tried when the column header matched a
+// date field) so a bare integer elsewhere stays an id.
+const EXCEL_EPOCH_UTC = Date.UTC(1899, 11, 30)
+const EXCEL_SERIAL_MIN = 40000
+const EXCEL_SERIAL_MAX = 50000
+
+/**
+ * Parse a raw date string to a calendar-validated YYYY-MM-DD string.
+ *
+ * ADR-0010 (import format expansion, replaces the old ISO-8601-only contract):
+ * accepts ISO YYYY-MM-DD, DD.MM.YYYY / D.M.YYYY, DD/MM/YYYY, YYYY/MM/DD, a
+ * datetime with a space- or T-separated time suffix, a full personnummer prefix
+ * (YYYYMMDD-NNNN), and (header-gated via opts.headerGated) the compact YYYYMMDD
+ * and Excel serial forms, and (with opts.referenceYear) short personnummer
+ * century expansion. Slash/dot dates default to Nordic day-first; see
+ * resolveDayMonth. The engine never reads the clock: without referenceYear the
+ * short-personnummer branch is disabled and returns null.
+ */
+export function parseDate(
+  v: string,
+  opts?: { headerGated?: boolean; referenceYear?: number }
+): string | null {
+  const trimmed = v.trim()
+  if (!trimmed) return null
+
+  // Full personnummer prefix: YYYYMMDD-NNNN (no century expansion needed).
+  const pnFull = /^(\d{4})(\d{2})(\d{2})-\d{4}$/.exec(trimmed)
+  if (pnFull) {
+    return toIsoDate(Number(pnFull[1]), Number(pnFull[2]), Number(pnFull[3]))
+  }
+
+  // Short personnummer YYMMDD-NNNN with caller reference-year century expansion.
+  // The engine never reads the clock; without referenceYear this branch is off.
+  const pnShort = /^(\d{2})(\d{2})(\d{2})-\d{4}$/.exec(trimmed)
+  if (pnShort) {
+    if (opts?.referenceYear === undefined) return null
+    const yy = Number(pnShort[1])
+    const refCentury = Math.floor(opts.referenceYear / 100) * 100
+    const refYY = opts.referenceYear % 100
+    // A two-digit year in the future (relative to the reference) belongs to the
+    // previous century (a birth year cannot be in the future).
+    const year = yy > refYY ? refCentury - 100 + yy : refCentury + yy
+    return toIsoDate(year, Number(pnShort[2]), Number(pnShort[3]))
+  }
+
+  if (opts?.headerGated) {
+    // Compact YYYYMMDD (8 digits, no separators).
+    const compact = /^(\d{4})(\d{2})(\d{2})$/.exec(trimmed)
+    if (compact) {
+      return toIsoDate(
+        Number(compact[1]),
+        Number(compact[2]),
+        Number(compact[3])
+      )
+    }
+    // Excel serial: a plausible-range integer -> date via the Excel epoch.
+    if (/^\d+$/.test(trimmed)) {
+      const serial = Number(trimmed)
+      if (serial >= EXCEL_SERIAL_MIN && serial <= EXCEL_SERIAL_MAX) {
+        const ms = EXCEL_EPOCH_UTC + serial * 86400000
+        const d = new Date(ms)
+        return toIsoDate(
+          d.getUTCFullYear(),
+          d.getUTCMonth() + 1,
+          d.getUTCDate()
+        )
+      }
+      return null
+    }
+  }
+
+  // Strip a trailing time part (space- or T-separated) before ISO/year-first.
+  const dateOnly = trimmed.replace(/[ T]\d{2}:\d{2}(:\d{2})?$/, "")
+
+  // ISO YYYY-MM-DD.
+  const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateOnly)
+  if (iso) {
+    return toIsoDate(Number(iso[1]), Number(iso[2]), Number(iso[3]))
+  }
+
+  // Year-first slash YYYY/MM/DD.
+  const yearFirst = /^(\d{4})\/(\d{1,2})\/(\d{1,2})$/.exec(dateOnly)
+  if (yearFirst) {
+    return toIsoDate(
+      Number(yearFirst[1]),
+      Number(yearFirst[2]),
+      Number(yearFirst[3])
+    )
+  }
+
+  // Dot date DD.MM.YYYY / D.M.YYYY.
+  const dot = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(dateOnly)
+  if (dot) {
+    const dm = resolveDayMonth(Number(dot[1]), Number(dot[2]))
+    if (!dm) return null
+    return toIsoDate(Number(dot[3]), dm[1], dm[0])
+  }
+
+  // Slash date DD/MM/YYYY.
+  const slash = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(dateOnly)
+  if (slash) {
+    const dm = resolveDayMonth(Number(slash[1]), Number(slash[2]))
+    if (!dm) return null
+    return toIsoDate(Number(slash[3]), dm[1], dm[0])
+  }
+
+  return null
+}
+
+/**
+ * Report whether a slash/dot date is ambiguous under the Nordic day-first
+ * policy: both day and month components are <= 12, so the US MM/DD reading was
+ * also calendar-valid (ADR-0010). Plan C turns a true result into the
+ * ambiguousDate validate warning. Returns false for ISO dates, unambiguous
+ * slash/dot dates (a component > 12), and any value parseDate rejects.
+ */
+export function isAmbiguousDate(v: string): boolean {
+  const trimmed = v.trim()
+  const m = /^(\d{1,2})[./](\d{1,2})[./]\d{4}$/.exec(trimmed)
+  if (!m) return false
+  const a = Number(m[1])
+  const b = Number(m[2])
+  if (a > 12 || b > 12) return false
+  // Both <= 12: ambiguous only if it actually parses to a valid date.
+  return parseDate(trimmed) !== null
 }
 
 /**

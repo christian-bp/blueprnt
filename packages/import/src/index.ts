@@ -25,6 +25,7 @@ export {
   parsePercent,
   parseGender,
   parseDate,
+  isAmbiguousDate,
   parseBool,
   parseIntId,
   parseStringId,
