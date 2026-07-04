@@ -14,6 +14,7 @@ import {
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
+import { SalaryForm } from "@/components/people/salary-form"
 import { useOrganization } from "@/components/org-context"
 import { type Crumb, PageBreadcrumb } from "@/components/page-breadcrumb"
 import { PageHeader } from "@/components/page-header"
@@ -52,8 +53,16 @@ export function PersonDetail({ personId }: { personId: string }) {
     { label: person?.displayName ?? "" },
   ]
 
-  // Loading: person or salary still resolving. Show a content-shaped skeleton.
-  if (person === undefined || salary === undefined) {
+  // Loading: hold the skeleton until ALL four queries resolve. assignment and
+  // roles being undefined (still loading) would cause the classification block
+  // to flash "no assignment" then re-render with the real level, so widen the
+  // gate here. null/empty still passes (loaded but absent data).
+  if (
+    person === undefined ||
+    salary === undefined ||
+    assignment === undefined ||
+    roles === undefined
+  ) {
     return (
       <div className="space-y-6">
         <PageHeader
@@ -66,9 +75,11 @@ export function PersonDetail({ personId }: { personId: string }) {
               <TableHead>{t("salaryColumns.payYear")}</TableHead>
               <TableHead>{t("salaryColumns.basicMonthly")}</TableHead>
               <TableHead>{t("salaryColumns.total")}</TableHead>
+              <TableHead>{t("salaryColumns.currency")}</TableHead>
+              <TableHead>{t("salaryColumns.source")}</TableHead>
             </TableRow>
           </TableHeader>
-          <TableSkeleton rows={3} columns={3} />
+          <TableSkeleton rows={3} columns={5} />
         </Table>
       </div>
     )
@@ -173,7 +184,8 @@ export function PersonDetail({ personId }: { personId: string }) {
         )}
       </section>
 
-      {/* Task 4 mounts <SalaryForm personId={person.personId} /> here. */}
+      <SalaryForm personId={person.personId} />
+
       {/* Task 5 mounts <ErasePersonControl personId={person.personId}
           displayName={person.displayName} externalRef={person.externalRef} />
           here. */}
