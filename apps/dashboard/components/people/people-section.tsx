@@ -178,7 +178,14 @@ export function PeopleSection() {
 
                 return (
                   <TableRow key={String(person.personId)}>
-                    <TableCell className="font-medium">{name}</TableCell>
+                    <TableCell className="font-medium">
+                      <Link
+                        className="underline-offset-4 hover:underline"
+                        href={`/people/${String(person.personId)}`}
+                      >
+                        {name}
+                      </Link>
+                    </TableCell>
                     <TableCell className="text-muted-foreground">
                       {person.gender != null
                         ? t(`gender.${person.gender}`)

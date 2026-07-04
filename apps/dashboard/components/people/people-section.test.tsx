@@ -194,6 +194,14 @@ describe("PeopleSection", () => {
     expect(screen.getByText("100%")).toBeDefined()
   })
 
+  it("links the person name cell to the detail route", () => {
+    onQuery((ref) => queryRouter(ref))
+    renderSection()
+    // Alice Svensson (personId "p1") should be a link to /people/p1.
+    const link = screen.getByRole("link", { name: "Alice Svensson" })
+    expect((link as HTMLAnchorElement).href).toContain("/people/p1")
+  })
+
   it("shows confirmed badge for a person with confirmed assignment", () => {
     onQuery((ref) => queryRouter(ref))
     renderSection()
