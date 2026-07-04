@@ -30,6 +30,7 @@ const settingsShape = v.object({
   employeeCount: v.union(v.number(), v.null()),
   industry: v.union(v.string(), v.null()),
   imageUrl: v.union(v.string(), v.null()),
+  pseudonymizeNames: v.boolean(),
 })
 
 export const getOrganizationSettings = orgQuery({
@@ -53,6 +54,7 @@ export const getOrganizationSettings = orgQuery({
       employeeCount: settings.employeeCount ?? null,
       industry: settings.industry ?? null,
       imageUrl,
+      pseudonymizeNames: settings.pseudonymizeNames ?? false,
     }
   },
 })
@@ -67,6 +69,7 @@ export const updateOrganizationSettings = adminMutation({
     language: v.optional(v.string()),
     employeeCount: v.optional(v.number()),
     industry: v.optional(v.string()),
+    pseudonymizeNames: v.optional(v.boolean()),
   },
   returns: v.null(),
   handler: async (ctx, args) => {

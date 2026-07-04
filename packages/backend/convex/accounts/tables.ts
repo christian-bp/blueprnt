@@ -51,4 +51,7 @@ export const organizations = defineTable({
   // The org logo's file-storage id. Org-domain content (NOT person PII): edited
   // by org admins, audited, and unaffected by person erasure (Role != Person).
   imageId: v.optional(v.id("_storage")),
+  // When true, the classification UI renders pseudonyms instead of real names
+  // for individuals, supporting blind-review workflows.
+  pseudonymizeNames: v.optional(v.boolean()),
 }).index("by_org", ["orgId"])
