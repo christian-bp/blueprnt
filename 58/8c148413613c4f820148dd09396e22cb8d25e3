@@ -1,0 +1,37 @@
+apps/dashboard/components/people/import/import-wizard.tsx
+  s_6bff98b662648b::t_0ea9d88207d8be 47
+  s_6bff98b662648b::t_6e4e4c7f3741d8 101-103
+  s_6bff98b662648b::t_387420fb411ff9 26-27
+apps/dashboard/components/people/import/upload-step.test.tsx
+  s_6bff98b662648b::t_079518e5b324cb 202,218-221
+  s_6bff98b662648b::t_161f993de86a0d 106
+  s_6bff98b662648b::t_1f973a49501d70 263-304
+  s_6bff98b662648b::t_45dedbbc740b33 46-49
+  s_6bff98b662648b::t_fa5bdd4fb847de 203
+  s_6bff98b662648b::t_169b73b72805c7 216-217
+  s_6bff98b662648b::t_411bacae9d5c80 10
+  s_6bff98b662648b::t_7c74c25fe6f9cd 68-92
+  s_6bff98b662648b::t_1cf137f5b86a48 95
+  s_6bff98b662648b::t_a08e837e065912 12
+  s_6bff98b662648b::t_e6fec2b19c16d2 14-31,38-45
+  s_6bff98b662648b::t_24f4dd7fe26279 13
+apps/dashboard/components/people/import/upload-step.tsx
+  s_6bff98b662648b::t_f0fa49d0bcdfc7 54
+  s_6bff98b662648b::t_732ef9ff31f090 36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "588c148413613c4f820148dd09396e22cb8d25e3",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
