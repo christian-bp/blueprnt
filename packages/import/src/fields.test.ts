@@ -109,8 +109,12 @@ describe("CANONICAL_FIELDS synonyms after Plan A additions", () => {
     CANONICAL_FIELDS.map((f) => [f.key, f.synonyms])
   )
 
-  it("removes the bare lon substring landmine from basicMonthly (DC-25)", () => {
-    expect(byKey.basicMonthly).not.toContain("lon")
+  it("lon does not fire as a substring inside longer words (DC-25 guard)", () => {
+    // "lon" is short (< SUBSTRING_MIN_LENGTH) so matchesSynonym never returns
+    // substring=true for it. A header like "Lönenivå" -> "loneniva" must not
+    // match basicMonthly via the substring path even though "lon" is a synonym.
+    const syns = byKey.basicMonthly ?? []
+    expect(matchesSynonym("loneniva", syns).substring).toBe(false)
   })
 
   it("adds Finnish person-number and SAP pernr to externalRef (DC-15, D7)", () => {

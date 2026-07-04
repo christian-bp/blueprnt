@@ -83,6 +83,7 @@ const FIELDS = [
       "anstnr",
       "anstallningsnummer",
       "anstallnr",
+      "ansattnr",
       "employeeid",
       "empno",
       "employeenumber",
@@ -128,6 +129,7 @@ const FIELDS = [
     tier: "required",
     shape: "money",
     synonyms: [
+      "lon",
       "manadslon",
       "grundlon",
       "fastmanadslon",

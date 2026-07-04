@@ -128,6 +128,82 @@ describe("detectColumns — shape-only fallback", () => {
   })
 })
 
+describe("detectColumns — Plan A restrictions and Nordic mappings", () => {
+  it("maps a full Norwegian file after the fold fix (DC-13)", () => {
+    const headers = ["Ansattnr", "Kjønn", "Grunnlønn", "Stilling"]
+    const rows = [
+      ["10042", "Mann", "52 000", "Utvikler"],
+      ["10043", "Kvinne", "61 000", "Leder"],
+    ]
+    const result = detectColumns({ headers, rows })
+    expect(result.map.externalRef?.columnIndex).toBe(0)
+    expect(result.map.gender?.columnIndex).toBe(1)
+    expect(result.map.basicMonthly?.columnIndex).toBe(2)
+    expect(result.map.title?.columnIndex).toBe(3)
+  })
+
+  it("maps a Finnish file without the lon landmine (DC-15, DC-25)", () => {
+    const headers = ["Henkilönro", "Peruspalkka", "Tehtävänimike"]
+    const rows = [
+      ["114 77", "3200", "Insinööri"],
+      ["225 88", "3600", "Päällikkö"],
+    ]
+    const result = detectColumns({ headers, rows })
+    expect(result.map.externalRef?.columnIndex).toBe(0)
+    expect(result.map.basicMonthly?.columnIndex).toBe(1)
+    expect(result.map.title?.columnIndex).toBe(2)
+  })
+
+  it("routes unknown text/id/percent columns to unmappedColumns, not shape-only fields (DC-09)", () => {
+    const headers = ["Anstnr", "Kostnadskonto", "Hemort", "Lönenivå"]
+    const rows = [
+      ["10042", "7010", "Stockholm", "3"],
+      ["10043", "7020", "Göteborg", "5"],
+    ]
+    const result = detectColumns({ headers, rows })
+    // Only externalRef (Anstnr header) is mapped; the rest are unmapped.
+    expect(result.map.externalRef?.columnIndex).toBe(0)
+    expect(result.unmappedColumns).toContain(1) // Kostnadskonto (id) not shape-only assigned
+    expect(result.unmappedColumns).toContain(2) // Hemort (text) not shape-only assigned
+    expect(result.unmappedColumns).toContain(3) // Lönenivå (id) not shape-only assigned
+  })
+
+  it("sends a runner-up salary synonym to unmappedColumns instead of stealing it (DC-10)", () => {
+    const headers = ["Lön", "Grundlön"]
+    const rows = [
+      ["52 000", "48 000"],
+      ["61 000", "55 000"],
+    ]
+    const result = detectColumns({ headers, rows })
+    // Lön wins basicMonthly; Grundlön (a header-candidate loser) is not stolen into variable.
+    expect(result.map.basicMonthly?.columnIndex).toBe(0)
+    expect(result.map.variable).toBeUndefined()
+    expect(result.unmappedColumns).toContain(1)
+  })
+
+  it("routes a blank-header column straight to unmappedColumns (DC-22)", () => {
+    const headers = ["Anstnr", "", "Månadslön"]
+    const rows = [
+      ["10042", "Anna", "52 000"],
+      ["10043", "Erik", "61 000"],
+    ]
+    const result = detectColumns({ headers, rows })
+    // The blank-header column (index 1) never earns firstName via shape-only.
+    expect(result.map.firstName).toBeUndefined()
+    expect(result.unmappedColumns).toContain(1)
+  })
+
+  it("still assigns a distinctive gender shape by shape-only when no header matches (DC-12 counter-lock)", () => {
+    const headers = ["Anstnr", "Ukjentkolonne"]
+    const rows = [
+      ["10042", "Mann"],
+      ["10043", "Kvinne"],
+    ]
+    const result = detectColumns({ headers, rows })
+    expect(result.map.gender?.columnIndex).toBe(1)
+  })
+})
+
 describe("detectColumns — unmapped columns", () => {
   it("reports the index of a junk column that has no synonym or shape match", () => {
     // Build a header set that explicitly covers every canonical field (including department

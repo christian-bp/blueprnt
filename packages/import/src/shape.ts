@@ -36,7 +36,10 @@ function isDate(cell: string): boolean {
 
 const GENDER_VALUES = new Set([
   "man",
+  "mann",
   "kvinna",
+  "kvinde",
+  "kvinne",
   "m",
   "k",
   "male",
