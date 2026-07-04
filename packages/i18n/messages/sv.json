@@ -188,11 +188,7 @@
         "map": {
           "title": "Mappa kolumner",
           "description": "Koppla varje fält till en kolumn i din CSV-fil. Obligatoriska fält måste mappas innan du kan fortsätta.",
-          "field": "Fält",
-          "source": "CSV-kolumn",
           "sample": "Exempelvärde",
-          "confidence": "Konfidens",
-          "notMapped": "Inte mappad",
           "unmappedRequired": "{count, plural, one {# obligatoriskt fält är inte mappat} other {# obligatoriska fält är inte mappade}}",
           "column": "CSV-kolumn",
           "mappedTo": "Mappas till",

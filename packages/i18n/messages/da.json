@@ -188,11 +188,7 @@
         "map": {
           "title": "Tilknyt kolonner",
           "description": "Knyt hvert felt til en kolonne i din CSV-fil. Obligatoriske felter skal tilknyttes, for du kan fortsaette.",
-          "field": "Felt",
-          "source": "CSV-kolonne",
           "sample": "Eksempelvaerdi",
-          "confidence": "Konfidens",
-          "notMapped": "Ikke tilknyttet",
           "unmappedRequired": "{count, plural, one {# obligatorisk felt er ikke tilknyttet} other {# obligatoriske felter er ikke tilknyttet}}",
           "column": "CSV-kolonne",
           "mappedTo": "Tilknyttet til",

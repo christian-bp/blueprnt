@@ -188,11 +188,7 @@
         "map": {
           "title": "Tilordne kolonner",
           "description": "Koble hvert felt til en kolonne i CSV-filen. Obligatoriske felt ma tilordnes for du kan ga videre.",
-          "field": "Felt",
-          "source": "CSV-kolonne",
           "sample": "Eksempelverdi",
-          "confidence": "Konfidensgrad",
-          "notMapped": "Ikke tilordnet",
           "unmappedRequired": "{count, plural, one {# obligatorisk felt er ikke tilordnet} other {# obligatoriske felt er ikke tilordnet}}",
           "column": "CSV-kolonne",
           "mappedTo": "Tilordnet til",

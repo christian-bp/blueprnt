@@ -188,11 +188,7 @@
         "map": {
           "title": "Yhdista sarakkeet",
           "description": "Yhdista jokainen kentta CSV-tiedoston sarakkeeseen. Pakolliset kentat on yhdistettava ennen jatkamista.",
-          "field": "Kentta",
-          "source": "CSV-sarake",
           "sample": "Esimerkkiarvo",
-          "confidence": "Luottamus",
-          "notMapped": "Ei yhdistetty",
           "unmappedRequired": "{count, plural, one {# pakollinen kentta ei ole yhdistetty} other {# pakollista kenttaa ei ole yhdistetty}}",
           "column": "CSV-sarake",
           "mappedTo": "Yhdistetty kenttaan",
