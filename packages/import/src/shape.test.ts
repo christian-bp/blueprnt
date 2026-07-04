@@ -127,6 +127,51 @@ describe("classifyColumn", () => {
       values: ["Head of Ops", "Elektronikkonstruktör"],
       shape: "text",
     },
+    {
+      label: "comma-decimal salary column is money (SC-20, M14)",
+      values: ["45 000,00", "52 000,50", "41 300,00"],
+      shape: "money",
+    },
+    {
+      label: "dot-thousands salary column is money (M10)",
+      values: ["52.000", "48.500", "61.000"],
+      shape: "money",
+    },
+    {
+      label: "run-on kr suffix column is money (M41)",
+      values: ["52000kr", "48000kr"],
+      shape: "money",
+    },
+    {
+      label: "decimal-percent column is percent (pp-14)",
+      values: ["87.5", "62.5", "100"],
+      shape: "percent",
+    },
+    {
+      label: "space-before-% column is percent (pp-13)",
+      values: ["80 %", "100 %", "75 %"],
+      shape: "percent",
+    },
+    {
+      label: "comma-decimal percent column is percent (pp-16 non-fraction)",
+      values: ["87,5", "62,5", "100,00"],
+      shape: "percent",
+    },
+    {
+      label: "DD.MM.YYYY column is date (date-10)",
+      values: ["15.01.2023", "03.11.2022", "28.02.2021"],
+      shape: "date",
+    },
+    {
+      label: "DD/MM/YYYY column is date (date-09)",
+      values: ["15/01/2023", "03/11/2022", "28/02/2021"],
+      shape: "date",
+    },
+    {
+      label: "datetime column is date (date-13)",
+      values: ["2023-01-15 00:00:00", "2022-11-03 00:00:00"],
+      shape: "date",
+    },
   ]
 
   for (const { label, values, shape } of cases) {
@@ -143,5 +188,60 @@ describe("classifyColumn", () => {
     const result = classifyColumn(["Man", "Man", "xyz"])
     expect(result.shape).toBe("gender")
     expect(result.confidence).toBeCloseTo(0.67, 2)
+  })
+
+  it("flags a fraction FTE column with fraction: true (pp-15)", () => {
+    const result = classifyColumn(["1.0", "0.8", "0.5", "0.75"])
+    expect(result.shape).toBe("percent")
+    expect(result.fraction).toBe(true)
+  })
+
+  it("flags a comma-decimal fraction column with fraction: true (pp-16)", () => {
+    const result = classifyColumn(["1,0", "0,8", "0,5"])
+    expect(result.shape).toBe("percent")
+    expect(result.fraction).toBe(true)
+  })
+
+  it("does not flag a normal percent column as fraction (pp-14)", () => {
+    const result = classifyColumn(["87.5", "62.5", "100"])
+    expect(result.shape).toBe("percent")
+    expect(result.fraction).toBeUndefined()
+  })
+
+  it("classifies a compact YYYYMMDD column as date only when header-gated (date-08)", () => {
+    const values = ["20230115", "20221103", "20210228"]
+    expect(classifyColumn(values, { headerGated: true }).shape).toBe("date")
+    // Without the gate a bare 8-digit column is an id.
+    expect(classifyColumn(values).shape).toBe("id")
+  })
+
+  it("classifies an Excel-serial column as date only when header-gated (date-19)", () => {
+    const values = ["44927", "44562", "45000"]
+    expect(classifyColumn(values, { headerGated: true }).shape).toBe("date")
+    expect(classifyColumn(values).shape).toBe("id")
+  })
+
+  // LOCK (SC-05, SC-02): the widened parseMoney now strips space grouping, so
+  // parseMoney("114 55") succeeds. The postal-code / small-grouped-id guard
+  // carried forward into isMoney (Step 3) must keep these classified as `id`,
+  // NOT money, because a 3+2 space group is not a true thousands pattern. This
+  // is a lock, not an intended delta: if either flips to "money", the guard was
+  // dropped.
+  it("keeps Swedish 3+2 postal codes as id after the widening (SC-05 LOCK)", () => {
+    expect(classifyColumn(["114 55", "752 28", "211 20"]).shape).toBe("id")
+  })
+
+  it("keeps space-grouped employee numbers as id after the widening (SC-02 LOCK)", () => {
+    expect(classifyColumn(["114 77", "114 55", "312 90"]).shape).toBe("id")
+  })
+
+  it("still classifies a true thousands-grouped salary column as money (M05-M07 LOCK)", () => {
+    expect(classifyColumn(["52 000", "61 000", "1 234 567"]).shape).toBe(
+      "money"
+    )
+  })
+
+  it("still classifies a currency-suffixed single group as money (SC-24 LOCK)", () => {
+    expect(classifyColumn(["9 500 kr", "8 200 kr"]).shape).toBe("money")
   })
 })
