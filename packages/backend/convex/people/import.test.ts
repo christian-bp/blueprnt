@@ -13,6 +13,15 @@ const FIXTURE_PATH = join(
 )
 const FIXTURE_CSV = readFileSync(FIXTURE_PATH, "utf8")
 
+const PERSONEC_FRACTION_CSV = readFileSync(
+  join(import.meta.dirname, "__fixtures__", "personec-fraction.csv"),
+  "utf8"
+)
+const SAP_NUMERIC_GENDER_CSV = readFileSync(
+  join(import.meta.dirname, "__fixtures__", "sap-numeric-gender.csv"),
+  "utf8"
+)
+
 // columnMap is string[][] (array of [sourceHeader, canonicalFieldKey] pairs)
 // because Convex forbids non-ASCII characters in v.record() object field names
 // at serialization time. Swedish CSV headers like "Månadslön" and "Födelsedatum"
@@ -420,5 +429,66 @@ describe("importPayroll (auth)", () => {
         payYear: 2026,
       })
     ).rejects.toThrow()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Row-skip triage: soft issues must not skip rows
+// ---------------------------------------------------------------------------
+
+const PERSONEC_COLUMN_MAP: string[][] = [
+  ["Ansattnr", "externalRef"],
+  ["Fornavn", "firstName"],
+  ["Etternavn", "lastName"],
+  ["Kjønn", "gender"],
+  ["Grunnlønn", "basicMonthly"],
+  ["Fødselsdato", "birthDate"],
+  ["Stillingsprosent", "ftePercent"],
+  ["Stilling", "title"],
+]
+
+const SAP_COLUMN_MAP: string[][] = [
+  ["PERNR", "externalRef"],
+  ["PLANS", "title"],
+  ["GESCH", "gender"],
+  ["ANSAL", "basicMonthly"],
+]
+
+describe("importPayroll (row-skip triage)", () => {
+  it("does NOT skip fraction-FTE rows (fractionScaled is a soft issue)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: PERSONEC_FRACTION_CSV,
+      columnMap: PERSONEC_COLUMN_MAP,
+      payYear: 2026,
+    })
+
+    expect(result.ok).toBe(true)
+    // Both rows carry fractionScaled + ambiguousDate (soft issues) but no hard
+    // issue. Neither row should be skipped.
+    expect(result.skippedRows).toBe(0)
+    expect(result.peopleImported).toBe(2)
+    expect(result.salariesImported).toBe(2)
+  })
+
+  // SAP numeric gender (GESCH 1/2) requires Task 2 to wire allowNumericCodes
+  // in the import action. Skipped until that task lands.
+  it.skip("does NOT skip numeric-gender rows (SAP GESCH 1/2)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: SAP_NUMERIC_GENDER_CSV,
+      columnMap: SAP_COLUMN_MAP,
+      payYear: 2026,
+    })
+
+    expect(result.ok).toBe(true)
+    expect(result.skippedRows).toBe(0)
+    expect(result.peopleImported).toBe(2)
   })
 })

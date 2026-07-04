@@ -10,6 +10,7 @@ import {
   parseGender,
   parseMoney,
   parsePercent,
+  type RowIssueCode,
   tokenizeCsv,
   validateImport,
 } from "@workspace/import"
@@ -44,6 +45,22 @@ const importResultValidator = v.object({
     ),
   }),
 })
+
+// Row-issue codes that make a row impossible to persist, so the whole row is
+// skipped. Soft codes (fractionScaled, ambiguousDate, nonNumericCode,
+// genderNameMismatch) are informational: the row still imports.
+//   - duplicateId:      the same externalRef twice; second write would collide.
+//   - unparsableMoney:  no usable basicMonthly.
+//   - negativeValue:    negative/parenthesized money is unsupported for V1.
+//   - unresolvedGender: person requires a Man/Kvinna gender to insert.
+//   - raggedRow:        the row's columns do not line up with the header.
+const HARD_SKIP_CODES: ReadonlySet<RowIssueCode> = new Set<RowIssueCode>([
+  "duplicateId",
+  "unparsableMoney",
+  "negativeValue",
+  "unresolvedGender",
+  "raggedRow",
+])
 
 // Ingests a payroll CSV end-to-end. The wizard calls this after the HR admin
 // confirms the column mapping on the review screen.
@@ -128,8 +145,14 @@ export const importPayroll = action({
       }
     }
 
-    // Step 4: Identify skipped rows (any per-row issue -> skip the whole row).
-    const skippedRowIndices = new Set(validation.issues.map((i) => i.row))
+    // Step 4: Identify skipped rows. Only HARD issues skip a row; soft issues
+    // (fractionScaled, ambiguousDate, nonNumericCode, genderNameMismatch) are
+    // informational and the row still imports.
+    const skippedRowIndices = new Set(
+      validation.issues
+        .filter((i) => HARD_SKIP_CODES.has(i.code as RowIssueCode))
+        .map((i) => i.row)
+    )
 
     // Fetch the org's currency as the fallback when no currency column is mapped.
     const orgCurrency: string = await ctx.runQuery(
