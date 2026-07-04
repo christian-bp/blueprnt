@@ -1,0 +1,20 @@
+docs/adr/0010-import-format-expansion-csv-only.md
+  s_6bff98b662648b::t_8bfe680ec338c9 1,3,5,7,9,11-17,19,21-29,31-32,34,36,38,40,42-49,51,53-59
+  s_6bff98b662648b::t_30e3810516daeb 2,4,6,8,10,18,20,30,33,35,37,39,41,50,52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "e945aa5a17f7ee561586358992906e70dfca1d3a",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
