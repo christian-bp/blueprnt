@@ -231,7 +231,7 @@ export function SalaryForm({ personId }: { personId: Id<"people"> }) {
             <SubmitButton
               type="submit"
               isSubmitting={form.formState.isSubmitting}
-              disabled={form.formState.isSubmitting}
+              disabled={!form.formState.isValid || form.formState.isSubmitting}
             >
               {t("submit")}
             </SubmitButton>

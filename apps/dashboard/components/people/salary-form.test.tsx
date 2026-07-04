@@ -29,7 +29,10 @@ describe("SalaryForm", () => {
     })
     fireEvent.blur(screen.getByLabelText("currency"))
 
-    fireEvent.click(screen.getByRole("button", { name: "submit" }))
+    const form = screen
+      .getByLabelText("payYear")
+      .closest("form") as HTMLFormElement
+    fireEvent.submit(form)
 
     await waitFor(() => {
       expect(setSalary).toHaveBeenCalledWith(
