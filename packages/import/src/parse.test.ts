@@ -62,6 +62,92 @@ describe("parseMoney", () => {
   it("parses zero", () => {
     expect(parseMoney("0")).toBe(0)
   })
+
+  it("parses comma-decimal without grouping (M13)", () => {
+    expect(parseMoney("52000,50")).toBe(52000.5)
+  })
+
+  it("parses space-thousands + comma-decimal (M14)", () => {
+    expect(parseMoney("52 000,50")).toBe(52000.5)
+  })
+
+  it("parses NBSP-thousands + comma-decimal (M15)", () => {
+    expect(parseMoney("52 000,50")).toBe(52000.5)
+  })
+
+  it("parses comma zero-cents to a whole number (M16)", () => {
+    expect(parseMoney("52000,00")).toBe(52000)
+  })
+
+  it("parses dot-decimal without grouping (M17)", () => {
+    expect(parseMoney("52000.50")).toBe(52000.5)
+  })
+
+  it("parses dot-decimal .00 to a whole number (M18)", () => {
+    expect(parseMoney("52000.00")).toBe(52000)
+  })
+
+  it("parses space-thousands + dot-decimal (M19)", () => {
+    expect(parseMoney("52 000.50")).toBe(52000.5)
+  })
+
+  it("parses dot-thousands as grouped integer (M10)", () => {
+    expect(parseMoney("52.000")).toBe(52000)
+  })
+
+  it("parses dot-thousands + comma-decimal (M11)", () => {
+    expect(parseMoney("52.000,50")).toBe(52000.5)
+  })
+
+  it("strips a currency word prefix with space (M35)", () => {
+    expect(parseMoney("SEK 52000")).toBe(52000)
+  })
+
+  it("strips a currency word prefix run-on (P3)", () => {
+    expect(parseMoney("SEK54000")).toBe(54000)
+  })
+
+  it("strips a NOK prefix (P3)", () => {
+    expect(parseMoney("NOK 54000")).toBe(54000)
+  })
+
+  it("parses kr suffix with comma-decimal (M33)", () => {
+    expect(parseMoney("45 250,75 kr")).toBe(45250.75)
+  })
+
+  it("parses a trailing euro symbol (M40)", () => {
+    expect(parseMoney("52000 €")).toBe(52000)
+  })
+
+  it("parses a run-on kr suffix with no space (M41)", () => {
+    expect(parseMoney("52000kr")).toBe(52000)
+  })
+
+  it("parses a large space+dot-decimal+EUR value (M43)", () => {
+    expect(parseMoney("1 234 567.00 EUR")).toBe(1234567)
+  })
+
+  it("parses NBSP-grouped comma-decimal salary (ENC-10)", () => {
+    expect(parseMoney("45 000,00")).toBe(45000)
+  })
+
+  it("parses spaced dot-decimal (ENC-11)", () => {
+    expect(parseMoney("45 000.00")).toBe(45000)
+  })
+
+  it("returns null for a parenthesized-negative (M25, V1 unsupported)", () => {
+    expect(parseMoney("(500)")).toBeNull()
+  })
+
+  // ADR-0010: en-US comma-thousands is unsupported; "52,000" reads the comma as
+  // a decimal (-> 52), not thousands. Documented, not a bug.
+  it("returns null for en-US comma-thousands (M20, V1 unsupported)", () => {
+    expect(parseMoney("52,000")).toBe(52)
+  })
+
+  it("returns null for interleaved letters", () => {
+    expect(parseMoney("52a000")).toBeNull()
+  })
 })
 
 describe("parseCurrency", () => {

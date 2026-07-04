@@ -3,39 +3,104 @@
 
 import { fold } from "./fields.js"
 
-// Known currency words that may appear as a trailing suffix in a money cell.
-// Any other trailing word is treated as an error and makes the value unparseable.
-const KNOWN_CURRENCY_WORDS = /\s+(kr|sek|nok|dkk|eur|gbp|usd)$/i
+// Known currency markers that may appear as a prefix or suffix in a money cell.
+// The suffix match uses \s* (not \s+) so a run-on suffix like "52000kr" parses (M41).
+// The set includes the non-ASCII euro symbol (M40). Any OTHER trailing word makes
+// the value unparseable.
+const CURRENCY_SUFFIX = /\s*(kr|sek|nok|dkk|eur|gbp|usd|€)$/i
+const CURRENCY_PREFIX = /^(kr|sek|nok|dkk|eur|gbp|usd|€)\s*/i
+// A trailing alphabetic run that is NOT a known currency word (used to reject e.g. "94 500 bad").
+const TRAILING_WORD = /[a-z]+$/i
 
 /**
- * Parse a raw money string to a plain number.
- * Strips space group separators and an optional trailing KNOWN currency word
- * (kr, sek, nok, dkk, eur, gbp, usd). An unknown trailing word makes the
- * value unparseable and returns null.
- * Examples: "94 500 kr" -> 94500, "52000" -> 52000
+ * Normalize the numeric core of a money string (grouping + decimal already
+ * stripped of currency markers) to a finite JS number, or null.
+ *
+ * Rules (ADR-0010, replaces the old integer-only contract):
+ *   - Space / NBSP / thin-space grouping is stripped (all Unicode whitespace).
+ *   - Comma is the decimal separator for sv/nb/da/fi ("52000,50" -> 52000.5).
+ *   - A dot is a THOUSANDS separator when it precedes exactly three digits that
+ *     are themselves followed by more digits or a comma-decimal ("52.000",
+ *     "52.000,50"); a dot is a DECIMAL point when it precedes one or two
+ *     trailing digits at the end of the number ("52000.50", "52000.00").
+ *   - Negatives and parenthesized-negatives are out of scope for V1 and return
+ *     null; Plan C surfaces them via the negativeValue row-issue code.
+ */
+function normalizeMoneyNumber(input: string): number | null {
+  // Strip all whitespace grouping (regular space, NBSP U+00A0, thin space U+2009,
+  // narrow NBSP U+202F are all matched by \s under the u-less regex except the
+  // narrow ones, so strip explicitly too).
+  const noGroups = input.replace(/[\s   ]/g, "")
+  if (!noGroups) return null
+
+  const hasComma = noGroups.includes(",")
+  const hasDot = noGroups.includes(".")
+
+  let normalized: string
+  if (hasComma) {
+    // Comma is always the decimal separator; any dots are thousands separators.
+    // Reject more than one comma.
+    if ((noGroups.match(/,/g) ?? []).length > 1) return null
+    normalized = noGroups.replace(/\./g, "").replace(",", ".")
+  } else if (hasDot) {
+    const dotCount = (noGroups.match(/\./g) ?? []).length
+    if (dotCount > 1) {
+      // Multiple dots with no comma: treat every dot as a thousands separator
+      // only if the shape is a strict thousands grouping (1-3 lead, groups of 3).
+      if (!/^\d{1,3}(\.\d{3})+$/.test(noGroups)) return null
+      normalized = noGroups.replace(/\./g, "")
+    } else {
+      // Exactly one dot. Thousands if it precedes exactly 3 trailing digits and
+      // the lead is 1-3 digits ("52.000"); decimal if it precedes 1 or 2 digits.
+      if (/^\d{1,3}\.\d{3}$/.test(noGroups)) {
+        normalized = noGroups.replace(".", "")
+      } else if (/^\d+\.\d{1,2}$/.test(noGroups)) {
+        normalized = noGroups
+      } else {
+        return null
+      }
+    }
+  } else {
+    normalized = noGroups
+  }
+
+  if (!/^\d+(\.\d+)?$/.test(normalized)) return null
+  const n = Number(normalized)
+  return Number.isFinite(n) ? n : null
+}
+
+/**
+ * Parse a raw money string to a finite JS number.
+ *
+ * ADR-0010 (import format expansion): accepts space/NBSP/thin-space grouping,
+ * comma-decimal ("52000,50"), dot-decimal ("52000.50"), dot-thousands
+ * ("52.000", "52.000,50"), and a leading OR trailing currency marker
+ * (kr/sek/nok/dkk/eur/gbp/usd word or the euro symbol), including run-on
+ * suffixes ("52000kr"). Decimals are preserved to at least two fractional
+ * digits. Returns null for unknown trailing words, interleaved letters, an
+ * empty result after stripping, a malformed number, and (for V1) negative
+ * and parenthesized-negative values.
+ * Examples: "94 500 kr" -> 94500, "45 250,75 kr" -> 45250.75,
+ *   "SEK 52000" -> 52000, "52.000,50" -> 52000.5, "52000kr" -> 52000.
  */
 export function parseMoney(v: string): number | null {
   const trimmed = v.trim()
   if (!trimmed) return null
 
-  // Strip a trailing known currency word, if present.
-  // If the input ends with a word that is NOT in the known set, reject it.
-  let working = trimmed
-  if (/\s+[a-z]+$/i.test(working)) {
-    if (!KNOWN_CURRENCY_WORDS.test(working)) return null
-    working = working.replace(KNOWN_CURRENCY_WORDS, "")
+  // Strip a leading currency marker if present (M35, P3).
+  let working = trimmed.replace(CURRENCY_PREFIX, "")
+
+  // Strip a trailing currency marker if present; reject any OTHER trailing word.
+  if (CURRENCY_SUFFIX.test(working)) {
+    working = working.replace(CURRENCY_SUFFIX, "")
+  } else if (TRAILING_WORD.test(working)) {
+    return null
   }
 
-  // Remove all space separators and try to parse.
-  const stripped = working.replace(/\s+/g, "").trim()
+  working = working.trim()
+  if (!working) return null
 
-  if (!stripped) return null
-
-  // Must consist entirely of digits (no decimals, no signs, per spec).
-  if (!/^\d+$/.test(stripped)) return null
-
-  const n = Number(stripped)
-  return Number.isFinite(n) ? n : null
+  return normalizeMoneyNumber(working)
 }
 
 /**
