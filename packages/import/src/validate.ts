@@ -9,7 +9,7 @@ import {
 } from "./fields.js"
 import { parseGender, parseMoney } from "./parse.js"
 import { ImportFormatError, tokenizeCsv } from "./tokenize.js"
-import type { TokenizeResult } from "./tokenize.js"
+import type { TokenizeResult, TokenizeSignals } from "./tokenize.js"
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -24,6 +24,9 @@ export type RowIssueCode =
   | "fractionScaled"
   | "ambiguousDate"
   | "negativeValue"
+  | "raggedRow"
+
+export type FileWarningCode = "noDelimiter" | "mojibake"
 
 export type RowIssue = {
   /** 0-based index into the data rows array. */
@@ -55,6 +58,8 @@ export type ImportValidation = {
    * (tokenizeCsv threw ImportFormatError). Undefined for well-formed CSV.
    */
   fileFormatError?: BlockingIssueCode
+  /** File-scoped warnings (shown once, not per row). */
+  fileWarnings?: FileWarningCode[]
 }
 
 // ---------------------------------------------------------------------------
@@ -132,15 +137,25 @@ function isFractionColumn(rows: string[][], col: number): boolean {
  * @param input   - The tokenized CSV (headers + data rows).
  * @param mapping - Output of detectColumns for the same input.
  * @param opts    - Optional heuristics (see ValidateOpts).
+ * @param signals - Optional tokenizer signals (raggedRows, noDelimiter). When
+ *                  omitted, those signals are not emitted (backward compatible).
  * @returns       - Readiness summary and per-row data-quality issues.
  */
 export function validateImport(
   input: { headers: string[]; rows: string[][] },
   mapping: DetectedMapping,
-  opts: ValidateOpts
+  opts: ValidateOpts,
+  signals?: Partial<TokenizeSignals>
 ): ImportValidation {
-  const { rows } = input
+  const { headers, rows } = input
   const { map } = mapping
+
+  // Mojibake detection: flag when 2+ headers contain double-encoded UTF-8 sequences.
+  const MOJIBAKE = /Ã¥|Ã¶|Ã¤|Ã¸|Ã¦/
+  const mojibakeCount = headers.filter((h) => MOJIBAKE.test(h)).length
+  const fileWarnings: FileWarningCode[] = []
+  if (mojibakeCount >= 2) fileWarnings.push("mojibake")
+  if (signals?.noDelimiter === true) fileWarnings.push("noDelimiter")
 
   // Build readiness: one entry per canonical field.
   const readiness: ReadinessEntry[] = CANONICAL_FIELDS.map((field) => ({
@@ -310,7 +325,24 @@ export function validateImport(
     }
   }
 
-  return { readiness, blocking, warnings, issues }
+  // Ragged-row issues: one per index from tokenizer signals.
+  if (signals?.raggedRows) {
+    for (const row of signals.raggedRows) {
+      issues.push({
+        row,
+        code: "raggedRow",
+        detail: `row ${row} has the wrong number of columns`,
+      })
+    }
+  }
+
+  return {
+    readiness,
+    blocking,
+    warnings,
+    issues,
+    ...(fileWarnings.length > 0 ? { fileWarnings } : {}),
+  }
 }
 
 /**
@@ -348,7 +380,6 @@ export function validateFile(
       throw err
     }
   }
-  // Task 6 widens this to `validateImport(input, mapping, opts, input.signals)`;
-  // in this task validateImport still takes three args (signals optional).
-  return validateImport(input, mapping, opts)
+  // signals is always present on a TokenizeResult (Plan A); thread it through.
+  return validateImport(input, mapping, opts, input.signals)
 }

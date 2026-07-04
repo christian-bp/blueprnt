@@ -487,6 +487,48 @@ describe("validateImport — issues: negativeValue (ENC-24)", () => {
   })
 })
 
+describe("validateImport — mojibake / ragged / noDelimiter signals", () => {
+  it("flags mojibake when 2+ headers contain double-encoding sequences (ENC-04)", () => {
+    const headers = ["KÃ¶n", "LÃ¶n", "Namn"]
+    const result = validateImport(
+      { headers, rows: [] },
+      { map: {}, unmappedColumns: [] },
+      {}
+    )
+    expect(result.fileWarnings).toContain("mojibake")
+  })
+
+  it("does not flag mojibake for clean headers", () => {
+    const result = validateImport(
+      { headers: HEADERS, rows: ROWS },
+      FULL_MAPPING,
+      {}
+    )
+    expect(result.fileWarnings ?? []).not.toContain("mojibake")
+  })
+
+  it("emits raggedRow per index from tokenizer signals (T19/T20)", () => {
+    const result = validateImport(
+      { headers: HEADERS, rows: ROWS },
+      FULL_MAPPING,
+      {},
+      { raggedRows: [1, 3] }
+    )
+    const ragged = result.issues.filter((i) => i.code === "raggedRow")
+    expect(ragged.map((i) => i.row).sort()).toEqual([1, 3])
+  })
+
+  it("emits noDelimiter file warning from tokenizer signal (T38)", () => {
+    const result = validateImport(
+      { headers: ["employee salary department"], rows: [["a b c"]] },
+      { map: {}, unmappedColumns: [] },
+      {},
+      { noDelimiter: true }
+    )
+    expect(result.fileWarnings).toContain("noDelimiter")
+  })
+})
+
 describe("validateFile — invalidFileFormat (A1, A4)", () => {
   // XLSX / ODS ZIP local-file header.
   const XLSX_MAGIC = "PK\x03\x04\x14\x00\x06\x00"

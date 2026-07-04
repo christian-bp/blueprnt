@@ -34,6 +34,7 @@ export {
 export { validateFile, validateImport } from "./validate.js"
 export type {
   BlockingIssueCode,
+  FileWarningCode,
   ImportValidation,
   RowIssue,
   RowIssueCode,
