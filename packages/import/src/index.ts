@@ -1,4 +1,9 @@
-export { CANONICAL_FIELDS, fold } from "./fields.js"
+export {
+  CANONICAL_FIELDS,
+  fold,
+  matchesSynonym,
+  SUBSTRING_MIN_LENGTH,
+} from "./fields.js"
 export type {
   CanonicalFieldKey,
   FieldTier,

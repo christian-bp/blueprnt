@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest"
-import { CANONICAL_FIELDS, fold } from "./fields.js"
+import {
+  CANONICAL_FIELDS,
+  fold,
+  matchesSynonym,
+  SUBSTRING_MIN_LENGTH,
+} from "./fields.js"
 
 describe("fold", () => {
   it("lowercases, strips accents, strips non-alphanumerics", () => {
@@ -169,5 +174,34 @@ describe("CANONICAL_FIELDS synonyms after Plan A additions", () => {
         `employmentStartDate missing ${syn}`
       ).toContain(syn)
     }
+  })
+})
+
+describe("matchesSynonym substring guard", () => {
+  it("exposes a minimum substring length of 5", () => {
+    expect(SUBSTRING_MIN_LENGTH).toBe(5)
+  })
+
+  it("matches an exact synonym regardless of length", () => {
+    const r = matchesSynonym("kon", ["kon", "gender"])
+    expect(r.exact).toBe(true)
+    expect(r.substring).toBe(false)
+  })
+
+  it("matches a long synonym as a substring", () => {
+    const r = matchesSynonym("bruttomanadslon", ["manadslon"])
+    expect(r.substring).toBe(true)
+  })
+
+  it("does NOT substring-match a synonym shorter than 5 chars (guards against future short landmines)", () => {
+    // "fte" is 3 chars; must not fire inside "software" or similar.
+    const r = matchesSynonym("softe", ["fte"])
+    expect(r.exact).toBe(false)
+    expect(r.substring).toBe(false)
+  })
+
+  it("still exact-matches a short synonym", () => {
+    const r = matchesSynonym("fte", ["fte"])
+    expect(r.exact).toBe(true)
   })
 })

@@ -44,6 +44,35 @@ export function fold(s: string): string {
     .replace(/[^a-z0-9]/g, "")
 }
 
+/**
+ * Minimum folded length for a synonym to participate in the substring-contains
+ * branch of header scoring. Short synonyms (< 5 folded chars) match by exact
+ * compare only, so they cannot fire inside longer unrelated words (DC-25).
+ */
+export const SUBSTRING_MIN_LENGTH = 5
+
+/**
+ * Test a folded header against a synonym list.
+ * `exact` is true when the folded header equals a synonym.
+ * `substring` is true when the folded header contains a synonym of at least
+ * SUBSTRING_MIN_LENGTH folded characters. Short synonyms never contribute to
+ * `substring`; they must match exactly.
+ */
+export function matchesSynonym(
+  folded: string,
+  synonyms: readonly string[]
+): { exact: boolean; substring: boolean } {
+  for (const syn of synonyms) {
+    if (folded === syn) return { exact: true, substring: false }
+  }
+  for (const syn of synonyms) {
+    if (syn.length >= SUBSTRING_MIN_LENGTH && folded.includes(syn)) {
+      return { exact: false, substring: true }
+    }
+  }
+  return { exact: false, substring: false }
+}
+
 const FIELDS = [
   // Required fields (spec §5.4)
   {
