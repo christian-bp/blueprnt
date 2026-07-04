@@ -241,7 +241,8 @@
           "preview": "Esikatselu ({count} ensimmäistä riviä)",
           "summary": "{people, plural, one {# henkilö} other {# henkilöä}} tuotavaksi, {flagged, plural, one {# merkitty} other {# merkittyä}}",
           "confirm": "Vahvista tuonti",
-          "importing": "Tuodaan..."
+          "importing": "Tuodaan...",
+          "blockingTitle": "Pakolliset kentat eivat ole yhdistettyna"
         }
       }
     },

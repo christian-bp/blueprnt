@@ -182,11 +182,13 @@ export function ReviewStep({
       {/* Unexpected blocking error from the action */}
       {blockingError !== null && blockingError.length > 0 && (
         <Alert variant="destructive" data-testid="blocking-error">
-          <AlertTitle>{tFields("basicMonthly")}</AlertTitle>
+          <AlertTitle>{t("blockingTitle")}</AlertTitle>
           <AlertDescription>
             <ul className="mt-1 list-disc pl-4">
               {blockingError.map((key) => (
-                <li key={key}>{key}</li>
+                <li key={key}>
+                  {tFields(key as Parameters<typeof tFields>[0])}
+                </li>
               ))}
             </ul>
           </AlertDescription>

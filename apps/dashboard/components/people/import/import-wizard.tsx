@@ -112,7 +112,27 @@ export function ImportWizard() {
             <UploadStep
               parsed={state.parsed}
               onParsed={(parsed, csvText) =>
-                setState((prev) => ({ ...prev, parsed, csvText }))
+                setState((prev) => {
+                  // Detect whether the new file has different headers.
+                  // If headers changed, the old column-index mapping is stale
+                  // and must be discarded so MapStep re-seeds for the new file.
+                  const headersChanged =
+                    prev.parsed === null ||
+                    prev.parsed.headers.length !== parsed.headers.length ||
+                    prev.parsed.headers.some((h, i) => h !== parsed.headers[i])
+                  return {
+                    ...prev,
+                    parsed,
+                    csvText,
+                    ...(headersChanged
+                      ? {
+                          mapping: null,
+                          checkBlocking: null,
+                          checkIssueCount: 0,
+                        }
+                      : {}),
+                  }
+                })
               }
             />
             <WizardFooter>

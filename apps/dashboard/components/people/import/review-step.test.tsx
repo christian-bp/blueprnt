@@ -339,6 +339,60 @@ describe("ReviewStep — confirm (failure)", () => {
     })
   })
 
+  it("shows the generic blockingTitle heading (not a raw field key) when ok:false", async () => {
+    importPayrollMock.mockResolvedValueOnce({
+      ok: false,
+      peopleImported: 0,
+      salariesImported: 0,
+      skippedRows: 0,
+      validation: {
+        readiness: [],
+        blocking: ["basicMonthly"],
+        warnings: [],
+        issues: [],
+      },
+    })
+    renderReviewStep()
+
+    fireEvent.click(screen.getByTestId("confirm-button"))
+
+    await waitFor(() => {
+      const alert = screen.getByTestId("blocking-error")
+      // Title must be the generic blockingTitle, not a raw field key.
+      expect(alert.textContent).toContain(
+        messages.dashboard.people.import.review.blockingTitle
+      )
+      // The blocking field must render as a localized label, not the raw key.
+      expect(alert.textContent).toContain(
+        messages.dashboard.people.import.fields.basicMonthly
+      )
+      expect(alert.textContent).not.toContain("basicMonthly")
+    })
+  })
+
+  it("does not call toast.error when ok:false (server-side blocking is not a thrown error)", async () => {
+    importPayrollMock.mockResolvedValueOnce({
+      ok: false,
+      peopleImported: 0,
+      salariesImported: 0,
+      skippedRows: 0,
+      validation: {
+        readiness: [],
+        blocking: ["basicMonthly"],
+        warnings: [],
+        issues: [],
+      },
+    })
+    renderReviewStep()
+
+    fireEvent.click(screen.getByTestId("confirm-button"))
+
+    await waitFor(() => {
+      expect(screen.getByTestId("blocking-error")).toBeDefined()
+    })
+    expect(toast.error).not.toHaveBeenCalled()
+  })
+
   it("does not navigate on ok:false", async () => {
     importPayrollMock.mockResolvedValueOnce({
       ok: false,

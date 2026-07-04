@@ -241,7 +241,8 @@
           "preview": "Förhandsgranskning (de första {count} raderna)",
           "summary": "{people, plural, one {# person} other {# personer}} att importera, {flagged, plural, one {# markerad} other {# markerade}}",
           "confirm": "Bekräfta import",
-          "importing": "Importerar..."
+          "importing": "Importerar...",
+          "blockingTitle": "Obligatoriska fält är inte mappade"
         }
       }
     },

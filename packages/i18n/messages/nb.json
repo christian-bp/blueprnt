@@ -241,7 +241,8 @@
           "preview": "Forhåndsvisning (de {count} første radene)",
           "summary": "{people, plural, one {# person} other {# personer}} som skal importeres, {flagged, plural, one {# flagget} other {# flaggede}}",
           "confirm": "Bekreft import",
-          "importing": "Importerer..."
+          "importing": "Importerer...",
+          "blockingTitle": "Obligatoriske felt er ikke tilordnet"
         }
       }
     },

@@ -241,7 +241,8 @@
           "preview": "Preview (first {count} rows)",
           "summary": "{people, plural, one {# person} other {# people}} to import, {flagged, plural, one {# flagged} other {# flagged}}",
           "confirm": "Confirm import",
-          "importing": "Importing..."
+          "importing": "Importing...",
+          "blockingTitle": "Required fields are not mapped"
         }
       }
     },
