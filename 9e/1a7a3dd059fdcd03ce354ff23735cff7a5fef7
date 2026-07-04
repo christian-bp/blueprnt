@@ -1,0 +1,31 @@
+packages/backend/convex/people/employeeCount.test.ts
+  s_6bff98b662648b::t_7a6175f5706b18 1-131
+packages/backend/convex/people/employeeCount.ts
+  s_6bff98b662648b::t_de2b928c229088 1-55
+packages/backend/convex/_generated/api.d.ts
+  s_0db1b1e0457afc::t_a6cd0b2ba56ec0 67,142
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "9e1a7a3dd059fdcd03ce354ff23735cff7a5fef7",
+  "prompts": {},
+  "sessions": {
+    "s_0db1b1e0457afc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a340cdd3039820876",
+        "model": "unknown"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
