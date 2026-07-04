@@ -26,6 +26,7 @@ export {
   parseDate,
   parseBool,
   parseIntId,
+  parseStringId,
 } from "./parse.js"
 
 export { validateImport } from "./validate.js"

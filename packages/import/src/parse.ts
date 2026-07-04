@@ -70,16 +70,46 @@ export function parsePercent(v: string): number | null {
 
 /**
  * Parse a gender cell value to the canonical Swedish label.
- * Uses fold() to normalize input before matching synonyms.
+ * Uses fold() to normalize input before matching. Covers sv/en/nb/da/fi words
+ * and English M/F. Numeric SCB/SAP codes (1 -> Man, 2 -> Kvinna) are resolved
+ * ONLY when opts.allowNumericCodes is true (set by a gender-column-aware caller);
+ * any other numeric code is ambiguous and returns null (flagged downstream).
+ * The system stays binary: non-binary tokens and unrecognized values return null.
  * Returns "Man" | "Kvinna" | null.
  */
-export function parseGender(v: string): "Man" | "Kvinna" | null {
+export function parseGender(
+  v: string,
+  opts?: { allowNumericCodes?: boolean }
+): "Man" | "Kvinna" | null {
   const f = fold(v)
   if (!f) return null
 
-  if (f === "man" || f === "male" || f === "m") return "Man"
-  if (f === "kvinna" || f === "female" || f === "woman" || f === "k") {
+  if (
+    f === "man" ||
+    f === "male" ||
+    f === "m" ||
+    f === "mann" || // nb
+    f === "mand" || // da
+    f === "mies" // fi
+  ) {
+    return "Man"
+  }
+  if (
+    f === "kvinna" ||
+    f === "female" ||
+    f === "woman" ||
+    f === "k" ||
+    f === "f" ||
+    f === "kvinne" || // nb
+    f === "kvinde" || // da
+    f === "nainen" // fi
+  ) {
     return "Kvinna"
+  }
+
+  if (opts?.allowNumericCodes) {
+    if (f === "1") return "Man"
+    if (f === "2") return "Kvinna"
   }
 
   return null
@@ -123,21 +153,51 @@ export function parseDate(v: string): string | null {
 
 /**
  * Parse a boolean-like string.
- * ja/yes/true -> true, nej/no/false -> false, else null.
+ * true:  ja, yes, true, kylla (fi)
+ * false: nej, no, false, nei (nb), ei (fi)
+ * else null. Input is folded so "Kyllä" matches "kylla".
  */
 export function parseBool(v: string): boolean | null {
-  const lower = v.trim().toLowerCase()
-  if (!lower) return null
+  const f = fold(v)
+  if (!f) return null
 
-  if (lower === "ja" || lower === "yes" || lower === "true") return true
-  if (lower === "nej" || lower === "no" || lower === "false") return false
+  if (f === "ja" || f === "yes" || f === "true" || f === "kylla") return true
+  if (f === "nej" || f === "no" || f === "false" || f === "nei" || f === "ei") {
+    return false
+  }
 
   return null
 }
 
 /**
+ * True when v is an id-shaped value: pure integer, personnummer (\d{8}-\d{4}
+ * or \d{6}-\d{4}), or a short alphanumeric code containing a digit. Mirrors
+ * shape.ts isId so the string parser and the shape detector agree.
+ */
+function isIdShaped(t: string): boolean {
+  if (/^\d+$/.test(t)) return true
+  if (/^\d{8}-\d{4}$/.test(t)) return true
+  if (/^\d{6}-\d{4}$/.test(t)) return true
+  if (/^[a-zA-Z0-9]{1,20}$/.test(t) && /\d/.test(t)) return true
+  return false
+}
+
+/**
+ * Parse an id-shaped value to a verbatim trimmed string, preserving leading
+ * zeros (00042 -> "00042"), alphanumeric codes (EMP001 -> "EMP001"), and
+ * personnummer strings. Returns null for a non-id value or blank (id-01/03/04/05).
+ */
+export function parseStringId(v: string): string | null {
+  const trimmed = v.trim()
+  if (!trimmed) return null
+  return isIdShaped(trimmed) ? trimmed : null
+}
+
+/**
  * Parse a numeric ID string (e.g. employee number) to a plain integer.
- * Returns null for any non-numeric or blank input.
+ * Returns null for non-numeric, blank, or an integer beyond Number.isSafeInteger
+ * (which would corrupt the value); such ids should be preserved via parseStringId
+ * instead (id-07).
  */
 export function parseIntId(v: string): number | null {
   const trimmed = v.trim()
@@ -146,5 +206,6 @@ export function parseIntId(v: string): number | null {
   if (!/^\d+$/.test(trimmed)) return null
 
   const n = Number(trimmed)
-  return Number.isFinite(n) ? n : null
+  if (!Number.isSafeInteger(n)) return null
+  return n
 }

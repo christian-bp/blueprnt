@@ -7,6 +7,7 @@ import {
   parseDate,
   parseBool,
   parseIntId,
+  parseStringId,
 } from "./parse.js"
 
 describe("parseMoney", () => {
@@ -257,5 +258,107 @@ describe("parseIntId", () => {
 
   it("returns null for a mixed alphanumeric code", () => {
     expect(parseIntId("EMP001")).toBeNull()
+  })
+})
+
+describe("parseGender Plan A broadening", () => {
+  it("resolves Norwegian mann/kvinne (GEN-05)", () => {
+    expect(parseGender("Mann")).toBe("Man")
+    expect(parseGender("Kvinne")).toBe("Kvinna")
+  })
+
+  it("resolves Danish mand/kvinde (GEN-06)", () => {
+    expect(parseGender("Mand")).toBe("Man")
+    expect(parseGender("Kvinde")).toBe("Kvinna")
+  })
+
+  it("resolves Finnish mies/nainen (GEN-07)", () => {
+    expect(parseGender("Mies")).toBe("Man")
+    expect(parseGender("Nainen")).toBe("Kvinna")
+  })
+
+  it("resolves English F to Kvinna, symmetric with M (GEN-04)", () => {
+    expect(parseGender("F")).toBe("Kvinna")
+    expect(parseGender("M")).toBe("Man")
+  })
+
+  it("does NOT map numeric codes without the opt-in flag (GEN-09 guard)", () => {
+    expect(parseGender("1")).toBeNull()
+    expect(parseGender("2")).toBeNull()
+  })
+
+  it("maps SCB numeric 1/2 only when allowNumericCodes is true (GEN-09, P6)", () => {
+    expect(parseGender("1", { allowNumericCodes: true })).toBe("Man")
+    expect(parseGender("2", { allowNumericCodes: true })).toBe("Kvinna")
+  })
+
+  it("flags ambiguous numeric codes as null even with the flag (Decision 3)", () => {
+    expect(parseGender("0", { allowNumericCodes: true })).toBeNull()
+    expect(parseGender("3", { allowNumericCodes: true })).toBeNull()
+  })
+
+  it("returns null for non-binary tokens (no third value)", () => {
+    expect(parseGender("Annat")).toBeNull()
+    expect(parseGender("Ukjent")).toBeNull()
+    expect(parseGender("X")).toBeNull()
+  })
+})
+
+describe("parseBool Plan A broadening", () => {
+  it("resolves Norwegian nei to false (bool-01)", () => {
+    expect(parseBool("Nei")).toBe(false)
+  })
+
+  it("resolves Finnish kyllä to true (bool-02)", () => {
+    expect(parseBool("Kyllä")).toBe(true)
+  })
+
+  it("resolves Finnish ei to false (bool-03)", () => {
+    expect(parseBool("Ei")).toBe(false)
+  })
+
+  it("keeps existing ja/nej/yes/no/true/false (lock)", () => {
+    expect(parseBool("Ja")).toBe(true)
+    expect(parseBool("Nej")).toBe(false)
+    expect(parseBool("yes")).toBe(true)
+    expect(parseBool("FALSE")).toBe(false)
+  })
+})
+
+describe("parseStringId and parseIntId safe-integer guard (Plan A)", () => {
+  it("preserves leading zeros as a string (id-01)", () => {
+    expect(parseStringId("00042")).toBe("00042")
+  })
+
+  it("returns an alphanumeric code verbatim (id-05)", () => {
+    expect(parseStringId("EMP001")).toBe("EMP001")
+  })
+
+  it("returns a full personnummer verbatim (id-03)", () => {
+    expect(parseStringId("19850612-1234")).toBe("19850612-1234")
+  })
+
+  it("returns a short personnummer verbatim (id-04)", () => {
+    expect(parseStringId("850612-1234")).toBe("850612-1234")
+  })
+
+  it("trims surrounding whitespace but preserves the value", () => {
+    expect(parseStringId("  10042  ")).toBe("10042")
+  })
+
+  it("returns null for a non-id value (pure letters)", () => {
+    expect(parseStringId("Anna")).toBeNull()
+  })
+
+  it("returns null for blank", () => {
+    expect(parseStringId("")).toBeNull()
+  })
+
+  it("parseIntId returns null for an integer beyond the safe range (id-07)", () => {
+    expect(parseIntId("123456789012345678")).toBeNull()
+  })
+
+  it("parseIntId still parses a safe integer (lock)", () => {
+    expect(parseIntId("10042")).toBe(10042)
   })
 })
