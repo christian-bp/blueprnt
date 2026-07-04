@@ -135,7 +135,9 @@
       "membershipUpdated": "Medlemskap oppdatert",
       "membershipRemoved": "Fjernet fra organisasjonen",
       "peopleImported": "Ansatte importert",
-      "classificationConfirmed": "Klassifisering bekreftet"
+      "classificationConfirmed": "Klassifisering bekreftet",
+      "salarySaved": "Lønn lagret",
+      "personErased": "Ansatt slettet"
     },
     "accountMenu": "Kontomeny",
     "nav": {
@@ -269,6 +271,66 @@
           "Man": "Mann",
           "Kvinna": "Kvinne"
         }
+      },
+      "detail": {
+        "backToPeople": "Tilbake til ansatte",
+        "identityHeading": "Ansatt",
+        "externalRef": "Ansattnummer",
+        "employmentStartDate": "Startdato",
+        "fte": "Stillingsandel",
+        "department": "Avdeling",
+        "notFound": "Denne ansatte kunne ikke finnes.",
+        "classificationHeading": "Rolle og nivå",
+        "role": "Rolle",
+        "level": "Nivå",
+        "levelSource": "Kilde",
+        "sourceSuggested": "Foreslått",
+        "sourceConfirmed": "Bekreftet",
+        "noAssignment": "Ikke klassifisert ennå.",
+        "salaryHeading": "Lønnshistorikk",
+        "salaryEmpty": "Ingen lønn registrert ennå.",
+        "salaryColumns": {
+          "payYear": "År",
+          "basicMonthly": "Fast månedslønn",
+          "total": "Total månedlig kompensasjon",
+          "currency": "Valuta",
+          "source": "Kilde",
+          "effectiveAt": "Gjelder fra"
+        },
+        "sourceImport": "Import",
+        "sourceManual": "Manuell"
+      },
+      "salaryForm": {
+        "addTitle": "Legg til lønn",
+        "payYear": "Lønnår",
+        "basicMonthly": "Fast månedslønn",
+        "currency": "Valuta",
+        "components": "Tilleggskomponenter",
+        "addComponent": "Legg til komponent",
+        "removeComponent": "Fjern komponent",
+        "componentKind": "Type",
+        "componentAmount": "Månedlig beløp",
+        "effectiveAt": "Gjelder fra",
+        "submit": "Lagre lønn",
+        "componentKinds": {
+          "variable": "Variabel lønn",
+          "bonus": "Bonus",
+          "benefitInKind": "Naturalytelse",
+          "fixedSupplement": "Fast tillegg",
+          "allowance": "Tillegg",
+          "equity": "Egenkapital",
+          "other": "Annet"
+        }
+      },
+      "erase": {
+        "trigger": "Slett ansatt",
+        "title": "Slett {name}",
+        "description": "Dette sletter den ansatte permanent sammen med alle tildelinger og lønnsoppføringer. Dette kan ikke angres.",
+        "confirmLabel": "Skriv ansattnummeret {externalRef} for å bekrefte",
+        "confirmNoRef": "Skriv DELETE for å bekrefte",
+        "confirm": "Slett permanent",
+        "cancel": "Avbryt",
+        "error": "Den ansatte kunne ikke slettes. Prøv igjen."
       }
     },
     "classify": {

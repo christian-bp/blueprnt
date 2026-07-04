@@ -135,7 +135,9 @@
       "membershipUpdated": "Medlemskap uppdaterat",
       "membershipRemoved": "Borttagen från organisationen",
       "peopleImported": "Anställda importerade",
-      "classificationConfirmed": "Klassificering bekräftad"
+      "classificationConfirmed": "Klassificering bekräftad",
+      "salarySaved": "Lönen sparades",
+      "personErased": "Anställd raderad"
     },
     "accountMenu": "Kontomeny",
     "nav": {
@@ -269,6 +271,66 @@
           "Man": "Man",
           "Kvinna": "Kvinna"
         }
+      },
+      "detail": {
+        "backToPeople": "Tillbaka till anställda",
+        "identityHeading": "Anställd",
+        "externalRef": "Anställningsnummer",
+        "employmentStartDate": "Startdatum",
+        "fte": "Sysselsättningsgrad",
+        "department": "Avdelning",
+        "notFound": "Den anställda kunde inte hittas.",
+        "classificationHeading": "Roll och nivå",
+        "role": "Roll",
+        "level": "Nivå",
+        "levelSource": "Källa",
+        "sourceSuggested": "Föreslagen",
+        "sourceConfirmed": "Bekräftad",
+        "noAssignment": "Inte klassificerad än.",
+        "salaryHeading": "Lönehistorik",
+        "salaryEmpty": "Ingen lön registrerad än.",
+        "salaryColumns": {
+          "payYear": "År",
+          "basicMonthly": "Fast månadslön",
+          "total": "Total månadsersättning",
+          "currency": "Valuta",
+          "source": "Källa",
+          "effectiveAt": "Gäller från"
+        },
+        "sourceImport": "Import",
+        "sourceManual": "Manuell"
+      },
+      "salaryForm": {
+        "addTitle": "Lägg till lön",
+        "payYear": "Löneår",
+        "basicMonthly": "Fast månadslön",
+        "currency": "Valuta",
+        "components": "Ytterligare komponenter",
+        "addComponent": "Lägg till komponent",
+        "removeComponent": "Ta bort komponent",
+        "componentKind": "Typ",
+        "componentAmount": "Månadsbelopp",
+        "effectiveAt": "Gäller från",
+        "submit": "Spara lön",
+        "componentKinds": {
+          "variable": "Rörlig ersättning",
+          "bonus": "Bonus",
+          "benefitInKind": "Naturaförmån",
+          "fixedSupplement": "Fast tillägg",
+          "allowance": "Ersättning",
+          "equity": "Aktier",
+          "other": "Övrigt"
+        }
+      },
+      "erase": {
+        "trigger": "Radera anställd",
+        "title": "Radera {name}",
+        "description": "Detta raderar den anställda permanent tillsammans med alla tilldelningar och löneuppgifter. Det kan inte ångras.",
+        "confirmLabel": "Skriv anställningsnumret {externalRef} för att bekräfta",
+        "confirmNoRef": "Skriv DELETE för att bekräfta",
+        "confirm": "Radera permanent",
+        "cancel": "Avbryt",
+        "error": "Den anställda kunde inte raderas. Försök igen."
       }
     },
     "classify": {

@@ -135,7 +135,9 @@
       "membershipUpdated": "Medlemskab opdateret",
       "membershipRemoved": "Fjernet fra organisationen",
       "peopleImported": "Medarbejdere importeret",
-      "classificationConfirmed": "Klassificering bekræftet"
+      "classificationConfirmed": "Klassificering bekræftet",
+      "salarySaved": "Løn gemt",
+      "personErased": "Medarbejder slettet"
     },
     "accountMenu": "Kontomenu",
     "nav": {
@@ -269,6 +271,66 @@
           "Man": "Mand",
           "Kvinna": "Kvinde"
         }
+      },
+      "detail": {
+        "backToPeople": "Tilbage til medarbejdere",
+        "identityHeading": "Medarbejder",
+        "externalRef": "Medarbejdernummer",
+        "employmentStartDate": "Startdato",
+        "fte": "Stilling",
+        "department": "Afdeling",
+        "notFound": "Denne medarbejder kunne ikke findes.",
+        "classificationHeading": "Rolle og niveau",
+        "role": "Rolle",
+        "level": "Niveau",
+        "levelSource": "Kilde",
+        "sourceSuggested": "Foreslået",
+        "sourceConfirmed": "Bekræftet",
+        "noAssignment": "Ikke klassificeret endnu.",
+        "salaryHeading": "Lønhistorik",
+        "salaryEmpty": "Ingen løn registreret endnu.",
+        "salaryColumns": {
+          "payYear": "År",
+          "basicMonthly": "Fast månedsløn",
+          "total": "Samlet månedlig kompensation",
+          "currency": "Valuta",
+          "source": "Kilde",
+          "effectiveAt": "Gælder fra"
+        },
+        "sourceImport": "Import",
+        "sourceManual": "Manuel"
+      },
+      "salaryForm": {
+        "addTitle": "Tilføj løn",
+        "payYear": "Lønår",
+        "basicMonthly": "Fast månedsløn",
+        "currency": "Valuta",
+        "components": "Yderligere komponenter",
+        "addComponent": "Tilføj komponent",
+        "removeComponent": "Fjern komponent",
+        "componentKind": "Type",
+        "componentAmount": "Månedligt beløb",
+        "effectiveAt": "Gælder fra",
+        "submit": "Gem løn",
+        "componentKinds": {
+          "variable": "Variabel løn",
+          "bonus": "Bonus",
+          "benefitInKind": "Naturalydelse",
+          "fixedSupplement": "Fast tillæg",
+          "allowance": "Tillæg",
+          "equity": "Aktier",
+          "other": "Andet"
+        }
+      },
+      "erase": {
+        "trigger": "Slet medarbejder",
+        "title": "Slet {name}",
+        "description": "Dette sletter medarbejderen permanent sammen med alle tildelinger og lønposter. Dette kan ikke fortrydes.",
+        "confirmLabel": "Skriv medarbejdernummeret {externalRef} for at bekræfte",
+        "confirmNoRef": "Skriv DELETE for at bekræfte",
+        "confirm": "Slet permanent",
+        "cancel": "Annuller",
+        "error": "Medarbejderen kunne ikke slettes. Prøv igen."
       }
     },
     "classify": {

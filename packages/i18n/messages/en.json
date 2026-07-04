@@ -135,7 +135,9 @@
       "membershipUpdated": "Membership updated",
       "membershipRemoved": "Removed from organization",
       "peopleImported": "People imported",
-      "classificationConfirmed": "Classification confirmed"
+      "classificationConfirmed": "Classification confirmed",
+      "salarySaved": "Salary saved",
+      "personErased": "Employee deleted"
     },
     "accountMenu": "Account menu",
     "nav": {
@@ -269,6 +271,66 @@
           "importing": "Importing...",
           "blockingTitle": "Required fields are not mapped"
         }
+      },
+      "detail": {
+        "backToPeople": "Back to people",
+        "identityHeading": "Employee",
+        "externalRef": "Employee number",
+        "employmentStartDate": "Start date",
+        "fte": "FTE",
+        "department": "Department",
+        "notFound": "This employee could not be found.",
+        "classificationHeading": "Role and level",
+        "role": "Role",
+        "level": "Level",
+        "levelSource": "Source",
+        "sourceSuggested": "Suggested",
+        "sourceConfirmed": "Confirmed",
+        "noAssignment": "Not classified yet.",
+        "salaryHeading": "Salary history",
+        "salaryEmpty": "No salary recorded yet.",
+        "salaryColumns": {
+          "payYear": "Year",
+          "basicMonthly": "Basic monthly",
+          "total": "Total monthly",
+          "currency": "Currency",
+          "source": "Source",
+          "effectiveAt": "Effective"
+        },
+        "sourceImport": "Import",
+        "sourceManual": "Manual"
+      },
+      "salaryForm": {
+        "addTitle": "Add salary",
+        "payYear": "Salary year",
+        "basicMonthly": "Basic monthly salary",
+        "currency": "Currency",
+        "components": "Additional components",
+        "addComponent": "Add component",
+        "removeComponent": "Remove component",
+        "componentKind": "Type",
+        "componentAmount": "Monthly amount",
+        "effectiveAt": "Effective date",
+        "submit": "Save salary",
+        "componentKinds": {
+          "variable": "Variable pay",
+          "bonus": "Bonus",
+          "benefitInKind": "Benefit in kind",
+          "fixedSupplement": "Fixed supplement",
+          "allowance": "Allowance",
+          "equity": "Equity",
+          "other": "Other"
+        }
+      },
+      "erase": {
+        "trigger": "Delete employee",
+        "title": "Delete {name}",
+        "description": "This permanently deletes this employee and all their assignments and salary records. This cannot be undone.",
+        "confirmLabel": "Type the employee number {externalRef} to confirm",
+        "confirmNoRef": "Type DELETE to confirm",
+        "confirm": "Delete permanently",
+        "cancel": "Cancel",
+        "error": "The employee could not be deleted. Try again."
       }
     },
     "classify": {

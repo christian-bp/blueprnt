@@ -135,7 +135,9 @@
       "membershipUpdated": "Jäsenyys päivitetty",
       "membershipRemoved": "Poistettu organisaatiosta",
       "peopleImported": "Henkilot tuotu",
-      "classificationConfirmed": "Luokittelu vahvistettu"
+      "classificationConfirmed": "Luokittelu vahvistettu",
+      "salarySaved": "Palkka tallennettu",
+      "personErased": "Työntekijä poistettu"
     },
     "accountMenu": "Tilivalikko",
     "nav": {
@@ -269,6 +271,66 @@
           "Man": "Mies",
           "Kvinna": "Nainen"
         }
+      },
+      "detail": {
+        "backToPeople": "Takaisin henkilöstöön",
+        "identityHeading": "Työntekijä",
+        "externalRef": "Henkilönumero",
+        "employmentStartDate": "Aloituspäivä",
+        "fte": "Työsuhde",
+        "department": "Osasto",
+        "notFound": "Tätä työntekijää ei löydy.",
+        "classificationHeading": "Rooli ja taso",
+        "role": "Rooli",
+        "level": "Taso",
+        "levelSource": "Lähde",
+        "sourceSuggested": "Ehdotettu",
+        "sourceConfirmed": "Vahvistettu",
+        "noAssignment": "Ei vielä luokiteltu.",
+        "salaryHeading": "Palkkahistoria",
+        "salaryEmpty": "Palkkaa ei ole vielä kirjattu.",
+        "salaryColumns": {
+          "payYear": "Vuosi",
+          "basicMonthly": "Kiinteä kuukausipalkka",
+          "total": "Kokonaiskuukausikorvaus",
+          "currency": "Valuutta",
+          "source": "Lähde",
+          "effectiveAt": "Voimassa alkaen"
+        },
+        "sourceImport": "Tuonti",
+        "sourceManual": "Manuaalinen"
+      },
+      "salaryForm": {
+        "addTitle": "Lisää palkka",
+        "payYear": "Palkkavuosi",
+        "basicMonthly": "Kiinteä kuukausipalkka",
+        "currency": "Valuutta",
+        "components": "Lisäkomponentit",
+        "addComponent": "Lisää komponentti",
+        "removeComponent": "Poista komponentti",
+        "componentKind": "Tyyppi",
+        "componentAmount": "Kuukausittainen summa",
+        "effectiveAt": "Voimassa alkaen",
+        "submit": "Tallenna palkka",
+        "componentKinds": {
+          "variable": "Muuttuva palkka",
+          "bonus": "Bonus",
+          "benefitInKind": "Luontaisetu",
+          "fixedSupplement": "Kiinteä lisä",
+          "allowance": "Korvaus",
+          "equity": "Osakepalkkio",
+          "other": "Muu"
+        }
+      },
+      "erase": {
+        "trigger": "Poista työntekijä",
+        "title": "Poista {name}",
+        "description": "Tämä poistaa työntekijän pysyvästi kaikkine tehtävineen ja palkkatietoineen. Toimintoa ei voi kumota.",
+        "confirmLabel": "Kirjoita henkilönumero {externalRef} vahvistaaksesi",
+        "confirmNoRef": "Kirjoita DELETE vahvistaaksesi",
+        "confirm": "Poista pysyvästi",
+        "cancel": "Peruuta",
+        "error": "Työntekijää ei voitu poistaa. Yritä uudelleen."
       }
     },
     "classify": {
