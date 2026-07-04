@@ -114,20 +114,34 @@ export function parseCurrency(v: string): string | null {
 }
 
 /**
- * Parse a percentage string to a number in [0, 100].
- * Accepts an optional trailing "%" character.
- * Decimals are accepted (e.g. "87.5" for a fractional FTE); range [0, 100] is enforced.
+ * Parse a percentage / FTE string to a number in [0, 100].
+ *
+ * ADR-0010 (import format expansion): accepts dot- OR comma-decimal, an
+ * optional trailing "%" with an optional leading space ("80 %", "87,5%").
+ * The "%" is stripped first, then a comma is normalized to a dot.
+ *
+ * Fraction mode is a COLUMN-LEVEL decision made by the shape detector, not by
+ * a single cell: when the caller passes { fraction: true } (because every
+ * non-blank cell in the column was <= 1.0), the parsed value is multiplied by
+ * 100 ("0.8" -> 80, "1.0" -> 100, "0,8" -> 80) before the range check. The
+ * range [0, 100] is enforced after any scaling.
  * Returns null if out of range or unparseable.
  */
-export function parsePercent(v: string): number | null {
+export function parsePercent(
+  v: string,
+  opts?: { fraction?: boolean }
+): number | null {
   const trimmed = v.trim()
   if (!trimmed) return null
 
-  const cleaned = trimmed.replace(/%$/, "").trim()
+  // Strip a trailing "%" (with optional leading space), then comma-to-dot.
+  const cleaned = trimmed.replace(/\s*%$/, "").trim().replace(",", ".")
   if (!cleaned) return null
+  if (!/^\d+(\.\d+)?$/.test(cleaned)) return null
 
-  const n = Number(cleaned)
+  let n = Number(cleaned)
   if (!Number.isFinite(n)) return null
+  if (opts?.fraction) n = n * 100
   if (n < 0 || n > 100) return null
 
   return n

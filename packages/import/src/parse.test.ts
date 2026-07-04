@@ -200,6 +200,45 @@ describe("parsePercent", () => {
   it("accepts a decimal value (fractional FTE like 87.5)", () => {
     expect(parsePercent("87.5")).toBe(87.5)
   })
+
+  it("parses comma-decimal percent (pp-04)", () => {
+    expect(parsePercent("87,5")).toBe(87.5)
+  })
+
+  it("parses comma-decimal 100,00 (pp-05)", () => {
+    expect(parsePercent("100,00")).toBe(100)
+  })
+
+  it("parses comma-decimal with % sign (pp-06)", () => {
+    expect(parsePercent("87,5%")).toBe(87.5)
+  })
+
+  it("parses a value with a leading space before % (pp-13)", () => {
+    expect(parsePercent("80 %")).toBe(80)
+  })
+
+  it("scales a dot fraction to percent in fraction mode (pp-07)", () => {
+    expect(parsePercent("0.8", { fraction: true })).toBe(80)
+  })
+
+  it("scales 1.0 to 100 in fraction mode (pp-08)", () => {
+    expect(parsePercent("1.0", { fraction: true })).toBe(100)
+  })
+
+  it("scales 0.375 to 37.5 in fraction mode (pp-09)", () => {
+    expect(parsePercent("0.375", { fraction: true })).toBe(37.5)
+  })
+
+  it("scales a comma fraction to percent in fraction mode (pp-10, pp-11)", () => {
+    expect(parsePercent("0,8", { fraction: true })).toBe(80)
+    expect(parsePercent("1,0", { fraction: true })).toBe(100)
+  })
+
+  it("does NOT scale in fraction mode when the value is already a percent", () => {
+    // A value > 1.0 under a fraction column would exceed [0,100] after x100;
+    // range check rejects it so a mis-detected column fails loud, not silently.
+    expect(parsePercent("80", { fraction: true })).toBeNull()
+  })
 })
 
 describe("parseGender", () => {
