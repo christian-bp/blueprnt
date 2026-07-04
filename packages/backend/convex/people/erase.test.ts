@@ -33,7 +33,7 @@ async function seedEditor(
   orgId: string,
   email: string
 ) {
-  // Create the user (seedMembership also creates a throwaway org — ignored).
+  // Create the user (seedMembership also creates a throwaway org -- ignored).
   const { userId } = await t.mutation(
     components.betterAuth.testing.seedMembership,
     { email, name: "Editor Person", role: "editor" }
@@ -77,7 +77,7 @@ async function seedRole(
   return roleId
 }
 
-describe("erasePerson", () => {
+describe("erasePersonAsOrg", () => {
   it("hard-deletes the person row, all payRecords, and all personAssignments", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
@@ -123,7 +123,10 @@ describe("erasePerson", () => {
     })
 
     // Erase the person.
-    await asAdmin.mutation(api.people.erase.erasePerson, { orgId, personId })
+    await asAdmin.mutation(api.people.erase.erasePersonAsOrg, {
+      orgId,
+      personId,
+    })
 
     // Verify all rows are gone.
     await t.run(async (ctx) => {
@@ -152,7 +155,10 @@ describe("erasePerson", () => {
     const { orgId, asAdmin } = await seedOrg(t)
     const personId = await seedPerson(orgId, asAdmin)
 
-    await asAdmin.mutation(api.people.erase.erasePerson, { orgId, personId })
+    await asAdmin.mutation(api.people.erase.erasePersonAsOrg, {
+      orgId,
+      personId,
+    })
 
     await t.run(async (ctx) => {
       const auditRows = await ctx.db
@@ -202,7 +208,7 @@ describe("erasePerson", () => {
 
     // Org B's admin tries to erase org A's person: must throw notFound.
     await expect(
-      asAdminB.mutation(api.people.erase.erasePerson, {
+      asAdminB.mutation(api.people.erase.erasePersonAsOrg, {
         orgId: orgB,
         personId: personAId,
       })
@@ -222,7 +228,7 @@ describe("erasePerson", () => {
     // Seed an editor and attempt erasure as that editor.
     const asEditor = await seedEditor(t, orgId, "editor@acme.se")
     await expect(
-      asEditor.mutation(api.people.erase.erasePerson, { orgId, personId })
+      asEditor.mutation(api.people.erase.erasePersonAsOrg, { orgId, personId })
     ).rejects.toThrow(/errors.adminRequired/)
 
     // Person must still exist.
@@ -264,7 +270,10 @@ describe("erasePerson", () => {
       levelSource: "confirmed",
     })
 
-    await asAdmin.mutation(api.people.erase.erasePerson, { orgId, personId })
+    await asAdmin.mutation(api.people.erase.erasePersonAsOrg, {
+      orgId,
+      personId,
+    })
 
     await t.run(async (ctx) => {
       expect(await ctx.db.get(personId)).toBeNull()
@@ -285,5 +294,117 @@ describe("erasePerson", () => {
         .collect()
       expect(assigns).toHaveLength(0)
     })
+  })
+})
+
+describe("erasePersonAsOrg (org-scoped HR erasure)", () => {
+  it("hard-deletes the person, their assignments, and their pay records", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    // Seed a role, a person, an assignment, and a pay record.
+    const { roleId, personId } = await t.run(async (ctx) => {
+      const roleId = await ctx.db.insert("roles", {
+        orgId,
+        title: "Engineer",
+        slug: "engineer",
+        function: "Engineering",
+        team: "Core",
+        trackKey: "IC" as const,
+        purpose: "",
+        responsibilities: "",
+      })
+      const personId = await ctx.db.insert("people", {
+        orgId,
+        externalRef: "E-1",
+        displayName: "Test Person",
+        gender: "Kvinna" as const,
+      })
+      await ctx.db.insert("personAssignments", {
+        orgId,
+        personId,
+        roleId,
+        level: "IC3",
+        levelSource: "confirmed" as const,
+        effectiveAt: 1_000,
+      })
+      await ctx.db.insert("payRecords", {
+        orgId,
+        personId,
+        payYear: 2026,
+        source: "manual" as const,
+        basicMonthly: 50_000,
+        currency: "SEK",
+        components: [],
+        effectiveAt: 1_000,
+        createdAt: 1_000,
+      })
+      return { roleId, personId }
+    })
+
+    await asAdmin.mutation(api.people.erase.erasePersonAsOrg, {
+      orgId,
+      personId,
+    })
+
+    const remaining = await t.run(async (ctx) => {
+      const person = await ctx.db.get(personId)
+      const assignments = await ctx.db
+        .query("personAssignments")
+        .withIndex("by_person", (q) =>
+          q.eq("orgId", orgId).eq("personId", personId)
+        )
+        .collect()
+      const pay = await ctx.db
+        .query("payRecords")
+        .withIndex("by_person", (q) =>
+          q.eq("orgId", orgId).eq("personId", personId)
+        )
+        .collect()
+      const role = await ctx.db.get(roleId)
+      return { person, assignments, pay, role }
+    })
+
+    expect(remaining.person).toBeNull()
+    expect(remaining.assignments).toHaveLength(0)
+    expect(remaining.pay).toHaveLength(0)
+    // The role must survive: erasure removes the person, not the role.
+    expect(remaining.role).not.toBeNull()
+  })
+
+  it("throws notFound for a person in another org", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t, "hr@acme.se")
+    const { orgId: otherOrgId } = await seedOrg(t, "hr@other.se")
+    const foreignPersonId = await t.run(async (ctx) =>
+      ctx.db.insert("people", {
+        orgId: otherOrgId,
+        displayName: "Foreign",
+        gender: "Man" as const,
+      })
+    )
+
+    await expect(
+      asAdmin.mutation(api.people.erase.erasePersonAsOrg, {
+        orgId,
+        personId: foreignPersonId,
+      })
+    ).rejects.toThrow()
+  })
+
+  it("rejects a non-admin (editor) member", async () => {
+    const t = initConvexTest()
+    const { orgId } = await seedOrg(t)
+    const personId = await t.run(async (ctx) =>
+      ctx.db.insert("people", {
+        orgId,
+        displayName: "Test",
+        gender: "Man" as const,
+      })
+    )
+    const asEditor = await seedEditor(t, orgId, "editor@acme.se")
+    await expect(
+      asEditor.mutation(api.people.erase.erasePersonAsOrg, { orgId, personId })
+    ).rejects.toThrow()
   })
 })
