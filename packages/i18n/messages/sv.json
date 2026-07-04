@@ -159,6 +159,10 @@
         "gender": "Kön",
         "department": "Avdelning",
         "fte": "Sysselsättningsgrad"
+      },
+      "gender": {
+        "Man": "Man",
+        "Kvinna": "Kvinna"
       }
     },
     "auditLog": {

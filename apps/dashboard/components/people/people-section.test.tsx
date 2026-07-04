@@ -86,8 +86,11 @@ describe("PeopleSection", () => {
     ])
     renderSection()
     expect(screen.getByText("Alice Svensson")).toBeDefined()
-    expect(screen.getByText("Kvinna")).toBeDefined()
+    // Gender should be the localized label (English: "Woman"), not the raw enum value.
+    expect(screen.getByText("Woman")).toBeDefined()
+    expect(screen.queryByText("Kvinna")).toBeNull()
     expect(screen.getByText("Engineering")).toBeDefined()
-    expect(screen.getByText("100")).toBeDefined()
+    // FTE should be rendered as a percentage string.
+    expect(screen.getByText("100%")).toBeDefined()
   })
 })

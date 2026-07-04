@@ -159,6 +159,10 @@
         "gender": "Køn",
         "department": "Afdeling",
         "fte": "Stilling"
+      },
+      "gender": {
+        "Man": "Mand",
+        "Kvinna": "Kvinde"
       }
     },
     "auditLog": {

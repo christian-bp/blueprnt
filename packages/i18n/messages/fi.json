@@ -159,6 +159,10 @@
         "gender": "Sukupuoli",
         "department": "Osasto",
         "fte": "Työsuhde"
+      },
+      "gender": {
+        "Man": "Mies",
+        "Kvinna": "Nainen"
       }
     },
     "auditLog": {

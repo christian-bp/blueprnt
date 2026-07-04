@@ -94,13 +94,13 @@ export function PeopleSection() {
                   {person.displayName}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {person.gender}
+                  {person.gender != null ? t(`gender.${person.gender}`) : ""}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {person.department ?? ""}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {person.ftePercent ?? ""}
+                  {person.ftePercent != null ? `${person.ftePercent}%` : ""}
                 </TableCell>
               </TableRow>
             ))}

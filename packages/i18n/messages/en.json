@@ -159,6 +159,10 @@
         "gender": "Gender",
         "department": "Department",
         "fte": "FTE"
+      },
+      "gender": {
+        "Man": "Man",
+        "Kvinna": "Woman"
       }
     },
     "auditLog": {
