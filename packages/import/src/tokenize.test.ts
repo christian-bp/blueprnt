@@ -199,7 +199,7 @@ describe("tokenizeCsv binary-signature guard (A1, A2, A3)", () => {
   })
 
   it("throws ImportFormatError with signature ole2 for legacy XLS (A2)", () => {
-    const xls = "ÐÏà¡±á" + "rest-of-ole2"
+    const xls = "\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1" + "rest-of-ole2"
     try {
       tokenizeCsv(xls)
       throw new Error("expected tokenizeCsv to throw")

@@ -8,6 +8,8 @@ import {
   type FieldTier,
 } from "./fields.js"
 import { parseGender, parseMoney } from "./parse.js"
+import { ImportFormatError, tokenizeCsv } from "./tokenize.js"
+import type { TokenizeResult } from "./tokenize.js"
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -33,15 +35,23 @@ export type ReadinessEntry = {
   mapped: boolean
 }
 
+/** A blocking signal that is not a missing canonical field. */
+export type BlockingIssueCode = "invalidFileFormat"
+
 export type ImportValidation = {
   /** One entry per canonical field: its tier and whether it is mapped. */
   readiness: ReadinessEntry[]
-  /** Required fields absent from the mapping — hard-block the import. */
-  blocking: CanonicalFieldKey[]
+  /** Required fields absent from the mapping, plus blocking non-field signals. */
+  blocking: (CanonicalFieldKey | BlockingIssueCode)[]
   /** Recommended fields absent from the mapping — soft warnings. */
   warnings: CanonicalFieldKey[]
   /** Per-row data-quality issues. */
   issues: RowIssue[]
+  /**
+   * Set to "invalidFileFormat" when the raw input was a binary spreadsheet
+   * (tokenizeCsv threw ImportFormatError). Undefined for well-formed CSV.
+   */
+  fileFormatError?: BlockingIssueCode
 }
 
 // ---------------------------------------------------------------------------
@@ -204,4 +214,44 @@ export function validateImport(
   }
 
   return { readiness, blocking, warnings, issues }
+}
+
+/**
+ * Tokenize-then-validate boundary. This is the single place where the
+ * tokenizer's typed ImportFormatError is caught and turned into the
+ * invalidFileFormat blocking signal, so the wizard can show
+ * "export as CSV" instead of "missing columns".
+ *
+ * @param text      - Raw (already-decoded) CSV text.
+ * @param mapping   - Detected mapping for the same input.
+ * @param opts      - Validate options.
+ * @param tokenized - Optional pre-tokenized TokenizeResult. When omitted, this
+ *                    calls tokenizeCsv(text) and catches ImportFormatError.
+ */
+export function validateFile(
+  text: string,
+  mapping: DetectedMapping,
+  opts: ValidateOpts,
+  tokenized?: TokenizeResult
+): ImportValidation {
+  let input = tokenized
+  if (input === undefined) {
+    try {
+      input = tokenizeCsv(text)
+    } catch (err) {
+      if (err instanceof ImportFormatError) {
+        return {
+          readiness: [],
+          blocking: ["invalidFileFormat"],
+          warnings: [],
+          issues: [],
+          fileFormatError: "invalidFileFormat",
+        }
+      }
+      throw err
+    }
+  }
+  // Task 6 widens this to `validateImport(input, mapping, opts, input.signals)`;
+  // in this task validateImport still takes three args (signals optional).
+  return validateImport(input, mapping, opts)
 }

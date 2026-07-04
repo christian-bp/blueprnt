@@ -31,8 +31,9 @@ export {
   parseStringId,
 } from "./parse.js"
 
-export { validateImport } from "./validate.js"
+export { validateFile, validateImport } from "./validate.js"
 export type {
+  BlockingIssueCode,
   ImportValidation,
   RowIssue,
   RowIssueCode,

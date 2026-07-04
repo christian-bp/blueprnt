@@ -2,7 +2,9 @@
 import { describe, expect, it } from "vitest"
 import type { DetectedMapping } from "./detect.js"
 import type { CanonicalFieldKey } from "./fields.js"
-import { validateImport } from "./validate.js"
+import { tokenizeCsv } from "./tokenize.js"
+import { ImportFormatError } from "./tokenize.js"
+import { validateFile, validateImport } from "./validate.js"
 
 // Real-derived 16-column Swedish payroll fixture.
 // Headers match the detect.test.ts SWEDISH_HEADERS fixture.
@@ -332,5 +334,37 @@ describe("validateImport — clean fixture produces no issues", () => {
     expect(result.issues).toHaveLength(0)
     expect(result.blocking).toHaveLength(0)
     expect(result.warnings).toHaveLength(0)
+  })
+})
+
+describe("validateFile — invalidFileFormat (A1, A4)", () => {
+  // XLSX / ODS ZIP local-file header.
+  const XLSX_MAGIC = "PK\x03\x04\x14\x00\x06\x00"
+  // Legacy XLS OLE2 compound-file header.
+  const XLS_MAGIC = "\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1"
+
+  const EMPTY_MAPPING: DetectedMapping = { map: {}, unmappedColumns: [] }
+
+  it("returns fileFormatError and the sentinel in blocking for XLSX magic bytes", () => {
+    const result = validateFile(XLSX_MAGIC, EMPTY_MAPPING, {})
+    expect(result.fileFormatError).toBe("invalidFileFormat")
+    expect(result.blocking).toContain("invalidFileFormat")
+    // It must NOT masquerade as missing canonical fields.
+    expect(result.blocking).not.toContain("basicMonthly")
+    expect(result.blocking).not.toContain("gender")
+  })
+
+  it("returns fileFormatError for legacy XLS magic bytes", () => {
+    const result = validateFile(XLS_MAGIC, EMPTY_MAPPING, {})
+    expect(result.fileFormatError).toBe("invalidFileFormat")
+    expect(result.blocking).toContain("invalidFileFormat")
+  })
+
+  it("throwing tokenizeCsv is the only path to invalidFileFormat", () => {
+    // Sanity: a plain CSV text through validateFile has no fileFormatError.
+    const csv = "name,salary\nAnna,52000\n"
+    const tokenized = tokenizeCsv(csv)
+    const result = validateFile(csv, EMPTY_MAPPING, {}, tokenized)
+    expect(result.fileFormatError).toBeUndefined()
   })
 })

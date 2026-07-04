@@ -38,7 +38,7 @@ export class ImportFormatError extends Error {
 // replacement characters (U+FFFD) and the OLE2 branch will NOT fire.
 // OLE2 detection via ArrayBuffer sniffing is deferred to the consumer layer.
 const ZIP_SIGNATURE = "PK\x03\x04"
-const OLE2_SIGNATURE = "ÐÏà¡±á"
+const OLE2_SIGNATURE = "\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1"
 
 function detectBinarySignature(text: string): "zip" | "ole2" | null {
   if (text.startsWith(ZIP_SIGNATURE)) return "zip"
