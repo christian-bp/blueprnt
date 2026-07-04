@@ -25,6 +25,11 @@ export const people = defineTable({
   // SSYK/SNI statistical code for pay-gap reporting.
   statisticalCode: v.optional(v.string()),
   department: v.optional(v.string()),
+  // Imported job title string (Befattning). Optional: manually created persons
+  // may have no title on record. This is the primary matching signal for the
+  // classification engine (title -> role). Not PII (a job title, not identity),
+  // so it lives on the person row alongside HR-structural attributes.
+  title: v.optional(v.string()),
   // Epoch ms timestamp. Set when the person leaves; null/absent means active.
   // Not a GDPR erasure: full erasure is a hard delete (see CLAUDE.md).
   archivedAt: v.optional(v.number()),

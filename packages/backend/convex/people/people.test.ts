@@ -321,6 +321,66 @@ describe("upsertPersonByExternalRef", () => {
     })
   })
 
+  it("persists title on insert and returns it via getPerson", async () => {
+    const t = initConvexTest()
+    const { orgId, userId } = await seedOrg(t)
+
+    const personId = await t.mutation(
+      internal.people.people.upsertPersonByExternalRef,
+      {
+        orgId,
+        actorId: userId,
+        externalRef: "EMP-100",
+        displayName: "Grace Hopper",
+        gender: "Kvinna",
+        country: "SE",
+        title: "Senior Backend Engineer",
+      }
+    )
+
+    await t.run(async (ctx) => {
+      const person = await ctx.db.get(personId)
+      expect(person?.title).toBe("Senior Backend Engineer")
+    })
+  })
+
+  it("updates title on re-import when the title changes", async () => {
+    const t = initConvexTest()
+    const { orgId, userId } = await seedOrg(t)
+
+    const personId = await t.mutation(
+      internal.people.people.upsertPersonByExternalRef,
+      {
+        orgId,
+        actorId: userId,
+        externalRef: "EMP-101",
+        displayName: "Ada Lovelace",
+        gender: "Kvinna",
+        country: "SE",
+        title: "Engineer",
+      }
+    )
+
+    const returnedId = await t.mutation(
+      internal.people.people.upsertPersonByExternalRef,
+      {
+        orgId,
+        actorId: userId,
+        externalRef: "EMP-101",
+        displayName: "Ada Lovelace",
+        gender: "Kvinna",
+        country: "SE",
+        title: "Principal Engineer",
+      }
+    )
+
+    expect(returnedId).toBe(personId)
+    await t.run(async (ctx) => {
+      const person = await ctx.db.get(personId)
+      expect(person?.title).toBe("Principal Engineer")
+    })
+  })
+
   it("is a no-op (no write, no audit) when nothing changed", async () => {
     const t = initConvexTest()
     const { orgId, userId } = await seedOrg(t)

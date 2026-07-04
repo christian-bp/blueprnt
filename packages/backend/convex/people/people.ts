@@ -22,6 +22,7 @@ const optionalPersonArgs = {
   isManager: v.optional(v.boolean()),
   statisticalCode: v.optional(v.string()),
   department: v.optional(v.string()),
+  title: v.optional(v.string()),
 }
 
 // Tenant-isolation assert for a point-read: throws notFound when the person
@@ -82,6 +83,7 @@ export const createPerson = orgMutation({
         ? { statisticalCode: args.statisticalCode }
         : {}),
       ...(args.department !== undefined ? { department: args.department } : {}),
+      ...(args.title !== undefined ? { title: args.title } : {}),
     })
 
     // Build the non-PII snapshot for the audit row. We pass the args directly
@@ -127,6 +129,7 @@ export const upsertPersonByExternalRef = internalMutation({
     isManager: v.optional(v.boolean()),
     statisticalCode: v.optional(v.string()),
     department: v.optional(v.string()),
+    title: v.optional(v.string()),
   },
   returns: v.id("people"),
   handler: async (ctx, args) => {
@@ -159,6 +162,7 @@ export const upsertPersonByExternalRef = internalMutation({
         ...(args.department !== undefined
           ? { department: args.department }
           : {}),
+        ...(args.title !== undefined ? { title: args.title } : {}),
       })
 
       const snapshot: Record<string, unknown> = {
@@ -207,6 +211,7 @@ export const upsertPersonByExternalRef = internalMutation({
     }
     if (args.department !== existing.department)
       patch.department = args.department
+    if (args.title !== existing.title) patch.title = args.title
 
     // No changes: no write, no audit row.
     if (Object.keys(patch).length === 0) return existing._id
@@ -250,6 +255,7 @@ const personShape = v.object({
   isManager: v.union(v.boolean(), v.null()),
   statisticalCode: v.union(v.string(), v.null()),
   department: v.union(v.string(), v.null()),
+  title: v.union(v.string(), v.null()),
   archivedAt: v.union(v.number(), v.null()),
 })
 
@@ -266,6 +272,7 @@ function toPersonShape(person: Doc<"people">) {
     isManager: person.isManager ?? null,
     statisticalCode: person.statisticalCode ?? null,
     department: person.department ?? null,
+    title: person.title ?? null,
     archivedAt: person.archivedAt ?? null,
   }
 }
