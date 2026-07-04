@@ -14,6 +14,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "devDependencies": {
+    "@workspace/constants": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "@workspace/vitest-config": "workspace:*",
     "typescript": "^6",
