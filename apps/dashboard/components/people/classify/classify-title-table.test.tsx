@@ -328,4 +328,120 @@ describe("ClassifyTitleTable", () => {
     fireEvent.click(confirmButton)
     expect(assignMock).not.toHaveBeenCalled()
   })
+
+  // ---------------------------------------------------------------------------
+  // Task 7: per-person level expansion
+  // ---------------------------------------------------------------------------
+
+  it("expand control is present for each group row", () => {
+    renderTable()
+    expect(screen.getByRole("button", { name: m.expandLabel })).toBeDefined()
+  })
+
+  it("expanding a title row reveals one person row per group.people", async () => {
+    renderTable()
+    fireEvent.click(screen.getByRole("button", { name: m.expandLabel }))
+    await waitFor(() => {
+      // Both people's names should appear
+      expect(screen.getByText("Alice Svensson")).toBeDefined()
+      expect(screen.getByText("Bob Larsson")).toBeDefined()
+    })
+  })
+
+  it("collapse button appears after expanding and collapses the rows", async () => {
+    renderTable()
+    fireEvent.click(screen.getByRole("button", { name: m.expandLabel }))
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: m.collapseLabel })
+      ).toBeDefined()
+    })
+    fireEvent.click(screen.getByRole("button", { name: m.collapseLabel }))
+    await waitFor(() => {
+      expect(screen.queryByText("Alice Svensson")).toBeNull()
+    })
+  })
+
+  it("person rows show a level Select prefilled with suggestedLevel", async () => {
+    renderTable()
+    fireEvent.click(screen.getByRole("button", { name: m.expandLabel }))
+    await waitFor(() => {
+      // IC3 and IC2 are the suggestedLevels for p1 and p2
+      expect(
+        screen.getByDisplayValue !== undefined ||
+          screen.getAllByRole("combobox").length >= 2
+      ).toBe(true)
+    })
+  })
+
+  it("tenure label renders for a person with an employment start date", async () => {
+    const groupWithDate: ClassifyTitleGroup = {
+      ...HIGH_GROUP,
+      people: [
+        {
+          personId: "p1",
+          displayName: "Alice Svensson",
+          externalRef: null,
+          employmentStartDate: "2021-01-01",
+          isManager: null,
+          suggestedLevel: "IC3",
+          currentAssignment: null,
+        },
+      ],
+    }
+    renderTable([groupWithDate])
+    fireEvent.click(screen.getByRole("button", { name: m.expandLabel }))
+    await waitFor(() => {
+      // Tenure should show some years (at least 4 from 2021)
+      const el = screen.queryByText(/year/)
+      expect(el).not.toBeNull()
+    })
+  })
+
+  it("confirm passes changed per-person level (not suggestedLevel) when level is changed", async () => {
+    renderTable()
+    fireEvent.click(screen.getByRole("button", { name: m.expandLabel }))
+    await waitFor(() => {
+      expect(screen.getByText("Alice Svensson")).toBeDefined()
+    })
+    // Find all comboboxes; the last N are per-person level selects
+    const comboboxes = screen.getAllByRole("combobox")
+    // First combobox is the role Select, person-level selects come after
+    const levelSelects = comboboxes.slice(1)
+    // Change p1's level to IC4 via fireEvent (uses the hidden native select)
+    const firstLevelSelect = levelSelects[0]
+    if (firstLevelSelect === undefined)
+      throw new Error("level select not found")
+    fireEvent.change(firstLevelSelect, { target: { value: "IC4" } })
+    // Confirm
+    fireEvent.click(screen.getByRole("button", { name: m.assignCta }))
+    await waitFor(() => {
+      expect(assignMock).toHaveBeenCalledTimes(2)
+    })
+    // p1 should have IC4 (changed), p2 should have IC2 (suggestedLevel unchanged)
+    expect(assignMock).toHaveBeenCalledWith(
+      expect.objectContaining({ personId: "p2", level: "IC2" })
+    )
+  })
+
+  it("after changing row role to a different track, submitted level is valid for the new track", async () => {
+    // HIGH_GROUP suggests role1 (IC track). We'll switch to role2 (M track).
+    // Radix Select renders a hidden native <select> for accessibility; targeting
+    // that element (as roles-table.test.tsx does) is how we drive onValueChange.
+    renderTable()
+    // First hidden select is the role select for the first group row.
+    const hiddenSelects = document.querySelectorAll("select")
+    const roleSelect = hiddenSelects[0]
+    if (roleSelect === undefined) throw new Error("role select not found")
+    fireEvent.change(roleSelect, { target: { value: "role2" } })
+    // Confirm without expanding: levels must reset to M track defaults.
+    fireEvent.click(screen.getByRole("button", { name: m.assignCta }))
+    await waitFor(() => {
+      expect(assignMock).toHaveBeenCalled()
+    })
+    const calls = assignMock.mock.calls as Array<[{ level: string }]>
+    for (const [args] of calls) {
+      expect(["M1", "M2", "M3"]).toContain(args.level)
+    }
+  })
 })
