@@ -93,6 +93,21 @@ vi.mock("@/components/onboarding/onboarding-dots", () => ({
   OnboardingDots: () => null,
 }))
 
+// MapStep now calls useQuery to load the saved mapping profile. Return null
+// (no saved profile) so auto-detection is the only seed in these tests.
+vi.mock("convex/react", () => ({
+  useQuery: vi.fn(() => null),
+}))
+
+// MapStep now calls useOrganization to scope the profile query.
+vi.mock("@/components/org-context", () => ({
+  useOrganization: () => ({
+    orgId: "org-test",
+    name: "Test Org",
+    role: "admin",
+  }),
+}))
+
 // ---------------------------------------------------------------------------
 // Fixtures
 // ---------------------------------------------------------------------------

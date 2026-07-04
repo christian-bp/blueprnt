@@ -1,9 +1,27 @@
-import { cleanup, render, screen } from "@testing-library/react"
+import { cleanup, render, screen, waitFor } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import type { ParsedCsv } from "./import-wizard"
-import { MapStep, buildInitialMapping } from "./map-step"
+import {
+  MapStep,
+  buildInitialMapping,
+  seedMappingFromProfile,
+} from "./map-step"
+
+// Default: no saved profile (query resolved, nothing saved).
+// Overridden per-test for the profile-seeding test.
+vi.mock("convex/react", () => ({
+  useQuery: vi.fn(() => null),
+}))
+
+vi.mock("@/components/org-context", () => ({
+  useOrganization: () => ({
+    orgId: "org-test",
+    name: "Test Org",
+    role: "admin",
+  }),
+}))
 
 // The real test CSV headers that match the synonym dictionary for the four
 // required canonical fields:
@@ -74,6 +92,44 @@ describe("buildInitialMapping", () => {
 })
 
 // ---------------------------------------------------------------------------
+// seedMappingFromProfile (pure helper, no render needed)
+// ---------------------------------------------------------------------------
+describe("seedMappingFromProfile", () => {
+  const parsed = {
+    headers: ["Anstnr", "Namn", "Befattning", "Lon"],
+    rows: [["1", "Alex", "Engineer", "50000"]],
+  }
+
+  it("maps saved canonical->header onto the current file's column indices", () => {
+    const result = seedMappingFromProfile(parsed, {
+      externalRef: "Anstnr",
+      displayName: "Namn",
+      title: "Befattning",
+      basicMonthly: "Lon",
+    })
+    expect(result).toEqual({
+      externalRef: 0,
+      displayName: 1,
+      title: 2,
+      basicMonthly: 3,
+    })
+  })
+
+  it("matches headers case-insensitively and trimmed", () => {
+    const result = seedMappingFromProfile(parsed, { title: " befattning " })
+    expect(result).toEqual({ title: 2 })
+  })
+
+  it("drops saved fields whose header is absent from the current file", () => {
+    const result = seedMappingFromProfile(parsed, {
+      title: "Befattning",
+      country: "Land",
+    })
+    expect(result).toEqual({ title: 2 })
+  })
+})
+
+// ---------------------------------------------------------------------------
 // MapStep: auto-detection seeding
 // ---------------------------------------------------------------------------
 describe("MapStep: auto-detection", () => {
@@ -104,6 +160,48 @@ describe("MapStep: auto-detection", () => {
     renderMapStep({ mapping: existingMapping, onMappingChange })
 
     expect(onMappingChange).not.toHaveBeenCalled()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// MapStep: profile-seeding render test
+// ---------------------------------------------------------------------------
+describe("MapStep: profile seeding", () => {
+  afterEach(() => {
+    cleanup()
+    vi.restoreAllMocks()
+  })
+
+  it("pre-seeds the mapping from the org's saved profile", async () => {
+    // Override useQuery for this test to return a saved profile.
+    const { useQuery } = await import("convex/react")
+    vi.mocked(useQuery).mockReturnValue({
+      profileId: "prof_1" as unknown as never,
+      columnMap: { title: "Befattning" },
+      parseRules: null,
+      updatedAt: 1,
+    } as unknown as never)
+
+    const onMappingChange = vi.fn()
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <MapStep
+          parsed={{
+            headers: ["Anstnr", "Befattning"],
+            rows: [["1", "Engineer"]],
+          }}
+          mapping={null}
+          onMappingChange={onMappingChange}
+        />
+      </NextIntlClientProvider>
+    )
+
+    // The effect seeds via onMappingChange once the profile query resolves.
+    await waitFor(() =>
+      expect(onMappingChange).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 1 })
+      )
+    )
   })
 })
 

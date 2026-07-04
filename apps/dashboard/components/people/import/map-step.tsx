@@ -1,5 +1,6 @@
 "use client"
 
+import { api } from "@workspace/backend/convex/_generated/api"
 import {
   CANONICAL_FIELDS,
   type CanonicalFieldKey,
@@ -20,8 +21,10 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
+import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useEffect } from "react"
+import { useOrganization } from "@/components/org-context"
 import type { ParsedCsv } from "./import-wizard"
 
 // Sentinel value used in the Select to represent "ignore this column".
@@ -30,6 +33,33 @@ const IGNORE_VALUE = "__ignore__"
 // ---------------------------------------------------------------------------
 // Pure helpers (exported for testing)
 // ---------------------------------------------------------------------------
+
+/**
+ * Convert a saved import-mapping profile ({ canonicalFieldKey -> sourceHeader })
+ * into the wizard's { canonicalFieldKey -> columnIndex } shape, by matching each
+ * saved header against the current file's headers (case-insensitive, trimmed).
+ * Saved fields whose header is not in the current file are dropped, so a
+ * profile from a differently-shaped file degrades gracefully.
+ */
+export function seedMappingFromProfile(
+  parsed: ParsedCsv,
+  columnMap: Record<string, string>
+): Record<string, number> {
+  const normalize = (s: string) => s.trim().toLowerCase()
+  const headerIndex = new Map<string, number>()
+  parsed.headers.forEach((header, index) => {
+    headerIndex.set(normalize(header), index)
+  })
+
+  const result: Record<string, number> = {}
+  for (const [fieldKey, sourceHeader] of Object.entries(columnMap)) {
+    const idx = headerIndex.get(normalize(sourceHeader))
+    if (idx !== undefined) {
+      result[fieldKey] = idx
+    }
+  }
+  return result
+}
 
 /**
  * Run detectColumns and convert the DetectedMapping to the flat
@@ -128,15 +158,30 @@ export interface MapStepProps {
 export function MapStep({ parsed, mapping, onMappingChange }: MapStepProps) {
   const tMap = useTranslations("dashboard.people.import.map")
   const tFields = useTranslations("dashboard.people.import.fields")
+  const { orgId } = useOrganization()
 
-  // On first entry (mapping === null), run auto-detection and seed the wizard.
-  // This effect only fires once because we check mapping === null as the guard.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally only runs when mapping is null; parsed/onMappingChange are stable for the lifetime of a CSV
+  // The org's saved mapping profile (null when none saved). undefined while the
+  // query resolves; we wait for it before seeding so the pre-seed is applied.
+  const savedProfile = useQuery(
+    api.people.importProfile.getImportMappingProfile,
+    { orgId }
+  )
+
+  // On first entry (mapping === null), seed the wizard. Prefer the saved
+  // profile (annual re-run skips re-mapping); fill any field the profile did
+  // not cover from auto-detection. Wait for the profile query to resolve.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: seeds once when mapping is null and the profile query has resolved; parsed/onMappingChange are stable for the CSV lifetime
   useEffect(() => {
-    if (mapping === null) {
-      onMappingChange(buildInitialMapping(parsed))
-    }
-  }, [])
+    if (mapping !== null) return
+    if (savedProfile === undefined) return
+    const auto = buildInitialMapping(parsed)
+    const fromProfile =
+      savedProfile !== null
+        ? seedMappingFromProfile(parsed, savedProfile.columnMap)
+        : {}
+    // Profile wins per field; auto-detection fills the rest.
+    onMappingChange({ ...auto, ...fromProfile })
+  }, [savedProfile])
 
   // Use the seeded mapping or fall back to an empty object while the effect
   // fires asynchronously (avoids rendering with null).
