@@ -422,7 +422,7 @@ export function ClassifyTitleTable({
                     exit={{ height: 0, opacity: 0 }}
                     transition={SPRING}
                     // The outer tr carries ONLY geometry so height:0 is true zero.
-                    style={{ display: "table-row", overflow: "hidden" }}
+                    style={{ display: "table-row" }}
                   >
                     <td colSpan={8} style={{ padding: 0 }}>
                       {/* Inner div carries visual styles; the outer tr has none. */}

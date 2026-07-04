@@ -366,11 +366,10 @@ describe("ClassifyTitleTable", () => {
     renderTable()
     fireEvent.click(screen.getByRole("button", { name: m.expandLabel }))
     await waitFor(() => {
-      // IC3 and IC2 are the suggestedLevels for p1 and p2
-      expect(
-        screen.getByDisplayValue !== undefined ||
-          screen.getAllByRole("combobox").length >= 2
-      ).toBe(true)
+      // Radix Select renders a hidden native <select> whose value reflects the
+      // controlled value. IC3 is p1's suggestedLevel; IC2 is p2's.
+      expect(screen.getAllByDisplayValue("IC3")).toHaveLength(1)
+      expect(screen.getAllByDisplayValue("IC2")).toHaveLength(1)
     })
   })
 
@@ -404,21 +403,24 @@ describe("ClassifyTitleTable", () => {
     await waitFor(() => {
       expect(screen.getByText("Alice Svensson")).toBeDefined()
     })
-    // Find all comboboxes; the last N are per-person level selects
-    const comboboxes = screen.getAllByRole("combobox")
-    // First combobox is the role Select, person-level selects come after
-    const levelSelects = comboboxes.slice(1)
-    // Change p1's level to IC4 via fireEvent (uses the hidden native select)
-    const firstLevelSelect = levelSelects[0]
-    if (firstLevelSelect === undefined)
-      throw new Error("level select not found")
-    fireEvent.change(firstLevelSelect, { target: { value: "IC4" } })
+    // Radix Select renders hidden native <select> elements; target those directly
+    // (the same pattern the cross-track test uses for the role select). After
+    // expanding, there are two hidden selects: index 0 = role select, index 1 =
+    // p1 level select, index 2 = p2 level select.
+    const hiddenSelects = document.querySelectorAll("select")
+    const p1LevelSelect = hiddenSelects[1]
+    if (p1LevelSelect === undefined)
+      throw new Error("p1 level select not found")
+    fireEvent.change(p1LevelSelect, { target: { value: "IC4" } })
     // Confirm
     fireEvent.click(screen.getByRole("button", { name: m.assignCta }))
     await waitFor(() => {
       expect(assignMock).toHaveBeenCalledTimes(2)
     })
     // p1 should have IC4 (changed), p2 should have IC2 (suggestedLevel unchanged)
+    expect(assignMock).toHaveBeenCalledWith(
+      expect.objectContaining({ personId: "p1", level: "IC4" })
+    )
     expect(assignMock).toHaveBeenCalledWith(
       expect.objectContaining({ personId: "p2", level: "IC2" })
     )
