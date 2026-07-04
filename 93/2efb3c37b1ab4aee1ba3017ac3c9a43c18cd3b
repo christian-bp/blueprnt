@@ -1,0 +1,29 @@
+packages/import/src/index.ts
+  s_6bff98b662648b::t_ed6f903f05108f 34,36
+packages/import/src/tokenize.test.ts
+  s_6bff98b662648b::t_f47f3d494c49f5 202
+packages/import/src/validate.test.ts
+  s_6bff98b662648b::t_6d01165a85882c 339-370
+  s_6bff98b662648b::t_1bbb2cdd4da9f0 5-7
+packages/import/src/tokenize.ts
+  s_6bff98b662648b::t_5f055ec853d7c6 41
+packages/import/src/validate.ts
+  s_6bff98b662648b::t_b529e87fe0d7ff 218-257
+  s_6bff98b662648b::t_42f0bc60b5b5ff 11-12,38-40,44-45,50-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "932efb3c37b1ab4aee1ba3017ac3c9a43c18cd3b",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
