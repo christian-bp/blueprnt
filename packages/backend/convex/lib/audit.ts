@@ -44,6 +44,7 @@ export const AUDIT_EVENTS = {
   assignmentSet: "assignment.set",
   salarySet: "pay.salarySet",
   mappingProfileSaved: "pay.mappingSaved",
+  importCompleted: "people.imported",
 } as const
 
 export type AuditEvent = (typeof AUDIT_EVENTS)[keyof typeof AUDIT_EVENTS]
@@ -77,7 +78,11 @@ export function categoryForEvent(type: string): AuditCategory | undefined {
   if (type.startsWith("member.") || type.startsWith("invitation."))
     return "member"
   if (type.startsWith("ai.")) return "ai"
-  if (type.startsWith("person.") || type.startsWith("assignment."))
+  if (
+    type.startsWith("person.") ||
+    type.startsWith("people.") ||
+    type.startsWith("assignment.")
+  )
     return "people"
   if (type.startsWith("pay.")) return "pay"
   return undefined

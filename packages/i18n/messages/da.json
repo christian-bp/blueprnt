@@ -314,7 +314,8 @@
         "personErased": "Person slettet",
         "assignmentSet": "Tildeling opdateret",
         "paySalarySet": "Lønning registreret",
-        "payMappingSaved": "Lønoversigt gemt"
+        "payMappingSaved": "Lønoversigt gemt",
+        "peopleImported": "Personer importeret"
       },
       "ai": {
         "modelDraft": "Modelkriterier: {count} tilføjet",

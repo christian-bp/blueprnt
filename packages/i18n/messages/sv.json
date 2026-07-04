@@ -314,7 +314,8 @@
         "personErased": "Person raderad",
         "assignmentSet": "Tilldelning uppdaterad",
         "paySalarySet": "Lön registrerad",
-        "payMappingSaved": "Lönemappning sparad"
+        "payMappingSaved": "Lönemappning sparad",
+        "peopleImported": "Personer importerade"
       },
       "ai": {
         "modelDraft": "Modellkriterier: {count} tillagda",

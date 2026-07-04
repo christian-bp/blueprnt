@@ -314,7 +314,8 @@
         "personErased": "Henkilö poistettu",
         "assignmentSet": "Tehtava paivitetty",
         "paySalarySet": "Palkka kirjattu",
-        "payMappingSaved": "Palkkakartoitus tallennettu"
+        "payMappingSaved": "Palkkakartoitus tallennettu",
+        "peopleImported": "Henkilot tuotu"
       },
       "ai": {
         "modelDraft": "Mallin kriteerit: {count} lisätty",

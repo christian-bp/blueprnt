@@ -294,6 +294,11 @@ export interface AuditPayloads {
   "assignment.set": { personId: string; roleId: string; changes: Changes }
   "pay.salarySet": { personId: string; changes: Changes }
   "pay.mappingSaved": { orgId: string; changes: Changes }
+  "people.imported": {
+    peopleImported: number
+    salariesImported: number
+    skippedRows: number
+  }
 }
 
 // Admin audit payloads, keyed 1:1 by every PLATFORM_AUDIT_EVENTS value. Also

@@ -314,7 +314,8 @@
         "personErased": "Person erased",
         "assignmentSet": "Assignment updated",
         "paySalarySet": "Salary recorded",
-        "payMappingSaved": "Pay mapping saved"
+        "payMappingSaved": "Pay mapping saved",
+        "peopleImported": "People imported"
       },
       "ai": {
         "modelDraft": "Model criteria: {count} added",
