@@ -153,7 +153,6 @@
       "heading": "Henkilöstö",
       "description": "Palkanlaskentajärjestelmästä tuodut työntekijät.",
       "empty": "Ei tuotuja työntekijöitä vielä.",
-      "import": "Tuo palkat",
       "columns": {
         "name": "Nimi",
         "gender": "Sukupuoli",
@@ -163,6 +162,27 @@
       "gender": {
         "Man": "Mies",
         "Kvinna": "Nainen"
+      },
+      "import": {
+        "title": "Tuo palkat",
+        "next": "Seuraava",
+        "back": "Takaisin",
+        "steps": {
+          "upload": "Lataa",
+          "map": "Yhdista sarakkeet",
+          "check": "Tarkista",
+          "review": "Tarkastele"
+        },
+        "navLabel": "Tuontivaiheet",
+        "upload": {
+          "heading": "Lataa CSV-tiedosto",
+          "description": "Valitse tai vedä ja pudota palkkajärjestelmasta viety CSV-tiedosto.",
+          "chooseFile": "Valitse tiedosto",
+          "dropHint": "tai vedä ja pudota tähän",
+          "detected": "{rows, plural, one {# rivi} other {# rivia}}, {columns} saraketta tunnistettu.",
+          "errorNotCsv": "Vain CSV-tiedostot ovat tuettuja. Valitse .csv-tiedosto.",
+          "errorEmpty": "Tiedosto on tyhja. Valitse CSV-tiedosto, jossa on vahintaan yksi datarivi."
+        }
       }
     },
     "auditLog": {

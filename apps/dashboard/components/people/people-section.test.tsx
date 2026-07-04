@@ -51,7 +51,7 @@ describe("PeopleSection", () => {
     // No person data rows visible either.
     expect(screen.queryByText("Alice")).toBeNull()
     // The header import link is always rendered (stable action slot).
-    const links = screen.getAllByRole("link", { name: m.import })
+    const links = screen.getAllByRole("link", { name: m.import.title })
     expect(links.length).toBeGreaterThanOrEqual(1)
   })
 
@@ -60,7 +60,7 @@ describe("PeopleSection", () => {
     renderSection()
     expect(screen.getByText(m.empty)).toBeDefined()
     // Both the header link and the empty-state CTA link are present.
-    const links = screen.getAllByRole("link", { name: m.import })
+    const links = screen.getAllByRole("link", { name: m.import.title })
     expect(links.length).toBeGreaterThanOrEqual(1)
     for (const link of links) {
       expect((link as HTMLAnchorElement).href).toContain("/people/import")

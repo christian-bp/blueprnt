@@ -153,7 +153,6 @@
       "heading": "Ansatte",
       "description": "Ansatte importert fra lønnssystemet.",
       "empty": "Ingen ansatte importert ennå.",
-      "import": "Importer lønninger",
       "columns": {
         "name": "Navn",
         "gender": "Kjønn",
@@ -163,6 +162,27 @@
       "gender": {
         "Man": "Mann",
         "Kvinna": "Kvinne"
+      },
+      "import": {
+        "title": "Importer lønninger",
+        "next": "Neste",
+        "back": "Tilbake",
+        "steps": {
+          "upload": "Last opp",
+          "map": "Tilordne kolonner",
+          "check": "Kontroller",
+          "review": "Gjennomgang"
+        },
+        "navLabel": "Importtrinn",
+        "upload": {
+          "heading": "Last opp en CSV-fil",
+          "description": "Velg eller dra og slipp en CSV-fil eksportert fra lønnssystemet.",
+          "chooseFile": "Velg fil",
+          "dropHint": "eller dra og slipp her",
+          "detected": "{rows, plural, one {# rad} other {# rader}}, {columns} kolonner oppdaget.",
+          "errorNotCsv": "Bare CSV-filer støttes. Velg en .csv-fil.",
+          "errorEmpty": "Filen er tom. Velg en CSV-fil med minst én datarad."
+        }
       }
     },
     "auditLog": {

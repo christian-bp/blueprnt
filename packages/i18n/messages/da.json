@@ -153,7 +153,6 @@
       "heading": "Medarbejdere",
       "description": "Medarbejdere importeret fra lønsystemet.",
       "empty": "Ingen medarbejdere importeret endnu.",
-      "import": "Importér løn",
       "columns": {
         "name": "Navn",
         "gender": "Køn",
@@ -163,6 +162,27 @@
       "gender": {
         "Man": "Mand",
         "Kvinna": "Kvinde"
+      },
+      "import": {
+        "title": "Importér løn",
+        "next": "Næste",
+        "back": "Tilbage",
+        "steps": {
+          "upload": "Upload",
+          "map": "Tilknyt kolonner",
+          "check": "Kontroller",
+          "review": "Gennemse"
+        },
+        "navLabel": "Importtrin",
+        "upload": {
+          "heading": "Upload en CSV-fil",
+          "description": "Vælg eller træk og slip en CSV-fil eksporteret fra lønsystemet.",
+          "chooseFile": "Vælg fil",
+          "dropHint": "eller træk og slip her",
+          "detected": "{rows, plural, one {# række} other {# rækker}}, {columns} kolonner fundet.",
+          "errorNotCsv": "Kun CSV-filer understøttes. Vælg en .csv-fil.",
+          "errorEmpty": "Filen er tom. Vælg en CSV-fil med mindst én datalinje."
+        }
       }
     },
     "auditLog": {

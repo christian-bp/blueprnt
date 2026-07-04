@@ -153,7 +153,6 @@
       "heading": "Medarbetare",
       "description": "Medarbetare importerade från ert lönesystem.",
       "empty": "Inga medarbetare importerade än.",
-      "import": "Importera löner",
       "columns": {
         "name": "Namn",
         "gender": "Kön",
@@ -163,6 +162,27 @@
       "gender": {
         "Man": "Man",
         "Kvinna": "Kvinna"
+      },
+      "import": {
+        "title": "Importera löner",
+        "next": "Nästa",
+        "back": "Tillbaka",
+        "steps": {
+          "upload": "Ladda upp",
+          "map": "Mappa kolumner",
+          "check": "Kontrollera",
+          "review": "Granska"
+        },
+        "navLabel": "Importsteg",
+        "upload": {
+          "heading": "Ladda upp en CSV-fil",
+          "description": "Välj eller dra och släpp en CSV-fil exporterad från ert lönesystem.",
+          "chooseFile": "Välj fil",
+          "dropHint": "eller dra och släpp här",
+          "detected": "{rows, plural, one {# rad} other {# rader}}, {columns} kolumner identifierade.",
+          "errorNotCsv": "Endast CSV-filer stöds. Välj en .csv-fil.",
+          "errorEmpty": "Filen är tom. Välj en CSV-fil med minst en rad med data."
+        }
       }
     },
     "auditLog": {

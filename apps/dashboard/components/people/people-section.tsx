@@ -55,7 +55,7 @@ export function PeopleSection() {
           strokeWidth={2}
           aria-hidden="true"
         />
-        {t("import")}
+        {t("import.title")}
       </Link>
     </Button>
   )
@@ -81,7 +81,7 @@ export function PeopleSection() {
             <EmptyDescription>{t("empty")}</EmptyDescription>
           </EmptyHeader>
           <Button asChild variant="outline">
-            <Link href="/people/import">{t("import")}</Link>
+            <Link href="/people/import">{t("import.title")}</Link>
           </Button>
         </Empty>
       ) : (
