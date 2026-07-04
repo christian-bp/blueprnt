@@ -75,13 +75,10 @@ function isMoney(cell: string): boolean {
   // flagged by `hasGroupingOrDecimal` and passes parseMoney, but without a
   // currency or space signal it is equally ambiguous. Restrict to dot-thousands.
   if (/[.,]/.test(t) && !/\s/.test(t) && !hasCurrency) {
-    // Only dot-thousands patterns are unambiguously money without a currency marker.
-    // Strip any comma-decimal tail for the pattern check.
-    const noDecimal = t.replace(/,\d+$/, "").replace(/\.\d{1,2}$/, "")
-    return (
-      /^\d{1,3}(\.\d{3})+$/.test(noDecimal) ||
-      /^\d{1,3}(\.\d{3})+(,\d+)?$/.test(t)
-    )
+    // Only dot-thousands patterns are unambiguously money without a currency marker
+    // (e.g. "52.000" or "52.000,50"). The optional comma-decimal tail is covered by
+    // the single pattern below; the separate noDecimal pre-strip is unnecessary.
+    return /^\d{1,3}(\.\d{3})+(,\d+)?$/.test(t)
   }
 
   return false
@@ -101,10 +98,10 @@ function isPercent(cell: string): boolean {
  *  header-gated compact/serial forms when the caller passes headerGated. ISO,
  *  DD.MM.YYYY, DD/MM/YYYY, YYYY/MM/DD, and datetime are always recognized.
  *
- *  Personnummer strings (\d{8}-\d{4}, \d{6}-\d{4}) are intentionally excluded
+ *  Personnummer strings (\d{8}-\d{4}, \d{6}-\d{4}) are intentionally EXCLUDED
  *  from the date shape: they are id-shaped and isId takes them, so a column of
  *  personnummer values classifies as `id`, not `date` (id-03, id-04). parseDate
- *  still accepts them for extraction; the shape just stays `id`.
+ *  still accepts them for extraction from an id column; the shape stays `id`.
  */
 function isDate(cell: string, headerGated: boolean): boolean {
   const t = cell.trim()

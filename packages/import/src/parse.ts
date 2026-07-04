@@ -30,7 +30,7 @@ function normalizeMoneyNumber(input: string): number | null {
   // Strip all whitespace grouping (regular space, NBSP U+00A0, thin space U+2009,
   // narrow NBSP U+202F are all matched by \s under the u-less regex except the
   // narrow ones, so strip explicitly too).
-  const noGroups = input.replace(/[\s   ]/g, "")
+  const noGroups = input.replace(/[\s\u00a0\u2009\u202f]/g, "")
   if (!noGroups) return null
 
   const hasComma = noGroups.includes(",")
@@ -76,8 +76,8 @@ function normalizeMoneyNumber(input: string): number | null {
  * comma-decimal ("52000,50"), dot-decimal ("52000.50"), dot-thousands
  * ("52.000", "52.000,50"), and a leading OR trailing currency marker
  * (kr/sek/nok/dkk/eur/gbp/usd word or the euro symbol), including run-on
- * suffixes ("52000kr"). Decimals are preserved to at least two fractional
- * digits. Returns null for unknown trailing words, interleaved letters, an
+ * suffixes ("52000kr"). No truncation to integer; fractional values are
+ * preserved. Returns null for unknown trailing words, interleaved letters, an
  * empty result after stripping, a malformed number, and (for V1) negative
  * and parenthesized-negative values.
  * Examples: "94 500 kr" -> 94500, "45 250,75 kr" -> 45250.75,
@@ -303,7 +303,13 @@ export function parseDate(
   }
 
   // Strip a trailing time part (space- or T-separated) before ISO/year-first.
-  const dateOnly = trimmed.replace(/[ T]\d{2}:\d{2}(:\d{2})?$/, "")
+  // Covers: "HH:MM", "HH:MM:SS", "HH:MM:SS.NNN", plus an optional trailing Z
+  // or numeric UTC offset (+hh:mm / -hh:mm / +hhmm / -hhmm). The wall-clock
+  // date is kept; no UTC normalization across midnight.
+  const dateOnly = trimmed.replace(
+    /[ T]\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:?\d{2})?$/,
+    ""
+  )
 
   // ISO YYYY-MM-DD.
   const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateOnly)

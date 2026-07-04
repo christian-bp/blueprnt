@@ -142,8 +142,20 @@ describe("parseMoney", () => {
 
   // ADR-0010: en-US comma-thousands is unsupported; "52,000" reads the comma as
   // a decimal (-> 52), not thousands. Documented, not a bug.
-  it("returns null for en-US comma-thousands (M20, V1 unsupported)", () => {
+  it("parses en-US comma-thousands as a Nordic comma-decimal, returning 52 (M20, ADR-0010 documented limitation)", () => {
     expect(parseMoney("52,000")).toBe(52)
+  })
+
+  it("rejects multi-comma: 52,000,50 returns null (multi-comma guard)", () => {
+    expect(parseMoney("52,000,50")).toBeNull()
+  })
+
+  it("rejects multi-comma: 1,234,567 returns null (multi-comma guard)", () => {
+    expect(parseMoney("1,234,567")).toBeNull()
+  })
+
+  it("parses euro symbol as a PREFIX (M40 prefix variant)", () => {
+    expect(parseMoney("€52000")).toBe(52000)
   })
 
   it("returns null for interleaved letters", () => {
@@ -351,6 +363,19 @@ describe("parseDate", () => {
 
   it("strips a T-separated time (date-12)", () => {
     expect(parseDate("2023-01-15T00:00:00")).toBe("2023-01-15")
+  })
+
+  it("strips a T-separated time with trailing Z (date-Z)", () => {
+    expect(parseDate("2023-01-15T00:00:00Z")).toBe("2023-01-15")
+  })
+
+  it("strips a T-separated time with fractional seconds and Z (date-frac-Z)", () => {
+    expect(parseDate("2023-01-15T00:00:00.000Z")).toBe("2023-01-15")
+  })
+
+  it("strips a T-separated time with numeric UTC offset (date-offset)", () => {
+    // Wall-clock date is kept; no UTC normalization across midnight.
+    expect(parseDate("2023-01-15T12:30:00+01:00")).toBe("2023-01-15")
   })
 
   it("parses YYYY/MM/DD year-first slash (date-25)", () => {
