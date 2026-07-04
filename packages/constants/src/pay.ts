@@ -22,3 +22,19 @@ export function totalMonthlyComp(
 ): number {
   return basicMonthly + components.reduce((sum, c) => sum + c.monthlyAmount, 0)
 }
+
+// Pure helper: FTE-adjusted total monthly comp. Grosses a part-time person's
+// compensation up to its full-time equivalent so pay-gap comparisons are like
+// for like (EU Pay Transparency Directive). ftePercent is a percentage
+// (100 = full time). A missing, zero, or non-positive ftePercent is treated as
+// 100 (no adjustment), so this never divides by zero. No I/O, no clock reads.
+export function fteTotalMonthlyComp(
+  basicMonthly: number,
+  components: ReadonlyArray<{ monthlyAmount: number }>,
+  ftePercent: number | undefined
+): number {
+  const total = totalMonthlyComp(basicMonthly, components)
+  const fraction =
+    ftePercent !== undefined && ftePercent > 0 ? ftePercent / 100 : 1
+  return total / fraction
+}

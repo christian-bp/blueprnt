@@ -22,5 +22,6 @@ export { TRACK_LEVELS, isValidLevelForTrack } from "./trackLevels"
 export {
   PAY_COMPONENT_KINDS,
   type PayComponentKind,
+  fteTotalMonthlyComp,
   totalMonthlyComp,
 } from "./pay"

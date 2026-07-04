@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest"
-import { PAY_COMPONENT_KINDS, totalMonthlyComp } from "./pay"
+import {
+  PAY_COMPONENT_KINDS,
+  fteTotalMonthlyComp,
+  totalMonthlyComp,
+} from "./pay"
 
 describe("PAY_COMPONENT_KINDS", () => {
   it("is a non-empty readonly array of strings", () => {
@@ -40,5 +44,34 @@ describe("totalMonthlyComp", () => {
 
   it("handles zero-valued components", () => {
     expect(totalMonthlyComp(30_000, [{ monthlyAmount: 0 }])).toBe(30_000)
+  })
+})
+
+describe("fteTotalMonthlyComp", () => {
+  it("returns the unadjusted total at 100% FTE", () => {
+    expect(fteTotalMonthlyComp(50_000, [], 100)).toBe(50_000)
+    expect(fteTotalMonthlyComp(40_000, [{ monthlyAmount: 8_000 }], 100)).toBe(
+      48_000
+    )
+  })
+
+  it("grosses up part-time comp to a full-time equivalent at 80% FTE", () => {
+    // 40_000 earned on an 80% contract -> full-time equivalent 50_000.
+    expect(fteTotalMonthlyComp(40_000, [], 80)).toBe(50_000)
+  })
+
+  it("treats a zero FTE as 100% (no division by zero)", () => {
+    expect(fteTotalMonthlyComp(30_000, [], 0)).toBe(30_000)
+  })
+
+  it("treats an undefined FTE as 100%", () => {
+    expect(fteTotalMonthlyComp(30_000, [], undefined)).toBe(30_000)
+  })
+
+  it("includes components in the FTE-adjusted total", () => {
+    // total 44_000 at 80% -> 55_000.
+    expect(fteTotalMonthlyComp(40_000, [{ monthlyAmount: 4_000 }], 80)).toBe(
+      55_000
+    )
   })
 })
