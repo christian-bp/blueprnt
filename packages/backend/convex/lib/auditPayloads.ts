@@ -292,6 +292,11 @@ export interface AuditPayloads {
   // GDPR: no name/email in the erased payload; personId is the internal key only.
   "person.erased": { personId: string; changes: Changes }
   "assignment.set": { personId: string; roleId: string; changes: Changes }
+  "classification.suggested": {
+    suggested: number
+    skipped: number
+    unmatchedTitles: number
+  }
   "pay.salarySet": { personId: string; changes: Changes }
   "pay.mappingSaved": { orgId: string; changes: Changes }
   "people.imported": {

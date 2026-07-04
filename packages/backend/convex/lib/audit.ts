@@ -42,6 +42,7 @@ export const AUDIT_EVENTS = {
   personArchived: "person.archived",
   personErased: "person.erased",
   assignmentSet: "assignment.set",
+  classificationSuggested: "classification.suggested",
   salarySet: "pay.salarySet",
   mappingProfileSaved: "pay.mappingSaved",
   importCompleted: "people.imported",
@@ -81,7 +82,8 @@ export function categoryForEvent(type: string): AuditCategory | undefined {
   if (
     type.startsWith("person.") ||
     type.startsWith("people.") ||
-    type.startsWith("assignment.")
+    type.startsWith("assignment.") ||
+    type.startsWith("classification.")
   )
     return "people"
   if (type.startsWith("pay.")) return "pay"

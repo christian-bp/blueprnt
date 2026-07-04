@@ -64,6 +64,8 @@ import type * as lib_errors from "../lib/errors.js";
 import type * as lib_functions from "../lib/functions.js";
 import type * as lib_slug from "../lib/slug.js";
 import type * as people_assignments from "../people/assignments.js";
+import type * as people_classification from "../people/classification.js";
+import type * as people_classificationShared from "../people/classificationShared.js";
 import type * as people_employeeCount from "../people/employeeCount.js";
 import type * as people_erase from "../people/erase.js";
 import type * as people_import from "../people/import.js";
@@ -141,6 +143,8 @@ declare const fullApi: ApiFromModules<{
   "lib/functions": typeof lib_functions;
   "lib/slug": typeof lib_slug;
   "people/assignments": typeof people_assignments;
+  "people/classification": typeof people_classification;
+  "people/classificationShared": typeof people_classificationShared;
   "people/employeeCount": typeof people_employeeCount;
   "people/erase": typeof people_erase;
   "people/import": typeof people_import;

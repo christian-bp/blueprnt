@@ -428,6 +428,7 @@
         "personArchived": "Person archived",
         "personErased": "Person erased",
         "assignmentSet": "Assignment updated",
+        "classificationSuggested": "Classification suggestions computed",
         "paySalarySet": "Salary recorded",
         "payMappingSaved": "Pay mapping saved",
         "peopleImported": "People imported"
