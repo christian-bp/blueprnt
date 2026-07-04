@@ -19,7 +19,7 @@ export type RowIssueCode =
   | "duplicateId"
   | "unparsableMoney"
   | "nonNumericCode"
-  | "blankGender"
+  | "unresolvedGender"
   | "genderNameMismatch"
 
 export type RowIssue = {
@@ -180,14 +180,19 @@ export function validateImport(
       }
     }
 
-    // blankGender: blank or unparseable gender cell when gender is mapped.
+    // unresolvedGender: blank, unrecognized, non-binary, or ambiguous-numeric
+    // gender cell when gender is mapped. The mapped column IS the gender column,
+    // so numeric SCB/SAP codes 1/2 are allowed to resolve (allowNumericCodes:
+    // true); parseGender still returns null for blank, unrecognized, non-binary,
+    // and ambiguous numeric codes (0, 3, ...), which flag. The wizard collects a
+    // manual Man/Kvinna assignment for the flagged rows downstream.
     if (genderCol !== undefined) {
       const raw = cell(genderCol)
-      if (parseGender(raw) === null) {
+      if (parseGender(raw, { allowNumericCodes: true }) === null) {
         issues.push({
           row: rowIdx,
-          code: "blankGender",
-          detail: `gender cell "${raw}" is blank or unrecognized`,
+          code: "unresolvedGender",
+          detail: `gender cell "${raw}" is blank, unrecognized, or ambiguous`,
         })
       }
     }

@@ -261,8 +261,8 @@ describe("validateImport — issues: unparsableMoney", () => {
   })
 })
 
-describe("validateImport — issues: blankGender", () => {
-  it("reports blankGender for a row with a blank gender cell", () => {
+describe("validateImport — issues: unresolvedGender", () => {
+  it("reports unresolvedGender for a row with a blank gender cell", () => {
     const rows: string[][] = [
       ...ROWS,
       // row 4: blank gender
@@ -271,9 +271,73 @@ describe("validateImport — issues: blankGender", () => {
       ),
     ]
     const result = validateImport({ headers: HEADERS, rows }, FULL_MAPPING, {})
-    const bad = result.issues.filter((i) => i.code === "blankGender")
+    const bad = result.issues.filter((i) => i.code === "unresolvedGender")
     expect(bad.length).toBeGreaterThanOrEqual(1)
     expect(bad.map((i) => i.row)).toContain(4)
+  })
+
+  it("reports unresolvedGender for a non-binary token (Annat), never a third value", () => {
+    const rows: string[][] = [
+      // row 0: gender cell "Annat" -> parseGender null -> flagged, not mapped
+      "2023-01-01;Test;User;Nej;Annat;Sverige;2024;1990-01-01;Analyst;1234;55000;0;0;SEK;118;100".split(
+        ";"
+      ),
+    ]
+    const result = validateImport({ headers: HEADERS, rows }, FULL_MAPPING, {})
+    const bad = result.issues.filter((i) => i.code === "unresolvedGender")
+    expect(bad.map((i) => i.row)).toContain(0)
+  })
+
+  it("does not flag a resolvable gender cell (Man)", () => {
+    const rows: string[][] = [
+      "2023-01-01;Test;User;Nej;Man;Sverige;2024;1990-01-01;Analyst;1234;55000;0;0;SEK;118;100".split(
+        ";"
+      ),
+    ]
+    const result = validateImport({ headers: HEADERS, rows }, FULL_MAPPING, {})
+    expect(
+      result.issues.filter((i) => i.code === "unresolvedGender")
+    ).toHaveLength(0)
+  })
+
+  it("does NOT flag numeric SCB/SAP codes 1 and 2 under a mapped gender column (P6, GEN-09)", () => {
+    // The mapped gender column is the gender column, so validate passes
+    // { allowNumericCodes: true }: 1 -> Man, 2 -> Kvinna resolve and do not flag.
+    const rows: string[][] = [
+      "2023-01-01;Test;User;Nej;1;Sverige;2024;1990-01-01;Analyst;1234;55000;0;0;SEK;118;100".split(
+        ";"
+      ),
+      "2023-01-01;Test;User;Nej;2;Sverige;2024;1990-01-01;Analyst;1235;55000;0;0;SEK;119;100".split(
+        ";"
+      ),
+    ]
+    const result = validateImport({ headers: HEADERS, rows }, FULL_MAPPING, {})
+    expect(
+      result.issues.filter((i) => i.code === "unresolvedGender")
+    ).toHaveLength(0)
+  })
+
+  it("still flags an ambiguous numeric gender code (3) even with numeric codes allowed", () => {
+    const rows: string[][] = [
+      "2023-01-01;Test;User;Nej;3;Sverige;2024;1990-01-01;Analyst;1234;55000;0;0;SEK;118;100".split(
+        ";"
+      ),
+    ]
+    const result = validateImport({ headers: HEADERS, rows }, FULL_MAPPING, {})
+    const bad = result.issues.filter((i) => i.code === "unresolvedGender")
+    expect(bad.map((i) => i.row)).toContain(0)
+  })
+
+  it("no blankGender code exists anymore", () => {
+    const rows: string[][] = [
+      "2023-01-01;Test;User;Nej;;Sverige;2024;1990-01-01;Analyst;1234;55000;0;0;SEK;118;100".split(
+        ";"
+      ),
+    ]
+    const result = validateImport({ headers: HEADERS, rows }, FULL_MAPPING, {})
+    // blankGender must not appear; unresolvedGender is the renamed code.
+    const codes = result.issues.map((i) => i.code as string)
+    expect(codes).not.toContain("blankGender")
   })
 })
 
