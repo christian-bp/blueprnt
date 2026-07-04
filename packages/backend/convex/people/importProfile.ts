@@ -1,5 +1,6 @@
 import { v } from "convex/values"
-import { AUDIT_EVENTS } from "../lib/audit"
+import { AUDIT_EVENTS, logAudit } from "../lib/audit"
+import { internalMutation } from "../_generated/server"
 import { orgMutation, orgQuery } from "../lib/functions"
 
 // Validator for parseRules (mirrors the schema field exactly).
@@ -85,6 +86,87 @@ export const saveImportMappingProfile = orgMutation({
       type: AUDIT_EVENTS.mappingProfileSaved,
       payload: {
         orgId: ctx.orgId,
+        changes: {
+          profileId: { from: existing._id, to: existing._id },
+        },
+      },
+    })
+
+    return null
+  },
+})
+
+// Internal variant of saveImportMappingProfile for the payroll-import action.
+// Actions cannot use orgMutation (no ctx.auth), so the import action calls this
+// with the already-resolved orgId + actorId instead. Uses the free logAudit
+// (internal mutations have no ctx.audit).
+export const internalSaveImportMappingProfile = internalMutation({
+  args: {
+    orgId: v.string(),
+    actorId: v.string(),
+    columnMap: v.record(v.string(), v.string()),
+    parseRules: v.optional(parseRulesValidator),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("importMappingProfiles")
+      .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
+      .first()
+
+    if (existing === null) {
+      const profileId = await ctx.db.insert("importMappingProfiles", {
+        orgId: args.orgId,
+        columnMap: args.columnMap,
+        ...(args.parseRules !== undefined
+          ? { parseRules: args.parseRules }
+          : {}),
+        updatedAt: Date.now(),
+      })
+
+      await logAudit(ctx, {
+        orgId: args.orgId,
+        type: AUDIT_EVENTS.mappingProfileSaved,
+        actorId: args.actorId,
+        payload: {
+          orgId: args.orgId,
+          changes: {
+            profileId: { from: null, to: profileId },
+          },
+        },
+      })
+
+      return null
+    }
+
+    // Update path: detect changes so a no-op save writes nothing.
+    const columnMapChanged =
+      JSON.stringify(args.columnMap) !== JSON.stringify(existing.columnMap)
+    const parseRulesChanged =
+      JSON.stringify(args.parseRules ?? null) !==
+      JSON.stringify(existing.parseRules ?? null)
+
+    if (!columnMapChanged && !parseRulesChanged) return null
+
+    const updatedAt = Date.now()
+    const patch: Record<string, unknown> = { updatedAt }
+    if (columnMapChanged) patch.columnMap = args.columnMap
+    if (parseRulesChanged) {
+      if (args.parseRules !== undefined) {
+        patch.parseRules = args.parseRules
+      } else {
+        patch.parseRules = undefined
+      }
+    }
+
+    await ctx.db.patch(existing._id, patch)
+
+    await logAudit(ctx, {
+      orgId: args.orgId,
+      type: AUDIT_EVENTS.mappingProfileSaved,
+      actorId: args.actorId,
+      payload: {
+        orgId: args.orgId,
         changes: {
           profileId: { from: existing._id, to: existing._id },
         },
