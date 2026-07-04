@@ -519,6 +519,63 @@ describe("importPayroll (row-skip triage)", () => {
 })
 
 // ---------------------------------------------------------------------------
+// Fraction FTE scaling: fractional column (0,8 / 1,0) -> stored as 80 / 100
+// ---------------------------------------------------------------------------
+
+describe("importPayroll (fraction FTE)", () => {
+  it("scales a fractional ftePercent column x100 (0,8 -> 80, 1,0 -> 100)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: PERSONEC_FRACTION_CSV,
+      columnMap: PERSONEC_COLUMN_MAP,
+      payYear: 2026,
+    })
+
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      const ola = people.find((p) => p.externalRef === "N1")
+      const kari = people.find((p) => p.externalRef === "N2")
+      expect(ola?.ftePercent).toBe(80) // "0,8" scaled x100
+      expect(kari?.ftePercent).toBe(100) // "1,0" scaled x100
+    })
+  })
+
+  it("does NOT scale a normal-percent ftePercent column (80 stays 80, 100 stays 100)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    // The happy-path fixture has Sysselssättningsgrad mapped to ftePercent.
+    // All values are whole percents (e.g. 100), so fteIsFraction is false.
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: FIXTURE_CSV,
+      columnMap: FULL_COLUMN_MAP,
+      payYear: 2026,
+    })
+
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      // Every ftePercent that was stored must be in [0, 100] — not 80x100=8000.
+      for (const p of people) {
+        if (p.ftePercent !== undefined) {
+          expect(p.ftePercent).toBeGreaterThanOrEqual(0)
+          expect(p.ftePercent).toBeLessThanOrEqual(100)
+        }
+      }
+    })
+  })
+})
+
+// ---------------------------------------------------------------------------
 // Date form expansion: compact YYYYMMDD, Excel serial, short personnummer, ISO
 // ---------------------------------------------------------------------------
 

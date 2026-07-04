@@ -3,6 +3,7 @@
 import { v } from "convex/values"
 import {
   CANONICAL_FIELDS,
+  classifyColumn,
   type DetectedMapping,
   parseBool,
   parseCurrency,
@@ -186,6 +187,13 @@ export const importPayroll = action({
     // for short-personnummer century expansion (explicit payYear arg > now).
     const referenceYear = args.payYear ?? new Date().getFullYear()
 
+    // Fraction is a column-level decision (every non-blank cell <= 1.0). Classify
+    // the mapped ftePercent column once, mirroring validateImport, so per-cell
+    // parsePercent can scale a fractional column x100 (0.8 -> 80).
+    const fteIsFraction =
+      ftePercentCol !== undefined &&
+      classifyColumn(rows.map((r) => r[ftePercentCol] ?? "")).fraction === true
+
     let peopleImported = 0
     let salariesImported = 0
 
@@ -230,7 +238,8 @@ export const importPayroll = action({
         : undefined
       const ftePercentRaw = cell(ftePercentCol)
       const ftePercent = ftePercentRaw
-        ? (parsePercent(ftePercentRaw) ?? undefined)
+        ? (parsePercent(ftePercentRaw, { fraction: fteIsFraction }) ??
+          undefined)
         : undefined
       const country = cell(countryCol) || undefined
       const isManagerRaw = cell(isManagerCol)
