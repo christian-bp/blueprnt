@@ -238,6 +238,7 @@ export const importPayroll = action({
     const isManagerCol = colOf("isManager")
     const statisticalCodeCol = colOf("statisticalCode")
     const departmentCol = colOf("department")
+    const titleCol = colOf("title")
     const basicMonthlyCol = colOf("basicMonthly")
     const currencyCol = colOf("currency")
     const variableCol = colOf("variable")
@@ -332,6 +333,7 @@ export const importPayroll = action({
         : undefined
       const statisticalCode = cell(statisticalCodeCol) || undefined
       const department = cell(departmentCol) || undefined
+      const title = cell(titleCol) || undefined
 
       // Upsert the person.
       const personId = await ctx.runMutation(
@@ -349,6 +351,7 @@ export const importPayroll = action({
           ...(isManager !== undefined ? { isManager } : {}),
           ...(statisticalCode !== undefined ? { statisticalCode } : {}),
           ...(department !== undefined ? { department } : {}),
+          ...(title !== undefined ? { title } : {}),
         }
       )
       peopleImported += 1

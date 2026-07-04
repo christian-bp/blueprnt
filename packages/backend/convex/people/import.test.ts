@@ -620,6 +620,39 @@ describe("importPayroll (date forms)", () => {
 })
 
 // ---------------------------------------------------------------------------
+// Title field: Befattning column is persisted on the person
+// ---------------------------------------------------------------------------
+
+describe("importPayroll (title field)", () => {
+  it("persists the mapped Befattning column as the person title", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: DATE_FORMS_CSV,
+      columnMap: DATE_FORMS_MAP,
+    })
+    expect(result.ok).toBe(true)
+    expect(result.peopleImported).toBeGreaterThan(0)
+
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      // Every imported row in the DATE_FORMS fixture has a non-empty Befattning,
+      // so every upserted person must carry a title string.
+      expect(people.length).toBeGreaterThan(0)
+      for (const person of people) {
+        expect(typeof person.title).toBe("string")
+        expect((person.title ?? "").length).toBeGreaterThan(0)
+      }
+    })
+  })
+})
+
+// ---------------------------------------------------------------------------
 // Binary / file-level guard: binary input returns ok:false, does not throw
 // ---------------------------------------------------------------------------
 
