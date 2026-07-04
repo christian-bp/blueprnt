@@ -1,5 +1,5 @@
 /**
- * ImportWizard — header-change mapping-reset tests.
+ * ImportWizard: header-change mapping-reset tests.
  *
  * FIX 1 regression: when the user re-uploads a CSV with DIFFERENT headers,
  * the wizard must reset `mapping` to null so MapStep re-seeds it for the
@@ -147,7 +147,7 @@ function clickNext() {
 // Tests
 // ---------------------------------------------------------------------------
 
-describe("ImportWizard — mapping reset on header change", () => {
+describe("ImportWizard: mapping reset on header change", () => {
   afterEach(() => {
     cleanup()
     vi.clearAllMocks()
@@ -197,18 +197,19 @@ describe("ImportWizard — mapping reset on header change", () => {
     ).toBeDefined()
 
     // File B has completely different column headers. The column-first table
-    // shows one row per CSV column, so "EmployeeID" (File A's header) must
-    // not appear anywhere in the map step — File B's column "StaffNumber"
-    // should be shown instead.
-    expect(screen.queryByTestId("map-col-EmployeeID")).toBeNull()
-    expect(screen.getByTestId("map-col-StaffNumber")).toBeDefined()
+    // shows one row per CSV column. Column 0 in File A was "EmployeeID";
+    // in File B it is "StaffNumber". Verify the header text changed.
+    // Row map-column-0 should now contain "StaffNumber", not "EmployeeID".
+    const col0Row = screen.getByTestId("map-column-0")
+    expect(col0Row.textContent).toContain("StaffNumber")
+    expect(col0Row.textContent).not.toContain("EmployeeID")
   })
 
   it("preserves the mapping when a re-upload has the SAME headers", async () => {
     renderWizard()
     await dropCsv(CSV_A, "fileA.csv")
 
-    // Advance to map step — MapStep seeds the mapping.
+    // Advance to map step: MapStep seeds the mapping.
     clickNext()
 
     // Confirm we are on the map step and a known header appears.
@@ -231,7 +232,8 @@ describe("ImportWizard — mapping reset on header change", () => {
 
     // The map step should still show "EmployeeID" as a column row (mapping
     // was preserved because headers matched). In the column-first layout,
-    // the row is keyed on the column header, not the field name.
-    expect(screen.getByTestId("map-col-EmployeeID")).toBeDefined()
+    // column 0 is still "EmployeeID".
+    const col0Row = screen.getByTestId("map-column-0")
+    expect(col0Row.textContent).toContain("EmployeeID")
   })
 })

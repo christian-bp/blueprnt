@@ -196,8 +196,7 @@
           "unmappedRequired": "{count, plural, one {# required field is not mapped} other {# required fields are not mapped}}",
           "column": "CSV column",
           "mappedTo": "Mapped to",
-          "ignore": "Ignore",
-          "detected": "Detected"
+          "ignore": "Ignore"
         },
         "tier": {
           "required": "Required",

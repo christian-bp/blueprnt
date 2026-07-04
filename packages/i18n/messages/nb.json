@@ -196,8 +196,7 @@
           "unmappedRequired": "{count, plural, one {# obligatorisk felt er ikke tilordnet} other {# obligatoriske felt er ikke tilordnet}}",
           "column": "CSV-kolonne",
           "mappedTo": "Tilordnet til",
-          "ignore": "Ignorer",
-          "detected": "Oppdaget"
+          "ignore": "Ignorer"
         },
         "check": {
           "title": "Kontroller beredskap",

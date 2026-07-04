@@ -74,9 +74,9 @@ describe("buildInitialMapping", () => {
 })
 
 // ---------------------------------------------------------------------------
-// MapStep — auto-detection seeding
+// MapStep: auto-detection seeding
 // ---------------------------------------------------------------------------
-describe("MapStep — auto-detection", () => {
+describe("MapStep: auto-detection", () => {
   afterEach(() => {
     cleanup()
   })
@@ -108,20 +108,20 @@ describe("MapStep — auto-detection", () => {
 })
 
 // ---------------------------------------------------------------------------
-// MapStep — column-first rendering
+// MapStep: column-first rendering
 // ---------------------------------------------------------------------------
-describe("MapStep — column-first rendering", () => {
+describe("MapStep: column-first rendering", () => {
   afterEach(() => {
     cleanup()
   })
 
-  it("renders a row for each CSV column header", () => {
+  it("renders one row per CSV column, identified by column index", () => {
     renderMapStep({
       mapping: { externalRef: 0, title: 1, gender: 2, basicMonthly: 3 },
     })
-    // Each CSV column header should appear as a row header in the table.
-    for (const header of TEST_HEADERS) {
-      expect(screen.getByTestId(`map-col-${header}`)).toBeDefined()
+    // TEST_HEADERS has 5 entries: indices 0-4.
+    for (let i = 0; i < TEST_HEADERS.length; i++) {
+      expect(screen.getByTestId(`map-column-${i}`)).toBeDefined()
     }
   })
 
@@ -129,23 +129,43 @@ describe("MapStep — column-first rendering", () => {
     renderMapStep({
       mapping: { externalRef: 0, title: 1, gender: 2, basicMonthly: 3 },
     })
-    // Sample values are joined across multiple rows per column.
-    // EmployeeID column shows both row samples.
-    const externalRefRow = screen.getByTestId("map-col-EmployeeID")
+    // EmployeeID is column 0; Gender is column 2; MonthlySalary is column 3.
+    const externalRefRow = screen.getByTestId("map-column-0")
     expect(externalRefRow.textContent).toContain("E001")
-    const genderRow = screen.getByTestId("map-col-Gender")
+    const genderRow = screen.getByTestId("map-column-2")
     expect(genderRow.textContent).toContain("Kvinna")
-    const salaryRow = screen.getByTestId("map-col-MonthlySalary")
+    const salaryRow = screen.getByTestId("map-column-3")
     expect(salaryRow.textContent).toContain("55000")
+  })
+
+  it("shows the CSV header text in the corresponding column row", () => {
+    renderMapStep({
+      mapping: { externalRef: 0, title: 1, gender: 2, basicMonthly: 3 },
+    })
+    // Column 0 is "EmployeeID"; column 4 is "Department".
+    const col0Row = screen.getByTestId("map-column-0")
+    expect(col0Row.textContent).toContain("EmployeeID")
+    const col4Row = screen.getByTestId("map-column-4")
+    expect(col4Row.textContent).toContain("Department")
   })
 
   it("shows the detected canonical field label for auto-mapped columns", () => {
     renderMapStep({
       mapping: { externalRef: 0, title: 1, gender: 2, basicMonthly: 3 },
     })
-    // The row for EmployeeID (col 0) should reference the externalRef field label.
-    const row = screen.getByTestId("map-col-EmployeeID")
+    // Column 0 (EmployeeID) is mapped to externalRef; its label appears in the row.
+    const row = screen.getByTestId("map-column-0")
     expect(row.textContent).toContain(m.fields.externalRef)
+  })
+
+  it("shows the Select trigger for each column", () => {
+    renderMapStep({
+      mapping: { externalRef: 0, title: 1, gender: 2, basicMonthly: 3 },
+    })
+    // Each column row exposes a trigger with the index-based testid.
+    for (let i = 0; i < TEST_HEADERS.length; i++) {
+      expect(screen.getByTestId(`map-column-${i}-trigger`)).toBeDefined()
+    }
   })
 
   it("shows Ignore option label in each select", () => {
@@ -156,12 +176,19 @@ describe("MapStep — column-first rendering", () => {
     // (Rendered inside each Select's content but visible in DOM via jsdom)
     expect(screen.getAllByText(m.map.ignore).length).toBeGreaterThan(0)
   })
+
+  it("assignColumnToField correctly re-assigns column 4 to department (pure helper)", () => {
+    // Verify the pure mapping helper used by handleColumnFieldChange.
+    const prev = { externalRef: 0, title: 1, gender: 2, basicMonthly: 3 }
+    const next = assignColumnToField(prev, 4, "department")
+    expect(next.department).toBe(4)
+  })
 })
 
 // ---------------------------------------------------------------------------
-// MapStep — unmapped required count
+// MapStep: unmapped required count
 // ---------------------------------------------------------------------------
-describe("MapStep — unmapped required count", () => {
+describe("MapStep: unmapped required count", () => {
   afterEach(() => {
     cleanup()
   })
@@ -194,9 +221,8 @@ describe("MapStep — unmapped required count", () => {
 })
 
 // ---------------------------------------------------------------------------
-// MapStep — Select interaction (controlled state)
-// MapStep exposes onColumnChange on each row's data-testid for testability.
-// We use the exported updateMapping helper to verify pure mapping logic.
+// MapStep: Select interaction (controlled state, pure helpers)
+// We use the exported helpers to verify mapping logic without jsdom pointer events.
 // ---------------------------------------------------------------------------
 import { assignColumnToField, columnToField, updateMapping } from "./map-step"
 

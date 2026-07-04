@@ -196,8 +196,7 @@
           "unmappedRequired": "{count, plural, one {# pakollinen kentta ei ole yhdistetty} other {# pakollista kenttaa ei ole yhdistetty}}",
           "column": "CSV-sarake",
           "mappedTo": "Yhdistetty kenttaan",
-          "ignore": "Ohita",
-          "detected": "Havaittu"
+          "ignore": "Ohita"
         },
         "check": {
           "title": "Tarkista valmius",

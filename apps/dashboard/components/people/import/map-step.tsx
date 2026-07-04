@@ -24,10 +24,6 @@ import { useTranslations } from "next-intl"
 import { useEffect } from "react"
 import type { ParsedCsv } from "./import-wizard"
 
-// Sentinel value used in the Select to represent "not mapped".
-// A string is required by Radix Select; we convert to/from the number -1.
-const NOT_MAPPED_VALUE = "__not_mapped__"
-
 // Sentinel value used in the Select to represent "ignore this column".
 const IGNORE_VALUE = "__ignore__"
 
@@ -105,7 +101,7 @@ export function assignColumnToField(
   }
 
   if (fieldKey === null) {
-    // Ignore this column — we already freed it above.
+    // Ignore this column: we already freed it above.
     return next
   }
 
@@ -152,8 +148,11 @@ export function MapStep({ parsed, mapping, onMappingChange }: MapStepProps) {
   ).length
 
   // Handle a column's field assignment changing via the Select.
+  // columnSelectValue returns either a CanonicalFieldKey or IGNORE_VALUE.
+  // updateMapping uses -1 as its "unmap" sentinel internally; that is a
+  // number contract separate from the Select's string values.
   function handleColumnFieldChange(columnIndex: number, value: string) {
-    if (value === IGNORE_VALUE || value === NOT_MAPPED_VALUE) {
+    if (value === IGNORE_VALUE) {
       onMappingChange(assignColumnToField(activeMapping, columnIndex, null))
     } else {
       onMappingChange(
@@ -196,7 +195,7 @@ export function MapStep({ parsed, mapping, onMappingChange }: MapStepProps) {
         </p>
       )}
 
-      {/* Mapping table — one row per CSV column */}
+      {/* Mapping table: one row per CSV column */}
       <div className="overflow-x-auto rounded-md border">
         <Table>
           <TableHeader>
@@ -216,7 +215,11 @@ export function MapStep({ parsed, mapping, onMappingChange }: MapStepProps) {
                 : null
 
               return (
-                <TableRow key={header} data-testid={`map-col-${header}`}>
+                <TableRow
+                  // biome-ignore lint/suspicious/noArrayIndexKey: column index IS the stable identity for CSV columns
+                  key={columnIndex}
+                  data-testid={`map-column-${columnIndex}`}
+                >
                   {/* CSV column header name */}
                   <TableCell>
                     <span className="font-medium text-sm">{header}</span>
@@ -246,15 +249,23 @@ export function MapStep({ parsed, mapping, onMappingChange }: MapStepProps) {
                         size="sm"
                         className="min-w-[160px]"
                         aria-label={header}
+                        data-testid={`map-column-${columnIndex}-trigger`}
                       >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value={IGNORE_VALUE}>
+                        <SelectItem
+                          value={IGNORE_VALUE}
+                          data-testid={`map-column-${columnIndex}-option-ignore`}
+                        >
                           {tMap("ignore")}
                         </SelectItem>
                         {CANONICAL_FIELDS.map((field) => (
-                          <SelectItem key={field.key} value={field.key}>
+                          <SelectItem
+                            key={field.key}
+                            value={field.key}
+                            data-testid={`map-column-${columnIndex}-option-${field.key}`}
+                          >
                             {tFields(
                               field.key as Parameters<typeof tFields>[0]
                             )}

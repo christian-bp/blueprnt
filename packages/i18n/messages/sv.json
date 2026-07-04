@@ -196,8 +196,7 @@
           "unmappedRequired": "{count, plural, one {# obligatoriskt fält är inte mappat} other {# obligatoriska fält är inte mappade}}",
           "column": "CSV-kolumn",
           "mappedTo": "Mappas till",
-          "ignore": "Ignorera",
-          "detected": "Detekterat"
+          "ignore": "Ignorera"
         },
         "check": {
           "title": "Kontrollera beredskap",
