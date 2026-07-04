@@ -1,0 +1,24 @@
+packages/import/src/index.ts
+  s_6bff98b662648b::t_e203618dcd0a3d 1-6
+packages/import/src/fields.test.ts
+  s_6bff98b662648b::t_26a298fe6eb437 2-7
+  s_6bff98b662648b::t_4464a3bb8b7a34 179-207
+packages/import/src/fields.ts
+  s_6bff98b662648b::t_356fe35dc2fd45 47-75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "ba6155af2cdc15a8a0e0cdfd986b8fcc76c67573",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
