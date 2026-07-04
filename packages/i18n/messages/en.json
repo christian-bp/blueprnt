@@ -135,8 +135,7 @@
       "membershipUpdated": "Membership updated",
       "membershipRemoved": "Removed from organization",
       "peopleImported": "People imported",
-      "classificationConfirmed": "Classification confirmed",
-      "settingsSaved": "Settings saved"
+      "classificationConfirmed": "Classification confirmed"
     },
     "accountMenu": "Account menu",
     "nav": {
@@ -300,16 +299,11 @@
       "expandLabel": "Expand group",
       "collapseLabel": "Collapse group",
       "levelLabel": "Level",
-      "tenureLabel": "Tenure",
       "tenureYears": "{years, plural, one {# year} other {# years}}",
-      "unmatchedHint": "No role matched. Assign one manually.",
       "createRoleCta": "Create new role",
       "mapExistingCta": "Map to existing role",
       "empty": "No employees imported yet. Import your payroll data to start classifying.",
       "summary": "{classified} of {total} classified",
-      "runningSuggestions": "Computing suggestions",
-      "entryCta": "Classify employees",
-      "entryHint": "{count, plural, one {# employee needs classification} other {# employees need classification}}",
       "createRole": {
         "title": "Create role",
         "description": "Create a new role and assign it to these employees.",
