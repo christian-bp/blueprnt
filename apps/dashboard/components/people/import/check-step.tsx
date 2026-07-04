@@ -3,8 +3,10 @@
 import {
   CANONICAL_FIELDS,
   type CanonicalFieldKey,
+  type FileWarningCode,
   type ImportValidation,
   type RowIssueCode,
+  tokenizeCsv,
   validateImport,
 } from "@workspace/import"
 import {
@@ -44,6 +46,8 @@ export interface CheckStepProps {
   parsed: ParsedCsv
   /** Current wizard mapping (canonical field key -> source column index). */
   mapping: Record<string, number>
+  /** Raw CSV text, re-tokenized here to recover structural signals. */
+  csvText: string
   /**
    * Called after validation runs.
    * @param isBlocking - true when required fields are missing (Next must be disabled).
@@ -52,19 +56,29 @@ export interface CheckStepProps {
   onValidated: (isBlocking: boolean, issueCount: number) => void
 }
 
-export function CheckStep({ parsed, mapping, onValidated }: CheckStepProps) {
+export function CheckStep({
+  parsed,
+  mapping,
+  csvText,
+  onValidated,
+}: CheckStepProps) {
   const tCheck = useTranslations("dashboard.people.import.check")
   const tFields = useTranslations("dashboard.people.import.fields")
   const tTier = useTranslations("dashboard.people.import.tier")
 
   const validation: ImportValidation = useMemo(() => {
     const detectedMapping = buildDetectedMapping(mapping)
+    // Re-tokenize to recover structural signals (noDelimiter, raggedRows) that
+    // the parsed headers/rows alone do not carry. tokenizeCsv never throws for
+    // well-formed CSV; a binary file would already have been rejected on upload.
+    const { signals } = tokenizeCsv(csvText)
     return validateImport(
       { headers: parsed.headers, rows: parsed.rows },
       detectedMapping,
-      {}
+      {},
+      signals
     )
-  }, [parsed, mapping])
+  }, [parsed, mapping, csvText])
 
   const isBlocking = validation.blocking.length > 0
   const issueCount = validation.issues.length
@@ -195,6 +209,24 @@ export function CheckStep({ parsed, mapping, onValidated }: CheckStepProps) {
               {validation.warnings.map((key) => (
                 <li key={key}>
                   {tFields(key as Parameters<typeof tFields>[0])}
+                </li>
+              ))}
+            </ul>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* File-scoped warnings (shown once, not per row) */}
+      {validation.fileWarnings && validation.fileWarnings.length > 0 && (
+        <Alert data-testid="file-warnings-section">
+          <AlertTitle>{tCheck("fileWarnings")}</AlertTitle>
+          <AlertDescription>
+            <ul className="mt-2 list-disc pl-4">
+              {validation.fileWarnings.map((code: FileWarningCode) => (
+                <li key={code}>
+                  {tCheck(
+                    `fileWarning.${code}` as Parameters<typeof tCheck>[0]
+                  )}
                 </li>
               ))}
             </ul>

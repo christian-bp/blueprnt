@@ -214,6 +214,7 @@
           },
           "rowsAffected": "{count, plural, one {# rivi} other {# rivia}} vaikutettu",
           "cannotProceed": "Korjaa yllaolevat pakolliset kentat jatkaaksesi.",
+          "fileWarnings": "Tiedostovaroitukset",
           "fileWarning": {
             "noDelimiter": "Sarake-erotinta ei löytynyt",
             "mojibake": "Otsikkoteksti näyttää vioittuneelta (väärä tiedostokoodaus)"

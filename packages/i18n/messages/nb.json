@@ -214,6 +214,7 @@
           },
           "rowsAffected": "{count, plural, one {# rad} other {# rader}} pavirket",
           "cannotProceed": "Fiks de obligatoriske feltene ovenfor for a fortsette.",
+          "fileWarnings": "Filadvarsler",
           "fileWarning": {
             "noDelimiter": "Ingen kolonneskiller funnet",
             "mojibake": "Overskriftsteksten ser ødelagt ut (feil filkoding)"

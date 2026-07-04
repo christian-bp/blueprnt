@@ -214,6 +214,7 @@
           },
           "rowsAffected": "{count, plural, one {# rad} other {# rader}} berörda",
           "cannotProceed": "Åtgärda de obligatoriska fälten ovan för att fortsätta.",
+          "fileWarnings": "Filvarningar",
           "fileWarning": {
             "noDelimiter": "Ingen kolumnavgränsare hittades",
             "mojibake": "Rubriktexten ser skadad ut (fel filkodning)"

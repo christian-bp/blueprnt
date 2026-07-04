@@ -175,19 +175,22 @@ export function ImportWizard() {
             heading={t("check.title")}
             description={t("check.description")}
           >
-            {state.parsed !== null && state.mapping !== null && (
-              <CheckStep
-                parsed={state.parsed}
-                mapping={state.mapping}
-                onValidated={(isBlocking, issueCount) =>
-                  setState((prev) => ({
-                    ...prev,
-                    checkBlocking: isBlocking,
-                    checkIssueCount: issueCount,
-                  }))
-                }
-              />
-            )}
+            {state.parsed !== null &&
+              state.mapping !== null &&
+              state.csvText !== null && (
+                <CheckStep
+                  parsed={state.parsed}
+                  mapping={state.mapping}
+                  csvText={state.csvText}
+                  onValidated={(isBlocking, issueCount) =>
+                    setState((prev) => ({
+                      ...prev,
+                      checkBlocking: isBlocking,
+                      checkIssueCount: issueCount,
+                    }))
+                  }
+                />
+              )}
             <WizardFooter>
               <Button variant="outline" onClick={goBack}>
                 {t("back")}

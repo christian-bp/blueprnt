@@ -214,6 +214,7 @@
           },
           "rowsAffected": "{count, plural, one {# raekke} other {# raekker}} berort",
           "cannotProceed": "Ret de obligatoriske felter ovenfor for at fortsaette.",
+          "fileWarnings": "Filadvarsler",
           "fileWarning": {
             "noDelimiter": "Ingen kolonneadskiller fundet",
             "mojibake": "Overskriftsteksten ser ødelagt ud (forkert filkodning)"

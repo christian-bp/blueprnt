@@ -219,6 +219,7 @@
           },
           "rowsAffected": "{count, plural, one {# row} other {# rows}} affected",
           "cannotProceed": "Fix the required fields above to continue.",
+          "fileWarnings": "File warnings",
           "fileWarning": {
             "noDelimiter": "No column separator detected",
             "mojibake": "Header text looks garbled (wrong file encoding)"

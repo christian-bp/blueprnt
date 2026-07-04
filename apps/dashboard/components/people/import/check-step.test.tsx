@@ -98,15 +98,25 @@ const m = messages.dashboard.people.import
 function renderCheckStep({
   parsed = FULL_PARSED,
   mapping = FULL_MAPPING,
+  csvText,
   onValidated = vi.fn(),
 }: {
   parsed?: ParsedCsv
   mapping?: Record<string, number>
-  onValidated?: (isBlocking: boolean) => void
+  csvText?: string
+  onValidated?: (isBlocking: boolean, issueCount: number) => void
 } = {}) {
+  const text =
+    csvText ??
+    `${parsed.headers.join(",")}\n${parsed.rows.map((r) => r.join(",")).join("\n")}`
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <CheckStep parsed={parsed} mapping={mapping} onValidated={onValidated} />
+      <CheckStep
+        parsed={parsed}
+        mapping={mapping}
+        csvText={text}
+        onValidated={onValidated}
+      />
     </NextIntlClientProvider>
   )
 }
@@ -229,5 +239,55 @@ describe("CheckStep — fully ready", () => {
   it("does not show a blocking alert when all required fields are mapped", () => {
     renderCheckStep({ mapping: FULL_MAPPING })
     expect(screen.queryByTestId("blocking-alert")).toBeNull()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Tests: file warnings (noDelimiter, mojibake)
+// ---------------------------------------------------------------------------
+
+describe("CheckStep — file warnings", () => {
+  afterEach(() => {
+    cleanup()
+  })
+
+  it("surfaces the no-delimiter file warning for single-column input", () => {
+    // A file where columns are separated by colons (not a papaparse-recognized
+    // delimiter) tokenizes as a single column: signals.noDelimiter === true.
+    // This mirrors a real export where the delimiter is unrecognized (e.g., the
+    // file uses a colon or space as a separator instead of comma, tab, pipe, or
+    // semicolon).
+    const singleCol: ParsedCsv = {
+      headers: ["EmployeeID:JobTitle:Gender:MonthlySalary"],
+      rows: [["E001:Engineer:Kvinna:55000"]],
+    }
+    renderCheckStep({
+      parsed: singleCol,
+      mapping: { externalRef: 0 },
+      csvText:
+        "EmployeeID:JobTitle:Gender:MonthlySalary\nE001:Engineer:Kvinna:55000",
+    })
+    const section = screen.getByTestId("file-warnings-section")
+    expect(section.textContent).toContain(m.check.fileWarning.noDelimiter)
+  })
+
+  it("surfaces the mojibake file warning when 2+ headers are double-encoded", () => {
+    // Two headers carry double-encoded UTF-8 sequences (Ã¥, Ã¶).
+    const garbled: ParsedCsv = {
+      headers: ["Anstnr", "MÃ¥nadslÃ¶n", "KÃ¶n", "Titel"],
+      rows: [["E001", "55000", "Kvinna", "Engineer"]],
+    }
+    renderCheckStep({
+      parsed: garbled,
+      mapping: { externalRef: 0, basicMonthly: 1, gender: 2, title: 3 },
+      csvText: "Anstnr,MÃ¥nadslÃ¶n,KÃ¶n,Titel\nE001,55000,Kvinna,Engineer",
+    })
+    const section = screen.getByTestId("file-warnings-section")
+    expect(section.textContent).toContain(m.check.fileWarning.mojibake)
+  })
+
+  it("shows no file-warnings section for a clean CSV", () => {
+    renderCheckStep({ mapping: FULL_MAPPING })
+    expect(screen.queryByTestId("file-warnings-section")).toBeNull()
   })
 })
