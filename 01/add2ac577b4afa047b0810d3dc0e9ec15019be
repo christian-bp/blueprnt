@@ -1,0 +1,26 @@
+apps/dashboard/components/people/people-section.test.tsx
+  s_6bff98b662648b::t_3e2c7afa4e822a 18,33-148,162,168,174-175,186-187,196-222,226-253
+  s_6bff98b662648b::t_4022d02bf64de4 223-225
+apps/dashboard/components/people/people-section.tsx
+  s_6bff98b662648b::t_13badd46dd2c9c 139
+  s_6bff98b662648b::t_0d6f4f188b4275 72
+  s_6bff98b662648b::t_23c8ee1bceb284 6,25,29-30,33-35,39-40,50-71,81,100-105,111-116,119-122,125,138,140-176,180-195
+  s_6bff98b662648b::t_e3b222835809e0 44-49
+  s_6bff98b662648b::t_ca03457dd08d55 177-179
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "01add2ac577b4afa047b0810d3dc0e9ec15019be",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
