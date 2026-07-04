@@ -1,0 +1,23 @@
+packages/backend/convex/people/erase.ts
+  s_6bff98b662648b::t_d5b0d381bb10e7 2-3,12-71,78-80,84
+packages/backend/convex/people/erase.test.ts
+  s_6bff98b662648b::t_40e38378c8e796 410
+  s_6bff98b662648b::t_c72d304d890213 397
+  s_6bff98b662648b::t_4970c6e6a6ed3c 36,80,126-129,158-161,211,231,273-276,299-396,398-409
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "4491dc6c5d2bf882de29d87e35befeb943ce3005",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
