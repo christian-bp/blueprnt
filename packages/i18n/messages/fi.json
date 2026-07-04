@@ -182,7 +182,8 @@
           "dropHint": "tai vedä ja pudota tähän",
           "detected": "{rows, plural, one {# rivi} other {# rivia}}, {columns} saraketta tunnistettu.",
           "errorNotCsv": "Vain CSV-tiedostot ovat tuettuja. Valitse .csv-tiedosto.",
-          "errorEmpty": "Tiedosto on tyhja. Valitse CSV-tiedosto, jossa on vahintaan yksi datarivi."
+          "errorEmpty": "Tiedosto on tyhja. Valitse CSV-tiedosto, jossa on vahintaan yksi datarivi.",
+          "errorInvalidFormat": "Tämä näyttää laskentataulukkotiedostolta, ei CSV-tiedostolta. Avaa se Excelissä tai palkkajärjestelmässäsi ja vie CSV-muodossa, lataa sitten CSV-tiedosto."
         },
         "map": {
           "title": "Yhdista sarakkeet",
@@ -205,8 +206,14 @@
             "duplicateId": "Tyontekija-ID on kahdennettu",
             "unparsableMoney": "Palkkaarvoa ei voi lukea",
             "nonNumericCode": "Ei-numeerinen tilastokoodi",
-            "blankGender": "Tyhja tai tunnistamaton sukupuoli",
-            "genderNameMismatch": "Sukupuoli ja nimi eivat taysmaa"
+            "unresolvedGender": "Sukupuoli on määritettävä",
+            "genderNameMismatch": "Sukupuoli ja nimi eivät täsmää",
+            "fractionScaled": "Työaika tulkittiin osuutena ja skaalattiin prosenteiksi",
+            "ambiguousDate": "Monitulkintainen päivämäärä (tulkittu muodossa päivä/kuukausi)",
+            "negativeValue": "Negatiivinen palkka-arvo",
+            "raggedRow": "Rivillä on väärä määrä sarakkeita",
+            "noDelimiter": "Sarake-erotinta ei löytynyt",
+            "mojibake": "Otsikkoteksti näyttää vioittuneelta (väärä tiedostokoodaus)"
           },
           "rowsAffected": "{count, plural, one {# rivi} other {# rivia}} vaikutettu",
           "cannotProceed": "Korjaa yllaolevat pakolliset kentat jatkaaksesi."

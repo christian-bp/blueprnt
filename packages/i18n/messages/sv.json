@@ -182,7 +182,8 @@
           "dropHint": "eller dra och släpp här",
           "detected": "{rows, plural, one {# rad} other {# rader}}, {columns} kolumner identifierade.",
           "errorNotCsv": "Endast CSV-filer stöds. Välj en .csv-fil.",
-          "errorEmpty": "Filen är tom. Välj en CSV-fil med minst en rad med data."
+          "errorEmpty": "Filen är tom. Välj en CSV-fil med minst en rad med data.",
+          "errorInvalidFormat": "Det här ser ut som en kalkylbladsfil, inte en CSV. Öppna den i Excel eller ditt lönesystem och exportera som CSV, ladda sedan upp CSV-filen."
         },
         "map": {
           "title": "Mappa kolumner",
@@ -205,8 +206,14 @@
             "duplicateId": "Dubblett av anställnings-ID",
             "unparsableMoney": "Ej läsbart lönvärde",
             "nonNumericCode": "Icke-numerisk statistikkod",
-            "blankGender": "Tomt eller okänt kön",
-            "genderNameMismatch": "Kön och namn stämmer inte"
+            "unresolvedGender": "Kön behöver anges",
+            "genderNameMismatch": "Kön och namn stämmer inte",
+            "fractionScaled": "Sysselsättningsgrad tolkad som andel och skalad till procent",
+            "ambiguousDate": "Tvetydigt datum (tolkat som dag/månad)",
+            "negativeValue": "Negativt lönevärde",
+            "raggedRow": "Raden har fel antal kolumner",
+            "noDelimiter": "Ingen kolumnavgränsare hittades",
+            "mojibake": "Rubriktexten ser skadad ut (fel filkodning)"
           },
           "rowsAffected": "{count, plural, one {# rad} other {# rader}} berörda",
           "cannotProceed": "Åtgärda de obligatoriska fälten ovan för att fortsätta."

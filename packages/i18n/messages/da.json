@@ -182,7 +182,8 @@
           "dropHint": "eller træk og slip her",
           "detected": "{rows, plural, one {# række} other {# rækker}}, {columns} kolonner fundet.",
           "errorNotCsv": "Kun CSV-filer understøttes. Vælg en .csv-fil.",
-          "errorEmpty": "Filen er tom. Vælg en CSV-fil med mindst én datalinje."
+          "errorEmpty": "Filen er tom. Vælg en CSV-fil med mindst én datalinje.",
+          "errorInvalidFormat": "Dette ligner en regnearksfil, ikke en CSV. Åbn den i Excel eller dit lønsystem og eksporter som CSV, upload derefter CSV-filen."
         },
         "map": {
           "title": "Tilknyt kolonner",
@@ -205,8 +206,14 @@
             "duplicateId": "Duplikeret medarbejder-ID",
             "unparsableMoney": "Ulaeselig loenvaerdi",
             "nonNumericCode": "Ikke-numerisk statistisk kode",
-            "blankGender": "Tomt eller ukendt kon",
-            "genderNameMismatch": "Kon og navn stemmer ikke overens"
+            "unresolvedGender": "Køn skal angives",
+            "genderNameMismatch": "Køn og navn stemmer ikke",
+            "fractionScaled": "Beskæftigelsesgrad tolket som andel og skaleret til procent",
+            "ambiguousDate": "Tvetydig dato (tolket som dag/måned)",
+            "negativeValue": "Negativ lønværdi",
+            "raggedRow": "Rækken har det forkerte antal kolonner",
+            "noDelimiter": "Ingen kolonneadskiller fundet",
+            "mojibake": "Overskriftsteksten ser ødelagt ud (forkert filkodning)"
           },
           "rowsAffected": "{count, plural, one {# raekke} other {# raekker}} berort",
           "cannotProceed": "Ret de obligatoriske felter ovenfor for at fortsaette."

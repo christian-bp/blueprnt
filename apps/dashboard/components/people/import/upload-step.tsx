@@ -1,6 +1,6 @@
 "use client"
 
-import { tokenizeCsv } from "@workspace/import"
+import { ImportFormatError, tokenizeCsv } from "@workspace/import"
 import { Button } from "@workspace/ui/components/button"
 import { useTranslations } from "next-intl"
 import { useRef, useState } from "react"
@@ -13,12 +13,20 @@ export function handleCsvText(
   text: string
 ):
   | { ok: true; parsed: ParsedCsv }
-  | { ok: false; error: "errorEmpty" | "errorNotCsv" } {
+  | { ok: false; error: "errorEmpty" | "errorNotCsv" | "errorInvalidFormat" } {
   const trimmed = text.trim()
   if (trimmed.length === 0) {
     return { ok: false, error: "errorEmpty" }
   }
-  const parsed = tokenizeCsv(text)
+  let parsed: ParsedCsv
+  try {
+    parsed = tokenizeCsv(text)
+  } catch (err) {
+    if (err instanceof ImportFormatError) {
+      return { ok: false, error: "errorInvalidFormat" }
+    }
+    throw err
+  }
   if (parsed.headers.length === 0) {
     return { ok: false, error: "errorEmpty" }
   }
@@ -36,7 +44,9 @@ export function UploadStep({
   onParsed: (result: ParsedCsv, csvText: string) => void
 }) {
   const t = useTranslations("dashboard.people.import.upload")
-  const [error, setError] = useState<"errorEmpty" | "errorNotCsv" | null>(null)
+  const [error, setError] = useState<
+    "errorEmpty" | "errorNotCsv" | "errorInvalidFormat" | null
+  >(null)
   const [isDragOver, setIsDragOver] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 

@@ -182,7 +182,8 @@
           "dropHint": "or drag and drop here",
           "detected": "{rows, plural, one {# row} other {# rows}}, {columns} columns detected.",
           "errorNotCsv": "Only CSV files are supported. Please select a .csv file.",
-          "errorEmpty": "The file is empty. Please select a CSV file with at least one row of data."
+          "errorEmpty": "The file is empty. Please select a CSV file with at least one row of data.",
+          "errorInvalidFormat": "This looks like a spreadsheet file, not a CSV. Open it in Excel or your payroll system and export it as CSV, then upload the CSV."
         },
         "map": {
           "title": "Map columns",
@@ -210,8 +211,14 @@
             "duplicateId": "Duplicate employee ID",
             "unparsableMoney": "Unreadable salary value",
             "nonNumericCode": "Non-numeric statistical code",
-            "blankGender": "Blank or unrecognized gender",
-            "genderNameMismatch": "Gender and name mismatch"
+            "unresolvedGender": "Gender needs to be assigned",
+            "genderNameMismatch": "Gender and name mismatch",
+            "fractionScaled": "FTE read as a fraction and scaled to a percentage",
+            "ambiguousDate": "Ambiguous date (read as day/month)",
+            "negativeValue": "Negative salary value",
+            "raggedRow": "Row has the wrong number of columns",
+            "noDelimiter": "No column separator detected",
+            "mojibake": "Header text looks garbled (wrong file encoding)"
           },
           "rowsAffected": "{count, plural, one {# row} other {# rows}} affected",
           "cannotProceed": "Fix the required fields above to continue."
