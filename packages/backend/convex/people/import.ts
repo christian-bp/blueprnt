@@ -454,6 +454,14 @@ export const importPayroll = action({
       skippedRows: skippedRowIndices.size,
     })
 
+    // Step 8: Run classification suggestions for the freshly imported people
+    // (titles now persisted). Deterministic engines, no AI (ADR-0003).
+    await ctx.runMutation(
+      internal.people.classificationInternal
+        .internalRunClassificationSuggestions,
+      { orgId: args.orgId, actorId }
+    )
+
     return {
       ok: true,
       peopleImported,

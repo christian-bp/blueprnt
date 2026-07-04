@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { api, components } from "../_generated/api"
+import { api, components, internal } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
 
 // Seeds a minimal org with one admin member.
@@ -243,5 +243,34 @@ describe("runClassificationSuggestions", () => {
       // No PII: the payload carries only counts, no names.
       expect(JSON.stringify(payload)).not.toContain("Anna")
     })
+  })
+
+  it("the internal wrapper suggests for imported people", async () => {
+    const t = initConvexTest()
+    const { orgId, userId, asAdmin } = await seedOrg(t)
+    await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Software Engineer",
+      function: "Engineering",
+      team: "Platform",
+      trackKey: "IC",
+    })
+    const personId = await seedPerson(t, orgId, {
+      displayName: "Anna Svensson",
+      title: "Software Engineer",
+    })
+
+    const result = await t.mutation(
+      internal.people.classificationInternal
+        .internalRunClassificationSuggestions,
+      { orgId, actorId: userId }
+    )
+    expect(result.suggested).toBe(1)
+
+    const current = await asAdmin.query(
+      api.people.assignments.getCurrentAssignment,
+      { orgId, personId }
+    )
+    expect(current?.levelSource).toBe("suggested")
   })
 })
