@@ -14,6 +14,7 @@ import {
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
+import { ErasePersonControl } from "@/components/people/erase-person-control"
 import { SalaryForm } from "@/components/people/salary-form"
 import { useOrganization } from "@/components/org-context"
 import { type Crumb, PageBreadcrumb } from "@/components/page-breadcrumb"
@@ -186,9 +187,13 @@ export function PersonDetail({ personId }: { personId: string }) {
 
       <SalaryForm personId={person.personId} />
 
-      {/* Task 5 mounts <ErasePersonControl personId={person.personId}
-          displayName={person.displayName} externalRef={person.externalRef} />
-          here. */}
+      <section className="flex justify-end border-t pt-4">
+        <ErasePersonControl
+          personId={person.personId}
+          displayName={person.displayName}
+          externalRef={person.externalRef}
+        />
+      </section>
     </div>
   )
 }

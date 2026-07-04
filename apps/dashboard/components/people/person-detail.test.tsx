@@ -16,6 +16,7 @@ vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "org_1", name: "Acme", role: "admin" }),
 }))
 vi.mock("@/hooks/use-page-title", () => ({ usePageTitle: () => {} }))
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: () => {} }) }))
 // Links: mock next/link with a plain <a> so href is inspectable.
 vi.mock("next/link", () => ({
   default: ({
