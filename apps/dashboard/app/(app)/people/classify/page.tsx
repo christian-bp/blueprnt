@@ -1,18 +1,16 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-} from "@workspace/ui/components/table"
+import { Table } from "@workspace/ui/components/table"
 import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useEffect, useRef } from "react"
 import { PageHeader } from "@/components/page-header"
 import { useOrganization } from "@/components/org-context"
-import { ClassifyTitleTable } from "@/components/people/classify/classify-title-table"
+import {
+  ClassifyTableHeader,
+  ClassifyTitleTable,
+} from "@/components/people/classify/classify-title-table"
 import { TableSkeleton } from "@/components/table-skeleton"
 import { usePageTitle } from "@/hooks/use-page-title"
 
@@ -54,7 +52,11 @@ export default function ClassifyPage() {
     void run({ orgId })
   }, [run, orgId])
 
-  const COLUMN_COUNT = 6
+  // FIX 7: COLUMN_COUNT matches the real table (8 columns: expand slot,
+  // title, people, suggestedRole, confidence, state, level, actions).
+  // ClassifyTableHeader is shared with the real table so the two cannot
+  // drift independently.
+  const COLUMN_COUNT = 8
 
   // Show a skeleton shaped like the real table while any query is loading.
   if (
@@ -67,16 +69,7 @@ export default function ClassifyPage() {
       <div className="space-y-4">
         <PageHeader title={t("heading")} description={t("description")} />
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t("columns.title")}</TableHead>
-              <TableHead>{t("columns.people")}</TableHead>
-              <TableHead>{t("columns.suggestedRole")}</TableHead>
-              <TableHead>{t("columns.confidence")}</TableHead>
-              <TableHead>{t("columns.state")}</TableHead>
-              <TableHead>{t("columns.actions")}</TableHead>
-            </TableRow>
-          </TableHeader>
+          <ClassifyTableHeader />
           <TableSkeleton columns={COLUMN_COUNT} rows={5} />
         </Table>
       </div>

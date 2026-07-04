@@ -8,7 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import { TableCell, TableRow } from "@workspace/ui/components/table"
 import { useTranslations } from "next-intl"
 import { displayNameFor } from "@/lib/person-display"
 import type { ClassifyPersonRow } from "./classify-title-table"
@@ -43,9 +42,14 @@ export interface ClassifyPersonRowsProps {
 }
 
 // ---------------------------------------------------------------------------
-// Component: renders one <TableRow> per person inside the expanded section.
-// The parent mounts these inside an AnimatePresence / motion wrapper so the
-// rows have no animation logic of their own (they are plain table rows).
+// Component: renders one block row per person inside the expanded section.
+// The parent mounts these inside a motion.div that handles the height
+// animation (see classify-title-table.tsx FIX 8). These are plain block
+// divs, NOT table rows, because the animation requires a block container
+// (a nested <Table> wraps itself in an overflow-x:auto scroll container
+// that fights height:0 collapse). Layout mirrors the table columns with
+// a simple CSS grid so person rows align visually as sub-rows of the
+// title row.
 // ---------------------------------------------------------------------------
 
 export function ClassifyPersonRows({
@@ -86,17 +90,20 @@ export function ClassifyPersonRows({
         const tenure = tenureYears(person.employmentStartDate, today)
 
         return (
-          <TableRow
+          // Block grid row: 8 columns matching the outer table's column count.
+          // pl-8 indents past the expand-toggle slot; the level select aligns
+          // with the outer Level column (col 7, index 6).
+          <div
             key={person.personId}
-            className="bg-muted/30"
             data-person-row
+            className="grid grid-cols-[2rem_1fr_1fr_1fr_auto_auto_8rem_auto] items-center gap-x-4 bg-muted/30 px-4 py-2 text-sm"
           >
-            {/* Expand toggle placeholder column */}
-            <TableCell />
+            {/* Expand toggle placeholder */}
+            <div />
             {/* Name */}
-            <TableCell className="text-sm">{name}</TableCell>
+            <div className="font-normal">{name}</div>
             {/* Employment start date + tenure */}
-            <TableCell className="text-muted-foreground text-sm">
+            <div className="text-muted-foreground">
               {person.employmentStartDate !== null ? (
                 <span>
                   {person.employmentStartDate}
@@ -107,13 +114,15 @@ export function ClassifyPersonRows({
                   )}
                 </span>
               ) : null}
-            </TableCell>
+            </div>
+            {/* Suggested role placeholder */}
+            <div />
             {/* Confidence placeholder */}
-            <TableCell />
+            <div />
             {/* State placeholder */}
-            <TableCell />
+            <div />
             {/* Level Select */}
-            <TableCell>
+            <div>
               <Select
                 value={currentLevel}
                 onValueChange={(value) => onLevelChange(person.personId, value)}
@@ -129,8 +138,10 @@ export function ClassifyPersonRows({
                   ))}
                 </SelectContent>
               </Select>
-            </TableCell>
-          </TableRow>
+            </div>
+            {/* Actions placeholder */}
+            <div />
+          </div>
         )
       })}
     </>

@@ -24,8 +24,8 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 import { useMutation } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
+import { Fragment, useState } from "react"
 import { useTranslations } from "next-intl"
-import { useState } from "react"
 import { toast } from "sonner"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SPRING } from "@/lib/motion"
@@ -136,6 +136,49 @@ function buildDefaultLevels(
 }
 
 // ---------------------------------------------------------------------------
+// Shared table header: exported so the loading skeleton in classify/page.tsx
+// can reuse the exact same cells and the two can never drift apart.
+// ---------------------------------------------------------------------------
+
+export function ClassifyTableHeader() {
+  const t = useTranslations("dashboard.classify")
+  const tHelp = useTranslations("dashboard.help")
+  return (
+    <TableHeader>
+      <TableRow>
+        {/* Reserved slot for the expand/collapse control (fixed width avoids layout shift) */}
+        <TableHead className="w-8" />
+        <TableHead>{t("columns.title")}</TableHead>
+        <TableHead>{t("columns.people")}</TableHead>
+        <TableHead>{t("columns.suggestedRole")}</TableHead>
+        <TableHead>
+          <span className="flex items-center gap-1.5">
+            {t("columns.confidence")}
+            {/* ONE HelpMorphButton per concept: confidence tiers are explained
+                here, at the column where the concept is first shown. */}
+            <HelpMorphButton label={tHelp("classifyConfidenceLabel")}>
+              {tHelp("classifyConfidenceBody")}
+            </HelpMorphButton>
+          </span>
+        </TableHead>
+        <TableHead>{t("columns.state")}</TableHead>
+        <TableHead>
+          <span className="flex items-center gap-1.5">
+            {t("levelLabel")}
+            {/* ONE HelpMorphButton per concept, placed where the concept is
+                first introduced: the level column header. */}
+            <HelpMorphButton label={tHelp("classifyLevelLabel")}>
+              {tHelp("classifyLevelBody")}
+            </HelpMorphButton>
+          </span>
+        </TableHead>
+        <TableHead>{t("columns.actions")}</TableHead>
+      </TableRow>
+    </TableHeader>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
@@ -154,7 +197,6 @@ export function ClassifyTitleTable({
 }) {
   const t = useTranslations("dashboard.classify")
   const tToast = useTranslations("dashboard.toast")
-  const tHelp = useTranslations("dashboard.help")
 
   // Per-row selected role: keyed by rowKey(group) (never null)
   const [selectedRole, setSelectedRole] = useState<Map<string, string | null>>(
@@ -172,6 +214,10 @@ export function ClassifyTitleTable({
   const [selectedLevel, setSelectedLevel] = useState<
     Map<string, Map<string, string>>
   >(() => new Map())
+
+  // Per-row in-flight guard: prevents double-confirm and surfaces errors.
+  // Keyed by rowKey(group).
+  const [confirming, setConfirming] = useState<Set<string>>(() => new Set())
 
   const confirm = useMutation(api.people.assignments.assignPersonToRole)
 
@@ -253,31 +299,45 @@ export function ClassifyTitleTable({
     const roleId = selectedRole.get(key) ?? group.suggestedRoleId
     if (roleId === null) return
 
+    // Guard: prevent a double-click from firing duplicate writes.
+    if (confirming.has(key)) return
+    setConfirming((prev) => new Set(prev).add(key))
+
     const groupLevels = selectedLevel.get(key)
 
-    for (const p of group.people) {
-      // Use the per-person selected level when present; fall back to
-      // suggestedLevel if it is valid for the role's track, then to the
-      // track's first level. This guarantees a valid level is always submitted.
-      const role = roleById.get(roleId)
-      const trackKey = role?.trackKey ?? ""
-      let level = groupLevels?.get(p.personId)
-      if (level === undefined) {
-        level =
-          p.suggestedLevel !== null &&
-          isValidLevelForTrack(trackKey, p.suggestedLevel)
-            ? p.suggestedLevel
-            : defaultLevelFor(roleId, roleById)
+    try {
+      for (const p of group.people) {
+        // Use the per-person selected level when present; fall back to
+        // suggestedLevel if it is valid for the role's track, then to the
+        // track's first level. This guarantees a valid level is always submitted.
+        const role = roleById.get(roleId)
+        const trackKey = role?.trackKey ?? ""
+        let level = groupLevels?.get(p.personId)
+        if (level === undefined) {
+          level =
+            p.suggestedLevel !== null &&
+            isValidLevelForTrack(trackKey, p.suggestedLevel)
+              ? p.suggestedLevel
+              : defaultLevelFor(roleId, roleById)
+        }
+        await confirm({
+          orgId,
+          personId: p.personId as Parameters<typeof confirm>[0]["personId"],
+          roleId: roleId as Parameters<typeof confirm>[0]["roleId"],
+          level,
+          levelSource: "confirmed",
+        })
       }
-      await confirm({
-        orgId,
-        personId: p.personId as Parameters<typeof confirm>[0]["personId"],
-        roleId: roleId as Parameters<typeof confirm>[0]["roleId"],
-        level,
-        levelSource: "confirmed",
+      toast.success(tToast("classificationConfirmed"))
+    } catch {
+      toast.error(tToast("error"))
+    } finally {
+      setConfirming((prev) => {
+        const next = new Set(prev)
+        next.delete(key)
+        return next
       })
     }
-    toast.success(tToast("classificationConfirmed"))
   }
 
   function confidenceVariant(
@@ -298,28 +358,7 @@ export function ClassifyTitleTable({
 
   return (
     <Table>
-      <TableHeader>
-        <TableRow>
-          {/* Reserved slot for the expand/collapse control (fixed width avoids layout shift) */}
-          <TableHead className="w-8" />
-          <TableHead>{t("columns.title")}</TableHead>
-          <TableHead>{t("columns.people")}</TableHead>
-          <TableHead>{t("columns.suggestedRole")}</TableHead>
-          <TableHead>{t("columns.confidence")}</TableHead>
-          <TableHead>{t("columns.state")}</TableHead>
-          <TableHead>
-            <span className="flex items-center gap-1.5">
-              {t("levelLabel")}
-              {/* ONE HelpMorphButton per concept, placed where the concept is
-                  first introduced: the level column header. */}
-              <HelpMorphButton label={tHelp("classifyLevelLabel")}>
-                {tHelp("classifyLevelBody")}
-              </HelpMorphButton>
-            </span>
-          </TableHead>
-          <TableHead>{t("columns.actions")}</TableHead>
-        </TableRow>
-      </TableHeader>
+      <ClassifyTableHeader />
       <TableBody>
         {groups.map((group) => {
           const key = rowKey(group)
@@ -333,10 +372,14 @@ export function ClassifyTitleTable({
           const trackKey = currentRole?.trackKey ?? ""
           const groupLevels =
             selectedLevel.get(key) ?? new Map<string, string>()
+          const isConfirming = confirming.has(key)
 
+          // FIX 1: Fragment carries the key so React can track the pair
+          // (title row + expansion row) as a unit. The inner TableRow must
+          // NOT repeat the key.
           return (
-            <>
-              <TableRow key={key}>
+            <Fragment key={key}>
+              <TableRow>
                 {/* Expand/collapse control in a pre-reserved slot so toggling
                     never causes the other cells to reflow. */}
                 <TableCell className="w-8 pr-0">
@@ -391,7 +434,9 @@ export function ClassifyTitleTable({
                       handleRoleChange(key, value, group)
                     }}
                   >
-                    <SelectTrigger>
+                    {/* FIX 5: aria-label on the role SelectTrigger so
+                        screen readers announce which select this is. */}
+                    <SelectTrigger aria-label={t("columns.suggestedRole")}>
                       <SelectValue placeholder={t("selectRolePlaceholder")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -438,9 +483,12 @@ export function ClassifyTitleTable({
                       }}
                     />
                   ) : (
+                    // FIX 2+3: disabled while in-flight (prevents double-write);
+                    // try/catch/finally in onConfirm surfaces errors via toast.error.
                     <Button
                       type="button"
                       size="sm"
+                      disabled={isConfirming}
                       onClick={() => void onConfirm(group)}
                     >
                       {t("assignCta")}
@@ -449,48 +497,50 @@ export function ClassifyTitleTable({
                 </TableCell>
               </TableRow>
 
-              {/* Expandable per-person rows. Animation follows docs/ui-animation.md:
-                  - The outer motion element carries ONLY geometry (height + opacity),
-                    no visual box styles, so height:0 truly reaches zero (rule 2).
-                  - overflow-hidden lives on the outer element only while animating;
-                    corner controls are inside the inner div and are not clipped at
-                    rest (rule 4 is not needed here as there are no floating corners).
-                  - AnimatePresence mode="popLayout" is not needed: these rows are
-                    beneath the title row and their removal does not reflow siblings
-                    above (rule 6 does not apply to a simple below-row expansion). */}
+              {/* FIX 8: expansion animation follows docs/ui-animation.md rule 2.
+                  A <tr> treats height as a minimum and ignores overflow, so
+                  animating height on a <motion.tr> snaps rather than glides.
+                  Fix: use a plain (non-animated) <tr> whose only child is a
+                  <motion.div> that carries BOTH the height animation AND
+                  overflow-hidden. The block div is where height:0 truly clips.
+                  No nested <Table> inside the animation (avoids the
+                  overflow-x:auto scroll container that a Table wraps itself in,
+                  which would fight the height collapse). */}
               <AnimatePresence initial={false}>
                 {isExpanded && (
-                  <motion.tr
-                    key={`${key}-people`}
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={SPRING}
-                    // The outer tr carries ONLY geometry so height:0 is true zero.
-                    style={{ display: "table-row" }}
-                  >
+                  <tr key={`${key}-people`}>
                     <td colSpan={8} style={{ padding: 0 }}>
-                      {/* Inner div carries visual styles; the outer tr has none. */}
-                      <div className="overflow-hidden">
-                        <Table>
-                          <TableBody>
-                            <ClassifyPersonRows
-                              people={group.people}
-                              trackKey={trackKey}
-                              selectedLevel={groupLevels}
-                              onLevelChange={(personId, level) =>
-                                handleLevelChange(key, personId, level)
-                              }
-                              pseudonymize={pseudonymize}
-                            />
-                          </TableBody>
-                        </Table>
-                      </div>
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={SPRING}
+                        // overflow-hidden on the block div so height:0
+                        // truly clips; no visual box styles on this element
+                        // (rule 2: outer carries geometry, inner carries style).
+                        className="overflow-hidden"
+                      >
+                        {/* Inner div carries indentation context for person
+                            rows; rendered as a plain block layout (not a
+                            nested Table) so the scroll container does not
+                            fight the height animation. */}
+                        <div className="py-1">
+                          <ClassifyPersonRows
+                            people={group.people}
+                            trackKey={trackKey}
+                            selectedLevel={groupLevels}
+                            onLevelChange={(personId, level) =>
+                              handleLevelChange(key, personId, level)
+                            }
+                            pseudonymize={pseudonymize}
+                          />
+                        </div>
+                      </motion.div>
                     </td>
-                  </motion.tr>
+                  </tr>
                 )}
               </AnimatePresence>
-            </>
+            </Fragment>
           )
         })}
       </TableBody>

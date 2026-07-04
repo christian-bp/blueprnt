@@ -25,6 +25,7 @@ import Link from "next/link"
 import { useMemo } from "react"
 import { useOrganization } from "@/components/org-context"
 import { PageHeader } from "@/components/page-header"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import { TableSkeleton } from "@/components/table-skeleton"
 import { countClassified } from "@/lib/classification-summary"
 import { displayNameFor } from "@/lib/person-display"
@@ -120,10 +121,15 @@ export function PeopleSection() {
       byTitle === undefined ||
       settings === undefined ? (
         // Loading: show a content-shaped skeleton while queries resolve.
-        <Table>
-          {tableHeader}
-          <TableSkeleton rows={8} columns={5} />
-        </Table>
+        // The Skeleton bar reserves the summary line's height so the table
+        // does not shift down when data arrives (minimize layout shift rule).
+        <>
+          <Skeleton className="h-4 w-48" />
+          <Table>
+            {tableHeader}
+            <TableSkeleton rows={8} columns={5} />
+          </Table>
+        </>
       ) : people.length === 0 ? (
         <Empty>
           <EmptyHeader>
