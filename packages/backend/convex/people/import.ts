@@ -5,6 +5,7 @@ import {
   CANONICAL_FIELDS,
   classifyColumn,
   type DetectedMapping,
+  ImportFormatError,
   parseBool,
   parseCurrency,
   parseDate,
@@ -13,7 +14,7 @@ import {
   parsePercent,
   type RowIssueCode,
   tokenizeCsv,
-  validateImport,
+  validateFile,
 } from "@workspace/import"
 import { internal } from "../_generated/api"
 import { action } from "../_generated/server"
@@ -44,6 +45,10 @@ const importResultValidator = v.object({
         detail: v.string(),
       })
     ),
+    // File-level signals (Plan C). fileWarnings surfaces delimiter/mojibake
+    // hints; fileFormatError marks a binary/unreadable file (also in blocking).
+    fileWarnings: v.optional(v.array(v.string())),
+    fileFormatError: v.optional(v.string()),
   }),
 })
 
@@ -94,8 +99,32 @@ export const importPayroll = action({
     // Step 1: Authenticate + assert org admin.
     const actorId = await requireOrgAdminAction(ctx, args.orgId)
 
-    // Step 2: Tokenize + validate.
-    const { headers, rows } = tokenizeCsv(args.csvText)
+    // Step 2: Tokenize + validate. A binary/unreadable file makes tokenizeCsv
+    // throw ImportFormatError; catch it and return the invalidFileFormat blocking
+    // signal (ok:false, nothing persisted) instead of letting the action reject.
+    let tokenized: ReturnType<typeof tokenizeCsv>
+    try {
+      tokenized = tokenizeCsv(args.csvText)
+    } catch (err) {
+      if (err instanceof ImportFormatError) {
+        const fileFormatValidation = {
+          readiness: [],
+          blocking: ["invalidFileFormat"],
+          warnings: [],
+          issues: [],
+          fileFormatError: "invalidFileFormat" as const,
+        }
+        return {
+          ok: false,
+          peopleImported: 0,
+          salariesImported: 0,
+          skippedRows: 0,
+          validation: fileFormatValidation,
+        }
+      }
+      throw err
+    }
+    const { headers, rows } = tokenized
 
     // Build a DetectedMapping from the wizard-confirmed columnMap.
     // columnMap is an array of [sourceHeader, canonicalFieldKey] pairs.
@@ -116,9 +145,14 @@ export const importPayroll = action({
     }
     const detected: DetectedMapping = { map: detectedMap, unmappedColumns: [] }
 
-    const validation = validateImport({ headers, rows }, detected, {})
+    // Reuse the already-tokenized result so validateFile threads the tokenizer
+    // signals (noDelimiter, raggedRows) without re-parsing, and populates
+    // fileWarnings (noDelimiter/mojibake).
+    const validation = validateFile(args.csvText, detected, {}, tokenized)
 
-    // Normalize validation for return (plain arrays, typed strings).
+    // Normalize validation for return (plain arrays, typed strings). File-level
+    // signals (fileWarnings, fileFormatError) are threaded so the wizard can
+    // surface delimiter/mojibake hints and the invalid-file-format state.
     const normalizedValidation = {
       readiness: validation.readiness.map((r) => ({
         key: r.key,
@@ -132,6 +166,12 @@ export const importPayroll = action({
         code: i.code,
         detail: i.detail,
       })),
+      ...(validation.fileWarnings !== undefined
+        ? { fileWarnings: [...validation.fileWarnings] }
+        : {}),
+      ...(validation.fileFormatError !== undefined
+        ? { fileFormatError: validation.fileFormatError }
+        : {}),
     }
 
     // Step 3: Hard-block when required fields are unmapped.

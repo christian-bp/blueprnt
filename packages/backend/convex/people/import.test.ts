@@ -13,6 +13,14 @@ const FIXTURE_PATH = join(
 )
 const FIXTURE_CSV = readFileSync(FIXTURE_PATH, "utf8")
 
+// Binary fixture: a ZIP/XLSX magic-byte sequence that tokenizeCsv rejects.
+// Read as latin1 so each raw byte is preserved as its corresponding code point
+// (UTF-8 decoding would mangle high bytes in the binary sequence).
+const BINARY_INPUT = readFileSync(
+  join(import.meta.dirname, "__fixtures__", "binary.bin"),
+  "latin1"
+)
+
 const PERSONEC_FRACTION_CSV = readFileSync(
   join(import.meta.dirname, "__fixtures__", "personec-fraction.csv"),
   "utf8"
@@ -270,12 +278,12 @@ describe("importPayroll (happy path)", () => {
     // Per-row issues: both Anstnr=114 rows get duplicateId;
     // Torsten Malm (UX Developer) also gets nonNumericCode.
     const duplicateIssues = result.validation.issues.filter(
-      (i) => i.code === "duplicateId"
+      (i: { code: string }) => i.code === "duplicateId"
     )
     expect(duplicateIssues).toHaveLength(2)
 
     const nonNumericIssues = result.validation.issues.filter(
-      (i) => i.code === "nonNumericCode"
+      (i: { code: string }) => i.code === "nonNumericCode"
     )
     expect(nonNumericIssues).toHaveLength(1)
     expect(nonNumericIssues[0]?.detail).toContain("Software Developer")
@@ -602,6 +610,38 @@ describe("importPayroll (date forms)", () => {
       expect(byRef("E2")?.birthDate).toBe("2023-01-01") // Excel serial 44927
       expect(byRef("E3")?.birthDate).toBe("1987-05-12") // short personnummer + refYear 2026
       expect(byRef("E4")?.birthDate).toBe("1990-11-03") // plain ISO
+    })
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Binary / file-level guard: binary input returns ok:false, does not throw
+// ---------------------------------------------------------------------------
+
+describe("importPayroll (binary / file-level guard)", () => {
+  it("returns ok:false with invalidFileFormat instead of throwing on a binary file", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: BINARY_INPUT,
+      columnMap: FULL_COLUMN_MAP,
+      payYear: 2026,
+    })
+
+    expect(result.ok).toBe(false)
+    expect(result.peopleImported).toBe(0)
+    expect(result.validation.blocking).toContain("invalidFileFormat")
+    expect(result.validation.fileFormatError).toBe("invalidFileFormat")
+
+    // Nothing persisted.
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(people).toHaveLength(0)
     })
   })
 })
