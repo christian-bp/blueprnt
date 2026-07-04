@@ -12,8 +12,8 @@ import { adminMutation } from "../lib/functions"
 // Shared hard-delete body. Deletes payRecords, then personAssignments, then the
 // people row, in child-first order. Throws notFound when the person is missing
 // or belongs to another org. Returns the non-PII "before" snapshot so the
-// caller can write the audit row (callers differ in how they log: adminMutation
-// uses ctx.audit; an internal mutation would use the free logAudit).
+// caller (erasePersonAsOrg, an adminMutation) can write the audit row via
+// ctx.audit.
 //
 // This is the SINGLE implementation of the delete. erasePersonAsOrg delegates
 // here; there is no duplicate delete logic.
