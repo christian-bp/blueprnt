@@ -1,0 +1,54 @@
+apps/dashboard/components/people/import/assign-gender.test.tsx
+  s_6bff98b662648b::t_78b3a9fe74afe8 1-58
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_2de28bc5158705 221-224,259-262
+apps/dashboard/components/people/import/assign-gender.tsx
+  s_6bff98b662648b::t_77f935da3cabd3 1-26,30-61
+  s_6bff98b662648b::t_c9f1a33c91efa2 27-29
+apps/dashboard/components/people/import/check-step.test.tsx
+  s_6bff98b662648b::t_83f5a52e744bb9 102-103,109-110,122-123
+  s_6bff98b662648b::t_550c61faf89943 300-353
+  s_6bff98b662648b::t_00aac024764efd 1
+apps/dashboard/components/people/import/review-step.test.tsx
+  s_6bff98b662648b::t_d54bed5abb3575 107,113,122
+  s_6bff98b662648b::t_0bc26b94376994 422-466
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_2de28bc5158705 221-224,259-262
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_2de28bc5158705 221-224,259-262
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_2de28bc5158705 221-224,259-262
+apps/dashboard/components/people/import/check-step.tsx
+  s_6bff98b662648b::t_54290d62552a84 288-296
+  s_6bff98b662648b::t_af38abfef3c815 120-137
+  s_6bff98b662648b::t_ce56320d4dc598 21
+  s_6bff98b662648b::t_db30a936b7b777 52-54,67-68
+apps/dashboard/components/people/import/review-step.tsx
+  s_6bff98b662648b::t_a2ee609b1fb588 166-178
+  s_6bff98b662648b::t_d1fe31c8c08b75 136-137,145
+apps/dashboard/components/people/import/import-wizard.tsx
+  s_6bff98b662648b::t_b391d25f7e9284 136
+  s_6bff98b662648b::t_5c8250ea4303ee 190-193
+  s_6bff98b662648b::t_2a24e3713af7a0 36-38
+  s_6bff98b662648b::t_1a9c67a98cb06e 61
+  s_6bff98b662648b::t_0b5a6c0e53ad9d 229
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_f63e086df3738c 226-229,232-234
+  s_6bff98b662648b::t_0a0373f2560662 235
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "59dec9b32abfaf7d0711b034863725bf8773b354",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
