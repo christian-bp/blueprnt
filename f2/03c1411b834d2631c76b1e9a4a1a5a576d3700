@@ -1,0 +1,22 @@
+docs/superpowers/specs/2026-07-04-v2-classification-design.md
+  s_6bff98b662648b::t_7e21c1acd86391 141
+  s_6bff98b662648b::t_f310f35b1a5b3f 148
+  s_6bff98b662648b::t_0c71a01c05a932 1-140,142-147,149-202,204-259
+  s_6bff98b662648b::t_bffb06cf698d52 203
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "f203c1411b834d2631c76b1e9a4a1a5a576d3700",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
