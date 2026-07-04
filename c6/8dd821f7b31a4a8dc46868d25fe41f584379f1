@@ -1,0 +1,43 @@
+packages/import/src/detect.test.ts
+  s_6bff98b662648b::t_3008d52dfff15d 3
+packages/import/src/detect.ts
+  s_6bff98b662648b::t_972d6b82595a6e 9-10
+packages/import/src/fields.test.ts
+  s_6bff98b662648b::t_4627121104f59c 7
+packages/import/src/index.ts
+  s_6bff98b662648b::t_4cc58668c0bcbe 6,12,14-15,17,19-20,32,34,43
+packages/import/src/issue-codes.test.ts
+  s_6bff98b662648b::t_bbe1bea2b781ee 6
+packages/import/src/parse.test.ts
+  s_6bff98b662648b::t_b41bf66dd61ebc 12
+packages/import/src/parse.ts
+  s_6bff98b662648b::t_0353696853e0c7 4
+packages/import/src/pipeline.test.ts
+  s_6bff98b662648b::t_19f40abe5784b3 8-10
+packages/import/src/shape.test.ts
+  s_6bff98b662648b::t_a4e8a4f287042d 2
+packages/import/src/shape.ts
+  s_6bff98b662648b::t_b6a40c21425d51 3-4
+packages/import/src/tokenize.test.ts
+  s_6bff98b662648b::t_d4916b88bacf81 2
+packages/import/src/validate.test.ts
+  s_6bff98b662648b::t_9bbe23f62a9814 3-6
+packages/import/src/validate.ts
+  s_6bff98b662648b::t_e7589ff70b19d6 4,9-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c68dd821f7b31a4a8dc46868d25fe41f584379f1",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
