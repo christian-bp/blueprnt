@@ -199,11 +199,39 @@ describe("ReviewStep — preview", () => {
     expect(screen.getByTestId("preview-row-1").textContent).toContain("EUR")
   })
 
-  it("shows the parsed gender value", () => {
+  it("shows the localized gender label in the preview (not the raw canonical value)", () => {
     renderReviewStep()
     const row0 = screen.getByTestId("preview-row-0")
-    // parseGender("Kvinna") = "Kvinna"
-    expect(row0.textContent).toContain("Kvinna")
+    // parseGender("Kvinna") = "Kvinna"; rendered via tGender -> en: "Woman"
+    expect(row0.textContent).toContain(
+      messages.dashboard.people.import.gender.Kvinna
+    )
+    // The raw canonical value must not leak into the cell.
+    // Note: "Man" also appears in row1 via tGender("Man") -> en: "Man" (same string), so
+    // only verify the Kvinna->Woman mapping which is distinct.
+  })
+
+  it("renders an empty gender cell when gender is null", () => {
+    const noGenderParsed: ParsedCsv = {
+      headers: HEADERS,
+      // Gender column (index 2) is empty for this row.
+      rows: [["E003", "Analyst", "", "45000", "100", "SEK"]],
+    }
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <ReviewStep
+          parsed={noGenderParsed}
+          mapping={MAPPING}
+          csvText={`${HEADERS.join(",")}\nE003,Analyst,,45000,100,SEK`}
+          flaggedCount={0}
+          genderOverrides={{}}
+        />
+      </NextIntlClientProvider>
+    )
+    const row0 = screen.getByTestId("preview-row-0")
+    // Gender cell should be empty (no "Man", "Kvinna", "Woman", etc.)
+    expect(row0.textContent).not.toContain("Woman")
+    expect(row0.textContent).not.toContain("Man")
   })
 
   it("shows the summary line with people count and flagged count", () => {

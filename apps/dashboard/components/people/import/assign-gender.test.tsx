@@ -55,4 +55,20 @@ describe("AssignGender", () => {
     fireEvent.click(screen.getByTestId("assign-gender-E014-Man"))
     expect(onChange).toHaveBeenCalledWith({ E001: "Kvinna", E014: "Man" })
   })
+
+  it("sets aria-pressed=true on the selected button and aria-pressed=false on the unselected button", () => {
+    renderAssign({ value: { E001: "Man" } })
+    const selectedBtn = screen.getByTestId("assign-gender-E001-Man")
+    const unselectedBtn = screen.getByTestId("assign-gender-E001-Kvinna")
+    expect(selectedBtn.getAttribute("aria-pressed")).toBe("true")
+    expect(unselectedBtn.getAttribute("aria-pressed")).toBe("false")
+  })
+
+  it("aria-pressed reflects no selection when value is empty", () => {
+    renderAssign({ value: {} })
+    const manBtn = screen.getByTestId("assign-gender-E001-Man")
+    const kvinnaBtn = screen.getByTestId("assign-gender-E001-Kvinna")
+    expect(manBtn.getAttribute("aria-pressed")).toBe("false")
+    expect(kvinnaBtn.getAttribute("aria-pressed")).toBe("false")
+  })
 })

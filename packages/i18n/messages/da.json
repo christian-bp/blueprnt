@@ -232,7 +232,7 @@
         "fields": {
           "externalRef": "Medarbejder-ID",
           "title": "Stillingsbetegnelse",
-          "gender": "Kon",
+          "gender": "Køn",
           "basicMonthly": "Manedlig grundlon",
           "firstName": "Fornavn",
           "lastName": "Efternavn",

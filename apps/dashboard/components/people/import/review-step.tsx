@@ -159,6 +159,7 @@ export function ReviewStep({
 }: ReviewStepProps) {
   const t = useTranslations("dashboard.people.import.review")
   const tFields = useTranslations("dashboard.people.import.fields")
+  const tGender = useTranslations("dashboard.people.import.gender")
   const tToast = useTranslations("dashboard.toast")
   const { orgId } = useOrganization()
   const router = useRouter()
@@ -266,7 +267,9 @@ export function ReviewStep({
                     {row.ftePercent !== null ? `${row.ftePercent}%` : ""}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {row.gender ?? ""}
+                    {row.gender != null
+                      ? tGender(row.gender as Parameters<typeof tGender>[0])
+                      : ""}
                   </TableCell>
                 </TableRow>
               ))}

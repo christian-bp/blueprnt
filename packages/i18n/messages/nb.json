@@ -232,7 +232,7 @@
         "fields": {
           "externalRef": "Ansatt-ID",
           "title": "Stillingstittel",
-          "gender": "Kjonn",
+          "gender": "Kjønn",
           "basicMonthly": "Manedlig grunnlonn",
           "firstName": "Fornavn",
           "lastName": "Etternavn",

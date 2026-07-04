@@ -46,6 +46,7 @@ export function AssignGender({ flagged, value, onChange }: AssignGenderProps) {
                   type="button"
                   size="sm"
                   variant={value[externalRef] === g ? "default" : "outline"}
+                  aria-pressed={value[externalRef] === g}
                   onClick={() => pick(externalRef, g)}
                   data-testid={`assign-gender-${externalRef}-${g}`}
                 >
