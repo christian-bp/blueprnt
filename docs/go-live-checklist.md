@@ -170,6 +170,21 @@ suite covers them before go-live:
   machine-drafted translations of the Swedish source (`sv` is the source, `en`
   is curated). Have a native speaker review them before go-live.
 
+- [ ] **Person `title` (Befattning) field: audit-diff + PII review.** V2
+  classification added `title` to the `people` table (imported from the payroll
+  Befattning column) and it now drives the deterministic title->role suggestion.
+  Two conscious pre-launch deferrals to revisit:
+  (1) `title` is currently EXCLUDED from `PERSON_AUDIT_FIELDS` and `nonPiiFields`
+  (treated as role-adjacent free text like displayName, not a diffed field).
+  Because a title now influences the assigned track/band, decide whether to
+  promote it to a DIFFED audit field (closer to `ftePercent`/`department`) so a
+  title edit that shifts a band is recorded in the people audit (today only
+  `band.shift` is). Not a blocker.
+  (2) `title` is imported free text, so a customer could stuff a person name into
+  a Befattning cell. This is the same latent risk already carried by other
+  role-level free-text fields (motivation/purpose) and needs no code change, but
+  flag it for the pre-launch privacy review.
+
 ## How to add to this list
 
 When you introduce anything that is acceptable only because we are pre-launch (a
