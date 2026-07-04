@@ -30,6 +30,7 @@ import { toast } from "sonner"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SPRING } from "@/lib/motion"
 import { ClassifyPersonRows } from "./classify-person-rows"
+import { UnmatchedTitleActions } from "./unmatched-title-actions"
 
 // ---------------------------------------------------------------------------
 // Types (structural subsets of the Convex return shapes; Convex ids are
@@ -160,6 +161,10 @@ export function ClassifyTitleTable({
     () => new Map()
   )
 
+  // Which role Selects are programmatically open (used by onMapExisting to
+  // focus the picker without adding a separate control).
+  const [selectOpen, setSelectOpen] = useState<Set<string>>(() => new Set())
+
   // Which groups have their per-person rows expanded
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set())
 
@@ -174,10 +179,9 @@ export function ClassifyTitleTable({
     roles.map((r) => [r.roleId, r])
   )
 
-  // Track reference is used to look up track names if needed in future.
-  // Currently tracks is consumed by the parent to populate the track filter;
-  // here we need it for correctness checks when track changes (via roleById).
-  void tracks
+  // tracks is passed to UnmatchedTitleActions so the create-role dialog can
+  // offer the track Select. roleById is used for correctness checks on
+  // track change (see handleRoleChange).
 
   function toggleExpanded(key: string) {
     setExpanded((prev) => {
@@ -362,11 +366,30 @@ export function ClassifyTitleTable({
                 </TableCell>
                 <TableCell>{group.personCount}</TableCell>
                 <TableCell>
+                  {/* open/onOpenChange lets onMapExisting focus the picker
+                      programmatically without a separate UI control. */}
                   <Select
                     value={currentRoleId ?? ""}
-                    onValueChange={(value) =>
+                    open={selectOpen.has(key)}
+                    onOpenChange={(next) => {
+                      setSelectOpen((prev) => {
+                        const s = new Set(prev)
+                        if (next) {
+                          s.add(key)
+                        } else {
+                          s.delete(key)
+                        }
+                        return s
+                      })
+                    }}
+                    onValueChange={(value) => {
+                      setSelectOpen((prev) => {
+                        const s = new Set(prev)
+                        s.delete(key)
+                        return s
+                      })
                       handleRoleChange(key, value, group)
-                    }
+                    }}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder={t("selectRolePlaceholder")} />
@@ -394,13 +417,35 @@ export function ClassifyTitleTable({
                     per-person level selects appear in the expanded rows. */}
                 <TableCell />
                 <TableCell>
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={() => void onConfirm(group)}
-                  >
-                    {t("assignCta")}
-                  </Button>
+                  {group.confidence === "unmatched" ? (
+                    <UnmatchedTitleActions
+                      orgId={orgId}
+                      title={group.title ?? ""}
+                      tracks={tracks}
+                      onRoleCreated={(roleId) =>
+                        setSelectedRole((prev) => {
+                          const next = new Map(prev)
+                          next.set(key, roleId)
+                          return next
+                        })
+                      }
+                      onMapExisting={() => {
+                        setSelectOpen((prev) => {
+                          const s = new Set(prev)
+                          s.add(key)
+                          return s
+                        })
+                      }}
+                    />
+                  ) : (
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => void onConfirm(group)}
+                    >
+                      {t("assignCta")}
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
 

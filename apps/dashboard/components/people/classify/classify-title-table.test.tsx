@@ -322,11 +322,13 @@ describe("ClassifyTitleTable", () => {
     })
   })
 
-  it("does not call assignPersonToRole when no role is selected for an unmatched group", () => {
+  it("renders createRoleCta and mapExistingCta for an unmatched group instead of assignCta", () => {
+    // Unmatched rows show UnmatchedTitleActions (create + map) rather than the
+    // confirm button, so no assignPersonToRole call is possible from those rows.
     renderTable([NO_TITLE_GROUP])
-    const confirmButton = screen.getByRole("button", { name: m.assignCta })
-    fireEvent.click(confirmButton)
-    expect(assignMock).not.toHaveBeenCalled()
+    expect(screen.getByRole("button", { name: m.createRoleCta })).toBeDefined()
+    expect(screen.getByRole("button", { name: m.mapExistingCta })).toBeDefined()
+    expect(screen.queryByRole("button", { name: m.assignCta })).toBeNull()
   })
 
   // ---------------------------------------------------------------------------
