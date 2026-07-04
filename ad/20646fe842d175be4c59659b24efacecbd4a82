@@ -1,0 +1,32 @@
+packages/import/src/parse.ts
+  s_6bff98b662648b::t_a719860faee1d6 174-178
+packages/import/src/tokenize.ts
+  s_6bff98b662648b::t_a15c0ed9aacbcb 252
+  s_6bff98b662648b::t_21ba18be27da1a 235-244,249-251,253-254,259-260,262,265-266,268-278
+  s_6bff98b662648b::t_0090dd5cb9ab5b 32-39
+packages/import/src/fields.ts
+  s_6bff98b662648b::t_994376e29f17ae 125
+  s_6bff98b662648b::t_a24ca6cfbb19c5 190-191
+packages/import/src/detect.test.ts
+  s_6bff98b662648b::t_a9a47a4d0d64a8 207-235
+packages/import/src/tokenize.test.ts
+  s_6bff98b662648b::t_f2e977038c6233 223-243
+packages/import/src/detect.ts
+  s_6bff98b662648b::t_b6fb7fee686237 25-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "ad20646fe842d175be4c59659b24efacecbd4a82",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
