@@ -1,0 +1,47 @@
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_4e22336b671a25 137-139
+  s_6bff98b662648b::t_dd419b105703fd 275-324
+  s_6bff98b662648b::t_ff6b6240e73861 1102-1106
+  s_6bff98b662648b::t_a1adaf1c13d606 163-164,166-171
+  s_6bff98b662648b::t_45bfe40008ced8 1469-1472
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_f4f6853aded450 137-139
+  s_6bff98b662648b::t_09ea8d72f0367a 1469-1472
+  s_6bff98b662648b::t_9b5a016587f132 275-324
+  s_6bff98b662648b::t_6f4e5bfe3145a9 163-164,166-171
+  s_6bff98b662648b::t_b43b7c91e7e2a9 1102-1106
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_4469e138d9c779 137-139
+  s_6bff98b662648b::t_eac47beb1557fb 1102-1106
+  s_6bff98b662648b::t_5df7533ab14fe3 163-164,166-171
+  s_6bff98b662648b::t_df7a8354492cb3 275-324
+  s_6bff98b662648b::t_1ddc39e75af589 1469-1472
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_8fa3d898a17dd0 1469-1472
+  s_6bff98b662648b::t_cfaa74add334e1 163-164,166-171
+  s_6bff98b662648b::t_3b45f913766f96 1102-1106
+  s_6bff98b662648b::t_53555d2440b2ef 275-324
+  s_6bff98b662648b::t_888070644089b7 137-139
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_a6d2f743f131ff 1469-1472
+  s_6bff98b662648b::t_580b90ec9eea46 275-324
+  s_6bff98b662648b::t_451a3ca7369243 137-139
+  s_6bff98b662648b::t_c4fe7529f78cac 1102-1106
+  s_6bff98b662648b::t_a17dbb9f69d8c8 163-164,166-171
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "1aca99718012cc1a3b79fde280a33927fb63fce6",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
