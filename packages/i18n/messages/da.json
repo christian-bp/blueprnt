@@ -133,7 +133,8 @@
       "organizationCreated": "Organisation oprettet",
       "membershipAdded": "Tilføjet til organisationen",
       "membershipUpdated": "Medlemskab opdateret",
-      "membershipRemoved": "Fjernet fra organisationen"
+      "membershipRemoved": "Fjernet fra organisationen",
+      "peopleImported": "Medarbejdere importeret"
     },
     "accountMenu": "Kontomenu",
     "nav": {
@@ -233,6 +234,14 @@
           "country": "Land",
           "department": "Afdeling",
           "isManager": "Leder"
+        },
+        "review": {
+          "title": "Gennemse og bekræft",
+          "description": "Kontroller forhåndsvisningen nedenfor og bekræft for at importere.",
+          "preview": "Forhåndsvisning (de {count} første rækker)",
+          "summary": "{people, plural, one {# person} other {# personer}} der skal importeres, {flagged, plural, one {# markeret} other {# markerede}}",
+          "confirm": "Bekræft import",
+          "importing": "Importerer..."
         }
       }
     },

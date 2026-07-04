@@ -47,8 +47,9 @@ export interface CheckStepProps {
   /**
    * Called after validation runs.
    * @param isBlocking - true when required fields are missing (Next must be disabled).
+   * @param issueCount - number of per-row data quality issues detected.
    */
-  onValidated: (isBlocking: boolean) => void
+  onValidated: (isBlocking: boolean, issueCount: number) => void
 }
 
 export function CheckStep({ parsed, mapping, onValidated }: CheckStepProps) {
@@ -66,17 +67,20 @@ export function CheckStep({ parsed, mapping, onValidated }: CheckStepProps) {
   }, [parsed, mapping])
 
   const isBlocking = validation.blocking.length > 0
+  const issueCount = validation.issues.length
 
   // Keep a ref to the latest onValidated so the effect never needs to re-run
   // when the parent re-creates the inline callback (which would cause an
-  // infinite setState loop). The effect only fires when isBlocking changes.
+  // infinite setState loop). The effect only fires when isBlocking or
+  // issueCount changes.
   const onValidatedRef = useRef(onValidated)
   onValidatedRef.current = onValidated
 
-  // Notify the wizard of the blocking state each time validation changes.
+  // Notify the wizard of the blocking state and issue count each time
+  // validation changes.
   useEffect(() => {
-    onValidatedRef.current(isBlocking)
-  }, [isBlocking])
+    onValidatedRef.current(isBlocking, issueCount)
+  }, [isBlocking, issueCount])
 
   // Group issues by code so we can show one entry per code with a count.
   const issueGroups = useMemo(() => {

@@ -12,6 +12,7 @@ import { NextButton } from "@/components/onboarding/next-button"
 import { Button } from "@workspace/ui/components/button"
 import { CheckStep } from "./check-step"
 import { MapStep } from "./map-step"
+import { ReviewStep } from "./review-step"
 import { UploadStep } from "./upload-step"
 
 // The parsed output from tokenizeCsv that the wizard threads through steps.
@@ -24,12 +25,14 @@ export interface ParsedCsv {
 interface WizardState {
   step: number
   parsed: ParsedCsv | null
-  // Raw CSV text retained so Task 5's importPayroll action can receive it.
+  // Raw CSV text retained so the importPayroll action can receive it.
   csvText: string | null
   mapping: Record<string, number> | null
   // Whether the check step has reported blocking required fields.
   // null = not yet validated (check step not yet reached).
   checkBlocking: boolean | null
+  // Number of per-row data-quality issues from the check step (used by ReviewStep).
+  checkIssueCount: number
   validation: unknown | null
   result: unknown | null
 }
@@ -51,6 +54,7 @@ export function ImportWizard() {
     csvText: null,
     mapping: null,
     checkBlocking: null,
+    checkIssueCount: 0,
     validation: null,
     result: null,
   })
@@ -155,8 +159,12 @@ export function ImportWizard() {
               <CheckStep
                 parsed={state.parsed}
                 mapping={state.mapping}
-                onValidated={(isBlocking) =>
-                  setState((prev) => ({ ...prev, checkBlocking: isBlocking }))
+                onValidated={(isBlocking, issueCount) =>
+                  setState((prev) => ({
+                    ...prev,
+                    checkBlocking: isBlocking,
+                    checkIssueCount: issueCount,
+                  }))
                 }
               />
             )}
@@ -174,8 +182,20 @@ export function ImportWizard() {
         )
       case STEP_REVIEW:
         return (
-          <ScreenShell heading={t("steps.review")}>
-            {/* Placeholder: replaced by Task 5 */}
+          <ScreenShell
+            heading={t("review.title")}
+            description={t("review.description")}
+          >
+            {state.parsed !== null &&
+              state.mapping !== null &&
+              state.csvText !== null && (
+                <ReviewStep
+                  parsed={state.parsed}
+                  mapping={state.mapping}
+                  csvText={state.csvText}
+                  flaggedCount={state.checkIssueCount}
+                />
+              )}
             <WizardFooter>
               <Button variant="outline" onClick={goBack}>
                 {t("back")}

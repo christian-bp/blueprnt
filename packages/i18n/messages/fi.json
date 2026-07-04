@@ -133,7 +133,8 @@
       "organizationCreated": "Organisaatio luotu",
       "membershipAdded": "Lisätty organisaatioon",
       "membershipUpdated": "Jäsenyys päivitetty",
-      "membershipRemoved": "Poistettu organisaatiosta"
+      "membershipRemoved": "Poistettu organisaatiosta",
+      "peopleImported": "Henkilot tuotu"
     },
     "accountMenu": "Tilivalikko",
     "nav": {
@@ -233,6 +234,14 @@
           "country": "Maa",
           "department": "Osasto",
           "isManager": "Esimies"
+        },
+        "review": {
+          "title": "Tarkista ja vahvista",
+          "description": "Tarkista alla oleva esikatselu ja vahvista tuonti.",
+          "preview": "Esikatselu ({count} ensimmäistä riviä)",
+          "summary": "{people, plural, one {# henkilö} other {# henkilöä}} tuotavaksi, {flagged, plural, one {# merkitty} other {# merkittyä}}",
+          "confirm": "Vahvista tuonti",
+          "importing": "Tuodaan..."
         }
       }
     },

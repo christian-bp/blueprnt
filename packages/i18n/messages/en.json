@@ -133,7 +133,8 @@
       "organizationCreated": "Organization created",
       "membershipAdded": "Added to organization",
       "membershipUpdated": "Membership updated",
-      "membershipRemoved": "Removed from organization"
+      "membershipRemoved": "Removed from organization",
+      "peopleImported": "People imported"
     },
     "accountMenu": "Account menu",
     "nav": {
@@ -233,6 +234,14 @@
           "country": "Country",
           "department": "Department",
           "isManager": "Manager"
+        },
+        "review": {
+          "title": "Review and confirm",
+          "description": "Check the preview below and confirm to import.",
+          "preview": "Preview (first {count} rows)",
+          "summary": "{people, plural, one {# person} other {# people}} to import, {flagged, plural, one {# flagged} other {# flagged}}",
+          "confirm": "Confirm import",
+          "importing": "Importing..."
         }
       }
     },

@@ -132,10 +132,10 @@ describe("CheckStep — blocking (required field missing)", () => {
     expect(alert.textContent).toContain(m.fields.basicMonthly)
   })
 
-  it("calls onValidated(true) when blocking", () => {
+  it("calls onValidated(true, 0) when blocking with no per-row issues", () => {
     const onValidated = vi.fn()
     renderCheckStep({ mapping: MISSING_BASIC_MONTHLY, onValidated })
-    expect(onValidated).toHaveBeenCalledWith(true)
+    expect(onValidated).toHaveBeenCalledWith(true, 0)
   })
 
   it("does not show the ready indicator when there are blocking fields", () => {
@@ -165,10 +165,10 @@ describe("CheckStep — warning only (recommended field missing)", () => {
     expect(warn.textContent).toContain(m.fields.ftePercent)
   })
 
-  it("calls onValidated(false) when only warnings (not blocking)", () => {
+  it("calls onValidated(false, 0) when only warnings (not blocking)", () => {
     const onValidated = vi.fn()
     renderCheckStep({ mapping: MISSING_FTE, onValidated })
-    expect(onValidated).toHaveBeenCalledWith(false)
+    expect(onValidated).toHaveBeenCalledWith(false, 0)
   })
 
   it("does not show a blocking alert when there are only warnings", () => {
@@ -220,10 +220,10 @@ describe("CheckStep — fully ready", () => {
     expect(screen.getByTestId("ready-indicator")).toBeDefined()
   })
 
-  it("calls onValidated(false) when no blocking issues", () => {
+  it("calls onValidated(false, 0) when no blocking issues and no data-quality issues", () => {
     const onValidated = vi.fn()
     renderCheckStep({ mapping: FULL_MAPPING, onValidated })
-    expect(onValidated).toHaveBeenCalledWith(false)
+    expect(onValidated).toHaveBeenCalledWith(false, 0)
   })
 
   it("does not show a blocking alert when all required fields are mapped", () => {
