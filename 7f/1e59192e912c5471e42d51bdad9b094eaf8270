@@ -1,0 +1,28 @@
+apps/dashboard/lib/classification-summary.ts
+  s_6bff98b662648b::t_e6d2804d07a595 1-4,8-13
+  s_6bff98b662648b::t_bd5eb3a4b6ba47 5-7
+apps/dashboard/lib/classification-summary.test.ts
+  s_6bff98b662648b::t_bd5eb3a4b6ba47 10-13
+  s_6bff98b662648b::t_d8f5719c8d2231 1-9,14-18
+apps/dashboard/lib/person-display.ts
+  s_6bff98b662648b::t_8053914301f4d2 1-13
+apps/dashboard/lib/person-display.test.ts
+  s_6bff98b662648b::t_410c03799433b0 1-7,15-16,24-25,33-34
+  s_6bff98b662648b::t_bd5eb3a4b6ba47 8-14,17-23,26-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "7f1e59192e912c5471e42d51bdad9b094eaf8270",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
