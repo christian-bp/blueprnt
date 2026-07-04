@@ -1,0 +1,27 @@
+packages/import/src/parse.ts
+  s_6bff98b662648b::t_31cf09f0061ed7 73-77,80-83,87-106,110-112
+  s_6bff98b662648b::t_9977a5dee308af 113,156-158,161-162,164-167
+  s_6bff98b662648b::t_9efab2deb64137 172-195,198-200,209-210
+  s_6bff98b662648b::t_da51353b4ea8de 114
+packages/import/src/index.ts
+  s_6bff98b662648b::t_02d28ae4123ed9 29
+packages/import/src/parse.test.ts
+  s_6bff98b662648b::t_154920c1495176 263-364
+  s_6bff98b662648b::t_213ef400fb9553 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "0c093d57c60fd64d49cb9760effc06894cc65bd3",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
