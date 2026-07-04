@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { tokenizeCsv } from "./tokenize.js"
+import { tokenizeCsv, ImportFormatError } from "./tokenize.js"
 
 // Real 16-column header from a Swedish HR export.
 const HEADER =
@@ -180,6 +180,43 @@ describe("tokenizeCsv header trimming and null-byte cleanup (T23, T35)", () => {
   it("strips null bytes from values (T35)", () => {
     const { rows } = tokenizeCsv("name,salary\nAlice\0,50000")
     expect(rows[0]?.[0]).toBe("Alice")
+  })
+})
+
+describe("tokenizeCsv binary-signature guard (A1, A2, A3)", () => {
+  it("throws ImportFormatError with kind binary and signature zip for XLSX/ODS (A1, A3)", () => {
+    const xlsx = "PK\x03\x04" + "rest-of-zip-bytes"
+    expect(() => tokenizeCsv(xlsx)).toThrow(ImportFormatError)
+    try {
+      tokenizeCsv(xlsx)
+    } catch (e) {
+      expect(e).toBeInstanceOf(ImportFormatError)
+      const err = e as ImportFormatError
+      expect(err.kind).toBe("binary")
+      expect(err.signature).toBe("zip")
+      expect(err.name).toBe("ImportFormatError")
+    }
+  })
+
+  it("throws ImportFormatError with signature ole2 for legacy XLS (A2)", () => {
+    const xls = "ÐÏà¡±á" + "rest-of-ole2"
+    try {
+      tokenizeCsv(xls)
+      throw new Error("expected tokenizeCsv to throw")
+    } catch (e) {
+      expect(e).toBeInstanceOf(ImportFormatError)
+      expect((e as ImportFormatError).signature).toBe("ole2")
+    }
+  })
+
+  it("does NOT throw for a normal CSV that merely contains PK later", () => {
+    // A CSV value containing "PK" mid-line must not trip the leading-byte guard.
+    expect(() => tokenizeCsv("name,code\nAlice,PK1234\nBob,ZZ99")).not.toThrow()
+  })
+
+  it("does NOT throw for a CSV whose first field starts with the letters PK", () => {
+    // Real header text can start with letters; only the exact PK\x03\x04 magic trips it.
+    expect(() => tokenizeCsv("PKlevel,salary\nA,50000")).not.toThrow()
   })
 })
 

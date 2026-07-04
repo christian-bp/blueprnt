@@ -9,6 +9,39 @@ import Papa from "papaparse"
 const UTF8_BOM = "﻿"
 
 /**
+ * Thrown by tokenizeCsv when the input is a binary spreadsheet, not CSV.
+ * This is the engine's only throwing path (a wrong-format file is not a value
+ * to parse). The wizard maps it to the invalidFileFormat blocking code and
+ * shows "export as CSV" (Plan C consumes { kind, signature }).
+ */
+export class ImportFormatError extends Error {
+  readonly kind = "binary" as const
+  readonly signature: "zip" | "ole2"
+
+  constructor(signature: "zip" | "ole2", message?: string) {
+    super(
+      message ??
+        `Binary spreadsheet input detected (${signature}); export as CSV`
+    )
+    this.name = "ImportFormatError"
+    this.signature = signature
+  }
+}
+
+// Leading code units of known binary spreadsheet signatures.
+// ZIP local-file header PK\x03\x04 covers XLSX and ODS; OLE2 compound-file
+// magic covers legacy XLS. These survive as leading code units in the common
+// decoded-string cases; byte-level encoding recovery stays the caller's job.
+const ZIP_SIGNATURE = "PK\x03\x04"
+const OLE2_SIGNATURE = "ÐÏà¡±á"
+
+function detectBinarySignature(text: string): "zip" | "ole2" | null {
+  if (text.startsWith(ZIP_SIGNATURE)) return "zip"
+  if (text.startsWith(OLE2_SIGNATURE)) return "ole2"
+  return null
+}
+
+/**
  * Structural signals from tokenization. Always present on the result, with
  * zero/empty values when nothing was detected. Plan C reads raggedRows,
  * noDelimiter, and (via detect) blankHeaderColumns.
@@ -48,6 +81,10 @@ function directiveDelimiter(line: string): string | null {
  * Every emitted data row has exactly headers.length cells.
  */
 export function tokenizeCsv(text: string): TokenizeResult {
+  // Binary-signature guard: reject binary spreadsheets before any parsing.
+  const binary = detectBinarySignature(text)
+  if (binary !== null) throw new ImportFormatError(binary)
+
   // 1. Strip any leading BOM(s).
   let input = text
   while (input.startsWith(UTF8_BOM)) input = input.slice(1)
