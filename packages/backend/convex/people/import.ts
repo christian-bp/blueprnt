@@ -82,6 +82,9 @@ const HARD_SKIP_CODES: ReadonlySet<RowIssueCode> = new Set<RowIssueCode>([
 //   payYear   - Override pay year; if omitted, each row's payYear column is used
 //               when mapped, otherwise the current calendar year.
 //   effectiveAt - Override effective timestamp; defaults to Date.now().
+//   genderOverrides - Optional [externalRef, "Man"|"Kvinna"] pairs supplying a
+//               manual gender for rows the parser could not resolve, so those
+//               rows import instead of being skipped as unresolvedGender.
 //
 // Returns:
 //   ok:false + validation when REQUIRED fields are unmapped (nothing persisted).
@@ -93,6 +96,10 @@ export const importPayroll = action({
     columnMap: v.array(v.array(v.string())),
     payYear: v.optional(v.number()),
     effectiveAt: v.optional(v.number()),
+    // Manual Man/Kvinna assignments for rows the parser could not resolve.
+    // Each entry is [externalRef, "Man"|"Kvinna"], mirroring columnMap's
+    // array-of-pairs shape (Convex-serializable without non-ASCII record keys).
+    genderOverrides: v.optional(v.array(v.array(v.string()))),
   },
   returns: importResultValidator,
   handler: async (ctx, args) => {
@@ -186,6 +193,20 @@ export const importPayroll = action({
       }
     }
 
+    // Build the gender override lookup from the wizard-supplied pairs.
+    // Only exact "Man" / "Kvinna" second values are honored; any other value is
+    // ignored (the row stays unresolved). The lookup is built before
+    // skippedRowIndices so the subtraction step below can reference it.
+    const genderOverrideByRef = new Map<string, "Man" | "Kvinna">()
+    for (const pair of args.genderOverrides ?? []) {
+      const ref = pair[0]
+      const value = pair[1]
+      if (ref === undefined) continue
+      if (value === "Man" || value === "Kvinna") {
+        genderOverrideByRef.set(ref, value)
+      }
+    }
+
     // Step 4: Identify skipped rows. Only HARD issues skip a row; soft issues
     // (fractionScaled, ambiguousDate, nonNumericCode, genderNameMismatch) are
     // informational and the row still imports.
@@ -223,6 +244,27 @@ export const importPayroll = action({
     const benefitInKindCol = colOf("benefitInKind")
     const payYearCol = colOf("payYear")
 
+    // Remove from skippedRowIndices any row whose ONLY hard blocker is
+    // unresolvedGender AND which has a valid gender override. Such rows must
+    // not be pre-skipped; the override supplies the gender inside the loop.
+    // A row that also carries another hard issue (e.g. duplicateId) stays
+    // skipped even when a gender override is present.
+    if (externalRefCol !== undefined) {
+      for (const issue of validation.issues) {
+        if (issue.code !== "unresolvedGender") continue
+        const ref = (rows[issue.row]?.[externalRefCol] ?? "").trim()
+        const hasOtherHardIssue = validation.issues.some(
+          (o) =>
+            o.row === issue.row &&
+            o.code !== "unresolvedGender" &&
+            HARD_SKIP_CODES.has(o.code as RowIssueCode)
+        )
+        if (!hasOtherHardIssue && genderOverrideByRef.has(ref)) {
+          skippedRowIndices.delete(issue.row)
+        }
+      }
+    }
+
     // The engine never reads the clock; the action supplies the reference year
     // for short-personnummer century expansion (explicit payYear arg > now).
     const referenceYear = args.payYear ?? new Date().getFullYear()
@@ -249,12 +291,14 @@ export const importPayroll = action({
       if (!externalRef) continue
 
       // gender: parse with numeric-code support so SAP/SCB codes 1/2 resolve,
-      // matching validateImport (which uses allowNumericCodes). Rows whose gender
-      // still cannot resolve carry the unresolvedGender HARD issue and were
-      // already dropped by skippedRowIndices; this null guard is defensive.
-      const parsedGender = parseGender(cell(genderCol), {
-        allowNumericCodes: true,
-      })
+      // matching validateImport (which uses allowNumericCodes). When the parse
+      // fails, fall back to the wizard's manual override for this externalRef.
+      // A row still null after the override carries unresolvedGender (HARD) and
+      // was already dropped by skippedRowIndices; the guard is defensive.
+      const parsedGender =
+        parseGender(cell(genderCol), { allowNumericCodes: true }) ??
+        genderOverrideByRef.get(externalRef) ??
+        null
       if (parsedGender === null) continue
 
       // displayName: join first + last names; fall back to externalRef if blank.

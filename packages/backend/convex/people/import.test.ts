@@ -4,6 +4,11 @@ import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
 
+const BLANK_GENDER_CSV = readFileSync(
+  join(import.meta.dirname, "__fixtures__", "blank-gender.csv"),
+  "utf8"
+)
+
 // Read the anonymized test fixture once at module load time. Using an absolute
 // path derived from import.meta.dirname keeps the test runnable from any cwd.
 const FIXTURE_PATH = join(
@@ -643,5 +648,126 @@ describe("importPayroll (binary / file-level guard)", () => {
         .collect()
       expect(people).toHaveLength(0)
     })
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Gender overrides: wizard-supplied Man/Kvinna for blank-gender rows
+// ---------------------------------------------------------------------------
+
+const BLANK_GENDER_MAP: string[][] = [
+  ["Id", "externalRef"],
+  ["Fornamn", "firstName"],
+  ["Kon", "gender"],
+  ["Manadslon", "basicMonthly"],
+  ["Befattning", "title"],
+]
+
+describe("importPayroll (gender overrides)", () => {
+  it("imports a blank-gender row when a matching override is supplied", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: BLANK_GENDER_CSV,
+      columnMap: BLANK_GENDER_MAP,
+      payYear: 2026,
+      genderOverrides: [["G2", "Kvinna"]],
+    })
+
+    expect(result.ok).toBe(true)
+    expect(result.peopleImported).toBe(2)
+
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      const frida = people.find((p) => p.externalRef === "G2")
+      expect(frida?.gender).toBe("Kvinna")
+    })
+  })
+
+  it("skips the blank-gender row when no override is supplied", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: BLANK_GENDER_CSV,
+      columnMap: BLANK_GENDER_MAP,
+      payYear: 2026,
+      // no genderOverrides
+    })
+
+    expect(result.ok).toBe(true)
+    // G2 has unresolvedGender (HARD) so it is skipped; only G1 imports.
+    expect(result.peopleImported).toBe(1)
+    expect(result.skippedRows).toBe(1)
+
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(people.map((p) => p.externalRef)).not.toContain("G2")
+    })
+  })
+
+  it("ignores an invalid override value and still skips the row", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: BLANK_GENDER_CSV,
+      columnMap: BLANK_GENDER_MAP,
+      payYear: 2026,
+      // "Unknown" is not a valid override value; the row stays skipped.
+      genderOverrides: [["G2", "Unknown"]],
+    })
+
+    expect(result.ok).toBe(true)
+    expect(result.peopleImported).toBe(1)
+    expect(result.skippedRows).toBe(1)
+
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(people.map((p) => p.externalRef)).not.toContain("G2")
+    })
+  })
+
+  it("still skips a row that has a gender override AND a duplicateId issue", async () => {
+    // CSV: G1 is unique; G2 appears twice (Frida with explicit gender, Anna with
+    // blank gender). validateImport flags duplicateId on BOTH G2 rows (first
+    // occurrence is also flagged when a duplicate is detected). The second G2
+    // (Anna) additionally has unresolvedGender. A genderOverrides entry for G2
+    // covers unresolvedGender, but duplicateId is still a HARD issue on both
+    // rows, so neither G2 row imports. Only G1 should be imported.
+    const dupCsv =
+      "Id,Fornamn,Kon,Manadslon,Befattning\nG1,Erik,Man,45000,Developer\nG2,Frida,Kvinna,47000,Designer\nG2,Anna,,48000,Analyst\n"
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: dupCsv,
+      columnMap: BLANK_GENDER_MAP,
+      payYear: 2026,
+      // G2 (row 2, Anna) has both duplicateId AND unresolvedGender;
+      // the override covers unresolvedGender but duplicateId is still HARD,
+      // so that row stays skipped. G2 (row 1, Frida) also has duplicateId,
+      // so it is skipped too. Only G1 imports.
+      genderOverrides: [["G2", "Kvinna"]],
+    })
+
+    expect(result.ok).toBe(true)
+    // Only G1 imports; both G2 rows are skipped due to duplicateId.
+    expect(result.peopleImported).toBe(1)
+    expect(result.skippedRows).toBe(2)
   })
 })
