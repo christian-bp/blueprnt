@@ -146,7 +146,20 @@
       "auditLog": "Tapahtumaloki",
       "accountSettings": "Tiliasetukset",
       "organization": "Organisaatio",
-      "signOut": "Kirjaudu ulos"
+      "signOut": "Kirjaudu ulos",
+      "people": "Henkilöstö"
+    },
+    "people": {
+      "heading": "Henkilöstö",
+      "description": "Palkanlaskentajärjestelmästä tuodut työntekijät.",
+      "empty": "Ei tuotuja työntekijöitä vielä.",
+      "import": "Tuo palkat",
+      "columns": {
+        "name": "Nimi",
+        "gender": "Sukupuoli",
+        "department": "Osasto",
+        "fte": "Työsuhde"
+      }
     },
     "auditLog": {
       "heading": "Tapahtumaloki",

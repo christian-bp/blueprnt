@@ -146,7 +146,20 @@
       "auditLog": "Händelselogg",
       "accountSettings": "Kontoinställningar",
       "organization": "Organisation",
-      "signOut": "Logga ut"
+      "signOut": "Logga ut",
+      "people": "Medarbetare"
+    },
+    "people": {
+      "heading": "Medarbetare",
+      "description": "Medarbetare importerade från ert lönesystem.",
+      "empty": "Inga medarbetare importerade än.",
+      "import": "Importera löner",
+      "columns": {
+        "name": "Namn",
+        "gender": "Kön",
+        "department": "Avdelning",
+        "fte": "Sysselsättningsgrad"
+      }
     },
     "auditLog": {
       "heading": "Händelselogg",

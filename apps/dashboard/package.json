@@ -23,6 +23,7 @@
     "@workspace/backend": "workspace:*",
     "@workspace/constants": "workspace:*",
     "@workspace/i18n": "workspace:*",
+    "@workspace/import": "workspace:*",
     "@workspace/ui": "workspace:*",
     "better-auth": "1.6.17",
     "convex": "^1.42.0",

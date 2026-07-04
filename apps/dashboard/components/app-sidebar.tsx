@@ -5,6 +5,7 @@ import {
   Briefcase01Icon,
   Home01Icon,
   Layers01Icon,
+  UserGroup03Icon,
   UserMultipleIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -47,6 +48,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       title: t("nav.model"),
       url: "/model",
       icon: <HugeiconsIcon icon={Layers01Icon} strokeWidth={2} />,
+    },
+    {
+      title: t("nav.people"),
+      url: "/people",
+      icon: <HugeiconsIcon icon={UserGroup03Icon} strokeWidth={2} />,
     },
   ]
 

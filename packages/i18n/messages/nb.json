@@ -146,7 +146,20 @@
       "auditLog": "Hendelseslogg",
       "accountSettings": "Kontoinnstillinger",
       "organization": "Organisasjon",
-      "signOut": "Logg ut"
+      "signOut": "Logg ut",
+      "people": "Ansatte"
+    },
+    "people": {
+      "heading": "Ansatte",
+      "description": "Ansatte importert fra lønnssystemet.",
+      "empty": "Ingen ansatte importert ennå.",
+      "import": "Importer lønninger",
+      "columns": {
+        "name": "Navn",
+        "gender": "Kjønn",
+        "department": "Avdeling",
+        "fte": "Stilling"
+      }
     },
     "auditLog": {
       "heading": "Hendelseslogg",

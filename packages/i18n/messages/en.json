@@ -146,7 +146,20 @@
       "auditLog": "Audit log",
       "accountSettings": "Account settings",
       "organization": "Organization",
-      "signOut": "Sign out"
+      "signOut": "Sign out",
+      "people": "People"
+    },
+    "people": {
+      "heading": "People",
+      "description": "Employees imported from your payroll system.",
+      "empty": "No employees imported yet.",
+      "import": "Import salaries",
+      "columns": {
+        "name": "Name",
+        "gender": "Gender",
+        "department": "Department",
+        "fte": "FTE"
+      }
     },
     "auditLog": {
       "heading": "Audit log",
