@@ -1,8 +1,8 @@
 import { isValidLevelForTrack } from "@workspace/constants"
 import { v } from "convex/values"
 import type { Doc, Id } from "../_generated/dataModel"
-import type { QueryCtx } from "../_generated/server"
-import { AUDIT_EVENTS, buildChanges } from "../lib/audit"
+import type { MutationCtx, QueryCtx } from "../_generated/server"
+import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 import { requireOwnRole } from "../assessment/roles"
@@ -62,6 +62,99 @@ async function loadPersonAssignments(
     .collect()
 }
 
+// Shared assignment write. Validates the level against the role's track,
+// enforces the strictly-chronological guard against the current open
+// assignment, closes that open assignment, inserts the new row, and writes the
+// assignment.set audit row. Callers MUST have already asserted that personId
+// and roleId belong to orgId (requireOwnPerson / requireOwnRole). Both the
+// public assignPersonToRole mutation and runClassificationSuggestions
+// (people/classification.ts) write through this one code path (DRY).
+export async function writeAssignment(
+  ctx: MutationCtx,
+  args: {
+    orgId: string
+    actorId: string
+    personId: Id<"people">
+    roleId: Id<"roles">
+    level: string
+    levelSource: "suggested" | "confirmed"
+    effectiveAt: number
+  }
+): Promise<Id<"personAssignments">> {
+  const role = await ctx.db.get(args.roleId)
+  // Caller asserted ownership; this is a defensive re-read for the trackKey.
+  if (role === null || role.orgId !== args.orgId) {
+    throw appError(ERROR_CODES.notFound)
+  }
+
+  // Validate level against the role's track.
+  if (!isValidLevelForTrack(role.trackKey, args.level)) {
+    throw appError(ERROR_CODES.invalidLevel)
+  }
+
+  // Find and close the current open assignment, if any.
+  // A person's assignment count is small so a collect + find is safe.
+  const all = await loadPersonAssignments(ctx, args.orgId, args.personId)
+  const openAssignment = all.find((a) => a.endedAt === undefined) ?? null
+
+  // Guard: assignments must be strictly chronological. If the new effectiveAt
+  // is <= the current open assignment's effectiveAt, closing the open row
+  // would set its endedAt <= its own effectiveAt, producing a broken interval
+  // (zero-length or inverted). Proper out-of-order timeline insertion is
+  // deferred to V2-core; V1 assumes each new assignment is always the latest.
+  if (
+    openAssignment !== null &&
+    args.effectiveAt <= openAssignment.effectiveAt
+  ) {
+    throw appError(ERROR_CODES.invalidEffectiveDate)
+  }
+
+  const prevSnapshot: Record<string, unknown> = {
+    roleId: null,
+    level: null,
+    levelSource: null,
+  }
+
+  if (openAssignment !== null) {
+    await ctx.db.patch(openAssignment._id, { endedAt: args.effectiveAt })
+    prevSnapshot.roleId = openAssignment.roleId
+    prevSnapshot.level = openAssignment.level
+    prevSnapshot.levelSource = openAssignment.levelSource
+  }
+
+  const nextSnapshot: Record<string, unknown> = {
+    roleId: args.roleId,
+    level: args.level,
+    levelSource: args.levelSource,
+  }
+
+  const assignmentId = await ctx.db.insert("personAssignments", {
+    orgId: args.orgId,
+    personId: args.personId,
+    roleId: args.roleId,
+    level: args.level,
+    levelSource: args.levelSource,
+    effectiveAt: args.effectiveAt,
+  })
+
+  await logAudit(ctx, {
+    orgId: args.orgId,
+    actorId: args.actorId,
+    type: AUDIT_EVENTS.assignmentSet,
+    payload: {
+      personId: args.personId,
+      roleId: args.roleId,
+      changes: buildChanges(
+        prevSnapshot,
+        nextSnapshot,
+        ASSIGNMENT_AUDIT_FIELDS
+      ),
+    },
+  })
+
+  return assignmentId
+}
+
 // Assign a person to a role at a given seniority level.
 // If the person has an open assignment (no endedAt), it is closed first by
 // setting its endedAt = effectiveAt. The new assignment becomes the active one.
@@ -78,72 +171,17 @@ export const assignPersonToRole = orgMutation({
   handler: async (ctx, args) => {
     // Assert both entities belong to the caller's org.
     await requireOwnPerson(ctx, args.personId)
-    const role = await requireOwnRole(ctx, args.roleId)
+    await requireOwnRole(ctx, args.roleId)
 
-    // Validate level against the role's track.
-    if (!isValidLevelForTrack(role.trackKey, args.level)) {
-      throw appError(ERROR_CODES.invalidLevel)
-    }
-
-    const effectiveAt = args.effectiveAt ?? Date.now()
-
-    // Find and close the current open assignment, if any.
-    // A person's assignment count is small so a collect + find is safe.
-    const all = await loadPersonAssignments(ctx, ctx.orgId, args.personId)
-    const openAssignment = all.find((a) => a.endedAt === undefined) ?? null
-
-    // Guard: assignments must be strictly chronological. If the new effectiveAt
-    // is <= the current open assignment's effectiveAt, closing the open row
-    // would set its endedAt <= its own effectiveAt, producing a broken interval
-    // (zero-length or inverted). Proper out-of-order timeline insertion
-    // (inserting a past assignment into the middle of the history) is deferred
-    // to V2-core; V1 assumes each new assignment is always the latest.
-    if (openAssignment !== null && effectiveAt <= openAssignment.effectiveAt) {
-      throw appError(ERROR_CODES.invalidEffectiveDate)
-    }
-
-    const prevSnapshot: Record<string, unknown> = {
-      roleId: null,
-      level: null,
-      levelSource: null,
-    }
-
-    if (openAssignment !== null) {
-      await ctx.db.patch(openAssignment._id, { endedAt: effectiveAt })
-      prevSnapshot.roleId = openAssignment.roleId
-      prevSnapshot.level = openAssignment.level
-      prevSnapshot.levelSource = openAssignment.levelSource
-    }
-
-    const nextSnapshot: Record<string, unknown> = {
-      roleId: args.roleId,
-      level: args.level,
-      levelSource: args.levelSource,
-    }
-
-    const assignmentId = await ctx.db.insert("personAssignments", {
+    return await writeAssignment(ctx, {
       orgId: ctx.orgId,
+      actorId: ctx.authUserId,
       personId: args.personId,
       roleId: args.roleId,
       level: args.level,
       levelSource: args.levelSource,
-      effectiveAt,
+      effectiveAt: args.effectiveAt ?? Date.now(),
     })
-
-    await ctx.audit.log({
-      type: AUDIT_EVENTS.assignmentSet,
-      payload: {
-        personId: args.personId,
-        roleId: args.roleId,
-        changes: buildChanges(
-          prevSnapshot,
-          nextSnapshot,
-          ASSIGNMENT_AUDIT_FIELDS
-        ),
-      },
-    })
-
-    return assignmentId
   },
 })
 
