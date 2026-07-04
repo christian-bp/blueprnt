@@ -1,0 +1,27 @@
+apps/dashboard/app/(app)/people/classify/page.tsx
+  s_6bff98b662648b::t_65d638417d5fe3 10-13,55-59,72
+  s_6bff98b662648b::t_693d75a5cb47b7 4
+apps/dashboard/components/people/people-section.tsx
+  s_6bff98b662648b::t_8150b986da3ca6 124-132
+  s_6bff98b662648b::t_421893791fa439 28
+apps/dashboard/components/people/classify/classify-person-rows.tsx
+  s_6bff98b662648b::t_0076ebfa30078d 45-52,93-96,99,101-102,104,106,117-119,121,123,125,141-144
+apps/dashboard/components/people/classify/classify-title-table.tsx
+  s_6bff98b662648b::t_b5da52b2321b50 27,138-180,218-221,302-305,308-329,331-338,361,375,377-379,381-382,437-439,486-487,491,500-508,511,513-538,540,543
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "39ffe4478495c2eb53076298358f8af9719f0d19",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
