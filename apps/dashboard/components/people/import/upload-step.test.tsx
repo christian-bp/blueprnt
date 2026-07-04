@@ -7,21 +7,46 @@ import {
 } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
+import React from "react"
 import { afterEach, describe, expect, it, vi } from "vitest"
+import { ImportWizard } from "./import-wizard"
+
+// Motion passthrough component: strips motion-specific props and renders a
+// plain element so tests are unaffected by animation details.
+function MotionEl(tag: string) {
+  return function MockMotionElement({
+    children,
+    // Strip props that are only valid on motion elements, not DOM elements.
+    initial: _i,
+    animate: _a,
+    exit: _e,
+    transition: _t,
+    variants: _v,
+    style,
+    className,
+    ...rest
+  }: Record<string, unknown> & { children?: React.ReactNode }) {
+    return React.createElement(tag, { style, className, ...rest }, children)
+  }
+}
 
 // Mock motion/react to avoid animation complexity in tests.
 vi.mock("motion/react", () => ({
   AnimatePresence: ({ children }: { children: React.ReactNode }) => (
     <>{children}</>
   ),
-  motion: {
-    div: ({
-      children,
-      ...props
-    }: React.HTMLAttributes<HTMLDivElement> & {
-      children?: React.ReactNode
-    }) => <div {...props}>{children}</div>,
-  },
+  motion: new Proxy(
+    {},
+    {
+      get(_target, tag: string) {
+        return MotionEl(tag)
+      },
+    }
+  ),
+  useReducedMotion: () => false,
+  MotionConfig: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
 }))
 
 // Mock next/link with a plain <a>.
@@ -40,8 +65,34 @@ vi.mock("@/components/account-menu", () => ({
   AccountMenu: () => null,
 }))
 
+// Mock AuthShell to a plain pass-through so wizard tests avoid deep dependency
+// chains (BackgroundAurora, TextEffect, OnboardingDots) that are not relevant
+// to the button-gating assertion.
+vi.mock("@/components/auth/auth-shell", () => ({
+  AuthShell: ({
+    children,
+    footer,
+  }: {
+    children: React.ReactNode
+    footer?: React.ReactNode
+    headerRight?: React.ReactNode
+    contentClassName?: string
+  }) => (
+    <div>
+      {children}
+      {footer}
+    </div>
+  ),
+}))
+
+// Mock OnboardingDots to avoid its internal motion dependencies.
+vi.mock("@/components/onboarding/onboarding-dots", () => ({
+  OnboardingDots: () => null,
+}))
+
 import { handleCsvText } from "./upload-step"
 import { UploadStep } from "./upload-step"
+import type { ParsedCsv } from "./import-wizard"
 
 const FIXTURE_CSV = `name,department,gender,salary
 Alice Svensson,Engineering,Kvinna,55000
@@ -52,7 +103,7 @@ const m = messages.dashboard.people.import
 
 function renderUploadStep({
   parsed = null,
-  onParsed = vi.fn(),
+  onParsed = vi.fn() as Parameters<typeof UploadStep>[0]["onParsed"],
 }: {
   parsed?: Parameters<typeof UploadStep>[0]["parsed"]
   onParsed?: Parameters<typeof UploadStep>[0]["onParsed"]
@@ -148,8 +199,8 @@ describe("UploadStep component", () => {
     expect(summary.textContent).toContain("3")
   })
 
-  it("calls onParsed and clears error when a valid CSV file is dropped", async () => {
-    const onParsed = vi.fn()
+  it("calls onParsed with parsed result and raw csvText when a valid CSV file is dropped", async () => {
+    const onParsed = vi.fn<(result: ParsedCsv, csvText: string) => void>()
     renderUploadStep({ onParsed })
 
     const dropZone = screen.getByRole("region")
@@ -162,11 +213,12 @@ describe("UploadStep component", () => {
     await waitFor(() => {
       expect(onParsed).toHaveBeenCalledOnce()
     })
-    const [arg] = onParsed.mock.calls[0] as [
-      { headers: string[]; rows: string[][] },
-    ]
-    expect(arg.headers).toEqual(["name", "department", "gender", "salary"])
-    expect(arg.rows).toHaveLength(3)
+    // biome-ignore lint/style/noNonNullAssertion: guaranteed by toHaveBeenCalledOnce above
+    const [parsed, csvText] = onParsed.mock.calls[0]!
+    expect(parsed.headers).toEqual(["name", "department", "gender", "salary"])
+    expect(parsed.rows).toHaveLength(3)
+    // Raw text must be forwarded so Task 5's importPayroll action can use it.
+    expect(csvText).toBe(FIXTURE_CSV)
   })
 
   it("shows errorNotCsv when a non-CSV file is selected via file input", async () => {
@@ -206,5 +258,47 @@ describe("UploadStep component", () => {
     })
     // onParsed must not have been called.
     expect(onParsed).not.toHaveBeenCalled()
+  })
+})
+
+describe("ImportWizard — Next button gating", () => {
+  afterEach(() => {
+    cleanup()
+  })
+
+  function renderWizard() {
+    return render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <ImportWizard />
+      </NextIntlClientProvider>
+    )
+  }
+
+  it("disables the Next button before a CSV is parsed", () => {
+    renderWizard()
+    const nextButton = screen.getByRole("button", {
+      name: messages.dashboard.people.import.next,
+    })
+    expect(nextButton).toHaveProperty("disabled", true)
+  })
+
+  it("enables the Next button after a valid CSV is successfully parsed", async () => {
+    renderWizard()
+
+    const dropZone = screen.getByRole("region")
+    const file = new File([FIXTURE_CSV], "payroll.csv", { type: "text/csv" })
+
+    fireEvent.drop(dropZone, {
+      dataTransfer: { files: [file] },
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("detected-summary")).not.toBeNull()
+    })
+
+    const nextButton = screen.getByRole("button", {
+      name: messages.dashboard.people.import.next,
+    })
+    expect(nextButton).toHaveProperty("disabled", false)
   })
 })

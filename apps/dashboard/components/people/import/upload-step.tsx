@@ -33,7 +33,7 @@ export function UploadStep({
   onParsed,
 }: {
   parsed: ParsedCsv | null
-  onParsed: (result: ParsedCsv) => void
+  onParsed: (result: ParsedCsv, csvText: string) => void
 }) {
   const t = useTranslations("dashboard.people.import.upload")
   const [error, setError] = useState<"errorEmpty" | "errorNotCsv" | null>(null)
@@ -51,7 +51,7 @@ export function UploadStep({
         const result = handleCsvText(text)
         if (result.ok) {
           setError(null)
-          onParsed(result.parsed)
+          onParsed(result.parsed, text)
         } else {
           setError(result.error)
         }

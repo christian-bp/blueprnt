@@ -23,6 +23,8 @@ export interface ParsedCsv {
 interface WizardState {
   step: number
   parsed: ParsedCsv | null
+  // Raw CSV text retained so Task 5's importPayroll action can receive it.
+  csvText: string | null
   mapping: Record<string, number> | null
   validation: unknown | null
   result: unknown | null
@@ -42,6 +44,7 @@ export function ImportWizard() {
   const [state, setState] = useState<WizardState>({
     step: STEP_UPLOAD,
     parsed: null,
+    csvText: null,
     mapping: null,
     validation: null,
     result: null,
@@ -95,7 +98,9 @@ export function ImportWizard() {
           >
             <UploadStep
               parsed={state.parsed}
-              onParsed={(parsed) => setState((prev) => ({ ...prev, parsed }))}
+              onParsed={(parsed, csvText) =>
+                setState((prev) => ({ ...prev, parsed, csvText }))
+              }
             />
             <WizardFooter>
               {state.step > 0 && (
