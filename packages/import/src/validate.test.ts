@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest"
 import type { DetectedMapping } from "./detect.js"
 import type { CanonicalFieldKey } from "./fields.js"
 import { tokenizeCsv } from "./tokenize.js"
-import { ImportFormatError } from "./tokenize.js"
 import { validateFile, validateImport } from "./validate.js"
 
 // Real-derived 16-column Swedish payroll fixture.
