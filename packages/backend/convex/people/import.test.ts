@@ -328,6 +328,7 @@ describe("importPayroll (blocking validation)", () => {
     expect(result.ok).toBe(false)
     expect(result.peopleImported).toBe(0)
     expect(result.salariesImported).toBe(0)
+    expect(result.skippedRows).toBe(0)
     expect(result.validation.blocking).toContain("basicMonthly")
 
     // Nothing written to the DB.
@@ -352,6 +353,26 @@ describe("importPayroll (blocking validation)", () => {
         .collect()
       expect(importAudit).toHaveLength(0)
     })
+  })
+
+  it("blocking return has ok:false, zero counts, and skippedRows:0 (not rows.length)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    // MISSING_BASIC_MONTHLY_MAP omits basicMonthly, which is a required field.
+    // The fixture has 118 data rows, but none should be reflected in skippedRows
+    // because the import was blocked before any row was processed.
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: FIXTURE_CSV,
+      columnMap: MISSING_BASIC_MONTHLY_MAP,
+      payYear: 2026,
+    })
+
+    expect(result.ok).toBe(false)
+    expect(result.peopleImported).toBe(0)
+    expect(result.salariesImported).toBe(0)
+    expect(result.skippedRows).toBe(0)
   })
 
   it("returns ok:false when externalRef is not mapped", async () => {

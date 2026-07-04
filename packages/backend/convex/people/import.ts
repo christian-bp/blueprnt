@@ -117,12 +117,13 @@ export const importPayroll = action({
     }
 
     // Step 3: Hard-block when required fields are unmapped.
+    // skippedRows is 0 here: nothing was processed, so nothing was skipped.
     if (validation.blocking.length > 0) {
       return {
         ok: false,
         peopleImported: 0,
         salariesImported: 0,
-        skippedRows: rows.length,
+        skippedRows: 0,
         validation: normalizedValidation,
       }
     }
