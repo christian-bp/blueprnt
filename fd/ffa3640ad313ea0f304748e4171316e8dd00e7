@@ -1,0 +1,33 @@
+apps/dashboard/components/people/salary-form.tsx
+  s_6bff98b662648b::t_6eca5a79592ccf 65
+  s_6bff98b662648b::t_4d72931a6c68e3 234
+  s_6bff98b662648b::t_d8eb9078d99cc0 40,50
+  s_6bff98b662648b::t_5a0882b2f32091 30,34-37,56,62,84,122,140,201
+  s_6bff98b662648b::t_c493569e6e7a66 1-25,27-29,31,33,39,42-44,46-49,51-55,57-61,63-64,66-75,80-83,85-121,123-139,141-171,173-200,202-233,235-243
+  s_6bff98b662648b::t_a45dae203e4809 41
+  s_6bff98b662648b::t_841cae16203146 45,76-79,172
+  s_6bff98b662648b::t_2a9a620e5f6a61 26,32,38
+apps/dashboard/components/people/salary-form.test.tsx
+  s_6bff98b662648b::t_904936c8fdc23c 1-10,14-47
+  s_6bff98b662648b::t_a1bb6d6ab4defd 11-13
+apps/dashboard/components/people/person-detail.tsx
+  s_6bff98b662648b::t_b1a1ad374a54bc 187-188
+  s_6bff98b662648b::t_b9a8954e81e8c3 17
+  s_6bff98b662648b::t_972c8661cfb14f 56-65,78-79,82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "fdffa3640ad313ea0f304748e4171316e8dd00e7",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
