@@ -1,0 +1,42 @@
+apps/dashboard/components/people/import/review-step.test.tsx
+  s_6bff98b662648b::t_b4078b87305d06 135
+apps/dashboard/components/people/import/importing-step.test.tsx
+  s_6bff98b662648b::t_b4078b87305d06 45,91
+packages/backend/convex/people/tables.ts
+  s_6bff98b662648b::t_1fc322e7c01894 117-119
+apps/dashboard/components/people/import/review-step.tsx
+  s_6bff98b662648b::t_7663a58942f5f6 154-159
+  s_6bff98b662648b::t_0b8f8285689a32 200-201,212
+packages/backend/convex/people/importHelpers.ts
+  s_6bff98b662648b::t_79d807347f0848 59,72,78
+  s_6bff98b662648b::t_a8870596b6e770 103-106,108,113,118
+apps/dashboard/components/people/import/importing-step.tsx
+  s_6bff98b662648b::t_7248582a27db75 17,20-21,24
+packages/backend/convex/people/import.test.ts
+  s_6bff98b662648b::t_5fc2993f977e3a 864-892
+  s_6bff98b662648b::t_3f0e449e9efe04 822,828
+packages/backend/convex/people/import.ts
+  s_6bff98b662648b::t_3f0e449e9efe04 305,314,467
+  s_6bff98b662648b::t_b265e0b6f40ea5 108-110,114-115
+  s_6bff98b662648b::t_e483c180022a6f 3
+apps/dashboard/components/people/import/import-wizard.tsx
+  s_6bff98b662648b::t_a9f6732d1775da 70-73,106,201,364,367,374,381,463
+  s_6bff98b662648b::t_dd3aae8616820d 443-444
+  s_6bff98b662648b::t_2bba6b9d3df018 207
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "000735de22296be26576db74f631b191ad8db10d",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
