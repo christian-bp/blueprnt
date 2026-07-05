@@ -2,14 +2,24 @@
 
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
-import { useState } from "react"
-import Link from "next/link"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { AccountMenu } from "@/components/account-menu"
 import { AuthShell } from "@/components/auth/auth-shell"
 import { OnboardingDots } from "@/components/onboarding/onboarding-dots"
 import { ScreenShell } from "@/components/onboarding/screen-shell"
 import { WizardFooter } from "@/components/onboarding/wizard-footer"
 import { NextButton } from "@/components/onboarding/next-button"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@workspace/ui/components/alert-dialog"
 import { Button } from "@workspace/ui/components/button"
 import { CheckStep } from "./check-step"
 import { MapStep } from "./map-step"
@@ -55,6 +65,7 @@ export function ImportWizard() {
   // back to the People list. Reuse the existing people.detail "back to people"
   // label rather than duplicate the string.
   const tDetail = useTranslations("dashboard.people.detail")
+  const router = useRouter()
 
   const [state, setState] = useState<WizardState>({
     step: STEP_UPLOAD,
@@ -67,6 +78,27 @@ export function ImportWizard() {
     validation: null,
     result: null,
   })
+
+  const [discardOpen, setDiscardOpen] = useState(false)
+
+  // A file has been uploaded/parsed and the import has not yet completed.
+  // Nothing is persisted to the DB until the final Import action, so leaving
+  // is a clean discard, but we warn the user first when there is progress.
+  const hasProgress = state.parsed !== null && state.result === null
+
+  // Guard reload/close/tab-close with the browser's native beforeunload prompt.
+  // Note: in-app browser Back is not interceptable in the App Router; this covers
+  // reload/close and the explicit exit button below.
+  useEffect(() => {
+    if (!hasProgress) return
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault()
+    }
+    window.addEventListener("beforeunload", handler)
+    return () => {
+      window.removeEventListener("beforeunload", handler)
+    }
+  }, [hasProgress])
 
   const stepKeys = [
     "steps.upload",
@@ -247,44 +279,72 @@ export function ImportWizard() {
   }
 
   return (
-    <AuthShell
-      headerRight={
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/people">{tDetail("backToPeople")}</Link>
-          </Button>
-          <AccountMenu />
-        </div>
-      }
-      contentClassName="max-w-xl"
-      footer={
-        <OnboardingDots
-          steps={steps}
-          activeIndex={state.step}
-          maxReachedIndex={state.step}
-          navLabel={t("navLabel")}
-          onSelect={(index) => {
-            if (index < state.step) {
-              setState((prev) => ({ ...prev, step: index }))
-            }
-          }}
-        />
-      }
-    >
-      {/* Step crossfade: old screen fades out before new one fades in.
-          initial={false} prevents the first screen from fading on page load. */}
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={`step-${state.step}`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="w-full"
-        >
-          {renderStep()}
-        </motion.div>
-      </AnimatePresence>
-    </AuthShell>
+    <>
+      <AlertDialog open={discardOpen} onOpenChange={setDiscardOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("discard.title")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("discard.description")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("discard.keep")}</AlertDialogCancel>
+            <AlertDialogAction onClick={() => router.push("/people")}>
+              {t("discard.discard")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AuthShell
+        headerRight={
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                if (hasProgress) {
+                  setDiscardOpen(true)
+                } else {
+                  router.push("/people")
+                }
+              }}
+            >
+              {tDetail("backToPeople")}
+            </Button>
+            <AccountMenu />
+          </div>
+        }
+        contentClassName="max-w-xl"
+        footer={
+          <OnboardingDots
+            steps={steps}
+            activeIndex={state.step}
+            maxReachedIndex={state.step}
+            navLabel={t("navLabel")}
+            onSelect={(index) => {
+              if (index < state.step) {
+                setState((prev) => ({ ...prev, step: index }))
+              }
+            }}
+          />
+        }
+      >
+        {/* Step crossfade: old screen fades out before new one fades in.
+            initial={false} prevents the first screen from fading on page load. */}
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={`step-${state.step}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="w-full"
+          >
+            {renderStep()}
+          </motion.div>
+        </AnimatePresence>
+      </AuthShell>
+    </>
   )
 }

@@ -60,6 +60,22 @@ vi.mock("next/link", () => ({
   }) => <a href={href}>{children}</a>,
 }))
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn() }),
+}))
+
+vi.mock("convex/react", () => ({
+  useQuery: vi.fn(() => null),
+}))
+
+vi.mock("@/components/org-context", () => ({
+  useOrganization: () => ({
+    orgId: "org-test",
+    name: "Test Org",
+    role: "admin",
+  }),
+}))
+
 // Mock the account menu to avoid its Convex dependencies.
 vi.mock("@/components/account-menu", () => ({
   AccountMenu: () => null,

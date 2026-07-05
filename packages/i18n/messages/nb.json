@@ -267,6 +267,12 @@
           "importing": "Importerer...",
           "blockingTitle": "Obligatoriske felt er ikke tilordnet"
         },
+        "discard": {
+          "title": "Forkaste denne importen?",
+          "description": "Den opplastede filen og kolonnetilordningen vil gå tapt.",
+          "keep": "Fortsett å redigere",
+          "discard": "Forkast"
+        },
         "gender": {
           "Man": "Mann",
           "Kvinna": "Kvinne"

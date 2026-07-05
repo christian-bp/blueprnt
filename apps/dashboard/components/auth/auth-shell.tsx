@@ -4,11 +4,11 @@ import type { ReactNode } from "react"
 import { BrandPanel } from "@/components/auth/brand-panel"
 import { Logo } from "@/components/logo"
 
-// The shared split-screen frame for sign-in, password, 2FA, and onboarding.
-// Left: the branded panel (lg+ only). Right: a vertically centered, card-less
-// content column with optional top-right (account menu) and bottom (step dots)
-// slots, plus a mobile-only wordmark (the BrandPanel carries the wordmark on
-// desktop). Pass contentClassName to widen the content past the default max-w-sm
+// The shared split-screen frame for sign-in, password, 2FA, onboarding, and import.
+// Left: the branded panel (lg+ only). Right: a card pinned to viewport height.
+// The brand panel, headerRight slot, mobile wordmark, and footer (step dots)
+// stay fixed; only the <main> scrolls internally when content is taller than the
+// viewport. Pass contentClassName to widen the content past the default max-w-sm
 // (e.g. the onboarding steps).
 export function AuthShell({
   children,
@@ -23,13 +23,13 @@ export function AuthShell({
 }) {
   const t = useTranslations("dashboard")
   return (
-    <div className="flex min-h-svh bg-background">
+    <div className="flex h-svh bg-background">
       <BrandPanel />
       {/* Right side: a bordered, rounded, inset card on lg (the polyform login
-          treatment); full-bleed and borderless on mobile. The lg margins reveal
-          the light base, and the column stretches to the inset height via the
-          flex parent (so no min-h-svh is needed here). */}
-      <div className="relative flex w-full flex-col lg:my-2 lg:mr-2 lg:w-1/2 lg:rounded-2xl lg:border lg:border-border lg:bg-card">
+          treatment); full-bleed and borderless on mobile. min-h-0 + overflow-hidden
+          constrain the card to the frame height so the rounded corners clip
+          correctly and only <main> scrolls internally. */}
+      <div className="relative flex min-h-0 w-full flex-col overflow-hidden lg:my-2 lg:mr-2 lg:w-1/2 lg:rounded-2xl lg:border lg:border-border lg:bg-card">
         {headerRight ? (
           <div className="absolute top-4 right-4 z-10">{headerRight}</div>
         ) : null}
@@ -39,10 +39,14 @@ export function AuthShell({
           label={t("title")}
           className="relative z-10 m-6 h-8 self-start text-brand lg:hidden"
         />
-        <main className="flex flex-1 flex-col items-center justify-center p-6 md:p-10">
+        {/* Vertical centering is via my-auto on the child (not justify-center here),
+            so the content centers when it fits and scrolls from the top when it
+            overflows. justify-center on a scroll container clips the top of
+            overflowing content (the classic flexbox centering + overflow gotcha). */}
+        <main className="flex min-h-0 flex-1 flex-col items-center overflow-y-auto p-6 md:p-10">
           <div
             className={cn(
-              "flex w-full max-w-sm flex-col gap-8",
+              "my-auto flex w-full max-w-sm flex-col gap-8",
               contentClassName
             )}
           >

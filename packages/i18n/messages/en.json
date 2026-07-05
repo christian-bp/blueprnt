@@ -270,6 +270,12 @@
           "confirm": "Confirm import",
           "importing": "Importing...",
           "blockingTitle": "Required fields are not mapped"
+        },
+        "discard": {
+          "title": "Discard this import?",
+          "description": "Your uploaded file and column mapping will be lost.",
+          "keep": "Keep editing",
+          "discard": "Discard"
         }
       },
       "detail": {

@@ -267,6 +267,12 @@
           "importing": "Tuodaan...",
           "blockingTitle": "Pakolliset kentat eivat ole yhdistettyna"
         },
+        "discard": {
+          "title": "Hylätäänkö tämä tuonti?",
+          "description": "Ladattu tiedosto ja sarakkeiden yhdistäminen menetetään.",
+          "keep": "Jatka muokkaamista",
+          "discard": "Hylkää"
+        },
         "gender": {
           "Man": "Mies",
           "Kvinna": "Nainen"

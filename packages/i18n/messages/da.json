@@ -267,6 +267,12 @@
           "importing": "Importerer...",
           "blockingTitle": "Obligatoriske felter er ikke tilknyttet"
         },
+        "discard": {
+          "title": "Kassér denne import?",
+          "description": "Din uploadede fil og kolonnetilknytning vil gå tabt.",
+          "keep": "Fortsæt med at redigere",
+          "discard": "Kassér"
+        },
         "gender": {
           "Man": "Mand",
           "Kvinna": "Kvinde"

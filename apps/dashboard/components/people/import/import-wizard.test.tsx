@@ -68,6 +68,11 @@ vi.mock("next/link", () => ({
   }) => <a href={href}>{children}</a>,
 }))
 
+const mockPush = vi.fn()
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockPush }),
+}))
+
 vi.mock("@/components/account-menu", () => ({
   AccountMenu: () => null,
 }))
@@ -76,6 +81,7 @@ vi.mock("@/components/auth/auth-shell", () => ({
   AuthShell: ({
     children,
     footer,
+    headerRight,
   }: {
     children: React.ReactNode
     footer?: React.ReactNode
@@ -83,6 +89,7 @@ vi.mock("@/components/auth/auth-shell", () => ({
     contentClassName?: string
   }) => (
     <div>
+      {headerRight}
       {children}
       {footer}
     </div>
@@ -250,5 +257,41 @@ describe("ImportWizard: mapping reset on header change", () => {
     // column 0 is still "EmployeeID".
     const col0Row = screen.getByTestId("map-column-0")
     expect(col0Row.textContent).toContain("EmployeeID")
+  })
+})
+
+describe("ImportWizard: guarded exit (hasProgress)", () => {
+  afterEach(() => {
+    cleanup()
+    vi.clearAllMocks()
+  })
+
+  it("navigates directly to /people when no file has been uploaded (hasProgress false)", () => {
+    renderWizard()
+    // No file uploaded: hasProgress is false.
+    const backBtn = screen.getByRole("button", {
+      name: messages.dashboard.people.detail.backToPeople,
+    })
+    fireEvent.click(backBtn)
+    expect(mockPush).toHaveBeenCalledWith("/people")
+  })
+
+  it("opens the discard dialog instead of navigating when a file has been uploaded (hasProgress true)", async () => {
+    renderWizard()
+    // Upload a file so hasProgress becomes true.
+    await dropCsv(CSV_A, "fileA.csv")
+
+    const backBtn = screen.getByRole("button", {
+      name: messages.dashboard.people.detail.backToPeople,
+    })
+    fireEvent.click(backBtn)
+
+    // router.push should NOT have been called yet (dialog opens first).
+    expect(mockPush).not.toHaveBeenCalled()
+
+    // The discard dialog title should be visible.
+    expect(
+      screen.getByText(messages.dashboard.people.import.discard.title)
+    ).toBeDefined()
   })
 })

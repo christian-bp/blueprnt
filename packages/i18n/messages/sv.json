@@ -267,6 +267,12 @@
           "importing": "Importerar...",
           "blockingTitle": "Obligatoriska fält är inte mappade"
         },
+        "discard": {
+          "title": "Avbryta importen?",
+          "description": "Din uppladdade fil och kolumnmappning kommer att gå förlorade.",
+          "keep": "Fortsätt redigera",
+          "discard": "Avbryt"
+        },
         "gender": {
           "Man": "Man",
           "Kvinna": "Kvinna"
