@@ -1,0 +1,46 @@
+apps/dashboard/components/people/import/import-wizard.tsx
+  s_6bff98b662648b::t_cd827c76fdd8c4 3-4
+  s_6bff98b662648b::t_13a08aab84031a 300-301,313
+  s_6bff98b662648b::t_2e099695a9c0c5 24
+  s_6bff98b662648b::t_f60cfa00ab4fa2 345
+apps/dashboard/components/onboarding/onboarding-wizard.tsx
+  s_6bff98b662648b::t_491986f5ae5ceb 10-11
+  s_6bff98b662648b::t_e96931391604f2 133-134
+  s_6bff98b662648b::t_1a9c911c882e13 269
+  s_6bff98b662648b::t_a04b9920fe1b43 180-184,188,192,198,200
+  s_6bff98b662648b::t_ba5c49f52eba3a 233-234
+apps/dashboard/components/wizard-shell.tsx
+  s_6bff98b662648b::t_610f5174f9c200 1-92
+apps/dashboard/components/people/import/upload-step.test.tsx
+  s_6bff98b662648b::t_83ee6d0f756ebe 84-88,94
+apps/dashboard/app/(app)/people/import/page.tsx
+  s_6bff98b662648b::t_b258ff02b40a08 3-5,10
+apps/dashboard/components/onboarding/onboarding-wizard.test.tsx
+  s_6bff98b662648b::t_4da088692c29dd 24-27,29,34
+apps/dashboard/components/auth/auth-shell.tsx
+  s_6bff98b662648b::t_6132a6c46e008e 3,9-14,29-32,36-37
+apps/dashboard/components/auth/auth-shell.test.tsx
+  s_6bff98b662648b::t_6f1ff52040ac6b 11-17
+apps/dashboard/components/wizard-shell.test.tsx
+  s_6bff98b662648b::t_968c9c3f0af205 1-40
+apps/dashboard/components/auth/brand-panel.tsx
+  s_6bff98b662648b::t_df97ad2d4c5a2c 4-7
+apps/dashboard/components/people/import/import-wizard.test.tsx
+  s_6bff98b662648b::t_6797927a3d3420 80-81,84,89,94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "a880a34bcc94f3cb055913f00dd37a40a9f7adc0",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
