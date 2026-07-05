@@ -281,6 +281,7 @@
         "importing": {
           "title": "Importing people",
           "description": "Your people are being imported. Keep this window open until it finishes.",
+          "working": "Importing...",
           "progressCount": "{processed} of {total} rows"
         },
         "done": {

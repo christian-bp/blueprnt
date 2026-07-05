@@ -33,8 +33,11 @@ export function ImportingStep() {
 
   return (
     <div className="flex w-full flex-col items-center gap-4">
-      {/* Decorative: the Progress element carries the accessible state. */}
-      <Spinner aria-hidden="true" className="size-6 text-brand" />
+      <div className="flex items-center gap-2">
+        {/* Decorative: the Progress element carries the accessible state. */}
+        <Spinner aria-hidden="true" className="text-brand" />
+        <span className="text-muted-foreground text-sm">{t("working")}</span>
+      </div>
       <Progress
         value={pct}
         aria-label={t("title")}

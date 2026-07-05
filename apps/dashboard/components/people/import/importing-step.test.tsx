@@ -58,10 +58,13 @@ describe("ImportingStep", () => {
     renderStep()
     // The bar shows no fake progress during the setup phase.
     expect(remaining()).toBe(100)
-    // The spinner is the loading indicator meanwhile.
+    // The spinner with its label is the loading indicator meanwhile.
     expect(
       document.querySelector('[aria-hidden="true"].animate-spin')
     ).not.toBeNull()
+    expect(
+      screen.getByText(messages.dashboard.people.import.importing.working)
+    ).toBeDefined()
     // No counts shown without real progress.
     expect(screen.getByTestId("import-progress-count").textContent).toBe("")
   })
