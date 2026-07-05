@@ -1,0 +1,45 @@
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_f9581366714b32 626,629,632
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_f9581366714b32 626,629,632
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_f9581366714b32 626,629,632
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_f9581366714b32 626,629,632
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_f9581366714b32 626,629,632
+apps/dashboard/components/overview/todo-widget.test.tsx
+  s_6bff98b662648b::t_7889297ff82b7c 34-69
+apps/dashboard/app/(app)/page.test.tsx
+  s_6bff98b662648b::t_97c7ba6e2a648b 57
+apps/dashboard/components/overview/todo-group.tsx
+  s_6bff98b662648b::t_83777c4b9815be 15,22-33
+  s_6bff98b662648b::t_517c906c0cbba1 73-77
+apps/dashboard/hooks/use-todo.ts
+  s_6bff98b662648b::t_a688c42783e53d 7-11,18-28
+apps/dashboard/lib/todo.ts
+  s_6bff98b662648b::t_bfb5be1954352b 148-153
+  s_6bff98b662648b::t_87858dce9a5e7c 8,30-38,41
+  s_6bff98b662648b::t_a5a860dda612b2 67-78,85-102
+  s_6bff98b662648b::t_6e6e26d3046be7 80-84
+  s_6bff98b662648b::t_8ac672b8d89184 180
+apps/dashboard/lib/todo.test.ts
+  s_6bff98b662648b::t_36fbf63afa81c8 37,48,66,75,106,123
+  s_6bff98b662648b::t_1167c29cc9e02d 126-190
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "116f648a94354d4d5ea90928904e6e67b25b1c70",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
