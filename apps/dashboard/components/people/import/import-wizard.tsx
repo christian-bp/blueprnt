@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { AccountMenu } from "@/components/account-menu"
 import { AuthShell } from "@/components/auth/auth-shell"
 import { OnboardingDots } from "@/components/onboarding/onboarding-dots"
 import { ScreenShell } from "@/components/onboarding/screen-shell"
@@ -298,22 +297,19 @@ export function ImportWizard() {
       </AlertDialog>
       <AuthShell
         headerRight={
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                if (hasProgress) {
-                  setDiscardOpen(true)
-                } else {
-                  router.push("/people")
-                }
-              }}
-            >
-              {tDetail("backToPeople")}
-            </Button>
-            <AccountMenu />
-          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              if (hasProgress) {
+                setDiscardOpen(true)
+              } else {
+                router.push("/people")
+              }
+            }}
+          >
+            {tDetail("backToPeople")}
+          </Button>
         }
         contentClassName="max-w-xl"
         footer={
