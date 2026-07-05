@@ -39,6 +39,7 @@ import { PersonDetail } from "./person-detail"
 // Fixtures
 const PERSON = {
   personId: "p1",
+  publicId: "pub-p1",
   displayName: "Alex Doe",
   gender: "Kvinna",
   externalRef: "E-1",
@@ -90,11 +91,11 @@ const ROLES = [
 const m = messages.dashboard.people.detail
 
 // Route queries by the stringified function ref path, exactly as the proxy in
-// convex-mocks.ts stringifies api.people.people.getPerson to
-// "people.people.getPerson". This is the same robust pattern used in
+// convex-mocks.ts stringifies api.people.people.getPersonByPublicId to
+// "people.people.getPersonByPublicId". This is the same robust pattern used in
 // people-section.test.tsx: no call-order counters, no render-phase side effects.
 function queryRouter(ref: string): unknown {
-  if (ref === "people.people.getPerson") return PERSON
+  if (ref === "people.people.getPersonByPublicId") return PERSON
   if (ref === "people.assignments.getCurrentAssignment") return ASSIGNMENT
   if (ref === "people.pay.getSalaryHistory") return SALARY
   if (ref === "assessment.roles.listRoles") return ROLES
@@ -104,7 +105,7 @@ function queryRouter(ref: string): unknown {
 function renderDetail() {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <PersonDetail personId="p1" />
+      <PersonDetail publicId="pub-p1" />
     </NextIntlClientProvider>
   )
 }
@@ -127,9 +128,9 @@ describe("PersonDetail", () => {
     expect(screen.getAllByText("50000").length).toBeGreaterThanOrEqual(1)
   })
 
-  it("shows the loading skeleton when getPerson is undefined", () => {
+  it("shows the loading skeleton when the person is still resolving", () => {
     onQuery((ref) => {
-      if (ref === "people.people.getPerson") return undefined
+      if (ref === "people.people.getPersonByPublicId") return undefined
       return queryRouter(ref)
     })
     renderDetail()
@@ -137,9 +138,9 @@ describe("PersonDetail", () => {
     expect(screen.queryByText("Alex Doe")).toBeNull()
   })
 
-  it("shows not-found state when getPerson returns null", () => {
+  it("shows not-found state when the publicId resolves to nothing", () => {
     onQuery((ref) => {
-      if (ref === "people.people.getPerson") return null
+      if (ref === "people.people.getPersonByPublicId") return null
       // salary must also be defined to pass the undefined loading gate
       if (ref === "people.pay.getSalaryHistory") return []
       return queryRouter(ref)

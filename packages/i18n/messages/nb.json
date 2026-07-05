@@ -324,6 +324,7 @@
       },
       "detail": {
         "backToPeople": "Tilbake til ansatte",
+        "actionsMenu": "Handlinger for ansatt",
         "identityHeading": "Ansatt",
         "externalRef": "Ansattnummer",
         "employmentStartDate": "Startdato",

@@ -324,6 +324,7 @@
       },
       "detail": {
         "backToPeople": "Tilbage til medarbejdere",
+        "actionsMenu": "Handlinger for medarbejder",
         "identityHeading": "Medarbejder",
         "externalRef": "Medarbejdernummer",
         "employmentStartDate": "Startdato",

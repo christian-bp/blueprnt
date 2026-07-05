@@ -11,6 +11,7 @@ import {
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
+import { uniquePersonPublicId } from "../lib/slug"
 
 // The optional person fields shared by createPerson and upsertPersonByExternalRef.
 const optionalPersonArgs = {
@@ -67,6 +68,7 @@ export const createPerson = orgMutation({
 
     const personId = await ctx.db.insert("people", {
       orgId: ctx.orgId,
+      publicId: await uniquePersonPublicId(ctx, ctx.orgId),
       displayName,
       gender: args.gender,
       ...(args.externalRef !== undefined
@@ -156,6 +158,7 @@ export const upsertPersonByExternalRef = internalMutation({
       // Insert path.
       const personId = await ctx.db.insert("people", {
         orgId: args.orgId,
+        publicId: await uniquePersonPublicId(ctx, args.orgId),
         externalRef: args.externalRef,
         displayName: args.displayName,
         gender: args.gender,
@@ -256,9 +259,10 @@ export const upsertPersonByExternalRef = internalMutation({
   },
 })
 
-// Person shape returned by listPeople and getPerson queries.
+// Person shape returned by listPeople and getPersonByPublicId queries.
 const personShape = v.object({
   personId: v.id("people"),
+  publicId: v.string(),
   displayName: v.string(),
   gender: v.union(v.literal("Man"), v.literal("Kvinna")),
   externalRef: v.union(v.string(), v.null()),
@@ -276,6 +280,7 @@ const personShape = v.object({
 function toPersonShape(person: Doc<"people">) {
   return {
     personId: person._id,
+    publicId: person.publicId,
     displayName: person.displayName,
     gender: person.gender,
     externalRef: person.externalRef ?? null,
@@ -309,13 +314,21 @@ export const listPeople = orgQuery({
   },
 })
 
-export const getPerson = orgQuery({
-  args: { personId: v.id("people") },
+// Route resolution for the person detail page: people are route-exposed by
+// their short random publicId (never the internal _id, never a name slug;
+// see lib/slug.ts). Resolves within the caller's org via by_org_publicId,
+// so a cross-org publicId simply misses.
+export const getPersonByPublicId = orgQuery({
+  args: { publicId: v.string() },
   returns: v.union(personShape, v.null()),
-  handler: async (ctx, { personId }) => {
-    const person = await ctx.db.get(personId)
-    if (person === null || person.orgId !== ctx.orgId) return null
-    return toPersonShape(person)
+  handler: async (ctx, { publicId }) => {
+    const person = await ctx.db
+      .query("people")
+      .withIndex("by_org_publicId", (q) =>
+        q.eq("orgId", ctx.orgId).eq("publicId", publicId)
+      )
+      .first()
+    return person !== null ? toPersonShape(person) : null
   },
 })
 

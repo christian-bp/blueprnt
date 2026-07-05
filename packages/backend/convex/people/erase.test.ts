@@ -316,6 +316,7 @@ describe("erasePersonAsOrg (org-scoped HR erasure)", () => {
       })
       const personId = await ctx.db.insert("people", {
         orgId,
+        publicId: "pub-test",
         externalRef: "E-1",
         displayName: "Test Person",
         gender: "Kvinna" as const,
@@ -379,6 +380,7 @@ describe("erasePersonAsOrg (org-scoped HR erasure)", () => {
     const foreignPersonId = await t.run(async (ctx) =>
       ctx.db.insert("people", {
         orgId: otherOrgId,
+        publicId: "pub-foreign",
         displayName: "Foreign",
         gender: "Man" as const,
       })
@@ -398,6 +400,7 @@ describe("erasePersonAsOrg (org-scoped HR erasure)", () => {
     const personId = await t.run(async (ctx) =>
       ctx.db.insert("people", {
         orgId,
+        publicId: "pub-test2",
         displayName: "Test",
         gender: "Man" as const,
       })

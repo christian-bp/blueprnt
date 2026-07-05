@@ -7,6 +7,9 @@ import { v } from "convex/values"
 // hard delete removes the row and anonymises any audit snapshots.
 export const people = defineTable({
   orgId: v.string(),
+  // Short random route key (uniquePersonPublicId): people are route-exposed
+  // but never name-slugged (PII in URLs) and never expose the internal _id.
+  publicId: v.string(),
   // Anstnr (employee number): the import upsert key from the payroll export.
   // Optional so manually created persons don't need a system reference.
   externalRef: v.optional(v.string()),
@@ -37,6 +40,8 @@ export const people = defineTable({
   .index("by_org", ["orgId"])
   // Compound index for import upsert: look up by org + employee number.
   .index("by_org_externalRef", ["orgId", "externalRef"])
+  // Route resolution: look up by org + public route key.
+  .index("by_org_publicId", ["orgId", "publicId"])
 
 // Role assignment per individual: connects a person to a role with a seniority
 // level. Effective-dated so history is preserved when an assignment changes.

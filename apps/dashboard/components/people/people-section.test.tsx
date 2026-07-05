@@ -39,6 +39,7 @@ const m = messages.dashboard.people
 const PEOPLE = [
   {
     personId: "p1",
+    publicId: "pub-p1",
     displayName: "Alice Svensson",
     gender: "Kvinna",
     department: "Engineering",
@@ -53,6 +54,7 @@ const PEOPLE = [
   },
   {
     personId: "p2",
+    publicId: "pub-p2",
     displayName: "Bob Larsson",
     gender: "Man",
     department: "Product",
@@ -67,6 +69,7 @@ const PEOPLE = [
   },
   {
     personId: "p3",
+    publicId: "pub-p3",
     displayName: "Charlie Nilsson",
     gender: null,
     department: null,
@@ -206,9 +209,9 @@ describe("PeopleSection", () => {
   it("links the person name cell to the detail route", () => {
     onQuery((ref) => queryRouter(ref))
     renderSection()
-    // Alice Svensson (personId "p1") should be a link to /people/p1.
+    // Alice Svensson links by her short publicId, never the internal id.
     const link = screen.getByRole("link", { name: "Alice Svensson" })
-    expect((link as HTMLAnchorElement).href).toContain("/people/p1")
+    expect((link as HTMLAnchorElement).href).toContain("/people/pub-p1")
   })
 
   it("shows confirmed badge for a person with confirmed assignment", () => {
@@ -354,6 +357,7 @@ describe("PeopleSection", () => {
     // 30 unclassified people: page 1 shows 25 rows, page 2 the last 5.
     const manyPeople = Array.from({ length: 30 }, (_, i) => ({
       personId: `p${i + 1}`,
+      publicId: `pub-${i + 1}`,
       displayName: `Person ${String(i + 1).padStart(2, "0")}`,
       gender: null,
       department: null,
@@ -392,6 +396,7 @@ describe("PeopleSection", () => {
   it("search resets to the first page", () => {
     const manyPeople = Array.from({ length: 30 }, (_, i) => ({
       personId: `p${i + 1}`,
+      publicId: `pub-${i + 1}`,
       displayName: `Person ${String(i + 1).padStart(2, "0")}`,
       gender: null,
       department: null,

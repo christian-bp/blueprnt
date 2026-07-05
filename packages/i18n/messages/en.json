@@ -324,6 +324,7 @@
       },
       "detail": {
         "backToPeople": "Back to people",
+        "actionsMenu": "Employee actions",
         "identityHeading": "Employee",
         "externalRef": "Employee number",
         "employmentStartDate": "Start date",

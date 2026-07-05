@@ -35,6 +35,7 @@ async function insertPerson(
   await t.run(async (ctx) => {
     await ctx.db.insert("people", {
       orgId,
+      publicId: crypto.randomUUID().slice(0, 8),
       displayName: `Person ${Math.random()}`,
       gender: "Man" as const,
       ...(opts.archivedAt !== undefined ? { archivedAt: opts.archivedAt } : {}),

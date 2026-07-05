@@ -324,6 +324,7 @@
       },
       "detail": {
         "backToPeople": "Takaisin henkilöstöön",
+        "actionsMenu": "Työntekijän toiminnot",
         "identityHeading": "Työntekijä",
         "externalRef": "Henkilönumero",
         "employmentStartDate": "Aloituspäivä",

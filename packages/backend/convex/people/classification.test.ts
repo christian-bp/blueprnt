@@ -38,6 +38,7 @@ async function seedPerson(
   return await t.run(async (ctx) =>
     ctx.db.insert("people", {
       orgId,
+      publicId: crypto.randomUUID().slice(0, 8),
       displayName: fields.displayName,
       gender: "Kvinna",
       ...(fields.title !== undefined ? { title: fields.title } : {}),

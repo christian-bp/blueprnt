@@ -13,7 +13,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@workspace/ui/components/alert-dialog"
-import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { useMutation } from "convex/react"
@@ -25,18 +24,23 @@ import { toast } from "sonner"
 import { z } from "zod"
 import { useOrganization } from "@/components/org-context"
 
-// Type-to-confirm erasure control. Mirrors the gate pattern in
+// Type-to-confirm erasure dialog. Mirrors the gate pattern in
 // admin/delete-user-dialog: RHF + a refine on the runtime token so
 // form.formState.isValid tracks "typed text equals the required token",
 // which gates the destructive AlertDialogAction. The input is a plain
 // register()ed field (no FormControl) so a partial match never glows the
 // field destructive-red. Calls the org-scoped erasePersonAsOrg on confirm,
-// then navigates to /people.
+// then navigates to /people. Controlled: the trigger lives in
+// PersonActionsMenu (the page's unified "..." menu), not here.
 export function ErasePersonControl({
+  open,
+  onOpenChange,
   personId,
   displayName,
   externalRef,
 }: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
   personId: Id<"people">
   displayName: string
   externalRef: string | null
@@ -46,7 +50,6 @@ export function ErasePersonControl({
   const { orgId } = useOrganization()
   const erasePerson = useMutation(api.people.erase.erasePersonAsOrg)
   const router = useRouter()
-  const [open, setOpen] = useState(false)
   const [busy, setBusy] = useState(false)
   const [failed, setFailed] = useState(false)
 
@@ -75,7 +78,7 @@ export function ErasePersonControl({
       form.reset({ confirmText: "" })
       setFailed(false)
     }
-    setOpen(next)
+    onOpenChange(next)
   }
 
   async function handleDelete() {
@@ -96,51 +99,46 @@ export function ErasePersonControl({
   }
 
   return (
-    <>
-      <Button variant="destructive" onClick={() => setOpen(true)}>
-        {t("trigger")}
-      </Button>
-      <AlertDialog open={open} onOpenChange={handleOpenChange}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {t("title", { name: displayName })}
-            </AlertDialogTitle>
-            <AlertDialogDescription>{t("description")}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="space-y-2">
-            <Label htmlFor={inputId}>
-              {externalRef !== null
-                ? t("confirmLabel", { externalRef })
-                : t("confirmNoRef")}
-            </Label>
-            <Input
-              id={inputId}
-              autoComplete="off"
-              {...form.register("confirmText")}
-            />
-          </div>
-          {failed && (
-            <p role="alert" className="text-destructive text-sm">
-              {t("error")}
-            </p>
-          )}
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={busy}>{t("cancel")}</AlertDialogCancel>
-            <AlertDialogAction
-              variant="destructive"
-              disabled={!confirmed || busy}
-              onClick={(event) => {
-                // Keep the dialog mounted; we close it ourselves on success.
-                event.preventDefault()
-                void handleDelete()
-              }}
-            >
-              {t("confirm")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+    <AlertDialog open={open} onOpenChange={handleOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            {t("title", { name: displayName })}
+          </AlertDialogTitle>
+          <AlertDialogDescription>{t("description")}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <div className="space-y-2">
+          <Label htmlFor={inputId}>
+            {externalRef !== null
+              ? t("confirmLabel", { externalRef })
+              : t("confirmNoRef")}
+          </Label>
+          <Input
+            id={inputId}
+            autoComplete="off"
+            {...form.register("confirmText")}
+          />
+        </div>
+        {failed && (
+          <p role="alert" className="text-destructive text-sm">
+            {t("error")}
+          </p>
+        )}
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={busy}>{t("cancel")}</AlertDialogCancel>
+          <AlertDialogAction
+            variant="destructive"
+            disabled={!confirmed || busy}
+            onClick={(event) => {
+              // Keep the dialog mounted; we close it ourselves on success.
+              event.preventDefault()
+              void handleDelete()
+            }}
+          >
+            {t("confirm")}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }

@@ -324,6 +324,7 @@
       },
       "detail": {
         "backToPeople": "Tillbaka till anställda",
+        "actionsMenu": "Åtgärder för anställd",
         "identityHeading": "Anställd",
         "externalRef": "Anställningsnummer",
         "employmentStartDate": "Startdatum",

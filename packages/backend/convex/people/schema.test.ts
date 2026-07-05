@@ -10,6 +10,7 @@ describe("people schema", () => {
     await t.run(async (ctx) => {
       const id = await ctx.db.insert("people", {
         orgId: "org1",
+        publicId: "pub-anna",
         displayName: "Anna Andersson",
         gender: "Kvinna",
       })
@@ -24,6 +25,7 @@ describe("people schema", () => {
     await t.run(async (ctx) => {
       const personId = await ctx.db.insert("people", {
         orgId: "org1",
+        publicId: "pub-erik",
         displayName: "Erik Eriksson",
         gender: "Man",
       })
@@ -57,6 +59,7 @@ describe("people schema", () => {
     await t.run(async (ctx) => {
       const personId = await ctx.db.insert("people", {
         orgId: "org1",
+        publicId: "pub-maria",
         displayName: "Maria Svensson",
         gender: "Kvinna",
       })

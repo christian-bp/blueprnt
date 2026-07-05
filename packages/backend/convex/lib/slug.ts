@@ -14,6 +14,29 @@ function shortId(): string {
   return crypto.randomUUID().replace(/-/g, "").slice(0, 8)
 }
 
+// People are route-exposed but deliberately NOT name-slugged: a name-derived
+// slug would put PII in URLs, logs, and browser history (Role != Person).
+// They carry a short random publicId instead, unique per org via the
+// by_org_publicId index, so links stay short and never expose the internal
+// Convex id. The _id stays the permanent internal key mutations take.
+export async function uniquePersonPublicId(
+  ctx: MutationCtx,
+  orgId: string
+): Promise<string> {
+  let candidate = shortId()
+  while (
+    (await ctx.db
+      .query("people")
+      .withIndex("by_org_publicId", (q) =>
+        q.eq("orgId", orgId).eq("publicId", candidate)
+      )
+      .first()) !== null
+  ) {
+    candidate = shortId()
+  }
+  return candidate
+}
+
 // Generate a slug unique within the org for a slug-routed table. slugify the
 // source name; fall back to a short id when it has no slug-able characters.
 // On a per-org collision (the same name legitimately exists elsewhere, e.g. a

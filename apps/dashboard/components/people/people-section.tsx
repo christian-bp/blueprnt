@@ -70,6 +70,7 @@ import { displayNameFor } from "@/lib/person-display"
 // matches exactly what is shown, never the hidden real name.
 export interface PeopleTableRow {
   personId: string
+  publicId: string
   name: string
   gender: "Man" | "Kvinna" | null
   department: string | null
@@ -152,6 +153,7 @@ export function PeopleSection() {
     const pseudonymize = settings?.pseudonymizeNames ?? false
     return people.map((person) => ({
       personId: String(person.personId),
+      publicId: person.publicId,
       name: displayNameFor(person, pseudonymize, (ref) =>
         tOrg("pseudonymTemplate", { ref })
       ),
@@ -468,7 +470,7 @@ export function PeopleSection() {
                         <TableCell className="font-medium">
                           <Link
                             className="underline-offset-4 hover:underline"
-                            href={`/people/${row.personId}`}
+                            href={`/people/${row.publicId}`}
                           >
                             {row.name}
                           </Link>

@@ -16,16 +16,17 @@ vi.mock("@/components/org-context", () => ({
 
 describe("ErasePersonControl", () => {
   it("gates the delete until the external ref is typed, then erases and navigates", async () => {
+    // Controlled dialog: the trigger lives in PersonActionsMenu, so the
+    // test renders it already open.
     render(
       <ErasePersonControl
+        open
+        onOpenChange={() => {}}
         personId={"p1" as never}
         displayName="Alex Doe"
         externalRef="E-1"
       />
     )
-
-    // Open the dialog.
-    fireEvent.click(screen.getByRole("button", { name: "trigger" }))
 
     // The confirm action is disabled until the ref matches.
     const confirm = () =>

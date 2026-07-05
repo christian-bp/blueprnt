@@ -105,7 +105,7 @@ describe("createPerson", () => {
   })
 })
 
-describe("listPeople / getPerson", () => {
+describe("listPeople / getPersonByPublicId", () => {
   it("listPeople returns only active people in the org by default", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
@@ -187,7 +187,31 @@ describe("listPeople / getPerson", () => {
     expect(listB[0]?.displayName).toBe("Person B")
   })
 
-  it("getPerson returns the person for its own org", async () => {
+  it("createPerson assigns a short publicId, distinct per person", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    await asAdmin.mutation(api.people.people.createPerson, {
+      orgId,
+      displayName: "Alice",
+      gender: "Kvinna",
+    })
+    await asAdmin.mutation(api.people.people.createPerson, {
+      orgId,
+      displayName: "Bob",
+      gender: "Man",
+    })
+
+    const list = await asAdmin.query(api.people.people.listPeople, { orgId })
+    const publicIds = list.map((p) => p.publicId)
+    expect(publicIds).toHaveLength(2)
+    for (const publicId of publicIds) {
+      expect(publicId).toMatch(/^[0-9a-f]{8}$/)
+    }
+    expect(new Set(publicIds).size).toBe(2)
+  })
+
+  it("getPersonByPublicId returns the person for its own org", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
 
@@ -198,9 +222,13 @@ describe("listPeople / getPerson", () => {
       country: "SE",
     })
 
-    const result = await asAdmin.query(api.people.people.getPerson, {
+    const list = await asAdmin.query(api.people.people.listPeople, { orgId })
+    const publicId = list[0]?.publicId
+    if (publicId === undefined) throw new Error("publicId missing")
+
+    const result = await asAdmin.query(api.people.people.getPersonByPublicId, {
       orgId,
-      personId,
+      publicId,
     })
     expect(result).not.toBeNull()
     expect(result?.personId).toBe(personId)
@@ -208,21 +236,26 @@ describe("listPeople / getPerson", () => {
     expect(result?.country).toBe("SE")
   })
 
-  it("getPerson returns null for a cross-org id", async () => {
+  it("getPersonByPublicId returns null for a cross-org publicId", async () => {
     const t = initConvexTest()
     const { orgId: orgA, asAdmin: asAdminA } = await seedOrg(t, "hr-a@acme.se")
     const { orgId: orgB, asAdmin: asAdminB } = await seedOrg(t, "hr-b@beta.se")
 
-    const personAId = await asAdminA.mutation(api.people.people.createPerson, {
+    await asAdminA.mutation(api.people.people.createPerson, {
       orgId: orgA,
       displayName: "Person A",
       gender: "Man",
     })
+    const listA = await asAdminA.query(api.people.people.listPeople, {
+      orgId: orgA,
+    })
+    const publicIdA = listA[0]?.publicId
+    if (publicIdA === undefined) throw new Error("publicId missing")
 
-    // Org B tries to read org A's person.
-    const result = await asAdminB.query(api.people.people.getPerson, {
+    // Org B tries to read org A's person by its public route key.
+    const result = await asAdminB.query(api.people.people.getPersonByPublicId, {
       orgId: orgB,
-      personId: personAId,
+      publicId: publicIdA,
     })
     expect(result).toBeNull()
   })
@@ -324,7 +357,7 @@ describe("upsertPersonByExternalRef", () => {
     })
   })
 
-  it("persists title on insert and returns it via getPerson", async () => {
+  it("persists title on insert", async () => {
     const t = initConvexTest()
     const { orgId, userId } = await seedOrg(t)
 
