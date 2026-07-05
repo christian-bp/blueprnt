@@ -67,9 +67,10 @@ interface WizardState {
   // file parses (with unchanged headers), the wizard returns straight to the
   // check step so the fresh validation is visible immediately.
   returnToCheck: boolean
-  // The import action is running: the importing screen replaces the review
-  // step until it succeeds (done screen) or fails (returns to review).
-  importing: boolean
+  // Non-null while the import action runs: the importing screen replaces
+  // the review step until it succeeds (done screen) or fails (returns to
+  // review). The value identifies the run in the importProgress table.
+  importingId: string | null
   // Blocking field keys from a failed import attempt (backend re-validation).
   importBlocking: string[] | null
   // Set when the import succeeded: the done screen shows these counts.
@@ -102,7 +103,7 @@ export function ImportWizard() {
     checkBlocking: null,
     genderOverrides: {},
     returnToCheck: false,
-    importing: false,
+    importingId: null,
     importBlocking: null,
     importResult: null,
   })
@@ -197,13 +198,13 @@ export function ImportWizard() {
       )
     }
     // The importing screen replaces the review step while the action runs.
-    if (state.importing) {
+    if (state.importingId !== null) {
       return (
         <ScreenShell
           heading={t("importing.title")}
           description={t("importing.description")}
         >
-          <ImportingStep />
+          <ImportingStep importId={state.importingId} />
         </ScreenShell>
       )
     }
@@ -360,24 +361,24 @@ export function ImportWizard() {
                   genderOverrides={state.genderOverrides}
                   onBack={goBack}
                   blockingError={state.importBlocking}
-                  onImportStart={() =>
+                  onImportStart={(importId) =>
                     setState((prev) => ({
                       ...prev,
-                      importing: true,
+                      importingId: importId,
                       importBlocking: null,
                     }))
                   }
                   onImportEnd={(blocking) =>
                     setState((prev) => ({
                       ...prev,
-                      importing: false,
+                      importingId: null,
                       importBlocking: blocking ?? null,
                     }))
                   }
                   onImportSuccess={(result) =>
                     setState((prev) => ({
                       ...prev,
-                      importing: false,
+                      importingId: null,
                       importResult: result,
                     }))
                   }
@@ -439,7 +440,8 @@ export function ImportWizard() {
             navLabel={t("navLabel")}
             onSelect={(index) => {
               // No navigation while the import runs or after it completed.
-              if (state.importing || state.importResult !== null) return
+              if (state.importingId !== null || state.importResult !== null)
+                return
               if (index < state.step) {
                 setState((prev) => ({ ...prev, step: index }))
               }
@@ -458,7 +460,7 @@ export function ImportWizard() {
             key={
               state.importResult !== null
                 ? "done"
-                : state.importing
+                : state.importingId !== null
                   ? "importing"
                   : `step-${state.step}`
             }

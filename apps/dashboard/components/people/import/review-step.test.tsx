@@ -132,7 +132,7 @@ function renderReviewStep({
   csvText?: string
   genderOverrides?: Record<string, "Man" | "Kvinna">
   onBack?: () => void
-  onImportStart?: () => void
+  onImportStart?: (importId: string) => void
   onImportEnd?: (blocking?: string[]) => void
   onImportSuccess?: (result: {
     created: number

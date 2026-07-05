@@ -56,6 +56,7 @@ export const logImportCompleted = internalMutation({
 export const setImportProgress = internalMutation({
   args: {
     orgId: v.string(),
+    importId: v.string(),
     processed: v.number(),
     total: v.number(),
   },
@@ -68,11 +69,13 @@ export const setImportProgress = internalMutation({
     if (existing === null) {
       await ctx.db.insert("importProgress", {
         orgId: args.orgId,
+        importId: args.importId,
         processed: args.processed,
         total: args.total,
       })
     } else {
       await ctx.db.patch(existing._id, {
+        importId: args.importId,
         processed: args.processed,
         total: args.total,
       })
@@ -97,20 +100,22 @@ export const clearImportProgress = internalMutation({
   },
 })
 
-// The live progress of the org's in-flight import, or null when none is
-// running. The importing screen subscribes to this reactively.
+// The live progress of the caller's import run, or null when that run has
+// not reported yet. Scoped by importId so a stale row from an earlier
+// (e.g. abandoned) run is never shown for a new one. The importing screen
+// subscribes to this reactively.
 export const getImportProgress = orgQuery({
-  args: {},
+  args: { importId: v.string() },
   returns: v.union(
     v.object({ processed: v.number(), total: v.number() }),
     v.null()
   ),
-  handler: async (ctx) => {
+  handler: async (ctx, args) => {
     const row = await ctx.db
       .query("importProgress")
       .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
       .unique()
-    if (row === null) return null
+    if (row === null || row.importId !== args.importId) return null
     return { processed: row.processed, total: row.total }
   },
 })

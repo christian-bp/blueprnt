@@ -14,11 +14,14 @@ import { useOrganization } from "@/components/org-context"
 // stays at 0 during the action's setup phase and holds its last value when
 // the progress row is cleared at completion (the wizard swaps to the done
 // screen a moment later).
-export function ImportingStep() {
+export function ImportingStep({ importId }: { importId: string }) {
   const t = useTranslations("dashboard.people.import.importing")
   const { orgId } = useOrganization()
+  // Scoped to THIS run: a stale progress row from an earlier (e.g.
+  // abandoned) import returns null instead of leaking into the bar.
   const progress = useQuery(api.people.importHelpers.getImportProgress, {
     orgId,
+    importId,
   })
   const [pct, setPct] = useState(0)
 

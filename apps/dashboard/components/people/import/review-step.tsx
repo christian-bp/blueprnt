@@ -151,8 +151,12 @@ export interface ReviewStepProps {
   genderOverrides: Record<string, "Man" | "Kvinna">
   /** Step back to the check step (the review owns its footer actions). */
   onBack: () => void
-  /** The import has started: the wizard shows the importing screen. */
-  onImportStart: () => void
+  /**
+   * The import has started: the wizard shows the importing screen. The
+   * importId identifies this run in the importProgress table so the screen
+   * never picks up a stale row from an earlier run.
+   */
+  onImportStart: (importId: string) => void
   /**
    * The import ended in failure: the wizard returns to this step.
    * `blocking` carries the required-field keys when the backend rejected
@@ -193,7 +197,8 @@ export function ReviewStep({
 
   async function handleConfirm() {
     setIsSubmitting(true)
-    onImportStart()
+    const importId = crypto.randomUUID()
+    onImportStart(importId)
     try {
       // Convert the ergonomic record to the Convex array-of-pairs Plan D expects.
       // Omit the arg entirely when there is nothing to override.
@@ -204,6 +209,7 @@ export function ReviewStep({
         orgId,
         csvText,
         columnMap,
+        importId,
         ...(genderOverridePairs.length > 0
           ? { genderOverrides: genderOverridePairs }
           : {}),

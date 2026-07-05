@@ -1,5 +1,6 @@
 "use node"
 
+import { randomUUID } from "node:crypto"
 import { v } from "convex/values"
 import {
   CANONICAL_FIELDS,
@@ -104,9 +105,14 @@ export const importPayroll = action({
     // Each entry is [externalRef, "Man"|"Kvinna"], mirroring columnMap's
     // array-of-pairs shape (Convex-serializable without non-ASCII record keys).
     genderOverrides: v.optional(v.array(v.array(v.string()))),
+    // Identifies this run in the importProgress table so the wizard's
+    // importing screen never shows a stale row from an earlier run.
+    importId: v.optional(v.string()),
   },
   returns: importResultValidator,
   handler: async (ctx, args) => {
+    // Callers that do not track progress (tests) get a throwaway id.
+    const importId = args.importId ?? randomUUID()
     // Step 1: Authenticate + assert org admin.
     const actorId = await requireOrgAdminAction(ctx, args.orgId)
 
@@ -296,6 +302,7 @@ export const importPayroll = action({
     const PROGRESS_FLUSH_EVERY = 10
     await ctx.runMutation(internal.people.importHelpers.setImportProgress, {
       orgId: args.orgId,
+      importId,
       processed: 0,
       total: rows.length,
     })
@@ -304,6 +311,7 @@ export const importPayroll = action({
       if (rowIdx > 0 && rowIdx % PROGRESS_FLUSH_EVERY === 0) {
         await ctx.runMutation(internal.people.importHelpers.setImportProgress, {
           orgId: args.orgId,
+          importId,
           processed: rowIdx,
           total: rows.length,
         })
@@ -456,6 +464,7 @@ export const importPayroll = action({
     // (profile save, employee count, audit, classification) run.
     await ctx.runMutation(internal.people.importHelpers.setImportProgress, {
       orgId: args.orgId,
+      importId,
       processed: rows.length,
       total: rows.length,
     })

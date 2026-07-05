@@ -114,6 +114,9 @@ export const importMappingProfiles = defineTable({
 // reactive query. Ephemeral UI state: counts only, never PII.
 export const importProgress = defineTable({
   orgId: v.string(),
+  // Identifies the import run this row belongs to, so the importing screen
+  // never shows a stale row from an earlier (e.g. abandoned) run.
+  importId: v.string(),
   // Data rows processed so far (including skipped rows).
   processed: v.number(),
   // Total data rows in the file.

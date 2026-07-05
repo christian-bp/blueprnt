@@ -42,7 +42,7 @@ function remaining() {
 function renderStep() {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <ImportingStep />
+      <ImportingStep importId="run-test" />
     </NextIntlClientProvider>
   )
 }
@@ -88,7 +88,7 @@ describe("ImportingStep", () => {
     useQueryMock.mockReturnValue(null)
     rerender(
       <NextIntlClientProvider locale="en" messages={messages}>
-        <ImportingStep />
+        <ImportingStep importId="run-test" />
       </NextIntlClientProvider>
     )
     expect(remaining()).toBe(0)

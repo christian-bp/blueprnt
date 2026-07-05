@@ -819,11 +819,13 @@ describe("import progress (live counts for the importing screen)", () => {
 
     await t.mutation(internal.people.importHelpers.setImportProgress, {
       orgId,
+      importId: "run-1",
       processed: 0,
       total: 118,
     })
     await t.mutation(internal.people.importHelpers.setImportProgress, {
       orgId,
+      importId: "run-1",
       processed: 50,
       total: 118,
     })
@@ -857,5 +859,34 @@ describe("import progress (live counts for the importing screen)", () => {
     await t.run(async (ctx) => {
       expect(await ctx.db.query("importProgress").collect()).toHaveLength(0)
     })
+  })
+})
+
+describe("getImportProgress scoping", () => {
+  it("only returns the row matching the caller's importId (stale runs stay invisible)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    await t.mutation(internal.people.importHelpers.setImportProgress, {
+      orgId,
+      importId: "run-1",
+      processed: 10,
+      total: 100,
+    })
+
+    expect(
+      await asAdmin.query(api.people.importHelpers.getImportProgress, {
+        orgId,
+        importId: "run-1",
+      })
+    ).toEqual({ processed: 10, total: 100 })
+
+    // A new run must not see the previous run's row.
+    expect(
+      await asAdmin.query(api.people.importHelpers.getImportProgress, {
+        orgId,
+        importId: "run-2",
+      })
+    ).toBeNull()
   })
 })
