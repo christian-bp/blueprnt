@@ -101,6 +101,13 @@ const exactString = (
   value: string
 ) => row.getValue<string>(columnId) === value
 
+// Button-height alert for the header action row: it sits beside the h-9
+// Import button, so it matches its height and radius (the default Alert is
+// py-3 rounded-lg and taller; the icon's baseline nudge is neutralized for
+// the centered single line). Call-site override, per the design-system rule.
+const HEADER_ALERT_CLASS =
+  "h-9 w-auto items-center rounded-md py-0 *:[svg]:translate-y-0"
+
 // Skeleton shape per column, mirroring the real row content (name link, short
 // gender word, department, tiny FTE value, classification badge pill) so the
 // loading table has the same silhouette as the loaded one.
@@ -282,7 +289,7 @@ export function PeopleSection() {
   // (the empty state owns that moment). Alert has no warning variant, so the
   // amber tint is a call-site override (same as method-panel.tsx).
   const summaryAlert = loading ? (
-    <Alert className="w-auto">
+    <Alert className={HEADER_ALERT_CLASS}>
       <HugeiconsIcon icon={InformationCircleIcon} strokeWidth={2} />
       <AlertTitle>
         <Skeleton className="h-5 w-40" />
@@ -291,7 +298,7 @@ export function PeopleSection() {
   ) : people.length === 0 ? null : (
     <Alert
       className={cn(
-        "w-auto",
+        HEADER_ALERT_CLASS,
         !allClassified &&
           "border-amber-500/50 text-amber-700 dark:text-amber-400"
       )}
