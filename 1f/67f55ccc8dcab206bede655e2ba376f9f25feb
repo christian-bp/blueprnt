@@ -1,0 +1,25 @@
+apps/dashboard/components/people/import/upload-step.test.tsx
+  s_6bff98b662648b::t_3bd08cd6576c54 33-61
+apps/dashboard/components/people/import/import-wizard.test.tsx
+  s_6bff98b662648b::t_1416f7837b4a75 43-71
+  s_6bff98b662648b::t_c763058fd030d1 169-171,173-175
+  s_6bff98b662648b::t_06b1becc3b9af5 282-331
+apps/dashboard/components/people/import/check-step.test.tsx
+  s_6bff98b662648b::t_487d39ce62d130 9-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "1f67f55ccc8dcab206bede655e2ba376f9f25feb",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
