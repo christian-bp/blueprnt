@@ -377,7 +377,7 @@
       "description": "Assign each employee to a role and level in your job architecture.",
       "pageTitle": "Classification",
       "columns": {
-        "title": "Job title",
+        "title": "Imported job title",
         "people": "Employees",
         "suggestedRole": "Suggested role",
         "state": "State",

@@ -377,7 +377,7 @@
       "description": "Määritä jokaiselle työntekijälle rooli ja taso työrooliarkkitehtuurissa.",
       "pageTitle": "Luokittelu",
       "columns": {
-        "title": "Toimenkuva",
+        "title": "Tuotu tehtävänimike",
         "people": "Työntekijät",
         "suggestedRole": "Ehdotettu rooli",
         "state": "Tila",

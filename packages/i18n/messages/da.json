@@ -377,7 +377,7 @@
       "description": "Tildel hver medarbejder en rolle og et niveau i jobbarkitekturen.",
       "pageTitle": "Klassificering",
       "columns": {
-        "title": "Jobtitel",
+        "title": "Importeret jobtitel",
         "people": "Medarbejdere",
         "suggestedRole": "Foreslået rolle",
         "state": "Status",

@@ -377,7 +377,7 @@
       "description": "Tildel hver ansatt en rolle og nivå i jobbarkitekturen.",
       "pageTitle": "Klassifisering",
       "columns": {
-        "title": "Jobbtittel",
+        "title": "Importert stillingstittel",
         "people": "Ansatte",
         "suggestedRole": "Foreslått rolle",
         "state": "Status",

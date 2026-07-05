@@ -377,7 +377,7 @@
       "description": "Tilldela varje anställd en roll och nivå i er jobbarkitektur.",
       "pageTitle": "Klassificering",
       "columns": {
-        "title": "Jobbtitel",
+        "title": "Importerad befattning",
         "people": "Anställda",
         "suggestedRole": "Föreslagen roll",
         "state": "Status",
