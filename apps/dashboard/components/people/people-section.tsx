@@ -271,18 +271,59 @@ export function PeopleSection() {
     </TableHeader>
   )
 
-  const importAction = (
-    <Button asChild>
-      <Link href="/people/import">
-        <HugeiconsIcon
-          icon={UserMultiple02Icon}
-          size={16}
-          strokeWidth={2}
-          aria-hidden="true"
-        />
-        {t("import.title")}
-      </Link>
-    </Button>
+  const loading =
+    people === undefined || byTitleLoading || settings === undefined
+
+  // The classification summary shares the header row with the primary action
+  // (the same alert-beside-a-control pairing as the model pages' toolbars):
+  // status and next step live together, and the table area starts directly
+  // with its own controls. While loading, the alert keeps its real frame and
+  // skeletons only the counts; it is dropped entirely before the first import
+  // (the empty state owns that moment). Alert has no warning variant, so the
+  // amber tint is a call-site override (same as method-panel.tsx).
+  const summaryAlert = loading ? (
+    <Alert className="w-auto">
+      <HugeiconsIcon icon={InformationCircleIcon} strokeWidth={2} />
+      <AlertTitle>
+        <Skeleton className="h-5 w-40" />
+      </AlertTitle>
+    </Alert>
+  ) : people.length === 0 ? null : (
+    <Alert
+      className={cn(
+        "w-auto",
+        !allClassified &&
+          "border-amber-500/50 text-amber-700 dark:text-amber-400"
+      )}
+    >
+      <HugeiconsIcon
+        icon={allClassified ? Tick02Icon : InformationCircleIcon}
+        strokeWidth={2}
+      />
+      <AlertTitle>
+        {tClassify("summary", {
+          classified: summary.classified,
+          total: summary.total,
+        })}
+      </AlertTitle>
+    </Alert>
+  )
+
+  const headerAction = (
+    <div className="flex flex-wrap items-center justify-end gap-3">
+      {summaryAlert}
+      <Button asChild>
+        <Link href="/people/import">
+          <HugeiconsIcon
+            icon={UserMultiple02Icon}
+            size={16}
+            strokeWidth={2}
+            aria-hidden="true"
+          />
+          {t("import.title")}
+        </Link>
+      </Button>
+    </div>
   )
 
   return (
@@ -290,26 +331,17 @@ export function PeopleSection() {
       <PageHeader
         title={t("heading")}
         description={t("description")}
-        // Classification now lives on its own header tab (PeopleTabs), so the
-        // header keeps a single primary action.
-        action={importAction}
+        // Classification navigation lives on its own header tab (PeopleTabs);
+        // the header action row pairs the classification status with the
+        // Import primary action.
+        action={headerAction}
       />
 
-      {people === undefined || byTitleLoading || settings === undefined ? (
-        // Loading: show a content-shaped skeleton while queries resolve.
-        // Reuse the real summary Alert (with its icon) and skeleton only the
-        // not-yet-known counts; the toolbar slot gets control-shaped bars, so
-        // nothing shifts when the data arrives (same pattern as
-        // method-panel.tsx).
+      {loading ? (
+        // Loading: show a content-shaped skeleton while queries resolve. The
+        // toolbar slot gets control-shaped bars so nothing shifts when the
+        // data arrives.
         <>
-          <div className="flex">
-            <Alert className="w-auto">
-              <HugeiconsIcon icon={InformationCircleIcon} strokeWidth={2} />
-              <AlertTitle>
-                <Skeleton className="h-5 w-40" />
-              </AlertTitle>
-            </Alert>
-          </div>
           <div className="flex flex-wrap items-center gap-2">
             <Skeleton className="h-9 w-64 rounded-md" />
             <Skeleton className="h-9 w-40 rounded-md" />
@@ -331,30 +363,6 @@ export function PeopleSection() {
         </Empty>
       ) : (
         <>
-          {/* Alert has no warning variant, so the amber tint is a call-site
-              override (same pattern as method-panel.tsx / model-builder.tsx).
-              The flex wrapper lets w-auto shrink the Alert to its content. */}
-          <div className="flex">
-            <Alert
-              className={cn(
-                "w-auto",
-                !allClassified &&
-                  "border-amber-500/50 text-amber-700 dark:text-amber-400"
-              )}
-            >
-              <HugeiconsIcon
-                icon={allClassified ? Tick02Icon : InformationCircleIcon}
-                strokeWidth={2}
-              />
-              <AlertTitle>
-                {tClassify("summary", {
-                  classified: summary.classified,
-                  total: summary.total,
-                })}
-              </AlertTitle>
-            </Alert>
-          </div>
-
           {/* Toolbar: search + the classification and department filters; the
               counter appears only while something is narrowing the table
               (mirrors the role register's toolbar). */}
