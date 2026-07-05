@@ -248,17 +248,18 @@ export function ReviewStep({
         </Alert>
       )}
 
-      {/* Summary line. No flagged count here: the check step forces every
-          actionable issue to be resolved before this step is reachable. */}
-      <p className="text-muted-foreground text-sm" data-testid="summary">
-        {t("summary", { people: parsed.rows.length })}
-      </p>
-
-      {/* Preview table */}
+      {/* Preview table. The heading row carries the total count on the right
+          (no flagged count: the check step forces every actionable issue to
+          be resolved before this step is reachable). */}
       <div data-testid="preview-table">
-        <h3 className="mb-3 font-medium text-sm">
-          {t("preview", { count: previewCount })}
-        </h3>
+        <div className="mb-3 flex items-baseline justify-between gap-2">
+          <h3 className="font-medium text-sm">
+            {t("preview", { count: previewCount })}
+          </h3>
+          <p className="text-muted-foreground text-sm" data-testid="summary">
+            {t("summary", { people: parsed.rows.length })}
+          </p>
+        </div>
         <div className="overflow-x-auto rounded-md border">
           <Table>
             <TableHeader>
