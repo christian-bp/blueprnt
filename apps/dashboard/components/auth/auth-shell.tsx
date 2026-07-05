@@ -22,10 +22,11 @@ export function AuthShell({ children }: { children: ReactNode }) {
           aurora is lg-only to keep small screens plain and legible. */}
       <BackgroundAurora className="hidden lg:block" />
       <BrandPanel />
-      {/* Right side: bordered rounded inset card on lg; full-bleed on mobile.
+      {/* Right side: bordered rounded inset card on lg (exactly half the
+          viewport, mirroring the brand panel); full-bleed on mobile.
           min-h-0 + overflow-hidden constrain it to the frame so only <main>
           scrolls and the rounded corners clip. */}
-      <div className="relative flex min-h-0 w-full flex-col overflow-hidden lg:my-4 lg:mr-4 lg:flex-1 lg:rounded-2xl lg:border lg:border-border lg:bg-card">
+      <div className="relative flex min-h-0 w-full flex-col overflow-hidden lg:my-4 lg:mr-4 lg:w-1/2 lg:rounded-2xl lg:border lg:border-border lg:bg-card">
         <Logo
           label={t("title")}
           className="relative z-10 m-6 h-8 self-start text-brand lg:hidden"
