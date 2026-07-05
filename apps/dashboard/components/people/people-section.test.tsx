@@ -26,6 +26,7 @@ vi.mock("next/link", () => ({
   }) => <a href={href}>{children}</a>,
 }))
 
+import type { ClassifyTitleGroup } from "@/components/people/classify/classify-title-table"
 import { PeopleSection } from "@/components/people/people-section"
 
 const m = messages.dashboard.people
@@ -78,12 +79,11 @@ const PEOPLE = [
 ]
 
 // BY_TITLE: p1 confirmed, p2 suggested, p3 unclassified (currentAssignment null)
-const BY_TITLE = [
+const BY_TITLE: ClassifyTitleGroup[] = [
   {
     title: "Software Engineer",
     personCount: 2,
     suggestedRoleId: "role1",
-    confidence: "high" as const,
     people: [
       {
         personId: "p1",
@@ -117,7 +117,6 @@ const BY_TITLE = [
     title: null,
     personCount: 1,
     suggestedRoleId: null,
-    confidence: "unmatched" as const,
     people: [
       {
         personId: "p3",
@@ -225,6 +224,35 @@ describe("PeopleSection", () => {
     renderSection()
     // 1 confirmed out of 3 total (from flattened BY_TITLE groups)
     expect(screen.getByText("1 of 3 classified")).toBeDefined()
+  })
+
+  it("renders the summary as an amber alert while people await classification", () => {
+    onQuery((ref) => queryRouter(ref))
+    renderSection()
+    // Same look as the model pages' progress status: an Alert, amber-tinted
+    // while classification work is outstanding.
+    const alert = screen.getByRole("alert")
+    expect(alert.textContent).toContain("1 of 3 classified")
+    expect(alert.className).toContain("text-amber-700")
+  })
+
+  it("renders a neutral alert when everyone is classified", () => {
+    const allConfirmed = BY_TITLE.map((group) => ({
+      ...group,
+      people: group.people.map((p) => ({
+        ...p,
+        currentAssignment: {
+          roleId: "role1",
+          level: "Senior",
+          levelSource: "confirmed" as const,
+        },
+      })),
+    }))
+    onQuery((ref) => queryRouter(ref, PEOPLE, allConfirmed))
+    renderSection()
+    const alert = screen.getByRole("alert")
+    expect(alert.textContent).toContain("3 of 3 classified")
+    expect(alert.className).not.toContain("text-amber-700")
   })
 
   it("renders real name when pseudonymizeNames is false", () => {

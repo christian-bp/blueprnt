@@ -1,8 +1,13 @@
 "use client"
 
-import { UserMultiple02Icon } from "@hugeicons/core-free-icons"
+import {
+  InformationCircleIcon,
+  Tick02Icon,
+  UserMultiple02Icon,
+} from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
+import { Alert, AlertTitle } from "@workspace/ui/components/alert"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -19,6 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
+import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
@@ -52,6 +58,12 @@ export function PeopleSection() {
   const settings = useQuery(api.accounts.organization.getOrganizationSettings, {
     orgId,
   })
+
+  // Mirrors the model pages' progress status (method-panel.tsx): a check +
+  // neutral tint when everyone is classified, an amber heads-up while people
+  // still await classification.
+  const allClassified =
+    summary.total > 0 && summary.classified === summary.total
 
   // Map personId -> assignment source for O(1) per-row badge lookup.
   const assignmentByPerson = useMemo(() => {
@@ -102,10 +114,19 @@ export function PeopleSection() {
 
       {people === undefined || byTitleLoading || settings === undefined ? (
         // Loading: show a content-shaped skeleton while queries resolve.
-        // The Skeleton bar reserves the summary line's height so the table
-        // does not shift down when data arrives (minimize layout shift rule).
+        // Reuse the real summary Alert (with its icon) and skeleton only the
+        // not-yet-known counts, so the toolbar height is identical to the
+        // loaded state and the table does not shift down when data arrives
+        // (same pattern as method-panel.tsx).
         <>
-          <Skeleton className="h-4 w-48" />
+          <div className="flex">
+            <Alert className="w-auto">
+              <HugeiconsIcon icon={InformationCircleIcon} strokeWidth={2} />
+              <AlertTitle>
+                <Skeleton className="h-5 w-40" />
+              </AlertTitle>
+            </Alert>
+          </div>
           <Table>
             {tableHeader}
             <TableSkeleton rows={8} columns={5} />
@@ -123,12 +144,29 @@ export function PeopleSection() {
         </Empty>
       ) : (
         <>
-          <p className="text-muted-foreground text-sm">
-            {tClassify("summary", {
-              classified: summary.classified,
-              total: summary.total,
-            })}
-          </p>
+          {/* Alert has no warning variant, so the amber tint is a call-site
+              override (same pattern as method-panel.tsx / model-builder.tsx).
+              The flex wrapper lets w-auto shrink the Alert to its content. */}
+          <div className="flex">
+            <Alert
+              className={cn(
+                "w-auto",
+                !allClassified &&
+                  "border-amber-500/50 text-amber-700 dark:text-amber-400"
+              )}
+            >
+              <HugeiconsIcon
+                icon={allClassified ? Tick02Icon : InformationCircleIcon}
+                strokeWidth={2}
+              />
+              <AlertTitle>
+                {tClassify("summary", {
+                  classified: summary.classified,
+                  total: summary.total,
+                })}
+              </AlertTitle>
+            </Alert>
+          </div>
           <Table>
             {tableHeader}
             <TableBody>
