@@ -55,8 +55,8 @@ export function PeopleTabs() {
             {/* Remaining-to-classify count on the Classify tab; hidden while
                 loading and when everyone is classified. */}
             {tab.labelKey === "classify" && !loading && remaining > 0 && (
+              // Brand-colored notification count (Badge default = brand).
               <Badge
-                variant="secondary"
                 className="ml-1.5"
                 aria-label={t("remainingLabel", { count: remaining })}
               >
