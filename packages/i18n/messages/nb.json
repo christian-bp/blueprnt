@@ -188,8 +188,8 @@
         "upload": {
           "heading": "Last opp en CSV-fil",
           "description": "Velg eller dra og slipp en CSV-fil eksportert fra lønnssystemet.",
-          "chooseFile": "Velg fil",
-          "dropHint": "eller dra og slipp her",
+          "dropTitle": "Slipp filer her",
+          "browseHint": "eller klikk for å bla på enheten din",
           "detected": "{rows, plural, one {# rad} other {# rader}}, {columns} kolonner oppdaget.",
           "errorNotCsv": "Bare CSV-filer støttes. Velg en .csv-fil.",
           "errorEmpty": "Filen er tom. Velg en CSV-fil med minst én datarad.",

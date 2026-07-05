@@ -188,8 +188,8 @@
         "upload": {
           "heading": "Lataa CSV-tiedosto",
           "description": "Valitse tai vedä ja pudota palkkajärjestelmasta viety CSV-tiedosto.",
-          "chooseFile": "Valitse tiedosto",
-          "dropHint": "tai vedä ja pudota tähän",
+          "dropTitle": "Pudota tiedostot tähän",
+          "browseHint": "tai selaa laitteeltasi napsauttamalla",
           "detected": "{rows, plural, one {# rivi} other {# rivia}}, {columns} saraketta tunnistettu.",
           "errorNotCsv": "Vain CSV-tiedostot ovat tuettuja. Valitse .csv-tiedosto.",
           "errorEmpty": "Tiedosto on tyhja. Valitse CSV-tiedosto, jossa on vahintaan yksi datarivi.",

@@ -188,8 +188,8 @@
         "upload": {
           "heading": "Upload a CSV file",
           "description": "Select or drop a CSV exported from your payroll system.",
-          "chooseFile": "Choose file",
-          "dropHint": "or drag and drop here",
+          "dropTitle": "Drop files here",
+          "browseHint": "or click to browse from your device",
           "detected": "{rows, plural, one {# row} other {# rows}}, {columns} columns detected.",
           "errorNotCsv": "Only CSV files are supported. Please select a .csv file.",
           "errorEmpty": "The file is empty. Please select a CSV file with at least one row of data.",

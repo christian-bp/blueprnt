@@ -187,12 +187,10 @@ describe("UploadStep component", () => {
     cleanup()
   })
 
-  it("renders the choose-file button and drop hint", () => {
+  it("renders the drop title and browse hint", () => {
     renderUploadStep()
-    expect(
-      screen.getByRole("button", { name: m.upload.chooseFile })
-    ).toBeDefined()
-    expect(screen.getByText(m.upload.dropHint)).toBeDefined()
+    expect(screen.getByText(m.upload.dropTitle)).toBeDefined()
+    expect(screen.getByText(m.upload.browseHint)).toBeDefined()
   })
 
   it("does not show the detection summary when no file has been parsed", () => {
