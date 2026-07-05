@@ -185,6 +185,47 @@ export const assignPersonToRole = orgMutation({
   },
 })
 
+// Assign many people in ONE transaction (the classify surface's confirm and
+// bulk-confirm actions). A single mutation means the reactive queries update
+// once for the whole batch instead of ticking per person, and the batch is
+// all-or-nothing. Each assignment still writes its own assignment.set audit
+// row through writeAssignment.
+export const assignPeopleToRole = orgMutation({
+  args: {
+    assignments: v.array(
+      v.object({
+        personId: v.id("people"),
+        roleId: v.id("roles"),
+        level: v.string(),
+      })
+    ),
+    levelSource: v.union(v.literal("suggested"), v.literal("confirmed")),
+    effectiveAt: v.optional(v.number()),
+  },
+  returns: v.array(v.id("personAssignments")),
+  handler: async (ctx, args) => {
+    const effectiveAt = args.effectiveAt ?? Date.now()
+    const ids: Id<"personAssignments">[] = []
+    for (const a of args.assignments) {
+      // Assert both entities belong to the caller's org.
+      await requireOwnPerson(ctx, a.personId)
+      await requireOwnRole(ctx, a.roleId)
+      ids.push(
+        await writeAssignment(ctx, {
+          orgId: ctx.orgId,
+          actorId: ctx.authUserId,
+          personId: a.personId,
+          roleId: a.roleId,
+          level: a.level,
+          levelSource: args.levelSource,
+          effectiveAt,
+        })
+      )
+    }
+    return ids
+  },
+})
+
 // Returns the person's currently active assignment (no endedAt), or null.
 // Returns null (not an error) when the person is not in this org, so the
 // caller can distinguish "no assignment" from "not found" via null/throw.

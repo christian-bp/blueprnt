@@ -194,10 +194,10 @@ function renderTable(
 describe("ClassifyTitleTable", () => {
   beforeEach(() => {
     // Wire the mutation mock
-    mockMutation("people.assignments.assignPersonToRole").mockImplementation(
+    mockMutation("people.assignments.assignPeopleToRole").mockImplementation(
       assignMock
     )
-    assignMock.mockResolvedValue("assignment-id")
+    assignMock.mockResolvedValue(["assignment-id"])
   })
 
   afterEach(() => {
@@ -241,28 +241,21 @@ describe("ClassifyTitleTable", () => {
     expect(screen.getByText(m.noTitle)).toBeDefined()
   })
 
-  it("fires assignPersonToRole once per person on Confirm with levelSource confirmed and selected roleId", async () => {
+  it("fires assignPeopleToRole ONCE with every person on Confirm", async () => {
     renderTable()
     const confirmButton = screen.getByRole("button", { name: m.assignCta })
     fireEvent.click(confirmButton)
     await waitFor(() => {
-      expect(assignMock).toHaveBeenCalledTimes(2)
+      expect(assignMock).toHaveBeenCalledTimes(1)
     })
-    // Check first call has required fields
     expect(assignMock).toHaveBeenCalledWith(
       expect.objectContaining({
         orgId: "org1",
-        personId: "p1",
-        roleId: "role1",
         levelSource: "confirmed",
-      })
-    )
-    expect(assignMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        orgId: "org1",
-        personId: "p2",
-        roleId: "role1",
-        levelSource: "confirmed",
+        assignments: [
+          expect.objectContaining({ personId: "p1", roleId: "role1" }),
+          expect.objectContaining({ personId: "p2", roleId: "role1" }),
+        ],
       })
     )
   })
@@ -282,10 +275,12 @@ describe("ClassifyTitleTable", () => {
     fireEvent.click(screen.getByRole("button", { name: m.assignCta }))
     await waitFor(() => {
       expect(assignMock).toHaveBeenCalledWith(
-        expect.objectContaining({ personId: "p1", level: "IC3" })
-      )
-      expect(assignMock).toHaveBeenCalledWith(
-        expect.objectContaining({ personId: "p2", level: "IC2" })
+        expect.objectContaining({
+          assignments: [
+            expect.objectContaining({ personId: "p1", level: "IC3" }),
+            expect.objectContaining({ personId: "p2", level: "IC2" }),
+          ],
+        })
       )
     })
   })
@@ -310,7 +305,9 @@ describe("ClassifyTitleTable", () => {
     await waitFor(() => {
       // IC track first level is "IC1"
       expect(assignMock).toHaveBeenCalledWith(
-        expect.objectContaining({ level: "IC1" })
+        expect.objectContaining({
+          assignments: [expect.objectContaining({ level: "IC1" })],
+        })
       )
     })
   })
@@ -354,10 +351,16 @@ describe("ClassifyTitleTable", () => {
     fireEvent.click(screen.getByTestId("confirm-selected"))
 
     await waitFor(() => {
-      // HIGH_GROUP has 2 people, secondGroup has 1; NO_TITLE_GROUP is skipped.
-      expect(assignMock).toHaveBeenCalledTimes(3)
+      // ONE batched mutation for the whole selection (a single transaction,
+      // so the reactive summary updates once, not per person).
+      expect(assignMock).toHaveBeenCalledTimes(1)
     })
-    expect(assignMock).toHaveBeenCalledWith(
+    // HIGH_GROUP has 2 people, secondGroup has 1; NO_TITLE_GROUP is skipped.
+    const [payload] = assignMock.mock.calls[0] as [
+      { assignments: Array<{ personId: string }> },
+    ]
+    expect(payload.assignments).toHaveLength(3)
+    expect(payload.assignments).toContainEqual(
       expect.objectContaining({ personId: "p4", roleId: "role1" })
     )
     // One toast for the whole bulk action.
@@ -466,14 +469,16 @@ describe("ClassifyTitleTable", () => {
     // Confirm
     fireEvent.click(screen.getByRole("button", { name: m.assignCta }))
     await waitFor(() => {
-      expect(assignMock).toHaveBeenCalledTimes(2)
+      expect(assignMock).toHaveBeenCalledTimes(1)
     })
     // p1 should have IC4 (changed), p2 should have IC2 (suggestedLevel unchanged)
     expect(assignMock).toHaveBeenCalledWith(
-      expect.objectContaining({ personId: "p1", level: "IC4" })
-    )
-    expect(assignMock).toHaveBeenCalledWith(
-      expect.objectContaining({ personId: "p2", level: "IC2" })
+      expect.objectContaining({
+        assignments: [
+          expect.objectContaining({ personId: "p1", level: "IC4" }),
+          expect.objectContaining({ personId: "p2", level: "IC2" }),
+        ],
+      })
     )
   })
 
@@ -492,9 +497,11 @@ describe("ClassifyTitleTable", () => {
     await waitFor(() => {
       expect(assignMock).toHaveBeenCalled()
     })
-    const calls = assignMock.mock.calls as Array<[{ level: string }]>
-    for (const [args] of calls) {
-      expect(["M1", "M2", "M3"]).toContain(args.level)
+    const [payload] = assignMock.mock.calls[0] as [
+      { assignments: Array<{ level: string }> },
+    ]
+    for (const a of payload.assignments) {
+      expect(["M1", "M2", "M3"]).toContain(a.level)
     }
   })
 })

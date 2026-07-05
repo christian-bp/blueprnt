@@ -424,3 +424,76 @@ describe("cross-org isolation", () => {
     expect(result).toHaveLength(0)
   })
 })
+
+describe("assignPeopleToRole (bulk)", () => {
+  it("assigns every person in one call and writes one audit row each", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const { personId, roleId } = await seedPersonAndRole(orgId, asAdmin)
+    const secondPersonId = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Bo Ek", gender: "Man" }
+    )
+
+    const ids = await asAdmin.mutation(
+      api.people.assignments.assignPeopleToRole,
+      {
+        orgId,
+        assignments: [
+          { personId, roleId, level: "IC2" },
+          { personId: secondPersonId, roleId, level: "IC1" },
+        ],
+        levelSource: "confirmed",
+      }
+    )
+    expect(ids).toHaveLength(2)
+
+    await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("personAssignments")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(rows).toHaveLength(2)
+      expect(rows.every((r) => r.levelSource === "confirmed")).toBe(true)
+
+      const auditRows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "assignment.set")
+        )
+        .collect()
+      expect(auditRows).toHaveLength(2)
+    })
+  })
+
+  it("rejects the whole batch when one level is invalid for the role's track", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const { personId, roleId } = await seedPersonAndRole(orgId, asAdmin)
+    const secondPersonId = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Bo Ek", gender: "Man" }
+    )
+
+    await expect(
+      asAdmin.mutation(api.people.assignments.assignPeopleToRole, {
+        orgId,
+        assignments: [
+          { personId, roleId, level: "IC2" },
+          // M1 is not a valid level on the IC track.
+          { personId: secondPersonId, roleId, level: "M1" },
+        ],
+        levelSource: "confirmed",
+      })
+    ).rejects.toThrow(/errors.invalidLevel/)
+
+    // All-or-nothing: the valid first assignment must not have persisted.
+    await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("personAssignments")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(rows).toHaveLength(0)
+    })
+  })
+})

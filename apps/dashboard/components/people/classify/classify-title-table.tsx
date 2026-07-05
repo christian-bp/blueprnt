@@ -213,7 +213,7 @@ export function ClassifyTitleTable({
   // Rows ticked for the bulk Confirm-selected action, keyed by rowKey(group).
   const [selected, setSelected] = useState<Set<string>>(() => new Set())
 
-  const confirm = useMutation(api.people.assignments.assignPersonToRole)
+  const assignPeople = useMutation(api.people.assignments.assignPeopleToRole)
 
   const roleById = new Map<string, ClassifyRole>(
     roles.map((r) => [r.roleId, r])
@@ -288,22 +288,20 @@ export function ClassifyTitleTable({
     }
   }
 
-  // Writes every person of the group to the resolved role. Shared by the
-  // per-row Confirm and the bulk Confirm-selected action (which toast once
-  // themselves). Throws on failure; callers surface the error.
-  async function confirmGroup(group: ClassifyTitleGroup) {
+  // Builds the per-person assignment payload for a group. Level resolution:
+  // the per-person selected level when present; else suggestedLevel when it
+  // is valid for the role's track; else the track's first level. This
+  // guarantees a valid level is always submitted.
+  function buildAssignments(
+    group: ClassifyTitleGroup
+  ): Array<{ personId: string; roleId: string; level: string }> {
     const key = rowKey(group)
     const roleId = selectedRole.get(key) ?? group.suggestedRoleId
-    if (roleId === null) return
-
+    if (roleId === null) return []
     const groupLevels = selectedLevel.get(key)
-
-    for (const p of group.people) {
-      // Use the per-person selected level when present; fall back to
-      // suggestedLevel if it is valid for the role's track, then to the
-      // track's first level. This guarantees a valid level is always submitted.
-      const role = roleById.get(roleId)
-      const trackKey = role?.trackKey ?? ""
+    const role = roleById.get(roleId)
+    const trackKey = role?.trackKey ?? ""
+    return group.people.map((p) => {
       let level = groupLevels?.get(p.personId)
       if (level === undefined) {
         level =
@@ -312,14 +310,23 @@ export function ClassifyTitleTable({
             ? p.suggestedLevel
             : defaultLevelFor(roleId, roleById)
       }
-      await confirm({
-        orgId,
-        personId: p.personId as Parameters<typeof confirm>[0]["personId"],
-        roleId: roleId as Parameters<typeof confirm>[0]["roleId"],
-        level,
-        levelSource: "confirmed",
-      })
-    }
+      return { personId: p.personId, roleId, level }
+    })
+  }
+
+  // ONE mutation for the whole batch: a single transaction, so the reactive
+  // badge and summary update once instead of ticking down per person.
+  async function submitAssignments(
+    assignments: Array<{ personId: string; roleId: string; level: string }>
+  ) {
+    if (assignments.length === 0) return
+    await assignPeople({
+      orgId,
+      assignments: assignments as Parameters<
+        typeof assignPeople
+      >[0]["assignments"],
+      levelSource: "confirmed",
+    })
   }
 
   async function onConfirm(group: ClassifyTitleGroup) {
@@ -328,7 +335,7 @@ export function ClassifyTitleTable({
     if (confirming.has(key)) return
     setConfirming((prev) => new Set(prev).add(key))
     try {
-      await confirmGroup(group)
+      await submitAssignments(buildAssignments(group))
       toast.success(tToast("classificationConfirmed"))
     } catch {
       toast.error(tToast("error"))
@@ -341,7 +348,7 @@ export function ClassifyTitleTable({
     }
   }
 
-  // Bulk confirm: every ticked group, one toast at the end.
+  // Bulk confirm: every ticked group in one mutation, one toast at the end.
   async function onConfirmSelected(selectableGroups: ClassifyTitleGroup[]) {
     const toConfirm = selectableGroups.filter((g) => selected.has(rowKey(g)))
     if (toConfirm.length === 0 || confirming.size > 0) return
@@ -349,9 +356,7 @@ export function ClassifyTitleTable({
       (prev) => new Set([...prev, ...toConfirm.map((g) => rowKey(g))])
     )
     try {
-      for (const group of toConfirm) {
-        await confirmGroup(group)
-      }
+      await submitAssignments(toConfirm.flatMap((g) => buildAssignments(g)))
       setSelected(new Set())
       toast.success(tToast("classificationConfirmed"))
     } catch {
