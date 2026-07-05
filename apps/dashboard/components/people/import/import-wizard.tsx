@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
+import Link from "next/link"
 import { AccountMenu } from "@/components/account-menu"
 import { AuthShell } from "@/components/auth/auth-shell"
 import { OnboardingDots } from "@/components/onboarding/onboarding-dots"
@@ -50,6 +51,10 @@ const STEP_REVIEW = 3
 
 export function ImportWizard() {
   const t = useTranslations("dashboard.people.import")
+  // Full-screen takeover hides the shell nav, so the wizard carries its own exit
+  // back to the People list. Reuse the existing people.detail "back to people"
+  // label rather than duplicate the string.
+  const tDetail = useTranslations("dashboard.people.detail")
 
   const [state, setState] = useState<WizardState>({
     step: STEP_UPLOAD,
@@ -243,7 +248,14 @@ export function ImportWizard() {
 
   return (
     <AuthShell
-      headerRight={<AccountMenu />}
+      headerRight={
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/people">{tDetail("backToPeople")}</Link>
+          </Button>
+          <AccountMenu />
+        </div>
+      }
       contentClassName="max-w-xl"
       footer={
         <OnboardingDots
