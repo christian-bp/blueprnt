@@ -1,0 +1,20 @@
+packages/ui/src/styles/globals.css
+  s_6bff98b662648b::t_6fa85ab0ca30bb 62
+  s_6bff98b662648b::t_4cbc480814cdc0 23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "8562493e1b593a954d60ff2306c2e4726ffae8b2",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
