@@ -1,0 +1,21 @@
+apps/dashboard/components/people/import/map-step.tsx
+  s_6bff98b662648b::t_fc5b7af10d1a1d 278-280,282-285
+apps/dashboard/components/people/import/import-wizard.tsx
+  s_6bff98b662648b::t_83b51f162f81ca 317-324
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "3f787cf98377e75d0ed1cf70ec24b6c16da7a27d",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
