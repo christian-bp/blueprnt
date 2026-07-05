@@ -35,29 +35,34 @@ export function ImportingStep({ importId }: { importId: string }) {
   }, [progress])
 
   return (
-    <div className="flex w-full flex-col items-center gap-4">
-      <div className="flex items-center gap-2">
-        {/* Decorative: the Progress element carries the accessible state. */}
-        <Spinner aria-hidden="true" className="text-brand" />
-        <span className="text-muted-foreground text-sm">{t("working")}</span>
+    <div className="flex w-full flex-col gap-3">
+      {/* One status row above the bar (the download-progress anatomy): what is
+          happening on the left, how far it has come on the right. The count
+          renders into its own right-aligned slot, so its appearance shifts
+          nothing; tabular-nums keeps it from jiggling while counting up. */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          {/* Decorative: the Progress element carries the accessible state. */}
+          <Spinner aria-hidden="true" className="text-brand" />
+          <span className="text-muted-foreground text-sm">{t("working")}</span>
+        </div>
+        <p
+          className="text-muted-foreground text-sm tabular-nums"
+          data-testid="import-progress-count"
+        >
+          {progress !== null && progress !== undefined
+            ? t("progressCount", {
+                processed: progress.processed,
+                total: progress.total,
+              })
+            : null}
+        </p>
       </div>
       <Progress
         value={pct}
         aria-label={t("title")}
         data-testid="import-progress"
       />
-      {/* Fixed-height slot: the count appearing must not shift the layout. */}
-      <p
-        className="min-h-5 text-center text-muted-foreground text-sm"
-        data-testid="import-progress-count"
-      >
-        {progress !== null && progress !== undefined
-          ? t("progressCount", {
-              processed: progress.processed,
-              total: progress.total,
-            })
-          : null}
-      </p>
     </div>
   )
 }
