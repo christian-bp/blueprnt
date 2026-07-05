@@ -2,10 +2,11 @@
 
 import { motion, useReducedMotion } from "motion/react"
 
-// Success badge for the 2FA completion screen: a filled circle springs in (with
-// a soft ring pulsing out once behind it), then the tick DRAWS itself across the
-// circle (stroke pathLength). Static under reduced motion (appears fully drawn,
-// no pulse). Decorative (aria-hidden); the heading beside it carries the meaning.
+// Shared success badge for one-off completion screens (2FA setup, change
+// email, import done): a filled circle springs in (with a soft ring pulsing
+// out once behind it), then the tick DRAWS itself across the circle (stroke
+// pathLength). Static under reduced motion (appears fully drawn, no pulse).
+// Decorative (aria-hidden); the heading beside it carries the meaning.
 // Brand-colored: this is a one-off celebratory confirmation, not a judgement
 // value, so the brand accent is appropriate here.
 export function SuccessCheck() {

@@ -22,7 +22,7 @@ vi.mock("next/link", () => ({
 
 // SuccessCheck uses framer motion; stub it to a simple marker so tests can
 // assert on its presence or absence without running animations.
-vi.mock("@/components/auth/success-check", () => ({
+vi.mock("@/components/success-check", () => ({
   SuccessCheck: () => <div data-testid="success-check" />,
 }))
 

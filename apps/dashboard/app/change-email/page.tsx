@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
 import { Suspense } from "react"
 import { AuthShell } from "@/components/auth/auth-shell"
-import { SuccessCheck } from "@/components/auth/success-check"
+import { SuccessCheck } from "@/components/success-check"
 import { usePageTitle } from "@/hooks/use-page-title"
 
 // Standalone landing page for the Better Auth change-email double opt-in flow.
