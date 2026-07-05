@@ -11,7 +11,6 @@ import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import { NextButton } from "@/components/onboarding/next-button"
 import { WizardFooter } from "@/components/onboarding/wizard-footer"
-import { SuccessCheck } from "@/components/success-check"
 import type { ImportResultCounts } from "./import-wizard"
 
 // The final wizard screen: what the import actually did. The wizard reaches
@@ -29,10 +28,6 @@ export function ImportDoneStep({ result }: { result: ImportResultCounts }) {
 
   return (
     <div className="flex w-full flex-col gap-6">
-      {/* The shared celebratory check (same as 2FA setup and change email). */}
-      <div className="flex justify-center">
-        <SuccessCheck />
-      </div>
       <div className="divide-y rounded-md border">
         {rows.map(({ key, icon, value }) => (
           <div

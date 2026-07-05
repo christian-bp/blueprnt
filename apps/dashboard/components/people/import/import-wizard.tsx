@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { OnboardingDots } from "@/components/onboarding/onboarding-dots"
+import { SuccessCheck } from "@/components/success-check"
 import { ScreenShell } from "@/components/onboarding/screen-shell"
 import { WizardFooter } from "@/components/onboarding/wizard-footer"
 import { NextButton } from "@/components/onboarding/next-button"
@@ -178,14 +179,21 @@ export function ImportWizard() {
 
   function renderStep() {
     // After a successful import: the done screen with the result counts.
+    // The celebratory check sits ABOVE the heading (same as the 2FA and
+    // change-email completion screens).
     if (state.importResult !== null) {
       return (
-        <ScreenShell
-          heading={t("done.title")}
-          description={t("done.description")}
-        >
-          <ImportDoneStep result={state.importResult} />
-        </ScreenShell>
+        <div className="flex w-full flex-col gap-6">
+          <div className="flex justify-center">
+            <SuccessCheck />
+          </div>
+          <ScreenShell
+            heading={t("done.title")}
+            description={t("done.description")}
+          >
+            <ImportDoneStep result={state.importResult} />
+          </ScreenShell>
+        </div>
       )
     }
     // The importing screen replaces the review step while the action runs.
