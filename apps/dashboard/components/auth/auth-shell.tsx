@@ -3,6 +3,7 @@
 import { cn } from "@workspace/ui/lib/utils"
 import { useTranslations } from "next-intl"
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react"
+import { BackgroundAurora } from "@/components/auth/background-aurora"
 import { BrandPanel } from "@/components/auth/brand-panel"
 import { Logo } from "@/components/logo"
 
@@ -51,7 +52,13 @@ export function AuthShell({
   }, [update])
 
   return (
-    <div className="flex h-svh bg-background">
+    <div className="relative flex h-svh bg-background">
+      {/* Full-viewport aurora backdrop (desktop only). It sits behind the brand
+          column AND the content card, so the drifting glow shows in the card's
+          margins (above/below/right) - a continuous living background, not just
+          the left panel. Mobile is full-bleed content with no card bg, so the
+          aurora is lg-only to keep small screens plain and legible. */}
+      <BackgroundAurora className="hidden lg:block" />
       <BrandPanel />
       {/* Right side: bordered rounded inset card on lg; full-bleed on mobile.
           min-h-0 + overflow-hidden constrain it to the frame so only <main>

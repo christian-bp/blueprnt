@@ -1,5 +1,6 @@
 "use client"
 
+import { cn } from "@workspace/ui/lib/utils"
 import { motion, useReducedMotion } from "motion/react"
 
 // Soft drifting "aurora" for the light brand panel: several large, blurred,
@@ -46,12 +47,15 @@ const BLOBS = [
   },
 ]
 
-export function BackgroundAurora() {
+export function BackgroundAurora({ className }: { className?: string }) {
   const reduce = useReducedMotion()
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-0 overflow-hidden"
+      className={cn(
+        "pointer-events-none absolute inset-0 overflow-hidden",
+        className
+      )}
     >
       {BLOBS.map((blob, i) => (
         <motion.div
