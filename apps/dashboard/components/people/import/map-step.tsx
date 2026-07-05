@@ -275,9 +275,14 @@ export function MapStep({ parsed, mapping, onMappingChange }: MapStepProps) {
                     )}
                   </TableCell>
 
-                  {/* Sample values from first few data rows */}
+                  {/* Sample values from first few data rows. Truncated so a
+                      long value cannot push the field selector out of view;
+                      the full text stays available via the title tooltip. */}
                   <TableCell>
-                    <span className="font-mono text-muted-foreground text-sm">
+                    <span
+                      title={samples.join(", ")}
+                      className="block max-w-[26rem] truncate font-mono text-muted-foreground text-sm"
+                    >
                       {samples.join(", ")}
                     </span>
                   </TableCell>

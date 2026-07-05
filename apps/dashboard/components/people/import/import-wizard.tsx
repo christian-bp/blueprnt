@@ -314,6 +314,14 @@ export function ImportWizard() {
             {tDetail("backToPeople")}
           </Button>
         }
+        // The map and check steps render per-column/per-row tables that need
+        // room for their controls; the upload and review steps keep the
+        // narrower default reading width.
+        contentClassName={
+          state.step === STEP_MAP || state.step === STEP_CHECK
+            ? "max-w-5xl"
+            : undefined
+        }
         footer={
           <OnboardingDots
             steps={steps}
