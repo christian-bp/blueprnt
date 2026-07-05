@@ -310,12 +310,11 @@ describe("ClassifyTitleTable", () => {
     })
   })
 
-  it("renders createRoleCta and mapExistingCta for an unmatched group instead of assignCta", () => {
-    // Unmatched rows show UnmatchedTitleActions (create + map) rather than the
-    // confirm button, so no assignPersonToRole call is possible from those rows.
+  it("renders createRoleCta for an unmatched group instead of assignCta", () => {
+    // Unmatched rows show UnmatchedTitleActions (create role) rather than the
+    // confirm button; picking an existing role happens in the row's select.
     renderTable([NO_TITLE_GROUP])
     expect(screen.getByRole("button", { name: m.createRoleCta })).toBeDefined()
-    expect(screen.getByRole("button", { name: m.mapExistingCta })).toBeDefined()
     expect(screen.queryByRole("button", { name: m.assignCta })).toBeNull()
   })
 
@@ -617,7 +616,7 @@ describe("ClassifyTitleTable", () => {
     )
   })
 
-  it("picking a role on an unmatched group replaces create/map with Confirm", async () => {
+  it("picking a role on an unmatched group replaces create-role with Confirm", async () => {
     renderTable([NO_TITLE_GROUP])
     const roleSelect = document.querySelectorAll("select")[0]
     if (roleSelect === undefined) throw new Error("role select not found")
@@ -627,7 +626,6 @@ describe("ClassifyTitleTable", () => {
       name: m.assignCta,
     })
     expect(screen.queryByRole("button", { name: m.createRoleCta })).toBeNull()
-    expect(screen.queryByRole("button", { name: m.mapExistingCta })).toBeNull()
 
     fireEvent.click(confirmButton)
     await waitFor(() => {

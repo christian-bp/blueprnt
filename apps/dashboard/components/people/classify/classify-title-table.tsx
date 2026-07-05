@@ -219,10 +219,6 @@ export function ClassifyTitleTable({
     () => new Map()
   )
 
-  // Which role Selects are programmatically open (used by onMapExisting to
-  // focus the picker without adding a separate control).
-  const [selectOpen, setSelectOpen] = useState<Set<string>>(() => new Set())
-
   // Which groups have their per-person rows expanded
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set())
 
@@ -547,30 +543,11 @@ export function ClassifyTitleTable({
                   </TableCell>
                   <TableCell>{group.personCount}</TableCell>
                   <TableCell>
-                    {/* open/onOpenChange lets onMapExisting focus the picker
-                      programmatically without a separate UI control. */}
                     <Select
                       value={currentRoleId ?? ""}
-                      open={selectOpen.has(key)}
-                      onOpenChange={(next) => {
-                        setSelectOpen((prev) => {
-                          const s = new Set(prev)
-                          if (next) {
-                            s.add(key)
-                          } else {
-                            s.delete(key)
-                          }
-                          return s
-                        })
-                      }}
-                      onValueChange={(value) => {
-                        setSelectOpen((prev) => {
-                          const s = new Set(prev)
-                          s.delete(key)
-                          return s
-                        })
+                      onValueChange={(value) =>
                         handleRoleChange(key, value, group)
-                      }}
+                      }
                     >
                       {/* FIX 5: aria-label on the role SelectTrigger so
                         screen readers announce which select this is. */}
@@ -592,7 +569,8 @@ export function ClassifyTitleTable({
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {/* No resolvable role: offer create/map. A resolvable
+                    {/* No resolvable role: offer creating one (picking an
+                      existing role happens in the row's select). A resolvable
                       role: Confirm, but only while there is something to
                       confirm (not yet confirmed, or a pending change).
                       A confirmed, untouched group shows no action; the row
@@ -609,13 +587,6 @@ export function ClassifyTitleTable({
                             return next
                           })
                         }
-                        onMapExisting={() => {
-                          setSelectOpen((prev) => {
-                            const s = new Set(prev)
-                            s.add(key)
-                            return s
-                          })
-                        }}
                       />
                     ) : actionable ? (
                       // FIX 2+3: disabled while in-flight (prevents double-write);

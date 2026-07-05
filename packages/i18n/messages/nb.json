@@ -405,7 +405,6 @@
       "levelLabel": "Nivå",
       "tenureYears": "{years, plural, one {# år} other {# år}}",
       "createRoleCta": "Opprett ny rolle",
-      "mapExistingCta": "Koble til eksisterende rolle",
       "empty": "Ingen ansatte importert ennå. Importer lønnsdata for å starte klassifisering.",
       "summary": "{classified} av {total} klassifisert",
       "createRole": {

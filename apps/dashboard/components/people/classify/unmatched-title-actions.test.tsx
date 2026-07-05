@@ -47,11 +47,9 @@ const createRoleMock = vi.fn()
 function renderActions({
   title = "Product Manager",
   onRoleCreated = vi.fn(),
-  onMapExisting = vi.fn(),
 }: {
   title?: string
   onRoleCreated?: (roleId: string) => void
-  onMapExisting?: () => void
 } = {}) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
@@ -60,7 +58,6 @@ function renderActions({
         title={title}
         tracks={TRACKS}
         onRoleCreated={onRoleCreated}
-        onMapExisting={onMapExisting}
       />
     </NextIntlClientProvider>
   )
@@ -84,10 +81,9 @@ describe("UnmatchedTitleActions", () => {
     vi.clearAllMocks()
   })
 
-  it("renders the createRoleCta and mapExistingCta buttons", () => {
+  it("renders the createRoleCta button", () => {
     renderActions()
     expect(screen.getByRole("button", { name: m.createRoleCta })).toBeDefined()
-    expect(screen.getByRole("button", { name: m.mapExistingCta })).toBeDefined()
   })
 
   it("opens the create-role dialog when createRoleCta is clicked", async () => {
@@ -165,12 +161,5 @@ describe("UnmatchedTitleActions", () => {
 
     // onRoleCreated should be called with the new role id
     expect(onRoleCreated).toHaveBeenCalledWith("role-new")
-  })
-
-  it("calls onMapExisting when the mapExistingCta button is clicked", () => {
-    const onMapExisting = vi.fn()
-    renderActions({ onMapExisting })
-    fireEvent.click(screen.getByRole("button", { name: m.mapExistingCta }))
-    expect(onMapExisting).toHaveBeenCalledTimes(1)
   })
 })

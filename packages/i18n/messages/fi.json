@@ -405,7 +405,6 @@
       "levelLabel": "Taso",
       "tenureYears": "{years, plural, one {# vuosi} other {# vuotta}}",
       "createRoleCta": "Luo uusi rooli",
-      "mapExistingCta": "Yhdistä olemassa olevaan rooliin",
       "empty": "Ei tuotuja työntekijöitä vielä. Tuo palkkatiedot aloittaaksesi luokittelun.",
       "summary": "{classified} / {total} luokiteltu",
       "createRole": {

@@ -40,12 +40,11 @@ import { type CreateRoleValues, makeCreateRoleSchema } from "@/lib/role-schemas"
 // ---------------------------------------------------------------------------
 // UnmatchedTitleActions
 //
-// Renders two action buttons for an unmatched title row:
-//   1. "Create role" - opens a dialog to create a new role (family-less),
-//      prefilled with the unmatched title, then calls onRoleCreated so the
-//      parent selects the new role for this row.
-//   2. "Map to existing" - calls onMapExisting so the parent opens the row's
-//      existing role Select for the user to pick a match manually.
+// Renders the "Create role" action for an unmatched title row: a dialog to
+// create a new role (family-less), prefilled with the unmatched title, then
+// calls onRoleCreated so the parent selects the new role for this row.
+// Mapping to an existing role needs no action here: the row's role Select
+// is the way to pick one.
 // ---------------------------------------------------------------------------
 
 // Structural subset: key is string at the JS layer; the form schema validates
@@ -61,13 +60,11 @@ export function UnmatchedTitleActions({
   title,
   tracks,
   onRoleCreated,
-  onMapExisting,
 }: {
   orgId: string
   title: string
   tracks: TrackOption[]
   onRoleCreated: (roleId: Id<"roles">) => void
-  onMapExisting: () => void
 }) {
   const t = useTranslations("dashboard.classify")
   const tCreate = useTranslations("dashboard.classify.createRole")
@@ -147,10 +144,6 @@ export function UnmatchedTitleActions({
         onClick={() => setOpen(true)}
       >
         {t("createRoleCta")}
-      </Button>
-
-      <Button type="button" size="sm" variant="ghost" onClick={onMapExisting}>
-        {t("mapExistingCta")}
       </Button>
 
       <Dialog open={open} onOpenChange={handleOpenChange}>

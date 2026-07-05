@@ -405,7 +405,6 @@
       "levelLabel": "Level",
       "tenureYears": "{years, plural, one {# year} other {# years}}",
       "createRoleCta": "Create new role",
-      "mapExistingCta": "Map to existing role",
       "empty": "No employees imported yet. Import your payroll data to start classifying.",
       "summary": "{classified} of {total} classified",
       "createRole": {

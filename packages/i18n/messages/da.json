@@ -405,7 +405,6 @@
       "levelLabel": "Niveau",
       "tenureYears": "{years, plural, one {# år} other {# år}}",
       "createRoleCta": "Opret ny rolle",
-      "mapExistingCta": "Knyt til eksisterende rolle",
       "empty": "Ingen medarbejdere importeret endnu. Importér løndata for at starte klassificering.",
       "summary": "{classified} af {total} klassificeret",
       "createRole": {

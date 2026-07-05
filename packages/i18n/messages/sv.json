@@ -405,7 +405,6 @@
       "levelLabel": "Nivå",
       "tenureYears": "{years, plural, one {# år} other {# år}}",
       "createRoleCta": "Skapa ny roll",
-      "mapExistingCta": "Koppla till befintlig roll",
       "empty": "Inga anställda importerade ännu. Importera lönedata för att börja klassificera.",
       "summary": "{classified} av {total} klassificerade",
       "createRole": {
