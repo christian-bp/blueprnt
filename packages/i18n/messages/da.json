@@ -276,7 +276,8 @@
         },
         "importing": {
           "title": "Importerer personer",
-          "description": "Dine personer importeres. Hold vinduet åbent, indtil importen er færdig."
+          "description": "Dine personer importeres. Hold vinduet åbent, indtil importen er færdig.",
+          "progressCount": "{processed} af {total} rækker"
         },
         "done": {
           "title": "Importen er fuldført",

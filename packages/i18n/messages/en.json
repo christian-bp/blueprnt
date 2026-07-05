@@ -280,7 +280,8 @@
         },
         "importing": {
           "title": "Importing people",
-          "description": "Your people are being imported. Keep this window open until it finishes."
+          "description": "Your people are being imported. Keep this window open until it finishes.",
+          "progressCount": "{processed} of {total} rows"
         },
         "done": {
           "title": "Import complete",

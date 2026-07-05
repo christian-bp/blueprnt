@@ -107,3 +107,15 @@ export const importMappingProfiles = defineTable({
   // Epoch ms: last time this profile was saved.
   updatedAt: v.number(),
 }).index("by_org", ["orgId"])
+
+// Live row-count progress for an in-flight payroll import. One row per org,
+// written by the importPayroll action as it processes rows and deleted when
+// the import finishes, so the importing screen can show real counts via a
+// reactive query. Ephemeral UI state: counts only, never PII.
+export const importProgress = defineTable({
+  orgId: v.string(),
+  // Data rows processed so far (including skipped rows).
+  processed: v.number(),
+  // Total data rows in the file.
+  total: v.number(),
+}).index("by_org", ["orgId"])

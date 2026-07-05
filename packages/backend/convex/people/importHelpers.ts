@@ -2,6 +2,7 @@ import { v } from "convex/values"
 import { internalMutation, internalQuery } from "../_generated/server"
 import { AUDIT_EVENTS, logAudit } from "../lib/audit"
 import type { AuditPayloads } from "../lib/auditPayloads"
+import { orgQuery } from "../lib/functions"
 
 // Returns the org's configured currency, or "SEK" as a safe default.
 // Called by the importPayroll action via ctx.runQuery.
@@ -45,5 +46,69 @@ export const logImportCompleted = internalMutation({
       payload,
     })
     return null
+  },
+})
+
+// Upserts the org's live import-progress row. Called by the importPayroll
+// action as it processes rows so the importing screen can show real counts.
+export const setImportProgress = internalMutation({
+  args: {
+    orgId: v.string(),
+    processed: v.number(),
+    total: v.number(),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("importProgress")
+      .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
+      .unique()
+    if (existing === null) {
+      await ctx.db.insert("importProgress", {
+        orgId: args.orgId,
+        processed: args.processed,
+        total: args.total,
+      })
+    } else {
+      await ctx.db.patch(existing._id, {
+        processed: args.processed,
+        total: args.total,
+      })
+    }
+    return null
+  },
+})
+
+// Removes the org's import-progress row when the import finishes.
+export const clearImportProgress = internalMutation({
+  args: { orgId: v.string() },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("importProgress")
+      .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
+      .unique()
+    if (existing !== null) {
+      await ctx.db.delete(existing._id)
+    }
+    return null
+  },
+})
+
+// The live progress of the org's in-flight import, or null when none is
+// running. The importing screen subscribes to this reactively.
+export const getImportProgress = orgQuery({
+  args: {},
+  returns: v.union(
+    v.object({ processed: v.number(), total: v.number() }),
+    v.null()
+  ),
+  handler: async (ctx) => {
+    const row = await ctx.db
+      .query("importProgress")
+      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
+      .unique()
+    if (row === null) return null
+    return { processed: row.processed, total: row.total }
   },
 })

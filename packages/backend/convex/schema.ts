@@ -8,6 +8,7 @@ import {
   personAssignments,
   payRecords,
   importMappingProfiles,
+  importProgress,
 } from "./people/tables"
 import { auditLog, suggestions, platformAuditLog } from "./shared/tables"
 
@@ -38,4 +39,5 @@ export default defineSchema({
   personAssignments,
   payRecords,
   importMappingProfiles,
+  importProgress,
 })

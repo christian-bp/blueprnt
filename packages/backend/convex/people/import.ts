@@ -285,7 +285,24 @@ export const importPayroll = action({
     let peopleUpdated = 0
     let salariesImported = 0
 
+    // Live progress for the importing screen: one row per org, updated every
+    // PROGRESS_FLUSH_EVERY rows (a per-row write would double the mutation
+    // count for no visible gain) and removed again after the loop.
+    const PROGRESS_FLUSH_EVERY = 10
+    await ctx.runMutation(internal.people.importHelpers.setImportProgress, {
+      orgId: args.orgId,
+      processed: 0,
+      total: rows.length,
+    })
+
     for (let rowIdx = 0; rowIdx < rows.length; rowIdx++) {
+      if (rowIdx > 0 && rowIdx % PROGRESS_FLUSH_EVERY === 0) {
+        await ctx.runMutation(internal.people.importHelpers.setImportProgress, {
+          orgId: args.orgId,
+          processed: rowIdx,
+          total: rows.length,
+        })
+      }
       if (skippedRowIndices.has(rowIdx)) continue
 
       const row = rows[rowIdx] ?? []
@@ -428,6 +445,14 @@ export const importPayroll = action({
       salariesImported += 1
     }
 
+    // All rows processed: show the final count while the post-loop steps
+    // (profile save, employee count, audit, classification) run.
+    await ctx.runMutation(internal.people.importHelpers.setImportProgress, {
+      orgId: args.orgId,
+      processed: rows.length,
+      total: rows.length,
+    })
+
     // Step 5: Save the import mapping profile for the next re-import.
     // The schema stores columnMap as { canonicalFieldKey -> sourceHeader }
     // (canonical key is always ASCII, safe as a Convex record field name;
@@ -471,6 +496,11 @@ export const importPayroll = action({
         .internalRunClassificationSuggestions,
       { orgId: args.orgId, actorId }
     )
+
+    // The import is done: remove the ephemeral progress row.
+    await ctx.runMutation(internal.people.importHelpers.clearImportProgress, {
+      orgId: args.orgId,
+    })
 
     return {
       ok: true,

@@ -276,7 +276,8 @@
         },
         "importing": {
           "title": "Importerar personer",
-          "description": "Dina personer importeras. Håll fönstret öppet tills importen är klar."
+          "description": "Dina personer importeras. Håll fönstret öppet tills importen är klar.",
+          "progressCount": "{processed} av {total} rader"
         },
         "done": {
           "title": "Importen är klar",

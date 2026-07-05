@@ -276,7 +276,8 @@
         },
         "importing": {
           "title": "Tuodaan henkilöitä",
-          "description": "Henkilöitäsi tuodaan. Pidä ikkuna auki, kunnes tuonti on valmis."
+          "description": "Henkilöitäsi tuodaan. Pidä ikkuna auki, kunnes tuonti on valmis.",
+          "progressCount": "{processed}/{total} riviä"
         },
         "done": {
           "title": "Tuonti on valmis",

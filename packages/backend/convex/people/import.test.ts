@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
-import { api, components } from "../_generated/api"
+import { api, components, internal } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
 
 const BLANK_GENDER_CSV = readFileSync(
@@ -805,5 +805,53 @@ describe("importPayroll (gender overrides)", () => {
     // Only G1 imports; both G2 rows are skipped due to duplicateId.
     expect(result.peopleCreated).toBe(1)
     expect(result.skippedRows).toBe(2)
+  })
+})
+
+describe("import progress (live counts for the importing screen)", () => {
+  it("setImportProgress upserts one row per org and clearImportProgress removes it", async () => {
+    const t = initConvexTest()
+    const { orgId } = await seedOrg(t)
+
+    await t.mutation(internal.people.importHelpers.setImportProgress, {
+      orgId,
+      processed: 0,
+      total: 118,
+    })
+    await t.mutation(internal.people.importHelpers.setImportProgress, {
+      orgId,
+      processed: 50,
+      total: 118,
+    })
+    await t.run(async (ctx) => {
+      const rows = await ctx.db.query("importProgress").collect()
+      expect(rows).toHaveLength(1)
+      expect(rows[0]?.processed).toBe(50)
+      expect(rows[0]?.total).toBe(118)
+    })
+
+    await t.mutation(internal.people.importHelpers.clearImportProgress, {
+      orgId,
+    })
+    await t.run(async (ctx) => {
+      expect(await ctx.db.query("importProgress").collect()).toHaveLength(0)
+    })
+  })
+
+  it("importPayroll leaves no progress row behind after completion", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: FIXTURE_CSV,
+      columnMap: FULL_COLUMN_MAP,
+      payYear: 2026,
+      effectiveAt: Date.now(),
+    })
+
+    await t.run(async (ctx) => {
+      expect(await ctx.db.query("importProgress").collect()).toHaveLength(0)
+    })
   })
 })
