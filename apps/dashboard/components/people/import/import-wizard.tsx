@@ -40,6 +40,8 @@ export interface ParsedCsv {
 export interface ImportResultCounts {
   created: number
   updated: number
+  // Existing people whose incoming data matched what is already stored.
+  unchanged: number
   skipped: number
 }
 

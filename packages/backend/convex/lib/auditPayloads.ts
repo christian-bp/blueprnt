@@ -302,6 +302,7 @@ export interface AuditPayloads {
   "people.imported": {
     peopleCreated: number
     peopleUpdated: number
+    peopleUnchanged: number
     salariesImported: number
     skippedRows: number
   }

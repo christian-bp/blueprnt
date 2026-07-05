@@ -15,6 +15,7 @@ export function ImportDoneStep({ result }: { result: ImportResultCounts }) {
   const rows = [
     { key: "created", value: result.created },
     { key: "updated", value: result.updated },
+    { key: "unchanged", value: result.unchanged },
     { key: "skipped", value: result.skipped },
   ] as const
 

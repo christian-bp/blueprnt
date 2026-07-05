@@ -233,7 +233,7 @@ describe("upsertPersonByExternalRef", () => {
     const t = initConvexTest()
     const { orgId, userId } = await seedOrg(t)
 
-    const { personId, created } = await t.mutation(
+    const { personId, outcome } = await t.mutation(
       internal.people.people.upsertPersonByExternalRef,
       {
         orgId,
@@ -245,7 +245,7 @@ describe("upsertPersonByExternalRef", () => {
         ftePercent: 100,
       }
     )
-    expect(created).toBe(true)
+    expect(outcome).toBe("created")
 
     await t.run(async (ctx) => {
       const person = await ctx.db.get(personId)
@@ -273,7 +273,7 @@ describe("upsertPersonByExternalRef", () => {
     const t = initConvexTest()
     const { orgId, userId } = await seedOrg(t)
 
-    const { personId, created } = await t.mutation(
+    const { personId, outcome } = await t.mutation(
       internal.people.people.upsertPersonByExternalRef,
       {
         orgId,
@@ -285,10 +285,10 @@ describe("upsertPersonByExternalRef", () => {
         ftePercent: 80,
       }
     )
-    expect(created).toBe(true)
+    expect(outcome).toBe("created")
 
     // Second call: ftePercent changes.
-    const { personId: returnedId, created: createdAgain } = await t.mutation(
+    const { personId: returnedId, outcome: outcomeAgain } = await t.mutation(
       internal.people.people.upsertPersonByExternalRef,
       {
         orgId,
@@ -302,7 +302,7 @@ describe("upsertPersonByExternalRef", () => {
     )
 
     expect(returnedId).toBe(personId)
-    expect(createdAgain).toBe(false)
+    expect(outcomeAgain).toBe("updated")
 
     await t.run(async (ctx) => {
       const person = await ctx.db.get(personId)
@@ -328,7 +328,7 @@ describe("upsertPersonByExternalRef", () => {
     const t = initConvexTest()
     const { orgId, userId } = await seedOrg(t)
 
-    const { personId, created } = await t.mutation(
+    const { personId, outcome } = await t.mutation(
       internal.people.people.upsertPersonByExternalRef,
       {
         orgId,
@@ -340,7 +340,7 @@ describe("upsertPersonByExternalRef", () => {
         title: "Senior Backend Engineer",
       }
     )
-    expect(created).toBe(true)
+    expect(outcome).toBe("created")
 
     await t.run(async (ctx) => {
       const person = await ctx.db.get(personId)
@@ -352,7 +352,7 @@ describe("upsertPersonByExternalRef", () => {
     const t = initConvexTest()
     const { orgId, userId } = await seedOrg(t)
 
-    const { personId, created } = await t.mutation(
+    const { personId, outcome } = await t.mutation(
       internal.people.people.upsertPersonByExternalRef,
       {
         orgId,
@@ -364,9 +364,9 @@ describe("upsertPersonByExternalRef", () => {
         title: "Engineer",
       }
     )
-    expect(created).toBe(true)
+    expect(outcome).toBe("created")
 
-    const { personId: returnedId, created: createdAgain } = await t.mutation(
+    const { personId: returnedId, outcome: outcomeAgain } = await t.mutation(
       internal.people.people.upsertPersonByExternalRef,
       {
         orgId,
@@ -380,7 +380,7 @@ describe("upsertPersonByExternalRef", () => {
     )
 
     expect(returnedId).toBe(personId)
-    expect(createdAgain).toBe(false)
+    expect(outcomeAgain).toBe("updated")
     await t.run(async (ctx) => {
       const person = await ctx.db.get(personId)
       expect(person?.title).toBe("Principal Engineer")
@@ -401,14 +401,18 @@ describe("upsertPersonByExternalRef", () => {
     })
 
     // Identical second call.
-    await t.mutation(internal.people.people.upsertPersonByExternalRef, {
-      orgId,
-      actorId: userId,
-      externalRef: "EMP-003",
-      displayName: "Frank",
-      gender: "Man",
-      country: "SE",
-    })
+    const { outcome: outcomeAgain } = await t.mutation(
+      internal.people.people.upsertPersonByExternalRef,
+      {
+        orgId,
+        actorId: userId,
+        externalRef: "EMP-003",
+        displayName: "Frank",
+        gender: "Man",
+        country: "SE",
+      }
+    )
+    expect(outcomeAgain).toBe("unchanged")
 
     await t.run(async (ctx) => {
       const people = await ctx.db

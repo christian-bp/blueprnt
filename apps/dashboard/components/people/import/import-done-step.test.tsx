@@ -11,7 +11,9 @@ vi.mock("next/navigation", () => ({
 
 const m = messages.dashboard.people.import.done
 
-function renderDone(result = { created: 5, updated: 2, skipped: 1 } as const) {
+function renderDone(
+  result = { created: 5, updated: 2, unchanged: 3, skipped: 1 } as const
+) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <ImportDoneStep result={result} />
@@ -33,6 +35,9 @@ describe("ImportDoneStep", () => {
     const updated = screen.getByTestId("done-updated")
     expect(updated.textContent).toContain(m.updated)
     expect(updated.textContent).toContain("2")
+    const unchanged = screen.getByTestId("done-unchanged")
+    expect(unchanged.textContent).toContain(m.unchanged)
+    expect(unchanged.textContent).toContain("3")
     const skipped = screen.getByTestId("done-skipped")
     expect(skipped.textContent).toContain(m.skipped)
     expect(skipped.textContent).toContain("1")

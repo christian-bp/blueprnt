@@ -137,6 +137,7 @@ describe("importPayroll (happy path)", () => {
     expect(result.skippedRows).toBe(2)
     expect(result.peopleCreated).toBe(116)
     expect(result.peopleUpdated).toBe(0)
+    expect(result.peopleUnchanged).toBe(0)
     expect(result.salariesImported).toBe(116)
 
     // No blocking issues on a complete mapping.
@@ -186,6 +187,7 @@ describe("importPayroll (happy path)", () => {
       const auditPayload = importAudit[0]?.payload as Record<string, unknown>
       expect(auditPayload.peopleCreated).toBe(116)
       expect(auditPayload.peopleUpdated).toBe(0)
+      expect(auditPayload.peopleUnchanged).toBe(0)
       expect(auditPayload.salariesImported).toBe(116)
       expect(auditPayload.skippedRows).toBe(2)
 
@@ -328,7 +330,9 @@ describe("importPayroll (happy path)", () => {
 
     expect(result2.ok).toBe(true)
     expect(result2.peopleCreated).toBe(0)
-    expect(result2.peopleUpdated).toBe(116)
+    // The identical re-import changes nothing: people are unchanged, not updated.
+    expect(result2.peopleUpdated).toBe(0)
+    expect(result2.peopleUnchanged).toBe(116)
 
     await t.run(async (ctx) => {
       // Still 116 people (upsert, not double-insert).

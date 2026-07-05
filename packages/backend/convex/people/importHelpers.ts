@@ -28,6 +28,7 @@ export const logImportCompleted = internalMutation({
     actorId: v.string(),
     peopleCreated: v.number(),
     peopleUpdated: v.number(),
+    peopleUnchanged: v.number(),
     salariesImported: v.number(),
     skippedRows: v.number(),
   },
@@ -36,6 +37,7 @@ export const logImportCompleted = internalMutation({
     const payload: AuditPayloads["people.imported"] = {
       peopleCreated: args.peopleCreated,
       peopleUpdated: args.peopleUpdated,
+      peopleUnchanged: args.peopleUnchanged,
       salariesImported: args.salariesImported,
       skippedRows: args.skippedRows,
     }

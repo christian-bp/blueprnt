@@ -213,6 +213,7 @@ export function ReviewStep({
         onImportSuccess({
           created: result.peopleCreated,
           updated: result.peopleUpdated,
+          unchanged: result.peopleUnchanged,
           skipped: result.skippedRows,
         })
       } else {

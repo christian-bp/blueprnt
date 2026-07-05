@@ -86,6 +86,7 @@ const OK_RESULT = {
   ok: true,
   peopleCreated: 2,
   peopleUpdated: 0,
+  peopleUnchanged: 0,
   salariesImported: 2,
   skippedRows: 0,
   validation: {
@@ -100,6 +101,7 @@ const BLOCKED_RESULT = {
   ok: false,
   peopleCreated: 0,
   peopleUpdated: 0,
+  peopleUnchanged: 0,
   salariesImported: 0,
   skippedRows: 0,
   validation: {
@@ -135,6 +137,7 @@ function renderReviewStep({
   onImportSuccess?: (result: {
     created: number
     updated: number
+    unchanged: number
     skipped: number
   }) => void
   blockingError?: string[] | null
@@ -361,6 +364,7 @@ describe("ReviewStep — confirm (success)", () => {
       expect(onImportSuccess).toHaveBeenCalledWith({
         created: 2,
         updated: 0,
+        unchanged: 0,
         skipped: 0,
       })
     })

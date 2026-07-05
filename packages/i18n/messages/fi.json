@@ -284,6 +284,7 @@
           "description": "Tässä on tiedostosi tulos.",
           "created": "Uusia henkilöitä tuotu",
           "updated": "Nykyisiä henkilöitä päivitetty",
+          "unchanged": "Jo ajan tasalla",
           "skipped": "Ohitetut rivit",
           "goToPeople": "Siirry henkilöihin"
         },

@@ -284,6 +284,7 @@
           "description": "Her er resultatet af din fil.",
           "created": "Nye personer importeret",
           "updated": "Eksisterende personer opdateret",
+          "unchanged": "Allerede opdateret",
           "skipped": "Oversprungne rækker",
           "goToPeople": "Gå til personer"
         },

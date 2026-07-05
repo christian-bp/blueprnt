@@ -288,6 +288,7 @@
           "description": "Here is what happened with your file.",
           "created": "New people imported",
           "updated": "Existing people updated",
+          "unchanged": "Already up to date",
           "skipped": "Rows skipped",
           "goToPeople": "Go to people"
         },

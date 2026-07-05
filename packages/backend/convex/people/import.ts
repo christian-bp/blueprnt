@@ -23,9 +23,11 @@ import { requireOrgAdminAction } from "../lib/functions"
 // Shape of the return value from importPayroll.
 const importResultValidator = v.object({
   ok: v.boolean(),
-  // New people inserted vs existing people (matched by externalRef) updated.
+  // New people inserted vs existing people (matched by externalRef) whose
+  // fields changed vs existing people whose incoming data was identical.
   peopleCreated: v.number(),
   peopleUpdated: v.number(),
+  peopleUnchanged: v.number(),
   salariesImported: v.number(),
   skippedRows: v.number(),
   // The full validation object from @workspace/import. Returned on both
@@ -127,6 +129,7 @@ export const importPayroll = action({
           ok: false,
           peopleCreated: 0,
           peopleUpdated: 0,
+          peopleUnchanged: 0,
           salariesImported: 0,
           skippedRows: 0,
           validation: fileFormatValidation,
@@ -191,6 +194,7 @@ export const importPayroll = action({
         ok: false,
         peopleCreated: 0,
         peopleUpdated: 0,
+        peopleUnchanged: 0,
         salariesImported: 0,
         skippedRows: 0,
         validation: normalizedValidation,
@@ -283,6 +287,7 @@ export const importPayroll = action({
 
     let peopleCreated = 0
     let peopleUpdated = 0
+    let peopleUnchanged = 0
     let salariesImported = 0
 
     // Live progress for the importing screen: one row per org, updated every
@@ -358,7 +363,7 @@ export const importPayroll = action({
       const title = cell(titleCol) || undefined
 
       // Upsert the person.
-      const { personId, created } = await ctx.runMutation(
+      const { personId, outcome } = await ctx.runMutation(
         internal.people.people.upsertPersonByExternalRef,
         {
           orgId: args.orgId,
@@ -376,10 +381,12 @@ export const importPayroll = action({
           ...(title !== undefined ? { title } : {}),
         }
       )
-      if (created) {
+      if (outcome === "created") {
         peopleCreated += 1
-      } else {
+      } else if (outcome === "updated") {
         peopleUpdated += 1
+      } else {
+        peopleUnchanged += 1
       }
 
       // Salary fields.
@@ -485,6 +492,7 @@ export const importPayroll = action({
       actorId,
       peopleCreated,
       peopleUpdated,
+      peopleUnchanged,
       salariesImported,
       skippedRows: skippedRowIndices.size,
     })
@@ -506,6 +514,7 @@ export const importPayroll = action({
       ok: true,
       peopleCreated,
       peopleUpdated,
+      peopleUnchanged,
       salariesImported,
       skippedRows: skippedRowIndices.size,
       validation: normalizedValidation,
