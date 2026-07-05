@@ -8,6 +8,7 @@ import { useEffect, useRef } from "react"
 import { PageHeader } from "@/components/page-header"
 import { useOrganization } from "@/components/org-context"
 import {
+  CLASSIFY_COLUMN_COUNT,
   ClassifyTableHeader,
   ClassifyTitleTable,
 } from "@/components/people/classify/classify-title-table"
@@ -52,13 +53,9 @@ export default function ClassifyPage() {
     void run({ orgId })
   }, [run, orgId])
 
-  // FIX 7: COLUMN_COUNT matches the real table (8 columns: expand slot,
-  // title, people, suggestedRole, confidence, state, level, actions).
-  // ClassifyTableHeader is shared with the real table so the two cannot
-  // drift independently.
-  const COLUMN_COUNT = 8
-
   // Show a skeleton shaped like the real table while any query is loading.
+  // ClassifyTableHeader and CLASSIFY_COLUMN_COUNT are shared with the real
+  // table so the two cannot drift independently.
   if (
     groups === undefined ||
     roles === undefined ||
@@ -70,7 +67,7 @@ export default function ClassifyPage() {
         <PageHeader title={t("heading")} description={t("description")} />
         <Table>
           <ClassifyTableHeader />
-          <TableSkeleton columns={COLUMN_COUNT} rows={5} />
+          <TableSkeleton columns={CLASSIFY_COLUMN_COUNT} rows={5} />
         </Table>
       </div>
     )

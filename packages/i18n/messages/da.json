@@ -380,14 +380,16 @@
         "title": "Jobtitel",
         "people": "Medarbejdere",
         "suggestedRole": "Foreslået rolle",
-        "confidence": "Sikkerhed",
         "state": "Status",
         "actions": "Handlinger"
       },
-      "confidence": {
-        "high": "Høj",
-        "medium": "Foreslået",
-        "unmatched": "Intet match"
+      "selectAll": "Vælg alle",
+      "selectTitle": "Vælg {title}",
+      "selectedCount": "{count} valgt",
+      "confirmSelected": "Bekræft valgte",
+      "personColumns": {
+        "name": "Navn",
+        "startDate": "Startdato"
       },
       "state": {
         "confirmed": "Bekræftet",
@@ -1195,8 +1197,6 @@
       "methodBiasRiskBody": "Risikoen for at dette kriterium over- eller undervurderer kønsmærket arbejde, for eksempel ved at favorisere synligt mandat eller budgetstørrelse frem for faktisk kompleksitet og ansvar.",
       "methodBiasCommentBody": "Hvad du overvejede i bias-tjekket og hvad du fandt.",
       "methodBiasActionBody": "Den afbødende handling for at reducere risikoen, for eksempel omformulerede niveaubeskrivelser eller justeret vægtning.",
-      "classifyConfidenceLabel": "Hvad betyder sikkerhedsniveauerne?",
-      "classifyConfidenceBody": "Høj betyder, at medarbejderens jobtitel nært svarer til en rolle i arkitekturen. Foreslået betyder, at matchet er sandsynligt, men ikke sikkert. Intet match betyder, at der ikke blev fundet en egnet rolle, og du skal tildele en manuelt.",
       "classifyLevelLabel": "Hvad er niveau?",
       "classifyLevelBody": "Niveau er individets anciennitet inden for rollens spor, for eksempel Senior eller Lead. Det angives per person, ikke på rollen, og bruges i lønkortlægning til at sammenligne personer i tilsvarende stillinger."
     },

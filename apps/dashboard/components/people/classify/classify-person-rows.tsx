@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 import { useTranslations } from "next-intl"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { displayNameFor } from "@/lib/person-display"
 import type { ClassifyPersonRow } from "./classify-title-table"
 
@@ -52,6 +53,11 @@ export interface ClassifyPersonRowsProps {
 // title row.
 // ---------------------------------------------------------------------------
 
+// The shared grid template: two leading slots mirroring the outer table's
+// checkbox + expand columns, then name, start date, and the level select.
+const PERSON_GRID =
+  "grid grid-cols-[2rem_2rem_1fr_1fr_minmax(8rem,14rem)] items-center gap-x-4 px-4"
+
 export function ClassifyPersonRows({
   people,
   trackKey,
@@ -60,6 +66,7 @@ export function ClassifyPersonRows({
   pseudonymize,
 }: ClassifyPersonRowsProps) {
   const t = useTranslations("dashboard.classify")
+  const tHelp = useTranslations("dashboard.help")
   const tOrg = useTranslations("dashboard.organization.general")
 
   // Capture today once per render for tenure computation (display-only;
@@ -72,6 +79,26 @@ export function ClassifyPersonRows({
 
   return (
     <>
+      {/* Header line for the expanded person rows: names the columns and
+          carries the level concept's help where levels are shown. */}
+      <div
+        className={`${PERSON_GRID} py-1.5 font-medium text-muted-foreground text-xs`}
+      >
+        <div />
+        <div />
+        <div>{t("personColumns.name")}</div>
+        <div>{t("personColumns.startDate")}</div>
+        <div>
+          <span className="flex items-center gap-1.5">
+            {t("levelLabel")}
+            {/* ONE HelpMorphButton per concept, placed where the concept is
+                used: the per-person level selects below. */}
+            <HelpMorphButton label={tHelp("classifyLevelLabel")}>
+              {tHelp("classifyLevelBody")}
+            </HelpMorphButton>
+          </span>
+        </div>
+      </div>
       {people.map((person) => {
         // Default the level to the person's suggestedLevel when it is valid
         // for this track, otherwise fall back to the first level in the track.
@@ -90,14 +117,15 @@ export function ClassifyPersonRows({
         const tenure = tenureYears(person.employmentStartDate, today)
 
         return (
-          // Block grid row: 8 columns matching the outer table's column count.
-          // pl-8 indents past the expand-toggle slot; the level select aligns
-          // with the outer Level column (col 7, index 6).
+          // Block grid row: the two leading slots keep person rows indented
+          // past the outer table's checkbox + expand columns.
           <div
             key={person.personId}
             data-person-row
-            className="grid grid-cols-[2rem_1fr_1fr_1fr_auto_auto_8rem_auto] items-center gap-x-4 bg-muted/30 px-4 py-2 text-sm"
+            className={`${PERSON_GRID} bg-muted/30 py-2 text-sm`}
           >
+            {/* Checkbox slot placeholder */}
+            <div />
             {/* Expand toggle placeholder */}
             <div />
             {/* Name */}
@@ -115,12 +143,6 @@ export function ClassifyPersonRows({
                 </span>
               ) : null}
             </div>
-            {/* Suggested role placeholder */}
-            <div />
-            {/* Confidence placeholder */}
-            <div />
-            {/* State placeholder */}
-            <div />
             {/* Level Select */}
             <div>
               <Select
@@ -139,8 +161,6 @@ export function ClassifyPersonRows({
                 </SelectContent>
               </Select>
             </div>
-            {/* Actions placeholder */}
-            <div />
           </div>
         )
       })}

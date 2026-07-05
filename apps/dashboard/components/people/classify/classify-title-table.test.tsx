@@ -210,7 +210,6 @@ describe("ClassifyTitleTable", () => {
     expect(screen.getByText(m.columns.title)).toBeDefined()
     expect(screen.getByText(m.columns.people)).toBeDefined()
     expect(screen.getByText(m.columns.suggestedRole)).toBeDefined()
-    expect(screen.getByText(m.columns.confidence)).toBeDefined()
     expect(screen.getByText(m.columns.state)).toBeDefined()
   })
 
@@ -220,21 +219,15 @@ describe("ClassifyTitleTable", () => {
     expect(screen.getByText("2")).toBeDefined()
   })
 
-  it("renders the high confidence badge for a high-confidence group", () => {
-    renderTable()
-    expect(screen.getByText(m.confidence.high)).toBeDefined()
-  })
-
   it("renders the state badge reflecting classificationStateForPeople", () => {
     // HIGH_GROUP has one confirmed + one suggested -> "pending"
     renderTable()
     expect(screen.getByText(m.state.pending)).toBeDefined()
   })
 
-  it("renders the unmatched badge and noTitle label for the null-title group", () => {
+  it("renders the noTitle label for the null-title group", () => {
     renderTable([NO_TITLE_GROUP])
     expect(screen.getByText(m.noTitle)).toBeDefined()
-    expect(screen.getByText(m.confidence.unmatched)).toBeDefined()
   })
 
   it("renders the unclassified state badge for the null-title group", () => {
@@ -329,6 +322,62 @@ describe("ClassifyTitleTable", () => {
     expect(screen.getByRole("button", { name: m.createRoleCta })).toBeDefined()
     expect(screen.getByRole("button", { name: m.mapExistingCta })).toBeDefined()
     expect(screen.queryByRole("button", { name: m.assignCta })).toBeNull()
+  })
+
+  // ---------------------------------------------------------------------------
+  // Bulk selection + Confirm selected
+  // ---------------------------------------------------------------------------
+
+  it("select-all plus Confirm selected assigns every selectable group's people", async () => {
+    // A second matched, unconfirmed group alongside HIGH_GROUP; the null-title
+    // group has no role and must be excluded from select-all.
+    const secondGroup: ClassifyTitleGroup = {
+      title: "Data Analyst",
+      personCount: 1,
+      suggestedRoleId: "role1",
+      confidence: "medium",
+      people: [
+        {
+          personId: "p4",
+          displayName: "Dana Ek",
+          externalRef: null,
+          employmentStartDate: null,
+          isManager: null,
+          suggestedLevel: "IC1",
+          currentAssignment: null,
+        },
+      ],
+    }
+    renderTable([HIGH_GROUP, secondGroup, NO_TITLE_GROUP])
+
+    fireEvent.click(screen.getByRole("checkbox", { name: m.selectAll }))
+    fireEvent.click(screen.getByTestId("confirm-selected"))
+
+    await waitFor(() => {
+      // HIGH_GROUP has 2 people, secondGroup has 1; NO_TITLE_GROUP is skipped.
+      expect(assignMock).toHaveBeenCalledTimes(3)
+    })
+    expect(assignMock).toHaveBeenCalledWith(
+      expect.objectContaining({ personId: "p4", roleId: "role1" })
+    )
+    // One toast for the whole bulk action.
+    expect(toast.success).toHaveBeenCalledTimes(1)
+  })
+
+  it("ticking a row shows the selected count", () => {
+    renderTable()
+    fireEvent.click(
+      screen.getByRole("checkbox", { name: "Select Senior Engineer" })
+    )
+    expect(screen.getByText("1 selected")).toBeDefined()
+  })
+
+  it("disables the checkbox for a group without a resolvable role", () => {
+    renderTable([NO_TITLE_GROUP])
+    const checkbox = screen.getByRole("checkbox", {
+      name: `Select ${m.noTitle}`,
+    })
+    expect((checkbox as HTMLButtonElement).disabled).toBe(true)
   })
 
   // ---------------------------------------------------------------------------

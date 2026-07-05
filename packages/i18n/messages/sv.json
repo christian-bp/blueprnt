@@ -380,14 +380,16 @@
         "title": "Jobbtitel",
         "people": "Anställda",
         "suggestedRole": "Föreslagen roll",
-        "confidence": "Säkerhet",
         "state": "Status",
         "actions": "Åtgärder"
       },
-      "confidence": {
-        "high": "Hög",
-        "medium": "Föreslagen",
-        "unmatched": "Ingen matchning"
+      "selectAll": "Markera alla",
+      "selectTitle": "Markera {title}",
+      "selectedCount": "{count} markerade",
+      "confirmSelected": "Bekräfta markerade",
+      "personColumns": {
+        "name": "Namn",
+        "startDate": "Startdatum"
       },
       "state": {
         "confirmed": "Bekräftad",
@@ -1195,8 +1197,6 @@
       "methodBiasRiskBody": "Risken att kriteriet över- eller undervärderar könskodat arbete, till exempel att synligt mandat eller stor budget premieras framför faktisk komplexitet och ansvar.",
       "methodBiasCommentBody": "Vad du övervägde i bias-granskningen och vad du kom fram till.",
       "methodBiasActionBody": "Åtgärden för att minska risken, till exempel omformulerade nivåbeskrivningar eller justerad viktning.",
-      "classifyConfidenceLabel": "Vad betyder säkerhetsnivåerna?",
-      "classifyConfidenceBody": "Hög innebär att den anställdas jobbtitel nära matchar en roll i er arkitektur. Föreslagen innebär att matchningen är trolig men inte säker. Ingen matchning innebär att ingen lämplig roll hittades och du behöver tilldela en manuellt.",
       "classifyLevelLabel": "Vad är nivå?",
       "classifyLevelBody": "Nivå är individens senioritet inom rollens spår, till exempel Senior eller Lead. Den anges per person, inte på rollen, och används i lönekartläggning för att jämföra personer i likvärdiga positioner."
     },

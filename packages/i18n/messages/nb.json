@@ -380,14 +380,16 @@
         "title": "Jobbtittel",
         "people": "Ansatte",
         "suggestedRole": "Foreslått rolle",
-        "confidence": "Sikkerhet",
         "state": "Status",
         "actions": "Handlinger"
       },
-      "confidence": {
-        "high": "Høy",
-        "medium": "Foreslått",
-        "unmatched": "Ingen treff"
+      "selectAll": "Velg alle",
+      "selectTitle": "Velg {title}",
+      "selectedCount": "{count} valgt",
+      "confirmSelected": "Bekreft valgte",
+      "personColumns": {
+        "name": "Navn",
+        "startDate": "Startdato"
       },
       "state": {
         "confirmed": "Bekreftet",
@@ -1195,8 +1197,6 @@
       "methodBiasRiskBody": "Risikoen for at dette kriteriet over- eller undervurderer kjønnskodet arbeid, for eksempel ved å favorisere synlig mandat eller budsjettstørrelse fremfor faktisk kompleksitet og ansvar.",
       "methodBiasCommentBody": "Hva du vurderte i biastjekken og hva du fant.",
       "methodBiasActionBody": "Det dempende tiltaket for å redusere risikoen, for eksempel omformulerte nivåbeskrivelser eller justert vekting.",
-      "classifyConfidenceLabel": "Hva betyr sikkerhetsnivåene?",
-      "classifyConfidenceBody": "Høy betyr at den ansattes jobbtittel nært samsvarer med en rolle i arkitekturen. Foreslått betyr at treffet er sannsynlig, men ikke sikkert. Ingen treff betyr at ingen egnet rolle ble funnet og du må tildele en manuelt.",
       "classifyLevelLabel": "Hva er nivå?",
       "classifyLevelBody": "Nivå er individets ansiennitet innen rollens spor, for eksempel Senior eller Lead. Det angis per person, ikke på rollen, og brukes i lønnskartlegging for å sammenligne personer i tilsvarende stillinger."
     },

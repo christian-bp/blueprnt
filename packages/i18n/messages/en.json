@@ -380,14 +380,16 @@
         "title": "Job title",
         "people": "Employees",
         "suggestedRole": "Suggested role",
-        "confidence": "Confidence",
         "state": "State",
         "actions": "Actions"
       },
-      "confidence": {
-        "high": "High",
-        "medium": "Suggested",
-        "unmatched": "Unmatched"
+      "selectAll": "Select all",
+      "selectTitle": "Select {title}",
+      "selectedCount": "{count} selected",
+      "confirmSelected": "Confirm selected",
+      "personColumns": {
+        "name": "Name",
+        "startDate": "Start date"
       },
       "state": {
         "confirmed": "Confirmed",
@@ -1195,8 +1197,6 @@
       "methodBiasRiskBody": "The risk that this criterion over- or under-values gender-coded work, for example favouring visible mandate or budget size over actual complexity and responsibility.",
       "methodBiasCommentBody": "What you considered in the bias check and what you found.",
       "methodBiasActionBody": "The mitigating action taken to reduce the risk, such as reworded level descriptions or adjusted weighting.",
-      "classifyConfidenceLabel": "What do the confidence tiers mean?",
-      "classifyConfidenceBody": "High means the employee's job title closely matches a role in your architecture. Suggested means the match is plausible but not certain. Unmatched means no suitable role was found and you need to assign one manually.",
       "classifyLevelLabel": "What is the level?",
       "classifyLevelBody": "Level is the individual's seniority within the role's track, for example Senior or Lead. It is set per person, not on the role itself, and is used in pay-equity analysis to compare people in equivalent positions."
     },

@@ -380,14 +380,16 @@
         "title": "Toimenkuva",
         "people": "Työntekijät",
         "suggestedRole": "Ehdotettu rooli",
-        "confidence": "Varmuus",
         "state": "Tila",
         "actions": "Toiminnot"
       },
-      "confidence": {
-        "high": "Korkea",
-        "medium": "Ehdotettu",
-        "unmatched": "Ei vastaavuutta"
+      "selectAll": "Valitse kaikki",
+      "selectTitle": "Valitse {title}",
+      "selectedCount": "{count} valittu",
+      "confirmSelected": "Vahvista valitut",
+      "personColumns": {
+        "name": "Nimi",
+        "startDate": "Aloituspäivä"
       },
       "state": {
         "confirmed": "Vahvistettu",
@@ -1195,8 +1197,6 @@
       "methodBiasRiskBody": "Riski siitä, että tämä kriteeri yli- tai aliarvioi sukupuolittunutta työtä, esimerkiksi suosimalla näkyvää mandaattia tai budjetin kokoa todellisen monimutkaisuuden ja vastuun sijaan.",
       "methodBiasCommentBody": "Mitä harkitsit vinouman tarkistuksessa ja mitä löysit.",
       "methodBiasActionBody": "Lievennystoimenpide riskin vähentämiseksi, kuten uudelleenmuotoillut tasokuvaukset tai mukautettu painotus.",
-      "classifyConfidenceLabel": "Mitä varmuustasot tarkoittavat?",
-      "classifyConfidenceBody": "Korkea tarkoittaa, että työntekijän toimenkuva vastaa läheisesti roolia arkkitehtuurissa. Ehdotettu tarkoittaa, että vastaavuus on todennäköinen mutta ei varma. Ei vastaavuutta tarkoittaa, että sopivaa roolia ei löytynyt ja sinun täytyy määrittää se manuaalisesti.",
       "classifyLevelLabel": "Mikä on taso?",
       "classifyLevelBody": "Taso on yksilön senioriteetti roolin ura-polun sisällä, esimerkiksi Senior tai Lead. Se asetetaan per henkilö, ei roolille, ja sitä käytetään tasa-arvoanalyysissä vertaamaan vastaavissa tehtävissä olevia henkilöitä."
     },
