@@ -1,10 +1,11 @@
 "use client"
 
+import { ArrowLeft01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { AuthShell } from "@/components/auth/auth-shell"
 import { OnboardingDots } from "@/components/onboarding/onboarding-dots"
 import { ScreenShell } from "@/components/onboarding/screen-shell"
 import { WizardFooter } from "@/components/onboarding/wizard-footer"
@@ -20,6 +21,7 @@ import {
   AlertDialogTitle,
 } from "@workspace/ui/components/alert-dialog"
 import { Button } from "@workspace/ui/components/button"
+import { WizardShell } from "@/components/wizard-shell"
 import { CheckStep } from "./check-step"
 import { MapStep } from "./map-step"
 import { ReviewStep } from "./review-step"
@@ -295,8 +297,8 @@ export function ImportWizard() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <AuthShell
-        headerRight={
+      <WizardShell
+        headerLeft={
           <Button
             variant="ghost"
             size="sm"
@@ -308,10 +310,10 @@ export function ImportWizard() {
               }
             }}
           >
+            <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} />
             {tDetail("backToPeople")}
           </Button>
         }
-        contentClassName="max-w-2xl"
         footer={
           <OnboardingDots
             steps={steps}
@@ -340,7 +342,7 @@ export function ImportWizard() {
             {renderStep()}
           </motion.div>
         </AnimatePresence>
-      </AuthShell>
+      </WizardShell>
     </>
   )
 }

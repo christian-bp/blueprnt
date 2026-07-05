@@ -77,18 +77,21 @@ vi.mock("@/components/account-menu", () => ({
   AccountMenu: () => null,
 }))
 
-vi.mock("@/components/auth/auth-shell", () => ({
-  AuthShell: ({
+vi.mock("@/components/wizard-shell", () => ({
+  WizardShell: ({
     children,
     footer,
+    headerLeft,
     headerRight,
   }: {
     children: React.ReactNode
     footer?: React.ReactNode
+    headerLeft?: React.ReactNode
     headerRight?: React.ReactNode
     contentClassName?: string
   }) => (
     <div>
+      {headerLeft}
       {headerRight}
       {children}
       {footer}

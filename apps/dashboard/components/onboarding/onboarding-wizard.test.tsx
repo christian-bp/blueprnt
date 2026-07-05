@@ -21,15 +21,17 @@ vi.mock("convex/react", () => ({
   useMutation: () => completeOnboardingMock,
 }))
 
-// The shell renders children, headerRight, and footer so that step/dots
-// assertions resolve without needing the real split-screen layout.
-vi.mock("@/components/auth/auth-shell", () => ({
-  AuthShell: (p: {
+// The shell renders children, header slots, and footer so that step/dots
+// assertions resolve without needing the real wizard layout.
+vi.mock("@/components/wizard-shell", () => ({
+  WizardShell: (p: {
     children: ReactNode
+    headerLeft?: ReactNode
     headerRight?: ReactNode
     footer?: ReactNode
   }) => (
     <div>
+      {p.headerLeft}
       {p.headerRight}
       {p.children}
       {p.footer}

@@ -7,7 +7,8 @@ import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import { type ReactNode, useState } from "react"
 import { AccountMenu } from "@/components/account-menu"
-import { AuthShell } from "@/components/auth/auth-shell"
+import { Logo } from "@/components/logo"
+import { WizardShell } from "@/components/wizard-shell"
 import { OnboardingDots } from "@/components/onboarding/onboarding-dots"
 import { CountryScreen } from "@/components/onboarding/country-screen"
 import { EnsureDefaultModel } from "@/components/onboarding/ensure-default-model"
@@ -129,6 +130,8 @@ export function OnboardingWizard({
   onFinished: () => void
 }) {
   const t = useTranslations("dashboard.onboarding")
+  // The wordmark label lives in the root dashboard namespace.
+  const tDash = useTranslations("dashboard")
   const orgId = status.organization?.orgId ?? null
   // Settings drive the per-field resume; skipped while no org exists.
   const settings = useQuery(
@@ -174,22 +177,27 @@ export function OnboardingWizard({
       ? backTo
       : Math.min(frontier, acked ?? Math.max(derived, 0))
 
+  // The wizard header: the wordmark keeps the first-run experience branded
+  // (the split brand panel is auth-only now); the account menu is the
+  // wizard's only sign-out affordance.
+  const wordmark = <Logo label={tDash("title")} className="h-8 text-brand" />
+
   // Members who are not admins cannot run setup mutations; tell them to wait.
   if (status.organization !== null && status.organization.role !== "admin") {
     return (
-      <AuthShell headerRight={<AccountMenu />}>
+      <WizardShell headerLeft={wordmark} headerRight={<AccountMenu />}>
         <p className="text-center text-muted-foreground">
           {t("waitingForAdmin")}
         </p>
-      </AuthShell>
+      </WizardShell>
     )
   }
 
   if (derived === -1) {
     return (
-      <AuthShell headerRight={<AccountMenu />}>
+      <WizardShell headerLeft={wordmark} headerRight={<AccountMenu />}>
         <Spinner aria-label={t("loading")} />
-      </AuthShell>
+      </WizardShell>
     )
   }
 
@@ -222,9 +230,9 @@ export function OnboardingWizard({
   }
 
   return (
-    <AuthShell
+    <WizardShell
+      headerLeft={wordmark}
       headerRight={<AccountMenu />}
-      contentClassName="max-w-2xl"
       footer={
         <OnboardingDots
           steps={STEPS.map(({ key, dotLabelKey }) => ({
@@ -258,6 +266,6 @@ export function OnboardingWizard({
           {step.render(ctx)}
         </motion.div>
       </AnimatePresence>
-    </AuthShell>
+    </WizardShell>
   )
 }

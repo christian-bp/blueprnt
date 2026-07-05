@@ -81,16 +81,17 @@ vi.mock("@/components/account-menu", () => ({
   AccountMenu: () => null,
 }))
 
-// Mock AuthShell to a plain pass-through so wizard tests avoid deep dependency
-// chains (BackgroundAurora, TextEffect, OnboardingDots) that are not relevant
-// to the button-gating assertion.
-vi.mock("@/components/auth/auth-shell", () => ({
-  AuthShell: ({
+// Mock WizardShell to a plain pass-through so wizard tests avoid layout
+// details (scroll cues, header slots) that are not relevant to the
+// button-gating assertion.
+vi.mock("@/components/wizard-shell", () => ({
+  WizardShell: ({
     children,
     footer,
   }: {
     children: React.ReactNode
     footer?: React.ReactNode
+    headerLeft?: React.ReactNode
     headerRight?: React.ReactNode
     contentClassName?: string
   }) => (
