@@ -255,6 +255,54 @@ describe("CheckStep — data quality issues", () => {
     expect(screen.queryByTestId("issues-section")).toBeNull()
     expect(screen.getByTestId("assign-gender")).toBeDefined()
   })
+
+  it("blocks continuing while hard data-quality issues remain", () => {
+    const onValidated = vi.fn()
+    renderCheckStep({
+      parsed: DUPLICATE_PARSED,
+      mapping: DUPLICATE_MAPPING,
+      onValidated,
+    })
+    // Both duplicate rows are flagged; the file must be fixed to continue.
+    expect(onValidated).toHaveBeenCalledWith(true, 2)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Tests: interpretation notices (non-blocking)
+// ---------------------------------------------------------------------------
+
+// "03/04/2020" parses as DD/MM while MM/DD would also be valid -> ambiguousDate.
+const AMBIGUOUS_DATE_PARSED: ParsedCsv = {
+  headers: ["EmployeeID", "JobTitle", "Gender", "MonthlySalary", "StartDate"],
+  rows: [["E001", "Engineer", "Kvinna", "55000", "03/04/2020"]],
+}
+const AMBIGUOUS_DATE_MAPPING: Record<string, number> = {
+  externalRef: 0,
+  title: 1,
+  gender: 2,
+  basicMonthly: 3,
+  employmentStartDate: 4,
+}
+
+describe("CheckStep — interpretation notices", () => {
+  afterEach(() => {
+    cleanup()
+  })
+
+  it("shows an ambiguous date as a non-blocking notice", () => {
+    const onValidated = vi.fn()
+    renderCheckStep({
+      parsed: AMBIGUOUS_DATE_PARSED,
+      mapping: AMBIGUOUS_DATE_MAPPING,
+      onValidated,
+    })
+    expect(screen.getByTestId("notices-section")).toBeDefined()
+    expect(screen.getByTestId("notice-group-ambiguousDate")).toBeDefined()
+    // Notices are not hard errors: no fix-and-reupload section, no block.
+    expect(screen.queryByTestId("issues-section")).toBeNull()
+    expect(onValidated).toHaveBeenCalledWith(false, 1)
+  })
 })
 
 // ---------------------------------------------------------------------------
@@ -392,6 +440,27 @@ describe("CheckStep — assign gender", () => {
     expect(screen.getByTestId("assign-gender")).toBeDefined()
     // The flagged row is identified by its externalRef E001.
     expect(screen.getByTestId("assign-gender-E001")).toBeDefined()
+  })
+
+  it("blocks continuing until every flagged gender is assigned", () => {
+    const onValidated = vi.fn()
+    renderCheckStep({
+      parsed: BLANK_GENDER_PARSED,
+      mapping: BLANK_GENDER_MAPPING,
+      onValidated,
+    })
+    expect(onValidated).toHaveBeenCalledWith(true, 1)
+  })
+
+  it("unblocks once all flagged genders are assigned", () => {
+    const onValidated = vi.fn()
+    renderCheckStep({
+      parsed: BLANK_GENDER_PARSED,
+      mapping: BLANK_GENDER_MAPPING,
+      genderOverrides: { E001: "Kvinna" },
+      onValidated,
+    })
+    expect(onValidated).toHaveBeenCalledWith(false, 1)
   })
 
   it("lifts the chosen gender via onGenderOverridesChange", () => {

@@ -228,7 +228,9 @@
             "notIncluded": "Not included"
           },
           "issuesHeading": "Data quality issues",
-          "issuesHelp": "These rows contain values we could not read reliably. We recommend fixing them in your payroll export and uploading the corrected file.",
+          "issuesHelp": "These rows contain values that could not be read reliably. Fix them in your payroll export and upload the corrected file to continue.",
+          "noticesHeading": "Good to know",
+          "noticesHelp": "These values were read with an interpretation worth double-checking. They do not stop the import.",
           "issue": {
             "duplicateId": "Duplicate employee ID",
             "unparsableMoney": "Unreadable salary value",
@@ -250,7 +252,7 @@
           },
           "assignGender": {
             "heading": "Assign gender for these rows",
-            "help": "We could not read a gender for these employees. Choose one for each so they can be imported. Rows are shown by employee ID; no other personal data is sent to import."
+            "help": "We could not read a gender for these employees. Assign one to each row to continue. Rows are shown by employee ID; no other personal data is sent to import."
           }
         },
         "gender": {

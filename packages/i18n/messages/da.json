@@ -223,7 +223,9 @@
             "notIncluded": "Ikke inkluderet"
           },
           "issuesHeading": "Datakvalitetsproblemer",
-          "issuesHelp": "Disse rækker indeholder værdier, der ikke kunne læses pålideligt. Vi anbefaler, at du retter dem i din løneksport og uploader den rettede fil.",
+          "issuesHelp": "Disse rækker indeholder værdier, der ikke kunne læses pålideligt. Ret dem i din løneksport, og upload den rettede fil for at fortsætte.",
+          "noticesHeading": "Godt at vide",
+          "noticesHelp": "Disse værdier blev læst med en fortolkning, der kan være værd at dobbelttjekke. De stopper ikke importen.",
           "issue": {
             "duplicateId": "Duplikeret medarbejder-ID",
             "unparsableMoney": "Ulaeselig loenvaerdi",
@@ -245,7 +247,7 @@
           },
           "assignGender": {
             "heading": "Angiv køn for disse rækker",
-            "help": "Vi kunne ikke aflæse køn for disse medarbejdere. Vælg et for hver, så de kan importeres. Rækkerne vises med medarbejdernummer; ingen andre personoplysninger sendes til importen."
+            "help": "Vi kunne ikke aflæse køn for disse medarbejdere. Angiv et for hver række for at fortsætte. Rækkerne vises med medarbejdernummer; ingen andre personoplysninger sendes til importen."
           }
         },
         "tier": {

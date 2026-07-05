@@ -13,6 +13,8 @@ import {
   type FieldTier,
   type FileWarningCode,
   type ImportValidation,
+  ROW_ISSUE_SEVERITY,
+  type RowIssue,
   type RowIssueCode,
   tokenizeCsv,
   validateImport,
@@ -61,6 +63,27 @@ export function fileRowNumber(dataRowIndex: number): number {
   return dataRowIndex + 2
 }
 
+/** Group issues by code, collecting the affected file-row numbers. */
+function groupIssues(issues: RowIssue[]) {
+  const groups = new Map<RowIssueCode, { count: number; rows: number[] }>()
+  for (const issue of issues) {
+    const existing = groups.get(issue.code)
+    if (existing) {
+      existing.count += 1
+      existing.rows.push(fileRowNumber(issue.row))
+    } else {
+      groups.set(issue.code, { count: 1, rows: [fileRowNumber(issue.row)] })
+    }
+  }
+  return groups
+}
+
+/** Format the affected-rows list, eliding beyond MAX_LISTED_ROWS. */
+function formatRows(rows: number[]): string {
+  const listed = rows.slice(0, MAX_LISTED_ROWS).join(", ")
+  return rows.length > MAX_LISTED_ROWS ? `${listed}, …` : listed
+}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -75,8 +98,10 @@ export interface CheckStepProps {
   genderOverrides: Record<string, "Man" | "Kvinna">
   onGenderOverridesChange: (next: Record<string, "Man" | "Kvinna">) => void
   /**
-   * Called after validation runs.
-   * @param isBlocking - true when required fields are missing (Next must be disabled).
+   * Called after validation runs (and again when a gender is assigned).
+   * @param isBlocking - true while the import cannot continue: required
+   *   fields missing, hard data errors in the file, or flagged genders not
+   *   yet assigned. Next must be disabled.
    * @param issueCount - number of per-row data quality issues detected.
    */
   onValidated: (isBlocking: boolean, issueCount: number) => void
@@ -111,41 +136,24 @@ export function CheckStep({
     )
   }, [parsed, mapping, csvText])
 
-  const isBlocking = validation.blocking.length > 0
   const issueCount = validation.issues.length
 
-  // Keep a ref to the latest onValidated so the effect never needs to re-run
-  // when the parent re-creates the inline callback (which would cause an
-  // infinite setState loop). The effect only fires when isBlocking or
-  // issueCount changes.
-  const onValidatedRef = useRef(onValidated)
-  onValidatedRef.current = onValidated
-
-  // Notify the wizard of the blocking state and issue count each time
-  // validation changes.
-  useEffect(() => {
-    onValidatedRef.current(isBlocking, issueCount)
-  }, [isBlocking, issueCount])
-
-  // Group issues by code (one entry per code, with the affected file rows).
-  // unresolvedGender is excluded: those rows are fixed in-app via the
-  // assign-gender section below, not by re-uploading a corrected file.
-  const issueGroups = useMemo(() => {
-    const groups = new Map<RowIssueCode, { count: number; rows: number[] }>()
-    for (const issue of validation.issues) {
-      if (issue.code === "unresolvedGender") continue
-      const existing = groups.get(issue.code)
-      if (existing) {
-        existing.count += 1
-        existing.rows.push(fileRowNumber(issue.row))
-      } else {
-        groups.set(issue.code, {
-          count: 1,
-          rows: [fileRowNumber(issue.row)],
-        })
-      }
+  // Split the per-row issues by how they are resolved: hard errors need a
+  // corrected file (unresolvedGender is the exception, fixed in-app below);
+  // notices are interpretations worth a look and never block.
+  const { hardGroups, noticeGroups } = useMemo(() => {
+    return {
+      hardGroups: groupIssues(
+        validation.issues.filter(
+          (i) =>
+            ROW_ISSUE_SEVERITY[i.code] === "error" &&
+            i.code !== "unresolvedGender"
+        )
+      ),
+      noticeGroups: groupIssues(
+        validation.issues.filter((i) => ROW_ISSUE_SEVERITY[i.code] === "notice")
+      ),
     }
-    return groups
   }, [validation.issues])
 
   // Rows flagged unresolvedGender, identified by their externalRef cell so the
@@ -165,6 +173,28 @@ export function CheckStep({
     }
     return out
   }, [validation.issues, mapping, parsed.rows])
+
+  // The full continue gate: missing required fields, hard data errors (fix
+  // the file and re-upload), or flagged genders not yet assigned in-app.
+  const fieldsBlocked = validation.blocking.length > 0
+  const issuesBlocked = hardGroups.size > 0
+  const gendersBlocked = flaggedGenderRows.some(
+    ({ externalRef }) => genderOverrides[externalRef] === undefined
+  )
+  const isBlocking = fieldsBlocked || issuesBlocked || gendersBlocked
+
+  // Keep a ref to the latest onValidated so the effect never needs to re-run
+  // when the parent re-creates the inline callback (which would cause an
+  // infinite setState loop). The effect only fires when the gate or the
+  // issue count changes.
+  const onValidatedRef = useRef(onValidated)
+  onValidatedRef.current = onValidated
+
+  // Notify the wizard of the blocking state and issue count each time
+  // validation (or a gender assignment) changes.
+  useEffect(() => {
+    onValidatedRef.current(isBlocking, issueCount)
+  }, [isBlocking, issueCount])
 
   // The status column for one field-coverage row.
   function rowStatus(entry: { mapped: boolean; tier: FieldTier }) {
@@ -195,7 +225,7 @@ export function CheckStep({
   return (
     <div className="flex w-full flex-col gap-6">
       {/* Blocking alert: required fields not mapped */}
-      {isBlocking && (
+      {fieldsBlocked && (
         <Alert variant="destructive" data-testid="blocking-alert">
           <AlertTitle>{tCheck("blocking")}</AlertTitle>
           <AlertDescription>
@@ -322,62 +352,76 @@ export function CheckStep({
         </Alert>
       )}
 
-      {/* Data-quality issues: recommend fixing the source file and
-          re-uploading (row numbers match the file, header on row 1). */}
-      {issueGroups.size > 0 && (
-        <div data-testid="issues-section" className="flex flex-col gap-3">
-          <div className="flex flex-col gap-0.5">
-            <h3 className="font-medium text-sm">{tCheck("issuesHeading")}</h3>
-            <p className="text-muted-foreground text-sm">
-              {tCheck("issuesHelp")}
-            </p>
-          </div>
-          <div className="flex flex-col gap-2">
-            {Array.from(issueGroups.entries()).map(
-              ([code, { count, rows }]) => {
-                const listed = rows.slice(0, MAX_LISTED_ROWS).join(", ")
-                const elided = rows.length > MAX_LISTED_ROWS ? ", …" : ""
-                return (
-                  <div
-                    key={code}
-                    className="flex flex-col gap-0.5 rounded-md border px-3 py-2"
-                    data-testid={`issue-group-${code}`}
-                  >
-                    <span className="font-medium text-sm">
-                      {tCheck(`issue.${code}` as Parameters<typeof tCheck>[0])}
-                    </span>
-                    <span className="text-muted-foreground text-xs">
-                      {tCheck("affectedRows", {
-                        count,
-                        rows: `${listed}${elided}`,
-                      })}
-                    </span>
-                  </div>
-                )
-              }
-            )}
-          </div>
-          <div>
+      {/* Hard data-quality errors: these block the import. The file must be
+          fixed and re-uploaded (row numbers match the file, header on row 1). */}
+      {issuesBlocked && (
+        <Alert variant="destructive" data-testid="issues-section">
+          <AlertTitle>{tCheck("issuesHeading")}</AlertTitle>
+          <AlertDescription>
+            <p>{tCheck("issuesHelp")}</p>
+            <ul className="mt-2 list-disc pl-4">
+              {Array.from(hardGroups.entries()).map(([code, group]) => (
+                <li key={code} data-testid={`issue-group-${code}`}>
+                  <span className="font-medium">
+                    {tCheck(`issue.${code}` as Parameters<typeof tCheck>[0])}
+                  </span>{" "}
+                  <span>
+                    {tCheck("affectedRows", {
+                      count: group.count,
+                      rows: formatRows(group.rows),
+                    })}
+                  </span>
+                </li>
+              ))}
+            </ul>
             <Button
               type="button"
               variant="outline"
               size="sm"
+              className="mt-3"
               onClick={onReupload}
               data-testid="reupload-button"
             >
               {tCheck("reupload")}
             </Button>
-          </div>
-        </div>
+          </AlertDescription>
+        </Alert>
       )}
 
-      {/* Per-row gender assignment for unresolvedGender rows */}
+      {/* Per-row gender assignment for unresolvedGender rows; every flagged
+          row must be assigned before the import can continue. */}
       {flaggedGenderRows.length > 0 && (
         <AssignGender
           flagged={flaggedGenderRows}
           value={genderOverrides}
           onChange={onGenderOverridesChange}
         />
+      )}
+
+      {/* Interpretation notices: values that were read successfully but with
+          an assumption worth double-checking. Never blocking. */}
+      {noticeGroups.size > 0 && (
+        <Alert data-testid="notices-section">
+          <AlertTitle>{tCheck("noticesHeading")}</AlertTitle>
+          <AlertDescription>
+            <p>{tCheck("noticesHelp")}</p>
+            <ul className="mt-2 list-disc pl-4">
+              {Array.from(noticeGroups.entries()).map(([code, group]) => (
+                <li key={code} data-testid={`notice-group-${code}`}>
+                  <span className="font-medium">
+                    {tCheck(`issue.${code}` as Parameters<typeof tCheck>[0])}
+                  </span>{" "}
+                  <span>
+                    {tCheck("affectedRows", {
+                      count: group.count,
+                      rows: formatRows(group.rows),
+                    })}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </AlertDescription>
+        </Alert>
       )}
     </div>
   )

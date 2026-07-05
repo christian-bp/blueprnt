@@ -31,13 +31,14 @@ export {
   parseStringId,
 } from "./parse"
 
-export { validateFile, validateImport } from "./validate"
+export { ROW_ISSUE_SEVERITY, validateFile, validateImport } from "./validate"
 export type {
   BlockingIssueCode,
   FileWarningCode,
   ImportValidation,
   RowIssue,
   RowIssueCode,
+  RowIssueSeverity,
   ReadinessEntry,
   ValidateOpts,
 } from "./validate"

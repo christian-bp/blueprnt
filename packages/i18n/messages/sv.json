@@ -223,7 +223,9 @@
             "notIncluded": "Ingår inte"
           },
           "issuesHeading": "Datakvalitetsproblem",
-          "issuesHelp": "Dessa rader innehåller värden som inte kunde läsas tillförlitligt. Vi rekommenderar att du rättar dem i din löneexport och laddar upp den korrigerade filen.",
+          "issuesHelp": "Dessa rader innehåller värden som inte kunde läsas tillförlitligt. Rätta dem i din löneexport och ladda upp den korrigerade filen för att fortsätta.",
+          "noticesHeading": "Bra att veta",
+          "noticesHelp": "Dessa värden lästes med en tolkning som kan vara värd att dubbelkolla. De stoppar inte importen.",
           "issue": {
             "duplicateId": "Dubblett av anställnings-ID",
             "unparsableMoney": "Ej läsbart lönvärde",
@@ -245,7 +247,7 @@
           },
           "assignGender": {
             "heading": "Ange kön för dessa rader",
-            "help": "Vi kunde inte läsa av kön för dessa anställda. Välj ett för var och en så att de kan importeras. Raderna visas med anställningsnummer; inga andra personuppgifter skickas till importen."
+            "help": "Vi kunde inte läsa av kön för dessa anställda. Ange ett för varje rad för att fortsätta. Raderna visas med anställningsnummer; inga andra personuppgifter skickas till importen."
           }
         },
         "tier": {

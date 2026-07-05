@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import { ROW_ISSUE_SEVERITY } from "./validate"
 import type {
   BlockingIssueCode,
   FileWarningCode,
@@ -31,5 +32,25 @@ describe("issue code inventory", () => {
   })
   it("file warning codes are unique", () => {
     expect(new Set(FILE_WARNING_CODES).size).toBe(FILE_WARNING_CODES.length)
+  })
+
+  it("every row code has a severity (the Record type enforces coverage)", () => {
+    for (const code of ROW_CODES) {
+      expect(["error", "notice"]).toContain(ROW_ISSUE_SEVERITY[code])
+    }
+  })
+
+  it("interpretation heuristics are notices, unreadable values are errors", () => {
+    // Notices never block: the source file may already be correct.
+    expect(ROW_ISSUE_SEVERITY.fractionScaled).toBe("notice")
+    expect(ROW_ISSUE_SEVERITY.ambiguousDate).toBe("notice")
+    expect(ROW_ISSUE_SEVERITY.genderNameMismatch).toBe("notice")
+    // Errors block until the file is fixed (or the value assigned in-app).
+    expect(ROW_ISSUE_SEVERITY.duplicateId).toBe("error")
+    expect(ROW_ISSUE_SEVERITY.unparsableMoney).toBe("error")
+    expect(ROW_ISSUE_SEVERITY.negativeValue).toBe("error")
+    expect(ROW_ISSUE_SEVERITY.nonNumericCode).toBe("error")
+    expect(ROW_ISSUE_SEVERITY.raggedRow).toBe("error")
+    expect(ROW_ISSUE_SEVERITY.unresolvedGender).toBe("error")
   })
 })

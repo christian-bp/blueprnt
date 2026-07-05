@@ -223,7 +223,9 @@
             "notIncluded": "Ei mukana"
           },
           "issuesHeading": "Tietolaadun ongelmat",
-          "issuesHelp": "Nämä rivit sisältävät arvoja, joita ei voitu lukea luotettavasti. Suosittelemme korjaamaan ne palkkajärjestelmän viennissä ja lataamaan korjatun tiedoston.",
+          "issuesHelp": "Nämä rivit sisältävät arvoja, joita ei voitu lukea luotettavasti. Korjaa ne palkkajärjestelmän viennissä ja lataa korjattu tiedosto jatkaaksesi.",
+          "noticesHeading": "Hyvä tietää",
+          "noticesHelp": "Nämä arvot luettiin tulkinnalla, joka kannattaa tarkistaa. Ne eivät estä tuontia.",
           "issue": {
             "duplicateId": "Tyontekija-ID on kahdennettu",
             "unparsableMoney": "Palkkaarvoa ei voi lukea",
@@ -245,7 +247,7 @@
           },
           "assignGender": {
             "heading": "Määritä sukupuoli näille riveille",
-            "help": "Emme voineet lukea sukupuolta näille työntekijöille. Valitse kullekin yksi, jotta heidät voidaan tuoda. Rivit näytetään henkilönumerolla; muita henkilötietoja ei lähetetä tuontiin."
+            "help": "Emme voineet lukea sukupuolta näille työntekijöille. Määritä jokaiselle riville yksi jatkaaksesi. Rivit näytetään henkilönumerolla; muita henkilötietoja ei lähetetä tuontiin."
           }
         },
         "tier": {

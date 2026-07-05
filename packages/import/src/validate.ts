@@ -29,6 +29,29 @@ export type RowIssueCode =
 
 export type FileWarningCode = "noDelimiter" | "mojibake"
 
+export type RowIssueSeverity = "error" | "notice"
+
+/**
+ * How each row issue gates the import. "error" rows carry values that cannot
+ * be imported correctly: the source file must be fixed (or, for
+ * unresolvedGender, the value assigned in-app) before continuing. "notice"
+ * rows were read successfully but with an interpretation worth
+ * double-checking (a scaled fraction, an assumed date order, a name/gender
+ * heuristic that can be a false positive); they never block, because the
+ * source file may already be correct.
+ */
+export const ROW_ISSUE_SEVERITY: Record<RowIssueCode, RowIssueSeverity> = {
+  duplicateId: "error",
+  unparsableMoney: "error",
+  nonNumericCode: "error",
+  unresolvedGender: "error",
+  genderNameMismatch: "notice",
+  fractionScaled: "notice",
+  ambiguousDate: "notice",
+  negativeValue: "error",
+  raggedRow: "error",
+}
+
 export type RowIssue = {
   /** 0-based index into the data rows array. */
   row: number

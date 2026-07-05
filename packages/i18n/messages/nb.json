@@ -223,7 +223,9 @@
             "notIncluded": "Ikke inkludert"
           },
           "issuesHeading": "Datakvalitetsproblemer",
-          "issuesHelp": "Disse radene inneholder verdier som ikke kunne leses pålitelig. Vi anbefaler at du retter dem i lønnseksporten og laster opp den korrigerte filen.",
+          "issuesHelp": "Disse radene inneholder verdier som ikke kunne leses pålitelig. Rett dem i lønnseksporten og last opp den korrigerte filen for å fortsette.",
+          "noticesHeading": "Godt å vite",
+          "noticesHelp": "Disse verdiene ble lest med en tolkning som kan være verdt å dobbeltsjekke. De stopper ikke importen.",
           "issue": {
             "duplicateId": "Duplikat av ansatt-ID",
             "unparsableMoney": "Uleselig lonnverdi",
@@ -245,7 +247,7 @@
           },
           "assignGender": {
             "heading": "Angi kjønn for disse radene",
-            "help": "Vi kunne ikke lese kjønn for disse ansatte. Velg ett for hver av dem så de kan importeres. Radene vises med ansattnummer; ingen andre personopplysninger sendes til importen."
+            "help": "Vi kunne ikke lese kjønn for disse ansatte. Angi ett for hver rad for å fortsette. Radene vises med ansattnummer; ingen andre personopplysninger sendes til importen."
           }
         },
         "tier": {
