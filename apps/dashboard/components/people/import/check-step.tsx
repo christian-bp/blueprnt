@@ -1,8 +1,16 @@
 "use client"
 
 import {
+  Cancel01Icon,
+  CheckmarkCircle02Icon,
+  MinusSignIcon,
+  Tick02Icon,
+} from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
+import {
   CANONICAL_FIELDS,
   type CanonicalFieldKey,
+  type FieldTier,
   type FileWarningCode,
   type ImportValidation,
   type RowIssueCode,
@@ -14,11 +22,17 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@workspace/ui/components/alert"
-import { Badge } from "@workspace/ui/components/badge"
+import { Button } from "@workspace/ui/components/button"
 import { useTranslations } from "next-intl"
 import { useEffect, useMemo, useRef } from "react"
 import type { ParsedCsv } from "./import-wizard"
 import { AssignGender } from "./assign-gender"
+
+// The tier order the field-coverage groups render in.
+const TIER_ORDER: readonly FieldTier[] = ["required", "recommended", "optional"]
+
+// How many affected file rows to list per issue before eliding.
+const MAX_LISTED_ROWS = 15
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -37,6 +51,14 @@ function buildDetectedMapping(mapping: Record<string, number>) {
     map[key as CanonicalFieldKey] = { columnIndex, confidence: 1 }
   }
   return { map, unmappedColumns: [] }
+}
+
+/**
+ * Convert a 0-based data-row index to the row number the user sees in their
+ * file (1-based, with the header on row 1, so the first data row is row 2).
+ */
+export function fileRowNumber(dataRowIndex: number): number {
+  return dataRowIndex + 2
 }
 
 // ---------------------------------------------------------------------------
@@ -58,6 +80,8 @@ export interface CheckStepProps {
    * @param issueCount - number of per-row data quality issues detected.
    */
   onValidated: (isBlocking: boolean, issueCount: number) => void
+  /** Jump back to the upload step so a corrected file can be uploaded. */
+  onReupload: () => void
 }
 
 export function CheckStep({
@@ -67,6 +91,7 @@ export function CheckStep({
   genderOverrides,
   onGenderOverridesChange,
   onValidated,
+  onReupload,
 }: CheckStepProps) {
   const tCheck = useTranslations("dashboard.people.import.check")
   const tFields = useTranslations("dashboard.people.import.fields")
@@ -102,16 +127,22 @@ export function CheckStep({
     onValidatedRef.current(isBlocking, issueCount)
   }, [isBlocking, issueCount])
 
-  // Group issues by code so we can show one entry per code with a count.
+  // Group issues by code (one entry per code, with the affected file rows).
+  // unresolvedGender is excluded: those rows are fixed in-app via the
+  // assign-gender section below, not by re-uploading a corrected file.
   const issueGroups = useMemo(() => {
     const groups = new Map<RowIssueCode, { count: number; rows: number[] }>()
     for (const issue of validation.issues) {
+      if (issue.code === "unresolvedGender") continue
       const existing = groups.get(issue.code)
       if (existing) {
         existing.count += 1
-        existing.rows.push(issue.row + 1) // 1-based for display
+        existing.rows.push(fileRowNumber(issue.row))
       } else {
-        groups.set(issue.code, { count: 1, rows: [issue.row + 1] })
+        groups.set(issue.code, {
+          count: 1,
+          rows: [fileRowNumber(issue.row)],
+        })
       }
     }
     return groups
@@ -135,9 +166,35 @@ export function CheckStep({
     return out
   }, [validation.issues, mapping, parsed.rows])
 
+  // The status column for one field-coverage row.
+  function rowStatus(entry: { mapped: boolean; tier: FieldTier }) {
+    if (entry.mapped) {
+      return {
+        icon: Tick02Icon,
+        iconClass: "text-success",
+        text: null, // replaced per row with the mapped column name
+        textClass: "text-muted-foreground",
+      }
+    }
+    if (entry.tier === "required") {
+      return {
+        icon: Cancel01Icon,
+        iconClass: "text-destructive",
+        text: tCheck("status.missing"),
+        textClass: "font-medium text-destructive",
+      }
+    }
+    return {
+      icon: MinusSignIcon,
+      iconClass: "text-muted-foreground",
+      text: tCheck("status.notIncluded"),
+      textClass: "text-muted-foreground",
+    }
+  }
+
   return (
     <div className="flex w-full flex-col gap-6">
-      {/* Blocking alert — required fields not mapped */}
+      {/* Blocking alert: required fields not mapped */}
       {isBlocking && (
         <Alert variant="destructive" data-testid="blocking-alert">
           <AlertTitle>{tCheck("blocking")}</AlertTitle>
@@ -164,81 +221,88 @@ export function CheckStep({
         </Alert>
       )}
 
-      {/* Ready indicator — shown when no blocking fields */}
+      {/* Ready banner: all required fields mapped */}
       {!isBlocking && (
-        <p
+        <div
           data-testid="ready-indicator"
-          className="font-medium text-green-700 text-sm dark:text-green-400"
+          className="flex items-start gap-3 rounded-md border p-4"
         >
-          {tCheck("ready")}
-        </p>
+          <HugeiconsIcon
+            icon={CheckmarkCircle02Icon}
+            strokeWidth={2}
+            className="mt-0.5 size-5 shrink-0 text-success"
+            aria-hidden="true"
+          />
+          <div className="flex flex-col gap-0.5">
+            <p className="font-medium text-sm">{tCheck("ready")}</p>
+            <p className="text-muted-foreground text-sm">
+              {tCheck("readyDescription")}
+            </p>
+          </div>
+        </div>
       )}
 
-      {/* Readiness checklist — one row per canonical field */}
-      <div className="flex flex-col gap-2">
-        {validation.readiness.map((entry) => {
-          const fieldLabel = tFields(entry.key as Parameters<typeof tFields>[0])
-          const tierLabel = tTier(entry.tier)
-
-          let statusIcon: string
-          let statusClass: string
-          if (entry.mapped) {
-            statusIcon = "✓"
-            statusClass = "text-green-700 dark:text-green-400"
-          } else if (entry.tier === "required") {
-            statusIcon = "✗"
-            statusClass = "text-destructive"
-          } else {
-            statusIcon = "–"
-            statusClass = "text-muted-foreground"
-          }
-
-          return (
-            <div
-              key={entry.key}
-              className="flex items-center justify-between gap-2"
-              data-testid={`readiness-row-${entry.key}`}
-            >
-              <div className="flex items-center gap-2">
-                <span
-                  className={`w-4 text-center font-bold text-sm ${statusClass}`}
-                  aria-hidden="true"
-                >
-                  {statusIcon}
-                </span>
-                <span className="text-sm">{fieldLabel}</span>
-              </div>
-              <Badge
-                variant={
-                  entry.tier === "required"
-                    ? "destructive"
-                    : entry.tier === "recommended"
-                      ? "secondary"
-                      : "outline"
-                }
-              >
-                {tierLabel}
-              </Badge>
+      {/* Field coverage, grouped by tier so the tier never reads as a status:
+          the group heading says what is expected, the row status (icon + text)
+          says what the file delivered. */}
+      {TIER_ORDER.map((tier) => {
+        const entries = validation.readiness.filter((e) => e.tier === tier)
+        if (entries.length === 0) return null
+        const showWarnings =
+          tier === "recommended" && validation.warnings.length > 0
+        return (
+          <section
+            key={tier}
+            className="flex flex-col gap-2"
+            data-testid={showWarnings ? "warnings-section" : undefined}
+          >
+            <div className="flex flex-col gap-0.5">
+              <h3 className="font-medium text-sm">
+                {tCheck(`groups.${tier}`)}
+              </h3>
+              {showWarnings && (
+                <p className="text-muted-foreground text-sm">
+                  {tCheck("warnings")}
+                </p>
+              )}
             </div>
-          )
-        })}
-      </div>
-
-      {/* Warnings section — recommended fields not mapped */}
-      {validation.warnings.length > 0 && (
-        <Alert data-testid="warnings-section">
-          <AlertTitle>{tCheck("warnings")}</AlertTitle>
-          <AlertDescription>
-            <ul className="mt-2 list-disc pl-4">
-              {validation.warnings.map((key) => (
-                <li key={key}>
-                  {tFields(key as Parameters<typeof tFields>[0])}
-                </li>
-              ))}
-            </ul>
-          </AlertDescription>
-        </Alert>
-      )}
+            <div className="divide-y rounded-md border">
+              {entries.map((entry) => {
+                const fieldLabel = tFields(
+                  entry.key as Parameters<typeof tFields>[0]
+                )
+                const status = rowStatus(entry)
+                const columnIndex = mapping[entry.key]
+                const statusText =
+                  status.text ??
+                  tCheck("status.mappedFrom", {
+                    column: parsed.headers[columnIndex ?? -1] ?? "",
+                  })
+                return (
+                  <div
+                    key={entry.key}
+                    className="flex items-center justify-between gap-2 px-3 py-2"
+                    data-testid={`readiness-row-${entry.key}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <HugeiconsIcon
+                        icon={status.icon}
+                        strokeWidth={2}
+                        className={`size-4 shrink-0 ${status.iconClass}`}
+                        aria-hidden="true"
+                      />
+                      <span className="text-sm">{fieldLabel}</span>
+                    </div>
+                    <span className={`text-xs ${status.textClass}`}>
+                      {statusText}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          </section>
+        )
+      })}
 
       {/* File-scoped warnings (shown once, not per row) */}
       {validation.fileWarnings && validation.fileWarnings.length > 0 && (
@@ -258,30 +322,51 @@ export function CheckStep({
         </Alert>
       )}
 
-      {/* Data-quality issues section */}
+      {/* Data-quality issues: recommend fixing the source file and
+          re-uploading (row numbers match the file, header on row 1). */}
       {issueGroups.size > 0 && (
-        <div data-testid="issues-section">
-          <h3 className="mb-3 font-medium text-sm">
-            {tCheck("issuesHeading")}
-          </h3>
+        <div data-testid="issues-section" className="flex flex-col gap-3">
+          <div className="flex flex-col gap-0.5">
+            <h3 className="font-medium text-sm">{tCheck("issuesHeading")}</h3>
+            <p className="text-muted-foreground text-sm">
+              {tCheck("issuesHelp")}
+            </p>
+          </div>
           <div className="flex flex-col gap-2">
             {Array.from(issueGroups.entries()).map(
-              ([code, { count, rows }]) => (
-                <div
-                  key={code}
-                  className="flex flex-col gap-0.5 rounded-md border px-3 py-2"
-                  data-testid={`issue-group-${code}`}
-                >
-                  <span className="font-medium text-sm">
-                    {tCheck(`issue.${code}` as Parameters<typeof tCheck>[0])}
-                  </span>
-                  <span className="text-muted-foreground text-xs">
-                    {tCheck("rowsAffected", { count })}{" "}
-                    <span className="font-mono">({rows.join(", ")})</span>
-                  </span>
-                </div>
-              )
+              ([code, { count, rows }]) => {
+                const listed = rows.slice(0, MAX_LISTED_ROWS).join(", ")
+                const elided = rows.length > MAX_LISTED_ROWS ? ", …" : ""
+                return (
+                  <div
+                    key={code}
+                    className="flex flex-col gap-0.5 rounded-md border px-3 py-2"
+                    data-testid={`issue-group-${code}`}
+                  >
+                    <span className="font-medium text-sm">
+                      {tCheck(`issue.${code}` as Parameters<typeof tCheck>[0])}
+                    </span>
+                    <span className="text-muted-foreground text-xs">
+                      {tCheck("affectedRows", {
+                        count,
+                        rows: `${listed}${elided}`,
+                      })}
+                    </span>
+                  </div>
+                )
+              }
             )}
+          </div>
+          <div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onReupload}
+              data-testid="reupload-button"
+            >
+              {tCheck("reupload")}
+            </Button>
           </div>
         </div>
       )}

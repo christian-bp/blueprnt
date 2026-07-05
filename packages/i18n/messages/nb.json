@@ -207,10 +207,22 @@
         "check": {
           "title": "Kontroller beredskap",
           "description": "Se gjennom feltdekning og datakvalitet for import.",
-          "ready": "Klar",
+          "ready": "Klar for import",
+          "readyDescription": "Alle obligatoriske felt er tilordnet. Se over dekningen nedenfor, og fortsett deretter.",
           "blocking": "Folgende obligatoriske felt er ikke tilordnet. Ga tilbake til tilordningssteget og fiks dem for du fortsetter.",
           "warnings": "Noen anbefalte felt er ikke tilordnet. Du kan fortsatt importere, men dekningen vil vaere begrenset.",
+          "groups": {
+            "required": "Obligatoriske felt",
+            "recommended": "Anbefalte felt",
+            "optional": "Valgfrie felt"
+          },
+          "status": {
+            "mappedFrom": "Tilordnet fra \"{column}\"",
+            "missing": "Mangler",
+            "notIncluded": "Ikke inkludert"
+          },
           "issuesHeading": "Datakvalitetsproblemer",
+          "issuesHelp": "Disse radene inneholder verdier som ikke kunne leses pålitelig. Vi anbefaler at du retter dem i lønnseksporten og laster opp den korrigerte filen.",
           "issue": {
             "duplicateId": "Duplikat av ansatt-ID",
             "unparsableMoney": "Uleselig lonnverdi",
@@ -222,7 +234,8 @@
             "negativeValue": "Negativ lønnsverdi",
             "raggedRow": "Raden har feil antall kolonner"
           },
-          "rowsAffected": "{count, plural, one {# rad} other {# rader}} pavirket",
+          "affectedRows": "{count, plural, one {Rad {rows} i filen din} other {Radene {rows} i filen din}}",
+          "reupload": "Last opp en korrigert fil",
           "cannotProceed": "Fiks de obligatoriske feltene ovenfor for a fortsette.",
           "fileWarnings": "Filadvarsler",
           "fileWarning": {

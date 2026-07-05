@@ -212,10 +212,22 @@
         "check": {
           "title": "Check readiness",
           "description": "Review field coverage and data quality before importing.",
-          "ready": "Ready",
+          "ready": "Ready to import",
+          "readyDescription": "All required fields are mapped. Review the coverage below, then continue.",
           "blocking": "The following required fields are not mapped. Return to the mapping step to fix them before continuing.",
           "warnings": "Some recommended fields are not mapped. You can still import, but coverage will be limited.",
+          "groups": {
+            "required": "Required fields",
+            "recommended": "Recommended fields",
+            "optional": "Optional fields"
+          },
+          "status": {
+            "mappedFrom": "Mapped from \"{column}\"",
+            "missing": "Missing",
+            "notIncluded": "Not included"
+          },
           "issuesHeading": "Data quality issues",
+          "issuesHelp": "These rows contain values we could not read reliably. We recommend fixing them in your payroll export and uploading the corrected file.",
           "issue": {
             "duplicateId": "Duplicate employee ID",
             "unparsableMoney": "Unreadable salary value",
@@ -227,7 +239,8 @@
             "negativeValue": "Negative salary value",
             "raggedRow": "Row has the wrong number of columns"
           },
-          "rowsAffected": "{count, plural, one {# row} other {# rows}} affected",
+          "affectedRows": "{count, plural, one {Row {rows} in your file} other {Rows {rows} in your file}}",
+          "reupload": "Upload a corrected file",
           "cannotProceed": "Fix the required fields above to continue.",
           "fileWarnings": "File warnings",
           "fileWarning": {

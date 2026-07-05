@@ -207,10 +207,22 @@
         "check": {
           "title": "Tarkista valmius",
           "description": "Tarkista kenttien kattavuus ja tietolaatu ennen tuontia.",
-          "ready": "Valmis",
+          "ready": "Valmis tuontiin",
+          "readyDescription": "Kaikki pakolliset kentät on yhdistetty. Tarkista kattavuus alta ja jatka sitten.",
           "blocking": "Seuraavia pakollisia kentia ei ole yhdistetty. Palaa yhdistamisvaiheeseen ja korjaa ne ennen jatkamista.",
           "warnings": "Joitakin suositeltuja kentia ei ole yhdistetty. Voit silti tuoda, mutta kattavuus jaa rajalliseksi.",
+          "groups": {
+            "required": "Pakolliset kentät",
+            "recommended": "Suositellut kentät",
+            "optional": "Valinnaiset kentät"
+          },
+          "status": {
+            "mappedFrom": "Yhdistetty sarakkeesta \"{column}\"",
+            "missing": "Puuttuu",
+            "notIncluded": "Ei mukana"
+          },
           "issuesHeading": "Tietolaadun ongelmat",
+          "issuesHelp": "Nämä rivit sisältävät arvoja, joita ei voitu lukea luotettavasti. Suosittelemme korjaamaan ne palkkajärjestelmän viennissä ja lataamaan korjatun tiedoston.",
           "issue": {
             "duplicateId": "Tyontekija-ID on kahdennettu",
             "unparsableMoney": "Palkkaarvoa ei voi lukea",
@@ -222,7 +234,8 @@
             "negativeValue": "Negatiivinen palkka-arvo",
             "raggedRow": "Rivillä on väärä määrä sarakkeita"
           },
-          "rowsAffected": "{count, plural, one {# rivi} other {# rivia}} vaikutettu",
+          "affectedRows": "{count, plural, one {Rivi {rows} tiedostossasi} other {Rivit {rows} tiedostossasi}}",
+          "reupload": "Lataa korjattu tiedosto",
           "cannotProceed": "Korjaa yllaolevat pakolliset kentat jatkaaksesi.",
           "fileWarnings": "Tiedostovaroitukset",
           "fileWarning": {

@@ -102,6 +102,7 @@ function renderCheckStep({
   genderOverrides = {},
   onGenderOverridesChange = vi.fn(),
   onValidated = vi.fn(),
+  onReupload = vi.fn(),
 }: {
   parsed?: ParsedCsv
   mapping?: Record<string, number>
@@ -109,6 +110,7 @@ function renderCheckStep({
   genderOverrides?: Record<string, "Man" | "Kvinna">
   onGenderOverridesChange?: (next: Record<string, "Man" | "Kvinna">) => void
   onValidated?: (isBlocking: boolean, issueCount: number) => void
+  onReupload?: () => void
 } = {}) {
   const text =
     csvText ??
@@ -122,6 +124,7 @@ function renderCheckStep({
         genderOverrides={genderOverrides}
         onGenderOverridesChange={onGenderOverridesChange}
         onValidated={onValidated}
+        onReupload={onReupload}
       />
     </NextIntlClientProvider>
   )
@@ -219,6 +222,66 @@ describe("CheckStep — data quality issues", () => {
     const issuesSection = screen.getByTestId("issues-section")
     // Both rows are affected (2 rows).
     expect(issuesSection.textContent).toContain("2")
+  })
+
+  it("lists affected rows as file row numbers (header on row 1)", () => {
+    renderCheckStep({ parsed: DUPLICATE_PARSED, mapping: DUPLICATE_MAPPING })
+    const group = screen.getByTestId("issue-group-duplicateId")
+    // Data rows 0 and 1 sit on file rows 2 and 3 (row 1 is the header).
+    expect(group.textContent).toContain("2, 3")
+  })
+
+  it("offers a re-upload shortcut that jumps back to the upload step", () => {
+    const onReupload = vi.fn()
+    renderCheckStep({
+      parsed: DUPLICATE_PARSED,
+      mapping: DUPLICATE_MAPPING,
+      onReupload,
+    })
+    fireEvent.click(screen.getByTestId("reupload-button"))
+    expect(onReupload).toHaveBeenCalledOnce()
+  })
+
+  it("does not show the issues section when the only issues are unresolved genders", () => {
+    // Gender issues are fixed in-app via the assign-gender section, not by
+    // re-uploading a corrected file.
+    renderCheckStep({
+      parsed: {
+        headers: ["EmployeeID", "JobTitle", "Gender", "MonthlySalary"],
+        rows: [["E001", "Engineer", "", "55000"]],
+      },
+      mapping: DUPLICATE_MAPPING,
+    })
+    expect(screen.queryByTestId("issues-section")).toBeNull()
+    expect(screen.getByTestId("assign-gender")).toBeDefined()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Tests: field coverage statuses
+// ---------------------------------------------------------------------------
+
+describe("CheckStep — field coverage statuses", () => {
+  afterEach(() => {
+    cleanup()
+  })
+
+  it("shows the source column name on a mapped field row", () => {
+    renderCheckStep({ mapping: FULL_MAPPING })
+    const row = screen.getByTestId("readiness-row-title")
+    expect(row.textContent).toContain("JobTitle")
+  })
+
+  it("marks an unmapped required field as missing", () => {
+    renderCheckStep({ mapping: MISSING_BASIC_MONTHLY })
+    const row = screen.getByTestId("readiness-row-basicMonthly")
+    expect(row.textContent).toContain(m.check.status.missing)
+  })
+
+  it("marks an unmapped recommended field as not included", () => {
+    renderCheckStep({ mapping: MISSING_FTE })
+    const row = screen.getByTestId("readiness-row-ftePercent")
+    expect(row.textContent).toContain(m.check.status.notIncluded)
   })
 })
 
@@ -344,6 +407,7 @@ describe("CheckStep — assign gender", () => {
           genderOverrides={{}}
           onGenderOverridesChange={onGenderOverridesChange}
           onValidated={vi.fn()}
+          onReupload={vi.fn()}
         />
       </NextIntlClientProvider>
     )

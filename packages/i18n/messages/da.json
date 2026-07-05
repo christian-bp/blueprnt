@@ -207,10 +207,22 @@
         "check": {
           "title": "Kontroller beredskab",
           "description": "Gennemse feltdaekning og datakvalitet inden import.",
-          "ready": "Klar",
+          "ready": "Klar til import",
+          "readyDescription": "Alle obligatoriske felter er tilknyttet. Gennemgå dækningen nedenfor, og fortsæt derefter.",
           "blocking": "Folgende obligatoriske felter er ikke tilknyttet. Ga tilbage til tilknytningstrinnet og ret dem, inden du fortsaetter.",
           "warnings": "Nogle anbefalede felter er ikke tilknyttet. Du kan stadig importere, men daekningen vil vaere begraenset.",
+          "groups": {
+            "required": "Obligatoriske felter",
+            "recommended": "Anbefalede felter",
+            "optional": "Valgfrie felter"
+          },
+          "status": {
+            "mappedFrom": "Tilknyttet fra \"{column}\"",
+            "missing": "Mangler",
+            "notIncluded": "Ikke inkluderet"
+          },
           "issuesHeading": "Datakvalitetsproblemer",
+          "issuesHelp": "Disse rækker indeholder værdier, der ikke kunne læses pålideligt. Vi anbefaler, at du retter dem i din løneksport og uploader den rettede fil.",
           "issue": {
             "duplicateId": "Duplikeret medarbejder-ID",
             "unparsableMoney": "Ulaeselig loenvaerdi",
@@ -222,7 +234,8 @@
             "negativeValue": "Negativ lønværdi",
             "raggedRow": "Rækken har det forkerte antal kolonner"
           },
-          "rowsAffected": "{count, plural, one {# raekke} other {# raekker}} berort",
+          "affectedRows": "{count, plural, one {Række {rows} i din fil} other {Rækkerne {rows} i din fil}}",
+          "reupload": "Upload en rettet fil",
           "cannotProceed": "Ret de obligatoriske felter ovenfor for at fortsaette.",
           "fileWarnings": "Filadvarsler",
           "fileWarning": {

@@ -207,10 +207,22 @@
         "check": {
           "title": "Kontrollera beredskap",
           "description": "Granska fälttäckning och datakvalitet innan import.",
-          "ready": "Klar",
+          "ready": "Klar för import",
+          "readyDescription": "Alla obligatoriska fält är mappade. Granska täckningen nedan och fortsätt sedan.",
           "blocking": "Följande obligatoriska fält är inte mappade. Gå tillbaka till mappningssteget och åtgärda dem innan du fortsätter.",
           "warnings": "Vissa rekommenderade fält är inte mappade. Du kan ändå importera, men täckningen blir begränsad.",
+          "groups": {
+            "required": "Obligatoriska fält",
+            "recommended": "Rekommenderade fält",
+            "optional": "Valfria fält"
+          },
+          "status": {
+            "mappedFrom": "Mappat från \"{column}\"",
+            "missing": "Saknas",
+            "notIncluded": "Ingår inte"
+          },
           "issuesHeading": "Datakvalitetsproblem",
+          "issuesHelp": "Dessa rader innehåller värden som inte kunde läsas tillförlitligt. Vi rekommenderar att du rättar dem i din löneexport och laddar upp den korrigerade filen.",
           "issue": {
             "duplicateId": "Dubblett av anställnings-ID",
             "unparsableMoney": "Ej läsbart lönvärde",
@@ -222,7 +234,8 @@
             "negativeValue": "Negativt lönevärde",
             "raggedRow": "Raden har fel antal kolumner"
           },
-          "rowsAffected": "{count, plural, one {# rad} other {# rader}} berörda",
+          "affectedRows": "{count, plural, one {Rad {rows} i din fil} other {Raderna {rows} i din fil}}",
+          "reupload": "Ladda upp en korrigerad fil",
           "cannotProceed": "Åtgärda de obligatoriska fälten ovan för att fortsätta.",
           "fileWarnings": "Filvarningar",
           "fileWarning": {
