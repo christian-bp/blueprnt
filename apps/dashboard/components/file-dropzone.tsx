@@ -90,7 +90,7 @@ export function FileDropzone({
         icon={CloudUploadIcon}
         size={40}
         strokeWidth={1.5}
-        className="text-muted-foreground"
+        className="text-brand"
       />
       <div className="flex flex-col items-center gap-1">
         <p className="font-semibold text-foreground text-lg">{title}</p>
