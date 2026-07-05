@@ -103,14 +103,14 @@ function renderReviewStep({
   parsed = PARSED,
   mapping = MAPPING,
   csvText = CSV_TEXT,
-  flaggedCount = 0,
   genderOverrides = {},
+  onBack = vi.fn(),
 }: {
   parsed?: ParsedCsv
   mapping?: Record<string, number>
   csvText?: string
-  flaggedCount?: number
   genderOverrides?: Record<string, "Man" | "Kvinna">
+  onBack?: () => void
 } = {}) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
@@ -118,8 +118,8 @@ function renderReviewStep({
         parsed={parsed}
         mapping={mapping}
         csvText={csvText}
-        flaggedCount={flaggedCount}
         genderOverrides={genderOverrides}
+        onBack={onBack}
       />
     </NextIntlClientProvider>
   )
@@ -223,7 +223,7 @@ describe("ReviewStep — preview", () => {
           parsed={noGenderParsed}
           mapping={MAPPING}
           csvText={`${HEADERS.join(",")}\nE003,Analyst,,45000,100,SEK`}
-          flaggedCount={0}
+          onBack={vi.fn()}
           genderOverrides={{}}
         />
       </NextIntlClientProvider>
@@ -234,12 +234,23 @@ describe("ReviewStep — preview", () => {
     expect(row0.textContent).not.toContain("Man")
   })
 
-  it("shows the summary line with people count and flagged count", () => {
-    renderReviewStep({ flaggedCount: 3 })
+  it("shows the summary line with the people count", () => {
+    renderReviewStep()
     const summary = screen.getByTestId("summary")
     expect(summary.textContent).toBeDefined()
     // Should contain the total row count
     expect(summary.textContent).toContain("2")
+  })
+
+  it("steps back via the footer back button", () => {
+    const onBack = vi.fn()
+    renderReviewStep({ onBack })
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: messages.dashboard.people.import.back,
+      })
+    )
+    expect(onBack).toHaveBeenCalledOnce()
   })
 })
 
@@ -484,7 +495,7 @@ describe("ReviewStep — fractional FTE preview", () => {
           parsed={fracParsed}
           mapping={fracMapping}
           csvText={`${fracHeaders.join(",")}\n${fracRows.map((r) => r.join(",")).join("\n")}`}
-          flaggedCount={0}
+          onBack={vi.fn()}
           genderOverrides={{}}
         />
       </NextIntlClientProvider>
@@ -515,7 +526,7 @@ describe("ReviewStep — gender overrides", () => {
           parsed={PARSED}
           mapping={MAPPING}
           csvText={CSV_TEXT}
-          flaggedCount={1}
+          onBack={vi.fn()}
           genderOverrides={{ E001: "Kvinna" }}
         />
       </NextIntlClientProvider>
@@ -532,7 +543,7 @@ describe("ReviewStep — gender overrides", () => {
 
   it("omits genderOverrides when the record is empty", async () => {
     importPayrollMock.mockResolvedValueOnce(OK_RESULT)
-    renderReviewStep({ flaggedCount: 0 })
+    renderReviewStep()
     fireEvent.click(screen.getByTestId("confirm-button"))
     await waitFor(() => {
       expect(importPayrollMock).toHaveBeenCalledOnce()

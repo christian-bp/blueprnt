@@ -44,11 +44,10 @@ interface WizardState {
   fileName: string | null
   fileSize: number | null
   mapping: Record<string, number> | null
-  // Whether the check step has reported blocking required fields.
+  // Whether the check step has reported the import as blocked (missing
+  // required fields, hard data errors, or unassigned genders).
   // null = not yet validated (check step not yet reached).
   checkBlocking: boolean | null
-  // Number of per-row data-quality issues from the check step (used by ReviewStep).
-  checkIssueCount: number
   // Per-row manual gender assignments collected on the check step,
   // keyed by trimmed externalRef. Forwarded to importPayroll as genderOverrides.
   genderOverrides: Record<string, "Man" | "Kvinna">
@@ -84,7 +83,6 @@ export function ImportWizard() {
     fileSize: null,
     mapping: null,
     checkBlocking: null,
-    checkIssueCount: 0,
     genderOverrides: {},
     returnToCheck: false,
     validation: null,
@@ -194,7 +192,6 @@ export function ImportWizard() {
                       ? {
                           mapping: null,
                           checkBlocking: null,
-                          checkIssueCount: 0,
                           genderOverrides: {},
                         }
                       : {}),
@@ -210,7 +207,6 @@ export function ImportWizard() {
                   fileSize: null,
                   mapping: null,
                   checkBlocking: null,
-                  checkIssueCount: 0,
                   genderOverrides: {},
                   returnToCheck: false,
                 }))
@@ -274,11 +270,10 @@ export function ImportWizard() {
                   onGenderOverridesChange={(genderOverrides) =>
                     setState((prev) => ({ ...prev, genderOverrides }))
                   }
-                  onValidated={(isBlocking, issueCount) =>
+                  onValidated={(isBlocking) =>
                     setState((prev) => ({
                       ...prev,
                       checkBlocking: isBlocking,
-                      checkIssueCount: issueCount,
                     }))
                   }
                 />
@@ -308,15 +303,10 @@ export function ImportWizard() {
                   parsed={state.parsed}
                   mapping={state.mapping}
                   csvText={state.csvText}
-                  flaggedCount={state.checkIssueCount}
                   genderOverrides={state.genderOverrides}
+                  onBack={goBack}
                 />
               )}
-            <WizardFooter>
-              <Button variant="outline" onClick={goBack}>
-                {t("back")}
-              </Button>
-            </WizardFooter>
           </ScreenShell>
         )
       default:

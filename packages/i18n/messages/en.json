@@ -283,9 +283,8 @@
           "title": "Review and confirm",
           "description": "Check the preview below and confirm to import.",
           "preview": "Preview (first {count} rows)",
-          "summary": "{people, plural, one {# person} other {# people}} to import, {flagged, plural, one {# flagged} other {# flagged}}",
+          "summary": "{people, plural, one {# person} other {# people}} to import",
           "confirm": "Confirm import",
-          "importing": "Importing...",
           "blockingTitle": "Required fields are not mapped"
         },
         "discard": {

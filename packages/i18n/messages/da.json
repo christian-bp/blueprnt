@@ -279,9 +279,8 @@
           "title": "Gennemse og bekræft",
           "description": "Kontroller forhåndsvisningen nedenfor og bekræft for at importere.",
           "preview": "Forhåndsvisning (de {count} første rækker)",
-          "summary": "{people, plural, one {# person} other {# personer}} der skal importeres, {flagged, plural, one {# markeret} other {# markerede}}",
+          "summary": "{people, plural, one {# person} other {# personer}} der skal importeres",
           "confirm": "Bekræft import",
-          "importing": "Importerer...",
           "blockingTitle": "Obligatoriske felter er ikke tilknyttet"
         },
         "discard": {

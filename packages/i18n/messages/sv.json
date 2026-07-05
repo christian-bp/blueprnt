@@ -279,9 +279,8 @@
           "title": "Granska och bekräfta",
           "description": "Kontrollera förhandsgranskningen nedan och bekräfta för att importera.",
           "preview": "Förhandsgranskning (de första {count} raderna)",
-          "summary": "{people, plural, one {# person} other {# personer}} att importera, {flagged, plural, one {# markerad} other {# markerade}}",
+          "summary": "{people, plural, one {# person} other {# personer}} att importera",
           "confirm": "Bekräfta import",
-          "importing": "Importerar...",
           "blockingTitle": "Obligatoriska fält är inte mappade"
         },
         "discard": {

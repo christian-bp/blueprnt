@@ -97,9 +97,8 @@ export interface CheckStepProps {
    * @param isBlocking - true while the import cannot continue: required
    *   fields missing, hard data errors in the file, or flagged genders not
    *   yet assigned. Next must be disabled.
-   * @param issueCount - number of per-row data quality issues detected.
    */
-  onValidated: (isBlocking: boolean, issueCount: number) => void
+  onValidated: (isBlocking: boolean) => void
   /** Jump back to the upload step so a corrected file can be uploaded. */
   onReupload: () => void
 }
@@ -130,8 +129,6 @@ export function CheckStep({
       signals
     )
   }, [parsed, mapping, csvText])
-
-  const issueCount = validation.issues.length
 
   // Split the per-row issues by how they are resolved: hard errors need a
   // corrected file (unresolvedGender is the exception, fixed in-app below);
@@ -180,16 +177,15 @@ export function CheckStep({
 
   // Keep a ref to the latest onValidated so the effect never needs to re-run
   // when the parent re-creates the inline callback (which would cause an
-  // infinite setState loop). The effect only fires when the gate or the
-  // issue count changes.
+  // infinite setState loop). The effect only fires when the gate changes.
   const onValidatedRef = useRef(onValidated)
   onValidatedRef.current = onValidated
 
-  // Notify the wizard of the blocking state and issue count each time
-  // validation (or a gender assignment) changes.
+  // Notify the wizard of the blocking state each time validation (or a
+  // gender assignment) changes.
   useEffect(() => {
-    onValidatedRef.current(isBlocking, issueCount)
-  }, [isBlocking, issueCount])
+    onValidatedRef.current(isBlocking)
+  }, [isBlocking])
 
   // One list entry per issue code: the label on top, then the affected file
   // rows as monospace chips (easier to scan than a comma-separated sentence).

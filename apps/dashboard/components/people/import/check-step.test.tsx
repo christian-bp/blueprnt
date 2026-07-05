@@ -120,7 +120,7 @@ function renderCheckStep({
   csvText?: string
   genderOverrides?: Record<string, "Man" | "Kvinna">
   onGenderOverridesChange?: (next: Record<string, "Man" | "Kvinna">) => void
-  onValidated?: (isBlocking: boolean, issueCount: number) => void
+  onValidated?: (isBlocking: boolean) => void
   onReupload?: () => void
 } = {}) {
   const text =
@@ -162,10 +162,10 @@ describe("CheckStep — blocking (required field missing)", () => {
     expect(alert.textContent).toContain(m.fields.basicMonthly)
   })
 
-  it("calls onValidated(true, 0) when blocking with no per-row issues", () => {
+  it("calls onValidated(true) when blocking with no per-row issues", () => {
     const onValidated = vi.fn()
     renderCheckStep({ mapping: MISSING_BASIC_MONTHLY, onValidated })
-    expect(onValidated).toHaveBeenCalledWith(true, 0)
+    expect(onValidated).toHaveBeenCalledWith(true)
   })
 
   it("does not show the ready indicator when there are blocking fields", () => {
@@ -195,10 +195,10 @@ describe("CheckStep — warning only (recommended field missing)", () => {
     expect(warn.textContent).toContain(m.fields.ftePercent)
   })
 
-  it("calls onValidated(false, 0) when only warnings (not blocking)", () => {
+  it("calls onValidated(false) when only warnings (not blocking)", () => {
     const onValidated = vi.fn()
     renderCheckStep({ mapping: MISSING_FTE, onValidated })
-    expect(onValidated).toHaveBeenCalledWith(false, 0)
+    expect(onValidated).toHaveBeenCalledWith(false)
   })
 
   it("does not show a blocking alert when there are only warnings", () => {
@@ -278,7 +278,7 @@ describe("CheckStep — data quality issues", () => {
       onValidated,
     })
     // Both duplicate rows are flagged; the file must be fixed to continue.
-    expect(onValidated).toHaveBeenCalledWith(true, 2)
+    expect(onValidated).toHaveBeenCalledWith(true)
   })
 })
 
@@ -315,7 +315,7 @@ describe("CheckStep — interpretation notices", () => {
     expect(screen.getByTestId("notice-group-ambiguousDate")).toBeDefined()
     // Notices are not hard errors: no fix-and-reupload section, no block.
     expect(screen.queryByTestId("issues-section")).toBeNull()
-    expect(onValidated).toHaveBeenCalledWith(false, 1)
+    expect(onValidated).toHaveBeenCalledWith(false)
   })
 })
 
@@ -361,10 +361,10 @@ describe("CheckStep — fully ready", () => {
     expect(screen.getByTestId("ready-indicator")).toBeDefined()
   })
 
-  it("calls onValidated(false, 0) when no blocking issues and no data-quality issues", () => {
+  it("calls onValidated(false) when no blocking issues and no data-quality issues", () => {
     const onValidated = vi.fn()
     renderCheckStep({ mapping: FULL_MAPPING, onValidated })
-    expect(onValidated).toHaveBeenCalledWith(false, 0)
+    expect(onValidated).toHaveBeenCalledWith(false)
   })
 
   it("does not show a blocking alert when all required fields are mapped", () => {
@@ -463,7 +463,7 @@ describe("CheckStep — assign gender", () => {
       mapping: BLANK_GENDER_MAPPING,
       onValidated,
     })
-    expect(onValidated).toHaveBeenCalledWith(true, 1)
+    expect(onValidated).toHaveBeenCalledWith(true)
   })
 
   it("unblocks once all flagged genders are assigned", () => {
@@ -474,7 +474,7 @@ describe("CheckStep — assign gender", () => {
       genderOverrides: { E001: "Kvinna" },
       onValidated,
     })
-    expect(onValidated).toHaveBeenCalledWith(false, 1)
+    expect(onValidated).toHaveBeenCalledWith(false)
   })
 
   it("lifts the chosen gender via onGenderOverridesChange", () => {

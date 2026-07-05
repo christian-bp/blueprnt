@@ -1,5 +1,7 @@
 "use client"
 
+import { Tick02Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
   type CanonicalFieldKey,
   classifyColumn,
@@ -14,6 +16,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@workspace/ui/components/alert"
+import { Button } from "@workspace/ui/components/button"
 import {
   Table,
   TableBody,
@@ -28,6 +31,7 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useOrganization } from "@/components/org-context"
+import { WizardFooter } from "@/components/onboarding/wizard-footer"
 import { SubmitButton } from "@/components/submit-button"
 import type { ParsedCsv } from "./import-wizard"
 
@@ -144,20 +148,21 @@ export interface ReviewStepProps {
   parsed: ParsedCsv
   mapping: Record<string, number>
   csvText: string
-  /** Number of rows that the check step flagged with issues. */
-  flaggedCount: number
   /** Per-row manual gender assignments, keyed by trimmed externalRef. */
   genderOverrides: Record<string, "Man" | "Kvinna">
+  /** Step back to the check step (the review owns its footer actions). */
+  onBack: () => void
 }
 
 export function ReviewStep({
   parsed,
   mapping,
   csvText,
-  flaggedCount,
   genderOverrides,
+  onBack,
 }: ReviewStepProps) {
   const t = useTranslations("dashboard.people.import.review")
+  const tImport = useTranslations("dashboard.people.import")
   const tFields = useTranslations("dashboard.people.import.fields")
   const tGender = useTranslations("dashboard.people.import.gender")
   const tToast = useTranslations("dashboard.toast")
@@ -224,12 +229,10 @@ export function ReviewStep({
         </Alert>
       )}
 
-      {/* Summary line */}
+      {/* Summary line. No flagged count here: the check step forces every
+          actionable issue to be resolved before this step is reachable. */}
       <p className="text-muted-foreground text-sm" data-testid="summary">
-        {t("summary", {
-          people: parsed.rows.length,
-          flagged: flaggedCount,
-        })}
+        {t("summary", { people: parsed.rows.length })}
       </p>
 
       {/* Preview table */}
@@ -278,14 +281,20 @@ export function ReviewStep({
         </div>
       </div>
 
-      {/* Confirm button */}
-      <SubmitButton
-        isSubmitting={isSubmitting}
-        onClick={handleConfirm}
-        data-testid="confirm-button"
-      >
-        {isSubmitting ? t("importing") : t("confirm")}
-      </SubmitButton>
+      {/* Footer: back + confirm, matching the other steps' action row */}
+      <WizardFooter>
+        <Button variant="outline" onClick={onBack} disabled={isSubmitting}>
+          {tImport("back")}
+        </Button>
+        <SubmitButton
+          isSubmitting={isSubmitting}
+          onClick={handleConfirm}
+          data-testid="confirm-button"
+        >
+          <HugeiconsIcon icon={Tick02Icon} strokeWidth={2} />
+          {t("confirm")}
+        </SubmitButton>
+      </WizardFooter>
     </div>
   )
 }
