@@ -1,0 +1,35 @@
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_a6df4496db5eca 241
+apps/dashboard/components/people/import/check-step.test.tsx
+  s_6bff98b662648b::t_9175bfbbeaf1de 238,242-245
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_ee386781e09dc4 241
+apps/dashboard/components/people/import/check-step.tsx
+  s_6bff98b662648b::t_01126cc043e48f 67-68,70,72-75,77
+  s_6bff98b662648b::t_5746878045388c 394
+  s_6bff98b662648b::t_9d419feba27ec7 426
+  s_6bff98b662648b::t_c15380db80163c 194-230
+  s_6bff98b662648b::t_25840d61581222 27
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_117cd7ce7bf60e 241
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_07641edafc3020 246
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_64b36842e8cdb5 241
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "714d76c8f14cb759418c12de4af9ebae7b3d267d",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
