@@ -134,7 +134,6 @@
       "membershipAdded": "Lagt til i organisasjonen",
       "membershipUpdated": "Medlemskap oppdatert",
       "membershipRemoved": "Fjernet fra organisasjonen",
-      "peopleImported": "Ansatte importert",
       "classificationConfirmed": "Klassifisering bekreftet",
       "salarySaved": "Lønn lagret",
       "personErased": "Ansatt slettet"
@@ -278,6 +277,14 @@
         "importing": {
           "title": "Importerer personer",
           "description": "Personene dine importeres. Hold vinduet åpent til importen er ferdig."
+        },
+        "done": {
+          "title": "Importen er fullført",
+          "description": "Her er resultatet av filen din.",
+          "created": "Nye personer importert",
+          "updated": "Eksisterende personer oppdatert",
+          "skipped": "Rader hoppet over",
+          "goToPeople": "Gå til personer"
         },
         "review": {
           "title": "Gjennomgang og bekreftelse",

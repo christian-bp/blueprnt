@@ -24,6 +24,7 @@ import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 import { WizardShell } from "@/components/wizard-shell"
 import { CheckStep } from "./check-step"
+import { ImportDoneStep } from "./import-done-step"
 import { ImportingStep } from "./importing-step"
 import { MapStep } from "./map-step"
 import { ReviewStep } from "./review-step"
@@ -33,6 +34,13 @@ import { UploadStep } from "./upload-step"
 export interface ParsedCsv {
   headers: string[]
   rows: string[][]
+}
+
+// What a successful import did, shown on the final done screen.
+export interface ImportResultCounts {
+  created: number
+  updated: number
+  skipped: number
 }
 
 // Wizard flow state.
@@ -57,10 +65,12 @@ interface WizardState {
   // check step so the fresh validation is visible immediately.
   returnToCheck: boolean
   // The import action is running: the importing screen replaces the review
-  // step until it succeeds (navigates away) or fails (returns to review).
+  // step until it succeeds (done screen) or fails (returns to review).
   importing: boolean
   // Blocking field keys from a failed import attempt (backend re-validation).
   importBlocking: string[] | null
+  // Set when the import succeeded: the done screen shows these counts.
+  importResult: ImportResultCounts | null
 }
 
 const STEP_COUNT = 4
@@ -91,6 +101,7 @@ export function ImportWizard() {
     returnToCheck: false,
     importing: false,
     importBlocking: null,
+    importResult: null,
   })
 
   const [discardOpen, setDiscardOpen] = useState(false)
@@ -101,11 +112,11 @@ export function ImportWizard() {
   // never while the old step is still on screen.
   const [displayedStep, setDisplayedStep] = useState(STEP_UPLOAD)
 
-  // A file has been uploaded/parsed and the import has not yet completed
-  // (a completed import navigates away). Nothing is persisted to the DB
-  // until the final Import action, so leaving is a clean discard, but we
-  // warn the user first when there is progress.
-  const hasProgress = state.parsed !== null
+  // A file has been uploaded/parsed and the import has not yet completed.
+  // Nothing is persisted to the DB until the final Import action, so leaving
+  // is a clean discard, but we warn the user first when there is progress.
+  // After a successful import (done screen) leaving is free again.
+  const hasProgress = state.parsed !== null && state.importResult === null
 
   // Guard reload/close/tab-close with the browser's native beforeunload prompt.
   // Note: in-app browser Back is not interceptable in the App Router; this covers
@@ -164,6 +175,17 @@ export function ImportWizard() {
   })()
 
   function renderStep() {
+    // After a successful import: the done screen with the result counts.
+    if (state.importResult !== null) {
+      return (
+        <ScreenShell
+          heading={t("done.title")}
+          description={t("done.description")}
+        >
+          <ImportDoneStep result={state.importResult} />
+        </ScreenShell>
+      )
+    }
     // The importing screen replaces the review step while the action runs.
     if (state.importing) {
       return (
@@ -342,6 +364,13 @@ export function ImportWizard() {
                       importBlocking: blocking ?? null,
                     }))
                   }
+                  onImportSuccess={(result) =>
+                    setState((prev) => ({
+                      ...prev,
+                      importing: false,
+                      importResult: result,
+                    }))
+                  }
                 />
               )}
           </ScreenShell>
@@ -399,8 +428,8 @@ export function ImportWizard() {
             maxReachedIndex={state.step}
             navLabel={t("navLabel")}
             onSelect={(index) => {
-              // No navigation while the import action is running.
-              if (state.importing) return
+              // No navigation while the import runs or after it completed.
+              if (state.importing || state.importResult !== null) return
               if (index < state.step) {
                 setState((prev) => ({ ...prev, step: index }))
               }
@@ -416,7 +445,13 @@ export function ImportWizard() {
           onExitComplete={() => setDisplayedStep(state.step)}
         >
           <motion.div
-            key={state.importing ? "importing" : `step-${state.step}`}
+            key={
+              state.importResult !== null
+                ? "done"
+                : state.importing
+                  ? "importing"
+                  : `step-${state.step}`
+            }
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

@@ -25,14 +25,16 @@ export const logImportCompleted = internalMutation({
   args: {
     orgId: v.string(),
     actorId: v.string(),
-    peopleImported: v.number(),
+    peopleCreated: v.number(),
+    peopleUpdated: v.number(),
     salariesImported: v.number(),
     skippedRows: v.number(),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
     const payload: AuditPayloads["people.imported"] = {
-      peopleImported: args.peopleImported,
+      peopleCreated: args.peopleCreated,
+      peopleUpdated: args.peopleUpdated,
       salariesImported: args.salariesImported,
       skippedRows: args.skippedRows,
     }

@@ -131,7 +131,9 @@ export const upsertPersonByExternalRef = internalMutation({
     department: v.optional(v.string()),
     title: v.optional(v.string()),
   },
-  returns: v.id("people"),
+  // `created` distinguishes the insert path from the update path so the
+  // import can report new vs updated people separately.
+  returns: v.object({ personId: v.id("people"), created: v.boolean() }),
   handler: async (ctx, args) => {
     const existing = await ctx.db
       .query("people")
@@ -186,7 +188,7 @@ export const upsertPersonByExternalRef = internalMutation({
         },
       })
 
-      return personId
+      return { personId, created: true }
     }
 
     // Update path: compute the patch (non-PII fields only for audit; PII fields
@@ -214,7 +216,9 @@ export const upsertPersonByExternalRef = internalMutation({
     if (args.title !== existing.title) patch.title = args.title
 
     // No changes: no write, no audit row.
-    if (Object.keys(patch).length === 0) return existing._id
+    if (Object.keys(patch).length === 0) {
+      return { personId: existing._id, created: false }
+    }
 
     await ctx.db.patch(existing._id, patch)
 
@@ -238,7 +242,7 @@ export const upsertPersonByExternalRef = internalMutation({
       },
     })
 
-    return existing._id
+    return { personId: existing._id, created: false }
   },
 })
 

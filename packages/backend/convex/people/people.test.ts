@@ -233,7 +233,7 @@ describe("upsertPersonByExternalRef", () => {
     const t = initConvexTest()
     const { orgId, userId } = await seedOrg(t)
 
-    const personId = await t.mutation(
+    const { personId, created } = await t.mutation(
       internal.people.people.upsertPersonByExternalRef,
       {
         orgId,
@@ -245,6 +245,7 @@ describe("upsertPersonByExternalRef", () => {
         ftePercent: 100,
       }
     )
+    expect(created).toBe(true)
 
     await t.run(async (ctx) => {
       const person = await ctx.db.get(personId)
@@ -272,7 +273,7 @@ describe("upsertPersonByExternalRef", () => {
     const t = initConvexTest()
     const { orgId, userId } = await seedOrg(t)
 
-    const personId = await t.mutation(
+    const { personId, created } = await t.mutation(
       internal.people.people.upsertPersonByExternalRef,
       {
         orgId,
@@ -284,9 +285,10 @@ describe("upsertPersonByExternalRef", () => {
         ftePercent: 80,
       }
     )
+    expect(created).toBe(true)
 
     // Second call: ftePercent changes.
-    const returnedId = await t.mutation(
+    const { personId: returnedId, created: createdAgain } = await t.mutation(
       internal.people.people.upsertPersonByExternalRef,
       {
         orgId,
@@ -300,6 +302,7 @@ describe("upsertPersonByExternalRef", () => {
     )
 
     expect(returnedId).toBe(personId)
+    expect(createdAgain).toBe(false)
 
     await t.run(async (ctx) => {
       const person = await ctx.db.get(personId)
@@ -325,7 +328,7 @@ describe("upsertPersonByExternalRef", () => {
     const t = initConvexTest()
     const { orgId, userId } = await seedOrg(t)
 
-    const personId = await t.mutation(
+    const { personId, created } = await t.mutation(
       internal.people.people.upsertPersonByExternalRef,
       {
         orgId,
@@ -337,6 +340,7 @@ describe("upsertPersonByExternalRef", () => {
         title: "Senior Backend Engineer",
       }
     )
+    expect(created).toBe(true)
 
     await t.run(async (ctx) => {
       const person = await ctx.db.get(personId)
@@ -348,7 +352,7 @@ describe("upsertPersonByExternalRef", () => {
     const t = initConvexTest()
     const { orgId, userId } = await seedOrg(t)
 
-    const personId = await t.mutation(
+    const { personId, created } = await t.mutation(
       internal.people.people.upsertPersonByExternalRef,
       {
         orgId,
@@ -360,8 +364,9 @@ describe("upsertPersonByExternalRef", () => {
         title: "Engineer",
       }
     )
+    expect(created).toBe(true)
 
-    const returnedId = await t.mutation(
+    const { personId: returnedId, created: createdAgain } = await t.mutation(
       internal.people.people.upsertPersonByExternalRef,
       {
         orgId,
@@ -375,6 +380,7 @@ describe("upsertPersonByExternalRef", () => {
     )
 
     expect(returnedId).toBe(personId)
+    expect(createdAgain).toBe(false)
     await t.run(async (ctx) => {
       const person = await ctx.db.get(personId)
       expect(person?.title).toBe("Principal Engineer")

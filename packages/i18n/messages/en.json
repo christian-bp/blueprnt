@@ -134,7 +134,6 @@
       "membershipAdded": "Added to organization",
       "membershipUpdated": "Membership updated",
       "membershipRemoved": "Removed from organization",
-      "peopleImported": "People imported",
       "classificationConfirmed": "Classification confirmed",
       "salarySaved": "Salary saved",
       "personErased": "Employee deleted"
@@ -282,6 +281,14 @@
         "importing": {
           "title": "Importing people",
           "description": "Your people are being imported. Keep this window open until it finishes."
+        },
+        "done": {
+          "title": "Import complete",
+          "description": "Here is what happened with your file.",
+          "created": "New people imported",
+          "updated": "Existing people updated",
+          "skipped": "Rows skipped",
+          "goToPeople": "Go to people"
         },
         "review": {
           "title": "Review and confirm",

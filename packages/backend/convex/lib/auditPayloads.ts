@@ -300,7 +300,8 @@ export interface AuditPayloads {
   "pay.salarySet": { personId: string; changes: Changes }
   "pay.mappingSaved": { orgId: string; changes: Changes }
   "people.imported": {
-    peopleImported: number
+    peopleCreated: number
+    peopleUpdated: number
     salariesImported: number
     skippedRows: number
   }

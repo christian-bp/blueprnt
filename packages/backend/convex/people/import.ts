@@ -23,7 +23,9 @@ import { requireOrgAdminAction } from "../lib/functions"
 // Shape of the return value from importPayroll.
 const importResultValidator = v.object({
   ok: v.boolean(),
-  peopleImported: v.number(),
+  // New people inserted vs existing people (matched by externalRef) updated.
+  peopleCreated: v.number(),
+  peopleUpdated: v.number(),
   salariesImported: v.number(),
   skippedRows: v.number(),
   // The full validation object from @workspace/import. Returned on both
@@ -123,7 +125,8 @@ export const importPayroll = action({
         }
         return {
           ok: false,
-          peopleImported: 0,
+          peopleCreated: 0,
+          peopleUpdated: 0,
           salariesImported: 0,
           skippedRows: 0,
           validation: fileFormatValidation,
@@ -186,7 +189,8 @@ export const importPayroll = action({
     if (validation.blocking.length > 0) {
       return {
         ok: false,
-        peopleImported: 0,
+        peopleCreated: 0,
+        peopleUpdated: 0,
         salariesImported: 0,
         skippedRows: 0,
         validation: normalizedValidation,
@@ -277,7 +281,8 @@ export const importPayroll = action({
       ftePercentCol !== undefined &&
       classifyColumn(rows.map((r) => r[ftePercentCol] ?? "")).fraction === true
 
-    let peopleImported = 0
+    let peopleCreated = 0
+    let peopleUpdated = 0
     let salariesImported = 0
 
     for (let rowIdx = 0; rowIdx < rows.length; rowIdx++) {
@@ -336,7 +341,7 @@ export const importPayroll = action({
       const title = cell(titleCol) || undefined
 
       // Upsert the person.
-      const personId = await ctx.runMutation(
+      const { personId, created } = await ctx.runMutation(
         internal.people.people.upsertPersonByExternalRef,
         {
           orgId: args.orgId,
@@ -354,7 +359,11 @@ export const importPayroll = action({
           ...(title !== undefined ? { title } : {}),
         }
       )
-      peopleImported += 1
+      if (created) {
+        peopleCreated += 1
+      } else {
+        peopleUpdated += 1
+      }
 
       // Salary fields.
       const basicMonthlyRaw = cell(basicMonthlyCol)
@@ -449,7 +458,8 @@ export const importPayroll = action({
     await ctx.runMutation(internal.people.importHelpers.logImportCompleted, {
       orgId: args.orgId,
       actorId,
-      peopleImported,
+      peopleCreated,
+      peopleUpdated,
       salariesImported,
       skippedRows: skippedRowIndices.size,
     })
@@ -464,7 +474,8 @@ export const importPayroll = action({
 
     return {
       ok: true,
-      peopleImported,
+      peopleCreated,
+      peopleUpdated,
       salariesImported,
       skippedRows: skippedRowIndices.size,
       validation: normalizedValidation,

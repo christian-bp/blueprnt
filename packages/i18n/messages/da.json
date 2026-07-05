@@ -134,7 +134,6 @@
       "membershipAdded": "Tilføjet til organisationen",
       "membershipUpdated": "Medlemskab opdateret",
       "membershipRemoved": "Fjernet fra organisationen",
-      "peopleImported": "Medarbejdere importeret",
       "classificationConfirmed": "Klassificering bekræftet",
       "salarySaved": "Løn gemt",
       "personErased": "Medarbejder slettet"
@@ -278,6 +277,14 @@
         "importing": {
           "title": "Importerer personer",
           "description": "Dine personer importeres. Hold vinduet åbent, indtil importen er færdig."
+        },
+        "done": {
+          "title": "Importen er fuldført",
+          "description": "Her er resultatet af din fil.",
+          "created": "Nye personer importeret",
+          "updated": "Eksisterende personer opdateret",
+          "skipped": "Oversprungne rækker",
+          "goToPeople": "Gå til personer"
         },
         "review": {
           "title": "Gennemse og bekræft",

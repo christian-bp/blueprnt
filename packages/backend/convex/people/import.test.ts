@@ -135,7 +135,8 @@ describe("importPayroll (happy path)", () => {
     // Torsten Malm row 57 and Ludvig Palm row 94 both get duplicateId;
     // Torsten also gets nonNumericCode for "Software Developer").
     expect(result.skippedRows).toBe(2)
-    expect(result.peopleImported).toBe(116)
+    expect(result.peopleCreated).toBe(116)
+    expect(result.peopleUpdated).toBe(0)
     expect(result.salariesImported).toBe(116)
 
     // No blocking issues on a complete mapping.
@@ -183,7 +184,8 @@ describe("importPayroll (happy path)", () => {
       expect(importAudit).toHaveLength(1)
 
       const auditPayload = importAudit[0]?.payload as Record<string, unknown>
-      expect(auditPayload.peopleImported).toBe(116)
+      expect(auditPayload.peopleCreated).toBe(116)
+      expect(auditPayload.peopleUpdated).toBe(0)
       expect(auditPayload.salariesImported).toBe(116)
       expect(auditPayload.skippedRows).toBe(2)
 
@@ -325,7 +327,8 @@ describe("importPayroll (happy path)", () => {
     })
 
     expect(result2.ok).toBe(true)
-    expect(result2.peopleImported).toBe(116)
+    expect(result2.peopleCreated).toBe(0)
+    expect(result2.peopleUpdated).toBe(116)
 
     await t.run(async (ctx) => {
       // Still 116 people (upsert, not double-insert).
@@ -362,7 +365,7 @@ describe("importPayroll (blocking validation)", () => {
     })
 
     expect(result.ok).toBe(false)
-    expect(result.peopleImported).toBe(0)
+    expect(result.peopleCreated).toBe(0)
     expect(result.salariesImported).toBe(0)
     expect(result.skippedRows).toBe(0)
     expect(result.validation.blocking).toContain("basicMonthly")
@@ -406,7 +409,7 @@ describe("importPayroll (blocking validation)", () => {
     })
 
     expect(result.ok).toBe(false)
-    expect(result.peopleImported).toBe(0)
+    expect(result.peopleCreated).toBe(0)
     expect(result.salariesImported).toBe(0)
     expect(result.skippedRows).toBe(0)
   })
@@ -497,7 +500,7 @@ describe("importPayroll (row-skip triage)", () => {
     // Both rows carry fractionScaled + ambiguousDate (soft issues) but no hard
     // issue. Neither row should be skipped.
     expect(result.skippedRows).toBe(0)
-    expect(result.peopleImported).toBe(2)
+    expect(result.peopleCreated).toBe(2)
     expect(result.salariesImported).toBe(2)
   })
 
@@ -514,7 +517,7 @@ describe("importPayroll (row-skip triage)", () => {
 
     expect(result.ok).toBe(true)
     expect(result.skippedRows).toBe(0)
-    expect(result.peopleImported).toBe(2)
+    expect(result.peopleCreated).toBe(2)
 
     await t.run(async (ctx) => {
       const people = await ctx.db
@@ -634,7 +637,7 @@ describe("importPayroll (title field)", () => {
       columnMap: DATE_FORMS_MAP,
     })
     expect(result.ok).toBe(true)
-    expect(result.peopleImported).toBeGreaterThan(0)
+    expect(result.peopleCreated).toBeGreaterThan(0)
 
     await t.run(async (ctx) => {
       const people = await ctx.db
@@ -669,7 +672,7 @@ describe("importPayroll (binary / file-level guard)", () => {
     })
 
     expect(result.ok).toBe(false)
-    expect(result.peopleImported).toBe(0)
+    expect(result.peopleCreated).toBe(0)
     expect(result.validation.blocking).toContain("invalidFileFormat")
     expect(result.validation.fileFormatError).toBe("invalidFileFormat")
 
@@ -710,7 +713,7 @@ describe("importPayroll (gender overrides)", () => {
     })
 
     expect(result.ok).toBe(true)
-    expect(result.peopleImported).toBe(2)
+    expect(result.peopleCreated).toBe(2)
 
     await t.run(async (ctx) => {
       const people = await ctx.db
@@ -736,7 +739,7 @@ describe("importPayroll (gender overrides)", () => {
 
     expect(result.ok).toBe(true)
     // G2 has unresolvedGender (HARD) so it is skipped; only G1 imports.
-    expect(result.peopleImported).toBe(1)
+    expect(result.peopleCreated).toBe(1)
     expect(result.skippedRows).toBe(1)
 
     await t.run(async (ctx) => {
@@ -762,7 +765,7 @@ describe("importPayroll (gender overrides)", () => {
     })
 
     expect(result.ok).toBe(true)
-    expect(result.peopleImported).toBe(1)
+    expect(result.peopleCreated).toBe(1)
     expect(result.skippedRows).toBe(1)
 
     await t.run(async (ctx) => {
@@ -800,7 +803,7 @@ describe("importPayroll (gender overrides)", () => {
 
     expect(result.ok).toBe(true)
     // Only G1 imports; both G2 rows are skipped due to duplicateId.
-    expect(result.peopleImported).toBe(1)
+    expect(result.peopleCreated).toBe(1)
     expect(result.skippedRows).toBe(2)
   })
 })

@@ -84,7 +84,8 @@ const CSV_TEXT = `${HEADERS.join(",")}\n${ROWS.map((r) => r.join(",")).join("\n"
 
 const OK_RESULT = {
   ok: true,
-  peopleImported: 2,
+  peopleCreated: 2,
+  peopleUpdated: 0,
   salariesImported: 2,
   skippedRows: 0,
   validation: {
@@ -97,7 +98,8 @@ const OK_RESULT = {
 
 const BLOCKED_RESULT = {
   ok: false,
-  peopleImported: 0,
+  peopleCreated: 0,
+  peopleUpdated: 0,
   salariesImported: 0,
   skippedRows: 0,
   validation: {
@@ -120,6 +122,7 @@ function renderReviewStep({
   onBack = vi.fn(),
   onImportStart = vi.fn(),
   onImportEnd = vi.fn(),
+  onImportSuccess = vi.fn(),
   blockingError = null,
 }: {
   parsed?: ParsedCsv
@@ -129,6 +132,11 @@ function renderReviewStep({
   onBack?: () => void
   onImportStart?: () => void
   onImportEnd?: (blocking?: string[]) => void
+  onImportSuccess?: (result: {
+    created: number
+    updated: number
+    skipped: number
+  }) => void
   blockingError?: string[] | null
 } = {}) {
   return render(
@@ -141,6 +149,7 @@ function renderReviewStep({
         onBack={onBack}
         onImportStart={onImportStart}
         onImportEnd={onImportEnd}
+        onImportSuccess={onImportSuccess}
         blockingError={blockingError}
       />
     </NextIntlClientProvider>
@@ -248,6 +257,7 @@ describe("ReviewStep — preview", () => {
           onBack={vi.fn()}
           onImportStart={vi.fn()}
           onImportEnd={vi.fn()}
+          onImportSuccess={vi.fn()}
           blockingError={null}
           genderOverrides={{}}
         />
@@ -340,38 +350,35 @@ describe("ReviewStep — confirm (success)", () => {
     expect(genderPair?.[0]).toBe("Gender")
   })
 
-  it("fires toast.success on ok:true", async () => {
+  it("signals onImportSuccess with the result counts on ok:true (no toast, no navigation: the done screen is the feedback)", async () => {
     importPayrollMock.mockResolvedValueOnce(OK_RESULT)
-    renderReviewStep()
+    const onImportSuccess = vi.fn()
+    renderReviewStep({ onImportSuccess })
 
     fireEvent.click(screen.getByTestId("confirm-button"))
 
     await waitFor(() => {
-      expect(toast.success).toHaveBeenCalledOnce()
+      expect(onImportSuccess).toHaveBeenCalledWith({
+        created: 2,
+        updated: 0,
+        skipped: 0,
+      })
     })
-  })
-
-  it("navigates to /people on ok:true", async () => {
-    importPayrollMock.mockResolvedValueOnce(OK_RESULT)
-    renderReviewStep()
-
-    fireEvent.click(screen.getByTestId("confirm-button"))
-
-    await waitFor(() => {
-      expect(pushMock).toHaveBeenCalledWith("/people")
-    })
+    expect(toast.success).not.toHaveBeenCalled()
+    expect(pushMock).not.toHaveBeenCalled()
   })
 
   it("signals onImportStart when confirm is clicked (wizard shows the importing screen)", async () => {
     importPayrollMock.mockResolvedValueOnce(OK_RESULT)
     const onImportStart = vi.fn()
-    renderReviewStep({ onImportStart })
+    const onImportSuccess = vi.fn()
+    renderReviewStep({ onImportStart, onImportSuccess })
 
     fireEvent.click(screen.getByTestId("confirm-button"))
 
     expect(onImportStart).toHaveBeenCalledOnce()
     await waitFor(() => {
-      expect(pushMock).toHaveBeenCalledWith("/people")
+      expect(onImportSuccess).toHaveBeenCalledOnce()
     })
   })
 })
@@ -501,6 +508,7 @@ describe("ReviewStep — fractional FTE preview", () => {
           onBack={vi.fn()}
           onImportStart={vi.fn()}
           onImportEnd={vi.fn()}
+          onImportSuccess={vi.fn()}
           blockingError={null}
           genderOverrides={{}}
         />
@@ -535,6 +543,7 @@ describe("ReviewStep — gender overrides", () => {
           onBack={vi.fn()}
           onImportStart={vi.fn()}
           onImportEnd={vi.fn()}
+          onImportSuccess={vi.fn()}
           blockingError={null}
           genderOverrides={{ E001: "Kvinna" }}
         />

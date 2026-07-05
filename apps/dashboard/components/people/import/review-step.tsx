@@ -27,13 +27,12 @@ import {
 } from "@workspace/ui/components/table"
 import { useAction } from "convex/react"
 import { useTranslations } from "next-intl"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useOrganization } from "@/components/org-context"
 import { WizardFooter } from "@/components/onboarding/wizard-footer"
 import { SubmitButton } from "@/components/submit-button"
-import type { ParsedCsv } from "./import-wizard"
+import type { ImportResultCounts, ParsedCsv } from "./import-wizard"
 
 // Maximum number of rows to show in the preview table.
 const PREVIEW_ROW_COUNT = 10
@@ -155,12 +154,14 @@ export interface ReviewStepProps {
   /** The import has started: the wizard shows the importing screen. */
   onImportStart: () => void
   /**
-   * The import ended without navigating away: the wizard returns to this
-   * step. `blocking` carries the required-field keys when the backend
-   * rejected the import (should not happen if the check step gated
-   * correctly); undefined for a generic failure.
+   * The import ended in failure: the wizard returns to this step.
+   * `blocking` carries the required-field keys when the backend rejected
+   * the import (should not happen if the check step gated correctly);
+   * undefined for a generic failure.
    */
   onImportEnd: (blocking?: string[]) => void
+  /** The import succeeded: the wizard shows the done screen with counts. */
+  onImportSuccess: (result: ImportResultCounts) => void
   /** Blocking keys from the last failed import attempt (wizard-held). */
   blockingError: string[] | null
 }
@@ -173,6 +174,7 @@ export function ReviewStep({
   onBack,
   onImportStart,
   onImportEnd,
+  onImportSuccess,
   blockingError,
 }: ReviewStepProps) {
   const t = useTranslations("dashboard.people.import.review")
@@ -181,7 +183,6 @@ export function ReviewStep({
   const tGender = useTranslations("dashboard.people.import.gender")
   const tToast = useTranslations("dashboard.toast")
   const { orgId } = useOrganization()
-  const router = useRouter()
 
   const importPayroll = useAction(api.people.import.importPayroll)
 
@@ -208,8 +209,12 @@ export function ReviewStep({
           : {}),
       })
       if (result.ok) {
-        toast.success(tToast("peopleImported"))
-        router.push("/people")
+        // The done screen is the completion feedback (no toast needed).
+        onImportSuccess({
+          created: result.peopleCreated,
+          updated: result.peopleUpdated,
+          skipped: result.skippedRows,
+        })
       } else {
         // Required fields were not mapped — surface the blocking list.
         onImportEnd(result.validation.blocking)

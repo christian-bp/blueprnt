@@ -134,7 +134,6 @@
       "membershipAdded": "Lisätty organisaatioon",
       "membershipUpdated": "Jäsenyys päivitetty",
       "membershipRemoved": "Poistettu organisaatiosta",
-      "peopleImported": "Henkilot tuotu",
       "classificationConfirmed": "Luokittelu vahvistettu",
       "salarySaved": "Palkka tallennettu",
       "personErased": "Työntekijä poistettu"
@@ -278,6 +277,14 @@
         "importing": {
           "title": "Tuodaan henkilöitä",
           "description": "Henkilöitäsi tuodaan. Pidä ikkuna auki, kunnes tuonti on valmis."
+        },
+        "done": {
+          "title": "Tuonti on valmis",
+          "description": "Tässä on tiedostosi tulos.",
+          "created": "Uusia henkilöitä tuotu",
+          "updated": "Nykyisiä henkilöitä päivitetty",
+          "skipped": "Ohitetut rivit",
+          "goToPeople": "Siirry henkilöihin"
         },
         "review": {
           "title": "Tarkista ja vahvista",
