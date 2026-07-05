@@ -29,6 +29,7 @@ import { Fragment, useState } from "react"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { SPRING } from "@/lib/motion"
+import type { TableSkeletonColumn } from "@/components/table-skeleton"
 import { ClassifyPersonRows } from "./classify-person-rows"
 import { UnmatchedTitleActions } from "./unmatched-title-actions"
 
@@ -165,10 +166,21 @@ function buildDefaultLevels(
 // can reuse the exact same cells and the two can never drift apart.
 // ---------------------------------------------------------------------------
 
-// The number of columns in the table (checkbox, expand, title, people, role,
-// state, actions). Exported so the loading skeleton and the expansion row's
-// colSpan can never drift from the real header.
-export const CLASSIFY_COLUMN_COUNT = 7
+// Skeleton shape per column, mirroring the real row content (checkbox, expand
+// chevron, title text, people count, role select trigger, state badge, confirm
+// button) so the loading table has the same silhouette and row height as the
+// loaded one. The column count for the expansion row's colSpan derives from it,
+// so header, skeleton, and colSpan can never drift apart.
+export const CLASSIFY_SKELETON_COLUMNS: TableSkeletonColumn[] = [
+  { className: "size-4 rounded-[4px]" },
+  { className: "size-4" },
+  { className: "w-40 max-w-full" },
+  { className: "w-8" },
+  { className: "h-9 w-44 max-w-full rounded-md" },
+  { className: "h-5 w-20 rounded-full" },
+  { className: "h-8 w-24 rounded-md" },
+]
+export const CLASSIFY_COLUMN_COUNT = CLASSIFY_SKELETON_COLUMNS.length
 
 export function ClassifyTableHeader({
   selectAll,

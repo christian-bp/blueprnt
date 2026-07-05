@@ -20,13 +20,26 @@ import { SalaryForm } from "@/components/people/salary-form"
 import { useOrganization } from "@/components/org-context"
 import { type Crumb, PageBreadcrumb } from "@/components/page-breadcrumb"
 import { PageHeader } from "@/components/page-header"
-import { TableSkeleton } from "@/components/table-skeleton"
+import {
+  TableSkeleton,
+  type TableSkeletonColumn,
+} from "@/components/table-skeleton"
 import { usePageTitle } from "@/hooks/use-page-title"
 
 // The per-person detail surface. Reads identity, current assignment (role +
 // level), and salary history. Host for the manual salary form (Task 4) and the
 // erasure control (Task 5). The route resolves by the raw Convex id, not a slug:
 // people are deliberately not route-slugged (Role != Person, PII minimization).
+
+// Skeleton shape per salary column, mirroring the real cells (year, two
+// amounts, a currency code, a short source word).
+const SALARY_SKELETON_COLUMNS: TableSkeletonColumn[] = [
+  { className: "w-10" },
+  { className: "w-16" },
+  { className: "w-16" },
+  { className: "w-10" },
+  { className: "w-14" },
+]
 export function PersonDetail({ personId }: { personId: string }) {
   const t = useTranslations("dashboard.people.detail")
   const tNav = useTranslations("dashboard.nav")
@@ -109,7 +122,7 @@ export function PersonDetail({ personId }: { personId: string }) {
                 <TableHead>{t("salaryColumns.source")}</TableHead>
               </TableRow>
             </TableHeader>
-            <TableSkeleton rows={3} columns={5} />
+            <TableSkeleton rows={3} columns={SALARY_SKELETON_COLUMNS} />
           </Table>
         </section>
       </div>

@@ -8,7 +8,7 @@ import { useEffect, useRef } from "react"
 import { PageHeader } from "@/components/page-header"
 import { useOrganization } from "@/components/org-context"
 import {
-  CLASSIFY_COLUMN_COUNT,
+  CLASSIFY_SKELETON_COLUMNS,
   ClassifyTableHeader,
   ClassifyTitleTable,
 } from "@/components/people/classify/classify-title-table"
@@ -54,8 +54,10 @@ export default function ClassifyPage() {
   }, [run, orgId])
 
   // Show a skeleton shaped like the real table while any query is loading.
-  // ClassifyTableHeader and CLASSIFY_COLUMN_COUNT are shared with the real
-  // table so the two cannot drift independently.
+  // ClassifyTableHeader and CLASSIFY_SKELETON_COLUMNS are shared with the real
+  // table so the two cannot drift independently; the per-column shapes mirror
+  // the row's real controls (checkbox, chevron, select, badge, button) so the
+  // silhouette and row height match the loaded state.
   if (
     groups === undefined ||
     roles === undefined ||
@@ -67,7 +69,7 @@ export default function ClassifyPage() {
         <PageHeader title={t("heading")} description={t("description")} />
         <Table>
           <ClassifyTableHeader />
-          <TableSkeleton columns={CLASSIFY_COLUMN_COUNT} rows={5} />
+          <TableSkeleton columns={CLASSIFY_SKELETON_COLUMNS} rows={5} />
         </Table>
       </div>
     )

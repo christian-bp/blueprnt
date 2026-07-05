@@ -32,7 +32,10 @@ import { useMemo } from "react"
 import { useOrganization } from "@/components/org-context"
 import { PageHeader } from "@/components/page-header"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import { TableSkeleton } from "@/components/table-skeleton"
+import {
+  TableSkeleton,
+  type TableSkeletonColumn,
+} from "@/components/table-skeleton"
 import { useClassificationSummary } from "@/hooks/use-classification-summary"
 import { displayNameFor } from "@/lib/person-display"
 
@@ -40,6 +43,17 @@ import { displayNameFor } from "@/lib/person-display"
 // payroll. Includes a classification badge per person derived from the
 // listPeopleByTitle query (the single source for badge state and the N-of-M
 // summary). The pseudonymizeNames org setting is applied to the name cell.
+
+// Skeleton shape per column, mirroring the real row content (name link, short
+// gender word, department, tiny FTE value, classification badge pill) so the
+// loading table has the same silhouette as the loaded one.
+const PEOPLE_SKELETON_COLUMNS: TableSkeletonColumn[] = [
+  { className: "w-36 max-w-full" },
+  { className: "w-16" },
+  { className: "w-28 max-w-full" },
+  { className: "w-10" },
+  { className: "h-5 w-24 rounded-full" },
+]
 
 export function PeopleSection() {
   const t = useTranslations("dashboard.people")
@@ -129,7 +143,7 @@ export function PeopleSection() {
           </div>
           <Table>
             {tableHeader}
-            <TableSkeleton rows={8} columns={5} />
+            <TableSkeleton rows={8} columns={PEOPLE_SKELETON_COLUMNS} />
           </Table>
         </>
       ) : people.length === 0 ? (
