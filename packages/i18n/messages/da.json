@@ -380,7 +380,7 @@
       "columns": {
         "title": "Importeret jobtitel",
         "people": "Medarbejdere",
-        "suggestedRole": "Foreslået rolle",
+        "role": "Rolle",
         "state": "Status",
         "actions": "Handlinger"
       },

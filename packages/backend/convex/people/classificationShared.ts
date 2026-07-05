@@ -10,7 +10,6 @@ export interface TitleGroup {
   title: string | null
   people: Doc<"people">[]
   suggestedRoleId: string | null
-  confidence: "high" | "medium" | "unmatched"
   // person._id (as string) -> engine level suggestion, or null when the group
   // matched no role (no track to draw a level from).
   suggestedLevelByPerson: Map<string, string | null>
@@ -68,7 +67,6 @@ export function buildTitleGroups(
     .map(([title, group]) => {
       const suggestion = suggestionByTitle.get(title)
       const suggestedRoleId = suggestion?.suggestedRoleId ?? null
-      const confidence = suggestion?.confidence ?? "unmatched"
       const role =
         suggestedRoleId !== null ? roleById.get(suggestedRoleId) : undefined
       const suggestedLevelByPerson = new Map<string, string | null>()
@@ -91,7 +89,6 @@ export function buildTitleGroups(
         title,
         people: group,
         suggestedRoleId,
-        confidence,
         suggestedLevelByPerson,
       }
     })
@@ -104,7 +101,6 @@ export function buildTitleGroups(
       title: null,
       people: untitled,
       suggestedRoleId: null,
-      confidence: "unmatched" as const,
       suggestedLevelByPerson: new Map(
         untitled.map((p) => [p._id as string, null])
       ),

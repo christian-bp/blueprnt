@@ -11,7 +11,7 @@ import {
 import { useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { displayNameFor } from "@/lib/person-display"
-import type { ClassifyPersonRow } from "./classify-title-table"
+import { type ClassifyPersonRow, resolveLevel } from "./classify-title-table"
 
 // ---------------------------------------------------------------------------
 // Pure tenure helper: display-only, not engine logic. Captured once per
@@ -100,15 +100,11 @@ export function ClassifyPersonRows({
         </div>
       </div>
       {people.map((person) => {
-        // Default the level to the person's suggestedLevel when it is valid
-        // for this track, otherwise fall back to the first level in the track.
-        const defaultLevel =
-          person.suggestedLevel !== null &&
-          isValidLevelForTrack(trackKey, person.suggestedLevel)
-            ? person.suggestedLevel
-            : (trackLevels[0] ?? "")
-
-        const currentLevel = selectedLevel.get(person.personId) ?? defaultLevel
+        // Default the level via the shared resolveLevel priority (current
+        // assigned level, then suggestion, then the track's first level) so
+        // what the select shows equals what buildAssignments would submit.
+        const currentLevel =
+          selectedLevel.get(person.personId) ?? resolveLevel(person, trackKey)
 
         const name = displayNameFor(person, pseudonymize, (ref) =>
           tOrg("pseudonymTemplate", { ref })

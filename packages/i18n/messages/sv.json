@@ -380,7 +380,7 @@
       "columns": {
         "title": "Importerad befattning",
         "people": "Anställda",
-        "suggestedRole": "Föreslagen roll",
+        "role": "Roll",
         "state": "Status",
         "actions": "Åtgärder"
       },

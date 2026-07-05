@@ -56,7 +56,6 @@ export interface ClassifyTitleGroup {
   title: string | null
   personCount: number
   suggestedRoleId: string | null
-  confidence: "high" | "medium" | "unmatched"
   people: ClassifyPersonRow[]
 }
 
@@ -102,35 +101,61 @@ function rowKey(group: ClassifyTitleGroup): string {
   return group.title ?? "__no_title__"
 }
 
-// The first (lowest) valid level for a role's track, used as a fallback when
-// the engine gave no per-person level. Guarantees a level that passes the
-// backend's isValidLevelForTrack check.
-function defaultLevelFor(
-  roleId: string,
-  roleById: Map<string, ClassifyRole>
+// The role every person in the group is confirmed to, or null when the group
+// is not uniformly confirmed to a single role. This is what the role select
+// shows for a confirmed group (the engine suggestion may be stale by then).
+export function confirmedRoleFor(group: {
+  people: Array<{
+    currentAssignment: {
+      roleId: string
+      levelSource: "suggested" | "confirmed"
+    } | null
+  }>
+}): string | null {
+  if (group.people.length === 0) return null
+  let roleId: string | null = null
+  for (const p of group.people) {
+    if (p.currentAssignment?.levelSource !== "confirmed") return null
+    if (roleId === null) {
+      roleId = p.currentAssignment.roleId
+    } else if (roleId !== p.currentAssignment.roleId) {
+      return null
+    }
+  }
+  return roleId
+}
+
+// The level to show/submit for a person, in priority order: their currently
+// assigned level (kept across a role swap when it is still valid on the
+// track), the engine's suggestion, the track's first level. An explicit
+// per-person selection overrides all of these at the call sites.
+export function resolveLevel(
+  person: Pick<ClassifyPersonRow, "suggestedLevel" | "currentAssignment">,
+  trackKey: string
 ): string {
-  const role = roleById.get(roleId)
-  if (role === undefined) return ""
-  const levels = TRACK_LEVELS[role.trackKey as keyof typeof TRACK_LEVELS] ?? []
+  const current = person.currentAssignment?.level
+  if (current !== undefined && isValidLevelForTrack(trackKey, current)) {
+    return current
+  }
+  if (
+    person.suggestedLevel !== null &&
+    isValidLevelForTrack(trackKey, person.suggestedLevel)
+  ) {
+    return person.suggestedLevel
+  }
+  const levels = TRACK_LEVELS[trackKey as keyof typeof TRACK_LEVELS] ?? []
   return levels[0] ?? ""
 }
 
 // Build a fresh per-person level Map for a group using the new track's
-// default, resetting any stale levels from a previous track.
+// defaults, resetting any stale levels from a previous track.
 function buildDefaultLevels(
   people: ClassifyPersonRow[],
   trackKey: string
 ): Map<string, string> {
-  const levels = TRACK_LEVELS[trackKey as keyof typeof TRACK_LEVELS] ?? []
-  const first = levels[0] ?? ""
   const result = new Map<string, string>()
   for (const p of people) {
-    const level =
-      p.suggestedLevel !== null &&
-      isValidLevelForTrack(trackKey, p.suggestedLevel)
-        ? p.suggestedLevel
-        : first
-    result.set(p.personId, level)
+    result.set(p.personId, resolveLevel(p, trackKey))
   }
   return result
 }
@@ -161,7 +186,7 @@ export function ClassifyTableHeader({
         <TableHead className="w-8" />
         <TableHead>{t("columns.title")}</TableHead>
         <TableHead>{t("columns.people")}</TableHead>
-        <TableHead>{t("columns.suggestedRole")}</TableHead>
+        <TableHead>{t("columns.role")}</TableHead>
         <TableHead>{t("columns.state")}</TableHead>
         <TableHead>{t("columns.actions")}</TableHead>
       </TableRow>
@@ -268,7 +293,10 @@ export function ClassifyTitleTable({
     // isValidLevelForTrack, but the UI must not offer or submit an invalid one).
     if (newRoleId !== null) {
       const newRole = roleById.get(newRoleId)
-      const prevRoleId = selectedRole.get(groupKey) ?? group.suggestedRoleId
+      const prevRoleId =
+        selectedRole.get(groupKey) ??
+        confirmedRoleFor(group) ??
+        group.suggestedRoleId
       const prevRole =
         prevRoleId !== null && prevRoleId !== undefined
           ? roleById.get(prevRoleId)
@@ -288,30 +316,56 @@ export function ClassifyTitleTable({
     }
   }
 
+  // Everything a row (and the toolbar's selectable set) needs to know about
+  // a group, derived once: the resolved role (an explicit pick wins over the
+  // confirmed role, which wins over the engine suggestion) and whether the
+  // group is actionable. A confirmed group becomes actionable again when the
+  // pending selection differs from what is confirmed (role swap or level
+  // change), so re-confirming applies the change.
+  function resolveGroup(group: ClassifyTitleGroup) {
+    const key = rowKey(group)
+    const state = classificationStateForPeople(group.people)
+    const confirmedRoleId = confirmedRoleFor(group)
+    const currentRoleId =
+      selectedRole.get(key) ?? confirmedRoleId ?? group.suggestedRoleId
+    const role =
+      currentRoleId !== null && currentRoleId !== undefined
+        ? roleById.get(currentRoleId)
+        : undefined
+    const trackKey = role?.trackKey ?? ""
+    const groupLevels = selectedLevel.get(key)
+    const levelsDirty =
+      groupLevels !== undefined &&
+      group.people.some((p) => {
+        const picked = groupLevels.get(p.personId)
+        return picked !== undefined && picked !== p.currentAssignment?.level
+      })
+    const dirty =
+      state === "confirmed" &&
+      (currentRoleId !== confirmedRoleId || levelsDirty)
+    const actionable =
+      currentRoleId !== null &&
+      currentRoleId !== undefined &&
+      (state !== "confirmed" || dirty)
+    return { key, state, confirmedRoleId, currentRoleId, trackKey, actionable }
+  }
+
   // Builds the per-person assignment payload for a group. Level resolution:
-  // the per-person selected level when present; else suggestedLevel when it
-  // is valid for the role's track; else the track's first level. This
+  // the per-person selected level when present, else resolveLevel (current
+  // assigned level, then suggestion, then the track's first level). This
   // guarantees a valid level is always submitted.
   function buildAssignments(
     group: ClassifyTitleGroup
   ): Array<{ personId: string; roleId: string; level: string }> {
     const key = rowKey(group)
-    const roleId = selectedRole.get(key) ?? group.suggestedRoleId
-    if (roleId === null) return []
+    const { currentRoleId, trackKey } = resolveGroup(group)
+    if (currentRoleId === null || currentRoleId === undefined) return []
     const groupLevels = selectedLevel.get(key)
-    const role = roleById.get(roleId)
-    const trackKey = role?.trackKey ?? ""
-    return group.people.map((p) => {
-      let level = groupLevels?.get(p.personId)
-      if (level === undefined) {
-        level =
-          p.suggestedLevel !== null &&
-          isValidLevelForTrack(trackKey, p.suggestedLevel)
-            ? p.suggestedLevel
-            : defaultLevelFor(roleId, roleById)
-      }
-      return { personId: p.personId, roleId, level }
-    })
+    return group.people.map((p) => ({
+      personId: p.personId,
+      roleId: currentRoleId,
+      level: groupLevels?.get(p.personId) ?? resolveLevel(p, trackKey),
+    }))
   }
 
   // ONE mutation for the whole batch: a single transaction, so the reactive
@@ -374,16 +428,11 @@ export function ClassifyTitleTable({
     return "outline"
   }
 
-  // Groups eligible for bulk confirmation: a resolvable role and not yet
-  // fully confirmed (re-confirming a confirmed group would only add writes).
-  const selectableGroups = groups.filter((group) => {
-    const key = rowKey(group)
-    const roleId = selectedRole.get(key) ?? group.suggestedRoleId
-    return (
-      roleId !== null &&
-      classificationStateForPeople(group.people) !== "confirmed"
-    )
-  })
+  // Groups eligible for bulk confirmation: actionable = a resolvable role
+  // and either not yet fully confirmed or carrying a pending change.
+  const selectableGroups = groups.filter(
+    (group) => resolveGroup(group).actionable
+  )
   const selectableKeys = selectableGroups.map((g) => rowKey(g))
   const selectedCount = selectableKeys.filter((k) => selected.has(k)).length
   const allSelected =
@@ -433,15 +482,9 @@ export function ClassifyTitleTable({
         />
         <TableBody>
           {groups.map((group) => {
-            const key = rowKey(group)
-            const state = classificationStateForPeople(group.people)
-            const currentRoleId = selectedRole.get(key) ?? group.suggestedRoleId
+            const { key, state, currentRoleId, trackKey, actionable } =
+              resolveGroup(group)
             const isExpanded = expanded.has(key)
-            const currentRole =
-              currentRoleId !== null && currentRoleId !== undefined
-                ? roleById.get(currentRoleId)
-                : undefined
-            const trackKey = currentRole?.trackKey ?? ""
             const groupLevels =
               selectedLevel.get(key) ?? new Map<string, string>()
             const isConfirming = confirming.has(key)
@@ -449,23 +492,19 @@ export function ClassifyTitleTable({
             // FIX 1: Fragment carries the key so React can track the pair
             // (title row + expansion row) as a unit. The inner TableRow must
             // NOT repeat the key.
-            const isSelectable =
-              currentRoleId !== null &&
-              currentRoleId !== undefined &&
-              state !== "confirmed"
-
             return (
               <Fragment key={key}>
                 <TableRow>
-                  {/* Bulk-selection checkbox; disabled when the group has no
-                    resolvable role or is already fully confirmed. */}
+                  {/* Bulk-selection checkbox; disabled when the group is not
+                    actionable (no resolvable role, or already confirmed with
+                    no pending change). */}
                   <TableCell className="w-8 pr-0">
                     <Checkbox
                       aria-label={t("selectTitle", {
                         title: group.title ?? t("noTitle"),
                       })}
                       checked={selected.has(key)}
-                      disabled={!isSelectable || isConfirming}
+                      disabled={!actionable || isConfirming}
                       onCheckedChange={(checked) => {
                         setSelected((prev) => {
                           const next = new Set(prev)
@@ -535,7 +574,7 @@ export function ClassifyTitleTable({
                     >
                       {/* FIX 5: aria-label on the role SelectTrigger so
                         screen readers announce which select this is. */}
-                      <SelectTrigger aria-label={t("columns.suggestedRole")}>
+                      <SelectTrigger aria-label={t("columns.role")}>
                         <SelectValue placeholder={t("selectRolePlaceholder")} />
                       </SelectTrigger>
                       <SelectContent>
@@ -553,7 +592,12 @@ export function ClassifyTitleTable({
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {group.confidence === "unmatched" ? (
+                    {/* No resolvable role: offer create/map. A resolvable
+                      role: Confirm, but only while there is something to
+                      confirm (not yet confirmed, or a pending change).
+                      A confirmed, untouched group shows no action; the row
+                      height is held by the role select, so nothing reflows. */}
+                    {currentRoleId === null || currentRoleId === undefined ? (
                       <UnmatchedTitleActions
                         orgId={orgId}
                         title={group.title ?? ""}
@@ -573,7 +617,7 @@ export function ClassifyTitleTable({
                           })
                         }}
                       />
-                    ) : (
+                    ) : actionable ? (
                       // FIX 2+3: disabled while in-flight (prevents double-write);
                       // try/catch/finally in onConfirm surfaces errors via toast.error.
                       <Button
@@ -584,7 +628,7 @@ export function ClassifyTitleTable({
                       >
                         {t("assignCta")}
                       </Button>
-                    )}
+                    ) : null}
                   </TableCell>
                 </TableRow>
 

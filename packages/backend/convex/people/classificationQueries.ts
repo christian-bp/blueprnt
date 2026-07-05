@@ -27,7 +27,7 @@ const personRowShape = v.object({
 
 // Distinct titles across an org's active people, each with the people sharing
 // it, their current open assignment, and the deterministic engine suggestion
-// (matched role + confidence + per-person level) computed via the shared
+// (matched role + per-person level) computed via the shared
 // buildTitleGroups helper (the SAME grouping/engine path classifyOrg persists
 // from, so what HR sees equals what gets written). Groups over a by_org collect
 // (distinct titles are bounded by headcount, so the collect is safe; spec 5).
@@ -40,11 +40,6 @@ export const listPeopleByTitle = orgQuery({
       title: v.union(v.string(), v.null()),
       personCount: v.number(),
       suggestedRoleId: v.union(v.id("roles"), v.null()),
-      confidence: v.union(
-        v.literal("high"),
-        v.literal("medium"),
-        v.literal("unmatched")
-      ),
       people: v.array(personRowShape),
     })
   ),
@@ -90,7 +85,6 @@ export const listPeopleByTitle = orgQuery({
         group.suggestedRoleId !== null
           ? (group.suggestedRoleId as Id<"roles">)
           : null,
-      confidence: group.confidence,
       people: group.people.map((person) => {
         const open = openByPerson.get(person._id as string) ?? null
         return {

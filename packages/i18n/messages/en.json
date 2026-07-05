@@ -380,7 +380,7 @@
       "columns": {
         "title": "Imported job title",
         "people": "Employees",
-        "suggestedRole": "Suggested role",
+        "role": "Role",
         "state": "State",
         "actions": "Actions"
       },

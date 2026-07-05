@@ -314,9 +314,8 @@ describe("listPeopleByTitle", () => {
     expect(groups).toHaveLength(2)
     const seGroup = groups.find((g) => g.title === "Software Engineer")
     expect(seGroup?.personCount).toBe(2)
-    // The query runs the engines: the exact-title match is high confidence and
-    // points at the created role.
-    expect(seGroup?.confidence).toBe("high")
+    // The query runs the engines: the exact-title match points at the
+    // created role.
     expect(seGroup?.suggestedRoleId).toBe(roleId)
     const annaRow = seGroup?.people.find((p) => p.personId === anna)
     expect(annaRow?.currentAssignment?.level).toBe("IC3")
@@ -332,7 +331,6 @@ describe("listPeopleByTitle", () => {
     const nullGroup = groups[groups.length - 1]
     expect(nullGroup?.title).toBeNull()
     expect(nullGroup?.suggestedRoleId).toBeNull()
-    expect(nullGroup?.confidence).toBe("unmatched")
     expect(nullGroup?.people[0]?.suggestedLevel).toBeNull()
   })
 
@@ -356,7 +354,6 @@ describe("listPeopleByTitle", () => {
       { orgId }
     )
     const rsGroup = groups.find((g) => g.title === "Rocket Scientist")
-    expect(rsGroup?.confidence).toBe("unmatched")
     expect(rsGroup?.suggestedRoleId).toBeNull()
     expect(rsGroup?.people[0]?.suggestedLevel).toBeNull()
   })

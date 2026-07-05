@@ -380,7 +380,7 @@
       "columns": {
         "title": "Tuotu tehtävänimike",
         "people": "Työntekijät",
-        "suggestedRole": "Ehdotettu rooli",
+        "role": "Rooli",
         "state": "Tila",
         "actions": "Toiminnot"
       },

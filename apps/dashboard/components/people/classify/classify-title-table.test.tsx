@@ -112,12 +112,11 @@ const TRACKS = [
   { key: "M", name: "Manager", order: 1 },
 ]
 
-// A matched group with high confidence: two people, one confirmed, one suggested
+// A matched group: two people, one confirmed, one suggested
 const HIGH_GROUP: ClassifyTitleGroup = {
   title: "Senior Engineer",
   personCount: 2,
   suggestedRoleId: "role1",
-  confidence: "high",
   people: [
     {
       personId: "p1",
@@ -148,12 +147,11 @@ const HIGH_GROUP: ClassifyTitleGroup = {
   ],
 }
 
-// An unmatched group (no title)
+// An unmatched group (no title, no resolvable role)
 const NO_TITLE_GROUP: ClassifyTitleGroup = {
   title: null,
   personCount: 1,
   suggestedRoleId: null,
-  confidence: "unmatched",
   people: [
     {
       personId: "p3",
@@ -209,7 +207,7 @@ describe("ClassifyTitleTable", () => {
     renderTable()
     expect(screen.getByText(m.columns.title)).toBeDefined()
     expect(screen.getByText(m.columns.people)).toBeDefined()
-    expect(screen.getByText(m.columns.suggestedRole)).toBeDefined()
+    expect(screen.getByText(m.columns.role)).toBeDefined()
     expect(screen.getByText(m.columns.state)).toBeDefined()
   })
 
@@ -332,7 +330,6 @@ describe("ClassifyTitleTable", () => {
       title: "Data Analyst",
       personCount: 1,
       suggestedRoleId: "role1",
-      confidence: "medium",
       people: [
         {
           personId: "p4",
@@ -503,5 +500,148 @@ describe("ClassifyTitleTable", () => {
     for (const a of payload.assignments) {
       expect(["M1", "M2", "M3"]).toContain(a.level)
     }
+  })
+
+  // ---------------------------------------------------------------------------
+  // Confirmed groups: no redundant Confirm, dirty on change
+  // ---------------------------------------------------------------------------
+
+  // Every person confirmed to role1: nothing to confirm until something changes.
+  const CONFIRMED_GROUP: ClassifyTitleGroup = {
+    title: "Platform Engineer",
+    personCount: 2,
+    suggestedRoleId: "role1",
+    people: [
+      {
+        personId: "p1",
+        displayName: "Alice Svensson",
+        externalRef: "42",
+        employmentStartDate: null,
+        isManager: null,
+        suggestedLevel: "IC3",
+        currentAssignment: {
+          roleId: "role1",
+          level: "IC3",
+          levelSource: "confirmed",
+        },
+      },
+      {
+        personId: "p2",
+        displayName: "Bob Larsson",
+        externalRef: null,
+        employmentStartDate: null,
+        isManager: null,
+        suggestedLevel: "IC2",
+        currentAssignment: {
+          roleId: "role1",
+          level: "IC2",
+          levelSource: "confirmed",
+        },
+      },
+    ],
+  }
+
+  it("shows no Confirm button and a disabled checkbox for a confirmed, untouched group", () => {
+    renderTable([CONFIRMED_GROUP])
+    expect(screen.queryByRole("button", { name: m.assignCta })).toBeNull()
+    const checkbox = screen.getByRole("checkbox", {
+      name: "Select Platform Engineer",
+    })
+    expect((checkbox as HTMLButtonElement).disabled).toBe(true)
+  })
+
+  it("shows the confirmed role in the select over a stale engine suggestion", () => {
+    // Suggestion says role2, but everyone is confirmed to role1: the select
+    // must show what is actually confirmed.
+    const staleSuggestion: ClassifyTitleGroup = {
+      ...CONFIRMED_GROUP,
+      suggestedRoleId: "role2",
+    }
+    renderTable([staleSuggestion])
+    const trigger = screen.getByRole("combobox", { name: m.columns.role })
+    expect(trigger.textContent).toContain("Software Engineer")
+    expect(trigger.textContent).not.toContain("Engineering Manager")
+  })
+
+  it("role swap on a confirmed group re-surfaces Confirm and submits the new role", async () => {
+    renderTable([CONFIRMED_GROUP])
+    const roleSelect = document.querySelectorAll("select")[0]
+    if (roleSelect === undefined) throw new Error("role select not found")
+    fireEvent.change(roleSelect, { target: { value: "role2" } })
+
+    // The change makes the group dirty: Confirm reappears.
+    const confirmButton = await screen.findByRole("button", {
+      name: m.assignCta,
+    })
+    fireEvent.click(confirmButton)
+    await waitFor(() => {
+      expect(assignMock).toHaveBeenCalledTimes(1)
+    })
+    // role2 is on the M track; the stale IC levels must be replaced.
+    const [payload] = assignMock.mock.calls[0] as [
+      { assignments: Array<{ roleId: string; level: string }> },
+    ]
+    expect(payload.assignments).toHaveLength(2)
+    for (const a of payload.assignments) {
+      expect(a.roleId).toBe("role2")
+      expect(["M1", "M2", "M3"]).toContain(a.level)
+    }
+  })
+
+  it("level change on a confirmed group re-surfaces Confirm and keeps other levels", async () => {
+    renderTable([CONFIRMED_GROUP])
+    fireEvent.click(screen.getByRole("button", { name: m.expandLabel }))
+    await waitFor(() => {
+      expect(screen.getByText("Alice Svensson")).toBeDefined()
+    })
+    // Hidden selects after expanding: [0] role, [1] p1 level, [2] p2 level.
+    const p1LevelSelect = document.querySelectorAll("select")[1]
+    if (p1LevelSelect === undefined)
+      throw new Error("p1 level select not found")
+    fireEvent.change(p1LevelSelect, { target: { value: "IC4" } })
+
+    const confirmButton = await screen.findByRole("button", {
+      name: m.assignCta,
+    })
+    fireEvent.click(confirmButton)
+    await waitFor(() => {
+      expect(assignMock).toHaveBeenCalledTimes(1)
+    })
+    expect(assignMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        assignments: [
+          expect.objectContaining({ personId: "p1", level: "IC4" }),
+          expect.objectContaining({ personId: "p2", level: "IC2" }),
+        ],
+      })
+    )
+  })
+
+  it("picking a role on an unmatched group replaces create/map with Confirm", async () => {
+    renderTable([NO_TITLE_GROUP])
+    const roleSelect = document.querySelectorAll("select")[0]
+    if (roleSelect === undefined) throw new Error("role select not found")
+    fireEvent.change(roleSelect, { target: { value: "role1" } })
+
+    const confirmButton = await screen.findByRole("button", {
+      name: m.assignCta,
+    })
+    expect(screen.queryByRole("button", { name: m.createRoleCta })).toBeNull()
+    expect(screen.queryByRole("button", { name: m.mapExistingCta })).toBeNull()
+
+    fireEvent.click(confirmButton)
+    await waitFor(() => {
+      expect(assignMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          assignments: [
+            expect.objectContaining({
+              personId: "p3",
+              roleId: "role1",
+              level: "IC1",
+            }),
+          ],
+        })
+      )
+    })
   })
 })
