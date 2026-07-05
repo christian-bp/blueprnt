@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { paginationItems } from "@/components/audit/audit-pagination"
+import { paginationItems } from "@/components/table-pagination"
 
 describe("paginationItems", () => {
   it("shows every page when there are at most 9", () => {

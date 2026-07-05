@@ -163,6 +163,16 @@
         "fte": "Sysselsättningsgrad",
         "classification": "Klassificering"
       },
+      "toolbar": {
+        "searchPlaceholder": "Sök på namn eller avdelning",
+        "classificationAll": "Alla klassificeringar",
+        "departmentAll": "Alla avdelningar",
+        "resultCount": "{shown} av {total} anställda",
+        "noMatches": "Inga anställda matchar sökningen eller filtren.",
+        "clearFilters": "Rensa filtren",
+        "previous": "Föregående",
+        "next": "Nästa"
+      },
       "badge": {
         "confirmed": "Bekräftad",
         "pending": "Väntande",

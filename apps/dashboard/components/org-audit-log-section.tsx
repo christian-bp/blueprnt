@@ -40,7 +40,7 @@ import { usePaginatedQuery, useQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
 import { type ReactNode, useMemo, useState } from "react"
 import type { DateRange } from "react-day-picker"
-import { AuditPagination } from "@/components/audit/audit-pagination"
+import { TablePagination } from "@/components/table-pagination"
 import { ChangeEntryRow, KV_GRID } from "@/components/audit/change-entry-row"
 import { ChangeArrow } from "@/components/change-arrow"
 import { DateRangePicker } from "@/components/date-range-picker"
@@ -412,7 +412,7 @@ export function OrgAuditLogSection() {
           while searching (search is capped, not paginated). */}
       <div className="flex flex-col items-center gap-1.5">
         {rows.length > 0 ? (
-          <AuditPagination
+          <TablePagination
             page={pager.page}
             pageCount={pager.pageCount}
             hasMore={pager.hasMore}

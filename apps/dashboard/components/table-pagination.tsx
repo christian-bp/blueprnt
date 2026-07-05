@@ -45,11 +45,12 @@ export function paginationItems(
   return items
 }
 
-// Numbered page control over the audit pagination hook. Page is 0-based in
+// Numbered page control over a client-side pager (useAuditPagination or a
+// TanStack pagination row model). Page is 0-based in
 // props, rendered 1-based. Every number is a loaded page (jump via onSelect);
 // Previous/Next are icon-only and load the next cursor page when needed. Disabled
 // links are inert (pointer-events-none).
-export function AuditPagination({
+export function TablePagination({
   page,
   pageCount,
   hasMore,

@@ -49,7 +49,7 @@ import {
   DeliveryStatusBadge,
   EmailStatusBadge,
 } from "@/components/admin/email-status-badge"
-import { AuditPagination } from "@/components/audit/audit-pagination"
+import { TablePagination } from "@/components/table-pagination"
 import { DateRangePicker } from "@/components/date-range-picker"
 import { PageHeading } from "@/components/page-heading"
 import { TableSkeleton } from "@/components/table-skeleton"
@@ -310,7 +310,7 @@ export function EmailLogSection() {
           reflow the table; a truncation note while searching (search is capped). */}
       <div className="flex flex-col items-center gap-1.5">
         {rows.length > 0 ? (
-          <AuditPagination
+          <TablePagination
             page={pager.page}
             pageCount={pager.pageCount}
             hasMore={pager.hasMore}

@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react"
+import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
@@ -27,7 +27,10 @@ vi.mock("next/link", () => ({
 }))
 
 import type { ClassifyTitleGroup } from "@/components/people/classify/classify-title-table"
-import { PeopleSection } from "@/components/people/people-section"
+import {
+  matchesPersonQuery,
+  PeopleSection,
+} from "@/components/people/people-section"
 
 const m = messages.dashboard.people
 
@@ -148,7 +151,12 @@ function queryRouter(
 function renderSection() {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <PeopleSection />
+      {/* The form wrapper makes Radix Selects render their hidden native
+          <select> bubble inputs, which is how the filter tests drive
+          onValueChange (same pattern as the classify table tests). */}
+      <form>
+        <PeopleSection />
+      </form>
     </NextIntlClientProvider>
   )
 }
@@ -186,11 +194,13 @@ describe("PeopleSection", () => {
     onQuery((ref) => queryRouter(ref))
     renderSection()
     expect(screen.getByText("Alice Svensson")).toBeDefined()
-    // Gender should be the localized label (English: "Woman"), not the raw enum value.
-    expect(screen.getByText("Woman")).toBeDefined()
+    // Gender should be the localized label (English: "Woman"), not the raw
+    // enum value. Cell-scoped queries: the filter selects' hidden native
+    // options repeat texts like "Engineering".
+    expect(screen.getByRole("cell", { name: "Woman" })).toBeDefined()
     expect(screen.queryByText("Kvinna")).toBeNull()
-    expect(screen.getByText("Engineering")).toBeDefined()
-    expect(screen.getByText("100%")).toBeDefined()
+    expect(screen.getByRole("cell", { name: "Engineering" })).toBeDefined()
+    expect(screen.getByRole("cell", { name: "100%" })).toBeDefined()
   })
 
   it("links the person name cell to the detail route", () => {
@@ -204,19 +214,21 @@ describe("PeopleSection", () => {
   it("shows confirmed badge for a person with confirmed assignment", () => {
     onQuery((ref) => queryRouter(ref))
     renderSection()
-    expect(screen.getByText(m.badge.confirmed)).toBeDefined()
+    expect(screen.getByRole("cell", { name: m.badge.confirmed })).toBeDefined()
   })
 
   it("shows pending badge for a person with suggested assignment", () => {
     onQuery((ref) => queryRouter(ref))
     renderSection()
-    expect(screen.getByText(m.badge.pending)).toBeDefined()
+    expect(screen.getByRole("cell", { name: m.badge.pending })).toBeDefined()
   })
 
   it("shows unclassified badge for a person with no assignment", () => {
     onQuery((ref) => queryRouter(ref))
     renderSection()
-    expect(screen.getByText(m.badge.unclassified)).toBeDefined()
+    expect(
+      screen.getByRole("cell", { name: m.badge.unclassified })
+    ).toBeDefined()
   })
 
   it("renders the summary line with correct classified/total from listPeopleByTitle", () => {
@@ -279,5 +291,149 @@ describe("PeopleSection", () => {
     renderSection()
     const importLinks = screen.getAllByRole("link", { name: m.import.title })
     expect(importLinks.length).toBeGreaterThanOrEqual(1)
+  })
+
+  // ---------------------------------------------------------------------------
+  // Search, filters, pagination
+  // ---------------------------------------------------------------------------
+
+  it("search narrows rows by name or department and shows the result count", () => {
+    onQuery((ref) => queryRouter(ref))
+    renderSection()
+    const search = screen.getByLabelText(m.toolbar.searchPlaceholder)
+    fireEvent.change(search, { target: { value: "alice" } })
+    expect(screen.getByText("Alice Svensson")).toBeDefined()
+    expect(screen.queryByText("Bob Larsson")).toBeNull()
+    expect(screen.getByText("1 of 3 people")).toBeDefined()
+
+    // Department text matches too.
+    fireEvent.change(search, { target: { value: "product" } })
+    expect(screen.getByText("Bob Larsson")).toBeDefined()
+    expect(screen.queryByText("Alice Svensson")).toBeNull()
+  })
+
+  it("filters by classification state", () => {
+    onQuery((ref) => queryRouter(ref))
+    renderSection()
+    // Radix Select renders hidden native selects; [0] = classification,
+    // [1] = department (same pattern as the classify table tests).
+    const stateSelect = document.querySelectorAll("select")[0]
+    if (stateSelect === undefined) throw new Error("state select not found")
+    fireEvent.change(stateSelect, { target: { value: "confirmed" } })
+    expect(screen.getByText("Alice Svensson")).toBeDefined()
+    expect(screen.queryByText("Bob Larsson")).toBeNull()
+    expect(screen.queryByText("Charlie Nilsson")).toBeNull()
+  })
+
+  it("filters by department", () => {
+    onQuery((ref) => queryRouter(ref))
+    renderSection()
+    const departmentSelect = document.querySelectorAll("select")[1]
+    if (departmentSelect === undefined)
+      throw new Error("department select not found")
+    fireEvent.change(departmentSelect, { target: { value: "Product" } })
+    expect(screen.getByText("Bob Larsson")).toBeDefined()
+    expect(screen.queryByText("Alice Svensson")).toBeNull()
+  })
+
+  it("shows the no-matches empty state and clears filters from it", () => {
+    onQuery((ref) => queryRouter(ref))
+    renderSection()
+    fireEvent.change(screen.getByLabelText(m.toolbar.searchPlaceholder), {
+      target: { value: "zzz" },
+    })
+    expect(screen.getByText(m.toolbar.noMatches)).toBeDefined()
+    fireEvent.click(
+      screen.getByRole("button", { name: m.toolbar.clearFilters })
+    )
+    expect(screen.getByText("Alice Svensson")).toBeDefined()
+    expect(screen.getByText("Bob Larsson")).toBeDefined()
+  })
+
+  it("paginates past 25 people and navigates with Next", () => {
+    // 30 unclassified people: page 1 shows 25 rows, page 2 the last 5.
+    const manyPeople = Array.from({ length: 30 }, (_, i) => ({
+      personId: `p${i + 1}`,
+      displayName: `Person ${String(i + 1).padStart(2, "0")}`,
+      gender: null,
+      department: null,
+      ftePercent: null,
+      externalRef: null,
+      birthDate: null,
+      employmentStartDate: null,
+      country: null,
+      isManager: null,
+      statisticalCode: null,
+      archivedAt: null,
+    }))
+    onQuery((ref) => queryRouter(ref, manyPeople, []))
+    renderSection()
+
+    // 1 header row + 25 data rows on the first page.
+    expect(screen.getAllByRole("row")).toHaveLength(26)
+    expect(screen.getByText("Person 01")).toBeDefined()
+    expect(screen.queryByText("Person 26")).toBeNull()
+
+    fireEvent.click(screen.getByLabelText(m.toolbar.next))
+    expect(screen.getAllByRole("row")).toHaveLength(6)
+    expect(screen.getByText("Person 26")).toBeDefined()
+    expect(screen.queryByText("Person 01")).toBeNull()
+
+    fireEvent.click(screen.getByLabelText(m.toolbar.previous))
+    expect(screen.getByText("Person 01")).toBeDefined()
+  })
+
+  it("hides the pagination control when everything fits on one page", () => {
+    onQuery((ref) => queryRouter(ref))
+    renderSection()
+    expect(screen.queryByLabelText(m.toolbar.next)).toBeNull()
+  })
+
+  it("search resets to the first page", () => {
+    const manyPeople = Array.from({ length: 30 }, (_, i) => ({
+      personId: `p${i + 1}`,
+      displayName: `Person ${String(i + 1).padStart(2, "0")}`,
+      gender: null,
+      department: null,
+      ftePercent: null,
+      externalRef: null,
+      birthDate: null,
+      employmentStartDate: null,
+      country: null,
+      isManager: null,
+      statisticalCode: null,
+      archivedAt: null,
+    }))
+    onQuery((ref) => queryRouter(ref, manyPeople, []))
+    renderSection()
+    fireEvent.click(screen.getByLabelText(m.toolbar.next))
+    expect(screen.getByText("Person 26")).toBeDefined()
+    // Searching from page 2 must land on page 1 of the filtered set.
+    fireEvent.change(screen.getByLabelText(m.toolbar.searchPlaceholder), {
+      target: { value: "person 0" },
+    })
+    expect(screen.getByText("Person 01")).toBeDefined()
+  })
+})
+
+describe("matchesPersonQuery", () => {
+  it("matches case-insensitive substrings of name and department", () => {
+    const person = { name: "Alice Svensson", department: "Engineering" }
+    expect(matchesPersonQuery(person, "ali")).toBe(true)
+    expect(matchesPersonQuery(person, "SVENS")).toBe(true)
+    expect(matchesPersonQuery(person, "engineer")).toBe(true)
+    expect(matchesPersonQuery(person, "bob")).toBe(false)
+  })
+
+  it("matches everything on an empty or whitespace query", () => {
+    const person = { name: "Alice Svensson", department: null }
+    expect(matchesPersonQuery(person, "")).toBe(true)
+    expect(matchesPersonQuery(person, "   ")).toBe(true)
+  })
+
+  it("never matches the department when it is null", () => {
+    expect(
+      matchesPersonQuery({ name: "Alice", department: null }, "engineering")
+    ).toBe(false)
   })
 })
