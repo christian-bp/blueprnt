@@ -1,0 +1,20 @@
+apps/dashboard/components/people/import/import-wizard.tsx
+  s_6bff98b662648b::t_d328dde2f4b11e 182-183,186-196
+  s_6bff98b662648b::t_97b4d6568d5d2b 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "0f01af1c107cb55f828410a5f8efccb73a7bbdd5",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
