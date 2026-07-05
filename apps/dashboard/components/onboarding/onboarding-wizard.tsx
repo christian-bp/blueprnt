@@ -144,6 +144,11 @@ export function OnboardingWizard({
 
   // Back-navigation from the dots; cleared when a revisited screen saves.
   const [backTo, setBackTo] = useState<number | null>(null)
+  // The step key whose content is currently visible. It lags the current
+  // step until the outgoing screen's exit fade finishes (onExitComplete), so
+  // the shell's scroll-to-top (keyed on this) runs in the blank moment
+  // between screens, never while the old screen is still on screen.
+  const [displayedStepKey, setDisplayedStepKey] = useState<string>(STEPS[0].key)
   // The highest screen index the UI may show. Settings save reactively the
   // moment a choice persists, which moves the derived resume index BEFORE
   // the choice screen's fade-and-pause has played; without this cap the
@@ -233,7 +238,7 @@ export function OnboardingWizard({
     <WizardShell
       headerLeft={wordmark}
       headerRight={<AccountMenu />}
-      contentKey={step.key}
+      contentKey={displayedStepKey}
       footer={
         <OnboardingDots
           steps={STEPS.map(({ key, dotLabelKey }) => ({
@@ -256,7 +261,11 @@ export function OnboardingWizard({
           screen fades out before the new one fades in. initial={false}
           keeps the very first screen from fading on page load; its
           heading still plays the TextEffect reveal. */}
-      <AnimatePresence mode="wait" initial={false}>
+      <AnimatePresence
+        mode="wait"
+        initial={false}
+        onExitComplete={() => setDisplayedStepKey(step.key)}
+      >
         <motion.div
           key={step.key}
           initial={{ opacity: 0 }}

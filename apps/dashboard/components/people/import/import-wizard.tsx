@@ -91,6 +91,12 @@ export function ImportWizard() {
 
   const [discardOpen, setDiscardOpen] = useState(false)
 
+  // The step whose content is currently visible. It lags state.step until the
+  // outgoing step's exit fade finishes (onExitComplete), so the shell's
+  // scroll-to-top (keyed on this) runs in the blank moment between steps,
+  // never while the old step is still on screen.
+  const [displayedStep, setDisplayedStep] = useState(STEP_UPLOAD)
+
   // A file has been uploaded/parsed and the import has not yet completed.
   // Nothing is persisted to the DB until the final Import action, so leaving
   // is a clean discard, but we warn the user first when there is progress.
@@ -354,7 +360,7 @@ export function ImportWizard() {
         // shell instead would resize the OUTGOING screen the moment the step
         // changes, while it is still visible mid-fade (a layout shift).
         contentClassName="max-w-5xl"
-        contentKey={state.step}
+        contentKey={displayedStep}
         footer={
           <OnboardingDots
             steps={steps}
@@ -371,7 +377,11 @@ export function ImportWizard() {
       >
         {/* Step crossfade: old screen fades out before new one fades in.
             initial={false} prevents the first screen from fading on page load. */}
-        <AnimatePresence mode="wait" initial={false}>
+        <AnimatePresence
+          mode="wait"
+          initial={false}
+          onExitComplete={() => setDisplayedStep(state.step)}
+        >
           <motion.div
             key={`step-${state.step}`}
             initial={{ opacity: 0 }}
