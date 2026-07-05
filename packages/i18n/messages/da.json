@@ -190,6 +190,7 @@
           "description": "Vælg eller træk og slip en CSV-fil eksporteret fra lønsystemet.",
           "dropTitle": "Slip filer her",
           "browseHint": "eller klik for at gennemse fra din enhed",
+          "uploaded": "{file} er uploadet",
           "detected": "{rows, plural, one {# række} other {# rækker}}, {columns} kolonner fundet.",
           "errorNotCsv": "Kun CSV-filer understøttes. Vælg en .csv-fil.",
           "errorEmpty": "Filen er tom. Vælg en CSV-fil med mindst én datalinje.",

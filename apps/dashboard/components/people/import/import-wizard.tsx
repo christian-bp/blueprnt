@@ -21,6 +21,7 @@ import {
   AlertDialogTitle,
 } from "@workspace/ui/components/alert-dialog"
 import { Button } from "@workspace/ui/components/button"
+import { cn } from "@workspace/ui/lib/utils"
 import { WizardShell } from "@/components/wizard-shell"
 import { CheckStep } from "./check-step"
 import { MapStep } from "./map-step"
@@ -39,6 +40,8 @@ interface WizardState {
   parsed: ParsedCsv | null
   // Raw CSV text retained so the importPayroll action can receive it.
   csvText: string | null
+  // Name of the uploaded file, shown in the upload success banner.
+  fileName: string | null
   mapping: Record<string, number> | null
   // Whether the check step has reported blocking required fields.
   // null = not yet validated (check step not yet reached).
@@ -72,6 +75,7 @@ export function ImportWizard() {
     step: STEP_UPLOAD,
     parsed: null,
     csvText: null,
+    fileName: null,
     mapping: null,
     checkBlocking: null,
     checkIssueCount: 0,
@@ -153,7 +157,8 @@ export function ImportWizard() {
           >
             <UploadStep
               parsed={state.parsed}
-              onParsed={(parsed, csvText) =>
+              fileName={state.fileName}
+              onParsed={(parsed, csvText, fileName) =>
                 setState((prev) => {
                   // Detect whether the new file has different headers.
                   // If headers changed, the old column-index mapping is stale
@@ -166,6 +171,7 @@ export function ImportWizard() {
                     ...prev,
                     parsed,
                     csvText,
+                    fileName,
                     ...(headersChanged
                       ? {
                           mapping: null,
@@ -317,9 +323,11 @@ export function ImportWizard() {
             {tDetail("backToPeople")}
           </Button>
         }
-        // The map step renders a per-column table that needs room for its
-        // selectors; the other steps keep the narrower default reading width.
-        contentClassName={state.step === STEP_MAP ? "max-w-5xl" : undefined}
+        // The shell stays at the widest step's width; each step carries its
+        // own max-width inside the crossfade below. Putting the width on the
+        // shell instead would resize the OUTGOING screen the moment the step
+        // changes, while it is still visible mid-fade (a layout shift).
+        contentClassName="max-w-5xl"
         footer={
           <OnboardingDots
             steps={steps}
@@ -343,7 +351,14 @@ export function ImportWizard() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="w-full"
+            // Per-step width: the map step's table uses the full 5xl shell;
+            // the other steps keep a centered reading column. The class lives
+            // on the crossfading element, so an exiting screen keeps its own
+            // width while it fades.
+            className={cn(
+              "w-full",
+              state.step !== STEP_MAP && "mx-auto max-w-2xl"
+            )}
           >
             {renderStep()}
           </motion.div>

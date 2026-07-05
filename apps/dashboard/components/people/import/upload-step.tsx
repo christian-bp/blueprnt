@@ -1,5 +1,7 @@
 "use client"
 
+import { CheckmarkCircle02Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { ImportFormatError, tokenizeCsv } from "@workspace/import"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
@@ -38,10 +40,13 @@ export function handleCsvText(
 
 export function UploadStep({
   parsed,
+  fileName,
   onParsed,
 }: {
   parsed: ParsedCsv | null
-  onParsed: (result: ParsedCsv, csvText: string) => void
+  /** Name of the successfully uploaded file (null before the first upload). */
+  fileName: string | null
+  onParsed: (result: ParsedCsv, csvText: string, fileName: string) => void
 }) {
   const t = useTranslations("dashboard.people.import.upload")
   const [error, setError] = useState<
@@ -61,7 +66,7 @@ export function UploadStep({
         const result = handleCsvText(text)
         if (result.ok) {
           setError(null)
-          onParsed(result.parsed, text)
+          onParsed(result.parsed, text, file.name)
         } else {
           setError(result.error)
         }
@@ -88,17 +93,31 @@ export function UploadStep({
         </p>
       )}
 
-      {/* Detection summary: shown when a file has been successfully parsed */}
-      {parsed !== null && error === null && (
-        <p
-          className="text-muted-foreground text-sm"
+      {/* Success banner: acknowledges the upload by file name, with the
+          detected shape as the detail line. */}
+      {parsed !== null && fileName !== null && error === null && (
+        <div
           data-testid="detected-summary"
+          className="flex w-full items-start gap-3 rounded-md border p-4"
         >
-          {t("detected", {
-            rows: parsed.rows.length,
-            columns: parsed.headers.length,
-          })}
-        </p>
+          <HugeiconsIcon
+            icon={CheckmarkCircle02Icon}
+            strokeWidth={2}
+            className="mt-0.5 size-5 shrink-0 text-success"
+            aria-hidden="true"
+          />
+          <div className="flex flex-col gap-0.5">
+            <p className="font-medium text-sm">
+              {t("uploaded", { file: fileName })}
+            </p>
+            <p className="text-muted-foreground text-sm">
+              {t("detected", {
+                rows: parsed.rows.length,
+                columns: parsed.headers.length,
+              })}
+            </p>
+          </div>
+        </div>
       )}
     </div>
   )

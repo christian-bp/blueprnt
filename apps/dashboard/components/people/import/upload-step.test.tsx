@@ -120,14 +120,16 @@ const m = messages.dashboard.people.import
 
 function renderUploadStep({
   parsed = null,
+  fileName = null,
   onParsed = vi.fn() as Parameters<typeof UploadStep>[0]["onParsed"],
 }: {
   parsed?: Parameters<typeof UploadStep>[0]["parsed"]
+  fileName?: string | null
   onParsed?: Parameters<typeof UploadStep>[0]["onParsed"]
 } = {}) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <UploadStep parsed={parsed} onParsed={onParsed} />
+      <UploadStep parsed={parsed} fileName={fileName} onParsed={onParsed} />
     </NextIntlClientProvider>
   )
 }
@@ -199,7 +201,7 @@ describe("UploadStep component", () => {
     expect(screen.queryByTestId("detected-summary")).toBeNull()
   })
 
-  it("shows the detection summary when a parsed result is provided", () => {
+  it("shows the upload success banner with the file name and detected shape", () => {
     renderUploadStep({
       parsed: {
         headers: ["name", "salary", "dept"],
@@ -208,14 +210,17 @@ describe("UploadStep component", () => {
           ["Bob", "60000", "Eng"],
         ],
       },
+      fileName: "payroll.csv",
     })
     const summary = screen.getByTestId("detected-summary")
+    expect(summary.textContent).toContain("payroll.csv")
     expect(summary.textContent).toContain("2")
     expect(summary.textContent).toContain("3")
   })
 
-  it("calls onParsed with parsed result and raw csvText when a valid CSV file is dropped", async () => {
-    const onParsed = vi.fn<(result: ParsedCsv, csvText: string) => void>()
+  it("calls onParsed with parsed result, raw csvText, and file name when a valid CSV file is dropped", async () => {
+    const onParsed =
+      vi.fn<(result: ParsedCsv, csvText: string, fileName: string) => void>()
     renderUploadStep({ onParsed })
 
     const dropZone = screen.getByRole("region")
@@ -229,11 +234,12 @@ describe("UploadStep component", () => {
       expect(onParsed).toHaveBeenCalledOnce()
     })
     // biome-ignore lint/style/noNonNullAssertion: guaranteed by toHaveBeenCalledOnce above
-    const [parsed, csvText] = onParsed.mock.calls[0]!
+    const [parsed, csvText, fileName] = onParsed.mock.calls[0]!
     expect(parsed.headers).toEqual(["name", "department", "gender", "salary"])
     expect(parsed.rows).toHaveLength(3)
     // Raw text must be forwarded so Task 5's importPayroll action can use it.
     expect(csvText).toBe(FIXTURE_CSV)
+    expect(fileName).toBe("payroll.csv")
   })
 
   it("shows errorNotCsv when a non-CSV file is selected via file input", async () => {
