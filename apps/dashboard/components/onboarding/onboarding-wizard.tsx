@@ -233,6 +233,7 @@ export function OnboardingWizard({
     <WizardShell
       headerLeft={wordmark}
       headerRight={<AccountMenu />}
+      contentKey={step.key}
       footer={
         <OnboardingDots
           steps={STEPS.map(({ key, dotLabelKey }) => ({

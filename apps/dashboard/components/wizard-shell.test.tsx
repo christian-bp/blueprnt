@@ -37,4 +37,20 @@ describe("WizardShell", () => {
     )
     expect(screen.queryByTestId("ft")).toBeNull()
   })
+
+  it("resets the scroll position when contentKey changes", () => {
+    const { rerender } = render(
+      <WizardShell contentKey="a">
+        <div />
+      </WizardShell>
+    )
+    const main = screen.getByRole("main")
+    main.scrollTop = 42
+    rerender(
+      <WizardShell contentKey="b">
+        <div />
+      </WizardShell>
+    )
+    expect(main.scrollTop).toBe(0)
+  })
 })

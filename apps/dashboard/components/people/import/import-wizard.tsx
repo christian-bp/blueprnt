@@ -354,6 +354,7 @@ export function ImportWizard() {
         // shell instead would resize the OUTGOING screen the moment the step
         // changes, while it is still visible mid-fade (a layout shift).
         contentClassName="max-w-5xl"
+        contentKey={state.step}
         footer={
           <OnboardingDots
             steps={steps}

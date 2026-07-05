@@ -18,12 +18,15 @@ export function WizardShell({
   headerRight,
   footer,
   contentClassName,
+  contentKey,
 }: {
   children: ReactNode
   headerLeft?: ReactNode
   headerRight?: ReactNode
   footer?: ReactNode
   contentClassName?: string
+  /** Changes when the wizard moves to a new step: resets the scroll to top. */
+  contentKey?: string | number
 }) {
   const mainRef = useRef<HTMLElement>(null)
   const [showHeaderCue, setShowHeaderCue] = useState(false)
@@ -48,6 +51,17 @@ export function WizardShell({
     observer.observe(el)
     return () => observer.disconnect()
   }, [update])
+
+  // A new step starts at the top: without this, the scroll position of a
+  // long step carries over to the next one.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: contentKey is the trigger, not an input
+  useEffect(() => {
+    const el = mainRef.current
+    if (el !== null) {
+      el.scrollTop = 0
+    }
+    update()
+  }, [contentKey])
 
   return (
     <div className="flex h-svh flex-col bg-background">
