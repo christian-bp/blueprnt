@@ -1,0 +1,29 @@
+apps/dashboard/components/people/salary-form.tsx
+  s_6bff98b662648b::t_a194079356dd0f 109-111
+apps/dashboard/components/people/person-detail.tsx
+  s_6bff98b662648b::t_c1cbfa38478eb3 21
+  s_6bff98b662648b::t_f54f49c27d7c18 112,114
+  s_6bff98b662648b::t_a9b8431a7bdf0a 194-196,198,200-204
+  s_6bff98b662648b::t_28c7bbece7da0c 35,38-39
+  s_6bff98b662648b::t_1a3e6dde87d9a7 77-92
+  s_6bff98b662648b::t_674483167dbbd4 288-292
+  s_6bff98b662648b::t_35bc3363d78dd4 56-57
+apps/dashboard/components/people/person-detail.test.tsx
+  s_6bff98b662648b::t_49818f3ecbd680 127-129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "ad7124a7ea70fa9172c19e5224f77603ea2a2a05",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
