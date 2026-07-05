@@ -311,7 +311,7 @@ export function ImportWizard() {
             {tDetail("backToPeople")}
           </Button>
         }
-        contentClassName="max-w-xl"
+        contentClassName="max-w-2xl"
         footer={
           <OnboardingDots
             steps={steps}

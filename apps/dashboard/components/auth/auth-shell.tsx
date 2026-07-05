@@ -56,7 +56,7 @@ export function AuthShell({
       {/* Right side: bordered rounded inset card on lg; full-bleed on mobile.
           min-h-0 + overflow-hidden constrain it to the frame so only <main>
           scrolls and the rounded corners clip. */}
-      <div className="relative flex min-h-0 w-full flex-col overflow-hidden lg:my-2 lg:mr-2 lg:w-1/2 lg:rounded-2xl lg:border lg:border-border lg:bg-card">
+      <div className="relative flex min-h-0 w-full flex-col overflow-hidden lg:my-2 lg:mr-2 lg:flex-1 lg:rounded-2xl lg:border lg:border-border lg:bg-card">
         {headerRight ? (
           // Pinned header bar (wizards): mobile logo left, controls right.
           <div

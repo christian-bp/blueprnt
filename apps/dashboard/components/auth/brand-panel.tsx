@@ -10,7 +10,7 @@ import { Logo } from "@/components/logo"
 export function BrandPanel() {
   const t = useTranslations("dashboard")
   return (
-    <div className="relative hidden overflow-hidden bg-background lg:flex lg:w-1/2">
+    <div className="relative hidden shrink-0 overflow-hidden bg-background lg:flex lg:w-[26rem]">
       <BackgroundAurora />
       <Logo
         label={t("title")}
