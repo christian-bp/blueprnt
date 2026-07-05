@@ -344,7 +344,6 @@
           "payYear": "Vuosi",
           "basicMonthly": "Kiinteä kuukausipalkka",
           "total": "Kokonaiskuukausikorvaus",
-          "currency": "Valuutta",
           "source": "Lähde",
           "effectiveAt": "Voimassa alkaen"
         },

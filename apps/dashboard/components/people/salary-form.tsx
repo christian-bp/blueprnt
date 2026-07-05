@@ -106,7 +106,9 @@ export function SalaryForm({ personId }: { personId: Id<"people"> }) {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="grid grid-cols-1 gap-4 sm:grid-cols-3"
+          // Two columns, not three: the form lives in the narrow salary rail
+          // of the person page, where three fields across is cramped.
+          className="grid grid-cols-1 gap-4 sm:grid-cols-2"
         >
           <FormField
             control={form.control}

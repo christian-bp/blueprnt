@@ -18,7 +18,7 @@ import {
   TableRow,
 } from "@workspace/ui/components/table"
 import { useQuery } from "convex/react"
-import { useLocale, useTranslations } from "next-intl"
+import { useFormatter, useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { PersonActionsMenu } from "@/components/people/person-actions-menu"
 import { SalaryForm } from "@/components/people/salary-form"
@@ -32,12 +32,11 @@ import {
 import { usePageTitle } from "@/hooks/use-page-title"
 
 // Skeleton shape per salary column, mirroring the real cells (year, two
-// amounts, a currency code, a short source word).
+// currency-formatted amounts, a short source word).
 const SALARY_SKELETON_COLUMNS: TableSkeletonColumn[] = [
   { className: "w-10" },
-  { className: "w-16" },
-  { className: "w-16" },
-  { className: "w-10" },
+  { className: "w-20" },
+  { className: "w-20" },
   { className: "w-14" },
 ]
 
@@ -53,6 +52,8 @@ export function PersonDetail({ publicId }: { publicId: string }) {
   const tNav = useTranslations("dashboard.nav")
   const { orgId } = useOrganization()
   const locale = useLocale()
+
+  const format = useFormatter()
 
   const person = useQuery(api.people.people.getPersonByPublicId, {
     orgId,
@@ -73,6 +74,22 @@ export function PersonDetail({ publicId }: { publicId: string }) {
 
   usePageTitle(person?.displayName ?? undefined)
 
+  // Amounts render as locale-aware currency (e.g. "94 500 kr"), which also
+  // removes the need for a separate currency column in the narrow rail.
+  // Imported currency strings are not schema-constrained, so an unknown code
+  // falls back to the raw pair instead of throwing.
+  function money(value: number, currency: string): string {
+    try {
+      return format.number(value, {
+        style: "currency",
+        currency,
+        maximumFractionDigits: 0,
+      })
+    } catch {
+      return `${value} ${currency}`
+    }
+  }
+
   const crumbs: Crumb[] = [
     { label: tNav("people"), href: "/people" },
     { label: person?.displayName ?? "" },
@@ -88,13 +105,13 @@ export function PersonDetail({ publicId }: { publicId: string }) {
       <PageHeader
         breadcrumb={<PageBreadcrumb segments={crumbs} />}
         title={<Skeleton className="h-6 w-48" />}
-        action={<Skeleton className="size-9 rounded-md" />}
       />
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>{t("identityHeading")}</CardTitle>
+              <Skeleton className="size-9 rounded-md" />
             </CardHeader>
             <CardContent className="space-y-6">
               <dl className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
@@ -129,7 +146,6 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                     <TableHead>{t("salaryColumns.payYear")}</TableHead>
                     <TableHead>{t("salaryColumns.basicMonthly")}</TableHead>
                     <TableHead>{t("salaryColumns.total")}</TableHead>
-                    <TableHead>{t("salaryColumns.currency")}</TableHead>
                     <TableHead>{t("salaryColumns.source")}</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -171,21 +187,21 @@ export function PersonDetail({ publicId }: { publicId: string }) {
       <PageHeader
         breadcrumb={<PageBreadcrumb segments={crumbs} />}
         title={person.displayName}
-        action={
-          <PersonActionsMenu
-            personId={person.personId}
-            displayName={person.displayName}
-            externalRef={person.externalRef}
-          />
-        }
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          {/* Identity + classification card */}
+          {/* Identity + classification card. The person's actions menu lives
+              in the card header, mirroring the role profile card's header
+              controls. */}
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>{t("identityHeading")}</CardTitle>
+              <PersonActionsMenu
+                personId={person.personId}
+                displayName={person.displayName}
+                externalRef={person.externalRef}
+              />
             </CardHeader>
             <CardContent className="space-y-6">
               <dl className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
@@ -262,7 +278,6 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                       <TableHead>{t("salaryColumns.payYear")}</TableHead>
                       <TableHead>{t("salaryColumns.basicMonthly")}</TableHead>
                       <TableHead>{t("salaryColumns.total")}</TableHead>
-                      <TableHead>{t("salaryColumns.currency")}</TableHead>
                       <TableHead>{t("salaryColumns.source")}</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -270,10 +285,11 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                     {salary.map((record) => (
                       <TableRow key={String(record.payRecordId)}>
                         <TableCell>{record.payYear}</TableCell>
-                        <TableCell>{record.basicMonthly}</TableCell>
-                        <TableCell>{record.totalMonthlyComp}</TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {record.currency}
+                        <TableCell className="tabular-nums">
+                          {money(record.basicMonthly, record.currency)}
+                        </TableCell>
+                        <TableCell className="tabular-nums">
+                          {money(record.totalMonthlyComp, record.currency)}
                         </TableCell>
                         <TableCell className="text-muted-foreground">
                           {record.source === "import"

@@ -344,7 +344,6 @@
           "payYear": "År",
           "basicMonthly": "Fast månedsløn",
           "total": "Samlet månedlig kompensation",
-          "currency": "Valuta",
           "source": "Kilde",
           "effectiveAt": "Gælder fra"
         },

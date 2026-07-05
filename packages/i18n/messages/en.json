@@ -344,7 +344,6 @@
           "payYear": "Year",
           "basicMonthly": "Basic monthly",
           "total": "Total monthly",
-          "currency": "Currency",
           "source": "Source",
           "effectiveAt": "Effective"
         },

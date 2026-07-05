@@ -124,8 +124,9 @@ describe("PersonDetail", () => {
     expect(screen.getByText("IC3")).toBeDefined()
     // Classification block: role title resolved from listRoles
     expect(screen.getByText("Engineer")).toBeDefined()
-    // Salary history: basicMonthly and totalMonthlyComp both render (both are 50000 in fixture)
-    expect(screen.getAllByText("50000").length).toBeGreaterThanOrEqual(1)
+    // Salary history: basicMonthly and totalMonthlyComp render as locale-aware
+    // currency (both are 50000 SEK in the fixture; en formats as "SEK 50,000").
+    expect(screen.getAllByText("SEK 50,000")).toHaveLength(2)
   })
 
   it("shows the loading skeleton when the person is still resolving", () => {
