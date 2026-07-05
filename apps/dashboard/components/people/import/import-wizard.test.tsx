@@ -40,23 +40,35 @@ function MotionEl(tag: string) {
   }
 }
 
-vi.mock("motion/react", () => ({
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
-  motion: new Proxy(
-    {},
-    {
-      get(_target, tag: string) {
-        return MotionEl(tag)
-      },
-    }
-  ),
-  useReducedMotion: () => false,
-  MotionConfig: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
-}))
+vi.mock("motion/react", () => {
+  // Cache one component per tag: a fresh function per `motion.div` access
+  // would change the element type every render, forcing React to remount the
+  // subtree each time (which turns any mount-time setState into an infinite
+  // loop). The real motion proxy caches components the same way.
+  const cache = new Map<string, ReturnType<typeof MotionEl>>()
+  return {
+    AnimatePresence: ({ children }: { children: React.ReactNode }) => (
+      <>{children}</>
+    ),
+    motion: new Proxy(
+      {},
+      {
+        get(_target, tag: string) {
+          let el = cache.get(tag)
+          if (el === undefined) {
+            el = MotionEl(tag)
+            cache.set(tag, el)
+          }
+          return el
+        },
+      }
+    ),
+    useReducedMotion: () => false,
+    MotionConfig: ({ children }: { children: React.ReactNode }) => (
+      <>{children}</>
+    ),
+  }
+})
 
 vi.mock("next/link", () => ({
   default: ({
@@ -154,9 +166,13 @@ async function dropCsv(csvText: string, filename = "payroll.csv") {
   const dropZone = screen.getByRole("region")
   const file = new File([csvText], filename, { type: "text/csv" })
   fireEvent.drop(dropZone, { dataTransfer: { files: [file] } })
-  // Wait for the async file.text() / onParsed path to settle.
+  // Wait for THIS file's card (by name): on a re-upload the previous file's
+  // card is already on screen, so waiting for mere presence would race the
+  // async FileReader path.
   await waitFor(() => {
-    expect(screen.queryByTestId("detected-summary")).not.toBeNull()
+    expect(screen.getByTestId("detected-summary").textContent).toContain(
+      filename
+    )
   })
 }
 
@@ -260,6 +276,56 @@ describe("ImportWizard: mapping reset on header change", () => {
     // column 0 is still "EmployeeID".
     const col0Row = screen.getByTestId("map-column-0")
     expect(col0Row.textContent).toContain("EmployeeID")
+  })
+})
+
+describe("ImportWizard: fix-and-reupload cycle re-validates", () => {
+  afterEach(() => {
+    cleanup()
+    vi.clearAllMocks()
+  })
+
+  // Same headers as CSV_A but with a duplicate EmployeeID (hard issue).
+  const CSV_A_BROKEN = `EmployeeID,JobTitle,Gender,MonthlySalary
+E001,Software Engineer,Kvinna,55000
+E001,Product Manager,Man,70000`
+
+  function nextButton() {
+    return screen.getByRole("button", {
+      name: messages.dashboard.people.import.next,
+    })
+  }
+
+  it("clears the quality issues and unblocks after a corrected file is re-uploaded", async () => {
+    renderWizard()
+
+    // Upload the broken file and walk to the check step.
+    await dropCsv(CSV_A_BROKEN, "broken.csv")
+    clickNext() // -> map
+    clickNext() // -> check
+
+    // The hard issue blocks: issues section shown, Next disabled.
+    expect(screen.getByTestId("issues-section")).toBeDefined()
+    expect(screen.getByTestId("issue-group-duplicateId")).toBeDefined()
+    await waitFor(() => {
+      expect(nextButton()).toHaveProperty("disabled", true)
+    })
+
+    // Jump back to upload via the fix-and-reupload shortcut.
+    fireEvent.click(screen.getByTestId("reupload-button"))
+    expect(screen.getByRole("region")).toBeDefined()
+
+    // Upload the corrected file (same headers, duplicate fixed).
+    await dropCsv(CSV_A, "fixed.csv")
+    clickNext() // -> map
+    clickNext() // -> check
+
+    // The check step must re-validate the NEW file: no issues, Next enabled.
+    expect(screen.queryByTestId("issues-section")).toBeNull()
+    expect(screen.getByTestId("ready-indicator")).toBeDefined()
+    await waitFor(() => {
+      expect(nextButton()).toHaveProperty("disabled", false)
+    })
   })
 })
 

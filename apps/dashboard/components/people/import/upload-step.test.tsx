@@ -30,24 +30,35 @@ function MotionEl(tag: string) {
   }
 }
 
-// Mock motion/react to avoid animation complexity in tests.
-vi.mock("motion/react", () => ({
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
-  motion: new Proxy(
-    {},
-    {
-      get(_target, tag: string) {
-        return MotionEl(tag)
-      },
-    }
-  ),
-  useReducedMotion: () => false,
-  MotionConfig: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
-}))
+// Mock motion/react to avoid animation complexity in tests. Components are
+// cached per tag: a fresh function per `motion.div` access would change the
+// element type every render and force React to remount the subtree (which
+// turns any mount-time setState into an infinite loop).
+vi.mock("motion/react", () => {
+  const cache = new Map<string, ReturnType<typeof MotionEl>>()
+  return {
+    AnimatePresence: ({ children }: { children: React.ReactNode }) => (
+      <>{children}</>
+    ),
+    motion: new Proxy(
+      {},
+      {
+        get(_target, tag: string) {
+          let el = cache.get(tag)
+          if (el === undefined) {
+            el = MotionEl(tag)
+            cache.set(tag, el)
+          }
+          return el
+        },
+      }
+    ),
+    useReducedMotion: () => false,
+    MotionConfig: ({ children }: { children: React.ReactNode }) => (
+      <>{children}</>
+    ),
+  }
+})
 
 // Mock next/link with a plain <a>.
 vi.mock("next/link", () => ({

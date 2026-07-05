@@ -6,29 +6,40 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 import type { ParsedCsv } from "./import-wizard"
 import { CheckStep } from "./check-step"
 
-// Mock motion/react to keep tests free of animation complexity.
-vi.mock("motion/react", () => ({
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
-  motion: new Proxy(
-    {},
-    {
-      get(_target, tag: string) {
-        return function MockEl({
-          children,
-          ...rest
-        }: Record<string, unknown> & { children?: React.ReactNode }) {
-          return React.createElement(String(tag), rest, children)
-        }
-      },
-    }
-  ),
-  useReducedMotion: () => false,
-  MotionConfig: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
-}))
+// Mock motion/react to keep tests free of animation complexity. Components
+// are cached per tag: a fresh function per `motion.div` access would change
+// the element type every render and force React to remount the subtree
+// (which turns any mount-time setState into an infinite loop).
+vi.mock("motion/react", () => {
+  const cache = new Map<string, React.ComponentType<Record<string, unknown>>>()
+  return {
+    AnimatePresence: ({ children }: { children: React.ReactNode }) => (
+      <>{children}</>
+    ),
+    motion: new Proxy(
+      {},
+      {
+        get(_target, tag: string) {
+          let el = cache.get(tag)
+          if (el === undefined) {
+            el = function MockEl({
+              children,
+              ...rest
+            }: Record<string, unknown> & { children?: React.ReactNode }) {
+              return React.createElement(String(tag), rest, children)
+            }
+            cache.set(tag, el)
+          }
+          return el
+        },
+      }
+    ),
+    useReducedMotion: () => false,
+    MotionConfig: ({ children }: { children: React.ReactNode }) => (
+      <>{children}</>
+    ),
+  }
+})
 
 // ---------------------------------------------------------------------------
 // Fixtures
