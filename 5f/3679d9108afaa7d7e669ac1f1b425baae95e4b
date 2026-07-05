@@ -1,0 +1,21 @@
+apps/dashboard/components/auth/brand-panel.tsx
+  s_6bff98b662648b::t_383e3934b01d40 6,11
+apps/dashboard/components/auth/auth-shell.tsx
+  s_6bff98b662648b::t_6a1dddd8637328 25-26,29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "5f3679d9108afaa7d7e669ac1f1b425baae95e4b",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
