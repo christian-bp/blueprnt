@@ -1,0 +1,27 @@
+apps/dashboard/components/people/import/import-done-step.tsx
+  s_6bff98b662648b::t_fe7e3adcde66d8 3-9,14,24-27,32-35,37,43-51
+apps/dashboard/app/change-email/change-email.test.tsx
+  s_6bff98b662648b::t_7b512fcebfd19f 25
+apps/dashboard/app/change-email/page.tsx
+  s_6bff98b662648b::t_7b512fcebfd19f 7
+apps/dashboard/components/auth/two-factor-setup.tsx
+  s_6bff98b662648b::t_7b512fcebfd19f 26
+apps/dashboard/components/success-check.tsx
+  s_6bff98b662648b::t_088aafc49d7373 5-9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "5be1a67d5937c6338083e3a69ecd4e0522195f61",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
