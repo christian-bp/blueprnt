@@ -623,11 +623,13 @@
         "groupCount": "{count} st",
         "viewAll": "Visa alla {count}",
         "evaluateProgress": "{rated}/{total} utvärderade",
+        "classifyPeopleCount": "{count, plural, one {# anställd} other {# anställda}}",
         "empty": {
           "title": "Du är i fas",
-          "body": "Inga roller eller kriterier behöver din uppmärksamhet just nu."
+          "body": "Inga roller, anställda eller kriterier behöver din uppmärksamhet just nu."
         },
         "groups": {
+          "classifyPeople": "Klassificera anställda till roller",
           "describeRoles": "Beskriv de här rollerna",
           "evaluateRoles": "Utvärdera de här rollerna",
           "documentCriteria": "Dokumentera kriterier",

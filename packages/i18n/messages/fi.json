@@ -623,11 +623,13 @@
         "groupCount": "{count} kpl",
         "viewAll": "Näytä kaikki {count}",
         "evaluateProgress": "{rated}/{total} arvioitu",
+        "classifyPeopleCount": "{count, plural, one {# työntekijä} other {# työntekijää}}",
         "empty": {
           "title": "Kaikki on ajan tasalla",
-          "body": "Mikään rooli tai kriteeri ei vaadi huomiotasi juuri nyt."
+          "body": "Mikään rooli, työntekijä tai kriteeri ei vaadi huomiotasi juuri nyt."
         },
         "groups": {
+          "classifyPeople": "Luokittele työntekijät rooleihin",
           "describeRoles": "Kuvaa nämä roolit",
           "evaluateRoles": "Arvioi nämä roolit",
           "documentCriteria": "Dokumentoi kriteerit",

@@ -623,11 +623,13 @@
         "groupCount": "{count} stk",
         "viewAll": "Vis alle {count}",
         "evaluateProgress": "{rated}/{total} vurdert",
+        "classifyPeopleCount": "{count, plural, one {# ansatt} other {# ansatte}}",
         "empty": {
           "title": "Du er à jour",
-          "body": "Ingen roller eller kriterier trenger oppmerksomheten din akkurat nå."
+          "body": "Ingen roller, ansatte eller kriterier trenger oppmerksomheten din akkurat nå."
         },
         "groups": {
+          "classifyPeople": "Klassifiser ansatte til roller",
           "describeRoles": "Beskriv disse rollene",
           "evaluateRoles": "Vurder disse rollene",
           "documentCriteria": "Dokumenter kriterier",

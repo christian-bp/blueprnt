@@ -623,11 +623,13 @@
         "groupCount": "{count, plural, one {# item} other {# items}}",
         "viewAll": "View all {count}",
         "evaluateProgress": "{rated}/{total} evaluated",
+        "classifyPeopleCount": "{count, plural, one {# person} other {# people}}",
         "empty": {
           "title": "You're all caught up",
-          "body": "No roles or criteria need your attention right now."
+          "body": "No roles, people, or criteria need your attention right now."
         },
         "groups": {
+          "classifyPeople": "Classify people into roles",
           "describeRoles": "Describe these roles",
           "evaluateRoles": "Evaluate these roles",
           "documentCriteria": "Document criteria",

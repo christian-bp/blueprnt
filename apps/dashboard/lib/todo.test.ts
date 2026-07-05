@@ -34,6 +34,7 @@ describe("buildTodo", () => {
         }),
       ],
       method: null,
+      peopleByTitle: [],
     })
     expect(todo.groups.map((g) => g.key)).toEqual(["describeRoles"])
     expect(todo.groups[0]?.items[0]?.href).toBe("/roles/backend-engineer")
@@ -44,6 +45,7 @@ describe("buildTodo", () => {
     const todo = buildTodo({
       roles: [role({ profileComplete: true, ratedCount: 3, totalCriteria: 9 })],
       method: null,
+      peopleByTitle: [],
     })
     const g = todo.groups.find((g) => g.key === "evaluateRoles")
     expect(g?.key).toBe("evaluateRoles")
@@ -61,6 +63,7 @@ describe("buildTodo", () => {
     const todo = buildTodo({
       roles: [role({ profileComplete: true, ratedCount: 9, totalCriteria: 9 })],
       method: null,
+      peopleByTitle: [],
     })
     expect(todo.total).toBe(0)
     expect(todo.groups).toEqual([])
@@ -69,6 +72,7 @@ describe("buildTodo", () => {
   it("splits criteria into document (notStarted/inProgress) and approve (documented); approved is done", () => {
     const todo = buildTodo({
       roles: [],
+      peopleByTitle: [],
       method: method([
         { criterionId: "c1", name: "Scope", status: "notStarted" },
         { criterionId: "c2", name: "Risk", status: "inProgress" },
@@ -99,6 +103,7 @@ describe("buildTodo", () => {
           totalCriteria: 9,
         }),
       ],
+      peopleByTitle: [],
       method: method([
         { criterionId: "c1", name: "Scope", status: "documented" },
       ]),
@@ -115,7 +120,72 @@ describe("buildTodo", () => {
   })
 
   it("treats a null method as no criteria groups", () => {
-    const todo = buildTodo({ roles: [], method: null })
+    const todo = buildTodo({ roles: [], method: null, peopleByTitle: [] })
     expect(todo).toEqual({ groups: [], total: 0 })
+  })
+
+  it("puts unconfirmed title groups first as classifyPeople, counting awaiting people", () => {
+    const todo = buildTodo({
+      roles: [role({ profileComplete: false })],
+      method: null,
+      peopleByTitle: [
+        {
+          // One suggested + one unassigned: both awaiting confirmation.
+          title: "Sales Manager",
+          people: [
+            { currentAssignment: { levelSource: "suggested" } },
+            { currentAssignment: null },
+          ],
+        },
+        {
+          // Fully confirmed: nothing to do, excluded.
+          title: "Backend Engineer",
+          people: [{ currentAssignment: { levelSource: "confirmed" } }],
+        },
+      ],
+    })
+    expect(todo.groups.map((g) => g.key)).toEqual([
+      "classifyPeople",
+      "describeRoles",
+    ])
+    const g = todo.groups[0]
+    expect(g?.count).toBe(1)
+    const item = g?.items[0] as {
+      title: string | null
+      href: string
+      peopleCount: number
+    }
+    expect(item.title).toBe("Sales Manager")
+    expect(item.href).toBe("/people/classify")
+    expect(item.peopleCount).toBe(2)
+    expect(todo.total).toBe(2)
+  })
+
+  it("carries the no-title bucket as title null with a stable id", () => {
+    const todo = buildTodo({
+      roles: [],
+      method: null,
+      peopleByTitle: [{ title: null, people: [{ currentAssignment: null }] }],
+    })
+    const g = todo.groups[0]
+    expect(g?.key).toBe("classifyPeople")
+    const item = g?.items[0] as { id: string; title: string | null }
+    expect(item.title).toBeNull()
+    expect(item.id).toBe("__no_title__")
+  })
+
+  it("caps classify items at MAX_ITEMS while count stays full", () => {
+    const todo = buildTodo({
+      roles: [],
+      method: null,
+      peopleByTitle: Array.from({ length: 6 }, (_, i) => ({
+        title: `Title ${i}`,
+        people: [{ currentAssignment: null }],
+      })),
+    })
+    const g = todo.groups[0]
+    expect(g?.items).toHaveLength(MAX_ITEMS)
+    expect(g?.count).toBe(6)
+    expect(todo.total).toBe(6)
   })
 })

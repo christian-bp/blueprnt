@@ -54,6 +54,7 @@ describe("OverviewPage", () => {
     useQueryMock.mockImplementation((ref: string) => {
       if (ref === "assessment.roles.listRoles") return []
       if (ref === "evaluationModel.method.getMethodModel") return null
+      if (ref === "people.classificationQueries.listPeopleByTitle") return []
       return undefined
     })
     renderPage()

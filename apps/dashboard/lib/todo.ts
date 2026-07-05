@@ -5,6 +5,7 @@
 export const MAX_ITEMS = 4
 
 export type TodoGroupKey =
+  | "classifyPeople"
   | "describeRoles"
   | "evaluateRoles"
   | "documentCriteria"
@@ -26,8 +27,18 @@ export type CriterionItem = {
   href: string
   status: "notStarted" | "inProgress" | "documented"
 }
+// One imported job title still waiting for a confirmed classification.
+// title: null is the no-title bucket (the component renders its label);
+// peopleCount is the people in the group awaiting confirmation.
+export type ClassifyItem = {
+  id: string
+  title: string | null
+  href: string
+  peopleCount: number
+}
 
 export type TodoGroup =
+  | { key: "classifyPeople"; items: ClassifyItem[]; count: number }
   | { key: "describeRoles"; items: RoleItem[]; count: number }
   | { key: "evaluateRoles"; items: EvaluateItem[]; count: number }
   | { key: "documentCriteria"; items: CriterionItem[]; count: number }
@@ -53,10 +64,43 @@ type TodoMethod = {
     status: "notStarted" | "inProgress" | "documented" | "approved"
   }[]
 } | null
+type TodoTitleGroup = {
+  title: string | null
+  people: {
+    currentAssignment: { levelSource: "suggested" | "confirmed" } | null
+  }[]
+}
 
-export type BuildTodoInput = { roles: TodoRole[]; method: TodoMethod }
+export type BuildTodoInput = {
+  roles: TodoRole[]
+  method: TodoMethod
+  peopleByTitle: TodoTitleGroup[]
+}
 
-export function buildTodo({ roles, method }: BuildTodoInput): Todo {
+export function buildTodo({
+  roles,
+  method,
+  peopleByTitle,
+}: BuildTodoInput): Todo {
+  // Classification first: after a payroll import it is the freshest work, and
+  // people must sit in roles before any analysis can use them. One item per
+  // imported title still holding people without a confirmed assignment
+  // ("classified" = confirmed, matching countClassified and the tab badge).
+  const classify: ClassifyItem[] = []
+  for (const group of peopleByTitle) {
+    const awaiting = group.people.filter(
+      (p) => p.currentAssignment?.levelSource !== "confirmed"
+    ).length
+    if (awaiting > 0) {
+      classify.push({
+        id: group.title ?? "__no_title__",
+        title: group.title,
+        href: "/people/classify",
+        peopleCount: awaiting,
+      })
+    }
+  }
+
   const describe: RoleItem[] = []
   const evaluate: EvaluateItem[] = []
   for (const r of roles) {
@@ -101,6 +145,12 @@ export function buildTodo({ roles, method }: BuildTodoInput): Todo {
   }
 
   const groups: TodoGroup[] = []
+  if (classify.length > 0)
+    groups.push({
+      key: "classifyPeople",
+      items: classify.slice(0, MAX_ITEMS),
+      count: classify.length,
+    })
   if (describe.length > 0)
     groups.push({
       key: "describeRoles",
@@ -127,6 +177,7 @@ export function buildTodo({ roles, method }: BuildTodoInput): Todo {
     })
 
   const total =
+    classify.length +
     describe.length +
     evaluate.length +
     documentItems.length +

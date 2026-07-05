@@ -31,6 +31,42 @@ describe("TodoWidget", () => {
     ).toBeGreaterThan(0)
   })
 
+  it("renders the classify group with the imported title and awaiting-people count", () => {
+    const todo: Todo = {
+      total: 2,
+      groups: [
+        {
+          key: "classifyPeople",
+          count: 2,
+          items: [
+            {
+              id: "Sales Manager",
+              title: "Sales Manager",
+              href: "/people/classify",
+              peopleCount: 4,
+            },
+            {
+              id: "__no_title__",
+              title: null,
+              href: "/people/classify",
+              peopleCount: 1,
+            },
+          ],
+        },
+      ],
+    }
+    renderWidget(todo)
+    expect(screen.getByText("Classify people into roles")).toBeDefined()
+    // First group is open by default: rows show the title (or the no-title
+    // label) and how many people await confirmation.
+    expect(screen.getByText("Sales Manager")).toBeDefined()
+    expect(screen.getByText("4 people")).toBeDefined()
+    expect(screen.getByText("Unclassified / no title")).toBeDefined()
+    expect(screen.getByText("1 person")).toBeDefined()
+    const row = screen.getByText("Sales Manager").closest("a")
+    expect(row?.getAttribute("href")).toBe("/people/classify")
+  })
+
   it("renders groups with the total, expands the first group, and links items", () => {
     const todo: Todo = {
       total: 7,

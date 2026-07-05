@@ -12,12 +12,25 @@ import Link from "next/link"
 export function TodoGroupItems({ group }: { group: TodoGroup }) {
   const t = useTranslations("dashboard.overview.todo")
   const tStatus = useTranslations("dashboard.model.method.status")
+  const tClassify = useTranslations("dashboard.classify")
 
   const rowClass =
     "flex items-center justify-between gap-3 rounded-md px-2 py-2 hover:bg-muted"
 
   return (
     <div className="flex flex-col gap-1">
+      {group.key === "classifyPeople" &&
+        group.items.map((item) => (
+          <Link key={item.id} href={item.href} className={rowClass}>
+            <span className="min-w-0 truncate">
+              {item.title ?? tClassify("noTitle")}
+            </span>
+            <span className="shrink-0 text-muted-foreground text-sm tabular-nums">
+              {t("classifyPeopleCount", { count: item.peopleCount })}
+            </span>
+          </Link>
+        ))}
+
       {group.key === "describeRoles" &&
         group.items.map((item) => (
           <Link key={item.id} href={item.href} className={rowClass}>
@@ -57,9 +70,11 @@ export function TodoGroupItems({ group }: { group: TodoGroup }) {
       {group.count > group.items.length && (
         <Link
           href={
-            group.key === "describeRoles" || group.key === "evaluateRoles"
-              ? "/roles"
-              : "/model/method"
+            group.key === "classifyPeople"
+              ? "/people/classify"
+              : group.key === "describeRoles" || group.key === "evaluateRoles"
+                ? "/roles"
+                : "/model/method"
           }
           className="px-2 py-2 text-muted-foreground text-sm underline-offset-4 hover:underline"
         >
