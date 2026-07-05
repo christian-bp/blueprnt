@@ -132,12 +132,43 @@ export const appendSalary = internalMutation({
     components: v.array(payComponentValidator),
     effectiveAt: v.optional(v.number()),
   },
-  returns: v.id("payRecords"),
+  // `created` is false when the append was skipped as a duplicate.
+  returns: v.object({
+    payRecordId: v.id("payRecords"),
+    created: v.boolean(),
+  }),
   handler: async (ctx, args) => {
     // Verify person exists in the given org before inserting.
     const person = await ctx.db.get(args.personId)
     if (person === null || person.orgId !== args.orgId) {
       throw appError(ERROR_CODES.notFound)
+    }
+
+    // Idempotency: when the person's NEWEST pay record already carries the
+    // same payYear and values, re-importing the same file must not append a
+    // duplicate row (e.g. an abandoned import that completed server-side,
+    // followed by a retry). Only the latest record is compared, so a value
+    // that changed and changed back still records real history.
+    const latest = await ctx.db
+      .query("payRecords")
+      .withIndex("by_person", (q) =>
+        q.eq("orgId", args.orgId).eq("personId", args.personId)
+      )
+      .order("desc")
+      .first()
+    if (
+      latest !== null &&
+      latest.payYear === args.payYear &&
+      latest.basicMonthly === args.basicMonthly &&
+      latest.currency === args.currency &&
+      latest.components.length === args.components.length &&
+      latest.components.every(
+        (c, i) =>
+          c.kind === args.components[i]?.kind &&
+          c.monthlyAmount === args.components[i]?.monthlyAmount
+      )
+    ) {
+      return { payRecordId: latest._id, created: false }
     }
 
     const effectiveAt = args.effectiveAt ?? Date.now()
@@ -172,7 +203,7 @@ export const appendSalary = internalMutation({
       },
     })
 
-    return payRecordId
+    return { payRecordId, created: true }
   },
 })
 

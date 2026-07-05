@@ -308,7 +308,7 @@ describe("importPayroll (happy path)", () => {
     })
   })
 
-  it("re-import is idempotent: upserts update existing people and add a new pay record", async () => {
+  it("re-import is idempotent: people unchanged and no duplicate pay records", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
 
@@ -333,6 +333,8 @@ describe("importPayroll (happy path)", () => {
     // The identical re-import changes nothing: people are unchanged, not updated.
     expect(result2.peopleUpdated).toBe(0)
     expect(result2.peopleUnchanged).toBe(116)
+    // Identical pay data is skipped, not appended again.
+    expect(result2.salariesImported).toBe(0)
 
     await t.run(async (ctx) => {
       // Still 116 people (upsert, not double-insert).
@@ -342,12 +344,12 @@ describe("importPayroll (happy path)", () => {
         .collect()
       expect(people).toHaveLength(116)
 
-      // Each person gets a second pay record (appendSalary always inserts).
+      // Still one pay record per person (identical appends are skipped).
       const pays = await ctx.db
         .query("payRecords")
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .collect()
-      expect(pays).toHaveLength(232)
+      expect(pays).toHaveLength(116)
     })
   })
 })

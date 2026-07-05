@@ -447,17 +447,23 @@ export const importPayroll = action({
         }
       }
 
-      await ctx.runMutation(internal.people.pay.appendSalary, {
-        orgId: args.orgId,
-        actorId,
-        personId,
-        payYear,
-        basicMonthly,
-        currency,
-        components,
-        effectiveAt,
-      })
-      salariesImported += 1
+      const { created: salaryCreated } = await ctx.runMutation(
+        internal.people.pay.appendSalary,
+        {
+          orgId: args.orgId,
+          actorId,
+          personId,
+          payYear,
+          basicMonthly,
+          currency,
+          components,
+          effectiveAt,
+        }
+      )
+      // Identical re-imports skip the append; count only real inserts.
+      if (salaryCreated) {
+        salariesImported += 1
+      }
     }
 
     // All rows processed: show the final count while the post-loop steps

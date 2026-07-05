@@ -193,16 +193,20 @@ describe("appendSalary (internal, import path)", () => {
     const { orgId, userId, asAdmin } = await seedOrg(t)
     const personId = await seedPerson(orgId, asAdmin)
 
-    const payRecordId = await t.mutation(internal.people.pay.appendSalary, {
-      orgId,
-      actorId: userId,
-      personId,
-      payYear: 2024,
-      basicMonthly: 55000,
-      currency: "SEK",
-      components: [],
-      effectiveAt: 1_700_000_000_000,
-    })
+    const { payRecordId, created } = await t.mutation(
+      internal.people.pay.appendSalary,
+      {
+        orgId,
+        actorId: userId,
+        personId,
+        payYear: 2024,
+        basicMonthly: 55000,
+        currency: "SEK",
+        components: [],
+        effectiveAt: 1_700_000_000_000,
+      }
+    )
+    expect(created).toBe(true)
 
     await t.run(async (ctx) => {
       const row = await ctx.db.get(payRecordId)
@@ -223,6 +227,46 @@ describe("appendSalary (internal, import path)", () => {
       // GDPR: no salary amounts in the audit trail.
       expect(payload?.basicMonthly).toBeUndefined()
       expect(payload?.components).toBeUndefined()
+    })
+  })
+
+  it("skips an append identical to the latest record, appends a changed one", async () => {
+    const t = initConvexTest()
+    const { orgId, userId, asAdmin } = await seedOrg(t)
+    const personId = await seedPerson(orgId, asAdmin)
+
+    const base = {
+      orgId,
+      actorId: userId,
+      personId,
+      payYear: 2026,
+      basicMonthly: 55000,
+      currency: "SEK",
+      components: [{ kind: "targetBonus", monthlyAmount: 1000 }],
+    }
+    const first = await t.mutation(internal.people.pay.appendSalary, base)
+    expect(first.created).toBe(true)
+
+    // Identical re-import: no duplicate row, no extra audit entry.
+    const dup = await t.mutation(internal.people.pay.appendSalary, base)
+    expect(dup.created).toBe(false)
+    expect(dup.payRecordId).toBe(first.payRecordId)
+
+    // A changed value still appends (real pay history).
+    const raised = await t.mutation(internal.people.pay.appendSalary, {
+      ...base,
+      basicMonthly: 57500,
+    })
+    expect(raised.created).toBe(true)
+
+    await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("payRecords")
+        .withIndex("by_person", (q) =>
+          q.eq("orgId", orgId).eq("personId", personId)
+        )
+        .collect()
+      expect(rows).toHaveLength(2)
     })
   })
 
