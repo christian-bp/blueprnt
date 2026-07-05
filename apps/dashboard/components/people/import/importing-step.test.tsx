@@ -79,4 +79,32 @@ describe("ImportingStep", () => {
     expect(count.textContent).toContain("59")
     expect(count.textContent).toContain("118")
   })
+
+  it("never moves backwards when real progress arrives below the simulated value", () => {
+    vi.useFakeTimers()
+    useQueryMock.mockReturnValue(null)
+    const { rerender } = renderStep()
+    // Let the simulated bar ease well past the first real percentage.
+    act(() => {
+      vi.advanceTimersByTime(3000)
+    })
+    const before = remaining()
+    // First real data point: ~1% done, far below the simulated bar. The bar
+    // must hold its position (ratchet), not jump backwards.
+    useQueryMock.mockReturnValue({ processed: 1, total: 118 })
+    rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <ImportingStep />
+      </NextIntlClientProvider>
+    )
+    expect(remaining()).toBeLessThanOrEqual(before)
+    // Once reality overtakes, the bar moves forward again.
+    useQueryMock.mockReturnValue({ processed: 118, total: 118 })
+    rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <ImportingStep />
+      </NextIntlClientProvider>
+    )
+    expect(remaining()).toBe(0)
+  })
 })

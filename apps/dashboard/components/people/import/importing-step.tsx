@@ -14,31 +14,40 @@ const TICK_MS = 150
 // counts to the importProgress table as it loops, and this component
 // subscribes to them reactively. While no progress row exists yet (the
 // action's setup phase) the bar eases asymptotically toward 90% as a
-// fallback, so it is never frozen.
+// fallback. The shown value is a RATCHET: the simulated drift stops the
+// moment real data exists, and real percentages only ever push the bar up,
+// so the handover from simulated to real can never move the bar backwards.
 export function ImportingStep() {
   const t = useTranslations("dashboard.people.import.importing")
   const { orgId } = useOrganization()
   const progress = useQuery(api.people.importHelpers.getImportProgress, {
     orgId,
   })
-  const [simulated, setSimulated] = useState(5)
+  const [shown, setShown] = useState(5)
+  const hasReal = progress !== null && progress !== undefined
 
+  // Simulated drift, only while the action has not reported real counts yet.
   useEffect(() => {
+    if (hasReal) return
     const id = setInterval(() => {
-      setSimulated((p) => Math.min(90, p + (90 - p) * 0.06))
+      setShown((p) => Math.min(90, p + (90 - p) * 0.06))
     }, TICK_MS)
     return () => clearInterval(id)
-  }, [])
+  }, [hasReal])
 
-  const real =
-    progress !== null && progress !== undefined && progress.total > 0
-      ? Math.round((progress.processed / progress.total) * 100)
-      : null
+  // Real counts ratchet the bar upward; a real percentage below what is
+  // already shown just pauses the bar until reality catches up.
+  useEffect(() => {
+    if (progress !== null && progress !== undefined && progress.total > 0) {
+      const pct = Math.round((progress.processed / progress.total) * 100)
+      setShown((p) => Math.max(p, pct))
+    }
+  }, [progress])
 
   return (
     <div className="flex w-full flex-col gap-2">
       <Progress
-        value={real ?? simulated}
+        value={shown}
         aria-label={t("title")}
         data-testid="import-progress"
       />
