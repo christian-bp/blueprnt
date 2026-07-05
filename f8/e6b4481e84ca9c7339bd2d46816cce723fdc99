@@ -1,0 +1,19 @@
+apps/dashboard/components/people/import/upload-step.tsx
+  s_6bff98b662648b::t_4d197b9d65da4c 112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "f8e6b4481e84ca9c7339bd2d46816cce723fdc99",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
