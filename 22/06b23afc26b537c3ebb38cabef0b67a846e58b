@@ -1,0 +1,36 @@
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_eb82ba92cb33ea 191-192
+apps/dashboard/components/people/import/upload-step.tsx
+  s_6bff98b662648b::t_3718d0ed795390 5-6,51-52,76-82
+apps/dashboard/components/file-dropzone.tsx
+  s_6bff98b662648b::t_72ce7f70d13d34 1-101
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_5786ff716abfb6 191-192
+apps/dashboard/components/file-dropzone.test.tsx
+  s_6bff98b662648b::t_df0cd1d60b9095 1-31,35-36,40-63
+  s_6bff98b662648b::t_11a3d6d75a5878 32-34,37-39
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_98cd68f14b74e4 191-192
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_50295dbedbcd1d 191-192
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_b064cd3fb3b89f 191-192
+apps/dashboard/components/people/import/upload-step.test.tsx
+  s_6bff98b662648b::t_30123a46443ef8 190,192-193
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "2206b23afc26b537c3ebb38cabef0b67a846e58b",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
