@@ -417,7 +417,6 @@
       "tenureYears": "{years, plural, one {# år} other {# år}}",
       "createRoleCta": "Opret ny rolle",
       "empty": "Ingen medarbejdere importeret endnu. Importér løndata for at starte klassificering.",
-      "summary": "{classified} af {total} klassificeret",
       "createRole": {
         "title": "Opret rolle",
         "description": "Opret en ny rolle og tildel den til disse medarbejdere.",

@@ -417,7 +417,6 @@
       "tenureYears": "{years, plural, one {# vuosi} other {# vuotta}}",
       "createRoleCta": "Luo uusi rooli",
       "empty": "Ei tuotuja työntekijöitä vielä. Tuo palkkatiedot aloittaaksesi luokittelun.",
-      "summary": "{classified} / {total} luokiteltu",
       "createRole": {
         "title": "Luo rooli",
         "description": "Luo uusi rooli ja määritä se näille työntekijöille.",

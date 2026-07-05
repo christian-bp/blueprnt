@@ -417,7 +417,6 @@
       "tenureYears": "{years, plural, one {# year} other {# years}}",
       "createRoleCta": "Create new role",
       "empty": "No employees imported yet. Import your payroll data to start classifying.",
-      "summary": "{classified} of {total} classified",
       "createRole": {
         "title": "Create role",
         "description": "Create a new role and assign it to these employees.",

@@ -1,11 +1,6 @@
 "use client"
 
-import {
-  InformationCircleIcon,
-  Search01Icon,
-  Tick02Icon,
-  UserMultiple02Icon,
-} from "@hugeicons/core-free-icons"
+import { Search01Icon, UserMultiple02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   type ColumnDef,
@@ -17,7 +12,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Alert, AlertTitle } from "@workspace/ui/components/alert"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -43,7 +37,6 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
-import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
@@ -101,13 +94,6 @@ const exactString = (
   value: string
 ) => row.getValue<string>(columnId) === value
 
-// Button-height alert for the header action row: it sits beside the h-9
-// Import button, so it matches its height and radius (the default Alert is
-// py-3 rounded-lg and taller; the icon's baseline nudge is neutralized for
-// the centered single line). Call-site override, per the design-system rule.
-const HEADER_ALERT_CLASS =
-  "h-9 w-auto items-center rounded-md py-0 *:[svg]:translate-y-0"
-
 // Skeleton shape per column, mirroring the real row content (name link, short
 // gender word, department, tiny FTE value, classification badge pill) so the
 // loading table has the same silhouette as the loaded one.
@@ -122,27 +108,17 @@ const PEOPLE_SKELETON_COLUMNS: TableSkeletonColumn[] = [
 export function PeopleSection() {
   const t = useTranslations("dashboard.people")
   const tToolbar = useTranslations("dashboard.people.toolbar")
-  const tClassify = useTranslations("dashboard.classify")
   const tOrg = useTranslations("dashboard.organization.general")
   const { orgId } = useOrganization()
 
   const people = useQuery(api.people.people.listPeople, { orgId })
-  // Shared flattened person set + summary (also feeds the Classify tab's
-  // remaining-count badge, so the two can never disagree).
-  const {
-    loading: byTitleLoading,
-    people: byTitlePeople,
-    summary,
-  } = useClassificationSummary(orgId)
+  // Shared flattened person set (the same query that feeds the Classify tab's
+  // remaining-count badge, so the row badges can never disagree with it).
+  const { loading: byTitleLoading, people: byTitlePeople } =
+    useClassificationSummary(orgId)
   const settings = useQuery(api.accounts.organization.getOrganizationSettings, {
     orgId,
   })
-
-  // Mirrors the model pages' progress status (method-panel.tsx): a check +
-  // neutral tint when everyone is classified, an amber heads-up while people
-  // still await classification.
-  const allClassified =
-    summary.total > 0 && summary.classified === summary.total
 
   // Map personId -> assignment source for O(1) per-row badge lookup.
   const assignmentByPerson = useMemo(() => {
@@ -281,56 +257,18 @@ export function PeopleSection() {
   const loading =
     people === undefined || byTitleLoading || settings === undefined
 
-  // The classification summary shares the header row with the primary action
-  // (the same alert-beside-a-control pairing as the model pages' toolbars):
-  // status and next step live together, and the table area starts directly
-  // with its own controls. While loading, the alert keeps its real frame and
-  // skeletons only the counts; it is dropped entirely before the first import
-  // (the empty state owns that moment). Alert has no warning variant, so the
-  // amber tint is a call-site override (same as method-panel.tsx).
-  const summaryAlert = loading ? (
-    <Alert className={HEADER_ALERT_CLASS}>
-      <HugeiconsIcon icon={InformationCircleIcon} strokeWidth={2} />
-      <AlertTitle>
-        <Skeleton className="h-5 w-40" />
-      </AlertTitle>
-    </Alert>
-  ) : people.length === 0 ? null : (
-    <Alert
-      className={cn(
-        HEADER_ALERT_CLASS,
-        !allClassified &&
-          "border-amber-500/50 text-amber-700 dark:text-amber-400"
-      )}
-    >
-      <HugeiconsIcon
-        icon={allClassified ? Tick02Icon : InformationCircleIcon}
-        strokeWidth={2}
-      />
-      <AlertTitle>
-        {tClassify("summary", {
-          classified: summary.classified,
-          total: summary.total,
-        })}
-      </AlertTitle>
-    </Alert>
-  )
-
-  const headerAction = (
-    <div className="flex flex-wrap items-center justify-end gap-3">
-      {summaryAlert}
-      <Button asChild>
-        <Link href="/people/import">
-          <HugeiconsIcon
-            icon={UserMultiple02Icon}
-            size={16}
-            strokeWidth={2}
-            aria-hidden="true"
-          />
-          {t("import.title")}
-        </Link>
-      </Button>
-    </div>
+  const importAction = (
+    <Button asChild>
+      <Link href="/people/import">
+        <HugeiconsIcon
+          icon={UserMultiple02Icon}
+          size={16}
+          strokeWidth={2}
+          aria-hidden="true"
+        />
+        {t("import.title")}
+      </Link>
+    </Button>
   )
 
   return (
@@ -338,10 +276,9 @@ export function PeopleSection() {
       <PageHeader
         title={t("heading")}
         description={t("description")}
-        // Classification navigation lives on its own header tab (PeopleTabs);
-        // the header action row pairs the classification status with the
-        // Import primary action.
-        action={headerAction}
+        // Classification progress lives on the Classify tab (badge + page);
+        // the header keeps a single primary action.
+        action={importAction}
       />
 
       {loading ? (

@@ -417,7 +417,6 @@
       "tenureYears": "{years, plural, one {# år} other {# år}}",
       "createRoleCta": "Skapa ny roll",
       "empty": "Inga anställda importerade ännu. Importera lönedata för att börja klassificera.",
-      "summary": "{classified} av {total} klassificerade",
       "createRole": {
         "title": "Skapa roll",
         "description": "Skapa en ny roll och tilldela den till dessa anställda.",
