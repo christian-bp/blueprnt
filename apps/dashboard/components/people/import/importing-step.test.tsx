@@ -64,8 +64,9 @@ describe("ImportingStep", () => {
     })
     const later = remaining()
     expect(later).toBeLessThan(initial)
-    // The simulated progress never claims completion (caps at 90%).
-    expect(later).toBeGreaterThanOrEqual(10)
+    // The simulated setup phase claims at most 10% progress, so it can never
+    // race ahead of the real counts and freeze the ratcheted bar high.
+    expect(later).toBeGreaterThanOrEqual(90)
     // No counts shown without real progress.
     expect(screen.getByTestId("import-progress-count").textContent).toBe("")
   })

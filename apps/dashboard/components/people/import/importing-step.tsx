@@ -23,14 +23,17 @@ export function ImportingStep() {
   const progress = useQuery(api.people.importHelpers.getImportProgress, {
     orgId,
   })
-  const [shown, setShown] = useState(5)
+  const [shown, setShown] = useState(2)
   const hasReal = progress !== null && progress !== undefined
 
   // Simulated drift, only while the action has not reported real counts yet.
+  // It eases toward a LOW ceiling: the setup phase it stands in for is a
+  // small slice of the work, and any fake value above the first real report
+  // would freeze the ratcheted bar there, overstating progress.
   useEffect(() => {
     if (hasReal) return
     const id = setInterval(() => {
-      setShown((p) => Math.min(90, p + (90 - p) * 0.06))
+      setShown((p) => Math.min(10, p + (10 - p) * 0.05))
     }, TICK_MS)
     return () => clearInterval(id)
   }, [hasReal])
