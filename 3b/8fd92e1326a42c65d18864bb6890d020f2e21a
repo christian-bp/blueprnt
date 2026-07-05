@@ -1,0 +1,46 @@
+apps/dashboard/components/people/classify/classify-person-rows.tsx
+  s_6bff98b662648b::t_0ea8ad8d1d257b 56-60,69,82-101
+  s_6bff98b662648b::t_b4d53b2911c65a 12
+  s_6bff98b662648b::t_0e28eb0a6a90f0 120-121,125,127-128
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_de96e9374e958d 386-392
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_de96e9374e958d 386-392
+apps/dashboard/components/people/classify/classify-title-table.tsx
+  s_6bff98b662648b::t_5b2c4642d02ced 451,456
+  s_6bff98b662648b::t_5dd7a5489a19a6 372-387,389-429
+  s_6bff98b662648b::t_ffc25f2bac3aa5 143-153,158-159
+  s_6bff98b662648b::t_98af3c5c1bd8c5 430-450,452-455,457-471,474-483,485-511,514-518,522-529,531-584,586,595-600,602-612,616-635
+  s_6bff98b662648b::t_2859b3ea2f2e1a 9,636-637
+  s_6bff98b662648b::t_70139d0725e7c8 291-294,299-326,331,344-361
+  s_6bff98b662648b::t_7a0c4827d21b5f 213-215
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_de96e9374e958d 386-392
+apps/dashboard/components/people/classify/classify-title-table.test.tsx
+  s_6bff98b662648b::t_a8d4948b6eae67 327-382
+  s_6bff98b662648b::t_f3067b157b1c32 228
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_de96e9374e958d 386-392
+apps/dashboard/app/(app)/people/classify/page.tsx
+  s_6bff98b662648b::t_c301bc8de4f435 11
+  s_6bff98b662648b::t_d243f214c04cb2 70
+  s_6bff98b662648b::t_68f85ed2525d05 57-58
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_de96e9374e958d 386-392
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "3b8fd92e1326a42c65d18864bb6890d020f2e21a",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
