@@ -40,8 +40,9 @@ interface WizardState {
   parsed: ParsedCsv | null
   // Raw CSV text retained so the importPayroll action can receive it.
   csvText: string | null
-  // Name of the uploaded file, shown in the upload success banner.
+  // Name and size of the uploaded file, shown in the upload file card.
   fileName: string | null
+  fileSize: number | null
   mapping: Record<string, number> | null
   // Whether the check step has reported blocking required fields.
   // null = not yet validated (check step not yet reached).
@@ -76,6 +77,7 @@ export function ImportWizard() {
     parsed: null,
     csvText: null,
     fileName: null,
+    fileSize: null,
     mapping: null,
     checkBlocking: null,
     checkIssueCount: 0,
@@ -158,7 +160,8 @@ export function ImportWizard() {
             <UploadStep
               parsed={state.parsed}
               fileName={state.fileName}
-              onParsed={(parsed, csvText, fileName) =>
+              fileSize={state.fileSize}
+              onParsed={(parsed, csvText, file) =>
                 setState((prev) => {
                   // Detect whether the new file has different headers.
                   // If headers changed, the old column-index mapping is stale
@@ -171,7 +174,8 @@ export function ImportWizard() {
                     ...prev,
                     parsed,
                     csvText,
-                    fileName,
+                    fileName: file.name,
+                    fileSize: file.size,
                     ...(headersChanged
                       ? {
                           mapping: null,
@@ -182,6 +186,19 @@ export function ImportWizard() {
                       : {}),
                   }
                 })
+              }
+              onClear={() =>
+                setState((prev) => ({
+                  ...prev,
+                  parsed: null,
+                  csvText: null,
+                  fileName: null,
+                  fileSize: null,
+                  mapping: null,
+                  checkBlocking: null,
+                  checkIssueCount: 0,
+                  genderOverrides: {},
+                }))
               }
             />
             <WizardFooter>

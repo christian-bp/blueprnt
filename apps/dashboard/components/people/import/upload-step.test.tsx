@@ -107,7 +107,7 @@ vi.mock("@/components/onboarding/onboarding-dots", () => ({
   OnboardingDots: () => null,
 }))
 
-import { handleCsvText } from "./upload-step"
+import { formatFileSize, handleCsvText } from "./upload-step"
 import { UploadStep } from "./upload-step"
 import type { ParsedCsv } from "./import-wizard"
 
@@ -121,15 +121,25 @@ const m = messages.dashboard.people.import
 function renderUploadStep({
   parsed = null,
   fileName = null,
+  fileSize = null,
   onParsed = vi.fn() as Parameters<typeof UploadStep>[0]["onParsed"],
+  onClear = vi.fn(),
 }: {
   parsed?: Parameters<typeof UploadStep>[0]["parsed"]
   fileName?: string | null
+  fileSize?: number | null
   onParsed?: Parameters<typeof UploadStep>[0]["onParsed"]
+  onClear?: () => void
 } = {}) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <UploadStep parsed={parsed} fileName={fileName} onParsed={onParsed} />
+      <UploadStep
+        parsed={parsed}
+        fileName={fileName}
+        fileSize={fileSize}
+        onParsed={onParsed}
+        onClear={onClear}
+      />
     </NextIntlClientProvider>
   )
 }
@@ -185,6 +195,14 @@ describe("handleCsvText (pure parse handler)", () => {
   })
 })
 
+describe("formatFileSize", () => {
+  it("formats bytes, kilobytes, and megabytes", () => {
+    expect(formatFileSize(512)).toBe("512 B")
+    expect(formatFileSize(2048)).toBe("2 kB")
+    expect(formatFileSize(3 * 1024 * 1024)).toBe("3.0 MB")
+  })
+})
+
 describe("UploadStep component", () => {
   afterEach(() => {
     cleanup()
@@ -201,7 +219,7 @@ describe("UploadStep component", () => {
     expect(screen.queryByTestId("detected-summary")).toBeNull()
   })
 
-  it("shows the upload success banner with the file name and detected shape", () => {
+  it("shows the uploaded file card with name, size, and detected shape", () => {
     renderUploadStep({
       parsed: {
         headers: ["name", "salary", "dept"],
@@ -211,16 +229,36 @@ describe("UploadStep component", () => {
         ],
       },
       fileName: "payroll.csv",
+      fileSize: 2048,
     })
     const summary = screen.getByTestId("detected-summary")
     expect(summary.textContent).toContain("payroll.csv")
+    expect(summary.textContent).toContain("2 kB")
     expect(summary.textContent).toContain("2")
     expect(summary.textContent).toContain("3")
   })
 
-  it("calls onParsed with parsed result, raw csvText, and file name when a valid CSV file is dropped", async () => {
+  it("clears the uploaded file via the remove button", () => {
+    const onClear = vi.fn()
+    renderUploadStep({
+      parsed: { headers: ["name"], rows: [["Alice"]] },
+      fileName: "payroll.csv",
+      fileSize: 100,
+      onClear,
+    })
+    fireEvent.click(screen.getByTestId("remove-file"))
+    expect(onClear).toHaveBeenCalledOnce()
+  })
+
+  it("calls onParsed with parsed result, raw csvText, and file meta when a valid CSV file is dropped", async () => {
     const onParsed =
-      vi.fn<(result: ParsedCsv, csvText: string, fileName: string) => void>()
+      vi.fn<
+        (
+          result: ParsedCsv,
+          csvText: string,
+          file: { name: string; size: number }
+        ) => void
+      >()
     renderUploadStep({ onParsed })
 
     const dropZone = screen.getByRole("region")
@@ -234,12 +272,13 @@ describe("UploadStep component", () => {
       expect(onParsed).toHaveBeenCalledOnce()
     })
     // biome-ignore lint/style/noNonNullAssertion: guaranteed by toHaveBeenCalledOnce above
-    const [parsed, csvText, fileName] = onParsed.mock.calls[0]!
+    const [parsed, csvText, fileMeta] = onParsed.mock.calls[0]!
     expect(parsed.headers).toEqual(["name", "department", "gender", "salary"])
     expect(parsed.rows).toHaveLength(3)
     // Raw text must be forwarded so Task 5's importPayroll action can use it.
     expect(csvText).toBe(FIXTURE_CSV)
-    expect(fileName).toBe("payroll.csv")
+    expect(fileMeta.name).toBe("payroll.csv")
+    expect(fileMeta.size).toBe(file.size)
   })
 
   it("shows errorNotCsv when a non-CSV file is selected via file input", async () => {
