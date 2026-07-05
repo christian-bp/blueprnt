@@ -170,7 +170,8 @@
       },
       "tabs": {
         "people": "Personer",
-        "classify": "Klassifiser"
+        "classify": "Klassifiser",
+        "remainingLabel": "{count, plural, one {# person igjen å klassifisere} other {# personer igjen å klassifisere}}"
       },
       "gender": {
         "Man": "Mann",

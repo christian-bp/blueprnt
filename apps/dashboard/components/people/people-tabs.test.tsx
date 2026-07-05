@@ -9,6 +9,27 @@ vi.mock("next/navigation", () => ({
   usePathname: () => pathState.current,
 }))
 
+// Controls what the classification query returns per test (undefined =
+// loading, [] = nobody imported).
+const useQueryMock = vi.fn()
+vi.mock("convex/react", () => ({
+  useQuery: (...args: unknown[]) => useQueryMock(...args),
+}))
+
+vi.mock("@workspace/backend/convex/_generated/api", () => ({
+  api: {
+    people: {
+      classificationQueries: {
+        listPeopleByTitle: "people.classificationQueries.listPeopleByTitle",
+      },
+    },
+  },
+}))
+
+vi.mock("@/components/org-context", () => ({
+  useOrganization: () => ({ orgId: "org1", name: "Acme", role: "admin" }),
+}))
+
 import { PeopleTabs } from "@/components/people/people-tabs"
 
 const PEOPLE = messages.dashboard.people.tabs.people
@@ -22,11 +43,25 @@ function renderTabs() {
   )
 }
 
+// One title group: two people, one confirmed and one still unclassified.
+const GROUPS = [
+  {
+    people: [
+      { currentAssignment: { levelSource: "confirmed" } },
+      { currentAssignment: null },
+    ],
+  },
+]
+
 describe("PeopleTabs", () => {
   beforeEach(() => {
     pathState.current = "/people"
+    useQueryMock.mockReturnValue(undefined)
   })
-  afterEach(() => cleanup())
+  afterEach(() => {
+    cleanup()
+    useQueryMock.mockReset()
+  })
 
   it("links People and Classify to their pages", () => {
     renderTabs()
@@ -66,5 +101,25 @@ describe("PeopleTabs", () => {
     expect(
       screen.getByRole("link", { name: PEOPLE }).getAttribute("aria-current")
     ).toBeNull()
+  })
+
+  it("shows the remaining-to-classify count on the Classify tab", () => {
+    useQueryMock.mockReturnValue(GROUPS)
+    renderTabs()
+    // One of the two people is still unconfirmed.
+    expect(screen.getByText("1")).toBeDefined()
+  })
+
+  it("hides the badge while loading and when everyone is classified", () => {
+    useQueryMock.mockReturnValue(undefined)
+    const { unmount } = renderTabs()
+    expect(screen.queryByText("1")).toBeNull()
+    unmount()
+
+    useQueryMock.mockReturnValue([
+      { people: [{ currentAssignment: { levelSource: "confirmed" } }] },
+    ])
+    renderTabs()
+    expect(screen.queryByText("0")).toBeNull()
   })
 })

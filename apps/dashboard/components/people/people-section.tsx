@@ -27,7 +27,7 @@ import { useOrganization } from "@/components/org-context"
 import { PageHeader } from "@/components/page-header"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { TableSkeleton } from "@/components/table-skeleton"
-import { countClassified } from "@/lib/classification-summary"
+import { useClassificationSummary } from "@/hooks/use-classification-summary"
 import { displayNameFor } from "@/lib/person-display"
 
 // The people list surface. Displays active (non-archived) people imported from
@@ -42,20 +42,16 @@ export function PeopleSection() {
   const { orgId } = useOrganization()
 
   const people = useQuery(api.people.people.listPeople, { orgId })
-  const byTitle = useQuery(api.people.classificationQueries.listPeopleByTitle, {
-    orgId,
-  })
+  // Shared flattened person set + summary (also feeds the Classify tab's
+  // remaining-count badge, so the two can never disagree).
+  const {
+    loading: byTitleLoading,
+    people: byTitlePeople,
+    summary,
+  } = useClassificationSummary(orgId)
   const settings = useQuery(api.accounts.organization.getOrganizationSettings, {
     orgId,
   })
-
-  // Flatten every title group's people ONCE. listPeopleByTitle returns each
-  // active person exactly once (including the title: null group), so this is
-  // the complete, non-duplicated person set for both the badge and the summary.
-  const byTitlePeople = useMemo(
-    () => (byTitle ?? []).flatMap((group) => group.people),
-    [byTitle]
-  )
 
   // Map personId -> assignment source for O(1) per-row badge lookup.
   const assignmentByPerson = useMemo(() => {
@@ -67,10 +63,6 @@ export function PeopleSection() {
     }
     return m
   }, [byTitlePeople])
-
-  // Summary counts derived from the single flattened source: never from
-  // listPeople. A person is classified when their levelSource is "confirmed".
-  const summary = useMemo(() => countClassified(byTitlePeople), [byTitlePeople])
 
   const tableHeader = (
     <TableHeader>
@@ -108,9 +100,7 @@ export function PeopleSection() {
         action={importAction}
       />
 
-      {people === undefined ||
-      byTitle === undefined ||
-      settings === undefined ? (
+      {people === undefined || byTitleLoading || settings === undefined ? (
         // Loading: show a content-shaped skeleton while queries resolve.
         // The Skeleton bar reserves the summary line's height so the table
         // does not shift down when data arrives (minimize layout shift rule).

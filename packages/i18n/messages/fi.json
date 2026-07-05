@@ -170,7 +170,8 @@
       },
       "tabs": {
         "people": "Henkilöt",
-        "classify": "Luokittele"
+        "classify": "Luokittele",
+        "remainingLabel": "{count, plural, one {# henkilö luokittelematta} other {# henkilöä luokittelematta}}"
       },
       "gender": {
         "Man": "Mies",

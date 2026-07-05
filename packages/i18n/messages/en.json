@@ -170,7 +170,8 @@
       },
       "tabs": {
         "people": "People",
-        "classify": "Classify"
+        "classify": "Classify",
+        "remainingLabel": "{count, plural, one {# person left to classify} other {# people left to classify}}"
       },
       "gender": {
         "Man": "Man",
