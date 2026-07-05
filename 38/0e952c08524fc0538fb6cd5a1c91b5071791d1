@@ -1,0 +1,60 @@
+apps/dashboard/components/people/import/review-step.tsx
+  s_6bff98b662648b::t_a56fa683c9ceb2 216
+packages/backend/convex/people/people.ts
+  s_6bff98b662648b::t_9332e5caf9ca32 255
+  s_6bff98b662648b::t_27ffa6bced1282 230
+  s_6bff98b662648b::t_eb52867318a642 201
+  s_6bff98b662648b::t_ba67d505bef24e 134-146
+apps/dashboard/components/people/import/import-done-step.test.tsx
+  s_6bff98b662648b::t_2d6dc8375c8ac7 14-16
+  s_6bff98b662648b::t_09b9ed701afd6e 38-40
+apps/dashboard/components/people/import/import-wizard.tsx
+  s_6bff98b662648b::t_45fc98a9b17dce 43-44
+apps/dashboard/components/people/import/review-step.test.tsx
+  s_6bff98b662648b::t_266182436bc440 367
+  s_6bff98b662648b::t_456a245661ef11 89,104
+  s_6bff98b662648b::t_65faf64e93b9a8 140
+packages/backend/convex/people/importHelpers.ts
+  s_6bff98b662648b::t_50d47324aca478 31,40
+packages/backend/convex/lib/auditPayloads.ts
+  s_6bff98b662648b::t_95868e66268860 305
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_c3ce46b3cef8fa 287
+packages/backend/convex/people/import.ts
+  s_6bff98b662648b::t_bf3f2850c8b664 26-27,30
+  s_6bff98b662648b::t_fd28e4bd517141 132,197,495,517
+  s_6bff98b662648b::t_e2909cc9e6420b 384,386,388-389
+  s_6bff98b662648b::t_9d7a1529cdd9a7 290
+  s_6bff98b662648b::t_0619a00341ce41 366
+packages/backend/convex/people/import.test.ts
+  s_6bff98b662648b::t_8ed78be003b456 140,190,333-335
+packages/backend/convex/people/people.test.ts
+  s_6bff98b662648b::t_b9b9bbfe4cf426 404-415
+  s_6bff98b662648b::t_f965d07154a6bd 236,248,276,288,291,305,331,343,355,367,369,383
+apps/dashboard/components/people/import/import-done-step.tsx
+  s_6bff98b662648b::t_ad60244d97c26e 18
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_8cf4c6e971df37 287
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_72f62872febee0 287
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_b762e77f99c7c4 291
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_9922e711db2e7b 287
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "380e952c08524fc0538fb6cd5a1c91b5071791d1",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
