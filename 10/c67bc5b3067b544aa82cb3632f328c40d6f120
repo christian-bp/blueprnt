@@ -1,0 +1,82 @@
+packages/backend/convex/people/tables.ts
+  s_6bff98b662648b::t_959fc44b154cee 10-11
+  s_6bff98b662648b::t_d052f8bf51dd09 12
+  s_6bff98b662648b::t_484658d76dbcf1 43-44
+packages/backend/convex/people/people.test.ts
+  s_6bff98b662648b::t_f271edf4ee96a1 360
+  s_6bff98b662648b::t_73fddbd1e1c26f 108
+  s_6bff98b662648b::t_f98f7a40b50c78 190-214,225-229,231,239,244,249-253,255-256,258
+apps/dashboard/app/(app)/people/[publicId]/page.tsx
+  s_6bff98b662648b::t_0a1befc73e649d 6-10
+apps/dashboard/components/people/person-detail.tsx
+  s_6bff98b662648b::t_9418266a299101 83-87
+  s_6bff98b662648b::t_ecaf7eac4ed3e8 43
+  s_6bff98b662648b::t_865de51cdc3c07 88-105,107-118,120-140,142-143
+  s_6bff98b662648b::t_1d4d89898f529c 225
+  s_6bff98b662648b::t_968e3edf88150e 5-10,23,44-51,57,59,61-71,81,106,119,163-167,174-180,183-224,226-243,245-291,293
+  s_6bff98b662648b::t_43fb42ae130def 145,158-161
+  s_6bff98b662648b::t_68f098d22a3031 144,162
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_4e8596dfec861c 327
+packages/backend/convex/people/employeeCount.test.ts
+  s_6bff98b662648b::t_51f1a81f9ddda1 38
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_4e8596dfec861c 327
+apps/dashboard/components/people/people-section.test.tsx
+  s_6bff98b662648b::t_9e3b2a2dca1f7a 42,57,72,212,214,360,399
+apps/dashboard/components/people/person-actions-menu.tsx
+  s_6bff98b662648b::t_c0b6a3b7dabd73 1-66
+apps/dashboard/components/people/people-section.tsx
+  s_6bff98b662648b::t_15ac9b921758de 156
+  s_6bff98b662648b::t_1550c36d446c69 473
+  s_6bff98b662648b::t_bc74378d4d9110 73
+apps/dashboard/components/people/erase-person-control.tsx
+  s_6bff98b662648b::t_5f9c9ccda4dc5d 81
+  s_6bff98b662648b::t_f658e71b9c2981 105-107
+  s_6bff98b662648b::t_9d1b3bc766739e 102
+  s_6bff98b662648b::t_d7af125fbaea89 27,33-34,36-37,42-43
+  s_6bff98b662648b::t_082151e9bc781f 103-104,108-142
+packages/backend/convex/people/schema.test.ts
+  s_6bff98b662648b::t_51f1a81f9ddda1 13,28,62
+apps/dashboard/components/people/erase-person-control.test.tsx
+  s_6bff98b662648b::t_becc4da90ec8ad 19-20,23-24
+packages/backend/convex/lib/slug.ts
+  s_6bff98b662648b::t_8607ea8dd16877 17-39
+packages/backend/convex/people/people.ts
+  s_6bff98b662648b::t_9cc4d5ea7e1f5a 161
+  s_6bff98b662648b::t_60ed0a5a5e4557 262,265
+  s_6bff98b662648b::t_9477e0a450641e 14
+  s_6bff98b662648b::t_1aec3db5ca215d 317-322,324-331
+  s_6bff98b662648b::t_77366f72a23058 283
+  s_6bff98b662648b::t_63e0824aed95b6 71
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_4e8596dfec861c 327
+apps/dashboard/components/people/person-detail.test.tsx
+  s_6bff98b662648b::t_becc4da90ec8ad 42,94-95,98,108,131,133,141,143
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_4e8596dfec861c 327
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_4e8596dfec861c 327
+CLAUDE.md
+  s_6bff98b662648b::t_9bf7d786002eae 76
+packages/backend/convex/people/erase.test.ts
+  s_6bff98b662648b::t_51f1a81f9ddda1 319,383,403
+packages/backend/convex/people/classification.test.ts
+  s_6bff98b662648b::t_51f1a81f9ddda1 41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "10c67bc5b3067b544aa82cb3632f328c40d6f120",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
