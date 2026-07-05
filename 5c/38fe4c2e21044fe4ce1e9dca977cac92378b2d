@@ -1,0 +1,25 @@
+apps/dashboard/components/auth/brand-panel.tsx
+  s_6bff98b662648b::t_3b126fa1ef407c 4-7,11
+apps/dashboard/components/auth/auth-shell.tsx
+  s_6bff98b662648b::t_54d6e18c13344e 55-61
+  s_6bff98b662648b::t_87054911744a04 6
+apps/dashboard/components/auth/background-aurora.tsx
+  s_6bff98b662648b::t_bb21bd07d00972 50,55-58
+  s_6bff98b662648b::t_e4d956853414dd 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "5c38fe4c2e21044fe4ce1e9dca977cac92378b2d",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
