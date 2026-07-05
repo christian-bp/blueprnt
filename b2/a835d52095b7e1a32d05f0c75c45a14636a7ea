@@ -1,0 +1,29 @@
+apps/dashboard/components/people/classify/classify-title-table.test.tsx
+  s_6bff98b662648b::t_38a348d5e57cf1 197,200,244,249,255-258,278-283
+  s_6bff98b662648b::t_2745079cbb2e04 308-310,354-356,358-363,472,476-481,500-504
+apps/dashboard/components/people/classify/classify-title-table.tsx
+  s_6bff98b662648b::t_97c9feba664f7b 325-327
+  s_6bff98b662648b::t_9cc61c3a799582 291-297,300,302-304,313-324,328-329
+  s_6bff98b662648b::t_b9a494835b85bf 338,351,359
+  s_6bff98b662648b::t_d9ca41f49c0237 216
+packages/backend/convex/people/assignments.ts
+  s_6bff98b662648b::t_fa73efb1157cd4 188-228
+packages/backend/convex/people/assignments.test.ts
+  s_6bff98b662648b::t_3c4265bc289efe 427-499
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "b2a835d52095b7e1a32d05f0c75c45a14636a7ea",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
