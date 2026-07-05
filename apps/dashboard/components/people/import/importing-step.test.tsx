@@ -1,4 +1,4 @@
-import { act, cleanup, render, screen } from "@testing-library/react"
+import { cleanup, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
@@ -50,23 +50,18 @@ function renderStep() {
 describe("ImportingStep", () => {
   afterEach(() => {
     cleanup()
-    vi.useRealTimers()
     useQueryMock.mockReset()
   })
 
-  it("falls back to a simulated advancing bar while no real progress exists", () => {
-    vi.useFakeTimers()
+  it("shows a spinner and keeps the bar at zero until real progress exists", () => {
     useQueryMock.mockReturnValue(null)
     renderStep()
-    const initial = remaining()
-    act(() => {
-      vi.advanceTimersByTime(1500)
-    })
-    const later = remaining()
-    expect(later).toBeLessThan(initial)
-    // The simulated setup phase claims at most 10% progress, so it can never
-    // race ahead of the real counts and freeze the ratcheted bar high.
-    expect(later).toBeGreaterThanOrEqual(90)
+    // The bar shows no fake progress during the setup phase.
+    expect(remaining()).toBe(100)
+    // The spinner is the loading indicator meanwhile.
+    expect(
+      document.querySelector('[aria-hidden="true"].animate-spin')
+    ).not.toBeNull()
     // No counts shown without real progress.
     expect(screen.getByTestId("import-progress-count").textContent).toBe("")
   })
@@ -81,26 +76,13 @@ describe("ImportingStep", () => {
     expect(count.textContent).toContain("118")
   })
 
-  it("never moves backwards when real progress arrives below the simulated value", () => {
-    vi.useFakeTimers()
-    useQueryMock.mockReturnValue(null)
-    const { rerender } = renderStep()
-    // Let the simulated bar ease well past the first real percentage.
-    act(() => {
-      vi.advanceTimersByTime(3000)
-    })
-    const before = remaining()
-    // First real data point: ~1% done, far below the simulated bar. The bar
-    // must hold its position (ratchet), not jump backwards.
-    useQueryMock.mockReturnValue({ processed: 1, total: 118 })
-    rerender(
-      <NextIntlClientProvider locale="en" messages={messages}>
-        <ImportingStep />
-      </NextIntlClientProvider>
-    )
-    expect(remaining()).toBeLessThanOrEqual(before)
-    // Once reality overtakes, the bar moves forward again.
+  it("holds the last value when the progress row is cleared at completion", () => {
     useQueryMock.mockReturnValue({ processed: 118, total: 118 })
+    const { rerender } = renderStep()
+    expect(remaining()).toBe(0)
+    // The action deletes the progress row just before it resolves; the bar
+    // must hold rather than snapping back to zero for that final moment.
+    useQueryMock.mockReturnValue(null)
     rerender(
       <NextIntlClientProvider locale="en" messages={messages}>
         <ImportingStep />

@@ -2,55 +2,41 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Progress } from "@workspace/ui/components/progress"
+import { Spinner } from "@workspace/ui/components/spinner"
 import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 import { useOrganization } from "@/components/org-context"
 
-// How often the simulated fallback progress advances.
-const TICK_MS = 150
-
-// The importing screen's progress bar. The import action writes its real row
-// counts to the importProgress table as it loops, and this component
-// subscribes to them reactively. While no progress row exists yet (the
-// action's setup phase) the bar eases asymptotically toward 90% as a
-// fallback. The shown value is a RATCHET: the simulated drift stops the
-// moment real data exists, and real percentages only ever push the bar up,
-// so the handover from simulated to real can never move the bar backwards.
+// The importing screen's loading state: a spinner (the action is working)
+// above a progress bar that only ever shows REAL row counts, written by the
+// import action to the importProgress table and read reactively. The bar
+// stays at 0 during the action's setup phase and holds its last value when
+// the progress row is cleared at completion (the wizard swaps to the done
+// screen a moment later).
 export function ImportingStep() {
   const t = useTranslations("dashboard.people.import.importing")
   const { orgId } = useOrganization()
   const progress = useQuery(api.people.importHelpers.getImportProgress, {
     orgId,
   })
-  const [shown, setShown] = useState(2)
-  const hasReal = progress !== null && progress !== undefined
+  const [pct, setPct] = useState(0)
 
-  // Simulated drift, only while the action has not reported real counts yet.
-  // It eases toward a LOW ceiling: the setup phase it stands in for is a
-  // small slice of the work, and any fake value above the first real report
-  // would freeze the ratcheted bar there, overstating progress.
-  useEffect(() => {
-    if (hasReal) return
-    const id = setInterval(() => {
-      setShown((p) => Math.min(10, p + (10 - p) * 0.05))
-    }, TICK_MS)
-    return () => clearInterval(id)
-  }, [hasReal])
-
-  // Real counts ratchet the bar upward; a real percentage below what is
-  // already shown just pauses the bar until reality catches up.
   useEffect(() => {
     if (progress !== null && progress !== undefined && progress.total > 0) {
-      const pct = Math.round((progress.processed / progress.total) * 100)
-      setShown((p) => Math.max(p, pct))
+      const next = Math.round((progress.processed / progress.total) * 100)
+      // The server counts are monotonic; the max is a safety net so the bar
+      // can never move backwards.
+      setPct((p) => Math.max(p, next))
     }
   }, [progress])
 
   return (
-    <div className="flex w-full flex-col gap-2">
+    <div className="flex w-full flex-col items-center gap-4">
+      {/* Decorative: the Progress element carries the accessible state. */}
+      <Spinner aria-hidden="true" className="size-6 text-brand" />
       <Progress
-        value={shown}
+        value={pct}
         aria-label={t("title")}
         data-testid="import-progress"
       />
