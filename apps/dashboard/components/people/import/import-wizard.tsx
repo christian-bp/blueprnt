@@ -24,6 +24,7 @@ import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 import { WizardShell } from "@/components/wizard-shell"
 import { CheckStep } from "./check-step"
+import { ImportingStep } from "./importing-step"
 import { MapStep } from "./map-step"
 import { ReviewStep } from "./review-step"
 import { UploadStep } from "./upload-step"
@@ -55,8 +56,11 @@ interface WizardState {
   // file parses (with unchanged headers), the wizard returns straight to the
   // check step so the fresh validation is visible immediately.
   returnToCheck: boolean
-  validation: unknown | null
-  result: unknown | null
+  // The import action is running: the importing screen replaces the review
+  // step until it succeeds (navigates away) or fails (returns to review).
+  importing: boolean
+  // Blocking field keys from a failed import attempt (backend re-validation).
+  importBlocking: string[] | null
 }
 
 const STEP_COUNT = 4
@@ -85,8 +89,8 @@ export function ImportWizard() {
     checkBlocking: null,
     genderOverrides: {},
     returnToCheck: false,
-    validation: null,
-    result: null,
+    importing: false,
+    importBlocking: null,
   })
 
   const [discardOpen, setDiscardOpen] = useState(false)
@@ -97,10 +101,11 @@ export function ImportWizard() {
   // never while the old step is still on screen.
   const [displayedStep, setDisplayedStep] = useState(STEP_UPLOAD)
 
-  // A file has been uploaded/parsed and the import has not yet completed.
-  // Nothing is persisted to the DB until the final Import action, so leaving
-  // is a clean discard, but we warn the user first when there is progress.
-  const hasProgress = state.parsed !== null && state.result === null
+  // A file has been uploaded/parsed and the import has not yet completed
+  // (a completed import navigates away). Nothing is persisted to the DB
+  // until the final Import action, so leaving is a clean discard, but we
+  // warn the user first when there is progress.
+  const hasProgress = state.parsed !== null
 
   // Guard reload/close/tab-close with the browser's native beforeunload prompt.
   // Note: in-app browser Back is not interceptable in the App Router; this covers
@@ -159,6 +164,17 @@ export function ImportWizard() {
   })()
 
   function renderStep() {
+    // The importing screen replaces the review step while the action runs.
+    if (state.importing) {
+      return (
+        <ScreenShell
+          heading={t("importing.title")}
+          description={t("importing.description")}
+        >
+          <ImportingStep />
+        </ScreenShell>
+      )
+    }
     switch (state.step) {
       case STEP_UPLOAD:
         return (
@@ -311,6 +327,21 @@ export function ImportWizard() {
                   csvText={state.csvText}
                   genderOverrides={state.genderOverrides}
                   onBack={goBack}
+                  blockingError={state.importBlocking}
+                  onImportStart={() =>
+                    setState((prev) => ({
+                      ...prev,
+                      importing: true,
+                      importBlocking: null,
+                    }))
+                  }
+                  onImportEnd={(blocking) =>
+                    setState((prev) => ({
+                      ...prev,
+                      importing: false,
+                      importBlocking: blocking ?? null,
+                    }))
+                  }
                 />
               )}
           </ScreenShell>
@@ -368,6 +399,8 @@ export function ImportWizard() {
             maxReachedIndex={state.step}
             navLabel={t("navLabel")}
             onSelect={(index) => {
+              // No navigation while the import action is running.
+              if (state.importing) return
               if (index < state.step) {
                 setState((prev) => ({ ...prev, step: index }))
               }
@@ -383,7 +416,7 @@ export function ImportWizard() {
           onExitComplete={() => setDisplayedStep(state.step)}
         >
           <motion.div
-            key={`step-${state.step}`}
+            key={state.importing ? "importing" : `step-${state.step}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

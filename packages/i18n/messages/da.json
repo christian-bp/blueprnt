@@ -275,6 +275,10 @@
           "department": "Afdeling",
           "isManager": "Leder"
         },
+        "importing": {
+          "title": "Importerer personer",
+          "description": "Dine personer importeres. Hold vinduet åbent, indtil importen er færdig."
+        },
         "review": {
           "title": "Gennemse og bekræft",
           "description": "Kontroller forhåndsvisningen nedenfor og bekræft for at importere.",

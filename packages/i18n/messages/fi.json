@@ -275,6 +275,10 @@
           "department": "Osasto",
           "isManager": "Esimies"
         },
+        "importing": {
+          "title": "Tuodaan henkilöitä",
+          "description": "Henkilöitäsi tuodaan. Pidä ikkuna auki, kunnes tuonti on valmis."
+        },
         "review": {
           "title": "Tarkista ja vahvista",
           "description": "Tarkista alla oleva esikatselu ja vahvista tuonti.",

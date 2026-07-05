@@ -275,6 +275,10 @@
           "department": "Avdelning",
           "isManager": "Chef"
         },
+        "importing": {
+          "title": "Importerar personer",
+          "description": "Dina personer importeras. Håll fönstret öppet tills importen är klar."
+        },
         "review": {
           "title": "Granska och bekräfta",
           "description": "Kontrollera förhandsgranskningen nedan och bekräfta för att importera.",

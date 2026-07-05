@@ -152,6 +152,17 @@ export interface ReviewStepProps {
   genderOverrides: Record<string, "Man" | "Kvinna">
   /** Step back to the check step (the review owns its footer actions). */
   onBack: () => void
+  /** The import has started: the wizard shows the importing screen. */
+  onImportStart: () => void
+  /**
+   * The import ended without navigating away: the wizard returns to this
+   * step. `blocking` carries the required-field keys when the backend
+   * rejected the import (should not happen if the check step gated
+   * correctly); undefined for a generic failure.
+   */
+  onImportEnd: (blocking?: string[]) => void
+  /** Blocking keys from the last failed import attempt (wizard-held). */
+  blockingError: string[] | null
 }
 
 export function ReviewStep({
@@ -160,6 +171,9 @@ export function ReviewStep({
   csvText,
   genderOverrides,
   onBack,
+  onImportStart,
+  onImportEnd,
+  blockingError,
 }: ReviewStepProps) {
   const t = useTranslations("dashboard.people.import.review")
   const tImport = useTranslations("dashboard.people.import")
@@ -172,15 +186,13 @@ export function ReviewStep({
   const importPayroll = useAction(api.people.import.importPayroll)
 
   const [isSubmitting, setIsSubmitting] = useState(false)
-  // Returned when ok:false (should not happen if check step gated correctly).
-  const [blockingError, setBlockingError] = useState<string[] | null>(null)
 
   const previewRows = buildPreviewRows(parsed, mapping)
   const columnMap = buildColumnMap(mapping, parsed.headers)
 
   async function handleConfirm() {
     setIsSubmitting(true)
-    setBlockingError(null)
+    onImportStart()
     try {
       // Convert the ergonomic record to the Convex array-of-pairs Plan D expects.
       // Omit the arg entirely when there is nothing to override.
@@ -200,10 +212,11 @@ export function ReviewStep({
         router.push("/people")
       } else {
         // Required fields were not mapped — surface the blocking list.
-        setBlockingError(result.validation.blocking)
+        onImportEnd(result.validation.blocking)
       }
     } catch {
       toast.error(tToast("error"))
+      onImportEnd()
     } finally {
       setIsSubmitting(false)
     }

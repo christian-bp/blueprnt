@@ -95,6 +95,19 @@ const OK_RESULT = {
   },
 }
 
+const BLOCKED_RESULT = {
+  ok: false,
+  peopleImported: 0,
+  salariesImported: 0,
+  skippedRows: 0,
+  validation: {
+    readiness: [],
+    blocking: ["basicMonthly"],
+    warnings: [],
+    issues: [],
+  },
+}
+
 // ---------------------------------------------------------------------------
 // Render helper
 // ---------------------------------------------------------------------------
@@ -105,12 +118,18 @@ function renderReviewStep({
   csvText = CSV_TEXT,
   genderOverrides = {},
   onBack = vi.fn(),
+  onImportStart = vi.fn(),
+  onImportEnd = vi.fn(),
+  blockingError = null,
 }: {
   parsed?: ParsedCsv
   mapping?: Record<string, number>
   csvText?: string
   genderOverrides?: Record<string, "Man" | "Kvinna">
   onBack?: () => void
+  onImportStart?: () => void
+  onImportEnd?: (blocking?: string[]) => void
+  blockingError?: string[] | null
 } = {}) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
@@ -120,6 +139,9 @@ function renderReviewStep({
         csvText={csvText}
         genderOverrides={genderOverrides}
         onBack={onBack}
+        onImportStart={onImportStart}
+        onImportEnd={onImportEnd}
+        blockingError={blockingError}
       />
     </NextIntlClientProvider>
   )
@@ -224,6 +246,9 @@ describe("ReviewStep — preview", () => {
           mapping={MAPPING}
           csvText={`${HEADERS.join(",")}\nE003,Analyst,,45000,100,SEK`}
           onBack={vi.fn()}
+          onImportStart={vi.fn()}
+          onImportEnd={vi.fn()}
+          blockingError={null}
           genderOverrides={{}}
         />
       </NextIntlClientProvider>
@@ -336,6 +361,19 @@ describe("ReviewStep — confirm (success)", () => {
       expect(pushMock).toHaveBeenCalledWith("/people")
     })
   })
+
+  it("signals onImportStart when confirm is clicked (wizard shows the importing screen)", async () => {
+    importPayrollMock.mockResolvedValueOnce(OK_RESULT)
+    const onImportStart = vi.fn()
+    renderReviewStep({ onImportStart })
+
+    fireEvent.click(screen.getByTestId("confirm-button"))
+
+    expect(onImportStart).toHaveBeenCalledOnce()
+    await waitFor(() => {
+      expect(pushMock).toHaveBeenCalledWith("/people")
+    })
+  })
 })
 
 // ---------------------------------------------------------------------------
@@ -359,103 +397,68 @@ describe("ReviewStep — confirm (failure)", () => {
     })
   })
 
-  it("shows a blocking error alert when ok:false", async () => {
-    importPayrollMock.mockResolvedValueOnce({
-      ok: false,
-      peopleImported: 0,
-      salariesImported: 0,
-      skippedRows: 0,
-      validation: {
-        readiness: [],
-        blocking: ["basicMonthly"],
-        warnings: [],
-        issues: [],
-      },
-    })
-    renderReviewStep()
+  it("signals onImportEnd with the blocking keys when ok:false", async () => {
+    importPayrollMock.mockResolvedValueOnce(BLOCKED_RESULT)
+    const onImportEnd = vi.fn()
+    renderReviewStep({ onImportEnd })
 
     fireEvent.click(screen.getByTestId("confirm-button"))
 
     await waitFor(() => {
-      expect(screen.getByTestId("blocking-error")).toBeDefined()
+      expect(onImportEnd).toHaveBeenCalledWith(["basicMonthly"])
     })
   })
 
-  it("shows the generic blockingTitle heading (not a raw field key) when ok:false", async () => {
-    importPayrollMock.mockResolvedValueOnce({
-      ok: false,
-      peopleImported: 0,
-      salariesImported: 0,
-      skippedRows: 0,
-      validation: {
-        readiness: [],
-        blocking: ["basicMonthly"],
-        warnings: [],
-        issues: [],
-      },
-    })
-    renderReviewStep()
-
-    fireEvent.click(screen.getByTestId("confirm-button"))
-
-    await waitFor(() => {
-      const alert = screen.getByTestId("blocking-error")
-      // Title must be the generic blockingTitle, not a raw field key.
-      expect(alert.textContent).toContain(
-        messages.dashboard.people.import.review.blockingTitle
-      )
-      // The blocking field must render as a localized label, not the raw key.
-      expect(alert.textContent).toContain(
-        messages.dashboard.people.import.fields.basicMonthly
-      )
-      expect(alert.textContent).not.toContain("basicMonthly")
-    })
+  it("renders the blocking error alert from the blockingError prop", () => {
+    renderReviewStep({ blockingError: ["basicMonthly"] })
+    const alert = screen.getByTestId("blocking-error")
+    // Title must be the generic blockingTitle, not a raw field key.
+    expect(alert.textContent).toContain(
+      messages.dashboard.people.import.review.blockingTitle
+    )
+    // The blocking field must render as a localized label, not the raw key.
+    expect(alert.textContent).toContain(
+      messages.dashboard.people.import.fields.basicMonthly
+    )
+    expect(alert.textContent).not.toContain("basicMonthly")
   })
 
   it("does not call toast.error when ok:false (server-side blocking is not a thrown error)", async () => {
-    importPayrollMock.mockResolvedValueOnce({
-      ok: false,
-      peopleImported: 0,
-      salariesImported: 0,
-      skippedRows: 0,
-      validation: {
-        readiness: [],
-        blocking: ["basicMonthly"],
-        warnings: [],
-        issues: [],
-      },
-    })
-    renderReviewStep()
+    importPayrollMock.mockResolvedValueOnce(BLOCKED_RESULT)
+    const onImportEnd = vi.fn()
+    renderReviewStep({ onImportEnd })
 
     fireEvent.click(screen.getByTestId("confirm-button"))
 
     await waitFor(() => {
-      expect(screen.getByTestId("blocking-error")).toBeDefined()
+      expect(onImportEnd).toHaveBeenCalledOnce()
     })
     expect(toast.error).not.toHaveBeenCalled()
   })
 
   it("does not navigate on ok:false", async () => {
-    importPayrollMock.mockResolvedValueOnce({
-      ok: false,
-      peopleImported: 0,
-      salariesImported: 0,
-      skippedRows: 0,
-      validation: {
-        readiness: [],
-        blocking: ["basicMonthly"],
-        warnings: [],
-        issues: [],
-      },
-    })
-    renderReviewStep()
+    importPayrollMock.mockResolvedValueOnce(BLOCKED_RESULT)
+    const onImportEnd = vi.fn()
+    renderReviewStep({ onImportEnd })
 
     fireEvent.click(screen.getByTestId("confirm-button"))
 
     await waitFor(() => {
-      expect(screen.getByTestId("blocking-error")).toBeDefined()
+      expect(onImportEnd).toHaveBeenCalledOnce()
     })
     expect(pushMock).not.toHaveBeenCalled()
+  })
+
+  it("signals onImportEnd without blocking keys when the action throws", async () => {
+    importPayrollMock.mockRejectedValueOnce(new Error("network error"))
+    const onImportEnd = vi.fn()
+    renderReviewStep({ onImportEnd })
+
+    fireEvent.click(screen.getByTestId("confirm-button"))
+
+    await waitFor(() => {
+      expect(onImportEnd).toHaveBeenCalledWith()
+    })
   })
 })
 
@@ -496,6 +499,9 @@ describe("ReviewStep — fractional FTE preview", () => {
           mapping={fracMapping}
           csvText={`${fracHeaders.join(",")}\n${fracRows.map((r) => r.join(",")).join("\n")}`}
           onBack={vi.fn()}
+          onImportStart={vi.fn()}
+          onImportEnd={vi.fn()}
+          blockingError={null}
           genderOverrides={{}}
         />
       </NextIntlClientProvider>
@@ -527,6 +533,9 @@ describe("ReviewStep — gender overrides", () => {
           mapping={MAPPING}
           csvText={CSV_TEXT}
           onBack={vi.fn()}
+          onImportStart={vi.fn()}
+          onImportEnd={vi.fn()}
+          blockingError={null}
           genderOverrides={{ E001: "Kvinna" }}
         />
       </NextIntlClientProvider>

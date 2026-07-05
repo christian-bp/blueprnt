@@ -279,6 +279,10 @@
           "department": "Department",
           "isManager": "Manager"
         },
+        "importing": {
+          "title": "Importing people",
+          "description": "Your people are being imported. Keep this window open until it finishes."
+        },
         "review": {
           "title": "Review and confirm",
           "description": "Check the preview below and confirm to import.",
