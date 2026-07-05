@@ -238,7 +238,7 @@
             "negativeValue": "Negatiivinen palkka-arvo",
             "raggedRow": "Rivillä on väärä määrä sarakkeita"
           },
-          "affectedRows": "{count, plural, one {Rivi {rows} tiedostossasi} other {Rivit {rows} tiedostossasi}}",
+          "affectedRows": "{count, plural, one {# rivi tiedostossasi:} other {# riviä tiedostossasi:}}",
           "reupload": "Lataa korjattu tiedosto",
           "cannotProceed": "Korjaa yllaolevat pakolliset kentat jatkaaksesi.",
           "fileWarnings": "Tiedostovaroitukset",

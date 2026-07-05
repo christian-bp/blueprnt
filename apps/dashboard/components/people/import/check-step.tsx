@@ -24,6 +24,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@workspace/ui/components/alert"
+import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { useTranslations } from "next-intl"
 import { useEffect, useMemo, useRef } from "react"
@@ -63,25 +64,19 @@ export function fileRowNumber(dataRowIndex: number): number {
   return dataRowIndex + 2
 }
 
-/** Group issues by code, collecting the affected file-row numbers. */
+/** Group issues by code, collecting the affected file rows (deduplicated:
+ *  a row can carry the same issue twice, e.g. two ambiguous date columns). */
 function groupIssues(issues: RowIssue[]) {
-  const groups = new Map<RowIssueCode, { count: number; rows: number[] }>()
+  const groups = new Map<RowIssueCode, Set<number>>()
   for (const issue of issues) {
-    const existing = groups.get(issue.code)
-    if (existing) {
-      existing.count += 1
-      existing.rows.push(fileRowNumber(issue.row))
-    } else {
-      groups.set(issue.code, { count: 1, rows: [fileRowNumber(issue.row)] })
+    let rows = groups.get(issue.code)
+    if (rows === undefined) {
+      rows = new Set()
+      groups.set(issue.code, rows)
     }
+    rows.add(fileRowNumber(issue.row))
   }
   return groups
-}
-
-/** Format the affected-rows list, eliding beyond MAX_LISTED_ROWS. */
-function formatRows(rows: number[]): string {
-  const listed = rows.slice(0, MAX_LISTED_ROWS).join(", ")
-  return rows.length > MAX_LISTED_ROWS ? `${listed}, …` : listed
 }
 
 // ---------------------------------------------------------------------------
@@ -195,6 +190,43 @@ export function CheckStep({
   useEffect(() => {
     onValidatedRef.current(isBlocking, issueCount)
   }, [isBlocking, issueCount])
+
+  // One list entry per issue code: the label on top, then the affected file
+  // rows as monospace chips (easier to scan than a comma-separated sentence).
+  function renderIssueGroups(
+    groups: Map<RowIssueCode, Set<number>>,
+    testidPrefix: string
+  ) {
+    return (
+      <ul className="mt-3 flex flex-col gap-3">
+        {Array.from(groups.entries()).map(([code, rowSet]) => {
+          const rows = Array.from(rowSet)
+          return (
+            <li
+              key={code}
+              className="flex flex-col gap-1.5"
+              data-testid={`${testidPrefix}-${code}`}
+            >
+              <span className="font-medium">
+                {tCheck(`issue.${code}` as Parameters<typeof tCheck>[0])}
+              </span>
+              <span className="flex flex-wrap items-center gap-1">
+                <span>{tCheck("affectedRows", { count: rows.length })}</span>
+                {rows.slice(0, MAX_LISTED_ROWS).map((row) => (
+                  <Badge key={row} variant="outline" className="font-mono">
+                    {row}
+                  </Badge>
+                ))}
+                {rows.length > MAX_LISTED_ROWS && (
+                  <span aria-hidden="true">…</span>
+                )}
+              </span>
+            </li>
+          )
+        })}
+      </ul>
+    )
+  }
 
   // The status column for one field-coverage row.
   function rowStatus(entry: { mapped: boolean; tier: FieldTier }) {
@@ -359,21 +391,7 @@ export function CheckStep({
           <AlertTitle>{tCheck("issuesHeading")}</AlertTitle>
           <AlertDescription>
             <p>{tCheck("issuesHelp")}</p>
-            <ul className="mt-2 list-disc pl-4">
-              {Array.from(hardGroups.entries()).map(([code, group]) => (
-                <li key={code} data-testid={`issue-group-${code}`}>
-                  <span className="font-medium">
-                    {tCheck(`issue.${code}` as Parameters<typeof tCheck>[0])}
-                  </span>{" "}
-                  <span>
-                    {tCheck("affectedRows", {
-                      count: group.count,
-                      rows: formatRows(group.rows),
-                    })}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            {renderIssueGroups(hardGroups, "issue-group")}
             <Button
               type="button"
               variant="outline"
@@ -405,21 +423,7 @@ export function CheckStep({
           <AlertTitle>{tCheck("noticesHeading")}</AlertTitle>
           <AlertDescription>
             <p>{tCheck("noticesHelp")}</p>
-            <ul className="mt-2 list-disc pl-4">
-              {Array.from(noticeGroups.entries()).map(([code, group]) => (
-                <li key={code} data-testid={`notice-group-${code}`}>
-                  <span className="font-medium">
-                    {tCheck(`issue.${code}` as Parameters<typeof tCheck>[0])}
-                  </span>{" "}
-                  <span>
-                    {tCheck("affectedRows", {
-                      count: group.count,
-                      rows: formatRows(group.rows),
-                    })}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            {renderIssueGroups(noticeGroups, "notice-group")}
           </AlertDescription>
         </Alert>
       )}

@@ -235,11 +235,14 @@ describe("CheckStep — data quality issues", () => {
     expect(issuesSection.textContent).toContain("2")
   })
 
-  it("lists affected rows as file row numbers (header on row 1)", () => {
+  it("lists affected rows as file-row-number chips (header on row 1)", () => {
     renderCheckStep({ parsed: DUPLICATE_PARSED, mapping: DUPLICATE_MAPPING })
     const group = screen.getByTestId("issue-group-duplicateId")
     // Data rows 0 and 1 sit on file rows 2 and 3 (row 1 is the header).
-    expect(group.textContent).toContain("2, 3")
+    const chips = Array.from(group.querySelectorAll('[data-slot="badge"]')).map(
+      (b) => b.textContent
+    )
+    expect(chips).toEqual(["2", "3"])
   })
 
   it("offers a re-upload shortcut that jumps back to the upload step", () => {

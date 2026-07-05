@@ -238,7 +238,7 @@
             "negativeValue": "Negativ lønværdi",
             "raggedRow": "Rækken har det forkerte antal kolonner"
           },
-          "affectedRows": "{count, plural, one {Række {rows} i din fil} other {Rækkerne {rows} i din fil}}",
+          "affectedRows": "{count, plural, one {# række i din fil:} other {# rækker i din fil:}}",
           "reupload": "Upload en rettet fil",
           "cannotProceed": "Ret de obligatoriske felter ovenfor for at fortsaette.",
           "fileWarnings": "Filadvarsler",

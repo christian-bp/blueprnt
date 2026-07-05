@@ -243,7 +243,7 @@
             "negativeValue": "Negative salary value",
             "raggedRow": "Row has the wrong number of columns"
           },
-          "affectedRows": "{count, plural, one {Row {rows} in your file} other {Rows {rows} in your file}}",
+          "affectedRows": "{count, plural, one {# row in your file:} other {# rows in your file:}}",
           "reupload": "Upload a corrected file",
           "cannotProceed": "Fix the required fields above to continue.",
           "fileWarnings": "File warnings",

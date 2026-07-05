@@ -238,7 +238,7 @@
             "negativeValue": "Negativt lönevärde",
             "raggedRow": "Raden har fel antal kolumner"
           },
-          "affectedRows": "{count, plural, one {Rad {rows} i din fil} other {Raderna {rows} i din fil}}",
+          "affectedRows": "{count, plural, one {# rad i din fil:} other {# rader i din fil:}}",
           "reupload": "Ladda upp en korrigerad fil",
           "cannotProceed": "Åtgärda de obligatoriska fälten ovan för att fortsätta.",
           "fileWarnings": "Filvarningar",
