@@ -109,7 +109,7 @@ export function UploadStep({
           "flex w-full cursor-pointer flex-col items-center gap-3 rounded-xl border-2 border-dashed p-8 text-center transition-colors",
           isDragOver
             ? "border-brand bg-brand/5"
-            : "border-border hover:border-brand/40 hover:bg-muted/30",
+            : "border-border hover:border-brand/40 hover:bg-brand/10",
         ].join(" ")}
         onClick={() => inputRef.current?.click()}
         onKeyDown={(e) => {
