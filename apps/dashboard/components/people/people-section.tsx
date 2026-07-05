@@ -98,23 +98,14 @@ export function PeopleSection() {
     </Button>
   )
 
-  const classifyAction = (
-    <Button asChild variant="outline">
-      <Link href="/people/classify">{t("classifyCta")}</Link>
-    </Button>
-  )
-
   return (
     <div className="space-y-4">
       <PageHeader
         title={t("heading")}
         description={t("description")}
-        action={
-          <div className="flex items-center gap-2">
-            {classifyAction}
-            {importAction}
-          </div>
-        }
+        // Classification now lives on its own header tab (PeopleTabs), so the
+        // header keeps a single primary action.
+        action={importAction}
       />
 
       {people === undefined ||

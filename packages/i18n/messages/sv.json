@@ -168,7 +168,10 @@
         "pending": "Väntande",
         "unclassified": "Oklassificerad"
       },
-      "classifyCta": "Klassificera anställda",
+      "tabs": {
+        "people": "Personer",
+        "classify": "Klassificera"
+      },
       "gender": {
         "Man": "Man",
         "Kvinna": "Kvinna"

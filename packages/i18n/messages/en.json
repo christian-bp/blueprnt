@@ -168,7 +168,10 @@
         "pending": "Pending",
         "unclassified": "Unclassified"
       },
-      "classifyCta": "Classify employees",
+      "tabs": {
+        "people": "People",
+        "classify": "Classify"
+      },
       "gender": {
         "Man": "Man",
         "Kvinna": "Woman"

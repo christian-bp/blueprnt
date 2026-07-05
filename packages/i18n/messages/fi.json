@@ -168,7 +168,10 @@
         "pending": "Odottaa",
         "unclassified": "Luokittelematon"
       },
-      "classifyCta": "Luokittele työntekijät",
+      "tabs": {
+        "people": "Henkilöt",
+        "classify": "Luokittele"
+      },
       "gender": {
         "Man": "Mies",
         "Kvinna": "Nainen"

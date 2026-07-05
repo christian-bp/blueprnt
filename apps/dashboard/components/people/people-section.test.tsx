@@ -246,13 +246,6 @@ describe("PeopleSection", () => {
     expect(screen.getByText("Employee #42")).toBeDefined()
   })
 
-  it("links the Classify employees action to /people/classify", () => {
-    onQuery((ref) => queryRouter(ref))
-    renderSection()
-    const link = screen.getByRole("link", { name: m.classifyCta })
-    expect((link as HTMLAnchorElement).href).toContain("/people/classify")
-  })
-
   it("keeps the Import link in the header action area", () => {
     onQuery((ref) => queryRouter(ref))
     renderSection()

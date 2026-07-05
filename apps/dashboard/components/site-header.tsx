@@ -8,6 +8,7 @@ import { AccountTabs } from "@/components/account/account-tabs"
 import { AdminTabs } from "@/components/admin/admin-tabs"
 import { ModelTabs } from "@/components/model/model-tabs"
 import { OrganizationTabs } from "@/components/organization/organization-tabs"
+import { PeopleTabs } from "@/components/people/people-tabs"
 import { SectionTabs } from "@/components/section-tabs"
 
 export function SiteHeader() {
@@ -17,11 +18,12 @@ export function SiteHeader() {
   const [section] = pathname.split("/").filter(Boolean)
 
   // The header carries the section identity: the Work section (/work, /roles),
-  // the Admin section, and the Model section (/model, /model/weighting) get
-  // switchable tabs; the other top-level sections get a plain title.
+  // the Admin, Model, and People sections get switchable tabs; the other
+  // top-level sections get a plain title.
   const inWorkSection = section === "work" || section === "roles"
   const inAdminSection = section === "admin"
   const inModelSection = section === "model"
+  const inPeopleSection = section === "people"
   const inAccountSection = section === "account"
   const inOrganizationSection = section === "organization"
   const sectionTitle = t("nav.home")
@@ -45,6 +47,8 @@ export function SiteHeader() {
           <AdminTabs />
         ) : inModelSection ? (
           <ModelTabs />
+        ) : inPeopleSection ? (
+          <PeopleTabs />
         ) : inAccountSection ? (
           <AccountTabs />
         ) : inOrganizationSection ? (

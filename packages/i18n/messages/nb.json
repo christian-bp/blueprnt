@@ -168,7 +168,10 @@
         "pending": "Venter",
         "unclassified": "Uklassifisert"
       },
-      "classifyCta": "Klassifiser ansatte",
+      "tabs": {
+        "people": "Personer",
+        "classify": "Klassifiser"
+      },
       "gender": {
         "Man": "Mann",
         "Kvinna": "Kvinne"

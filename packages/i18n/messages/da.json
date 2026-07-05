@@ -168,7 +168,10 @@
         "pending": "Afventer",
         "unclassified": "Uklassificeret"
       },
-      "classifyCta": "Klassificér medarbejdere",
+      "tabs": {
+        "people": "Personer",
+        "classify": "Klassificér"
+      },
       "gender": {
         "Man": "Mand",
         "Kvinna": "Kvinde"
