@@ -52,6 +52,10 @@ interface WizardState {
   // Per-row manual gender assignments collected on the check step,
   // keyed by trimmed externalRef. Forwarded to importPayroll as genderOverrides.
   genderOverrides: Record<string, "Man" | "Kvinna">
+  // Armed by the check step's fix-and-reupload shortcut: after the corrected
+  // file parses (with unchanged headers), the wizard returns straight to the
+  // check step so the fresh validation is visible immediately.
+  returnToCheck: boolean
   validation: unknown | null
   result: unknown | null
 }
@@ -82,6 +86,7 @@ export function ImportWizard() {
     checkBlocking: null,
     checkIssueCount: 0,
     genderOverrides: {},
+    returnToCheck: false,
     validation: null,
     result: null,
   })
@@ -176,6 +181,15 @@ export function ImportWizard() {
                     csvText,
                     fileName: file.name,
                     fileSize: file.size,
+                    // Came here via fix-and-reupload and the mapping still
+                    // applies (headers unchanged): jump straight back to the
+                    // check step so the re-test is visible immediately. A
+                    // changed-headers file needs the map step first.
+                    step:
+                      prev.returnToCheck && !headersChanged
+                        ? STEP_CHECK
+                        : prev.step,
+                    returnToCheck: false,
                     ...(headersChanged
                       ? {
                           mapping: null,
@@ -198,6 +212,7 @@ export function ImportWizard() {
                   checkBlocking: null,
                   checkIssueCount: 0,
                   genderOverrides: {},
+                  returnToCheck: false,
                 }))
               }
             />
@@ -249,7 +264,11 @@ export function ImportWizard() {
                   mapping={state.mapping}
                   csvText={state.csvText}
                   onReupload={() =>
-                    setState((prev) => ({ ...prev, step: STEP_UPLOAD }))
+                    setState((prev) => ({
+                      ...prev,
+                      step: STEP_UPLOAD,
+                      returnToCheck: true,
+                    }))
                   }
                   genderOverrides={state.genderOverrides}
                   onGenderOverridesChange={(genderOverrides) =>

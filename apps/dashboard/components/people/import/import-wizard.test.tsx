@@ -296,7 +296,7 @@ E001,Product Manager,Man,70000`
     })
   }
 
-  it("clears the quality issues and unblocks after a corrected file is re-uploaded", async () => {
+  it("returns to the check step and re-validates after a corrected file is re-uploaded", async () => {
     renderWizard()
 
     // Upload the broken file and walk to the check step.
@@ -315,17 +315,38 @@ E001,Product Manager,Man,70000`
     fireEvent.click(screen.getByTestId("reupload-button"))
     expect(screen.getByRole("region")).toBeDefined()
 
-    // Upload the corrected file (same headers, duplicate fixed).
-    await dropCsv(CSV_A, "fixed.csv")
-    clickNext() // -> map
-    clickNext() // -> check
-
-    // The check step must re-validate the NEW file: no issues, Next enabled.
+    // Upload the corrected file (same headers, duplicate fixed). The wizard
+    // returns straight to the check step, which re-validates the new file:
+    // no issues, ready, Next enabled.
+    const dropZone = screen.getByRole("region")
+    const file = new File([CSV_A], "fixed.csv", { type: "text/csv" })
+    fireEvent.drop(dropZone, { dataTransfer: { files: [file] } })
+    await waitFor(() => {
+      expect(screen.getByTestId("ready-indicator")).toBeDefined()
+    })
     expect(screen.queryByTestId("issues-section")).toBeNull()
-    expect(screen.getByTestId("ready-indicator")).toBeDefined()
     await waitFor(() => {
       expect(nextButton()).toHaveProperty("disabled", false)
     })
+  })
+
+  it("stays on the upload step when the corrected file has different headers", async () => {
+    renderWizard()
+
+    await dropCsv(CSV_A_BROKEN, "broken.csv")
+    clickNext() // -> map
+    clickNext() // -> check
+    expect(screen.getByTestId("issues-section")).toBeDefined()
+
+    fireEvent.click(screen.getByTestId("reupload-button"))
+
+    // Different headers invalidate the mapping: the user must pass the map
+    // step again, so no auto-return to check.
+    await dropCsv(CSV_B, "other.csv")
+    expect(screen.getByRole("region")).toBeDefined()
+    expect(
+      screen.queryByText(messages.dashboard.people.import.check.title)
+    ).toBeNull()
   })
 })
 
