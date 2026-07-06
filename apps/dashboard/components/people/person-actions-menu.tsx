@@ -44,7 +44,9 @@ export function PersonActionsMenu({
             <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        {/* w-auto: size to the item labels, not the icon trigger's width
+            (see salary-row-actions.tsx). */}
+        <DropdownMenuContent align="end" className="w-auto">
           <DropdownMenuItem
             variant="destructive"
             onSelect={() => setEraseOpen(true)}

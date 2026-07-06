@@ -50,7 +50,10 @@ export function SalaryRowActions({
             <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        {/* w-auto: the vendored content pins itself to the trigger's width,
+            which for an icon trigger is the 128px min floor and wraps the
+            item label; sizing to content keeps it on one line. */}
+        <DropdownMenuContent align="end" className="w-auto">
           <DropdownMenuItem
             variant="destructive"
             onSelect={() => setConfirmOpen(true)}
