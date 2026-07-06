@@ -41,10 +41,8 @@ describe("AddSalaryDialog", () => {
       target: { value: "50000" },
     })
     fireEvent.blur(screen.getByLabelText("basicMonthly"))
-    fireEvent.change(screen.getByLabelText("currency"), {
-      target: { value: "SEK" },
-    })
-    fireEvent.blur(screen.getByLabelText("currency"))
+    // Currency is a select defaulting to SEK; the payload assertion below
+    // verifies it reaches the mutation.
 
     const form = screen
       .getByLabelText("payYear")

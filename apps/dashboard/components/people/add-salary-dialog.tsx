@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import { PAY_COMPONENT_KINDS } from "@workspace/constants"
+import { CURRENCY_KEYS, PAY_COMPONENT_KINDS } from "@workspace/constants"
 import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
@@ -41,7 +41,8 @@ import type { ValidationT } from "@/lib/validation"
 
 // Zod factory (messages via i18n). Number fields are validated as numbers
 // (inputs use valueAsNumber so the value reaches the schema as a number
-// already). Currency is a required non-empty string. Components are an array
+// already). Currency is one of the org-selectable currencies (CURRENCY_KEYS,
+// the same set the organization picker offers). Components are an array
 // of { kind, monthlyAmount } rows matching the payRecords component shape.
 function makeSalarySchema(t: ValidationT) {
   return z.object({
@@ -51,7 +52,7 @@ function makeSalarySchema(t: ValidationT) {
       .min(2000)
       .max(2100),
     basicMonthly: z.number({ error: t("required") }).nonnegative(),
-    currency: z.string().trim().min(1, t("required")),
+    currency: z.enum(CURRENCY_KEYS, { error: t("required") }),
     components: z.array(
       z.object({
         kind: z.string().min(1, t("required")),
@@ -181,9 +182,28 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t("currency")}</FormLabel>
-                      <FormControl>
-                        <Input aria-label={t("currency")} {...field} />
-                      </FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <FormControl>
+                          <SelectTrigger
+                            ref={field.ref}
+                            onBlur={field.onBlur}
+                            aria-label={t("currency")}
+                            className="w-full"
+                          >
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {CURRENCY_KEYS.map((currency) => (
+                            <SelectItem key={currency} value={currency}>
+                              {currency}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
