@@ -3,7 +3,12 @@ import { totalMonthlyComp } from "@workspace/constants"
 import type { Doc, Id } from "../_generated/dataModel"
 import type { QueryCtx } from "../_generated/server"
 import { internalMutation } from "../_generated/server"
-import { AUDIT_EVENTS, buildCreateChanges, logAudit } from "../lib/audit"
+import {
+  AUDIT_EVENTS,
+  buildChanges,
+  buildCreateChanges,
+  logAudit,
+} from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 
@@ -115,6 +120,45 @@ export const setSalary = orgMutation({
     })
 
     return payRecordId
+  },
+})
+
+// Hard-delete a single pay record (correcting a wrong year or a bad import
+// row). Same permission tier as setSalary: whoever may enter a salary may
+// correct one.
+//
+// Audit: pay.salaryDeleted with the same AMOUNT-FREE payload rule as
+// salarySet (GDPR: the trail records THAT a person/year/source record was
+// removed, never the value); the diff runs from the snapshot to null.
+export const deleteSalary = orgMutation({
+  args: { payRecordId: v.id("payRecords") },
+  returns: v.null(),
+  handler: async (ctx, { payRecordId }) => {
+    const record = await ctx.db.get(payRecordId)
+    if (record === null || record.orgId !== ctx.orgId) {
+      throw appError(ERROR_CODES.notFound)
+    }
+
+    await ctx.db.delete(payRecordId)
+
+    const snapshot: Record<string, unknown> = {
+      payYear: record.payYear,
+      source: record.source,
+      currency: record.currency,
+    }
+    await ctx.audit.log({
+      type: AUDIT_EVENTS.salaryDeleted,
+      payload: {
+        personId: record.personId,
+        changes: buildChanges(
+          snapshot,
+          { payYear: null, source: null, currency: null },
+          [...PAY_AUDIT_FIELDS]
+        ),
+      },
+    })
+
+    return null
   },
 })
 

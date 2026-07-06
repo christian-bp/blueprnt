@@ -136,6 +136,7 @@
       "membershipRemoved": "Borttagen från organisationen",
       "classificationConfirmed": "Klassificering bekräftad",
       "salarySaved": "Lönen sparades",
+      "salaryDeleted": "Lönepost borttagen",
       "personErased": "Anställd raderad"
     },
     "accountMenu": "Kontomeny",
@@ -340,18 +341,22 @@
         "noAssignment": "Inte klassificerad än.",
         "salaryHeading": "Lönehistorik",
         "salaryEmpty": "Ingen lön registrerad än.",
+        "salaryRowActions": "Åtgärder för lönepost",
+        "deleteSalaryCta": "Ta bort lönepost",
+        "deleteSalaryTitle": "Ta bort löneposten för {year}",
+        "deleteSalaryDescription": "Detta tar bort posten ur lönehistoriken. Det kan inte ångras.",
+        "deleteSalaryConfirm": "Ta bort",
+        "deleteSalaryCancel": "Avbryt",
         "salaryColumns": {
           "payYear": "År",
           "basicMonthly": "Fast månadslön",
           "total": "Total månadsersättning",
-          "source": "Källa",
           "effectiveAt": "Gäller från"
-        },
-        "sourceImport": "Import",
-        "sourceManual": "Manuell"
+        }
       },
       "salaryForm": {
         "addTitle": "Lägg till lön",
+        "addDescription": "Lägg till en lönepost i den anställdas historik.",
         "payYear": "Löneår",
         "basicMonthly": "Fast månadslön",
         "currency": "Valuta",
@@ -362,6 +367,7 @@
         "componentAmount": "Månadsbelopp",
         "effectiveAt": "Gäller från",
         "submit": "Spara lön",
+        "cancel": "Avbryt",
         "componentKinds": {
           "variable": "Rörlig ersättning",
           "bonus": "Bonus",
@@ -595,6 +601,7 @@
         "assignmentSet": "Tilldelning uppdaterad",
         "classificationSuggested": "Klassificeringsförslag beräknade",
         "paySalarySet": "Lön registrerad",
+        "paySalaryDeleted": "Lönepost borttagen",
         "payMappingSaved": "Lönemappning sparad",
         "peopleImported": "Personer importerade"
       },

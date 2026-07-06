@@ -579,3 +579,75 @@ describe("GDPR: pay.salarySet audit payload is amount-free", () => {
     })
   })
 })
+
+describe("deleteSalary", () => {
+  it("hard-deletes the record and writes an amount-free audit row", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const personId = await seedPerson(orgId, asAdmin)
+    const payRecordId = await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId,
+      payYear: 2024,
+      basicMonthly: 50000,
+      currency: "SEK",
+      components: [],
+    })
+
+    await asAdmin.mutation(api.people.pay.deleteSalary, {
+      orgId,
+      payRecordId,
+    })
+
+    await t.run(async (ctx) => {
+      expect(await ctx.db.get(payRecordId)).toBeNull()
+
+      const auditRows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "pay.salaryDeleted")
+        )
+        .collect()
+      expect(auditRows).toHaveLength(1)
+      const payload = auditRows[0]?.payload as Record<string, unknown>
+      expect(payload?.personId).toBe(personId)
+      const changes = payload?.changes as Record<
+        string,
+        { from: unknown; to: unknown }
+      >
+      expect(changes?.payYear).toEqual({ from: 2024, to: null })
+      // GDPR: never the amounts.
+      expect(changes).not.toHaveProperty("basicMonthly")
+    })
+  })
+
+  it("rejects a cross-org payRecordId", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const { orgId: otherOrgId, asAdmin: asOtherAdmin } = await seedOrg(
+      t,
+      "hr@other.se"
+    )
+    const personId = await seedPerson(orgId, asAdmin)
+    const payRecordId = await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId,
+      payYear: 2024,
+      basicMonthly: 50000,
+      currency: "SEK",
+      components: [],
+    })
+
+    await expect(
+      asOtherAdmin.mutation(api.people.pay.deleteSalary, {
+        orgId: otherOrgId,
+        payRecordId,
+      })
+    ).rejects.toThrow()
+
+    // The record survives the failed cross-org attempt.
+    await t.run(async (ctx) => {
+      expect(await ctx.db.get(payRecordId)).not.toBeNull()
+    })
+  })
+})

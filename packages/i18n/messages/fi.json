@@ -136,6 +136,7 @@
       "membershipRemoved": "Poistettu organisaatiosta",
       "classificationConfirmed": "Luokittelu vahvistettu",
       "salarySaved": "Palkka tallennettu",
+      "salaryDeleted": "Palkkatietue poistettu",
       "personErased": "Työntekijä poistettu"
     },
     "accountMenu": "Tilivalikko",
@@ -340,18 +341,22 @@
         "noAssignment": "Ei vielä luokiteltu.",
         "salaryHeading": "Palkkahistoria",
         "salaryEmpty": "Palkkaa ei ole vielä kirjattu.",
+        "salaryRowActions": "Palkkatietueen toiminnot",
+        "deleteSalaryCta": "Poista palkkatietue",
+        "deleteSalaryTitle": "Poista vuoden {year} palkkatietue",
+        "deleteSalaryDescription": "Tämä poistaa tietueen palkkahistoriasta. Toimintoa ei voi kumota.",
+        "deleteSalaryConfirm": "Poista",
+        "deleteSalaryCancel": "Peruuta",
         "salaryColumns": {
           "payYear": "Vuosi",
           "basicMonthly": "Kiinteä kuukausipalkka",
           "total": "Kokonaiskuukausikorvaus",
-          "source": "Lähde",
           "effectiveAt": "Voimassa alkaen"
-        },
-        "sourceImport": "Tuonti",
-        "sourceManual": "Manuaalinen"
+        }
       },
       "salaryForm": {
         "addTitle": "Lisää palkka",
+        "addDescription": "Lisää palkkatietue työntekijän historiaan.",
         "payYear": "Palkkavuosi",
         "basicMonthly": "Kiinteä kuukausipalkka",
         "currency": "Valuutta",
@@ -362,6 +367,7 @@
         "componentAmount": "Kuukausittainen summa",
         "effectiveAt": "Voimassa alkaen",
         "submit": "Tallenna palkka",
+        "cancel": "Peruuta",
         "componentKinds": {
           "variable": "Muuttuva palkka",
           "bonus": "Bonus",
@@ -595,6 +601,7 @@
         "assignmentSet": "Tehtava paivitetty",
         "classificationSuggested": "Luokitteluehdotukset laskettu",
         "paySalarySet": "Palkka kirjattu",
+        "paySalaryDeleted": "Palkkatietue poistettu",
         "payMappingSaved": "Palkkakartoitus tallennettu",
         "peopleImported": "Henkilot tuotu"
       },

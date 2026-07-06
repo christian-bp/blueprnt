@@ -1,6 +1,18 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react"
-import { describe, expect, it, vi } from "vitest"
-import { SalaryForm } from "./salary-form"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
+import { afterEach, describe, expect, it, vi } from "vitest"
+import { AddSalaryDialog } from "./add-salary-dialog"
+
+afterEach(() => {
+  cleanup()
+  setSalary.mockClear()
+  toastSuccess.mockClear()
+})
 
 const setSalary = vi.hoisted(() => vi.fn().mockResolvedValue("pr_1"))
 const toastSuccess = vi.hoisted(() => vi.fn())
@@ -12,9 +24,14 @@ vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "org_1", name: "Acme", role: "admin" }),
 }))
 
-describe("SalaryForm", () => {
-  it("calls setSalary with the entered basic salary and shows a success toast", async () => {
-    render(<SalaryForm personId={"p1" as never} />)
+describe("AddSalaryDialog", () => {
+  it("opens from the trigger, saves the entered salary, toasts, and closes", async () => {
+    render(<AddSalaryDialog personId={"p1" as never} />)
+
+    // The form lives in a dialog behind the card-header trigger.
+    expect(screen.queryByRole("dialog")).toBeNull()
+    fireEvent.click(screen.getByRole("button", { name: "addTitle" }))
+    expect(screen.getByRole("dialog")).toBeDefined()
 
     fireEvent.change(screen.getByLabelText("payYear"), {
       target: { value: "2026" },
@@ -46,5 +63,17 @@ describe("SalaryForm", () => {
       )
     })
     expect(toastSuccess).toHaveBeenCalledWith("salarySaved")
+    // Success closes the dialog.
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).toBeNull()
+    })
+  })
+
+  it("cancel closes the dialog without saving", () => {
+    render(<AddSalaryDialog personId={"p1" as never} />)
+    fireEvent.click(screen.getByRole("button", { name: "addTitle" }))
+    fireEvent.click(screen.getByRole("button", { name: "cancel" }))
+    expect(screen.queryByRole("dialog")).toBeNull()
+    expect(setSalary).not.toHaveBeenCalled()
   })
 })

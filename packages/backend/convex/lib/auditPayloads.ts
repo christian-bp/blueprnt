@@ -298,6 +298,7 @@ export interface AuditPayloads {
     unmatchedTitles: number
   }
   "pay.salarySet": { personId: string; changes: Changes }
+  "pay.salaryDeleted": { personId: string; changes: Changes }
   "pay.mappingSaved": { orgId: string; changes: Changes }
   "people.imported": {
     peopleCreated: number

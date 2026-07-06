@@ -44,6 +44,7 @@ export const AUDIT_EVENTS = {
   assignmentSet: "assignment.set",
   classificationSuggested: "classification.suggested",
   salarySet: "pay.salarySet",
+  salaryDeleted: "pay.salaryDeleted",
   mappingProfileSaved: "pay.mappingSaved",
   importCompleted: "people.imported",
 } as const

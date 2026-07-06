@@ -20,8 +20,9 @@ import {
 import { useQuery } from "convex/react"
 import { useFormatter, useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
+import { AddSalaryDialog } from "@/components/people/add-salary-dialog"
 import { PersonActionsMenu } from "@/components/people/person-actions-menu"
-import { SalaryForm } from "@/components/people/salary-form"
+import { SalaryRowActions } from "@/components/people/salary-row-actions"
 import { useOrganization } from "@/components/org-context"
 import { type Crumb, PageBreadcrumb } from "@/components/page-breadcrumb"
 import { PageHeader } from "@/components/page-header"
@@ -32,12 +33,12 @@ import {
 import { usePageTitle } from "@/hooks/use-page-title"
 
 // Skeleton shape per salary column, mirroring the real cells (year, two
-// currency-formatted amounts, a short source word).
+// currency-formatted amounts, the row-actions button).
 const SALARY_SKELETON_COLUMNS: TableSkeletonColumn[] = [
   { className: "w-10" },
   { className: "w-20" },
   { className: "w-20" },
-  { className: "w-14" },
+  { className: "ml-auto size-9 rounded-md" },
 ]
 
 // The per-person detail surface: the role-detail layout (a wide profile card
@@ -136,8 +137,9 @@ export function PersonDetail({ publicId }: { publicId: string }) {
         </div>
         <div className="space-y-6">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>{t("salaryHeading")}</CardTitle>
+              <Skeleton className="h-8 w-24 rounded-md" />
             </CardHeader>
             <CardContent>
               <Table>
@@ -146,7 +148,9 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                     <TableHead>{t("salaryColumns.payYear")}</TableHead>
                     <TableHead>{t("salaryColumns.basicMonthly")}</TableHead>
                     <TableHead>{t("salaryColumns.total")}</TableHead>
-                    <TableHead>{t("salaryColumns.source")}</TableHead>
+                    <TableHead>
+                      <span className="sr-only">{t("salaryRowActions")}</span>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableSkeleton rows={3} columns={SALARY_SKELETON_COLUMNS} />
@@ -260,13 +264,16 @@ export function PersonDetail({ publicId }: { publicId: string }) {
         </div>
 
         {/* The salary rail sticks in view while the taller profile scrolls
-            (same anatomy as the role page's evaluation rail). */}
+            (same anatomy as the role page's evaluation rail). The card header
+            carries the add-salary dialog trigger; each row's actions live
+            behind its trailing "..." menu. */}
         <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>{t("salaryHeading")}</CardTitle>
+              <AddSalaryDialog personId={person.personId} />
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent>
               {salary.length === 0 ? (
                 <p className="text-muted-foreground text-sm">
                   {t("salaryEmpty")}
@@ -278,7 +285,9 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                       <TableHead>{t("salaryColumns.payYear")}</TableHead>
                       <TableHead>{t("salaryColumns.basicMonthly")}</TableHead>
                       <TableHead>{t("salaryColumns.total")}</TableHead>
-                      <TableHead>{t("salaryColumns.source")}</TableHead>
+                      <TableHead>
+                        <span className="sr-only">{t("salaryRowActions")}</span>
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -291,18 +300,17 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                         <TableCell className="tabular-nums">
                           {money(record.totalMonthlyComp, record.currency)}
                         </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {record.source === "import"
-                            ? t("sourceImport")
-                            : t("sourceManual")}
+                        <TableCell className="w-8 text-right">
+                          <SalaryRowActions
+                            payRecordId={record.payRecordId}
+                            payYear={record.payYear}
+                          />
                         </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               )}
-
-              <SalaryForm personId={person.personId} />
             </CardContent>
           </Card>
         </div>

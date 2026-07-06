@@ -136,6 +136,7 @@
       "membershipRemoved": "Fjernet fra organisationen",
       "classificationConfirmed": "Klassificering bekræftet",
       "salarySaved": "Løn gemt",
+      "salaryDeleted": "Lønpost slettet",
       "personErased": "Medarbejder slettet"
     },
     "accountMenu": "Kontomenu",
@@ -340,18 +341,22 @@
         "noAssignment": "Ikke klassificeret endnu.",
         "salaryHeading": "Lønhistorik",
         "salaryEmpty": "Ingen løn registreret endnu.",
+        "salaryRowActions": "Handlinger for lønpost",
+        "deleteSalaryCta": "Slet lønpost",
+        "deleteSalaryTitle": "Slet lønposten for {year}",
+        "deleteSalaryDescription": "Dette fjerner posten fra lønhistorikken. Det kan ikke fortrydes.",
+        "deleteSalaryConfirm": "Slet",
+        "deleteSalaryCancel": "Annuller",
         "salaryColumns": {
           "payYear": "År",
           "basicMonthly": "Fast månedsløn",
           "total": "Samlet månedlig kompensation",
-          "source": "Kilde",
           "effectiveAt": "Gælder fra"
-        },
-        "sourceImport": "Import",
-        "sourceManual": "Manuel"
+        }
       },
       "salaryForm": {
         "addTitle": "Tilføj løn",
+        "addDescription": "Tilføj en lønpost til medarbejderens historik.",
         "payYear": "Lønår",
         "basicMonthly": "Fast månedsløn",
         "currency": "Valuta",
@@ -362,6 +367,7 @@
         "componentAmount": "Månedligt beløb",
         "effectiveAt": "Gælder fra",
         "submit": "Gem løn",
+        "cancel": "Annuller",
         "componentKinds": {
           "variable": "Variabel løn",
           "bonus": "Bonus",
@@ -595,6 +601,7 @@
         "assignmentSet": "Tildeling opdateret",
         "classificationSuggested": "Klassifikationsforslag beregnet",
         "paySalarySet": "Lønning registreret",
+        "paySalaryDeleted": "Lønpost slettet",
         "payMappingSaved": "Lønoversigt gemt",
         "peopleImported": "Personer importeret"
       },
