@@ -1,0 +1,46 @@
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_1a9d9fe19ce178 362
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_1a9d9fe19ce178 362
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_1a9d9fe19ce178 362
+packages/backend/convex/people/pay.test.ts
+  s_6bff98b662648b::t_525a15adc3340e 654-766
+packages/backend/convex/people/pay.ts
+  s_6bff98b662648b::t_18be601f6fde3f 272-273,277,289-295,298-307
+  s_6bff98b662648b::t_bcf265ff8bb62e 14
+  s_6bff98b662648b::t_8d2a5c6856986a 41-43,56-70
+apps/dashboard/components/people/person-detail.tsx
+  s_6bff98b662648b::t_c235113201f2f3 151
+  s_6bff98b662648b::t_49b4795bc2fa62 36,41
+  s_6bff98b662648b::t_ac82f023204bc6 327
+  s_6bff98b662648b::t_d96583897ded51 305,321-326,328-337
+  s_6bff98b662648b::t_67e1cc2bd88a6e 190-193
+  s_6bff98b662648b::t_03b6775831bf9e 338
+packages/backend/convex/people/assignments.ts
+  s_6bff98b662648b::t_179520db0bd621 49-64
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_1a9d9fe19ce178 362
+apps/dashboard/components/people/person-detail.test.tsx
+  s_6bff98b662648b::t_ebc5a805c5f1fa 128-130
+  s_6bff98b662648b::t_e03e5a82608afb 134-138
+  s_6bff98b662648b::t_f8550b3c3d67b0 78-80
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_1a9d9fe19ce178 362
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "df33e070325570733e8352b2ab31e6cf341e5de3",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
