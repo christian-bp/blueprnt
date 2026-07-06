@@ -359,6 +359,7 @@
           "payYear": "År",
           "basicMonthly": "Fast månadslön",
           "total": "Total månadsersättning",
+          "role": "Roll",
           "effectiveAt": "Gäller från"
         }
       },

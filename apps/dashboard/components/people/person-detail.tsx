@@ -33,11 +33,12 @@ import {
 import { usePageTitle } from "@/hooks/use-page-title"
 
 // Skeleton shape per salary column, mirroring the real cells (year, two
-// currency-formatted amounts, the row-actions button).
+// currency-formatted amounts, the role/level pair, the row-actions button).
 const SALARY_SKELETON_COLUMNS: TableSkeletonColumn[] = [
   { className: "w-10" },
   { className: "w-20" },
   { className: "w-20" },
+  { className: "w-16" },
   { className: "ml-auto size-9 rounded-md" },
 ]
 
@@ -147,6 +148,7 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                     <TableHead>{t("salaryColumns.payYear")}</TableHead>
                     <TableHead>{t("salaryColumns.basicMonthly")}</TableHead>
                     <TableHead>{t("salaryColumns.total")}</TableHead>
+                    <TableHead>{t("salaryColumns.role")}</TableHead>
                     <TableHead>
                       <span className="sr-only">{t("salaryRowActions")}</span>
                     </TableHead>
@@ -184,6 +186,10 @@ export function PersonDetail({ publicId }: { publicId: string }) {
       ? (roles.find((r) => String(r.roleId) === String(assignment.roleId)) ??
         null)
       : null
+
+  // Role titles for the salary history's role/level join (a missing role,
+  // e.g. deleted, still shows the level alone).
+  const roleTitleById = new Map(roles.map((r) => [String(r.roleId), r.title]))
 
   return (
     <div className="space-y-6">
@@ -296,6 +302,7 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                       <TableHead>{t("salaryColumns.payYear")}</TableHead>
                       <TableHead>{t("salaryColumns.basicMonthly")}</TableHead>
                       <TableHead>{t("salaryColumns.total")}</TableHead>
+                      <TableHead>{t("salaryColumns.role")}</TableHead>
                       <TableHead>
                         <span className="sr-only">{t("salaryRowActions")}</span>
                       </TableHead>
@@ -310,6 +317,24 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                         </TableCell>
                         <TableCell className="tabular-nums">
                           {money(record.totalMonthlyComp, record.currency)}
+                        </TableCell>
+                        {/* The role + level the salary was earned under (the
+                            assignment active at the record's effective time),
+                            so a promotion's before/after stays readable.
+                            Empty when the record predates classification. */}
+                        <TableCell>
+                          {record.assignment !== null && (
+                            <div className="min-w-0 max-w-32">
+                              <p className="truncate">
+                                {roleTitleById.get(
+                                  String(record.assignment.roleId)
+                                ) ?? ""}
+                              </p>
+                              <p className="text-muted-foreground text-xs">
+                                {record.assignment.level}
+                              </p>
+                            </div>
+                          )}
                         </TableCell>
                         <TableCell className="w-8 text-right">
                           <SalaryRowActions

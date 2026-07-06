@@ -11,6 +11,7 @@ import {
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
+import { assignmentActiveAt } from "./assignments"
 
 // The pay audit fields: ONLY non-sensitive fields are captured in the audit
 // trail. Salary amounts (basicMonthly, components) are NEVER included
@@ -37,8 +38,9 @@ const payComponentValidator = v.object({
   monthlyAmount: v.number(),
 })
 
-// Wire shape returned by getSalaryHistory and getCurrentSalary.
-const payRecordShape = v.object({
+// Wire fields shared by getSalaryHistory and getCurrentSalary (one source of
+// truth so the two shapes cannot drift).
+const payRecordFields = {
   payRecordId: v.id("payRecords"),
   personId: v.id("people"),
   payYear: v.number(),
@@ -51,6 +53,21 @@ const payRecordShape = v.object({
   totalMonthlyComp: v.number(),
   effectiveAt: v.number(),
   createdAt: v.number(),
+}
+
+const payRecordShape = v.object(payRecordFields)
+
+// History rows additionally carry the role + level the salary was earned
+// under: the assignment active at the record's effectiveAt, joined on read
+// via assignmentActiveAt (derived, never stored; ADR-0002 spirit). Null when
+// the person had no assignment yet at that time (e.g. salary imported before
+// the first classification).
+const salaryHistoryShape = v.object({
+  ...payRecordFields,
+  assignment: v.union(
+    v.object({ roleId: v.id("roles"), level: v.string() }),
+    v.null()
+  ),
 })
 
 function toPayRecordShape(doc: Doc<"payRecords">) {
@@ -252,11 +269,12 @@ export const appendSalary = internalMutation({
 })
 
 // Returns all pay records for a person ordered by effectiveAt descending
-// (most recent first). Returns an empty array when the person does not belong
+// (most recent first), each joined to the role + level active at its
+// effective time. Returns an empty array when the person does not belong
 // to this org.
 export const getSalaryHistory = orgQuery({
   args: { personId: v.id("people") },
-  returns: v.array(payRecordShape),
+  returns: v.array(salaryHistoryShape),
   handler: async (ctx, { personId }) => {
     const person = await ctx.db.get(personId)
     if (person === null || person.orgId !== ctx.orgId) return []
@@ -268,9 +286,25 @@ export const getSalaryHistory = orgQuery({
       )
       .collect()
 
+    const assignments = await ctx.db
+      .query("personAssignments")
+      .withIndex("by_person", (q) =>
+        q.eq("orgId", ctx.orgId).eq("personId", personId)
+      )
+      .collect()
+
     // Sort most recent effectiveAt first.
     rows.sort((a, b) => b.effectiveAt - a.effectiveAt)
-    return rows.map(toPayRecordShape)
+    return rows.map((row) => {
+      const active = assignmentActiveAt(assignments, row.effectiveAt)
+      return {
+        ...toPayRecordShape(row),
+        assignment:
+          active !== null
+            ? { roleId: active.roleId, level: active.level }
+            : null,
+      }
+    })
   },
 })
 

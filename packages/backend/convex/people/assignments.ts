@@ -46,6 +46,22 @@ function toAssignmentShape(doc: Doc<"personAssignments">) {
   }
 }
 
+// The assignment that was active at a point in time: effectiveAt <= at, and
+// still open or ended after `at`. Pure interval lookup over a person's
+// assignment timeline, exported so the pay history can join each salary
+// record to the role + level it was earned under (derived, never stored:
+// a later or corrected classification re-joins history automatically).
+export function assignmentActiveAt(
+  assignments: readonly Doc<"personAssignments">[],
+  at: number
+): Doc<"personAssignments"> | null {
+  return (
+    assignments.find(
+      (a) => a.effectiveAt <= at && (a.endedAt === undefined || at < a.endedAt)
+    ) ?? null
+  )
+}
+
 // Collect all assignments for a (orgId, personId) pair via the by_person index,
 // then find the open one (endedAt === undefined) in JS. A person's assignment
 // count is small (O(career length)), so the collect is bounded.

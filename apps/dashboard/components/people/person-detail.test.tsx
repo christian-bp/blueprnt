@@ -75,6 +75,9 @@ const SALARY = [
     totalMonthlyComp: 50000,
     effectiveAt: 1000,
     createdAt: 1000,
+    // The role + level active when this salary became effective (an earlier
+    // level than the current IC3 assignment, as after a promotion).
+    assignment: { roleId: "r1", level: "IC2" },
   },
 ]
 
@@ -122,11 +125,17 @@ describe("PersonDetail", () => {
     expect(screen.getAllByText("Alex Doe").length).toBeGreaterThanOrEqual(1)
     // Classification block: level badge
     expect(screen.getByText("IC3")).toBeDefined()
-    // Classification block: role title resolved from listRoles
-    expect(screen.getByText("Engineer")).toBeDefined()
+    // Classification block: role title resolved from listRoles (it also
+    // appears in the salary row's role/level join below)
+    expect(screen.getAllByText("Engineer").length).toBeGreaterThanOrEqual(1)
     // Salary history: basicMonthly and totalMonthlyComp render as locale-aware
     // currency (both are 50000 SEK in the fixture; en formats as "SEK 50,000").
     expect(screen.getAllByText("SEK 50,000")).toHaveLength(2)
+    // The record is joined to the role + level it was earned under: the
+    // fixture salary predates the promotion to IC3, so it shows IC2 (and the
+    // role title appears in the classification block AND the salary row).
+    expect(screen.getByText("IC2")).toBeDefined()
+    expect(screen.getAllByText("Engineer").length).toBeGreaterThanOrEqual(2)
     // A confirmed assignment shows no source hint (the default good state).
     expect(screen.queryByText(m.sourceSuggested)).toBeNull()
   })

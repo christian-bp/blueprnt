@@ -651,3 +651,116 @@ describe("deleteSalary", () => {
     })
   })
 })
+
+describe("getSalaryHistory role/level join", () => {
+  it("joins each record to the assignment active at its effective time", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const personId = await seedPerson(orgId, asAdmin)
+    const { roleId: engineerId } = await asAdmin.mutation(
+      api.assessment.roles.createRole,
+      {
+        orgId,
+        title: "Software Engineer",
+        function: "Engineering",
+        team: "Platform",
+        trackKey: "IC",
+      }
+    )
+    const { roleId: managerId } = await asAdmin.mutation(
+      api.assessment.roles.createRole,
+      {
+        orgId,
+        title: "Engineering Manager",
+        function: "Engineering",
+        team: "Platform",
+        trackKey: "M",
+      }
+    )
+
+    // Timeline: engineer from t=1000, salary at t=1500, promoted to manager
+    // at t=2000 (closes the engineer assignment), raise at t=2500.
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId,
+      roleId: engineerId,
+      level: "IC3",
+      levelSource: "confirmed",
+      effectiveAt: 1000,
+    })
+    await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId,
+      payYear: 2025,
+      basicMonthly: 50000,
+      currency: "SEK",
+      components: [],
+      effectiveAt: 1500,
+    })
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId,
+      roleId: managerId,
+      level: "M2",
+      levelSource: "confirmed",
+      effectiveAt: 2000,
+    })
+    await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId,
+      payYear: 2026,
+      basicMonthly: 60000,
+      currency: "SEK",
+      components: [],
+      effectiveAt: 2500,
+    })
+
+    const history = await asAdmin.query(api.people.pay.getSalaryHistory, {
+      orgId,
+      personId,
+    })
+    // Most recent first: the raise under the manager assignment, then the
+    // old salary under the (now closed) engineer assignment.
+    expect(history).toHaveLength(2)
+    expect(history[0]?.assignment).toEqual({ roleId: managerId, level: "M2" })
+    expect(history[1]?.assignment).toEqual({ roleId: engineerId, level: "IC3" })
+  })
+
+  it("returns a null assignment for a record that predates all assignments", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const personId = await seedPerson(orgId, asAdmin)
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Software Engineer",
+      function: "Engineering",
+      team: "Platform",
+      trackKey: "IC",
+    })
+
+    // Salary imported/entered before the person was ever classified.
+    await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId,
+      payYear: 2025,
+      basicMonthly: 50000,
+      currency: "SEK",
+      components: [],
+      effectiveAt: 500,
+    })
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId,
+      roleId,
+      level: "IC1",
+      levelSource: "confirmed",
+      effectiveAt: 1000,
+    })
+
+    const history = await asAdmin.query(api.people.pay.getSalaryHistory, {
+      orgId,
+      personId,
+    })
+    expect(history[0]?.assignment).toBeNull()
+  })
+})

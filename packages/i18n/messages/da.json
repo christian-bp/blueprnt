@@ -359,6 +359,7 @@
           "payYear": "År",
           "basicMonthly": "Fast månedsløn",
           "total": "Samlet månedlig kompensation",
+          "role": "Rolle",
           "effectiveAt": "Gælder fra"
         }
       },
