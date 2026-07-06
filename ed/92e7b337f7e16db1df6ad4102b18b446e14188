@@ -1,0 +1,21 @@
+apps/dashboard/components/people/person-actions-menu.tsx
+  s_6bff98b662648b::t_6c1d7b7a483efa 47-49
+apps/dashboard/components/people/salary-row-actions.tsx
+  s_6bff98b662648b::t_be8b7eae21a880 53-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "ed92e7b337f7e16db1df6ad4102b18b446e14188",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
