@@ -337,7 +337,15 @@
         "level": "Taso",
         "levelSource": "Lähde",
         "sourceSuggested": "Ehdotettu",
-        "sourceConfirmed": "Vahvistettu",
+        "editClassification": {
+          "cta": "Muokkaa roolia ja tasoa",
+          "title": "Muokkaa roolia ja tasoa",
+          "description": "Määritä työntekijän rooli ja senioriteettitaso. Tallennus vahvistaa luokittelun.",
+          "rolePlaceholder": "Valitse rooli",
+          "levelPlaceholder": "Valitse taso",
+          "save": "Tallenna",
+          "cancel": "Peruuta"
+        },
         "noAssignment": "Ei vielä luokiteltu.",
         "salaryHeading": "Palkkahistoria",
         "salaryEmpty": "Palkkaa ei ole vielä kirjattu.",

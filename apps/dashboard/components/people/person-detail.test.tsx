@@ -127,6 +127,19 @@ describe("PersonDetail", () => {
     // Salary history: basicMonthly and totalMonthlyComp render as locale-aware
     // currency (both are 50000 SEK in the fixture; en formats as "SEK 50,000").
     expect(screen.getAllByText("SEK 50,000")).toHaveLength(2)
+    // A confirmed assignment shows no source hint (the default good state).
+    expect(screen.queryByText(m.sourceSuggested)).toBeNull()
+  })
+
+  it("shows the suggested hint only for an unconfirmed assignment", () => {
+    onQuery((ref) => {
+      if (ref === "people.assignments.getCurrentAssignment") {
+        return { ...ASSIGNMENT, levelSource: "suggested" }
+      }
+      return queryRouter(ref)
+    })
+    renderDetail()
+    expect(screen.getByText(m.sourceSuggested)).toBeDefined()
   })
 
   it("shows the loading skeleton when the person is still resolving", () => {

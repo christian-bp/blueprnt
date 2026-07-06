@@ -337,7 +337,15 @@
         "level": "Niveau",
         "levelSource": "Kilde",
         "sourceSuggested": "Foreslået",
-        "sourceConfirmed": "Bekræftet",
+        "editClassification": {
+          "cta": "Rediger rolle og niveau",
+          "title": "Rediger rolle og niveau",
+          "description": "Angiv medarbejderens rolle og senioritetsniveau. Når du gemmer, bekræftes klassificeringen.",
+          "rolePlaceholder": "Vælg en rolle",
+          "levelPlaceholder": "Vælg et niveau",
+          "save": "Gem",
+          "cancel": "Annuller"
+        },
         "noAssignment": "Ikke klassificeret endnu.",
         "salaryHeading": "Lønhistorik",
         "salaryEmpty": "Ingen løn registreret endnu.",

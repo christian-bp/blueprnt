@@ -129,7 +129,6 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                 <div className="flex items-center gap-3">
                   <Skeleton className="h-4 w-28" />
                   <Skeleton className="h-5 w-10 rounded-full" />
-                  <Skeleton className="h-4 w-20" />
                 </div>
               </section>
             </CardContent>
@@ -205,6 +204,15 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                 personId={person.personId}
                 displayName={person.displayName}
                 externalRef={person.externalRef}
+                roles={roles}
+                currentAssignment={
+                  assignment !== null
+                    ? {
+                        roleId: String(assignment.roleId),
+                        level: assignment.level,
+                      }
+                    : null
+                }
               />
             </CardHeader>
             <CardContent className="space-y-6">
@@ -251,11 +259,14 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                       </Link>
                     )}
                     <Badge>{assignment.level}</Badge>
-                    <span className="text-muted-foreground">
-                      {assignment.levelSource === "confirmed"
-                        ? t("sourceConfirmed")
-                        : t("sourceSuggested")}
-                    </span>
+                    {/* Confirmed is the default good state and says nothing;
+                        only the suggested hint carries information (go
+                        confirm it on Classify). */}
+                    {assignment.levelSource === "suggested" && (
+                      <span className="text-muted-foreground">
+                        {t("sourceSuggested")}
+                      </span>
+                    )}
                   </div>
                 )}
               </section>

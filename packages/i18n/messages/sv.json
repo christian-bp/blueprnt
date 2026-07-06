@@ -337,7 +337,15 @@
         "level": "Nivå",
         "levelSource": "Källa",
         "sourceSuggested": "Föreslagen",
-        "sourceConfirmed": "Bekräftad",
+        "editClassification": {
+          "cta": "Redigera roll och nivå",
+          "title": "Redigera roll och nivå",
+          "description": "Ange den anställdas roll och senioritetsnivå. När du sparar bekräftas klassificeringen.",
+          "rolePlaceholder": "Välj en roll",
+          "levelPlaceholder": "Välj en nivå",
+          "save": "Spara",
+          "cancel": "Avbryt"
+        },
         "noAssignment": "Inte klassificerad än.",
         "salaryHeading": "Lönehistorik",
         "salaryEmpty": "Ingen lön registrerad än.",

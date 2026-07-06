@@ -337,7 +337,15 @@
         "level": "Level",
         "levelSource": "Source",
         "sourceSuggested": "Suggested",
-        "sourceConfirmed": "Confirmed",
+        "editClassification": {
+          "cta": "Edit role and level",
+          "title": "Edit role and level",
+          "description": "Set the employee's role and seniority level. Saving confirms the classification.",
+          "rolePlaceholder": "Select a role",
+          "levelPlaceholder": "Select a level",
+          "save": "Save",
+          "cancel": "Cancel"
+        },
         "noAssignment": "Not classified yet.",
         "salaryHeading": "Salary history",
         "salaryEmpty": "No salary recorded yet.",
