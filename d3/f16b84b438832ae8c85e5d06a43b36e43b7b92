@@ -1,0 +1,24 @@
+apps/dashboard/components/people/add-salary-dialog.tsx
+  s_6bff98b662648b::t_e9fbbc5b9e1038 6
+  s_6bff98b662648b::t_612991789ebf32 44-45,55
+  s_6bff98b662648b::t_19d45be2adefb7 189-206
+  s_6bff98b662648b::t_0c8fb2f6e5b9c1 185-188
+apps/dashboard/components/people/add-salary-dialog.test.tsx
+  s_6bff98b662648b::t_963229755bb783 44-45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "d3f16b84b438832ae8c85e5d06a43b36e43b7b92",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
