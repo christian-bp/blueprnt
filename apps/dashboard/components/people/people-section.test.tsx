@@ -389,6 +389,42 @@ describe("PeopleSection", () => {
     expect(firstDataRow()?.textContent).toContain("Alice Svensson")
   })
 
+  it("sorts across all pages: a descending sort surfaces page-2 rows on page 1", () => {
+    const manyPeople = Array.from({ length: 30 }, (_, i) => ({
+      personId: `p${i + 1}`,
+      publicId: `pub-${i + 1}`,
+      displayName: `Person ${String(i + 1).padStart(2, "0")}`,
+      gender: null,
+      department: null,
+      ftePercent: null,
+      externalRef: null,
+      birthDate: null,
+      employmentStartDate: null,
+      country: null,
+      isManager: null,
+      statisticalCode: null,
+      archivedAt: null,
+    }))
+    onQuery((ref) => queryRouter(ref, manyPeople, []))
+    renderSection()
+
+    // Unsorted, Person 30 lives on page 2.
+    expect(screen.queryByText("Person 30")).toBeNull()
+
+    // Sort descending: the whole set reorders, so page 1 now starts at
+    // Person 30 and Person 01 moves to page 2.
+    const nameHeader = screen.getByRole("button", { name: m.columns.name })
+    fireEvent.click(nameHeader)
+    fireEvent.click(nameHeader)
+    expect(screen.getAllByRole("row")[1]?.textContent).toContain("Person 30")
+    expect(screen.queryByText("Person 01")).toBeNull()
+
+    // Page 2 continues the sorted order.
+    fireEvent.click(screen.getByLabelText(m.toolbar.next))
+    expect(screen.getAllByRole("row")[1]?.textContent).toContain("Person 05")
+    expect(screen.getByText("Person 01")).toBeDefined()
+  })
+
   it("search resets to the first page", () => {
     const manyPeople = Array.from({ length: 30 }, (_, i) => ({
       personId: `p${i + 1}`,
