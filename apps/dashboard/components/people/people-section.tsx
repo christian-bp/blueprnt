@@ -263,11 +263,12 @@ export function PeopleSection() {
   // on hover like the table's links; the chevron shows only on the sorted
   // column, inside a pre-reserved fixed-width slot so its appearance never
   // shifts the label or the column widths (layout-shift rule).
-  function sortableHead(id: string, label: string) {
+  function sortableHead(id: string, label: string, widthClass?: string) {
     const column = table.getColumn(id)
     const sorted = column?.getIsSorted() ?? false
     return (
       <TableHead
+        className={widthClass}
         aria-sort={
           sorted === "asc"
             ? "ascending"
@@ -299,14 +300,18 @@ export function PeopleSection() {
     )
   }
 
+  // Fixed column widths (with table-fixed on the Table): auto layout
+  // re-measures columns from each page's content, so widths jump on every
+  // page flip and when the skeleton swaps for data. Name takes the remaining
+  // space; the narrow columns are pinned.
   const tableHeader = (
     <TableHeader>
       <TableRow>
         {sortableHead("name", t("columns.name"))}
-        {sortableHead("gender", t("columns.gender"))}
-        {sortableHead("department", t("columns.department"))}
-        {sortableHead("fte", t("columns.fte"))}
-        {sortableHead("classification", t("columns.classification"))}
+        {sortableHead("gender", t("columns.gender"), "w-28")}
+        {sortableHead("department", t("columns.department"), "w-[22%]")}
+        {sortableHead("fte", t("columns.fte"), "w-20")}
+        {sortableHead("classification", t("columns.classification"), "w-40")}
       </TableRow>
     </TableHeader>
   )
@@ -345,7 +350,7 @@ export function PeopleSection() {
             <Skeleton className="h-9 w-64 rounded-md" />
             <Skeleton className="h-9 w-40 rounded-md" />
           </div>
-          <Table>
+          <Table className="table-fixed">
             {tableHeader}
             <TableSkeleton rows={8} columns={PEOPLE_SKELETON_COLUMNS} />
           </Table>
@@ -467,7 +472,7 @@ export function PeopleSection() {
             </Empty>
           ) : (
             <>
-              <Table>
+              <Table className="table-fixed">
                 {tableHeader}
                 <TableBody>
                   {pageRows.map((row) => {
@@ -489,7 +494,7 @@ export function PeopleSection() {
 
                     return (
                       <TableRow key={row.personId}>
-                        <TableCell className="font-medium">
+                        <TableCell className="truncate font-medium">
                           <Link
                             className="underline-offset-4 hover:underline"
                             href={`/people/${row.publicId}`}
@@ -500,7 +505,7 @@ export function PeopleSection() {
                         <TableCell className="text-muted-foreground">
                           {row.gender != null ? t(`gender.${row.gender}`) : ""}
                         </TableCell>
-                        <TableCell className="text-muted-foreground">
+                        <TableCell className="truncate text-muted-foreground">
                           {row.department ?? ""}
                         </TableCell>
                         <TableCell className="text-muted-foreground">
