@@ -1,0 +1,37 @@
+packages/backend/convex/assessment/roles.test.ts
+  s_6bff98b662648b::t_e17be583059dbc 89-105,325
+  s_6bff98b662648b::t_49ebc200b35b8c 303-324
+packages/backend/convex/assessment/roles.ts
+  s_6bff98b662648b::t_034697b5a67fd6 111-112,115
+  s_6bff98b662648b::t_715404eb943789 400-401,403,406
+apps/dashboard/lib/role-schemas.ts
+  s_6bff98b662648b::t_fa1fa21efe77f4 23-26
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_90b3e093b23f19 444-445,708-709
+packages/backend/convex/ai/generate.ts
+  s_6bff98b662648b::t_57b35cecb17c37 304-311,316
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_90b3e093b23f19 444-445,708-709
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_90b3e093b23f19 444-445,708-709
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_90b3e093b23f19 444-445,708-709
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_90b3e093b23f19 444-445,708-709
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "29d66629f963b7ecffc1a749dd01f75516288931",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
