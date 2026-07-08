@@ -336,11 +336,16 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                             </div>
                           )}
                         </TableCell>
-                        <TableCell className="w-8 text-right">
-                          <SalaryRowActions
-                            payRecordId={record.payRecordId}
-                            payYear={record.payYear}
-                          />
+                        <TableCell className="w-8">
+                          {/* Block flex wrapper for the same reason as the
+                              people table's badge cell: a baseline-aligned
+                              inline-flex button inflates the line box. */}
+                          <div className="flex justify-end">
+                            <SalaryRowActions
+                              payRecordId={record.payRecordId}
+                              payYear={record.payYear}
+                            />
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}

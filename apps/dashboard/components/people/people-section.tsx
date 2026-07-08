@@ -450,7 +450,15 @@ export function PeopleSection() {
                           {row.ftePercent != null ? `${row.ftePercent}%` : ""}
                         </TableCell>
                         <TableCell>
-                          <Badge variant={badge.variant}>{badge.label}</Badge>
+                          {/* Block flex wrapper: an inline-flex Badge rides
+                              the TEXT BASELINE and (with Source Sans 3's
+                              metrics) inflates the line box past the 20px
+                              text line, making data rows taller than the
+                              skeleton's. Block layout keeps the cell at
+                              exactly one text line. */}
+                          <div className="flex min-h-5 items-center">
+                            <Badge variant={badge.variant}>{badge.label}</Badge>
+                          </div>
                         </TableCell>
                       </TableRow>
                     )
