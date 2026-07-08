@@ -20,21 +20,19 @@ export function OtpField(props: {
   ariaLabel: string
   inputRef?: Ref<HTMLInputElement>
   autoFocus?: boolean
-  // While true, the code is being verified: the whole input is swapped out for
-  // a bordered box with a spinner and the `verifyingLabel`, the way polyform's
-  // OTP shows its verifying state. Swapped, not overlaid: the library's real
-  // input paints the pasted code through visibility tricks (paste selection),
-  // so nothing of it may stay mounted. The fixed-height wrapper keeps the
-  // swap free of layout shift.
+  // While true, the code is being verified: the slots stay VISIBLE but
+  // disabled (the entered code remains readable, dimmed via the group's
+  // has-disabled style), and a padded status card floats centered on top.
+  // Disabling the library's real input also clears its paste selection,
+  // which used to paint ghost digits over the overlay.
   verifying?: boolean
   verifyingLabel?: string
 }) {
   const innerRef = useRef<HTMLInputElement | null>(null)
   const prevVerifying = useRef(false)
 
-  // Refocus after a failed verify: the input unmounts while verifying, so when
-  // it comes back (verifying true -> false) it must reclaim focus for the
-  // retry (autoFocus only applies to the very first mount).
+  // Refocus after a failed verify: disabling the input drops focus, so when
+  // verifying ends (true -> false) it must reclaim focus for the retry.
   useEffect(() => {
     if (prevVerifying.current && props.verifying !== true) {
       innerRef.current?.focus()
@@ -53,33 +51,35 @@ export function OtpField(props: {
   }
 
   return (
-    <div className="h-12">
-      {props.verifying === true ? (
-        <div className="flex h-full w-full items-center justify-center gap-2 rounded-md border border-input bg-background/95">
-          <Spinner className="size-5" />
-          {props.verifyingLabel && (
-            <span className="font-medium text-foreground text-sm">
-              {props.verifyingLabel}
-            </span>
-          )}
+    <div className="relative h-12">
+      <InputOTP
+        ref={setRefs}
+        maxLength={6}
+        value={props.value}
+        onChange={props.onChange}
+        onComplete={props.onComplete}
+        autoFocus={props.autoFocus}
+        aria-label={props.ariaLabel}
+        disabled={props.verifying === true}
+      >
+        <InputOTPGroup>
+          {Array.from({ length: 6 }).map((_, i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: slots are positional
+            <InputOTPSlot key={i} index={i} className="size-12 text-xl" />
+          ))}
+        </InputOTPGroup>
+      </InputOTP>
+      {props.verifying === true && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="flex items-center gap-2 rounded-md border border-input bg-background/95 px-4 py-2 shadow-sm">
+            <Spinner className="size-5" />
+            {props.verifyingLabel && (
+              <span className="font-medium text-foreground text-sm">
+                {props.verifyingLabel}
+              </span>
+            )}
+          </div>
         </div>
-      ) : (
-        <InputOTP
-          ref={setRefs}
-          maxLength={6}
-          value={props.value}
-          onChange={props.onChange}
-          onComplete={props.onComplete}
-          autoFocus={props.autoFocus}
-          aria-label={props.ariaLabel}
-        >
-          <InputOTPGroup>
-            {Array.from({ length: 6 }).map((_, i) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: slots are positional
-              <InputOTPSlot key={i} index={i} className="size-12 text-xl" />
-            ))}
-          </InputOTPGroup>
-        </InputOTP>
       )}
     </div>
   )

@@ -21,7 +21,7 @@ describe("OtpField", () => {
     expect(screen.getByLabelText("6-digit code")).toBeDefined()
   })
 
-  it("swaps the input for a labelled spinner while verifying", () => {
+  it("keeps the slots visible but disabled with the status card on top while verifying", () => {
     render(
       <OtpField
         value="123456"
@@ -34,10 +34,11 @@ describe("OtpField", () => {
     )
     expect(screen.getByRole("status")).toBeDefined()
     expect(screen.getByText("Verifying...")).toBeDefined()
-    // The input (and with it the pasted code) is fully unmounted: nothing of
-    // the entered digits can stay visible during the verify.
-    expect(screen.queryByLabelText("6-digit code")).toBeNull()
-    expect(screen.queryByText("1")).toBeNull()
+    // The input stays mounted and shows the entered code, but takes no input.
+    const input = screen.getByLabelText("6-digit code") as HTMLInputElement
+    expect(input.disabled).toBe(true)
+    expect(screen.getByText("1")).toBeDefined()
+    expect(screen.getByText("6")).toBeDefined()
   })
 
   it("refocuses the input after verifying ends", async () => {
