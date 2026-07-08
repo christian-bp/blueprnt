@@ -20,8 +20,10 @@ export function makeCreateRoleSchema(
   return z
     .object({
       title: z.string().trim().min(1, t("required")),
-      roleFunction: z.string().trim().min(1, t("required")),
-      team: z.string().trim().min(1, t("required")),
+      // Function and team are optional context: they help the AI draft and
+      // the register's search, but a role is complete without them.
+      roleFunction: z.string().trim(),
+      team: z.string().trim(),
       trackKey: z.enum(["IC", "Lead", "M"], { message: t("required") }),
       familyId: z.string().nullable(),
     })

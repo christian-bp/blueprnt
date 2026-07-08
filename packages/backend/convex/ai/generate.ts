@@ -301,14 +301,19 @@ const ROLE_PROFILE_CONTRACT =
 // One role's identity line in a prompt. Used by both paths so the single and
 // batched prompts describe a role identically.
 function roleIdentityLine(args: RoleProfileInput): string {
-  // The family is appended as a trailing clause only when present and
-  // non-empty. When absent the line is byte-identical to the no-family wording,
-  // so a role without a family produces exactly the prompt it did before.
+  // Function, team, and family are optional context: each clause is appended
+  // only when present and non-empty, so an unset field never puts an empty
+  // quoted string in the prompt. With every field set the line stays
+  // byte-identical to the original wording.
+  const clauses: string[] = []
+  if (args.roleFunction !== "") clauses.push(`function "${args.roleFunction}"`)
+  if (args.team !== "") clauses.push(`team "${args.team}"`)
+  const contextClause = clauses.length > 0 ? ` in ${clauses.join(", ")}` : ""
   const familyClause =
     args.family !== undefined && args.family !== ""
       ? `, role family "${args.family}"`
       : ""
-  return `the role "${args.title}" (track ${args.trackName}) in function "${args.roleFunction}", team "${args.team}"${familyClause}`
+  return `the role "${args.title}" (track ${args.trackName})${contextClause}${familyClause}`
 }
 
 // Pure single-profile generation against the EU model. Returns the profile

@@ -86,6 +86,23 @@ describe("createRole", () => {
       })
     ).rejects.toThrow(/errors.invalidInput/)
   })
+
+  it("accepts empty function and team (optional context)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, track } = await seedTemplateOrganization(t)
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Unmapped Specialist",
+      function: "  ",
+      team: "",
+      trackKey: track.key,
+    })
+    await t.run(async (ctx) => {
+      const role = await ctx.db.get(roleId)
+      expect(role?.function).toBe("")
+      expect(role?.team).toBe("")
+    })
+  })
 })
 
 describe("listRoles and getRole", () => {
@@ -281,6 +298,29 @@ describe("updateRole", () => {
     await t.run(async (ctx) => {
       const role = await ctx.db.get(roleId)
       expect(role?.trackKey).toBe(otherTrack.key)
+    })
+  })
+
+  it("clears function and team with an empty string (optional context)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, track } = await seedTemplateOrganization(t)
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Developer",
+      function: "Engineering",
+      team: "Core",
+      trackKey: track.key,
+    })
+    await asAdmin.mutation(api.assessment.roles.updateRole, {
+      orgId,
+      roleId,
+      function: "",
+      team: "  ",
+    })
+    await t.run(async (ctx) => {
+      const role = await ctx.db.get(roleId)
+      expect(role?.function).toBe("")
+      expect(role?.team).toBe("")
     })
   })
 })

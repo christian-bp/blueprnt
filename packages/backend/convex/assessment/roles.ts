@@ -108,14 +108,11 @@ export const createRole = orgMutation({
   returns: v.object({ roleId: v.id("roles"), slug: v.string() }),
   handler: async (ctx, args) => {
     const title = args.title.trim()
+    // Function and team are optional context (empty string = not set); only
+    // the title is required.
     const roleFunction = args.function.trim()
     const team = args.team.trim()
-    if (
-      title.length === 0 ||
-      title.length > MAX_TITLE_LENGTH ||
-      roleFunction.length === 0 ||
-      team.length === 0
-    ) {
+    if (title.length === 0 || title.length > MAX_TITLE_LENGTH) {
       throw appError(ERROR_CODES.invalidInput)
     }
     let familySlug: string | undefined
@@ -400,15 +397,13 @@ export const updateRole = orgMutation({
       }
       patch.title = title
     }
+    // Function and team are optional context: an empty string clears the
+    // field (undefined leaves it unchanged).
     if (args.function !== undefined) {
-      const roleFunction = args.function.trim()
-      if (roleFunction.length === 0) throw appError(ERROR_CODES.invalidInput)
-      patch.function = roleFunction
+      patch.function = args.function.trim()
     }
     if (args.team !== undefined) {
-      const team = args.team.trim()
-      if (team.length === 0) throw appError(ERROR_CODES.invalidInput)
-      patch.team = team
+      patch.team = args.team.trim()
     }
     if (args.trackKey !== undefined) {
       patch.trackKey = args.trackKey
