@@ -1,0 +1,41 @@
+skills-lock.json
+  s_64bfec4f2c802c::t_1c0ff273abc392 8
+.agents/skills/shadcn/mcp.md
+  s_64bfec4f2c802c::t_1c0ff273abc392 40-41,43,48-50,52,63-64,66
+.agents/skills/shadcn/cli.md
+  s_64bfec4f2c802c::t_1c0ff273abc392 133,138-148
+.agents/skills/shadcn/evals/evals.json
+  s_64bfec4f2c802c::t_1c0ff273abc392 45-74
+.agents/skills/shadcn/SKILL.md
+  s_64bfec4f2c802c::t_1c0ff273abc392 3,78-83,145,250-251,269
+.agents/skills/shadcn/rules/styling.md
+  s_64bfec4f2c802c::t_1c0ff273abc392 16,164-185
+.agents/skills/shadcn/rules/composition.md
+  s_64bfec4f2c802c::t_1c0ff273abc392 54-59
+.agents/skills/shadcn/rules/chat.md
+  s_6bff98b662648b::t_4b1a8207722767 1-224
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "71efc88b0cf42af07558e667ca9e3f7e04485d45",
+  "prompts": {},
+  "sessions": {
+    "s_64bfec4f2c802c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4f7800a4-edf3-4da7-819f-2e64c8b536c8",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "unknown"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
