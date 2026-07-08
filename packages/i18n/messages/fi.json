@@ -310,7 +310,22 @@
           "preview": "Esikatselu ({count} ensimmäistä riviä)",
           "summary": "{people, plural, one {# henkilö} other {# henkilöä}} tuotavaksi",
           "confirm": "Vahvista tuonti",
-          "blockingTitle": "Pakolliset kentat eivat ole yhdistettyna"
+          "blockingTitle": "Pakolliset kentat eivat ole yhdistettyna",
+          "changes": {
+            "heading": "Mitä tuonti muuttaa",
+            "newPeople": "Uudet työntekijät",
+            "updatedPeople": "Päivitettävät työntekijät",
+            "unchangedPeople": "Jo ajan tasalla",
+            "salaryNew": "Uudet palkkatietueet",
+            "salaryChanged": "Saman palkkavuoden palkkamuutokset",
+            "salaryIdentical": "Jo ajan tasalla olevat palkat",
+            "displayName": "Nimi",
+            "andMore": "{count, plural, one {ja # muu} other {ja # muuta}}",
+            "previewFailed": "Muutosten esikatselua ei voitu ladata. Voit silti tuoda.",
+            "mismatchTitle": "Tarkista nämä työntekijänumerot",
+            "mismatchBody": "Nämä työntekijänumerot ovat jo olemassa eri nimellä. Se voi tarkoittaa uudelleenkäytettyä numeroa tai kirjoitusvirhettä, joten rivit ohitetaan, ellet valitse niiden päivittämistä.",
+            "mismatchImportAnyway": "Päivitä nämä työntekijät silti"
+          }
         },
         "discard": {
           "title": "Hylätäänkö tämä tuonti?",

@@ -12,6 +12,7 @@ import {
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 import { assignmentActiveAt } from "./assignments"
+import { sameSalaryValues } from "./importDiff"
 
 // The pay audit fields: ONLY non-sensitive fields are captured in the audit
 // trail. Salary amounts (basicMonthly, components) are NEVER included
@@ -217,18 +218,8 @@ export const appendSalary = internalMutation({
       )
       .order("desc")
       .first()
-    if (
-      latest !== null &&
-      latest.payYear === args.payYear &&
-      latest.basicMonthly === args.basicMonthly &&
-      latest.currency === args.currency &&
-      latest.components.length === args.components.length &&
-      latest.components.every(
-        (c, i) =>
-          c.kind === args.components[i]?.kind &&
-          c.monthlyAmount === args.components[i]?.monthlyAmount
-      )
-    ) {
+    // Shared with previewImport so the review preview applies exactly this rule.
+    if (latest !== null && sameSalaryValues(args, latest)) {
       return { payRecordId: latest._id, created: false }
     }
 

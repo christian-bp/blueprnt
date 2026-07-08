@@ -892,3 +892,186 @@ describe("getImportProgress scoping", () => {
     ).toBeNull()
   })
 })
+
+// ---------------------------------------------------------------------------
+// previewImport: the dry-run diff the review step shows
+// ---------------------------------------------------------------------------
+
+const SIMPLE_MAP: string[][] = [
+  ["Anstnr", "externalRef"],
+  ["Fornamn", "firstName"],
+  ["Efternamn", "lastName"],
+  ["Kon", "gender"],
+  ["Befattning", "title"],
+  ["Manadslon", "basicMonthly"],
+  ["Lonear", "payYear"],
+]
+
+function simpleCsv(rows: string[]): string {
+  return [
+    "Anstnr;Fornamn;Efternamn;Kon;Befattning;Manadslon;Lonear",
+    ...rows,
+  ].join("\n")
+}
+
+const V1_CSV = simpleCsv([
+  "1;Anna;Svensson;Kvinna;Controller;50000;2026",
+  "2;Bo;Karlsson;Man;Tekniker;40000;2026",
+])
+
+// v2: Anna gets a new title and a raise (same pay year); Bo is identical;
+// Cesar is brand new.
+const V2_CSV = simpleCsv([
+  "1;Anna;Svensson;Kvinna;Senior Controller;52000;2026",
+  "2;Bo;Karlsson;Man;Tekniker;40000;2026",
+  "3;Cesar;Lind;Man;Saljare;45000;2026",
+])
+
+describe("previewImport", () => {
+  it("previews a first import as all-created", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const preview = await asAdmin.action(api.people.import.previewImport, {
+      orgId,
+      csvText: V1_CSV,
+      columnMap: SIMPLE_MAP,
+    })
+    expect(preview.ok).toBe(true)
+    expect(preview.diff?.people).toEqual({
+      created: 2,
+      updated: 0,
+      unchanged: 0,
+    })
+    expect(preview.diff?.salary.newEntries).toBe(2)
+    expect(preview.diff?.nameMismatches).toEqual([])
+  })
+
+  it("previews a re-import exactly as the import then executes it", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: V1_CSV,
+      columnMap: SIMPLE_MAP,
+    })
+
+    const preview = await asAdmin.action(api.people.import.previewImport, {
+      orgId,
+      csvText: V2_CSV,
+      columnMap: SIMPLE_MAP,
+    })
+    expect(preview.ok).toBe(true)
+    expect(preview.diff?.people).toEqual({
+      created: 1,
+      updated: 1,
+      unchanged: 1,
+    })
+
+    // Anna's field diff names the changed field with both values.
+    expect(preview.diff?.updatedPeople).toHaveLength(1)
+    expect(preview.diff?.updatedPeople[0]).toMatchObject({
+      externalRef: "1",
+      displayName: "Anna Svensson",
+    })
+    expect(preview.diff?.updatedPeople[0]?.changes).toContainEqual({
+      field: "title",
+      from: "Controller",
+      to: "Senior Controller",
+    })
+
+    // Salary: Anna's raise is a same-year change, Bo identical, Cesar new.
+    expect(preview.diff?.salary.changedSameYear).toBe(1)
+    expect(preview.diff?.salary.identical).toBe(1)
+    expect(preview.diff?.salary.newEntries).toBe(1)
+    expect(preview.diff?.salary.changedDetails[0]).toMatchObject({
+      externalRef: "1",
+      payYear: 2026,
+      from: 50000,
+      to: 52000,
+    })
+
+    // The preview cannot lie: the real import produces the same counts.
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: V2_CSV,
+      columnMap: SIMPLE_MAP,
+    })
+    expect(result.peopleCreated).toBe(1)
+    expect(result.peopleUpdated).toBe(1)
+    expect(result.peopleUnchanged).toBe(1)
+    // Anna's raise appends + Cesar's first salary; Bo's identical row skips.
+    expect(result.salariesImported).toBe(2)
+  })
+
+  it("flags a different name on an existing employee number", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: V1_CSV,
+      columnMap: SIMPLE_MAP,
+    })
+
+    const preview = await asAdmin.action(api.people.import.previewImport, {
+      orgId,
+      csvText: simpleCsv(["1;Greta;Berg;Kvinna;Controller;50000;2026"]),
+      columnMap: SIMPLE_MAP,
+    })
+    expect(preview.diff?.nameMismatches).toEqual([
+      {
+        externalRef: "1",
+        storedName: "Anna Svensson",
+        incomingName: "Greta Berg",
+      },
+    ])
+  })
+
+  it("returns ok:false with no diff when required fields are unmapped", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const preview = await asAdmin.action(api.people.import.previewImport, {
+      orgId,
+      csvText: V1_CSV,
+      columnMap: [["Anstnr", "externalRef"]],
+    })
+    expect(preview.ok).toBe(false)
+    expect(preview.diff).toBeNull()
+  })
+})
+
+describe("importPayroll skipExternalRefs", () => {
+  it("leaves skipped rows untouched and counts them as skipped", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: V1_CSV,
+      columnMap: SIMPLE_MAP,
+    })
+
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: V2_CSV,
+      columnMap: SIMPLE_MAP,
+      skipExternalRefs: ["1"],
+    })
+    expect(result.peopleUpdated).toBe(0)
+    expect(result.peopleCreated).toBe(1)
+    expect(result.skippedRows).toBe(1)
+
+    // Anna kept her stored title and salary (row skipped person AND salary).
+    await t.run(async (ctx) => {
+      const anna = (await ctx.db.query("people").collect()).find(
+        (p) => p.externalRef === "1"
+      )
+      expect(anna?.title).toBe("Controller")
+      const salaries = (await ctx.db.query("payRecords").collect()).filter(
+        (r) => r.personId === anna?._id
+      )
+      expect(salaries).toHaveLength(1)
+      expect(salaries[0]?.basicMonthly).toBe(50000)
+    })
+  })
+})

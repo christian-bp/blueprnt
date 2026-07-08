@@ -310,7 +310,22 @@
           "preview": "Förhandsgranskning (de första {count} raderna)",
           "summary": "{people, plural, one {# person} other {# personer}} att importera",
           "confirm": "Bekräfta import",
-          "blockingTitle": "Obligatoriska fält är inte mappade"
+          "blockingTitle": "Obligatoriska fält är inte mappade",
+          "changes": {
+            "heading": "Vad importen kommer att ändra",
+            "newPeople": "Nya anställda",
+            "updatedPeople": "Uppdaterade anställda",
+            "unchangedPeople": "Redan aktuella",
+            "salaryNew": "Nya löneposter",
+            "salaryChanged": "Löneändringar för samma löneår",
+            "salaryIdentical": "Löner som redan är aktuella",
+            "displayName": "Namn",
+            "andMore": "{count, plural, one {och # till} other {och # till}}",
+            "previewFailed": "Förhandsgranskningen av ändringar kunde inte laddas. Du kan ändå importera.",
+            "mismatchTitle": "Kontrollera dessa anställningsnummer",
+            "mismatchBody": "Dessa anställningsnummer finns redan med ett annat namn. Det kan betyda ett återanvänt nummer eller ett skrivfel, så raderna hoppas över om du inte väljer att uppdatera dem.",
+            "mismatchImportAnyway": "Uppdatera dessa anställda ändå"
+          }
         },
         "discard": {
           "title": "Avbryta importen?",

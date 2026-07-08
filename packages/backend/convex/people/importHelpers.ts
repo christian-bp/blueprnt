@@ -18,6 +18,95 @@ export const getOrgCurrency = internalQuery({
   },
 })
 
+// The stored side of previewImport's dry-run diff: every active person that
+// carries an externalRef (the import upsert key), with the import-diffable
+// fields and the newest pay record's values. Bounded by headcount, same as
+// listPeopleByTitle. Called by the previewImport action via ctx.runQuery.
+export const getImportBaseline = internalQuery({
+  args: { orgId: v.string() },
+  returns: v.array(
+    v.object({
+      externalRef: v.string(),
+      displayName: v.string(),
+      gender: v.union(v.literal("Man"), v.literal("Kvinna")),
+      birthDate: v.optional(v.string()),
+      employmentStartDate: v.optional(v.string()),
+      ftePercent: v.optional(v.number()),
+      country: v.optional(v.string()),
+      isManager: v.optional(v.boolean()),
+      statisticalCode: v.optional(v.string()),
+      department: v.optional(v.string()),
+      title: v.optional(v.string()),
+      latestSalary: v.union(
+        v.object({
+          payYear: v.number(),
+          basicMonthly: v.number(),
+          currency: v.string(),
+          components: v.array(
+            v.object({ kind: v.string(), monthlyAmount: v.number() })
+          ),
+        }),
+        v.null()
+      ),
+    })
+  ),
+  handler: async (ctx, { orgId }) => {
+    const people = (
+      await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+    ).filter((p) => p.archivedAt === undefined && p.externalRef !== undefined)
+
+    const result = []
+    for (const person of people) {
+      const latest = await ctx.db
+        .query("payRecords")
+        .withIndex("by_person", (q) =>
+          q.eq("orgId", orgId).eq("personId", person._id)
+        )
+        .order("desc")
+        .first()
+      result.push({
+        // The filter above guarantees externalRef; the fallback narrows the type.
+        externalRef: person.externalRef ?? "",
+        displayName: person.displayName,
+        gender: person.gender,
+        ...(person.birthDate !== undefined
+          ? { birthDate: person.birthDate }
+          : {}),
+        ...(person.employmentStartDate !== undefined
+          ? { employmentStartDate: person.employmentStartDate }
+          : {}),
+        ...(person.ftePercent !== undefined
+          ? { ftePercent: person.ftePercent }
+          : {}),
+        ...(person.country !== undefined ? { country: person.country } : {}),
+        ...(person.isManager !== undefined
+          ? { isManager: person.isManager }
+          : {}),
+        ...(person.statisticalCode !== undefined
+          ? { statisticalCode: person.statisticalCode }
+          : {}),
+        ...(person.department !== undefined
+          ? { department: person.department }
+          : {}),
+        ...(person.title !== undefined ? { title: person.title } : {}),
+        latestSalary:
+          latest !== null
+            ? {
+                payYear: latest.payYear,
+                basicMonthly: latest.basicMonthly,
+                currency: latest.currency,
+                components: latest.components,
+              }
+            : null,
+      })
+    }
+    return result
+  },
+})
+
 // Writes the people.imported audit row from inside a mutation transaction.
 // Actions have no ctx.db and therefore cannot call logAudit directly, so the
 // import action delegates here via ctx.runMutation. Counts only: no PII, no

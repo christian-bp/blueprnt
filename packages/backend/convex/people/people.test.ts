@@ -558,3 +558,42 @@ describe("archivePerson", () => {
     ).rejects.toThrow(/errors.notFound/)
   })
 })
+
+describe("upsert absent-field semantics", () => {
+  it("leaves a stored field untouched when the re-import does not carry it", async () => {
+    const t = initConvexTest()
+    const { orgId, userId } = await seedOrg(t)
+    const { personId } = await t.mutation(
+      internal.people.people.upsertPersonByExternalRef,
+      {
+        orgId,
+        actorId: userId,
+        externalRef: "77",
+        displayName: "Anna Svensson",
+        gender: "Kvinna",
+        department: "Ekonomi",
+        title: "Controller",
+      }
+    )
+
+    // Re-import from a narrower file (e.g. salary-only export): no department
+    // or title columns. The stored values must survive, and the person counts
+    // as unchanged.
+    const { outcome } = await t.mutation(
+      internal.people.people.upsertPersonByExternalRef,
+      {
+        orgId,
+        actorId: userId,
+        externalRef: "77",
+        displayName: "Anna Svensson",
+        gender: "Kvinna",
+      }
+    )
+    expect(outcome).toBe("unchanged")
+    await t.run(async (ctx) => {
+      const person = await ctx.db.get(personId)
+      expect(person?.department).toBe("Ekonomi")
+      expect(person?.title).toBe("Controller")
+    })
+  })
+})

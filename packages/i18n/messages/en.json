@@ -314,7 +314,22 @@
           "preview": "Preview (first {count} rows)",
           "summary": "{people, plural, one {# person} other {# people}} to import",
           "confirm": "Confirm import",
-          "blockingTitle": "Required fields are not mapped"
+          "blockingTitle": "Required fields are not mapped",
+          "changes": {
+            "heading": "What this import will change",
+            "newPeople": "New employees",
+            "updatedPeople": "Updated employees",
+            "unchangedPeople": "Already up to date",
+            "salaryNew": "New salary entries",
+            "salaryChanged": "Salary changes for the same year",
+            "salaryIdentical": "Salaries already up to date",
+            "displayName": "Name",
+            "andMore": "{count, plural, one {and # more} other {and # more}}",
+            "previewFailed": "The change preview could not be loaded. You can still import.",
+            "mismatchTitle": "Check these employee numbers",
+            "mismatchBody": "These employee numbers already exist with a different name. This can mean a reused number or a typo, so the rows are skipped unless you choose to update them.",
+            "mismatchImportAnyway": "Update these employees anyway"
+          }
         },
         "discard": {
           "title": "Discard this import?",

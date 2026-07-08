@@ -20,16 +20,23 @@ vi.mock("sonner", () => ({
 }))
 
 const importPayrollMock = vi.fn()
+const previewImportMock = vi.fn()
 const pushMock = vi.fn()
 
 vi.mock("convex/react", () => ({
-  useAction: (_ref: unknown) => importPayrollMock,
+  useAction: (ref: unknown) =>
+    ref === "people.import.previewImport"
+      ? previewImportMock
+      : importPayrollMock,
 }))
 
 vi.mock("@workspace/backend/convex/_generated/api", () => ({
   api: {
     people: {
-      import: { importPayroll: "people.import.importPayroll" },
+      import: {
+        importPayroll: "people.import.importPayroll",
+        previewImport: "people.import.previewImport",
+      },
     },
   },
 }))
@@ -81,6 +88,41 @@ const MAPPING: Record<string, number> = {
 }
 
 const CSV_TEXT = `${HEADERS.join(",")}\n${ROWS.map((r) => r.join(",")).join("\n")}`
+
+const EMPTY_VALIDATION = {
+  readiness: [],
+  blocking: [],
+  warnings: [],
+  issues: [],
+}
+
+// Default change preview: two new people, nothing else. Individual tests
+// override with mockResolvedValueOnce BEFORE rendering (the fetch fires on
+// mount).
+const OK_PREVIEW = {
+  ok: true,
+  validation: EMPTY_VALIDATION,
+  skippedRows: 0,
+  diff: {
+    people: { created: 2, updated: 0, unchanged: 0 },
+    updatedPeople: [],
+    nameMismatches: [],
+    salary: {
+      newEntries: 2,
+      changedSameYear: 0,
+      identical: 0,
+      changedDetails: [],
+    },
+  },
+}
+previewImportMock.mockResolvedValue(OK_PREVIEW)
+
+// The confirm button waits for the change preview; click once it enables.
+async function clickConfirm() {
+  const button = screen.getByTestId("confirm-button") as HTMLButtonElement
+  await waitFor(() => expect(button.disabled).toBe(false))
+  fireEvent.click(button)
+}
 
 const OK_RESULT = {
   ok: true,
@@ -306,7 +348,7 @@ describe("ReviewStep — confirm (success)", () => {
     importPayrollMock.mockResolvedValueOnce(OK_RESULT)
     renderReviewStep()
 
-    fireEvent.click(screen.getByTestId("confirm-button"))
+    await clickConfirm()
 
     await waitFor(() => {
       expect(importPayrollMock).toHaveBeenCalledOnce()
@@ -321,7 +363,7 @@ describe("ReviewStep — confirm (success)", () => {
     importPayrollMock.mockResolvedValueOnce(OK_RESULT)
     renderReviewStep()
 
-    fireEvent.click(screen.getByTestId("confirm-button"))
+    await clickConfirm()
 
     await waitFor(() => {
       expect(importPayrollMock).toHaveBeenCalledOnce()
@@ -339,7 +381,7 @@ describe("ReviewStep — confirm (success)", () => {
     importPayrollMock.mockResolvedValueOnce(OK_RESULT)
     renderReviewStep()
 
-    fireEvent.click(screen.getByTestId("confirm-button"))
+    await clickConfirm()
 
     await waitFor(() => {
       expect(importPayrollMock).toHaveBeenCalledOnce()
@@ -358,7 +400,7 @@ describe("ReviewStep — confirm (success)", () => {
     const onImportSuccess = vi.fn()
     renderReviewStep({ onImportSuccess })
 
-    fireEvent.click(screen.getByTestId("confirm-button"))
+    await clickConfirm()
 
     await waitFor(() => {
       expect(onImportSuccess).toHaveBeenCalledWith({
@@ -378,7 +420,7 @@ describe("ReviewStep — confirm (success)", () => {
     const onImportSuccess = vi.fn()
     renderReviewStep({ onImportStart, onImportSuccess })
 
-    fireEvent.click(screen.getByTestId("confirm-button"))
+    await clickConfirm()
 
     expect(onImportStart).toHaveBeenCalledOnce()
     await waitFor(() => {
@@ -401,7 +443,7 @@ describe("ReviewStep — confirm (failure)", () => {
     importPayrollMock.mockRejectedValueOnce(new Error("network error"))
     renderReviewStep()
 
-    fireEvent.click(screen.getByTestId("confirm-button"))
+    await clickConfirm()
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledOnce()
@@ -413,7 +455,7 @@ describe("ReviewStep — confirm (failure)", () => {
     const onImportEnd = vi.fn()
     renderReviewStep({ onImportEnd })
 
-    fireEvent.click(screen.getByTestId("confirm-button"))
+    await clickConfirm()
 
     await waitFor(() => {
       expect(onImportEnd).toHaveBeenCalledWith(["basicMonthly"])
@@ -439,7 +481,7 @@ describe("ReviewStep — confirm (failure)", () => {
     const onImportEnd = vi.fn()
     renderReviewStep({ onImportEnd })
 
-    fireEvent.click(screen.getByTestId("confirm-button"))
+    await clickConfirm()
 
     await waitFor(() => {
       expect(onImportEnd).toHaveBeenCalledOnce()
@@ -452,7 +494,7 @@ describe("ReviewStep — confirm (failure)", () => {
     const onImportEnd = vi.fn()
     renderReviewStep({ onImportEnd })
 
-    fireEvent.click(screen.getByTestId("confirm-button"))
+    await clickConfirm()
 
     await waitFor(() => {
       expect(onImportEnd).toHaveBeenCalledOnce()
@@ -465,7 +507,7 @@ describe("ReviewStep — confirm (failure)", () => {
     const onImportEnd = vi.fn()
     renderReviewStep({ onImportEnd })
 
-    fireEvent.click(screen.getByTestId("confirm-button"))
+    await clickConfirm()
 
     await waitFor(() => {
       expect(onImportEnd).toHaveBeenCalledWith()
@@ -553,7 +595,7 @@ describe("ReviewStep — gender overrides", () => {
         />
       </NextIntlClientProvider>
     )
-    fireEvent.click(screen.getByTestId("confirm-button"))
+    await clickConfirm()
     await waitFor(() => {
       expect(importPayrollMock).toHaveBeenCalledOnce()
     })
@@ -566,11 +608,139 @@ describe("ReviewStep — gender overrides", () => {
   it("omits genderOverrides when the record is empty", async () => {
     importPayrollMock.mockResolvedValueOnce(OK_RESULT)
     renderReviewStep()
-    fireEvent.click(screen.getByTestId("confirm-button"))
+    await clickConfirm()
     await waitFor(() => {
       expect(importPayrollMock).toHaveBeenCalledOnce()
     })
     const call = importPayrollMock.mock.calls[0]?.[0] as Record<string, unknown>
     expect("genderOverrides" in call).toBe(false)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Change preview + name-mismatch guard
+// ---------------------------------------------------------------------------
+
+describe("ReviewStep — change preview", () => {
+  afterEach(() => {
+    cleanup()
+    vi.clearAllMocks()
+  })
+
+  const mChanges = messages.dashboard.people.import.review.changes
+
+  it("renders the change counts and the per-person field diffs", async () => {
+    previewImportMock.mockResolvedValueOnce({
+      ...OK_PREVIEW,
+      diff: {
+        people: { created: 1, updated: 1, unchanged: 3 },
+        updatedPeople: [
+          {
+            externalRef: "E001",
+            displayName: "Anna Svensson",
+            changes: [{ field: "department", from: "Ekonomi", to: "HR" }],
+          },
+        ],
+        nameMismatches: [],
+        salary: {
+          newEntries: 1,
+          changedSameYear: 2,
+          identical: 3,
+          changedDetails: [],
+        },
+      },
+    })
+    renderReviewStep()
+
+    await waitFor(() => {
+      expect(screen.getByText(mChanges.updatedPeople)).toBeDefined()
+    })
+    expect(screen.getByText(mChanges.newPeople)).toBeDefined()
+    expect(screen.getByText(mChanges.salaryChanged)).toBeDefined()
+    // The per-person diff names the person and the changed field's values.
+    const updated = screen.getByTestId("updated-people")
+    expect(updated.textContent).toContain("Anna Svensson")
+    expect(updated.textContent).toContain("Ekonomi")
+    expect(updated.textContent).toContain("HR")
+  })
+
+  it("skips name-mismatched rows by default and passes them to importPayroll", async () => {
+    previewImportMock.mockResolvedValueOnce({
+      ...OK_PREVIEW,
+      diff: {
+        ...OK_PREVIEW.diff,
+        nameMismatches: [
+          {
+            externalRef: "E001",
+            storedName: "Anna Svensson",
+            incomingName: "Greta Berg",
+          },
+        ],
+      },
+    })
+    importPayrollMock.mockResolvedValueOnce(OK_RESULT)
+    renderReviewStep()
+
+    await waitFor(() => {
+      expect(screen.getByTestId("name-mismatch")).toBeDefined()
+    })
+    expect(screen.getByTestId("name-mismatch").textContent).toContain(
+      "Greta Berg"
+    )
+
+    await clickConfirm()
+    await waitFor(() => {
+      expect(importPayrollMock).toHaveBeenCalledOnce()
+    })
+    const call = importPayrollMock.mock.calls[0]?.[0] as {
+      skipExternalRefs?: string[]
+    }
+    expect(call.skipExternalRefs).toEqual(["E001"])
+  })
+
+  it("imports mismatched rows when HR opts in", async () => {
+    previewImportMock.mockResolvedValueOnce({
+      ...OK_PREVIEW,
+      diff: {
+        ...OK_PREVIEW.diff,
+        nameMismatches: [
+          {
+            externalRef: "E001",
+            storedName: "Anna Svensson",
+            incomingName: "Greta Berg",
+          },
+        ],
+      },
+    })
+    importPayrollMock.mockResolvedValueOnce(OK_RESULT)
+    renderReviewStep()
+
+    await waitFor(() => {
+      expect(screen.getByTestId("name-mismatch")).toBeDefined()
+    })
+    fireEvent.click(
+      screen.getByRole("checkbox", { name: mChanges.mismatchImportAnyway })
+    )
+
+    await clickConfirm()
+    await waitFor(() => {
+      expect(importPayrollMock).toHaveBeenCalledOnce()
+    })
+    const call = importPayrollMock.mock.calls[0]?.[0] as Record<string, unknown>
+    expect("skipExternalRefs" in call).toBe(false)
+  })
+
+  it("allows importing when the preview fails to load", async () => {
+    previewImportMock.mockRejectedValueOnce(new Error("network"))
+    importPayrollMock.mockResolvedValueOnce(OK_RESULT)
+    renderReviewStep()
+
+    await waitFor(() => {
+      expect(screen.getByText(mChanges.previewFailed)).toBeDefined()
+    })
+    await clickConfirm()
+    await waitFor(() => {
+      expect(importPayrollMock).toHaveBeenCalledOnce()
+    })
   })
 })

@@ -17,6 +17,9 @@ import {
   AlertTitle,
 } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
+import { Checkbox } from "@workspace/ui/components/checkbox"
+import { Label } from "@workspace/ui/components/label"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   Table,
   TableBody,
@@ -25,9 +28,10 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
+import type { FunctionReturnType } from "convex/server"
 import { useAction } from "convex/react"
 import { useTranslations } from "next-intl"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useOrganization } from "@/components/org-context"
 import { WizardFooter } from "@/components/onboarding/wizard-footer"
@@ -36,6 +40,9 @@ import type { ImportResultCounts, ParsedCsv } from "./import-wizard"
 
 // Maximum number of rows to show in the preview table.
 const PREVIEW_ROW_COUNT = 10
+
+// Maximum updated-people diff cards shown before "and N more".
+const UPDATED_PEOPLE_SHOWN = 6
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -185,15 +192,58 @@ export function ReviewStep({
   const tImport = useTranslations("dashboard.people.import")
   const tFields = useTranslations("dashboard.people.import.fields")
   const tGender = useTranslations("dashboard.people.import.gender")
+  const tChanges = useTranslations("dashboard.people.import.review.changes")
   const tToast = useTranslations("dashboard.toast")
   const { orgId } = useOrganization()
 
+  // The diff names person fields by their stored keys; displayName is the
+  // one field with no canonical import-field label of its own.
+  function fieldChangeLabel(field: string): string {
+    if (field === "displayName") return tChanges("displayName")
+    return tFields(field as Parameters<typeof tFields>[0])
+  }
+
   const importPayroll = useAction(api.people.import.importPayroll)
+  const previewImport = useAction(api.people.import.previewImport)
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const previewRows = buildPreviewRows(parsed, mapping)
   const columnMap = buildColumnMap(mapping, parsed.headers)
+
+  // The dry-run change preview: the SAME pipeline the import runs, diffed
+  // against the stored data server-side, so what this step shows is what the
+  // import will do. Fetched once on mount (an action, not a reactive query);
+  // the ref guards StrictMode's double-invoked mount effect.
+  const [changePreview, setChangePreview] = useState<FunctionReturnType<
+    typeof api.people.import.previewImport
+  > | null>(null)
+  const [previewFailed, setPreviewFailed] = useState(false)
+  // Rows flagged as name mismatches are skipped unless HR opts in.
+  const [updateMismatchedAnyway, setUpdateMismatchedAnyway] = useState(false)
+  const previewRanRef = useRef(false)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: fire once on mount
+  useEffect(() => {
+    if (previewRanRef.current) return
+    previewRanRef.current = true
+    const genderOverridePairs = Object.entries(genderOverrides)
+    previewImport({
+      orgId,
+      csvText,
+      columnMap,
+      ...(genderOverridePairs.length > 0
+        ? { genderOverrides: genderOverridePairs }
+        : {}),
+    })
+      .then(setChangePreview)
+      .catch(() => setPreviewFailed(true))
+  }, [])
+
+  const nameMismatches = changePreview?.diff?.nameMismatches ?? []
+  const skippedMismatchRefs =
+    !updateMismatchedAnyway && nameMismatches.length > 0
+      ? nameMismatches.map((m) => m.externalRef)
+      : []
 
   async function handleConfirm() {
     setIsSubmitting(true)
@@ -212,6 +262,10 @@ export function ReviewStep({
         importId,
         ...(genderOverridePairs.length > 0
           ? { genderOverrides: genderOverridePairs }
+          : {}),
+        // Name-mismatched rows stay out unless HR ticked the override.
+        ...(skippedMismatchRefs.length > 0
+          ? { skipExternalRefs: skippedMismatchRefs }
           : {}),
       })
       if (result.ok) {
@@ -250,6 +304,129 @@ export function ReviewStep({
                 </li>
               ))}
             </ul>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* What the import will actually do, from the server-side dry run. */}
+      <div data-testid="import-changes">
+        <h3 className="mb-3 font-medium text-sm">{tChanges("heading")}</h3>
+        {previewFailed ? (
+          <p className="text-muted-foreground text-sm">
+            {tChanges("previewFailed")}
+          </p>
+        ) : changePreview === null ? (
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-64" />
+            <Skeleton className="h-5 w-56" />
+            <Skeleton className="h-5 w-60" />
+          </div>
+        ) : changePreview.diff === null ? null : (
+          <div className="space-y-4">
+            <ul className="max-w-sm space-y-1 text-sm">
+              {(
+                [
+                  ["newPeople", changePreview.diff.people.created],
+                  ["updatedPeople", changePreview.diff.people.updated],
+                  ["unchangedPeople", changePreview.diff.people.unchanged],
+                  ["salaryNew", changePreview.diff.salary.newEntries],
+                  ["salaryChanged", changePreview.diff.salary.changedSameYear],
+                  ["salaryIdentical", changePreview.diff.salary.identical],
+                ] as const
+              )
+                .filter(([, count]) => count > 0)
+                .map(([key, count]) => (
+                  <li
+                    key={key}
+                    className="flex items-baseline justify-between gap-4"
+                  >
+                    <span className="text-muted-foreground">
+                      {tChanges(key)}
+                    </span>
+                    <span className="font-medium tabular-nums">{count}</span>
+                  </li>
+                ))}
+            </ul>
+
+            {/* Who changes, field by field, so updating is a knowing act. */}
+            {changePreview.diff.updatedPeople.length > 0 && (
+              <div className="space-y-2" data-testid="updated-people">
+                {changePreview.diff.updatedPeople
+                  .slice(0, UPDATED_PEOPLE_SHOWN)
+                  .map((person) => (
+                    <div
+                      key={person.externalRef}
+                      className="rounded-md border px-3 py-2 text-sm"
+                    >
+                      <p className="font-medium">{person.displayName}</p>
+                      <p className="text-muted-foreground">
+                        {person.changes.map((change, index) => (
+                          <span key={change.field}>
+                            {index > 0 && " · "}
+                            {fieldChangeLabel(change.field)}:{" "}
+                            {change.from !== "" && (
+                              <>
+                                {change.from}
+                                {" → "}
+                              </>
+                            )}
+                            {change.to}
+                          </span>
+                        ))}
+                      </p>
+                    </div>
+                  ))}
+                {changePreview.diff.updatedPeople.length >
+                  UPDATED_PEOPLE_SHOWN && (
+                  <p className="text-muted-foreground text-sm">
+                    {tChanges("andMore", {
+                      count:
+                        changePreview.diff.updatedPeople.length -
+                        UPDATED_PEOPLE_SHOWN,
+                    })}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Same employee number, different name: likely a reused number or a
+          typo. These rows stay OUT of the import unless HR opts in. Alert has
+          no warning variant; the amber tint is the call-site override used
+          across the app. */}
+      {nameMismatches.length > 0 && (
+        <Alert
+          className="border-amber-500/50 text-amber-700 dark:text-amber-400"
+          data-testid="name-mismatch"
+        >
+          <AlertTitle>{tChanges("mismatchTitle")}</AlertTitle>
+          <AlertDescription>
+            <p>{tChanges("mismatchBody")}</p>
+            <ul className="mt-2 space-y-1">
+              {nameMismatches.map((mismatch) => (
+                <li key={mismatch.externalRef} className="font-medium">
+                  {mismatch.externalRef}: {mismatch.storedName}
+                  {" → "}
+                  {mismatch.incomingName}
+                </li>
+              ))}
+            </ul>
+            {/* htmlFor association (not a wrapping label): a label around the
+                checkbox re-dispatches the click and toggles it twice. */}
+            <div className="mt-3 flex items-center gap-2">
+              <Checkbox
+                id="import-mismatched-anyway"
+                checked={updateMismatchedAnyway}
+                onCheckedChange={(checked) =>
+                  setUpdateMismatchedAnyway(checked === true)
+                }
+              />
+              <Label htmlFor="import-mismatched-anyway" className="font-medium">
+                {tChanges("mismatchImportAnyway")}
+              </Label>
+            </div>
           </AlertDescription>
         </Alert>
       )}
@@ -314,6 +491,9 @@ export function ReviewStep({
         </Button>
         <SubmitButton
           isSubmitting={isSubmitting}
+          // The confirm waits for the change preview (it defines the
+          // mismatch skip list); a failed preview does not block importing.
+          disabled={changePreview === null && !previewFailed}
           onClick={handleConfirm}
           data-testid="confirm-button"
         >

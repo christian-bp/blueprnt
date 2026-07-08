@@ -310,7 +310,22 @@
           "preview": "Forhåndsvisning (de {count} første rækker)",
           "summary": "{people, plural, one {# person} other {# personer}} der skal importeres",
           "confirm": "Bekræft import",
-          "blockingTitle": "Obligatoriske felter er ikke tilknyttet"
+          "blockingTitle": "Obligatoriske felter er ikke tilknyttet",
+          "changes": {
+            "heading": "Hvad importen vil ændre",
+            "newPeople": "Nye medarbejdere",
+            "updatedPeople": "Opdaterede medarbejdere",
+            "unchangedPeople": "Allerede opdaterede",
+            "salaryNew": "Nye lønposter",
+            "salaryChanged": "Lønændringer for samme lønår",
+            "salaryIdentical": "Lønninger der allerede er opdaterede",
+            "displayName": "Navn",
+            "andMore": "{count, plural, one {og # mere} other {og # mere}}",
+            "previewFailed": "Forhåndsvisningen af ændringer kunne ikke indlæses. Du kan stadig importere.",
+            "mismatchTitle": "Kontrollér disse medarbejdernumre",
+            "mismatchBody": "Disse medarbejdernumre findes allerede med et andet navn. Det kan betyde et genbrugt nummer eller en tastefejl, så rækkerne springes over, medmindre du vælger at opdatere dem.",
+            "mismatchImportAnyway": "Opdater disse medarbejdere alligevel"
+          }
         },
         "discard": {
           "title": "Kassér denne import?",

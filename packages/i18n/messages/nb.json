@@ -310,7 +310,22 @@
           "preview": "Forhåndsvisning (de {count} første radene)",
           "summary": "{people, plural, one {# person} other {# personer}} som skal importeres",
           "confirm": "Bekreft import",
-          "blockingTitle": "Obligatoriske felt er ikke tilordnet"
+          "blockingTitle": "Obligatoriske felt er ikke tilordnet",
+          "changes": {
+            "heading": "Hva importen vil endre",
+            "newPeople": "Nye ansatte",
+            "updatedPeople": "Oppdaterte ansatte",
+            "unchangedPeople": "Allerede oppdaterte",
+            "salaryNew": "Nye lønnsoppføringer",
+            "salaryChanged": "Lønnsendringer for samme lønnsår",
+            "salaryIdentical": "Lønninger som allerede er oppdaterte",
+            "displayName": "Navn",
+            "andMore": "{count, plural, one {og # til} other {og # til}}",
+            "previewFailed": "Forhåndsvisningen av endringer kunne ikke lastes. Du kan likevel importere.",
+            "mismatchTitle": "Kontroller disse ansattnumrene",
+            "mismatchBody": "Disse ansattnumrene finnes allerede med et annet navn. Det kan bety et gjenbrukt nummer eller en skrivefeil, så radene hoppes over med mindre du velger å oppdatere dem.",
+            "mismatchImportAnyway": "Oppdater disse ansatte likevel"
+          }
         },
         "discard": {
           "title": "Forkaste denne importen?",

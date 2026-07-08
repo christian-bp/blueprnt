@@ -12,6 +12,7 @@ import {
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
 import { uniquePersonPublicId } from "../lib/slug"
+import { personImportPatch } from "./importDiff"
 
 // The optional person fields shared by createPerson and upsertPersonByExternalRef.
 const optionalPersonArgs = {
@@ -204,29 +205,23 @@ export const upsertPersonByExternalRef = internalMutation({
       return { personId, outcome: "created" as const }
     }
 
-    // Update path: compute the patch (non-PII fields only for audit; PII fields
-    // like displayName and gender are patched but never diffed in the audit row).
-    const patch: Record<string, unknown> = {}
-    if (args.displayName !== existing.displayName)
-      patch.displayName = args.displayName
-    if (args.gender !== existing.gender) patch.gender = args.gender
-    if (args.birthDate !== existing.birthDate) {
-      patch.birthDate = args.birthDate
-    }
-    if (args.employmentStartDate !== existing.employmentStartDate) {
-      patch.employmentStartDate = args.employmentStartDate
-    }
-    if (args.ftePercent !== existing.ftePercent) {
-      patch.ftePercent = args.ftePercent
-    }
-    if (args.country !== existing.country) patch.country = args.country
-    if (args.isManager !== existing.isManager) patch.isManager = args.isManager
-    if (args.statisticalCode !== existing.statisticalCode) {
-      patch.statisticalCode = args.statisticalCode
-    }
-    if (args.department !== existing.department)
-      patch.department = args.department
-    if (args.title !== existing.title) patch.title = args.title
+    // Update path: compute the patch via the shared import-diff rule (also
+    // used by previewImport, so the review preview cannot disagree with the
+    // import). A field ABSENT from the file is left untouched, never cleared.
+    // Non-PII fields only reach the audit diff; PII fields like displayName
+    // and gender are patched but never diffed in the audit row.
+    const patch: Record<string, unknown> = personImportPatch(existing, {
+      displayName: args.displayName,
+      gender: args.gender,
+      birthDate: args.birthDate,
+      employmentStartDate: args.employmentStartDate,
+      ftePercent: args.ftePercent,
+      country: args.country,
+      isManager: args.isManager,
+      statisticalCode: args.statisticalCode,
+      department: args.department,
+      title: args.title,
+    })
 
     // No changes: no write, no audit row.
     if (Object.keys(patch).length === 0) {
