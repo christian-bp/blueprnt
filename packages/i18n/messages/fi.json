@@ -417,7 +417,6 @@
         "role": "Rooli",
         "state": "Tila"
       },
-      "reviewHint": "Tarkista jokaisen työntekijän taso ja vahvista sitten.",
       "noRoleMatch": "Ei osumaa vielä",
       "personColumns": {
         "name": "Nimi",

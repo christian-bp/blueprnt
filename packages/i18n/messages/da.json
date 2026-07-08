@@ -417,7 +417,6 @@
         "role": "Rolle",
         "state": "Status"
       },
-      "reviewHint": "Kontrollér hver medarbejders niveau, og bekræft derefter.",
       "noRoleMatch": "Intet match endnu",
       "personColumns": {
         "name": "Navn",

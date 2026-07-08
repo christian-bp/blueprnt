@@ -417,7 +417,6 @@
         "role": "Roll",
         "state": "Status"
       },
-      "reviewHint": "Kontrollera varje anställds nivå och bekräfta sedan.",
       "noRoleMatch": "Ingen träff ännu",
       "personColumns": {
         "name": "Namn",

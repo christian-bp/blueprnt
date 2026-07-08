@@ -283,7 +283,6 @@ describe("ClassifyTitleTable", () => {
     })
     expect(screen.getByRole("combobox", { name: m.columns.role })).toBeDefined()
     expect(screen.getByRole("button", { name: m.assignCta })).toBeDefined()
-    expect(screen.getByText(m.reviewHint)).toBeDefined()
   })
 
   it("collapse hides the panel again", async () => {

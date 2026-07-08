@@ -417,7 +417,6 @@
         "role": "Role",
         "state": "State"
       },
-      "reviewHint": "Check each employee's level, then confirm.",
       "noRoleMatch": "No match yet",
       "personColumns": {
         "name": "Name",

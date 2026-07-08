@@ -686,10 +686,7 @@ export function ClassifyTitleTable({
                               and only while there is something to confirm
                               (not yet confirmed, or a pending change). */}
                           {actionable && (
-                            <div className="flex flex-wrap items-center justify-end gap-3">
-                              <span className="text-muted-foreground text-sm">
-                                {t("reviewHint")}
-                              </span>
+                            <div className="flex justify-end">
                               {/* FIX 2+3: disabled while in-flight (prevents
                                   double-write); try/catch/finally in onConfirm
                                   surfaces errors via toast.error. */}
