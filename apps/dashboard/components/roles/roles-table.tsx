@@ -109,7 +109,9 @@ const exactString = (
 const HEAD_WIDTH: Record<string, string> = {
   track: "w-44",
   team: "w-[22%]",
-  evaluation: "w-24",
+  // w-32 fits the widest locale label (fi "Vaativuusluokka"); narrower clips
+  // it and forces a horizontal scroll.
+  evaluation: "w-32",
 }
 
 export function RolesTable({

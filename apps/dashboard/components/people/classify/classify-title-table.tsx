@@ -246,7 +246,9 @@ export function ClassifyTableHeader({
         {/* Reserved slot for the expand/collapse control (fixed width avoids layout shift) */}
         <TableHead className="w-8" />
         {head("title", t("columns.title"))}
-        {head("people", t("columns.people"), "w-24")}
+        {/* w-32 fits the widest locale label (da "Medarbejdere") plus the
+            sort chevron slot. */}
+        {head("people", t("columns.people"), "w-32")}
         <TableHead className="w-[26%]">{t("columns.role")}</TableHead>
         {head("state", t("columns.state"), "w-36")}
       </TableRow>

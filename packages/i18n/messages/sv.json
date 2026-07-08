@@ -161,7 +161,7 @@
         "name": "Namn",
         "gender": "Kön",
         "department": "Avdelning",
-        "fte": "Sysselsättningsgrad"
+        "fte": "Omfattning"
       },
       "toolbar": {
         "searchPlaceholder": "Sök på namn eller avdelning",

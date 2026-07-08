@@ -161,7 +161,7 @@
         "name": "Navn",
         "gender": "Kjønn",
         "department": "Avdeling",
-        "fte": "Stilling"
+        "fte": "Stillingsgrad"
       },
       "toolbar": {
         "searchPlaceholder": "Søk på navn eller avdeling",

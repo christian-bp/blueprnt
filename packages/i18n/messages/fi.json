@@ -161,7 +161,7 @@
         "name": "Nimi",
         "gender": "Sukupuoli",
         "department": "Osasto",
-        "fte": "Työsuhde"
+        "fte": "Työaika"
       },
       "toolbar": {
         "searchPlaceholder": "Hae nimellä tai osastolla",

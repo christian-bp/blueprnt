@@ -256,7 +256,9 @@ export function PeopleSection() {
         {sortableHead("name", t("columns.name"))}
         {sortableHead("gender", t("columns.gender"), "w-28")}
         {sortableHead("department", t("columns.department"), "w-[22%]")}
-        {sortableHead("fte", t("columns.fte"), "w-20")}
+        {/* w-28 fits the widest locale label (sv "Omfattning") plus the sort
+            chevron slot; narrower clips it and forces a horizontal scroll. */}
+        {sortableHead("fte", t("columns.fte"), "w-28")}
       </TableRow>
     </TableHeader>
   )
