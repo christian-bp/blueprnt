@@ -1,5 +1,7 @@
 "use client"
 
+import { MoreVerticalIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Badge } from "@workspace/ui/components/badge"
 import {
@@ -33,13 +35,26 @@ import {
 import { usePageTitle } from "@/hooks/use-page-title"
 
 // Skeleton shape per salary column, mirroring the real cells (year, two
-// currency-formatted amounts, the role/level pair, the row-actions button).
+// currency-formatted amounts, the role/level pair, the row-actions trigger).
+// The trigger is static per-row chrome, not data, so it renders as its real
+// icon (muted, non-interactive) rather than a bar.
 const SALARY_SKELETON_COLUMNS: TableSkeletonColumn[] = [
   { className: "w-10" },
   { className: "w-20" },
   { className: "w-20" },
   { className: "w-16" },
-  { className: "ml-auto size-9 rounded-md" },
+  {
+    content: (
+      <span className="ml-auto flex size-9 items-center justify-center text-muted-foreground/50">
+        <HugeiconsIcon
+          icon={MoreVerticalIcon}
+          size={16}
+          strokeWidth={2}
+          aria-hidden="true"
+        />
+      </span>
+    ),
+  },
 ]
 
 // The per-person detail surface: the role-detail layout (a wide profile card

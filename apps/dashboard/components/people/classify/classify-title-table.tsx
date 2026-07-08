@@ -172,11 +172,24 @@ function buildDefaultLevels(
 
 // Skeleton shape per column, mirroring the real row content (expand chevron,
 // title text, people count, resolved role text, state badge) so the loading
-// table has the same silhouette and row height as the loaded one. The column
-// count for the expansion row's colSpan derives from it, so header, skeleton,
-// and colSpan can never drift apart.
+// table has the same silhouette and row height as the loaded one. The chevron
+// is static per-row chrome, not data, so it renders as its real icon (muted,
+// non-interactive) rather than a bar. The column count for the expansion
+// row's colSpan derives from it, so header, skeleton, and colSpan can never
+// drift apart.
 export const CLASSIFY_SKELETON_COLUMNS: TableSkeletonColumn[] = [
-  { className: "size-4" },
+  {
+    content: (
+      <span className="flex size-6 items-center justify-center text-muted-foreground/50">
+        <HugeiconsIcon
+          icon={ArrowDown01Icon}
+          size={14}
+          strokeWidth={2}
+          aria-hidden="true"
+        />
+      </span>
+    ),
+  },
   { className: "w-40 max-w-full" },
   { className: "w-8" },
   { className: "w-32 max-w-full" },

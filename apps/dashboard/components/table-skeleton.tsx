@@ -1,11 +1,16 @@
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { TableBody, TableCell, TableRow } from "@workspace/ui/components/table"
 import { cn } from "@workspace/ui/lib/utils"
+import type { ReactNode } from "react"
 
 // Per-column shaping for the skeleton bar. Tailor it to the column's real
 // content for a natural look, e.g. "h-5 w-16 rounded-full" for a badge column or
 // "w-24" for a short value. Defaults to a full-width "h-4" bar.
-export type TableSkeletonColumn = { className?: string }
+// `content` replaces the bar entirely: skeleton bars stand in for unknown
+// DATA, so per-row chrome that is identical for every row (an expand chevron,
+// a row-actions trigger) renders as its real icon, muted and non-interactive,
+// instead of a gray bar.
+export type TableSkeletonColumn = { className?: string; content?: ReactNode }
 
 // A reusable table loading state: skeleton rows for a table body. Render it in
 // place of <TableBody> inside the same <Table> while data loads, so the table
@@ -41,7 +46,11 @@ export function TableSkeleton({
                   real text; taller control-shaped bars (selects, buttons)
                   still grow it. */}
               <div className="flex min-h-5 items-center">
-                <Skeleton className={cn("h-4 w-full", col.className)} />
+                {col.content !== undefined ? (
+                  col.content
+                ) : (
+                  <Skeleton className={cn("h-4 w-full", col.className)} />
+                )}
               </div>
             </TableCell>
           ))}
