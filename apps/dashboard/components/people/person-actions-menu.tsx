@@ -55,9 +55,7 @@ export function PersonActionsMenu({
         >
           <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
         </DropdownMenuTrigger>
-        {/* w-auto: size to the item labels, not the icon trigger's width
-            (see salary-row-actions.tsx). */}
-        <DropdownMenuContent align="end" className="w-auto">
+        <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => setEditOpen(true)}>
             {t("detail.editClassification.cta")}
           </DropdownMenuItem>

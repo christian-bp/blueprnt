@@ -144,7 +144,7 @@ export function UploadStep({
               </p>
             </div>
           </div>
-          <Progress value={reading.progress} className="h-1" />
+          <Progress value={reading.progress} />
         </div>
       )}
 
