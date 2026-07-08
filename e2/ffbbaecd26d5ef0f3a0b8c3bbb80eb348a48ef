@@ -1,0 +1,27 @@
+apps/dashboard/components/people/import/upload-step.tsx
+  s_64bfec4f2c802c::t_677653635e5238 147
+apps/dashboard/components/people/person-actions-menu.tsx
+  s_64bfec4f2c802c::t_37012bedb54629 58
+apps/dashboard/components/people/salary-row-actions.tsx
+  s_64bfec4f2c802c::t_855cb947f3c250 55
+packages/ui/src/components/dropdown-menu.tsx
+  s_64bfec4f2c802c::t_d1d8f7728005c6 45-50
+packages/ui/src/components/select.tsx
+  s_64bfec4f2c802c::t_cd39555c8ee213 87-91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "e2ffbbaecd26d5ef0f3a0b8c3bbb80eb348a48ef",
+  "prompts": {},
+  "sessions": {
+    "s_64bfec4f2c802c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4f7800a4-edf3-4da7-819f-2e64c8b536c8",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
