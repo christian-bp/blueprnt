@@ -142,14 +142,18 @@ export function PersonDetail({ publicId }: { publicId: string }) {
               <Skeleton className="h-8 w-24 rounded-md" />
             </CardHeader>
             <CardContent>
-              <Table>
+              <Table className="table-fixed">
                 <TableHeader>
                   <TableRow>
-                    <TableHead>{t("salaryColumns.payYear")}</TableHead>
+                    <TableHead className="w-14">
+                      {t("salaryColumns.payYear")}
+                    </TableHead>
                     <TableHead>{t("salaryColumns.basicMonthly")}</TableHead>
                     <TableHead>{t("salaryColumns.total")}</TableHead>
-                    <TableHead>{t("salaryColumns.role")}</TableHead>
-                    <TableHead>
+                    <TableHead className="w-28">
+                      {t("salaryColumns.role")}
+                    </TableHead>
+                    <TableHead className="w-12">
                       <span className="sr-only">{t("salaryRowActions")}</span>
                     </TableHead>
                   </TableRow>
@@ -296,14 +300,18 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                   {t("salaryEmpty")}
                 </p>
               ) : (
-                <Table>
+                <Table className="table-fixed">
                   <TableHeader>
                     <TableRow>
-                      <TableHead>{t("salaryColumns.payYear")}</TableHead>
+                      <TableHead className="w-14">
+                        {t("salaryColumns.payYear")}
+                      </TableHead>
                       <TableHead>{t("salaryColumns.basicMonthly")}</TableHead>
                       <TableHead>{t("salaryColumns.total")}</TableHead>
-                      <TableHead>{t("salaryColumns.role")}</TableHead>
-                      <TableHead>
+                      <TableHead className="w-28">
+                        {t("salaryColumns.role")}
+                      </TableHead>
+                      <TableHead className="w-12">
                         <span className="sr-only">{t("salaryRowActions")}</span>
                       </TableHead>
                     </TableRow>

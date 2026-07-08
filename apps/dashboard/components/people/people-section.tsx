@@ -1,11 +1,6 @@
 "use client"
 
-import {
-  ArrowDown01Icon,
-  ArrowUp01Icon,
-  Search01Icon,
-  UserMultiple02Icon,
-} from "@hugeicons/core-free-icons"
+import { Search01Icon, UserMultiple02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   type ColumnDef,
@@ -51,6 +46,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useOrganization } from "@/components/org-context"
 import { PageHeader } from "@/components/page-header"
 import { TablePagination } from "@/components/table-pagination"
+import { ariaSort, TableSortButton } from "@/components/table-sort-button"
 import {
   TableSkeleton,
   type TableSkeletonColumn,
@@ -156,7 +152,10 @@ export function PeopleSection() {
 
   const [globalFilter, setGlobalFilter] = useState("")
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [sorting, setSorting] = useState<SortingState>([])
+  // Default order: by name, ascending.
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "name", desc: false },
+  ])
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: PAGE_SIZE,
@@ -259,43 +258,21 @@ export function PeopleSection() {
   }
 
   // Clickable, sortable column heading: first click sorts ascending, the
-  // next flips to descending. Plain text (no button chrome) that underlines
-  // on hover like the table's links; the chevron shows only on the sorted
-  // column, inside a pre-reserved fixed-width slot so its appearance never
-  // shifts the label or the column widths (layout-shift rule).
+  // next flips to descending (TableSortButton owns the shared visual
+  // language; sorting resets to the first page like the filters do).
   function sortableHead(id: string, label: string, widthClass?: string) {
     const column = table.getColumn(id)
     const sorted = column?.getIsSorted() ?? false
     return (
-      <TableHead
-        className={widthClass}
-        aria-sort={
-          sorted === "asc"
-            ? "ascending"
-            : sorted === "desc"
-              ? "descending"
-              : undefined
-        }
-      >
-        <button
-          type="button"
-          className="inline-flex items-center gap-1 underline-offset-4 hover:underline"
-          onClick={() => {
+      <TableHead className={widthClass} aria-sort={ariaSort(sorted)}>
+        <TableSortButton
+          label={label}
+          sorted={sorted}
+          onToggle={() => {
             column?.toggleSorting(sorted === "asc")
             resetPage()
           }}
-        >
-          {label}
-          <span className="inline-flex w-3.5" aria-hidden="true">
-            {sorted !== false && (
-              <HugeiconsIcon
-                icon={sorted === "asc" ? ArrowUp01Icon : ArrowDown01Icon}
-                size={14}
-                strokeWidth={2}
-              />
-            )}
-          </span>
-        </button>
+        />
       </TableHead>
     )
   }

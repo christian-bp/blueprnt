@@ -257,6 +257,32 @@ describe("ClassifyTitleTable", () => {
     expect(screen.getByText(m.noTitle)).toBeDefined()
   })
 
+  it("sorts by title ascending by default, no-title bucket pinned last", () => {
+    const aardvark: ClassifyTitleGroup = {
+      ...HIGH_GROUP,
+      title: "Aardvark Handler",
+    }
+    // Deliberately shuffled input: null-title first, Senior before Aardvark.
+    renderTable([NO_TITLE_GROUP, HIGH_GROUP, aardvark])
+    const rows = screen.getAllByRole("row")
+    expect(rows[1]?.textContent).toContain("Aardvark Handler")
+    expect(rows[2]?.textContent).toContain("Senior Engineer")
+    expect(rows[3]?.textContent).toContain(m.noTitle)
+  })
+
+  it("clicking the title heading flips the direction, no-title still last", () => {
+    const aardvark: ClassifyTitleGroup = {
+      ...HIGH_GROUP,
+      title: "Aardvark Handler",
+    }
+    renderTable([NO_TITLE_GROUP, HIGH_GROUP, aardvark])
+    fireEvent.click(screen.getByRole("button", { name: m.columns.title }))
+    const rows = screen.getAllByRole("row")
+    expect(rows[1]?.textContent).toContain("Senior Engineer")
+    expect(rows[2]?.textContent).toContain("Aardvark Handler")
+    expect(rows[3]?.textContent).toContain(m.noTitle)
+  })
+
   it("fires assignPeopleToRole ONCE with every person on Confirm", async () => {
     renderTable()
     const confirmButton = screen.getByRole("button", { name: m.assignCta })

@@ -103,6 +103,15 @@ const exactString = (
   value: string
 ) => row.getValue<string>(columnId) === value
 
+// Fixed column widths (with table-fixed on the Table): auto layout would
+// re-measure columns from the visible rows, so widths would jump whenever
+// filtering changes which rows show. Title takes the remaining space.
+const HEAD_WIDTH: Record<string, string> = {
+  track: "w-44",
+  team: "w-[22%]",
+  evaluation: "w-24",
+}
+
 export function RolesTable({
   roles,
   tracks,
@@ -141,9 +150,11 @@ export function RolesTable({
         accessorKey: "title",
         header: t("table.title"),
         cell: ({ row }) => (
+          // block truncate: a long title clamps inside the fixed column
+          // instead of widening it.
           <Link
             href={`/roles/${row.original.slug}`}
-            className="font-medium underline-offset-4 hover:underline"
+            className="block truncate font-medium underline-offset-4 hover:underline"
           >
             {row.original.title}
           </Link>
@@ -168,7 +179,9 @@ export function RolesTable({
         header: t("table.team"),
         enableGlobalFilter: false,
         cell: ({ row }) => (
-          <span className="text-muted-foreground">{row.original.team}</span>
+          <span className="block truncate text-muted-foreground">
+            {row.original.team}
+          </span>
         ),
       },
       {
@@ -294,12 +307,12 @@ export function RolesTable({
           </Button>
         </Empty>
       ) : (
-        <Table>
+        <Table className="table-fixed">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className={HEAD_WIDTH[header.id]}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(

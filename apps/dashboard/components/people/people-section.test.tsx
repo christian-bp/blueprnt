@@ -361,17 +361,29 @@ describe("PeopleSection", () => {
     expect(screen.queryByLabelText(m.toolbar.next)).toBeNull()
   })
 
-  it("sorts by name on header click and flips direction on the second", () => {
+  it("sorts by name ascending by default", () => {
+    // Fixture order is deliberately shuffled; the default sort restores it.
+    onQuery((ref) =>
+      queryRouter(ref, [PEOPLE[2], PEOPLE[0], PEOPLE[1]] as typeof PEOPLE)
+    )
+    renderSection()
+    expect(screen.getAllByRole("row")[1]?.textContent).toContain(
+      "Alice Svensson"
+    )
+  })
+
+  it("clicking the default-sorted name heading flips it to descending and back", () => {
     onQuery((ref) => queryRouter(ref))
     renderSection()
     const nameHeader = screen.getByRole("button", { name: m.columns.name })
     const firstDataRow = () => screen.getAllByRole("row")[1]
 
-    fireEvent.click(nameHeader)
-    expect(firstDataRow()?.textContent).toContain("Alice Svensson")
-
+    // Already ascending by default, so the first click flips to descending.
     fireEvent.click(nameHeader)
     expect(firstDataRow()?.textContent).toContain("Charlie Nilsson")
+
+    fireEvent.click(nameHeader)
+    expect(firstDataRow()?.textContent).toContain("Alice Svensson")
   })
 
   it("sorts FTE numerically with missing values below real ones", () => {
@@ -411,10 +423,10 @@ describe("PeopleSection", () => {
     // Unsorted, Person 30 lives on page 2.
     expect(screen.queryByText("Person 30")).toBeNull()
 
-    // Sort descending: the whole set reorders, so page 1 now starts at
-    // Person 30 and Person 01 moves to page 2.
+    // Sort descending (one click: name is already ascending by default): the
+    // whole set reorders, so page 1 now starts at Person 30 and Person 01
+    // moves to page 2.
     const nameHeader = screen.getByRole("button", { name: m.columns.name })
-    fireEvent.click(nameHeader)
     fireEvent.click(nameHeader)
     expect(screen.getAllByRole("row")[1]?.textContent).toContain("Person 30")
     expect(screen.queryByText("Person 01")).toBeNull()

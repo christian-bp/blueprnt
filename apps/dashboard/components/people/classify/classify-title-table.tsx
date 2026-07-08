@@ -25,10 +25,11 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 import { useMutation } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
-import { Fragment, useState } from "react"
+import { Fragment, useMemo, useState } from "react"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { SPRING } from "@/lib/motion"
+import { ariaSort, TableSortButton } from "@/components/table-sort-button"
 import type { TableSkeletonColumn } from "@/components/table-skeleton"
 import { ClassifyPersonRows } from "./classify-person-rows"
 import { UnmatchedTitleActions } from "./unmatched-title-actions"
@@ -102,6 +103,9 @@ export function classificationStateForPeople(
 function rowKey(group: ClassifyTitleGroup): string {
   return group.title ?? "__no_title__"
 }
+
+// Sort rank for the classification state: work first, done last.
+const STATE_RANK = { unclassified: 0, pending: 1, confirmed: 2 } as const
 
 // The role every person in the group is confirmed to, or null when the group
 // is not uniformly confirmed to a single role. This is what the role select
@@ -183,13 +187,49 @@ export const CLASSIFY_SKELETON_COLUMNS: TableSkeletonColumn[] = [
 ]
 export const CLASSIFY_COLUMN_COUNT = CLASSIFY_SKELETON_COLUMNS.length
 
+// The columns a user can sort the title groups by. The role column is a
+// select (input, not data) and actions carry no order, so neither sorts.
+export type ClassifySortKey = "title" | "people" | "state"
+
 export function ClassifyTableHeader({
   selectAll,
+  sort,
+  onSort,
 }: {
   // The select-all checkbox slot; the loading skeleton omits it.
   selectAll?: React.ReactNode
+  // Current sort + toggle; the loading skeleton omits both (static labels).
+  sort?: { key: ClassifySortKey; desc: boolean }
+  onSort?: (key: ClassifySortKey) => void
 }) {
   const t = useTranslations("dashboard.classify")
+
+  // Sortable heading (static label in the skeleton). Widths are declared here
+  // once, with table-fixed on the Table, so columns cannot re-measure from
+  // content when rows change (layout-shift rule); the title column takes the
+  // remaining space.
+  const head = (key: ClassifySortKey, label: string, widthClass?: string) => {
+    const sorted: false | "asc" | "desc" =
+      sort !== undefined && sort.key === key
+        ? sort.desc
+          ? "desc"
+          : "asc"
+        : false
+    return (
+      <TableHead className={widthClass} aria-sort={ariaSort(sorted)}>
+        {onSort !== undefined ? (
+          <TableSortButton
+            label={label}
+            sorted={sorted}
+            onToggle={() => onSort(key)}
+          />
+        ) : (
+          label
+        )}
+      </TableHead>
+    )
+  }
+
   return (
     <TableHeader>
       <TableRow>
@@ -197,11 +237,11 @@ export function ClassifyTableHeader({
         <TableHead className="w-8">{selectAll}</TableHead>
         {/* Reserved slot for the expand/collapse control (fixed width avoids layout shift) */}
         <TableHead className="w-8" />
-        <TableHead>{t("columns.title")}</TableHead>
-        <TableHead>{t("columns.people")}</TableHead>
-        <TableHead>{t("columns.role")}</TableHead>
-        <TableHead>{t("columns.state")}</TableHead>
-        <TableHead>{t("columns.actions")}</TableHead>
+        {head("title", t("columns.title"))}
+        {head("people", t("columns.people"), "w-24")}
+        <TableHead className="w-64">{t("columns.role")}</TableHead>
+        {head("state", t("columns.state"), "w-32")}
+        <TableHead className="w-40">{t("columns.actions")}</TableHead>
       </TableRow>
     </TableHeader>
   )
@@ -437,6 +477,42 @@ export function ClassifyTitleTable({
     return "outline"
   }
 
+  // Column sorting: default by title ascending (the backend's order); a
+  // click on the same heading flips the direction. The no-title bucket stays
+  // pinned last in every order (it is the "needs a title" catch-all, not a
+  // sortable value).
+  const [sort, setSort] = useState<{ key: ClassifySortKey; desc: boolean }>({
+    key: "title",
+    desc: false,
+  })
+  function toggleSort(key: ClassifySortKey) {
+    setSort((prev) =>
+      prev.key === key ? { key, desc: !prev.desc } : { key, desc: false }
+    )
+  }
+  const sortedGroups = useMemo(() => {
+    const arr = [...groups]
+    arr.sort((a, b) => {
+      if ((a.title === null) !== (b.title === null)) {
+        return a.title === null ? 1 : -1
+      }
+      let cmp = 0
+      if (sort.key === "title") {
+        cmp = (a.title ?? "").localeCompare(b.title ?? "", undefined, {
+          sensitivity: "base",
+        })
+      } else if (sort.key === "people") {
+        cmp = a.personCount - b.personCount
+      } else {
+        cmp =
+          STATE_RANK[classificationStateForPeople(a.people)] -
+          STATE_RANK[classificationStateForPeople(b.people)]
+      }
+      return sort.desc ? -cmp : cmp
+    })
+    return arr
+  }, [groups, sort])
+
   // Groups eligible for bulk confirmation: actionable = a resolvable role
   // and either not yet fully confirmed or carrying a pending change.
   const selectableGroups = groups.filter(
@@ -472,8 +548,10 @@ export function ClassifyTitleTable({
           {t("confirmSelected")}
         </Button>
       </div>
-      <Table>
+      <Table className="table-fixed">
         <ClassifyTableHeader
+          sort={sort}
+          onSort={toggleSort}
           selectAll={
             <Checkbox
               aria-label={t("selectAll")}
@@ -489,7 +567,7 @@ export function ClassifyTitleTable({
           }
         />
         <TableBody>
-          {groups.map((group) => {
+          {sortedGroups.map((group) => {
             const { key, state, currentRoleId, trackKey, actionable } =
               resolveGroup(group)
             const isExpanded = expanded.has(key)
@@ -550,7 +628,7 @@ export function ClassifyTitleTable({
                       />
                     </button>
                   </TableCell>
-                  <TableCell className="font-medium">
+                  <TableCell className="truncate font-medium">
                     {group.title !== null ? group.title : t("noTitle")}
                   </TableCell>
                   <TableCell>{group.personCount}</TableCell>
@@ -567,7 +645,13 @@ export function ClassifyTitleTable({
                     >
                       {/* FIX 5: aria-label on the role SelectTrigger so
                         screen readers announce which select this is. */}
-                      <SelectTrigger aria-label={t("columns.role")}>
+                      {/* max-w-full: long role titles clamp inside the fixed
+                          column instead of widening it (the trigger's value
+                          line-clamps). */}
+                      <SelectTrigger
+                        aria-label={t("columns.role")}
+                        className="max-w-full"
+                      >
                         <SelectValue placeholder={t("selectRolePlaceholder")} />
                       </SelectTrigger>
                       <SelectContent>
