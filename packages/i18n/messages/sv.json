@@ -425,6 +425,7 @@
       "expandLabel": "Expandera grupp",
       "collapseLabel": "Minimera grupp",
       "levelLabel": "Nivå",
+      "levelNeedsRole": "Välj en roll först",
       "tenureYears": "{years, plural, one {# år} other {# år}}",
       "createRoleCta": "Skapa ny roll",
       "empty": "Inga anställda importerade ännu. Importera lönedata för att börja klassificera.",

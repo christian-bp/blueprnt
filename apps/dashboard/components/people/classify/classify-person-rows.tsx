@@ -131,16 +131,23 @@ export function ClassifyPersonRows({
                   </span>
                 ) : null}
               </div>
-              {/* Level Select */}
+              {/* Level Select. Without a resolved role there is no track and
+                  no levels: the select stays full-size but disabled, and the
+                  placeholder states the precondition in words (guidance
+                  convention) instead of collapsing to an empty control. */}
               <div>
                 <Select
                   value={currentLevel}
                   onValueChange={onSelectValue((value: string) =>
                     onLevelChange(person.personId, value)
                   )}
+                  disabled={trackLevels.length === 0}
                 >
-                  <SelectTrigger aria-label={t("levelLabel")}>
-                    <SelectValue />
+                  <SelectTrigger
+                    aria-label={t("levelLabel")}
+                    className="w-full"
+                  >
+                    <SelectValue placeholder={t("levelNeedsRole")} />
                   </SelectTrigger>
                   <SelectContent>
                     {trackLevels.map((level) => (

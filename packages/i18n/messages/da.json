@@ -425,6 +425,7 @@
       "expandLabel": "Udvid gruppe",
       "collapseLabel": "Skjul gruppe",
       "levelLabel": "Niveau",
+      "levelNeedsRole": "Vælg en rolle først",
       "tenureYears": "{years, plural, one {# år} other {# år}}",
       "createRoleCta": "Opret ny rolle",
       "empty": "Ingen medarbejdere importeret endnu. Importér løndata for at starte klassificering.",

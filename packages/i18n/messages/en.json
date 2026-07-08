@@ -425,6 +425,7 @@
       "expandLabel": "Expand group",
       "collapseLabel": "Collapse group",
       "levelLabel": "Level",
+      "levelNeedsRole": "Pick a role first",
       "tenureYears": "{years, plural, one {# year} other {# years}}",
       "createRoleCta": "Create new role",
       "empty": "No employees imported yet. Import your payroll data to start classifying.",

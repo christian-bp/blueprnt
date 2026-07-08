@@ -519,6 +519,9 @@ describe("ClassifyTitleTable", () => {
       ).toBeDefined()
     })
     expect(screen.queryByRole("button", { name: m.assignCta })).toBeNull()
+    // Without a role there is no track: the level select states the
+    // precondition instead of rendering empty.
+    expect(screen.getByText(m.levelNeedsRole)).toBeDefined()
   })
 
   it("picking a role in the panel replaces create-role with Confirm", async () => {

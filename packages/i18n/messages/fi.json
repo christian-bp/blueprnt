@@ -425,6 +425,7 @@
       "expandLabel": "Laajenna ryhmä",
       "collapseLabel": "Tiivistä ryhmä",
       "levelLabel": "Taso",
+      "levelNeedsRole": "Valitse ensin rooli",
       "tenureYears": "{years, plural, one {# vuosi} other {# vuotta}}",
       "createRoleCta": "Luo uusi rooli",
       "empty": "Ei tuotuja työntekijöitä vielä. Tuo palkkatiedot aloittaaksesi luokittelun.",
