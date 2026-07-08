@@ -1,0 +1,19 @@
+apps/dashboard/components/people/classify/classify-title-table.tsx
+  s_6bff98b662648b::t_9013d67a15ebe1 689
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "fd5ea0b60c07609c07fb052d0c2c7c3068efef9a",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
