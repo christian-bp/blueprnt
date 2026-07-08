@@ -614,12 +614,15 @@ export function ClassifyTitleTable({
                             lives here, next to what it affects. */}
                         <div className="space-y-4 border-b bg-muted/30 py-4 pr-4 pl-12">
                           {/* Role picker: the one place the group's role is
-                              set; creating a missing role sits beside it. */}
-                          <div className="flex flex-wrap items-end gap-3">
-                            <div className="w-72 max-w-full space-y-1.5">
-                              <span className="block font-medium text-muted-foreground text-xs">
-                                {t("columns.role")}
-                              </span>
+                              set; creating a missing role sits beside it.
+                              Label above, then select + create button on ONE
+                              flex line centered against each other, so they
+                              stay aligned whatever their heights. */}
+                          <div className="space-y-1.5">
+                            <span className="block font-medium text-muted-foreground text-xs">
+                              {t("columns.role")}
+                            </span>
+                            <div className="flex flex-wrap items-center gap-3">
                               <Select
                                 value={currentRoleId ?? ""}
                                 onValueChange={onSelectValue((value: string) =>
@@ -634,7 +637,7 @@ export function ClassifyTitleTable({
                                     announce which select this is. */}
                                 <SelectTrigger
                                   aria-label={t("columns.role")}
-                                  className="w-full bg-card"
+                                  className="w-72 max-w-full bg-card"
                                 >
                                   <SelectValue
                                     placeholder={t("selectRolePlaceholder")}
@@ -648,22 +651,22 @@ export function ClassifyTitleTable({
                                   ))}
                                 </SelectContent>
                               </Select>
+                              {(currentRoleId === null ||
+                                currentRoleId === undefined) && (
+                                <UnmatchedTitleActions
+                                  orgId={orgId}
+                                  title={group.title ?? ""}
+                                  tracks={tracks}
+                                  onRoleCreated={(roleId) =>
+                                    setSelectedRole((prev) => {
+                                      const next = new Map(prev)
+                                      next.set(key, roleId)
+                                      return next
+                                    })
+                                  }
+                                />
+                              )}
                             </div>
-                            {(currentRoleId === null ||
-                              currentRoleId === undefined) && (
-                              <UnmatchedTitleActions
-                                orgId={orgId}
-                                title={group.title ?? ""}
-                                tracks={tracks}
-                                onRoleCreated={(roleId) =>
-                                  setSelectedRole((prev) => {
-                                    const next = new Map(prev)
-                                    next.set(key, roleId)
-                                    return next
-                                  })
-                                }
-                              />
-                            )}
                           </div>
 
                           <ClassifyPersonRows

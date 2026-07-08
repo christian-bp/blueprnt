@@ -114,7 +114,9 @@ export function ClassifyPersonRows({
             <div
               key={person.personId}
               data-person-row
-              className={`${PERSON_GRID} py-2 text-sm`}
+              // Row hover ties the level select to its person across the
+              // wide gap (same tint as table-row hover).
+              className={`${PERSON_GRID} py-2 text-sm transition-colors hover:bg-muted/50`}
             >
               {/* Name */}
               <div className="truncate">{name}</div>
