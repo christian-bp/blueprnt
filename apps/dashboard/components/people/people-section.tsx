@@ -1,6 +1,12 @@
 "use client"
 
-import { Search01Icon, UserMultiple02Icon } from "@hugeicons/core-free-icons"
+import {
+  ArrowDataTransferVerticalIcon,
+  ArrowDown01Icon,
+  ArrowUp01Icon,
+  Search01Icon,
+  UserMultiple02Icon,
+} from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   type ColumnDef,
@@ -8,7 +14,9 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   type Row,
+  type SortingState,
   useReactTable,
 } from "@tanstack/react-table"
 import { api } from "@workspace/backend/convex/_generated/api"
@@ -149,6 +157,7 @@ export function PeopleSection() {
 
   const [globalFilter, setGlobalFilter] = useState("")
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [sorting, setSorting] = useState<SortingState>([])
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: PAGE_SIZE,
@@ -167,7 +176,13 @@ export function PeopleSection() {
         filterFn: exactString,
         enableGlobalFilter: false,
       },
-      { id: "fte", accessorKey: "ftePercent", enableGlobalFilter: false },
+      {
+        id: "fte",
+        // Missing FTE sorts below any real percentage instead of tripping
+        // the numeric comparator with nulls; cells render from row.original.
+        accessorFn: (row) => row.ftePercent ?? -1,
+        enableGlobalFilter: false,
+      },
       {
         id: "classification",
         accessorKey: "classification",
@@ -181,9 +196,10 @@ export function PeopleSection() {
   const table = useReactTable({
     data: rows,
     columns,
-    state: { globalFilter, columnFilters, pagination },
+    state: { globalFilter, columnFilters, sorting, pagination },
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
+    onSortingChange: setSorting,
     onPaginationChange: setPagination,
     // Auto-resets setState on data-identity changes and can loop on unrelated
     // re-renders (see the GROUPING note in roles-table.tsx); the toolbar
@@ -195,6 +211,7 @@ export function PeopleSection() {
       matchesPersonQuery(row.original, value),
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   })
 
@@ -242,14 +259,61 @@ export function PeopleSection() {
     resetPage()
   }
 
+  // Clickable, sortable column heading: first click sorts ascending, the
+  // next flips to descending (the shadcn data-table recipe). The icon slot is
+  // always rendered (neutral both-ways glyph when unsorted) so toggling never
+  // shifts the label; the negative margin aligns the ghost button's label
+  // with the body cells' text.
+  function sortableHead(id: string, label: string) {
+    const column = table.getColumn(id)
+    const sorted = column?.getIsSorted() ?? false
+    return (
+      <TableHead
+        aria-sort={
+          sorted === "asc"
+            ? "ascending"
+            : sorted === "desc"
+              ? "descending"
+              : undefined
+        }
+      >
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="-ml-2.5"
+          onClick={() => {
+            column?.toggleSorting(sorted === "asc")
+            resetPage()
+          }}
+        >
+          {label}
+          <HugeiconsIcon
+            icon={
+              sorted === "asc"
+                ? ArrowUp01Icon
+                : sorted === "desc"
+                  ? ArrowDown01Icon
+                  : ArrowDataTransferVerticalIcon
+            }
+            size={14}
+            strokeWidth={2}
+            aria-hidden="true"
+            className={sorted === false ? "text-muted-foreground/70" : ""}
+          />
+        </Button>
+      </TableHead>
+    )
+  }
+
   const tableHeader = (
     <TableHeader>
       <TableRow>
-        <TableHead>{t("columns.name")}</TableHead>
-        <TableHead>{t("columns.gender")}</TableHead>
-        <TableHead>{t("columns.department")}</TableHead>
-        <TableHead>{t("columns.fte")}</TableHead>
-        <TableHead>{t("columns.classification")}</TableHead>
+        {sortableHead("name", t("columns.name"))}
+        {sortableHead("gender", t("columns.gender"))}
+        {sortableHead("department", t("columns.department"))}
+        {sortableHead("fte", t("columns.fte"))}
+        {sortableHead("classification", t("columns.classification"))}
       </TableRow>
     </TableHeader>
   )

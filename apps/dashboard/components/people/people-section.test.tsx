@@ -361,6 +361,34 @@ describe("PeopleSection", () => {
     expect(screen.queryByLabelText(m.toolbar.next)).toBeNull()
   })
 
+  it("sorts by name on header click and flips direction on the second", () => {
+    onQuery((ref) => queryRouter(ref))
+    renderSection()
+    const nameHeader = screen.getByRole("button", { name: m.columns.name })
+    const firstDataRow = () => screen.getAllByRole("row")[1]
+
+    fireEvent.click(nameHeader)
+    expect(firstDataRow()?.textContent).toContain("Alice Svensson")
+
+    fireEvent.click(nameHeader)
+    expect(firstDataRow()?.textContent).toContain("Charlie Nilsson")
+  })
+
+  it("sorts FTE numerically with missing values below real ones", () => {
+    onQuery((ref) => queryRouter(ref))
+    renderSection()
+    const fteHeader = screen.getByRole("button", { name: m.columns.fte })
+    const firstDataRow = () => screen.getAllByRole("row")[1]
+
+    // Ascending: Charlie (no FTE) sorts below every real percentage.
+    fireEvent.click(fteHeader)
+    expect(firstDataRow()?.textContent).toContain("Charlie Nilsson")
+
+    // Descending: Alice's 100% first.
+    fireEvent.click(fteHeader)
+    expect(firstDataRow()?.textContent).toContain("Alice Svensson")
+  })
+
   it("search resets to the first page", () => {
     const manyPeople = Array.from({ length: 30 }, (_, i) => ({
       personId: `p${i + 1}`,
