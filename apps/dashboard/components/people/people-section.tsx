@@ -1,7 +1,6 @@
 "use client"
 
 import {
-  ArrowDataTransferVerticalIcon,
   ArrowDown01Icon,
   ArrowUp01Icon,
   Search01Icon,
@@ -260,10 +259,10 @@ export function PeopleSection() {
   }
 
   // Clickable, sortable column heading: first click sorts ascending, the
-  // next flips to descending (the shadcn data-table recipe). The icon slot is
-  // always rendered (neutral both-ways glyph when unsorted) so toggling never
-  // shifts the label; the negative margin aligns the ghost button's label
-  // with the body cells' text.
+  // next flips to descending. Plain text (no button chrome) that underlines
+  // on hover like the table's links; the chevron shows only on the sorted
+  // column, inside a pre-reserved fixed-width slot so its appearance never
+  // shifts the label or the column widths (layout-shift rule).
   function sortableHead(id: string, label: string) {
     const column = table.getColumn(id)
     const sorted = column?.getIsSorted() ?? false
@@ -277,31 +276,25 @@ export function PeopleSection() {
               : undefined
         }
       >
-        <Button
+        <button
           type="button"
-          variant="ghost"
-          size="sm"
-          className="-ml-2.5"
+          className="inline-flex items-center gap-1 underline-offset-4 hover:underline"
           onClick={() => {
             column?.toggleSorting(sorted === "asc")
             resetPage()
           }}
         >
           {label}
-          <HugeiconsIcon
-            icon={
-              sorted === "asc"
-                ? ArrowUp01Icon
-                : sorted === "desc"
-                  ? ArrowDown01Icon
-                  : ArrowDataTransferVerticalIcon
-            }
-            size={14}
-            strokeWidth={2}
-            aria-hidden="true"
-            className={sorted === false ? "text-muted-foreground/70" : ""}
-          />
-        </Button>
+          <span className="inline-flex w-3.5" aria-hidden="true">
+            {sorted !== false && (
+              <HugeiconsIcon
+                icon={sorted === "asc" ? ArrowUp01Icon : ArrowDown01Icon}
+                size={14}
+                strokeWidth={2}
+              />
+            )}
+          </span>
+        </button>
       </TableHead>
     )
   }
