@@ -9,8 +9,14 @@ import type { ReactNode } from "react"
 // `content` replaces the bar entirely: skeleton bars stand in for unknown
 // DATA, so per-row chrome that is identical for every row (an expand chevron,
 // a row-actions trigger) renders as its real icon, muted and non-interactive,
-// instead of a gray bar.
-export type TableSkeletonColumn = { className?: string; content?: ReactNode }
+// instead of a gray bar. `cellClassName` mirrors any padding/width override
+// the REAL cell carries (e.g. pr-0 on a control column), so the content sits
+// at exactly the same position in both states.
+export type TableSkeletonColumn = {
+  className?: string
+  cellClassName?: string
+  content?: ReactNode
+}
 
 // A reusable table loading state: skeleton rows for a table body. Render it in
 // place of <TableBody> inside the same <Table> while data loads, so the table
@@ -40,6 +46,7 @@ export function TableSkeleton({
             <TableCell
               // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
               key={colIndex}
+              className={col.cellClassName}
             >
               {/* The wrapper reserves a text-sm line box (min-h-5) around the
                   thinner bar, so skeleton rows are exactly as tall as rows of

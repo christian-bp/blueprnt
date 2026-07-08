@@ -179,8 +179,11 @@ function buildDefaultLevels(
 // drift apart.
 export const CLASSIFY_SKELETON_COLUMNS: TableSkeletonColumn[] = [
   {
+    // pr-0 mirrors the real chevron cell so the icon sits at the exact same
+    // position in both states.
+    cellClassName: "pr-0",
     content: (
-      <span className="flex size-6 items-center justify-center text-muted-foreground/50">
+      <span className="flex size-6 shrink-0 items-center justify-center text-muted-foreground/50">
         <HugeiconsIcon
           icon={ArrowDown01Icon}
           size={14}
