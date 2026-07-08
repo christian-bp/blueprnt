@@ -406,13 +406,10 @@
         "title": "Imported job title",
         "people": "Employees",
         "role": "Role",
-        "state": "State",
-        "actions": "Actions"
+        "state": "State"
       },
-      "selectAll": "Select all",
-      "selectTitle": "Select {title}",
-      "selectedCount": "{count} selected",
-      "confirmSelected": "Confirm selected",
+      "reviewHint": "Check each employee's level, then confirm.",
+      "noRoleMatch": "No match yet",
       "personColumns": {
         "name": "Name",
         "startDate": "Start date"

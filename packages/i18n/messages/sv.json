@@ -406,13 +406,10 @@
         "title": "Importerad befattning",
         "people": "Anställda",
         "role": "Roll",
-        "state": "Status",
-        "actions": "Åtgärder"
+        "state": "Status"
       },
-      "selectAll": "Markera alla",
-      "selectTitle": "Markera {title}",
-      "selectedCount": "{count} markerade",
-      "confirmSelected": "Bekräfta markerade",
+      "reviewHint": "Kontrollera varje anställds nivå och bekräfta sedan.",
+      "noRoleMatch": "Ingen träff ännu",
       "personColumns": {
         "name": "Namn",
         "startDate": "Startdatum"

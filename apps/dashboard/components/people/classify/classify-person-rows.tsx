@@ -44,20 +44,18 @@ export interface ClassifyPersonRowsProps {
 }
 
 // ---------------------------------------------------------------------------
-// Component: renders one block row per person inside the expanded section.
-// The parent mounts these inside a motion.div that handles the height
-// animation (see classify-title-table.tsx FIX 8). These are plain block
-// divs, NOT table rows, because the animation requires a block container
-// (a nested <Table> wraps itself in an overflow-x:auto scroll container
-// that fights height:0 collapse). Layout mirrors the table columns with
-// a simple CSS grid so person rows align visually as sub-rows of the
-// title row.
+// Component: the person list inside the expanded review panel, rendered as a
+// bordered card (header row + divided person rows). The parent mounts it
+// inside a motion.div that handles the height animation (see
+// classify-title-table.tsx FIX 8). These are plain block divs, NOT table
+// rows, because the animation requires a block container (a nested <Table>
+// wraps itself in an overflow-x:auto scroll container that fights height:0
+// collapse).
 // ---------------------------------------------------------------------------
 
-// The shared grid template: two leading slots mirroring the outer table's
-// checkbox + expand columns, then name, start date, and the level select.
+// The shared grid template: name, start date, and the level select.
 const PERSON_GRID =
-  "grid grid-cols-[2rem_2rem_1fr_1fr_minmax(8rem,14rem)] items-center gap-x-4 px-4"
+  "grid grid-cols-[minmax(0,1fr)_minmax(9rem,12rem)_minmax(8rem,13rem)] items-center gap-x-4 px-4"
 
 export function ClassifyPersonRows({
   people,
@@ -79,14 +77,12 @@ export function ClassifyPersonRows({
   ).filter((l) => isValidLevelForTrack(trackKey, l))
 
   return (
-    <>
-      {/* Header line for the expanded person rows: names the columns and
-          carries the level concept's help where levels are shown. */}
+    <div className="overflow-hidden rounded-lg border bg-card">
+      {/* Header line for the person rows: names the columns and carries the
+          level concept's help where levels are shown. */}
       <div
-        className={`${PERSON_GRID} py-1.5 font-medium text-muted-foreground text-xs`}
+        className={`${PERSON_GRID} border-b bg-muted/50 py-2 font-medium text-muted-foreground text-xs`}
       >
-        <div />
-        <div />
         <div>{t("personColumns.name")}</div>
         <div>{t("personColumns.startDate")}</div>
         <div>
@@ -100,69 +96,65 @@ export function ClassifyPersonRows({
           </span>
         </div>
       </div>
-      {people.map((person) => {
-        // Default the level via the shared resolveLevel priority (current
-        // assigned level, then suggestion, then the track's first level) so
-        // what the select shows equals what buildAssignments would submit.
-        const currentLevel =
-          selectedLevel.get(person.personId) ?? resolveLevel(person, trackKey)
+      <div className="divide-y">
+        {people.map((person) => {
+          // Default the level via the shared resolveLevel priority (current
+          // assigned level, then suggestion, then the track's first level) so
+          // what the select shows equals what buildAssignments would submit.
+          const currentLevel =
+            selectedLevel.get(person.personId) ?? resolveLevel(person, trackKey)
 
-        const name = displayNameFor(person, pseudonymize, (ref) =>
-          tOrg("pseudonymTemplate", { ref })
-        )
+          const name = displayNameFor(person, pseudonymize, (ref) =>
+            tOrg("pseudonymTemplate", { ref })
+          )
 
-        const tenure = tenureYears(person.employmentStartDate, today)
+          const tenure = tenureYears(person.employmentStartDate, today)
 
-        return (
-          // Block grid row: the two leading slots keep person rows indented
-          // past the outer table's checkbox + expand columns.
-          <div
-            key={person.personId}
-            data-person-row
-            className={`${PERSON_GRID} bg-muted/30 py-2 text-sm`}
-          >
-            {/* Checkbox slot placeholder */}
-            <div />
-            {/* Expand toggle placeholder */}
-            <div />
-            {/* Name */}
-            <div className="font-normal">{name}</div>
-            {/* Employment start date + tenure */}
-            <div className="text-muted-foreground">
-              {person.employmentStartDate !== null ? (
-                <span>
-                  {person.employmentStartDate}
-                  {tenure !== null && (
-                    <span className="ml-1.5 text-xs">
-                      ({t("tenureYears", { years: tenure })})
-                    </span>
+          return (
+            <div
+              key={person.personId}
+              data-person-row
+              className={`${PERSON_GRID} py-2 text-sm`}
+            >
+              {/* Name */}
+              <div className="truncate">{name}</div>
+              {/* Employment start date + tenure */}
+              <div className="text-muted-foreground">
+                {person.employmentStartDate !== null ? (
+                  <span>
+                    {person.employmentStartDate}
+                    {tenure !== null && (
+                      <span className="ml-1.5 text-xs">
+                        ({t("tenureYears", { years: tenure })})
+                      </span>
+                    )}
+                  </span>
+                ) : null}
+              </div>
+              {/* Level Select */}
+              <div>
+                <Select
+                  value={currentLevel}
+                  onValueChange={onSelectValue((value: string) =>
+                    onLevelChange(person.personId, value)
                   )}
-                </span>
-              ) : null}
+                >
+                  <SelectTrigger aria-label={t("levelLabel")}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {trackLevels.map((level) => (
+                      <SelectItem key={level} value={level}>
+                        {level}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            {/* Level Select */}
-            <div>
-              <Select
-                value={currentLevel}
-                onValueChange={onSelectValue((value: string) =>
-                  onLevelChange(person.personId, value)
-                )}
-              >
-                <SelectTrigger aria-label={t("levelLabel")}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {trackLevels.map((level) => (
-                    <SelectItem key={level} value={level}>
-                      {level}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        )
-      })}
-    </>
+          )
+        })}
+      </div>
+    </div>
   )
 }

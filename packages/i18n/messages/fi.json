@@ -406,13 +406,10 @@
         "title": "Tuotu tehtävänimike",
         "people": "Työntekijät",
         "role": "Rooli",
-        "state": "Tila",
-        "actions": "Toiminnot"
+        "state": "Tila"
       },
-      "selectAll": "Valitse kaikki",
-      "selectTitle": "Valitse {title}",
-      "selectedCount": "{count} valittu",
-      "confirmSelected": "Vahvista valitut",
+      "reviewHint": "Tarkista jokaisen työntekijän taso ja vahvista sitten.",
+      "noRoleMatch": "Ei osumaa vielä",
       "personColumns": {
         "name": "Nimi",
         "startDate": "Aloituspäivä"

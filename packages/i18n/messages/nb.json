@@ -406,13 +406,10 @@
         "title": "Importert stillingstittel",
         "people": "Ansatte",
         "role": "Rolle",
-        "state": "Status",
-        "actions": "Handlinger"
+        "state": "Status"
       },
-      "selectAll": "Velg alle",
-      "selectTitle": "Velg {title}",
-      "selectedCount": "{count} valgt",
-      "confirmSelected": "Bekreft valgte",
+      "reviewHint": "Kontroller nivået til hver ansatt, og bekreft deretter.",
+      "noRoleMatch": "Ingen treff ennå",
       "personColumns": {
         "name": "Navn",
         "startDate": "Startdato"

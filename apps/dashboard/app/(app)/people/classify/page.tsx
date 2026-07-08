@@ -67,15 +67,10 @@ export default function ClassifyPage() {
     return (
       <div className="space-y-4">
         <PageHeader title={t("heading")} description={t("description")} />
-        <div className="space-y-2">
-          {/* Mirrors the loaded table's reserved bulk-toolbar slot so the
-              table sits at the same height before and after data arrives. */}
-          <div className="min-h-8" />
-          <Table className="table-fixed">
-            <ClassifyTableHeader />
-            <TableSkeleton columns={CLASSIFY_SKELETON_COLUMNS} rows={5} />
-          </Table>
-        </div>
+        <Table className="table-fixed">
+          <ClassifyTableHeader />
+          <TableSkeleton columns={CLASSIFY_SKELETON_COLUMNS} rows={5} />
+        </Table>
       </div>
     )
   }

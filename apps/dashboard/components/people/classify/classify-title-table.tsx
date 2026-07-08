@@ -6,7 +6,6 @@ import { ArrowDown01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
-import { Checkbox } from "@workspace/ui/components/checkbox"
 import {
   Select,
   SelectContent,
@@ -171,19 +170,17 @@ function buildDefaultLevels(
 // can reuse the exact same cells and the two can never drift apart.
 // ---------------------------------------------------------------------------
 
-// Skeleton shape per column, mirroring the real row content (checkbox, expand
-// chevron, title text, people count, role select trigger, state badge, confirm
-// button) so the loading table has the same silhouette and row height as the
-// loaded one. The column count for the expansion row's colSpan derives from it,
-// so header, skeleton, and colSpan can never drift apart.
+// Skeleton shape per column, mirroring the real row content (expand chevron,
+// title text, people count, resolved role text, state badge) so the loading
+// table has the same silhouette and row height as the loaded one. The column
+// count for the expansion row's colSpan derives from it, so header, skeleton,
+// and colSpan can never drift apart.
 export const CLASSIFY_SKELETON_COLUMNS: TableSkeletonColumn[] = [
-  { className: "size-4 rounded-[4px]" },
   { className: "size-4" },
   { className: "w-40 max-w-full" },
   { className: "w-8" },
-  { className: "h-9 w-44 max-w-full rounded-md" },
+  { className: "w-32 max-w-full" },
   { className: "h-5 w-20 rounded-full" },
-  { className: "h-8 w-24 rounded-md" },
 ]
 export const CLASSIFY_COLUMN_COUNT = CLASSIFY_SKELETON_COLUMNS.length
 
@@ -192,12 +189,9 @@ export const CLASSIFY_COLUMN_COUNT = CLASSIFY_SKELETON_COLUMNS.length
 export type ClassifySortKey = "title" | "people" | "state"
 
 export function ClassifyTableHeader({
-  selectAll,
   sort,
   onSort,
 }: {
-  // The select-all checkbox slot; the loading skeleton omits it.
-  selectAll?: React.ReactNode
   // Current sort + toggle; the loading skeleton omits both (static labels).
   sort?: { key: ClassifySortKey; desc: boolean }
   onSort?: (key: ClassifySortKey) => void
@@ -233,15 +227,12 @@ export function ClassifyTableHeader({
   return (
     <TableHeader>
       <TableRow>
-        {/* Select-all checkbox in a fixed-width slot */}
-        <TableHead className="w-8">{selectAll}</TableHead>
         {/* Reserved slot for the expand/collapse control (fixed width avoids layout shift) */}
         <TableHead className="w-8" />
         {head("title", t("columns.title"))}
         {head("people", t("columns.people"), "w-24")}
-        <TableHead className="w-64">{t("columns.role")}</TableHead>
-        {head("state", t("columns.state"), "w-32")}
-        <TableHead className="w-40">{t("columns.actions")}</TableHead>
+        <TableHead className="w-[26%]">{t("columns.role")}</TableHead>
+        {head("state", t("columns.state"), "w-36")}
       </TableRow>
     </TableHeader>
   )
@@ -283,9 +274,6 @@ export function ClassifyTitleTable({
   // Per-row in-flight guard: prevents double-confirm and surfaces errors.
   // Keyed by rowKey(group).
   const [confirming, setConfirming] = useState<Set<string>>(() => new Set())
-
-  // Rows ticked for the bulk Confirm-selected action, keyed by rowKey(group).
-  const [selected, setSelected] = useState<Set<string>>(() => new Set())
 
   const assignPeople = useMutation(api.people.assignments.assignPeopleToRole)
 
@@ -451,24 +439,6 @@ export function ClassifyTitleTable({
     }
   }
 
-  // Bulk confirm: every ticked group in one mutation, one toast at the end.
-  async function onConfirmSelected(selectableGroups: ClassifyTitleGroup[]) {
-    const toConfirm = selectableGroups.filter((g) => selected.has(rowKey(g)))
-    if (toConfirm.length === 0 || confirming.size > 0) return
-    setConfirming(
-      (prev) => new Set([...prev, ...toConfirm.map((g) => rowKey(g))])
-    )
-    try {
-      await submitAssignments(toConfirm.flatMap((g) => buildAssignments(g)))
-      setSelected(new Set())
-      toast.success(tToast("classificationConfirmed"))
-    } catch {
-      toast.error(tToast("error"))
-    } finally {
-      setConfirming(new Set())
-    }
-  }
-
   function stateVariant(
     state: "confirmed" | "pending" | "unclassified"
   ): "default" | "secondary" | "outline" {
@@ -513,208 +483,94 @@ export function ClassifyTitleTable({
     return arr
   }, [groups, sort])
 
-  // Groups eligible for bulk confirmation: actionable = a resolvable role
-  // and either not yet fully confirmed or carrying a pending change.
-  const selectableGroups = groups.filter(
-    (group) => resolveGroup(group).actionable
-  )
-  const selectableKeys = selectableGroups.map((g) => rowKey(g))
-  const selectedCount = selectableKeys.filter((k) => selected.has(k)).length
-  const allSelected =
-    selectableKeys.length > 0 && selectedCount === selectableKeys.length
-  const bulkBusy = confirming.size > 0
-
   return (
-    <div className="space-y-2">
-      {/* Bulk toolbar: the slot is always reserved (invisible at zero
-          selection) so ticking a row never shifts the table down. */}
-      <div className="flex min-h-8 items-center justify-end gap-3">
-        <span
-          className={cn(
-            "text-muted-foreground text-sm",
-            selectedCount === 0 && "invisible"
-          )}
-        >
-          {t("selectedCount", { count: selectedCount })}
-        </span>
-        <Button
-          type="button"
-          size="sm"
-          disabled={bulkBusy}
-          className={cn(selectedCount === 0 && "invisible")}
-          onClick={() => void onConfirmSelected(selectableGroups)}
-          data-testid="confirm-selected"
-        >
-          {t("confirmSelected")}
-        </Button>
-      </div>
-      <Table className="table-fixed">
-        <ClassifyTableHeader
-          sort={sort}
-          onSort={toggleSort}
-          selectAll={
-            <Checkbox
-              aria-label={t("selectAll")}
-              checked={allSelected}
-              indeterminate={!allSelected && selectedCount > 0}
-              disabled={selectableKeys.length === 0 || bulkBusy}
-              onCheckedChange={(checked) => {
-                setSelected(
-                  checked === true ? new Set(selectableKeys) : new Set()
-                )
-              }}
-            />
-          }
-        />
-        <TableBody>
-          {sortedGroups.map((group) => {
-            const { key, state, currentRoleId, trackKey, actionable } =
-              resolveGroup(group)
-            const isExpanded = expanded.has(key)
-            const groupLevels =
-              selectedLevel.get(key) ?? new Map<string, string>()
-            const isConfirming = confirming.has(key)
+    <Table className="table-fixed">
+      <ClassifyTableHeader sort={sort} onSort={toggleSort} />
+      <TableBody>
+        {sortedGroups.map((group) => {
+          const { key, state, currentRoleId, trackKey, actionable } =
+            resolveGroup(group)
+          const isExpanded = expanded.has(key)
+          const groupLevels =
+            selectedLevel.get(key) ?? new Map<string, string>()
+          const isConfirming = confirming.has(key)
+          const roleTitle =
+            currentRoleId !== null && currentRoleId !== undefined
+              ? (roleById.get(currentRoleId)?.title ?? "")
+              : null
 
-            // FIX 1: Fragment carries the key so React can track the pair
-            // (title row + expansion row) as a unit. The inner TableRow must
-            // NOT repeat the key.
-            return (
-              <Fragment key={key}>
-                <TableRow>
-                  {/* Bulk-selection checkbox; disabled when the group is not
-                    actionable (no resolvable role, or already confirmed with
-                    no pending change). */}
-                  <TableCell className="w-8 pr-0">
-                    <Checkbox
-                      aria-label={t("selectTitle", {
-                        title: group.title ?? t("noTitle"),
-                      })}
-                      checked={selected.has(key)}
-                      disabled={!actionable || isConfirming}
-                      onCheckedChange={(checked) => {
-                        setSelected((prev) => {
-                          const next = new Set(prev)
-                          if (checked === true) {
-                            next.add(key)
-                          } else {
-                            next.delete(key)
-                          }
-                          return next
-                        })
-                      }}
-                    />
-                  </TableCell>
-                  {/* Expand/collapse control in a pre-reserved slot so toggling
+          // FIX 1: Fragment carries the key so React can track the pair
+          // (title row + expansion row) as a unit. The inner TableRow must
+          // NOT repeat the key.
+          return (
+            <Fragment key={key}>
+              {/* The collapsed row is pure status: title, count, the resolved
+                  role (read-only), and the state. Every edit (role, levels)
+                  and the Confirm itself live in the expanded panel, so a
+                  group cannot be confirmed without its people on screen.
+                  The whole row toggles; the chevron stays the accessible
+                  control. */}
+              <TableRow
+                className="cursor-pointer"
+                onClick={(event) => {
+                  // Real controls handle themselves; a click ending a text
+                  // selection is a copy gesture, not a toggle.
+                  if ((event.target as HTMLElement).closest("button,a")) return
+                  if (window.getSelection()?.toString()) return
+                  toggleExpanded(key)
+                }}
+              >
+                {/* Expand/collapse control in a pre-reserved slot so toggling
                     never causes the other cells to reflow. */}
-                  <TableCell className="w-8 pr-0">
-                    <button
-                      type="button"
-                      aria-label={
-                        isExpanded ? t("collapseLabel") : t("expandLabel")
-                      }
-                      aria-expanded={isExpanded}
-                      onClick={() => toggleExpanded(key)}
-                      className="flex size-6 items-center justify-center rounded text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                      <HugeiconsIcon
-                        icon={ArrowDown01Icon}
-                        size={14}
-                        strokeWidth={2}
-                        aria-hidden="true"
-                        className={cn(
-                          "transition-transform motion-reduce:transition-none",
-                          isExpanded && "rotate-180"
-                        )}
-                      />
-                    </button>
-                  </TableCell>
-                  <TableCell className="truncate font-medium">
-                    {group.title !== null ? group.title : t("noTitle")}
-                  </TableCell>
-                  <TableCell>{group.personCount}</TableCell>
-                  <TableCell>
-                    <Select
-                      value={currentRoleId ?? ""}
-                      onValueChange={onSelectValue((value: string) =>
-                        handleRoleChange(key, value, group)
+                <TableCell className="w-8 pr-0">
+                  <button
+                    type="button"
+                    aria-label={
+                      isExpanded ? t("collapseLabel") : t("expandLabel")
+                    }
+                    aria-expanded={isExpanded}
+                    onClick={() => toggleExpanded(key)}
+                    className="flex size-6 items-center justify-center rounded text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <HugeiconsIcon
+                      icon={ArrowDown01Icon}
+                      size={14}
+                      strokeWidth={2}
+                      aria-hidden="true"
+                      className={cn(
+                        "transition-transform motion-reduce:transition-none",
+                        isExpanded && "rotate-180"
                       )}
-                      items={roles.map((r) => ({
-                        value: r.roleId,
-                        label: r.title,
-                      }))}
-                    >
-                      {/* FIX 5: aria-label on the role SelectTrigger so
-                        screen readers announce which select this is. */}
-                      {/* max-w-full: long role titles clamp inside the fixed
-                          column instead of widening it (the trigger's value
-                          line-clamps). */}
-                      <SelectTrigger
-                        aria-label={t("columns.role")}
-                        className="max-w-full"
-                      >
-                        <SelectValue placeholder={t("selectRolePlaceholder")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {roles.map((r) => (
-                          <SelectItem key={r.roleId} value={r.roleId}>
-                            {r.title}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell>
-                    {/* Block flex wrapper: inline-flex content on the text
-                        baseline inflates the line box by a font-metric-
-                        dependent amount (see the people table's badge cell),
-                        which would desync data rows from the skeleton's if
-                        this ever became the row's tallest cell. */}
-                    <div className="flex min-h-5 items-center">
-                      <Badge variant={stateVariant(state)}>
-                        {t(`state.${state}`)}
-                      </Badge>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {/* No resolvable role: offer creating one (picking an
-                      existing role happens in the row's select). A resolvable
-                      role: Confirm, but only while there is something to
-                      confirm (not yet confirmed, or a pending change).
-                      A confirmed, untouched group shows no action; the row
-                      height is held by the role select, so nothing reflows. */}
-                    {/* Block flex wrapper: keeps the inline-flex button off
-                        the text baseline (same rationale as the state cell). */}
-                    <div className="flex items-center">
-                      {currentRoleId === null || currentRoleId === undefined ? (
-                        <UnmatchedTitleActions
-                          orgId={orgId}
-                          title={group.title ?? ""}
-                          tracks={tracks}
-                          onRoleCreated={(roleId) =>
-                            setSelectedRole((prev) => {
-                              const next = new Map(prev)
-                              next.set(key, roleId)
-                              return next
-                            })
-                          }
-                        />
-                      ) : actionable ? (
-                        // FIX 2+3: disabled while in-flight (prevents double-write);
-                        // try/catch/finally in onConfirm surfaces errors via toast.error.
-                        <Button
-                          type="button"
-                          size="sm"
-                          disabled={isConfirming}
-                          onClick={() => void onConfirm(group)}
-                        >
-                          {t("assignCta")}
-                        </Button>
-                      ) : null}
-                    </div>
-                  </TableCell>
-                </TableRow>
+                    />
+                  </button>
+                </TableCell>
+                <TableCell className="truncate font-medium">
+                  {group.title !== null ? group.title : t("noTitle")}
+                </TableCell>
+                <TableCell>{group.personCount}</TableCell>
+                <TableCell className="truncate">
+                  {roleTitle !== null ? (
+                    roleTitle
+                  ) : (
+                    <span className="text-muted-foreground">
+                      {t("noRoleMatch")}
+                    </span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  {/* Block flex wrapper: inline-flex content on the text
+                      baseline inflates the line box by a font-metric-
+                      dependent amount (see the people table's badge cell),
+                      which would desync data rows from the skeleton's. */}
+                  <div className="flex min-h-5 items-center">
+                    <Badge variant={stateVariant(state)}>
+                      {t(`state.${state}`)}
+                    </Badge>
+                  </div>
+                </TableCell>
+              </TableRow>
 
-                {/* FIX 8: expansion animation follows docs/ui-animation.md rule 2.
+              {/* FIX 8: expansion animation follows docs/ui-animation.md rule 2.
                   A <tr> treats height as a minimum and ignores overflow, so
                   animating height on a <motion.tr> snaps rather than glides.
                   Fix: use a plain (non-animated) <tr> whose only child is a
@@ -723,48 +579,119 @@ export function ClassifyTitleTable({
                   No nested <Table> inside the animation (avoids the
                   overflow-x:auto scroll container that a Table wraps itself in,
                   which would fight the height collapse). */}
-                <AnimatePresence initial={false}>
-                  {isExpanded && (
-                    <tr key={`${key}-people`}>
-                      <td
-                        colSpan={CLASSIFY_COLUMN_COUNT}
-                        style={{ padding: 0 }}
+              <AnimatePresence initial={false}>
+                {isExpanded && (
+                  <tr key={`${key}-people`}>
+                    <td colSpan={CLASSIFY_COLUMN_COUNT} style={{ padding: 0 }}>
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={SPRING}
+                        // overflow-hidden on the block div so height:0
+                        // truly clips; no visual box styles on this element
+                        // (rule 2: outer carries geometry, inner carries style).
+                        className="overflow-hidden"
                       >
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={SPRING}
-                          // overflow-hidden on the block div so height:0
-                          // truly clips; no visual box styles on this element
-                          // (rule 2: outer carries geometry, inner carries style).
-                          className="overflow-hidden"
-                        >
-                          {/* Inner div carries indentation context for person
-                            rows; rendered as a plain block layout (not a
-                            nested Table) so the scroll container does not
-                            fight the height animation. */}
-                          <div className="py-1">
-                            <ClassifyPersonRows
-                              people={group.people}
-                              trackKey={trackKey}
-                              selectedLevel={groupLevels}
-                              onLevelChange={(personId, level) =>
-                                handleLevelChange(key, personId, level)
-                              }
-                              pseudonymize={pseudonymize}
-                            />
+                        {/* The review workspace: the inner div carries the
+                            panel's box styles (rule 2). Everything editable
+                            lives here, next to what it affects. */}
+                        <div className="space-y-4 border-b bg-muted/30 py-4 pr-4 pl-12">
+                          {/* Role picker: the one place the group's role is
+                              set; creating a missing role sits beside it. */}
+                          <div className="flex flex-wrap items-end gap-3">
+                            <div className="w-72 max-w-full space-y-1.5">
+                              <span className="block font-medium text-muted-foreground text-xs">
+                                {t("columns.role")}
+                              </span>
+                              <Select
+                                value={currentRoleId ?? ""}
+                                onValueChange={onSelectValue((value: string) =>
+                                  handleRoleChange(key, value, group)
+                                )}
+                                items={roles.map((r) => ({
+                                  value: r.roleId,
+                                  label: r.title,
+                                }))}
+                              >
+                                {/* FIX 5: aria-label so screen readers
+                                    announce which select this is. */}
+                                <SelectTrigger
+                                  aria-label={t("columns.role")}
+                                  className="w-full bg-card"
+                                >
+                                  <SelectValue
+                                    placeholder={t("selectRolePlaceholder")}
+                                  />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {roles.map((r) => (
+                                    <SelectItem key={r.roleId} value={r.roleId}>
+                                      {r.title}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            {(currentRoleId === null ||
+                              currentRoleId === undefined) && (
+                              <UnmatchedTitleActions
+                                orgId={orgId}
+                                title={group.title ?? ""}
+                                tracks={tracks}
+                                onRoleCreated={(roleId) =>
+                                  setSelectedRole((prev) => {
+                                    const next = new Map(prev)
+                                    next.set(key, roleId)
+                                    return next
+                                  })
+                                }
+                              />
+                            )}
                           </div>
-                        </motion.div>
-                      </td>
-                    </tr>
-                  )}
-                </AnimatePresence>
-              </Fragment>
-            )
-          })}
-        </TableBody>
-      </Table>
-    </div>
+
+                          <ClassifyPersonRows
+                            people={group.people}
+                            trackKey={trackKey}
+                            selectedLevel={groupLevels}
+                            onLevelChange={(personId, level) =>
+                              handleLevelChange(key, personId, level)
+                            }
+                            pseudonymize={pseudonymize}
+                          />
+
+                          {/* The ONLY Confirm: it exists solely inside the
+                              open panel, with every person's level on screen,
+                              and only while there is something to confirm
+                              (not yet confirmed, or a pending change). */}
+                          {actionable && (
+                            <div className="flex flex-wrap items-center justify-end gap-3">
+                              <span className="text-muted-foreground text-sm">
+                                {t("reviewHint")}
+                              </span>
+                              {/* FIX 2+3: disabled while in-flight (prevents
+                                  double-write); try/catch/finally in onConfirm
+                                  surfaces errors via toast.error. */}
+                              <Button
+                                type="button"
+                                size="sm"
+                                disabled={isConfirming}
+                                onClick={() => void onConfirm(group)}
+                              >
+                                {t("assignCta")}
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    </td>
+                  </tr>
+                )}
+              </AnimatePresence>
+            </Fragment>
+          )
+        })}
+      </TableBody>
+    </Table>
   )
 }

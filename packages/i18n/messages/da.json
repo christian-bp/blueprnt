@@ -406,13 +406,10 @@
         "title": "Importeret jobtitel",
         "people": "Medarbejdere",
         "role": "Rolle",
-        "state": "Status",
-        "actions": "Handlinger"
+        "state": "Status"
       },
-      "selectAll": "Vælg alle",
-      "selectTitle": "Vælg {title}",
-      "selectedCount": "{count} valgt",
-      "confirmSelected": "Bekræft valgte",
+      "reviewHint": "Kontrollér hver medarbejders niveau, og bekræft derefter.",
+      "noRoleMatch": "Intet match endnu",
       "personColumns": {
         "name": "Navn",
         "startDate": "Startdato"
