@@ -39,16 +39,18 @@ export function SalaryRowActions({
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            aria-label={t("salaryRowActions")}
-            className="shrink-0 text-muted-foreground hover:text-foreground"
-          >
-            <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
-          </Button>
+        <DropdownMenuTrigger
+          render={
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label={t("salaryRowActions")}
+              className="shrink-0 text-muted-foreground hover:text-foreground"
+            />
+          }
+        >
+          <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
         </DropdownMenuTrigger>
         {/* w-auto: the vendored content pins itself to the trigger's width,
             which for an icon trigger is the 128px min floor and wraps the
@@ -56,7 +58,7 @@ export function SalaryRowActions({
         <DropdownMenuContent align="end" className="w-auto">
           <DropdownMenuItem
             variant="destructive"
-            onSelect={() => setConfirmOpen(true)}
+            onClick={() => setConfirmOpen(true)}
           >
             {t("deleteSalaryCta")}
           </DropdownMenuItem>

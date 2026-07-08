@@ -197,6 +197,12 @@ export function EmailLogSection() {
           />
         </div>
         <Select
+          items={{
+            all: t("statuses.all"),
+            ...Object.fromEntries(
+              STATUSES.map((s) => [s, dyn(t, `statuses.${s}`)])
+            ),
+          }}
           value={status}
           onValueChange={(value) => setStatus(value as Status | "all")}
         >
@@ -213,6 +219,12 @@ export function EmailLogSection() {
           </SelectContent>
         </Select>
         <Select
+          items={{
+            all: t("templates.all"),
+            ...Object.fromEntries(
+              TEMPLATES.map((tpl) => [tpl, dyn(t, `templates.${tpl}`)])
+            ),
+          }}
           value={type}
           onValueChange={(value) => setType(value as Template | "all")}
         >
@@ -377,8 +389,8 @@ function EmailDetailSheet({ messageId }: { messageId: string }) {
           <SheetTitle>{t("detail.notFound")}</SheetTitle>
         </SheetHeader>
         <SheetFooter>
-          <SheetClose asChild>
-            <Button variant="outline">{t("detail.close")}</Button>
+          <SheetClose render={<Button variant="outline" />}>
+            {t("detail.close")}
           </SheetClose>
         </SheetFooter>
       </>
@@ -512,8 +524,8 @@ function EmailDetailSheet({ messageId }: { messageId: string }) {
       </div>
 
       <SheetFooter>
-        <SheetClose asChild>
-          <Button variant="outline">{t("detail.close")}</Button>
+        <SheetClose render={<Button variant="outline" />}>
+          {t("detail.close")}
         </SheetClose>
       </SheetFooter>
     </>

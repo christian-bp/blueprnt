@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import { onSelectValue } from "@/lib/select"
 
 // Reusable currency picker over the product's distinct currencies (Nordic
 // kronor + EUR). Currency codes (SEK/NOK/DKK/EUR) are language-neutral, so the
@@ -28,7 +29,7 @@ export function CurrencySelect({
   "aria-label"?: string
 }) {
   return (
-    <Select value={value} onValueChange={onValueChange}>
+    <Select value={value} onValueChange={onSelectValue(onValueChange)}>
       <SelectTrigger id={id} aria-label={ariaLabel} className="w-full">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>

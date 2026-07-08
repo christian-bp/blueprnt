@@ -146,16 +146,16 @@ describe("CriterionComplianceDialog", () => {
     expect(screen.getByDisplayValue("Distinguishes seniority")).toBeDefined()
     expect(screen.getByDisplayValue("Checked")).toBeDefined()
     // The "medium" bias-risk toggle should be pressed
-    const mediumBtn = screen.getByRole("radio", { name: /medium/i })
-    expect(mediumBtn.getAttribute("data-state")).toBe("on")
+    const mediumBtn = screen.getByRole("button", { name: /medium/i })
+    expect(mediumBtn.getAttribute("aria-pressed")).toBe("true")
   })
 
   it("renders the three bias-risk options as toggle buttons, not a combobox", () => {
     renderDialog()
-    // ToggleGroup single renders each item as role=radio
-    const low = screen.getByRole("radio", { name: /low/i })
-    const medium = screen.getByRole("radio", { name: /medium/i })
-    const high = screen.getByRole("radio", { name: /high/i })
+    // Base UI ToggleGroup items render as toggle buttons (aria-pressed).
+    const low = screen.getByRole("button", { name: /low/i })
+    const medium = screen.getByRole("button", { name: /medium/i })
+    const high = screen.getByRole("button", { name: /high/i })
     expect(low).toBeDefined()
     expect(medium).toBeDefined()
     expect(high).toBeDefined()
@@ -252,8 +252,8 @@ describe("CriterionComplianceDialog", () => {
     expect(screen.getByDisplayValue("AIW")).toBeDefined()
     expect(screen.getByDisplayValue("AIB")).toBeDefined()
     // The "medium" bias-risk toggle should be pressed
-    const mediumBtn = screen.getByRole("radio", { name: /medium/i })
-    expect(mediumBtn.getAttribute("data-state")).toBe("on")
+    const mediumBtn = screen.getByRole("button", { name: /medium/i })
+    expect(mediumBtn.getAttribute("aria-pressed")).toBe("true")
     // Form is now dirty: Save is shown, Approve is not
     expect(screen.getByRole("button", { name: /save/i })).toBeDefined()
     expect(screen.queryByRole("button", { name: /approve/i })).toBeNull()

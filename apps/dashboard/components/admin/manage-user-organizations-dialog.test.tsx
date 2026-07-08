@@ -8,6 +8,7 @@ import {
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
+import { pickSelectOption } from "@/test/select"
 
 const { addMembershipMock, setMembershipRoleMock, removeMembershipMock } =
   vi.hoisted(() => ({
@@ -107,20 +108,15 @@ describe("ManageUserOrganizationsDialog", () => {
     addMembershipMock.mockResolvedValue(null)
     renderDialog()
 
-    // The add section is wrapped in a <form>, which causes Radix Select to
-    // render hidden native <select> elements. The membership list also has one
-    // role select per row (one row here: Acme Corp). The hidden selects in the
-    // form are at indices 0 (org) and 1 (role).
-    // We target the form's selects directly.
+    // The add form.s org select (the membership list has a per-row role
+    // select, so target the trigger by its label). Role defaults to editor.
+    await pickSelectOption(
+      screen.getByRole("combobox", {
+        name: messages.dashboard.admin.users.organizations.orgLabel,
+      }),
+      "Beta Inc"
+    )
     const form = document.querySelector("form") as HTMLFormElement
-    const formSelects = Array.from(
-      form.querySelectorAll("select")
-    ) as HTMLSelectElement[]
-
-    // formSelects[0] = org select; formSelects[1] = role select
-    if (formSelects[0]) {
-      fireEvent.change(formSelects[0], { target: { value: "org-2" } })
-    }
 
     // Submit the form (the Add button is type="submit").
     fireEvent.submit(form)

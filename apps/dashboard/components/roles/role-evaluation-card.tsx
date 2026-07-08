@@ -14,7 +14,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@workspace/ui/components/alert"
-import { Button } from "@workspace/ui/components/button"
+import { Button, buttonVariants } from "@workspace/ui/components/button"
 import {
   Card,
   CardContent,
@@ -122,23 +122,25 @@ export function RoleEvaluationCard({
         </CardTitle>
         {showResult && result?.complete && (
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                aria-label={t("manageCta")}
-                className="shrink-0"
-              >
-                <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
-              </Button>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  aria-label={t("manageCta")}
+                  className="shrink-0"
+                />
+              }
+            >
+              <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <Link href={`/roles/${slug}/rate`}>{t("adjustRateCta")}</Link>
+              <DropdownMenuItem render={<Link href={`/roles/${slug}/rate`} />}>
+                {t("adjustRateCta")}
               </DropdownMenuItem>
               {isAdmin && (
-                <DropdownMenuItem onSelect={() => setAnchorOpen(true)}>
+                <DropdownMenuItem onClick={() => setAnchorOpen(true)}>
                   {anchorRole === null
                     ? tAnchor("designateCta")
                     : tAnchor("manageCta")}
@@ -246,9 +248,9 @@ export function RoleEvaluationCard({
               {evaluated ? tRoles("evaluated") : tRoles("notEvaluated")}
             </p>
             {!archived && profileComplete && (
-              <Button asChild>
-                <Link href={`/roles/${slug}/rate`}>{ctaLabel}</Link>
-              </Button>
+              <Link href={`/roles/${slug}/rate`} className={buttonVariants()}>
+                {ctaLabel}
+              </Link>
             )}
           </div>
         )}

@@ -46,6 +46,7 @@ import {
   makeAddMembershipSchema,
   type MembershipRole,
 } from "@/lib/admin-schemas"
+import { onSelectValue } from "@/lib/select"
 
 export function ManageUserOrganizationsDialog(props: {
   user: { authId: string; name: string; email: string }
@@ -145,10 +146,11 @@ export function ManageUserOrganizationsDialog(props: {
                   <span className="min-w-0 truncate text-sm">{m.name}</span>
                   <div className="flex items-center gap-2">
                     <Select
+                      items={{ admin: tRole("admin"), editor: tRole("editor") }}
                       value={m.role}
-                      onValueChange={(value) =>
+                      onValueChange={onSelectValue((value: string) =>
                         handleRoleChange(m.orgId, value)
-                      }
+                      )}
                     >
                       <SelectTrigger
                         className="w-32"
@@ -164,24 +166,26 @@ export function ManageUserOrganizationsDialog(props: {
                       </SelectContent>
                     </Select>
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          aria-label={t("memberActions", { name: m.name })}
-                          className="shrink-0 text-muted-foreground hover:text-foreground"
-                        >
-                          <HugeiconsIcon
-                            icon={MoreVerticalIcon}
-                            strokeWidth={2}
+                      <DropdownMenuTrigger
+                        render={
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            aria-label={t("memberActions", { name: m.name })}
+                            className="shrink-0 text-muted-foreground hover:text-foreground"
                           />
-                        </Button>
+                        }
+                      >
+                        <HugeiconsIcon
+                          icon={MoreVerticalIcon}
+                          strokeWidth={2}
+                        />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
                           variant="destructive"
-                          onSelect={() => handleRemove(m.orgId)}
+                          onClick={() => handleRemove(m.orgId)}
                         >
                           {t("removeCta")}
                         </DropdownMenuItem>
@@ -213,6 +217,10 @@ export function ManageUserOrganizationsDialog(props: {
                         <Select
                           value={field.value}
                           onValueChange={field.onChange}
+                          items={addableOrgs.map((o) => ({
+                            value: o.orgId,
+                            label: o.name,
+                          }))}
                         >
                           <FormControl>
                             <SelectTrigger
@@ -244,6 +252,10 @@ export function ManageUserOrganizationsDialog(props: {
                         <Select
                           value={field.value}
                           onValueChange={field.onChange}
+                          items={{
+                            admin: tRole("admin"),
+                            editor: tRole("editor"),
+                          }}
                         >
                           <FormControl>
                             <SelectTrigger

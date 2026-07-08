@@ -53,25 +53,30 @@ export function FamilyFilter({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="w-48 justify-between font-normal">
-          <span className="truncate">{label}</span>
-          <HugeiconsIcon
-            icon={ArrowDown01Icon}
-            size={16}
-            strokeWidth={2}
-            aria-hidden="true"
-            className="ml-2 shrink-0 opacity-60"
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="outline"
+            className="w-48 justify-between font-normal"
           />
-        </Button>
+        }
+      >
+        <span className="truncate">{label}</span>
+        <HugeiconsIcon
+          icon={ArrowDown01Icon}
+          size={16}
+          strokeWidth={2}
+          aria-hidden="true"
+          className="ml-2 shrink-0 opacity-60"
+        />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-56">
         {options.map((option) => (
           <DropdownMenuCheckboxItem
             key={option.id}
             checked={!hidden.has(option.id)}
-            // Keep the menu open so multiple families can be toggled in one go.
-            onSelect={(event) => event.preventDefault()}
+            // The menu stays open (Base UI checkbox items default to
+            // closeOnClick false) so multiple families can be toggled in one go.
             onCheckedChange={() => toggle(option.id)}
           >
             {option.name}

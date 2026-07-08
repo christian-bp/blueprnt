@@ -111,6 +111,14 @@ export function FamilyPicker({
 
   return (
     <Select
+      items={[
+        { value: NONE, label: t("none") },
+        ...(families ?? []).map((family) => ({
+          value: family.familyId,
+          label: family.name,
+        })),
+        { value: CREATE, label: t("createNew") },
+      ]}
       value={value ?? NONE}
       onValueChange={(next) => {
         if (next === CREATE) {

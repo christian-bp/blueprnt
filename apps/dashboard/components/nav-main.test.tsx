@@ -1,4 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react"
+import { cloneElement } from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 const pathState = vi.hoisted(() => ({ current: "/" }))
@@ -26,14 +27,14 @@ vi.mock("@workspace/ui/components/sidebar", () => ({
     children,
     ...props
   }: React.ComponentProps<"button"> & {
-    asChild?: boolean
+    render?: React.ReactElement<Record<string, unknown>>
     isActive?: boolean
     tooltip?: string
   }) => {
-    const { asChild, isActive, tooltip, ...rest } = props
+    const { render: renderProp, isActive, tooltip, ...rest } = props
     return (
       <button type="button" data-active={isActive ? "true" : "false"} {...rest}>
-        {children}
+        {renderProp ? cloneElement(renderProp, undefined, children) : children}
       </button>
     )
   },

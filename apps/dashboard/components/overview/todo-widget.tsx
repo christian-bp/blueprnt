@@ -71,7 +71,7 @@ export function TodoWidget({ todo }: { todo: Todo | undefined }) {
       {/* Each group is its own outlined card (rounded border + px), spaced by
           gap-3, rather than the accordion's default divider lines. */}
       <Accordion
-        type="multiple"
+        multiple
         defaultValue={[todo.groups[0]?.key ?? ""]}
         className="gap-3"
       >

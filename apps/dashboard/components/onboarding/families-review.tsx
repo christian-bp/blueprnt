@@ -46,6 +46,7 @@ import {
   moveRoleToFamily,
   reorderRoleWithinFamily,
 } from "@/lib/family-dnd"
+import { onSelectValue } from "@/lib/select"
 
 interface TrackOption {
   trackKey: string
@@ -397,7 +398,14 @@ function SortableRoleRow({
         value={role.title}
         onChange={(event) => onTitleChange(event.target.value)}
       />
-      <Select value={role.trackKey} onValueChange={onTrackChange}>
+      <Select
+        value={role.trackKey}
+        onValueChange={onSelectValue(onTrackChange)}
+        items={trackOptions.map((option) => ({
+          value: option.trackKey,
+          label: option.label,
+        }))}
+      >
         <SelectTrigger
           aria-label={tCreate("trackLabel")}
           className="w-36 shrink-0"

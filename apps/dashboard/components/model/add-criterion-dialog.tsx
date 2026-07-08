@@ -32,8 +32,8 @@ export function AddCriterionDialog({ orgId }: { orgId: string }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button type="button">{tEditor("addCta")}</Button>
+      <DialogTrigger render={<Button type="button" />}>
+        {tEditor("addCta")}
       </DialogTrigger>
       {/* The form is tall; cap the height and scroll inside so the dialog stays
           centered and the overlay shifts nothing behind it. */}

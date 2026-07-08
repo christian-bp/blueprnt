@@ -8,6 +8,7 @@ import {
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
+import { pickSelectOption } from "@/test/select"
 
 const { createUserMock, requestPasswordResetMock, toastSuccessMock } =
   vi.hoisted(() => ({
@@ -67,10 +68,23 @@ function openDialog() {
   fireEvent.click(screen.getByRole("button", { name: labels.cta }))
 }
 
-// Radix Select renders a hidden native <select> when inside a <form>. We target
-// them by querying all selects (org is first, role is second).
-function hiddenSelects(): HTMLSelectElement[] {
-  return Array.from(document.querySelectorAll("select"))
+// Base UI Selects are driven through their popup listbox (no hidden native
+// select anymore): open the labeled trigger and commit an option.
+const ORG_NAMES: Record<string, string> = {
+  "org-1": "Acme Corp",
+  "org-2": "Beta Inc",
+}
+async function pickOrg(orgId: string) {
+  await pickSelectOption(
+    screen.getByRole("combobox", { name: labels.orgLabel }),
+    ORG_NAMES[orgId] ?? orgId
+  )
+}
+async function pickRole(role: "admin" | "editor") {
+  await pickSelectOption(
+    screen.getByRole("combobox", { name: labels.roleLabel }),
+    messages.accounts.role[role]
+  )
 }
 
 function submitForm() {
@@ -112,8 +126,7 @@ describe("CreateUserDialog", () => {
     fireEvent.change(screen.getByLabelText(labels.emailLabel), {
       target: { value: "alice@example.com" },
     })
-    const selects = hiddenSelects()
-    if (selects[0]) fireEvent.change(selects[0], { target: { value: "org-1" } })
+    await pickOrg("org-1")
     await waitFor(() => {
       expect(submit().disabled).toBe(false)
     })
@@ -188,9 +201,8 @@ describe("CreateUserDialog", () => {
     fireEvent.change(screen.getByLabelText(labels.emailLabel), {
       target: { value: "alice@example.com" },
     })
-    const selects = hiddenSelects()
-    if (selects[0]) fireEvent.change(selects[0], { target: { value: "org-1" } })
-    if (selects[1]) fireEvent.change(selects[1], { target: { value: "admin" } })
+    await pickOrg("org-1")
+    await pickRole("admin")
     submitForm()
     await waitFor(() => {
       expect(createUserMock).toHaveBeenCalledWith({
@@ -218,8 +230,7 @@ describe("CreateUserDialog", () => {
     fireEvent.change(screen.getByLabelText(labels.emailLabel), {
       target: { value: "bob@example.com" },
     })
-    const selects = hiddenSelects()
-    if (selects[0]) fireEvent.change(selects[0], { target: { value: "org-2" } })
+    await pickOrg("org-2")
     submitForm()
     await waitFor(() => {
       expect(createUserMock).toHaveBeenCalledWith({
@@ -241,8 +252,7 @@ describe("CreateUserDialog", () => {
     fireEvent.change(screen.getByLabelText(labels.emailLabel), {
       target: { value: "alice@example.com" },
     })
-    const selects = hiddenSelects()
-    if (selects[0]) fireEvent.change(selects[0], { target: { value: "org-1" } })
+    await pickOrg("org-1")
     submitForm()
     await waitFor(() => {
       expect(toastSuccessMock).toHaveBeenCalledWith(
@@ -261,8 +271,7 @@ describe("CreateUserDialog", () => {
     fireEvent.change(screen.getByLabelText(labels.emailLabel), {
       target: { value: "carol@example.com" },
     })
-    const selects = hiddenSelects()
-    if (selects[0]) fireEvent.change(selects[0], { target: { value: "org-1" } })
+    await pickOrg("org-1")
     submitForm()
     await waitFor(() => {
       // Assert via role so the a11y contract (assertive live region) the test

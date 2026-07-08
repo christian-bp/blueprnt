@@ -1,7 +1,7 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Button } from "@workspace/ui/components/button"
+import { buttonVariants } from "@workspace/ui/components/button"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
@@ -73,9 +73,12 @@ export default function RatePage(props: {
     return (
       <div className="w-full max-w-2xl space-y-4">
         <RatingResult orgId={orgId} roleId={role.roleId} />
-        <Button asChild variant="outline">
-          <Link href={`/roles/${role.slug}`}>{t("result.backToRole")}</Link>
-        </Button>
+        <Link
+          href={`/roles/${role.slug}`}
+          className={buttonVariants({ variant: "outline" })}
+        >
+          {t("result.backToRole")}
+        </Link>
       </div>
     )
   }

@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Slot } from "radix-ui"
+import { mergeProps } from "@base-ui/react/merge-props"
+import { useRender } from "@base-ui/react/use-render"
 import {
   Controller,
   type ControllerProps,
@@ -101,20 +102,30 @@ function FormLabel({
   )
 }
 
-function FormControl({ ...props }: React.ComponentProps<typeof Slot.Root>) {
+function FormControl({ ref, children, ...props }: React.ComponentProps<"div">) {
   const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
 
-  return (
-    <Slot.Root
-      data-slot="form-control"
-      id={formItemId}
-      aria-describedby={
-        error ? `${formDescriptionId} ${formMessageId}` : `${formDescriptionId}`
-      }
-      aria-invalid={!!error}
-      {...props}
-    />
-  )
+  // Slot semantics via useRender: the single child is the rendered element and
+  // the field wiring (id + aria attributes) is merged onto it, so the consumer
+  // API stays <FormControl><Input /></FormControl>.
+  return useRender({
+    render: React.isValidElement<Record<string, unknown>>(children)
+      ? children
+      : undefined,
+    ref: ref as React.Ref<HTMLElement>,
+    defaultTagName: "div",
+    props: mergeProps<"div">(
+      {
+        "data-slot": "form-control",
+        id: formItemId,
+        "aria-describedby": error
+          ? `${formDescriptionId} ${formMessageId}`
+          : `${formDescriptionId}`,
+        "aria-invalid": !!error,
+      } as React.ComponentProps<"div">,
+      props
+    ),
+  })
 }
 
 function FormDescription({ className, ...props }: React.ComponentProps<"p">) {

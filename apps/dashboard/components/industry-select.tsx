@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 import { useTranslations } from "next-intl"
+import { onSelectValue } from "@/lib/select"
 
 // Reusable industry picker over the product's whole industry set. Industries
 // have no flag or icon (the onboarding industry screen shows text-only option
@@ -31,7 +32,13 @@ export function IndustrySelect({
   const t = useTranslations("dashboard.onboarding.profile")
 
   return (
-    <Select value={value} onValueChange={onValueChange}>
+    <Select
+      value={value}
+      onValueChange={onSelectValue(onValueChange)}
+      items={Object.fromEntries(
+        INDUSTRY_KEYS.map((code) => [code, t(`industries.${code}`)])
+      )}
+    >
       <SelectTrigger id={id} aria-label={ariaLabel} className="w-full">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>

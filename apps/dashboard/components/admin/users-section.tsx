@@ -135,26 +135,28 @@ export function UsersSection() {
                 <TableCell className="text-right">
                   <div className="flex justify-end">
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          aria-label={t("rowActions", { name: user.name })}
-                          className="shrink-0 text-muted-foreground hover:text-foreground"
-                        >
-                          <HugeiconsIcon
-                            icon={MoreVerticalIcon}
-                            strokeWidth={2}
+                      <DropdownMenuTrigger
+                        render={
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            aria-label={t("rowActions", { name: user.name })}
+                            className="shrink-0 text-muted-foreground hover:text-foreground"
                           />
-                        </Button>
+                        }
+                      >
+                        <HugeiconsIcon
+                          icon={MoreVerticalIcon}
+                          strokeWidth={2}
+                        />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onSelect={() => resend(user.email)}>
+                        <DropdownMenuItem onClick={() => resend(user.email)}>
                           {t("resendInvite")}
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onSelect={() =>
+                          onClick={() =>
                             setOrgTarget({
                               authId: user.authId,
                               name: user.name,
@@ -166,7 +168,7 @@ export function UsersSection() {
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           variant="destructive"
-                          onSelect={() =>
+                          onClick={() =>
                             setDeleteTarget({
                               authId: user.authId,
                               name: user.name,

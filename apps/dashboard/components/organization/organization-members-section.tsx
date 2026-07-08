@@ -180,31 +180,33 @@ export function OrganizationMembersSection(props: { refreshKey: number }) {
                   <TableCell className="text-right">
                     <div className="flex justify-end">
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            aria-label={t("memberActions", { name: m.name })}
-                            className="shrink-0 text-muted-foreground hover:text-foreground"
-                          >
-                            <HugeiconsIcon
-                              icon={MoreVerticalIcon}
-                              strokeWidth={2}
+                        <DropdownMenuTrigger
+                          render={
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              aria-label={t("memberActions", { name: m.name })}
+                              className="shrink-0 text-muted-foreground hover:text-foreground"
                             />
-                          </Button>
+                          }
+                        >
+                          <HugeiconsIcon
+                            icon={MoreVerticalIcon}
+                            strokeWidth={2}
+                          />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           {m.role === "editor" ? (
                             <DropdownMenuItem
-                              onSelect={() => handleRole(m.userId, "admin")}
+                              onClick={() => handleRole(m.userId, "admin")}
                             >
                               {t("changeRoleAdmin")}
                             </DropdownMenuItem>
                           ) : (
                             <DropdownMenuItem
                               disabled={isSoleAdmin}
-                              onSelect={() => handleRole(m.userId, "editor")}
+                              onClick={() => handleRole(m.userId, "editor")}
                             >
                               {t("changeRoleEditor")}
                             </DropdownMenuItem>
@@ -212,7 +214,7 @@ export function OrganizationMembersSection(props: { refreshKey: number }) {
                           <DropdownMenuItem
                             variant="destructive"
                             disabled={isSoleAdmin}
-                            onSelect={() =>
+                            onClick={() =>
                               setRemoveTarget({
                                 userId: m.userId,
                                 name: m.name,
@@ -242,26 +244,28 @@ export function OrganizationMembersSection(props: { refreshKey: number }) {
                 <TableCell className="text-right">
                   <div className="flex justify-end">
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          aria-label={ti("invitationActions", {
-                            email: inv.email,
-                          })}
-                          className="shrink-0 text-muted-foreground hover:text-foreground"
-                        >
-                          <HugeiconsIcon
-                            icon={MoreVerticalIcon}
-                            strokeWidth={2}
+                      <DropdownMenuTrigger
+                        render={
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            aria-label={ti("invitationActions", {
+                              email: inv.email,
+                            })}
+                            className="shrink-0 text-muted-foreground hover:text-foreground"
                           />
-                        </Button>
+                        }
+                      >
+                        <HugeiconsIcon
+                          icon={MoreVerticalIcon}
+                          strokeWidth={2}
+                        />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
                           variant="destructive"
-                          onSelect={() =>
+                          onClick={() =>
                             setRevokeTarget({ id: inv.id, email: inv.email })
                           }
                         >

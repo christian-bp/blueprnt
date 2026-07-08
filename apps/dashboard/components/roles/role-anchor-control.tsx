@@ -24,6 +24,7 @@ import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 import { toast } from "sonner"
+import { onSelectValue } from "@/lib/select"
 
 // Anchor roles (ankarroller) are the org's 2-5 designated reference roles used
 // to calibrate other assessments; designating/reviewing them is model
@@ -61,7 +62,15 @@ function BandField({
       <Label htmlFor="anchor-band" className="text-muted-foreground">
         {t("expectedBandLabel")}
       </Label>
-      <Select value={band} onValueChange={onChange} disabled={disabled}>
+      <Select
+        value={band}
+        onValueChange={onSelectValue(onChange)}
+        disabled={disabled}
+        items={bandOptions.map((option) => ({
+          value: String(option),
+          label: t("bandOption", { band: option }),
+        }))}
+      >
         <SelectTrigger id="anchor-band" className="w-full">
           <SelectValue placeholder={t("expectedBandLabel")} />
         </SelectTrigger>
@@ -288,6 +297,11 @@ function EditForm({
             setStatus(value as AnchorRoleInfo["status"])
           }
           disabled={pending}
+          items={Object.fromEntries(
+            (Object.keys(STATUS_KEYS) as AnchorRoleInfo["status"][]).map(
+              (option) => [option, t(STATUS_KEYS[option])]
+            )
+          )}
         >
           <SelectTrigger id="anchor-status" className="w-full">
             <SelectValue />

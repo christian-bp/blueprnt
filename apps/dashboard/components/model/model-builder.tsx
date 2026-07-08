@@ -253,7 +253,7 @@ export function ModelBuilder({
                       // meaning. Because the per-criterion weighting texts are
                       // full sentences (not the short generic phrases), one
                       // popover per level reads far better than a single card
-                      // listing all five. Root/Trigger(asChild) add no DOM and
+                      // listing all five. Root/Trigger(render) add no DOM and
                       // Content portals out, so the joined ButtonGroup styling
                       // (which targets direct children) is unaffected.
                       <ButtonGroup
@@ -275,41 +275,46 @@ export function ModelBuilder({
                           return (
                             <HoverCard
                               key={option}
-                              openDelay={150}
-                              closeDelay={100}
+                              // Keep the card open when you click to pick this
+                              // level: the button is its own trigger, so
+                              // without this the press dismisses the card and
+                              // hover reopens it (a flicker). It still closes
+                              // on pointer-leave.
+                              onOpenChange={(nextOpen, eventDetails) => {
+                                if (
+                                  !nextOpen &&
+                                  (eventDetails.reason === "trigger-press" ||
+                                    eventDetails.reason === "outside-press")
+                                ) {
+                                  eventDetails.cancel()
+                                }
+                              }}
                             >
-                              <HoverCardTrigger asChild>
-                                <Button
-                                  type="button"
-                                  size="sm"
-                                  variant={
-                                    points === option ? "default" : "outline"
-                                  }
-                                  disabled={saving}
-                                  aria-pressed={points === option}
-                                  className="flex-1 px-0 tabular-nums"
-                                  onClick={() =>
-                                    setDraft((current) => ({
-                                      ...current,
-                                      [criterion.criterionId]: option,
-                                    }))
-                                  }
-                                >
-                                  {option}
-                                </Button>
-                              </HoverCardTrigger>
-                              <HoverCardContent
-                                align="center"
-                                className="w-72"
-                                // Keep the card open when you click to pick this
-                                // level: the button is its own trigger, so
-                                // without this Radix dismisses on pointer-down
-                                // and reopens on hover (a flicker). It still
-                                // closes on pointer-leave.
-                                onInteractOutside={(event) =>
-                                  event.preventDefault()
+                              <HoverCardTrigger
+                                delay={150}
+                                closeDelay={100}
+                                render={
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant={
+                                      points === option ? "default" : "outline"
+                                    }
+                                    disabled={saving}
+                                    aria-pressed={points === option}
+                                    className="flex-1 px-0 tabular-nums"
+                                    onClick={() =>
+                                      setDraft((current) => ({
+                                        ...current,
+                                        [criterion.criterionId]: option,
+                                      }))
+                                    }
+                                  />
                                 }
                               >
+                                {option}
+                              </HoverCardTrigger>
+                              <HoverCardContent align="center" className="w-72">
                                 <p className="text-muted-foreground text-sm">
                                   {meaning}
                                 </p>

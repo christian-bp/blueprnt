@@ -253,29 +253,30 @@ function CriterionComplianceForm({
                 <FormDescription>{tHelp("methodBiasRiskBody")}</FormDescription>
                 <FormControl>
                   <ToggleGroup
-                    type="single"
                     variant="outline"
                     disabled={locked}
-                    value={field.value ?? ""}
-                    onValueChange={(v) =>
-                      field.onChange(v === "" ? undefined : v)
+                    // Single-select is the Base UI default; the group value is
+                    // an array holding the pressed value (empty when cleared).
+                    value={field.value ? [field.value] : []}
+                    onValueChange={(groupValue) =>
+                      field.onChange(groupValue[0])
                     }
                   >
                     <ToggleGroupItem
                       value="low"
-                      className="data-[state=on]:border-brand data-[state=on]:bg-brand data-[state=on]:text-brand-foreground data-[state=on]:hover:bg-brand"
+                      className="data-pressed:border-brand data-pressed:bg-brand data-pressed:text-brand-foreground data-pressed:hover:bg-brand"
                     >
                       {t("biasRiskOption.low")}
                     </ToggleGroupItem>
                     <ToggleGroupItem
                       value="medium"
-                      className="data-[state=on]:border-brand data-[state=on]:bg-brand data-[state=on]:text-brand-foreground data-[state=on]:hover:bg-brand"
+                      className="data-pressed:border-brand data-pressed:bg-brand data-pressed:text-brand-foreground data-pressed:hover:bg-brand"
                     >
                       {t("biasRiskOption.medium")}
                     </ToggleGroupItem>
                     <ToggleGroupItem
                       value="high"
-                      className="data-[state=on]:border-brand data-[state=on]:bg-brand data-[state=on]:text-brand-foreground data-[state=on]:hover:bg-brand"
+                      className="data-pressed:border-brand data-pressed:bg-brand data-pressed:text-brand-foreground data-pressed:hover:bg-brand"
                     >
                       {t("biasRiskOption.high")}
                     </ToggleGroupItem>

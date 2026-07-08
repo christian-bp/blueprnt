@@ -166,6 +166,10 @@ export function EditClassificationDialog({
                   <FormLabel>{tDetail("role")}</FormLabel>
                   <Select
                     value={field.value}
+                    items={roles.map((role) => ({
+                      value: String(role.roleId),
+                      label: role.title,
+                    }))}
                     onValueChange={(value) => {
                       field.onChange(value)
                       // A role on another track invalidates the picked level:

@@ -52,6 +52,7 @@ import {
   type OrgSettingsValues,
   orgSettingsSchema,
 } from "@/lib/admin-schemas"
+import { onSelectValue } from "@/lib/select"
 
 interface AdminOrg {
   orgId: string
@@ -160,10 +161,11 @@ export function ManageOrganizationDialog(props: {
                   </span>
                   <div className="flex items-center gap-2">
                     <Select
+                      items={{ admin: t("roleAdmin"), editor: t("roleEditor") }}
                       value={m.role}
-                      onValueChange={(value) =>
+                      onValueChange={onSelectValue((value: string) =>
                         handleRoleChange(m.authId, value)
-                      }
+                      )}
                     >
                       <SelectTrigger
                         className="w-32"
@@ -179,24 +181,26 @@ export function ManageOrganizationDialog(props: {
                       </SelectContent>
                     </Select>
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          aria-label={t("memberActions", { name: m.name })}
-                          className="shrink-0 text-muted-foreground hover:text-foreground"
-                        >
-                          <HugeiconsIcon
-                            icon={MoreVerticalIcon}
-                            strokeWidth={2}
+                      <DropdownMenuTrigger
+                        render={
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            aria-label={t("memberActions", { name: m.name })}
+                            className="shrink-0 text-muted-foreground hover:text-foreground"
                           />
-                        </Button>
+                        }
+                      >
+                        <HugeiconsIcon
+                          icon={MoreVerticalIcon}
+                          strokeWidth={2}
+                        />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
                           variant="destructive"
-                          onSelect={() => handleRemove(m.authId)}
+                          onClick={() => handleRemove(m.authId)}
                         >
                           {t("removeCta")}
                         </DropdownMenuItem>

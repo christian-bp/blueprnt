@@ -221,25 +221,27 @@ export function RoleProfileCard({
               </>
             ) : (
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    aria-label={t("manageCta")}
-                    className="shrink-0"
-                  >
-                    <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
-                  </Button>
+                <DropdownMenuTrigger
+                  render={
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      aria-label={t("manageCta")}
+                      className="shrink-0"
+                    />
+                  }
+                >
+                  <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onSelect={() => startEditing()}>
+                  <DropdownMenuItem onClick={() => startEditing()}>
                     {t("editCta")}
                   </DropdownMenuItem>
                   {isAdmin && (
                     <DropdownMenuItem
                       variant="destructive"
-                      onSelect={() => setConfirmArchive(true)}
+                      onClick={() => setConfirmArchive(true)}
                     >
                       {tArchive("cta")}
                     </DropdownMenuItem>

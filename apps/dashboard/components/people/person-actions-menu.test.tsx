@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import messages from "@workspace/i18n/messages/en.json"
+import { pickSelectOption } from "@/test/select"
 
 vi.mock("sonner", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
@@ -97,10 +98,13 @@ describe("PersonActionsMenu", () => {
     )
     expect(screen.getByRole("dialog")).toBeDefined()
 
-    // Radix hidden native selects inside the dialog form: [0] role, [1] level.
-    const roleSelect = document.querySelectorAll("select")[0]
-    if (roleSelect === undefined) throw new Error("role select not found")
-    fireEvent.change(roleSelect, { target: { value: "role2" } })
+    // The dialog form.s role select, labeled by its FormLabel.
+    await pickSelectOption(
+      screen.getByRole("combobox", {
+        name: messages.dashboard.people.detail.role,
+      }),
+      "Engineering Manager"
+    )
 
     // role2 is on the M track; IC3 is invalid there, so the level falls back
     // to the track's first level and the form is dirty + valid.
@@ -144,9 +148,12 @@ describe("PersonActionsMenu", () => {
     fireEvent.click(
       screen.getByRole("menuitem", { name: m.detail.editClassification.cta })
     )
-    const roleSelect = document.querySelectorAll("select")[0]
-    if (roleSelect === undefined) throw new Error("role select not found")
-    fireEvent.change(roleSelect, { target: { value: "role1" } })
+    await pickSelectOption(
+      screen.getByRole("combobox", {
+        name: messages.dashboard.people.detail.role,
+      }),
+      "Software Engineer"
+    )
 
     const save = screen.getByRole("button", {
       name: m.detail.editClassification.save,

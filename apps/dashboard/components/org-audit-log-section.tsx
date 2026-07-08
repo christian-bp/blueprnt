@@ -310,6 +310,12 @@ export function OrgAuditLogSection() {
           />
         </div>
         <Select
+          items={{
+            all: t("categories.all"),
+            ...Object.fromEntries(
+              CATEGORIES.map((category) => [category, categoryLabel(category)])
+            ),
+          }}
           value={selectedCategory}
           onValueChange={(value) =>
             setSelectedCategory(value as Category | "all")
@@ -767,8 +773,8 @@ function AuditDetailSheet({
       </div>
 
       <SheetFooter>
-        <SheetClose asChild>
-          <Button variant="outline">{t("detail.close")}</Button>
+        <SheetClose render={<Button variant="outline" />}>
+          {t("detail.close")}
         </SheetClose>
       </SheetFooter>
     </>

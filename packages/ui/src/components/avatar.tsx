@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Avatar as AvatarPrimitive } from "radix-ui"
+import { Avatar as AvatarPrimitive } from "@base-ui/react/avatar"
 
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -10,7 +10,7 @@ function Avatar({
   size = "default",
   variant = "default",
   ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Root> & {
+}: AvatarPrimitive.Root.Props & {
   size?: "default" | "sm" | "lg"
   // Local deviation from upstream shadcn: the "brand" variant tints the avatar
   // with the brand color (ring + initials fallback) for branded identity
@@ -39,10 +39,7 @@ function Avatar({
   )
 }
 
-function AvatarImage({
-  className,
-  ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Image>) {
+function AvatarImage({ className, ...props }: AvatarPrimitive.Image.Props) {
   return (
     <AvatarPrimitive.Image
       data-slot="avatar-image"
@@ -58,7 +55,7 @@ function AvatarImage({
 function AvatarFallback({
   className,
   ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
+}: AvatarPrimitive.Fallback.Props) {
   return (
     <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"

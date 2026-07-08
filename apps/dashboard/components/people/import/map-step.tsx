@@ -26,6 +26,7 @@ import { useTranslations } from "next-intl"
 import { useEffect } from "react"
 import { useOrganization } from "@/components/org-context"
 import type { ParsedCsv } from "./import-wizard"
+import { onSelectValue } from "@/lib/select"
 
 // Sentinel value used in the Select to represent "ignore this column".
 const IGNORE_VALUE = "__ignore__"
@@ -291,9 +292,18 @@ export function MapStep({ parsed, mapping, onMappingChange }: MapStepProps) {
                   <TableCell>
                     <Select
                       value={currentValue}
-                      onValueChange={(value) =>
+                      onValueChange={onSelectValue((value: string) =>
                         handleColumnFieldChange(columnIndex, value)
-                      }
+                      )}
+                      items={{
+                        [IGNORE_VALUE]: tMap("ignore"),
+                        ...Object.fromEntries(
+                          CANONICAL_FIELDS.map((field) => [
+                            field.key,
+                            tFields(field.key as Parameters<typeof tFields>[0]),
+                          ])
+                        ),
+                      }}
                     >
                       <SelectTrigger
                         size="sm"

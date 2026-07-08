@@ -69,9 +69,7 @@ export function CreateOrganizationDialog() {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button>{t("cta")}</Button>
-      </DialogTrigger>
+      <DialogTrigger render={<Button />}>{t("cta")}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>

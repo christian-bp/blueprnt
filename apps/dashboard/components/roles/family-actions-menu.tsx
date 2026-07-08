@@ -44,24 +44,26 @@ export function FamilyActionsMenu({
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            aria-label={tFamily("actionsMenu")}
-            className="shrink-0"
-          >
-            <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
-          </Button>
+        <DropdownMenuTrigger
+          render={
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              aria-label={tFamily("actionsMenu")}
+              className="shrink-0"
+            />
+          }
+        >
+          <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onSelect={() => setRenameOpen(true)}>
+          <DropdownMenuItem onClick={() => setRenameOpen(true)}>
             {tFamily("renameCta")}
           </DropdownMenuItem>
           <DropdownMenuItem
             variant="destructive"
-            onSelect={() => setConfirmDelete(true)}
+            onClick={() => setConfirmDelete(true)}
           >
             {tFamily("removeCta")}
           </DropdownMenuItem>

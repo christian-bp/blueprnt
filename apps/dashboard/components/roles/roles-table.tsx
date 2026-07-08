@@ -92,7 +92,7 @@ export function matchesRoleQuery(
 // MODULE-LEVEL constant: state.grouping keys the grouped-row-model memo, and
 // every recompute of that memo queues TanStack's auto-resets, whose
 // resetPageIndex setState re-renders the table. An inline ["family"] array
-// (new identity per render) therefore turns ANY re-render (e.g. a radix
+// (new identity per render) therefore turns ANY re-render (e.g. a
 // Select opening inside this tree) into an infinite render loop that
 // freezes the page. Keep the identity stable and the auto-resets off.
 const GROUPING = ["family"]
@@ -251,6 +251,12 @@ export function RolesTable({
           />
         </div>
         <Select
+          items={{
+            all: tToolbar("trackAll"),
+            ...Object.fromEntries(
+              tracks.map((track) => [track.key, track.name])
+            ),
+          }}
           value={trackFilter}
           onValueChange={(value) =>
             table

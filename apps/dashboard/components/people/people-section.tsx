@@ -13,7 +13,7 @@ import {
 } from "@tanstack/react-table"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
+import { Button, buttonVariants } from "@workspace/ui/components/button"
 import {
   Empty,
   EmptyDescription,
@@ -258,17 +258,15 @@ export function PeopleSection() {
     people === undefined || byTitleLoading || settings === undefined
 
   const importAction = (
-    <Button asChild>
-      <Link href="/people/import">
-        <HugeiconsIcon
-          icon={UserMultiple02Icon}
-          size={16}
-          strokeWidth={2}
-          aria-hidden="true"
-        />
-        {t("import.title")}
-      </Link>
-    </Button>
+    <Link href="/people/import" className={buttonVariants()}>
+      <HugeiconsIcon
+        icon={UserMultiple02Icon}
+        size={16}
+        strokeWidth={2}
+        aria-hidden="true"
+      />
+      {t("import.title")}
+    </Link>
   )
 
   return (
@@ -301,9 +299,12 @@ export function PeopleSection() {
             <EmptyTitle>{t("heading")}</EmptyTitle>
             <EmptyDescription>{t("empty")}</EmptyDescription>
           </EmptyHeader>
-          <Button asChild variant="outline">
-            <Link href="/people/import">{t("import.title")}</Link>
-          </Button>
+          <Link
+            href="/people/import"
+            className={buttonVariants({ variant: "outline" })}
+          >
+            {t("import.title")}
+          </Link>
         </Empty>
       ) : (
         <>
@@ -331,6 +332,12 @@ export function PeopleSection() {
               />
             </div>
             <Select
+              items={{
+                all: tToolbar("classificationAll"),
+                confirmed: t("badge.confirmed"),
+                suggested: t("badge.pending"),
+                none: t("badge.unclassified"),
+              }}
               value={classificationFilter}
               onValueChange={(value) => {
                 table
@@ -355,6 +362,12 @@ export function PeopleSection() {
             </Select>
             {departments.length > 0 && (
               <Select
+                items={{
+                  all: tToolbar("departmentAll"),
+                  ...Object.fromEntries(
+                    departments.map((department) => [department, department])
+                  ),
+                }}
                 value={departmentFilter}
                 onValueChange={(value) => {
                   table

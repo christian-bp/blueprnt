@@ -31,8 +31,10 @@ export function PageBreadcrumb({ segments }: { segments: Crumb[] }) {
             <Fragment key={`${segment.label}-${segment.href || ""}`}>
               <BreadcrumbItem>
                 {isLink ? (
-                  <BreadcrumbLink asChild>
-                    <Link href={segment.href as string}>{segment.label}</Link>
+                  <BreadcrumbLink
+                    render={<Link href={segment.href as string} />}
+                  >
+                    {segment.label}
                   </BreadcrumbLink>
                 ) : (
                   <BreadcrumbPage className="font-medium">

@@ -9,101 +9,10 @@ import { NextIntlClientProvider } from "next-intl"
 import { useState } from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
+import { pickSelectOption } from "@/test/select"
 
 const designateMock = vi.fn()
 const updateMock = vi.fn()
-
-// Radix Select renders its hidden native <select> only when the trigger is
-// inside a <form>. Because the dialog content is portaled to document.body
-// (outside any <form>), the hidden-select pattern is unavailable for the band
-// field. Mock the Select primitives with simple native elements so
-// fireEvent.change works directly in the dialog tests.
-import * as React from "react"
-
-type SelectCtx = {
-  value: string
-  onChange: (v: string) => void
-  disabled: boolean
-}
-const SelectContext = React.createContext<SelectCtx>({
-  value: "",
-  onChange: () => {},
-  disabled: false,
-})
-
-function MockSelect({
-  value = "",
-  onValueChange = () => {},
-  disabled = false,
-  children,
-}: {
-  value?: string
-  onValueChange?: (v: string) => void
-  disabled?: boolean
-  children?: React.ReactNode
-}) {
-  return (
-    <SelectContext.Provider
-      value={{ value, onChange: onValueChange, disabled }}
-    >
-      {children}
-    </SelectContext.Provider>
-  )
-}
-function MockSelectTrigger({
-  id,
-  children,
-}: {
-  id?: string
-  children?: React.ReactNode
-}) {
-  const ctx = React.useContext(SelectContext)
-  return (
-    <button
-      type="button"
-      id={id}
-      role="combobox"
-      aria-expanded={false}
-      disabled={ctx.disabled}
-    >
-      {children}
-    </button>
-  )
-}
-function MockSelectValue({ placeholder }: { placeholder?: string }) {
-  const ctx = React.useContext(SelectContext)
-  return <span>{ctx.value || placeholder}</span>
-}
-function MockSelectContent({ children }: { children?: React.ReactNode }) {
-  const ctx = React.useContext(SelectContext)
-  return (
-    <select
-      value={ctx.value}
-      disabled={ctx.disabled}
-      onChange={(e) => ctx.onChange(e.target.value)}
-      aria-hidden
-    >
-      {children}
-    </select>
-  )
-}
-function MockSelectItem({
-  value,
-  children,
-}: {
-  value: string
-  children?: React.ReactNode
-}) {
-  return <option value={value}>{children}</option>
-}
-
-vi.mock("@workspace/ui/components/select", () => ({
-  Select: MockSelect,
-  SelectTrigger: MockSelectTrigger,
-  SelectValue: MockSelectValue,
-  SelectContent: MockSelectContent,
-  SelectItem: MockSelectItem,
-}))
 
 vi.mock("convex/react", () => ({
   useMutation: (ref: unknown) =>
@@ -181,11 +90,12 @@ describe("AnchorDialog", () => {
     designateMock.mockResolvedValue(null)
     wrap(<HostedDialog anchorRole={null} />)
 
-    const bandSelect = [
-      ...document.querySelectorAll("select"),
-    ][0] as HTMLSelectElement
-    if (bandSelect === undefined) throw new Error("band select not found")
-    fireEvent.change(bandSelect, { target: { value: "2" } })
+    // The real Base UI Select works inside the portaled dialog; drive its
+    // popup listbox directly.
+    await pickSelectOption(
+      screen.getByRole("combobox", { name: anchor.expectedBandLabel }),
+      anchor.bandOption.replace("{band}", "2")
+    )
     fireEvent.change(screen.getByLabelText(anchor.motivationLabel), {
       target: { value: "  Stable reference role.  " },
     })

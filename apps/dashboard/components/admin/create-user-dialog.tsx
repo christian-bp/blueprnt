@@ -85,9 +85,7 @@ export function CreateUserDialog() {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button>{t("cta")}</Button>
-      </DialogTrigger>
+      <DialogTrigger render={<Button />}>{t("cta")}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
@@ -131,6 +129,10 @@ export function CreateUserDialog() {
                     value={field.value}
                     onValueChange={field.onChange}
                     disabled={organizations === undefined}
+                    items={(organizations ?? []).map((o) => ({
+                      value: o.orgId,
+                      label: o.name,
+                    }))}
                   >
                     <FormControl>
                       <SelectTrigger ref={field.ref} onBlur={field.onBlur}>
@@ -155,7 +157,14 @@ export function CreateUserDialog() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("roleLabel")}</FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    items={{
+                      editor: tAccounts("role.editor"),
+                      admin: tAccounts("role.admin"),
+                    }}
+                  >
                     <FormControl>
                       <SelectTrigger ref={field.ref} onBlur={field.onBlur}>
                         <SelectValue />

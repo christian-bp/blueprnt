@@ -5,6 +5,7 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { authClient } from "@/lib/auth-client"
 import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar"
 import {
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSub,
@@ -54,34 +55,37 @@ export function OrgSwitchMenuSub() {
         <span className="truncate">{current.name}</span>
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent>
-        <DropdownMenuLabel className="text-muted-foreground text-xs">
-          {t("orgSwitcher.label")}
-        </DropdownMenuLabel>
-        {list.map((org) => {
-          const isActive = org.id === current?.id
-          return (
-            <DropdownMenuItem
-              key={org.id}
-              aria-current={isActive ? "true" : undefined}
-              className="gap-2"
-              onClick={() => handleSelect(org.id)}
-            >
-              <Avatar variant="brand" className="size-5 shrink-0">
-                <AvatarFallback className="text-xs">
-                  {initialsOf(org.name)}
-                </AvatarFallback>
-              </Avatar>
-              <span className="truncate">{org.name}</span>
-              {isActive ? (
-                <HugeiconsIcon
-                  icon={Tick02Icon}
-                  strokeWidth={2}
-                  className="ml-auto size-4"
-                />
-              ) : null}
-            </DropdownMenuItem>
-          )
-        })}
+        {/* Base UI group labels must sit inside a Group. */}
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="text-muted-foreground text-xs">
+            {t("orgSwitcher.label")}
+          </DropdownMenuLabel>
+          {list.map((org) => {
+            const isActive = org.id === current?.id
+            return (
+              <DropdownMenuItem
+                key={org.id}
+                aria-current={isActive ? "true" : undefined}
+                className="gap-2"
+                onClick={() => handleSelect(org.id)}
+              >
+                <Avatar variant="brand" className="size-5 shrink-0">
+                  <AvatarFallback className="text-xs">
+                    {initialsOf(org.name)}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="truncate">{org.name}</span>
+                {isActive ? (
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    strokeWidth={2}
+                    className="ml-auto size-4"
+                  />
+                ) : null}
+              </DropdownMenuItem>
+            )
+          })}
+        </DropdownMenuGroup>
       </DropdownMenuSubContent>
     </DropdownMenuSub>
   )

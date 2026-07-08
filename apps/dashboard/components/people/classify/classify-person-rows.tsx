@@ -12,6 +12,7 @@ import { useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { displayNameFor } from "@/lib/person-display"
 import { type ClassifyPersonRow, resolveLevel } from "./classify-title-table"
+import { onSelectValue } from "@/lib/select"
 
 // ---------------------------------------------------------------------------
 // Pure tenure helper: display-only, not engine logic. Captured once per
@@ -143,7 +144,9 @@ export function ClassifyPersonRows({
             <div>
               <Select
                 value={currentLevel}
-                onValueChange={(value) => onLevelChange(person.personId, value)}
+                onValueChange={onSelectValue((value: string) =>
+                  onLevelChange(person.personId, value)
+                )}
               >
                 <SelectTrigger aria-label={t("levelLabel")}>
                   <SelectValue />

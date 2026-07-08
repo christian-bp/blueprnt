@@ -32,6 +32,7 @@ import { SPRING } from "@/lib/motion"
 import type { TableSkeletonColumn } from "@/components/table-skeleton"
 import { ClassifyPersonRows } from "./classify-person-rows"
 import { UnmatchedTitleActions } from "./unmatched-title-actions"
+import { onSelectValue } from "@/lib/select"
 
 // ---------------------------------------------------------------------------
 // Types (structural subsets of the Convex return shapes; Convex ids are
@@ -476,9 +477,8 @@ export function ClassifyTitleTable({
           selectAll={
             <Checkbox
               aria-label={t("selectAll")}
-              checked={
-                allSelected ? true : selectedCount > 0 ? "indeterminate" : false
-              }
+              checked={allSelected}
+              indeterminate={!allSelected && selectedCount > 0}
               disabled={selectableKeys.length === 0 || bulkBusy}
               onCheckedChange={(checked) => {
                 setSelected(
@@ -557,9 +557,13 @@ export function ClassifyTitleTable({
                   <TableCell>
                     <Select
                       value={currentRoleId ?? ""}
-                      onValueChange={(value) =>
+                      onValueChange={onSelectValue((value: string) =>
                         handleRoleChange(key, value, group)
-                      }
+                      )}
+                      items={roles.map((r) => ({
+                        value: r.roleId,
+                        label: r.title,
+                      }))}
                     >
                       {/* FIX 5: aria-label on the role SelectTrigger so
                         screen readers announce which select this is. */}

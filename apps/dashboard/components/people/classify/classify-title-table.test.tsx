@@ -6,6 +6,7 @@ import {
   waitFor,
 } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
+import { pickSelectOption } from "@/test/select"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -71,6 +72,23 @@ describe("classificationStateForPeople", () => {
 // ---------------------------------------------------------------------------
 
 const m = messages.dashboard.classify
+
+// Base UI Selects are driven through their popup listbox: open the labeled
+// trigger and commit an option. Triggers share per-column labels, so pick
+// by index (role selects come one per group row; level selects one per
+// person row after expanding).
+async function pickRole(title: string, index = 0) {
+  const trigger = screen.getAllByRole("combobox", { name: m.columns.role })[
+    index
+  ] as HTMLElement
+  await pickSelectOption(trigger, title)
+}
+async function pickLevel(level: string, index: number) {
+  const trigger = screen.getAllByRole("combobox", { name: m.levelLabel })[
+    index
+  ] as HTMLElement
+  await pickSelectOption(trigger, level)
+}
 
 const ROLES = [
   {
@@ -376,7 +394,8 @@ describe("ClassifyTitleTable", () => {
     const checkbox = screen.getByRole("checkbox", {
       name: `Select ${m.noTitle}`,
     })
-    expect((checkbox as HTMLButtonElement).disabled).toBe(true)
+    // Base UI checkboxes render a span: disabled surfaces as aria-disabled.
+    expect(checkbox.getAttribute("aria-disabled")).toBe("true")
   })
 
   // ---------------------------------------------------------------------------
@@ -453,15 +472,8 @@ describe("ClassifyTitleTable", () => {
     await waitFor(() => {
       expect(screen.getByText("Alice Svensson")).toBeDefined()
     })
-    // Radix Select renders hidden native <select> elements; target those directly
-    // (the same pattern the cross-track test uses for the role select). After
-    // expanding, there are two hidden selects: index 0 = role select, index 1 =
-    // p1 level select, index 2 = p2 level select.
-    const hiddenSelects = document.querySelectorAll("select")
-    const p1LevelSelect = hiddenSelects[1]
-    if (p1LevelSelect === undefined)
-      throw new Error("p1 level select not found")
-    fireEvent.change(p1LevelSelect, { target: { value: "IC4" } })
+    // After expanding: one level select per person row; p1 is the first.
+    await pickLevel("IC4", 0)
     // Confirm
     fireEvent.click(screen.getByRole("button", { name: m.assignCta }))
     await waitFor(() => {
@@ -480,14 +492,9 @@ describe("ClassifyTitleTable", () => {
 
   it("after changing row role to a different track, submitted level is valid for the new track", async () => {
     // HIGH_GROUP suggests role1 (IC track). We'll switch to role2 (M track).
-    // Radix Select renders a hidden native <select> for accessibility; targeting
-    // that element (as roles-table.test.tsx does) is how we drive onValueChange.
     renderTable()
-    // First hidden select is the role select for the first group row.
-    const hiddenSelects = document.querySelectorAll("select")
-    const roleSelect = hiddenSelects[0]
-    if (roleSelect === undefined) throw new Error("role select not found")
-    fireEvent.change(roleSelect, { target: { value: "role2" } })
+    // The first group row.s role select.
+    await pickRole("Engineering Manager")
     // Confirm without expanding: levels must reset to M track defaults.
     fireEvent.click(screen.getByRole("button", { name: m.assignCta }))
     await waitFor(() => {
@@ -546,7 +553,8 @@ describe("ClassifyTitleTable", () => {
     const checkbox = screen.getByRole("checkbox", {
       name: "Select Platform Engineer",
     })
-    expect((checkbox as HTMLButtonElement).disabled).toBe(true)
+    // Base UI checkboxes render a span: disabled surfaces as aria-disabled.
+    expect(checkbox.getAttribute("aria-disabled")).toBe("true")
   })
 
   it("shows the confirmed role in the select over a stale engine suggestion", () => {
@@ -564,9 +572,7 @@ describe("ClassifyTitleTable", () => {
 
   it("role swap on a confirmed group re-surfaces Confirm and submits the new role", async () => {
     renderTable([CONFIRMED_GROUP])
-    const roleSelect = document.querySelectorAll("select")[0]
-    if (roleSelect === undefined) throw new Error("role select not found")
-    fireEvent.change(roleSelect, { target: { value: "role2" } })
+    await pickRole("Engineering Manager")
 
     // The change makes the group dirty: Confirm reappears.
     const confirmButton = await screen.findByRole("button", {
@@ -593,11 +599,8 @@ describe("ClassifyTitleTable", () => {
     await waitFor(() => {
       expect(screen.getByText("Alice Svensson")).toBeDefined()
     })
-    // Hidden selects after expanding: [0] role, [1] p1 level, [2] p2 level.
-    const p1LevelSelect = document.querySelectorAll("select")[1]
-    if (p1LevelSelect === undefined)
-      throw new Error("p1 level select not found")
-    fireEvent.change(p1LevelSelect, { target: { value: "IC4" } })
+    // After expanding: one level select per person row; p1 is the first.
+    await pickLevel("IC4", 0)
 
     const confirmButton = await screen.findByRole("button", {
       name: m.assignCta,
@@ -618,9 +621,7 @@ describe("ClassifyTitleTable", () => {
 
   it("picking a role on an unmatched group replaces create-role with Confirm", async () => {
     renderTable([NO_TITLE_GROUP])
-    const roleSelect = document.querySelectorAll("select")[0]
-    if (roleSelect === undefined) throw new Error("role select not found")
-    fireEvent.change(roleSelect, { target: { value: "role1" } })
+    await pickRole("Software Engineer")
 
     const confirmButton = await screen.findByRole("button", {
       name: m.assignCta,

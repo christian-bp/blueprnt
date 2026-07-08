@@ -85,8 +85,8 @@ export function InviteMemberDialog(props: {
         if (!next) reset()
       }}
     >
-      <DialogTrigger asChild>
-        <Button type="button">{t("cta")}</Button>
+      <DialogTrigger render={<Button type="button" />}>
+        {t("cta")}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -119,7 +119,14 @@ export function InviteMemberDialog(props: {
                 <FormItem>
                   <FormLabel>{t("roleLabel")}</FormLabel>
                   <FormControl>
-                    <Select value={field.value} onValueChange={field.onChange}>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      items={{
+                        editor: tm("roleEditor"),
+                        admin: tm("roleAdmin"),
+                      }}
+                    >
                       <SelectTrigger aria-label={t("roleLabel")}>
                         <SelectValue />
                       </SelectTrigger>

@@ -203,28 +203,30 @@ export function CriterionItem({
           {editable &&
             (showMenu ? (
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    disabled={removing}
-                    aria-label={tEditor("rowMenuLabel", { name })}
-                    className="shrink-0 text-muted-foreground hover:text-foreground"
-                  >
-                    <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
-                  </Button>
+                <DropdownMenuTrigger
+                  render={
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      disabled={removing}
+                      aria-label={tEditor("rowMenuLabel", { name })}
+                      className="shrink-0 text-muted-foreground hover:text-foreground"
+                    />
+                  }
+                >
+                  <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   {onEdit !== undefined && (
-                    <DropdownMenuItem onSelect={onEdit}>
+                    <DropdownMenuItem onClick={onEdit}>
                       {tEditor("editCta")}
                     </DropdownMenuItem>
                   )}
                   {onRemove !== undefined && (
                     <DropdownMenuItem
                       variant="destructive"
-                      onSelect={() => setConfirmRemove(true)}
+                      onClick={() => setConfirmRemove(true)}
                     >
                       {tEditor("removeCta")}
                     </DropdownMenuItem>

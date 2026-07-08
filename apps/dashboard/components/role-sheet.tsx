@@ -4,7 +4,7 @@ import { AnchorIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
+import { buttonVariants } from "@workspace/ui/components/button"
 import {
   Sheet,
   SheetContent,
@@ -225,9 +225,13 @@ function RoleSheetContent({
           </div>
 
           <SheetFooter>
-            <Button asChild onClick={onClose}>
-              <Link href={`/roles/${role?.slug ?? ""}`}>{t("openRole")}</Link>
-            </Button>
+            <Link
+              href={`/roles/${role?.slug ?? ""}`}
+              onClick={onClose}
+              className={buttonVariants()}
+            >
+              {t("openRole")}
+            </Link>
           </SheetFooter>
         </>
       )}

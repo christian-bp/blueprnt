@@ -206,7 +206,14 @@ export function UnmatchedTitleActions({
                         {tHelp("trackBody")}
                       </HelpMorphButton>
                     </div>
-                    <Select value={field.value} onValueChange={field.onChange}>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      items={tracks.map((track) => ({
+                        value: track.key,
+                        label: track.name,
+                      }))}
+                    >
                       <FormControl>
                         <SelectTrigger
                           ref={field.ref}

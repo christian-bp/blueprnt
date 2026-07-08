@@ -72,8 +72,8 @@ export function AccountMenu() {
             onboarded one; renders nothing with fewer than two companies. */}
         <OrgSwitchMenuSub />
         <LanguageMenuSub />
-        <DropdownMenuItem asChild>
-          <Link href="/account">{t("nav.accountSettings")}</Link>
+        <DropdownMenuItem render={<Link href="/account" />}>
+          {t("nav.accountSettings")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>

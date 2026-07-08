@@ -42,26 +42,28 @@ export function PersonActionsMenu({
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            aria-label={t("detail.actionsMenu")}
-            className="shrink-0"
-          >
-            <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
-          </Button>
+        <DropdownMenuTrigger
+          render={
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              aria-label={t("detail.actionsMenu")}
+              className="shrink-0"
+            />
+          }
+        >
+          <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
         </DropdownMenuTrigger>
         {/* w-auto: size to the item labels, not the icon trigger's width
             (see salary-row-actions.tsx). */}
         <DropdownMenuContent align="end" className="w-auto">
-          <DropdownMenuItem onSelect={() => setEditOpen(true)}>
+          <DropdownMenuItem onClick={() => setEditOpen(true)}>
             {t("detail.editClassification.cta")}
           </DropdownMenuItem>
           <DropdownMenuItem
             variant="destructive"
-            onSelect={() => setEraseOpen(true)}
+            onClick={() => setEraseOpen(true)}
           >
             {t("erase.trigger")}
           </DropdownMenuItem>

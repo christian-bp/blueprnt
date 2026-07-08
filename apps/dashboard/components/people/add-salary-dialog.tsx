@@ -224,6 +224,12 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
                         <Select
                           value={field.value}
                           onValueChange={field.onChange}
+                          items={Object.fromEntries(
+                            PAY_COMPONENT_KINDS.map((kind) => [
+                              kind,
+                              t(`componentKinds.${kind}`),
+                            ])
+                          )}
                         >
                           <FormControl>
                             <SelectTrigger aria-label={t("componentKind")}>

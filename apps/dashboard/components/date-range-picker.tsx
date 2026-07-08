@@ -47,15 +47,17 @@ export function DateRangePicker({
 
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          aria-label={ariaLabel}
-          className={TRIGGER_CLASS}
-        >
-          <HugeiconsIcon icon={Calendar01Icon} strokeWidth={2} />
-          {label}
-        </Button>
+      <PopoverTrigger
+        render={
+          <Button
+            variant="outline"
+            aria-label={ariaLabel}
+            className={TRIGGER_CLASS}
+          />
+        }
+      >
+        <HugeiconsIcon icon={Calendar01Icon} strokeWidth={2} />
+        {label}
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
         <Calendar

@@ -8,6 +8,7 @@ import {
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
+import { pickSelectOption } from "@/test/select"
 import { RolesTable, type RolesTableRow } from "@/components/roles/roles-table"
 import { matchesRoleQuery } from "@/components/roles/roles-table"
 
@@ -89,18 +90,9 @@ const TRACKS = [
 function renderTable(roles: RolesTableRow[] = ROLES) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      {/* form wrapper: radix Selects render their hidden native <select>
-          only inside a form under happy-dom (same pattern as family-picker). */}
-      <form>
-        <RolesTable roles={roles} tracks={TRACKS} />
-      </form>
+      <RolesTable roles={roles} tracks={TRACKS} />
     </NextIntlClientProvider>
   )
-}
-
-// The toolbar's only select: the track filter.
-function hiddenSelects(): HTMLSelectElement[] {
-  return [...document.querySelectorAll("select")]
 }
 
 describe("RolesTable", () => {
@@ -138,11 +130,14 @@ describe("RolesTable", () => {
     ).toBeDefined()
   })
 
-  it("filters by track via the select", () => {
+  it("filters by track via the select", async () => {
     renderTable()
-    const trackSelect = hiddenSelects()[0]
-    if (trackSelect === undefined) throw new Error("track select missing")
-    fireEvent.change(trackSelect, { target: { value: "M" } })
+    await pickSelectOption(
+      screen.getByRole("combobox", {
+        name: messages.dashboard.roles.table.track,
+      }),
+      "Manager"
+    )
     expect(screen.getByText("Account Executive")).toBeDefined()
     expect(screen.queryByText("Senior Engineer")).toBeNull()
   })

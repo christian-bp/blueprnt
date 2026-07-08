@@ -22,6 +22,7 @@ import { useLocale, useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { useSetPreviewLocale } from "@/components/locale-provider"
 import { FLAG_BY_LOCALE, LANGUAGE_LABEL_KEYS } from "@/lib/locales"
+import { onSelectValue } from "@/lib/select"
 
 // Inline display-language picker for the Profile tab of account settings.
 // Uses the same optimistic locale-change logic as LanguageMenuSub: the preview
@@ -58,7 +59,19 @@ export function LanguageSection() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Select value={active} onValueChange={handleLocaleChange}>
+        <Select
+          value={active}
+          onValueChange={onSelectValue(handleLocaleChange)}
+          items={Object.fromEntries(
+            routing.locales.map((code) => [
+              code,
+              <span key={code} className="flex items-center gap-2">
+                <Flag code={FLAG_BY_LOCALE[code]} alt="" size="S" />
+                {t(LANGUAGE_LABEL_KEYS[code])}
+              </span>,
+            ])
+          )}
+        >
           <SelectTrigger
             aria-label={t("account.profile.languageLabel")}
             className="max-w-sm"

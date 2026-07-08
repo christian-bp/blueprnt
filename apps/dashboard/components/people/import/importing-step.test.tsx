@@ -29,14 +29,15 @@ vi.mock("@/components/org-context", () => ({
 
 import { ImportingStep } from "./importing-step"
 
-// The vendored shadcn Progress conveys the value through the indicator's
-// translateX(-remaining%) style, so read the remaining percentage there.
+// The vendored shadcn Progress (Base UI) exposes the value through the
+// progressbar's aria-valuenow; read the remaining percentage from it.
 function remaining() {
-  const indicator = screen
-    .getByTestId("import-progress")
-    .querySelector('[data-slot="progress-indicator"]') as HTMLElement
-  const match = indicator.style.transform.match(/translateX\(-([\d.]+)%\)/)
-  return Number(match?.[1])
+  const root = screen.getByTestId("import-progress")
+  const bar =
+    root.getAttribute("role") === "progressbar"
+      ? root
+      : (root.querySelector('[role="progressbar"]') as HTMLElement)
+  return 100 - Number(bar.getAttribute("aria-valuenow"))
 }
 
 function renderStep() {

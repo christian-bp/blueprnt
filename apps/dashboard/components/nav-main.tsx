@@ -57,15 +57,13 @@ export function NavMain({ items }: { items: NavItem[] }) {
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
-                asChild
                 isActive={itemActive(item)}
                 tooltip={item.title}
                 className={`${RAIL_CLASSES} ${ACTIVE_CLASSES}`}
+                render={<Link href={item.url} />}
               >
-                <Link href={item.url}>
-                  {item.icon}
-                  <span>{item.title}</span>
-                </Link>
+                {item.icon}
+                <span>{item.title}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

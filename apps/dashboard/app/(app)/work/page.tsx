@@ -1,7 +1,7 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Button } from "@workspace/ui/components/button"
+import { buttonVariants } from "@workspace/ui/components/button"
 import {
   Empty,
   EmptyDescription,
@@ -109,9 +109,12 @@ export default function WorkOverviewPage() {
             <EmptyTitle>{t("heading")}</EmptyTitle>
             <EmptyDescription>{t("empty")}</EmptyDescription>
           </EmptyHeader>
-          <Button asChild variant="outline">
-            <Link href="/roles">{t("emptyCta")}</Link>
-          </Button>
+          <Link
+            href="/roles"
+            className={buttonVariants({ variant: "outline" })}
+          >
+            {t("emptyCta")}
+          </Link>
         </Empty>
       ) : (
         <Tabs defaultValue="ladder" className="space-y-4">

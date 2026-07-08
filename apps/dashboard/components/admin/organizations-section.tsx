@@ -104,23 +104,25 @@ export function OrganizationsSection() {
                 <TableCell className="text-right">
                   <div className="flex justify-end">
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          aria-label={t("rowActions", { name: org.name })}
-                          className="shrink-0 text-muted-foreground hover:text-foreground"
-                        >
-                          <HugeiconsIcon
-                            icon={MoreVerticalIcon}
-                            strokeWidth={2}
+                      <DropdownMenuTrigger
+                        render={
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            aria-label={t("rowActions", { name: org.name })}
+                            className="shrink-0 text-muted-foreground hover:text-foreground"
                           />
-                        </Button>
+                        }
+                      >
+                        <HugeiconsIcon
+                          icon={MoreVerticalIcon}
+                          strokeWidth={2}
+                        />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
-                          onSelect={() => setManageOrgId(org.orgId)}
+                          onClick={() => setManageOrgId(org.orgId)}
                         >
                           {t("manageCta")}
                         </DropdownMenuItem>

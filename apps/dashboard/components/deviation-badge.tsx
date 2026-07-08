@@ -23,10 +23,10 @@ export function DeviationBadge({ agreedBand }: { agreedBand: number }) {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger asChild>
-          <Badge variant="destructive" aria-label={label}>
-            {t("deviation", { band: agreedBand })}
-          </Badge>
+        <TooltipTrigger
+          render={<Badge variant="destructive" aria-label={label} />}
+        >
+          {t("deviation", { band: agreedBand })}
         </TooltipTrigger>
         <TooltipContent arrow>{label}</TooltipContent>
       </Tooltip>

@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-// Same fonts and variable names as apps/web. The radix-vega preset maps
+// Same fonts and variable names as apps/web. The base-vega preset maps
 // font-heading to font-sans in the shared globals.css, so no separate
 // heading font is loaded.
 const sourceSans = Source_Sans_3({

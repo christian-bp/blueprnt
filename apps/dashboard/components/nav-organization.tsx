@@ -16,6 +16,7 @@ import { useQuery } from "convex/react"
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
@@ -68,71 +69,76 @@ export function NavOrganization() {
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              aria-label={t("orgSwitcher.switch")}
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground group-data-[collapsible=icon]:-mx-px group-data-[collapsible=icon]:size-9! group-data-[collapsible=icon]:justify-center"
-            >
-              <Avatar
-                key={logoUrl ?? "no-logo"}
-                variant="brand"
-                className="shrink-0 group-data-[collapsible=icon]:size-9"
-              >
-                {logoUrl ? (
-                  <AvatarImage src={logoUrl} alt={current.name} />
-                ) : null}
-                <AvatarFallback>{initialsOf(current.name)}</AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                <span className="truncate font-medium">{current.name}</span>
-                <span className="truncate text-muted-foreground text-xs">
-                  {t("orgSwitcher.label")}
-                </span>
-              </div>
-              <HugeiconsIcon
-                icon={MoreVerticalCircle01Icon}
-                strokeWidth={2}
-                className="ml-auto size-4 group-data-[collapsible=icon]:hidden"
+          <DropdownMenuTrigger
+            render={
+              <SidebarMenuButton
+                size="lg"
+                aria-label={t("orgSwitcher.switch")}
+                className="data-popup-open:bg-sidebar-accent data-popup-open:text-sidebar-accent-foreground group-data-[collapsible=icon]:-mx-px group-data-[collapsible=icon]:size-9! group-data-[collapsible=icon]:justify-center"
               />
-            </SidebarMenuButton>
+            }
+          >
+            <Avatar
+              key={logoUrl ?? "no-logo"}
+              variant="brand"
+              className="shrink-0 group-data-[collapsible=icon]:size-9"
+            >
+              {logoUrl ? (
+                <AvatarImage src={logoUrl} alt={current.name} />
+              ) : null}
+              <AvatarFallback>{initialsOf(current.name)}</AvatarFallback>
+            </Avatar>
+            <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
+              <span className="truncate font-medium">{current.name}</span>
+              <span className="truncate text-muted-foreground text-xs">
+                {t("orgSwitcher.label")}
+              </span>
+            </div>
+            <HugeiconsIcon
+              icon={MoreVerticalCircle01Icon}
+              strokeWidth={2}
+              className="ml-auto size-4 group-data-[collapsible=icon]:hidden"
+            />
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            className="w-(--anchor-width) min-w-56 rounded-lg"
             side={isMobile ? "bottom" : "right"}
             // align start (not end like NavUser): this trigger sits at the TOP
             // of the sidebar, so the menu drops down from the trigger's top edge.
             align="start"
             sideOffset={4}
           >
-            <DropdownMenuLabel className="text-muted-foreground text-xs">
-              {t("orgSwitcher.label")}
-            </DropdownMenuLabel>
-            {list.map((org) => {
-              const isActive = org.id === current?.id
-              return (
-                <DropdownMenuItem
-                  key={org.id}
-                  aria-current={isActive ? "true" : undefined}
-                  onClick={() => handleSelect(org.id)}
-                >
-                  <Avatar variant="brand" className="size-6 shrink-0">
-                    {org.id === current?.id && logoUrl ? (
-                      <AvatarImage src={logoUrl} alt={org.name} />
+            {/* Base UI group labels must sit inside a Group. */}
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="text-muted-foreground text-xs">
+                {t("orgSwitcher.label")}
+              </DropdownMenuLabel>
+              {list.map((org) => {
+                const isActive = org.id === current?.id
+                return (
+                  <DropdownMenuItem
+                    key={org.id}
+                    aria-current={isActive ? "true" : undefined}
+                    onClick={() => handleSelect(org.id)}
+                  >
+                    <Avatar variant="brand" className="size-6 shrink-0">
+                      {org.id === current?.id && logoUrl ? (
+                        <AvatarImage src={logoUrl} alt={org.name} />
+                      ) : null}
+                      <AvatarFallback>{initialsOf(org.name)}</AvatarFallback>
+                    </Avatar>
+                    <span className="truncate">{org.name}</span>
+                    {isActive ? (
+                      <HugeiconsIcon
+                        icon={Tick02Icon}
+                        strokeWidth={2}
+                        className="ml-auto size-4"
+                      />
                     ) : null}
-                    <AvatarFallback>{initialsOf(org.name)}</AvatarFallback>
-                  </Avatar>
-                  <span className="truncate">{org.name}</span>
-                  {isActive ? (
-                    <HugeiconsIcon
-                      icon={Tick02Icon}
-                      strokeWidth={2}
-                      className="ml-auto size-4"
-                    />
-                  ) : null}
-                </DropdownMenuItem>
-              )
-            })}
+                  </DropdownMenuItem>
+                )
+              })}
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

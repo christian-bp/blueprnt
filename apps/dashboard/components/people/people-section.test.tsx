@@ -3,6 +3,7 @@ import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { onQuery } from "@/test/convex-mocks"
+import { pickSelectOption } from "@/test/select"
 
 vi.mock(
   "convex/react",
@@ -279,26 +280,29 @@ describe("PeopleSection", () => {
     expect(screen.queryByText("Alice Svensson")).toBeNull()
   })
 
-  it("filters by classification state", () => {
+  it("filters by classification state", async () => {
     onQuery((ref) => queryRouter(ref))
     renderSection()
-    // Radix Select renders hidden native selects; [0] = classification,
-    // [1] = department (same pattern as the classify table tests).
-    const stateSelect = document.querySelectorAll("select")[0]
-    if (stateSelect === undefined) throw new Error("state select not found")
-    fireEvent.change(stateSelect, { target: { value: "confirmed" } })
+    await pickSelectOption(
+      screen.getByRole("combobox", {
+        name: messages.dashboard.people.columns.classification,
+      }),
+      messages.dashboard.people.badge.confirmed
+    )
     expect(screen.getByText("Alice Svensson")).toBeDefined()
     expect(screen.queryByText("Bob Larsson")).toBeNull()
     expect(screen.queryByText("Charlie Nilsson")).toBeNull()
   })
 
-  it("filters by department", () => {
+  it("filters by department", async () => {
     onQuery((ref) => queryRouter(ref))
     renderSection()
-    const departmentSelect = document.querySelectorAll("select")[1]
-    if (departmentSelect === undefined)
-      throw new Error("department select not found")
-    fireEvent.change(departmentSelect, { target: { value: "Product" } })
+    await pickSelectOption(
+      screen.getByRole("combobox", {
+        name: messages.dashboard.people.columns.department,
+      }),
+      "Product"
+    )
     expect(screen.getByText("Bob Larsson")).toBeDefined()
     expect(screen.queryByText("Alice Svensson")).toBeNull()
   })

@@ -292,28 +292,32 @@ function MoveCard({
     <li className="flex items-start gap-3 rounded-md border p-3">
       <Checkbox
         id={checkboxId}
-        aria-label={label}
         checked={checked}
         onCheckedChange={(value) => onToggle(index, value === true)}
         className="mt-0.5"
       />
       <div className="min-w-0 flex-1 space-y-2">
         {/* The transfer is wrapped in a label so the whole block toggles the
-            checkbox; the screen-reader name stays the full sentence via the
-            checkbox aria-label. */}
+            checkbox. Base UI names the checkbox from this label (it wires
+            aria-labelledby, which beats aria-label), so the screen-reader
+            name is the sr-only full sentence and the visible compact rows
+            are hidden from the accessible name. */}
         <label htmlFor={checkboxId} className="block cursor-pointer space-y-1">
-          <TransferRow
-            name={fromName}
-            before={fromBefore}
-            after={fromAfter}
-            delta={-points}
-          />
-          <TransferRow
-            name={toName}
-            before={toBefore}
-            after={toAfter}
-            delta={points}
-          />
+          <span className="sr-only">{label}</span>
+          <span aria-hidden="true" className="block space-y-1">
+            <TransferRow
+              name={fromName}
+              before={fromBefore}
+              after={fromAfter}
+              delta={-points}
+            />
+            <TransferRow
+              name={toName}
+              before={toBefore}
+              after={toAfter}
+              delta={points}
+            />
+          </span>
         </label>
         <div>
           <button
