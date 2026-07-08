@@ -2,7 +2,8 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import { buttonVariants } from "@workspace/ui/components/button"
-import { Spinner } from "@workspace/ui/components/spinner"
+import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
@@ -31,10 +32,38 @@ export default function RatePage(props: {
   usePageTitle([role?.title, t("title")])
 
   if (role === undefined || model === undefined) {
+    // Content-shaped loading state mirroring the stepper's layout: heading,
+    // the step-progress line, then the criterion card with its 0-5 anchor
+    // options and the nav row, so nothing reflows when the data arrives.
     return (
-      <main className="flex items-center justify-center p-6">
-        <Spinner aria-label={t("title")} />
-      </main>
+      <div className="space-y-4">
+        <PageHeading>
+          <Skeleton className="h-7 w-72 max-w-full" />
+        </PageHeading>
+        <div className="w-full max-w-2xl space-y-4">
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-4 w-28" />
+            <Skeleton className="h-1.5 w-20 rounded-full" />
+          </div>
+          <Card>
+            <CardHeader className="space-y-2">
+              <Skeleton className="h-5 w-48 max-w-full" />
+              <Skeleton className="h-4 w-3/4" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                {[0, 1, 2, 3, 4, 5].map((level) => (
+                  <Skeleton key={level} className="h-12 w-full rounded-md" />
+                ))}
+              </div>
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-9 w-24 rounded-md" />
+                <Skeleton className="h-9 w-24 rounded-md" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     )
   }
   if (role === null || model === null) {

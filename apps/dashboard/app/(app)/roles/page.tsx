@@ -7,13 +7,13 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
-import { Spinner } from "@workspace/ui/components/spinner"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { PageHeader } from "@/components/page-header"
 import { useOrganization } from "@/components/org-context"
 import { CreateRoleDialog } from "@/components/roles/create-role-dialog"
-import { RolesTable } from "@/components/roles/roles-table"
+import { RolesTable, RolesTableSkeleton } from "@/components/roles/roles-table"
 import { usePageTitle } from "@/hooks/use-page-title"
 
 // The role register: header + create CTA, then the grouped data table
@@ -29,6 +29,10 @@ export default function RolesPage() {
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
   const results = useQuery(api.assessment.results.getResults, { orgId, locale })
 
+  // The header is static i18n content, so it renders immediately; only the
+  // data-dependent parts (the create action needs the model's tracks, the
+  // table needs the rows) swap in from their skeletons (content-shaped
+  // loading rule).
   if (
     roles === undefined ||
     model === undefined ||
@@ -36,9 +40,14 @@ export default function RolesPage() {
     results === undefined
   ) {
     return (
-      <main className="flex items-center justify-center p-6">
-        <Spinner aria-label={t("heading")} />
-      </main>
+      <div className="space-y-4">
+        <PageHeader
+          title={t("heading")}
+          description={t("description")}
+          action={<Skeleton className="h-9 w-28 rounded-md" />}
+        />
+        <RolesTableSkeleton />
+      </div>
     )
   }
 

@@ -29,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   Table,
   TableBody,
@@ -41,6 +42,10 @@ import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
+import {
+  TableSkeleton,
+  type TableSkeletonColumn,
+} from "@/components/table-skeleton"
 import { TrackBadge } from "@/components/track-badge"
 import { groupByFamily } from "@/lib/role-groups"
 
@@ -103,15 +108,54 @@ const exactString = (
   value: string
 ) => row.getValue<string>(columnId) === value
 
-// Fixed column widths (with table-fixed on the Table): auto layout would
-// re-measure columns from the visible rows, so widths would jump whenever
-// filtering changes which rows show. Title takes the remaining space.
-const HEAD_WIDTH: Record<string, string> = {
-  track: "w-44",
-  team: "w-[22%]",
-  // w-32 fits the widest locale label (fi "Vaativuusluokka"); narrower clips
-  // it and forces a horizontal scroll.
-  evaluation: "w-32",
+// The register's header, shared by the data table and the page's loading
+// skeleton so the two cannot drift. The columns are not sortable (grouped
+// registers take no per-column sorting), so a static header is equivalent to
+// rendering TanStack's header groups. Fixed column widths (with table-fixed
+// on the Table): auto layout would re-measure columns from the visible rows,
+// so widths would jump whenever filtering changes which rows show. Title
+// takes the remaining space. Band is w-32 to fit the widest locale label
+// (fi "Vaativuusluokka"); narrower clips it and forces a horizontal scroll.
+export function RolesTableHeader() {
+  const t = useTranslations("dashboard.roles")
+  const tAssessment = useTranslations("assessment")
+  return (
+    <TableHeader>
+      <TableRow>
+        <TableHead>{t("table.title")}</TableHead>
+        <TableHead className="w-44">{t("table.track")}</TableHead>
+        <TableHead className="w-[22%]">{t("table.team")}</TableHead>
+        <TableHead className="w-32">{tAssessment("band")}</TableHead>
+      </TableRow>
+    </TableHeader>
+  )
+}
+
+// Skeleton shape per column, mirroring the real row content (title link,
+// track badge, team text, band badge) so the loading table has the same
+// silhouette as the loaded one.
+const ROLES_SKELETON_COLUMNS: TableSkeletonColumn[] = [
+  { className: "w-40 max-w-full" },
+  { className: "h-5 w-20 rounded-full" },
+  { className: "w-24 max-w-full" },
+  { className: "h-5 w-10 rounded-full" },
+]
+
+// The register's loading state: toolbar-shaped bars over the shared header
+// and skeleton rows (unpaginated, so sized to typical content).
+export function RolesTableSkeleton() {
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <Skeleton className="h-9 w-64 rounded-md" />
+        <Skeleton className="h-9 w-40 rounded-md" />
+      </div>
+      <Table className="table-fixed">
+        <RolesTableHeader />
+        <TableSkeleton rows={8} columns={ROLES_SKELETON_COLUMNS} />
+      </Table>
+    </div>
+  )
 }
 
 export function RolesTable({
@@ -124,7 +168,6 @@ export function RolesTable({
   const t = useTranslations("dashboard.roles")
   const tToolbar = useTranslations("dashboard.roles.toolbar")
   const tFamily = useTranslations("dashboard.roles.family")
-  const tAssessment = useTranslations("assessment")
   const router = useRouter()
 
   const [globalFilter, setGlobalFilter] = useState("")
@@ -150,7 +193,6 @@ export function RolesTable({
       {
         id: "title",
         accessorKey: "title",
-        header: t("table.title"),
         cell: ({ row }) => (
           // block truncate: a long title clamps inside the fixed column
           // instead of widening it.
@@ -165,20 +207,23 @@ export function RolesTable({
       {
         id: "track",
         accessorFn: (row) => row.trackKey,
-        header: t("table.track"),
         filterFn: exactString,
         enableGlobalFilter: false,
+        // Block flex wrapper: an inline-flex badge directly in the cell sits
+        // on the text baseline and inflates the line box, desyncing the row
+        // height from the skeleton rows (skeleton parity rule).
         cell: ({ row }) => (
-          <TrackBadge
-            trackKey={row.original.trackKey}
-            name={row.original.trackName}
-          />
+          <div className="flex items-center">
+            <TrackBadge
+              trackKey={row.original.trackKey}
+              name={row.original.trackName}
+            />
+          </div>
         ),
       },
       {
         id: "team",
         accessorKey: "team",
-        header: t("table.team"),
         enableGlobalFilter: false,
         cell: ({ row }) => (
           <span className="block truncate text-muted-foreground">
@@ -188,16 +233,20 @@ export function RolesTable({
       },
       {
         id: "evaluation",
-        header: tAssessment("band"),
         enableGlobalFilter: false,
         // The evaluation outcome: a role's band once it is fully evaluated,
         // otherwise "not evaluated" (an incomplete or still-computing role has
         // no band yet, the same rule as the family and overview tables).
+        // Block flex wrapper: skeleton parity, same as the track cell.
         cell: ({ row }) =>
-          row.original.band != null ? <Badge>{row.original.band}</Badge> : null,
+          row.original.band != null ? (
+            <div className="flex items-center">
+              <Badge>{row.original.band}</Badge>
+            </div>
+          ) : null,
       },
     ],
-    [t, tAssessment]
+    []
   )
 
   const table = useReactTable({
@@ -310,22 +359,7 @@ export function RolesTable({
         </Empty>
       ) : (
         <Table className="table-fixed">
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className={HEAD_WIDTH[header.id]}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
+          <RolesTableHeader />
           <TableBody>
             {table.getRowModel().rows.map((row) => {
               if (row.getIsGrouped()) {

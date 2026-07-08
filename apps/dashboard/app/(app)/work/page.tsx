@@ -9,7 +9,7 @@ import {
   EmptyTitle,
 } from "@workspace/ui/components/empty"
 import { Label } from "@workspace/ui/components/label"
-import { Spinner } from "@workspace/ui/components/spinner"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Switch } from "@workspace/ui/components/switch"
 import {
   Tabs,
@@ -52,11 +52,56 @@ export default function WorkOverviewPage() {
   const [hidden, setHidden] = useState<Set<string>>(new Set())
   const [grouped, setGrouped] = useState(false)
 
+  // The header is static i18n content, so both branches render it for real;
+  // one node so the two cannot drift.
+  const header = (
+    <div>
+      <div className="flex items-center gap-1.5">
+        <PageHeading>{t("heading")}</PageHeading>
+        <HelpMorphButton label={tHelp("scoreLabel")}>
+          {tHelp("scoreBody")}
+        </HelpMorphButton>
+      </div>
+      <p className="text-muted-foreground text-sm">{t("description")}</p>
+    </div>
+  )
+
   if (results === undefined) {
+    // Content-shaped loading state mirroring the ladder view: the tabs bar,
+    // then band rows (the ladder's real bordered boxes: a w-28 label block
+    // and role chips), so nothing reflows when the results arrive.
     return (
-      <main className="flex items-center justify-center p-6">
-        <Spinner aria-label={t("heading")} />
-      </main>
+      <div className="space-y-6">
+        {header}
+        <div className="space-y-4">
+          <Skeleton className="h-9 w-44 rounded-md" />
+          <ul className="space-y-2">
+            {[3, 2, 4, 1, 2].map((chips, band) => (
+              <li
+                // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
+                key={band}
+                className="rounded-xl border p-3"
+              >
+                <div className="flex gap-4">
+                  <div className="w-28 shrink-0 space-y-1.5">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-3 w-20" />
+                  </div>
+                  <div className="flex flex-1 flex-wrap items-start gap-2 self-center">
+                    {Array.from({ length: chips }, (_, chip) => (
+                      <Skeleton
+                        // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
+                        key={chip}
+                        className="h-8 w-28 rounded-md"
+                      />
+                    ))}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     )
   }
 
@@ -94,15 +139,7 @@ export default function WorkOverviewPage() {
   )
   return (
     <div className="space-y-6">
-      <div>
-        <div className="flex items-center gap-1.5">
-          <PageHeading>{t("heading")}</PageHeading>
-          <HelpMorphButton label={tHelp("scoreLabel")}>
-            {tHelp("scoreBody")}
-          </HelpMorphButton>
-        </div>
-        <p className="text-muted-foreground text-sm">{t("description")}</p>
-      </div>
+      {header}
       {results.rows.length === 0 ? (
         <Empty>
           <EmptyHeader>

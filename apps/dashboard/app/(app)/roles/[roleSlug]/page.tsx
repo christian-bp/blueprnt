@@ -2,7 +2,6 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Badge } from "@workspace/ui/components/badge"
-import { Spinner } from "@workspace/ui/components/spinner"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
@@ -11,6 +10,7 @@ import { type Crumb, PageBreadcrumb } from "@/components/page-breadcrumb"
 import { PageHeader } from "@/components/page-header"
 import { useOrganization } from "@/components/org-context"
 import { TrackBadge } from "@/components/track-badge"
+import { RoleDetailSkeleton } from "@/components/roles/role-detail-skeleton"
 import { RoleEvaluationCard } from "@/components/roles/role-evaluation-card"
 import { RoleProfileCard } from "@/components/roles/role-profile-card"
 import { usePageTitle } from "@/hooks/use-page-title"
@@ -31,11 +31,7 @@ export default function RolePage(props: {
   usePageTitle(role?.title)
 
   if (role === undefined) {
-    return (
-      <main className="flex items-center justify-center p-6">
-        <Spinner aria-label={t("profileHeading")} />
-      </main>
-    )
+    return <RoleDetailSkeleton />
   }
   if (role === null) {
     return (
