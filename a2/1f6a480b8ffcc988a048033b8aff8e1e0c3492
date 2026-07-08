@@ -1,0 +1,21 @@
+apps/dashboard/components/auth/otp-field.test.tsx
+  s_6bff98b662648b::t_2f1e4d7a1e9059 24,37-41
+apps/dashboard/components/auth/otp-field.tsx
+  s_6bff98b662648b::t_ddd26767b2c4a5 23-27,34-35,54-81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "a21f6a480b8ffcc988a048033b8aff8e1e0c3492",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
