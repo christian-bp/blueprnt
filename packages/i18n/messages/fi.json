@@ -321,7 +321,7 @@
             "salaryChanged": "Saman palkkavuoden palkkamuutokset",
             "salaryIdentical": "Jo ajan tasalla olevat palkat",
             "displayName": "Nimi",
-            "andMore": "{count, plural, one {ja # muu} other {ja # muuta}}",
+            "showAll": "Näytä kaikki {count}",
             "previewFailed": "Muutosten esikatselua ei voitu ladata. Voit silti tuoda.",
             "mismatchTitle": "Tarkista nämä työntekijänumerot",
             "mismatchBody": "Nämä työntekijänumerot ovat jo olemassa eri nimellä. Se voi tarkoittaa uudelleenkäytettyä numeroa tai kirjoitusvirhettä, joten rivit ohitetaan, ellet valitse niiden päivittämistä.",

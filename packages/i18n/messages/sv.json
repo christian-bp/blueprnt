@@ -321,7 +321,7 @@
             "salaryChanged": "Löneändringar för samma löneår",
             "salaryIdentical": "Löner som redan är aktuella",
             "displayName": "Namn",
-            "andMore": "{count, plural, one {och # till} other {och # till}}",
+            "showAll": "Visa alla {count}",
             "previewFailed": "Förhandsgranskningen av ändringar kunde inte laddas. Du kan ändå importera.",
             "mismatchTitle": "Kontrollera dessa anställningsnummer",
             "mismatchBody": "Dessa anställningsnummer finns redan med ett annat namn. Det kan betyda ett återanvänt nummer eller ett skrivfel, så raderna hoppas över om du inte väljer att uppdatera dem.",

@@ -321,7 +321,7 @@
             "salaryChanged": "Lønændringer for samme lønår",
             "salaryIdentical": "Lønninger der allerede er opdaterede",
             "displayName": "Navn",
-            "andMore": "{count, plural, one {og # mere} other {og # mere}}",
+            "showAll": "Vis alle {count}",
             "previewFailed": "Forhåndsvisningen af ændringer kunne ikke indlæses. Du kan stadig importere.",
             "mismatchTitle": "Kontrollér disse medarbejdernumre",
             "mismatchBody": "Disse medarbejdernumre findes allerede med et andet navn. Det kan betyde et genbrugt nummer eller en tastefejl, så rækkerne springes over, medmindre du vælger at opdatere dem.",

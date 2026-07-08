@@ -157,6 +157,8 @@ export function ReviewStep({
   const [previewFailed, setPreviewFailed] = useState(false)
   // Rows flagged as name mismatches are skipped unless HR opts in.
   const [updateMismatchedAnyway, setUpdateMismatchedAnyway] = useState(false)
+  // The updated-people list starts capped; Show all reveals the rest.
+  const [showAllUpdated, setShowAllUpdated] = useState(false)
   const previewRanRef = useRef(false)
   // biome-ignore lint/correctness/useExhaustiveDependencies: fire once on mount
   useEffect(() => {
@@ -341,35 +343,42 @@ export function ReviewStep({
             {/* Who changes, field by field, so updating is a knowing act. */}
             {changePreview.diff.updatedPeople.length > 0 && (
               <div className="space-y-2" data-testid="updated-people">
-                {changePreview.diff.updatedPeople
-                  .slice(0, UPDATED_PEOPLE_SHOWN)
-                  .map((person) => (
-                    <div
-                      key={person.externalRef}
-                      className="rounded-md border px-3 py-2 text-sm"
+                {(showAllUpdated
+                  ? changePreview.diff.updatedPeople
+                  : changePreview.diff.updatedPeople.slice(
+                      0,
+                      UPDATED_PEOPLE_SHOWN
+                    )
+                ).map((person) => (
+                  <div
+                    key={person.externalRef}
+                    className="rounded-md border px-3 py-2 text-sm"
+                  >
+                    <p className="font-medium">{person.displayName}</p>
+                    <p className="text-muted-foreground">
+                      {person.changes.map((change, index) => (
+                        <span key={change.field}>
+                          {index > 0 && " · "}
+                          {fieldChangeLabel(change.field)}:{" "}
+                          <FromTo from={change.from} to={change.to} />
+                        </span>
+                      ))}
+                    </p>
+                  </div>
+                ))}
+                {!showAllUpdated &&
+                  changePreview.diff.updatedPeople.length >
+                    UPDATED_PEOPLE_SHOWN && (
+                    <button
+                      type="button"
+                      className="text-muted-foreground text-sm underline-offset-4 hover:underline"
+                      onClick={() => setShowAllUpdated(true)}
                     >
-                      <p className="font-medium">{person.displayName}</p>
-                      <p className="text-muted-foreground">
-                        {person.changes.map((change, index) => (
-                          <span key={change.field}>
-                            {index > 0 && " · "}
-                            {fieldChangeLabel(change.field)}:{" "}
-                            <FromTo from={change.from} to={change.to} />
-                          </span>
-                        ))}
-                      </p>
-                    </div>
-                  ))}
-                {changePreview.diff.updatedPeople.length >
-                  UPDATED_PEOPLE_SHOWN && (
-                  <p className="text-muted-foreground text-sm">
-                    {tChanges("andMore", {
-                      count:
-                        changePreview.diff.updatedPeople.length -
-                        UPDATED_PEOPLE_SHOWN,
-                    })}
-                  </p>
-                )}
+                      {tChanges("showAll", {
+                        count: changePreview.diff.updatedPeople.length,
+                      })}
+                    </button>
+                  )}
               </div>
             )}
           </div>

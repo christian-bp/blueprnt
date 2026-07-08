@@ -544,6 +544,35 @@ describe("ReviewStep — change preview", () => {
     expect(updated.textContent).toContain("HR")
   })
 
+  it("caps the updated-people list and reveals the rest via Show all", async () => {
+    const manyUpdated = Array.from({ length: 8 }, (_, i) => ({
+      externalRef: `E${i + 1}`,
+      displayName: `Person ${i + 1}`,
+      changes: [{ field: "department", from: "A", to: "B" }],
+    }))
+    previewImportMock.mockResolvedValueOnce({
+      ...OK_PREVIEW,
+      diff: {
+        ...OK_PREVIEW.diff,
+        people: { created: 0, updated: 8, unchanged: 0 },
+        updatedPeople: manyUpdated,
+      },
+    })
+    renderReviewStep()
+
+    const updated = await screen.findByTestId("updated-people")
+    // Capped at 6: the 8th person is hidden behind Show all.
+    expect(updated.textContent).toContain("Person 6")
+    expect(updated.textContent).not.toContain("Person 8")
+
+    fireEvent.click(screen.getByRole("button", { name: /8/ }))
+    expect(screen.getByTestId("updated-people").textContent).toContain(
+      "Person 8"
+    )
+    // The expander disappears once everything is shown.
+    expect(screen.queryByRole("button", { name: /Show all/ })).toBeNull()
+  })
+
   it("skips name-mismatched rows by default and passes them to importPayroll", async () => {
     previewImportMock.mockResolvedValueOnce({
       ...OK_PREVIEW,

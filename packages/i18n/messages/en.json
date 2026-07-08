@@ -325,7 +325,7 @@
             "salaryChanged": "Salary changes for the same year",
             "salaryIdentical": "Salaries already up to date",
             "displayName": "Name",
-            "andMore": "{count, plural, one {and # more} other {and # more}}",
+            "showAll": "Show all {count}",
             "previewFailed": "The change preview could not be loaded. You can still import.",
             "mismatchTitle": "Check these employee numbers",
             "mismatchBody": "These employee numbers already exist with a different name. This can mean a reused number or a typo, so the rows are skipped unless you choose to update them.",
