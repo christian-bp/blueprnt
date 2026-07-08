@@ -71,6 +71,10 @@ import {
 const CATEGORIES = ["model", "role", "organization", "member", "ai"] as const
 type Category = (typeof CATEGORIES)[number]
 
+// Shared by the pager and the loading skeleton so the skeleton always shows a
+// full page of rows.
+const PAGE_SIZE = 25
+
 // A single enriched audit row, as returned by both the browse and search
 // queries. `names` is a per-row id -> display-name map for that row's payload.
 type AuditRow = {
@@ -179,7 +183,7 @@ export function OrgAuditLogSection() {
 
   const pager = useAuditPagination({
     rows,
-    pageSize: 25,
+    pageSize: PAGE_SIZE,
     canLoadMore: !isSearching && browse.status === "CanLoadMore",
     isLoadingMore: !isSearching && browse.status === "LoadingMore",
     loadMore: browse.loadMore,
@@ -347,7 +351,7 @@ export function OrgAuditLogSection() {
         <Table className="table-fixed">
           {auditTableHeader}
           <TableSkeleton
-            rows={25}
+            rows={PAGE_SIZE}
             columns={[
               { className: "w-28" },
               { className: "w-24" },

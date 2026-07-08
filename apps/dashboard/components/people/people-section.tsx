@@ -296,7 +296,7 @@ export function PeopleSection() {
           </div>
           <Table className="table-fixed">
             {tableHeader}
-            <TableSkeleton rows={8} columns={PEOPLE_SKELETON_COLUMNS} />
+            <TableSkeleton rows={PAGE_SIZE} columns={PEOPLE_SKELETON_COLUMNS} />
           </Table>
         </>
       ) : people.length === 0 ? (

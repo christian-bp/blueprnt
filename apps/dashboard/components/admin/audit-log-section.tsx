@@ -63,6 +63,10 @@ import {
 const CATEGORIES = ["user", "organization", "membership", "admin"] as const
 type Category = (typeof CATEGORIES)[number]
 
+// Shared by the pager and the loading skeleton so the skeleton always shows a
+// full page of rows.
+const PAGE_SIZE = 25
+
 // A single enriched platform-audit row, as returned by both the browse and
 // search queries. targetUser/targetOrg are resolved display labels (or null);
 // payloads carry ids and codes only, never PII.
@@ -191,7 +195,7 @@ export function AuditLogSection() {
 
   const pager = useAuditPagination({
     rows,
-    pageSize: 25,
+    pageSize: PAGE_SIZE,
     canLoadMore: !isSearching && browse.status === "CanLoadMore",
     isLoadingMore: !isSearching && browse.status === "LoadingMore",
     loadMore: browse.loadMore,
@@ -318,7 +322,7 @@ export function AuditLogSection() {
         <Table className="table-fixed">
           {auditTableHeader}
           <TableSkeleton
-            rows={25}
+            rows={PAGE_SIZE}
             columns={[
               { className: "w-28" },
               { className: "w-24" },
