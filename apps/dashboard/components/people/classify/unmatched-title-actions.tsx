@@ -137,12 +137,10 @@ export function UnmatchedTitleActions({
 
   return (
     <div className="flex items-center gap-2">
-      <Button
-        type="button"
-        size="sm"
-        variant="outline"
-        onClick={() => setOpen(true)}
-      >
+      {/* Default size (h-9): this button sits on one line with the h-9 role
+          select; size="sm" was a leftover from its former life inside the
+          table's actions cell. */}
+      <Button type="button" variant="outline" onClick={() => setOpen(true)}>
         {t("createRoleCta")}
       </Button>
 
