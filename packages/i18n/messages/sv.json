@@ -307,12 +307,13 @@
         "review": {
           "title": "Granska och bekräfta",
           "description": "Kontrollera förhandsgranskningen nedan och bekräfta för att importera.",
-          "preview": "Förhandsgranskning (de första {count} raderna)",
           "summary": "{people, plural, one {# person} other {# personer}} att importera",
           "confirm": "Bekräfta import",
           "blockingTitle": "Obligatoriska fält är inte mappade",
           "changes": {
             "heading": "Vad importen kommer att ändra",
+            "employeesGroup": "Anställda",
+            "salariesGroup": "Löner",
             "newPeople": "Nya anställda",
             "updatedPeople": "Uppdaterade anställda",
             "unchangedPeople": "Redan aktuella",

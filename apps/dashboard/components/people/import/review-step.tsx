@@ -1,15 +1,15 @@
 "use client"
 
-import { Tick02Icon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
 import {
-  type CanonicalFieldKey,
-  classifyColumn,
-  parseCurrency,
-  parseGender,
-  parseMoney,
-  parsePercent,
-} from "@workspace/import"
+  ArrowRight01Icon,
+  Coins01Icon,
+  CoinsDollarIcon,
+  Tick02Icon,
+  UserAdd01Icon,
+  UserCheck01Icon,
+  UserEdit01Icon,
+} from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
   Alert,
@@ -20,14 +20,6 @@ import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Label } from "@workspace/ui/components/label"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@workspace/ui/components/table"
 import type { FunctionReturnType } from "convex/server"
 import { useAction } from "convex/react"
 import { useTranslations } from "next-intl"
@@ -37,9 +29,6 @@ import { useOrganization } from "@/components/org-context"
 import { WizardFooter } from "@/components/onboarding/wizard-footer"
 import { SubmitButton } from "@/components/submit-button"
 import type { ImportResultCounts, ParsedCsv } from "./import-wizard"
-
-// Maximum number of rows to show in the preview table.
-const PREVIEW_ROW_COUNT = 10
 
 // Maximum updated-people diff cards shown before "and N more".
 const UPDATED_PEOPLE_SHOWN = 6
@@ -73,77 +62,26 @@ export function buildColumnMap(
   return pairs
 }
 
-// A single normalized preview row.
-interface PreviewRow {
-  displayName: string
-  basicMonthly: number | null
-  currency: string | null
-  ftePercent: number | null
-  gender: string | null
-}
-
-/**
- * Normalize up to PREVIEW_ROW_COUNT data rows using the parsers from
- * @workspace/import so the preview shows the same values the backend will
- * actually import.
- */
-function buildPreviewRows(
-  parsed: ParsedCsv,
-  mapping: Record<string, number>
-): PreviewRow[] {
-  const col = (key: CanonicalFieldKey): number | undefined => {
-    const idx = mapping[key]
-    return idx !== undefined && idx >= 0 && idx < parsed.headers.length
-      ? idx
-      : undefined
-  }
-
-  const firstNameCol = col("firstName")
-  const lastNameCol = col("lastName")
-  const externalRefCol = col("externalRef")
-  const basicMonthlyCol = col("basicMonthly")
-  const currencyCol = col("currency")
-  const ftePercentCol = col("ftePercent")
-  const genderCol = col("gender")
-
-  // Determine once whether the FTE column is fractional (values <= 1.0). The
-  // backend classifies the whole column and scales x100; mirror that here so the
-  // preview value matches the imported value (classifyColumn over ALL rows, not
-  // just the previewed slice, so the fraction verdict is the column's, not the
-  // preview window's).
-  const fteIsFraction =
-    ftePercentCol !== undefined &&
-    classifyColumn(parsed.rows.map((r) => r[ftePercentCol] ?? "")).fraction ===
-      true
-
-  const rows = parsed.rows.slice(0, PREVIEW_ROW_COUNT)
-
-  return rows.map((row) => {
-    const cell = (colIdx: number | undefined): string =>
-      colIdx !== undefined ? (row[colIdx] ?? "").trim() : ""
-
-    const firstName = cell(firstNameCol)
-    const lastName = cell(lastNameCol)
-    const externalRef = cell(externalRefCol)
-    const displayName =
-      [firstName, lastName].filter(Boolean).join(" ") || externalRef
-
-    const basicMonthlyRaw = cell(basicMonthlyCol)
-    const basicMonthly = basicMonthlyRaw ? parseMoney(basicMonthlyRaw) : null
-
-    const currencyRaw = cell(currencyCol)
-    const currency = currencyRaw ? parseCurrency(currencyRaw) : null
-
-    const ftePercentRaw = cell(ftePercentCol)
-    const ftePercent = ftePercentRaw
-      ? parsePercent(ftePercentRaw, { fraction: fteIsFraction })
-      : null
-
-    const genderRaw = cell(genderCol)
-    const gender = genderRaw ? parseGender(genderRaw) : null
-
-    return { displayName, basicMonthly, currency, ftePercent, gender }
-  })
+// A stored value becoming an incoming value, joined by an arrow icon (never
+// a bare text arrow); `from` may be absent when a field is newly set.
+function FromTo({ from, to }: { from?: string; to: string }) {
+  return (
+    <span className="inline-flex items-center gap-1">
+      {from !== undefined && from !== "" && (
+        <>
+          <span>{from}</span>
+          <HugeiconsIcon
+            icon={ArrowRight01Icon}
+            size={12}
+            strokeWidth={2}
+            aria-hidden="true"
+            className="shrink-0 text-muted-foreground/70"
+          />
+        </>
+      )}
+      <span>{to}</span>
+    </span>
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -191,7 +129,6 @@ export function ReviewStep({
   const t = useTranslations("dashboard.people.import.review")
   const tImport = useTranslations("dashboard.people.import")
   const tFields = useTranslations("dashboard.people.import.fields")
-  const tGender = useTranslations("dashboard.people.import.gender")
   const tChanges = useTranslations("dashboard.people.import.review.changes")
   const tToast = useTranslations("dashboard.toast")
   const { orgId } = useOrganization()
@@ -208,7 +145,6 @@ export function ReviewStep({
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const previewRows = buildPreviewRows(parsed, mapping)
   const columnMap = buildColumnMap(mapping, parsed.headers)
 
   // The dry-run change preview: the SAME pipeline the import runs, diffed
@@ -288,8 +224,6 @@ export function ReviewStep({
     }
   }
 
-  const previewCount = Math.min(PREVIEW_ROW_COUNT, parsed.rows.length)
-
   return (
     <div className="flex w-full flex-col gap-6">
       {/* Unexpected blocking error from the action */}
@@ -310,7 +244,12 @@ export function ReviewStep({
 
       {/* What the import will actually do, from the server-side dry run. */}
       <div data-testid="import-changes">
-        <h3 className="mb-3 font-medium text-sm">{tChanges("heading")}</h3>
+        <div className="mb-3 flex items-baseline justify-between gap-2">
+          <h3 className="font-medium text-sm">{tChanges("heading")}</h3>
+          <p className="text-muted-foreground text-sm" data-testid="summary">
+            {t("summary", { people: parsed.rows.length })}
+          </p>
+        </div>
         {previewFailed ? (
           <p className="text-muted-foreground text-sm">
             {tChanges("previewFailed")}
@@ -323,30 +262,81 @@ export function ReviewStep({
           </div>
         ) : changePreview.diff === null ? null : (
           <div className="space-y-4">
-            <ul className="max-w-sm space-y-1 text-sm">
+            {/* Grouped icon rows, the done screen's visual language, so the
+                before (this preview) and after (the result) read the same. */}
+            <div className="grid gap-4 sm:grid-cols-2">
               {(
                 [
-                  ["newPeople", changePreview.diff.people.created],
-                  ["updatedPeople", changePreview.diff.people.updated],
-                  ["unchangedPeople", changePreview.diff.people.unchanged],
-                  ["salaryNew", changePreview.diff.salary.newEntries],
-                  ["salaryChanged", changePreview.diff.salary.changedSameYear],
-                  ["salaryIdentical", changePreview.diff.salary.identical],
+                  {
+                    group: "employeesGroup",
+                    lines: [
+                      {
+                        key: "newPeople",
+                        icon: UserAdd01Icon,
+                        count: changePreview.diff.people.created,
+                      },
+                      {
+                        key: "updatedPeople",
+                        icon: UserEdit01Icon,
+                        count: changePreview.diff.people.updated,
+                      },
+                      {
+                        key: "unchangedPeople",
+                        icon: UserCheck01Icon,
+                        count: changePreview.diff.people.unchanged,
+                      },
+                    ],
+                  },
+                  {
+                    group: "salariesGroup",
+                    lines: [
+                      {
+                        key: "salaryNew",
+                        icon: Coins01Icon,
+                        count: changePreview.diff.salary.newEntries,
+                      },
+                      {
+                        key: "salaryChanged",
+                        icon: CoinsDollarIcon,
+                        count: changePreview.diff.salary.changedSameYear,
+                      },
+                      {
+                        key: "salaryIdentical",
+                        icon: Tick02Icon,
+                        count: changePreview.diff.salary.identical,
+                      },
+                    ],
+                  },
                 ] as const
-              )
-                .filter(([, count]) => count > 0)
-                .map(([key, count]) => (
-                  <li
-                    key={key}
-                    className="flex items-baseline justify-between gap-4"
-                  >
-                    <span className="text-muted-foreground">
-                      {tChanges(key)}
-                    </span>
-                    <span className="font-medium tabular-nums">{count}</span>
-                  </li>
-                ))}
-            </ul>
+              ).map(({ group, lines }) => (
+                <div key={group}>
+                  <h4 className="mb-2 font-medium text-muted-foreground text-xs">
+                    {tChanges(group)}
+                  </h4>
+                  <div className="divide-y rounded-md border">
+                    {lines.map(({ key, icon, count }) => (
+                      <div
+                        key={key}
+                        className="flex items-center justify-between gap-2 px-3 py-2"
+                      >
+                        <span className="flex items-center gap-2">
+                          <HugeiconsIcon
+                            icon={icon}
+                            strokeWidth={2}
+                            className="size-4 shrink-0 text-muted-foreground"
+                            aria-hidden="true"
+                          />
+                          <span className="text-sm">{tChanges(key)}</span>
+                        </span>
+                        <span className="font-medium font-mono text-sm">
+                          {count}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
 
             {/* Who changes, field by field, so updating is a knowing act. */}
             {changePreview.diff.updatedPeople.length > 0 && (
@@ -364,13 +354,7 @@ export function ReviewStep({
                           <span key={change.field}>
                             {index > 0 && " · "}
                             {fieldChangeLabel(change.field)}:{" "}
-                            {change.from !== "" && (
-                              <>
-                                {change.from}
-                                {" → "}
-                              </>
-                            )}
-                            {change.to}
+                            <FromTo from={change.from} to={change.to} />
                           </span>
                         ))}
                       </p>
@@ -407,9 +391,11 @@ export function ReviewStep({
             <ul className="mt-2 space-y-1">
               {nameMismatches.map((mismatch) => (
                 <li key={mismatch.externalRef} className="font-medium">
-                  {mismatch.externalRef}: {mismatch.storedName}
-                  {" → "}
-                  {mismatch.incomingName}
+                  {mismatch.externalRef}:{" "}
+                  <FromTo
+                    from={mismatch.storedName}
+                    to={mismatch.incomingName}
+                  />
                 </li>
               ))}
             </ul>
@@ -430,59 +416,6 @@ export function ReviewStep({
           </AlertDescription>
         </Alert>
       )}
-
-      {/* Preview table. The heading row carries the total count on the right
-          (no flagged count: the check step forces every actionable issue to
-          be resolved before this step is reachable). */}
-      <div data-testid="preview-table">
-        <div className="mb-3 flex items-baseline justify-between gap-2">
-          <h3 className="font-medium text-sm">
-            {t("preview", { count: previewCount })}
-          </h3>
-          <p className="text-muted-foreground text-sm" data-testid="summary">
-            {t("summary", { people: parsed.rows.length })}
-          </p>
-        </div>
-        <div className="overflow-x-auto rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{tFields("firstName")}</TableHead>
-                <TableHead>{tFields("basicMonthly")}</TableHead>
-                <TableHead>{tFields("currency")}</TableHead>
-                <TableHead>{tFields("ftePercent")}</TableHead>
-                <TableHead>{tFields("gender")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {previewRows.map((row, idx) => (
-                // biome-ignore lint/suspicious/noArrayIndexKey: preview rows have no stable id; row index is the correct key here
-                <TableRow key={idx} data-testid={`preview-row-${idx}`}>
-                  <TableCell className="font-medium">
-                    {row.displayName}
-                  </TableCell>
-                  <TableCell className="font-mono text-sm">
-                    {row.basicMonthly !== null
-                      ? row.basicMonthly.toLocaleString("sv-SE")
-                      : ""}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {row.currency ?? ""}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {row.ftePercent !== null ? `${row.ftePercent}%` : ""}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {row.gender != null
-                      ? tGender(row.gender as Parameters<typeof tGender>[0])
-                      : ""}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
 
       {/* Footer: back + confirm, matching the other steps' action row */}
       <WizardFooter>

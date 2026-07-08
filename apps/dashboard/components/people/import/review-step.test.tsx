@@ -248,76 +248,9 @@ describe("ReviewStep — preview", () => {
     cleanup()
   })
 
-  it("renders the preview table", () => {
+  it("shows the summary line with the people count", async () => {
     renderReviewStep()
-    expect(screen.getByTestId("preview-table")).toBeDefined()
-  })
-
-  it("renders a row for each data row (up to 10)", () => {
-    renderReviewStep()
-    expect(screen.getByTestId("preview-row-0")).toBeDefined()
-    expect(screen.getByTestId("preview-row-1")).toBeDefined()
-  })
-
-  it("shows the parsed basicMonthly value (space-grouped '52 000' becomes 52000)", () => {
-    renderReviewStep()
-    // parseMoney("52 000") = 52000; displayed as locale string (sv-SE: "52 000")
-    const row0 = screen.getByTestId("preview-row-0")
-    // The cell should contain the numeric value. toLocaleString('sv-SE') produces
-    // "52 000" with a thin non-breaking space — just check the digits are there.
-    expect(row0.textContent).toMatch(/52/)
-    expect(row0.textContent).toMatch(/000/)
-  })
-
-  it("shows the currency value for each row", () => {
-    renderReviewStep()
-    expect(screen.getByTestId("preview-row-0").textContent).toContain("SEK")
-    expect(screen.getByTestId("preview-row-1").textContent).toContain("EUR")
-  })
-
-  it("shows the localized gender label in the preview (not the raw canonical value)", () => {
-    renderReviewStep()
-    const row0 = screen.getByTestId("preview-row-0")
-    // parseGender("Kvinna") = "Kvinna"; rendered via tGender -> en: "Woman"
-    expect(row0.textContent).toContain(
-      messages.dashboard.people.import.gender.Kvinna
-    )
-    // The raw canonical value must not leak into the cell.
-    // Note: "Man" also appears in row1 via tGender("Man") -> en: "Man" (same string), so
-    // only verify the Kvinna->Woman mapping which is distinct.
-  })
-
-  it("renders an empty gender cell when gender is null", () => {
-    const noGenderParsed: ParsedCsv = {
-      headers: HEADERS,
-      // Gender column (index 2) is empty for this row.
-      rows: [["E003", "Analyst", "", "45000", "100", "SEK"]],
-    }
-    render(
-      <NextIntlClientProvider locale="en" messages={messages}>
-        <ReviewStep
-          parsed={noGenderParsed}
-          mapping={MAPPING}
-          csvText={`${HEADERS.join(",")}\nE003,Analyst,,45000,100,SEK`}
-          onBack={vi.fn()}
-          onImportStart={vi.fn()}
-          onImportEnd={vi.fn()}
-          onImportSuccess={vi.fn()}
-          blockingError={null}
-          genderOverrides={{}}
-        />
-      </NextIntlClientProvider>
-    )
-    const row0 = screen.getByTestId("preview-row-0")
-    // Gender cell should be empty (no "Man", "Kvinna", "Woman", etc.)
-    expect(row0.textContent).not.toContain("Woman")
-    expect(row0.textContent).not.toContain("Man")
-  })
-
-  it("shows the summary line with the people count", () => {
-    renderReviewStep()
-    const summary = screen.getByTestId("summary")
-    expect(summary.textContent).toBeDefined()
+    const summary = await screen.findByTestId("summary")
     // Should contain the total row count
     expect(summary.textContent).toContain("2")
   })
@@ -512,59 +445,6 @@ describe("ReviewStep — confirm (failure)", () => {
     await waitFor(() => {
       expect(onImportEnd).toHaveBeenCalledWith()
     })
-  })
-})
-
-// ---------------------------------------------------------------------------
-// Fractional FTE preview
-// ---------------------------------------------------------------------------
-
-describe("ReviewStep — fractional FTE preview", () => {
-  afterEach(() => {
-    cleanup()
-    vi.clearAllMocks()
-  })
-
-  it("shows a fractional FTE column scaled to a percentage (0.8 -> 80)", () => {
-    const fracHeaders = [
-      "EmployeeID",
-      "JobTitle",
-      "Gender",
-      "MonthlySalary",
-      "FTE",
-    ]
-    const fracRows: string[][] = [
-      ["E001", "Engineer", "Kvinna", "55000", "0.8"],
-      ["E002", "Manager", "Man", "70000", "1.0"],
-    ]
-    const fracParsed: ParsedCsv = { headers: fracHeaders, rows: fracRows }
-    const fracMapping: Record<string, number> = {
-      externalRef: 0,
-      title: 1,
-      gender: 2,
-      basicMonthly: 3,
-      ftePercent: 4,
-    }
-    render(
-      <NextIntlClientProvider locale="en" messages={messages}>
-        <ReviewStep
-          parsed={fracParsed}
-          mapping={fracMapping}
-          csvText={`${fracHeaders.join(",")}\n${fracRows.map((r) => r.join(",")).join("\n")}`}
-          onBack={vi.fn()}
-          onImportStart={vi.fn()}
-          onImportEnd={vi.fn()}
-          onImportSuccess={vi.fn()}
-          blockingError={null}
-          genderOverrides={{}}
-        />
-      </NextIntlClientProvider>
-    )
-    // 0.8 scaled x100 -> "80%", not "0.8%".
-    expect(screen.getByTestId("preview-row-0").textContent).toContain("80%")
-    expect(screen.getByTestId("preview-row-0").textContent).not.toContain(
-      "0.8%"
-    )
   })
 })
 
