@@ -1,0 +1,51 @@
+apps/dashboard/app/(app)/people/classify/page.tsx
+  s_6bff98b662648b::t_f1e7570e929d77 70-78
+apps/dashboard/components/people/people-section.test.tsx
+  s_6bff98b662648b::t_f2140c1bb4c695 426-428
+  s_6bff98b662648b::t_8a9446e4f0b183 364-374
+  s_6bff98b662648b::t_824feeae09b534 375,381,383,386
+CLAUDE.md
+  s_6bff98b662648b::t_36d2409b68aed4 69
+apps/dashboard/components/people/classify/classify-title-table.test.tsx
+  s_6bff98b662648b::t_ed2c9c0a0c3b96 260-285
+apps/dashboard/components/table-sort-button.tsx
+  s_6bff98b662648b::t_e5be1f37889cf9 1-49
+apps/dashboard/components/people/classify/classify-title-table.tsx
+  s_6bff98b662648b::t_e916dfe020c778 631
+  s_6bff98b662648b::t_a32df589f631bc 551,553-554
+  s_6bff98b662648b::t_46eb14061083d3 648-654
+  s_6bff98b662648b::t_88e366be2c2920 32
+  s_6bff98b662648b::t_84eaec786a26ca 480-515
+  s_6bff98b662648b::t_d5ab2f5d610f9c 107-109
+  s_6bff98b662648b::t_0a49f3bf481ec6 190-193,196-197,201-203,206-232,240-244
+  s_6bff98b662648b::t_227b9b2134506b 28
+  s_6bff98b662648b::t_70049214a01313 570
+apps/dashboard/components/people/people-section.tsx
+  s_6bff98b662648b::t_1c567925c7f1b4 261-262,267-271,275
+  s_6bff98b662648b::t_ff500a9012513f 49
+  s_6bff98b662648b::t_feb4d3e0f25d04 3
+  s_6bff98b662648b::t_a3007aec291d6d 155-158
+apps/dashboard/components/roles/roles-table.tsx
+  s_6bff98b662648b::t_14f2c319588e5c 106-114
+  s_6bff98b662648b::t_e8ffa1c4cd2ae0 153-154,157
+  s_6bff98b662648b::t_f8c9dc3a2a5fc7 182-184
+  s_6bff98b662648b::t_70905c41d3ae0c 310,315
+apps/dashboard/components/people/person-detail.tsx
+  s_6bff98b662648b::t_2677f77ad441d7 145,148-150,153-156,303,306-308,311-314
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "514ab2faa066934647de2e143f18b0d1032dcfc3",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
