@@ -215,26 +215,6 @@ describe("PeopleSection", () => {
     expect((link as HTMLAnchorElement).href).toContain("/people/pub-p1")
   })
 
-  it("shows confirmed badge for a person with confirmed assignment", () => {
-    onQuery((ref) => queryRouter(ref))
-    renderSection()
-    expect(screen.getByRole("cell", { name: m.badge.confirmed })).toBeDefined()
-  })
-
-  it("shows pending badge for a person with suggested assignment", () => {
-    onQuery((ref) => queryRouter(ref))
-    renderSection()
-    expect(screen.getByRole("cell", { name: m.badge.pending })).toBeDefined()
-  })
-
-  it("shows unclassified badge for a person with no assignment", () => {
-    onQuery((ref) => queryRouter(ref))
-    renderSection()
-    expect(
-      screen.getByRole("cell", { name: m.badge.unclassified })
-    ).toBeDefined()
-  })
-
   it("renders real name when pseudonymizeNames is false", () => {
     onQuery((ref) =>
       queryRouter(ref, PEOPLE, BY_TITLE, { pseudonymizeNames: false })
@@ -278,20 +258,6 @@ describe("PeopleSection", () => {
     fireEvent.change(search, { target: { value: "product" } })
     expect(screen.getByText("Bob Larsson")).toBeDefined()
     expect(screen.queryByText("Alice Svensson")).toBeNull()
-  })
-
-  it("filters by classification state", async () => {
-    onQuery((ref) => queryRouter(ref))
-    renderSection()
-    await pickSelectOption(
-      screen.getByRole("combobox", {
-        name: messages.dashboard.people.columns.classification,
-      }),
-      messages.dashboard.people.badge.confirmed
-    )
-    expect(screen.getByText("Alice Svensson")).toBeDefined()
-    expect(screen.queryByText("Bob Larsson")).toBeNull()
-    expect(screen.queryByText("Charlie Nilsson")).toBeNull()
   })
 
   it("filters by department", async () => {

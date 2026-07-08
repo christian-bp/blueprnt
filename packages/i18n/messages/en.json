@@ -161,23 +161,16 @@
         "name": "Name",
         "gender": "Gender",
         "department": "Department",
-        "fte": "FTE",
-        "classification": "Classification"
+        "fte": "FTE"
       },
       "toolbar": {
         "searchPlaceholder": "Search by name or department",
-        "classificationAll": "All classifications",
         "departmentAll": "All departments",
         "resultCount": "{shown} of {total} people",
         "noMatches": "No people match the search or filters.",
         "clearFilters": "Clear filters",
         "previous": "Previous",
         "next": "Next"
-      },
-      "badge": {
-        "confirmed": "Confirmed",
-        "pending": "Pending",
-        "unclassified": "Unclassified"
       },
       "tabs": {
         "people": "People",

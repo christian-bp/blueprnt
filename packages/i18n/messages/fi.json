@@ -161,23 +161,16 @@
         "name": "Nimi",
         "gender": "Sukupuoli",
         "department": "Osasto",
-        "fte": "Työsuhde",
-        "classification": "Luokittelu"
+        "fte": "Työsuhde"
       },
       "toolbar": {
         "searchPlaceholder": "Hae nimellä tai osastolla",
-        "classificationAll": "Kaikki luokittelut",
         "departmentAll": "Kaikki osastot",
         "resultCount": "{shown}/{total} työntekijää",
         "noMatches": "Yksikään työntekijä ei vastaa hakua tai suodattimia.",
         "clearFilters": "Tyhjennä suodattimet",
         "previous": "Edellinen",
         "next": "Seuraava"
-      },
-      "badge": {
-        "confirmed": "Vahvistettu",
-        "pending": "Odottaa",
-        "unclassified": "Luokittelematon"
       },
       "tabs": {
         "people": "Henkilöt",

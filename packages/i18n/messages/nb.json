@@ -161,23 +161,16 @@
         "name": "Navn",
         "gender": "Kjønn",
         "department": "Avdeling",
-        "fte": "Stilling",
-        "classification": "Klassifisering"
+        "fte": "Stilling"
       },
       "toolbar": {
         "searchPlaceholder": "Søk på navn eller avdeling",
-        "classificationAll": "Alle klassifiseringer",
         "departmentAll": "Alle avdelinger",
         "resultCount": "{shown} av {total} ansatte",
         "noMatches": "Ingen ansatte matcher søket eller filtrene.",
         "clearFilters": "Nullstill filtrene",
         "previous": "Forrige",
         "next": "Neste"
-      },
-      "badge": {
-        "confirmed": "Bekreftet",
-        "pending": "Venter",
-        "unclassified": "Uklassifisert"
       },
       "tabs": {
         "people": "Personer",

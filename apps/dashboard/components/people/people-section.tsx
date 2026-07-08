@@ -14,7 +14,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Badge } from "@workspace/ui/components/badge"
 import { Button, buttonVariants } from "@workspace/ui/components/button"
 import {
   Empty,
@@ -51,19 +50,17 @@ import {
   TableSkeleton,
   type TableSkeletonColumn,
 } from "@/components/table-skeleton"
-import { useClassificationSummary } from "@/hooks/use-classification-summary"
 import { displayNameFor } from "@/lib/person-display"
 
 // The people list surface. Displays active (non-archived) people imported from
 // payroll as a searchable, filterable, paginated data table (the shadcn data
-// table recipe on @tanstack/react-table, same as the role register). Includes
-// a classification badge per person derived from the listPeopleByTitle query
-// (the single source for badge state and the N-of-M summary). The
-// pseudonymizeNames org setting is applied to the name cell.
+// table recipe on @tanstack/react-table, same as the role register).
+// Classification state lives on the Classify tab (badge + page), not here.
+// The pseudonymizeNames org setting is applied to the name cell.
 
-// One table row: a person joined with their classification state and the
-// RESOLVED display name. Pseudonymization is applied up front so search
-// matches exactly what is shown, never the hidden real name.
+// One table row with the RESOLVED display name: pseudonymization is applied
+// up front so search matches exactly what is shown, never the hidden real
+// name.
 export interface PeopleTableRow {
   personId: string
   publicId: string
@@ -71,7 +68,6 @@ export interface PeopleTableRow {
   gender: "Man" | "Kvinna" | null
   department: string | null
   ftePercent: number | null
-  classification: "confirmed" | "suggested" | "none"
 }
 
 // The people list's free-text search: case-insensitive substring over the
@@ -98,14 +94,13 @@ const exactString = (
 ) => row.getValue<string>(columnId) === value
 
 // Skeleton shape per column, mirroring the real row content (name link, short
-// gender word, department, tiny FTE value, classification badge pill) so the
-// loading table has the same silhouette as the loaded one.
+// gender word, department, tiny FTE value) so the loading table has the same
+// silhouette as the loaded one.
 const PEOPLE_SKELETON_COLUMNS: TableSkeletonColumn[] = [
   { className: "w-36 max-w-full" },
   { className: "w-16" },
   { className: "w-28 max-w-full" },
   { className: "w-10" },
-  { className: "h-5 w-24 rounded-full" },
 ]
 
 export function PeopleSection() {
@@ -115,24 +110,9 @@ export function PeopleSection() {
   const { orgId } = useOrganization()
 
   const people = useQuery(api.people.people.listPeople, { orgId })
-  // Shared flattened person set (the same query that feeds the Classify tab's
-  // remaining-count badge, so the row badges can never disagree with it).
-  const { loading: byTitleLoading, people: byTitlePeople } =
-    useClassificationSummary(orgId)
   const settings = useQuery(api.accounts.organization.getOrganizationSettings, {
     orgId,
   })
-
-  // Map personId -> assignment source for O(1) per-row badge lookup.
-  const assignmentByPerson = useMemo(() => {
-    const m = new Map<string, "confirmed" | "suggested">()
-    for (const p of byTitlePeople) {
-      if (p.currentAssignment !== null) {
-        m.set(String(p.personId), p.currentAssignment.levelSource)
-      }
-    }
-    return m
-  }, [byTitlePeople])
 
   const rows = useMemo<PeopleTableRow[]>(() => {
     if (people === undefined || settings === undefined) return []
@@ -146,9 +126,8 @@ export function PeopleSection() {
       gender: person.gender ?? null,
       department: person.department ?? null,
       ftePercent: person.ftePercent ?? null,
-      classification: assignmentByPerson.get(String(person.personId)) ?? "none",
     }))
-  }, [people, settings, assignmentByPerson, tOrg])
+  }, [people, settings, tOrg])
 
   const [globalFilter, setGlobalFilter] = useState("")
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -181,12 +160,6 @@ export function PeopleSection() {
         accessorFn: (row) => row.ftePercent ?? -1,
         enableGlobalFilter: false,
       },
-      {
-        id: "classification",
-        accessorKey: "classification",
-        filterFn: exactString,
-        enableGlobalFilter: false,
-      },
     ],
     []
   )
@@ -217,10 +190,6 @@ export function PeopleSection() {
   const pageRows = table.getRowModel().rows.map((row) => row.original)
   const pageCount = table.getPageCount()
   const filtersActive = globalFilter.trim() !== "" || columnFilters.length > 0
-  const classificationFilter =
-    (table.getColumn("classification")?.getFilterValue() as
-      | string
-      | undefined) ?? "all"
   const departmentFilter =
     (table.getColumn("department")?.getFilterValue() as string | undefined) ??
     "all"
@@ -288,13 +257,11 @@ export function PeopleSection() {
         {sortableHead("gender", t("columns.gender"), "w-28")}
         {sortableHead("department", t("columns.department"), "w-[22%]")}
         {sortableHead("fte", t("columns.fte"), "w-20")}
-        {sortableHead("classification", t("columns.classification"), "w-40")}
       </TableRow>
     </TableHeader>
   )
 
-  const loading =
-    people === undefined || byTitleLoading || settings === undefined
+  const loading = people === undefined || settings === undefined
 
   const importAction = (
     <Link href="/people/import" className={buttonVariants()}>
@@ -347,9 +314,9 @@ export function PeopleSection() {
         </Empty>
       ) : (
         <>
-          {/* Toolbar: search + the classification and department filters; the
-              counter appears only while something is narrowing the table
-              (mirrors the role register's toolbar). */}
+          {/* Toolbar: search + the department filter; the counter appears
+              only while something is narrowing the table (mirrors the role
+              register's toolbar). */}
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative">
               <HugeiconsIcon
@@ -370,35 +337,6 @@ export function PeopleSection() {
                 className="w-64 pl-8"
               />
             </div>
-            <Select
-              items={{
-                all: tToolbar("classificationAll"),
-                confirmed: t("badge.confirmed"),
-                suggested: t("badge.pending"),
-                none: t("badge.unclassified"),
-              }}
-              value={classificationFilter}
-              onValueChange={(value) => {
-                table
-                  .getColumn("classification")
-                  ?.setFilterValue(value === "all" ? undefined : value)
-                resetPage()
-              }}
-            >
-              <SelectTrigger aria-label={t("columns.classification")}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">
-                  {tToolbar("classificationAll")}
-                </SelectItem>
-                <SelectItem value="confirmed">
-                  {t("badge.confirmed")}
-                </SelectItem>
-                <SelectItem value="suggested">{t("badge.pending")}</SelectItem>
-                <SelectItem value="none">{t("badge.unclassified")}</SelectItem>
-              </SelectContent>
-            </Select>
             {departments.length > 0 && (
               <Select
                 items={{
@@ -453,22 +391,6 @@ export function PeopleSection() {
                 {tableHeader}
                 <TableBody>
                   {pageRows.map((row) => {
-                    const badge =
-                      row.classification === "confirmed"
-                        ? {
-                            variant: "default" as const,
-                            label: t("badge.confirmed"),
-                          }
-                        : row.classification === "suggested"
-                          ? {
-                              variant: "secondary" as const,
-                              label: t("badge.pending"),
-                            }
-                          : {
-                              variant: "outline" as const,
-                              label: t("badge.unclassified"),
-                            }
-
                     return (
                       <TableRow key={row.personId}>
                         <TableCell className="truncate font-medium">
@@ -487,17 +409,6 @@ export function PeopleSection() {
                         </TableCell>
                         <TableCell className="text-muted-foreground">
                           {row.ftePercent != null ? `${row.ftePercent}%` : ""}
-                        </TableCell>
-                        <TableCell>
-                          {/* Block flex wrapper: an inline-flex Badge rides
-                              the TEXT BASELINE and (with Source Sans 3's
-                              metrics) inflates the line box past the 20px
-                              text line, making data rows taller than the
-                              skeleton's. Block layout keeps the cell at
-                              exactly one text line. */}
-                          <div className="flex min-h-5 items-center">
-                            <Badge variant={badge.variant}>{badge.label}</Badge>
-                          </div>
                         </TableCell>
                       </TableRow>
                     )
