@@ -1,0 +1,65 @@
+apps/dashboard/components/people/import/review-step.test.tsx
+  s_6bff98b662648b::t_0e98020b7b386a 28-30,619-745
+  s_6bff98b662648b::t_9a637bef11b4ee 23,27,36-39,92-126,351,366,384,403,423,446,458,484,497,510,598,611
+  s_6bff98b662648b::t_e7da8c20be404a 746
+apps/dashboard/components/people/import/review-step.tsx
+  s_6bff98b662648b::t_2dce59bfab5d1e 195,199-204
+  s_6bff98b662648b::t_ea38f5b435b155 31,34
+  s_6bff98b662648b::t_d0a980cb9c27de 207,214-246
+  s_6bff98b662648b::t_0a2da0d4bed24e 266-269
+  s_6bff98b662648b::t_0626d359ca121c 311-415,419,421-425,430-433
+  s_6bff98b662648b::t_4ef9663eee79af 20,22
+  s_6bff98b662648b::t_6dfb433b1c13c0 44-46
+  s_6bff98b662648b::t_76004055bafd1a 416-418,420,426-429
+  s_6bff98b662648b::t_8753eef27aae83 494-496
+  s_6bff98b662648b::t_b1f939716fc0bb 21
+  s_6bff98b662648b::t_5f1666bce0879a 205
+  s_6bff98b662648b::t_eb88db93e84643 247
+packages/backend/convex/people/importDiff.test.ts
+  s_6bff98b662648b::t_dcdef3491b7f97 1-86,88-127
+  s_6bff98b662648b::t_cedf8488fbb60a 87
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_67419689d0aee7 313-328
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_67419689d0aee7 317-332
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_67419689d0aee7 313-328
+packages/backend/convex/people/people.ts
+  s_6bff98b662648b::t_0b93a685218c4c 15
+  s_6bff98b662648b::t_bf6477876247b0 208-224
+packages/backend/convex/people/importHelpers.ts
+  s_6bff98b662648b::t_4ff337b4ebecf6 21-109
+packages/backend/convex/people/import.ts
+  s_6bff98b662648b::t_2581c4ce2d91d8 21,23-25,27-63,75,94-413,431-432,448,457,460-461,469,473-478,505-506,514-515,526,534-535,553,563,573,579,587,590,609-614
+  s_6bff98b662648b::t_1b510ef73cea49 26,615-719
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_67419689d0aee7 313-328
+packages/backend/convex/people/import.test.ts
+  s_6bff98b662648b::t_dca7260b528ddd 895-910,915-940,946-965,971-1065,1069-1077
+  s_6bff98b662648b::t_cedf8488fbb60a 911-914,941-945,966-970,1066-1068
+packages/backend/convex/people/people.test.ts
+  s_6bff98b662648b::t_b1126b75789519 561-599
+packages/backend/convex/people/importDiff.ts
+  s_6bff98b662648b::t_63484a3dcda0a9 1-220
+packages/backend/convex/people/pay.ts
+  s_6bff98b662648b::t_8709d25578ea10 15
+  s_6bff98b662648b::t_939ee169b6c049 221-222
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_67419689d0aee7 313-328
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "2f818358d6242fe106db83066565127ef6292c40",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
