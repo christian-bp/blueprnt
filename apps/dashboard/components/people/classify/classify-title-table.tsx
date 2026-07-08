@@ -580,9 +580,16 @@ export function ClassifyTitleTable({
                     </Select>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={stateVariant(state)}>
-                      {t(`state.${state}`)}
-                    </Badge>
+                    {/* Block flex wrapper: inline-flex content on the text
+                        baseline inflates the line box by a font-metric-
+                        dependent amount (see the people table's badge cell),
+                        which would desync data rows from the skeleton's if
+                        this ever became the row's tallest cell. */}
+                    <div className="flex min-h-5 items-center">
+                      <Badge variant={stateVariant(state)}>
+                        {t(`state.${state}`)}
+                      </Badge>
+                    </div>
                   </TableCell>
                   <TableCell>
                     {/* No resolvable role: offer creating one (picking an
@@ -591,31 +598,35 @@ export function ClassifyTitleTable({
                       confirm (not yet confirmed, or a pending change).
                       A confirmed, untouched group shows no action; the row
                       height is held by the role select, so nothing reflows. */}
-                    {currentRoleId === null || currentRoleId === undefined ? (
-                      <UnmatchedTitleActions
-                        orgId={orgId}
-                        title={group.title ?? ""}
-                        tracks={tracks}
-                        onRoleCreated={(roleId) =>
-                          setSelectedRole((prev) => {
-                            const next = new Map(prev)
-                            next.set(key, roleId)
-                            return next
-                          })
-                        }
-                      />
-                    ) : actionable ? (
-                      // FIX 2+3: disabled while in-flight (prevents double-write);
-                      // try/catch/finally in onConfirm surfaces errors via toast.error.
-                      <Button
-                        type="button"
-                        size="sm"
-                        disabled={isConfirming}
-                        onClick={() => void onConfirm(group)}
-                      >
-                        {t("assignCta")}
-                      </Button>
-                    ) : null}
+                    {/* Block flex wrapper: keeps the inline-flex button off
+                        the text baseline (same rationale as the state cell). */}
+                    <div className="flex items-center">
+                      {currentRoleId === null || currentRoleId === undefined ? (
+                        <UnmatchedTitleActions
+                          orgId={orgId}
+                          title={group.title ?? ""}
+                          tracks={tracks}
+                          onRoleCreated={(roleId) =>
+                            setSelectedRole((prev) => {
+                              const next = new Map(prev)
+                              next.set(key, roleId)
+                              return next
+                            })
+                          }
+                        />
+                      ) : actionable ? (
+                        // FIX 2+3: disabled while in-flight (prevents double-write);
+                        // try/catch/finally in onConfirm surfaces errors via toast.error.
+                        <Button
+                          type="button"
+                          size="sm"
+                          disabled={isConfirming}
+                          onClick={() => void onConfirm(group)}
+                        >
+                          {t("assignCta")}
+                        </Button>
+                      ) : null}
+                    </div>
                   </TableCell>
                 </TableRow>
 
