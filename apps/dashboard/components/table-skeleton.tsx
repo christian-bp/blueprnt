@@ -36,7 +36,13 @@ export function TableSkeleton({
               // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
               key={colIndex}
             >
-              <Skeleton className={cn("h-4 w-full", col.className)} />
+              {/* The wrapper reserves a text-sm line box (min-h-5) around the
+                  thinner bar, so skeleton rows are exactly as tall as rows of
+                  real text; taller control-shaped bars (selects, buttons)
+                  still grow it. */}
+              <div className="flex min-h-5 items-center">
+                <Skeleton className={cn("h-4 w-full", col.className)} />
+              </div>
             </TableCell>
           ))}
         </TableRow>
