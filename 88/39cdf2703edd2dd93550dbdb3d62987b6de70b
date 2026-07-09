@@ -1,0 +1,58 @@
+apps/dashboard/components/people/edit-person-dialog.test.tsx
+  s_6bff98b662648b::t_02bfbaea10b8d7 1-143
+packages/backend/convex/people/people.ts
+  s_6bff98b662648b::t_4e9fa21a2d98b2 349-417,421-424,430-436
+  s_6bff98b662648b::t_9a32c816dec662 418-420,425-429
+apps/dashboard/components/people/add-person-dialog.test.tsx
+  s_6bff98b662648b::t_2a684d2d32db66 100
+  s_6bff98b662648b::t_63387051ec8278 173-177,192-199
+  s_6bff98b662648b::t_3ed53a7d36a4ab 18,24,27-31,36,38-40,58,60,88,92,145,148,157,170,209,219
+  s_6bff98b662648b::t_c5a264267fd445 200-201
+apps/dashboard/components/people/add-person-dialog.tsx
+  s_6bff98b662648b::t_4e60be770d5307 5
+  s_6bff98b662648b::t_66e06198ec30f8 201-202,212
+  s_6bff98b662648b::t_c0517a1c6b181b 250,264,292-295,298,301-382
+  s_6bff98b662648b::t_ca0fc188b3ac78 50-77
+  s_6bff98b662648b::t_45de55b90ce99d 98-102,108,111,116-133,194,196-200,203-211
+  s_6bff98b662648b::t_e3c24b55f5b85e 31-33,41
+  s_6bff98b662648b::t_33be735d5a9a8a 169
+  s_6bff98b662648b::t_5813510a6cde90 134-135,144-145,153-158,171,213-214,236,284,392,405,412,424,458
+apps/dashboard/components/people/person-actions-menu.test.tsx
+  s_6bff98b662648b::t_157500e22081d0 36
+  s_6bff98b662648b::t_69eb37a6774fb4 63-71
+packages/backend/convex/people/people.test.ts
+  s_6bff98b662648b::t_0b45e634235326 162-289
+apps/dashboard/components/people/person-actions-menu.tsx
+  s_6bff98b662648b::t_02d7ce4f1c939e 18-21,26-28,30,34,39
+  s_6bff98b662648b::t_c081584ba74cce 60-62,75-80,84,92-94
+apps/dashboard/components/people/person-detail.tsx
+  s_6bff98b662648b::t_5fc1d00a17698f 258-266
+apps/dashboard/components/people/edit-person-dialog.tsx
+  s_6bff98b662648b::t_1e9b42bdd3091f 1-321
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_01d9fd0d502882 141-142,340-349,353,356
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_28c9d699b49b5f 141-142,340-349,353,356
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_09a8335447d676 141-142,340-349,353,356
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_db17b681ea2eee 141-142,340-349,353,356
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_10090f0613cb91 141-142,340-349,353,356
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "8839cdf2703edd2dd93550dbdb3d62987b6de70b",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
