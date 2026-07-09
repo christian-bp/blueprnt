@@ -348,7 +348,7 @@
         "error": "Den anställda kunde inte läggas till. Försök igen."
       },
       "editPerson": {
-        "title": "Redigera uppgifter",
+        "title": "Redigera anställd",
         "description": "Uppdatera den anställdas uppgifter. Om ett fält töms tas värdet bort.",
         "cta": "Spara ändringar",
         "error": "Ändringarna kunde inte sparas. Försök igen."

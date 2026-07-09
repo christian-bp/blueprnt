@@ -348,7 +348,7 @@
         "error": "Työntekijää ei voitu lisätä. Yritä uudelleen."
       },
       "editPerson": {
-        "title": "Muokkaa tietoja",
+        "title": "Muokkaa työntekijää",
         "description": "Päivitä työntekijän tiedot. Tyhjennetty kenttä poistaa arvon.",
         "cta": "Tallenna muutokset",
         "error": "Muutoksia ei voitu tallentaa. Yritä uudelleen."

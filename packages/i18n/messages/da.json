@@ -348,7 +348,7 @@
         "error": "Medarbejderen kunne ikke tilføjes. Prøv igen."
       },
       "editPerson": {
-        "title": "Rediger oplysninger",
+        "title": "Rediger medarbejder",
         "description": "Opdater medarbejderens oplysninger. Ryddes et felt, fjernes værdien.",
         "cta": "Gem ændringer",
         "error": "Ændringerne kunne ikke gemmes. Prøv igen."

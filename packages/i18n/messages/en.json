@@ -348,7 +348,7 @@
         "error": "The employee could not be added. Try again."
       },
       "editPerson": {
-        "title": "Edit details",
+        "title": "Edit employee",
         "description": "Update the employee's details. Clearing a field removes its value from the record.",
         "cta": "Save changes",
         "error": "The changes could not be saved. Try again."

@@ -348,7 +348,7 @@
         "error": "Den ansatte kunne ikke legges til. Prøv igjen."
       },
       "editPerson": {
-        "title": "Rediger detaljer",
+        "title": "Rediger ansatt",
         "description": "Oppdater den ansattes detaljer. Tømmes et felt, fjernes verdien.",
         "cta": "Lagre endringer",
         "error": "Endringene kunne ikke lagres. Prøv igjen."
