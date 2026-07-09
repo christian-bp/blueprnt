@@ -1,0 +1,42 @@
+apps/dashboard/components/people/add-person-dialog.tsx
+  s_6bff98b662648b::t_85d73322b67a45 41,330,368
+apps/dashboard/components/people/person-actions-menu.tsx
+  s_6bff98b662648b::t_85729e5fc84614 23-24
+  s_6bff98b662648b::t_f56443724b3a7b 73
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_37a0cee0102e7b 356-358
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_37a0cee0102e7b 356-358
+apps/dashboard/components/people/edit-person-dialog.test.tsx
+  s_6bff98b662648b::t_6d36ebd2e5afff 19-20,24,32-34,63-67,71-77,90,143-144
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_37a0cee0102e7b 356-358
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_37a0cee0102e7b 356-358
+apps/dashboard/components/people/edit-person-dialog.tsx
+  s_6bff98b662648b::t_168d4ae4e9f378 104-108,112-113,121-128,133-134,139-140,144,151,155-158,162,171,181-186,208,210-230
+  s_6bff98b662648b::t_d70c4f3d659737 31,46-53,55,67-93
+  s_6bff98b662648b::t_664d0f426cfeb0 304-393
+  s_6bff98b662648b::t_02780de458025f 231
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_37a0cee0102e7b 356-358
+apps/dashboard/components/people/person-actions-menu.test.tsx
+  s_6bff98b662648b::t_fc01cfc1d69136 100,103,117,134,141,143
+  s_6bff98b662648b::t_719a4d1e660367 151,160
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "add2a17e002975aadcf16d272d30ca63949fbede",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
