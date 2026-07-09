@@ -61,6 +61,30 @@ export function DatePicker({
       ? format.dateTime(selected, { dateStyle: "medium" })
       : t("placeholder")
 
+  // Navigating to another month or year RETARGETS an existing selection to
+  // the same day there (clamped to the month's length): picking a year in
+  // the caption dropdown IS the edit being made, and without this, closing
+  // the picker after a year change silently kept the old value (only a day
+  // click committed). The picked day stays highlighted in whatever month is
+  // shown, and the trigger label updates live, so the value never drifts
+  // out of sight. With nothing selected yet, navigation just navigates.
+  function handleMonthChange(month: Date) {
+    if (selected === undefined) return
+    if (
+      month.getFullYear() === selected.getFullYear() &&
+      month.getMonth() === selected.getMonth()
+    ) {
+      return
+    }
+    const daysInMonth = new Date(
+      month.getFullYear(),
+      month.getMonth() + 1,
+      0
+    ).getDate()
+    const day = Math.min(selected.getDate(), daysInMonth)
+    onChange(toIsoDate(new Date(month.getFullYear(), month.getMonth(), day)))
+  }
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
@@ -100,6 +124,7 @@ export function DatePicker({
             formatMonthDropdown: (date) =>
               format.dateTime(date, { month: "long" }),
           }}
+          onMonthChange={handleMonthChange}
           onSelect={(date) => {
             onChange(date === undefined ? "" : toIsoDate(date))
             setOpen(false)
