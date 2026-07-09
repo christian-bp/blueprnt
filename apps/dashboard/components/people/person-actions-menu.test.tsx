@@ -97,12 +97,10 @@ describe("PersonActionsMenu", () => {
     expect(screen.getByRole("alertdialog")).toBeDefined()
   })
 
-  it("edits the classification: role swap resets the level to the new track and saves confirmed", async () => {
+  it("edits the role: a track swap resets the level and saves a confirmed assignment", async () => {
     renderMenu()
     openMenu()
-    fireEvent.click(
-      screen.getByRole("menuitem", { name: m.detail.editClassification.cta })
-    )
+    fireEvent.click(screen.getByRole("menuitem", { name: m.editPerson.title }))
     expect(screen.getByRole("dialog")).toBeDefined()
 
     // The dialog form.s role select, labeled by its FormLabel.
@@ -116,7 +114,7 @@ describe("PersonActionsMenu", () => {
     // role2 is on the M track; IC3 is invalid there, so the level falls back
     // to the track's first level and the form is dirty + valid.
     const save = screen.getByRole("button", {
-      name: m.detail.editClassification.save,
+      name: m.editPerson.cta,
     }) as HTMLButtonElement
     await waitFor(() => expect(save.disabled).toBe(false))
     fireEvent.click(save)
@@ -133,18 +131,16 @@ describe("PersonActionsMenu", () => {
       )
     })
     expect(toast.success).toHaveBeenCalledWith(
-      messages.dashboard.toast.classificationConfirmed
+      messages.dashboard.toast.personUpdated
     )
   })
 
   it("gates saving on a change: the pre-filled form starts disabled", () => {
     renderMenu()
     openMenu()
-    fireEvent.click(
-      screen.getByRole("menuitem", { name: m.detail.editClassification.cta })
-    )
+    fireEvent.click(screen.getByRole("menuitem", { name: m.editPerson.title }))
     const save = screen.getByRole("button", {
-      name: m.detail.editClassification.save,
+      name: m.editPerson.cta,
     }) as HTMLButtonElement
     expect(save.disabled).toBe(true)
   })
@@ -152,9 +148,7 @@ describe("PersonActionsMenu", () => {
   it("assigns an unclassified person (empty form, valid after picking)", async () => {
     renderMenu(null)
     openMenu()
-    fireEvent.click(
-      screen.getByRole("menuitem", { name: m.detail.editClassification.cta })
-    )
+    fireEvent.click(screen.getByRole("menuitem", { name: m.editPerson.title }))
     await pickSelectOption(
       screen.getByRole("combobox", {
         name: messages.dashboard.people.detail.role,
@@ -163,7 +157,7 @@ describe("PersonActionsMenu", () => {
     )
 
     const save = screen.getByRole("button", {
-      name: m.detail.editClassification.save,
+      name: m.editPerson.cta,
     }) as HTMLButtonElement
     await waitFor(() => expect(save.disabled).toBe(false))
     fireEvent.click(save)

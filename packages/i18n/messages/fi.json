@@ -353,7 +353,9 @@
         "departmentLabel": "Osasto",
         "startDateLabel": "Aloituspäivä",
         "fteLabel": "Työaika %",
-        "cancel": "Peruuta"
+        "cancel": "Peruuta",
+        "rolePlaceholder": "Valitse rooli",
+        "levelPlaceholder": "Valitse taso"
       },
       "detail": {
         "backToPeople": "Takaisin henkilöstöön",
@@ -369,15 +371,6 @@
         "level": "Taso",
         "levelSource": "Lähde",
         "sourceSuggested": "Ehdotettu",
-        "editClassification": {
-          "cta": "Muokkaa roolia ja tasoa",
-          "title": "Muokkaa roolia ja tasoa",
-          "description": "Määritä työntekijän rooli ja senioriteettitaso. Tallennus vahvistaa luokittelun.",
-          "rolePlaceholder": "Valitse rooli",
-          "levelPlaceholder": "Valitse taso",
-          "save": "Tallenna",
-          "cancel": "Peruuta"
-        },
         "noAssignment": "Ei vielä luokiteltu.",
         "salaryHeading": "Palkkahistoria",
         "salaryEmpty": "Palkkaa ei ole vielä kirjattu.",

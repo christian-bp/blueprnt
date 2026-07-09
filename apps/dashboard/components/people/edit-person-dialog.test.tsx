@@ -16,9 +16,12 @@ vi.mock("sonner", () => ({
 
 const updatePersonMock = vi.fn()
 
+const assignMock = vi.fn()
+
 vi.mock("convex/react", () => ({
   useMutation: (ref: unknown) => {
     if (ref === "people.people.updatePerson") return updatePersonMock
+    if (ref === "people.assignments.assignPersonToRole") return assignMock
     return vi.fn()
   },
 }))
@@ -26,6 +29,9 @@ vi.mock("convex/react", () => ({
 vi.mock("@workspace/backend/convex/_generated/api", () => ({
   api: {
     people: {
+      assignments: {
+        assignPersonToRole: "people.assignments.assignPersonToRole",
+      },
       people: { updatePerson: "people.people.updatePerson" },
     },
   },
@@ -54,10 +60,21 @@ const PERSON: EditablePerson = {
   ftePercent: 100,
 }
 
+const ROLES = [
+  { roleId: "role1", title: "Software Engineer", trackKey: "IC" },
+  { roleId: "role2", title: "Engineering Manager", trackKey: "M" },
+]
+
 function renderDialog(onOpenChange = vi.fn(), person = PERSON) {
   render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <EditPersonDialog open onOpenChange={onOpenChange} person={person} />
+      <EditPersonDialog
+        open
+        onOpenChange={onOpenChange}
+        person={person}
+        roles={ROLES}
+        currentAssignment={{ roleId: "role1", level: "IC3" }}
+      />
     </NextIntlClientProvider>
   )
   return onOpenChange
@@ -70,6 +87,7 @@ function saveButton() {
 describe("EditPersonDialog", () => {
   beforeEach(() => {
     updatePersonMock.mockReset().mockResolvedValue(null)
+    assignMock.mockReset().mockResolvedValue("a1")
     vi.mocked(toast.success).mockReset()
   })
   afterEach(() => cleanup())
@@ -122,6 +140,8 @@ describe("EditPersonDialog", () => {
       messages.dashboard.toast.personUpdated
     )
     expect(onOpenChange).toHaveBeenCalledWith(false)
+    // The unchanged role/level pair writes no new assignment.
+    expect(assignMock).not.toHaveBeenCalled()
   })
 
   it("surfaces a taken employee number inline and stays open", async () => {

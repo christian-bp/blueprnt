@@ -13,9 +13,6 @@ import { useTranslations } from "next-intl"
 import { useState } from "react"
 import {
   type AssignableRole,
-  EditClassificationDialog,
-} from "@/components/people/edit-classification-dialog"
-import {
   type EditablePerson,
   EditPersonDialog,
 } from "@/components/people/edit-person-dialog"
@@ -23,8 +20,8 @@ import { ErasePersonControl } from "@/components/people/erase-person-control"
 
 // The person page's unified actions menu: a single "..." trigger in the
 // employee card's header (same anatomy as FamilyActionsMenu) holding the
-// person actions: editing the identity details, editing the role + level
-// classification, and the GDPR erasure as a destructive item opening the
+// person actions: one Edit dialog covering the identity details AND the
+// role + level pair, and the GDPR erasure as a destructive item opening the
 // type-to-confirm dialog.
 export function PersonActionsMenu({
   person,
@@ -37,7 +34,6 @@ export function PersonActionsMenu({
 }) {
   const t = useTranslations("dashboard.people")
   const [detailsOpen, setDetailsOpen] = useState(false)
-  const [editOpen, setEditOpen] = useState(false)
   const [eraseOpen, setEraseOpen] = useState(false)
 
   return (
@@ -60,9 +56,6 @@ export function PersonActionsMenu({
           <DropdownMenuItem onClick={() => setDetailsOpen(true)}>
             {t("editPerson.title")}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setEditOpen(true)}>
-            {t("detail.editClassification.cta")}
-          </DropdownMenuItem>
           <DropdownMenuItem
             variant="destructive"
             onClick={() => setEraseOpen(true)}
@@ -76,14 +69,8 @@ export function PersonActionsMenu({
         open={detailsOpen}
         onOpenChange={setDetailsOpen}
         person={person}
-      />
-
-      <EditClassificationDialog
-        open={editOpen}
-        onOpenChange={setEditOpen}
-        personId={person.personId}
         roles={roles}
-        current={currentAssignment}
+        currentAssignment={currentAssignment}
       />
 
       <ErasePersonControl

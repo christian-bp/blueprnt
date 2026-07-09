@@ -353,7 +353,9 @@
         "departmentLabel": "Department",
         "startDateLabel": "Start date",
         "fteLabel": "FTE %",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "rolePlaceholder": "Select a role",
+        "levelPlaceholder": "Select a level"
       },
       "detail": {
         "backToPeople": "Back to people",
@@ -369,15 +371,6 @@
         "level": "Level",
         "levelSource": "Source",
         "sourceSuggested": "Suggested",
-        "editClassification": {
-          "cta": "Edit role and level",
-          "title": "Edit role and level",
-          "description": "Set the employee's role and seniority level. Saving confirms the classification.",
-          "rolePlaceholder": "Select a role",
-          "levelPlaceholder": "Select a level",
-          "save": "Save",
-          "cancel": "Cancel"
-        },
         "noAssignment": "Not classified yet.",
         "salaryHeading": "Salary history",
         "salaryEmpty": "No salary recorded yet.",

@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import { isValidLevelForTrack, TRACK_LEVELS } from "@workspace/constants"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useEffect, useMemo, useState } from "react"
@@ -42,8 +43,16 @@ import type { ValidationT } from "@/lib/validation"
 // The pay-transparency gender categories, mirroring the people table's union.
 const GENDER_VALUES = ["Man", "Kvinna"] as const
 
+// Structural subset of listRoles rows used by the role picker (shared with
+// the add dialog and the actions menu).
+export interface AssignableRole {
+  roleId: string
+  title: string
+  trackKey: string
+}
+
 // The editable identity fields, as the dialog receives them from the person
-// page (role + level live in EditClassificationDialog; salary on its card).
+// page (salary lives on its own card).
 export interface EditablePerson {
   personId: Id<"people">
   displayName: string
@@ -55,16 +64,33 @@ export interface EditablePerson {
 }
 
 // Zod factory (messages via i18n): name and gender stay required; the rest
-// may be empty, and an emptied field CLEARS the stored value on save.
-function makeEditPersonSchema(t: ValidationT) {
-  return z.object({
-    displayName: z.string().trim().min(1, t("required")),
-    gender: z.enum(GENDER_VALUES, { error: t("required") }),
-    externalRef: z.string().trim(),
-    department: z.string().trim(),
-    employmentStartDate: z.string(),
-    ftePercent: z.number().min(1).max(100).optional(),
-  })
+// may be empty, and an emptied field CLEARS the stored value on save. The
+// role + level pair is optional as a pair (an unassigned person can stay
+// unassigned); a picked role requires a level valid for its track
+// (ADR-0005).
+function makeEditPersonSchema(t: ValidationT, roles: AssignableRole[]) {
+  return z
+    .object({
+      displayName: z.string().trim().min(1, t("required")),
+      gender: z.enum(GENDER_VALUES, { error: t("required") }),
+      roleId: z.string(),
+      level: z.string(),
+      externalRef: z.string().trim(),
+      department: z.string().trim(),
+      employmentStartDate: z.string(),
+      ftePercent: z.number().min(1).max(100).optional(),
+    })
+    .refine(
+      (values) => {
+        if (values.roleId === "") return true
+        const role = roles.find((r) => r.roleId === values.roleId)
+        return (
+          role !== undefined &&
+          isValidLevelForTrack(role.trackKey, values.level)
+        )
+      },
+      { path: ["level"], message: t("required") }
+    )
 }
 
 type EditPersonValues = z.infer<ReturnType<typeof makeEditPersonSchema>>
@@ -75,11 +101,16 @@ function isPersonRefExistsError(error: unknown): boolean {
   )
 }
 
-// Maps a person to the form's value shape (stored-absent becomes "").
-function toFormValues(person: EditablePerson): EditPersonValues {
+// Maps a person + assignment to the form's value shape (absent becomes "").
+function toFormValues(
+  person: EditablePerson,
+  currentAssignment: { roleId: string; level: string } | null
+): EditPersonValues {
   return {
     displayName: person.displayName,
     gender: person.gender,
+    roleId: currentAssignment?.roleId ?? "",
+    level: currentAssignment?.level ?? "",
     externalRef: person.externalRef ?? "",
     department: person.department ?? "",
     employmentStartDate: person.employmentStartDate ?? "",
@@ -87,37 +118,48 @@ function toFormValues(person: EditablePerson): EditPersonValues {
   }
 }
 
-// Full-field editing of an employee's identity details from the person page
-// (the actions menu carries the trigger). Pre-filled and therefore gated on
-// isDirty as well as isValid, so an unchanged form cannot fire a no-op
-// mutation. The backend clears a field when it receives "" (or null for
-// FTE): an explicit manual decision, unlike the import path where an absent
-// field never clears.
+// Full-field editing of an employee from the person page (the actions menu
+// carries the trigger): identity details plus the role + level pair in ONE
+// dialog. Pre-filled and therefore gated on isDirty as well as isValid, so
+// an unchanged form cannot fire a no-op mutation. The backend clears an
+// identity field when it receives "" (or null for FTE): an explicit manual
+// decision, unlike the import path where an absent field never clears. A
+// changed role or level writes a CONFIRMED assignment through the same
+// mutation the classify surface uses.
 export function EditPersonDialog({
   open,
   onOpenChange,
   person,
+  roles,
+  currentAssignment,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   person: EditablePerson
+  roles: AssignableRole[]
+  currentAssignment: { roleId: string; level: string } | null
 }) {
   const t = useTranslations("dashboard.people.editPerson")
   const tForm = useTranslations("dashboard.people.personForm")
+  const tDetail = useTranslations("dashboard.people.detail")
   const tGender = useTranslations("dashboard.people.gender")
   const tValidation = useTranslations("dashboard.validation")
   const tErrors = useTranslations("errors")
   const tToast = useTranslations("dashboard.toast")
   const { orgId } = useOrganization()
   const updatePerson = useMutation(api.people.people.updatePerson)
+  const assignPerson = useMutation(api.people.assignments.assignPersonToRole)
 
   const [failure, setFailure] = useState(false)
 
-  const schema = useMemo(() => makeEditPersonSchema(tValidation), [tValidation])
+  const schema = useMemo(
+    () => makeEditPersonSchema(tValidation, roles),
+    [tValidation, roles]
+  )
   const form = useForm<EditPersonValues>({
     resolver: zodResolver(schema),
     mode: "onTouched",
-    defaultValues: toFormValues(person),
+    defaultValues: toFormValues(person, currentAssignment),
   })
 
   // Re-prime the form from the live person each time the dialog opens (the
@@ -126,7 +168,7 @@ export function EditPersonDialog({
   // biome-ignore lint/correctness/useExhaustiveDependencies: reset only on open
   useEffect(() => {
     if (open) {
-      form.reset(toFormValues(person))
+      form.reset(toFormValues(person, currentAssignment))
       setFailure(false)
     }
   }, [open])
@@ -135,6 +177,12 @@ export function EditPersonDialog({
   // subscriptions on the first render; inline reads inside the (initially
   // unmounted) dialog content register too late and the gate never updates.
   const { isValid, isDirty, isSubmitting } = form.formState
+
+  const selectedRoleId = form.watch("roleId")
+  const selectedRole = roles.find((r) => r.roleId === selectedRoleId)
+  const levels = selectedRole
+    ? (TRACK_LEVELS[selectedRole.trackKey as keyof typeof TRACK_LEVELS] ?? [])
+    : []
 
   async function onSubmit(values: EditPersonValues) {
     setFailure(false)
@@ -149,8 +197,6 @@ export function EditPersonDialog({
         employmentStartDate: values.employmentStartDate,
         ftePercent: values.ftePercent ?? null,
       })
-      toast.success(tToast("personUpdated"))
-      onOpenChange(false)
     } catch (error) {
       if (isPersonRefExistsError(error)) {
         form.setError("externalRef", {
@@ -159,7 +205,30 @@ export function EditPersonDialog({
       } else {
         setFailure(true)
       }
+      return
     }
+    // A changed role/level pair writes a confirmed assignment; unchanged
+    // classification writes nothing (effective-dated history stays clean).
+    const assignmentChanged =
+      values.roleId !== "" &&
+      (values.roleId !== (currentAssignment?.roleId ?? "") ||
+        values.level !== (currentAssignment?.level ?? ""))
+    if (assignmentChanged) {
+      try {
+        await assignPerson({
+          orgId,
+          personId: person.personId,
+          roleId: values.roleId as Id<"roles">,
+          level: values.level,
+          levelSource: "confirmed",
+        })
+      } catch {
+        setFailure(true)
+        return
+      }
+    }
+    toast.success(tToast("personUpdated"))
+    onOpenChange(false)
   }
 
   return (
@@ -228,6 +297,96 @@ export function EditPersonDialog({
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="roleId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{tDetail("role")}</FormLabel>
+                    <Select
+                      value={field.value}
+                      items={roles.map((role) => ({
+                        value: role.roleId,
+                        label: role.title,
+                      }))}
+                      onValueChange={(value) => {
+                        field.onChange(value)
+                        // A role on another track invalidates the picked
+                        // level: fall back to the new track's first level.
+                        const role = roles.find((r) => r.roleId === value)
+                        const trackLevels = role
+                          ? (TRACK_LEVELS[
+                              role.trackKey as keyof typeof TRACK_LEVELS
+                            ] ?? [])
+                          : []
+                        const level = form.getValues("level")
+                        if (!trackLevels.includes(level)) {
+                          form.setValue("level", trackLevels[0] ?? "", {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          })
+                        }
+                      }}
+                    >
+                      <FormControl>
+                        <SelectTrigger
+                          ref={field.ref}
+                          onBlur={field.onBlur}
+                          className="w-full"
+                        >
+                          <SelectValue placeholder={tForm("rolePlaceholder")} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {roles.map((role) => (
+                          <SelectItem key={role.roleId} value={role.roleId}>
+                            {role.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="level"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{tDetail("level")}</FormLabel>
+                    {/* Keyed by track: a cross-track role change must remount
+                        options and value together (the bubble select
+                        otherwise fires a spurious ""). */}
+                    <Select
+                      key={selectedRole?.trackKey ?? "no-track"}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={selectedRole === undefined}
+                    >
+                      <FormControl>
+                        <SelectTrigger
+                          ref={field.ref}
+                          onBlur={field.onBlur}
+                          className="w-full"
+                        >
+                          <SelectValue
+                            placeholder={tForm("levelPlaceholder")}
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {levels.map((level) => (
+                          <SelectItem key={level} value={level}>
+                            {level}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

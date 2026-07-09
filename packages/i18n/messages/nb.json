@@ -353,7 +353,9 @@
         "departmentLabel": "Avdeling",
         "startDateLabel": "Startdato",
         "fteLabel": "Stillingsandel %",
-        "cancel": "Avbryt"
+        "cancel": "Avbryt",
+        "rolePlaceholder": "Velg en rolle",
+        "levelPlaceholder": "Velg et nivå"
       },
       "detail": {
         "backToPeople": "Tilbake til ansatte",
@@ -369,15 +371,6 @@
         "level": "Nivå",
         "levelSource": "Kilde",
         "sourceSuggested": "Foreslått",
-        "editClassification": {
-          "cta": "Rediger rolle og nivå",
-          "title": "Rediger rolle og nivå",
-          "description": "Angi den ansattes rolle og senioritetsnivå. Når du lagrer, bekreftes klassifiseringen.",
-          "rolePlaceholder": "Velg en rolle",
-          "levelPlaceholder": "Velg et nivå",
-          "save": "Lagre",
-          "cancel": "Avbryt"
-        },
         "noAssignment": "Ikke klassifisert ennå.",
         "salaryHeading": "Lønnshistorikk",
         "salaryEmpty": "Ingen lønn registrert ennå.",

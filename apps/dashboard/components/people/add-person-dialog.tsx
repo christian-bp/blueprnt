@@ -38,7 +38,7 @@ import { toast } from "sonner"
 import { z } from "zod"
 import { DatePicker } from "@/components/date-picker"
 import { useOrganization } from "@/components/org-context"
-import type { AssignableRole } from "@/components/people/edit-classification-dialog"
+import type { AssignableRole } from "@/components/people/edit-person-dialog"
 import { SubmitButton } from "@/components/submit-button"
 import type { ValidationT } from "@/lib/validation"
 
@@ -97,9 +97,6 @@ export function AddPersonDialog() {
   const t = useTranslations("dashboard.people.addPerson")
   const tForm = useTranslations("dashboard.people.personForm")
   const tDetail = useTranslations("dashboard.people.detail")
-  const tClassify = useTranslations(
-    "dashboard.people.detail.editClassification"
-  )
   const tGender = useTranslations("dashboard.people.gender")
   const tValidation = useTranslations("dashboard.validation")
   const tErrors = useTranslations("errors")
@@ -330,7 +327,7 @@ export function AddPersonDialog() {
                             className="w-full"
                           >
                             <SelectValue
-                              placeholder={tClassify("rolePlaceholder")}
+                              placeholder={tForm("rolePlaceholder")}
                             />
                           </SelectTrigger>
                         </FormControl>
@@ -368,7 +365,7 @@ export function AddPersonDialog() {
                             className="w-full"
                           >
                             <SelectValue
-                              placeholder={tClassify("levelPlaceholder")}
+                              placeholder={tForm("levelPlaceholder")}
                             />
                           </SelectTrigger>
                         </FormControl>
