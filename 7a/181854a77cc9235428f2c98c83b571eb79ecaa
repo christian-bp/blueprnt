@@ -1,0 +1,19 @@
+apps/dashboard/app/(app)/work/page.tsx
+  s_6bff98b662648b::t_3ec7ac08f0bcb3 101-112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "7a181854a77cc9235428f2c98c83b571eb79ecaa",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
