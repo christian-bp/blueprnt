@@ -98,9 +98,18 @@ export default function WorkOverviewPage() {
                 className="rounded-xl border p-3"
               >
                 <div className="flex gap-4">
-                  <div className="w-28 shrink-0 space-y-1.5">
-                    <Skeleton className="h-4 w-16" />
-                    <Skeleton className="h-3 w-20" />
+                  {/* The rail bars sit in line boxes matching the real text
+                      lines (text-sm 20px + text-xs 16px = a 36px rail), so
+                      the skeleton row measures exactly as tall as a loaded
+                      band row (measured in headless Chrome: 62px vs 60px
+                      with naively stacked bars). */}
+                  <div className="w-28 shrink-0">
+                    <div className="flex h-5 items-center">
+                      <Skeleton className="h-4 w-16" />
+                    </div>
+                    <div className="flex h-4 items-center">
+                      <Skeleton className="h-3 w-20" />
+                    </div>
                   </div>
                   <div className="flex flex-1 flex-wrap items-start gap-2 self-center">
                     {Array.from({ length: chips }, (_, chip) => (
