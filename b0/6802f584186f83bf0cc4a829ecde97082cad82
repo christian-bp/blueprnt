@@ -1,0 +1,22 @@
+apps/dashboard/components/date-picker.tsx
+  s_6bff98b662648b::t_91dea62ffc3de7 127
+  s_6bff98b662648b::t_5fb30ef329728a 64-87
+apps/dashboard/components/date-picker.test.tsx
+  s_6bff98b662648b::t_728bb8f13ab6d7 1-83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "b06802f584186f83bf0cc4a829ecde97082cad82",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
