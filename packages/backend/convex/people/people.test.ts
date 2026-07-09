@@ -31,14 +31,17 @@ describe("createPerson", () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
 
-    const personId = await asAdmin.mutation(api.people.people.createPerson, {
-      orgId,
-      displayName: "Anna Svensson",
-      gender: "Kvinna",
-      country: "SE",
-      ftePercent: 100,
-      department: "Engineering",
-    })
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      {
+        orgId,
+        displayName: "Anna Svensson",
+        gender: "Kvinna",
+        country: "SE",
+        ftePercent: 100,
+        department: "Engineering",
+      }
+    )
 
     await t.run(async (ctx) => {
       const person = await ctx.db.get(personId)
@@ -90,17 +93,68 @@ describe("createPerson", () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
 
-    const personId = await asAdmin.mutation(api.people.people.createPerson, {
-      orgId,
-      displayName: "Erik Johansson",
-      gender: "Man",
-    })
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      {
+        orgId,
+        displayName: "Erik Johansson",
+        gender: "Man",
+      }
+    )
 
     await t.run(async (ctx) => {
       const person = await ctx.db.get(personId)
       expect(person?.displayName).toBe("Erik Johansson")
       expect(person?.externalRef).toBeUndefined()
       expect(person?.archivedAt).toBeUndefined()
+    })
+  })
+
+  it("returns the publicId matching the stored row (the route handle)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const { personId, publicId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Erik Johansson", gender: "Man" }
+    )
+
+    await t.run(async (ctx) => {
+      const person = await ctx.db.get(personId)
+      expect(person?.publicId).toBe(publicId)
+    })
+  })
+
+  it("rejects a taken employee number and treats a blank one as absent", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    await asAdmin.mutation(api.people.people.createPerson, {
+      orgId,
+      displayName: "Anna Svensson",
+      gender: "Kvinna",
+      externalRef: "1001",
+    })
+
+    // The employee number is the import upsert key: a duplicate would make
+    // future imports update one row while the other drifts stale.
+    await expect(
+      asAdmin.mutation(api.people.people.createPerson, {
+        orgId,
+        displayName: "Erik Johansson",
+        gender: "Man",
+        externalRef: " 1001 ",
+      })
+    ).rejects.toThrow(/errors.personRefExists/)
+
+    // Whitespace-only means "no ref": stored as absent, never colliding.
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Bo Ek", gender: "Man", externalRef: "   " }
+    )
+    await t.run(async (ctx) => {
+      const person = await ctx.db.get(personId)
+      expect(person?.externalRef).toBeUndefined()
     })
   })
 })
@@ -115,11 +169,14 @@ describe("listPeople / getPersonByPublicId", () => {
       displayName: "Alice",
       gender: "Kvinna",
     })
-    const bobId = await asAdmin.mutation(api.people.people.createPerson, {
-      orgId,
-      displayName: "Bob",
-      gender: "Man",
-    })
+    const { personId: bobId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      {
+        orgId,
+        displayName: "Bob",
+        gender: "Man",
+      }
+    )
 
     // Archive Bob.
     await asAdmin.mutation(api.people.people.archivePerson, {
@@ -141,11 +198,14 @@ describe("listPeople / getPersonByPublicId", () => {
       displayName: "Alice",
       gender: "Kvinna",
     })
-    const bobId = await asAdmin.mutation(api.people.people.createPerson, {
-      orgId,
-      displayName: "Bob",
-      gender: "Man",
-    })
+    const { personId: bobId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      {
+        orgId,
+        displayName: "Bob",
+        gender: "Man",
+      }
+    )
     await asAdmin.mutation(api.people.people.archivePerson, {
       orgId,
       personId: bobId,
@@ -215,12 +275,15 @@ describe("listPeople / getPersonByPublicId", () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
 
-    const personId = await asAdmin.mutation(api.people.people.createPerson, {
-      orgId,
-      displayName: "Carla",
-      gender: "Kvinna",
-      country: "SE",
-    })
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      {
+        orgId,
+        displayName: "Carla",
+        gender: "Kvinna",
+        country: "SE",
+      }
+    )
 
     const list = await asAdmin.query(api.people.people.listPeople, { orgId })
     const publicId = list[0]?.publicId
@@ -472,11 +535,14 @@ describe("archivePerson", () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
 
-    const personId = await asAdmin.mutation(api.people.people.createPerson, {
-      orgId,
-      displayName: "Grace",
-      gender: "Kvinna",
-    })
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      {
+        orgId,
+        displayName: "Grace",
+        gender: "Kvinna",
+      }
+    )
 
     await asAdmin.mutation(api.people.people.archivePerson, {
       orgId,
@@ -509,11 +575,14 @@ describe("archivePerson", () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
 
-    const personId = await asAdmin.mutation(api.people.people.createPerson, {
-      orgId,
-      displayName: "Hanna",
-      gender: "Kvinna",
-    })
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      {
+        orgId,
+        displayName: "Hanna",
+        gender: "Kvinna",
+      }
+    )
 
     // First archive.
     await asAdmin.mutation(api.people.people.archivePerson, {
@@ -543,11 +612,10 @@ describe("archivePerson", () => {
     const { orgId: orgA, asAdmin: asAdminA } = await seedOrg(t, "hr-a@acme.se")
     const { orgId: orgB, asAdmin: asAdminB } = await seedOrg(t, "hr-b@beta.se")
 
-    const personAId = await asAdminA.mutation(api.people.people.createPerson, {
-      orgId: orgA,
-      displayName: "Person A",
-      gender: "Man",
-    })
+    const { personId: personAId } = await asAdminA.mutation(
+      api.people.people.createPerson,
+      { orgId: orgA, displayName: "Person A", gender: "Man" }
+    )
 
     // Org B tries to archive org A's person.
     await expect(

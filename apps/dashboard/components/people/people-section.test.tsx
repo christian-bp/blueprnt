@@ -16,6 +16,11 @@ vi.mock(
 vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "org1", name: "Acme", role: "admin" }),
 }))
+// The AddPersonDialog in the header navigates after a create: give it a
+// no-op router (these tests never submit it).
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn() }),
+}))
 // The import and classify buttons are Links: mock next/link with a plain <a>.
 vi.mock("next/link", () => ({
   default: ({

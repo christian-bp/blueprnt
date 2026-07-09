@@ -52,7 +52,7 @@ async function seedPerson(
   orgId: string,
   asAdmin: ReturnType<ReturnType<typeof initConvexTest>["withIdentity"]>
 ) {
-  return await asAdmin.mutation(api.people.people.createPerson, {
+  const { personId } = await asAdmin.mutation(api.people.people.createPerson, {
     orgId,
     displayName: "Anna Svensson",
     gender: "Kvinna",
@@ -60,6 +60,7 @@ async function seedPerson(
     ftePercent: 100,
     department: "Engineering",
   })
+  return personId
 }
 
 // Seeds a role in the given org (required to create an assignment).

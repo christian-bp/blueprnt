@@ -44,6 +44,7 @@ import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
 import { useOrganization } from "@/components/org-context"
 import { PageHeader } from "@/components/page-header"
+import { AddPersonDialog } from "@/components/people/add-person-dialog"
 import { TablePagination } from "@/components/table-pagination"
 import { TableSearchField } from "@/components/table-search-field"
 import { ariaSort, TableSortButton } from "@/components/table-sort-button"
@@ -319,16 +320,22 @@ export function PeopleSection() {
     </div>
   )
 
-  const importAction = (
-    <Link href="/people/import" className={buttonVariants()}>
-      <HugeiconsIcon
-        icon={UserMultiple02Icon}
-        size={16}
-        strokeWidth={2}
-        aria-hidden="true"
-      />
-      {t("import.title")}
-    </Link>
+  // Import stays the primary action (payroll exports are the canonical data
+  // source); the manual single-person add sits beside it as the secondary
+  // path (its dialog carries its own outline trigger).
+  const headerActions = (
+    <div className="flex items-center gap-2">
+      <AddPersonDialog />
+      <Link href="/people/import" className={buttonVariants()}>
+        <HugeiconsIcon
+          icon={UserMultiple02Icon}
+          size={16}
+          strokeWidth={2}
+          aria-hidden="true"
+        />
+        {t("import.title")}
+      </Link>
+    </div>
   )
 
   return (
@@ -336,9 +343,7 @@ export function PeopleSection() {
       <PageHeader
         title={t("heading")}
         description={t("description")}
-        // Classification progress lives on the Classify tab (badge + page);
-        // the header keeps a single primary action.
-        action={importAction}
+        action={headerActions}
       />
 
       {loading ? (

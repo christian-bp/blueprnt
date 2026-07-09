@@ -29,7 +29,7 @@ async function seedPersonAndRole(
   orgId: string,
   asAdmin: ReturnType<ReturnType<typeof initConvexTest>["withIdentity"]>
 ) {
-  const personId = await asAdmin.mutation(api.people.people.createPerson, {
+  const { personId } = await asAdmin.mutation(api.people.people.createPerson, {
     orgId,
     displayName: "Anna Svensson",
     gender: "Kvinna",
@@ -315,11 +315,14 @@ describe("cross-org isolation", () => {
     const { orgId: orgB, asAdmin: asAdminB } = await seedOrg(t, "hr-b@beta.se")
 
     // Create a person in org A.
-    const personAId = await asAdminA.mutation(api.people.people.createPerson, {
-      orgId: orgA,
-      displayName: "Person A",
-      gender: "Man",
-    })
+    const { personId: personAId } = await asAdminA.mutation(
+      api.people.people.createPerson,
+      {
+        orgId: orgA,
+        displayName: "Person A",
+        gender: "Man",
+      }
+    )
 
     // Create a role in org B.
     const { roleId: roleBId } = await asAdminB.mutation(
@@ -351,11 +354,14 @@ describe("cross-org isolation", () => {
     const { orgId: orgB, asAdmin: asAdminB } = await seedOrg(t, "hr-b@beta.se")
 
     // Create a person in org B.
-    const personBId = await asAdminB.mutation(api.people.people.createPerson, {
-      orgId: orgB,
-      displayName: "Person B",
-      gender: "Kvinna",
-    })
+    const { personId: personBId } = await asAdminB.mutation(
+      api.people.people.createPerson,
+      {
+        orgId: orgB,
+        displayName: "Person B",
+        gender: "Kvinna",
+      }
+    )
 
     // Create a role in org A.
     const { roleId: roleAId } = await asAdminA.mutation(
@@ -430,7 +436,7 @@ describe("assignPeopleToRole (bulk)", () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
     const { personId, roleId } = await seedPersonAndRole(orgId, asAdmin)
-    const secondPersonId = await asAdmin.mutation(
+    const { personId: secondPersonId } = await asAdmin.mutation(
       api.people.people.createPerson,
       { orgId, displayName: "Bo Ek", gender: "Man" }
     )
@@ -470,7 +476,7 @@ describe("assignPeopleToRole (bulk)", () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
     const { personId, roleId } = await seedPersonAndRole(orgId, asAdmin)
-    const secondPersonId = await asAdmin.mutation(
+    const { personId: secondPersonId } = await asAdmin.mutation(
       api.people.people.createPerson,
       { orgId, displayName: "Bo Ek", gender: "Man" }
     )

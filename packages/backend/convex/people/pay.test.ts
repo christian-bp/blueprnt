@@ -29,11 +29,12 @@ async function seedPerson(
   orgId: string,
   asAdmin: ReturnType<ReturnType<typeof initConvexTest>["withIdentity"]>
 ) {
-  return await asAdmin.mutation(api.people.people.createPerson, {
+  const { personId } = await asAdmin.mutation(api.people.people.createPerson, {
     orgId,
     displayName: "Anna Svensson",
     gender: "Kvinna",
   })
+  return personId
 }
 
 describe("setSalary", () => {

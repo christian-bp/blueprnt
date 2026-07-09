@@ -15,3 +15,9 @@ export async function pickSelectOption(
   fireEvent.pointerUp(option)
   fireEvent.click(option)
 }
+// CAVEAT: in a real browser the popup closes on selection; happy-dom misses
+// that, so the listbox stays open and swallows the NEXT click in the test
+// (its dismiss logic eats it as an outside press). When a test needs to
+// CLICK something after picking (e.g. a calendar day), do the click first
+// and the select pick last; an explicit Escape here is no fix, since it
+// propagates and closes the surrounding dialog too.

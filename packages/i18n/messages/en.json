@@ -137,7 +137,8 @@
       "classificationConfirmed": "Classification confirmed",
       "salarySaved": "Salary saved",
       "salaryDeleted": "Salary record deleted",
-      "personErased": "Employee deleted"
+      "personErased": "Employee deleted",
+      "personCreated": "Employee added"
     },
     "accountMenu": "Account menu",
     "nav": {
@@ -331,6 +332,20 @@
           "keep": "Keep editing",
           "discard": "Discard"
         }
+      },
+      "addPerson": {
+        "title": "Add employee",
+        "description": "Name and gender are required; everything else can be added later. With an employee number, future payroll imports update this person instead of creating a duplicate.",
+        "nameLabel": "Name",
+        "genderLabel": "Gender",
+        "titleLabel": "Job title",
+        "departmentLabel": "Department",
+        "externalRefLabel": "Employee number",
+        "startDateLabel": "Start date",
+        "fteLabel": "FTE %",
+        "cancel": "Cancel",
+        "cta": "Add employee",
+        "error": "The employee could not be added. Try again."
       },
       "detail": {
         "backToPeople": "Back to people",
@@ -1652,6 +1667,10 @@
         "cancel": "Cancel",
         "error": "Could not revoke the invitation. Please try again."
       }
+    },
+    "datePicker": {
+      "placeholder": "Pick a date",
+      "clear": "Clear"
     }
   },
   "errors": {
@@ -1676,6 +1695,7 @@
     "tooFewCriteria": "A model needs at least 5 criteria.",
     "lastAdmin": "You're the last administrator of an organization. Contact support to delete your account.",
     "invalidLevel": "That level is not valid for this role's track.",
-    "invalidEffectiveDate": "The effective date must be after the current assignment's start date."
+    "invalidEffectiveDate": "The effective date must be after the current assignment's start date.",
+    "personRefExists": "An employee with that employee number already exists."
   }
 }

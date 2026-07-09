@@ -137,7 +137,8 @@
       "classificationConfirmed": "Luokittelu vahvistettu",
       "salarySaved": "Palkka tallennettu",
       "salaryDeleted": "Palkkatietue poistettu",
-      "personErased": "Työntekijä poistettu"
+      "personErased": "Työntekijä poistettu",
+      "personCreated": "Työntekijä lisätty"
     },
     "accountMenu": "Tilivalikko",
     "nav": {
@@ -331,6 +332,20 @@
           "Man": "Mies",
           "Kvinna": "Nainen"
         }
+      },
+      "addPerson": {
+        "title": "Lisää työntekijä",
+        "description": "Nimi ja sukupuoli vaaditaan; kaiken muun voi lisätä myöhemmin. Henkilönumeron avulla tulevat palkkatuonnit päivittävät henkilön eivätkä luo kaksoiskappaletta.",
+        "nameLabel": "Nimi",
+        "genderLabel": "Sukupuoli",
+        "titleLabel": "Tehtävänimike",
+        "departmentLabel": "Osasto",
+        "externalRefLabel": "Henkilönumero",
+        "startDateLabel": "Aloituspäivä",
+        "fteLabel": "Työaika %",
+        "cancel": "Peruuta",
+        "cta": "Lisää työntekijä",
+        "error": "Työntekijää ei voitu lisätä. Yritä uudelleen."
       },
       "detail": {
         "backToPeople": "Takaisin henkilöstöön",
@@ -1652,6 +1667,10 @@
         "cancel": "Peruuta",
         "error": "Kutsua ei voitu peruuttaa. Yritä uudelleen."
       }
+    },
+    "datePicker": {
+      "placeholder": "Valitse päivä",
+      "clear": "Tyhjennä"
     }
   },
   "errors": {
@@ -1676,6 +1695,7 @@
     "tooFewCriteria": "Malli tarvitsee vähintään 5 kriteeriä.",
     "lastAdmin": "Olet organisaation viimeinen ylläpitäjä. Ota yhteyttä tukeen poistaaksesi tilisi.",
     "invalidLevel": "Taso ei ole kelvollinen tämän roolin polulle.",
-    "invalidEffectiveDate": "Voimaantulopäivän on oltava nykyisen tehtävän alkamispäivän jälkeen."
+    "invalidEffectiveDate": "Voimaantulopäivän on oltava nykyisen tehtävän alkamispäivän jälkeen.",
+    "personRefExists": "Työntekijä tällä työntekijänumerolla on jo olemassa."
   }
 }

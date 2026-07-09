@@ -23,6 +23,7 @@ export const ERROR_CODES = {
   invalidTransition: "errors.invalidTransition",
   roleFamilyExists: "errors.roleFamilyExists",
   roleExists: "errors.roleExists",
+  personRefExists: "errors.personRefExists",
   lastAdmin: "errors.lastAdmin",
   invalidLevel: "errors.invalidLevel",
   invalidEffectiveDate: "errors.invalidEffectiveDate",

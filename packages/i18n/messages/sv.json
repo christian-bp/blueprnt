@@ -137,7 +137,8 @@
       "classificationConfirmed": "Klassificering bekräftad",
       "salarySaved": "Lönen sparades",
       "salaryDeleted": "Lönepost borttagen",
-      "personErased": "Anställd raderad"
+      "personErased": "Anställd raderad",
+      "personCreated": "Anställd tillagd"
     },
     "accountMenu": "Kontomeny",
     "nav": {
@@ -331,6 +332,20 @@
           "Man": "Man",
           "Kvinna": "Kvinna"
         }
+      },
+      "addPerson": {
+        "title": "Lägg till anställd",
+        "description": "Namn och kön krävs; allt annat kan läggas till senare. Med ett anställningsnummer uppdaterar framtida löneimporter personen i stället för att skapa en dubblett.",
+        "nameLabel": "Namn",
+        "genderLabel": "Kön",
+        "titleLabel": "Befattning",
+        "departmentLabel": "Avdelning",
+        "externalRefLabel": "Anställningsnummer",
+        "startDateLabel": "Startdatum",
+        "fteLabel": "Sysselsättningsgrad %",
+        "cancel": "Avbryt",
+        "cta": "Lägg till anställd",
+        "error": "Den anställda kunde inte läggas till. Försök igen."
       },
       "detail": {
         "backToPeople": "Tillbaka till anställda",
@@ -1652,6 +1667,10 @@
         "cancel": "Avbryt",
         "error": "Det gick inte att återkalla inbjudan. Försök igen."
       }
+    },
+    "datePicker": {
+      "placeholder": "Välj datum",
+      "clear": "Rensa"
     }
   },
   "errors": {
@@ -1676,6 +1695,7 @@
     "tooFewCriteria": "En modell behöver minst 5 kriterier.",
     "lastAdmin": "Du är den sista administratören i en organisation. Kontakta supporten för att radera ditt konto.",
     "invalidLevel": "Den nivån är inte giltig för rollens spår.",
-    "invalidEffectiveDate": "Giltighetsdatumet måste vara efter den aktuella tilldelningens startdatum."
+    "invalidEffectiveDate": "Giltighetsdatumet måste vara efter den aktuella tilldelningens startdatum.",
+    "personRefExists": "En anställd med det anställningsnumret finns redan."
   }
 }

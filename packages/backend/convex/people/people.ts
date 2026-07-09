@@ -62,19 +62,38 @@ export const createPerson = orgMutation({
     gender: v.union(v.literal("Man"), v.literal("Kvinna")),
     ...optionalPersonArgs,
   },
-  returns: v.id("people"),
+  // Returns the internal id (for follow-up writes) and the publicId (the
+  // route handle), so a caller can navigate to the new person without a
+  // second read (same contract as createRole's { roleId, slug }).
+  returns: v.object({ personId: v.id("people"), publicId: v.string() }),
   handler: async (ctx, args) => {
     const displayName = args.displayName.trim()
     if (displayName.length === 0) throw appError(ERROR_CODES.invalidInput)
 
+    // The employee number is the import upsert key: a duplicate would make
+    // future payroll imports update one row while the other silently drifts,
+    // so a taken ref is rejected here (empty/whitespace means "no ref").
+    const externalRef =
+      args.externalRef !== undefined && args.externalRef.trim() !== ""
+        ? args.externalRef.trim()
+        : undefined
+    if (externalRef !== undefined) {
+      const taken = await ctx.db
+        .query("people")
+        .withIndex("by_org_externalRef", (q) =>
+          q.eq("orgId", ctx.orgId).eq("externalRef", externalRef)
+        )
+        .first()
+      if (taken !== null) throw appError(ERROR_CODES.personRefExists)
+    }
+
+    const publicId = await uniquePersonPublicId(ctx, ctx.orgId)
     const personId = await ctx.db.insert("people", {
       orgId: ctx.orgId,
-      publicId: await uniquePersonPublicId(ctx, ctx.orgId),
+      publicId,
       displayName,
       gender: args.gender,
-      ...(args.externalRef !== undefined
-        ? { externalRef: args.externalRef }
-        : {}),
+      ...(externalRef !== undefined ? { externalRef } : {}),
       ...(args.birthDate !== undefined ? { birthDate: args.birthDate } : {}),
       ...(args.employmentStartDate !== undefined
         ? { employmentStartDate: args.employmentStartDate }
@@ -92,7 +111,7 @@ export const createPerson = orgMutation({
     // Build the non-PII snapshot for the audit row. We pass the args directly
     // rather than re-reading the inserted doc to avoid an extra read.
     const snapshot: Record<string, unknown> = {
-      externalRef: args.externalRef ?? null,
+      externalRef: externalRef ?? null,
       employmentStartDate: args.employmentStartDate ?? null,
       ftePercent: args.ftePercent ?? null,
       country: args.country ?? null,
@@ -110,7 +129,7 @@ export const createPerson = orgMutation({
       },
     })
 
-    return personId
+    return { personId, publicId }
   },
 })
 

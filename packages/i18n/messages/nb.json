@@ -137,7 +137,8 @@
       "classificationConfirmed": "Klassifisering bekreftet",
       "salarySaved": "Lønn lagret",
       "salaryDeleted": "Lønnsoppføring slettet",
-      "personErased": "Ansatt slettet"
+      "personErased": "Ansatt slettet",
+      "personCreated": "Ansatt lagt til"
     },
     "accountMenu": "Kontomeny",
     "nav": {
@@ -331,6 +332,20 @@
           "Man": "Mann",
           "Kvinna": "Kvinne"
         }
+      },
+      "addPerson": {
+        "title": "Legg til ansatt",
+        "description": "Navn og kjønn kreves; alt annet kan legges til senere. Med et ansattnummer oppdaterer fremtidige lønnsimporter personen i stedet for å opprette en duplikat.",
+        "nameLabel": "Navn",
+        "genderLabel": "Kjønn",
+        "titleLabel": "Stillingstittel",
+        "departmentLabel": "Avdeling",
+        "externalRefLabel": "Ansattnummer",
+        "startDateLabel": "Startdato",
+        "fteLabel": "Stillingsandel %",
+        "cancel": "Avbryt",
+        "cta": "Legg til ansatt",
+        "error": "Den ansatte kunne ikke legges til. Prøv igjen."
       },
       "detail": {
         "backToPeople": "Tilbake til ansatte",
@@ -1652,6 +1667,10 @@
         "cancel": "Avbryt",
         "error": "Kunne ikke trekke tilbake invitasjonen. Prøv igjen."
       }
+    },
+    "datePicker": {
+      "placeholder": "Velg dato",
+      "clear": "Tøm"
     }
   },
   "errors": {
@@ -1676,6 +1695,7 @@
     "tooFewCriteria": "En modell trenger minst 5 kriterier.",
     "lastAdmin": "Du er den siste administratoren i en organisasjon. Kontakt støtte for å slette kontoen din.",
     "invalidLevel": "Det nivået er ikke gyldig for rollens spor.",
-    "invalidEffectiveDate": "Ikrafttredelsesdatoen må være etter den gjeldende tildelingens startdato."
+    "invalidEffectiveDate": "Ikrafttredelsesdatoen må være etter den gjeldende tildelingens startdato.",
+    "personRefExists": "En ansatt med det ansattnummeret finnes allerede."
   }
 }

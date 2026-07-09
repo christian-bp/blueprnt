@@ -339,12 +339,15 @@ describe("removeSeededOrganization", () => {
     const asAdmin = t.withIdentity({ subject: userId })
 
     // Seed a person.
-    const personId = await asAdmin.mutation(api.people.people.createPerson, {
-      orgId,
-      displayName: "Anna Svensson",
-      gender: "Kvinna",
-      country: "SE",
-    })
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      {
+        orgId,
+        displayName: "Anna Svensson",
+        gender: "Kvinna",
+        country: "SE",
+      }
+    )
 
     // Seed a role (required for the assignment).
     const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
