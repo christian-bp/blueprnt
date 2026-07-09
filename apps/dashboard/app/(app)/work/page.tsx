@@ -74,7 +74,11 @@ export default function WorkOverviewPage() {
     return (
       <div className="space-y-6">
         {header}
-        <Tabs value="ladder" className="space-y-4">
+        {/* Uncontrolled like the loaded Tabs below: React keeps the instance
+            across the branch swap (same position), so a controlled loading
+            Tabs would warn about switching to uncontrolled, and uncontrolled
+            state lets a tab picked during loading carry over. */}
+        <Tabs defaultValue="ladder" className="space-y-4">
           <TabsList variant="line">
             <TabsTrigger value="ladder">{t("viewLadder")}</TabsTrigger>
             <TabsTrigger value="matrix">{t("viewMatrix")}</TabsTrigger>
