@@ -1,0 +1,76 @@
+apps/dashboard/test/select.ts
+  s_6bff98b662648b::t_0a73b89a1dd96b 18-23
+apps/dashboard/components/people/people-section.test.tsx
+  s_6bff98b662648b::t_f560b6ebf4d603 19-23
+CLAUDE.md
+  s_6bff98b662648b::t_41bdf184d13910 65
+apps/dashboard/components/people/people-section.tsx
+  s_6bff98b662648b::t_af3bb3f147ffd8 47
+  s_6bff98b662648b::t_099d8ee955da9f 323-338,346
+apps/dashboard/components/people/add-person-dialog.test.tsx
+  s_6bff98b662648b::t_2ce650a7672fc9 164
+  s_6bff98b662648b::t_bb3384adeecea1 166,190,205
+  s_6bff98b662648b::t_e7d7c793192c6e 1-64,74-139,155,161-163,165,167-174,176-189,191,193-204,206-209
+  s_6bff98b662648b::t_5bd4eb6c218b4c 65-73
+  s_6bff98b662648b::t_52ad09c4ddb781 143-145
+  s_6bff98b662648b::t_5be23e698749f3 192
+  s_6bff98b662648b::t_04497f462b8580 140-142,146-154,156-160,175
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_f02e515a73610a 1670-1673
+  s_6bff98b662648b::t_1449d2d7141e2c 140-141,336-349,1698-1699
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_1449d2d7141e2c 140-141,336-349,1698-1699
+  s_6bff98b662648b::t_f02e515a73610a 1670-1673
+packages/backend/convex/people/erase.test.ts
+  s_6bff98b662648b::t_c48a9f98ba89af 55,63
+packages/backend/convex/people/people.ts
+  s_6bff98b662648b::t_358fe1d711c71e 65-68,73-90,93,96
+  s_6bff98b662648b::t_33bedd3a30cef9 114,132
+packages/backend/convex/lib/errors.ts
+  s_6bff98b662648b::t_9b484836921584 26
+apps/dashboard/components/date-picker.tsx
+  s_6bff98b662648b::t_18ded2e3feff21 1-113
+packages/backend/convex/people/assignments.test.ts
+  s_6bff98b662648b::t_36e2e248e1f628 32,439,479
+  s_6bff98b662648b::t_5be23e698749f3 318-325,357-364
+packages/backend/convex/accounts/mirrors.test.ts
+  s_6bff98b662648b::t_223921b31a2dfe 342-344
+  s_6bff98b662648b::t_5be23e698749f3 345-350
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_f02e515a73610a 1670-1673
+  s_6bff98b662648b::t_1449d2d7141e2c 140-141,336-349,1698-1699
+packages/backend/convex/people/people.test.ts
+  s_6bff98b662648b::t_5be23e698749f3 37-44,99-103,175-179,204-208,281-286,541-545,581-585
+  s_6bff98b662648b::t_223921b31a2dfe 34-36,96-98,172-174,201-203,278-280,538-540,578-580
+  s_6bff98b662648b::t_fc0f751af754f0 112-159
+  s_6bff98b662648b::t_622808f95ce846 615-618
+packages/backend/convex/people/pay.test.ts
+  s_6bff98b662648b::t_36e2e248e1f628 32,37
+apps/dashboard/components/people/add-person-dialog.tsx
+  s_6bff98b662648b::t_5be23e698749f3 126,186
+  s_6bff98b662648b::t_9a0eb5f6bd146a 1-36,38-125,127-185,187-255,263-323
+  s_6bff98b662648b::t_d5449bdfc68681 256-262
+  s_6bff98b662648b::t_5d213bb7936528 37
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_1449d2d7141e2c 140-141,336-349,1698-1699
+  s_6bff98b662648b::t_f02e515a73610a 1670-1673
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_1449d2d7141e2c 140-141,336-349,1698-1699
+  s_6bff98b662648b::t_f02e515a73610a 1670-1673
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "0a5edf0c3b5126415bd6b8977b689d7e2b205ddf",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
