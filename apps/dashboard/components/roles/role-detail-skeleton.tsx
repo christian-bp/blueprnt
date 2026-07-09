@@ -1,5 +1,8 @@
 "use client"
 
+import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Button } from "@workspace/ui/components/button"
 import {
   Card,
   CardContent,
@@ -9,6 +12,7 @@ import {
 import { Label } from "@workspace/ui/components/label"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useTranslations } from "next-intl"
+import { PageBreadcrumb } from "@/components/page-breadcrumb"
 import { PageHeader } from "@/components/page-header"
 
 // Content-shaped loading state for the role page: the real layout (header,
@@ -33,21 +37,39 @@ function FieldSkeleton({ label, bar }: { label: string; bar: string }) {
 
 export function RoleDetailSkeleton() {
   const t = useTranslations("dashboard.roles.detail")
+  const tNav = useTranslations("dashboard.nav")
   const tRole = useTranslations("assessment.role")
   const tModel = useTranslations("model")
 
   return (
     <div className="space-y-6">
       <PageHeader
-        breadcrumb={<Skeleton className="h-4 w-44" />}
+        // The Roles crumb is static; the family/title crumbs join it with
+        // the data.
+        breadcrumb={
+          <PageBreadcrumb
+            segments={[{ label: tNav("roles"), href: "/roles" }]}
+          />
+        }
         title={<Skeleton className="h-7 w-56 max-w-full" />}
         titleAdornment={<Skeleton className="h-5 w-20 rounded-full" />}
       />
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>{t("profileHeading")}</CardTitle>
+              {/* The real actions trigger (static chrome, enabled no-op:
+                  the load is brief and disabling would just flash gray). */}
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                aria-label={t("manageCta")}
+                className="shrink-0"
+              >
+                <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
+              </Button>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-3">

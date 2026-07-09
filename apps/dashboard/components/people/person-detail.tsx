@@ -1,9 +1,13 @@
 "use client"
 
-import { MoreVerticalIcon } from "@hugeicons/core-free-icons"
+import {
+  MoreHorizontalIcon,
+  MoreVerticalIcon,
+} from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Badge } from "@workspace/ui/components/badge"
+import { Button } from "@workspace/ui/components/button"
 import {
   Card,
   CardContent,
@@ -66,6 +70,7 @@ const SALARY_SKELETON_COLUMNS: TableSkeletonColumn[] = [
 // minimization; see convex/lib/slug.ts).
 export function PersonDetail({ publicId }: { publicId: string }) {
   const t = useTranslations("dashboard.people.detail")
+  const tSalaryForm = useTranslations("dashboard.people.salaryForm")
   const tNav = useTranslations("dashboard.nav")
   const { orgId } = useOrganization()
   const locale = useLocale()
@@ -128,21 +133,41 @@ export function PersonDetail({ publicId }: { publicId: string }) {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>{t("identityHeading")}</CardTitle>
-              <Skeleton className="size-9 rounded-md" />
+              {/* The real actions trigger (static chrome, enabled no-op:
+                  the load is brief and disabling would just flash gray). */}
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                aria-label={t("actionsMenu")}
+                className="shrink-0"
+              >
+                <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
+              </Button>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* The dt labels and the section heading are static i18n text,
+                  so they render for real; bars stand in for the values. */}
               <dl className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton placeholders
-                  <div key={i} className="space-y-1">
-                    <Skeleton className="h-3 w-20" />
-                    <Skeleton className="h-4 w-24" />
+                {[
+                  t("externalRef"),
+                  t("employmentStartDate"),
+                  t("department"),
+                  t("fte"),
+                ].map((label) => (
+                  <div key={label}>
+                    <dt className="text-muted-foreground">{label}</dt>
+                    <dd className="flex min-h-5 items-center">
+                      <Skeleton className="h-4 w-24 max-w-full" />
+                    </dd>
                   </div>
                 ))}
               </dl>
               <section className="space-y-2">
-                <Skeleton className="h-4 w-32" />
-                <div className="flex items-center gap-3">
+                <h2 className="font-medium text-sm">
+                  {t("classificationHeading")}
+                </h2>
+                <div className="flex min-h-5 items-center gap-3">
                   <Skeleton className="h-4 w-28" />
                   <Skeleton className="h-5 w-10 rounded-full" />
                 </div>
@@ -154,7 +179,11 @@ export function PersonDetail({ publicId }: { publicId: string }) {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>{t("salaryHeading")}</CardTitle>
-              <Skeleton className="h-8 w-24 rounded-md" />
+              {/* The real add-salary trigger (static chrome, enabled no-op
+                  while loading). */}
+              <Button type="button" size="sm">
+                {tSalaryForm("addTitle")}
+              </Button>
             </CardHeader>
             <CardContent>
               <Table className="table-fixed">

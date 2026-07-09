@@ -58,7 +58,9 @@ export function MethodPanel({ orgId }: { orgId: string }) {
               <Skeleton className="h-5 w-52" />
             </AlertTitle>
           </Alert>
-          <Skeleton className="h-9 w-36" />
+          {/* The real download button (static chrome): it loads its own data
+              and disables itself until ready. */}
+          <MethodAppendixDownload orgId={orgId} />
         </div>
         <CriterionListSkeleton variant="method" />
       </div>

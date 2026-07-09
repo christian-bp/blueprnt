@@ -1,7 +1,5 @@
 "use client"
 
-import { Search01Icon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -21,7 +19,6 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
-import { Input } from "@workspace/ui/components/input"
 import {
   Select,
   SelectContent,
@@ -29,7 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   Table,
   TableBody,
@@ -42,6 +38,7 @@ import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
+import { TableSearchField } from "@/components/table-search-field"
 import {
   TableSkeleton,
   type TableSkeletonColumn,
@@ -141,14 +138,27 @@ const ROLES_SKELETON_COLUMNS: TableSkeletonColumn[] = [
   { className: "h-5 w-10 rounded-full" },
 ]
 
-// The register's loading state: toolbar-shaped bars over the shared header
-// and skeleton rows (unpaginated, so sized to typical content).
+// The register's loading state: the REAL toolbar controls over the shared
+// header and skeleton rows (unpaginated, so sized to typical content). The
+// controls' labels are static i18n text, so bars would hide known chrome,
+// and they stay enabled: the load is brief, interacting is a harmless no-op,
+// and a grayed control would just flash. The track filter shows its
+// all-option; the real options arrive with the data.
 export function RolesTableSkeleton() {
+  const t = useTranslations("dashboard.roles")
+  const tToolbar = useTranslations("dashboard.roles.toolbar")
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        <Skeleton className="h-9 w-64 rounded-md" />
-        <Skeleton className="h-9 w-40 rounded-md" />
+        <TableSearchField placeholder={tToolbar("searchPlaceholder")} />
+        <Select items={{ all: tToolbar("trackAll") }} value="all">
+          <SelectTrigger aria-label={t("table.track")}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{tToolbar("trackAll")}</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <Table className="table-fixed">
         <RolesTableHeader />
@@ -298,22 +308,11 @@ export function RolesTable({
       {/* Toolbar: search + the track filter; the counter appears only while
           something is narrowing the table. */}
       <div className="flex flex-wrap items-center gap-2">
-        <div className="relative">
-          <HugeiconsIcon
-            icon={Search01Icon}
-            size={16}
-            strokeWidth={2}
-            aria-hidden="true"
-            className="absolute top-1/2 left-2.5 -translate-y-1/2 text-muted-foreground"
-          />
-          <Input
-            value={globalFilter}
-            placeholder={tToolbar("searchPlaceholder")}
-            aria-label={tToolbar("searchPlaceholder")}
-            onChange={(event) => setGlobalFilter(event.target.value)}
-            className="w-64 pl-8"
-          />
-        </div>
+        <TableSearchField
+          placeholder={tToolbar("searchPlaceholder")}
+          value={globalFilter}
+          onChange={setGlobalFilter}
+        />
         <Select
           items={{
             all: tToolbar("trackAll"),

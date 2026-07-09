@@ -67,14 +67,18 @@ export default function WorkOverviewPage() {
   )
 
   if (results === undefined) {
-    // Content-shaped loading state mirroring the ladder view: the tabs bar,
-    // then band rows (the ladder's real bordered boxes: a w-28 label block
-    // and role chips), so nothing reflows when the results arrive.
+    // Content-shaped loading state mirroring the ladder view: the REAL tabs
+    // (static i18n chrome, enabled no-ops while the results load), then band
+    // rows (the ladder's real bordered boxes: a w-28 label block and role
+    // chips), so nothing reflows when the results arrive.
     return (
       <div className="space-y-6">
         {header}
-        <div className="space-y-4">
-          <Skeleton className="h-9 w-44 rounded-md" />
+        <Tabs value="ladder" className="space-y-4">
+          <TabsList variant="line">
+            <TabsTrigger value="ladder">{t("viewLadder")}</TabsTrigger>
+            <TabsTrigger value="matrix">{t("viewMatrix")}</TabsTrigger>
+          </TabsList>
           <ul className="space-y-2">
             {[3, 2, 4, 1, 2].map((chips, band) => (
               <li
@@ -100,7 +104,7 @@ export default function WorkOverviewPage() {
               </li>
             ))}
           </ul>
-        </div>
+        </Tabs>
       </div>
     )
   }

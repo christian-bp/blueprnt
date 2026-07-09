@@ -1,8 +1,9 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
-import { buttonVariants } from "@workspace/ui/components/button"
+import { Button, buttonVariants } from "@workspace/ui/components/button"
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
+import { Kbd } from "@workspace/ui/components/kbd"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
@@ -37,8 +38,13 @@ export default function RatePage(props: {
     // options and the nav row, so nothing reflows when the data arrives.
     return (
       <div className="space-y-4">
+        {/* The heading's prefix is static i18n text; only the role title is
+            data, so only it gets a bar. */}
         <PageHeading>
-          <Skeleton className="h-7 w-72 max-w-full" />
+          <span className="flex items-center gap-2">
+            {t("title")}:
+            <Skeleton className="h-5 w-48 max-w-full" />
+          </span>
         </PageHeading>
         <div className="w-full max-w-2xl space-y-4">
           <div className="flex items-center justify-between">
@@ -56,9 +62,24 @@ export default function RatePage(props: {
                   <Skeleton key={level} className="h-12 w-full rounded-md" />
                 ))}
               </div>
+              {/* The real nav buttons (static i18n chrome). Disabled is the
+                  truthful state here, not a loading effect: the loaded
+                  stepper opens with Back disabled on step 1 and Next
+                  disabled until an anchor is picked. */}
               <div className="flex items-center justify-between">
-                <Skeleton className="h-9 w-24 rounded-md" />
-                <Skeleton className="h-9 w-24 rounded-md" />
+                <Button type="button" variant="outline" disabled>
+                  {t("backCta")}
+                </Button>
+                <Button type="button" disabled>
+                  {t("nextCta")}
+                  <Kbd
+                    data-icon="inline-end"
+                    aria-hidden="true"
+                    className="translate-x-0.5"
+                  >
+                    ⏎
+                  </Kbd>
+                </Button>
               </div>
             </CardContent>
           </Card>

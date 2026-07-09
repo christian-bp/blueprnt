@@ -7,7 +7,7 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
-import { Skeleton } from "@workspace/ui/components/skeleton"
+import { Button } from "@workspace/ui/components/button"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { PageHeader } from "@/components/page-header"
@@ -29,10 +29,10 @@ export default function RolesPage() {
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
   const results = useQuery(api.assessment.results.getResults, { orgId, locale })
 
-  // The header is static i18n content, so it renders immediately; only the
-  // data-dependent parts (the create action needs the model's tracks, the
-  // table needs the rows) swap in from their skeletons (content-shaped
-  // loading rule).
+  // The header and its create action are static i18n content, so they render
+  // immediately (the action as a plain no-op button until the dialog has its
+  // tracks; the load is brief and disabling would just flash gray); only the
+  // data-shaped parts swap in from the skeleton.
   if (
     roles === undefined ||
     model === undefined ||
@@ -44,7 +44,7 @@ export default function RolesPage() {
         <PageHeader
           title={t("heading")}
           description={t("description")}
-          action={<Skeleton className="h-9 w-28 rounded-md" />}
+          action={<Button type="button">{t("newCta")}</Button>}
         />
         <RolesTableSkeleton />
       </div>

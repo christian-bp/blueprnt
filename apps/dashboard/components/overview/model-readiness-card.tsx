@@ -27,14 +27,28 @@ export function ModelReadinessCard({ orgId }: { orgId: string }) {
   })
 
   if (method === undefined) {
+    // The title and CTA link are static i18n text, so they render for real;
+    // bars stand in for the progress lines (their counts are the data).
     return (
       <Card>
         <CardHeader>
-          <Skeleton className="h-5 w-24" />
+          <CardTitle className="text-base">{t("title")}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-full" />
+        <CardContent className="space-y-3 text-sm">
+          <div className="space-y-1.5">
+            <Skeleton className="h-4 w-40 max-w-full" />
+            <Progress value={0} />
+          </div>
+          <div className="space-y-1.5">
+            <Skeleton className="h-4 w-40 max-w-full" />
+            <Progress value={0} />
+          </div>
+          <Link
+            href="/model/method"
+            className="inline-block text-muted-foreground text-sm underline-offset-4 hover:underline"
+          >
+            {t("cta")}
+          </Link>
         </CardContent>
       </Card>
     )

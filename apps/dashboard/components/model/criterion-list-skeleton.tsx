@@ -1,14 +1,21 @@
+"use client"
+
+import { MoreVerticalIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Button } from "@workspace/ui/components/button"
+import { ButtonGroup } from "@workspace/ui/components/button-group"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { useTranslations } from "next-intl"
 
 // A content-shaped loading state for the criteria list, the list-equivalent of
 // TableSkeleton: render it in place of the <ul> of CriterionItem rows while the
 // model query is loading, so the page shows its real shape instantly and the
 // rows drop in without reflow. Each placeholder mirrors CriterionItem at rest:
 // the same bordered box (rounded-md border p-3), the same min-h-9 inner row and
-// 12px inter-row gap, with the trailing slot and note line matching the phase:
-//   - define: only the reserved row-menu square
-//   - weight: the 1-5 weight slot (w-52) plus the share note below
-//   - method: the status badge + action plus the share note below
+// 12px inter-row gap, with the trailing slot and note line matching the phase.
+// Static per-row chrome (the row menu, the 1-5 digits, the Open action) is
+// never a bar: it renders as its real element, muted and non-interactive; bars
+// stand in only for the data (name, description, status, share).
 export type CriterionListSkeletonVariant = "define" | "weight" | "method"
 
 export function CriterionListSkeleton({
@@ -18,6 +25,7 @@ export function CriterionListSkeleton({
   rows?: number
   variant: CriterionListSkeletonVariant
 }) {
+  const tMethod = useTranslations("dashboard.model.method")
   const withNote = variant !== "define"
   return (
     <ul aria-hidden="true">
@@ -42,17 +50,46 @@ export function CriterionListSkeleton({
               </span>
             </span>
             {variant === "define" && (
-              <Skeleton className="size-9 shrink-0 rounded-md" />
+              <span className="flex size-9 shrink-0 items-center justify-center text-muted-foreground/50">
+                <HugeiconsIcon
+                  icon={MoreVerticalIcon}
+                  size={16}
+                  strokeWidth={2}
+                />
+              </span>
             )}
             {variant === "weight" && (
               <span className="flex h-9 w-52 shrink-0 items-center justify-end">
-                <Skeleton className="h-8 w-full" />
+                {/* The real 1-5 group: the digits are static chrome; which
+                    one is pressed is the data, so none is. */}
+                <ButtonGroup className="pointer-events-none w-full">
+                  {[1, 2, 3, 4, 5].map((option) => (
+                    <Button
+                      key={option}
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      tabIndex={-1}
+                      className="flex-1 px-0 text-muted-foreground/50 tabular-nums"
+                    >
+                      {option}
+                    </Button>
+                  ))}
+                </ButtonGroup>
               </span>
             )}
             {variant === "method" && (
               <span className="flex shrink-0 items-center gap-2">
                 <Skeleton className="h-5 w-24 rounded-full" />
-                <Skeleton className="h-8 w-16" />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  tabIndex={-1}
+                  className="pointer-events-none text-muted-foreground/50"
+                >
+                  {tMethod("openCta")}
+                </Button>
               </span>
             )}
           </div>

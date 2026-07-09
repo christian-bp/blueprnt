@@ -1,7 +1,10 @@
 "use client"
 
+import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Badge } from "@workspace/ui/components/badge"
+import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   Table,
@@ -81,15 +84,35 @@ export default function FamilyPage(props: {
     model === undefined ||
     model === null
   ) {
-    // Content-shaped loading state: the page's real layout with bars for the
-    // data (the family name, the actions, the rows), so nothing reflows when
-    // the data arrives.
+    // Content-shaped loading state: bars stand in for the data (the family
+    // name, the rows); the actions are static chrome, so they render as
+    // their real buttons (enabled no-ops: the load is brief and disabling
+    // would just flash gray).
     return (
       <div className="space-y-6">
         <PageHeader
-          breadcrumb={<Skeleton className="h-4 w-40" />}
+          // The Roles crumb is static; the family crumb joins it with the
+          // data.
+          breadcrumb={
+            <PageBreadcrumb
+              segments={[{ label: tNav("roles"), href: "/roles" }]}
+            />
+          }
           title={<Skeleton className="h-7 w-48 max-w-full" />}
-          action={<Skeleton className="h-9 w-28 rounded-md" />}
+          action={
+            <div className="flex items-center gap-2">
+              <Button type="button">{t("newCta")}</Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                aria-label={tFamily("actionsMenu")}
+                className="shrink-0"
+              >
+                <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
+              </Button>
+            </div>
+          }
         />
         <Table className="table-fixed">
           {tableHeader}

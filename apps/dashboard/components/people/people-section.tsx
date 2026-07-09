@@ -1,6 +1,6 @@
 "use client"
 
-import { Search01Icon, UserMultiple02Icon } from "@hugeicons/core-free-icons"
+import { UserMultiple02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   type ColumnDef,
@@ -45,6 +45,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useOrganization } from "@/components/org-context"
 import { PageHeader } from "@/components/page-header"
 import { TablePagination } from "@/components/table-pagination"
+import { TableSearchField } from "@/components/table-search-field"
 import { ariaSort, TableSortButton } from "@/components/table-sort-button"
 import {
   TableSkeleton,
@@ -265,6 +266,59 @@ export function PeopleSection() {
 
   const loading = people === undefined || settings === undefined
 
+  // Toolbar: search + the department filter; the counter appears only while
+  // something is narrowing the table (mirrors the role register's toolbar).
+  // The table state lives in this component, so the SAME live toolbar renders
+  // during loading (static chrome is never a skeleton bar, and it needs no
+  // disabling: a search typed into the loading state carries over). The
+  // department select appears with the data (its options ARE the data).
+  const toolbar = (
+    <div className="flex flex-wrap items-center gap-2">
+      <TableSearchField
+        placeholder={tToolbar("searchPlaceholder")}
+        value={globalFilter}
+        onChange={(value) => {
+          setGlobalFilter(value)
+          resetPage()
+        }}
+      />
+      {departments.length > 0 && (
+        <Select
+          items={{
+            all: tToolbar("departmentAll"),
+            ...Object.fromEntries(
+              departments.map((department) => [department, department])
+            ),
+          }}
+          value={departmentFilter}
+          onValueChange={(value) => {
+            table
+              .getColumn("department")
+              ?.setFilterValue(value === "all" ? undefined : value)
+            resetPage()
+          }}
+        >
+          <SelectTrigger aria-label={t("columns.department")}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{tToolbar("departmentAll")}</SelectItem>
+            {departments.map((department) => (
+              <SelectItem key={department} value={department}>
+                {department}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+      {filtersActive && (
+        <span className="ml-auto text-muted-foreground text-sm tabular-nums">
+          {tToolbar("resultCount", { shown, total: rows.length })}
+        </span>
+      )}
+    </div>
+  )
+
   const importAction = (
     <Link href="/people/import" className={buttonVariants()}>
       <HugeiconsIcon
@@ -288,14 +342,9 @@ export function PeopleSection() {
       />
 
       {loading ? (
-        // Loading: show a content-shaped skeleton while queries resolve. The
-        // toolbar slot gets control-shaped bars so nothing shifts when the
-        // data arrives.
+        // Loading: the live toolbar over a content-shaped table skeleton.
         <>
-          <div className="flex flex-wrap items-center gap-2">
-            <Skeleton className="h-9 w-64 rounded-md" />
-            <Skeleton className="h-9 w-40 rounded-md" />
-          </div>
+          {toolbar}
           <Table className="table-fixed">
             {tableHeader}
             <TableSkeleton rows={PAGE_SIZE} columns={PEOPLE_SKELETON_COLUMNS} />
@@ -316,66 +365,7 @@ export function PeopleSection() {
         </Empty>
       ) : (
         <>
-          {/* Toolbar: search + the department filter; the counter appears
-              only while something is narrowing the table (mirrors the role
-              register's toolbar). */}
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative">
-              <HugeiconsIcon
-                icon={Search01Icon}
-                size={16}
-                strokeWidth={2}
-                aria-hidden="true"
-                className="absolute top-1/2 left-2.5 -translate-y-1/2 text-muted-foreground"
-              />
-              <Input
-                value={globalFilter}
-                placeholder={tToolbar("searchPlaceholder")}
-                aria-label={tToolbar("searchPlaceholder")}
-                onChange={(event) => {
-                  setGlobalFilter(event.target.value)
-                  resetPage()
-                }}
-                className="w-64 pl-8"
-              />
-            </div>
-            {departments.length > 0 && (
-              <Select
-                items={{
-                  all: tToolbar("departmentAll"),
-                  ...Object.fromEntries(
-                    departments.map((department) => [department, department])
-                  ),
-                }}
-                value={departmentFilter}
-                onValueChange={(value) => {
-                  table
-                    .getColumn("department")
-                    ?.setFilterValue(value === "all" ? undefined : value)
-                  resetPage()
-                }}
-              >
-                <SelectTrigger aria-label={t("columns.department")}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">
-                    {tToolbar("departmentAll")}
-                  </SelectItem>
-                  {departments.map((department) => (
-                    <SelectItem key={department} value={department}>
-                      {department}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-            {filtersActive && (
-              <span className="ml-auto text-muted-foreground text-sm tabular-nums">
-                {tToolbar("resultCount", { shown, total: rows.length })}
-              </span>
-            )}
-          </div>
+          {toolbar}
 
           {shown === 0 ? (
             <Empty>

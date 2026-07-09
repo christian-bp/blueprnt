@@ -124,7 +124,12 @@ export function ModelBuilder({
                 <Skeleton className="h-5 w-40" />
               </AlertTitle>
             </Alert>
-            <Skeleton className="h-8 w-24" />
+            {/* The real Save button (static chrome). Disabled is the truthful
+                state, not a loading effect: the loaded editor opens clean
+                (not dirty), where Save is disabled too. */}
+            <Button type="button" size="sm" disabled>
+              {tEditor("saveCta")}
+            </Button>
           </div>
         )}
         <CriterionListSkeleton variant={loadingWeight ? "weight" : "define"} />
