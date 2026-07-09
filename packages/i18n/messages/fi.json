@@ -846,6 +846,7 @@
       "description": "Bandit ja kunkin bandin roolit, johdettu reaaliaikaisesti nykyisestä mallista ja arvioinneista.",
       "viewLadder": "Tikkaat",
       "viewMatrix": "Matriisi",
+      "viewFamilies": "Perheet",
       "groupByFamily": "Ryhmittele perheittäin",
       "familiesShown": "{shown}/{total} perhettä",
       "selectAll": "Valitse kaikki",

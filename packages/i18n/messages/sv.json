@@ -846,6 +846,7 @@
       "description": "Banden och rollerna i varje band, härledda live från aktuell modell och bedömningar.",
       "viewLadder": "Stege",
       "viewMatrix": "Matris",
+      "viewFamilies": "Familjer",
       "groupByFamily": "Gruppera efter familj",
       "familiesShown": "{shown} av {total} familjer",
       "selectAll": "Markera alla",

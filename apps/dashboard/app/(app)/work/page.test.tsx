@@ -1,4 +1,10 @@
-import { cleanup, render, screen } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
@@ -104,6 +110,49 @@ describe("WorkOverviewPage", () => {
     rerender(page())
     expect(screen.getByRole("link", { name: /CTO/ })).toBeDefined()
     expect(screen.getByText("Band 1")).toBeDefined()
+  })
+
+  it("the families view shows family rows with roles in band columns and hides the group toggle", async () => {
+    useQueryMock.mockImplementation((ref: string) =>
+      ref === "assessment.results.getResults"
+        ? results([
+            bandRow({ familyId: "f1", familyName: "Engineering" }),
+            bandRow({
+              roleId: "r2",
+              title: "Analyst",
+              band: 2,
+              familyId: null,
+              familyName: null,
+            }),
+          ])
+        : undefined
+    )
+    renderPage()
+    // The toggle exists on the ladder view...
+    expect(
+      screen.getByText(messages.dashboard.bands.groupByFamily)
+    ).toBeDefined()
+
+    fireEvent.click(
+      screen.getByRole("tab", { name: messages.dashboard.bands.viewFamilies })
+    )
+    // ...and hides on the families view, where family IS the row axis.
+    await waitFor(() => {
+      expect(
+        screen.queryByText(messages.dashboard.bands.groupByFamily)
+      ).toBeNull()
+    })
+    // One row per family (the family-less bucket included), roles as chips.
+    expect(screen.getByRole("rowheader", { name: "Engineering" })).toBeDefined()
+    expect(
+      screen.getByRole("rowheader", {
+        name: messages.dashboard.roles.family.none,
+      })
+    ).toBeDefined()
+    expect(screen.getByRole("columnheader", { name: "Band 1" })).toBeDefined()
+    expect(screen.getAllByRole("link", { name: /CTO/ }).length).toBeGreaterThan(
+      0
+    )
   })
 
   it("offers a group-by-family toggle when roles have families", () => {

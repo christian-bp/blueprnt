@@ -846,6 +846,7 @@
       "description": "Bandene og rollene i hvert band, utledet live fra gjeldende modell og vurderinger.",
       "viewLadder": "Stige",
       "viewMatrix": "Matrise",
+      "viewFamilies": "Familier",
       "groupByFamily": "Grupper etter familie",
       "familiesShown": "{shown} av {total} familier",
       "selectAll": "Velg alle",

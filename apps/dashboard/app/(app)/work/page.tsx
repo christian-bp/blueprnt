@@ -23,6 +23,7 @@ import Link from "next/link"
 import { useState } from "react"
 import { BandLadder } from "@/components/bands/band-ladder"
 import { BandMatrix } from "@/components/bands/band-matrix"
+import { FamilyBandMatrix } from "@/components/bands/family-band-matrix"
 import { FamilyFilter } from "@/components/bands/family-filter"
 import { PendingRoles } from "@/components/bands/pending-roles"
 import { HelpMorphButton } from "@/components/help-morph-button"
@@ -57,7 +58,7 @@ export default function WorkOverviewPage() {
   // selection when the active trigger remounts in a new spot, which left the
   // loaded page with no view selected. Page-owned state also lets a tab
   // picked during loading carry over.
-  const [view, setView] = useState<"ladder" | "matrix">("ladder")
+  const [view, setView] = useState<"ladder" | "matrix" | "families">("ladder")
 
   // The header is static i18n content, so both branches render it for real;
   // one node so the two cannot drift.
@@ -83,12 +84,15 @@ export default function WorkOverviewPage() {
         {header}
         <Tabs
           value={view}
-          onValueChange={(value) => setView(value as "ladder" | "matrix")}
+          onValueChange={(value) =>
+            setView(value as "ladder" | "matrix" | "families")
+          }
           className="space-y-4"
         >
           <TabsList variant="line">
             <TabsTrigger value="ladder">{t("viewLadder")}</TabsTrigger>
             <TabsTrigger value="matrix">{t("viewMatrix")}</TabsTrigger>
+            <TabsTrigger value="families">{t("viewFamilies")}</TabsTrigger>
           </TabsList>
           <ul className="space-y-2">
             {[3, 2, 4, 1, 2].map((chips, band) => (
@@ -180,13 +184,16 @@ export default function WorkOverviewPage() {
       ) : (
         <Tabs
           value={view}
-          onValueChange={(value) => setView(value as "ladder" | "matrix")}
+          onValueChange={(value) =>
+            setView(value as "ladder" | "matrix" | "families")
+          }
           className="space-y-4"
         >
           <div className="flex flex-wrap items-center gap-3">
             <TabsList variant="line">
               <TabsTrigger value="ladder">{t("viewLadder")}</TabsTrigger>
               <TabsTrigger value="matrix">{t("viewMatrix")}</TabsTrigger>
+              <TabsTrigger value="families">{t("viewFamilies")}</TabsTrigger>
             </TabsList>
             {hasAnyFamily && (
               <FamilyFilter
@@ -195,7 +202,10 @@ export default function WorkOverviewPage() {
                 onHiddenChange={setHidden}
               />
             )}
-            {hasAnyFamily && (
+            {/* Group-by-family is meaningless on the families view (family
+                IS the row axis there); it trails the row, so hiding it
+                shifts nothing else. */}
+            {hasAnyFamily && view !== "families" && (
               <div className="flex items-center gap-2">
                 <Switch
                   id="group-by-family"
@@ -226,6 +236,10 @@ export default function WorkOverviewPage() {
               tracks={trackCols}
               groupByFamily={grouped}
             />
+            <PendingRoles rows={filteredRows} />
+          </TabsContent>
+          <TabsContent value="families" className="space-y-4">
+            <FamilyBandMatrix bands={results.bands} rows={filteredRows} />
             <PendingRoles rows={filteredRows} />
           </TabsContent>
         </Tabs>

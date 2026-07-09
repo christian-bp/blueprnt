@@ -846,6 +846,7 @@
       "description": "The bands and the roles in each, derived live from the current model and ratings.",
       "viewLadder": "Ladder",
       "viewMatrix": "Matrix",
+      "viewFamilies": "Families",
       "groupByFamily": "Group by family",
       "familiesShown": "{shown} of {total} families",
       "selectAll": "Select all",

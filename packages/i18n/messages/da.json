@@ -846,6 +846,7 @@
       "description": "Bånd og rollerne i hvert bånd, udledt live fra den aktuelle model og vurderinger.",
       "viewLadder": "Stige",
       "viewMatrix": "Matrix",
+      "viewFamilies": "Familier",
       "groupByFamily": "Gruppér efter familie",
       "familiesShown": "{shown} af {total} familier",
       "selectAll": "Vælg alle",
