@@ -87,6 +87,13 @@ export function DatePicker({
           mode="single"
           selected={selected}
           defaultMonth={selected}
+          // Month + year dropdowns in the caption: dates like an employment
+          // start are often years back, and stepping there month by month
+          // with the arrows is a chore. The bounds define the dropdowns'
+          // year range (paging beyond next year is never a real pick here).
+          captionLayout="dropdown"
+          startMonth={new Date(1970, 0)}
+          endMonth={new Date(new Date().getFullYear() + 1, 11)}
           onSelect={(date) => {
             onChange(date === undefined ? "" : toIsoDate(date))
             setOpen(false)
