@@ -15,14 +15,6 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@workspace/ui/components/table"
 import { useQuery } from "convex/react"
 import { useFormatter, useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
@@ -32,34 +24,51 @@ import { SalaryRowActions } from "@/components/people/salary-row-actions"
 import { useOrganization } from "@/components/org-context"
 import { type Crumb, PageBreadcrumb } from "@/components/page-breadcrumb"
 import { PageHeader } from "@/components/page-header"
-import {
-  TableSkeleton,
-  type TableSkeletonColumn,
-} from "@/components/table-skeleton"
 import { usePageTitle } from "@/hooks/use-page-title"
 
-// Skeleton shape per salary column, mirroring the real cells (year, two
-// currency-formatted amounts, the role/level pair, the row-actions trigger).
-// The trigger is static per-row chrome, not data, so it renders as its real
-// icon (muted, non-interactive) rather than a bar.
-const SALARY_SKELETON_COLUMNS: TableSkeletonColumn[] = [
-  { className: "w-10" },
-  { className: "w-20" },
-  { className: "w-20" },
-  { className: "w-16" },
-  {
-    content: (
-      <span className="ml-auto flex size-9 items-center justify-center text-muted-foreground/50">
-        <HugeiconsIcon
-          icon={MoreVerticalIcon}
-          size={16}
-          strokeWidth={2}
-          aria-hidden="true"
-        />
-      </span>
-    ),
-  },
-]
+// The salary list's loading state: the same stacked-item wrappers as the
+// loaded list (year + role lines left, total + basic lines right, the row
+// menu as its real muted icon), with bars centered in each text line box so
+// the rows measure identical to loaded ones.
+function SalaryListSkeleton() {
+  return (
+    <ul className="divide-y text-sm">
+      {(["a", "b", "c"] as const).map((key) => (
+        <li
+          key={key}
+          className="flex items-start justify-between gap-3 py-3 first:pt-0 last:pb-0"
+        >
+          <div className="min-w-0">
+            <div className="flex h-5 items-center">
+              <Skeleton className="h-4 w-10" />
+            </div>
+            <div className="flex h-4 items-center">
+              <Skeleton className="h-3 w-24" />
+            </div>
+          </div>
+          <div className="flex items-start gap-1">
+            <div className="flex flex-col items-end">
+              <div className="flex h-5 items-center">
+                <Skeleton className="h-4 w-20" />
+              </div>
+              <div className="flex h-4 items-center">
+                <Skeleton className="h-3 w-28" />
+              </div>
+            </div>
+            <span className="flex size-9 items-center justify-center text-muted-foreground/50">
+              <HugeiconsIcon
+                icon={MoreVerticalIcon}
+                size={16}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+            </span>
+          </div>
+        </li>
+      ))}
+    </ul>
+  )
+}
 
 // The per-person detail surface: the role-detail layout (a wide profile card
 // plus a sticky right rail) applied to a person. The left card holds identity
@@ -126,7 +135,9 @@ export function PersonDetail({ publicId }: { publicId: string }) {
     <div className="space-y-6">
       <PageHeader
         breadcrumb={<PageBreadcrumb segments={crumbs} />}
-        title={<Skeleton className="h-6 w-48" />}
+        // h-7 = the PageHeading's text-lg line box (28px); a shorter bar let
+        // everything below shift up 4px until the title loaded.
+        title={<Skeleton className="h-7 w-48" />}
       />
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
@@ -186,24 +197,7 @@ export function PersonDetail({ publicId }: { publicId: string }) {
               </Button>
             </CardHeader>
             <CardContent>
-              <Table className="table-fixed">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-14">
-                      {t("salaryColumns.payYear")}
-                    </TableHead>
-                    <TableHead>{t("salaryColumns.basicMonthly")}</TableHead>
-                    <TableHead>{t("salaryColumns.total")}</TableHead>
-                    <TableHead className="w-28">
-                      {t("salaryColumns.role")}
-                    </TableHead>
-                    <TableHead className="w-12">
-                      <span className="sr-only">{t("salaryRowActions")}</span>
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableSkeleton rows={3} columns={SALARY_SKELETON_COLUMNS} />
-              </Table>
+              <SalaryListSkeleton />
             </CardContent>
           </Card>
         </div>
@@ -350,65 +344,61 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                   {t("salaryEmpty")}
                 </p>
               ) : (
-                <Table className="table-fixed">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-14">
-                        {t("salaryColumns.payYear")}
-                      </TableHead>
-                      <TableHead>{t("salaryColumns.basicMonthly")}</TableHead>
-                      <TableHead>{t("salaryColumns.total")}</TableHead>
-                      <TableHead className="w-28">
-                        {t("salaryColumns.role")}
-                      </TableHead>
-                      <TableHead className="w-12">
-                        <span className="sr-only">{t("salaryRowActions")}</span>
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {salary.map((record) => (
-                      <TableRow key={String(record.payRecordId)}>
-                        <TableCell>{record.payYear}</TableCell>
-                        <TableCell className="tabular-nums">
-                          {money(record.basicMonthly, record.currency)}
-                        </TableCell>
-                        <TableCell className="tabular-nums">
-                          {money(record.totalMonthlyComp, record.currency)}
-                        </TableCell>
-                        {/* The role + level the salary was earned under (the
-                            assignment active at the record's effective time),
-                            so a promotion's before/after stays readable.
-                            Empty when the record predates classification. */}
-                        <TableCell>
-                          {record.assignment !== null && (
-                            <div className="min-w-0 max-w-32">
-                              <p className="truncate">
-                                {roleTitleById.get(
-                                  String(record.assignment.roleId)
-                                ) ?? ""}
-                              </p>
-                              <p className="text-muted-foreground text-xs">
-                                {record.assignment.level}
-                              </p>
-                            </div>
-                          )}
-                        </TableCell>
-                        <TableCell className="w-8">
-                          {/* Block flex wrapper for the same reason as the
-                              people table's badge cell: a baseline-aligned
-                              inline-flex button inflates the line box. */}
-                          <div className="flex justify-end">
-                            <SalaryRowActions
-                              payRecordId={record.payRecordId}
-                              payYear={record.payYear}
-                            />
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                // A stacked list, not a table: the rail is a third of the
+                // page, and two currency amounts plus a role can never share
+                // fixed columns across locales and magnitudes (the headers
+                // and values overlapped). Each record stacks instead: year
+                // and the role + level it was earned under on the left, the
+                // total (the headline number) with the labeled basic beneath
+                // on the right; long content wraps or truncates, never
+                // overlaps.
+                <ul className="divide-y text-sm">
+                  {salary.map((record) => (
+                    <li
+                      key={String(record.payRecordId)}
+                      className="flex items-start justify-between gap-3 py-3 first:pt-0 last:pb-0"
+                    >
+                      <div className="min-w-0">
+                        <p className="font-medium tabular-nums">
+                          {record.payYear}
+                        </p>
+                        {/* The assignment active at the record's effective
+                            time, so a promotion's before/after stays
+                            readable. Absent when the record predates
+                            classification. */}
+                        {record.assignment !== null && (
+                          <p className="truncate text-muted-foreground text-xs">
+                            {(() => {
+                              const title = roleTitleById.get(
+                                String(record.assignment.roleId)
+                              )
+                              return title !== undefined && title !== ""
+                                ? `${title} · ${record.assignment.level}`
+                                : record.assignment.level
+                            })()}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex items-start gap-1">
+                        <div className="text-right">
+                          <p className="whitespace-nowrap font-medium tabular-nums">
+                            {money(record.totalMonthlyComp, record.currency)}
+                          </p>
+                          <p className="text-muted-foreground text-xs">
+                            {t("salaryColumns.basicMonthly")}{" "}
+                            <span className="whitespace-nowrap tabular-nums">
+                              {money(record.basicMonthly, record.currency)}
+                            </span>
+                          </p>
+                        </div>
+                        <SalaryRowActions
+                          payRecordId={record.payRecordId}
+                          payYear={record.payYear}
+                        />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               )}
             </CardContent>
           </Card>

@@ -388,11 +388,7 @@
         "deleteSalaryConfirm": "Slet",
         "deleteSalaryCancel": "Annuller",
         "salaryColumns": {
-          "payYear": "År",
-          "basicMonthly": "Fast månedsløn",
-          "total": "Samlet månedlig kompensation",
-          "role": "Rolle",
-          "effectiveAt": "Gælder fra"
+          "basicMonthly": "Fast månedsløn"
         }
       },
       "salaryForm": {

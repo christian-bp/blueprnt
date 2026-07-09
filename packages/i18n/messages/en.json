@@ -388,11 +388,7 @@
         "deleteSalaryConfirm": "Delete",
         "deleteSalaryCancel": "Cancel",
         "salaryColumns": {
-          "payYear": "Year",
-          "basicMonthly": "Basic monthly",
-          "total": "Total monthly",
-          "role": "Role",
-          "effectiveAt": "Effective"
+          "basicMonthly": "Basic monthly"
         }
       },
       "salaryForm": {

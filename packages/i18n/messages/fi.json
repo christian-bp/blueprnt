@@ -388,11 +388,7 @@
         "deleteSalaryConfirm": "Poista",
         "deleteSalaryCancel": "Peruuta",
         "salaryColumns": {
-          "payYear": "Vuosi",
-          "basicMonthly": "Kiinteä kuukausipalkka",
-          "total": "Kokonaiskuukausikorvaus",
-          "role": "Rooli",
-          "effectiveAt": "Voimassa alkaen"
+          "basicMonthly": "Kiinteä kuukausipalkka"
         }
       },
       "salaryForm": {
