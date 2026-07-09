@@ -138,7 +138,8 @@
       "salarySaved": "Palkka tallennettu",
       "salaryDeleted": "Palkkatietue poistettu",
       "personErased": "Työntekijä poistettu",
-      "personCreated": "Työntekijä lisätty"
+      "personCreated": "Työntekijä lisätty",
+      "personUpdated": "Työntekijä päivitetty"
     },
     "accountMenu": "Tilivalikko",
     "nav": {
@@ -336,16 +337,23 @@
       "addPerson": {
         "title": "Lisää työntekijä",
         "description": "Nimi ja sukupuoli vaaditaan; kaiken muun voi lisätä myöhemmin. Henkilönumeron avulla tulevat palkkatuonnit päivittävät henkilön eivätkä luo kaksoiskappaletta.",
-        "nameLabel": "Nimi",
-        "genderLabel": "Sukupuoli",
-        "titleLabel": "Tehtävänimike",
-        "departmentLabel": "Osasto",
-        "externalRefLabel": "Henkilönumero",
-        "startDateLabel": "Aloituspäivä",
-        "fteLabel": "Työaika %",
-        "cancel": "Peruuta",
         "cta": "Lisää työntekijä",
         "error": "Työntekijää ei voitu lisätä. Yritä uudelleen."
+      },
+      "editPerson": {
+        "title": "Muokkaa tietoja",
+        "description": "Päivitä työntekijän tiedot. Tyhjennetty kenttä poistaa arvon.",
+        "cta": "Tallenna muutokset",
+        "error": "Muutoksia ei voitu tallentaa. Yritä uudelleen."
+      },
+      "personForm": {
+        "nameLabel": "Nimi",
+        "genderLabel": "Sukupuoli",
+        "externalRefLabel": "Henkilönumero",
+        "departmentLabel": "Osasto",
+        "startDateLabel": "Aloituspäivä",
+        "fteLabel": "Työaika %",
+        "cancel": "Peruuta"
       },
       "detail": {
         "backToPeople": "Takaisin henkilöstöön",

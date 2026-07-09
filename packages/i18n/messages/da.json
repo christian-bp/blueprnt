@@ -138,7 +138,8 @@
       "salarySaved": "Løn gemt",
       "salaryDeleted": "Lønpost slettet",
       "personErased": "Medarbejder slettet",
-      "personCreated": "Medarbejder tilføjet"
+      "personCreated": "Medarbejder tilføjet",
+      "personUpdated": "Medarbejder opdateret"
     },
     "accountMenu": "Kontomenu",
     "nav": {
@@ -336,16 +337,23 @@
       "addPerson": {
         "title": "Tilføj medarbejder",
         "description": "Navn og køn er påkrævet; alt andet kan tilføjes senere. Med et medarbejdernummer opdaterer fremtidige lønimporter personen i stedet for at oprette en dublet.",
-        "nameLabel": "Navn",
-        "genderLabel": "Køn",
-        "titleLabel": "Jobtitel",
-        "departmentLabel": "Afdeling",
-        "externalRefLabel": "Medarbejdernummer",
-        "startDateLabel": "Startdato",
-        "fteLabel": "Stilling %",
-        "cancel": "Annuller",
         "cta": "Tilføj medarbejder",
         "error": "Medarbejderen kunne ikke tilføjes. Prøv igen."
+      },
+      "editPerson": {
+        "title": "Rediger oplysninger",
+        "description": "Opdater medarbejderens oplysninger. Ryddes et felt, fjernes værdien.",
+        "cta": "Gem ændringer",
+        "error": "Ændringerne kunne ikke gemmes. Prøv igen."
+      },
+      "personForm": {
+        "nameLabel": "Navn",
+        "genderLabel": "Køn",
+        "externalRefLabel": "Medarbejdernummer",
+        "departmentLabel": "Afdeling",
+        "startDateLabel": "Startdato",
+        "fteLabel": "Stilling %",
+        "cancel": "Annuller"
       },
       "detail": {
         "backToPeople": "Tilbage til medarbejdere",

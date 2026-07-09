@@ -138,7 +138,8 @@
       "salarySaved": "Lönen sparades",
       "salaryDeleted": "Lönepost borttagen",
       "personErased": "Anställd raderad",
-      "personCreated": "Anställd tillagd"
+      "personCreated": "Anställd tillagd",
+      "personUpdated": "Anställd uppdaterad"
     },
     "accountMenu": "Kontomeny",
     "nav": {
@@ -336,16 +337,23 @@
       "addPerson": {
         "title": "Lägg till anställd",
         "description": "Namn och kön krävs; allt annat kan läggas till senare. Med ett anställningsnummer uppdaterar framtida löneimporter personen i stället för att skapa en dubblett.",
-        "nameLabel": "Namn",
-        "genderLabel": "Kön",
-        "titleLabel": "Befattning",
-        "departmentLabel": "Avdelning",
-        "externalRefLabel": "Anställningsnummer",
-        "startDateLabel": "Startdatum",
-        "fteLabel": "Sysselsättningsgrad %",
-        "cancel": "Avbryt",
         "cta": "Lägg till anställd",
         "error": "Den anställda kunde inte läggas till. Försök igen."
+      },
+      "editPerson": {
+        "title": "Redigera uppgifter",
+        "description": "Uppdatera den anställdas uppgifter. Om ett fält töms tas värdet bort.",
+        "cta": "Spara ändringar",
+        "error": "Ändringarna kunde inte sparas. Försök igen."
+      },
+      "personForm": {
+        "nameLabel": "Namn",
+        "genderLabel": "Kön",
+        "externalRefLabel": "Anställningsnummer",
+        "departmentLabel": "Avdelning",
+        "startDateLabel": "Startdatum",
+        "fteLabel": "Sysselsättningsgrad %",
+        "cancel": "Avbryt"
       },
       "detail": {
         "backToPeople": "Tillbaka till anställda",

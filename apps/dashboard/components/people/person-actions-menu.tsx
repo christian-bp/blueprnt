@@ -2,7 +2,6 @@
 
 import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Button } from "@workspace/ui/components/button"
 import {
   DropdownMenu,
@@ -16,26 +15,28 @@ import {
   type AssignableRole,
   EditClassificationDialog,
 } from "@/components/people/edit-classification-dialog"
+import {
+  type EditablePerson,
+  EditPersonDialog,
+} from "@/components/people/edit-person-dialog"
 import { ErasePersonControl } from "@/components/people/erase-person-control"
 
 // The person page's unified actions menu: a single "..." trigger in the
 // employee card's header (same anatomy as FamilyActionsMenu) holding the
-// person actions: editing the role + level classification, and the GDPR
-// erasure as a destructive item opening the type-to-confirm dialog.
+// person actions: editing the identity details, editing the role + level
+// classification, and the GDPR erasure as a destructive item opening the
+// type-to-confirm dialog.
 export function PersonActionsMenu({
-  personId,
-  displayName,
-  externalRef,
+  person,
   roles,
   currentAssignment,
 }: {
-  personId: Id<"people">
-  displayName: string
-  externalRef: string | null
+  person: EditablePerson
   roles: AssignableRole[]
   currentAssignment: { roleId: string; level: string } | null
 }) {
   const t = useTranslations("dashboard.people")
+  const [detailsOpen, setDetailsOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
   const [eraseOpen, setEraseOpen] = useState(false)
 
@@ -56,6 +57,9 @@ export function PersonActionsMenu({
           <HugeiconsIcon icon={MoreHorizontalIcon} strokeWidth={2} />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => setDetailsOpen(true)}>
+            {t("editPerson.title")}
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setEditOpen(true)}>
             {t("detail.editClassification.cta")}
           </DropdownMenuItem>
@@ -68,10 +72,16 @@ export function PersonActionsMenu({
         </DropdownMenuContent>
       </DropdownMenu>
 
+      <EditPersonDialog
+        open={detailsOpen}
+        onOpenChange={setDetailsOpen}
+        person={person}
+      />
+
       <EditClassificationDialog
         open={editOpen}
         onOpenChange={setEditOpen}
-        personId={personId}
+        personId={person.personId}
         roles={roles}
         current={currentAssignment}
       />
@@ -79,9 +89,9 @@ export function PersonActionsMenu({
       <ErasePersonControl
         open={eraseOpen}
         onOpenChange={setEraseOpen}
-        personId={personId}
-        displayName={displayName}
-        externalRef={externalRef}
+        personId={person.personId}
+        displayName={person.displayName}
+        externalRef={person.externalRef}
       />
     </>
   )

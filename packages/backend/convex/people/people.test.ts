@@ -159,6 +159,134 @@ describe("createPerson", () => {
   })
 })
 
+describe("updatePerson", () => {
+  it("patches changed fields, clears via empty values, audits non-PII diffs", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      {
+        orgId,
+        displayName: "Anna Svensson",
+        gender: "Kvinna",
+        department: "Engineering",
+        ftePercent: 100,
+      }
+    )
+
+    await asAdmin.mutation(api.people.people.updatePerson, {
+      orgId,
+      personId,
+      displayName: "  Anna Karlsson  ",
+      department: "",
+      ftePercent: 80,
+      employmentStartDate: "2024-03-01",
+    })
+
+    await t.run(async (ctx) => {
+      const person = await ctx.db.get(personId)
+      expect(person?.displayName).toBe("Anna Karlsson")
+      expect(person?.department).toBeUndefined()
+      expect(person?.ftePercent).toBe(80)
+      expect(person?.employmentStartDate).toBe("2024-03-01")
+      // Gender untouched (arg omitted).
+      expect(person?.gender).toBe("Kvinna")
+
+      const auditRows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "person.updated")
+        )
+        .collect()
+      expect(auditRows).toHaveLength(1)
+      const changes = (auditRows[0]?.payload as Record<string, unknown>)
+        .changes as Record<string, unknown>
+      // Cleared field diffs to null; PII (displayName) never appears.
+      expect(changes.department).toEqual({ from: "Engineering", to: null })
+      expect(changes.ftePercent).toEqual({ from: 100, to: 80 })
+      expect(changes).not.toHaveProperty("displayName")
+    })
+  })
+
+  it("is a no-op (no write, no audit) when nothing changes", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Anna", gender: "Kvinna", department: "Sales" }
+    )
+
+    await asAdmin.mutation(api.people.people.updatePerson, {
+      orgId,
+      personId,
+      displayName: "Anna",
+      department: "Sales",
+    })
+
+    await t.run(async (ctx) => {
+      const auditRows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "person.updated")
+        )
+        .collect()
+      expect(auditRows).toHaveLength(0)
+    })
+  })
+
+  it("rejects another person's employee number but keeps its own", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    await asAdmin.mutation(api.people.people.createPerson, {
+      orgId,
+      displayName: "Anna",
+      gender: "Kvinna",
+      externalRef: "1001",
+    })
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Erik", gender: "Man", externalRef: "1002" }
+    )
+
+    await expect(
+      asAdmin.mutation(api.people.people.updatePerson, {
+        orgId,
+        personId,
+        externalRef: "1001",
+      })
+    ).rejects.toThrow(/errors.personRefExists/)
+
+    // Re-sending the person's own ref is not a collision.
+    await asAdmin.mutation(api.people.people.updatePerson, {
+      orgId,
+      personId,
+      externalRef: "1002",
+      department: "Finance",
+    })
+    await t.run(async (ctx) => {
+      const person = await ctx.db.get(personId)
+      expect(person?.externalRef).toBe("1002")
+      expect(person?.department).toBe("Finance")
+    })
+  })
+
+  it("rejects an empty displayName", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Anna", gender: "Kvinna" }
+    )
+    await expect(
+      asAdmin.mutation(api.people.people.updatePerson, {
+        orgId,
+        personId,
+        displayName: "   ",
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+  })
+})
+
 describe("listPeople / getPersonByPublicId", () => {
   it("listPeople returns only active people in the org by default", async () => {
     const t = initConvexTest()

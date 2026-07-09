@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@workspace/backend/convex/_generated/api"
+import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
@@ -27,8 +28,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import { useMutation } from "convex/react"
-import { useTranslations } from "next-intl"
+import { isValidLevelForTrack, TRACK_LEVELS } from "@workspace/constants"
+import { useMutation, useQuery } from "convex/react"
+import { useLocale, useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -36,6 +38,7 @@ import { toast } from "sonner"
 import { z } from "zod"
 import { DatePicker } from "@/components/date-picker"
 import { useOrganization } from "@/components/org-context"
+import type { AssignableRole } from "@/components/people/edit-classification-dialog"
 import { SubmitButton } from "@/components/submit-button"
 import type { ValidationT } from "@/lib/validation"
 
@@ -44,18 +47,34 @@ const GENDER_VALUES = ["Man", "Kvinna"] as const
 
 // Zod factory (messages via i18n). Only name and gender are required (the
 // backend re-validates); the optional strings normalize to "" here and are
-// omitted from the mutation payload. FTE reaches the schema as a number via
-// valueAsNumber, with the empty input mapped to undefined at the field.
-function makeAddPersonSchema(t: ValidationT) {
-  return z.object({
-    displayName: z.string().trim().min(1, t("required")),
-    gender: z.enum(GENDER_VALUES, { error: t("required") }),
-    title: z.string().trim(),
-    department: z.string().trim(),
-    externalRef: z.string().trim(),
-    employmentStartDate: z.string(),
-    ftePercent: z.number().min(1).max(100).optional(),
-  })
+// omitted from the mutation payload. The role + level pair is optional as a
+// pair: no role means the person starts unassigned (assignable later on the
+// person page); a picked role requires a level valid for its track
+// (ADR-0005). FTE reaches the schema as a number via valueAsNumber, with the
+// empty input mapped to undefined at the field.
+function makeAddPersonSchema(t: ValidationT, roles: AssignableRole[]) {
+  return z
+    .object({
+      displayName: z.string().trim().min(1, t("required")),
+      gender: z.enum(GENDER_VALUES, { error: t("required") }),
+      roleId: z.string(),
+      level: z.string(),
+      department: z.string().trim(),
+      externalRef: z.string().trim(),
+      employmentStartDate: z.string(),
+      ftePercent: z.number().min(1).max(100).optional(),
+    })
+    .refine(
+      (values) => {
+        if (values.roleId === "") return true
+        const role = roles.find((r) => String(r.roleId) === values.roleId)
+        return (
+          role !== undefined &&
+          isValidLevelForTrack(role.trackKey, values.level)
+        )
+      },
+      { path: ["level"], message: t("required") }
+    )
 }
 
 export type AddPersonValues = z.infer<ReturnType<typeof makeAddPersonSchema>>
@@ -76,18 +95,44 @@ function isPersonRefExistsError(error: unknown): boolean {
 // where salary and classification can follow.
 export function AddPersonDialog() {
   const t = useTranslations("dashboard.people.addPerson")
+  const tForm = useTranslations("dashboard.people.personForm")
+  const tDetail = useTranslations("dashboard.people.detail")
+  const tClassify = useTranslations(
+    "dashboard.people.detail.editClassification"
+  )
   const tGender = useTranslations("dashboard.people.gender")
   const tValidation = useTranslations("dashboard.validation")
   const tErrors = useTranslations("errors")
   const tToast = useTranslations("dashboard.toast")
   const { orgId } = useOrganization()
+  const locale = useLocale()
   const router = useRouter()
   const createPerson = useMutation(api.people.people.createPerson)
+  const assignPerson = useMutation(api.people.assignments.assignPersonToRole)
 
   const [open, setOpen] = useState(false)
   const [failure, setFailure] = useState(false)
 
-  const schema = useMemo(() => makeAddPersonSchema(tValidation), [tValidation])
+  // The role options for the optional assignment; fetched only while the
+  // dialog is open (the register page itself does not need the roles).
+  const rolesQuery = useQuery(
+    api.assessment.roles.listRoles,
+    open ? { orgId, locale } : "skip"
+  )
+  const roles: AssignableRole[] = useMemo(
+    () =>
+      (rolesQuery ?? []).map((role) => ({
+        roleId: String(role.roleId),
+        title: role.title,
+        trackKey: role.trackKey,
+      })),
+    [rolesQuery]
+  )
+
+  const schema = useMemo(
+    () => makeAddPersonSchema(tValidation, roles),
+    [tValidation, roles]
+  )
   const form = useForm<AddPersonValues>({
     resolver: zodResolver(schema),
     mode: "onTouched",
@@ -96,13 +141,20 @@ export function AddPersonDialog() {
       // Unpicked gender (empty string) fails via z.enum, gating isValid
       // until an explicit choice is made.
       gender: "" as AddPersonValues["gender"],
-      title: "",
+      roleId: "",
+      level: "",
       department: "",
       externalRef: "",
       employmentStartDate: "",
       ftePercent: undefined,
     },
   })
+
+  const selectedRoleId = form.watch("roleId")
+  const selectedRole = roles.find((r) => r.roleId === selectedRoleId)
+  const levels = selectedRole
+    ? (TRACK_LEVELS[selectedRole.trackKey as keyof typeof TRACK_LEVELS] ?? [])
+    : []
 
   function handleOpenChange(next: boolean) {
     setOpen(next)
@@ -114,15 +166,15 @@ export function AddPersonDialog() {
 
   async function onSubmit(values: AddPersonValues) {
     setFailure(false)
+    let created: Awaited<ReturnType<typeof createPerson>>
     try {
-      const { publicId } = await createPerson({
+      created = await createPerson({
         orgId,
         displayName: values.displayName,
         gender: values.gender,
         ...(values.externalRef !== ""
           ? { externalRef: values.externalRef }
           : {}),
-        ...(values.title !== "" ? { title: values.title } : {}),
         ...(values.department !== "" ? { department: values.department } : {}),
         ...(values.employmentStartDate !== ""
           ? { employmentStartDate: values.employmentStartDate }
@@ -131,9 +183,6 @@ export function AddPersonDialog() {
           ? { ftePercent: values.ftePercent }
           : {}),
       })
-      toast.success(tToast("personCreated"))
-      setOpen(false)
-      router.push(`/people/${publicId}`)
     } catch (error) {
       if (isPersonRefExistsError(error)) {
         form.setError("externalRef", {
@@ -142,7 +191,27 @@ export function AddPersonDialog() {
       } else {
         setFailure(true)
       }
+      return
     }
+    // The optional assignment is a second write: if it fails the person
+    // still exists, so surface the error but continue to the person page,
+    // where Edit role and level can finish the job.
+    if (values.roleId !== "") {
+      try {
+        await assignPerson({
+          orgId,
+          personId: created.personId,
+          roleId: values.roleId as Id<"roles">,
+          level: values.level,
+          levelSource: "confirmed",
+        })
+      } catch {
+        toast.error(tToast("error"))
+      }
+    }
+    toast.success(tToast("personCreated"))
+    setOpen(false)
+    router.push(`/people/${created.publicId}`)
   }
 
   return (
@@ -164,7 +233,7 @@ export function AddPersonDialog() {
                 name="displayName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("nameLabel")}</FormLabel>
+                    <FormLabel>{tForm("nameLabel")}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -178,7 +247,7 @@ export function AddPersonDialog() {
                   name="gender"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("genderLabel")}</FormLabel>
+                      <FormLabel>{tForm("genderLabel")}</FormLabel>
                       <Select
                         value={field.value}
                         onValueChange={field.onChange}
@@ -192,7 +261,7 @@ export function AddPersonDialog() {
                             onBlur={field.onBlur}
                             className="w-full"
                           >
-                            <SelectValue placeholder={t("genderLabel")} />
+                            <SelectValue placeholder={tForm("genderLabel")} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -212,7 +281,7 @@ export function AddPersonDialog() {
                   name="externalRef"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("externalRefLabel")}</FormLabel>
+                      <FormLabel>{tForm("externalRefLabel")}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -220,15 +289,97 @@ export function AddPersonDialog() {
                     </FormItem>
                   )}
                 />
+                {/* Optional role + level pair (same controls as the person
+                    page's Edit role and level): a manually added person gets
+                    a real role directly instead of a free-text title (titles
+                    are the payroll import's matching artifact). */}
                 <FormField
                   control={form.control}
-                  name="title"
+                  name="roleId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("titleLabel")}</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
+                      <FormLabel>{tDetail("role")}</FormLabel>
+                      <Select
+                        value={field.value}
+                        items={roles.map((role) => ({
+                          value: role.roleId,
+                          label: role.title,
+                        }))}
+                        onValueChange={(value) => {
+                          field.onChange(value)
+                          // A role on another track invalidates the picked
+                          // level: fall back to the new track's first level.
+                          const role = roles.find((r) => r.roleId === value)
+                          const trackLevels = role
+                            ? (TRACK_LEVELS[
+                                role.trackKey as keyof typeof TRACK_LEVELS
+                              ] ?? [])
+                            : []
+                          const level = form.getValues("level")
+                          if (!trackLevels.includes(level)) {
+                            form.setValue("level", trackLevels[0] ?? "", {
+                              shouldValidate: true,
+                            })
+                          }
+                        }}
+                      >
+                        <FormControl>
+                          <SelectTrigger
+                            ref={field.ref}
+                            onBlur={field.onBlur}
+                            className="w-full"
+                          >
+                            <SelectValue
+                              placeholder={tClassify("rolePlaceholder")}
+                            />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {roles.map((role) => (
+                            <SelectItem key={role.roleId} value={role.roleId}>
+                              {role.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="level"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{tDetail("level")}</FormLabel>
+                      {/* Keyed by track: a cross-track role change must
+                          remount options and value together (the bubble
+                          select otherwise fires a spurious ""). */}
+                      <Select
+                        key={selectedRole?.trackKey ?? "no-track"}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        disabled={selectedRole === undefined}
+                      >
+                        <FormControl>
+                          <SelectTrigger
+                            ref={field.ref}
+                            onBlur={field.onBlur}
+                            className="w-full"
+                          >
+                            <SelectValue
+                              placeholder={tClassify("levelPlaceholder")}
+                            />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {levels.map((level) => (
+                            <SelectItem key={level} value={level}>
+                              {level}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -238,7 +389,7 @@ export function AddPersonDialog() {
                   name="department"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("departmentLabel")}</FormLabel>
+                      <FormLabel>{tForm("departmentLabel")}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -251,14 +402,14 @@ export function AddPersonDialog() {
                   name="employmentStartDate"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("startDateLabel")}</FormLabel>
+                      <FormLabel>{tForm("startDateLabel")}</FormLabel>
                       <FormControl>
                         <DatePicker
                           value={field.value}
                           onChange={field.onChange}
                           onBlur={field.onBlur}
                           ref={field.ref}
-                          ariaLabel={t("startDateLabel")}
+                          ariaLabel={tForm("startDateLabel")}
                         />
                       </FormControl>
                       <FormMessage />
@@ -270,7 +421,7 @@ export function AddPersonDialog() {
                   name="ftePercent"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("fteLabel")}</FormLabel>
+                      <FormLabel>{tForm("fteLabel")}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -304,7 +455,7 @@ export function AddPersonDialog() {
                   variant="outline"
                   onClick={() => handleOpenChange(false)}
                 >
-                  {t("cancel")}
+                  {tForm("cancel")}
                 </Button>
                 <SubmitButton
                   type="submit"

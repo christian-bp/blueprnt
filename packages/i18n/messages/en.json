@@ -138,7 +138,8 @@
       "salarySaved": "Salary saved",
       "salaryDeleted": "Salary record deleted",
       "personErased": "Employee deleted",
-      "personCreated": "Employee added"
+      "personCreated": "Employee added",
+      "personUpdated": "Employee updated"
     },
     "accountMenu": "Account menu",
     "nav": {
@@ -336,16 +337,23 @@
       "addPerson": {
         "title": "Add employee",
         "description": "Name and gender are required; everything else can be added later. With an employee number, future payroll imports update this person instead of creating a duplicate.",
-        "nameLabel": "Name",
-        "genderLabel": "Gender",
-        "titleLabel": "Job title",
-        "departmentLabel": "Department",
-        "externalRefLabel": "Employee number",
-        "startDateLabel": "Start date",
-        "fteLabel": "FTE %",
-        "cancel": "Cancel",
         "cta": "Add employee",
         "error": "The employee could not be added. Try again."
+      },
+      "editPerson": {
+        "title": "Edit details",
+        "description": "Update the employee's details. Clearing a field removes its value from the record.",
+        "cta": "Save changes",
+        "error": "The changes could not be saved. Try again."
+      },
+      "personForm": {
+        "nameLabel": "Name",
+        "genderLabel": "Gender",
+        "externalRefLabel": "Employee number",
+        "departmentLabel": "Department",
+        "startDateLabel": "Start date",
+        "fteLabel": "FTE %",
+        "cancel": "Cancel"
       },
       "detail": {
         "backToPeople": "Back to people",

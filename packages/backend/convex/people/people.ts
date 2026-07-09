@@ -346,6 +346,94 @@ export const getPersonByPublicId = orgQuery({
   },
 })
 
+// Manual full-field edit from the person page. Every field is optional in
+// the args (undefined = leave unchanged); for the optional person fields an
+// empty string (or null for ftePercent) CLEARS the stored value, which the
+// import path never does (a field absent from a file is left untouched, but
+// a manual edit clearing a field is an explicit decision). Patches only what
+// actually changed: an effective no-op writes nothing and no audit row.
+export const updatePerson = orgMutation({
+  args: {
+    personId: v.id("people"),
+    displayName: v.optional(v.string()),
+    gender: v.optional(v.union(v.literal("Man"), v.literal("Kvinna"))),
+    externalRef: v.optional(v.string()),
+    department: v.optional(v.string()),
+    employmentStartDate: v.optional(v.string()),
+    ftePercent: v.optional(v.union(v.number(), v.null())),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const person = await requireOwnPerson(ctx, args.personId)
+
+    const patch: Record<string, unknown> = {}
+    if (args.displayName !== undefined) {
+      const displayName = args.displayName.trim()
+      if (displayName.length === 0) throw appError(ERROR_CODES.invalidInput)
+      if (displayName !== person.displayName) patch.displayName = displayName
+    }
+    if (args.gender !== undefined && args.gender !== person.gender) {
+      patch.gender = args.gender
+    }
+    if (args.externalRef !== undefined) {
+      // Empty clears; a non-empty ref must stay unique within the org (it is
+      // the import upsert key), excluding this person's own current value.
+      const externalRef =
+        args.externalRef.trim() === "" ? undefined : args.externalRef.trim()
+      if (externalRef !== undefined && externalRef !== person.externalRef) {
+        const taken = await ctx.db
+          .query("people")
+          .withIndex("by_org_externalRef", (q) =>
+            q.eq("orgId", ctx.orgId).eq("externalRef", externalRef)
+          )
+          .first()
+        if (taken !== null) throw appError(ERROR_CODES.personRefExists)
+      }
+      if (externalRef !== person.externalRef) patch.externalRef = externalRef
+    }
+    if (args.department !== undefined) {
+      const department =
+        args.department.trim() === "" ? undefined : args.department.trim()
+      if (department !== person.department) patch.department = department
+    }
+    if (args.employmentStartDate !== undefined) {
+      const employmentStartDate =
+        args.employmentStartDate === "" ? undefined : args.employmentStartDate
+      if (employmentStartDate !== person.employmentStartDate) {
+        patch.employmentStartDate = employmentStartDate
+      }
+    }
+    if (args.ftePercent !== undefined) {
+      const ftePercent = args.ftePercent === null ? undefined : args.ftePercent
+      if (ftePercent !== person.ftePercent) patch.ftePercent = ftePercent
+    }
+
+    // Nothing actually changed: no write, no audit row.
+    if (Object.keys(patch).length === 0) return null
+
+    await ctx.db.patch(args.personId, patch)
+
+    // Diff only the non-PII fields for the audit row; a PII-only change
+    // (displayName/gender) still writes the row to record that something
+    // changed, just without the values (the upsert path's rule). The after
+    // side goes through nonPiiFields too, so a cleared field diffs to null
+    // (an undefined would be stripped from the stored payload).
+    await ctx.audit.log({
+      type: AUDIT_EVENTS.personUpdated,
+      payload: {
+        personId: args.personId,
+        changes: buildChanges(
+          nonPiiFields(person),
+          nonPiiFields({ ...person, ...patch } as Partial<Doc<"people">>),
+          [...PERSON_AUDIT_FIELDS]
+        ),
+      },
+    })
+
+    return null
+  },
+})
+
 export const archivePerson = adminMutation({
   args: { personId: v.id("people") },
   returns: v.null(),

@@ -138,7 +138,8 @@
       "salarySaved": "Lønn lagret",
       "salaryDeleted": "Lønnsoppføring slettet",
       "personErased": "Ansatt slettet",
-      "personCreated": "Ansatt lagt til"
+      "personCreated": "Ansatt lagt til",
+      "personUpdated": "Ansatt oppdatert"
     },
     "accountMenu": "Kontomeny",
     "nav": {
@@ -336,16 +337,23 @@
       "addPerson": {
         "title": "Legg til ansatt",
         "description": "Navn og kjønn kreves; alt annet kan legges til senere. Med et ansattnummer oppdaterer fremtidige lønnsimporter personen i stedet for å opprette en duplikat.",
-        "nameLabel": "Navn",
-        "genderLabel": "Kjønn",
-        "titleLabel": "Stillingstittel",
-        "departmentLabel": "Avdeling",
-        "externalRefLabel": "Ansattnummer",
-        "startDateLabel": "Startdato",
-        "fteLabel": "Stillingsandel %",
-        "cancel": "Avbryt",
         "cta": "Legg til ansatt",
         "error": "Den ansatte kunne ikke legges til. Prøv igjen."
+      },
+      "editPerson": {
+        "title": "Rediger detaljer",
+        "description": "Oppdater den ansattes detaljer. Tømmes et felt, fjernes verdien.",
+        "cta": "Lagre endringer",
+        "error": "Endringene kunne ikke lagres. Prøv igjen."
+      },
+      "personForm": {
+        "nameLabel": "Navn",
+        "genderLabel": "Kjønn",
+        "externalRefLabel": "Ansattnummer",
+        "departmentLabel": "Avdeling",
+        "startDateLabel": "Startdato",
+        "fteLabel": "Stillingsandel %",
+        "cancel": "Avbryt"
       },
       "detail": {
         "backToPeople": "Tilbake til ansatte",

@@ -255,9 +255,15 @@ export function PersonDetail({ publicId }: { publicId: string }) {
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>{t("identityHeading")}</CardTitle>
               <PersonActionsMenu
-                personId={person.personId}
-                displayName={person.displayName}
-                externalRef={person.externalRef}
+                person={{
+                  personId: person.personId,
+                  displayName: person.displayName,
+                  gender: person.gender,
+                  externalRef: person.externalRef,
+                  department: person.department,
+                  employmentStartDate: person.employmentStartDate,
+                  ftePercent: person.ftePercent,
+                }}
                 roles={roles}
                 currentAssignment={
                   assignment !== null

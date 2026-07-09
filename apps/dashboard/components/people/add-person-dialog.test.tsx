@@ -15,18 +15,29 @@ vi.mock("sonner", () => ({
 }))
 
 const createPersonMock = vi.fn()
+const assignMock = vi.fn()
 const pushMock = vi.fn()
 
 vi.mock("convex/react", () => ({
   useMutation: (ref: unknown) => {
     if (ref === "people.people.createPerson") return createPersonMock
+    if (ref === "people.assignments.assignPersonToRole") return assignMock
     return vi.fn()
   },
+  // listRoles for the optional role select.
+  useQuery: () => [
+    { roleId: "role-1", title: "Software Engineer", trackKey: "IC" },
+    { roleId: "role-2", title: "Engineering Manager", trackKey: "M" },
+  ],
 }))
 
 vi.mock("@workspace/backend/convex/_generated/api", () => ({
   api: {
+    assessment: { roles: { listRoles: "assessment.roles.listRoles" } },
     people: {
+      assignments: {
+        assignPersonToRole: "people.assignments.assignPersonToRole",
+      },
       people: { createPerson: "people.people.createPerson" },
     },
   },
@@ -44,7 +55,9 @@ import { toast } from "sonner"
 import { AddPersonDialog } from "@/components/people/add-person-dialog"
 
 const labels = messages.dashboard.people.addPerson
+const fields = messages.dashboard.people.personForm
 const gender = messages.dashboard.people.gender
+const detail = messages.dashboard.people.detail
 
 function renderDialog() {
   return render(
@@ -72,11 +85,11 @@ async function clickSubmit() {
 }
 
 async function fillRequired(name = "Anna Svensson") {
-  fireEvent.change(screen.getByLabelText(labels.nameLabel), {
+  fireEvent.change(screen.getByLabelText(fields.nameLabel), {
     target: { value: name },
   })
   await pickSelectOption(
-    screen.getByRole("combobox", { name: labels.genderLabel }),
+    screen.getByRole("combobox", { name: fields.genderLabel }),
     gender.Kvinna
   )
 }
@@ -84,6 +97,7 @@ async function fillRequired(name = "Anna Svensson") {
 describe("AddPersonDialog", () => {
   beforeEach(() => {
     createPersonMock.mockReset()
+    assignMock.mockReset().mockResolvedValue("a1")
     pushMock.mockReset()
     vi.mocked(toast.success).mockReset()
     vi.mocked(toast.error).mockReset()
@@ -128,13 +142,10 @@ describe("AddPersonDialog", () => {
     })
     renderDialog()
     openDialog()
-    fireEvent.change(screen.getByLabelText(labels.externalRefLabel), {
+    fireEvent.change(screen.getByLabelText(fields.externalRefLabel), {
       target: { value: "1001" },
     })
-    fireEvent.change(screen.getByLabelText(labels.titleLabel), {
-      target: { value: "Controller" },
-    })
-    fireEvent.change(screen.getByLabelText(labels.departmentLabel), {
+    fireEvent.change(screen.getByLabelText(fields.departmentLabel), {
       target: { value: "Finance" },
     })
     // The start date goes through the shadcn calendar picker: open it and
@@ -143,7 +154,7 @@ describe("AddPersonDialog", () => {
     // so the text match is unambiguous. Picked BEFORE the gender select:
     // happy-dom leaves a picked select's popup open, and the lingering
     // popup swallows the next click (see test/select.ts).
-    fireEvent.click(screen.getByRole("button", { name: labels.startDateLabel }))
+    fireEvent.click(screen.getByRole("button", { name: fields.startDateLabel }))
     const dayButton = await waitFor(() => {
       const button = screen
         .getAllByRole("button")
@@ -156,9 +167,14 @@ describe("AddPersonDialog", () => {
     const expectedIso = `${today.getFullYear()}-${String(
       today.getMonth() + 1
     ).padStart(2, "0")}-15`
-    fireEvent.change(screen.getByLabelText(labels.fteLabel), {
+    fireEvent.change(screen.getByLabelText(fields.fteLabel), {
       target: { value: "80" },
     })
+    // Picking a role auto-fills the level with the track's first option.
+    await pickSelectOption(
+      screen.getByRole("combobox", { name: detail.role }),
+      "Software Engineer"
+    )
     await fillRequired()
 
     await clickSubmit()
@@ -168,10 +184,19 @@ describe("AddPersonDialog", () => {
         displayName: "Anna Svensson",
         gender: "Kvinna",
         externalRef: "1001",
-        title: "Controller",
         department: "Finance",
         employmentStartDate: expectedIso,
         ftePercent: 80,
+      })
+    })
+    // The picked role becomes a confirmed assignment after the create.
+    await waitFor(() => {
+      expect(assignMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        personId: "person-new",
+        roleId: "role-1",
+        level: "IC1",
+        levelSource: "confirmed",
       })
     })
   })
@@ -181,7 +206,7 @@ describe("AddPersonDialog", () => {
     renderDialog()
     openDialog()
     await fillRequired()
-    fireEvent.change(screen.getByLabelText(labels.externalRefLabel), {
+    fireEvent.change(screen.getByLabelText(fields.externalRefLabel), {
       target: { value: "1001" },
     })
 
@@ -191,7 +216,7 @@ describe("AddPersonDialog", () => {
     })
     expect(pushMock).not.toHaveBeenCalled()
     // The dialog stays open with the form intact for a correction.
-    expect(screen.getByLabelText(labels.nameLabel)).toBeDefined()
+    expect(screen.getByLabelText(fields.nameLabel)).toBeDefined()
   })
 
   it("shows the generic failure line on other errors", async () => {

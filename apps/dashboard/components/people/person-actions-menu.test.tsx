@@ -33,6 +33,7 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
         assignPersonToRole: "people.assignments.assignPersonToRole",
       },
       erase: { erasePersonAsOrg: "people.erase.erasePersonAsOrg" },
+      people: { updatePerson: "people.people.updatePerson" },
     },
   },
 }))
@@ -59,9 +60,15 @@ function renderMenu(
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <PersonActionsMenu
-        personId={"p1" as Id<"people">}
-        displayName="Alex Doe"
-        externalRef="E-1"
+        person={{
+          personId: "p1" as Id<"people">,
+          displayName: "Alex Doe",
+          gender: "Man",
+          externalRef: "E-1",
+          department: null,
+          employmentStartDate: null,
+          ftePercent: null,
+        }}
         roles={ROLES}
         currentAssignment={currentAssignment}
       />
