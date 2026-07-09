@@ -1,0 +1,71 @@
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.tsx
+  s_6bff98b662648b::t_3c97bcda3aa0a3 41-42,44-47
+  s_6bff98b662648b::t_3fe03deb1dac74 4,6
+  s_6bff98b662648b::t_8ae447940aa664 65-68,70-82
+apps/dashboard/components/roles/roles-table.tsx
+  s_6bff98b662648b::t_f4914a18bde5ff 41
+  s_6bff98b662648b::t_e90dc7400ab71a 141-146,153-154
+  s_6bff98b662648b::t_60fa1b8111a4e1 148-149,155-161
+  s_6bff98b662648b::t_aa09266af978e2 311-315
+apps/dashboard/components/table-search-field.tsx
+  s_6bff98b662648b::t_894b47ccf3fbb8 1-9,13-14,16-40
+  s_6bff98b662648b::t_812260866408e6 10-12,15
+apps/dashboard/components/people/person-detail.tsx
+  s_6bff98b662648b::t_acac8e213e6858 73
+  s_6bff98b662648b::t_50eb8c81aacbe3 182-186
+  s_6bff98b662648b::t_a3b3bd8e757958 136-146
+  s_6bff98b662648b::t_85fa3e9f44dcc0 3-6,10
+  s_6bff98b662648b::t_5d87975b7f621b 149-150,152-162,167-170
+apps/dashboard/components/model/criterion-list-skeleton.tsx
+  s_6bff98b662648b::t_4089b6360cdaa5 1-6,8,15-18,28,53-59,63-78,84-92
+apps/dashboard/components/model/model-builder.tsx
+  s_6bff98b662648b::t_c2cca8dd652a2b 127-132
+apps/dashboard/components/overview/model-readiness-card.tsx
+  s_6bff98b662648b::t_d6cf6966ef90cc 30-31,35,37-39,41-43,45-51
+  s_6bff98b662648b::t_4e702f0379a19a 40,44
+apps/dashboard/components/model/method-panel.tsx
+  s_6bff98b662648b::t_54d1409ac17859 61-63
+apps/dashboard/components/overview/todo-skeleton.tsx
+  s_6bff98b662648b::t_f1a225eccc85ee 1-4,6,8-11,13,16-25
+CLAUDE.md
+  s_6bff98b662648b::t_bbdf8b03460ee1 72
+apps/dashboard/components/roles/role-detail-skeleton.tsx
+  s_6bff98b662648b::t_917bf1d44eb919 40,47-53
+  s_6bff98b662648b::t_5a916e62cddbf9 3-5
+  s_6bff98b662648b::t_585f5666f60d14 15
+  s_6bff98b662648b::t_c85bb6f63e039b 60,62-72
+apps/dashboard/components/model/criterion-list-skeleton.test.tsx
+  s_6bff98b662648b::t_364e246dc54003 2,4,11-21,26,30-34,37-42,45-50
+apps/dashboard/app/(app)/work/page.tsx
+  s_6bff98b662648b::t_f07fd2c8c99627 70-73,77-81
+  s_6bff98b662648b::t_42bc4d9aaea568 107
+apps/dashboard/app/(app)/roles/families/[familySlug]/page.tsx
+  s_6bff98b662648b::t_f3fb2419650593 87-90,102-115
+  s_6bff98b662648b::t_60dcbae53c23e7 94-100
+  s_6bff98b662648b::t_404f100cab8ca0 3-4,7
+apps/dashboard/components/people/people-section.tsx
+  s_6bff98b662648b::t_198abce0133b5b 48
+  s_6bff98b662648b::t_06943d44c80535 345,347
+  s_6bff98b662648b::t_8e2257ba2110b4 3
+  s_6bff98b662648b::t_16a8e7f63a011c 269-321
+  s_6bff98b662648b::t_d185938f90b735 368
+apps/dashboard/app/(app)/roles/page.tsx
+  s_6bff98b662648b::t_48326062112475 32-35,47
+  s_6bff98b662648b::t_1a7e8619679565 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "7922bd105b709843ae7b522c41fac6dd9c680486",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
