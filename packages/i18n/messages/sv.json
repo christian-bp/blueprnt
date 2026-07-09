@@ -172,7 +172,11 @@
         "noMatches": "Inga anställda matchar sökningen eller filtren.",
         "clearFilters": "Rensa filtren",
         "previous": "Föregående",
-        "next": "Nästa"
+        "next": "Nästa",
+        "genderAll": "Alla kön",
+        "fteAll": "Alla omfattningar",
+        "fteFull": "Heltid",
+        "ftePart": "Deltid"
       },
       "tabs": {
         "people": "Personer",

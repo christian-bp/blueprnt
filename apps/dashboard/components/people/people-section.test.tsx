@@ -278,6 +278,42 @@ describe("PeopleSection", () => {
     expect(screen.queryByText("Alice Svensson")).toBeNull()
   })
 
+  it("filters by gender", async () => {
+    onQuery((ref) => queryRouter(ref))
+    renderSection()
+    await pickSelectOption(
+      screen.getByRole("combobox", {
+        name: messages.dashboard.people.columns.gender,
+      }),
+      messages.dashboard.people.gender.Man
+    )
+    expect(screen.getByText("Bob Larsson")).toBeDefined()
+    expect(screen.queryByText("Alice Svensson")).toBeNull()
+    expect(screen.queryByText("Charlie Nilsson")).toBeNull()
+  })
+
+  it("filters by FTE: full-time is exactly 100, part-time below, unknown only under all", async () => {
+    onQuery((ref) => queryRouter(ref))
+    renderSection()
+    const trigger = () =>
+      screen.getByRole("combobox", {
+        name: messages.dashboard.people.columns.fte,
+      })
+    // Full-time: Alice (100) only; Charlie (unknown FTE) is excluded.
+    await pickSelectOption(trigger(), m.toolbar.fteFull)
+    expect(screen.getByText("Alice Svensson")).toBeDefined()
+    expect(screen.queryByText("Bob Larsson")).toBeNull()
+    expect(screen.queryByText("Charlie Nilsson")).toBeNull()
+    // Part-time: Bob (80) only.
+    await pickSelectOption(trigger(), m.toolbar.ftePart)
+    expect(screen.getByText("Bob Larsson")).toBeDefined()
+    expect(screen.queryByText("Alice Svensson")).toBeNull()
+    expect(screen.queryByText("Charlie Nilsson")).toBeNull()
+    // Back to all: everyone, including the unknown-FTE person.
+    await pickSelectOption(trigger(), m.toolbar.fteAll)
+    expect(screen.getByText("Charlie Nilsson")).toBeDefined()
+  })
+
   it("shows the no-matches empty state and clears filters from it", () => {
     onQuery((ref) => queryRouter(ref))
     renderSection()

@@ -53,6 +53,7 @@ import {
   type TableSkeletonColumn,
 } from "@/components/table-skeleton"
 import { displayNameFor } from "@/lib/person-display"
+import { onSelectValue } from "@/lib/select"
 
 // The people list surface. Displays active (non-archived) people imported from
 // payroll as a searchable, filterable, paginated data table (the shadcn data
@@ -108,6 +109,7 @@ const PEOPLE_SKELETON_COLUMNS: TableSkeletonColumn[] = [
 export function PeopleSection() {
   const t = useTranslations("dashboard.people")
   const tToolbar = useTranslations("dashboard.people.toolbar")
+  const tGender = useTranslations("dashboard.people.gender")
   const tOrg = useTranslations("dashboard.organization.general")
   const { orgId } = useOrganization()
 
@@ -148,7 +150,12 @@ export function PeopleSection() {
   const columns = useMemo<ColumnDef<PeopleTableRow>[]>(
     () => [
       { id: "name", accessorKey: "name" },
-      { id: "gender", accessorKey: "gender", enableGlobalFilter: false },
+      {
+        id: "gender",
+        accessorKey: "gender",
+        filterFn: exactString,
+        enableGlobalFilter: false,
+      },
       {
         id: "department",
         accessorFn: (row) => row.department ?? "",
@@ -160,6 +167,12 @@ export function PeopleSection() {
         // Missing FTE sorts below any real percentage instead of tripping
         // the numeric comparator with nulls; cells render from row.original.
         accessorFn: (row) => row.ftePercent ?? -1,
+        // Full-time is exactly 100 %; part-time is any real value below it.
+        // Missing FTE (the -1 sentinel) shows only under "all".
+        filterFn: (row, columnId, value: string) => {
+          const fte = row.getValue<number>(columnId)
+          return value === "full" ? fte === 100 : fte > -1 && fte < 100
+        },
         enableGlobalFilter: false,
       },
     ],
@@ -195,6 +208,18 @@ export function PeopleSection() {
   const departmentFilter =
     (table.getColumn("department")?.getFilterValue() as string | undefined) ??
     "all"
+  const genderFilter =
+    (table.getColumn("gender")?.getFilterValue() as string | undefined) ?? "all"
+  const fteFilter =
+    (table.getColumn("fte")?.getFilterValue() as string | undefined) ?? "all"
+
+  // Shared handler for the toolbar's column-filter selects: "all" clears.
+  function setColumnFilter(columnId: string, value: string) {
+    table
+      .getColumn(columnId)
+      ?.setFilterValue(value === "all" ? undefined : value)
+    resetPage()
+  }
 
   // Distinct departments for the filter options, sorted for a stable list.
   const departments = useMemo(
@@ -292,12 +317,9 @@ export function PeopleSection() {
             ),
           }}
           value={departmentFilter}
-          onValueChange={(value) => {
-            table
-              .getColumn("department")
-              ?.setFilterValue(value === "all" ? undefined : value)
-            resetPage()
-          }}
+          onValueChange={onSelectValue((value: string) =>
+            setColumnFilter("department", value)
+          )}
         >
           <SelectTrigger aria-label={t("columns.department")}>
             <SelectValue />
@@ -309,6 +331,50 @@ export function PeopleSection() {
                 {department}
               </SelectItem>
             ))}
+          </SelectContent>
+        </Select>
+      )}
+      {rows.length > 0 && (
+        <Select
+          items={{
+            all: tToolbar("genderAll"),
+            Man: tGender("Man"),
+            Kvinna: tGender("Kvinna"),
+          }}
+          value={genderFilter}
+          onValueChange={onSelectValue((value: string) =>
+            setColumnFilter("gender", value)
+          )}
+        >
+          <SelectTrigger aria-label={t("columns.gender")}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{tToolbar("genderAll")}</SelectItem>
+            <SelectItem value="Man">{tGender("Man")}</SelectItem>
+            <SelectItem value="Kvinna">{tGender("Kvinna")}</SelectItem>
+          </SelectContent>
+        </Select>
+      )}
+      {rows.length > 0 && (
+        <Select
+          items={{
+            all: tToolbar("fteAll"),
+            full: tToolbar("fteFull"),
+            part: tToolbar("ftePart"),
+          }}
+          value={fteFilter}
+          onValueChange={onSelectValue((value: string) =>
+            setColumnFilter("fte", value)
+          )}
+        >
+          <SelectTrigger aria-label={t("columns.fte")}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{tToolbar("fteAll")}</SelectItem>
+            <SelectItem value="full">{tToolbar("fteFull")}</SelectItem>
+            <SelectItem value="part">{tToolbar("ftePart")}</SelectItem>
           </SelectContent>
         </Select>
       )}

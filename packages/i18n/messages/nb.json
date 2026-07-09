@@ -172,7 +172,11 @@
         "noMatches": "Ingen ansatte matcher søket eller filtrene.",
         "clearFilters": "Nullstill filtrene",
         "previous": "Forrige",
-        "next": "Neste"
+        "next": "Neste",
+        "genderAll": "Alle kjønn",
+        "fteAll": "Alle stillingsandeler",
+        "fteFull": "Heltid",
+        "ftePart": "Deltid"
       },
       "tabs": {
         "people": "Personer",

@@ -172,7 +172,11 @@
         "noMatches": "Ingen medarbejdere matcher søgningen eller filtrene.",
         "clearFilters": "Ryd filtrene",
         "previous": "Forrige",
-        "next": "Næste"
+        "next": "Næste",
+        "genderAll": "Alle køn",
+        "fteAll": "Alle stillinger",
+        "fteFull": "Fuldtid",
+        "ftePart": "Deltid"
       },
       "tabs": {
         "people": "Personer",

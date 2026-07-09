@@ -172,7 +172,11 @@
         "noMatches": "No people match the search or filters.",
         "clearFilters": "Clear filters",
         "previous": "Previous",
-        "next": "Next"
+        "next": "Next",
+        "genderAll": "All genders",
+        "fteAll": "All FTE",
+        "fteFull": "Full-time",
+        "ftePart": "Part-time"
       },
       "tabs": {
         "people": "People",
