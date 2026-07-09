@@ -1,0 +1,71 @@
+packages/import/src/validate.ts
+  s_6bff98b662648b::t_2bcb319f9c1569 168
+  s_6bff98b662648b::t_552781b0f95fd3 30
+apps/dashboard/components/people/import/upload-step.test.tsx
+  s_6bff98b662648b::t_422098a8ae0b63 241
+  s_6bff98b662648b::t_95c6a9f12a6590 256
+packages/i18n/messages/nb.json
+  s_6bff98b662648b::t_bf0b1d034cce1a 216-218,258-259
+packages/i18n/messages/da.json
+  s_6bff98b662648b::t_bf0b1d034cce1a 216-218,258-259
+packages/i18n/messages/sv.json
+  s_6bff98b662648b::t_bf0b1d034cce1a 216-218,258-259
+apps/dashboard/components/people/import/map-step.test.tsx
+  s_6bff98b662648b::t_73abd65cc5ac85 44-48
+  s_6bff98b662648b::t_422098a8ae0b63 90,106,198
+  s_6bff98b662648b::t_54f6a59d64b3a2 421-422,427-465
+  s_6bff98b662648b::t_9c1037fe100189 423-426
+packages/import/src/tokenize.test.ts
+  s_6bff98b662648b::t_2d1559972b4b69 258-326
+packages/i18n/messages/en.json
+  s_6bff98b662648b::t_bf0b1d034cce1a 216-218,263-264
+packages/import/src/validate.test.ts
+  s_6bff98b662648b::t_0f564e10694df2 525-534
+apps/dashboard/components/people/import/map-step.tsx
+  s_6bff98b662648b::t_ed09acf94d1fc6 285-287,289-293
+  s_6bff98b662648b::t_262aa1c4dcef3c 70-75
+  s_6bff98b662648b::t_8f188ea3b886a9 238-248
+apps/dashboard/components/people/import/review-step.test.tsx
+  s_6bff98b662648b::t_73abd65cc5ac85 78
+packages/import/src/detect.test.ts
+  s_6bff98b662648b::t_121e4dd4dfe2e4 261-351
+  s_6bff98b662648b::t_1b23d3b5d21aae 352-381
+apps/dashboard/components/people/import/import-wizard.tsx
+  s_6bff98b662648b::t_182a2ec3f49033 38-39
+packages/import/src/tokenize.ts
+  s_6bff98b662648b::t_65e292be913946 163-164,166
+  s_6bff98b662648b::t_d336e8392db14f 67-71
+  s_6bff98b662648b::t_5cb65f612decdd 215,217,222-267
+  s_6bff98b662648b::t_5777fadf63828a 8-9
+  s_6bff98b662648b::t_fe28478e3b426c 151-161,165,167-169,180
+  s_6bff98b662648b::t_fbf11151925f3d 170-173
+  s_6bff98b662648b::t_34e98ee65096c2 138
+  s_6bff98b662648b::t_dbafeb77a42f18 174-175,181-182,268-271
+packages/i18n/messages/fi.json
+  s_6bff98b662648b::t_bf0b1d034cce1a 216-218,258-259
+apps/dashboard/components/people/import/check-step.test.tsx
+  s_6bff98b662648b::t_73abd65cc5ac85 60-64
+  s_6bff98b662648b::t_422098a8ae0b63 99,271,299,401,418,445
+apps/dashboard/components/people/import/upload-step.tsx
+  s_6bff98b662648b::t_c0e2a93e7325e9 28-33
+packages/import/src/detect.ts
+  s_6bff98b662648b::t_9bd79b22113cbb 64-67,89-98
+  s_6bff98b662648b::t_df1f3a74e8c88f 184-286
+  s_6bff98b662648b::t_bf6b13b9b06319 99
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "b6e730ad8a634dd0afd82250e5719c88e868c091",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
