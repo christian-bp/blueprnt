@@ -35,6 +35,11 @@ const SAP_NUMERIC_GENDER_CSV = readFileSync(
   "utf8"
 )
 
+const HEADERLESS_CSV = readFileSync(
+  join(import.meta.dirname, "__fixtures__", "headerless.csv"),
+  "utf8"
+)
+
 const DATE_FORMS_CSV = readFileSync(
   join(import.meta.dirname, "__fixtures__", "date-forms.csv"),
   "utf8"
@@ -357,6 +362,92 @@ describe("importPayroll (happy path)", () => {
 // ---------------------------------------------------------------------------
 // Blocking case: required field unmapped -> nothing persisted
 // ---------------------------------------------------------------------------
+
+describe("importPayroll (headerless file, end to end)", () => {
+  // The wizard maps a headerless file by the tokenizer's synthesized
+  // positional names; the backend re-tokenizes the same csvText and must
+  // resolve them identically. This is the round trip that proves a file
+  // without a header row actually imports (HL).
+  const HEADERLESS_COLUMN_MAP: string[][] = [
+    ["column_1", "externalRef"],
+    ["column_2", "firstName"],
+    ["column_3", "lastName"],
+    ["column_4", "gender"],
+    ["column_5", "title"],
+    ["column_6", "department"],
+    ["column_7", "employmentStartDate"],
+    ["column_8", "ftePercent"],
+    ["column_9", "basicMonthly"],
+  ]
+
+  it("imports every row (none swallowed as a header) with correct fields", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    const result = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: HEADERLESS_CSV,
+      columnMap: HEADERLESS_COLUMN_MAP,
+      payYear: 2026,
+      effectiveAt: Date.now(),
+    })
+
+    expect(result.ok).toBe(true)
+    expect(result.validation.blocking).toHaveLength(0)
+    // All 4 rows import: the first row is data, not a header.
+    expect(result.peopleCreated).toBe(4)
+    expect(result.skippedRows).toBe(0)
+    expect(result.salariesImported).toBe(4)
+
+    await t.run(async (ctx) => {
+      const people = await ctx.db
+        .query("people")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(people).toHaveLength(4)
+
+      const anna = people.find((p) => p.externalRef === "1001")
+      expect(anna?.displayName).toBe("Anna Svensson")
+      expect(anna?.gender).toBe("Kvinna")
+      expect(anna?.title).toBe("Utvecklare")
+      expect(anna?.department).toBe("IT")
+      expect(anna?.employmentStartDate).toBe("2020-01-15")
+      expect(anna?.ftePercent).toBe(100)
+
+      const pays = await ctx.db
+        .query("payRecords")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(pays).toHaveLength(4)
+      const annaPay = pays.find((pay) => pay.personId === anna?._id)
+      expect(annaPay?.basicMonthly).toBe(52000)
+    })
+  })
+
+  it("re-importing the same headerless file is idempotent (all unchanged)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: HEADERLESS_CSV,
+      columnMap: HEADERLESS_COLUMN_MAP,
+      payYear: 2026,
+      effectiveAt: Date.now(),
+    })
+    const second = await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: HEADERLESS_CSV,
+      columnMap: HEADERLESS_COLUMN_MAP,
+      payYear: 2026,
+      effectiveAt: Date.now(),
+    })
+
+    expect(second.peopleCreated).toBe(0)
+    expect(second.peopleUpdated).toBe(0)
+    expect(second.peopleUnchanged).toBe(4)
+  })
+})
 
 describe("importPayroll (blocking validation)", () => {
   it("returns ok:false and persists nothing when basicMonthly is not mapped", async () => {

@@ -324,3 +324,63 @@ describe("tokenizeCsv headerless detection (HL)", () => {
     expect(tokenizeCsv(csv).signals.headerless).toBe(false)
   })
 })
+
+describe("tokenizeCsv headerless false-positive sweep (HL-FP)", () => {
+  it("HL-FP-01: the real 16-column Swedish HR export header never flags", () => {
+    const result = tokenizeCsv(FIXTURE)
+    expect(result.signals.headerless).toBe(false)
+  })
+
+  it("HL-FP-02: unknown text headers over date-shaped data stay headers", () => {
+    // The data below has dates, but the header cells themselves are text:
+    // gate 2 compares the HEADER cells' shapes, not the data's.
+    const csv = ["Period;Notes", "2024-01-15;foo", "2024-02-15;bar"].join("\n")
+    expect(tokenizeCsv(csv).signals.headerless).toBe(false)
+  })
+
+  it("HL-FP-03: headers containing a year number stay headers via synonyms", () => {
+    const csv = ["Anstnr;Lön 2024", "1001;52000", "1002;48500"].join("\n")
+    expect(tokenizeCsv(csv).signals.headerless).toBe(false)
+  })
+})
+
+describe("tokenizeCsv headerless format variants (HL-FMT)", () => {
+  it("HL-FMT-01: comma-delimited with a quoted comma field", () => {
+    const csv = [
+      '1001,"Svensson, Anna",Kvinna,2020-01-15,100',
+      '1002,"Johansson, Erik",Man,2018-03-01,80',
+    ].join("\n")
+    const result = tokenizeCsv(csv)
+    expect(result.signals.headerless).toBe(true)
+    expect(result.rows.length).toBe(2)
+    expect(result.rows[0]?.[1]).toBe("Svensson, Anna")
+  })
+
+  it("HL-FMT-02: BOM + CRLF line endings", () => {
+    const csv = "﻿1001;Anna;Kvinna;2020-01-15\r\n1002;Erik;Man;2018-03-01\r\n"
+    const result = tokenizeCsv(csv)
+    expect(result.signals.headerless).toBe(true)
+    expect(result.rows.length).toBe(2)
+  })
+
+  it("HL-FMT-03: sep= directive followed by headerless data", () => {
+    const csv = [
+      "sep=;",
+      "1001;Anna;Kvinna;2020-01-15",
+      "1002;Erik;Man;2018-03-01",
+    ].join("\n")
+    const result = tokenizeCsv(csv)
+    expect(result.signals.headerless).toBe(true)
+    expect(result.rows.length).toBe(2)
+  })
+
+  it("HL-FMT-04: tab-delimited headerless data", () => {
+    const csv = [
+      "1001\tAnna\tKvinna\t2020-01-15",
+      "1002\tErik\tMan\t2018-03-01",
+    ].join("\n")
+    const result = tokenizeCsv(csv)
+    expect(result.signals.headerless).toBe(true)
+    expect(result.headers.length).toBe(4)
+  })
+})

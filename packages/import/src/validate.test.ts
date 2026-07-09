@@ -1,6 +1,6 @@
 // Tests for validateImport: readiness + data-quality validation.
 import { describe, expect, it } from "vitest"
-import type { DetectedMapping } from "./detect"
+import { type DetectedMapping, detectColumns } from "./detect"
 import type { CanonicalFieldKey } from "./fields"
 import { tokenizeCsv } from "./tokenize"
 import { validateFile, validateImport } from "./validate"
@@ -583,5 +583,40 @@ describe("validateFile — invalidFileFormat (A1, A4)", () => {
     const tokenized = tokenizeCsv(csv)
     const result = validateFile(csv, EMPTY_MAPPING, {}, tokenized)
     expect(result.fileFormatError).toBeUndefined()
+  })
+})
+
+describe("validateFile — headerless round trip (HL)", () => {
+  it("tokenize -> detect -> validate: required fields satisfied via synthesized names, headerless warned", () => {
+    const csv = [
+      "1001;Anna;Svensson;Kvinna;Utvecklare;2020-01-15;100;52 000,00",
+      "1002;Erik;Johansson;Man;Controller;2018-03-01;80;48 500,00",
+    ].join("\n")
+    const tokenized = tokenizeCsv(csv)
+    expect(tokenized.signals.headerless).toBe(true)
+
+    // Content suggestions plus the user's manual text-column assignments,
+    // exactly as the Map step would produce them.
+    const detected = detectColumns({
+      headers: tokenized.headers,
+      rows: tokenized.rows,
+      headerless: true,
+      currentYear: 2026,
+    })
+    const mapping = {
+      map: {
+        ...detected.map,
+        firstName: { columnIndex: 1, confidence: 1 },
+        lastName: { columnIndex: 2, confidence: 1 },
+        title: { columnIndex: 4, confidence: 1 },
+      },
+      unmappedColumns: [],
+    }
+
+    const result = validateFile(csv, mapping, {})
+    expect(result.fileWarnings).toContain("headerless")
+    // The content suggestions covered the required non-text fields:
+    // nothing blocks the import.
+    expect(result.blocking).toHaveLength(0)
   })
 })

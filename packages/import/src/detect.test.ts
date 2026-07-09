@@ -379,3 +379,34 @@ describe("detectColumns content-only mode (headerless files)", () => {
     expect(map.payYear).toBeUndefined()
   })
 })
+
+describe("detectColumns content-only ambiguity guards (CO-AMB)", () => {
+  it("CO-AMB-01: two gender-shaped columns stay unmapped", () => {
+    const rows = [
+      ["Anna", "Kvinna", "Kvinna"],
+      ["Erik", "Man", "Man"],
+    ]
+    const { map } = detectColumns({
+      headers: ["column_1", "column_2", "column_3"],
+      rows,
+      headerless: true,
+      currentYear: 2026,
+    })
+    expect(map.gender).toBeUndefined()
+  })
+
+  it("CO-AMB-02: two date columns with the same newest year stay unmapped", () => {
+    const rows = [
+      ["2020-01-15", "2020-06-01"],
+      ["2019-03-01", "2018-02-01"],
+    ]
+    const { map } = detectColumns({
+      headers: ["column_1", "column_2"],
+      rows,
+      headerless: true,
+      currentYear: 2026,
+    })
+    expect(map.employmentStartDate).toBeUndefined()
+    expect(map.birthDate).toBeUndefined()
+  })
+})
