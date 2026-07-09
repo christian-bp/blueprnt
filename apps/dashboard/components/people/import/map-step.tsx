@@ -67,7 +67,12 @@ export function seedMappingFromProfile(
  * Record<CanonicalFieldKey, columnIndex> shape the wizard stores.
  */
 export function buildInitialMapping(parsed: ParsedCsv): Record<string, number> {
-  const { map } = detectColumns({ headers: parsed.headers, rows: parsed.rows })
+  const { map } = detectColumns({
+    headers: parsed.headers,
+    rows: parsed.rows,
+    // A headerless file gets content-only suggestions (shapes, not synonyms).
+    headerless: parsed.headerless,
+  })
   const result: Record<string, number> = {}
   for (const [key, entry] of Object.entries(map)) {
     if (entry !== undefined) {
@@ -230,6 +235,17 @@ export function MapStep({ parsed, mapping, onMappingChange }: MapStepProps) {
     <div className="flex w-full flex-col gap-4">
       <p className="text-muted-foreground text-sm">{tMap("description")}</p>
 
+      {/* Headerless file: say why the columns are numbered and why most
+          suggestions are missing (guidance convention: state it in words). */}
+      {parsed.headerless && (
+        <p
+          data-testid="headerless-notice"
+          className="text-muted-foreground text-sm"
+        >
+          {tMap("headerlessNotice")}
+        </p>
+      )}
+
       {/* Unmapped required fields warning */}
       {unmappedRequiredCount > 0 && (
         <p
@@ -266,9 +282,15 @@ export function MapStep({ parsed, mapping, onMappingChange }: MapStepProps) {
                   key={columnIndex}
                   data-testid={`map-column-${columnIndex}`}
                 >
-                  {/* CSV column header name */}
+                  {/* CSV column header name; a headerless file shows a
+                      localized positional label instead of the synthesized
+                      technical name. */}
                   <TableCell>
-                    <span className="font-medium text-sm">{header}</span>
+                    <span className="font-medium text-sm">
+                      {parsed.headerless
+                        ? tMap("columnNumber", { number: columnIndex + 1 })
+                        : header}
+                    </span>
                     {currentFieldLabel !== null && (
                       <span className="ml-2 text-muted-foreground text-xs">
                         {currentFieldLabel}

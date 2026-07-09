@@ -255,3 +255,72 @@ describe("tokenizeCsv single-column signal (T38)", () => {
     expect(signals.noDelimiter).toBe(false)
   })
 })
+
+describe("tokenizeCsv headerless detection (HL)", () => {
+  const DATA_ROWS = [
+    "1001;Anna Svensson;Kvinna;Utvecklare;IT;2020-01-15;100;52000",
+    "1002;Erik Johansson;Man;Controller;Ekonomi;2018-03-01;80;48500",
+    "1003;Maria Karlsson;Kvinna;HR-specialist;HR;2021-09-01;100;44000",
+  ]
+
+  it("HL-01: flags a headerless payroll file and keeps every row as data", () => {
+    const result = tokenizeCsv(DATA_ROWS.join("\n"))
+    expect(result.signals.headerless).toBe(true)
+    expect(result.rows.length).toBe(3)
+    expect(result.rows[0]?.[1]).toBe("Anna Svensson")
+  })
+
+  it("HL-02: synthesizes unique positional header names", () => {
+    const result = tokenizeCsv(DATA_ROWS.join("\n"))
+    expect(result.headers).toEqual([
+      "column_1",
+      "column_2",
+      "column_3",
+      "column_4",
+      "column_5",
+      "column_6",
+      "column_7",
+      "column_8",
+    ])
+    // Headerless is its own signal: no blank/duplicate header noise.
+    expect(result.signals.blankHeaderColumns).toEqual([])
+    expect(result.signals.duplicateHeaders).toEqual([])
+  })
+
+  it("HL-03: one recognized header synonym keeps the header interpretation", () => {
+    const csv = ["Anstnr;Namn;Kon;Titel", "1001;Anna;Kvinna;Utvecklare"].join(
+      "\n"
+    )
+    const result = tokenizeCsv(csv)
+    expect(result.signals.headerless).toBe(false)
+    expect(result.rows.length).toBe(1)
+  })
+
+  it("HL-04: unknown all-text headers stay headers (no data-shape signal)", () => {
+    const csv = [
+      "EmployeeNo;FullName;Sex;JobTitle;Unit",
+      "1001;Anna Svensson;Kvinna;Utvecklare;IT",
+    ].join("\n")
+    const result = tokenizeCsv(csv)
+    expect(result.signals.headerless).toBe(false)
+    expect(result.headers[0]).toBe("EmployeeNo")
+  })
+
+  it("HL-05: a single-row file cannot be judged and keeps the status quo", () => {
+    const result = tokenizeCsv(DATA_ROWS[0] as string)
+    expect(result.signals.headerless).toBe(false)
+  })
+
+  it("HL-06: headerless detection still applies after a preamble comment", () => {
+    const csv = ["# export 2026-07-09", ...DATA_ROWS].join("\n")
+    const result = tokenizeCsv(csv)
+    expect(result.signals.headerless).toBe(true)
+    expect(result.rows.length).toBe(3)
+    expect(result.signals.preambleRowsSkipped).toBe(1)
+  })
+
+  it("HL-07: a headered file reports headerless: false in signals", () => {
+    const csv = ["Anstnr;Namn", "1;Anna"].join("\n")
+    expect(tokenizeCsv(csv).signals.headerless).toBe(false)
+  })
+})

@@ -213,7 +213,9 @@
           "unmappedRequired": "{count, plural, one {# obligatorisk felt er ikke tilknyttet} other {# obligatoriske felter er ikke tilknyttet}}",
           "column": "CSV-kolonne",
           "mappedTo": "Tilknyttet til",
-          "ignore": "Ignorer"
+          "ignore": "Ignorer",
+          "columnNumber": "Kolonne {number}",
+          "headerlessNotice": "Filen mangler en overskriftsrække, så første række blev beholdt som data, og kolonnerne er nummererede. Felter blev foreslået ud fra kolonnernes indhold, hvor det var muligt; tilknyt resten nedenfor."
         },
         "check": {
           "title": "Kontroller beredskab",
@@ -253,7 +255,8 @@
           "fileWarnings": "Filadvarsler",
           "fileWarning": {
             "noDelimiter": "Ingen kolonneadskiller fundet",
-            "mojibake": "Overskriftsteksten ser ødelagt ud (forkert filkodning)"
+            "mojibake": "Overskriftsteksten ser ødelagt ud (forkert filkodning)",
+            "headerless": "Filen mangler en overskriftsrække; kolonnerne blev identificeret ud fra deres indhold. Kontrollér tilknytningen."
           },
           "assignGender": {
             "heading": "Angiv køn for disse rækker",

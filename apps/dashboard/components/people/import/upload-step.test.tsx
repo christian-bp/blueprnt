@@ -238,6 +238,7 @@ describe("UploadStep component", () => {
           ["Alice", "50000", "HR"],
           ["Bob", "60000", "Eng"],
         ],
+        headerless: false,
       },
       fileName: "payroll.csv",
       fileSize: 2048,
@@ -252,7 +253,7 @@ describe("UploadStep component", () => {
   it("clears the uploaded file via the remove button", () => {
     const onClear = vi.fn()
     renderUploadStep({
-      parsed: { headers: ["name"], rows: [["Alice"]] },
+      parsed: { headers: ["name"], rows: [["Alice"]], headerless: false },
       fileName: "payroll.csv",
       fileSize: 100,
       onClear,

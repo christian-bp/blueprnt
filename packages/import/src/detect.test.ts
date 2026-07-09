@@ -258,3 +258,124 @@ describe("detectColumns — unmapped columns", () => {
     expect(result.map.department?.columnIndex).toBe(16)
   })
 })
+
+describe("detectColumns content-only mode (headerless files)", () => {
+  // Column layout: id, name, gender, title, dept, birth, start, fte, salary.
+  const ROWS = [
+    [
+      "1001",
+      "Anna Svensson",
+      "Kvinna",
+      "Utvecklare",
+      "IT",
+      "1985-04-12",
+      "2020-01-15",
+      "100",
+      "52 000,00",
+    ],
+    [
+      "1002",
+      "Erik Johansson",
+      "Man",
+      "Controller",
+      "Ekonomi",
+      "1979-11-02",
+      "2018-03-01",
+      "80",
+      "48 500,00",
+    ],
+    [
+      "1003",
+      "Maria Karlsson",
+      "Kvinna",
+      "HR-specialist",
+      "HR",
+      "1992-06-23",
+      "2021-09-01",
+      "100",
+      "44 000,00",
+    ],
+  ]
+  const HEADERS = ROWS[0]!.map((_, i) => `column_${i + 1}`)
+
+  function detect(rows: string[][], currentYear = 2026) {
+    const headers = rows[0]!.map((_, i) => `column_${i + 1}`)
+    return detectColumns({ headers, rows, headerless: true, currentYear })
+  }
+
+  it("CO-01: suggests by shape and disambiguates the two date columns", () => {
+    const { map } = detectColumns({
+      headers: HEADERS,
+      rows: ROWS,
+      headerless: true,
+      currentYear: 2026,
+    })
+    expect(map.gender?.columnIndex).toBe(2)
+    expect(map.ftePercent?.columnIndex).toBe(7)
+    expect(map.basicMonthly?.columnIndex).toBe(8)
+    expect(map.externalRef?.columnIndex).toBe(0)
+    // Newer-maxed date column is the start date, the older the birth date.
+    expect(map.employmentStartDate?.columnIndex).toBe(6)
+    expect(map.birthDate?.columnIndex).toBe(5)
+    // Text columns (name, title, department) carry no shape signal.
+    expect(map.title).toBeUndefined()
+    expect(map.department).toBeUndefined()
+  })
+
+  it("CO-02: content suggestions carry low confidence", () => {
+    const { map } = detect(ROWS)
+    expect(map.gender?.confidence).toBe(0.4)
+  })
+
+  it("CO-03: a single old-maxed date column is the birth date", () => {
+    const { map } = detect(
+      [
+        ["Anna", "1985-04-12"],
+        ["Erik", "1979-11-02"],
+      ],
+      2026
+    )
+    expect(map.birthDate?.columnIndex).toBe(1)
+    expect(map.employmentStartDate).toBeUndefined()
+  })
+
+  it("CO-04: a single recent-maxed date column is the start date", () => {
+    const { map } = detect(
+      [
+        ["Anna", "2020-01-15"],
+        ["Erik", "2024-03-01"],
+      ],
+      2026
+    )
+    expect(map.employmentStartDate?.columnIndex).toBe(1)
+    expect(map.birthDate).toBeUndefined()
+  })
+
+  it("CO-05: an all-year id column is the pay year, not the employee number", () => {
+    const { map } = detect([
+      ["Anna", "2024"],
+      ["Erik", "2024"],
+    ])
+    expect(map.payYear?.columnIndex).toBe(1)
+    expect(map.externalRef).toBeUndefined()
+  })
+
+  it("CO-06: several money columns stay unmapped (basic vs variable vs benefits)", () => {
+    const { map, unmappedColumns } = detect([
+      ["Anna", "52 000,00", "5 000,00"],
+      ["Erik", "48 500,00", "3 000,00"],
+    ])
+    expect(map.basicMonthly).toBeUndefined()
+    expect(unmappedColumns).toContain(1)
+    expect(unmappedColumns).toContain(2)
+  })
+
+  it("CO-07: several id columns stay unmapped (nothing tells them apart)", () => {
+    const { map } = detect([
+      ["1001", "12345"],
+      ["1002", "23456"],
+    ])
+    expect(map.externalRef).toBeUndefined()
+    expect(map.payYear).toBeUndefined()
+  })
+})

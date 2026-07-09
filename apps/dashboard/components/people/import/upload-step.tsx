@@ -25,7 +25,12 @@ export function handleCsvText(
   }
   let parsed: ParsedCsv
   try {
-    parsed = tokenizeCsv(text)
+    const tokenized = tokenizeCsv(text)
+    parsed = {
+      headers: tokenized.headers,
+      rows: tokenized.rows,
+      headerless: tokenized.signals.headerless,
+    }
   } catch (err) {
     if (err instanceof ImportFormatError) {
       return { ok: false, error: "errorInvalidFormat" }

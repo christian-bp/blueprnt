@@ -213,7 +213,9 @@
           "unmappedRequired": "{count, plural, one {# required field is not mapped} other {# required fields are not mapped}}",
           "column": "CSV column",
           "mappedTo": "Mapped to",
-          "ignore": "Ignore"
+          "ignore": "Ignore",
+          "columnNumber": "Column {number}",
+          "headerlessNotice": "This file has no header row, so the first row was kept as data and the columns are numbered. Fields were suggested from the column contents where possible; assign the rest below."
         },
         "tier": {
           "required": "Required",
@@ -258,7 +260,8 @@
           "fileWarnings": "File warnings",
           "fileWarning": {
             "noDelimiter": "No column separator detected",
-            "mojibake": "Header text looks garbled (wrong file encoding)"
+            "mojibake": "Header text looks garbled (wrong file encoding)",
+            "headerless": "The file has no header row; columns were identified from their content. Check the mapping."
           },
           "assignGender": {
             "heading": "Assign gender for these rows",

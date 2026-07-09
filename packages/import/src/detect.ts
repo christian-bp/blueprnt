@@ -61,6 +61,10 @@ const SHAPE_ONLY_ELIGIBLE: ReadonlySet<string> = new Set(["gender", "boolean"])
 export function detectColumns(input: {
   headers: string[]
   rows: string[][]
+  /** From TokenizeSignals: the file has no header row (headers are blank). */
+  headerless?: boolean
+  /** Injectable for tests; the date disambiguation needs "now". */
+  currentYear?: number
 }): DetectedMapping {
   const { headers, rows } = input
   const numCols = headers.length
@@ -81,6 +85,17 @@ export function detectColumns(input: {
     const colValues = sample.map((row) => row[colIdx] ?? "")
     return classifyColumn(colValues).shape
   })
+
+  // A headerless file has nothing for the synonym passes to chew on: fall
+  // back to content-only suggestions over the column shapes.
+  if (input.headerless === true) {
+    return detectByContent({
+      numCols,
+      colShapes,
+      sample,
+      currentYear: input.currentYear ?? new Date().getFullYear(),
+    })
+  }
 
   // Columns whose folded header is empty are always unmapped (DC-22, ENC-16).
   const blankHeaderCols = new Set<number>()
@@ -164,5 +179,108 @@ export function detectColumns(input: {
     if (!assignedCols.has(i)) unmappedColumns.push(i)
   }
 
+  return { map, unmappedColumns }
+}
+
+// Content-only suggestion confidence: below every header-based score, so the
+// Map step presents these as suggestions to verify, never as certainties.
+const CONTENT_CONFIDENCE = 0.4
+
+/**
+ * Content-only detection for headerless files: suggest fields purely from
+ * column shapes, and only where the file leaves no real ambiguity.
+ *
+ *   gender / boolean / percent — unique-field shapes: assigned when exactly
+ *     one column has the shape (gender, isManager, ftePercent).
+ *   money — basicMonthly when exactly one money column; several money
+ *     columns (basic + variable + benefits) cannot be told apart by shape.
+ *   date — one date column: employmentStartDate when its newest year is
+ *     recent (people get hired), birthDate when the newest year is over
+ *     ADULT_AGE_YEARS back (nobody employable was born more recently).
+ *     Two date columns: the newer-maxed one is the start date, the older the
+ *     birth date. More than two: unmapped.
+ *   id — exactly one id column: payYear when every value is a bare year,
+ *     externalRef otherwise (the employee number).
+ *
+ * Text columns (name, title, department) carry no shape signal and stay
+ * unmapped for the user to assign in the Map step.
+ */
+const ADULT_AGE_YEARS = 15
+
+function detectByContent(input: {
+  numCols: number
+  colShapes: string[]
+  sample: string[][]
+  currentYear: number
+}): DetectedMapping {
+  const { numCols, colShapes, sample, currentYear } = input
+  const map: DetectedMapping["map"] = {}
+  const assignedCols = new Set<number>()
+
+  const columnsOf = (shape: string): number[] =>
+    colShapes.flatMap((s, i) => (s === shape ? [i] : []))
+
+  const assign = (fieldKey: CanonicalFieldKey, columnIndex: number) => {
+    map[fieldKey] = { columnIndex, confidence: CONTENT_CONFIDENCE }
+    assignedCols.add(columnIndex)
+  }
+
+  const columnValues = (col: number): string[] =>
+    sample.map((row) => (row[col] ?? "").trim()).filter((v) => v !== "")
+
+  // Newest year mentioned anywhere in the column's values (0 when none).
+  const maxYear = (col: number): number => {
+    let max = 0
+    for (const value of columnValues(col)) {
+      for (const match of value.matchAll(/(?:19|20)\d{2}/g)) {
+        const year = Number(match[0])
+        if (year > max) max = year
+      }
+    }
+    return max
+  }
+
+  for (const [shape, fieldKey] of [
+    ["gender", "gender"],
+    ["boolean", "isManager"],
+    ["percent", "ftePercent"],
+    ["money", "basicMonthly"],
+  ] as const) {
+    const cols = columnsOf(shape)
+    if (cols.length === 1 && cols[0] !== undefined) assign(fieldKey, cols[0])
+  }
+
+  const dateCols = columnsOf("date")
+  if (dateCols.length === 1 && dateCols[0] !== undefined) {
+    const col = dateCols[0]
+    assign(
+      maxYear(col) >= currentYear - ADULT_AGE_YEARS
+        ? "employmentStartDate"
+        : "birthDate",
+      col
+    )
+  } else if (dateCols.length === 2) {
+    const [a, b] = dateCols as [number, number]
+    const yearA = maxYear(a)
+    const yearB = maxYear(b)
+    if (yearA !== yearB) {
+      assign("employmentStartDate", yearA > yearB ? a : b)
+      assign("birthDate", yearA > yearB ? b : a)
+    }
+  }
+
+  const idCols = columnsOf("id")
+  if (idCols.length === 1 && idCols[0] !== undefined) {
+    const col = idCols[0]
+    const values = columnValues(col)
+    const allYears =
+      values.length > 0 && values.every((v) => /^(?:19|20)\d{2}$/.test(v))
+    assign(allYears ? "payYear" : "externalRef", col)
+  }
+
+  const unmappedColumns: number[] = []
+  for (let i = 0; i < numCols; i++) {
+    if (!assignedCols.has(i)) unmappedColumns.push(i)
+  }
   return { map, unmappedColumns }
 }

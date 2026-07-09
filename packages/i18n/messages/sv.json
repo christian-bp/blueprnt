@@ -213,7 +213,9 @@
           "unmappedRequired": "{count, plural, one {# obligatoriskt fält är inte mappat} other {# obligatoriska fält är inte mappade}}",
           "column": "CSV-kolumn",
           "mappedTo": "Mappas till",
-          "ignore": "Ignorera"
+          "ignore": "Ignorera",
+          "columnNumber": "Kolumn {number}",
+          "headerlessNotice": "Filen saknar rubrikrad, så första raden behölls som data och kolumnerna är numrerade. Fält föreslogs utifrån kolumnernas innehåll där det gick; koppla resten nedan."
         },
         "check": {
           "title": "Kontrollera beredskap",
@@ -253,7 +255,8 @@
           "fileWarnings": "Filvarningar",
           "fileWarning": {
             "noDelimiter": "Ingen kolumnavgränsare hittades",
-            "mojibake": "Rubriktexten ser skadad ut (fel filkodning)"
+            "mojibake": "Rubriktexten ser skadad ut (fel filkodning)",
+            "headerless": "Filen saknar rubrikrad; kolumnerna identifierades utifrån sitt innehåll. Kontrollera kopplingen."
           },
           "assignGender": {
             "heading": "Ange kön för dessa rader",

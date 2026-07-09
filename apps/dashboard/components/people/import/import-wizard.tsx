@@ -35,6 +35,8 @@ import { UploadStep } from "./upload-step"
 export interface ParsedCsv {
   headers: string[]
   rows: string[][]
+  /** The file has no header row: headers are synthesized ("column_1", ...). */
+  headerless: boolean
 }
 
 // What a successful import did, shown on the final done screen.

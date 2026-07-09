@@ -213,7 +213,9 @@
           "unmappedRequired": "{count, plural, one {# obligatorisk felt er ikke tilordnet} other {# obligatoriske felt er ikke tilordnet}}",
           "column": "CSV-kolonne",
           "mappedTo": "Tilordnet til",
-          "ignore": "Ignorer"
+          "ignore": "Ignorer",
+          "columnNumber": "Kolonne {number}",
+          "headerlessNotice": "Filen mangler overskriftsrad, så første rad ble beholdt som data og kolonnene er nummererte. Felt ble foreslått ut fra kolonnenes innhold der det var mulig; koble resten nedenfor."
         },
         "check": {
           "title": "Kontroller beredskap",
@@ -253,7 +255,8 @@
           "fileWarnings": "Filadvarsler",
           "fileWarning": {
             "noDelimiter": "Ingen kolonneskiller funnet",
-            "mojibake": "Overskriftsteksten ser ødelagt ut (feil filkoding)"
+            "mojibake": "Overskriftsteksten ser ødelagt ut (feil filkoding)",
+            "headerless": "Filen mangler overskriftsrad; kolonnene ble identifisert ut fra innholdet. Kontroller koblingen."
           },
           "assignGender": {
             "heading": "Angi kjønn for disse radene",

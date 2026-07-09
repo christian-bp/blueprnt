@@ -57,7 +57,11 @@ const FULL_ROWS: string[][] = [
   ["E001", "Software Engineer", "Kvinna", "55000", "100"],
   ["E002", "Product Manager", "Man", "70000", "80"],
 ]
-const FULL_PARSED: ParsedCsv = { headers: FULL_HEADERS, rows: FULL_ROWS }
+const FULL_PARSED: ParsedCsv = {
+  headers: FULL_HEADERS,
+  rows: FULL_ROWS,
+  headerless: false,
+}
 
 // Mapping that covers all four required fields AND ftePercent.
 // Column indices: EmployeeID=0, JobTitle=1, Gender=2, MonthlySalary=3, FTE=4
@@ -92,6 +96,7 @@ const DUPLICATE_ROWS: string[][] = [
 const DUPLICATE_PARSED: ParsedCsv = {
   headers: ["EmployeeID", "JobTitle", "Gender", "MonthlySalary"],
   rows: DUPLICATE_ROWS,
+  headerless: false,
 }
 const DUPLICATE_MAPPING: Record<string, number> = {
   externalRef: 0,
@@ -263,6 +268,7 @@ describe("CheckStep — data quality issues", () => {
       parsed: {
         headers: ["EmployeeID", "JobTitle", "Gender", "MonthlySalary"],
         rows: [["E001", "Engineer", "", "55000"]],
+        headerless: false,
       },
       mapping: DUPLICATE_MAPPING,
     })
@@ -290,6 +296,7 @@ describe("CheckStep — data quality issues", () => {
 const AMBIGUOUS_DATE_PARSED: ParsedCsv = {
   headers: ["EmployeeID", "JobTitle", "Gender", "MonthlySalary", "StartDate"],
   rows: [["E001", "Engineer", "Kvinna", "55000", "03/04/2020"]],
+  headerless: false,
 }
 const AMBIGUOUS_DATE_MAPPING: Record<string, number> = {
   externalRef: 0,
@@ -391,6 +398,7 @@ describe("CheckStep — file warnings", () => {
     const singleCol: ParsedCsv = {
       headers: ["EmployeeID:JobTitle:Gender:MonthlySalary"],
       rows: [["E001:Engineer:Kvinna:55000"]],
+      headerless: false,
     }
     renderCheckStep({
       parsed: singleCol,
@@ -407,6 +415,7 @@ describe("CheckStep — file warnings", () => {
     const garbled: ParsedCsv = {
       headers: ["Anstnr", "MÃ¥nadslÃ¶n", "KÃ¶n", "Titel"],
       rows: [["E001", "55000", "Kvinna", "Engineer"]],
+      headerless: false,
     }
     renderCheckStep({
       parsed: garbled,
@@ -433,6 +442,7 @@ const BLANK_GENDER_PARSED: ParsedCsv = {
     ["E001", "Engineer", "", "55000"],
     ["E002", "Manager", "Man", "70000"],
   ],
+  headerless: false,
 }
 const BLANK_GENDER_MAPPING: Record<string, number> = {
   externalRef: 0,

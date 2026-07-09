@@ -5,6 +5,8 @@
 // strips null bytes, and signals single-column input. Value cells are NOT trimmed.
 
 import Papa from "papaparse"
+import { CANONICAL_FIELDS, fold, matchesSynonym } from "./fields"
+import { classifyColumn } from "./shape"
 
 const UTF8_BOM = "﻿"
 
@@ -62,6 +64,11 @@ export type TokenizeSignals = {
   blankHeaderColumns: number[]
   /** True when the file parsed as a single column (likely a missing delimiter). */
   noDelimiter: boolean
+  /**
+   * True when the file has no header row (the first row is data). Headers are
+   * synthesized blank; detection falls back to content-only suggestions.
+   */
+  headerless: boolean
 }
 
 export type TokenizeResult = {
@@ -128,6 +135,7 @@ export function tokenizeCsv(text: string): TokenizeResult {
         duplicateHeaders: [],
         blankHeaderColumns: [],
         noDelimiter: false,
+        headerless: false,
       },
     }
   }
@@ -139,18 +147,39 @@ export function tokenizeCsv(text: string): TokenizeResult {
   const preambleRowsSkipped = headerRowIndex
 
   const rawHeader = (allRows[headerRowIndex] ?? []).map((c) => cleanCell(c))
-  const rawData = allRows.slice(headerRowIndex + 1)
 
-  // 6. Trim headers (value cells stay untrimmed).
-  let headers = rawHeader.map((h) => h.trim())
+  // 5b. Headerless detection: the chosen "header" row may really be the
+  //     first DATA row (a file exported without headers). If so, keep it as
+  //     data, synthesize blank headers, and flag the file so detection can
+  //     fall back to content-only suggestions (and the UI can say so).
+  const headerless = looksHeaderless(
+    rawHeader.map((h) => h.trim()),
+    allRows.slice(headerRowIndex + 1)
+  )
+  const rawData = allRows.slice(
+    headerless ? headerRowIndex : headerRowIndex + 1
+  )
 
-  // 7. Record blank-header columns and disambiguate duplicates.
+  // 6. Trim headers (value cells stay untrimmed). A headerless file gets
+  //    synthesized positional names ("column_1", ...): unique and stable, so
+  //    the header-name-keyed mapping contract (wizard -> backend columnMap)
+  //    works unchanged; the UI displays them as localized "Column N" labels.
+  let headers = headerless
+    ? rawHeader.map((_, i) => `column_${i + 1}`)
+    : rawHeader.map((h) => h.trim())
+
+  // 7. Record blank-header columns and disambiguate duplicates. For a
+  //    headerless file every header is synthetic (non-blank, unique), so
+  //    neither signal applies: headerless is its own signal. (A trailing
+  //    all-empty column consequently does not strip in headerless mode; it
+  //    classifies as empty and stays unmapped, which is harmless.)
   const blankHeaderColumns: number[] = []
   headers.forEach((h, i) => {
     if (h.length === 0) blankHeaderColumns.push(i)
   })
-  const { headers: dedupedHeaders, duplicateHeaders } =
-    disambiguateHeaders(headers)
+  const { headers: dedupedHeaders, duplicateHeaders } = headerless
+    ? { headers, duplicateHeaders: [] }
+    : disambiguateHeaders(headers)
   headers = dedupedHeaders
 
   // 8. Clean value cells (null bytes) but do NOT trim.
@@ -183,10 +212,61 @@ export function tokenizeCsv(text: string): TokenizeResult {
       preambleRowsSkipped,
       raggedRows,
       duplicateHeaders,
-      blankHeaderColumns: stripped.blankHeaderColumns,
+      blankHeaderColumns: headerless ? [] : stripped.blankHeaderColumns,
       noDelimiter,
+      headerless,
     },
   }
+}
+
+// Shapes a header word can never take: header cells are text (or id-like
+// codes such as "EmpNo"), never dates, gender words, amounts, percents, or
+// booleans. A candidate-header cell classifying as one of these, in a column
+// whose data classifies the same way, means the row is really data. `id` is
+// deliberately excluded: unknown-language headers ("EmpNo") classify as id
+// and would misfire.
+const DATA_ONLY_SHAPES: ReadonlySet<string> = new Set([
+  "date",
+  "gender",
+  "money",
+  "percent",
+  "boolean",
+])
+
+/**
+ * Decide whether the chosen header row is really the first data row.
+ * Conservative on purpose: both gates must agree.
+ *   Gate 1: no cell matches any canonical-field header synonym (a single
+ *           recognized header word proves a real header row).
+ *   Gate 2: at least one cell classifies as a distinctly data-like shape
+ *           (DATA_ONLY_SHAPES) AND its column's data classifies the same.
+ * With no data rows below there is nothing to compare against: keep the
+ * status-quo header interpretation.
+ */
+function looksHeaderless(candidate: string[], dataRows: string[][]): boolean {
+  if (dataRows.length === 0) return false
+
+  for (const cell of candidate) {
+    const folded = fold(cell)
+    if (folded.length === 0) continue
+    for (const field of CANONICAL_FIELDS) {
+      const { exact, substring } = matchesSynonym(folded, field.synonyms)
+      if (exact || substring) return false
+    }
+  }
+
+  const sample = dataRows.slice(0, 20)
+  for (let col = 0; col < candidate.length; col++) {
+    const cell = (candidate[col] ?? "").trim()
+    if (cell === "") continue
+    const cellShape = classifyColumn([cell]).shape
+    if (!DATA_ONLY_SHAPES.has(cellShape)) continue
+    const colShape = classifyColumn(
+      sample.map((row) => cleanCell(row[col] ?? ""))
+    ).shape
+    if (colShape === cellShape) return true
+  }
+  return false
 }
 
 // Strip null bytes from a cell. Does not trim (value parsers own trimming).

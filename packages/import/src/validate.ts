@@ -27,7 +27,7 @@ export type RowIssueCode =
   | "negativeValue"
   | "raggedRow"
 
-export type FileWarningCode = "noDelimiter" | "mojibake"
+export type FileWarningCode = "noDelimiter" | "mojibake" | "headerless"
 
 export type RowIssueSeverity = "error" | "notice"
 
@@ -165,6 +165,7 @@ export function validateImport(
   const fileWarnings: FileWarningCode[] = []
   if (mojibakeCount >= 2) fileWarnings.push("mojibake")
   if (signals?.noDelimiter === true) fileWarnings.push("noDelimiter")
+  if (signals?.headerless === true) fileWarnings.push("headerless")
 
   // Build readiness: one entry per canonical field.
   const readiness: ReadinessEntry[] = CANONICAL_FIELDS.map((field) => ({

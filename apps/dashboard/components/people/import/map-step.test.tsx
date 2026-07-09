@@ -41,7 +41,11 @@ const TEST_ROWS: string[][] = [
   ["E002", "Product Manager", "Man", "70000", "Product"],
 ]
 
-const PARSED: ParsedCsv = { headers: TEST_HEADERS, rows: TEST_ROWS }
+const PARSED: ParsedCsv = {
+  headers: TEST_HEADERS,
+  rows: TEST_ROWS,
+  headerless: false,
+}
 
 const m = messages.dashboard.people.import
 
@@ -83,6 +87,7 @@ describe("buildInitialMapping", () => {
     const result = buildInitialMapping({
       headers: ["EmployeeID"],
       rows: [["E001"]],
+      headerless: false,
     })
     // "EmployeeID" matches externalRef's synonym "employeeid".
     expect(result.externalRef).toBe(0)
@@ -98,6 +103,7 @@ describe("seedMappingFromProfile", () => {
   const parsed = {
     headers: ["Anstnr", "Namn", "Befattning", "Lon"],
     rows: [["1", "Alex", "Engineer", "50000"]],
+    headerless: false,
   }
 
   it("maps saved canonical->header onto the current file's column indices", () => {
@@ -189,6 +195,7 @@ describe("MapStep: profile seeding", () => {
           parsed={{
             headers: ["Anstnr", "Befattning"],
             rows: [["1", "Engineer"]],
+            headerless: false,
           }}
           mapping={null}
           onMappingChange={onMappingChange}
@@ -409,5 +416,50 @@ describe("assignColumnToField", () => {
     const next = assignColumnToField(prev, 0, "externalRef")
     expect(next.externalRef).toBe(0)
     expect(next.title).toBe(1)
+  })
+})
+
+describe("headerless files (HL)", () => {
+  afterEach(() => {
+    cleanup()
+  })
+
+  // A headerless file as tokenizeCsv emits it: synthesized column names,
+  // every row kept as data.
+  const HEADERLESS_PARSED: ParsedCsv = {
+    headers: ["column_1", "column_2", "column_3", "column_4", "column_5"],
+    rows: [
+      ["1001", "Anna Svensson", "Kvinna", "2020-01-15", "100"],
+      ["1002", "Erik Johansson", "Man", "2018-03-01", "80"],
+    ],
+    headerless: true,
+  }
+
+  it("seeds content-only suggestions from the column shapes", () => {
+    const mapping = buildInitialMapping(HEADERLESS_PARSED)
+    expect(mapping.gender).toBe(2)
+    expect(mapping.employmentStartDate).toBe(3)
+    expect(mapping.ftePercent).toBe(4)
+    expect(mapping.externalRef).toBe(0)
+    // The name column is text: no shape signal, left for the user.
+    expect(mapping.displayName).toBeUndefined()
+  })
+
+  it("shows the headerless notice and numbered column labels", () => {
+    renderMapStep({ parsed: HEADERLESS_PARSED })
+    expect(screen.getByTestId("headerless-notice").textContent).toBe(
+      m.map.headerlessNotice
+    )
+    // The synthesized technical names never render; the localized positional
+    // label does.
+    expect(screen.queryByText("column_1")).toBeNull()
+    expect(screen.getByText("Column 1")).toBeDefined()
+    expect(screen.getByText("Column 5")).toBeDefined()
+  })
+
+  it("keeps real header names and no notice for headered files", () => {
+    renderMapStep()
+    expect(screen.queryByTestId("headerless-notice")).toBeNull()
+    expect(screen.getByText("EmployeeID")).toBeDefined()
   })
 })

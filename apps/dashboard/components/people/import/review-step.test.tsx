@@ -75,7 +75,7 @@ const ROWS: string[][] = [
   ["E002", "Product Manager", "Man", "70000", "80", "EUR"],
 ]
 
-const PARSED: ParsedCsv = { headers: HEADERS, rows: ROWS }
+const PARSED: ParsedCsv = { headers: HEADERS, rows: ROWS, headerless: false }
 
 // Mapping: canonical field key -> column index.
 const MAPPING: Record<string, number> = {

@@ -522,6 +522,16 @@ describe("validateImport — mojibake / ragged / noDelimiter signals", () => {
     expect(result.fileWarnings ?? []).not.toContain("mojibake")
   })
 
+  it("emits the headerless file warning from tokenizer signals (HL)", () => {
+    const result = validateImport(
+      { headers: HEADERS, rows: ROWS },
+      FULL_MAPPING,
+      {},
+      { headerless: true }
+    )
+    expect(result.fileWarnings).toContain("headerless")
+  })
+
   it("emits raggedRow per index from tokenizer signals (T19/T20)", () => {
     const result = validateImport(
       { headers: HEADERS, rows: ROWS },
