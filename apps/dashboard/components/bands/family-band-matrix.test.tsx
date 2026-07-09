@@ -60,11 +60,13 @@ describe("FamilyBandMatrix", () => {
     // Column headers: one per band.
     expect(screen.getByRole("columnheader", { name: "Band 1" })).toBeDefined()
     expect(screen.getByRole("columnheader", { name: "Band 2" })).toBeDefined()
-    // Row headers in order: Finance, Tech, then the family-less bucket.
-    const rowHeaders = screen
-      .getAllByRole("rowheader")
+    // Family labels are full-width rows (scope=colgroup, so columnheader
+    // role) in order: Finance, Tech, then the family-less bucket.
+    const familyLabels = screen
+      .getAllByRole("columnheader")
       .map((header) => header.textContent)
-    expect(rowHeaders).toEqual([
+      .filter((label) => label !== null && !/^Band \d+$/.test(label))
+    expect(familyLabels).toEqual([
       "Finance",
       "Tech",
       messages.dashboard.roles.family.none,
@@ -88,10 +90,12 @@ describe("FamilyBandMatrix", () => {
         band: 2,
       }),
     ])
-    const techRow = screen
-      .getByRole("rowheader", { name: "Tech" })
+    // The family's band cells sit in the row right below its label row.
+    const labelRow = screen
+      .getByRole("columnheader", { name: "Tech" })
       .closest("tr") as HTMLTableRowElement
-    const cells = within(techRow).getAllByRole("cell")
+    const cellsRow = labelRow.nextElementSibling as HTMLTableRowElement
+    const cells = within(cellsRow).getAllByRole("cell")
     // Band 1 first, Band 2 second.
     expect(within(cells[0] as HTMLElement).getByText("Engineer")).toBeDefined()
     expect(within(cells[1] as HTMLElement).getByText("Architect")).toBeDefined()
@@ -119,9 +123,11 @@ describe("FamilyBandMatrix", () => {
     expect(screen.queryByText("Draft Role")).toBeNull()
   })
 
-  it("renders nothing but headers when every role is filtered away", () => {
+  it("renders nothing but band headers when every role is filtered away", () => {
     renderMatrix([])
-    expect(screen.getByRole("columnheader", { name: "Band 1" })).toBeDefined()
-    expect(screen.queryAllByRole("rowheader")).toHaveLength(0)
+    // Only the two band headers remain: no family label rows.
+    expect(
+      screen.getAllByRole("columnheader").map((header) => header.textContent)
+    ).toEqual(["Band 1", "Band 2"])
   })
 })

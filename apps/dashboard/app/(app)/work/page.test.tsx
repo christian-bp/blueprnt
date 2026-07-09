@@ -142,10 +142,13 @@ describe("WorkOverviewPage", () => {
         screen.queryByText(messages.dashboard.bands.groupByFamily)
       ).toBeNull()
     })
-    // One row per family (the family-less bucket included), roles as chips.
-    expect(screen.getByRole("rowheader", { name: "Engineering" })).toBeDefined()
+    // One label row per family (the family-less bucket included), roles as
+    // chips beneath (the full-width label th maps to the columnheader role).
     expect(
-      screen.getByRole("rowheader", {
+      screen.getByRole("columnheader", { name: "Engineering" })
+    ).toBeDefined()
+    expect(
+      screen.getByRole("columnheader", {
         name: messages.dashboard.roles.family.none,
       })
     ).toBeDefined()
