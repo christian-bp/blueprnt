@@ -94,6 +94,12 @@ export function DatePicker({
           captionLayout="dropdown"
           startMonth={new Date(1970, 0)}
           endMonth={new Date(new Date().getFullYear() + 1, 11)}
+          // Full month names in the ACTIVE next-intl locale (the vendor
+          // default abbreviates and follows the browser locale instead).
+          formatters={{
+            formatMonthDropdown: (date) =>
+              format.dateTime(date, { month: "long" }),
+          }}
           onSelect={(date) => {
             onChange(date === undefined ? "" : toIsoDate(date))
             setOpen(false)
