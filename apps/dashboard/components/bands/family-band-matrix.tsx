@@ -6,6 +6,10 @@ import { HATCH_CLASS } from "@/components/bands/hatch"
 import { RoleChip } from "@/components/bands/role-chip"
 import { type BandRoleRow, bandRanges } from "@/lib/bands"
 import { SPRING } from "@/lib/motion"
+import {
+  MATRIX_COL_HEADER_CLASS,
+  MATRIX_WRAPPER_CLASS,
+} from "@/components/bands/matrix-chrome"
 import { groupByFamily } from "@/lib/role-groups"
 
 // Family x band matrix (the BandMatrix transposed onto the family axis):
@@ -43,16 +47,16 @@ export function FamilyBandMatrix({
   )
 
   return (
-    <div className="overflow-x-auto">
+    <div className={MATRIX_WRAPPER_CLASS}>
       <table className="w-full border-separate border-spacing-2">
         <thead>
           <tr>
-            <th scope="col" className="w-24" />
+            <th scope="col" className={`w-24 ${MATRIX_COL_HEADER_CLASS}`} />
             {ranges.map((range) => (
               <th
                 key={range.band}
                 scope="col"
-                className="whitespace-nowrap text-left font-medium text-muted-foreground text-xs uppercase tracking-wide"
+                className={`whitespace-nowrap text-left font-medium text-muted-foreground text-xs uppercase tracking-wide ${MATRIX_COL_HEADER_CLASS}`}
               >
                 {t("bandRow", { band: range.band })}
               </th>

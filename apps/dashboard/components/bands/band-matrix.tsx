@@ -4,6 +4,10 @@ import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import { RoleChip } from "@/components/bands/role-chip"
 import { HATCH_CLASS } from "@/components/bands/hatch"
+import {
+  MATRIX_COL_HEADER_CLASS,
+  MATRIX_WRAPPER_CLASS,
+} from "@/components/bands/matrix-chrome"
 import { type BandRoleRow, bandRanges } from "@/lib/bands"
 import { SPRING } from "@/lib/motion"
 import { groupByFamily as groupRowsByFamily } from "@/lib/role-groups"
@@ -61,11 +65,11 @@ export function BandMatrix({
   )
 
   return (
-    <div className="overflow-x-auto">
+    <div className={MATRIX_WRAPPER_CLASS}>
       <table className="w-full border-separate border-spacing-2">
         <thead>
           <tr>
-            <th scope="col" className="w-24" />
+            <th scope="col" className={`w-24 ${MATRIX_COL_HEADER_CLASS}`} />
             {tracks.map((track) => (
               <th
                 key={track.key}
@@ -75,7 +79,7 @@ export function BandMatrix({
                 // (title alone is not reliably announced).
                 aria-label={track.name}
                 title={track.name}
-                className="text-left font-medium text-muted-foreground text-xs uppercase tracking-wide"
+                className={`text-left font-medium text-muted-foreground text-xs uppercase tracking-wide ${MATRIX_COL_HEADER_CLASS}`}
               >
                 {track.key}
               </th>
