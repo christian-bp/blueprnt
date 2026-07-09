@@ -1,0 +1,23 @@
+apps/dashboard/components/bands/family-band-matrix.tsx
+  s_6bff98b662648b::t_3bc3efdca5f712 4,17-25,71-80,82-120
+apps/dashboard/app/(app)/work/page.test.tsx
+  s_6bff98b662648b::t_97ac4c3aaad925 145-146,148-151
+apps/dashboard/components/bands/family-band-matrix.test.tsx
+  s_6bff98b662648b::t_97ac4c3aaad925 63-66,68-69,93-95,97-98,126,128-131
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "253fdf99a0b575932c827cf1d493cc06d3ebda33",
+  "prompts": {},
+  "sessions": {
+    "s_6bff98b662648b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b29fafc9-2370-444a-995d-dd4c51859832",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
