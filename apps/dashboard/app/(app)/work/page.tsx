@@ -51,6 +51,13 @@ export default function WorkOverviewPage() {
   // Families turned OFF; empty means all are shown.
   const [hidden, setHidden] = useState<Set<string>>(new Set())
   const [grouped, setGrouped] = useState(false)
+  // The active tab, owned by the page so BOTH branches render the same
+  // controlled Tabs. The Tabs instance persists across the loading-to-loaded
+  // branch swap (same tree position), and Base UI drops an uncontrolled
+  // selection when the active trigger remounts in a new spot, which left the
+  // loaded page with no view selected. Page-owned state also lets a tab
+  // picked during loading carry over.
+  const [view, setView] = useState<"ladder" | "matrix">("ladder")
 
   // The header is static i18n content, so both branches render it for real;
   // one node so the two cannot drift.
@@ -74,11 +81,11 @@ export default function WorkOverviewPage() {
     return (
       <div className="space-y-6">
         {header}
-        {/* Uncontrolled like the loaded Tabs below: React keeps the instance
-            across the branch swap (same position), so a controlled loading
-            Tabs would warn about switching to uncontrolled, and uncontrolled
-            state lets a tab picked during loading carry over. */}
-        <Tabs defaultValue="ladder" className="space-y-4">
+        <Tabs
+          value={view}
+          onValueChange={(value) => setView(value as "ladder" | "matrix")}
+          className="space-y-4"
+        >
           <TabsList variant="line">
             <TabsTrigger value="ladder">{t("viewLadder")}</TabsTrigger>
             <TabsTrigger value="matrix">{t("viewMatrix")}</TabsTrigger>
@@ -162,7 +169,11 @@ export default function WorkOverviewPage() {
           </Link>
         </Empty>
       ) : (
-        <Tabs defaultValue="ladder" className="space-y-4">
+        <Tabs
+          value={view}
+          onValueChange={(value) => setView(value as "ladder" | "matrix")}
+          className="space-y-4"
+        >
           <div className="flex flex-wrap items-center gap-3">
             <TabsList variant="line">
               <TabsTrigger value="ladder">{t("viewLadder")}</TabsTrigger>

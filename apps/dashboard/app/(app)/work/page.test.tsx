@@ -50,12 +50,16 @@ function results(rows: Array<Record<string, unknown>>) {
   }
 }
 
-function renderPage() {
-  return render(
+function page() {
+  return (
     <NextIntlClientProvider locale="en" messages={messages}>
       <WorkOverviewPage />
     </NextIntlClientProvider>
   )
+}
+
+function renderPage() {
+  return render(page())
 }
 
 describe("WorkOverviewPage", () => {
@@ -80,6 +84,24 @@ describe("WorkOverviewPage", () => {
     expect(screen.getByText(messages.dashboard.bands.viewLadder)).toBeDefined()
     expect(screen.getByText(messages.dashboard.bands.viewMatrix)).toBeDefined()
     // Ladder is the default view: the role chip is on screen.
+    expect(screen.getByRole("link", { name: /CTO/ })).toBeDefined()
+    expect(screen.getByText("Band 1")).toBeDefined()
+  })
+
+  it("keeps the ladder view selected when the results arrive after loading", () => {
+    // Loading first: the page renders its real tabs over the skeleton. The
+    // Tabs instance persists across the branch swap (same tree position), so
+    // the selection must survive it or the loaded page shows no view at all.
+    useQueryMock.mockImplementation(() => undefined)
+    const { rerender } = renderPage()
+    expect(screen.getByText(messages.dashboard.bands.viewLadder)).toBeDefined()
+
+    useQueryMock.mockImplementation((ref: string) =>
+      ref === "assessment.results.getResults"
+        ? results([bandRow({})])
+        : undefined
+    )
+    rerender(page())
     expect(screen.getByRole("link", { name: /CTO/ })).toBeDefined()
     expect(screen.getByText("Band 1")).toBeDefined()
   })
