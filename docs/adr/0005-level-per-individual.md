@@ -23,3 +23,9 @@ En roll bär en **track** (vilken sorts jobb: IC/Lead/M) men **ingen nivå**. Ni
 
 - **Behålla nivåroller (källdokumentets linje):** mest trogen karriärarkitektur-tänket och ger band per senioritetssteg, men värderingsobjektet matchar inte lönekartläggningens grupper, och setupen blir tyngre. Bortvald 2026-06-07.
 - **Nivå på både roll och individ:** dubblerad sanning med synkproblem. Bortvald.
+
+## Tillägg 2026-07-10: nivådefinitionerna är nu en kodkonstant
+
+Korrigering av konsekvensnoten ovan (2026-06-07: "definitionerna består enbart i standardmall.md"). V2:s rollplacering har delvis skeppat. Nivåladdarna (IC1–IC5, Lead-1..3, M1–M3) lever nu som konstanten `TRACK_LEVELS` i `@workspace/constants` (enda källan i kod) och driver aktiv validering av individ-till-roll-placering (`isValidLevelForTrack` i `people/assignments.ts`) samt nivåförslag; `standardmall.md` är prosareferens. Individens nivå lagras per `personAssignments`-rad. Rollen bär fortfarande bara `trackKey` (ingen nivå på rollen), och band beräknas fortfarande av motorn. `updateRole` blockerar dessutom ett track-byte som skulle lämna en aktiv tilldelnings nivå utanför den nya trackens ladder (`errors.roleTrackChangeBlocked`).
+
+*Denna not är utkastad av en assistent; den svenska texten bör granskas av en modersmålstalare.*

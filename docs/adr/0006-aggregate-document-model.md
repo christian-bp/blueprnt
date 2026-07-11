@@ -38,3 +38,12 @@ Gränsdragningen är beslutets kärna; allt som växer med användningen förbli
 - **Behålla full normalisering (13 tabeller):** fungerade, men betalade N+1-queries, orphan-städning i tre mutationer och radavstämning i kommande E2-redigering för en integritet som dokumentinbäddning ger gratis. Bortvald 2026-06-07.
 - **Bädda in även kriterier (och betyg) i modell-/rolldokumenten:** maximalt aggregerat, men bryter id-referenserna från `ratings`/`suggestions`, tvingar egna sträng-id:n och slår ihop oberoende skrivvägar till ett OCC-hett dokument. Bortvald.
 - **Behålla `tracks`/`levels` som seedade tabeller för V2-flexibilitet:** raderna hade noll läsare utöver uppslag som redan lokaliserade per nyckel; V2 återinför en tabell när verkliga krav finns, utan att rollreferenserna behöver migreras. Bortvald.
+
+## Tillägg 2026-07-10: tabellinventariet har ändrats
+
+Antalsuppgiften ovan ("13 till 9 tabeller") och listan över kvarvarande tabeller är inaktuella; koden är den korrekta källan (se `packages/backend/convex/schema.ts`).
+
+- **`emails`-tabellen är pensionerad:** e-post flyttades till Convex-komponenten `@christian-ek/sweego` med egen livscykel. Den finns inte längre i app-schemat, tvärtemot listan "förbli tabeller" ovan.
+- **Inventariet har vuxit sedan dess** via senare ADR:er och skivor: `platformAuditLog` (ADR-0009), `aiUsageEvents`/`aiUsageMonthly` (AI-användningstelemetri), samt people/pay-kontextens tabeller (`people`, `payRecords`, `personAssignments`, `importMappingProfiles`, `importProgress`). Aggregat-kontra-entitet-regeln som är beslutets kärna är oförändrad; bara antalet och `emails`-raden i listan är fel.
+
+*Denna not är utkastad av en assistent; den svenska texten bör granskas av en modersmålstalare.*

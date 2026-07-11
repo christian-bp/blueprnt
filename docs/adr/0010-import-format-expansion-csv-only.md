@@ -56,4 +56,8 @@ Motorn förblir ren och deterministisk (ADR-0002) och rör aldrig score/band-pat
 - **Lägg till ett tredje kanoniskt könsvärde (granskningens Decision C, alternativ 1).** Bortvald av produktägaren: systemet förblir exakt två kön. Olösta och icke-binära indata flaggas för manuell `Man`/`Kvinna`-tilldelning nedströms i stället för att mappas till ett nytt värde.
 - **Välj DD/MM/MM-DD som standard efter värdens locale eller efter en upptäckt fil-locale.** Bortvald: det skulle införa icke-determinism (värdens locale) eller skörhet (locale-detektion) i en ren motor. En fast regel för nordiskt day-first plus en explicit tvetydighetsvarning är deterministisk och testbar.
 
-*Denna ADR är utkastad av en assistent; den svenska texten bör få en granskning av en modersmålstalare.*
+## Tillägg 2026-07-10: `isMoney` garanterar bara enkelriktningen
+
+Formuleringen ovan ("Detektorn `isMoney` utökas till att matcha parsern **exakt** ... ett värde kan inte längre passera formdetektion men misslyckas i parsning eller tvärtom") stämmer bara åt ena hållet i den skeppade koden. `isMoney` anropar `parseMoney` internt och returnerar falskt när den ger null, så **allt som detekteras som belopp är parsbart** (detektor ⊆ parser). Detektorn är dock *medvetet snävare* än parsern: bara heltal, komma-endast-decimaler utan gruppering (`52000,50`) och mellanslagsgrupper som inte är tusental (`114 55`) parsas men detekteras aldrig som belopp — pp-16/SC-05/SC-02-testerna låser detta för att skydda postnummer, grupperade id:n och valutalösa kommavärden. ADR:ns dubbelriktade "exakt"-påstående är alltså inte sant per design; koden är rätt. (Determinismnoten under Konsekvenser gäller nu bokstavligt: motorn läser inte klockan — `detectColumns` tar referensåret från anroparen och stänger av födelse-/startdatum-heuristiken när det saknas, i stället för att falla tillbaka på `new Date()`.)
+
+*Denna not är utkastad av en assistent; den svenska texten bör granskas av en modersmålstalare.*

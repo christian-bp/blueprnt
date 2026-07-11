@@ -96,6 +96,12 @@ in the same change.
 - [ ] **Re-check the CRA / security hardening plan.** Cross-reference
   `docs/superpowers/specs/2026-06-26-cra-hardening-design.md` and confirm its
   go-live items are done.
+- [ ] **Confirm Sweego's EU hosting region and sign a DPA.** ADR-0001 attaches
+  this as an explicit pre-go-live action for the email subprocessor: welcome,
+  reset, invitation, change-email, and 2FA-code mail all carry recipient email
+  addresses (and bodies) through Sweego. Confirm the hosting region is EU,
+  execute a data-processing agreement, and add Sweego to the subprocessor / DPA
+  register before go-live.
 
 ## V1 conformance follow-ups (from the 2026-07-01 audit)
 
@@ -124,8 +130,9 @@ starting V2:
 - [ ] **Aggregate anchor-comparison panel.** The bands/work overview shows
   per-role deviation chips (`getResults`) but not the agreed-vs-computed table
   (`listAnchorRoles`); the data seam exists, the panel is not built.
-- [ ] **Doc housekeeping.** Fix the stale "with guardrails" test description in
-  `roles.test.ts` and add `starter.import` to the spec's V1 AI-scope list.
+- [x] **Doc housekeeping.** Fixed the stale "with guardrails" test description in
+  `roles.test.ts` and added the starter import + criterion-compliance/bias-review
+  drafts to the V1 AI-scope list (ADR-0003 tillägg 2026-07-10).
 
 ## E2E-only coverage to verify before launch
 

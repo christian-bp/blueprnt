@@ -23,3 +23,12 @@ Utlöst av implementationsunderlaget för rapportering, data och synlighet enlig
 
 - **A. En tenant med en juridisk-enhet-dimension (ursprungligt förslag, bortvalt 2026-06-17):** enheter som rader under en organisation, delad jobbarkitektur, rollup per enhet och land. Ger delad modell och koncernöversikt, men kostar en ny dimension i datamodellen och i UI för en vinst (delad modell, rollup) som inte krävs av direktivet och ändå kan läggas till additivt senare. Bortvald till förmån för den enklare organisation-per-företag.
 - **C. Skjut upp helt:** bortvalt, den strukturella frågan behövde ett svar innan rapportlagret designas.
+
+## Tillägg 2026-07-10: provisionering är back-office; employeeCount härleds nu
+
+Två konsekvensrader ovan har fått en annan lösning än texten antyder.
+
+- **Att skapa/gå med i fler organisationer är back-office, inte en app-yta (ersätter bygge-raden ovan, se ADR-0009).** Endast den *första* organisationen skapas i appen (onboardingens namnsteg via `authClient.organization.create`). Ytterligare organisationer och medlemskap provisioneras av plattformsadmin (`platform/admin.ts`); företagsväljaren är avsiktligt bara en växlare, utan skapa/gå-med-affordans. Bygg alltså inte ett självbetjänings-flöde för att skapa/gå med i organisationer.
+- **`employeeCount` härleds nu från importerade medarbetare.** Sömmen har landat: `internal.people.employeeCount.setEmployeeCountFromPeople` är den enda skrivaren (kallad från importflödet), och det manuella `employeeCount`-argumentet på `updateOrganizationSettings` är borttaget, så det auktoritativa, reviderade antalet inte kan skrivas över manuellt. Trösklarna 100 / 150 / 250 (V2-rapportlagret, ADR-0008) kan då lita på fältet.
+
+*Denna not är utkastad av en assistent; den svenska texten bör granskas av en modersmålstalare.*

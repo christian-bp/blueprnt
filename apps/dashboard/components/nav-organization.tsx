@@ -38,9 +38,10 @@ function initialsOf(name: string): string {
     .toUpperCase()
 }
 
-// Switch-only company picker. Companies and memberships are provisioned by a
-// back-office admin interface (ADR-0007), so there is deliberately no create
-// or add affordance here.
+// Switch-only company picker. Additional companies and memberships are
+// provisioned by the back-office platform admin (ADR-0009); only the first org
+// is created in-app during onboarding. So there is deliberately no create or
+// add affordance here.
 export function NavOrganization() {
   const { isMobile } = useSidebar()
   const t = useTranslations("dashboard")

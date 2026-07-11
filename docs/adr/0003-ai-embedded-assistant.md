@@ -37,3 +37,23 @@ Systemet byggs **AI-redo från dag 1** (förslagslager + proveniens + AI-anrop v
 - Proveniensen bevaras: AI-användning loggas en gång PER ANROP (en aiUsageEvents-rad med org, modell, leverantör, token och tidpunkt) och varje tillämpad roll får en `role.updated`-revisionsrad. Ifyllningen skapar inte längre per-roll-`role.profile`-förslag; det per-anrops-loggade användningseventet plus per-roll-revisionsraden är proveniensen.
 
 **Avgränsning:** Undantaget gäller endast onboardingens profil-ifyllning. Övriga AI-utdata (kriterieutkast, betydelsejusteringar, framtida betygsförslag) kräver fortsatt explicit HR-bekräftelse per post enligt ovan.
+
+## Tillägg 2026-07-10: skeppade AI-ytor, chunkning, SDK-version och interaktiva utkast
+
+Denna not korrigerar drift mellan ADR-texten ovan och den faktiska koden (koden är rätt; noten uppdaterar dokumentet).
+
+**Skeppade V1 AI-ytor (utöver de ovan).** Två ytterligare AI-funktioner har skeppats och saknades i scope-listan:
+
+- **Starter-import:** HR klistrar in organisationens roller och AI:n grupperar dem i rollfamiljer (`ai/suggest.ts` `requestStarterImport` + `ai/generate.ts` `generateStarterImport`). Går via förslagslagret (förslagsrad + `ai.suggestionConfirmed`) och bekräftas av HR, enligt huvudregeln.
+- **Kriterie-efterlevnadsutkast med biasgranskning:** `ai/draft.ts` `draftCriterionCompliance` + `ai/generate.ts` `generateCriterionComplianceText` genererar syfte/relevans/överlapp plus en biasbedömning (biasRisk/biasComment/biasAction) för ett kriterium.
+- Den uppskjutna "kalibrerings-/biaskoll" i inledningen avser **betygskalibrering** (AI som granskar HR:s betyg), inte kriteriedokumentationens biasgranskning ovan, som är byggd.
+
+**Chunkning (korrigerar "ett anrop per uppsättning" i 2026-06-14-tillägget).** Onboarding-ifyllningen delar alltid upp uppsättningen i bitar om högst `PREFILL_MAX_PER_CALL = 5` roller per anrop och kör bitarna i konfigurerbara samtidighetsvågor (`PREFILL_CONCURRENCY`, sekventiellt som standard). En typisk uppsättning (fler än 5 roller) blir alltså `ceil(n/5)` strukturerade anrop, ett `aiUsageEvents`-event per anrop; index-ekomappningen och den exakta mängdvalideringen gäller per bit. "Exakt ett anrop" gäller bara uppsättningar om högst 5 roller.
+
+**AI SDK-version.** Backend kör AI SDK v7 (`ai: ^7.0.2`), inte v6. Mekaniken är oförändrad (generateText + Output.object, Mistral La Plateforme direkt via `@ai-sdk/mistral`, ingen AI-gateway i datavägen).
+
+**Interaktiva utkast ("fyll formuläret") kontra förslagslagret.** De interaktiva utkasten `draftRoleProfile` och `draftCriterionCompliance` returnerar text direkt till klienten som fyller redigeringsformuläret; HR granskar och redigerar i formuläret och sparar sedan via `updateRole`/`saveCriterionCompliance`. Den sparade texten är därmed människo-författad (HR granskar och redigerar före spar) och revideras som en vanlig `role.updated`/`modelUpdated`-rad, inte via `ai.suggestionConfirmed`. Detta är ett medvetet mönster, skilt från bekräfta-ett-förslag-flödet: utkastet är en startpunkt, inte ett autotillämpat förslag.
+
+**Beslut (2026-07-10):** revisionsspåret markerar avsiktligt **inte** AI-assistans på dessa sparade rader. Människan som granskar, redigerar och sparar texten är dess författare och ansvarig för innehållet. En `source: "ai"`-markör vore dessutom missvisande eftersom mutationen bara ser den slutgiltiga texten och inte kan veta hur mycket av AI-utkastet som överlevde redigeringen. Detta skiljer sig från förslagslagrets flöden (modellutkast, viktgranskning, starter-import), som är helt AI-genererade tills HR bekräftar dem och därför bär full proveniens.
+
+*Denna not är utkastad av en assistent; den svenska texten bör granskas av en modersmålstalare.*

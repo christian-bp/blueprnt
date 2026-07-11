@@ -62,7 +62,7 @@ Band 1 = högst; tröskel = lägsta poäng (inklusive) som heltal på 0 till 100
 
 ## Track-schema
 
-Track-schemat: **IC1–IC5, Lead 1–3, M1–M3.** Sedan 2026-06-07 (ADR-0005) bär roller bara en **track**; nivåerna är **referensdata för V2:s rollplacering** (individens senioritet) och seedas i modellen i väntan på den. Guardrail-intervallen (min/max per nivå och kriterium, kurerade från Excel-fliken "Track") är **pensionerade ur V1:s betygsflöde** och står kvar här som referens, t.ex. som placeringsstöd i V2; de seedas inte längre. Lead-3 finns inte i Excel; definitionen nedan gäller.
+Track-schemat: **IC1–IC5, Lead 1–3, M1–M3.** Sedan 2026-06-07 (ADR-0005) bär roller bara en **track**; nivåerna är individens senioritet vid rollplaceringen. Nivåladdarna lever som konstanten `TRACK_LEVELS` i `@workspace/constants` (denna standardmall är prosareferens) och driver validering av individ-till-roll-placering; de seedas inte i modellen (ADR-0005, tillägg 2026-07-10). Guardrail-intervallen (min/max per nivå och kriterium, kurerade från Excel-fliken "Track") är **pensionerade ur V1:s betygsflöde** och står kvar här som referens, t.ex. som placeringsstöd i V2; de seedas inte längre. Lead-3 finns inte i Excel; definitionen nedan gäller.
 
 ### Lead-3
 

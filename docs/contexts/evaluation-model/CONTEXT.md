@@ -15,7 +15,7 @@ Vilken *sorts* jobb en roll är — dess arketyp: Individual Contributor (IC), L
 _Undvik_: Karriärväg (godtagbar synonym, men "Track" är kanoniskt), Jobbfamilj/Rollfamilj (en familj är inte en track, se Rollfamilj)
 
 **Nivå** *(kod: Level)*:
-Medarbetarens *senioritet inom rollens track* (IC1–IC5, Lead-1–Lead-3, M1–M3). Sätts på **individen** vid rollplaceringen (V2, people-kontexten), aldrig på rollen (ADR-0005): rollen "System Developer" är IC, Bo i den kan vara IC1 och Axel IC4. Scopad per track — en IC5 och en M3 är inte samma "nivå". Nivådefinitionerna seedas som referensdata i modellen i väntan på V2.
+Medarbetarens *senioritet inom rollens track* (IC1–IC5, Lead-1–Lead-3, M1–M3). Sätts på **individen** vid rollplaceringen (V2, people-kontexten), aldrig på rollen (ADR-0005): rollen "System Developer" är IC, Bo i den kan vara IC1 och Axel IC4. Scopad per track — en IC5 och en M3 är inte samma "nivå". Nivådefinitionerna är konstanten `TRACK_LEVELS` i `@workspace/constants` (standardmall.md är prosareferens) och driver validering av individens rollplacering; de seedas inte i modellen (ADR-0005, tillägg 2026-07-10).
 _Undvik_: Senioritet (godtagbar beskrivning, "Nivå" är kanoniskt), Grad, Nivåroll (utgånget begrepp: roller bär ingen nivå)
 
 **Band**:
