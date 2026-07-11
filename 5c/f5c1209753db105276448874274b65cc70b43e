@@ -1,0 +1,46 @@
+packages/backend/convex/people/pay.ts
+  s_3ee8e687b1c393::t_035f5648e3a1a2 126-135
+  s_3ee8e687b1c393::t_28304cedf0a49b 502-517,519
+  s_3ee8e687b1c393::t_6b2bae1a92d762 36-52
+  s_3ee8e687b1c393::t_ce4c560bf524e1 237-246
+  s_3ee8e687b1c393::t_da6744a346240b 136
+apps/dashboard/components/people/add-salary-dialog.test.tsx
+  s_3ee8e687b1c393::t_8e069fe5dc5420 52-53
+  s_3ee8e687b1c393::t_1bc9ee32a0d2cc 20-25
+  s_3ee8e687b1c393::t_ba3acb18015574 27-30
+apps/dashboard/components/people/add-salary-dialog.tsx
+  s_3ee8e687b1c393::t_6c143b48018784 126
+  s_3ee8e687b1c393::t_40e4f8cc1d95b0 182
+  s_3ee8e687b1c393::t_94097980e9a8a8 33,35
+  s_3ee8e687b1c393::t_ea0456ed3a37fc 82-86,90
+  s_3ee8e687b1c393::t_47fb690d871052 163
+  s_3ee8e687b1c393::t_e5b4d89510cef8 181,244
+  s_3ee8e687b1c393::t_8c04ae420b979c 245
+  s_3ee8e687b1c393::t_e7fd8f6980a3fa 242
+  s_3ee8e687b1c393::t_1c05230f3c545c 47-52
+  s_3ee8e687b1c393::t_197c7d2cf40da1 297-300
+  s_3ee8e687b1c393::t_e9c788f963214c 115-117,124-125
+  s_3ee8e687b1c393::t_fae8b2fbafee61 34
+  s_3ee8e687b1c393::t_0164afba6e6b45 87-89
+  s_3ee8e687b1c393::t_316d57677211fd 179
+  s_3ee8e687b1c393::t_f9c2226a08b1de 8
+packages/backend/convex/people/pay.test.ts
+  s_3ee8e687b1c393::t_334b2ccf6e1363 213-247
+  s_3ee8e687b1c393::t_ef25f5d1726b35 1004-1018
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "5cf5c1209753db105276448874274b65cc70b43e",
+  "prompts": {},
+  "sessions": {
+    "s_3ee8e687b1c393": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "105251fe-0801-4944-83b7-9bf37751d22b",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
