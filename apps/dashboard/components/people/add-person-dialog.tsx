@@ -40,6 +40,7 @@ import { DatePicker } from "@/components/date-picker"
 import { useOrganization } from "@/components/org-context"
 import type { AssignableRole } from "@/components/people/edit-person-dialog"
 import { SubmitButton } from "@/components/submit-button"
+import { numberInputField } from "@/lib/number-field"
 import type { ValidationT } from "@/lib/validation"
 
 // The pay-transparency gender categories, mirroring the people table's union.
@@ -424,16 +425,7 @@ export function AddPersonDialog() {
                           type="number"
                           min={1}
                           max={100}
-                          value={field.value ?? ""}
-                          onBlur={field.onBlur}
-                          ref={field.ref}
-                          onChange={(e) =>
-                            field.onChange(
-                              Number.isNaN(e.target.valueAsNumber)
-                                ? undefined
-                                : e.target.valueAsNumber
-                            )
-                          }
+                          {...numberInputField(field)}
                         />
                       </FormControl>
                       <FormMessage />

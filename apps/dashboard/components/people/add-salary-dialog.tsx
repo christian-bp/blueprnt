@@ -1,6 +1,8 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Delete02Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { CURRENCY_KEYS, PAY_COMPONENT_KINDS } from "@workspace/constants"
@@ -37,11 +39,13 @@ import { toast } from "sonner"
 import { z } from "zod"
 import { useOrganization } from "@/components/org-context"
 import { SubmitButton } from "@/components/submit-button"
+import { numberInputField } from "@/lib/number-field"
 import type { ValidationT } from "@/lib/validation"
 
-// Zod factory (messages via i18n). Number fields are validated as numbers
-// (inputs use valueAsNumber so the value reaches the schema as a number
-// already). Currency is one of the org-selectable currencies (CURRENCY_KEYS,
+// Zod factory (messages via i18n). Number fields are validated as numbers; the
+// inputs bind via numberInputField, so a value reaches the schema as a number
+// (or undefined when the field is cleared, which reads as the required error).
+// Currency is one of the org-selectable currencies (CURRENCY_KEYS,
 // the same set the organization picker offers). Components are an array
 // of { kind, monthlyAmount } rows matching the payRecords component shape.
 function makeSalarySchema(t: ValidationT) {
@@ -146,10 +150,7 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
                         <Input
                           type="number"
                           aria-label={t("payYear")}
-                          {...field}
-                          onChange={(e) =>
-                            field.onChange(e.target.valueAsNumber)
-                          }
+                          {...numberInputField(field)}
                         />
                       </FormControl>
                       <FormMessage />
@@ -166,10 +167,7 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
                         <Input
                           type="number"
                           aria-label={t("basicMonthly")}
-                          {...field}
-                          onChange={(e) =>
-                            field.onChange(e.target.valueAsNumber)
-                          }
+                          {...numberInputField(field)}
                         />
                       </FormControl>
                       <FormMessage />
@@ -219,7 +217,7 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
                     control={form.control}
                     name={`components.${index}.kind`}
                     render={({ field }) => (
-                      <FormItem className="flex-1">
+                      <FormItem className="min-w-0 flex-1">
                         <FormLabel>{t("componentKind")}</FormLabel>
                         <Select
                           value={field.value}
@@ -232,7 +230,13 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
                           )}
                         >
                           <FormControl>
-                            <SelectTrigger aria-label={t("componentKind")}>
+                            {/* w-full: the vendor trigger is w-fit by default
+                                and would overflow its column on long kind
+                                names (e.g. Swedish). */}
+                            <SelectTrigger
+                              aria-label={t("componentKind")}
+                              className="w-full"
+                            >
                               <SelectValue />
                             </SelectTrigger>
                           </FormControl>
@@ -252,28 +256,35 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
                     control={form.control}
                     name={`components.${index}.monthlyAmount`}
                     render={({ field }) => (
-                      <FormItem className="flex-1">
+                      <FormItem className="min-w-0 flex-1">
                         <FormLabel>{t("componentAmount")}</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
                             aria-label={t("componentAmount")}
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(e.target.valueAsNumber)
-                            }
+                            {...numberInputField(field)}
                           />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+                  {/* Removing an unsaved row needs no confirm: a quiet ghost
+                      trashcan (RemoveConfirm's iconography without its armed
+                      step) sized to the h-9 field row. */}
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="ghost"
+                    size="icon"
+                    aria-label={t("removeComponent")}
+                    className="shrink-0 text-muted-foreground"
                     onClick={() => components.remove(index)}
                   >
-                    {t("removeComponent")}
+                    <HugeiconsIcon
+                      icon={Delete02Icon}
+                      size={16}
+                      strokeWidth={2}
+                    />
                   </Button>
                 </div>
               ))}
