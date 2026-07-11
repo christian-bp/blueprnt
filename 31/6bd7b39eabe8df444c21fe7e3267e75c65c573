@@ -1,0 +1,47 @@
+CLAUDE.md
+  s_ae59df4ec4ea8f::t_4bcb602bc5226d 44
+docs/adr/0007-legal-entity-reporting-dimension.md
+  s_ae59df4ec4ea8f::t_5d43a8d403ff46 26-34
+apps/dashboard/components/nav-organization.tsx
+  s_ae59df4ec4ea8f::t_1174a66108c6ad 41-44
+docs/adr/0005-level-per-individual.md
+  s_ae59df4ec4ea8f::t_e399b6531c1373 26-31
+docs/adr/0009-platform-admin.md
+  s_ae59df4ec4ea8f::t_aadc37e94b49e0 39-49
+docs/reviews/2026-07-10-full-app-audit.md
+  s_ae59df4ec4ea8f::t_ea45f415a31337 1-201
+docs/adr/0003-ai-embedded-assistant.md
+  s_ae59df4ec4ea8f::t_aadf57d59c5634 40-54,58-59
+  s_ae59df4ec4ea8f::t_50962140463a0c 55-57
+docs/PLAN-V1.md
+  s_ae59df4ec4ea8f::t_640ffadeef626e 135
+  s_ae59df4ec4ea8f::t_1d901947ef5bb7 45
+  s_ae59df4ec4ea8f::t_62896e954a7c1c 136
+docs/contexts/evaluation-model/CONTEXT.md
+  s_ae59df4ec4ea8f::t_3c37aa0e3d81bc 18
+docs/contexts/evaluation-model/standardmall.md
+  s_ae59df4ec4ea8f::t_d4bb25d7ce3e3b 65
+docs/adr/0010-import-format-expansion-csv-only.md
+  s_ae59df4ec4ea8f::t_9fb9ae8043750e 59-63
+docs/go-live-checklist.md
+  s_ae59df4ec4ea8f::t_d0b3f840348278 99-104
+  s_ae59df4ec4ea8f::t_b82d3108616827 133-135
+docs/adr/0006-aggregate-document-model.md
+  s_ae59df4ec4ea8f::t_13aa7cc84d208e 41-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "316bd7b39eabe8df444c21fe7e3267e75c65c573",
+  "prompts": {},
+  "sessions": {
+    "s_ae59df4ec4ea8f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ca5110d5-3f90-43c3-989e-f4d927469088",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
