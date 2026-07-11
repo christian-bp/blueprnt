@@ -1,0 +1,23 @@
+apps/dashboard/hooks/use-money.ts
+  s_3ee8e687b1c393::t_46e86da0e87964 1-12
+apps/dashboard/lib/currency.test.ts
+  s_3ee8e687b1c393::t_f2fda6cf612046 1-30
+apps/dashboard/lib/currency.ts
+  s_3ee8e687b1c393::t_35fbd67ed8a118 1-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "ffaf1be98f87abbf4b5736111d6aed92578e2df5",
+  "prompts": {},
+  "sessions": {
+    "s_3ee8e687b1c393": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "105251fe-0801-4944-83b7-9bf37751d22b",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
