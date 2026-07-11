@@ -316,7 +316,7 @@ describe("getModel", () => {
     expect(result).toBeNull()
   })
 
-  it("returns the full model with importance levels and never weights", async () => {
+  it("returns the full model with 1-5 weight points balanced to the point budget", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedReadyOrganization(t)
     await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {

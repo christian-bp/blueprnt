@@ -2,26 +2,15 @@
 // seed the blueprnt demo org so the results/band view looks like a real company.
 // Inspired by a real company's role list (founder, 2026-06). Titles are kept
 // verbatim (the idiomatic Swedish/English mix). Each role carries only a
-// trackKey (IC/Lead/M); the `level` (M3/IC4/Lead-1, encoding seniority) is NOT
-// stored on the role (level is per-individual, ADR-0005) but drives the seeded
-// ratings -> band. Purpose/responsibilities are Swedish drafts (machine-
+// trackKey (IC/Lead/M); level is per-individual (ADR-0005) and is NOT stored on
+// the role. The seeded ratings come from RATINGS_BY_TITLE (keyed by title), not
+// from any per-role level. Purpose/responsibilities are Swedish drafts (machine-
 // generated, flag for native review). This is NOT the onboarding industry
 // starter; it is a hardcoded demo fixture for seedRatedRoles.
-
-export type DevLevel =
-  | "M3"
-  | "M2"
-  | "M1"
-  | "Lead-1"
-  | "IC5"
-  | "IC4"
-  | "IC3"
-  | "IC2"
 
 export interface DevRole {
   title: string
   trackKey: "IC" | "Lead" | "M"
-  level: DevLevel
   purpose: string
   responsibilities: string
 }
@@ -38,7 +27,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "CEO",
         trackKey: "M",
-        level: "M3",
         purpose: "Leder hela företaget mot dess vision och affärsmål.",
         responsibilities:
           "Sätta strategi och övergripande inriktning\nLeda ledningsgruppen\nAnsvara för resultat och tillväxt\nFöreträda företaget mot styrelse och intressenter\nForma kultur och värderingar",
@@ -46,7 +34,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Head of HR",
         trackKey: "M",
-        level: "M3",
         purpose:
           "Leder HR-funktionen och bygger en stark organisation och kultur.",
         responsibilities:
@@ -55,7 +42,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Head of Finance",
         trackKey: "M",
-        level: "M3",
         purpose:
           "Leder ekonomifunktionen och säkerställer god ekonomisk styrning.",
         responsibilities:
@@ -64,7 +50,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Head of Sales & Marketing",
         trackKey: "M",
-        level: "M3",
         purpose: "Leder sälj och marknad mot intäkts- och tillväxtmål.",
         responsibilities:
           "Sätta sälj- och marknadsstrategi\nLeda och coacha sälj- och marknadsteamet\nDriva pipeline och kundtillväxt\nUtveckla varumärke och positionering\nFölja upp resultat och nyckeltal",
@@ -72,7 +57,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Head of Product",
         trackKey: "M",
-        level: "M3",
         purpose:
           "Leder produktfunktionen och äger den övergripande produktinriktningen.",
         responsibilities:
@@ -86,7 +70,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Software Developer",
         trackKey: "IC",
-        level: "IC3",
         purpose:
           "Bygger och underhåller programvara som möter produkt- och kvalitetskrav.",
         responsibilities:
@@ -95,7 +78,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Software Tester",
         trackKey: "IC",
-        level: "IC3",
         purpose:
           "Säkerställer programvarans kvalitet genom systematisk testning och felsökning.",
         responsibilities:
@@ -104,7 +86,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Embedded Developer",
         trackKey: "IC",
-        level: "IC3",
         purpose:
           "Utvecklar inbyggd programvara som styr hårdvara tillförlitligt och effektivt.",
         responsibilities:
@@ -113,7 +94,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Hardware Developer",
         trackKey: "IC",
-        level: "IC3",
         purpose:
           "Designar hårdvara som uppfyller funktions-, prestanda- och kvalitetskrav.",
         responsibilities:
@@ -122,7 +102,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Konstruktör",
         trackKey: "IC",
-        level: "IC3",
         purpose:
           "Konstruerar elektronik- och mekaniklösningar som uppfyller krav och specifikationer.",
         responsibilities:
@@ -131,7 +110,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Cloud Architect",
         trackKey: "IC",
-        level: "IC4",
         purpose:
           "Utformar molnarkitektur som är skalbar, säker och kostnadseffektiv.",
         responsibilities:
@@ -140,7 +118,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Infrastructure Engineer",
         trackKey: "IC",
-        level: "IC3",
         purpose:
           "Driver och underhåller infrastruktur så att system är stabila och tillgängliga.",
         responsibilities:
@@ -149,7 +126,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Technical Solutions Architect",
         trackKey: "M",
-        level: "M2",
         purpose:
           "Leder den övergripande tekniska lösningsarkitekturen för att möta affärs- och produktmål.",
         responsibilities:
@@ -158,7 +134,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Department Manager Software",
         trackKey: "M",
-        level: "M1",
         purpose:
           "Leder mjukvaruavdelningen för pålitlig leverans och utvecklar medarbetarna.",
         responsibilities:
@@ -167,7 +142,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Strategy Engineer",
         trackKey: "IC",
-        level: "IC4",
         purpose:
           "Driver teknisk strategi och framåtblickande ingenjörsarbete för långsiktig konkurrenskraft.",
         responsibilities:
@@ -181,7 +155,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Data Developer",
         trackKey: "IC",
-        level: "IC3",
         purpose:
           "Bygger och underhåller datapipelines och datalösningar som möter verksamhetens behov.",
         responsibilities:
@@ -190,7 +163,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Department Manager Data",
         trackKey: "M",
-        level: "M1",
         purpose:
           "Leder dataavdelningen mot tillförlitlig leverans och utvecklar medarbetarna.",
         responsibilities:
@@ -204,7 +176,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Product Manager",
         trackKey: "IC",
-        level: "IC4",
         purpose:
           "Äger ett produktområde och dess roadmap för att rätt saker byggs.",
         responsibilities:
@@ -213,7 +184,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Product Coordinator",
         trackKey: "IC",
-        level: "IC3",
         purpose:
           "Samordnar produktarbetet och håller ihop planering och releaser.",
         responsibilities:
@@ -222,7 +192,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Product Promotor",
         trackKey: "IC",
-        level: "IC3",
         purpose: "Marknadsför produkten och driver dess position på marknaden.",
         responsibilities:
           "Ta fram budskap och positionering\nPlanera lanseringar och kampanjer\nTa fram säljstödjande material\nFölja upp marknad och konkurrenter",
@@ -230,7 +199,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "UX Lead",
         trackKey: "IC",
-        level: "IC4",
         purpose:
           "Leder UX- och designarbetet mot en sammanhållen användarupplevelse.",
         responsibilities:
@@ -244,7 +212,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Account Manager",
         trackKey: "IC",
-        level: "IC3",
         purpose:
           "Vårdar och utvecklar befintliga kundrelationer för att skapa långsiktig affär.",
         responsibilities:
@@ -253,7 +220,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Key Account Manager",
         trackKey: "IC",
-        level: "IC4",
         purpose: "Ansvarar för företagets största och mest strategiska kunder.",
         responsibilities:
           "Leda strategiska nyckelkunder\nUtveckla affärsplaner per konto\nDriva komplexa förhandlingar\nBygga relationer på ledningsnivå\nSäkra tillväxt och lönsamhet",
@@ -261,7 +227,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Sales Manager",
         trackKey: "M",
-        level: "M1",
         purpose:
           "Leder säljteamet mot uppsatta mål och bygger en stark säljkultur.",
         responsibilities:
@@ -270,7 +235,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Order & Indoor Sales",
         trackKey: "IC",
-        level: "IC2",
         purpose:
           "Hanterar order och innesälj för att ge kunden snabb och korrekt service.",
         responsibilities:
@@ -279,7 +243,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Marknadskoordinator",
         trackKey: "IC",
-        level: "IC3",
         purpose:
           "Samordnar marknadsaktiviteter och stödjer teamet i det dagliga arbetet.",
         responsibilities:
@@ -288,7 +251,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "E-Commerce Strategy Lead",
         trackKey: "IC",
-        level: "IC5",
         purpose:
           "Driver bolagets e-handelsstrategi för ökad tillväxt och kundvärde.",
         responsibilities:
@@ -297,7 +259,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Partner & Cooperations Manager",
         trackKey: "IC",
-        level: "IC4",
         purpose:
           "Bygger och förvaltar partnerskap och samarbeten som stärker affären.",
         responsibilities:
@@ -306,7 +267,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Content Delivery Manager",
         trackKey: "Lead",
-        level: "Lead-1",
         purpose:
           "Leder produktion och leverans av innehåll med rätt kvalitet och tempo.",
         responsibilities:
@@ -320,7 +280,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "IT Manager",
         trackKey: "M",
-        level: "M1",
         purpose:
           "Leder den interna IT-verksamheten för stabil drift och säkra system.",
         responsibilities:
@@ -329,7 +288,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "IT-specialist",
         trackKey: "IC",
-        level: "IC3",
         purpose:
           "Bygger och förvaltar interna system och infrastruktur för pålitlig drift.",
         responsibilities:
@@ -338,7 +296,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "IT-support",
         trackKey: "IC",
-        level: "IC2",
         purpose:
           "Hjälper medarbetare med IT-frågor och håller arbetsplatsen igång.",
         responsibilities:
@@ -347,7 +304,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Supporttekniker",
         trackKey: "IC",
-        level: "IC3",
         purpose:
           "Löser kundernas tekniska problem och säkerställer en god supportupplevelse.",
         responsibilities:
@@ -361,7 +317,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Controller",
         trackKey: "IC",
-        level: "IC3",
         purpose:
           "Säkerställer tillförlitlig finansiell rapportering och analys som stöd för affärsbeslut.",
         responsibilities:
@@ -370,7 +325,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Redovisningsekonom",
         trackKey: "IC",
-        level: "IC3",
         purpose:
           "Sköter löpande bokföring och redovisning så att räkenskaperna är korrekta och i tid.",
         responsibilities:
@@ -379,7 +333,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Strategic Purchaser",
         trackKey: "IC",
-        level: "IC3",
         purpose:
           "Driver strategiskt inköp för att säkra rätt leverantörer, kostnad och kvalitet på lång sikt.",
         responsibilities:
@@ -388,7 +341,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Admin & Purchasing",
         trackKey: "IC",
-        level: "IC2",
         purpose:
           "Ger administrativt stöd och sköter operativt inköp så att verksamheten fungerar smidigt.",
         responsibilities:
@@ -402,7 +354,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Project Manager",
         trackKey: "IC",
-        level: "IC3",
         purpose:
           "Driver leveransprojekt i mål med rätt omfattning, tid och budget.",
         responsibilities:
@@ -411,7 +362,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Project Management Officer",
         trackKey: "IC",
-        level: "IC3",
         purpose:
           "Säkerställer styrning och stöd så att projekt drivs enhetligt och med god kvalitet.",
         responsibilities:
@@ -420,7 +370,6 @@ export const DEV_COMPANY: DevFamily[] = [
       {
         title: "Project & Operations Manager",
         trackKey: "M",
-        level: "M1",
         purpose:
           "Leder både projekt och löpande verksamhet för stabil och effektiv leverans.",
         responsibilities:

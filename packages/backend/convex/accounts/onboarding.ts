@@ -1,7 +1,8 @@
 import { v } from "convex/values"
 import { components } from "../_generated/api"
-import { mutation, query } from "../_generated/server"
+import { query } from "../_generated/server"
 import { ERROR_CODES, appError } from "../lib/errors"
+import { authedMutation } from "../lib/functions"
 
 // First-run gate for the dashboard. NOT org-scoped: it exists precisely to
 // find the user's organization (or its absence) before any org-scoped call is
@@ -110,27 +111,28 @@ export const getUiLocale = query({
 const SUPPORTED_LOCALES = new Set(["en", "sv", "nb", "da", "fi"])
 
 // Per-user UI language override (the top of the getUiLocale resolution
-// chain). NOT org-scoped: the locale belongs to the user, not a tenant.
-export const setUiLocale = mutation({
+// chain). NOT org-scoped: the locale belongs to the user, not a tenant, so it
+// uses authedMutation (identity-only) rather than an org wrapper.
+export const setUiLocale = authedMutation({
   args: { locale: v.string() },
   returns: v.null(),
   handler: async (ctx, { locale }) => {
-    const identity = await ctx.auth.getUserIdentity()
-    if (identity === null) throw appError(ERROR_CODES.notAuthenticated)
     if (!SUPPORTED_LOCALES.has(locale)) {
       throw appError(ERROR_CODES.invalidInput)
     }
     const user = await ctx.db
       .query("users")
-      .withIndex("by_auth_id", (q) => q.eq("authId", identity.subject))
+      .withIndex("by_auth_id", (q) => q.eq("authId", ctx.authUserId))
       .unique()
     if (user === null) {
       // The mirror row is normally created by the Better Auth onUserCreate
-      // trigger; recover gracefully if it is missing.
+      // trigger; recover gracefully if it is missing. authedMutation injects
+      // only authUserId, so re-read the identity for the name/email snapshot.
+      const identity = await ctx.auth.getUserIdentity()
       await ctx.db.insert("users", {
-        authId: identity.subject,
-        name: typeof identity.name === "string" ? identity.name : "",
-        email: typeof identity.email === "string" ? identity.email : "",
+        authId: ctx.authUserId,
+        name: typeof identity?.name === "string" ? identity.name : "",
+        email: typeof identity?.email === "string" ? identity.email : "",
         locale,
       })
       return null

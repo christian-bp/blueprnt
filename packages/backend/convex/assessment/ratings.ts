@@ -48,7 +48,7 @@ export const setRating = orgMutation({
       .unique()
 
     // No-op short-circuit: identical value and motivation writes nothing and
-    // audits nothing (mirrors updateCriterionImportance).
+    // audits nothing (mirrors rebalanceWeights' no-op return).
     const nextMotivation =
       trimmedMotivation === undefined || trimmedMotivation === ""
         ? undefined

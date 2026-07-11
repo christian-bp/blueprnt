@@ -5,7 +5,7 @@ import { SUGGESTION_KINDS } from "@workspace/constants"
 import { internal } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
 import { type ActionCtx, action } from "../_generated/server"
-import { ERROR_CODES } from "../lib/errors"
+import { appError, ERROR_CODES } from "../lib/errors"
 import { AI_PROFILE_MODEL_ID, AI_PROVIDER } from "./config"
 import { generateRoleProfileBatch } from "./generate"
 
@@ -100,7 +100,7 @@ export const prefillRoleProfiles = action({
     // internal query re-checks the membership and only ever reads THIS org's
     // roles, so a foreign org is rejected before any model call.
     const identity = await ctx.auth.getUserIdentity()
-    if (identity === null) throw new Error(ERROR_CODES.notAuthenticated)
+    if (identity === null) throw appError(ERROR_CODES.notAuthenticated)
 
     const { targets, context, actorId } = await ctx.runQuery(
       internal.ai.prefillData.collectPrefillTargets,

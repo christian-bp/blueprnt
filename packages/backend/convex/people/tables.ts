@@ -96,7 +96,7 @@ export const payRecords = defineTable({
   .index("by_org", ["orgId"])
   .index("by_person", ["orgId", "personId"])
 
-// Column-mapping profile for CSV/XLSX imports. One active profile per org
+// Column-mapping profile for CSV imports (CSV-only for V1; ADR-0010). One active profile per org
 // (upserted on each import configuration save). Maps canonical field names
 // (e.g. "displayName") to the source file's header (e.g. "Namn").
 export const importMappingProfiles = defineTable({

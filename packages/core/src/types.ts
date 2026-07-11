@@ -6,9 +6,6 @@ export type RatingValue = 0 | 1 | 2 | 3 | 4 | 5
 // Band 1 is the HIGHEST band. Higher band number = lower weight.
 export type Band = number
 
-export const TRACK_KEYS = ["IC", "Lead", "M"] as const
-export type TrackKey = (typeof TRACK_KEYS)[number]
-
 export interface CriterionWeight {
   criterionId: string
   weightPoints: WeightPoints

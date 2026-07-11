@@ -48,10 +48,10 @@ export const DEFAULT_WEIGHT_POINTS: Record<CriterionKey, WeightPoints> = {
 
 // The fixed V1 track schema (PLAN-V1 §9.6): tracks are constants, not rows
 // (ADR-0006). Roles reference tracks by these stable keys (roles.trackKey);
-// display names localize from the content modules. The level schema
-// (IC1-IC5, Lead 1-3, M1-M3) and the advisory guardrail ranges live as
-// reference data in docs/contexts/evaluation-model/standardmall.md awaiting
-// V2 role placement (ADR-0005).
+// display names localize from the content modules. The per-track level ladders
+// (IC1-IC5, Lead-1..3, M1-M3) live as the TRACK_LEVELS constant in
+// @workspace/constants and drive live per-individual assignment validation and
+// level suggestion (ADR-0005); standardmall.md is their prose reference.
 export const TRACK_KEYS = ["IC", "Lead", "M"] as const
 export type TrackKey = (typeof TRACK_KEYS)[number]
 

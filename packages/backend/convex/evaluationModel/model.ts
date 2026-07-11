@@ -268,7 +268,10 @@ export const createEmptyModel = adminMutation({
         name: name.trim(),
         changes: buildCreateChanges(
           { name: name.trim(), bandThresholds: defaultBandThresholds() },
-          ["name", "bandThresholds"]
+          // Shared field list (templateKey is absent from `after` and skipped,
+          // matching addCriterion) so a new auditable model field is captured
+          // by every create path, not just the template one.
+          MODEL_AUDIT_FIELDS
         ),
         count: 0,
         items: [],

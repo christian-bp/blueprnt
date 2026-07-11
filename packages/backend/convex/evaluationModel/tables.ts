@@ -32,7 +32,9 @@ export const criteria = defineTable({
   templateKey: v.optional(v.string()),
   // 1-5 weight points under the point budget (criteria count x 3, exact sum;
   // ADR-0004). Mutations keep the model balanced at all times: new criteria
-  // enter at 3, reweighting is an atomic batch, removal requires 3.
+  // enter at 3, reweighting is an atomic batch, and removal redistributes the
+  // removed criterion's points deterministically across the survivors
+  // (one-click removal; ADR-0004 2026-06-07 amendment).
   weightPoints: v.number(),
   order: v.number(),
   isCustom: v.boolean(),

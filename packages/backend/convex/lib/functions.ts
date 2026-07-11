@@ -154,10 +154,24 @@ export async function requireOrgAdminAction(
 ): Promise<string> {
   const identity = await ctx.auth.getUserIdentity()
   if (identity === null) throw appError(ERROR_CODES.notAuthenticated)
-  const membership = await ctx.runQuery(
-    components.betterAuth.membership.getMembership,
-    { organizationId: orgId, userId: identity.subject }
-  )
+  let membership: { role: string } | null
+  try {
+    membership = await ctx.runQuery(
+      components.betterAuth.membership.getMembership,
+      { organizationId: orgId, userId: identity.subject }
+    )
+  } catch (error) {
+    // Fail closed with a machine-readable code, exactly like resolveOrgContext:
+    // a duplicate-membership .unique() throw (or any lookup failure) must not
+    // escape an action as raw/redacted error text. The log line is the ops
+    // breadcrumb (matches the query/mutation path this comment promises).
+    console.error("membership lookup failed", {
+      orgId,
+      subject: identity.subject,
+      error: error instanceof Error ? error.message : String(error),
+    })
+    throw appError(ERROR_CODES.membershipConflict)
+  }
   if (membership === null) throw appError(ERROR_CODES.notAMember)
   if (membership.role !== "admin") throw appError(ERROR_CODES.adminRequired)
   return identity.subject
