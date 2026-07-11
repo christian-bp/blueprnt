@@ -1,0 +1,69 @@
+packages/i18n/messages/nb.json
+  s_ae59df4ec4ea8f::t_09a061430a947b 1029
+  s_ae59df4ec4ea8f::t_e8c85ba81183b1 1704-1705
+packages/backend/convex/accounts/mirrors.ts
+  s_ae59df4ec4ea8f::t_be86149f49effe 260-263
+  s_ae59df4ec4ea8f::t_15a57a47a760be 3
+  s_ae59df4ec4ea8f::t_e5811a706a276d 290,301-316
+  s_ae59df4ec4ea8f::t_2b7f4d57e0061e 6-11
+packages/backend/convex/accounts/mirrors.test.ts
+  s_ae59df4ec4ea8f::t_80e7ae4996c5dd 106
+  s_ae59df4ec4ea8f::t_8cbbe548add5fb 75-105,107-117
+packages/backend/convex/ai/generate.ts
+  s_ae59df4ec4ea8f::t_726f80cd067224 221
+packages/backend/convex/assessment/starters.ts
+  s_ae59df4ec4ea8f::t_53ef1c3a2ae30f 15
+  s_ae59df4ec4ea8f::t_3ec25a667f37a7 551-557
+  s_ae59df4ec4ea8f::t_60fe439cab1170 623-634
+  s_ae59df4ec4ea8f::t_9c8b36d838aadd 635-637
+packages/backend/convex/accounts/organization.ts
+  s_ae59df4ec4ea8f::t_a8c42c48e752e4 202-213
+  s_ae59df4ec4ea8f::t_80b911bf9517bc 66-69,91
+packages/backend/convex/lib/errors.ts
+  s_ae59df4ec4ea8f::t_a59ad82eedbe98 30
+packages/i18n/messages/en.json
+  s_ae59df4ec4ea8f::t_69716c9beeac5f 1704-1705
+  s_ae59df4ec4ea8f::t_1c86d216e1a337 1029
+packages/i18n/messages/da.json
+  s_ae59df4ec4ea8f::t_efb49b3883d821 1029
+  s_ae59df4ec4ea8f::t_9655dae06a77d2 1704-1705
+packages/backend/convex/accounts/organization.test.ts
+  s_ae59df4ec4ea8f::t_c1450d82b50156 152
+  s_ae59df4ec4ea8f::t_888ee439781be0 124-125,131
+  s_ae59df4ec4ea8f::t_bb5dfa16141bba 442-464
+  s_ae59df4ec4ea8f::t_acdcd282a4d330 465
+packages/backend/convex/assessment/starters.test.ts
+  s_ae59df4ec4ea8f::t_a0e0c14389a30c 576-579,585,588,591-599
+  s_ae59df4ec4ea8f::t_ce184020d2e044 625
+  s_ae59df4ec4ea8f::t_9df21229cf5a0e 632-634,636-643
+packages/backend/convex/assessment/roles.test.ts
+  s_ae59df4ec4ea8f::t_bf739ed5b4efd6 305-344
+  s_ae59df4ec4ea8f::t_615e0c988ca974 110
+  s_ae59df4ec4ea8f::t_b487aebd0c0e47 1
+  s_ae59df4ec4ea8f::t_f11fc85b03ec93 345-346
+packages/i18n/messages/fi.json
+  s_ae59df4ec4ea8f::t_fd11878c4afe3c 1029
+  s_ae59df4ec4ea8f::t_13521b268a6055 1704-1705
+packages/i18n/messages/sv.json
+  s_ae59df4ec4ea8f::t_3980ed59564dd6 1704-1705
+  s_ae59df4ec4ea8f::t_2485d1cffaf3b3 1029
+packages/backend/convex/assessment/roles.ts
+  s_ae59df4ec4ea8f::t_35c2340b2c2e4e 1
+  s_ae59df4ec4ea8f::t_74c9e6444152ef 410-429
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "b55132f2db66bb9fb11a820b787d48b5007fae12",
+  "prompts": {},
+  "sessions": {
+    "s_ae59df4ec4ea8f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ca5110d5-3f90-43c3-989e-f4d927469088",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
