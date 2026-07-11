@@ -410,7 +410,6 @@
         "addDescription": "Add a salary record to this employee's history.",
         "payYear": "Salary year",
         "basicMonthly": "Basic monthly salary",
-        "currency": "Currency",
         "components": "Additional components",
         "addComponent": "Add component",
         "removeComponent": "Remove component",

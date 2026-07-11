@@ -17,9 +17,17 @@ afterEach(() => {
 const setSalary = vi.hoisted(() => vi.fn().mockResolvedValue("pr_1"))
 const toastSuccess = vi.hoisted(() => vi.fn())
 
-vi.mock("convex/react", () => ({ useMutation: () => setSalary }))
+vi.mock("convex/react", () => ({
+  useMutation: () => setSalary,
+  // The org settings query supplies the currency the amount fields display and
+  // the mutation stores.
+  useQuery: () => ({ currency: "SEK", pseudonymizeNames: false }),
+}))
 vi.mock("sonner", () => ({ toast: { success: toastSuccess, error: vi.fn() } }))
-vi.mock("next-intl", () => ({ useTranslations: () => (k: string) => k }))
+vi.mock("next-intl", () => ({
+  useTranslations: () => (k: string) => k,
+  useLocale: () => "en",
+}))
 vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "org_1", name: "Acme", role: "admin" }),
 }))
@@ -41,8 +49,8 @@ describe("AddSalaryDialog", () => {
       target: { value: "50000" },
     })
     fireEvent.blur(screen.getByLabelText("basicMonthly"))
-    // Currency is a select defaulting to SEK; the payload assertion below
-    // verifies it reaches the mutation.
+    // There is no currency field: the org's currency (SEK here, from the
+    // settings query) is what reaches the mutation, asserted below.
 
     const form = screen
       .getByLabelText("payYear")

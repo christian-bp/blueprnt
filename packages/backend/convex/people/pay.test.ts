@@ -210,6 +210,41 @@ describe("setSalary", () => {
       })
     ).rejects.toThrow(/errors.notFound/)
   })
+
+  it("rejects a currency other than the org's own", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const personId = await seedPerson(orgId, asAdmin)
+
+    // The org's currency is SEK (seedOrg); EUR must be refused, not stored.
+    await expect(
+      asAdmin.mutation(api.people.pay.setSalary, {
+        orgId,
+        personId,
+        payYear: 2026,
+        basicMonthly: 50000,
+        currency: "EUR",
+        components: [],
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+  })
+
+  it("rejects negative amounts", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const personId = await seedPerson(orgId, asAdmin)
+
+    await expect(
+      asAdmin.mutation(api.people.pay.setSalary, {
+        orgId,
+        personId,
+        payYear: 2026,
+        basicMonthly: 50000,
+        currency: "SEK",
+        components: [{ kind: "variable", monthlyAmount: -100 }],
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+  })
 })
 
 describe("appendSalary (internal, import path)", () => {
@@ -966,13 +1001,21 @@ describe("getRolePayComparison", () => {
       level: "IC2",
       levelSource: "confirmed",
     })
-    await asAdmin.mutation(api.people.pay.setSalary, {
-      orgId,
-      personId: eurPeer,
-      payYear: 2026,
-      basicMonthly: 4000,
-      currency: "EUR",
-      components: [],
+    // Insert the EUR record directly: setSalary now rejects any currency other
+    // than the org's, so a non-org currency can only reach the DB via a
+    // non-setSalary path (legacy/import data). This simulates exactly that.
+    await t.run(async (ctx) => {
+      await ctx.db.insert("payRecords", {
+        orgId,
+        personId: eurPeer,
+        payYear: 2026,
+        source: "import",
+        basicMonthly: 4000,
+        currency: "EUR",
+        components: [],
+        effectiveAt: 1_700_000_000_000,
+        createdAt: 1_700_000_000_000,
+      })
     })
 
     // Archived peer: skipped silently (not part of the active population).

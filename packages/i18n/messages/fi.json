@@ -410,7 +410,6 @@
         "addDescription": "Lisää palkkatietue työntekijän historiaan.",
         "payYear": "Palkkavuosi",
         "basicMonthly": "Kiinteä kuukausipalkka",
-        "currency": "Valuutta",
         "components": "Lisäkomponentit",
         "addComponent": "Lisää komponentti",
         "removeComponent": "Poista komponentti",

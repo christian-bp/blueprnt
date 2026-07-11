@@ -410,7 +410,6 @@
         "addDescription": "Lägg till en lönepost i den anställdas historik.",
         "payYear": "Löneår",
         "basicMonthly": "Fast månadslön",
-        "currency": "Valuta",
         "components": "Ytterligare komponenter",
         "addComponent": "Lägg till komponent",
         "removeComponent": "Ta bort komponent",

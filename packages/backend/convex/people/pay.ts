@@ -33,6 +33,23 @@ async function requireOwnPerson(
   return person
 }
 
+// The org's configured currency. Money is always stored in the organization's
+// own currency, so writers validate the incoming currency against this and
+// reject a mismatch. Throws when the org has no currency set yet (a pay record
+// cannot be recorded without knowing its currency).
+async function requireOrgCurrency(
+  ctx: QueryCtx & { orgId: string }
+): Promise<string> {
+  const org = await ctx.db
+    .query("organizations")
+    .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
+    .first()
+  if (org?.currency === undefined || org.currency === "") {
+    throw appError(ERROR_CODES.invalidInput)
+  }
+  return org.currency
+}
+
 // Validator for a single compensation component.
 const payComponentValidator = v.object({
   kind: v.string(),
@@ -105,6 +122,17 @@ export const setSalary = orgMutation({
   handler: async (ctx, args) => {
     // Assert the person belongs to the caller's org.
     await requireOwnPerson(ctx, args.personId)
+
+    // Money is always in the org's own currency (never a per-record choice),
+    // and amounts are non-negative. Reject anything else rather than store it.
+    const orgCurrency = await requireOrgCurrency(ctx)
+    if (
+      args.currency !== orgCurrency ||
+      args.basicMonthly < 0 ||
+      args.components.some((component) => component.monthlyAmount < 0)
+    ) {
+      throw appError(ERROR_CODES.invalidInput)
+    }
 
     const effectiveAt = args.effectiveAt ?? Date.now()
     const createdAt = Date.now()
@@ -204,6 +232,16 @@ export const appendSalary = internalMutation({
     const person = await ctx.db.get(args.personId)
     if (person === null || person.orgId !== args.orgId) {
       throw appError(ERROR_CODES.notFound)
+    }
+
+    // Amounts are non-negative (the import validator already blocks negatives
+    // upstream; this is the write-path backstop so a payRecord's derived
+    // basic/variable split can never go negative).
+    if (
+      args.basicMonthly < 0 ||
+      args.components.some((component) => component.monthlyAmount < 0)
+    ) {
+      throw appError(ERROR_CODES.invalidInput)
     }
 
     // Idempotency: when the person's NEWEST pay record already carries the
@@ -461,17 +499,25 @@ export const getRolePayComparison = orgQuery({
       )
       .collect()
 
-    const points: Array<ReturnType<typeof comparisonPoint>> = []
+    const activePeers = roleAssignments.filter(
+      (a) => a.endedAt === undefined && a.personId !== personId
+    )
+    // Resolve every peer's person doc and latest pay record concurrently
+    // rather than serializing one peer's two reads after the next.
+    const peerData = await Promise.all(
+      activePeers.map(async (assignment) => ({
+        assignment,
+        peer: await ctx.db.get(assignment.personId),
+        record: await latestPayRecord(ctx, assignment.personId),
+      }))
+    )
+
+    const points: Array<ReturnType<typeof comparisonPoint>> = [
+      comparisonPoint(person, ownRecord, active.level, true),
+    ]
     let excludedCount = 0
-    for (const assignment of roleAssignments) {
-      if (assignment.endedAt !== undefined) continue
-      if (assignment.personId === personId) {
-        points.push(comparisonPoint(person, ownRecord, assignment.level, true))
-        continue
-      }
-      const peer = await ctx.db.get(assignment.personId)
+    for (const { assignment, peer, record } of peerData) {
       if (peer === null || peer.archivedAt !== undefined) continue
-      const record = await latestPayRecord(ctx, assignment.personId)
       if (record === null) continue
       if (record.currency !== ownRecord.currency) {
         excludedCount += 1

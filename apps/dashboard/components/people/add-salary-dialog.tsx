@@ -5,7 +5,7 @@ import { Delete02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import { CURRENCY_KEYS, PAY_COMPONENT_KINDS } from "@workspace/constants"
+import { PAY_COMPONENT_KINDS } from "@workspace/constants"
 import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
@@ -23,7 +23,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@workspace/ui/components/form"
-import { Input } from "@workspace/ui/components/input"
 import {
   Select,
   SelectContent,
@@ -31,7 +30,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import { useMutation } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
+import { CurrencyInput, currencyInputField } from "@/components/currency-input"
+import { NumberInput } from "@/components/number-input"
 import { useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
@@ -43,11 +44,12 @@ import { numberInputField } from "@/lib/number-field"
 import type { ValidationT } from "@/lib/validation"
 
 // Zod factory (messages via i18n). Number fields are validated as numbers; the
-// inputs bind via numberInputField, so a value reaches the schema as a number
-// (or undefined when the field is cleared, which reads as the required error).
-// Currency is one of the org-selectable currencies (CURRENCY_KEYS,
-// the same set the organization picker offers). Components are an array
-// of { kind, monthlyAmount } rows matching the payRecords component shape.
+// inputs bind via numberInputField / CurrencyInput, so a value reaches the
+// schema as a number (or undefined when the field is cleared, which reads as
+// the required error). Currency is NOT a form field: all of an org's money is
+// in the organization's own currency (enforced by the backend), so the form
+// only displays it. Components are an array of { kind, monthlyAmount } rows
+// matching the payRecords component shape.
 function makeSalarySchema(t: ValidationT) {
   return z.object({
     payYear: z
@@ -56,7 +58,6 @@ function makeSalarySchema(t: ValidationT) {
       .min(2000)
       .max(2100),
     basicMonthly: z.number({ error: t("required") }).nonnegative(),
-    currency: z.enum(CURRENCY_KEYS, { error: t("required") }),
     components: z.array(
       z.object({
         kind: z.string().min(1, t("required")),
@@ -78,6 +79,15 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
   const tToast = useTranslations("dashboard.toast")
   const { orgId } = useOrganization()
   const setSalary = useMutation(api.people.pay.setSalary)
+  // The org's currency: shown in the amount fields and sent on save. The
+  // backend rejects any currency other than the org's, so we must send the
+  // real one, never a guess. It is undefined until the settings query resolves
+  // (no fallback, or a slow load would silently record the wrong currency);
+  // saving is blocked until then.
+  const settings = useQuery(api.accounts.organization.getOrganizationSettings, {
+    orgId,
+  })
+  const currency = settings?.currency ?? undefined
 
   const [open, setOpen] = useState(false)
 
@@ -88,7 +98,6 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
     defaultValues: {
       payYear: new Date().getFullYear(),
       basicMonthly: 0,
-      currency: "SEK",
       components: [],
     },
   })
@@ -103,20 +112,24 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
   }
 
   async function onSubmit(values: SalaryFormValues) {
+    // The submit button is disabled until settings resolve, so currency is
+    // defined here; this guard also narrows the type for the mutation call.
+    if (currency === undefined) return
     try {
       await setSalary({
         orgId,
         personId,
         payYear: values.payYear,
         basicMonthly: values.basicMonthly,
-        currency: values.currency,
+        // Always the org's own currency; the form never lets the user pick one,
+        // and the backend rejects any other value.
+        currency,
         components: values.components,
       })
       toast.success(tToast("salarySaved"))
       form.reset({
         payYear: values.payYear,
         basicMonthly: 0,
-        currency: values.currency,
         components: [],
       })
       setOpen(false)
@@ -147,8 +160,7 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
                     <FormItem>
                       <FormLabel>{t("payYear")}</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
+                        <NumberInput
                           aria-label={t("payYear")}
                           {...numberInputField(field)}
                         />
@@ -164,44 +176,12 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
                     <FormItem>
                       <FormLabel>{t("basicMonthly")}</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
+                        <CurrencyInput
                           aria-label={t("basicMonthly")}
-                          {...numberInputField(field)}
+                          currency={currency ?? ""}
+                          {...currencyInputField(field)}
                         />
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="currency"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("currency")}</FormLabel>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <FormControl>
-                          <SelectTrigger
-                            ref={field.ref}
-                            onBlur={field.onBlur}
-                            aria-label={t("currency")}
-                            className="w-full"
-                          >
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {CURRENCY_KEYS.map((currency) => (
-                            <SelectItem key={currency} value={currency}>
-                              {currency}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -259,10 +239,10 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
                       <FormItem className="min-w-0 flex-1">
                         <FormLabel>{t("componentAmount")}</FormLabel>
                         <FormControl>
-                          <Input
-                            type="number"
+                          <CurrencyInput
                             aria-label={t("componentAmount")}
-                            {...numberInputField(field)}
+                            currency={currency ?? ""}
+                            {...currencyInputField(field)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -314,7 +294,10 @@ export function AddSalaryDialog({ personId }: { personId: Id<"people"> }) {
                   type="submit"
                   isSubmitting={form.formState.isSubmitting}
                   disabled={
-                    !form.formState.isValid || form.formState.isSubmitting
+                    !form.formState.isValid ||
+                    form.formState.isSubmitting ||
+                    // The org currency must be known before saving (see above).
+                    currency === undefined
                   }
                 >
                   {t("submit")}

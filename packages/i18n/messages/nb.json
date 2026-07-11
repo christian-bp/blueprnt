@@ -410,7 +410,6 @@
         "addDescription": "Legg til en lønnsoppføring i den ansattes historikk.",
         "payYear": "Lønnår",
         "basicMonthly": "Fast månedslønn",
-        "currency": "Valuta",
         "components": "Tilleggskomponenter",
         "addComponent": "Legg til komponent",
         "removeComponent": "Fjern komponent",
