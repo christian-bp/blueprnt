@@ -1,6 +1,7 @@
 "use client"
 
 import {
+  InformationCircleIcon,
   MoreHorizontalIcon,
   MoreVerticalIcon,
 } from "@hugeicons/core-free-icons"
@@ -16,14 +17,19 @@ import {
 } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useQuery } from "convex/react"
-import { useFormatter, useLocale, useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { AddSalaryDialog } from "@/components/people/add-salary-dialog"
+import {
+  PayComparisonSection,
+  PayComparisonSectionSkeleton,
+} from "@/components/people/pay-comparison-section"
 import { PersonActionsMenu } from "@/components/people/person-actions-menu"
 import { SalaryRowActions } from "@/components/people/salary-row-actions"
 import { useOrganization } from "@/components/org-context"
 import { type Crumb, PageBreadcrumb } from "@/components/page-breadcrumb"
 import { PageHeader } from "@/components/page-header"
+import { useMoney } from "@/hooks/use-money"
 import { usePageTitle } from "@/hooks/use-page-title"
 
 // The salary list's loading state: the same stacked-item wrappers as the
@@ -83,8 +89,10 @@ export function PersonDetail({ publicId }: { publicId: string }) {
   const tNav = useTranslations("dashboard.nav")
   const { orgId } = useOrganization()
   const locale = useLocale()
-
-  const format = useFormatter()
+  // Amounts render as locale-aware currency (e.g. "94 500 kr" in Swedish,
+  // "$94,500" for a USD org), which also removes the need for a separate
+  // currency column in the narrow rail.
+  const money = useMoney()
 
   const person = useQuery(api.people.people.getPersonByPublicId, {
     orgId,
@@ -104,22 +112,6 @@ export function PersonDetail({ publicId }: { publicId: string }) {
   const roles = useQuery(api.assessment.roles.listRoles, { orgId, locale })
 
   usePageTitle(person?.displayName ?? undefined)
-
-  // Amounts render as locale-aware currency (e.g. "94 500 kr"), which also
-  // removes the need for a separate currency column in the narrow rail.
-  // Imported currency strings are not schema-constrained, so an unknown code
-  // falls back to the raw pair instead of throwing.
-  function money(value: number, currency: string): string {
-    try {
-      return format.number(value, {
-        style: "currency",
-        currency,
-        maximumFractionDigits: 0,
-      })
-    } catch {
-      return `${value} ${currency}`
-    }
-  }
 
   const crumbs: Crumb[] = [
     { label: tNav("people"), href: "/people" },
@@ -175,7 +167,7 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                 ))}
               </dl>
               <section className="space-y-2">
-                <h2 className="font-medium text-sm">
+                <h2 className="text-muted-foreground text-sm">
                   {t("classificationHeading")}
                 </h2>
                 <div className="flex min-h-5 items-center gap-3">
@@ -185,6 +177,9 @@ export function PersonDetail({ publicId }: { publicId: string }) {
               </section>
             </CardContent>
           </Card>
+          {/* The pay-comparison card's own loading state, so the column
+              reserves its full height up front. */}
+          <PayComparisonSectionSkeleton />
         </div>
         <div className="space-y-6">
           <Card>
@@ -295,7 +290,7 @@ export function PersonDetail({ publicId }: { publicId: string }) {
 
               {/* Classification block */}
               <section className="space-y-2">
-                <h2 className="font-medium text-sm">
+                <h2 className="text-muted-foreground text-sm">
                   {t("classificationHeading")}
                 </h2>
                 {assignment === null ? (
@@ -312,20 +307,44 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                         {role.title}
                       </Link>
                     )}
-                    <Badge>{assignment.level}</Badge>
-                    {/* Confirmed is the default good state and says nothing;
-                        only the suggested hint carries information (go
-                        confirm it on Classify). */}
+                    {/* Confirmed is the default good state: a solid badge and
+                        nothing else. A suggested level is provisional, so its
+                        badge renders outline and the hint links to Classify,
+                        where the confirmation happens. */}
+                    <Badge
+                      variant={
+                        assignment.levelSource === "suggested"
+                          ? "outline"
+                          : "default"
+                      }
+                    >
+                      {assignment.level}
+                    </Badge>
                     {assignment.levelSource === "suggested" && (
-                      <span className="text-muted-foreground">
-                        {t("sourceSuggested")}
-                      </span>
+                      <Link
+                        href="/people/classify"
+                        className="inline-flex items-center gap-1.5 text-muted-foreground underline-offset-4 hover:underline"
+                      >
+                        <HugeiconsIcon
+                          icon={InformationCircleIcon}
+                          size={16}
+                          strokeWidth={2}
+                          aria-hidden="true"
+                        />
+                        {t("suggestedLevelHint")}
+                      </Link>
                     )}
                   </div>
                 )}
               </section>
             </CardContent>
           </Card>
+
+          {/* Pay comparison against the role: its own card below identity. */}
+          <PayComparisonSection
+            personId={person.personId}
+            trackKey={role?.trackKey}
+          />
         </div>
 
         {/* The salary rail sticks in view while the taller profile scrolls

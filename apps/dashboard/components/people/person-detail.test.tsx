@@ -102,6 +102,7 @@ function queryRouter(ref: string): unknown {
   if (ref === "people.assignments.getCurrentAssignment") return ASSIGNMENT
   if (ref === "people.pay.getSalaryHistory") return SALARY
   if (ref === "assessment.roles.listRoles") return ROLES
+  if (ref === "people.pay.getRolePayComparison") return { status: "noSalary" }
   return undefined
 }
 
@@ -135,10 +136,14 @@ describe("PersonDetail", () => {
     // IC3, so it shows IC2.
     expect(screen.getByText("Engineer · IC2")).toBeDefined()
     // A confirmed assignment shows no source hint (the default good state).
-    expect(screen.queryByText(m.sourceSuggested)).toBeNull()
+    expect(screen.queryByText(m.suggestedLevelHint)).toBeNull()
+    // The pay-comparison section renders its precondition state.
+    expect(
+      screen.getByText(messages.dashboard.people.payComparison.precondition)
+    ).toBeDefined()
   })
 
-  it("shows the suggested hint only for an unconfirmed assignment", () => {
+  it("links the suggested hint to Classify for an unconfirmed assignment", () => {
     onQuery((ref) => {
       if (ref === "people.assignments.getCurrentAssignment") {
         return { ...ASSIGNMENT, levelSource: "suggested" }
@@ -146,7 +151,8 @@ describe("PersonDetail", () => {
       return queryRouter(ref)
     })
     renderDetail()
-    expect(screen.getByText(m.sourceSuggested)).toBeDefined()
+    const hint = screen.getByText(m.suggestedLevelHint)
+    expect(hint.closest("a")?.getAttribute("href")).toBe("/people/classify")
   })
 
   it("shows the loading skeleton when the person is still resolving", () => {
@@ -157,6 +163,11 @@ describe("PersonDetail", () => {
     renderDetail()
     // In loading state, person name is absent
     expect(screen.queryByText("Alex Doe")).toBeNull()
+    // The pay-comparison section's static chrome renders in the outer
+    // skeleton too, so the left card cannot grow when the data arrives.
+    expect(
+      screen.getByText(messages.dashboard.people.payComparison.heading)
+    ).toBeDefined()
   })
 
   it("shows not-found state when the publicId resolves to nothing", () => {
