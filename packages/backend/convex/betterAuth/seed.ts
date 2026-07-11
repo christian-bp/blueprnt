@@ -76,6 +76,8 @@ export const removeUserByEmail = mutation({
 })
 
 // Tables wiped by wipeAuthData. jwks is deliberately excluded (see below).
+// twoFactor (TOTP secrets + backup codes) and rateLimit are included so a reset
+// leaves no prior user's credentials or throttle state behind.
 const AUTH_WIPE_TABLES = [
   "user",
   "session",
@@ -84,6 +86,8 @@ const AUTH_WIPE_TABLES = [
   "organization",
   "member",
   "invitation",
+  "twoFactor",
+  "rateLimit",
 ] as const
 
 // Page size mirrors devReset.wipeAppTables: bound the per-transaction write

@@ -325,6 +325,10 @@ describe("accounts.account.eraseSelf", () => {
     )
     expect(audit).toHaveLength(1)
     expect(audit[0]?.actorName).toBe("deleted user")
+    // searchText is denormalized from the name, so it must be rebuilt to the
+    // tombstone too: the erased name is neither stored nor searchable.
+    expect(audit[0]?.searchText).toBe("deleted user role.created")
+    expect(audit[0]?.searchText ?? "").not.toContain("erase me")
     // Email purge scheduled with the erased address.
     const scheduled = await t.run((ctx) =>
       ctx.db.system.query("_scheduled_functions").collect()

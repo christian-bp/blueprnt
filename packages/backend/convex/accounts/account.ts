@@ -16,8 +16,8 @@ import {
   replaceStoredImage,
 } from "../files"
 import {
-  ERASED_ACTOR_NAME,
   PLATFORM_AUDIT_EVENTS,
+  anonymizeAuthoredAuditRows,
   logPlatformAudit,
 } from "../lib/audit"
 import { ERROR_CODES, appError } from "../lib/errors"
@@ -237,20 +237,9 @@ export const eraseSelf = internalMutation({
     }
     // Anonymize this person's snapshotted name in both audit logs (rows kept for
     // the trail's legitimate-interest basis; their payloads carry IDs/codes only).
-    const orgAuthored = await ctx.db
-      .query("auditLog")
-      .withIndex("by_actor", (q) => q.eq("actorId", authUserId))
-      .collect()
-    for (const row of orgAuthored) {
-      await ctx.db.patch(row._id, { actorName: ERASED_ACTOR_NAME })
-    }
-    const platformAuthored = await ctx.db
-      .query("platformAuditLog")
-      .withIndex("by_actor", (q) => q.eq("actorId", authUserId))
-      .collect()
-    for (const row of platformAuthored) {
-      await ctx.db.patch(row._id, { actorName: ERASED_ACTOR_NAME })
-    }
+    // Rewrites both actorName AND the derived searchText, so the erased name is
+    // neither stored nor searchable; shared with platform.deleteUser.
+    await anonymizeAuthoredAuditRows(ctx, authUserId)
     // The erasure is self-attributed (actor === target): the person deleted
     // their own account. Non-identifying org count only, never name/email.
     await logPlatformAudit(ctx, {

@@ -28,10 +28,9 @@ export async function erasePersonRecords(
   }
 
   // Non-PII delete snapshot built BEFORE deletion. PERSON_AUDIT_FIELDS excludes
-  // displayName, gender, and birthDate (PII); salary amounts never live on the
-  // people row.
+  // displayName, gender, birthDate, and externalRef (all person identifiers);
+  // salary amounts never live on the people row.
   const nonPiiBefore: Record<string, unknown> = {
-    externalRef: person.externalRef ?? null,
     employmentStartDate: person.employmentStartDate ?? null,
     ftePercent: person.ftePercent ?? null,
     country: person.country ?? null,

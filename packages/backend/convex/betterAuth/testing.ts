@@ -151,6 +151,36 @@ export const seedAccount = mutation({
   },
 })
 
+// Test-only: insert a twoFactor row (TOTP secret + backup codes, keyed by
+// userId) so the erasure path can assert the credential row is hard-deleted.
+export const seedTwoFactorRow = mutation({
+  args: { userId: v.string() },
+  returns: v.null(),
+  handler: async (ctx, { userId }) => {
+    assertTestEnv()
+    await ctx.db.insert("twoFactor", {
+      secret: "test-secret",
+      backupCodes: "test-backup-codes",
+      userId,
+    })
+    return null
+  },
+})
+
+// Test-only: count twoFactor rows for a user, so erasure can assert removal.
+export const countTwoFactorForUser = query({
+  args: { userId: v.string() },
+  returns: v.number(),
+  handler: async (ctx, { userId }) => {
+    assertTestEnv()
+    const rows = await ctx.db
+      .query("twoFactor")
+      .withIndex("userId", (q) => q.eq("userId", userId))
+      .collect()
+    return rows.length
+  },
+})
+
 // Test-only: list invitation rows (email + inviterId) so erasure can assert
 // which invitations remain after a purge.
 export const listInvitations = query({

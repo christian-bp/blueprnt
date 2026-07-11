@@ -229,6 +229,15 @@ export const eraseUser = mutation({
       .withIndex("userId", (q) => q.eq("userId", userId))
       .collect()
     for (const s of sessions) await ctx.db.delete(s._id)
+    // Two-factor credentials (TOTP secret + backup codes). 2FA is mandatory for
+    // every user, so a twoFactor row always exists; it is keyed by userId and no
+    // other path ever deletes it, so erasure must, or the credential row (an
+    // identity row under the hard-delete contract) survives forever.
+    const twoFactors = await ctx.db
+      .query("twoFactor")
+      .withIndex("userId", (q) => q.eq("userId", userId))
+      .collect()
+    for (const tf of twoFactors) await ctx.db.delete(tf._id)
     // Invitations carry the invitee email (PII), so purge them too. Read the
     // user's email BEFORE deleting the user row, then delete invitations where
     // the user is the invitee (email index) and where they are the sender
@@ -250,6 +259,23 @@ export const eraseUser = mutation({
     for (const inv of invitedBy) await ctx.db.delete(inv._id)
     if (uid !== null) await ctx.db.delete(uid)
     return { orgIds, email }
+  },
+})
+
+// GDPR: purge every invitation row addressed to an email (the invitee address
+// is PII). Called when a user changes their email so invitations to the OLD
+// address are not orphaned and retained: eraseUser keys on the CURRENT email
+// only, so the old address must be cleaned up at change time. Bounded read.
+export const purgeInvitationsForEmail = mutation({
+  args: { email: v.string() },
+  returns: v.null(),
+  handler: async (ctx, { email }) => {
+    const invitations = await ctx.db
+      .query("invitation")
+      .withIndex("email", (q) => q.eq("email", email))
+      .collect()
+    for (const inv of invitations) await ctx.db.delete(inv._id)
+    return null
   },
 })
 

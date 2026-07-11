@@ -1886,6 +1886,13 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         { created: boolean; userId: string },
         Name
       >;
+      purgeInvitationsForEmail: FunctionReference<
+        "mutation",
+        "internal",
+        { email: string },
+        null,
+        Name
+      >;
       removeMember: FunctionReference<
         "mutation",
         "internal",
@@ -1951,6 +1958,13 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
       >;
     };
     testing: {
+      countTwoFactorForUser: FunctionReference<
+        "query",
+        "internal",
+        { userId: string },
+        number,
+        Name
+      >;
       listInvitations: FunctionReference<
         "query",
         "internal",
@@ -1991,6 +2005,13 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         "internal",
         { orgName: string; role: string; userId: string },
         { orgId: string },
+        Name
+      >;
+      seedTwoFactorRow: FunctionReference<
+        "mutation",
+        "internal",
+        { userId: string },
+        null,
         Name
       >;
       seedUserWithTwoFactor: FunctionReference<

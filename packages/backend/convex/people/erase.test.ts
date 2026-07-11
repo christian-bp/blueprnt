@@ -154,7 +154,20 @@ describe("erasePersonAsOrg", () => {
   it("writes a person.erased audit row containing personId but NO PII fields", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
-    const personId = await seedPerson(orgId, asAdmin)
+    // Seed WITH an employee number: it is a person identifier and must not
+    // survive in the append-only trail after erasure (GDPR).
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      {
+        orgId,
+        displayName: "Anna Svensson",
+        gender: "Kvinna",
+        externalRef: "E-4711",
+        country: "SE",
+        ftePercent: 100,
+        department: "Engineering",
+      }
+    )
 
     await asAdmin.mutation(api.people.erase.erasePersonAsOrg, {
       orgId,
@@ -185,6 +198,11 @@ describe("erasePersonAsOrg", () => {
       // Salary amount: basicMonthly is a pay record field and must NOT appear.
       expect(payloadJson).not.toContain("basicMonthly")
       expect(payloadJson).not.toContain("50000")
+      // Employee number (externalRef) is a person identifier: neither the key
+      // nor the value may survive, in the payload or its derived searchText.
+      expect(payloadJson).not.toContain("externalRef")
+      expect(payloadJson).not.toContain("E-4711")
+      expect(auditRows[0]?.searchText ?? "").not.toContain("e-4711")
 
       // The changes map should carry the non-PII structural fields as from->null
       // transitions. country and ftePercent were seeded with values above.

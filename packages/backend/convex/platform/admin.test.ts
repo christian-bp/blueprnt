@@ -1126,6 +1126,56 @@ describe("deleteUser (erasure)", () => {
     expect(del?.payload).toEqual({ orgCount: 1 })
   })
 
+  it("hard-deletes the twoFactor credential row and tombstones searchText", async () => {
+    const t = initConvexTest()
+    const adminId = await seedPlatformAdmin(t)
+    const asAdmin = t.withIdentity({ subject: adminId })
+    const orgId = await seedOrg(t, adminId, "acme-2fa")
+    const { authId } = await asAdmin.mutation(api.platform.admin.createUser, {
+      name: "Erase Me",
+      email: "erase-2fa@acme.se",
+      orgId,
+      role: "editor",
+    })
+    // Every user completes mandatory 2FA, so a twoFactor row exists.
+    await t.mutation(components.betterAuth.testing.seedTwoFactorRow, {
+      userId: authId,
+    })
+    // An org audit row authored by the user carries their name in searchText.
+    await t.run(async (ctx) => {
+      await ctx.db.insert("auditLog", {
+        orgId,
+        type: "role.created",
+        actorId: authId,
+        actorName: "Erase Me",
+        payload: {},
+        category: "role",
+        searchText: "erase me role.created",
+      })
+    })
+
+    await asAdmin.mutation(api.platform.admin.deleteUser, { authId })
+
+    // The credential row is gone (GDPR: no residual TOTP secret/backup codes).
+    const twoFactorCount = await t.query(
+      components.betterAuth.testing.countTwoFactorForUser,
+      { userId: authId }
+    )
+    expect(twoFactorCount).toBe(0)
+    // The authored audit row keeps its trail, but the name is tombstoned in BOTH
+    // actorName and the denormalized searchText.
+    const audit = await t.run(async (ctx) =>
+      ctx.db
+        .query("auditLog")
+        .withIndex("by_actor", (q) => q.eq("actorId", authId))
+        .collect()
+    )
+    expect(audit).toHaveLength(1)
+    expect(audit[0]?.actorName).toBe("deleted user")
+    expect(audit[0]?.searchText).toBe("deleted user role.created")
+    expect(audit[0]?.searchText ?? "").not.toContain("erase me")
+  })
+
   it("deletes the erased person's stored avatar file", async () => {
     const t = initConvexTest()
     const adminId = await seedPlatformAdmin(t)

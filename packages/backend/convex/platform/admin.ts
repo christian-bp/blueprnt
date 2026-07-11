@@ -6,8 +6,8 @@ import { query } from "../_generated/server"
 import type { QueryCtx } from "../_generated/server"
 import { onOrganizationCreate, onUserCreate } from "../accounts/mirrors"
 import {
+  anonymizeAuthoredAuditRows,
   buildChanges,
-  ERASED_ACTOR_NAME,
   PLATFORM_AUDIT_CATEGORIES,
   PLATFORM_AUDIT_EVENTS,
   logPlatformAudit,
@@ -681,21 +681,10 @@ export const deleteUser = platformMutation({
       if (mirror.imageId != null) await ctx.storage.delete(mirror.imageId)
       await ctx.db.delete(mirror._id)
     }
-    // Anonymize this person's snapshotted name in both audit logs.
-    const orgAuthored = await ctx.db
-      .query("auditLog")
-      .withIndex("by_actor", (q) => q.eq("actorId", authId))
-      .collect()
-    for (const row of orgAuthored) {
-      await ctx.db.patch(row._id, { actorName: ERASED_ACTOR_NAME })
-    }
-    const platformAuthored = await ctx.db
-      .query("platformAuditLog")
-      .withIndex("by_actor", (q) => q.eq("actorId", authId))
-      .collect()
-    for (const row of platformAuthored) {
-      await ctx.db.patch(row._id, { actorName: ERASED_ACTOR_NAME })
-    }
+    // Anonymize this person's snapshotted name in both audit logs. Rewrites both
+    // actorName AND the derived searchText, so the erased name is neither stored
+    // nor searchable; shared with accounts.eraseSelf.
+    await anonymizeAuthoredAuditRows(ctx, authId)
     await logPlatformAudit(ctx, {
       actorId: ctx.authUserId,
       type: PLATFORM_AUDIT_EVENTS.userDeleted,

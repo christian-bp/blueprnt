@@ -434,6 +434,11 @@ describe("betterAuth/seed.wipeAuthData", () => {
       components.betterAuth.testing.seedMembership,
       { email: "hr@acme.se", name: "HR Person", role: "admin" }
     )
+    // A twoFactor credential row: the wipe must clear it too, so a reset leaves
+    // no prior user's TOTP secret behind.
+    await t.mutation(components.betterAuth.testing.seedTwoFactorRow, {
+      userId,
+    })
 
     const result = await t.mutation(components.betterAuth.seed.wipeAuthData, {})
     expect(result).toEqual({ done: true })
@@ -443,6 +448,11 @@ describe("betterAuth/seed.wipeAuthData", () => {
       { organizationId: orgId, userId }
     )
     expect(membership).toBeNull()
+    const twoFactorCount = await t.query(
+      components.betterAuth.testing.countTwoFactorForUser,
+      { userId }
+    )
+    expect(twoFactorCount).toBe(0)
 
     const memberships = await t.query(
       components.betterAuth.membership.listMembershipsForUser,

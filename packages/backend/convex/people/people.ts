@@ -43,9 +43,10 @@ async function requireOwnPerson(
 // Builds the non-PII subset of a person doc suitable for audit diffs.
 // Maps the person doc to a plain Record so buildChanges/buildCreateChanges
 // can walk PERSON_AUDIT_FIELDS without hitting Convex document internals.
+// Excludes externalRef (the employee number, a person identifier) along with
+// the other PII, so audit diffs and their searchText carry no identifier.
 function nonPiiFields(person: Partial<Doc<"people">>): Record<string, unknown> {
   return {
-    externalRef: person.externalRef ?? null,
     employmentStartDate: person.employmentStartDate ?? null,
     ftePercent: person.ftePercent ?? null,
     country: person.country ?? null,

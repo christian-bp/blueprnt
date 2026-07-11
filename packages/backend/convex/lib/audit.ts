@@ -378,11 +378,15 @@ export const ROLE_CREATE_FIELDS = [
 ] as const
 
 // The person fields captured for create/update/archive diffs. EXCLUDES
-// displayName, gender, and birthDate (PII; GDPR / Role != Person) so audit
-// changes diffs never carry personal data. Only structural and
-// HR-operational fields are recorded.
+// displayName, gender, birthDate, AND externalRef (the employee number): every
+// one is a person identifier (an employee number is a personal identifier under
+// GDPR Art. 4(1), trivially mapped back to the individual via payroll; Role !=
+// Person), and the append-only trail must survive erasure PII-free, so no
+// personal identifier may enter the diff or its derived searchText. personId
+// (an internal, non-PII key that dangles harmlessly once the row is
+// hard-deleted) is the trace key instead. Only structural and HR-operational
+// fields are recorded.
 export const PERSON_AUDIT_FIELDS = [
-  "externalRef",
   "employmentStartDate",
   "ftePercent",
   "country",
@@ -533,4 +537,49 @@ export async function logPlatformAudit<E extends keyof PlatformAuditPayloads>(
     // for display): keeping searchText PII-free is what lets erasure stay clean.
     searchText: buildSearchText(actorName, entry.type, payload),
   })
+}
+
+// GDPR erasure: anonymizes every audit row the erased user AUTHORED, across both
+// the per-org auditLog and the platformAuditLog. Replaces the snapshotted
+// actorName with the tombstone AND rebuilds the derived searchText from it, so
+// the erased person's real name is neither stored nor full-text-searchable
+// afterwards (actorName alone is not enough: searchText is a denormalized copy
+// that was built from the name at write time). The rows themselves are kept for
+// the trail's legitimate-interest basis; their payloads carry IDs/codes only,
+// never PII, so rebuilding searchText from tombstone + type + payload leaves no
+// personal data behind. Shared by both erasure paths (accounts.eraseSelf and
+// platform.deleteUser) so the two cannot drift (the same rationale that makes
+// ERASED_ACTOR_NAME a shared constant).
+export async function anonymizeAuthoredAuditRows(
+  ctx: GenericMutationCtx<DataModel>,
+  actorId: string
+): Promise<void> {
+  const orgAuthored = await ctx.db
+    .query("auditLog")
+    .withIndex("by_actor", (q) => q.eq("actorId", actorId))
+    .collect()
+  for (const row of orgAuthored) {
+    await ctx.db.patch(row._id, {
+      actorName: ERASED_ACTOR_NAME,
+      searchText: buildSearchText(
+        ERASED_ACTOR_NAME,
+        row.type,
+        row.payload as Record<string, unknown>
+      ),
+    })
+  }
+  const platformAuthored = await ctx.db
+    .query("platformAuditLog")
+    .withIndex("by_actor", (q) => q.eq("actorId", actorId))
+    .collect()
+  for (const row of platformAuthored) {
+    await ctx.db.patch(row._id, {
+      actorName: ERASED_ACTOR_NAME,
+      searchText: buildSearchText(
+        ERASED_ACTOR_NAME,
+        row.type,
+        row.payload as Record<string, unknown>
+      ),
+    })
+  }
 }
