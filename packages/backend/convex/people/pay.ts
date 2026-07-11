@@ -1,5 +1,5 @@
 import { v } from "convex/values"
-import { totalMonthlyComp } from "@workspace/constants"
+import { fteTotalMonthlyComp, totalMonthlyComp } from "@workspace/constants"
 import type { Doc, Id } from "../_generated/dataModel"
 import type { QueryCtx } from "../_generated/server"
 import { internalMutation } from "../_generated/server"
@@ -329,5 +329,162 @@ export const getCurrentSalary = orgQuery({
     }
 
     return current !== null ? toPayRecordShape(current) : null
+  },
+})
+
+// The person page's pay-comparison payload. Each point identifies a colleague
+// (displayName + externalRef, so the chart tooltip can name people and the
+// client can pseudonymize per the org setting, as the People register does),
+// carries the FTE-adjusted basic/variable split and pay year for the tooltip,
+// and the gender the chart colors dots by (the tool's core lens is the pay gap
+// between men and women; HR already sees gender in the People register). This
+// is an HR-only, org-scoped read; it never enters the audit trail (where
+// employee-identifying fields and salary are forbidden).
+const payComparisonShape = v.union(
+  v.object({ status: v.literal("unclassified") }),
+  v.object({ status: v.literal("noSalary") }),
+  v.object({
+    status: v.literal("ready"),
+    currency: v.string(),
+    excludedCount: v.number(),
+    points: v.array(
+      v.object({
+        publicId: v.string(),
+        displayName: v.string(),
+        externalRef: v.union(v.string(), v.null()),
+        gender: v.union(v.literal("Man"), v.literal("Kvinna")),
+        level: v.string(),
+        basic: v.number(),
+        variable: v.number(),
+        amount: v.number(),
+        payYear: v.number(),
+        isSelf: v.boolean(),
+      })
+    ),
+  })
+)
+
+// One person's dot for the pay-comparison chart. All amounts are FTE-adjusted
+// (the chart's like-for-like basis, decision #3): basic and variable are each
+// grossed to full-time via the shared fteTotalMonthlyComp helper, and variable
+// is the remainder so the two always sum to the plotted total. Identity travels
+// with the point so the tooltip can name the person (client-side pseudonymize).
+function comparisonPoint(
+  person: Doc<"people">,
+  record: Doc<"payRecords">,
+  level: string,
+  isSelf: boolean
+) {
+  const amount = Math.round(
+    fteTotalMonthlyComp(
+      record.basicMonthly,
+      record.components,
+      person.ftePercent
+    )
+  )
+  const basic = Math.round(
+    fteTotalMonthlyComp(record.basicMonthly, [], person.ftePercent)
+  )
+  return {
+    publicId: person.publicId,
+    displayName: person.displayName,
+    externalRef: person.externalRef ?? null,
+    gender: person.gender,
+    level,
+    basic,
+    variable: amount - basic,
+    amount,
+    payYear: record.payYear,
+    isSelf,
+  }
+}
+
+// A person's most recent pay record: greatest payYear, ties broken by
+// effectiveAt (a correction within the same year wins over the original).
+async function latestPayRecord(
+  ctx: QueryCtx & { orgId: string },
+  personId: Id<"people">
+): Promise<Doc<"payRecords"> | null> {
+  const rows = await ctx.db
+    .query("payRecords")
+    .withIndex("by_person", (q) =>
+      q.eq("orgId", ctx.orgId).eq("personId", personId)
+    )
+    .collect()
+  let latest: Doc<"payRecords"> | null = null
+  for (const row of rows) {
+    if (
+      latest === null ||
+      row.payYear > latest.payYear ||
+      (row.payYear === latest.payYear && row.effectiveAt > latest.effectiveAt)
+    ) {
+      latest = row
+    }
+  }
+  return latest
+}
+
+// Comparison data for the person page's "Pay compared with the role" chart:
+// everyone with an active assignment on the same role, on FTE-adjusted total
+// monthly pay (fteTotalMonthlyComp, the V2 salary spec's canonical metric),
+// each person contributing their latest payYear record. Peers paid in another
+// currency than the viewed person are excluded and counted (not comparable);
+// archived peers are excluded; the viewed person is included archived or not.
+// Derived on read, nothing stored. Read-only, so no audit row.
+export const getRolePayComparison = orgQuery({
+  args: { personId: v.id("people") },
+  returns: payComparisonShape,
+  handler: async (ctx, { personId }) => {
+    const person = await ctx.db.get(personId)
+    if (person === null || person.orgId !== ctx.orgId) {
+      // Same silent empty as getSalaryHistory for a foreign person: reveal
+      // nothing about other orgs' data.
+      return { status: "unclassified" as const }
+    }
+
+    const ownAssignments = await ctx.db
+      .query("personAssignments")
+      .withIndex("by_person", (q) =>
+        q.eq("orgId", ctx.orgId).eq("personId", personId)
+      )
+      .collect()
+    const active = ownAssignments.find((a) => a.endedAt === undefined)
+    if (active === undefined) return { status: "unclassified" as const }
+
+    const ownRecord = await latestPayRecord(ctx, personId)
+    if (ownRecord === null) return { status: "noSalary" as const }
+
+    const roleAssignments = await ctx.db
+      .query("personAssignments")
+      .withIndex("by_role", (q) =>
+        q.eq("orgId", ctx.orgId).eq("roleId", active.roleId)
+      )
+      .collect()
+
+    const points: Array<ReturnType<typeof comparisonPoint>> = []
+    let excludedCount = 0
+    for (const assignment of roleAssignments) {
+      if (assignment.endedAt !== undefined) continue
+      if (assignment.personId === personId) {
+        points.push(comparisonPoint(person, ownRecord, assignment.level, true))
+        continue
+      }
+      const peer = await ctx.db.get(assignment.personId)
+      if (peer === null || peer.archivedAt !== undefined) continue
+      const record = await latestPayRecord(ctx, assignment.personId)
+      if (record === null) continue
+      if (record.currency !== ownRecord.currency) {
+        excludedCount += 1
+        continue
+      }
+      points.push(comparisonPoint(peer, record, assignment.level, false))
+    }
+
+    return {
+      status: "ready" as const,
+      currency: ownRecord.currency,
+      excludedCount,
+      points,
+    }
   },
 })

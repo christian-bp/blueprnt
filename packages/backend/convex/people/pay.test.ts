@@ -37,6 +37,30 @@ async function seedPerson(
   return personId
 }
 
+// Seeds a role and assigns the given person to it at the given level.
+async function seedRoleWithAssignment(
+  orgId: string,
+  asAdmin: ReturnType<ReturnType<typeof initConvexTest>["withIdentity"]>,
+  personId: Awaited<ReturnType<typeof seedPerson>>,
+  level = "IC3"
+) {
+  const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
+    orgId,
+    title: "Software Engineer",
+    function: "Engineering",
+    team: "Platform",
+    trackKey: "IC",
+  })
+  await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+    orgId,
+    personId,
+    roleId,
+    level,
+    levelSource: "confirmed",
+  })
+  return roleId
+}
+
 describe("setSalary", () => {
   it("appends a payRecords row with source manual and writes an audit row", async () => {
     const t = initConvexTest()
@@ -763,5 +787,239 @@ describe("getSalaryHistory role/level join", () => {
       personId,
     })
     expect(history[0]?.assignment).toBeNull()
+  })
+})
+
+describe("getRolePayComparison", () => {
+  it("returns unclassified when the person has no active assignment", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const personId = await seedPerson(orgId, asAdmin)
+
+    const result = await asAdmin.query(api.people.pay.getRolePayComparison, {
+      orgId,
+      personId,
+    })
+    expect(result).toEqual({ status: "unclassified" })
+  })
+
+  it("returns noSalary when classified but without any pay record", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const personId = await seedPerson(orgId, asAdmin)
+    await seedRoleWithAssignment(orgId, asAdmin, personId)
+
+    const result = await asAdmin.query(api.people.pay.getRolePayComparison, {
+      orgId,
+      personId,
+    })
+    expect(result).toEqual({ status: "noSalary" })
+  })
+
+  it("returns identified points with the FTE-adjusted basic/variable split", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const personId = await seedPerson(orgId, asAdmin)
+    const roleId = await seedRoleWithAssignment(orgId, asAdmin, personId)
+
+    // Peer on the same role at 80% FTE: 40000 basic + 0 components
+    // grosses up to 50000. levelSource "suggested" must still count.
+    const { personId: peerId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Bo Berg", gender: "Man", ftePercent: 80 }
+    )
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId: peerId,
+      roleId,
+      level: "IC2",
+      levelSource: "suggested",
+    })
+    await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId: peerId,
+      payYear: 2026,
+      basicMonthly: 40000,
+      currency: "SEK",
+      components: [],
+    })
+
+    await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId,
+      payYear: 2026,
+      basicMonthly: 55000,
+      currency: "SEK",
+      components: [{ kind: "variable", monthlyAmount: 5000 }],
+    })
+
+    const result = await asAdmin.query(api.people.pay.getRolePayComparison, {
+      orgId,
+      personId,
+    })
+    if (result.status !== "ready") throw new Error("expected ready")
+    expect(result.currency).toBe("SEK")
+    expect(result.excludedCount).toBe(0)
+    expect(result.points).toHaveLength(2)
+
+    const self = result.points.find((p) => p.isSelf)
+    const peer = result.points.find((p) => !p.isSelf)
+    // Self: full time, basic 55000 + variable 5000 = 60000.
+    expect(self).toMatchObject({
+      displayName: "Anna Svensson",
+      externalRef: null,
+      gender: "Kvinna",
+      level: "IC3",
+      basic: 55000,
+      variable: 5000,
+      amount: 60000,
+      payYear: 2026,
+      isSelf: true,
+    })
+    expect(self?.publicId).toBeTypeOf("string")
+    // Peer: 80% FTE grosses 40000 basic to 50000, no variable; suggested
+    // level still counts.
+    expect(peer).toMatchObject({
+      displayName: "Bo Berg",
+      externalRef: null,
+      gender: "Man",
+      level: "IC2",
+      basic: 50000,
+      variable: 0,
+      amount: 50000,
+      payYear: 2026,
+      isSelf: false,
+    })
+
+    // The contract shape: identity + gender (the chart's coloring lens) + the
+    // FTE-adjusted split + pay year, and NOTHING else (no internal id).
+    for (const point of result.points) {
+      expect(Object.keys(point).sort()).toEqual([
+        "amount",
+        "basic",
+        "displayName",
+        "externalRef",
+        "gender",
+        "isSelf",
+        "level",
+        "payYear",
+        "publicId",
+        "variable",
+      ])
+    }
+  })
+
+  it("uses each person's latest payYear record", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const personId = await seedPerson(orgId, asAdmin)
+    await seedRoleWithAssignment(orgId, asAdmin, personId)
+
+    await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId,
+      payYear: 2024,
+      basicMonthly: 40000,
+      currency: "SEK",
+      components: [],
+    })
+    await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId,
+      payYear: 2026,
+      basicMonthly: 48000,
+      currency: "SEK",
+      components: [],
+    })
+
+    const result = await asAdmin.query(api.people.pay.getRolePayComparison, {
+      orgId,
+      personId,
+    })
+    if (result.status !== "ready") throw new Error("expected ready")
+    expect(result.points[0]?.amount).toBe(48000)
+  })
+
+  it("excludes other-currency peers with a count and skips archived peers", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const personId = await seedPerson(orgId, asAdmin)
+    const roleId = await seedRoleWithAssignment(orgId, asAdmin, personId)
+    await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId,
+      payYear: 2026,
+      basicMonthly: 50000,
+      currency: "SEK",
+      components: [],
+    })
+
+    // Peer paid in EUR: excluded, counted.
+    const { personId: eurPeer } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Eva Euro", gender: "Kvinna" }
+    )
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId: eurPeer,
+      roleId,
+      level: "IC2",
+      levelSource: "confirmed",
+    })
+    await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId: eurPeer,
+      payYear: 2026,
+      basicMonthly: 4000,
+      currency: "EUR",
+      components: [],
+    })
+
+    // Archived peer: skipped silently (not part of the active population).
+    const { personId: archivedPeer } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Ola Old", gender: "Man" }
+    )
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId: archivedPeer,
+      roleId,
+      level: "IC4",
+      levelSource: "confirmed",
+    })
+    await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId: archivedPeer,
+      payYear: 2026,
+      basicMonthly: 70000,
+      currency: "SEK",
+      components: [],
+    })
+    await t.run(async (ctx) => {
+      await ctx.db.patch(archivedPeer, { archivedAt: 1_700_000_000_000 })
+    })
+
+    const result = await asAdmin.query(api.people.pay.getRolePayComparison, {
+      orgId,
+      personId,
+    })
+    if (result.status !== "ready") throw new Error("expected ready")
+    expect(result.excludedCount).toBe(1)
+    expect(result.points).toHaveLength(1)
+    expect(result.points[0]?.isSelf).toBe(true)
+  })
+
+  it("is org-isolated: another org's caller gets unclassified", async () => {
+    const t = initConvexTest()
+    const { orgId: orgA, asAdmin: asAdminA } = await seedOrg(t, "a@a.se")
+    const personId = await seedPerson(orgA, asAdminA)
+    await seedRoleWithAssignment(orgA, asAdminA, personId)
+
+    const { orgId: orgB, asAdmin: asAdminB } = await seedOrg(t, "b@b.se")
+    const result = await asAdminB.query(api.people.pay.getRolePayComparison, {
+      orgId: orgB,
+      personId,
+    })
+    expect(result).toEqual({ status: "unclassified" })
   })
 })

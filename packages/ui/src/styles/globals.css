@@ -35,6 +35,12 @@
     --chart-3: oklch(0.6 0.118 184.704);
     --chart-4: oklch(0.511 0.096 186.391);
     --chart-5: oklch(0.437 0.078 188.216);
+    /* Gender data-viz colors: one blue/orange pair reused by EVERY chart that
+       splits people by gender (pay-gap analysis etc.). Colorblind-safe
+       (validated, adjacent CVD dE ~97) and distinct from --brand. Light-mode
+       steps. */
+    --gender-man: #2a78d6;
+    --gender-woman: #eb6834;
     --radius: 0.625rem;
     --sidebar: oklch(0.985 0 0);
     --sidebar-foreground: oklch(0.145 0 0);
@@ -74,6 +80,10 @@
     --chart-3: oklch(0.6 0.118 184.704);
     --chart-4: oklch(0.511 0.096 186.391);
     --chart-5: oklch(0.437 0.078 188.216);
+    /* Gender data-viz colors, dark-surface steps (lifted for contrast on the
+       dark plane; validated against it). See the light block above. */
+    --gender-man: #3987e5;
+    --gender-woman: #d95926;
     --sidebar: oklch(0.205 0 0);
     --sidebar-foreground: oklch(0.985 0 0);
     --sidebar-primary: var(--brand);
@@ -112,6 +122,8 @@
     --color-chart-3: var(--chart-3);
     --color-chart-4: var(--chart-4);
     --color-chart-5: var(--chart-5);
+    --color-gender-man: var(--gender-man);
+    --color-gender-woman: var(--gender-woman);
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);
     --radius-lg: var(--radius);
