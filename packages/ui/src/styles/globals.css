@@ -38,9 +38,9 @@
     /* Gender data-viz colors: one blue/orange pair reused by EVERY chart that
        splits people by gender (pay-gap analysis etc.). Colorblind-safe
        (validated, adjacent CVD dE ~97) and distinct from --brand. Light-mode
-       steps. */
-    --gender-man: #2a78d6;
-    --gender-woman: #eb6834;
+       steps (oklch of the validated #2a78d6 / #eb6834). */
+    --gender-man: oklch(0.5753 0.1626 255.53);
+    --gender-woman: oklch(0.6708 0.175 40.64);
     --radius: 0.625rem;
     --sidebar: oklch(0.985 0 0);
     --sidebar-foreground: oklch(0.145 0 0);
@@ -81,9 +81,9 @@
     --chart-4: oklch(0.511 0.096 186.391);
     --chart-5: oklch(0.437 0.078 188.216);
     /* Gender data-viz colors, dark-surface steps (lifted for contrast on the
-       dark plane; validated against it). See the light block above. */
-    --gender-man: #3987e5;
-    --gender-woman: #d95926;
+       dark plane; validated against it; oklch of #3987e5 / #d95926). */
+    --gender-man: oklch(0.6221 0.1612 255.05);
+    --gender-woman: oklch(0.6221 0.1726 40.11);
     --sidebar: oklch(0.205 0 0);
     --sidebar-foreground: oklch(0.985 0 0);
     --sidebar-primary: var(--brand);
