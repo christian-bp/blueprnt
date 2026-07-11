@@ -93,7 +93,9 @@ export function detectColumns(input: {
       numCols,
       colShapes,
       sample,
-      currentYear: input.currentYear ?? new Date().getFullYear(),
+      // The engine never reads the clock (ADR-0010): the reference year comes
+      // from the caller or the birth-vs-start heuristic stays off (below).
+      currentYear: input.currentYear,
     })
   }
 
@@ -211,7 +213,7 @@ function detectByContent(input: {
   numCols: number
   colShapes: string[]
   sample: string[][]
-  currentYear: number
+  currentYear: number | undefined
 }): DetectedMapping {
   const { numCols, colShapes, sample, currentYear } = input
   const map: DetectedMapping["map"] = {}
@@ -252,13 +254,20 @@ function detectByContent(input: {
 
   const dateCols = columnsOf("date")
   if (dateCols.length === 1 && dateCols[0] !== undefined) {
-    const col = dateCols[0]
-    assign(
-      maxYear(col) >= currentYear - ADULT_AGE_YEARS
-        ? "employmentStartDate"
-        : "birthDate",
-      col
-    )
+    // Distinguishing employmentStartDate from birthDate on a single date column
+    // needs a reference year. The engine never reads the clock (ADR-0010), so
+    // without an explicit currentYear this heuristic stays off and the column is
+    // left unmapped for the user to assign. Two date columns (below) compare the
+    // two relatively and need no reference year.
+    if (currentYear !== undefined) {
+      const col = dateCols[0]
+      assign(
+        maxYear(col) >= currentYear - ADULT_AGE_YEARS
+          ? "employmentStartDate"
+          : "birthDate",
+        col
+      )
+    }
   } else if (dateCols.length === 2) {
     const [a, b] = dateCols as [number, number]
     const yearA = maxYear(a)

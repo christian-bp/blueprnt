@@ -351,6 +351,19 @@ describe("detectColumns content-only mode (headerless files)", () => {
     expect(map.birthDate).toBeUndefined()
   })
 
+  it("CO-05: a single date column stays unmapped without a reference year (no clock read; ADR-0010)", () => {
+    const rows = [
+      ["Anna", "1985-04-12"],
+      ["Erik", "1979-11-02"],
+    ]
+    const headers = rows[0]!.map((_, i) => `column_${i + 1}`)
+    // No currentYear passed: the engine must not read the clock, so the
+    // birth-vs-start heuristic stays off and the date column is left unmapped.
+    const { map } = detectColumns({ headers, rows, headerless: true })
+    expect(map.birthDate).toBeUndefined()
+    expect(map.employmentStartDate).toBeUndefined()
+  })
+
   it("CO-05: an all-year id column is the pay year, not the employee number", () => {
     const { map } = detect([
       ["Anna", "2024"],

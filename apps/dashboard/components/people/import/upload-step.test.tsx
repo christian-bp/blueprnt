@@ -118,7 +118,7 @@ vi.mock("@/components/onboarding/onboarding-dots", () => ({
   OnboardingDots: () => null,
 }))
 
-import { formatFileSize, handleCsvText } from "./upload-step"
+import { formatFileSize, handleCsvText, isOle2Signature } from "./upload-step"
 import { UploadStep } from "./upload-step"
 import type { ParsedCsv } from "./import-wizard"
 
@@ -211,6 +211,24 @@ describe("formatFileSize", () => {
     expect(formatFileSize(512)).toBe("512 B")
     expect(formatFileSize(2048)).toBe("2 kB")
     expect(formatFileSize(3 * 1024 * 1024)).toBe("3.0 MB")
+  })
+})
+
+describe("isOle2Signature (legacy .xls sniff)", () => {
+  it("detects the OLE2 compound-file magic (legacy .xls renamed to .csv)", () => {
+    const head = new Uint8Array([
+      0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1,
+    ])
+    expect(isOle2Signature(head)).toBe(true)
+  })
+
+  it("does not fire for ordinary CSV text bytes", () => {
+    const head = new TextEncoder().encode("name,salary\nAlice,50000")
+    expect(isOle2Signature(head)).toBe(false)
+  })
+
+  it("does not fire for a prefix shorter than the signature", () => {
+    expect(isOle2Signature(new Uint8Array([0xd0, 0xcf]))).toBe(false)
   })
 })
 

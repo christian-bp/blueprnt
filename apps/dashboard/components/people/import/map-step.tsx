@@ -72,6 +72,9 @@ export function buildInitialMapping(parsed: ParsedCsv): Record<string, number> {
     rows: parsed.rows,
     // A headerless file gets content-only suggestions (shapes, not synonyms).
     headerless: parsed.headerless,
+    // The engine never reads the clock (ADR-0010); the reference year for the
+    // single-date-column birth-vs-start heuristic is read here, in the caller.
+    currentYear: new Date().getFullYear(),
   })
   const result: Record<string, number> = {}
   for (const [key, entry] of Object.entries(map)) {

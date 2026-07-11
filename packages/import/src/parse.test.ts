@@ -140,10 +140,24 @@ describe("parseMoney", () => {
     expect(parseMoney("(500)")).toBeNull()
   })
 
-  // ADR-0010: en-US comma-thousands is unsupported; "52,000" reads the comma as
-  // a decimal (-> 52), not thousands. Documented, not a bug.
-  it("parses en-US comma-thousands as a Nordic comma-decimal, returning 52 (M20, ADR-0010 documented limitation)", () => {
-    expect(parseMoney("52,000")).toBe(52)
+  // ADR-0010 decision 1: en-US comma-thousands is a V1 non-goal. "52,000" is
+  // ambiguous (en-US 52000 vs Nordic three-decimal 52.0), so it returns null and
+  // surfaces as unparsableMoney, rather than silently reading 52 (1000x too
+  // small). A 1-3 digit lead + exactly three trailing digits is the caught shape.
+  it("returns null for en-US comma-thousands: 52,000 (M20, ADR-0010 V1 non-goal)", () => {
+    expect(parseMoney("52,000")).toBeNull()
+  })
+
+  it("returns null for en-US comma-thousands with a single lead digit: 1,000", () => {
+    expect(parseMoney("1,000")).toBeNull()
+  })
+
+  it("still parses a Nordic comma-decimal with a >3-digit lead: 52000,000 -> 52000", () => {
+    expect(parseMoney("52000,000")).toBe(52000)
+  })
+
+  it("still parses a two-place Nordic comma-decimal after the guard: 999,50 -> 999.5", () => {
+    expect(parseMoney("999,50")).toBe(999.5)
   })
 
   it("rejects multi-comma: 52,000,50 returns null (multi-comma guard)", () => {

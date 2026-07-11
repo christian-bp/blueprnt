@@ -41,6 +41,14 @@ function normalizeMoneyNumber(input: string): number | null {
     // Comma is always the decimal separator; any dots are thousands separators.
     // Reject more than one comma.
     if ((noGroups.match(/,/g) ?? []).length > 1) return null
+    // en-US comma-thousands (`52,000`, `1,000`) is out of scope for V1 (ADR-0010
+    // decision 1) and ambiguous against a three-decimal Nordic comma: a 1-3
+    // digit lead, one comma, then exactly three digits (no dot to disambiguate)
+    // returns null so the row surfaces as unparsableMoney, rather than silently
+    // reading `52,000` as 52 (a 1000x-too-small salary). Nordic comma decimals
+    // use one or two places (`52000,50`, `52000,00`) and a >3-digit lead
+    // (`52000,000`) is unambiguously decimal, so neither is caught here.
+    if (/^\d{1,3},\d{3}$/.test(noGroups)) return null
     normalized = noGroups.replace(/\./g, "").replace(",", ".")
   } else if (hasDot) {
     const dotCount = (noGroups.match(/\./g) ?? []).length
@@ -78,7 +86,8 @@ function normalizeMoneyNumber(input: string): number | null {
  * (kr/sek/nok/dkk/eur/gbp/usd word or the euro symbol), including run-on
  * suffixes ("52000kr"). No truncation to integer; fractional values are
  * preserved. Returns null for unknown trailing words, interleaved letters, an
- * empty result after stripping, a malformed number, and (for V1) negative
+ * empty result after stripping, a malformed number, en-US comma-thousands
+ * (`52,000`, `1,234,567.00`; ADR-0010 V1 non-goal), and (for V1) negative
  * and parenthesized-negative values.
  * Examples: "94 500 kr" -> 94500, "45 250,75 kr" -> 45250.75,
  *   "SEK 52000" -> 52000, "52.000,50" -> 52000.5, "52000kr" -> 52000.

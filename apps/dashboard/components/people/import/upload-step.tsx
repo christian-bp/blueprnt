@@ -46,6 +46,22 @@ export function handleCsvText(
   return { ok: true, parsed }
 }
 
+// OLE2 compound-file magic (legacy .xls). The tokenizer's binary guard cannot
+// catch this: reading the file as UTF-8 text mangles these bytes to U+FFFD, so
+// ADR-0010 defers the OLE2 sniff to the consumer layer. We do it here, on the
+// raw bytes, before decoding, so a legacy .xls renamed to .csv fails with a
+// clear "wrong format" message instead of a confusing "missing columns" error.
+// (ZIP/XLSX/ODS is caught in the tokenizer: its PK\x03\x04 magic is ASCII and
+// survives the UTF-8 decode.)
+const OLE2_MAGIC = [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]
+
+// True when the file's leading bytes are the OLE2 signature. Pure over the byte
+// prefix so it is unit-testable without a File/FileReader.
+export function isOle2Signature(head: Uint8Array): boolean {
+  if (head.length < OLE2_MAGIC.length) return false
+  return OLE2_MAGIC.every((byte, index) => head[index] === byte)
+}
+
 /** Human-readable file size for the file card's meta line. */
 export function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`
@@ -87,12 +103,23 @@ export function UploadStep({
   // Format-specific validation stays here; FileDropzone owns the drop/click
   // mechanics and hands us the picked file. The FileReader progress events
   // drive an honest progress bar (instant for small files).
-  function processFile(file: File) {
+  async function processFile(file: File) {
     if (!file.name.toLowerCase().endsWith(".csv") && file.type !== "text/csv") {
       setError("errorNotCsv")
       return
     }
     setError(null)
+    // Sniff the raw leading bytes for the OLE2 (legacy .xls) magic before
+    // decoding as text: UTF-8 decoding would destroy the signature, so a
+    // renamed .xls would otherwise slip past the tokenizer's binary guard and
+    // fail later with a confusing "missing columns" error (ADR-0010).
+    const head = new Uint8Array(
+      await file.slice(0, OLE2_MAGIC.length).arrayBuffer()
+    )
+    if (isOle2Signature(head)) {
+      setError("errorInvalidFormat")
+      return
+    }
     setReading({ name: file.name, size: file.size, progress: 0 })
     const reader = new FileReader()
     reader.onprogress = (e) => {
