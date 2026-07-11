@@ -57,6 +57,8 @@ const PEOPLE = [
     isManager: null,
     statisticalCode: null,
     archivedAt: null,
+    roleId: "role1",
+    levelSource: "confirmed",
   },
   {
     personId: "p2",
@@ -72,6 +74,8 @@ const PEOPLE = [
     isManager: null,
     statisticalCode: null,
     archivedAt: null,
+    roleId: "role1",
+    levelSource: "suggested",
   },
   {
     personId: "p3",
@@ -87,6 +91,19 @@ const PEOPLE = [
     isManager: null,
     statisticalCode: null,
     archivedAt: null,
+    roleId: null,
+    levelSource: null,
+  },
+]
+
+// listRoles options for the role filter (only role1 has people here).
+const ROLES = [
+  {
+    roleId: "role1",
+    title: "Software Engineer",
+    slug: "software-engineer",
+    trackKey: "IC",
+    trackName: "IC",
   },
 ]
 
@@ -154,6 +171,7 @@ function queryRouter(
   if (ref === "people.people.listPeople") return people
   if (ref === "people.classificationQueries.listPeopleByTitle") return byTitle
   if (ref === "accounts.organization.getOrganizationSettings") return settings
+  if (ref === "assessment.roles.listRoles") return ROLES
   return []
 }
 
@@ -292,6 +310,25 @@ describe("PeopleSection", () => {
     expect(screen.queryByText("Charlie Nilsson")).toBeNull()
   })
 
+  it("filters by role and flags a still-suggested assignment only while filtering", async () => {
+    onQuery((ref) => queryRouter(ref))
+    renderSection()
+    // No role filter yet: the register stays clean, no suggested badge.
+    expect(screen.queryByText(m.suggestedBadge)).toBeNull()
+    await pickSelectOption(
+      screen.getByRole("combobox", {
+        name: messages.dashboard.people.columns.role,
+      }),
+      "Software Engineer"
+    )
+    // Only people assigned to role1 remain; the unclassified person is dropped.
+    expect(screen.getByText("Alice Svensson")).toBeDefined()
+    expect(screen.getByText("Bob Larsson")).toBeDefined()
+    expect(screen.queryByText("Charlie Nilsson")).toBeNull()
+    // The suggested badge shows on the unconfirmed assignment (Bob) only.
+    expect(screen.getAllByText(m.suggestedBadge)).toHaveLength(1)
+  })
+
   it("filters by FTE: full-time is exactly 100, part-time below, unknown only under all", async () => {
     onQuery((ref) => queryRouter(ref))
     renderSection()
@@ -344,6 +381,8 @@ describe("PeopleSection", () => {
       isManager: null,
       statisticalCode: null,
       archivedAt: null,
+      roleId: null,
+      levelSource: null,
     }))
     onQuery((ref) => queryRouter(ref, manyPeople, []))
     renderSection()
@@ -423,6 +462,8 @@ describe("PeopleSection", () => {
       isManager: null,
       statisticalCode: null,
       archivedAt: null,
+      roleId: null,
+      levelSource: null,
     }))
     onQuery((ref) => queryRouter(ref, manyPeople, []))
     renderSection()
@@ -459,6 +500,8 @@ describe("PeopleSection", () => {
       isManager: null,
       statisticalCode: null,
       archivedAt: null,
+      roleId: null,
+      levelSource: null,
     }))
     onQuery((ref) => queryRouter(ref, manyPeople, []))
     renderSection()

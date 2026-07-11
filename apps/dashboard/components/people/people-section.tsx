@@ -14,6 +14,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { api } from "@workspace/backend/convex/_generated/api"
+import { Badge } from "@workspace/ui/components/badge"
 import { Button, buttonVariants } from "@workspace/ui/components/button"
 import {
   Empty,
@@ -21,7 +22,6 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
-import { Input } from "@workspace/ui/components/input"
 import {
   Select,
   SelectContent,
@@ -29,7 +29,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   Table,
   TableBody,
@@ -38,8 +37,14 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { useQuery } from "convex/react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
 import { useOrganization } from "@/components/org-context"
@@ -58,7 +63,9 @@ import { onSelectValue } from "@/lib/select"
 // The people list surface. Displays active (non-archived) people imported from
 // payroll as a searchable, filterable, paginated data table (the shadcn data
 // table recipe on @tanstack/react-table, same as the role register).
-// Classification state lives on the Classify tab (badge + page), not here.
+// Classification is still DONE on the Classify tab; here it only surfaces as a
+// role filter (over every created role) and, while narrowing by role, a
+// "Suggested" badge on people whose assignment is not yet confirmed.
 // The pseudonymizeNames org setting is applied to the name cell.
 
 // One table row with the RESOLVED display name: pseudonymization is applied
@@ -71,6 +78,10 @@ export interface PeopleTableRow {
   gender: "Man" | "Kvinna" | null
   department: string | null
   ftePercent: number | null
+  // The person's active role assignment (null when unclassified): its role id
+  // drives the role filter, and levelSource flags a still-suggested assignment.
+  roleId: string | null
+  levelSource: "suggested" | "confirmed" | null
 }
 
 // The people list's free-text search: case-insensitive substring over the
@@ -106,17 +117,47 @@ const PEOPLE_SKELETON_COLUMNS: TableSkeletonColumn[] = [
   { className: "w-10" },
 ]
 
+// The "Suggested" pill shown on a row while narrowing by role, when that
+// person's assignment to the role is not yet confirmed. Self-contained (own
+// TooltipProvider, mirroring DeviationBadge) so it drops anywhere; the visible
+// text is the short label, the tooltip and aria-label carry the explanation.
+function SuggestedRoleBadge() {
+  const t = useTranslations("dashboard.people")
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <Badge
+              variant="outline"
+              className="shrink-0 text-muted-foreground"
+              aria-label={t("suggestedBadgeTooltip")}
+            />
+          }
+        >
+          {t("suggestedBadge")}
+        </TooltipTrigger>
+        <TooltipContent arrow>{t("suggestedBadgeTooltip")}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
+}
+
 export function PeopleSection() {
   const t = useTranslations("dashboard.people")
   const tToolbar = useTranslations("dashboard.people.toolbar")
   const tGender = useTranslations("dashboard.people.gender")
   const tOrg = useTranslations("dashboard.organization.general")
   const { orgId } = useOrganization()
+  const locale = useLocale()
 
   const people = useQuery(api.people.people.listPeople, { orgId })
   const settings = useQuery(api.accounts.organization.getOrganizationSettings, {
     orgId,
   })
+  // All created roles are the role-filter options (not just roles that happen
+  // to have people), so the filter always offers the full set.
+  const roles = useQuery(api.assessment.roles.listRoles, { orgId, locale })
 
   const rows = useMemo<PeopleTableRow[]>(() => {
     if (people === undefined || settings === undefined) return []
@@ -130,6 +171,8 @@ export function PeopleSection() {
       gender: person.gender ?? null,
       department: person.department ?? null,
       ftePercent: person.ftePercent ?? null,
+      roleId: person.roleId !== null ? String(person.roleId) : null,
+      levelSource: person.levelSource,
     }))
   }, [people, settings, tOrg])
 
@@ -159,6 +202,15 @@ export function PeopleSection() {
       {
         id: "department",
         accessorFn: (row) => row.department ?? "",
+        filterFn: exactString,
+        enableGlobalFilter: false,
+      },
+      {
+        // Filter-only (no visible column): matches on the assigned role id.
+        // Unclassified people (roleId null -> "") match no role, so selecting
+        // a role narrows to its classified people.
+        id: "role",
+        accessorFn: (row) => row.roleId ?? "",
         filterFn: exactString,
         enableGlobalFilter: false,
       },
@@ -212,6 +264,11 @@ export function PeopleSection() {
     (table.getColumn("gender")?.getFilterValue() as string | undefined) ?? "all"
   const fteFilter =
     (table.getColumn("fte")?.getFilterValue() as string | undefined) ?? "all"
+  const roleFilter =
+    (table.getColumn("role")?.getFilterValue() as string | undefined) ?? "all"
+  // The suggested-assignment badge is shown only while narrowing by role: it
+  // answers "which of these are still unconfirmed in this role?".
+  const roleFilterActive = roleFilter !== "all"
 
   // Shared handler for the toolbar's column-filter selects: "all" clears.
   function setColumnFilter(columnId: string, value: string) {
@@ -232,6 +289,18 @@ export function PeopleSection() {
         )
       ).sort((a, b) => a.localeCompare(b)),
     [rows]
+  )
+
+  // Role-filter options: every created role (id + title), not only roles with
+  // people, so the filter always offers the full set. listRoles is already
+  // locale-sorted by title.
+  const roleOptions = useMemo(
+    () =>
+      (roles ?? []).map((role) => ({
+        id: String(role.roleId),
+        title: role.title,
+      })),
+    [roles]
   )
 
   // Every filter change resets to the first page; this clamp covers the
@@ -329,6 +398,32 @@ export function PeopleSection() {
             {departments.map((department) => (
               <SelectItem key={department} value={department}>
                 {department}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+      {roleOptions.length > 0 && (
+        <Select
+          items={{
+            all: tToolbar("roleAll"),
+            ...Object.fromEntries(
+              roleOptions.map((role) => [role.id, role.title])
+            ),
+          }}
+          value={roleFilter}
+          onValueChange={onSelectValue((value: string) =>
+            setColumnFilter("role", value)
+          )}
+        >
+          <SelectTrigger aria-label={t("columns.role")}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{tToolbar("roleAll")}</SelectItem>
+            {roleOptions.map((role) => (
+              <SelectItem key={role.id} value={role.id}>
+                {role.title}
               </SelectItem>
             ))}
           </SelectContent>
@@ -456,13 +551,21 @@ export function PeopleSection() {
                   {pageRows.map((row) => {
                     return (
                       <TableRow key={row.personId}>
-                        <TableCell className="truncate font-medium">
-                          <Link
-                            className="underline-offset-4 hover:underline"
-                            href={`/people/${row.publicId}`}
-                          >
-                            {row.name}
-                          </Link>
+                        <TableCell className="font-medium">
+                          {/* Name truncates; the suggested badge (shown only
+                              while narrowing by role) stays visible beside it. */}
+                          <div className="flex items-center gap-2">
+                            <Link
+                              className="truncate underline-offset-4 hover:underline"
+                              href={`/people/${row.publicId}`}
+                            >
+                              {row.name}
+                            </Link>
+                            {roleFilterActive &&
+                              row.levelSource === "suggested" && (
+                                <SuggestedRoleBadge />
+                              )}
+                          </div>
                         </TableCell>
                         <TableCell className="text-muted-foreground">
                           {row.gender != null ? t(`gender.${row.gender}`) : ""}

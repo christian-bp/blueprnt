@@ -274,8 +274,8 @@ export const upsertPersonByExternalRef = internalMutation({
   },
 })
 
-// Person shape returned by listPeople and getPersonByPublicId queries.
-const personShape = v.object({
+// Person shape returned by getPersonByPublicId; listPeople extends it below.
+const personFields = {
   personId: v.id("people"),
   publicId: v.string(),
   displayName: v.string(),
@@ -290,6 +290,20 @@ const personShape = v.object({
   department: v.union(v.string(), v.null()),
   title: v.union(v.string(), v.null()),
   archivedAt: v.union(v.number(), v.null()),
+}
+const personShape = v.object(personFields)
+
+// listPeople additionally joins each person's active role assignment so the
+// register can filter by role and flag still-suggested (unconfirmed)
+// assignments. Both are null when the person has no active assignment.
+const listPersonShape = v.object({
+  ...personFields,
+  roleId: v.union(v.id("roles"), v.null()),
+  levelSource: v.union(
+    v.literal("suggested"),
+    v.literal("confirmed"),
+    v.null()
+  ),
 })
 
 function toPersonShape(person: Doc<"people">) {
@@ -315,7 +329,7 @@ export const listPeople = orgQuery({
   args: {
     includeArchived: v.optional(v.boolean()),
   },
-  returns: v.array(personShape),
+  returns: v.array(listPersonShape),
   handler: async (ctx, { includeArchived }) => {
     const people = await ctx.db
       .query("people")
@@ -325,7 +339,35 @@ export const listPeople = orgQuery({
       includeArchived === true
         ? people
         : people.filter((p) => p.archivedAt === undefined)
-    return filtered.map(toPersonShape)
+
+    // Map each person to their single active assignment (invariant: at most one
+    // active per person), so the register can filter by role and flag suggested
+    // assignments without a per-row query.
+    const assignments = await ctx.db
+      .query("personAssignments")
+      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
+      .collect()
+    const activeByPerson = new Map<
+      string,
+      { roleId: Id<"roles">; levelSource: "suggested" | "confirmed" }
+    >()
+    for (const assignment of assignments) {
+      if (assignment.endedAt === undefined) {
+        activeByPerson.set(assignment.personId, {
+          roleId: assignment.roleId,
+          levelSource: assignment.levelSource,
+        })
+      }
+    }
+
+    return filtered.map((person) => {
+      const active = activeByPerson.get(person._id)
+      return {
+        ...toPersonShape(person),
+        roleId: active?.roleId ?? null,
+        levelSource: active?.levelSource ?? null,
+      }
+    })
   },
 })
 
