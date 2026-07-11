@@ -159,15 +159,19 @@
       "heading": "Henkilöstö",
       "description": "Palkanlaskentajärjestelmästä tuodut työntekijät.",
       "empty": "Ei tuotuja työntekijöitä vielä.",
+      "suggestedBadge": "Ehdotettu",
+      "suggestedBadgeTooltip": "Roolia ei ole vielä vahvistettu. Vahvista se Luokittele-sivulla.",
       "columns": {
         "name": "Nimi",
         "gender": "Sukupuoli",
         "department": "Osasto",
-        "fte": "Työaika"
+        "fte": "Työaika",
+        "role": "Rooli"
       },
       "toolbar": {
         "searchPlaceholder": "Hae nimellä tai osastolla",
         "departmentAll": "Kaikki osastot",
+        "roleAll": "Kaikki roolit",
         "resultCount": "{shown}/{total} työntekijää",
         "noMatches": "Yksikään työntekijä ei vastaa hakua tai suodattimia.",
         "clearFilters": "Tyhjennä suodattimet",
@@ -376,8 +380,7 @@
         "classificationHeading": "Rooli ja taso",
         "role": "Rooli",
         "level": "Taso",
-        "levelSource": "Lähde",
-        "sourceSuggested": "Ehdotettu",
+        "suggestedLevelHint": "Ehdotettu taso, vahvista Luokittele-välilehdellä",
         "noAssignment": "Ei vielä luokiteltu.",
         "salaryHeading": "Palkkahistoria",
         "salaryEmpty": "Palkkaa ei ole vielä kirjattu.",
@@ -390,6 +393,17 @@
         "salaryColumns": {
           "basicMonthly": "Kiinteä kuukausipalkka"
         }
+      },
+      "payComparison": {
+        "heading": "Palkka verrattuna rooliin",
+        "scopeRole": "Sama rooli",
+        "precondition": "Vertailu näytetään, kun henkilö on luokiteltu ja hänellä on kirjattu palkka.",
+        "onlyPerson": "Roolin ainoa henkilö, jolla on kirjattu palkka.",
+        "footnote": "Kokoaikaiseksi muunnettu kokonaiskuukausipalkka, viimeisin kirjattu vuosi henkilöä kohden.",
+        "excluded": "{count, plural, one {# kollegaa ei näytetä (palkka eri valuutassa)} other {# kollegaa ei näytetä (palkka eri valuutassa)}}",
+        "tooltipBasic": "Peruspalkka",
+        "tooltipVariable": "Muuttuva",
+        "vsThisPerson": "{diff} verrattuna tähän henkilöön"
       },
       "salaryForm": {
         "addTitle": "Lisää palkka",
@@ -1251,7 +1265,9 @@
       "methodBiasCommentBody": "Mitä harkitsit vinouman tarkistuksessa ja mitä löysit.",
       "methodBiasActionBody": "Lievennystoimenpide riskin vähentämiseksi, kuten uudelleenmuotoillut tasokuvaukset tai mukautettu painotus.",
       "classifyLevelLabel": "Mikä on taso?",
-      "classifyLevelBody": "Taso on yksilön senioriteetti roolin ura-polun sisällä, esimerkiksi Senior tai Lead. Se asetetaan per henkilö, ei roolille, ja sitä käytetään tasa-arvoanalyysissä vertaamaan vastaavissa tehtävissä olevia henkilöitä."
+      "classifyLevelBody": "Taso on yksilön senioriteetti roolin ura-polun sisällä, esimerkiksi Senior tai Lead. Se asetetaan per henkilö, ei roolille, ja sitä käytetään tasa-arvoanalyysissä vertaamaan vastaavissa tehtävissä olevia henkilöitä.",
+      "fteAdjustedLabel": "Mitä kokoaikaiseksi muunnettu tarkoittaa?",
+      "fteAdjustedBody": "Osa-aikainen palkka muunnetaan kokoaikaiseksi ennen vertailua. Henkilö, joka työskentelee 80% ja ansaitsee 40 000 kuukaudessa, näytetään arvolla 50 000, jotta kaikkia verrataan kokoaikaisin ehdoin."
     },
     "admin": {
       "tabs": {

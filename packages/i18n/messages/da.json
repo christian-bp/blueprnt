@@ -159,15 +159,19 @@
       "heading": "Medarbejdere",
       "description": "Medarbejdere importeret fra lønsystemet.",
       "empty": "Ingen medarbejdere importeret endnu.",
+      "suggestedBadge": "Foreslået",
+      "suggestedBadgeTooltip": "Rollen er ikke bekræftet endnu. Bekræft den på Klassificér-siden.",
       "columns": {
         "name": "Navn",
         "gender": "Køn",
         "department": "Afdeling",
-        "fte": "Stilling"
+        "fte": "Stilling",
+        "role": "Rolle"
       },
       "toolbar": {
         "searchPlaceholder": "Søg på navn eller afdeling",
         "departmentAll": "Alle afdelinger",
+        "roleAll": "Alle roller",
         "resultCount": "{shown} af {total} medarbejdere",
         "noMatches": "Ingen medarbejdere matcher søgningen eller filtrene.",
         "clearFilters": "Ryd filtrene",
@@ -376,8 +380,7 @@
         "classificationHeading": "Rolle og niveau",
         "role": "Rolle",
         "level": "Niveau",
-        "levelSource": "Kilde",
-        "sourceSuggested": "Foreslået",
+        "suggestedLevelHint": "Foreslået niveau, bekræft under Klassificér",
         "noAssignment": "Ikke klassificeret endnu.",
         "salaryHeading": "Lønhistorik",
         "salaryEmpty": "Ingen løn registreret endnu.",
@@ -390,6 +393,17 @@
         "salaryColumns": {
           "basicMonthly": "Fast månedsløn"
         }
+      },
+      "payComparison": {
+        "heading": "Løn sammenlignet med rollen",
+        "scopeRole": "Samme rolle",
+        "precondition": "Sammenligningen vises, når personen er klassificeret og har en registreret løn.",
+        "onlyPerson": "Den eneste person i rollen med registreret løn.",
+        "footnote": "Fuldtidsjusteret samlet månedsløn, seneste registrerede år pr. person.",
+        "excluded": "{count, plural, one {# kollega vises ikke (løn i anden valuta)} other {# kolleger vises ikke (løn i anden valuta)}}",
+        "tooltipBasic": "Grundløn",
+        "tooltipVariable": "Variabelt",
+        "vsThisPerson": "{diff} sammenlignet med denne person"
       },
       "salaryForm": {
         "addTitle": "Tilføj løn",
@@ -1251,7 +1265,9 @@
       "methodBiasCommentBody": "Hvad du overvejede i bias-tjekket og hvad du fandt.",
       "methodBiasActionBody": "Den afbødende handling for at reducere risikoen, for eksempel omformulerede niveaubeskrivelser eller justeret vægtning.",
       "classifyLevelLabel": "Hvad er niveau?",
-      "classifyLevelBody": "Niveau er individets anciennitet inden for rollens spor, for eksempel Senior eller Lead. Det angives per person, ikke på rollen, og bruges i lønkortlægning til at sammenligne personer i tilsvarende stillinger."
+      "classifyLevelBody": "Niveau er individets anciennitet inden for rollens spor, for eksempel Senior eller Lead. Det angives per person, ikke på rollen, og bruges i lønkortlægning til at sammenligne personer i tilsvarende stillinger.",
+      "fteAdjustedLabel": "Hvad betyder fuldtidsjusteret?",
+      "fteAdjustedBody": "Deltidsløn omregnes til fuld tid før sammenligningen. En person, der arbejder 80% med 40.000 i månedsløn, vises som 50.000, så alle sammenlignes på fuldtidsvilkår."
     },
     "admin": {
       "tabs": {

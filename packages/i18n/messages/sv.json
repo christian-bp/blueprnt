@@ -159,15 +159,19 @@
       "heading": "Medarbetare",
       "description": "Medarbetare importerade från ert lönesystem.",
       "empty": "Inga medarbetare importerade än.",
+      "suggestedBadge": "Föreslagen",
+      "suggestedBadgeTooltip": "Rollen är inte bekräftad än. Bekräfta den på sidan Klassificera.",
       "columns": {
         "name": "Namn",
         "gender": "Kön",
         "department": "Avdelning",
-        "fte": "Omfattning"
+        "fte": "Omfattning",
+        "role": "Roll"
       },
       "toolbar": {
         "searchPlaceholder": "Sök på namn eller avdelning",
         "departmentAll": "Alla avdelningar",
+        "roleAll": "Alla roller",
         "resultCount": "{shown} av {total} anställda",
         "noMatches": "Inga anställda matchar sökningen eller filtren.",
         "clearFilters": "Rensa filtren",
@@ -376,8 +380,7 @@
         "classificationHeading": "Roll och nivå",
         "role": "Roll",
         "level": "Nivå",
-        "levelSource": "Källa",
-        "sourceSuggested": "Föreslagen",
+        "suggestedLevelHint": "Föreslagen nivå, bekräfta under Klassificera",
         "noAssignment": "Inte klassificerad än.",
         "salaryHeading": "Lönehistorik",
         "salaryEmpty": "Ingen lön registrerad än.",
@@ -390,6 +393,17 @@
         "salaryColumns": {
           "basicMonthly": "Fast månadslön"
         }
+      },
+      "payComparison": {
+        "heading": "Lön jämfört med rollen",
+        "scopeRole": "Samma roll",
+        "precondition": "Jämförelsen visas när personen är klassificerad och har en registrerad lön.",
+        "onlyPerson": "Den enda personen i rollen med registrerad lön.",
+        "footnote": "Heltidsjusterad total månadslön, senast registrerade år per person.",
+        "excluded": "{count, plural, one {# kollega visas inte (lön i annan valuta)} other {# kollegor visas inte (lön i annan valuta)}}",
+        "tooltipBasic": "Grundlön",
+        "tooltipVariable": "Rörligt",
+        "vsThisPerson": "{diff} jämfört med denna person"
       },
       "salaryForm": {
         "addTitle": "Lägg till lön",
@@ -1251,7 +1265,9 @@
       "methodBiasCommentBody": "Vad du övervägde i bias-granskningen och vad du kom fram till.",
       "methodBiasActionBody": "Åtgärden för att minska risken, till exempel omformulerade nivåbeskrivningar eller justerad viktning.",
       "classifyLevelLabel": "Vad är nivå?",
-      "classifyLevelBody": "Nivå är individens senioritet inom rollens spår, till exempel Senior eller Lead. Den anges per person, inte på rollen, och används i lönekartläggning för att jämföra personer i likvärdiga positioner."
+      "classifyLevelBody": "Nivå är individens senioritet inom rollens spår, till exempel Senior eller Lead. Den anges per person, inte på rollen, och används i lönekartläggning för att jämföra personer i likvärdiga positioner.",
+      "fteAdjustedLabel": "Vad betyder heltidsjusterad?",
+      "fteAdjustedBody": "Deltidslön räknas upp till heltid innan jämförelsen. En person som arbetar 80% med 40 000 i månadslön visas som 50 000, så att alla jämförs på heltidsvillkor."
     },
     "admin": {
       "tabs": {

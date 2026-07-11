@@ -159,15 +159,19 @@
       "heading": "People",
       "description": "Employees imported from your payroll system.",
       "empty": "No employees imported yet.",
+      "suggestedBadge": "Suggested",
+      "suggestedBadgeTooltip": "This role is not confirmed yet. Confirm it on the Classify page.",
       "columns": {
         "name": "Name",
         "gender": "Gender",
         "department": "Department",
-        "fte": "FTE"
+        "fte": "FTE",
+        "role": "Role"
       },
       "toolbar": {
         "searchPlaceholder": "Search by name or department",
         "departmentAll": "All departments",
+        "roleAll": "All roles",
         "resultCount": "{shown} of {total} people",
         "noMatches": "No people match the search or filters.",
         "clearFilters": "Clear filters",
@@ -376,8 +380,7 @@
         "classificationHeading": "Role and level",
         "role": "Role",
         "level": "Level",
-        "levelSource": "Source",
-        "sourceSuggested": "Suggested",
+        "suggestedLevelHint": "Suggested level, confirm on Classify",
         "noAssignment": "Not classified yet.",
         "salaryHeading": "Salary history",
         "salaryEmpty": "No salary recorded yet.",
@@ -390,6 +393,17 @@
         "salaryColumns": {
           "basicMonthly": "Basic monthly"
         }
+      },
+      "payComparison": {
+        "heading": "Pay compared with the role",
+        "scopeRole": "Same role",
+        "precondition": "The comparison appears once the person is classified and has a recorded salary.",
+        "onlyPerson": "The only person in this role with a recorded salary.",
+        "footnote": "FTE-adjusted total monthly pay, latest recorded year per person.",
+        "excluded": "{count, plural, one {# colleague not shown (pay in another currency)} other {# colleagues not shown (pay in another currency)}}",
+        "tooltipBasic": "Basic",
+        "tooltipVariable": "Variable",
+        "vsThisPerson": "{diff} vs this person"
       },
       "salaryForm": {
         "addTitle": "Add salary",
@@ -1251,7 +1265,9 @@
       "methodBiasCommentBody": "What you considered in the bias check and what you found.",
       "methodBiasActionBody": "The mitigating action taken to reduce the risk, such as reworded level descriptions or adjusted weighting.",
       "classifyLevelLabel": "What is the level?",
-      "classifyLevelBody": "Level is the individual's seniority within the role's track, for example Senior or Lead. It is set per person, not on the role itself, and is used in pay-equity analysis to compare people in equivalent positions."
+      "classifyLevelBody": "Level is the individual's seniority within the role's track, for example Senior or Lead. It is set per person, not on the role itself, and is used in pay-equity analysis to compare people in equivalent positions.",
+      "fteAdjustedLabel": "What does FTE-adjusted mean?",
+      "fteAdjustedBody": "Part-time pay is scaled up to its full-time equivalent before comparing. A person working 80% with a monthly pay of 40,000 is shown as 50,000, so everyone is compared on full-time terms."
     },
     "admin": {
       "tabs": {
