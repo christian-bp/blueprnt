@@ -1,0 +1,62 @@
+packages/i18n/messages/nb.json
+  s_3ee8e687b1c393::t_9cf7b1e8e6c4eb 1268-1270
+  s_3ee8e687b1c393::t_18df9d50d54148 168-169
+  s_3ee8e687b1c393::t_94e84ea4d74bed 174
+  s_3ee8e687b1c393::t_7d2c511d3dec16 397-402,407
+  s_3ee8e687b1c393::t_c3dd119b61bc76 162
+  s_3ee8e687b1c393::t_9318453e14a3ba 403-406
+  s_3ee8e687b1c393::t_3ee264303c6392 163
+  s_3ee8e687b1c393::t_5005d496764fd7 383
+packages/i18n/messages/da.json
+  s_3ee8e687b1c393::t_5ed790b1d10cca 163
+  s_3ee8e687b1c393::t_fc3e1bdb61380b 162
+  s_3ee8e687b1c393::t_e96269dc365703 403-406
+  s_3ee8e687b1c393::t_87856d0424b889 168-169
+  s_3ee8e687b1c393::t_f36b2f3ca3cb7b 174
+  s_3ee8e687b1c393::t_4edfef412f1a16 383
+  s_3ee8e687b1c393::t_09f674c890a493 1268-1270
+  s_3ee8e687b1c393::t_1ca98d6bd43297 397-402
+  s_3ee8e687b1c393::t_0479dc26d7e054 407
+packages/i18n/messages/fi.json
+  s_3ee8e687b1c393::t_748f31abc6eb20 163
+  s_3ee8e687b1c393::t_523a1ddd4e6400 397-402,407
+  s_3ee8e687b1c393::t_851a273804e7b5 174
+  s_3ee8e687b1c393::t_33dd1859621444 383
+  s_3ee8e687b1c393::t_390b8d6516ce9b 162
+  s_3ee8e687b1c393::t_ee1451eafc2c96 168-169
+  s_3ee8e687b1c393::t_8a9c1af314da1c 1268-1270
+  s_3ee8e687b1c393::t_4bddf21eab1902 403-406
+packages/i18n/messages/sv.json
+  s_3ee8e687b1c393::t_75348deae18cea 168-169
+  s_3ee8e687b1c393::t_eec04bd6a48c2c 1268-1270
+  s_3ee8e687b1c393::t_5935a0dd28c02d 162
+  s_3ee8e687b1c393::t_54d92b4e67448a 397-402,407
+  s_3ee8e687b1c393::t_26d916e99ba6f3 383
+  s_3ee8e687b1c393::t_4b52be07edc1f8 163
+  s_3ee8e687b1c393::t_b23d8e9131e37a 403-406
+  s_3ee8e687b1c393::t_1bc124db9abbba 174
+packages/i18n/messages/en.json
+  s_3ee8e687b1c393::t_e87f3cb0ad456e 383
+  s_3ee8e687b1c393::t_6562b2809a3ce6 162,168-169,174
+  s_3ee8e687b1c393::t_0f65ffc37d97be 403-406
+  s_3ee8e687b1c393::t_a8fb3f172ff4f5 163
+  s_3ee8e687b1c393::t_c7c8b35100277f 1268-1270
+  s_3ee8e687b1c393::t_e0185603c906fc 397-402
+  s_3ee8e687b1c393::t_2f890f5a58bde8 407
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "2ff461b8f89f76b4b8cb7c8f4b531a61b84a9fa4",
+  "prompts": {},
+  "sessions": {
+    "s_3ee8e687b1c393": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "105251fe-0801-4944-83b7-9bf37751d22b",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
