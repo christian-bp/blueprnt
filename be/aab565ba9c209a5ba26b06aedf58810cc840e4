@@ -1,0 +1,41 @@
+packages/backend/convex/ai/prefill.ts
+  s_ae59df4ec4ea8f::t_6e38cbd53b57b1 8
+  s_ae59df4ec4ea8f::t_fbc73a80be4469 103
+packages/backend/convex/lib/functions.ts
+  s_ae59df4ec4ea8f::t_75b83be8f9e2dd 157-174
+packages/backend/convex/evaluationModel/model.test.ts
+  s_ae59df4ec4ea8f::t_3a0dc15dca82cc 319
+packages/backend/convex/accounts/onboarding.ts
+  s_ae59df4ec4ea8f::t_f1c94298f066f9 114-116,125,129-131,133-135
+  s_ae59df4ec4ea8f::t_b370d0a18531b7 3,5
+packages/backend/convex/assessment/seed.ts
+  s_ae59df4ec4ea8f::t_dab70da9350cbd 11-13
+packages/backend/convex/evaluationModel/tables.ts
+  s_ae59df4ec4ea8f::t_b97aa3637dda94 35-37
+packages/backend/convex/evaluationModel/model.ts
+  s_ae59df4ec4ea8f::t_672cf7e962cbb8 271-274
+packages/backend/convex/assessment/ratings.ts
+  s_ae59df4ec4ea8f::t_729495a4a8b8f4 51
+packages/backend/convex/evaluationModel/standardTemplate.ts
+  s_ae59df4ec4ea8f::t_fea83160a4d59f 51-54
+packages/backend/convex/people/tables.ts
+  s_ae59df4ec4ea8f::t_2103e23a132ef3 99
+packages/backend/convex/assessment/devCompany.ts
+  s_ae59df4ec4ea8f::t_48d0cf74867117 5-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "beaab565ba9c209a5ba26b06aedf58810cc840e4",
+  "prompts": {},
+  "sessions": {
+    "s_ae59df4ec4ea8f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ca5110d5-3f90-43c3-989e-f4d927469088",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
