@@ -1,0 +1,38 @@
+apps/dashboard/components/currency-input.test.tsx
+  s_3ee8e687b1c393::t_34e3f814ee701e 1-56
+apps/dashboard/components/currency-input.tsx
+  s_3ee8e687b1c393::t_86441292269c7d 1-20,23-42,44-67,69,71-91,111
+  s_3ee8e687b1c393::t_0b01a73a1a917b 21-22,68,70,92-110
+  s_3ee8e687b1c393::t_3dcdf58dd5cf29 43
+apps/dashboard/components/people/edit-person-dialog.tsx
+  s_3ee8e687b1c393::t_e5fc08df6ea95f 41
+  s_3ee8e687b1c393::t_37781432387c3e 435
+apps/dashboard/lib/grouped-number.test.ts
+  s_3ee8e687b1c393::t_3d237a8fd43f17 1-46
+apps/dashboard/components/number-input.test.tsx
+  s_3ee8e687b1c393::t_b40c6fd6ff3dc5 3-5,10-32
+  s_3ee8e687b1c393::t_8136de3c3a1e5c 1-2,6-9
+apps/dashboard/lib/grouped-number.ts
+  s_3ee8e687b1c393::t_6188e2f9b345a1 1-33
+apps/dashboard/components/number-input.tsx
+  s_3ee8e687b1c393::t_f5dbb963fbee36 1-25
+apps/dashboard/components/people/add-person-dialog.tsx
+  s_3ee8e687b1c393::t_e5ecb3801e0770 43
+  s_3ee8e687b1c393::t_05c6ef16f05600 425
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "feac8b3dfec068009a87a621b0d1ce553ffa2c96",
+  "prompts": {},
+  "sessions": {
+    "s_3ee8e687b1c393": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "105251fe-0801-4944-83b7-9bf37751d22b",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
