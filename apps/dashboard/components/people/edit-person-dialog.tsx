@@ -38,6 +38,7 @@ import { z } from "zod"
 import { DatePicker } from "@/components/date-picker"
 import { useOrganization } from "@/components/org-context"
 import { SubmitButton } from "@/components/submit-button"
+import { NumberInput } from "@/components/number-input"
 import { numberInputField } from "@/lib/number-field"
 import type { ValidationT } from "@/lib/validation"
 
@@ -431,8 +432,7 @@ export function EditPersonDialog({
                   <FormItem>
                     <FormLabel>{tForm("fteLabel")}</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
+                      <NumberInput
                         min={1}
                         max={100}
                         {...numberInputField(field)}
