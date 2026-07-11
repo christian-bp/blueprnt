@@ -12,7 +12,7 @@ import {
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 import { uniqueSlug } from "../lib/slug"
-import { deriveResults } from "./compute"
+import { deriveResults, logBandShifts } from "./compute"
 import { clampIndustry, starterContent } from "./industryStarters"
 
 // One created family with its created roles, returned by insertStarterSet so a
@@ -548,12 +548,13 @@ export const reconcileStarterSet = orgMutation({
     }
 
     // 5. Removed roles: any existing non-archived role not kept by the payload
-    // is archived (never hard-deleted). No band-shift wrap: reconcile never
-    // changes ratings or the model, and an archived role simply leaves results.
-    // A retired anchor's audit row captures the role's live computed band just
-    // before it leaves the results set. Derive ONCE here, before any patch in
-    // the loop (so every band is pre-archive), and only when something will
-    // actually be archived (cheap guard: skip the derive on a no-op reconcile).
+    // is archived (never hard-deleted). An archived role leaves the results set,
+    // so a fully-rated role's band drops to null; that band.shift is logged
+    // after the loop (mirroring archiveRole) so the reconcile path's band
+    // history is complete. A retired anchor's audit row captures the role's live
+    // computed band just before it leaves the results set. Derive ONCE here,
+    // before any patch in the loop (so every band is pre-archive), and only when
+    // something will actually be archived (cheap guard: skip on a no-op reconcile).
     const willArchive = activeRoles.some(
       (role) => !keptRoleIds.has(role._id as string)
     )
@@ -616,6 +617,21 @@ export const reconcileStarterSet = orgMutation({
           anchorRetired: retiredAnchor !== undefined,
           changes: { archivedAt: { from: null, to: archivedAt } },
         },
+      })
+    }
+
+    // Log the band.shift diff for the archives as a batch (mirrors archiveRole).
+    // reconcileBefore is the single pre-archive derive; derive once more now that
+    // every archived role has left the results set. Runs only when something was
+    // archived. entityId ties the shifts to this reconcile run's batchId.
+    if (reconcileBefore !== null) {
+      const reconcileAfter = await deriveResults(ctx, orgId)
+      await logBandShifts(ctx, {
+        orgId,
+        actorId,
+        before: reconcileBefore.results,
+        after: reconcileAfter.results,
+        cause: { event: AUDIT_EVENTS.roleArchived, entityId: batchId },
       })
     }
 

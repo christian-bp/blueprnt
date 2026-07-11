@@ -1026,7 +1026,7 @@
         "heading": "Organisaation {name} rooliperheet ja roolit",
         "pasteLabel": "Teidän roolinne ja rooliperheenne",
         "pasteHelpLabel": "Miten tämä toimii?",
-        "pasteHelpBody": "Liitä suoraan asiakirjasta, taulukosta tai HR-järjestelmästä; tekoäly päättelee, mitä tarkoitat. Jos teksti mainitsee jo rooliperheet, ne säilytetään, muuten tekoäly ehdottaa, mitkä roolit kuuluvat samaan perheeseen. Tarkistat tuloksen ja voit muuttaa kaikkea ennen kuin mitään luodaan.",
+        "pasteHelpBody": "Liitä suoraan asiakirjasta, taulukosta tai HR-järjestelmästä; tekoäly päättelee, mitä tarkoitat. Jos teksti mainitsee jo rooliperheet, ne säilytetään, muuten tekoäly ehdottaa, mitkä roolit kuuluvat samaan perheeseen. Tarkistat tuloksen ja voit muuttaa kaikkea ennen kuin mitään luodaan. Liitä vain roolinimikkeet, älä työntekijöiden nimiä.",
         "placeholderPhrase1": "Kehitys: Ohjelmistokehittäjä, Tech Lead, Kehityspäällikkö",
         "placeholderPhrase2": "Kirjanpitäjä, Palkka-asiantuntija, HR-generalisti, Toimistovastaava",
         "placeholderPhrase3": "Myymäläpäällikkö, Myyjä, Visual Merchandiser",
@@ -1701,6 +1701,7 @@
     "lastAdmin": "Olet organisaation viimeinen ylläpitäjä. Ota yhteyttä tukeen poistaaksesi tilisi.",
     "invalidLevel": "Taso ei ole kelvollinen tämän roolin polulle.",
     "invalidEffectiveDate": "Voimaantulopäivän on oltava nykyisen tehtävän alkamispäivän jälkeen.",
-    "personRefExists": "Työntekijä tällä työntekijänumerolla on jo olemassa."
+    "personRefExists": "Työntekijä tällä työntekijänumerolla on jo olemassa.",
+    "roleTrackChangeBlocked": "Siirrä tähän rooliin tällä hetkellä kuuluvat henkilöt ennen kuin vaihdat sen trackin."
   }
 }

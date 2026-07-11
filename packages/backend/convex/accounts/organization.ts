@@ -63,11 +63,14 @@ export const getOrganizationSettings = orgQuery({
 // one. This makes it safe to call updateOrganizationSettings immediately after
 // organization.create, before the onOrganizationCreate trigger has committed.
 export const updateOrganizationSettings = adminMutation({
+  // employeeCount is intentionally NOT settable here: it is derived from the
+  // imported people (internal.people.employeeCount.setEmployeeCountFromPeople is
+  // the sole writer, ADR-0007). A manual arg would let an admin overwrite the
+  // derived, audited headcount and desync it until the next import.
   args: {
     country: v.optional(v.string()),
     currency: v.optional(v.string()),
     language: v.optional(v.string()),
-    employeeCount: v.optional(v.number()),
     industry: v.optional(v.string()),
     pseudonymizeNames: v.optional(v.boolean()),
   },
@@ -85,8 +88,7 @@ export const updateOrganizationSettings = adminMutation({
     await ctx.audit.log({
       type: AUDIT_EVENTS.organizationSettingsUpdated,
       // `settings` is read before the write, so it is the correct before-state.
-      // `created` flags the upsert-insert path; employeeCount is included so a
-      // changed headcount is captured in the diff.
+      // `created` flags the upsert-insert path.
       payload: {
         created: settings === null,
         changes: buildChanges(settings ?? {}, args, SETTINGS_AUDIT_FIELDS),
@@ -197,6 +199,18 @@ export const getLanguageForUser = internalQuery({
     v.object({ language: v.union(v.string(), v.null()) })
   ),
   handler: async (ctx, { userId }) => {
+    // Prefer the user's OWN stored UI locale (the users mirror's locale field).
+    // A user can belong to more than one organization (platform addMembership +
+    // the org switcher), so picking an arbitrary membership's org language could
+    // send transactional mail in an unrelated entity's language. Fall back to a
+    // membership org's language only when the user has no stored locale yet.
+    const mirror = await ctx.db
+      .query("users")
+      .withIndex("by_auth_id", (q) => q.eq("authId", userId))
+      .unique()
+    if (mirror?.locale != null && mirror.locale !== "") {
+      return { language: mirror.locale }
+    }
     const memberships = await ctx.runQuery(
       components.betterAuth.membership.listMembershipsForUser,
       { userId }

@@ -91,7 +91,6 @@ describe("organization settings", () => {
         country: "SE",
         currency: "SEK",
         language: "sv",
-        employeeCount: 42,
       }
     )
     await t.run(async (ctx) => {
@@ -122,14 +121,14 @@ describe("organization settings", () => {
         changes: Record<string, { from: unknown; to: unknown }>
       }
       expect(payload.created).toBe(false)
-      // employeeCount is captured in the diff (regression for the prior
-      // omission of employeeCount from the buildChanges field list).
+      // The settable fields are captured in the diff. employeeCount is NOT
+      // settable here (derived from imported people; ADR-0007).
       expect(payload.changes).toMatchObject({
         country: { from: null, to: "SE" },
         currency: { from: null, to: "SEK" },
         language: { from: null, to: "sv" },
-        employeeCount: { from: null, to: 42 },
       })
+      expect(payload.changes.employeeCount).toBeUndefined()
     })
   })
 
@@ -150,7 +149,7 @@ describe("organization settings", () => {
     const asAdmin = t.withIdentity({ subject: userId })
     await asAdmin.mutation(
       api.accounts.organization.updateOrganizationSettings,
-      { orgId, country: "NO", employeeCount: 7 }
+      { orgId, country: "NO" }
     )
     await t.run(async (ctx) => {
       const audit = await ctx.db
@@ -166,7 +165,6 @@ describe("organization settings", () => {
       expect(payload.created).toBe(true)
       expect(payload.changes).toMatchObject({
         country: { from: null, to: "NO" },
-        employeeCount: { from: null, to: 7 },
       })
     })
   })
@@ -440,6 +438,30 @@ describe("getLanguageForUser", () => {
       { userId: "no-such-user" }
     )
     expect(result).toBeNull()
+  })
+
+  it("prefers the user's own stored locale over any membership org language", async () => {
+    const t = initConvexTest()
+    const { orgId, userId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email: "hr@acme.se", name: "HR Person", role: "admin" }
+    )
+    await t.run(async (ctx) => {
+      // Org language is Swedish, but the user's own UI locale is Finnish. A
+      // multi-org user must get their own locale, not an arbitrary org's.
+      await ctx.db.insert("organizations", { orgId, language: "sv" })
+      await ctx.db.insert("users", {
+        authId: userId,
+        name: "HR Person",
+        email: "hr@acme.se",
+        locale: "fi",
+      })
+    })
+    const result = await t.query(
+      internal.accounts.organization.getLanguageForUser,
+      { userId }
+    )
+    expect(result).toEqual({ language: "fi" })
   })
 })
 

@@ -573,26 +573,30 @@ describe("reconcileStarterSet", () => {
     if (keeper === undefined || goner === undefined || family === undefined) {
       throw new Error("seed")
     }
-    // Give the soon-archived role a rating; it must survive the archive.
-    await t.run(async (ctx) => {
+    // Fully rate the soon-archived role (one rating per criterion) so it has a
+    // computed band: its ratings must survive the archive, and archiving it must
+    // log the band.shift as the band drops out of the results set.
+    const criteriaCount = await t.run(async (ctx) => {
       const model = await ctx.db
         .query("models")
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .unique()
       if (model === null) throw new Error("model")
-      const criterion = await ctx.db
+      const criteria = await ctx.db
         .query("criteria")
         .withIndex("by_model", (q) => q.eq("modelId", model._id))
-        .first()
-      if (criterion === null) throw new Error("criterion")
+        .collect()
       const roleDocId = ctx.db.normalizeId("roles", goner.roleId)
       if (roleDocId === null) throw new Error("bad id")
-      await ctx.db.insert("ratings", {
-        orgId,
-        roleId: roleDocId,
-        criterionId: criterion._id,
-        value: 3,
-      })
+      for (const criterion of criteria) {
+        await ctx.db.insert("ratings", {
+          orgId,
+          roleId: roleDocId,
+          criterionId: criterion._id,
+          value: 3,
+        })
+      }
+      return criteria.length
     })
 
     await asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
@@ -618,16 +622,25 @@ describe("reconcileStarterSet", () => {
         .query("ratings")
         .withIndex("by_role_criterion", (q) => q.eq("roleId", goneDocId))
         .collect()
-      expect(ratings).toHaveLength(1)
+      expect(ratings).toHaveLength(criteriaCount)
     })
     const archived = await auditOfType(t, orgId, "role.archived")
     expect(archived).toHaveLength(1)
     expect((archived[0]?.payload as { roleId: string }).roleId).toBe(
       goner.roleId
     )
-    // No band.shift logging from reconcile.
+    // A fully-rated role leaving the results set logs exactly one band.shift
+    // (band -> null), mirroring archiveRole, so the reconcile band history is
+    // complete. The un-rated Keeper stays band null throughout and shifts none.
     const shifts = await auditOfType(t, orgId, "band.shift")
-    expect(shifts).toHaveLength(0)
+    expect(shifts).toHaveLength(1)
+    const shiftPayload = shifts[0]?.payload as {
+      roleId: string
+      changes: { band: { from: unknown; to: unknown } }
+    }
+    expect(shiftPayload.roleId).toBe(goner.roleId)
+    expect(typeof shiftPayload.changes.band.from).toBe("number")
+    expect(shiftPayload.changes.band.to).toBeNull()
   })
 
   it("removes a family that becomes empty when its roles are dropped", async () => {

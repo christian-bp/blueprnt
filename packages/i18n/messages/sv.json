@@ -1026,7 +1026,7 @@
         "heading": "Rollfamiljer och roller hos {name}",
         "pasteLabel": "Era roller och rollfamiljer",
         "pasteHelpLabel": "Hur fungerar det här?",
-        "pasteHelpBody": "Klistra in direkt från ett dokument, kalkylblad eller HR-system; AI:n listar ut vad du menar. Om texten redan nämner rollfamiljer behålls de, annars föreslår AI:n vilka roller som hör ihop i en familj. Du granskar resultatet och kan ändra allt innan något skapas.",
+        "pasteHelpBody": "Klistra in direkt från ett dokument, kalkylblad eller HR-system; AI:n listar ut vad du menar. Om texten redan nämner rollfamiljer behålls de, annars föreslår AI:n vilka roller som hör ihop i en familj. Du granskar resultatet och kan ändra allt innan något skapas. Klistra bara in rolltitlar, inte de anställdas namn.",
         "placeholderPhrase1": "Utveckling: Systemutvecklare, Tech Lead, Utvecklingschef",
         "placeholderPhrase2": "Redovisningsekonom, Lönespecialist, HR-generalist, Kontorsansvarig",
         "placeholderPhrase3": "Butikschef, Säljare, Visual Merchandiser",
@@ -1701,6 +1701,7 @@
     "lastAdmin": "Du är den sista administratören i en organisation. Kontakta supporten för att radera ditt konto.",
     "invalidLevel": "Den nivån är inte giltig för rollens spår.",
     "invalidEffectiveDate": "Giltighetsdatumet måste vara efter den aktuella tilldelningens startdatum.",
-    "personRefExists": "En anställd med det anställningsnumret finns redan."
+    "personRefExists": "En anställd med det anställningsnumret finns redan.",
+    "roleTrackChangeBlocked": "Omplacera personerna som just nu tillhör den här rollen innan du ändrar dess track."
   }
 }

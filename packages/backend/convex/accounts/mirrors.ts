@@ -1,8 +1,14 @@
 import type { GenericMutationCtx } from "convex/server"
 import { v } from "convex/values"
+import { components, internal } from "../_generated/api"
 import type { DataModel } from "../_generated/dataModel"
 import { internalMutation } from "../_generated/server"
-import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
+import {
+  AUDIT_EVENTS,
+  buildChanges,
+  logAudit,
+  SETTINGS_AUDIT_FIELDS,
+} from "../lib/audit"
 
 type Ctx = GenericMutationCtx<DataModel>
 
@@ -251,7 +257,10 @@ export const seedOrganizationSettings = internalMutation({
           changes: buildChanges(
             row ?? {},
             { country, currency, language, industry },
-            ["country", "currency", "language", "industry"]
+            // Shared field list (employeeCount/pseudonymizeNames absent from
+            // `after` and skipped) so seeded settings diffs cannot drift from
+            // the settingsUpdated field set.
+            SETTINGS_AUDIT_FIELDS
           ),
         },
       })
@@ -278,7 +287,7 @@ export const seedOrganizationSettings = internalMutation({
 export async function onUserUpdate(
   ctx: Ctx,
   newDoc: AuthUserDoc,
-  _oldDoc: AuthUserDoc
+  oldDoc: AuthUserDoc
 ) {
   const row = await ctx.db
     .query("users")
@@ -289,6 +298,22 @@ export async function onUserUpdate(
     return
   }
   await ctx.db.patch(row._id, { name: newDoc.name, email: newDoc.email })
+  // On an email change (the only path that changes a user's email), clean up
+  // the OLD address's PII footprint. Erasure keys on the CURRENT email only, so
+  // without this an invitation addressed to the old address would be orphaned
+  // and retained forever, and the old address's sent-mail history would never
+  // be purged. Purge both at change time so later erasure is complete.
+  if (oldDoc.email !== "" && oldDoc.email !== newDoc.email) {
+    await ctx.runMutation(
+      components.betterAuth.provisioning.purgeInvitationsForEmail,
+      { email: oldDoc.email }
+    )
+    await ctx.scheduler.runAfter(
+      0,
+      internal.email.erasure.purgeRecipientEmails,
+      { email: oldDoc.email }
+    )
+  }
 }
 
 export async function onUserDelete(ctx: Ctx, doc: AuthUserDoc) {

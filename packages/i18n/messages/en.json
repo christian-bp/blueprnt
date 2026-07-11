@@ -1026,7 +1026,7 @@
         "heading": "Role families and roles at {name}",
         "pasteLabel": "Your roles and role families",
         "pasteHelpLabel": "How does this work?",
-        "pasteHelpBody": "Paste straight from a document, spreadsheet or HR system; the AI works out what you mean. If your text already mentions role families they are kept, otherwise the AI suggests which roles belong together in a family. You review the result and can change everything before anything is created.",
+        "pasteHelpBody": "Paste straight from a document, spreadsheet or HR system; the AI works out what you mean. If your text already mentions role families they are kept, otherwise the AI suggests which roles belong together in a family. You review the result and can change everything before anything is created. Paste role titles only, not employee names.",
         "placeholderPhrase1": "Engineering: Software Developer, Tech Lead, Engineering Manager",
         "placeholderPhrase2": "Accountant, Payroll Specialist, HR Generalist, Office Manager",
         "placeholderPhrase3": "Store Manager, Sales Associate, Visual Merchandiser",
@@ -1701,6 +1701,7 @@
     "lastAdmin": "You're the last administrator of an organization. Contact support to delete your account.",
     "invalidLevel": "That level is not valid for this role's track.",
     "invalidEffectiveDate": "The effective date must be after the current assignment's start date.",
-    "personRefExists": "An employee with that employee number already exists."
+    "personRefExists": "An employee with that employee number already exists.",
+    "roleTrackChangeBlocked": "Reassign the people currently on this role before changing its track."
   }
 }

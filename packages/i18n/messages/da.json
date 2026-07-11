@@ -1026,7 +1026,7 @@
         "heading": "Rollefamilier og roller hos {name}",
         "pasteLabel": "Jeres roller og rollefamilier",
         "pasteHelpLabel": "Hvordan fungerer det?",
-        "pasteHelpBody": "Indsæt direkte fra et dokument, regneark eller HR-system; AI'en finder ud af, hvad du mener. Hvis teksten allerede nævner rollefamilier, beholdes de, ellers foreslår AI'en hvilke roller der hører sammen i en familie. Du gennemgår resultatet og kan ændre alt, før noget oprettes.",
+        "pasteHelpBody": "Indsæt direkte fra et dokument, regneark eller HR-system; AI'en finder ud af, hvad du mener. Hvis teksten allerede nævner rollefamilier, beholdes de, ellers foreslår AI'en hvilke roller der hører sammen i en familie. Du gennemgår resultatet og kan ændre alt, før noget oprettes. Indsæt kun rolletitler, ikke medarbejdernes navne.",
         "placeholderPhrase1": "Udvikling: Softwareudvikler, Tech Lead, Udviklingschef",
         "placeholderPhrase2": "Regnskabsmedarbejder, Lønspecialist, HR-generalist, Kontoransvarlig",
         "placeholderPhrase3": "Butikschef, Salgsassistent, Visual Merchandiser",
@@ -1701,6 +1701,7 @@
     "lastAdmin": "Du er den sidste administrator i en organisation. Kontakt support for at slette din konto.",
     "invalidLevel": "Det niveau er ikke gyldigt for rollens spor.",
     "invalidEffectiveDate": "Ikrafttrædelsesdatoen skal være efter den aktuelle tildelnings startdato.",
-    "personRefExists": "En medarbejder med det medarbejdernummer findes allerede."
+    "personRefExists": "En medarbejder med det medarbejdernummer findes allerede.",
+    "roleTrackChangeBlocked": "Flyt de personer, der aktuelt hører til denne rolle, før du ændrer dens track."
   }
 }

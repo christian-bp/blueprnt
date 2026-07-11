@@ -1,3 +1,4 @@
+import { TRACK_LEVELS } from "@workspace/constants"
 import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
@@ -106,7 +107,7 @@ describe("createRole", () => {
 })
 
 describe("listRoles and getRole", () => {
-  it("lists non-archived roles with progress and resolves a role with guardrails", async () => {
+  it("lists non-archived roles with progress and resolves a role with its ratings", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
     const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
@@ -298,6 +299,48 @@ describe("updateRole", () => {
     await t.run(async (ctx) => {
       const role = await ctx.db.get(roleId)
       expect(role?.trackKey).toBe(otherTrack.key)
+    })
+  })
+
+  it("rejects a track change that would orphan an active assignment's level", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Developer",
+      function: "Engineering",
+      team: "Core",
+      trackKey: track.key,
+    })
+    const otherTrack = model.tracks.find((tr) => tr.key !== track.key)
+    if (otherTrack === undefined) throw new Error("seed")
+    // Assign a person at a level valid for the CURRENT track.
+    const level = TRACK_LEVELS[track.key as keyof typeof TRACK_LEVELS][0]
+    if (level === undefined) throw new Error("seed")
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Bo Ek", gender: "Man" }
+    )
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId,
+      roleId,
+      level,
+      levelSource: "confirmed",
+    })
+
+    // The track change is blocked: the active level is invalid for the new track.
+    await expect(
+      asAdmin.mutation(api.assessment.roles.updateRole, {
+        orgId,
+        roleId,
+        trackKey: otherTrack.key,
+      })
+    ).rejects.toThrow(/errors.roleTrackChangeBlocked/)
+    // The role's track is unchanged.
+    await t.run(async (ctx) => {
+      const role = await ctx.db.get(roleId)
+      expect(role?.trackKey).toBe(track.key)
     })
   })
 

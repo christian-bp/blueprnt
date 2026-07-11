@@ -1,3 +1,4 @@
+import { isValidLevelForTrack } from "@workspace/constants"
 import { v } from "convex/values"
 import type { Doc, Id } from "../_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
@@ -406,6 +407,26 @@ export const updateRole = orgMutation({
       patch.team = args.team.trim()
     }
     if (args.trackKey !== undefined) {
+      // Changing the track would orphan any active individual level: levels are
+      // per-track and disjoint (IC*/Lead-*/M*; ADR-0005), so an IC3 assignment
+      // cannot stay on a Manager-track role. Block the change while an active
+      // assignment holds a level invalid for the new track, so HR reassigns
+      // explicitly instead of leaving a level outside the role's ladder. Closed
+      // (historical) assignments keep their own level and are not affected.
+      if (args.trackKey !== role.trackKey) {
+        const roleAssignments = await ctx.db
+          .query("personAssignments")
+          .withIndex("by_role", (q) =>
+            q.eq("orgId", ctx.orgId).eq("roleId", role._id)
+          )
+          .collect()
+        const wouldOrphan = roleAssignments.some(
+          (a) =>
+            a.endedAt === undefined &&
+            !isValidLevelForTrack(args.trackKey as string, a.level)
+        )
+        if (wouldOrphan) throw appError(ERROR_CODES.roleTrackChangeBlocked)
+      }
       patch.trackKey = args.trackKey
     }
     if (args.familyId !== undefined) {

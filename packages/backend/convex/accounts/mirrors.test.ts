@@ -72,6 +72,49 @@ describe("user mirror triggers", () => {
     })
   })
 
+  it("onUserUpdate purges the OLD email's invitations and schedules its mail purge on an email change", async () => {
+    const t = initConvexTest()
+    // An invitation addressed to the user's OLD email.
+    await t.mutation(components.betterAuth.testing.seedInvitation, {
+      organizationId: "org_1",
+      email: "old@acme.se",
+      inviterId: "someone",
+    })
+    await t.run(async (ctx) => {
+      await onUserCreate(ctx, { ...authUser, email: "old@acme.se" })
+    })
+
+    // Email change: old@acme.se -> new@acme.se.
+    await t.run(async (ctx) => {
+      await onUserUpdate(
+        ctx,
+        { ...authUser, email: "new@acme.se" },
+        { ...authUser, email: "old@acme.se" }
+      )
+    })
+
+    // The invitation to the old address is purged (not orphaned past erasure).
+    const remaining = await t.query(
+      components.betterAuth.testing.listInvitations,
+      {}
+    )
+    expect(remaining.some((i) => i.email === "old@acme.se")).toBe(false)
+    // A Sweego purge of the old address's mail history is scheduled.
+    const scheduled = await t.run((ctx) =>
+      ctx.db.system.query("_scheduled_functions").collect()
+    )
+    const purge = scheduled.find((s) => s.name.includes("purgeRecipientEmails"))
+    expect(purge?.args).toEqual([{ email: "old@acme.se" }])
+    // The mirror now holds the new email.
+    const row = await t.run(async (ctx) =>
+      ctx.db
+        .query("users")
+        .withIndex("by_auth_id", (q) => q.eq("authId", "ba_user_1"))
+        .unique()
+    )
+    expect(row?.email).toBe("new@acme.se")
+  })
+
   it("onUserDelete removes the mirror row", async () => {
     const t = initConvexTest()
     await t.run(async (ctx) => {
