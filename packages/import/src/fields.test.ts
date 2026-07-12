@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import {
   CANONICAL_FIELDS,
+  defaultBasis,
   fold,
   matchesSynonym,
   SUBSTRING_MIN_LENGTH,
@@ -207,5 +208,16 @@ describe("matchesSynonym substring guard", () => {
   it("still exact-matches a short synonym", () => {
     const r = matchesSynonym("fte", ["fte"])
     expect(r.exact).toBe(true)
+  })
+})
+
+describe("defaultBasis", () => {
+  it("uses the field default when the header has no annual hint", () => {
+    expect(defaultBasis("basicMonthly", "Månadslön")).toBe("monthly")
+    expect(defaultBasis("bonus", "Bonus")).toBe("annual")
+  })
+  it("returns annual when the header itself implies an annual figure", () => {
+    expect(defaultBasis("basicMonthly", "Årslön")).toBe("annual")
+    expect(defaultBasis("basicMonthly", "Annual salary")).toBe("annual")
   })
 })

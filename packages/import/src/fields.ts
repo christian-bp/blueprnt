@@ -1,5 +1,7 @@
 // Canonical field definitions and synonym dictionary for the salary import engine.
 
+import { DEFAULT_BASIS_BY_FIELD, type PayBasis } from "@workspace/constants"
+
 export type FieldTier = "required" | "recommended" | "optional"
 
 export type ValueShape =
@@ -10,6 +12,7 @@ export type ValueShape =
   | "date"
   | "gender"
   | "boolean"
+  | "employmentType"
 
 export type FieldDef = {
   key: CanonicalFieldKey
@@ -251,9 +254,11 @@ const FIELDS = [
     key: "variable",
     tier: "optional",
     shape: "money",
+    // "malbonus"/"bonus" removed (Task 3): they now belong exclusively to the
+    // dedicated "bonus" field below, so a "Bonus"/"Målbonus" header resolves
+    // unambiguously instead of tying on array-index order between two
+    // distinct optional money fields.
     synonyms: [
-      "malbonus",
-      "bonus",
       "variable",
       "variabel",
       "variabellonn",
@@ -273,6 +278,84 @@ const FIELDS = [
       "benefitinkind",
       "forman",
       "naturalforman",
+    ],
+  },
+  {
+    key: "bonus",
+    tier: "optional",
+    shape: "money",
+    synonyms: [
+      "bonus",
+      "arsbonus",
+      "annualbonus",
+      "yearbonus",
+      "resultatbonus",
+      "malbonus",
+    ],
+  },
+  {
+    key: "fixedSupplement",
+    tier: "optional",
+    shape: "money",
+    synonyms: [
+      "fasttillagg",
+      "fixedsupplement",
+      "fastlonetillagg",
+      "fasttillaegg",
+      "lonetillagg",
+    ],
+  },
+  {
+    key: "allowance",
+    tier: "optional",
+    shape: "money",
+    synonyms: [
+      "ersattning",
+      "allowance",
+      "obtillagg",
+      "skifttillagg",
+      "traktamente",
+      "tillaeg",
+    ],
+  },
+  {
+    key: "equity",
+    tier: "optional",
+    shape: "money",
+    synonyms: [
+      "aktier",
+      "equity",
+      "optioner",
+      "aktieprogram",
+      "incitament",
+      "aksjer",
+    ],
+  },
+  {
+    key: "other",
+    tier: "optional",
+    shape: "money",
+    synonyms: [
+      "ovrigersattning",
+      "ovrigttillagg",
+      "otheraddition",
+      "othercomp",
+      "annengodtgjorelse",
+    ],
+  },
+  {
+    key: "employmentType",
+    tier: "recommended",
+    shape: "employmentType",
+    synonyms: [
+      "anstallningsform",
+      "anstform",
+      "employmenttype",
+      "employmentform",
+      "contracttype",
+      "ansettelsesform",
+      "ansaettelsesform",
+      "palvelussuhde",
     ],
   },
   {
@@ -312,3 +395,30 @@ export const CANONICAL_FIELDS: readonly FieldDef[] = FIELDS.map((f) => ({
 })) as unknown as readonly FieldDef[]
 
 export type CanonicalFieldKey = (typeof FIELDS)[number]["key"]
+
+// Folded header fragments that imply an annual figure regardless of the field
+// (e.g. an "Årslön" column mapped to base salary). Used to seed the Map-step
+// basis toggle to "annual" so the common annual-column case is one click.
+export const ANNUAL_HINT: readonly string[] = [
+  "arslon",
+  "arslonn",
+  "annualsalary",
+  "yearlysalary",
+  "grosssalary",
+  "arsbonus",
+  "annualbonus",
+  "arsinkomst",
+  "arsersattning",
+].map(fold)
+
+// Pure: the default monthly/annual basis for a mapped money column. An
+// annual-flavoured header wins; otherwise the field's default; otherwise
+// monthly. Used client-side (Map step) to seed the toggle.
+export function defaultBasis(fieldKey: string, rawHeader: string): PayBasis {
+  const folded = fold(rawHeader)
+  if (ANNUAL_HINT.some((hint) => folded.includes(hint))) return "annual"
+  return (
+    DEFAULT_BASIS_BY_FIELD[fieldKey as keyof typeof DEFAULT_BASIS_BY_FIELD] ??
+    "monthly"
+  )
+}

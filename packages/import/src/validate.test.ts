@@ -37,6 +37,16 @@ const FULL_MAPPING: DetectedMapping = {
     currency: { columnIndex: col("Valuta"), confidence: 1.0 },
     externalRef: { columnIndex: col("Anstnr"), confidence: 1.0 },
     ftePercent: { columnIndex: col("Sysselssättningsgrad"), confidence: 1.0 },
+    // This legacy 16-column fixture predates employmentType (Task 3) and has
+    // no dedicated column for it. Readiness only checks mapping presence, not
+    // column shape/content, so reusing country's column marks it mapped
+    // without affecting any other assertion in this file. This duplicate
+    // column index is a fixture-only artifact: detectColumns itself could
+    // never produce it (a real column index maps to at most one field), so
+    // a future validate.ts refactor that reads employmentType's cell content
+    // would not get a false green from this fixture; the drop-employmentType
+    // warnings test below exercises that unmapped case directly.
+    employmentType: { columnIndex: col("Land"), confidence: 1.0 },
   },
   unmappedColumns: [],
 }
@@ -170,6 +180,18 @@ describe("validateImport — warnings (recommended fields missing)", () => {
     }
     const result = validateImport({ headers: HEADERS, rows: ROWS }, mapping, {})
     expect(result.warnings).toContain("ftePercent")
+  })
+
+  it("warnings contains employmentType when its mapping is dropped", () => {
+    const mapping: DetectedMapping = {
+      map: { ...FULL_MAPPING.map, employmentType: undefined },
+      // Dropping employmentType frees no column: in this fixture it shares
+      // Land's column index with country, which stays mapped, so
+      // unmappedColumns stays empty like FULL_MAPPING's.
+      unmappedColumns: [],
+    }
+    const result = validateImport({ headers: HEADERS, rows: ROWS }, mapping, {})
+    expect(result.warnings).toContain("employmentType")
   })
 
   it("warnings does not contain optional fields", () => {

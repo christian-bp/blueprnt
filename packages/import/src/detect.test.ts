@@ -393,6 +393,20 @@ describe("detectColumns content-only mode (headerless files)", () => {
   })
 })
 
+describe("detectColumns — new component-kind and employment-type synonyms", () => {
+  it("detects new component and employment-type columns", () => {
+    const { map } = detectColumns({
+      headers: ["Bonus", "Anställningsform", "Aktier"],
+      rows: [["10000", "Tillsvidare", "5000"]],
+      headerless: false,
+      currentYear: 2026,
+    })
+    expect(map.bonus?.columnIndex).toBe(0)
+    expect(map.employmentType?.columnIndex).toBe(1)
+    expect(map.equity?.columnIndex).toBe(2)
+  })
+})
+
 describe("detectColumns content-only ambiguity guards (CO-AMB)", () => {
   it("CO-AMB-01: two gender-shaped columns stay unmapped", () => {
     const rows = [

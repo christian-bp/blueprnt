@@ -1,5 +1,7 @@
 export {
+  ANNUAL_HINT,
   CANONICAL_FIELDS,
+  defaultBasis,
   fold,
   matchesSynonym,
   SUBSTRING_MIN_LENGTH,
@@ -10,6 +12,7 @@ export type {
   ValueShape,
   FieldDef,
 } from "./fields"
+export type { PayBasis } from "@workspace/constants"
 
 export { tokenizeCsv, ImportFormatError } from "./tokenize"
 export type { TokenizeResult, TokenizeSignals } from "./tokenize"
