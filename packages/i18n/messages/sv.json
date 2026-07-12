@@ -223,7 +223,10 @@
           "mappedTo": "Mappas till",
           "ignore": "Ignorera",
           "columnNumber": "Kolumn {number}",
-          "headerlessNotice": "Filen saknar rubrikrad, så första raden behölls som data och kolumnerna är numrerade. Fält föreslogs utifrån kolumnernas innehåll där det gick; koppla resten nedan."
+          "headerlessNotice": "Filen saknar rubrikrad, så första raden behölls som data och kolumnerna är numrerade. Fält föreslogs utifrån kolumnernas innehåll där det gick; koppla resten nedan.",
+          "basisHeader": "Beloppet är",
+          "basisMonthly": "Per månad",
+          "basisAnnual": "Per år"
         },
         "check": {
           "title": "Kontrollera beredskap",
@@ -293,7 +296,13 @@
           "currency": "Valuta",
           "country": "Land",
           "department": "Avdelning",
-          "isManager": "Chef"
+          "isManager": "Chef",
+          "bonus": "Bonus",
+          "fixedSupplement": "Fast tillägg",
+          "allowance": "Tillägg",
+          "equity": "Aktier/optioner",
+          "other": "Övrig ersättning",
+          "employmentType": "Anställningsform"
         },
         "importing": {
           "title": "Importerar personer",

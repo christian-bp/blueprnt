@@ -223,7 +223,10 @@
           "mappedTo": "Mapped to",
           "ignore": "Ignore",
           "columnNumber": "Column {number}",
-          "headerlessNotice": "This file has no header row, so the first row was kept as data and the columns are numbered. Fields were suggested from the column contents where possible; assign the rest below."
+          "headerlessNotice": "This file has no header row, so the first row was kept as data and the columns are numbered. Fields were suggested from the column contents where possible; assign the rest below.",
+          "basisHeader": "Amount is",
+          "basisMonthly": "Per month",
+          "basisAnnual": "Per year"
         },
         "tier": {
           "required": "Required",
@@ -297,7 +300,13 @@
           "currency": "Currency",
           "country": "Country",
           "department": "Department",
-          "isManager": "Manager"
+          "isManager": "Manager",
+          "bonus": "Bonus",
+          "fixedSupplement": "Fixed supplement",
+          "allowance": "Allowance",
+          "equity": "Equity",
+          "other": "Other pay component",
+          "employmentType": "Employment type"
         },
         "importing": {
           "title": "Importing people",

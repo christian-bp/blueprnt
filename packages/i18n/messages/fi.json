@@ -223,7 +223,10 @@
           "mappedTo": "Yhdistetty kenttaan",
           "ignore": "Ohita",
           "columnNumber": "Sarake {number}",
-          "headerlessNotice": "Tiedostossa ei ole otsikkoriviä, joten ensimmäinen rivi säilytettiin datana ja sarakkeet on numeroitu. Kentät ehdotettiin sarakkeiden sisällön perusteella, missä se oli mahdollista; yhdistä loput alla."
+          "headerlessNotice": "Tiedostossa ei ole otsikkoriviä, joten ensimmäinen rivi säilytettiin datana ja sarakkeet on numeroitu. Kentät ehdotettiin sarakkeiden sisällön perusteella, missä se oli mahdollista; yhdistä loput alla.",
+          "basisHeader": "Summa on",
+          "basisMonthly": "Kuukaudessa",
+          "basisAnnual": "Vuodessa"
         },
         "check": {
           "title": "Tarkista valmius",
@@ -293,7 +296,13 @@
           "currency": "Valuutta",
           "country": "Maa",
           "department": "Osasto",
-          "isManager": "Esimies"
+          "isManager": "Esimies",
+          "bonus": "Bonus",
+          "fixedSupplement": "Kiinteä lisä",
+          "allowance": "Lisä",
+          "equity": "Osakkeet/optiot",
+          "other": "Muu palkkaosuus",
+          "employmentType": "Palvelussuhteen tyyppi"
         },
         "importing": {
           "title": "Tuodaan henkilöitä",

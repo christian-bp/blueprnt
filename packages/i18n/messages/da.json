@@ -223,7 +223,10 @@
           "mappedTo": "Tilknyttet til",
           "ignore": "Ignorer",
           "columnNumber": "Kolonne {number}",
-          "headerlessNotice": "Filen mangler en overskriftsrække, så første række blev beholdt som data, og kolonnerne er nummererede. Felter blev foreslået ud fra kolonnernes indhold, hvor det var muligt; tilknyt resten nedenfor."
+          "headerlessNotice": "Filen mangler en overskriftsrække, så første række blev beholdt som data, og kolonnerne er nummererede. Felter blev foreslået ud fra kolonnernes indhold, hvor det var muligt; tilknyt resten nedenfor.",
+          "basisHeader": "Beløbet er",
+          "basisMonthly": "Per måned",
+          "basisAnnual": "Per år"
         },
         "check": {
           "title": "Kontroller beredskab",
@@ -293,7 +296,13 @@
           "currency": "Valuta",
           "country": "Land",
           "department": "Afdeling",
-          "isManager": "Leder"
+          "isManager": "Leder",
+          "bonus": "Bonus",
+          "fixedSupplement": "Fast tillæg",
+          "allowance": "Tillæg",
+          "equity": "Aktier/optioner",
+          "other": "Anden betaling",
+          "employmentType": "Ansættelsesform"
         },
         "importing": {
           "title": "Importerer personer",

@@ -223,7 +223,10 @@
           "mappedTo": "Tilordnet til",
           "ignore": "Ignorer",
           "columnNumber": "Kolonne {number}",
-          "headerlessNotice": "Filen mangler overskriftsrad, så første rad ble beholdt som data og kolonnene er nummererte. Felt ble foreslått ut fra kolonnenes innhold der det var mulig; koble resten nedenfor."
+          "headerlessNotice": "Filen mangler overskriftsrad, så første rad ble beholdt som data og kolonnene er nummererte. Felt ble foreslått ut fra kolonnenes innhold der det var mulig; koble resten nedenfor.",
+          "basisHeader": "Beløpet er",
+          "basisMonthly": "Per måned",
+          "basisAnnual": "Per år"
         },
         "check": {
           "title": "Kontroller beredskap",
@@ -293,7 +296,13 @@
           "currency": "Valuta",
           "country": "Land",
           "department": "Avdeling",
-          "isManager": "Leder"
+          "isManager": "Leder",
+          "bonus": "Bonus",
+          "fixedSupplement": "Fast tillegg",
+          "allowance": "Tillegg",
+          "equity": "Aksjer/opsjoner",
+          "other": "Annen godtgjørelse",
+          "employmentType": "Ansettelsesform"
         },
         "importing": {
           "title": "Importerer personer",
