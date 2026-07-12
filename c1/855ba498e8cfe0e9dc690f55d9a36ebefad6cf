@@ -1,0 +1,20 @@
+apps/dashboard/components/people/import/review-step.tsx
+  s_6ea4434f5c3a0d::t_4b77b804c6afca 318,321-325,327,333,347-354,362-378,380-406
+  s_6ea4434f5c3a0d::t_2cc80b57658ba0 66-118
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "c1855ba498e8cfe0e9dc690f55d9a36ebefad6cf",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
