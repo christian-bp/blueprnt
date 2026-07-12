@@ -9,6 +9,12 @@ const parseRulesValidator = v.object({
   delimiter: v.optional(v.string()),
 })
 
+// Validator for basisMap (mirrors the schema field exactly).
+const basisMapValidator = v.record(
+  v.string(),
+  v.union(v.literal("monthly"), v.literal("annual"))
+)
+
 // Wire shape returned by getImportMappingProfile.
 const profileShape = v.object({
   profileId: v.id("importMappingProfiles"),
@@ -17,6 +23,7 @@ const profileShape = v.object({
     v.object({ delimiter: v.optional(v.string()) }),
     v.null()
   ),
+  basisMap: v.optional(basisMapValidator),
   updatedAt: v.number(),
 })
 
@@ -29,6 +36,7 @@ export const saveImportMappingProfile = orgMutation({
   args: {
     columnMap: v.record(v.string(), v.string()),
     parseRules: v.optional(parseRulesValidator),
+    basisMap: v.optional(basisMapValidator),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -41,6 +49,7 @@ export const saveImportMappingProfile = orgMutation({
         ...(args.parseRules !== undefined
           ? { parseRules: args.parseRules }
           : {}),
+        ...(args.basisMap !== undefined ? { basisMap: args.basisMap } : {}),
       }
     )
     return null
@@ -58,6 +67,7 @@ export const internalSaveImportMappingProfile = internalMutation({
     actorId: v.string(),
     columnMap: v.record(v.string(), v.string()),
     parseRules: v.optional(parseRulesValidator),
+    basisMap: v.optional(basisMapValidator),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -73,6 +83,7 @@ export const internalSaveImportMappingProfile = internalMutation({
         ...(args.parseRules !== undefined
           ? { parseRules: args.parseRules }
           : {}),
+        ...(args.basisMap !== undefined ? { basisMap: args.basisMap } : {}),
         updatedAt: Date.now(),
       })
 
@@ -97,8 +108,13 @@ export const internalSaveImportMappingProfile = internalMutation({
     const parseRulesChanged =
       JSON.stringify(args.parseRules ?? null) !==
       JSON.stringify(existing.parseRules ?? null)
+    const basisMapChanged =
+      JSON.stringify(args.basisMap ?? null) !==
+      JSON.stringify(existing.basisMap ?? null)
 
-    if (!columnMapChanged && !parseRulesChanged) return null
+    if (!columnMapChanged && !parseRulesChanged && !basisMapChanged) {
+      return null
+    }
 
     const updatedAt = Date.now()
     const patch: Record<string, unknown> = { updatedAt }
@@ -108,6 +124,13 @@ export const internalSaveImportMappingProfile = internalMutation({
         patch.parseRules = args.parseRules
       } else {
         patch.parseRules = undefined
+      }
+    }
+    if (basisMapChanged) {
+      if (args.basisMap !== undefined) {
+        patch.basisMap = args.basisMap
+      } else {
+        patch.basisMap = undefined
       }
     }
 
@@ -145,6 +168,7 @@ export const getImportMappingProfile = orgQuery({
       profileId: profile._id,
       columnMap: profile.columnMap,
       parseRules: profile.parseRules ?? null,
+      ...(profile.basisMap !== undefined ? { basisMap: profile.basisMap } : {}),
       updatedAt: profile.updatedAt,
     }
   },

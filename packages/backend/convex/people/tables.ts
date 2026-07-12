@@ -33,6 +33,15 @@ export const people = defineTable({
   // classification engine (title -> role). Not PII (a job title, not identity),
   // so it lives on the person row alongside HR-structural attributes.
   title: v.optional(v.string()),
+  // Anställningsform. Canonical values mirror @workspace/constants EMPLOYMENT_TYPES.
+  employmentType: v.optional(
+    v.union(
+      v.literal("permanent"),
+      v.literal("fixedTerm"),
+      v.literal("substitute"),
+      v.literal("hourly")
+    )
+  ),
   // Epoch ms timestamp. Set when the person leaves; null/absent means active.
   // Not a GDPR erasure: full erasure is a hard delete (see CLAUDE.md).
   archivedAt: v.optional(v.number()),
@@ -108,6 +117,11 @@ export const importMappingProfiles = defineTable({
     v.object({
       delimiter: v.optional(v.string()),
     })
+  ),
+  // Per-money-column basis (monthly | annual), keyed by canonical field. ASCII
+  // keys, so a record is safe (unlike columnMap's non-ASCII source headers).
+  basisMap: v.optional(
+    v.record(v.string(), v.union(v.literal("monthly"), v.literal("annual")))
   ),
   // Epoch ms: last time this profile was saved.
   updatedAt: v.number(),

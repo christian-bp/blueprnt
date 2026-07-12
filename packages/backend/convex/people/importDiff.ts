@@ -1,3 +1,5 @@
+import type { EmploymentType } from "@workspace/constants"
+
 // Pure import-diff logic, shared by the real import (upsert patch, salary
 // idempotency) and the review step's dry-run preview (previewImport), so the
 // preview can never disagree with what the import would actually do.
@@ -16,6 +18,7 @@ export const PERSON_IMPORT_OPTIONAL_FIELDS = [
   "statisticalCode",
   "department",
   "title",
+  "employmentType",
 ] as const
 export type PersonImportOptionalField =
   (typeof PERSON_IMPORT_OPTIONAL_FIELDS)[number]
@@ -31,6 +34,7 @@ export interface PersonImportValues {
   statisticalCode?: string
   department?: string
   title?: string
+  employmentType?: EmploymentType
 }
 
 // The stored side of the comparison (structural subset of the people doc).

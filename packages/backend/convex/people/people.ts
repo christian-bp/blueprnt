@@ -25,6 +25,15 @@ const optionalPersonArgs = {
   statisticalCode: v.optional(v.string()),
   department: v.optional(v.string()),
   title: v.optional(v.string()),
+  // Anställningsform. Canonical values mirror @workspace/constants EMPLOYMENT_TYPES.
+  employmentType: v.optional(
+    v.union(
+      v.literal("permanent"),
+      v.literal("fixedTerm"),
+      v.literal("substitute"),
+      v.literal("hourly")
+    )
+  ),
 }
 
 // Tenant-isolation assert for a point-read: throws notFound when the person
@@ -53,6 +62,7 @@ function nonPiiFields(person: Partial<Doc<"people">>): Record<string, unknown> {
     isManager: person.isManager ?? null,
     statisticalCode: person.statisticalCode ?? null,
     department: person.department ?? null,
+    employmentType: person.employmentType ?? null,
     archivedAt: person.archivedAt ?? null,
   }
 }
@@ -107,6 +117,9 @@ export const createPerson = orgMutation({
         : {}),
       ...(args.department !== undefined ? { department: args.department } : {}),
       ...(args.title !== undefined ? { title: args.title } : {}),
+      ...(args.employmentType !== undefined
+        ? { employmentType: args.employmentType }
+        : {}),
     })
 
     // Build the non-PII snapshot for the audit row. We pass the args directly
@@ -119,6 +132,7 @@ export const createPerson = orgMutation({
       isManager: args.isManager ?? null,
       statisticalCode: args.statisticalCode ?? null,
       department: args.department ?? null,
+      employmentType: args.employmentType ?? null,
       archivedAt: null,
     }
 
@@ -153,6 +167,14 @@ export const upsertPersonByExternalRef = internalMutation({
     statisticalCode: v.optional(v.string()),
     department: v.optional(v.string()),
     title: v.optional(v.string()),
+    employmentType: v.optional(
+      v.union(
+        v.literal("permanent"),
+        v.literal("fixedTerm"),
+        v.literal("substitute"),
+        v.literal("hourly")
+      )
+    ),
   },
   // The outcome tells the import what actually happened, so it can report
   // new vs updated vs already-up-to-date people separately: "created" for
@@ -199,6 +221,9 @@ export const upsertPersonByExternalRef = internalMutation({
           ? { department: args.department }
           : {}),
         ...(args.title !== undefined ? { title: args.title } : {}),
+        ...(args.employmentType !== undefined
+          ? { employmentType: args.employmentType }
+          : {}),
       })
 
       const snapshot: Record<string, unknown> = {
@@ -209,6 +234,7 @@ export const upsertPersonByExternalRef = internalMutation({
         isManager: args.isManager ?? null,
         statisticalCode: args.statisticalCode ?? null,
         department: args.department ?? null,
+        employmentType: args.employmentType ?? null,
         archivedAt: null,
       }
 
@@ -241,6 +267,7 @@ export const upsertPersonByExternalRef = internalMutation({
       statisticalCode: args.statisticalCode,
       department: args.department,
       title: args.title,
+      employmentType: args.employmentType,
     })
 
     // No changes: no write, no audit row.

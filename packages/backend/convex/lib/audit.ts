@@ -392,6 +392,7 @@ export const PERSON_AUDIT_FIELDS = [
   "isManager",
   "statisticalCode",
   "department",
+  "employmentType",
   "archivedAt",
 ] as const
 

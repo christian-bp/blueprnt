@@ -37,6 +37,14 @@ export const getImportBaseline = internalQuery({
       statisticalCode: v.optional(v.string()),
       department: v.optional(v.string()),
       title: v.optional(v.string()),
+      employmentType: v.optional(
+        v.union(
+          v.literal("permanent"),
+          v.literal("fixedTerm"),
+          v.literal("substitute"),
+          v.literal("hourly")
+        )
+      ),
       latestSalary: v.union(
         v.object({
           payYear: v.number(),
@@ -92,6 +100,9 @@ export const getImportBaseline = internalQuery({
           ? { department: person.department }
           : {}),
         ...(person.title !== undefined ? { title: person.title } : {}),
+        ...(person.employmentType !== undefined
+          ? { employmentType: person.employmentType }
+          : {}),
         latestSalary:
           latest !== null
             ? {

@@ -40,6 +40,14 @@ describe("personImportPatch", () => {
     })
     expect(patch).toEqual({ displayName: "Anna Berg" })
   })
+
+  it("emits an employmentType change in the person patch", () => {
+    const patch = personImportPatch(
+      { displayName: "A", gender: "Kvinna" },
+      { displayName: "A", gender: "Kvinna", employmentType: "permanent" }
+    )
+    expect(patch.employmentType).toBe("permanent")
+  })
 })
 
 describe("sameSalaryValues", () => {

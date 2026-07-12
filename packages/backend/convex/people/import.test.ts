@@ -267,11 +267,13 @@ describe("importPayroll (happy path)", () => {
       expect(pay.currency).toBe("SEK")
       expect(pay.payYear).toBe(2026)
 
-      // Components: benefitInKind=5000, variable=100000.
+      // Components: benefitInKind=5000 (monthly by default, unchanged).
+      // variable=100000 is annual by default (DEFAULT_BASIS_BY_FIELD), so it
+      // is normalized to a monthly amount (100000 / 12) at ingestion.
       const benefitComp = pay.components.find((c) => c.kind === "benefitInKind")
       const variableComp = pay.components.find((c) => c.kind === "variable")
       expect(benefitComp?.monthlyAmount).toBe(5000)
-      expect(variableComp?.monthlyAmount).toBe(100000)
+      expect(variableComp?.monthlyAmount).toBeCloseTo(100000 / 12)
     })
   })
 
@@ -1163,6 +1165,64 @@ describe("importPayroll skipExternalRefs", () => {
       )
       expect(salaries).toHaveLength(1)
       expect(salaries[0]?.basicMonthly).toBe(50000)
+    })
+  })
+})
+
+describe("importPayroll (basis + components + employmentType)", () => {
+  // Befattning/title is mapped even though this test does not exercise it:
+  // title is a required field (CANONICAL_FIELDS), so omitting it would block
+  // the whole import before basis/component normalization is ever reached.
+  const CSV = [
+    "Anstnr,Kon,Befattning,Manadslon,Arsbonus,Anstallningsform",
+    "E1,Kvinna,Utvecklare,40000,120000,Tillsvidare",
+  ].join("\n")
+  const MAP: string[][] = [
+    ["Anstnr", "externalRef"],
+    ["Kon", "gender"],
+    ["Befattning", "title"],
+    ["Manadslon", "basicMonthly"],
+    ["Arsbonus", "bonus"],
+    ["Anstallningsform", "employmentType"],
+  ]
+
+  it("divides an annual bonus by 12 and stores it as a separate component", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: CSV,
+      columnMap: MAP,
+      importId: "run-basis-1",
+      basisMap: { basicMonthly: "monthly", bonus: "annual" },
+    })
+
+    await t.run(async (ctx) => {
+      const pay = await ctx.db.query("payRecords").collect()
+      expect(pay).toHaveLength(1)
+      expect(pay[0]?.basicMonthly).toBe(40000)
+      const bonus = pay[0]?.components.find((c) => c.kind === "bonus")
+      expect(bonus?.monthlyAmount).toBe(10000) // 120000 / 12
+
+      const people = await ctx.db.query("people").collect()
+      expect(people[0]?.employmentType).toBe("permanent")
+    })
+  })
+
+  it("defaults basicMonthly to monthly when basisMap omits it", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: CSV,
+      columnMap: MAP,
+      importId: "run-basis-2",
+      // no basisMap: base salary falls back to DEFAULT_BASIS_BY_FIELD (monthly)
+    })
+    await t.run(async (ctx) => {
+      const pay = await ctx.db.query("payRecords").collect()
+      expect(pay[0]?.basicMonthly).toBe(40000)
     })
   })
 })

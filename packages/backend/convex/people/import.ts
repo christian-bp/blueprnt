@@ -17,6 +17,13 @@ import {
   tokenizeCsv,
   validateFile,
 } from "@workspace/import"
+import {
+  DEFAULT_BASIS_BY_FIELD,
+  PAY_COMPONENT_KINDS,
+  normalizeEmploymentType,
+  toMonthly,
+  type PayBasis,
+} from "@workspace/constants"
 import { internal } from "../_generated/api"
 import { action, type ActionCtx } from "../_generated/server"
 import { requireOrgAdminAction } from "../lib/functions"
@@ -113,6 +120,7 @@ type PrepareArgs = {
   columnMap: string[][]
   payYear?: number
   genderOverrides?: string[][]
+  basisMap?: Record<string, PayBasis>
 }
 
 type PreparedImport =
@@ -242,11 +250,16 @@ async function prepareImport(
   const statisticalCodeCol = colOf("statisticalCode")
   const departmentCol = colOf("department")
   const titleCol = colOf("title")
+  const employmentTypeCol = colOf("employmentType")
   const basicMonthlyCol = colOf("basicMonthly")
   const currencyCol = colOf("currency")
-  const variableCol = colOf("variable")
-  const benefitInKindCol = colOf("benefitInKind")
   const payYearCol = colOf("payYear")
+
+  const basisMap = args.basisMap
+  const basisOf = (key: string): PayBasis =>
+    (basisMap?.[key] as PayBasis | undefined) ??
+    DEFAULT_BASIS_BY_FIELD[key as keyof typeof DEFAULT_BASIS_BY_FIELD] ??
+    "monthly"
 
   // Remove from skippedRowIndices any row whose ONLY hard blocker is
   // unresolvedGender AND which has a valid gender override. Such rows must
@@ -334,13 +347,20 @@ async function prepareImport(
     const statisticalCode = cell(statisticalCodeCol) || undefined
     const department = cell(departmentCol) || undefined
     const title = cell(titleCol) || undefined
+    const employmentType =
+      normalizeEmploymentType(cell(employmentTypeCol)) ?? undefined
 
     // Salary fields. An unparsable basicMonthly drops the salary only (the
-    // person still imports).
+    // person still imports). The basis (monthly vs annual) is resolved per
+    // field: the wizard-supplied basisMap takes precedence, falling back to
+    // DEFAULT_BASIS_BY_FIELD, so an annual column is normalized to monthly
+    // before it is stored (payRecords always stores monthly amounts).
     const basicMonthlyRaw = cell(basicMonthlyCol)
-    const basicMonthly = basicMonthlyRaw
-      ? (parseMoney(basicMonthlyRaw) ?? null)
-      : null
+    const parsedBasic = basicMonthlyRaw ? parseMoney(basicMonthlyRaw) : null
+    const basicMonthly =
+      parsedBasic === null
+        ? null
+        : toMonthly(parsedBasic, basisOf("basicMonthly"))
 
     let salary: NormalizedImportRow["salary"] = null
     if (basicMonthly !== null) {
@@ -364,21 +384,22 @@ async function prepareImport(
         payYear = new Date().getFullYear()
       }
 
-      // Build compensation components from optionally-mapped columns.
+      // Build compensation components from every optionally-mapped component
+      // column (field key === kind), normalizing each to a monthly amount via
+      // its resolved basis so annual-flavoured columns (e.g. bonus) divide by
+      // 12 before storage.
       const components: Array<{ kind: string; monthlyAmount: number }> = []
-      const variableRaw = cell(variableCol)
-      if (variableRaw) {
-        const amount = parseMoney(variableRaw)
-        if (amount !== null && amount > 0) {
-          components.push({ kind: "variable", monthlyAmount: amount })
-        }
-      }
-      const benefitRaw = cell(benefitInKindCol)
-      if (benefitRaw) {
-        const amount = parseMoney(benefitRaw)
-        if (amount !== null && amount > 0) {
-          components.push({ kind: "benefitInKind", monthlyAmount: amount })
-        }
+      for (const kind of PAY_COMPONENT_KINDS) {
+        const col = colOf(kind)
+        if (col === undefined) continue
+        const raw = cell(col)
+        if (!raw) continue
+        const parsed = parseMoney(raw)
+        if (parsed === null || parsed <= 0) continue
+        components.push({
+          kind,
+          monthlyAmount: toMonthly(parsed, basisOf(kind)),
+        })
       }
 
       salary = { payYear, basicMonthly, currency, components }
@@ -397,6 +418,7 @@ async function prepareImport(
         ...(statisticalCode !== undefined ? { statisticalCode } : {}),
         ...(department !== undefined ? { department } : {}),
         ...(title !== undefined ? { title } : {}),
+        ...(employmentType !== undefined ? { employmentType } : {}),
       },
       salary,
     })
@@ -430,6 +452,10 @@ async function prepareImport(
 //               rows import instead of being skipped as unresolvedGender.
 //   skipExternalRefs - Rows to leave out entirely (person AND salary), e.g.
 //               the review step's name-mismatch guard. Counted as skipped.
+//   basisMap  - Optional canonical-field-key -> "monthly"|"annual" map, so the
+//               wizard can tell the ingest an annual-flavoured column (e.g. an
+//               annual bonus) needs dividing by 12. Falls back to
+//               DEFAULT_BASIS_BY_FIELD, then "monthly", when a field is absent.
 //
 // Returns:
 //   ok:false + validation when REQUIRED fields are unmapped (nothing persisted).
@@ -449,6 +475,9 @@ export const importPayroll = action({
     // Identifies this run in the importProgress table so the wizard's
     // importing screen never shows a stale row from an earlier run.
     importId: v.optional(v.string()),
+    basisMap: v.optional(
+      v.record(v.string(), v.union(v.literal("monthly"), v.literal("annual")))
+    ),
   },
   returns: importResultValidator,
   handler: async (ctx, args) => {
@@ -567,7 +596,12 @@ export const importPayroll = action({
     }
     await ctx.runMutation(
       internal.people.importProfile.internalSaveImportMappingProfile,
-      { orgId: args.orgId, actorId, columnMap: profileColumnMap }
+      {
+        orgId: args.orgId,
+        actorId,
+        columnMap: profileColumnMap,
+        ...(args.basisMap !== undefined ? { basisMap: args.basisMap } : {}),
+      }
     )
 
     // Set the authoritative employee count.
@@ -677,8 +711,10 @@ type ImportPreview = {
 
 // Dry-runs the import for the review step: the SAME preparation pipeline as
 // importPayroll, diffed against the stored people + latest salaries via the
-// shared importDiff rules, writing nothing. What this returns is, by
-// construction, what importPayroll would do with the same arguments.
+// shared importDiff rules, writing nothing. It takes the same arguments as
+// importPayroll (including basisMap, so the preview's monthly/annual
+// normalization matches the real import), and what this returns is, by
+// construction, what importPayroll would do with them.
 export const previewImport = action({
   args: {
     orgId: v.string(),
@@ -686,6 +722,9 @@ export const previewImport = action({
     columnMap: v.array(v.array(v.string())),
     payYear: v.optional(v.number()),
     genderOverrides: v.optional(v.array(v.array(v.string()))),
+    basisMap: v.optional(
+      v.record(v.string(), v.union(v.literal("monthly"), v.literal("annual")))
+    ),
   },
   returns: importPreviewValidator,
   handler: async (ctx, args): Promise<ImportPreview> => {

@@ -146,6 +146,21 @@ describe("saveImportMappingProfile + getImportMappingProfile", () => {
     })
   })
 
+  it("round-trips basisMap on the mapping profile", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    await asAdmin.mutation(api.people.importProfile.saveImportMappingProfile, {
+      orgId,
+      columnMap: { basicMonthly: "Manadslon", bonus: "Arsbonus" },
+      basisMap: { basicMonthly: "monthly", bonus: "annual" },
+    })
+    const profile = await asAdmin.query(
+      api.people.importProfile.getImportMappingProfile,
+      { orgId }
+    )
+    expect(profile?.basisMap?.bonus).toBe("annual")
+  })
+
   it("cross-org isolation: org B cannot see org A's profile", async () => {
     const t = initConvexTest()
     const { orgId: orgA, asAdmin: asAdminA } = await seedOrg(t, "hr-a@acme.se")

@@ -40,6 +40,7 @@ describe("createPerson", () => {
         country: "SE",
         ftePercent: 100,
         department: "Engineering",
+        employmentType: "permanent",
       }
     )
 
@@ -68,6 +69,7 @@ describe("createPerson", () => {
       expect(changes).toHaveProperty("country")
       expect(changes).toHaveProperty("ftePercent")
       expect(changes).toHaveProperty("department")
+      expect(changes).toHaveProperty("employmentType")
 
       // ...and must NOT contain PII fields.
       expect(changes).not.toHaveProperty("displayName")
