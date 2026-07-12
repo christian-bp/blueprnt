@@ -1,0 +1,56 @@
+packages/i18n/messages/en.json
+  s_3ee8e687b1c393::t_506f044927b0b9 1632
+packages/i18n/messages/nb.json
+  s_3ee8e687b1c393::t_88ca417824da28 1632
+apps/dashboard/components/people/people-section.tsx
+  s_3ee8e687b1c393::t_0b72df3c667232 351
+  s_3ee8e687b1c393::t_a58f6d084864f5 69
+  s_3ee8e687b1c393::t_1b9e597726d9ff 155,159,166
+apps/dashboard/components/people/people-section.test.tsx
+  s_3ee8e687b1c393::t_75123f856caa79 205
+  s_3ee8e687b1c393::t_56e6be1daea760 166
+apps/dashboard/components/people/pay-comparison-section.tsx
+  s_3ee8e687b1c393::t_9c71f95242670e 133-135,149
+  s_3ee8e687b1c393::t_cf997cef937490 77-80
+packages/i18n/messages/sv.json
+  s_3ee8e687b1c393::t_124545fcf584cb 1632
+packages/backend/convex/accounts/mirrors.ts
+  s_3ee8e687b1c393::t_8b222e4383cd28 260-262
+apps/dashboard/lib/pay-comparison.ts
+  s_3ee8e687b1c393::t_e1f6ff57659b68 5
+apps/dashboard/components/people/classify/classify-person-rows.tsx
+  s_3ee8e687b1c393::t_e7fc8934ee8935 103
+apps/dashboard/components/people/pay-comparison-section.test.tsx
+  s_3ee8e687b1c393::t_37e6e514487d01 53-57
+packages/backend/convex/people/pay.ts
+  s_3ee8e687b1c393::t_d080bd3e14ba15 373-379
+  s_3ee8e687b1c393::t_2d3584652aa391 406-407
+apps/dashboard/components/people/classify/classify-title-table.test.tsx
+  s_3ee8e687b1c393::t_943799b36d32b7 186
+apps/dashboard/components/people/add-salary-dialog.test.tsx
+  s_3ee8e687b1c393::t_a3b6bad5b08b1a 24
+apps/dashboard/app/(app)/organization/general/page.tsx
+  s_3ee8e687b1c393::t_2b6fb05abdd6d5 26-33
+packages/i18n/messages/da.json
+  s_3ee8e687b1c393::t_777ebe3894fbc4 1632
+packages/i18n/messages/fi.json
+  s_3ee8e687b1c393::t_fbe62e3b9ba2d4 1632
+apps/dashboard/app/(app)/people/classify/page.tsx
+  s_3ee8e687b1c393::t_f2d173d50de261 58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "a4af8ea78955bcbd858ce1233e9ccfaf371a2b0d",
+  "prompts": {},
+  "sessions": {
+    "s_3ee8e687b1c393": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "105251fe-0801-4944-83b7-9bf37751d22b",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
