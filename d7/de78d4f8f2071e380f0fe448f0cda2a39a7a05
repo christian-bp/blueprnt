@@ -1,0 +1,24 @@
+docs/adr/0011-kartlaggning-livscykel-fryst-datalager.md
+  s_6ea4434f5c3a0d::t_81cba0a931703b 3
+  s_6ea4434f5c3a0d::t_5163172cec8456 1-2,4-23,25-27,29-39
+  s_6ea4434f5c3a0d::t_dc20e3c7df81de 24
+  s_6ea4434f5c3a0d::t_26f9d82d406e27 28
+CLAUDE.md
+  s_6ea4434f5c3a0d::t_6c4ab9bcb732cd 44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "d7de78d4f8f2071e380f0fe448f0cda2a39a7a05",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
