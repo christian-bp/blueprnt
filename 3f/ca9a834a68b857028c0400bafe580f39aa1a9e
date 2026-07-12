@@ -1,0 +1,40 @@
+packages/import/src/validate.test.ts
+  s_6ea4434f5c3a0d::t_8e9ad49e2a3df4 185-194
+  s_6ea4434f5c3a0d::t_4ccf77c8803c77 43-48
+  s_6ea4434f5c3a0d::t_30941120435d83 40-42,49
+  s_6ea4434f5c3a0d::t_5276502171c05e 195-196
+packages/import/package.json
+  s_6ea4434f5c3a0d::t_59fc49562c344e 17
+packages/import/src/fields.test.ts
+  s_6ea4434f5c3a0d::t_a7d7eb9480e292 213-222
+  s_6ea4434f5c3a0d::t_263c77b8f5aa48 4
+  s_6ea4434f5c3a0d::t_27fd771b113150 223
+packages/import/src/fields.ts
+  s_6ea4434f5c3a0d::t_95448b233d28b2 398-424
+  s_6ea4434f5c3a0d::t_e9da7ba521c832 15
+  s_6ea4434f5c3a0d::t_56d02e57021456 283-360
+  s_6ea4434f5c3a0d::t_180546c0f5200d 257-260
+  s_6ea4434f5c3a0d::t_e08f20c4c59161 3-4
+packages/import/src/index.ts
+  s_6ea4434f5c3a0d::t_62a573b66f0926 2,4,15
+packages/import/src/detect.test.ts
+  s_6ea4434f5c3a0d::t_ebd63f66f83d0b 396-409
+bun.lock
+  s_6ea4434f5c3a0d::t_776747b434275d 161
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "3fca9a834a68b857028c0400bafe580f39aa1a9e",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
