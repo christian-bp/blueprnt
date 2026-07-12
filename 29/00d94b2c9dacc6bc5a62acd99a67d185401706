@@ -1,0 +1,19 @@
+docs/superpowers/plans/2026-07-12-role-track-change.md
+  s_6ea4434f5c3a0d::t_f8b7dd8b90fd8c 1-405
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "2900d94b2c9dacc6bc5a62acd99a67d185401706",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
