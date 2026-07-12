@@ -404,7 +404,6 @@ export const ANNUAL_HINT: readonly string[] = [
   "arslonn",
   "annualsalary",
   "yearlysalary",
-  "grosssalary",
   "arsbonus",
   "annualbonus",
   "arsinkomst",

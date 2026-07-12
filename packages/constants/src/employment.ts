@@ -17,6 +17,7 @@ const EMPLOYMENT_TYPE_SYNONYMS: Record<EmploymentType, readonly string[]> = {
   fixedTerm: [
     "visstid",
     "tidsbegransad",
+    "tidsbegraenset",
     "temporary",
     "fixedterm",
     "midlertidig",

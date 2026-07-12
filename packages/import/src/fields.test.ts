@@ -220,4 +220,13 @@ describe("defaultBasis", () => {
     expect(defaultBasis("basicMonthly", "Årslön")).toBe("annual")
     expect(defaultBasis("basicMonthly", "Annual salary")).toBe("annual")
   })
+  it("treats a gross-salary header as monthly (gross denotes pre-tax, not a period)", () => {
+    // "grosssalary" is a basicMonthly synonym but NOT an annual hint: a column
+    // headed "Gross Salary" must keep the field's monthly default, not be
+    // divided by 12. Guards the inverted-12x regression.
+    expect(defaultBasis("basicMonthly", "Gross Salary")).toBe("monthly")
+    expect(defaultBasis("basicMonthly", "Gross Salary (per month)")).toBe(
+      "monthly"
+    )
+  })
 })

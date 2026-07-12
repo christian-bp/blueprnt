@@ -1225,4 +1225,33 @@ describe("importPayroll (basis + components + employmentType)", () => {
       expect(pay[0]?.basicMonthly).toBe(40000)
     })
   })
+
+  it("divides an annual base-salary column by 12 (guards the headline ÷12 fix)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    // An annual base-salary column with basisMap { basicMonthly: "annual" }
+    // must be stored as monthly. This kills the mutation "drop toMonthly on
+    // basicMonthly": that would store 480000 and fail here.
+    const annualCsv = [
+      "Anstnr,Kon,Befattning,Arslon",
+      "E1,Kvinna,Utvecklare,480000",
+    ].join("\n")
+    await asAdmin.action(api.people.import.importPayroll, {
+      orgId,
+      csvText: annualCsv,
+      columnMap: [
+        ["Anstnr", "externalRef"],
+        ["Kon", "gender"],
+        ["Befattning", "title"],
+        ["Arslon", "basicMonthly"],
+      ],
+      importId: "run-basis-annual-base",
+      basisMap: { basicMonthly: "annual" },
+    })
+    await t.run(async (ctx) => {
+      const pay = await ctx.db.query("payRecords").collect()
+      expect(pay).toHaveLength(1)
+      expect(pay[0]?.basicMonthly).toBe(40000) // 480000 / 12
+    })
+  })
 })

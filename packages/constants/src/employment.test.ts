@@ -6,6 +6,7 @@ describe("normalizeEmploymentType", () => {
     expect(normalizeEmploymentType("Tillsvidare")).toBe("permanent")
     expect(normalizeEmploymentType("fast anställning")).toBe("permanent")
     expect(normalizeEmploymentType("Visstid")).toBe("fixedTerm")
+    expect(normalizeEmploymentType("Tidsbegrænset")).toBe("fixedTerm")
     expect(normalizeEmploymentType("Vikariat")).toBe("substitute")
     expect(normalizeEmploymentType("Timanställd")).toBe("hourly")
     expect(normalizeEmploymentType("Permanent")).toBe("permanent")
