@@ -10,7 +10,6 @@ import {
 } from "@workspace/ui/components/select"
 import { useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
-import { displayNameFor } from "@/lib/person-display"
 import { type ClassifyPersonRow, resolveLevel } from "./classify-title-table"
 import { onSelectValue } from "@/lib/select"
 
@@ -40,7 +39,6 @@ export interface ClassifyPersonRowsProps {
   // Map<personId, selectedLevel> - controlled by the parent
   selectedLevel: Map<string, string>
   onLevelChange: (personId: string, level: string) => void
-  pseudonymize: boolean
 }
 
 // ---------------------------------------------------------------------------
@@ -62,11 +60,9 @@ export function ClassifyPersonRows({
   trackKey,
   selectedLevel,
   onLevelChange,
-  pseudonymize,
 }: ClassifyPersonRowsProps) {
   const t = useTranslations("dashboard.classify")
   const tHelp = useTranslations("dashboard.help")
-  const tOrg = useTranslations("dashboard.organization.general")
 
   // Capture today once per render for tenure computation (display-only;
   // new Date() is acceptable in a client component per the task brief).
@@ -104,9 +100,7 @@ export function ClassifyPersonRows({
           const currentLevel =
             selectedLevel.get(person.personId) ?? resolveLevel(person, trackKey)
 
-          const name = displayNameFor(person, pseudonymize, (ref) =>
-            tOrg("pseudonymTemplate", { ref })
-          )
+          const name = person.displayName
 
           const tenure = tenureYears(person.employmentStartDate, today)
 

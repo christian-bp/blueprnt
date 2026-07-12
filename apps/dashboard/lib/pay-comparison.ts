@@ -2,13 +2,10 @@ import { TRACK_LEVELS } from "@workspace/constants"
 
 // One person's dot in the pay-comparison chart, mirroring the point shape the
 // getRolePayComparison query returns. Amounts are FTE-adjusted (basic +
-// variable = amount); identity (displayName + externalRef) is present so the
-// tooltip can name the person, with pseudonymization applied client-side per
-// the org setting (as in the People register).
+// variable = amount); displayName lets the tooltip label the person.
 export type PayComparisonPoint = {
   publicId: string
   displayName: string
-  externalRef: string | null
   gender: "Man" | "Kvinna"
   level: string
   basic: number

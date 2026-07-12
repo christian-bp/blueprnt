@@ -1629,10 +1629,7 @@
         "industryLabel": "Bransje",
         "industryPlaceholder": "Velg en bransje",
         "save": "Lagre endringer",
-        "error": "Kunne ikke lagre organisasjonen. Prøv igjen.",
-        "pseudonymizeLabel": "Pseudonymiser ansattes navn",
-        "pseudonymizeDescription": "Erstatt ansattes navn med et referansenummer i alle visninger. Dataene endres ikke; bare visningen maskeres.",
-        "pseudonymTemplate": "Ansatt #{ref}"
+        "error": "Kunne ikke lagre organisasjonen. Prøv igjen."
       },
       "logo": {
         "title": "Logo",

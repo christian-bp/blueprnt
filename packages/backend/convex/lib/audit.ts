@@ -362,7 +362,6 @@ export const SETTINGS_AUDIT_FIELDS = [
   "language",
   "employeeCount",
   "industry",
-  "pseudonymizeNames",
 ] as const
 
 // The job profile fields captured when a role is created (createRole and the

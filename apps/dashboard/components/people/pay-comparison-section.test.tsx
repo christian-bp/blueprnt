@@ -32,7 +32,6 @@ function point(
   return {
     publicId: "pub-x",
     displayName: "Bo Berg",
-    externalRef: null,
     gender: "Man",
     level: "IC2",
     basic: 42000,
@@ -51,18 +50,11 @@ function renderSection() {
   )
 }
 
-// Route both queries the section reads: the comparison payload and the org
-// settings (pseudonymize flag). Settings default to a resolved object so the
-// chart is never stuck behind the settings-loading skeleton.
-function onQueries(
-  comparison: unknown,
-  settings: unknown = { pseudonymizeNames: false }
-) {
-  onQuery((ref) => {
-    if (ref === "people.pay.getRolePayComparison") return comparison
-    if (ref === "accounts.organization.getOrganizationSettings") return settings
-    return undefined
-  })
+// Route the one query the section reads: the comparison payload.
+function onQueries(comparison: unknown) {
+  onQuery((ref) =>
+    ref === "people.pay.getRolePayComparison" ? comparison : undefined
+  )
 }
 
 describe("PayComparisonSection", () => {
@@ -132,28 +124,6 @@ describe("PayComparisonSection", () => {
     expect(screen.queryByText(m.onlyPerson)).toBeNull()
   })
 
-  it("holds a skeleton until the pseudonymize setting resolves", () => {
-    // Settings genuinely unresolved: route the comparison but leave the
-    // settings query undefined (a default arg to onQueries would resolve it).
-    onQuery((ref) =>
-      ref === "people.pay.getRolePayComparison"
-        ? {
-            status: "ready",
-            currency: "SEK",
-            excludedCount: 0,
-            points: [
-              point({ level: "IC3", isSelf: true }),
-              point({ level: "IC2", isSelf: false }),
-            ],
-          }
-        : undefined
-    )
-    renderSection()
-    // Chart chrome absent, skeleton present, while settings are unresolved.
-    expect(document.querySelector("[data-chart]")).toBeNull()
-    expect(document.querySelector('[data-slot="skeleton"]')).not.toBeNull()
-  })
-
   it("renders the chart, footnote, exclusion line, and a Man/Woman legend for 2+ points", () => {
     onQueries({
       status: "ready",
@@ -204,7 +174,6 @@ describe("PayComparisonSection", () => {
 function renderTooltip(props: {
   point: PayComparisonPoint
   selfAmount: number
-  pseudonymize?: boolean
 }) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
@@ -212,7 +181,6 @@ function renderTooltip(props: {
         point={props.point}
         selfAmount={props.selfAmount}
         currency="SEK"
-        pseudonymize={props.pseudonymize ?? false}
       />
     </NextIntlClientProvider>
   )
@@ -267,20 +235,6 @@ describe("PayComparisonTooltip", () => {
     expect(selfName).toBeDefined()
     expect(selfName.className).toContain("text-brand")
     expect(screen.queryByText(/vs this person/)).toBeNull()
-  })
-
-  it("pseudonymizes the peer name when the org setting is on", () => {
-    renderTooltip({
-      point: point({
-        displayName: "Bo Berg",
-        externalRef: "E-42",
-        isSelf: false,
-      }),
-      selfAmount: 60000,
-      pseudonymize: true,
-    })
-    expect(screen.queryByText("Bo Berg")).toBeNull()
-    expect(screen.getByText("Employee #E-42")).toBeDefined()
   })
 
   it("shows only the total, without the split, when there is no variable pay", () => {

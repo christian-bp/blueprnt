@@ -57,7 +57,6 @@ import {
   TableSkeleton,
   type TableSkeletonColumn,
 } from "@/components/table-skeleton"
-import { displayNameFor } from "@/lib/person-display"
 import { onSelectValue } from "@/lib/select"
 
 // The people list surface. Displays active (non-archived) people imported from
@@ -66,11 +65,8 @@ import { onSelectValue } from "@/lib/select"
 // Classification is still DONE on the Classify tab; here it only surfaces as a
 // role filter (over every created role) and, while narrowing by role, a
 // "Suggested" badge on people whose assignment is not yet confirmed.
-// The pseudonymizeNames org setting is applied to the name cell.
 
-// One table row with the RESOLVED display name: pseudonymization is applied
-// up front so search matches exactly what is shown, never the hidden real
-// name.
+// One table row for a person.
 export interface PeopleTableRow {
   personId: string
   publicId: string
@@ -147,34 +143,27 @@ export function PeopleSection() {
   const t = useTranslations("dashboard.people")
   const tToolbar = useTranslations("dashboard.people.toolbar")
   const tGender = useTranslations("dashboard.people.gender")
-  const tOrg = useTranslations("dashboard.organization.general")
   const { orgId } = useOrganization()
   const locale = useLocale()
 
   const people = useQuery(api.people.people.listPeople, { orgId })
-  const settings = useQuery(api.accounts.organization.getOrganizationSettings, {
-    orgId,
-  })
   // All created roles are the role-filter options (not just roles that happen
   // to have people), so the filter always offers the full set.
   const roles = useQuery(api.assessment.roles.listRoles, { orgId, locale })
 
   const rows = useMemo<PeopleTableRow[]>(() => {
-    if (people === undefined || settings === undefined) return []
-    const pseudonymize = settings?.pseudonymizeNames ?? false
+    if (people === undefined) return []
     return people.map((person) => ({
       personId: String(person.personId),
       publicId: person.publicId,
-      name: displayNameFor(person, pseudonymize, (ref) =>
-        tOrg("pseudonymTemplate", { ref })
-      ),
+      name: person.displayName,
       gender: person.gender ?? null,
       department: person.department ?? null,
       ftePercent: person.ftePercent ?? null,
       roleId: person.roleId !== null ? String(person.roleId) : null,
       levelSource: person.levelSource,
     }))
-  }, [people, settings, tOrg])
+  }, [people])
 
   const [globalFilter, setGlobalFilter] = useState("")
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -359,7 +348,7 @@ export function PeopleSection() {
     </TableHeader>
   )
 
-  const loading = people === undefined || settings === undefined
+  const loading = people === undefined
 
   // Toolbar: search + the department filter; the counter appears only while
   // something is narrowing the table (mirrors the role register's toolbar).

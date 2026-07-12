@@ -183,11 +183,7 @@ const NO_TITLE_GROUP: ClassifyTitleGroup = {
   ],
 }
 
-function renderTable(
-  groups = [HIGH_GROUP],
-  roles = ROLES,
-  pseudonymize = false
-) {
+function renderTable(groups = [HIGH_GROUP], roles = ROLES) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <form>
@@ -196,7 +192,6 @@ function renderTable(
           groups={groups}
           roles={roles}
           tracks={TRACKS}
-          pseudonymize={pseudonymize}
         />
       </form>
     </NextIntlClientProvider>

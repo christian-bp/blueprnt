@@ -160,17 +160,13 @@ const BY_TITLE: ClassifyTitleGroup[] = [
   },
 ]
 
-const SETTINGS = { pseudonymizeNames: false }
-
 function queryRouter(
   ref: string,
   people = PEOPLE,
-  byTitle = BY_TITLE,
-  settings: { pseudonymizeNames: boolean } | undefined = SETTINGS
+  byTitle = BY_TITLE
 ): unknown {
   if (ref === "people.people.listPeople") return people
   if (ref === "people.classificationQueries.listPeopleByTitle") return byTitle
-  if (ref === "accounts.organization.getOrganizationSettings") return settings
   if (ref === "assessment.roles.listRoles") return ROLES
   return []
 }
@@ -206,7 +202,7 @@ describe("PeopleSection", () => {
   })
 
   it("renders the empty state with an import CTA when people returns []", () => {
-    onQuery((ref) => queryRouter(ref, [], [], SETTINGS))
+    onQuery((ref) => queryRouter(ref, []))
     renderSection()
     expect(screen.getByText(m.empty)).toBeDefined()
     // Both the header link and the empty-state CTA link are present.
@@ -236,25 +232,6 @@ describe("PeopleSection", () => {
     // Alice Svensson links by her short publicId, never the internal id.
     const link = screen.getByRole("link", { name: "Alice Svensson" })
     expect((link as HTMLAnchorElement).href).toContain("/people/pub-p1")
-  })
-
-  it("renders real name when pseudonymizeNames is false", () => {
-    onQuery((ref) =>
-      queryRouter(ref, PEOPLE, BY_TITLE, { pseudonymizeNames: false })
-    )
-    renderSection()
-    expect(screen.getByText("Alice Svensson")).toBeDefined()
-    expect(screen.queryByText("Employee #42")).toBeNull()
-  })
-
-  it("renders pseudonym when pseudonymizeNames is true and externalRef is set", () => {
-    onQuery((ref) =>
-      queryRouter(ref, PEOPLE, BY_TITLE, { pseudonymizeNames: true })
-    )
-    renderSection()
-    // Alice has externalRef "42" -> should show pseudonym
-    expect(screen.queryByText("Alice Svensson")).toBeNull()
-    expect(screen.getByText("Employee #42")).toBeDefined()
   })
 
   it("keeps the Import link in the header action area", () => {

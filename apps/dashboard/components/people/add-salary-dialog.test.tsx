@@ -21,7 +21,7 @@ vi.mock("convex/react", () => ({
   useMutation: () => setSalary,
   // The org settings query supplies the currency the amount fields display and
   // the mutation stores.
-  useQuery: () => ({ currency: "SEK", pseudonymizeNames: false }),
+  useQuery: () => ({ currency: "SEK" }),
 }))
 vi.mock("sonner", () => ({ toast: { success: toastSuccess, error: vi.fn() } }))
 vi.mock("next-intl", () => ({

@@ -36,9 +36,6 @@ export default function ClassifyPage() {
   })
   const roles = useQuery(api.assessment.roles.listRoles, { orgId, locale })
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
-  const settings = useQuery(api.accounts.organization.getOrganizationSettings, {
-    orgId,
-  })
 
   // Fire-once effect: run the classification engine for any titles that do not
   // yet have a suggestion row. The mutation is idempotent; the ref prevents a
@@ -58,12 +55,7 @@ export default function ClassifyPage() {
   // table so the two cannot drift independently; the per-column shapes mirror
   // the row's real controls (checkbox, chevron, select, badge, button) so the
   // silhouette and row height match the loaded state.
-  if (
-    groups === undefined ||
-    roles === undefined ||
-    model === undefined ||
-    settings === undefined
-  ) {
+  if (groups === undefined || roles === undefined || model === undefined) {
     return (
       <div className="space-y-4">
         <PageHeader title={t("heading")} description={t("description")} />
@@ -88,7 +80,6 @@ export default function ClassifyPage() {
         groups={groups}
         roles={roles}
         tracks={tracks}
-        pseudonymize={settings.pseudonymizeNames}
       />
     </div>
   )

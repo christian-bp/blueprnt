@@ -265,13 +265,11 @@ export function ClassifyTitleTable({
   groups,
   roles,
   tracks,
-  pseudonymize,
 }: {
   orgId: string
   groups: ClassifyTitleGroup[]
   roles: ClassifyRole[]
   tracks: ClassifyTrack[]
-  pseudonymize: boolean
 }) {
   const t = useTranslations("dashboard.classify")
   const tToast = useTranslations("dashboard.toast")
@@ -678,7 +676,6 @@ export function ClassifyTitleTable({
                             onLevelChange={(personId, level) =>
                               handleLevelChange(key, personId, level)
                             }
-                            pseudonymize={pseudonymize}
                           />
 
                           {/* The ONLY Confirm: it exists solely inside the

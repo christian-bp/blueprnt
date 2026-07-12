@@ -1629,10 +1629,7 @@
         "industryLabel": "Toimiala",
         "industryPlaceholder": "Valitse toimiala",
         "save": "Tallenna muutokset",
-        "error": "Organisaatiota ei voitu tallentaa. Yritä uudelleen.",
-        "pseudonymizeLabel": "Pseudonymisoi työntekijöiden nimet",
-        "pseudonymizeDescription": "Korvaa työntekijöiden nimet viitenumerolla kaikissa näkymissä. Tiedot eivät muutu; vain näyttö peitetään.",
-        "pseudonymTemplate": "Työntekijä #{ref}"
+        "error": "Organisaatiota ei voitu tallentaa. Yritä uudelleen."
       },
       "logo": {
         "title": "Logo",

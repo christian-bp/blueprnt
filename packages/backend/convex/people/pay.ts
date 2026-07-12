@@ -370,14 +370,13 @@ export const getCurrentSalary = orgQuery({
   },
 })
 
-// The person page's pay-comparison payload. Each point identifies a colleague
-// (displayName + externalRef, so the chart tooltip can name people and the
-// client can pseudonymize per the org setting, as the People register does),
-// carries the FTE-adjusted basic/variable split and pay year for the tooltip,
-// and the gender the chart colors dots by (the tool's core lens is the pay gap
-// between men and women; HR already sees gender in the People register). This
-// is an HR-only, org-scoped read; it never enters the audit trail (where
-// employee-identifying fields and salary are forbidden).
+// The person page's pay-comparison payload. Each point names a colleague
+// (displayName, so the chart tooltip can label people, as the People register
+// does), carries the FTE-adjusted basic/variable split and pay year for the
+// tooltip, and the gender the chart colors dots by (the tool's core lens is the
+// pay gap between men and women; HR already sees gender in the People
+// register). This is an HR-only, org-scoped read; it never enters the audit
+// trail (where employee-identifying fields and salary are forbidden).
 const payComparisonShape = v.union(
   v.object({ status: v.literal("unclassified") }),
   v.object({ status: v.literal("noSalary") }),
@@ -389,7 +388,6 @@ const payComparisonShape = v.union(
       v.object({
         publicId: v.string(),
         displayName: v.string(),
-        externalRef: v.union(v.string(), v.null()),
         gender: v.union(v.literal("Man"), v.literal("Kvinna")),
         level: v.string(),
         basic: v.number(),
@@ -405,8 +403,8 @@ const payComparisonShape = v.union(
 // One person's dot for the pay-comparison chart. All amounts are FTE-adjusted
 // (the chart's like-for-like basis, decision #3): basic and variable are each
 // grossed to full-time via the shared fteTotalMonthlyComp helper, and variable
-// is the remainder so the two always sum to the plotted total. Identity travels
-// with the point so the tooltip can name the person (client-side pseudonymize).
+// is the remainder so the two always sum to the plotted total. The name travels
+// with the point so the tooltip can label the person.
 function comparisonPoint(
   person: Doc<"people">,
   record: Doc<"payRecords">,
@@ -426,7 +424,6 @@ function comparisonPoint(
   return {
     publicId: person.publicId,
     displayName: person.displayName,
-    externalRef: person.externalRef ?? null,
     gender: person.gender,
     level,
     basic,

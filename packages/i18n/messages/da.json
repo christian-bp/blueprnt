@@ -1629,10 +1629,7 @@
         "industryLabel": "Branche",
         "industryPlaceholder": "Vælg en branche",
         "save": "Gem ændringer",
-        "error": "Kunne ikke gemme organisationen. Prøv igen.",
-        "pseudonymizeLabel": "Pseudonymiser medarbejdernavne",
-        "pseudonymizeDescription": "Erstat medarbejdernavne med et referencenummer i alle visninger. Dataene ændres ikke; kun visningen maskeres.",
-        "pseudonymTemplate": "Medarbejder #{ref}"
+        "error": "Kunne ikke gemme organisationen. Prøv igen."
       },
       "logo": {
         "title": "Logo",

@@ -257,9 +257,9 @@ export const seedOrganizationSettings = internalMutation({
           changes: buildChanges(
             row ?? {},
             { country, currency, language, industry },
-            // Shared field list (employeeCount/pseudonymizeNames absent from
-            // `after` and skipped) so seeded settings diffs cannot drift from
-            // the settingsUpdated field set.
+            // Shared field list (employeeCount absent from `after` and skipped)
+            // so seeded settings diffs cannot drift from the settingsUpdated
+            // field set.
             SETTINGS_AUDIT_FIELDS
           ),
         },

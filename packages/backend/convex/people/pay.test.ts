@@ -902,7 +902,6 @@ describe("getRolePayComparison", () => {
     // Self: full time, basic 55000 + variable 5000 = 60000.
     expect(self).toMatchObject({
       displayName: "Anna Svensson",
-      externalRef: null,
       gender: "Kvinna",
       level: "IC3",
       basic: 55000,
@@ -916,7 +915,6 @@ describe("getRolePayComparison", () => {
     // level still counts.
     expect(peer).toMatchObject({
       displayName: "Bo Berg",
-      externalRef: null,
       gender: "Man",
       level: "IC2",
       basic: 50000,
@@ -933,7 +931,6 @@ describe("getRolePayComparison", () => {
         "amount",
         "basic",
         "displayName",
-        "externalRef",
         "gender",
         "isSelf",
         "level",

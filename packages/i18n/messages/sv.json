@@ -1629,10 +1629,7 @@
         "industryLabel": "Bransch",
         "industryPlaceholder": "Välj en bransch",
         "save": "Spara ändringar",
-        "error": "Det gick inte att spara organisationen. Försök igen.",
-        "pseudonymizeLabel": "Pseudonymisera anställdas namn",
-        "pseudonymizeDescription": "Ersätt anställdas namn med ett referensnummer i alla vyer. Data ändras inte; bara visningen maskeras.",
-        "pseudonymTemplate": "Anställd #{ref}"
+        "error": "Det gick inte att spara organisationen. Försök igen."
       },
       "logo": {
         "title": "Logotyp",

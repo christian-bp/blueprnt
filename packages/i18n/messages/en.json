@@ -1629,10 +1629,7 @@
         "industryLabel": "Industry",
         "industryPlaceholder": "Select an industry",
         "save": "Save changes",
-        "error": "Could not save the organization. Please try again.",
-        "pseudonymizeLabel": "Pseudonymize employee names",
-        "pseudonymizeDescription": "Replace employee names with a reference number in all views. The data is unchanged; only the display is masked.",
-        "pseudonymTemplate": "Employee #{ref}"
+        "error": "Could not save the organization. Please try again."
       },
       "logo": {
         "title": "Logo",

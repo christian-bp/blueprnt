@@ -34,7 +34,6 @@ import {
   buildPayComparisonRows,
   type PayComparisonPoint,
 } from "@/lib/pay-comparison"
-import { displayNameFor } from "@/lib/person-display"
 
 // The card's static header (title, help, scope chip): identical in the loading
 // and loaded states, so it renders outside the state branches and never
@@ -75,11 +74,10 @@ export function PayComparisonSectionSkeleton() {
 // "Pay compared with the role" on the person page: same-role people as a dot
 // plot on FTE-adjusted total monthly pay (x) by level (rows), dots colored by
 // gender (the tool's core pay-gap lens) with the viewed person marked by a
-// brand ring and dashed line. The tooltip names each person (respecting the
-// org's pseudonymize-names setting, applied client-side as in the People
-// register) and breaks the figure into basic vs variable with the gap to the
-// viewed person. The single "Same role" chip is the seam where the same-band
-// scope joins when the analysis pillar lands.
+// brand ring and dashed line. The tooltip names each person and breaks the
+// figure into basic vs variable with the gap to the viewed person. The single
+// "Same role" chip is the seam where the same-band scope joins when the
+// analysis pillar lands.
 export function PayComparisonSection({
   personId,
   trackKey,
@@ -92,11 +90,6 @@ export function PayComparisonSection({
   const comparison = useQuery(api.people.pay.getRolePayComparison, {
     orgId,
     personId,
-  })
-  // The pseudonymize setting gates only the chart (it decides how peer names
-  // render); the precondition / only-person text states never touch it.
-  const settings = useQuery(api.accounts.organization.getOrganizationSettings, {
-    orgId,
   })
 
   return (
@@ -122,17 +115,12 @@ export function PayComparisonSection({
           ) : (
             <p className="text-muted-foreground text-sm">{t("onlyPerson")}</p>
           )
-        ) : settings === undefined ? (
-          // The chart needs the pseudonymize setting to render names; hold the
-          // same-height skeleton until it resolves so nothing reflows.
-          <Skeleton className="h-48 w-full" />
         ) : (
           <PayComparisonChart
             currency={comparison.currency}
             excludedCount={comparison.excludedCount}
             points={comparison.points}
             trackKey={trackKey}
-            pseudonymize={settings?.pseudonymizeNames ?? false}
           />
         )}
       </CardContent>
@@ -142,33 +130,23 @@ export function PayComparisonSection({
 
 // The tooltip for one dot. Exported and driven purely by props so it is
 // unit-testable without simulating a recharts hover (recharts renders it only
-// while hovering, which jsdom cannot drive). The viewed person shows their own
-// name in brand and no self-comparison; peers show their (optionally
-// pseudonymized) name and the signed gap to the viewed person.
+// while hovering, which jsdom cannot drive). The viewed person's name is
+// brand-colored and shows no self-comparison; peers show the signed gap to the
+// viewed person.
 export function PayComparisonTooltip({
   point,
   selfAmount,
   currency,
-  pseudonymize,
 }: {
   point: PayComparisonPoint
   selfAmount: number
   currency: string
-  pseudonymize: boolean
 }) {
   const t = useTranslations("dashboard.people.payComparison")
-  const tOrg = useTranslations("dashboard.organization.general")
   const tGender = useTranslations("dashboard.people.gender")
   const money = useMoney()
 
-  // The viewed person shows their real name (their own page already shows it,
-  // pseudonymization is a register concern) in the brand color that matches
-  // their dot; peers are pseudonymize-aware.
-  const name = point.isSelf
-    ? point.displayName
-    : displayNameFor(point, pseudonymize, (ref) =>
-        tOrg("pseudonymTemplate", { ref })
-      )
+  const name = point.displayName
   const diff = point.amount - selfAmount
   // The gender swatch reuses the same raw token the dot is filled with, so the
   // tooltip and the dot read as the same color.
@@ -261,13 +239,11 @@ function PayComparisonChart({
   excludedCount,
   points,
   trackKey,
-  pseudonymize,
 }: {
   currency: string
   excludedCount: number
   points: PayComparisonPoint[]
   trackKey: string | undefined
-  pseudonymize: boolean
 }) {
   const t = useTranslations("dashboard.people.payComparison")
   const tGender = useTranslations("dashboard.people.gender")
@@ -340,7 +316,6 @@ function PayComparisonChart({
                   point={point}
                   selfAmount={selfAmount}
                   currency={currency}
-                  pseudonymize={pseudonymize}
                 />
               )
             }}
