@@ -162,6 +162,7 @@ function renderReviewStep({
   parsed = PARSED,
   mapping = MAPPING,
   csvText = CSV_TEXT,
+  basisMap = {},
   genderOverrides = {},
   onBack = vi.fn(),
   onImportStart = vi.fn(),
@@ -172,6 +173,7 @@ function renderReviewStep({
   parsed?: ParsedCsv
   mapping?: Record<string, number>
   csvText?: string
+  basisMap?: Record<string, "monthly" | "annual">
   genderOverrides?: Record<string, "Man" | "Kvinna">
   onBack?: () => void
   onImportStart?: (importId: string) => void
@@ -190,6 +192,7 @@ function renderReviewStep({
         parsed={parsed}
         mapping={mapping}
         csvText={csvText}
+        basisMap={basisMap}
         genderOverrides={genderOverrides}
         onBack={onBack}
         onImportStart={onImportStart}
@@ -466,6 +469,7 @@ describe("ReviewStep — gender overrides", () => {
           parsed={PARSED}
           mapping={MAPPING}
           csvText={CSV_TEXT}
+          basisMap={{}}
           onBack={vi.fn()}
           onImportStart={vi.fn()}
           onImportEnd={vi.fn()}
@@ -494,6 +498,50 @@ describe("ReviewStep — gender overrides", () => {
     })
     const call = importPayrollMock.mock.calls[0]?.[0] as Record<string, unknown>
     expect("genderOverrides" in call).toBe(false)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Basis map
+// ---------------------------------------------------------------------------
+
+describe("ReviewStep — basis map", () => {
+  afterEach(() => {
+    cleanup()
+    vi.clearAllMocks()
+  })
+
+  it("passes a non-empty basisMap to previewImport and importPayroll", async () => {
+    importPayrollMock.mockResolvedValueOnce(OK_RESULT)
+    const basisMap = { basicMonthly: "monthly", bonus: "annual" } as const
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <ReviewStep
+          parsed={PARSED}
+          mapping={MAPPING}
+          csvText={CSV_TEXT}
+          basisMap={basisMap}
+          onBack={vi.fn()}
+          onImportStart={vi.fn()}
+          onImportEnd={vi.fn()}
+          onImportSuccess={vi.fn()}
+          blockingError={null}
+          genderOverrides={{}}
+        />
+      </NextIntlClientProvider>
+    )
+    await clickConfirm()
+    await waitFor(() => {
+      expect(importPayrollMock).toHaveBeenCalledOnce()
+    })
+    const previewCall = previewImportMock.mock.calls[0]?.[0] as {
+      basisMap?: Record<string, string>
+    }
+    expect(previewCall.basisMap).toEqual(basisMap)
+    const importCall = importPayrollMock.mock.calls[0]?.[0] as {
+      basisMap?: Record<string, string>
+    }
+    expect(importCall.basisMap).toEqual(basisMap)
   })
 })
 

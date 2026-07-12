@@ -2,6 +2,7 @@
 
 import { ArrowLeft01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import type { PayBasis } from "@workspace/import"
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
@@ -58,6 +59,8 @@ interface WizardState {
   fileName: string | null
   fileSize: number | null
   mapping: Record<string, number> | null
+  // Monthly/annual basis per mapped money field key, seeded by MapStep.
+  basisMap: Record<string, PayBasis>
   // Whether the check step has reported the import as blocked (missing
   // required fields, hard data errors, or unassigned genders).
   // null = not yet validated (check step not yet reached).
@@ -102,6 +105,7 @@ export function ImportWizard() {
     fileName: null,
     fileSize: null,
     mapping: null,
+    basisMap: {},
     checkBlocking: null,
     genderOverrides: {},
     returnToCheck: false,
@@ -248,6 +252,7 @@ export function ImportWizard() {
                     ...(headersChanged
                       ? {
                           mapping: null,
+                          basisMap: {},
                           checkBlocking: null,
                           genderOverrides: {},
                         }
@@ -263,6 +268,7 @@ export function ImportWizard() {
                   fileName: null,
                   fileSize: null,
                   mapping: null,
+                  basisMap: {},
                   checkBlocking: null,
                   genderOverrides: {},
                   returnToCheck: false,
@@ -292,6 +298,10 @@ export function ImportWizard() {
                 mapping={state.mapping}
                 onMappingChange={(mapping) =>
                   setState((prev) => ({ ...prev, mapping }))
+                }
+                basisMap={state.basisMap}
+                onBasisChange={(basisMap) =>
+                  setState((prev) => ({ ...prev, basisMap }))
                 }
               />
             )}
@@ -360,6 +370,7 @@ export function ImportWizard() {
                   parsed={state.parsed}
                   mapping={state.mapping}
                   csvText={state.csvText}
+                  basisMap={state.basisMap}
                   genderOverrides={state.genderOverrides}
                   onBack={goBack}
                   blockingError={state.importBlocking}

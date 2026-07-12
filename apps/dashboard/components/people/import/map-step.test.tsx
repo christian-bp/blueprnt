@@ -7,6 +7,7 @@ import {
   MapStep,
   buildInitialMapping,
   seedMappingFromProfile,
+  syncBasisMap,
 } from "./map-step"
 
 // Default: no saved profile (query resolved, nothing saved).
@@ -53,10 +54,14 @@ function renderMapStep({
   parsed = PARSED,
   mapping = null,
   onMappingChange = vi.fn(),
+  basisMap = {},
+  onBasisChange = vi.fn(),
 }: {
   parsed?: ParsedCsv
   mapping?: Record<string, number> | null
   onMappingChange?: (mapping: Record<string, number>) => void
+  basisMap?: Record<string, "monthly" | "annual">
+  onBasisChange?: (basisMap: Record<string, "monthly" | "annual">) => void
 } = {}) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
@@ -64,6 +69,8 @@ function renderMapStep({
         parsed={parsed}
         mapping={mapping}
         onMappingChange={onMappingChange}
+        basisMap={basisMap}
+        onBasisChange={onBasisChange}
       />
     </NextIntlClientProvider>
   )
@@ -136,6 +143,25 @@ describe("seedMappingFromProfile", () => {
 })
 
 // ---------------------------------------------------------------------------
+// syncBasisMap (pure helper, no render needed)
+// ---------------------------------------------------------------------------
+describe("syncBasisMap", () => {
+  it("seeds a basis for each mapped money field and drops non-money fields", () => {
+    const headers = ["Årslön", "Bonus", "Anstnr"]
+    const mapping = { basicMonthly: 0, bonus: 1, externalRef: 2 }
+    const result = syncBasisMap(mapping, headers, {})
+    expect(result.basicMonthly).toBe("annual") // "Årslön" annual hint
+    expect(result.bonus).toBe("annual") // field default
+    expect(result.externalRef).toBeUndefined() // not a money field
+  })
+  it("preserves an existing user override", () => {
+    const headers = ["Bonus"]
+    const result = syncBasisMap({ bonus: 0 }, headers, { bonus: "monthly" })
+    expect(result.bonus).toBe("monthly")
+  })
+})
+
+// ---------------------------------------------------------------------------
 // MapStep: auto-detection seeding
 // ---------------------------------------------------------------------------
 describe("MapStep: auto-detection", () => {
@@ -199,6 +225,8 @@ describe("MapStep: profile seeding", () => {
           }}
           mapping={null}
           onMappingChange={onMappingChange}
+          basisMap={{}}
+          onBasisChange={vi.fn()}
         />
       </NextIntlClientProvider>
     )

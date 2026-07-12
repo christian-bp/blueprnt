@@ -4,7 +4,9 @@ import { api } from "@workspace/backend/convex/_generated/api"
 import {
   CANONICAL_FIELDS,
   type CanonicalFieldKey,
+  defaultBasis,
   detectColumns,
+  type PayBasis,
 } from "@workspace/import"
 import {
   Select,
@@ -30,6 +32,14 @@ import { onSelectValue } from "@/lib/select"
 
 // Sentinel value used in the Select to represent "ignore this column".
 const IGNORE_VALUE = "__ignore__"
+
+// Canonical field keys whose stored value is a money amount; these are the
+// only fields that get a monthly/annual basis toggle in the table. Typed as
+// Set<string> (not Set<CanonicalFieldKey>) so it also accepts the plain
+// string keys syncBasisMap reads out of a Record<string, number> mapping.
+const MONEY_FIELD_KEYS: Set<string> = new Set(
+  CANONICAL_FIELDS.filter((f) => f.shape === "money").map((f) => f.key)
+)
 
 // ---------------------------------------------------------------------------
 // Pure helpers (exported for testing)
@@ -152,6 +162,23 @@ export function assignColumnToField(
   return next
 }
 
+// Keep a basis entry for every mapped MONEY column: preserve an existing
+// override, else seed from defaultBasis (field default + annual header hint).
+// Drops entries for unmapped or non-money fields so basisMap tracks mapping.
+export function syncBasisMap(
+  mapping: Record<string, number>,
+  headers: string[],
+  prev: Record<string, PayBasis>
+): Record<string, PayBasis> {
+  const next: Record<string, PayBasis> = {}
+  for (const [fieldKey, columnIndex] of Object.entries(mapping)) {
+    if (!MONEY_FIELD_KEYS.has(fieldKey)) continue
+    next[fieldKey] =
+      prev[fieldKey] ?? defaultBasis(fieldKey, headers[columnIndex] ?? "")
+  }
+  return next
+}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -162,9 +189,18 @@ export interface MapStepProps {
    *  Null means not yet seeded; the component will seed it on mount. */
   mapping: Record<string, number> | null
   onMappingChange: (mapping: Record<string, number>) => void
+  /** Monthly/annual basis per mapped money field key. */
+  basisMap: Record<string, PayBasis>
+  onBasisChange: (basisMap: Record<string, PayBasis>) => void
 }
 
-export function MapStep({ parsed, mapping, onMappingChange }: MapStepProps) {
+export function MapStep({
+  parsed,
+  mapping,
+  onMappingChange,
+  basisMap,
+  onBasisChange,
+}: MapStepProps) {
   const tMap = useTranslations("dashboard.people.import.map")
   const tFields = useTranslations("dashboard.people.import.fields")
   const { orgId } = useOrganization()
@@ -189,7 +225,13 @@ export function MapStep({ parsed, mapping, onMappingChange }: MapStepProps) {
         ? seedMappingFromProfile(parsed, savedProfile.columnMap)
         : {}
     // Profile wins per field; auto-detection fills the rest.
-    onMappingChange({ ...auto, ...fromProfile })
+    const seeded = { ...auto, ...fromProfile }
+    onMappingChange(seeded)
+    // Seed the basis toggles too: a saved profile's basis wins per field,
+    // else the field default / annual header hint decides.
+    onBasisChange(
+      syncBasisMap(seeded, parsed.headers, savedProfile?.basisMap ?? {})
+    )
   }, [savedProfile])
 
   // Use the seeded mapping or fall back to an empty object while the effect
@@ -206,17 +248,16 @@ export function MapStep({ parsed, mapping, onMappingChange }: MapStepProps) {
   // updateMapping uses -1 as its "unmap" sentinel internally; that is a
   // number contract separate from the Select's string values.
   function handleColumnFieldChange(columnIndex: number, value: string) {
-    if (value === IGNORE_VALUE) {
-      onMappingChange(assignColumnToField(activeMapping, columnIndex, null))
-    } else {
-      onMappingChange(
-        assignColumnToField(
-          activeMapping,
-          columnIndex,
-          value as CanonicalFieldKey
-        )
-      )
-    }
+    const nextMapping =
+      value === IGNORE_VALUE
+        ? assignColumnToField(activeMapping, columnIndex, null)
+        : assignColumnToField(
+            activeMapping,
+            columnIndex,
+            value as CanonicalFieldKey
+          )
+    onMappingChange(nextMapping)
+    onBasisChange(syncBasisMap(nextMapping, parsed.headers, basisMap))
   }
 
   // The current Select value for a column: the field key it is assigned to,
@@ -268,6 +309,7 @@ export function MapStep({ parsed, mapping, onMappingChange }: MapStepProps) {
               <TableHead>{tMap("column")}</TableHead>
               <TableHead>{tMap("sample")}</TableHead>
               <TableHead>{tMap("mappedTo")}</TableHead>
+              <TableHead>{tMap("basisHeader")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -358,6 +400,49 @@ export function MapStep({ parsed, mapping, onMappingChange }: MapStepProps) {
                         ))}
                       </SelectContent>
                     </Select>
+                  </TableCell>
+
+                  {/* Monthly/annual basis toggle: only for money-shaped
+                      fields. The cell renders empty (not omitted) for other
+                      rows so every row keeps the same column count; the
+                      table uses the default auto layout, not table-fixed. */}
+                  <TableCell>
+                    {currentFieldKey &&
+                    MONEY_FIELD_KEYS.has(currentFieldKey) ? (
+                      <Select
+                        value={
+                          basisMap[currentFieldKey] ??
+                          defaultBasis(currentFieldKey, header)
+                        }
+                        onValueChange={onSelectValue((value: string) =>
+                          onBasisChange({
+                            ...basisMap,
+                            [currentFieldKey]: value as PayBasis,
+                          })
+                        )}
+                        items={{
+                          monthly: tMap("basisMonthly"),
+                          annual: tMap("basisAnnual"),
+                        }}
+                      >
+                        <SelectTrigger
+                          size="sm"
+                          className="min-w-[130px]"
+                          aria-label={tMap("basisHeader")}
+                          data-testid={`map-column-${columnIndex}-basis-trigger`}
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="monthly">
+                            {tMap("basisMonthly")}
+                          </SelectItem>
+                          <SelectItem value="annual">
+                            {tMap("basisAnnual")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    ) : null}
                   </TableCell>
                 </TableRow>
               )

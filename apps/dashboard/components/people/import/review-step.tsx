@@ -11,6 +11,7 @@ import {
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
+import type { PayBasis } from "@workspace/import"
 import {
   Alert,
   AlertDescription,
@@ -92,6 +93,8 @@ export interface ReviewStepProps {
   parsed: ParsedCsv
   mapping: Record<string, number>
   csvText: string
+  /** Monthly/annual basis per mapped money field key, from the Map step. */
+  basisMap: Record<string, PayBasis>
   /** Per-row manual gender assignments, keyed by trimmed externalRef. */
   genderOverrides: Record<string, "Man" | "Kvinna">
   /** Step back to the check step (the review owns its footer actions). */
@@ -119,6 +122,7 @@ export function ReviewStep({
   parsed,
   mapping,
   csvText,
+  basisMap,
   genderOverrides,
   onBack,
   onImportStart,
@@ -172,6 +176,7 @@ export function ReviewStep({
       ...(genderOverridePairs.length > 0
         ? { genderOverrides: genderOverridePairs }
         : {}),
+      ...(Object.keys(basisMap).length > 0 ? { basisMap } : {}),
     })
       .then(setChangePreview)
       .catch(() => setPreviewFailed(true))
@@ -205,6 +210,7 @@ export function ReviewStep({
         ...(skippedMismatchRefs.length > 0
           ? { skipExternalRefs: skippedMismatchRefs }
           : {}),
+        ...(Object.keys(basisMap).length > 0 ? { basisMap } : {}),
       })
       if (result.ok) {
         // The done screen is the completion feedback (no toast needed).
