@@ -1,0 +1,30 @@
+packages/constants/src/pay.ts
+  s_6ea4434f5c3a0d::t_472b1360a1a66c 41-67
+packages/constants/src/index.ts
+  s_6ea4434f5c3a0d::t_afa29fc879197e 14-18
+  s_6ea4434f5c3a0d::t_c8332f5ce7daaa 28-29,31,34
+packages/constants/src/pay.test.ts
+  s_6ea4434f5c3a0d::t_663d52fc8d5bdf 81-104
+  s_6ea4434f5c3a0d::t_e3ac169794a8c1 3-4,7
+packages/constants/src/employment.test.ts
+  s_6ea4434f5c3a0d::t_0ff4743b45828b 1-25
+packages/constants/src/employment.ts
+  s_6ea4434f5c3a0d::t_4e6a029a9509f2 36-37
+  s_6ea4434f5c3a0d::t_39d3e9c498249f 1-35,38-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "82b0332b24950babd5fe501bb3cb57385ac9f5da",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
