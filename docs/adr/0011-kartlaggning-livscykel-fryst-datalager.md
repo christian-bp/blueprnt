@@ -15,7 +15,7 @@ ADR-0008 formulerade frysningen som att den omfattar även utfall och godkännan
 
 ## Beslut
 
-1. **Kartläggningen är en entitet med statusflöde:** Ej startad, Aktiv/Pågående, Pausad, Under granskning, Slutförd/Arkiverad. Referensdatum, ansvarig HR-person och populationsanmärkningar (t.ex. dokumenterad exkludering) sätts vid initiering.
+1. **Kartläggningen är en entitet med statusflöde:** Ej startad, Aktiv/Pågående, Pausad, Under granskning, Slutförd/Arkiverad. Referensdatum, ansvarig HR-person och populationsanmärkningar (t.ex. dokumenterad exkludering) sätts vid initiering. (P1-slutförandegrinden för övergången Under granskning -> Slutförd, samt primärvyns SYSTEMKRAV, finns i ADR-0012.)
 2. **Ny entitet: bandpolicyintervall (min/mid/max i valuta per band)** på org/bandnivå (Roll != Person: intervallet hör till bandmodellen, aldrig till individen). Det är grunden för off-policy-detektering (Del 4 Steg 4) och ingår i frysningen.
 3. **Åtkomst- och exportloggning.** Utöver dagens invariant ("varje tillståndsändrande mutation skriver en revisionsrad") loggas även **visningar och exporter** av en kartläggning. Detta är en ny, läs-orienterad revisionsdimension för kartläggningsdata; den ska inte tillämpas brett på övriga ytor.
 4. **Arkivpaket och retention.** En kartläggning ska kunna exporteras som ett komplett paket (PDF-rapport + XLSX-data + JSON-metadata) och bevaras minst 5 år i en separat backup-rutin.

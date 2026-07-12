@@ -37,7 +37,7 @@
 | 3 | Gender: **required binary `Man`/`Kvinna`**, no "unspecified". | Confirmed by the test data (120 rows, no third value) and by DL's binary 60% comparison. A blank/unreadable `Kön` is an import-validation item, never stored blank. Gender is **not** GDPR Art. 9 special-category data; it is regular-but-sensitive personal data. |
 | 4 | Level (per-individual, on `personAssignments`, validated against the role's `trackKey`): **suggested** from `Befattning` + `Statistikkod` + tenure via the suggestion layer, **HR-confirmed**. | Per ADR-0005 (level is per-individual, set in V2). Reconciles the source explainer's "level-role" framing against the accepted ADR. |
 | 5 | Equal-value grouping: **score-tolerance** on the 0-100 role score, independent of band boundaries. | Reverses an earlier "use bands" choice after the docs (`PLAN-V1 §11`: "likvärdigt arbete ≠ band rakt av") flagged band-direct grouping as legally fragile. Tolerance width is a documented, HR/Legal-tunable parameter. |
-| 6 | Small-group masking: hide any group with fewer than **3** people. | Parametrized (configurable default), flagged for HR/Legal sign-off; several regimes use 5. |
+| 6 | Small-group masking: hide any group with fewer than **3** people. | Parametrized (configurable default), flagged for HR/Legal sign-off; several regimes use 5. **v3 update (ADR-0012):** default raised to 4 (still configurable); the per-group gap classification itself is now v3's four-level flag ladder, not a raw hide/show threshold (see the §6 gap-analysis note below). |
 | 7 | Re-import: **upsert on `Anstnr`**; archive leavers (never hard-delete on re-import). Pay is **effective-dated history**: a re-import, a raise, or a manual edit APPENDS a new salary record, never overwrites; frozen report runs are untouched. | |
 | 8 | Pay is an **effective-dated history table**: each record has `effectiveAt` + `source` (`import` \| `manual`), `basicMonthly` (the Art. 9 basic-salary component, stored distinctly + required), an **extensible `components[]`** (`{kind, monthlyAmount}`: variable/bonus, benefit-in-kind, fixed supplement, allowance, equity, other), and `currency`. The pay-gap **comparison metric is TOTAL COMP** = `basicMonthly + sum(components)`, FTE-adjusted, derived **live** and frozen in the report run (never stored). **Manual entry supported from the start.** | Consistent with ADR-0002/0008. Compare on **total comp, not basic alone** (product decision); the Art. 9 basic-vs-variable split is still reported. Components extensible so any company's comp maps in. History retained; current = latest effective. |
 
@@ -133,6 +133,8 @@ Flag for HR resolution (never a silent import): a duplicate identifier in a batc
 
 **Gap analysis (deterministic, no AI):** per group × gender: median, mean, quartile distribution; gender-dominance flag at ≥60%; unadjusted gap. **Small-group masking** (default: hide groups < 3) enforced as a **query-layer invariant**, not a UI afterthought.
 
+**v3 update (ADR-0012, supersedes this flag model):** the per-group gap classification is now v3's four-level ladder: 🔴 gap > 10%, 🟠 gap 5-10%, ✅ gap < 5%, ⚪ otillräckligt underlag (fewer than 4 individuals in the group OR the group is missing one gender). The small-group masking default is raised from 3 to 4 (still configurable). The ≥60% dominance flag above remains a separate P2 signal, and the 5% figure is the separate joint-pay-assessment legal trigger, not the flag ladder; the three must not be conflated. ADR-0012 is authoritative.
+
 ---
 
 ## 7. Reporting, thresholds, export
@@ -164,7 +166,7 @@ Flag for HR resolution (never a silent import): a duplicate identifier in a batc
 ---
 
 ## 10. Open items for HR/Legal (parametrized, confirm before go-live)
-- Small-group masking threshold (provisional default 3).
+- Small-group masking threshold (provisional default 3). **v3 update (ADR-0012):** raised to 4 (still configurable). Distinct from the ⚪ insufficient-data flag in the v3 gap ladder (also < 4 individuals, or the group missing one gender) which is a statistical-sufficiency signal, not the privacy-masking threshold itself.
 - Equal-value score-tolerance width and its documented justification in the method appendix.
 - Which pay components count in the statutory comparison metric (basic only vs basic + variable + benefit).
 - Final Swedish transposition specifics (report form, deadlines, recipients, formats) once legislated.

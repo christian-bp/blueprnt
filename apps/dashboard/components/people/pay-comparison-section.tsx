@@ -75,9 +75,11 @@ export function PayComparisonSectionSkeleton() {
 // plot on FTE-adjusted total monthly pay (x) by level (rows), dots colored by
 // gender (the tool's core pay-gap lens) with the viewed person marked by a
 // brand ring and dashed line. The tooltip names each person and breaks the
-// figure into basic vs variable with the gap to the viewed person. The single
-// "Same role" chip is the seam where the same-band scope joins when the
-// analysis pillar lands.
+// figure into basic vs variable with the gap to the viewed person. The
+// "Same role" chip scopes this to a per-role, per-person detail view (v3 P3
+// optional QC, ADR-0012), not the seed of v3's P1 primary gender-gap view:
+// that is a separate gender-aggregate, small-cell-masked query (lika arbete
+// = job_title+band+level, likvärdigt arbete = band).
 export function PayComparisonSection({
   personId,
   trackKey,

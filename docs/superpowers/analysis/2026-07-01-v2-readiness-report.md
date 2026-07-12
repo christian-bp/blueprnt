@@ -251,6 +251,16 @@ Resolve the open questions in 4.6 first; several are schema-shaping.
 - Small-group cell masking baked into the query layer.
 - Pure, deterministic, explainable; no AI.
 
+**v3 update (ADR-0012):** Phase 3 splits into 3a and 3b. Phase 3a is the
+mandatory gender-gap PRIMARY VIEW and must land first: Step 1 (lika arbete,
+group = job_title + band + level) and Step 2 (likvärdigt arbete, group =
+band), pre-selected, always-on, non-disableable, classified by the v3
+four-level flag ladder (🔴 gap > 10% / 🟠 5-10% / ✅ < 5% / ⚪ otillräckligt
+underlag: fewer than 4 individuals in the group or the group missing one
+gender). Phase 3b is the secondary/complementary comparisons (equal-value
+tolerance/clustering, job-family/cohort/intersectional views), layered on
+top, per the P1 > P2 > P3 priority order. See ADR-0012.
+
 ### Phase 4 — Frozen report runs (ADR-0008)
 - `payGapReportRun`: freeze timestamp, population + exclusions, copy of ratings,
   copy of model config (criteria/weights/anchors/thresholds), derived outcomes,
@@ -291,7 +301,10 @@ Resolve the open questions in 4.6 first; several are schema-shaping.
 5. **Equal-value grouping algorithm:** tolerance band width? clustering method?
    How is the grouping justified in the method appendix?
 6. **Min group size for masking:** what threshold, and what does the UI show for a
-   suppressed cell?
+   suppressed cell? **CLOSED (v3/ADR-0012):** fewer than 4 individuals OR the
+   group is missing one gender. This is the ⚪ statistical-insufficiency
+   threshold in the gap ladder, distinct from privacy cell-masking (also
+   raised to 4, but a separate concern; see ADR-0012).
 7. **Retention + legal basis** for imported salary/PII of non-app-user employees,
    and their erasure/rectification path.
 8. **Re-import semantics:** upsert on `Anstnr`? How are leavers, title changes, and
