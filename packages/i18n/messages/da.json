@@ -139,7 +139,8 @@
       "salaryDeleted": "Lønpost slettet",
       "personErased": "Medarbejder slettet",
       "personCreated": "Medarbejder tilføjet",
-      "personUpdated": "Medarbejder opdateret"
+      "personUpdated": "Medarbejder opdateret",
+      "roleTrackChanged": "Sporet er ændret. {count, plural, one {# persons niveau skal} other {# personers niveauer skal}} bekræftes igen."
     },
     "accountMenu": "Kontomenu",
     "nav": {
@@ -1722,7 +1723,6 @@
     "lastAdmin": "Du er den sidste administrator i en organisation. Kontakt support for at slette din konto.",
     "invalidLevel": "Det niveau er ikke gyldigt for rollens spor.",
     "invalidEffectiveDate": "Ikrafttrædelsesdatoen skal være efter den aktuelle tildelnings startdato.",
-    "personRefExists": "En medarbejder med det medarbejdernummer findes allerede.",
-    "roleTrackChangeBlocked": "Flyt de personer, der aktuelt hører til denne rolle, før du ændrer dens track."
+    "personRefExists": "En medarbejder med det medarbejdernummer findes allerede."
   }
 }

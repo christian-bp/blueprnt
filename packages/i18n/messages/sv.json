@@ -139,7 +139,8 @@
       "salaryDeleted": "Lönepost borttagen",
       "personErased": "Anställd raderad",
       "personCreated": "Anställd tillagd",
-      "personUpdated": "Anställd uppdaterad"
+      "personUpdated": "Anställd uppdaterad",
+      "roleTrackChanged": "Spåret har ändrats. {count, plural, one {# persons nivå behöver} other {# personers nivåer behöver}} bekräftas på nytt."
     },
     "accountMenu": "Kontomeny",
     "nav": {
@@ -1722,7 +1723,6 @@
     "lastAdmin": "Du är den sista administratören i en organisation. Kontakta supporten för att radera ditt konto.",
     "invalidLevel": "Den nivån är inte giltig för rollens spår.",
     "invalidEffectiveDate": "Giltighetsdatumet måste vara efter den aktuella tilldelningens startdatum.",
-    "personRefExists": "En anställd med det anställningsnumret finns redan.",
-    "roleTrackChangeBlocked": "Omplacera personerna som just nu tillhör den här rollen innan du ändrar dess track."
+    "personRefExists": "En anställd med det anställningsnumret finns redan."
   }
 }

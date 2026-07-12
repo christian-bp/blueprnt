@@ -17,6 +17,13 @@ import {
 } from "@workspace/ui/components/dropdown-menu"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { AiEditingIcon, MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -27,11 +34,14 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useState } from "react"
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
+import { HelpMorphButton } from "@/components/help-morph-button"
 import { MorphPopover } from "@/components/morph-popover"
 import { FamilyPicker } from "@/components/roles/family-picker"
 import { ResponsibilitiesList } from "@/components/roles/responsibilities-list"
 import { RoleAiPanel } from "@/components/roles/role-ai-panel"
+import { onSelectValue } from "@/lib/select"
 import { isDuplicateRoleError } from "@/lib/role-error"
+import type { CreateRoleValues } from "@/lib/role-schemas"
 
 // Structural subset of getRole used by this card.
 export interface RoleProfile {
@@ -39,6 +49,7 @@ export interface RoleProfile {
   title: string
   function: string
   team: string
+  trackKey: string
   trackName: string
   familyId: string | null
   familyName: string | null
@@ -57,10 +68,12 @@ export function RoleProfileCard({
   orgId,
   role,
   isAdmin,
+  tracks,
 }: {
   orgId: string
   role: RoleProfile
   isAdmin: boolean
+  tracks: { key: string; name: string }[]
 }) {
   const t = useTranslations("dashboard.roles.detail")
   const tRole = useTranslations("assessment.role")
@@ -70,6 +83,10 @@ export function RoleProfileCard({
   const tErrors = useTranslations("errors")
   const tArchive = useTranslations("dashboard.roles.archive")
   const tToast = useTranslations("dashboard.toast")
+  // The track select reuses the create-dialog's label key (no dedicated
+  // assessment.role.track key exists).
+  const tCreate = useTranslations("dashboard.roles.create")
+  const tHelp = useTranslations("dashboard.help")
   const updateRole = useMutation(api.assessment.roles.updateRole)
   const archiveRole = useMutation(api.assessment.roles.archiveRole)
   const router = useRouter()
@@ -92,6 +109,7 @@ export function RoleProfileCard({
       title: role.title,
       function: role.function,
       team: role.team,
+      trackKey: role.trackKey,
       purpose: role.purpose,
       responsibilities: role.responsibilities,
     }
@@ -115,25 +133,49 @@ export function RoleProfileCard({
     setPending(true)
     setFailure(null)
     // Patch only changed fields so the audit row names what actually moved.
+    // trackKey is handled separately below (typed cast), not through this
+    // generic string patch.
     const patch: Record<string, string> = {}
     const current = currentValues()
     for (const [field, value] of Object.entries(draft)) {
+      if (field === "trackKey") continue
       if (value !== current[field]) patch[field] = value
     }
+    // trackKey is a literal union on the mutation; cast it explicitly
+    // (mirrors familyId below) instead of letting it ride the untyped patch
+    // spread, which never checked it against that union.
+    const trackKeyChange =
+      draft.trackKey !== current.trackKey
+        ? { trackKey: draft.trackKey as CreateRoleValues["trackKey"] }
+        : {}
     // The null sentinel clears membership; undefined leaves it unchanged.
     const familyChange =
       draftFamilyId !== (role.familyId ?? null)
         ? { familyId: draftFamilyId as never }
         : {}
     try {
-      if (Object.keys(patch).length > 0 || "familyId" in familyChange) {
-        await updateRole({
+      if (
+        Object.keys(patch).length > 0 ||
+        "trackKey" in trackKeyChange ||
+        "familyId" in familyChange
+      ) {
+        const result = await updateRole({
           orgId,
           roleId: role.roleId,
           ...patch,
+          ...trackKeyChange,
           ...familyChange,
         })
-        toast.success(tToast("roleUpdated"))
+        // Changing the track resets any level suggested/confirmed for that
+        // track (they no longer apply once the ladder changes); tell the
+        // user how many were reset instead of leaving it silent.
+        if (result.levelsReset > 0) {
+          toast.success(
+            tToast("roleTrackChanged", { count: result.levelsReset })
+          )
+        } else {
+          toast.success(tToast("roleUpdated"))
+        }
       }
       setEditing(false)
     } catch (error) {
@@ -253,7 +295,7 @@ export function RoleProfileCard({
         )}
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-4">
           {(
             [
               ["title", tRole("title"), role.title],
@@ -262,12 +304,14 @@ export function RoleProfileCard({
             ] as const
           ).map(([key, label, value]) => (
             <div key={key} className="space-y-1">
-              <Label
-                htmlFor={`profile-${key}`}
-                className="text-muted-foreground"
-              >
-                {label}
-              </Label>
+              <div className="flex h-6 items-center gap-1.5">
+                <Label
+                  htmlFor={`profile-${key}`}
+                  className="text-muted-foreground"
+                >
+                  {label}
+                </Label>
+              </div>
               {editing ? (
                 <Input
                   id={`profile-${key}`}
@@ -281,6 +325,45 @@ export function RoleProfileCard({
               )}
             </div>
           ))}
+          <div className="space-y-1">
+            <div className="flex h-6 items-center gap-1.5">
+              <Label htmlFor="profile-track" className="text-muted-foreground">
+                {tCreate("trackLabel")}
+              </Label>
+              {editing && (
+                <HelpMorphButton label={tHelp("trackLabel")}>
+                  {tHelp("trackBody")}
+                </HelpMorphButton>
+              )}
+            </div>
+            {editing ? (
+              <Select
+                value={draft.trackKey ?? role.trackKey}
+                onValueChange={onSelectValue((value: string) =>
+                  setField("trackKey", value)
+                )}
+                name="trackKey"
+                items={Object.fromEntries(
+                  tracks.map((tr) => [tr.key, tr.name])
+                )}
+              >
+                <SelectTrigger id="profile-track" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {tracks.map((tr) => (
+                    <SelectItem key={tr.key} value={tr.key}>
+                      {tr.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <p id="profile-track" className="text-sm">
+                {role.trackName}
+              </p>
+            )}
+          </div>
         </div>
         <div className="space-y-1">
           <Label htmlFor="profile-family" className="text-muted-foreground">
@@ -291,6 +374,7 @@ export function RoleProfileCard({
               orgId={orgId}
               value={draftFamilyId}
               onChange={setDraftFamilyId}
+              selectedLabel={role.familyName}
             />
           ) : role.familyName !== null ? (
             <p id="profile-family" className="text-sm">

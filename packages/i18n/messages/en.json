@@ -139,7 +139,8 @@
       "salaryDeleted": "Salary record deleted",
       "personErased": "Employee deleted",
       "personCreated": "Employee added",
-      "personUpdated": "Employee updated"
+      "personUpdated": "Employee updated",
+      "roleTrackChanged": "Track changed. {count, plural, one {# person's level needs} other {# people's levels need}} re-confirming."
     },
     "accountMenu": "Account menu",
     "nav": {
@@ -1722,7 +1723,6 @@
     "lastAdmin": "You're the last administrator of an organization. Contact support to delete your account.",
     "invalidLevel": "That level is not valid for this role's track.",
     "invalidEffectiveDate": "The effective date must be after the current assignment's start date.",
-    "personRefExists": "An employee with that employee number already exists.",
-    "roleTrackChangeBlocked": "Reassign the people currently on this role before changing its track."
+    "personRefExists": "An employee with that employee number already exists."
   }
 }

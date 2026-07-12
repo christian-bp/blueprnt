@@ -29,6 +29,7 @@ export function FamilyPicker({
   value,
   onChange,
   id,
+  selectedLabel,
 }: {
   orgId: string
   value: string | null
@@ -36,6 +37,13 @@ export function FamilyPicker({
   // Optional id applied to the picker's trigger so a FormLabel/FormControl can
   // associate its label with the control (like CountrySelect et al.).
   id?: string
+  /**
+   * The current selection's display name, known by the caller up front (e.g.
+   * from the role it belongs to). Seeds the Select's items while `families`
+   * is still loading, so the trigger resolves the name immediately instead
+   * of briefly falling back to the raw id.
+   */
+  selectedLabel?: string | null
 }) {
   const t = useTranslations("dashboard.roles.family")
   const tErrors = useTranslations("errors")
@@ -109,10 +117,23 @@ export function FamilyPicker({
     )
   }
 
+  // Still loading and the current value is a real family id: seed it into
+  // the items so the trigger shows its name right away instead of the raw
+  // id. Once `families` loads, the real list takes over (no double-add).
+  const seedSelectedItem =
+    families === undefined &&
+    value !== null &&
+    value !== NONE &&
+    value !== CREATE &&
+    selectedLabel != null
+      ? [{ value, label: selectedLabel }]
+      : []
+
   return (
     <Select
       items={[
         { value: NONE, label: t("none") },
+        ...seedSelectedItem,
         ...(families ?? []).map((family) => ({
           value: family.familyId,
           label: family.name,

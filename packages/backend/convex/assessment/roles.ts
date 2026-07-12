@@ -1,4 +1,5 @@
 import { isValidLevelForTrack } from "@workspace/constants"
+import { suggestLevelForPerson } from "@workspace/core"
 import { v } from "convex/values"
 import type { Doc, Id } from "../_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
@@ -14,6 +15,11 @@ import { familyNames, trackNames } from "./names"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
 import { uniqueSlug } from "../lib/slug"
+// people/assignments.ts imports requireOwnRole from this module, so this is a
+// benign import cycle: safe only because both bindings are referenced inside
+// handler bodies, never at module top-level. Do not move either import to
+// module-eval scope.
+import { writeAssignment } from "../people/assignments"
 import { deriveResults } from "./compute"
 
 // The job profile text fields (assessment glossary). purpose and
@@ -384,7 +390,7 @@ export const updateRole = orgMutation({
     familyId: v.optional(v.union(v.id("roleFamilies"), v.null())),
     ...optionalProfileArgs,
   },
-  returns: v.null(),
+  returns: v.object({ levelsReset: v.number() }),
   handler: async (ctx, args) => {
     const role = await requireOwnRole(ctx, args.roleId)
     if (role.archivedAt !== undefined) {
@@ -407,26 +413,6 @@ export const updateRole = orgMutation({
       patch.team = args.team.trim()
     }
     if (args.trackKey !== undefined) {
-      // Changing the track would orphan any active individual level: levels are
-      // per-track and disjoint (IC*/Lead-*/M*; ADR-0005), so an IC3 assignment
-      // cannot stay on a Manager-track role. Block the change while an active
-      // assignment holds a level invalid for the new track, so HR reassigns
-      // explicitly instead of leaving a level outside the role's ladder. Closed
-      // (historical) assignments keep their own level and are not affected.
-      if (args.trackKey !== role.trackKey) {
-        const roleAssignments = await ctx.db
-          .query("personAssignments")
-          .withIndex("by_role", (q) =>
-            q.eq("orgId", ctx.orgId).eq("roleId", role._id)
-          )
-          .collect()
-        const wouldOrphan = roleAssignments.some(
-          (a) =>
-            a.endedAt === undefined &&
-            !isValidLevelForTrack(args.trackKey as string, a.level)
-        )
-        if (wouldOrphan) throw appError(ERROR_CODES.roleTrackChangeBlocked)
-      }
       patch.trackKey = args.trackKey
     }
     if (args.familyId !== undefined) {
@@ -472,7 +458,7 @@ export const updateRole = orgMutation({
       assertFieldLength(value)
       patch[field] = value.trim()
     }
-    if (Object.keys(patch).length === 0) return null
+    if (Object.keys(patch).length === 0) return { levelsReset: 0 }
     await ctx.db.patch(args.roleId, patch)
     await ctx.audit.log({
       type: AUDIT_EVENTS.roleUpdated,
@@ -481,7 +467,48 @@ export const updateRole = orgMutation({
         changes: buildChanges(role, patch, Object.keys(patch)),
       },
     })
-    return null
+
+    // A track change orphans every active assignment's level (ladders are
+    // disjoint: IC*/Lead-*/M*), so re-suggest a level in the new track and
+    // flag it unconfirmed. HR re-confirms via the Classify surface / to-do.
+    let levelsReset = 0
+    if (args.trackKey !== undefined && args.trackKey !== role.trackKey) {
+      const now = Date.now()
+      const roleAssignments = await ctx.db
+        .query("personAssignments")
+        .withIndex("by_role", (q) =>
+          q.eq("orgId", ctx.orgId).eq("roleId", role._id)
+        )
+        .collect()
+      for (const a of roleAssignments) {
+        if (a.endedAt !== undefined) continue // closed history is untouched
+        if (isValidLevelForTrack(args.trackKey, a.level)) continue // defensive
+        const person = await ctx.db.get(a.personId)
+        // Defensive/unreachable: erasePersonAsOrg hard-deletes personAssignments
+        // child-first, so a dangling personId here cannot occur in practice.
+        if (person === null) continue
+        const { suggestedLevel } = suggestLevelForPerson({
+          trackKey: args.trackKey,
+          ...(person.title !== undefined ? { title: person.title } : {}),
+          ...(person.employmentStartDate !== undefined
+            ? { employmentStartDate: person.employmentStartDate }
+            : {}),
+          today: now,
+        })
+        await writeAssignment(ctx, {
+          orgId: ctx.orgId,
+          actorId: ctx.authUserId,
+          personId: a.personId,
+          roleId: role._id,
+          // writeAssignment requires effectiveAt strictly after the open row.
+          effectiveAt: Math.max(now, a.effectiveAt + 1),
+          level: suggestedLevel,
+          levelSource: "suggested",
+        })
+        levelsReset++
+      }
+    }
+    return { levelsReset }
   },
 })
 

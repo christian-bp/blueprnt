@@ -1,4 +1,4 @@
-import { TRACK_LEVELS } from "@workspace/constants"
+import { isValidLevelForTrack, TRACK_LEVELS } from "@workspace/constants"
 import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
@@ -302,7 +302,7 @@ describe("updateRole", () => {
     })
   })
 
-  it("rejects a track change that would orphan an active assignment's level", async () => {
+  it("edits the role: a track swap re-suggests the level and flags it unconfirmed", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
     const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
@@ -329,18 +329,168 @@ describe("updateRole", () => {
       levelSource: "confirmed",
     })
 
-    // The track change is blocked: the active level is invalid for the new track.
-    await expect(
-      asAdmin.mutation(api.assessment.roles.updateRole, {
-        orgId,
-        roleId,
-        trackKey: otherTrack.key,
-      })
-    ).rejects.toThrow(/errors.roleTrackChangeBlocked/)
-    // The role's track is unchanged.
+    // The track change is NOT blocked: it re-suggests the level for the new
+    // track and flags it unconfirmed, rather than orphaning it.
+    const result = await asAdmin.mutation(api.assessment.roles.updateRole, {
+      orgId,
+      roleId,
+      trackKey: otherTrack.key,
+    })
+    expect(result.levelsReset).toBe(1)
+
     await t.run(async (ctx) => {
       const role = await ctx.db.get(roleId)
-      expect(role?.trackKey).toBe(track.key)
+      expect(role?.trackKey).toBe(otherTrack.key)
+
+      const assignments = await ctx.db
+        .query("personAssignments")
+        .withIndex("by_person", (q) =>
+          q.eq("orgId", orgId).eq("personId", personId)
+        )
+        .collect()
+      const open = assignments.find((a) => a.endedAt === undefined)
+      expect(open).toBeDefined()
+      // Re-suggested, unconfirmed, and valid for the NEW track.
+      expect(open?.levelSource).toBe("suggested")
+      expect(isValidLevelForTrack(otherTrack.key, open?.level ?? "")).toBe(true)
+    })
+  })
+
+  it("track swap with no active assignments returns levelsReset 0", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Developer",
+      function: "Engineering",
+      team: "Core",
+      trackKey: track.key,
+    })
+    const otherTrack = model.tracks.find((tr) => tr.key !== track.key)
+    if (otherTrack === undefined) throw new Error("seed")
+    const result = await asAdmin.mutation(api.assessment.roles.updateRole, {
+      orgId,
+      roleId,
+      trackKey: otherTrack.key,
+    })
+    expect(result.levelsReset).toBe(0)
+    await t.run(async (ctx) => {
+      const role = await ctx.db.get(roleId)
+      expect(role?.trackKey).toBe(otherTrack.key)
+    })
+  })
+
+  it("track swap leaves a closed (historical) assignment untouched", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Developer",
+      function: "Engineering",
+      team: "Core",
+      trackKey: track.key,
+    })
+    const { roleId: otherRoleId } = await asAdmin.mutation(
+      api.assessment.roles.createRole,
+      {
+        orgId,
+        title: "Other Role",
+        function: "Engineering",
+        team: "Core",
+        trackKey: track.key,
+      }
+    )
+    const otherTrack = model.tracks.find((tr) => tr.key !== track.key)
+    if (otherTrack === undefined) throw new Error("seed")
+    const level = TRACK_LEVELS[track.key as keyof typeof TRACK_LEVELS][0]
+    if (level === undefined) throw new Error("seed")
+
+    // Person A is assigned to roleId, then reassigned elsewhere so the
+    // roleId row becomes CLOSED (endedAt set) history, not the active
+    // assignment.
+    const { personId: closedPersonId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Alva Historik", gender: "Kvinna" }
+    )
+    const ts1 = 1_700_000_000_000
+    const ts2 = 1_700_000_100_000
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId: closedPersonId,
+      roleId,
+      level,
+      levelSource: "confirmed",
+      effectiveAt: ts1,
+    })
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId: closedPersonId,
+      roleId: otherRoleId,
+      level,
+      levelSource: "confirmed",
+      effectiveAt: ts2,
+    })
+
+    // Person B is assigned to roleId and left open: the only active
+    // assignment on this role when the track changes.
+    const { personId: openPersonId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Bo Ek", gender: "Man" }
+    )
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId: openPersonId,
+      roleId,
+      level,
+      levelSource: "confirmed",
+    })
+
+    const closedBefore = await t.run(async (ctx) => {
+      const assignments = await ctx.db
+        .query("personAssignments")
+        .withIndex("by_person", (q) =>
+          q.eq("orgId", orgId).eq("personId", closedPersonId)
+        )
+        .collect()
+      const closed = assignments.find((a) => a.endedAt !== undefined)
+      if (closed === undefined) {
+        throw new Error("expected a closed assignment")
+      }
+      return closed
+    })
+    expect(closedBefore.roleId).toBe(roleId)
+
+    const result = await asAdmin.mutation(api.assessment.roles.updateRole, {
+      orgId,
+      roleId,
+      trackKey: otherTrack.key,
+    })
+    // Only the ACTIVE orphaned assignment (person B) is reset; the closed
+    // history row (person A) is left alone and does not count.
+    expect(result.levelsReset).toBe(1)
+
+    await t.run(async (ctx) => {
+      const role = await ctx.db.get(roleId)
+      expect(role?.trackKey).toBe(otherTrack.key)
+
+      // The closed row's level and levelSource are UNCHANGED: closed history
+      // is never reset, only the currently active assignment.
+      const closedAfter = await ctx.db.get(closedBefore._id)
+      expect(closedAfter?.level).toBe(closedBefore.level)
+      expect(closedAfter?.levelSource).toBe(closedBefore.levelSource)
+      expect(closedAfter?.endedAt).toBe(closedBefore.endedAt)
+
+      const openAssignments = await ctx.db
+        .query("personAssignments")
+        .withIndex("by_person", (q) =>
+          q.eq("orgId", orgId).eq("personId", openPersonId)
+        )
+        .collect()
+      const open = openAssignments.find((a) => a.endedAt === undefined)
+      expect(open).toBeDefined()
+      // Re-suggested, unconfirmed, and valid for the NEW track.
+      expect(open?.levelSource).toBe("suggested")
+      expect(isValidLevelForTrack(otherTrack.key, open?.level ?? "")).toBe(true)
     })
   })
 

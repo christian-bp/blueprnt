@@ -28,9 +28,12 @@ export default function RolePage(props: {
     slug: roleSlug,
     locale,
   })
+  // The model carries the org's tracks, for the profile card's track select
+  // (its own criteria/thresholds are unused here).
+  const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
   usePageTitle(role?.title)
 
-  if (role === undefined) {
+  if (role === undefined || model === undefined) {
     return <RoleDetailSkeleton />
   }
   if (role === null) {
@@ -81,6 +84,7 @@ export default function RolePage(props: {
             orgId={orgId}
             role={role}
             isAdmin={orgRole === "admin"}
+            tracks={model?.tracks ?? []}
           />
         </div>
         {/* The evaluation rail sticks in view while the taller profile

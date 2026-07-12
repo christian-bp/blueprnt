@@ -139,7 +139,8 @@
       "salaryDeleted": "Palkkatietue poistettu",
       "personErased": "Työntekijä poistettu",
       "personCreated": "Työntekijä lisätty",
-      "personUpdated": "Työntekijä päivitetty"
+      "personUpdated": "Työntekijä päivitetty",
+      "roleTrackChanged": "Ura muutettu. {count, plural, one {# henkilön taso on} other {# henkilön tasot on}} vahvistettava uudelleen."
     },
     "accountMenu": "Tilivalikko",
     "nav": {
@@ -1722,7 +1723,6 @@
     "lastAdmin": "Olet organisaation viimeinen ylläpitäjä. Ota yhteyttä tukeen poistaaksesi tilisi.",
     "invalidLevel": "Taso ei ole kelvollinen tämän roolin polulle.",
     "invalidEffectiveDate": "Voimaantulopäivän on oltava nykyisen tehtävän alkamispäivän jälkeen.",
-    "personRefExists": "Työntekijä tällä työntekijänumerolla on jo olemassa.",
-    "roleTrackChangeBlocked": "Siirrä tähän rooliin tällä hetkellä kuuluvat henkilöt ennen kuin vaihdat sen trackin."
+    "personRefExists": "Työntekijä tällä työntekijänumerolla on jo olemassa."
   }
 }

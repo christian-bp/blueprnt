@@ -9,6 +9,10 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 
+vi.mock("sonner", () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
+}))
+
 const updateRoleMock = vi.fn()
 const archiveRoleMock = vi.fn()
 const pushMock = vi.fn()
@@ -39,6 +43,7 @@ vi.mock("@workspace/backend/convex/_generated/api", () => ({
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: pushMock }) }))
 
+import { toast } from "sonner"
 import {
   RoleProfileCard,
   type RoleProfile,
@@ -55,6 +60,7 @@ function makeRole(overrides?: Partial<RoleProfile>): RoleProfile {
     title: "Developer",
     function: "Engineering",
     team: "Core",
+    trackKey: "IC",
     trackName: "Individual contributor",
     familyId: null,
     familyName: null,
@@ -66,10 +72,19 @@ function makeRole(overrides?: Partial<RoleProfile>): RoleProfile {
   }
 }
 
-function renderCard(role: RoleProfile, isAdmin = true) {
+function renderCard(
+  role: RoleProfile,
+  isAdmin = true,
+  tracks: { key: string; name: string }[] = []
+) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <RoleProfileCard orgId="org-1" role={role} isAdmin={isAdmin} />
+      <RoleProfileCard
+        orgId="org-1"
+        role={role}
+        isAdmin={isAdmin}
+        tracks={tracks}
+      />
     </NextIntlClientProvider>
   )
 }
@@ -91,6 +106,8 @@ describe("RoleProfileCard", () => {
     updateRoleMock.mockReset()
     archiveRoleMock.mockReset()
     pushMock.mockReset()
+    vi.mocked(toast.success).mockReset()
+    vi.mocked(toast.error).mockReset()
   })
   afterEach(() => {
     cleanup()
@@ -110,7 +127,7 @@ describe("RoleProfileCard", () => {
   })
 
   it("opens the manage menu, edits, saves only the changed fields, and exits edit mode", async () => {
-    updateRoleMock.mockResolvedValue(null)
+    updateRoleMock.mockResolvedValue({ levelsReset: 0 })
     renderCard(makeRole())
     startEditing()
     fireEvent.change(
@@ -162,7 +179,7 @@ describe("RoleProfileCard", () => {
   })
 
   it("leaves the family untouched when only a text field changes", async () => {
-    updateRoleMock.mockResolvedValue(null)
+    updateRoleMock.mockResolvedValue({ levelsReset: 0 })
     renderCard(makeRole({ familyId: "f-tech", familyName: "Tech" }))
     startEditing()
     fireEvent.change(
@@ -261,5 +278,56 @@ describe("RoleProfileCard", () => {
     expect(screen.getByText("Builds the product")).toBeDefined()
     // The mutation was never called.
     expect(updateRoleMock).not.toHaveBeenCalled()
+  })
+
+  it("edits the track and toasts the reset count", async () => {
+    updateRoleMock.mockResolvedValueOnce({ levelsReset: 2 })
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        {/* The form wrapper makes Base UI render the track Select's hidden
+            native input, the only way to drive a Select under happy-dom
+            (its portal opens only on real pointer events). Same pattern as
+            the family-picker and industry-select tests. */}
+        <form>
+          <RoleProfileCard
+            orgId="org-1"
+            isAdmin
+            role={makeRole({ trackKey: "IC", trackName: "IC" })}
+            tracks={[
+              { key: "IC", name: "IC" },
+              { key: "Lead", name: "Lead" },
+            ]}
+          />
+        </form>
+      </NextIntlClientProvider>
+    )
+    startEditing()
+    // The track Select carries name="trackKey" so its hidden input is
+    // unambiguous among the card's other Base UI selects (e.g. the family
+    // picker's, which has no name).
+    const hidden = document.querySelector(
+      'input[name="trackKey"]'
+    ) as HTMLInputElement
+    fireEvent.change(hidden, { target: { value: "Lead" } })
+    // The change handler resolves through a microtask; wait for the
+    // controlled trigger to reflect it before saving.
+    await waitFor(() => {
+      expect(document.getElementById("profile-track")?.textContent).toContain(
+        "Lead"
+      )
+    })
+    fireEvent.click(screen.getByRole("button", { name: labels.saveCta }))
+    await waitFor(() => {
+      expect(updateRoleMock).toHaveBeenCalledWith(
+        expect.objectContaining({ roleId: "role-1", trackKey: "Lead" })
+      )
+    })
+    // The reset count surfaces as a toast; next-intl renders the ICU plural:
+    // 2 -> "2 people's levels need re-confirming.".
+    await waitFor(() => {
+      expect(vi.mocked(toast.success)).toHaveBeenCalledWith(
+        "Track changed. 2 people's levels need re-confirming."
+      )
+    })
   })
 })
