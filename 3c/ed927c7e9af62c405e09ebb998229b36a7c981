@@ -1,0 +1,34 @@
+docs/adr/0012-primar-konslonegap-vy-och-prioritetsordning.md
+  s_6ea4434f5c3a0d::t_f626674d1b8a64 1-34
+docs/PLAN-V1.md
+  s_6ea4434f5c3a0d::t_195b3d0227aee3 165
+  s_6ea4434f5c3a0d::t_32e09fd2cb6467 131-132
+docs/superpowers/specs/2026-07-03-v2-salary-import-design.md
+  s_6ea4434f5c3a0d::t_e9637b37941026 136-137
+  s_6ea4434f5c3a0d::t_7590d9a3645b96 169
+  s_6ea4434f5c3a0d::t_560159f625155f 40
+docs/superpowers/analysis/2026-07-01-v2-readiness-report.md
+  s_6ea4434f5c3a0d::t_6861427afa5511 305
+  s_6ea4434f5c3a0d::t_4090576433df91 254-263
+  s_6ea4434f5c3a0d::t_ed20b8357b12af 304,306-307
+apps/dashboard/components/people/pay-comparison-section.tsx
+  s_6ea4434f5c3a0d::t_99a8bd2d342c76 78-82
+docs/adr/0011-kartlaggning-livscykel-fryst-datalager.md
+  s_6ea4434f5c3a0d::t_7ce7e8057eb18b 18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "3ced927c7e9af62c405e09ebb998229b36a7c981",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
