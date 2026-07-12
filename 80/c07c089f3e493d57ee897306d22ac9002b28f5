@@ -1,0 +1,19 @@
+docs/superpowers/plans/2026-07-11-import-fidelity.md
+  s_6ea4434f5c3a0d::t_5db9440889f746 1-978
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "80c07c089f3e493d57ee897306d22ac9002b28f5",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
