@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest"
 import {
+  DEFAULT_BASIS_BY_FIELD,
+  PAY_BASIS,
   PAY_COMPONENT_KINDS,
   fteTotalMonthlyComp,
+  toMonthly,
   totalMonthlyComp,
 } from "./pay"
 
@@ -73,5 +76,29 @@ describe("fteTotalMonthlyComp", () => {
     expect(fteTotalMonthlyComp(40_000, [{ monthlyAmount: 4_000 }], 80)).toBe(
       55_000
     )
+  })
+})
+
+describe("toMonthly", () => {
+  it("passes a monthly amount through unchanged", () => {
+    expect(toMonthly(50000, "monthly")).toBe(50000)
+  })
+  it("divides an annual amount by 12", () => {
+    expect(toMonthly(120000, "annual")).toBe(10000)
+  })
+})
+
+describe("DEFAULT_BASIS_BY_FIELD", () => {
+  it("defaults base salary to monthly and bonus/variable to annual", () => {
+    expect(DEFAULT_BASIS_BY_FIELD.basicMonthly).toBe("monthly")
+    expect(DEFAULT_BASIS_BY_FIELD.variable).toBe("annual")
+    expect(DEFAULT_BASIS_BY_FIELD.bonus).toBe("annual")
+    expect(DEFAULT_BASIS_BY_FIELD.benefitInKind).toBe("monthly")
+  })
+  it("has a basis for basicMonthly and every pay component kind", () => {
+    expect(PAY_BASIS).toEqual(["monthly", "annual"])
+    for (const kind of PAY_COMPONENT_KINDS) {
+      expect(DEFAULT_BASIS_BY_FIELD[kind]).toBeDefined()
+    }
   })
 })

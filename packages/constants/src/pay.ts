@@ -38,3 +38,30 @@ export function fteTotalMonthlyComp(
     ftePercent !== undefined && ftePercent > 0 ? ftePercent / 100 : 1
   return total / fraction
 }
+
+// Whether a mapped pay column is expressed per month or per year. Annual
+// columns are divided by 12 at import ingestion so payRecords stays monthly.
+export const PAY_BASIS = ["monthly", "annual"] as const
+export type PayBasis = (typeof PAY_BASIS)[number]
+
+// Pure helper: normalize an amount to a monthly figure. No I/O, no clock reads.
+export function toMonthly(amount: number, basis: PayBasis): number {
+  return basis === "annual" ? amount / 12 : amount
+}
+
+// Default basis per money field, used when the import mapping does not specify
+// one (an annual-flavoured header can still override this client-side; see
+// @workspace/import defaultBasis). Bonus/variable/equity are typically annual.
+export const DEFAULT_BASIS_BY_FIELD: Record<
+  "basicMonthly" | PayComponentKind,
+  PayBasis
+> = {
+  basicMonthly: "monthly",
+  variable: "annual",
+  bonus: "annual",
+  benefitInKind: "monthly",
+  fixedSupplement: "monthly",
+  allowance: "monthly",
+  equity: "annual",
+  other: "monthly",
+}
