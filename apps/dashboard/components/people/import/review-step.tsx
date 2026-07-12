@@ -63,6 +63,59 @@ export function buildColumnMap(
   return pairs
 }
 
+// The change-summary grid's group/row shape: static i18n keys and icons only
+// (the count is looked up separately), so it renders identically whether the
+// dry-run preview is still loading or has landed.
+const CHANGE_GROUPS = [
+  {
+    group: "employeesGroup",
+    lines: [
+      { key: "newPeople", icon: UserAdd01Icon },
+      { key: "updatedPeople", icon: UserEdit01Icon },
+      { key: "unchangedPeople", icon: UserCheck01Icon },
+    ],
+  },
+  {
+    group: "salariesGroup",
+    lines: [
+      { key: "salaryNew", icon: Coins01Icon },
+      { key: "salaryChanged", icon: CoinsDollarIcon },
+      { key: "salaryIdentical", icon: Tick02Icon },
+    ],
+  },
+] as const
+
+// Looks up the count for a change-summary row by its static key. Structurally
+// typed (not imported from the backend) so this stays a plain view helper.
+function countForKey(
+  diff: {
+    people: { created: number; updated: number; unchanged: number }
+    salary: {
+      newEntries: number
+      changedSameYear: number
+      identical: number
+    }
+  },
+  key: string
+): number | undefined {
+  switch (key) {
+    case "newPeople":
+      return diff.people.created
+    case "updatedPeople":
+      return diff.people.updated
+    case "unchangedPeople":
+      return diff.people.unchanged
+    case "salaryNew":
+      return diff.salary.newEntries
+    case "salaryChanged":
+      return diff.salary.changedSameYear
+    case "salaryIdentical":
+      return diff.salary.identical
+    default:
+      return undefined
+  }
+}
+
 // A stored value becoming an incoming value, joined by an arrow icon (never
 // a bare text arrow); `from` may be absent when a field is newly set.
 function FromTo({ from, to }: { from?: string; to: string }) {
@@ -262,67 +315,22 @@ export function ReviewStep({
           <p className="text-muted-foreground text-sm">
             {tChanges("previewFailed")}
           </p>
-        ) : changePreview === null ? (
-          <div className="space-y-2">
-            <Skeleton className="h-5 w-64" />
-            <Skeleton className="h-5 w-56" />
-            <Skeleton className="h-5 w-60" />
-          </div>
-        ) : changePreview.diff === null ? null : (
+        ) : changePreview?.diff === null ? null : (
           <div className="space-y-4">
             {/* Grouped icon rows, the done screen's visual language, so the
-                before (this preview) and after (the result) read the same. */}
+                before (this preview) and after (the result) read the same.
+                Headers, icons, and row labels are static i18n and always
+                render for real; only the count is a skeleton while the
+                dry-run preview loads, so loading and loaded read as the
+                same layout. */}
             <div className="grid gap-4 sm:grid-cols-2">
-              {(
-                [
-                  {
-                    group: "employeesGroup",
-                    lines: [
-                      {
-                        key: "newPeople",
-                        icon: UserAdd01Icon,
-                        count: changePreview.diff.people.created,
-                      },
-                      {
-                        key: "updatedPeople",
-                        icon: UserEdit01Icon,
-                        count: changePreview.diff.people.updated,
-                      },
-                      {
-                        key: "unchangedPeople",
-                        icon: UserCheck01Icon,
-                        count: changePreview.diff.people.unchanged,
-                      },
-                    ],
-                  },
-                  {
-                    group: "salariesGroup",
-                    lines: [
-                      {
-                        key: "salaryNew",
-                        icon: Coins01Icon,
-                        count: changePreview.diff.salary.newEntries,
-                      },
-                      {
-                        key: "salaryChanged",
-                        icon: CoinsDollarIcon,
-                        count: changePreview.diff.salary.changedSameYear,
-                      },
-                      {
-                        key: "salaryIdentical",
-                        icon: Tick02Icon,
-                        count: changePreview.diff.salary.identical,
-                      },
-                    ],
-                  },
-                ] as const
-              ).map(({ group, lines }) => (
+              {CHANGE_GROUPS.map(({ group, lines }) => (
                 <div key={group}>
                   <h4 className="mb-2 font-medium text-muted-foreground text-xs">
                     {tChanges(group)}
                   </h4>
                   <div className="divide-y rounded-md border">
-                    {lines.map(({ key, icon, count }) => (
+                    {lines.map(({ key, icon }) => (
                       <div
                         key={key}
                         className="flex items-center justify-between gap-2 px-3 py-2"
@@ -336,9 +344,14 @@ export function ReviewStep({
                           />
                           <span className="text-sm">{tChanges(key)}</span>
                         </span>
-                        <span className="font-medium font-mono text-sm">
-                          {count}
-                        </span>
+                        {changePreview === null ? (
+                          <Skeleton className="h-5 w-6" />
+                        ) : (
+                          <span className="font-medium font-mono text-sm">
+                            {changePreview.diff &&
+                              countForKey(changePreview.diff, key)}
+                          </span>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -346,47 +359,51 @@ export function ReviewStep({
               ))}
             </div>
 
-            {/* Who changes, field by field, so updating is a knowing act. */}
-            {changePreview.diff.updatedPeople.length > 0 && (
-              <div className="space-y-2" data-testid="updated-people">
-                {(showAllUpdated
-                  ? changePreview.diff.updatedPeople
-                  : changePreview.diff.updatedPeople.slice(
-                      0,
-                      UPDATED_PEOPLE_SHOWN
-                    )
-                ).map((person) => (
-                  <div
-                    key={person.externalRef}
-                    className="rounded-md border px-3 py-2 text-sm"
-                  >
-                    <p className="font-medium">{person.displayName}</p>
-                    <p className="text-muted-foreground">
-                      {person.changes.map((change, index) => (
-                        <span key={change.field}>
-                          {index > 0 && " · "}
-                          {fieldChangeLabel(change.field)}:{" "}
-                          <FromTo from={change.from} to={change.to} />
-                        </span>
-                      ))}
-                    </p>
-                  </div>
-                ))}
-                {!showAllUpdated &&
-                  changePreview.diff.updatedPeople.length >
-                    UPDATED_PEOPLE_SHOWN && (
-                    <button
-                      type="button"
-                      className="text-muted-foreground text-sm underline-offset-4 hover:underline"
-                      onClick={() => setShowAllUpdated(true)}
+            {/* Who changes, field by field, so updating is a knowing act.
+                Only once the preview has landed (extends below the summary
+                grid rather than shifting it). */}
+            {changePreview !== null &&
+              changePreview.diff !== null &&
+              changePreview.diff.updatedPeople.length > 0 && (
+                <div className="space-y-2" data-testid="updated-people">
+                  {(showAllUpdated
+                    ? changePreview.diff.updatedPeople
+                    : changePreview.diff.updatedPeople.slice(
+                        0,
+                        UPDATED_PEOPLE_SHOWN
+                      )
+                  ).map((person) => (
+                    <div
+                      key={person.externalRef}
+                      className="rounded-md border px-3 py-2 text-sm"
                     >
-                      {tChanges("showAll", {
-                        count: changePreview.diff.updatedPeople.length,
-                      })}
-                    </button>
-                  )}
-              </div>
-            )}
+                      <p className="font-medium">{person.displayName}</p>
+                      <p className="text-muted-foreground">
+                        {person.changes.map((change, index) => (
+                          <span key={change.field}>
+                            {index > 0 && " · "}
+                            {fieldChangeLabel(change.field)}:{" "}
+                            <FromTo from={change.from} to={change.to} />
+                          </span>
+                        ))}
+                      </p>
+                    </div>
+                  ))}
+                  {!showAllUpdated &&
+                    changePreview.diff.updatedPeople.length >
+                      UPDATED_PEOPLE_SHOWN && (
+                      <button
+                        type="button"
+                        className="text-muted-foreground text-sm underline-offset-4 hover:underline"
+                        onClick={() => setShowAllUpdated(true)}
+                      >
+                        {tChanges("showAll", {
+                          count: changePreview.diff.updatedPeople.length,
+                        })}
+                      </button>
+                    )}
+                </div>
+              )}
           </div>
         )}
       </div>
