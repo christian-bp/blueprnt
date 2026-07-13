@@ -3,12 +3,7 @@
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Card, CardContent } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import {
-  Table,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@workspace/ui/components/table"
+import { Table } from "@workspace/ui/components/table"
 import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
@@ -16,7 +11,11 @@ import { use } from "react"
 import { PageBreadcrumb } from "@/components/page-breadcrumb"
 import { PageHeader } from "@/components/page-header"
 import { useOrganization } from "@/components/org-context"
-import { PayMappingDetail } from "@/components/pay-mapping/pay-mapping-detail"
+import {
+  MetaField,
+  PayMappingDetail,
+  PayMappingRowsHeader,
+} from "@/components/pay-mapping/pay-mapping-detail"
 import { TableSearchField } from "@/components/table-search-field"
 import { TableSkeleton } from "@/components/table-skeleton"
 import { usePageTitle } from "@/hooks/use-page-title"
@@ -39,23 +38,34 @@ function PayMappingDetailSkeleton() {
         title={<Skeleton className="h-7 w-56 max-w-full" />}
       />
       <Card>
-        {/* Mirrors the loaded metadata card exactly (same CardContent, dl grid,
-            and text-sm dt/dd line boxes) so the card measures identical and does
-            not resize when the run resolves. Each bar is inline-block + centered
-            in its text-sm line box (per the skeleton-measurement rule). */}
+        {/* Mirrors the loaded metadata card exactly: the same MetaField, with
+            its real (static i18n) label and a value-only Skeleton bar, so the
+            card measures identical and does not resize when the run resolves.
+            Each bar is inline-block + centered in its text-sm line box (per
+            the skeleton-measurement rule). */}
         <CardContent>
           <dl className="grid gap-4 text-sm sm:grid-cols-4">
-            {Array.from({ length: 7 }, (_, index) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
-              <div key={index}>
-                <dt className="text-muted-foreground">
-                  <Skeleton className="inline-block h-4 w-20 max-w-full align-middle" />
-                </dt>
-                <dd>
-                  <Skeleton className="inline-block h-4 w-16 max-w-full align-middle" />
-                </dd>
-              </div>
-            ))}
+            <MetaField label={t("table.label")}>
+              <Skeleton className="inline-block h-4 w-16 max-w-full align-middle" />
+            </MetaField>
+            <MetaField label={t("detail.referenceDate")}>
+              <Skeleton className="inline-block h-4 w-16 max-w-full align-middle" />
+            </MetaField>
+            <MetaField label={t("table.status")}>
+              <Skeleton className="inline-block h-4 w-16 max-w-full align-middle" />
+            </MetaField>
+            <MetaField label={t("table.responsible")}>
+              <Skeleton className="inline-block h-4 w-16 max-w-full align-middle" />
+            </MetaField>
+            <MetaField label={t("detail.population")}>
+              <Skeleton className="inline-block h-4 w-16 max-w-full align-middle" />
+            </MetaField>
+            <MetaField label={t("detail.withPay")}>
+              <Skeleton className="inline-block h-4 w-16 max-w-full align-middle" />
+            </MetaField>
+            <MetaField label={t("detail.excluded")}>
+              <Skeleton className="inline-block h-4 w-16 max-w-full align-middle" />
+            </MetaField>
           </dl>
         </CardContent>
       </Card>
@@ -67,16 +77,7 @@ function PayMappingDetailSkeleton() {
           <TableSearchField placeholder={t("detail.searchPlaceholder")} />
         </div>
         <Table className="table-fixed">
-          <TableHeader>
-            <TableRow>
-              <TableHead />
-              <TableHead className="w-28" />
-              <TableHead className="w-48" />
-              <TableHead className="w-20" />
-              <TableHead className="w-20" />
-              <TableHead className="w-36" />
-            </TableRow>
-          </TableHeader>
+          <PayMappingRowsHeader />
           <TableSkeleton
             columns={[
               {},

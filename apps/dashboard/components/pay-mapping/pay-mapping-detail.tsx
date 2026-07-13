@@ -26,6 +26,7 @@ import {
   TableRow,
 } from "@workspace/ui/components/table"
 import { useFormatter, useTranslations } from "next-intl"
+import type { ReactNode } from "react"
 import { useEffect, useMemo, useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { PageBreadcrumb } from "@/components/page-breadcrumb"
@@ -86,6 +87,49 @@ export function matchesSnapshotRowQuery(
 
 const PAGE_SIZE = 25
 
+// The detail table's header, shared by the loaded table and the page's
+// loading skeleton (same precedent as RolesTableHeader in roles-table.tsx) so
+// the two cannot drift and the skeleton shows the real, static column labels
+// instead of gray bars over known chrome.
+export function PayMappingRowsHeader() {
+  const t = useTranslations("dashboard.payMapping")
+  return (
+    <TableHeader>
+      <TableRow>
+        <TableHead>{t("detail.columns.name")}</TableHead>
+        <TableHead className="w-28">{t("detail.columns.gender")}</TableHead>
+        <TableHead className="w-48">{t("detail.columns.role")}</TableHead>
+        <TableHead className="w-20">{t("detail.columns.band")}</TableHead>
+        <TableHead className="w-20">{t("detail.columns.level")}</TableHead>
+        <TableHead className="w-36">{t("detail.columns.salary")}</TableHead>
+      </TableRow>
+    </TableHeader>
+  )
+}
+
+// One metadata field in the run's summary card: a static i18n label (dt) over
+// a value (dd). Shared by the loaded card and the page's loading skeleton, so
+// the skeleton can render the real label with a value-only Skeleton bar
+// instead of graying out known chrome. valueClassName lets a caller carry the
+// dd's layout (e.g. the status field's flex/min-h-5 wrapper for its Badge)
+// without duplicating the label/value structure.
+export function MetaField({
+  label,
+  children,
+  valueClassName,
+}: {
+  label: string
+  children: ReactNode
+  valueClassName?: string
+}) {
+  return (
+    <div>
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className={valueClassName}>{children}</dd>
+    </div>
+  )
+}
+
 // The kartlaggning (pay mapping) detail: a frozen-population survey. Read-only
 // throughout, since the whole point of the snapshot is that it never changes
 // after the freeze (ADR-0011). Renders the run's metadata and every frozen
@@ -112,8 +156,8 @@ export function PayMappingDetail({
   })
 
   // A single column carries the filter pipeline: the header row is the
-  // static tableHeader below and cells render from row.original, so no other
-  // column defs are needed here (mirrors pay-mappings-section).
+  // shared PayMappingRowsHeader above and cells render from row.original, so
+  // no other column defs are needed here (mirrors pay-mappings-section).
   const columns = useMemo<ColumnDef<PayMappingSnapshotRow>[]>(
     () => [{ id: "name", accessorKey: "displayName" }],
     []
@@ -162,19 +206,6 @@ export function PayMappingDetail({
     resetPage()
   }
 
-  const tableHeader = (
-    <TableHeader>
-      <TableRow>
-        <TableHead>{t("detail.columns.name")}</TableHead>
-        <TableHead className="w-28">{t("detail.columns.gender")}</TableHead>
-        <TableHead className="w-48">{t("detail.columns.role")}</TableHead>
-        <TableHead className="w-20">{t("detail.columns.band")}</TableHead>
-        <TableHead className="w-20">{t("detail.columns.level")}</TableHead>
-        <TableHead className="w-36">{t("detail.columns.salary")}</TableHead>
-      </TableRow>
-    </TableHeader>
-  )
-
   return (
     <div className="space-y-6">
       <PageHeader
@@ -197,48 +228,32 @@ export function PayMappingDetail({
       <Card>
         <CardContent>
           <dl className="grid gap-4 text-sm sm:grid-cols-4">
-            <div>
-              <dt className="text-muted-foreground">{t("table.label")}</dt>
-              <dd>{run.label}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">
-                {t("detail.referenceDate")}
-              </dt>
-              <dd>
-                {format.dateTime(new Date(run.referenceDate), {
-                  dateStyle: "medium",
-                })}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">{t("table.status")}</dt>
-              {/* min-h-5: the inline-flex Badge would otherwise inflate the
-                  line box beyond a plain text value's height. */}
-              <dd className="flex min-h-5 items-center">
-                <Badge variant="outline">{t(`status.${run.status}`)}</Badge>
-              </dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">
-                {t("table.responsible")}
-              </dt>
-              <dd>{run.initiatedByName}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">
-                {t("detail.population")}
-              </dt>
-              <dd>{run.populationCount}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">{t("detail.withPay")}</dt>
-              <dd>{run.withPayCount}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">{t("detail.excluded")}</dt>
-              <dd>{run.unclassifiedExcludedCount}</dd>
-            </div>
+            <MetaField label={t("table.label")}>{run.label}</MetaField>
+            <MetaField label={t("detail.referenceDate")}>
+              {format.dateTime(new Date(run.referenceDate), {
+                dateStyle: "medium",
+              })}
+            </MetaField>
+            {/* min-h-5: the inline-flex Badge would otherwise inflate the
+                line box beyond a plain text value's height. */}
+            <MetaField
+              label={t("table.status")}
+              valueClassName="flex min-h-5 items-center"
+            >
+              <Badge variant="outline">{t(`status.${run.status}`)}</Badge>
+            </MetaField>
+            <MetaField label={t("table.responsible")}>
+              {run.initiatedByName}
+            </MetaField>
+            <MetaField label={t("detail.population")}>
+              {run.populationCount}
+            </MetaField>
+            <MetaField label={t("detail.withPay")}>
+              {run.withPayCount}
+            </MetaField>
+            <MetaField label={t("detail.excluded")}>
+              {run.unclassifiedExcludedCount}
+            </MetaField>
           </dl>
         </CardContent>
       </Card>
@@ -248,7 +263,9 @@ export function PayMappingDetail({
       ) : null}
 
       {run.rows.length === 0 ? (
-        <Table className="table-fixed">{tableHeader}</Table>
+        <Table className="table-fixed">
+          <PayMappingRowsHeader />
+        </Table>
       ) : (
         // space-y-4 (not the page's space-y-6) so the toolbar-to-table gap
         // matches the pay-mappings list table.
@@ -285,7 +302,7 @@ export function PayMappingDetail({
           ) : (
             <>
               <Table className="table-fixed">
-                {tableHeader}
+                <PayMappingRowsHeader />
                 <TableBody>
                   {pageRows.map((row) => {
                     const snapshot = row.original
