@@ -395,6 +395,10 @@ export const FIELD_DISPLAY_ORDER = [
   "skipped",
   "unmatchedTitles",
   "orgCount",
+  // Pay-mapping run flat-stats fields (payMapping.runStarted).
+  "populationCount",
+  "withPayCount",
+  "unclassifiedExcludedCount",
 ] as const
 
 // Sorts change entries into FIELD_DISPLAY_ORDER. Stable: unknown fields keep

@@ -92,6 +92,10 @@ const OTHER_AUDIT_FIELDS = [
   "skipped",
   "unmatchedTitles",
   "orgCount",
+  // payMapping.runStarted flat-stat fields
+  "populationCount",
+  "withPayCount",
+  "unclassifiedExcludedCount",
 ] as const
 
 const ALL_AUDIT_FIELDS = [

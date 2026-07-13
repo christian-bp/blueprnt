@@ -140,7 +140,8 @@
       "personErased": "Employee deleted",
       "personCreated": "Employee added",
       "personUpdated": "Employee updated",
-      "roleTrackChanged": "Track changed. {count, plural, one {# person's level needs} other {# people's levels need}} re-confirming."
+      "roleTrackChanged": "Track changed. {count, plural, one {# person's level needs} other {# people's levels need}} re-confirming.",
+      "payMappingStarted": "Pay mapping started"
     },
     "accountMenu": "Account menu",
     "nav": {
@@ -154,7 +155,8 @@
       "accountSettings": "Account settings",
       "organization": "Organization",
       "signOut": "Sign out",
-      "people": "People"
+      "people": "People",
+      "payMapping": "Pay mappings"
     },
     "people": {
       "heading": "People",
@@ -641,7 +643,10 @@
         "level": "Level",
         "levelSource": "Level source",
         "originalWeightPoints": "Original weight points",
-        "anchorCount": "Anchor count"
+        "anchorCount": "Anchor count",
+        "populationCount": "People included",
+        "withPayCount": "With a salary",
+        "unclassifiedExcludedCount": "Excluded (unclassified)"
       },
       "values": {
         "yes": "Yes",
@@ -686,7 +691,8 @@
         "paySalarySet": "Salary recorded",
         "paySalaryDeleted": "Salary record deleted",
         "payMappingSaved": "Pay mapping saved",
-        "peopleImported": "People imported"
+        "peopleImported": "People imported",
+        "payMappingRunStarted": "Pay mapping started"
       },
       "ai": {
         "modelDraft": "Model criteria: {count} added",
@@ -863,6 +869,61 @@
         "resultCount": "{shown} of {total} roles",
         "noMatches": "No roles match the search or filters.",
         "clearFilters": "Clear filters"
+      }
+    },
+    "payMapping": {
+      "heading": "Pay mappings",
+      "description": "Frozen snapshots of your pay data for equal-pay analysis. Each one captures a point in time.",
+      "startCta": "Start pay mapping",
+      "empty": "No pay mappings yet. Start one to freeze today's pay data for analysis.",
+      "table": {
+        "label": "Name",
+        "referenceDate": "Reference date",
+        "status": "Status",
+        "population": "People",
+        "responsible": "Started by",
+        "created": "Created"
+      },
+      "toolbar": {
+        "searchPlaceholder": "Search by name or started by",
+        "resultCount": "{shown} of {total} pay mappings",
+        "noMatches": "No pay mappings match the search.",
+        "clearFilters": "Clear search",
+        "previous": "Previous",
+        "next": "Next"
+      },
+      "status": {
+        "active": "Active",
+        "paused": "Paused",
+        "underReview": "Under review",
+        "completed": "Completed"
+      },
+      "start": {
+        "title": "Start a pay mapping",
+        "description": "This freezes a snapshot of today's pay, roles and demographics. The reference date is today.",
+        "labelLabel": "Name",
+        "labelPlaceholder": "e.g. Pay mapping 2026",
+        "cta": "Start",
+        "cancel": "Cancel",
+        "error": "The pay mapping could not be started. Try again."
+      },
+      "detail": {
+        "population": "People included",
+        "withPay": "With a salary",
+        "excluded": "Excluded (unclassified)",
+        "referenceDate": "Reference date",
+        "notFound": "That pay mapping was not found.",
+        "back": "Back to pay mappings",
+        "erased": "Erased",
+        "searchPlaceholder": "Search by name or role",
+        "columns": {
+          "name": "Name",
+          "gender": "Gender",
+          "role": "Role",
+          "band": "Band",
+          "level": "Level",
+          "salary": "Monthly salary"
+        }
       }
     },
     "rating": {
@@ -1302,7 +1363,11 @@
       "classifyLevelLabel": "What is the level?",
       "classifyLevelBody": "Level is the individual's seniority within the role's track, for example Senior or Lead. It is set per person, not on the role itself, and is used in pay-equity analysis to compare people in equivalent positions.",
       "fteAdjustedLabel": "What does FTE-adjusted mean?",
-      "fteAdjustedBody": "Part-time pay is scaled up to its full-time equivalent before comparing. A person working 80% with a monthly pay of 40,000 is shown as 50,000, so everyone is compared on full-time terms."
+      "fteAdjustedBody": "Part-time pay is scaled up to its full-time equivalent before comparing. A person working 80% with a monthly pay of 40,000 is shown as 50,000, so everyone is compared on full-time terms.",
+      "payMappingLabel": "What is a pay mapping?",
+      "payMappingBody": "A pay mapping (lönekartläggning) is a frozen snapshot of your pay, roles and demographics at a point in time. All equal-pay analysis runs against the frozen copy, never live data, so the numbers cannot shift under you.",
+      "referenceDateLabel": "What is the reference date?",
+      "referenceDateBody": "The date the snapshot represents. It is set to today when you start the mapping."
     },
     "admin": {
       "tabs": {

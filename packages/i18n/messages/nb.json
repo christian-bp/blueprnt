@@ -140,7 +140,8 @@
       "personErased": "Ansatt slettet",
       "personCreated": "Ansatt lagt til",
       "personUpdated": "Ansatt oppdatert",
-      "roleTrackChanged": "Sporet er endret. {count, plural, one {# persons nivå må} other {# personers nivåer må}} bekreftes på nytt."
+      "roleTrackChanged": "Sporet er endret. {count, plural, one {# persons nivå må} other {# personers nivåer må}} bekreftes på nytt.",
+      "payMappingStarted": "Lønnskartlegging startet"
     },
     "accountMenu": "Kontomeny",
     "nav": {
@@ -154,7 +155,8 @@
       "accountSettings": "Kontoinnstillinger",
       "organization": "Organisasjon",
       "signOut": "Logg ut",
-      "people": "Ansatte"
+      "people": "Ansatte",
+      "payMapping": "Lønnskartlegginger"
     },
     "people": {
       "heading": "Ansatte",
@@ -641,7 +643,10 @@
         "level": "Nivå",
         "levelSource": "Nivåkilde",
         "originalWeightPoints": "Opprinnelige vektpoeng",
-        "anchorCount": "Antall ankere"
+        "anchorCount": "Antall ankere",
+        "populationCount": "Personer inkludert",
+        "withPayCount": "Med lønn",
+        "unclassifiedExcludedCount": "Ekskludert (uklassifisert)"
       },
       "values": {
         "yes": "Ja",
@@ -686,7 +691,8 @@
         "paySalarySet": "Lønn registrert",
         "paySalaryDeleted": "Lønnsoppføring slettet",
         "payMappingSaved": "Lønnskartlegging lagret",
-        "peopleImported": "Personer importert"
+        "peopleImported": "Personer importert",
+        "payMappingRunStarted": "Lønnskartlegging startet"
       },
       "ai": {
         "modelDraft": "Modellkriterier: {count} lagt til",
@@ -863,6 +869,61 @@
         "resultCount": "{shown} av {total} roller",
         "noMatches": "Ingen roller matcher søket eller filtrene.",
         "clearFilters": "Nullstill filtrene"
+      }
+    },
+    "payMapping": {
+      "heading": "Lønnskartlegginger",
+      "description": "Fryste øyeblikksbilder av lønnsdataene for likelønnsanalyse. Hver av dem fanger et tidspunkt.",
+      "startCta": "Start lønnskartlegging",
+      "empty": "Ingen lønnskartlegginger ennå. Start en for å fryse dagens lønnsdata for analyse.",
+      "table": {
+        "label": "Navn",
+        "referenceDate": "Referansedato",
+        "status": "Status",
+        "population": "Personer",
+        "responsible": "Startet av",
+        "created": "Opprettet"
+      },
+      "toolbar": {
+        "searchPlaceholder": "Søk på navn eller startet av",
+        "resultCount": "{shown} av {total} lønnskartlegginger",
+        "noMatches": "Ingen lønnskartlegginger matcher søket.",
+        "clearFilters": "Nullstill søket",
+        "previous": "Forrige",
+        "next": "Neste"
+      },
+      "status": {
+        "active": "Aktiv",
+        "paused": "Pauset",
+        "underReview": "Under gjennomgang",
+        "completed": "Fullført"
+      },
+      "start": {
+        "title": "Start en lønnskartlegging",
+        "description": "Dette fryser et øyeblikksbilde av dagens lønn, roller og demografi. Referansedatoen er i dag.",
+        "labelLabel": "Navn",
+        "labelPlaceholder": "f.eks. Lønnskartlegging 2026",
+        "cta": "Start",
+        "cancel": "Avbryt",
+        "error": "Lønnskartleggingen kunne ikke startes. Prøv igjen."
+      },
+      "detail": {
+        "population": "Personer inkludert",
+        "withPay": "Med lønn",
+        "excluded": "Utelatt (uklassifisert)",
+        "referenceDate": "Referansedato",
+        "notFound": "Den lønnskartleggingen ble ikke funnet.",
+        "back": "Tilbake til lønnskartlegginger",
+        "erased": "Slettet",
+        "searchPlaceholder": "Søk på navn eller rolle",
+        "columns": {
+          "name": "Navn",
+          "gender": "Kjønn",
+          "role": "Rolle",
+          "band": "Bånd",
+          "level": "Nivå",
+          "salary": "Månedslønn"
+        }
       }
     },
     "rating": {
@@ -1302,7 +1363,11 @@
       "classifyLevelLabel": "Hva er nivå?",
       "classifyLevelBody": "Nivå er individets ansiennitet innen rollens spor, for eksempel Senior eller Lead. Det angis per person, ikke på rollen, og brukes i lønnskartlegging for å sammenligne personer i tilsvarende stillinger.",
       "fteAdjustedLabel": "Hva betyr heltidsjustert?",
-      "fteAdjustedBody": "Deltidslønn regnes opp til heltid før sammenligningen. En person som jobber 80% med 40 000 i månedslønn vises som 50 000, slik at alle sammenlignes på heltidsvilkår."
+      "fteAdjustedBody": "Deltidslønn regnes opp til heltid før sammenligningen. En person som jobber 80% med 40 000 i månedslønn vises som 50 000, slik at alle sammenlignes på heltidsvilkår.",
+      "payMappingLabel": "Hva er en lønnskartlegging?",
+      "payMappingBody": "En lønnskartlegging er et fryst øyeblikksbilde av lønn, roller og demografi på et gitt tidspunkt. All likelønnsanalyse kjøres mot den fryste kopien, aldri mot livedata, slik at tallene ikke kan endre seg under dere.",
+      "referenceDateLabel": "Hva er referansedatoen?",
+      "referenceDateBody": "Datoen øyeblikksbildet representerer. Den settes til dagens dato når dere starter kartleggingen."
     },
     "admin": {
       "tabs": {

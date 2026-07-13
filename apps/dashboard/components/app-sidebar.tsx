@@ -3,6 +3,7 @@
 import {
   Audit02Icon,
   Briefcase01Icon,
+  ChartColumnIcon,
   Home01Icon,
   Layers01Icon,
   UserGroup03Icon,
@@ -53,6 +54,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       title: t("nav.people"),
       url: "/people",
       icon: <HugeiconsIcon icon={UserGroup03Icon} strokeWidth={2} />,
+    },
+    {
+      title: t("nav.payMapping"),
+      url: "/pay-mappings",
+      icon: <HugeiconsIcon icon={ChartColumnIcon} strokeWidth={2} />,
     },
   ]
 

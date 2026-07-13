@@ -140,7 +140,8 @@
       "personErased": "Anställd raderad",
       "personCreated": "Anställd tillagd",
       "personUpdated": "Anställd uppdaterad",
-      "roleTrackChanged": "Spåret har ändrats. {count, plural, one {# persons nivå behöver} other {# personers nivåer behöver}} bekräftas på nytt."
+      "roleTrackChanged": "Spåret har ändrats. {count, plural, one {# persons nivå behöver} other {# personers nivåer behöver}} bekräftas på nytt.",
+      "payMappingStarted": "Lönekartläggning startad"
     },
     "accountMenu": "Kontomeny",
     "nav": {
@@ -154,7 +155,8 @@
       "accountSettings": "Kontoinställningar",
       "organization": "Organisation",
       "signOut": "Logga ut",
-      "people": "Medarbetare"
+      "people": "Medarbetare",
+      "payMapping": "Lönekartläggningar"
     },
     "people": {
       "heading": "Medarbetare",
@@ -641,7 +643,10 @@
         "level": "Nivå",
         "levelSource": "Nivåkälla",
         "originalWeightPoints": "Ursprungliga viktpoäng",
-        "anchorCount": "Antal ankare"
+        "anchorCount": "Antal ankare",
+        "populationCount": "Personer inkluderade",
+        "withPayCount": "Med lön",
+        "unclassifiedExcludedCount": "Exkluderade (oklassade)"
       },
       "values": {
         "yes": "Ja",
@@ -686,7 +691,8 @@
         "paySalarySet": "Lön registrerad",
         "paySalaryDeleted": "Lönepost borttagen",
         "payMappingSaved": "Lönemappning sparad",
-        "peopleImported": "Personer importerade"
+        "peopleImported": "Personer importerade",
+        "payMappingRunStarted": "Lönekartläggning startad"
       },
       "ai": {
         "modelDraft": "Modellkriterier: {count} tillagda",
@@ -863,6 +869,61 @@
         "resultCount": "{shown} av {total} roller",
         "noMatches": "Inga roller matchar sökningen eller filtren.",
         "clearFilters": "Rensa filtren"
+      }
+    },
+    "payMapping": {
+      "heading": "Lönekartläggningar",
+      "description": "Frysta ögonblicksbilder av er lönedata för lönekartläggning. Var och en fångar en tidpunkt.",
+      "startCta": "Starta lönekartläggning",
+      "empty": "Inga lönekartläggningar än. Starta en för att frysa dagens lönedata för analys.",
+      "table": {
+        "label": "Namn",
+        "referenceDate": "Referensdatum",
+        "status": "Status",
+        "population": "Personer",
+        "responsible": "Startad av",
+        "created": "Skapad"
+      },
+      "toolbar": {
+        "searchPlaceholder": "Sök på namn eller startad av",
+        "resultCount": "{shown} av {total} lönekartläggningar",
+        "noMatches": "Inga lönekartläggningar matchar sökningen.",
+        "clearFilters": "Rensa sökningen",
+        "previous": "Föregående",
+        "next": "Nästa"
+      },
+      "status": {
+        "active": "Aktiv",
+        "paused": "Pausad",
+        "underReview": "Under översyn",
+        "completed": "Avslutad"
+      },
+      "start": {
+        "title": "Starta en lönekartläggning",
+        "description": "Detta fryser en ögonblicksbild av dagens löner, roller och demografi. Referensdatumet är idag.",
+        "labelLabel": "Namn",
+        "labelPlaceholder": "t.ex. Lönekartläggning 2026",
+        "cta": "Starta",
+        "cancel": "Avbryt",
+        "error": "Lönekartläggningen kunde inte startas. Försök igen."
+      },
+      "detail": {
+        "population": "Personer som ingår",
+        "withPay": "Med lön",
+        "excluded": "Exkluderade (oklassificerade)",
+        "referenceDate": "Referensdatum",
+        "notFound": "Den lönekartläggningen kunde inte hittas.",
+        "back": "Tillbaka till lönekartläggningar",
+        "erased": "Raderad",
+        "searchPlaceholder": "Sök på namn eller roll",
+        "columns": {
+          "name": "Namn",
+          "gender": "Kön",
+          "role": "Roll",
+          "band": "Band",
+          "level": "Nivå",
+          "salary": "Månadslön"
+        }
       }
     },
     "rating": {
@@ -1302,7 +1363,11 @@
       "classifyLevelLabel": "Vad är nivå?",
       "classifyLevelBody": "Nivå är individens senioritet inom rollens spår, till exempel Senior eller Lead. Den anges per person, inte på rollen, och används i lönekartläggning för att jämföra personer i likvärdiga positioner.",
       "fteAdjustedLabel": "Vad betyder heltidsjusterad?",
-      "fteAdjustedBody": "Deltidslön räknas upp till heltid innan jämförelsen. En person som arbetar 80% med 40 000 i månadslön visas som 50 000, så att alla jämförs på heltidsvillkor."
+      "fteAdjustedBody": "Deltidslön räknas upp till heltid innan jämförelsen. En person som arbetar 80% med 40 000 i månadslön visas som 50 000, så att alla jämförs på heltidsvillkor.",
+      "payMappingLabel": "Vad är en lönekartläggning?",
+      "payMappingBody": "En lönekartläggning är en fryst ögonblicksbild av era löner, roller och demografi vid en given tidpunkt. All lönekartläggningsanalys körs mot den frysta kopian, aldrig mot livedata, så siffrorna kan inte ändras under er.",
+      "referenceDateLabel": "Vad är referensdatumet?",
+      "referenceDateBody": "Datumet som ögonblicksbilden representerar. Det sätts till dagens datum när ni startar kartläggningen."
     },
     "admin": {
       "tabs": {

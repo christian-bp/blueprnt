@@ -140,7 +140,8 @@
       "personErased": "Työntekijä poistettu",
       "personCreated": "Työntekijä lisätty",
       "personUpdated": "Työntekijä päivitetty",
-      "roleTrackChanged": "Ura muutettu. {count, plural, one {# henkilön taso on} other {# henkilön tasot on}} vahvistettava uudelleen."
+      "roleTrackChanged": "Ura muutettu. {count, plural, one {# henkilön taso on} other {# henkilön tasot on}} vahvistettava uudelleen.",
+      "payMappingStarted": "Palkkakartoitus aloitettu"
     },
     "accountMenu": "Tilivalikko",
     "nav": {
@@ -154,7 +155,8 @@
       "accountSettings": "Tiliasetukset",
       "organization": "Organisaatio",
       "signOut": "Kirjaudu ulos",
-      "people": "Henkilöstö"
+      "people": "Henkilöstö",
+      "payMapping": "Palkkakartoitukset"
     },
     "people": {
       "heading": "Henkilöstö",
@@ -641,7 +643,10 @@
         "level": "Taso",
         "levelSource": "Tason lähde",
         "originalWeightPoints": "Alkuperäiset painopisteet",
-        "anchorCount": "Ankkurien määrä"
+        "anchorCount": "Ankkurien määrä",
+        "populationCount": "Mukana olevat henkilöt",
+        "withPayCount": "Palkka tiedossa",
+        "unclassifiedExcludedCount": "Suljettu pois (luokittelematon)"
       },
       "values": {
         "yes": "Kyllä",
@@ -686,7 +691,8 @@
         "paySalarySet": "Palkka kirjattu",
         "paySalaryDeleted": "Palkkatietue poistettu",
         "payMappingSaved": "Palkkakartoitus tallennettu",
-        "peopleImported": "Henkilot tuotu"
+        "peopleImported": "Henkilot tuotu",
+        "payMappingRunStarted": "Palkkakartoitus aloitettu"
       },
       "ai": {
         "modelDraft": "Mallin kriteerit: {count} lisätty",
@@ -863,6 +869,61 @@
         "resultCount": "{shown}/{total} roolia",
         "noMatches": "Yksikään rooli ei vastaa hakua tai suodattimia.",
         "clearFilters": "Tyhjennä suodattimet"
+      }
+    },
+    "payMapping": {
+      "heading": "Palkkakartoitukset",
+      "description": "Jäädytettyjä tilannekuvia palkkatiedoistanne tasa-arvoanalyysiä varten. Jokainen niistä tallentaa yhden ajankohdan.",
+      "startCta": "Aloita palkkakartoitus",
+      "empty": "Ei palkkakartoituksia vielä. Aloita yksi jäädyttääksesi tämän päivän palkkatiedot analyysiä varten.",
+      "table": {
+        "label": "Nimi",
+        "referenceDate": "Viitepäivä",
+        "status": "Tila",
+        "population": "Henkilöt",
+        "responsible": "Aloittaja",
+        "created": "Luotu"
+      },
+      "toolbar": {
+        "searchPlaceholder": "Hae nimellä tai aloittajalla",
+        "resultCount": "{shown}/{total} palkkakartoitusta",
+        "noMatches": "Yksikään palkkakartoitus ei vastaa hakua.",
+        "clearFilters": "Tyhjennä haku",
+        "previous": "Edellinen",
+        "next": "Seuraava"
+      },
+      "status": {
+        "active": "Aktiivinen",
+        "paused": "Keskeytetty",
+        "underReview": "Tarkistettavana",
+        "completed": "Valmis"
+      },
+      "start": {
+        "title": "Aloita palkkakartoitus",
+        "description": "Tämä jäädyttää tilannekuvan tämän päivän palkoista, rooleista ja demografiasta. Viitepäivä on tänään.",
+        "labelLabel": "Nimi",
+        "labelPlaceholder": "esim. Palkkakartoitus 2026",
+        "cta": "Aloita",
+        "cancel": "Peruuta",
+        "error": "Palkkakartoitusta ei voitu aloittaa. Yritä uudelleen."
+      },
+      "detail": {
+        "population": "Mukana olevat henkilöt",
+        "withPay": "Palkka tiedossa",
+        "excluded": "Suljettu pois (luokittelematon)",
+        "referenceDate": "Viitepäivä",
+        "notFound": "Palkkakartoitusta ei löytynyt.",
+        "back": "Takaisin palkkakartoituksiin",
+        "erased": "Poistettu",
+        "searchPlaceholder": "Hae nimellä tai roolilla",
+        "columns": {
+          "name": "Nimi",
+          "gender": "Sukupuoli",
+          "role": "Rooli",
+          "band": "Vaativuusluokka",
+          "level": "Taso",
+          "salary": "Kuukausipalkka"
+        }
       }
     },
     "rating": {
@@ -1302,7 +1363,11 @@
       "classifyLevelLabel": "Mikä on taso?",
       "classifyLevelBody": "Taso on yksilön senioriteetti roolin ura-polun sisällä, esimerkiksi Senior tai Lead. Se asetetaan per henkilö, ei roolille, ja sitä käytetään tasa-arvoanalyysissä vertaamaan vastaavissa tehtävissä olevia henkilöitä.",
       "fteAdjustedLabel": "Mitä kokoaikaiseksi muunnettu tarkoittaa?",
-      "fteAdjustedBody": "Osa-aikainen palkka muunnetaan kokoaikaiseksi ennen vertailua. Henkilö, joka työskentelee 80% ja ansaitsee 40 000 kuukaudessa, näytetään arvolla 50 000, jotta kaikkia verrataan kokoaikaisin ehdoin."
+      "fteAdjustedBody": "Osa-aikainen palkka muunnetaan kokoaikaiseksi ennen vertailua. Henkilö, joka työskentelee 80% ja ansaitsee 40 000 kuukaudessa, näytetään arvolla 50 000, jotta kaikkia verrataan kokoaikaisin ehdoin.",
+      "payMappingLabel": "Mikä on palkkakartoitus?",
+      "payMappingBody": "Palkkakartoitus on jäädytetty tilannekuva palkoista, rooleista ja demografiasta yhtenä ajankohtana. Kaikki tasa-arvoanalyysi tehdään jäädytetystä kopiosta, ei koskaan elävästä datasta, jotta luvut eivät voi muuttua altanne.",
+      "referenceDateLabel": "Mikä on viitepäivä?",
+      "referenceDateBody": "Päivä, jota tilannekuva edustaa. Se asetetaan tämän päivän päivämääräksi, kun aloitatte kartoituksen."
     },
     "admin": {
       "tabs": {
