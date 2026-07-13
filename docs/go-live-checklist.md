@@ -102,6 +102,11 @@ in the same change.
   addresses (and bodies) through Sweego. Confirm the hosting region is EU,
   execute a data-processing agreement, and add Sweego to the subprocessor / DPA
   register before go-live.
+- [ ] **Verify the pay-mapping freeze scales past ~1000 employees.** The
+  pay-mapping freeze (`startPayMappingRun`) is currently a single transaction.
+  Verify it against Convex's per-transaction read/write limits and convert it
+  to the batched-action pattern (mirror `people/import`) before onboarding an
+  org above ~1000 employees.
 
 ## V1 conformance follow-ups (from the 2026-07-01 audit)
 
