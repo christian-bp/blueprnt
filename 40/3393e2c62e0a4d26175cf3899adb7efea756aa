@@ -1,0 +1,30 @@
+apps/dashboard/components/pay-mapping/pay-mapping-detail.tsx
+  s_6ea4434f5c3a0d::t_e8509107e56b68 29
+  s_6ea4434f5c3a0d::t_69582b85b6abc4 92
+docs/go-live-checklist.md
+  s_6ea4434f5c3a0d::t_fe93e8a8c5ceb4 110-118
+packages/backend/convex/schema.ts
+  s_6ea4434f5c3a0d::t_9f31ee57918528 13
+packages/backend/convex/payMapping/runs.test.ts
+  s_6ea4434f5c3a0d::t_1a17da7aa61840 22-23
+docs/adr/0011-kartlaggning-livscykel-fryst-datalager.md
+  s_6ea4434f5c3a0d::t_14d2b79bef4db2 21-22
+apps/dashboard/components/pay-mapping/pay-mapping-detail.test.tsx
+  s_6ea4434f5c3a0d::t_ac7e86914da86d 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "403393e2c62e0a4d26175cf3899adb7efea756aa",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
