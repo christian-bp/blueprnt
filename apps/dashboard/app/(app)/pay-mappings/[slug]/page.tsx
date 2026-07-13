@@ -39,14 +39,24 @@ function PayMappingDetailSkeleton() {
         title={<Skeleton className="h-7 w-56 max-w-full" />}
       />
       <Card>
-        <CardContent className="grid gap-4 sm:grid-cols-4">
-          {Array.from({ length: 7 }, (_, index) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
-            <div key={index} className="space-y-1">
-              <Skeleton className="h-4 w-20" />
-              <Skeleton className="h-4 w-16" />
-            </div>
-          ))}
+        {/* Mirrors the loaded metadata card exactly (same CardContent, dl grid,
+            and text-sm dt/dd line boxes) so the card measures identical and does
+            not resize when the run resolves. Each bar is inline-block + centered
+            in its text-sm line box (per the skeleton-measurement rule). */}
+        <CardContent>
+          <dl className="grid gap-4 text-sm sm:grid-cols-4">
+            {Array.from({ length: 7 }, (_, index) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
+              <div key={index}>
+                <dt className="text-muted-foreground">
+                  <Skeleton className="inline-block h-4 w-20 max-w-full align-middle" />
+                </dt>
+                <dd>
+                  <Skeleton className="inline-block h-4 w-16 max-w-full align-middle" />
+                </dd>
+              </div>
+            ))}
+          </dl>
         </CardContent>
       </Card>
       <div className="space-y-4">
