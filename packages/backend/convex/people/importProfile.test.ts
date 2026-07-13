@@ -210,10 +210,11 @@ describe("saveImportMappingProfile + getImportMappingProfile", () => {
       expect(auditRows).toHaveLength(1)
 
       const payload = auditRows[0]?.payload as Record<string, unknown>
-      // The payload is lightweight: only orgId + a reference to the profileId.
+      // Marker payload: only orgId. No internal profile id, and the full column
+      // map is never dumped into the audit trail.
       expect(payload?.orgId).toBe(orgId)
-      // The full column map is not dumped into the audit trail.
       expect(payload).not.toHaveProperty("columnMap")
+      expect(payload).not.toHaveProperty("profileId")
     })
   })
 })

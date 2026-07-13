@@ -65,3 +65,30 @@ export function ChangeEntryRow({
     </li>
   )
 }
+
+// A flat key/value record for an event whose payload is a bag of counts or codes
+// (an import summary, a classification run, a platform membership change) rather
+// than a before/after diff. Each row shows its localized label above the value,
+// in the same bordered record as a ChangeEntryRow list, so a stats event reads
+// the same as a change event. Shared by the org and admin audit detail sheets.
+export function StatList({
+  stats,
+  fieldLabel,
+}: {
+  stats: Array<{ field: string; value: string }>
+  // Resolves a payload field key to its localized label (falls back to the key).
+  fieldLabel: (field: string) => string
+}) {
+  return (
+    <ul className="divide-y divide-border overflow-hidden rounded-lg border">
+      {stats.map((stat) => (
+        <li key={stat.field} className="px-3 py-2.5 text-sm">
+          <div className="text-muted-foreground text-xs">
+            {fieldLabel(stat.field)}
+          </div>
+          <div className="mt-0.5 break-words">{stat.value}</div>
+        </li>
+      ))}
+    </ul>
+  )
+}

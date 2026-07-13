@@ -184,7 +184,9 @@ export const setMembershipRole = platformMutation({
       type: PLATFORM_AUDIT_EVENTS.membershipRoleChanged,
       targetUserId: authId,
       targetOrgId: orgId,
-      payload: { from: result.from, to: role },
+      // A role change IS a before/after change: model it as a `changes` diff so
+      // the audit log renders it as "Role: <from> -> <to>" like every other diff.
+      payload: { changes: { role: { from: result.from, to: role } } },
     })
     return null
   },

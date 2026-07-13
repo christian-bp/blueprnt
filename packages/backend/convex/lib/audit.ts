@@ -396,6 +396,20 @@ export const PERSON_AUDIT_FIELDS = [
   "archivedAt",
 ] as const
 
+// The pay-record fields diffed on salarySet/salaryDeleted. AMOUNT-FREE by
+// design (GDPR): the trail records the year/source/currency of a pay change,
+// never the amount (Role != Person; people/pay.ts).
+export const PAY_AUDIT_FIELDS = ["payYear", "source", "currency"] as const
+
+// The assignment fields diffed on assignment.set (people/assignments.ts). roleId
+// is the internal key; the audit-log query resolves it to the role title for the
+// detail sheet, and the frontend labels it "Role".
+export const ASSIGNMENT_AUDIT_FIELDS = [
+  "roleId",
+  "level",
+  "levelSource",
+] as const
+
 // One bulk `items` entry for a freshly created criterion (template/scratch/AI).
 // Wraps buildCreateChanges over CRITERION_AUDIT_FIELDS; the human label is the
 // criterion name (ids in items are NOT resolved at read time). The optional

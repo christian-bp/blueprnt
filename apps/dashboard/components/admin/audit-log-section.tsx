@@ -41,7 +41,11 @@ import { useFormatter, useTranslations } from "next-intl"
 import { type ReactNode, useMemo, useState } from "react"
 import type { DateRange } from "react-day-picker"
 import { TablePagination } from "@/components/table-pagination"
-import { ChangeEntryRow, KV_GRID } from "@/components/audit/change-entry-row"
+import {
+  ChangeEntryRow,
+  KV_GRID,
+  StatList,
+} from "@/components/audit/change-entry-row"
 import { DateRangePicker } from "@/components/date-range-picker"
 import { PageHeading } from "@/components/page-heading"
 import { TableSkeleton } from "@/components/table-skeleton"
@@ -51,8 +55,10 @@ import { endOfDay, startOfDay } from "@/lib/date-bounds"
 import {
   changeEntries,
   formatChanges,
+  formatStats,
   orderEntries,
   payloadChanges,
+  payloadStats,
   sectionKind,
 } from "@/lib/audit-detail"
 
@@ -100,19 +106,6 @@ function composeTarget(
   const org = row.targetOrg ?? (row.targetOrgMissing ? deletedOrg : null)
   if (user !== null && org !== null) return `${user} @ ${org}`
   return user ?? org ?? ""
-}
-
-// Render the payload compactly as plain text: "key: value" pairs joined with
-// commas, arrays joined with commas. No raw JSON braces. Payloads carry ids and
-// codes only (never PII), so this is safe to surface verbatim.
-function formatPayload(payload: unknown): string {
-  if (payload === null || typeof payload !== "object") return ""
-  return Object.entries(payload as Record<string, unknown>)
-    .map(([key, value]) => {
-      const text = Array.isArray(value) ? value.join(", ") : String(value)
-      return `${key}: ${text}`
-    })
-    .join(", ")
 }
 
 export function AuditLogSection() {
@@ -230,12 +223,21 @@ export function AuditLogSection() {
     return tFields.has(key) ? tFields(key) : field
   }
 
+  // Localizes a boolean field value to Yes/No (shared auditLog namespace), so a
+  // diff row reads "... : No -> Yes" rather than the raw "false -> true".
+  function boolLabel(value: boolean): string {
+    return tFields(value ? "values.yes" : "values.no")
+  }
+
   // The short one-line summary for the table cell: structured before->after
-  // diffs (e.g. platform.orgUpdated) render via formatChanges; everything else
-  // keeps the flat "key: value" rendering.
+  // diffs (e.g. platform.orgUpdated, membershipRoleChanged) render via
+  // formatChanges; a flat payload (platform.userDeleted, membershipGranted)
+  // renders as labeled stats, never a raw payload key.
   function detail(payload: unknown): ReactNode {
     const changes = payloadChanges(payload)
-    return changes ? formatChanges(changes, fieldLabel) : formatPayload(payload)
+    return changes
+      ? formatChanges(changes, fieldLabel, undefined, boolLabel)
+      : formatStats(payload, fieldLabel)
   }
 
   // First-data loading for whichever query is active shows a skeleton table; the
@@ -433,6 +435,7 @@ export function AuditLogSection() {
               actionLabel={actionLabel}
               categoryLabel={categoryLabel}
               fieldLabel={fieldLabel}
+              boolLabel={boolLabel}
             />
           ) : null}
         </SheetContent>
@@ -454,6 +457,7 @@ function AuditDetailSheet({
   actionLabel,
   categoryLabel,
   fieldLabel,
+  boolLabel,
 }: {
   row: AuditRow
   t: ReturnType<typeof useTranslations<"dashboard.admin.auditLog">>
@@ -462,6 +466,7 @@ function AuditDetailSheet({
   actionLabel: (type: string) => string
   categoryLabel: (category: string) => string
   fieldLabel: (field: string) => string
+  boolLabel: (value: boolean) => string
 }) {
   const target = composeTarget(row, t("deletedUser"), t("deletedOrg"))
   const dateLong = format.dateTime(new Date(row.at), {
@@ -473,7 +478,7 @@ function AuditDetailSheet({
   // carries no `changes` map, we fall back to its remaining scalars below.
   const changes = payloadChanges(row.payload)
   const entries = changes
-    ? orderEntries(changeEntries(changes, fieldLabel))
+    ? orderEntries(changeEntries(changes, fieldLabel, undefined, boolLabel))
     : []
   const kind = sectionKind(row.type, entries)
   const sectionHeading =
@@ -483,19 +488,10 @@ function AuditDetailSheet({
         ? t("detail.removedHeading")
         : t("detail.changes")
 
-  // No `changes`: surface the payload's own scalar fields as a framed flat list
-  // (id/code "key: value" rows). `changes` itself is skipped (handled above).
-  const p = (row.payload ?? {}) as Record<string, unknown>
-  const flatEntries =
-    entries.length > 0
-      ? []
-      : Object.entries(p)
-          .filter(
-            ([key, value]) =>
-              key !== "changes" &&
-              (typeof value === "string" || typeof value === "number")
-          )
-          .map(([key, value]) => ({ key, value: String(value) }))
+  // No `changes`: surface the payload's own scalar fields as a labeled flat
+  // record (a count/code per row). `changes`, ids, and `source` are excluded by
+  // payloadStats; ordering is stable via FIELD_DISPLAY_ORDER.
+  const stats = entries.length > 0 ? [] : payloadStats(row.payload)
 
   return (
     <>
@@ -547,21 +543,12 @@ function AuditDetailSheet({
               ))}
             </ul>
           </section>
-        ) : flatEntries.length > 0 ? (
+        ) : stats.length > 0 ? (
           <section className="space-y-2">
             <h3 className="font-medium text-sm">
               {t("detail.detailsHeading")}
             </h3>
-            <ul className="divide-y divide-border overflow-hidden rounded-lg border">
-              {flatEntries.map((entry) => (
-                <li key={entry.key} className="px-3 py-2.5 text-sm">
-                  <div className="text-muted-foreground text-xs">
-                    {fieldLabel(entry.key)}
-                  </div>
-                  <div className="mt-0.5 break-words">{entry.value}</div>
-                </li>
-              ))}
-            </ul>
+            <StatList stats={stats} fieldLabel={fieldLabel} />
           </section>
         ) : (
           <p className="text-muted-foreground text-sm">

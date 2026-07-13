@@ -105,6 +105,18 @@ async function enrichRows(
     if (typeof roleId === "string" && roleTitles.has(roleId)) {
       names[roleId] = roleTitles.get(roleId) as string
     }
+    // assignment.set diffs the role (changes.roleId.{from,to}); resolve both
+    // sides so a re-assignment shows role titles, never a raw id, in the sheet.
+    const roleChange = (payload.changes as Record<string, unknown> | undefined)
+      ?.roleId as Record<string, unknown> | undefined
+    if (roleChange != null && typeof roleChange === "object") {
+      for (const side of ["from", "to"] as const) {
+        const value = roleChange[side]
+        if (typeof value === "string" && roleTitles.has(value)) {
+          names[value] = roleTitles.get(value) as string
+        }
+      }
+    }
     const familyId = payload.familyId
     if (typeof familyId === "string" && familyNames.has(familyId)) {
       names[familyId] = familyNames.get(familyId) as string

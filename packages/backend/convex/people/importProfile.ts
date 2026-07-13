@@ -77,7 +77,7 @@ export const internalSaveImportMappingProfile = internalMutation({
       .first()
 
     if (existing === null) {
-      const profileId = await ctx.db.insert("importMappingProfiles", {
+      await ctx.db.insert("importMappingProfiles", {
         orgId: args.orgId,
         columnMap: args.columnMap,
         ...(args.parseRules !== undefined
@@ -87,16 +87,15 @@ export const internalSaveImportMappingProfile = internalMutation({
         updatedAt: Date.now(),
       })
 
+      // Marker event: the trail records THAT the import mapping was saved. The
+      // profile id is an internal key with no display value, and the column map
+      // itself is not domain content worth diffing, so the payload carries no
+      // changes (the event label alone is the record).
       await logAudit(ctx, {
         orgId: args.orgId,
         type: AUDIT_EVENTS.mappingProfileSaved,
         actorId: args.actorId,
-        payload: {
-          orgId: args.orgId,
-          changes: {
-            profileId: { from: null, to: profileId },
-          },
-        },
+        payload: { orgId: args.orgId, changes: {} },
       })
 
       return null
@@ -140,12 +139,7 @@ export const internalSaveImportMappingProfile = internalMutation({
       orgId: args.orgId,
       type: AUDIT_EVENTS.mappingProfileSaved,
       actorId: args.actorId,
-      payload: {
-        orgId: args.orgId,
-        changes: {
-          profileId: { from: existing._id, to: existing._id },
-        },
-      },
+      payload: { orgId: args.orgId, changes: {} },
     })
 
     return null

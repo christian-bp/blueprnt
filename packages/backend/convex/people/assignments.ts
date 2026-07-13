@@ -2,7 +2,12 @@ import { isValidLevelForTrack } from "@workspace/constants"
 import { v } from "convex/values"
 import type { Doc, Id } from "../_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
-import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
+import {
+  ASSIGNMENT_AUDIT_FIELDS,
+  AUDIT_EVENTS,
+  buildChanges,
+  logAudit,
+} from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 import { requireOwnRole } from "../assessment/roles"
@@ -19,9 +24,6 @@ async function requireOwnPerson(
   }
   return person
 }
-
-// The assignment fields included in the audit changes diff.
-const ASSIGNMENT_AUDIT_FIELDS = ["roleId", "level", "levelSource"] as const
 
 // Wire shape returned by getCurrentAssignment and listAssignmentsForPerson.
 const assignmentShape = v.object({

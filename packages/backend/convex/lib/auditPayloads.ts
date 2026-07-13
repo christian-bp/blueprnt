@@ -318,7 +318,7 @@ export interface PlatformAuditPayloads {
   "platform.orgCreated": Record<string, never>
   "platform.orgUpdated": { changes: Changes }
   "platform.membershipGranted": { role: string }
-  "platform.membershipRoleChanged": { from: string; to: string }
+  "platform.membershipRoleChanged": { changes: Changes }
   "platform.membershipRevoked": Record<string, never>
   "platform.adminGranted": Record<string, never>
   "platform.adminRevoked": Record<string, never>

@@ -8,17 +8,12 @@ import {
   buildChanges,
   buildCreateChanges,
   logAudit,
+  PAY_AUDIT_FIELDS,
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 import { assignmentActiveAt } from "./assignments"
 import { sameSalaryValues } from "./importDiff"
-
-// The pay audit fields: ONLY non-sensitive fields are captured in the audit
-// trail. Salary amounts (basicMonthly, components) are NEVER included
-// (GDPR / Role != Person). The audit records THAT a salary was set for a
-// person/year/source, never the value.
-const PAY_AUDIT_FIELDS = ["payYear", "source", "currency"] as const
 
 // Tenant-isolation assert for a point-read: throws notFound when the person
 // does not exist or belongs to a different org.

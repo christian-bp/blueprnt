@@ -1,6 +1,14 @@
 import {
+  ANCHOR_AUDIT_FIELDS,
+  ASSIGNMENT_AUDIT_FIELDS,
   AUDIT_EVENTS,
+  CRITERION_AUDIT_FIELDS,
+  MODEL_AUDIT_FIELDS,
+  PAY_AUDIT_FIELDS,
+  PERSON_AUDIT_FIELDS,
   PLATFORM_AUDIT_EVENTS,
+  ROLE_CREATE_FIELDS,
+  SETTINGS_AUDIT_FIELDS,
 } from "@workspace/backend/convex/lib/audit"
 import en from "@workspace/i18n/messages/en.json"
 import { describe, expect, it } from "vitest"
@@ -35,6 +43,75 @@ describe("audit log event labels", () => {
     const missing = Object.values(PLATFORM_AUDIT_EVENTS).filter(
       (type) => !(type.replace("platform.", "") in labels)
     )
+    expect(missing).toEqual([])
+  })
+})
+
+// Every field an audit payload can carry (in a `changes` diff or as a flat
+// stat) MUST have a dashboard.auditLog.fields.* label, or the table cell and
+// detail sheet fall back to the raw payload key (the very dump this rendering
+// exists to prevent). The backend field-set constants are the source of truth
+// for the diff fields; importing them means adding a field to any set without
+// its label fails this test instead of shipping a raw key.
+//
+// The rest are fields not covered by an imported constant: the compliance /
+// band-shift / rating diff fields, and the flat-stats event fields
+// (people.imported, classification.suggested, platform.*). Kept in sync by hand
+// with the writers (evaluationModel/method.ts, engine band.shift, ratings, and
+// the flat-stats event payloads in auditPayloads.ts).
+const OTHER_AUDIT_FIELDS = [
+  // criterion.complianceUpdated (COMPLIANCE_AUDIT_FIELDS in method.ts)
+  "whyRelevant",
+  "overlapNotes",
+  "biasRisk",
+  "biasComment",
+  "biasAction",
+  // band.shift diffs (assessment/compute.ts FIELDS) + rating.change
+  "band",
+  "score",
+  "complete",
+  "ratedCount",
+  "value",
+  "motivation",
+  // ai.suggestionConfirmed model.draft bulk item diffs (ai/suggest.ts)
+  "originalWeightPoints",
+  "anchorCount",
+  // member.* / invitation.* / platform.membership* / organization.created scalars
+  "role",
+  "status",
+  "expiresAt",
+  "onboardingCompletedAt",
+  "orgId",
+  // flat-stats event fields
+  "peopleCreated",
+  "peopleUpdated",
+  "peopleUnchanged",
+  "salariesImported",
+  "skippedRows",
+  "suggested",
+  "skipped",
+  "unmatchedTitles",
+  "orgCount",
+] as const
+
+const ALL_AUDIT_FIELDS = [
+  ...new Set<string>([
+    ...CRITERION_AUDIT_FIELDS,
+    ...ANCHOR_AUDIT_FIELDS,
+    ...MODEL_AUDIT_FIELDS,
+    ...SETTINGS_AUDIT_FIELDS,
+    ...ROLE_CREATE_FIELDS,
+    ...PERSON_AUDIT_FIELDS,
+    ...PAY_AUDIT_FIELDS,
+    ...ASSIGNMENT_AUDIT_FIELDS,
+    ...OTHER_AUDIT_FIELDS,
+  ]),
+]
+
+describe("audit log field labels", () => {
+  it("every audit diff and stat field has a label in dashboard.auditLog.fields", () => {
+    const fields = en.dashboard.auditLog.fields as Record<string, string>
+    const missing = ALL_AUDIT_FIELDS.filter((field) => !(field in fields))
     expect(missing).toEqual([])
   })
 })

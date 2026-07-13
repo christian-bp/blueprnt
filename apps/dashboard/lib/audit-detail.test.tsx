@@ -7,11 +7,13 @@ import {
   formatAuditDetail as rawFormatAuditDetail,
   formatChanges as rawFormatChanges,
   formatAuditValue,
+  formatStats,
   orderEntries,
   payloadChanges,
   payloadItems,
   payloadMoves,
   payloadProvenance,
+  payloadStats,
   payloadSuggestions,
   sectionKind,
 } from "./audit-detail"
@@ -147,6 +149,18 @@ describe("formatChanges", () => {
     )
     expect(out).toBe("Anchors: …")
     expect(out).not.toContain("[object Object]")
+  })
+
+  it("localizes booleans via boolLabel instead of 'true'/'false'", () => {
+    const boolLabel = (value: boolean) => (value ? "Yes" : "No")
+    expect(
+      formatChanges(
+        { isManager: { from: false, to: true } },
+        fieldLabel,
+        "…",
+        boolLabel
+      )
+    ).toBe("IsManager: No → Yes")
   })
 })
 
@@ -413,9 +427,94 @@ describe("formatAuditDetail", () => {
       )
     ).toBe("status: active")
   })
+
+  it("renders people.imported as labeled stats, ordered, never raw keys", () => {
+    expect(
+      formatAuditDetail(
+        "people.imported",
+        {
+          peopleCreated: 118,
+          peopleUpdated: 0,
+          peopleUnchanged: 0,
+          salariesImported: 118,
+          skippedRows: 0,
+        },
+        {},
+        labels,
+        fieldLabel
+      )
+    ).toBe(
+      "PeopleCreated: 118 · PeopleUpdated: 0 · PeopleUnchanged: 0 · SalariesImported: 118 · SkippedRows: 0"
+    )
+  })
+
+  it("renders classification.suggested as labeled stats", () => {
+    expect(
+      formatAuditDetail(
+        "classification.suggested",
+        { suggested: 112, skipped: 6, unmatchedTitles: 5 },
+        {},
+        labels,
+        fieldLabel
+      )
+    ).toBe("Suggested: 112 · Skipped: 6 · UnmatchedTitles: 5")
+  })
+
+  it("renders a changes-bearing event with no explicit case inline (person.updated)", () => {
+    expect(
+      formatAuditDetail(
+        "person.updated",
+        { personId: "p1", changes: { title: { from: "Dev", to: "Lead" } } },
+        {},
+        labels,
+        fieldLabel
+      )
+    ).toBe("Title: Dev → Lead")
+  })
+
+  it("renders assignment.set as the assigned role name (never the raw id)", () => {
+    expect(
+      formatAuditDetail(
+        "assignment.set",
+        {
+          personId: "p1",
+          roleId: "r1",
+          changes: {
+            roleId: { from: null, to: "r1" },
+            level: { from: null, to: "IC3" },
+            levelSource: { from: null, to: "suggested" },
+          },
+        },
+        { r1: "Analyst" },
+        labels,
+        fieldLabel
+      )
+    ).toBe("Analyst")
+  })
 })
 
 describe("changeEntries", () => {
+  it("localizes boolean values via boolLabel", () => {
+    const boolLabel = (value: boolean) => (value ? "Yes" : "No")
+    expect(
+      changeEntries(
+        { isCustom: { from: true, to: false } },
+        fieldLabel,
+        undefined,
+        boolLabel
+      )
+    ).toEqual([
+      {
+        field: "isCustom",
+        label: "IsCustom",
+        from: "Yes",
+        to: "No",
+        isSet: false,
+        isComplex: false,
+      },
+    ])
+  })
+
   it("renders a real change as { from, to, isSet: false, isComplex: false }", () => {
     expect(
       changeEntries({ country: { from: "se", to: "no" } }, fieldLabel)
@@ -514,6 +613,61 @@ describe("changeEntries", () => {
         isComplex: false,
       },
     ])
+  })
+})
+
+describe("payloadStats", () => {
+  it("returns scalar fields, excluding changes, ids, and source", () => {
+    expect(
+      payloadStats({
+        personId: "p1",
+        roleId: "r1",
+        source: "import",
+        changes: { title: { from: "a", to: "b" } },
+        skipped: 6,
+        note: "hi",
+      })
+    ).toEqual([
+      { field: "skipped", value: "6" },
+      { field: "note", value: "hi" },
+    ])
+  })
+
+  it("orders by FIELD_DISPLAY_ORDER regardless of stored key order", () => {
+    // Given out-of-order keys, the identity-first order is imposed.
+    expect(
+      payloadStats({
+        skippedRows: 0,
+        peopleCreated: 118,
+        salariesImported: 118,
+      }).map((s) => s.field)
+    ).toEqual(["peopleCreated", "salariesImported", "skippedRows"])
+  })
+
+  it("excludes booleans (a provenance flag is not a stat)", () => {
+    expect(payloadStats({ seeded: true, orgCount: 3 })).toEqual([
+      { field: "orgCount", value: "3" },
+    ])
+  })
+
+  it("is empty for a payload with no stats", () => {
+    expect(payloadStats({ personId: "p1", changes: {} })).toEqual([])
+    expect(payloadStats(null)).toEqual([])
+  })
+})
+
+describe("formatStats", () => {
+  it("joins labeled stats with ' · '", () => {
+    expect(
+      formatStats(
+        { suggested: 112, skipped: 6, unmatchedTitles: 5 },
+        fieldLabel
+      )
+    ).toBe("Suggested: 112 · Skipped: 6 · UnmatchedTitles: 5")
+  })
+
+  it("returns an empty string when there are no stats", () => {
+    expect(formatStats({ personId: "p1" }, fieldLabel)).toBe("")
   })
 })
 

@@ -41,7 +41,11 @@ import { useFormatter, useTranslations } from "next-intl"
 import { type ReactNode, useMemo, useState } from "react"
 import type { DateRange } from "react-day-picker"
 import { TablePagination } from "@/components/table-pagination"
-import { ChangeEntryRow, KV_GRID } from "@/components/audit/change-entry-row"
+import {
+  ChangeEntryRow,
+  KV_GRID,
+  StatList,
+} from "@/components/audit/change-entry-row"
 import { ChangeArrow } from "@/components/change-arrow"
 import { DateRangePicker } from "@/components/date-range-picker"
 import { useOrganization } from "@/components/org-context"
@@ -60,6 +64,7 @@ import {
   payloadItems,
   payloadMoves,
   payloadProvenance,
+  payloadStats,
   payloadSuggestions,
   sectionKind,
 } from "@/lib/audit-detail"
@@ -216,6 +221,12 @@ export function OrgAuditLogSection() {
     return t.has(key) ? t(key) : field
   }
 
+  // Localizes a boolean field value to Yes/No, so a change/diff row reads
+  // "Manager: No -> Yes" rather than the raw "false -> true".
+  function boolLabel(value: boolean): string {
+    return t(value ? "values.yes" : "values.no")
+  }
+
   // The short one-line summary: AI suggestion events render from their own
   // payload (counts), everything else through the shared structured-change
   // formatter. names is per row (each row carries only the ids it references).
@@ -243,7 +254,8 @@ export function OrgAuditLogSection() {
         fieldsChanged: (count) => t("details.fieldsChanged", { count }),
         createdMarker: t("detail.createdMarker"),
       },
-      fieldLabel
+      fieldLabel,
+      boolLabel
     )
   }
 
@@ -458,6 +470,7 @@ export function OrgAuditLogSection() {
               actionLabel={actionLabel}
               categoryLabel={categoryLabel}
               fieldLabel={fieldLabel}
+              boolLabel={boolLabel}
               detailText={detailText}
             />
           ) : null}
@@ -477,6 +490,7 @@ function AuditDetailSheet({
   actionLabel,
   categoryLabel,
   fieldLabel,
+  boolLabel,
   detailText,
 }: {
   row: AuditRow
@@ -486,6 +500,7 @@ function AuditDetailSheet({
   actionLabel: (type: string) => string
   categoryLabel: (category: string) => string
   fieldLabel: (field: string) => string
+  boolLabel: (value: boolean) => string
   detailText: (
     type: string,
     payload: unknown,
@@ -537,7 +552,7 @@ function AuditDetailSheet({
 
   const changes = payloadChanges(row.payload)
   const rawEntries = changes
-    ? changeEntries(changes, fieldLabel, resolveName)
+    ? changeEntries(changes, fieldLabel, resolveName, boolLabel)
     : []
   const kind = sectionKind(row.type, rawEntries)
   // On a creation snapshot, fields set to nothing (e.g. an unset function/team)
@@ -556,10 +571,14 @@ function AuditDetailSheet({
         : t("detail.changes")
   // Annotate the role profile fields when a rename auto-cleared them.
   const clearedByRename = p.profileClearedByRename === true
-  const items = payloadItems(row.payload, fieldLabel)
+  const items = payloadItems(row.payload, fieldLabel, boolLabel)
   const moves = payloadMoves(row.payload)
   const suggestions = payloadSuggestions(row.payload)
   const provenance = payloadProvenance(row.payload)
+  // Flat-stats events (people.imported, classification.suggested) carry no
+  // `changes` map; their scalar counts render as a labeled card, not a raw dump.
+  // Only when there are no field changes, so a diff event never doubles up.
+  const stats = entries.length > 0 ? [] : payloadStats(row.payload)
 
   // Whether any of the structured groups produced renderable content; the
   // one-line summary / no-changes note is only a final fallback when not.
@@ -567,7 +586,8 @@ function AuditDetailSheet({
     entries.length > 0 ||
     (items?.items.length ?? 0) > 0 ||
     (moves?.moves.length ?? 0) > 0 ||
-    (suggestions?.items.length ?? 0) > 0
+    (suggestions?.items.length ?? 0) > 0 ||
+    stats.length > 0
   const summary = hasGroups ? "" : detailText(row.type, row.payload, row.names)
   const dateLong = format.dateTime(new Date(row.at), {
     dateStyle: "long",
@@ -631,6 +651,17 @@ function AuditDetailSheet({
                     />
                   ))}
                 </ul>
+              </section>
+            ) : null}
+
+            {/* Flat-stats group: an import/classification summary as a labeled
+                record (no before/after). */}
+            {stats.length > 0 ? (
+              <section className="space-y-2">
+                <h3 className="font-medium text-sm">
+                  {t("detail.detailsHeading")}
+                </h3>
+                <StatList stats={stats} fieldLabel={fieldLabel} />
               </section>
             ) : null}
 

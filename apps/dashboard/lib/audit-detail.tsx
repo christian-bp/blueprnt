@@ -32,8 +32,15 @@ export function formatAuditValue(value: unknown): string {
 export function formatChanges(
   changes: Record<string, { from: unknown; to: unknown }>,
   fieldLabel: (field: string) => string,
-  complexPlaceholder = "…"
+  complexPlaceholder = "…",
+  // Localizes a boolean field value to "Yes"/"No" (else it stringifies as
+  // "true"/"false"). Optional so callers without i18n keep the raw behavior.
+  boolLabel?: (value: boolean) => string
 ): ReactNode {
+  const valueText = (value: unknown) =>
+    typeof value === "boolean" && boolLabel
+      ? boolLabel(value)
+      : formatAuditValue(value)
   return Object.entries(changes).map(([field, { from, to }], index) => {
     const label = fieldLabel(field)
     const isComplex =
@@ -50,8 +57,8 @@ export function formatChanges(
         </Fragment>
       )
     }
-    const fromText = formatAuditValue(from)
-    const toText = formatAuditValue(to)
+    const fromText = valueText(from)
+    const toText = valueText(to)
     if (fromText.trim() === "") {
       return (
         <Fragment key={field}>
@@ -116,7 +123,8 @@ function firstItemId(item: Record<string, unknown>, index: number): string {
 // explicit `payload.count`, else the item count.
 export function payloadItems(
   payload: unknown,
-  fieldLabel: (field: string) => string
+  fieldLabel: (field: string) => string,
+  boolLabel?: (value: boolean) => string
 ): {
   count: number
   items: Array<{
@@ -134,7 +142,9 @@ export function payloadItems(
     return {
       key: firstItemId(item, index),
       title: typeof item.label === "string" ? item.label : "",
-      entries: changes ? changeEntries(changes, fieldLabel) : [],
+      entries: changes
+        ? changeEntries(changes, fieldLabel, undefined, boolLabel)
+        : [],
     }
   })
   const count = typeof p.count === "number" ? p.count : items.length
@@ -231,6 +241,42 @@ export function payloadProvenance(
   return out
 }
 
+// Reads an event's "flat stats": the scalar payload fields that are neither a
+// structured `changes` map, an internal id, nor the `source` marker, as an
+// ordered {field,value} list. This is the shape of events whose payload is a
+// bag of counts or codes rather than a before->after diff (people.imported,
+// classification.suggested, platform.userDeleted, platform.membershipGranted).
+// Ordered via FIELD_DISPLAY_ORDER so the read is stable regardless of stored key
+// order (Convex does not guarantee object key order on read of a v.any() payload).
+// Booleans are excluded: a provenance flag is not a stat.
+export function payloadStats(
+  payload: unknown
+): Array<{ field: string; value: string }> {
+  const p = (payload ?? {}) as Record<string, unknown>
+  const stats = Object.entries(p)
+    .filter(
+      ([key, value]) =>
+        key !== "changes" &&
+        !key.endsWith("Id") &&
+        key !== "source" &&
+        (typeof value === "string" || typeof value === "number")
+    )
+    .map(([field, value]) => ({ field, value: formatAuditValue(value) }))
+  return orderEntries(stats)
+}
+
+// One-line labeled summary of an event's flat stats, e.g.
+// "New employees: 118 · Salaries imported: 118 · Skipped rows: 0". Empty string
+// when the payload carries no stats, so a payload-less event renders nothing.
+export function formatStats(
+  payload: unknown,
+  fieldLabel: (field: string) => string
+): string {
+  return payloadStats(payload)
+    .map(({ field, value }) => `${fieldLabel(field)}: ${value}`)
+    .join(" · ")
+}
+
 // One row per changed field, for rendering a structured before/after list.
 // `isSet` is true when there was no prior value (first-time set), so the UI can
 // show just the new value instead of "<empty> -> value". `isComplex` is true
@@ -243,7 +289,8 @@ export function payloadProvenance(
 export function changeEntries(
   changes: Record<string, { from: unknown; to: unknown }>,
   fieldLabel: (field: string) => string,
-  resolveName?: (id: string) => string | undefined
+  resolveName?: (id: string) => string | undefined,
+  boolLabel?: (value: boolean) => string
 ): Array<{
   field: string
   label: string
@@ -253,6 +300,7 @@ export function changeEntries(
   isComplex: boolean
 }> {
   const display = (value: unknown): string => {
+    if (typeof value === "boolean" && boolLabel) return boolLabel(value)
     if (typeof value === "string" && resolveName) {
       const name = resolveName(value)
       if (name) return name
@@ -322,6 +370,31 @@ export const FIELD_DISPLAY_ORDER = [
   "archivedAt",
   "orgId",
   "bandThresholds",
+  // Person diff fields (person.* events); country/archivedAt are already above.
+  "department",
+  "employmentType",
+  "employmentStartDate",
+  "ftePercent",
+  "isManager",
+  "statisticalCode",
+  // Pay diff fields (pay.* events); currency is already above.
+  "payYear",
+  "source",
+  // Assignment diff fields (assignment.set).
+  "roleId",
+  "level",
+  "levelSource",
+  // Flat-stats fields: event summaries whose payload is a bag of counts/codes
+  // (people.imported, classification.suggested, platform.*), not a diff.
+  "peopleCreated",
+  "peopleUpdated",
+  "peopleUnchanged",
+  "salariesImported",
+  "skippedRows",
+  "suggested",
+  "skipped",
+  "unmatchedTitles",
+  "orgCount",
 ] as const
 
 // Sorts change entries into FIELD_DISPLAY_ORDER. Stable: unknown fields keep
@@ -425,7 +498,8 @@ export function formatAuditDetail(
   payload: unknown,
   names: Record<string, string>,
   labels: AuditDetailLabels,
-  fieldLabel: (field: string) => string = (f) => f
+  fieldLabel: (field: string) => string = (f) => f,
+  boolLabel?: (value: boolean) => string
 ): ReactNode {
   const p = (payload ?? {}) as Record<string, unknown>
   const roleName = (id: unknown) =>
@@ -450,6 +524,9 @@ export function formatAuditDetail(
     case "rating.change":
     case "anchorRole.designated":
     case "anchorRole.updated":
+    // assignment.set carries the assigned roleId (top-level, resolved to the
+    // role title by the audit-log query); the level detail lives in the sheet.
+    case "assignment.set":
       return roleName(p.roleId)
     case "role.updated": {
       const base = roleName(p.roleId)
@@ -463,7 +540,7 @@ export function formatAuditDetail(
         `${base}: ${labels.fieldsChanged(entries.length)}`
       ) : (
         <>
-          {base}: {formatChanges(changes, fieldLabel)}
+          {base}: {formatChanges(changes, fieldLabel, undefined, boolLabel)}
         </>
       )
     }
@@ -495,7 +572,7 @@ export function formatAuditDetail(
       if (changes !== null) {
         return (
           <>
-            {base}: {formatChanges(changes, fieldLabel)}
+            {base}: {formatChanges(changes, fieldLabel, undefined, boolLabel)}
           </>
         )
       }
@@ -508,7 +585,8 @@ export function formatAuditDetail(
     case "member.roleChanged":
       return changes !== null ? (
         <>
-          {memberName(p.memberUserId)}: {formatChanges(changes, fieldLabel)}
+          {memberName(p.memberUserId)}:{" "}
+          {formatChanges(changes, fieldLabel, undefined, boolLabel)}
         </>
       ) : (
         memberName(p.memberUserId)
@@ -516,7 +594,9 @@ export function formatAuditDetail(
     case "member.removed":
       return memberName(p.memberUserId)
     case "organization.settingsUpdated":
-      return changes !== null ? formatChanges(changes, fieldLabel) : ""
+      return changes !== null
+        ? formatChanges(changes, fieldLabel, undefined, boolLabel)
+        : ""
     case "organization.created":
       return labels.createdMarker
     case "model.created":
@@ -546,17 +626,16 @@ export function formatAuditDetail(
     case "invitation.accepted":
     case "invitation.revoked":
       return ""
-    default:
+    default: {
       if (isBulk) return labels.itemsChanged(bulkCount)
-      // Clean fallback: scalar fields only, never raw ids or "source".
-      return Object.entries(p)
-        .filter(
-          ([k, v]) =>
-            !k.endsWith("Id") &&
-            k !== "source" &&
-            (typeof v === "string" || typeof v === "number")
-        )
-        .map(([k, v]) => `${k}: ${v}`)
-        .join(", ")
+      // A changes-bearing event with no explicit case (person.*, pay.*,
+      // assignment.set, organization.nameUpdated) reads like settingsUpdated:
+      // its field changes inline. A flat-stats event (people.imported,
+      // classification.suggested) reads as labeled "Label: value" stats. Neither
+      // ever leaks a raw payload key.
+      if (changes !== null)
+        return formatChanges(changes, fieldLabel, undefined, boolLabel)
+      return formatStats(p, fieldLabel)
+    }
   }
 }

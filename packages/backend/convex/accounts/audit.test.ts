@@ -155,6 +155,44 @@ describe("accounts.audit.listAuditLog (browse)", () => {
     expect(Object.keys(created?.names ?? {})).toEqual([roleId.toString()])
   })
 
+  it("enriches assignment.set names with BOTH the old and new roleId on a re-assignment", async () => {
+    const t = initConvexTest()
+    const { orgId, adminId } = await setup(t)
+    const roleA = await createRole(t, adminId, orgId, "Analyst")
+    const roleB = await createRole(t, adminId, orgId, "Lead Analyst")
+    // A re-assignment diffs the role: changes.roleId = { from: A, to: B }. Both
+    // sides must resolve to titles so the detail sheet never shows a raw id.
+    await t.run(async (ctx) => {
+      const payload = {
+        personId: "person-placeholder",
+        roleId: roleB,
+        changes: {
+          roleId: { from: roleA, to: roleB },
+          level: { from: "IC3", to: "Lead-1" },
+          levelSource: { from: "confirmed", to: "suggested" },
+        },
+      }
+      await ctx.db.insert("auditLog", {
+        orgId,
+        type: "assignment.set",
+        actorId: adminId,
+        actorName: "Admin Person",
+        payload,
+        category: categoryForEvent("assignment.set"),
+        searchText: buildSearchText("Admin Person", "assignment.set", payload),
+      })
+    })
+    const result = await t
+      .withIdentity({ subject: adminId })
+      .query(api.accounts.audit.listAuditLog, {
+        orgId,
+        paginationOpts: { numItems: 50, cursor: null },
+      })
+    const row = result.page.find((r) => r.type === "assignment.set")
+    expect(row?.names[roleA.toString()]).toBe("Analyst")
+    expect(row?.names[roleB.toString()]).toBe("Lead Analyst")
+  })
+
   it("enriches a member row's names with its memberUserId -> name", async () => {
     const t = initConvexTest()
     const { orgId, adminId } = await setup(t)
