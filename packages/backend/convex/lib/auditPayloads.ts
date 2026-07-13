@@ -307,6 +307,12 @@ export interface AuditPayloads {
     salariesImported: number
     skippedRows: number
   }
+  "payMapping.runStarted": {
+    runId: string
+    populationCount: number
+    withPayCount: number
+    unclassifiedExcludedCount: number
+  }
 }
 
 // Admin audit payloads, keyed 1:1 by every PLATFORM_AUDIT_EVENTS value. Also

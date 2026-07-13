@@ -4,7 +4,7 @@ import type { MutationCtx } from "../_generated/server"
 
 // Tables whose rows are reachable by their own route and therefore carry a
 // human-readable, per-org-unique `slug` (resolved via the `by_org_slug` index).
-type SlugTable = "roles" | "roleFamilies"
+type SlugTable = "roles" | "roleFamilies" | "payMappingRuns"
 
 // A short, url-safe id derived from a v4 uuid. No new dependency: crypto is
 // available in the Convex runtime (already used in assessment/starters.ts).
@@ -61,12 +61,19 @@ export async function uniqueSlug(
               q.eq("orgId", orgId).eq("slug", slug)
             )
             .first()
-        : await ctx.db
-            .query("roleFamilies")
-            .withIndex("by_org_slug", (q) =>
-              q.eq("orgId", orgId).eq("slug", slug)
-            )
-            .first()
+        : table === "roleFamilies"
+          ? await ctx.db
+              .query("roleFamilies")
+              .withIndex("by_org_slug", (q) =>
+                q.eq("orgId", orgId).eq("slug", slug)
+              )
+              .first()
+          : await ctx.db
+              .query("payMappingRuns")
+              .withIndex("by_org_slug", (q) =>
+                q.eq("orgId", orgId).eq("slug", slug)
+              )
+              .first()
     return hit !== null && hit._id !== opts.excludeId
   }
 

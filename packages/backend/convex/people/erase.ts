@@ -8,6 +8,7 @@ import {
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation } from "../lib/functions"
+import { pseudonymizePersonInSnapshots } from "../payMapping/erasure"
 
 // Shared hard-delete body. Deletes payRecords, then personAssignments, then the
 // people row, in child-first order. Throws notFound when the person is missing
@@ -26,6 +27,9 @@ export async function erasePersonRecords(
   if (person === null || person.orgId !== orgId) {
     throw appError(ERROR_CODES.notFound)
   }
+  // Captured before the deletes below: the people row (and with it
+  // person.publicId) is gone after step 3.
+  const personPublicId = person.publicId
 
   // Non-PII delete snapshot built BEFORE deletion. PERSON_AUDIT_FIELDS excludes
   // displayName, gender, birthDate, and externalRef (all person identifiers);
@@ -64,6 +68,10 @@ export async function erasePersonRecords(
 
   // 3. The people row itself.
   await ctx.db.delete(personId)
+
+  // 4. Pseudonymize the person inside any frozen kartläggning snapshot
+  //    (ADR-0011): the row stays, identity is tombstoned, aggregate kept.
+  await pseudonymizePersonInSnapshots(ctx, orgId, personPublicId)
 
   return nonPiiBefore
 }

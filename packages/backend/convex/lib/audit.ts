@@ -1,4 +1,4 @@
-import type { GenericMutationCtx } from "convex/server"
+import type { GenericMutationCtx, GenericQueryCtx } from "convex/server"
 import type { DataModel, Doc } from "../_generated/dataModel"
 import type { AuditPayloads, PlatformAuditPayloads } from "./auditPayloads"
 
@@ -47,6 +47,7 @@ export const AUDIT_EVENTS = {
   salaryDeleted: "pay.salaryDeleted",
   mappingProfileSaved: "pay.mappingSaved",
   importCompleted: "people.imported",
+  payMappingRunStarted: "payMapping.runStarted",
 } as const
 
 export type AuditEvent = (typeof AUDIT_EVENTS)[keyof typeof AUDIT_EVENTS]
@@ -87,7 +88,7 @@ export function categoryForEvent(type: string): AuditCategory | undefined {
     type.startsWith("classification.")
   )
     return "people"
-  if (type.startsWith("pay.")) return "pay"
+  if (type.startsWith("pay.") || type.startsWith("payMapping.")) return "pay"
   return undefined
 }
 
@@ -464,12 +465,17 @@ export function criterionDeleteItem(criterion: Doc<"criteria">): {
   }
 }
 
-// Snapshots the actor's display name at write time by looking up the users
-// mirror by auth id. Returns "unknown" when no mirror row matches (sentinel
-// actors like "system"/"seeded"/"system:cli") or when the lookup throws.
-// Shared by both audit writers so the snapshot rule cannot drift between them.
-async function resolveActorName(
-  ctx: GenericMutationCtx<DataModel>,
+// Resolves an actor id to its display name by looking up the users mirror by
+// auth id. Returns "unknown" when no mirror row matches (sentinel actors like
+// "system"/"seeded"/"system:cli") or when the lookup throws. Shared by both
+// audit writers (as a write-time snapshot) AND by read-time resolvers such as
+// payMapping/runs.ts's "started by" column, so the lookup rule cannot drift
+// between write-time and read-time use. Typed to accept any read-capable ctx
+// (a GenericMutationCtx satisfies this structurally since its db is a
+// GenericDatabaseWriter, a superset of GenericDatabaseReader) so both mutation
+// and query contexts can call it.
+export async function resolveActorName(
+  ctx: GenericQueryCtx<DataModel>,
   actorId: string
 ): Promise<string> {
   try {
