@@ -1,0 +1,21 @@
+docs/superpowers/specs/2026-07-12-kartlaggning-snapshot-design.md
+  s_6ea4434f5c3a0d::t_9d5172a22637fc 1-154,157-167,172-224
+  s_6ea4434f5c3a0d::t_77493e7dd959a9 155-156
+  s_6ea4434f5c3a0d::t_22608dbc4c1b2d 168-171
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "013079100adea2aea8afc74097de3e994a6604f5",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
