@@ -1,0 +1,19 @@
+docs/superpowers/plans/2026-07-13-p1-gender-gap-view.md
+  s_6ea4434f5c3a0d::t_88a3a22ccac03d 1-1491
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "0ffe68d964a2821b9ac0117e9a3d54ae700a95f0",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "unknown"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
