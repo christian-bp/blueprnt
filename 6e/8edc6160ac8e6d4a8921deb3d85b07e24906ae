@@ -1,0 +1,19 @@
+docs/superpowers/plans/2026-07-12-kartlaggning-snapshot.md
+  s_6ea4434f5c3a0d::t_4730f836caeb15 1-881
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "6e8edc6160ac8e6d4a8921deb3d85b07e24906ae",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
