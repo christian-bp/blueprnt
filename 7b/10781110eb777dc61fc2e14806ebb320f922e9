@@ -1,0 +1,122 @@
+packages/i18n/messages/sv.json
+  s_6ea4434f5c3a0d::t_da08b5a41bfb29 642-644
+  s_6ea4434f5c3a0d::t_df649915287052 646-648
+  s_6ea4434f5c3a0d::t_8065913057db96 630,632-641
+  s_6ea4434f5c3a0d::t_73a424ef50dd98 622-629,631
+  s_6ea4434f5c3a0d::t_cce8457ab119db 645
+apps/dashboard/lib/audit-detail.test.tsx
+  s_6ea4434f5c3a0d::t_44aec47bef7864 10,16
+  s_6ea4434f5c3a0d::t_cdfd7c9f4136a5 497-517
+  s_6ea4434f5c3a0d::t_8f04423c734b8a 619-673
+  s_6ea4434f5c3a0d::t_c841da18677fef 153-164
+  s_6ea4434f5c3a0d::t_65ef75984e45c2 430-473
+  s_6ea4434f5c3a0d::t_611f8a63e2f721 474-493
+apps/dashboard/lib/audit-labels.test.ts
+  s_6ea4434f5c3a0d::t_471f702d8f79a5 50-68,70-71,74-75,80-81,85,96-109,112,114
+  s_6ea4434f5c3a0d::t_9c4fff4de69258 82-83
+  s_6ea4434f5c3a0d::t_bfe698e9b78ec2 2-3,5-8,10-11
+  s_6ea4434f5c3a0d::t_06382f80d834df 49,86-95,110-111,113,115-117
+  s_6ea4434f5c3a0d::t_8be1e937fc71b4 69,72-73,76-79,84
+packages/backend/convex/accounts/audit.ts
+  s_6ea4434f5c3a0d::t_52635137807fdc 108-119
+packages/backend/convex/people/assignments.ts
+  s_6ea4434f5c3a0d::t_86d667fd34e178 5-10
+packages/backend/convex/platform/admin.ts
+  s_6ea4434f5c3a0d::t_c803ac03f23fba 187-189
+packages/backend/convex/people/importProfile.test.ts
+  s_6ea4434f5c3a0d::t_b07825cb631079 213-214,217
+packages/i18n/messages/da.json
+  s_6ea4434f5c3a0d::t_4907856e0492b6 630,632-641
+  s_6ea4434f5c3a0d::t_f35030e56c3714 646-648
+  s_6ea4434f5c3a0d::t_af2cf0a88c7111 642-644
+  s_6ea4434f5c3a0d::t_6d9c201c0194c6 622-629,631
+  s_6ea4434f5c3a0d::t_cb2d887d57f63f 645
+packages/backend/convex/lib/audit.ts
+  s_6ea4434f5c3a0d::t_dbf694bf618268 399-412
+packages/i18n/messages/en.json
+  s_6ea4434f5c3a0d::t_a90a175aa44c0d 632-641
+  s_6ea4434f5c3a0d::t_775d1491b75014 622-631
+  s_6ea4434f5c3a0d::t_3054d9ad3086fb 646-648
+  s_6ea4434f5c3a0d::t_00ca625f2897b8 642-644
+  s_6ea4434f5c3a0d::t_8ee3f134e42295 645
+packages/backend/convex/accounts/audit.test.ts
+  s_6ea4434f5c3a0d::t_cc0c0ee57c313e 158-195
+apps/dashboard/components/audit/change-entry-row.tsx
+  s_6ea4434f5c3a0d::t_31d479d9d7c6d6 68-94
+packages/i18n/messages/fi.json
+  s_6ea4434f5c3a0d::t_2c67e26c2e98f9 622-629,631
+  s_6ea4434f5c3a0d::t_f184359e7e503b 630,632-641
+  s_6ea4434f5c3a0d::t_db502b05cbaab2 642-644
+  s_6ea4434f5c3a0d::t_39721e542ef8c5 646-648
+  s_6ea4434f5c3a0d::t_5bfd48ad82188f 645
+apps/dashboard/components/admin/audit-log-section.tsx
+  s_6ea4434f5c3a0d::t_92b528cb5e70fc 460,469
+  s_6ea4434f5c3a0d::t_8f74202532c7d6 481
+  s_6ea4434f5c3a0d::t_299de916acb7fa 546,551
+  s_6ea4434f5c3a0d::t_6dddfc72dd463a 58,61
+  s_6ea4434f5c3a0d::t_67bc5e70e34cab 238,240
+  s_6ea4434f5c3a0d::t_2801e97caf301d 233-235
+  s_6ea4434f5c3a0d::t_cde3000787f063 239
+  s_6ea4434f5c3a0d::t_a02c077f016658 44-48
+  s_6ea4434f5c3a0d::t_1fce84a7dc0cd5 226-231
+  s_6ea4434f5c3a0d::t_564ff2910f8342 438
+  s_6ea4434f5c3a0d::t_41326fa5bd4a9f 491-494
+CLAUDE.md
+  s_6ea4434f5c3a0d::t_be310ba59bc08e 42
+apps/dashboard/lib/audit-detail.tsx
+  s_6ea4434f5c3a0d::t_1d6802850071cc 60-61
+  s_6ea4434f5c3a0d::t_ad9fffa83c5318 248
+  s_6ea4434f5c3a0d::t_0039eb39c670a7 303
+  s_6ea4434f5c3a0d::t_5d39ae972ac2cb 543,575
+  s_6ea4434f5c3a0d::t_ba44da8e93232a 35-38,40-43
+  s_6ea4434f5c3a0d::t_e5b87eadbdec43 145-147,588-589,597-599,636-637
+  s_6ea4434f5c3a0d::t_04592fdfb1a430 387-397
+  s_6ea4434f5c3a0d::t_b3c1a624436507 501-502
+  s_6ea4434f5c3a0d::t_d230227af733d9 527-529
+  s_6ea4434f5c3a0d::t_5f1d3a6c430f14 373-386
+  s_6ea4434f5c3a0d::t_3b922bd1a0641a 126-127
+  s_6ea4434f5c3a0d::t_14ee0a959f0a85 244-247,249-279
+  s_6ea4434f5c3a0d::t_bbbb8f0b865fd4 629,631-635,638-639
+  s_6ea4434f5c3a0d::t_6484085ebcfca8 292-293
+packages/backend/convex/people/importProfile.ts
+  s_6ea4434f5c3a0d::t_8564f93aa984ef 80
+  s_6ea4434f5c3a0d::t_39b738d8c4ba8a 90-93,98
+  s_6ea4434f5c3a0d::t_5c4f47b8ea7632 142
+packages/backend/convex/lib/auditPayloads.ts
+  s_6ea4434f5c3a0d::t_f196287a245113 321
+apps/dashboard/components/org-audit-log-section.tsx
+  s_6ea4434f5c3a0d::t_685773b4a42933 67
+  s_6ea4434f5c3a0d::t_b5eb412aa9d3e3 44-48
+  s_6ea4434f5c3a0d::t_d54ae3818c76f3 555
+  s_6ea4434f5c3a0d::t_e247726b3292ff 574
+  s_6ea4434f5c3a0d::t_e2c9441f4c16ca 578-581,589-590
+  s_6ea4434f5c3a0d::t_cf6f794d730e0f 657-667
+  s_6ea4434f5c3a0d::t_6e0797e63f85fb 493,503
+  s_6ea4434f5c3a0d::t_66608fe210163e 257-258
+  s_6ea4434f5c3a0d::t_99e7e79bf322f6 224-229
+  s_6ea4434f5c3a0d::t_cff31bdce6411c 473
+packages/backend/convex/people/pay.ts
+  s_6ea4434f5c3a0d::t_88387b562a0668 11
+packages/i18n/messages/nb.json
+  s_6ea4434f5c3a0d::t_4791d92db03ccb 642-644
+  s_6ea4434f5c3a0d::t_bc46b32c5bad93 646-648
+  s_6ea4434f5c3a0d::t_01f387c57775c2 622-626,628-629,631
+  s_6ea4434f5c3a0d::t_ec1d3138985853 627,630,632-641
+  s_6ea4434f5c3a0d::t_456ab99b26192a 645
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "7b10781110eb777dc61fc2e14806ebb320f922e9",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
