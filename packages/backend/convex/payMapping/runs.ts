@@ -286,24 +286,3 @@ export const getPayMappingRunBySlug = orgQuery({
     }
   },
 })
-
-// View-logging (ADR-0011 section 3). A mutation, called by the detail page on
-// mount. Not audited via ctx.audit: this is the separate access dimension.
-export const logPayMappingView = orgMutation({
-  args: { runId: v.id("payMappingRuns") },
-  returns: v.null(),
-  handler: async (ctx, { runId }) => {
-    const run = await ctx.db.get(runId)
-    if (run === null || run.orgId !== ctx.orgId) {
-      throw appError(ERROR_CODES.notFound)
-    }
-    await ctx.db.insert("payMappingAccessLog", {
-      orgId: ctx.orgId,
-      runId,
-      actorId: ctx.authUserId,
-      at: Date.now(),
-      kind: "view",
-    })
-    return null
-  },
-})

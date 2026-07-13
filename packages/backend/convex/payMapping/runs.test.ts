@@ -19,10 +19,8 @@ const PAST = 1_700_000_000_000
 // of whom has a pay record and one who does not, and one active unclassified
 // person (no assignment). Returns the caller's org id and an HR (admin)
 // identity wrapper for the freeze mutation.
-async function seedForFreeze(
-  t: ReturnType<typeof initConvexTest>,
-  email = "hr@acme.se"
-) {
+async function seedForFreeze(t: ReturnType<typeof initConvexTest>) {
+  const email = "hr@acme.se"
   const { orgId, userId } = await t.mutation(
     components.betterAuth.testing.seedMembership,
     { email, name: OPERATOR_NAME, role: "admin" }
@@ -302,67 +300,5 @@ describe("getPayMappingRunBySlug", () => {
     )
 
     expect(result).toBeNull()
-  })
-})
-
-describe("logPayMappingView", () => {
-  it("appends one view row to payMappingAccessLog without writing to the audit trail", async () => {
-    const t = initConvexTest()
-    const { orgId, asHr } = await seedForFreeze(t)
-
-    const { runId } = await asHr.mutation(
-      api.payMapping.runs.startPayMappingRun,
-      { orgId, label: "Test" }
-    )
-
-    const auditsBefore = await t.run((ctx) =>
-      ctx.db
-        .query("auditLog")
-        .withIndex("by_org", (q) => q.eq("orgId", orgId))
-        .collect()
-    )
-
-    await asHr.mutation(api.payMapping.runs.logPayMappingView, {
-      orgId,
-      runId,
-    })
-
-    const logs = await t.run((ctx) =>
-      ctx.db
-        .query("payMappingAccessLog")
-        .withIndex("by_run", (q) => q.eq("orgId", orgId).eq("runId", runId))
-        .collect()
-    )
-    expect(logs).toHaveLength(1)
-    expect(logs[0]?.kind).toBe("view")
-    expect(logs[0]?.runId).toBe(runId)
-
-    // ADR-0011 §3: view-logging stays out of the domain audit trail, so the
-    // auditLog row count for this org must be unchanged by the call above.
-    const auditsAfter = await t.run((ctx) =>
-      ctx.db
-        .query("auditLog")
-        .withIndex("by_org", (q) => q.eq("orgId", orgId))
-        .collect()
-    )
-    expect(auditsAfter).toHaveLength(auditsBefore.length)
-  })
-
-  it("throws when the runId belongs to another org", async () => {
-    const t = initConvexTest()
-    const { orgId: orgA, asHr: asHrA } = await seedForFreeze(t, "hr-a@acme.se")
-    const { orgId: orgB, asHr: asHrB } = await seedForFreeze(t, "hr-b@beta.se")
-
-    const { runId: runIdB } = await asHrB.mutation(
-      api.payMapping.runs.startPayMappingRun,
-      { orgId: orgB, label: "Other org run" }
-    )
-
-    await expect(
-      asHrA.mutation(api.payMapping.runs.logPayMappingView, {
-        orgId: orgA,
-        runId: runIdB,
-      })
-    ).rejects.toThrow(/errors.notFound/)
   })
 })

@@ -107,6 +107,15 @@ in the same change.
   Verify it against Convex's per-transaction read/write limits and convert it
   to the batched-action pattern (mirror `people/import`) before onboarding an
   org above ~1000 employees.
+- [ ] **Implement kartlaggning access + export logging in the export slice.**
+  ADR-0011 section 3 (Atkomst- och exportloggning) decided that views and
+  exports of a kartlaggning get logged, but the first snapshot slice shipped
+  without it (see the ADR's 2026-07-13 update): the change-log requirement is
+  already covered by the domain audit trail, and the real value is at the
+  export boundary, which does not exist yet. Guide Modul 9 / line 735 covers
+  the same requirement. Before go-live, build this logging in the future
+  export/report module (guide Modul 8) at the point data leaves the system,
+  not as a per-view log on the detail page.
 
 ## V1 conformance follow-ups (from the 2026-07-01 audit)
 

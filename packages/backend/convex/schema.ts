@@ -10,11 +10,7 @@ import {
   importMappingProfiles,
   importProgress,
 } from "./people/tables"
-import {
-  payMappingRuns,
-  payMappingSnapshotRows,
-  payMappingAccessLog,
-} from "./payMapping/tables"
+import { payMappingRuns, payMappingSnapshotRows } from "./payMapping/tables"
 import { auditLog, suggestions, platformAuditLog } from "./shared/tables"
 
 // Minimal domain tables by design (ADR-0006): aggregates (anchors, band
@@ -47,5 +43,4 @@ export default defineSchema({
   importProgress,
   payMappingRuns,
   payMappingSnapshotRows,
-  payMappingAccessLog,
 })

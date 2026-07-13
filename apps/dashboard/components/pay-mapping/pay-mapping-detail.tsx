@@ -7,7 +7,6 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -26,9 +25,8 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
-import { useMutation } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { PageBreadcrumb } from "@/components/page-breadcrumb"
 import { PageHeader } from "@/components/page-header"
@@ -91,10 +89,8 @@ const PAGE_SIZE = 25
 // The kartlaggning (pay mapping) detail: a frozen-population survey. Read-only
 // throughout, since the whole point of the snapshot is that it never changes
 // after the freeze (ADR-0011). Renders the run's metadata and every frozen
-// row, and logs a view once per mount (the access-log dimension, separate
-// from the domain audit trail).
+// row.
 export function PayMappingDetail({
-  orgId,
   run,
 }: {
   orgId: string
@@ -106,18 +102,6 @@ export function PayMappingDetail({
   const tPeople = useTranslations("dashboard.people")
   const format = useFormatter()
   const money = useMoney()
-
-  const logView = useMutation(api.payMapping.runs.logPayMappingView)
-  // Fire-once effect: StrictMode double-invokes effects on mount, and without
-  // this guard the view would be logged twice per mount. The mutation's
-  // rejection is swallowed since this is a background access-log write, not a
-  // user-facing action.
-  const ranRef = useRef(false)
-  useEffect(() => {
-    if (ranRef.current) return
-    ranRef.current = true
-    logView({ orgId, runId: run.runId }).catch(() => {})
-  }, [logView, orgId, run.runId])
 
   const erasedLabel = t("detail.erased")
 

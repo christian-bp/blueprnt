@@ -1,24 +1,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-
-const logViewMock = vi.fn().mockResolvedValue(undefined)
-
-vi.mock("convex/react", () => ({
-  useMutation: () => logViewMock,
-}))
-
-vi.mock("@workspace/backend/convex/_generated/api", () => ({
-  api: {
-    payMapping: {
-      runs: {
-        logPayMappingView: "payMapping.runs.logPayMappingView",
-      },
-    },
-  },
-}))
-
+import { afterEach, describe, expect, it } from "vitest"
 import {
   matchesSnapshotRowQuery,
   PayMappingDetail,
@@ -73,9 +56,6 @@ function renderDetail(run: PayMappingRunDetail = RUN) {
 }
 
 describe("PayMappingDetail", () => {
-  beforeEach(() => {
-    logViewMock.mockReset().mockResolvedValue(undefined)
-  })
   afterEach(() => {
     cleanup()
   })
@@ -115,15 +95,6 @@ describe("PayMappingDetail", () => {
     // The erased row shows the erased label, never the real name.
     expect(screen.getByText(m.detail.erased)).toBeDefined()
     expect(screen.queryByText("Removed person")).toBeNull()
-  })
-
-  it("logs a view once on mount", () => {
-    renderDetail()
-    expect(logViewMock).toHaveBeenCalledTimes(1)
-    expect(logViewMock).toHaveBeenCalledWith({
-      orgId: "org-1",
-      runId: "run1",
-    })
   })
 
   // ---------------------------------------------------------------------------

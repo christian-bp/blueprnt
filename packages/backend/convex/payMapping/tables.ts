@@ -71,13 +71,3 @@ export const payMappingSnapshotRows = defineTable({
 })
   .index("by_run", ["orgId", "runId"])
   .index("by_org_person", ["orgId", "personPublicId"])
-
-// Read-oriented access dimension (ADR-0011 §3), kept out of the domain audit
-// trail so high-volume view events do not pollute it. Slice 1: only "view".
-export const payMappingAccessLog = defineTable({
-  orgId: v.string(),
-  runId: v.id("payMappingRuns"),
-  actorId: v.string(),
-  at: v.number(),
-  kind: v.union(v.literal("view"), v.literal("export")),
-}).index("by_run", ["orgId", "runId"])
