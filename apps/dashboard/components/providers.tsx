@@ -1,6 +1,9 @@
 "use client"
 
-import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react"
+import {
+  type AuthClient,
+  ConvexBetterAuthProvider,
+} from "@convex-dev/better-auth/react"
 import { ConvexReactClient } from "convex/react"
 import { Toaster } from "@workspace/ui/components/sonner"
 import { MotionConfig } from "motion/react"
@@ -16,7 +19,13 @@ export function Providers(props: {
   return (
     <ConvexBetterAuthProvider
       client={convex}
-      authClient={authClient}
+      // Cast to the provider's own exported prop type: since better-auth
+      // 1.6.25 its session inference collapses to `never` inside
+      // @convex-dev/better-auth's abstract AuthClient union, so NO concrete
+      // client is assignable even though 1.6.x is inside the component's
+      // declared peer range. Remove the cast when the component fixes its
+      // AuthClient type.
+      authClient={authClient as unknown as AuthClient}
       initialToken={props.initialToken}
     >
       {/* Honour the OS-level prefers-reduced-motion preference for all motion

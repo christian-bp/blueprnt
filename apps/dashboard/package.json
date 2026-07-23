@@ -13,7 +13,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@convex-dev/better-auth": "0.12.4",
+    "@convex-dev/better-auth": "0.12.5",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
@@ -25,14 +25,14 @@
     "@workspace/i18n": "workspace:*",
     "@workspace/import": "workspace:*",
     "@workspace/ui": "workspace:*",
-    "better-auth": "1.6.17",
-    "convex": "^1.42.0",
-    "motion": "^12.42.0",
-    "next": "16.2.9",
-    "next-intl": "^4.13.0",
+    "better-auth": "1.6.25",
+    "convex": "^1.42.3",
+    "motion": "^12.42.2",
+    "next": "16.2.11",
+    "next-intl": "^4.13.4",
     "qrcode": "^1.5.4",
-    "react": "19.2.7",
-    "react-dom": "19.2.7",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
     "sonner": "^2.0.7",
     "zod": "^4.4.3"
   },
@@ -43,10 +43,10 @@
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@vitejs/plugin-react": "^6.0.3",
+    "@vitejs/plugin-react": "^6.0.4",
     "@workspace/typescript-config": "workspace:*",
     "@workspace/vitest-config": "workspace:*",
     "typescript": "^6",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.10"
   }
 }

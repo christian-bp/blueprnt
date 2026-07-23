@@ -10,16 +10,16 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "next-intl": "^4.13.0"
+    "next-intl": "^4.13.4"
   },
   "devDependencies": {
     "@types/react": "^19",
     "@workspace/typescript-config": "workspace:*",
     "@workspace/vitest-config": "workspace:*",
-    "next": "16.2.9",
-    "react": "19.2.7",
+    "next": "16.2.11",
+    "react": "19.2.8",
     "typescript": "^6",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.10"
   },
   "exports": {
     ".": "./src/index.ts",
