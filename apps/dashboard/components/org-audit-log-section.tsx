@@ -66,6 +66,7 @@ import {
   payloadProvenance,
   payloadStats,
   payloadSuggestions,
+  resolveCodedValue,
   sectionKind,
 } from "@/lib/audit-detail"
 
@@ -107,6 +108,12 @@ function eventKey(type: string): string {
 
 export function OrgAuditLogSection() {
   const t = useTranslations("dashboard.auditLog")
+  // Scoped at the `dashboard` root (not `dashboard.auditLog`) so valueLabel
+  // below can reuse existing domain copy for a coded audit VALUE (a
+  // pay-mapping scope, praxis finding, praxis area, or pay-gap reason) from
+  // dashboard.payMapping.*, rather than inventing new audit-only wording for
+  // a concept that already has a real label elsewhere.
+  const tDashboard = useTranslations("dashboard")
   const format = useFormatter()
   const { orgId, role } = useOrganization()
 
@@ -227,6 +234,23 @@ export function OrgAuditLogSection() {
     return t(value ? "values.yes" : "values.no")
   }
 
+  // Localizes a coded field value (a pay-mapping scope, praxis finding,
+  // praxis area key, or pay-gap reason) so it never renders as its raw wire
+  // code (e.g. "praxis", "found", "payPolicy", "experience"). Returns
+  // undefined (NOT the raw value) when the field carries no coded domain or
+  // the resolved key has no string in the active locale: formatChanges/
+  // changeEntries treat undefined as "try the next resolver" (resolveName,
+  // then the raw fallback), so falling back to the raw value here would wrongly
+  // short-circuit that chain for every non-coded field, including id fields
+  // resolveName exists to handle (e.g. familyId).
+  function valueLabel(field: string, value: string): string | undefined {
+    return resolveCodedValue(field, value, (key) =>
+      tDashboard.has(key as Parameters<typeof tDashboard.has>[0])
+        ? tDashboard(key as Parameters<typeof tDashboard>[0])
+        : undefined
+    )
+  }
+
   // The short one-line summary: AI suggestion events render from their own
   // payload (counts), everything else through the shared structured-change
   // formatter. names is per row (each row carries only the ids it references).
@@ -255,7 +279,8 @@ export function OrgAuditLogSection() {
         createdMarker: t("detail.createdMarker"),
       },
       fieldLabel,
-      boolLabel
+      boolLabel,
+      valueLabel
     )
   }
 
@@ -471,6 +496,7 @@ export function OrgAuditLogSection() {
               categoryLabel={categoryLabel}
               fieldLabel={fieldLabel}
               boolLabel={boolLabel}
+              valueLabel={valueLabel}
               detailText={detailText}
             />
           ) : null}
@@ -491,6 +517,7 @@ function AuditDetailSheet({
   categoryLabel,
   fieldLabel,
   boolLabel,
+  valueLabel,
   detailText,
 }: {
   row: AuditRow
@@ -501,6 +528,7 @@ function AuditDetailSheet({
   categoryLabel: (category: string) => string
   fieldLabel: (field: string) => string
   boolLabel: (value: boolean) => string
+  valueLabel: (field: string, value: string) => string | undefined
   detailText: (
     type: string,
     payload: unknown,
@@ -552,7 +580,7 @@ function AuditDetailSheet({
 
   const changes = payloadChanges(row.payload)
   const rawEntries = changes
-    ? changeEntries(changes, fieldLabel, resolveName, boolLabel)
+    ? changeEntries(changes, fieldLabel, resolveName, boolLabel, valueLabel)
     : []
   const kind = sectionKind(row.type, rawEntries)
   // On a creation snapshot, fields set to nothing (e.g. an unset function/team)

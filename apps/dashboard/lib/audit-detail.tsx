@@ -1,3 +1,4 @@
+import type { PayGapReason, PraxisAreaKey } from "@workspace/constants"
 import { Fragment, type ReactNode } from "react"
 import { ChangeArrow } from "@/components/change-arrow"
 
@@ -22,6 +23,91 @@ export function formatAuditValue(value: unknown): string {
   }
 }
 
+// The domains of coded/enum VALUES a pay-mapping audit payload can carry
+// (never free text, an id, or a boolean, which are handled elsewhere): a
+// scope, a praxis review verdict, a praxis review area key, and the
+// ", "-joined pay-gap reason codes (payMapping/analyses.ts's auditView joins
+// the reasons array into one display string, never an array, so `reasons` is
+// resolved token-by-token in resolveCodedValue below). Each Record is typed
+// against the domain's own literal union (PayGapReason/PraxisAreaKey from
+// @workspace/constants; the scope/finding unions mirror
+// payMapping/analyses.ts's scopeValidator and payMapping/tables.ts's
+// payMappingFindingValidator, kept in sync by hand since those two are not
+// exported as shared types), so a value added to any domain without also
+// giving it an i18n key here is a compile error, never a silently-unmapped
+// raw code. Every key is relative to the `dashboard` message namespace and
+// REUSES existing dashboard.payMapping.* domain copy (the audit log is not
+// the place to invent new wording for a scope/verdict/area/reason that
+// already has a real label elsewhere): the caller resolves it with a
+// `dashboard`-scoped translator, not the `dashboard.auditLog`-scoped one used
+// for field labels.
+type PayMappingScope = "equalWork" | "equivalentWork" | "praxis"
+type PayMappingFinding = "none" | "found"
+
+export const SCOPE_VALUE_KEYS: Record<PayMappingScope, string> = {
+  equalWork: "payMapping.review.chapters.equalWork",
+  equivalentWork: "payMapping.review.chapters.equivalentWork",
+  praxis: "payMapping.review.chapters.praxis",
+}
+
+export const FINDING_VALUE_KEYS: Record<PayMappingFinding, string> = {
+  none: "payMapping.review.findingNone",
+  found: "payMapping.review.findingFound",
+}
+
+export const PRAXIS_AREA_VALUE_KEYS: Record<PraxisAreaKey, string> = {
+  payPolicy: "payMapping.review.praxis.payPolicy.title",
+  collectiveAgreements: "payMapping.review.praxis.collectiveAgreements.title",
+  benefits: "payMapping.review.praxis.benefits.title",
+  payPractices: "payMapping.review.praxis.payPractices.title",
+  previousActions: "payMapping.review.praxis.previousActions.title",
+}
+
+export const PAY_GAP_REASON_VALUE_KEYS: Record<PayGapReason, string> = {
+  alternativeLabourMarket: "payMapping.reasons.alternativeLabourMarket",
+  recruitmentPayLevel: "payMapping.reasons.recruitmentPayLevel",
+  experience: "payMapping.reasons.experience",
+  historicalPay: "payMapping.reasons.historicalPay",
+  competence: "payMapping.reasons.competence",
+  performance: "payMapping.reasons.performance",
+  responsibility: "payMapping.reasons.responsibility",
+}
+
+// Resolves one payMapping.groupAnalysisUpdated payload field's raw coded
+// VALUE to its localized label, via the caller's `translate` (typically a
+// t.has-guarded lookup against a `dashboard`-scoped translator). Returns
+// undefined when the field carries no coded domain (free text, ids,
+// booleans), the value is not a known member of its domain (e.g. `groupLabel`
+// for an equalWork/equivalentWork row, which is already a "roleTitle · level"
+// display string, not a praxis area key), or the translator has no string for
+// the resolved key: in any of those cases the caller falls back to the raw
+// value rather than throwing or rendering nothing.
+export function resolveCodedValue(
+  field: string,
+  value: string,
+  translate: (key: string) => string | undefined
+): string | undefined {
+  if (field === "reasons") {
+    if (value.trim() === "") return undefined
+    return value
+      .split(", ")
+      .map((token) => {
+        const key = (PAY_GAP_REASON_VALUE_KEYS as Record<string, string>)[token]
+        return (key ? translate(key) : undefined) ?? token
+      })
+      .join(", ")
+  }
+  const key =
+    field === "scope"
+      ? (SCOPE_VALUE_KEYS as Record<string, string>)[value]
+      : field === "finding"
+        ? (FINDING_VALUE_KEYS as Record<string, string>)[value]
+        : field === "groupLabel"
+          ? (PRAXIS_AREA_VALUE_KEYS as Record<string, string>)[value]
+          : undefined
+  return key ? translate(key) : undefined
+}
+
 // Renders a structured before->after `changes` object as a one-line node. Each
 // entry is "<fieldLabel>: <from> [→] <to>" (the arrow is a ChangeArrow icon, not
 // a glyph), or just "<fieldLabel>: <to>" when `from` is empty (null/undefined/
@@ -35,12 +121,22 @@ export function formatChanges(
   complexPlaceholder = "…",
   // Localizes a boolean field value to "Yes"/"No" (else it stringifies as
   // "true"/"false"). Optional so callers without i18n keep the raw behavior.
-  boolLabel?: (value: boolean) => string
+  boolLabel?: (value: boolean) => string,
+  // Localizes a coded string field value (a scope, a finding, a praxis area
+  // key, a reason code) via resolveCodedValue. Optional so callers without
+  // i18n keep the raw behavior; returns undefined (not the raw value) when
+  // the field/value is not a known coded pair, so the raw string is the
+  // explicit fallback here, not something valueLabel itself decided.
+  valueLabel?: (field: string, value: string) => string | undefined
 ): ReactNode {
-  const valueText = (value: unknown) =>
-    typeof value === "boolean" && boolLabel
-      ? boolLabel(value)
-      : formatAuditValue(value)
+  const valueText = (field: string, value: unknown) => {
+    if (typeof value === "boolean" && boolLabel) return boolLabel(value)
+    if (typeof value === "string" && valueLabel) {
+      const label = valueLabel(field, value)
+      if (label !== undefined) return label
+    }
+    return formatAuditValue(value)
+  }
   return Object.entries(changes).map(([field, { from, to }], index) => {
     const label = fieldLabel(field)
     const isComplex =
@@ -57,8 +153,8 @@ export function formatChanges(
         </Fragment>
       )
     }
-    const fromText = valueText(from)
-    const toText = valueText(to)
+    const fromText = valueText(field, from)
+    const toText = valueText(field, to)
     if (fromText.trim() === "") {
       return (
         <Fragment key={field}>
@@ -286,11 +382,16 @@ export function formatStats(
 // `resolveName` (optional) turns an id-valued field into a human name: when a
 // from/to value is a string that resolves to a name, the name is shown instead
 // of the raw id (e.g. a role's `familyId` renders as the family name).
+// `valueLabel` (optional) turns a coded field's value (a scope, a finding, a
+// praxis area key, a reason code) into its localized label via
+// resolveCodedValue, checked before resolveName (the two never overlap: no
+// coded field is also an id field) and before the raw fallback.
 export function changeEntries(
   changes: Record<string, { from: unknown; to: unknown }>,
   fieldLabel: (field: string) => string,
   resolveName?: (id: string) => string | undefined,
-  boolLabel?: (value: boolean) => string
+  boolLabel?: (value: boolean) => string,
+  valueLabel?: (field: string, value: string) => string | undefined
 ): Array<{
   field: string
   label: string
@@ -299,8 +400,12 @@ export function changeEntries(
   isSet: boolean
   isComplex: boolean
 }> {
-  const display = (value: unknown): string => {
+  const display = (field: string, value: unknown): string => {
     if (typeof value === "boolean" && boolLabel) return boolLabel(value)
+    if (typeof value === "string" && valueLabel) {
+      const label = valueLabel(field, value)
+      if (label !== undefined) return label
+    }
     if (typeof value === "string" && resolveName) {
       const name = resolveName(value)
       if (name) return name
@@ -308,8 +413,8 @@ export function changeEntries(
     return formatAuditValue(value)
   }
   return Object.entries(changes).map(([field, { from, to }]) => {
-    const fromText = display(from)
-    const toText = display(to)
+    const fromText = display(field, from)
+    const toText = display(field, to)
     return {
       field,
       label: fieldLabel(field),
@@ -395,10 +500,18 @@ export const FIELD_DISPLAY_ORDER = [
   "skipped",
   "unmatchedTitles",
   "orgCount",
-  // Pay-mapping run flat-stats fields (payMapping.runStarted).
+  // Pay-mapping run flat-stats fields (payMapping.runStarted/runDeleted).
+  // label leads: the run's own display name, identity-first like title/name.
+  "label",
   "populationCount",
   "withPayCount",
-  "unclassifiedExcludedCount",
+  // Pay-mapping group-analysis context fields (payMapping.groupAnalysisUpdated):
+  // not diffed, but ordered so they lead a no-changes stats fallback.
+  "groupLabel",
+  "scope",
+  // Pay-mapping run completion flat-stats fields (payMapping.runCompleted).
+  "equalWorkDone",
+  "equivalentWorkDone",
 ] as const
 
 // Sorts change entries into FIELD_DISPLAY_ORDER. Stable: unknown fields keep
@@ -503,7 +616,8 @@ export function formatAuditDetail(
   names: Record<string, string>,
   labels: AuditDetailLabels,
   fieldLabel: (field: string) => string = (f) => f,
-  boolLabel?: (value: boolean) => string
+  boolLabel?: (value: boolean) => string,
+  valueLabel?: (field: string, value: string) => string | undefined
 ): ReactNode {
   const p = (payload ?? {}) as Record<string, unknown>
   const roleName = (id: unknown) =>
@@ -544,7 +658,8 @@ export function formatAuditDetail(
         `${base}: ${labels.fieldsChanged(entries.length)}`
       ) : (
         <>
-          {base}: {formatChanges(changes, fieldLabel, undefined, boolLabel)}
+          {base}:{" "}
+          {formatChanges(changes, fieldLabel, undefined, boolLabel, valueLabel)}
         </>
       )
     }
@@ -576,7 +691,14 @@ export function formatAuditDetail(
       if (changes !== null) {
         return (
           <>
-            {base}: {formatChanges(changes, fieldLabel, undefined, boolLabel)}
+            {base}:{" "}
+            {formatChanges(
+              changes,
+              fieldLabel,
+              undefined,
+              boolLabel,
+              valueLabel
+            )}
           </>
         )
       }
@@ -590,7 +712,7 @@ export function formatAuditDetail(
       return changes !== null ? (
         <>
           {memberName(p.memberUserId)}:{" "}
-          {formatChanges(changes, fieldLabel, undefined, boolLabel)}
+          {formatChanges(changes, fieldLabel, undefined, boolLabel, valueLabel)}
         </>
       ) : (
         memberName(p.memberUserId)
@@ -599,7 +721,7 @@ export function formatAuditDetail(
       return memberName(p.memberUserId)
     case "organization.settingsUpdated":
       return changes !== null
-        ? formatChanges(changes, fieldLabel, undefined, boolLabel)
+        ? formatChanges(changes, fieldLabel, undefined, boolLabel, valueLabel)
         : ""
     case "organization.created":
       return labels.createdMarker
@@ -630,6 +752,31 @@ export function formatAuditDetail(
     case "invitation.accepted":
     case "invitation.revoked":
       return ""
+    // The group documented (groupLabel) and which comparison it was
+    // documented under (scope: equalWork/equivalentWork/praxis) are flat
+    // context fields, not part of the diff, so the default case's
+    // formatChanges-only rendering would drop them; show both alongside the
+    // reasons/note/done/finding changes. Both are coded: scope is always a
+    // wire code, and groupLabel is a raw PRAXIS_AREA_KEYS slug for a praxis
+    // row (already a real "roleTitle · level" display string otherwise), so
+    // both go through valueLabel, falling back to the raw value when unset.
+    case "payMapping.groupAnalysisUpdated": {
+      const rawGroupLabel = typeof p.groupLabel === "string" ? p.groupLabel : ""
+      const rawScope = typeof p.scope === "string" ? p.scope : ""
+      const groupLabel =
+        valueLabel?.("groupLabel", rawGroupLabel) ?? rawGroupLabel
+      const scope = valueLabel?.("scope", rawScope) ?? rawScope
+      const base = rawScope
+        ? `${groupLabel} (${fieldLabel("scope")}: ${scope})`
+        : groupLabel
+      if (changes === null) return base
+      return (
+        <>
+          {base}:{" "}
+          {formatChanges(changes, fieldLabel, undefined, boolLabel, valueLabel)}
+        </>
+      )
+    }
     default: {
       if (isBulk) return labels.itemsChanged(bulkCount)
       // A changes-bearing event with no explicit case (person.*, pay.*,
@@ -638,7 +785,13 @@ export function formatAuditDetail(
       // classification.suggested) reads as labeled "Label: value" stats. Neither
       // ever leaks a raw payload key.
       if (changes !== null)
-        return formatChanges(changes, fieldLabel, undefined, boolLabel)
+        return formatChanges(
+          changes,
+          fieldLabel,
+          undefined,
+          boolLabel,
+          valueLabel
+        )
       return formatStats(p, fieldLabel)
     }
   }

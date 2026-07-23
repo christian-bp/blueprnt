@@ -4,17 +4,22 @@ import { describe, expect, it } from "vitest"
 import {
   aiAuditDetail,
   changeEntries,
+  FINDING_VALUE_KEYS,
   formatAuditDetail as rawFormatAuditDetail,
   formatChanges as rawFormatChanges,
   formatAuditValue,
   formatStats,
   orderEntries,
+  PAY_GAP_REASON_VALUE_KEYS,
   payloadChanges,
   payloadItems,
   payloadMoves,
   payloadProvenance,
   payloadStats,
   payloadSuggestions,
+  PRAXIS_AREA_VALUE_KEYS,
+  resolveCodedValue,
+  SCOPE_VALUE_KEYS,
   sectionKind,
 } from "./audit-detail"
 
@@ -71,6 +76,18 @@ const labels = {
 // raw field keys without depending on the i18n catalog.
 const fieldLabel = (f: string) => f.charAt(0).toUpperCase() + f.slice(1)
 
+// Stub value-label resolver: a deterministic "translate" that upper-cases the
+// resolved i18n key, mirroring how fieldLabel/boolLabel stub away the real
+// i18n catalog above. Assertions below reference the exported *_VALUE_KEYS
+// constants (never a hardcoded key string), so they track a key rename
+// automatically instead of silently going stale. Returns undefined (NOT the
+// raw value) when unresolved, exactly like the real caller: formatChanges/
+// changeEntries treat undefined as "try the next resolver", so a stub that
+// fell back to the raw value here would hide a shadowing bug (see the
+// "does not let valueLabel shadow resolveName" test below).
+const valueLabel = (field: string, value: string): string | undefined =>
+  resolveCodedValue(field, value, (key) => key.toUpperCase())
+
 describe("formatAuditValue", () => {
   it("passes scalars through as strings", () => {
     expect(formatAuditValue("se")).toBe("se")
@@ -95,6 +112,80 @@ describe("formatAuditValue", () => {
     const circular: Record<string, unknown> = {}
     circular.self = circular
     expect(formatAuditValue(circular)).toBe("")
+  })
+})
+
+describe("resolveCodedValue", () => {
+  // Echoes the key back unchanged so assertions can compare directly against
+  // the exported *_VALUE_KEYS constants without a stub transform in the way.
+  const translate = (key: string) => key
+
+  it("resolves a scope code to its key", () => {
+    expect(resolveCodedValue("scope", "equalWork", translate)).toBe(
+      SCOPE_VALUE_KEYS.equalWork
+    )
+    expect(resolveCodedValue("scope", "praxis", translate)).toBe(
+      SCOPE_VALUE_KEYS.praxis
+    )
+  })
+
+  it("resolves a finding verdict to its key", () => {
+    expect(resolveCodedValue("finding", "none", translate)).toBe(
+      FINDING_VALUE_KEYS.none
+    )
+    expect(resolveCodedValue("finding", "found", translate)).toBe(
+      FINDING_VALUE_KEYS.found
+    )
+  })
+
+  it("resolves a groupLabel that is a praxis area key", () => {
+    expect(resolveCodedValue("groupLabel", "payPolicy", translate)).toBe(
+      PRAXIS_AREA_VALUE_KEYS.payPolicy
+    )
+  })
+
+  it("returns undefined for a groupLabel that is not a praxis area key (an equalWork/equivalentWork display string)", () => {
+    expect(
+      resolveCodedValue("groupLabel", "Engineer · L3", translate)
+    ).toBeUndefined()
+  })
+
+  it("resolves a single reason code", () => {
+    expect(resolveCodedValue("reasons", "experience", translate)).toBe(
+      PAY_GAP_REASON_VALUE_KEYS.experience
+    )
+  })
+
+  it("resolves and rejoins multiple ', '-joined reason codes", () => {
+    expect(
+      resolveCodedValue("reasons", "experience, competence", translate)
+    ).toBe(
+      `${PAY_GAP_REASON_VALUE_KEYS.experience}, ${PAY_GAP_REASON_VALUE_KEYS.competence}`
+    )
+  })
+
+  it("falls back to the raw token within a reasons list when one token is unmapped", () => {
+    expect(resolveCodedValue("reasons", "experience, mystery", translate)).toBe(
+      `${PAY_GAP_REASON_VALUE_KEYS.experience}, mystery`
+    )
+  })
+
+  it("returns undefined for an empty reasons string", () => {
+    expect(resolveCodedValue("reasons", "", translate)).toBeUndefined()
+  })
+
+  it("returns undefined for a field with no coded domain", () => {
+    expect(resolveCodedValue("note", "anything", translate)).toBeUndefined()
+  })
+
+  it("returns undefined for a value outside its domain (scope)", () => {
+    expect(resolveCodedValue("scope", "mystery", translate)).toBeUndefined()
+  })
+
+  it("returns undefined when the translator has no string for the resolved key", () => {
+    expect(
+      resolveCodedValue("scope", "equalWork", () => undefined)
+    ).toBeUndefined()
   })
 })
 
@@ -161,6 +252,32 @@ describe("formatChanges", () => {
         boolLabel
       )
     ).toBe("IsManager: No → Yes")
+  })
+
+  it("localizes a coded field value via valueLabel instead of the raw code", () => {
+    expect(
+      formatChanges(
+        { finding: { from: "none", to: "found" } },
+        fieldLabel,
+        "…",
+        undefined,
+        valueLabel
+      )
+    ).toBe(
+      `Finding: ${FINDING_VALUE_KEYS.none.toUpperCase()} → ${FINDING_VALUE_KEYS.found.toUpperCase()}`
+    )
+  })
+
+  it("falls back to the raw value when valueLabel does not recognize the field", () => {
+    expect(
+      formatChanges(
+        { country: { from: "se", to: "no" } },
+        fieldLabel,
+        "…",
+        undefined,
+        valueLabel
+      )
+    ).toBe("Country: se → no")
   })
 })
 
@@ -491,6 +608,90 @@ describe("formatAuditDetail", () => {
       )
     ).toBe("Analyst")
   })
+
+  it("renders payMapping.groupAnalysisUpdated with group label, scope, and changes, resolving scope and reasons via valueLabel", () => {
+    expect(
+      formatAuditDetail(
+        "payMapping.groupAnalysisUpdated",
+        {
+          runId: "run1",
+          scope: "equalWork",
+          // groupLabel is already a real "roleTitle · level" display string
+          // for equalWork/equivalentWork, so valueLabel must pass it through
+          // unchanged (it is not a praxis area key).
+          groupLabel: "PM · Mid",
+          changes: {
+            reasons: { from: null, to: "experience, competence" },
+            done: { from: null, to: true },
+          },
+        },
+        {},
+        labels,
+        fieldLabel,
+        (value) => (value ? "Yes" : "No"),
+        valueLabel
+      )
+    ).toBe(
+      `PM · Mid (Scope: ${SCOPE_VALUE_KEYS.equalWork.toUpperCase()}): Reasons: ${PAY_GAP_REASON_VALUE_KEYS.experience.toUpperCase()}, ${PAY_GAP_REASON_VALUE_KEYS.competence.toUpperCase()}; Done: Yes`
+    )
+  })
+
+  it("renders payMapping.groupAnalysisUpdated with just the group context when there are no changes", () => {
+    expect(
+      formatAuditDetail(
+        "payMapping.groupAnalysisUpdated",
+        { runId: "run1", scope: "equivalentWork", groupLabel: "Nurse · Mid" },
+        {},
+        labels,
+        fieldLabel,
+        undefined,
+        valueLabel
+      )
+    ).toBe(
+      `Nurse · Mid (Scope: ${SCOPE_VALUE_KEYS.equivalentWork.toUpperCase()})`
+    )
+  })
+
+  it("resolves a praxis row's groupLabel (the raw area key), scope, and finding verdicts, never the raw codes", () => {
+    expect(
+      formatAuditDetail(
+        "payMapping.groupAnalysisUpdated",
+        {
+          runId: "run1",
+          scope: "praxis",
+          groupLabel: "payPolicy",
+          changes: { finding: { from: "none", to: "found" } },
+        },
+        {},
+        labels,
+        fieldLabel,
+        undefined,
+        valueLabel
+      )
+    ).toBe(
+      `${PRAXIS_AREA_VALUE_KEYS.payPolicy.toUpperCase()} (Scope: ${SCOPE_VALUE_KEYS.praxis.toUpperCase()}): Finding: ${FINDING_VALUE_KEYS.none.toUpperCase()} → ${FINDING_VALUE_KEYS.found.toUpperCase()}`
+    )
+  })
+
+  it("falls back to the raw scope/groupLabel/reasons codes when no valueLabel is wired", () => {
+    // Guards that a caller which omits valueLabel (there should be none
+    // left in the app, but the parameter is optional) degrades to the raw
+    // code rather than throwing.
+    expect(
+      formatAuditDetail(
+        "payMapping.groupAnalysisUpdated",
+        {
+          runId: "run1",
+          scope: "praxis",
+          groupLabel: "payPolicy",
+          changes: { finding: { from: "none", to: "found" } },
+        },
+        {},
+        labels,
+        fieldLabel
+      )
+    ).toBe("payPolicy (Scope: praxis): Finding: none → found")
+  })
 })
 
 describe("changeEntries", () => {
@@ -513,6 +714,29 @@ describe("changeEntries", () => {
         isComplex: false,
       },
     ])
+  })
+
+  it("localizes a coded field value via valueLabel instead of the raw code", () => {
+    const [entry] = changeEntries(
+      { scope: { from: null, to: "praxis" } },
+      fieldLabel,
+      undefined,
+      undefined,
+      valueLabel
+    )
+    expect(entry?.to).toBe(SCOPE_VALUE_KEYS.praxis.toUpperCase())
+    expect(entry?.isSet).toBe(true)
+  })
+
+  it("does not let valueLabel shadow resolveName for an id field", () => {
+    const [entry] = changeEntries(
+      { familyId: { from: null, to: "fam1" } },
+      fieldLabel,
+      (id) => (id === "fam1" ? "Product" : undefined),
+      undefined,
+      valueLabel
+    )
+    expect(entry?.to).toBe("Product")
   })
 
   it("renders a real change as { from, to, isSet: false, isComplex: false }", () => {
