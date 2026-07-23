@@ -1,0 +1,35 @@
+packages/backend/convex/assessment/anchorRoles.test.ts
+  s_6ea4434f5c3a0d::t_418c056603b953 388-390
+packages/ui/src/text-effect.tsx
+  s_6ea4434f5c3a0d::t_3b818509d54d10 284-285,289-290
+packages/backend/convex/people/people.test.ts
+  s_6ea4434f5c3a0d::t_418c056603b953 204-206
+apps/dashboard/components/onboarding/country-screen.test.tsx
+  s_6ea4434f5c3a0d::t_ff2651012e15e0 79-83,85-89,91-97,99-100
+packages/import/src/detect.test.ts
+  s_6ea4434f5c3a0d::t_c41f7f282ee61b 299,302,359
+packages/backend/convex/assessment/starters.test.ts
+  s_6ea4434f5c3a0d::t_ff2651012e15e0 633,972
+  s_6ea4434f5c3a0d::t_418c056603b953 533-534,544-545,631-632,970-971
+packages/backend/convex/evaluationModel/model.test.ts
+  s_6ea4434f5c3a0d::t_418c056603b953 628
+  s_6ea4434f5c3a0d::t_cb5b8eb52ee9d0 243-247
+biome.json
+  s_6ea4434f5c3a0d::t_c6f69dd5b18be4 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "0b7bf325f8df04d1ad7aa1eb0207b400e5581af1",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
