@@ -1,0 +1,26 @@
+apps/dashboard/components/bands/matrix-chrome.ts
+  s_6ea4434f5c3a0d::t_66ee349810feb9 5-6,10-11
+apps/dashboard/components/app-shell.tsx
+  s_6ea4434f5c3a0d::t_78f46422e7cc12 24-28,48-53,55-61,65
+  s_6ea4434f5c3a0d::t_efc29f22e72997 5-6,22-23,62-64,66-67
+apps/dashboard/app/(app)/work/page.tsx
+  s_6ea4434f5c3a0d::t_78f46422e7cc12 83,90,97,169,190,224-227,240-241,243,252-253,255
+  s_6ea4434f5c3a0d::t_8196ac24613a8c 254
+  s_6ea4434f5c3a0d::t_d62c5826f920a2 235-239,242
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "6db7cbcfad2f72b840d81f4040c9a7c27577d5fc",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
