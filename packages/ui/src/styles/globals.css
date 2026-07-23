@@ -27,6 +27,18 @@
     --destructive: oklch(0.577 0.245 27.325);
     --success: oklch(0.59 0.15 150);
     --success-foreground: oklch(0.985 0 0);
+    /* Amber "warning" data-viz token for the pay-gap flag chip (ADR-0012):
+       there is no amber/warning token in the base system, so this one is
+       added here, alongside the --gender-* tokens below. Used as tinted
+       text (bg-flag-elevated/10 text-flag-elevated), so it must stay dark
+       enough to read on its own pale tint over the light card. */
+    --flag-elevated: oklch(0.5 0.145 78);
+    /* Pay-gap flag TEXT tokens tuned for AA on the destructive/success tint:
+       the base --destructive/--success text tokens fail AA (~3.4-4.0:1) on
+       their own bg-x/10 tint in light mode, so these darker steps replace
+       them as text color while the destructive/success tint stays the same. */
+    --flag-critical: oklch(0.5 0.2 27.325);
+    --flag-ok: oklch(0.5 0.135 150);
     --border: oklch(0.922 0 0);
     --input: oklch(0.922 0 0);
     --ring: oklch(0.708 0 0);
@@ -72,6 +84,14 @@
     --destructive: oklch(0.704 0.191 22.216);
     --success: oklch(0.7 0.15 152);
     --success-foreground: oklch(0.205 0 0);
+    /* Amber "warning" data-viz token for the pay-gap flag chip (ADR-0012),
+       dark-surface step: must stay light enough to read as tinted text
+       over its own pale tint over the dark card. */
+    --flag-elevated: oklch(0.85 0.15 80);
+    /* Pay-gap flag TEXT tokens tuned for AA on the destructive/success tint,
+       dark-surface step (see :root for the light-mode rationale). */
+    --flag-critical: oklch(0.8 0.11 27.325);
+    --flag-ok: oklch(0.75 0.14 150);
     --border: oklch(1 0 0 / 10%);
     --input: oklch(1 0 0 / 15%);
     --ring: oklch(0.556 0 0);
@@ -112,6 +132,9 @@
     --color-destructive: var(--destructive);
     --color-success: var(--success);
     --color-success-foreground: var(--success-foreground);
+    --color-flag-elevated: var(--flag-elevated);
+    --color-flag-critical: var(--flag-critical);
+    --color-flag-ok: var(--flag-ok);
     --color-border: var(--border);
     --color-input: var(--input);
     --color-ring: var(--ring);

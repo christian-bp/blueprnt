@@ -141,7 +141,11 @@
       "personCreated": "Ansatt lagt til",
       "personUpdated": "Ansatt oppdatert",
       "roleTrackChanged": "Sporet er endret. {count, plural, one {# persons nivå må} other {# personers nivåer må}} bekreftes på nytt.",
-      "payMappingStarted": "Lønnskartlegging startet"
+      "payMappingStarted": "Lønnskartlegging startet",
+      "payMappingGroupReopened": "Gruppen gjenåpnet.",
+      "payMappingCompleted": "Lønnskartleggingen fullført.",
+      "payMappingReopened": "Lønnskartleggingen gjenåpnet.",
+      "payMappingDeleted": "Lønnskartlegging slettet"
     },
     "accountMenu": "Kontomeny",
     "nav": {
@@ -646,7 +650,15 @@
         "anchorCount": "Antall ankere",
         "populationCount": "Personer inkludert",
         "withPayCount": "Med lønn",
-        "unclassifiedExcludedCount": "Ekskludert (uklassifisert)"
+        "label": "Navn",
+        "reasons": "Saklige grunner",
+        "note": "Utdypet analyse",
+        "done": "Markert fullført",
+        "finding": "Vurdering",
+        "groupLabel": "Gruppe",
+        "scope": "Visning",
+        "equalWorkDone": "Grupper for likt arbeid markert fullført",
+        "equivalentWorkDone": "Grupper for likeverdig arbeid markert fullført"
       },
       "values": {
         "yes": "Ja",
@@ -692,7 +704,12 @@
         "paySalaryDeleted": "Lønnsoppføring slettet",
         "payMappingSaved": "Lønnskartlegging lagret",
         "peopleImported": "Personer importert",
-        "payMappingRunStarted": "Lønnskartlegging startet"
+        "payMappingRunStarted": "Lønnskartlegging startet",
+        "payMappingGroupAnalysisUpdated": "Lønnsanalyse oppdatert",
+        "payMappingRunCompleted": "Lønnskartlegging fullført",
+        "payMappingRunReopened": "Lønnskartlegging gjenåpnet",
+        "payMappingCollaborationUpdated": "Samarbeid oppdatert",
+        "payMappingRunDeleted": "Lønnskartlegging slettet"
       },
       "ai": {
         "modelDraft": "Modellkriterier: {count} lagt til",
@@ -728,6 +745,7 @@
         "viewAll": "Vis alle {count}",
         "evaluateProgress": "{rated}/{total} vurdert",
         "classifyPeopleCount": "{count, plural, one {# ansatt} other {# ansatte}}",
+        "startPayMappingItem": "Start lønnskartleggingen",
         "empty": {
           "title": "Du er à jour",
           "body": "Ingen roller, ansatte eller kriterier trenger oppmerksomheten din akkurat nå."
@@ -737,7 +755,8 @@
           "describeRoles": "Beskriv disse rollene",
           "evaluateRoles": "Vurder disse rollene",
           "documentCriteria": "Dokumenter kriterier",
-          "approveCriteria": "Godkjenn kriterier"
+          "approveCriteria": "Godkjenn kriterier",
+          "startPayMapping": "Klar for lønnskartleggingen"
         }
       },
       "chart": {
@@ -882,21 +901,33 @@
         "status": "Status",
         "population": "Personer",
         "responsible": "Startet av",
-        "created": "Opprettet"
+        "created": "Opprettet",
+        "rowActionsLabel": "Handlinger for {label}",
+        "deleteCta": "Slett lønnskartlegging",
+        "deleteDialogTitle": "Slette {label}?",
+        "deleteDialogDescription": "Lønnskartleggingen, det frosne øyeblikksbildet og dokumentasjonen slettes permanent. Dette kan ikke angres.",
+        "deleteConfirm": "Slett",
+        "deleteCancel": "Avbryt"
       },
       "toolbar": {
         "searchPlaceholder": "Søk på navn eller startet av",
         "resultCount": "{shown} av {total} lønnskartlegginger",
-        "noMatches": "Ingen lønnskartlegginger matcher søket.",
-        "clearFilters": "Nullstill søket",
+        "noMatches": "Ingen lønnskartlegginger matcher søket eller filtrene.",
+        "clearFilters": "Nullstill filtrene",
         "previous": "Forrige",
-        "next": "Neste"
+        "next": "Neste",
+        "statusAll": "Alle statuser",
+        "statusNotCompleted": "Ikke fullført"
       },
       "status": {
         "active": "Aktiv",
         "paused": "Pauset",
         "underReview": "Under gjennomgang",
         "completed": "Fullført"
+      },
+      "switcher": {
+        "label": "Bytt lønnskartlegging",
+        "all": "Alle lønnskartlegginger"
       },
       "start": {
         "title": "Start en lønnskartlegging",
@@ -907,23 +938,233 @@
         "cancel": "Avbryt",
         "error": "Lønnskartleggingen kunne ikke startes. Prøv igjen."
       },
+      "preconditions": {
+        "title": "Ikke klart ennå",
+        "classifyLine": "{count, plural, one {# person er ikke klassifisert ennå} other {# personer er ikke klassifisert ennå}}",
+        "evaluateLine": "{count, plural, one {# rolle med ansatte mangler fullført vurdering} other {# roller med ansatte mangler fullført vurdering}}"
+      },
       "detail": {
         "population": "Personer inkludert",
-        "withPay": "Med lønn",
-        "excluded": "Utelatt (uklassifisert)",
-        "referenceDate": "Referansedato",
         "notFound": "Den lønnskartleggingen ble ikke funnet.",
         "back": "Tilbake til lønnskartlegginger",
         "erased": "Slettet",
-        "searchPlaceholder": "Søk på navn eller rolle",
         "columns": {
           "name": "Navn",
           "gender": "Kjønn",
-          "role": "Rolle",
-          "band": "Bånd",
-          "level": "Nivå",
           "salary": "Månedslønn"
         }
+      },
+      "gap": {
+        "bandLabel": "Bånd {band}",
+        "columns": {
+          "group": "Gruppe",
+          "women": "Kvinner",
+          "men": "Menn",
+          "band": "Bånd",
+          "headcount": "Antall",
+          "womenShare": "Andel kvinner",
+          "mean": "Snittlønn",
+          "diffPct": "Forskjell %",
+          "diffSek": "Forskjell"
+        },
+        "flag": {
+          "critical": "Over 10 %",
+          "elevated": "5-10 %",
+          "ok": "Under 5 %",
+          "insufficient": "Utilstrekkelig grunnlag"
+        },
+        "noComparators": "Ingen likeverdig eller lavere verdsatt gruppe er høyere lønnet enn denne.",
+        "empty": "Ingen lønninger i denne kartleggingen ennå.",
+        "groupMembers": "Personer i gruppen",
+        "bandContext": "Innenfor bånd {band} tjener kvinner {gap} mindre enn menn.",
+        "bandContextWomenAhead": "Innenfor bånd {band} tjener kvinner {gap} mer enn menn.",
+        "bandContextNone": "Innenfor bånd {band} er det ikke noe målbart lønnsgap mellom kvinner og menn."
+      },
+      "tabs": {
+        "overview": "Oversikt",
+        "analysis": "Analyse",
+        "report": "Rapport"
+      },
+      "overview": {
+        "headlineGapLabel": "Lønnsgap",
+        "insufficient": "Utilstrekkelig grunnlag for et lønnsgap på organisasjonsnivå.",
+        "statisticsHeading": "Statistikk",
+        "wholeSurveyTitle": "Hele kartleggingen",
+        "quartileTitle": "Kjønnsfordeling etter lønnsnivå",
+        "ageTitle": "Aldersfordeling",
+        "quartiles": {
+          "upper": "Øvre kvartil",
+          "upperMiddle": "Øvre midtre",
+          "lowerMiddle": "Nedre midtre",
+          "lower": "Nedre kvartil"
+        },
+        "birthDateUnknown": "{count, plural, one {# person uten fødselsdato} other {# personer uten fødselsdato}}"
+      },
+      "clock": {
+        "label": "Likestillingsklokke",
+        "womenBehind": "Kvinner arbeider i praksis så lenge ubetalt hver arbeidsdag.",
+        "menBehind": "Menn arbeider i praksis så lenge ubetalt hver arbeidsdag.",
+        "noGap": "Ingen målbar lønnsforskjell.",
+        "hours": "Timer",
+        "minutes": "Minutter",
+        "seconds": "Sekunder"
+      },
+      "report": {
+        "comingSoonTitle": "Rapport og eksport",
+        "comingSoonBody": "En signerbar oppsummering for fagforeningen og arbeidsgiveren, eksport per ansatt og tiltak, og EUs artikkel 9-rapport kommer. De genereres fra denne fryste kartleggingen."
+      },
+      "reasons": {
+        "groups": {
+          "market": "Marked",
+          "individual": "Individ",
+          "work": "Arbeid"
+        },
+        "alternativeLabourMarket": "Alternativt arbeidsmarked",
+        "recruitmentPayLevel": "Lønnsnivå ved rekruttering",
+        "experience": "Erfaring",
+        "historicalPay": "Historisk lønn",
+        "competence": "Kompetanse",
+        "performance": "Prestasjon",
+        "responsibility": "Ansvar"
+      },
+      "analysisForm": {
+        "reasonsTitle": "Lønnsforskjeller forklares av",
+        "noteTitle": "Utdypet analyse",
+        "noteHelper": "Beskriv forklaringen ut fra rolle, marked og erfaring. Unngå å navngi enkeltpersoner: teksten blir en del av den lovpålagte dokumentasjonen.",
+        "lockedHint": "Lønnskartleggingen er fullført og låst. Gjenåpne den fra oversikten for å redigere."
+      },
+      "scatter": {
+        "titleEqualWork": "Personer i gruppen",
+        "titleEquivalentWork": "Personer i sammenligningen",
+        "xAge": "Alder",
+        "xTenure": "Ansettelsestid (år)",
+        "basic": "Grunnlønn",
+        "variable": "Variabelt",
+        "total": "Totalt (heltidsjustert)",
+        "age": "Alder",
+        "tenure": "Ansettelsestid",
+        "group": "Gruppe",
+        "omittedAge": "{count, plural, one {# person uten fødselsdato vises ikke} other {# personer uten fødselsdato vises ikke}}",
+        "omittedTenure": "{count, plural, one {# person uten ansettelsesdato vises ikke} other {# personer uten ansettelsesdato vises ikke}}",
+        "emptyAge": "Ingen her har både registrert lønn og fødselsdato ennå.",
+        "emptyTenure": "Ingen her har både registrert lønn og ansettelsesdato ennå."
+      },
+      "documentation": {
+        "complete": "Fullfør lønnskartleggingen",
+        "remaining": "{count, plural, one {# steg gjenstår før lønnskartleggingen kan fullføres} other {# steg gjenstår før lønnskartleggingen kan fullføres}}",
+        "completedNote": "Lønnskartleggingen er fullført og låst.",
+        "reopen": "Gjenåpne",
+        "reopenConfirmTitle": "Gjenåpne lønnskartleggingen?",
+        "reopenConfirmBody": "Å gjenåpne låser opp den lovpålagte dokumentasjonen for redigering. Fullfør den på nytt når du er ferdig.",
+        "reopenConfirmCta": "Gjenåpne",
+        "cancel": "Avbryt"
+      },
+      "journey": {
+        "title": "Din reise gjennom lønnskartleggingen",
+        "count": "{done} av {total}",
+        "state": {
+          "notStarted": "Ikke påbegynt",
+          "inProgress": "Pågår",
+          "done": "Fullført"
+        }
+      },
+      "review": {
+        "showUnderlag": "Vis grunnlaget",
+        "previous": "Forrige",
+        "exit": "Avslutt gjennomgangen",
+        "backToJourney": "Tilbake til gjennomgangen",
+        "skip": "Hopp over",
+        "continue": "Fortsett",
+        "markDoneNext": "Merk som utført og gå videre",
+        "introTitle": "Kom i gang",
+        "introBody": "En lønnskartlegging kartlegger lønn, roller og demografi for å finne og rette usaklige lønnsforskjeller mellom kvinner og menn. Denne gjennomgangen tar deg gjennom stegene loven krever, og skaper dokumentasjonen lønnskartleggingen skal oppbevare.",
+        "cycleBody": "En lønnskartlegging følger en årlig syklus: undersøk lønnen, analyser forskjellene, gjør noe med det du finner, og følg opp neste år. Denne gjennomgangen dekker undersøk og analyser; selve tiltakene samles i handlingsplanen etterpå.",
+        "autosaveHint": "Alt du fyller ut lagres automatisk.",
+        "collaborationTitle": "Samarbeid",
+        "collaborationParticipants": "Hvem deltar i samarbeidet?",
+        "collaborationDescription": "Hvordan skjer samarbeidet?",
+        "collaborationHint": "Lønnskartleggingen kan ikke fullføres før begge samarbeidsfeltene er fylt ut.",
+        "findingNone": "Ingen mangler funnet",
+        "findingFound": "Mangler eller uklarheter funnet",
+        "praxisNoteLabel": "Beskrivelse",
+        "praxisNoteHelper": "Beskriv hva dere har funnet, og hva som bør endres.",
+        "undoDone": "Angre fullført-merking",
+        "finding": {
+          "less": "Kvinnene i denne gruppen tjener i gjennomsnitt {gap} mindre enn mennene ({women} kvinner · {men} menn).",
+          "more": "Kvinnene i denne gruppen tjener i gjennomsnitt {gap} mer enn mennene ({women} kvinner · {men} menn).",
+          "none": "Det er ikke noe målbart lønnsgap mellom kvinnene og mennene i denne gruppen ({women} kvinner · {men} menn).",
+          "onlyWomen": "Denne gruppen har bare kvinner ({count} personer), så det finnes ingen kvinne-mann-sammenligning å gjøre. Forklar hvorfor gruppen ser slik ut.",
+          "onlyMen": "Denne gruppen har bare menn ({count} personer), så det finnes ingen kvinne-mann-sammenligning å gjøre. Forklar hvorfor gruppen ser slik ut.",
+          "orgLess": "Kvinnene tjener i gjennomsnitt {gap} mindre enn mennene i hele lønnskartleggingen.",
+          "orgMore": "Kvinnene tjener i gjennomsnitt {gap} mer enn mennene i hele lønnskartleggingen.",
+          "orgNone": "Det er ikke noe målbart lønnsgap mellom kvinner og menn i hele lønnskartleggingen.",
+          "wdLead": "{label} er kvinnedominert ({share} kvinner).",
+          "wdComparisons": "{count, plural, one {Ett likeverdig eller lavere verdsatt arbeid har høyere lønn i gjennomsnitt.} other {# likeverdige eller lavere verdsatte arbeid har høyere lønn i gjennomsnitt.}}",
+          "wdComparator": "{label} (bånd {band}) tjener {diff} mer per måned i gjennomsnitt."
+        },
+        "praxis": {
+          "payPolicy": {
+            "title": "Lønnspolicy",
+            "question": "Er lønnspolicyen og kriteriene for lønnsfastsettelse kjønnsnøytrale, og er de tydelige for dem som bruker dem?",
+            "helper": "Se på hvordan lønnsbeslutninger faktisk tas i praksis, ikke bare hva som står skrevet."
+          },
+          "collectiveAgreements": {
+            "title": "Tariffavtaler",
+            "question": "Praktiseres tariffavtaler og lokale lønnsavtaler på samme måte for kvinner og menn?",
+            "helper": "Kontroller både avtalens vilkår og hvordan de brukes i den daglige lønnsfastsettelsen."
+          },
+          "benefits": {
+            "title": "Ytelser og variabel lønn",
+            "question": "Gis ytelser, tillegg og variabel lønn på kjønnsnøytralt grunnlag?",
+            "helper": "Ta med bonuser, bilgodtgjørelse, beredskapsgodtgjørelse og andre tillegg i tillegg til grunnlønnen."
+          },
+          "payPractices": {
+            "title": "Praksis for lønnsfastsettelse",
+            "question": "Er praksisen for lønnsfastsettelse kjønnsnøytral ved ansettelse, forfremmelse og under foreldrepermisjon?",
+            "helper": "Et lønnsetterslep på grunn av foreldrepermisjon er normalt ikke i seg selv en saklig grunn for en lønnsforskjell."
+          },
+          "previousActions": {
+            "title": "Tidligere tiltak",
+            "question": "Hvordan ble tiltakene som ble planlagt i forrige lønnskartlegging, gjennomført?",
+            "helper": "Dokumentasjonen skal vurdere om forrige års planlagte tiltak ble gjennomført, og om de hadde den tiltenkte effekten."
+          }
+        },
+        "allSteps": "Alle steg",
+        "searchSteps": "Søk i steg",
+        "noMatches": "Ingen steg samsvarer med søket.",
+        "progressDone": "{done} av {total} utført",
+        "chapters": {
+          "start": "Kom i gang & samarbeid",
+          "praxis": "Bestemmelser & praksis",
+          "equalWork": "Grupper med likt arbeid",
+          "equivalentWork": "Kvinnedominerte grupper",
+          "finish": "Avslutt",
+          "intro": {
+            "equalWork": {
+              "title": "Grupper med likt arbeid",
+              "body": "Gruppene dannes ut fra hva folk faktisk gjør på jobb, ikke stillingstitlene deres. Hver lønnsforskjell i hver gruppe analyseres her, uansett hvor liten den er: flaggene for 5 % og 10 % nedenfor er bare verktøyets egen prioritering, ikke en lovbestemt grense.",
+              "empty": "Ingen grupper med likt arbeid trenger dokumentasjon i denne lønnskartleggingen."
+            },
+            "equivalentWork": {
+              "title": "Kvinnedominerte grupper",
+              "body": "En gruppe regnes som kvinnedominert når minst 60 % av den er kvinner, en retningslinje fra det svenske Diskrimineringsombudet (DO), ikke en grense i selve lovteksten. For hver slik gruppe sammenligner dette kapittelet lønnen med arbeid som verdsettes som likeverdig eller lavere, men som likevel betaler mer.",
+              "empty": "Ingen kvinnedominerte grupper har høyere betalte sammenligninger i denne lønnskartleggingen."
+            }
+          }
+        },
+        "status": {
+          "toReview": "gjenstår å vurdere",
+          "done": "utført"
+        },
+        "finish": {
+          "title": "Alt gjennomgått"
+        },
+        "finishActionsNote": "Lønnsjusteringer, kostnadsberegning og den treårige tidsplanen legges til i handlingsplanen.",
+        "summaryTitle": "Sammendrag",
+        "remainingBanner": "{count, plural, one {# steg gjenstår i den veiledede gjennomgangen.} other {# steg gjenstår i den veiledede gjennomgangen.}}",
+        "continueWizard": "Fortsett gjennomgangen",
+        "backToSummary": "Tilbake til sammendraget",
+        "openSummary": "Åpne sammendraget"
       }
     },
     "rating": {
@@ -1367,7 +1608,32 @@
       "payMappingLabel": "Hva er en lønnskartlegging?",
       "payMappingBody": "En lønnskartlegging er et fryst øyeblikksbilde av lønn, roller og demografi på et gitt tidspunkt. All likelønnsanalyse kjøres mot den fryste kopien, aldri mot livedata, slik at tallene ikke kan endre seg under dere.",
       "referenceDateLabel": "Hva er referansedatoen?",
-      "referenceDateBody": "Datoen øyeblikksbildet representerer. Den settes til dagens dato når dere starter kartleggingen."
+      "referenceDateBody": "Datoen øyeblikksbildet representerer. Den settes til dagens dato når dere starter kartleggingen.",
+      "payGapEqualWorkLabel": "Likt arbeid",
+      "payGapEqualWorkBody": "Personer som utfører samme arbeid på samme nivå. Vi sammenligner gjennomsnittslønnen til kvinner og menn i hver slik gruppe.",
+      "payGapEquivalentWorkLabel": "Likeverdig arbeid",
+      "payGapEquivalentWorkBody": "Roller som vurderingen veier likt havner i samme bånd. Dette er den samlede lønnsforskjellen mellom kvinner og menn innenfor båndet, vist som kontekst til sammenligningen ovenfor.",
+      "womenDominatedLabel": "Hva er en kvinnedominert gruppe?",
+      "womenDominatedBody": "En gruppe regnes som kvinnedominert når minst 60 prosent er kvinner. Loven krever at slike grupper sammenlignes med arbeid som vurderingen anser som likeverdig eller lavere, men som betaler mer: et kvinnedominert arbeid skal ikke lønnes lavere enn et arbeid som verdsettes likt eller lavere.",
+      "payGapFlagsLabel": "Hva flaggene betyr",
+      "payGapFlagsBody": "Flagget er lønnsgapet mellom kvinner og menn i gruppen: over 10 % krever tiltak, 5-10 % bør følges med, under 5 % er ok. Grupper med bare ett kjønn viser ingen gap: det finnes ingen sammenligning å gjøre.",
+      "equalityClockLabel": "Likestillingsklokke",
+      "equalityClockBody": "Lønnsgapet uttrykt som tid: hvor stor del av en 8-timers arbeidsdag det lavere betalte kjønnet arbeider uten tilsvarende lønn. Den utledes fra gjennomsnittsgapet, ikke fra en timeplan.",
+      "headlineGapLabel": "Lønnsgap på organisasjonsnivå",
+      "headlineGapBody": "Det gjennomsnittlige lønnsgapet mellom alle kvinner og alle menn i kartleggingen (FTE-justert totallønn). En positiv verdi betyr at kvinner tjener mindre. Det er et tall for hele populasjonen og vises selv når enkeltgrupper er små.",
+      "payQuartilesLabel": "Lønnsnivåkvartiler",
+      "payQuartilesBody": "Alle med lønn rangeres etter lønn og deles i fire like store grupper, fra den lavest betalte fjerdedelen til den høyeste. Hvis kvinner samler seg i de nedre kvartilene og menn i de øvre, er lønnsnivåene ujevnt fordelt (et glasstakmønster).",
+      "payGapReasonsLabel": "Saklige grunner",
+      "payGapReasonsBody": "Svensk lov krever en saklig grunn, for eksempel markedsforhold eller erfaring, for enhver lønnsforskjell mellom sammenlignbare grupper. Velg faktorene som gjelder, og utdyp i tekstfeltet.",
+      "payGapScatterLabel": "Hva viser diagrammet?",
+      "payGapScatterBody": "Hvert punkt er én person, plottet etter alder eller ansettelsestid mot heltidsjustert total lønn. Lønnsforskjeller kan skyldes saklige, ikke-diskriminerende grunner som alder eller ansiennitet: bruk denne visningen til å sjekke om et slikt mønster forklarer et gap før du konkluderer at det er uforklart. Diagrammet synliggjør også lønnsspredningen: lovens analyse ser på forskjeller i spredning mellom gruppene som sammenlignes, ikke bare på gjennomsnittene.",
+      "payGapGateLabel": "Hva innebærer det å fullføre lønnskartleggingen?",
+      "payGapGateBody": "Hver gruppe med likt arbeid som har et lønnsgap, og hver kvinnedominerte gruppe med en høyere betalt sammenligning, må markeres fullført med en dokumentert grunn før lønnskartleggingen kan fullføres. Dette er den lovpålagte dokumentasjonen svensk lov krever.",
+      "collaborationLabel": "Hva er samarbeid?",
+      "collaborationBody": "Samarbeid vil si å involvere de ansatte og deres tillitsvalgte i hvert steg av lønnskartleggingen (diskrimineringslovens 3 kap. 11 §). Hvis virksomheten er bundet av tariffavtale, har tillitsvalgte rett til den informasjonen de behøver for å delta (12 §)."
+    },
+    "widgetCard": {
+      "expand": "Forstørr"
     },
     "admin": {
       "tabs": {
@@ -1814,6 +2080,10 @@
     "lastAdmin": "Du er den siste administratoren i en organisasjon. Kontakt støtte for å slette kontoen din.",
     "invalidLevel": "Det nivået er ikke gyldig for rollens spor.",
     "invalidEffectiveDate": "Ikrafttredelsesdatoen må være etter den gjeldende tildelingens startdato.",
-    "personRefExists": "En ansatt med det ansattnummeret finnes allerede."
+    "personRefExists": "En ansatt med det ansattnummeret finnes allerede.",
+    "payMappingRunCompleted": "Lønnskartleggingen er fullført og låst. Åpne den igjen for å redigere.",
+    "payMappingDocumentationRequired": "Legg til en saklig grunn eller en utdypet analyse før du markerer gruppen som fullført.",
+    "payMappingGateUnmet": "Det er steg igjen i gjennomgangen før lønnskartleggingen kan fullføres.",
+    "payMappingPreconditionsUnmet": "Personer eller roller mangler klassifisering eller vurdering, så lønnskartleggingen kan ikke startes ennå."
   }
 }

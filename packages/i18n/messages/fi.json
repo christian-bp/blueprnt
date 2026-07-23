@@ -141,7 +141,11 @@
       "personCreated": "Työntekijä lisätty",
       "personUpdated": "Työntekijä päivitetty",
       "roleTrackChanged": "Ura muutettu. {count, plural, one {# henkilön taso on} other {# henkilön tasot on}} vahvistettava uudelleen.",
-      "payMappingStarted": "Palkkakartoitus aloitettu"
+      "payMappingStarted": "Palkkakartoitus aloitettu",
+      "payMappingGroupReopened": "Ryhmä avattu uudelleen.",
+      "payMappingCompleted": "Palkkakartoitus viimeistelty.",
+      "payMappingReopened": "Palkkakartoitus avattu uudelleen.",
+      "payMappingDeleted": "Palkkakartoitus poistettu"
     },
     "accountMenu": "Tilivalikko",
     "nav": {
@@ -646,7 +650,15 @@
         "anchorCount": "Ankkurien määrä",
         "populationCount": "Mukana olevat henkilöt",
         "withPayCount": "Palkka tiedossa",
-        "unclassifiedExcludedCount": "Suljettu pois (luokittelematon)"
+        "label": "Nimi",
+        "reasons": "Asialliset perusteet",
+        "note": "Syventävä analyysi",
+        "done": "Merkitty valmiiksi",
+        "finding": "Arviointi",
+        "groupLabel": "Ryhmä",
+        "scope": "Näkymä",
+        "equalWorkDone": "Samaa työtä koskevat ryhmät merkitty valmiiksi",
+        "equivalentWorkDone": "Samanarvoista työtä koskevat ryhmät merkitty valmiiksi"
       },
       "values": {
         "yes": "Kyllä",
@@ -692,7 +704,12 @@
         "paySalaryDeleted": "Palkkatietue poistettu",
         "payMappingSaved": "Palkkakartoitus tallennettu",
         "peopleImported": "Henkilot tuotu",
-        "payMappingRunStarted": "Palkkakartoitus aloitettu"
+        "payMappingRunStarted": "Palkkakartoitus aloitettu",
+        "payMappingGroupAnalysisUpdated": "Palkka-analyysi päivitetty",
+        "payMappingRunCompleted": "Palkkakartoitus valmistunut",
+        "payMappingRunReopened": "Palkkakartoitus avattu uudelleen",
+        "payMappingCollaborationUpdated": "Yhteistoiminta päivitetty",
+        "payMappingRunDeleted": "Palkkakartoitus poistettu"
       },
       "ai": {
         "modelDraft": "Mallin kriteerit: {count} lisätty",
@@ -728,6 +745,7 @@
         "viewAll": "Näytä kaikki {count}",
         "evaluateProgress": "{rated}/{total} arvioitu",
         "classifyPeopleCount": "{count, plural, one {# työntekijä} other {# työntekijää}}",
+        "startPayMappingItem": "Aloita palkkakartoitus",
         "empty": {
           "title": "Kaikki on ajan tasalla",
           "body": "Mikään rooli, työntekijä tai kriteeri ei vaadi huomiotasi juuri nyt."
@@ -737,7 +755,8 @@
           "describeRoles": "Kuvaa nämä roolit",
           "evaluateRoles": "Arvioi nämä roolit",
           "documentCriteria": "Dokumentoi kriteerit",
-          "approveCriteria": "Hyväksy kriteerit"
+          "approveCriteria": "Hyväksy kriteerit",
+          "startPayMapping": "Valmis palkkakartoitukseen"
         }
       },
       "chart": {
@@ -882,21 +901,33 @@
         "status": "Tila",
         "population": "Henkilöt",
         "responsible": "Aloittaja",
-        "created": "Luotu"
+        "created": "Luotu",
+        "rowActionsLabel": "Toiminnot: {label}",
+        "deleteCta": "Poista palkkakartoitus",
+        "deleteDialogTitle": "Poistetaanko {label}?",
+        "deleteDialogDescription": "Palkkakartoitus, sen jäädytetty tilannekuva ja dokumentaatio poistetaan pysyvästi. Tätä ei voi kumota.",
+        "deleteConfirm": "Poista",
+        "deleteCancel": "Peruuta"
       },
       "toolbar": {
         "searchPlaceholder": "Hae nimellä tai aloittajalla",
         "resultCount": "{shown}/{total} palkkakartoitusta",
-        "noMatches": "Yksikään palkkakartoitus ei vastaa hakua.",
-        "clearFilters": "Tyhjennä haku",
+        "noMatches": "Yksikään palkkakartoitus ei vastaa hakua tai suodattimia.",
+        "clearFilters": "Tyhjennä suodattimet",
         "previous": "Edellinen",
-        "next": "Seuraava"
+        "next": "Seuraava",
+        "statusAll": "Kaikki tilat",
+        "statusNotCompleted": "Ei valmis"
       },
       "status": {
         "active": "Aktiivinen",
         "paused": "Keskeytetty",
         "underReview": "Tarkistettavana",
         "completed": "Valmis"
+      },
+      "switcher": {
+        "label": "Vaihda palkkakartoitusta",
+        "all": "Kaikki palkkakartoitukset"
       },
       "start": {
         "title": "Aloita palkkakartoitus",
@@ -907,23 +938,233 @@
         "cancel": "Peruuta",
         "error": "Palkkakartoitusta ei voitu aloittaa. Yritä uudelleen."
       },
+      "preconditions": {
+        "title": "Ei vielä valmis",
+        "classifyLine": "{count, plural, one {# henkilö ei ole vielä luokiteltu} other {# henkilöä ei ole vielä luokiteltu}}",
+        "evaluateLine": "{count, plural, one {# rooli, jossa on työntekijöitä, odottaa arviointia} other {# roolia, joissa on työntekijöitä, odottaa arviointia}}"
+      },
       "detail": {
         "population": "Mukana olevat henkilöt",
-        "withPay": "Palkka tiedossa",
-        "excluded": "Suljettu pois (luokittelematon)",
-        "referenceDate": "Viitepäivä",
         "notFound": "Palkkakartoitusta ei löytynyt.",
         "back": "Takaisin palkkakartoituksiin",
         "erased": "Poistettu",
-        "searchPlaceholder": "Hae nimellä tai roolilla",
         "columns": {
           "name": "Nimi",
           "gender": "Sukupuoli",
-          "role": "Rooli",
-          "band": "Vaativuusluokka",
-          "level": "Taso",
           "salary": "Kuukausipalkka"
         }
+      },
+      "gap": {
+        "bandLabel": "Vaativuusluokka {band}",
+        "columns": {
+          "group": "Ryhmä",
+          "women": "Naiset",
+          "men": "Miehet",
+          "band": "Vaativuusluokka",
+          "headcount": "Henkilömäärä",
+          "womenShare": "Naisten osuus",
+          "mean": "Keskipalkka",
+          "diffPct": "Ero %",
+          "diffSek": "Ero"
+        },
+        "flag": {
+          "critical": "Yli 10 %",
+          "elevated": "5-10 %",
+          "ok": "Alle 5 %",
+          "insufficient": "Riittämättömät tiedot"
+        },
+        "noComparators": "Mikään samanarvoinen tai alempi ryhmä ei ole tätä paremmin palkattu.",
+        "empty": "Tässä kartoituksessa ei ole vielä palkkoja.",
+        "groupMembers": "Ryhmän henkilöt",
+        "bandContext": "Vaativuusluokassa {band} naiset ansaitsevat {gap} vähemmän kuin miehet.",
+        "bandContextWomenAhead": "Vaativuusluokassa {band} naiset ansaitsevat {gap} enemmän kuin miehet.",
+        "bandContextNone": "Vaativuusluokassa {band} ei ole mitattavaa naisten ja miesten välistä palkkaeroa."
+      },
+      "tabs": {
+        "overview": "Yleiskatsaus",
+        "analysis": "Analyysi",
+        "report": "Raportti"
+      },
+      "overview": {
+        "headlineGapLabel": "Palkkaero",
+        "insufficient": "Riittämättömät tiedot organisaatiotason palkkaeroa varten.",
+        "statisticsHeading": "Tilastot",
+        "wholeSurveyTitle": "Koko kartoitus",
+        "quartileTitle": "Sukupuolijakauma palkkatason mukaan",
+        "ageTitle": "Ikäjakauma",
+        "quartiles": {
+          "upper": "Ylin neljännes",
+          "upperMiddle": "Ylempi keski",
+          "lowerMiddle": "Alempi keski",
+          "lower": "Alin neljännes"
+        },
+        "birthDateUnknown": "{count, plural, one {# henkilöltä puuttuu syntymäaika} other {# henkilöltä puuttuu syntymäaika}}"
+      },
+      "clock": {
+        "label": "Tasa-arvokello",
+        "womenBehind": "Naiset tekevät käytännössä näin pitkään palkatonta työtä joka työpäivä.",
+        "menBehind": "Miehet tekevät käytännössä näin pitkään palkatonta työtä joka työpäivä.",
+        "noGap": "Ei mitattavaa palkkaeroa.",
+        "hours": "Tunnit",
+        "minutes": "Minuutit",
+        "seconds": "Sekunnit"
+      },
+      "report": {
+        "comingSoonTitle": "Raportti ja vienti",
+        "comingSoonBody": "Allekirjoitettava yhteenveto ammattiliitolle ja työnantajalle, henkilö- ja toimenpidekohtaiset viennit sekä EU:n 9 artiklan raportti ovat tulossa. Ne luodaan tästä jäädytetystä kartoituksesta."
+      },
+      "reasons": {
+        "groups": {
+          "market": "Markkina",
+          "individual": "Yksilö",
+          "work": "Työ"
+        },
+        "alternativeLabourMarket": "Vaihtoehtoiset työmarkkinat",
+        "recruitmentPayLevel": "Palkkataso rekrytoinnissa",
+        "experience": "Kokemus",
+        "historicalPay": "Aiempi palkka",
+        "competence": "Osaaminen",
+        "performance": "Suoriutuminen",
+        "responsibility": "Vastuu"
+      },
+      "analysisForm": {
+        "reasonsTitle": "Palkkaerot selittyvät",
+        "noteTitle": "Syventävä analyysi",
+        "noteHelper": "Kuvaile selitys roolin, markkinan ja kokemuksen näkökulmasta. Vältä yksittäisten henkilöiden nimeämistä: teksti tulee osaksi lakisääteistä dokumentaatiota.",
+        "lockedHint": "Palkkakartoitus on valmis ja lukittu. Avaa se uudelleen yleiskatsauksesta muokataksesi."
+      },
+      "scatter": {
+        "titleEqualWork": "Ryhmän henkilöt",
+        "titleEquivalentWork": "Vertailun henkilöt",
+        "xAge": "Ikä",
+        "xTenure": "Palvelusaika (vuotta)",
+        "basic": "Peruspalkka",
+        "variable": "Muuttuva",
+        "total": "Yhteensä (kokoaikaistettuna)",
+        "age": "Ikä",
+        "tenure": "Palvelusaika",
+        "group": "Ryhmä",
+        "omittedAge": "{count, plural, one {# henkilöä ei näytetä: syntymäaika puuttuu} other {# henkilöä ei näytetä: syntymäaika puuttuu}}",
+        "omittedTenure": "{count, plural, one {# henkilöä ei näytetä: aloituspäivä puuttuu} other {# henkilöä ei näytetä: aloituspäivä puuttuu}}",
+        "emptyAge": "Kenelläkään täällä ei ole vielä sekä kirjattua palkkaa että syntymäaikaa.",
+        "emptyTenure": "Kenelläkään täällä ei ole vielä sekä kirjattua palkkaa että aloituspäivää."
+      },
+      "documentation": {
+        "complete": "Viimeistele palkkakartoitus",
+        "remaining": "{count, plural, one {# vaihe on vielä jäljellä ennen kuin palkkakartoituksen voi viimeistellä} other {# vaihetta on vielä jäljellä ennen kuin palkkakartoituksen voi viimeistellä}}",
+        "completedNote": "Palkkakartoitus on valmis ja lukittu.",
+        "reopen": "Avaa uudelleen",
+        "reopenConfirmTitle": "Avataanko palkkakartoitus uudelleen?",
+        "reopenConfirmBody": "Uudelleenavaaminen avaa lakisääteisen dokumentaation muokattavaksi. Viimeistele se uudelleen, kun olet valmis.",
+        "reopenConfirmCta": "Avaa uudelleen",
+        "cancel": "Peruuta"
+      },
+      "journey": {
+        "title": "Palkkakartoituksesi vaiheet",
+        "count": "{done}/{total}",
+        "state": {
+          "notStarted": "Ei aloitettu",
+          "inProgress": "Kesken",
+          "done": "Valmis"
+        }
+      },
+      "review": {
+        "showUnderlag": "Näytä taustatiedot",
+        "previous": "Edellinen",
+        "exit": "Lopeta tarkastus",
+        "backToJourney": "Takaisin tarkastukseen",
+        "skip": "Ohita toistaiseksi",
+        "continue": "Jatka",
+        "markDoneNext": "Merkitse valmiiksi ja jatka",
+        "introTitle": "Aloitetaan",
+        "introBody": "Palkkakartoitus kartoittaa palkat, roolit ja väestötiedot, jotta epäasialliset naisten ja miesten väliset palkkaerot löydetään ja korjataan. Tämä prosessi käy läpi lain edellyttämät vaiheet ja tuottaa dokumentaation, joka palkkakartoituksen on säilytettävä.",
+        "cycleBody": "Palkkakartoitus noudattaa vuosittaista kiertoa: selvitä palkat, analysoi erot, toimi havaintojen perusteella ja seuraa tilannetta seuraavana vuonna. Tämä prosessi kattaa selvittämisen ja analysoinnin; itse toimenpiteet kootaan jälkeenpäin toimintasuunnitelmaan.",
+        "autosaveHint": "Kaikki syöttämäsi tiedot tallentuvat automaattisesti.",
+        "collaborationTitle": "Yhteistoiminta",
+        "collaborationParticipants": "Ketkä osallistuvat yhteistoimintaan?",
+        "collaborationDescription": "Miten yhteistoiminta tapahtuu?",
+        "collaborationHint": "Palkkakartoitusta ei voi viimeistellä, ennen kuin molemmat yhteistoimintakentät on täytetty.",
+        "findingNone": "Puutteita ei löytynyt",
+        "findingFound": "Puutteita tai epäselvyyksiä löytyi",
+        "praxisNoteLabel": "Kuvaus",
+        "praxisNoteHelper": "Kuvaa, mitä löysitte ja mitä pitäisi muuttaa.",
+        "undoDone": "Peru valmiiksi merkitseminen",
+        "finding": {
+          "less": "Tämän ryhmän naiset ansaitsevat keskimäärin {gap} vähemmän kuin miehet ({women} naista · {men} miestä).",
+          "more": "Tämän ryhmän naiset ansaitsevat keskimäärin {gap} enemmän kuin miehet ({women} naista · {men} miestä).",
+          "none": "Tämän ryhmän naisten ja miesten välillä ei ole mitattavaa palkkaeroa ({women} naista · {men} miestä).",
+          "onlyWomen": "Tässä ryhmässä on vain naisia ({count} henkilöä), joten nais-mies-vertailua ei voi tehdä. Selitä, miksi ryhmä näyttää tällaiselta.",
+          "onlyMen": "Tässä ryhmässä on vain miehiä ({count} henkilöä), joten nais-mies-vertailua ei voi tehdä. Selitä, miksi ryhmä näyttää tällaiselta.",
+          "orgLess": "Naiset ansaitsevat keskimäärin {gap} vähemmän kuin miehet koko palkkakartoituksessa.",
+          "orgMore": "Naiset ansaitsevat keskimäärin {gap} enemmän kuin miehet koko palkkakartoituksessa.",
+          "orgNone": "Naisten ja miesten välillä ei ole mitattavaa palkkaeroa koko palkkakartoituksessa.",
+          "wdLead": "{label} on naisvaltainen ({share} naisia).",
+          "wdComparisons": "{count, plural, one {Yksi samanarvoinen tai alempi tehtävä ansaitsee keskimäärin enemmän.} other {# samanarvoista tai alempaa tehtävää ansaitsee keskimäärin enemmän.}}",
+          "wdComparator": "{label} (vaativuusluokka {band}) ansaitsee keskimäärin {diff} enemmän kuukaudessa."
+        },
+        "praxis": {
+          "payPolicy": {
+            "title": "Palkkapolitiikka",
+            "question": "Ovatko palkkapolitiikka ja palkanmäärityskriteerit sukupuolineutraaleja, ja ovatko ne selkeitä niille, jotka soveltavat niitä?",
+            "helper": "Tarkastele, miten palkkapäätökset tehdään käytännössä, ei vain sitä, mitä on kirjattu."
+          },
+          "collectiveAgreements": {
+            "title": "Työehtosopimukset",
+            "question": "Sovelletaanko työehtosopimuksia ja paikallisia palkkasopimuksia samalla tavalla naisiin ja miehiin?",
+            "helper": "Tarkista sekä sopimuksen ehdot että se, miten niitä sovelletaan päivittäisessä palkanmäärityksessä."
+          },
+          "benefits": {
+            "title": "Edut ja muuttuva palkanosa",
+            "question": "Myönnetäänkö edut, lisät ja muuttuva palkanosa sukupuolineutraalein perustein?",
+            "helper": "Ota huomioon bonukset, autoetu, päivystyskorvaus ja muut lisät peruspalkan ohella."
+          },
+          "payPractices": {
+            "title": "Palkanmäärityskäytäntö",
+            "question": "Onko palkanmäärityskäytäntö sukupuolineutraali rekrytoinnissa, ylennyksissä ja perhevapaan aikana?",
+            "helper": "Perhevapaan aiheuttama palkkaviive ei yleensä yksinään ole asiallinen peruste palkkaerolle."
+          },
+          "previousActions": {
+            "title": "Aiemmat toimenpiteet",
+            "question": "Miten edellisessä palkkakartoituksessa suunnitellut toimenpiteet toteutettiin?",
+            "helper": "Dokumentaatiossa on arvioitava, toteutettiinko viime vuoden suunnitellut toimenpiteet ja saavutettiinko niillä tavoiteltu vaikutus."
+          }
+        },
+        "allSteps": "Kaikki vaiheet",
+        "searchSteps": "Hae vaiheita",
+        "noMatches": "Mikään vaihe ei vastaa hakua.",
+        "progressDone": "{done}/{total} valmiina",
+        "chapters": {
+          "start": "Aloitus ja yhteistoiminta",
+          "praxis": "Säännöt ja käytäntö",
+          "equalWork": "Samaa työtä tekevät ryhmät",
+          "equivalentWork": "Naisvaltaiset ryhmät",
+          "finish": "Lopetus",
+          "intro": {
+            "equalWork": {
+              "title": "Samaa työtä tekevät ryhmät",
+              "body": "Ryhmät muodostetaan sen perusteella, mitä ihmiset tosiasiassa tekevät työssään, ei heidän nimikkeidensä perusteella. Kaikki tässä olevat palkkaerot analysoidaan niiden koosta riippumatta: alla olevat 5 %:n ja 10 %:n liput ovat vain työkalun oma priorisointi, ei lakiin kirjattu raja.",
+              "empty": "Tässä palkkakartoituksessa ei ole samaa työtä tekeviä ryhmiä, jotka vaativat dokumentointia."
+            },
+            "equivalentWork": {
+              "title": "Naisvaltaiset ryhmät",
+              "body": "Ryhmä lasketaan naisvaltaiseksi, kun vähintään 60 % siitä on naisia. Tämä on Ruotsin tasa-arvovaltuutetun (DO) suositusarvo, ei lakiin kirjattu raja. Tässä luvussa verrataan ryhmän palkkaa tehtäviin, jotka arviointi katsoo samanarvoisiksi tai matalammiksi mutta joissa palkka on silti korkeampi.",
+              "empty": "Tässä palkkakartoituksessa ei ole naisvaltaisia ryhmiä, joilla on paremmin palkattuja vertailukohtia."
+            }
+          }
+        },
+        "status": {
+          "toReview": "tarkistettava",
+          "done": "valmis"
+        },
+        "finish": {
+          "title": "Kaikki tarkistettu"
+        },
+        "finishActionsNote": "Palkkakorjaukset, kustannusarvio ja kolmen vuoden aikataulu lisätään toimintasuunnitelmaan.",
+        "summaryTitle": "Yhteenveto",
+        "remainingBanner": "{count, plural, one {# vaihe on jäljellä ohjatussa tarkastuksessa.} other {# vaihetta on jäljellä ohjatussa tarkastuksessa.}}",
+        "continueWizard": "Jatka tarkastusta",
+        "backToSummary": "Takaisin yhteenvetoon",
+        "openSummary": "Avaa yhteenveto"
       }
     },
     "rating": {
@@ -1367,7 +1608,32 @@
       "payMappingLabel": "Mikä on palkkakartoitus?",
       "payMappingBody": "Palkkakartoitus on jäädytetty tilannekuva palkoista, rooleista ja demografiasta yhtenä ajankohtana. Kaikki tasa-arvoanalyysi tehdään jäädytetystä kopiosta, ei koskaan elävästä datasta, jotta luvut eivät voi muuttua altanne.",
       "referenceDateLabel": "Mikä on viitepäivä?",
-      "referenceDateBody": "Päivä, jota tilannekuva edustaa. Se asetetaan tämän päivän päivämääräksi, kun aloitatte kartoituksen."
+      "referenceDateBody": "Päivä, jota tilannekuva edustaa. Se asetetaan tämän päivän päivämääräksi, kun aloitatte kartoituksen.",
+      "payGapEqualWorkLabel": "Sama työ",
+      "payGapEqualWorkBody": "Henkilöt, jotka tekevät samaa työtä samalla tasolla. Vertaamme naisten ja miesten keskipalkkaa kussakin tällaisessa ryhmässä.",
+      "payGapEquivalentWorkLabel": "Samanarvoinen työ",
+      "payGapEquivalentWorkBody": "Tehtävät, jotka arviointi painottaa yhtä paljon, päätyvät samalle vaativuustasolle. Tämä on naisten ja miesten välinen kokonaispalkkaero kyseisellä tasolla, esitettynä yllä olevan vertailun taustaksi.",
+      "womenDominatedLabel": "Mikä on naisvaltainen ryhmä?",
+      "womenDominatedBody": "Ryhmä on naisvaltainen, kun vähintään 60 prosenttia siitä on naisia. Laki edellyttää, että tällaisia ryhmiä verrataan tehtäviin, jotka arviointi katsoo samanarvoisiksi tai alempiarvoisiksi mutta joista maksetaan enemmän: naisvaltaisesta tehtävästä ei saa maksaa vähemmän kuin samanarvoisesta tai alempiarvoisesta tehtävästä.",
+      "payGapFlagsLabel": "Mitä merkinnät tarkoittavat",
+      "payGapFlagsBody": "Merkintä on naisten ja miesten välinen palkkaero ryhmässä: yli 10 % vaatii toimia, 5-10 % kannattaa seurata, alle 5 % on ok. Ryhmät, joissa on vain yksi sukupuoli, eivät näytä eroa: vertailtavaa ei ole.",
+      "equalityClockLabel": "Tasa-arvokello",
+      "equalityClockBody": "Palkkaero ilmaistuna aikana: kuinka suuren osan 8-tuntisesta työpäivästä pienempipalkkainen sukupuoli tekee ilman vastaavaa palkkaa. Se johdetaan keskimääräisestä erosta, ei työvuorolistasta.",
+      "headlineGapLabel": "Organisaatiotason palkkaero",
+      "headlineGapBody": "Keskimääräinen palkkaero kaikkien naisten ja kaikkien miesten välillä kartoituksessa (FTE-korjattu kokonaispalkka). Positiivinen arvo tarkoittaa, että naiset ansaitsevat vähemmän. Se on koko henkilöstön luku ja näytetään, vaikka yksittäiset ryhmät olisivat pieniä.",
+      "payQuartilesLabel": "Palkkatasoneljännekset",
+      "payQuartilesBody": "Kaikki palkalliset asetetaan palkan mukaan järjestykseen ja jaetaan neljään yhtä suureen ryhmään, pienipalkkaisimmasta neljänneksestä suurimpaan. Jos naiset keskittyvät alempiin neljänneksiin ja miehet ylempiin, palkkatasot jakautuvat epätasaisesti (lasikattokuvio).",
+      "payGapReasonsLabel": "Asialliset perusteet",
+      "payGapReasonsBody": "Ruotsin laki edellyttää asiallista perustetta, esimerkiksi markkinatilannetta tai kokemusta, jokaiselle vertailukelpoisten ryhmien väliselle palkkaerolle. Valitse tekijät, jotka koskevat tilannetta, ja tarkenna tekstikentässä.",
+      "payGapScatterLabel": "Mitä kaavio näyttää?",
+      "payGapScatterBody": "Jokainen piste on yksi henkilö, sijoitettuna iän tai palvelusajan mukaan suhteessa kokoaikaistettuun kokonaispalkkaan. Palkkaerot voivat johtua asiallisista, syrjimättömistä syistä kuten iästä tai kokemuksesta: käytä tätä näkymää tarkistaaksesi, selittääkö tällainen syy palkkaeron, ennen kuin päätellään, että se on selittämätön. Kaavio näyttää myös palkkahajonnan: laissa edellytetty analyysi tarkastelee hajonnan eroja vertailtavien ryhmien välillä, ei vain keskiarvoja.",
+      "payGapGateLabel": "Mitä palkkakartoituksen viimeistely tarkoittaa?",
+      "payGapGateBody": "Jokainen samaa työtä tekevä ryhmä, jolla on palkkaero, ja jokainen naisvaltainen ryhmä, jolla on korkeammin palkattu vertailu, on merkittävä valmiiksi dokumentoidulla perusteella ennen kuin palkkakartoitus voidaan viimeistellä. Tämä on Ruotsin lain edellyttämä lakisääteinen dokumentaatio.",
+      "collaborationLabel": "Mitä yhteistoiminta tarkoittaa?",
+      "collaborationBody": "Yhteistoiminta tarkoittaa henkilöstön ja heidän luottamusmiestensä osallistamista palkkakartoituksen kaikissa vaiheissa (syrjintälain 3 luvun 11 §). Jos organisaationne on sidottu työehtosopimukseen, luottamusmiehillä on oikeus saada tarvitsemansa tiedot osallistuakseen (12 §)."
+    },
+    "widgetCard": {
+      "expand": "Suurenna"
     },
     "admin": {
       "tabs": {
@@ -1814,6 +2080,10 @@
     "lastAdmin": "Olet organisaation viimeinen ylläpitäjä. Ota yhteyttä tukeen poistaaksesi tilisi.",
     "invalidLevel": "Taso ei ole kelvollinen tämän roolin polulle.",
     "invalidEffectiveDate": "Voimaantulopäivän on oltava nykyisen tehtävän alkamispäivän jälkeen.",
-    "personRefExists": "Työntekijä tällä työntekijänumerolla on jo olemassa."
+    "personRefExists": "Työntekijä tällä työntekijänumerolla on jo olemassa.",
+    "payMappingRunCompleted": "Palkkakartoitus on valmis ja lukittu. Avaa se uudelleen muokataksesi.",
+    "payMappingDocumentationRequired": "Lisää asiallinen peruste tai syventävä analyysi ennen kuin merkitset ryhmän valmiiksi.",
+    "payMappingGateUnmet": "Tarkastuksessa on vielä vaiheita ennen kuin palkkakartoituksen voi viimeistellä.",
+    "payMappingPreconditionsUnmet": "Henkilöiltä tai rooleilta puuttuu luokittelu tai arviointi, joten palkkakartoitusta ei voi vielä aloittaa."
   }
 }

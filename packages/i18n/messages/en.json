@@ -141,7 +141,11 @@
       "personCreated": "Employee added",
       "personUpdated": "Employee updated",
       "roleTrackChanged": "Track changed. {count, plural, one {# person's level needs} other {# people's levels need}} re-confirming.",
-      "payMappingStarted": "Pay mapping started"
+      "payMappingStarted": "Pay mapping started",
+      "payMappingGroupReopened": "Group reopened.",
+      "payMappingCompleted": "Pay mapping completed.",
+      "payMappingReopened": "Pay mapping reopened.",
+      "payMappingDeleted": "Pay mapping deleted"
     },
     "accountMenu": "Account menu",
     "nav": {
@@ -646,7 +650,15 @@
         "anchorCount": "Anchor count",
         "populationCount": "People included",
         "withPayCount": "With a salary",
-        "unclassifiedExcludedCount": "Excluded (unclassified)"
+        "label": "Name",
+        "reasons": "Objective reasons",
+        "note": "Deepened analysis",
+        "done": "Marked done",
+        "finding": "Assessment",
+        "groupLabel": "Group",
+        "scope": "View",
+        "equalWorkDone": "Equal work groups marked done",
+        "equivalentWorkDone": "Equivalent work groups marked done"
       },
       "values": {
         "yes": "Yes",
@@ -692,7 +704,12 @@
         "paySalaryDeleted": "Salary record deleted",
         "payMappingSaved": "Pay mapping saved",
         "peopleImported": "People imported",
-        "payMappingRunStarted": "Pay mapping started"
+        "payMappingRunStarted": "Pay mapping started",
+        "payMappingGroupAnalysisUpdated": "Pay gap analysis updated",
+        "payMappingRunCompleted": "Pay mapping completed",
+        "payMappingRunReopened": "Pay mapping reopened",
+        "payMappingCollaborationUpdated": "Collaboration updated",
+        "payMappingRunDeleted": "Pay mapping deleted"
       },
       "ai": {
         "modelDraft": "Model criteria: {count} added",
@@ -728,6 +745,7 @@
         "viewAll": "View all {count}",
         "evaluateProgress": "{rated}/{total} evaluated",
         "classifyPeopleCount": "{count, plural, one {# person} other {# people}}",
+        "startPayMappingItem": "Start the pay mapping",
         "empty": {
           "title": "You're all caught up",
           "body": "No roles, people, or criteria need your attention right now."
@@ -737,7 +755,8 @@
           "describeRoles": "Describe these roles",
           "evaluateRoles": "Evaluate these roles",
           "documentCriteria": "Document criteria",
-          "approveCriteria": "Approve criteria"
+          "approveCriteria": "Approve criteria",
+          "startPayMapping": "Ready for the pay mapping"
         }
       },
       "chart": {
@@ -882,21 +901,33 @@
         "status": "Status",
         "population": "People",
         "responsible": "Started by",
-        "created": "Created"
+        "created": "Created",
+        "rowActionsLabel": "Actions for {label}",
+        "deleteCta": "Delete pay mapping",
+        "deleteDialogTitle": "Delete {label}?",
+        "deleteDialogDescription": "The pay mapping, its frozen snapshot, and its documentation are permanently deleted. This cannot be undone.",
+        "deleteConfirm": "Delete",
+        "deleteCancel": "Cancel"
       },
       "toolbar": {
         "searchPlaceholder": "Search by name or started by",
         "resultCount": "{shown} of {total} pay mappings",
-        "noMatches": "No pay mappings match the search.",
-        "clearFilters": "Clear search",
+        "noMatches": "No pay mappings match the search or filters.",
+        "clearFilters": "Clear filters",
         "previous": "Previous",
-        "next": "Next"
+        "next": "Next",
+        "statusAll": "All statuses",
+        "statusNotCompleted": "Not completed"
       },
       "status": {
         "active": "Active",
         "paused": "Paused",
         "underReview": "Under review",
         "completed": "Completed"
+      },
+      "switcher": {
+        "label": "Switch pay mapping",
+        "all": "All pay mappings"
       },
       "start": {
         "title": "Start a pay mapping",
@@ -907,23 +938,233 @@
         "cancel": "Cancel",
         "error": "The pay mapping could not be started. Try again."
       },
+      "preconditions": {
+        "title": "Not ready yet",
+        "classifyLine": "{count, plural, one {# person is not classified yet} other {# people are not classified yet}}",
+        "evaluateLine": "{count, plural, one {# role with employees still needs a completed evaluation} other {# roles with employees still need a completed evaluation}}"
+      },
       "detail": {
         "population": "People included",
-        "withPay": "With a salary",
-        "excluded": "Excluded (unclassified)",
-        "referenceDate": "Reference date",
         "notFound": "That pay mapping was not found.",
         "back": "Back to pay mappings",
         "erased": "Erased",
-        "searchPlaceholder": "Search by name or role",
         "columns": {
           "name": "Name",
           "gender": "Gender",
-          "role": "Role",
-          "band": "Band",
-          "level": "Level",
           "salary": "Monthly salary"
         }
+      },
+      "gap": {
+        "bandLabel": "Band {band}",
+        "columns": {
+          "group": "Group",
+          "women": "Women",
+          "men": "Men",
+          "band": "Band",
+          "headcount": "Headcount",
+          "womenShare": "Share of women",
+          "mean": "Avg pay",
+          "diffPct": "Difference %",
+          "diffSek": "Difference"
+        },
+        "flag": {
+          "critical": "Over 10%",
+          "elevated": "5-10%",
+          "ok": "Under 5%",
+          "insufficient": "Not enough data"
+        },
+        "noComparators": "No equally or lower valued group out-earns this one.",
+        "empty": "No salaries in this survey yet.",
+        "groupMembers": "People in the group",
+        "bandContext": "Within band {band}, women earn {gap} less than men.",
+        "bandContextWomenAhead": "Within band {band}, women earn {gap} more than men.",
+        "bandContextNone": "Within band {band} there is no measurable woman-man gap."
+      },
+      "tabs": {
+        "overview": "Overview",
+        "analysis": "Analysis",
+        "report": "Report"
+      },
+      "overview": {
+        "headlineGapLabel": "Pay gap",
+        "insufficient": "Not enough data for an organization-level gap.",
+        "statisticsHeading": "Statistics",
+        "wholeSurveyTitle": "The whole survey",
+        "quartileTitle": "Gender split by pay level",
+        "ageTitle": "Age distribution",
+        "quartiles": {
+          "upper": "Upper quartile",
+          "upperMiddle": "Upper middle",
+          "lowerMiddle": "Lower middle",
+          "lower": "Lower quartile"
+        },
+        "birthDateUnknown": "{count, plural, one {# person without a birth date} other {# people without a birth date}}"
+      },
+      "clock": {
+        "label": "Equality clock",
+        "womenBehind": "Women effectively work this long unpaid each working day.",
+        "menBehind": "Men effectively work this long unpaid each working day.",
+        "noGap": "No measurable pay gap.",
+        "hours": "Hours",
+        "minutes": "Minutes",
+        "seconds": "Seconds"
+      },
+      "report": {
+        "comingSoonTitle": "Report and export",
+        "comingSoonBody": "A signable summary for the union and employer, per-employee and action exports, and the EU Art. 9 filing are coming. They will be generated from this frozen survey."
+      },
+      "reasons": {
+        "groups": {
+          "market": "Market",
+          "individual": "Individual",
+          "work": "Work"
+        },
+        "alternativeLabourMarket": "Alternative labour market",
+        "recruitmentPayLevel": "Pay level at recruitment",
+        "experience": "Experience",
+        "historicalPay": "Historical pay",
+        "competence": "Competence",
+        "performance": "Performance",
+        "responsibility": "Responsibility"
+      },
+      "analysisForm": {
+        "reasonsTitle": "Pay differences explained by",
+        "noteTitle": "Deepened analysis",
+        "noteHelper": "Describe the explanation in terms of role, market and experience. Avoid naming individuals: the text becomes part of the statutory documentation.",
+        "lockedHint": "The pay mapping is completed and locked. Reopen it from the overview to edit."
+      },
+      "scatter": {
+        "titleEqualWork": "People in the group",
+        "titleEquivalentWork": "People in the comparison",
+        "xAge": "Age",
+        "xTenure": "Tenure (years)",
+        "basic": "Basic pay",
+        "variable": "Variable pay",
+        "total": "Total (FTE-adjusted)",
+        "age": "Age",
+        "tenure": "Tenure",
+        "group": "Group",
+        "omittedAge": "{count, plural, one {# person without a birth date is not shown} other {# people without a birth date are not shown}}",
+        "omittedTenure": "{count, plural, one {# person without a start date is not shown} other {# people without a start date are not shown}}",
+        "emptyAge": "No one here has both a recorded salary and a birth date yet.",
+        "emptyTenure": "No one here has both a recorded salary and a start date yet."
+      },
+      "documentation": {
+        "complete": "Complete the pay mapping",
+        "remaining": "{count, plural, one {# step remains before the pay mapping can be completed} other {# steps remain before the pay mapping can be completed}}",
+        "completedNote": "The pay mapping is completed and locked.",
+        "reopen": "Reopen",
+        "reopenConfirmTitle": "Reopen the pay mapping?",
+        "reopenConfirmBody": "Reopening unlocks the statutory documentation for editing. Complete it again when you are done.",
+        "reopenConfirmCta": "Reopen",
+        "cancel": "Cancel"
+      },
+      "journey": {
+        "title": "Your pay mapping journey",
+        "count": "{done} of {total}",
+        "state": {
+          "notStarted": "Not started",
+          "inProgress": "In progress",
+          "done": "Done"
+        }
+      },
+      "review": {
+        "showUnderlag": "Show the underlying data",
+        "previous": "Previous",
+        "exit": "Exit the review",
+        "backToJourney": "Back to the review",
+        "skip": "Skip for now",
+        "continue": "Continue",
+        "markDoneNext": "Mark done and continue",
+        "introTitle": "Get started",
+        "introBody": "A pay mapping maps your pay, roles and demographics to find and address unjustified pay differences between women and men. This journey walks through the steps the law requires and produces the documentation your pay mapping must keep on file.",
+        "cycleBody": "A pay mapping runs on an annual cycle: investigate the pay, analyze the differences, act on what you find, and follow up next year. This journey covers investigate and analyze; the actions themselves are gathered in the action plan afterward.",
+        "autosaveHint": "Everything you enter is saved automatically.",
+        "collaborationTitle": "Collaboration",
+        "collaborationParticipants": "Who takes part in the collaboration?",
+        "collaborationDescription": "How does the collaboration happen?",
+        "collaborationHint": "The pay mapping cannot be completed until both collaboration fields are filled in.",
+        "findingNone": "No deficiencies found",
+        "findingFound": "Deficiencies or unclarities found",
+        "praxisNoteLabel": "Description",
+        "praxisNoteHelper": "Describe what you found and what should change.",
+        "undoDone": "Undo mark as done",
+        "finding": {
+          "less": "The women in this group earn on average {gap} less than the men ({women} women · {men} men).",
+          "more": "The women in this group earn on average {gap} more than the men ({women} women · {men} men).",
+          "none": "There is no measurable pay difference between the women and the men in this group ({women} women · {men} men).",
+          "onlyWomen": "This group has only women ({count} people), so there is no woman-man comparison to make. Explain why the group looks this way.",
+          "onlyMen": "This group has only men ({count} people), so there is no woman-man comparison to make. Explain why the group looks this way.",
+          "orgLess": "Women earn on average {gap} less than men across the whole pay mapping.",
+          "orgMore": "Women earn on average {gap} more than men across the whole pay mapping.",
+          "orgNone": "There is no measurable pay gap between women and men across the whole pay mapping.",
+          "wdLead": "{label} is women-dominated ({share} women).",
+          "wdComparisons": "{count, plural, one {One equally or lower valued job earns more on average.} other {# equally or lower valued jobs earn more on average.}}",
+          "wdComparator": "{label} (band {band}) earns {diff} more per month on average."
+        },
+        "praxis": {
+          "payPolicy": {
+            "title": "Pay policy",
+            "question": "Are the pay policy and pay-setting criteria gender-neutral, and are they clear to those who apply them?",
+            "helper": "Look at how pay decisions are actually made in practice, not only what is written down."
+          },
+          "collectiveAgreements": {
+            "title": "Collective agreements",
+            "question": "Are collective agreements and local pay agreements applied the same way for women and men?",
+            "helper": "Check both the agreement's terms and how they are used in day-to-day pay decisions."
+          },
+          "benefits": {
+            "title": "Benefits and variable pay",
+            "question": "Are benefits, allowances and variable pay granted on gender-neutral grounds?",
+            "helper": "Include bonuses, car allowances, on-call pay and other extras alongside base pay."
+          },
+          "payPractices": {
+            "title": "Pay-setting practice",
+            "question": "Is pay-setting practice gender-neutral at hiring, promotion and during parental leave?",
+            "helper": "A pay lag caused by parental leave is normally not, on its own, an objective reason for a pay difference."
+          },
+          "previousActions": {
+            "title": "Previous actions",
+            "question": "How were the measures planned in the previous pay mapping carried out?",
+            "helper": "The documentation must evaluate whether last year's planned measures were carried out and whether they had the intended effect."
+          }
+        },
+        "allSteps": "All steps",
+        "searchSteps": "Search steps",
+        "noMatches": "No steps match the search.",
+        "progressDone": "{done} of {total} done",
+        "chapters": {
+          "start": "Get started and collaboration",
+          "praxis": "Rules and practice",
+          "equalWork": "Equal work groups",
+          "equivalentWork": "Women-dominated groups",
+          "finish": "Finish",
+          "intro": {
+            "equalWork": {
+              "title": "Equal work groups",
+              "body": "Groups are formed from what people actually do at work, not their job titles. Every pay difference in each group is analyzed here, no matter how small it looks: the 5% and 10% flags below are only this tool's own way of ordering what needs attention first, not a legal threshold.",
+              "empty": "No equal-work groups need documentation in this pay mapping."
+            },
+            "equivalentWork": {
+              "title": "Women-dominated groups",
+              "body": "A group counts as women-dominated when at least 60% of it is women, a guideline from the Swedish Equality Ombudsman (DO), not a number written into law. For each such group, this chapter compares its pay against jobs the evaluation weighs as equally valuable or lower, but which still pay more.",
+              "empty": "No women-dominated groups have higher-paid comparisons in this pay mapping."
+            }
+          }
+        },
+        "status": {
+          "toReview": "to review",
+          "done": "done"
+        },
+        "finish": {
+          "title": "Everything reviewed"
+        },
+        "finishActionsNote": "Pay adjustments, cost estimate and the three-year time plan are added in the action plan.",
+        "summaryTitle": "Summary",
+        "remainingBanner": "{count, plural, one {# step remains in the guided review.} other {# steps remain in the guided review.}}",
+        "continueWizard": "Continue the review",
+        "backToSummary": "Back to the summary",
+        "openSummary": "Open the summary"
       }
     },
     "rating": {
@@ -1365,9 +1606,34 @@
       "fteAdjustedLabel": "What does FTE-adjusted mean?",
       "fteAdjustedBody": "Part-time pay is scaled up to its full-time equivalent before comparing. A person working 80% with a monthly pay of 40,000 is shown as 50,000, so everyone is compared on full-time terms.",
       "payMappingLabel": "What is a pay mapping?",
-      "payMappingBody": "A pay mapping (lönekartläggning) is a frozen snapshot of your pay, roles and demographics at a point in time. All equal-pay analysis runs against the frozen copy, never live data, so the numbers cannot shift under you.",
+      "payMappingBody": "A pay mapping (Swedish: lönekartläggning) is a frozen snapshot of your pay, roles and demographics at a point in time. All equal-pay analysis runs against the frozen copy, never live data, so the numbers cannot shift under you.",
       "referenceDateLabel": "What is the reference date?",
-      "referenceDateBody": "The date the snapshot represents. It is set to today when you start the mapping."
+      "referenceDateBody": "The date the snapshot represents. It is set to today when you start the mapping.",
+      "payGapEqualWorkLabel": "Equal work",
+      "payGapEqualWorkBody": "People doing the same job at the same level (Swedish: lika arbete). We compare the average pay of women and men in each such group.",
+      "payGapEquivalentWorkLabel": "Equivalent work",
+      "payGapEquivalentWorkBody": "Roles that the evaluation weighs equally (Swedish: likvärdigt arbete) land in the same band. This is the overall pay gap between women and men within that band, shown as context alongside the specific comparison above.",
+      "womenDominatedLabel": "What is a women-dominated group?",
+      "womenDominatedBody": "A group counts as women-dominated when at least 60 percent of it is women. Swedish law requires comparing these groups with jobs the evaluation weighs as equally valuable or lower, but which pay more: a woman-dominated job should not be paid less than a job worth the same or less.",
+      "payGapFlagsLabel": "What the flags mean",
+      "payGapFlagsBody": "The flag is the pay gap between women and men in the group: over 10% needs action, 5-10% is worth watching, under 5% is fine. Groups with only one gender show no gap: there is no comparison to make.",
+      "equalityClockLabel": "Equality clock",
+      "equalityClockBody": "The pay gap shown as time: the share of an 8-hour working day that the lower-paid gender works without matching pay. It is derived from the average gap, not a schedule.",
+      "headlineGapLabel": "Organization pay gap",
+      "headlineGapBody": "The average pay gap between all women and all men in the survey (FTE-adjusted total pay). A positive value means women earn less. It is a whole-population figure, so it is shown even when individual groups are small.",
+      "payQuartilesLabel": "Pay level quartiles",
+      "payQuartilesBody": "Everyone with a salary is ranked by pay and split into four equal groups, from the lowest-paid quarter to the highest. If women cluster in the lower quartiles and men in the upper, pay levels are unevenly distributed (a glass-ceiling pattern).",
+      "payGapReasonsLabel": "Objective reasons",
+      "payGapReasonsBody": "Swedish law requires an objective reason, for example market conditions or experience, for every pay difference between comparable groups. Pick the factors that apply and elaborate in the text field.",
+      "payGapScatterLabel": "What does this chart show?",
+      "payGapScatterBody": "Each dot is one person, plotted by age or tenure against FTE-adjusted total pay. Pay can differ for objective, non-discriminatory reasons such as age or seniority: use this view to check for such a pattern before concluding a gap is unexplained. The scatter also makes pay dispersion visible: the law's analysis looks at differences in spread between the groups being compared, not only their averages.",
+      "payGapGateLabel": "What does completing the pay mapping do?",
+      "payGapGateBody": "Every equal-work group with a pay gap, and every women-dominated group with a higher-paid comparison, must be marked done with a documented reason before the pay mapping can be completed. This is the statutory documentation Swedish law requires.",
+      "collaborationLabel": "What is collaboration?",
+      "collaborationBody": "Collaboration (Swedish: samverkan) means cooperating with employees and their union representatives at every step of the pay mapping (Diskrimineringslagen 3 kap. 11 §). If your organization is bound by a collective agreement, the union representatives have a right to the information they need to take part (12 §)."
+    },
+    "widgetCard": {
+      "expand": "Expand"
     },
     "admin": {
       "tabs": {
@@ -1814,6 +2080,10 @@
     "lastAdmin": "You're the last administrator of an organization. Contact support to delete your account.",
     "invalidLevel": "That level is not valid for this role's track.",
     "invalidEffectiveDate": "The effective date must be after the current assignment's start date.",
-    "personRefExists": "An employee with that employee number already exists."
+    "personRefExists": "An employee with that employee number already exists.",
+    "payMappingRunCompleted": "The pay mapping is completed and locked. Reopen it to edit.",
+    "payMappingDocumentationRequired": "Add an objective reason or a deepened analysis before marking the group done.",
+    "payMappingGateUnmet": "Steps remain in the review before the pay mapping can be completed.",
+    "payMappingPreconditionsUnmet": "People or roles are missing classification or evaluation, so the pay mapping cannot start yet."
   }
 }

@@ -141,7 +141,11 @@
       "personCreated": "Anställd tillagd",
       "personUpdated": "Anställd uppdaterad",
       "roleTrackChanged": "Spåret har ändrats. {count, plural, one {# persons nivå behöver} other {# personers nivåer behöver}} bekräftas på nytt.",
-      "payMappingStarted": "Lönekartläggning startad"
+      "payMappingStarted": "Lönekartläggning startad",
+      "payMappingGroupReopened": "Gruppen återöppnad.",
+      "payMappingCompleted": "Lönekartläggningen slutförd.",
+      "payMappingReopened": "Lönekartläggningen återöppnad.",
+      "payMappingDeleted": "Lönekartläggning borttagen"
     },
     "accountMenu": "Kontomeny",
     "nav": {
@@ -646,7 +650,15 @@
         "anchorCount": "Antal ankare",
         "populationCount": "Personer inkluderade",
         "withPayCount": "Med lön",
-        "unclassifiedExcludedCount": "Exkluderade (oklassade)"
+        "label": "Namn",
+        "reasons": "Sakliga skäl",
+        "note": "Fördjupad analys",
+        "done": "Klarmarkerad",
+        "finding": "Bedömning",
+        "groupLabel": "Grupp",
+        "scope": "Vy",
+        "equalWorkDone": "Grupper för lika arbete klarmarkerade",
+        "equivalentWorkDone": "Grupper för likvärdigt arbete klarmarkerade"
       },
       "values": {
         "yes": "Ja",
@@ -692,7 +704,12 @@
         "paySalaryDeleted": "Lönepost borttagen",
         "payMappingSaved": "Lönemappning sparad",
         "peopleImported": "Personer importerade",
-        "payMappingRunStarted": "Lönekartläggning startad"
+        "payMappingRunStarted": "Lönekartläggning startad",
+        "payMappingGroupAnalysisUpdated": "Löneanalys uppdaterad",
+        "payMappingRunCompleted": "Lönekartläggning slutförd",
+        "payMappingRunReopened": "Lönekartläggning återöppnad",
+        "payMappingCollaborationUpdated": "Samverkan uppdaterad",
+        "payMappingRunDeleted": "Lönekartläggning borttagen"
       },
       "ai": {
         "modelDraft": "Modellkriterier: {count} tillagda",
@@ -728,6 +745,7 @@
         "viewAll": "Visa alla {count}",
         "evaluateProgress": "{rated}/{total} utvärderade",
         "classifyPeopleCount": "{count, plural, one {# anställd} other {# anställda}}",
+        "startPayMappingItem": "Starta lönekartläggningen",
         "empty": {
           "title": "Du är i fas",
           "body": "Inga roller, anställda eller kriterier behöver din uppmärksamhet just nu."
@@ -737,7 +755,8 @@
           "describeRoles": "Beskriv de här rollerna",
           "evaluateRoles": "Utvärdera de här rollerna",
           "documentCriteria": "Dokumentera kriterier",
-          "approveCriteria": "Godkänn kriterier"
+          "approveCriteria": "Godkänn kriterier",
+          "startPayMapping": "Redo för lönekartläggningen"
         }
       },
       "chart": {
@@ -882,21 +901,33 @@
         "status": "Status",
         "population": "Personer",
         "responsible": "Startad av",
-        "created": "Skapad"
+        "created": "Skapad",
+        "rowActionsLabel": "Åtgärder för {label}",
+        "deleteCta": "Ta bort lönekartläggning",
+        "deleteDialogTitle": "Ta bort {label}?",
+        "deleteDialogDescription": "Lönekartläggningen, dess frysta ögonblicksbild och dess dokumentation tas bort permanent. Detta kan inte ångras.",
+        "deleteConfirm": "Ta bort",
+        "deleteCancel": "Avbryt"
       },
       "toolbar": {
         "searchPlaceholder": "Sök på namn eller startad av",
         "resultCount": "{shown} av {total} lönekartläggningar",
-        "noMatches": "Inga lönekartläggningar matchar sökningen.",
-        "clearFilters": "Rensa sökningen",
+        "noMatches": "Inga lönekartläggningar matchar sökningen eller filtren.",
+        "clearFilters": "Rensa filtren",
         "previous": "Föregående",
-        "next": "Nästa"
+        "next": "Nästa",
+        "statusAll": "Alla statusar",
+        "statusNotCompleted": "Inte avslutad"
       },
       "status": {
         "active": "Aktiv",
         "paused": "Pausad",
         "underReview": "Under översyn",
         "completed": "Avslutad"
+      },
+      "switcher": {
+        "label": "Byt lönekartläggning",
+        "all": "Alla lönekartläggningar"
       },
       "start": {
         "title": "Starta en lönekartläggning",
@@ -907,23 +938,233 @@
         "cancel": "Avbryt",
         "error": "Lönekartläggningen kunde inte startas. Försök igen."
       },
+      "preconditions": {
+        "title": "Inte redo än",
+        "classifyLine": "{count, plural, one {# person är inte klassificerad än} other {# personer är inte klassificerade än}}",
+        "evaluateLine": "{count, plural, one {# roll med anställda saknar färdig utvärdering} other {# roller med anställda saknar färdig utvärdering}}"
+      },
       "detail": {
         "population": "Personer som ingår",
-        "withPay": "Med lön",
-        "excluded": "Exkluderade (oklassificerade)",
-        "referenceDate": "Referensdatum",
         "notFound": "Den lönekartläggningen kunde inte hittas.",
         "back": "Tillbaka till lönekartläggningar",
         "erased": "Raderad",
-        "searchPlaceholder": "Sök på namn eller roll",
         "columns": {
           "name": "Namn",
           "gender": "Kön",
-          "role": "Roll",
-          "band": "Band",
-          "level": "Nivå",
           "salary": "Månadslön"
         }
+      },
+      "gap": {
+        "bandLabel": "Band {band}",
+        "columns": {
+          "group": "Grupp",
+          "women": "Kvinnor",
+          "men": "Män",
+          "band": "Band",
+          "headcount": "Antal",
+          "womenShare": "Andel kvinnor",
+          "mean": "Medellön",
+          "diffPct": "Skillnad %",
+          "diffSek": "Skillnad"
+        },
+        "flag": {
+          "critical": "Över 10 %",
+          "elevated": "5-10 %",
+          "ok": "Under 5 %",
+          "insufficient": "Otillräckligt underlag"
+        },
+        "noComparators": "Ingen likvärdig eller lägre värderad grupp är högre betald än den här.",
+        "empty": "Inga löner i den här kartläggningen ännu.",
+        "groupMembers": "Personer i gruppen",
+        "bandContext": "Inom band {band} tjänar kvinnor {gap} mindre än män.",
+        "bandContextWomenAhead": "Inom band {band} tjänar kvinnor {gap} mer än män.",
+        "bandContextNone": "Inom band {band} finns inget mätbart lönegap mellan kvinnor och män."
+      },
+      "tabs": {
+        "overview": "Översikt",
+        "analysis": "Analys",
+        "report": "Rapport"
+      },
+      "overview": {
+        "headlineGapLabel": "Lönegap",
+        "insufficient": "Otillräckligt underlag för ett lönegap på organisationsnivå.",
+        "statisticsHeading": "Statistik",
+        "wholeSurveyTitle": "Hela kartläggningen",
+        "quartileTitle": "Könsfördelning utifrån lönenivå",
+        "ageTitle": "Åldersfördelning",
+        "quartiles": {
+          "upper": "Övre kvartilen",
+          "upperMiddle": "Övre mellan",
+          "lowerMiddle": "Nedre mellan",
+          "lower": "Nedre kvartilen"
+        },
+        "birthDateUnknown": "{count, plural, one {# person utan födelsedatum} other {# personer utan födelsedatum}}"
+      },
+      "clock": {
+        "label": "Jämställdhetsklocka",
+        "womenBehind": "Kvinnor arbetar i praktiken så här länge oavlönat varje arbetsdag.",
+        "menBehind": "Män arbetar i praktiken så här länge oavlönat varje arbetsdag.",
+        "noGap": "Inget mätbart lönegap.",
+        "hours": "Timmar",
+        "minutes": "Minuter",
+        "seconds": "Sekunder"
+      },
+      "report": {
+        "comingSoonTitle": "Rapport och export",
+        "comingSoonBody": "En signerbar sammanställning för facket och arbetsgivaren, export per medarbetare och åtgärd, samt EU:s artikel 9-rapport är på väg. De genereras från den här frysta kartläggningen."
+      },
+      "reasons": {
+        "groups": {
+          "market": "Marknad",
+          "individual": "Individ",
+          "work": "Arbete"
+        },
+        "alternativeLabourMarket": "Alternativ arbetsmarknad",
+        "recruitmentPayLevel": "Lönenivå vid rekrytering",
+        "experience": "Erfarenhet",
+        "historicalPay": "Historisk lön",
+        "competence": "Kompetens",
+        "performance": "Prestation",
+        "responsibility": "Ansvar"
+      },
+      "analysisForm": {
+        "reasonsTitle": "Löneskillnader förklaras av",
+        "noteTitle": "Fördjupad analys",
+        "noteHelper": "Beskriv förklaringen utifrån roll, marknad och erfarenhet. Undvik att namnge enskilda individer: texten blir en del av den lagstadgade dokumentationen.",
+        "lockedHint": "Lönekartläggningen är avslutad och låst. Återöppna den från översikten för att redigera."
+      },
+      "scatter": {
+        "titleEqualWork": "Personer i gruppen",
+        "titleEquivalentWork": "Personer i jämförelsen",
+        "xAge": "Ålder",
+        "xTenure": "Anställningstid (år)",
+        "basic": "Grundlön",
+        "variable": "Rörligt",
+        "total": "Totalt (heltidsjusterat)",
+        "age": "Ålder",
+        "tenure": "Anställningstid",
+        "group": "Grupp",
+        "omittedAge": "{count, plural, one {# person utan födelsedatum visas inte} other {# personer utan födelsedatum visas inte}}",
+        "omittedTenure": "{count, plural, one {# person utan anställningsdatum visas inte} other {# personer utan anställningsdatum visas inte}}",
+        "emptyAge": "Ingen här har både registrerad lön och födelsedatum ännu.",
+        "emptyTenure": "Ingen här har både registrerad lön och anställningsdatum ännu."
+      },
+      "documentation": {
+        "complete": "Slutför lönekartläggningen",
+        "remaining": "{count, plural, one {# steg kvarstår innan lönekartläggningen kan slutföras} other {# steg kvarstår innan lönekartläggningen kan slutföras}}",
+        "completedNote": "Lönekartläggningen är avslutad och låst.",
+        "reopen": "Återöppna",
+        "reopenConfirmTitle": "Återöppna lönekartläggningen?",
+        "reopenConfirmBody": "Om du återöppnar låses den lagstadgade dokumentationen upp för redigering. Slutför den igen när du är klar.",
+        "reopenConfirmCta": "Återöppna",
+        "cancel": "Avbryt"
+      },
+      "journey": {
+        "title": "Din resa genom lönekartläggningen",
+        "count": "{done} av {total}",
+        "state": {
+          "notStarted": "Inte påbörjad",
+          "inProgress": "Pågår",
+          "done": "Klar"
+        }
+      },
+      "review": {
+        "showUnderlag": "Visa underlag",
+        "previous": "Föregående",
+        "exit": "Avsluta granskningen",
+        "backToJourney": "Tillbaka till granskningen",
+        "skip": "Hoppa över",
+        "continue": "Fortsätt",
+        "markDoneNext": "Klarmarkera och gå till nästa",
+        "introTitle": "Kom igång",
+        "introBody": "En lönekartläggning kartlägger löner, roller och demografi för att hitta och åtgärda osakliga löneskillnader mellan kvinnor och män. Den här genomgången går igenom de steg som lagen kräver och tar fram den dokumentation som lönekartläggningen ska bevara.",
+        "cycleBody": "En lönekartläggning följer en årlig cykel: undersök lönerna, analysera skillnaderna, åtgärda det ni hittar och följ upp nästa år. Den här genomgången täcker undersök och analysera; själva åtgärderna samlas i handlingsplanen efteråt.",
+        "autosaveHint": "Allt du fyller i sparas automatiskt.",
+        "collaborationTitle": "Samverkan",
+        "collaborationParticipants": "Vilka deltar i samverkan?",
+        "collaborationDescription": "Hur sker samverkan?",
+        "collaborationHint": "Lönekartläggningen kan inte slutföras förrän båda samverkansfälten är ifyllda.",
+        "findingNone": "Inga brister funna",
+        "findingFound": "Brister eller otydligheter funna",
+        "praxisNoteLabel": "Beskrivning",
+        "praxisNoteHelper": "Beskriv vad ni har hittat och vad som bör ändras.",
+        "undoDone": "Ångra klarmarkering",
+        "finding": {
+          "less": "Kvinnorna i den här gruppen tjänar i genomsnitt {gap} mindre än männen ({women} kvinnor · {men} män).",
+          "more": "Kvinnorna i den här gruppen tjänar i genomsnitt {gap} mer än männen ({women} kvinnor · {men} män).",
+          "none": "Det finns ingen mätbar löneskillnad mellan kvinnorna och männen i den här gruppen ({women} kvinnor · {men} män).",
+          "onlyWomen": "Den här gruppen har bara kvinnor ({count} personer), så det finns ingen kvinna-man-jämförelse att göra. Förklara varför gruppen ser ut så här.",
+          "onlyMen": "Den här gruppen har bara män ({count} personer), så det finns ingen kvinna-man-jämförelse att göra. Förklara varför gruppen ser ut så här.",
+          "orgLess": "Kvinnorna tjänar i genomsnitt {gap} mindre än männen i hela lönekartläggningen.",
+          "orgMore": "Kvinnorna tjänar i genomsnitt {gap} mer än männen i hela lönekartläggningen.",
+          "orgNone": "Det finns ingen mätbar löneskillnad mellan kvinnor och män i hela lönekartläggningen.",
+          "wdLead": "{label} är kvinnodominerad ({share} kvinnor).",
+          "wdComparisons": "{count, plural, one {Ett likvärdigt eller lägre värderat arbete har högre lön i genomsnitt.} other {# likvärdiga eller lägre värderade arbeten har högre lön i genomsnitt.}}",
+          "wdComparator": "{label} (band {band}) tjänar {diff} mer per månad i genomsnitt."
+        },
+        "praxis": {
+          "payPolicy": {
+            "title": "Lönepolicy",
+            "question": "Är lönepolicyn och lönesättningskriterierna könsneutrala, och är de tydliga för dem som tillämpar dem?",
+            "helper": "Titta på hur lönebeslut faktiskt fattas i praktiken, inte bara vad som står skrivet."
+          },
+          "collectiveAgreements": {
+            "title": "Kollektivavtal",
+            "question": "Tillämpas kollektivavtal och lokala löneavtal på samma sätt för kvinnor och män?",
+            "helper": "Kontrollera både avtalets villkor och hur de används i den dagliga lönesättningen."
+          },
+          "benefits": {
+            "title": "Förmåner och rörlig lön",
+            "question": "Beviljas förmåner, tillägg och rörlig lön på könsneutrala grunder?",
+            "helper": "Räkna in bonusar, bilersättning, jourersättning och andra tillägg utöver grundlönen."
+          },
+          "payPractices": {
+            "title": "Lönesättningspraxis",
+            "question": "Är lönesättningspraxis könsneutral vid nyanställning, befordran och under föräldraledighet?",
+            "helper": "En löneeftersläpning på grund av föräldraledighet är normalt inte i sig ett sakligt skäl för en löneskillnad."
+          },
+          "previousActions": {
+            "title": "Tidigare åtgärder",
+            "question": "Hur genomfördes de åtgärder som planerades i den förra lönekartläggningen?",
+            "helper": "Dokumentationen ska utvärdera om förra årets planerade åtgärder genomfördes och om de fick avsedd effekt."
+          }
+        },
+        "allSteps": "Alla steg",
+        "searchSteps": "Sök steg",
+        "noMatches": "Inga steg matchar sökningen.",
+        "progressDone": "{done} av {total} klara",
+        "chapters": {
+          "start": "Kom igång & samverkan",
+          "praxis": "Bestämmelser & praxis",
+          "equalWork": "Grupper med lika arbete",
+          "equivalentWork": "Kvinnodominerade grupper",
+          "finish": "Avsluta",
+          "intro": {
+            "equalWork": {
+              "title": "Grupper med lika arbete",
+              "body": "Grupperna bildas utifrån vad personer faktiskt gör på jobbet, inte deras titlar. Varje löneskillnad i varje grupp analyseras här, oavsett hur liten den ser ut: flaggorna för 5 % och 10 % nedan är bara verktygets egen prioritering, inget lagstadgat gränsvärde.",
+              "empty": "Inga grupper med lika arbete behöver dokumenteras i den här lönekartläggningen."
+            },
+            "equivalentWork": {
+              "title": "Kvinnodominerade grupper",
+              "body": "En grupp räknas som kvinnodominerad när minst 60 % av den är kvinnor, en riktpunkt från Diskrimineringsombudsmannen (DO), inte en gräns i lagtexten. För varje sådan grupp jämför det här kapitlet lönen med arbeten som värderingen bedömer som likvärdiga eller lägre, men som ändå betalar mer.",
+              "empty": "Inga kvinnodominerade grupper har högre betalda jämförelser i den här lönekartläggningen."
+            }
+          }
+        },
+        "status": {
+          "toReview": "kvar att granska",
+          "done": "klar"
+        },
+        "finish": {
+          "title": "Allt granskat"
+        },
+        "finishActionsNote": "Löneåtgärder, kostnadsberäkning och den treåriga tidsplanen läggs till i handlingsplanen.",
+        "summaryTitle": "Sammanställning",
+        "remainingBanner": "{count, plural, one {# steg kvarstår i den guidade granskningen.} other {# steg kvarstår i den guidade granskningen.}}",
+        "continueWizard": "Fortsätt granskningen",
+        "backToSummary": "Tillbaka till sammanställningen",
+        "openSummary": "Öppna sammanställningen"
       }
     },
     "rating": {
@@ -1367,7 +1608,32 @@
       "payMappingLabel": "Vad är en lönekartläggning?",
       "payMappingBody": "En lönekartläggning är en fryst ögonblicksbild av era löner, roller och demografi vid en given tidpunkt. All lönekartläggningsanalys körs mot den frysta kopian, aldrig mot livedata, så siffrorna kan inte ändras under er.",
       "referenceDateLabel": "Vad är referensdatumet?",
-      "referenceDateBody": "Datumet som ögonblicksbilden representerar. Det sätts till dagens datum när ni startar kartläggningen."
+      "referenceDateBody": "Datumet som ögonblicksbilden representerar. Det sätts till dagens datum när ni startar kartläggningen.",
+      "payGapEqualWorkLabel": "Lika arbete",
+      "payGapEqualWorkBody": "Personer som utför samma arbete på samma nivå. Vi jämför kvinnors och mäns genomsnittslön i varje sådan grupp.",
+      "payGapEquivalentWorkLabel": "Likvärdigt arbete",
+      "payGapEquivalentWorkBody": "Arbeten som värderingen väger lika hamnar i samma band. Det här är den samlade löneskillnaden mellan kvinnor och män inom bandet, visad som sammanhang till jämförelsen ovan.",
+      "womenDominatedLabel": "Vad är en kvinnodominerad grupp?",
+      "womenDominatedBody": "En grupp räknas som kvinnodominerad när minst 60 procent är kvinnor. Enligt lag ska sådana grupper jämföras med arbeten som värderingen bedömer som likvärdiga eller lägre men som betalar mer: ett kvinnodominerat arbete ska inte ha lägre lön än ett arbete som värderas lika eller lägre.",
+      "payGapFlagsLabel": "Vad flaggorna betyder",
+      "payGapFlagsBody": "Flaggan är lönegapet mellan kvinnor och män i gruppen: över 10 % kräver åtgärd, 5-10 % bör bevakas, under 5 % är ok. Grupper med bara ett kön visar inget gap: det finns ingen jämförelse att göra.",
+      "equalityClockLabel": "Jämställdhetsklocka",
+      "equalityClockBody": "Lönegapet uttryckt som tid: hur stor del av en 8-timmars arbetsdag som det lägre betalda könet arbetar utan motsvarande lön. Den härleds ur genomsnittsgapet, inte ur ett schema.",
+      "headlineGapLabel": "Lönegap på organisationsnivå",
+      "headlineGapBody": "Det genomsnittliga lönegapet mellan alla kvinnor och alla män i kartläggningen (FTE-justerad totallön). Ett positivt värde betyder att kvinnor tjänar mindre. Det är en siffra för hela populationen och visas även när enskilda grupper är små.",
+      "payQuartilesLabel": "Lönenivåkvartiler",
+      "payQuartilesBody": "Alla med lön rangordnas efter lön och delas i fyra lika stora grupper, från den lägst betalda fjärdedelen till den högsta. Om kvinnor samlas i de nedre kvartilerna och män i de övre är lönenivåerna ojämnt fördelade (ett glastaksmönster).",
+      "payGapReasonsLabel": "Sakliga skäl",
+      "payGapReasonsBody": "Svensk lag kräver ett sakligt skäl, till exempel marknadsförhållanden eller erfarenhet, för varje löneskillnad mellan jämförbara grupper. Välj de faktorer som gäller och utveckla i textfältet.",
+      "payGapScatterLabel": "Vad visar diagrammet?",
+      "payGapScatterBody": "Varje punkt är en person, utplacerad efter ålder eller anställningstid mot heltidsjusterad totallön. Löneskillnader kan bero på sakliga, icke-diskriminerande skäl som ålder eller erfarenhet: använd vyn för att se om ett sådant mönster förklarar ett gap innan du drar slutsatsen att det är oförklarat. Diagrammet gör även lönespridningen synlig: lagens analys tittar på skillnader i spridning mellan de grupper som jämförs, inte bara på medelvärden.",
+      "payGapGateLabel": "Vad innebär det att slutföra lönekartläggningen?",
+      "payGapGateBody": "Varje grupp med lika arbete som har ett löneglapp, och varje kvinnodominerad grupp med en högre betald jämförelse, måste klarmarkeras med ett dokumenterat skäl innan lönekartläggningen kan slutföras. Detta är den lagstadgade dokumentation som svensk lag kräver.",
+      "collaborationLabel": "Vad är samverkan?",
+      "collaborationBody": "Samverkan innebär att samverka med arbetstagarna och deras fackliga representanter i varje steg av lönekartläggningen (diskrimineringslagen 3 kap. 11 §). Om er organisation är bunden av kollektivavtal har de fackliga representanterna rätt till den information de behöver för att delta (12 §)."
+    },
+    "widgetCard": {
+      "expand": "Förstora"
     },
     "admin": {
       "tabs": {
@@ -1814,6 +2080,10 @@
     "lastAdmin": "Du är den sista administratören i en organisation. Kontakta supporten för att radera ditt konto.",
     "invalidLevel": "Den nivån är inte giltig för rollens spår.",
     "invalidEffectiveDate": "Giltighetsdatumet måste vara efter den aktuella tilldelningens startdatum.",
-    "personRefExists": "En anställd med det anställningsnumret finns redan."
+    "personRefExists": "En anställd med det anställningsnumret finns redan.",
+    "payMappingRunCompleted": "Lönekartläggningen är slutförd och låst. Öppna den igen för att redigera.",
+    "payMappingDocumentationRequired": "Lägg till ett sakligt skäl eller en fördjupad analys innan du klarmarkerar gruppen.",
+    "payMappingGateUnmet": "Det finns steg kvar i granskningen innan lönekartläggningen kan slutföras.",
+    "payMappingPreconditionsUnmet": "Personer eller roller saknar klassificering eller utvärdering, så lönekartläggningen kan inte startas än."
   }
 }
