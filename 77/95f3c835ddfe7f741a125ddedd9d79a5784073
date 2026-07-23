@@ -1,0 +1,117 @@
+apps/dashboard/components/band-badge.tsx
+  s_6ea4434f5c3a0d::t_fa80062dee928b 1-17,19-25
+  s_6ea4434f5c3a0d::t_483d26cca1e282 18
+apps/dashboard/components/confirm-delete-dialog.tsx
+  s_6ea4434f5c3a0d::t_e5d7258d01bff9 60-67
+  s_6ea4434f5c3a0d::t_fc4e3b4765a9ae 13-14,58,71-85
+apps/dashboard/components/option-card.tsx
+  s_6ea4434f5c3a0d::t_89e11f98a13acd 42-44
+  s_6ea4434f5c3a0d::t_d6bffbb12de6db 28
+  s_6ea4434f5c3a0d::t_74fad8d76d195d 27,39-41,53
+  s_6ea4434f5c3a0d::t_01f83b1f0d3de7 59-60
+apps/dashboard/components/track-badge.test.tsx
+  s_6ea4434f5c3a0d::t_4aaf4a996122c8 3,47-57,61
+  s_99fde687ec7029::t_226ab077575803 58-60
+  s_99fde687ec7029::t_7db4d269833137 62
+apps/dashboard/components/onboarding/industry-screen.tsx
+  s_6ea4434f5c3a0d::t_defb2d1308c2cc 8
+apps/dashboard/components/role-sheet.tsx
+  s_6ea4434f5c3a0d::t_d6abc1a69ad6a3 30,139
+  s_6ea4434f5c3a0d::t_6800975c1688e2 88
+apps/dashboard/components/table-search-field.tsx
+  s_6ea4434f5c3a0d::t_ab1699f0986e7b 6,8-15,20,25
+  s_6ea4434f5c3a0d::t_5048c1632ca109 41
+apps/dashboard/components/widget-card.tsx
+  s_6ea4434f5c3a0d::t_aa68223d94b5f5 1-2,4-51,53-66,68-88
+  s_6ea4434f5c3a0d::t_7ba8bfe1a47d5b 3
+  s_6ea4434f5c3a0d::t_e0d26b2256c793 67
+  s_6ea4434f5c3a0d::t_b721edd6b9a04b 52
+apps/dashboard/components/people/import/import-wizard.tsx
+  s_6ea4434f5c3a0d::t_43af7077019499 12
+apps/dashboard/components/accordion-section.tsx
+  s_6ea4434f5c3a0d::t_3bb61401337eb1 13-15
+  s_6ea4434f5c3a0d::t_39526a02062d24 1-11,16-63
+  s_6ea4434f5c3a0d::t_6e7bf77d127655 12
+apps/dashboard/components/people/person-detail.tsx
+  s_6ea4434f5c3a0d::t_d6abc1a69ad6a3 310-313
+  s_6ea4434f5c3a0d::t_27dff108a8fed9 10
+apps/dashboard/components/accordion-section.test.tsx
+  s_6ea4434f5c3a0d::t_018cfa8e56e835 1-69
+apps/dashboard/components/widget-card.test.tsx
+  s_6ea4434f5c3a0d::t_d18ca52763b08c 1-60
+apps/dashboard/components/band-badge.test.tsx
+  s_6ea4434f5c3a0d::t_7d09c90051c54d 1-19,21-41
+  s_6ea4434f5c3a0d::t_84e4abf548b4a3 20
+apps/dashboard/components/screen-shell.tsx
+  s_6ea4434f5c3a0d::t_c361c5d666caf2 8-20,33-39,83-85,92-98,116,118-124,126-129,131
+  s_6ea4434f5c3a0d::t_6e7bf77d127655 41-43
+  s_6ea4434f5c3a0d::t_f74cbe6f01730f 22,45-50,67,77-80
+  s_6ea4434f5c3a0d::t_5c19a0588a22bc 111-115,117
+  s_6ea4434f5c3a0d::t_0be6e0d4f3e035 62-66,68-76
+  s_6ea4434f5c3a0d::t_98b670138edd06 88
+  s_6ea4434f5c3a0d::t_f33c13e916ef3f 3,21,40,44,59-61,81-82,86-87,89-91,99-110,125,130,133
+  s_5ad434ad023b5b::t_e0b4584113b04e 23
+  s_6ea4434f5c3a0d::t_ec1792f88a2b4d 51-53
+  s_c710adbb2e3393::t_ed71223e607c5e 54
+apps/dashboard/components/screen-shell.test.tsx
+  s_6ea4434f5c3a0d::t_673b0ddcd48160 29,39-52
+  s_6ea4434f5c3a0d::t_b19308fd92848c 8,11,13-15,21,24,26-28,37-38,53-81
+  s_6ea4434f5c3a0d::t_626395161dd610 3
+apps/dashboard/components/onboarding/name-screen.tsx
+  s_6ea4434f5c3a0d::t_fa2553a639c197 16
+apps/dashboard/components/onboarding/families-step.tsx
+  s_6ea4434f5c3a0d::t_1cfdb6f3beea3b 17
+apps/dashboard/components/people/pay-comparison-section.tsx
+  s_6ea4434f5c3a0d::t_a5ce8f61483050 25,32-34,37-39,47-48,50-51,56-60,82,89-121,123-124,129-134
+  s_6ea4434f5c3a0d::t_d7fd21a848a3e8 278-285
+  s_6ea4434f5c3a0d::t_97f056621cf520 71-73
+  s_6ea4434f5c3a0d::t_a64d5c40204f9b 52-55,125-128
+  s_6ea4434f5c3a0d::t_fa7ed1f12b3281 249,255
+apps/dashboard/components/table-search-field.test.tsx
+  s_6ea4434f5c3a0d::t_6d9163d7971c0e 1-19
+apps/dashboard/components/track-badge.tsx
+  s_6ea4434f5c3a0d::t_8f39b9cc6c0f71 1,53-71
+  s_6ea4434f5c3a0d::t_0cf369ae4119d3 72-74
+apps/dashboard/components/onboarding/country-screen.tsx
+  s_6ea4434f5c3a0d::t_806cb5e2f46f48 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "7795f3c835ddfe7f741a125ddedd9d79a5784073",
+  "prompts": {},
+  "sessions": {
+    "s_5ad434ad023b5b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1b4d7dab-2222-43c1-a776-38851ce15e18",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_99fde687ec7029": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0b038944-7d48-48e4-a724-d9edbda453b2",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_c710adbb2e3393": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-afea94ac2856fe231",
+        "model": "unknown"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
