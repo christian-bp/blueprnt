@@ -113,4 +113,23 @@ describe("TodoWidget", () => {
     // Group count carries a unit (en pluralizes; Nordic use st/stk/kpl).
     expect(screen.getByText("6 items")).toBeDefined()
   })
+
+  it("renders the startPayMapping group as a single full-row link to the create surface", () => {
+    const todo: Todo = {
+      total: 1,
+      groups: [
+        {
+          key: "startPayMapping",
+          count: 1,
+          items: [{ id: "startPayMapping", href: "/pay-mappings" }],
+        },
+      ],
+    }
+    renderWidget(todo)
+    expect(screen.getByText("Start the pay mapping")).toBeDefined()
+    const row = screen.getByText("Start the pay mapping").closest("a")
+    expect(row?.getAttribute("href")).toBe("/pay-mappings")
+    // A single item never triggers the "view all" overflow link.
+    expect(screen.queryByText(/View all/)).toBeNull()
+  })
 })

@@ -1,13 +1,18 @@
 "use client"
 
+import { MoreVerticalIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import {
   type ColumnDef,
+  type ColumnFiltersState,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  type Row,
   useReactTable,
 } from "@tanstack/react-table"
 import { api } from "@workspace/backend/convex/_generated/api"
+import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -16,6 +21,13 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
 import {
   Table,
   TableBody,
@@ -32,6 +44,7 @@ import { useEffect, useMemo, useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
 import { PageHeader } from "@/components/page-header"
+import { PayMappingRunActions } from "@/components/pay-mapping/pay-mapping-run-actions"
 import { StartPayMappingDialog } from "@/components/pay-mapping/start-pay-mapping-dialog"
 import { TablePagination } from "@/components/table-pagination"
 import { TableSearchField } from "@/components/table-search-field"
@@ -40,6 +53,7 @@ import {
   type TableSkeletonColumn,
 } from "@/components/table-skeleton"
 import { SPRING } from "@/lib/motion"
+import { onSelectValue } from "@/lib/select"
 
 // The pay mappings (kartlaggningar) list: a searchable, paginated data table
 // (the shadcn data table recipe on @tanstack/react-table, same as the people
@@ -76,15 +90,37 @@ export function matchesPayMappingQuery(
 
 const PAGE_SIZE = 25
 
+// Exact-match column filter (mirrors the department/gender/fte columns in
+// people-section): the status filter narrows on the group value below, not
+// a substring.
+const exactString = (
+  row: Row<PayMappingRunRow>,
+  columnId: string,
+  value: string
+) => row.getValue<string>(columnId) === value
+
 // Skeleton shape per column, mirroring the real row content (name link, a
-// medium date, a status pill, a count, a started-by name) so the loading
-// table has the same silhouette as the loaded one.
+// medium date, a status pill, a count, a started-by name, a row-actions
+// trigger) so the loading table has the same silhouette as the loaded one.
+// The trigger is per-row chrome identical for every row, not data, so it
+// renders as its real (muted, non-interactive) icon rather than a bar.
 const PAY_MAPPING_SKELETON_COLUMNS: TableSkeletonColumn[] = [
   { className: "w-48 max-w-full" },
   { className: "w-24" },
   { className: "h-5 w-16 rounded-full" },
   { className: "w-10" },
   { className: "w-32 max-w-full" },
+  {
+    content: (
+      <span className="flex size-9 shrink-0 items-center justify-end text-muted-foreground/50">
+        <HugeiconsIcon
+          icon={MoreVerticalIcon}
+          strokeWidth={2}
+          aria-hidden="true"
+        />
+      </span>
+    ),
+  },
 ]
 
 export function PayMappingsSection() {
@@ -111,33 +147,44 @@ export function PayMappingsSection() {
   }, [runs])
 
   const [globalFilter, setGlobalFilter] = useState("")
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: PAGE_SIZE,
   })
 
-  // A single column carries the filter pipeline: the header row is the
-  // static tableHeader below (shared with the skeleton) and cells render
-  // from row.original, so no other column defs are needed here (mirrors
-  // people-section: columns exist for the filter/pagination machinery, not
-  // for rendering).
+  // The label column carries the search pipeline; statusGroup is a
+  // filter-only column (no visible header of its own, the real "Status"
+  // column renders from row.original below) narrowed by the toolbar's status
+  // Select. Mirrors people-section: columns exist for the filter/pagination
+  // machinery, not for rendering.
   const columns = useMemo<ColumnDef<PayMappingRunRow>[]>(
-    () => [{ id: "label", accessorKey: "label" }],
+    () => [
+      { id: "label", accessorKey: "label" },
+      {
+        id: "statusGroup",
+        accessorFn: (row) =>
+          row.status === "completed" ? "completed" : "notCompleted",
+        filterFn: exactString,
+        enableGlobalFilter: false,
+      },
+    ],
     []
   )
 
   const table = useReactTable({
     data: rows,
     columns,
-    state: { globalFilter, pagination },
+    state: { globalFilter, columnFilters, pagination },
     onGlobalFilterChange: setGlobalFilter,
+    onColumnFiltersChange: setColumnFilters,
     onPaginationChange: setPagination,
     // Auto-resets setState on data-identity changes and can loop on
     // unrelated re-renders (see the GROUPING note in roles-table.tsx); the
-    // toolbar's search handler resets the page explicitly instead.
+    // toolbar's handlers reset the page explicitly instead.
     autoResetPageIndex: false,
     // The matcher reads the whole row, so it runs on the label column only
-    // (the only column, which stays global-filterable by default).
+    // (statusGroup opts out of global filtering).
     globalFilterFn: (row, _columnId, value: string) =>
       matchesPayMappingQuery(row.original, value),
     getCoreRowModel: getCoreRowModel(),
@@ -148,10 +195,13 @@ export function PayMappingsSection() {
   const shown = table.getFilteredRowModel().rows.length
   const pageRows = table.getRowModel().rows.map((row) => row.original)
   const pageCount = table.getPageCount()
-  const filtersActive = globalFilter.trim() !== ""
+  const filtersActive = globalFilter.trim() !== "" || columnFilters.length > 0
+  const statusFilter =
+    (table.getColumn("statusGroup")?.getFilterValue() as string | undefined) ??
+    "all"
 
-  // A search change resets to the first page; this clamp covers the
-  // remaining case where a reactive data update shrinks the filtered set
+  // A search or filter change resets to the first page; this clamp covers
+  // the remaining case where a reactive data update shrinks the filtered set
   // while a later page is open.
   useEffect(() => {
     if (pagination.pageIndex > 0 && pagination.pageIndex >= pageCount) {
@@ -163,8 +213,17 @@ export function PayMappingsSection() {
     setPagination((p) => (p.pageIndex === 0 ? p : { ...p, pageIndex: 0 }))
   }
 
-  function clearSearch() {
+  // Shared handler for the toolbar's status Select: "all" clears the filter.
+  function setColumnFilter(columnId: string, value: string) {
+    table
+      .getColumn(columnId)
+      ?.setFilterValue(value === "all" ? undefined : value)
+    resetPage()
+  }
+
+  function clearFilters() {
     setGlobalFilter("")
+    setColumnFilters([])
     resetPage()
   }
 
@@ -180,16 +239,20 @@ export function PayMappingsSection() {
         <TableHead className="w-28">{t("table.status")}</TableHead>
         <TableHead className="w-20">{t("table.population")}</TableHead>
         <TableHead className="w-40">{t("table.responsible")}</TableHead>
+        {/* No header text: a trailing row-actions trigger, like the
+            expand-chevron column in classify-title-table. */}
+        <TableHead className="w-14" />
       </TableRow>
     </TableHeader>
   )
 
-  // Toolbar: search only (there is no other filter here); the counter
-  // appears only while a search is narrowing the table (mirrors the people
-  // and role registers' toolbar). The table state lives in this component,
-  // so the SAME live toolbar renders during loading (static chrome is never
-  // a skeleton bar, and it needs no disabling: a search typed into the
-  // loading state carries over).
+  // Toolbar: search + the status filter (Not completed / Completed); the
+  // counter appears only while something is narrowing the table (mirrors the
+  // people and role registers' toolbar). The table state lives in this
+  // component, so the SAME live toolbar (including the status Select, always
+  // showing "All") renders during loading: static chrome is never a skeleton
+  // bar, and it needs no disabling since a change typed/picked during loading
+  // carries over.
   const toolbar = (
     <div className="flex flex-wrap items-center gap-2">
       <TableSearchField
@@ -200,6 +263,28 @@ export function PayMappingsSection() {
           resetPage()
         }}
       />
+      <Select
+        items={{
+          all: tToolbar("statusAll"),
+          notCompleted: tToolbar("statusNotCompleted"),
+          completed: t("status.completed"),
+        }}
+        value={statusFilter}
+        onValueChange={onSelectValue((value: string) =>
+          setColumnFilter("statusGroup", value)
+        )}
+      >
+        <SelectTrigger aria-label={t("table.status")}>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">{tToolbar("statusAll")}</SelectItem>
+          <SelectItem value="notCompleted">
+            {tToolbar("statusNotCompleted")}
+          </SelectItem>
+          <SelectItem value="completed">{t("status.completed")}</SelectItem>
+        </SelectContent>
+      </Select>
       {filtersActive && (
         <span className="ml-auto text-muted-foreground text-sm tabular-nums">
           {tToolbar("resultCount", { shown, total: rows.length })}
@@ -253,7 +338,7 @@ export function PayMappingsSection() {
                 <EmptyTitle>{t("heading")}</EmptyTitle>
                 <EmptyDescription>{tToolbar("noMatches")}</EmptyDescription>
               </EmptyHeader>
-              <Button type="button" variant="outline" onClick={clearSearch}>
+              <Button type="button" variant="outline" onClick={clearFilters}>
                 {tToolbar("clearFilters")}
               </Button>
             </Empty>
@@ -302,6 +387,17 @@ export function PayMappingsSection() {
                         </TableCell>
                         <TableCell className="truncate text-muted-foreground">
                           {run.initiatedByName}
+                        </TableCell>
+                        <TableCell>
+                          {/* Block flex wrapper: the trigger never sits bare
+                              in the cell (see the status badge above). */}
+                          <div className="flex justify-end">
+                            <PayMappingRunActions
+                              orgId={orgId}
+                              runId={run.runId as Id<"payMappingRuns">}
+                              label={run.label}
+                            />
+                          </div>
                         </TableCell>
                       </motion.tr>
                     ))}

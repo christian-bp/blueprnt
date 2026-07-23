@@ -10,6 +10,7 @@ export type TodoGroupKey =
   | "evaluateRoles"
   | "documentCriteria"
   | "approveCriteria"
+  | "startPayMapping"
 
 export type RoleItem = {
   id: string
@@ -36,6 +37,8 @@ export type ClassifyItem = {
   href: string
   peopleCount: number
 }
+// The single "go start it" row once the pay-mapping gate is clear.
+export type StartPayMappingItem = { id: string; href: string }
 
 export type TodoGroup =
   | { key: "classifyPeople"; items: ClassifyItem[]; count: number }
@@ -43,6 +46,7 @@ export type TodoGroup =
   | { key: "evaluateRoles"; items: EvaluateItem[]; count: number }
   | { key: "documentCriteria"; items: CriterionItem[]; count: number }
   | { key: "approveCriteria"; items: CriterionItem[]; count: number }
+  | { key: "startPayMapping"; items: StartPayMappingItem[]; count: number }
 
 export type Todo = { groups: TodoGroup[]; total: number }
 
@@ -67,20 +71,28 @@ type TodoMethod = {
 type TodoTitleGroup = {
   title: string | null
   people: {
-    currentAssignment: { levelSource: "suggested" | "confirmed" } | null
+    currentAssignment: {
+      roleId: string
+      levelSource: "suggested" | "confirmed"
+    } | null
   }[]
+}
+type TodoPayMappingRun = {
+  status: "active" | "paused" | "underReview" | "completed"
 }
 
 export type BuildTodoInput = {
   roles: TodoRole[]
   method: TodoMethod
   peopleByTitle: TodoTitleGroup[]
+  payMappingRuns: TodoPayMappingRun[]
 }
 
 export function buildTodo({
   roles,
   method,
   peopleByTitle,
+  payMappingRuns,
 }: BuildTodoInput): Todo {
   // Classification first: after a payroll import it is the freshest work, and
   // people must sit in roles before any analysis can use them. One item per
@@ -176,11 +188,49 @@ export function buildTodo({
       count: approveItems.length,
     })
 
+  // The pay-mapping gate's own readiness, mirroring the backend's shared
+  // precondition helper exactly: every person classified (a confirmed open
+  // assignment) and every STAFFED role (holding at least one open
+  // assignment, any confirmation state) resolves a band (fully rated). An
+  // unstaffed role's evaluation state never blocks this, unlike
+  // describeRoles/evaluateRoles above, which track every role regardless of
+  // staffing. Rendered as its own final group only once the gate is clear
+  // AND no non-completed run is already in flight (nothing left to start).
+  const totalUnclassified = classify.reduce(
+    (sum, item) => sum + item.peopleCount,
+    0
+  )
+  const staffedRoleIds = new Set<string>()
+  for (const group of peopleByTitle) {
+    for (const person of group.people) {
+      if (person.currentAssignment !== null) {
+        staffedRoleIds.add(person.currentAssignment.roleId)
+      }
+    }
+  }
+  const isRoleEvaluated = (r: TodoRole) =>
+    r.totalCriteria > 0 && r.ratedCount === r.totalCriteria
+  const unevaluatedStaffedRoles = roles.filter(
+    (r) => staffedRoleIds.has(r.roleId) && !isRoleEvaluated(r)
+  )
+  const payMappingReady =
+    totalUnclassified === 0 && unevaluatedStaffedRoles.length === 0
+  const hasOpenRun = payMappingRuns.some((run) => run.status !== "completed")
+  const startPayMapping = payMappingReady && !hasOpenRun
+  if (startPayMapping) {
+    groups.push({
+      key: "startPayMapping",
+      items: [{ id: "startPayMapping", href: "/pay-mappings" }],
+      count: 1,
+    })
+  }
+
   const total =
     classify.length +
     describe.length +
     evaluate.length +
     documentItems.length +
-    approveItems.length
+    approveItems.length +
+    (startPayMapping ? 1 : 0)
   return { groups, total }
 }

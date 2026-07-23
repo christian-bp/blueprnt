@@ -6,13 +6,9 @@ import {
   CheckmarkCircle02Icon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@workspace/ui/components/accordion"
+import { Accordion } from "@workspace/ui/components/accordion"
 import { useTranslations } from "next-intl"
+import { AccordionSection } from "@/components/accordion-section"
 import { TodoGroupItems } from "@/components/overview/todo-group"
 import { TodoSkeleton } from "@/components/overview/todo-skeleton"
 import type { Todo } from "@/lib/todo"
@@ -75,39 +71,23 @@ export function TodoWidget({ todo }: { todo: Todo | undefined }) {
         defaultValue={[todo.groups[0]?.key ?? ""]}
         className="gap-3"
       >
+        {/* The brand-chevron-first trigger anatomy lives in AccordionSection
+            (the shared app primitive this widget's local markup was
+            generalized into). contentClassName overrides the accordion's
+            prose default (`[&_a]:underline`): the item rows are whole-row
+            links, not text links, so they should not be underlined. The
+            "view all" link opts back into hover-underline itself. */}
         {todo.groups.map((group) => (
-          <AccordionItem
+          <AccordionSection
             key={group.key}
             value={group.key}
             className="rounded-xl border px-4"
+            title={t(`groups.${group.key}`)}
+            meta={t("groupCount", { count: group.count })}
+            contentClassName="[&_a]:no-underline"
           >
-            {/* A brand chevron at the START of the row: force-hide the built-in
-                right chevron with `[&>svg]:hidden!` (the `!` beats its
-                expanded-state `group-aria-expanded:inline`; `>` targets only its
-                direct-child icons, not our nested one) and render our own,
-                rotating 90deg on open. */}
-            <AccordionTrigger className="[&>svg]:hidden!">
-              <span className="flex flex-1 items-center gap-2">
-                <HugeiconsIcon
-                  icon={ArrowRight01Icon}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                  className="size-4 shrink-0 text-brand transition-transform group-aria-expanded/accordion-trigger:rotate-90"
-                />
-                <span>{t(`groups.${group.key}`)}</span>
-                <span className="ml-auto text-muted-foreground tabular-nums">
-                  {t("groupCount", { count: group.count })}
-                </span>
-              </span>
-            </AccordionTrigger>
-            {/* Override the accordion's prose default (`[&_a]:underline`): the
-                item rows are whole-row links, not text links, so they should not
-                be underlined. The "view all" link opts back into hover-underline
-                itself. */}
-            <AccordionContent className="[&_a]:no-underline">
-              <TodoGroupItems group={group} />
-            </AccordionContent>
-          </AccordionItem>
+            <TodoGroupItems group={group} />
+          </AccordionSection>
         ))}
       </Accordion>
     </div>

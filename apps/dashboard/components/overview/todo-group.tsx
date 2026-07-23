@@ -67,6 +67,13 @@ export function TodoGroupItems({ group }: { group: TodoGroup }) {
           </Link>
         ))}
 
+      {group.key === "startPayMapping" &&
+        group.items.map((item) => (
+          <Link key={item.id} href={item.href} className={rowClass}>
+            <span className="min-w-0 truncate">{t("startPayMappingItem")}</span>
+          </Link>
+        ))}
+
       {group.count > group.items.length && (
         <Link
           href={
@@ -74,7 +81,9 @@ export function TodoGroupItems({ group }: { group: TodoGroup }) {
               ? "/people/classify"
               : group.key === "describeRoles" || group.key === "evaluateRoles"
                 ? "/roles"
-                : "/model/method"
+                : group.key === "startPayMapping"
+                  ? "/pay-mappings"
+                  : "/model/method"
           }
           className="px-2 py-2 text-muted-foreground text-sm underline-offset-4 hover:underline"
         >

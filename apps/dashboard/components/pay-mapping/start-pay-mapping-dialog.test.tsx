@@ -13,36 +13,43 @@ vi.mock("sonner", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 
-const startPayMappingRunMock = vi.fn()
+vi.mock(
+  "convex/react",
+  async () => (await import("@/test/convex-mocks")).convexReactModule
+)
+vi.mock(
+  "@workspace/backend/convex/_generated/api",
+  async () => (await import("@/test/convex-mocks")).apiModule
+)
+
 const pushMock = vi.fn()
-
-vi.mock("convex/react", () => ({
-  useMutation: (ref: unknown) => {
-    if (ref === "payMapping.runs.startPayMappingRun")
-      return startPayMappingRunMock
-    return vi.fn()
-  },
-}))
-
-vi.mock("@workspace/backend/convex/_generated/api", () => ({
-  api: {
-    payMapping: {
-      runs: {
-        startPayMappingRun: "payMapping.runs.startPayMappingRun",
-      },
-    },
-  },
-}))
-
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: pushMock }),
 }))
 
 import { toast } from "sonner"
 import { StartPayMappingDialog } from "@/components/pay-mapping/start-pay-mapping-dialog"
+import { mockMutation, onQuery } from "@/test/convex-mocks"
+
+const startPayMappingRunMock = mockMutation(
+  "payMapping.runs.startPayMappingRun"
+)
 
 const labels = messages.dashboard.payMapping.start
+const preconditionLabels = messages.dashboard.payMapping.preconditions
 const triggerLabel = messages.dashboard.payMapping.startCta
+
+// Ready by default; individual tests overwrite this before rendering to
+// exercise the not-ready panel path.
+let preconditionsResult:
+  | { unclassifiedCount: number; unevaluatedRoles: unknown[]; ready: boolean }
+  | undefined = { unclassifiedCount: 0, unevaluatedRoles: [], ready: true }
+
+onQuery((ref) =>
+  ref === "payMapping.runs.getPayMappingPreconditions"
+    ? preconditionsResult
+    : undefined
+)
 
 function renderDialog() {
   return render(
@@ -58,6 +65,11 @@ describe("StartPayMappingDialog", () => {
     pushMock.mockReset()
     vi.mocked(toast.success).mockReset()
     vi.mocked(toast.error).mockReset()
+    preconditionsResult = {
+      unclassifiedCount: 0,
+      unevaluatedRoles: [],
+      ready: true,
+    }
   })
   afterEach(() => {
     cleanup()
@@ -142,5 +154,42 @@ describe("StartPayMappingDialog", () => {
       expect(screen.getByRole("alert")).toBeDefined()
     })
     expect(screen.getByLabelText(labels.labelLabel)).toBeDefined()
+  })
+
+  it("shows the precondition panel instead of the form when the gate is unmet, and never calls the server", () => {
+    preconditionsResult = {
+      unclassifiedCount: 3,
+      unevaluatedRoles: [{ roleId: "r1", title: "Designer", slug: "designer" }],
+      ready: false,
+    }
+    renderDialog()
+    fireEvent.click(screen.getByRole("button", { name: triggerLabel }))
+
+    expect(screen.getByText(preconditionLabels.title)).toBeDefined()
+    expect(screen.queryByLabelText(labels.labelLabel)).toBeNull()
+    expect(startPayMappingRunMock).not.toHaveBeenCalled()
+  })
+
+  it("shows the form when the gate is met", () => {
+    preconditionsResult = {
+      unclassifiedCount: 0,
+      unevaluatedRoles: [],
+      ready: true,
+    }
+    renderDialog()
+    fireEvent.click(screen.getByRole("button", { name: triggerLabel }))
+
+    expect(screen.getByLabelText(labels.labelLabel)).toBeDefined()
+    expect(screen.queryByText(preconditionLabels.title)).toBeNull()
+  })
+
+  it("shows a loading indicator, not the form or the panel, while the precondition check is in flight", () => {
+    preconditionsResult = undefined
+    renderDialog()
+    fireEvent.click(screen.getByRole("button", { name: triggerLabel }))
+
+    expect(screen.queryByLabelText(labels.labelLabel)).toBeNull()
+    expect(screen.queryByText(preconditionLabels.title)).toBeNull()
+    expect(document.querySelector('[data-slot="spinner"]')).toBeDefined()
   })
 })

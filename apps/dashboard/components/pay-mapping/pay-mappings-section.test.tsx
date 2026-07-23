@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from "next-intl"
 import type { ReactNode } from "react"
 import React from "react"
 import { afterEach, describe, expect, it, vi } from "vitest"
+import { pickSelectOption } from "@/test/select"
 
 const queryMock = vi.fn()
 
@@ -131,6 +132,13 @@ describe("PayMappingsSection", () => {
     // The real search toolbar renders during loading too: static chrome
     // (an i18n-labeled control) is never a skeleton bar.
     expect(screen.getByLabelText(m.toolbar.searchPlaceholder)).toBeDefined()
+    // The status filter is real chrome too, enabled and showing "All".
+    const statusFilter = screen.getByRole("combobox", {
+      name: m.table.status,
+    })
+    expect(statusFilter).toBeDefined()
+    expect(statusFilter.getAttribute("aria-disabled")).toBeNull()
+    expect(screen.getByText(m.toolbar.statusAll)).toBeDefined()
   })
 
   it("renders the empty state with the start CTA when there are no runs", () => {
@@ -246,6 +254,50 @@ describe("PayMappingsSection", () => {
     queryMock.mockReturnValue(RUNS)
     renderSection()
     expect(screen.queryByLabelText(m.toolbar.next)).toBeNull()
+  })
+
+  // ---------------------------------------------------------------------------
+  // Status filter
+  // ---------------------------------------------------------------------------
+
+  it("filters by status: Not completed excludes completed runs, Completed excludes the rest", async () => {
+    queryMock.mockReturnValue(RUNS)
+    renderSection()
+    const statusFilter = () =>
+      screen.getByRole("combobox", { name: m.table.status })
+
+    await pickSelectOption(statusFilter(), m.toolbar.statusNotCompleted)
+    expect(screen.getByText("Lonekartlaggning 2026")).toBeDefined()
+    expect(screen.queryByText("Lonekartlaggning 2025")).toBeNull()
+    expect(screen.getByText("1 of 2 pay mappings")).toBeDefined()
+
+    await pickSelectOption(statusFilter(), m.status.completed)
+    expect(screen.getByText("Lonekartlaggning 2025")).toBeDefined()
+    expect(screen.queryByText("Lonekartlaggning 2026")).toBeNull()
+
+    await pickSelectOption(statusFilter(), m.toolbar.statusAll)
+    expect(screen.getByText("Lonekartlaggning 2026")).toBeDefined()
+    expect(screen.getByText("Lonekartlaggning 2025")).toBeDefined()
+  })
+
+  it("combines the status filter with search, and clears both from the no-matches state", async () => {
+    queryMock.mockReturnValue(RUNS)
+    renderSection()
+    fireEvent.change(screen.getByLabelText(m.toolbar.searchPlaceholder), {
+      target: { value: "2025" },
+    })
+    await pickSelectOption(
+      screen.getByRole("combobox", { name: m.table.status }),
+      m.toolbar.statusNotCompleted
+    )
+    // 2025 is completed, so the search+status combination matches nothing.
+    expect(screen.getByText(m.toolbar.noMatches)).toBeDefined()
+
+    fireEvent.click(
+      screen.getByRole("button", { name: m.toolbar.clearFilters })
+    )
+    expect(screen.getByText("Lonekartlaggning 2026")).toBeDefined()
+    expect(screen.getByText("Lonekartlaggning 2025")).toBeDefined()
   })
 })
 
