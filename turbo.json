@@ -21,7 +21,7 @@
       "persistent": true
     },
     "test": {
-      "outputs": ["coverage/**"]
+      "outputs": []
     },
     "test:watch": {
       "cache": false,
