@@ -2,12 +2,13 @@
 // families x bands), so their scroll/sticky behavior cannot drift.
 
 // The scroll wrapper: horizontal for wide grids (the wide-content rule), and
-// vertically viewport-bounded so long grids scroll INSIDE it. That inner
+// vertically filling the height-bounded tab panel on /work (flex-1 inside
+// the panel's flex column) so long grids scroll INSIDE it. That inner
 // vertical scroll is what makes the sticky header work at all: an
 // overflow-x container is a scroll container for both axes, so a sticky
 // header inside it can never stick to the window; it can only stick to the
-// wrapper's own scrollport. Grids shorter than the cap are unaffected.
-export const MATRIX_WRAPPER_CLASS = "max-h-[70vh] overflow-auto"
+// wrapper's own scrollport.
+export const MATRIX_WRAPPER_CLASS = "min-h-0 flex-1 overflow-auto"
 
 // A sticky column-header cell. border-separate's border-spacing leaves
 // transparent slits between and around the header cells that scrolled chips

@@ -80,21 +80,21 @@ export default function WorkOverviewPage() {
     // rows (the ladder's real bordered boxes: a w-28 label block and role
     // chips), so nothing reflows when the results arrive.
     return (
-      <div className="space-y-6">
+      <div className="flex min-h-0 flex-1 flex-col gap-6">
         {header}
         <Tabs
           value={view}
           onValueChange={(value) =>
             setView(value as "ladder" | "matrix" | "families")
           }
-          className="space-y-4"
+          className="flex min-h-0 flex-1 flex-col gap-4"
         >
           <TabsList variant="line">
             <TabsTrigger value="ladder">{t("viewLadder")}</TabsTrigger>
             <TabsTrigger value="matrix">{t("viewMatrix")}</TabsTrigger>
             <TabsTrigger value="families">{t("viewFamilies")}</TabsTrigger>
           </TabsList>
-          <ul className="space-y-2">
+          <ul className="min-h-0 flex-1 space-y-2 overflow-y-auto">
             {[3, 2, 4, 1, 2].map((chips, band) => (
               <li
                 // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
@@ -166,7 +166,7 @@ export default function WorkOverviewPage() {
     results.rows.filter((row) => row.band !== null)
   )
   return (
-    <div className="space-y-6">
+    <div className="flex min-h-0 flex-1 flex-col gap-6">
       {header}
       {results.rows.length === 0 ? (
         <Empty>
@@ -187,7 +187,7 @@ export default function WorkOverviewPage() {
           onValueChange={(value) =>
             setView(value as "ladder" | "matrix" | "families")
           }
-          className="space-y-4"
+          className="flex min-h-0 flex-1 flex-col gap-4"
         >
           <div className="flex flex-wrap items-center gap-3">
             <TabsList variant="line">
@@ -221,7 +221,10 @@ export default function WorkOverviewPage() {
               </div>
             )}
           </div>
-          <TabsContent value="ladder" className="space-y-4">
+          <TabsContent
+            value="ladder"
+            className="min-h-0 flex-1 space-y-4 overflow-y-auto"
+          >
             <BandLadder
               bands={results.bands}
               rows={filteredRows}
@@ -229,7 +232,15 @@ export default function WorkOverviewPage() {
             />
             <PendingRoles rows={filteredRows} />
           </TabsContent>
-          <TabsContent value="matrix" className="space-y-4">
+          {/* The matrix panels are flex columns WITHOUT their own scroll:
+              the matrix wrapper (MATRIX_WRAPPER_CLASS) is the vertical
+              scroller, so its sticky column headers can stick; a scrolling
+              panel would double-scroll and un-stick them. The ladder has no
+              sticky header, so its panel scrolls itself. */}
+          <TabsContent
+            value="matrix"
+            className="flex min-h-0 flex-1 flex-col gap-4"
+          >
             <BandMatrix
               bands={results.bands}
               rows={filteredRows}
@@ -238,7 +249,10 @@ export default function WorkOverviewPage() {
             />
             <PendingRoles rows={filteredRows} />
           </TabsContent>
-          <TabsContent value="families" className="space-y-4">
+          <TabsContent
+            value="families"
+            className="flex min-h-0 flex-1 flex-col gap-4"
+          >
             <FamilyBandMatrix bands={results.bands} rows={filteredRows} />
             <PendingRoles rows={filteredRows} />
           </TabsContent>

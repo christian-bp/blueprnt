@@ -2,6 +2,8 @@
 
 import { SidebarInset, SidebarProvider } from "@workspace/ui/components/sidebar"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
+import { cn } from "@workspace/ui/lib/utils"
+import { usePathname } from "next/navigation"
 import type { CSSProperties, ReactNode } from "react"
 import { AppSidebar } from "@/components/app-sidebar"
 import {
@@ -17,6 +19,13 @@ export function AppShell(props: {
   organization: OrganizationInfo
   children: ReactNode
 }) {
+  const pathname = usePathname()
+  // The band-architecture views (/work: ladder, matrix, families) are wide
+  // grid surfaces that earn the whole viewport, width AND height: the inset
+  // card locks to the viewport (its rounded bottom never pushed off-screen)
+  // and the view scrolls inside. Every other page keeps the capped reading
+  // width and normal page flow.
+  const fullBleed = pathname === "/work"
   return (
     <OrganizationProvider value={props.organization}>
       {/* This ui package's sidebar variant does not bundle a TooltipProvider;
@@ -36,11 +45,26 @@ export function AppShell(props: {
           }
         >
           <AppSidebar variant="inset" />
-          <SidebarInset>
+          <SidebarInset
+            className={cn(
+              // 1rem = the inset variant's own m-2 top+bottom margins.
+              fullBleed && "md:h-[calc(100svh_-_1rem)] md:overflow-hidden"
+            )}
+          >
             <SiteHeader />
-            <div className="flex flex-1 flex-col">
-              <div className="@container/main flex flex-1 flex-col gap-2">
-                <div className="flex w-full max-w-6xl flex-col gap-4 px-4 py-4 md:gap-6 md:py-6 lg:px-6">
+            <div className={cn("flex flex-1 flex-col", fullBleed && "min-h-0")}>
+              <div
+                className={cn(
+                  "@container/main flex flex-1 flex-col gap-2",
+                  fullBleed && "min-h-0"
+                )}
+              >
+                <div
+                  className={cn(
+                    "flex w-full flex-col gap-4 px-4 py-4 md:gap-6 md:py-6 lg:px-6",
+                    fullBleed ? "min-h-0 flex-1" : "max-w-6xl"
+                  )}
+                >
                   {/* Role quick-look sheet, openable from any role chip in the
                       app (e.g. the Overview); renders nothing and runs no
                       queries until a role is opened. */}
