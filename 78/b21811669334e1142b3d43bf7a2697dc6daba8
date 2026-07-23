@@ -1,0 +1,93 @@
+apps/dashboard/components/pay-mapping/pay-mappings-section.tsx
+  s_6ea4434f5c3a0d::t_31214fde685035 391-400
+  s_6ea4434f5c3a0d::t_a6ec59864be1e8 93-101,103-106,113-123
+  s_6ea4434f5c3a0d::t_5c853f4f78d3be 56
+  s_6ea4434f5c3a0d::t_a60b00b20047d7 341
+  s_6ea4434f5c3a0d::t_90fd2cc4d0c4e9 200-201
+  s_6ea4434f5c3a0d::t_8caf70ab3a6015 150,156-160,162-171,178,180,184,187,198-199,203-204,216-224,226
+  s_6ea4434f5c3a0d::t_16ad50f6342c5f 242-244,249-255,266-287
+  s_6ea4434f5c3a0d::t_bf823becdfd49a 3-4,7,11,15,24-30,47
+  s_6ea4434f5c3a0d::t_8a65cac2aa0eed 401
+apps/dashboard/app/(app)/page.test.tsx
+  s_6ea4434f5c3a0d::t_c26c85c7119791 58-61
+apps/dashboard/lib/todo.test.ts
+  s_6ea4434f5c3a0d::t_d78f4b4e815c4e 25-30
+  s_6ea4434f5c3a0d::t_eed5057d54a441 44
+  s_6ea4434f5c3a0d::t_220c944bf2e4bc 75
+  s_6ea4434f5c3a0d::t_4711a3a3f3b6e9 85
+  s_6ea4434f5c3a0d::t_bbcbbed7892266 201
+  s_6ea4434f5c3a0d::t_d978343aa95611 246-258
+  s_6ea4434f5c3a0d::t_8e32bc49e8fd87 187
+  s_6ea4434f5c3a0d::t_7df8cf44ae0f5d 213-245,259-307
+  s_6ea4434f5c3a0d::t_cb2a28fe9b57b5 56
+  s_6ea4434f5c3a0d::t_674201571e7fb8 117
+  s_6ea4434f5c3a0d::t_b6d8a97f95bb64 147,153,160-162
+  s_6ea4434f5c3a0d::t_11494061434536 134-139
+  s_88960e97765670::t_b0f7eca1358981 308
+apps/dashboard/components/pay-mapping/pay-mappings-section.test.tsx
+  s_6ea4434f5c3a0d::t_7d8d518f7c3ff0 7
+  s_6ea4434f5c3a0d::t_734893869698f1 135-141
+  s_6ea4434f5c3a0d::t_1c140b51370785 258-301
+apps/dashboard/components/overview/todo-widget.test.tsx
+  s_6ea4434f5c3a0d::t_9b68a0938c619a 116-134
+apps/dashboard/components/overview/todo-group.tsx
+  s_6ea4434f5c3a0d::t_4dc0d6ff688f70 70-72,74-76,84-86
+  s_6ea4434f5c3a0d::t_f801758cef9a53 73
+apps/dashboard/lib/todo.ts
+  s_6ea4434f5c3a0d::t_d06f1b63d8b66d 13
+  s_6ea4434f5c3a0d::t_1e8244455b52ae 95
+  s_6ea4434f5c3a0d::t_56c4f17cd1ab97 74-77,80-82,88
+  s_6ea4434f5c3a0d::t_064840f5ea3d00 191-227,233-234
+  s_6ea4434f5c3a0d::t_13eeb624e3dffa 40-41,49
+apps/dashboard/components/pay-mapping/pay-mapping-preconditions-panel.test.tsx
+  s_6ea4434f5c3a0d::t_f4690cb8175ecf 1-58,62-72,76-78
+  s_6ea4434f5c3a0d::t_f801758cef9a53 59-61,73-75
+apps/dashboard/components/overview/todo-widget.tsx
+  s_6ea4434f5c3a0d::t_050e86f7841e2b 74-79,81,85-87,89-90
+  s_6ea4434f5c3a0d::t_1ded2c26a8b4ae 9,11
+apps/dashboard/components/pay-mapping/pay-mapping-run-actions.test.tsx
+  s_6ea4434f5c3a0d::t_9158f9214dff93 110,122-124
+  s_6ea4434f5c3a0d::t_90fd2cc4d0c4e9 76-78
+  s_6ea4434f5c3a0d::t_b4b7708475fa53 1-75,79-109,111-121,125-126
+apps/dashboard/components/pay-mapping/pay-mapping-preconditions-panel.tsx
+  s_6ea4434f5c3a0d::t_71d8b18b61ae13 1,32-33,35-43,63,72,78,81
+  s_6ea4434f5c3a0d::t_457183d425cde6 2-8,46-57,87
+  s_6ea4434f5c3a0d::t_60dd773224710b 9-31,34,44-45,58-62,64-71,73-77,79-80,82-86,88-89
+apps/dashboard/components/pay-mapping/start-pay-mapping-dialog.test.tsx
+  s_6ea4434f5c3a0d::t_6e3de5b0661d2f 16-23,25,32,39,42-52,158-161,163-173,179-194
+  s_6ea4434f5c3a0d::t_f801758cef9a53 34-36,68-72,162,174-178
+  s_6ea4434f5c3a0d::t_b51c0db8ea2642 33,53
+apps/dashboard/components/pay-mapping/pay-mapping-run-actions.tsx
+  s_6ea4434f5c3a0d::t_13bd99848fc55b 81,83
+  s_6ea4434f5c3a0d::t_02ca028df5fd15 1-80,82,84-91
+apps/dashboard/components/pay-mapping/start-pay-mapping-dialog.tsx
+  s_6ea4434f5c3a0d::t_12b1b474884bc3 104-111,113-134,139-176
+  s_6ea4434f5c3a0d::t_254bbbe476e47c 24-25,32,42-47,60-63
+  s_6ea4434f5c3a0d::t_f801758cef9a53 135-137
+apps/dashboard/hooks/use-todo.ts
+  s_6ea4434f5c3a0d::t_fdfd52fa04d9ac 7,11-13,24-26,30-31,34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "78b21811669334e1142b3d43bf7a2697dc6daba8",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_88960e97765670": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1b1a311f-b1c0-48ea-9d1d-3fd7789555ae",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
