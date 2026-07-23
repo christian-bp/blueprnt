@@ -17,7 +17,6 @@ describe("payMapping schema + slug", () => {
         systemVersion: "test",
         populationCount: 0,
         withPayCount: 0,
-        unclassifiedExcludedCount: 0,
         frozenModel: { criteria: [], bandThresholds: [] },
       })
     )
@@ -39,7 +38,6 @@ describe("payMapping schema + slug", () => {
         systemVersion: "test",
         populationCount: 0,
         withPayCount: 0,
-        unclassifiedExcludedCount: 0,
         frozenModel: { criteria: [], bandThresholds: [] },
       })
       const slug = await uniqueSlug(

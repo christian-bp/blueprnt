@@ -10,7 +10,11 @@ import {
   importMappingProfiles,
   importProgress,
 } from "./people/tables"
-import { payMappingRuns, payMappingSnapshotRows } from "./payMapping/tables"
+import {
+  payMappingGroupAnalyses,
+  payMappingRuns,
+  payMappingSnapshotRows,
+} from "./payMapping/tables"
 import { auditLog, suggestions, platformAuditLog } from "./shared/tables"
 
 // Minimal domain tables by design (ADR-0006): aggregates (anchors, band
@@ -20,8 +24,8 @@ import { auditLog, suggestions, platformAuditLog } from "./shared/tables"
 // log `platformAuditLog` was added (ADR-0009), and the former `emails` outbox
 // table was retired when email moved to the Sweego component (its records live
 // in that component now, not in the app schema). The two aiUsage* tables are
-// append-only telemetry / rollup for AI cost tracking (spec 2026-06-10),
-// outside that domain count.
+// append-only telemetry / rollup for AI cost tracking, outside that domain
+// count.
 export default defineSchema({
   users,
   organizations,
@@ -35,7 +39,7 @@ export default defineSchema({
   suggestions,
   aiUsageEvents,
   aiUsageMonthly,
-  // people/pay bounded context (Plan 2, Task 1)
+  // people/pay bounded context
   people,
   personAssignments,
   payRecords,
@@ -43,4 +47,5 @@ export default defineSchema({
   importProgress,
   payMappingRuns,
   payMappingSnapshotRows,
+  payMappingGroupAnalyses,
 })

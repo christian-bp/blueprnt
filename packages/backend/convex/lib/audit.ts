@@ -48,6 +48,11 @@ export const AUDIT_EVENTS = {
   mappingProfileSaved: "pay.mappingSaved",
   importCompleted: "people.imported",
   payMappingRunStarted: "payMapping.runStarted",
+  payMappingGroupAnalysisUpdated: "payMapping.groupAnalysisUpdated",
+  payMappingRunCompleted: "payMapping.runCompleted",
+  payMappingRunReopened: "payMapping.runReopened",
+  payMappingCollaborationUpdated: "payMapping.collaborationUpdated",
+  payMappingRunDeleted: "payMapping.runDeleted",
 } as const
 
 export type AuditEvent = (typeof AUDIT_EVENTS)[keyof typeof AUDIT_EVENTS]
@@ -409,6 +414,20 @@ export const ASSIGNMENT_AUDIT_FIELDS = [
   "roleId",
   "level",
   "levelSource",
+] as const
+
+// The pay-gap documentation fields diffed on payMapping.groupAnalysisUpdated
+// (payMapping/analyses.ts). reasons are diffed as a ", "-joined display
+// string (the taxonomy is a fixed enum, not free text); note is group-level
+// (role-level) free text a user writes to justify a gap, never person
+// identity (ADR-0012; Role != Person). finding ("none"|"found") is the
+// praxis review's per-area verdict (DL 3 kap. 8 § p1); always null for
+// equalWork/equivalentWork rows, so it never appears in their diff.
+export const GROUP_ANALYSIS_AUDIT_FIELDS = [
+  "reasons",
+  "note",
+  "done",
+  "finding",
 ] as const
 
 // One bulk `items` entry for a freshly created criterion (template/scratch/AI).

@@ -311,7 +311,35 @@ export interface AuditPayloads {
     runId: string
     populationCount: number
     withPayCount: number
-    unclassifiedExcludedCount: number
+  }
+  "payMapping.groupAnalysisUpdated": {
+    runId: string
+    scope: "equalWork" | "equivalentWork" | "praxis"
+    // "roleTitle · level" for equalWork/equivalentWork; for praxis, the raw
+    // PRAXIS_AREA_KEYS area-key slug (never split, it carries no "|").
+    // Role-level content either way, never person identity.
+    groupLabel: string
+    changes: Changes
+  }
+  "payMapping.runCompleted": {
+    runId: string
+    equalWorkDone: number
+    equivalentWorkDone: number
+  }
+  "payMapping.runReopened": { runId: string }
+  // Pure marker payload (mirrors runReopened): the samverkan (collaboration)
+  // participants are people's names by design (statutory documentation
+  // content), so the trail records ONLY that the field changed, never the
+  // participants/description.
+  "payMapping.collaborationUpdated": { runId: string }
+  // A hard delete: the run's own display name (org content, never person
+  // PII) plus the population count at deletion time, mirroring the
+  // runStarted precedent's flat-stat shape. runId is excluded from rendering
+  // by payloadStats (any "*Id" key), so it never shows as a raw id.
+  "payMapping.runDeleted": {
+    runId: string
+    label: string
+    populationCount: number
   }
 }
 
