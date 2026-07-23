@@ -1,0 +1,19 @@
+packages/backend/convex/betterAuth/generatedSchema.ts
+  s_6ea4434f5c3a0d::t_5431cfda320641 108-109
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "bd56675b9a9c3106e3b5951be301f101f22d2cdf",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
