@@ -80,9 +80,16 @@ export async function classifyOrg(
         )
       }
 
+      // A confirmed assignment only counts as already-classified when its
+      // role is still active (roleById is built from the active-only roles
+      // collected above): a confirmed open assignment to an archived/missing
+      // role is NOT classified (listPeopleByTitle exposes it as
+      // currentAssignment: null for the same reason), so it must stay
+      // suggestable here too, rather than skip re-classification forever.
       if (
         open !== null &&
-        (open.levelSource === "confirmed" ||
+        ((open.levelSource === "confirmed" &&
+          roleById.has(open.roleId as string)) ||
           (open.roleId === role._id && open.level === level))
       ) {
         skipped += 1

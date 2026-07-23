@@ -211,6 +211,66 @@ describe("runClassificationSuggestions", () => {
     expect(current?.level).toBe("IC5")
   })
 
+  it("re-suggests when the existing confirmed assignment points to an archived role (C1 consistency)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const { roleId: retiredRoleId } = await asAdmin.mutation(
+      api.assessment.roles.createRole,
+      {
+        orgId,
+        title: "Retired Role",
+        function: "Ops",
+        team: "Ops",
+        trackKey: "IC",
+      }
+    )
+    const { roleId: newRoleId } = await asAdmin.mutation(
+      api.assessment.roles.createRole,
+      {
+        orgId,
+        title: "Software Engineer",
+        function: "Engineering",
+        team: "Platform",
+        trackKey: "IC",
+      }
+    )
+    const personId = await seedPerson(t, orgId, {
+      displayName: "Anna Svensson",
+      title: "Software Engineer",
+    })
+    // HR confirmed the person against a role that has since been archived
+    // directly (bypassing archiveRole, which now ends its own open
+    // assignments), simulating a pre-existing stale row.
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId,
+      roleId: retiredRoleId,
+      level: "IC5",
+      levelSource: "confirmed",
+    })
+    await t.run(async (ctx) => {
+      await ctx.db.patch(retiredRoleId, { archivedAt: Date.now() })
+    })
+
+    const result = await asAdmin.mutation(
+      api.people.classification.runClassificationSuggestions,
+      { orgId }
+    )
+    // NOT skipped as "already confirmed": a confirmed assignment to an
+    // archived role is not classified (matches listPeopleByTitle's
+    // currentAssignment: null for the same row), so it stays suggestable
+    // against the title-matched active role.
+    expect(result.suggested).toBe(1)
+    expect(result.skipped).toBe(0)
+
+    const current = await asAdmin.query(
+      api.people.assignments.getCurrentAssignment,
+      { orgId, personId }
+    )
+    expect(current?.roleId).toBe(newRoleId)
+    expect(current?.levelSource).toBe("suggested")
+  })
+
   it("writes a PII-free classification.suggested audit row", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
@@ -333,6 +393,47 @@ describe("listPeopleByTitle", () => {
     expect(nullGroup?.title).toBeNull()
     expect(nullGroup?.suggestedRoleId).toBeNull()
     expect(nullGroup?.people[0]?.suggestedLevel).toBeNull()
+  })
+
+  it("exposes currentAssignment: null when a confirmed open assignment points to an archived role (C1)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Retired Role",
+      function: "Ops",
+      team: "Ops",
+      trackKey: "IC",
+    })
+    const personId = await seedPerson(t, orgId, {
+      displayName: "Dana Berg",
+      title: "Retired Role",
+    })
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId,
+      roleId,
+      level: "IC3",
+      levelSource: "confirmed",
+    })
+    // Simulate a PRE-EXISTING stale row: archive the role directly
+    // (bypassing archiveRole, which now ends its own open assignments), so
+    // the confirmed assignment stays open, pointing at an archived role.
+    await t.run(async (ctx) => {
+      await ctx.db.patch(roleId, { archivedAt: Date.now() })
+    })
+
+    const groups = await asAdmin.query(
+      api.people.classificationQueries.listPeopleByTitle,
+      { orgId }
+    )
+    const row = groups
+      .flatMap((g) => g.people)
+      .find((p) => p.personId === personId)
+    // NOT the stale roleId/level: a confirmed assignment to an archived role
+    // is not a real classification, so it surfaces exactly like "no
+    // assignment at all" for reassignment on the classify page.
+    expect(row?.currentAssignment).toBeNull()
   })
 
   it("marks a title that matches no role as unmatched", async () => {

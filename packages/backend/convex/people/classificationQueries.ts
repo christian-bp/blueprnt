@@ -57,6 +57,7 @@ export const listPeopleByTitle = orgQuery({
         .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
         .collect()
     ).filter((r) => r.archivedAt === undefined)
+    const activeRoleIds = new Set(roles.map((r) => r._id as string))
 
     // Build each person's current-open-assignment lookup up front.
     const openByPerson = new Map<string, Doc<"personAssignments">>()
@@ -95,8 +96,16 @@ export const listPeopleByTitle = orgQuery({
           isManager: person.isManager ?? null,
           suggestedLevel:
             group.suggestedLevelByPerson.get(person._id as string) ?? null,
+          // "Classified" = a confirmed open assignment to an ACTIVE role
+          // (the same definition computePayMappingPreconditions uses, so the
+          // gate and this surface can never disagree). An open assignment
+          // whose role is archived or missing is exposed as null here, not
+          // as its stale role/level: it is not a real classification, so
+          // the person surfaces for reassignment on the classify page (and
+          // countClassified/the tab badge/the to-do's classify group all
+          // count them as unclassified too, since they read this field).
           currentAssignment:
-            open !== null
+            open !== null && activeRoleIds.has(open.roleId as string)
               ? {
                   roleId: open.roleId as Id<"roles">,
                   level: open.level,

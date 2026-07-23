@@ -638,6 +638,138 @@ describe("archiveRole", () => {
       expect(payload.changes?.status).toMatchObject({ to: "replaced" })
     })
   })
+
+  it("ends open assignments to the archived role, audits assignment.set, leaves closed history untouched, and the person then reads unclassified (C1)", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, track } = await seedTemplateOrganization(t)
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Developer",
+      function: "Engineering",
+      team: "Core",
+      trackKey: track.key,
+    })
+    const { roleId: otherRoleId } = await asAdmin.mutation(
+      api.assessment.roles.createRole,
+      {
+        orgId,
+        title: "Other Role",
+        function: "Engineering",
+        team: "Core",
+        trackKey: track.key,
+      }
+    )
+    const level = TRACK_LEVELS[track.key as keyof typeof TRACK_LEVELS][0]
+    if (level === undefined) throw new Error("seed")
+
+    // Person A was reassigned elsewhere before the archive: their row on
+    // roleId is already CLOSED (historical), not the active assignment, and
+    // must stay untouched by the archive.
+    const { personId: closedPersonId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Alva Historik", gender: "Kvinna" }
+    )
+    const ts1 = 1_700_000_000_000
+    const ts2 = 1_700_000_100_000
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId: closedPersonId,
+      roleId,
+      level,
+      levelSource: "confirmed",
+      effectiveAt: ts1,
+    })
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId: closedPersonId,
+      roleId: otherRoleId,
+      level,
+      levelSource: "confirmed",
+      effectiveAt: ts2,
+    })
+
+    // Person B has a CONFIRMED, OPEN assignment to roleId at archive time:
+    // exactly the C1 shape (passes every existing gate check today).
+    const { personId: openPersonId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Bo Ek", gender: "Man" }
+    )
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId: openPersonId,
+      roleId,
+      level,
+      levelSource: "confirmed",
+    })
+
+    await asAdmin.mutation(api.assessment.roles.archiveRole, { orgId, roleId })
+
+    await t.run(async (ctx) => {
+      // Person B's open assignment is now ENDED (no replacement, since there
+      // is no role left to move them to).
+      const openAssignments = await ctx.db
+        .query("personAssignments")
+        .withIndex("by_person", (q) =>
+          q.eq("orgId", orgId).eq("personId", openPersonId)
+        )
+        .collect()
+      expect(openAssignments).toHaveLength(1)
+      expect(openAssignments[0]?.endedAt).toBeDefined()
+
+      // Person A's already-closed row on roleId keeps its ORIGINAL endedAt
+      // (ts2), untouched by the archive.
+      const closedAssignments = await ctx.db
+        .query("personAssignments")
+        .withIndex("by_person", (q) =>
+          q.eq("orgId", orgId).eq("personId", closedPersonId)
+        )
+        .collect()
+      const closedOnArchivedRole = closedAssignments.find(
+        (a) => a.roleId === roleId
+      )
+      expect(closedOnArchivedRole?.endedAt).toBe(ts2)
+
+      // The close is audited via the SAME assignment.set event writeAssignment
+      // uses, with an all-null "after" (no invented event type).
+      const sets = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "assignment.set")
+        )
+        .collect()
+      const closeRow = sets.find((row) => {
+        const p = row.payload as {
+          personId?: string
+          changes?: { roleId?: { to: unknown } }
+        }
+        return p.personId === openPersonId && p.changes?.roleId?.to === null
+      })
+      expect(closeRow).toBeDefined()
+      const payload = closeRow?.payload as {
+        roleId?: string
+        changes?: Record<string, { from: unknown; to: unknown }>
+      }
+      expect(payload.roleId).toBe(roleId)
+      expect(payload.changes?.roleId).toEqual({ from: roleId, to: null })
+      expect(payload.changes?.level).toEqual({ from: level, to: null })
+      expect(payload.changes?.levelSource).toEqual({
+        from: "confirmed",
+        to: null,
+      })
+    })
+
+    // The person now genuinely reads as unclassified (not a stale
+    // "confirmed" row silently pointing nowhere): listPeopleByTitle exposes
+    // their currentAssignment as null.
+    const groups = await asAdmin.query(
+      api.people.classificationQueries.listPeopleByTitle,
+      { orgId }
+    )
+    const openRow = groups
+      .flatMap((g) => g.people)
+      .find((p) => p.personId === openPersonId)
+    expect(openRow?.currentAssignment).toBeNull()
+  })
 })
 
 describe("role family membership", () => {

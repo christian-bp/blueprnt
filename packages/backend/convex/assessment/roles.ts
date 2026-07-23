@@ -6,6 +6,7 @@ import type { MutationCtx, QueryCtx } from "../_generated/server"
 import { clampLocale } from "../evaluationModel/localize"
 import { trackKeyValidator } from "../evaluationModel/tables"
 import {
+  ASSIGNMENT_AUDIT_FIELDS,
   AUDIT_EVENTS,
   buildChanges,
   buildCreateChanges,
@@ -50,7 +51,7 @@ function assertFieldLength(value: string): void {
   if (value.length > MAX_FIELD_LENGTH) throw appError(ERROR_CODES.invalidInput)
 }
 
-// Used by Task 8 mutations (updateRole, archiveRole).
+// Used by updateRole and archiveRole.
 export async function requireOwnRole(
   ctx: QueryCtx & { orgId: string },
   roleId: Id<"roles">
@@ -540,6 +541,45 @@ export const archiveRole = adminMutation({
       archivedAt,
       ...(retiredAnchor !== undefined ? { anchorRole: retiredAnchor } : {}),
     })
+
+    // A person left assigned to a retired role would otherwise silently
+    // stale as "classified" while nothing ever evaluates the role again
+    // (the pay-mapping gate's "classified" = confirmed open assignment to
+    // an ACTIVE role). Ending every open assignment to this role makes that
+    // unclassified state explicit immediately, mirroring updateRole's
+    // track-change branch: same end-assignment mechanics (a direct endedAt
+    // patch, not a writeAssignment reassignment, since there is no
+    // replacement role to move to) and the same assignment.set audit shape
+    // (ASSIGNMENT_AUDIT_FIELDS before->after), here with an all-null "after"
+    // for a plain close.
+    const openAssignments = (
+      await ctx.db
+        .query("personAssignments")
+        .withIndex("by_role", (q) =>
+          q.eq("orgId", ctx.orgId).eq("roleId", roleId)
+        )
+        .collect()
+    ).filter((a) => a.endedAt === undefined)
+    for (const assignment of openAssignments) {
+      await ctx.db.patch(assignment._id, { endedAt: archivedAt })
+      await ctx.audit.log({
+        type: AUDIT_EVENTS.assignmentSet,
+        payload: {
+          personId: assignment.personId,
+          roleId: assignment.roleId,
+          changes: buildChanges(
+            {
+              roleId: assignment.roleId,
+              level: assignment.level,
+              levelSource: assignment.levelSource,
+            },
+            { roleId: null, level: null, levelSource: null },
+            ASSIGNMENT_AUDIT_FIELDS
+          ),
+        },
+      })
+    }
+
     const after = await deriveResults(ctx, ctx.orgId)
     await ctx.audit.bandShifts({
       before: before.results,
