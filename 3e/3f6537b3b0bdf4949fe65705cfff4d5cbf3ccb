@@ -1,0 +1,69 @@
+apps/dashboard/lib/audit-detail.tsx
+  s_6ea4434f5c3a0d::t_91a560257f26dc 124-130,132-139,156-157
+  s_6ea4434f5c3a0d::t_b31fa630b47b41 503-505
+  s_6ea4434f5c3a0d::t_c6208c34b24c32 512
+  s_6ea4434f5c3a0d::t_e1efe493e22715 619-620
+  s_6ea4434f5c3a0d::t_6a2e50fc704bbe 694-701
+  s_6ea4434f5c3a0d::t_2f6237b05a8183 95,764,788-794
+  s_6ea4434f5c3a0d::t_7bd483cad04a2c 661-662
+  s_6ea4434f5c3a0d::t_441c24b6f2fb20 385-388,393-394,403,405-408,416-417
+  s_6ea4434f5c3a0d::t_faed3c51044929 758
+  s_6ea4434f5c3a0d::t_6d0fa09a3a9e24 1,26-94,96-109
+  s_6ea4434f5c3a0d::t_ffaefe9bc4c84b 715,724
+  s_6ea4434f5c3a0d::t_12af6fdab74785 756-757,759-762,765-769,775-776
+  s_6ea4434f5c3a0d::t_5313c888fea5fa 513-514
+  s_6ea4434f5c3a0d::t_707daf12783165 508-511
+  s_6ea4434f5c3a0d::t_bef8bfd21afaef 755,763,770-774,777-779
+  s_6ea4434f5c3a0d::t_120aeb4906a790 110
+apps/dashboard/lib/audit-detail.test.tsx
+  s_6ea4434f5c3a0d::t_e13160a4d6eb1e 171,281,719-740
+  s_6ea4434f5c3a0d::t_12b6b3a68a4c98 83-89
+  s_6ea4434f5c3a0d::t_76b598c6acba8b 7,13,20-22
+  s_6ea4434f5c3a0d::t_539fca94fa0500 611,613-617,622-630,633,637-642,644-645,691-692,694
+  s_6ea4434f5c3a0d::t_76900f7ffcb4a8 677-679
+  s_6ea4434f5c3a0d::t_433894e9c3666b 168-170
+  s_6ea4434f5c3a0d::t_fda89e13210596 118-167,172-189
+  s_6ea4434f5c3a0d::t_ffd89a955f2e2d 256-280
+  s_6ea4434f5c3a0d::t_4768e4801bc888 612,619-621,631-632,635,646-676,680-690,693
+  s_6ea4434f5c3a0d::t_c734a597f8c87c 79-82,90
+  s_6ea4434f5c3a0d::t_f8f326ec45500e 618,634,636,643
+  s_6ea4434f5c3a0d::t_62820fd8815217 190-191
+  s_6ea4434f5c3a0d::t_10c08f761644fd 741
+apps/dashboard/components/org-audit-log-section.tsx
+  s_6ea4434f5c3a0d::t_09ed1ca44ab37f 239-250
+  s_6ea4434f5c3a0d::t_fdce5eafa0fb7b 499,520
+  s_6ea4434f5c3a0d::t_f256d802a8180e 69
+  s_6ea4434f5c3a0d::t_306ffe1047d2cd 237-238,251-253
+  s_6ea4434f5c3a0d::t_f3a041a857630c 282-283
+  s_6ea4434f5c3a0d::t_684013f9c89bb6 531
+  s_6ea4434f5c3a0d::t_7fe276b5557d84 583
+  s_6ea4434f5c3a0d::t_2d257a8791b2e0 111-116
+apps/dashboard/lib/audit-labels.test.ts
+  s_6ea4434f5c3a0d::t_49a09154740fc5 111-112
+  s_6ea4434f5c3a0d::t_4a330133ce546e 137-139,142-192,194
+  s_6ea4434f5c3a0d::t_35b903f9769250 103,106
+  s_6ea4434f5c3a0d::t_b75c963ed66e88 110
+  s_6ea4434f5c3a0d::t_c81afd06e5fa7b 125
+  s_6ea4434f5c3a0d::t_cdfd435cfc58ca 14,17-22
+  s_6ea4434f5c3a0d::t_de7137b414e7d8 140-141
+  s_6ea4434f5c3a0d::t_bea189ce9086ef 6
+  s_6ea4434f5c3a0d::t_a7bd2e780b6d89 107-109
+  s_6ea4434f5c3a0d::t_5b0b6038a88e65 193
+  s_6ea4434f5c3a0d::t_a5325a5ad840f7 195
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "3e3f6537b3b0bdf4949fe65705cfff4d5cbf3ccb",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
