@@ -1,0 +1,37 @@
+packages/constants/src/trackLevels.test.ts
+  s_6ea4434f5c3a0d::t_8f39b9cc6c0f71 2-6,67-78
+  s_6ea4434f5c3a0d::t_08f922cb5eea24 79
+packages/constants/src/trackLevels.ts
+  s_6ea4434f5c3a0d::t_8f39b9cc6c0f71 26-28
+  s_6ea4434f5c3a0d::t_67cec87fe6c845 18-25,29-32
+packages/constants/src/index.ts
+  s_6ea4434f5c3a0d::t_b301a7d431aaf4 41-46
+  s_6ea4434f5c3a0d::t_d9061be638f8e2 26,47-51
+  s_6ea4434f5c3a0d::t_67cec87fe6c845 27-30
+packages/constants/src/praxisAreas.test.ts
+  s_6ea4434f5c3a0d::t_0062c4a376d9af 1-22
+packages/constants/src/payGapReasons.ts
+  s_6ea4434f5c3a0d::t_bb7a78e09984ee 12-15
+  s_6ea4434f5c3a0d::t_1a5072dde49b1a 1-11,16-25
+packages/constants/src/praxisAreas.ts
+  s_6ea4434f5c3a0d::t_01262923c25bc5 1
+  s_6ea4434f5c3a0d::t_5737e3aac88d14 2-17
+packages/constants/src/payGapReasons.test.ts
+  s_6ea4434f5c3a0d::t_2ae7e10583c3ba 1-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "8c6a2f2b1738037beb5a72c4b7ffdd8ac974e234",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
