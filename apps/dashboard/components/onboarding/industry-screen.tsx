@@ -5,7 +5,7 @@ import { INDUSTRY_KEYS, type IndustryKey } from "@workspace/constants"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { OptionCard } from "@/components/option-card"
-import { ScreenShell } from "@/components/onboarding/screen-shell"
+import { ScreenShell } from "@/components/screen-shell"
 import { useAutoAdvance } from "@/hooks/use-auto-advance"
 
 // The industry list lives in @workspace/constants; it also keys the starter

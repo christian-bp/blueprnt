@@ -1,3 +1,4 @@
+import { trackKeyForLevel } from "@workspace/constants"
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -46,6 +47,28 @@ export function TrackBadge({
           <span className="md:hidden">{trackKey}</span>
         </>
       )}
+    </Badge>
+  )
+}
+
+// A level code ("M2", "IC5", "Lead-2") as a badge tinted by the track it
+// belongs to, so levels read with the same color language as TrackBadge
+// wherever they appear without the track object in hand. A level outside
+// every ladder falls back to the plain outline badge.
+export function LevelBadge({
+  level,
+  className,
+}: {
+  level: string
+  className?: string
+}) {
+  const trackKey = trackKeyForLevel(level)
+  return (
+    <Badge
+      variant="outline"
+      className={cn(trackKey !== undefined && TRACK_TINTS[trackKey], className)}
+    >
+      {level}
     </Badge>
   )
 }

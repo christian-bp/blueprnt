@@ -24,6 +24,8 @@ export function OptionCard({
   media,
   selected,
   faded = false,
+  disabled = false,
+  size = "default",
   onSelect,
   className,
   children,
@@ -34,6 +36,12 @@ export function OptionCard({
   media?: ReactNode
   selected: boolean
   faded?: boolean
+  // A real read-only state (e.g. a completed pay-mapping run's locked step),
+  // unlike `faded` it keeps the card visible, just non-interactive.
+  disabled?: boolean
+  // "sm" is the compact in-form variant (the review steps' verdict and
+  // reason choices); "default" is the onboarding screens' large card.
+  size?: "default" | "sm"
   onSelect: () => void
   className?: string
   children?: ReactNode
@@ -42,13 +50,14 @@ export function OptionCard({
     <motion.button
       type="button"
       aria-pressed={selected}
-      disabled={faded}
+      disabled={faded || disabled}
       onClick={onSelect}
       initial={false}
       animate={{ opacity: faded ? 0 : 1 }}
       transition={{ duration: OPTION_FADE_MS / 1000, ease: "easeOut" }}
       className={cn(
-        "relative flex flex-col items-center gap-1 rounded-lg border p-4 text-center transition-colors hover:bg-muted/50",
+        "relative flex flex-col items-center gap-1 rounded-lg border text-center transition-colors hover:bg-muted/50 disabled:pointer-events-none disabled:opacity-50",
+        size === "sm" ? "p-2.5 text-sm" : "p-4",
         selected && "border-brand bg-brand/5",
         className
       )}

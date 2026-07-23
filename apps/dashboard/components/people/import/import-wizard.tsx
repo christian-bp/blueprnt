@@ -9,7 +9,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { OnboardingDots } from "@/components/onboarding/onboarding-dots"
 import { SuccessCheck } from "@/components/success-check"
-import { ScreenShell } from "@/components/onboarding/screen-shell"
+import { ScreenShell } from "@/components/screen-shell"
 import { WizardFooter } from "@/components/onboarding/wizard-footer"
 import { NextButton } from "@/components/onboarding/next-button"
 import {

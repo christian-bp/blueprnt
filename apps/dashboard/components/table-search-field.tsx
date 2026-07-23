@@ -3,21 +3,26 @@
 import { Search01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Input } from "@workspace/ui/components/input"
+import { cn } from "@workspace/ui/lib/utils"
 
-// The register toolbars' free-text search field (people, roles): a w-64 input
-// with the search glyph inside its left padding. One component so every table
-// searches the same way, and so a loading toolbar can render the REAL control
-// (static chrome is never a skeleton bar) with zero markup drift. Omitting
-// `value` leaves the input uncontrolled: a loading state that cannot hold the
-// query yet still takes keystrokes instead of freezing or graying out.
+// The register toolbars' free-text search field (people, roles): defaults to
+// w-64 with the search glyph inside its left padding. One component so every
+// table searches the same way, and so a loading toolbar can render the REAL
+// control (static chrome is never a skeleton bar) with zero markup drift.
+// Omitting `value` leaves the input uncontrolled: a loading state that cannot
+// hold the query yet still takes keystrokes instead of freezing or graying out.
+// Pass className to override the default width, e.g. the analysis worklist
+// passes w-full to fill its card.
 export function TableSearchField({
   placeholder,
   value,
   onChange,
+  className,
 }: {
   placeholder: string
   value?: string
   onChange?: (value: string) => void
+  className?: string
 }) {
   return (
     <div className="relative">
@@ -33,7 +38,7 @@ export function TableSearchField({
         placeholder={placeholder}
         aria-label={placeholder}
         onChange={(event) => onChange?.(event.target.value)}
-        className="w-64 pl-8"
+        className={cn("w-64 pl-8", className)}
       />
     </div>
   )

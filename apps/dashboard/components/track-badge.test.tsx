@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react"
 import { afterEach, describe, expect, it } from "vitest"
-import { TrackBadge } from "@/components/track-badge"
+import { LevelBadge, TrackBadge } from "@/components/track-badge"
 
 describe("TrackBadge", () => {
   afterEach(() => {
@@ -42,5 +42,21 @@ describe("TrackBadge", () => {
     expect(badge.className).not.toContain("bg-sky-50")
     expect(badge.className).not.toContain("bg-violet-50")
     expect(badge.className).not.toContain("bg-amber-50")
+  })
+})
+
+describe("LevelBadge", () => {
+  it("renders the level code tinted by its own track", () => {
+    render(<LevelBadge level="M2" />)
+    const badge = screen.getByText("M2")
+    expect(badge.closest('[data-slot="badge"]')?.className).toContain("amber")
+  })
+
+  it("falls back to the plain outline badge for a level outside every ladder", () => {
+    render(<LevelBadge level="Senior" />)
+    const badge = screen.getByText("Senior")
+    expect(badge.closest('[data-slot="badge"]')?.className).not.toContain(
+      "amber"
+    )
   })
 })

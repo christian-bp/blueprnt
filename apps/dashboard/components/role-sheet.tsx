@@ -3,7 +3,6 @@
 import { AnchorIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Badge } from "@workspace/ui/components/badge"
 import { buttonVariants } from "@workspace/ui/components/button"
 import {
   Sheet,
@@ -28,6 +27,7 @@ import { DeviationBadge } from "@/components/deviation-badge"
 import { useOrganization } from "@/components/org-context"
 import { RoleCriterionBreakdown } from "@/components/roles/role-criterion-breakdown"
 import { ResponsibilitiesList } from "@/components/roles/responsibilities-list"
+import { BandBadge } from "@/components/band-badge"
 import { TrackBadge } from "@/components/track-badge"
 
 interface RoleSheetContextValue {
@@ -85,7 +85,7 @@ function RoleSheetContent({
   const tRoles = useTranslations("dashboard.roles")
   const tDetail = useTranslations("dashboard.roles.detail")
   const tRole = useTranslations("assessment.role")
-  const tAssessment = useTranslations("assessment")
+  const _tAssessment = useTranslations("assessment")
   const tFamily = useTranslations("dashboard.roles.family")
   const tModel = useTranslations("model")
   const { orgId } = useOrganization()
@@ -136,7 +136,7 @@ function RoleSheetContent({
               {/* Band sits with the title once the role is fully evaluated,
                   matching the role page result badge. */}
               {result?.complete && result.band !== null && (
-                <Badge>{`${tAssessment("band")} ${result.band}`}</Badge>
+                <BandBadge band={result.band} />
               )}
             </div>
             {subtitle.length > 0 ? (

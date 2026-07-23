@@ -4,12 +4,6 @@ import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { Badge } from "@workspace/ui/components/badge"
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
-import {
   type ChartConfig,
   ChartContainer,
   ChartLegend,
@@ -27,33 +21,22 @@ import {
   XAxis,
   YAxis,
 } from "recharts"
-import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
+import { WidgetCard } from "@/components/widget-card"
 import { useMoney } from "@/hooks/use-money"
 import {
   buildPayComparisonRows,
   type PayComparisonPoint,
 } from "@/lib/pay-comparison"
 
-// The card's static header (title, help, scope chip): identical in the loading
-// and loaded states, so it renders outside the state branches and never
-// remounts across them. The chip sits right per the card-header anatomy (same
-// as the salary card).
-function PayComparisonHeader() {
+// The scope chip in the widget header (right slot), shared by the loaded and
+// loading states so the chrome never changes across them.
+function ScopeChip() {
   const t = useTranslations("dashboard.people.payComparison")
-  const tHelp = useTranslations("dashboard.help")
   return (
-    <CardHeader className="flex flex-row items-center justify-between">
-      <div className="flex items-center gap-2">
-        <CardTitle>{t("heading")}</CardTitle>
-        <HelpMorphButton label={tHelp("fteAdjustedLabel")}>
-          {tHelp("fteAdjustedBody")}
-        </HelpMorphButton>
-      </div>
-      <Badge variant="outline" className="text-muted-foreground">
-        {t("scopeRole")}
-      </Badge>
-    </CardHeader>
+    <Badge variant="outline" className="text-muted-foreground">
+      {t("scopeRole")}
+    </Badge>
   )
 }
 
@@ -61,13 +44,20 @@ function PayComparisonHeader() {
 // can reserve the same card and height: the swap to loaded content then cannot
 // reflow the column.
 export function PayComparisonSectionSkeleton() {
+  const t = useTranslations("dashboard.people.payComparison")
+  const tHelp = useTranslations("dashboard.help")
   return (
-    <Card>
-      <PayComparisonHeader />
-      <CardContent>
-        <Skeleton className="h-48 w-full" />
-      </CardContent>
-    </Card>
+    <WidgetCard
+      title={t("heading")}
+      help={{
+        label: tHelp("fteAdjustedLabel"),
+        body: tHelp("fteAdjustedBody"),
+      }}
+      headerExtra={<ScopeChip />}
+      expandable
+    >
+      <Skeleton className="h-48 w-full" />
+    </WidgetCard>
   )
 }
 
@@ -78,8 +68,9 @@ export function PayComparisonSectionSkeleton() {
 // figure into basic vs variable with the gap to the viewed person. The
 // "Same role" chip scopes this to a per-role, per-person detail view (v3 P3
 // optional QC, ADR-0012), not the seed of v3's P1 primary gender-gap view:
-// that is a separate gender-aggregate, small-cell-masked query (lika arbete
-// = job_title+band+level, likvärdigt arbete = band).
+// that is a separate gender-aggregate query (lika arbete =
+// job_title+band+level, likvärdigt arbete = band; single-gender groups read
+// as insufficient per the ADR-0012 amendment).
 export function PayComparisonSection({
   personId,
   trackKey,
@@ -88,45 +79,59 @@ export function PayComparisonSection({
   trackKey: string | undefined
 }) {
   const t = useTranslations("dashboard.people.payComparison")
+  const tHelp = useTranslations("dashboard.help")
   const { orgId } = useOrganization()
   const comparison = useQuery(api.people.pay.getRolePayComparison, {
     orgId,
     personId,
   })
 
+  // One content renderer for both the card and the expanded dialog, so the
+  // two can never diverge; only the chart grows in the dialog. The card is
+  // ALWAYS expandable so its header chrome stays static across the loading,
+  // precondition, and chart states (expanding a text state just shows the
+  // same message larger, a harmless no-op).
+  const content = (expanded: boolean) =>
+    comparison === undefined ? (
+      <Skeleton className={expanded ? "h-96 w-full" : "h-48 w-full"} />
+    ) : comparison.status !== "ready" ? (
+      // Preconditions in words, one shared line for both missing pieces
+      // (classification and a recorded salary).
+      <p className="text-muted-foreground text-sm">{t("precondition")}</p>
+    ) : comparison.points.length < 2 ? (
+      // Self is the only comparable point. If peers exist but were excluded
+      // for currency, say so (decision #5: never hide the exclusion); only
+      // when nothing was excluded is the person genuinely alone on the role.
+      comparison.excludedCount > 0 ? (
+        <p className="text-muted-foreground text-sm">
+          {t("excluded", { count: comparison.excludedCount })}
+        </p>
+      ) : (
+        <p className="text-muted-foreground text-sm">{t("onlyPerson")}</p>
+      )
+    ) : (
+      <PayComparisonChart
+        currency={comparison.currency}
+        excludedCount={comparison.excludedCount}
+        points={comparison.points}
+        trackKey={trackKey}
+        expanded={expanded}
+      />
+    )
+
   return (
-    <Card>
-      {/* Static header renders during loading (skeleton rule); only the chart
-          area is data-shaped. */}
-      <PayComparisonHeader />
-      <CardContent>
-        {comparison === undefined ? (
-          <Skeleton className="h-48 w-full" />
-        ) : comparison.status !== "ready" ? (
-          // Preconditions in words, one shared line for both missing pieces
-          // (classification and a recorded salary).
-          <p className="text-muted-foreground text-sm">{t("precondition")}</p>
-        ) : comparison.points.length < 2 ? (
-          // Self is the only comparable point. If peers exist but were excluded
-          // for currency, say so (decision #5: never hide the exclusion); only
-          // when nothing was excluded is the person genuinely alone on the role.
-          comparison.excludedCount > 0 ? (
-            <p className="text-muted-foreground text-sm">
-              {t("excluded", { count: comparison.excludedCount })}
-            </p>
-          ) : (
-            <p className="text-muted-foreground text-sm">{t("onlyPerson")}</p>
-          )
-        ) : (
-          <PayComparisonChart
-            currency={comparison.currency}
-            excludedCount={comparison.excludedCount}
-            points={comparison.points}
-            trackKey={trackKey}
-          />
-        )}
-      </CardContent>
-    </Card>
+    <WidgetCard
+      title={t("heading")}
+      help={{
+        label: tHelp("fteAdjustedLabel"),
+        body: tHelp("fteAdjustedBody"),
+      }}
+      headerExtra={<ScopeChip />}
+      expandable
+      expandedChildren={content(true)}
+    >
+      {content(false)}
+    </WidgetCard>
   )
 }
 
@@ -241,11 +246,13 @@ function PayComparisonChart({
   excludedCount,
   points,
   trackKey,
+  expanded = false,
 }: {
   currency: string
   excludedCount: number
   points: PayComparisonPoint[]
   trackKey: string | undefined
+  expanded?: boolean
 }) {
   const t = useTranslations("dashboard.people.payComparison")
   const tGender = useTranslations("dashboard.people.gender")
@@ -268,8 +275,14 @@ function PayComparisonChart({
   return (
     <div className="space-y-1">
       {/* aspect-auto overrides the container's default aspect-video so the
-          section gets a fixed height matching the loading skeleton. */}
-      <ChartContainer config={config} className="aspect-auto h-48 w-full">
+          section gets a fixed height matching the loading skeleton; the
+          expanded (dialog) variant gets the taller canvas. */}
+      <ChartContainer
+        config={config}
+        className={
+          expanded ? "aspect-auto h-96 w-full" : "aspect-auto h-48 w-full"
+        }
+      >
         <ScatterChart
           accessibilityLayer
           margin={{ top: 8, right: 8, bottom: 0, left: 0 }}

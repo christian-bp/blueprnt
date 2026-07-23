@@ -13,7 +13,7 @@ import { Flag } from "@workspace/ui/flag"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { OptionCard } from "@/components/option-card"
-import { ScreenShell } from "@/components/onboarding/screen-shell"
+import { ScreenShell } from "@/components/screen-shell"
 import { useAutoAdvance } from "@/hooks/use-auto-advance"
 
 // The country list and the derived currency AND default language live in

@@ -7,7 +7,7 @@ import {
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Badge } from "@workspace/ui/components/badge"
+import { LevelBadge } from "@/components/track-badge"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -307,19 +307,10 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                         {role.title}
                       </Link>
                     )}
-                    {/* Confirmed is the default good state: a solid badge and
-                        nothing else. A suggested level is provisional, so its
-                        badge renders outline and the hint links to Classify,
-                        where the confirmation happens. */}
-                    <Badge
-                      variant={
-                        assignment.levelSource === "suggested"
-                          ? "outline"
-                          : "default"
-                      }
-                    >
-                      {assignment.level}
-                    </Badge>
+                    {/* The level in the app-wide track-tinted badge. A
+                        suggested level is provisional: the hint beside it
+                        links to Classify, where the confirmation happens. */}
+                    <LevelBadge level={assignment.level} />
                     {assignment.levelSource === "suggested" && (
                       <Link
                         href="/people/classify"

@@ -10,6 +10,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@workspace/ui/components/alert-dialog"
+import { Spinner } from "@workspace/ui/components/spinner"
+import { cn } from "@workspace/ui/lib/utils"
 import type { ReactNode } from "react"
 
 // Controlled destructive-confirmation dialog. Backs any destructive action that
@@ -53,12 +55,34 @@ export function ConfirmDeleteDialog({
           <AlertDialogAction
             variant="destructive"
             disabled={pending}
+            className="relative"
             onClick={async () => {
-              await onConfirm()
+              // A rejected onConfirm means the action failed (the caller
+              // already toasted the error): keep the dialog open so the
+              // user can retry, instead of closing on a failed delete.
+              try {
+                await onConfirm()
+              } catch {
+                return
+              }
               onOpenChange(false)
             }}
           >
-            {confirmLabel}
+            {/* SubmitButton's overlay anatomy: the label keeps its width
+                (invisible, not removed) so nothing reflows mid-delete. */}
+            <span
+              className={cn(
+                "inline-flex items-center gap-[inherit]",
+                pending && "invisible"
+              )}
+            >
+              {confirmLabel}
+            </span>
+            {pending && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Spinner />
+              </div>
+            )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
