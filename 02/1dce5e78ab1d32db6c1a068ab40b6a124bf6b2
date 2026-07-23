@@ -1,0 +1,44 @@
+packages/core/src/pay-gap.test.ts
+  s_6ea4434f5c3a0d::t_f87f8465480f0f 182-188,195-201,213-219,221-226,246-251,253-265,272-278
+  s_6ea4434f5c3a0d::t_7fd9c20b09fcab 157,163,165,168
+  s_6ea4434f5c3a0d::t_43d21bf8f64f53 170-181,189-194,202-208,220,227,229-234,237-245,252,266-271,279-286,292-306
+  s_6ea4434f5c3a0d::t_5184214277af16 117-118
+  s_6ea4434f5c3a0d::t_48399075c6b6b8 2-3,5-6,8,11,14-91
+  s_6ea4434f5c3a0d::t_305c270803206d 1,92-93,95-96,101-109,111-116,119-156,169
+  s_6ea4434f5c3a0d::t_2f844dd3efdf54 94,97-100,110
+  s_6ea4434f5c3a0d::t_14b80ef91ed6b0 9
+  s_6ea4434f5c3a0d::t_da269fae615581 209-212,228,235-236
+  s_6ea4434f5c3a0d::t_54130f1a6dc512 167
+  s_6ea4434f5c3a0d::t_932ebff9c722f4 287-291
+  s_6ea4434f5c3a0d::t_2ac0895512c2c9 4,7,10,12-13
+  s_6ea4434f5c3a0d::t_0adfdf8e67cd12 158-162,164,166
+packages/core/src/pay-gap.ts
+  s_6ea4434f5c3a0d::t_d92b6c58b53efb 283
+  s_6ea4434f5c3a0d::t_ba74a4aa0ca357 281
+  s_6ea4434f5c3a0d::t_0be1cf7ced2d1c 21-22
+  s_6ea4434f5c3a0d::t_1abd3a351c8d35 23-29,35
+  s_6ea4434f5c3a0d::t_169a0bbcf0e3c7 169-172,177-224,231-267,271-280,282,284-291
+  s_6ea4434f5c3a0d::t_bbbdc10270918c 118-120
+  s_6ea4434f5c3a0d::t_12f7bd93cd47e6 72-117,121-168
+  s_6ea4434f5c3a0d::t_f87f8465480f0f 173-176,268-270
+  s_6ea4434f5c3a0d::t_f87a56bf32b539 1-20,30-34,36-71
+  s_6ea4434f5c3a0d::t_f5178e30080c05 225-230
+packages/core/src/index.ts
+  s_6ea4434f5c3a0d::t_df6238be6eafc4 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "021dce5e78ab1d32db6c1a068ab40b6a124bf6b2",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
