@@ -1,0 +1,86 @@
+docs/superpowers/specs/2026-07-16-analysis-documentation-and-scatter-design.md
+  s_6ea4434f5c3a0d::t_018373ea5660fe 1-101,103-129
+  s_6ea4434f5c3a0d::t_e79f6c741547b8 102
+  s_6ea4434f5c3a0d::t_6d1c763af64045 130-136
+docs/superpowers/plans/2026-07-16-analysis-documentation-and-scatter.md
+  s_6ea4434f5c3a0d::t_3ff5d5de7b0791 1-1032
+docs/superpowers/specs/2026-07-23-pay-mapping-preconditions-gate-design.md
+  s_6ea4434f5c3a0d::t_aaf1395f2fa29c 1-37
+docs/go-live-checklist.md
+  s_6ea4434f5c3a0d::t_92b7b05af9ec07 110-122
+  s_6ea4434f5c3a0d::t_e30eeb201c409a 123-143
+  s_6ea4434f5c3a0d::t_a1949e9f3e7fc5 243-255
+  s_6ea4434f5c3a0d::t_d221ec8a9f77d4 256
+docs/superpowers/plans/2026-07-12-pay-mapping-snapshot.md
+  s_6ea4434f5c3a0d::t_ced81b6951b59e 13
+docs/superpowers/plans/2026-07-22-takeover-wizard-and-summary.md
+  s_6ea4434f5c3a0d::t_b2458b658d93a1 1-93
+docs/pay-mapping-analysis-teardown-and-plan.md
+  s_6ea4434f5c3a0d::t_00c6d0119edc83 1-35,37-116,118,122,124,128-190
+  s_6ea4434f5c3a0d::t_beb93ad85cab24 117,123,125-127
+  s_6ea4434f5c3a0d::t_aa4cf6d23c106f 36
+  s_6ea4434f5c3a0d::t_4d652921a6e8ec 119-121
+docs/superpowers/specs/2026-07-13-staged-survey-detail-design.md
+  s_6ea4434f5c3a0d::t_88105484a4c0a6 159-167
+  s_6ea4434f5c3a0d::t_dcb3f715b1e883 99
+  s_6ea4434f5c3a0d::t_0d021aafc0740b 137-147
+  s_6ea4434f5c3a0d::t_48a4057bad3580 148,150,152-155,157
+  s_6ea4434f5c3a0d::t_8dfa42eaa13068 72
+  s_6ea4434f5c3a0d::t_69508e4411a30f 176
+  s_6ea4434f5c3a0d::t_4ba2019a2ed8af 1-38,40-57,59-71,73-98,100-114,178-182
+  s_6ea4434f5c3a0d::t_969aebb76bcabf 125-136
+  s_6ea4434f5c3a0d::t_6190d45e2b7032 58
+  s_6ea4434f5c3a0d::t_b780541ff82b87 149,151,156,158
+  s_6ea4434f5c3a0d::t_d350c991acde17 168-175,177
+  s_6ea4434f5c3a0d::t_18a5e5acf643fa 115-124
+  s_6ea4434f5c3a0d::t_953777f9218852 39
+CLAUDE.md
+  s_6ea4434f5c3a0d::t_8dcc6ce65d031b 44
+  s_6ea4434f5c3a0d::t_ddec7527808be6 42
+  s_6ea4434f5c3a0d::t_6df3381cde88a3 61
+docs/lonekartlaggning-process-och-kravbild.md
+  s_6ea4434f5c3a0d::t_16daa3f01b0ebe 1-2,6-105,107-129
+  s_6ea4434f5c3a0d::t_e42a12703e8f35 106
+  s_6ea4434f5c3a0d::t_80e10a18335f29 3-5
+docs/superpowers/specs/2026-07-22-pay-mapping-summary-steady-state-design.md
+  s_6ea4434f5c3a0d::t_6753f18e3e9c54 2,4,6,11,13,21,23,26,28,30,32,37-39
+  s_6ea4434f5c3a0d::t_e74338bf7af6ae 1,3,5,7-10,22,24-25,27,29,31,33-36,40
+  s_6ea4434f5c3a0d::t_b7032c6e7e1cc6 17
+  s_6ea4434f5c3a0d::t_7af15d99bfcf37 16
+  s_6ea4434f5c3a0d::t_c4d72da448a17b 12,14-15,18-20
+docs/adr/0012-primar-konslonegap-vy-och-prioritetsordning.md
+  s_6ea4434f5c3a0d::t_772b5b76b0e350 35-45
+docs/superpowers/plans/2026-07-13-staged-survey-detail.md
+  s_6ea4434f5c3a0d::t_b92dfb11003437 1-1207
+docs/superpowers/plans/2026-07-22-guided-pay-mapping-review-journey.md
+  s_6ea4434f5c3a0d::t_958f88bbbcc16f 11
+  s_6ea4434f5c3a0d::t_45414d8e5e379b 8-10
+  s_6ea4434f5c3a0d::t_fa1eeb934e16f5 12-14
+  s_c57833637e6df3::t_240d42cb2f4380 1-7,15-347
+docs/superpowers/specs/2026-07-22-guided-pay-mapping-review-journey-design.md
+  s_6ea4434f5c3a0d::t_ee5b71048a41e3 1-99
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "029298eb194a2108cec2cbf0b1579b90812ae5b3",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_c57833637e6df3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a7359f013e75c23ce",
+        "model": "unknown"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
