@@ -15,3 +15,18 @@ export function isValidLevelForTrack(trackKey: string, level: string): boolean {
   if (levels === undefined) return false
   return (levels as readonly string[]).includes(level)
 }
+
+// The track a level code belongs to ("M2" -> "M", "Lead-2" -> "Lead"),
+// resolved against the ladders above so display surfaces can tint a level
+// by its track without carrying the track alongside it. Undefined for a
+// level no ladder contains.
+export function trackKeyForLevel(
+  level: string
+): keyof typeof TRACK_LEVELS | undefined {
+  for (const key of Object.keys(
+    TRACK_LEVELS
+  ) as (keyof typeof TRACK_LEVELS)[]) {
+    if (TRACK_LEVELS[key].includes(level)) return key
+  }
+  return undefined
+}

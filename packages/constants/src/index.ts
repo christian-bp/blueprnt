@@ -23,7 +23,11 @@ export {
   SUGGESTION_KINDS,
   type SuggestionKind,
 } from "./suggestions"
-export { TRACK_LEVELS, isValidLevelForTrack } from "./trackLevels"
+export {
+  TRACK_LEVELS,
+  isValidLevelForTrack,
+  trackKeyForLevel,
+} from "./trackLevels"
 export {
   DEFAULT_BASIS_BY_FIELD,
   PAY_BASIS,
@@ -34,3 +38,14 @@ export {
   toMonthly,
   totalMonthlyComp,
 } from "./pay"
+export {
+  PAY_GAP_REASON_GROUP_KEYS,
+  PAY_GAP_REASON_GROUPS,
+  PAY_GAP_REASONS,
+  type PayGapReason,
+} from "./payGapReasons"
+export {
+  BASE_PRAXIS_AREA_KEYS,
+  PRAXIS_AREA_KEYS,
+  type PraxisAreaKey,
+} from "./praxisAreas"

@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest"
-import { TRACK_LEVELS, isValidLevelForTrack } from "./trackLevels"
+import {
+  TRACK_LEVELS,
+  isValidLevelForTrack,
+  trackKeyForLevel,
+} from "./trackLevels"
 
 describe("TRACK_LEVELS", () => {
   it("IC track has exactly IC1-IC5", () => {
@@ -58,5 +62,18 @@ describe("isValidLevelForTrack", () => {
   it("Lead-2 is valid for Lead but not for IC", () => {
     expect(isValidLevelForTrack("Lead", "Lead-2")).toBe(true)
     expect(isValidLevelForTrack("IC", "Lead-2")).toBe(false)
+  })
+})
+
+describe("trackKeyForLevel", () => {
+  it("resolves each ladder's levels to its own track", () => {
+    expect(trackKeyForLevel("IC3")).toBe("IC")
+    expect(trackKeyForLevel("Lead-2")).toBe("Lead")
+    expect(trackKeyForLevel("M2")).toBe("M")
+  })
+
+  it("returns undefined for a level no ladder contains", () => {
+    expect(trackKeyForLevel("Senior")).toBeUndefined()
+    expect(trackKeyForLevel("")).toBeUndefined()
   })
 })
