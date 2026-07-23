@@ -107,6 +107,40 @@ in the same change.
   Verify it against Convex's per-transaction read/write limits and convert it
   to the batched-action pattern (mirror `people/import`) before onboarding an
   org above ~1000 employees.
+- [ ] **Fix the shared destructive/success Badge tint contrast (app-wide).**
+  The shared `Badge` `destructive` and `success` variants
+  (`packages/ui/src/components/badge.tsx`) render `text-destructive`/
+  `text-success` on their own `bg-destructive/10`/`bg-success/10` tint, which
+  measures ~3.4-4.0:1 in LIGHT mode (dark mode already clears the 4.5:1 AA
+  bar), below WCAG AA, for every badge using those variants app-wide. The
+  pay-gap flag chips (`components/pay-mapping/pay-gap-flag-badge.tsx`,
+  ADR-0012) were hardened locally with dedicated `--flag-critical`/
+  `--flag-ok` text tokens (`packages/ui/src/styles/globals.css`) that keep
+  the same tint but pass AA in both themes. Before go-live, consider fixing
+  the shared variants themselves (a darker text token or a stronger tint) so
+  every destructive/success badge passes AA without a per-surface override,
+  with a visual regression pass across their usages.
+- [ ] **Decide the erasure path for samverkan participant names
+  (`payMappingRuns.collaboration.participants`).** The collaboration record
+  (`setPayMappingCollaboration`) stores free-text participant names as
+  statutory samverkansredogörelse content, but no erasure or anonymization
+  path touches it (`erasePersonAsOrg` only hard-deletes `people`,
+  `payRecords`, and `personAssignments`). Decide before go-live whether to add
+  an erasure/anonymization hook for these names or record an explicit ADR
+  exception, and implement whichever is decided.
+- [ ] **Gate `deletePayMappingRun` on run status.** The mutation currently
+  hard-deletes a run (and its snapshot rows + group analyses) regardless of
+  `status`, including a `completed` run, which is the statutory kartläggning
+  evidence document. Decide the go-live policy (e.g. block deleting completed
+  runs, or require a separate unlock step) and add the corresponding
+  server-side status gate.
+- [ ] **Collapse the double per-person assignment query in
+  `startPayMappingRun`.** `computePayMappingPreconditions` (the gate) and the
+  freeze loop right after it each run their own per-person
+  `personAssignments` query over the same `active` population, so every
+  person's assignments are read twice in one mutation. Fine at today's org
+  sizes; before onboarding a large org, collapse the two loops so each
+  person's assignments are fetched once.
 - [ ] **Implement kartlaggning access + export logging in the export slice.**
   ADR-0011 section 3 (Atkomst- och exportloggning) decided that views and
   exports of a kartlaggning get logged, but the first snapshot slice shipped
@@ -205,6 +239,20 @@ suite covers them before go-live:
   a Befattning cell. This is the same latent risk already carried by other
   role-level free-text fields (motivation/purpose) and needs no code change, but
   flag it for the pre-launch privacy review.
+
+- [ ] **P1 gender-gap small-cell masking: enforce the export minimums at the
+  Art. 9 boundary.** In-app, the gap engine (`packages/core/pay-gap.ts` +
+  `payMapping/gap.ts`, ADR-0012 amendment 2026-07-16) computes a gap for every
+  group with at least 1 woman AND 1 man; ⚪ insufficient now means only that a
+  gender is missing. This is deliberate: the app is HR-only and HR already sees
+  every individual salary, so a 4-person floor protected nothing in-app while
+  making small orgs' analyses unusable. But the SAME `getPayMappingGap`
+  aggregate will feed the Art. 9 export (M8), where the data leaves the HR
+  context. Before that export ships, apply the full small-cell minimums at the
+  export boundary: mask any group mean/gap where total < 4 OR `womenCount < 2`
+  OR `menCount < 2` (a 1-person "mean" is an individual's salary). This lives
+  in the export slice, not the engine; the in-app view keeps the loose rule.
+  Not an in-app blocker.
 
 ## How to add to this list
 

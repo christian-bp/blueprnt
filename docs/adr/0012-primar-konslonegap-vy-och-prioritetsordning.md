@@ -32,3 +32,14 @@ Utlöst av v3 av metodstödet `Lonekartlaggning_Steg_for_Steg_Guide v3.md` (Del 
 
 - ADR-0002 (live-omräkning) står fast för arbetsytan. Primärvyn beräknas mot ögonblicksbilden.
 - ADR-0011:s livscykel och två-lagersmodell står fast; denna ADR lägger till primärvyns SYSTEMKRAV, P1/P2/P3-ordningen och P1-slutförandegrinden.
+
+## Tillägg 2026-07-16: maskningströskeln delas mellan appen och exporten
+
+Vid bygget av primärvyn visade sig 4-personersgränsen göra P1 nästan oanvändbar för små och medelstora organisationer, där de flesta lika-grupper har färre än 4 personer, samtidigt som den inte skyddade något i appen: målgruppen är enbart HR, som redan ser varje individuell lön (och numera gruppens medlemmar bredvid siffrorna). 4-personersgränsen är en småcellskonvention för PUBLICERAD/EXPORTERAD statistik, inte ett krav på arbetsgivarens egen interna analys.
+
+Beslut (ersätter punkt 2:s ⚪-definition för vyn i appen):
+
+- **I appen:** ⚪ (otillräckligt underlag) betyder enbart att ett kön saknas i gruppen. Med minst 1 kvinna och 1 man finns en verklig jämförelse och gruppen får gap + flagga. Grupper med bara ett kön döljs ur analysens arbetslista (det finns ingen kvinna-man-jämförelse att göra) men antalet dolda anges alltid under listan, och de återkommer som dokumenterbara poster med M6 (sakliga skäl), där grindens krav på att ⚪-grupper motiveras står fast.
+- **Vid exportgränsen (M8, Art. 9-rapporten och alla aggregat som lämnar HR-kontexten):** de fulla småcellsminimen gäller, minst 4 personer totalt OCH minst 2 per kön, innan ett gruppmedelvärde exponeras. Detta spåras i go-live-checklistan och implementeras i exportslicen.
+
+Flaggnivåerna (🔴 >10 %, 🟠 5-10 %, ✅ <5 %) och allt annat i denna ADR står fast.

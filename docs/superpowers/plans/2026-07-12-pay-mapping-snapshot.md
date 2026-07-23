@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- **Spec:** `docs/superpowers/specs/2026-07-12-kartlaggning-snapshot-design.md`. ADRs: 0011 (lifecycle + frozen layer), 0012 (P1 gate — later), 0002 (engine purity), 0008 (freeze includes model config).
+- **Spec:** `docs/superpowers/specs/2026-07-12-pay-mapping-snapshot-design.md`. ADRs: 0011 (lifecycle + frozen layer), 0012 (P1 gate — later), 0002 (engine purity), 0008 (freeze includes model config).
 - **All user-facing text through i18n**, added to `packages/i18n/messages/en.json` first, then mirrored to `sv.json`, `nb.json`, `da.json`, `fi.json`. Edit locale JSON with the Edit/Write tool only — never shell sed (mojibake). Nordic strings are drafts; flag for native review.
 - **No em dashes** in any copy, comment, or commit.
 - **Every state-changing mutation writes a typed audit row** via `ctx.audit.log({ type, payload })`; a new event needs its `AUDIT_EVENTS` key, `AuditPayloads` entry, `categoryForEvent` branch, a `dashboard.auditLog.events.<camelKey>` label in every locale, and a `dashboard.auditLog.fields.<field>` label for every scalar payload field (coverage tests in `apps/dashboard/lib/audit-labels.test.ts`).
