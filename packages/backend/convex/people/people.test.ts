@@ -201,8 +201,9 @@ describe("updatePerson", () => {
         )
         .collect()
       expect(auditRows).toHaveLength(1)
-      const changes = (auditRows[0]?.payload as Record<string, unknown>)
-        .changes as Record<string, unknown>
+      const changes = (
+        auditRows[0]?.payload as Record<string, unknown> | undefined
+      )?.changes as Record<string, unknown>
       // Cleared field diffs to null; PII (displayName) never appears.
       expect(changes.department).toEqual({ from: "Engineering", to: null })
       expect(changes.ftePercent).toEqual({ from: 100, to: 80 })

@@ -240,8 +240,11 @@ describe("discardModel", () => {
       // templateKey is now captured in the delete-snapshot changes (from:value
       // -> to:null), not as a top-level scalar.
       expect(
-        (audit[0]?.payload as { changes: { templateKey?: unknown } }).changes
-          .templateKey
+        (
+          audit[0]?.payload as
+            | { changes: { templateKey?: unknown } }
+            | undefined
+        )?.changes.templateKey
       ).toEqual({ from: STANDARD_TEMPLATE_KEY, to: null })
     })
   })
@@ -622,7 +625,7 @@ describe("model.created / model.discarded audit payloads (before/after)", () => 
     // clampLocale("xx") -> "en".
     expect(payload?.locale).toBe("en")
     expect(payload?.count).toBe(9)
-    expect((payload?.items as unknown[]).length).toBe(9)
+    expect(payload?.items).toHaveLength(9)
   })
 
   it("model.created (scratch) has zero items and a 2-field create-change", async () => {

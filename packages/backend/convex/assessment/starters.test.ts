@@ -530,7 +530,8 @@ describe("reconcileStarterSet", () => {
     const devUpdate = updated.find(
       (row) => (row.payload as { roleId: string }).roleId === developer.roleId
     )
-    const devChanges = (devUpdate?.payload as { changes: Changes }).changes
+    const devChanges =
+      (devUpdate?.payload as { changes: Changes } | undefined)?.changes ?? {}
     expect(Object.keys(devChanges).sort()).toEqual(["title", "trackKey"])
     expect(devChanges.title).toEqual({
       from: "Developer",
@@ -540,7 +541,8 @@ describe("reconcileStarterSet", () => {
     const leadUpdate = updated.find(
       (row) => (row.payload as { roleId: string }).roleId === lead.roleId
     )
-    const leadChanges = (leadUpdate?.payload as { changes: Changes }).changes
+    const leadChanges =
+      (leadUpdate?.payload as { changes: Changes } | undefined)?.changes ?? {}
     expect(Object.keys(leadChanges)).toEqual(["familyId"])
     // The family was renamed (not removed/created anew).
     const renamed = await auditOfType(t, orgId, "roleFamily.renamed")
@@ -626,9 +628,9 @@ describe("reconcileStarterSet", () => {
     })
     const archived = await auditOfType(t, orgId, "role.archived")
     expect(archived).toHaveLength(1)
-    expect((archived[0]?.payload as { roleId: string }).roleId).toBe(
-      goner.roleId
-    )
+    expect(
+      (archived[0]?.payload as { roleId: string } | undefined)?.roleId
+    ).toBe(goner.roleId)
     // A fully-rated role leaving the results set logs exactly one band.shift
     // (band -> null), mirroring archiveRole, so the reconcile band history is
     // complete. The un-rated Keeper stays band null throughout and shifts none.
@@ -965,9 +967,9 @@ describe("reconcileStarterSet", () => {
     expect(after.map((r) => r.title)).toEqual(["Keeper"])
     const archived = await auditOfType(t, orgId, "role.archived")
     expect(archived).toHaveLength(1)
-    expect((archived[0]?.payload as { roleId: string }).roleId).toBe(
-      goner.roleId
-    )
+    expect(
+      (archived[0]?.payload as { roleId: string } | undefined)?.roleId
+    ).toBe(goner.roleId)
   })
 
   // The job profile is name-derived (AI prefill drafts purpose/responsibilities

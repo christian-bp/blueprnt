@@ -76,25 +76,28 @@ describe("CountryScreen", () => {
     ["dk", "DKK", "da"],
     ["fi", "EUR", "fi"],
     ["other", "EUR", "en"],
-  ])("derives currency and language for %s as %s + %s", async (country, currency, language) => {
-    updateSettingsMock.mockResolvedValue(undefined)
-    renderScreen({ orgId: "org-1", savedCountry: null, onAdvance: vi.fn() })
+  ])(
+    "derives currency and language for %s as %s + %s",
+    async (country, currency, language) => {
+      updateSettingsMock.mockResolvedValue(undefined)
+      renderScreen({ orgId: "org-1", savedCountry: null, onAdvance: vi.fn() })
 
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: profile.countries[country as keyof typeof profile.countries],
-      })
-    )
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: profile.countries[country as keyof typeof profile.countries],
+        })
+      )
 
-    await waitFor(() => {
-      expect(updateSettingsMock).toHaveBeenCalledWith({
-        orgId: "org-1",
-        country,
-        currency,
-        language,
+      await waitFor(() => {
+        expect(updateSettingsMock).toHaveBeenCalledWith({
+          orgId: "org-1",
+          country,
+          currency,
+          language,
+        })
       })
-    })
-  })
+    }
+  )
 
   it("shows a flag per country card and a flagless slot for Other", () => {
     renderScreen({ orgId: "org-1", savedCountry: null, onAdvance: vi.fn() })

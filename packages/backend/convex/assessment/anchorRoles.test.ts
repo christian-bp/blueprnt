@@ -385,8 +385,9 @@ describe("updateAnchorRole", () => {
         return status?.from === "replaced" && status?.to === "active"
       })
       expect(
-        typeof (reactivation?.payload as { computedBand?: number | null })
-          .computedBand
+        typeof (
+          reactivation?.payload as { computedBand?: number | null } | undefined
+        )?.computedBand
       ).toBe("number")
     })
     await asAdmin.mutation(api.assessment.anchorRoles.updateAnchorRole, {

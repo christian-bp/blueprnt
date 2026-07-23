@@ -296,10 +296,10 @@ describe("detectColumns content-only mode (headerless files)", () => {
       "44 000,00",
     ],
   ]
-  const HEADERS = ROWS[0]!.map((_, i) => `column_${i + 1}`)
+  const HEADERS = (ROWS[0] ?? []).map((_, i) => `column_${i + 1}`)
 
   function detect(rows: string[][], currentYear = 2026) {
-    const headers = rows[0]!.map((_, i) => `column_${i + 1}`)
+    const headers = (rows[0] ?? []).map((_, i) => `column_${i + 1}`)
     return detectColumns({ headers, rows, headerless: true, currentYear })
   }
 
@@ -356,7 +356,7 @@ describe("detectColumns content-only mode (headerless files)", () => {
       ["Anna", "1985-04-12"],
       ["Erik", "1979-11-02"],
     ]
-    const headers = rows[0]!.map((_, i) => `column_${i + 1}`)
+    const headers = (rows[0] ?? []).map((_, i) => `column_${i + 1}`)
     // No currentYear passed: the engine must not read the clock, so the
     // birth-vs-start heuristic stays off and the date column is left unmapped.
     const { map } = detectColumns({ headers, rows, headerless: true })
