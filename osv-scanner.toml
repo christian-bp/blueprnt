@@ -1,0 +1,10 @@
+# Documented CVE-scan exceptions. Every entry needs a reason and should be
+# re-evaluated when the underlying dependency moves.
+
+[[IgnoredVulns]]
+id = "GHSA-892p-pqrr-hxqr"
+reason = "Name collision: matches our private workspace app named 'flags' (apps/flags, version 0.0.1), not the npm 'flags' package the advisory targets."
+
+[[IgnoredVulns]]
+id = "GHSA-frvp-7c67-39w9"
+reason = "@hono/node-server 1.x is pulled only by @modelcontextprotocol/sdk (dev tooling, never deployed); the fix requires a 2.x major that the SDK does not accept yet. Re-check when @modelcontextprotocol/sdk bumps."
