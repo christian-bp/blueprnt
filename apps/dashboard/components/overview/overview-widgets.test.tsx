@@ -78,7 +78,7 @@ describe("OverviewWidgets", () => {
     expect(action.getAttribute("href")).toBe("/people")
   })
 
-  it("renders the trend chart for a single pay-mapping run's headcount", () => {
+  it("shows no chart for a single pay-mapping run (one dot is not a trend)", () => {
     renderWidgets({
       stats: { ...ALL_DONE, totalPeople: 10 },
       headcountTrend: [{ date: 1, value: 10 }],
@@ -86,7 +86,7 @@ describe("OverviewWidgets", () => {
     const workforceCard = screen
       .getByText(t.workforce.label)
       .closest('[data-slot="card"]')
-    expect(workforceCard?.querySelector('[data-slot="chart"]')).not.toBeNull()
+    expect(workforceCard?.querySelector('[data-slot="chart"]')).toBeNull()
   })
 
   it("shows no chart in the workforce card while its own headcount trend is still loading", () => {

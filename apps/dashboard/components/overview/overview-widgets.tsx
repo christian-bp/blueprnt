@@ -91,8 +91,9 @@ export function OverviewWidgets({
   // cards' viz occupies so nothing shifts as headcountTrend's own
   // subscription resolves. No chart while there are no people yet (the
   // import prompt already carries that state), while the trend is still
-  // loading, or when there is no run yet whose headcount is measurable
-  // (mirrors Polyform's own hasData guard: a single point still counts).
+  // loading, or until there are at least TWO runs to plot: a single run is
+  // just one dot, not a trend, so it stays an empty reserved area until a
+  // second run gives the curve two points.
   const trendConfig = {
     value: { label: t("workforce.trendLabel"), color: "var(--brand)" },
   } satisfies ChartConfig
@@ -101,6 +102,7 @@ export function OverviewWidgets({
     stats.totalPeople === 0 ||
     headcountTrend === undefined ||
     headcountTrend === null ||
+    headcountTrend.length < 2 ||
     !headcountTrend.some((p) => p.value > 0)
   ) {
     workforceViz = <div className="h-14 w-full" />
