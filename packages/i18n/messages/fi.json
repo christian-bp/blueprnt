@@ -149,7 +149,7 @@
     },
     "accountMenu": "Tilivalikko",
     "nav": {
-      "home": "Etusivu",
+      "home": "Yleiskatsaus",
       "overview": "Yleiskatsaus",
       "work": "Työarkkitehtuuri",
       "roles": "Roolit",
@@ -739,11 +739,13 @@
         "afternoon": "Hyvää iltapäivää{hasName, select, yes{, {name}} other{}}",
         "evening": "Hyvää iltaa{hasName, select, yes{, {name}} other{}}"
       },
+      "subtitle": "Sinulla on {count, plural, =0 {ei mitään odottamassa} one {# tehtävä odottamassa} other {# tehtävää odottamassa}} juuri nyt.",
+      "viewAll": "Näytä kaikki {count}",
+      "sectionTodo": "Tehtävät",
+      "sectionOverview": "Yleiskatsaus",
       "todo": {
-        "heading": "Tehtävät:",
-        "groupCount": "{count} kpl",
-        "viewAll": "Näytä kaikki {count}",
         "evaluateProgress": "{rated}/{total} arvioitu",
+        "groupCount": "{count} kpl",
         "classifyPeopleCount": "{count, plural, one {# työntekijä} other {# työntekijää}}",
         "startPayMappingItem": "Aloita palkkakartoitus",
         "importPeopleItem": "Tuo työntekijäsi",
@@ -761,21 +763,38 @@
           "importPeople": "Aloita työntekijöistä"
         }
       },
-      "chart": {
-        "title": "Roolit bändeittäin",
-        "sampleBadge": "Esimerkki",
-        "roles": "Roolit"
+      "quickActions": {
+        "importEmployees": "Tuo työntekijöitä",
+        "classify": "Luokittele",
+        "roles": "Roolit",
+        "startPayMapping": "Aloita palkkakartoitus"
       },
-      "modelReadiness": {
-        "title": "Menetelmä",
-        "documented": "{documented}/{total} dokumentoitu",
-        "approved": "{approved}/{total} hyväksytty",
-        "cta": "Avaa menetelmä"
-      },
-      "gettingStarted": {
-        "title": "Aloitus",
-        "body": "Rakenna mallisi, kuvaa roolisi ja arvioi ne kriteerien mukaan.",
-        "cta": "Siirry malliin"
+      "widgets": {
+        "workforce": {
+          "label": "Työvoima",
+          "view": "Henkilöstö",
+          "headcount": "{count, plural, one {# työntekijä} other {# työntekijää}}",
+          "unclassified": "{count} luokittelematta",
+          "allClassified": "Kaikki luokiteltu",
+          "importPrompt": "Tuo tietoja aloittaaksesi",
+          "trendLabel": "Työntekijät"
+        },
+        "bands": {
+          "label": "Vaativuusluokkien jakauma",
+          "view": "Työarkkitehtuuri",
+          "headline": "{roles, plural, one {# rooli} other {# roolia}} kattaa {bands, plural, one {# vaativuusluokan} other {# vaativuusluokkaa}}",
+          "empty": "Arvioi rooleja nähdäksesi jakauman",
+          "seriesLabel": "Roolit",
+          "barLabel": "Vaativuusluokka {band}"
+        },
+        "gap": {
+          "label": "Palkkaero",
+          "view": "Avaa",
+          "notStarted": "Ei aloitettu",
+          "prompt": "Aloita ensimmäinen palkkakartoituksesi",
+          "insufficientValue": "Ei tarpeeksi tietoa",
+          "quartileLabel": "Kvartiili {index}"
+        }
       }
     },
     "roleSheet": {
@@ -1075,7 +1094,6 @@
       "review": {
         "showUnderlag": "Näytä taustatiedot",
         "previous": "Edellinen",
-        "exit": "Lopeta tarkastus",
         "backToJourney": "Takaisin tarkastukseen",
         "skip": "Ohita toistaiseksi",
         "continue": "Jatka",
@@ -1161,7 +1179,8 @@
           "done": "valmis"
         },
         "finish": {
-          "title": "Kaikki tarkistettu"
+          "title": "Kaikki tarkistettu",
+          "backToSummary": "Takaisin yhteenvetoon"
         },
         "finishActionsNote": "Palkkakorjaukset, kustannusarvio ja kolmen vuoden aikataulu lisätään toimintasuunnitelmaan.",
         "summaryTitle": "Yhteenveto",

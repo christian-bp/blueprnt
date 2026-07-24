@@ -149,7 +149,7 @@
     },
     "accountMenu": "Account menu",
     "nav": {
-      "home": "Home",
+      "home": "Overview",
       "overview": "Overview",
       "work": "Job architecture",
       "roles": "Roles",
@@ -739,11 +739,13 @@
         "afternoon": "Good afternoon{hasName, select, yes{, {name}} other{}}",
         "evening": "Good evening{hasName, select, yes{, {name}} other{}}"
       },
+      "subtitle": "You have {count, plural, =0 {nothing waiting} one {# item waiting} other {# items waiting}} right now.",
+      "viewAll": "View all {count}",
+      "sectionTodo": "To do",
+      "sectionOverview": "Overview",
       "todo": {
-        "heading": "To do:",
-        "groupCount": "{count, plural, one {# item} other {# items}}",
-        "viewAll": "View all {count}",
         "evaluateProgress": "{rated}/{total} evaluated",
+        "groupCount": "{count, plural, one {# item} other {# items}}",
         "classifyPeopleCount": "{count, plural, one {# person} other {# people}}",
         "startPayMappingItem": "Start the pay mapping",
         "importPeopleItem": "Import your employees",
@@ -761,21 +763,38 @@
           "importPeople": "Get started with your employees"
         }
       },
-      "chart": {
-        "title": "Roles per band",
-        "sampleBadge": "Sample",
-        "roles": "Roles"
+      "quickActions": {
+        "importEmployees": "Import employees",
+        "classify": "Classify",
+        "roles": "Roles",
+        "startPayMapping": "Start pay mapping"
       },
-      "modelReadiness": {
-        "title": "Method",
-        "documented": "{documented}/{total} documented",
-        "approved": "{approved}/{total} approved",
-        "cta": "Open the method"
-      },
-      "gettingStarted": {
-        "title": "Getting started",
-        "body": "Build your model, describe your roles, then evaluate them against the criteria.",
-        "cta": "Go to the model"
+      "widgets": {
+        "workforce": {
+          "label": "Workforce",
+          "view": "People",
+          "headcount": "{count, plural, one {# person} other {# people}}",
+          "unclassified": "{count} unclassified",
+          "allClassified": "All classified",
+          "importPrompt": "Import to get started",
+          "trendLabel": "Employees"
+        },
+        "bands": {
+          "label": "Band distribution",
+          "view": "Job architecture",
+          "headline": "{roles, plural, one {# role} other {# roles}} across {bands, plural, one {# band} other {# bands}}",
+          "empty": "Evaluate roles to see the distribution",
+          "seriesLabel": "Roles",
+          "barLabel": "Band {band}"
+        },
+        "gap": {
+          "label": "Pay gap",
+          "view": "Open",
+          "notStarted": "Not started",
+          "prompt": "Start your first pay mapping",
+          "insufficientValue": "Not enough data",
+          "quartileLabel": "Quartile {index}"
+        }
       }
     },
     "roleSheet": {
@@ -1075,7 +1094,6 @@
       "review": {
         "showUnderlag": "Show the underlying data",
         "previous": "Previous",
-        "exit": "Exit the review",
         "backToJourney": "Back to the review",
         "skip": "Skip for now",
         "continue": "Continue",
@@ -1161,7 +1179,8 @@
           "done": "done"
         },
         "finish": {
-          "title": "Everything reviewed"
+          "title": "Everything reviewed",
+          "backToSummary": "Back to the summary"
         },
         "finishActionsNote": "Pay adjustments, cost estimate and the three-year time plan are added in the action plan.",
         "summaryTitle": "Summary",

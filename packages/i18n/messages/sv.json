@@ -149,7 +149,7 @@
     },
     "accountMenu": "Kontomeny",
     "nav": {
-      "home": "Hem",
+      "home": "Översikt",
       "overview": "Översikt",
       "work": "Jobbarkitektur",
       "roles": "Roller",
@@ -739,11 +739,13 @@
         "afternoon": "God eftermiddag{hasName, select, yes{, {name}} other{}}",
         "evening": "God kväll{hasName, select, yes{, {name}} other{}}"
       },
+      "subtitle": "Du har {count, plural, =0 {inget som väntar} other {# uppdrag som väntar}} just nu.",
+      "viewAll": "Visa alla {count}",
+      "sectionTodo": "Att göra",
+      "sectionOverview": "Översikt",
       "todo": {
-        "heading": "Att göra:",
-        "groupCount": "{count} st",
-        "viewAll": "Visa alla {count}",
         "evaluateProgress": "{rated}/{total} utvärderade",
+        "groupCount": "{count} st",
         "classifyPeopleCount": "{count, plural, one {# anställd} other {# anställda}}",
         "startPayMappingItem": "Starta lönekartläggningen",
         "importPeopleItem": "Importera dina anställda",
@@ -761,21 +763,38 @@
           "importPeople": "Kom igång med dina anställda"
         }
       },
-      "chart": {
-        "title": "Roller per band",
-        "sampleBadge": "Exempel",
-        "roles": "Roller"
+      "quickActions": {
+        "importEmployees": "Importera anställda",
+        "classify": "Klassificera",
+        "roles": "Roller",
+        "startPayMapping": "Starta lönekartläggning"
       },
-      "modelReadiness": {
-        "title": "Metod",
-        "documented": "{documented}/{total} dokumenterade",
-        "approved": "{approved}/{total} godkända",
-        "cta": "Öppna metoden"
-      },
-      "gettingStarted": {
-        "title": "Kom igång",
-        "body": "Bygg din modell, beskriv dina roller och utvärdera dem sedan mot kriterierna.",
-        "cta": "Gå till modellen"
+      "widgets": {
+        "workforce": {
+          "label": "Personal",
+          "view": "Medarbetare",
+          "headcount": "{count, plural, one {# anställd} other {# anställda}}",
+          "unclassified": "{count} oklassificerade",
+          "allClassified": "Alla klassificerade",
+          "importPrompt": "Importera för att komma igång",
+          "trendLabel": "Anställda"
+        },
+        "bands": {
+          "label": "Bandfördelning",
+          "view": "Jobbarkitektur",
+          "headline": "{roles, plural, one {# roll} other {# roller}} över {bands, plural, one {# band} other {# band}}",
+          "empty": "Utvärdera roller för att se fördelningen",
+          "seriesLabel": "Roller",
+          "barLabel": "Band {band}"
+        },
+        "gap": {
+          "label": "Lönegap",
+          "view": "Öppna",
+          "notStarted": "Inte påbörjad",
+          "prompt": "Starta din första lönekartläggning",
+          "insufficientValue": "Otillräckligt underlag",
+          "quartileLabel": "Kvartil {index}"
+        }
       }
     },
     "roleSheet": {
@@ -1075,7 +1094,6 @@
       "review": {
         "showUnderlag": "Visa underlag",
         "previous": "Föregående",
-        "exit": "Avsluta granskningen",
         "backToJourney": "Tillbaka till granskningen",
         "skip": "Hoppa över",
         "continue": "Fortsätt",
@@ -1161,7 +1179,8 @@
           "done": "klar"
         },
         "finish": {
-          "title": "Allt granskat"
+          "title": "Allt granskat",
+          "backToSummary": "Tillbaka till sammanställningen"
         },
         "finishActionsNote": "Löneåtgärder, kostnadsberäkning och den treåriga tidsplanen läggs till i handlingsplanen.",
         "summaryTitle": "Sammanställning",

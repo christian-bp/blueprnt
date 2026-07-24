@@ -149,7 +149,7 @@
     },
     "accountMenu": "Kontomenu",
     "nav": {
-      "home": "Hjem",
+      "home": "Oversigt",
       "overview": "Oversigt",
       "work": "Jobarkitektur",
       "roles": "Roller",
@@ -739,11 +739,13 @@
         "afternoon": "God eftermiddag{hasName, select, yes{, {name}} other{}}",
         "evening": "God aften{hasName, select, yes{, {name}} other{}}"
       },
+      "subtitle": "Du har {count, plural, =0 {ingenting der venter} one {# opgave der venter} other {# opgaver der venter}} lige nu.",
+      "viewAll": "Vis alle {count}",
+      "sectionTodo": "Opgaver",
+      "sectionOverview": "Oversigt",
       "todo": {
-        "heading": "At gøre:",
-        "groupCount": "{count} stk.",
-        "viewAll": "Vis alle {count}",
         "evaluateProgress": "{rated}/{total} vurderet",
+        "groupCount": "{count} stk",
         "classifyPeopleCount": "{count, plural, one {# medarbejder} other {# medarbejdere}}",
         "startPayMappingItem": "Start lønkortlægningen",
         "importPeopleItem": "Importér dine medarbejdere",
@@ -761,21 +763,38 @@
           "importPeople": "Kom i gang med dine medarbejdere"
         }
       },
-      "chart": {
-        "title": "Roller per band",
-        "sampleBadge": "Eksempel",
-        "roles": "Roller"
+      "quickActions": {
+        "importEmployees": "Importér medarbejdere",
+        "classify": "Klassificér",
+        "roles": "Roller",
+        "startPayMapping": "Start lønkortlægning"
       },
-      "modelReadiness": {
-        "title": "Metode",
-        "documented": "{documented}/{total} dokumenteret",
-        "approved": "{approved}/{total} godkendt",
-        "cta": "Åbn metoden"
-      },
-      "gettingStarted": {
-        "title": "Kom godt i gang",
-        "body": "Byg din model, beskriv dine roller, og vurder dem mod kriterierne.",
-        "cta": "Gå til modellen"
+      "widgets": {
+        "workforce": {
+          "label": "Arbejdsstyrke",
+          "view": "Medarbejdere",
+          "headcount": "{count, plural, one {# medarbejder} other {# medarbejdere}}",
+          "unclassified": "{count} uklassificerede",
+          "allClassified": "Alle klassificeret",
+          "importPrompt": "Importér for at komme i gang",
+          "trendLabel": "Medarbejdere"
+        },
+        "bands": {
+          "label": "Bånddistribution",
+          "view": "Jobarkitektur",
+          "headline": "{roles, plural, one {# rolle} other {# roller}} over {bands, plural, one {# bånd} other {# bånd}}",
+          "empty": "Vurdér roller for at se fordelingen",
+          "seriesLabel": "Roller",
+          "barLabel": "Bånd {band}"
+        },
+        "gap": {
+          "label": "Løngab",
+          "view": "Åbn",
+          "notStarted": "Ikke startet",
+          "prompt": "Start din første lønkortlægning",
+          "insufficientValue": "Ikke nok data",
+          "quartileLabel": "Kvartil {index}"
+        }
       }
     },
     "roleSheet": {
@@ -1075,7 +1094,6 @@
       "review": {
         "showUnderlag": "Vis grundlaget",
         "previous": "Forrige",
-        "exit": "Afslut gennemgangen",
         "backToJourney": "Tilbage til gennemgangen",
         "skip": "Spring over",
         "continue": "Fortsæt",
@@ -1161,7 +1179,8 @@
           "done": "udført"
         },
         "finish": {
-          "title": "Alt gennemgået"
+          "title": "Alt gennemgået",
+          "backToSummary": "Tilbage til opsummeringen"
         },
         "finishActionsNote": "Lønjusteringer, omkostningsberegning og den treårige tidsplan tilføjes i handlingsplanen.",
         "summaryTitle": "Opsummering",

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { buildTodo, MAX_ITEMS } from "./todo"
+import { buildOverviewStats, buildTodo, MAX_ITEMS } from "./todo"
 
 const role = (
   over: Partial<Parameters<typeof buildTodo>[0]["roles"][number]> = {}
@@ -367,5 +367,63 @@ describe("buildTodo importPeople group", () => {
       payMappingRuns: OPEN_RUN,
     })
     expect(staffed.groups.map((g) => g.key)).not.toContain("importPeople")
+  })
+})
+
+describe("buildOverviewStats", () => {
+  it("reports totalPeople 0 when the org holds no people", () => {
+    const stats = buildOverviewStats({
+      roles: [],
+      method: null,
+      peopleByTitle: [],
+      payMappingRuns: [],
+    })
+    expect(stats.totalPeople).toBe(0)
+    expect(stats.unclassifiedCount).toBe(0)
+  })
+
+  it("mirrors buildTodo's per-domain counts for a mixed fixture", () => {
+    const input = {
+      roles: [
+        role({ roleId: "r1", slug: "r-1", profileComplete: false }),
+        role({
+          roleId: "r2",
+          slug: "r-2",
+          profileComplete: true,
+          ratedCount: 2,
+          totalCriteria: 9,
+        }),
+      ],
+      method: method([
+        { criterionId: "c1", name: "Scope", status: "notStarted" },
+        { criterionId: "c2", name: "Risk", status: "documented" },
+      ]),
+      peopleByTitle: [
+        {
+          title: "Sales Manager",
+          people: [
+            {
+              currentAssignment: {
+                roleId: "r3",
+                levelSource: "suggested" as const,
+              },
+            },
+          ],
+        },
+      ],
+      payMappingRuns: OPEN_RUN,
+    }
+    const stats = buildOverviewStats(input)
+    expect(stats.describeCount).toBe(1)
+    expect(stats.evaluateCount).toBe(1)
+    expect(stats.documentCount).toBe(1)
+    expect(stats.approveCount).toBe(1)
+    expect(stats.unclassifiedCount).toBe(1)
+    // Cross-check against buildTodo's own groups for the same input.
+    const todo = buildTodo(input)
+    const describe = todo.groups.find((g) => g.key === "describeRoles")
+    const evaluate = todo.groups.find((g) => g.key === "evaluateRoles")
+    expect(describe?.count).toBe(stats.describeCount)
+    expect(evaluate?.count).toBe(stats.evaluateCount)
   })
 })

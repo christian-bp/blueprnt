@@ -81,8 +81,13 @@ type TodoTitleGroup = {
     } | null
   }[]
 }
+type PayMappingRunStatus = "active" | "paused" | "underReview" | "completed"
+// label is optional only so existing buildTodo fixtures (which never read
+// it) keep type-checking unchanged; the real listPayMappingRuns query always
+// supplies a non-empty one.
 type TodoPayMappingRun = {
-  status: "active" | "paused" | "underReview" | "completed"
+  status: PayMappingRunStatus
+  label?: string
 }
 
 export type BuildTodoInput = {
@@ -92,12 +97,15 @@ export type BuildTodoInput = {
   payMappingRuns: TodoPayMappingRun[]
 }
 
-export function buildTodo({
+// One pass over the four queries, shared by buildTodo (the grouped to-do
+// list) and buildOverviewStats (the overview widget cards), so the two views
+// can never disagree about what still needs attention.
+function computeCounts({
   roles,
   method,
   peopleByTitle,
   payMappingRuns,
-}: BuildTodoInput): Todo {
+}: BuildTodoInput) {
   // Classification first: after a payroll import it is the freshest work, and
   // people must sit in roles before any analysis can use them. One item per
   // imported title still holding people without a confirmed assignment
@@ -168,52 +176,12 @@ export function buildTodo({
     0
   )
 
-  const groups: TodoGroup[] = []
-  if (totalPeople === 0)
-    groups.push({
-      key: "importPeople",
-      items: [{ id: "importPeople", href: "/people/import" }],
-      count: 1,
-    })
-  if (classify.length > 0)
-    groups.push({
-      key: "classifyPeople",
-      items: classify.slice(0, MAX_ITEMS),
-      count: classify.length,
-    })
-  if (describe.length > 0)
-    groups.push({
-      key: "describeRoles",
-      items: describe.slice(0, MAX_ITEMS),
-      count: describe.length,
-    })
-  if (evaluate.length > 0)
-    groups.push({
-      key: "evaluateRoles",
-      items: evaluate.slice(0, MAX_ITEMS),
-      count: evaluate.length,
-    })
-  if (documentItems.length > 0)
-    groups.push({
-      key: "documentCriteria",
-      items: documentItems.slice(0, MAX_ITEMS),
-      count: documentItems.length,
-    })
-  if (approveItems.length > 0)
-    groups.push({
-      key: "approveCriteria",
-      items: approveItems.slice(0, MAX_ITEMS),
-      count: approveItems.length,
-    })
-
   // The pay-mapping gate's own readiness, mirroring the backend's shared
   // precondition helper exactly: every person classified (a confirmed open
   // assignment) and every STAFFED role (holding at least one open
   // assignment, any confirmation state) resolves a band (fully rated). An
   // unstaffed role's evaluation state never blocks this, unlike
-  // describeRoles/evaluateRoles above, which track every role regardless of
-  // staffing. Rendered as its own final group only once the gate is clear
-  // AND no non-completed run is already in flight (nothing left to start).
+  // describe/evaluate above, which track every role regardless of staffing.
   const totalUnclassified = classify.reduce(
     (sum, item) => sum + item.peopleCount,
     0
@@ -236,7 +204,72 @@ export function buildTodo({
     totalUnclassified === 0 &&
     unevaluatedStaffedRoles.length === 0
   const hasOpenRun = payMappingRuns.some((run) => run.status !== "completed")
-  const startPayMapping = payMappingReady && !hasOpenRun
+  const isOpenRun = (
+    run: TodoPayMappingRun
+  ): run is TodoPayMappingRun & {
+    status: Exclude<PayMappingRunStatus, "completed">
+  } => run.status !== "completed"
+  const openRun = payMappingRuns.find(isOpenRun)
+
+  return {
+    classify,
+    describe,
+    evaluate,
+    documentItems,
+    approveItems,
+    totalPeople,
+    totalUnclassified,
+    unevaluatedStaffedRoles,
+    payMappingReady,
+    hasOpenRun,
+    openRun,
+  }
+}
+
+export function buildTodo(input: BuildTodoInput): Todo {
+  const c = computeCounts(input)
+
+  const groups: TodoGroup[] = []
+  if (c.totalPeople === 0)
+    groups.push({
+      key: "importPeople",
+      items: [{ id: "importPeople", href: "/people/import" }],
+      count: 1,
+    })
+  if (c.classify.length > 0)
+    groups.push({
+      key: "classifyPeople",
+      items: c.classify.slice(0, MAX_ITEMS),
+      count: c.classify.length,
+    })
+  if (c.describe.length > 0)
+    groups.push({
+      key: "describeRoles",
+      items: c.describe.slice(0, MAX_ITEMS),
+      count: c.describe.length,
+    })
+  if (c.evaluate.length > 0)
+    groups.push({
+      key: "evaluateRoles",
+      items: c.evaluate.slice(0, MAX_ITEMS),
+      count: c.evaluate.length,
+    })
+  if (c.documentItems.length > 0)
+    groups.push({
+      key: "documentCriteria",
+      items: c.documentItems.slice(0, MAX_ITEMS),
+      count: c.documentItems.length,
+    })
+  if (c.approveItems.length > 0)
+    groups.push({
+      key: "approveCriteria",
+      items: c.approveItems.slice(0, MAX_ITEMS),
+      count: c.approveItems.length,
+    })
+
+  // Rendered as its own final group only once the gate is clear AND no
+  // non-completed run is already in flight (nothing left to start).
+  const startPayMapping = c.payMappingReady && !c.hasOpenRun
   if (startPayMapping) {
     groups.push({
       key: "startPayMapping",
@@ -246,12 +279,37 @@ export function buildTodo({
   }
 
   const total =
-    (totalPeople === 0 ? 1 : 0) +
-    classify.length +
-    describe.length +
-    evaluate.length +
-    documentItems.length +
-    approveItems.length +
+    (c.totalPeople === 0 ? 1 : 0) +
+    c.classify.length +
+    c.describe.length +
+    c.evaluate.length +
+    c.documentItems.length +
+    c.approveItems.length +
     (startPayMapping ? 1 : 0)
   return { groups, total }
+}
+
+// The overview front page's state: one entry per widget card's narrative.
+export type OverviewStats = {
+  totalPeople: number
+  unclassifiedCount: number
+  describeCount: number
+  evaluateCount: number
+  documentCount: number
+  approveCount: number
+}
+
+// Derives the overview widget cards' state from the same counting pass
+// buildTodo groups from (DRY: one pass, two views).
+export function buildOverviewStats(input: BuildTodoInput): OverviewStats {
+  const c = computeCounts(input)
+
+  return {
+    totalPeople: c.totalPeople,
+    unclassifiedCount: c.totalUnclassified,
+    describeCount: c.describe.length,
+    evaluateCount: c.evaluate.length,
+    documentCount: c.documentItems.length,
+    approveCount: c.approveItems.length,
+  }
 }

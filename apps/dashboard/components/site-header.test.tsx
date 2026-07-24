@@ -79,7 +79,7 @@ describe("SiteHeader", () => {
   it("shows a plain section title and no navigation on a top-level non-Work route", () => {
     pathState.current = "/"
     renderHeader()
-    expect(screen.getByText("Home")).toBeDefined()
+    expect(screen.getByText(messages.dashboard.nav.home)).toBeDefined()
     // No section tabs and (now) no breadcrumb trail in the header -> no links.
     expect(document.querySelector("a")).toBeNull()
   })
