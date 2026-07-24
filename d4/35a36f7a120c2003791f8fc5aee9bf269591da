@@ -1,0 +1,92 @@
+apps/dashboard/components/people/classify/classify-title-table.tsx
+  s_6ea4434f5c3a0d::t_80233b43a4fc3f 509-513,519-525
+  s_6ea4434f5c3a0d::t_43727cb90c74c5 514-518
+  s_6ea4434f5c3a0d::t_452f80f0d1aefe 5,9-15
+  s_6ea4434f5c3a0d::t_3c05a43cfdd024 526
+apps/dashboard/components/organization/organization-members-section.test.tsx
+  s_6ea4434f5c3a0d::t_43727cb90c74c5 119-121
+  s_6ea4434f5c3a0d::t_6bcdaa35349544 112-118,122-123
+apps/dashboard/components/pay-mapping/pay-mapping-group-underlag.tsx
+  s_6ea4434f5c3a0d::t_e4333f5c722506 9-14
+  s_6ea4434f5c3a0d::t_0345366bdc9f4f 137-161,163-187
+  s_6ea4434f5c3a0d::t_43727cb90c74c5 23
+  s_6ea4434f5c3a0d::t_983cc55ed93ad0 8
+apps/dashboard/app/(app)/work/page.tsx
+  s_6ea4434f5c3a0d::t_e6e8324f115b52 177-183
+  s_6ea4434f5c3a0d::t_07fd88c4e77854 3-4,11
+apps/dashboard/components/admin/email-log-section.tsx
+  s_6ea4434f5c3a0d::t_3cb8eb3103e76b 16
+  s_6ea4434f5c3a0d::t_1876367659bb5b 271-279
+  s_6ea4434f5c3a0d::t_6e578475f92a3a 3
+apps/dashboard/components/organization/organization-members-section.tsx
+  s_6ea4434f5c3a0d::t_43727cb90c74c5 3
+  s_6ea4434f5c3a0d::t_37740cfa246da5 156-168
+  s_6ea4434f5c3a0d::t_247e9745ffac10 24-29
+  s_6ea4434f5c3a0d::t_57154db4201d23 23
+apps/dashboard/components/admin/organizations-section.tsx
+  s_6ea4434f5c3a0d::t_b64c4691c2c759 75-83
+  s_6ea4434f5c3a0d::t_43727cb90c74c5 3
+  s_6ea4434f5c3a0d::t_e417d3de6f06f4 18
+apps/dashboard/components/pay-mapping/pay-mappings-section.tsx
+  s_6ea4434f5c3a0d::t_43727cb90c74c5 3
+  s_6ea4434f5c3a0d::t_06b806e92313fd 322-328
+  s_6ea4434f5c3a0d::t_a78d468dc1d83e 22
+apps/dashboard/components/admin/users-section.tsx
+  s_6ea4434f5c3a0d::t_43727cb90c74c5 3
+  s_6ea4434f5c3a0d::t_3fabe3230404ce 18
+  s_6ea4434f5c3a0d::t_03f9a283eb79b3 110-118
+apps/dashboard/app/(app)/roles/families/[familySlug]/page.tsx
+  s_6ea4434f5c3a0d::t_e2ac013f47ddbe 181-199
+  s_6ea4434f5c3a0d::t_43727cb90c74c5 3
+  s_6ea4434f5c3a0d::t_35751d81ee7ff5 8-14
+  s_6ea4434f5c3a0d::t_3442cbc411caae 200-222,224-240
+apps/dashboard/components/people/person-detail.tsx
+  s_6ea4434f5c3a0d::t_be609aae1ad650 361-373
+  s_6ea4434f5c3a0d::t_7fe43067bdf9e5 4,19-25
+apps/dashboard/components/people/people-section.test.tsx
+  s_6ea4434f5c3a0d::t_b9c166a64facc8 214
+  s_6ea4434f5c3a0d::t_43727cb90c74c5 215-217
+apps/dashboard/components/people/people-section.tsx
+  s_6ea4434f5c3a0d::t_1f7fd2603ce47b 23
+  s_6ea4434f5c3a0d::t_ce632e1b341ebb 514
+  s_6ea4434f5c3a0d::t_184919b305b7b7 512-513,515-518
+apps/dashboard/components/people/classify/classify-title-table.test.tsx
+  s_6ea4434f5c3a0d::t_43727cb90c74c5 252-254
+  s_6ea4434f5c3a0d::t_ffaf7db1216fa0 248-251,255-256
+apps/dashboard/components/people/person-detail.test.tsx
+  s_6ea4434f5c3a0d::t_18b3df60547b42 203
+  s_6ea4434f5c3a0d::t_43727cb90c74c5 204-206
+apps/dashboard/components/pay-mapping/pay-mappings-section.test.tsx
+  s_6ea4434f5c3a0d::t_9172d71113a32f 152-154
+apps/dashboard/components/admin/audit-log-section.tsx
+  s_6ea4434f5c3a0d::t_c0e0925edd85e8 12
+  s_6ea4434f5c3a0d::t_1fc4d964a490e9 3
+  s_6ea4434f5c3a0d::t_b426d714c856a8 342-350
+apps/dashboard/components/org-audit-log-section.tsx
+  s_6ea4434f5c3a0d::t_e349b01a246f0c 405-413
+  s_6ea4434f5c3a0d::t_26956aeaac70bc 12
+  s_6ea4434f5c3a0d::t_7eff3a4b91325e 3
+apps/dashboard/components/pay-mapping/pay-mapping-group-underlag.test.tsx
+  s_6ea4434f5c3a0d::t_2e8e0f6b335188 106-124
+apps/dashboard/app/(app)/work/page.test.tsx
+  s_6ea4434f5c3a0d::t_1b1267d2c088ee 81-83
+apps/dashboard/app/(app)/roles/page.tsx
+  s_6ea4434f5c3a0d::t_923cc8b69421e4 3-4,10
+  s_6ea4434f5c3a0d::t_8abdcde67d096a 87-93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "d435a36f7a120c2003791f8fc5aee9bf269591da",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
