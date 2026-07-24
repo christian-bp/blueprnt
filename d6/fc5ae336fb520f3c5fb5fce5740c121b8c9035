@@ -1,0 +1,21 @@
+apps/dashboard/components/overview/overview-widgets.tsx
+  s_6ea4434f5c3a0d::t_800ecd759f691a 94-96,105
+apps/dashboard/components/overview/overview-widgets.test.tsx
+  s_6ea4434f5c3a0d::t_b07b2e8782125c 81,89
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "d6fc5ae336fb520f3c5fb5fce5740c121b8c9035",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
