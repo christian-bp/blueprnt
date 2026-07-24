@@ -22,7 +22,7 @@ import type {
   OrgAggregate,
   PayMappingGapResult,
 } from "./pay-mapping-gap-types"
-import { percentText } from "./review-jump-menu"
+import { percentText } from "@/lib/percent"
 
 // A legend/stat row keyed by gender: a color swatch, a muted label, and a
 // right-aligned value. Shared by the donut's side rows so the gender-row

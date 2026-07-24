@@ -10,7 +10,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@workspace/ui/components/sheet"
-import type { useFormatter } from "next-intl"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { AccordionSection } from "@/components/accordion-section"
@@ -55,19 +54,6 @@ export function stepDoneFor(
     hasPreviousCompletedRun: false,
   }
   return isStepDone(step, input)
-}
-
-// Unsigned percent text, shared by every review surface that shows a gap
-// number: never a signed percent (the direction is carried by a word next
-// to it, e.g. the overview's org-level finding sentence).
-export function percentText(
-  pct: number,
-  format: ReturnType<typeof useFormatter>
-): string {
-  return format.number(Math.abs(pct) / 100, {
-    style: "percent",
-    maximumFractionDigits: 1,
-  })
 }
 
 // A sheet row: the shared checklist presentation (done icon + label +
