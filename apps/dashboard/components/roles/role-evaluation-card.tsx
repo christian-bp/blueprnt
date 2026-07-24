@@ -248,7 +248,10 @@ export function RoleEvaluationCard({
               {evaluated ? tRoles("evaluated") : tRoles("notEvaluated")}
             </p>
             {!archived && profileComplete && (
-              <Link href={`/roles/${slug}/rate`} className={buttonVariants()}>
+              <Link
+                href={`/roles/${slug}/rate`}
+                className={cn(buttonVariants())}
+              >
                 {ctaLabel}
               </Link>
             )}

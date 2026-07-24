@@ -5,6 +5,7 @@ import { Button, buttonVariants } from "@workspace/ui/components/button"
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
 import { Kbd } from "@workspace/ui/components/kbd"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
@@ -125,7 +126,7 @@ export default function RatePage(props: {
         <RatingResult orgId={orgId} roleId={role.roleId} />
         <Link
           href={`/roles/${role.slug}`}
-          className={buttonVariants({ variant: "outline" })}
+          className={cn(buttonVariants({ variant: "outline" }))}
         >
           {t("result.backToRole")}
         </Link>

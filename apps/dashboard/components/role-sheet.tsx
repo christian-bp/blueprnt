@@ -13,6 +13,7 @@ import {
   SheetTitle,
 } from "@workspace/ui/components/sheet"
 import { Spinner } from "@workspace/ui/components/spinner"
+import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
@@ -228,7 +229,7 @@ function RoleSheetContent({
             <Link
               href={`/roles/${role?.slug ?? ""}`}
               onClick={onClose}
-              className={buttonVariants()}
+              className={cn(buttonVariants())}
             >
               {t("openRole")}
             </Link>

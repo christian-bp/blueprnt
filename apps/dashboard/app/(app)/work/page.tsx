@@ -20,6 +20,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs"
+import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
@@ -186,7 +187,7 @@ export default function WorkOverviewPage() {
           </EmptyHeader>
           <Link
             href="/roles"
-            className={buttonVariants({ variant: "outline" })}
+            className={cn(buttonVariants({ variant: "outline" }))}
           >
             {t("emptyCta")}
           </Link>

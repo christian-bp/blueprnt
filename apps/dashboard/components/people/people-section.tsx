@@ -44,6 +44,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
@@ -477,7 +478,7 @@ export function PeopleSection() {
   const headerActions = (
     <div className="flex items-center gap-2">
       <AddPersonDialog />
-      <Link href="/people/import" className={buttonVariants()}>
+      <Link href="/people/import" className={cn(buttonVariants())}>
         <HugeiconsIcon
           icon={UserMultiple02Icon}
           size={16}
@@ -521,7 +522,7 @@ export function PeopleSection() {
           </EmptyHeader>
           <Link
             href="/people/import"
-            className={buttonVariants({ variant: "outline" })}
+            className={cn(buttonVariants({ variant: "outline" }))}
           >
             {t("import.title")}
           </Link>
