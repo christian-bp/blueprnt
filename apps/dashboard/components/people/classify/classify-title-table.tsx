@@ -113,6 +113,44 @@ function rowKey(group: ClassifyTitleGroup): string {
 // Sort rank for the classification state: work first, done last.
 const STATE_RANK = { unclassified: 0, pending: 1, confirmed: 2 } as const
 
+export type ClassifySort = { key: ClassifySortKey; desc: boolean }
+
+// The table's own initial sort (title ascending): shared so the auto-expand
+// pick below (which needs "the first row in the DEFAULT view") and the
+// sort state's own initial value can never drift apart.
+const DEFAULT_SORT: ClassifySort = { key: "title", desc: false }
+
+// Column sorting, extracted so both the live table (sortedGroups) and the
+// auto-expand pick on mount (which needs the groups in DISPLAY order before
+// any state hook has run) share one implementation. The no-title bucket
+// stays pinned last in every order (it is the "needs a title" catch-all, not
+// a sortable value).
+function sortGroups(
+  groups: ClassifyTitleGroup[],
+  sort: ClassifySort
+): ClassifyTitleGroup[] {
+  const arr = [...groups]
+  arr.sort((a, b) => {
+    if ((a.title === null) !== (b.title === null)) {
+      return a.title === null ? 1 : -1
+    }
+    let cmp = 0
+    if (sort.key === "title") {
+      cmp = (a.title ?? "").localeCompare(b.title ?? "", undefined, {
+        sensitivity: "base",
+      })
+    } else if (sort.key === "people") {
+      cmp = a.personCount - b.personCount
+    } else {
+      cmp =
+        STATE_RANK[classificationStateForPeople(a.people)] -
+        STATE_RANK[classificationStateForPeople(b.people)]
+    }
+    return sort.desc ? -cmp : cmp
+  })
+  return arr
+}
+
 // The role every person in the group is confirmed to, or null when the group
 // is not uniformly confirmed to a single role. This is what the role select
 // shows for a confirmed group (the engine suggestion may be stale by then).
@@ -216,7 +254,7 @@ export function ClassifyTableHeader({
   onSort,
 }: {
   // Current sort + toggle; the loading skeleton omits both (static labels).
-  sort?: { key: ClassifySortKey; desc: boolean }
+  sort?: ClassifySort
   onSort?: (key: ClassifySortKey) => void
 }) {
   const t = useTranslations("dashboard.classify")
@@ -286,8 +324,22 @@ export function ClassifyTitleTable({
     () => new Map()
   )
 
-  // Which groups have their per-person rows expanded
-  const [expanded, setExpanded] = useState<Set<string>>(() => new Set())
+  // Which groups have their per-person rows expanded. Lands the user on the
+  // first group that still needs attention (not yet confirmed), in the
+  // table's default display order, so opening Classify immediately shows
+  // what to do instead of a flat list with nothing focused; a fully
+  // classified org (nothing unconfirmed) opens with nothing expanded.
+  // Computed once via this lazy initializer (mount only, never revisited as
+  // groups changes reactively afterward) -- mirrors the review journey's own
+  // resume-once landing (pay-mapping-review.tsx), not a perpetual auto-open.
+  const [expanded, setExpanded] = useState<Set<string>>(() => {
+    const firstUnfinished = sortGroups(groups, DEFAULT_SORT).find(
+      (group) => classificationStateForPeople(group.people) !== "confirmed"
+    )
+    return firstUnfinished !== undefined
+      ? new Set([rowKey(firstUnfinished)])
+      : new Set()
+  })
 
   // Per-person selected levels: outer key = rowKey(group), inner key = personId
   const [selectedLevel, setSelectedLevel] = useState<
@@ -474,37 +526,13 @@ export function ClassifyTitleTable({
   // click on the same heading flips the direction. The no-title bucket stays
   // pinned last in every order (it is the "needs a title" catch-all, not a
   // sortable value).
-  const [sort, setSort] = useState<{ key: ClassifySortKey; desc: boolean }>({
-    key: "title",
-    desc: false,
-  })
+  const [sort, setSort] = useState<ClassifySort>(DEFAULT_SORT)
   function toggleSort(key: ClassifySortKey) {
     setSort((prev) =>
       prev.key === key ? { key, desc: !prev.desc } : { key, desc: false }
     )
   }
-  const sortedGroups = useMemo(() => {
-    const arr = [...groups]
-    arr.sort((a, b) => {
-      if ((a.title === null) !== (b.title === null)) {
-        return a.title === null ? 1 : -1
-      }
-      let cmp = 0
-      if (sort.key === "title") {
-        cmp = (a.title ?? "").localeCompare(b.title ?? "", undefined, {
-          sensitivity: "base",
-        })
-      } else if (sort.key === "people") {
-        cmp = a.personCount - b.personCount
-      } else {
-        cmp =
-          STATE_RANK[classificationStateForPeople(a.people)] -
-          STATE_RANK[classificationStateForPeople(b.people)]
-      }
-      return sort.desc ? -cmp : cmp
-    })
-    return arr
-  }, [groups, sort])
+  const sortedGroups = useMemo(() => sortGroups(groups, sort), [groups, sort])
 
   if (groups.length === 0) {
     return (
