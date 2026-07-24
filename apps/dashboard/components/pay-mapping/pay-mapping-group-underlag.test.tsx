@@ -103,6 +103,25 @@ describe("PayMappingGroupUnderlag - equalWork", () => {
     expect(screen.queryByText("Not In Group")).toBeNull()
   })
 
+  it("shows the Empty state with an icon instead of an empty table when the group has no priced members", async () => {
+    renderUnderlag({
+      scope: "equalWork",
+      group: { ...EQUAL_WORK_GROUP, roleTitle: "No Match", level: "None" },
+      rows: EQUAL_WORK_ROWS,
+      currency: "SEK",
+      referenceDateMs: REFERENCE_DATE_MS,
+    })
+    fireEvent.click(screen.getByRole("button", { name: m.review.showUnderlag }))
+
+    await waitFor(() => {
+      expect(screen.getByText(m.gap.empty)).toBeDefined()
+    })
+    expect(screen.queryByRole("table")).toBeNull()
+    expect(
+      document.querySelector('[data-slot="empty-icon"] svg')
+    ).not.toBeNull()
+  })
+
   it("expands on click to show the group's own member table (scoped by groupMembers) and its scatter", async () => {
     renderUnderlag({
       scope: "equalWork",

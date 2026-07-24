@@ -20,6 +20,7 @@ import {
   Empty,
   EmptyDescription,
   EmptyHeader,
+  EmptyMedia,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
 import {
@@ -508,6 +509,13 @@ export function PeopleSection() {
       ) : people.length === 0 ? (
         <Empty>
           <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <HugeiconsIcon
+                icon={UserMultiple02Icon}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+            </EmptyMedia>
             <EmptyTitle>{t("heading")}</EmptyTitle>
             <EmptyDescription>{t("empty")}</EmptyDescription>
           </EmptyHeader>

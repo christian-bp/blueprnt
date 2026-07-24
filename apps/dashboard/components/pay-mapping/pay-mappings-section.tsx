@@ -1,6 +1,6 @@
 "use client"
 
-import { MoreVerticalIcon } from "@hugeicons/core-free-icons"
+import { ChartColumnIcon, MoreVerticalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   type ColumnDef,
@@ -19,6 +19,7 @@ import {
   Empty,
   EmptyDescription,
   EmptyHeader,
+  EmptyMedia,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
 import {
@@ -318,6 +319,13 @@ export function PayMappingsSection() {
       ) : runs.length === 0 ? (
         <Empty>
           <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <HugeiconsIcon
+                icon={ChartColumnIcon}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+            </EmptyMedia>
             <div className="flex items-center gap-1.5">
               <EmptyTitle>{t("heading")}</EmptyTitle>
               <HelpMorphButton label={tHelp("payMappingLabel")}>

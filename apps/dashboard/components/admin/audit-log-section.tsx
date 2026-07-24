@@ -1,6 +1,6 @@
 "use client"
 
-import { Search01Icon } from "@hugeicons/core-free-icons"
+import { Audit02Icon, Search01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Badge } from "@workspace/ui/components/badge"
@@ -9,6 +9,7 @@ import {
   Empty,
   EmptyDescription,
   EmptyHeader,
+  EmptyMedia,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
 import { Input } from "@workspace/ui/components/input"
@@ -338,6 +339,15 @@ export function AuditLogSection() {
       ) : rows.length === 0 ? (
         <Empty>
           <EmptyHeader>
+            {!isSearching && (
+              <EmptyMedia variant="icon">
+                <HugeiconsIcon
+                  icon={Audit02Icon}
+                  strokeWidth={2}
+                  aria-hidden="true"
+                />
+              </EmptyMedia>
+            )}
             <EmptyTitle>{t("heading")}</EmptyTitle>
             <EmptyDescription>
               {isSearching ? t("search.empty") : t("empty")}

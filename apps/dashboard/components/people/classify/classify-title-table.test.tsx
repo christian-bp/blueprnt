@@ -245,6 +245,15 @@ describe("ClassifyTitleTable", () => {
     expect(screen.getByText(m.state.pending)).toBeDefined()
   })
 
+  it("renders the Empty state with an icon when there are no title groups", () => {
+    renderTable([])
+    expect(screen.getByText(m.empty)).toBeDefined()
+    expect(screen.queryByRole("table")).toBeNull()
+    expect(
+      document.querySelector('[data-slot="empty-icon"] svg')
+    ).not.toBeNull()
+  })
+
   it("renders the noTitle label and the no-match hint for the null-title group", () => {
     renderTable([NO_TITLE_GROUP])
     expect(screen.getByText(m.noTitle)).toBeDefined()

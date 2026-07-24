@@ -1,10 +1,13 @@
 "use client"
 
+import { Briefcase01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
   Empty,
   EmptyDescription,
   EmptyHeader,
+  EmptyMedia,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
 import { Button } from "@workspace/ui/components/button"
@@ -81,6 +84,13 @@ export default function RolesPage() {
       {roles.length === 0 ? (
         <Empty>
           <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <HugeiconsIcon
+                icon={Briefcase01Icon}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+            </EmptyMedia>
             <EmptyTitle>{t("heading")}</EmptyTitle>
             <EmptyDescription>{t("empty")}</EmptyDescription>
           </EmptyHeader>

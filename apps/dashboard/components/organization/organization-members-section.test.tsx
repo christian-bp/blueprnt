@@ -109,6 +109,18 @@ afterEach(() => {
 })
 
 describe("OrganizationMembersSection", () => {
+  it("renders the Empty state with an icon when there are no members and no pending invitations", async () => {
+    useQueryMock.mockReturnValue([])
+    listInvitations.mockResolvedValueOnce({ data: [], error: null })
+    renderSection()
+    expect(await screen.findByText(t.empty)).toBeDefined()
+    expect(screen.getByText(t.title)).toBeDefined()
+    expect(screen.queryByRole("table")).toBeNull()
+    expect(
+      document.querySelector('[data-slot="empty-icon"] svg')
+    ).not.toBeNull()
+  })
+
   it("renders members and pending invitations in one table", async () => {
     renderSection()
     expect(screen.getByText("Admin One")).toBeDefined()

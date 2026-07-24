@@ -1,11 +1,14 @@
 "use client"
 
+import { Briefcase01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { buttonVariants } from "@workspace/ui/components/button"
 import {
   Empty,
   EmptyDescription,
   EmptyHeader,
+  EmptyMedia,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
 import { Label } from "@workspace/ui/components/label"
@@ -171,6 +174,13 @@ export default function WorkOverviewPage() {
       {results.rows.length === 0 ? (
         <Empty>
           <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <HugeiconsIcon
+                icon={Briefcase01Icon}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+            </EmptyMedia>
             <EmptyTitle>{t("heading")}</EmptyTitle>
             <EmptyDescription>{t("empty")}</EmptyDescription>
           </EmptyHeader>

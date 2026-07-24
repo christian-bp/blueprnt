@@ -1,10 +1,17 @@
 "use client"
 
-import { MoreHorizontalIcon } from "@hugeicons/core-free-icons"
+import { Briefcase01Icon, MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@workspace/ui/components/empty"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   Table,
@@ -171,49 +178,66 @@ export default function FamilyPage(props: {
           </div>
         }
       />
-      <Table className="table-fixed">
-        {tableHeader}
-        <TableBody>
-          {familyRoles.map((role) => {
-            const result = bandByRole.get(role.roleId as string)
-            return (
-              <TableRow key={role.roleId}>
-                <TableCell>
-                  {/* block truncate: a long title clamps inside the fixed
-                      column instead of widening it. */}
-                  <Link
-                    className="block truncate font-medium underline-offset-4 hover:underline"
-                    href={`/roles/${role.slug}`}
-                  >
-                    {role.title}
-                  </Link>
-                </TableCell>
-                {/* Block flex wrappers: an inline-flex badge directly in the
-                    cell sits on the text baseline and inflates the line box,
-                    desyncing the row height from the skeleton rows. */}
-                <TableCell>
-                  <div className="flex items-center">
-                    <TrackBadge
-                      trackKey={role.trackKey}
-                      name={role.trackName}
-                    />
-                  </div>
-                </TableCell>
-                <TableCell className="truncate text-muted-foreground">
-                  {role.team}
-                </TableCell>
-                <TableCell>
-                  {result?.band != null ? (
-                    <div className="flex items-center justify-end">
-                      <Badge>{result.band}</Badge>
+      {familyRoles.length === 0 ? (
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <HugeiconsIcon
+                icon={Briefcase01Icon}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+            </EmptyMedia>
+            <EmptyTitle>{family.name}</EmptyTitle>
+            <EmptyDescription>{tFamily("rolesEmpty")}</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : (
+        <Table className="table-fixed">
+          {tableHeader}
+          <TableBody>
+            {familyRoles.map((role) => {
+              const result = bandByRole.get(role.roleId as string)
+              return (
+                <TableRow key={role.roleId}>
+                  <TableCell>
+                    {/* block truncate: a long title clamps inside the fixed
+                        column instead of widening it. */}
+                    <Link
+                      className="block truncate font-medium underline-offset-4 hover:underline"
+                      href={`/roles/${role.slug}`}
+                    >
+                      {role.title}
+                    </Link>
+                  </TableCell>
+                  {/* Block flex wrappers: an inline-flex badge directly in
+                      the cell sits on the text baseline and inflates the
+                      line box, desyncing the row height from the skeleton
+                      rows. */}
+                  <TableCell>
+                    <div className="flex items-center">
+                      <TrackBadge
+                        trackKey={role.trackKey}
+                        name={role.trackName}
+                      />
                     </div>
-                  ) : null}
-                </TableCell>
-              </TableRow>
-            )
-          })}
-        </TableBody>
-      </Table>
+                  </TableCell>
+                  <TableCell className="truncate text-muted-foreground">
+                    {role.team}
+                  </TableCell>
+                  <TableCell>
+                    {result?.band != null ? (
+                      <div className="flex items-center justify-end">
+                        <Badge>{result.band}</Badge>
+                      </div>
+                    ) : null}
+                  </TableCell>
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
+      )}
     </div>
   )
 }

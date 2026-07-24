@@ -200,5 +200,9 @@ describe("PersonDetail", () => {
     })
     renderDetail()
     expect(screen.getByText(m.salaryEmpty)).toBeDefined()
+    // The Empty state renders an icon, not just the bare text line.
+    expect(
+      document.querySelector('[data-slot="empty-icon"] svg')
+    ).not.toBeNull()
   })
 })

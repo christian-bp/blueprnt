@@ -1,6 +1,7 @@
 "use client"
 
 import {
+  Coins01Icon,
   InformationCircleIcon,
   MoreHorizontalIcon,
   MoreVerticalIcon,
@@ -15,6 +16,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@workspace/ui/components/empty"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
@@ -350,9 +358,19 @@ export function PersonDetail({ publicId }: { publicId: string }) {
             </CardHeader>
             <CardContent>
               {salary.length === 0 ? (
-                <p className="text-muted-foreground text-sm">
-                  {t("salaryEmpty")}
-                </p>
+                <Empty>
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <HugeiconsIcon
+                        icon={Coins01Icon}
+                        strokeWidth={2}
+                        aria-hidden="true"
+                      />
+                    </EmptyMedia>
+                    <EmptyTitle>{t("salaryHeading")}</EmptyTitle>
+                    <EmptyDescription>{t("salaryEmpty")}</EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
               ) : (
                 // A stacked list, not a table: the rail is a third of the
                 // page, and two currency amounts plus a role can never share

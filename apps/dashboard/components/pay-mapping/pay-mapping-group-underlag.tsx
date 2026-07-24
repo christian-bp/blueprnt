@@ -6,6 +6,13 @@ import {
   CollapsibleTrigger,
 } from "@workspace/ui/components/collapsible"
 import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@workspace/ui/components/empty"
+import {
   Table,
   TableBody,
   TableCell,
@@ -13,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
-import { ArrowDown01Icon } from "@hugeicons/core-free-icons"
+import { ArrowDown01Icon, UserGroup03Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { useFormatter, useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
@@ -127,40 +134,57 @@ function EqualWorkUnderlag({
     <div className="space-y-4">
       <div className="space-y-2">
         <h4 className="font-medium text-sm">{tGap("groupMembers")}</h4>
-        <Table className="table-fixed">
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t("detail.columns.name")}</TableHead>
-              <TableHead className="w-28">
-                {t("detail.columns.gender")}
-              </TableHead>
-              <TableHead className="w-36">
-                {t("detail.columns.salary")}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {/* Index keys: the frozen member list never reorders, and the
-                rows carry no id (erased rows all share one tombstone name, so
-                a name-based key would collide and could drop a row). */}
-            {members.map((member, index) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: frozen order, no stable id on the wire
-              <TableRow key={index}>
-                <TableCell className="truncate font-medium">
-                  {member.erased ? t("detail.erased") : member.displayName}
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {tPeople(`gender.${member.gender}`)}
-                </TableCell>
-                <TableCell className="text-muted-foreground tabular-nums">
-                  {member.basicMonthly !== null && member.currency !== undefined
-                    ? money(member.basicMonthly, member.currency)
-                    : "-"}
-                </TableCell>
+        {members.length === 0 ? (
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <HugeiconsIcon
+                  icon={UserGroup03Icon}
+                  strokeWidth={2}
+                  aria-hidden="true"
+                />
+              </EmptyMedia>
+              <EmptyTitle>{tGap("groupMembers")}</EmptyTitle>
+              <EmptyDescription>{tGap("empty")}</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        ) : (
+          <Table className="table-fixed">
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("detail.columns.name")}</TableHead>
+                <TableHead className="w-28">
+                  {t("detail.columns.gender")}
+                </TableHead>
+                <TableHead className="w-36">
+                  {t("detail.columns.salary")}
+                </TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {/* Index keys: the frozen member list never reorders, and the
+                  rows carry no id (erased rows all share one tombstone name,
+                  so a name-based key would collide and could drop a row). */}
+              {members.map((member, index) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: frozen order, no stable id on the wire
+                <TableRow key={index}>
+                  <TableCell className="truncate font-medium">
+                    {member.erased ? t("detail.erased") : member.displayName}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {tPeople(`gender.${member.gender}`)}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground tabular-nums">
+                    {member.basicMonthly !== null &&
+                    member.currency !== undefined
+                      ? money(member.basicMonthly, member.currency)
+                      : "-"}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </div>
       <PayMappingScatter
         rows={members}

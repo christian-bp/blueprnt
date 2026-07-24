@@ -78,6 +78,9 @@ describe("WorkOverviewPage", () => {
     )
     renderPage()
     expect(screen.getByText(messages.dashboard.bands.empty)).toBeDefined()
+    expect(
+      document.querySelector('[data-slot="empty-icon"] svg')
+    ).not.toBeNull()
   })
 
   it("renders the ladder with both view toggles when roles exist", () => {

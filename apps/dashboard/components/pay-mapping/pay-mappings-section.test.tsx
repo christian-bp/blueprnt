@@ -149,6 +149,9 @@ describe("PayMappingsSection", () => {
     expect(
       screen.getAllByRole("button", { name: m.startCta }).length
     ).toBeGreaterThanOrEqual(2)
+    expect(
+      document.querySelector('[data-slot="empty-icon"] svg')
+    ).not.toBeNull()
   })
 
   it("renders a row per run when loaded, linking to its detail route", () => {

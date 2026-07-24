@@ -2,10 +2,17 @@
 
 import { api } from "@workspace/backend/convex/_generated/api"
 import { TRACK_LEVELS, isValidLevelForTrack } from "@workspace/constants"
-import { ArrowDown01Icon } from "@hugeicons/core-free-icons"
+import { ArrowDown01Icon, Tag01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@workspace/ui/components/empty"
 import {
   Select,
   SelectContent,
@@ -498,6 +505,24 @@ export function ClassifyTitleTable({
     })
     return arr
   }, [groups, sort])
+
+  if (groups.length === 0) {
+    return (
+      <Empty>
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <HugeiconsIcon
+              icon={Tag01Icon}
+              strokeWidth={2}
+              aria-hidden="true"
+            />
+          </EmptyMedia>
+          <EmptyTitle>{t("heading")}</EmptyTitle>
+          <EmptyDescription>{t("empty")}</EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    )
+  }
 
   return (
     <Table className="table-fixed">

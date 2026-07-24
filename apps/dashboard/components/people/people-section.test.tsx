@@ -211,6 +211,10 @@ describe("PeopleSection", () => {
     for (const link of links) {
       expect((link as HTMLAnchorElement).href).toContain("/people/import")
     }
+    // The true-empty state renders an icon (not the filtered no-matches state).
+    expect(
+      document.querySelector('[data-slot="empty-icon"] svg')
+    ).not.toBeNull()
   })
 
   it("renders person rows with gender localized", () => {
