@@ -1,0 +1,20 @@
+apps/dashboard/components/pay-mapping/review-finish.tsx
+  s_6ea4434f5c3a0d::t_6927c07f0fe0ad 12
+  s_6ea4434f5c3a0d::t_f5cb60935a738c 108
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "b83c3f4db8b818da9939c501a86066641ea32b34",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
