@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import { cn } from "@workspace/ui/lib/utils"
 import { useMutation } from "convex/react"
 import { ConvexError } from "convex/values"
 import { useTranslations } from "next-intl"
@@ -104,7 +105,7 @@ export function ReviewFinish({
         <CardTitle>{tFinish("title")}</CardTitle>
       </CardHeader>
       <CardContent>
-        <Link href={summaryHref} className={buttonVariants()}>
+        <Link href={summaryHref} className={cn(buttonVariants())}>
           {t("openSummary")}
         </Link>
       </CardContent>
