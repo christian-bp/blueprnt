@@ -48,9 +48,16 @@ import {
 export function StartPayMappingDialog({
   orgId,
   triggerLabel,
+  // Callers control this per placement: a page header's own primary action
+  // stays the default (solid) button, but every Empty state's action in the
+  // app is an outline button (see e.g. people-section.tsx, work/page.tsx), so
+  // the same dialog reused as an Empty state's action must opt into outline
+  // explicitly rather than silently inheriting the solid default.
+  variant = "default",
 }: {
   orgId: string
   triggerLabel: string
+  variant?: "default" | "outline"
 }) {
   const t = useTranslations("dashboard.payMapping.start")
   const tHelp = useTranslations("dashboard.help")
@@ -99,7 +106,9 @@ export function StartPayMappingDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger render={<Button />}>{triggerLabel}</DialogTrigger>
+      <DialogTrigger render={<Button variant={variant} />}>
+        {triggerLabel}
+      </DialogTrigger>
       <DialogContent>
         {preconditions !== undefined && !preconditions.ready ? (
           <>

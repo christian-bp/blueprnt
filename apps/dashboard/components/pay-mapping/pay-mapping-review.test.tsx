@@ -243,13 +243,17 @@ describe("PayMappingReview", () => {
 
   it("renders the WizardShell chrome: an exit control and the jump trigger in the header", () => {
     renderShell()
-    expect(screen.getByRole("button", { name: t.exit })).toBeDefined()
+    expect(
+      screen.getByRole("button", { name: t.finish.backToSummary })
+    ).toBeDefined()
     expect(screen.getByRole("button", { name: t.allSteps })).toBeDefined()
   })
 
   it("exits to the run's summary (the analysis route) with no confirm dialog: everything autosaves", () => {
     renderShell()
-    fireEvent.click(screen.getByRole("button", { name: t.exit }))
+    fireEvent.click(
+      screen.getByRole("button", { name: t.finish.backToSummary })
+    )
     expect(pushMock).toHaveBeenCalledWith("/pay-mappings/pay-2026/analysis")
     expect(screen.queryByRole("alertdialog")).toBeNull()
   })
@@ -426,6 +430,8 @@ describe("PayMappingReview", () => {
     expect(screen.queryByText(t.allSteps)).toBeNull()
     // Never trap the user in the takeover: even with nothing to review yet,
     // there is still a way out.
-    expect(screen.getByRole("button", { name: t.exit })).toBeDefined()
+    expect(
+      screen.getByRole("button", { name: t.finish.backToSummary })
+    ).toBeDefined()
   })
 })

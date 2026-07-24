@@ -334,7 +334,11 @@ export function PayMappingsSection() {
             </div>
             <EmptyDescription>{t("empty")}</EmptyDescription>
           </EmptyHeader>
-          {startDialog}
+          <StartPayMappingDialog
+            orgId={orgId}
+            triggerLabel={t("startCta")}
+            variant="outline"
+          />
         </Empty>
       ) : (
         <>

@@ -145,10 +145,19 @@ describe("PayMappingsSection", () => {
     queryMock.mockReturnValue([])
     renderSection()
     expect(screen.getByText(m.empty)).toBeDefined()
-    // Both the header action and the empty-state CTA render the same trigger.
-    expect(
-      screen.getAllByRole("button", { name: m.startCta }).length
-    ).toBeGreaterThanOrEqual(2)
+    // Both the header action and the empty-state CTA render the same
+    // trigger label, but every Empty state's own action is an outline
+    // button (matching people-section/work page's Empty states) while the
+    // page header keeps its usual solid primary action.
+    const buttons = screen.getAllByRole("button", { name: m.startCta })
+    expect(buttons.length).toBeGreaterThanOrEqual(2)
+    const emptyButton = buttons.find((button) =>
+      button.closest('[data-slot="empty"]')
+    )
+    expect(emptyButton?.className).toContain("border-border")
+    expect(emptyButton?.className).not.toContain("bg-brand")
+    const headerButton = buttons.find((button) => button !== emptyButton)
+    expect(headerButton?.className).toContain("bg-brand")
     expect(
       document.querySelector('[data-slot="empty-icon"] svg')
     ).not.toBeNull()

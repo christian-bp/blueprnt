@@ -1,5 +1,7 @@
 "use client"
 
+import { ArrowLeft01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
   equalWorkGroupRequiresDocumentation,
@@ -195,7 +197,8 @@ export function PayMappingReview() {
       size="sm"
       onClick={() => router.push(analysisHref)}
     >
-      {t("exit")}
+      <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} />
+      {t("finish.backToSummary")}
     </Button>
   )
 
