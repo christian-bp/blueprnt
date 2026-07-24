@@ -134,11 +134,9 @@ function DiagonalPattern({ id, color }: { id: string; color: string }) {
 export function HeadcountArea({
   data,
   config,
-  formatDate,
 }: {
-  data: { date: number; value: number }[]
+  data: { label: string; value: number }[]
   config: ChartConfig
-  formatDate: (value: number) => string
 }) {
   return (
     <ChartContainer
@@ -150,17 +148,17 @@ export function HeadcountArea({
         <defs>
           <DiagonalPattern id="workforceHatch" color="var(--brand)" />
         </defs>
-        <XAxis dataKey="date" hide />
+        {/* The axis key is the pre-formatted date STRING, not the raw epoch
+            number: ChartTooltipContent uses the axis value directly as the
+            tooltip label only when it is a string, otherwise it resolves to
+            the series config label (which would then hit new Date() and
+            throw). Same reason the bar charts key on a pre-formatted label. */}
+        <XAxis dataKey="label" hide />
         <YAxis hide domain={[0, "auto"]} />
         <ChartTooltip
           cursor={false}
           position={{ y: -40 }}
-          content={
-            <ChartTooltipContent
-              labelFormatter={(label) => formatDate(label as number)}
-              indicator="dot"
-            />
-          }
+          content={<ChartTooltipContent indicator="dot" />}
         />
         <Area
           dataKey="value"

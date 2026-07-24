@@ -103,17 +103,15 @@ describe("HeadcountArea", () => {
   const config = {
     value: { label: "Employees", color: "var(--brand)" },
   } satisfies ChartConfig
-  const formatDate = (value: number) => String(value)
 
   it("mounts a chart container for representative data", () => {
     const { container } = renderWithIntl(
       <HeadcountArea
         data={[
-          { date: 1, value: 5 },
-          { date: 2, value: 8 },
+          { label: "Jan 1", value: 5 },
+          { label: "Jan 2", value: 8 },
         ]}
         config={config}
-        formatDate={formatDate}
       />
     )
     expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
@@ -121,29 +119,21 @@ describe("HeadcountArea", () => {
 
   it("mounts without crashing for a single data point", () => {
     const { container } = renderWithIntl(
-      <HeadcountArea
-        data={[{ date: 1, value: 5 }]}
-        config={config}
-        formatDate={formatDate}
-      />
+      <HeadcountArea data={[{ label: "Jan 1", value: 5 }]} config={config} />
     )
     expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
   })
 
   it("mounts without crashing for an empty data array", () => {
     const { container } = renderWithIntl(
-      <HeadcountArea data={[]} config={config} formatDate={formatDate} />
+      <HeadcountArea data={[]} config={config} />
     )
     expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
   })
 
   it("is decorative", () => {
     const { container } = renderWithIntl(
-      <HeadcountArea
-        data={[{ date: 1, value: 5 }]}
-        config={config}
-        formatDate={formatDate}
-      />
+      <HeadcountArea data={[{ label: "Jan 1", value: 5 }]} config={config} />
     )
     expect(
       container
