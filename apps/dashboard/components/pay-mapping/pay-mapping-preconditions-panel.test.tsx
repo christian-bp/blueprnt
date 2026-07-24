@@ -18,20 +18,28 @@ describe("PayMappingPreconditionsPanel", () => {
   afterEach(cleanup)
 
   it("shows the classify line with the live count, linking to the classify surface", () => {
-    renderPanel({ unclassifiedCount: 6, unevaluatedRoles: [] })
+    renderPanel({ peopleCount: 8, unclassifiedCount: 6, unevaluatedRoles: [] })
     expect(screen.getByText("Not ready yet")).toBeDefined()
     const line = screen.getByText("6 people are not classified yet")
     expect(line.closest("a")?.getAttribute("href")).toBe("/people/classify")
     expect(screen.queryByText(/evaluation/)).toBeNull()
   })
 
+  it("shows the import line first, linking to the import, when the org has no people", () => {
+    renderPanel({ peopleCount: 0, unclassifiedCount: 0, unevaluatedRoles: [] })
+    const line = screen.getByText("No employees have been imported yet")
+    expect(line.closest("a")?.getAttribute("href")).toBe("/people/import")
+    expect(screen.queryByText(/classified/)).toBeNull()
+  })
+
   it("singularizes the classify line for one person", () => {
-    renderPanel({ unclassifiedCount: 1, unevaluatedRoles: [] })
+    renderPanel({ peopleCount: 8, unclassifiedCount: 1, unevaluatedRoles: [] })
     expect(screen.getByText("1 person is not classified yet")).toBeDefined()
   })
 
   it("shows the evaluate line and lists the unevaluated roles, each linking to its own page", () => {
     renderPanel({
+      peopleCount: 8,
       unclassifiedCount: 0,
       unevaluatedRoles: [
         { roleId: "r1", title: "Designer", slug: "designer" },
@@ -54,7 +62,7 @@ describe("PayMappingPreconditionsPanel", () => {
       title: `Role ${i}`,
       slug: `role-${i}`,
     }))
-    renderPanel({ unclassifiedCount: 0, unevaluatedRoles })
+    renderPanel({ peopleCount: 8, unclassifiedCount: 0, unevaluatedRoles })
     expect(
       screen.getByText(
         "6 roles with employees still need a completed evaluation"
@@ -65,6 +73,7 @@ describe("PayMappingPreconditionsPanel", () => {
 
   it("shows both lines together when both conditions are unmet", () => {
     renderPanel({
+      peopleCount: 8,
       unclassifiedCount: 2,
       unevaluatedRoles: [{ roleId: "r1", title: "Designer", slug: "designer" }],
     })

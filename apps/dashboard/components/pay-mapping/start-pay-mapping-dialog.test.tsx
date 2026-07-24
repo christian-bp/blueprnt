@@ -42,8 +42,18 @@ const triggerLabel = messages.dashboard.payMapping.startCta
 // Ready by default; individual tests overwrite this before rendering to
 // exercise the not-ready panel path.
 let preconditionsResult:
-  | { unclassifiedCount: number; unevaluatedRoles: unknown[]; ready: boolean }
-  | undefined = { unclassifiedCount: 0, unevaluatedRoles: [], ready: true }
+  | {
+      peopleCount: number
+      unclassifiedCount: number
+      unevaluatedRoles: unknown[]
+      ready: boolean
+    }
+  | undefined = {
+  peopleCount: 12,
+  unclassifiedCount: 0,
+  unevaluatedRoles: [],
+  ready: true,
+}
 
 onQuery((ref) =>
   ref === "payMapping.runs.getPayMappingPreconditions"
@@ -66,6 +76,7 @@ describe("StartPayMappingDialog", () => {
     vi.mocked(toast.success).mockReset()
     vi.mocked(toast.error).mockReset()
     preconditionsResult = {
+      peopleCount: 12,
       unclassifiedCount: 0,
       unevaluatedRoles: [],
       ready: true,
@@ -158,6 +169,7 @@ describe("StartPayMappingDialog", () => {
 
   it("shows the precondition panel instead of the form when the gate is unmet, and never calls the server", () => {
     preconditionsResult = {
+      peopleCount: 12,
       unclassifiedCount: 3,
       unevaluatedRoles: [{ roleId: "r1", title: "Designer", slug: "designer" }],
       ready: false,
@@ -172,6 +184,7 @@ describe("StartPayMappingDialog", () => {
 
   it("shows the form when the gate is met", () => {
     preconditionsResult = {
+      peopleCount: 12,
       unclassifiedCount: 0,
       unevaluatedRoles: [],
       ready: true,

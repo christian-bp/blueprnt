@@ -54,9 +54,24 @@ describe("OverviewPage", () => {
     useQueryMock.mockImplementation((ref: string) => {
       if (ref === "assessment.roles.listRoles") return []
       if (ref === "evaluationModel.method.getMethodModel") return null
-      if (ref === "people.classificationQueries.listPeopleByTitle") return []
-      // A non-completed run in flight: with no roles or people at all, the
-      // gate would otherwise be vacuously ready and add its own group.
+      // One classified person, so the org is not empty (an empty org shows
+      // the importPeople group instead of the all-caught-up state).
+      if (ref === "people.classificationQueries.listPeopleByTitle")
+        return [
+          {
+            title: "Engineer",
+            people: [
+              {
+                currentAssignment: {
+                  roleId: "r-neutral",
+                  levelSource: "confirmed",
+                },
+              },
+            ],
+          },
+        ]
+      // A non-completed run in flight: with everything above clear, the gate
+      // would otherwise be ready and add its own group.
       if (ref === "payMapping.runs.listPayMappingRuns")
         return [{ status: "active" }]
       return undefined

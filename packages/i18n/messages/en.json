@@ -746,6 +746,7 @@
         "evaluateProgress": "{rated}/{total} evaluated",
         "classifyPeopleCount": "{count, plural, one {# person} other {# people}}",
         "startPayMappingItem": "Start the pay mapping",
+        "importPeopleItem": "Import your employees",
         "empty": {
           "title": "You're all caught up",
           "body": "No roles, people, or criteria need your attention right now."
@@ -756,7 +757,8 @@
           "evaluateRoles": "Evaluate these roles",
           "documentCriteria": "Document criteria",
           "approveCriteria": "Approve criteria",
-          "startPayMapping": "Ready for the pay mapping"
+          "startPayMapping": "Ready for the pay mapping",
+          "importPeople": "Get started with your employees"
         }
       },
       "chart": {
@@ -819,6 +821,7 @@
         "removeHint": "Roles keep all their data; they just leave the family.",
         "error": "Something went wrong. Try again.",
         "rolesHeading": "Roles in the family",
+        "rolesEmpty": "No roles in this family yet.",
         "notFound": "This family does not exist.",
         "roleCount": "{count, plural, =1 {1 role} other {# roles}}",
         "actionsMenu": "Family actions",
@@ -940,6 +943,7 @@
       },
       "preconditions": {
         "title": "Not ready yet",
+        "importLine": "No employees have been imported yet",
         "classifyLine": "{count, plural, one {# person is not classified yet} other {# people are not classified yet}}",
         "evaluateLine": "{count, plural, one {# role with employees still needs a completed evaluation} other {# roles with employees still need a completed evaluation}}"
       },

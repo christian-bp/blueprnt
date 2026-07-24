@@ -107,6 +107,7 @@ export function StartPayMappingDialog({
               <DialogTitle>{t("title")}</DialogTitle>
             </DialogHeader>
             <PayMappingPreconditionsPanel
+              peopleCount={preconditions.peopleCount}
               unclassifiedCount={preconditions.unclassifiedCount}
               unevaluatedRoles={preconditions.unevaluatedRoles}
             />

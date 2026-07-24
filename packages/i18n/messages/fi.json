@@ -746,6 +746,7 @@
         "evaluateProgress": "{rated}/{total} arvioitu",
         "classifyPeopleCount": "{count, plural, one {# työntekijä} other {# työntekijää}}",
         "startPayMappingItem": "Aloita palkkakartoitus",
+        "importPeopleItem": "Tuo työntekijäsi",
         "empty": {
           "title": "Kaikki on ajan tasalla",
           "body": "Mikään rooli, työntekijä tai kriteeri ei vaadi huomiotasi juuri nyt."
@@ -756,7 +757,8 @@
           "evaluateRoles": "Arvioi nämä roolit",
           "documentCriteria": "Dokumentoi kriteerit",
           "approveCriteria": "Hyväksy kriteerit",
-          "startPayMapping": "Valmis palkkakartoitukseen"
+          "startPayMapping": "Valmis palkkakartoitukseen",
+          "importPeople": "Aloita työntekijöistä"
         }
       },
       "chart": {
@@ -819,6 +821,7 @@
         "removeHint": "Roolit säilyttävät kaikki tietonsa; ne vain poistuvat perheestä.",
         "error": "Jokin meni pieleen. Yritä uudelleen.",
         "rolesHeading": "Roolit perheessä",
+        "rolesEmpty": "Ei vielä rooleja tässä perheessä.",
         "notFound": "Tätä perhettä ei ole olemassa.",
         "roleCount": "{count, plural, =1 {1 rooli} other {# roolia}}",
         "actionsMenu": "Perheen toiminnot",
@@ -940,6 +943,7 @@
       },
       "preconditions": {
         "title": "Ei vielä valmis",
+        "importLine": "Työntekijöitä ei ole vielä tuotu",
         "classifyLine": "{count, plural, one {# henkilö ei ole vielä luokiteltu} other {# henkilöä ei ole vielä luokiteltu}}",
         "evaluateLine": "{count, plural, one {# rooli, jossa on työntekijöitä, odottaa arviointia} other {# roolia, joissa on työntekijöitä, odottaa arviointia}}"
       },

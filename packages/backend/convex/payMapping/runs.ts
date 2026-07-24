@@ -47,6 +47,7 @@ export type PreconditionRole = {
 }
 
 export type PayMappingPreconditions = {
+  peopleCount: number
   unclassifiedCount: number
   unevaluatedRoles: PreconditionRole[]
   ready: boolean
@@ -123,9 +124,15 @@ export async function computePayMappingPreconditions(
     .sort((a, b) => a.title.localeCompare(b.title))
 
   return {
+    peopleCount: active.length,
     unclassifiedCount,
     unevaluatedRoles,
-    ready: unclassifiedCount === 0 && unevaluatedRoles.length === 0,
+    // An org with no people at all is never ready: DL 3 kap. maps employees,
+    // so an empty population must import before anything can start.
+    ready:
+      active.length > 0 &&
+      unclassifiedCount === 0 &&
+      unevaluatedRoles.length === 0,
   }
 }
 
@@ -141,6 +148,7 @@ const preconditionRoleShape = v.object({
 export const getPayMappingPreconditions = orgQuery({
   args: {},
   returns: v.object({
+    peopleCount: v.number(),
     unclassifiedCount: v.number(),
     unevaluatedRoles: v.array(preconditionRoleShape),
     ready: v.boolean(),

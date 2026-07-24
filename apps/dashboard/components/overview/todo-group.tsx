@@ -74,6 +74,13 @@ export function TodoGroupItems({ group }: { group: TodoGroup }) {
           </Link>
         ))}
 
+      {group.key === "importPeople" &&
+        group.items.map((item) => (
+          <Link key={item.id} href={item.href} className={rowClass}>
+            <span className="min-w-0 truncate">{t("importPeopleItem")}</span>
+          </Link>
+        ))}
+
       {group.count > group.items.length && (
         <Link
           href={

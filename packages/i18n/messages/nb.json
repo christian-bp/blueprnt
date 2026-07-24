@@ -746,6 +746,7 @@
         "evaluateProgress": "{rated}/{total} vurdert",
         "classifyPeopleCount": "{count, plural, one {# ansatt} other {# ansatte}}",
         "startPayMappingItem": "Start lønnskartleggingen",
+        "importPeopleItem": "Importer dine ansatte",
         "empty": {
           "title": "Du er à jour",
           "body": "Ingen roller, ansatte eller kriterier trenger oppmerksomheten din akkurat nå."
@@ -756,7 +757,8 @@
           "evaluateRoles": "Vurder disse rollene",
           "documentCriteria": "Dokumenter kriterier",
           "approveCriteria": "Godkjenn kriterier",
-          "startPayMapping": "Klar for lønnskartleggingen"
+          "startPayMapping": "Klar for lønnskartleggingen",
+          "importPeople": "Kom i gang med dine ansatte"
         }
       },
       "chart": {
@@ -819,6 +821,7 @@
         "removeHint": "Rollene beholder alle sine data; de forlater bare familien.",
         "error": "Noe gikk galt. Prøv igjen.",
         "rolesHeading": "Roller i familien",
+        "rolesEmpty": "Ingen roller i denne familien ennå.",
         "notFound": "Denne familien finnes ikke.",
         "roleCount": "{count, plural, =1 {1 rolle} other {# roller}}",
         "actionsMenu": "Familiehandlinger",
@@ -940,6 +943,7 @@
       },
       "preconditions": {
         "title": "Ikke klart ennå",
+        "importLine": "Ingen ansatte er importert ennå",
         "classifyLine": "{count, plural, one {# person er ikke klassifisert ennå} other {# personer er ikke klassifisert ennå}}",
         "evaluateLine": "{count, plural, one {# rolle med ansatte mangler fullført vurdering} other {# roller med ansatte mangler fullført vurdering}}"
       },

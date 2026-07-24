@@ -5,6 +5,7 @@
 export const MAX_ITEMS = 4
 
 export type TodoGroupKey =
+  | "importPeople"
   | "classifyPeople"
   | "describeRoles"
   | "evaluateRoles"
@@ -39,8 +40,11 @@ export type ClassifyItem = {
 }
 // The single "go start it" row once the pay-mapping gate is clear.
 export type StartPayMappingItem = { id: string; href: string }
+// The single "import your employees" row while the org holds no people.
+export type ImportPeopleItem = { id: string; href: string }
 
 export type TodoGroup =
+  | { key: "importPeople"; items: ImportPeopleItem[]; count: number }
   | { key: "classifyPeople"; items: ClassifyItem[]; count: number }
   | { key: "describeRoles"; items: RoleItem[]; count: number }
   | { key: "evaluateRoles"; items: EvaluateItem[]; count: number }
@@ -156,7 +160,21 @@ export function buildTodo({
     }
   }
 
+  // With no people at all, every other check below is vacuously clear, so
+  // the whole journey starts with the import. One row, first in priority,
+  // and the pay-mapping gate never reads as ready meanwhile.
+  const totalPeople = peopleByTitle.reduce(
+    (sum, group) => sum + group.people.length,
+    0
+  )
+
   const groups: TodoGroup[] = []
+  if (totalPeople === 0)
+    groups.push({
+      key: "importPeople",
+      items: [{ id: "importPeople", href: "/people/import" }],
+      count: 1,
+    })
   if (classify.length > 0)
     groups.push({
       key: "classifyPeople",
@@ -214,7 +232,9 @@ export function buildTodo({
     (r) => staffedRoleIds.has(r.roleId) && !isRoleEvaluated(r)
   )
   const payMappingReady =
-    totalUnclassified === 0 && unevaluatedStaffedRoles.length === 0
+    totalPeople > 0 &&
+    totalUnclassified === 0 &&
+    unevaluatedStaffedRoles.length === 0
   const hasOpenRun = payMappingRuns.some((run) => run.status !== "completed")
   const startPayMapping = payMappingReady && !hasOpenRun
   if (startPayMapping) {
@@ -226,6 +246,7 @@ export function buildTodo({
   }
 
   const total =
+    (totalPeople === 0 ? 1 : 0) +
     classify.length +
     describe.length +
     evaluate.length +

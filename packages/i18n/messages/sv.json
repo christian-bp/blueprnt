@@ -746,6 +746,7 @@
         "evaluateProgress": "{rated}/{total} utvärderade",
         "classifyPeopleCount": "{count, plural, one {# anställd} other {# anställda}}",
         "startPayMappingItem": "Starta lönekartläggningen",
+        "importPeopleItem": "Importera dina anställda",
         "empty": {
           "title": "Du är i fas",
           "body": "Inga roller, anställda eller kriterier behöver din uppmärksamhet just nu."
@@ -756,7 +757,8 @@
           "evaluateRoles": "Utvärdera de här rollerna",
           "documentCriteria": "Dokumentera kriterier",
           "approveCriteria": "Godkänn kriterier",
-          "startPayMapping": "Redo för lönekartläggningen"
+          "startPayMapping": "Redo för lönekartläggningen",
+          "importPeople": "Kom igång med dina anställda"
         }
       },
       "chart": {
@@ -819,6 +821,7 @@
         "removeHint": "Rollerna behåller alla sina data; de lämnar bara familjen.",
         "error": "Något gick fel. Försök igen.",
         "rolesHeading": "Roller i familjen",
+        "rolesEmpty": "Inga roller i den här familjen än.",
         "notFound": "Den här familjen finns inte.",
         "roleCount": "{count, plural, =1 {1 roll} other {# roller}}",
         "actionsMenu": "Familjeåtgärder",
@@ -940,6 +943,7 @@
       },
       "preconditions": {
         "title": "Inte redo än",
+        "importLine": "Inga anställda är importerade ännu",
         "classifyLine": "{count, plural, one {# person är inte klassificerad än} other {# personer är inte klassificerade än}}",
         "evaluateLine": "{count, plural, one {# roll med anställda saknar färdig utvärdering} other {# roller med anställda saknar färdig utvärdering}}"
       },

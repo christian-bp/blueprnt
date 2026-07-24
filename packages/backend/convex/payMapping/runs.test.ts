@@ -373,10 +373,12 @@ describe("getPayMappingPreconditions", () => {
       { orgId }
     )
     expect(result).toEqual({
+      peopleCount: expect.any(Number),
       unclassifiedCount: 0,
       unevaluatedRoles: [],
       ready: true,
     })
+    expect(result.peopleCount).toBeGreaterThan(0)
   })
 
   it("reports the unclassified count and the unevaluated staffed roles, excluding unstaffed ones", async () => {
@@ -442,6 +444,34 @@ describe("getPayMappingPreconditions", () => {
       },
     ])
     expect(result.ready).toBe(false)
+  })
+
+  it("never reports ready for an org with no people, so the empty org must import first", async () => {
+    const t = initConvexTest()
+    const email = "hr@empty.se"
+    const { orgId, userId } = await t.mutation(
+      components.betterAuth.testing.seedMembership,
+      { email, name: OPERATOR_NAME, role: "admin" }
+    )
+    const asHr = t.withIdentity({ subject: userId })
+
+    const result = await asHr.query(
+      api.payMapping.runs.getPayMappingPreconditions,
+      { orgId }
+    )
+    expect(result).toEqual({
+      peopleCount: 0,
+      unclassifiedCount: 0,
+      unevaluatedRoles: [],
+      ready: false,
+    })
+
+    await expect(
+      asHr.mutation(api.payMapping.runs.startPayMappingRun, {
+        orgId,
+        label: "Empty org run",
+      })
+    ).rejects.toThrow("errors.payMappingPreconditionsUnmet")
   })
 })
 

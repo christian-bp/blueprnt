@@ -28,6 +28,23 @@ const method = (
 // group and desyncs total/groups assertions written before that group existed.
 const OPEN_RUN = [{ status: "active" as const }]
 
+// One classified person staffed on a role outside each test's roles fixture:
+// the neutral default for tests that are not about people at all, so the org
+// never reads as empty (an empty org adds the importPeople group).
+const PEOPLE_NEUTRAL = [
+  {
+    title: "Neutral",
+    people: [
+      {
+        currentAssignment: {
+          roleId: "neutral-staffed",
+          levelSource: "confirmed" as const,
+        },
+      },
+    ],
+  },
+]
+
 describe("buildTodo", () => {
   it("routes a profile-incomplete role to describeRoles only (the gate)", () => {
     const todo = buildTodo({
@@ -40,7 +57,7 @@ describe("buildTodo", () => {
         }),
       ],
       method: null,
-      peopleByTitle: [],
+      peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: OPEN_RUN,
     })
     expect(todo.groups.map((g) => g.key)).toEqual(["describeRoles"])
@@ -52,7 +69,7 @@ describe("buildTodo", () => {
     const todo = buildTodo({
       roles: [role({ profileComplete: true, ratedCount: 3, totalCriteria: 9 })],
       method: null,
-      peopleByTitle: [],
+      peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: OPEN_RUN,
     })
     const g = todo.groups.find((g) => g.key === "evaluateRoles")
@@ -71,7 +88,7 @@ describe("buildTodo", () => {
     const todo = buildTodo({
       roles: [role({ profileComplete: true, ratedCount: 9, totalCriteria: 9 })],
       method: null,
-      peopleByTitle: [],
+      peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: OPEN_RUN,
     })
     expect(todo.total).toBe(0)
@@ -81,7 +98,7 @@ describe("buildTodo", () => {
   it("splits criteria into document (notStarted/inProgress) and approve (documented); approved is done", () => {
     const todo = buildTodo({
       roles: [],
-      peopleByTitle: [],
+      peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: OPEN_RUN,
       method: method([
         { criterionId: "c1", name: "Scope", status: "notStarted" },
@@ -113,7 +130,7 @@ describe("buildTodo", () => {
           totalCriteria: 9,
         }),
       ],
-      peopleByTitle: [],
+      peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: OPEN_RUN,
       method: method([
         { criterionId: "c1", name: "Scope", status: "documented" },
@@ -134,7 +151,7 @@ describe("buildTodo", () => {
     const todo = buildTodo({
       roles: [],
       method: null,
-      peopleByTitle: [],
+      peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: OPEN_RUN,
     })
     expect(todo).toEqual({ groups: [], total: 0 })
@@ -215,7 +232,7 @@ describe("buildTodo startPayMapping group", () => {
   it("adds it last, after approveCriteria, once the gate is clear and no run is open", () => {
     const todo = buildTodo({
       roles: [],
-      peopleByTitle: [],
+      peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: [],
       method: method([
         { criterionId: "c1", name: "Scope", status: "documented" },
@@ -278,7 +295,7 @@ describe("buildTodo startPayMapping group", () => {
       roles: [role({ roleId: "r1", profileComplete: false })],
       method: null,
       payMappingRuns: [],
-      peopleByTitle: [],
+      peopleByTitle: PEOPLE_NEUTRAL,
     })
     expect(todo.groups.map((g) => g.key)).toEqual([
       "describeRoles",
@@ -290,7 +307,7 @@ describe("buildTodo startPayMapping group", () => {
     const todo = buildTodo({
       roles: [],
       method: null,
-      peopleByTitle: [],
+      peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: [{ status: "underReview" }],
     })
     expect(todo.groups.map((g) => g.key)).not.toContain("startPayMapping")
@@ -300,9 +317,55 @@ describe("buildTodo startPayMapping group", () => {
     const todo = buildTodo({
       roles: [],
       method: null,
-      peopleByTitle: [],
+      peopleByTitle: PEOPLE_NEUTRAL,
       payMappingRuns: [{ status: "completed" }, { status: "completed" }],
     })
     expect(todo.groups.map((g) => g.key)).toEqual(["startPayMapping"])
+  })
+})
+
+describe("buildTodo importPeople group", () => {
+  it("puts the import row first, alone, when the org has no people", () => {
+    const todo = buildTodo({
+      roles: [],
+      method: null,
+      peopleByTitle: [],
+      payMappingRuns: [],
+    })
+    expect(todo.groups.map((g) => g.key)).toEqual(["importPeople"])
+    expect(todo.groups[0]?.items).toEqual([
+      { id: "importPeople", href: "/people/import" },
+    ])
+    expect(todo.total).toBe(1)
+  })
+
+  it("never reads the pay-mapping gate as ready while the org is empty", () => {
+    const todo = buildTodo({
+      roles: [],
+      peopleByTitle: [],
+      payMappingRuns: [],
+      method: method([
+        { criterionId: "c1", name: "Scope", status: "approved" },
+      ]),
+    })
+    expect(todo.groups.map((g) => g.key)).toEqual(["importPeople"])
+    expect(todo.groups.map((g) => g.key)).not.toContain("startPayMapping")
+  })
+
+  it("keeps the import row while a run is somehow open, and drops it once people exist", () => {
+    const empty = buildTodo({
+      roles: [],
+      method: null,
+      peopleByTitle: [],
+      payMappingRuns: OPEN_RUN,
+    })
+    expect(empty.groups.map((g) => g.key)).toEqual(["importPeople"])
+    const staffed = buildTodo({
+      roles: [],
+      method: null,
+      peopleByTitle: PEOPLE_NEUTRAL,
+      payMappingRuns: OPEN_RUN,
+    })
+    expect(staffed.groups.map((g) => g.key)).not.toContain("importPeople")
   })
 })

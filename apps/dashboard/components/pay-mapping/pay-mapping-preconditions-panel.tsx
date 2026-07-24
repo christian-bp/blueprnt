@@ -22,9 +22,11 @@ export interface PreconditionRole {
 // link to where the work happens; the unevaluated-role rows below the
 // evaluate line are capped at MAX_ITEMS, the same cap the to-do uses.
 export function PayMappingPreconditionsPanel({
+  peopleCount,
   unclassifiedCount,
   unevaluatedRoles,
 }: {
+  peopleCount: number
   unclassifiedCount: number
   unevaluatedRoles: PreconditionRole[]
 }) {
@@ -55,6 +57,12 @@ export function PayMappingPreconditionsPanel({
         <EmptyTitle>{t("title")}</EmptyTitle>
       </EmptyHeader>
       <div className="flex w-full flex-col gap-1 text-left">
+        {peopleCount === 0 && (
+          <Link href="/people/import" className={rowClass}>
+            <span className="min-w-0 truncate">{t("importLine")}</span>
+            {chevron}
+          </Link>
+        )}
         {unclassifiedCount > 0 && (
           <Link href="/people/classify" className={rowClass}>
             <span className="min-w-0 truncate">
