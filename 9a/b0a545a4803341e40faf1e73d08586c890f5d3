@@ -1,0 +1,36 @@
+apps/dashboard/components/people/classify/classify-title-table.test.tsx
+  s_6ea4434f5c3a0d::t_dfe1f69bd302e8 594-595
+  s_6ea4434f5c3a0d::t_eda1f11d86d8db 257-258
+  s_6ea4434f5c3a0d::t_0a4cd66f8d96a7 618-642,644
+  s_6ea4434f5c3a0d::t_1ac2bf0288e94b 219-221,223-228,237
+  s_6ea4434f5c3a0d::t_9122d17be297ff 643
+  s_6ea4434f5c3a0d::t_f799e223b08425 293,297,303
+  s_6ea4434f5c3a0d::t_e3c9e277abacc2 255,259
+  s_6ea4434f5c3a0d::t_c816eb19d2dd49 229-230,236,238,240-241,244
+  s_6ea4434f5c3a0d::t_797416734d5490 295-296
+  s_6ea4434f5c3a0d::t_d843ccaa9b09ad 231-235,242-243
+  s_6ea4434f5c3a0d::t_024a3777325774 609-610
+  s_6ea4434f5c3a0d::t_99842ce42df76a 587,596,603,611
+apps/dashboard/components/people/classify/classify-title-table.tsx
+  s_6ea4434f5c3a0d::t_9122d17be297ff 535
+  s_6ea4434f5c3a0d::t_8e43220f02d7db 529
+  s_6ea4434f5c3a0d::t_2542291277baf7 327-342
+  s_6ea4434f5c3a0d::t_9e1498de296413 116-153
+  s_6ea4434f5c3a0d::t_ab4befbb9891b1 257
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "9ab0a545a4803341e40faf1e73d08586c890f5d3",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
