@@ -1,0 +1,70 @@
+apps/dashboard/components/pay-mapping/start-pay-mapping-dialog.tsx
+  s_6ea4434f5c3a0d::t_ae727f1922a8e1 110
+packages/i18n/messages/sv.json
+  s_6ea4434f5c3a0d::t_1366f46c1951a1 946
+  s_6ea4434f5c3a0d::t_b0892a6c77376c 749
+  s_6ea4434f5c3a0d::t_dee536e96fcf3e 760-761
+  s_6ea4434f5c3a0d::t_eb54853b621c33 824
+packages/i18n/messages/da.json
+  s_6ea4434f5c3a0d::t_bb57ad667bb52d 824
+  s_6ea4434f5c3a0d::t_dc5dce852de64a 760-761
+  s_6ea4434f5c3a0d::t_ef4f1768fe858a 749
+  s_6ea4434f5c3a0d::t_4f108a49961d16 946
+apps/dashboard/app/(app)/page.test.tsx
+  s_6ea4434f5c3a0d::t_c74405910a5212 57-74
+packages/i18n/messages/nb.json
+  s_6ea4434f5c3a0d::t_649a0ccce8538b 824
+  s_6ea4434f5c3a0d::t_1c7490531b34c8 760-761
+  s_6ea4434f5c3a0d::t_0fbf00f79b4b67 749
+  s_6ea4434f5c3a0d::t_c563c6efd24b09 946
+packages/backend/convex/payMapping/runs.ts
+  s_6ea4434f5c3a0d::t_c0ba2e22fea88f 50,127,130-135,151
+packages/i18n/messages/fi.json
+  s_6ea4434f5c3a0d::t_2d1a741d602e4c 760-761
+  s_6ea4434f5c3a0d::t_d8c020ed3ae61c 946
+  s_6ea4434f5c3a0d::t_62efa6c2c8cc46 749
+  s_6ea4434f5c3a0d::t_d4c179de602436 824
+apps/dashboard/lib/todo.test.ts
+  s_6ea4434f5c3a0d::t_2ec212e43d9760 31-47,60,72,91,101,133,154,235,298,310,320,326-368
+  s_6ea4434f5c3a0d::t_8927e032e9484a 369-371
+apps/dashboard/components/pay-mapping/start-pay-mapping-dialog.test.tsx
+  s_6ea4434f5c3a0d::t_0ae079ebb8156f 45-56,79,172,187
+apps/dashboard/components/overview/todo-group.tsx
+  s_6ea4434f5c3a0d::t_bfa1a0206ff6b5 77-83
+apps/dashboard/lib/todo.ts
+  s_6ea4434f5c3a0d::t_ee61f890ed3872 8
+  s_6ea4434f5c3a0d::t_cb37aa522494e4 235-237
+  s_6ea4434f5c3a0d::t_7e798eaf7a3a0a 249
+  s_6ea4434f5c3a0d::t_a89637d3e61585 163-170,172-177
+  s_6ea4434f5c3a0d::t_5d51b051c50681 43-44,47
+packages/backend/convex/payMapping/runs.test.ts
+  s_6ea4434f5c3a0d::t_0ae079ebb8156f 376,381
+  s_6ea4434f5c3a0d::t_06a6754b2c61d0 448-475
+apps/dashboard/components/pay-mapping/pay-mapping-preconditions-panel.tsx
+  s_6ea4434f5c3a0d::t_940e1dea6c1b23 25,29
+  s_6ea4434f5c3a0d::t_b03d73ff69625d 60-65
+apps/dashboard/components/pay-mapping/pay-mapping-preconditions-panel.test.tsx
+  s_6ea4434f5c3a0d::t_cbd1c70034d4d4 42,76
+  s_6ea4434f5c3a0d::t_0044aa309cf16b 21,28-34,36,65
+packages/i18n/messages/en.json
+  s_6ea4434f5c3a0d::t_b2a5081cbc9e85 760-761
+  s_6ea4434f5c3a0d::t_ca227b6bff1ba4 749
+  s_6ea4434f5c3a0d::t_aef67184089d81 946
+  s_6ea4434f5c3a0d::t_66a2f3f266daa6 824
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "109cb523c64dfdce6c1a570af52a022d60e8a2f3",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
