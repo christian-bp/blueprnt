@@ -1,0 +1,30 @@
+apps/dashboard/components/pay-mapping/pay-mapping-review.tsx
+  s_6ea4434f5c3a0d::t_36bc3ec748f2d9 200-201
+  s_6ea4434f5c3a0d::t_597763f7e585a0 3-4
+apps/dashboard/components/pay-mapping/pay-mappings-section.test.tsx
+  s_6ea4434f5c3a0d::t_8609f405684b62 154-156
+  s_6ea4434f5c3a0d::t_987a86437dce16 148-153,157-160
+apps/dashboard/components/pay-mapping/start-pay-mapping-dialog.tsx
+  s_6ea4434f5c3a0d::t_2f7f2725d9eed8 51-56,60
+  s_6ea4434f5c3a0d::t_98a0a24fc47e5f 109-111
+apps/dashboard/components/pay-mapping/pay-mapping-review.test.tsx
+  s_6ea4434f5c3a0d::t_4bd099109a99a3 246-248,254-256,433-435
+apps/dashboard/components/pay-mapping/pay-mappings-section.tsx
+  s_6ea4434f5c3a0d::t_d6eb2a793a7a44 337-341
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "c0e06ce3093b6224432338a591c831fe1d897497",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
