@@ -1,0 +1,32 @@
+apps/dashboard/components/roles/role-evaluation-card.tsx
+  s_6ea4434f5c3a0d::t_36764735b45c45 251-254
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.tsx
+  s_6ea4434f5c3a0d::t_56f220e5ca4a58 8
+  s_6ea4434f5c3a0d::t_0c9efb744a4546 129
+apps/dashboard/components/people/people-section.tsx
+  s_6ea4434f5c3a0d::t_b605a9a9767b22 47
+  s_6ea4434f5c3a0d::t_ccfe1ff6f40eca 481
+  s_6ea4434f5c3a0d::t_1a056aa2b639d7 525
+apps/dashboard/components/role-sheet.tsx
+  s_6ea4434f5c3a0d::t_94672f081f5bb2 16
+  s_6ea4434f5c3a0d::t_106f91af799fcc 232
+apps/dashboard/app/(app)/work/page.tsx
+  s_6ea4434f5c3a0d::t_9ffe3e5fda330a 190
+  s_6ea4434f5c3a0d::t_6ea608af32d13b 23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "ce3e85c15693190ef8b2d9c593b2f7f1a5b428c5",
+  "prompts": {},
+  "sessions": {
+    "s_6ea4434f5c3a0d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1a3a6465-136e-46f0-9ab7-b2b4cd262d2d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
