@@ -773,7 +773,7 @@
         "workforce": {
           "label": "Työvoima",
           "view": "Henkilöstö",
-          "headcount": "{count, plural, one {# työntekijä} other {# työntekijää}}",
+          "headcount": "{count, plural, one {# työntekijä tällä hetkellä} other {# työntekijää tällä hetkellä}}",
           "unclassified": "{count} luokittelematta",
           "allClassified": "Kaikki luokiteltu",
           "importPrompt": "Tuo tietoja aloittaaksesi",

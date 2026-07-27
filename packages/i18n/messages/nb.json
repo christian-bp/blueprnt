@@ -773,7 +773,7 @@
         "workforce": {
           "label": "Arbeidsstyrke",
           "view": "Ansatte",
-          "headcount": "{count, plural, one {# ansatt} other {# ansatte}}",
+          "headcount": "{count, plural, one {# ansatt i dag} other {# ansatte i dag}}",
           "unclassified": "{count} uklassifiserte",
           "allClassified": "Alle klassifisert",
           "importPrompt": "Importer for å komme i gang",

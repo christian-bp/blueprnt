@@ -64,11 +64,11 @@ describe("OverviewWidgets", () => {
     renderWidgets({
       stats: { ...ALL_DONE, totalPeople: 10, unclassifiedCount: 3 },
       headcountTrend: [
-        { date: 1, value: 7 },
-        { date: 2, value: 10 },
+        { date: 1, runLabel: "Pay mapping 2025", value: 7 },
+        { date: 2, runLabel: "Pay mapping 2026", value: 10 },
       ],
     })
-    expect(screen.getByText("10 people")).toBeDefined()
+    expect(screen.getByText("10 people today")).toBeDefined()
     expect(screen.getByText("3 unclassified")).toBeDefined()
     const workforceCard = screen
       .getByText(t.workforce.label)
@@ -81,7 +81,7 @@ describe("OverviewWidgets", () => {
   it("shows no chart for a single pay-mapping run (one dot is not a trend)", () => {
     renderWidgets({
       stats: { ...ALL_DONE, totalPeople: 10 },
-      headcountTrend: [{ date: 1, value: 10 }],
+      headcountTrend: [{ date: 1, runLabel: "Pay mapping 2026", value: 10 }],
     })
     const workforceCard = screen
       .getByText(t.workforce.label)
@@ -114,7 +114,7 @@ describe("OverviewWidgets", () => {
   it("shows no chart in the workforce card when every run's headcount is zero", () => {
     renderWidgets({
       stats: { ...ALL_DONE, totalPeople: 10 },
-      headcountTrend: [{ date: 1, value: 0 }],
+      headcountTrend: [{ date: 1, runLabel: "Pay mapping 2026", value: 0 }],
     })
     const workforceCard = screen
       .getByText(t.workforce.label)
@@ -130,7 +130,7 @@ describe("OverviewWidgets", () => {
   it("shows no chart when there are no people yet, even if a trend already exists", () => {
     renderWidgets({
       stats: { ...ALL_DONE, totalPeople: 0 },
-      headcountTrend: [{ date: 1, value: 5 }],
+      headcountTrend: [{ date: 1, runLabel: "Pay mapping 2026", value: 5 }],
     })
     const workforceCard = screen
       .getByText(t.workforce.label)
@@ -277,7 +277,7 @@ describe("OverviewWidgets", () => {
     expect(screen.getByText(t.workforce.label)).toBeDefined()
     expect(screen.getByText(t.bands.label)).toBeDefined()
     expect(screen.getByText(t.gap.label)).toBeDefined()
-    expect(screen.queryByText("10 people")).toBeNull()
+    expect(screen.queryByText("10 people today")).toBeNull()
     expect(screen.queryByText("4.2%")).toBeNull()
     const peopleLink = screen.getByRole("link", { name: t.workforce.view })
     expect(peopleLink.getAttribute("href")).toBe("/people")

@@ -104,12 +104,18 @@ describe("HeadcountArea", () => {
     value: { label: "Employees", color: "var(--brand)" },
   } satisfies ChartConfig
 
+  const point = (label: string, caption: string, value: number) => ({
+    label,
+    caption,
+    value,
+  })
+
   it("mounts a chart container for representative data", () => {
     const { container } = renderWithIntl(
       <HeadcountArea
         data={[
-          { label: "Jan 1", value: 5 },
-          { label: "Jan 2", value: 8 },
+          point("Pay mapping 2025", "Jan 1", 5),
+          point("Pay mapping 2026", "Jan 2", 8),
         ]}
         config={config}
       />
@@ -119,7 +125,10 @@ describe("HeadcountArea", () => {
 
   it("mounts without crashing for a single data point", () => {
     const { container } = renderWithIntl(
-      <HeadcountArea data={[{ label: "Jan 1", value: 5 }]} config={config} />
+      <HeadcountArea
+        data={[point("Pay mapping 2026", "Jan 1", 5)]}
+        config={config}
+      />
     )
     expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
   })
@@ -131,9 +140,28 @@ describe("HeadcountArea", () => {
     expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
   })
 
+  it("mounts for two points sharing a heading and a date", () => {
+    // Two pay-mapping runs can share a reference date and a name, so both
+    // points can carry identical text; the axis keys on a synthetic unique
+    // value so the tooltip still resolves (browser-only, see widget-viz.tsx).
+    const { container } = renderWithIntl(
+      <HeadcountArea
+        data={[
+          point("Pay mapping 2026", "Jan 1", 118),
+          point("Pay mapping 2026", "Jan 1", 121),
+        ]}
+        config={config}
+      />
+    )
+    expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
+  })
+
   it("is decorative", () => {
     const { container } = renderWithIntl(
-      <HeadcountArea data={[{ label: "Jan 1", value: 5 }]} config={config} />
+      <HeadcountArea
+        data={[point("Pay mapping 2026", "Jan 1", 5)]}
+        config={config}
+      />
     )
     expect(
       container

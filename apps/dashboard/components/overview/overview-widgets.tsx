@@ -110,7 +110,10 @@ export function OverviewWidgets({
     workforceViz = (
       <HeadcountArea
         data={headcountTrend.map((point) => ({
-          label: format.dateTime(new Date(point.date), { dateStyle: "medium" }),
+          label: point.runLabel,
+          caption: format.dateTime(new Date(point.date), {
+            dateStyle: "medium",
+          }),
           value: point.value,
         }))}
         config={trendConfig}

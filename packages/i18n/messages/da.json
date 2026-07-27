@@ -773,7 +773,7 @@
         "workforce": {
           "label": "Arbejdsstyrke",
           "view": "Medarbejdere",
-          "headcount": "{count, plural, one {# medarbejder} other {# medarbejdere}}",
+          "headcount": "{count, plural, one {# medarbejder i dag} other {# medarbejdere i dag}}",
           "unclassified": "{count} uklassificerede",
           "allClassified": "Alle klassificeret",
           "importPrompt": "Importér for at komme i gang",

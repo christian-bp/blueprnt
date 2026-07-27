@@ -773,7 +773,7 @@
         "workforce": {
           "label": "Workforce",
           "view": "People",
-          "headcount": "{count, plural, one {# person} other {# people}}",
+          "headcount": "{count, plural, one {# person today} other {# people today}}",
           "unclassified": "{count} unclassified",
           "allClassified": "All classified",
           "importPrompt": "Import to get started",

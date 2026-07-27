@@ -9,8 +9,9 @@
 // when that value is a string (a numeric dataKey resolves through a
 // config-label lookup instead), so each bar chart's category axis points at
 // a pre-formatted `label` field rather than the raw number (mirrors
-// QuartileStat/AgeStat in pay-mapping-overview.tsx); HeadcountArea's numeric
-// date axis instead resolves through its caller-supplied formatDate.
+// QuartileStat/AgeStat in pay-mapping-overview.tsx); HeadcountArea, whose
+// labels can repeat, keys on a synthetic axis value and prints its label
+// through a labelFormatter instead.
 import {
   type ChartConfig,
   ChartContainer,
@@ -19,6 +20,7 @@ import {
 } from "@workspace/ui/components/chart"
 import { useTranslations } from "next-intl"
 import { Area, AreaChart, Bar, BarChart, XAxis, YAxis } from "recharts"
+import { headcountTrendDomain } from "@/lib/headcount-trend"
 
 // A minimal vertical mini bar chart (Midday Profit-card style): one bar per
 // configured band, left-to-right ascending (Band 1 first), height scaled to
@@ -126,39 +128,94 @@ function DiagonalPattern({ id, color }: { id: string; color: string }) {
   )
 }
 
+// The category axis keys on a synthetic per-point key (see HeadcountArea), so
+// the axis value is not what recharts should print as the tooltip heading; the
+// hovered row carries the real one. recharts types a payload row loosely,
+// hence the narrowing.
+function hoveredPoint(
+  items: readonly { payload?: unknown }[] | undefined
+): { label: string; caption: string } | null {
+  const row = items?.[0]?.payload
+  if (
+    typeof row === "object" &&
+    row !== null &&
+    "label" in row &&
+    typeof row.label === "string" &&
+    "caption" in row &&
+    typeof row.caption === "string"
+  ) {
+    return { label: row.label, caption: row.caption }
+  }
+  return null
+}
+
+// The tooltip's heading: which pay mapping this headcount came from, with its
+// reference date underneath. Naming the run is what tells the reader the
+// number is a pay mapping's population and not a live workforce count.
+function TrendHeading({
+  items,
+}: {
+  items: readonly { payload?: unknown }[] | undefined
+}) {
+  const point = hoveredPoint(items)
+  if (point === null) {
+    return null
+  }
+  return (
+    // A pay mapping's name is free text, and the card clips its overflow, so
+    // the heading wraps inside a fixed width instead of widening the tooltip
+    // past the card edge.
+    <div className="grid max-w-40 gap-0.5">
+      <span className="break-words">{point.label}</span>
+      <span className="font-normal text-muted-foreground">{point.caption}</span>
+    </div>
+  )
+}
+
 // A smooth, monotone area chart of a value over time with a diagonal-hatch
 // fill and a thin brand stroke bleeding to the card's bottom edge (Polyform
-// stat-card style). No axis chrome (both axes hidden); the caller passes a
-// pre-built formatDate so this stays i18n-free, and a pre-built ChartConfig
-// so the series label and color come from the caller too.
+// stat-card style). No axis chrome (both axes hidden); the caller passes each
+// point's heading (`label`, the pay mapping's name) and sub-heading
+// (`caption`, its formatted reference date) so this stays i18n-free, and a
+// pre-built ChartConfig so the series label and color come from the caller.
 export function HeadcountArea({
   data,
   config,
 }: {
-  data: { label: string; value: number }[]
+  data: { label: string; caption: string; value: number }[]
   config: ChartConfig
 }) {
+  // Two pay-mapping runs can carry the same reference date and even the same
+  // name, which would give the category axis two identical values; recharts
+  // then resolves no active tooltip index at all and hovering does nothing. So
+  // the axis keys on a per-point value that is unique by construction, and the
+  // tooltip heading comes from the row. jsdom/happy-dom give recharts no
+  // layout, so this only reproduces in a real browser.
+  const rows = data.map((point, index) => ({ ...point, key: String(index) }))
+
   return (
     <ChartContainer
       aria-hidden="true"
       config={config}
       className="aspect-auto h-14 w-full"
     >
-      <AreaChart data={data} margin={{ top: 4, left: 0, right: 0, bottom: 0 }}>
+      <AreaChart data={rows} margin={{ top: 4, left: 0, right: 0, bottom: 0 }}>
         <defs>
           <DiagonalPattern id="workforceHatch" color="var(--brand)" />
         </defs>
-        {/* The axis key is the pre-formatted date STRING, not the raw epoch
-            number: ChartTooltipContent uses the axis value directly as the
-            tooltip label only when it is a string, otherwise it resolves to
-            the series config label (which would then hit new Date() and
-            throw). Same reason the bar charts key on a pre-formatted label. */}
-        <XAxis dataKey="label" hide />
-        <YAxis hide domain={[0, "auto"]} />
+        <XAxis dataKey="key" hide />
+        <YAxis hide domain={headcountTrendDomain(data.map((p) => p.value))} />
         <ChartTooltip
           cursor={false}
           position={{ y: -40 }}
-          content={<ChartTooltipContent indicator="dot" />}
+          content={
+            <ChartTooltipContent
+              indicator="dot"
+              labelFormatter={(_axisValue, items) => (
+                <TrendHeading items={items} />
+              )}
+            />
+          }
         />
         <Area
           dataKey="value"

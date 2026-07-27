@@ -773,7 +773,7 @@
         "workforce": {
           "label": "Personal",
           "view": "Medarbetare",
-          "headcount": "{count, plural, one {# anställd} other {# anställda}}",
+          "headcount": "{count, plural, one {# anställd i dag} other {# anställda i dag}}",
           "unclassified": "{count} oklassificerade",
           "allClassified": "Alla klassificerade",
           "importPrompt": "Importera för att komma igång",
