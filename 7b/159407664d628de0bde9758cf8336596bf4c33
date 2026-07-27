@@ -1,0 +1,56 @@
+apps/dashboard/lib/headcount-trend.ts
+  s_85d86f7f3ca7ee::t_423a094a0cd549 28-42
+  s_85d86f7f3ca7ee::t_9acdf16835cede 5-9,12,22-26
+  s_85d86f7f3ca7ee::t_2a98aa08ced92c 27
+apps/dashboard/components/overview/widget-viz.test.tsx
+  s_85d86f7f3ca7ee::t_4e3411dc2c3191 107-112,117-118,128-131,143-146,150-151,161-164
+  s_85d86f7f3ca7ee::t_c66e755466ab09 147-149,152-158
+packages/i18n/messages/nb.json
+  s_85d86f7f3ca7ee::t_c391c7115da6bd 776
+packages/i18n/messages/en.json
+  s_85d86f7f3ca7ee::t_431a39c350680b 776
+apps/dashboard/components/overview/overview-widgets.test.tsx
+  s_85d86f7f3ca7ee::t_84c0a4652fc2b5 67-68,84,117,133
+  s_85d86f7f3ca7ee::t_d1083b4aae670e 71,280
+apps/dashboard/components/overview/widget-viz.tsx
+  s_85d86f7f3ca7ee::t_c831269cea053c 188-193
+  s_85d86f7f3ca7ee::t_c47e5a866b8c8d 165-169
+  s_85d86f7f3ca7ee::t_88f3ce354bc357 23
+  s_85d86f7f3ca7ee::t_3a069a43839e33 138-142,146,148,173-174,194-195,202,206-207,211-213,217-218
+  s_85d86f7f3ca7ee::t_2d8b0985feb573 12-14
+  s_85d86f7f3ca7ee::t_96da3b4ae769e5 160,170
+  s_85d86f7f3ca7ee::t_59558f5ebe7ee7 177-180,185
+  s_85d86f7f3ca7ee::t_62cab2a815d555 214-216
+  s_85d86f7f3ca7ee::t_776fd83708a4f6 131-134,136,143-145,149-159,161-164,171-172
+  s_85d86f7f3ca7ee::t_be141ed2b53260 135,137,147
+apps/dashboard/lib/headcount-trend.test.ts
+  s_85d86f7f3ca7ee::t_794beba5f6572a 9,17-18,24-26,28-29,34-35
+  s_85d86f7f3ca7ee::t_ffd01585ca4da2 2
+  s_85d86f7f3ca7ee::t_338c5f1aae3bd2 11-15
+  s_85d86f7f3ca7ee::t_0779d5ba69195f 41-78
+  s_85d86f7f3ca7ee::t_27472dbe0f65dc 16
+packages/i18n/messages/da.json
+  s_85d86f7f3ca7ee::t_14390eb7a9a2b9 776
+packages/i18n/messages/sv.json
+  s_85d86f7f3ca7ee::t_1644da53d7f0f3 776
+apps/dashboard/components/overview/overview-widgets.tsx
+  s_85d86f7f3ca7ee::t_7dfe7344815fca 113-116
+packages/i18n/messages/fi.json
+  s_85d86f7f3ca7ee::t_1c775cac7fdefd 776
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "7b159407664d628de0bde9758cf8336596bf4c33",
+  "prompts": {},
+  "sessions": {
+    "s_85d86f7f3ca7ee": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "affd0db7-845d-446a-a2e5-5b35727db508",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
