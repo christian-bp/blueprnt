@@ -16,6 +16,8 @@ describe("payMapping schema + slug", () => {
         initiatedAt: 1,
         systemVersion: "test",
         populationCount: 0,
+        womenCount: 0,
+        menCount: 0,
         withPayCount: 0,
         frozenModel: { criteria: [], bandThresholds: [] },
       })
@@ -37,6 +39,8 @@ describe("payMapping schema + slug", () => {
         initiatedAt: 1,
         systemVersion: "test",
         populationCount: 0,
+        womenCount: 0,
+        menCount: 0,
         withPayCount: 0,
         frozenModel: { criteria: [], bandThresholds: [] },
       })

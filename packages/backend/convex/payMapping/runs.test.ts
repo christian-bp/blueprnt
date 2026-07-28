@@ -609,6 +609,8 @@ async function insertRun(
       systemVersion: "test",
       populationCount: rows.length,
       withPayCount: rows.filter((r) => r.basicMonthly !== null).length,
+      womenCount: rows.filter((r) => r.gender === "Kvinna").length,
+      menCount: rows.filter((r) => r.gender === "Man").length,
       frozenModel: { criteria: [], bandThresholds: [] },
     })
     let i = 0

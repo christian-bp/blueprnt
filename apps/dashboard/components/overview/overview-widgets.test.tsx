@@ -64,8 +64,8 @@ describe("OverviewWidgets", () => {
     renderWidgets({
       stats: { ...ALL_DONE, totalPeople: 10, unclassifiedCount: 3 },
       headcountTrend: [
-        { date: 1, runLabel: "Pay mapping 2025", value: 7 },
-        { date: 2, runLabel: "Pay mapping 2026", value: 10 },
+        { date: 1, runLabel: "Pay mapping 2025", women: 3, men: 4 },
+        { date: 2, runLabel: "Pay mapping 2026", women: 5, men: 5 },
       ],
     })
     expect(screen.getByText("10 people today")).toBeDefined()
@@ -81,7 +81,9 @@ describe("OverviewWidgets", () => {
   it("shows no chart for a single pay-mapping run (one dot is not a trend)", () => {
     renderWidgets({
       stats: { ...ALL_DONE, totalPeople: 10 },
-      headcountTrend: [{ date: 1, runLabel: "Pay mapping 2026", value: 10 }],
+      headcountTrend: [
+        { date: 1, runLabel: "Pay mapping 2026", women: 5, men: 5 },
+      ],
     })
     const workforceCard = screen
       .getByText(t.workforce.label)
@@ -114,7 +116,9 @@ describe("OverviewWidgets", () => {
   it("shows no chart in the workforce card when every run's headcount is zero", () => {
     renderWidgets({
       stats: { ...ALL_DONE, totalPeople: 10 },
-      headcountTrend: [{ date: 1, runLabel: "Pay mapping 2026", value: 0 }],
+      headcountTrend: [
+        { date: 1, runLabel: "Pay mapping 2026", women: 0, men: 0 },
+      ],
     })
     const workforceCard = screen
       .getByText(t.workforce.label)
@@ -130,7 +134,9 @@ describe("OverviewWidgets", () => {
   it("shows no chart when there are no people yet, even if a trend already exists", () => {
     renderWidgets({
       stats: { ...ALL_DONE, totalPeople: 0 },
-      headcountTrend: [{ date: 1, runLabel: "Pay mapping 2026", value: 5 }],
+      headcountTrend: [
+        { date: 1, runLabel: "Pay mapping 2026", women: 2, men: 3 },
+      ],
     })
     const workforceCard = screen
       .getByText(t.workforce.label)
@@ -176,7 +182,7 @@ describe("OverviewWidgets", () => {
     expect(bandCard?.querySelector('[data-slot="chart"]')).not.toBeNull()
   })
 
-  it("upgrades the pay-gap card to the percent, flag badge, and quartile bars once a run's gap is measurable", () => {
+  it("upgrades the pay-gap card to the percent and quartile bars once a run's gap is measurable", () => {
     const payMappingHeadline: PayMappingHeadline = {
       slug: "pay-2026",
       label: "Pay 2026",
@@ -192,9 +198,12 @@ describe("OverviewWidgets", () => {
     }
     renderWidgets({ payMappingHeadline })
     expect(screen.getByText("4.2%")).toBeDefined()
+    // The severity badge belongs to the run page, not this card: on the
+    // overview it added a second colour system to a card whose own number
+    // already carries the state.
     expect(
-      screen.getByText(messages.dashboard.payMapping.gap.flag.elevated)
-    ).toBeDefined()
+      screen.queryByText(messages.dashboard.payMapping.gap.flag.elevated)
+    ).toBeNull()
     const gapCard = screen.getByText(t.gap.label).closest('[data-slot="card"]')
     expect(gapCard?.querySelector('[data-slot="chart"]')).not.toBeNull()
     const action = screen.getByRole("link", { name: t.gap.view })

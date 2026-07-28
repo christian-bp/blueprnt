@@ -26,6 +26,12 @@ export const payMappingRuns = defineTable({
   systemVersion: v.string(),
   populationCount: v.number(),
   withPayCount: v.number(),
+  // The population's gender split, denormalized off the snapshot rows at
+  // freeze time exactly as populationCount is. The overview's workforce trend
+  // plots one point per run, so reading this from the rows instead would mean
+  // scanning every snapshot row of every run on each dashboard load.
+  womenCount: v.number(),
+  menCount: v.number(),
   frozenModel: v.object({
     criteria: v.array(
       v.object({

@@ -1,30 +1,31 @@
 "use client"
 
 import { useTranslations } from "next-intl"
+import { genderFillStyle } from "@/components/gender-mark"
 import { useMoney } from "@/hooks/use-money"
 
-// One gender's row: fixed-width label and amount columns so the two tracks
-// in between get identical geometry (the gap markers below must align
-// vertically across the rows to read as one line), the bar scaled to its
-// share of the larger mean, and a dashed marker at the LOWER mean's
-// position. On the shorter bar the marker sits at its end; on the longer it
-// cuts through, pointing out the tail beyond it as the gap. The visual is
-// aria-hidden decoration: the label + money value carry the meaning, so
-// color is never the only signal.
+// The label and amount columns are fixed so both tracks get identical
+// geometry, and so the marker overlay below can be positioned off the same
+// two widths. Kept as constants because three places have to agree on them.
+const LABEL_W = "5rem" // w-20
+const AMOUNT_W = "6rem" // w-24
+const COL_GAP = "0.75rem" // gap-3
+
+// One gender's row: the label, the track with its bar scaled to the larger
+// mean's share, and the amount. The visual is aria-hidden decoration: the
+// label + money value carry the meaning, so color is never the only signal.
 function MeanBarRow({
   label,
   value,
   currency,
   widthPct,
-  markerPct,
-  colorVar,
+  series,
 }: {
   label: string
   value: number
   currency: string
   widthPct: number
-  markerPct: number | null
-  colorVar: string
+  series: "women" | "men"
 }) {
   const money = useMoney()
   return (
@@ -32,21 +33,15 @@ function MeanBarRow({
       <span className="w-20 shrink-0 text-muted-foreground text-sm">
         {label}
       </span>
-      <div aria-hidden className="relative flex-1">
-        <div className="h-3 overflow-hidden rounded-full bg-muted">
-          <div
-            data-testid="mean-bar"
-            className="h-full rounded-full"
-            style={{ width: `${widthPct}%`, backgroundColor: colorVar }}
-          />
-        </div>
-        {markerPct !== null && (
-          <div
-            data-testid="mean-marker"
-            className="absolute -inset-y-1 border-foreground/50 border-l-2 border-dashed"
-            style={{ left: `${markerPct}%` }}
-          />
-        )}
+      <div
+        aria-hidden
+        className="h-3 flex-1 overflow-hidden rounded-full bg-muted"
+      >
+        <div
+          data-testid="mean-bar"
+          className="h-full rounded-full"
+          style={{ width: `${widthPct}%`, ...genderFillStyle(series) }}
+        />
       </div>
       <span className="w-24 shrink-0 text-right text-sm tabular-nums">
         {money(value, currency)}
@@ -63,6 +58,12 @@ function MeanBarRow({
 // statutory documentation. Women renders first, matching the gap table's
 // column order. Pure data-render: no loading state of its own, the caller
 // only mounts it once the means are known.
+//
+// The marker is ONE element overlaying both rows, not one drawn per row: per
+// row, the gap between them left a break in the middle of a line that has to
+// read as continuous. It is an absolute overlay inset to exactly the track
+// column rather than a grid cell, because an explicitly placed grid item
+// makes the auto-placed row cells flow around it.
 export function MeanComparisonBars({
   womenMean,
   menMean,
@@ -79,23 +80,45 @@ export function MeanComparisonBars({
   const markerPct = max > 0 && lo < 100 ? lo : null
 
   return (
-    <div className="space-y-2">
+    <div className="relative space-y-2">
       <MeanBarRow
         label={tColumns("women")}
         value={womenMean}
         currency={currency}
         widthPct={widthPct(womenMean)}
-        markerPct={markerPct}
-        colorVar="var(--gender-woman)"
+        series="women"
       />
       <MeanBarRow
         label={tColumns("men")}
         value={menMean}
         currency={currency}
         widthPct={widthPct(menMean)}
-        markerPct={markerPct}
-        colorVar="var(--gender-man)"
+        series="men"
       />
+      {markerPct !== null && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0"
+          style={{
+            left: `calc(${LABEL_W} + ${COL_GAP})`,
+            right: `calc(${AMOUNT_W} + ${COL_GAP})`,
+          }}
+        >
+          {/* A gradient rather than `border-dashed`: CSS gives no control over
+              a border's dash rhythm, and the browser default is a heavy,
+              coarse pattern that reads as a divider instead of a quiet
+              reference line. 3px on, 4px off at 1px wide, in muted ink. */}
+          <div
+            data-testid="mean-marker"
+            className="-inset-y-1.5 absolute w-px text-foreground/40"
+            style={{
+              left: `${markerPct}%`,
+              backgroundImage:
+                "repeating-linear-gradient(to bottom, currentColor 0 3px, transparent 3px 7px)",
+            }}
+          />
+        </div>
+      )}
     </div>
   )
 }

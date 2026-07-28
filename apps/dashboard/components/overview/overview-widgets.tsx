@@ -2,6 +2,7 @@
 
 import type { ChartConfig } from "@workspace/ui/components/chart"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { cn } from "@workspace/ui/lib/utils"
 import { useFormatter, useTranslations } from "next-intl"
 import type { ReactNode } from "react"
 import { OverviewWidgetCard } from "@/components/overview/widget-card"
@@ -10,10 +11,11 @@ import {
   HeadcountArea,
   QuartileSplitBars,
 } from "@/components/overview/widget-viz"
-import { PayGapFlagBadge } from "@/components/pay-mapping/pay-gap-flag-badge"
 import type { PayMappingHeadline } from "@/hooks/use-pay-mapping-headline"
 import type { BandOverview } from "@/lib/band-overview"
-import type { HeadcountPoint } from "@/lib/headcount-trend"
+import { GenderMenIcon } from "@/components/gender-mark"
+import { WIDGET_CHART_HEIGHT } from "@/lib/chart-style"
+import { type HeadcountPoint, headcountTotal } from "@/lib/headcount-trend"
 import { percentText } from "@/lib/percent"
 import type { OverviewStats } from "@/lib/todo"
 
@@ -32,7 +34,7 @@ function renderSkeletonCard(label: string, viewLabel: string, href: string) {
       title={label}
       headline={<Skeleton className="h-6 w-24" />}
       action={{ label: viewLabel, href }}
-      viz={<div className="h-14 w-full" />}
+      viz={<div className={cn("w-full", WIDGET_CHART_HEIGHT)} />}
     />
   )
 }
@@ -55,6 +57,7 @@ export function OverviewWidgets({
   headcountTrend: HeadcountPoint[] | undefined | null
 }) {
   const t = useTranslations("dashboard.overview.widgets")
+  const tGap = useTranslations("dashboard.payMapping.gap.columns")
   const format = useFormatter()
 
   if (stats === undefined) {
@@ -94,8 +97,14 @@ export function OverviewWidgets({
   // loading, or until there are at least TWO runs to plot: a single run is
   // just one dot, not a trend, so it stays an empty reserved area until a
   // second run gives the curve two points.
+  const genderLabels = { women: tGap("women"), men: tGap("men") }
   const trendConfig = {
-    value: { label: t("workforce.trendLabel"), color: "var(--brand)" },
+    women: { label: genderLabels.women, color: "var(--gender-woman)" },
+    men: {
+      label: genderLabels.men,
+      color: "var(--gender-man)",
+      icon: GenderMenIcon,
+    },
   } satisfies ChartConfig
   let workforceViz: ReactNode
   if (
@@ -103,9 +112,9 @@ export function OverviewWidgets({
     headcountTrend === undefined ||
     headcountTrend === null ||
     headcountTrend.length < 2 ||
-    !headcountTrend.some((p) => p.value > 0)
+    !headcountTrend.some((p) => headcountTotal(p) > 0)
   ) {
-    workforceViz = <div className="h-14 w-full" />
+    workforceViz = <div className={cn("w-full", WIDGET_CHART_HEIGHT)} />
   } else {
     workforceViz = (
       <HeadcountArea
@@ -114,9 +123,11 @@ export function OverviewWidgets({
           caption: format.dateTime(new Date(point.date), {
             dateStyle: "medium",
           }),
-          value: point.value,
+          women: point.women,
+          men: point.men,
         }))}
         config={trendConfig}
+        labels={genderLabels}
       />
     )
   }
@@ -214,7 +225,6 @@ export function OverviewWidgets({
             </span>
           </div>
         }
-        badge={<PayGapFlagBadge flag={payMappingHeadline.flag} />}
         action={{
           label: t("gap.view"),
           href: `/pay-mappings/${payMappingHeadline.slug}`,

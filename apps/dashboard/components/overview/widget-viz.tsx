@@ -18,9 +18,29 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@workspace/ui/components/chart"
+import { cn } from "@workspace/ui/lib/utils"
 import { useTranslations } from "next-intl"
 import { Area, AreaChart, Bar, BarChart, XAxis, YAxis } from "recharts"
-import { headcountTrendDomain } from "@/lib/headcount-trend"
+import {
+  type GenderSeries,
+  GENDER_MARK_BORDER,
+  GenderHatch,
+  GenderMenIcon,
+  GenderTooltipContent,
+  useGenderMarks,
+} from "@/components/gender-mark"
+import {
+  BAR_RADIUS,
+  CHART_TOOLTIP_TEXT,
+  WIDGET_CHART_HEIGHT,
+} from "@/lib/chart-style"
+
+// Every widget chart sits in the bottom strip of a card that CLIPS its
+// overflow (the fill bleeds to the rounded bottom edge), and recharts renders
+// the tooltip inside the chart's own wrapper. Left to place itself the tooltip
+// opens downward from the cursor and the card cuts it in half, so all three
+// charts pin it above the strip, where the card still has room.
+const TOOLTIP_ABOVE = { y: -40 }
 
 // A minimal vertical mini bar chart (Midday Profit-card style): one bar per
 // configured band, left-to-right ascending (Band 1 first), height scaled to
@@ -43,19 +63,25 @@ export function BandBars({
     <ChartContainer
       aria-hidden="true"
       config={config}
-      className="aspect-auto h-14 w-full"
+      className={cn("aspect-auto w-full", WIDGET_CHART_HEIGHT)}
     >
       <BarChart data={data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
         <XAxis dataKey="label" hide />
-        <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+        <ChartTooltip
+          cursor={false}
+          position={TOOLTIP_ABOVE}
+          content={<ChartTooltipContent className={CHART_TOOLTIP_TEXT} />}
+        />
         {/* minPointSize forces a visible sliver even for a band that holds
             zero roles, so every configured band stays present in the chart
             (buildBandOverview zero-fills them); the tooltip still reads the
             true 0 count. */}
+        {/* Top corners only: this strip bleeds to the card's bottom edge, so a
+            bottom radius would cut a notch out against it. */}
         <Bar
           dataKey="count"
           fill="var(--color-count)"
-          radius={2}
+          radius={[BAR_RADIUS, BAR_RADIUS, 0, 0]}
           minPointSize={2}
         />
       </BarChart>
@@ -64,9 +90,17 @@ export function BandBars({
 }
 
 // One stacked column per pay quartile, lower quartile first: women's share
-// stacked below men's share of that quartile's headcount. An all-zero input
-// (no measurable gap yet) still renders the chart at the same height with
-// zero-height bars; recharts handles that natively, no special-casing.
+// below men's share of that quartile's headcount. The moving split boundary is
+// the reading (the glass-ceiling view); the columns themselves come out the
+// same height because quartiles hold near-equal headcounts by construction.
+//
+// Do NOT normalize this with stackOffset="expand" to force exactly equal
+// columns: recharts then resolves an active tooltip index only for the FIRST
+// category, so every column but the leftmost goes dead to hover (measured in a
+// browser). It buys nothing here anyway, for the reason above.
+//
+// An all-zero input (no measurable gap yet) still renders the chart at the same
+// height with zero-height columns; recharts handles that natively.
 export function QuartileSplitBars({
   quartiles,
 }: {
@@ -74,9 +108,16 @@ export function QuartileSplitBars({
 }) {
   const t = useTranslations("dashboard.overview.widgets")
   const tGap = useTranslations("dashboard.payMapping.gap.columns")
+  const marks = useGenderMarks()
   const config = {
     women: { label: tGap("women"), color: "var(--gender-woman)" },
-    men: { label: tGap("men"), color: "var(--gender-man)" },
+    // The icon is what makes the tooltip's key hatched. Without it both series
+    // draw the same solid dot, because both colors are the same ink now.
+    men: {
+      label: tGap("men"),
+      color: "var(--gender-man)",
+      icon: GenderMenIcon,
+    },
   } satisfies ChartConfig
   const data = quartiles.map((q, index) => ({
     q: index + 1,
@@ -88,43 +129,41 @@ export function QuartileSplitBars({
     <ChartContainer
       aria-hidden="true"
       config={config}
-      className="aspect-auto h-14 w-full"
+      className={cn("aspect-auto w-full", WIDGET_CHART_HEIGHT)}
     >
-      <BarChart data={data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+      <BarChart
+        data={data}
+        barCategoryGap="18%"
+        margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+      >
+        <defs>
+          <GenderHatch id={marks.hatchId} />
+        </defs>
         <XAxis dataKey="label" hide />
-        <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-        <Bar dataKey="women" stackId="a" fill="var(--color-women)" />
-        <Bar dataKey="men" stackId="a" fill="var(--color-men)" radius={2} />
+        <ChartTooltip
+          cursor={false}
+          position={TOOLTIP_ABOVE}
+          content={
+            <GenderTooltipContent
+              labels={{ women: tGap("women"), men: tGap("men") }}
+            />
+          }
+        />
+        <Bar
+          dataKey="women"
+          stackId="a"
+          fill={marks.women}
+          {...GENDER_MARK_BORDER}
+        />
+        <Bar
+          dataKey="men"
+          stackId="a"
+          fill={marks.men}
+          {...GENDER_MARK_BORDER}
+          radius={[BAR_RADIUS, BAR_RADIUS, 0, 0]}
+        />
       </BarChart>
     </ChartContainer>
-  )
-}
-
-// The Polyform stat-card diagonal-hatch fill pattern for an area chart:
-// a 4x4 tile rotated -45deg holding a faint fill and a thin line, so the
-// area under the curve reads as a hatch rather than a flat block.
-function DiagonalPattern({ id, color }: { id: string; color: string }) {
-  return (
-    <pattern
-      id={id}
-      x="0"
-      y="0"
-      width="4"
-      height="4"
-      patternUnits="userSpaceOnUse"
-      patternTransform="rotate(-45)"
-    >
-      <rect width="4" height="4" fill={color} fillOpacity="0.08" />
-      <line
-        x1="0"
-        y1="0"
-        x2="0"
-        y2="4"
-        stroke={color}
-        strokeWidth="0.8"
-        strokeOpacity="0.4"
-      />
-    </pattern>
   )
 }
 
@@ -172,18 +211,28 @@ function TrendHeading({
   )
 }
 
-// A smooth, monotone area chart of a value over time with a diagonal-hatch
-// fill and a thin brand stroke bleeding to the card's bottom edge (Polyform
-// stat-card style). No axis chrome (both axes hidden); the caller passes each
-// point's heading (`label`, the pay mapping's name) and sub-heading
-// (`caption`, its formatted reference date) so this stays i18n-free, and a
-// pre-built ChartConfig so the series label and color come from the caller.
+// The workforce over pay-mapping runs, as two stacked areas bleeding to the
+// card's bottom edge: women solid under men hatched, the same encoding every
+// other gender chart uses. It plots the SPLIT rather than a single headcount
+// line because the hatch means "men" everywhere else in the app, so a lone
+// hatched area read as a gender series when it was really a total.
+//
+// Stacked areas sit on zero by design: area encodes magnitude, so a padded
+// axis window (which a single flat line needed to be readable) would misstate
+// the composition.
+//
+// No axis chrome (both axes hidden); the caller passes each point's heading
+// (`label`, the pay mapping's name) and sub-heading (`caption`, its formatted
+// reference date) so this stays i18n-free, plus a pre-built ChartConfig for the
+// two series labels.
 export function HeadcountArea({
   data,
   config,
+  labels,
 }: {
-  data: { label: string; caption: string; value: number }[]
+  data: { label: string; caption: string; women: number; men: number }[]
   config: ChartConfig
+  labels: Record<GenderSeries, string>
 }) {
   // Two pay-mapping runs can carry the same reference date and even the same
   // name, which would give the category axis two identical values; recharts
@@ -192,37 +241,56 @@ export function HeadcountArea({
   // tooltip heading comes from the row. jsdom/happy-dom give recharts no
   // layout, so this only reproduces in a real browser.
   const rows = data.map((point, index) => ({ ...point, key: String(index) }))
+  const marks = useGenderMarks()
 
   return (
     <ChartContainer
       aria-hidden="true"
       config={config}
-      className="aspect-auto h-14 w-full"
+      className={cn("aspect-auto w-full", WIDGET_CHART_HEIGHT)}
     >
       <AreaChart data={rows} margin={{ top: 4, left: 0, right: 0, bottom: 0 }}>
         <defs>
-          <DiagonalPattern id="workforceHatch" color="var(--brand)" />
+          <GenderHatch id={marks.hatchId} />
         </defs>
         <XAxis dataKey="key" hide />
-        <YAxis hide domain={headcountTrendDomain(data.map((p) => p.value))} />
+        <YAxis hide domain={[0, "auto"]} />
         <ChartTooltip
           cursor={false}
-          position={{ y: -40 }}
+          position={TOOLTIP_ABOVE}
           content={
-            <ChartTooltipContent
+            <GenderTooltipContent
               indicator="dot"
+              labels={labels}
               labelFormatter={(_axisValue, items) => (
                 <TrendHeading items={items} />
               )}
             />
           }
         />
+        {/* Women first so the solid series is the baseline, matching the
+            quartile columns. Both fills run at full strength: the encoding is
+            solid-vs-hatch in one ink, so lightening the solid band here to
+            make the card airier would have made women a different colour than
+            in every other chart. The stroke is what makes each band read as a
+            curve rather than a slab. */}
         <Area
-          dataKey="value"
+          dataKey="women"
+          stackId="a"
           type="monotone"
-          fill="url(#workforceHatch)"
-          stroke="var(--color-value)"
-          strokeWidth={1}
+          fill={marks.women}
+          fillOpacity={1}
+          {...GENDER_MARK_BORDER}
+          strokeWidth={1.5}
+        />
+        <Area
+          dataKey="men"
+          stackId="a"
+          type="monotone"
+          fill={marks.men}
+          fillOpacity={1}
+          {...GENDER_MARK_BORDER}
+          strokeWidth={1.5}
         />
       </AreaChart>
     </ChartContainer>

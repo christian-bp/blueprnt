@@ -1,6 +1,6 @@
 "use client"
 
-import { FullScreenIcon } from "@hugeicons/core-free-icons"
+import { ExpandIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -64,7 +64,7 @@ export function WidgetCard({
                 aria-label={t("expand")}
                 onClick={() => setOpen(true)}
               >
-                <HugeiconsIcon icon={FullScreenIcon} strokeWidth={2} />
+                <HugeiconsIcon icon={ExpandIcon} strokeWidth={2} />
               </Button>
             )}
           </div>

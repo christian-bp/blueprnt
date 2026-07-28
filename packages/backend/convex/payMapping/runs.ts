@@ -224,11 +224,15 @@ export const startPayMappingRun = orgMutation({
       systemVersion: SYSTEM_VERSION,
       populationCount: 0,
       withPayCount: 0,
+      womenCount: 0,
+      menCount: 0,
       frozenModel,
     })
 
     let populationCount = 0
     let withPayCount = 0
+    let womenCount = 0
+    let menCount = 0
 
     for (const person of active) {
       const assignments = await ctx.db
@@ -300,11 +304,15 @@ export const startPayMappingRun = orgMutation({
         ...(pay?.payYear !== undefined ? { payYear: pay.payYear } : {}),
       })
       populationCount += 1
+      if (person.gender === "Kvinna") womenCount += 1
+      else menCount += 1
     }
 
     await ctx.db.patch(runId, {
       populationCount,
       withPayCount,
+      womenCount,
+      menCount,
     })
     await ctx.audit.log({
       type: AUDIT_EVENTS.payMappingRunStarted,
@@ -328,6 +336,8 @@ const runSummary = v.object({
   initiatedByName: v.string(),
   populationCount: v.number(),
   withPayCount: v.number(),
+  womenCount: v.number(),
+  menCount: v.number(),
 })
 
 export const listPayMappingRuns = orgQuery({
@@ -360,6 +370,8 @@ export const listPayMappingRuns = orgQuery({
       initiatedBy: r.initiatedBy,
       initiatedByName: nameById.get(r.initiatedBy) ?? "unknown",
       populationCount: r.populationCount,
+      womenCount: r.womenCount,
+      menCount: r.menCount,
       withPayCount: r.withPayCount,
     }))
   },

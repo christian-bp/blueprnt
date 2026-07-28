@@ -5,17 +5,23 @@ import { fteTotalMonthlyComp } from "@workspace/constants"
 import {
   type ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
 } from "@workspace/ui/components/chart"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { cn } from "@workspace/ui/lib/utils"
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { CartesianGrid, Scatter, ScatterChart, XAxis, YAxis } from "recharts"
+import {
+  GENDER_DOT,
+  GenderLegend,
+  GenderMenIcon,
+  genderKeyStyle,
+} from "@/components/gender-mark"
 import { WidgetCard } from "@/components/widget-card"
 import { useMoney } from "@/hooks/use-money"
+import { CHART_TOOLTIP_TEXT } from "@/lib/chart-style"
 import type { PayMappingSnapshotRow } from "./pay-mapping-gap-types"
 
 // The scatter's X axis: age (from birthDate) or tenure (from
@@ -93,11 +99,15 @@ export function ScatterTooltipContent({
   const money = useMoney()
   const { row } = point
   const variable = row.components.reduce((sum, c) => sum + c.monthlyAmount, 0)
-  const genderColor =
-    row.gender === "Man" ? "var(--gender-man)" : "var(--gender-woman)"
+  const genderSeries = row.gender === "Man" ? "men" : "women"
 
   return (
-    <div className="min-w-40 rounded-md border bg-popover px-3 py-2 text-popover-foreground text-xs shadow-md">
+    <div
+      className={cn(
+        "min-w-40 rounded-md border bg-popover px-3 py-2 text-popover-foreground shadow-md",
+        CHART_TOOLTIP_TEXT
+      )}
+    >
       <p className="font-medium">
         {row.erased ? tDetail("erased") : row.displayName}
       </p>
@@ -112,8 +122,8 @@ export function ScatterTooltipContent({
       <p className="flex items-center gap-1.5 text-muted-foreground">
         <span
           aria-hidden="true"
-          className="size-2 shrink-0 rounded-full"
-          style={{ backgroundColor: genderColor }}
+          className="size-2 shrink-0 rounded-[2px]"
+          style={genderKeyStyle(genderSeries)}
         />
         {tGender(row.gender)}
       </p>
@@ -222,8 +232,15 @@ export function PayMappingScatter({
   const women = points.filter((point) => point.woman)
   const men = points.filter((point) => !point.woman)
 
+  // A hatch cannot survive on a scatter dot, so the men series is the same
+  // ink drawn as an outline instead (GENDER_DOT); the legend icon keeps the
+  // key honest about which mark belongs to which series.
   const config = {
-    man: { label: tGender("Man"), color: "var(--gender-man)" },
+    man: {
+      label: tGender("Man"),
+      color: "var(--gender-man)",
+      icon: GenderMenIcon,
+    },
     woman: { label: tGender("Kvinna"), color: "var(--gender-woman)" },
   } satisfies ChartConfig
 
@@ -270,13 +287,17 @@ export function PayMappingScatter({
                 )
               }}
             />
-            {/* Two series (man/woman) give the legend its labels: gender is
-                never color-alone. */}
-            <ChartLegend content={<ChartLegendContent />} />
-            <Scatter name="man" data={men} fill="var(--color-man)" />
-            <Scatter name="woman" data={women} fill="var(--color-woman)" />
+            <Scatter name="man" data={men} {...GENDER_DOT.men} />
+            <Scatter name="woman" data={women} {...GENDER_DOT.women} />
           </ScatterChart>
         </ChartContainer>
+        {/* Both series are named here, so gender is never mark-alone. */}
+        <GenderLegend
+          items={[
+            { series: "women", label: tGender("Kvinna") },
+            { series: "men", label: tGender("Man") },
+          ]}
+        />
         {omitted > 0 && (
           <p className="text-muted-foreground text-xs">
             {xMode === "age"

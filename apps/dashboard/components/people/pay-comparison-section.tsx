@@ -6,11 +6,10 @@ import { Badge } from "@workspace/ui/components/badge"
 import {
   type ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
 } from "@workspace/ui/components/chart"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import {
@@ -21,9 +20,16 @@ import {
   XAxis,
   YAxis,
 } from "recharts"
+import {
+  GENDER_DOT,
+  GenderLegend,
+  GenderMenIcon,
+  genderKeyStyle,
+} from "@/components/gender-mark"
 import { useOrganization } from "@/components/org-context"
 import { WidgetCard } from "@/components/widget-card"
 import { useMoney } from "@/hooks/use-money"
+import { CHART_TOOLTIP_TEXT } from "@/lib/chart-style"
 import {
   buildPayComparisonRows,
   type PayComparisonPoint,
@@ -155,13 +161,17 @@ export function PayComparisonTooltip({
 
   const name = point.displayName
   const diff = point.amount - selfAmount
-  // The gender swatch reuses the same raw token the dot is filled with, so the
-  // tooltip and the dot read as the same color.
-  const genderColor =
-    point.gender === "Man" ? "var(--gender-man)" : "var(--gender-woman)"
+  // The swatch mirrors the dot's own mark (solid for women, hatched for men),
+  // so the tooltip and the plot state the same thing.
+  const genderSeries = point.gender === "Man" ? "men" : "women"
 
   return (
-    <div className="min-w-40 rounded-md border bg-popover px-3 py-2 text-popover-foreground text-xs shadow-md">
+    <div
+      className={cn(
+        "min-w-40 rounded-md border bg-popover px-3 py-2 text-popover-foreground shadow-md",
+        CHART_TOOLTIP_TEXT
+      )}
+    >
       {/* Identity: name (brand for the viewed person) over a muted subtitle,
           with a gender swatch so gender is stated, not color-only. */}
       <p className={point.isSelf ? "font-medium text-brand" : "font-medium"}>
@@ -173,8 +183,8 @@ export function PayComparisonTooltip({
       <p className="flex items-center gap-1.5 text-muted-foreground">
         <span
           aria-hidden="true"
-          className="size-2 shrink-0 rounded-full"
-          style={{ backgroundColor: genderColor }}
+          className="size-2 shrink-0 rounded-[2px]"
+          style={genderKeyStyle(genderSeries)}
         />
         {tGender(point.gender)}
       </p>
@@ -216,28 +226,44 @@ export function PayComparisonTooltip({
 // viewed person gets a brand ring so "you" stays findable now that color means
 // gender; every other dot gets a thin surface ring so overlapping dots still
 // separate. Recharts calls the shape per point with the resolved cx/cy/fill.
+// Gender is the dot's own fill (solid women, outlined men: a hatch cannot
+// survive on a 10px mark), which leaves the dot's stroke already spoken for on
+// the men series. So the viewed person is marked by a SEPARATE outer halo
+// instead of a thicker stroke, and the two encodings stop competing: any dot
+// can be self, and any self dot still shows its gender.
 function GenderDot({
   cx,
   cy,
-  fill,
   payload,
 }: {
   cx?: number
   cy?: number
-  fill?: string
   payload?: PayComparisonPoint & { row: number }
 }) {
   if (cx === undefined || cy === undefined) return null
   const isSelf = payload?.isSelf ?? false
+  const mark = payload?.gender === "Man" ? GENDER_DOT.men : GENDER_DOT.women
   return (
-    <circle
-      cx={cx}
-      cy={cy}
-      r={5}
-      fill={fill}
-      stroke={isSelf ? "var(--brand)" : "var(--background)"}
-      strokeWidth={isSelf ? 2.5 : 1}
-    />
+    <>
+      {isSelf && (
+        <circle
+          cx={cx}
+          cy={cy}
+          r={8.5}
+          fill="none"
+          stroke="var(--brand)"
+          strokeWidth={1.5}
+        />
+      )}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={5}
+        fill={mark.fill}
+        stroke={mark.stroke === "none" ? "var(--background)" : mark.stroke}
+        strokeWidth={mark.stroke === "none" ? 1 : mark.strokeWidth}
+      />
+    </>
   )
 }
 
@@ -268,7 +294,11 @@ function PayComparisonChart({
   const selfAmount = points.find((point) => point.isSelf)?.amount ?? 0
 
   const config = {
-    man: { label: tGender("Man"), color: "var(--gender-man)" },
+    man: {
+      label: tGender("Man"),
+      color: "var(--gender-man)",
+      icon: GenderMenIcon,
+    },
     woman: { label: tGender("Kvinna"), color: "var(--gender-woman)" },
   } satisfies ChartConfig
 
@@ -335,24 +365,17 @@ function PayComparisonChart({
               )
             }}
           />
-          {/* Two series (man/woman) give the legend its labels: gender is
-              never color-alone. The `name` is the raw config key, which
-              ChartLegendContent resolves to the translated label + swatch. */}
-          <ChartLegend content={<ChartLegendContent />} />
-          <Scatter
-            name="man"
-            data={men}
-            fill="var(--color-man)"
-            shape={GenderDot}
-          />
-          <Scatter
-            name="woman"
-            data={women}
-            fill="var(--color-woman)"
-            shape={GenderDot}
-          />
+          <Scatter name="man" data={men} shape={GenderDot} />
+          <Scatter name="woman" data={women} shape={GenderDot} />
         </ScatterChart>
       </ChartContainer>
+      {/* Both series are named here, so gender is never mark-alone. */}
+      <GenderLegend
+        items={[
+          { series: "women", label: tGender("Kvinna") },
+          { series: "men", label: tGender("Man") },
+        ]}
+      />
       <p className="text-muted-foreground text-xs">{t("footnote")}</p>
       {excludedCount > 0 && (
         <p className="text-muted-foreground text-xs">

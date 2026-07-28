@@ -101,23 +101,31 @@ describe("HeadcountArea", () => {
   afterEach(cleanup)
 
   const config = {
-    value: { label: "Employees", color: "var(--brand)" },
+    women: { label: "Women", color: "var(--gender-woman)" },
+    men: { label: "Men", color: "var(--gender-man)" },
   } satisfies ChartConfig
 
-  const point = (label: string, caption: string, value: number) => ({
+  const point = (
+    label: string,
+    caption: string,
+    women: number,
+    men: number
+  ) => ({
     label,
     caption,
-    value,
+    women,
+    men,
   })
 
   it("mounts a chart container for representative data", () => {
     const { container } = renderWithIntl(
       <HeadcountArea
         data={[
-          point("Pay mapping 2025", "Jan 1", 5),
-          point("Pay mapping 2026", "Jan 2", 8),
+          point("Pay mapping 2025", "Jan 1", 2, 3),
+          point("Pay mapping 2026", "Jan 2", 4, 4),
         ]}
         config={config}
+        labels={{ women: "Women", men: "Men" }}
       />
     )
     expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
@@ -126,8 +134,9 @@ describe("HeadcountArea", () => {
   it("mounts without crashing for a single data point", () => {
     const { container } = renderWithIntl(
       <HeadcountArea
-        data={[point("Pay mapping 2026", "Jan 1", 5)]}
+        data={[point("Pay mapping 2026", "Jan 1", 2, 3)]}
         config={config}
+        labels={{ women: "Women", men: "Men" }}
       />
     )
     expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
@@ -135,7 +144,11 @@ describe("HeadcountArea", () => {
 
   it("mounts without crashing for an empty data array", () => {
     const { container } = renderWithIntl(
-      <HeadcountArea data={[]} config={config} />
+      <HeadcountArea
+        data={[]}
+        config={config}
+        labels={{ women: "Women", men: "Men" }}
+      />
     )
     expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
   })
@@ -147,10 +160,11 @@ describe("HeadcountArea", () => {
     const { container } = renderWithIntl(
       <HeadcountArea
         data={[
-          point("Pay mapping 2026", "Jan 1", 118),
-          point("Pay mapping 2026", "Jan 1", 121),
+          point("Pay mapping 2026", "Jan 1", 59, 59),
+          point("Pay mapping 2026", "Jan 1", 60, 61),
         ]}
         config={config}
+        labels={{ women: "Women", men: "Men" }}
       />
     )
     expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
@@ -159,8 +173,9 @@ describe("HeadcountArea", () => {
   it("is decorative", () => {
     const { container } = renderWithIntl(
       <HeadcountArea
-        data={[point("Pay mapping 2026", "Jan 1", 5)]}
+        data={[point("Pay mapping 2026", "Jan 1", 2, 3)]}
         config={config}
+        labels={{ women: "Women", men: "Men" }}
       />
     )
     expect(

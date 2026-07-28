@@ -47,13 +47,23 @@ describe("MeanComparisonBars", () => {
     expect((bars[1] as HTMLElement).style.width).toBe("100%")
   })
 
-  it("draws the dashed gap marker through both tracks at the lower mean", () => {
+  it("draws ONE dashed gap marker spanning both tracks at the lower mean", () => {
+    // One element, not one per row: per-row markers left the row gap as a
+    // break in a line that has to read as continuous.
     const { container } = renderBars(50_000, 100_000)
     const markers = container.querySelectorAll('[data-testid="mean-marker"]')
-    expect(markers).toHaveLength(2)
-    for (const marker of markers) {
-      expect((marker as HTMLElement).style.left).toBe("50%")
-    }
+    expect(markers).toHaveLength(1)
+    expect((markers[0] as HTMLElement).style.left).toBe("50%")
+  })
+
+  it("overlays the marker on the track column across both rows", () => {
+    const { container } = renderBars(50_000, 100_000)
+    const holder = container.querySelector('[data-testid="mean-marker"]')
+      ?.parentElement as HTMLElement
+    // Inset to exactly the track column: past the label, short of the amount.
+    expect(holder.className).toContain("inset-y-0")
+    expect(holder.style.left).not.toBe("")
+    expect(holder.style.right).not.toBe("")
   })
 
   it("puts the marker at the men's level when the women earn more", () => {

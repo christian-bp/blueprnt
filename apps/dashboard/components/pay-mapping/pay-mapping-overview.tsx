@@ -4,14 +4,19 @@ import { AGE_BUCKETS } from "@workspace/core"
 import {
   type ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
-  ChartTooltipContent,
 } from "@workspace/ui/components/chart"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useFormatter, useTranslations } from "next-intl"
 import { Bar, BarChart, Cell, Pie, PieChart, XAxis, YAxis } from "recharts"
+import {
+  GenderHatch,
+  GenderMenIcon,
+  GENDER_MARK_BORDER,
+  GenderLegend,
+  GenderTooltipContent,
+  useGenderMarks,
+} from "@/components/gender-mark"
 import { WidgetCard } from "@/components/widget-card"
 import { EqualityClock, EqualityClockSkeleton } from "./equality-clock"
 import { MeanComparisonBars } from "./mean-comparison-bars"
@@ -22,32 +27,8 @@ import type {
   OrgAggregate,
   PayMappingGapResult,
 } from "./pay-mapping-gap-types"
+import { BAR_RADIUS, CHART_AXIS_FONT_SIZE } from "@/lib/chart-style"
 import { percentText } from "@/lib/percent"
-
-// A legend/stat row keyed by gender: a color swatch, a muted label, and a
-// right-aligned value. Shared by the donut's side rows so the gender-row
-// anatomy lives once.
-function GenderStatRow({
-  colorVar,
-  label,
-  value,
-}: {
-  colorVar: string
-  label: string
-  value: string
-}) {
-  return (
-    <div className="flex items-center gap-2">
-      <span
-        aria-hidden
-        className="size-2 shrink-0 rounded-full"
-        style={{ backgroundColor: colorVar }}
-      />
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd className="ml-auto tabular-nums">{value}</dd>
-    </div>
-  )
-}
 
 // The unadjusted org-level gap, sentence-first: a plain-language finding
 // (unsigned percent, direction spelled out in the word, same convention and
@@ -149,6 +130,7 @@ function WholeSurveyStat({
   expanded?: boolean
 }) {
   const tGap = useTranslations("dashboard.payMapping.gap.columns")
+  const marks = useGenderMarks()
   if (population === undefined) {
     return <Skeleton className="h-40 w-full" />
   }
@@ -157,16 +139,27 @@ function WholeSurveyStat({
   const total = women + men
   const config = {
     women: { label: tGap("women"), color: "var(--gender-woman)" },
-    men: { label: tGap("men"), color: "var(--gender-man)" },
+    men: {
+      label: tGap("men"),
+      color: "var(--gender-man)",
+      icon: GenderMenIcon,
+    },
   } satisfies ChartConfig
   const data = [
     {
       key: "women",
       label: tGap("women"),
       value: women,
-      fill: "var(--gender-woman)",
+      fill: marks.women,
+      swatch: "women" as const,
     },
-    { key: "men", label: tGap("men"), value: men, fill: "var(--gender-man)" },
+    {
+      key: "men",
+      label: tGap("men"),
+      value: men,
+      fill: marks.men,
+      swatch: "men" as const,
+    },
   ]
   const share = (value: number) =>
     total > 0 ? `${value} (${Math.round((value / total) * 100)}%)` : `${value}`
@@ -177,16 +170,29 @@ function WholeSurveyStat({
         className={expanded ? "aspect-square h-80" : "aspect-square h-40"}
       >
         <PieChart>
-          <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+          <defs>
+            <GenderHatch id={marks.hatchId} />
+          </defs>
+          {/* nameKey is the config key, NOT the translated label:
+              ChartTooltipContent resolves a series' key by name, so naming
+              slices "Man" found no config entry, fell back to a swatch whose
+              colour was the hatch's url(...) paint, and drew nothing. */}
+          <ChartTooltip
+            content={
+              <GenderTooltipContent
+                hideLabel
+                labels={{ women: tGap("women"), men: tGap("men") }}
+              />
+            }
+          />
           <Pie
             data={data}
             dataKey="value"
-            nameKey="label"
+            nameKey="key"
             innerRadius={expanded ? 80 : 40}
-            strokeWidth={2}
           >
             {data.map((d) => (
-              <Cell key={d.key} fill={d.fill} />
+              <Cell key={d.key} fill={d.fill} {...GENDER_MARK_BORDER} />
             ))}
           </Pie>
         </PieChart>
@@ -196,16 +202,13 @@ function WholeSurveyStat({
           <p className="text-muted-foreground text-sm">{countLabel}</p>
           <p className="font-semibold text-3xl tabular-nums">{total}</p>
         </div>
-        <dl className="space-y-1 text-sm">
-          {data.map((d) => (
-            <GenderStatRow
-              key={d.key}
-              colorVar={d.fill}
-              label={d.label}
-              value={share(d.value)}
-            />
-          ))}
-        </dl>
+        <GenderLegend
+          items={data.map((d) => ({
+            series: d.swatch,
+            label: d.label,
+            value: share(d.value),
+          }))}
+        />
       </div>
     </div>
   )
@@ -224,11 +227,16 @@ function QuartileStat({
 }) {
   const t = useTranslations("dashboard.payMapping.overview.quartiles")
   const tGap = useTranslations("dashboard.payMapping.gap.columns")
+  const marks = useGenderMarks()
   if (quartiles === undefined) {
     return <Skeleton className="h-40 w-full" />
   }
   const config = {
-    men: { label: tGap("men"), color: "var(--gender-man)" },
+    men: {
+      label: tGap("men"),
+      color: "var(--gender-man)",
+      icon: GenderMenIcon,
+    },
     women: { label: tGap("women"), color: "var(--gender-woman)" },
   } satisfies ChartConfig
   // Wire order is lower -> upper; display the upper quartile on top.
@@ -241,41 +249,59 @@ function QuartileStat({
     }))
     .reverse()
   return (
-    <ChartContainer
-      config={config}
-      className={
-        expanded ? "aspect-auto h-96 w-full" : "aspect-auto h-40 w-full"
-      }
-    >
-      <BarChart accessibilityLayer layout="vertical" data={data}>
-        <XAxis type="number" hide />
-        <YAxis
-          type="category"
-          dataKey="label"
-          tickLine={false}
-          axisLine={false}
-          width={expanded ? 140 : 92}
-          fontSize={expanded ? 13 : 11}
-        />
-        <ChartTooltip content={<ChartTooltipContent />} />
-        {/* Outer corners rounded on each end of the stack: the base (men)
+    <div className="space-y-2">
+      <ChartContainer
+        config={config}
+        className={
+          expanded ? "aspect-auto h-96 w-full" : "aspect-auto h-40 w-full"
+        }
+      >
+        <BarChart accessibilityLayer layout="vertical" data={data}>
+          <XAxis type="number" hide />
+          <YAxis
+            type="category"
+            dataKey="label"
+            tickLine={false}
+            axisLine={false}
+            width={expanded ? 148 : 100}
+            fontSize={CHART_AXIS_FONT_SIZE}
+          />
+          <defs>
+            <GenderHatch id={marks.hatchId} />
+          </defs>
+          <ChartTooltip
+            content={
+              <GenderTooltipContent
+                labels={{ women: tGap("women"), men: tGap("men") }}
+              />
+            }
+          />
+          {/* Outer corners rounded on each end of the stack: the base (men)
             segment carries the left radius, the top (women) segment the
             right (recharts radius order: [tl, tr, br, bl]). */}
-        <Bar
-          dataKey="men"
-          stackId="a"
-          fill="var(--color-men)"
-          radius={[2, 0, 0, 2]}
-        />
-        <Bar
-          dataKey="women"
-          stackId="a"
-          fill="var(--color-women)"
-          radius={[0, 2, 2, 0]}
-        />
-        <ChartLegend content={<ChartLegendContent />} />
-      </BarChart>
-    </ChartContainer>
+          <Bar
+            dataKey="men"
+            stackId="a"
+            fill={marks.men}
+            {...GENDER_MARK_BORDER}
+            radius={[BAR_RADIUS, 0, 0, BAR_RADIUS]}
+          />
+          <Bar
+            dataKey="women"
+            stackId="a"
+            fill={marks.women}
+            {...GENDER_MARK_BORDER}
+            radius={[0, BAR_RADIUS, BAR_RADIUS, 0]}
+          />
+        </BarChart>
+      </ChartContainer>
+      <GenderLegend
+        items={[
+          { series: "women", label: tGap("women") },
+          { series: "men", label: tGap("men") },
+        ]}
+      />
+    </div>
   )
 }
 
@@ -291,11 +317,16 @@ function AgeStat({
 }) {
   const tOverview = useTranslations("dashboard.payMapping.overview")
   const tGap = useTranslations("dashboard.payMapping.gap.columns")
+  const marks = useGenderMarks()
   if (age === undefined) {
     return <Skeleton className="h-40 w-full" />
   }
   const config = {
-    men: { label: tGap("men"), color: "var(--gender-man)" },
+    men: {
+      label: tGap("men"),
+      color: "var(--gender-man)",
+      icon: GenderMenIcon,
+    },
     women: { label: tGap("women"), color: "var(--gender-woman)" },
   } satisfies ChartConfig
   const data = AGE_BUCKETS.map((bucket, index) => ({
@@ -316,15 +347,39 @@ function AgeStat({
             dataKey="bucket"
             tickLine={false}
             axisLine={false}
-            fontSize={expanded ? 12 : 10}
+            fontSize={CHART_AXIS_FONT_SIZE}
             interval={0}
           />
-          <ChartTooltip content={<ChartTooltipContent />} />
-          <Bar dataKey="men" fill="var(--color-men)" radius={2} />
-          <Bar dataKey="women" fill="var(--color-women)" radius={2} />
-          <ChartLegend content={<ChartLegendContent />} />
+          <defs>
+            <GenderHatch id={marks.hatchId} />
+          </defs>
+          <ChartTooltip
+            content={
+              <GenderTooltipContent
+                labels={{ women: tGap("women"), men: tGap("men") }}
+              />
+            }
+          />
+          <Bar
+            dataKey="men"
+            fill={marks.men}
+            {...GENDER_MARK_BORDER}
+            radius={BAR_RADIUS}
+          />
+          <Bar
+            dataKey="women"
+            fill={marks.women}
+            {...GENDER_MARK_BORDER}
+            radius={BAR_RADIUS}
+          />
         </BarChart>
       </ChartContainer>
+      <GenderLegend
+        items={[
+          { series: "women", label: tGap("women") },
+          { series: "men", label: tGap("men") },
+        ]}
+      />
       {age.unknown > 0 && (
         <p className="text-muted-foreground text-xs">
           {tOverview("birthDateUnknown", { count: age.unknown })}
