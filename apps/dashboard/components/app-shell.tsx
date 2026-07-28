@@ -15,6 +15,18 @@ import { SiteHeader } from "@/components/site-header"
 
 // The signed-in, onboarded application frame: sidebar + header + page
 // content. Mounted by OnboardingGate once onboarding is complete.
+// The cap a normal page gets. It sits on the element that ALSO carries the
+// page padding, so a page's visible content is this minus px-4 (lg:px-6).
+export const PAGE_MAX_W = "max-w-6xl"
+
+// The same width measured as CONTENT, for use inside /work: that route is
+// full-bleed (no cap, so its matrix can use every pixel), which means anything
+// there that should line up with other pages has to subtract the padding the
+// shell would otherwise have included. Capping at a bare PAGE_MAX_W instead
+// makes it wider than every other page by exactly that padding. 72rem is 6xl.
+export const PAGE_CONTENT_MAX_W =
+  "max-w-[calc(72rem-2rem)] lg:max-w-[calc(72rem-3rem)]"
+
 export function AppShell(props: {
   organization: OrganizationInfo
   children: ReactNode
@@ -62,7 +74,7 @@ export function AppShell(props: {
                 <div
                   className={cn(
                     "flex w-full flex-col gap-4 px-4 py-4 md:gap-6 md:py-6 lg:px-6",
-                    fullBleed ? "min-h-0 flex-1" : "max-w-6xl"
+                    fullBleed ? "min-h-0 flex-1" : PAGE_MAX_W
                   )}
                 >
                   {/* Role quick-look sheet, openable from any role chip in the

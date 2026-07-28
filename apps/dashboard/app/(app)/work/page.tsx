@@ -21,6 +21,7 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs"
 import { cn } from "@workspace/ui/lib/utils"
+import { PAGE_CONTENT_MAX_W } from "@/components/app-shell"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
@@ -39,6 +40,11 @@ import { trackColumns } from "@/lib/bands"
 // Filter key for roles with no family (the "No family" option).
 const NO_FAMILY = "__none__"
 
+// /work is the app's only full-bleed route (AppShell), which the matrix and
+// families views need: they are horizontal and want every pixel. The ladder is
+// a vertical list of band rows, so it instead lines up with every other page by
+// applying the shell's content width. The loading placeholder below carries it
+// too, so the panel does not narrow when the data arrives.
 // Work > Overview: the band ladder (default) and a band-by-track matrix
 // toggle. A multi-select family filter shows/hides families, and a "group by
 // family" switch clusters roles by family inside each band (ladder) or cell
@@ -98,7 +104,12 @@ export default function WorkOverviewPage() {
             <TabsTrigger value="matrix">{t("viewMatrix")}</TabsTrigger>
             <TabsTrigger value="families">{t("viewFamilies")}</TabsTrigger>
           </TabsList>
-          <ul className="min-h-0 flex-1 space-y-2 overflow-y-auto">
+          <ul
+            className={cn(
+              "min-h-0 w-full flex-1 space-y-2 overflow-y-auto",
+              PAGE_CONTENT_MAX_W
+            )}
+          >
             {[3, 2, 4, 1, 2].map((chips, band) => (
               <li
                 // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
@@ -234,7 +245,10 @@ export default function WorkOverviewPage() {
           </div>
           <TabsContent
             value="ladder"
-            className="min-h-0 flex-1 space-y-4 overflow-y-auto"
+            className={cn(
+              "min-h-0 w-full flex-1 space-y-4 overflow-y-auto",
+              PAGE_CONTENT_MAX_W
+            )}
           >
             <BandLadder
               bands={results.bands}
