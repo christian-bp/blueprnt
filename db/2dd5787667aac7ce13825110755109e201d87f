@@ -1,0 +1,24 @@
+apps/dashboard/components/app-shell.tsx
+  s_85d86f7f3ca7ee::t_38af71328e5a37 20,29,77
+  s_85d86f7f3ca7ee::t_fdfff6b4f9908b 18-19,21-28
+apps/dashboard/app/(app)/work/page.tsx
+  s_85d86f7f3ca7ee::t_fdfff6b4f9908b 24,46-47,107-112,248-250
+  s_85d86f7f3ca7ee::t_38af71328e5a37 43-45
+  s_85d86f7f3ca7ee::t_ecbfac6ca04c24 251
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "db2dd5787667aac7ce13825110755109e201d87f",
+  "prompts": {},
+  "sessions": {
+    "s_85d86f7f3ca7ee": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "affd0db7-845d-446a-a2e5-5b35727db508",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
