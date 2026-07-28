@@ -1,0 +1,45 @@
+packages/i18n/messages/da.json
+  s_85d86f7f3ca7ee::t_11f56a6356bade 148,712,930-935
+packages/i18n/messages/nb.json
+  s_85d86f7f3ca7ee::t_11f56a6356bade 148,712,930-935
+packages/i18n/messages/fi.json
+  s_85d86f7f3ca7ee::t_11f56a6356bade 148,712,930-935
+apps/dashboard/components/pay-mapping/rename-pay-mapping-dialog.tsx
+  s_85d86f7f3ca7ee::t_7a1ca2a50ee4ef 117
+  s_85d86f7f3ca7ee::t_2da06e2f6fc55e 1-116,118-127
+packages/backend/convex/lib/audit.ts
+  s_85d86f7f3ca7ee::t_bd787fc724946c 55
+apps/dashboard/components/pay-mapping/pay-mapping-run-actions.tsx
+  s_85d86f7f3ca7ee::t_7a1ca2a50ee4ef 19,23-24,42,62-64,74-80
+  s_85d86f7f3ca7ee::t_db6fbd1858c4ab 81
+packages/backend/convex/lib/auditPayloads.ts
+  s_85d86f7f3ca7ee::t_bd787fc724946c 330-332
+packages/backend/convex/payMapping/runs.ts
+  s_85d86f7f3ca7ee::t_a1d54479606d9c 601-638
+apps/dashboard/components/pay-mapping/start-pay-mapping-dialog.tsx
+  s_85d86f7f3ca7ee::t_b600a5742cdcc8 35-36,76-77,92
+packages/i18n/messages/sv.json
+  s_85d86f7f3ca7ee::t_11f56a6356bade 148,712,930-935
+apps/dashboard/lib/pay-mapping-schemas.ts
+  s_85d86f7f3ca7ee::t_b600a5742cdcc8 4-8,13
+packages/i18n/messages/en.json
+  s_85d86f7f3ca7ee::t_11f56a6356bade 148,712,930-935
+packages/backend/convex/payMapping/runs.test.ts
+  s_85d86f7f3ca7ee::t_92bf1445945e60 1191-1272
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "6e11b7f8dd82d8e833d66780a4c0eb3390dd6d81",
+  "prompts": {},
+  "sessions": {
+    "s_85d86f7f3ca7ee": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "affd0db7-845d-446a-a2e5-5b35727db508",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
