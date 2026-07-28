@@ -65,7 +65,10 @@ export function SiteHeader() {
       ) : inPayMappingRun ? (
         <PayMappingTabs />
       ) : (
-        <span className="font-medium text-sm">{sectionTitle}</span>
+        // px-2 matches the header tab links (every *-tabs component uses it),
+        // so a section with a plain title starts its text at the same x as one
+        // with tabs instead of sitting flush against the separator.
+        <span className="px-2 font-medium text-sm">{sectionTitle}</span>
       )}
       {inPayMappingRun && <PayMappingRunIndicator />}
     </header>
