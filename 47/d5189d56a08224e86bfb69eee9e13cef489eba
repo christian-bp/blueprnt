@@ -1,0 +1,38 @@
+apps/dashboard/components/overview/widget-viz.tsx
+  s_85d86f7f3ca7ee::t_75172a42a9318d 38
+  s_85d86f7f3ca7ee::t_2f559ec0c1b656 23,216-228,230,232-233,236-244
+  s_85d86f7f3ca7ee::t_53059724ef72d5 229,231,234-235
+  s_85d86f7f3ca7ee::t_879ba3bd686d7a 248-249,251-258,262,278-282,292,296,298-299,301,303,305
+  s_85d86f7f3ca7ee::t_5556832f9f507d 24,263,290,300,304,306,308
+  s_85d86f7f3ca7ee::t_d47de4e198ab84 245-247
+CLAUDE.md
+  s_85d86f7f3ca7ee::t_c35140f20c3087 70
+apps/dashboard/components/overview/overview-widgets.tsx
+  s_85d86f7f3ca7ee::t_b91b8d9b760f43 11,120
+apps/dashboard/components/overview/widget-viz.test.tsx
+  s_85d86f7f3ca7ee::t_b91b8d9b760f43 9,100,122,136,147,161,175
+apps/dashboard/lib/headcount-trend.ts
+  s_85d86f7f3ca7ee::t_0fcb76ca6dd3e3 42-50,52,54-56,58-59
+  s_85d86f7f3ca7ee::t_180ccce80d1c20 41,51,53,57,60
+apps/dashboard/lib/headcount-trend.test.ts
+  s_85d86f7f3ca7ee::t_5a792f9489446b 5,58-67,70-71,84,88-90,92-93
+  s_85d86f7f3ca7ee::t_53059724ef72d5 68-69,72-83,85,91
+  s_85d86f7f3ca7ee::t_a4cfb17937a5e5 86-87
+  s_85d86f7f3ca7ee::t_d357f2170e7de3 94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "47d5189d56a08224e86bfb69eee9e13cef489eba",
+  "prompts": {},
+  "sessions": {
+    "s_85d86f7f3ca7ee": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "affd0db7-845d-446a-a2e5-5b35727db508",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
