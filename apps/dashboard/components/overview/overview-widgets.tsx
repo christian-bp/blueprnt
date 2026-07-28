@@ -8,7 +8,7 @@ import type { ReactNode } from "react"
 import { OverviewWidgetCard } from "@/components/overview/widget-card"
 import {
   BandBars,
-  HeadcountArea,
+  HeadcountTrend,
   QuartileSplitBars,
 } from "@/components/overview/widget-viz"
 import type { PayMappingHeadline } from "@/hooks/use-pay-mapping-headline"
@@ -117,7 +117,7 @@ export function OverviewWidgets({
     workforceViz = <div className={cn("w-full", WIDGET_CHART_HEIGHT)} />
   } else {
     workforceViz = (
-      <HeadcountArea
+      <HeadcountTrend
         data={headcountTrend.map((point) => ({
           label: point.runLabel,
           caption: format.dateTime(new Date(point.date), {

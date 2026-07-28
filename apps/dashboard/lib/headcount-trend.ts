@@ -38,3 +38,23 @@ export function buildHeadcountTrend(
 export function headcountTotal(point: HeadcountPoint): number {
   return point.women + point.men
 }
+
+// The y-axis window for the trend chart: one line of TOTAL headcount, so the
+// window is sized to that total's own movement.
+//
+// Not zero-based, and not a line per gender. An area encodes magnitude so it
+// has to sit on zero, which renders a 118 -> 121 change as about one pixel. A
+// line per gender does not help either: the two series sit ~20 apart while each
+// moves by 1-2, and no single axis can both fit that gap and magnify that
+// movement. One total line has neither problem, and the hover still carries the
+// split.
+export function headcountTrendDomain(
+  totals: readonly number[]
+): [number, number] {
+  if (totals.length === 0) return [0, 1]
+  const min = Math.min(...totals)
+  const max = Math.max(...totals)
+  const span = max - min
+  const pad = span > 0 ? span * 0.6 : Math.max(max * 0.05, 1)
+  return [Math.max(0, min - pad), max + pad * 0.4]
+}

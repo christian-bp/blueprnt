@@ -6,7 +6,7 @@ import type { ReactNode } from "react"
 import { afterEach, describe, expect, it } from "vitest"
 import {
   BandBars,
-  HeadcountArea,
+  HeadcountTrend,
   QuartileSplitBars,
 } from "@/components/overview/widget-viz"
 
@@ -97,7 +97,7 @@ describe("QuartileSplitBars", () => {
   })
 })
 
-describe("HeadcountArea", () => {
+describe("HeadcountTrend", () => {
   afterEach(cleanup)
 
   const config = {
@@ -119,7 +119,7 @@ describe("HeadcountArea", () => {
 
   it("mounts a chart container for representative data", () => {
     const { container } = renderWithIntl(
-      <HeadcountArea
+      <HeadcountTrend
         data={[
           point("Pay mapping 2025", "Jan 1", 2, 3),
           point("Pay mapping 2026", "Jan 2", 4, 4),
@@ -133,7 +133,7 @@ describe("HeadcountArea", () => {
 
   it("mounts without crashing for a single data point", () => {
     const { container } = renderWithIntl(
-      <HeadcountArea
+      <HeadcountTrend
         data={[point("Pay mapping 2026", "Jan 1", 2, 3)]}
         config={config}
         labels={{ women: "Women", men: "Men" }}
@@ -144,7 +144,7 @@ describe("HeadcountArea", () => {
 
   it("mounts without crashing for an empty data array", () => {
     const { container } = renderWithIntl(
-      <HeadcountArea
+      <HeadcountTrend
         data={[]}
         config={config}
         labels={{ women: "Women", men: "Men" }}
@@ -158,7 +158,7 @@ describe("HeadcountArea", () => {
     // points can carry identical text; the axis keys on a synthetic unique
     // value so the tooltip still resolves (browser-only, see widget-viz.tsx).
     const { container } = renderWithIntl(
-      <HeadcountArea
+      <HeadcountTrend
         data={[
           point("Pay mapping 2026", "Jan 1", 59, 59),
           point("Pay mapping 2026", "Jan 1", 60, 61),
@@ -172,7 +172,7 @@ describe("HeadcountArea", () => {
 
   it("is decorative", () => {
     const { container } = renderWithIntl(
-      <HeadcountArea
+      <HeadcountTrend
         data={[point("Pay mapping 2026", "Jan 1", 2, 3)]}
         config={config}
         labels={{ women: "Women", men: "Men" }}

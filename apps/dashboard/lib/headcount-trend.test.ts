@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 import {
   buildHeadcountTrend,
   headcountTotal,
+  headcountTrendDomain,
   type HeadcountTrendRun,
 } from "./headcount-trend"
 
@@ -52,5 +53,42 @@ describe("headcountTotal", () => {
 
   it("is zero for an empty population", () => {
     expect(headcountTotal({ date: 1, runLabel: "x", women: 0, men: 0 })).toBe(0)
+  })
+})
+
+describe("headcountTrendDomain", () => {
+  it("returns a valid window for no points", () => {
+    const [low, high] = headcountTrendDomain([])
+    expect(low).toBeLessThan(high)
+  })
+
+  it("does not anchor at zero", () => {
+    // The whole reason the trend is lines and not stacked areas: on a
+    // zero-based axis 118 -> 121 is about one pixel.
+    const [low] = headcountTrendDomain([118, 121])
+    expect(low).toBeGreaterThan(100)
+  })
+
+  it("keeps every total inside the window", () => {
+    const [low, high] = headcountTrendDomain([118, 121])
+    expect(low).toBeLessThan(118)
+    expect(high).toBeGreaterThan(121)
+  })
+
+  it("gives the change most of the window", () => {
+    // The point of the padded window: a 3-person move has to be legible.
+    const [low, high] = headcountTrendDomain([118, 121])
+    expect(3 / (high - low)).toBeGreaterThan(0.4)
+  })
+
+  it("brackets a flat pair instead of collapsing to a point", () => {
+    const [low, high] = headcountTrendDomain([120, 120])
+    expect(low).toBeLessThan(120)
+    expect(high).toBeGreaterThan(120)
+  })
+
+  it("never drops below zero", () => {
+    const [low] = headcountTrendDomain([1, 2])
+    expect(low).toBeGreaterThanOrEqual(0)
   })
 })

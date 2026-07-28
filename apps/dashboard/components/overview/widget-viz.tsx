@@ -20,7 +20,8 @@ import {
 } from "@workspace/ui/components/chart"
 import { cn } from "@workspace/ui/lib/utils"
 import { useTranslations } from "next-intl"
-import { Area, AreaChart, Bar, BarChart, XAxis, YAxis } from "recharts"
+import type { ComponentProps } from "react"
+import { Bar, BarChart, Line, LineChart, XAxis, YAxis } from "recharts"
 import {
   type GenderSeries,
   GENDER_MARK_BORDER,
@@ -34,6 +35,7 @@ import {
   CHART_TOOLTIP_TEXT,
   WIDGET_CHART_HEIGHT,
 } from "@/lib/chart-style"
+import { headcountTrendDomain } from "@/lib/headcount-trend"
 
 // Every widget chart sits in the bottom strip of a card that CLIPS its
 // overflow (the fill bleeds to the rounded bottom edge), and recharts renders
@@ -211,21 +213,54 @@ function TrendHeading({
   )
 }
 
-// The workforce over pay-mapping runs, as two stacked areas bleeding to the
-// card's bottom edge: women solid under men hatched, the same encoding every
-// other gender chart uses. It plots the SPLIT rather than a single headcount
-// line because the hatch means "men" everywhere else in the app, so a lone
-// hatched area read as a gender series when it was really a total.
+// The trend's hover. The chart plots ONE series (the total), so recharts hands
+// over a single payload row; this expands it into the two gender rows before
+// GenderTooltipContent renders them, which is what lets the hover carry the
+// split that the line itself no longer shows. Reusing that component rather
+// than hand-building a card keeps the row markup, ordering and type size
+// identical to every other chart's hover.
+function TrendTooltipContent({
+  labels,
+  ...props
+}: ComponentProps<typeof GenderTooltipContent>) {
+  const row = props.payload?.[0]?.payload as
+    | { women: number; men: number }
+    | undefined
+  const base = props.payload?.[0]
+  const payload =
+    row === undefined || base === undefined
+      ? props.payload
+      : [
+          { ...base, dataKey: "women", name: "women", value: row.women },
+          { ...base, dataKey: "men", name: "men", value: row.men },
+        ]
+  return (
+    <GenderTooltipContent
+      {...props}
+      labels={labels}
+      payload={payload}
+      indicator="dot"
+      labelFormatter={(_axisValue, items) => <TrendHeading items={items} />}
+    />
+  )
+}
+
+// The workforce over pay-mapping runs, as ONE line of total headcount bleeding
+// to the card's bottom edge. The hover breaks that total into women and men.
 //
-// Stacked areas sit on zero by design: area encodes magnitude, so a padded
-// axis window (which a single flat line needed to be readable) would misstate
-// the composition.
+// One line, not two, and not the stacked areas this started as. An area encodes
+// magnitude so it must sit on zero, which draws a 118 -> 121 change as about a
+// pixel. A line per gender does not fix it either: the two series sit ~20 apart
+// while each moves by 1-2, and no single axis can both fit that gap and magnify
+// that movement. A single total line is sized to its own movement, so the
+// change is finally legible, and the split moves to the hover where it costs
+// nothing. That also leaves the mark free of the gender encoding, which is why
+// this chart no longer needs the hatch.
 //
 // No axis chrome (both axes hidden); the caller passes each point's heading
 // (`label`, the pay mapping's name) and sub-heading (`caption`, its formatted
-// reference date) so this stays i18n-free, plus a pre-built ChartConfig for the
-// two series labels.
-export function HeadcountArea({
+// reference date) so this stays i18n-free, plus the series labels for the hover.
+export function HeadcountTrend({
   data,
   config,
   labels,
@@ -240,8 +275,11 @@ export function HeadcountArea({
   // the axis keys on a per-point value that is unique by construction, and the
   // tooltip heading comes from the row. jsdom/happy-dom give recharts no
   // layout, so this only reproduces in a real browser.
-  const rows = data.map((point, index) => ({ ...point, key: String(index) }))
-  const marks = useGenderMarks()
+  const rows = data.map((point, index) => ({
+    ...point,
+    key: String(index),
+    total: point.women + point.men,
+  }))
 
   return (
     <ChartContainer
@@ -249,50 +287,25 @@ export function HeadcountArea({
       config={config}
       className={cn("aspect-auto w-full", WIDGET_CHART_HEIGHT)}
     >
-      <AreaChart data={rows} margin={{ top: 4, left: 0, right: 0, bottom: 0 }}>
-        <defs>
-          <GenderHatch id={marks.hatchId} />
-        </defs>
+      <LineChart data={rows} margin={{ top: 8, left: 0, right: 0, bottom: 8 }}>
         <XAxis dataKey="key" hide />
-        <YAxis hide domain={[0, "auto"]} />
+        <YAxis hide domain={headcountTrendDomain(rows.map((r) => r.total))} />
         <ChartTooltip
           cursor={false}
           position={TOOLTIP_ABOVE}
-          content={
-            <GenderTooltipContent
-              indicator="dot"
-              labels={labels}
-              labelFormatter={(_axisValue, items) => (
-                <TrendHeading items={items} />
-              )}
-            />
-          }
+          content={<TrendTooltipContent labels={labels} />}
         />
-        {/* Women first so the solid series is the baseline, matching the
-            quartile columns. Both fills run at full strength: the encoding is
-            solid-vs-hatch in one ink, so lightening the solid band here to
-            make the card airier would have made women a different colour than
-            in every other chart. The stroke is what makes each band read as a
-            curve rather than a slab. */}
-        <Area
-          dataKey="women"
-          stackId="a"
+        {/* Dots on every point: with as few as two runs the line alone gives no
+            sense of where the readings actually are. */}
+        <Line
+          dataKey="total"
           type="monotone"
-          fill={marks.women}
-          fillOpacity={1}
-          {...GENDER_MARK_BORDER}
-          strokeWidth={1.5}
+          stroke="var(--brand)"
+          strokeWidth={2}
+          dot={{ r: 2.5, strokeWidth: 0, fill: "var(--brand)" }}
+          activeDot={{ r: 4 }}
         />
-        <Area
-          dataKey="men"
-          stackId="a"
-          type="monotone"
-          fill={marks.men}
-          fillOpacity={1}
-          {...GENDER_MARK_BORDER}
-          strokeWidth={1.5}
-        />
-      </AreaChart>
+      </LineChart>
     </ChartContainer>
   )
 }
