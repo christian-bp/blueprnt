@@ -145,6 +145,7 @@
       "payMappingGroupReopened": "Gruppen genåbnet.",
       "payMappingCompleted": "Lønkortlægningen afsluttet.",
       "payMappingReopened": "Lønkortlægningen genåbnet.",
+      "payMappingRenamed": "Lønkortlægningen er omdøbt",
       "payMappingDeleted": "Lønkortlægning slettet"
     },
     "accountMenu": "Kontomenu",
@@ -708,6 +709,7 @@
         "payMappingGroupAnalysisUpdated": "Lønanalyse opdateret",
         "payMappingRunCompleted": "Lønkortlægning afsluttet",
         "payMappingRunReopened": "Lønkortlægning genåbnet",
+        "payMappingRunRenamed": "Lønkortlægning omdøbt",
         "payMappingCollaborationUpdated": "Samarbejde opdateret",
         "payMappingRunDeleted": "Lønkortlægning slettet"
       },
@@ -925,6 +927,12 @@
         "responsible": "Startet af",
         "created": "Oprettet",
         "rowActionsLabel": "Handlinger for {label}",
+        "renameCta": "Omdøb",
+        "renameDialogTitle": "Omdøb lønkortlægningen",
+        "renameDialogDescription": "Navnet er, hvordan lønkortlægningen vises og linkes. Omdøber du den, ændres linket.",
+        "renameNameLabel": "Navn",
+        "renameSave": "Gem",
+        "renameCancel": "Annuller",
         "deleteCta": "Slet lønkortlægning",
         "deleteDialogTitle": "Slet {label}?",
         "deleteDialogDescription": "Lønkortlægningen, dens frosne øjebliksbillede og dens dokumentation slettes permanent. Det kan ikke fortrydes.",

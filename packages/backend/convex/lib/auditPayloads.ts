@@ -327,6 +327,9 @@ export interface AuditPayloads {
     equivalentWorkDone: number
   }
   "payMapping.runReopened": { runId: string }
+  // A rename diffs the run's own display name, which is org content (the pay
+  // mapping's title), never person PII.
+  "payMapping.runRenamed": { runId: string; changes: Changes }
   // Pure marker payload (mirrors runReopened): the samverkan (collaboration)
   // participants are people's names by design (statutory documentation
   // content), so the trail records ONLY that the field changed, never the

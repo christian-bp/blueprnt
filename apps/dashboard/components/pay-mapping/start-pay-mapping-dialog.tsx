@@ -32,8 +32,8 @@ import { HelpMorphButton } from "@/components/help-morph-button"
 import { PayMappingPreconditionsPanel } from "@/components/pay-mapping/pay-mapping-preconditions-panel"
 import { SubmitButton } from "@/components/submit-button"
 import {
-  makeStartRunSchema,
-  type StartRunValues,
+  makeRunLabelSchema,
+  type RunLabelValues,
 } from "@/lib/pay-mapping-schemas"
 
 // Starts a new pay mapping (kartlaggning): the only field is a label. The
@@ -73,8 +73,8 @@ export function StartPayMappingDialog({
   const [open, setOpen] = useState(false)
   const [failed, setFailed] = useState(false)
 
-  const schema = useMemo(() => makeStartRunSchema(tv), [tv])
-  const form = useForm<StartRunValues>({
+  const schema = useMemo(() => makeRunLabelSchema(tv), [tv])
+  const form = useForm<RunLabelValues>({
     resolver: zodResolver(schema),
     mode: "onTouched",
     defaultValues: { label: "" },
@@ -89,7 +89,7 @@ export function StartPayMappingDialog({
     }
   }
 
-  async function onSubmit(values: StartRunValues) {
+  async function onSubmit(values: RunLabelValues) {
     setFailed(false)
     try {
       const { slug } = await startPayMappingRun({

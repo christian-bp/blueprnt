@@ -598,6 +598,44 @@ export const setPayMappingCollaboration = orgMutation({
 // audit payload carries the run's own label (org content, never person
 // PII) and the population count, mirroring runStarted's flat-stat shape;
 // runId is never rendered as a raw value (payloadStats drops any "*Id" key).
+// Rename a pay mapping. The run is route-exposed, so the slug is regenerated
+// from the new label (CLAUDE.md: routes resolve by (orgId, slug), never a raw
+// id) and any open link to the old slug stops resolving; the run's _id, and so
+// every snapshot row and analysis pointing at it, is untouched.
+//
+// Renaming is allowed in any status, including completed: the label is the
+// document's title, not part of the frozen evidence (which is the population,
+// the model and the analyses). An unchanged label is a no-op, so a dialog that
+// opens and closes writes no audit row.
+export const renamePayMappingRun = orgMutation({
+  args: { runId: v.id("payMappingRuns"), label: v.string() },
+  returns: v.null(),
+  handler: async (ctx, { runId, label }) => {
+    const run = await ctx.db.get(runId)
+    if (run === null || run.orgId !== ctx.orgId)
+      throw appError(ERROR_CODES.notFound)
+
+    const trimmed = label.trim()
+    if (trimmed === "") throw appError(ERROR_CODES.invalidInput)
+    if (trimmed === run.label) return null
+
+    await ctx.db.patch(runId, {
+      label: trimmed,
+      slug: await uniqueSlug(ctx, "payMappingRuns", ctx.orgId, trimmed, {
+        excludeId: runId,
+      }),
+    })
+    await ctx.audit.log({
+      type: AUDIT_EVENTS.payMappingRunRenamed,
+      payload: {
+        runId,
+        changes: { label: { from: run.label, to: trimmed } },
+      },
+    })
+    return null
+  },
+})
+
 export const deletePayMappingRun = orgMutation({
   args: { runId: v.id("payMappingRuns") },
   returns: v.null(),

@@ -145,6 +145,7 @@
       "payMappingGroupReopened": "Gruppen gjenåpnet.",
       "payMappingCompleted": "Lønnskartleggingen fullført.",
       "payMappingReopened": "Lønnskartleggingen gjenåpnet.",
+      "payMappingRenamed": "Lønnskartleggingen har fått nytt navn",
       "payMappingDeleted": "Lønnskartlegging slettet"
     },
     "accountMenu": "Kontomeny",
@@ -708,6 +709,7 @@
         "payMappingGroupAnalysisUpdated": "Lønnsanalyse oppdatert",
         "payMappingRunCompleted": "Lønnskartlegging fullført",
         "payMappingRunReopened": "Lønnskartlegging gjenåpnet",
+        "payMappingRunRenamed": "Lønnskartlegging omdøpt",
         "payMappingCollaborationUpdated": "Samarbeid oppdatert",
         "payMappingRunDeleted": "Lønnskartlegging slettet"
       },
@@ -925,6 +927,12 @@
         "responsible": "Startet av",
         "created": "Opprettet",
         "rowActionsLabel": "Handlinger for {label}",
+        "renameCta": "Endre navn",
+        "renameDialogTitle": "Endre navn på lønnskartleggingen",
+        "renameDialogDescription": "Navnet er hvordan lønnskartleggingen vises og lenkes. Endrer du navnet, endres lenken.",
+        "renameNameLabel": "Navn",
+        "renameSave": "Lagre",
+        "renameCancel": "Avbryt",
         "deleteCta": "Slett lønnskartlegging",
         "deleteDialogTitle": "Slette {label}?",
         "deleteDialogDescription": "Lønnskartleggingen, det frosne øyeblikksbildet og dokumentasjonen slettes permanent. Dette kan ikke angres.",

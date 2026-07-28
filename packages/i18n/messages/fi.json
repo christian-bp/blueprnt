@@ -145,6 +145,7 @@
       "payMappingGroupReopened": "Ryhmä avattu uudelleen.",
       "payMappingCompleted": "Palkkakartoitus viimeistelty.",
       "payMappingReopened": "Palkkakartoitus avattu uudelleen.",
+      "payMappingRenamed": "Palkkakartoitus nimetty uudelleen",
       "payMappingDeleted": "Palkkakartoitus poistettu"
     },
     "accountMenu": "Tilivalikko",
@@ -708,6 +709,7 @@
         "payMappingGroupAnalysisUpdated": "Palkka-analyysi päivitetty",
         "payMappingRunCompleted": "Palkkakartoitus valmistunut",
         "payMappingRunReopened": "Palkkakartoitus avattu uudelleen",
+        "payMappingRunRenamed": "Palkkakartoitus nimetty uudelleen",
         "payMappingCollaborationUpdated": "Yhteistoiminta päivitetty",
         "payMappingRunDeleted": "Palkkakartoitus poistettu"
       },
@@ -925,6 +927,12 @@
         "responsible": "Aloittaja",
         "created": "Luotu",
         "rowActionsLabel": "Toiminnot: {label}",
+        "renameCta": "Nimeä uudelleen",
+        "renameDialogTitle": "Nimeä palkkakartoitus uudelleen",
+        "renameDialogDescription": "Nimi määrittää, miten palkkakartoitus näkyy ja linkitetään. Uudelleennimeäminen muuttaa linkkiä.",
+        "renameNameLabel": "Nimi",
+        "renameSave": "Tallenna",
+        "renameCancel": "Peruuta",
         "deleteCta": "Poista palkkakartoitus",
         "deleteDialogTitle": "Poistetaanko {label}?",
         "deleteDialogDescription": "Palkkakartoitus, sen jäädytetty tilannekuva ja dokumentaatio poistetaan pysyvästi. Tätä ei voi kumota.",

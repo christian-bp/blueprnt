@@ -16,10 +16,12 @@ import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { toast } from "sonner"
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
+import { RenamePayMappingDialog } from "@/components/pay-mapping/rename-pay-mapping-dialog"
 
 // Per-row actions for the pay-mappings list (the row-actions convention: one
 // trailing "..." trigger, a destructive item confirmed via an AlertDialog).
-// Today that is deleting the run: a hard delete of the run, its frozen
+// Renaming (any status: the label is the document's title, not part of the
+// frozen evidence) and deleting: a hard delete of the run, its frozen
 // snapshot, and its documentation (backend: deletePayMappingRun). Any run
 // status is deletable pre-launch (CLAUDE.md "No legacy before launch"); the
 // confirm dialog below carries the "cannot be undone" warning instead of a
@@ -37,6 +39,7 @@ export function PayMappingRunActions({
   const tToast = useTranslations("dashboard.toast")
   const deleteRun = useMutation(api.payMapping.runs.deletePayMappingRun)
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [renameOpen, setRenameOpen] = useState(false)
   const [pending, setPending] = useState(false)
 
   return (
@@ -56,6 +59,9 @@ export function PayMappingRunActions({
           <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => setRenameOpen(true)}>
+            {t("renameCta")}
+          </DropdownMenuItem>
           <DropdownMenuItem
             variant="destructive"
             onClick={() => setConfirmOpen(true)}
@@ -64,6 +70,14 @@ export function PayMappingRunActions({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <RenamePayMappingDialog
+        orgId={orgId}
+        runId={runId}
+        label={label}
+        open={renameOpen}
+        onOpenChange={setRenameOpen}
+      />
 
       <ConfirmDeleteDialog
         open={confirmOpen}

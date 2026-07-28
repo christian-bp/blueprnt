@@ -52,6 +52,7 @@ export const AUDIT_EVENTS = {
   payMappingRunCompleted: "payMapping.runCompleted",
   payMappingRunReopened: "payMapping.runReopened",
   payMappingCollaborationUpdated: "payMapping.collaborationUpdated",
+  payMappingRunRenamed: "payMapping.runRenamed",
   payMappingRunDeleted: "payMapping.runDeleted",
 } as const
 

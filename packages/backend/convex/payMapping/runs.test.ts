@@ -1188,6 +1188,88 @@ describe("setPayMappingCollaboration", () => {
   })
 })
 
+describe("renamePayMappingRun", () => {
+  it("renames the run, regenerates its slug, and logs the diff", async () => {
+    const t = initConvexTest()
+    const { orgId, runId, asHr } = await seedRun(t, requiredGroupRows)
+    const before = await t.run((ctx) => ctx.db.get(runId))
+
+    await asHr.mutation(api.payMapping.runs.renamePayMappingRun, {
+      orgId,
+      runId,
+      label: "Lönekartläggning 2027",
+    })
+
+    const run = await t.run((ctx) => ctx.db.get(runId))
+    expect(run?.label).toBe("Lönekartläggning 2027")
+    // Route-exposed entity: the slug follows the name so links stay readable.
+    expect(run?.slug).not.toBe(before?.slug)
+    expect(run?.slug).toContain("2027")
+
+    const audits = await t.run((ctx) =>
+      ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "payMapping.runRenamed")
+        )
+        .collect()
+    )
+    expect(audits).toHaveLength(1)
+    const payload = audits[0]?.payload as Record<string, unknown>
+    expect(payload.changes).toEqual({
+      label: { from: before?.label, to: "Lönekartläggning 2027" },
+    })
+  })
+
+  it("trims the label", async () => {
+    const t = initConvexTest()
+    const { orgId, runId, asHr } = await seedRun(t, requiredGroupRows)
+    await asHr.mutation(api.payMapping.runs.renamePayMappingRun, {
+      orgId,
+      runId,
+      label: "  Trimmad  ",
+    })
+    const run = await t.run((ctx) => ctx.db.get(runId))
+    expect(run?.label).toBe("Trimmad")
+  })
+
+  it("is a no-op for an unchanged label: no write, no audit row", async () => {
+    const t = initConvexTest()
+    const { orgId, runId, asHr } = await seedRun(t, requiredGroupRows)
+    const before = await t.run((ctx) => ctx.db.get(runId))
+
+    await asHr.mutation(api.payMapping.runs.renamePayMappingRun, {
+      orgId,
+      runId,
+      label: before?.label ?? "",
+    })
+
+    const run = await t.run((ctx) => ctx.db.get(runId))
+    expect(run?.slug).toBe(before?.slug)
+    const audits = await t.run((ctx) =>
+      ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "payMapping.runRenamed")
+        )
+        .collect()
+    )
+    expect(audits).toHaveLength(0)
+  })
+
+  it("rejects an empty label", async () => {
+    const t = initConvexTest()
+    const { orgId, runId, asHr } = await seedRun(t, requiredGroupRows)
+    await expect(
+      asHr.mutation(api.payMapping.runs.renamePayMappingRun, {
+        orgId,
+        runId,
+        label: "   ",
+      })
+    ).rejects.toThrow()
+  })
+})
+
 describe("deletePayMappingRun", () => {
   it("hard-deletes the run and every child row (snapshot rows + group analyses), and logs payMapping.runDeleted", async () => {
     const t = initConvexTest()

@@ -145,6 +145,7 @@
       "payMappingGroupReopened": "Group reopened.",
       "payMappingCompleted": "Pay mapping completed.",
       "payMappingReopened": "Pay mapping reopened.",
+      "payMappingRenamed": "Pay mapping renamed",
       "payMappingDeleted": "Pay mapping deleted"
     },
     "accountMenu": "Account menu",
@@ -708,6 +709,7 @@
         "payMappingGroupAnalysisUpdated": "Pay gap analysis updated",
         "payMappingRunCompleted": "Pay mapping completed",
         "payMappingRunReopened": "Pay mapping reopened",
+        "payMappingRunRenamed": "Pay mapping renamed",
         "payMappingCollaborationUpdated": "Collaboration updated",
         "payMappingRunDeleted": "Pay mapping deleted"
       },
@@ -925,6 +927,12 @@
         "responsible": "Started by",
         "created": "Created",
         "rowActionsLabel": "Actions for {label}",
+        "renameCta": "Rename",
+        "renameDialogTitle": "Rename pay mapping",
+        "renameDialogDescription": "The name is how this pay mapping is listed and linked. Renaming changes its link.",
+        "renameNameLabel": "Name",
+        "renameSave": "Save",
+        "renameCancel": "Cancel",
         "deleteCta": "Delete pay mapping",
         "deleteDialogTitle": "Delete {label}?",
         "deleteDialogDescription": "The pay mapping, its frozen snapshot, and its documentation are permanently deleted. This cannot be undone.",

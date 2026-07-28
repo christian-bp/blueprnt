@@ -145,6 +145,7 @@
       "payMappingGroupReopened": "Gruppen återöppnad.",
       "payMappingCompleted": "Lönekartläggningen slutförd.",
       "payMappingReopened": "Lönekartläggningen återöppnad.",
+      "payMappingRenamed": "Lönekartläggningen har bytt namn",
       "payMappingDeleted": "Lönekartläggning borttagen"
     },
     "accountMenu": "Kontomeny",
@@ -708,6 +709,7 @@
         "payMappingGroupAnalysisUpdated": "Löneanalys uppdaterad",
         "payMappingRunCompleted": "Lönekartläggning slutförd",
         "payMappingRunReopened": "Lönekartläggning återöppnad",
+        "payMappingRunRenamed": "Lönekartläggning omdöpt",
         "payMappingCollaborationUpdated": "Samverkan uppdaterad",
         "payMappingRunDeleted": "Lönekartläggning borttagen"
       },
@@ -925,6 +927,12 @@
         "responsible": "Startad av",
         "created": "Skapad",
         "rowActionsLabel": "Åtgärder för {label}",
+        "renameCta": "Byt namn",
+        "renameDialogTitle": "Byt namn på lönekartläggningen",
+        "renameDialogDescription": "Namnet är hur lönekartläggningen visas och länkas. Byter du namn ändras länken.",
+        "renameNameLabel": "Namn",
+        "renameSave": "Spara",
+        "renameCancel": "Avbryt",
         "deleteCta": "Ta bort lönekartläggning",
         "deleteDialogTitle": "Ta bort {label}?",
         "deleteDialogDescription": "Lönekartläggningen, dess frysta ögonblicksbild och dess dokumentation tas bort permanent. Detta kan inte ångras.",
