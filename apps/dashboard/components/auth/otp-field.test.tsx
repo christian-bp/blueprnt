@@ -41,6 +41,25 @@ describe("OtpField", () => {
     expect(screen.getByText("6")).toBeDefined()
   })
 
+  it("fades the slots far back while verifying so they do not read through the card", () => {
+    render(
+      <OtpField
+        value="123456"
+        onChange={() => {}}
+        onComplete={() => {}}
+        ariaLabel="6-digit code"
+        verifying
+      />
+    )
+    // The dim is keyed off the disabled input, so it lives on the container as
+    // a static class overriding the vendor's opacity-50.
+    const container = screen
+      .getByLabelText("6-digit code")
+      .closest(".cn-input-otp")
+    expect(container?.className).toContain("has-disabled:opacity-20")
+    expect(container?.className).not.toContain("has-disabled:opacity-50")
+  })
+
   it("refocuses the input after verifying ends", async () => {
     const { rerender } = render(
       <OtpField

@@ -20,11 +20,11 @@ export function OtpField(props: {
   ariaLabel: string
   inputRef?: Ref<HTMLInputElement>
   autoFocus?: boolean
-  // While true, the code is being verified: the slots stay VISIBLE but
-  // disabled (the entered code remains readable, dimmed via the group's
-  // has-disabled style), and a padded status card floats centered on top.
-  // Disabling the library's real input also clears its paste selection,
-  // which used to paint ghost digits over the overlay.
+  // While true, the code is being verified: the slots stay mounted but
+  // disabled and fade far back (see the containerClassName below), and a
+  // padded status card floats centered on top. Disabling the library's real
+  // input also clears its paste selection, which used to paint ghost digits
+  // over the overlay.
   verifying?: boolean
   verifyingLabel?: string
 }) {
@@ -61,6 +61,14 @@ export function OtpField(props: {
         autoFocus={props.autoFocus}
         aria-label={props.ariaLabel}
         disabled={props.verifying === true}
+        // The status card floats over the slots, so while verifying the field
+        // must recede instead of reading through it: shadcn's disabled dim
+        // (opacity-50) leaves the digits and borders competing with the card,
+        // so we override that one variant down to a ghost. The transition
+        // makes the fade (and the fade back on a failed verify) a movement
+        // rather than a flicker; the disabled state is what drives it, so the
+        // class is static and no second condition can drift from `verifying`.
+        containerClassName="transition-opacity duration-200 has-disabled:opacity-20"
       >
         <InputOTPGroup>
           {Array.from({ length: 6 }).map((_, i) => (
