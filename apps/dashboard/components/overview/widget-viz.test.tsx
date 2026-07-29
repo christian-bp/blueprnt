@@ -126,6 +126,7 @@ describe("HeadcountTrend", () => {
         ]}
         config={config}
         labels={{ women: "Women", men: "Men" }}
+        totalLabel="Employees"
       />
     )
     expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
@@ -137,6 +138,7 @@ describe("HeadcountTrend", () => {
         data={[point("Pay mapping 2026", "Jan 1", 2, 3)]}
         config={config}
         labels={{ women: "Women", men: "Men" }}
+        totalLabel="Employees"
       />
     )
     expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
@@ -148,6 +150,7 @@ describe("HeadcountTrend", () => {
         data={[]}
         config={config}
         labels={{ women: "Women", men: "Men" }}
+        totalLabel="Employees"
       />
     )
     expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
@@ -165,6 +168,7 @@ describe("HeadcountTrend", () => {
         ]}
         config={config}
         labels={{ women: "Women", men: "Men" }}
+        totalLabel="Employees"
       />
     )
     expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
@@ -176,6 +180,7 @@ describe("HeadcountTrend", () => {
         data={[point("Pay mapping 2026", "Jan 1", 2, 3)]}
         config={config}
         labels={{ women: "Women", men: "Men" }}
+        totalLabel="Employees"
       />
     )
     expect(

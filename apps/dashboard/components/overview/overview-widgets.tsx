@@ -128,6 +128,7 @@ export function OverviewWidgets({
         }))}
         config={trendConfig}
         labels={genderLabels}
+        totalLabel={t("workforce.trendLabel")}
       />
     )
   }

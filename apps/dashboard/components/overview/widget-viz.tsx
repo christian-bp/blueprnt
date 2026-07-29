@@ -20,7 +20,6 @@ import {
 } from "@workspace/ui/components/chart"
 import { cn } from "@workspace/ui/lib/utils"
 import { useTranslations } from "next-intl"
-import type { ComponentProps } from "react"
 import { Bar, BarChart, Line, LineChart, XAxis, YAxis } from "recharts"
 import {
   type GenderSeries,
@@ -169,79 +168,62 @@ export function QuartileSplitBars({
   )
 }
 
-// The category axis keys on a synthetic per-point key (see HeadcountArea), so
-// the axis value is not what recharts should print as the tooltip heading; the
-// hovered row carries the real one. recharts types a payload row loosely,
-// hence the narrowing.
-function hoveredPoint(
-  items: readonly { payload?: unknown }[] | undefined
-): { label: string; caption: string } | null {
-  const row = items?.[0]?.payload
-  if (
-    typeof row === "object" &&
-    row !== null &&
-    "label" in row &&
-    typeof row.label === "string" &&
-    "caption" in row &&
-    typeof row.caption === "string"
-  ) {
-    return { label: row.label, caption: row.caption }
-  }
-  return null
-}
-
-// The tooltip's heading: which pay mapping this headcount came from, with its
-// reference date underneath. Naming the run is what tells the reader the
-// number is a pay mapping's population and not a live workforce count.
-function TrendHeading({
-  items,
-}: {
-  items: readonly { payload?: unknown }[] | undefined
-}) {
-  const point = hoveredPoint(items)
-  if (point === null) {
-    return null
-  }
-  return (
-    // A pay mapping's name is free text, and the card clips its overflow, so
-    // the heading wraps inside a fixed width instead of widening the tooltip
-    // past the card edge.
-    <div className="grid max-w-40 gap-0.5">
-      <span className="break-words">{point.label}</span>
-      <span className="font-normal text-muted-foreground">{point.caption}</span>
-    </div>
-  )
-}
-
-// The trend's hover. The chart plots ONE series (the total), so recharts hands
-// over a single payload row; this expands it into the two gender rows before
-// GenderTooltipContent renders them, which is what lets the hover carry the
-// split that the line itself no longer shows. Reusing that component rather
-// than hand-building a card keeps the row markup, ordering and type size
-// identical to every other chart's hover.
 function TrendTooltipContent({
+  active,
+  payload,
   labels,
-  ...props
-}: ComponentProps<typeof GenderTooltipContent>) {
-  const row = props.payload?.[0]?.payload as
-    | { women: number; men: number }
+  totalLabel,
+}: {
+  active?: boolean
+  payload?: readonly { payload?: unknown }[]
+  labels: Record<GenderSeries, string>
+  totalLabel: string
+}) {
+  if (active !== true) return null
+  const row = payload?.[0]?.payload as
+    | { label: string; caption: string; women: number; men: number }
     | undefined
-  const base = props.payload?.[0]
-  const payload =
-    row === undefined || base === undefined
-      ? props.payload
-      : [
-          { ...base, dataKey: "women", name: "women", value: row.women },
-          { ...base, dataKey: "men", name: "men", value: row.men },
-        ]
+  if (row === undefined) return null
+  const total = row.women + row.men
+
+  // Composed rather than listed as one row per value. The chart plots a single
+  // series, so a row list gave five lines of identical weight with nothing
+  // leading, and a lone swatch that keyed nothing. Here the run identifies the
+  // reading, the total answers it, and the split is a footnote under it.
   return (
-    <GenderTooltipContent
-      {...props}
-      labels={labels}
-      payload={payload}
-      indicator="dot"
-      labelFormatter={(_axisValue, items) => <TrendHeading items={items} />}
-    />
+    <div
+      className={cn(
+        "grid min-w-36 max-w-48 gap-1 rounded-lg border border-border/50 bg-background px-2.5 py-2 shadow-xl",
+        CHART_TOOLTIP_TEXT
+      )}
+    >
+      <div className="grid gap-0.5">
+        {/* A pay mapping's name is free text, so it wraps inside the card's
+            width instead of widening the tooltip past the card edge. */}
+        <span className="break-words font-medium leading-snug">
+          {row.label}
+        </span>
+        <span className="text-muted-foreground text-xs">{row.caption}</span>
+      </div>
+      <div className="flex items-center justify-between gap-3">
+        {/* The same key geometry as GenderKeyRow, solid in the line's own ink.
+            No border: that rule exists so a hatch reads as a bounded shape,
+            and this swatch has no hatched sibling to sit beside. */}
+        <span className="flex items-center gap-2 text-muted-foreground">
+          <span
+            aria-hidden
+            className="size-2.5 shrink-0 rounded-[2px] bg-brand"
+          />
+          {totalLabel}
+        </span>
+        <span className="font-semibold text-base tabular-nums">{total}</span>
+      </div>
+      {/* Indented past the swatch so the split hangs off the total it breaks
+          down rather than starting a new column of its own. */}
+      <div className="pl-[calc(0.625rem+0.5rem)] text-muted-foreground text-xs tabular-nums">
+        {labels.women} {row.women} · {labels.men} {row.men}
+      </div>
+    </div>
   )
 }
 
@@ -264,10 +246,12 @@ export function HeadcountTrend({
   data,
   config,
   labels,
+  totalLabel,
 }: {
   data: { label: string; caption: string; women: number; men: number }[]
   config: ChartConfig
   labels: Record<GenderSeries, string>
+  totalLabel: string
 }) {
   // Two pay-mapping runs can carry the same reference date and even the same
   // name, which would give the category axis two identical values; recharts
@@ -293,7 +277,9 @@ export function HeadcountTrend({
         <ChartTooltip
           cursor={false}
           position={TOOLTIP_ABOVE}
-          content={<TrendTooltipContent labels={labels} />}
+          content={
+            <TrendTooltipContent labels={labels} totalLabel={totalLabel} />
+          }
         />
         {/* Dots on every point: with as few as two runs the line alone gives no
             sense of where the readings actually are. */}
