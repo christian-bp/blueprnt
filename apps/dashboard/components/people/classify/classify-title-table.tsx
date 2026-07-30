@@ -1,7 +1,11 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
-import { TRACK_LEVELS, isValidLevelForTrack } from "@workspace/constants"
+import {
+  MAX_ASSIGNMENTS_PER_MUTATION,
+  TRACK_LEVELS,
+  isValidLevelForTrack,
+} from "@workspace/constants"
 import { ArrowDown01Icon, Tag01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Badge } from "@workspace/ui/components/badge"
@@ -37,6 +41,7 @@ import { toast } from "sonner"
 import { SPRING } from "@/lib/motion"
 import { ariaSort, TableSortButton } from "@/components/table-sort-button"
 import type { TableSkeletonColumn } from "@/components/table-skeleton"
+import { packAssignmentChunks } from "./classify-bulk"
 import { ClassifyPersonRows } from "./classify-person-rows"
 import { UnmatchedTitleActions } from "./unmatched-title-actions"
 import { onSelectValue } from "@/lib/select"
@@ -480,19 +485,22 @@ export function ClassifyTitleTable({
     }))
   }
 
-  // ONE mutation for the whole batch: a single transaction, so the reactive
-  // badge and summary update once instead of ticking down per person.
+  // Submits in bounded chunks (the server rejects batches over the shared
+  // limit): a typical group is one chunk and one transaction; an oversized
+  // group lands as consecutive chunks, each atomic on its own.
   async function submitAssignments(
     assignments: Array<{ personId: string; roleId: string; level: string }>
   ) {
-    if (assignments.length === 0) return
-    await assignPeople({
-      orgId,
-      assignments: assignments as Parameters<
-        typeof assignPeople
-      >[0]["assignments"],
-      levelSource: "confirmed",
-    })
+    for (const chunk of packAssignmentChunks(
+      [assignments],
+      MAX_ASSIGNMENTS_PER_MUTATION
+    )) {
+      await assignPeople({
+        orgId,
+        assignments: chunk as Parameters<typeof assignPeople>[0]["assignments"],
+        levelSource: "confirmed",
+      })
+    }
   }
 
   async function onConfirm(group: ClassifyTitleGroup) {
