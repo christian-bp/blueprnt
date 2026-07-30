@@ -1,0 +1,19 @@
+packages/i18n/messages/sv.json
+  s_0d1a9cb77984cf::t_877d4eec2f518c 482
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "f83729bc7c07713115941966e0ecfac1105d48ad",
+  "prompts": {},
+  "sessions": {
+    "s_0d1a9cb77984cf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31e79143-66ef-4cdc-96a5-68d31b7180a8",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
