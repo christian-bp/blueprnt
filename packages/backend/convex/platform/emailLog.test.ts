@@ -38,9 +38,6 @@ describe("platform email log (access control)", () => {
     await expect(
       t.query(api.platform.emailLog.get, { messageId: "m" })
     ).rejects.toThrow(/errors.notAuthenticated/)
-    await expect(t.query(api.platform.emailLog.bounds, {})).rejects.toThrow(
-      /errors.notAuthenticated/
-    )
   })
 
   it("rejects a signed-in non-platform-admin caller", async () => {
@@ -49,9 +46,6 @@ describe("platform email log (access control)", () => {
     const asUser = t.withIdentity({ subject: userId })
     await expect(
       asUser.query(api.platform.emailLog.list, { paginationOpts: PAGE })
-    ).rejects.toThrow(/errors.platformAdminRequired/)
-    await expect(
-      asUser.query(api.platform.emailLog.bounds, {})
     ).rejects.toThrow(/errors.platformAdminRequired/)
   })
 })

@@ -39,7 +39,7 @@ import {
 } from "@workspace/ui/components/table"
 import { usePaginatedQuery, useQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
-import { type ReactNode, useMemo, useState } from "react"
+import { type ReactNode, useState } from "react"
 import type { DateRange } from "react-day-picker"
 import { TablePagination } from "@/components/table-pagination"
 import {
@@ -54,6 +54,10 @@ import { useAuditPagination } from "@/hooks/use-audit-pagination"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { endOfDay, startOfDay } from "@/lib/date-bounds"
 import {
+  PLATFORM_AUDIT_FILTER_CATEGORIES,
+  resolveCodedValue,
+} from "@/lib/audit-constants"
+import {
   changeEntries,
   formatChanges,
   formatStats,
@@ -63,11 +67,11 @@ import {
   sectionKind,
 } from "@/lib/audit-detail"
 
-// The four filterable platform categories. Kept as local literals rather than
-// importing the backend constant so we do not pull backend internals into the
-// bundle; the query ignores any value outside this set (no filter), so "all"
-// maps to undefined below.
-const CATEGORIES = ["user", "organization", "membership", "admin"] as const
+// The filterable platform categories (drift-guarded against the backend's
+// PLATFORM_AUDIT_CATEGORIES; see the constant's note in lib/audit-constants.ts).
+// The query ignores any value outside this set (no filter), so "all" maps to
+// undefined below.
+const CATEGORIES = PLATFORM_AUDIT_FILTER_CATEGORIES
 type Category = (typeof CATEGORIES)[number]
 
 // Shared by the pager and the loading skeleton so the skeleton always shows a
@@ -114,6 +118,9 @@ export function AuditLogSection() {
   // Change-field labels reuse the org namespace: the same domain fields appear
   // in platform payload diffs (e.g. platform.orgUpdated changes).
   const tFields = useTranslations("dashboard.auditLog")
+  // Dashboard-scoped so valueLabel can reuse existing domain copy (e.g. the
+  // members table's role labels) for coded values, per the coded-value rule.
+  const tDashboard = useTranslations("dashboard")
   const format = useFormatter()
 
   // Toolbar state. The visible input is immediate; the debounced value drives
@@ -125,39 +132,16 @@ export function AuditLogSection() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const debouncedSearch = useDebouncedValue(search, 300)
 
-  // The earliest admin audit row's time (the page is already platform-admin
-  // gated), used to default the picker to the full span. The full default range
-  // is memoized on the earliest value; `new Date()` is "today" at memo time,
-  // which is what we want for the open-ended upper bound (no effect, no flash).
-  const bounds = useQuery(api.platform.admin.auditLogBounds, {})
-  // Until bounds resolve we fall back to today so the trigger always shows a
-  // date (never a loader); the query bounds stay open until then (startArg/
-  // endArg) so no rows hide.
-  const defaultRange = useMemo<DateRange>(
-    () => ({
-      from: bounds?.earliest != null ? new Date(bounds.earliest) : new Date(),
-      to: new Date(),
-    }),
-    [bounds?.earliest]
-  )
-
   // Row whose detail sheet is open, or null when the sheet is closed.
   const [selectedRow, setSelectedRow] = useState<AuditRow | null>(null)
 
-  // The effective range: the user's pick when set, otherwise the full default
-  // span. The picker's Clear calls onChange(undefined), which falls back here
-  // to the default span again.
-  const range = dateRange ?? defaultRange
-
   const isSearching = debouncedSearch.trim().length > 0
   const categoryArg = selectedCategory === "all" ? undefined : selectedCategory
-  // Inclusive epoch-ms bounds, held open until the earliest is known so the
-  // brief today-only default does not filter the data; a picked "from" without
-  // a "to" stays open-ended.
-  const startArg =
-    bounds !== undefined && range.from ? startOfDay(range.from) : undefined
-  const endArg =
-    bounds !== undefined && range.to ? endOfDay(range.to) : undefined
+  // Inclusive epoch-ms bounds. No picked range means no date filter at all
+  // (the trigger shows its placeholder), and Clear returns to that state; a
+  // picked "from" without a "to" stays open-ended.
+  const startArg = dateRange?.from ? startOfDay(dateRange.from) : undefined
+  const endArg = dateRange?.to ? endOfDay(dateRange.to) : undefined
 
   // Only one query is ever active at a time (browse XOR search). The page is
   // already platform-admin gated, so there is no extra role gate here.
@@ -230,6 +214,23 @@ export function AuditLogSection() {
     return tFields(value ? "values.yes" : "values.no")
   }
 
+  // Localizes a coded field value (here the member role on membership events)
+  // so it never renders as its raw wire code (e.g. "admin"). Same contract as
+  // the org section's valueLabel: undefined means "fall back to the raw value".
+  function valueLabel(field: string, value: string): string | undefined {
+    return resolveCodedValue(field, value, (key) =>
+      tDashboard.has(key as Parameters<typeof tDashboard.has>[0])
+        ? tDashboard(key as Parameters<typeof tDashboard>[0])
+        : undefined
+    )
+  }
+
+  // Formats an AUDIT_DATE_FIELDS epoch-ms payload value as a localized date,
+  // so a timestamp field never renders as raw milliseconds.
+  function dateLabel(epochMs: number): string {
+    return format.dateTime(new Date(epochMs), { dateStyle: "medium" })
+  }
+
   // The short one-line summary for the table cell: structured before->after
   // diffs (e.g. platform.orgUpdated, membershipRoleChanged) render via
   // formatChanges; a flat payload (platform.userDeleted, membershipGranted)
@@ -237,8 +238,15 @@ export function AuditLogSection() {
   function detail(payload: unknown): ReactNode {
     const changes = payloadChanges(payload)
     return changes
-      ? formatChanges(changes, fieldLabel, undefined, boolLabel)
-      : formatStats(payload, fieldLabel)
+      ? formatChanges(
+          changes,
+          fieldLabel,
+          undefined,
+          boolLabel,
+          valueLabel,
+          dateLabel
+        )
+      : formatStats(payload, fieldLabel, valueLabel)
   }
 
   // First-data loading for whichever query is active shows a skeleton table; the
@@ -312,7 +320,7 @@ export function AuditLogSection() {
           </SelectContent>
         </Select>
         <DateRangePicker
-          value={range}
+          value={dateRange}
           onChange={setDateRange}
           placeholder={t("dateRange.placeholder")}
           clearLabel={t("dateRange.clear")}
@@ -446,6 +454,8 @@ export function AuditLogSection() {
               categoryLabel={categoryLabel}
               fieldLabel={fieldLabel}
               boolLabel={boolLabel}
+              valueLabel={valueLabel}
+              dateLabel={dateLabel}
             />
           ) : null}
         </SheetContent>
@@ -468,6 +478,8 @@ function AuditDetailSheet({
   categoryLabel,
   fieldLabel,
   boolLabel,
+  valueLabel,
+  dateLabel,
 }: {
   row: AuditRow
   t: ReturnType<typeof useTranslations<"dashboard.admin.auditLog">>
@@ -477,6 +489,8 @@ function AuditDetailSheet({
   categoryLabel: (category: string) => string
   fieldLabel: (field: string) => string
   boolLabel: (value: boolean) => string
+  valueLabel: (field: string, value: string) => string | undefined
+  dateLabel: (epochMs: number) => string
 }) {
   const target = composeTarget(row, t("deletedUser"), t("deletedOrg"))
   const dateLong = format.dateTime(new Date(row.at), {
@@ -488,7 +502,16 @@ function AuditDetailSheet({
   // carries no `changes` map, we fall back to its remaining scalars below.
   const changes = payloadChanges(row.payload)
   const entries = changes
-    ? orderEntries(changeEntries(changes, fieldLabel, undefined, boolLabel))
+    ? orderEntries(
+        changeEntries(
+          changes,
+          fieldLabel,
+          undefined,
+          boolLabel,
+          valueLabel,
+          dateLabel
+        )
+      )
     : []
   const kind = sectionKind(row.type, entries)
   const sectionHeading =
@@ -501,23 +524,28 @@ function AuditDetailSheet({
   // No `changes`: surface the payload's own scalar fields as a labeled flat
   // record (a count/code per row). `changes`, ids, and `source` are excluded by
   // payloadStats; ordering is stable via FIELD_DISPLAY_ORDER.
-  const stats = entries.length > 0 ? [] : payloadStats(row.payload)
+  const stats = entries.length > 0 ? [] : payloadStats(row.payload, valueLabel)
 
   return (
     <>
+      {/* A static title frames the sheet, mirroring the org audit sheet; the
+          event itself lives as the first row of the meta grid, never
+          duplicated up here. */}
       <SheetHeader className="gap-1.5">
-        {/* pr-8 keeps a long title clear of the sheet's absolute close button. */}
+        {/* pr-8 keeps the title clear of the sheet's absolute close button. */}
         <SheetTitle className="text-balance pr-8">
-          {actionLabel(row.type)}
+          {t("detail.title")}
         </SheetTitle>
         <SheetDescription className="text-balance">
-          {target || dateLong}
+          {t("detail.subtitle")}
         </SheetDescription>
       </SheetHeader>
 
       <div className="flex flex-col gap-5 overflow-y-auto px-4 pb-4">
-        {/* Meta, as key/value rows: operator, when, category, target. */}
+        {/* Meta, as key/value rows: action, operator, when, category, target. */}
         <dl className={KV_GRID}>
+          <dt className="text-muted-foreground">{t("table.action")}</dt>
+          <dd className="min-w-0 break-words">{actionLabel(row.type)}</dd>
           <dt className="text-muted-foreground">{t("detail.operator")}</dt>
           <dd className="min-w-0 break-words">
             {operatorLabel(row.actorId, row.actorName)}

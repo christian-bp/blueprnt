@@ -37,9 +37,10 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
-import { usePaginatedQuery, useQuery } from "convex/react"
+import { AUDIT_LOG_PAGE_SIZE } from "@workspace/constants"
+import { useQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
-import { type ReactNode, useMemo, useState } from "react"
+import { type ReactNode, useEffect, useRef, useState } from "react"
 import type { DateRange } from "react-day-picker"
 import { TablePagination } from "@/components/table-pagination"
 import {
@@ -52,12 +53,21 @@ import { DateRangePicker } from "@/components/date-range-picker"
 import { useOrganization } from "@/components/org-context"
 import { PageHeading } from "@/components/page-heading"
 import { TableSkeleton } from "@/components/table-skeleton"
-import { useAuditPagination } from "@/hooks/use-audit-pagination"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { endOfDay, startOfDay } from "@/lib/date-bounds"
 import {
+  AUDIT_FILTER_CATEGORIES,
+  resolveCodedValue,
+} from "@/lib/audit-constants"
+import {
+  auditPageView,
+  type BrowseCache,
+  nextBrowseCache,
+} from "@/lib/audit-page-view"
+import {
   aiAuditDetail,
   AI_KIND_KEY,
+  auditContextParts,
   changeEntries,
   formatAuditDetail,
   orderEntries,
@@ -67,20 +77,19 @@ import {
   payloadProvenance,
   payloadStats,
   payloadSuggestions,
-  resolveCodedValue,
   sectionKind,
 } from "@/lib/audit-detail"
 
-// The five filterable categories. Kept as local literals rather than importing
-// the backend constant so we do not pull backend internals into the bundle; the
+// The filterable categories (drift-guarded against the backend's
+// AUDIT_CATEGORIES; see the constant's note in lib/audit-constants.ts). The
 // query ignores any value outside this set (no filter), so "all" maps to
 // undefined below.
-const CATEGORIES = ["model", "role", "organization", "member", "ai"] as const
+const CATEGORIES = AUDIT_FILTER_CATEGORIES
 type Category = (typeof CATEGORIES)[number]
 
-// Shared by the pager and the loading skeleton so the skeleton always shows a
-// full page of rows.
-const PAGE_SIZE = 25
+// Shared with the backend page query, the pager, and the loading skeleton
+// (one constant, so the three can never drift apart).
+const PAGE_SIZE = AUDIT_LOG_PAGE_SIZE
 
 // A single enriched audit row, as returned by both the browse and search
 // queries. `names` is a per-row id -> display-name map for that row's payload.
@@ -127,56 +136,66 @@ export function OrgAuditLogSection() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const debouncedSearch = useDebouncedValue(search, 300)
 
-  // The earliest audit row's time (admin-gated like the other queries), used to
-  // default the picker to the full span. The full default range is memoized on
-  // the earliest value; `new Date()` is "today" at memo time, which is what we
-  // want for the open-ended upper bound (no effect, no flash).
-  const bounds = useQuery(
-    api.accounts.audit.auditLogBounds,
-    role === "admin" ? { orgId } : "skip"
-  )
-  // Default span: earliest entry (org creation) -> today. Until bounds resolve
-  // we fall back to today so the trigger always shows a date (never a loader);
-  // the query bounds stay open until then (startArg/endArg) so no rows hide.
-  const defaultRange = useMemo<DateRange>(
-    () => ({
-      from: bounds?.earliest != null ? new Date(bounds.earliest) : new Date(),
-      to: new Date(),
-    }),
-    [bounds?.earliest]
-  )
-
   // Row whose detail sheet is open, or null when the sheet is closed.
   const [selectedRow, setSelectedRow] = useState<AuditRow | null>(null)
 
-  // The effective range: the user's pick when set, otherwise the full default
-  // span. The picker's Clear calls onChange(undefined), which falls back here
-  // to the default span again.
-  const range = dateRange ?? defaultRange
-
   const isSearching = debouncedSearch.trim().length > 0
   const categoryArg = selectedCategory === "all" ? undefined : selectedCategory
-  // Inclusive epoch-ms bounds, held open until the earliest is known so the
-  // brief today-only default does not filter the data; a picked "from" without
-  // a "to" stays open-ended.
-  const startArg =
-    bounds !== undefined && range.from ? startOfDay(range.from) : undefined
-  const endArg =
-    bounds !== undefined && range.to ? endOfDay(range.to) : undefined
+  // Inclusive epoch-ms bounds. No picked range means no date filter at all
+  // (the trigger shows its placeholder), and Clear returns to that state; a
+  // picked "from" without a "to" stays open-ended.
+  const startArg = dateRange?.from ? startOfDay(dateRange.from) : undefined
+  const endArg = dateRange?.to ? endOfDay(dateRange.to) : undefined
+
+  // The current 0-based page, reset whenever any filter changes (a page
+  // number only means something within one filter combination).
+  const [page, setPage] = useState(0)
+  // orgId is part of the key so an org switch can never show the previous
+  // org's rows, not even for the one render the next page takes to load.
+  const filterKey = `${orgId}|${selectedCategory}|${isSearching}|${debouncedSearch}|${startArg ?? ""}|${endArg ?? ""}`
+  // biome-ignore lint/correctness/useExhaustiveDependencies: filterKey is the reset signal, not a read dependency
+  useEffect(() => {
+    setPage(0)
+  }, [filterKey])
 
   // Editors never call either query: the adminQuery would reject them. The
   // cosmetic guard keeps the page graceful (the sidebar item is hidden for them
   // anyway). Only one query is ever active at a time (browse XOR search).
-  const browse = usePaginatedQuery(
-    api.accounts.audit.listAuditLog,
+  // Browsing fetches ONE page by number: the audit aggregates give the server
+  // the exact total and an O(log n) jump to any page, so the pager shows a
+  // real last page and jumping to it costs one query, not a load-more chain.
+  const browseResult = useQuery(
+    api.accounts.audit.getAuditLogPage,
     role === "admin" && !isSearching
-      ? { orgId, category: categoryArg, start: startArg, end: endArg }
-      : "skip",
-    // Load up to 9 pages (25 each) up front so their numbers are real and
-    // jumpable in the pager; beyond that the pager collapses to an ellipsis and
-    // Next loads more.
-    { initialNumItems: 225 }
+      ? { orgId, category: categoryArg, start: startArg, end: endArg, page }
+      : "skip"
   )
+  // Keep the previous page's rows on screen while the next page loads (no
+  // skeleton flash on a page flip); the eager invalidation rules live in the
+  // pure nextBrowseCache (lib/audit-page-view.ts).
+  const lastBrowse = useRef<BrowseCache<NonNullable<typeof browseResult>>>(null)
+  lastBrowse.current = nextBrowseCache(lastBrowse.current, {
+    filterKey,
+    isSearching,
+    result: browseResult,
+  })
+  const browse = browseResult ?? lastBrowse.current?.value
+
+  // Self-heal a page past the end: unreachable in normal use (the trail is
+  // append-only and filter changes reset the page), but any table/aggregate
+  // divergence would otherwise strand the user on an empty page with the
+  // pager hidden.
+  useEffect(() => {
+    if (
+      browseResult !== undefined &&
+      browseResult.rows.length === 0 &&
+      browseResult.total > 0 &&
+      page > 0
+    ) {
+      setPage(Math.max(0, Math.ceil(browseResult.total / PAGE_SIZE) - 1))
+    }
+  }, [browseResult, page])
+
   const searchResult = useQuery(
     api.accounts.audit.searchAuditLog,
     role === "admin" && isSearching
@@ -190,17 +209,17 @@ export function OrgAuditLogSection() {
       : "skip"
   )
 
-  const rows: AuditRow[] = isSearching
-    ? (searchResult?.rows ?? [])
-    : browse.results
-
-  const pager = useAuditPagination({
-    rows,
+  // Search results are capped at 50 and arrive whole; they page client-side
+  // with the same page state. Browse rows arrive one page at a time. The
+  // shared derivation (totals, clamped page, page rows) is the pure
+  // auditPageView (lib/audit-page-view.ts).
+  const searchRows: AuditRow[] = searchResult?.rows ?? []
+  const view = auditPageView({
+    isSearching,
+    searchRows,
+    browse,
+    page,
     pageSize: PAGE_SIZE,
-    canLoadMore: !isSearching && browse.status === "CanLoadMore",
-    isLoadingMore: !isSearching && browse.status === "LoadingMore",
-    loadMore: browse.loadMore,
-    resetKey: `${selectedCategory}|${isSearching}|${debouncedSearch}|${startArg ?? ""}|${endArg ?? ""}`,
   })
 
   // Translate an event type to its label, falling back to the raw type when no
@@ -252,6 +271,14 @@ export function OrgAuditLogSection() {
     )
   }
 
+  // Formats an AUDIT_DATE_FIELDS epoch-ms payload value (archivedAt,
+  // reviewedAt, expiresAt, ...) as a localized date, shared by the table
+  // summary, the sheet's change list, and the context line's invitation
+  // expiry, so a timestamp never renders as raw milliseconds.
+  function dateLabel(epochMs: number): string {
+    return format.dateTime(new Date(epochMs), { dateStyle: "medium" })
+  }
+
   // The short one-line summary: AI suggestion events render from their own
   // payload (counts), everything else through the shared structured-change
   // formatter. names is per row (each row carries only the ids it references).
@@ -281,7 +308,8 @@ export function OrgAuditLogSection() {
       },
       fieldLabel,
       boolLabel,
-      valueLabel
+      valueLabel,
+      dateLabel
     )
   }
 
@@ -310,7 +338,7 @@ export function OrgAuditLogSection() {
   // toolbar still mounts so it does not flash in.
   const loadingFirst = isSearching
     ? searchResult === undefined
-    : browse.status === "LoadingFirstPage"
+    : browse === undefined
 
   // Shared header for the data and skeleton tables (same columns, no reflow).
   const auditTableHeader = (
@@ -376,7 +404,7 @@ export function OrgAuditLogSection() {
           </SelectContent>
         </Select>
         <DateRangePicker
-          value={range}
+          value={dateRange}
           onChange={setDateRange}
           placeholder={t("dateRange.placeholder")}
           clearLabel={t("dateRange.clear")}
@@ -399,7 +427,7 @@ export function OrgAuditLogSection() {
             ]}
           />
         </Table>
-      ) : rows.length === 0 ? (
+      ) : view.total === 0 ? (
         <Empty>
           <EmptyHeader>
             {!isSearching && (
@@ -421,7 +449,7 @@ export function OrgAuditLogSection() {
         <Table className="table-fixed">
           {auditTableHeader}
           <TableBody>
-            {pager.pageRows.map((row) => (
+            {view.pageRows.map((row) => (
               <TableRow
                 key={row.id}
                 role="button"
@@ -468,21 +496,23 @@ export function OrgAuditLogSection() {
           reflow the table. Previous/Next page control plus a truncation note
           while searching (search is capped, not paginated). */}
       <div className="flex flex-col items-center gap-1.5">
-        {rows.length > 0 ? (
+        {view.total > 0 ? (
           <TablePagination
-            page={pager.page}
-            pageCount={pager.pageCount}
-            hasMore={pager.hasMore}
-            canPrev={pager.canPrev}
-            canNext={pager.canNext}
-            onPrev={pager.goPrev}
-            onNext={pager.goNext}
-            onSelect={pager.goTo}
+            page={view.shownPage}
+            pageCount={view.pageCount}
+            hasMore={false}
+            canPrev={view.shownPage > 0}
+            canNext={view.shownPage < view.pageCount - 1}
+            onPrev={() => setPage(Math.max(0, view.shownPage - 1))}
+            onNext={() =>
+              setPage(Math.min(view.pageCount - 1, view.shownPage + 1))
+            }
+            onSelect={setPage}
             previousLabel={t("previous")}
             nextLabel={t("next")}
           />
         ) : null}
-        {isSearching && rows.length === 50 ? (
+        {isSearching && searchRows.length === 50 ? (
           <p className="text-muted-foreground text-sm">
             {t("search.capped", { count: 50 })}
           </p>
@@ -507,6 +537,7 @@ export function OrgAuditLogSection() {
               fieldLabel={fieldLabel}
               boolLabel={boolLabel}
               valueLabel={valueLabel}
+              dateLabel={dateLabel}
               detailText={detailText}
             />
           ) : null}
@@ -528,6 +559,7 @@ function AuditDetailSheet({
   fieldLabel,
   boolLabel,
   valueLabel,
+  dateLabel,
   detailText,
 }: {
   row: AuditRow
@@ -539,6 +571,7 @@ function AuditDetailSheet({
   fieldLabel: (field: string) => string
   boolLabel: (value: boolean) => string
   valueLabel: (field: string, value: string) => string | undefined
+  dateLabel: (epochMs: number) => string
   detailText: (
     type: string,
     payload: unknown,
@@ -547,42 +580,20 @@ function AuditDetailSheet({
 }) {
   const p = (row.payload ?? {}) as Record<string, unknown>
 
-  // The always-on entity-context line: the subject of the event. We pick
-  // whichever ids the row resolved (role, then criterion/family/model, then
-  // member), falling back to the captured `name` for renamed/removed families.
-  // Invitation rows have no resolvable subject id (email is PII), so their
-  // subject is role + status + expiry instead.
-  function contextLine(): string {
-    const parts: string[] = []
-    const named = (id: unknown) =>
-      typeof id === "string" ? row.names[id] : undefined
-    const roleName = named(p.roleId)
-    if (roleName) parts.push(roleName)
-    const criterionName = named(p.criterionId)
-    if (criterionName) parts.push(criterionName)
-    const familyName = named(p.familyId)
-    if (familyName) parts.push(familyName)
-    else if (typeof p.name === "string" && row.type.startsWith("roleFamily.")) {
-      // A renamed/removed family resolves no id; use the captured name.
-      parts.push(p.name)
-    }
-    const modelName = named(p.modelId)
-    if (modelName) parts.push(modelName)
-    const memberName = named(p.memberUserId)
-    if (memberName) parts.push(memberName)
-    if (row.type.startsWith("invitation.")) {
-      if (typeof p.role === "string") parts.push(String(p.role))
-      if (typeof p.status === "string") parts.push(String(p.status))
-      if (typeof p.expiresAt === "number") {
-        parts.push(
-          format.dateTime(new Date(p.expiresAt), { dateStyle: "medium" })
-        )
-      }
-    }
-    return parts.join(" · ")
-  }
-
-  const subject = contextLine()
+  // The always-on entity-context line: the subject of the event, built by the
+  // pure auditContextParts (lib/audit-detail.tsx, vocabulary in
+  // lib/audit-constants.ts) so its precedence rules stay
+  // testable.
+  const subject = auditContextParts(
+    row.type,
+    row.payload,
+    row.names,
+    {
+      deletedRun: t("details.deletedRun"),
+      scopeFieldLabel: fieldLabel("scope"),
+    },
+    valueLabel
+  ).join(" · ")
 
   // Resolve a payload id (e.g. a role's familyId value) to its display name, so
   // change rows show "Produkt", not the raw id.
@@ -590,7 +601,14 @@ function AuditDetailSheet({
 
   const changes = payloadChanges(row.payload)
   const rawEntries = changes
-    ? changeEntries(changes, fieldLabel, resolveName, boolLabel, valueLabel)
+    ? changeEntries(
+        changes,
+        fieldLabel,
+        resolveName,
+        boolLabel,
+        valueLabel,
+        dateLabel
+      )
     : []
   const kind = sectionKind(row.type, rawEntries)
   // On a creation snapshot, fields set to nothing (e.g. an unset function/team)
@@ -616,7 +634,7 @@ function AuditDetailSheet({
   // Flat-stats events (people.imported, classification.suggested) carry no
   // `changes` map; their scalar counts render as a labeled card, not a raw dump.
   // Only when there are no field changes, so a diff event never doubles up.
-  const stats = entries.length > 0 ? [] : payloadStats(row.payload)
+  const stats = entries.length > 0 ? [] : payloadStats(row.payload, valueLabel)
 
   // Whether any of the structured groups produced renderable content; the
   // one-line summary / no-changes note is only a final fallback when not.
@@ -634,20 +652,27 @@ function AuditDetailSheet({
 
   return (
     <>
+      {/* A static title frames the sheet; the event itself and its timestamp
+          live as rows in the meta grid below, never duplicated up here. */}
       <SheetHeader className="gap-1.5">
-        {/* pr-8 keeps a long title clear of the sheet's absolute close button. */}
+        {/* pr-8 keeps the title clear of the sheet's absolute close button. */}
         <SheetTitle className="text-balance pr-8">
-          {actionLabel(row.type)}
+          {t("detail.title")}
         </SheetTitle>
-        <SheetDescription className="text-balance">{dateLong}</SheetDescription>
+        <SheetDescription className="text-balance">
+          {t("detail.subtitle")}
+        </SheetDescription>
       </SheetHeader>
 
       <div className="flex flex-col gap-5 overflow-y-auto px-4 pb-4">
-        {/* Meta, as key/value rows: what (the subject), who, when, category. */}
+        {/* Meta, as key/value rows: action, what (the subject), who, when,
+            category. */}
         <dl className={KV_GRID}>
+          <dt className="text-muted-foreground">{t("table.action")}</dt>
+          <dd className="min-w-0 break-words">{actionLabel(row.type)}</dd>
           {subject ? (
             <>
-              <dt className="text-muted-foreground">{t("detail.what")}</dt>
+              <dt className="text-muted-foreground">{t("detail.appliesTo")}</dt>
               <dd className="min-w-0 break-words">{subject}</dd>
             </>
           ) : null}
@@ -801,7 +826,7 @@ function AuditDetailSheet({
                         {item.status ? (
                           <span className="text-muted-foreground">
                             {" "}
-                            {item.status}
+                            {valueLabel("status", item.status) ?? item.status}
                           </span>
                         ) : null}
                       </li>
@@ -834,8 +859,19 @@ function AuditDetailSheet({
                     `detail.provenance.sourceValues.${value}` as Parameters<
                       typeof t.has
                     >[0]
+                  // source/via values share one wire vocabulary (how the
+                  // change came to be); cause carries the triggering event
+                  // key, labeled like the action column; the boolean flags
+                  // read Yes, never a raw "true". batchId stays a raw trace
+                  // key on purpose.
                   const displayValue =
-                    key === "source" && t.has(valueKey) ? t(valueKey) : value
+                    (key === "source" || key === "via") && t.has(valueKey)
+                      ? t(valueKey)
+                      : key === "cause"
+                        ? actionLabel(value)
+                        : value === "true"
+                          ? boolLabel(true)
+                          : value
                   return `${label}: ${displayValue}`
                 })
                 .join(" · ")}

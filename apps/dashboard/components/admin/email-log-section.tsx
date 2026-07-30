@@ -44,7 +44,7 @@ import {
 } from "@workspace/ui/components/table"
 import { usePaginatedQuery, useQuery } from "convex/react"
 import { useFormatter, useTranslations } from "next-intl"
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import type { DateRange } from "react-day-picker"
 import {
   DeliveryStatusBadge,
@@ -101,25 +101,13 @@ export function EmailLogSection() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const debouncedSearch = useDebouncedValue(search, 300)
 
-  // Earliest message time defaults the picker to the full span. Until it
-  // resolves, the query bounds stay open (startArg/endArg) so no rows hide.
-  const bounds = useQuery(api.platform.emailLog.bounds, {})
-  const defaultRange = useMemo<DateRange>(
-    () => ({
-      from: bounds?.earliest != null ? new Date(bounds.earliest) : new Date(),
-      to: new Date(),
-    }),
-    [bounds?.earliest]
-  )
-  const range = dateRange ?? defaultRange
-
   const isSearching = debouncedSearch.trim().length > 0
   const statusArg = status === "all" ? undefined : status
   const typeArg = type === "all" ? undefined : type
-  const startArg =
-    bounds !== undefined && range.from ? startOfDay(range.from) : undefined
-  const endArg =
-    bounds !== undefined && range.to ? endOfDay(range.to) : undefined
+  // Inclusive epoch-ms bounds. No picked range means no date filter at all
+  // (the trigger shows its placeholder), and Clear returns to that state.
+  const startArg = dateRange?.from ? startOfDay(dateRange.from) : undefined
+  const endArg = dateRange?.to ? endOfDay(dateRange.to) : undefined
 
   // Only one query is active at a time (browse XOR search).
   const browse = usePaginatedQuery(
@@ -242,7 +230,7 @@ export function EmailLogSection() {
           </SelectContent>
         </Select>
         <DateRangePicker
-          value={range}
+          value={dateRange}
           onChange={setDateRange}
           placeholder={t("dateRange.placeholder")}
           clearLabel={t("dateRange.clear")}

@@ -7,7 +7,7 @@ import { platformQuery } from "../lib/functions"
 
 // Email delivery history lives in the Sweego component (it owns sends, retries,
 // and webhook-driven delivery tracking). These platform-admin queries are thin,
-// PII-curated read wrappers over the component's list / search / get / bounds,
+// PII-curated read wrappers over the component's list / search / get,
 // reshaped into stable DTOs so the admin UI never depends on the component's
 // internal schema. Access is gated by `platformQuery` (requirePlatformAdmin);
 // the email log surfaces recipient addresses + rendered bodies, operator-only.
@@ -120,13 +120,6 @@ export const search = platformQuery({
     })
     return { page: result.page.map(toRow) }
   },
-})
-
-// Earliest message time (epoch ms) for the date-range picker default, or null.
-export const bounds = platformQuery({
-  args: {},
-  returns: v.object({ earliest: v.union(v.number(), v.null()) }),
-  handler: async (ctx) => sweego.bounds(ctx),
 })
 
 const vEmailAddress = v.object({
