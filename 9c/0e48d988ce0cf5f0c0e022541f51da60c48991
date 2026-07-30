@@ -1,0 +1,40 @@
+packages/backend/convex/testing.helpers.ts
+  s_0d1a9cb77984cf::t_a2b90769016c3c 2
+  s_0d1a9cb77984cf::t_9566adb405813f 27-31
+packages/backend/convex/devReset.ts
+  s_0d1a9cb77984cf::t_370f813e860fa6 69-72,76-103
+  s_0d1a9cb77984cf::t_31e68d6d9b9dd4 4-7
+  s_0d1a9cb77984cf::t_32d4557ce9e0c1 104-105
+packages/backend/convex/devReset.test.ts
+  s_0d1a9cb77984cf::t_abe8a1ed598e42 1-112
+packages/backend/package.json
+  s_0d1a9cb77984cf::t_35966dddac6289 19
+packages/backend/convex/convex.config.ts
+  s_0d1a9cb77984cf::t_674b22f5c4f3e7 1,9-14
+packages/backend/convex/lib/auditAggregates.ts
+  s_0d1a9cb77984cf::t_e875b7955d4294 1,3-4,11-73,86-137
+  s_0d1a9cb77984cf::t_e31d12079dd85b 74-85
+  s_0d1a9cb77984cf::t_45690e6b6112ed 2,5-10
+docs/go-live-checklist.md
+  s_0d1a9cb77984cf::t_0a64e433af4c3d 257-268
+bun.lock
+  s_0d1a9cb77984cf::t_383842bf4efb51 79,359-360
+packages/backend/convex/_generated/api.d.ts
+  s_0d1a9cb77984cf::t_435123feb864e4 62,150,210-211
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "9c0e48d988ce0cf5f0c0e022541f51da60c48991",
+  "prompts": {},
+  "sessions": {
+    "s_0d1a9cb77984cf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31e79143-66ef-4cdc-96a5-68d31b7180a8",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
