@@ -1,0 +1,21 @@
+packages/backend/convex/people/assignments.ts
+  s_0d1a9cb77984cf::t_411d4fe6e180c7 210-214
+docs/go-live-checklist.md
+  s_0d1a9cb77984cf::t_80647e493826a0 265-270
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "b7b9ffe030a39c9ffedf97bfb071d9360ffeabe2",
+  "prompts": {},
+  "sessions": {
+    "s_0d1a9cb77984cf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31e79143-66ef-4cdc-96a5-68d31b7180a8",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
