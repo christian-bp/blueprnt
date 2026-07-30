@@ -1,0 +1,27 @@
+packages/backend/convex/people/assignments.ts
+  s_0d1a9cb77984cf::t_55aa006e4eaeb4 1-4
+  s_0d1a9cb77984cf::t_338d575862ffef 228-234
+packages/constants/src/index.ts
+  s_0d1a9cb77984cf::t_ff9f3635b5066a 13
+packages/backend/convex/people/assignments.test.ts
+  s_0d1a9cb77984cf::t_7f2bbc8c5e7a1c 1,4
+  s_0d1a9cb77984cf::t_781809d392dffc 508-559
+packages/constants/src/assignments.ts
+  s_0d1a9cb77984cf::t_56c5a0e3ab439a 1-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "6dff7a7df4453a83dd05baa60a9f616cf1af9f54",
+  "prompts": {},
+  "sessions": {
+    "s_0d1a9cb77984cf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31e79143-66ef-4cdc-96a5-68d31b7180a8",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
