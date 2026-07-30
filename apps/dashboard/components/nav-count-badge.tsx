@@ -20,7 +20,12 @@ export function NavCountBadge({
   label: string
 }) {
   return (
-    <AnimatePresence initial={false}>
+    // No initial={false}: the parent tab mounts this only once its query has
+    // loaded, so the badge's first render already carries the count, and
+    // suppressing initial would swallow the enter animation entirely. Letting
+    // the mount animate is the point: the badge springs in when the section
+    // appears and whenever the count crosses zero.
+    <AnimatePresence>
       {count > 0 && (
         <motion.span
           initial={{ opacity: 0, scale: 0.6 }}
