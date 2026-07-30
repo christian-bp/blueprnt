@@ -1,0 +1,21 @@
+apps/dashboard/components/people/classify/classify-bulk.ts
+  s_0d1a9cb77984cf::t_40f344a8b2d961 1-54
+apps/dashboard/components/people/classify/classify-bulk.test.ts
+  s_0d1a9cb77984cf::t_17dab78263fa90 1-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "340cf548b22cb2871e85715b2f97ab314695a809",
+  "prompts": {},
+  "sessions": {
+    "s_0d1a9cb77984cf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31e79143-66ef-4cdc-96a5-68d31b7180a8",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
