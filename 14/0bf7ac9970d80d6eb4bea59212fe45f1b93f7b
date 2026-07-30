@@ -1,0 +1,61 @@
+packages/backend/convex/platform/emailLog.ts
+  s_0d1a9cb77984cf::t_e95bab4dc1e570 10
+apps/dashboard/components/org-audit-log-section.tsx
+  s_0d1a9cb77984cf::t_fe122d0295a60e 43
+  s_0d1a9cb77984cf::t_22f4abdfc482a9 59-61
+  s_0d1a9cb77984cf::t_674b3455a4d147 84,584-585,595
+  s_0d1a9cb77984cf::t_a2e226ef63b537 83,87
+  s_0d1a9cb77984cf::t_0477d127f4ef04 174-181
+  s_0d1a9cb77984cf::t_fc1fd1c418e29b 40-41,90-92
+  s_0d1a9cb77984cf::t_bbede2f8a29577 540,562,574,604-611,637,829
+  s_0d1a9cb77984cf::t_ff72c805640166 655-656,658,660,662-664,672
+  s_0d1a9cb77984cf::t_e54ee2f10721b9 341,503,507,509-510,515
+  s_0d1a9cb77984cf::t_aa26c44f809d1f 668-669,671
+  s_0d1a9cb77984cf::t_0e69c657cea689 70
+  s_0d1a9cb77984cf::t_ef9f6157be4c70 675
+  s_0d1a9cb77984cf::t_5f89c9f75af6e3 583,586-594,596
+  s_0d1a9cb77984cf::t_ee76d9148b9b65 144-148,407
+  s_0d1a9cb77984cf::t_3ad028cfec828d 274-281,311-312
+  s_0d1a9cb77984cf::t_9d01536edb7d7d 153-155
+  s_0d1a9cb77984cf::t_fd063d9c23c992 182-197,213-215,217-221,430,452,499,501-502,504-506,508
+  s_0d1a9cb77984cf::t_eccf15797a9736 58,62-66
+  s_0d1a9cb77984cf::t_65b2ced933183d 862-866,868-874
+  s_0d1a9cb77984cf::t_52c4764925a6ab 150-152,156-159,164-168,170-171,173,198,212,216
+  s_0d1a9cb77984cf::t_1ad9788f1f531d 149
+apps/dashboard/lib/audit-page-view.test.ts
+  s_0d1a9cb77984cf::t_0b12d80258b072 2-6
+  s_0d1a9cb77984cf::t_c83a861680b9c6 1,7-81
+  s_0d1a9cb77984cf::t_282f3ac1b11bb5 82-136
+apps/dashboard/lib/audit-page-view.ts
+  s_0d1a9cb77984cf::t_a4c506edc42df9 18-40
+  s_0d1a9cb77984cf::t_2e8e03ffffefce 1-17,41-60
+apps/dashboard/components/admin/audit-log-section.tsx
+  s_0d1a9cb77984cf::t_e8c623ce51b8f9 140-144,323
+  s_0d1a9cb77984cf::t_a2995201b22a3c 57-59,121-123,217-233,241-249,505-514,527
+  s_0d1a9cb77984cf::t_0f33dc24ccb645 545,547
+  s_0d1a9cb77984cf::t_a560f0f3a7ffb7 531-533,535,537,540,548
+  s_0d1a9cb77984cf::t_fe122d0295a60e 42
+  s_0d1a9cb77984cf::t_3c726256ca781f 457-458,481-482,492-493
+  s_0d1a9cb77984cf::t_ed4909edea97c0 70,72-74
+  s_0d1a9cb77984cf::t_674b3455a4d147 71
+  s_0d1a9cb77984cf::t_e4364ee7b7bfb3 56
+apps/dashboard/components/admin/email-log-section.tsx
+  s_0d1a9cb77984cf::t_fe122d0295a60e 47
+  s_0d1a9cb77984cf::t_e8c623ce51b8f9 107-110,233
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "140bf7ac9970d80d6eb4bea59212fe45f1b93f7b",
+  "prompts": {},
+  "sessions": {
+    "s_0d1a9cb77984cf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31e79143-66ef-4cdc-96a5-68d31b7180a8",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
