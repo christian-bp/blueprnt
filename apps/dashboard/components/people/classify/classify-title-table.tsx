@@ -53,7 +53,11 @@ import { toast } from "sonner"
 import { SPRING } from "@/lib/motion"
 import { ariaSort, TableSortButton } from "@/components/table-sort-button"
 import type { TableSkeletonColumn } from "@/components/table-skeleton"
-import { packAssignmentChunks, selectionState } from "./classify-bulk"
+import {
+  type BulkAssignment,
+  packAssignmentChunks,
+  selectionState,
+} from "./classify-bulk"
 import { ClassifyPersonRows } from "./classify-person-rows"
 import { UnmatchedTitleActions } from "./unmatched-title-actions"
 import { onSelectValue } from "@/lib/select"
@@ -281,7 +285,9 @@ export function ClassifyTableHeader({
   // Current sort + toggle; the loading skeleton omits both (static labels).
   sort?: ClassifySort
   onSort?: (key: ClassifySortKey) => void
-  // Header select-all state; the loading skeleton omits it (disabled box).
+  // Header select-all state; the loading skeleton omits it (renders the real
+  // control, enabled: the loaded checkbox's own initial state is enabled, and
+  // a click during the brief load is a harmless no-op).
   selectAll?: {
     checked: boolean
     indeterminate: boolean
@@ -331,7 +337,7 @@ export function ClassifyTableHeader({
               }
             />
           ) : (
-            <Checkbox aria-label={t("bulk.selectAll")} disabled />
+            <Checkbox aria-label={t("bulk.selectAll")} />
           )}
         </TableHead>
         {/* Reserved slot for the expand/collapse control (fixed width avoids layout shift) */}
@@ -366,7 +372,9 @@ export function ClassifyBulkToolbar({
   const titles = selection?.titles ?? 0
   return (
     <div className="flex min-h-8 items-center justify-between gap-2">
-      <p className="text-muted-foreground text-sm">
+      {/* The only feedback for select-all/select-row: announce it to screen
+        readers too, since nothing else states the current selection. */}
+      <p aria-live="polite" className="text-muted-foreground text-sm">
         {titles > 0
           ? t("bulk.selectedCount", {
               titles,
@@ -564,9 +572,7 @@ export function ClassifyTitleTable({
   // the per-person selected level when present, else resolveLevel (current
   // assigned level, then suggestion, then the track's first level). This
   // guarantees a valid level is always submitted.
-  function buildAssignments(
-    group: ClassifyTitleGroup
-  ): Array<{ personId: string; roleId: string; level: string }> {
+  function buildAssignments(group: ClassifyTitleGroup): BulkAssignment[] {
     const key = rowKey(group)
     const { currentRoleId, trackKey } = resolveGroup(group)
     if (currentRoleId === null || currentRoleId === undefined) return []
@@ -578,14 +584,18 @@ export function ClassifyTitleTable({
     }))
   }
 
-  // Submits in bounded chunks (the server rejects batches over the shared
-  // limit): a typical group is one chunk and one transaction; an oversized
-  // group lands as consecutive chunks, each atomic on its own.
-  async function submitAssignments(
-    assignments: Array<{ personId: string; roleId: string; level: string }>
+  // The one path every classify confirm submits through: packs one or more
+  // groups' assignments into bounded chunks (the server rejects batches over
+  // the shared limit) and awaits them in order, each chunk its own atomic
+  // transaction. onChunkDone reports how many people just landed, for the
+  // bulk dialog's progress readout; the per-group confirm has no progress UI
+  // and omits it.
+  async function submitChunks(
+    groups: ReadonlyArray<readonly BulkAssignment[]>,
+    onChunkDone?: (count: number) => void
   ) {
     for (const chunk of packAssignmentChunks(
-      [assignments],
+      groups,
       MAX_ASSIGNMENTS_PER_MUTATION
     )) {
       await assignPeople({
@@ -593,7 +603,15 @@ export function ClassifyTitleTable({
         assignments: chunk as Parameters<typeof assignPeople>[0]["assignments"],
         levelSource: "confirmed",
       })
+      onChunkDone?.(chunk.length)
     }
+  }
+
+  // A single group is the one-group case of the shared chunk-submit path: a
+  // typical group is one chunk and one transaction; an oversized group lands
+  // as consecutive chunks.
+  async function submitAssignments(assignments: BulkAssignment[]) {
+    await submitChunks([assignments])
   }
 
   async function onConfirm(group: ClassifyTitleGroup) {
@@ -618,31 +636,30 @@ export function ClassifyTitleTable({
   // Confirms every selected group, one bounded chunk at a time. On a failed
   // chunk the dialog stays open; the chunks that landed have already flipped
   // their groups to confirmed, the derived selection has pruned them, and
-  // pressing confirm again finishes the remainder.
+  // pressing confirm again finishes the remainder. If the selection pruned
+  // to nothing while the dialog was open (every selected group got confirmed
+  // elsewhere meanwhile), there is nothing to submit: close the dialog
+  // without a success toast, since nothing was actually confirmed.
   async function onBulkConfirm() {
     if (bulkProgress !== null) return
     const groupAssignments = selectedGroups.map((group) =>
       buildAssignments(group)
     )
-    const chunks = packAssignmentChunks(
-      groupAssignments,
-      MAX_ASSIGNMENTS_PER_MUTATION
-    )
+    if (
+      packAssignmentChunks(groupAssignments, MAX_ASSIGNMENTS_PER_MUTATION)
+        .length === 0
+    ) {
+      setBulkOpen(false)
+      return
+    }
     const total = groupAssignments.reduce((sum, a) => sum + a.length, 0)
     setBulkProgress({ done: 0, total })
     try {
       let done = 0
-      for (const chunk of chunks) {
-        await assignPeople({
-          orgId,
-          assignments: chunk as Parameters<
-            typeof assignPeople
-          >[0]["assignments"],
-          levelSource: "confirmed",
-        })
-        done += chunk.length
+      await submitChunks(groupAssignments, (count) => {
+        done += count
         setBulkProgress({ done, total })
-      }
+      })
       toast.success(tToast("classificationConfirmed"))
       setSelected(new Set())
       setBulkOpen(false)
