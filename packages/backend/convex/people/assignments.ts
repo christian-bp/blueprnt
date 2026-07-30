@@ -1,4 +1,7 @@
-import { isValidLevelForTrack } from "@workspace/constants"
+import {
+  isValidLevelForTrack,
+  MAX_ASSIGNMENTS_PER_MUTATION,
+} from "@workspace/constants"
 import { v } from "convex/values"
 import type { Doc, Id } from "../_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
@@ -222,6 +225,13 @@ export const assignPeopleToRole = orgMutation({
   },
   returns: v.array(v.id("personAssignments")),
   handler: async (ctx, args) => {
+    // Bounded transaction (CLAUDE.md scalability rule): callers chunk to this
+    // limit; a larger batch would approach Convex's per-transaction document
+    // limits (each assignment costs ~8-12 writes).
+    if (args.assignments.length > MAX_ASSIGNMENTS_PER_MUTATION) {
+      throw appError(ERROR_CODES.invalidInput)
+    }
+
     const effectiveAt = args.effectiveAt ?? Date.now()
     const ids: Id<"personAssignments">[] = []
     for (const a of args.assignments) {

@@ -1,5 +1,7 @@
+import { MAX_ASSIGNMENTS_PER_MUTATION } from "@workspace/constants"
 import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
+import type { Id } from "../_generated/dataModel"
 import { initConvexTest } from "../testing.helpers"
 
 // Seeds a minimal org with one admin member.
@@ -501,5 +503,57 @@ describe("assignPeopleToRole (bulk)", () => {
         .collect()
       expect(rows).toHaveLength(0)
     })
+  })
+})
+
+describe("assignPeopleToRole batch bound", () => {
+  it("rejects a batch larger than MAX_ASSIGNMENTS_PER_MUTATION", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t, "hr-bound1@acme.se")
+    const { personId, roleId } = await seedPersonAndRole(orgId, asAdmin)
+
+    // One person/role repeated: the length gate must fire before any
+    // per-item work, so a batch this size never reaches the loop.
+    const assignments = Array.from(
+      { length: MAX_ASSIGNMENTS_PER_MUTATION + 1 },
+      () => ({ personId, roleId, level: "IC1" })
+    )
+    await expect(
+      asAdmin.mutation(api.people.assignments.assignPeopleToRole, {
+        orgId,
+        assignments,
+        levelSource: "confirmed",
+      })
+    ).rejects.toThrow(/errors.invalidInput/)
+  })
+
+  it("accepts a batch exactly at the bound", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t, "hr-bound2@acme.se")
+    const { roleId } = await seedPersonAndRole(orgId, asAdmin)
+
+    // A distinct person per entry: assigning the same person twice in one
+    // batch would collide with the strictly-chronological guard in
+    // writeAssignment (all entries share one effectiveAt), a different
+    // invariant than the batch LENGTH bound under test here.
+    const personIds: Id<"people">[] = []
+    for (let i = 0; i < MAX_ASSIGNMENTS_PER_MUTATION; i++) {
+      const { personId } = await asAdmin.mutation(
+        api.people.people.createPerson,
+        { orgId, displayName: `Batch Person ${i}`, gender: "Man" }
+      )
+      personIds.push(personId)
+    }
+
+    const assignments = personIds.map((personId) => ({
+      personId,
+      roleId,
+      level: "IC1",
+    }))
+    const ids = await asAdmin.mutation(
+      api.people.assignments.assignPeopleToRole,
+      { orgId, assignments, levelSource: "confirmed" }
+    )
+    expect(ids).toHaveLength(MAX_ASSIGNMENTS_PER_MUTATION)
   })
 })
