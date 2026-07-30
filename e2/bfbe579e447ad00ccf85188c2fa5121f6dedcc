@@ -1,0 +1,23 @@
+apps/dashboard/components/people/people-tabs.tsx
+  s_0d1a9cb77984cf::t_a91cf5c580dd0a 5,34-50,55-58
+apps/dashboard/components/section-tabs.tsx
+  s_0d1a9cb77984cf::t_1b6e65b4c4b6c6 5,35-45,50-53
+apps/dashboard/components/header-tab-link.tsx
+  s_0d1a9cb77984cf::t_1792b33c7f91a1 1-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "e2bfbe579e447ad00ccf85188c2fa5121f6dedcc",
+  "prompts": {},
+  "sessions": {
+    "s_0d1a9cb77984cf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31e79143-66ef-4cdc-96a5-68d31b7180a8",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
