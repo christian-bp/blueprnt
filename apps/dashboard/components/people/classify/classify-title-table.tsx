@@ -136,16 +136,11 @@ const STATE_RANK = { unclassified: 0, pending: 1, confirmed: 2 } as const
 
 export type ClassifySort = { key: ClassifySortKey; desc: boolean }
 
-// The table's own initial sort (title ascending): shared so the auto-expand
-// pick below (which needs "the first row in the DEFAULT view") and the
-// sort state's own initial value can never drift apart.
+// The table's own initial sort (title ascending).
 const DEFAULT_SORT: ClassifySort = { key: "title", desc: false }
 
-// Column sorting, extracted so both the live table (sortedGroups) and the
-// auto-expand pick on mount (which needs the groups in DISPLAY order before
-// any state hook has run) share one implementation. The no-title bucket
-// stays pinned last in every order (it is the "needs a title" catch-all, not
-// a sortable value).
+// Column sorting. The no-title bucket stays pinned last in every order (it
+// is the "needs a title" catch-all, not a sortable value).
 function sortGroups(
   groups: ClassifyTitleGroup[],
   sort: ClassifySort
@@ -430,22 +425,10 @@ export function ClassifyTitleTable({
     total: number
   } | null>(null)
 
-  // Which groups have their per-person rows expanded. Lands the user on the
-  // first group that still needs attention (not yet confirmed), in the
-  // table's default display order, so opening Classify immediately shows
-  // what to do instead of a flat list with nothing focused; a fully
-  // classified org (nothing unconfirmed) opens with nothing expanded.
-  // Computed once via this lazy initializer (mount only, never revisited as
-  // groups changes reactively afterward) -- mirrors the review journey's own
-  // resume-once landing (pay-mapping-review.tsx), not a perpetual auto-open.
-  const [expanded, setExpanded] = useState<Set<string>>(() => {
-    const firstUnfinished = sortGroups(groups, DEFAULT_SORT).find(
-      (group) => classificationStateForPeople(group.people) !== "confirmed"
-    )
-    return firstUnfinished !== undefined
-      ? new Set([rowKey(firstUnfinished)])
-      : new Set()
-  })
+  // Which groups have their per-person rows expanded. Everything starts
+  // collapsed: the table is scanned for bulk selection first, and a group's
+  // per-person review panel is opt-in via its row.
+  const [expanded, setExpanded] = useState<Set<string>>(() => new Set())
 
   // Per-person selected levels: outer key = rowKey(group), inner key = personId
   const [selectedLevel, setSelectedLevel] = useState<

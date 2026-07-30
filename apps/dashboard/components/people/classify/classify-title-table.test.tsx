@@ -216,32 +216,10 @@ describe("ClassifyTitleTable", () => {
     vi.clearAllMocks()
   })
 
-  // The first non-confirmed group now auto-expands on mount, so this is
-  // "ensure a panel is open" rather than "there must be a collapsed row to
-  // click": a no-op when the auto-expand already opened it.
+  // Opens the first row's per-person panel (everything mounts collapsed).
   function expandFirst() {
     const toggle = screen.queryAllByRole("button", { name: m.expandLabel })[0]
     if (toggle !== undefined) fireEvent.click(toggle)
-  }
-
-  // Inverse of expandFirst: collapses whatever auto-expanded on mount, so a
-  // test can assert the genuinely-collapsed rendering. A no-op when nothing
-  // is expanded. Async: the panel's exit transition (AnimatePresence) keeps
-  // its content mounted until the animation finishes, so the collapsed DOM
-  // state only lands after a wait, not synchronously on click. Waits on the
-  // role combobox specifically (every panel renders one, unlike Confirm,
-  // which only some do) rather than the toggle's own aria-label, which flips
-  // instantly with the state change, well before the exit animation (and the
-  // unmount it gates) actually completes.
-  async function collapseFirst() {
-    const toggle = screen.queryAllByRole("button", { name: m.collapseLabel })[0]
-    if (toggle === undefined) return
-    fireEvent.click(toggle)
-    await waitFor(() => {
-      expect(
-        screen.queryByRole("combobox", { name: m.columns.role })
-      ).toBeNull()
-    })
   }
 
   it("renders column headers", () => {
@@ -252,11 +230,8 @@ describe("ClassifyTitleTable", () => {
     expect(screen.getByText(m.columns.state)).toBeDefined()
   })
 
-  it("renders the title, person count, and resolved role as text", async () => {
+  it("renders the title, person count, and resolved role as text", () => {
     renderTable()
-    // HIGH_GROUP is not yet confirmed, so it auto-expands on mount; collapse
-    // it first to assert the genuinely-collapsed, read-only row rendering.
-    await collapseFirst()
     expect(screen.getByText("Senior Engineer")).toBeDefined()
     expect(screen.getByText("2")).toBeDefined()
     // The collapsed row shows the resolved role read-only (no select).
@@ -290,17 +265,13 @@ describe("ClassifyTitleTable", () => {
   // The review gate: Confirm exists ONLY inside the expanded panel
   // ---------------------------------------------------------------------------
 
-  it("offers no Confirm anywhere while the group is collapsed", async () => {
+  it("offers no Confirm anywhere while the group is collapsed", () => {
     renderTable()
-    // HIGH_GROUP auto-expands on mount (see below); collapse it first to
-    // assert the genuinely-collapsed state this test is about.
-    await collapseFirst()
     expect(screen.queryByRole("button", { name: m.assignCta })).toBeNull()
   })
 
   it("clicking the row expands the review panel", async () => {
     renderTable()
-    await collapseFirst()
     fireEvent.click(screen.getByText("Senior Engineer"))
     await waitFor(() => {
       expect(screen.getByText("Alice Svensson")).toBeDefined()
@@ -584,31 +555,25 @@ describe("ClassifyTitleTable", () => {
   // Sorting
   // ---------------------------------------------------------------------------
 
-  it("sorts by title ascending by default, no-title bucket pinned last", async () => {
+  it("sorts by title ascending by default, no-title bucket pinned last", () => {
     const aardvark: ClassifyTitleGroup = {
       ...HIGH_GROUP,
       title: "Aardvark Handler",
     }
     // Deliberately shuffled input: null-title first, Senior before Aardvark.
     renderTable([NO_TITLE_GROUP, HIGH_GROUP, aardvark])
-    // Aardvark Handler (first non-confirmed in default order) auto-expands
-    // on mount; collapse it so the expansion row doesn't shift row indices.
-    await collapseFirst()
     const rows = screen.getAllByRole("row")
     expect(rows[1]?.textContent).toContain("Aardvark Handler")
     expect(rows[2]?.textContent).toContain("Senior Engineer")
     expect(rows[3]?.textContent).toContain(m.noTitle)
   })
 
-  it("clicking the title heading flips the direction, no-title still last", async () => {
+  it("clicking the title heading flips the direction, no-title still last", () => {
     const aardvark: ClassifyTitleGroup = {
       ...HIGH_GROUP,
       title: "Aardvark Handler",
     }
     renderTable([NO_TITLE_GROUP, HIGH_GROUP, aardvark])
-    // Aardvark Handler auto-expands on mount; collapse it so the expansion
-    // row doesn't shift row indices below.
-    await collapseFirst()
     fireEvent.click(screen.getByRole("button", { name: m.columns.title }))
     const rows = screen.getAllByRole("row")
     expect(rows[1]?.textContent).toContain("Senior Engineer")
@@ -617,30 +582,21 @@ describe("ClassifyTitleTable", () => {
   })
 
   // ---------------------------------------------------------------------------
-  // Auto-expand on mount: land the user on the first thing to do
+  // Mount state: everything collapsed, expansion is opt-in
   // ---------------------------------------------------------------------------
 
-  it("auto-expands the first non-confirmed group, in default sort order, on mount", () => {
-    // Default sort is title ascending: "Platform Engineer" (confirmed) sorts
-    // before "Senior Engineer" (pending), but the confirmed one is skipped.
+  it("expands nothing on mount, even with unconfirmed groups present", () => {
     renderTable([CONFIRMED_GROUP, HIGH_GROUP])
-    // Senior Engineer's people are visible with no click at all.
-    expect(screen.getByText("Alice Svensson")).toBeDefined()
-    expect(screen.getByText("Bob Larsson")).toBeDefined()
-    expect(screen.getByRole("button", { name: m.assignCta })).toBeDefined()
-    // Exactly one row is open (the collapse control only exists on that row).
-    expect(
-      screen.getAllByRole("button", { name: m.collapseLabel })
-    ).toHaveLength(1)
-  })
-
-  it("expands nothing on mount when every group is already confirmed", () => {
-    renderTable([CONFIRMED_GROUP])
+    // No per-person rows visible without a click.
     expect(screen.queryByText("Alice Svensson")).toBeNull()
+    expect(screen.queryByText("Bob Larsson")).toBeNull()
     expect(
       screen.queryAllByRole("button", { name: m.collapseLabel })
     ).toHaveLength(0)
-    expect(screen.getByRole("button", { name: m.expandLabel })).toBeDefined()
+    // Every row still offers its expand control.
+    expect(screen.getAllByRole("button", { name: m.expandLabel })).toHaveLength(
+      2
+    )
   })
 
   // ---------------------------------------------------------------------------
