@@ -1,0 +1,22 @@
+apps/dashboard/components/table-pagination.test.tsx
+  s_0d1a9cb77984cf::t_bc5fdff1c630d5 4-6,8-9,12-18,21-23,33-35,38-50,55,59-79,82-91,94-96,99-101
+  s_0d1a9cb77984cf::t_427dd2fcebcf2c 24,26
+apps/dashboard/components/table-pagination.tsx
+  s_0d1a9cb77984cf::t_52830d2a3a547f 13-22,29-51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "fa7d91c202bfe7bda030af4d2195f31dba365de4",
+  "prompts": {},
+  "sessions": {
+    "s_0d1a9cb77984cf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31e79143-66ef-4cdc-96a5-68d31b7180a8",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
