@@ -480,7 +480,11 @@
         "selectAll": "Select all classifiable titles",
         "selectRow": "Select {title}",
         "selectedCount": "{titles, plural, one {# title} other {# titles}} selected, {people, plural, one {# person} other {# people}}",
-        "cta": "Classify selected"
+        "cta": "Classify selected",
+        "dialogTitle": "Classify selected?",
+        "dialogDescription": "{titles, plural, one {# title} other {# titles}} and {people, plural, one {# person} other {# people}} will be classified with their suggested roles and levels. You can change any classification afterwards.",
+        "confirm": "Classify",
+        "progress": "{done} / {total}"
       },
       "noTitle": "Unclassified / no title",
       "selectRolePlaceholder": "Select a role",

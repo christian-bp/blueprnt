@@ -480,7 +480,11 @@
         "selectAll": "Markera alla klassificerbara titlar",
         "selectRow": "Markera {title}",
         "selectedCount": "{titles, plural, one {# titel} other {# titlar}} markerade, {people, plural, one {# person} other {# personer}}",
-        "cta": "Klassificera valda"
+        "cta": "Klassificera valda",
+        "dialogTitle": "Klassificera valda?",
+        "dialogDescription": "{titles, plural, one {# titel} other {# titlar}} och {people, plural, one {# person} other {# personer}} klassificeras med sina föreslagna roller och nivåer. Du kan ändra varje klassificering efteråt.",
+        "confirm": "Klassificera",
+        "progress": "{done} / {total}"
       },
       "noTitle": "Oklassificerad / ingen titel",
       "selectRolePlaceholder": "Välj en roll",

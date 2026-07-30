@@ -682,4 +682,105 @@ describe("ClassifyTitleTable", () => {
     // 1 actionable title, 2 people (the unmatched group is not selectable).
     expect(screen.getByText(/1 title .* 2 people/)).toBeDefined()
   })
+
+  // ---------------------------------------------------------------------------
+  // Bulk confirm: the summary dialog gates a chunked write across groups
+  // ---------------------------------------------------------------------------
+
+  it("bulk confirm goes through the summary dialog and merges groups into one chunked call", async () => {
+    const SECOND_GROUP: ClassifyTitleGroup = {
+      title: "Engineering Manager",
+      personCount: 1,
+      suggestedRoleId: "role2",
+      people: [
+        {
+          personId: "p9",
+          displayName: "Eva Holm",
+          externalRef: null,
+          employmentStartDate: null,
+          isManager: true,
+          suggestedLevel: "M1",
+          currentAssignment: null,
+        },
+      ],
+    }
+    renderTable([HIGH_GROUP, SECOND_GROUP])
+    fireEvent.click(screen.getByRole("checkbox", { name: m.bulk.selectAll }))
+    fireEvent.click(screen.getByRole("button", { name: m.bulk.cta }))
+    // The dialog gates the write: nothing has been submitted yet.
+    expect(assignMock).not.toHaveBeenCalled()
+    expect(
+      screen.getByRole("alertdialog", { name: m.bulk.dialogTitle })
+    ).toBeDefined()
+    fireEvent.click(screen.getByRole("button", { name: m.bulk.confirm }))
+    await waitFor(() => expect(toast.success).toHaveBeenCalled())
+    // Three people across two groups fit one chunk: exactly one mutation
+    // call whose payload carries all of them, confirmed.
+    expect(assignMock).toHaveBeenCalledTimes(1)
+    const [call] = assignMock.mock.calls[0] as [
+      {
+        levelSource: string
+        assignments: Array<{ personId: string }>
+      },
+    ]
+    expect(call.levelSource).toBe("confirmed")
+    expect(call.assignments.map((a) => a.personId).sort()).toEqual([
+      "p1",
+      "p2",
+      "p9",
+    ])
+  })
+
+  it("keeps the dialog open and shows an error toast when a chunk fails", async () => {
+    assignMock.mockRejectedValueOnce(new Error("boom"))
+    renderTable([HIGH_GROUP])
+    fireEvent.click(screen.getByRole("checkbox", { name: m.bulk.selectAll }))
+    fireEvent.click(screen.getByRole("button", { name: m.bulk.cta }))
+    fireEvent.click(screen.getByRole("button", { name: m.bulk.confirm }))
+    await waitFor(() => expect(toast.error).toHaveBeenCalled())
+    expect(
+      screen.getByRole("alertdialog", { name: m.bulk.dialogTitle })
+    ).toBeDefined()
+  })
+
+  it("splits a selected group larger than the mutation limit into sequential chunks", async () => {
+    // Closes a deferred review finding: no component-level test previously
+    // drove a >MAX_ASSIGNMENTS_PER_MUTATION group through the mocked
+    // mutation. 60 people -> chunks of 50 and 10, called in order.
+    const BIG_GROUP: ClassifyTitleGroup = {
+      title: "Retail Associate",
+      personCount: 60,
+      suggestedRoleId: "role1",
+      people: Array.from({ length: 60 }, (_, i) => ({
+        personId: `big-${i}`,
+        displayName: `Person ${i}`,
+        externalRef: null,
+        employmentStartDate: null,
+        isManager: null,
+        suggestedLevel: "IC1",
+        currentAssignment: null,
+      })),
+    }
+    renderTable([BIG_GROUP])
+    fireEvent.click(screen.getByRole("checkbox", { name: m.bulk.selectAll }))
+    fireEvent.click(screen.getByRole("button", { name: m.bulk.cta }))
+    fireEvent.click(screen.getByRole("button", { name: m.bulk.confirm }))
+    await waitFor(() => expect(toast.success).toHaveBeenCalled())
+    expect(assignMock).toHaveBeenCalledTimes(2)
+    const calls = assignMock.mock.calls as Array<
+      [{ assignments: Array<{ personId: string }> }]
+    >
+    const sizes = calls
+      .map(([payload]) => payload.assignments.length)
+      .sort((a, b) => a - b)
+    expect(sizes).toEqual([10, 50])
+    const allIds = calls.flatMap(([payload]) =>
+      payload.assignments.map((a) => a.personId)
+    )
+    // Exact union, no duplicates: every person lands in exactly one chunk.
+    expect(new Set(allIds).size).toBe(60)
+    expect(allIds.slice().sort()).toEqual(
+      BIG_GROUP.people.map((p) => p.personId).sort()
+    )
+  })
 })

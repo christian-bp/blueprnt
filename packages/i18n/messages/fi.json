@@ -480,7 +480,11 @@
         "selectAll": "Valitse kaikki luokiteltavat nimikkeet",
         "selectRow": "Valitse {title}",
         "selectedCount": "{titles, plural, one {# nimike} other {# nimikettä}} valittu, {people, plural, one {# henkilö} other {# henkilöä}}",
-        "cta": "Luokittele valitut"
+        "cta": "Luokittele valitut",
+        "dialogTitle": "Luokitellaanko valitut?",
+        "dialogDescription": "{titles, plural, one {# nimike} other {# nimikettä}} ja {people, plural, one {# henkilö} other {# henkilöä}} luokitellaan ehdotetuilla rooleilla ja tasoilla. Voit muuttaa jokaista luokittelua jälkikäteen.",
+        "confirm": "Luokittele",
+        "progress": "{done} / {total}"
       },
       "noTitle": "Luokittelematon / ei toimenkuvaa",
       "selectRolePlaceholder": "Valitse rooli",

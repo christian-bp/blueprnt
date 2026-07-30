@@ -480,7 +480,11 @@
         "selectAll": "Vælg alle klassificerbare titler",
         "selectRow": "Vælg {title}",
         "selectedCount": "{titles, plural, one {# titel} other {# titler}} valgt, {people, plural, one {# person} other {# personer}}",
-        "cta": "Klassificer valgte"
+        "cta": "Klassificer valgte",
+        "dialogTitle": "Klassificer valgte?",
+        "dialogDescription": "{titles, plural, one {# titel} other {# titler}} og {people, plural, one {# person} other {# personer}} klassificeres med deres foreslåede roller og niveauer. Du kan ændre hver klassificering bagefter.",
+        "confirm": "Klassificer",
+        "progress": "{done} / {total}"
       },
       "noTitle": "Uklassificeret / ingen titel",
       "selectRolePlaceholder": "Vælg en rolle",

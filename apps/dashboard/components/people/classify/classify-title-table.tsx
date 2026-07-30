@@ -8,6 +8,16 @@ import {
 } from "@workspace/constants"
 import { ArrowDown01Icon, Tag01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@workspace/ui/components/alert-dialog"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -25,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import { Spinner } from "@workspace/ui/components/spinner"
 import {
   Table,
   TableBody,
@@ -404,6 +415,13 @@ export function ClassifyTitleTable({
   const [selected, setSelected] = useState<Set<string>>(() => new Set())
   const [bulkOpen, setBulkOpen] = useState(false)
 
+  // Chunk progress while the bulk confirm runs, or null when idle. done and
+  // total count PEOPLE, matching the dialog description's unit.
+  const [bulkProgress, setBulkProgress] = useState<{
+    done: number
+    total: number
+  } | null>(null)
+
   // Which groups have their per-person rows expanded. Lands the user on the
   // first group that still needs attention (not yet confirmed), in the
   // table's default display order, so opening Classify immediately shows
@@ -594,6 +612,44 @@ export function ClassifyTitleTable({
         next.delete(key)
         return next
       })
+    }
+  }
+
+  // Confirms every selected group, one bounded chunk at a time. On a failed
+  // chunk the dialog stays open; the chunks that landed have already flipped
+  // their groups to confirmed, the derived selection has pruned them, and
+  // pressing confirm again finishes the remainder.
+  async function onBulkConfirm() {
+    if (bulkProgress !== null) return
+    const groupAssignments = selectedGroups.map((group) =>
+      buildAssignments(group)
+    )
+    const chunks = packAssignmentChunks(
+      groupAssignments,
+      MAX_ASSIGNMENTS_PER_MUTATION
+    )
+    const total = groupAssignments.reduce((sum, a) => sum + a.length, 0)
+    setBulkProgress({ done: 0, total })
+    try {
+      let done = 0
+      for (const chunk of chunks) {
+        await assignPeople({
+          orgId,
+          assignments: chunk as Parameters<
+            typeof assignPeople
+          >[0]["assignments"],
+          levelSource: "confirmed",
+        })
+        done += chunk.length
+        setBulkProgress({ done, total })
+      }
+      toast.success(tToast("classificationConfirmed"))
+      setSelected(new Set())
+      setBulkOpen(false)
+    } catch {
+      toast.error(tToast("error"))
+    } finally {
+      setBulkProgress(null)
     }
   }
 
@@ -915,6 +971,49 @@ export function ClassifyTitleTable({
           })}
         </TableBody>
       </Table>
+
+      {/* Standard AlertDialog anatomy (confirm-delete-dialog.tsx): header
+        (title + description), footer with cancel first (outline) and the
+        primary action last. Cancel reuses createRole.cancel (the same
+        "Cancel" copy already translated in every locale for this surface)
+        instead of a new bulk.cancel key. AlertDialogAction in this vendored
+        alert-dialog.tsx is a plain Button (not a Close), so it never
+        auto-closes: the dialog only closes explicitly, inside
+        onBulkConfirm, on success. */}
+      <AlertDialog open={bulkOpen} onOpenChange={setBulkOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("bulk.dialogTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("bulk.dialogDescription", {
+                titles: sel.effective.size,
+                people: selectedPeopleCount,
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={bulkProgress !== null}>
+              {t("createRole.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={bulkProgress !== null}
+              onClick={() => void onBulkConfirm()}
+            >
+              {bulkProgress !== null ? (
+                <>
+                  <Spinner />
+                  {t("bulk.progress", {
+                    done: bulkProgress.done,
+                    total: bulkProgress.total,
+                  })}
+                </>
+              ) : (
+                t("bulk.confirm")
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   )
 }
