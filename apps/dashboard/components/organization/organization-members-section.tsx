@@ -173,7 +173,11 @@ export function OrganizationMembersSection(props: { refreshKey: number }) {
               <TableHead>{t("table.name")}</TableHead>
               <TableHead>{t("table.email")}</TableHead>
               <TableHead>{t("table.role")}</TableHead>
-              <TableHead className="text-right">{t("table.actions")}</TableHead>
+              <TableHead className="text-right">
+                {/* Row actions need no visible heading; the label stays for
+                    screen readers. */}
+                <span className="sr-only">{t("table.actions")}</span>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
