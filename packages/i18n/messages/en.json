@@ -485,7 +485,7 @@
         "dialogTitle": "Classify selected?",
         "dialogDescription": "{titles, plural, one {# title} other {# titles}} and {people, plural, one {# person} other {# people}} will be classified with their suggested roles and levels. You can change any classification afterwards.",
         "confirm": "Classify",
-        "progress": "{done} / {total}"
+        "progress": "<done></done> / <total></total>"
       },
       "noTitle": "Unclassified / no title",
       "selectRolePlaceholder": "Select a role",

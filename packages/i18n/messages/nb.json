@@ -485,7 +485,7 @@
         "dialogTitle": "Klassifiser valgte?",
         "dialogDescription": "{titles, plural, one {# tittel} other {# titler}} og {people, plural, one {# person} other {# personer}} klassifiseres med sine foreslåtte roller og nivåer. Du kan endre hver klassifisering etterpå.",
         "confirm": "Klassifiser",
-        "progress": "{done} / {total}"
+        "progress": "<done></done> / <total></total>"
       },
       "noTitle": "Uklassifisert / ingen tittel",
       "selectRolePlaceholder": "Velg en rolle",

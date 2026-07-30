@@ -485,7 +485,7 @@
         "dialogTitle": "Luokitellaanko valitut?",
         "dialogDescription": "{titles, plural, one {# nimike} other {# nimikettä}} ja {people, plural, one {# henkilö} other {# henkilöä}} luokitellaan ehdotetuilla rooleilla ja tasoilla. Voit muuttaa jokaista luokittelua jälkikäteen.",
         "confirm": "Luokittele",
-        "progress": "{done} / {total}"
+        "progress": "<done></done> / <total></total>"
       },
       "noTitle": "Luokittelematon / ei toimenkuvaa",
       "selectRolePlaceholder": "Valitse rooli",

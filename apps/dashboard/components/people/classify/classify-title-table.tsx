@@ -1,5 +1,6 @@
 "use client"
 
+import NumberFlow from "@number-flow/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
   MAX_ASSIGNMENTS_PER_MUTATION,
@@ -1002,9 +1003,12 @@ export function ClassifyTitleTable({
               {bulkProgress !== null ? (
                 <>
                   <Spinner />
-                  {t("bulk.progress", {
-                    done: bulkProgress.done,
-                    total: bulkProgress.total,
+                  {/* The progress numbers render through NumberFlow (the
+                      message's tags carry the layout) so the done count
+                      rolls as each chunk lands instead of swapping. */}
+                  {t.rich("bulk.progress", {
+                    done: () => <NumberFlow value={bulkProgress.done} />,
+                    total: () => <NumberFlow value={bulkProgress.total} />,
                   })}
                 </>
               ) : (
