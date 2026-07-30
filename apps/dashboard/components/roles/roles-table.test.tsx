@@ -174,13 +174,18 @@ describe("RolesTable", () => {
     expect(pushMock).toHaveBeenCalledWith("/roles/r1")
   })
 
-  it("shows the band for an evaluated role and nothing for an unevaluated one", () => {
+  it("shows the band for an evaluated role and a not-yet-evaluated line otherwise", () => {
     renderTable([
       row({ roleId: "r1", title: "Done Role", band: 3 }),
       row({ roleId: "r2", title: "Todo Role", band: null }),
     ])
     expect(screen.getByText("3")).toBeDefined()
-    // An unevaluated role shows no band, not a "not evaluated" label.
-    expect(screen.queryByText(messages.dashboard.roles.notEvaluated)).toBeNull()
+    // An unevaluated role is called out, never a blank cell.
+    const marker = screen.getByText(messages.dashboard.roles.notEvaluated)
+    expect(marker.closest("tr")?.textContent).toContain("Todo Role")
+    // The evaluated role carries no marker.
+    expect(
+      screen.getAllByText(messages.dashboard.roles.notEvaluated)
+    ).toHaveLength(1)
   })
 })

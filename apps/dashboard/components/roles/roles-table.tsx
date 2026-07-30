@@ -111,8 +111,9 @@ const exactString = (
 // rendering TanStack's header groups. Fixed column widths (with table-fixed
 // on the Table): auto layout would re-measure columns from the visible rows,
 // so widths would jump whenever filtering changes which rows show. Title
-// takes the remaining space. Band is w-32 to fit the widest locale label
-// (fi "Vaativuusluokka"); narrower clips it and forces a horizontal scroll.
+// takes the remaining space. Band is w-40 to fit the column's widest content
+// on one line (the sv "Inte utvärderad ännu" cell text, wider than the fi
+// "Vaativuusluokka" heading); narrower wraps or clips.
 export function RolesTableHeader() {
   const t = useTranslations("dashboard.roles")
   const tAssessment = useTranslations("assessment")
@@ -122,7 +123,7 @@ export function RolesTableHeader() {
         <TableHead>{t("table.title")}</TableHead>
         <TableHead className="w-44">{t("table.track")}</TableHead>
         <TableHead className="w-[22%]">{t("table.team")}</TableHead>
-        <TableHead className="w-32">{tAssessment("band")}</TableHead>
+        <TableHead className="w-40">{tAssessment("band")}</TableHead>
       </TableRow>
     </TableHeader>
   )
@@ -245,18 +246,24 @@ export function RolesTable({
         id: "evaluation",
         enableGlobalFilter: false,
         // The evaluation outcome: a role's band once it is fully evaluated,
-        // otherwise "not evaluated" (an incomplete or still-computing role has
-        // no band yet, the same rule as the family and overview tables).
+        // otherwise a muted "not yet evaluated" line (an incomplete or
+        // still-computing role has no band yet, the same rule as the family
+        // and overview tables), so the register shows which roles still need
+        // evaluating instead of a blank cell.
         // Block flex wrapper: skeleton parity, same as the track cell.
         cell: ({ row }) =>
           row.original.band != null ? (
             <div className="flex items-center">
               <Badge>{row.original.band}</Badge>
             </div>
-          ) : null,
+          ) : (
+            <span className="block truncate text-muted-foreground">
+              {t("notEvaluated")}
+            </span>
+          ),
       },
     ],
-    []
+    [t]
   )
 
   const table = useReactTable({

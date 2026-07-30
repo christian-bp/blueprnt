@@ -48,7 +48,8 @@ const FAMILY_SKELETON_COLUMNS: TableSkeletonColumn[] = [
 
 // Per-family progression: the family's roles in one table with a track column,
 // ordered by track (track order) then title. Band outcomes appear only for
-// complete roles, the same visibility rule as the results view.
+// complete roles (the same visibility rule as the results view); a role
+// without one shows a muted "not yet evaluated" line instead of a blank cell.
 export default function FamilyPage(props: {
   params: Promise<{ familySlug: string }>
 }) {
@@ -72,14 +73,15 @@ export default function FamilyPage(props: {
 
   // Shared by the loaded table and the loading skeleton so the two cannot
   // drift. Fixed widths (with table-fixed) match the roles register; band is
-  // w-32 to fit the widest locale label (fi "Vaativuusluokka").
+  // w-40 to fit the column's widest content on one line (the sv "Inte
+  // utvärderad ännu" cell text).
   const tableHeader = (
     <TableHeader>
       <TableRow>
         <TableHead>{t("table.title")}</TableHead>
         <TableHead className="w-44">{t("table.track")}</TableHead>
         <TableHead className="w-[22%]">{t("table.team")}</TableHead>
-        <TableHead className="w-32 text-right">{tAssessment("band")}</TableHead>
+        <TableHead className="w-40 text-right">{tAssessment("band")}</TableHead>
       </TableRow>
     </TableHeader>
   )
@@ -230,7 +232,11 @@ export default function FamilyPage(props: {
                       <div className="flex items-center justify-end">
                         <Badge>{result.band}</Badge>
                       </div>
-                    ) : null}
+                    ) : (
+                      <span className="block truncate text-right text-muted-foreground">
+                        {t("notEvaluated")}
+                      </span>
+                    )}
                   </TableCell>
                 </TableRow>
               )
