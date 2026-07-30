@@ -10,6 +10,7 @@ export {
   defaultCurrencyFor,
   defaultLanguageFor,
 } from "./countries"
+export { AUDIT_LOG_PAGE_SIZE } from "./auditLog"
 export { EMAIL_TEMPLATE_KEYS, type EmailTemplateKey } from "./email"
 export {
   EMPLOYMENT_TYPES,
