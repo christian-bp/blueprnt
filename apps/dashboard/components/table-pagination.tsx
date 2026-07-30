@@ -10,38 +10,49 @@ import {
   PaginationPrevious,
 } from "@workspace/ui/components/pagination"
 
-// How many page numbers to show before collapsing to ellipses.
-const MAX_NUMBERS = 9
-
-// Build the list of 1-based page numbers (and ellipsis gaps) to render. Every
-// number is a loaded, directly-jumpable page. When there are at most MAX_NUMBERS
-// loaded pages they are all shown; beyond that, the first and last loaded page
-// are kept and a window around the current page is shown, with "ellipsis" for the
-// gaps. A trailing "ellipsis" is appended when more, not-yet-loaded cursor pages
-// may still exist (hasMore), so the control reads e.g. "1 2 3 4 5 6 7 8 9 ...".
-// Exported for testing.
+// Build the list of 1-based page numbers (and ellipsis gaps) to render: the
+// classic seven-slot pagination window. The first page, the current page with
+// one sibling on each side, the last page, and an ellipsis in each gap, so
+// the control reads "1 … 9 10 11 … 17" and keeps a near-constant width at
+// every position. Near an edge the window widens so five numbers stay
+// visible ("1 2 3 4 5 … 17" / "1 … 13 14 15 16 17"). Every number is a
+// loaded, directly-jumpable page. When more cursor pages may still load
+// (hasMore) the total is unknown, so the trailing ellipsis takes the right
+// boundary's place and stands in for the not-yet-loaded pages (the Next
+// arrow loads them): "1 … 9 10 …". Exported for testing.
 export function paginationItems(
   current0: number,
   pageCount: number,
   hasMore: boolean
 ): Array<number | "ellipsis"> {
   const current = current0 + 1 // 1-based for display
-  const items: Array<number | "ellipsis"> = []
-  if (pageCount <= MAX_NUMBERS) {
-    for (let page = 1; page <= pageCount; page++) items.push(page)
+  // Everything is loaded and fits without gaps: a plain list.
+  if (!hasMore && pageCount <= 7) {
+    return Array.from({ length: pageCount }, (_, index) => index + 1)
+  }
+  // The sibling window, widened at the edges to keep five numbers visible:
+  // near the start it is 2..5; near a KNOWN end it is N-4..N-1 (the
+  // boundary pages render separately).
+  let start = current - 1
+  let end = current + 1
+  if (current <= 3) {
+    start = 2
+    end = 5
+  } else if (!hasMore && current >= pageCount - 2) {
+    start = pageCount - 4
+    end = pageCount - 1
+  }
+  start = Math.max(start, 2)
+  end = Math.min(end, hasMore ? pageCount : pageCount - 1)
+  const items: Array<number | "ellipsis"> = [1]
+  if (start > 2) items.push("ellipsis")
+  for (let page = start; page <= end; page++) items.push(page)
+  if (hasMore) {
+    items.push("ellipsis")
   } else {
-    const siblings = 2
-    const start = Math.max(2, current - siblings)
-    const end = Math.min(pageCount - 1, current + siblings)
-    items.push(1)
-    if (start > 2) items.push("ellipsis")
-    for (let page = start; page <= end; page++) items.push(page)
     if (end < pageCount - 1) items.push("ellipsis")
     items.push(pageCount)
   }
-  // More cursor pages may exist beyond the last loaded one; the Next arrow loads
-  // them. The trailing ellipsis signals there is more than what is numbered.
-  if (hasMore) items.push("ellipsis")
   return items
 }
 
