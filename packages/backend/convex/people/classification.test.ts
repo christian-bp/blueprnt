@@ -304,6 +304,23 @@ describe("runClassificationSuggestions", () => {
       // No PII: the payload carries only counts, no names.
       expect(JSON.stringify(payload)).not.toContain("Anna")
     })
+
+    // The Classify surface re-runs the engine on every visit; an idempotent
+    // pass that suggests nothing is not a state change and must not add a
+    // summary row (or the trail gains one "suggested: 0" row per page view).
+    await asAdmin.mutation(
+      api.people.classification.runClassificationSuggestions,
+      { orgId }
+    )
+    await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "classification.suggested")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+    })
   })
 
   it("the internal wrapper suggests for imported people", async () => {

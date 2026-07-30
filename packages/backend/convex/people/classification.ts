@@ -110,12 +110,18 @@ export async function classifyOrg(
     }
   }
 
-  await logAudit(ctx, {
-    orgId,
-    actorId,
-    type: AUDIT_EVENTS.classificationSuggested,
-    payload: { suggested, skipped, unmatchedTitles },
-  })
+  // The summary row only exists when the run actually changed something: the
+  // Classify surface re-runs the (idempotent) engine on every visit, and a
+  // no-op pass is not a state change, so logging it would fill the trail with
+  // one "suggested: 0" row per page view.
+  if (suggested > 0) {
+    await logAudit(ctx, {
+      orgId,
+      actorId,
+      type: AUDIT_EVENTS.classificationSuggested,
+      payload: { suggested, skipped, unmatchedTitles },
+    })
+  }
 
   return { suggested, skipped, unmatchedTitles }
 }
