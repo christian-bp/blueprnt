@@ -1,25 +1,47 @@
 import {
   ANCHOR_AUDIT_FIELDS,
   ASSIGNMENT_AUDIT_FIELDS,
+  AUDIT_CATEGORIES,
   AUDIT_EVENTS,
   CRITERION_AUDIT_FIELDS,
   GROUP_ANALYSIS_AUDIT_FIELDS,
   MODEL_AUDIT_FIELDS,
   PAY_AUDIT_FIELDS,
   PERSON_AUDIT_FIELDS,
+  PLATFORM_AUDIT_CATEGORIES,
   PLATFORM_AUDIT_EVENTS,
   ROLE_CREATE_FIELDS,
   SETTINGS_AUDIT_FIELDS,
 } from "@workspace/backend/convex/lib/audit"
-import { PAY_GAP_REASONS, PRAXIS_AREA_KEYS } from "@workspace/constants"
+import {
+  COUNTRY_KEYS,
+  EMPLOYMENT_TYPES,
+  INDUSTRY_KEYS,
+  PAY_GAP_REASONS,
+  PRAXIS_AREA_KEYS,
+  TRACK_LEVELS,
+} from "@workspace/constants"
 import en from "@workspace/i18n/messages/en.json"
+import { routing } from "@workspace/i18n/routing"
 import { describe, expect, it } from "vitest"
 import {
+  AUDIT_FILTER_CATEGORIES,
+  BIAS_RISK_VALUE_KEYS,
+  COUNTRY_VALUE_KEYS,
+  EMPLOYMENT_TYPE_VALUE_KEYS,
   FINDING_VALUE_KEYS,
+  INDUSTRY_VALUE_KEYS,
+  LEVEL_SOURCE_VALUE_KEYS,
+  MEMBER_ROLE_VALUE_KEYS,
   PAY_GAP_REASON_VALUE_KEYS,
+  PLATFORM_AUDIT_FILTER_CATEGORIES,
   PRAXIS_AREA_VALUE_KEYS,
+  SALARY_SOURCE_VALUE_KEYS,
   SCOPE_VALUE_KEYS,
-} from "./audit-detail"
+  STATUS_VALUE_KEYS,
+  TRACK_VALUE_KEYS,
+} from "./audit-constants"
+import { LANGUAGE_LABEL_KEYS } from "./locales"
 
 // The audit log renders an event's readable label from i18n and falls back to
 // the raw event type when none exists. These tests guard that EVERY audit event
@@ -50,6 +72,46 @@ describe("audit log event labels", () => {
     const labels = en.dashboard.admin.auditLog.events as Record<string, string>
     const missing = Object.values(PLATFORM_AUDIT_EVENTS).filter(
       (type) => !(type.replace("platform.", "") in labels)
+    )
+    expect(missing).toEqual([])
+  })
+})
+
+// The audit-log toolbars keep their filterable-category lists as local
+// literals (bundle-hygiene; see AUDIT_FILTER_CATEGORIES in audit-constants.ts),
+// so nothing at compile time ties them to the backend's category vocabulary.
+// These tests are that tie: a category added to AUDIT_CATEGORIES /
+// PLATFORM_AUDIT_CATEGORIES without its filter option or its
+// categories.* label fails here instead of shipping a log that silently
+// cannot filter the new area (how the people/pay options were once missed).
+describe("audit log category filters", () => {
+  it("the org filter list matches the backend AUDIT_CATEGORIES", () => {
+    expect([...AUDIT_FILTER_CATEGORIES].sort()).toEqual(
+      [...AUDIT_CATEGORIES].sort()
+    )
+  })
+
+  it("the platform filter list matches the backend PLATFORM_AUDIT_CATEGORIES", () => {
+    expect([...PLATFORM_AUDIT_FILTER_CATEGORIES].sort()).toEqual(
+      [...PLATFORM_AUDIT_CATEGORIES].sort()
+    )
+  })
+
+  it("every org category (plus all) has a label in dashboard.auditLog.categories", () => {
+    const labels = en.dashboard.auditLog.categories as Record<string, string>
+    const missing = ["all", ...AUDIT_CATEGORIES].filter(
+      (category) => !(category in labels)
+    )
+    expect(missing).toEqual([])
+  })
+
+  it("every platform category (plus all) has a label in dashboard.admin.auditLog.categories", () => {
+    const labels = en.dashboard.admin.auditLog.categories as Record<
+      string,
+      string
+    >
+    const missing = ["all", ...PLATFORM_AUDIT_CATEGORIES].filter(
+      (category) => !(category in labels)
     )
     expect(missing).toEqual([])
   })
@@ -139,7 +201,7 @@ describe("audit log field labels", () => {
 // finding, a praxis area key, a pay-gap reason) must resolve to a localized
 // label too, never render the raw wire code (e.g. "payPolicy (Vy: praxis)"
 // or "Bedömning: none -> found" in the live log).
-// audit-detail.tsx's resolveCodedValue is typed (a Record per domain) so an
+// audit-constants.ts's resolveCodedValue is typed (a Record per domain) so an
 // unmapped VALUE is a compile error; this test is the "test failure" half of
 // that guard, mirroring the field-label coverage above: it walks each
 // *_VALUE_KEYS Record's i18n key (relative to `dashboard`) and fails if the
@@ -151,6 +213,28 @@ describe("audit log field labels", () => {
 // same convention OTHER_AUDIT_FIELDS above already uses.
 const PAY_MAPPING_SCOPES = ["equalWork", "equivalentWork", "praxis"] as const
 const PAY_MAPPING_FINDINGS = ["none", "found"] as const
+// The non-pay-mapping coded domains, mirrored from their backend validators
+// by the same hand-synced convention: assignment levelSource
+// (people/tables.ts), org member roles (lib/functions.ts scopes), the shared
+// `status` union (Better Auth invitations + suggestions + anchor
+// designations), salary source (people/pay.ts), and the fixed V1 tracks.
+const LEVEL_SOURCES = ["suggested", "confirmed"] as const
+const MEMBER_ROLES = ["admin", "editor"] as const
+const AUDIT_STATUSES = [
+  "pending",
+  "accepted",
+  "rejected",
+  "canceled",
+  "generating",
+  "suggested",
+  "confirmed",
+  "failed",
+  "active",
+  "underReview",
+  "replaced",
+] as const
+const SALARY_SOURCES = ["import", "manual"] as const
+const BIAS_RISKS = ["low", "medium", "high"] as const
 
 function resolveDashboardKey(key: string): unknown {
   return key
@@ -178,6 +262,36 @@ describe("audit log value labels", () => {
     expect(Object.keys(PAY_GAP_REASON_VALUE_KEYS).sort()).toEqual(
       [...PAY_GAP_REASONS].sort()
     )
+    expect(Object.keys(LEVEL_SOURCE_VALUE_KEYS).sort()).toEqual(
+      [...LEVEL_SOURCES].sort()
+    )
+    expect(Object.keys(MEMBER_ROLE_VALUE_KEYS).sort()).toEqual(
+      [...MEMBER_ROLES].sort()
+    )
+    expect(Object.keys(STATUS_VALUE_KEYS).sort()).toEqual(
+      [...AUDIT_STATUSES].sort()
+    )
+    expect(Object.keys(COUNTRY_VALUE_KEYS).sort()).toEqual(
+      [...COUNTRY_KEYS].sort()
+    )
+    expect(Object.keys(LANGUAGE_LABEL_KEYS).sort()).toEqual(
+      [...routing.locales].sort()
+    )
+    expect(Object.keys(BIAS_RISK_VALUE_KEYS).sort()).toEqual(
+      [...BIAS_RISKS].sort()
+    )
+    expect(Object.keys(EMPLOYMENT_TYPE_VALUE_KEYS).sort()).toEqual(
+      [...EMPLOYMENT_TYPES].sort()
+    )
+    expect(Object.keys(INDUSTRY_VALUE_KEYS).sort()).toEqual(
+      [...INDUSTRY_KEYS].sort()
+    )
+    expect(Object.keys(SALARY_SOURCE_VALUE_KEYS).sort()).toEqual(
+      [...SALARY_SOURCES].sort()
+    )
+    expect(Object.keys(TRACK_VALUE_KEYS).sort()).toEqual(
+      Object.keys(TRACK_LEVELS).sort()
+    )
   })
 
   it("every coded value's i18n key resolves to a real string in en", () => {
@@ -186,6 +300,16 @@ describe("audit log value labels", () => {
       ...Object.values(FINDING_VALUE_KEYS),
       ...Object.values(PRAXIS_AREA_VALUE_KEYS),
       ...Object.values(PAY_GAP_REASON_VALUE_KEYS),
+      ...Object.values(LEVEL_SOURCE_VALUE_KEYS),
+      ...Object.values(MEMBER_ROLE_VALUE_KEYS),
+      ...Object.values(STATUS_VALUE_KEYS),
+      ...Object.values(COUNTRY_VALUE_KEYS),
+      ...Object.values(LANGUAGE_LABEL_KEYS),
+      ...Object.values(BIAS_RISK_VALUE_KEYS),
+      ...Object.values(EMPLOYMENT_TYPE_VALUE_KEYS),
+      ...Object.values(INDUSTRY_VALUE_KEYS),
+      ...Object.values(SALARY_SOURCE_VALUE_KEYS),
+      ...Object.values(TRACK_VALUE_KEYS),
     ]
     const missing = allKeys.filter(
       (key) => typeof resolveDashboardKey(key) !== "string"

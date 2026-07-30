@@ -2,24 +2,37 @@ import { cleanup, render } from "@testing-library/react"
 import type { ReactNode } from "react"
 import { describe, expect, it } from "vitest"
 import {
-  aiAuditDetail,
-  changeEntries,
+  BIAS_RISK_VALUE_KEYS,
+  COUNTRY_VALUE_KEYS,
+  EMPLOYMENT_TYPE_VALUE_KEYS,
   FINDING_VALUE_KEYS,
+  INDUSTRY_VALUE_KEYS,
+  LEVEL_SOURCE_VALUE_KEYS,
+  MEMBER_ROLE_VALUE_KEYS,
+  PAY_GAP_REASON_VALUE_KEYS,
+  PRAXIS_AREA_VALUE_KEYS,
+  resolveCodedValue,
+  SALARY_SOURCE_VALUE_KEYS,
+  SCOPE_VALUE_KEYS,
+  STATUS_VALUE_KEYS,
+  TRACK_VALUE_KEYS,
+} from "./audit-constants"
+import { LANGUAGE_LABEL_KEYS } from "./locales"
+import {
+  aiAuditDetail,
+  auditContextParts,
+  changeEntries,
   formatAuditDetail as rawFormatAuditDetail,
   formatChanges as rawFormatChanges,
   formatAuditValue,
   formatStats,
   orderEntries,
-  PAY_GAP_REASON_VALUE_KEYS,
   payloadChanges,
   payloadItems,
   payloadMoves,
   payloadProvenance,
   payloadStats,
   payloadSuggestions,
-  PRAXIS_AREA_VALUE_KEYS,
-  resolveCodedValue,
-  SCOPE_VALUE_KEYS,
   sectionKind,
 } from "./audit-detail"
 
@@ -174,6 +187,43 @@ describe("resolveCodedValue", () => {
     expect(resolveCodedValue("reasons", "", translate)).toBeUndefined()
   })
 
+  it("resolves every non-pay-mapping coded domain to its key", () => {
+    expect(resolveCodedValue("levelSource", "suggested", translate)).toBe(
+      LEVEL_SOURCE_VALUE_KEYS.suggested
+    )
+    expect(resolveCodedValue("role", "admin", translate)).toBe(
+      MEMBER_ROLE_VALUE_KEYS.admin
+    )
+    expect(resolveCodedValue("status", "canceled", translate)).toBe(
+      STATUS_VALUE_KEYS.canceled
+    )
+    expect(resolveCodedValue("country", "se", translate)).toBe(
+      COUNTRY_VALUE_KEYS.se
+    )
+    // A person's country is an imported uppercase ISO code; same label.
+    expect(resolveCodedValue("country", "SE", translate)).toBe(
+      COUNTRY_VALUE_KEYS.se
+    )
+    expect(resolveCodedValue("language", "sv", translate)).toBe(
+      LANGUAGE_LABEL_KEYS.sv
+    )
+    expect(resolveCodedValue("biasRisk", "medium", translate)).toBe(
+      BIAS_RISK_VALUE_KEYS.medium
+    )
+    expect(resolveCodedValue("employmentType", "fixedTerm", translate)).toBe(
+      EMPLOYMENT_TYPE_VALUE_KEYS.fixedTerm
+    )
+    expect(resolveCodedValue("industry", "itTelecom", translate)).toBe(
+      INDUSTRY_VALUE_KEYS.itTelecom
+    )
+    expect(resolveCodedValue("source", "import", translate)).toBe(
+      SALARY_SOURCE_VALUE_KEYS.import
+    )
+    expect(resolveCodedValue("trackKey", "IC", translate)).toBe(
+      TRACK_VALUE_KEYS.IC
+    )
+  })
+
   it("returns undefined for a field with no coded domain", () => {
     expect(resolveCodedValue("note", "anything", translate)).toBeUndefined()
   })
@@ -271,13 +321,53 @@ describe("formatChanges", () => {
   it("falls back to the raw value when valueLabel does not recognize the field", () => {
     expect(
       formatChanges(
+        { team: { from: "Platform", to: "Core" } },
+        fieldLabel,
+        "…",
+        undefined,
+        valueLabel
+      )
+    ).toBe("Team: Platform → Core")
+  })
+
+  it("resolves country codes through the coded-value domain", () => {
+    expect(
+      formatChanges(
         { country: { from: "se", to: "no" } },
         fieldLabel,
         "…",
         undefined,
         valueLabel
       )
-    ).toBe("Country: se → no")
+    ).toBe(
+      `Country: ${COUNTRY_VALUE_KEYS.se.toUpperCase()} → ${COUNTRY_VALUE_KEYS.no.toUpperCase()}`
+    )
+  })
+
+  it("formats an AUDIT_DATE_FIELDS epoch-ms value via dateLabel, never as raw milliseconds", () => {
+    expect(
+      formatChanges(
+        { archivedAt: { from: null, to: 1753776000000 } },
+        fieldLabel,
+        "…",
+        undefined,
+        valueLabel,
+        (epochMs) => `DATE(${epochMs})`
+      )
+    ).toBe("ArchivedAt: DATE(1753776000000)")
+  })
+
+  it("formats an ISO-date field via dateLabel too, so one sheet never mixes date formats", () => {
+    expect(
+      formatChanges(
+        { employmentStartDate: { from: null, to: "2024-01-15" } },
+        fieldLabel,
+        "…",
+        undefined,
+        valueLabel,
+        (epochMs) => `DATE(${epochMs})`
+      )
+    ).toBe(`EmploymentStartDate: DATE(${Date.parse("2024-01-15")})`)
   })
 })
 
@@ -378,16 +468,29 @@ describe("formatAuditDetail", () => {
     ).toBe("Engineering: Name: Eng → Engineering")
   })
 
-  it("renders member.added as name (role)", () => {
+  it("renders member.added as name (role) from the changes diff", () => {
+    // The writer (onMemberCreate) logs the granted role only inside changes;
+    // there is never a top-level role.
     const names = { u1: "Jane Doe" }
     expect(
       formatAuditDetail(
         "member.added",
-        { memberUserId: "u1", role: "editor" },
+        { memberUserId: "u1", changes: { role: { from: null, to: "editor" } } },
         names,
         labels
       )
     ).toBe("Jane Doe (editor)")
+    expect(
+      formatAuditDetail(
+        "member.added",
+        { memberUserId: "u1", changes: { role: { from: null, to: "editor" } } },
+        names,
+        labels,
+        fieldLabel,
+        undefined,
+        valueLabel
+      )
+    ).toBe(`Jane Doe (${MEMBER_ROLE_VALUE_KEYS.editor.toUpperCase()})`)
   })
 
   it("renders member.roleChanged as 'name: <changes>'", () => {
@@ -1206,5 +1309,118 @@ describe("sectionKind", () => {
     expect(sectionKind("organization.settingsUpdated", updated)).toBe("update")
     expect(sectionKind("rating.change", removed)).toBe("remove")
     expect(sectionKind("rating.change", [])).toBe("update")
+  })
+})
+
+describe("auditContextParts", () => {
+  const contextLabels = {
+    deletedRun: "Deleted pay mapping",
+    scopeFieldLabel: "Scope",
+  }
+  const parts = (
+    type: string,
+    payload: unknown,
+    names: Record<string, string> = {}
+  ) => auditContextParts(type, payload, names, contextLabels, valueLabel)
+
+  it("leads with the resolved run label for a payMapping row", () => {
+    expect(
+      parts(
+        "payMapping.runCompleted",
+        { runId: "run1", equalWorkDone: 3, equivalentWorkDone: 2 },
+        { run1: "Lönekartläggning 2026" }
+      )
+    ).toEqual(["Lönekartläggning 2026"])
+  })
+
+  it("falls back to the captured label on the runDeleted row once the run is gone", () => {
+    expect(
+      parts("payMapping.runDeleted", {
+        runId: "run1",
+        label: "Lönekartläggning 2026",
+        populationCount: 10,
+      })
+    ).toEqual(["Lönekartläggning 2026"])
+  })
+
+  it("marks a deleted run's other rows with the localized marker", () => {
+    expect(parts("payMapping.runReopened", { runId: "run1" })).toEqual([
+      "Deleted pay mapping",
+    ])
+  })
+
+  it("names the documented group with its comparison scope, so equal and equivalent work stay distinguishable", () => {
+    const payload = (scope: string) => ({
+      runId: "run1",
+      scope,
+      groupLabel: "PM · Mid",
+      changes: { done: { from: null, to: true } },
+    })
+    const names = { run1: "Lönekartläggning 2026" }
+    // Run and group join into ONE ": "-separated part: a group label is
+    // itself "roleTitle · level", so a " · " list join would blur where the
+    // run ends and the group begins.
+    expect(
+      parts("payMapping.groupAnalysisUpdated", payload("equalWork"), names)
+    ).toEqual([
+      `Lönekartläggning 2026: PM · Mid (Scope: ${SCOPE_VALUE_KEYS.equalWork.toUpperCase()})`,
+    ])
+    expect(
+      parts("payMapping.groupAnalysisUpdated", payload("equivalentWork"), names)
+    ).toEqual([
+      `Lönekartläggning 2026: PM · Mid (Scope: ${SCOPE_VALUE_KEYS.equivalentWork.toUpperCase()})`,
+    ])
+  })
+
+  it("resolves a praxis area key through the value label, never the raw slug", () => {
+    expect(
+      parts(
+        "payMapping.groupAnalysisUpdated",
+        { runId: "run1", scope: "praxis", groupLabel: "payPolicy" },
+        { run1: "Lönekartläggning 2026" }
+      )
+    ).toEqual([
+      `Lönekartläggning 2026: ${PRAXIS_AREA_VALUE_KEYS.payPolicy.toUpperCase()} (Scope: ${SCOPE_VALUE_KEYS.praxis.toUpperCase()})`,
+    ])
+  })
+
+  it("skips an empty group label without leaving a dangling part", () => {
+    expect(
+      parts(
+        "payMapping.groupAnalysisUpdated",
+        { runId: "run1", scope: "equalWork", groupLabel: "" },
+        { run1: "Lönekartläggning 2026" }
+      )
+    ).toEqual(["Lönekartläggning 2026"])
+  })
+
+  it("resolves role and criterion for a rating row, in that order", () => {
+    expect(
+      parts(
+        "rating.change",
+        { roleId: "r1", criterionId: "c1", created: true, changes: {} },
+        { r1: "Analyst", c1: "Scope" }
+      )
+    ).toEqual(["Analyst", "Scope"])
+  })
+
+  it("uses the captured name for a removed family whose id resolves nothing", () => {
+    expect(
+      parts("roleFamily.removed", { familyId: "f1", name: "Product" })
+    ).toEqual(["Product"])
+  })
+
+  it("gives invitation rows no subject (the invitee is PII; the diff carries the rest)", () => {
+    // The real writer shape: role/status/expiry live only in the changes map.
+    expect(
+      parts("invitation.created", {
+        invitationId: "i1",
+        changes: {
+          role: { from: null, to: "editor" },
+          status: { from: null, to: "pending" },
+          expiresAt: { from: null, to: 1000 },
+        },
+      })
+    ).toEqual([])
   })
 })

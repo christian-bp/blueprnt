@@ -510,7 +510,7 @@
         "organization": "Organisaatio",
         "member": "Jäsen",
         "ai": "Tekoäly",
-        "people": "Henkilot",
+        "people": "Henkilöt",
         "pay": "Palkka"
       },
       "categoryFilterLabel": "Suodata luokan mukaan",
@@ -528,7 +528,9 @@
       "previous": "Edellinen",
       "next": "Seuraava",
       "detail": {
-        "what": "Mitä",
+        "title": "Lokimerkintä",
+        "subtitle": "Tämän tapahtuman koko merkintä.",
+        "appliesTo": "Koskee",
         "who": "Kuka",
         "when": "Milloin",
         "category": "Luokka",
@@ -560,7 +562,8 @@
             "scratch": "Alusta",
             "starter": "Aloituspaketti",
             "aiImport": "Tekoälytuonti",
-            "aiSuggestion": "Tekoälyehdotus"
+            "aiSuggestion": "Tekoälyehdotus",
+            "onboardingPrefill": "Esitäytetty käyttöönotossa"
           }
         }
       },
@@ -579,6 +582,7 @@
         "deletedRole": "Poistettu rooli",
         "deletedFamily": "Poistettu perhe",
         "deletedUser": "Poistettu käyttäjä",
+        "deletedRun": "Poistettu palkkakartoitus",
         "itemsChanged": "{count, plural, one {# kohde muuttui} other {# kohdetta muuttui}}",
         "fieldsChanged": "{count, plural, one {# kenttä muuttui} other {# kenttää muuttui}}",
         "complexValue": "Koostettu arvo"
@@ -663,7 +667,29 @@
       },
       "values": {
         "yes": "Kyllä",
-        "no": "Ei"
+        "no": "Ei",
+        "status": {
+          "accepted": "Hyväksytty",
+          "rejected": "Hylätty",
+          "canceled": "Peruutettu",
+          "generating": "Luodaan",
+          "failed": "Epäonnistui"
+        },
+        "source": {
+          "import": "Tuotu",
+          "manual": "Manuaalinen"
+        },
+        "employmentType": {
+          "permanent": "Vakituinen",
+          "fixedTerm": "Määräaikainen",
+          "substitute": "Sijainen",
+          "hourly": "Tuntityöntekijä"
+        },
+        "tracks": {
+          "IC": "Individual Contributor",
+          "Lead": "Lead",
+          "M": "Manager"
+        }
       },
       "events": {
         "organizationCreated": "Organisaatio luotu",
@@ -1817,6 +1843,8 @@
           "details": "Tiedot"
         },
         "detail": {
+          "title": "Lokimerkintä",
+          "subtitle": "Tämän tapahtuman koko merkintä.",
           "operator": "Operaattori",
           "target": "Kohde",
           "when": "Milloin",

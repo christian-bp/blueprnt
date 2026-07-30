@@ -528,7 +528,9 @@
       "previous": "Forrige",
       "next": "Neste",
       "detail": {
-        "what": "Hva",
+        "title": "Loggoppføring",
+        "subtitle": "Hele oppføringen for denne hendelsen.",
+        "appliesTo": "Gjelder",
         "who": "Hvem",
         "when": "Når",
         "category": "Kategori",
@@ -560,7 +562,8 @@
             "scratch": "Fra bunnen",
             "starter": "Startsett",
             "aiImport": "KI-import",
-            "aiSuggestion": "KI-forslag"
+            "aiSuggestion": "KI-forslag",
+            "onboardingPrefill": "Forhåndsutfylt ved onboarding"
           }
         }
       },
@@ -579,6 +582,7 @@
         "deletedRole": "Slettet rolle",
         "deletedFamily": "Slettet familie",
         "deletedUser": "Slettet bruker",
+        "deletedRun": "Slettet lønnskartlegging",
         "itemsChanged": "{count, plural, one {# element endret} other {# elementer endret}}",
         "fieldsChanged": "{count, plural, one {# felt endret} other {# felter endret}}",
         "complexValue": "Sammensatt verdi"
@@ -663,7 +667,29 @@
       },
       "values": {
         "yes": "Ja",
-        "no": "Nei"
+        "no": "Nei",
+        "status": {
+          "accepted": "Akseptert",
+          "rejected": "Avvist",
+          "canceled": "Tilbakekalt",
+          "generating": "Genereres",
+          "failed": "Mislyktes"
+        },
+        "source": {
+          "import": "Importert",
+          "manual": "Manuell"
+        },
+        "employmentType": {
+          "permanent": "Fast",
+          "fixedTerm": "Midlertidig",
+          "substitute": "Vikariat",
+          "hourly": "Timelønnet"
+        },
+        "tracks": {
+          "IC": "Individual Contributor",
+          "Lead": "Lead",
+          "M": "Manager"
+        }
       },
       "events": {
         "organizationCreated": "Organisasjon opprettet",
@@ -1817,6 +1843,8 @@
           "details": "Detaljer"
         },
         "detail": {
+          "title": "Loggoppføring",
+          "subtitle": "Hele oppføringen for denne hendelsen.",
           "operator": "Operatør",
           "target": "Mål",
           "when": "Når",

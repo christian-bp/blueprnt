@@ -528,7 +528,9 @@
       "previous": "Forrige",
       "next": "Næste",
       "detail": {
-        "what": "Hvad",
+        "title": "Logpost",
+        "subtitle": "Hele posten for denne hændelse.",
+        "appliesTo": "Gælder",
         "who": "Hvem",
         "when": "Hvornår",
         "category": "Kategori",
@@ -560,7 +562,8 @@
             "scratch": "Fra bunden",
             "starter": "Startsæt",
             "aiImport": "AI-import",
-            "aiSuggestion": "AI-forslag"
+            "aiSuggestion": "AI-forslag",
+            "onboardingPrefill": "Forudfyldt ved onboarding"
           }
         }
       },
@@ -579,6 +582,7 @@
         "deletedRole": "Slettet rolle",
         "deletedFamily": "Slettet familie",
         "deletedUser": "Slettet bruger",
+        "deletedRun": "Slettet lønkortlægning",
         "itemsChanged": "{count, plural, one {# element ændret} other {# elementer ændret}}",
         "fieldsChanged": "{count, plural, one {# felt ændret} other {# felter ændret}}",
         "complexValue": "Sammensat værdi"
@@ -663,7 +667,29 @@
       },
       "values": {
         "yes": "Ja",
-        "no": "Nej"
+        "no": "Nej",
+        "status": {
+          "accepted": "Accepteret",
+          "rejected": "Afvist",
+          "canceled": "Tilbagekaldt",
+          "generating": "Genereres",
+          "failed": "Mislykkedes"
+        },
+        "source": {
+          "import": "Importeret",
+          "manual": "Manuel"
+        },
+        "employmentType": {
+          "permanent": "Fastansat",
+          "fixedTerm": "Tidsbegrænset",
+          "substitute": "Vikariat",
+          "hourly": "Timelønnet"
+        },
+        "tracks": {
+          "IC": "Individual Contributor",
+          "Lead": "Lead",
+          "M": "Manager"
+        }
       },
       "events": {
         "organizationCreated": "Organisation oprettet",
@@ -1817,6 +1843,8 @@
           "details": "Detaljer"
         },
         "detail": {
+          "title": "Logpost",
+          "subtitle": "Hele posten for denne hændelse.",
           "operator": "Operatør",
           "target": "Mål",
           "when": "Hvornår",

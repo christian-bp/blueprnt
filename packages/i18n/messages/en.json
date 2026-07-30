@@ -528,7 +528,9 @@
       "previous": "Previous",
       "next": "Next",
       "detail": {
-        "what": "What",
+        "title": "Audit log entry",
+        "subtitle": "The full record of this event.",
+        "appliesTo": "Applies to",
         "who": "Who",
         "when": "When",
         "category": "Category",
@@ -560,7 +562,8 @@
             "scratch": "From scratch",
             "starter": "Starter set",
             "aiImport": "AI import",
-            "aiSuggestion": "AI suggestion"
+            "aiSuggestion": "AI suggestion",
+            "onboardingPrefill": "Onboarding prefill"
           }
         }
       },
@@ -579,6 +582,7 @@
         "deletedRole": "Deleted role",
         "deletedFamily": "Deleted family",
         "deletedUser": "Deleted user",
+        "deletedRun": "Deleted pay mapping",
         "itemsChanged": "{count, plural, one {# item changed} other {# items changed}}",
         "fieldsChanged": "{count, plural, one {# field changed} other {# fields changed}}",
         "complexValue": "Complex value"
@@ -663,7 +667,29 @@
       },
       "values": {
         "yes": "Yes",
-        "no": "No"
+        "no": "No",
+        "status": {
+          "accepted": "Accepted",
+          "rejected": "Rejected",
+          "canceled": "Canceled",
+          "generating": "Generating",
+          "failed": "Failed"
+        },
+        "source": {
+          "import": "Imported",
+          "manual": "Manual"
+        },
+        "employmentType": {
+          "permanent": "Permanent",
+          "fixedTerm": "Fixed-term",
+          "substitute": "Substitute",
+          "hourly": "Hourly"
+        },
+        "tracks": {
+          "IC": "Individual Contributor",
+          "Lead": "Lead",
+          "M": "Manager"
+        }
       },
       "events": {
         "organizationCreated": "Organization created",
@@ -1817,6 +1843,8 @@
           "details": "Details"
         },
         "detail": {
+          "title": "Audit log entry",
+          "subtitle": "The full record of this event.",
           "operator": "Operator",
           "target": "Target",
           "when": "When",

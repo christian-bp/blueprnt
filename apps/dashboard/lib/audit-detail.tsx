@@ -1,6 +1,6 @@
-import type { PayGapReason, PraxisAreaKey } from "@workspace/constants"
 import { Fragment, type ReactNode } from "react"
 import { ChangeArrow } from "@/components/change-arrow"
+import { AUDIT_DATE_FIELDS, AUDIT_ISO_DATE_FIELDS } from "@/lib/audit-constants"
 
 // Stringifies any audit-payload value for display. Scalars pass through (via
 // String); null/undefined collapse to "". Objects/arrays are compact-JSON
@@ -23,91 +23,6 @@ export function formatAuditValue(value: unknown): string {
   }
 }
 
-// The domains of coded/enum VALUES a pay-mapping audit payload can carry
-// (never free text, an id, or a boolean, which are handled elsewhere): a
-// scope, a praxis review verdict, a praxis review area key, and the
-// ", "-joined pay-gap reason codes (payMapping/analyses.ts's auditView joins
-// the reasons array into one display string, never an array, so `reasons` is
-// resolved token-by-token in resolveCodedValue below). Each Record is typed
-// against the domain's own literal union (PayGapReason/PraxisAreaKey from
-// @workspace/constants; the scope/finding unions mirror
-// payMapping/analyses.ts's scopeValidator and payMapping/tables.ts's
-// payMappingFindingValidator, kept in sync by hand since those two are not
-// exported as shared types), so a value added to any domain without also
-// giving it an i18n key here is a compile error, never a silently-unmapped
-// raw code. Every key is relative to the `dashboard` message namespace and
-// REUSES existing dashboard.payMapping.* domain copy (the audit log is not
-// the place to invent new wording for a scope/verdict/area/reason that
-// already has a real label elsewhere): the caller resolves it with a
-// `dashboard`-scoped translator, not the `dashboard.auditLog`-scoped one used
-// for field labels.
-type PayMappingScope = "equalWork" | "equivalentWork" | "praxis"
-type PayMappingFinding = "none" | "found"
-
-export const SCOPE_VALUE_KEYS: Record<PayMappingScope, string> = {
-  equalWork: "payMapping.review.chapters.equalWork",
-  equivalentWork: "payMapping.review.chapters.equivalentWork",
-  praxis: "payMapping.review.chapters.praxis",
-}
-
-export const FINDING_VALUE_KEYS: Record<PayMappingFinding, string> = {
-  none: "payMapping.review.findingNone",
-  found: "payMapping.review.findingFound",
-}
-
-export const PRAXIS_AREA_VALUE_KEYS: Record<PraxisAreaKey, string> = {
-  payPolicy: "payMapping.review.praxis.payPolicy.title",
-  collectiveAgreements: "payMapping.review.praxis.collectiveAgreements.title",
-  benefits: "payMapping.review.praxis.benefits.title",
-  payPractices: "payMapping.review.praxis.payPractices.title",
-  previousActions: "payMapping.review.praxis.previousActions.title",
-}
-
-export const PAY_GAP_REASON_VALUE_KEYS: Record<PayGapReason, string> = {
-  alternativeLabourMarket: "payMapping.reasons.alternativeLabourMarket",
-  recruitmentPayLevel: "payMapping.reasons.recruitmentPayLevel",
-  experience: "payMapping.reasons.experience",
-  historicalPay: "payMapping.reasons.historicalPay",
-  competence: "payMapping.reasons.competence",
-  performance: "payMapping.reasons.performance",
-  responsibility: "payMapping.reasons.responsibility",
-}
-
-// Resolves one payMapping.groupAnalysisUpdated payload field's raw coded
-// VALUE to its localized label, via the caller's `translate` (typically a
-// t.has-guarded lookup against a `dashboard`-scoped translator). Returns
-// undefined when the field carries no coded domain (free text, ids,
-// booleans), the value is not a known member of its domain (e.g. `groupLabel`
-// for an equalWork/equivalentWork row, which is already a "roleTitle · level"
-// display string, not a praxis area key), or the translator has no string for
-// the resolved key: in any of those cases the caller falls back to the raw
-// value rather than throwing or rendering nothing.
-export function resolveCodedValue(
-  field: string,
-  value: string,
-  translate: (key: string) => string | undefined
-): string | undefined {
-  if (field === "reasons") {
-    if (value.trim() === "") return undefined
-    return value
-      .split(", ")
-      .map((token) => {
-        const key = (PAY_GAP_REASON_VALUE_KEYS as Record<string, string>)[token]
-        return (key ? translate(key) : undefined) ?? token
-      })
-      .join(", ")
-  }
-  const key =
-    field === "scope"
-      ? (SCOPE_VALUE_KEYS as Record<string, string>)[value]
-      : field === "finding"
-        ? (FINDING_VALUE_KEYS as Record<string, string>)[value]
-        : field === "groupLabel"
-          ? (PRAXIS_AREA_VALUE_KEYS as Record<string, string>)[value]
-          : undefined
-  return key ? translate(key) : undefined
-}
-
 // Renders a structured before->after `changes` object as a one-line node. Each
 // entry is "<fieldLabel>: <from> [→] <to>" (the arrow is a ChangeArrow icon, not
 // a glyph), or just "<fieldLabel>: <to>" when `from` is empty (null/undefined/
@@ -127,10 +42,28 @@ export function formatChanges(
   // i18n keep the raw behavior; returns undefined (not the raw value) when
   // the field/value is not a known coded pair, so the raw string is the
   // explicit fallback here, not something valueLabel itself decided.
-  valueLabel?: (field: string, value: string) => string | undefined
+  valueLabel?: (field: string, value: string) => string | undefined,
+  // Formats an AUDIT_DATE_FIELDS epoch-ms value as a localized date, so a
+  // timestamp field never renders as a raw millisecond count.
+  dateLabel?: (epochMs: number) => string
 ): ReactNode {
   const valueText = (field: string, value: unknown) => {
     if (typeof value === "boolean" && boolLabel) return boolLabel(value)
+    if (
+      typeof value === "number" &&
+      dateLabel &&
+      AUDIT_DATE_FIELDS.has(field)
+    ) {
+      return dateLabel(value)
+    }
+    if (
+      typeof value === "string" &&
+      dateLabel &&
+      AUDIT_ISO_DATE_FIELDS.has(field)
+    ) {
+      const epochMs = Date.parse(value)
+      if (!Number.isNaN(epochMs)) return dateLabel(epochMs)
+    }
     if (typeof value === "string" && valueLabel) {
       const label = valueLabel(field, value)
       if (label !== undefined) return label
@@ -346,7 +279,10 @@ export function payloadProvenance(
 // order (Convex does not guarantee object key order on read of a v.any() payload).
 // Booleans are excluded: a provenance flag is not a stat.
 export function payloadStats(
-  payload: unknown
+  payload: unknown,
+  // Localizes a coded string stat value (e.g. platform.membershipGranted's
+  // role) via resolveCodedValue; the raw value is the explicit fallback.
+  valueLabel?: (field: string, value: string) => string | undefined
 ): Array<{ field: string; value: string }> {
   const p = (payload ?? {}) as Record<string, unknown>
   const stats = Object.entries(p)
@@ -357,7 +293,12 @@ export function payloadStats(
         key !== "source" &&
         (typeof value === "string" || typeof value === "number")
     )
-    .map(([field, value]) => ({ field, value: formatAuditValue(value) }))
+    .map(([field, value]) => ({
+      field,
+      value:
+        (typeof value === "string" ? valueLabel?.(field, value) : undefined) ??
+        formatAuditValue(value),
+    }))
   return orderEntries(stats)
 }
 
@@ -366,9 +307,10 @@ export function payloadStats(
 // when the payload carries no stats, so a payload-less event renders nothing.
 export function formatStats(
   payload: unknown,
-  fieldLabel: (field: string) => string
+  fieldLabel: (field: string) => string,
+  valueLabel?: (field: string, value: string) => string | undefined
 ): string {
-  return payloadStats(payload)
+  return payloadStats(payload, valueLabel)
     .map(({ field, value }) => `${fieldLabel(field)}: ${value}`)
     .join(" · ")
 }
@@ -391,7 +333,10 @@ export function changeEntries(
   fieldLabel: (field: string) => string,
   resolveName?: (id: string) => string | undefined,
   boolLabel?: (value: boolean) => string,
-  valueLabel?: (field: string, value: string) => string | undefined
+  valueLabel?: (field: string, value: string) => string | undefined,
+  // Formats an AUDIT_DATE_FIELDS epoch-ms value as a localized date, so a
+  // timestamp field never renders as a raw millisecond count.
+  dateLabel?: (epochMs: number) => string
 ): Array<{
   field: string
   label: string
@@ -402,6 +347,21 @@ export function changeEntries(
 }> {
   const display = (field: string, value: unknown): string => {
     if (typeof value === "boolean" && boolLabel) return boolLabel(value)
+    if (
+      typeof value === "number" &&
+      dateLabel &&
+      AUDIT_DATE_FIELDS.has(field)
+    ) {
+      return dateLabel(value)
+    }
+    if (
+      typeof value === "string" &&
+      dateLabel &&
+      AUDIT_ISO_DATE_FIELDS.has(field)
+    ) {
+      const epochMs = Date.parse(value)
+      if (!Number.isNaN(epochMs)) return dateLabel(epochMs)
+    }
     if (typeof value === "string" && valueLabel) {
       const label = valueLabel(field, value)
       if (label !== undefined) return label
@@ -594,6 +554,78 @@ export function aiAuditDetail(
   }
 }
 
+// Strings the detail sheet's entity-context ("Applies to") line needs: the
+// vanished-run marker and the localized "scope" field label used in the
+// group-analysis "group (Scope: ...)" segment.
+export type AuditContextLabels = {
+  deletedRun: string
+  scopeFieldLabel: string
+}
+
+// The detail sheet's entity-context ("Applies to") line, as ordered display
+// parts (the sheet joins them with " · "). Pure so the precedence rules are
+// testable: the resolved run label first (falling back to the runDeleted
+// row's captured `label`, then to the deleted-run marker once the run is
+// hard-deleted), joined by ": " with the documented group and its comparison
+// scope when both are present (a group label is itself "roleTitle · level",
+// so a " · " join would blur where the run ends and the group begins), then
+// whichever ids the row resolved (role, criterion, family with its
+// captured-name fallback, model, member). Invitation rows deliberately get
+// no subject line: the invitee is PII and unresolvable, and the role/status/
+// expiry the writers capture render as the details diff, not as a subject.
+export function auditContextParts(
+  type: string,
+  payload: unknown,
+  names: Record<string, string>,
+  labels: AuditContextLabels,
+  valueLabel: (field: string, value: string) => string | undefined
+): string[] {
+  const p = (payload ?? {}) as Record<string, unknown>
+  const parts: string[] = []
+  const named = (id: unknown) =>
+    typeof id === "string" ? names[id] : undefined
+  const runName = named(p.runId)
+  const runPart =
+    runName ??
+    (type.startsWith("payMapping.")
+      ? typeof p.label === "string"
+        ? p.label
+        : labels.deletedRun
+      : undefined)
+  const rawGroupLabel = typeof p.groupLabel === "string" ? p.groupLabel : ""
+  let groupPart: string | undefined
+  if (rawGroupLabel) {
+    const groupLabel = valueLabel("groupLabel", rawGroupLabel) ?? rawGroupLabel
+    const rawScope = typeof p.scope === "string" ? p.scope : ""
+    const scope = valueLabel("scope", rawScope) ?? rawScope
+    groupPart = rawScope
+      ? `${groupLabel} (${labels.scopeFieldLabel}: ${scope})`
+      : groupLabel
+  }
+  if (runPart !== undefined && groupPart !== undefined) {
+    parts.push(`${runPart}: ${groupPart}`)
+  } else if (runPart !== undefined) {
+    parts.push(runPart)
+  } else if (groupPart !== undefined) {
+    parts.push(groupPart)
+  }
+  const roleName = named(p.roleId)
+  if (roleName) parts.push(roleName)
+  const criterionName = named(p.criterionId)
+  if (criterionName) parts.push(criterionName)
+  const familyName = named(p.familyId)
+  if (familyName) parts.push(familyName)
+  else if (typeof p.name === "string" && type.startsWith("roleFamily.")) {
+    // A renamed/removed family resolves no id; use the captured name.
+    parts.push(p.name)
+  }
+  const modelName = named(p.modelId)
+  if (modelName) parts.push(modelName)
+  const memberName = named(p.memberUserId)
+  if (memberName) parts.push(memberName)
+  return parts
+}
+
 // Strings/formatters the (pure, testable) table-cell formatter needs. The
 // deleted-* fallbacks name a vanished subject; the count formatters and the
 // created marker localize the bulk/marker summaries.
@@ -617,7 +649,8 @@ export function formatAuditDetail(
   labels: AuditDetailLabels,
   fieldLabel: (field: string) => string = (f) => f,
   boolLabel?: (value: boolean) => string,
-  valueLabel?: (field: string, value: string) => string | undefined
+  valueLabel?: (field: string, value: string) => string | undefined,
+  dateLabel?: (epochMs: number) => string
 ): ReactNode {
   const p = (payload ?? {}) as Record<string, unknown>
   const roleName = (id: unknown) =>
@@ -659,7 +692,14 @@ export function formatAuditDetail(
       ) : (
         <>
           {base}:{" "}
-          {formatChanges(changes, fieldLabel, undefined, boolLabel, valueLabel)}
+          {formatChanges(
+            changes,
+            fieldLabel,
+            undefined,
+            boolLabel,
+            valueLabel,
+            dateLabel
+          )}
         </>
       )
     }
@@ -697,22 +737,40 @@ export function formatAuditDetail(
               fieldLabel,
               undefined,
               boolLabel,
-              valueLabel
+              valueLabel,
+              dateLabel
             )}
           </>
         )
       }
       return typeof p.name === "string" ? p.name : base
     }
-    case "member.added":
-      return p.role
-        ? `${memberName(p.memberUserId)} (${String(p.role)})`
+    case "member.added": {
+      // The granted role lives in the changes diff (onMemberCreate logs
+      // { changes: { role: { from: null, to } } }, never a top-level role);
+      // it is a wire code (admin/editor), so label it like every other
+      // coded value.
+      const roleTo = changes?.role?.to
+      const role =
+        typeof roleTo === "string"
+          ? (valueLabel?.("role", roleTo) ?? roleTo)
+          : null
+      return role
+        ? `${memberName(p.memberUserId)} (${role})`
         : memberName(p.memberUserId)
+    }
     case "member.roleChanged":
       return changes !== null ? (
         <>
           {memberName(p.memberUserId)}:{" "}
-          {formatChanges(changes, fieldLabel, undefined, boolLabel, valueLabel)}
+          {formatChanges(
+            changes,
+            fieldLabel,
+            undefined,
+            boolLabel,
+            valueLabel,
+            dateLabel
+          )}
         </>
       ) : (
         memberName(p.memberUserId)
@@ -721,7 +779,14 @@ export function formatAuditDetail(
       return memberName(p.memberUserId)
     case "organization.settingsUpdated":
       return changes !== null
-        ? formatChanges(changes, fieldLabel, undefined, boolLabel, valueLabel)
+        ? formatChanges(
+            changes,
+            fieldLabel,
+            undefined,
+            boolLabel,
+            valueLabel,
+            dateLabel
+          )
         : ""
     case "organization.created":
       return labels.createdMarker
@@ -773,7 +838,14 @@ export function formatAuditDetail(
       return (
         <>
           {base}:{" "}
-          {formatChanges(changes, fieldLabel, undefined, boolLabel, valueLabel)}
+          {formatChanges(
+            changes,
+            fieldLabel,
+            undefined,
+            boolLabel,
+            valueLabel,
+            dateLabel
+          )}
         </>
       )
     }
@@ -790,9 +862,10 @@ export function formatAuditDetail(
           fieldLabel,
           undefined,
           boolLabel,
-          valueLabel
+          valueLabel,
+          dateLabel
         )
-      return formatStats(p, fieldLabel)
+      return formatStats(p, fieldLabel, valueLabel)
     }
   }
 }

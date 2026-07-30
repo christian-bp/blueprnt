@@ -528,7 +528,9 @@
       "previous": "Föregående",
       "next": "Nästa",
       "detail": {
-        "what": "Vad",
+        "title": "Loggpost",
+        "subtitle": "Hela posten för denna händelse.",
+        "appliesTo": "Gäller",
         "who": "Vem",
         "when": "När",
         "category": "Kategori",
@@ -560,7 +562,8 @@
             "scratch": "Från grunden",
             "starter": "Startuppsättning",
             "aiImport": "AI-import",
-            "aiSuggestion": "AI-förslag"
+            "aiSuggestion": "AI-förslag",
+            "onboardingPrefill": "Förifylld vid onboarding"
           }
         }
       },
@@ -579,6 +582,7 @@
         "deletedRole": "Borttagen roll",
         "deletedFamily": "Borttagen familj",
         "deletedUser": "Borttagen användare",
+        "deletedRun": "Borttagen lönekartläggning",
         "itemsChanged": "{count, plural, one {# objekt ändrat} other {# objekt ändrade}}",
         "fieldsChanged": "{count, plural, one {# fält ändrat} other {# fält ändrade}}",
         "complexValue": "Sammansatt värde"
@@ -663,7 +667,29 @@
       },
       "values": {
         "yes": "Ja",
-        "no": "Nej"
+        "no": "Nej",
+        "status": {
+          "accepted": "Accepterad",
+          "rejected": "Avvisad",
+          "canceled": "Återkallad",
+          "generating": "Genereras",
+          "failed": "Misslyckades"
+        },
+        "source": {
+          "import": "Importerad",
+          "manual": "Manuell"
+        },
+        "employmentType": {
+          "permanent": "Tillsvidare",
+          "fixedTerm": "Visstid",
+          "substitute": "Vikariat",
+          "hourly": "Timanställd"
+        },
+        "tracks": {
+          "IC": "Individual Contributor",
+          "Lead": "Lead",
+          "M": "Manager"
+        }
       },
       "events": {
         "organizationCreated": "Organisation skapad",
@@ -1817,6 +1843,8 @@
           "details": "Detaljer"
         },
         "detail": {
+          "title": "Loggpost",
+          "subtitle": "Hela posten för denna händelse.",
           "operator": "Operatör",
           "target": "Mål",
           "when": "När",
