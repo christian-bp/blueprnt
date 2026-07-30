@@ -1,0 +1,25 @@
+apps/dashboard/components/people/classify/classify-bulk.test.ts
+  s_0d1a9cb77984cf::t_4d18d8b29adf7d 8,10
+  s_0d1a9cb77984cf::t_1602d907079536 41,44
+  s_0d1a9cb77984cf::t_ef4d77cb6a14e6 39,42-43,45-46
+  s_0d1a9cb77984cf::t_dcb62f8b1d292e 64,67-68,70-71,73-74,76-77,79-80
+  s_0d1a9cb77984cf::t_02907d37a792e5 52,55,58
+  s_0d1a9cb77984cf::t_67131f745bd30c 66,69,72,75,78
+  s_0d1a9cb77984cf::t_b59407ccf8fed0 50,53-54,56-57,59-60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "580f3b0964428e71668d7f039426c1aaf6b2e056",
+  "prompts": {},
+  "sessions": {
+    "s_0d1a9cb77984cf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31e79143-66ef-4cdc-96a5-68d31b7180a8",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
