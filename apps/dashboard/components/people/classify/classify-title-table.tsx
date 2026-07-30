@@ -336,6 +336,45 @@ export function ClassifyTableHeader({
   )
 }
 
+// Bulk toolbar: exported so the loading skeleton in classify/page.tsx can
+// render the exact same slot (real controls, zero-selection state) instead
+// of nothing, so the table's data arrival never adds a row that was not
+// already reserved during loading (the layout-shift rule). Omitting
+// `selection` renders the zero state: no count text, the CTA present but
+// disabled, matching the loaded table's own zero-selection rendering.
+export function ClassifyBulkToolbar({
+  selection,
+}: {
+  selection?: {
+    titles: number
+    people: number
+    onOpen: () => void
+  }
+}) {
+  const t = useTranslations("dashboard.classify")
+  const titles = selection?.titles ?? 0
+  return (
+    <div className="flex min-h-8 items-center justify-between gap-2">
+      <p className="text-muted-foreground text-sm">
+        {titles > 0
+          ? t("bulk.selectedCount", {
+              titles,
+              people: selection?.people ?? 0,
+            })
+          : null}
+      </p>
+      <Button
+        type="button"
+        size="sm"
+        disabled={titles === 0}
+        onClick={() => selection?.onOpen()}
+      >
+        {t("bulk.cta")}
+      </Button>
+    </div>
+  )
+}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -622,26 +661,13 @@ export function ClassifyTitleTable({
 
   return (
     <>
-      {/* Bulk toolbar: stable slot (no layout shift); the CTA arms only when
-          something is selected. */}
-      <div className="flex min-h-8 items-center justify-between gap-2">
-        <p className="text-muted-foreground text-sm">
-          {sel.effective.size > 0
-            ? t("bulk.selectedCount", {
-                titles: sel.effective.size,
-                people: selectedPeopleCount,
-              })
-            : null}
-        </p>
-        <Button
-          type="button"
-          size="sm"
-          disabled={sel.effective.size === 0}
-          onClick={() => setBulkOpen(true)}
-        >
-          {t("bulk.cta")}
-        </Button>
-      </div>
+      <ClassifyBulkToolbar
+        selection={{
+          titles: sel.effective.size,
+          people: selectedPeopleCount,
+          onOpen: () => setBulkOpen(true),
+        }}
+      />
       <Table className="table-fixed">
         <ClassifyTableHeader
           sort={sort}

@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/page-header"
 import { useOrganization } from "@/components/org-context"
 import {
   CLASSIFY_SKELETON_COLUMNS,
+  ClassifyBulkToolbar,
   ClassifyTableHeader,
   ClassifyTitleTable,
 } from "@/components/people/classify/classify-title-table"
@@ -51,14 +52,18 @@ export default function ClassifyPage() {
   }, [run, orgId])
 
   // Show a skeleton shaped like the real table while any query is loading.
-  // ClassifyTableHeader and CLASSIFY_SKELETON_COLUMNS are shared with the real
-  // table so the two cannot drift independently; the per-column shapes mirror
-  // the row's real controls (checkbox, chevron, select, badge, button) so the
+  // ClassifyBulkToolbar, ClassifyTableHeader, and CLASSIFY_SKELETON_COLUMNS
+  // are shared with the real table so the three cannot drift independently;
+  // the toolbar's own zero-selection state (no count text, disabled CTA) is
+  // real chrome, not a placeholder, so the table never gains a row when data
+  // arrives (the layout-shift rule). The per-column shapes mirror the row's
+  // real controls (checkbox, chevron, select, badge, button) so the
   // silhouette and row height match the loaded state.
   if (groups === undefined || roles === undefined || model === undefined) {
     return (
       <div className="space-y-4">
         <PageHeader title={t("heading")} description={t("description")} />
+        <ClassifyBulkToolbar />
         <Table className="table-fixed">
           <ClassifyTableHeader />
           <TableSkeleton columns={CLASSIFY_SKELETON_COLUMNS} rows={5} />
