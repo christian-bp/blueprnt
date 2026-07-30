@@ -254,6 +254,14 @@ suite covers them before go-live:
   in the export slice, not the engine; the in-app view keeps the loose rule.
   Not an in-app blocker.
 
+- [ ] **Chunk the remaining org-scaled single-transaction writes.** Per the
+  CLAUDE.md scalability rule, write paths whose work grows with org size must
+  run as bounded chunks. Known single-transaction paths to convert before
+  onboarding a large org: `classifyOrg` (one suggested assignment per matched
+  person, people/classification.ts), the import apply step if it writes
+  per-person in one mutation, and `deletePayMappingRun`'s child-first delete
+  loop. Verify each against Convex's per-transaction document limits at the
+  target org size (~8-12 writes per person for assignment-writing paths).
 - [ ] **Audit-log count/offset aggregates: backfill on restored data + watch
   write contention.** The audit pager's exact totals come from two
   `@convex-dev/aggregate` instances maintained by `logAudit`; rows that reach
