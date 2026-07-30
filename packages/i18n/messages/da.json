@@ -476,6 +476,12 @@
         "pending": "Afventer",
         "unclassified": "Uklassificeret"
       },
+      "bulk": {
+        "selectAll": "Vælg alle klassificerbare titler",
+        "selectRow": "Vælg {title}",
+        "selectedCount": "{titles, plural, one {# titel} other {# titler}} valgt, {people, plural, one {# person} other {# personer}}",
+        "cta": "Klassificer valgte"
+      },
       "noTitle": "Uklassificeret / ingen titel",
       "selectRolePlaceholder": "Vælg en rolle",
       "assignCta": "Bekræft klassificering",

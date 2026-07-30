@@ -476,6 +476,12 @@
         "pending": "Venter",
         "unclassified": "Uklassifisert"
       },
+      "bulk": {
+        "selectAll": "Velg alle klassifiserbare titler",
+        "selectRow": "Velg {title}",
+        "selectedCount": "{titles, plural, one {# tittel} other {# titler}} valgt, {people, plural, one {# person} other {# personer}}",
+        "cta": "Klassifiser valgte"
+      },
       "noTitle": "Uklassifisert / ingen tittel",
       "selectRolePlaceholder": "Velg en rolle",
       "assignCta": "Bekreft klassifisering",

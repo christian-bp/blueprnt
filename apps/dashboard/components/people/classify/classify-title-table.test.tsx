@@ -642,4 +642,44 @@ describe("ClassifyTitleTable", () => {
     ).toHaveLength(0)
     expect(screen.getByRole("button", { name: m.expandLabel })).toBeDefined()
   })
+
+  // ---------------------------------------------------------------------------
+  // Bulk selection: checkboxes + toolbar
+  // ---------------------------------------------------------------------------
+
+  it("renders a checkbox per row, disabled when the group is not actionable", () => {
+    renderTable([HIGH_GROUP, NO_TITLE_GROUP])
+    // Header select-all + one per row.
+    const boxes = screen.getAllByRole("checkbox")
+    expect(boxes).toHaveLength(3)
+    const rowBox = screen.getByRole("checkbox", {
+      name: m.bulk.selectRow.replace("{title}", "Senior Engineer"),
+    })
+    // The Checkbox is a Base UI (non-native) control: it surfaces disabled
+    // state via aria-disabled, not the native `disabled` IDL property (see
+    // organization-members-section.test.tsx / pay-mappings-section.test.tsx
+    // for the same pattern with other Base UI primitives).
+    expect(rowBox.getAttribute("aria-disabled")).toBeNull()
+    const unmatchedBox = screen.getByRole("checkbox", {
+      name: m.bulk.selectRow.replace("{title}", m.noTitle),
+    })
+    expect(unmatchedBox.getAttribute("aria-disabled")).toBe("true")
+  })
+
+  it("select-all selects only actionable groups and enables the CTA with counts", async () => {
+    renderTable([HIGH_GROUP, NO_TITLE_GROUP])
+    const cta = screen.getByRole("button", {
+      name: m.bulk.cta,
+    }) as HTMLButtonElement
+    expect(cta.disabled).toBe(true)
+    fireEvent.click(screen.getByRole("checkbox", { name: m.bulk.selectAll }))
+    await waitFor(() => {
+      expect(
+        (screen.getByRole("button", { name: m.bulk.cta }) as HTMLButtonElement)
+          .disabled
+      ).toBe(false)
+    })
+    // 1 actionable title, 2 people (the unmatched group is not selectable).
+    expect(screen.getByText(/1 title .* 2 people/)).toBeDefined()
+  })
 })

@@ -476,6 +476,12 @@
         "pending": "Väntande",
         "unclassified": "Oklassificerad"
       },
+      "bulk": {
+        "selectAll": "Markera alla klassificerbara titlar",
+        "selectRow": "Markera {title}",
+        "selectedCount": "{titles, plural, one {# titel} other {# titlar}} markerade, {people, plural, one {# person} other {# personer}}",
+        "cta": "Klassificera valda"
+      },
       "noTitle": "Oklassificerad / ingen titel",
       "selectRolePlaceholder": "Välj en roll",
       "assignCta": "Bekräfta klassificering",

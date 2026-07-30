@@ -476,6 +476,12 @@
         "pending": "Pending",
         "unclassified": "Unclassified"
       },
+      "bulk": {
+        "selectAll": "Select all classifiable titles",
+        "selectRow": "Select {title}",
+        "selectedCount": "{titles, plural, one {# title} other {# titles}} selected, {people, plural, one {# person} other {# people}}",
+        "cta": "Classify selected"
+      },
       "noTitle": "Unclassified / no title",
       "selectRolePlaceholder": "Select a role",
       "assignCta": "Confirm classification",

@@ -476,6 +476,12 @@
         "pending": "Odottaa",
         "unclassified": "Luokittelematon"
       },
+      "bulk": {
+        "selectAll": "Valitse kaikki luokiteltavat nimikkeet",
+        "selectRow": "Valitse {title}",
+        "selectedCount": "{titles, plural, one {# nimike} other {# nimikettä}} valittu, {people, plural, one {# henkilö} other {# henkilöä}}",
+        "cta": "Luokittele valitut"
+      },
       "noTitle": "Luokittelematon / ei toimenkuvaa",
       "selectRolePlaceholder": "Valitse rooli",
       "assignCta": "Vahvista luokittelu",
