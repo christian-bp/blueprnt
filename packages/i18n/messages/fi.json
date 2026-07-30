@@ -154,6 +154,7 @@
       "overview": "Yleiskatsaus",
       "work": "Työarkkitehtuuri",
       "roles": "Roolit",
+      "rolesRemainingLabel": "{count, plural, one {# rooli arvioimatta} other {# roolia arvioimatta}}",
       "model": "Malli",
       "admin": "Admin",
       "auditLog": "Tapahtumaloki",

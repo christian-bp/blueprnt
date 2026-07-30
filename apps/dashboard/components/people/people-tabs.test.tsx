@@ -107,19 +107,19 @@ describe("PeopleTabs", () => {
     useQueryMock.mockReturnValue(GROUPS)
     renderTabs()
     // One of the two people is still unconfirmed.
-    expect(screen.getByText("1")).toBeDefined()
+    expect(screen.getByLabelText("1 person left to classify")).toBeDefined()
   })
 
   it("hides the badge while loading and when everyone is classified", () => {
     useQueryMock.mockReturnValue(undefined)
     const { unmount } = renderTabs()
-    expect(screen.queryByText("1")).toBeNull()
+    expect(document.querySelector("number-flow-react")).toBeNull()
     unmount()
 
     useQueryMock.mockReturnValue([
       { people: [{ currentAssignment: { levelSource: "confirmed" } }] },
     ])
     renderTabs()
-    expect(screen.queryByText("0")).toBeNull()
+    expect(document.querySelector("number-flow-react")).toBeNull()
   })
 })

@@ -1,10 +1,10 @@
 "use client"
 
-import { Badge } from "@workspace/ui/components/badge"
 import { motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { NavCountBadge } from "@/components/nav-count-badge"
 import { useOrganization } from "@/components/org-context"
 import { useClassificationSummary } from "@/hooks/use-classification-summary"
 import { SPRING } from "@/lib/motion"
@@ -53,15 +53,12 @@ export function PeopleTabs() {
           >
             {t(tab.labelKey)}
             {/* Remaining-to-classify count on the Classify tab; hidden while
-                loading and when everyone is classified. */}
-            {tab.labelKey === "classify" && !loading && remaining > 0 && (
-              // Brand-colored notification count (Badge default = brand).
-              <Badge
-                className="ml-1.5"
-                aria-label={t("remainingLabel", { count: remaining })}
-              >
-                {remaining}
-              </Badge>
+                loading and (inside the badge) when everyone is classified. */}
+            {tab.labelKey === "classify" && !loading && (
+              <NavCountBadge
+                count={remaining}
+                label={t("remainingLabel", { count: remaining })}
+              />
             )}
             {active && (
               <motion.span

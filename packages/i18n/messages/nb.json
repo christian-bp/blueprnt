@@ -154,6 +154,7 @@
       "overview": "Oversikt",
       "work": "Jobbarkitektur",
       "roles": "Roller",
+      "rolesRemainingLabel": "{count, plural, one {# rolle igjen å vurdere} other {# roller igjen å vurdere}}",
       "model": "Modell",
       "admin": "Admin",
       "auditLog": "Hendelseslogg",
