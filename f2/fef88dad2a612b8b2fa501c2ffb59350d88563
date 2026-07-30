@@ -1,0 +1,22 @@
+apps/dashboard/components/people/classify/classify-title-table.tsx
+  s_0d1a9cb77984cf::t_8b227b19e4f757 500
+  s_0d1a9cb77984cf::t_15bd077b4aa936 44
+  s_0d1a9cb77984cf::t_f246060a2f69b3 4-8
+  s_0d1a9cb77984cf::t_8101bae90e3b74 488-490,494-499,501-503
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "f2fef88dad2a612b8b2fa501c2ffb59350d88563",
+  "prompts": {},
+  "sessions": {
+    "s_0d1a9cb77984cf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31e79143-66ef-4cdc-96a5-68d31b7180a8",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
