@@ -1,0 +1,28 @@
+apps/dashboard/components/people/classify/classify-bulk.test.ts
+  s_0d1a9cb77984cf::t_02907d37a792e5 55,59,63
+  s_0d1a9cb77984cf::t_f8527ae6bf9fa0 41,45
+  s_0d1a9cb77984cf::t_b59407ccf8fed0 52,56-57,60-61,64-65
+  s_0d1a9cb77984cf::t_67131f745bd30c 72,76,80,84,88
+  s_0d1a9cb77984cf::t_72ff68a4de33f6 71,75,79,83,87
+  s_0d1a9cb77984cf::t_4d18d8b29adf7d 8,10
+  s_0d1a9cb77984cf::t_ef4d77cb6a14e6 39,43-44,47-48
+  s_0d1a9cb77984cf::t_dcb62f8b1d292e 69,73-74,77-78,81-82,85-86,89-90
+  s_0d1a9cb77984cf::t_1602d907079536 42,46
+  s_0d1a9cb77984cf::t_3685b7287b4d41 54,58,62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "092ee5f08f274f07bbb0d687c77af0ebbd0eb5d8",
+  "prompts": {},
+  "sessions": {
+    "s_0d1a9cb77984cf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31e79143-66ef-4cdc-96a5-68d31b7180a8",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
