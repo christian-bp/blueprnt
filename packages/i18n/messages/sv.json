@@ -325,7 +325,7 @@
           "updated": "Befintliga personer uppdaterade",
           "unchanged": "Redan uppdaterade",
           "skipped": "Överhoppade rader",
-          "goToPeople": "Gå till personer"
+          "goToClassify": "Gå till klassificering"
         },
         "review": {
           "title": "Granska och bekräfta",

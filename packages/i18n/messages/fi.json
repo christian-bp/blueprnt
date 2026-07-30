@@ -325,7 +325,7 @@
           "updated": "Nykyisiä henkilöitä päivitetty",
           "unchanged": "Jo ajan tasalla",
           "skipped": "Ohitetut rivit",
-          "goToPeople": "Siirry henkilöihin"
+          "goToClassify": "Siirry luokitteluun"
         },
         "review": {
           "title": "Tarkista ja vahvista",

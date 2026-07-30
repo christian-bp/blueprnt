@@ -15,6 +15,8 @@ import type { ImportResultCounts } from "./import-wizard"
 
 // The final wizard screen: what the import actually did. The wizard reaches
 // this only after importPayroll succeeded, so the only action is leaving.
+// The exit lands on Classify: assigning the imported people to roles is the
+// next step in the journey, not browsing the register.
 export function ImportDoneStep({ result }: { result: ImportResultCounts }) {
   const t = useTranslations("dashboard.people.import.done")
   const router = useRouter()
@@ -50,9 +52,9 @@ export function ImportDoneStep({ result }: { result: ImportResultCounts }) {
       </div>
       <WizardFooter>
         <NextButton
-          label={t("goToPeople")}
-          onClick={() => router.push("/people")}
-          data-testid="go-to-people"
+          label={t("goToClassify")}
+          onClick={() => router.push("/people/classify")}
+          data-testid="go-to-classify"
         />
       </WizardFooter>
     </div>

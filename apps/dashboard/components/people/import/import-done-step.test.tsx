@@ -43,9 +43,9 @@ describe("ImportDoneStep", () => {
     expect(skipped.textContent).toContain("1")
   })
 
-  it("navigates to the people list via the primary action", () => {
+  it("navigates to the classify surface via the primary action", () => {
     renderDone()
-    fireEvent.click(screen.getByTestId("go-to-people"))
-    expect(pushMock).toHaveBeenCalledWith("/people")
+    fireEvent.click(screen.getByTestId("go-to-classify"))
+    expect(pushMock).toHaveBeenCalledWith("/people/classify")
   })
 })

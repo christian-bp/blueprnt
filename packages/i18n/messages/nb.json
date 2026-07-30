@@ -325,7 +325,7 @@
           "updated": "Eksisterende personer oppdatert",
           "unchanged": "Allerede oppdatert",
           "skipped": "Rader hoppet over",
-          "goToPeople": "Gå til personer"
+          "goToClassify": "Gå til klassifisering"
         },
         "review": {
           "title": "Gjennomgang og bekreftelse",

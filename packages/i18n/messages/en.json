@@ -329,7 +329,7 @@
           "updated": "Existing people updated",
           "unchanged": "Already up to date",
           "skipped": "Rows skipped",
-          "goToPeople": "Go to people"
+          "goToClassify": "Go to classification"
         },
         "review": {
           "title": "Review and confirm",
