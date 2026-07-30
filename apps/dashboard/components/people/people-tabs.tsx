@@ -1,13 +1,11 @@
 "use client"
 
-import { motion } from "motion/react"
 import { useTranslations } from "next-intl"
-import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { HeaderTabLink } from "@/components/header-tab-link"
 import { NavCountBadge } from "@/components/nav-count-badge"
 import { useOrganization } from "@/components/org-context"
 import { useClassificationSummary } from "@/hooks/use-classification-summary"
-import { SPRING } from "@/lib/motion"
 
 // Sub-pages of the People section, shown as header tabs (mirrors ModelTabs).
 // People is the /people index (the directory, including person detail pages);
@@ -33,43 +31,31 @@ export function PeopleTabs() {
       aria-label={tNav("people")}
       className="flex h-full items-stretch gap-1"
     >
-      {TABS.map((tab) => {
-        // The index tab (People, /people) is active unless the classify
-        // sub-route matches, so person detail pages keep People active.
-        const active =
-          tab.href === "/people"
-            ? !pathname.startsWith("/people/classify")
-            : pathname.startsWith(tab.href)
-        return (
-          <Link
-            key={tab.href}
-            href={tab.href}
-            aria-current={active ? "page" : undefined}
-            className={`relative flex items-center px-2 font-medium text-sm transition-colors ${
-              active
-                ? "text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {t(tab.labelKey)}
-            {/* Remaining-to-classify count on the Classify tab; hidden while
-                loading and (inside the badge) when everyone is classified. */}
-            {tab.labelKey === "classify" && !loading && (
+      {TABS.map((tab) => (
+        <HeaderTabLink
+          key={tab.href}
+          href={tab.href}
+          label={t(tab.labelKey)}
+          // The index tab (People, /people) is active unless the classify
+          // sub-route matches, so person detail pages keep People active.
+          active={
+            tab.href === "/people"
+              ? !pathname.startsWith("/people/classify")
+              : pathname.startsWith(tab.href)
+          }
+          underlineId="people-tab-underline"
+          // Remaining-to-classify count on the Classify tab; hidden while
+          // loading and (inside the badge) when everyone is classified.
+          badge={
+            tab.labelKey === "classify" && !loading ? (
               <NavCountBadge
                 count={remaining}
                 label={t("remainingLabel", { count: remaining })}
               />
-            )}
-            {active && (
-              <motion.span
-                layoutId="people-tab-underline"
-                transition={SPRING}
-                className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-foreground"
-              />
-            )}
-          </Link>
-        )
-      })}
+            ) : undefined
+          }
+        />
+      ))}
     </nav>
   )
 }
