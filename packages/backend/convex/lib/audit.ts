@@ -1,5 +1,6 @@
 import type { GenericMutationCtx, GenericQueryCtx } from "convex/server"
 import type { DataModel, Doc } from "../_generated/dataModel"
+import { insertAuditAggregates } from "./auditAggregates"
 import type { AuditPayloads, PlatformAuditPayloads } from "./auditPayloads"
 
 // Every value here needs BOTH a payload entry in AuditPayloads
@@ -96,6 +97,119 @@ export function categoryForEvent(type: string): AuditCategory | undefined {
     return "people"
   if (type.startsWith("pay.") || type.startsWith("payMapping.")) return "pay"
   return undefined
+}
+
+// Audit subject: the specific entity INSTANCE an event is about, the second
+// classification axis next to category (which is the app AREA). Stored
+// denormalized and indexed on the row (by_org_subject) so one entity's whole
+// trail (canonically a pay-mapping run) is retrievable without scanning
+// payloads. Kinds are added only when a retrieval question exists for them;
+// events whose entity kind is not scoped yet stay null in AUDIT_SUBJECTS.
+export const AUDIT_SUBJECT_KINDS = ["payMappingRun", "role"] as const
+export type AuditSubjectKind = (typeof AUDIT_SUBJECT_KINDS)[number]
+export type AuditSubject = { kind: AuditSubjectKind; id: string }
+
+// One entry per AUDIT_EVENTS value, so every event DECLARES which entity
+// instance it is about: a deriver reads the id from the event's typed payload
+// (compile-checked against AuditPayloads[E], so a wrong field is a type
+// error), and `null` records the reviewed decision that the event has no
+// single-entity subject (org-wide, bulk, or a kind not scoped yet). The
+// Record over AuditEvent makes a new event without a subject decision a
+// compile error, mirroring the AuditPayloads coverage guard. Multi-entity
+// events carry ONE canonical subject: the entity whose own page a user would
+// open to ask "what happened here" (rating.change and assignment.set index
+// the role; their criterion/person ids stay payload-only until those kinds
+// get a consumer). Subjects are internal ids only, never PII, and dangle
+// harmlessly once their entity is hard-deleted (same status as payload ids).
+const AUDIT_SUBJECTS: {
+  [E in AuditEvent]:
+    | ((payload: AuditPayloads[E]) => AuditSubject | undefined)
+    | null
+} = {
+  "organization.created": null,
+  "organization.settingsUpdated": null,
+  "organization.onboardingCompleted": null,
+  "organization.logoUpdated": null,
+  "organization.logoRemoved": null,
+  "organization.nameUpdated": null,
+  "member.added": null,
+  "member.roleChanged": null,
+  "member.removed": null,
+  "invitation.created": null,
+  "invitation.accepted": null,
+  "invitation.revoked": null,
+  "model.created": null,
+  "model.updated": null,
+  "model.discarded": null,
+  // Every confirmable suggestion kind targets the model or the starter set,
+  // neither a subject kind yet (role-profile AI applies log role.updated,
+  // which carries the role subject).
+  "ai.suggestionConfirmed": null,
+  "ai.suggestionRejected": (payload) =>
+    payload.roleId !== undefined
+      ? { kind: "role", id: payload.roleId }
+      : undefined,
+  "role.created": (payload) => ({ kind: "role", id: payload.roleId }),
+  "role.updated": (payload) => ({ kind: "role", id: payload.roleId }),
+  "role.archived": (payload) => ({ kind: "role", id: payload.roleId }),
+  "rating.change": (payload) => ({ kind: "role", id: payload.roleId }),
+  "band.shift": (payload) => ({ kind: "role", id: payload.roleId }),
+  "anchorRole.designated": (payload) => ({ kind: "role", id: payload.roleId }),
+  "anchorRole.updated": (payload) => ({ kind: "role", id: payload.roleId }),
+  "roleFamily.created": null,
+  "roleFamily.renamed": null,
+  "roleFamily.removed": null,
+  "criterion.approved": null,
+  "criterion.reopened": null,
+  "person.created": null,
+  "person.updated": null,
+  "person.archived": null,
+  "person.erased": null,
+  "assignment.set": (payload) => ({ kind: "role", id: payload.roleId }),
+  "classification.suggested": null,
+  "pay.salarySet": null,
+  "pay.salaryDeleted": null,
+  "pay.mappingSaved": null,
+  "people.imported": null,
+  "payMapping.runStarted": (payload) => ({
+    kind: "payMappingRun",
+    id: payload.runId,
+  }),
+  "payMapping.groupAnalysisUpdated": (payload) => ({
+    kind: "payMappingRun",
+    id: payload.runId,
+  }),
+  "payMapping.runCompleted": (payload) => ({
+    kind: "payMappingRun",
+    id: payload.runId,
+  }),
+  "payMapping.runReopened": (payload) => ({
+    kind: "payMappingRun",
+    id: payload.runId,
+  }),
+  "payMapping.collaborationUpdated": (payload) => ({
+    kind: "payMappingRun",
+    id: payload.runId,
+  }),
+  "payMapping.runRenamed": (payload) => ({
+    kind: "payMappingRun",
+    id: payload.runId,
+  }),
+  "payMapping.runDeleted": (payload) => ({
+    kind: "payMappingRun",
+    id: payload.runId,
+  }),
+}
+
+// Derives the subject for one event from its typed payload, or undefined for
+// an event with no single-entity subject (or a deriver that finds no id, e.g.
+// an ai.suggestionRejected without a roleId).
+export function subjectForEvent<E extends AuditEvent>(
+  type: E,
+  payload: AuditPayloads[E]
+): AuditSubject | undefined {
+  const derive = AUDIT_SUBJECTS[type]
+  return derive === null ? undefined : derive(payload)
 }
 
 // Collects scalar string/number leaves from an audit payload for the search text.
@@ -528,19 +642,27 @@ export async function logAudit<E extends keyof AuditPayloads>(
   }
 ) {
   const actorName = await resolveActorName(ctx, entry.actorId)
-  await ctx.db.insert("auditLog", {
+  // Derived like category: never passed by call sites, always computed from
+  // the typed payload. Spread conditionally (undefined is not a Convex value).
+  const subject = subjectForEvent(entry.type, entry.payload)
+  const rowId = await ctx.db.insert("auditLog", {
     orgId: entry.orgId,
     type: entry.type,
     actorId: entry.actorId,
     actorName,
     payload: entry.payload as Record<string, unknown>,
     category: categoryForEvent(entry.type),
+    ...(subject !== undefined ? { subject } : {}),
     searchText: buildSearchText(
       actorName,
       entry.type,
       entry.payload as Record<string, unknown>
     ),
   })
+  // Same-transaction aggregate maintenance (the pager's exact count and
+  // jump-to-page), so the counts can never drift from the table.
+  const row = await ctx.db.get(rowId)
+  if (row !== null) await insertAuditAggregates(ctx, row)
 }
 
 // The admin audit log writer. Org-free operator trail, SEPARATE from logAudit

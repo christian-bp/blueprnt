@@ -1,7 +1,7 @@
 import type { GenericMutationCtx } from "convex/server"
 import { v } from "convex/values"
 import { components, internal } from "../_generated/api"
-import type { DataModel } from "../_generated/dataModel"
+import type { DataModel, Doc } from "../_generated/dataModel"
 import { internalMutation } from "../_generated/server"
 import {
   AUDIT_EVENTS,
@@ -9,6 +9,7 @@ import {
   logAudit,
   SETTINGS_AUDIT_FIELDS,
 } from "../lib/audit"
+import { removeAuditAggregates } from "../lib/auditAggregates"
 
 type Ctx = GenericMutationCtx<DataModel>
 
@@ -151,6 +152,11 @@ export const removeSeededOrganization = internalMutation({
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .collect()
       for (const row of rows) {
+        // A deleted audit row must also leave the pager's count/offset
+        // aggregates, or the org's page count keeps counting phantom rows.
+        if (table === "auditLog") {
+          await removeAuditAggregates(ctx, row as Doc<"auditLog">)
+        }
         await ctx.db.delete(row._id)
       }
     }

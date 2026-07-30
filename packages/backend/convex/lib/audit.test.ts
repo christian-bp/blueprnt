@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest"
 import type { Doc } from "../_generated/dataModel"
 import {
   AUDIT_EVENTS,
+  type AuditEvent,
+  type AuditSubject,
   anchorDiff,
   buildChanges,
   buildCreateChanges,
@@ -11,7 +13,9 @@ import {
   criterionCreateItem,
   criterionDeleteItem,
   PLATFORM_AUDIT_EVENTS,
+  subjectForEvent,
 } from "./audit"
+import type { AuditPayloads } from "./auditPayloads"
 
 describe("admin audit vocabulary", () => {
   it("defines the platform event keys", () => {
@@ -312,6 +316,227 @@ describe("categoryForEvent", () => {
     for (const type of Object.values(AUDIT_EVENTS)) {
       expect(categoryForEvent(type)).toBeDefined()
     }
+  })
+})
+
+// One minimal, contract-valid payload per event. The mapped type makes this
+// map total AND shape-checked: a new AUDIT_EVENTS value without a fixture, or
+// a fixture drifting from its AuditPayloads entry, is a compile error.
+const SUBJECT_FIXTURES: { [E in AuditEvent]: AuditPayloads[E] } = {
+  "organization.created": { changes: {} },
+  "organization.settingsUpdated": { changes: {} },
+  "organization.onboardingCompleted": { changes: {} },
+  "organization.logoUpdated": {},
+  "organization.logoRemoved": {},
+  "organization.nameUpdated": { changes: {} },
+  "member.added": { memberUserId: "user-1", changes: {} },
+  "member.roleChanged": { memberUserId: "user-1", changes: {} },
+  "member.removed": { memberUserId: "user-1", changes: {} },
+  "invitation.created": { invitationId: "inv-1", changes: {} },
+  "invitation.accepted": {
+    invitationId: "inv-1",
+    status: "accepted",
+    changes: {},
+  },
+  "invitation.revoked": {
+    invitationId: "inv-1",
+    status: "revoked",
+    changes: {},
+  },
+  "model.created": {
+    modelId: "model-1",
+    source: "template",
+    name: "Standard",
+    changes: {},
+    count: 0,
+    items: [],
+  },
+  "model.updated": {
+    change: "criterion.updated",
+    criterionId: "crit-1",
+    modelId: "model-1",
+    changes: {},
+  },
+  "model.discarded": {
+    modelId: "model-1",
+    name: "Standard",
+    changes: {},
+    count: 0,
+    items: [],
+    suggestionCount: 0,
+    suggestions: [],
+  },
+  "ai.suggestionConfirmed": {
+    suggestionId: "sug-1",
+    kind: "model.draft",
+    modelId: "model-1",
+    acceptedCount: 2,
+    totalProposed: 3,
+    count: 2,
+    items: [],
+  },
+  "ai.suggestionRejected": {
+    suggestionId: "sug-1",
+    kind: "role.profile",
+    changes: {},
+    roleId: "role-1",
+  },
+  "role.created": { roleId: "role-1", changes: {} },
+  "role.updated": { roleId: "role-1", changes: {} },
+  "role.archived": {
+    roleId: "role-1",
+    title: "Developer",
+    trackKey: "IC",
+    function: "engineering",
+    team: "Platform",
+    familyId: null,
+    anchorRetired: false,
+    changes: {},
+  },
+  "rating.change": {
+    roleId: "role-1",
+    criterionId: "crit-1",
+    created: true,
+    changes: {},
+  },
+  "band.shift": {
+    roleId: "role-1",
+    cause: { event: "rating.change", roleId: "role-1" },
+    changes: {},
+  },
+  "anchorRole.designated": {
+    roleId: "role-1",
+    computedBand: 2,
+    changes: {},
+  },
+  "anchorRole.updated": { roleId: "role-1", changes: {} },
+  "roleFamily.created": { familyId: "fam-1", changes: {} },
+  "roleFamily.renamed": { familyId: "fam-1", changes: {} },
+  "roleFamily.removed": {
+    familyId: "fam-1",
+    name: "Product",
+    changes: {},
+    count: 0,
+    items: [],
+  },
+  "criterion.approved": { criterionId: "crit-1", modelId: "model-1" },
+  "criterion.reopened": { criterionId: "crit-1", modelId: "model-1" },
+  "person.created": { personId: "person-1", changes: {} },
+  "person.updated": { personId: "person-1", changes: {} },
+  "person.archived": { personId: "person-1", changes: {} },
+  "person.erased": { personId: "person-1", changes: {} },
+  "assignment.set": { personId: "person-1", roleId: "role-1", changes: {} },
+  "classification.suggested": {
+    suggested: 1,
+    skipped: 0,
+    unmatchedTitles: 0,
+  },
+  "pay.salarySet": { personId: "person-1", changes: {} },
+  "pay.salaryDeleted": { personId: "person-1", changes: {} },
+  "pay.mappingSaved": { orgId: "org-1", changes: {} },
+  "people.imported": {
+    peopleCreated: 1,
+    peopleUpdated: 0,
+    peopleUnchanged: 0,
+    salariesImported: 0,
+    skippedRows: 0,
+  },
+  "payMapping.runStarted": {
+    runId: "run-1",
+    populationCount: 10,
+    withPayCount: 9,
+  },
+  "payMapping.groupAnalysisUpdated": {
+    runId: "run-1",
+    scope: "equalWork",
+    groupLabel: "Developer · L3",
+    changes: {},
+  },
+  "payMapping.runCompleted": {
+    runId: "run-1",
+    equalWorkDone: 3,
+    equivalentWorkDone: 2,
+  },
+  "payMapping.runReopened": { runId: "run-1" },
+  "payMapping.collaborationUpdated": { runId: "run-1" },
+  "payMapping.runRenamed": { runId: "run-1", changes: {} },
+  "payMapping.runDeleted": {
+    runId: "run-1",
+    label: "Lönekartläggning 2026",
+    populationCount: 10,
+  },
+}
+
+// The expected subject per fixture above: the canonical primary entity, or
+// undefined for events with no single-entity subject. Total over AuditEvent so
+// a new event must state its expectation here, mirroring the deriver map.
+const EXPECTED_SUBJECTS: { [E in AuditEvent]: AuditSubject | undefined } = {
+  "organization.created": undefined,
+  "organization.settingsUpdated": undefined,
+  "organization.onboardingCompleted": undefined,
+  "organization.logoUpdated": undefined,
+  "organization.logoRemoved": undefined,
+  "organization.nameUpdated": undefined,
+  "member.added": undefined,
+  "member.roleChanged": undefined,
+  "member.removed": undefined,
+  "invitation.created": undefined,
+  "invitation.accepted": undefined,
+  "invitation.revoked": undefined,
+  "model.created": undefined,
+  "model.updated": undefined,
+  "model.discarded": undefined,
+  "ai.suggestionConfirmed": undefined,
+  "ai.suggestionRejected": { kind: "role", id: "role-1" },
+  "role.created": { kind: "role", id: "role-1" },
+  "role.updated": { kind: "role", id: "role-1" },
+  "role.archived": { kind: "role", id: "role-1" },
+  "rating.change": { kind: "role", id: "role-1" },
+  "band.shift": { kind: "role", id: "role-1" },
+  "anchorRole.designated": { kind: "role", id: "role-1" },
+  "anchorRole.updated": { kind: "role", id: "role-1" },
+  "roleFamily.created": undefined,
+  "roleFamily.renamed": undefined,
+  "roleFamily.removed": undefined,
+  "criterion.approved": undefined,
+  "criterion.reopened": undefined,
+  "person.created": undefined,
+  "person.updated": undefined,
+  "person.archived": undefined,
+  "person.erased": undefined,
+  "assignment.set": { kind: "role", id: "role-1" },
+  "classification.suggested": undefined,
+  "pay.salarySet": undefined,
+  "pay.salaryDeleted": undefined,
+  "pay.mappingSaved": undefined,
+  "people.imported": undefined,
+  "payMapping.runStarted": { kind: "payMappingRun", id: "run-1" },
+  "payMapping.groupAnalysisUpdated": { kind: "payMappingRun", id: "run-1" },
+  "payMapping.runCompleted": { kind: "payMappingRun", id: "run-1" },
+  "payMapping.runReopened": { kind: "payMappingRun", id: "run-1" },
+  "payMapping.collaborationUpdated": { kind: "payMappingRun", id: "run-1" },
+  "payMapping.runRenamed": { kind: "payMappingRun", id: "run-1" },
+  "payMapping.runDeleted": { kind: "payMappingRun", id: "run-1" },
+}
+
+describe("subjectForEvent", () => {
+  it("derives the expected subject (or none) for every audit event", () => {
+    for (const type of Object.values(AUDIT_EVENTS)) {
+      expect(subjectForEvent(type, SUBJECT_FIXTURES[type]), type).toEqual(
+        EXPECTED_SUBJECTS[type]
+      )
+    }
+  })
+
+  it("skips an ai.suggestionRejected without a roleId", () => {
+    expect(
+      subjectForEvent("ai.suggestionRejected", {
+        suggestionId: "sug-1",
+        kind: "model.draft",
+        changes: {},
+        modelId: "model-1",
+      })
+    ).toBeUndefined()
   })
 })
 

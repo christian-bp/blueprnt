@@ -185,6 +185,7 @@ describe("AI suggestion lifecycle", () => {
       expect(audit).toHaveLength(1)
       const payload = audit[0]?.payload as {
         kind: string
+        modelId: string
         acceptedCount: number
         totalProposed: number
         count: number
@@ -196,6 +197,9 @@ describe("AI suggestion lifecycle", () => {
       }
       // One valid criterion landed out of two proposed.
       expect(payload.kind).toBe("model.draft")
+      // The permanent entity attribution: the trail must always record which
+      // model the confirmation touched.
+      expect(payload.modelId).toBe(criteria[0]?.modelId)
       expect(payload.acceptedCount).toBe(1)
       expect(payload.totalProposed).toBe(2)
       expect(payload.count).toBe(1)
@@ -429,6 +433,7 @@ describe("AI suggestion lifecycle", () => {
         .collect()
       expect(audit).toHaveLength(1)
       const payload = audit[0]?.payload as {
+        modelId: string
         appliedCount: number
         totalMoves: number
         skippedCount: number
@@ -449,6 +454,9 @@ describe("AI suggestion lifecycle", () => {
           motivation: string
         }>
       }
+      // The permanent entity attribution: the trail must always record which
+      // model the confirmation touched.
+      expect(payload.modelId).toBe(suggestion?.target.modelId)
       expect(payload.appliedCount).toBe(1)
       // Four accepted indexes were sent; only the first applied.
       expect(payload.totalMoves).toBe(4)

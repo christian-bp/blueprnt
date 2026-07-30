@@ -98,12 +98,18 @@ export type ModelUpdatedPayload =
       changes: Changes
     }
 
-// ai.suggestionConfirmed is heterogeneous, keyed on `kind` (one of the four
-// suggestion kinds). Discriminated so each kind's distinct fields stay required.
+// ai.suggestionConfirmed is heterogeneous, keyed on `kind`: the three
+// suggestion kinds with a confirm path (role-profile AI applies log
+// role.updated instead, so there is no role-kind variant here). Discriminated
+// so each kind's distinct fields stay required. The model kinds carry modelId
+// so the row stays attributable to its entity forever (a row written without
+// the id can never be backfilled); rendering drops any "*Id" key, so no label
+// is needed.
 export type AiConfirmedPayload =
   | {
       suggestionId: string
       kind: "model.draft"
+      modelId: string
       acceptedCount: number
       totalProposed: number
       count: number
@@ -112,6 +118,7 @@ export type AiConfirmedPayload =
   | {
       suggestionId: string
       kind: "model.weightReview"
+      modelId: string
       appliedCount: number
       totalMoves: number
       skippedCount: number
@@ -119,16 +126,6 @@ export type AiConfirmedPayload =
       count: number
       items: AuditItem[]
       moves: AuditMove[]
-    }
-  | {
-      suggestionId: string
-      kind: "role.profile"
-      roleId: string
-      appliedCount: number
-      appliedFields: string[]
-      requestedFields: string[]
-      offeredFields: string[]
-      confirmed: boolean
     }
   | {
       suggestionId: string

@@ -294,6 +294,7 @@ export const confirmModelDraft = adminMutation({
       payload: {
         suggestionId,
         kind: SUGGESTION_KINDS.modelDraft,
+        modelId: model._id,
         acceptedCount: insertedCount,
         totalProposed: draft.criteria.length,
         count: created.length,
@@ -318,14 +319,19 @@ export const confirmWeightReview = adminMutation({
   returns: v.null(),
   handler: async (ctx, { suggestionId, acceptedMoveIndexes }) => {
     const suggestion = await ctx.db.get(suggestionId)
+    // target.modelId is always set at request time for weight reviews; the
+    // guard makes that a checked invariant so the audit row's modelId (the
+    // trail's permanent entity attribution) can never be silently absent.
     if (
       suggestion === null ||
       suggestion.orgId !== ctx.orgId ||
       suggestion.target.kind !== SUGGESTION_KINDS.weightReview ||
+      suggestion.target.modelId === undefined ||
       suggestion.status !== "suggested"
     ) {
       throw appError(ERROR_CODES.notFound)
     }
+    const modelId = suggestion.target.modelId
     const value = suggestion.suggestedValue as {
       moves: {
         fromCriterionId: string
@@ -454,6 +460,7 @@ export const confirmWeightReview = adminMutation({
       payload: {
         suggestionId,
         kind: SUGGESTION_KINDS.weightReview,
+        modelId,
         appliedCount,
         totalMoves: value.moves.length,
         skippedCount: accepted.length - appliedCount,

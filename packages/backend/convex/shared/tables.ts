@@ -1,5 +1,25 @@
 import { defineTable } from "convex/server"
+import type { Infer } from "convex/values"
 import { v } from "convex/values"
+import type { AuditSubjectKind } from "../lib/audit"
+
+// The subject-kind vocabulary, mirrored from AUDIT_SUBJECT_KINDS
+// (lib/audit.ts). Written as literal validators (v.union needs literal
+// members); the drift guard below makes a divergence between the validator
+// and the constant a compile error, the same pattern as payMapping's
+// payGapReasonValidator.
+const auditSubjectKindValidator = v.union(
+  v.literal("payMappingRun"),
+  v.literal("role")
+)
+type KindFromValidator = Infer<typeof auditSubjectKindValidator>
+type _SubjectKindsExact = KindFromValidator extends AuditSubjectKind
+  ? AuditSubjectKind extends KindFromValidator
+    ? true
+    : never
+  : never
+const _assertSubjectKindsMatch: _SubjectKindsExact = true
+void _assertSubjectKindsMatch
 
 // Append-only. actorName is snapshotted at write time so audit rows stay
 // truthful if a user is later renamed or deleted. by_actor lets erasure find
@@ -11,13 +31,18 @@ import { v } from "convex/values"
 // (anonymizeAuthoredAuditRows) rewrites BOTH actorName AND the derived
 // searchText to the tombstone: since searchText is denormalized from the name,
 // anonymizing actorName alone would leave the name stored and searchable.
-// category and searchText are derived in logAudit from the event type and
-// payload: category is the action's app area (model/role/...) for filtering;
-// searchText is denormalized lowercase text (actor + action + payload values)
-// for full-text search. by_org_category supports category-filtered, time-ordered
-// pagination; the search_text search index backs full-text search filterable by
-// org and category. Both fields are optional so a schema push against
-// pre-existing rows does not fail; logAudit always sets them going forward.
+// category, subject, and searchText are derived in logAudit from the event
+// type and payload: category is the action's app area (model/role/...) for
+// filtering; subject is the entity INSTANCE the event is about ({ kind, id },
+// via the compile-time-total AUDIT_SUBJECTS map in lib/audit.ts), internal
+// ids only, never PII, so one entity's whole trail (canonically a pay-mapping
+// run) is index-retrievable; searchText is denormalized lowercase text
+// (actor + action + payload values) for full-text search. by_org_category and
+// by_org_subject support filtered, time-ordered pagination; the search_text
+// search index backs full-text search filterable by org, category, and
+// subject. The derived fields are optional so a schema push against
+// pre-existing rows does not fail (and events with no single-entity subject
+// stay subject-free); logAudit always sets category/searchText going forward.
 export const auditLog = defineTable({
   orgId: v.string(),
   type: v.string(),
@@ -25,15 +50,19 @@ export const auditLog = defineTable({
   actorName: v.string(),
   payload: v.any(),
   category: v.optional(v.string()),
+  subject: v.optional(
+    v.object({ kind: auditSubjectKindValidator, id: v.string() })
+  ),
   searchText: v.optional(v.string()),
 })
   .index("by_org", ["orgId"])
   .index("by_org_type", ["orgId", "type"])
   .index("by_org_category", ["orgId", "category"])
+  .index("by_org_subject", ["orgId", "subject.kind", "subject.id"])
   .index("by_actor", ["actorId"])
   .searchIndex("search_text", {
     searchField: "searchText",
-    filterFields: ["orgId", "category"],
+    filterFields: ["orgId", "category", "subject.kind", "subject.id"],
   })
 
 // The ADMIN audit log: the complete, authoritative record of every platform

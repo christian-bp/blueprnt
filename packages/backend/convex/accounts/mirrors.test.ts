@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { api, components, internal } from "../_generated/api"
+import { locateAuditPage } from "../lib/auditAggregates"
 import { initConvexTest } from "../testing.helpers"
 import {
   onInvitationCreate,
@@ -488,6 +489,31 @@ describe("removeSeededOrganization", () => {
           .withIndex("by_org", (q) => q.eq("orgId", orgId))
           .collect()
       ).toHaveLength(0)
+      // The audited mutations above wrote auditLog rows; teardown must remove
+      // BOTH the rows and their entries in the pager's count/offset
+      // aggregates, or the org's page count keeps counting phantom rows.
+      expect(
+        await ctx.db
+          .query("auditLog")
+          .withIndex("by_org", (q) => q.eq("orgId", orgId))
+          .collect()
+      ).toHaveLength(0)
+      const { total } = await locateAuditPage(ctx, {
+        orgId,
+        category: null,
+        start: undefined,
+        end: undefined,
+        offset: 0,
+      })
+      expect(total).toBe(0)
+      const { total: peopleTotal } = await locateAuditPage(ctx, {
+        orgId,
+        category: "people",
+        start: undefined,
+        end: undefined,
+        offset: 0,
+      })
+      expect(peopleTotal).toBe(0)
     })
   })
 })
