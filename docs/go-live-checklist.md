@@ -254,6 +254,18 @@ suite covers them before go-live:
   in the export slice, not the engine; the in-app view keeps the loose rule.
   Not an in-app blocker.
 
+- [ ] **Audit-log count/offset aggregates: backfill on restored data + watch
+  write contention.** The audit pager's exact totals come from two
+  `@convex-dev/aggregate` instances maintained by `logAudit`; rows that reach
+  a deployment WITHOUT going through `logAudit` (restoring an environment
+  from a pre-aggregate snapshot, importing data) silently under-report totals
+  until `devReset:backfillAuditLogAggregates` is run. Any environment seeded
+  from existing data must run the backfill before the pager is trusted. Post
+  go-live, watch the OCC-conflict rate on audit-writing mutations (each org's
+  aggregates serialize concurrent inserts per namespace; bulk fan-outs like
+  `band.shift` amplify this) and tune node size / laziness per the component
+  README if it shows up.
+
 ## How to add to this list
 
 When you introduce anything that is acceptable only because we are pre-launch (a

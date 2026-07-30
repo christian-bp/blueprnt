@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+import aggregateTest from "@convex-dev/aggregate/test"
 import { convexTest } from "convex-test"
 import authSchema from "./betterAuth/schema"
 import schema from "./schema"
@@ -23,6 +24,11 @@ export function initConvexTest() {
     authSchema,
     import.meta.glob("./betterAuth/**/*.ts")
   )
+  // The audit pager's count/offset aggregates: logAudit writes into them
+  // inline (awaited, unlike Sweego's fire-and-forget email jobs), so every
+  // test that runs a state-changing mutation needs them registered.
+  aggregateTest.register(t, "auditAggregateByOrg")
+  aggregateTest.register(t, "auditAggregateByCategory")
   liveTests.push(t)
   return t
 }

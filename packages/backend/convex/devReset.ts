@@ -1,6 +1,10 @@
 import { v } from "convex/values"
 import type { TableNames } from "./_generated/dataModel"
 import { internalMutation } from "./_generated/server"
+import {
+  backfillAuditAggregates,
+  clearAuditAggregates,
+} from "./lib/auditAggregates"
 
 // Dev-only database wipe. This mutation is internal and never internet-exposed,
 // but it must ONLY ever be reached via seed:resetDatabase, the "use node" action
@@ -62,6 +66,40 @@ export const wipeAppTables = internalMutation({
         truncated = true
       }
     }
+    // The audit pager's count/offset aggregates mirror auditLog; a reset that
+    // wiped the rows but kept the aggregate nodes would leave phantom pages.
+    // clearAll is cheap and idempotent, so it runs on every pass.
+    await clearAuditAggregates(ctx)
     return { done: !truncated }
+  },
+})
+
+// One-time dev backfill: registers every pre-existing auditLog row in the
+// pager's count/offset aggregates (rows written after the aggregates shipped
+// register themselves in logAudit). Idempotent (insertIfDoesNotExist) and
+// paged by cursor; run repeatedly from the CLI until it reports done:
+//   npx convex run devReset:backfillAuditLogAggregates '{}'
+//   npx convex run devReset:backfillAuditLogAggregates '{"cursor": "<continueCursor>"}'
+// Dev-only tooling: production starts from a go-live reset, where logAudit
+// maintains the aggregates from the first row.
+export const backfillAuditLogAggregates = internalMutation({
+  args: { cursor: v.optional(v.string()) },
+  returns: v.object({
+    done: v.boolean(),
+    processed: v.number(),
+    continueCursor: v.string(),
+  }),
+  handler: async (ctx, args) => {
+    const page = await ctx.db
+      .query("auditLog")
+      .paginate({ numItems: PAGE_SIZE, cursor: args.cursor ?? null })
+    for (const row of page.page) {
+      await backfillAuditAggregates(ctx, row)
+    }
+    return {
+      done: page.isDone,
+      processed: page.page.length,
+      continueCursor: page.continueCursor,
+    }
   },
 })

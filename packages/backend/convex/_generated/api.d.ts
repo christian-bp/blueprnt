@@ -59,6 +59,7 @@ import type * as evaluationModel_tables from "../evaluationModel/tables.js";
 import type * as files from "../files.js";
 import type * as http from "../http.js";
 import type * as lib_audit from "../lib/audit.js";
+import type * as lib_auditAggregates from "../lib/auditAggregates.js";
 import type * as lib_auditPayloads from "../lib/auditPayloads.js";
 import type * as lib_errors from "../lib/errors.js";
 import type * as lib_functions from "../lib/functions.js";
@@ -146,6 +147,7 @@ declare const fullApi: ApiFromModules<{
   files: typeof files;
   http: typeof http;
   "lib/audit": typeof lib_audit;
+  "lib/auditAggregates": typeof lib_auditAggregates;
   "lib/auditPayloads": typeof lib_auditPayloads;
   "lib/errors": typeof lib_errors;
   "lib/functions": typeof lib_functions;
@@ -205,4 +207,6 @@ export declare const internal: FilterApi<
 export declare const components: {
   betterAuth: import("../betterAuth/_generated/component.js").ComponentApi<"betterAuth">;
   sweego: import("@christian-ek/sweego/_generated/component.js").ComponentApi<"sweego">;
+  auditAggregateByOrg: import("@convex-dev/aggregate/_generated/component.js").ComponentApi<"auditAggregateByOrg">;
+  auditAggregateByCategory: import("@convex-dev/aggregate/_generated/component.js").ComponentApi<"auditAggregateByCategory">;
 };
