@@ -1,0 +1,19 @@
+apps/dashboard/components/nav-count-badge.tsx
+  s_0d1a9cb77984cf::t_010c1301fed2e1 23-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "a9407ccf67040948c245fb71625c37387b2d23f5",
+  "prompts": {},
+  "sessions": {
+    "s_0d1a9cb77984cf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31e79143-66ef-4cdc-96a5-68d31b7180a8",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
