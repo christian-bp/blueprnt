@@ -683,6 +683,33 @@ describe("ClassifyTitleTable", () => {
     expect(screen.getByText(/1 title .* 2 people/)).toBeDefined()
   })
 
+  it("selecting one of several actionable groups marks the header checkbox partially selected", () => {
+    const SECOND_GROUP: ClassifyTitleGroup = {
+      title: "Engineering Manager",
+      personCount: 1,
+      suggestedRoleId: "role2",
+      people: [
+        {
+          personId: "p9",
+          displayName: "Eva Holm",
+          externalRef: null,
+          employmentStartDate: null,
+          isManager: true,
+          suggestedLevel: "M1",
+          currentAssignment: null,
+        },
+      ],
+    }
+    renderTable([HIGH_GROUP, SECOND_GROUP])
+    fireEvent.click(
+      screen.getByRole("checkbox", {
+        name: m.bulk.selectRow.replace("{title}", "Senior Engineer"),
+      })
+    )
+    const headerBox = screen.getByRole("checkbox", { name: m.bulk.selectAll })
+    expect(headerBox.getAttribute("aria-checked")).toBe("mixed")
+  })
+
   // ---------------------------------------------------------------------------
   // Bulk confirm: the summary dialog gates a chunked write across groups
   // ---------------------------------------------------------------------------
@@ -731,6 +758,47 @@ describe("ClassifyTitleTable", () => {
     ])
   })
 
+  it("closes the dialog without a success toast when the selection prunes to empty before confirm", async () => {
+    const { rerender } = renderTable([HIGH_GROUP])
+    fireEvent.click(screen.getByRole("checkbox", { name: m.bulk.selectAll }))
+    fireEvent.click(screen.getByRole("button", { name: m.bulk.cta }))
+    expect(
+      screen.getByRole("alertdialog", { name: m.bulk.dialogTitle })
+    ).toBeDefined()
+    // The selected group gets confirmed elsewhere (another tab, another
+    // admin) while the dialog is still open: re-render with it fully
+    // confirmed as-is, which prunes the effective selection to nothing.
+    const nowConfirmed: ClassifyTitleGroup = {
+      ...HIGH_GROUP,
+      people: HIGH_GROUP.people.map((p) => ({
+        ...p,
+        currentAssignment: {
+          roleId: "role1",
+          level: p.suggestedLevel ?? "IC1",
+          levelSource: "confirmed" as const,
+        },
+      })),
+    }
+    rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <form>
+          <ClassifyTitleTable
+            orgId="org1"
+            groups={[nowConfirmed]}
+            roles={ROLES}
+            tracks={TRACKS}
+          />
+        </form>
+      </NextIntlClientProvider>
+    )
+    fireEvent.click(screen.getByRole("button", { name: m.bulk.confirm }))
+    await waitFor(() => {
+      expect(screen.queryByRole("alertdialog")).toBeNull()
+    })
+    expect(assignMock).not.toHaveBeenCalled()
+    expect(toast.success).not.toHaveBeenCalled()
+  })
+
   it("keeps the dialog open and shows an error toast when a chunk fails", async () => {
     assignMock.mockRejectedValueOnce(new Error("boom"))
     renderTable([HIGH_GROUP])
@@ -743,10 +811,42 @@ describe("ClassifyTitleTable", () => {
     ).toBeDefined()
   })
 
+  it("stops after the failing chunk in a multi-chunk bulk confirm: exactly the chunks tried, error toast, dialog stays open, no success", async () => {
+    // 60 people packs into chunks of 50 and 10 (MAX_ASSIGNMENTS_PER_MUTATION
+    // is 50). The first chunk lands, the second fails: the surface must not
+    // report success for a selection that only partially landed.
+    const BIG_GROUP: ClassifyTitleGroup = {
+      title: "Retail Associate",
+      personCount: 60,
+      suggestedRoleId: "role1",
+      people: Array.from({ length: 60 }, (_, i) => ({
+        personId: `big-${i}`,
+        displayName: `Person ${i}`,
+        externalRef: null,
+        employmentStartDate: null,
+        isManager: null,
+        suggestedLevel: "IC1",
+        currentAssignment: null,
+      })),
+    }
+    assignMock
+      .mockResolvedValueOnce(["assignment-id"])
+      .mockRejectedValueOnce(new Error("boom"))
+    renderTable([BIG_GROUP])
+    fireEvent.click(screen.getByRole("checkbox", { name: m.bulk.selectAll }))
+    fireEvent.click(screen.getByRole("button", { name: m.bulk.cta }))
+    fireEvent.click(screen.getByRole("button", { name: m.bulk.confirm }))
+    await waitFor(() => expect(toast.error).toHaveBeenCalled())
+    expect(assignMock).toHaveBeenCalledTimes(2)
+    expect(
+      screen.getByRole("alertdialog", { name: m.bulk.dialogTitle })
+    ).toBeDefined()
+    expect(toast.success).not.toHaveBeenCalled()
+  })
+
   it("splits a selected group larger than the mutation limit into sequential chunks", async () => {
-    // Closes a deferred review finding: no component-level test previously
-    // drove a >MAX_ASSIGNMENTS_PER_MUTATION group through the mocked
-    // mutation. 60 people -> chunks of 50 and 10, called in order.
+    // Drives a >MAX_ASSIGNMENTS_PER_MUTATION group through the component's
+    // mocked mutation. 60 people -> chunks of 50 and 10, called in order.
     const BIG_GROUP: ClassifyTitleGroup = {
       title: "Retail Associate",
       personCount: 60,
