@@ -207,9 +207,11 @@ export const assignPersonToRole = orgMutation({
 })
 
 // Assign many people in ONE transaction (the classify surface's confirm and
-// bulk-confirm actions). A single mutation means the reactive queries update
-// once for the whole batch instead of ticking per person, and the batch is
-// all-or-nothing. Each assignment still writes its own assignment.set audit
+// bulk-confirm actions call this per bounded chunk, never once for an
+// unbounded selection). A single call means the reactive queries update once
+// for that chunk instead of ticking per person, and the chunk is
+// all-or-nothing; the surface may make several such calls in sequence for a
+// larger selection. Each assignment still writes its own assignment.set audit
 // row through writeAssignment.
 export const assignPeopleToRole = orgMutation({
   args: {

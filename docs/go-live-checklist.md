@@ -262,6 +262,12 @@ suite covers them before go-live:
   per-person in one mutation, and `deletePayMappingRun`'s child-first delete
   loop. Verify each against Convex's per-transaction document limits at the
   target org size (~8-12 writes per person for assignment-writing paths).
+  The read side needs the same bounding: `listPeopleByTitle`
+  (people/classificationQueries.ts, the classify surface's data source)
+  collects every active person via `by_org`, then runs one `personAssignments`
+  index query per person to find their open assignment. That is an N+1 read
+  fan-out, not a single bounded query; it needs bounding (e.g. a batched or
+  paginated lookup) before large-org onboarding.
 - [ ] **Audit-log count/offset aggregates: backfill on restored data + watch
   write contention.** The audit pager's exact totals come from two
   `@convex-dev/aggregate` instances maintained by `logAudit`; rows that reach
