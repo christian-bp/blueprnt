@@ -1,0 +1,37 @@
+packages/backend/convex/accounts/audit.test.ts
+  s_0d1a9cb77984cf::t_b6a4dfefe7fdbf 56-99,102,105,107,109-117,119,121-138,159-170,185,188,190-192,194,197,199-201,216,219,222-223,232,235,237,251,253,255-263,268-269,285,287,289,291-292,297,300,302,328,330,332-333,336-337,343,346,348,416,419,421,445-451,460,468,473,480,482,484-485,488,490-492,494-495,505,508,510-512,514,524,527,529-531,542,546,548-550,553,556,558,560,563,565-567,570,572-575,586-587,593,597,599-602
+  s_0d1a9cb77984cf::t_ad7c817b926383 3
+  s_0d1a9cb77984cf::t_f2bed64655051b 142-158
+  s_0d1a9cb77984cf::t_0d37eecc1aa214 353,356-401,403-409,411-413,418,422-440,442-443
+  s_0d1a9cb77984cf::t_4099dd3f61fd90 139
+  s_0d1a9cb77984cf::t_276a2b0025f1bb 441,444
+packages/backend/convex/accounts/audit.ts
+  s_0d1a9cb77984cf::t_eb03896500850d 85-86,93
+  s_0d1a9cb77984cf::t_a2f68359e53efa 47-50
+  s_0d1a9cb77984cf::t_d5465d7a92df2e 46
+  s_0d1a9cb77984cf::t_81b21915e619b8 176-186,188,193,201-214,220-224,227,232-236,239-240
+  s_0d1a9cb77984cf::t_23f0ff1a0a4072 87-92,94-105
+  s_0d1a9cb77984cf::t_bcb84fbab20be0 196-200
+  s_0d1a9cb77984cf::t_294eb22a88d4ee 1,5
+  s_0d1a9cb77984cf::t_88f40fe65bed72 155-158
+packages/constants/src/index.ts
+  s_0d1a9cb77984cf::t_1cc0460c10ecad 13
+packages/constants/src/auditLog.ts
+  s_0d1a9cb77984cf::t_dcec26b8edf027 1-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "91198ce765283a2198b1e47ad60078eedc0392a0",
+  "prompts": {},
+  "sessions": {
+    "s_0d1a9cb77984cf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31e79143-66ef-4cdc-96a5-68d31b7180a8",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
