@@ -1,0 +1,19 @@
+packages/ui/src/components/checkbox.tsx
+  s_0d1a9cb77984cf::t_28b33105097cae 7,9-22,26,28,37-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "3a8ee7f16f73e772077afd49abab45f33c84922d",
+  "prompts": {},
+  "sessions": {
+    "s_0d1a9cb77984cf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31e79143-66ef-4cdc-96a5-68d31b7180a8",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
