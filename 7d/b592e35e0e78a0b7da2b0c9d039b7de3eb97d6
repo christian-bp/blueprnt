@@ -1,0 +1,26 @@
+docs/superpowers/specs/2026-07-30-bulk-classify-design.md
+  s_0d1a9cb77984cf::t_c010138caf85fd 62-65
+  s_0d1a9cb77984cf::t_5b04fe607bfe76 1-61,66-103
+CLAUDE.md
+  s_0d1a9cb77984cf::t_7542864cd9dc08 57
+docs/go-live-checklist.md
+  s_0d1a9cb77984cf::t_8b2800582cd1b3 257-264
+docs/superpowers/plans/2026-07-30-bulk-classify.md
+  s_0d1a9cb77984cf::t_fdc2297f451b3d 1-925
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "7db592e35e0e78a0b7da2b0c9d039b7de3eb97d6",
+  "prompts": {},
+  "sessions": {
+    "s_0d1a9cb77984cf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "31e79143-66ef-4cdc-96a5-68d31b7180a8",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
