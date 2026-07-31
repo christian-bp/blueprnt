@@ -12,7 +12,7 @@ vi.mock("next/navigation", () => ({
 // The journey card (rendered above the KPI/chart grids) calls useMutation +
 // useQuery + useOrganization, so this test file needs the same mocks as
 // pay-mapping-journey-card.test.tsx.
-vi.mock("sonner", () => ({
+vi.mock("@/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 vi.mock(

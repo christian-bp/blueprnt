@@ -6,12 +6,12 @@ import {
   waitFor,
 } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import messages from "@workspace/i18n/messages/en.json"
 
-vi.mock("sonner", () => ({
+vi.mock("@/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 

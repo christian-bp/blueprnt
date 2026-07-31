@@ -23,7 +23,9 @@ vi.mock("convex/react", () => ({
   // the mutation stores.
   useQuery: () => ({ currency: "SEK" }),
 }))
-vi.mock("sonner", () => ({ toast: { success: toastSuccess, error: vi.fn() } }))
+vi.mock("@/lib/toast", () => ({
+  toast: { success: toastSuccess, error: vi.fn() },
+}))
 vi.mock("next-intl", () => ({
   useTranslations: () => (k: string) => k,
   useLocale: () => "en",

@@ -15,7 +15,7 @@ import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
 import { RenameFamilyDialog } from "@/components/roles/rename-family-dialog"
 

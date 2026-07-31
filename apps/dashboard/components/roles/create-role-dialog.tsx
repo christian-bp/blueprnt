@@ -31,7 +31,7 @@ import {
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { HelpMorphButton } from "@/components/help-morph-button"

@@ -13,7 +13,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 // Module mocks (declared before the module under test is imported)
 // ---------------------------------------------------------------------------
 
-vi.mock("sonner", () => ({
+vi.mock("@/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 
@@ -26,7 +26,7 @@ vi.mock(
   async () => (await import("@/test/convex-mocks")).apiModule
 )
 
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { mockMutation } from "@/test/convex-mocks"
 import { UnmatchedTitleActions } from "@/components/people/classify/unmatched-title-actions"
 

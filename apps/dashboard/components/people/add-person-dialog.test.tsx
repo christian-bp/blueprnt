@@ -10,7 +10,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import { pickSelectOption } from "@/test/select"
 
-vi.mock("sonner", () => ({
+vi.mock("@/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 
@@ -51,7 +51,7 @@ vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "org-1", name: "Acme", role: "admin" }),
 }))
 
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { AddPersonDialog } from "@/components/people/add-person-dialog"
 
 const labels = messages.dashboard.people.addPerson

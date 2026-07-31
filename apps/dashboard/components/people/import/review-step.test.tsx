@@ -15,7 +15,7 @@ import { ReviewStep, buildColumnMap } from "./review-step"
 // Module mocks (must be declared before any imports that reference them)
 // ---------------------------------------------------------------------------
 
-vi.mock("sonner", () => ({
+vi.mock("@/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 
@@ -53,7 +53,7 @@ vi.mock("@/components/org-context", () => ({
   }),
 }))
 
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 
 // ---------------------------------------------------------------------------
 // Fixtures

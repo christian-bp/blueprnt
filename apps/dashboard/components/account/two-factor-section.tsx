@@ -29,7 +29,7 @@ import {
 } from "@workspace/ui/components/form"
 import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"

@@ -14,7 +14,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 // Module mocks (declared before the module under test is imported)
 // ---------------------------------------------------------------------------
 
-vi.mock("sonner", () => ({
+vi.mock("@/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 
@@ -32,7 +32,7 @@ vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "org1", name: "Acme", role: "admin" }),
 }))
 
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { mockMutation } from "@/test/convex-mocks"
 import type { ClassifyTitleGroup } from "@/components/people/classify/classify-title-table"
 import {

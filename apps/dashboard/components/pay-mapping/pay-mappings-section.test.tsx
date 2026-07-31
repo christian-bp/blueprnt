@@ -73,7 +73,7 @@ vi.mock("next/link", () => ({
   ),
 }))
 
-vi.mock("sonner", () => ({
+vi.mock("@/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 

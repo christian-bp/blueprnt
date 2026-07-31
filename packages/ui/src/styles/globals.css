@@ -186,3 +186,28 @@
     background-color: color-mix(in oklab, var(--brand) 25%, transparent);
     }
 }
+
+/* Local rules for the toast host. Both correct properties of the vendored Base
+   UI toast that it exposes no prop for, and both sit outside @layer so they win
+   over Tailwind's utility layer.
+
+   The viewport ships z-50, the same as the dialog and alert-dialog overlays,
+   which portal in later and so would paint over a toast. Surfaces that toast
+   while their dialog stays open need the toast above the modal layer: a failed
+   bulk confirm shows its failure only as a toast. Nothing else in the UI goes
+   above 50. */
+[data-slot="toast-viewport"] {
+  z-index: 60;
+}
+
+/* The toast's enter/exit transitions are baked into its class list, so they are
+   outside Motion's reach and prefers-reduced-motion has to be honoured here.
+   Collapse the durations instead of removing the transitions, so the
+   transitionend the library waits on before unmounting still fires. */
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="toast"],
+  [data-slot="toast"] * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

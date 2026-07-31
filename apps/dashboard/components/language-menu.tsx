@@ -12,7 +12,7 @@ import {
 } from "@workspace/ui/components/dropdown-menu"
 import { useMutation } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { useSetPreviewLocale } from "@/components/locale-provider"
 import { FLAG_BY_LOCALE, LANGUAGE_LABEL_KEYS } from "@/lib/locales"
 

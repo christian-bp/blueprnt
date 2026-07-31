@@ -20,7 +20,7 @@ import {
   useRef,
   useState,
 } from "react"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { OptionCard } from "@/components/option-card"
 import { useOrganization } from "@/components/org-context"

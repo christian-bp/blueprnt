@@ -10,7 +10,7 @@ import en from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-vi.mock("sonner", () => ({
+vi.mock("@/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 
@@ -32,7 +32,7 @@ vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "org-1", role: "admin" }),
 }))
 
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { mockMutation, onQuery } from "@/test/convex-mocks"
 import { PayMappingJourneyCard } from "./pay-mapping-journey-card"
 import type {

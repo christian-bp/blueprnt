@@ -9,7 +9,7 @@ import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-vi.mock("sonner", () => ({
+vi.mock("@/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 
@@ -27,7 +27,7 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: pushMock }),
 }))
 
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { StartPayMappingDialog } from "@/components/pay-mapping/start-pay-mapping-dialog"
 import { mockMutation, onQuery } from "@/test/convex-mocks"
 

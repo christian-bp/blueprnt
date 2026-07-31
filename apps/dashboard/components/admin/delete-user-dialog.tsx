@@ -17,7 +17,7 @@ import { Label } from "@workspace/ui/components/label"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 

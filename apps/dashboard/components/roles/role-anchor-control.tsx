@@ -23,7 +23,7 @@ import { Textarea } from "@workspace/ui/components/textarea"
 import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { onSelectValue } from "@/lib/select"
 
 // Anchor roles (ankarroller) are the org's 2-5 designated reference roles used

@@ -16,7 +16,7 @@ const { toastSuccessMock, toastErrorMock } = vi.hoisted(() => ({
 
 const addCriterionMock = vi.fn()
 
-vi.mock("sonner", () => ({
+vi.mock("@/lib/toast", () => ({
   toast: { success: toastSuccessMock, error: toastErrorMock },
 }))
 

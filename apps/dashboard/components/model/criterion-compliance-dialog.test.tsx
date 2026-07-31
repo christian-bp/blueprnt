@@ -11,9 +11,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 
-vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
+vi.mock("@/lib/toast", () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
 
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 
 // Module-level variable: useAction returns a closure over this so the
 // component always calls the current mock. The describe-level beforeEach

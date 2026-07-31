@@ -17,7 +17,7 @@ import {
 import { OtpField } from "@/components/auth/otp-field"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import QRCode from "qrcode"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form"

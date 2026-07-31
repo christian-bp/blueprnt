@@ -31,7 +31,7 @@ import {
 import { Textarea } from "@workspace/ui/components/textarea"
 import { useAction, useMutation } from "convex/react"
 import { useFormatter, useLocale, useTranslations } from "next-intl"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { Spinner } from "@workspace/ui/components/spinner"

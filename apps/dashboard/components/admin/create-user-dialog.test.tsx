@@ -17,7 +17,7 @@ const { createUserMock, requestPasswordResetMock, toastSuccessMock } =
     toastSuccessMock: vi.fn(),
   }))
 
-vi.mock("sonner", () => ({
+vi.mock("@/lib/toast", () => ({
   toast: { success: toastSuccessMock, error: vi.fn() },
 }))
 

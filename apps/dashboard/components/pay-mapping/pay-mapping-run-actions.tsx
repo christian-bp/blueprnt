@@ -14,7 +14,7 @@ import {
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
 import { RenamePayMappingDialog } from "@/components/pay-mapping/rename-pay-mapping-dialog"
 

@@ -25,7 +25,7 @@ import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { SubmitButton } from "@/components/submit-button"
 import {
   makeRunLabelSchema,

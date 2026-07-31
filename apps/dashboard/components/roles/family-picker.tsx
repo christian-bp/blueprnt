@@ -14,7 +14,7 @@ import {
 import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useId, useState } from "react"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { isDuplicateFamilyError } from "@/lib/family-error"
 
 // Sentinel item values: real family ids never collide with these.

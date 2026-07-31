@@ -23,10 +23,11 @@ describe("Providers", () => {
         <div>child</div>
       </Providers>
     )
-    // Sonner renders a <section aria-label="Notifications …"> in jsdom
-    // (the data-sonner-toaster attribute is only set in a real browser context).
+    // The Base UI toast viewport is the host that the toast list renders into.
+    // Assert on the data-slot rather than the vendor's own aria-label, so the
+    // check survives an upstream label change.
     expect(
-      document.querySelector('section[aria-label^="Notifications"]')
+      document.querySelector('[data-slot="toast-viewport"]')
     ).not.toBeNull()
   })
 })

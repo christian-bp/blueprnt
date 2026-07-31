@@ -38,7 +38,7 @@ import {
 import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useCallback, useEffect, useState } from "react"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { useOrganization } from "@/components/org-context"
 import { authClient } from "@/lib/auth-client"
 

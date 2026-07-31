@@ -9,7 +9,7 @@ import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-vi.mock("sonner", () => ({
+vi.mock("@/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 
@@ -27,7 +27,7 @@ vi.mock("@/components/org-context", () => ({
 
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { ConvexError } from "convex/values"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import type { GroupAnalysis } from "@/components/pay-mapping/pay-mapping-gap-types"
 import { ReviewPraxisStep } from "@/components/pay-mapping/review-praxis-step"
 import { mockMutation } from "@/test/convex-mocks"

@@ -13,7 +13,7 @@ const { toastSuccess, toastError } = vi.hoisted(() => ({
   toastSuccess: vi.fn(),
   toastError: vi.fn(),
 }))
-vi.mock("sonner", () => ({
+vi.mock("@/lib/toast", () => ({
   toast: { success: toastSuccess, error: toastError },
 }))
 

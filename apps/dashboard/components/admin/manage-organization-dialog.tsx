@@ -41,7 +41,7 @@ import {
 import { useMutation, useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { useForm } from "react-hook-form"
 import { CountrySelect } from "@/components/country-select"
 import { CurrencySelect } from "@/components/currency-select"

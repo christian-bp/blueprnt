@@ -13,7 +13,7 @@ import {
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
-import { toast } from "sonner"
+import { toast } from "@/lib/toast"
 import { CriterionForm } from "@/components/model/criterion-form"
 
 // Wraps the shared CriterionForm in a dialog so the tall form does not push

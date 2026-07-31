@@ -7,7 +7,9 @@ const toastSuccess = vi.hoisted(() => vi.fn())
 const push = vi.hoisted(() => vi.fn())
 
 vi.mock("convex/react", () => ({ useMutation: () => erase }))
-vi.mock("sonner", () => ({ toast: { success: toastSuccess, error: vi.fn() } }))
+vi.mock("@/lib/toast", () => ({
+  toast: { success: toastSuccess, error: vi.fn() },
+}))
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }))
 vi.mock("next-intl", () => ({ useTranslations: () => (k: string) => k }))
 vi.mock("@/components/org-context", () => ({
