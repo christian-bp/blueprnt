@@ -1,6 +1,10 @@
 "use client"
 
-import { Cancel01Icon, Csv01Icon } from "@hugeicons/core-free-icons"
+import {
+  Alert02Icon,
+  Cancel01Icon,
+  Csv01Icon,
+} from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { ImportFormatError, tokenizeCsv } from "@workspace/import"
 import {
@@ -89,6 +93,12 @@ type UploadCard =
       progress: number
     }
   | {
+      state: "error"
+      testId: "rejected-file"
+      title: string
+      description: string
+    }
+  | {
       state: "done"
       testId: "detected-summary"
       title: string
@@ -125,16 +135,31 @@ export function UploadStep({
     size: number
     progress: number
   } | null>(null)
+  // Name of the file that was refused, so the error card can say which file it
+  // was. Held separately from `error` because a rejection can happen before any
+  // read starts, so `reading` is not set on those paths.
+  const [rejected, setRejected] = useState<{ name: string } | null>(null)
+
+  // Every rejection records the offending file's name alongside the code, so the
+  // card can name it.
+  function fail(
+    file: File,
+    code: "errorEmpty" | "errorNotCsv" | "errorInvalidFormat"
+  ) {
+    setRejected({ name: file.name })
+    setError(code)
+  }
 
   // Format-specific validation stays here; FileDropzone owns the drop/click
   // mechanics and hands us the picked file. The FileReader progress events
   // drive an honest progress bar (instant for small files).
   async function processFile(file: File) {
     if (!file.name.toLowerCase().endsWith(".csv") && file.type !== "text/csv") {
-      setError("errorNotCsv")
+      fail(file, "errorNotCsv")
       return
     }
     setError(null)
+    setRejected(null)
     // Sniff the raw leading bytes for the OLE2 (legacy .xls) magic before
     // decoding as text: UTF-8 decoding would destroy the signature, so a
     // renamed .xls would otherwise slip past the tokenizer's binary guard and
@@ -143,7 +168,7 @@ export function UploadStep({
       await file.slice(0, OLE2_MAGIC.length).arrayBuffer()
     )
     if (isOle2Signature(head)) {
-      setError("errorInvalidFormat")
+      fail(file, "errorInvalidFormat")
       return
     }
     setReading({ name: file.name, size: file.size, progress: 0 })
@@ -156,7 +181,7 @@ export function UploadStep({
     }
     reader.onerror = () => {
       setReading(null)
-      setError("errorEmpty")
+      fail(file, "errorEmpty")
     }
     reader.onload = () => {
       setReading(null)
@@ -164,9 +189,10 @@ export function UploadStep({
       const result = handleCsvText(text)
       if (result.ok) {
         setError(null)
+        setRejected(null)
         onParsed(result.parsed, text, { name: file.name, size: file.size })
       } else {
-        setError(result.error)
+        fail(file, result.error)
       }
     }
     reader.readAsText(file)
@@ -184,19 +210,26 @@ export function UploadStep({
           description: t("uploading", { progress: reading.progress }),
           progress: reading.progress,
         }
-      : error === null && parsed !== null && fileName !== null
+      : error !== null
         ? {
-            state: "done",
-            testId: "detected-summary",
-            title: fileName,
-            description: `${
-              fileSize !== null ? `${formatFileSize(fileSize)} · ` : ""
-            }${t("detected", {
-              rows: parsed.rows.length,
-              columns: parsed.headers.length,
-            })}`,
+            state: "error",
+            testId: "rejected-file",
+            title: rejected?.name ?? "",
+            description: t(error),
           }
-        : null
+        : parsed !== null && fileName !== null
+          ? {
+              state: "done",
+              testId: "detected-summary",
+              title: fileName,
+              description: `${
+                fileSize !== null ? `${formatFileSize(fileSize)} · ` : ""
+              }${t("detected", {
+                rows: parsed.rows.length,
+                columns: parsed.headers.length,
+              })}`,
+            }
+          : null
 
   return (
     <div className="flex w-full flex-col gap-4">
@@ -217,6 +250,12 @@ export function UploadStep({
           <AttachmentMedia>
             {card.state === "uploading" ? (
               <Spinner />
+            ) : card.state === "error" ? (
+              <HugeiconsIcon
+                icon={Alert02Icon}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
             ) : (
               <HugeiconsIcon
                 icon={Csv01Icon}
@@ -228,7 +267,11 @@ export function UploadStep({
           </AttachmentMedia>
           <AttachmentContent>
             <AttachmentTitle>{card.title}</AttachmentTitle>
-            <AttachmentDescription>{card.description}</AttachmentDescription>
+            <AttachmentDescription
+              role={card.state === "error" ? "alert" : undefined}
+            >
+              {card.description}
+            </AttachmentDescription>
           </AttachmentContent>
           {card.state === "done" && (
             <AttachmentActions>
@@ -247,13 +290,6 @@ export function UploadStep({
             <Progress value={card.progress} className="basis-full" />
           )}
         </Attachment>
-      )}
-
-      {/* Inline error */}
-      {error !== null && (
-        <p role="alert" className="text-destructive text-sm">
-          {t(error)}
-        </p>
       )}
     </div>
   )

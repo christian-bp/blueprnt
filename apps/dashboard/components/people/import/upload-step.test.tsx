@@ -349,6 +349,68 @@ describe("UploadStep component", () => {
     // onParsed must not have been called.
     expect(onParsed).not.toHaveBeenCalled()
   })
+
+  it("names the rejected file in an error card", async () => {
+    renderUploadStep()
+
+    const input = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement
+    const file = new File(["<html></html>"], "report.html", {
+      type: "text/html",
+    })
+    Object.defineProperty(input, "files", { value: [file] })
+    fireEvent.change(input)
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("rejected-file")).not.toBeNull()
+    })
+    const card = screen.getByTestId("rejected-file")
+    expect(card.textContent).toContain("report.html")
+    expect(card.textContent).toContain(m.upload.errorNotCsv)
+  })
+
+  it("still announces the rejection to assistive tech", async () => {
+    renderUploadStep()
+
+    const input = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement
+    const file = new File([""], "empty.csv", { type: "text/csv" })
+    Object.defineProperty(input, "files", { value: [file] })
+    fireEvent.change(input)
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert").textContent).toContain(
+        m.upload.errorEmpty
+      )
+    })
+  })
+
+  it("clears the error card when a valid file is picked next", async () => {
+    renderUploadStep()
+
+    const input = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement
+    const bad = new File(["<html></html>"], "report.html", {
+      type: "text/html",
+    })
+    Object.defineProperty(input, "files", { value: [bad], configurable: true })
+    fireEvent.change(input)
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("rejected-file")).not.toBeNull()
+    })
+
+    const good = new File([FIXTURE_CSV], "payroll.csv", { type: "text/csv" })
+    Object.defineProperty(input, "files", { value: [good], configurable: true })
+    fireEvent.change(input)
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("rejected-file")).toBeNull()
+    })
+  })
 })
 
 describe("ImportWizard — Next button gating", () => {
