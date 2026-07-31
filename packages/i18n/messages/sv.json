@@ -752,7 +752,7 @@
       "ai": {
         "modelDraft": "Modellkriterier: {count} tillagda",
         "weightReview": "Viktgenomgång: {count} tillämpade",
-        "starterImport": "Startimport: {families} familjer, {roles} roller",
+        "starterImport": "Startimport: {families, plural, one {# familj} other {# familjer}}, {roles, plural, one {# roll} other {# roller}}",
         "kind": {
           "modelDraft": "Modellkriterier",
           "weightReview": "Viktgenomgång",
@@ -1159,8 +1159,8 @@
           "less": "Kvinnorna i den här gruppen tjänar i genomsnitt {gap} mindre än männen ({women} kvinnor · {men} män).",
           "more": "Kvinnorna i den här gruppen tjänar i genomsnitt {gap} mer än männen ({women} kvinnor · {men} män).",
           "none": "Det finns ingen mätbar löneskillnad mellan kvinnorna och männen i den här gruppen ({women} kvinnor · {men} män).",
-          "onlyWomen": "Den här gruppen har bara kvinnor ({count} personer), så det finns ingen kvinna-man-jämförelse att göra. Förklara varför gruppen ser ut så här.",
-          "onlyMen": "Den här gruppen har bara män ({count} personer), så det finns ingen kvinna-man-jämförelse att göra. Förklara varför gruppen ser ut så här.",
+          "onlyWomen": "Den här gruppen har bara kvinnor ({count, plural, one {# person} other {# personer}}), så det finns ingen kvinna-man-jämförelse att göra. Förklara varför gruppen ser ut så här.",
+          "onlyMen": "Den här gruppen har bara män ({count, plural, one {# person} other {# personer}}), så det finns ingen kvinna-man-jämförelse att göra. Förklara varför gruppen ser ut så här.",
           "orgLess": "Kvinnorna tjänar i genomsnitt {gap} mindre än männen i hela lönekartläggningen.",
           "orgMore": "Kvinnorna tjänar i genomsnitt {gap} mer än männen i hela lönekartläggningen.",
           "orgNone": "Det finns ingen mätbar löneskillnad mellan kvinnor och män i hela lönekartläggningen.",

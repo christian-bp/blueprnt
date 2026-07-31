@@ -752,7 +752,7 @@
       "ai": {
         "modelDraft": "Modelkriterier: {count} tilføjet",
         "weightReview": "Vægtgennemgang: {count} anvendt",
-        "starterImport": "Startimport: {families} familier, {roles} roller",
+        "starterImport": "Startimport: {families, plural, one {# familie} other {# familier}}, {roles, plural, one {# rolle} other {# roller}}",
         "kind": {
           "modelDraft": "Modelkriterier",
           "weightReview": "Vægtgennemgang",
@@ -1159,8 +1159,8 @@
           "less": "Kvinderne i denne gruppe tjener i gennemsnit {gap} mindre end mændene ({women} kvinder · {men} mænd).",
           "more": "Kvinderne i denne gruppe tjener i gennemsnit {gap} mere end mændene ({women} kvinder · {men} mænd).",
           "none": "Der er ikke noget målbart løngab mellem kvinderne og mændene i denne gruppe ({women} kvinder · {men} mænd).",
-          "onlyWomen": "Denne gruppe har kun kvinder ({count} personer), så der er ingen kvinde-mand-sammenligning at foretage. Forklar, hvorfor gruppen ser sådan ud.",
-          "onlyMen": "Denne gruppe har kun mænd ({count} personer), så der er ingen kvinde-mand-sammenligning at foretage. Forklar, hvorfor gruppen ser sådan ud.",
+          "onlyWomen": "Denne gruppe har kun kvinder ({count, plural, one {# person} other {# personer}}), så der er ingen kvinde-mand-sammenligning at foretage. Forklar, hvorfor gruppen ser sådan ud.",
+          "onlyMen": "Denne gruppe har kun mænd ({count, plural, one {# person} other {# personer}}), så der er ingen kvinde-mand-sammenligning at foretage. Forklar, hvorfor gruppen ser sådan ud.",
           "orgLess": "Kvinderne tjener i gennemsnit {gap} mindre end mændene i hele lønkortlægningen.",
           "orgMore": "Kvinderne tjener i gennemsnit {gap} mere end mændene i hele lønkortlægningen.",
           "orgNone": "Der er ikke noget målbart løngab mellem kvinder og mænd i hele lønkortlægningen.",

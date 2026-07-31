@@ -752,7 +752,7 @@
       "ai": {
         "modelDraft": "Mallin kriteerit: {count} lisätty",
         "weightReview": "Painotusten tarkistus: {count} käytetty",
-        "starterImport": "Aloitustuonti: {families} perhettä, {roles} roolia",
+        "starterImport": "Aloitustuonti: {families, plural, one {# perhe} other {# perhettä}}, {roles, plural, one {# rooli} other {# roolia}}",
         "kind": {
           "modelDraft": "Mallin kriteerit",
           "weightReview": "Painotusten tarkistus",
@@ -1159,8 +1159,8 @@
           "less": "Tämän ryhmän naiset ansaitsevat keskimäärin {gap} vähemmän kuin miehet ({women} naista · {men} miestä).",
           "more": "Tämän ryhmän naiset ansaitsevat keskimäärin {gap} enemmän kuin miehet ({women} naista · {men} miestä).",
           "none": "Tämän ryhmän naisten ja miesten välillä ei ole mitattavaa palkkaeroa ({women} naista · {men} miestä).",
-          "onlyWomen": "Tässä ryhmässä on vain naisia ({count} henkilöä), joten nais-mies-vertailua ei voi tehdä. Selitä, miksi ryhmä näyttää tällaiselta.",
-          "onlyMen": "Tässä ryhmässä on vain miehiä ({count} henkilöä), joten nais-mies-vertailua ei voi tehdä. Selitä, miksi ryhmä näyttää tällaiselta.",
+          "onlyWomen": "Tässä ryhmässä on vain naisia ({count, plural, one {# henkilö} other {# henkilöä}}), joten nais-mies-vertailua ei voi tehdä. Selitä, miksi ryhmä näyttää tällaiselta.",
+          "onlyMen": "Tässä ryhmässä on vain miehiä ({count, plural, one {# henkilö} other {# henkilöä}}), joten nais-mies-vertailua ei voi tehdä. Selitä, miksi ryhmä näyttää tällaiselta.",
           "orgLess": "Naiset ansaitsevat keskimäärin {gap} vähemmän kuin miehet koko palkkakartoituksessa.",
           "orgMore": "Naiset ansaitsevat keskimäärin {gap} enemmän kuin miehet koko palkkakartoituksessa.",
           "orgNone": "Naisten ja miesten välillä ei ole mitattavaa palkkaeroa koko palkkakartoituksessa.",
@@ -1508,8 +1508,8 @@
         "removeConfirm": "Kyllä, poista kriteeri",
         "saveCta": "Tallenna painotus",
         "cancelCta": "Peruuta",
-        "pointsLeft": "{count} painopistettä jaettavana",
-        "pointsOver": "{count} painopistettä yli budjetin",
+        "pointsLeft": "{count, plural, one {# painopiste} other {# painopistettä}} jaettavana",
+        "pointsOver": "{count, plural, one {# painopiste} other {# painopistettä}} yli budjetin",
         "balanced": "Kaikki painopisteet on jaettu",
         "minCriteriaHint": "Lisää vähintään {min} kriteeriä jatkaaksesi.",
         "removalFloorHint": "Malli tarvitsee vähintään {min} kriteeriä, joten kriteerejä ei voi poistaa juuri nyt.",
@@ -1622,7 +1622,7 @@
       "applyCta": "Käytä valittuja",
       "rejectCta": "Hylkää",
       "noMoves": "Tekoäly ei löytänyt ehdotettavia siirtoja.",
-      "moveLabel": "Siirrä {points} painopistettä kohteesta {from} kohteeseen {to}",
+      "moveLabel": "Siirrä {points, plural, one {# painopiste} other {# painopistettä}} kohteesta {from} kohteeseen {to}",
       "whyChange": "Miksi tämä muutos?"
     },
     "help": {
