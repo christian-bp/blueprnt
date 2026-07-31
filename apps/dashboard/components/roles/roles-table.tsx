@@ -20,13 +20,6 @@ import {
   EmptyTitle,
 } from "@workspace/ui/components/empty"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select"
-import {
   Table,
   TableBody,
   TableCell,
@@ -38,7 +31,11 @@ import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
-import { TableSearchField } from "@/components/table-search-field"
+import {
+  ALL_TRACKS,
+  RoleTableToolbar,
+  type RolesTableTrack,
+} from "@/components/roles/role-table-toolbar"
 import {
   TableSkeleton,
   type TableSkeletonColumn,
@@ -71,15 +68,11 @@ export interface RolesTableRow {
   band: number | null
 }
 
-export interface RolesTableTrack {
-  key: string
-  name: string
-}
-
-// The role register's free-text search: case-insensitive substring over the
+// The role tables' free-text search: case-insensitive substring over the
 // role's free-text fields (title, team, function). Pure and exported so the
-// matching rules are unit-tested without a DOM; the table wires it in as
-// its globalFilterFn.
+// matching rules are unit-tested without a DOM, and so every role table
+// searches by the same rules: the register wires it in as its globalFilterFn,
+// a family page filters its own rows with it.
 export function matchesRoleQuery(
   role: { title: string; team: string; function: string },
   query: string
@@ -146,21 +139,9 @@ const ROLES_SKELETON_COLUMNS: TableSkeletonColumn[] = [
 // and a grayed control would just flash. The track filter shows its
 // all-option; the real options arrive with the data.
 export function RolesTableSkeleton() {
-  const t = useTranslations("dashboard.roles")
-  const tToolbar = useTranslations("dashboard.roles.toolbar")
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <TableSearchField placeholder={tToolbar("searchPlaceholder")} />
-        <Select items={{ all: tToolbar("trackAll") }} value="all">
-          <SelectTrigger aria-label={t("table.track")}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{tToolbar("trackAll")}</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <RoleTableToolbar tracks={[]} />
       <Table className="table-fixed">
         <RolesTableHeader />
         <TableSkeleton rows={8} columns={ROLES_SKELETON_COLUMNS} />
@@ -299,7 +280,6 @@ export function RolesTable({
   })
 
   const shown = table.getFilteredRowModel().rows.length
-  const filtersActive = globalFilter.trim() !== "" || columnFilters.length > 0
   const visibleColumnCount = table.getVisibleLeafColumns().length
 
   function clearFilters() {
@@ -308,50 +288,24 @@ export function RolesTable({
   }
 
   const trackFilter =
-    (table.getColumn("track")?.getFilterValue() as string | undefined) ?? "all"
+    (table.getColumn("track")?.getFilterValue() as string | undefined) ??
+    ALL_TRACKS
 
   return (
     <div className="space-y-4">
-      {/* Toolbar: search + the track filter; the counter appears only while
-          something is narrowing the table. */}
-      <div className="flex flex-wrap items-center gap-2">
-        <TableSearchField
-          placeholder={tToolbar("searchPlaceholder")}
-          value={globalFilter}
-          onChange={setGlobalFilter}
-        />
-        <Select
-          items={{
-            all: tToolbar("trackAll"),
-            ...Object.fromEntries(
-              tracks.map((track) => [track.key, track.name])
-            ),
-          }}
-          value={trackFilter}
-          onValueChange={(value) =>
-            table
-              .getColumn("track")
-              ?.setFilterValue(value === "all" ? undefined : value)
-          }
-        >
-          <SelectTrigger aria-label={t("table.track")}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{tToolbar("trackAll")}</SelectItem>
-            {tracks.map((track) => (
-              <SelectItem key={track.key} value={track.key}>
-                {track.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {filtersActive && (
-          <span className="ml-auto text-muted-foreground text-sm tabular-nums">
-            {tToolbar("resultCount", { shown, total: roles.length })}
-          </span>
-        )}
-      </div>
+      <RoleTableToolbar
+        tracks={tracks}
+        query={globalFilter}
+        onQueryChange={setGlobalFilter}
+        track={trackFilter}
+        onTrackChange={(value) =>
+          table
+            .getColumn("track")
+            ?.setFilterValue(value === ALL_TRACKS ? undefined : value)
+        }
+        shown={shown}
+        total={roles.length}
+      />
 
       {shown === 0 ? (
         <Empty>
