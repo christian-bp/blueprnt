@@ -23,17 +23,45 @@ import { useState } from "react"
 import { FileDropzone } from "@/components/file-dropzone"
 import type { ParsedCsv } from "./import-wizard"
 
+/**
+ * Why an upload was refused. Each value is an i18n key under
+ * `dashboard.people.import.upload`, named once so the parse handler, the
+ * component state and the failure helper cannot drift apart. Deliberately
+ * coarse: every "this is not CSV data" case (wrong extension, spreadsheet, web
+ * page, XML) resolves to the same message, because the user's next action is
+ * the same in all of them. Only an empty file needs its own copy, since there
+ * the fix is to re-export with data rather than to change format.
+ */
+export type UploadError = "errorEmpty" | "errorNotCsv"
+
+// Markup signatures no CSV starts with. A web page or XML export renamed to
+// .csv passes both the extension check and the OLE2 sniff, and then tokenizes
+// as a valid ONE-column CSV, because its lines carry no delimiter so each line
+// becomes a single cell. Deliberately narrow: a bare "<" would not do, since
+// some systems bracket their header names.
+const MARKUP_PREFIXES = ["<!doctype", "<html", "<?xml", "<!--"]
+
+/**
+ * True when the text opens with a markup signature. Takes already-trimmed text
+ * and is pure over it, so it is unit-testable without a File or FileReader.
+ */
+export function isMarkupContent(trimmed: string): boolean {
+  const head = trimmed.slice(0, 16).toLowerCase()
+  return MARKUP_PREFIXES.some((prefix) => head.startsWith(prefix))
+}
+
 // Accepts a raw CSV text string, validates it, and returns either a ParsedCsv
 // result or an error key. Kept as a named export so tests can call it directly
 // without rendering the component.
 export function handleCsvText(
   text: string
-):
-  | { ok: true; parsed: ParsedCsv }
-  | { ok: false; error: "errorEmpty" | "errorNotCsv" | "errorInvalidFormat" } {
+): { ok: true; parsed: ParsedCsv } | { ok: false; error: UploadError } {
   const trimmed = text.trim()
   if (trimmed.length === 0) {
     return { ok: false, error: "errorEmpty" }
+  }
+  if (isMarkupContent(trimmed)) {
+    return { ok: false, error: "errorNotCsv" }
   }
   let parsed: ParsedCsv
   try {
@@ -45,7 +73,7 @@ export function handleCsvText(
     }
   } catch (err) {
     if (err instanceof ImportFormatError) {
-      return { ok: false, error: "errorInvalidFormat" }
+      return { ok: false, error: "errorNotCsv" }
     }
     throw err
   }
@@ -126,9 +154,7 @@ export function UploadStep({
   onClear: () => void
 }) {
   const t = useTranslations("dashboard.people.import.upload")
-  const [error, setError] = useState<
-    "errorEmpty" | "errorNotCsv" | "errorInvalidFormat" | null
-  >(null)
+  const [error, setError] = useState<UploadError | null>(null)
   // The in-flight read: drives the uploading card (spinner + progress bar).
   const [reading, setReading] = useState<{
     name: string
@@ -142,10 +168,7 @@ export function UploadStep({
 
   // Every rejection records the offending file's name alongside the code, so the
   // card can name it.
-  function fail(
-    file: File,
-    code: "errorEmpty" | "errorNotCsv" | "errorInvalidFormat"
-  ) {
+  function fail(file: File, code: UploadError) {
     setRejected({ name: file.name })
     setError(code)
   }
@@ -168,7 +191,7 @@ export function UploadStep({
       await file.slice(0, OLE2_MAGIC.length).arrayBuffer()
     )
     if (isOle2Signature(head)) {
-      fail(file, "errorInvalidFormat")
+      fail(file, "errorNotCsv")
       return
     }
     setReading({ name: file.name, size: file.size, progress: 0 })

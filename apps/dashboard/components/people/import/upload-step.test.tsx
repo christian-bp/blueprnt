@@ -118,7 +118,12 @@ vi.mock("@/components/onboarding/onboarding-dots", () => ({
   OnboardingDots: () => null,
 }))
 
-import { formatFileSize, handleCsvText, isOle2Signature } from "./upload-step"
+import {
+  formatFileSize,
+  handleCsvText,
+  isMarkupContent,
+  isOle2Signature,
+} from "./upload-step"
 import { UploadStep } from "./upload-step"
 import type { ParsedCsv } from "./import-wizard"
 
@@ -196,6 +201,31 @@ describe("handleCsvText (pure parse handler)", () => {
     expect(result.error).toBe("errorEmpty")
   })
 
+  // A multi-line web page renamed to .csv used to tokenize as a valid
+  // one-column CSV and be accepted, because HTML lines carry no delimiter.
+  it("returns errorNotCsv for a web page renamed to .csv", () => {
+    const result = handleCsvText(`<!DOCTYPE html>
+<html>
+<head><title>Report</title></head>
+<body>
+<p>Hello</p>
+</body>
+</html>`)
+    expect(result.ok).toBe(false)
+    if (result.ok) return
+    expect(result.error).toBe("errorNotCsv")
+  })
+
+  it("returns errorNotCsv for an XML export renamed to .csv", () => {
+    const result = handleCsvText(`<?xml version="1.0"?>
+<payroll>
+<employee name="Alice" />
+</payroll>`)
+    expect(result.ok).toBe(false)
+    if (result.ok) return
+    expect(result.error).toBe("errorNotCsv")
+  })
+
   it("handles a BOM-prefixed UTF-8 CSV", () => {
     const bom = "﻿"
     const result = handleCsvText(`${bom}name,salary\nAlice,50000`)
@@ -203,6 +233,31 @@ describe("handleCsvText (pure parse handler)", () => {
     if (!result.ok) return
     expect(result.parsed.headers).toEqual(["name", "salary"])
     expect(result.parsed.rows).toHaveLength(1)
+  })
+})
+
+describe("isMarkupContent (web page / XML sniff)", () => {
+  it("detects the markup signatures a CSV never starts with", () => {
+    expect(isMarkupContent("<!DOCTYPE html>\n<html>")).toBe(true)
+    expect(isMarkupContent('<html lang="en">')).toBe(true)
+    expect(isMarkupContent('<?xml version="1.0"?>')).toBe(true)
+    expect(isMarkupContent("<!-- generated -->")).toBe(true)
+  })
+
+  it("is case-insensitive", () => {
+    expect(isMarkupContent("<!doctype HTML>")).toBe(true)
+    expect(isMarkupContent("<HTML>")).toBe(true)
+  })
+
+  it("does not fire for ordinary CSV text", () => {
+    expect(isMarkupContent("name,department,salary")).toBe(false)
+    expect(isMarkupContent("Alice Svensson,Engineering,55000")).toBe(false)
+  })
+
+  // Some payroll systems bracket their header names, so a bare "<" or a
+  // punctuation-only heuristic would refuse a legitimate export.
+  it("does not fire for a CSV with bracketed headers", () => {
+    expect(isMarkupContent("[Name],[Department],[Salary]")).toBe(false)
   })
 })
 
@@ -385,6 +440,40 @@ describe("UploadStep component", () => {
         m.upload.errorEmpty
       )
     })
+  })
+
+  // The reported case: an .html file renamed to .csv was accepted and the
+  // wizard let the user carry on.
+  it("refuses a web page renamed to .csv and names it in the error card", async () => {
+    const onParsed = vi.fn()
+    renderUploadStep({ onParsed })
+
+    const input = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement
+    const file = new File(
+      [
+        `<!DOCTYPE html>
+<html>
+<body>
+<p>Payroll report</p>
+</body>
+</html>`,
+      ],
+      "report.csv",
+      { type: "text/csv" }
+    )
+    Object.defineProperty(input, "files", { value: [file] })
+    fireEvent.change(input)
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("rejected-file")).not.toBeNull()
+    })
+    const card = screen.getByTestId("rejected-file")
+    expect(card.textContent).toContain("report.csv")
+    expect(card.textContent).toContain(m.upload.errorNotCsv)
+    // The wizard must not be allowed to advance.
+    expect(onParsed).not.toHaveBeenCalled()
   })
 
   it("clears the error card when a valid file is picked next", async () => {

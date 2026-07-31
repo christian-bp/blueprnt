@@ -219,9 +219,8 @@
           "uploading": "Uploading... {progress}%",
           "removeFile": "Remove {file}",
           "detected": "{rows, plural, one {# row} other {# rows}}, {columns} columns detected.",
-          "errorNotCsv": "Only CSV files are supported. Please select a .csv file.",
-          "errorEmpty": "The file is empty. Please select a CSV file with at least one row of data.",
-          "errorInvalidFormat": "This looks like a spreadsheet file, not a CSV. Open it in Excel or your payroll system and export it as CSV, then upload the CSV."
+          "errorNotCsv": "This file isn't a CSV. If it's a spreadsheet, open it in Excel or your payroll system and export it as CSV, then upload that file.",
+          "errorEmpty": "The file is empty. Please select a CSV file with at least one row of data."
         },
         "map": {
           "title": "Map columns",

@@ -219,9 +219,8 @@
           "uploading": "Uploader... {progress}%",
           "removeFile": "Fjern {file}",
           "detected": "{rows, plural, one {# række} other {# rækker}}, {columns} kolonner fundet.",
-          "errorNotCsv": "Kun CSV-filer understøttes. Vælg en .csv-fil.",
-          "errorEmpty": "Filen er tom. Vælg en CSV-fil med mindst én datalinje.",
-          "errorInvalidFormat": "Dette ligner en regnearksfil, ikke en CSV. Åbn den i Excel eller dit lønsystem og eksporter som CSV, upload derefter CSV-filen."
+          "errorNotCsv": "Den her fil er ikke en CSV. Hvis det er et regneark, åbn den i Excel eller dit lønsystem og eksporter som CSV, upload derefter den fil.",
+          "errorEmpty": "Filen er tom. Vælg en CSV-fil med mindst én datalinje."
         },
         "map": {
           "title": "Tilknyt kolonner",

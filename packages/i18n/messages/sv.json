@@ -219,9 +219,8 @@
           "uploading": "Laddar upp... {progress}%",
           "removeFile": "Ta bort {file}",
           "detected": "{rows, plural, one {# rad} other {# rader}}, {columns} kolumner identifierade.",
-          "errorNotCsv": "Endast CSV-filer stöds. Välj en .csv-fil.",
-          "errorEmpty": "Filen är tom. Välj en CSV-fil med minst en rad med data.",
-          "errorInvalidFormat": "Det här ser ut som en kalkylbladsfil, inte en CSV. Öppna den i Excel eller ditt lönesystem och exportera som CSV, ladda sedan upp CSV-filen."
+          "errorNotCsv": "Den här filen är inte en CSV. Om det är ett kalkylblad, öppna den i Excel eller ditt lönesystem och exportera som CSV, ladda sedan upp den filen.",
+          "errorEmpty": "Filen är tom. Välj en CSV-fil med minst en rad med data."
         },
         "map": {
           "title": "Mappa kolumner",
