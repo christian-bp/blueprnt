@@ -1,6 +1,7 @@
 import { isValidLevelForTrack, TRACK_LEVELS } from "@workspace/constants"
 import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
+import type { Id } from "../_generated/dataModel"
 import { initConvexTest } from "../testing.helpers"
 
 async function seedTemplateOrganization(
@@ -158,6 +159,61 @@ describe("listRoles and getRole", () => {
       },
     ])
     expect(role?.profileComplete).toBe(true)
+  })
+
+  it("counts the active people holding each role", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin, track } = await seedTemplateOrganization(t)
+    const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
+      orgId,
+      title: "Developer",
+      function: "Engineering",
+      team: "Core",
+      trackKey: track.key,
+    })
+    const { roleId: emptyRoleId } = await asAdmin.mutation(
+      api.assessment.roles.createRole,
+      {
+        orgId,
+        title: "Architect",
+        function: "Engineering",
+        team: "Core",
+        trackKey: track.key,
+      }
+    )
+
+    const people: Id<"people">[] = []
+    for (const displayName of ["Anna Lind", "Bo Persson", "Cecilia Ek"]) {
+      const { personId } = await asAdmin.mutation(
+        api.people.people.createPerson,
+        { orgId, displayName, gender: "Kvinna" }
+      )
+      people.push(personId)
+      await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+        orgId,
+        personId,
+        roleId,
+        level: `${track.key}1`,
+        levelSource: "confirmed",
+      })
+    }
+    // An archived person keeps their (historically true) open assignment, so
+    // the count has to exclude them or it reports people who have left.
+    const archived = people[2]
+    if (archived === undefined) throw new Error("seed")
+    await asAdmin.mutation(api.people.people.archivePerson, {
+      orgId,
+      personId: archived,
+    })
+
+    const list = await asAdmin.query(api.assessment.roles.listRoles, {
+      orgId,
+      locale: "sv",
+    })
+    const byId = new Map(list.map((row) => [row.roleId as string, row]))
+    expect(byId.get(roleId as string)?.employeeCount).toBe(2)
+    // A role nobody holds reports zero, never undefined.
+    expect(byId.get(emptyRoleId as string)?.employeeCount).toBe(0)
   })
 
   it("returns null from getRole for garbage and foreign ids", async () => {

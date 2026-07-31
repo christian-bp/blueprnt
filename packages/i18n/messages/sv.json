@@ -175,7 +175,8 @@
         "gender": "Kön",
         "department": "Avdelning",
         "fte": "Omfattning",
-        "role": "Roll"
+        "role": "Roll",
+        "level": "Nivå"
       },
       "toolbar": {
         "searchPlaceholder": "Sök på namn eller avdelning",
@@ -855,7 +856,8 @@
       "table": {
         "title": "Titel",
         "track": "Track",
-        "team": "Team"
+        "team": "Team",
+        "employees": "Medarbetare"
       },
       "create": {
         "title": "Ny roll",
@@ -912,7 +914,12 @@
         "emptyField": "Inte ifylld ännu",
         "archivedBadge": "Arkiverad",
         "archivedHint": "Rollen är arkiverad och skrivskyddad. Historiken finns kvar.",
-        "aiProvenance": "Granska och redigera utkastet, spara sedan."
+        "aiProvenance": "Granska och redigera utkastet, spara sedan.",
+        "people": {
+          "heading": "Medarbetare i rollen",
+          "empty": "Inga medarbetare är klassificerade i den här rollen ännu.",
+          "archivedEmpty": "Rollen är arkiverad, så ingen är klassificerad i den. Historiken finns kvar."
+        }
       },
       "archive": {
         "cta": "Arkivera roll",

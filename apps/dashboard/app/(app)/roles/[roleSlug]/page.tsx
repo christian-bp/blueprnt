@@ -12,6 +12,7 @@ import { useOrganization } from "@/components/org-context"
 import { TrackBadge } from "@/components/track-badge"
 import { RoleDetailSkeleton } from "@/components/roles/role-detail-skeleton"
 import { RoleEvaluationCard } from "@/components/roles/role-evaluation-card"
+import { RolePeopleCard } from "@/components/roles/role-people-card"
 import { RoleProfileCard } from "@/components/roles/role-profile-card"
 import { usePageTitle } from "@/hooks/use-page-title"
 
@@ -104,6 +105,13 @@ export default function RolePage(props: {
           />
         </div>
       </div>
+      {/* Full width below the grid: the holder list is a table, and the left
+          column is narrowed by the sticky evaluation rail. */}
+      <RolePeopleCard
+        orgId={orgId}
+        roleId={role.roleId}
+        archived={role.archived}
+      />
     </div>
   )
 }

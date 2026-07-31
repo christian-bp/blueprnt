@@ -22,6 +22,22 @@ export interface RolesTableTrack {
 // "no track filter" is this sentinel rather than an empty string.
 export const ALL_TRACKS = "all"
 
+// The role tables' free-text search: case-insensitive substring over the
+// role's free-text fields (title, team, function). Pure and exported so the
+// matching rules are unit-tested without a DOM, and so every role table
+// searches by the same rules: the register wires it in as its globalFilterFn,
+// a family page filters its own rows with it.
+export function matchesRoleQuery(
+  role: { title: string; team: string; function: string },
+  query: string
+): boolean {
+  const q = query.trim().toLowerCase()
+  if (q === "") return true
+  return [role.title, role.team, role.function].some((field) =>
+    field.toLowerCase().includes(q)
+  )
+}
+
 // The toolbar shared by every role table (the register and a family page):
 // free-text search + the track filter, with a result count that appears only
 // while something narrows the table. One component so the surfaces search and

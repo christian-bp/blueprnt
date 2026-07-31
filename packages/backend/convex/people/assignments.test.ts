@@ -557,3 +557,238 @@ describe("assignPeopleToRole batch bound", () => {
     expect(ids).toHaveLength(MAX_ASSIGNMENTS_PER_MUTATION)
   })
 })
+
+describe("listPeopleForRole", () => {
+  it("returns the role's current holders, name-ordered, with their level", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t, "hr-holders@acme.se")
+    const { roleId } = await seedPersonAndRole(orgId, asAdmin)
+
+    // Inserted out of order: the query sorts by name, not by insert time.
+    const { personId: bo } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      {
+        orgId,
+        displayName: "Bo Persson",
+        gender: "Man",
+        department: "Platform",
+        ftePercent: 80,
+      }
+    )
+    const { personId: anna } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      {
+        orgId,
+        displayName: "Anna Lind",
+        gender: "Kvinna",
+        department: "Engineering",
+        ftePercent: 100,
+      }
+    )
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId: bo,
+      roleId,
+      level: "IC2",
+      levelSource: "suggested",
+    })
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId: anna,
+      roleId,
+      level: "IC3",
+      levelSource: "confirmed",
+    })
+
+    const rows = await asAdmin.query(api.people.assignments.listPeopleForRole, {
+      orgId,
+      roleId,
+    })
+    expect(rows.map((row) => row.displayName)).toEqual([
+      "Anna Lind",
+      "Bo Persson",
+    ])
+    expect(rows[0]).toMatchObject({
+      personId: anna,
+      level: "IC3",
+      levelSource: "confirmed",
+      department: "Engineering",
+      ftePercent: 100,
+    })
+    // The route handle travels with the row: the card links to the person
+    // page by publicId, never by the internal id.
+    expect(rows[0]?.publicId).toBeTypeOf("string")
+    expect(rows[1]).toMatchObject({ level: "IC2", levelSource: "suggested" })
+  })
+
+  it("reports null for a person with no department or FTE on record", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t, "hr-sparse@acme.se")
+    const { personId, roleId } = await seedPersonAndRole(orgId, asAdmin)
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId,
+      roleId,
+      level: "IC1",
+      levelSource: "confirmed",
+    })
+
+    const rows = await asAdmin.query(api.people.assignments.listPeopleForRole, {
+      orgId,
+      roleId,
+    })
+    expect(rows).toHaveLength(1)
+    expect(rows[0]?.department).toBeNull()
+    expect(rows[0]?.ftePercent).toBeNull()
+  })
+
+  it("drops holders whose assignment ended, and archived people", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t, "hr-ended@acme.se")
+    const { personId: mover, roleId } = await seedPersonAndRole(orgId, asAdmin)
+    const { roleId: otherRoleId } = await asAdmin.mutation(
+      api.assessment.roles.createRole,
+      {
+        orgId,
+        title: "Staff Engineer",
+        function: "Engineering",
+        team: "Platform",
+        trackKey: "IC",
+      }
+    )
+    const { personId: leaver } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      { orgId, displayName: "Leaving Person", gender: "Man" }
+    )
+
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId: mover,
+      roleId,
+      level: "IC1",
+      levelSource: "confirmed",
+    })
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId: leaver,
+      roleId,
+      level: "IC1",
+      levelSource: "confirmed",
+    })
+    // A later assignment closes the first one: the mover is a holder of the
+    // new role only.
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId: mover,
+      roleId: otherRoleId,
+      level: "IC2",
+      levelSource: "confirmed",
+      effectiveAt: Date.now() + 1000,
+    })
+    await asAdmin.mutation(api.people.people.archivePerson, {
+      orgId,
+      personId: leaver,
+    })
+
+    expect(
+      await asAdmin.query(api.people.assignments.listPeopleForRole, {
+        orgId,
+        roleId,
+      })
+    ).toEqual([])
+    const moved = await asAdmin.query(
+      api.people.assignments.listPeopleForRole,
+      { orgId, roleId: otherRoleId }
+    )
+    expect(moved.map((row) => row.personId)).toEqual([mover])
+  })
+
+  it("returns nothing for a role in another org", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t, "hr-org-a@acme.se")
+    const { personId, roleId } = await seedPersonAndRole(orgId, asAdmin)
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId,
+      roleId,
+      level: "IC1",
+      levelSource: "confirmed",
+    })
+
+    const other = await seedOrg(t, "hr-org-b@beta.se")
+    expect(
+      await other.asAdmin.query(api.people.assignments.listPeopleForRole, {
+        orgId: other.orgId,
+        roleId,
+      })
+    ).toEqual([])
+  })
+})
+
+describe("listPeopleForRole ordering and history", () => {
+  it("orders names by the caller's locale collation", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t, "hr-collate@acme.se")
+    const { roleId } = await seedPersonAndRole(orgId, asAdmin)
+
+    // Å sorts after Z in Swedish but next to A in English, so the same two
+    // names come back in a different order per locale.
+    for (const displayName of ["Åsa Ek", "Bo Nilsson"]) {
+      const { personId } = await asAdmin.mutation(
+        api.people.people.createPerson,
+        { orgId, displayName, gender: "Kvinna" }
+      )
+      await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+        orgId,
+        personId,
+        roleId,
+        level: "IC1",
+        levelSource: "confirmed",
+      })
+    }
+
+    const sv = await asAdmin.query(api.people.assignments.listPeopleForRole, {
+      orgId,
+      roleId,
+      locale: "sv",
+    })
+    expect(sv.map((row) => row.displayName)).toEqual(["Bo Nilsson", "Åsa Ek"])
+    const en = await asAdmin.query(api.people.assignments.listPeopleForRole, {
+      orgId,
+      roleId,
+      locale: "en",
+    })
+    expect(en.map((row) => row.displayName)).toEqual(["Åsa Ek", "Bo Nilsson"])
+  })
+
+  it("lists a re-assigned person once, at their current level", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t, "hr-relevel@acme.se")
+    const { personId, roleId } = await seedPersonAndRole(orgId, asAdmin)
+
+    // A level change within the same role closes the first row and opens a
+    // second one, so the role's history holds two rows for one holder.
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId,
+      roleId,
+      level: "IC2",
+      levelSource: "suggested",
+    })
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId,
+      roleId,
+      level: "IC3",
+      levelSource: "confirmed",
+      effectiveAt: Date.now() + 1000,
+    })
+
+    const rows = await asAdmin.query(api.people.assignments.listPeopleForRole, {
+      orgId,
+      roleId,
+    })
+    expect(rows).toHaveLength(1)
+    expect(rows[0]).toMatchObject({ level: "IC3", levelSource: "confirmed" })
+  })
+})

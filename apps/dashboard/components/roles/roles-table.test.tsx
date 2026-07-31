@@ -10,26 +10,6 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import { pickSelectOption } from "@/test/select"
 import { RolesTable, type RolesTableRow } from "@/components/roles/roles-table"
-import { matchesRoleQuery } from "@/components/roles/roles-table"
-
-const ROLE = { title: "Senior Engineer", team: "Core", function: "Engineering" }
-
-describe("matchesRoleQuery", () => {
-  it("matches case-insensitive substrings in title, team, and function", () => {
-    expect(matchesRoleQuery(ROLE, "senior")).toBe(true)
-    expect(matchesRoleQuery(ROLE, "core")).toBe(true)
-    expect(matchesRoleQuery(ROLE, "ENGINEERING")).toBe(true)
-  })
-
-  it("returns true for an empty or whitespace query", () => {
-    expect(matchesRoleQuery(ROLE, "")).toBe(true)
-    expect(matchesRoleQuery(ROLE, "   ")).toBe(true)
-  })
-
-  it("returns false when no field matches", () => {
-    expect(matchesRoleQuery(ROLE, "sales")).toBe(false)
-  })
-})
 
 const pushMock = vi.fn()
 vi.mock("next/navigation", () => ({
@@ -52,6 +32,7 @@ function row(overrides: Partial<RolesTableRow>): RolesTableRow {
     familyId: "f-eng",
     familyName: "Engineering",
     familySlug: "engineering",
+    employeeCount: 0,
     band: null,
     ...overrides,
   }
@@ -104,7 +85,7 @@ describe("RolesTable", () => {
   it("renders one table with family group rows, counts, and links", () => {
     renderTable()
     // One single column header row set.
-    expect(screen.getAllByRole("columnheader")).toHaveLength(4)
+    expect(screen.getAllByRole("columnheader")).toHaveLength(5)
     // Family groups in name order, family-less last.
     const engineering = screen.getByRole("link", { name: "Engineering" })
     expect(engineering.getAttribute("href")).toBe("/roles/families/engineering")

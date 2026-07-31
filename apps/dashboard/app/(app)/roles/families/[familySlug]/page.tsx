@@ -27,14 +27,15 @@ import Link from "next/link"
 import { use, useState } from "react"
 import { useOrganization } from "@/components/org-context"
 import { type Crumb, PageBreadcrumb } from "@/components/page-breadcrumb"
+import { NoMatchesEmpty } from "@/components/no-matches-empty"
 import { PageHeader } from "@/components/page-header"
 import { CreateRoleDialog } from "@/components/roles/create-role-dialog"
 import { FamilyActionsMenu } from "@/components/roles/family-actions-menu"
 import {
   ALL_TRACKS,
+  matchesRoleQuery,
   RoleTableToolbar,
 } from "@/components/roles/role-table-toolbar"
-import { matchesRoleQuery } from "@/components/roles/roles-table"
 import { TrackBadge } from "@/components/track-badge"
 import {
   TableSkeleton,
@@ -48,6 +49,7 @@ const FAMILY_SKELETON_COLUMNS: TableSkeletonColumn[] = [
   { className: "w-40 max-w-full" },
   { className: "h-5 w-20 rounded-full" },
   { className: "w-24 max-w-full" },
+  { className: "w-6" },
   { className: "ml-auto h-5 w-10 rounded-full" },
 ]
 
@@ -70,9 +72,24 @@ export default function FamilyPage(props: {
   const locale = useLocale()
 
   // Filter state lives outside the data, so the loading toolbar shares it: a
-  // query typed while the roles load carries over to the real table.
-  const [query, setQuery] = useState("")
-  const [track, setTrack] = useState(ALL_TRACKS)
+  // query typed while the roles load carries over to the real table. It is
+  // keyed by the family, because sibling families share this route (and this
+  // component instance): carrying a filter across the switch would drop the
+  // visitor into a zero-match table on a family they just opened. Adjusting
+  // state during render is React's documented alternative to a reset effect.
+  const [filters, setFilters] = useState({
+    slug: familySlug,
+    query: "",
+    track: ALL_TRACKS,
+  })
+  if (filters.slug !== familySlug) {
+    setFilters({ slug: familySlug, query: "", track: ALL_TRACKS })
+  }
+  const { query, track } = filters
+  const setQuery = (next: string) =>
+    setFilters((current) => ({ ...current, query: next }))
+  const setTrack = (next: string) =>
+    setFilters((current) => ({ ...current, track: next }))
 
   const families = useQuery(api.assessment.families.listRoleFamilies, {
     orgId,
@@ -94,6 +111,7 @@ export default function FamilyPage(props: {
         <TableHead>{t("table.title")}</TableHead>
         <TableHead className="w-44">{t("table.track")}</TableHead>
         <TableHead className="w-[22%]">{t("table.team")}</TableHead>
+        <TableHead className="w-32">{t("table.employees")}</TableHead>
         <TableHead className="w-40 text-right">{tAssessment("band")}</TableHead>
       </TableRow>
     </TableHeader>
@@ -143,6 +161,8 @@ export default function FamilyPage(props: {
             tracks={[]}
             query={query}
             onQueryChange={setQuery}
+            track={track}
+            onTrackChange={setTrack}
           />
           <Table className="table-fixed">
             {tableHeader}
@@ -241,15 +261,12 @@ export default function FamilyPage(props: {
             total={familyRoles.length}
           />
           {shownRoles.length === 0 ? (
-            <Empty>
-              <EmptyHeader>
-                <EmptyTitle>{family.name}</EmptyTitle>
-                <EmptyDescription>{tToolbar("noMatches")}</EmptyDescription>
-              </EmptyHeader>
-              <Button type="button" variant="outline" onClick={clearFilters}>
-                {tToolbar("clearFilters")}
-              </Button>
-            </Empty>
+            <NoMatchesEmpty
+              title={family.name}
+              description={tToolbar("noMatches")}
+              clearLabel={tToolbar("clearFilters")}
+              onClear={clearFilters}
+            />
           ) : (
             <Table className="table-fixed">
               {tableHeader}

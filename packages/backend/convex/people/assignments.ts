@@ -2,7 +2,7 @@ import {
   isValidLevelForTrack,
   MAX_ASSIGNMENTS_PER_MUTATION,
 } from "@workspace/constants"
-import { v } from "convex/values"
+import { type Infer, v } from "convex/values"
 import type { Doc, Id } from "../_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
 import {
@@ -11,6 +11,7 @@ import {
   buildChanges,
   logAudit,
 } from "../lib/audit"
+import { clampLocale } from "../evaluationModel/localize"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 import { requireOwnRole } from "../assessment/roles"
@@ -81,6 +82,62 @@ async function loadPersonAssignments(
       q.eq("orgId", orgId).eq("personId", personId)
     )
     .collect()
+}
+
+// Collect all assignments for a (orgId, roleId) pair via the by_role index,
+// current and historical. The mirror of loadPersonAssignments for the other
+// direction: every caller that needs "who is (or was) in this role" reads
+// through this one query, so the index and the org scoping are declared once.
+// Callers filter for open rows themselves (endedAt === undefined); a closed
+// row is history, and some callers want it.
+export async function loadRoleAssignments(
+  ctx: QueryCtx,
+  orgId: string,
+  roleId: Id<"roles">
+): Promise<Doc<"personAssignments">[]> {
+  return await ctx.db
+    .query("personAssignments")
+    .withIndex("by_role", (q) => q.eq("orgId", orgId).eq("roleId", roleId))
+    .collect()
+}
+
+// Headcount per role for the whole org: how many active people hold each role
+// right now (open assignment, non-archived person), keyed by role id. Two
+// org-scoped index reads instead of one query per role, so the role register
+// can show a count per row without an N+1 fan-out. Roles with no holders are
+// absent from the map (callers default to 0).
+//
+// Archived people are excluded here rather than at the write: archivePerson
+// leaves the assignment open (the classification is still the historical
+// truth), so a count that trusted the assignment alone would report people who
+// have left.
+export async function countHoldersByRole(
+  ctx: QueryCtx,
+  orgId: string
+): Promise<Map<string, number>> {
+  const [assignments, people] = await Promise.all([
+    ctx.db
+      .query("personAssignments")
+      .withIndex("by_org", (q) => q.eq("orgId", orgId))
+      .collect(),
+    ctx.db
+      .query("people")
+      .withIndex("by_org", (q) => q.eq("orgId", orgId))
+      .collect(),
+  ])
+  const active = new Set(
+    people
+      .filter((person) => person.archivedAt === undefined)
+      .map((person) => person._id as string)
+  )
+  const counts = new Map<string, number>()
+  for (const assignment of assignments) {
+    if (assignment.endedAt !== undefined) continue
+    if (!active.has(assignment.personId as string)) continue
+    const key = assignment.roleId as string
+    counts.set(key, (counts.get(key) ?? 0) + 1)
+  }
+  return counts
 }
 
 // Shared assignment write. Validates the level against the role's track,
@@ -286,5 +343,74 @@ export const listAssignmentsForPerson = orgQuery({
     // Sort most recent first.
     all.sort((a, b) => b.effectiveAt - a.effectiveAt)
     return all.map(toAssignmentShape)
+  },
+})
+
+// Wire shape for the role page's employee list: the person's identity and the
+// classification that puts them in the role. Person PII stays inside the
+// people context (Role != Person): the role tables carry none of this, the
+// employee's own page is the source, and this shape is read-only.
+const rolePersonShape = v.object({
+  personId: v.id("people"),
+  publicId: v.string(),
+  displayName: v.string(),
+  level: v.string(),
+  levelSource: v.union(v.literal("suggested"), v.literal("confirmed")),
+  department: v.union(v.string(), v.null()),
+  ftePercent: v.union(v.number(), v.null()),
+})
+
+// The employees currently classified into a role, name-ordered in the caller's
+// locale. Keeps only open assignments (an ended one is history, not a current
+// holder) and drops archived people. Returns an empty array when the role
+// belongs to another org, so a foreign id simply shows nothing.
+//
+// Scale: the index read is scoped to one role, but it collects that role's
+// whole assignment HISTORY (every re-classification and track change writes
+// another row per person), and it resolves one person document per open
+// assignment. Bounded by a role, not by the org, and the person reads run
+// concurrently; a role held by hundreds of people still wants the bounding
+// tracked in docs/go-live-checklist.md before large-org onboarding.
+export const listPeopleForRole = orgQuery({
+  args: { roleId: v.id("roles"), locale: v.optional(v.string()) },
+  returns: v.array(rolePersonShape),
+  handler: async (ctx, { roleId, locale }) => {
+    const role = await ctx.db.get(roleId)
+    if (role === null || role.orgId !== ctx.orgId) return []
+
+    const all = await loadRoleAssignments(ctx, ctx.orgId, roleId)
+    const open = all.filter((assignment) => assignment.endedAt === undefined)
+    const resolved = await Promise.all(
+      open.map(async (assignment) => ({
+        assignment,
+        person: await ctx.db.get(assignment.personId),
+      }))
+    )
+
+    const rows: Infer<typeof rolePersonShape>[] = []
+    for (const { assignment, person } of resolved) {
+      // A person in another org can never hold this org's role, and an
+      // archived person has left the register.
+      if (
+        person === null ||
+        person.orgId !== ctx.orgId ||
+        person.archivedAt !== undefined
+      ) {
+        continue
+      }
+      rows.push({
+        personId: person._id,
+        publicId: person.publicId,
+        displayName: person.displayName,
+        level: assignment.level,
+        levelSource: assignment.levelSource,
+        department: person.department ?? null,
+        ftePercent: person.ftePercent ?? null,
+      })
+    }
+
+    const sortLocale = clampLocale(locale)
+    rows.sort((a, b) => a.displayName.localeCompare(b.displayName, sortLocale))
+    return rows
   },
 })

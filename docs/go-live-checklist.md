@@ -266,6 +266,13 @@ suite covers them before go-live:
   index query per person to find their open assignment. That is an N+1 read
   fan-out, not a single bounded query; it needs bounding (e.g. a batched or
   paginated lookup) before large-org onboarding.
+  Same class, smaller blast radius: `listPeopleForRole`
+  (people/assignments.ts, the role page's employee list) collects ONE role's
+  whole assignment history via `by_role` and resolves one person document per
+  open assignment (concurrently, but unbounded), then returns every holder for
+  client-side pagination. Bounded by a role rather than the org, so it is safe
+  for ordinary roles; a role held by hundreds of people (one title across a
+  large org) wants a paginated query before large-org onboarding.
   Also here: **`erasePersonRecords`** (people/erase.ts) now does all of one
   person's erasure in a single transaction: delete their `payRecords` and
   `personAssignments`, patch their frozen `payMappingSnapshotRows`, AND patch

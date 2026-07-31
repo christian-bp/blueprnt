@@ -2,8 +2,30 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
-import { RoleTableToolbar } from "@/components/roles/role-table-toolbar"
+import {
+  matchesRoleQuery,
+  RoleTableToolbar,
+} from "@/components/roles/role-table-toolbar"
 import { pickSelectOption } from "@/test/select"
+
+const ROLE = { title: "Senior Engineer", team: "Core", function: "Engineering" }
+
+describe("matchesRoleQuery", () => {
+  it("matches case-insensitive substrings in title, team, and function", () => {
+    expect(matchesRoleQuery(ROLE, "senior")).toBe(true)
+    expect(matchesRoleQuery(ROLE, "core")).toBe(true)
+    expect(matchesRoleQuery(ROLE, "ENGINEERING")).toBe(true)
+  })
+
+  it("returns true for an empty or whitespace query", () => {
+    expect(matchesRoleQuery(ROLE, "")).toBe(true)
+    expect(matchesRoleQuery(ROLE, "   ")).toBe(true)
+  })
+
+  it("returns false when no field matches", () => {
+    expect(matchesRoleQuery(ROLE, "sales")).toBe(false)
+  })
+})
 
 const toolbar = messages.dashboard.roles.toolbar
 

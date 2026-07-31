@@ -49,6 +49,7 @@ function role(overrides: Record<string, unknown>) {
     familyName: "Engineering",
     familySlug: "engineering",
     trackOrder: 1,
+    employeeCount: 0,
     ...overrides,
   }
 }
@@ -86,6 +87,7 @@ function loaded(roles: Array<Record<string, unknown>> = ROLES) {
           slug: "engineering",
           roleCount: 2,
         },
+        { familyId: "f-sales", name: "Sales", slug: "sales", roleCount: 1 },
       ]
     }
     if (ref === "assessment.roles.listRoles") return roles
@@ -106,15 +108,16 @@ function loaded(roles: Array<Record<string, unknown>> = ROLES) {
   }
 }
 
-// One promise for the whole file: the page reads its params with use(), so a
-// fresh promise per render would suspend again on every rerender.
+// One promise per family for the whole file: the page reads its params with
+// use(), so a fresh promise per render would suspend again on every rerender.
 const PARAMS = Promise.resolve({ familySlug: "engineering" })
+const OTHER_PARAMS = Promise.resolve({ familySlug: "sales" })
 
-function page() {
+function page(params: typeof PARAMS = PARAMS) {
   return (
     <NextIntlClientProvider locale="en" messages={messages}>
       <Suspense fallback={null}>
-        <FamilyPage params={PARAMS} />
+        <FamilyPage params={params} />
       </Suspense>
     </NextIntlClientProvider>
   )
@@ -203,6 +206,22 @@ describe("FamilyPage", () => {
     expect(search().value).toBe("platform")
     expect(screen.getByText("Engineering Manager")).toBeDefined()
     expect(screen.queryByText("Senior Engineer")).toBeNull()
+  })
+
+  it("drops the filters when another family opens on the same route", async () => {
+    useQueryMock.mockImplementation(loaded())
+    const { rerender } = await renderPage()
+    fireEvent.change(search(), { target: { value: "platform" } })
+    expect(search().value).toBe("platform")
+
+    // Sibling families share this route and this component instance, so a
+    // carried-over filter would open the new family already narrowed. The new
+    // params promise suspends, so the act scope has to cover the rerender.
+    await act(async () => {
+      rerender(page(OTHER_PARAMS))
+    })
+    expect(search().value).toBe("")
+    expect(screen.getByText("Account Executive")).toBeDefined()
   })
 
   it("keeps the no-roles empty state without a toolbar", async () => {

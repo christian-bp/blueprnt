@@ -14,8 +14,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Badge } from "@workspace/ui/components/badge"
-import { Button, buttonVariants } from "@workspace/ui/components/button"
+import { buttonVariants } from "@workspace/ui/components/button"
 import {
   Empty,
   EmptyDescription,
@@ -38,20 +37,16 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
+import { NoMatchesEmpty } from "@/components/no-matches-empty"
 import { useOrganization } from "@/components/org-context"
 import { PageHeader } from "@/components/page-header"
 import { AddPersonDialog } from "@/components/people/add-person-dialog"
+import { SuggestedRoleBadge } from "@/components/suggested-role-badge"
 import { TablePagination } from "@/components/table-pagination"
 import { TableSearchField } from "@/components/table-search-field"
 import { ariaSort, TableSortButton } from "@/components/table-sort-button"
@@ -85,7 +80,7 @@ export interface PeopleTableRow {
 // The people list's free-text search: case-insensitive substring over the
 // visible free-text cells (name, department). Pure and exported so the
 // matching rules are unit-tested without a DOM (same pattern as
-// matchesRoleQuery in roles-table).
+// matchesRoleQuery in role-table-toolbar).
 export function matchesPersonQuery(
   person: { name: string; department: string | null },
   query: string
@@ -114,32 +109,6 @@ const PEOPLE_SKELETON_COLUMNS: TableSkeletonColumn[] = [
   { className: "w-28 max-w-full" },
   { className: "w-10" },
 ]
-
-// The "Suggested" pill shown on a row while narrowing by role, when that
-// person's assignment to the role is not yet confirmed. Self-contained (own
-// TooltipProvider, mirroring DeviationBadge) so it drops anywhere; the visible
-// text is the short label, the tooltip and aria-label carry the explanation.
-function SuggestedRoleBadge() {
-  const t = useTranslations("dashboard.people")
-  return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger
-          render={
-            <Badge
-              variant="outline"
-              className="shrink-0 text-muted-foreground"
-              aria-label={t("suggestedBadgeTooltip")}
-            />
-          }
-        >
-          {t("suggestedBadge")}
-        </TooltipTrigger>
-        <TooltipContent arrow>{t("suggestedBadgeTooltip")}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  )
-}
 
 export function PeopleSection() {
   const t = useTranslations("dashboard.people")
@@ -532,15 +501,12 @@ export function PeopleSection() {
           {toolbar}
 
           {shown === 0 ? (
-            <Empty>
-              <EmptyHeader>
-                <EmptyTitle>{t("heading")}</EmptyTitle>
-                <EmptyDescription>{tToolbar("noMatches")}</EmptyDescription>
-              </EmptyHeader>
-              <Button type="button" variant="outline" onClick={clearFilters}>
-                {tToolbar("clearFilters")}
-              </Button>
-            </Empty>
+            <NoMatchesEmpty
+              title={t("heading")}
+              description={tToolbar("noMatches")}
+              clearLabel={tToolbar("clearFilters")}
+              onClear={clearFilters}
+            />
           ) : (
             <>
               <Table className="table-fixed">

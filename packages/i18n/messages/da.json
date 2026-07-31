@@ -175,7 +175,8 @@
         "gender": "Køn",
         "department": "Afdeling",
         "fte": "Stilling",
-        "role": "Rolle"
+        "role": "Rolle",
+        "level": "Niveau"
       },
       "toolbar": {
         "searchPlaceholder": "Søg på navn eller afdeling",
@@ -855,7 +856,8 @@
       "table": {
         "title": "Titel",
         "track": "Track",
-        "team": "Team"
+        "team": "Team",
+        "employees": "Medarbejdere"
       },
       "create": {
         "title": "Ny rolle",
@@ -912,7 +914,12 @@
         "emptyField": "Ikke udfyldt endnu",
         "archivedBadge": "Arkiveret",
         "archivedHint": "Rollen er arkiveret og skrivebeskyttet. Historikken bevares.",
-        "aiProvenance": "Gennemse og rediger udkastet, gem derefter."
+        "aiProvenance": "Gennemse og rediger udkastet, gem derefter.",
+        "people": {
+          "heading": "Medarbejdere i rollen",
+          "empty": "Ingen medarbejdere er klassificeret i denne rolle endnu.",
+          "archivedEmpty": "Rollen er arkiveret, så ingen er klassificeret i den. Historikken bevares."
+        }
       },
       "archive": {
         "cta": "Arkiver rolle",

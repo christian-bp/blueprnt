@@ -175,7 +175,8 @@
         "gender": "Sukupuoli",
         "department": "Osasto",
         "fte": "Työaika",
-        "role": "Rooli"
+        "role": "Rooli",
+        "level": "Taso"
       },
       "toolbar": {
         "searchPlaceholder": "Hae nimellä tai osastolla",
@@ -855,7 +856,8 @@
       "table": {
         "title": "Tehtävänimike",
         "track": "Track",
-        "team": "Tiimi"
+        "team": "Tiimi",
+        "employees": "Työntekijät"
       },
       "create": {
         "title": "Uusi rooli",
@@ -912,7 +914,12 @@
         "emptyField": "Ei vielä täytetty",
         "archivedBadge": "Arkistoitu",
         "archivedHint": "Rooli on arkistoitu ja vain luku -tilassa. Historia säilyy.",
-        "aiProvenance": "Tarkista ja muokkaa luonnosta, tallenna sitten."
+        "aiProvenance": "Tarkista ja muokkaa luonnosta, tallenna sitten.",
+        "people": {
+          "heading": "Roolin työntekijät",
+          "empty": "Tähän rooliin ei ole vielä luokiteltu työntekijöitä.",
+          "archivedEmpty": "Rooli on arkistoitu, joten siihen ei ole luokiteltu ketään. Historia säilyy."
+        }
       },
       "archive": {
         "cta": "Arkistoi rooli",

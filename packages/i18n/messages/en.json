@@ -175,7 +175,8 @@
         "gender": "Gender",
         "department": "Department",
         "fte": "FTE",
-        "role": "Role"
+        "role": "Role",
+        "level": "Level"
       },
       "toolbar": {
         "searchPlaceholder": "Search by name or department",
@@ -855,7 +856,8 @@
       "table": {
         "title": "Title",
         "track": "Track",
-        "team": "Team"
+        "team": "Team",
+        "employees": "Employees"
       },
       "create": {
         "title": "New role",
@@ -912,7 +914,12 @@
         "emptyField": "Not filled in yet",
         "archivedBadge": "Archived",
         "archivedHint": "This role is archived and read-only. Its history is kept.",
-        "aiProvenance": "Review and edit the draft, then Save."
+        "aiProvenance": "Review and edit the draft, then Save.",
+        "people": {
+          "heading": "Employees in this role",
+          "empty": "No employees are classified into this role yet.",
+          "archivedEmpty": "This role is archived, so nobody is classified into it. Its history is kept."
+        }
       },
       "archive": {
         "cta": "Archive role",

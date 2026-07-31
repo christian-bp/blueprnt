@@ -14,6 +14,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useTranslations } from "next-intl"
 import { PageBreadcrumb } from "@/components/page-breadcrumb"
 import { PageHeader } from "@/components/page-header"
+import { RolePeopleCardSkeleton } from "@/components/roles/role-people-card"
 
 // Content-shaped loading state for the role page: the real layout (header,
 // profile card, evaluation rail) with the static chrome rendered for real
@@ -117,6 +118,9 @@ export function RoleDetailSkeleton() {
           </Card>
         </div>
       </div>
+      {/* The employee list's own loading state, so the card is already in
+          place when the role's data arrives and nothing below it moves. */}
+      <RolePeopleCardSkeleton />
     </div>
   )
 }

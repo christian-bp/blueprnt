@@ -12,13 +12,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from "@workspace/ui/components/empty"
 import {
   Table,
   TableBody,
@@ -31,8 +24,10 @@ import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
+import { NoMatchesEmpty } from "@/components/no-matches-empty"
 import {
   ALL_TRACKS,
+  matchesRoleQuery,
   RoleTableToolbar,
   type RolesTableTrack,
 } from "@/components/roles/role-table-toolbar"
@@ -47,8 +42,9 @@ import { groupByFamily } from "@/lib/role-groups"
 // @tanstack/react-table), per the 2026-06-12 design spec: a hidden family
 // column carries the grouping, the pipeline filters BEFORE grouping so
 // families without matches disappear, and expansion is pinned open (the
-// groups are organization, not disclosure). Search is the exported pure
-// matcher below; the track filter goes through a column filter.
+// groups are organization, not disclosure). Search and the track filter come
+// from the shared toolbar module: its matcher runs as globalFilterFn, its
+// track value drives a column filter.
 
 // Structural subset of listRoles rows (same precedent as CreateRoleDialog's
 // TrackOption): the table needs no convex types of its own.
@@ -65,23 +61,8 @@ export interface RolesTableRow {
   familyId: string | null
   familyName: string | null
   familySlug: string | null
+  employeeCount: number
   band: number | null
-}
-
-// The role tables' free-text search: case-insensitive substring over the
-// role's free-text fields (title, team, function). Pure and exported so the
-// matching rules are unit-tested without a DOM, and so every role table
-// searches by the same rules: the register wires it in as its globalFilterFn,
-// a family page filters its own rows with it.
-export function matchesRoleQuery(
-  role: { title: string; team: string; function: string },
-  query: string
-): boolean {
-  const q = query.trim().toLowerCase()
-  if (q === "") return true
-  return [role.title, role.team, role.function].some((field) =>
-    field.toLowerCase().includes(q)
-  )
 }
 
 // MODULE-LEVEL constant: state.grouping keys the grouped-row-model memo, and
@@ -116,6 +97,9 @@ export function RolesTableHeader() {
         <TableHead>{t("table.title")}</TableHead>
         <TableHead className="w-44">{t("table.track")}</TableHead>
         <TableHead className="w-[22%]">{t("table.team")}</TableHead>
+        {/* w-32 fits the widest locale label (da/nb "Medarbejdere") on one
+            line; the value itself is a short number. */}
+        <TableHead className="w-32">{t("table.employees")}</TableHead>
         <TableHead className="w-40">{tAssessment("band")}</TableHead>
       </TableRow>
     </TableHeader>
@@ -129,6 +113,7 @@ const ROLES_SKELETON_COLUMNS: TableSkeletonColumn[] = [
   { className: "w-40 max-w-full" },
   { className: "h-5 w-20 rounded-full" },
   { className: "w-24 max-w-full" },
+  { className: "w-6" },
   { className: "h-5 w-10 rounded-full" },
 ]
 
@@ -224,6 +209,24 @@ export function RolesTable({
         ),
       },
       {
+        id: "employees",
+        enableGlobalFilter: false,
+        // How many people currently hold the role. Zero is muted rather than
+        // hidden: "nobody in this role" is information (an unstaffed role), not
+        // an empty cell.
+        cell: ({ row }) => (
+          <span
+            className={
+              row.original.employeeCount === 0
+                ? "text-muted-foreground/60 tabular-nums"
+                : "tabular-nums"
+            }
+          >
+            {row.original.employeeCount}
+          </span>
+        ),
+      },
+      {
         id: "evaluation",
         enableGlobalFilter: false,
         // The evaluation outcome: a role's band once it is fully evaluated,
@@ -308,15 +311,12 @@ export function RolesTable({
       />
 
       {shown === 0 ? (
-        <Empty>
-          <EmptyHeader>
-            <EmptyTitle>{t("heading")}</EmptyTitle>
-            <EmptyDescription>{tToolbar("noMatches")}</EmptyDescription>
-          </EmptyHeader>
-          <Button type="button" variant="outline" onClick={clearFilters}>
-            {tToolbar("clearFilters")}
-          </Button>
-        </Empty>
+        <NoMatchesEmpty
+          title={t("heading")}
+          description={tToolbar("noMatches")}
+          clearLabel={tToolbar("clearFilters")}
+          onClear={clearFilters}
+        />
       ) : (
         <Table className="table-fixed">
           <RolesTableHeader />

@@ -20,7 +20,11 @@ import { uniqueSlug } from "../lib/slug"
 // benign import cycle: safe only because both bindings are referenced inside
 // handler bodies, never at module top-level. Do not move either import to
 // module-eval scope.
-import { writeAssignment } from "../people/assignments"
+import {
+  countHoldersByRole,
+  loadRoleAssignments,
+  writeAssignment,
+} from "../people/assignments"
 import { deriveResults } from "./compute"
 
 // The job profile text fields (assessment glossary). purpose and
@@ -197,10 +201,14 @@ export const listRoles = orgQuery({
       familyName: v.union(v.string(), v.null()),
       familySlug: v.union(v.string(), v.null()),
       trackOrder: v.number(),
+      // How many active people hold the role right now, so the register can
+      // show a role's headcount without a query per row.
+      employeeCount: v.number(),
     })
   ),
   handler: async (ctx, { locale }) => {
     const derived = await deriveResults(ctx, ctx.orgId)
+    const holders = await countHoldersByRole(ctx, ctx.orgId)
     const resultByRole = new Map(
       derived.results.map((result) => [result.roleId, result])
     )
@@ -237,6 +245,7 @@ export const listRoles = orgQuery({
             ? (families.get(role.familyId as string)?.slug ?? null)
             : null,
         trackOrder: track?.order ?? 0,
+        employeeCount: holders.get(role._id as string) ?? 0,
       }
     })
   },
@@ -475,12 +484,11 @@ export const updateRole = orgMutation({
     let levelsReset = 0
     if (args.trackKey !== undefined && args.trackKey !== role.trackKey) {
       const now = Date.now()
-      const roleAssignments = await ctx.db
-        .query("personAssignments")
-        .withIndex("by_role", (q) =>
-          q.eq("orgId", ctx.orgId).eq("roleId", role._id)
-        )
-        .collect()
+      const roleAssignments = await loadRoleAssignments(
+        ctx,
+        ctx.orgId,
+        role._id
+      )
       for (const a of roleAssignments) {
         if (a.endedAt !== undefined) continue // closed history is untouched
         if (isValidLevelForTrack(args.trackKey, a.level)) continue // defensive
@@ -553,12 +561,7 @@ export const archiveRole = adminMutation({
     // (ASSIGNMENT_AUDIT_FIELDS before->after), here with an all-null "after"
     // for a plain close.
     const openAssignments = (
-      await ctx.db
-        .query("personAssignments")
-        .withIndex("by_role", (q) =>
-          q.eq("orgId", ctx.orgId).eq("roleId", roleId)
-        )
-        .collect()
+      await loadRoleAssignments(ctx, ctx.orgId, roleId)
     ).filter((a) => a.endedAt === undefined)
     for (const assignment of openAssignments) {
       await ctx.db.patch(assignment._id, { endedAt: archivedAt })

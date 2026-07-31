@@ -175,7 +175,8 @@
         "gender": "Kjønn",
         "department": "Avdeling",
         "fte": "Stillingsgrad",
-        "role": "Rolle"
+        "role": "Rolle",
+        "level": "Nivå"
       },
       "toolbar": {
         "searchPlaceholder": "Søk på navn eller avdeling",
@@ -855,7 +856,8 @@
       "table": {
         "title": "Tittel",
         "track": "Track",
-        "team": "Team"
+        "team": "Team",
+        "employees": "Ansatte"
       },
       "create": {
         "title": "Ny rolle",
@@ -912,7 +914,12 @@
         "emptyField": "Ikke fylt inn ennå",
         "archivedBadge": "Arkivert",
         "archivedHint": "Rollen er arkivert og skrivebeskyttet. Historikken beholdes.",
-        "aiProvenance": "Se gjennom og rediger utkastet, lagre deretter."
+        "aiProvenance": "Se gjennom og rediger utkastet, lagre deretter.",
+        "people": {
+          "heading": "Ansatte i rollen",
+          "empty": "Ingen ansatte er klassifisert i denne rollen ennå.",
+          "archivedEmpty": "Rollen er arkivert, så ingen er klassifisert i den. Historikken beholdes."
+        }
       },
       "archive": {
         "cta": "Arkiver rolle",

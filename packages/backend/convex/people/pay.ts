@@ -12,7 +12,7 @@ import {
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
-import { assignmentActiveAt } from "./assignments"
+import { assignmentActiveAt, loadRoleAssignments } from "./assignments"
 import { sameSalaryValues } from "./importDiff"
 
 // Tenant-isolation assert for a point-read: throws notFound when the person
@@ -484,12 +484,11 @@ export const getRolePayComparison = orgQuery({
     const ownRecord = await latestPayRecord(ctx, personId)
     if (ownRecord === null) return { status: "noSalary" as const }
 
-    const roleAssignments = await ctx.db
-      .query("personAssignments")
-      .withIndex("by_role", (q) =>
-        q.eq("orgId", ctx.orgId).eq("roleId", active.roleId)
-      )
-      .collect()
+    const roleAssignments = await loadRoleAssignments(
+      ctx,
+      ctx.orgId,
+      active.roleId
+    )
 
     const activePeers = roleAssignments.filter(
       (a) => a.endedAt === undefined && a.personId !== personId
