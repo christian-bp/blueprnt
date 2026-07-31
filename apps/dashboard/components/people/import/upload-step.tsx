@@ -3,7 +3,15 @@
 import { Cancel01Icon, Csv01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { ImportFormatError, tokenizeCsv } from "@workspace/import"
-import { Button } from "@workspace/ui/components/button"
+import {
+  Attachment,
+  AttachmentAction,
+  AttachmentActions,
+  AttachmentContent,
+  AttachmentDescription,
+  AttachmentMedia,
+  AttachmentTitle,
+} from "@workspace/ui/components/attachment"
 import { Progress } from "@workspace/ui/components/progress"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { useTranslations } from "next-intl"
@@ -68,6 +76,24 @@ export function formatFileSize(bytes: number): string {
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} kB`
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
+
+// What the file card shows, per state. A discriminated union rather than a set
+// of loose booleans, so a state, its test hook and its copy cannot drift apart,
+// and a missing field is a compile error.
+type UploadCard =
+  | {
+      state: "uploading"
+      testId: "uploading-file"
+      title: string
+      description: string
+      progress: number
+    }
+  | {
+      state: "done"
+      testId: "detected-summary"
+      title: string
+      description: string
+    }
 
 export function UploadStep({
   parsed,
@@ -146,8 +172,31 @@ export function UploadStep({
     reader.readAsText(file)
   }
 
-  const showCompleted =
-    parsed !== null && fileName !== null && reading === null && error === null
+  // A read in flight wins, otherwise a parsed file with no error. Checking
+  // `parsed` and `fileName` inline rather than via a precomputed boolean is what
+  // narrows them to non-null for the done arm.
+  const card: UploadCard | null =
+    reading !== null
+      ? {
+          state: "uploading",
+          testId: "uploading-file",
+          title: reading.name,
+          description: t("uploading", { progress: reading.progress }),
+          progress: reading.progress,
+        }
+      : error === null && parsed !== null && fileName !== null
+        ? {
+            state: "done",
+            testId: "detected-summary",
+            title: fileName,
+            description: `${
+              fileSize !== null ? `${formatFileSize(fileSize)} · ` : ""
+            }${t("detected", {
+              rows: parsed.rows.length,
+              columns: parsed.headers.length,
+            })}`,
+          }
+        : null
 
   return (
     <div className="flex w-full flex-col gap-4">
@@ -159,63 +208,45 @@ export function UploadStep({
         ariaLabel={t("heading")}
       />
 
-      {/* Uploading card: shown while the file is being read */}
-      {reading !== null && (
-        <div
-          data-testid="uploading-file"
-          className="flex flex-col gap-2 rounded-lg border bg-card p-3"
+      {card !== null && (
+        <Attachment
+          state={card.state}
+          className="w-full"
+          data-testid={card.testId}
         >
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+          <AttachmentMedia>
+            {card.state === "uploading" ? (
               <Spinner />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate font-medium text-sm">{reading.name}</p>
-              <p className="text-muted-foreground text-xs">
-                {t("uploading", { progress: reading.progress })}
-              </p>
-            </div>
-          </div>
-          <Progress value={reading.progress} />
-        </div>
-      )}
-
-      {/* Uploaded file card: name, size + detected shape, and remove */}
-      {showCompleted && (
-        <div
-          data-testid="detected-summary"
-          className="flex items-center gap-3 rounded-lg border bg-card p-3"
-        >
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
-            <HugeiconsIcon
-              icon={Csv01Icon}
-              size={20}
-              strokeWidth={1.5}
-              aria-hidden="true"
-            />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate font-medium text-sm">{fileName}</p>
-            <p className="text-muted-foreground text-xs">
-              {fileSize !== null && `${formatFileSize(fileSize)} · `}
-              {t("detected", {
-                rows: parsed.rows.length,
-                columns: parsed.headers.length,
-              })}
-            </p>
-          </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="shrink-0"
-            onClick={onClear}
-            aria-label={t("removeFile", { file: fileName })}
-            data-testid="remove-file"
-          >
-            <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} />
-          </Button>
-        </div>
+            ) : (
+              <HugeiconsIcon
+                icon={Csv01Icon}
+                size={20}
+                strokeWidth={1.5}
+                aria-hidden="true"
+              />
+            )}
+          </AttachmentMedia>
+          <AttachmentContent>
+            <AttachmentTitle>{card.title}</AttachmentTitle>
+            <AttachmentDescription>{card.description}</AttachmentDescription>
+          </AttachmentContent>
+          {card.state === "done" && (
+            <AttachmentActions>
+              <AttachmentAction
+                onClick={onClear}
+                aria-label={t("removeFile", { file: card.title })}
+                data-testid="remove-file"
+              >
+                <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} />
+              </AttachmentAction>
+            </AttachmentActions>
+          )}
+          {/* basis-full: the Attachment root is flex-wrap, so this puts the bar
+              on its own row inside the card instead of below it. */}
+          {card.state === "uploading" && (
+            <Progress value={card.progress} className="basis-full" />
+          )}
+        </Attachment>
       )}
 
       {/* Inline error */}
