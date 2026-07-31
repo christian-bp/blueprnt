@@ -1,0 +1,186 @@
+apps/dashboard/components/admin/delete-user-dialog.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 20
+apps/dashboard/components/roles/family-actions-menu.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 9,14
+apps/dashboard/components/admin/manage-user-organizations-dialog.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 41
+apps/dashboard/components/pay-mapping/review-start-step.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 10
+apps/dashboard/components/account/two-factor-section.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 32
+apps/dashboard/components/pay-mapping/review-group-step.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 12,29
+apps/dashboard/components/pay-mapping/start-pay-mapping-dialog.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 12,30
+apps/dashboard/components/account/avatar-section.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 14
+apps/dashboard/components/people/add-salary-dialog.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 39
+apps/dashboard/components/roles/create-role-dialog.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 34
+apps/dashboard/components/people/salary-row-actions.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 9,14
+apps/dashboard/components/people/add-salary-dialog.test.tsx
+  s_f8b42642ba4434::t_5c3eb3bd33177c 26-28
+apps/dashboard/components/people/classify/classify-title-table.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 53
+apps/dashboard/lib/toast-host.test.tsx
+  s_f8b42642ba4434::t_8c29b614fc5e61 1-23,29-34,38-39
+  s_f8b42642ba4434::t_f8a35b1c4eacd7 28,35-37
+  s_f8b42642ba4434::t_f12ff59bde28be 24-27
+apps/dashboard/components/organization/organization-members-section.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 18
+apps/dashboard/components/pay-mapping/review-finish.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 6,30
+apps/dashboard/components/pay-mapping/review-start-step.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 12,30
+apps/dashboard/components/people/erase-person-control.test.tsx
+  s_f8b42642ba4434::t_5c3eb3bd33177c 10-12
+apps/dashboard/components/pay-mapping/rename-pay-mapping-dialog.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 28
+apps/dashboard/components/people/salary-row-actions.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 17
+apps/dashboard/components/pay-mapping/pay-mapping-summary.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 6,27
+packages/ui/src/styles/globals.css
+  s_f8b42642ba4434::t_2d268326a1f4a4 188-212
+apps/dashboard/components/account/language-section.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 22
+apps/dashboard/components/roles/role-profile-card.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 12,46
+apps/dashboard/components/people/classify/unmatched-title-actions.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 16,29
+apps/dashboard/components/roles/family-picker.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 17
+apps/dashboard/components/providers.tsx
+  s_f8b42642ba4434::t_453c6c2d53365b 8
+  s_f8b42642ba4434::t_8a6228303b14a0 34-36
+apps/dashboard/components/pay-mapping/review-group-step.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 10
+AGENTS.md
+  s_f8b42642ba4434::t_c573f05970f771 22-27
+apps/dashboard/components/providers.test.tsx
+  s_f8b42642ba4434::t_2d78dc91d38817 26-28,30
+apps/dashboard/components/pay-mapping/pay-mapping-run-actions.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 11,14
+apps/dashboard/components/admin/manage-organization-dialog.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 44
+apps/dashboard/components/pay-mapping/pay-mapping-summary.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 20
+apps/dashboard/components/organization/organization-members-section.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 41
+apps/dashboard/components/people/add-person-dialog.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 37
+apps/dashboard/components/roles/role-profile-card.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 34
+apps/dashboard/components/pay-mapping/start-pay-mapping-dialog.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 30
+apps/dashboard/components/auth/two-factor-setup.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 13
+apps/dashboard/components/organization/organization-profile-form.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 17
+apps/dashboard/components/pay-mapping/review-praxis-step.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 12,30
+apps/dashboard/components/people/erase-person-control.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 23
+apps/dashboard/components/admin/create-user-dialog.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 20
+apps/dashboard/components/account/two-factor-section.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 13
+apps/dashboard/components/pay-mapping/pay-mapping-group-analysis-form.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 23
+apps/dashboard/components/pay-mapping/pay-mapping-journey-card.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 21
+apps/dashboard/components/model/add-criterion-dialog.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 19
+apps/dashboard/lib/toast.test.ts
+  s_f8b42642ba4434::t_6c82a29b83f826 3-4
+  s_f8b42642ba4434::t_7fea70ff3c43a2 1-2,5-34
+apps/dashboard/components/pay-mapping/pay-mappings-section.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 76
+apps/dashboard/components/account/language-section.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 12
+apps/dashboard/components/roles/role-anchor-control.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 26
+apps/dashboard/components/people/add-person-dialog.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 13,54
+apps/dashboard/components/organization/organization-profile-form.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 32
+apps/dashboard/components/people/import/review-step.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 18,56
+apps/dashboard/components/people/edit-person-dialog.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 36
+apps/dashboard/components/pay-mapping/pay-mapping-review.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 6
+apps/dashboard/components/language-menu.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 15
+apps/dashboard/lib/toast.ts
+  s_f8b42642ba4434::t_e50a01dd6148da 3-13
+  s_f8b42642ba4434::t_752d522faa2e60 1-2
+apps/dashboard/components/roles/rename-family-dialog.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 27
+apps/dashboard/components/pay-mapping/pay-mapping-journey-card.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 13,35
+apps/dashboard/components/admin/create-organization-dialog.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 28
+apps/dashboard/components/roles/family-actions-menu.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 18
+CLAUDE.md
+  s_f8b42642ba4434::t_39403f8e2cb788 76
+apps/dashboard/components/people/classify/classify-title-table.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 17,35
+apps/dashboard/components/organization/organization-logo-section.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 14
+apps/dashboard/components/pay-mapping/pay-mapping-group-analysis-form.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 12,30
+apps/dashboard/components/pay-mapping/review-finish.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 19
+apps/dashboard/components/model/add-criterion-dialog.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 16
+apps/dashboard/components/model/criterion-compliance-dialog.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 34
+apps/dashboard/components/people/person-actions-menu.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 9,15
+apps/dashboard/components/people/classify/unmatched-title-actions.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 33
+apps/dashboard/components/auth/two-factor-setup.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 20
+apps/dashboard/components/admin/create-user-dialog.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 34
+apps/dashboard/components/pay-mapping/pay-mapping-run-actions.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 17
+apps/dashboard/components/model/criterion-compliance-dialog.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 14,16
+apps/dashboard/components/pay-mapping/review-praxis-step.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 12
+apps/dashboard/components/pay-mapping/pay-mapping-overview.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 15
+apps/dashboard/components/account/avatar-section.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 16
+apps/dashboard/components/model/edit-criterion-dialog.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 14
+apps/dashboard/components/roles/create-role-dialog.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 12,44
+apps/dashboard/components/people/edit-person-dialog.test.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 13,44
+apps/dashboard/components/people/import/review-step.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 28
+apps/dashboard/components/model/model-builder.tsx
+  s_f8b42642ba4434::t_b73dcc8f6189dd 26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.18",
+  "base_commit_sha": "f02615f17a3c3b02f4b9a85d48144b3b72d18451",
+  "prompts": {},
+  "sessions": {
+    "s_f8b42642ba4434": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9f563d6e-4a98-467b-beb2-946f09f4433d",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
