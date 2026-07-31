@@ -1,0 +1,132 @@
+packages/backend/convex/lib/audit.test.ts
+  s_8b7cf01403919e::t_2f45f76c0f7d3d 517-520
+  s_8b7cf01403919e::t_ebfdd89bb4b08e 676-683,685-689,692,695-716,718-724
+  s_8b7cf01403919e::t_d4a45a5f28bb82 670-675,684,690-691,693-694,717,725-784,786-787,796,810-814,833-835
+  s_8b7cf01403919e::t_b24a7aee4b1168 785,790-794,797-809,815-832
+  s_8b7cf01403919e::t_046c8fb2bc3783 788-789,795
+  s_8b7cf01403919e::t_51d1b4ebdf5a1d 20
+  s_8b7cf01403919e::t_61d1019fa482af 15-17,19,21-22,27,29
+  s_8b7cf01403919e::t_30835fab4f6e49 18,23-25,28
+packages/backend/convex/people/erase.test.ts
+  s_8b7cf01403919e::t_5024366b295e8e 224-254,256-264,266-292,296-298,303-308,311-314,321-323
+  s_8b7cf01403919e::t_1e2edcf45f6a56 309-310
+  s_8b7cf01403919e::t_4461fda79f1de9 255,265
+  s_8b7cf01403919e::t_860f4b4f46e103 2-6
+  s_8b7cf01403919e::t_0c6a1c89fc9577 324-446
+  s_8b7cf01403919e::t_dae2672e4f7b74 293-295
+  s_8b7cf01403919e::t_046c8fb2bc3783 299-302
+  s_8b7cf01403919e::t_9cc2aea7fae905 315-320
+apps/dashboard/lib/audit-detail.tsx
+  s_8b7cf01403919e::t_535319b78e2f1d 397-403
+packages/backend/convex/shared/tables.ts
+  s_8b7cf01403919e::t_abf029065395f2 29-41
+  s_8b7cf01403919e::t_e9b27e739fee02 13-14
+docs/adr/0013-personidentitet-i-revisionsloggen.md
+  s_8b7cf01403919e::t_675bbc4602bf29 38-42
+  s_8b7cf01403919e::t_2a75745eec2178 26,28-29
+  s_8b7cf01403919e::t_47c4bef7b7826a 1-25,27,30-37,43-45
+docs/go-live-checklist.md
+  s_8b7cf01403919e::t_a0b53d5385179a 228-239
+  s_8b7cf01403919e::t_515944b08f8d44 269-297
+packages/backend/convex/lib/auditAggregates.ts
+  s_8b7cf01403919e::t_210575b33d8d87 18-20
+packages/i18n/messages/fi.json
+  s_8b7cf01403919e::t_2b86d7917484de 299
+  s_8b7cf01403919e::t_89aa3b0f117a80 601-604
+  s_8b7cf01403919e::t_cb65cef2d8d5dd 605
+  s_8b7cf01403919e::t_5d81a0108eef96 685
+apps/dashboard/lib/audit-constants.ts
+  s_8b7cf01403919e::t_14d6d3cedec40f 193-201
+  s_8b7cf01403919e::t_5be015fe1745c4 236,241,255
+  s_8b7cf01403919e::t_4fb0c901b51962 279-281
+  s_8b7cf01403919e::t_56354a4fb55a0a 312-314,317
+  s_8b7cf01403919e::t_89814ee7eedb90 242-254,256-263
+  s_8b7cf01403919e::t_333cef4b611e6c 264
+packages/backend/convex/people/people.test.ts
+  s_8b7cf01403919e::t_ce5ddd3f143b97 282-283
+  s_8b7cf01403919e::t_c37f0714ed81bf 67-68,75-81
+  s_8b7cf01403919e::t_f7dbed3c71f588 255-256
+  s_8b7cf01403919e::t_592a63b748f87a 169
+  s_8b7cf01403919e::t_a8a2b21557da20 211-212,215-254,257-281,284-287
+  s_8b7cf01403919e::t_e38498e4207095 569-570,572-574
+packages/i18n/messages/da.json
+  s_8b7cf01403919e::t_cd4d29db6069bc 601-604
+  s_8b7cf01403919e::t_3229e7cb1c9dce 685
+packages/backend/convex/people/people.ts
+  s_8b7cf01403919e::t_aefa9ff59a6f4c 11
+  s_8b7cf01403919e::t_ca61315ae70fe7 108-111
+  s_8b7cf01403919e::t_f5b4475a789fcc 203
+  s_8b7cf01403919e::t_9b8fb4cb8445fa 448-452,458-459
+  s_8b7cf01403919e::t_cc523b54cdba9e 243-247
+  s_8b7cf01403919e::t_712d5e67a79500 221
+packages/i18n/messages/sv.json
+  s_8b7cf01403919e::t_5b3862f272fa3b 685
+  s_8b7cf01403919e::t_6bfc87f801e4d1 601-604
+packages/i18n/messages/nb.json
+  s_8b7cf01403919e::t_d99ff211aa9c7c 685
+  s_8b7cf01403919e::t_3a0ee6b2b4f92b 601-604
+packages/backend/convex/people/tables.ts
+  s_8b7cf01403919e::t_0ec8e9281c1040 33-36
+packages/backend/convex/lib/audit.ts
+  s_8b7cf01403919e::t_4f74cedb7cc1c3 129-130,132-134
+  s_8b7cf01403919e::t_5ec72a321a63ff 511-525,527-531,542-543,595,600,623-630
+  s_8b7cf01403919e::t_223223c235ed2c 544-594,596-599
+  s_8b7cf01403919e::t_d3e04cff2f85e7 876-882,900
+  s_8b7cf01403919e::t_046c8fb2bc3783 887-891
+  s_8b7cf01403919e::t_f62f3b0cbaac9f 927-928
+  s_8b7cf01403919e::t_c81bd0c9891314 175-178
+  s_8b7cf01403919e::t_3ebeb0febaa43b 601-622
+  s_8b7cf01403919e::t_dc3bba14c74827 865-875,883-886,892-899,901-916,937-976
+  s_8b7cf01403919e::t_425bb0dc37e7c8 918-926,929-934
+  s_8b7cf01403919e::t_d6f72296632cf1 917,935-936
+  s_8b7cf01403919e::t_dc85e5233db4f2 108-116
+  s_8b7cf01403919e::t_9b880d40c7cb1a 822-831
+  s_8b7cf01403919e::t_269b45898a3a1d 631
+apps/dashboard/lib/audit-labels.test.ts
+  s_8b7cf01403919e::t_a081795c0f5c8d 341-348
+  s_8b7cf01403919e::t_aceadad9d97887 9,35
+  s_8b7cf01403919e::t_f26a62be1f75de 34,37
+  s_8b7cf01403919e::t_5f688c20a12656 331-340,349-352
+  s_8b7cf01403919e::t_ba24e1be9dd6c1 243-244
+  s_8b7cf01403919e::t_945780d601fe3c 7
+  s_8b7cf01403919e::t_3e5e3830f8a669 320
+  s_8b7cf01403919e::t_57fb6b9572d538 293-295
+apps/dashboard/lib/audit-detail.test.tsx
+  s_8b7cf01403919e::t_7051889e638f69 236-248,250-254
+  s_8b7cf01403919e::t_779e85fa7a9af4 402-416,419,421
+  s_8b7cf01403919e::t_90afec1e12cfb3 417-418,420
+  s_8b7cf01403919e::t_f272b42f33f091 227-235,249
+  s_8b7cf01403919e::t_59dcdfa67fd478 8,10
+CLAUDE.md
+  s_8b7cf01403919e::t_60a903e9a96d73 44
+  s_8b7cf01403919e::t_296b84226b235c 42
+packages/backend/convex/lib/auditPayloads.ts
+  s_8b7cf01403919e::t_735071cc7b9686 286-289,293-294
+packages/i18n/messages/en.json
+  s_8b7cf01403919e::t_9a3e64d12a6638 601-604
+  s_8b7cf01403919e::t_8cbc722f9c0bae 685
+packages/backend/convex/people/erase.ts
+  s_8b7cf01403919e::t_f92b796a175c08 88-92
+  s_8b7cf01403919e::t_2ec56f9bbb79cb 100-104,109-112
+  s_8b7cf01403919e::t_fd9d0ccbb7022e 5,8
+  s_8b7cf01403919e::t_c8b61120b872f4 16-20
+  s_8b7cf01403919e::t_8bd9a0eb80803a 76-83
+  s_8b7cf01403919e::t_5f1e1b33a62d0e 37-45
+  s_8b7cf01403919e::t_2083049428cf4c 9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.18",
+  "base_commit_sha": "edc3febeb74e842984921d734530d2d85ac6873a",
+  "prompts": {},
+  "sessions": {
+    "s_8b7cf01403919e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c62bae39-fedb-4605-b307-6cfe76fcc113",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
