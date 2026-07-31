@@ -598,6 +598,10 @@
         "complexValue": "Sammansatt värde"
       },
       "fields": {
+        "displayName": "Namn",
+        "gender": "Kön",
+        "externalRef": "Anställningsnummer",
+        "birthDate": "Födelsedatum",
         "title": "Titel",
         "function": "Funktion",
         "team": "Team",
@@ -678,6 +682,7 @@
       "values": {
         "yes": "Ja",
         "no": "Nej",
+        "erased": "Raderad",
         "status": {
           "accepted": "Accepterad",
           "rejected": "Avvisad",

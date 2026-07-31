@@ -225,20 +225,18 @@ suite covers them before go-live:
   machine-drafted translations of the Swedish source (`sv` is the source, `en`
   is curated). Have a native speaker review them before go-live.
 
-- [ ] **Person `title` (Befattning) field: audit-diff + PII review.** V2
-  classification added `title` to the `people` table (imported from the payroll
-  Befattning column) and it now drives the deterministic title->role suggestion.
-  Two conscious pre-launch deferrals to revisit:
-  (1) `title` is currently EXCLUDED from `PERSON_AUDIT_FIELDS` and `nonPiiFields`
-  (treated as role-adjacent free text like displayName, not a diffed field).
-  Because a title now influences the assigned track/band, decide whether to
-  promote it to a DIFFED audit field (closer to `ftePercent`/`department`) so a
-  title edit that shifts a band is recorded in the people audit (today only
-  `band.shift` is). Not a blocker.
-  (2) `title` is imported free text, so a customer could stuff a person name into
-  a Befattning cell. This is the same latent risk already carried by other
-  role-level free-text fields (motivation/purpose) and needs no code change, but
-  flag it for the pre-launch privacy review.
+- [ ] **Person `title` (Befattning) field: PII review.** V2 classification added
+  `title` to the `people` table (imported from the payroll Befattning column) and
+  it now drives the deterministic title->role suggestion.
+  (1) RESOLVED 2026-07-31 by ADR-0013: `title` is now a diffed audit field, along
+  with the other identity fields, so a title edit that shifts a band is recorded
+  in the people audit and not only as a `band.shift`.
+  (2) STILL OPEN: `title` is imported free text, so a customer could stuff a
+  person name into a Befattning cell. This is the same latent risk already
+  carried by other role-level free-text fields (motivation/purpose) and needs no
+  code change, but flag it for the pre-launch privacy review. Note that since
+  ADR-0013 a `title` value reaches the audit trail, where erasure tombstones it
+  like any other identity field, so a name hidden in a title is erasable.
 
 - [ ] **P1 gender-gap small-cell masking: enforce the export minimums at the
   Art. 9 boundary.** In-app, the gap engine (`packages/core/pay-gap.ts` +
@@ -268,6 +266,35 @@ suite covers them before go-live:
   index query per person to find their open assignment. That is an N+1 read
   fan-out, not a single bounded query; it needs bounding (e.g. a batched or
   paginated lookup) before large-org onboarding.
+  Also here: **`erasePersonRecords`** (people/erase.ts) now does all of one
+  person's erasure in a single transaction: delete their `payRecords` and
+  `personAssignments`, patch their frozen `payMappingSnapshotRows`, AND patch
+  every audit row about them (`anonymizePersonAuditRows`, ADR-0013). It is
+  bounded by ONE person's history, not the org's, so it is far smaller than the
+  paths above, but an org that writes a `person.updated` row per person per
+  nightly sync accumulates hundreds of rows per person over a couple of years.
+  The failure mode is not partial PII (the mutation is atomic) but that erasure
+  becomes permanently impossible for that person, with only a generic error to
+  diagnose it, which would block an Art. 17 request. When chunking it, INVERT
+  the order: scrub the trail in bounded chunks first and delete the `people` row
+  last (or write a resumable pending-erasure marker), because today's order
+  (delete at step 3, scrub at step 5) is exactly the order that would leave
+  un-scrubbed rows with no live row to resume from once split across
+  transactions.
+
+- [ ] **Re-introducing an erased employee: decide suppression vs controller
+  process.** Nothing records that an `externalRef` has been erased, so a later
+  payroll import that still contains the number simply re-creates the person
+  (`upsertPersonByExternalRef`'s insert path) with their full identity, no
+  warning, and since ADR-0013 a fresh identity-bearing `person.created` audit
+  row. Narrower variant: an erasure that commits between two rows of a running
+  import is undone by the rest of that same import. This predates ADR-0013 (the
+  `people` row was always re-created); what changed is that the trail now
+  records the identity too. Decide before launch: either a suppression record
+  keyed on org + a salted hash of `externalRef` (no plaintext identifier
+  retained) that the import checks and surfaces as an explicit row issue in the
+  review step, so a re-add is deliberate; or an explicit statement that this is
+  a controller process, not a product control. Do not leave it unexamined.
 - [ ] **Audit-log count/offset aggregates: backfill on restored data + watch
   write contention.** The audit pager's exact totals come from two
   `@convex-dev/aggregate` instances maintained by `logAudit`; rows that reach

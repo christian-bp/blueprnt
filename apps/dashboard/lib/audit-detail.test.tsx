@@ -5,7 +5,9 @@ import {
   BIAS_RISK_VALUE_KEYS,
   COUNTRY_VALUE_KEYS,
   EMPLOYMENT_TYPE_VALUE_KEYS,
+  ERASED_AUDIT_VALUE,
   FINDING_VALUE_KEYS,
+  GENDER_VALUE_KEYS,
   INDUSTRY_VALUE_KEYS,
   LEVEL_SOURCE_VALUE_KEYS,
   MEMBER_ROLE_VALUE_KEYS,
@@ -222,6 +224,34 @@ describe("resolveCodedValue", () => {
     expect(resolveCodedValue("trackKey", "IC", translate)).toBe(
       TRACK_VALUE_KEYS.IC
     )
+    // A person diff's gender must never render the raw Swedish wire code.
+    expect(resolveCodedValue("gender", "Kvinna", translate)).toBe(
+      GENDER_VALUE_KEYS.Kvinna
+    )
+    expect(resolveCodedValue("gender", "Man", translate)).toBe(
+      GENDER_VALUE_KEYS.Man
+    )
+  })
+
+  it("labels the erased tombstone on an identity field, before the per-field domains", () => {
+    // Written over an erased person's identity values (ADR-0013). Resolves on
+    // any of them, including gender, whose own coded domain it must pre-empt.
+    for (const field of ["displayName", "gender", "externalRef", "birthDate"]) {
+      expect(resolveCodedValue(field, ERASED_AUDIT_VALUE, translate)).toBe(
+        "auditLog.values.erased"
+      )
+    }
+  })
+
+  it("does not label a non-identity field that legitimately holds the word", () => {
+    // "erased" is a real English word, so a department, role family or note a
+    // customer actually named that must render as itself, not as scrubbed data.
+    expect(
+      resolveCodedValue("department", ERASED_AUDIT_VALUE, translate)
+    ).toBeUndefined()
+    expect(
+      resolveCodedValue("note", ERASED_AUDIT_VALUE, translate)
+    ).toBeUndefined()
   })
 
   it("returns undefined for a field with no coded domain", () => {
@@ -368,6 +398,26 @@ describe("formatChanges", () => {
         (epochMs) => `DATE(${epochMs})`
       )
     ).toBe(`EmploymentStartDate: DATE(${Date.parse("2024-01-15")})`)
+  })
+
+  // birthDate is BOTH an ISO-date field and an identity field an erasure
+  // tombstones, and the date branch runs before the coded-value branch. It works
+  // only because Date.parse("erased") is NaN and falls through, so pin it: a
+  // more lenient date path would otherwise render an erased person's birth date
+  // as "Invalid Date" on a GDPR-visible surface with the suite still green.
+  it("renders a tombstoned ISO-date field as the erased marker, never a date", () => {
+    const out = formatChanges(
+      { birthDate: { from: ERASED_AUDIT_VALUE, to: ERASED_AUDIT_VALUE } },
+      fieldLabel,
+      "…",
+      undefined,
+      valueLabel,
+      (epochMs) => `DATE(${epochMs})`
+    )
+    expect(out).toBe(
+      "BirthDate: AUDITLOG.VALUES.ERASED → AUDITLOG.VALUES.ERASED"
+    )
+    expect(out).not.toContain("DATE(")
   })
 })
 

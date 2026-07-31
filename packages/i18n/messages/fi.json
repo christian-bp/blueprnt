@@ -296,7 +296,7 @@
           "lastName": "Sukunimi",
           "ftePercent": "Työaika %",
           "payYear": "Palkkausvuosi",
-          "birthDate": "Syntymaaika",
+          "birthDate": "Syntymäaika",
           "employmentStartDate": "Työsuhteen alkamispäivä",
           "statisticalCode": "Tilastokoodi",
           "variable": "Muuttuva palkka",
@@ -598,7 +598,11 @@
         "complexValue": "Koostettu arvo"
       },
       "fields": {
-        "title": "Otsikko",
+        "displayName": "Nimi",
+        "gender": "Sukupuoli",
+        "externalRef": "Henkilönumero",
+        "birthDate": "Syntymäaika",
+        "title": "Tehtävänimike",
         "function": "Toiminto",
         "team": "Tiimi",
         "trackKey": "Ura",
@@ -678,6 +682,7 @@
       "values": {
         "yes": "Kyllä",
         "no": "Ei",
+        "erased": "Poistettu",
         "status": {
           "accepted": "Hyväksytty",
           "rejected": "Hylätty",

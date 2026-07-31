@@ -12,7 +12,21 @@ import {
   categoryForEvent,
   criterionCreateItem,
   criterionDeleteItem,
+  ANCHOR_AUDIT_FIELDS,
+  ASSIGNMENT_AUDIT_FIELDS,
+  CRITERION_AUDIT_FIELDS,
+  ERASED_FIELD_VALUE,
+  GROUP_ANALYSIS_AUDIT_FIELDS,
+  isPersonIdentityField,
+  MODEL_AUDIT_FIELDS,
+  PAY_AUDIT_FIELDS,
+  PERSON_AUDIT_FIELDS,
+  PERSON_ERASURE_AUDIT_FIELDS,
+  PERSON_IDENTITY_AUDIT_FIELDS,
   PLATFORM_AUDIT_EVENTS,
+  ROLE_CREATE_FIELDS,
+  scrubPersonIdentityChanges,
+  SETTINGS_AUDIT_FIELDS,
   subjectForEvent,
 } from "./audit"
 import type { AuditPayloads } from "./auditPayloads"
@@ -500,10 +514,10 @@ const EXPECTED_SUBJECTS: { [E in AuditEvent]: AuditSubject | undefined } = {
   "roleFamily.removed": undefined,
   "criterion.approved": undefined,
   "criterion.reopened": undefined,
-  "person.created": undefined,
-  "person.updated": undefined,
-  "person.archived": undefined,
-  "person.erased": undefined,
+  "person.created": { kind: "person", id: "person-1" },
+  "person.updated": { kind: "person", id: "person-1" },
+  "person.archived": { kind: "person", id: "person-1" },
+  "person.erased": { kind: "person", id: "person-1" },
   "assignment.set": { kind: "role", id: "role-1" },
   "classification.suggested": undefined,
   "pay.salarySet": undefined,
@@ -651,5 +665,171 @@ describe("buildSearchText", () => {
     })
     // The object-valued from/to are skipped; only the scalar label survives.
     expect(text).toBe("sys model.discarded scope")
+  })
+})
+
+// The person diff records the employee's own identity values (ADR-0013), which
+// is only lawful because erasure can take them back out again. These tests pin
+// both halves: the field lists that decide what is identity, and the scrub that
+// tombstones it.
+describe("person audit field lists", () => {
+  it("classifies every audited field as exactly one of identity or structural", () => {
+    // The classification Record is compile-time-total, so this pins the derived
+    // halves: every field lands in exactly one list, and neither list invents a
+    // field that is not audited.
+    for (const field of PERSON_AUDIT_FIELDS) {
+      const inIdentity = PERSON_IDENTITY_AUDIT_FIELDS.includes(field)
+      const inErasure = PERSON_ERASURE_AUDIT_FIELDS.includes(field)
+      expect(inIdentity !== inErasure, field).toBe(true)
+    }
+    expect(
+      PERSON_IDENTITY_AUDIT_FIELDS.length + PERSON_ERASURE_AUDIT_FIELDS.length
+    ).toBe(PERSON_AUDIT_FIELDS.length)
+    expect(isPersonIdentityField("displayName")).toBe(true)
+    expect(isPersonIdentityField("department")).toBe(false)
+  })
+
+  it("keeps the row written AT erasure free of every identity field", () => {
+    for (const field of PERSON_IDENTITY_AUDIT_FIELDS) {
+      expect(PERSON_ERASURE_AUDIT_FIELDS).not.toContain(field)
+    }
+  })
+
+  // anonymizePersonAuditRows only reaches rows carrying a `person` subject, i.e.
+  // the person.* events. If an identity field ever entered ANOTHER event's diff
+  // (a pay row, an assignment, a role snapshot), those rows have a different
+  // subject, the scrub would never find them, and the leak would be silent and
+  // unbackfillable. This is the guard that makes that a test failure.
+  it("keeps identity fields out of every other event's diff", () => {
+    const otherFieldSets = {
+      CRITERION_AUDIT_FIELDS,
+      ANCHOR_AUDIT_FIELDS,
+      MODEL_AUDIT_FIELDS,
+      SETTINGS_AUDIT_FIELDS,
+      PAY_AUDIT_FIELDS,
+      ASSIGNMENT_AUDIT_FIELDS,
+      GROUP_ANALYSIS_AUDIT_FIELDS,
+    }
+    for (const [name, fields] of Object.entries(otherFieldSets)) {
+      for (const field of fields as readonly string[]) {
+        expect(isPersonIdentityField(field), `${name}.${field}`).toBe(false)
+      }
+    }
+    // ROLE_CREATE_FIELDS is the documented exception: a ROLE's `title` collides
+    // by name with a person's job title. Roles are never created from a person's
+    // imported Befattning, so a role row carries no person data; asserted here so
+    // the collision stays a known, single case rather than a surprise.
+    expect(
+      (ROLE_CREATE_FIELDS as readonly string[]).filter(isPersonIdentityField)
+    ).toEqual(["title"])
+  })
+})
+
+describe("scrubPersonIdentityChanges", () => {
+  it("tombstones identity values and leaves structural ones", () => {
+    const scrubbed = scrubPersonIdentityChanges({
+      personId: "person-1",
+      changes: {
+        displayName: { from: "Anna Andersson", to: "Anna Bergström" },
+        externalRef: { from: "4711", to: "4712" },
+        gender: { from: "Man", to: "Kvinna" },
+        birthDate: { from: "1980-05-01", to: "1980-06-01" },
+        title: { from: "Utvecklare", to: "Senior utvecklare" },
+        department: { from: "Sales", to: "Marketing" },
+        ftePercent: { from: 80, to: 100 },
+      },
+    })
+    expect(scrubbed).toEqual({
+      personId: "person-1",
+      changes: {
+        displayName: { from: ERASED_FIELD_VALUE, to: ERASED_FIELD_VALUE },
+        externalRef: { from: ERASED_FIELD_VALUE, to: ERASED_FIELD_VALUE },
+        gender: { from: ERASED_FIELD_VALUE, to: ERASED_FIELD_VALUE },
+        birthDate: { from: ERASED_FIELD_VALUE, to: ERASED_FIELD_VALUE },
+        title: { from: ERASED_FIELD_VALUE, to: ERASED_FIELD_VALUE },
+        department: { from: "Sales", to: "Marketing" },
+        ftePercent: { from: 80, to: 100 },
+      },
+    })
+  })
+
+  it("keeps a null side null instead of inventing a value", () => {
+    const scrubbed = scrubPersonIdentityChanges({
+      changes: { displayName: { from: null, to: "Anna Andersson" } },
+    })
+    expect(scrubbed).toEqual({
+      changes: { displayName: { from: null, to: ERASED_FIELD_VALUE } },
+    })
+  })
+
+  it("returns null when there is nothing to scrub, and is idempotent", () => {
+    // No diff at all.
+    expect(scrubPersonIdentityChanges({ personId: "person-1" })).toBeNull()
+    // A diff with no identity fields.
+    expect(
+      scrubPersonIdentityChanges({
+        changes: { department: { from: "Sales", to: "Marketing" } },
+      })
+    ).toBeNull()
+    // Already scrubbed: a second pass must not report work to do, so erasure
+    // never rewrites (and re-searchTexts) rows it has already cleaned.
+    const once = scrubPersonIdentityChanges({
+      changes: { displayName: { from: "Anna", to: "Anna B" } },
+    })
+    expect(once).not.toBeNull()
+    expect(
+      scrubPersonIdentityChanges(once as Record<string, unknown>)
+    ).toBeNull()
+  })
+
+  it("removes every identity value from the rebuilt search text", () => {
+    const payload = {
+      personId: "person-1",
+      changes: {
+        displayName: { from: "Anna Andersson", to: "Anna Bergström" },
+        externalRef: { from: "4711", to: "4712" },
+        birthDate: { from: "1985-04-12", to: "1985-04-13" },
+        gender: { from: "Kvinna", to: "Man" },
+        title: { from: "Ekonomiassistent", to: "Ekonom" },
+        department: { from: "Ekonomi", to: "Finans" },
+      },
+    }
+    // Before: every identity value is full-text searchable. Asserted so this
+    // test cannot pass vacuously against a trail that never held them.
+    const before = buildSearchText("HR Admin", "person.updated", payload)
+    for (const value of [
+      "anna andersson",
+      "4711",
+      "1985-04-12",
+      "kvinna",
+      "ekonomiassistent",
+    ]) {
+      expect(before, value).toContain(value)
+    }
+
+    const scrubbed = scrubPersonIdentityChanges(payload) as Record<
+      string,
+      unknown
+    >
+    const text = buildSearchText("HR Admin", "person.updated", scrubbed)
+    // After: none of them are, in either direction of any identity diff.
+    for (const value of [
+      "anna",
+      "andersson",
+      "bergström",
+      "4711",
+      "4712",
+      "1985",
+      "kvinna",
+      "ekonomiassistent",
+      "ekonom ",
+    ]) {
+      expect(text, value).not.toContain(value)
+    }
+    // The structural diff and the operator's own name stay: neither is the
+    // erased person's identity, and both carry the trail's remaining value.
+    expect(text).toContain("ekonomi")
+    expect(text).toContain("finans")
+    expect(text).toContain("hr admin")
   })
 })

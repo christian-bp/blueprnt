@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest"
-import { api, components } from "../_generated/api"
+import { api, components, internal } from "../_generated/api"
+import {
+  anonymizePersonAuditRows,
+  PERSON_ERASURE_AUDIT_FIELDS,
+} from "../lib/audit"
 import { initConvexTest } from "../testing.helpers"
 
 // Seeds a minimal org with one admin member.
@@ -214,6 +218,229 @@ describe("erasePersonAsOrg", () => {
       expect(changes?.country).toEqual({ from: "SE", to: null })
       expect(changes).toHaveProperty("ftePercent")
       expect(changes?.ftePercent).toEqual({ from: 100, to: null })
+    })
+  })
+
+  // person.* diffs record the employee's own identity values (ADR-0013), so
+  // erasure has to reach back into the EARLIER rows and tombstone them. Without
+  // this the right to erasure would be broken: the name, employee number and
+  // birth date would survive forever in the retained trail, and (worse) stay
+  // full-text searchable through the denormalized searchText.
+  it("tombstones the person's identity values across their whole retained trail", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      {
+        orgId,
+        displayName: "Anna Svensson",
+        gender: "Kvinna",
+        externalRef: "E-4711",
+        birthDate: "1985-04-12",
+        country: "SE",
+        department: "Engineering",
+      }
+    )
+    // A rename, so the trail holds an identity before->after diff too.
+    await asAdmin.mutation(api.people.people.updatePerson, {
+      orgId,
+      personId,
+      displayName: "Anna Bergström",
+      department: "Marketing",
+    })
+
+    // Precondition: while the person exists, the trail really does carry the
+    // names (otherwise this test could pass against a trail that never had
+    // them, the exact bug being fixed).
+    const actorNamesBefore = await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      const dump = JSON.stringify(rows)
+      expect(dump).toContain("Anna Svensson")
+      expect(dump).toContain("Anna Bergström")
+      expect(dump).toContain("E-4711")
+      expect(dump).toContain("1985-04-12")
+      return rows.map((row) => row.actorName)
+    })
+
+    await asAdmin.mutation(api.people.erase.erasePersonAsOrg, {
+      orgId,
+      personId,
+    })
+
+    await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+
+      // Nothing about the person survives anywhere: payloads or searchText.
+      const dump = JSON.stringify(rows)
+      expect(dump).not.toContain("Anna Svensson")
+      expect(dump).not.toContain("Anna Bergström")
+      expect(dump).not.toContain("Svensson")
+      expect(dump).not.toContain("Bergström")
+      expect(dump).not.toContain("E-4711")
+      expect(dump).not.toContain("1985-04-12")
+      expect(dump).not.toContain("Kvinna")
+
+      // The rows themselves are KEPT (legitimate interest) and still say which
+      // fields changed and when: pseudonymized, not deleted.
+      const updated = rows.filter((row) => row.type === "person.updated")
+      expect(updated).toHaveLength(1)
+      const changes = (
+        updated[0]?.payload as { changes?: Record<string, unknown> } | undefined
+      )?.changes as Record<string, unknown>
+      expect(changes.displayName).toEqual({ from: "erased", to: "erased" })
+      // A structural field is not personal data once the person row is gone, so
+      // it survives intact and the trail stays useful.
+      expect(changes.department).toEqual({
+        from: "Engineering",
+        to: "Marketing",
+      })
+
+      // The created row's identity fields are tombstoned the same way, with the
+      // "no value before" side left as null rather than invented.
+      const created = rows.filter((row) => row.type === "person.created")
+      expect(created).toHaveLength(1)
+      const createdChanges = (
+        created[0]?.payload as { changes?: Record<string, unknown> } | undefined
+      )?.changes as Record<string, unknown>
+      expect(createdChanges.displayName).toEqual({ from: null, to: "erased" })
+      expect(createdChanges.externalRef).toEqual({ from: null, to: "erased" })
+      expect(createdChanges.birthDate).toEqual({ from: null, to: "erased" })
+
+      // The operator who made the edits keeps their snapshotted name untouched:
+      // accountability for the action is not the erased person's personal data
+      // (only anonymizeAuthoredAuditRows, for an erased OPERATOR, rewrites it).
+      expect(
+        rows.slice(0, actorNamesBefore.length).map((row) => row.actorName)
+      ).toEqual(actorNamesBefore)
+    })
+  })
+
+  // The sweep above drives two writers. This one drives EVERY writer that can
+  // touch a person before erasure, then asserts absence over the whole trail
+  // without naming event types. It is the test that fails if a new row class
+  // ever carries identity outside the `person`-subject rows the scrub sweeps,
+  // or outside the top-level `changes` map it walks.
+  it("leaves no identity value in any audit row, whichever writer wrote it", async () => {
+    const t = initConvexTest()
+    const { orgId, userId, asAdmin } = await seedOrg(t)
+    const roleId = await seedRole(orgId, asAdmin)
+
+    const IDENTITY = {
+      displayName: "Anna Svensson",
+      renamed: "Anna Bergström",
+      externalRef: "E-4711",
+      birthDate: "1985-04-12",
+      title: "Ekonomiassistent",
+      importedTitle: "Ekonomichef",
+    }
+
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      {
+        orgId,
+        displayName: IDENTITY.displayName,
+        gender: "Kvinna",
+        externalRef: IDENTITY.externalRef,
+        birthDate: IDENTITY.birthDate,
+        title: IDENTITY.title,
+        country: "SE",
+        department: "Engineering",
+      }
+    )
+    // Manual edit path.
+    await asAdmin.mutation(api.people.people.updatePerson, {
+      orgId,
+      personId,
+      displayName: IDENTITY.renamed,
+    })
+    // Import upsert path (a payroll file correcting the job title).
+    await t.mutation(internal.people.people.upsertPersonByExternalRef, {
+      orgId,
+      actorId: userId,
+      externalRef: IDENTITY.externalRef,
+      displayName: IDENTITY.renamed,
+      gender: "Kvinna",
+      title: IDENTITY.importedTitle,
+    })
+    // The person's other writers: assignment, salary, archive.
+    await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
+      orgId,
+      personId,
+      roleId,
+      level: "IC3",
+      levelSource: "confirmed",
+    })
+    await asAdmin.mutation(api.people.pay.setSalary, {
+      orgId,
+      personId,
+      payYear: 2024,
+      basicMonthly: 50000,
+      currency: "SEK",
+      components: [],
+    })
+    await asAdmin.mutation(api.people.people.archivePerson, { orgId, personId })
+
+    const identityValues = Object.values(IDENTITY)
+
+    // Precondition: the trail really holds each of them somewhere.
+    await t.run(async (ctx) => {
+      const dump = JSON.stringify(
+        await ctx.db
+          .query("auditLog")
+          .withIndex("by_org", (q) => q.eq("orgId", orgId))
+          .collect()
+      )
+      for (const value of identityValues) {
+        expect(dump, value).toContain(value)
+      }
+    })
+
+    await asAdmin.mutation(api.people.erase.erasePersonAsOrg, {
+      orgId,
+      personId,
+    })
+
+    await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      const dump = JSON.stringify(rows)
+      for (const value of identityValues) {
+        expect(dump, value).not.toContain(value)
+      }
+      // Case-insensitively too: searchText is lowercased.
+      for (const value of identityValues) {
+        expect(dump.toLowerCase(), value).not.toContain(value.toLowerCase())
+      }
+
+      // The row written AT erasure snapshots exactly the identity-free list, so
+      // a call site passing the wrong field list would fail here.
+      const erased = rows.filter((row) => row.type === "person.erased")
+      expect(erased).toHaveLength(1)
+      const erasedChanges = (
+        erased[0]?.payload as { changes?: Record<string, unknown> } | undefined
+      )?.changes as Record<string, unknown>
+      expect(Object.keys(erasedChanges).sort()).toEqual(
+        [...PERSON_ERASURE_AUDIT_FIELDS].sort()
+      )
+
+      // Re-running the scrub is a no-op: erasure never rewrites clean rows.
+      const contentBefore = rows.map((row) => [row.payload, row.searchText])
+      await anonymizePersonAuditRows(ctx, orgId, personId)
+      const after = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org", (q) => q.eq("orgId", orgId))
+        .collect()
+      expect(after.map((row) => [row.payload, row.searchText])).toEqual(
+        contentBefore
+      )
     })
   })
 

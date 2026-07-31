@@ -15,8 +15,9 @@ type QueryCtx = GenericQueryCtx<DataModel>
 // total and O(log n) jump-to-page over a table Convex cannot cheaply count
 // or offset into. Both are maintained by logAudit (the single audit writer);
 // devReset clears them; the trail is append-only, so no delete/replace hooks
-// exist. Erasure patches rewrite actorName/searchText but never the sort key
-// (_creationTime) or namespace, so erasure needs no aggregate hook either.
+// exist. Erasure patches rewrite actorName, payload identity values, and
+// searchText, but never the sort key (_creationTime) or namespace, so erasure
+// needs no aggregate hook either.
 // The aggregates store only namespaces and _creationTime keys, never row
 // content, so no PII can reach them by construction.
 

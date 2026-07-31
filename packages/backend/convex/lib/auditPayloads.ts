@@ -283,10 +283,15 @@ export interface AuditPayloads {
   }
   "criterion.approved": { criterionId: string; modelId: string }
   "criterion.reopened": { criterionId: string; modelId: string }
+  // These three diff the employee's identity values too (ADR-0013), which
+  // erasure tombstones via anonymizePersonAuditRows. Keep the shape flat:
+  // the scrub walks only the top-level `changes` map, and a nested `items[]`
+  // here fails a compile-time assertion in lib/audit.ts.
   "person.created": { personId: string; changes: Changes }
   "person.updated": { personId: string; changes: Changes }
   "person.archived": { personId: string; changes: Changes }
-  // GDPR: no name/email in the erased payload; personId is the internal key only.
+  // GDPR: the row written AT erasure carries no identity value at all (it is
+  // built from PERSON_ERASURE_AUDIT_FIELDS); personId is the internal key only.
   "person.erased": { personId: string; changes: Changes }
   "assignment.set": { personId: string; roleId: string; changes: Changes }
   "classification.suggested": {

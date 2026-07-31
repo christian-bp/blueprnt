@@ -8,6 +8,7 @@ import {
   buildCreateChanges,
   logAudit,
   PERSON_AUDIT_FIELDS,
+  personAuditFields,
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
@@ -47,24 +48,6 @@ async function requireOwnPerson(
     throw appError(ERROR_CODES.notFound)
   }
   return person
-}
-
-// Builds the non-PII subset of a person doc suitable for audit diffs.
-// Maps the person doc to a plain Record so buildChanges/buildCreateChanges
-// can walk PERSON_AUDIT_FIELDS without hitting Convex document internals.
-// Excludes externalRef (the employee number, a person identifier) along with
-// the other PII, so audit diffs and their searchText carry no identifier.
-function nonPiiFields(person: Partial<Doc<"people">>): Record<string, unknown> {
-  return {
-    employmentStartDate: person.employmentStartDate ?? null,
-    ftePercent: person.ftePercent ?? null,
-    country: person.country ?? null,
-    isManager: person.isManager ?? null,
-    statisticalCode: person.statisticalCode ?? null,
-    department: person.department ?? null,
-    employmentType: person.employmentType ?? null,
-    archivedAt: person.archivedAt ?? null,
-  }
 }
 
 export const createPerson = orgMutation({
@@ -122,19 +105,10 @@ export const createPerson = orgMutation({
         : {}),
     })
 
-    // Build the non-PII snapshot for the audit row. We pass the args directly
-    // rather than re-reading the inserted doc to avoid an extra read.
-    const snapshot: Record<string, unknown> = {
-      externalRef: externalRef ?? null,
-      employmentStartDate: args.employmentStartDate ?? null,
-      ftePercent: args.ftePercent ?? null,
-      country: args.country ?? null,
-      isManager: args.isManager ?? null,
-      statisticalCode: args.statisticalCode ?? null,
-      department: args.department ?? null,
-      employmentType: args.employmentType ?? null,
-      archivedAt: null,
-    }
+    // Build the snapshot for the audit row from the args (plus the normalized
+    // externalRef) rather than re-reading the inserted doc, to avoid an extra
+    // read: the two are identical by construction here.
+    const snapshot = personAuditFields({ ...args, displayName, externalRef })
 
     await ctx.audit.log({
       type: AUDIT_EVENTS.personCreated,
@@ -226,17 +200,7 @@ export const upsertPersonByExternalRef = internalMutation({
           : {}),
       })
 
-      const snapshot: Record<string, unknown> = {
-        externalRef: args.externalRef,
-        employmentStartDate: args.employmentStartDate ?? null,
-        ftePercent: args.ftePercent ?? null,
-        country: args.country ?? null,
-        isManager: args.isManager ?? null,
-        statisticalCode: args.statisticalCode ?? null,
-        department: args.department ?? null,
-        employmentType: args.employmentType ?? null,
-        archivedAt: null,
-      }
+      const snapshot = personAuditFields(args)
 
       await logAudit(ctx, {
         orgId: args.orgId,
@@ -254,8 +218,7 @@ export const upsertPersonByExternalRef = internalMutation({
     // Update path: compute the patch via the shared import-diff rule (also
     // used by previewImport, so the review preview cannot disagree with the
     // import). A field ABSENT from the file is left untouched, never cleared.
-    // Non-PII fields only reach the audit diff; PII fields like displayName
-    // and gender are patched but never diffed in the audit row.
+    // Every changed field reaches the audit diff, identity included (ADR-0013).
     const patch: Record<string, unknown> = personImportPatch(existing, {
       displayName: args.displayName,
       gender: args.gender,
@@ -277,16 +240,15 @@ export const upsertPersonByExternalRef = internalMutation({
 
     await ctx.db.patch(existing._id, patch)
 
-    // Diff only the non-PII fields for the audit row.
-    const before = nonPiiFields(existing)
+    // Diff every audited field, identity included (ADR-0013): an import that
+    // only corrects a name or an employee number is a real change to a person's
+    // record and must read as one in the trail. Erasure tombstones those values
+    // later (anonymizePersonAuditRows).
+    const before = personAuditFields(existing)
     const changes = buildChanges(before, { ...before, ...patch }, [
       ...PERSON_AUDIT_FIELDS,
     ])
 
-    // Only write an audit row when at least one non-PII field changed.
-    // (A PII-only change like displayName/gender alone would produce an empty
-    // changes map, which is still a meaningful update; we write the row to
-    // record that something changed, just without the PII values.)
     await logAudit(ctx, {
       orgId: args.orgId,
       type: AUDIT_EVENTS.personUpdated,
@@ -483,18 +445,18 @@ export const updatePerson = orgMutation({
 
     await ctx.db.patch(args.personId, patch)
 
-    // Diff only the non-PII fields for the audit row; a PII-only change
-    // (displayName/gender) still writes the row to record that something
-    // changed, just without the values (the upsert path's rule). The after
-    // side goes through nonPiiFields too, so a cleared field diffs to null
-    // (an undefined would be stripped from the stored payload).
+    // Diff every audited field, identity included (ADR-0013), so renaming a
+    // person or fixing their employee number lands as a real before->after row
+    // instead of the empty `changes: {}` this path used to write. Both sides go
+    // through personAuditFields, so a cleared field diffs to null (an undefined
+    // would be stripped from the stored payload).
     await ctx.audit.log({
       type: AUDIT_EVENTS.personUpdated,
       payload: {
         personId: args.personId,
         changes: buildChanges(
-          nonPiiFields(person),
-          nonPiiFields({ ...person, ...patch } as Partial<Doc<"people">>),
+          personAuditFields(person),
+          personAuditFields({ ...person, ...patch } as Partial<Doc<"people">>),
           [...PERSON_AUDIT_FIELDS]
         ),
       },

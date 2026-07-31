@@ -10,7 +10,8 @@ import type { AuditSubjectKind } from "../lib/audit"
 // payGapReasonValidator.
 const auditSubjectKindValidator = v.union(
   v.literal("payMappingRun"),
-  v.literal("role")
+  v.literal("role"),
+  v.literal("person")
 )
 type KindFromValidator = Infer<typeof auditSubjectKindValidator>
 type _SubjectKindsExact = KindFromValidator extends AuditSubjectKind
@@ -25,12 +26,19 @@ void _assertSubjectKindsMatch
 // truthful if a user is later renamed or deleted. by_actor lets erasure find
 // and anonymize a user's authored rows without a full scan. Payloads carry IDs,
 // codes, and role/org/model domain content (including role-level free text such
-// as motivation, purpose, and responsibilities), never person identity, salary,
-// performance, or contact data, so erasure leaves no person PII in the trail and
-// the rows can be kept under their legitimate-interest basis. Erasure
-// (anonymizeAuthoredAuditRows) rewrites BOTH actorName AND the derived
-// searchText to the tombstone: since searchText is denormalized from the name,
-// anonymizing actorName alone would leave the name stored and searchable.
+// as motivation, purpose, and responsibilities), plus the employee's own identity
+// values in `person.*` diffs (ADR-0013). They never carry salary amounts,
+// performance, or contact data. The rows are kept under their legitimate-interest
+// basis, and every identity value in them is pseudonymized on erasure, so no
+// direct identifier survives a hard delete:
+//   - the AUTHOR's snapshotted name, by anonymizeAuthoredAuditRows;
+//   - the SUBJECT employee's identity values, by anonymizePersonAuditRows
+//     (which the `person` subject kind and by_org_subject exist to make bounded).
+// Both rewrite the derived searchText as well as the stored value: since
+// searchText is denormalized at write time, tombstoning the value alone would
+// leave the name stored and searchable. Adding a new person field means
+// classifying it in PERSON_AUDIT_FIELD_KIND (lib/audit.ts); it does not compile
+// otherwise.
 // category, subject, and searchText are derived in logAudit from the event
 // type and payload: category is the action's app area (model/role/...) for
 // filtering; subject is the entity INSTANCE the event is about ({ kind, id },

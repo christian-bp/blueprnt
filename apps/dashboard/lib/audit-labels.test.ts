@@ -4,7 +4,9 @@ import {
   AUDIT_CATEGORIES,
   AUDIT_EVENTS,
   CRITERION_AUDIT_FIELDS,
+  ERASED_FIELD_VALUE,
   GROUP_ANALYSIS_AUDIT_FIELDS,
+  PERSON_IDENTITY_AUDIT_FIELDS,
   MODEL_AUDIT_FIELDS,
   PAY_AUDIT_FIELDS,
   PERSON_AUDIT_FIELDS,
@@ -29,7 +31,10 @@ import {
   BIAS_RISK_VALUE_KEYS,
   COUNTRY_VALUE_KEYS,
   EMPLOYMENT_TYPE_VALUE_KEYS,
+  ERASED_AUDIT_VALUE,
+  ERASED_AUDIT_VALUE_FIELDS,
   FINDING_VALUE_KEYS,
+  GENDER_VALUE_KEYS,
   INDUSTRY_VALUE_KEYS,
   LEVEL_SOURCE_VALUE_KEYS,
   MEMBER_ROLE_VALUE_KEYS,
@@ -235,6 +240,8 @@ const AUDIT_STATUSES = [
 ] as const
 const SALARY_SOURCES = ["import", "manual"] as const
 const BIAS_RISKS = ["low", "medium", "high"] as const
+// person.* `gender` (the Swedish wire codes on the people table).
+const PERSON_GENDERS = ["Man", "Kvinna"] as const
 
 function resolveDashboardKey(key: string): unknown {
   return key
@@ -283,6 +290,9 @@ describe("audit log value labels", () => {
     expect(Object.keys(EMPLOYMENT_TYPE_VALUE_KEYS).sort()).toEqual(
       [...EMPLOYMENT_TYPES].sort()
     )
+    expect(Object.keys(GENDER_VALUE_KEYS).sort()).toEqual(
+      [...PERSON_GENDERS].sort()
+    )
     expect(Object.keys(INDUSTRY_VALUE_KEYS).sort()).toEqual(
       [...INDUSTRY_KEYS].sort()
     )
@@ -307,6 +317,7 @@ describe("audit log value labels", () => {
       ...Object.values(LANGUAGE_LABEL_KEYS),
       ...Object.values(BIAS_RISK_VALUE_KEYS),
       ...Object.values(EMPLOYMENT_TYPE_VALUE_KEYS),
+      ...Object.values(GENDER_VALUE_KEYS),
       ...Object.values(INDUSTRY_VALUE_KEYS),
       ...Object.values(SALARY_SOURCE_VALUE_KEYS),
       ...Object.values(TRACK_VALUE_KEYS),
@@ -315,5 +326,27 @@ describe("audit log value labels", () => {
       (key) => typeof resolveDashboardKey(key) !== "string"
     )
     expect(missing).toEqual([])
+  })
+})
+
+// When a person is erased, the backend rewrites their identity values in the
+// retained trail to ERASED_FIELD_VALUE (ADR-0013). The frontend mirrors that
+// constant to render it as a localized marker instead of the bare word, the same
+// mirroring convention (and drift guard) as AUDIT_FILTER_CATEGORIES above.
+describe("erased-value marker", () => {
+  it("mirrors the backend tombstone", () => {
+    expect(ERASED_AUDIT_VALUE).toBe(ERASED_FIELD_VALUE)
+  })
+
+  it("mirrors exactly the backend's identity field set", () => {
+    // The marker only resolves on these fields, so a field the backend starts
+    // tombstoning without adding it here would render the bare word "erased".
+    expect([...ERASED_AUDIT_VALUE_FIELDS].sort()).toEqual(
+      [...PERSON_IDENTITY_AUDIT_FIELDS].sort()
+    )
+  })
+
+  it("has a localized label", () => {
+    expect(typeof resolveDashboardKey("auditLog.values.erased")).toBe("string")
   })
 })

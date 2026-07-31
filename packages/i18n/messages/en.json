@@ -598,6 +598,10 @@
         "complexValue": "Complex value"
       },
       "fields": {
+        "displayName": "Name",
+        "gender": "Gender",
+        "externalRef": "Employee number",
+        "birthDate": "Birth date",
         "title": "Title",
         "function": "Function",
         "team": "Team",
@@ -678,6 +682,7 @@
       "values": {
         "yes": "Yes",
         "no": "No",
+        "erased": "Erased",
         "status": {
           "accepted": "Accepted",
           "rejected": "Rejected",

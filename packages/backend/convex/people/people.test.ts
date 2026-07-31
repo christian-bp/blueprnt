@@ -64,17 +64,21 @@ describe("createPerson", () => {
       const payload = auditRows[0]?.payload as Record<string, unknown>
       expect(payload?.personId).toBe(personId)
 
-      // The changes map must contain non-PII fields...
+      // The create snapshot records every audited field (ADR-0013): the
+      // structural ones...
       const changes = payload?.changes as Record<string, unknown>
       expect(changes).toHaveProperty("country")
       expect(changes).toHaveProperty("ftePercent")
       expect(changes).toHaveProperty("department")
       expect(changes).toHaveProperty("employmentType")
 
-      // ...and must NOT contain PII fields.
-      expect(changes).not.toHaveProperty("displayName")
-      expect(changes).not.toHaveProperty("gender")
-      expect(changes).not.toHaveProperty("birthDate")
+      // ...and the identity ones, which erasure tombstones later.
+      expect(changes.displayName).toEqual({ from: null, to: "Anna Svensson" })
+      expect(changes.gender).toEqual({ from: null, to: "Kvinna" })
+      expect(changes).toHaveProperty("birthDate")
+
+      // Indexed by its person so erasure can find every row about them.
+      expect(auditRows[0]?.subject).toEqual({ kind: "person", id: personId })
     })
   })
 
@@ -162,7 +166,7 @@ describe("createPerson", () => {
 })
 
 describe("updatePerson", () => {
-  it("patches changed fields, clears via empty values, audits non-PII diffs", async () => {
+  it("patches changed fields, clears via empty values, audits every field diff", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
     const { personId } = await asAdmin.mutation(
@@ -204,10 +208,83 @@ describe("updatePerson", () => {
       const changes = (
         auditRows[0]?.payload as Record<string, unknown> | undefined
       )?.changes as Record<string, unknown>
-      // Cleared field diffs to null; PII (displayName) never appears.
+      // Cleared field diffs to null; the trimmed name is diffed like any other
+      // field (ADR-0013), and an untouched field stays out of the diff.
       expect(changes.department).toEqual({ from: "Engineering", to: null })
       expect(changes.ftePercent).toEqual({ from: 100, to: 80 })
-      expect(changes).not.toHaveProperty("displayName")
+      expect(changes.displayName).toEqual({
+        from: "Anna Svensson",
+        to: "Anna Karlsson",
+      })
+      expect(changes).not.toHaveProperty("gender")
+    })
+  })
+
+  // The bug this pins: a name-only edit used to patch the person and then write
+  // an audit row whose diff was `{}`, so the log showed "Person updated" with
+  // "No field-level changes recorded" and the change was untraceable.
+  it("records a rename, a gender change and an employee-number change", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t)
+    const { personId } = await asAdmin.mutation(
+      api.people.people.createPerson,
+      {
+        orgId,
+        displayName: "Anna Svensson",
+        gender: "Kvinna",
+        externalRef: "4711",
+      }
+    )
+
+    await asAdmin.mutation(api.people.people.updatePerson, {
+      orgId,
+      personId,
+      displayName: "Anna Bergström",
+    })
+
+    await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "person.updated")
+        )
+        .collect()
+      expect(rows).toHaveLength(1)
+      const row = rows[0]
+      expect(
+        (row?.payload as { changes?: Record<string, unknown> } | undefined)
+          ?.changes
+      ).toEqual({
+        displayName: { from: "Anna Svensson", to: "Anna Bergström" },
+      })
+      // The row is indexed by its person so erasure can find it later, and the
+      // new name is searchable while the person exists.
+      expect(row?.subject).toEqual({ kind: "person", id: personId })
+      expect(row?.searchText).toContain("anna bergström")
+    })
+
+    await asAdmin.mutation(api.people.people.updatePerson, {
+      orgId,
+      personId,
+      gender: "Man",
+      externalRef: "4712",
+    })
+
+    await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "person.updated")
+        )
+        .collect()
+      expect(rows).toHaveLength(2)
+      expect(
+        (rows[1]?.payload as { changes?: Record<string, unknown> } | undefined)
+          ?.changes
+      ).toEqual({
+        gender: { from: "Kvinna", to: "Man" },
+        externalRef: { from: "4711", to: "4712" },
+      })
     })
   })
 
@@ -489,10 +566,12 @@ describe("upsertPersonByExternalRef", () => {
       expect(auditRows).toHaveLength(1)
       const payload = auditRows[0]?.payload as Record<string, unknown>
       expect(payload?.personId).toBe(personId)
-      // No PII in the changes.
+      // The imported identity values are diffed like every other field
+      // (ADR-0013); erasure tombstones them if the person is later deleted.
       const changes = payload?.changes as Record<string, unknown>
-      expect(changes).not.toHaveProperty("displayName")
-      expect(changes).not.toHaveProperty("gender")
+      expect(changes.displayName).toEqual({ from: null, to: "Diana Prince" })
+      expect(changes.gender).toEqual({ from: null, to: "Kvinna" })
+      expect(changes.externalRef).toEqual({ from: null, to: "EMP-001" })
     })
   })
 

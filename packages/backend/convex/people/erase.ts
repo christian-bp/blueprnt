@@ -2,19 +2,22 @@ import { v } from "convex/values"
 import type { Id } from "../_generated/dataModel"
 import type { MutationCtx } from "../_generated/server"
 import {
+  anonymizePersonAuditRows,
   AUDIT_EVENTS,
   buildDeleteChanges,
-  PERSON_AUDIT_FIELDS,
+  PERSON_ERASURE_AUDIT_FIELDS,
+  personAuditFields,
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation } from "../lib/functions"
 import { pseudonymizePersonInSnapshots } from "../payMapping/erasure"
 
 // Shared hard-delete body. Deletes payRecords, then personAssignments, then the
-// people row, in child-first order. Throws notFound when the person is missing
-// or belongs to another org. Returns the non-PII "before" snapshot so the
-// caller (erasePersonAsOrg, an adminMutation) can write the audit row via
-// ctx.audit.
+// people row, in child-first order, then pseudonymizes the person inside the two
+// retained records (the frozen pay-mapping snapshot and the audit trail).
+// Throws notFound when the person is missing or belongs to another org. Returns
+// the identity-free "before" snapshot so the caller (erasePersonAsOrg, an
+// adminMutation) can write the audit row via ctx.audit.
 //
 // This is the SINGLE implementation of the delete. erasePersonAsOrg delegates
 // here; there is no duplicate delete logic.
@@ -31,18 +34,15 @@ export async function erasePersonRecords(
   // person.publicId) is gone after step 3.
   const personPublicId = person.publicId
 
-  // Non-PII delete snapshot built BEFORE deletion. PERSON_AUDIT_FIELDS excludes
-  // displayName, gender, birthDate, and externalRef (all person identifiers);
-  // salary amounts never live on the people row.
-  const nonPiiBefore: Record<string, unknown> = {
-    employmentStartDate: person.employmentStartDate ?? null,
-    ftePercent: person.ftePercent ?? null,
-    country: person.country ?? null,
-    isManager: person.isManager ?? null,
-    statisticalCode: person.statisticalCode ?? null,
-    department: person.department ?? null,
-    archivedAt: person.archivedAt ?? null,
-  }
+  // Identity-free delete snapshot built BEFORE deletion.
+  // PERSON_ERASURE_AUDIT_FIELDS is PERSON_AUDIT_FIELDS minus the identity
+  // fields, so the row written AT erasure never captures the name, gender,
+  // employee number, birth date, or job title this very mutation is scrubbing
+  // out of the older rows; salary amounts never live on the people row.
+  const identityFreeBefore = personAuditFields(
+    person,
+    PERSON_ERASURE_AUDIT_FIELDS
+  )
 
   // 1. payRecords (child of people, by_person index).
   const payRows = await ctx.db
@@ -73,14 +73,23 @@ export async function erasePersonRecords(
   //    (ADR-0011): the row stays, identity is tombstoned, aggregate kept.
   await pseudonymizePersonInSnapshots(ctx, orgId, personPublicId)
 
-  return nonPiiBefore
+  // 5. Tombstone the person's identity values inside the retained audit trail
+  //    (ADR-0013): person.* diffs record name/gender/employee number/birth
+  //    date/job title, so the same anonymize-not-retain rule applies here as to
+  //    the frozen snapshot above. The rows stay (legitimate interest), their
+  //    identity values and derived searchText do not.
+  await anonymizePersonAuditRows(ctx, orgId, personId)
+
+  return identityFreeBefore
 }
 
 // GDPR right to erasure: hard-deletes a person and all their associated data
 // (payRecords, personAssignments) in child-first order so referential-style
-// invariants are respected. The audit payload carries IDs ONLY (no name, gender,
-// birthDate, email, salary amount) because the audit row itself must survive the
-// erasure and GDPR requires the trail to be PII-free.
+// invariants are respected. The audit payload this writes carries IDs and
+// structural fields ONLY (no name, gender, birthDate, employee number, job
+// title, email, salary amount), and erasePersonRecords has already tombstoned
+// those values in the person's EARLIER rows, so the surviving trail holds no
+// personal data about the erased individual.
 //
 // This is the org-admin-gated HR entry point. adminMutation enforces org-admin
 // role. Deletion is delegated to erasePersonRecords (the single implementation).
@@ -88,12 +97,19 @@ export const erasePersonAsOrg = adminMutation({
   args: { personId: v.id("people") },
   returns: v.null(),
   handler: async (ctx, { personId }) => {
-    const nonPiiBefore = await erasePersonRecords(ctx, ctx.orgId, personId)
+    const identityFreeBefore = await erasePersonRecords(
+      ctx,
+      ctx.orgId,
+      personId
+    )
     await ctx.audit.log({
       type: AUDIT_EVENTS.personErased,
       payload: {
         personId,
-        changes: buildDeleteChanges(nonPiiBefore, PERSON_AUDIT_FIELDS),
+        changes: buildDeleteChanges(
+          identityFreeBefore,
+          PERSON_ERASURE_AUDIT_FIELDS
+        ),
       },
     })
     return null

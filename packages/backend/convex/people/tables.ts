@@ -30,8 +30,10 @@ export const people = defineTable({
   department: v.optional(v.string()),
   // Imported job title string (Befattning). Optional: manually created persons
   // may have no title on record. This is the primary matching signal for the
-  // classification engine (title -> role). Not PII (a job title, not identity),
-  // so it lives on the person row alongside HR-structural attributes.
+  // classification engine (title -> role). A job title is not an identifier in
+  // itself, but it is imported free text a payroll export can carry a name in,
+  // so the audit trail classifies it as identity and tombstones it on erasure
+  // (PERSON_AUDIT_FIELD_KIND in lib/audit.ts, ADR-0013).
   title: v.optional(v.string()),
   // Anställningsform. Canonical values mirror @workspace/constants EMPLOYMENT_TYPES.
   employmentType: v.optional(

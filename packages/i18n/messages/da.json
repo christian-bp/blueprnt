@@ -598,6 +598,10 @@
         "complexValue": "Sammensat værdi"
       },
       "fields": {
+        "displayName": "Navn",
+        "gender": "Køn",
+        "externalRef": "Medarbejdernummer",
+        "birthDate": "Fødselsdato",
         "title": "Titel",
         "function": "Funktion",
         "team": "Team",
@@ -678,6 +682,7 @@
       "values": {
         "yes": "Ja",
         "no": "Nej",
+        "erased": "Slettet",
         "status": {
           "accepted": "Accepteret",
           "rejected": "Afvist",

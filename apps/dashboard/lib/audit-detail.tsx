@@ -394,6 +394,13 @@ export function changeEntries(
 // guarantee object key order on read of a v.any() payload). Unknown fields keep
 // their original relative order, after the known ones.
 export const FIELD_DISPLAY_ORDER = [
+  // Person identity fields (person.* events) lead: a person diff reads like the
+  // person form, name first. No role/model event carries them, so they cost
+  // those events nothing.
+  "displayName",
+  "gender",
+  "externalRef",
+  "birthDate",
   "title",
   "name",
   "trackKey",

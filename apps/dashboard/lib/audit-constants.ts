@@ -190,6 +190,15 @@ export const EMPLOYMENT_TYPE_VALUE_KEYS: Record<EmploymentType, string> = {
   hourly: "auditLog.values.employmentType.hourly",
 }
 
+// person.* `gender` (people/tables.ts: the Swedish wire codes Man|Kvinna),
+// labeled where the people register already labels them, so the audit diff
+// reads "Gender: Man -> Woman" and never the raw "Kvinna".
+type PersonGender = "Man" | "Kvinna"
+export const GENDER_VALUE_KEYS: Record<PersonGender, string> = {
+  Man: "people.gender.Man",
+  Kvinna: "people.gender.Kvinna",
+}
+
 // pay.salarySet/salaryDeleted `source` (people/pay.ts: import|manual). Only
 // the pay diffs carry `source` INSIDE changes; the top-level provenance
 // `source` renders through detail.provenance.sourceValues instead.
@@ -224,9 +233,34 @@ const CODED_FIELD_DOMAINS: Record<string, Record<string, string>> = {
   industry: INDUSTRY_VALUE_KEYS,
   biasRisk: BIAS_RISK_VALUE_KEYS,
   employmentType: EMPLOYMENT_TYPE_VALUE_KEYS,
+  gender: GENDER_VALUE_KEYS,
   source: SALARY_SOURCE_VALUE_KEYS,
   trackKey: TRACK_VALUE_KEYS,
 }
+
+// The tombstone the backend writes over an erased person's identity values in
+// the retained audit trail (ERASED_FIELD_VALUE in lib/audit.ts, ADR-0013), and
+// the fields that can carry it (PERSON_IDENTITY_AUDIT_FIELDS). Both mirrored
+// here rather than imported, like AUDIT_FILTER_CATEGORIES above, with
+// audit-labels.test.ts as the drift guard.
+//
+// A scrubbed row must read "Name: Erased", never the bare word "erased", which
+// would be indistinguishable from a value someone typed. resolveCodedValue
+// therefore answers the tombstone before the per-field domains, but only for
+// these fields: the marker is a real English word, so resolving it on ANY field
+// would relabel a department, role family, or note that a customer legitimately
+// named "erased" as scrubbed data. (`title` is shared with a role's title, so
+// that one field keeps the false positive; a role named "erased" is not a case
+// worth more machinery than this comment.)
+export const ERASED_AUDIT_VALUE = "erased"
+
+export const ERASED_AUDIT_VALUE_FIELDS: ReadonlySet<string> = new Set([
+  "displayName",
+  "gender",
+  "externalRef",
+  "birthDate",
+  "title",
+])
 
 // Resolves one payload field's raw coded VALUE to its localized label, via
 // the caller's `translate` (typically a t.has-guarded lookup against a
@@ -242,6 +276,9 @@ export function resolveCodedValue(
   value: string,
   translate: (key: string) => string | undefined
 ): string | undefined {
+  if (value === ERASED_AUDIT_VALUE && ERASED_AUDIT_VALUE_FIELDS.has(field)) {
+    return translate("auditLog.values.erased")
+  }
   if (field === "reasons") {
     if (value.trim() === "") return undefined
     return value
@@ -272,9 +309,10 @@ export const AUDIT_DATE_FIELDS: ReadonlySet<string> = new Set([
   "onboardingCompletedAt",
 ])
 
-// ISO-date-string payload fields (person employmentStartDate): localized
-// through the same dateLabel, so one sheet never mixes "2024-01-15" with
-// "Jan 15, 2024".
+// ISO-date-string payload fields (person employmentStartDate, birthDate):
+// localized through the same dateLabel, so one sheet never mixes "2024-01-15"
+// with "Jan 15, 2024".
 export const AUDIT_ISO_DATE_FIELDS: ReadonlySet<string> = new Set([
   "employmentStartDate",
+  "birthDate",
 ])
