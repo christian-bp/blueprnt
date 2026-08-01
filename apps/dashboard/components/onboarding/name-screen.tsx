@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form"
 import { NextButton } from "@/components/onboarding/next-button"
 import { OnboardingInput } from "@/components/onboarding/onboarding-input"
 import { ScreenShell } from "@/components/screen-shell"
+import { WizardFooter } from "@/components/onboarding/wizard-footer"
 import { authClient } from "@/lib/auth-client"
 import { makeOrgNameSchema, type OrgNameValues } from "@/lib/onboarding-schemas"
 import { organizationSlug } from "@/lib/slug"
@@ -80,31 +81,37 @@ export function NameScreen({
   return (
     <ScreenShell heading={tScreens("name.heading")}>
       <Form {...form}>
+        {/* The whole column is capped, not just the field: a single short
+            answer does not want the shell's full width, and the footer sharing
+            the cap keeps Next's right edge on the field's right edge. */}
         <form
-          className="flex w-full flex-col items-center gap-6"
+          className="flex w-full max-w-sm flex-col gap-6"
           onSubmit={form.handleSubmit(onValid)}
         >
           <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
-              <FormItem className="flex w-full max-w-sm flex-col">
+              <FormItem className="flex w-full flex-col">
                 <FormControl>
                   <OnboardingInput
                     aria-label={t("nameLabel")}
                     placeholder={t("namePlaceholder")}
-                    className="text-center"
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="text-center" />
+                <FormMessage />
               </FormItem>
             )}
           />
-          <NextButton
-            type="submit"
-            disabled={!form.formState.isValid || form.formState.isSubmitting}
-          />
+          {/* The forward CTA sits in the shared footer row (right-aligned) like
+              every other wizard step, not centered under the field. */}
+          <WizardFooter>
+            <NextButton
+              type="submit"
+              disabled={!form.formState.isValid || form.formState.isSubmitting}
+            />
+          </WizardFooter>
           {failed && (
             <p role="alert" className="text-destructive text-sm">
               {t("error")}

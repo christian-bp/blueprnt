@@ -230,6 +230,27 @@ describe("FamiliesStep", () => {
     expect(next.disabled).toBe(true)
   })
 
+  // The format hint is always visible (not only inside the help popover), and
+  // it is the textarea's description so it reaches screen readers with the
+  // field rather than as a loose line after it.
+  it("describes the field with a visible format hint", () => {
+    renderStep()
+    const hint = screen.getByText(t.pasteHint)
+    expect(
+      screen.getByLabelText(t.pasteLabel).getAttribute("aria-describedby")
+    ).toBe(hint.id)
+    // The help body stays behind the popover trigger.
+    expect(screen.queryByText(t.pasteHelpBody)).toBeNull()
+  })
+
+  it("drops the paste hint once the review list is shown", async () => {
+    currentFamilies = existingFamiliesFixture()
+    currentRoles = existingRolesFixture()
+    renderStep()
+    expect(await screen.findByText(t.reviewHint)).toBeDefined()
+    expect(screen.queryByText(t.pasteHint)).toBeNull()
+  })
+
   it("sends the pasted text to the AI on next", async () => {
     requestStarterImportMock.mockResolvedValue("sugg-1")
     renderStep()
