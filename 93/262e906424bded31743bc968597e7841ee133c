@@ -1,0 +1,47 @@
+packages/i18n/messages/sv.json
+  s_3c88210d88fd70::t_7610a4f934e451 1456-1458,1460
+  s_3c88210d88fd70::t_3adc4b00d72ddb 1464
+apps/dashboard/components/onboarding/families-step.tsx
+  s_3c88210d88fd70::t_f0fb89d9ca8a92 103-107
+  s_3c88210d88fd70::t_50b0e66ac0992c 148-151
+  s_3c88210d88fd70::t_1a97748c743e44 190
+  s_3c88210d88fd70::t_b6687b834b6a18 191-193
+  s_3c88210d88fd70::t_d6387a067d79df 194-195,198-199,204-208
+  s_3c88210d88fd70::t_c83b249cc27f8a 158-171,173-188
+apps/dashboard/components/onboarding/name-screen.tsx
+  s_3c88210d88fd70::t_ed111a503c5e1f 17
+  s_3c88210d88fd70::t_65232768b50b2c 84-86,88
+  s_3c88210d88fd70::t_218afdbf615deb 95,103,107-114
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_3c88210d88fd70::t_68feb2f3a2aa05 247-248
+  s_3c88210d88fd70::t_02530138c8fb48 237-245,249-253
+  s_3c88210d88fd70::t_24b8035f32a497 233-236,246
+packages/i18n/messages/fi.json
+  s_3c88210d88fd70::t_b94a2ebd0abf39 1456-1458,1460
+  s_3c88210d88fd70::t_b6294fb88387e0 1464
+packages/i18n/messages/en.json
+  s_3c88210d88fd70::t_62c9f9e0ee8103 1464
+  s_3c88210d88fd70::t_18117b0ce3416f 1456-1458,1460
+packages/i18n/messages/nb.json
+  s_3c88210d88fd70::t_d2b7a4c3f08108 1456-1458,1460
+  s_3c88210d88fd70::t_c64fa677340efa 1464
+packages/i18n/messages/da.json
+  s_3c88210d88fd70::t_c61c6cd2c0f42c 1456-1458,1460
+  s_3c88210d88fd70::t_42e928d7efebed 1464
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.19",
+  "base_commit_sha": "93262e906424bded31743bc968597e7841ee133c",
+  "prompts": {},
+  "sessions": {
+    "s_3c88210d88fd70": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0161171c-f880-4632-927c-5554261477d2",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
