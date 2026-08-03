@@ -123,6 +123,21 @@ async function readRole(
   return await t.run(async (ctx) => ctx.db.get(roleId))
 }
 
+// Seeds an org (with model) and `count` empty-profile roles, for the
+// roleIds-scoping tests below. Wraps seedOrg + insertRole so the seeded shape
+// matches every other test in this file.
+async function seedRolesWithEmptyProfiles(
+  t: ReturnType<typeof initConvexTest>,
+  count: number
+): Promise<{ orgId: string; userId: string; roleIds: Id<"roles">[] }> {
+  const { orgId, userId } = await seedOrg(t, "prefill-scope@acme.se")
+  const roleIds: Id<"roles">[] = []
+  for (let i = 0; i < count; i++) {
+    roleIds.push(await insertRole(t, orgId, { title: `Scoped Role ${i}` }))
+  }
+  return { orgId, userId, roleIds }
+}
+
 describe("prefillRoleProfiles", () => {
   beforeEach(() => {
     generateTextMock.mockReset()
@@ -158,6 +173,7 @@ describe("prefillRoleProfiles", () => {
 
     const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
       orgId,
+      via: "onboardingPrefill",
     })
     expect(result).toEqual({ generated: 3, failed: 0 })
 
@@ -248,6 +264,42 @@ describe("prefillRoleProfiles", () => {
     })
   })
 
+  // The prefill runs from two surfaces, and the audit row it writes is a
+  // LABELLED provenance value the reader sees. Every in-app import used to
+  // record "Onboarding prefill", which is a false statement about an editor
+  // adding roles to a years-old org, in the exact row the auto-apply exception
+  // rests on.
+  it("records the calling surface as the prefill provenance", async () => {
+    const t = initConvexTest()
+    const { orgId, asAdmin } = await seedOrg(t, "prefill-via@acme.se")
+    const roleId = await insertRole(t, orgId, { title: "Imported Role" })
+    generateTextMock.mockImplementation(async (options: { prompt: string }) =>
+      okBatch(options.prompt, (title) => ({
+        purpose: `Purpose of ${title}.`,
+        responsibilities: `Responsibilities of ${title}`,
+      }))
+    )
+
+    await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
+      orgId,
+      via: "roleImportPrefill",
+    })
+
+    await t.run(async (ctx) => {
+      const rows = await ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "role.updated")
+        )
+        .collect()
+      const row = rows.find(
+        (entry) => (entry.payload as Record<string, unknown>).roleId === roleId
+      )
+      if (row === undefined) throw new Error("no role.updated row for the role")
+      expect((row.payload as { via: string }).via).toBe("roleImportPrefill")
+    })
+  })
+
   it("maps each profile by its ECHOED index even when the model reorders them", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t, "prefill-reorder@acme.se")
@@ -271,6 +323,7 @@ describe("prefillRoleProfiles", () => {
 
     const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
       orgId,
+      via: "onboardingPrefill",
     })
     expect(result).toEqual({ generated: 3, failed: 0 })
     expect(generateTextMock).toHaveBeenCalledTimes(1)
@@ -303,6 +356,7 @@ describe("prefillRoleProfiles", () => {
 
     const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
       orgId,
+      via: "onboardingPrefill",
     })
     // The single call failed; all three roles are counted failed, none applied.
     expect(result).toEqual({ generated: 0, failed: 3 })
@@ -356,6 +410,7 @@ describe("prefillRoleProfiles", () => {
 
     const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
       orgId,
+      via: "onboardingPrefill",
     })
     // The single call failed; all three roles are counted failed, none applied.
     expect(result).toEqual({ generated: 0, failed: 3 })
@@ -405,6 +460,7 @@ describe("prefillRoleProfiles", () => {
 
     const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
       orgId,
+      via: "onboardingPrefill",
     })
     // The single call failed; all three roles are counted failed, none applied.
     expect(result).toEqual({ generated: 0, failed: 3 })
@@ -439,6 +495,7 @@ describe("prefillRoleProfiles", () => {
 
     const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
       orgId,
+      via: "onboardingPrefill",
     })
     expect(result).toEqual({ generated: 0, failed: 0 })
     expect(generateTextMock).toHaveBeenCalledTimes(0)
@@ -471,6 +528,7 @@ describe("prefillRoleProfiles", () => {
 
     const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
       orgId,
+      via: "onboardingPrefill",
     })
     expect(result).toEqual({ generated: 23, failed: 0 })
     expect(generateTextMock).toHaveBeenCalledTimes(5)
@@ -522,6 +580,7 @@ describe("prefillRoleProfiles", () => {
 
     const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
       orgId,
+      via: "onboardingPrefill",
     })
     // Chunk 0 (roles 0-4) failed; the other four chunks (18 roles) applied.
     expect(result).toEqual({ generated: 18, failed: 5 })
@@ -574,6 +633,7 @@ describe("prefillRoleProfiles", () => {
 
     const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
       orgId,
+      via: "onboardingPrefill",
     })
     expect(result).toEqual({ generated: 2, failed: 0 })
     expect(generateTextMock).toHaveBeenCalledTimes(1)
@@ -606,6 +666,7 @@ describe("prefillRoleProfiles", () => {
 
     const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
       orgId,
+      via: "onboardingPrefill",
     })
     expect(result).toEqual({ generated: 2, failed: 0 })
     // The family clause prefix never appears when no role has a family, so the
@@ -638,6 +699,7 @@ describe("prefillRoleProfiles", () => {
 
     const result = await asAdmin.action(api.ai.prefill.prefillRoleProfiles, {
       orgId,
+      via: "onboardingPrefill",
     })
     expect(result).toEqual({ generated: 1, failed: 0 })
     expect(capturedPrompt).not.toContain("role family")
@@ -658,7 +720,10 @@ describe("prefillRoleProfiles", () => {
     const asOutsider = t.withIdentity({ subject: outsiderId })
 
     await expect(
-      asOutsider.action(api.ai.prefill.prefillRoleProfiles, { orgId })
+      asOutsider.action(api.ai.prefill.prefillRoleProfiles, {
+        orgId,
+        via: "onboardingPrefill",
+      })
     ).rejects.toThrow(/errors.notAMember/)
     // No generation happened for the foreign org.
     expect(generateTextMock).toHaveBeenCalledTimes(0)
@@ -763,5 +828,54 @@ describe("collectPrefillTargets generation locale", () => {
     )
 
     expect(context.locale).toBe("sv")
+  })
+})
+
+describe("collectPrefillTargets role scope", () => {
+  beforeEach(() => {
+    // No generateText is invoked in this block; kept for parity with the rest
+    // of the suite, same as the other query-only describe blocks above.
+    vi.stubEnv("MISTRAL_API_KEY", "test-key")
+  })
+
+  it("narrows to the given roleIds", async () => {
+    const t = initConvexTest()
+    const { orgId, userId, roleIds } = await seedRolesWithEmptyProfiles(t, 3)
+    const scoped = roleIds.slice(0, 2)
+    const { targets } = await t.query(
+      internal.ai.prefillData.collectPrefillTargets,
+      { orgId, userId, roleIds: scoped }
+    )
+    expect(targets.map((target) => target.roleId).sort()).toEqual(
+      scoped.slice().sort()
+    )
+  })
+
+  it("still excludes a scoped role that already has a profile", async () => {
+    const t = initConvexTest()
+    const { orgId, userId, roleIds } = await seedRolesWithEmptyProfiles(t, 2)
+    const [first, second] = roleIds
+    if (first === undefined || second === undefined) throw new Error("seed")
+    await t.run(async (ctx) => {
+      await ctx.db.patch(first, {
+        purpose: "Already written",
+        responsibilities: "Already written",
+      })
+    })
+    const { targets } = await t.query(
+      internal.ai.prefillData.collectPrefillTargets,
+      { orgId, userId, roleIds: [first, second] }
+    )
+    expect(targets.map((target) => target.roleId)).toEqual([second])
+  })
+
+  it("returns every empty role when no scope is given", async () => {
+    const t = initConvexTest()
+    const { orgId, userId, roleIds } = await seedRolesWithEmptyProfiles(t, 3)
+    const { targets } = await t.query(
+      internal.ai.prefillData.collectPrefillTargets,
+      { orgId, userId }
+    )
+    expect(targets).toHaveLength(roleIds.length)
   })
 })

@@ -98,7 +98,7 @@ export type ModelUpdatedPayload =
       changes: Changes
     }
 
-// ai.suggestionConfirmed is heterogeneous, keyed on `kind`: the three
+// ai.suggestionConfirmed is heterogeneous, keyed on `kind`: the four
 // suggestion kinds with a confirm path (role-profile AI applies log
 // role.updated instead, so there is no role-kind variant here). Discriminated
 // so each kind's distinct fields stay required. The model kinds carry modelId
@@ -132,6 +132,14 @@ export type AiConfirmedPayload =
       kind: "starter.import"
       familyCount: number
       roleCount: number
+      families: unknown[]
+    }
+  | {
+      suggestionId: string
+      kind: "role.import"
+      familyCount: number
+      roleCount: number
+      skippedCount: number
       families: unknown[]
     }
 

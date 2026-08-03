@@ -1,19 +1,17 @@
 "use client"
 
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Progress } from "@workspace/ui/components/progress"
-import { Spinner } from "@workspace/ui/components/spinner"
 import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
-import { useEffect, useState } from "react"
 import { useOrganization } from "@/components/org-context"
+import { WizardProgress } from "@/components/wizard-progress"
 
 // The importing screen's loading state: a spinner (the action is working)
 // above a progress bar that only ever shows REAL row counts, written by the
-// import action to the importProgress table and read reactively. The bar
-// stays at 0 during the action's setup phase and holds its last value when
-// the progress row is cleared at completion (the wizard swaps to the done
-// screen a moment later).
+// import action to the importProgress table and read reactively. WizardProgress
+// owns the percentage derivation and the monotonic clamp: feeding it 0/0
+// while progress is null (the setup phase, and the moment the row is cleared
+// at completion) holds the bar at its last value rather than snapping back.
 export function ImportingStep({ importId }: { importId: string }) {
   const t = useTranslations("dashboard.people.import.importing")
   const { orgId } = useOrganization()
@@ -23,46 +21,21 @@ export function ImportingStep({ importId }: { importId: string }) {
     orgId,
     importId,
   })
-  const [pct, setPct] = useState(0)
-
-  useEffect(() => {
-    if (progress !== null && progress !== undefined && progress.total > 0) {
-      const next = Math.round((progress.processed / progress.total) * 100)
-      // The server counts are monotonic; the max is a safety net so the bar
-      // can never move backwards.
-      setPct((p) => Math.max(p, next))
-    }
-  }, [progress])
 
   return (
-    <div className="flex w-full flex-col gap-3">
-      {/* One status row above the bar (the download-progress anatomy): what is
-          happening on the left, how far it has come on the right. The count
-          renders into its own right-aligned slot, so its appearance shifts
-          nothing; tabular-nums keeps it from jiggling while counting up. */}
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          {/* Decorative: the Progress element carries the accessible state. */}
-          <Spinner aria-hidden="true" className="text-brand" />
-          <span className="text-muted-foreground text-sm">{t("working")}</span>
-        </div>
-        <p
-          className="text-muted-foreground text-sm tabular-nums"
-          data-testid="import-progress-count"
-        >
-          {progress !== null && progress !== undefined
-            ? t("progressCount", {
-                processed: progress.processed,
-                total: progress.total,
-              })
-            : null}
-        </p>
-      </div>
-      <Progress
-        value={pct}
-        aria-label={t("title")}
-        data-testid="import-progress"
-      />
-    </div>
+    <WizardProgress
+      done={progress?.processed ?? 0}
+      total={progress?.total ?? 0}
+      label={t("working")}
+      countLabel={
+        progress !== null && progress !== undefined
+          ? t("progressCount", {
+              processed: progress.processed,
+              total: progress.total,
+            })
+          : undefined
+      }
+      testId="import-progress"
+    />
   )
 }

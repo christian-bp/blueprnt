@@ -56,6 +56,7 @@ import { TableSkeleton } from "@/components/table-skeleton"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { endOfDay, startOfDay } from "@/lib/date-bounds"
 import {
+  AI_KIND_KEY,
   AUDIT_FILTER_CATEGORIES,
   resolveCodedValue,
 } from "@/lib/audit-constants"
@@ -66,10 +67,10 @@ import {
 } from "@/lib/audit-page-view"
 import {
   aiAuditDetail,
-  AI_KIND_KEY,
   auditContextParts,
   changeEntries,
   formatAuditDetail,
+  isSuggestionKind,
   orderEntries,
   payloadChanges,
   payloadItems,
@@ -816,7 +817,9 @@ function AuditDetailSheet({
                 </h3>
                 <ul className="space-y-2">
                   {suggestions.items.map((item) => {
-                    const kindKey = AI_KIND_KEY[item.kind]
+                    const kindKey = isSuggestionKind(item.kind)
+                      ? AI_KIND_KEY[item.kind]
+                      : undefined
                     const kindLabel = kindKey
                       ? t(`ai.kind.${kindKey}` as Parameters<typeof t>[0])
                       : item.kind

@@ -21,12 +21,14 @@ import {
   INDUSTRY_KEYS,
   PAY_GAP_REASONS,
   PRAXIS_AREA_KEYS,
+  SUGGESTION_KINDS,
   TRACK_LEVELS,
 } from "@workspace/constants"
 import en from "@workspace/i18n/messages/en.json"
 import { routing } from "@workspace/i18n/routing"
 import { describe, expect, it } from "vitest"
 import {
+  AI_KIND_VALUE_KEYS,
   AUDIT_FILTER_CATEGORIES,
   BIAS_RISK_VALUE_KEYS,
   COUNTRY_VALUE_KEYS,
@@ -151,6 +153,13 @@ const OTHER_AUDIT_FIELDS = [
   // ai.suggestionConfirmed model.draft bulk item diffs (ai/suggest.ts)
   "originalWeightPoints",
   "anchorCount",
+  // ai.suggestionConfirmed model.draft / model.weightReview flat-stat fields
+  // (auditPayloads.ts AiConfirmedPayload). These render through
+  // payloadStats/StatList, so an unlabelled one prints its raw payload key.
+  "acceptedCount",
+  "totalProposed",
+  "appliedCount",
+  "totalMoves",
   // member.* / invitation.* / platform.membership* / organization.created scalars
   "role",
   "status",
@@ -177,6 +186,13 @@ const OTHER_AUDIT_FIELDS = [
   // payMapping.runCompleted flat-stat fields
   "equalWorkDone",
   "equivalentWorkDone",
+  // ai.suggestionConfirmed flat-stat fields (the import kinds). These render
+  // through payloadStats/StatList, not a `changes` diff, so without a label
+  // the sheet printed the raw payload keys.
+  "kind",
+  "familyCount",
+  "roleCount",
+  "skippedCount",
 ] as const
 
 const ALL_AUDIT_FIELDS = [
@@ -302,6 +318,9 @@ describe("audit log value labels", () => {
     expect(Object.keys(TRACK_VALUE_KEYS).sort()).toEqual(
       Object.keys(TRACK_LEVELS).sort()
     )
+    expect(Object.keys(AI_KIND_VALUE_KEYS).sort()).toEqual(
+      Object.values(SUGGESTION_KINDS).sort()
+    )
   })
 
   it("every coded value's i18n key resolves to a real string in en", () => {
@@ -321,6 +340,7 @@ describe("audit log value labels", () => {
       ...Object.values(INDUSTRY_VALUE_KEYS),
       ...Object.values(SALARY_SOURCE_VALUE_KEYS),
       ...Object.values(TRACK_VALUE_KEYS),
+      ...Object.values(AI_KIND_VALUE_KEYS),
     ]
     const missing = allKeys.filter(
       (key) => typeof resolveDashboardKey(key) !== "string"

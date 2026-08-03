@@ -1,11 +1,21 @@
-import { MAX_STARTER_IMPORT_TEXT, SUGGESTION_KINDS } from "@workspace/constants"
+import {
+  MAX_FAMILIES,
+  MAX_ROLES,
+  MAX_STARTER_IMPORT_TEXT,
+  SUGGESTION_KINDS,
+} from "@workspace/constants"
 import { isWeightPoints } from "@workspace/core"
 import { v } from "convex/values"
 import { components, internal } from "../_generated/api"
 import type { MutationCtx } from "../_generated/server"
 import { internalQuery } from "../_generated/server"
 import { deriveResults } from "../assessment/compute"
-import { insertStarterSet, starterFamilyShape } from "../assessment/starters"
+import {
+  additiveFamilyShape,
+  insertAdditiveRoles,
+  insertStarterSet,
+  starterFamilyShape,
+} from "../assessment/starters"
 import {
   clampLocale,
   isCriterionKey,
@@ -19,6 +29,7 @@ import { AUDIT_EVENTS, buildCreateChanges } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgMutation, orgQuery } from "../lib/functions"
 import { AI_MODEL_ID, AI_PROVIDER } from "./config"
+import { isSuggestionClosed } from "./persist"
 import { repairDraftWeights } from "./weights"
 
 interface SettingsContext {
@@ -521,6 +532,65 @@ export const requestStarterImport = orgMutation({
   },
 })
 
+// The in-app role import: the same paste-and-group generation as the
+// onboarding starter import, but for an org that already has a register. Its
+// own kind, so the two surfaces can never pick up each other's open proposals
+// and so AI spend stays attributable per surface. Member scope, like
+// createRole.
+export const requestRoleImport = orgMutation({
+  args: { rawText: v.string(), locale: v.optional(v.string()) },
+  returns: v.id("suggestions"),
+  handler: async (ctx, { rawText, locale }) => {
+    const settings = await requireCompleteSettings(ctx, ctx.orgId)
+    const text = rawText.trim()
+    if (text.length === 0 || text.length > MAX_STARTER_IMPORT_TEXT) {
+      throw appError(ERROR_CODES.invalidInput)
+    }
+    const resolvedLocale = promptLocale(locale, settings.locale)
+    const trackNames = templateContent(clampLocale(resolvedLocale)).trackNames
+    // The org's existing families go into the prompt so the model reuses an
+    // exact name where a pasted role fits one, instead of inventing
+    // "Engineering Team" beside the existing "Engineering". Family names are
+    // role-level organizational content: no person data is involved.
+    // Capped at MAX_FAMILIES (the same bound the import itself accepts):
+    // nothing limits how many families an org accumulates, and an unbounded
+    // list would grow the prompt without bound on a large register.
+    const families = await ctx.db
+      .query("roleFamilies")
+      .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
+      .collect()
+    const existingFamilies = families
+      .slice(0, MAX_FAMILIES)
+      .map((family) => family.name)
+    const suggestionId = await ctx.db.insert("suggestions", {
+      orgId: ctx.orgId,
+      target: { kind: SUGGESTION_KINDS.roleImport },
+      suggestedValue: null,
+      source: "ai",
+      status: "generating",
+      model: { provider: AI_PROVIDER, model: AI_MODEL_ID },
+      requestedBy: ctx.authUserId,
+    })
+    await ctx.scheduler.runAfter(
+      0,
+      internal.ai.generate.generateStarterImport,
+      {
+        suggestionId,
+        locale: resolvedLocale,
+        industry: settings.industry,
+        country: settings.country,
+        ...(settings.employeeCount !== undefined
+          ? { employeeCount: settings.employeeCount }
+          : {}),
+        rawText: text,
+        tracks: TRACK_KEYS.map((key) => ({ key, name: trackNames[key] })),
+        existingFamilies,
+      }
+    )
+    return suggestionId
+  },
+})
+
 // Confirms the AI import with the user's EDITED list: the suggestion stores
 // what the AI proposed, the confirm receives what the human approved after
 // review (ADR-0003). Rows insert through the same validated path as
@@ -570,6 +640,86 @@ export const confirmStarterImport = orgMutation({
   },
 })
 
+// Confirms the in-app role import with the user's EDITED list. Unlike
+// confirmStarterImport this is purely additive: it never archives or renames
+// anything, and a family carrying a familyId means "add into that existing
+// family". Member scope, like createRole and the role register.
+export const confirmRoleImport = orgMutation({
+  args: {
+    suggestionId: v.id("suggestions"),
+    families: v.array(additiveFamilyShape),
+    // How many titles the REVIEW already dropped as already-present before
+    // submitting. The server cannot re-derive this: the resolver strips those
+    // rows out of the payload on purpose (so they neither consume the MAX_ROLES
+    // budget nor inflate the "Create N roles" count), which leaves the server
+    // able to count only the races that slipped in after review. Without this
+    // the audit row recorded 0 skipped for every import that skipped anything.
+    skippedInReview: v.number(),
+  },
+  returns: v.object({
+    createdRoleIds: v.array(v.id("roles")),
+    familyCount: v.number(),
+    roleCount: v.number(),
+    skippedCount: v.number(),
+  }),
+  handler: async (ctx, { suggestionId, families, skippedInReview }) => {
+    const suggestion = await ctx.db.get(suggestionId)
+    if (
+      suggestion === null ||
+      suggestion.orgId !== ctx.orgId ||
+      suggestion.target.kind !== SUGGESTION_KINDS.roleImport ||
+      suggestion.status !== "suggested"
+    ) {
+      throw appError(ERROR_CODES.notFound)
+    }
+    // A client-supplied number that lands in the audit trail, and the only
+    // stat in the trail the server cannot re-derive (the review's own drops
+    // are gone by the time this runs). Bounded, but CLAMPED rather than
+    // rejected: it feeds a count and nothing else, and the total legitimately
+    // exceeds MAX_ROLES when the seed dropped a large set of already-present
+    // roles before the review even opened. Throwing there would kill a valid
+    // import over a statistic, behind a generic error with nothing on screen
+    // to correct. A malformed value is still a client bug and is refused.
+    if (!Number.isInteger(skippedInReview) || skippedInReview < 0) {
+      throw appError(ERROR_CODES.invalidInput)
+    }
+    const skippedReported = Math.min(skippedInReview, MAX_ROLES)
+    const result = await insertAdditiveRoles(ctx, {
+      orgId: ctx.orgId,
+      actorId: ctx.authUserId,
+      families,
+    })
+    // Nothing landed (every role already existed, or the list was emptied in
+    // review): the proposal closes as rejected, mirroring the other confirms.
+    await ctx.db.patch(suggestionId, {
+      status: result.roleCount > 0 ? "confirmed" : "rejected",
+      confirmedBy: ctx.authUserId,
+    })
+    // The per-row role.created / roleFamily.created rows carry the field-level
+    // snapshots; this is the import-level summary. The skipped total spans both
+    // halves of the decision: what the review dropped before submitting, plus
+    // what this write found already taken (a role created in another tab
+    // between review and confirm).
+    await ctx.audit.log({
+      type: AUDIT_EVENTS.aiSuggestionConfirmed,
+      payload: {
+        suggestionId,
+        kind: SUGGESTION_KINDS.roleImport,
+        familyCount: result.familyCount,
+        roleCount: result.roleCount,
+        skippedCount: result.skippedCount + skippedReported,
+        families: result.families,
+      },
+    })
+    return {
+      createdRoleIds: result.createdRoleIds,
+      familyCount: result.familyCount,
+      roleCount: result.roleCount,
+      skippedCount: result.skippedCount,
+    }
+  },
+})
+
 // Member scope: dismissing applies nothing, and editors must be able to
 // dismiss their own role-profile drafts. Two guards keep this from becoming a
 // backdoor around the confirm paths' scoping (model.* confirms are
@@ -577,9 +727,14 @@ export const confirmStarterImport = orgMutation({
 //   1. model.draft / model.weightReview are admin-configuration surfaces, so
 //      dismissing them requires admin, mirroring their confirm paths. Editors
 //      keep dismiss rights over role.profile only.
-//   2. Only the open states (suggested, failed) are dismissible. confirmed and
-//      rejected are terminal, so a confirmed suggestion's human-confirmation
-//      provenance can never be flipped to rejected and reattributed.
+//   2. Only the open states (generating, suggested, failed) are dismissible.
+//      confirmed and rejected are terminal, so a confirmed suggestion's
+//      human-confirmation provenance can never be flipped to rejected and
+//      reattributed. A still-generating row is dismissible on purpose: a
+//      surface the user walked away from has to be able to end the generation
+//      it abandoned (ADR-0003 wants every lifecycle closed), and the
+//      generation's own terminal write is guarded (patchOpenSuggestion in
+//      ai/persist.ts) so it cannot resurrect the row after this.
 // The dismisser is recorded in rejectedBy, never confirmedBy, and the
 // transition writes an audit row like every other state-changing mutation.
 export const rejectSuggestion = orgMutation({
@@ -596,7 +751,7 @@ export const rejectSuggestion = orgMutation({
     if (isModelTarget && ctx.role !== "admin") {
       throw appError(ERROR_CODES.adminRequired)
     }
-    if (suggestion.status !== "suggested" && suggestion.status !== "failed") {
+    if (isSuggestionClosed(suggestion.status)) {
       throw appError(ERROR_CODES.invalidTransition)
     }
     // Snapshot the prior status BEFORE the patch (Convex patch does not mutate

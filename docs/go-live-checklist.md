@@ -90,6 +90,19 @@ in the same change.
 - [ ] **Native review of the overview greeting + to-do strings.** `dashboard.overview.greeting.*` and `dashboard.overview.todo.*` (sv/nb/da/fi) were machine-drafted from English. Have a native speaker review before launch, and confirm the "evaluate" term matches each locale's existing usage (`dashboard.roles.evaluated`).
 - [ ] **Native review of the dashboard side-card + chart strings.** `dashboard.overview.chart.*`, `dashboard.overview.modelReadiness.*`, and `dashboard.overview.gettingStarted.*` (sv/nb/da/fi) were machine-drafted from English. Have a native speaker review before launch.
 - [ ] **Native review of the CRUD toast strings.** `dashboard.toast.*` (sv/nb/da/fi) were machine-drafted from English (sv authored in-house). Have a native speaker review before launch.
+- [ ] **Label the audit payload field `count`.** Every other payload field now
+  resolves to a `dashboard.auditLog.fields.*` label; `count` deliberately does
+  not, so the `ai.suggestionConfirmed` flat-stat line is the one place the audit
+  detail still prints a raw payload key. It was left unlabelled on purpose: three
+  unrelated events write it with three different meanings.
+  `ai.suggestionConfirmed` (`model.draft`: criteria added; `model.weightReview`:
+  weight moves applied), `roleFamily.removed` (roles moved out of the removed
+  family), and `model.discarded` (criteria discarded). The latter two carry a
+  `changes` map, so they render as diffs and hide `count` today, but the label
+  namespace is shared, so one string would have to fit all three. Make the
+  cross-surface wording decision (one neutral term, or split into per-event
+  flat-stat keys), then ship the label in all five locales and register `count`
+  in `OTHER_AUDIT_FIELDS` (`apps/dashboard/lib/audit-labels.test.ts`).
 
 ## Security and compliance
 
@@ -102,6 +115,32 @@ in the same change.
   addresses (and bodies) through Sweego. Confirm the hosting region is EU,
   execute a data-processing agreement, and add Sweego to the subprocessor / DPA
   register before go-live.
+- [ ] **Build or retire the two backend-complete AI flows with no UI.**
+  `SUGGESTION_KINDS.modelDraft` (`model.draft`) and `criterionCompliance` are
+  fully wired server-side (request, confirm, audit labels, tests) but have zero
+  consumers under `apps/`. They are NOT dead code: ADR-0003 names modellutkast
+  as a suggestion-layer flow, and `getWeightReviewLock` reads confirmed
+  `model.draft` rows as part of live lock logic, so deleting them would break
+  working behaviour and contradict a live ADR. Recorded here so they read as
+  scheduled work rather than orphans, since "no legacy before launch" otherwise
+  invites each new reviewer to re-litigate deleting them. Before go-live either
+  ship their panels or remove the kinds together with the lock logic that reads
+  them.
+
+- [ ] **Rate-limit the AI request surfaces per org.** Every `request*` mutation
+  in `ai/suggest.ts` (`requestModelDraft`, `requestWeightReview`,
+  `requestStarterImport`, `requestRoleImport`, plus `prefillRoleProfiles`)
+  schedules a model call, and `ai/usage.ts` records spend without enforcing any
+  quota. **There is no bound of any kind today**, and the obvious cheap ones do
+  not work: reusing an in-flight generation is wrong (the second caller pasted
+  different text and would be shown the first caller's proposal), and any guard
+  keyed on an open row is defeated with no delay at all, because
+  `rejectSuggestion` accepts a `generating` row and is member-scope, so
+  request → reject → request loops freely and each iteration bills a full model
+  call. A real per-org quota (a rate-limit component, or a ceiling read from
+  `ai/usage.ts`) is required before go-live, together with a decision on what
+  the UI shows when it is hit.
+
 - [ ] **Verify the pay-mapping freeze scales past ~1000 employees.** The
   pay-mapping freeze (`startPayMappingRun`) is currently a single transaction.
   Verify it against Convex's per-transaction read/write limits and convert it
@@ -288,6 +327,28 @@ suite covers them before go-live:
   (delete at step 3, scrub at step 5) is exactly the order that would leave
   un-scrubbed rows with no live row to resume from once split across
   transactions.
+  Same class, payload-bounded rather than org-bounded: `insertStarterSet` and
+  `insertAdditiveRoles` (assessment/starters.ts) each write up to 20 families
+  plus 100 roles plus roughly 120 audit rows and their aggregate updates in ONE
+  transaction. The cap is a payload constant (`MAX_FAMILIES` / `MAX_ROLES`), not
+  the org's size, so neither write grows with a large customer. The org-scaled
+  READ cost is not shared between them, though. `insertStarterSet` only
+  collects the org's `roleFamilies` (for family-name uniqueness); its per-role
+  slug check against `roles` (`uniqueSlug`, lib/slug.ts) is a bounded indexed
+  point lookup, not an org-wide collect, so it does not grow with the org's
+  role count. `insertAdditiveRoles` does grow: on top of that same
+  `roleFamilies` collect, it also collects every role in the org to build its
+  title-uniqueness set (the same pattern `reconcileStarterSet` and
+  `assertUniqueRoleTitle` already use). On top of its writes it also issues one
+  `uniqueSlug` call per created role and per created family (roughly 120 at a
+  full import), and each of those is at least one `by_org_slug` index probe,
+  more when the base slug is taken (the prefixed form, then a short-id suffix
+  per retry). Those reads are bounded and indexed, but they count against the
+  transaction's budget, so include them in the estimate rather than counting
+  writes alone. Verify the total against Convex's per-transaction document
+  limits at a full 100-role import before large-org onboarding, and bound
+  `insertAdditiveRoles`' uniqueness read if a register ever reaches thousands
+  of roles.
 
 - [ ] **Re-introducing an erased employee: decide suppression vs controller
   process.** Nothing records that an `externalRef` has been erased, so a later

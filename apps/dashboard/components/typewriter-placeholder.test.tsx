@@ -6,7 +6,7 @@ vi.mock("motion/react", () => ({
   useReducedMotion: () => reducedMotionMock(),
 }))
 
-import { TypewriterPlaceholder } from "@/components/onboarding/typewriter-placeholder"
+import { TypewriterPlaceholder } from "@/components/typewriter-placeholder"
 
 function text(): string {
   return screen.getByTestId("typewriter-placeholder").textContent ?? ""

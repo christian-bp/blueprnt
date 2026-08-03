@@ -3,6 +3,11 @@ import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
 import { initConvexTest } from "../testing.helpers"
+import { roleTitleKey } from "./roles"
+
+// Opaque ids: roleTitleKey only ever stringifies them.
+const FAMILY_A = "fam_a" as Id<"roleFamilies">
+const FAMILY_B = "fam_b" as Id<"roleFamilies">
 
 async function seedTemplateOrganization(
   t: ReturnType<typeof initConvexTest>,
@@ -1069,5 +1074,25 @@ describe("role slugs", () => {
     )
     expect(unfiledDetail?.familyName).toBeNull()
     expect(unfiledDetail?.familySlug).toBeNull()
+  })
+})
+
+describe("roleTitleKey", () => {
+  it("is case-insensitive and whitespace-insensitive", () => {
+    expect(roleTitleKey(FAMILY_A, "  Backend Engineer ")).toBe(
+      roleTitleKey(FAMILY_A, "backend engineer")
+    )
+  })
+
+  it("scopes the key to the family", () => {
+    expect(roleTitleKey(FAMILY_A, "Developer")).not.toBe(
+      roleTitleKey(FAMILY_B, "Developer")
+    )
+  })
+
+  it("gives family-less roles their own scope", () => {
+    expect(roleTitleKey(undefined, "Developer")).not.toBe(
+      roleTitleKey(FAMILY_A, "Developer")
+    )
   })
 })

@@ -87,4 +87,33 @@ describe("uniqueSlug", () => {
     })
     expect(slug).toBe("sales-manager")
   })
+
+  it("never gives a role a slug a static route would shadow", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      const importSlug = await uniqueSlug(ctx, "roles", "org-1", "Import")
+      const familiesSlug = await uniqueSlug(ctx, "roles", "org-1", "Families")
+      expect(importSlug).not.toBe("import")
+      expect(familiesSlug).not.toBe("families")
+    })
+  })
+
+  it("prefers the family prefix over a random suffix for a reserved title", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      const slug = await uniqueSlug(ctx, "roles", "org-1", "Import", {
+        prefix: "finance",
+      })
+      expect(slug).toBe("finance-import")
+    })
+  })
+
+  it("leaves role FAMILY slugs alone (no static sibling to shadow)", async () => {
+    const t = initConvexTest()
+    await t.run(async (ctx) => {
+      expect(await uniqueSlug(ctx, "roleFamilies", "org-1", "Import")).toBe(
+        "import"
+      )
+    })
+  })
 })

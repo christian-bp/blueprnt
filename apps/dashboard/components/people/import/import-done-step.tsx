@@ -9,8 +9,8 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
-import { NextButton } from "@/components/onboarding/next-button"
-import { WizardFooter } from "@/components/onboarding/wizard-footer"
+import { NextButton } from "@/components/next-button"
+import { WizardFooter } from "@/components/wizard-footer"
 import type { ImportResultCounts } from "./import-wizard"
 
 // The final wizard screen: what the import actually did. The wizard reaches

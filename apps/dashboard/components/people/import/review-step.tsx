@@ -27,7 +27,7 @@ import { useTranslations } from "next-intl"
 import { useEffect, useRef, useState } from "react"
 import { toast } from "@/lib/toast"
 import { useOrganization } from "@/components/org-context"
-import { WizardFooter } from "@/components/onboarding/wizard-footer"
+import { WizardFooter } from "@/components/wizard-footer"
 import { SubmitButton } from "@/components/submit-button"
 import type { ImportResultCounts, ParsedCsv } from "./import-wizard"
 

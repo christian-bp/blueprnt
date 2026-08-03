@@ -90,6 +90,32 @@ describe("en.json language purity", () => {
   })
 })
 
+// TypewriterPlaceholder types its phrases into a single-line, whitespace-nowrap
+// overlay: a newline never breaks the line, it just runs the next segment into
+// the same line (found in production: the role import's grouped example
+// collapsed into one meaningless run-on line). Guard every locale's phrase for
+// both placeholder families that feed the component, so a future phrase can't
+// reintroduce the bug silently.
+const PLACEHOLDER_PHRASE_PREFIXES = [
+  "dashboard.roles.import.paste.placeholder",
+  "dashboard.onboarding.families.placeholderPhrase",
+]
+
+describe("typewriter placeholder phrases stay single-line", () => {
+  const allLocales = { en, ...locales }
+  for (const [locale, messages] of Object.entries(allLocales)) {
+    it(`${locale}.json has no newline in a placeholder phrase`, () => {
+      const offenders = flattenStringValues(messages)
+        .filter(([key]) =>
+          PLACEHOLDER_PHRASE_PREFIXES.some((prefix) => key.startsWith(prefix))
+        )
+        .filter(([, value]) => value.includes("\n"))
+        .map(([key]) => key)
+      expect(offenders).toEqual([])
+    })
+  }
+})
+
 import { routing } from "./routing"
 
 it("messages folder matches routing.locales exactly", () => {

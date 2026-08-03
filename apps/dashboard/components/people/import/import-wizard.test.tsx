@@ -111,8 +111,8 @@ vi.mock("@/components/wizard-shell", () => ({
   ),
 }))
 
-vi.mock("@/components/onboarding/onboarding-dots", () => ({
-  OnboardingDots: () => null,
+vi.mock("@/components/wizard-dots", () => ({
+  WizardDots: () => null,
 }))
 
 // MapStep now calls useQuery to load the saved mapping profile. Return null

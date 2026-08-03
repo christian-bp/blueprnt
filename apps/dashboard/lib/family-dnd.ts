@@ -1,9 +1,23 @@
-// Pure list operations behind the families-review drag and drop, plus the
-// draft types shared by the families onboarding step. Kept out of the
-// component so the move semantics are unit-testable without simulating
-// pointer events (the full drag interaction is e2e scope).
+// Pure list operations behind the family review table's drag and drop, plus
+// the draft types its callers share. Kept out of the component so the move
+// semantics are unit-testable without simulating pointer events (the full drag
+// interaction is e2e scope).
 
+import type { UniqueIdentifier } from "@dnd-kit/core"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
+
+// dnd-kit ids are shared between sortable roles and droppable family
+// containers, so they carry a type prefix. Parsed here beside the operations
+// that consume the parsed ids, rather than in each surface that drags.
+export function roleIdOf(id: UniqueIdentifier): number | null {
+  const match = /^role-(\d+)$/.exec(String(id))
+  return match === null ? null : Number(match[1])
+}
+
+export function familyIdOf(id: UniqueIdentifier): number | null {
+  const match = /^family-(\d+)$/.exec(String(id))
+  return match === null ? null : Number(match[1])
+}
 
 // The synthetic numeric `id` is the dnd/React key (always present, unique
 // across all families and roles). `roleId`/`familyId` are the REAL backend

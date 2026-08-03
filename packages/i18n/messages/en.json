@@ -90,6 +90,33 @@
     }
   },
   "dashboard": {
+    "dnd": {
+      "cancelled": "Moving {title} was cancelled.",
+      "dropped": "{title} was placed in {family}.",
+      "instructions": "Press space or enter to pick up a role, use the arrow keys to move it, and press space or enter again to drop it. Press escape to cancel.",
+      "over": "{title} is over {family}.",
+      "pickedUp": "Picked up {title}."
+    },
+    "familyTable": {
+      "addFamily": "Add family",
+      "addRoleShort": "Add role",
+      "blankTitle": "No title yet, so this row is ignored.",
+      "collision": "Two new families cannot share a name.",
+      "columnMove": "Move",
+      "columnRemove": "Remove",
+      "columnRole": "Role",
+      "columnTrack": "Track",
+      "dragHandle": "Move role {title}",
+      "duplicate": "Already exists, will be skipped",
+      "familyActions": "Actions for {name}",
+      "nameMissing": "Give this family a name, or its roles will not be added.",
+      "removeFamilyConfirm": "Yes, remove the family",
+      "removeFamilyDescription": "It has not been created yet, so nothing in your register changes. Any roles listed under it will not be added.",
+      "removeFamilyDescriptionExisting": "This family already exists. Removing it here also archives the roles under it when you continue.",
+      "removeFamilyTitle": "Remove this family?",
+      "removeRole": "Remove role {title}",
+      "removeRoleConfirm": "Yes, remove the role"
+    },
     "title": "blueprnt",
     "validation": {
       "required": "This field is required.",
@@ -574,7 +601,8 @@
             "starter": "Starter set",
             "aiImport": "AI import",
             "aiSuggestion": "AI suggestion",
-            "onboardingPrefill": "Onboarding prefill"
+            "onboardingPrefill": "Onboarding prefill",
+            "roleImportPrefill": "Role import prefill"
           }
         }
       },
@@ -668,6 +696,10 @@
         "levelSource": "Level source",
         "originalWeightPoints": "Original weight points",
         "anchorCount": "Anchor count",
+        "acceptedCount": "Accepted criteria",
+        "totalProposed": "Proposed criteria",
+        "appliedCount": "Applied weight moves",
+        "totalMoves": "Proposed weight moves",
         "populationCount": "People included",
         "withPayCount": "With a salary",
         "label": "Name",
@@ -678,7 +710,11 @@
         "groupLabel": "Group",
         "scope": "View",
         "equalWorkDone": "Equal work groups marked done",
-        "equivalentWorkDone": "Equivalent work groups marked done"
+        "equivalentWorkDone": "Equivalent work groups marked done",
+        "kind": "Type",
+        "familyCount": "Families created",
+        "roleCount": "Roles added",
+        "skippedCount": "Skipped"
       },
       "values": {
         "yes": "Yes",
@@ -759,10 +795,14 @@
         "modelDraft": "Model criteria: {count} added",
         "weightReview": "Weight review: {count} applied",
         "starterImport": "Starter import: {families, plural, one {# family} other {# families}}, {roles, plural, one {# role} other {# roles}}",
+        "roleImport": "Role import: {families, plural, one {# family} other {# families}}, {roles, plural, one {# role} other {# roles}}",
         "kind": {
           "modelDraft": "Model criteria",
           "weightReview": "Weight review",
-          "starterImport": "Starter roles"
+          "roleProfile": "Role profile",
+          "starterImport": "Starter roles",
+          "criterionCompliance": "Criterion review",
+          "roleImport": "Imported roles"
         }
       }
     },
@@ -851,6 +891,57 @@
       "description": "Job profiles evaluated against your model. Roles, never persons.",
       "newCta": "Create role",
       "empty": "No roles yet. Create your first role to start evaluating.",
+      "import": {
+        "cta": "Add roles",
+        "navLabel": "Import steps",
+        "steps": {
+          "paste": "Your roles",
+          "review": "Review"
+        },
+        "paste": {
+          "heading": "Which roles should we add?",
+          "label": "Your roles",
+          "hint": "Separate roles with commas, or group them by starting with a family name and a colon.",
+          "helpLabel": "About pasting roles",
+          "helpBody": "Paste whatever you have: a list of titles, a team-by-team breakdown, or a column from a spreadsheet. We group them into role families, match each role to a track, and add them to families you already have where they fit. Nothing is saved until you confirm.\n\nA role family groups roles that share the same kind of work, like Engineering or Sales; families organize the register and never affect the weighting. A track is the kind of job, for example individual contributor or manager; it says nothing about seniority.",
+          "placeholder1": "Legal Counsel, HR Partner, Controller",
+          "placeholder2": "Sales: Account Executive, Sales Manager; Finance: Accountant, Payroll Specialist",
+          "cta": "Analyse",
+          "error": "The roles could not be read. Try again."
+        },
+        "review": {
+          "heading": "Review what will be added",
+          "truncated": "An import takes at most {roles} roles across {families} role families. Anything past that was left out, so add the rest in a second import.",
+          "cta": "{count, plural, one {Create # role} other {Create # roles}}",
+          "nothingToAdd": "{count, plural, one {# role in this list already exists} other {# roles in this list already exist}}, so there is nothing left to add. Add a role to a family, or start over with a different list.",
+          "nothingHere": "There is nothing to add. Add a role to a family, or start over with a new list.",
+          "tooManyRoles": "This is {count} roles. An import takes at most {max} at a time, so remove some rows and add the rest in a second import.",
+          "tooManyFamilies": "An import takes at most {max} role families at a time. Merge or remove some, then add the rest in a second import.",
+          "restart": "Start over",
+          "error": "The roles could not be created. Try again.",
+          "invalid": "Some of these roles were not accepted. Check for a very long name or title, or too many rows, then try again."
+        },
+        "prefilling": {
+          "heading": "Drafting job profiles",
+          "body": "We are writing a purpose and responsibilities for each new role from its name. This can take a moment.",
+          "progress": "{done} of {total} roles"
+        },
+        "done": {
+          "title": "Roles added",
+          "description": "Here is what happened.",
+          "roles": "Roles added",
+          "families": "Families created",
+          "skipped": "Already existed",
+          "cta": "Go to roles",
+          "profilesFailed": "The roles were added, but the job profiles could not be drafted. You can draft them from each role page."
+        },
+        "discard": {
+          "title": "Discard this import?",
+          "description": "The roles you reviewed will not be created. You can start again at any time.",
+          "keep": "Keep reviewing",
+          "discard": "Discard"
+        }
+      },
       "evaluated": "Evaluated",
       "notEvaluated": "Not yet evaluated",
       "table": {
@@ -1464,22 +1555,11 @@
         "templateCta": "Use an industry template",
         "generating": "Organizing your roles into families",
         "nextCta": "Next",
-        "addFamilyCta": "Add family",
-        "addRoleCta": "Add role",
-        "removeFamilyLabel": "Remove family {name}",
-        "removeRoleLabel": "Remove role {title}",
-        "removeFamilyConfirm": "Yes, remove the family",
-        "removeRoleConfirm": "Yes, remove the role",
         "error": "Something went wrong. Try again.",
         "restartCta": "Start over",
         "restartConfirm": "Yes, start over",
         "restartCancel": "Cancel",
-        "dragHandleLabel": "Move role {title}",
-        "dndInstructions": "Press space or enter to pick up a role, use the arrow keys to move it, and press space or enter again to drop it. Press escape to cancel.",
-        "dndPickedUp": "Picked up {title}.",
-        "dndOver": "{title} is over {family}.",
-        "dndDropped": "{title} was placed in {family}.",
-        "dndCancelled": "Moving {title} was cancelled.",
+        "importTruncated": "An import takes at most {roles} roles across {families} role families. Anything past that was left out; you can add the rest later.",
         "reviewHint": "Group the roles into families and set each role's track.",
         "reviewHintStarter": "A starting point from your industry: group roles into families and set each role's track. Change anything later.",
         "ungroupedFamilyName": "Other roles",

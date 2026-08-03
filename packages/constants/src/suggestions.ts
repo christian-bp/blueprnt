@@ -7,6 +7,7 @@ export const SUGGESTION_KINDS = {
   roleProfile: "role.profile",
   starterImport: "starter.import",
   criterionCompliance: "criterion.compliance",
+  roleImport: "role.import",
 } as const
 
 export type SuggestionKind =

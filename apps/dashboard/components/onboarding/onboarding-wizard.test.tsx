@@ -114,8 +114,8 @@ let dotsProps: {
   maxReachedIndex: number
   onSelect: (index: number) => void
 } | null = null
-vi.mock("@/components/onboarding/onboarding-dots", () => ({
-  OnboardingDots: (props: {
+vi.mock("@/components/wizard-dots", () => ({
+  WizardDots: (props: {
     steps: { key: string; label: string }[]
     activeIndex: number
     maxReachedIndex: number

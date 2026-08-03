@@ -6,6 +6,18 @@ import type { MutationCtx } from "../_generated/server"
 // human-readable, per-org-unique `slug` (resolved via the `by_org_slug` index).
 type SlugTable = "roles" | "roleFamilies" | "payMappingRuns"
 
+// Slugs a static route segment would shadow, per table: /roles/import and
+// /roles/families resolve to their own pages, so a role holding either slug
+// would be unreachable at its own URL. Treated as permanently taken, so the
+// generator falls through to the readable prefixed form and then a short-id
+// suffix. Role families sit under /roles/families/<slug>, where no static
+// sibling exists, so they reserve nothing.
+const RESERVED_SLUGS: Record<SlugTable, readonly string[]> = {
+  roles: ["import", "families"],
+  roleFamilies: [],
+  payMappingRuns: [],
+}
+
 // A short, url-safe id derived from a v4 uuid. No new dependency: crypto is
 // available in the Convex runtime (already used in assessment/starters.ts).
 // Used as a slug fallback when a name has no slug-able characters and as a
@@ -51,6 +63,7 @@ export async function uniqueSlug(
   opts: { excludeId?: Id<SlugTable>; prefix?: string } = {}
 ): Promise<string> {
   const isTaken = async (slug: string): Promise<boolean> => {
+    if (RESERVED_SLUGS[table].includes(slug)) return true
     // Branch on the concrete table name so the by_org_slug index (and its
     // compound eq range) resolves; a union table arg loses the index typing.
     const hit =

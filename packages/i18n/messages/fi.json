@@ -90,6 +90,33 @@
     }
   },
   "dashboard": {
+    "dnd": {
+      "cancelled": "Roolin {title} siirto peruutettiin.",
+      "dropped": "{title} sijoitettiin perheeseen {family}.",
+      "instructions": "Poimi rooli painamalla välilyöntiä tai enteriä, siirrä sitä nuolinäppäimillä ja pudota se painamalla välilyöntiä tai enteriä uudelleen. Peruuta painamalla escape.",
+      "over": "{title} on perheen {family} päällä.",
+      "pickedUp": "Poimittiin {title}."
+    },
+    "familyTable": {
+      "addFamily": "Lisää perhe",
+      "addRoleShort": "Lisää rooli",
+      "blankTitle": "Ei vielä nimikettä, joten rivi ohitetaan.",
+      "collision": "Kahdella uudella perheellä ei voi olla samaa nimeä.",
+      "columnMove": "Siirrä",
+      "columnRemove": "Poista",
+      "columnRole": "Rooli",
+      "columnTrack": "Track",
+      "dragHandle": "Siirrä roolia {title}",
+      "duplicate": "On jo olemassa, ohitetaan",
+      "familyActions": "Toiminnot: {name}",
+      "nameMissing": "Anna perheelle nimi, tai sen rooleja ei lisätä.",
+      "removeFamilyConfirm": "Kyllä, poista perhe",
+      "removeFamilyDescription": "Sitä ei ole vielä luotu, joten rekisterisi ei muutu. Sen alla lueteltuja rooleja ei lisätä.",
+      "removeFamilyDescriptionExisting": "Perhe on jo olemassa. Jos poistat sen tästä, myös sen alla olevat roolit arkistoidaan, kun jatkat.",
+      "removeFamilyTitle": "Poistetaanko perhe?",
+      "removeRole": "Poista rooli {title}",
+      "removeRoleConfirm": "Kyllä, poista rooli"
+    },
     "title": "blueprnt",
     "validation": {
       "required": "Tämä kenttä on pakollinen.",
@@ -574,7 +601,8 @@
             "starter": "Aloituspaketti",
             "aiImport": "Tekoälytuonti",
             "aiSuggestion": "Tekoälyehdotus",
-            "onboardingPrefill": "Esitäytetty käyttöönotossa"
+            "onboardingPrefill": "Esitäytetty käyttöönotossa",
+            "roleImportPrefill": "Esitäytetty roolituonnissa"
           }
         }
       },
@@ -668,6 +696,10 @@
         "levelSource": "Tason lähde",
         "originalWeightPoints": "Alkuperäiset painopisteet",
         "anchorCount": "Ankkurien määrä",
+        "acceptedCount": "Hyväksytyt kriteerit",
+        "totalProposed": "Ehdotetut kriteerit",
+        "appliedCount": "Käytetyt painotusmuutokset",
+        "totalMoves": "Ehdotetut painotusmuutokset",
         "populationCount": "Mukana olevat henkilöt",
         "withPayCount": "Palkka tiedossa",
         "label": "Nimi",
@@ -678,7 +710,11 @@
         "groupLabel": "Ryhmä",
         "scope": "Näkymä",
         "equalWorkDone": "Samaa työtä koskevat ryhmät merkitty valmiiksi",
-        "equivalentWorkDone": "Samanarvoista työtä koskevat ryhmät merkitty valmiiksi"
+        "equivalentWorkDone": "Samanarvoista työtä koskevat ryhmät merkitty valmiiksi",
+        "kind": "Tyyppi",
+        "familyCount": "Luodut perheet",
+        "roleCount": "Lisätyt roolit",
+        "skippedCount": "Ohitetut"
       },
       "values": {
         "yes": "Kyllä",
@@ -759,10 +795,14 @@
         "modelDraft": "Mallin kriteerit: {count} lisätty",
         "weightReview": "Painotusten tarkistus: {count} käytetty",
         "starterImport": "Aloitustuonti: {families, plural, one {# perhe} other {# perhettä}}, {roles, plural, one {# rooli} other {# roolia}}",
+        "roleImport": "Roolien tuonti: {families, plural, one {# perhe} other {# perhettä}}, {roles, plural, one {# rooli} other {# roolia}}",
         "kind": {
           "modelDraft": "Mallin kriteerit",
           "weightReview": "Painotusten tarkistus",
-          "starterImport": "Aloitusroolit"
+          "roleProfile": "Roolikuvaus",
+          "starterImport": "Aloitusroolit",
+          "criterionCompliance": "Kriteerien tarkistus",
+          "roleImport": "Tuodut roolit"
         }
       }
     },
@@ -851,6 +891,57 @@
       "description": "Tehtäväprofiilit, joita arvioidaan mallinne perusteella. Roolit, ei koskaan henkilöt.",
       "newCta": "Luo rooli",
       "empty": "Ei vielä rooleja. Luo ensimmäinen rooli aloittaaksesi arvioinnin.",
+      "import": {
+        "cta": "Lisää rooleja",
+        "navLabel": "Tuontivaiheet",
+        "steps": {
+          "paste": "Roolisi",
+          "review": "Tarkastele"
+        },
+        "paste": {
+          "heading": "Mitkä roolit lisätään?",
+          "label": "Roolisi",
+          "hint": "Erota roolit pilkulla, tai ryhmittele ne aloittamalla perheen nimellä ja kaksoispisteellä.",
+          "helpLabel": "Roolien liittämisestä",
+          "helpBody": "Liitä mitä tahansa sinulla on: luettelo nimikkeistä, tiimikohtainen erittely tai sarake laskentataulukosta. Ryhmittelemme roolit rooliperheisiin, tunnistamme kunkin roolin track ja lisäämme ne valmiiksi olemassa oleviin perheisiin, joihin ne sopivat. Mitään ei tallenneta ennen kuin vahvistat.\n\nRooliperhe kokoaa roolit, joissa tehdään samanlaista työtä, esimerkiksi Kehitys tai Myynti; perheet jäsentävät rekisterin eivätkä koskaan vaikuta painotukseen. Track on työn tyyppi, esimerkiksi yksittäinen tekijä tai esihenkilö; se ei kerro mitään kokemustasosta.",
+          "placeholder1": "Yhtiöjuristi, HR-partneri, Controller",
+          "placeholder2": "Myynti: Account Executive, Myyntipäällikkö; Talous: Kirjanpitäjä, Palkka-asiantuntija",
+          "cta": "Analysoi",
+          "error": "Rooleja ei voitu lukea. Yritä uudelleen."
+        },
+        "review": {
+          "heading": "Tarkastele, mitä lisätään",
+          "truncated": "Yhteen tuontiin mahtuu enintään {roles} roolia ja {families} rooliperhettä. Sen ylittävä osa jäi pois, joten lisää loput toisella tuonnilla.",
+          "cta": "{count, plural, one {Luo # rooli} other {Luo # roolia}}",
+          "nothingToAdd": "{count, plural, one {# rooli tässä luettelossa on jo olemassa} other {# roolia tässä luettelossa on jo olemassa}}, joten lisättävää ei ole enää. Lisää rooli perheeseen tai aloita alusta eri luettelolla.",
+          "nothingHere": "Lisättävää ei ole. Lisää rooli perheeseen tai aloita alusta uudella luettelolla.",
+          "tooManyRoles": "Tässä on {count} roolia. Yhteen tuontiin mahtuu enintään {max} kerrallaan, joten poista rivejä ja lisää loput toisella tuonnilla.",
+          "tooManyFamilies": "Yhteen tuontiin mahtuu enintään {max} rooliperhettä kerrallaan. Yhdistä tai poista joitakin ja lisää loput toisella tuonnilla.",
+          "restart": "Aloita alusta",
+          "error": "Rooleja ei voitu luoda. Yritä uudelleen.",
+          "invalid": "Osaa rooleista ei hyväksytty. Tarkista, onko jokin nimi tai nimike hyvin pitkä tai onko rivejä liikaa, ja yritä uudelleen."
+        },
+        "prefilling": {
+          "heading": "Luodaan rooliprofiileja",
+          "body": "Kirjoitamme jokaiselle uudelle roolille tarkoituksen ja vastuut sen nimen perusteella. Tämä voi kestää hetken.",
+          "progress": "{done}/{total} roolia"
+        },
+        "done": {
+          "title": "Rooleja lisätty",
+          "description": "Tässä on mitä tapahtui.",
+          "roles": "Rooleja lisätty",
+          "families": "Perheitä luotu",
+          "skipped": "Oli jo olemassa",
+          "cta": "Siirry rooleihin",
+          "profilesFailed": "Roolit lisättiin, mutta rooliprofiileja ei voitu luoda. Voit luoda ne kunkin roolin sivulta."
+        },
+        "discard": {
+          "title": "Hylätäänkö tämä tuonti?",
+          "description": "Tarkastelemiasi rooleja ei luoda. Voit aloittaa alusta milloin tahansa.",
+          "keep": "Jatka tarkastelua",
+          "discard": "Hylkää"
+        }
+      },
       "evaluated": "Arvioitu",
       "notEvaluated": "Ei vielä arvioitu",
       "table": {
@@ -1464,22 +1555,11 @@
         "templateCta": "Käytä toimialan mallipohjaa",
         "generating": "Järjestellään roolejasi perheisiin",
         "nextCta": "Seuraava",
-        "addFamilyCta": "Lisää perhe",
-        "addRoleCta": "Lisää rooli",
-        "removeFamilyLabel": "Poista perhe {name}",
-        "removeRoleLabel": "Poista rooli {title}",
-        "removeFamilyConfirm": "Kyllä, poista perhe",
-        "removeRoleConfirm": "Kyllä, poista rooli",
         "error": "Jokin meni pieleen. Yritä uudelleen.",
         "restartCta": "Aloita alusta",
         "restartConfirm": "Kyllä, aloita alusta",
         "restartCancel": "Peruuta",
-        "dragHandleLabel": "Siirrä roolia {title}",
-        "dndInstructions": "Nosta rooli painamalla välilyöntiä tai enteriä, siirrä sitä nuolinäppäimillä ja pudota painamalla välilyöntiä tai enteriä uudelleen. Peruuta painamalla escapea.",
-        "dndPickedUp": "Nostettiin {title}.",
-        "dndOver": "{title} on perheen {family} päällä.",
-        "dndDropped": "{title} sijoitettiin perheeseen {family}.",
-        "dndCancelled": "Roolin {title} siirto peruutettiin.",
+        "importTruncated": "Yhteen tuontiin mahtuu enintään {roles} roolia ja {families} rooliperhettä. Sen ylittävä osa jäi pois, voit lisätä loput myöhemmin.",
         "reviewHint": "Ryhmittele roolit perheisiin ja aseta jokaisen roolin track.",
         "reviewHintStarter": "Lähtökohta toimialanne perusteella: ryhmittele roolit perheisiin ja aseta jokaisen roolin track. Muuta mitä tahansa myöhemmin.",
         "ungroupedFamilyName": "Muut roolit",

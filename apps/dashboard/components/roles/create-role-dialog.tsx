@@ -33,6 +33,7 @@ import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import { toast } from "@/lib/toast"
 import { useMemo, useState } from "react"
+import type * as React from "react"
 import { useForm } from "react-hook-form"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { FamilyPicker } from "@/components/roles/family-picker"
@@ -58,6 +59,10 @@ export function CreateRoleDialog({
   triggerLabel,
   existing,
   defaultFamilyId = null,
+  // The roles page demotes this to the secondary action beside the import, the
+  // way the people header does. Defaults to the primary button everywhere else
+  // (the family page keeps it as its main action).
+  triggerVariant,
 }: {
   orgId: string
   tracks: TrackOption[]
@@ -68,6 +73,7 @@ export function CreateRoleDialog({
   // When set, the role is created in this family and the family picker is
   // hidden: used from a family page, where the family is the fixed context.
   defaultFamilyId?: string | null
+  triggerVariant?: React.ComponentProps<typeof Button>["variant"]
 }) {
   const t = useTranslations("dashboard.roles.create")
   const tHelp = useTranslations("dashboard.help")
@@ -132,7 +138,9 @@ export function CreateRoleDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger render={<Button />}>{triggerLabel}</DialogTrigger>
+      <DialogTrigger render={<Button variant={triggerVariant} />}>
+        {triggerLabel}
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>

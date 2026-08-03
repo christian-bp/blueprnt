@@ -21,6 +21,12 @@ export {
 export { INDUSTRY_KEYS, type IndustryKey, clampIndustry } from "./industries"
 export { SLUG_PATTERN, isValidSlug, slugify } from "./slug"
 export {
+  MAX_FAMILIES,
+  MAX_FAMILY_NAME,
+  MAX_ROLE_TITLE,
+  MAX_ROLES,
+} from "./starterSet"
+export {
   MAX_STARTER_IMPORT_TEXT,
   SUGGESTION_KINDS,
   type SuggestionKind,

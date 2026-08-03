@@ -7,11 +7,11 @@ import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { OnboardingDots } from "@/components/onboarding/onboarding-dots"
+import { NextButton } from "@/components/next-button"
 import { SuccessCheck } from "@/components/success-check"
 import { ScreenShell } from "@/components/screen-shell"
-import { WizardFooter } from "@/components/onboarding/wizard-footer"
-import { NextButton } from "@/components/onboarding/next-button"
+import { WizardFooter } from "@/components/wizard-footer"
+import { WizardDots } from "@/components/wizard-dots"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,6 +25,7 @@ import {
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 import { WizardShell } from "@/components/wizard-shell"
+import { useLaggedContentKey } from "@/hooks/use-lagged-content-key"
 import { CheckStep } from "./check-step"
 import { ImportDoneStep } from "./import-done-step"
 import { ImportingStep } from "./importing-step"
@@ -116,11 +117,9 @@ export function ImportWizard() {
 
   const [discardOpen, setDiscardOpen] = useState(false)
 
-  // The step whose content is currently visible. It lags state.step until the
-  // outgoing step's exit fade finishes (onExitComplete), so the shell's
-  // scroll-to-top (keyed on this) runs in the blank moment between steps,
-  // never while the old step is still on screen.
-  const [displayedStep, setDisplayedStep] = useState(STEP_UPLOAD)
+  const { displayedKey: displayedStep, onExitComplete } = useLaggedContentKey(
+    state.step
+  )
 
   // A file has been uploaded/parsed and the import has not yet completed.
   // Nothing is persisted to the DB until the final Import action, so leaving
@@ -446,7 +445,7 @@ export function ImportWizard() {
         contentClassName="max-w-5xl"
         contentKey={displayedStep}
         footer={
-          <OnboardingDots
+          <WizardDots
             steps={steps}
             activeIndex={state.step}
             maxReachedIndex={state.step}
@@ -467,7 +466,7 @@ export function ImportWizard() {
         <AnimatePresence
           mode="wait"
           initial={false}
-          onExitComplete={() => setDisplayedStep(state.step)}
+          onExitComplete={onExitComplete}
         >
           <motion.div
             key={

@@ -6,6 +6,7 @@ import {
   waitFor,
 } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
+import type * as React from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 
@@ -52,8 +53,14 @@ const TRACKS = [
 ] as const
 
 function renderDialog(
-  existing: { title: string; familyId: string | null }[] = []
+  options: {
+    existing?: { title: string; familyId: string | null }[]
+    triggerVariant?: React.ComponentProps<
+      typeof CreateRoleDialog
+    >["triggerVariant"]
+  } = {}
 ) {
+  const { existing = [], triggerVariant } = options
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <CreateRoleDialog
@@ -61,6 +68,7 @@ function renderDialog(
         tracks={[...TRACKS]}
         triggerLabel={labels.title}
         existing={existing}
+        triggerVariant={triggerVariant}
       />
     </NextIntlClientProvider>
   )
@@ -75,6 +83,25 @@ describe("CreateRoleDialog", () => {
   })
   afterEach(() => {
     cleanup()
+  })
+
+  it("renders its trigger as the default primary button", () => {
+    renderDialog()
+    const trigger = screen.getByRole("button", { name: labels.title })
+    // A substring check for "border" would never fail either way: the
+    // vendor Button's BASE classes (packages/ui/src/components/button.tsx)
+    // apply "border border-transparent" to every variant, so it is present
+    // even on the default button. bg-brand is the class the default variant
+    // alone owns, so its presence is a real signal.
+    expect(trigger.className).toContain("bg-brand")
+  })
+
+  it("renders its trigger in the requested variant", () => {
+    renderDialog({ triggerVariant: "outline" })
+    const trigger = screen.getByRole("button", { name: labels.title })
+    // bg-background is the class the outline variant alone owns.
+    expect(trigger.className).toContain("bg-background")
+    expect(trigger.className).not.toContain("bg-brand")
   })
 
   it("opens on the trigger and submits the basics, then navigates", async () => {
@@ -151,7 +178,7 @@ describe("CreateRoleDialog", () => {
   })
 
   it("blocks a title already taken in the selected family without calling the server", async () => {
-    renderDialog([{ title: "Manager", familyId: null }])
+    renderDialog({ existing: [{ title: "Manager", familyId: null }] })
     fireEvent.click(screen.getByRole("button", { name: labels.title }))
     fireEvent.change(screen.getByLabelText(labels.titleLabel), {
       target: { value: "Manager" },

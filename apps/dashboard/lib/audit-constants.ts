@@ -4,6 +4,7 @@ import type {
   IndustryKey,
   PayGapReason,
   PraxisAreaKey,
+  SuggestionKind,
   TRACK_LEVELS,
 } from "@workspace/constants"
 import { LANGUAGE_LABEL_KEYS } from "@/lib/locales"
@@ -217,6 +218,32 @@ export const TRACK_VALUE_KEYS: Record<keyof typeof TRACK_LEVELS, string> = {
   M: "auditLog.values.tracks.M",
 }
 
+// Maps "model.draft" -> "modelDraft", etc., for i18n keys
+// (auditLog.ai.kind.<key>). Typed by SuggestionKind and total, so a kind added
+// to SUGGESTION_KINDS without a label here is a compile error rather than a
+// blank audit detail.
+export const AI_KIND_KEY: Record<SuggestionKind, string> = {
+  "model.draft": "modelDraft",
+  "model.weightReview": "weightReview",
+  "role.profile": "roleProfile",
+  "starter.import": "starterImport",
+  "criterion.compliance": "criterionCompliance",
+  "role.import": "roleImport",
+}
+
+// ai.suggestionConfirmed / ai.suggestionRejected `kind`: the payload field
+// carries a raw wire code ("role.import"), which the flat-stats renderer would
+// otherwise print verbatim. Derived from AI_KIND_KEY so the coded-value path
+// and the AI panels' own labels can never drift, and reusing the existing
+// auditLog.ai.kind.* wording rather than a parallel auditLog.values.* set.
+export const AI_KIND_VALUE_KEYS: Record<SuggestionKind, string> =
+  Object.fromEntries(
+    Object.entries(AI_KIND_KEY).map(([kind, key]) => [
+      kind,
+      `auditLog.ai.kind.${key}`,
+    ])
+  ) as Record<SuggestionKind, string>
+
 // Field name -> its coded domain's value-key Record. One lookup table so
 // resolveCodedValue stays a two-liner as domains accrue; `reasons` is
 // special-cased inside resolveCodedValue (its value is a ", "-joined token
@@ -236,6 +263,7 @@ const CODED_FIELD_DOMAINS: Record<string, Record<string, string>> = {
   gender: GENDER_VALUE_KEYS,
   source: SALARY_SOURCE_VALUE_KEYS,
   trackKey: TRACK_VALUE_KEYS,
+  kind: AI_KIND_VALUE_KEYS,
 }
 
 // The tombstone the backend writes over an erased person's identity values in

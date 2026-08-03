@@ -1,19 +1,28 @@
+import {
+  MAX_FAMILIES,
+  MAX_FAMILY_NAME,
+  MAX_ROLE_TITLE,
+  MAX_ROLES,
+} from "@workspace/constants"
 import { v } from "convex/values"
 import type { Id } from "../_generated/dataModel"
 import type { MutationCtx } from "../_generated/server"
 import { isTrackKey } from "../evaluationModel/localize"
+import type { TrackKey } from "../evaluationModel/standardTemplate"
 import { trackKeyValidator } from "../evaluationModel/tables"
 import {
   AUDIT_EVENTS,
   buildChanges,
   buildCreateChanges,
   logAudit,
+  ROLE_CREATE_FIELDS,
 } from "../lib/audit"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 import { uniqueSlug } from "../lib/slug"
 import { deriveResults, logBandShifts } from "./compute"
 import { clampIndustry, starterContent } from "./industryStarters"
+import { roleTitleKey } from "./roles"
 
 // One created family with its created roles, returned by insertStarterSet so a
 // caller (the AI starter-import confirm path) can report what landed without a
@@ -23,13 +32,6 @@ export interface InsertedStarterFamily {
   name: string
   roles: { roleId: string; title: string; trackKey: string }[]
 }
-
-// The starter-set contract, shared with the AI import path (ai/suggest,
-// ai/starterImport): one source of truth for the size limits.
-export const MAX_FAMILIES = 20
-export const MAX_ROLES = 100
-export const MAX_FAMILY_NAME = 100
-export const MAX_ROLE_TITLE = 200
 
 // The createStarterSet input shape: purpose/responsibilities are OPTIONAL
 // because the AI-import and reconcile paths create roles with no predefined
@@ -46,6 +48,34 @@ export const starterFamilyShape = v.object({
     })
   ),
 })
+
+// The in-app additive import payload: a family either targets an EXISTING
+// family by id (its roles are added into it) or is created from `name`.
+export const additiveFamilyShape = v.object({
+  familyId: v.optional(v.id("roleFamilies")),
+  name: v.string(),
+  roles: v.array(v.object({ title: v.string(), trackKey: trackKeyValidator })),
+})
+
+// Mirrors additiveFamilyShape exactly, track key included: unlike
+// starterFamilyShape (whose roles come from raw AI output and are typed
+// `string`), this payload's track key is already narrowed by the validator, so
+// the helper carries that narrowing through to the insert instead of widening.
+export interface AdditiveFamilyInput {
+  familyId?: Id<"roleFamilies">
+  name: string
+  roles: { title: string; trackKey: TrackKey }[]
+}
+
+// What one additive import landed. `createdRoleIds` is what lets the caller
+// scope the profile prefill to exactly these roles.
+export interface AdditiveImportResult {
+  createdRoleIds: Id<"roles">[]
+  familyCount: number
+  roleCount: number
+  skippedCount: number
+  families: InsertedStarterFamily[]
+}
 
 // The getIndustryStarter return shape: every predefined role carries a
 // purpose + responsibilities (required here, unlike the input shape).
@@ -209,15 +239,7 @@ export async function insertStarterSet(
               purpose,
               responsibilities,
             },
-            [
-              "title",
-              "trackKey",
-              "familyId",
-              "function",
-              "team",
-              "purpose",
-              "responsibilities",
-            ]
+            ROLE_CREATE_FIELDS
           ),
         },
       })
@@ -531,15 +553,7 @@ export const reconcileStarterSet = orgMutation({
                   purpose: "",
                   responsibilities: "",
                 },
-                [
-                  "title",
-                  "trackKey",
-                  "familyId",
-                  "function",
-                  "team",
-                  "purpose",
-                  "responsibilities",
-                ]
+                ROLE_CREATE_FIELDS
               ),
             },
           })
@@ -675,3 +689,218 @@ export const reconcileStarterSet = orgMutation({
     return null
   },
 })
+
+// Adds roles (and, where needed, families) to an org that ALREADY has some.
+// Purely additive: nothing existing is renamed, re-tracked, or archived, which
+// is what separates this from reconcileStarterSet. A role whose title is
+// already taken in its target family is SKIPPED rather than rejected, so
+// re-pasting an overlapping list stays safe and a long review is never thrown
+// away over one collision; the review surface flags those rows in advance.
+//
+// The whole payload is validated before the first write (the same discipline
+// reconcileStarterSet uses), so a rejection rolls back cleanly.
+export async function insertAdditiveRoles(
+  ctx: MutationCtx,
+  args: {
+    orgId: string
+    actorId: string
+    families: AdditiveFamilyInput[]
+  }
+): Promise<AdditiveImportResult> {
+  const { orgId, actorId, families } = args
+  const empty: AdditiveImportResult = {
+    createdRoleIds: [],
+    familyCount: 0,
+    roleCount: 0,
+    skippedCount: 0,
+    families: [],
+  }
+  if (families.length === 0) return empty
+  if (families.length > MAX_FAMILIES) throw appError(ERROR_CODES.invalidInput)
+  const totalRoles = families.reduce(
+    (sum, family) => sum + family.roles.length,
+    0
+  )
+  if (totalRoles > MAX_ROLES) throw appError(ERROR_CODES.invalidInput)
+
+  // One correlation id per import, so every audit row this writer emits
+  // reconstructs as a single import unit.
+  const batchId = crypto.randomUUID()
+
+  const existingFamilies = await ctx.db
+    .query("roleFamilies")
+    .withIndex("by_org", (q) => q.eq("orgId", orgId))
+    .collect()
+  const familyById = new Map(
+    existingFamilies.map((family) => [family._id as string, family])
+  )
+  const takenFamilyNames = new Set(
+    existingFamilies.map((family) => family.name.toLowerCase())
+  )
+  const allRoles = await ctx.db
+    .query("roles")
+    .withIndex("by_org", (q) => q.eq("orgId", orgId))
+    .collect()
+  // Title keys already taken by a live role, keyed exactly the way createRole's
+  // assert keys them. Grows as this import writes, so two payload cards
+  // targeting the SAME existing family cannot both create the same title.
+  const takenTitles = new Set(
+    allRoles
+      .filter((role) => role.archivedAt === undefined)
+      .map((role) => roleTitleKey(role.familyId, role.title))
+  )
+
+  // 1. Validate everything BEFORE any write.
+  const newNames = new Set<string>()
+  for (const family of families) {
+    if (family.familyId !== undefined) {
+      if (!familyById.has(family.familyId as string)) {
+        throw appError(ERROR_CODES.notFound)
+      }
+    } else {
+      const name = family.name.trim()
+      if (name.length === 0 || name.length > MAX_FAMILY_NAME) {
+        throw appError(ERROR_CODES.invalidInput)
+      }
+      const lowered = name.toLowerCase()
+      if (takenFamilyNames.has(lowered) || newNames.has(lowered)) {
+        throw appError(ERROR_CODES.roleFamilyExists)
+      }
+      newNames.add(lowered)
+    }
+    for (const role of family.roles) {
+      const title = role.title.trim()
+      if (title.length === 0 || title.length > MAX_ROLE_TITLE) {
+        throw appError(ERROR_CODES.invalidInput)
+      }
+      // Tracks are fixed constants (ADR-0006). The validator already narrows
+      // this; guard defensively in case it is ever loosened.
+      if (!isTrackKey(role.trackKey)) throw appError(ERROR_CODES.invalidInput)
+    }
+  }
+
+  // 2. Write.
+  const created: InsertedStarterFamily[] = []
+  const createdRoleIds: Id<"roles">[] = []
+  let familyCount = 0
+  let skippedCount = 0
+
+  for (const family of families) {
+    const targetId = family.familyId
+    // Resolve which roles actually land BEFORE creating a new family, so an
+    // all-skipped family never leaves an empty shell in the register.
+    const seenInNewFamily = new Set<string>()
+    const pending: { title: string; trackKey: TrackKey }[] = []
+    for (const role of family.roles) {
+      const title = role.title.trim()
+      if (targetId !== undefined) {
+        const key = roleTitleKey(targetId, title)
+        if (takenTitles.has(key)) {
+          skippedCount += 1
+          continue
+        }
+        takenTitles.add(key)
+      } else {
+        // A brand-new family holds no stored roles, so only the payload's own
+        // duplicates can collide inside it. Keyed through roleTitleKey for the
+        // one normalization contract, but into a PER-CARD set: sharing
+        // takenTitles here would compare with roleTitleKey(undefined, title),
+        // the family-less group's key, and wrongly skip a legitimate new role.
+        const key = roleTitleKey(undefined, title)
+        if (seenInNewFamily.has(key)) {
+          skippedCount += 1
+          continue
+        }
+        seenInNewFamily.add(key)
+      }
+      pending.push({ title, trackKey: role.trackKey })
+    }
+    if (pending.length === 0) continue
+
+    let familyId: Id<"roleFamilies">
+    let familySlug: string
+    let familyName: string
+    if (targetId !== undefined) {
+      const existing = familyById.get(targetId as string)
+      if (existing === undefined) throw appError(ERROR_CODES.notFound)
+      familyId = existing._id
+      familySlug = existing.slug
+      familyName = existing.name
+    } else {
+      familyName = family.name.trim()
+      familySlug = await uniqueSlug(ctx, "roleFamilies", orgId, familyName)
+      familyId = await ctx.db.insert("roleFamilies", {
+        orgId,
+        name: familyName,
+        slug: familySlug,
+      })
+      familyCount += 1
+      await logAudit(ctx, {
+        orgId,
+        type: AUDIT_EVENTS.roleFamilyCreated,
+        actorId,
+        payload: {
+          familyId,
+          source: "aiImport",
+          batchId,
+          changes: { name: { from: null, to: familyName } },
+        },
+      })
+    }
+
+    const createdRoles: InsertedStarterFamily["roles"] = []
+    for (const role of pending) {
+      // Roles insert with EMPTY function/team and an empty profile (honest
+      // drafts, no invented data); the caller's scoped prefill fills the
+      // profile. The family-slug prefix matches createRole, so a title shared
+      // across two families gets a readable slug rather than a random suffix.
+      const roleId = await ctx.db.insert("roles", {
+        orgId,
+        title: role.title,
+        slug: await uniqueSlug(ctx, "roles", orgId, role.title, {
+          prefix: familySlug,
+        }),
+        function: "",
+        team: "",
+        trackKey: role.trackKey,
+        familyId,
+        purpose: "",
+        responsibilities: "",
+      })
+      await logAudit(ctx, {
+        orgId,
+        type: AUDIT_EVENTS.roleCreated,
+        actorId,
+        payload: {
+          roleId,
+          familyId,
+          source: "aiImport",
+          batchId,
+          changes: buildCreateChanges(
+            {
+              title: role.title,
+              function: "",
+              team: "",
+              trackKey: role.trackKey,
+              familyId,
+              purpose: "",
+              responsibilities: "",
+            },
+            ROLE_CREATE_FIELDS
+          ),
+        },
+      })
+      createdRoles.push({ roleId, title: role.title, trackKey: role.trackKey })
+      createdRoleIds.push(roleId)
+    }
+    created.push({ familyId, name: familyName, roles: createdRoles })
+  }
+
+  return {
+    createdRoleIds,
+    familyCount,
+    roleCount: createdRoleIds.length,
+    skippedCount,
+    families: created,
+  }
+}

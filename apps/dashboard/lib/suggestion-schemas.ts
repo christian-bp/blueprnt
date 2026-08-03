@@ -18,22 +18,6 @@ export const weightReviewValueSchema = z.object({
   ),
 })
 
-export type WeightReviewValue = z.infer<typeof weightReviewValueSchema>
-
-export const modelDraftValueSchema = z.object({
-  criteria: z.array(
-    z.object({
-      name: z.string(),
-      description: z.string(),
-      helpText: z.string(),
-      weightPoints: z.number().int().min(1).max(5),
-      anchors: z.array(z.string()).length(6),
-    })
-  ),
-})
-
-export type ModelDraftValue = z.infer<typeof modelDraftValueSchema>
-
 // The onboarding paste-import textarea: client gate for the pasted role
 // list (the backend re-validates with the same shared constant).
 export const starterImportInputSchema = z
@@ -49,6 +33,11 @@ export const starterImportValueSchema = z.object({
       roles: z.array(z.object({ title: z.string(), trackKey: z.string() })),
     })
   ),
+  // Whether the generation clamped the grouping to the import's size caps.
+  // Required: the writer always sets it, and pre-launch there is no row worth
+  // keeping a reader-side shim for (a proposal predating the field parses as
+  // empty and is re-requested, which is what resetting dev data means).
+  truncated: z.boolean(),
 })
 
 export type StarterImportValue = z.infer<typeof starterImportValueSchema>

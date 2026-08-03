@@ -1,6 +1,11 @@
+import type { SuggestionKind } from "@workspace/constants"
 import { Fragment, type ReactNode } from "react"
 import { ChangeArrow } from "@/components/change-arrow"
-import { AUDIT_DATE_FIELDS, AUDIT_ISO_DATE_FIELDS } from "@/lib/audit-constants"
+import {
+  AI_KIND_KEY,
+  AUDIT_DATE_FIELDS,
+  AUDIT_ISO_DATE_FIELDS,
+} from "@/lib/audit-constants"
 
 // Stringifies any audit-payload value for display. Scalars pass through (via
 // String); null/undefined collapse to "". Objects/arrays are compact-JSON
@@ -479,6 +484,12 @@ export const FIELD_DISPLAY_ORDER = [
   // Pay-mapping run completion flat-stats fields (payMapping.runCompleted).
   "equalWorkDone",
   "equivalentWorkDone",
+  // ai.suggestionConfirmed import flat-stats fields: the suggestion kind leads
+  // (it says which AI flow the row is about), then what the confirm landed.
+  "kind",
+  "familyCount",
+  "roleCount",
+  "skippedCount",
 ] as const
 
 // Sorts change entries into FIELD_DISPLAY_ORDER. Stable: unknown fields keep
@@ -525,11 +536,10 @@ export function sectionKind(
   return "update"
 }
 
-// Maps "model.draft" -> "modelDraft", etc., for i18n keys (ai.kind.<key>).
-export const AI_KIND_KEY: Record<string, string> = {
-  "model.draft": "modelDraft",
-  "model.weightReview": "weightReview",
-  "starter.import": "starterImport",
+export function isSuggestionKind(value: string): value is SuggestionKind {
+  // hasOwn, not `in`: `in` walks the prototype chain, so "toString" and
+  // "constructor" would pass the guard and resolve to a function.
+  return Object.hasOwn(AI_KIND_KEY, value)
 }
 
 // Human-readable detail for ai.suggestionConfirmed / ai.suggestionRejected.
@@ -541,7 +551,7 @@ export function aiAuditDetail(
 ): string {
   const p = (payload ?? {}) as Record<string, unknown>
   const kind = typeof p.kind === "string" ? p.kind : ""
-  const kindKey = AI_KIND_KEY[kind]
+  const kindKey = isSuggestionKind(kind) ? AI_KIND_KEY[kind] : undefined
   if (type === "ai.suggestionRejected") {
     return kindKey ? t(`ai.kind.${kindKey}`) : ""
   }
@@ -553,6 +563,11 @@ export function aiAuditDetail(
       return t("ai.weightReview", { count: num(p.appliedCount) })
     case "starter.import":
       return t("ai.starterImport", {
+        families: num(p.familyCount),
+        roles: num(p.roleCount),
+      })
+    case "role.import":
+      return t("ai.roleImport", {
         families: num(p.familyCount),
         roles: num(p.roleCount),
       })

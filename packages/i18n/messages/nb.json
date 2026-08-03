@@ -90,6 +90,33 @@
     }
   },
   "dashboard": {
+    "dnd": {
+      "cancelled": "Flyttingen av {title} ble avbrutt.",
+      "dropped": "{title} ble plassert i {family}.",
+      "instructions": "Trykk mellomrom eller enter for å plukke opp en rolle, bruk piltastene for å flytte den, og trykk mellomrom eller enter igjen for å slippe den. Trykk escape for å avbryte.",
+      "over": "{title} er over {family}.",
+      "pickedUp": "Plukket opp {title}."
+    },
+    "familyTable": {
+      "addFamily": "Legg til familie",
+      "addRoleShort": "Legg til rolle",
+      "blankTitle": "Ingen tittel ennå, så raden hoppes over.",
+      "collision": "To nye familier kan ikke ha samme navn.",
+      "columnMove": "Flytt",
+      "columnRemove": "Fjern",
+      "columnRole": "Rolle",
+      "columnTrack": "Track",
+      "dragHandle": "Flytt rollen {title}",
+      "duplicate": "Finnes allerede, hoppes over",
+      "familyActions": "Handlinger for {name}",
+      "nameMissing": "Gi familien et navn, ellers blir ikke rollene dens lagt til.",
+      "removeFamilyConfirm": "Ja, fjern familien",
+      "removeFamilyDescription": "Den er ikke opprettet ennå, så ingenting i registeret ditt endres. Roller som står under den, blir ikke lagt til.",
+      "removeFamilyDescriptionExisting": "Familien finnes allerede. Fjerner du den her, blir også rollene under den arkivert når du går videre.",
+      "removeFamilyTitle": "Fjerne familien?",
+      "removeRole": "Fjern rollen {title}",
+      "removeRoleConfirm": "Ja, fjern rollen"
+    },
     "title": "blueprnt",
     "validation": {
       "required": "Dette feltet er påkrevd.",
@@ -574,7 +601,8 @@
             "starter": "Startsett",
             "aiImport": "KI-import",
             "aiSuggestion": "KI-forslag",
-            "onboardingPrefill": "Forhåndsutfylt ved onboarding"
+            "onboardingPrefill": "Forhåndsutfylt ved onboarding",
+            "roleImportPrefill": "Forhåndsutfylt ved rolleimport"
           }
         }
       },
@@ -668,6 +696,10 @@
         "levelSource": "Nivåkilde",
         "originalWeightPoints": "Opprinnelige vektpoeng",
         "anchorCount": "Antall ankere",
+        "acceptedCount": "Aksepterte kriterier",
+        "totalProposed": "Foreslåtte kriterier",
+        "appliedCount": "Anvendte vektendringer",
+        "totalMoves": "Foreslåtte vektendringer",
         "populationCount": "Personer inkludert",
         "withPayCount": "Med lønn",
         "label": "Navn",
@@ -678,7 +710,11 @@
         "groupLabel": "Gruppe",
         "scope": "Visning",
         "equalWorkDone": "Grupper for likt arbeid markert fullført",
-        "equivalentWorkDone": "Grupper for likeverdig arbeid markert fullført"
+        "equivalentWorkDone": "Grupper for likeverdig arbeid markert fullført",
+        "kind": "Type",
+        "familyCount": "Opprettede familier",
+        "roleCount": "Lagt til roller",
+        "skippedCount": "Hoppet over"
       },
       "values": {
         "yes": "Ja",
@@ -759,10 +795,14 @@
         "modelDraft": "Modellkriterier: {count} lagt til",
         "weightReview": "Vektgjennomgang: {count} brukt",
         "starterImport": "Startimport: {families, plural, one {# familie} other {# familier}}, {roles, plural, one {# rolle} other {# roller}}",
+        "roleImport": "Rolleimport: {families, plural, one {# familie} other {# familier}}, {roles, plural, one {# rolle} other {# roller}}",
         "kind": {
           "modelDraft": "Modellkriterier",
           "weightReview": "Vektgjennomgang",
-          "starterImport": "Startroller"
+          "roleProfile": "Rolleprofil",
+          "starterImport": "Startroller",
+          "criterionCompliance": "Kriteriegjennomgang",
+          "roleImport": "Importerte roller"
         }
       }
     },
@@ -851,6 +891,57 @@
       "description": "Jobbprofiler som vurderes mot modellen deres. Roller, aldri personer.",
       "newCta": "Opprett rolle",
       "empty": "Ingen roller ennå. Opprett den første rollen for å begynne å vurdere.",
+      "import": {
+        "cta": "Legg til roller",
+        "navLabel": "Importtrinn",
+        "steps": {
+          "paste": "Dine roller",
+          "review": "Gjennomgang"
+        },
+        "paste": {
+          "heading": "Hvilke roller skal vi legge til?",
+          "label": "Dine roller",
+          "hint": "Skill roller med komma, eller grupper dem ved å starte med et familienavn og kolon.",
+          "helpLabel": "Om å lime inn roller",
+          "helpBody": "Lim inn det du har: en liste med titler, en oppdeling team for team, eller en kolonne fra et regneark. Vi grupperer dem i rollefamilier, matcher hver rolle mot en track, og legger dem i familier du allerede har der de passer. Ingenting lagres før du bekrefter.\n\nEn rollefamilie samler roller med samme slags arbeid, for eksempel Utvikling eller Salg; familier ordner registeret og påvirker aldri vektingen. En track er typen jobb, for eksempel individuell bidragsyter eller leder; den sier ingenting om ansiennitet.",
+          "placeholder1": "Selskapsjurist, HR-partner, Controller",
+          "placeholder2": "Salg: Account Executive, Salgssjef; Finans: Regnskapsfører, Lønnsspesialist",
+          "cta": "Analyser",
+          "error": "Rollene kunne ikke leses. Prøv igjen."
+        },
+        "review": {
+          "heading": "Gjennomgå hva som skal legges til",
+          "truncated": "En import tar maks {roles} roller i {families} rollefamilier. Alt utover det ble ikke tatt med, så legg til resten i en ny import.",
+          "cta": "{count, plural, one {Opprett # rolle} other {Opprett # roller}}",
+          "nothingToAdd": "{count, plural, one {# rolle i listen finnes allerede} other {# roller i listen finnes allerede}}, så det er ingenting igjen å legge til. Legg til en rolle i en familie, eller start på nytt med en annen liste.",
+          "nothingHere": "Det er ingenting å legge til. Legg til en rolle i en familie, eller start på nytt med en ny liste.",
+          "tooManyRoles": "Dette er {count} roller. En import tar maks {max} om gangen, så fjern noen rader og legg til resten i en ny import.",
+          "tooManyFamilies": "En import tar maks {max} rollefamilier om gangen. Slå sammen eller fjern noen, og legg til resten i en ny import.",
+          "restart": "Start på nytt",
+          "error": "Rollene kunne ikke opprettes. Prøv igjen.",
+          "invalid": "Noen av rollene ble ikke godtatt. Sjekk om et navn eller en tittel er svært lang, eller om det er for mange rader, og prøv igjen."
+        },
+        "prefilling": {
+          "heading": "Lager rolleprofiler",
+          "body": "Vi skriver et formål og ansvarsområder for hver ny rolle ut fra navnet. Dette kan ta et øyeblikk.",
+          "progress": "{done} av {total} roller"
+        },
+        "done": {
+          "title": "Roller lagt til",
+          "description": "Her er hva som skjedde.",
+          "roles": "Roller lagt til",
+          "families": "Familier opprettet",
+          "skipped": "Fantes allerede",
+          "cta": "Gå til roller",
+          "profilesFailed": "Rollene ble lagt til, men rolleprofilene kunne ikke lages. Du kan lage dem fra hver rolleside."
+        },
+        "discard": {
+          "title": "Forkaste denne importen?",
+          "description": "Rollene du har gjennomgått, blir ikke opprettet. Du kan starte på nytt når som helst.",
+          "keep": "Fortsett å gjennomgå",
+          "discard": "Forkast"
+        }
+      },
       "evaluated": "Vurdert",
       "notEvaluated": "Ikke vurdert ennå",
       "table": {
@@ -1464,22 +1555,11 @@
         "templateCta": "Bruk en bransjemal",
         "generating": "Organiserer rollene dine i familier",
         "nextCta": "Neste",
-        "addFamilyCta": "Legg til familie",
-        "addRoleCta": "Legg til rolle",
-        "removeFamilyLabel": "Fjern familien {name}",
-        "removeRoleLabel": "Fjern rollen {title}",
-        "removeFamilyConfirm": "Ja, fjern familien",
-        "removeRoleConfirm": "Ja, fjern rollen",
         "error": "Noe gikk galt. Prøv igjen.",
         "restartCta": "Start på nytt",
         "restartConfirm": "Ja, start på nytt",
         "restartCancel": "Avbryt",
-        "dragHandleLabel": "Flytt rollen {title}",
-        "dndInstructions": "Trykk på mellomrom eller enter for å løfte en rolle, bruk piltastene til å flytte den, og trykk på mellomrom eller enter igjen for å slippe den. Trykk på escape for å avbryte.",
-        "dndPickedUp": "Løftet {title}.",
-        "dndOver": "{title} er over {family}.",
-        "dndDropped": "{title} ble plassert i {family}.",
-        "dndCancelled": "Flyttingen av {title} ble avbrutt.",
+        "importTruncated": "En import tar maks {roles} roller i {families} rollefamilier. Alt utover det ble ikke tatt med, du kan legge til resten senere.",
         "reviewHint": "Grupper rollene i familier og sett hver rolles track.",
         "reviewHintStarter": "Et utgangspunkt basert på bransjen deres: grupper rollene i familier og sett hver rolles track. Endre hva som helst senere.",
         "ungroupedFamilyName": "Andre roller",

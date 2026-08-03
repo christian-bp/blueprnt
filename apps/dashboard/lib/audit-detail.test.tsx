@@ -1,7 +1,10 @@
 import { cleanup, render } from "@testing-library/react"
+import { SUGGESTION_KINDS } from "@workspace/constants"
 import type { ReactNode } from "react"
 import { describe, expect, it } from "vitest"
 import {
+  AI_KIND_KEY,
+  AI_KIND_VALUE_KEYS,
   BIAS_RISK_VALUE_KEYS,
   COUNTRY_VALUE_KEYS,
   EMPLOYMENT_TYPE_VALUE_KEYS,
@@ -1046,6 +1049,29 @@ describe("formatStats", () => {
   it("returns an empty string when there are no stats", () => {
     expect(formatStats({ personId: "p1" }, fieldLabel)).toBe("")
   })
+
+  // The ai.suggestionConfirmed import payloads carry no `changes` map, so the
+  // sheet and the table cell render them through payloadStats/formatStats.
+  // Every field must resolve to a label and the coded `kind` to a value label,
+  // never the raw payload keys ("kind: role.import · familyCount: 1").
+  it("labels every field of a role.import confirm, kind included", () => {
+    expect(
+      formatStats(
+        {
+          suggestionId: "s1",
+          kind: "role.import",
+          familyCount: 1,
+          roleCount: 2,
+          skippedCount: 1,
+          families: [{ familyId: "f1", name: "Legal", roles: [] }],
+        },
+        fieldLabel,
+        valueLabel
+      )
+    ).toBe(
+      `Kind: ${AI_KIND_VALUE_KEYS["role.import"].toUpperCase()} · FamilyCount: 1 · RoleCount: 2 · SkippedCount: 1`
+    )
+  })
 })
 
 describe("payloadChanges", () => {
@@ -1250,6 +1276,31 @@ describe("aiAuditDetail", () => {
     ).toBe('ai.starterImport {"families":5,"roles":12}')
   })
 
+  it("renders a confirmed role.import with family and role counts", () => {
+    expect(
+      aiAuditDetail(
+        "ai.suggestionConfirmed",
+        {
+          suggestionId: "s1",
+          kind: "role.import",
+          familyCount: 3,
+          roleCount: 8,
+        },
+        t
+      )
+    ).toBe('ai.roleImport {"families":3,"roles":8}')
+  })
+
+  it("renders a rejected role.import as its kind label", () => {
+    expect(
+      aiAuditDetail(
+        "ai.suggestionRejected",
+        { suggestionId: "s1", kind: "role.import" },
+        t
+      )
+    ).toBe("ai.kind.roleImport {}")
+  })
+
   it("falls back to 0 counts when the payload is missing them", () => {
     expect(
       aiAuditDetail(
@@ -1271,6 +1322,14 @@ describe("aiAuditDetail", () => {
     expect(
       aiAuditDetail("ai.suggestionRejected", { suggestionId: "s1" }, t)
     ).toBe("")
+  })
+})
+
+describe("AI_KIND_KEY", () => {
+  it("covers every kind in SUGGESTION_KINDS, so a new kind without a label fails here", () => {
+    expect(Object.keys(AI_KIND_KEY).sort()).toEqual(
+      Object.values(SUGGESTION_KINDS).sort()
+    )
   })
 })
 

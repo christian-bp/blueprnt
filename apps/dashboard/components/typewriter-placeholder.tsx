@@ -28,6 +28,11 @@ export function TypewriterPlaceholder({
   phrases,
   className,
 }: {
+  // Each phrase renders inside a single whitespace-nowrap line: a newline
+  // does not break the line, it collapses into the same line as the text
+  // around it. A phrase meant to demonstrate multi-line or grouped input
+  // must express that on one line (for example a colon before a group)
+  // instead of embedding "\n".
   phrases: string[]
   className?: string
 }) {

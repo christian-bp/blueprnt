@@ -10,9 +10,11 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
-import { Button } from "@workspace/ui/components/button"
+import { Button, buttonVariants } from "@workspace/ui/components/button"
+import { cn } from "@workspace/ui/lib/utils"
 import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
+import Link from "next/link"
 import { PageHeader } from "@/components/page-header"
 import { useOrganization } from "@/components/org-context"
 import { CreateRoleDialog } from "@/components/roles/create-role-dialog"
@@ -32,10 +34,10 @@ export default function RolesPage() {
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
   const results = useQuery(api.assessment.results.getResults, { orgId, locale })
 
-  // The header and its create action are static i18n content, so they render
-  // immediately (the action as a plain no-op button until the dialog has its
-  // tracks; the load is brief and disabling would just flash gray); only the
-  // data-shaped parts swap in from the skeleton.
+  // The header and its actions are static i18n content, so they render
+  // immediately (the create button as a plain no-op until the dialog has its
+  // tracks, and the import link works right away); only the data-shaped
+  // parts swap in from the skeleton.
   if (
     roles === undefined ||
     model === undefined ||
@@ -47,7 +49,22 @@ export default function RolesPage() {
         <PageHeader
           title={t("heading")}
           description={t("description")}
-          action={<Button type="button">{t("newCta")}</Button>}
+          action={
+            <div className="flex items-center gap-2">
+              <Button type="button" variant="outline">
+                {t("newCta")}
+              </Button>
+              <Link href="/roles/import" className={cn(buttonVariants())}>
+                <HugeiconsIcon
+                  icon={Briefcase01Icon}
+                  size={16}
+                  strokeWidth={2}
+                  aria-hidden="true"
+                />
+                {t("import.cta")}
+              </Link>
+            </div>
+          }
         />
         <RolesTableSkeleton />
       </div>
@@ -73,12 +90,26 @@ export default function RolesPage() {
         title={t("heading")}
         description={t("description")}
         action={
-          <CreateRoleDialog
-            orgId={orgId}
-            tracks={model.tracks}
-            triggerLabel={t("newCta")}
-            existing={roles}
-          />
+          // Import is the primary: a register is built fastest in bulk, and
+          // this matches the people header, where the bulk path also leads.
+          <div className="flex items-center gap-2">
+            <CreateRoleDialog
+              orgId={orgId}
+              tracks={model.tracks}
+              triggerLabel={t("newCta")}
+              existing={roles}
+              triggerVariant="outline"
+            />
+            <Link href="/roles/import" className={cn(buttonVariants())}>
+              <HugeiconsIcon
+                icon={Briefcase01Icon}
+                size={16}
+                strokeWidth={2}
+                aria-hidden="true"
+              />
+              {t("import.cta")}
+            </Link>
+          </div>
         }
       />
       {roles.length === 0 ? (
@@ -94,6 +125,12 @@ export default function RolesPage() {
             <EmptyTitle>{t("heading")}</EmptyTitle>
             <EmptyDescription>{t("empty")}</EmptyDescription>
           </EmptyHeader>
+          <Link
+            href="/roles/import"
+            className={cn(buttonVariants({ variant: "outline" }))}
+          >
+            {t("import.cta")}
+          </Link>
         </Empty>
       ) : (
         <RolesTable roles={rows} tracks={model.tracks} />

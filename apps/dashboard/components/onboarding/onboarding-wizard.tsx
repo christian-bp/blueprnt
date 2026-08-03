@@ -8,13 +8,14 @@ import { useTranslations } from "next-intl"
 import { type ReactNode, useState } from "react"
 import { AccountMenu } from "@/components/account-menu"
 import { Logo } from "@/components/logo"
+import { WizardDots } from "@/components/wizard-dots"
 import { WizardShell } from "@/components/wizard-shell"
-import { OnboardingDots } from "@/components/onboarding/onboarding-dots"
 import { CountryScreen } from "@/components/onboarding/country-screen"
 import { EnsureDefaultModel } from "@/components/onboarding/ensure-default-model"
 import { FamiliesStep } from "@/components/onboarding/families-step"
 import { IndustryScreen } from "@/components/onboarding/industry-screen"
 import { NameScreen } from "@/components/onboarding/name-screen"
+import { useLaggedContentKey } from "@/hooks/use-lagged-content-key"
 
 export interface OnboardingStatus {
   organization: { orgId: string; name: string; role: string } | null
@@ -144,11 +145,6 @@ export function OnboardingWizard({
 
   // Back-navigation from the dots; cleared when a revisited screen saves.
   const [backTo, setBackTo] = useState<number | null>(null)
-  // The step key whose content is currently visible. It lags the current
-  // step until the outgoing screen's exit fade finishes (onExitComplete), so
-  // the shell's scroll-to-top (keyed on this) runs in the blank moment
-  // between screens, never while the old screen is still on screen.
-  const [displayedStepKey, setDisplayedStepKey] = useState<string>(STEPS[0].key)
   // The highest screen index the UI may show. Settings save reactively the
   // moment a choice persists, which moves the derived resume index BEFORE
   // the choice screen's fade-and-pause has played; without this cap the
@@ -181,6 +177,12 @@ export function OnboardingWizard({
     backTo !== null && backTo < frontier
       ? backTo
       : Math.min(frontier, acked ?? Math.max(derived, 0))
+  const step = STEPS[current] ?? STEPS[0]
+  // Called unconditionally, ahead of the early returns below: those render a
+  // bare WizardShell with no contentKey, so this hook's own state must not
+  // depend on anything only computed past that point.
+  const { displayedKey: displayedStepKey, onExitComplete } =
+    useLaggedContentKey(step.key)
 
   // The wizard header: the wordmark keeps the first-run experience branded
   // (the split brand panel is auth-only now); the account menu is the
@@ -206,7 +208,6 @@ export function OnboardingWizard({
     )
   }
 
-  const step = STEPS[current] ?? STEPS[0]
   // Completing a screen moves one step forward and acknowledges the move
   // (see acked above). On a revisited screen (backTo set) it walks to the
   // NEXT screen, not back to the frontier, so the user retraces the flow
@@ -240,7 +241,7 @@ export function OnboardingWizard({
       headerRight={<AccountMenu />}
       contentKey={displayedStepKey}
       footer={
-        <OnboardingDots
+        <WizardDots
           steps={STEPS.map(({ key, dotLabelKey }) => ({
             key,
             label: t(dotLabelKey),
@@ -264,7 +265,7 @@ export function OnboardingWizard({
       <AnimatePresence
         mode="wait"
         initial={false}
-        onExitComplete={() => setDisplayedStepKey(step.key)}
+        onExitComplete={onExitComplete}
       >
         <motion.div
           key={step.key}

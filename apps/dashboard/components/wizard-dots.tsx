@@ -14,18 +14,26 @@ export interface DotStep {
 // dot, so no FLIP distortion per docs/ui-animation.md); siblings reposition
 // with the same spring. Steps up to maxReachedIndex are clickable; future
 // steps render disabled. Reduced motion is honoured globally.
-export function OnboardingDots({
+export function WizardDots({
   steps,
   activeIndex,
   maxReachedIndex,
   onSelect,
   navLabel,
+  // Turns every dot into a plain marker: disabled, with no hover highlight.
+  // For a phase that cannot be navigated out of (a confirm on the wire, a
+  // finished run), where an enabled dot that does nothing on click is a dead
+  // affordance. Deliberately separate from maxReachedIndex, which keeps
+  // driving the REACHED styling: lowering that instead would grey out the
+  // active dot and misreport which step the user is on.
+  interactive = true,
 }: {
   steps: DotStep[]
   activeIndex: number
   maxReachedIndex: number
   onSelect: (index: number) => void
   navLabel?: string
+  interactive?: boolean
 }) {
   return (
     <nav
@@ -33,18 +41,19 @@ export function OnboardingDots({
       className="flex items-center justify-center gap-1"
     >
       {steps.map((step, index) => {
-        const reachable = index <= maxReachedIndex
+        const reached = index <= maxReachedIndex
         const isActive = index === activeIndex
+        const selectable = reached && interactive
         return (
           <button
             key={step.key}
             type="button"
-            disabled={!reachable}
+            disabled={!selectable}
             aria-label={step.label}
             aria-current={isActive ? "step" : undefined}
             className="group flex h-6 items-center px-1 disabled:cursor-default"
             onClick={() => {
-              if (reachable) onSelect(index)
+              if (selectable) onSelect(index)
             }}
           >
             <motion.span
@@ -53,8 +62,9 @@ export function OnboardingDots({
               className={cn(
                 "block h-2 rounded-full",
                 isActive ? "w-6 bg-brand" : "w-2",
-                !isActive && reachable && "bg-brand/40 group-hover:bg-brand/60",
-                !reachable && "bg-muted"
+                !isActive && reached && "bg-brand/40",
+                !isActive && selectable && "group-hover:bg-brand/60",
+                !reached && "bg-muted"
               )}
             />
           </button>

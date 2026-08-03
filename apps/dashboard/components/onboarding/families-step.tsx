@@ -2,21 +2,20 @@
 
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { MAX_STARTER_IMPORT_TEXT } from "@workspace/constants"
+import { MAX_FAMILIES, MAX_ROLES } from "@workspace/constants"
+import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
-import { Label } from "@workspace/ui/components/label"
-import { Progress } from "@workspace/ui/components/progress"
 import { Spinner } from "@workspace/ui/components/spinner"
-import { Textarea } from "@workspace/ui/components/textarea"
 import { AnimatePresence, motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 import { ConfirmButtons } from "@/components/confirm-buttons"
 import { HelpMorphButton } from "@/components/help-morph-button"
-import { FamiliesReview } from "@/components/onboarding/families-review"
-import { NextButton } from "@/components/onboarding/next-button"
+import { FamilyReviewTable } from "@/components/family-review-table"
+import { NextButton } from "@/components/next-button"
+import { PastedRolesField } from "@/components/pasted-roles-field"
 import { ScreenShell } from "@/components/screen-shell"
-import { TypewriterPlaceholder } from "@/components/onboarding/typewriter-placeholder"
-import { WizardFooter } from "@/components/onboarding/wizard-footer"
+import { WizardFooter } from "@/components/wizard-footer"
+import { WizardProgress } from "@/components/wizard-progress"
 import { useFamiliesDraftFlow } from "@/hooks/use-families-draft-flow"
 import { capitalizeFirst } from "@/lib/capitalize"
 
@@ -64,6 +63,7 @@ export function FamiliesStep({
     prefillProgress,
     created,
     restartPending,
+    importTruncated,
     inputValid,
     seedFromTemplate,
     onAnalyze,
@@ -147,46 +147,21 @@ export function FamiliesStep({
       <div className="w-full space-y-3">
         {/* No subtitle here (the review and prefill phases carry their own):
             the heading is a question, so it already says what this screen wants,
-            and a paragraph repeating it read as a wall of text above the field.
-            What is left is the field's label, its format hint and the popover. */}
-        <div className="flex items-center gap-2">
-          <Label htmlFor="families-import-text">{t("pasteLabel")}</Label>
-          <HelpMorphButton label={t("pasteHelpLabel")}>
-            {t("pasteHelpBody")}
-          </HelpMorphButton>
-        </div>
-        {/* The field and its hint are one block (tighter than the section's
-            space-y-3), so the hint reads as belonging to the textarea and not
-            as another centered line. Styled like the design system's
-            FormDescription; this input is not a react-hook-form field, so the
-            describedby link is wired by hand. */}
-        <div className="space-y-1.5">
-          <div className="relative">
-            <Textarea
-              id="families-import-text"
-              aria-describedby="families-import-hint"
-              value={rawText}
-              onChange={(event) => setRawText(event.target.value)}
-              className="min-h-40"
-              maxLength={MAX_STARTER_IMPORT_TEXT}
-            />
-            {rawText === "" && (
-              <TypewriterPlaceholder
-                phrases={[
-                  t("placeholderPhrase1"),
-                  t("placeholderPhrase2"),
-                  t("placeholderPhrase3"),
-                ]}
-              />
-            )}
-          </div>
-          <p
-            id="families-import-hint"
-            className="text-muted-foreground text-sm"
-          >
-            {t("pasteHint")}
-          </p>
-        </div>
+            and a paragraph repeating it read as a wall of text above the field. */}
+        <PastedRolesField
+          id="families-import-text"
+          value={rawText}
+          onChange={setRawText}
+          label={t("pasteLabel")}
+          helpLabel={t("pasteHelpLabel")}
+          helpBody={t("pasteHelpBody")}
+          hint={t("pasteHint")}
+          placeholderPhrases={[
+            t("placeholderPhrase1"),
+            t("placeholderPhrase2"),
+            t("placeholderPhrase3"),
+          ]}
+        />
         {/* The template CTA is the other way to leave this screen, so it sits
             in the footer immediately left of Next as the outline secondary to
             its primary (the footer convention), and carries the same forward
@@ -237,29 +212,17 @@ export function FamiliesStep({
   // template path (every role already complete) never reaches here.
   function renderPrefillingPhase() {
     const { done, total } = prefillProgress
-    const percent = total > 0 ? Math.round((done / total) * 100) : 0
     return (
-      <div className="flex w-full max-w-md flex-col items-center gap-4 text-center">
-        <div className="space-y-1">
-          {/* Spinner sits on the same row as the heading, not on a line of its
-              own (which read as a stray loose dot above the title). */}
-          <p className="flex items-center justify-center gap-2 font-medium text-base">
-            <Spinner />
-            {t("prefillingHeading")}
-          </p>
-          <p className="text-muted-foreground text-sm">{t("prefillingBody")}</p>
-        </div>
-        {/* The drafting bar wears the rose brand accent (override the shared
-            Progress indicator at the call site) so this branded onboarding
-            moment matches the heading; other progress bars stay neutral. */}
-        <Progress
-          value={percent}
-          className="[&>[data-slot=progress-indicator]]:bg-brand"
-        />
-        <p className="text-muted-foreground text-sm">
-          {t("prefillingProgress", { done, total })}
-        </p>
-      </div>
+      <WizardProgress
+        className="max-w-md"
+        done={done}
+        total={total}
+        label={t("prefillingHeading")}
+        heading
+        description={t("prefillingBody")}
+        countLabel={t("prefillingProgress", { done, total })}
+        accent
+      />
     )
   }
 
@@ -285,7 +248,25 @@ export function FamiliesStep({
             {tHelp("familiesReviewBody")}
           </HelpMorphButton>
         </p>
-        <FamiliesReview
+        {/* The AI grouping was clamped to the import's caps, so the list below
+            is shorter than what was pasted. Said here because the review shows
+            only the survivors: without it the missing roles are discovered
+            much later, in the register. */}
+        {importTruncated && (
+          <Alert>
+            <AlertDescription>
+              {t("importTruncated", {
+                roles: MAX_ROLES,
+                families: MAX_FAMILIES,
+              })}
+            </AlertDescription>
+          </Alert>
+        )}
+        {/* The same table the in-app role import reviews its proposal in.
+            No register and no annotations: onboarding builds the starter set
+            for an org that has none yet, so every row is one this step would
+            create and is editable and removable. */}
+        <FamilyReviewTable
           families={draft.families ?? []}
           onFamiliesChange={draft.update}
           claimId={draft.claimId}

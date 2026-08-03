@@ -90,6 +90,33 @@
     }
   },
   "dashboard": {
+    "dnd": {
+      "cancelled": "Flytten av {title} avbröts.",
+      "dropped": "{title} placerades i {family}.",
+      "instructions": "Tryck på mellanslag eller enter för att plocka upp en roll, använd piltangenterna för att flytta den och tryck på mellanslag eller enter igen för att släppa den. Tryck på escape för att avbryta.",
+      "over": "{title} är över {family}.",
+      "pickedUp": "Plockade upp {title}."
+    },
+    "familyTable": {
+      "addFamily": "Lägg till familj",
+      "addRoleShort": "Lägg till roll",
+      "blankTitle": "Ingen titel än, så raden hoppas över.",
+      "collision": "Två nya familjer kan inte heta likadant.",
+      "columnMove": "Flytta",
+      "columnRemove": "Ta bort",
+      "columnRole": "Roll",
+      "columnTrack": "Track",
+      "dragHandle": "Flytta rollen {title}",
+      "duplicate": "Finns redan, hoppas över",
+      "familyActions": "Åtgärder för {name}",
+      "nameMissing": "Ge familjen ett namn, annars läggs dess roller inte till.",
+      "removeFamilyConfirm": "Ja, ta bort familjen",
+      "removeFamilyDescription": "Den har inte skapats än, så inget i ditt register ändras. Roller som listas under den läggs inte till.",
+      "removeFamilyDescriptionExisting": "Familjen finns redan. Tar du bort den här arkiveras även rollerna under den när du går vidare.",
+      "removeFamilyTitle": "Ta bort familjen?",
+      "removeRole": "Ta bort rollen {title}",
+      "removeRoleConfirm": "Ja, ta bort rollen"
+    },
     "title": "blueprnt",
     "validation": {
       "required": "Det här fältet är obligatoriskt.",
@@ -574,7 +601,8 @@
             "starter": "Startuppsättning",
             "aiImport": "AI-import",
             "aiSuggestion": "AI-förslag",
-            "onboardingPrefill": "Förifylld vid onboarding"
+            "onboardingPrefill": "Förifylld vid onboarding",
+            "roleImportPrefill": "Förifylld vid rollimport"
           }
         }
       },
@@ -668,6 +696,10 @@
         "levelSource": "Nivåkälla",
         "originalWeightPoints": "Ursprungliga viktpoäng",
         "anchorCount": "Antal ankare",
+        "acceptedCount": "Accepterade kriterier",
+        "totalProposed": "Föreslagna kriterier",
+        "appliedCount": "Tillämpade viktändringar",
+        "totalMoves": "Föreslagna viktändringar",
         "populationCount": "Personer inkluderade",
         "withPayCount": "Med lön",
         "label": "Namn",
@@ -678,7 +710,11 @@
         "groupLabel": "Grupp",
         "scope": "Vy",
         "equalWorkDone": "Grupper för lika arbete klarmarkerade",
-        "equivalentWorkDone": "Grupper för likvärdigt arbete klarmarkerade"
+        "equivalentWorkDone": "Grupper för likvärdigt arbete klarmarkerade",
+        "kind": "Typ",
+        "familyCount": "Skapade familjer",
+        "roleCount": "Tillagda roller",
+        "skippedCount": "Överhoppade"
       },
       "values": {
         "yes": "Ja",
@@ -759,10 +795,14 @@
         "modelDraft": "Modellkriterier: {count} tillagda",
         "weightReview": "Viktgenomgång: {count} tillämpade",
         "starterImport": "Startimport: {families, plural, one {# familj} other {# familjer}}, {roles, plural, one {# roll} other {# roller}}",
+        "roleImport": "Rollimport: {families, plural, one {# familj} other {# familjer}}, {roles, plural, one {# roll} other {# roller}}",
         "kind": {
           "modelDraft": "Modellkriterier",
           "weightReview": "Viktgenomgång",
-          "starterImport": "Startroller"
+          "roleProfile": "Rollprofil",
+          "starterImport": "Startroller",
+          "criterionCompliance": "Kriteriegranskning",
+          "roleImport": "Importerade roller"
         }
       }
     },
@@ -851,6 +891,57 @@
       "description": "Jobbprofiler som värderas mot er modell. Roller, aldrig personer.",
       "newCta": "Skapa roll",
       "empty": "Inga roller ännu. Skapa din första roll för att börja värdera.",
+      "import": {
+        "cta": "Lägg till roller",
+        "navLabel": "Importsteg",
+        "steps": {
+          "paste": "Dina roller",
+          "review": "Granska"
+        },
+        "paste": {
+          "heading": "Vilka roller ska vi lägga till?",
+          "label": "Dina roller",
+          "hint": "Skilj roller åt med kommatecken, eller gruppera dem genom att inleda med ett familjenamn och kolon.",
+          "helpBody": "Klistra in det du har: en lista med titlar, en uppdelning per team eller en kolumn från ett kalkylark. Vi grupperar dem i rollfamiljer, matchar varje roll mot en track och lägger dem i familjer du redan har där de passar. Ingenting sparas förrän du bekräftar.\n\nEn rollfamilj samlar roller med samma slags arbete, till exempel Utveckling eller Försäljning; familjer ordnar registret och påverkar aldrig viktningen. En track är typen av jobb, till exempel individuell bidragsgivare eller chef; den säger ingenting om senioritet.",
+          "helpLabel": "Om att klistra in roller",
+          "placeholder1": "Bolagsjurist, HR-partner, Controller",
+          "placeholder2": "Försäljning: Account Executive, Säljchef; Finans: Redovisningsekonom, Lönespecialist",
+          "cta": "Analysera",
+          "error": "Rollerna kunde inte läsas. Försök igen."
+        },
+        "review": {
+          "heading": "Granska vad som läggs till",
+          "truncated": "En import tar högst {roles} roller i {families} rollfamiljer. Allt över det togs inte med, så lägg till resten i en andra import.",
+          "cta": "{count, plural, one {Skapa # roll} other {Skapa # roller}}",
+          "nothingToAdd": "{count, plural, one {# roll i listan finns redan} other {# roller i listan finns redan}}, så det finns inget kvar att lägga till. Lägg till en roll i en familj, eller börja om med en annan lista.",
+          "nothingHere": "Det finns inget att lägga till. Lägg till en roll i en familj, eller börja om med en ny lista.",
+          "tooManyRoles": "Det här är {count} roller. En import tar högst {max} åt gången, så ta bort några rader och lägg till resten i en andra import.",
+          "tooManyFamilies": "En import tar högst {max} rollfamiljer åt gången. Slå ihop eller ta bort några, och lägg till resten i en andra import.",
+          "restart": "Börja om",
+          "error": "Rollerna kunde inte skapas. Försök igen.",
+          "invalid": "Några av rollerna accepterades inte. Kontrollera om något namn eller någon titel är väldigt långt, eller om raderna är för många, och försök igen."
+        },
+        "prefilling": {
+          "heading": "Skapar rollprofiler",
+          "body": "Vi skriver ett syfte och ansvarsområden för varje ny roll utifrån dess namn. Det kan ta en stund.",
+          "progress": "{done} av {total} roller"
+        },
+        "done": {
+          "title": "Roller tillagda",
+          "description": "Så här gick det.",
+          "roles": "Roller tillagda",
+          "families": "Familjer skapade",
+          "skipped": "Fanns redan",
+          "cta": "Till roller",
+          "profilesFailed": "Rollerna lades till, men rollprofilerna kunde inte skapas. Du kan skapa dem från varje rollsida."
+        },
+        "discard": {
+          "title": "Kasta den här importen?",
+          "description": "Rollerna du granskat skapas inte. Du kan börja om när som helst.",
+          "keep": "Fortsätt granska",
+          "discard": "Kasta"
+        }
+      },
       "evaluated": "Utvärderad",
       "notEvaluated": "Inte utvärderad ännu",
       "table": {
@@ -1464,22 +1555,11 @@
         "templateCta": "Använd en branschmall",
         "generating": "Organiserar dina roller i familjer",
         "nextCta": "Nästa",
-        "addFamilyCta": "Lägg till familj",
-        "addRoleCta": "Lägg till roll",
-        "removeFamilyLabel": "Ta bort familjen {name}",
-        "removeRoleLabel": "Ta bort rollen {title}",
-        "removeFamilyConfirm": "Ja, ta bort familjen",
-        "removeRoleConfirm": "Ja, ta bort rollen",
         "error": "Något gick fel. Försök igen.",
         "restartCta": "Börja om",
         "restartConfirm": "Ja, börja om",
         "restartCancel": "Avbryt",
-        "dragHandleLabel": "Flytta rollen {title}",
-        "dndInstructions": "Tryck på mellanslag eller retur för att lyfta en roll, använd piltangenterna för att flytta den och tryck på mellanslag eller retur igen för att släppa den. Tryck på escape för att avbryta.",
-        "dndPickedUp": "Lyfte {title}.",
-        "dndOver": "{title} är över {family}.",
-        "dndDropped": "{title} placerades i {family}.",
-        "dndCancelled": "Flytten av {title} avbröts.",
+        "importTruncated": "En import tar högst {roles} roller i {families} rollfamiljer. Allt över det togs inte med, du kan lägga till resten senare.",
         "reviewHint": "Gruppera rollerna i familjer och sätt varje rolls track.",
         "reviewHintStarter": "En startpunkt utifrån er bransch: gruppera rollerna i familjer och sätt varje rolls track. Ändra vad som helst senare.",
         "ungroupedFamilyName": "Övriga roller",

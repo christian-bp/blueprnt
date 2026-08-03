@@ -113,9 +113,9 @@ vi.mock("@/components/wizard-shell", () => ({
   ),
 }))
 
-// Mock OnboardingDots to avoid its internal motion dependencies.
-vi.mock("@/components/onboarding/onboarding-dots", () => ({
-  OnboardingDots: () => null,
+// Mock WizardDots to avoid its internal motion dependencies.
+vi.mock("@/components/wizard-dots", () => ({
+  WizardDots: () => null,
 }))
 
 import {

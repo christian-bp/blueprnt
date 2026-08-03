@@ -127,7 +127,14 @@ export function HelpMorphButton({
                   className="w-[26rem] max-w-[85vw] space-y-3 p-4"
                 >
                   <h3 className="font-medium text-sm">{label}</h3>
-                  <p className="text-muted-foreground text-sm">{children}</p>
+                  {/* whitespace-pre-line is a no-op for every existing
+                      single-line body (it only special-cases literal
+                      newlines), and lets a body that needs a second
+                      paragraph get one via "\n\n" without a second slot on
+                      this component. */}
+                  <p className="whitespace-pre-line text-muted-foreground text-sm">
+                    {children}
+                  </p>
                 </motion.div>
               </PopoverPrimitive.Popup>
             </PopoverPrimitive.Positioner>

@@ -67,6 +67,17 @@ export async function requireOwnRole(
   return role
 }
 
+// The uniqueness key for a role title inside its family: case-insensitive,
+// whitespace-trimmed, family-scoped, and distinct for a family-less role.
+// Exported so every path deciding "is this title already taken here" compares
+// identically (createRole's assert and the additive import's skip pass).
+export function roleTitleKey(
+  familyId: Id<"roleFamilies"> | undefined,
+  title: string
+): string {
+  return `${familyId ?? ""}:${title.trim().toLowerCase()}`
+}
+
 // Role titles are unique within a family (case-insensitive); the same title
 // may recur in a different family, and family-less roles form their own group.
 // Archived roles are retired and never block a title. Org role counts are
@@ -82,14 +93,12 @@ async function assertUniqueRoleTitle(
     .query("roles")
     .withIndex("by_org", (q) => q.eq("orgId", orgId))
     .collect()
-  const lowered = title.toLowerCase()
-  const scope = familyId ?? null
+  const key = roleTitleKey(familyId, title)
   const clash = roles.some(
     (role) =>
       role._id !== excludeId &&
       role.archivedAt === undefined &&
-      (role.familyId ?? null) === scope &&
-      role.title.toLowerCase() === lowered
+      roleTitleKey(role.familyId, role.title) === key
   )
   if (clash) throw appError(ERROR_CODES.roleExists)
 }

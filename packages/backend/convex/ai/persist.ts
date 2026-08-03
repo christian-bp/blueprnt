@@ -1,9 +1,37 @@
+import { MAX_FAMILIES, MAX_ROLES } from "@workspace/constants"
 import { isBalanced } from "@workspace/core"
 import { v } from "convex/values"
-import { internalMutation } from "../_generated/server"
-import { MAX_FAMILIES, MAX_ROLES } from "../assessment/starters"
+import type { Doc, Id } from "../_generated/dataModel"
+import { internalMutation, type MutationCtx } from "../_generated/server"
 import { isTrackKey } from "../evaluationModel/localize"
 import { appError, ERROR_CODES } from "../lib/errors"
+
+// The closed end of the suggestion lifecycle (ADR-0003). Confirmed and
+// rejected are terminal: the human verdict has been recorded, so nothing may
+// write over it afterwards, neither a late generation (below) nor a second
+// dismissal (rejectSuggestion).
+export function isSuggestionClosed(
+  status: Doc<"suggestions">["status"]
+): boolean {
+  return status === "confirmed" || status === "rejected"
+}
+
+// Every terminal write a generation makes goes through here. The action runs
+// for up to a minute after the request, and the row can be closed while it is
+// still in flight: the user dismisses the proposal and walks away. Patching
+// unconditionally then flips that rejected row back to "suggested" (or
+// "failed"), and the proposal the user dismissed ambushes them on the next
+// visit. A late outcome for a closed row is therefore dropped, not written,
+// and dropping it is not an error: nobody is waiting for it.
+async function patchOpenSuggestion(
+  ctx: MutationCtx,
+  suggestionId: Id<"suggestions">,
+  patch: Partial<Doc<"suggestions">>
+): Promise<void> {
+  const suggestion = await ctx.db.get(suggestionId)
+  if (suggestion === null || isSuggestionClosed(suggestion.status)) return
+  await ctx.db.patch(suggestionId, patch)
+}
 
 export const saveDraft = internalMutation({
   args: {
@@ -29,7 +57,7 @@ export const saveDraft = internalMutation({
     if (!isBalanced(criteria.map((criterion) => criterion.weightPoints))) {
       throw appError(ERROR_CODES.weightsUnbalanced)
     }
-    await ctx.db.patch(suggestionId, {
+    await patchOpenSuggestion(ctx, suggestionId, {
       suggestedValue: { criteria },
       status: "suggested",
     })
@@ -54,7 +82,7 @@ export const saveWeightReview = internalMutation({
   },
   returns: v.null(),
   handler: async (ctx, { suggestionId, moves }) => {
-    await ctx.db.patch(suggestionId, {
+    await patchOpenSuggestion(ctx, suggestionId, {
       suggestedValue: { moves },
       status: "suggested",
     })
@@ -79,9 +107,13 @@ export const saveStarterImport = internalMutation({
         ),
       })
     ),
+    // Whether the caps cost the user roles the model had returned. Stored with
+    // the proposal because the review is the only place that can say so, and
+    // it cannot re-derive it: it never sees what was clamped away.
+    truncated: v.boolean(),
   },
   returns: v.null(),
-  handler: async (ctx, { suggestionId, families }) => {
+  handler: async (ctx, { suggestionId, families, truncated }) => {
     const totalRoles = families.reduce(
       (sum, family) => sum + family.roles.length,
       0
@@ -99,8 +131,8 @@ export const saveStarterImport = internalMutation({
     ) {
       throw appError(ERROR_CODES.invalidInput)
     }
-    await ctx.db.patch(suggestionId, {
-      suggestedValue: { families },
+    await patchOpenSuggestion(ctx, suggestionId, {
+      suggestedValue: { families, truncated },
       status: "suggested",
     })
     return null
@@ -112,7 +144,10 @@ export const markFailed = internalMutation({
   args: { suggestionId: v.id("suggestions"), errorCode: v.string() },
   returns: v.null(),
   handler: async (ctx, { suggestionId, errorCode }) => {
-    await ctx.db.patch(suggestionId, { status: "failed", errorCode })
+    await patchOpenSuggestion(ctx, suggestionId, {
+      status: "failed",
+      errorCode,
+    })
     return null
   },
 })

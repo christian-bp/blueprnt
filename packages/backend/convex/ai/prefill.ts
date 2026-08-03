@@ -1,6 +1,6 @@
 "use node"
 
-import { v } from "convex/values"
+import { type Infer, v } from "convex/values"
 import { SUGGESTION_KINDS } from "@workspace/constants"
 import { internal } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
@@ -8,6 +8,11 @@ import { type ActionCtx, action } from "../_generated/server"
 import { appError, ERROR_CODES } from "../lib/errors"
 import { AI_PROFILE_MODEL_ID, AI_PROVIDER } from "./config"
 import { generateRoleProfileBatch } from "./generate"
+import { prefillViaValidator } from "./prefillData"
+
+// The surface a prefill run is attributed to, derived from the validator so
+// the action's args and the chunk helper cannot drift apart.
+type PrefillVia = Infer<typeof prefillViaValidator>
 
 // One role that needs prefilling, resolved by the internal query: the title +
 // HR context the prompt consumes, plus the org's company context (the AI
@@ -63,14 +68,16 @@ const PREFILL_CONCURRENCY =
     : 1
 
 // Auto-applies AI-drafted job profiles for an org's roles whose profile is
-// still empty, during onboarding. Collects every empty-profile role, splits
-// them into small chunks (PREFILL_MAX_PER_CALL), and for each chunk makes ONE
-// structured-object call that returns one profile per role in the chunk
-// (generateRoleProfileBatch); each returned profile is applied directly to its
-// role (applyPrefill) instead of routing through the suggestion/confirm flow.
-// The chunks run in bounded-concurrency WAVES (PREFILL_CONCURRENCY at a time),
-// and each call stays small enough to beat generateRoleProfileBatch's 60s
-// per-call timeout.
+// still empty: during onboarding (every empty-profile role), or scoped to a
+// specific set of roles via roleIds (an in-app import's batch, so it never
+// drafts profiles for unrelated roles the user left empty on purpose). Splits
+// the targeted roles into small chunks (PREFILL_MAX_PER_CALL), and for each
+// chunk makes ONE structured-object call that returns one profile per role in
+// the chunk (generateRoleProfileBatch); each returned profile is applied
+// directly to its role (applyPrefill) instead of routing through the
+// suggestion/confirm flow. The chunks run in bounded-concurrency WAVES
+// (PREFILL_CONCURRENCY at a time), and each call stays small enough to beat
+// generateRoleProfileBatch's 60s per-call timeout.
 //
 // ADR-0003 note: this is a deliberate, scoped softening of "AI output is a
 // suggestion HR confirms". The auto-applied text is name-derived profile copy
@@ -89,11 +96,24 @@ export const prefillRoleProfiles = action({
   // locale), mirroring the other AI flows. collectPrefillTargets resolves it
   // through promptLocale (falling back to the org's saved language), so the
   // generated profiles come back in the language the user is actually viewing.
-  args: { orgId: v.string(), locale: v.optional(v.string()) },
+  // roleIds narrows the run to a specific set of roles (an in-app import's
+  // batch); omitted, every empty-profile role in the org is targeted
+  // (onboarding's behaviour, unchanged).
+  // `via` names the surface that ran the prefill; it is written verbatim into
+  // every role.updated audit row this action produces. Required, with no
+  // default: a defaulted value means a new surface that forgets it is recorded
+  // as some other surface, which is the exact false-provenance defect this
+  // argument exists to remove. Choosing one is a compile-time obligation.
+  args: {
+    orgId: v.string(),
+    locale: v.optional(v.string()),
+    roleIds: v.optional(v.array(v.id("roles"))),
+    via: prefillViaValidator,
+  },
   returns: v.object({ generated: v.number(), failed: v.number() }),
   handler: async (
     ctx,
-    { orgId, locale }
+    { orgId, locale, roleIds, via }
   ): Promise<{ generated: number; failed: number }> => {
     // Org scope: resolve identity + membership exactly like the org function
     // wrapper, but from an action (which has ctx.auth but no ctx.db). The
@@ -108,6 +128,7 @@ export const prefillRoleProfiles = action({
         orgId,
         userId: identity.subject,
         ...(locale !== undefined ? { locale } : {}),
+        ...(roleIds !== undefined ? { roleIds } : {}),
       }
     )
 
@@ -133,7 +154,7 @@ export const prefillRoleProfiles = action({
       // and one bad chunk cannot fail the rest of its wave.
       const appliedCounts = await Promise.all(
         wave.map((chunk) =>
-          prefillChunk(ctx, { orgId, actorId, context, chunk })
+          prefillChunk(ctx, { orgId, actorId, context, chunk, via })
         )
       )
       for (let w = 0; w < wave.length; w++) {
@@ -159,9 +180,10 @@ async function prefillChunk(
     actorId: string
     context: PrefillContext
     chunk: PrefillTarget[]
+    via: PrefillVia
   }
 ): Promise<number> {
-  const { orgId, actorId, context, chunk } = args
+  const { orgId, actorId, context, chunk, via } = args
   const roleInputs = chunk.map((target) => ({
     locale: context.locale,
     industry: context.industry,
@@ -214,7 +236,7 @@ async function prefillChunk(
       if (target === undefined || profile === undefined) continue
       const didApply: boolean = await ctx.runMutation(
         internal.ai.prefillData.applyPrefill,
-        { orgId, roleId: target.roleId, actorId, profile }
+        { orgId, roleId: target.roleId, actorId, profile, via }
       )
       if (didApply) applied += 1
     }

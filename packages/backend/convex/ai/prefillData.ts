@@ -17,6 +17,17 @@ const profileShape = v.object({
   responsibilities: v.string(),
 })
 
+// Which surface auto-applied the profile. It is a LABELLED provenance value in
+// the audit detail, so it must name the surface that actually ran: an in-app
+// import at a two-year-old org attributed to onboarding is a false record in
+// the exact row the ADR-0003 auto-apply exception rests on. A literal union
+// rather than a string, so a new surface has to add its value here (and its
+// label in every locale) instead of writing an unlabelled one.
+export const prefillViaValidator = v.union(
+  v.literal("onboardingPrefill"),
+  v.literal("roleImportPrefill")
+)
+
 // responsibilities is the wider field; everything else (purpose) is capped
 // shorter. Mirrors ai/suggest's maxLengthFor so the trust boundary is the
 // same as the confirm path the prefill replaces.
@@ -28,12 +39,20 @@ function maxLengthFor(field: (typeof PROFILE_TEXT_FIELDS)[number]): number {
 // org-scoped read. Membership is re-checked here (the action only has the
 // caller's identity): a foreign org, or a caller who is not a member, is
 // rejected before any model call. Roles that already have a non-empty profile
-// are filtered out, so the action never spends a generation on them.
+// are filtered out, so the action never spends a generation on them. When
+// roleIds is given, the result is further narrowed to that set (still on top
+// of the archived/already-complete exclusions), for a caller that only wants
+// to draft profiles for a specific batch of roles rather than every empty one.
 export const collectPrefillTargets = internalQuery({
   args: {
     orgId: v.string(),
     userId: v.string(),
     locale: v.optional(v.string()),
+    // Narrows the prefill to specific roles. Absent means every empty-profile
+    // role in the org (onboarding, where the whole register was just created);
+    // present means exactly what one in-app import created, so an import never
+    // drafts profiles for unrelated roles the user left empty on purpose.
+    roleIds: v.optional(v.array(v.id("roles"))),
   },
   returns: v.object({
     actorId: v.string(),
@@ -56,7 +75,7 @@ export const collectPrefillTargets = internalQuery({
       })
     ),
   }),
-  handler: async (ctx, { orgId, userId, locale }) => {
+  handler: async (ctx, { orgId, userId, locale, roleIds }) => {
     // Membership re-check (fail closed), mirroring resolveOrgContext: the
     // action authenticated the caller, this confirms they belong to THIS org.
     let membership: { role: string } | null
@@ -106,13 +125,22 @@ export const collectPrefillTargets = internalQuery({
     // simply omits the family clause.
     const families = await familyNames(ctx, orgId)
 
+    // Absent roleIds -> no scope filter (every empty-profile role in the org,
+    // onboarding's behaviour). Present -> only those roles, ON TOP OF the
+    // existing archived/already-complete exclusions, never instead of them.
+    const scope =
+      roleIds === undefined ? null : new Set<string>(roleIds as string[])
+
     const roles = await ctx.db
       .query("roles")
       .withIndex("by_org", (q) => q.eq("orgId", orgId))
       .collect()
     const targets = roles
       .filter(
-        (role) => role.archivedAt === undefined && !isProfileComplete(role)
+        (role) =>
+          role.archivedAt === undefined &&
+          !isProfileComplete(role) &&
+          (scope === null || scope.has(role._id as string))
       )
       .map((role) => {
         // Omit the family key entirely when the role has no family (or its
@@ -163,9 +191,10 @@ export const applyPrefill = internalMutation({
     roleId: v.id("roles"),
     actorId: v.string(),
     profile: profileShape,
+    via: prefillViaValidator,
   },
   returns: v.boolean(),
-  handler: async (ctx, { orgId, roleId, actorId, profile }) => {
+  handler: async (ctx, { orgId, roleId, actorId, profile, via }) => {
     const role = await ctx.db.get(roleId)
     const locked =
       role === null || role.orgId !== orgId || role.archivedAt !== undefined
@@ -191,15 +220,15 @@ export const applyPrefill = internalMutation({
 
     // Structured before->after diff over the applied fields: `role` is the
     // pre-patch in-memory doc read above, `patch` is what we apply (Convex
-    // patch does not mutate the already-read doc). source/via mark this as the
-    // onboarding AI prefill so the Sheet can attribute it.
+    // patch does not mutate the already-read doc). source/via mark this as an
+    // AI prefill from the calling surface so the Sheet can attribute it.
     const changes = buildChanges(role, patch, appliedFields)
     await ctx.db.patch(roleId, patch)
     await logAudit(ctx, {
       orgId,
       type: AUDIT_EVENTS.roleUpdated,
       actorId,
-      payload: { roleId, source: "ai", via: "onboardingPrefill", changes },
+      payload: { roleId, source: "ai", via, changes },
     })
     return true
   },

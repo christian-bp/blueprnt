@@ -43,7 +43,7 @@ vi.mock("@workspace/backend/convex/_generated/api", async () => {
 
 // The animated placeholder runs real timers; it has its own test file and
 // only adds noise (act warnings) here.
-vi.mock("@/components/onboarding/typewriter-placeholder", () => ({
+vi.mock("@/components/typewriter-placeholder", () => ({
   TypewriterPlaceholder: () => null,
 }))
 
@@ -92,6 +92,7 @@ function suggestedImportFixture() {
     kind: "starter.import",
     status: "suggested",
     suggestedValue: {
+      truncated: false,
       families: [
         {
           name: "Engineering",
@@ -183,7 +184,57 @@ async function seedFromTemplate() {
     return Promise.resolve(null)
   })
   fireEvent.click(screen.getByRole("button", { name: t.templateCta }))
-  await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+  await reviewRendered()
+}
+
+// The review renders as the shared family table: a family's name is static
+// text in its group header, and the field is opened from the row's actions
+// menu. These read and drive it the way a user would.
+const familyNameLabel = messages.dashboard.roles.family.nameLabel
+const familyMenu = messages.dashboard.roles.family
+const roleTitleLabel = messages.dashboard.roles.create.titleLabel
+const familyActionsFor = (name: string) =>
+  messages.dashboard.familyTable.familyActions.replace("{name}", name)
+
+/** The family names on screen, in group order. */
+function familyNames(): string[] {
+  return Array.from(document.querySelectorAll("tbody")).map((body) => {
+    const header = body.querySelector("tr")
+    return header?.querySelector("td span span")?.textContent?.trim() ?? ""
+  })
+}
+
+/** Waits for the review table to have rendered its editable rows. */
+async function reviewRendered() {
+  return await screen.findAllByLabelText(roleTitleLabel)
+}
+
+/** Removes a family through its row-actions menu and the confirm dialog. */
+async function removeFamily(name: string) {
+  const trigger = screen.getByRole("button", { name: familyActionsFor(name) })
+  fireEvent.pointerDown(trigger)
+  fireEvent.click(trigger)
+  fireEvent.click(
+    await screen.findByRole("menuitem", { name: familyMenu.removeCta })
+  )
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: messages.dashboard.familyTable.removeFamilyConfirm,
+    })
+  )
+}
+
+/** Opens one family's name field through its row-actions menu. */
+async function openFamilyName(name: string) {
+  const trigger = screen.getByRole("button", { name: familyActionsFor(name) })
+  fireEvent.pointerDown(trigger)
+  fireEvent.click(trigger)
+  fireEvent.click(
+    await screen.findByRole("menuitem", { name: familyMenu.renameCta })
+  )
+  return (await screen.findByRole("textbox", {
+    name: familyNameLabel,
+  })) as HTMLInputElement
 }
 
 describe("FamiliesStep", () => {
@@ -221,9 +272,7 @@ describe("FamiliesStep", () => {
   it("starts in the paste view with a disabled next button", () => {
     renderStep()
     expect(screen.getByLabelText(t.pasteLabel)).toBeDefined()
-    expect(
-      screen.queryAllByLabelText(messages.dashboard.roles.family.nameLabel)
-    ).toHaveLength(0)
+    expect(screen.queryAllByLabelText(roleTitleLabel)).toHaveLength(0)
     const next = screen.getByRole("button", {
       name: nextCta,
     }) as HTMLButtonElement
@@ -312,10 +361,8 @@ describe("FamiliesStep", () => {
     renderStep(onFinished)
 
     // The AI proposal seeds the editable review list directly.
-    const nameInputs = (await screen.findAllByLabelText(
-      messages.dashboard.roles.family.nameLabel
-    )) as HTMLInputElement[]
-    expect(nameInputs.map((input) => input.value)).toEqual(["Engineering"])
+    await reviewRendered()
+    expect(familyNames()).toEqual(["Engineering"])
     expect(screen.getByText(messages.dashboard.ai.provenance)).toBeDefined()
 
     fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
@@ -383,20 +430,13 @@ describe("FamiliesStep", () => {
       ],
     })
     expect(screen.queryByLabelText(t.pasteLabel)).toBeNull()
-    expect(
-      screen.queryAllByLabelText(messages.dashboard.roles.family.nameLabel)
-    ).toHaveLength(0)
+    expect(screen.queryAllByLabelText(roleTitleLabel)).toHaveLength(0)
 
     // Once the created set appears, the resume-from-existing seed renders the
     // editable review (the same families, now carrying their real ids).
     deferred.resolve()
-    const nameInputs = (await screen.findAllByLabelText(
-      messages.dashboard.roles.family.nameLabel
-    )) as HTMLInputElement[]
-    expect(nameInputs.map((input) => input.value)).toEqual([
-      "Engineering",
-      "Sales",
-    ])
+    await reviewRendered()
+    expect(familyNames()).toEqual(["Engineering", "Sales"])
     // AI provenance is not shown: the review is the freshly-created set.
     expect(screen.queryByText(messages.dashboard.ai.provenance)).toBeNull()
   })
@@ -415,13 +455,8 @@ describe("FamiliesStep", () => {
     // currentFamilies/currentRoles are now populated (seedFromTemplate created
     // them); a fresh mount has no local draft, yet must resume into the review.
     renderStep()
-    const nameInputs = (await screen.findAllByLabelText(
-      messages.dashboard.roles.family.nameLabel
-    )) as HTMLInputElement[]
-    expect(nameInputs.map((input) => input.value)).toEqual([
-      "Engineering",
-      "Sales",
-    ])
+    await reviewRendered()
+    expect(familyNames()).toEqual(["Engineering", "Sales"])
     expect(screen.queryByLabelText(t.pasteLabel)).toBeNull()
   })
 
@@ -546,13 +581,8 @@ describe("FamiliesStep", () => {
         />
       </NextIntlClientProvider>
     )
-    const nameInputs = (await screen.findAllByLabelText(
-      messages.dashboard.roles.family.nameLabel
-    )) as HTMLInputElement[]
-    expect(nameInputs.map((input) => input.value)).toEqual([
-      "Engineering",
-      "Sales",
-    ])
+    await reviewRendered()
+    expect(familyNames()).toEqual(["Engineering", "Sales"])
     expect(screen.queryByText(messages.dashboard.ai.provenance)).toBeNull()
 
     // Advancing reconciles the created set; it must NOT confirm the abandoned
@@ -576,16 +606,7 @@ describe("FamiliesStep", () => {
 
     // Remove the Sales family (arm the morph confirm, then confirm), then
     // reconcile on Next.
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: t.removeFamilyLabel.replace("{name}", "Sales"),
-      })
-    )
-    fireEvent.click(
-      await screen.findByRole("button", {
-        name: t.removeFamilyConfirm,
-      })
-    )
+    await removeFamily("Sales")
     fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
 
     await waitFor(() => {
@@ -613,10 +634,12 @@ describe("FamiliesStep", () => {
     renderStep(onFinished)
     await seedFromTemplate()
 
-    for (const input of screen.getAllByLabelText(
-      messages.dashboard.roles.family.nameLabel
-    )) {
-      fireEvent.change(input, { target: { value: "   " } })
+    for (const name of familyNames()) {
+      const field = await openFamilyName(name)
+      fireEvent.change(field, { target: { value: "   " } })
+      // Enter puts the field away, the way a user moves to the next one; two
+      // open fields would make "the" name field ambiguous.
+      fireEvent.keyDown(field, { key: "Enter" })
     }
     fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
 
@@ -637,7 +660,10 @@ describe("FamiliesStep", () => {
     for (const title of ["Developer", "Tech Lead", "Account Executive"]) {
       expect(
         screen.getByRole("button", {
-          name: t.dragHandleLabel.replace("{title}", title),
+          name: messages.dashboard.familyTable.dragHandle.replace(
+            "{title}",
+            title
+          ),
         })
       ).toBeDefined()
     }
@@ -647,7 +673,7 @@ describe("FamiliesStep", () => {
     currentSuggestions = [suggestedImportFixture()]
     rejectSuggestionMock.mockResolvedValue(null)
     renderStep()
-    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+    await reviewRendered()
 
     fireEvent.click(screen.getByRole("button", { name: t.restartCta }))
 
@@ -696,7 +722,7 @@ describe("FamiliesStep", () => {
     )
     const onFinished = vi.fn()
     renderStep(onFinished)
-    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+    await reviewRendered()
 
     fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
 
@@ -716,7 +742,7 @@ describe("FamiliesStep", () => {
       .mockResolvedValueOnce(null)
     const onFinished = vi.fn()
     renderStep(onFinished)
-    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+    await reviewRendered()
 
     // First attempt: the confirm throws, the step stays and shows the alert.
     fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
@@ -747,13 +773,8 @@ describe("FamiliesStep", () => {
 
     // The editable review shows the existing role families; the paste/import
     // entry is gone.
-    const nameInputs = (await screen.findAllByLabelText(
-      messages.dashboard.roles.family.nameLabel
-    )) as HTMLInputElement[]
-    expect(nameInputs.map((input) => input.value)).toEqual([
-      "Engineering",
-      "Sales",
-    ])
+    await reviewRendered()
+    expect(familyNames()).toEqual(["Engineering", "Sales"])
     expect(screen.queryByLabelText(t.pasteLabel)).toBeNull()
     // A genuine revisit now offers Start over too (the destructive
     // ConfirmButtons trigger), mirroring the model step's change-choice; the
@@ -822,7 +843,7 @@ describe("FamiliesStep", () => {
     renderStep()
 
     // The revisit resumes straight into the editable review of the saved set.
-    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+    await reviewRendered()
 
     // Arm the destructive Start over (ConfirmButtons trigger), then confirm.
     fireEvent.click(screen.getByRole("button", { name: t.restartCta }))
@@ -839,9 +860,7 @@ describe("FamiliesStep", () => {
     })
     // The paste fork returns and the archived roles do not re-seed a review.
     expect(await screen.findByLabelText(t.pasteLabel)).toBeDefined()
-    expect(
-      screen.queryAllByLabelText(messages.dashboard.roles.family.nameLabel)
-    ).toHaveLength(0)
+    expect(screen.queryAllByLabelText(roleTitleLabel)).toHaveLength(0)
     expect(rejectSuggestionMock).not.toHaveBeenCalled()
   })
 
@@ -863,9 +882,7 @@ describe("FamiliesStep", () => {
 
     // The spinner holds: no review (no family-name inputs), no AI provenance
     // line, and no paste view. Nothing has seeded yet.
-    expect(
-      screen.queryAllByLabelText(messages.dashboard.roles.family.nameLabel)
-    ).toHaveLength(0)
+    expect(screen.queryAllByLabelText(roleTitleLabel)).toHaveLength(0)
     expect(screen.queryByText(messages.dashboard.ai.provenance)).toBeNull()
     expect(screen.queryByLabelText(t.pasteLabel)).toBeNull()
     // Nothing is created, confirmed, or reconciled while roles are loading.
@@ -890,13 +907,8 @@ describe("FamiliesStep", () => {
     // The existing set seeded the review, not the suggested import (which is a
     // single "Engineering" family). The provenance line (AI-seeded only) is
     // absent.
-    const nameInputs = (await screen.findAllByLabelText(
-      messages.dashboard.roles.family.nameLabel
-    )) as HTMLInputElement[]
-    expect(nameInputs.map((input) => input.value)).toEqual([
-      "Engineering",
-      "Sales",
-    ])
+    await reviewRendered()
+    expect(familyNames()).toEqual(["Engineering", "Sales"])
     expect(screen.queryByText(messages.dashboard.ai.provenance)).toBeNull()
     const titleInputs = screen.getAllByLabelText(
       messages.dashboard.roles.create.titleLabel
@@ -955,7 +967,7 @@ describe("FamiliesStep", () => {
     })
     const onFinished = vi.fn(() => order.push("advance"))
     renderStep(onFinished)
-    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+    await reviewRendered()
 
     fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
 
@@ -966,6 +978,7 @@ describe("FamiliesStep", () => {
     expect(prefillRoleProfilesMock).toHaveBeenCalledWith({
       orgId: "org-1",
       locale: "en",
+      via: "onboardingPrefill",
     })
     // persist -> prefill -> advance, strictly ordered.
     expect(order).toEqual(["reconcile", "prefill", "advance"])
@@ -984,7 +997,7 @@ describe("FamiliesStep", () => {
     })
     const onFinished = vi.fn(() => order.push("advance"))
     renderStep(onFinished)
-    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+    await reviewRendered()
 
     fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
 
@@ -995,6 +1008,7 @@ describe("FamiliesStep", () => {
     expect(prefillRoleProfilesMock).toHaveBeenCalledWith({
       orgId: "org-1",
       locale: "en",
+      via: "onboardingPrefill",
     })
     expect(order).toEqual(["confirm", "prefill", "advance"])
   })
@@ -1018,7 +1032,7 @@ describe("FamiliesStep", () => {
     )
     const onFinished = vi.fn()
     renderStep(onFinished)
-    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+    await reviewRendered()
 
     const next = screen.getByRole("button", {
       name: t.nextCta,
@@ -1061,7 +1075,7 @@ describe("FamiliesStep", () => {
     )
     const onFinished = vi.fn()
     renderStep(onFinished)
-    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+    await reviewRendered()
 
     fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
 
@@ -1108,7 +1122,7 @@ describe("FamiliesStep", () => {
     renderStep(onFinished)
 
     // The AI proposal seeds the editable review; confirm it with Next.
-    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+    await reviewRendered()
     fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
 
     // While the prefill is in flight the dedicated prefilling screen takes over
@@ -1139,7 +1153,7 @@ describe("FamiliesStep", () => {
       .mockResolvedValueOnce({ generated: 0, failed: 0 })
     const onFinished = vi.fn()
     renderStep(onFinished)
-    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+    await reviewRendered()
 
     fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
     await waitFor(() => {
@@ -1171,7 +1185,7 @@ describe("FamiliesStep", () => {
       .mockResolvedValueOnce({ generated: 1, failed: 0 })
     const onFinished = vi.fn()
     renderStep(onFinished)
-    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+    await reviewRendered()
 
     fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
     await waitFor(() => {
@@ -1194,7 +1208,7 @@ describe("FamiliesStep", () => {
       .mockRejectedValueOnce(new Error("retry transport blew up"))
     const onFinished = vi.fn()
     renderStep(onFinished)
-    await screen.findAllByLabelText(messages.dashboard.roles.family.nameLabel)
+    await reviewRendered()
 
     fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
     await waitFor(() => {

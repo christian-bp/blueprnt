@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
-import { NextButton } from "@/components/onboarding/next-button"
+import { NextButton } from "@/components/next-button"
 
 const nextCta = messages.dashboard.onboarding.screens.nextCta
 

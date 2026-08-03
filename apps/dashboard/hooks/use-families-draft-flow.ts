@@ -4,16 +4,18 @@ import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { SUGGESTION_KINDS } from "@workspace/constants"
 import type { FunctionArgs } from "convex/server"
-import { useAction, useMutation, useQuery } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
-import { type SeedFamily, useDraftFamilies } from "@/hooks/use-draft-families"
-import { useSuggestionFlow } from "@/hooks/use-suggestion-flow"
-import { isDuplicateFamilyError } from "@/lib/family-error"
+import type { SeedFamily, useDraftFamilies } from "@/hooks/use-draft-families"
+import { usePastedRoleDraft } from "@/hooks/use-pasted-role-draft"
 import {
-  starterImportInputSchema,
-  starterImportValueSchema,
-} from "@/lib/suggestion-schemas"
+  prefillProgressOf,
+  useProfilePrefill,
+} from "@/hooks/use-profile-prefill"
+import type { SuggestionFlow } from "@/hooks/use-suggestion-flow"
+import { isDuplicateFamilyError } from "@/lib/family-error"
+import type { StarterImportValue } from "@/lib/suggestion-schemas"
 
 // What seeded the editable review list: the already-created set (a revisit, or
 // the just-created-this-session template set, both reconciled on advance) or an
@@ -81,7 +83,7 @@ export interface FamiliesDraftFlow {
   requestFailed: boolean
   failure: "duplicate" | "generic" | null
   // The shared AI suggestion lifecycle for the paste-import proposal.
-  flow: ReturnType<typeof useSuggestionFlow<unknown>>
+  flow: SuggestionFlow<StarterImportValue>
   // True while finish() runs (persist + prefill).
   pending: boolean
   // How many roles already have a complete profile out of the total, derived
@@ -92,6 +94,9 @@ export interface FamiliesDraftFlow {
   created: boolean
   // True while a template discard is in flight (disables Start over).
   restartPending: boolean
+  // The AI grouping under review was clamped to the import's size caps, so the
+  // list on screen is shorter than what was pasted.
+  importTruncated: boolean
   // The paste view's analyze gate.
   inputValid: boolean
   // Handlers.
@@ -102,12 +107,14 @@ export interface FamiliesDraftFlow {
 }
 
 // Owns the families step's draft flow: the queries it reads, the create /
-// confirm / reconcile / request mutations and the prefill action, the AI
-// suggestion lifecycle, the editable draft, and the interacting state flags
-// that orchestrate paste / AI-import / template-create-on-pick /
-// resume-from-existing / reconcile / prefill. The two render-phase seed blocks
-// (resume-from-existing, AI-seed) run here as adjust-state-during-render, the
-// established pattern; the component is a thin view over what this returns.
+// confirm / reconcile mutations and the prefill action, and the interacting
+// state flags that orchestrate paste / AI-import / template-create-on-pick /
+// resume-from-existing / reconcile / prefill. The paste-to-AI-to-draft engine
+// (textarea, request, suggestion lifecycle, AI seed) comes from
+// usePastedRoleDraft; what stays here is the second seed source
+// (resume-from-existing, a render-phase seed like the AI one) and everything
+// onboarding does with the resulting list. The component is a thin view over
+// what this returns.
 export function useFamiliesDraftFlow(options: {
   orgId: string
   organizationName: string
@@ -132,49 +139,24 @@ export function useFamiliesDraftFlow(options: {
     orgId,
     locale,
   })
-  // The shared suggestion lifecycle for the paste-import proposal; request
-  // and confirm stay here (kind-specific args).
-  const flow = useSuggestionFlow({
-    orgId,
-    kind: SUGGESTION_KINDS.starterImport,
-    schema: starterImportValueSchema,
-  })
   const createStarterSet = useMutation(api.assessment.starters.createStarterSet)
   const reconcileStarterSet = useMutation(
     api.assessment.starters.reconcileStarterSet
   )
   const requestStarterImport = useMutation(api.ai.suggest.requestStarterImport)
   const confirmStarterImport = useMutation(api.ai.suggest.confirmStarterImport)
-  // Auto-prefills empty role profiles after the set is persisted. The action
-  // skips roles that already have a profile (so an unchanged revisit makes no
-  // model call), which is why finish() always calls it after persist rather
-  // than gating on a possibly-stale client view of which roles are empty.
-  const prefillRoleProfiles = useAction(api.ai.prefill.prefillRoleProfiles)
+  // The shared post-persist prefill span (flag, single retry, hard-reject
+  // handling). Onboarding passes no roleIds: every empty-profile role in a
+  // just-created org is in scope, and every profile it drafts is recorded as
+  // onboarding's own.
+  const prefill = useProfilePrefill({ orgId, via: "onboardingPrefill" })
 
-  // The editable review list (families, unique ids, cleaned payload).
-  const draft = useDraftFamilies()
-
-  const [rawText, setRawText] = useState("")
-  const [seededFrom, setSeededFrom] = useState<SeedSource | null>(null)
   const [pending, setPending] = useState(false)
-  // True across the prefill await in finish(), and only when prefill will have
-  // something to draft (see the willPrefill decision there): the AI import
-  // always creates brand-new empty roles, while the template/revisit paths only
-  // prefill stored roles that still lack a profile. While set it drives the
-  // dedicated prefilling screen (a loader + progress bar). The template path
-  // arrives already profileComplete, so it never sets this and never flashes
-  // the screen. Left true on success so the wizard advances away from it.
-  const [prefilling, setPrefilling] = useState(false)
-  const [requestPending, setRequestPending] = useState(false)
-  const [requestFailed, setRequestFailed] = useState(false)
   const [failure, setFailure] = useState<"duplicate" | "generic" | null>(null)
   // Remember a successful creation so a retry after a later failure only
   // advances, never re-runs the creation (which would throw notFound /
   // roleFamilyExists on the second run).
   const [created, setCreated] = useState(false)
-  // Guards the seed-on-render block after "start over": the dismissed
-  // suggestion may still read as suggested until the reject round-trips.
-  const [lastDismissedId, setLastDismissedId] = useState<string | null>(null)
   // Latches the resume-from-existing seed so it fires once: the queried roles
   // stay non-empty after seeding, so without this a "start over" back to the
   // paste view would instantly re-seed the same review.
@@ -189,16 +171,43 @@ export function useFamiliesDraftFlow(options: {
   const [templatePending, setTemplatePending] = useState(false)
   const [restartPending, setRestartPending] = useState(false)
 
+  // The AI seed must not fire while another source owns the screen: a genuine
+  // revisit (resume-from-existing) or an in-flight template create. Requiring
+  // roles to be RESOLVED and empty makes this independent of block ordering,
+  // and createdViaTemplate covers the window where the create has resolved but
+  // the listRoles subscription has not yet reported the new roles.
+  const canSeedFromAi =
+    !resumedExisting &&
+    !createdViaTemplate &&
+    existingRoles !== undefined &&
+    existingRoles.length === 0
+
+  const pasted = usePastedRoleDraft({
+    orgId,
+    locale,
+    kind: SUGGESTION_KINDS.starterImport,
+    request: requestStarterImport,
+    tracks: model?.tracks,
+    canSeed: canSeedFromAi,
+    // Onboarding resumes: the step can be left mid-generation (a reload, a
+    // step back) and coming back to a finished proposal is the same piece of
+    // work, so an already-open proposal still seeds the review here.
+    resume: true,
+  })
+  const { draft, flow } = pasted
+
   // Resume on a revisit: when the families step was finished once, families
   // and roles already exist, so seed the review straight from them (carrying
-  // their real ids invisibly) and reconcile on advance. This runs BEFORE the
-  // AI seed block, so a stale unreviewed suggestion never wins over the real
-  // saved set; the forward flow has no roles yet, so the block stays off and
-  // the paste/template/AI flow keeps charge. Latched on resumedExisting so the
-  // still-present roles cannot re-seed after a deliberate clear.
+  // their real ids invisibly) and reconcile on advance. The AI seed inside
+  // usePastedRoleDraft has already run for this render, but canSeedFromAi kept
+  // it off while roles are present, so a stale unreviewed suggestion never wins
+  // over the real saved set; the forward flow has no roles yet, so this block
+  // stays off and the paste/template/AI flow keeps charge. Latched on
+  // resumedExisting so the still-present roles cannot re-seed after a
+  // deliberate clear.
   if (
     !resumedExisting &&
-    seededFrom === null &&
+    pasted.seededSuggestionId === null &&
     existingRoles !== undefined &&
     existingRoles.length > 0 &&
     existingFamilies !== undefined &&
@@ -247,51 +256,20 @@ export function useFamiliesDraftFlow(options: {
       }
     }
     draft.seed(familyOrder)
-    setSeededFrom({ source: "existing" })
     setResumedExisting(true)
   }
 
-  // Seed the review list from a suggested AI import the first render both
-  // the suggestion and the model (for valid track keys) are available
-  // (adjust-state-during-render, the established pattern). Resuming after a
-  // reload lands here too: an unreviewed import goes straight to review.
-  // "Roles resolved and empty" is a precondition, not an ordering assumption:
-  // a render-phase setSeededFrom does not update the local seededFrom const,
-  // so if both seed blocks fired in one render the later AI block would
-  // override the real saved set. Requiring existingRoles to be resolved
-  // (not undefined) AND empty makes resume-from-existing win regardless of
-  // block order, and keeps the AI block from seeding during the load window:
-  // while listRoles is still loading (existingRoles === undefined) the AI
-  // block stays off and the spinner holds until roles resolve, so a revisit's
-  // stale import never seeds before resume-from-existing can claim charge.
-  const importValue = flow.value
-  if (
-    seededFrom === null &&
-    // Defense-in-depth against the template-create hijack: an in-progress or
-    // just-resolved template create (createdViaTemplate, possibly before the
-    // listRoles subscription reports the new roles) must never let the AI
-    // block seed, regardless of how the reject round-trip is timed.
-    !createdViaTemplate &&
-    existingRoles !== undefined &&
-    existingRoles.length === 0 &&
-    flow.status === "suggested" &&
-    flow.suggestionId !== null &&
-    flow.suggestionId !== lastDismissedId &&
-    importValue !== null &&
-    model !== undefined &&
-    model !== null
-  ) {
-    const validKeys = new Set<string>(model.tracks.map((track) => track.key))
-    const fallbackTrackKey = model.tracks[0]?.key ?? "IC"
-    draft.seed(importValue.families, (trackKey) =>
-      validKeys.has(trackKey) ? trackKey : fallbackTrackKey
-    )
-    setSeededFrom({ source: "ai", suggestionId: flow.suggestionId })
-  }
+  // What seeded the review, derived rather than stored: the resume latch means
+  // the existing set, a seeded proposal means the AI. Nothing else can seed.
+  const seededFrom: SeedSource | null = resumedExisting
+    ? { source: "existing" }
+    : pasted.seededSuggestionId !== null
+      ? { source: "ai", suggestionId: pasted.seededSuggestionId }
+      : null
 
   // Back to the paste view with the pasted text intact. An AI-seeded review
-  // dismisses its suggestion (the lifecycle always ends in confirmed or
-  // rejected); best-effort, with lastDismissedId blocking an instant re-seed.
+  // dismisses its suggestion through the shared engine (the lifecycle always
+  // ends in confirmed or rejected), which also blocks an instant re-seed.
   // Any "existing" review (a saved revisit OR the just-created-via-template set,
   // both flowing through the resume-from-existing seed) instead DISCARDS: it
   // reconciles to an empty set, which archives every active role and removes
@@ -308,7 +286,6 @@ export function useFamiliesDraftFlow(options: {
       try {
         await reconcileStarterSet({ orgId, families: [] })
         draft.clear()
-        setSeededFrom(null)
         setResumedExisting(false)
         setCreatedViaTemplate(false)
         setFailure(null)
@@ -319,12 +296,7 @@ export function useFamiliesDraftFlow(options: {
       }
       return
     }
-    if (seededFrom?.source === "ai") {
-      flow.reject().catch(() => {})
-      setLastDismissedId(seededFrom.suggestionId)
-    }
-    draft.clear()
-    setSeededFrom(null)
+    pasted.dismiss()
     setFailure(null)
   }
 
@@ -336,19 +308,11 @@ export function useFamiliesDraftFlow(options: {
   // paste view.
   async function seedFromTemplate() {
     if (starter === undefined || templatePending) return
-    // Walking away from an open AI proposal dismisses it (the suggestion
-    // lifecycle always ends in confirmed or rejected); a still-generating
-    // row cannot be rejected and is simply superseded. The reject is
-    // fire-and-forget and flow.status (derived from getOpenSuggestions) does
-    // not flip synchronously, so ALSO latch the id out of the AI seed block
-    // the same way restart() does: without this, the in-flight window (create
-    // pending, seededFrom still null, roles still empty, status still
-    // "suggested") satisfies the AI block's gate and it would hijack the
-    // screen onto the abandoned proposal.
-    if (flow.status === "suggested" || flow.status === "failed") {
-      flow.reject().catch(() => {})
-      if (flow.suggestionId !== null) setLastDismissedId(flow.suggestionId)
-    }
+    // Walking away from an open AI proposal dismisses it (the lifecycle always
+    // ends in confirmed or rejected) and latches its id out of the seed block,
+    // so the in-flight window (create pending, nothing seeded yet, roles still
+    // empty, status still "suggested") cannot let it hijack the screen.
+    pasted.dismiss()
     setCreatedViaTemplate(true)
     setTemplatePending(true)
     setFailure(null)
@@ -359,20 +323,6 @@ export function useFamiliesDraftFlow(options: {
       setCreatedViaTemplate(false)
     } finally {
       setTemplatePending(false)
-    }
-  }
-
-  async function onAnalyze() {
-    const parsed = starterImportInputSchema.safeParse(rawText)
-    if (!parsed.success) return
-    setRequestPending(true)
-    setRequestFailed(false)
-    try {
-      await requestStarterImport({ orgId, rawText: parsed.data, locale })
-    } catch {
-      setRequestFailed(true)
-    } finally {
-      setRequestPending(false)
     }
   }
 
@@ -405,44 +355,17 @@ export function useFamiliesDraftFlow(options: {
         })
         setCreated(true)
       }
-      // After the set is persisted, auto-prefill the empty role profiles so the
-      // score step opens with drafted purpose + responsibilities. The action
-      // skips non-empty roles (an unchanged revisit costs no model call) and
-      // isolates per-call failures, returning counts rather than throwing for
-      // them; only a hard/transport error rejects, and on that we surface the
-      // generic error and let the user retry Next (a half-prefilled set still
-      // advances cleanly later via the score step's manual fallback). The whole
-      // span (persist + prefill) shares the one `pending` flag, so the Next
-      // button stays in its loading state until the prefill resolves.
-      //
       // Whether prefill will have anything to draft, decided up front
       // (existingRoles is the stale render-closure value on the AI path, where
       // confirmStarterImport creates the new empty roles during finish()). The
-      // AI import always produces brand-new roles with empty profiles, so the
-      // screen should show whenever the confirmed draft has any role; the
-      // template/revisit paths reuse existing roles, so only show it when some
-      // stored role still lacks a profile (the template path arrives
-      // all-complete and must not flash the screen). We READ the existing
-      // profileComplete field on listRoles; nothing here changes server-side.
+      // AI import always produces brand-new roles with empty profiles; the
+      // template/revisit paths reuse existing roles, so only show the screen
+      // when some stored role still lacks a profile.
       const willPrefill =
         seededFrom?.source === "ai"
           ? (draft.families ?? []).some((family) => family.roles.length > 0)
           : (existingRoles ?? []).some((role) => !role.profileComplete)
-      if (willPrefill) setPrefilling(true)
-      const { failed } = await prefillRoleProfiles({ orgId, locale })
-      // A partial failure (one batched call hit a rate limit or timeout) leaves
-      // some roles empty but does not throw. Give it ONE best-effort retry: the
-      // action re-targets only the still-empty roles, so the roles that already
-      // succeeded are never regenerated. The retry is swallowed and we advance
-      // regardless. The score step's manual capture is the final fallback for
-      // any role still empty after it, so a second miss must not block onboarding.
-      if (failed > 0) {
-        try {
-          await prefillRoleProfiles({ orgId, locale })
-        } catch {
-          // Best effort only: advancing with a few empty profiles is fine.
-        }
-      }
+      await prefill.run({ locale, willPrefill })
       // Onboarding is NOT completed here: the score step owns completion on
       // every exit path. This step only creates the starter set and advances.
       onAdvance()
@@ -450,10 +373,9 @@ export function useFamiliesDraftFlow(options: {
       // reconcile can throw roleFamilyExists (duplicate) / roleLocked /
       // invalidInput; map the duplicate to the existing duplicate message and
       // everything else to the generic one, exactly like the create paths. A
-      // hard prefill reject lands here too and shows the generic error; drop
-      // the prefilling screen so the user returns to the review with the error.
+      // hard prefill reject lands here too and shows the generic error; the
+      // prefill hook has already dropped its own screen flag.
       setFailure(isDuplicateFamilyError(error) ? "duplicate" : "generic")
-      setPrefilling(false)
       setPending(false)
     }
   }
@@ -462,7 +384,7 @@ export function useFamiliesDraftFlow(options: {
   // The prefilling screen wins while set: it covers the (possibly long) prefill
   // span after persist, replacing the review's Next-button spinner with a
   // dedicated loader + progress bar.
-  const phase: FamiliesDraftPhase = prefilling
+  const phase: FamiliesDraftPhase = prefill.prefilling
     ? "prefilling"
     : inReview
       ? "review"
@@ -501,19 +423,9 @@ export function useFamiliesDraftFlow(options: {
     !resumedExisting &&
     (revisitPending || templateCreatePending)
 
-  const trackOptions = (model?.tracks ?? []).map((track) => ({
-    trackKey: track.key,
-    label: track.name,
-  }))
-
-  // Live prefill progress from listRoles: total roles vs the roles that already
-  // report a complete profile. As each prefill chunk's applyPrefill commits,
-  // listRoles re-runs and done climbs, so the progress bar advances reactively
-  // without any extra backend plumbing.
-  const prefillProgress = {
-    total: (existingRoles ?? []).length,
-    done: (existingRoles ?? []).filter((role) => role.profileComplete).length,
-  }
+  // Live prefill progress from listRoles, unscoped: during onboarding every
+  // role in the org belongs to the set being created.
+  const prefillProgress = prefillProgressOf(existingRoles)
 
   return {
     phase,
@@ -524,22 +436,25 @@ export function useFamiliesDraftFlow(options: {
     seededFrom,
     createdViaTemplate,
     restartDestructive: seededFrom?.source === "existing",
-    trackOptions,
-    rawText,
-    setRawText,
+    trackOptions: pasted.trackOptions,
+    rawText: pasted.rawText,
+    setRawText: pasted.setRawText,
     starterReady: starter !== undefined,
     modelReady: model !== undefined && model !== null,
-    requestPending,
-    requestFailed,
+    requestPending: pasted.requestPending,
+    requestFailed: pasted.requestFailed,
     failure,
     flow,
     pending,
     prefillProgress,
     created,
     restartPending,
-    inputValid: starterImportInputSchema.safeParse(rawText).success,
+    // Only the AI review can be truncated: the template and revisit seeds come
+    // from stored roles, which never went through the import's caps.
+    importTruncated: seededFrom?.source === "ai" && pasted.truncated,
+    inputValid: pasted.inputValid,
     seedFromTemplate,
-    onAnalyze,
+    onAnalyze: pasted.analyze,
     finish,
     restart,
   }
