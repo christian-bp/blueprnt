@@ -1,0 +1,46 @@
+apps/dashboard/app/(app)/roles/families/[familySlug]/page.test.tsx
+  s_7b573984cadbd7::t_6a853e671dee71 171-188
+apps/dashboard/app/(app)/roles/families/[familySlug]/page.tsx
+  s_7b573984cadbd7::t_3c9e09269d0ad5 253-256,258,261-264,266-267,270,273
+  s_7b573984cadbd7::t_ef6fc5b5332a95 143-144,247
+  s_7b573984cadbd7::t_03068ff20f8948 37-45
+  s_7b573984cadbd7::t_ec375ab45ee07a 269
+  s_7b573984cadbd7::t_31872d3c3ceb22 268
+apps/dashboard/components/roles/roles-table.test.tsx
+  s_7b573984cadbd7::t_931785150bfc04 12
+  s_7b573984cadbd7::t_eb36ac98d1a703 99-133
+apps/dashboard/components/roles/roles-table.tsx
+  s_7b573984cadbd7::t_c43cbe4f7ae5dc 264,271-274,279-289,293
+  s_7b573984cadbd7::t_3fced8f7f4bcd7 33-41
+  s_7b573984cadbd7::t_b3d367a34c2ca2 107-108
+  s_7b573984cadbd7::t_f876c4b17dc153 20
+  s_7b573984cadbd7::t_066883e97abda8 256
+  s_7b573984cadbd7::t_3dbac53cdfadd6 150,159-162,169,175,181,184
+  s_7b573984cadbd7::t_96e397ef19d9e4 42-46
+  s_7b573984cadbd7::t_e75ce9242efd7d 90-94
+apps/dashboard/components/roles/role-table-row.tsx
+  s_7b573984cadbd7::t_fd85045ba7c835 42
+  s_7b573984cadbd7::t_23f961ed5677be 109-115,120
+  s_7b573984cadbd7::t_86efa3d42eb27e 140
+  s_7b573984cadbd7::t_40c013deffd9e4 1-4,11-41,43-70,78-108,116-119,121-139,141-144
+  s_7b573984cadbd7::t_30708f58e26189 5-9,71-77
+  s_7b573984cadbd7::t_1a5bd33439cfef 10
+apps/dashboard/lib/role-family-row.ts
+  s_7b573984cadbd7::t_11d058b81c0eba 1-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "6a0102906a6d096df5c216eb557ac3ba18dfd02f",
+  "prompts": {},
+  "sessions": {
+    "s_7b573984cadbd7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "56fe2af9-f376-491c-9725-6b609219f0ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
