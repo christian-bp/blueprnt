@@ -9,6 +9,7 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import { pickSelectOption } from "@/test/select"
+import { ROLE_SKELETON_COLUMNS } from "@/components/roles/role-table-row"
 import { RolesTable, type RolesTableRow } from "@/components/roles/roles-table"
 
 const pushMock = vi.fn()
@@ -93,6 +94,41 @@ describe("RolesTable", () => {
     expect(screen.getByText(messages.dashboard.roles.family.none)).toBeDefined()
     // Counts per group. next-intl renders the ICU plural: 2 -> "2 roles".
     expect(screen.getByText("2 roles")).toBeDefined()
+  })
+
+  // The same guard the family page carries, for the same reason, but here the
+  // drift is easier to cause: the headings are hand-written while the body
+  // cells come from the TanStack column defs, so the two counts have
+  // independent sources. Adding a column def without a heading (or the
+  // reverse) slides every later value one column left under table-fixed,
+  // exactly as it did on the family page, and nothing throws. The skeleton is
+  // a third independent source and is checked against the same number, so a
+  // heading added without a skeleton entry cannot make the table gain a
+  // column when the data arrives.
+  it("gives every row a cell for every heading", () => {
+    const view = renderTable()
+    const headings = view.container.querySelectorAll("thead th")
+    expect(headings.length).toBeGreaterThan(0)
+    expect(ROLE_SKELETON_COLUMNS).toHaveLength(headings.length)
+    const rows = view.container.querySelectorAll("tbody tr")
+    expect(rows.length).toBeGreaterThan(0)
+    let groupRows = 0
+    let dataRows = 0
+    for (const row of rows) {
+      const cells = row.querySelectorAll("td")
+      // A family group row is one spanning cell; a role row is one cell per
+      // heading. Both have to add up to the same width.
+      if (cells.length === 1 && cells[0]?.hasAttribute("colspan") === true) {
+        groupRows++
+        expect(Number(cells[0]?.getAttribute("colspan"))).toBe(headings.length)
+      } else {
+        dataRows++
+        expect(cells).toHaveLength(headings.length)
+      }
+    }
+    // Neither branch may be vacuous: the fixture has both kinds of row.
+    expect(groupRows).toBeGreaterThan(0)
+    expect(dataRows).toBeGreaterThan(0)
   })
 
   it("searching hides families without matches and shows the counter", () => {

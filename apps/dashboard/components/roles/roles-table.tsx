@@ -11,15 +11,13 @@ import {
   type Row,
   useReactTable,
 } from "@tanstack/react-table"
-import { Badge } from "@workspace/ui/components/badge"
 import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
+import { cn } from "@workspace/ui/lib/utils"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -32,10 +30,20 @@ import {
   type RolesTableTrack,
 } from "@/components/roles/role-table-toolbar"
 import {
-  TableSkeleton,
-  type TableSkeletonColumn,
-} from "@/components/table-skeleton"
-import { TrackBadge } from "@/components/track-badge"
+  ROLE_SKELETON_COLUMNS,
+  RoleBandCell,
+  RoleEmployeesCell,
+  RoleTableHeadings,
+  RoleTeamCell,
+  RoleTitleCell,
+  RoleTrackCell,
+} from "@/components/roles/role-table-row"
+import { TableSkeleton } from "@/components/table-skeleton"
+import {
+  FAMILY_COUNT_CLASS,
+  FAMILY_NAME_CLASS,
+  FAMILY_ROW_CLASS,
+} from "@/lib/role-family-row"
 import { groupByFamily } from "@/lib/role-groups"
 
 // The role register as ONE grouped data table (shadcn data table recipe on
@@ -79,43 +87,11 @@ const exactString = (
   value: string
 ) => row.getValue<string>(columnId) === value
 
-// The register's header, shared by the data table and the page's loading
-// skeleton so the two cannot drift. The columns are not sortable (grouped
-// registers take no per-column sorting), so a static header is equivalent to
-// rendering TanStack's header groups. Fixed column widths (with table-fixed
-// on the Table): auto layout would re-measure columns from the visible rows,
-// so widths would jump whenever filtering changes which rows show. Title
-// takes the remaining space. Band is w-40 to fit the column's widest content
-// on one line (the sv "Inte utvärderad ännu" cell text, wider than the fi
-// "Vaativuusluokka" heading); narrower wraps or clips.
-export function RolesTableHeader() {
-  const t = useTranslations("dashboard.roles")
-  const tAssessment = useTranslations("assessment")
-  return (
-    <TableHeader>
-      <TableRow>
-        <TableHead>{t("table.title")}</TableHead>
-        <TableHead className="w-44">{t("table.track")}</TableHead>
-        <TableHead className="w-[22%]">{t("table.team")}</TableHead>
-        {/* w-32 fits the widest locale label (da/nb "Medarbejdere") on one
-            line; the value itself is a short number. */}
-        <TableHead className="w-32">{t("table.employees")}</TableHead>
-        <TableHead className="w-40">{tAssessment("band")}</TableHead>
-      </TableRow>
-    </TableHeader>
-  )
-}
-
-// Skeleton shape per column, mirroring the real row content (title link,
-// track badge, team text, band badge) so the loading table has the same
-// silhouette as the loaded one.
-const ROLES_SKELETON_COLUMNS: TableSkeletonColumn[] = [
-  { className: "w-40 max-w-full" },
-  { className: "h-5 w-20 rounded-full" },
-  { className: "w-24 max-w-full" },
-  { className: "w-6" },
-  { className: "h-5 w-10 rounded-full" },
-]
+// The headings, the widths, the skeleton and the cells all come from the
+// shared role row (components/roles/role-table-row.tsx), so this register and
+// a single family's page cannot drift apart. The columns are not sortable
+// (grouped registers take no per-column sorting), so a static header is
+// equivalent to rendering TanStack's header groups.
 
 // The register's loading state: the REAL toolbar controls over the shared
 // header and skeleton rows (unpaginated, so sized to typical content). The
@@ -128,8 +104,8 @@ export function RolesTableSkeleton() {
     <div className="space-y-4">
       <RoleTableToolbar tracks={[]} />
       <Table className="table-fixed">
-        <RolesTableHeader />
-        <TableSkeleton rows={8} columns={ROLES_SKELETON_COLUMNS} />
+        <RoleTableHeadings />
+        <TableSkeleton rows={8} columns={ROLE_SKELETON_COLUMNS} />
       </Table>
     </div>
   )
@@ -171,14 +147,7 @@ export function RolesTable({
         id: "title",
         accessorKey: "title",
         cell: ({ row }) => (
-          // block truncate: a long title clamps inside the fixed column
-          // instead of widening it.
-          <Link
-            href={`/roles/${row.original.slug}`}
-            className="block truncate font-medium underline-offset-4 hover:underline"
-          >
-            {row.original.title}
-          </Link>
+          <RoleTitleCell slug={row.original.slug} title={row.original.title} />
         ),
       },
       {
@@ -186,68 +155,33 @@ export function RolesTable({
         accessorFn: (row) => row.trackKey,
         filterFn: exactString,
         enableGlobalFilter: false,
-        // Block flex wrapper: an inline-flex badge directly in the cell sits
-        // on the text baseline and inflates the line box, desyncing the row
-        // height from the skeleton rows (skeleton parity rule).
         cell: ({ row }) => (
-          <div className="flex items-center">
-            <TrackBadge
-              trackKey={row.original.trackKey}
-              name={row.original.trackName}
-            />
-          </div>
+          <RoleTrackCell
+            trackKey={row.original.trackKey}
+            name={row.original.trackName}
+          />
         ),
       },
       {
         id: "team",
         accessorKey: "team",
         enableGlobalFilter: false,
-        cell: ({ row }) => (
-          <span className="block truncate text-muted-foreground">
-            {row.original.team}
-          </span>
-        ),
+        cell: ({ row }) => <RoleTeamCell team={row.original.team} />,
       },
       {
         id: "employees",
         enableGlobalFilter: false,
-        // How many people currently hold the role. Zero is muted rather than
-        // hidden: "nobody in this role" is information (an unstaffed role), not
-        // an empty cell.
         cell: ({ row }) => (
-          <span
-            className={
-              row.original.employeeCount === 0
-                ? "text-muted-foreground/60 tabular-nums"
-                : "tabular-nums"
-            }
-          >
-            {row.original.employeeCount}
-          </span>
+          <RoleEmployeesCell count={row.original.employeeCount} />
         ),
       },
       {
         id: "evaluation",
         enableGlobalFilter: false,
-        // The evaluation outcome: a role's band once it is fully evaluated,
-        // otherwise a muted "not yet evaluated" line (an incomplete or
-        // still-computing role has no band yet, the same rule as the family
-        // and overview tables), so the register shows which roles still need
-        // evaluating instead of a blank cell.
-        // Block flex wrapper: skeleton parity, same as the track cell.
-        cell: ({ row }) =>
-          row.original.band != null ? (
-            <div className="flex items-center">
-              <Badge>{row.original.band}</Badge>
-            </div>
-          ) : (
-            <span className="block truncate text-muted-foreground">
-              {t("notEvaluated")}
-            </span>
-          ),
+        cell: ({ row }) => <RoleBandCell band={row.original.band} />,
       },
     ],
-    [t]
+    []
   )
 
   const table = useReactTable({
@@ -319,7 +253,7 @@ export function RolesTable({
         />
       ) : (
         <Table className="table-fixed">
-          <RolesTableHeader />
+          <RoleTableHeadings />
           <TableBody>
             {table.getRowModel().rows.map((row) => {
               if (row.getIsGrouped()) {
@@ -327,26 +261,36 @@ export function RolesTable({
                 // column itself is removed via groupedColumnMode).
                 const firstLeaf = row.subRows[0]?.original
                 return (
-                  <TableRow
-                    key={row.id}
-                    className="bg-muted/50 hover:bg-muted/50"
-                  >
+                  <TableRow key={row.id} className={FAMILY_ROW_CLASS}>
                     <TableCell colSpan={visibleColumnCount}>
                       <span className="flex items-baseline gap-2">
                         {firstLeaf !== undefined &&
                         firstLeaf.familySlug !== null ? (
                           <Link
                             href={`/roles/families/${firstLeaf.familySlug}`}
-                            className="font-bold text-sm underline-offset-4 hover:underline"
+                            className={cn(
+                              FAMILY_NAME_CLASS,
+                              "underline-offset-4 hover:underline"
+                            )}
                           >
                             {firstLeaf.familyName}
                           </Link>
                         ) : (
-                          <span className="text-muted-foreground text-sm">
+                          // The roles with no family at all. It stands where a
+                          // name would, so it takes the name's size and drops
+                          // only the weight: left at the old smaller size it
+                          // read as a note about the group rather than as the
+                          // group's own heading.
+                          <span
+                            className={cn(
+                              FAMILY_NAME_CLASS,
+                              "font-normal text-muted-foreground"
+                            )}
+                          >
                             {tFamily("none")}
                           </span>
                         )}
-                        <span className="text-muted-foreground text-xs">
+                        <span className={FAMILY_COUNT_CLASS}>
                           {tFamily("roleCount", { count: row.subRows.length })}
                         </span>
                       </span>

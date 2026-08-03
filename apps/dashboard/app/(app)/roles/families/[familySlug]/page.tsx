@@ -3,7 +3,6 @@
 import { Briefcase01Icon, MoreHorizontalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
   Empty,
@@ -17,8 +16,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
 import { useQuery } from "convex/react"
@@ -36,22 +33,17 @@ import {
   matchesRoleQuery,
   RoleTableToolbar,
 } from "@/components/roles/role-table-toolbar"
-import { TrackBadge } from "@/components/track-badge"
 import {
-  TableSkeleton,
-  type TableSkeletonColumn,
-} from "@/components/table-skeleton"
+  ROLE_SKELETON_COLUMNS,
+  RoleBandCell,
+  RoleEmployeesCell,
+  RoleTableHeadings,
+  RoleTeamCell,
+  RoleTitleCell,
+  RoleTrackCell,
+} from "@/components/roles/role-table-row"
+import { TableSkeleton } from "@/components/table-skeleton"
 import { usePageTitle } from "@/hooks/use-page-title"
-
-// Skeleton shape per column, mirroring the real row content (title link,
-// track badge, team text, right-aligned band badge).
-const FAMILY_SKELETON_COLUMNS: TableSkeletonColumn[] = [
-  { className: "w-40 max-w-full" },
-  { className: "h-5 w-20 rounded-full" },
-  { className: "w-24 max-w-full" },
-  { className: "w-6" },
-  { className: "ml-auto h-5 w-10 rounded-full" },
-]
 
 // Per-family progression: the family's roles in one table with a track column,
 // ordered by track (track order) then title. Band outcomes appear only for
@@ -67,7 +59,6 @@ export default function FamilyPage(props: {
   const tNav = useTranslations("dashboard.nav")
   const tFamily = useTranslations("dashboard.roles.family")
   const tToolbar = useTranslations("dashboard.roles.toolbar")
-  const tAssessment = useTranslations("assessment")
   const { orgId } = useOrganization()
   const locale = useLocale()
 
@@ -100,22 +91,6 @@ export default function FamilyPage(props: {
   const model = useQuery(api.evaluationModel.model.getModel, { orgId, locale })
   const family = families?.find((entry) => entry.slug === familySlug)
   usePageTitle(family?.name)
-
-  // Shared by the loaded table and the loading skeleton so the two cannot
-  // drift. Fixed widths (with table-fixed) match the roles register; band is
-  // w-40 to fit the column's widest content on one line (the sv "Inte
-  // utvärderad ännu" cell text).
-  const tableHeader = (
-    <TableHeader>
-      <TableRow>
-        <TableHead>{t("table.title")}</TableHead>
-        <TableHead className="w-44">{t("table.track")}</TableHead>
-        <TableHead className="w-[22%]">{t("table.team")}</TableHead>
-        <TableHead className="w-32">{t("table.employees")}</TableHead>
-        <TableHead className="w-40 text-right">{tAssessment("band")}</TableHead>
-      </TableRow>
-    </TableHeader>
-  )
 
   if (
     families === undefined ||
@@ -165,8 +140,8 @@ export default function FamilyPage(props: {
             onTrackChange={setTrack}
           />
           <Table className="table-fixed">
-            {tableHeader}
-            <TableSkeleton rows={5} columns={FAMILY_SKELETON_COLUMNS} />
+            <RoleTableHeadings />
+            <TableSkeleton rows={5} columns={ROLE_SKELETON_COLUMNS} />
           </Table>
         </div>
       </div>
@@ -269,47 +244,33 @@ export default function FamilyPage(props: {
             />
           ) : (
             <Table className="table-fixed">
-              {tableHeader}
+              <RoleTableHeadings />
               <TableBody>
                 {shownRoles.map((role) => {
                   const result = bandByRole.get(role.roleId as string)
                   return (
                     <TableRow key={role.roleId}>
+                      {/* Every cell comes from the shared role row, so this
+                          table and the register cannot drift apart. One cell
+                          per heading, always: table-fixed slides a short row's
+                          later values left under the wrong headings. */}
                       <TableCell>
-                        {/* block truncate: a long title clamps inside the fixed
-                        column instead of widening it. */}
-                        <Link
-                          className="block truncate font-medium underline-offset-4 hover:underline"
-                          href={`/roles/${role.slug}`}
-                        >
-                          {role.title}
-                        </Link>
-                      </TableCell>
-                      {/* Block flex wrappers: an inline-flex badge directly in
-                      the cell sits on the text baseline and inflates the
-                      line box, desyncing the row height from the skeleton
-                      rows. */}
-                      <TableCell>
-                        <div className="flex items-center">
-                          <TrackBadge
-                            trackKey={role.trackKey}
-                            name={role.trackName}
-                          />
-                        </div>
-                      </TableCell>
-                      <TableCell className="truncate text-muted-foreground">
-                        {role.team}
+                        <RoleTitleCell slug={role.slug} title={role.title} />
                       </TableCell>
                       <TableCell>
-                        {result?.band != null ? (
-                          <div className="flex items-center justify-end">
-                            <Badge>{result.band}</Badge>
-                          </div>
-                        ) : (
-                          <span className="block truncate text-right text-muted-foreground">
-                            {t("notEvaluated")}
-                          </span>
-                        )}
+                        <RoleTrackCell
+                          trackKey={role.trackKey}
+                          name={role.trackName}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <RoleTeamCell team={role.team} />
+                      </TableCell>
+                      <TableCell>
+                        <RoleEmployeesCell count={role.employeeCount} />
+                      </TableCell>
+                      <TableCell>
+                        <RoleBandCell band={result?.band ?? null} />
                       </TableCell>
                     </TableRow>
                   )

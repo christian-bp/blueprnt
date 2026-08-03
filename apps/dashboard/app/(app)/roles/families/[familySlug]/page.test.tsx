@@ -168,6 +168,24 @@ describe("FamilyPage", () => {
     expect(screen.queryByText(count(2, 2))).toBeNull()
   })
 
+  // The table is table-fixed with widths declared on the header, so a row with
+  // fewer cells than headings does not leave a gap at the end: every later
+  // value slides one column left and sits under someone else's heading. The
+  // Employees column shipped as a heading and a skeleton bar with no body
+  // cell, which put each band under "Employees" and left "Band" empty, and
+  // nothing failed. Counting is what catches it.
+  it("gives every row a cell for every heading", async () => {
+    useQueryMock.mockImplementation(loaded())
+    const view = await renderPage()
+    const headings = view.container.querySelectorAll("thead th")
+    expect(headings.length).toBeGreaterThan(0)
+    const rows = view.container.querySelectorAll("tbody tr")
+    expect(rows.length).toBeGreaterThan(0)
+    for (const row of rows) {
+      expect(row.querySelectorAll("td")).toHaveLength(headings.length)
+    }
+  })
+
   it("narrows the table by search and shows the counter", async () => {
     useQueryMock.mockImplementation(loaded())
     await renderPage()
