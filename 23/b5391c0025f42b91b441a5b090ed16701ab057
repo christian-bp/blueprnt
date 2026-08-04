@@ -1,0 +1,32 @@
+.github/workflows/secret-scan.yml
+  s_309818ec3c36db::t_cedf5b642f481c 11-13
+.github/workflows/ci.yml
+  s_309818ec3c36db::t_3a7f10bb426162 8-23,47-62
+  s_309818ec3c36db::t_8552fda59bcfaf 64-69
+  s_309818ec3c36db::t_76b9fb3d0b938e 63
+renovate.json
+  s_309818ec3c36db::t_6a16de8abb2b3f 3-8
+  s_309818ec3c36db::t_ebbd9ca772f2be 34-39,44-45
+.github/workflows/sbom.yml
+  s_309818ec3c36db::t_8008137f20ad34 8-10
+turbo.json
+  s_309818ec3c36db::t_c34a961e8ea5bb 4,11-12
+packages/backend/convex/betterAuth/_generated/component.ts
+  s_309818ec3c36db::t_5644ed31dd8d8e 301-306,334-338,657-662,690-694,895-900,940-945,1154-1159,1193-1197,1588-1593,1627-1631
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "23b5391c0025f42b91b441a5b090ed16701ab057",
+  "prompts": {},
+  "sessions": {
+    "s_309818ec3c36db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "728d32ae-0f77-489a-9438-8e5b5fe7ff99",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
