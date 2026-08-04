@@ -17,7 +17,7 @@
     "@workspace/constants": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "@workspace/vitest-config": "workspace:*",
-    "typescript": "^6",
+    "typescript": "^7",
     "vitest": "^4.1.10"
   }
 }

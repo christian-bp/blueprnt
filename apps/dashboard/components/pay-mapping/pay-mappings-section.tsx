@@ -3,13 +3,16 @@
 import { ChartColumnIcon, MoreVerticalIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
-  type ColumnDef,
+  columnFilteringFeature,
   type ColumnFiltersState,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
+  createColumnHelper,
+  createFilteredRowModel,
+  createPaginatedRowModel,
+  globalFilteringFeature,
   type Row,
-  useReactTable,
+  rowPaginationFeature,
+  tableFeatures,
+  useTable,
 } from "@tanstack/react-table"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
@@ -59,9 +62,9 @@ import { onSelectValue } from "@/lib/select"
 // The pay mappings (kartlaggningar) list: a searchable, paginated data table
 // (the shadcn data table recipe on @tanstack/react-table, same as the people
 // and role registers), but NOT sortable: runs are always newest first (the
-// query's own order; getCoreRowModel with no getSortedRowModel preserves it),
-// because this is a chronological timeline like the audit log, not a
-// sortable register.
+// query's own order, which the automatic core row model preserves because no
+// sorting feature is registered), because this is a chronological timeline
+// like the audit log, not a sortable register.
 
 // One table row for a pay-mapping run.
 export interface PayMappingRunRow {
@@ -91,14 +94,50 @@ export function matchesPayMappingQuery(
 
 const PAGE_SIZE = 25
 
+// v9 registers features explicitly: an API is absent unless its feature is
+// here, and each row-model slot follows the feature it belongs to. Sorting is
+// deliberately absent, so the query's own chronological order is preserved.
+const features = tableFeatures({
+  columnFilteringFeature,
+  globalFilteringFeature,
+  rowPaginationFeature,
+  filteredRowModel: createFilteredRowModel(),
+  paginatedRowModel: createPaginatedRowModel(),
+})
+
+type PayMappingFeatures = typeof features
+
 // Exact-match column filter (mirrors the department/gender/fte columns in
 // people-section): the status filter narrows on the group value below, not
 // a substring.
 const exactString = (
-  row: Row<PayMappingRunRow>,
+  row: Row<PayMappingFeatures, PayMappingRunRow>,
   columnId: string,
   value: string
 ) => row.getValue<string>(columnId) === value
+
+// Built through the column helper rather than annotated as ColumnDef[]: the
+// annotation widens every accessor's value type to unknown, while the helper
+// infers each one from its accessor. Module level because the definitions are
+// static, so the table's model inputs keep one identity for the process.
+const columnHelper = createColumnHelper<PayMappingFeatures, PayMappingRunRow>()
+
+// The label column carries the search pipeline; statusGroup is a
+// filter-only column (no visible header of its own, the real "Status"
+// column renders from row.original below) narrowed by the toolbar's status
+// Select. Mirrors people-section: columns exist for the filter/pagination
+// machinery, not for rendering.
+const columns = columnHelper.columns([
+  columnHelper.accessor("label", { id: "label" }),
+  columnHelper.accessor(
+    (row) => (row.status === "completed" ? "completed" : "notCompleted"),
+    {
+      id: "statusGroup",
+      filterFn: exactString,
+      enableGlobalFilter: false,
+    }
+  ),
+])
 
 // Skeleton shape per column, mirroring the real row content (name link, a
 // medium date, a status pill, a count, a started-by name, a row-actions
@@ -154,26 +193,8 @@ export function PayMappingsSection() {
     pageSize: PAGE_SIZE,
   })
 
-  // The label column carries the search pipeline; statusGroup is a
-  // filter-only column (no visible header of its own, the real "Status"
-  // column renders from row.original below) narrowed by the toolbar's status
-  // Select. Mirrors people-section: columns exist for the filter/pagination
-  // machinery, not for rendering.
-  const columns = useMemo<ColumnDef<PayMappingRunRow>[]>(
-    () => [
-      { id: "label", accessorKey: "label" },
-      {
-        id: "statusGroup",
-        accessorFn: (row) =>
-          row.status === "completed" ? "completed" : "notCompleted",
-        filterFn: exactString,
-        enableGlobalFilter: false,
-      },
-    ],
-    []
-  )
-
-  const table = useReactTable({
+  const table = useTable({
+    features,
     data: rows,
     columns,
     state: { globalFilter, columnFilters, pagination },
@@ -188,9 +209,6 @@ export function PayMappingsSection() {
     // (statusGroup opts out of global filtering).
     globalFilterFn: (row, _columnId, value: string) =>
       matchesPayMappingQuery(row.original, value),
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
   })
 
   const shown = table.getFilteredRowModel().rows.length

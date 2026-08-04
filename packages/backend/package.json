@@ -14,7 +14,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@ai-sdk/mistral": "^4.0.14",
+    "@ai-sdk/mistral": "^4.0.22",
     "@christian-ek/sweego": "0.4.1",
     "@convex-dev/aggregate": "^0.2.2",
     "@convex-dev/better-auth": "0.12.5",
@@ -22,18 +22,18 @@
     "@workspace/core": "workspace:*",
     "@workspace/email": "workspace:*",
     "@workspace/import": "workspace:*",
-    "ai": "^7.0.36",
+    "ai": "^7.0.51",
     "better-auth": "1.6.25",
-    "convex": "^1.42.3",
-    "convex-helpers": "^0.1.120",
+    "convex": "^1.43.0",
+    "convex-helpers": "^0.1.121",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@edge-runtime/vm": "^5.0.0",
     "@workspace/typescript-config": "workspace:*",
     "@workspace/vitest-config": "workspace:*",
-    "convex-test": "^0.0.54",
-    "typescript": "^6",
+    "convex-test": "^0.0.55",
+    "typescript": "^7",
     "vitest": "^4.1.10"
   }
 }

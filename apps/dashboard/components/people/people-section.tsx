@@ -3,15 +3,19 @@
 import { UserMultiple02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
-  type ColumnDef,
+  columnFilteringFeature,
   type ColumnFiltersState,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
+  createColumnHelper,
+  createFilteredRowModel,
+  createPaginatedRowModel,
+  createSortedRowModel,
+  globalFilteringFeature,
   type Row,
+  rowPaginationFeature,
+  rowSortingFeature,
   type SortingState,
-  useReactTable,
+  tableFeatures,
+  useTable,
 } from "@tanstack/react-table"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { buttonVariants } from "@workspace/ui/components/button"
@@ -94,11 +98,69 @@ export function matchesPersonQuery(
 
 const PAGE_SIZE = 25
 
+// v9 registers features explicitly: an API is absent unless its feature is
+// here, and each row-model slot follows the feature it belongs to.
+const features = tableFeatures({
+  columnFilteringFeature,
+  globalFilteringFeature,
+  rowSortingFeature,
+  rowPaginationFeature,
+  filteredRowModel: createFilteredRowModel(),
+  sortedRowModel: createSortedRowModel(),
+  paginatedRowModel: createPaginatedRowModel(),
+})
+
+type PeopleFeatures = typeof features
+
 const exactString = (
-  row: Row<PeopleTableRow>,
+  row: Row<PeopleFeatures, PeopleTableRow>,
   columnId: string,
   value: string
 ) => row.getValue<string>(columnId) === value
+
+// Built through the column helper rather than annotated as ColumnDef[]: the
+// annotation widens every accessor's value type to unknown, while the helper
+// infers each one from its accessor (so the fte filter below reads a number
+// without asking for one). Module level because the definitions are static,
+// so the table's model inputs keep one identity for the process.
+const columnHelper = createColumnHelper<PeopleFeatures, PeopleTableRow>()
+
+// Column defs exist for the filter/pagination pipeline only: the header row
+// is the static tableHeader below (shared with the skeleton) and cells
+// render from row.original, so no header/cell defs are needed here.
+const columns = columnHelper.columns([
+  columnHelper.accessor("name", { id: "name" }),
+  columnHelper.accessor("gender", {
+    id: "gender",
+    filterFn: exactString,
+    enableGlobalFilter: false,
+  }),
+  columnHelper.accessor((row) => row.department ?? "", {
+    id: "department",
+    filterFn: exactString,
+    enableGlobalFilter: false,
+  }),
+  // Filter-only (no visible column): matches on the assigned role id.
+  // Unclassified people (roleId null -> "") match no role, so selecting
+  // a role narrows to its classified people.
+  columnHelper.accessor((row) => row.roleId ?? "", {
+    id: "role",
+    filterFn: exactString,
+    enableGlobalFilter: false,
+  }),
+  // Missing FTE sorts below any real percentage instead of tripping
+  // the numeric comparator with nulls; cells render from row.original.
+  columnHelper.accessor((row) => row.ftePercent ?? -1, {
+    id: "fte",
+    // Full-time is exactly 100 %; part-time is any real value below it.
+    // Missing FTE (the -1 sentinel) shows only under "all".
+    filterFn: (row, columnId, value: string) => {
+      const fte = row.getValue<number>(columnId)
+      return value === "full" ? fte === 100 : fte > -1 && fte < 100
+    },
+    enableGlobalFilter: false,
+  }),
+])
 
 // Skeleton shape per column, mirroring the real row content (name link, short
 // gender word, department, tiny FTE value) so the loading table has the same
@@ -147,51 +209,8 @@ export function PeopleSection() {
     pageSize: PAGE_SIZE,
   })
 
-  // Column defs exist for the filter/pagination pipeline only: the header row
-  // is the static tableHeader below (shared with the skeleton) and cells
-  // render from row.original, so no header/cell defs are needed here.
-  const columns = useMemo<ColumnDef<PeopleTableRow>[]>(
-    () => [
-      { id: "name", accessorKey: "name" },
-      {
-        id: "gender",
-        accessorKey: "gender",
-        filterFn: exactString,
-        enableGlobalFilter: false,
-      },
-      {
-        id: "department",
-        accessorFn: (row) => row.department ?? "",
-        filterFn: exactString,
-        enableGlobalFilter: false,
-      },
-      {
-        // Filter-only (no visible column): matches on the assigned role id.
-        // Unclassified people (roleId null -> "") match no role, so selecting
-        // a role narrows to its classified people.
-        id: "role",
-        accessorFn: (row) => row.roleId ?? "",
-        filterFn: exactString,
-        enableGlobalFilter: false,
-      },
-      {
-        id: "fte",
-        // Missing FTE sorts below any real percentage instead of tripping
-        // the numeric comparator with nulls; cells render from row.original.
-        accessorFn: (row) => row.ftePercent ?? -1,
-        // Full-time is exactly 100 %; part-time is any real value below it.
-        // Missing FTE (the -1 sentinel) shows only under "all".
-        filterFn: (row, columnId, value: string) => {
-          const fte = row.getValue<number>(columnId)
-          return value === "full" ? fte === 100 : fte > -1 && fte < 100
-        },
-        enableGlobalFilter: false,
-      },
-    ],
-    []
-  )
-
-  const table = useReactTable({
+  const table = useTable({
+    features,
     data: rows,
     columns,
     state: { globalFilter, columnFilters, sorting, pagination },
@@ -203,14 +222,15 @@ export function PeopleSection() {
     // re-renders (see the GROUPING note in roles-table.tsx); the toolbar
     // handlers reset the page explicitly instead.
     autoResetPageIndex: false,
+    // The register always has a sort (default: name ascending), so a heading
+    // toggles between ascending and descending and never back to unsorted.
+    // The handler already passes an explicit direction, so the removal step
+    // is unreachable; stating the policy keeps it that way if that changes.
+    enableSortingRemoval: false,
     // The matcher reads the whole row, so it runs on the name column only
     // (every other column opts out of global filtering).
     globalFilterFn: (row, _columnId, value: string) =>
       matchesPersonQuery(row.original, value),
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
   })
 
   const shown = table.getFilteredRowModel().rows.length

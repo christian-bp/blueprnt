@@ -1,15 +1,19 @@
 "use client"
 
 import {
-  type ColumnDef,
+  columnFilteringFeature,
   type ColumnFiltersState,
-  flexRender,
-  getCoreRowModel,
-  getExpandedRowModel,
-  getFilteredRowModel,
-  getGroupedRowModel,
+  columnGroupingFeature,
+  columnVisibilityFeature,
+  createColumnHelper,
+  createExpandedRowModel,
+  createFilteredRowModel,
+  createGroupedRowModel,
+  globalFilteringFeature,
   type Row,
-  useReactTable,
+  rowExpandingFeature,
+  tableFeatures,
+  useTable,
 } from "@tanstack/react-table"
 import {
   Table,
@@ -81,11 +85,77 @@ export interface RolesTableRow {
 // freezes the page. Keep the identity stable and the auto-resets off.
 const GROUPING = ["family"]
 
+// v9 registers features explicitly: an API is absent unless its feature is
+// here, and each row-model slot follows the feature it belongs to. Pagination
+// is deliberately absent (this register is unpaginated), which also removes
+// the auto-reset that used to need switching off.
+const features = tableFeatures({
+  columnFilteringFeature,
+  columnGroupingFeature,
+  columnVisibilityFeature,
+  globalFilteringFeature,
+  rowExpandingFeature,
+  filteredRowModel: createFilteredRowModel(),
+  groupedRowModel: createGroupedRowModel(),
+  expandedRowModel: createExpandedRowModel(),
+})
+
+type RolesFeatures = typeof features
+
 const exactString = (
-  row: Row<RolesTableRow>,
+  row: Row<RolesFeatures, RolesTableRow>,
   columnId: string,
   value: string
 ) => row.getValue<string>(columnId) === value
+
+// Built through the column helper rather than annotated as ColumnDef[]: the
+// annotation widens every accessor's value type to unknown, while the helper
+// infers each one from its accessor and keeps the two cell-only columns
+// declared as displays (no accessor, so nothing to widen). Module level
+// because the definitions are static, so the table's model inputs keep one
+// identity for the process.
+const columnHelper = createColumnHelper<RolesFeatures, RolesTableRow>()
+
+const columns = columnHelper.columns([
+  // The sentinel keeps family-less roles in ONE group; the group row
+  // renders the real name (or the none label) from its leaf rows.
+  columnHelper.accessor((row) => row.familyId ?? "__none__", {
+    id: "family",
+    enableGlobalFilter: false,
+  }),
+  columnHelper.accessor("title", {
+    id: "title",
+    cell: ({ row }) => (
+      <RoleTitleCell slug={row.original.slug} title={row.original.title} />
+    ),
+  }),
+  columnHelper.accessor((row) => row.trackKey, {
+    id: "track",
+    filterFn: exactString,
+    enableGlobalFilter: false,
+    cell: ({ row }) => (
+      <RoleTrackCell
+        trackKey={row.original.trackKey}
+        name={row.original.trackName}
+      />
+    ),
+  }),
+  columnHelper.accessor("team", {
+    id: "team",
+    enableGlobalFilter: false,
+    cell: ({ row }) => <RoleTeamCell team={row.original.team} />,
+  }),
+  columnHelper.display({
+    id: "employees",
+    enableGlobalFilter: false,
+    cell: ({ row }) => <RoleEmployeesCell count={row.original.employeeCount} />,
+  }),
+  columnHelper.display({
+    id: "evaluation",
+    enableGlobalFilter: false,
+    cell: ({ row }) => <RoleBandCell band={row.original.band} />,
+  }),
+])
 
 // The headings, the widths, the skeleton and the cells all come from the
 // shared role row (components/roles/role-table-row.tsx), so this register and
@@ -134,57 +204,8 @@ export function RolesTable({
     [roles]
   )
 
-  const columns = useMemo<ColumnDef<RolesTableRow>[]>(
-    () => [
-      {
-        id: "family",
-        // The sentinel keeps family-less roles in ONE group; the group row
-        // renders the real name (or the none label) from its leaf rows.
-        accessorFn: (row) => row.familyId ?? "__none__",
-        enableGlobalFilter: false,
-      },
-      {
-        id: "title",
-        accessorKey: "title",
-        cell: ({ row }) => (
-          <RoleTitleCell slug={row.original.slug} title={row.original.title} />
-        ),
-      },
-      {
-        id: "track",
-        accessorFn: (row) => row.trackKey,
-        filterFn: exactString,
-        enableGlobalFilter: false,
-        cell: ({ row }) => (
-          <RoleTrackCell
-            trackKey={row.original.trackKey}
-            name={row.original.trackName}
-          />
-        ),
-      },
-      {
-        id: "team",
-        accessorKey: "team",
-        enableGlobalFilter: false,
-        cell: ({ row }) => <RoleTeamCell team={row.original.team} />,
-      },
-      {
-        id: "employees",
-        enableGlobalFilter: false,
-        cell: ({ row }) => (
-          <RoleEmployeesCell count={row.original.employeeCount} />
-        ),
-      },
-      {
-        id: "evaluation",
-        enableGlobalFilter: false,
-        cell: ({ row }) => <RoleBandCell band={row.original.band} />,
-      },
-    ],
-    []
-  )
-
-  const table = useReactTable({
+  const table = useTable({
+    features,
     data,
     columns,
     state: {
@@ -200,20 +221,14 @@ export function RolesTable({
     onColumnFiltersChange: setColumnFilters,
     onExpandedChange: () => {},
     onGroupingChange: () => {},
-    // Unused features must not queue resets: expansion is pinned and there
-    // is no pagination, but their auto-resets would still setState (see the
-    // GROUPING note above).
+    // Expansion is pinned, so its auto-reset must not queue a setState (see
+    // the GROUPING note above).
     autoResetExpanded: false,
-    autoResetPageIndex: false,
     groupedColumnMode: "remove",
     // The matcher reads the whole row, so it runs on the title column only
     // (every other column opts out of global filtering).
     globalFilterFn: (row, _columnId, value: string) =>
       matchesRoleQuery(row.original, value),
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getGroupedRowModel: getGroupedRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
   })
 
   const shown = table.getFilteredRowModel().rows.length
@@ -316,10 +331,7 @@ export function RolesTable({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      <table.FlexRender cell={cell} />
                     </TableCell>
                   ))}
                 </TableRow>
