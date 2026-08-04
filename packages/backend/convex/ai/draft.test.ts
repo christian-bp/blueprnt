@@ -1,4 +1,3 @@
-/// <reference types="vite/client" />
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { api, components, internal } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"

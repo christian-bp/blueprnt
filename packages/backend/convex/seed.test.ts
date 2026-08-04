@@ -1,4 +1,3 @@
-/// <reference types="vite/client" />
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { api, components, internal } from "./_generated/api"
 import { initConvexTest } from "./testing.helpers"

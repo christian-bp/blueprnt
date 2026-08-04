@@ -34,6 +34,7 @@
     "@workspace/vitest-config": "workspace:*",
     "convex-test": "^0.0.55",
     "typescript": "^7",
+    "vite": "^8.0.16",
     "vitest": "^4.1.10"
   }
 }
