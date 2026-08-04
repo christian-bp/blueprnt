@@ -1,18 +1,15 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "stream",
+  "globalDependencies": ["biome.json"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**"]
     },
-    "lint": {
-      "dependsOn": ["^lint"]
-    },
-    "format": {
-      "dependsOn": ["^format"]
-    },
+    "lint": {},
+    "format": {},
     "typecheck": {
       "dependsOn": ["^typecheck"]
     },

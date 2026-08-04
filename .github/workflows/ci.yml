@@ -5,6 +5,22 @@ on:
     branches: [main]
   pull_request:
 
+# A branch only needs its newest commit verified. main is exempt: every commit
+# there is a release candidate and keeps its own result.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+
+env:
+  # Turborepo Remote Caching. Unset secrets simply mean no remote cache, so this
+  # is inert until TURBO_TOKEN and TURBO_TEAM exist.
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  TURBO_TELEMETRY_DISABLED: 1
+
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -28,5 +44,28 @@ jobs:
       - name: Tests
         run: bun run turbo run test
 
+      # Compile every app. Typecheck does not catch what only fails at build
+      # time: a bad import graph, a route that throws while its page data is
+      # collected, or a framework version that cannot read the installed
+      # TypeScript. Without this step those reach Vercel before anyone sees them.
+      #
+      # The NEXT_PUBLIC_* values are throwaway placeholders. They are public by
+      # definition and only need to parse for the build to collect page data, so
+      # CI needs no secrets; the artifact is a compile check and is never
+      # deployed. Vercel builds separately with the real values.
+      - name: Build
+        run: bun run turbo run build
+        env:
+          NEXT_PUBLIC_CONVEX_URL: https://placeholder-ci.convex.cloud
+          NEXT_PUBLIC_CONVEX_SITE_URL: https://placeholder-ci.convex.site
+          NEXT_PUBLIC_SITE_URL: http://localhost:3001
+          NEXT_PUBLIC_FLAGS_URL: http://localhost:3002
+
+      # Deliberately high-only, and deliberately NOT the same floor as the OSV
+      # workflows, which fail on any severity. A moderate can therefore pass
+      # here and fail there. Today that gap holds one finding:
+      # @hono/node-server, whose fix is a major that its dependent's range
+      # (^1.19.9, via shadcn's MCP SDK) does not accept. Raising this to
+      # moderate before that resolves upstream would make CI permanently red.
       - name: Audit dependencies
         run: bun audit --audit-level=high

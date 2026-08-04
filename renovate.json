@@ -1,6 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", ":dependencyDashboard", "schedule:weekly"],
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    "schedule:weekly",
+    "helpers:pinGitHubActionDigests"
+  ],
   "timezone": "Europe/Stockholm",
   "labels": ["dependencies"],
   "rangeStrategy": "bump",
@@ -26,9 +31,16 @@
       "groupName": null,
       "separateMinorPatch": true,
       "labels": ["dependencies", "security-sensitive"]
+    },
+    {
+      "description": "The overrides block pins transitive packages that nothing else declares, so nothing else can raise them: not npm-check-updates, which does not read the field, and not the package's own dependents. Left grouped they disappear into a batch, and these are the pins that drifted below their own security fixes.",
+      "matchDepTypes": ["overrides"],
+      "groupName": null,
+      "labels": ["dependencies", "overrides"]
     }
   ],
   "vulnerabilityAlerts": {
     "labels": ["security"]
-  }
+  },
+  "osvVulnerabilityAlerts": true
 }
