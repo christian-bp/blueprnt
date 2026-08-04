@@ -9,6 +9,8 @@
     "format": "turbo format",
     "typecheck": "turbo typecheck",
     "test": "turbo test",
+    "clean:cache": "rm -rf apps/*/.next .turbo apps/*/.turbo packages/*/.turbo",
+    "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules apps/*/.next .turbo apps/*/.turbo packages/*/.turbo && bun install",
     "db:reset": "bun run --cwd packages/backend db:reset",
     "prepare": "git config core.hooksPath .githooks"
   },
