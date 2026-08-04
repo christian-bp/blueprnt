@@ -1,0 +1,21 @@
+package.json
+  s_309818ec3c36db::t_58d1e39d6f8ad2 33-40
+bun.lock
+  s_309818ec3c36db::t_c834cab03879fd 237-240,243,245-246,1054,1304,1370,1408,1572,1666,1806,1884
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "18014dfa7913db78113a243c201476f7f3d932bf",
+  "prompts": {},
+  "sessions": {
+    "s_309818ec3c36db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "728d32ae-0f77-489a-9438-8e5b5fe7ff99",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
