@@ -29,11 +29,15 @@
   "overrides": {
     "next": "16.3.0",
     "sharp": "0.35.3",
-    "brace-expansion": "5.0.8",
-    "fast-uri": "3.1.4",
-    "js-yaml": "4.3.0",
     "body-parser": "2.3.0",
-    "postcss": "8.5.18",
+    "brace-expansion": "5.0.9",
+    "fast-uri": "3.1.5",
+    "hono": "4.13.0",
+    "ip-address": "10.4.0",
+    "js-yaml": "4.3.0",
+    "postcss": "8.5.25",
+    "socket.io-parser": "4.2.7",
+    "undici": "7.29.0",
     "ws": "8.21.0"
   }
 }
