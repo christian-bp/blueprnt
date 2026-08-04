@@ -1,0 +1,35 @@
+apps/dashboard/components/success-check.test.tsx
+  s_309818ec3c36db::t_7c0e41b7a5c407 12,19,24,35,37-38,40,42-43,50-51,53,60-62
+  s_309818ec3c36db::t_3857c51c1d6557 52,54-59
+  s_309818ec3c36db::t_415ffc0325fc77 45,48-49
+  s_309818ec3c36db::t_632a7956c9092b 2,4-10,14-17,20-23,25,34,36,39,41,44,46-47,63-71
+  s_309818ec3c36db::t_b76677627dc62d 11
+  s_309818ec3c36db::t_88ddac31be99be 13
+  s_309818ec3c36db::t_18211fdbdf3a1b 18
+apps/dashboard/components/success-check.tsx
+  s_309818ec3c36db::t_875a2cbf90cfb2 79,82-89
+  s_309818ec3c36db::t_6b2afd22320ba7 33-42
+  s_309818ec3c36db::t_edc276ed335e76 142-144
+  s_309818ec3c36db::t_59dac6574e5b96 163
+  s_309818ec3c36db::t_377aeaef14321f 21-23,27,29,32
+  s_309818ec3c36db::t_0275fd4a703876 10,14-20,24-26,28,30-31,43-74,78,80-81,90-105,111,114-115,117,128-141,145-162,164-169,172
+  s_309818ec3c36db::t_9b2de406f5cc8b 75-77
+  s_309818ec3c36db::t_94e64b92065f55 6-9
+  s_309818ec3c36db::t_b18dc26f53c990 116,118-127
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "b39ed0d42110d103699935205188aed3e4a501bf",
+  "prompts": {},
+  "sessions": {
+    "s_309818ec3c36db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "728d32ae-0f77-489a-9438-8e5b5fe7ff99",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
