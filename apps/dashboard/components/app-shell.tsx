@@ -4,8 +4,9 @@ import { SidebarInset, SidebarProvider } from "@workspace/ui/components/sidebar"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 import { usePathname } from "next/navigation"
-import type { CSSProperties, ReactNode } from "react"
+import { type CSSProperties, type ReactNode, useState } from "react"
 import { AppSidebar } from "@/components/app-sidebar"
+import { initialSidebarOpen } from "@/lib/sidebar-state"
 import {
   type OrganizationInfo,
   OrganizationProvider,
@@ -32,6 +33,11 @@ export function AppShell(props: {
   children: ReactNode
 }) {
   const pathname = usePathname()
+  // Expanded sidebar for first-time visitors (the nav labels are part of the
+  // app's guidance; the icon rail is a returning user's opt-in). The vendor
+  // sidebar persists every toggle to a cookie but never reads it back, so the
+  // mount-time read here is what makes the choice survive a reload.
+  const [defaultOpen] = useState(initialSidebarOpen)
   // The level-architecture views (/work: ladder, matrix, families) are wide
   // grid surfaces that earn the whole viewport, width AND height: the inset
   // card locks to the viewport (its rounded bottom never pushed off-screen)
@@ -44,9 +50,7 @@ export function AppShell(props: {
           SidebarMenuButton tooltips require one at the app level. */}
       <TooltipProvider>
         <SidebarProvider
-          // Collapsed icon rail is the default; expanding is the opt-in
-          // (toggle, rail, or cmd+b).
-          defaultOpen={false}
+          defaultOpen={defaultOpen}
           style={
             {
               // Narrower than the shadcn default: the nav is three short
