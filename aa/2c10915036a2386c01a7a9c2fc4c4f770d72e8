@@ -1,0 +1,23 @@
+apps/dashboard/components/level-badge.tsx
+  s_46d3319fc60049::t_12764f6aa4f59e 23
+  s_46d3319fc60049::t_fcf456afe26bf5 3,8,10-12
+apps/dashboard/components/roles/role-evaluation-card.tsx
+  s_46d3319fc60049::t_dcb560e86037ba 9
+  s_46d3319fc60049::t_8dceeb6e92e0f7 169
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "aa2c10915036a2386c01a7a9c2fc4c4f770d72e8",
+  "prompts": {},
+  "sessions": {
+    "s_46d3319fc60049": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "816e546f-aa36-4e52-9850-ffd3291e457d",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
