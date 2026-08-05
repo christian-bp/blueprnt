@@ -2,7 +2,12 @@ import { v } from "convex/values"
 import { internalMutation } from "../_generated/server"
 import { isCriterionKey } from "../evaluationModel/localize"
 import { CRITERION_KEYS } from "../evaluationModel/standardTemplate"
-import { DEV_COMPANY, RATINGS_BY_TITLE } from "./devCompany"
+import {
+  DEMO_ANCHOR_ROLES,
+  DEMO_WEIGHT_POINTS,
+  DEV_COMPANY,
+  RATINGS_BY_TITLE,
+} from "./devCompany"
 import { insertStarterSet } from "./starters"
 
 // Dev/seed-only: give an org the blueprnt demo company (DEV_COMPANY: ~40 roles
@@ -17,8 +22,11 @@ import { insertStarterSet } from "./starters"
 // seed is "use node"), so this is an internalMutation; the founder authId is
 // passed in as actorId (the admin-gated createStarterSet/setRating cannot be
 // used) so the role/roleFamily.created audit rows are attributed to the seeded
-// account, not "system". Ratings are inserted directly and do not log
-// rating.change/level.shift rows.
+// account, not "system". The demo org mirrors the production demo company as a
+// company that has DONE its model work: the calibrated DEMO_WEIGHT_POINTS are
+// patched over the template defaults and the DEMO_ANCHOR_ROLES designations
+// are applied. Ratings, weights, and anchors are written directly and do not
+// log the audit rows the interactive paths write.
 export const seedRatedRoles = internalMutation({
   args: { orgId: v.string(), actorId: v.string() },
   returns: v.object({ roleCount: v.number(), ratingCount: v.number() }),
@@ -52,6 +60,26 @@ export const seedRatedRoles = internalMutation({
       .query("roles")
       .withIndex("by_org", (q) => q.eq("orgId", orgId))
       .collect()
+
+    // Apply the demo org's calibrated weighting over the template defaults the
+    // model was seeded with.
+    for (const criterion of criteria) {
+      const templateKey = criterion.templateKey
+      if (templateKey === undefined || !isCriterionKey(templateKey)) continue
+      const weightPoints = DEMO_WEIGHT_POINTS[templateKey]
+      if (criterion.weightPoints !== weightPoints) {
+        await ctx.db.patch(criterion._id, { weightPoints })
+      }
+    }
+
+    // Designate the demo org's anchor roles.
+    for (const role of roles) {
+      const anchor = DEMO_ANCHOR_ROLES[role.title.trim()]
+      if (anchor === undefined) continue
+      await ctx.db.patch(role._id, {
+        anchorRole: { ...anchor, status: "active", reviewedAt: Date.now() },
+      })
+    }
 
     let ratingCount = 0
     for (const role of roles) {

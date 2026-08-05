@@ -10,7 +10,7 @@ import {
   DEFAULT_LEVEL_THRESHOLDS,
   DEFAULT_WEIGHT_POINTS,
 } from "../evaluationModel/standardTemplate"
-import { DEV_COMPANY, RATINGS_BY_TITLE } from "./devCompany"
+import { DEMO_WEIGHT_POINTS, DEV_COMPANY, RATINGS_BY_TITLE } from "./devCompany"
 
 const THRESHOLDS = DEFAULT_LEVEL_THRESHOLDS.map((t) => ({
   level: t.level,
@@ -34,6 +34,12 @@ function evaluate(ratings: readonly number[], weights: Record<string, number>) {
 
 const DEFAULT_WEIGHTS: Record<string, number> = Object.fromEntries(
   CRITERION_KEYS.map((key) => [key, DEFAULT_WEIGHT_POINTS[key]])
+)
+
+// The calibrated weighting the seed applies to the demo org (what the seeded
+// results/level view actually renders under).
+const DEMO_WEIGHTS: Record<string, number> = Object.fromEntries(
+  CRITERION_KEYS.map((key) => [key, DEMO_WEIGHT_POINTS[key]])
 )
 
 // A technical-heavy reweighting within the fixed point budget (sum 27):
@@ -84,6 +90,27 @@ describe("devCompany ratings", () => {
     // that silently empties level 1.
     expect(levelByTitle.CEO).toBe(1)
     expect(dist[1]).toBeGreaterThanOrEqual(1)
+  })
+
+  it("keeps the demo weight points on the exact point budget", () => {
+    const total = Object.values(DEMO_WEIGHT_POINTS).reduce((s, p) => s + p, 0)
+    expect(total).toBe(CRITERION_KEYS.length * 3)
+  })
+
+  it("reproduces the production demo ladder under the demo weights", () => {
+    const dist: Record<number, number> = {}
+    const levelByTitle: Record<string, number> = {}
+    for (const title of ALL_TITLES) {
+      const { level } = evaluate(RATINGS_BY_TITLE[title] ?? [], DEMO_WEIGHTS)
+      dist[level] = (dist[level] ?? 0) + 1
+      levelByTitle[title] = level
+    }
+    // The exact ladder the production demo org shows (level 3 is empty); a
+    // drift in any rating vector or weight point breaks this.
+    expect(dist).toEqual({ 1: 1, 2: 4, 4: 6, 5: 9, 6: 11, 7: 9 })
+    expect(levelByTitle.CEO).toBe(1)
+    expect(levelByTitle["Content Delivery Manager"]).toBe(4)
+    expect(levelByTitle["Software Developer"]).toBe(6)
   })
 
   it("re-weighting toward technical criteria moves the levels", () => {

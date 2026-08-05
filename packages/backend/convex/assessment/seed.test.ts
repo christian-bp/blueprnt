@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest"
 import { internal } from "../_generated/api"
+import { isCriterionKey } from "../evaluationModel/localize"
 import { initConvexTest } from "../testing.helpers"
-import { DEV_COMPANY } from "./devCompany"
+import {
+  DEMO_ANCHOR_ROLES,
+  DEMO_WEIGHT_POINTS,
+  DEV_COMPANY,
+} from "./devCompany"
 
 const EXPECTED_ROLES = DEV_COMPANY.reduce((sum, f) => sum + f.roles.length, 0)
 const EXPECTED_FAMILIES = DEV_COMPANY.length
@@ -100,6 +105,30 @@ describe("assessment/seed.seedRatedRoles", () => {
       // Order & Indoor Sales: junior, low magnitude.
       expect(cell("Order & Indoor Sales", "scope")).toBe(2)
       expect(cell("Order & Indoor Sales", "people")).toBe(1)
+
+      // The calibrated demo weighting replaced the template defaults.
+      for (const criterion of criteria) {
+        const templateKey = criterion.templateKey
+        if (templateKey === undefined || !isCriterionKey(templateKey)) continue
+        expect(criterion.weightPoints, `weight for ${templateKey}`).toBe(
+          DEMO_WEIGHT_POINTS[templateKey]
+        )
+      }
+
+      // Track calibration from prod: the two Lead-track roles.
+      const roleByTitle = new Map(roles.map((r) => [r.title, r]))
+      expect(roleByTitle.get("E-Commerce Strategy Lead")?.trackKey).toBe("Lead")
+      expect(roleByTitle.get("UX Lead")?.trackKey).toBe("Lead")
+
+      // The anchor designation landed: active, at the expected level, with the
+      // fixture's motivation.
+      for (const [title, anchor] of Object.entries(DEMO_ANCHOR_ROLES)) {
+        const anchorRole = roleByTitle.get(title)?.anchorRole
+        expect(anchorRole?.status, `anchor for ${title}`).toBe("active")
+        expect(anchorRole?.expectedLevel).toBe(anchor.expectedLevel)
+        expect(anchorRole?.motivation).toBe(anchor.motivation)
+        expect(anchorRole?.reviewedAt).toBeGreaterThan(0)
+      }
 
       // Seeded role.created (and roleFamily.created) rows are attributed to the
       // founder account, not the "system" sentinel, and resolve to the

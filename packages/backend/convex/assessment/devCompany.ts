@@ -8,6 +8,8 @@
 // are Swedish drafts (machine-generated, flag for native review). This is NOT
 // the onboarding industry starter; it is a hardcoded demo fixture for
 // seedRatedRoles.
+import type { WeightPoints } from "@workspace/core"
+import type { CriterionKey } from "../evaluationModel/standardTemplate"
 
 import type { RatingValue } from "@workspace/core"
 
@@ -201,7 +203,7 @@ export const DEV_COMPANY: DevFamily[] = [
       },
       {
         title: "UX Lead",
-        trackKey: "IC",
+        trackKey: "Lead",
         purpose:
           "Leder UX- och designarbetet mot en sammanhållen användarupplevelse.",
         responsibilities:
@@ -253,7 +255,7 @@ export const DEV_COMPANY: DevFamily[] = [
       },
       {
         title: "E-Commerce Strategy Lead",
-        trackKey: "IC",
+        trackKey: "Lead",
         purpose:
           "Driver bolagets e-handelsstrategi för ökad tillväxt och kundvärde.",
         responsibilities:
@@ -454,4 +456,35 @@ export const RATINGS_BY_TITLE: Record<string, RatingVector> = {
   "Project Manager": [3, 3, 3, 3, 1, 3, 2, 1, 3],
   "Project Management Officer": [1, 2, 3, 3, 2, 2, 1, 0, 3],
   "Project & Operations Manager": [4, 3, 4, 3, 2, 4, 3, 2, 3],
+}
+
+// The demo org's calibrated weight points, mirroring the production demo org
+// like RATINGS_BY_TITLE does. Four criteria deviate from the standard
+// template's defaults (autonomy 4->3, risk 3->4, financial 2->3, people 2->1);
+// the sum stays on the exact 27-point budget (guarded in devCompany.test.ts).
+// seedRatedRoles patches these onto the seeded criteria, so the demo org is a
+// company that has DONE its weighting, not one sitting on defaults.
+export const DEMO_WEIGHT_POINTS: Record<CriterionKey, WeightPoints> = {
+  scope: 5,
+  complexity: 4,
+  autonomy: 3,
+  risk: 4,
+  knowledge: 3,
+  stakeholders: 3,
+  financial: 3,
+  people: 1,
+  formal: 1,
+}
+
+// Anchor-role designations, mirroring the production demo org. Keyed by role
+// title; seedRatedRoles stamps status "active" and reviewedAt at seed time.
+export const DEMO_ANCHOR_ROLES: Record<
+  string,
+  { expectedLevel: number; motivation: string }
+> = {
+  "Technical Solutions Architect": {
+    expectedLevel: 4,
+    motivation:
+      "Det är en tung roll både kunskapsmässigt och personal som kräver både en ledarskapsförmåga samt specialistkompetens inom domän.",
+  },
 }
