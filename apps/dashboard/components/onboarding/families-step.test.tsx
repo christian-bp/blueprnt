@@ -640,6 +640,14 @@ describe("FamiliesStep", () => {
       // Enter puts the field away, the way a user moves to the next one; two
       // open fields would make "the" name field ambiguous.
       fireEvent.keyDown(field, { key: "Enter" })
+      // Wait for the field to actually close before opening the next family's
+      // menu: opening it mid-re-render makes the menu click a no-op on a slow
+      // machine, and openFamilyName then times out waiting for the menuitem.
+      await waitFor(() => {
+        expect(
+          screen.queryByRole("textbox", { name: familyNameLabel })
+        ).toBeNull()
+      })
     }
     fireEvent.click(screen.getByRole("button", { name: t.nextCta }))
 
