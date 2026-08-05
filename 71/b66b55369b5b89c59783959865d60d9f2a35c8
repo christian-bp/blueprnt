@@ -1,0 +1,508 @@
+packages/core/src/classification/senioritySuggester.ts
+  s_46d3319fc60049::t_ce8849c19602ba 1-129
+apps/dashboard/components/pay-mapping/pay-mapping-scatter.tsx
+  s_46d3319fc60049::t_42d6519eabf7c3 115,117,119
+apps/dashboard/app/(app)/roles/families/[familySlug]/page.tsx
+  s_46d3319fc60049::t_d016b85fdd1c59 39,49,162,250,273
+apps/dashboard/components/pdf/method-appendix.tsx
+  s_46d3319fc60049::t_b205498bc89e85 86,90,159,204,206,210,213-215
+docs/contexts/evaluation-model/viktning-poangbudget.md
+  s_46d3319fc60049::t_91779667761e73 8
+apps/dashboard/app/(app)/roles/page.tsx
+  s_46d3319fc60049::t_38594a8346556e 74,76,79,84
+packages/backend/convex/assessment/devCompany.test.ts
+  s_a8d5c4a651c492::t_dd171507a92873 57-59,65
+  s_a8d5c4a651c492::t_67fa963e1ff369 2,10,15-16,32,72,74,76-78,80,89,115-116
+  s_a8d5c4a651c492::t_602cd5d1d58fc7 82-86
+CLAUDE.md
+  s_46d3319fc60049::t_c5a0d2bd228f92 32,36-37,41-42,68-69
+apps/dashboard/components/people/people-section.tsx
+  s_46d3319fc60049::t_d810e6acefe8d9 79,81,197,549
+docs/adr/0005-level-per-individual.md
+  s_a8d5c4a651c492::t_616ff77bbab91e 35
+  s_a8d5c4a651c492::t_6fb85296b83b8c 32-34
+packages/backend/convex/people/schema.test.ts
+  s_46d3319fc60049::t_0a730e61c6f330 47-48,53
+packages/backend/convex/lib/errors.ts
+  s_46d3319fc60049::t_eb79aa6bfb12cf 28
+apps/dashboard/components/rating/rating-stepper.tsx
+  s_a8d5c4a651c492::t_00a77f335a5f02 30,48,89,92,97,130-131,133,183,186,245,249,262,272
+  s_a8d5c4a651c492::t_2a064d44f7dc88 197
+docs/build-pdf.sh
+  s_46d3319fc60049::t_51330e84f68ec3 39
+packages/backend/convex/people/assignments.ts
+  s_46d3319fc60049::t_60897771fdd18c 2,37-38,48-49,58,143,157-158,168-170,192-193,199-200,205-206,213-214,236,239,244-245,259-260,279,282,306-307,357-358,405-406
+apps/dashboard/components/pay-mapping/pay-mapping-scatter.test.tsx
+  s_46d3319fc60049::t_99f3d53064c09f 29-30,219,228-229,235
+apps/dashboard/components/levels/level-ladder.tsx
+  s_46d3319fc60049::t_efd2547f35b40e 5-110
+packages/backend/convex/ai/generate.ts
+  s_46d3319fc60049::t_9657ca5028e86f 389,415,440,446
+packages/backend/convex/assessment/results.test.ts
+  s_46d3319fc60049::t_e868f9b340b4b1 67,97,109,111,115,124,136,145-147,161,195,224
+apps/dashboard/app/(app)/roles/page.test.tsx
+  s_46d3319fc60049::t_89ecc4542495bf 43,106
+apps/dashboard/app/(app)/work/page.tsx
+  s_46d3319fc60049::t_8fabaa5f54635d 29-33,38,45,48,50-51,54,89,113,116,123,181,253-254,269-270,281
+apps/dashboard/lib/pdf/method-appendix-data.ts
+  s_46d3319fc60049::t_3b994d78af272e 10,37,54-56
+packages/backend/convex/accounts/onboarding.test.ts
+  s_46d3319fc60049::t_0af2e40c5f66ed 105
+packages/backend/convex/evaluationModel/criteria.test.ts
+  s_46d3319fc60049::t_886f690db256cc 69,71,386-387,390-391,413,419,427,429,448,452,458,571,585,591,778,781,816,870-871,971,973,980,992,1013,1038
+packages/backend/convex/schema.ts
+  s_46d3319fc60049::t_57458a1bf53a60 20
+packages/backend/convex/evaluationModel/standardTemplate.ts
+  s_46d3319fc60049::t_d2915f45c95fbc 51-55,59,64-71
+apps/dashboard/components/roles/role-profile-card.tsx
+  s_46d3319fc60049::t_07335d419f8490 169-172,174
+packages/backend/convex/assessment/seed.test.ts
+  s_46d3319fc60049::t_e7ff2af60c5798 73-75
+packages/backend/convex/people/classification.test.ts
+  s_46d3319fc60049::t_c4e7c3ad388391 82-83,195-196,210-211,248-249,271,352,382-383,399-400,402-403,406,412,433-434,450,477
+packages/backend/convex/lib/audit.test.ts
+  s_46d3319fc60049::t_8c859fcd5caa30 181,183,205,207-208,211-212,231,250,280,314,416,423,509,648-649,661
+apps/dashboard/components/pay-mapping/pay-mapping-group-underlag.tsx
+  s_a8d5c4a651c492::t_196c1a817002d8 36-40,43-47,52,58,63,65,71-72,79,85,94-95,205,230-231,253,278,307,310-311,313-315,317-318
+packages/backend/convex/seed.ts
+  s_46d3319fc60049::t_b45eba2c8eff96 48
+packages/backend/convex/people/tables.ts
+  s_46d3319fc60049::t_23ee3382a2ecef 57-58,65-68
+packages/backend/convex/assessment/tables.ts
+  s_46d3319fc60049::t_f909eaa6948e91 45-46,62
+apps/dashboard/hooks/use-level-overview.ts
+  s_46d3319fc60049::t_ec38d4c2c474f7 5-19
+apps/dashboard/components/roles/import/role-import-wizard.test.tsx
+  s_46d3319fc60049::t_6bd1586bdf2c24 118
+apps/dashboard/components/people/person-actions-menu.tsx
+  s_46d3319fc60049::t_8688337c375be0 24-25,33
+packages/backend/convex/seed.test.ts
+  s_46d3319fc60049::t_1bf4dc9cb81b19 273,281,396
+apps/dashboard/components/roles/role-profile-card.test.tsx
+  s_46d3319fc60049::t_d9134bdbcea79f 130,182,284,326,329
+apps/dashboard/components/roles/role-evaluation-card.test.tsx
+  s_46d3319fc60049::t_c6e30486d6773a 30,47,74,86,151,155,186,194-200,202,208,226-227
+packages/backend/convex/evaluationModel/criteria.ts
+  s_46d3319fc60049::t_80e3b60a66bef8 66,72,90,109,130,149,171,228,268,341
+packages/backend/convex/assessment/anchorRoles.test.ts
+  s_46d3319fc60049::t_76d5c28c93f196 63,77,84,98,102,104,121-123,148,154,164,169,178,197,204,212,225,243,251,265,271-272,274,282,295,310-311,327,332-333,356,371,389-390,430,449,453
+apps/dashboard/components/app-sidebar.tsx
+  s_46d3319fc60049::t_78526478e83569 33
+apps/dashboard/lib/pay-comparison.ts
+  s_46d3319fc60049::t_6d63fd28837a17 1,10,18-20,22-24,27,30,32,34-36,39,42
+packages/backend/convex/assessment/compute.ts
+  s_46d3319fc60049::t_81d6422becd41f 3,14,21,23,46-47,84-86,89-90,97,105-107,109,117-119,122
+apps/dashboard/components/pay-mapping/pay-mapping-review.test.tsx
+  s_46d3319fc60049::t_85d5718311561f 55-56,70-71,85-86,113,120,127,137,143,384
+docs/README.md
+  s_46d3319fc60049::t_637c1490824e30 11
+apps/dashboard/components/pay-mapping/review-finish.test.tsx
+  s_46d3319fc60049::t_a6966ada3fef7e 53-54
+apps/dashboard/components/pay-mapping/pay-mapping-overview.test.tsx
+  s_46d3319fc60049::t_f2ee288928ca08 46-47
+apps/dashboard/components/people/add-person-dialog.tsx
+  s_46d3319fc60049::t_09bcca6eea3e16 31-34,55-57,66,78,81,147,157-160,202,209-210,296-300,316-317,319-321,324-332,361,364,381,386-388
+apps/dashboard/components/model/criterion-form.test.tsx
+  s_46d3319fc60049::t_42e04ac8ac69d5 68,100,128,133,135,138,140,142,149-150,156,159,163,166,169,172
+apps/dashboard/components/pay-mapping/review-group-step.test.tsx
+  s_46d3319fc60049::t_7c05cb3dfc08c4 63-64,76,86,98-99,111-112,124-125,133-134,151-152,237,243,247,249,331,334,355,367,372
+docs/adr/0011-kartlaggning-livscykel-fryst-datalager.md
+  s_a8d5c4a651c492::t_60b22f4fa6c974 42-45
+packages/backend/convex/evaluationModel/method.test.ts
+  s_46d3319fc60049::t_1b0e1f26d58c1f 39,76-77
+apps/dashboard/components/overview/widget-viz.tsx
+  s_46d3319fc60049::t_721ff6f2d01274 47,49,52,56,60,76-78
+packages/backend/convex/evaluationModel/standardTemplate.content.en.ts
+  s_46d3319fc60049::t_b4dcc06624b77f 7,12-13,57,73,75,92,108,127,143,162,178,197,213,232,248,267,283,285,302,318,320,337,353,355
+apps/dashboard/components/levels/family-filter.test.tsx
+  s_46d3319fc60049::t_4c6d5b43b27a6a 5-74
+docs/PLAN-V1.md
+  s_a8d5c4a651c492::t_fee447c0e08fad 12,14-15,24,35,50,52,55,61,67,69-71,73,78,80,86,88-89,91-92,98,106,110,118,120-121,123,125,130,132-133,135,137,139,141,148,157,162,164-165
+  s_a8d5c4a651c492::t_cbe869dd126df2 46
+  s_a8d5c4a651c492::t_a12cf4dcaf1e9f 45
+  s_a8d5c4a651c492::t_ceace646eb5e9e 44
+apps/dashboard/components/levels/role-chip.test.tsx
+  s_46d3319fc60049::t_e9ed9fbd240fde 5-76
+apps/dashboard/lib/todo.test.ts
+  s_46d3319fc60049::t_1368edce1ea97b 41,170-172,180-182,289-291,414
+apps/dashboard/lib/levels.ts
+  s_46d3319fc60049::t_f0bc32f6905fa1 1-39
+packages/backend/convex/people/classificationQueries.ts
+  s_46d3319fc60049::t_a207f21eba2e7c 7-10,17,21-22,30,97-98,103,111-112
+packages/backend/convex/evaluationModel/standardTemplate.content.sv.ts
+  s_46d3319fc60049::t_c8e536b9c3f1f9 5,9,29,45,47,64,80,99,115,134,150,169,185,204,220,239,255,257,274,290,292,309,325,327
+apps/dashboard/app/(app)/work/page.test.tsx
+  s_46d3319fc60049::t_69efbc85df5f65 30,41,52-54,80,89,93-94,97,106,110,115,118,122-123,126,136,140,145,158,167,172
+packages/backend/convex/accounts/audit.test.ts
+  s_46d3319fc60049::t_5a2b9725788736 260-261,315,395
+apps/dashboard/components/people/classify/classify-title-table.tsx
+  s_46d3319fc60049::t_ea6d3234b9c924 7-8,78,81-82,114,121,178,185,195-200,203-204,208-209,211,213-215,218-220,226,435-436,466,469,471,473-475,494-497,514,516-519,530-531,543-545,547-548,552,560-564,569,573-574,595,751-752,765,946-948,953
+docs/contexts/accounts/CONTEXT.md
+  s_46d3319fc60049::t_ceff4e953b9343 16
+apps/dashboard/lib/evaluation-summary.test.ts
+  s_46d3319fc60049::t_e55f153fb09649 5,10-11,21,23,28
+apps/dashboard/lib/audit-detail.test.tsx
+  s_46d3319fc60049::t_4a2b59a6b60b35 21,122-123,196-197,320,466-467,565,569-570,578,582,757-758,775,958,964,1470
+packages/backend/convex/evaluationModel/method.ts
+  s_46d3319fc60049::t_f4957e2ef32182 72,129,198-199,302-304,310
+apps/dashboard/components/levels/role-chip.tsx
+  s_46d3319fc60049::t_99d2df3d52553c 10-43
+packages/i18n/messages/nb.json
+  s_a8d5c4a651c492::t_c101b656a3c899 61,65,67,80-81,172,208,416,427,429-430,491,515,524-525,535,639,666,669-670,697-698,770,868-869,871,874,908,1035-1036,1130,1135,1151-1153,1274,1344,1355,1360-1361,1367,1369,1377,1379,1381,1383-1384,1594-1599,1684,1688,1692,1726,1735-1736,1738,1741-1742,1764-1766,1774,1776,2244
+apps/dashboard/components/levels/pending-roles.tsx
+  s_46d3319fc60049::t_3adc292a79b562 7-24
+apps/dashboard/components/role-sheet.tsx
+  s_46d3319fc60049::t_5c78e963629b83 31,85,137,139-140,161,165-169,177,204,211
+packages/i18n/messages/da.json
+  s_a8d5c4a651c492::t_c101b656a3c899 61,65,67,80-81,172,208,416,427,429-430,491,515,524-525,535,639,666,669-670,697-698,770,868-869,871,874,908,1035-1036,1130,1135,1151-1153,1274,1344,1355,1360-1361,1367,1369,1377,1379,1381,1383-1384,1594-1599,1684,1688,1692,1726,1735-1736,1738,1741-1742,1764-1766,1774,1776,2244
+packages/core/src/scoring.fixtures.ts
+  s_46d3319fc60049::t_be79800c09c4cc 3,23-30
+apps/dashboard/components/levels/hatch.ts
+  s_46d3319fc60049::t_3c8b4ea6f60d76 1
+packages/constants/src/index.ts
+  s_46d3319fc60049::t_833ac0fcae0b11 35-38
+packages/backend/convex/payMapping/gap.test.ts
+  s_46d3319fc60049::t_da274425417410 7,13-14,47,63,65,77,79,84-85,91-92,98-99,105-106,121-122,129,131,136-137,143-144,150-151,157-158,169-174,184-185,192-193,199-200,206-207,232-233,239-240,246-247,253-254,280,286-287,293-294,305,307,316-317,323-324,345-346,372-373,379-380,386-387,393-394,400-401,407-408,433-434,440-441,462-463,469-470,476-477,483-484,491-492,519-520,527-528,535-536,556-558,564-565,571-572,578-579,585-586,592-593,599-600,606-607
+packages/core/src/scoring.ts
+  s_46d3319fc60049::t_2de1928c8c3470 6,11,33-34,108,110,112-115,119,121,124,126,129-130,153
+packages/backend/convex/payMapping/erasure.ts
+  s_46d3319fc60049::t_2a03c7fcc605f5 6
+apps/dashboard/components/section-tabs.test.tsx
+  s_46d3319fc60049::t_76ec6bb619f332 94,96,108
+packages/constants/src/trackSeniorities.test.ts
+  s_46d3319fc60049::t_2eb71dd08e2974 3-77
+docs/lonekartlaggning-process-och-kravbild.md
+  s_46d3319fc60049::t_44b28b9acd2b86 27,35
+packages/core/src/pay-gap.test.ts
+  s_46d3319fc60049::t_822c29d050e9e4 184-185,197-198,204-212,214-215,219,226,228-229,236,249-250,252,256,259,267,270,278,283
+packages/backend/convex/lib/audit.ts
+  s_46d3319fc60049::t_bd88bb23a7d4b4 33,83,167,233,431,434-435,437-438,449,476,482,487,642-643,674
+apps/dashboard/components/people/classify/classify-bulk.test.ts
+  s_46d3319fc60049::t_df78dcd2a10fd0 12
+packages/backend/convex/payMapping/tables.test.ts
+  s_46d3319fc60049::t_4e9e109efacd1c 22,45
+docs/contexts/evaluation-model/CONTEXT.md
+  s_a8d5c4a651c492::t_33a944b6d60cca 3,5,10,17-19,21-23,30,50,53-54,58,62,85,89,94,100,104-108,110,113-114
+  s_a8d5c4a651c492::t_657815ae2337de 33-36
+apps/dashboard/lib/audit-labels.test.ts
+  s_46d3319fc60049::t_4aac3a0f9288ee 25,47,135,137,146-147,238,242,288-289,319,332
+packages/core/src/types.ts
+  s_46d3319fc60049::t_3662c6946857e1 6-7,30-33,43,51,56
+packages/backend/convex/ai/suggest.test.ts
+  s_46d3319fc60049::t_0fbc13eb57e7e6 603,617,633,665,668,680-681
+apps/dashboard/components/deviation-badge.test.tsx
+  s_46d3319fc60049::t_d0dccff0e1292f 10,14,19,25
+apps/dashboard/components/roles/role-people-card.test.tsx
+  s_46d3319fc60049::t_9a97360be03a72 36-37,65,72,101,111
+apps/dashboard/components/levels/family-level-matrix.test.tsx
+  s_46d3319fc60049::t_d19d9f80e631a7 5-131
+apps/dashboard/lib/evaluation-summary.ts
+  s_46d3319fc60049::t_2ab9fb38ebf1dd 2,7,10
+apps/dashboard/lib/level-overview.test.ts
+  s_46d3319fc60049::t_0260b7ebef1209 2-36
+packages/backend/convex/assessment/families.ts
+  s_46d3319fc60049::t_5780c61d18b2fa 40
+packages/backend/convex/evaluationModel/model.test.ts
+  s_46d3319fc60049::t_10dd99d8489d1f 44,47,54,56,160,359-360,372-373,428-429,477,486,489,595,645,683
+apps/dashboard/components/model/criterion-item.tsx
+  s_46d3319fc60049::t_1789b7242ca185 115,322,324
+apps/dashboard/components/model/criterion-item.test.tsx
+  s_46d3319fc60049::t_60901ae3cc7172 16,42-47
+packages/backend/convex/ai/suggest.ts
+  s_46d3319fc60049::t_eec4c25c473719 255-256,290,456,941
+apps/dashboard/app/(app)/roles/[roleSlug]/rate/page.tsx
+  s_46d3319fc60049::t_07fdaf83361b6e 62-63
+apps/dashboard/components/pay-mapping/pay-mapping-summary.test.tsx
+  s_46d3319fc60049::t_3a66976e9b281b 57-58,72-73,87-88,117,124,131,141,147
+packages/backend/convex/payMapping/runs.test.ts
+  s_46d3319fc60049::t_9706d0bb1a4f80 1,17,19,45,53-55,57,105-106,112-113,155,158,249-251,254,274-275,296-298,319-320,326,397-399,425-426,577,583-584,589,618,632,634,750-751,757-758,764-765,771-772,778-779,785-786,798-799,805-806
+packages/backend/convex/assessment/results.ts
+  s_46d3319fc60049::t_72e3b46dff4f29 9-10,26,32,38,52,55-56,58,76-79,90,101,103,108-109,112,116,132,182
+packages/backend/convex/assessment/devCompany.ts
+  s_a8d5c4a651c492::t_4442cda64474b3 403-414,416
+  s_a8d5c4a651c492::t_274044af301a87 2-10
+  s_a8d5c4a651c492::t_f73a2fec6f356a 12
+  s_a8d5c4a651c492::t_924ddc4598591e 400-402
+  s_a8d5c4a651c492::t_c7ab6d7ccb42dd 397-399
+  s_a8d5c4a651c492::t_30ae0aadacb3b5 11
+apps/dashboard/components/level-badge.test.tsx
+  s_46d3319fc60049::t_2fc1b21d6feb69 5-28
+apps/dashboard/components/overview/widget-card.test.tsx
+  s_46d3319fc60049::t_73ed4a8314944e 11,13,19,21
+apps/dashboard/components/onboarding/families-step.test.tsx
+  s_46d3319fc60049::t_40b8139ad8518a 85
+packages/backend/convex/assessment/anchorRoles.ts
+  s_46d3319fc60049::t_1f9ff71f67459a 29,38,41,43-45,62,67,71,80,85,92,102,105,118,127,132,141-142,146,148,152-153,156,163,169,179,187-188,200-201,224-226
+apps/dashboard/components/pdf/method-appendix-download.tsx
+  s_46d3319fc60049::t_2c803cef63e20a 47,51
+packages/backend/convex/payMapping/runs.ts
+  s_46d3319fc60049::t_86afcae43c5907 42,62,67,85,109,121,195,198,200,252,254,264,298-299,389-390,451
+apps/dashboard/components/rating/rating-result.tsx
+  s_46d3319fc60049::t_d10df630e7f0a2 18,41,61,64,67,100,102,121
+apps/dashboard/components/people/classify/classify-title-table.test.tsx
+  s_46d3319fc60049::t_2bb11a7a03bd1d 47-48,78,86-87,90,145,148-149,158,161-162,180,316,328,336-337,344-345,354,359,363,366,372,378-379,385-386,393,402,406,425,428-429,438,441-442,480,485,489,495,504-505,525,527,546,654,685,705,709,733-734,784,816
+packages/backend/convex/assessment/ratings.test.ts
+  s_46d3319fc60049::t_fa1d4a21f0ff68 42,46,59,65,79,85,90,109,115,119,149,156
+docs/pay-mapping-analysis-teardown-and-plan.md
+  s_46d3319fc60049::t_2562adf02c1ad0 54,64,66,68,70,107,138-140
+packages/backend/convex/assessment/compute.test.ts
+  s_46d3319fc60049::t_a7d318edab38ae 4,61,107,113-114,118,129,137,145,155,163,171,178,184,191,195-197,202,210,214,224,234,246,256
+apps/dashboard/lib/audit-constants.ts
+  s_46d3319fc60049::t_1b8c0fd5a89546 8,78,100,102-103,215-220,256,299
+packages/backend/convex/payMapping/gap.ts
+  s_46d3319fc60049::t_9f27e285ad18b1 24-25,31-32,64,68-69,84-85,97-98,115,172,175,181,191-193,196-198,203-204,208,213-217,221,225,228,232-234,239
+packages/core/src/classification/senioritySuggester.test.ts
+  s_46d3319fc60049::t_9a2a4deaaf389d 1-125
+packages/backend/convex/assessment/ratings.ts
+  s_46d3319fc60049::t_0dca99a878ba56 10-11,83,85
+apps/dashboard/components/pay-mapping/pay-mapping-journey-card.test.tsx
+  s_46d3319fc60049::t_313568e80be3d6 60-61,75-76,90-91
+apps/dashboard/app/(app)/page.tsx
+  s_46d3319fc60049::t_d1f0e0eed3c643 11,32,58
+packages/backend/convex/assessment/starters.ts
+  s_46d3319fc60049::t_d968b615ee6c84 23,131,309-310,566-567,569-570,605-606,608,610,637,643
+apps/dashboard/components/track-badge.tsx
+  s_46d3319fc60049::t_92171d4c6f5af1 1,28,54-56,58-59,62,65,71
+packages/core/src/scoring.test.ts
+  s_46d3319fc60049::t_6a499b033f0635 3,140,142-147,150,152-154,156,160,164-165,170,172,178,196,204,212,229,263
+packages/backend/convex/assessment/seed.ts
+  s_46d3319fc60049::t_bc022418b74038 12-20
+  s_46d3319fc60049::t_71f6d45596336e 9-11
+  s_46d3319fc60049::t_7c4256fbc73c3d 21
+apps/dashboard/components/roles/role-anchor-control.tsx
+  s_46d3319fc60049::t_1674f18fa14bf3 34,36,48-50,54-55,62-63,66,69,71,74-75,78,80,143,148,160,173,187-189,191,215,228,234,240,249,260-261,279-281,283,342,363-364,383,392
+packages/backend/convex/assessment/roles.test.ts
+  s_46d3319fc60049::t_48f95f8e1fa3f2 1-4,204-205,369,381-384,393-394,397-398,404,419-422,426,443,472-474,489-490,497-498,512-513,538,544-545,547-548,560-563,592,618,626-627,663,675,680,700,704,706,732-734,749-750,757-758,772-773,825-826,867
+CONTEXT-MAP.md
+  s_a8d5c4a651c492::t_ecab3a0fbfc235 9-10,25-26
+  s_a8d5c4a651c492::t_070e0ac55501fd 17-18,20
+  s_a8d5c4a651c492::t_8f3be072524a41 14-16
+packages/backend/convex/people/pay.test.ts
+  s_46d3319fc60049::t_c4a87a4dd01ba8 40,45,58-59,715,747-748,764-765,785-792,821-822,867,876-877,912,921,925,944,1004-1005,1033-1034
+apps/dashboard/lib/level-overview.ts
+  s_46d3319fc60049::t_a58723a2a10b57 1-37
+apps/dashboard/lib/todo.ts
+  s_46d3319fc60049::t_1c5a79b5b3be85 2,80,116,182
+packages/backend/convex/accounts/mirrors.ts
+  s_46d3319fc60049::t_7b2f4de21e8283 101
+packages/backend/convex/people/people.ts
+  s_46d3319fc60049::t_ded4615ae2e10d 291,341,347,357
+apps/dashboard/components/model/criterion-form.tsx
+  s_46d3319fc60049::t_8abb11995c124c 136,140,145,163,166,171,177,180,182,185,187
+apps/dashboard/components/levels/matrix-chrome.ts
+  s_46d3319fc60049::t_c58da703d93816 1-2
+packages/i18n/messages/sv.json
+  s_a8d5c4a651c492::t_c101b656a3c899 61,65,67,80-81,172,208,416,427,429-430,491,515,524-525,535,639,666,669-670,697-698,770,868-869,871,874,1035-1036,1130,1135,1151-1153,1274,1344,1355,1360-1361,1367,1369,1377,1379,1381,1383-1384,1594-1599,1684,1688,1692,1726,1735-1736,1738,1741-1742,1764-1766,1774,1776,2244
+packages/backend/convex/payMapping/analyses.test.ts
+  s_46d3319fc60049::t_c200b6efe15d64 8,15-16,47,61,63,81-82,88-89,101-102,108-109,118,124-125,131-132,138-139,145-146,152-153,159-160
+apps/dashboard/components/model/model-builder.tsx
+  s_46d3319fc60049::t_8916ddcc3b2aa8 257-264,272-276,278,286
+apps/dashboard/components/pay-mapping/pay-mapping-group-underlag.test.tsx
+  s_46d3319fc60049::t_618c57a3a28afd 35-36,52-53,65-66,78-79,109,139,161-162,175-176,186-187,195-196,206,208,210-211,230,239,243,256
+apps/dashboard/lib/classification-summary.ts
+  s_46d3319fc60049::t_1c6649255f345c 6,10
+apps/dashboard/components/pdf/method-appendix-render.test.tsx
+  s_46d3319fc60049::t_72ba91799f5ad0 56-58,72,76
+docs/contexts/evaluation-model/track-level-band.md
+  s_46d3319fc60049::t_541290af694b35 10
+apps/dashboard/components/levels/level-matrix.tsx
+  s_46d3319fc60049::t_30c81ed1237faa 5-119
+packages/backend/convex/payMapping/erasure.test.ts
+  s_46d3319fc60049::t_a8252f49fe2627 1,30,40-42,44,85-86,112,133,135
+apps/dashboard/components/overview/overview-widgets.test.tsx
+  s_46d3319fc60049::t_996d0194ef074d 8,30,36-37,46,60,157-158,160-164,167-170,172-173,177-181,183,251-254,256,259-264,290
+apps/dashboard/components/overview/overview-widgets.tsx
+  s_46d3319fc60049::t_caddadd7c833ed 10,15,25,42,50,55,71,136-142,144-149,151-152,154-157,246
+apps/dashboard/components/pay-mapping/pay-mapping-gap-types.ts
+  s_46d3319fc60049::t_bf8fb02a5ae889 16-17,38-39,43-44,106-107
+apps/dashboard/components/people/person-detail.tsx
+  s_46d3319fc60049::t_6dd634e1250f6e 11,131-133,236-237,270,319-320,322-323,334,380-383,405-406
+apps/dashboard/components/roles/roles-table.tsx
+  s_46d3319fc60049::t_2b91ca3daf234b 39,77,156
+apps/dashboard/lib/audit-detail.tsx
+  s_46d3319fc60049::t_c31a576c001669 432,435,449,462-463,592,701,728,730-731,733,735,848
+apps/dashboard/components/levels/family-filter.tsx
+  s_46d3319fc60049::t_b8f5e8af88bff6 36
+docs/adr/0012-primar-konslonegap-vy-och-prioritetsordning.md
+  s_46d3319fc60049::t_7112a974b5f038 46-49
+packages/backend/convex/assessment/roles.ts
+  s_46d3319fc60049::t_28935aa02bce79 1-2,270,293,308,412,480,490-491,493,503,508,523-524,526,529,535,585-586,588,596,607-608,610-611
+apps/dashboard/components/app-shell.tsx
+  s_46d3319fc60049::t_beeeb59116c482 35
+apps/dashboard/lib/pay-comparison.test.ts
+  s_46d3319fc60049::t_5f1b6160f04b33 6-8,10,12-13,17-20,22,27-29,31
+packages/backend/convex/people/erase.test.ts
+  s_46d3319fc60049::t_9c030082008e83 107-108,376-377,515-516,574-575
+apps/dashboard/components/rating/rating-stepper.test.tsx
+  s_46d3319fc60049::t_e52b1906c135dc 34-36,44-46,128,131
+packages/backend/convex/evaluationModel/standardTemplate.content.fi.ts
+  s_46d3319fc60049::t_95f588cae0244c 28,44,46,63,79,98,114,133,149,168,184,203,219,238,254,256,273,289,291,308,324,326
+packages/core/src/pay-gap.ts
+  s_46d3319fc60049::t_782ca0ea9ce099 187-188,197-198,210-211,223-225,227,229-230,235-236,247,253,257,269,275
+apps/dashboard/components/rating/rating-result.test.tsx
+  s_46d3319fc60049::t_513cf278deddb2 29,52,90,93,102-107,114,116-121,129-130,133
+packages/backend/convex/schema.test.ts
+  s_46d3319fc60049::t_692d0355949c26 5,15,23
+apps/dashboard/app/(app)/roles/families/[familySlug]/page.test.tsx
+  s_46d3319fc60049::t_40a0cb6e6d196f 95,104,175
+packages/backend/convex/evaluationModel/standardTemplate.content.nb.ts
+  s_46d3319fc60049::t_8f0902404f602c 27,43,45,62,78,97,113,132,148,167,183,202,218,237,253,255,272,288,290,307,323,325
+apps/dashboard/components/pdf/method-appendix-download.test.tsx
+  s_46d3319fc60049::t_e21bf058860378 20
+packages/i18n/messages/fi.json
+  s_a8d5c4a651c492::t_c101b656a3c899 61-62,65,67,80-81,172,208,416,427,429-430,491,515,524-525,535,639,666,669-670,697-698,770,868-869,871,874,908,1035-1036,1130,1135,1151-1153,1274,1344,1355,1360-1361,1367,1369,1377,1379,1381,1383-1384,1594-1599,1684,1688,1692,1726,1735-1736,1738,1741-1742,1764-1766,1774,1776,2244
+docs/ui-animation.md
+  s_46d3319fc60049::t_58ec71e8524bbd 76
+apps/dashboard/components/roles/role-table-row.tsx
+  s_46d3319fc60049::t_b3cdf265d9ad60 25,39-40,53,110,126-129,135,137-138
+apps/dashboard/components/pay-mapping/review-jump-menu.test.tsx
+  s_46d3319fc60049::t_3d8ab77994ce98 22-23,37-38,52-53,78,85,92,102,108
+apps/dashboard/components/people/classify/classify-bulk.ts
+  s_46d3319fc60049::t_ad501ba7dfa534 7
+apps/dashboard/components/people/pay-comparison-section.test.tsx
+  s_46d3319fc60049::t_38342f60d54de7 36,107,118,136,142,165-166,194,199,228
+packages/backend/convex/lib/functions.ts
+  s_46d3319fc60049::t_684c1fcaab2169 15,17,31,37,40,52-53
+packages/backend/convex/people/assignments.test.ts
+  s_46d3319fc60049::t_f742071df3fd38 61-62,72-73,102-103,114,119,125-126,128,131,141-142,144,157-158,170-171,182-183,203-204,215-216,226,240-241,250-251,260-261,274-275,283-284,294,296,347-348,386-387,402-403,424-425,451-452,454,465,477,490-492,494,496,519,525,551,555,562,592-593,599-600,613-614,621-624,635-636,671-672,678-679,687-688,717-718,748-749,767,772,778-779,785-786,795-798
+packages/core/src/index.ts
+  s_46d3319fc60049::t_a4c9215c887618 6
+apps/dashboard/lib/classification-summary.test.ts
+  s_46d3319fc60049::t_49d096ddec1290 4-5
+apps/dashboard/components/levels/family-level-matrix.tsx
+  s_46d3319fc60049::t_c9ff3d106e71d3 6-93
+apps/dashboard/components/people/edit-person-dialog.test.tsx
+  s_46d3319fc60049::t_081a9e2de1b4da 76,143
+docs/contexts/evaluation-model/standardmall.md
+  s_46d3319fc60049::t_018f00fc464063 1,43,45,47,49,51-57,60-61,65,85,90
+packages/backend/convex/lib/auditPayloads.ts
+  s_46d3319fc60049::t_351dfd4f2b7cc6 5,7,53,55,251,253,259,264-265,328
+apps/dashboard/components/levels/level-ladder.test.tsx
+  s_46d3319fc60049::t_3a85858ab65901 5-90
+apps/dashboard/components/role-sheet.test.tsx
+  s_46d3319fc60049::t_1d63f63c8a6b31 49,109,131,135,145-150
+apps/dashboard/components/model/method-panel.test.tsx
+  s_46d3319fc60049::t_00003e0cf67d75 48
+apps/dashboard/components/model/model-builder.test.tsx
+  s_46d3319fc60049::t_243a98c43902c7 73-78,123
+apps/dashboard/lib/pdf/method-appendix-data.test.ts
+  s_46d3319fc60049::t_0a7777adab7674 8-10
+apps/dashboard/components/pay-mapping/review-group-step.tsx
+  s_a8d5c4a651c492::t_c00ed21ed860d7 13-14,98-100,109,255-257,279-281,333
+apps/dashboard/components/level-badge.tsx
+  s_a8d5c4a651c492::t_d8d525db78bbf2 8-15
+  s_a8d5c4a651c492::t_8b92673293578b 22
+packages/backend/convex/people/classificationShared.ts
+  s_46d3319fc60049::t_7ae93c36c69f98 1-4,9,16-18,23,75,77,81,88,95,107
+apps/dashboard/components/overview/widget-viz.test.tsx
+  s_46d3319fc60049::t_a2db4ab5016c10 9,24,29,31-33,41,47
+apps/dashboard/components/roles/roles-table.test.tsx
+  s_46d3319fc60049::t_db3f8228cfef5a 37,194,196-197
+packages/backend/convex/people/classification.ts
+  s_46d3319fc60049::t_518089ff837733 8,71,76-79,81,93,95,106-107
+apps/dashboard/components/people/people-tabs.tsx
+  s_46d3319fc60049::t_c4cd16a93e9884 12
+apps/dashboard/components/people/person-actions-menu.test.tsx
+  s_46d3319fc60049::t_52c71f01c14d11 55,57,100,114-115,128-129,168-169
+packages/backend/convex/accounts/mirrors.test.ts
+  s_46d3319fc60049::t_01f3d91e43f159 410-411
+apps/dashboard/components/people/add-person-dialog.test.tsx
+  s_46d3319fc60049::t_452cb85d9e6ce4 173,198-199
+apps/dashboard/components/people/classify/classify-person-rows.tsx
+  s_46d3319fc60049::t_527147d39502c7 3-6,16-19,45-47,60,67-68,77-79,84,92,94-96,103-109,119,138-142,145,147,149,152,155,158-160
+packages/backend/convex/assessment/starters.test.ts
+  s_46d3319fc60049::t_18855372f70e9a 45,579-580,634-637,641,644-645,1297,1322,1348,1372,1377,1379
+packages/backend/convex/accounts/organization.test.ts
+  s_46d3319fc60049::t_b2238012197bc4 228,273,336
+apps/dashboard/components/people/people-section.test.tsx
+  s_46d3319fc60049::t_33527bf8799b4c 61,78,95,123,126-127,136,139-140,156,366,447,485
+apps/dashboard/components/pay-mapping/review-queue.ts
+  s_46d3319fc60049::t_779b5d33b8eac0 60
+docs/contexts/assessment/CONTEXT.md
+  s_46d3319fc60049::t_5af4c7319035fa 3,8,12,17,29,32-34,37,41,59,65-69,73
+apps/dashboard/components/people/edit-person-dialog.tsx
+  s_46d3319fc60049::t_2664d70488f795 31-34,73-74,82,94,97,112,118,127-129,132,145,188-191,217,222,229-230,326-327,329-331,334-343,370,373,390,395-397
+apps/dashboard/components/levels/level-matrix.test.tsx
+  s_46d3319fc60049::t_940fc5a4c0bb55 5-128,142
+packages/backend/convex/payMapping/analyses.ts
+  s_46d3319fc60049::t_5b83b7c4e64016 192-193,196,201
+packages/backend/convex/evaluationModel/tables.ts
+  s_46d3319fc60049::t_df539e4c1ea4a9 5,10-11,14-16,25,29
+packages/backend/convex/evaluationModel/standardTemplate.content.da.ts
+  s_46d3319fc60049::t_75aa031e0af049 28,44,46,63,79,98,114,133,149,168,184,203,219,238,254,256,273,289,291,308,324,326
+packages/i18n/messages/en.json
+  s_a8d5c4a651c492::t_c101b656a3c899 61,65,67,80-81,172,208,416,427,429-430,491,515,524-525,666,669-670,697-698,770,868-869,871,874,1035-1036,1130,1135,1151-1153,1274,1344,1355,1360-1361,1367,1369,1377,1379,1381,1383-1384,1594-1599,1684,1688,1692,1726,1735-1736,1738,1741-1742,1764-1766,1774,1776,2244
+apps/dashboard/components/levels/pending-roles.test.tsx
+  s_46d3319fc60049::t_130d64529232ef 5-54
+apps/dashboard/components/track-badge.test.tsx
+  s_46d3319fc60049::t_681d62260a08aa 3,48-50,55-56
+apps/dashboard/components/pay-mapping/review-queue.test.ts
+  s_46d3319fc60049::t_965c0ec0e51778 32-33,47-48,62-63,82,89,96,498
+docs/go-live-checklist.md
+  s_a8d5c4a651c492::t_88456655e5adc1 93
+  s_a8d5c4a651c492::t_8b7a305ecae77c 201-203,205,218,272-273,376
+apps/dashboard/components/roles/role-evaluation-card.tsx
+  s_a8d5c4a651c492::t_65d521a6e93cb5 45,90,95-100,103-104,157,159-164,166,185,197,199,205
+  s_a8d5c4a651c492::t_7b180102139f50 176
+packages/backend/convex/payMapping/tables.ts
+  s_46d3319fc60049::t_c73e5c3894f163 43-44,62,77-78,130,132
+docs/adr/0014-terminologi-niva-senioritet-steg.md
+  s_a8d5c4a651c492::t_7adf41b0cd18ea 25
+  s_a8d5c4a651c492::t_4983b5f6f9c795 1-21,29-36
+  s_a8d5c4a651c492::t_2843940f0cf061 22-24
+  s_a8d5c4a651c492::t_a7712e1a81c496 26-28
+packages/backend/convex/ai/prefill.ts
+  s_46d3319fc60049::t_a510a331d9672a 84
+apps/dashboard/lib/levels.test.ts
+  s_46d3319fc60049::t_f4f5002891ff3e 2-34
+apps/dashboard/components/deviation-badge.tsx
+  s_46d3319fc60049::t_09c0c14b6603b1 12-22,29
+packages/backend/README.md
+  s_46d3319fc60049::t_88da962d405edd 25
+packages/backend/convex/evaluationModel/standardTemplate.test.ts
+  s_46d3319fc60049::t_b966cc16f839b4 5,16-17,19,52-54
+packages/constants/src/trackSeniorities.ts
+  s_46d3319fc60049::t_509593ba402ce9 1-34
+apps/dashboard/components/people/people-tabs.test.tsx
+  s_46d3319fc60049::t_13023d0a941373 50,120
+apps/dashboard/components/roles/role-anchor-control.test.tsx
+  s_46d3319fc60049::t_2338c228bad79b 26,53,96-97,108
+apps/dashboard/components/roles/role-people-card.tsx
+  s_46d3319fc60049::t_c46cf7c850ea45 43,54-55,66-68,77,81-83,219,230
+packages/backend/convex/evaluationModel/model.ts
+  s_46d3319fc60049::t_594a590185b9a7 16,53-55,96,105,148,188,195,239,260,270,316,370,400-401,411-412,433,452-453,455,458-459,471-473,483-484
+packages/backend/convex/people/pay.ts
+  s_46d3319fc60049::t_1bccf4b2d56f02 73,81,296,328,387,406,423,507,517
+apps/dashboard/app/(app)/page.test.tsx
+  s_46d3319fc60049::t_a2a63fc08c502c 35,38,64,71,89,133,168
+apps/dashboard/components/people/person-detail.test.tsx
+  s_46d3319fc60049::t_3736357febfd94 60-61,78-81,123,128,135-137,140,150,155
+apps/dashboard/components/people/pay-comparison-section.tsx
+  s_46d3319fc60049::t_1954b8178175f7 71-79,181,286,330-332,337-339
+apps/dashboard/hooks/use-evaluation-summary.ts
+  s_46d3319fc60049::t_7a8522a2e7a9a6 10,27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "71b66b55369b5b89c59783959865d60d9f2a35c8",
+  "prompts": {},
+  "sessions": {
+    "s_46d3319fc60049": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "816e546f-aa36-4e52-9850-ffd3291e457d",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_a8d5c4a651c492": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b721b87d-d568-49f1-9dfa-0ec78e1f2572",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
