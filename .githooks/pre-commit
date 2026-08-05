@@ -13,8 +13,10 @@ if ! command -v bun >/dev/null 2>&1; then
   exit 1
 fi
 
+# --error-on-warnings: a warning is a defect here, not a suggestion. Without it
+# warnings accumulate silently, since nothing fails and nobody reads a green log.
 echo "pre-commit: biome check (staged files)..."
-if ! bun x biome check --staged --no-errors-on-unmatched; then
+if ! bun x biome check --staged --no-errors-on-unmatched --error-on-warnings; then
   echo ""
   echo "pre-commit: Biome failed. Fix with: bun run format && bun x biome check --staged --write"
   exit 1

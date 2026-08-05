@@ -110,7 +110,7 @@ export function MeanComparisonBars({
               reference line. 3px on, 4px off at 1px wide, in muted ink. */}
           <div
             data-testid="mean-marker"
-            className="-inset-y-1.5 absolute w-px text-foreground/40"
+            className="absolute -inset-y-1.5 w-px text-foreground/40"
             style={{
               left: `${markerPct}%`,
               backgroundImage:

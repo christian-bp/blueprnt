@@ -35,8 +35,11 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      # --error-on-warnings: a warning is a defect here, not a suggestion. Without
+      # it warnings accumulate silently, since nothing fails and nobody reads a
+      # green log.
       - name: Biome (lint + format check)
-        run: bun x biome ci .
+        run: bun x biome ci --error-on-warnings .
 
       - name: Typecheck
         run: bun run turbo run typecheck
