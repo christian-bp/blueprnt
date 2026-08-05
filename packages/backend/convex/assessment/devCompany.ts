@@ -381,73 +381,59 @@ export const DEV_COMPANY: DevFamily[] = [
 
 // Per-role 0-5 ratings across the nine criteria in CRITERION_KEYS order
 // [scope, complexity, autonomy, risk, knowledge, stakeholders, financial,
-// people, formal]. Unlike a flat number per role, these VARY across criteria by
-// function, which is what makes the weighting matter: a role rated the same on
-// every criterion has a score independent of the weights (the budget cancels),
-// so re-weighting the model would not move it. With differentiated profiles,
-// boosting e.g. the technical criteria (complexity/knowledge) lifts the
-// engineers and lowers the leadership-heavy roles. Magnitude is roughly
-// seniority-scaled for a sensible default-weight spread. Verified in
+// people, formal]. The vectors mirror the hand-tuned ratings of the production
+// demo org, so a reseed reproduces that calibration exactly; when the demo
+// ratings are re-tuned there, this map is what must be updated to match.
+// Profiles VARY across criteria by function, which is what makes the weighting
+// matter: boosting the technical criteria (complexity/knowledge) lifts the
+// engineering profiles and drops the leadership-heavy ones. Verified in
 // devCompany.test.ts (default-weight distribution + reweighting sensitivity).
 //
-// Archetype profiles (shared shapes), assigned to titles below.
-const EXEC_CEO = [5, 3, 5, 5, 3, 5, 5, 5, 5] as const // broad leader, low on the technical criteria
-const EXEC_HEAD = [5, 3, 4, 4, 3, 5, 5, 5, 5] as const
-const ARCHITECT = [4, 5, 4, 4, 5, 4, 4, 4, 4] as const // deep technical leader (peaks complexity/knowledge)
-const MGR_TECH = [4, 4, 4, 4, 5, 4, 3, 5, 4] as const
-const MGR_SALES = [4, 3, 4, 4, 3, 5, 5, 5, 4] as const
-const MGR_OPS = [4, 4, 4, 4, 3, 4, 4, 5, 4] as const
-const LEAD = [3, 3, 4, 3, 4, 4, 3, 3, 3] as const
-const SR_TECH = [3, 5, 4, 4, 5, 3, 2, 2, 3] as const // senior engineer (peaks complexity/knowledge)
-const SR_PRODUCT = [4, 4, 4, 3, 4, 5, 3, 3, 3] as const
-const SR_SALES = [4, 3, 4, 4, 3, 5, 4, 2, 3] as const
-const ECOMM = [4, 4, 5, 4, 4, 5, 4, 2, 3] as const
-const DEV = [3, 5, 3, 3, 5, 2, 1, 1, 2] as const // engineer IC: complexity/knowledge max, low people/financial
-const BIZ_IC = [3, 2, 3, 3, 3, 4, 3, 1, 2] as const
-const FIN_IC = [3, 3, 3, 4, 3, 2, 4, 1, 3] as const
-const SUPPORT_IC = [2, 3, 3, 3, 4, 3, 1, 1, 2] as const
-const PROJ_IC = [3, 3, 4, 3, 3, 4, 3, 2, 3] as const
-const JR_IC = [2, 3, 2, 2, 3, 3, 2, 1, 2] as const
+// Only three shapes are shared between titles; every other role carries its
+// own vector.
+const EXEC_HEAD = [5, 3, 4, 4, 3, 5, 5, 5, 5] as const // functional head (HR/Sales/Product)
+const SPECIALIST_IC = [2, 2, 2, 3, 3, 2, 1, 0, 3] as const // hands-on specialist, no people responsibility
+const COORDINATOR_IC = [2, 2, 2, 2, 2, 3, 1, 0, 3] as const // coordinating IC, stakeholder-tilted
 
 export const RATINGS_BY_TITLE: Record<string, readonly number[]> = {
-  CEO: EXEC_CEO,
+  CEO: [5, 5, 5, 5, 5, 5, 5, 5, 3],
   "Head of HR": EXEC_HEAD,
-  "Head of Finance": EXEC_HEAD,
+  "Head of Finance": [5, 4, 5, 4, 4, 5, 5, 5, 3],
   "Head of Sales & Marketing": EXEC_HEAD,
   "Head of Product": EXEC_HEAD,
-  "Software Developer": DEV,
-  "Software Tester": DEV,
-  "Embedded Developer": DEV,
-  "Hardware Developer": DEV,
-  Konstruktör: DEV,
-  "Cloud Architect": SR_TECH,
-  "Infrastructure Engineer": DEV,
-  "Technical Solutions Architect": ARCHITECT,
-  "Department Manager Software": MGR_TECH,
-  "Strategy Engineer": SR_TECH,
-  "Data Developer": DEV,
-  "Department Manager Data": MGR_TECH,
-  "Product Manager": SR_PRODUCT,
-  "Product Coordinator": BIZ_IC,
-  "Product Promotor": BIZ_IC,
-  "UX Lead": SR_PRODUCT,
-  "Account Manager": BIZ_IC,
-  "Key Account Manager": SR_SALES,
-  "Sales Manager": MGR_SALES,
-  "Order & Indoor Sales": JR_IC,
-  Marknadskoordinator: BIZ_IC,
-  "E-Commerce Strategy Lead": ECOMM,
-  "Partner & Cooperations Manager": SR_SALES,
-  "Content Delivery Manager": LEAD,
-  "IT Manager": MGR_TECH,
-  "IT-specialist": SUPPORT_IC,
-  "IT-support": JR_IC,
-  Supporttekniker: SUPPORT_IC,
-  Controller: FIN_IC,
-  Redovisningsekonom: FIN_IC,
-  "Strategic Purchaser": FIN_IC,
-  "Admin & Purchasing": JR_IC,
-  "Project Manager": PROJ_IC,
-  "Project Management Officer": PROJ_IC,
-  "Project & Operations Manager": MGR_OPS,
+  "Software Developer": SPECIALIST_IC,
+  "Software Tester": [2, 3, 4, 2, 3, 3, 0, 0, 3],
+  "Embedded Developer": SPECIALIST_IC,
+  "Hardware Developer": SPECIALIST_IC,
+  Konstruktör: [2, 2, 2, 2, 2, 2, 1, 0, 3],
+  "Cloud Architect": [3, 4, 3, 3, 4, 2, 1, 0, 3],
+  "Infrastructure Engineer": [2, 3, 2, 2, 3, 2, 1, 0, 3],
+  "Technical Solutions Architect": [4, 4, 4, 3, 3, 4, 3, 2, 3],
+  "Department Manager Software": [3, 3, 4, 3, 2, 3, 3, 2, 3],
+  "Strategy Engineer": [4, 5, 2, 4, 1, 5, 0, 0, 3],
+  "Data Developer": [2, 2, 2, 2, 2, 2, 0, 0, 1],
+  "Department Manager Data": [4, 3, 4, 3, 3, 4, 3, 2, 2],
+  "Product Manager": [3, 3, 4, 3, 2, 4, 2, 0, 3],
+  "Product Coordinator": [2, 3, 3, 3, 2, 3, 1, 0, 3],
+  "Product Promotor": [2, 2, 2, 3, 3, 3, 0, 0, 3],
+  "UX Lead": [4, 3, 4, 3, 3, 3, 0, 0, 3],
+  "Account Manager": [3, 2, 3, 3, 3, 4, 3, 1, 2],
+  "Key Account Manager": [3, 3, 2, 4, 2, 4, 4, 0, 3],
+  "Sales Manager": [4, 4, 4, 4, 2, 3, 4, 2, 2],
+  "Order & Indoor Sales": [2, 3, 2, 2, 3, 3, 2, 1, 2],
+  Marknadskoordinator: COORDINATOR_IC,
+  "E-Commerce Strategy Lead": [4, 4, 4, 4, 3, 3, 2, 0, 3],
+  "Partner & Cooperations Manager": COORDINATOR_IC,
+  "Content Delivery Manager": [4, 3, 4, 3, 3, 3, 3, 0, 3],
+  "IT Manager": [3, 2, 4, 3, 2, 2, 3, 2, 3],
+  "IT-specialist": [2, 2, 2, 2, 3, 2, 1, 0, 3],
+  "IT-support": [1, 1, 2, 2, 1, 2, 1, 0, 2],
+  Supporttekniker: [2, 3, 2, 3, 2, 3, 1, 0, 2],
+  Controller: SPECIALIST_IC,
+  Redovisningsekonom: [2, 1, 2, 1, 1, 2, 0, 0, 3],
+  "Strategic Purchaser": [3, 3, 3, 3, 3, 4, 1, 0, 3],
+  "Admin & Purchasing": [2, 2, 2, 2, 1, 2, 1, 0, 2],
+  "Project Manager": [3, 3, 3, 3, 1, 3, 2, 1, 3],
+  "Project Management Officer": [1, 2, 3, 3, 2, 2, 1, 0, 3],
+  "Project & Operations Manager": [4, 3, 4, 3, 2, 4, 3, 2, 3],
 }

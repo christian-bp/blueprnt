@@ -84,18 +84,19 @@ describe("assessment/seed.seedRatedRoles", () => {
             templateKeyById.get(r.criterionId) === templateKey
         )?.value
       }
-      // CEO (EXEC_CEO): broad leader, deliberately low on the technical criteria.
+      // CEO: at the ceiling on every criterion except formal.
       expect(cell("CEO", "scope")).toBe(5)
-      expect(cell("CEO", "complexity")).toBe(3)
-      expect(cell("CEO", "people")).toBe(5)
-      // Software Developer (DEV): peaks on the technical criteria, low on people.
-      expect(cell("Software Developer", "complexity")).toBe(5)
-      expect(cell("Software Developer", "knowledge")).toBe(5)
-      expect(cell("Software Developer", "people")).toBe(1)
-      // Technical Solutions Architect (ARCHITECT): deep technical leader.
-      expect(cell("Technical Solutions Architect", "complexity")).toBe(5)
-      expect(cell("Technical Solutions Architect", "knowledge")).toBe(5)
-      // Order & Indoor Sales (JR_IC): junior, low magnitude.
+      expect(cell("CEO", "complexity")).toBe(5)
+      expect(cell("CEO", "formal")).toBe(3)
+      // Software Developer (SPECIALIST_IC): hands-on specialist, no people
+      // responsibility.
+      expect(cell("Software Developer", "risk")).toBe(3)
+      expect(cell("Software Developer", "knowledge")).toBe(3)
+      expect(cell("Software Developer", "people")).toBe(0)
+      // Cloud Architect: peaks on the technical criteria.
+      expect(cell("Cloud Architect", "complexity")).toBe(4)
+      expect(cell("Cloud Architect", "knowledge")).toBe(4)
+      // Order & Indoor Sales: junior, low magnitude.
       expect(cell("Order & Indoor Sales", "scope")).toBe(2)
       expect(cell("Order & Indoor Sales", "people")).toBe(1)
 
