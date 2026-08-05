@@ -2,16 +2,18 @@ import { defineTable } from "convex/server"
 import { v } from "convex/values"
 
 // One living model per organization (V1: no versioning, ADR-0002). Score and
-// band are NEVER stored; they are derived by packages/core.
+// level are NEVER stored; they are derived by packages/core.
 export const models = defineTable({
   orgId: v.string(),
   name: v.string(),
   templateKey: v.optional(v.string()),
-  // Band thresholds are an aggregate of the model (ADR-0006): always exactly
-  // 7 entries (band 1-7, Band 1 = highest), read as a complete set and edited
+  // Level thresholds are an aggregate of the model (ADR-0006): always exactly
+  // 7 entries (level 1-7, Level 1 = highest), read as a complete set and edited
   // as a set, so they live on the model document. minScore is the lowest
   // inclusive score on the normalized 0-100 scale (ADR-0004).
-  bandThresholds: v.array(v.object({ band: v.number(), minScore: v.number() })),
+  levelThresholds: v.array(
+    v.object({ level: v.number(), minScore: v.number() })
+  ),
 }).index("by_org", ["orgId"])
 
 export const criteria = defineTable({
@@ -20,11 +22,11 @@ export const criteria = defineTable({
   name: v.string(),
   description: v.string(),
   helpText: v.string(),
-  // Anchor texts for scores 0-5, always exactly 6, ordered by level. Anchors
+  // Anchor texts for scores 0-5, always exactly 6, ordered by step. Anchors
   // are an aggregate of the criterion (ADR-0006): never referenced from
   // elsewhere and never read without it, so they live on its document and
   // cannot outlive it.
-  anchors: v.array(v.object({ level: v.number(), text: v.string() })),
+  anchors: v.array(v.object({ step: v.number(), text: v.string() })),
   // standard template criterion key ("scope".."formal") set at seed time; display
   // localizes pristine template rows from the content modules. E2 editing MUST
   // clear this key when any text field changes (ownership transfer to the

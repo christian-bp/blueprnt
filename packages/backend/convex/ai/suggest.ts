@@ -252,8 +252,8 @@ export const confirmModelDraft = adminMutation({
         name: entry.name,
         description: entry.criterion.description,
         helpText: entry.criterion.helpText,
-        anchors: entry.criterion.anchors.map((text, level) => ({
-          level,
+        anchors: entry.criterion.anchors.map((text, step) => ({
+          step,
           text,
         })),
         weightPoints,
@@ -287,7 +287,7 @@ export const confirmModelDraft = adminMutation({
     if (insertedCount > 0) {
       // New criteria flip fully rated roles to incomplete: log the shifts.
       const after = await deriveResults(ctx, ctx.orgId)
-      await ctx.audit.bandShifts({
+      await ctx.audit.levelShifts({
         before: before.results,
         after: after.results,
         cause: {
@@ -453,7 +453,7 @@ export const confirmWeightReview = adminMutation({
     }))
     if (appliedCount > 0) {
       const after = await deriveResults(ctx, ctx.orgId)
-      await ctx.audit.bandShifts({
+      await ctx.audit.levelShifts({
         before: before.results,
         after: after.results,
         cause: {
@@ -938,9 +938,7 @@ export const collectCriterionComplianceContext = internalQuery({
       isCriterionKey(criterion.templateKey)
         ? content.criteria[criterion.templateKey]
         : null
-    const anchorsSorted = [...criterion.anchors].sort(
-      (a, b) => a.level - b.level
-    )
+    const anchorsSorted = [...criterion.anchors].sort((a, b) => a.step - b.step)
 
     // Sibling criteria names (localized the same way), excluding this one.
     const siblings = await ctx.db

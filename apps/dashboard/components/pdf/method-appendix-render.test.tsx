@@ -53,9 +53,9 @@ const DOC: MethodAppendixDoc = {
       decidedAt: null,
     },
   ],
-  bandThresholds: [
-    { band: 1, minScore: 80 },
-    { band: 2, minScore: 60 },
+  levelThresholds: [
+    { level: 1, minScore: 80 },
+    { level: 2, minScore: 60 },
   ],
 }
 
@@ -69,11 +69,11 @@ const LABELS = {
   methodologyBody: "Roles are evaluated criterion by criterion.",
   criteriaTitle: "Criteria and weights",
   rationaleTitle: "Criterion rationale and bias review",
-  bandsTitle: "Band thresholds",
+  levelsTitle: "Level thresholds",
   colCriterion: "Criterion",
   colWeight: "Weight",
   colShare: "Share",
-  colBand: "Band",
+  colLevel: "Level",
   colMinScore: "Min score",
   purpose: "Purpose",
   whyRelevant: "Why relevant",

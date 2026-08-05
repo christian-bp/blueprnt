@@ -31,9 +31,9 @@ import { onSelectValue } from "@/lib/select"
 // governance, so all write controls are admin-only. The designation lives as an
 // aggregate on the role. This module exports AnchorDialog (the designate/edit
 // form in a dialog, admin-only) and the AnchorRoleInfo type; the Evaluation
-// card shows the anchor band + help inline and opens this dialog to manage it.
+// card shows the anchor level + help inline and opens this dialog to manage it.
 export interface AnchorRoleInfo {
-  expectedBand: number
+  expectedLevel: number
   motivation: string
   status: "active" | "underReview" | "replaced"
   reviewedAt: number
@@ -45,39 +45,39 @@ const STATUS_KEYS = {
   replaced: "statusReplaced",
 } as const
 
-function BandField({
-  band,
-  bandOptions,
+function LevelField({
+  level,
+  levelOptions,
   disabled,
   onChange,
 }: {
-  band: string
-  bandOptions: number[]
+  level: string
+  levelOptions: number[]
   disabled: boolean
   onChange: (value: string) => void
 }) {
   const t = useTranslations("dashboard.roles.anchor")
   return (
     <div className="space-y-2">
-      <Label htmlFor="anchor-band" className="text-muted-foreground">
-        {t("expectedBandLabel")}
+      <Label htmlFor="anchor-level" className="text-muted-foreground">
+        {t("expectedLevelLabel")}
       </Label>
       <Select
-        value={band}
+        value={level}
         onValueChange={onSelectValue(onChange)}
         disabled={disabled}
-        items={bandOptions.map((option) => ({
+        items={levelOptions.map((option) => ({
           value: String(option),
-          label: t("bandOption", { band: option }),
+          label: t("levelOption", { level: option }),
         }))}
       >
-        <SelectTrigger id="anchor-band" className="w-full">
-          <SelectValue placeholder={t("expectedBandLabel")} />
+        <SelectTrigger id="anchor-level" className="w-full">
+          <SelectValue placeholder={t("expectedLevelLabel")} />
         </SelectTrigger>
         <SelectContent>
-          {bandOptions.map((option) => (
+          {levelOptions.map((option) => (
             <SelectItem key={option} value={String(option)}>
-              {t("bandOption", { band: option })}
+              {t("levelOption", { level: option })}
             </SelectItem>
           ))}
         </SelectContent>
@@ -140,12 +140,12 @@ function FormError({ failed }: { failed: boolean }) {
 function DesignateForm({
   orgId,
   roleId,
-  bandOptions,
+  levelOptions,
   onClose,
 }: {
   orgId: string
   roleId: Id<"roles">
-  bandOptions: number[]
+  levelOptions: number[]
   onClose: () => void
 }) {
   const t = useTranslations("dashboard.roles.anchor")
@@ -157,7 +157,7 @@ function DesignateForm({
   const activeCount = (anchors ?? []).filter(
     (a) => a.status === "active"
   ).length
-  const [band, setBand] = useState("")
+  const [level, setLevel] = useState("")
   const [motivation, setMotivation] = useState("")
   const [pending, setPending] = useState(false)
   const [failed, setFailed] = useState(false)
@@ -170,7 +170,7 @@ function DesignateForm({
       await designate({
         orgId,
         roleId,
-        expectedBand: Number(band),
+        expectedLevel: Number(level),
         motivation: trimmedMotivation,
       })
       toast.success(tToast("anchorSet"))
@@ -184,11 +184,11 @@ function DesignateForm({
 
   return (
     <div className="space-y-4">
-      <BandField
-        band={band}
-        bandOptions={bandOptions}
+      <LevelField
+        level={level}
+        levelOptions={levelOptions}
         disabled={pending}
-        onChange={setBand}
+        onChange={setLevel}
       />
       <MotivationField
         motivation={motivation}
@@ -212,7 +212,7 @@ function DesignateForm({
         </Button>
         <Button
           onClick={handleDesignate}
-          disabled={pending || band === "" || trimmedMotivation === ""}
+          disabled={pending || level === "" || trimmedMotivation === ""}
         >
           {t("designateCta")}
         </Button>
@@ -225,19 +225,19 @@ function EditForm({
   orgId,
   roleId,
   anchorRole,
-  bandOptions,
+  levelOptions,
   onClose,
 }: {
   orgId: string
   roleId: Id<"roles">
   anchorRole: AnchorRoleInfo
-  bandOptions: number[]
+  levelOptions: number[]
   onClose: () => void
 }) {
   const t = useTranslations("dashboard.roles.anchor")
   const tToast = useTranslations("dashboard.toast")
   const update = useMutation(api.assessment.anchorRoles.updateAnchorRole)
-  const [band, setBand] = useState(String(anchorRole.expectedBand))
+  const [level, setLevel] = useState(String(anchorRole.expectedLevel))
   const [motivation, setMotivation] = useState(anchorRole.motivation)
   const [status, setStatus] = useState<AnchorRoleInfo["status"]>(
     anchorRole.status
@@ -246,7 +246,7 @@ function EditForm({
   const [failed, setFailed] = useState(false)
   const trimmedMotivation = motivation.trim()
   const dirty =
-    Number(band) !== anchorRole.expectedBand ||
+    Number(level) !== anchorRole.expectedLevel ||
     trimmedMotivation !== anchorRole.motivation ||
     status !== anchorRole.status
 
@@ -257,8 +257,8 @@ function EditForm({
       await update({
         orgId,
         roleId,
-        ...(Number(band) !== anchorRole.expectedBand
-          ? { expectedBand: Number(band) }
+        ...(Number(level) !== anchorRole.expectedLevel
+          ? { expectedLevel: Number(level) }
           : {}),
         ...(trimmedMotivation !== anchorRole.motivation
           ? { motivation: trimmedMotivation }
@@ -276,11 +276,11 @@ function EditForm({
 
   return (
     <div className="space-y-4">
-      <BandField
-        band={band}
-        bandOptions={bandOptions}
+      <LevelField
+        level={level}
+        levelOptions={levelOptions}
         disabled={pending}
-        onChange={setBand}
+        onChange={setLevel}
       />
       <MotivationField
         motivation={motivation}
@@ -339,7 +339,7 @@ function EditForm({
   )
 }
 
-// Loads the band options when open; renders the designate or edit form. The
+// Loads the level options when open; renders the designate or edit form. The
 // edit form is keyed by reviewedAt so a concurrent admin's update remounts it
 // with fresh values instead of overwriting silently.
 export function AnchorDialog({
@@ -360,8 +360,8 @@ export function AnchorDialog({
     api.evaluationModel.model.getModel,
     open ? { orgId } : "skip"
   )
-  const bandOptions = Array.from(
-    { length: model?.bandThresholds.length ?? 0 },
+  const levelOptions = Array.from(
+    { length: model?.levelThresholds.length ?? 0 },
     (_, index) => index + 1
   )
   const close = () => onOpenChange(false)
@@ -380,7 +380,7 @@ export function AnchorDialog({
           <DesignateForm
             orgId={orgId}
             roleId={roleId}
-            bandOptions={bandOptions}
+            levelOptions={levelOptions}
             onClose={close}
           />
         ) : (
@@ -389,7 +389,7 @@ export function AnchorDialog({
             orgId={orgId}
             roleId={roleId}
             anchorRole={anchorRole}
-            bandOptions={bandOptions}
+            levelOptions={levelOptions}
             onClose={close}
           />
         )}

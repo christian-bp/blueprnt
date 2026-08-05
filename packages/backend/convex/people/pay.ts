@@ -70,7 +70,7 @@ const payRecordFields = {
 
 const payRecordShape = v.object(payRecordFields)
 
-// History rows additionally carry the role + level the salary was earned
+// History rows additionally carry the role + seniority the salary was earned
 // under: the assignment active at the record's effectiveAt, joined on read
 // via assignmentActiveAt (derived, never stored; ADR-0002 spirit). Null when
 // the person had no assignment yet at that time (e.g. salary imported before
@@ -78,7 +78,7 @@ const payRecordShape = v.object(payRecordFields)
 const salaryHistoryShape = v.object({
   ...payRecordFields,
   assignment: v.union(
-    v.object({ roleId: v.id("roles"), level: v.string() }),
+    v.object({ roleId: v.id("roles"), seniority: v.string() }),
     v.null()
   ),
 })
@@ -293,7 +293,7 @@ export const appendSalary = internalMutation({
 })
 
 // Returns all pay records for a person ordered by effectiveAt descending
-// (most recent first), each joined to the role + level active at its
+// (most recent first), each joined to the role + seniority active at its
 // effective time. Returns an empty array when the person does not belong
 // to this org.
 export const getSalaryHistory = orgQuery({
@@ -325,7 +325,7 @@ export const getSalaryHistory = orgQuery({
         ...toPayRecordShape(row),
         assignment:
           active !== null
-            ? { roleId: active.roleId, level: active.level }
+            ? { roleId: active.roleId, seniority: active.seniority }
             : null,
       }
     })
@@ -384,7 +384,7 @@ const payComparisonShape = v.union(
         publicId: v.string(),
         displayName: v.string(),
         gender: v.union(v.literal("Man"), v.literal("Kvinna")),
-        level: v.string(),
+        seniority: v.string(),
         basic: v.number(),
         variable: v.number(),
         amount: v.number(),
@@ -403,7 +403,7 @@ const payComparisonShape = v.union(
 function comparisonPoint(
   person: Doc<"people">,
   record: Doc<"payRecords">,
-  level: string,
+  seniority: string,
   isSelf: boolean
 ) {
   const amount = Math.round(
@@ -420,7 +420,7 @@ function comparisonPoint(
     publicId: person.publicId,
     displayName: person.displayName,
     gender: person.gender,
-    level,
+    seniority,
     basic,
     variable: amount - basic,
     amount,
@@ -504,7 +504,7 @@ export const getRolePayComparison = orgQuery({
     )
 
     const points: Array<ReturnType<typeof comparisonPoint>> = [
-      comparisonPoint(person, ownRecord, active.level, true),
+      comparisonPoint(person, ownRecord, active.seniority, true),
     ]
     let excludedCount = 0
     for (const { assignment, peer, record } of peerData) {
@@ -514,7 +514,7 @@ export const getRolePayComparison = orgQuery({
         excludedCount += 1
         continue
       }
-      points.push(comparisonPoint(peer, record, assignment.level, false))
+      points.push(comparisonPoint(peer, record, assignment.seniority, false))
     }
 
     return {

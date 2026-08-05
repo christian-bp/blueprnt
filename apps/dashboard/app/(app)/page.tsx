@@ -7,8 +7,8 @@ import { QuickActions } from "@/components/overview/quick-actions"
 import { TodoList } from "@/components/overview/todo-list"
 import { WelcomeGreeting } from "@/components/overview/welcome-greeting"
 import { useOrganization } from "@/components/org-context"
-import { useBandOverview } from "@/hooks/use-band-overview"
 import { useHeadcountTrend } from "@/hooks/use-headcount-trend"
+import { useLevelOverview } from "@/hooks/use-level-overview"
 import { useOverviewStats } from "@/hooks/use-overview-stats"
 import { usePageTitle } from "@/hooks/use-page-title"
 import { usePayMappingHeadline } from "@/hooks/use-pay-mapping-headline"
@@ -29,7 +29,7 @@ export default function OverviewPage() {
   const locale = useLocale()
   const todo = useTodo(orgId, locale)
   const stats = useOverviewStats(orgId, locale)
-  const bandOverview = useBandOverview(orgId, locale)
+  const levelOverview = useLevelOverview(orgId, locale)
   const payMappingHeadline = usePayMappingHeadline(orgId)
   const headcountTrend = useHeadcountTrend(orgId)
 
@@ -55,7 +55,7 @@ export default function OverviewPage() {
         </h2>
         <OverviewWidgets
           stats={stats}
-          bandOverview={bandOverview}
+          levelOverview={levelOverview}
           payMappingHeadline={payMappingHeadline}
           headcountTrend={headcountTrend}
         />

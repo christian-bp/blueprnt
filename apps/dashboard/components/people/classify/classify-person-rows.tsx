@@ -1,6 +1,9 @@
 "use client"
 
-import { TRACK_LEVELS, isValidLevelForTrack } from "@workspace/constants"
+import {
+  TRACK_SENIORITIES,
+  isValidSeniorityForTrack,
+} from "@workspace/constants"
 import {
   Select,
   SelectContent,
@@ -10,7 +13,10 @@ import {
 } from "@workspace/ui/components/select"
 import { useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
-import { type ClassifyPersonRow, resolveLevel } from "./classify-title-table"
+import {
+  type ClassifyPersonRow,
+  resolveSeniority,
+} from "./classify-title-table"
 import { onSelectValue } from "@/lib/select"
 
 // ---------------------------------------------------------------------------
@@ -36,9 +42,9 @@ export function tenureYears(
 export interface ClassifyPersonRowsProps {
   people: ClassifyPersonRow[]
   trackKey: string
-  // Map<personId, selectedLevel> - controlled by the parent
-  selectedLevel: Map<string, string>
-  onLevelChange: (personId: string, level: string) => void
+  // Map<personId, selectedSeniority> - controlled by the parent
+  selectedSeniority: Map<string, string>
+  onSeniorityChange: (personId: string, seniority: string) => void
 }
 
 // ---------------------------------------------------------------------------
@@ -51,15 +57,15 @@ export interface ClassifyPersonRowsProps {
 // collapse).
 // ---------------------------------------------------------------------------
 
-// The shared grid template: name, start date, and the level select.
+// The shared grid template: name, start date, and the seniority select.
 const PERSON_GRID =
   "grid grid-cols-[minmax(0,1fr)_minmax(9rem,12rem)_minmax(8rem,13rem)] items-center gap-x-4 px-4"
 
 export function ClassifyPersonRows({
   people,
   trackKey,
-  selectedLevel,
-  onLevelChange,
+  selectedSeniority,
+  onSeniorityChange,
 }: ClassifyPersonRowsProps) {
   const t = useTranslations("dashboard.classify")
   const tHelp = useTranslations("dashboard.help")
@@ -68,14 +74,14 @@ export function ClassifyPersonRows({
   // new Date() is acceptable in a client component per the task brief).
   const today = new Date()
 
-  const trackLevels = (
-    TRACK_LEVELS[trackKey as keyof typeof TRACK_LEVELS] ?? []
-  ).filter((l) => isValidLevelForTrack(trackKey, l))
+  const trackSeniorities = (
+    TRACK_SENIORITIES[trackKey as keyof typeof TRACK_SENIORITIES] ?? []
+  ).filter((l) => isValidSeniorityForTrack(trackKey, l))
 
   return (
     <div className="overflow-hidden rounded-lg border bg-card">
       {/* Header line for the person rows: names the columns and carries the
-          level concept's help where levels are shown. */}
+          seniority concept's help where seniorities are shown. */}
       <div
         className={`${PERSON_GRID} border-b bg-muted/50 py-2 font-medium text-muted-foreground text-xs`}
       >
@@ -83,22 +89,24 @@ export function ClassifyPersonRows({
         <div>{t("personColumns.startDate")}</div>
         <div>
           <span className="flex items-center gap-1.5">
-            {t("levelLabel")}
+            {t("seniorityLabel")}
             {/* ONE HelpMorphButton per concept, placed where the concept is
-                used: the per-person level selects below. */}
-            <HelpMorphButton label={tHelp("classifyLevelLabel")}>
-              {tHelp("classifyLevelBody")}
+                used: the per-person seniority selects below. */}
+            <HelpMorphButton label={tHelp("classifySeniorityLabel")}>
+              {tHelp("classifySeniorityBody")}
             </HelpMorphButton>
           </span>
         </div>
       </div>
       <div className="divide-y">
         {people.map((person) => {
-          // Default the level via the shared resolveLevel priority (current
-          // assigned level, then suggestion, then the track's first level) so
-          // what the select shows equals what buildAssignments would submit.
-          const currentLevel =
-            selectedLevel.get(person.personId) ?? resolveLevel(person, trackKey)
+          // Default the seniority via the shared resolveSeniority priority
+          // (current assigned seniority, then suggestion, then the track's
+          // first seniority) so what the select shows equals what
+          // buildAssignments would submit.
+          const currentSeniority =
+            selectedSeniority.get(person.personId) ??
+            resolveSeniority(person, trackKey)
 
           const name = person.displayName
 
@@ -108,7 +116,7 @@ export function ClassifyPersonRows({
             <div
               key={person.personId}
               data-person-row
-              // Row hover ties the level select to its person across the
+              // Row hover ties the seniority select to its person across the
               // wide gap (same tint as table-row hover).
               className={`${PERSON_GRID} py-2 text-sm transition-colors hover:bg-muted/50`}
             >
@@ -127,28 +135,29 @@ export function ClassifyPersonRows({
                   </span>
                 ) : null}
               </div>
-              {/* Level Select. Without a resolved role there is no track and
-                  no levels: the select stays full-size but disabled, and the
-                  placeholder states the precondition in words (guidance
-                  convention) instead of collapsing to an empty control. */}
+              {/* Seniority Select. Without a resolved role there is no track
+                  and no seniorities: the select stays full-size but disabled,
+                  and the placeholder states the precondition in words
+                  (guidance convention) instead of collapsing to an empty
+                  control. */}
               <div>
                 <Select
-                  value={currentLevel}
+                  value={currentSeniority}
                   onValueChange={onSelectValue((value: string) =>
-                    onLevelChange(person.personId, value)
+                    onSeniorityChange(person.personId, value)
                   )}
-                  disabled={trackLevels.length === 0}
+                  disabled={trackSeniorities.length === 0}
                 >
                   <SelectTrigger
-                    aria-label={t("levelLabel")}
+                    aria-label={t("seniorityLabel")}
                     className="w-full"
                   >
-                    <SelectValue placeholder={t("levelNeedsRole")} />
+                    <SelectValue placeholder={t("seniorityNeedsRole")} />
                   </SelectTrigger>
                   <SelectContent>
-                    {trackLevels.map((level) => (
-                      <SelectItem key={level} value={level}>
-                        {level}
+                    {trackSeniorities.map((seniority) => (
+                      <SelectItem key={seniority} value={seniority}>
+                        {seniority}
                       </SelectItem>
                     ))}
                   </SelectContent>

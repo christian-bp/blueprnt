@@ -13,7 +13,7 @@ import { appError, ERROR_CODES } from "../lib/errors"
 import { adminMutation, orgQuery } from "../lib/functions"
 import {
   CRITERION_KEYS,
-  DEFAULT_BAND_THRESHOLDS,
+  DEFAULT_LEVEL_THRESHOLDS,
   DEFAULT_WEIGHT_POINTS,
   STANDARD_TEMPLATE_KEY,
   TRACK_KEYS,
@@ -50,9 +50,9 @@ async function contentLocale(
 
 // Used by BOTH template and scratch models (thresholds are editable in E2).
 // Tracks are fixed V1 constants (TRACK_KEYS, ADR-0006) and are not seeded.
-function defaultBandThresholds() {
-  return DEFAULT_BAND_THRESHOLDS.map((threshold) => ({
-    band: threshold.band,
+function defaultLevelThresholds() {
+  return DEFAULT_LEVEL_THRESHOLDS.map((threshold) => ({
+    level: threshold.level,
     minScore: threshold.minScore,
   }))
 }
@@ -93,7 +93,7 @@ export const createModelFromTemplate = adminMutation({
       orgId: ctx.orgId,
       name: content.modelName,
       templateKey: STANDARD_TEMPLATE_KEY,
-      bandThresholds: defaultBandThresholds(),
+      levelThresholds: defaultLevelThresholds(),
     })
 
     // Capture each inserted criterion as a bulk create-snapshot item; the
@@ -102,7 +102,7 @@ export const createModelFromTemplate = adminMutation({
     const criteriaSnapshots = []
     for (const [index, key] of CRITERION_KEYS.entries()) {
       const criterion = content.criteria[key]
-      const anchors = criterion.anchors.map((text, level) => ({ level, text }))
+      const anchors = criterion.anchors.map((text, step) => ({ step, text }))
       const criterionId = await ctx.db.insert("criteria", {
         orgId: ctx.orgId,
         modelId,
@@ -145,7 +145,7 @@ export const createModelFromTemplate = adminMutation({
           {
             name: content.modelName,
             templateKey: STANDARD_TEMPLATE_KEY,
-            bandThresholds: defaultBandThresholds(),
+            levelThresholds: defaultLevelThresholds(),
           },
           MODEL_AUDIT_FIELDS
         ),
@@ -185,14 +185,14 @@ export const seedStandardModel = internalMutation({
       orgId,
       name: content.modelName,
       templateKey: STANDARD_TEMPLATE_KEY,
-      bandThresholds: defaultBandThresholds(),
+      levelThresholds: defaultLevelThresholds(),
     })
 
     // Same per-criterion create-snapshot building as createModelFromTemplate.
     const criteriaSnapshots = []
     for (const [index, key] of CRITERION_KEYS.entries()) {
       const criterion = content.criteria[key]
-      const anchors = criterion.anchors.map((text, level) => ({ level, text }))
+      const anchors = criterion.anchors.map((text, step) => ({ step, text }))
       const criterionId = await ctx.db.insert("criteria", {
         orgId,
         modelId,
@@ -236,7 +236,7 @@ export const seedStandardModel = internalMutation({
           {
             name: content.modelName,
             templateKey: STANDARD_TEMPLATE_KEY,
-            bandThresholds: defaultBandThresholds(),
+            levelThresholds: defaultLevelThresholds(),
           },
           MODEL_AUDIT_FIELDS
         ),
@@ -257,7 +257,7 @@ export const createEmptyModel = adminMutation({
     const modelId = await ctx.db.insert("models", {
       orgId: ctx.orgId,
       name: name.trim(),
-      bandThresholds: defaultBandThresholds(),
+      levelThresholds: defaultLevelThresholds(),
     })
     await ctx.audit.log({
       type: AUDIT_EVENTS.modelCreated,
@@ -267,7 +267,7 @@ export const createEmptyModel = adminMutation({
         templateKey: null,
         name: name.trim(),
         changes: buildCreateChanges(
-          { name: name.trim(), bandThresholds: defaultBandThresholds() },
+          { name: name.trim(), levelThresholds: defaultLevelThresholds() },
           // Shared field list (templateKey is absent from `after` and skipped,
           // matching addCriterion) so a new auditable model field is captured
           // by every create path, not just the template one.
@@ -313,7 +313,7 @@ export const discardModel = adminMutation({
     if (model === null) return null
 
     // Child-first deletion, same order as mirrors.removeSeededOrganization:
-    // criteria, then the model row. Anchors and band thresholds ride along
+    // criteria, then the model row. Anchors and level thresholds ride along
     // on their parent documents (ADR-0006); tracks are constants.
     const criteria = await ctx.db
       .query("criteria")
@@ -367,7 +367,7 @@ export const discardModel = adminMutation({
   },
 })
 
-const anchorShape = v.object({ level: v.number(), text: v.string() })
+const anchorShape = v.object({ step: v.number(), text: v.string() })
 
 // Localizes pristine standard-template content at read time. Template-seeded
 // criteria carry their standard template key (criteria.templateKey); tracks and
@@ -397,8 +397,8 @@ export const getModel = orgQuery({
           anchors: v.array(anchorShape),
           // Per-criterion weighting explanations (for weight points 1..5),
           // localized, for pristine template criteria; null for custom or
-          // edited rows, where the UI falls back to the generic level meanings.
-          weightLevels: v.union(v.array(v.string()), v.null()),
+          // edited rows, where the UI falls back to the generic weight meanings.
+          weightMeanings: v.union(v.array(v.string()), v.null()),
         })
       ),
       tracks: v.array(
@@ -408,8 +408,8 @@ export const getModel = orgQuery({
           order: v.number(),
         })
       ),
-      bandThresholds: v.array(
-        v.object({ band: v.number(), minScore: v.number() })
+      levelThresholds: v.array(
+        v.object({ level: v.number(), minScore: v.number() })
       ),
     })
   ),
@@ -430,7 +430,7 @@ export const getModel = orgQuery({
     criteriaRows.sort((a, b) => a.order - b.order)
     const criteria = []
     for (const row of criteriaRows) {
-      const anchors = [...row.anchors].sort((a, b) => a.level - b.level)
+      const anchors = [...row.anchors].sort((a, b) => a.step - b.step)
       // Pristine template criteria localize from the content module by their
       // standard template key. Custom/AI rows (no key, or an unknown key) and rows
       // whose key was cleared by an E2 edit render as stored.
@@ -449,14 +449,14 @@ export const getModel = orgQuery({
         anchors:
           localized !== null
             ? anchors.map((a) => ({
-                level: a.level,
-                text: localized.anchors[a.level] ?? a.text,
+                step: a.step,
+                text: localized.anchors[a.step] ?? a.text,
               }))
-            : anchors.map((a) => ({ level: a.level, text: a.text })),
+            : anchors.map((a) => ({ step: a.step, text: a.text })),
         // Pristine template criteria serve their localized per-criterion
         // weighting explanations; custom/edited rows return null so the UI
-        // falls back to the generic weight-level meanings.
-        weightLevels: localized?.weightLevels ?? null,
+        // falls back to the generic weight meanings.
+        weightMeanings: localized?.weightMeanings ?? null,
       })
     }
 
@@ -468,7 +468,9 @@ export const getModel = orgQuery({
       order: index + 1,
     }))
 
-    const thresholds = [...model.bandThresholds].sort((a, b) => a.band - b.band)
+    const thresholds = [...model.levelThresholds].sort(
+      (a, b) => a.level - b.level
+    )
 
     return {
       modelId: model._id,
@@ -478,8 +480,8 @@ export const getModel = orgQuery({
       templateKey: model.templateKey ?? null,
       criteria,
       tracks,
-      bandThresholds: thresholds.map((threshold) => ({
-        band: threshold.band,
+      levelThresholds: thresholds.map((threshold) => ({
+        level: threshold.level,
         minScore: threshold.minScore,
       })),
     }

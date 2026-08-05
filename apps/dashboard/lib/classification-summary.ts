@@ -3,11 +3,11 @@
 // not gate). Derived at render, never stored (ADR-0002).
 export function countClassified(
   people: {
-    currentAssignment: { levelSource: "suggested" | "confirmed" } | null
+    currentAssignment: { senioritySource: "suggested" | "confirmed" } | null
   }[]
 ): { classified: number; total: number } {
   const classified = people.filter(
-    (p) => p.currentAssignment?.levelSource === "confirmed"
+    (p) => p.currentAssignment?.senioritySource === "confirmed"
   ).length
   return { classified, total: people.length }
 }

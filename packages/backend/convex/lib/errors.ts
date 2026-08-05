@@ -25,7 +25,7 @@ export const ERROR_CODES = {
   roleExists: "errors.roleExists",
   personRefExists: "errors.personRefExists",
   lastAdmin: "errors.lastAdmin",
-  invalidLevel: "errors.invalidLevel",
+  invalidSeniority: "errors.invalidSeniority",
   invalidEffectiveDate: "errors.invalidEffectiveDate",
   payMappingRunCompleted: "errors.payMappingRunCompleted",
   payMappingDocumentationRequired: "errors.payMappingDocumentationRequired",

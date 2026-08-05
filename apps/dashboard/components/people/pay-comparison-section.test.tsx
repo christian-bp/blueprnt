@@ -33,7 +33,7 @@ function point(
     publicId: "pub-x",
     displayName: "Bo Berg",
     gender: "Man",
-    level: "IC2",
+    seniority: "IC2",
     basic: 42000,
     variable: 0,
     amount: 42000,
@@ -104,7 +104,7 @@ describe("PayComparisonSection", () => {
       status: "ready",
       currency: "SEK",
       excludedCount: 0,
-      points: [point({ level: "IC3", isSelf: true })],
+      points: [point({ seniority: "IC3", isSelf: true })],
     })
     renderSection()
     expect(screen.getByText(m.onlyPerson)).toBeDefined()
@@ -115,7 +115,7 @@ describe("PayComparisonSection", () => {
       status: "ready",
       currency: "SEK",
       excludedCount: 2,
-      points: [point({ level: "IC3", isSelf: true })],
+      points: [point({ seniority: "IC3", isSelf: true })],
     })
     renderSection()
     expect(
@@ -133,13 +133,13 @@ describe("PayComparisonSection", () => {
         point({
           displayName: "Alex Doe",
           gender: "Kvinna",
-          level: "IC3",
+          seniority: "IC3",
           isSelf: true,
         }),
         point({
           displayName: "Bo Berg",
           gender: "Man",
-          level: "IC2",
+          seniority: "IC2",
           isSelf: false,
         }),
       ],
@@ -162,8 +162,8 @@ describe("PayComparisonSection", () => {
       currency: "SEK",
       excludedCount: 0,
       points: [
-        point({ level: "IC3", isSelf: true }),
-        point({ level: "IC2", isSelf: false }),
+        point({ seniority: "IC3", isSelf: true }),
+        point({ seniority: "IC2", isSelf: false }),
       ],
     })
     renderSection()
@@ -191,12 +191,12 @@ describe("PayComparisonTooltip", () => {
     cleanup()
   })
 
-  it("names a peer and shows level, year, split, and gap to this person", () => {
+  it("names a peer and shows seniority, year, split, and gap to this person", () => {
     renderTooltip({
       point: point({
         displayName: "Bo Berg",
         gender: "Man",
-        level: "IC2",
+        seniority: "IC2",
         basic: 45000,
         variable: 5000,
         amount: 50000,
@@ -225,7 +225,7 @@ describe("PayComparisonTooltip", () => {
     renderTooltip({
       point: point({
         displayName: "Alex Doe",
-        level: "IC3",
+        seniority: "IC3",
         amount: 60000,
         isSelf: true,
       }),

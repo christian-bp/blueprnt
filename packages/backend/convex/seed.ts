@@ -45,7 +45,7 @@ async function wipeAllData(ctx: ActionCtx): Promise<void> {
 
 // The demo companies seeded into a fresh deployment (dev reset AND production
 // seed). Blueprnt AB is a FULLY onboarded, rated company (settings + standard
-// model + the ~40-role demo company, every role rated so the results/band view
+// model + the ~40-role demo company, every role rated so the results/level view
 // is populated). Blueprnt Nordic AB is left BARE (membership only), so switching
 // to it opens the onboarding wizard. They model a real group: Blueprnt AB is the
 // operating company, Blueprnt Nordic AB a sister entity. Idempotent (orgs keyed

@@ -3,7 +3,7 @@ import { ERASED_ACTOR_NAME } from "../lib/audit"
 
 // GDPR (ADR-0011): pseudonymize an erased person inside every immutable snapshot
 // row (tombstone the name, clear the birth date) while KEEPING the aggregate
-// (gender, role/band/level, pay) so the statutory evidence document survives.
+// (gender, role/level/seniority, pay) so the statutory evidence document survives.
 export async function pseudonymizePersonInSnapshots(
   ctx: MutationCtx,
   orgId: string,

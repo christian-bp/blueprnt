@@ -33,8 +33,8 @@ function holder(overrides: Record<string, unknown>) {
     personId: "p1",
     publicId: "abc123",
     displayName: "Anna Lind",
-    level: "IC3",
-    levelSource: "confirmed",
+    seniority: "IC3",
+    senioritySource: "confirmed",
     department: "Engineering",
     ftePercent: 100,
     ...overrides,
@@ -62,14 +62,14 @@ describe("RolePeopleCard", () => {
   beforeEach(() => useQueryMock.mockReset())
   afterEach(() => cleanup())
 
-  it("lists the holders with their level, department and FTE", () => {
+  it("lists the holders with their seniority, department and FTE", () => {
     useQueryMock.mockReturnValue([
       holder({}),
       holder({
         personId: "p2",
         publicId: "def456",
         displayName: "Bo Persson",
-        level: "IC2",
+        seniority: "IC2",
         department: "Platform",
         ftePercent: 80,
       }),
@@ -98,7 +98,7 @@ describe("RolePeopleCard", () => {
     expect(screen.getByText("100%")).toBeDefined()
     expect(screen.getByText("80%")).toBeDefined()
     // Column labels come from the people surface (one set of labels).
-    expect(screen.getByText(columns.level)).toBeDefined()
+    expect(screen.getByText(columns.seniority)).toBeDefined()
   })
 
   it("flags an assignment that is only suggested", () => {
@@ -108,7 +108,7 @@ describe("RolePeopleCard", () => {
         personId: "p2",
         publicId: "def456",
         displayName: "Bo Persson",
-        levelSource: "suggested",
+        senioritySource: "suggested",
       }),
     ])
     renderCard()

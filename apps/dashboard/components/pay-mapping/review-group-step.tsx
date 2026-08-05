@@ -10,8 +10,8 @@ import { useEffect, useRef, useState } from "react"
 import { toast } from "@/lib/toast"
 import { useOrganization } from "@/components/org-context"
 import { ScreenShell } from "@/components/screen-shell"
-import { BandBadge } from "@/components/band-badge"
-import { LevelBadge } from "@/components/track-badge"
+import { LevelBadge } from "@/components/level-badge"
+import { SeniorityBadge } from "@/components/track-badge"
 import { useMoney } from "@/hooks/use-money"
 import type {
   GapGroup,
@@ -95,9 +95,9 @@ type ReviewGroupStepProps =
   | ({
       scope: "equivalentWork"
       group: WomenDominatedGroupWire
-      // The full equivalent-work band list: PayMappingGroupUnderlag's own
-      // equivalent-work branch needs it (to find the group's own band's
-      // women-men gap for its band-context sentence), mirroring the union
+      // The full equivalent-work level list: PayMappingGroupUnderlag's own
+      // equivalent-work branch needs it (to find the group's own level's
+      // women-men gap for its level-context sentence), mirroring the union
       // it composes. The shell holds the run's whole gap result and passes
       // gap.equivalentWork through unchanged.
       equivalentWork: GapGroup[]
@@ -106,7 +106,7 @@ type ReviewGroupStepProps =
 // The wizard's documentation step for one equalWork (equal-work) or
 // equivalentWork (women-dominated cross-level comparison) group
 // (ADR-0012). Composes, in order: the group's heading (label +
-// severity/band chips), the plain-language finding sentence(s) that
+// severity/level chips), the plain-language finding sentence(s) that
 // restate the group's own numbers so the reader never has to translate a
 // raw percentage into a judgment, MeanComparisonBars (equalWork only, and
 // only once both means are known),
@@ -252,9 +252,9 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
     }
   }
 
-  // The full "roleTitle · level" label, still used by the women-dominated
-  // finding sentence; the heading itself shows the title with the level as
-  // a badge beside it.
+  // The full "roleTitle · seniority" label, still used by the
+  // women-dominated finding sentence; the heading itself shows the title
+  // with the seniority as a badge beside it.
   const label = groupLabel(props.group)
   // The same "still validly done" condition the form uses to decide whether
   // an edit reopens it (see pay-mapping-group-analysis-form.tsx's own
@@ -276,10 +276,12 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
           {props.scope === "equalWork" && (
             <PayGapFlagBadge flag={props.group.flag} />
           )}
+          {props.group.seniority !== null && (
+            <SeniorityBadge seniority={props.group.seniority} />
+          )}
           {props.group.level !== null && (
             <LevelBadge level={props.group.level} />
           )}
-          {props.group.band !== null && <BandBadge band={props.group.band} />}
         </>
       }
     >
@@ -328,7 +330,7 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
                       <li key={comparison.key}>
                         {tFinding("wdComparator", {
                           label: groupLabel(comparison),
-                          band: comparison.band,
+                          level: comparison.level,
                           diff: money(comparison.diffSek, currency),
                         })}
                       </li>

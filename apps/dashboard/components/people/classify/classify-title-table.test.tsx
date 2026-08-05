@@ -44,8 +44,8 @@ import {
 // Pure helper tests
 // ---------------------------------------------------------------------------
 
-const conf = { currentAssignment: { levelSource: "confirmed" as const } }
-const sug = { currentAssignment: { levelSource: "suggested" as const } }
+const conf = { currentAssignment: { senioritySource: "confirmed" as const } }
+const sug = { currentAssignment: { senioritySource: "suggested" as const } }
 const none = { currentAssignment: null }
 
 describe("classificationStateForPeople", () => {
@@ -75,7 +75,7 @@ const m = messages.dashboard.classify
 
 // Base UI Selects are driven through their popup listbox: open the labeled
 // trigger and commit an option. Triggers share per-column labels, so pick
-// by index (role selects come one per group row; level selects one per
+// by index (role selects come one per group row; seniority selects one per
 // person row after expanding).
 async function pickRole(title: string, index = 0) {
   const trigger = screen.getAllByRole("combobox", { name: m.columns.role })[
@@ -83,11 +83,11 @@ async function pickRole(title: string, index = 0) {
   ] as HTMLElement
   await pickSelectOption(trigger, title)
 }
-async function pickLevel(level: string, index: number) {
-  const trigger = screen.getAllByRole("combobox", { name: m.levelLabel })[
+async function pickSeniority(seniority: string, index: number) {
+  const trigger = screen.getAllByRole("combobox", { name: m.seniorityLabel })[
     index
   ] as HTMLElement
-  await pickSelectOption(trigger, level)
+  await pickSelectOption(trigger, seniority)
 }
 
 const ROLES = [
@@ -142,11 +142,11 @@ const HIGH_GROUP: ClassifyTitleGroup = {
       externalRef: "42",
       employmentStartDate: null,
       isManager: null,
-      suggestedLevel: "IC3",
+      suggestedSeniority: "IC3",
       currentAssignment: {
         roleId: "role1",
-        level: "IC3",
-        levelSource: "confirmed",
+        seniority: "IC3",
+        senioritySource: "confirmed",
       },
     },
     {
@@ -155,11 +155,11 @@ const HIGH_GROUP: ClassifyTitleGroup = {
       externalRef: null,
       employmentStartDate: null,
       isManager: null,
-      suggestedLevel: "IC2",
+      suggestedSeniority: "IC2",
       currentAssignment: {
         roleId: "role1",
-        level: "IC2",
-        levelSource: "suggested",
+        seniority: "IC2",
+        senioritySource: "suggested",
       },
     },
   ],
@@ -177,7 +177,7 @@ const NO_TITLE_GROUP: ClassifyTitleGroup = {
       externalRef: null,
       employmentStartDate: null,
       isManager: null,
-      suggestedLevel: null,
+      suggestedSeniority: null,
       currentAssignment: null,
     },
   ],
@@ -313,7 +313,7 @@ describe("ClassifyTitleTable", () => {
     expect(assignMock).toHaveBeenCalledWith(
       expect.objectContaining({
         orgId: "org1",
-        levelSource: "confirmed",
+        senioritySource: "confirmed",
         assignments: [
           expect.objectContaining({ personId: "p1", roleId: "role1" }),
           expect.objectContaining({ personId: "p2", roleId: "role1" }),
@@ -325,7 +325,7 @@ describe("ClassifyTitleTable", () => {
     )
   })
 
-  it("uses each person's resolved level when confirming", async () => {
+  it("uses each person's resolved seniority when confirming", async () => {
     renderTable()
     expandFirst()
     fireEvent.click(screen.getByRole("button", { name: m.assignCta }))
@@ -333,16 +333,16 @@ describe("ClassifyTitleTable", () => {
       expect(assignMock).toHaveBeenCalledWith(
         expect.objectContaining({
           assignments: [
-            expect.objectContaining({ personId: "p1", level: "IC3" }),
-            expect.objectContaining({ personId: "p2", level: "IC2" }),
+            expect.objectContaining({ personId: "p1", seniority: "IC3" }),
+            expect.objectContaining({ personId: "p2", seniority: "IC2" }),
           ],
         })
       )
     })
   })
 
-  it("falls back to TRACK_LEVELS[0] when suggestedLevel is null", async () => {
-    const groupNoLevel: ClassifyTitleGroup = {
+  it("falls back to TRACK_SENIORITIES[0] when suggestedSeniority is null", async () => {
+    const groupNoSeniority: ClassifyTitleGroup = {
       ...HIGH_GROUP,
       people: [
         {
@@ -351,46 +351,46 @@ describe("ClassifyTitleTable", () => {
           externalRef: "42",
           employmentStartDate: null,
           isManager: null,
-          suggestedLevel: null,
+          suggestedSeniority: null,
           currentAssignment: null,
         },
       ],
     }
-    renderTable([groupNoLevel])
+    renderTable([groupNoSeniority])
     expandFirst()
     fireEvent.click(screen.getByRole("button", { name: m.assignCta }))
     await waitFor(() => {
-      // IC track first level is "IC1"
+      // IC track first seniority is "IC1"
       expect(assignMock).toHaveBeenCalledWith(
         expect.objectContaining({
-          assignments: [expect.objectContaining({ level: "IC1" })],
+          assignments: [expect.objectContaining({ seniority: "IC1" })],
         })
       )
     })
   })
 
-  it("confirm passes a changed per-person level", async () => {
+  it("confirm passes a changed per-person seniority", async () => {
     renderTable()
     expandFirst()
     await waitFor(() => {
       expect(screen.getByText("Alice Svensson")).toBeDefined()
     })
-    // Level selects: one per person row, index 0 = p1.
-    await pickLevel("IC4", 0)
+    // Seniority selects: one per person row, index 0 = p1.
+    await pickSeniority("IC4", 0)
     fireEvent.click(screen.getByRole("button", { name: m.assignCta }))
     await waitFor(() => {
       expect(assignMock).toHaveBeenCalledWith(
         expect.objectContaining({
           assignments: [
-            expect.objectContaining({ personId: "p1", level: "IC4" }),
-            expect.objectContaining({ personId: "p2", level: "IC2" }),
+            expect.objectContaining({ personId: "p1", seniority: "IC4" }),
+            expect.objectContaining({ personId: "p2", seniority: "IC2" }),
           ],
         })
       )
     })
   })
 
-  it("after changing the role to a different track, submitted levels are valid for it", async () => {
+  it("after changing the role to a different track, submitted seniorities are valid for it", async () => {
     renderTable()
     expandFirst()
     await pickRole("Engineering Manager")
@@ -399,11 +399,11 @@ describe("ClassifyTitleTable", () => {
       expect(assignMock).toHaveBeenCalled()
     })
     const [payload] = assignMock.mock.calls[0] as [
-      { assignments: Array<{ roleId: string; level: string }> },
+      { assignments: Array<{ roleId: string; seniority: string }> },
     ]
     for (const a of payload.assignments) {
       expect(a.roleId).toBe("role2")
-      expect(["M1", "M2", "M3"]).toContain(a.level)
+      expect(["M1", "M2", "M3"]).toContain(a.seniority)
     }
   })
 
@@ -422,11 +422,11 @@ describe("ClassifyTitleTable", () => {
         externalRef: "42",
         employmentStartDate: null,
         isManager: null,
-        suggestedLevel: "IC3",
+        suggestedSeniority: "IC3",
         currentAssignment: {
           roleId: "role1",
-          level: "IC3",
-          levelSource: "confirmed",
+          seniority: "IC3",
+          senioritySource: "confirmed",
         },
       },
       {
@@ -435,11 +435,11 @@ describe("ClassifyTitleTable", () => {
         externalRef: null,
         employmentStartDate: null,
         isManager: null,
-        suggestedLevel: "IC2",
+        suggestedSeniority: "IC2",
         currentAssignment: {
           roleId: "role1",
-          level: "IC2",
-          levelSource: "confirmed",
+          seniority: "IC2",
+          senioritySource: "confirmed",
         },
       },
     ],
@@ -477,22 +477,22 @@ describe("ClassifyTitleTable", () => {
       expect(assignMock).toHaveBeenCalledTimes(1)
     })
     const [payload] = assignMock.mock.calls[0] as [
-      { assignments: Array<{ roleId: string; level: string }> },
+      { assignments: Array<{ roleId: string; seniority: string }> },
     ]
     expect(payload.assignments).toHaveLength(2)
     for (const a of payload.assignments) {
       expect(a.roleId).toBe("role2")
-      expect(["M1", "M2", "M3"]).toContain(a.level)
+      expect(["M1", "M2", "M3"]).toContain(a.seniority)
     }
   })
 
-  it("level change on a confirmed group re-surfaces Confirm and keeps other levels", async () => {
+  it("seniority change on a confirmed group re-surfaces Confirm and keeps other seniorities", async () => {
     renderTable([CONFIRMED_GROUP])
     expandFirst()
     await waitFor(() => {
       expect(screen.getByText("Alice Svensson")).toBeDefined()
     })
-    await pickLevel("IC4", 0)
+    await pickSeniority("IC4", 0)
     const confirmButton = await screen.findByRole("button", {
       name: m.assignCta,
     })
@@ -501,8 +501,8 @@ describe("ClassifyTitleTable", () => {
       expect(assignMock).toHaveBeenCalledWith(
         expect.objectContaining({
           assignments: [
-            expect.objectContaining({ personId: "p1", level: "IC4" }),
-            expect.objectContaining({ personId: "p2", level: "IC2" }),
+            expect.objectContaining({ personId: "p1", seniority: "IC4" }),
+            expect.objectContaining({ personId: "p2", seniority: "IC2" }),
           ],
         })
       )
@@ -522,9 +522,9 @@ describe("ClassifyTitleTable", () => {
       ).toBeDefined()
     })
     expect(screen.queryByRole("button", { name: m.assignCta })).toBeNull()
-    // Without a role there is no track: the level select states the
+    // Without a role there is no track: the seniority select states the
     // precondition instead of rendering empty.
-    expect(screen.getByText(m.levelNeedsRole)).toBeDefined()
+    expect(screen.getByText(m.seniorityNeedsRole)).toBeDefined()
   })
 
   it("picking a role in the panel replaces create-role with Confirm", async () => {
@@ -543,7 +543,7 @@ describe("ClassifyTitleTable", () => {
             expect.objectContaining({
               personId: "p3",
               roleId: "role1",
-              level: "IC1",
+              seniority: "IC1",
             }),
           ],
         })
@@ -651,7 +651,7 @@ describe("ClassifyTitleTable", () => {
           externalRef: null,
           employmentStartDate: null,
           isManager: true,
-          suggestedLevel: "M1",
+          suggestedSeniority: "M1",
           currentAssignment: null,
         },
       ],
@@ -682,7 +682,7 @@ describe("ClassifyTitleTable", () => {
           externalRef: null,
           employmentStartDate: null,
           isManager: true,
-          suggestedLevel: "M1",
+          suggestedSeniority: "M1",
           currentAssignment: null,
         },
       ],
@@ -702,11 +702,11 @@ describe("ClassifyTitleTable", () => {
     expect(assignMock).toHaveBeenCalledTimes(1)
     const [call] = assignMock.mock.calls[0] as [
       {
-        levelSource: string
+        senioritySource: string
         assignments: Array<{ personId: string }>
       },
     ]
-    expect(call.levelSource).toBe("confirmed")
+    expect(call.senioritySource).toBe("confirmed")
     expect(call.assignments.map((a) => a.personId).sort()).toEqual([
       "p1",
       "p2",
@@ -730,8 +730,8 @@ describe("ClassifyTitleTable", () => {
         ...p,
         currentAssignment: {
           roleId: "role1",
-          level: p.suggestedLevel ?? "IC1",
-          levelSource: "confirmed" as const,
+          seniority: p.suggestedSeniority ?? "IC1",
+          senioritySource: "confirmed" as const,
         },
       })),
     }
@@ -781,7 +781,7 @@ describe("ClassifyTitleTable", () => {
         externalRef: null,
         employmentStartDate: null,
         isManager: null,
-        suggestedLevel: "IC1",
+        suggestedSeniority: "IC1",
         currentAssignment: null,
       })),
     }
@@ -813,7 +813,7 @@ describe("ClassifyTitleTable", () => {
         externalRef: null,
         employmentStartDate: null,
         isManager: null,
-        suggestedLevel: "IC1",
+        suggestedSeniority: "IC1",
         currentAssignment: null,
       })),
     }

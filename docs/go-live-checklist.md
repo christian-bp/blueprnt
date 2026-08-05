@@ -90,6 +90,7 @@ in the same change.
 - [ ] **Native review of the overview greeting + to-do strings.** `dashboard.overview.greeting.*` and `dashboard.overview.todo.*` (sv/nb/da/fi) were machine-drafted from English. Have a native speaker review before launch, and confirm the "evaluate" term matches each locale's existing usage (`dashboard.roles.evaluated`).
 - [ ] **Native review of the dashboard side-card + chart strings.** `dashboard.overview.chart.*`, `dashboard.overview.modelReadiness.*`, and `dashboard.overview.gettingStarted.*` (sv/nb/da/fi) were machine-drafted from English. Have a native speaker review before launch.
 - [ ] **Native review of the CRUD toast strings.** `dashboard.toast.*` (sv/nb/da/fi) were machine-drafted from English (sv authored in-house). Have a native speaker review before launch.
+- [ ] **Native review of the ADR-0014 terminology strings (Nivå/Senioritet/Steg).** Every key the ADR-0014 change renamed or rewrote carries machine-drafted nb/da/fi values (sv/en reviewed in-house); review them from that change's i18n diff rather than any fixed list. Among others it spans `dashboard.levels.*`, `dashboard.overview.widgets.levels.*`, the `dashboard.model.editor.*` step scale, `dashboard.rating.result.*`, `dashboard.roles.anchor.*`, `dashboard.payMapping.gap.*`, the `dashboard.help.*` level/seniority/step explanations, `model.level`/`model.seniority`/`model.step`, the audit event/field labels, the "track" loanword normalization, and the seeded standardTemplate content. Pay particular attention to the fi short form (`Taso {level}` on numbered labels: `assessment.levelNumbered`, `dashboard.levels.levelRow`, the gap and deviation chips; long `Vaativuustaso` in prose), nb `Trinn`, da `Trin`, and the seniority help copy. Have a native speaker review before launch.
 - [ ] **Label the audit payload field `count`.** Every other payload field now
   resolves to a `dashboard.auditLog.fields.*` label; `count` deliberately does
   not, so the `ai.suggestionConfirmed` flat-stat line is the one place the audit
@@ -197,11 +198,11 @@ bias-review UI, the metodbilaga export, the verbatim anchor texts, the
 `PLAN-V1.md` four-factor prose) are closed. These remain, and none of them block
 starting V2:
 
-- [ ] **Band-threshold editing (E2 configurability).** The schema supports
-  per-org `bandThresholds`, but no mutation patches them after model creation
-  (all creation paths call `defaultBandThresholds()`) and there is no editing
+- [ ] **Level-threshold editing (E2 configurability).** The schema supports
+  per-org `levelThresholds`, but no mutation patches them after model creation
+  (all creation paths call `defaultLevelThresholds()`) and there is no editing
   UI. The docs promise per-org configurability; add the set-mutation + UI.
-- [ ] **Calibrate the default band thresholds against real data.** The defaults
+- [ ] **Calibrate the default level thresholds against real data.** The defaults
   were translated from the Excel prototype at a different weight spread
   (`docs/contexts/evaluation-model/standardmall.md`); uncalibrated thresholds
   yield unreliable comparable-work groupings. Best done with the real salary
@@ -214,7 +215,7 @@ starting V2:
   (EU-hosted, so residency is fine); implement the documented Azure fallback so
   Mistral is not a single point of failure, or explicitly de-scope it in the
   spec + ADR-0003.
-- [ ] **Aggregate anchor-comparison panel.** The bands/work overview shows
+- [ ] **Aggregate anchor-comparison panel.** The levels/work overview shows
   per-role deviation chips (`getResults`) but not the agreed-vs-computed table
   (`listAnchorRoles`); the data seam exists, the panel is not built.
 - [x] **Doc housekeeping.** Fixed the stale "with guardrails" test description in
@@ -268,8 +269,8 @@ suite covers them before go-live:
   `title` to the `people` table (imported from the payroll Befattning column) and
   it now drives the deterministic title->role suggestion.
   (1) RESOLVED 2026-07-31 by ADR-0013: `title` is now a diffed audit field, along
-  with the other identity fields, so a title edit that shifts a band is recorded
-  in the people audit and not only as a `band.shift`.
+  with the other identity fields, so a title edit that shifts a level is recorded
+  in the people audit and not only as a `level.shift`.
   (2) STILL OPEN: `title` is imported free text, so a customer could stuff a
   person name into a Befattning cell. This is the same latent risk already
   carried by other role-level free-text fields (motivation/purpose) and needs no
@@ -372,7 +373,7 @@ suite covers them before go-live:
   from existing data must run the backfill before the pager is trusted. Post
   go-live, watch the OCC-conflict rate on audit-writing mutations (each org's
   aggregates serialize concurrent inserts per namespace; bulk fan-outs like
-  `band.shift` amplify this) and tune node size / laziness per the component
+  `level.shift` amplify this) and tune node size / laziness per the component
   README if it shows up.
 
 ## How to add to this list

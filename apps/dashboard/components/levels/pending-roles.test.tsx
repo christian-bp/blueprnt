@@ -2,10 +2,10 @@ import { cleanup, render, screen } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
-import { PendingRoles } from "@/components/bands/pending-roles"
-import type { BandRoleRow } from "@/lib/bands"
+import { PendingRoles } from "@/components/levels/pending-roles"
+import type { LevelRoleRow } from "@/lib/levels"
 
-function role(overrides: Partial<BandRoleRow>): BandRoleRow {
+function role(overrides: Partial<LevelRoleRow>): LevelRoleRow {
   return {
     roleId: "r1",
     slug: "r1",
@@ -13,7 +13,7 @@ function role(overrides: Partial<BandRoleRow>): BandRoleRow {
     trackKey: "IC",
     trackName: "Individual contributor",
     score: null,
-    band: null,
+    level: null,
     ratedCount: 3,
     totalCriteria: 9,
     familyId: null,
@@ -23,7 +23,7 @@ function role(overrides: Partial<BandRoleRow>): BandRoleRow {
   }
 }
 
-function renderPending(rows: BandRoleRow[]) {
+function renderPending(rows: LevelRoleRow[]) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <PendingRoles rows={rows} />
@@ -34,10 +34,10 @@ function renderPending(rows: BandRoleRow[]) {
 describe("PendingRoles", () => {
   afterEach(() => cleanup())
 
-  it("lists roles without a band and a link, with no rating count", () => {
+  it("lists roles without a level and a link, with no rating count", () => {
     renderPending([role({})])
     expect(
-      screen.getByText(messages.dashboard.bands.pendingHeading)
+      screen.getByText(messages.dashboard.levels.pendingHeading)
     ).toBeDefined()
     // The per-role rating count is intentionally not shown.
     expect(screen.queryByText("3/9 rated")).toBeNull()
@@ -46,12 +46,12 @@ describe("PendingRoles", () => {
     ).toBe("/roles/r1")
   })
 
-  it("ignores roles that already have a band", () => {
+  it("ignores roles that already have a level", () => {
     renderPending([
-      role({ roleId: "r2", title: "Engineer", band: 5, score: 58 }),
+      role({ roleId: "r2", title: "Engineer", level: 5, score: 58 }),
     ])
     expect(
-      screen.queryByText(messages.dashboard.bands.pendingHeading)
+      screen.queryByText(messages.dashboard.levels.pendingHeading)
     ).toBeNull()
   })
 

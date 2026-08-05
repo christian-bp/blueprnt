@@ -37,7 +37,7 @@ async function assertUniqueName(
   if (clash) throw appError(ERROR_CODES.roleFamilyExists)
 }
 
-// Families never affect scoring: no band-shift wraps anywhere in this module
+// Families never affect scoring: no level-shift wraps anywhere in this module
 // (ADR-0002 untouched). Member scope: families are role content, like roles.
 export const createRoleFamily = orgMutation({
   args: { name: v.string() },

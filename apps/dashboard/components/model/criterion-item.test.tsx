@@ -13,7 +13,7 @@ import { CriterionItem } from "@/components/model/criterion-item"
 const editor = messages.dashboard.model.editor
 
 function renderItem(props: {
-  anchors?: { level: number; text: string }[]
+  anchors?: { step: number; text: string }[]
   editable?: boolean
   onEdit?: () => void
   onRemove?: () => void
@@ -39,12 +39,12 @@ describe("CriterionItem anchor scale section", () => {
   })
 
   const ANCHORS = [
-    { level: 0, text: "Not present" },
-    { level: 1, text: "Follows instructions" },
-    { level: 2, text: "Works independently" },
-    { level: 3, text: "Guides others" },
-    { level: 4, text: "Shapes the area" },
-    { level: 5, text: "Defines the field" },
+    { step: 0, text: "Not present" },
+    { step: 1, text: "Follows instructions" },
+    { step: 2, text: "Works independently" },
+    { step: 3, text: "Guides others" },
+    { step: 4, text: "Shapes the area" },
+    { step: 5, text: "Defines the field" },
   ]
 
   it("renders no trigger without anchors", () => {

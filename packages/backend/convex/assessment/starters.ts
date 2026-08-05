@@ -20,7 +20,7 @@ import {
 import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 import { uniqueSlug } from "../lib/slug"
-import { deriveResults, logBandShifts } from "./compute"
+import { deriveResults, logLevelShifts } from "./compute"
 import { clampIndustry, starterContent } from "./industryStarters"
 import { roleTitleKey } from "./roles"
 
@@ -128,7 +128,7 @@ export const getIndustryStarter = orgQuery({
 // predefined per-role profile (so those roles arrive profileComplete and the
 // onboarding prefill skips them), while the AI-import path sends none and the
 // roles start empty (default "") for prefill to fill. Families never affect
-// scoring, so there is no band-shift wrap.
+// scoring, so there is no level-shift wrap.
 export async function insertStarterSet(
   ctx: MutationCtx,
   args: {
@@ -306,8 +306,8 @@ const reconcileFamilyShape = v.object({
 //     is empty of non-archived roles (roleFamily.removed).
 //
 // Families never affect scoring and archiving only drops a role from results,
-// so reconcile never changes ratings or the model: there is NO band-shift wrap
-// here (ADR-0002 untouched), unlike archiveRole.
+// so reconcile never changes ratings or the model: there is NO level-shift
+// wrap here (ADR-0002 untouched), unlike archiveRole.
 export const reconcileStarterSet = orgMutation({
   args: { families: v.array(reconcileFamilyShape) },
   returns: v.null(),
@@ -563,11 +563,11 @@ export const reconcileStarterSet = orgMutation({
 
     // 5. Removed roles: any existing non-archived role not kept by the payload
     // is archived (never hard-deleted). An archived role leaves the results set,
-    // so a fully-rated role's band drops to null; that band.shift is logged
-    // after the loop (mirroring archiveRole) so the reconcile path's band
+    // so a fully-rated role's level drops to null; that level.shift is logged
+    // after the loop (mirroring archiveRole) so the reconcile path's level
     // history is complete. A retired anchor's audit row captures the role's live
-    // computed band just before it leaves the results set. Derive ONCE here,
-    // before any patch in the loop (so every band is pre-archive), and only when
+    // computed level just before it leaves the results set. Derive ONCE here,
+    // before any patch in the loop (so every level is pre-archive), and only when
     // something will actually be archived (cheap guard: skip on a no-op reconcile).
     const willArchive = activeRoles.some(
       (role) => !keptRoleIds.has(role._id as string)
@@ -602,12 +602,12 @@ export const reconcileStarterSet = orgMutation({
             roleId: role._id,
             viaReconcile: true,
             batchId,
-            expectedBand: role.anchorRole.expectedBand,
-            // The live computed band of this role just before it leaves the
+            expectedLevel: role.anchorRole.expectedLevel,
+            // The live computed level of this role just before it leaves the
             // results set, sourced from the single pre-loop derive.
-            computedBand:
+            computedLevel:
               reconcileBefore?.results.find((r) => r.roleId === role._id)
-                ?.band ?? null,
+                ?.level ?? null,
             changes: buildChanges(role.anchorRole, retiredAnchor, [
               "status",
               "reviewedAt",
@@ -634,13 +634,13 @@ export const reconcileStarterSet = orgMutation({
       })
     }
 
-    // Log the band.shift diff for the archives as a batch (mirrors archiveRole).
+    // Log the level.shift diff for the archives as a batch (mirrors archiveRole).
     // reconcileBefore is the single pre-archive derive; derive once more now that
     // every archived role has left the results set. Runs only when something was
     // archived. entityId ties the shifts to this reconcile run's batchId.
     if (reconcileBefore !== null) {
       const reconcileAfter = await deriveResults(ctx, orgId)
-      await logBandShifts(ctx, {
+      await logLevelShifts(ctx, {
         orgId,
         actorId,
         before: reconcileBefore.results,

@@ -166,12 +166,12 @@ export function RoleProfileCard({
           ...trackKeyChange,
           ...familyChange,
         })
-        // Changing the track resets any level suggested/confirmed for that
-        // track (they no longer apply once the ladder changes); tell the
-        // user how many were reset instead of leaving it silent.
-        if (result.levelsReset > 0) {
+        // Changing the track resets any seniority suggested/confirmed for
+        // that track (they no longer apply once the ladder changes); tell
+        // the user how many were reset instead of leaving it silent.
+        if (result.senioritiesReset > 0) {
           toast.success(
-            tToast("roleTrackChanged", { count: result.levelsReset })
+            tToast("roleTrackChanged", { count: result.senioritiesReset })
           )
         } else {
           toast.success(tToast("roleUpdated"))

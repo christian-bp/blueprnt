@@ -17,7 +17,7 @@ import {
 } from "./payMapping/tables"
 import { auditLog, suggestions, platformAuditLog } from "./shared/tables"
 
-// Minimal domain tables by design (ADR-0006): aggregates (anchors, band
+// Minimal domain tables by design (ADR-0006): aggregates (anchors, level
 // thresholds) live on their parent documents and the fixed V1 track schema is
 // constants, so only entities with external references or independent write
 // paths get a table of their own. Since ADR-0006 the set shifted: the operator

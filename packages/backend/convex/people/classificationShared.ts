@@ -1,23 +1,26 @@
-import { suggestLevelForPerson, suggestRoleForTitles } from "@workspace/core"
+import {
+  suggestRoleForTitles,
+  suggestSeniorityForPerson,
+} from "@workspace/core"
 import type { Doc } from "../_generated/dataModel"
 
 // One title group: the exact imported title (or null for the no-title bucket),
 // the people sharing it, the engine's role suggestion for the group, and the
-// per-person level suggestion keyed by person id. Both the writer
+// per-person seniority suggestion keyed by person id. Both the writer
 // (runClassificationSuggestions/classifyOrg) and the reader (listPeopleByTitle)
 // consume this so the suggestion is computed once, identically.
 export interface TitleGroup {
   title: string | null
   people: Doc<"people">[]
   suggestedRoleId: string | null
-  // person._id (as string) -> engine level suggestion, or null when the group
-  // matched no role (no track to draw a level from).
-  suggestedLevelByPerson: Map<string, string | null>
+  // person._id (as string) -> engine seniority suggestion, or null when the
+  // group matched no role (no track to draw a seniority from).
+  suggestedSeniorityByPerson: Map<string, string | null>
 }
 
 // Groups active people by their exact title string (the no-title bucket keyed
 // null), builds the POSITIONAL engine inputs, runs suggestRoleForTitles + a
-// per-person suggestLevelForPerson, and returns one TitleGroup per distinct
+// per-person suggestSeniorityForPerson, and returns one TitleGroup per distinct
 // title. Titled groups come first (ascending by title), the null-title group
 // last. `now` is passed so the engine's clock is caller-controlled (purity).
 export function buildTitleGroups(
@@ -69,27 +72,27 @@ export function buildTitleGroups(
       const suggestedRoleId = suggestion?.suggestedRoleId ?? null
       const role =
         suggestedRoleId !== null ? roleById.get(suggestedRoleId) : undefined
-      const suggestedLevelByPerson = new Map<string, string | null>()
+      const suggestedSeniorityByPerson = new Map<string, string | null>()
       for (const person of group) {
-        suggestedLevelByPerson.set(
+        suggestedSeniorityByPerson.set(
           person._id as string,
           role === undefined
             ? null
-            : suggestLevelForPerson({
+            : suggestSeniorityForPerson({
                 trackKey: role.trackKey,
                 ...(person.title !== undefined ? { title: person.title } : {}),
                 ...(person.employmentStartDate !== undefined
                   ? { employmentStartDate: person.employmentStartDate }
                   : {}),
                 today: now,
-              }).suggestedLevel
+              }).suggestedSeniority
         )
       }
       return {
         title,
         people: group,
         suggestedRoleId,
-        suggestedLevelByPerson,
+        suggestedSeniorityByPerson,
       }
     })
 
@@ -101,7 +104,7 @@ export function buildTitleGroups(
       title: null,
       people: untitled,
       suggestedRoleId: null,
-      suggestedLevelByPerson: new Map(
+      suggestedSeniorityByPerson: new Map(
         untitled.map((p) => [p._id as string, null])
       ),
     },

@@ -170,7 +170,7 @@ describe("AddPersonDialog", () => {
     fireEvent.change(screen.getByLabelText(fields.fteLabel), {
       target: { value: "80" },
     })
-    // Picking a role auto-fills the level with the track's first option.
+    // Picking a role auto-fills the seniority with the track's first option.
     await pickSelectOption(
       screen.getByRole("combobox", { name: detail.role }),
       "Software Engineer"
@@ -195,8 +195,8 @@ describe("AddPersonDialog", () => {
         orgId: "org-1",
         personId: "person-new",
         roleId: "role-1",
-        level: "IC1",
-        levelSource: "confirmed",
+        seniority: "IC1",
+        senioritySource: "confirmed",
       })
     })
   })

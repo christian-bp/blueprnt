@@ -7,7 +7,7 @@ type Status = "notStarted" | "inProgress" | "documented" | "approved"
 export type MethodModel = {
   modelName: string
   pointBudget: number
-  bandThresholds: readonly { band: number; minScore: number }[]
+  levelThresholds: readonly { level: number; minScore: number }[]
   criteria: readonly {
     criterionId: string
     name: string
@@ -34,7 +34,7 @@ export type MethodAppendixDoc = {
   pointBudget: number
   biasStatement: string
   criteria: MethodModel["criteria"]
-  bandThresholds: { band: number; minScore: number }[]
+  levelThresholds: { level: number; minScore: number }[]
 }
 
 export function assembleMethodAppendix(
@@ -51,6 +51,8 @@ export function assembleMethodAppendix(
     pointBudget: model.pointBudget,
     biasStatement: labels.biasStatement,
     criteria: [...model.criteria].sort((a, b) => a.order - b.order),
-    bandThresholds: [...model.bandThresholds].sort((a, b) => a.band - b.band),
+    levelThresholds: [...model.levelThresholds].sort(
+      (a, b) => a.level - b.level
+    ),
   }
 }

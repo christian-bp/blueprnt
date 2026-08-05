@@ -44,13 +44,13 @@ describe("people schema", () => {
         orgId: "org1",
         personId,
         roleId,
-        level: "L3",
-        levelSource: "confirmed",
+        seniority: "L3",
+        senioritySource: "confirmed",
         effectiveAt: 1_700_000_000_000,
       })
       const doc = await ctx.db.get(id)
       expect(doc?._id).toBe(id)
-      expect(doc?.level).toBe("L3")
+      expect(doc?.seniority).toBe("L3")
     })
   })
 

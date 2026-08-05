@@ -57,8 +57,8 @@ function equalWorkGroup(overrides: Partial<GapGroup> = {}): GapGroup {
   return {
     key: "a",
     roleTitle: "SWE",
-    level: "Senior",
-    band: 3,
+    seniority: "Senior",
+    level: 3,
     womenCount: 2,
     menCount: 2,
     womenMeanComp: 90000,
@@ -72,8 +72,8 @@ function equalWorkGroup(overrides: Partial<GapGroup> = {}): GapGroup {
 const COMPARISON: WomenDominatedComparisonWire = {
   key: "cmp-1",
   roleTitle: "Technician",
-  level: "Mid",
-  band: 3,
+  seniority: "Mid",
+  level: 3,
   headcount: 4,
   womenSharePct: 25,
   meanComp: 44000,
@@ -87,8 +87,8 @@ function womenDominatedGroup(
   return {
     key: "wd-1",
     roleTitle: "Nurse",
-    level: "Senior",
-    band: 3,
+    seniority: "Senior",
+    level: 3,
     headcount: 10,
     womenSharePct: 90,
     meanComp: 40000,

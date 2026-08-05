@@ -26,7 +26,7 @@ const COMPLETE_RESULT = {
   ratedCount: 2,
   totalCriteria: 2,
   score: 74,
-  band: 2,
+  level: 2,
   criteria: [
     {
       criterionId: "c-scope",
@@ -49,7 +49,7 @@ let resultFixture: unknown = COMPLETE_RESULT
 let anchorList: {
   roleId: string
   title: string
-  expectedBand: number
+  expectedLevel: number
   status: string
 }[] = []
 onQuery((ref) => {
@@ -87,10 +87,10 @@ describe("RatingResult", () => {
     expect(screen.getByLabelText(labels.computing)).toBeDefined()
   })
 
-  it("shows the score and band badge when complete", () => {
+  it("shows the score and level badge when complete", () => {
     renderResult()
 
-    // Score (with its fixed 0-100 scale) and band visible.
+    // Score (with its fixed 0-100 scale) and level visible.
     expect(
       screen.getByText(labels.scoreOutOf.replace("{score}", "74"))
     ).toBeDefined()
@@ -99,16 +99,26 @@ describe("RatingResult", () => {
 
   it("hides the anchor comparison when there are no active anchors", () => {
     anchorList = [
-      { roleId: "a-1", title: "Retired", expectedBand: 2, status: "replaced" },
+      {
+        roleId: "a-1",
+        title: "Retired",
+        expectedLevel: 2,
+        status: "replaced",
+      },
     ]
     renderResult()
     expect(screen.queryByText(labels.anchorsHeading)).toBeNull()
   })
 
   it("compares against active anchors without a hint when one is near", () => {
-    // Result band 2, anchor band 2: distance 0, no manual-validation hint.
+    // Result level 2, anchor level 2: distance 0, no manual-validation hint.
     anchorList = [
-      { roleId: "a-1", title: "Team Lead", expectedBand: 2, status: "active" },
+      {
+        roleId: "a-1",
+        title: "Team Lead",
+        expectedLevel: 2,
+        status: "active",
+      },
     ]
     renderResult()
     expect(screen.getByText(labels.anchorsHeading)).toBeDefined()
@@ -116,11 +126,11 @@ describe("RatingResult", () => {
     expect(screen.queryByText(labels.farFromAnchors)).toBeNull()
   })
 
-  it("asks for manual validation when every anchor is two or more bands away", () => {
-    // Result band 2, nearest anchor band 5: distance 3 (the guide's
+  it("asks for manual validation when every anchor is two or more levels away", () => {
+    // Result level 2, nearest anchor level 5: distance 3 (the guide's
     // far-from-anchors flag).
     anchorList = [
-      { roleId: "a-1", title: "Director", expectedBand: 5, status: "active" },
+      { roleId: "a-1", title: "Director", expectedLevel: 5, status: "active" },
     ]
     renderResult()
     expect(screen.getByText(labels.farFromAnchors)).toBeDefined()

@@ -43,3 +43,7 @@ Beslut (ersätter punkt 2:s ⚪-definition för vyn i appen):
 - **Vid exportgränsen (M8, Art. 9-rapporten och alla aggregat som lämnar HR-kontexten):** de fulla småcellsminimen gäller, minst 4 personer totalt OCH minst 2 per kön, innan ett gruppmedelvärde exponeras. Detta spåras i go-live-checklistan och implementeras i exportslicen.
 
 Flaggnivåerna (🔴 >10 %, 🟠 5-10 %, ✅ <5 %) och allt annat i denna ADR står fast.
+
+## Tillägg 2026-08-05: begreppen har bytt namn (ADR-0014)
+
+Beslutet ovan står fast, orden har bytt namn. Det som här heter **band** (rollens beräknade tyngd) heter i dag **Nivå** (kod `level`, Nivå 1 är högst), och det som här heter **level** (individens senioritet inom rollens track) heter i dag **Senioritet** (kod `seniority`). Texten ovan skrivs inte om: läs "band" som Nivå och "level" i individ-betydelsen som Senioritet. Se [ADR-0014](./0014-terminologi-niva-senioritet-steg.md).

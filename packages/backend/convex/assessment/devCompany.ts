@@ -1,12 +1,15 @@
 // Dev/seed-only fixture: a realistic ~40-role Nordic product company used to
-// seed the blueprnt demo org so the results/band view looks like a real company.
-// Inspired by a real company's role list (founder, 2026-06). Titles are kept
-// verbatim (the idiomatic Swedish/English mix). Each role carries only a
-// trackKey (IC/Lead/M); level is per-individual (ADR-0005) and is NOT stored on
-// the role. The seeded ratings come from RATINGS_BY_TITLE (keyed by title), not
-// from any per-role level. Purpose/responsibilities are Swedish drafts (machine-
-// generated, flag for native review). This is NOT the onboarding industry
-// starter; it is a hardcoded demo fixture for seedRatedRoles.
+// seed the blueprnt demo org so the results/level view looks like a real
+// company. Inspired by a real company's role list (founder, 2026-06). Titles
+// are kept verbatim (the idiomatic Swedish/English mix). Each role carries
+// only a trackKey (IC/Lead/M); seniority is per-individual (ADR-0005) and is
+// NOT stored on the role. The seeded ratings come from RATINGS_BY_TITLE
+// (keyed by title), not from any per-role seniority. Purpose/responsibilities
+// are Swedish drafts (machine-generated, flag for native review). This is NOT
+// the onboarding industry starter; it is a hardcoded demo fixture for
+// seedRatedRoles.
+
+import type { RatingValue } from "@workspace/core"
 
 export interface DevRole {
   title: string
@@ -391,11 +394,26 @@ export const DEV_COMPANY: DevFamily[] = [
 //
 // Only three shapes are shared between titles; every other role carries its
 // own vector.
-const EXEC_HEAD = [5, 3, 4, 4, 3, 5, 5, 5, 5] as const // functional head (HR/Sales/Product)
-const SPECIALIST_IC = [2, 2, 2, 3, 3, 2, 1, 0, 3] as const // hands-on specialist, no people responsibility
-const COORDINATOR_IC = [2, 2, 2, 2, 2, 3, 1, 0, 3] as const // coordinating IC, stakeholder-tilted
+//
+// One rating per criterion in CRITERION_KEYS order; the tuple type makes a
+// wrong-length, non-integer, or out-of-range vector a compile error instead of
+// a seed-time surprise.
+type RatingVector = readonly [
+  RatingValue,
+  RatingValue,
+  RatingValue,
+  RatingValue,
+  RatingValue,
+  RatingValue,
+  RatingValue,
+  RatingValue,
+  RatingValue,
+]
+const EXEC_HEAD: RatingVector = [5, 3, 4, 4, 3, 5, 5, 5, 5] // functional head (HR/Sales/Product)
+const SPECIALIST_IC: RatingVector = [2, 2, 2, 3, 3, 2, 1, 0, 3] // hands-on specialist, no people responsibility
+const COORDINATOR_IC: RatingVector = [2, 2, 2, 2, 2, 3, 1, 0, 3] // coordinating IC, stakeholder-tilted
 
-export const RATINGS_BY_TITLE: Record<string, readonly number[]> = {
+export const RATINGS_BY_TITLE: Record<string, RatingVector> = {
   CEO: [5, 5, 5, 5, 5, 5, 5, 5, 3],
   "Head of HR": EXEC_HEAD,
   "Head of Finance": [5, 4, 5, 4, 4, 5, 5, 5, 3],

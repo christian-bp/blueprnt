@@ -32,10 +32,10 @@ const tOverview = messages.dashboard.overview
 
 // A fully-loaded fixture with buildTodo total === 0: one confirmed person
 // staffed on a role that carries zero criteria. Such a role never resolves
-// a band (blocking the pay-mapping gate) but sits in no buildTodo group at
+// a level (blocking the pay-mapping gate) but sits in no buildTodo group at
 // all (profileComplete so not "describe"; ratedCount(0) < totalCriteria(0)
 // is false so not "evaluate" either), so nothing is left to do. No model,
-// no pay-mapping history, and no results (so the band-distribution widget
+// no pay-mapping history, and no results (so the level-distribution widget
 // falls back to its empty narrative rather than staying in its own
 // perpetual skeleton).
 function mockNeutralQueries() {
@@ -61,14 +61,14 @@ function mockNeutralQueries() {
             {
               currentAssignment: {
                 roleId: "r-neutral",
-                levelSource: "confirmed",
+                senioritySource: "confirmed",
               },
             },
           ],
         },
       ]
     if (ref === "payMapping.runs.listPayMappingRuns") return []
-    if (ref === "assessment.results.getResults") return { rows: [], bands: [] }
+    if (ref === "assessment.results.getResults") return { rows: [], levels: [] }
     return undefined
   })
 }
@@ -86,7 +86,7 @@ function mockWorkFixture() {
         { title: "Support Lead", people: [{ currentAssignment: null }] },
       ]
     if (ref === "payMapping.runs.listPayMappingRuns") return []
-    if (ref === "assessment.results.getResults") return { rows: [], bands: [] }
+    if (ref === "assessment.results.getResults") return { rows: [], levels: [] }
     return undefined
   })
 }
@@ -130,7 +130,7 @@ describe("OverviewPage", () => {
       if (ref === "people.classificationQueries.listPeopleByTitle") return []
       if (ref === "payMapping.runs.listPayMappingRuns") return []
       if (ref === "assessment.results.getResults")
-        return { rows: [], bands: [] }
+        return { rows: [], levels: [] }
       return undefined
     })
     const { unmount } = renderPage()
@@ -165,7 +165,7 @@ describe("OverviewPage", () => {
     renderPage()
     expect(screen.getByText(tOverview.todo.empty.title)).toBeDefined()
     expect(screen.getByText(tOverview.widgets.workforce.label)).toBeDefined()
-    expect(screen.getByText(tOverview.widgets.bands.label)).toBeDefined()
+    expect(screen.getByText(tOverview.widgets.levels.label)).toBeDefined()
     expect(screen.getByText(tOverview.widgets.gap.label)).toBeDefined()
   })
 })

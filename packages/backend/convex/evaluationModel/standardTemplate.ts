@@ -48,26 +48,27 @@ export const DEFAULT_WEIGHT_POINTS: Record<CriterionKey, WeightPoints> = {
 
 // The fixed V1 track schema (PLAN-V1 §9.6): tracks are constants, not rows
 // (ADR-0006). Roles reference tracks by these stable keys (roles.trackKey);
-// display names localize from the content modules. The per-track level ladders
-// (IC1-IC5, Lead-1..3, M1-M3) live as the TRACK_LEVELS constant in
-// @workspace/constants and drive live per-individual assignment validation and
-// level suggestion (ADR-0005); standardmall.md is their prose reference.
+// display names localize from the content modules. The per-track seniority
+// ladders (IC1-IC5, Lead-1..3, M1-M3) live as the TRACK_SENIORITIES constant
+// in @workspace/constants and drive live per-individual assignment validation
+// and seniority suggestion (ADR-0005); standardmall.md is their prose
+// reference.
 export const TRACK_KEYS = ["IC", "Lead", "M"] as const
 export type TrackKey = (typeof TRACK_KEYS)[number]
 
-// 7 bands, Band 1 = highest; minScore is the lowest inclusive score as an
+// 7 levels, Level 1 = highest; minScore is the lowest inclusive score as an
 // integer on the normalized 0-100 scale (ADR-0004). The values translate the
 // Excel prototype's thresholds as shares of max (530/540 -> 98 etc.) and are
 // to be calibrated before launch. Used by BOTH template and scratch models
 // (thresholds are editable in E2).
-export const DEFAULT_BAND_THRESHOLDS = [
-  { band: 1, minScore: 98 },
-  { band: 2, minScore: 83 },
-  { band: 3, minScore: 74 },
-  { band: 4, minScore: 63 },
-  { band: 5, minScore: 53 },
-  { band: 6, minScore: 41 },
-  { band: 7, minScore: 0 },
+export const DEFAULT_LEVEL_THRESHOLDS = [
+  { level: 1, minScore: 98 },
+  { level: 2, minScore: 83 },
+  { level: 3, minScore: 74 },
+  { level: 4, minScore: 63 },
+  { level: 5, minScore: 53 },
+  { level: 6, minScore: 41 },
+  { level: 7, minScore: 0 },
 ] as const
 
 export type TemplateLocale = "sv" | "en" | "nb" | "da" | "fi"

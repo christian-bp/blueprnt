@@ -57,8 +57,8 @@ const ASSIGNMENT = {
   assignmentId: "a1",
   personId: "p1",
   roleId: "r1",
-  level: "IC3",
-  levelSource: "confirmed",
+  seniority: "IC3",
+  senioritySource: "confirmed",
   effectiveAt: 1000,
   endedAt: null,
 }
@@ -75,9 +75,10 @@ const SALARY = [
     totalMonthlyComp: 50000,
     effectiveAt: 1000,
     createdAt: 1000,
-    // The role + level active when this salary became effective (an earlier
-    // level than the current IC3 assignment, as after a promotion).
-    assignment: { roleId: "r1", level: "IC2" },
+    // The role + seniority active when this salary became effective (an
+    // earlier seniority than the current IC3 assignment, as after a
+    // promotion).
+    assignment: { roleId: "r1", seniority: "IC2" },
   },
 ]
 
@@ -119,24 +120,24 @@ describe("PersonDetail", () => {
     cleanup()
   })
 
-  it("renders identity, current level, role title, and salary history", () => {
+  it("renders identity, current seniority, role title, and salary history", () => {
     onQuery((ref) => queryRouter(ref))
     renderDetail()
     // Person name appears at least once (in the page header title and/or breadcrumb)
     expect(screen.getAllByText("Alex Doe").length).toBeGreaterThanOrEqual(1)
-    // Classification block: level badge
+    // Classification block: seniority badge
     expect(screen.getByText("IC3")).toBeDefined()
     // Classification block: role title resolved from listRoles.
     expect(screen.getAllByText("Engineer").length).toBeGreaterThanOrEqual(1)
     // Salary history: basicMonthly and totalMonthlyComp render as locale-aware
     // currency (both are 50000 SEK in the fixture; en formats as "SEK 50,000").
     expect(screen.getAllByText("SEK 50,000")).toHaveLength(2)
-    // The record is joined to the role + level it was earned under, shown as
-    // one "title - level" line: the fixture salary predates the promotion to
-    // IC3, so it shows IC2.
+    // The record is joined to the role + seniority it was earned under, shown
+    // as one "title - seniority" line: the fixture salary predates the
+    // promotion to IC3, so it shows IC2.
     expect(screen.getByText("Engineer · IC2")).toBeDefined()
     // A confirmed assignment shows no source hint (the default good state).
-    expect(screen.queryByText(m.suggestedLevelHint)).toBeNull()
+    expect(screen.queryByText(m.suggestedSeniorityHint)).toBeNull()
     // The pay-comparison section renders its precondition state.
     expect(
       screen.getByText(messages.dashboard.people.payComparison.precondition)
@@ -146,12 +147,12 @@ describe("PersonDetail", () => {
   it("links the suggested hint to Classify for an unconfirmed assignment", () => {
     onQuery((ref) => {
       if (ref === "people.assignments.getCurrentAssignment") {
-        return { ...ASSIGNMENT, levelSource: "suggested" }
+        return { ...ASSIGNMENT, senioritySource: "suggested" }
       }
       return queryRouter(ref)
     })
     renderDetail()
-    const hint = screen.getByText(m.suggestedLevelHint)
+    const hint = screen.getByText(m.suggestedSeniorityHint)
     expect(hint.closest("a")?.getAttribute("href")).toBe("/people/classify")
   })
 

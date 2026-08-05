@@ -26,7 +26,7 @@ const anchorStatusValidator = v.union(
   v.literal("replaced")
 )
 
-async function bandCount(
+async function levelCount(
   ctx: Parameters<typeof deriveResults>[0],
   orgId: string
 ): Promise<number> {
@@ -35,14 +35,14 @@ async function bandCount(
     .withIndex("by_org", (q) => q.eq("orgId", orgId))
     .unique()
   if (model === null) throw appError(ERROR_CODES.notFound)
-  return model.bandThresholds.length
+  return model.levelThresholds.length
 }
 
-function validateExpectedBand(expectedBand: number, bands: number) {
+function validateExpectedLevel(expectedLevel: number, levels: number) {
   if (
-    !Number.isInteger(expectedBand) ||
-    expectedBand < 1 ||
-    expectedBand > bands
+    !Number.isInteger(expectedLevel) ||
+    expectedLevel < 1 ||
+    expectedLevel > levels
   ) {
     throw appError(ERROR_CODES.invalidInput)
   }
@@ -59,16 +59,16 @@ function validateMotivation(motivation: string): string {
 // Designates a role as an anchor role. Preconditions follow the guide's
 // designation process: the role must exist, not be archived, not already be
 // an anchor, and must have a COMPLETE assessment (a real rating on every
-// criterion, so the anchor has a criteria profile and a computed band to
+// criterion, so the anchor has a criteria profile and a computed level to
 // calibrate against).
 export const designateAnchorRole = adminMutation({
   args: {
     roleId: v.id("roles"),
-    expectedBand: v.number(),
+    expectedLevel: v.number(),
     motivation: v.string(),
   },
   returns: v.null(),
-  handler: async (ctx, { roleId, expectedBand, motivation }) => {
+  handler: async (ctx, { roleId, expectedLevel, motivation }) => {
     const role = await ctx.db.get(roleId)
     if (role === null || role.orgId !== ctx.orgId) {
       throw appError(ERROR_CODES.notFound)
@@ -77,19 +77,19 @@ export const designateAnchorRole = adminMutation({
     if (role.anchorRole !== undefined) {
       throw appError(ERROR_CODES.invalidTransition)
     }
-    validateExpectedBand(expectedBand, await bandCount(ctx, ctx.orgId))
+    validateExpectedLevel(expectedLevel, await levelCount(ctx, ctx.orgId))
     const trimmedMotivation = validateMotivation(motivation)
 
     const derived = await deriveResults(ctx, ctx.orgId)
     const result = derived.results.find((row) => row.roleId === roleId)
-    if (result === undefined || result.band === null) {
+    if (result === undefined || result.level === null) {
       throw appError(ERROR_CODES.ratingsIncomplete)
     }
 
     const reviewedAt = Date.now()
     await ctx.db.patch(roleId, {
       anchorRole: {
-        expectedBand,
+        expectedLevel,
         motivation: trimmedMotivation,
         status: "active",
         reviewedAt,
@@ -99,10 +99,10 @@ export const designateAnchorRole = adminMutation({
       type: AUDIT_EVENTS.anchorRoleDesignated,
       payload: {
         roleId,
-        computedBand: result.band,
+        computedLevel: result.level,
         changes: buildCreateChanges(
           {
-            expectedBand,
+            expectedLevel,
             motivation: trimmedMotivation,
             status: "active",
             reviewedAt,
@@ -115,7 +115,7 @@ export const designateAnchorRole = adminMutation({
   },
 })
 
-// Updates an existing designation: agreed band, motivation, or lifecycle
+// Updates an existing designation: agreed level, motivation, or lifecycle
 // status (underReview during a review round, replaced when retired). Every
 // update counts as a review, so reviewedAt is always bumped. Reactivating a
 // non-active anchor re-passes the designation preconditions: the role may
@@ -124,12 +124,12 @@ export const designateAnchorRole = adminMutation({
 export const updateAnchorRole = adminMutation({
   args: {
     roleId: v.id("roles"),
-    expectedBand: v.optional(v.number()),
+    expectedLevel: v.optional(v.number()),
     motivation: v.optional(v.string()),
     status: v.optional(anchorStatusValidator),
   },
   returns: v.null(),
-  handler: async (ctx, { roleId, expectedBand, motivation, status }) => {
+  handler: async (ctx, { roleId, expectedLevel, motivation, status }) => {
     const role = await ctx.db.get(roleId)
     if (
       role === null ||
@@ -138,35 +138,35 @@ export const updateAnchorRole = adminMutation({
     ) {
       throw appError(ERROR_CODES.notFound)
     }
-    if (expectedBand !== undefined) {
-      validateExpectedBand(expectedBand, await bandCount(ctx, ctx.orgId))
+    if (expectedLevel !== undefined) {
+      validateExpectedLevel(expectedLevel, await levelCount(ctx, ctx.orgId))
     }
     const trimmedMotivation =
       motivation !== undefined ? validateMotivation(motivation) : undefined
-    // The role's current derived band is the value the designation is
+    // The role's current derived level is the value the designation is
     // calibrated against, so it is always captured in the audit row (binding
-    // correction #5), not only on reactivation. The same single-role band
+    // correction #5), not only on reactivation. The same single-role level
     // derivation also gates reactivation (the assessment must still be
     // complete). Derived once and reused for both.
     const derived = await deriveResults(ctx, ctx.orgId)
-    const computedBand =
-      derived.results.find((row) => row.roleId === roleId)?.band ?? null
+    const computedLevel =
+      derived.results.find((row) => row.roleId === roleId)?.level ?? null
     if (status === "active" && role.anchorRole.status !== "active") {
       if (role.archivedAt !== undefined) throw appError(ERROR_CODES.roleLocked)
-      if (computedBand === null) {
+      if (computedLevel === null) {
         throw appError(ERROR_CODES.ratingsIncomplete)
       }
     }
 
     const reviewedAt = Date.now()
     const before = {
-      expectedBand: role.anchorRole.expectedBand,
+      expectedLevel: role.anchorRole.expectedLevel,
       motivation: role.anchorRole.motivation,
       status: role.anchorRole.status,
       reviewedAt: role.anchorRole.reviewedAt,
     }
     const after = {
-      expectedBand: expectedBand ?? before.expectedBand,
+      expectedLevel: expectedLevel ?? before.expectedLevel,
       motivation: trimmedMotivation ?? before.motivation,
       status: status ?? before.status,
       reviewedAt,
@@ -176,7 +176,7 @@ export const updateAnchorRole = adminMutation({
       type: AUDIT_EVENTS.anchorRoleUpdated,
       payload: {
         roleId,
-        computedBand,
+        computedLevel,
         changes: buildChanges(before, after, ANCHOR_AUDIT_FIELDS),
       },
     })
@@ -184,8 +184,8 @@ export const updateAnchorRole = adminMutation({
   },
 })
 
-// The org's anchor roles with their live computed band next to the agreed
-// band, for the calibration surfaces (results page, rating reveal). Computed
+// The org's anchor roles with their live computed level next to the agreed
+// level, for the calibration surfaces (results page, rating reveal). Computed
 // at read time like every result (ADR-0002). Replaced anchors are included
 // (the consumer filters by status); the list is small by design (2-5).
 // Archived roles are excluded here, and archiveRole marks their designation
@@ -197,8 +197,8 @@ export const listAnchorRoles = orgQuery({
       roleId: v.id("roles"),
       title: v.string(),
       trackKey: trackKeyValidator,
-      expectedBand: v.number(),
-      computedBand: v.union(v.number(), v.null()),
+      expectedLevel: v.number(),
+      computedLevel: v.union(v.number(), v.null()),
       motivation: v.string(),
       status: anchorStatusValidator,
       reviewedAt: v.number(),
@@ -221,9 +221,9 @@ export const listAnchorRoles = orgQuery({
         roleId: role._id,
         title: role.title,
         trackKey: role.trackKey,
-        expectedBand: anchorRole.expectedBand,
-        computedBand:
-          derived.results.find((row) => row.roleId === role._id)?.band ?? null,
+        expectedLevel: anchorRole.expectedLevel,
+        computedLevel:
+          derived.results.find((row) => row.roleId === role._id)?.level ?? null,
         motivation: anchorRole.motivation,
         status: anchorRole.status,
         reviewedAt: anchorRole.reviewedAt,

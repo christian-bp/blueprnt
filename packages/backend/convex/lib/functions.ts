@@ -12,9 +12,9 @@ import {
   query,
   type QueryCtx,
 } from "../_generated/server"
-import { logBandShifts } from "../assessment/compute"
+import { logLevelShifts } from "../assessment/compute"
 import { logAudit } from "./audit"
-import type { AuditPayloads, BandCause } from "./auditPayloads"
+import type { AuditPayloads, LevelCause } from "./auditPayloads"
 import { appError, ERROR_CODES } from "./errors"
 
 export type OrganizationRole = "admin" | "editor"
@@ -28,16 +28,16 @@ interface OrgContext {
 // A ctx-bound audit writer pre-bound to the org-scoped ctx's orgId/actorId, so
 // org/admin call sites stop repeating `orgId: ctx.orgId, actorId: ctx.authUserId`
 // on every audit row. The contents are identical to the free `logAudit`/
-// `logBandShifts`; this is sugar over the same writers.
+// `logLevelShifts`; this is sugar over the same writers.
 interface AuditWriter {
   log: <E extends keyof AuditPayloads>(entry: {
     type: E
     payload: AuditPayloads[E]
   }) => Promise<void>
-  bandShifts: (entry: {
+  levelShifts: (entry: {
     before: RoleResult[]
     after: RoleResult[]
-    cause: BandCause
+    cause: LevelCause
   }) => Promise<void>
 }
 
@@ -49,8 +49,8 @@ function makeAuditWriter(
 ): AuditWriter {
   return {
     log: (entry) => logAudit(ctx, { orgId, actorId: authUserId, ...entry }),
-    bandShifts: (entry) =>
-      logBandShifts(ctx, { orgId, actorId: authUserId, ...entry }),
+    levelShifts: (entry) =>
+      logLevelShifts(ctx, { orgId, actorId: authUserId, ...entry }),
   }
 }
 

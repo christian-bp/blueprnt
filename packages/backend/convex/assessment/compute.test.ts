@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
-import { deriveResults, logBandShifts } from "./compute"
+import { deriveResults, logLevelShifts } from "./compute"
 
 async function seedTemplateOrganization(t: ReturnType<typeof initConvexTest>) {
   const { orgId, userId } = await t.mutation(
@@ -58,7 +58,7 @@ describe("deriveResults", () => {
       expect(derived.results[0]).toMatchObject({
         complete: true,
         score: 100,
-        band: 1,
+        level: 1,
       })
     })
   })
@@ -104,18 +104,18 @@ describe("deriveResults", () => {
         ratedCount: 1,
         complete: false,
         score: null,
-        band: null,
+        level: null,
       })
     })
   })
 })
 
-describe("logBandShifts", () => {
-  it("writes one band.shift row per changed band, treating missing as null", async () => {
+describe("logLevelShifts", () => {
+  it("writes one level.shift row per changed level, treating missing as null", async () => {
     const t = initConvexTest()
     const { orgId, userId } = await seedTemplateOrganization(t)
     await t.run(async (ctx) => {
-      await logBandShifts(ctx, {
+      await logLevelShifts(ctx, {
         orgId,
         actorId: userId,
         cause: { event: "model.updated" },
@@ -126,7 +126,7 @@ describe("logBandShifts", () => {
             totalCriteria: 9,
             complete: true,
             score: 100,
-            band: 1,
+            level: 1,
           },
           {
             roleId: "b",
@@ -134,7 +134,7 @@ describe("logBandShifts", () => {
             totalCriteria: 9,
             complete: true,
             score: 55,
-            band: 5,
+            level: 5,
           },
           {
             roleId: "gone",
@@ -142,7 +142,7 @@ describe("logBandShifts", () => {
             totalCriteria: 9,
             complete: true,
             score: 0,
-            band: 7,
+            level: 7,
           },
         ],
         after: [
@@ -152,7 +152,7 @@ describe("logBandShifts", () => {
             totalCriteria: 9,
             complete: true,
             score: 90,
-            band: 2,
+            level: 2,
           },
           {
             roleId: "b",
@@ -160,7 +160,7 @@ describe("logBandShifts", () => {
             totalCriteria: 9,
             complete: true,
             score: 55,
-            band: 5,
+            level: 5,
           },
           {
             roleId: "new",
@@ -168,37 +168,38 @@ describe("logBandShifts", () => {
             totalCriteria: 9,
             complete: false,
             score: null,
-            band: null,
+            level: null,
           },
         ],
       })
       const rows = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "band.shift")
+          q.eq("orgId", orgId).eq("type", "level.shift")
         )
         .collect()
       const payloads = rows.map((row) => row.payload as Record<string, unknown>)
       expect(payloads).toHaveLength(2)
 
-      // Role "a": band 1 -> 2 and score 100 -> 90 changed; complete and
+      // Role "a": level 1 -> 2 and score 100 -> 90 changed; complete and
       // ratedCount unchanged so they are absent. The cause is always recorded.
       const a = payloads.find((p) => p.roleId === "a")
       expect(a).toBeDefined()
       expect(a?.cause).toEqual({ event: "model.updated" })
       expect(a?.totalCriteria).toBe(9)
       expect(a?.changes).toEqual({
-        band: { from: 1, to: 2 },
+        level: { from: 1, to: 2 },
         score: { from: 100, to: 90 },
       })
 
-      // Role "gone": present before, absent after. band 7 -> null gates the row;
-      // score/complete/ratedCount also flip to their null/zero-ish absent values.
+      // Role "gone": present before, absent after. level 7 -> null gates the
+      // row; score/complete/ratedCount also flip to their null/zero-ish
+      // absent values.
       const gone = payloads.find((p) => p.roleId === "gone")
       expect(gone).toBeDefined()
       expect(gone?.totalCriteria).toBe(9)
       expect(gone?.changes).toMatchObject({
-        band: { from: 7, to: null },
+        level: { from: 7, to: null },
         score: { from: 0, to: null },
         complete: { from: true, to: null },
         ratedCount: { from: 9, to: null },
@@ -206,11 +207,11 @@ describe("logBandShifts", () => {
     })
   })
 
-  it("threads the cause into the band.shift payload", async () => {
+  it("threads the cause into the level.shift payload", async () => {
     const t = initConvexTest()
     const { orgId, userId } = await seedTemplateOrganization(t)
     await t.run(async (ctx) => {
-      await logBandShifts(ctx, {
+      await logLevelShifts(ctx, {
         orgId,
         actorId: userId,
         before: [
@@ -220,7 +221,7 @@ describe("logBandShifts", () => {
             totalCriteria: 9,
             complete: true,
             score: 100,
-            band: 1,
+            level: 1,
           },
         ],
         after: [
@@ -230,7 +231,7 @@ describe("logBandShifts", () => {
             totalCriteria: 9,
             complete: true,
             score: 80,
-            band: 3,
+            level: 3,
           },
         ],
         cause: {
@@ -242,7 +243,7 @@ describe("logBandShifts", () => {
       const rows = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "band.shift")
+          q.eq("orgId", orgId).eq("type", "level.shift")
         )
         .collect()
       expect(rows).toHaveLength(1)
@@ -252,7 +253,7 @@ describe("logBandShifts", () => {
         roleId: "a",
         criterionId: "crit-1",
       })
-      expect(payload.changes).toMatchObject({ band: { from: 1, to: 3 } })
+      expect(payload.changes).toMatchObject({ level: { from: 1, to: 3 } })
     })
   })
 })

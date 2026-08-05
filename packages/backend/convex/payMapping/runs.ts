@@ -39,7 +39,7 @@ function payRecordAt(
 }
 
 // One role blocking the gate: staffed (holds at least one open assignment)
-// but not fully evaluated (resolves no band).
+// but not fully evaluated (resolves no level).
 export type PreconditionRole = {
   roleId: Id<"roles">
   title: string
@@ -59,12 +59,12 @@ export type PayMappingPreconditions = {
 // not archived; the same definition listPeopleByTitle's currentAssignment,
 // countClassified, the people-tab badge, and the to-do's classify group all
 // use), and every ACTIVE role holding at least one open assignment
-// ("staffed") resolves a band (complete evaluation, the same deriveResults
+// ("staffed") resolves a level (complete evaluation, the same deriveResults
 // resolution the frozen snapshot reads). An unstaffed role's evaluation
 // state never blocks. Shared by startPayMappingRun's server-side gate and
 // getPayMappingPreconditions so the two can never fork. Archived roles are
 // excluded from BOTH checks: from the staffed-evaluation check because
-// deriveResults never resolves a band for them (so they can never block),
+// deriveResults never resolves a level for them (so they can never block),
 // and from the classified check because a confirmed open assignment to an
 // archived (or otherwise missing) role is NOT a real classification -- it
 // counts toward unclassifiedCount, same as no assignment at all. archiveRole
@@ -82,7 +82,7 @@ export async function computePayMappingPreconditions(
   const active = people.filter((p) => p.archivedAt === undefined)
 
   const derived = await deriveResults(ctx, orgId)
-  const bandByRole = new Map(derived.results.map((r) => [r.roleId, r]))
+  const levelByRole = new Map(derived.results.map((r) => [r.roleId, r]))
 
   const roleRows = await ctx.db
     .query("roles")
@@ -106,7 +106,7 @@ export async function computePayMappingPreconditions(
     const open = assignments.find((a) => a.endedAt === undefined) ?? null
     if (
       open === null ||
-      open.levelSource !== "confirmed" ||
+      open.senioritySource !== "confirmed" ||
       !activeRoleById.has(open.roleId as string)
     ) {
       unclassifiedCount += 1
@@ -118,7 +118,7 @@ export async function computePayMappingPreconditions(
     .map((roleId) => activeRoleById.get(roleId))
     .filter((role): role is Doc<"roles"> => role !== undefined)
     .filter(
-      (role) => (bandByRole.get(role._id as string)?.band ?? null) === null
+      (role) => (levelByRole.get(role._id as string)?.level ?? null) === null
     )
     .map((role) => ({ roleId: role._id, title: role.title, slug: role.slug }))
     .sort((a, b) => a.title.localeCompare(b.title))
@@ -192,12 +192,12 @@ export const startPayMappingRun = orgMutation({
         weightPoints: c.weightPoints,
         anchorCount: c.anchors.length,
       })),
-      bandThresholds: model?.bandThresholds ?? [],
+      levelThresholds: model?.levelThresholds ?? [],
     }
 
-    // Derive band/score for every role once, index by roleId.
+    // Derive level/score for every role once, index by roleId.
     const derived = await deriveResults(ctx, ctx.orgId)
-    const bandByRole = new Map(derived.results.map((r) => [r.roleId, r]))
+    const levelByRole = new Map(derived.results.map((r) => [r.roleId, r]))
 
     // Roles for title/track lookup.
     const roleRows = await ctx.db
@@ -249,9 +249,9 @@ export const startPayMappingRun = orgMutation({
       // The gate above (computePayMappingPreconditions) already counts a
       // confirmed open assignment to an archived/missing role as
       // unclassified and rejects the run before this loop ever starts, so a
-      // band-less row is impossible by construction past this point.
+      // level-less row is impossible by construction past this point.
       // Reaching this with one means the gate and this loop have diverged:
-      // fail loud rather than silently freezing the exact band-less row the
+      // fail loud rather than silently freezing the exact level-less row the
       // gate exists to prevent (the C1 defect). Mirrors the classifyOrg
       // invariant throw (people/classification.ts): a plain Error, not an
       // appError code, since this guards an internal programming error, not
@@ -261,7 +261,7 @@ export const startPayMappingRun = orgMutation({
           `startPayMappingRun invariant: person ${person._id} has an open assignment to archived/missing role ${open.roleId}, which should be unreachable past the preconditions gate`
         )
       }
-      const result = bandByRole.get(open.roleId as string)
+      const result = levelByRole.get(open.roleId as string)
       const payRows = await ctx.db
         .query("payRecords")
         .withIndex("by_person", (q) =>
@@ -295,8 +295,8 @@ export const startPayMappingRun = orgMutation({
           : {}),
         roleTitle: role?.title ?? "",
         trackKey: role?.trackKey ?? "",
-        level: open.level,
-        band: result?.band ?? null,
+        seniority: open.seniority,
+        level: result?.level ?? null,
         score: result?.score ?? null,
         basicMonthly: pay?.basicMonthly ?? null,
         components: pay?.components ?? [],
@@ -386,8 +386,8 @@ const snapshotRowShape = v.object({
   ftePercent: v.optional(v.number()),
   roleTitle: v.string(),
   trackKey: v.string(),
-  level: v.string(),
-  band: v.union(v.number(), v.null()),
+  seniority: v.string(),
+  level: v.union(v.number(), v.null()),
   basicMonthly: v.union(v.number(), v.null()),
   components: v.array(
     v.object({ kind: v.string(), monthlyAmount: v.number() })
@@ -448,8 +448,8 @@ export const getPayMappingRunBySlug = orgQuery({
         ...(r.ftePercent !== undefined ? { ftePercent: r.ftePercent } : {}),
         roleTitle: r.roleTitle,
         trackKey: r.trackKey,
+        seniority: r.seniority,
         level: r.level,
-        band: r.band,
         basicMonthly: r.basicMonthly,
         components: r.components,
         ...(r.currency !== undefined ? { currency: r.currency } : {}),

@@ -31,9 +31,9 @@ const CRITERIA = [
     name: "Scope",
     description: "How wide the role reaches.",
     helpText: "Judge against the anchors.",
-    anchors: [0, 1, 2, 3, 4, 5].map((level) => ({
-      level,
-      text: `Scope anchor ${level}`,
+    anchors: [0, 1, 2, 3, 4, 5].map((step) => ({
+      step,
+      text: `Scope anchor ${step}`,
     })),
   },
   {
@@ -41,9 +41,9 @@ const CRITERIA = [
     name: "Risk",
     description: "Consequence of mistakes.",
     helpText: "Judge against the anchors.",
-    anchors: [0, 1, 2, 3, 4, 5].map((level) => ({
-      level,
-      text: `Risk anchor ${level}`,
+    anchors: [0, 1, 2, 3, 4, 5].map((step) => ({
+      step,
+      text: `Risk anchor ${step}`,
     })),
   },
 ]
@@ -125,10 +125,10 @@ describe("RatingStepper", () => {
     })
   })
 
-  it("never renders score or band during the steps (blindness)", () => {
+  it("never renders score or level during the steps (blindness)", () => {
     renderStepper()
     expect(screen.queryByText(labels.result.scoreLabel)).toBeNull()
-    expect(screen.queryByText(labels.result.bandLabel)).toBeNull()
+    expect(screen.queryByText(labels.result.levelLabel)).toBeNull()
   })
 
   it("selects an anchor by its number key and advances on Enter", async () => {

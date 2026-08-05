@@ -5,7 +5,7 @@
 > **Om detta dokument (repo-anmärkning):** källdokument inlagt 2026-06-06 (från Google-dokumentet "Viktning", författat 2026-06-05). Detta är den kanoniska förklaringen av viktningsmodellen; den ersätter den tidigare fasta 7-gradiga betydelseskalan med dolda vikter (8 till 18) från Excel-prototypen. Beslutet och dess systemkonsekvenser är dokumenterade i [ADR-0004](../../adr/0004-point-budget-weighting.md). Tre preciseringar gäller i repot:
 >
 > 1. **Terminologi:** dokumentet säger "poäng" om vikterna. I produktspråket säger vi **viktpoäng**, eftersom Poäng (Score) redan är kanoniskt för rollens viktade total (se assessment-ordlistan). Den härledda procentsiffran kallas **andel**.
-> 2. **Rollpoängen:** dokumentet definierar viktningen, inte rollens totalpoäng. Beslut 2026-06-06: totalpoängen normaliseras till en fast skala 0 till 100 (se ADR-0004), så bandtrösklarna förblir stabila oavsett antal kriterier.
+> 2. **Rollpoängen:** dokumentet definierar viktningen, inte rollens totalpoäng. Beslut 2026-06-06: totalpoängen normaliseras till en fast skala 0 till 100 (se ADR-0004), så nivåtrösklarna förblir stabila oavsett antal kriterier.
 > 3. **Standardmallens förval:** exemplet i §6 är normativt; standardmallen seedas med exakt den fördelningen (beslut 2026-06-06, se [standardmall.md](./standardmall.md)).
 
 **Syfte.** Detta dokument förklarar varför vi använder en poängbudget för att vikta värderingsfaktorer, hur modellen fungerar och varför den är lättare att förstå och bygga in i system än fri viktning.

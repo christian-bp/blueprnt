@@ -36,7 +36,7 @@ async function seedReadyOrganization(t: ReturnType<typeof initConvexTest>) {
 }
 
 describe("criterion compliance write path", () => {
-  it("saves rationale + bias fields and audits with no band-shift", async () => {
+  it("saves rationale + bias fields and audits with no level-shift", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedReadyOrganization(t)
     const model = await asAdmin.query(api.evaluationModel.model.getModel, {
@@ -73,8 +73,8 @@ describe("criterion compliance write path", () => {
         "criterion.complianceUpdated"
     )
     expect(compliance).toHaveLength(1)
-    const bandShifts = rows.filter((r) => r.type === "band.shift")
-    expect(bandShifts).toHaveLength(0)
+    const levelShifts = rows.filter((r) => r.type === "level.shift")
+    expect(levelShifts).toHaveLength(0)
   })
 
   it("blocks approval until documented, then locks on approval and requires explicit reopen to edit", async () => {

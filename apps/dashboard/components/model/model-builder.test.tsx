@@ -70,12 +70,12 @@ const model = {
       order: 1,
       isCustom: false,
       anchors: [
-        { level: 0, text: "none" },
-        { level: 1, text: "a" },
-        { level: 2, text: "b" },
-        { level: 3, text: "c" },
-        { level: 4, text: "d" },
-        { level: 5, text: "max" },
+        { step: 0, text: "none" },
+        { step: 1, text: "a" },
+        { step: 2, text: "b" },
+        { step: 3, text: "c" },
+        { step: 4, text: "d" },
+        { step: 5, text: "max" },
       ],
     },
     {
@@ -120,7 +120,7 @@ const model = {
     },
   ],
   tracks: [],
-  bandThresholds: [{ band: 1, minScore: 100 }],
+  levelThresholds: [{ level: 1, minScore: 100 }],
 }
 
 let reviewLocked = false

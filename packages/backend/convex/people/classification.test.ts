@@ -79,8 +79,8 @@ describe("runClassificationSuggestions", () => {
       api.people.assignments.getCurrentAssignment,
       { orgId, personId }
     )
-    expect(current?.levelSource).toBe("suggested")
-    expect(current?.level.startsWith("IC")).toBe(true)
+    expect(current?.senioritySource).toBe("suggested")
+    expect(current?.seniority.startsWith("IC")).toBe(true)
   })
 
   it("creates no assignment for a person whose title matches no role", async () => {
@@ -192,8 +192,8 @@ describe("runClassificationSuggestions", () => {
       orgId,
       personId,
       roleId,
-      level: "IC5",
-      levelSource: "confirmed",
+      seniority: "IC5",
+      senioritySource: "confirmed",
     })
 
     const result = await asAdmin.mutation(
@@ -207,8 +207,8 @@ describe("runClassificationSuggestions", () => {
       api.people.assignments.getCurrentAssignment,
       { orgId, personId }
     )
-    expect(current?.levelSource).toBe("confirmed")
-    expect(current?.level).toBe("IC5")
+    expect(current?.senioritySource).toBe("confirmed")
+    expect(current?.seniority).toBe("IC5")
   })
 
   it("re-suggests when the existing confirmed assignment points to an archived role (C1 consistency)", async () => {
@@ -245,8 +245,8 @@ describe("runClassificationSuggestions", () => {
       orgId,
       personId,
       roleId: retiredRoleId,
-      level: "IC5",
-      levelSource: "confirmed",
+      seniority: "IC5",
+      senioritySource: "confirmed",
     })
     await t.run(async (ctx) => {
       await ctx.db.patch(retiredRoleId, { archivedAt: Date.now() })
@@ -268,7 +268,7 @@ describe("runClassificationSuggestions", () => {
       { orgId, personId }
     )
     expect(current?.roleId).toBe(newRoleId)
-    expect(current?.levelSource).toBe("suggested")
+    expect(current?.senioritySource).toBe("suggested")
   })
 
   it("writes a PII-free classification.suggested audit row", async () => {
@@ -349,7 +349,7 @@ describe("runClassificationSuggestions", () => {
       api.people.assignments.getCurrentAssignment,
       { orgId, personId }
     )
-    expect(current?.levelSource).toBe("suggested")
+    expect(current?.senioritySource).toBe("suggested")
   })
 })
 
@@ -379,8 +379,8 @@ describe("listPeopleByTitle", () => {
       orgId,
       personId: anna,
       roleId,
-      level: "IC3",
-      levelSource: "confirmed",
+      seniority: "IC3",
+      senioritySource: "confirmed",
     })
 
     const groups = await asAdmin.query(
@@ -396,20 +396,20 @@ describe("listPeopleByTitle", () => {
     // created role.
     expect(seGroup?.suggestedRoleId).toBe(roleId)
     const annaRow = seGroup?.people.find((p) => p.personId === anna)
-    expect(annaRow?.currentAssignment?.level).toBe("IC3")
-    expect(annaRow?.currentAssignment?.levelSource).toBe("confirmed")
+    expect(annaRow?.currentAssignment?.seniority).toBe("IC3")
+    expect(annaRow?.currentAssignment?.senioritySource).toBe("confirmed")
     expect(annaRow?.employmentStartDate).toBe("2020-01-01")
-    // Each matched person carries an engine level suggestion for the role's track.
-    expect(annaRow?.suggestedLevel?.startsWith("IC")).toBe(true)
+    // Each matched person carries an engine seniority suggestion for the role's track.
+    expect(annaRow?.suggestedSeniority?.startsWith("IC")).toBe(true)
     const boRow = seGroup?.people.find((p) => p.displayName === "Bo Karlsson")
     expect(boRow?.currentAssignment).toBeNull()
-    expect(boRow?.suggestedLevel?.startsWith("IC")).toBe(true)
+    expect(boRow?.suggestedSeniority?.startsWith("IC")).toBe(true)
 
     // The null-title group is last, with no role suggestion.
     const nullGroup = groups[groups.length - 1]
     expect(nullGroup?.title).toBeNull()
     expect(nullGroup?.suggestedRoleId).toBeNull()
-    expect(nullGroup?.people[0]?.suggestedLevel).toBeNull()
+    expect(nullGroup?.people[0]?.suggestedSeniority).toBeNull()
   })
 
   it("exposes currentAssignment: null when a confirmed open assignment points to an archived role (C1)", async () => {
@@ -430,8 +430,8 @@ describe("listPeopleByTitle", () => {
       orgId,
       personId,
       roleId,
-      level: "IC3",
-      levelSource: "confirmed",
+      seniority: "IC3",
+      senioritySource: "confirmed",
     })
     // Simulate a PRE-EXISTING stale row: archive the role directly
     // (bypassing archiveRole, which now ends its own open assignments), so
@@ -447,7 +447,7 @@ describe("listPeopleByTitle", () => {
     const row = groups
       .flatMap((g) => g.people)
       .find((p) => p.personId === personId)
-    // NOT the stale roleId/level: a confirmed assignment to an archived role
+    // NOT the stale roleId/seniority: a confirmed assignment to an archived role
     // is not a real classification, so it surfaces exactly like "no
     // assignment at all" for reassignment on the classify page.
     expect(row?.currentAssignment).toBeNull()
@@ -474,7 +474,7 @@ describe("listPeopleByTitle", () => {
     )
     const rsGroup = groups.find((g) => g.title === "Rocket Scientist")
     expect(rsGroup?.suggestedRoleId).toBeNull()
-    expect(rsGroup?.people[0]?.suggestedLevel).toBeNull()
+    expect(rsGroup?.people[0]?.suggestedSeniority).toBeNull()
   })
 
   it("returns an empty array for an org with no people", async () => {

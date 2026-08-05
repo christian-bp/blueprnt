@@ -51,7 +51,7 @@ The staged framing itself is worth adopting inside a kartläggning. It matches o
 
 **What to adopt.** This is our **M6 (objective reasons)**, and it is the missing half of the P1 view we just built. Adopt: the Market/Individual/Work taxonomy, the per-group worklist with a done-state, and the free-text rationale field. Wiring per-group completion is precisely ADR-0012's **completion gate** (a survey cannot reach Slutförd until every red/amber group carries a documented reason or an action plan).
 
-**How to do it better, and the key architectural constraint.** Their "Generativa insikter" almost certainly reads individual pay and performance to write its analysis (the sample text names "the person with the highest pay in the group"). **We cannot do that**: we never send person PII to the AI (Role != Person, GDPR, ADR-0003). So our AI-assist must operate on **role-level and aggregate-level inputs only**: the group's aggregate gap, the role profile and its evaluation criteria, band and level, and organization context (industry, size, country). From those it can propose *likely reason categories* and *draft neutral language*; the HR user writes any person-specific rationale themselves and confirms the suggestion (provenance, HR-decides). This is both a constraint and a genuine selling point: defensibly GDPR-clean AI in a domain where the incumbent's AI is a data-protection liability.
+**How to do it better, and the key architectural constraint.** Their "Generativa insikter" almost certainly reads individual pay and performance to write its analysis (the sample text names "the person with the highest pay in the group"). **We cannot do that**: we never send person PII to the AI (Role != Person, GDPR, ADR-0003). So our AI-assist must operate on **role-level and aggregate-level inputs only**: the group's aggregate gap, the role profile and its evaluation criteria, level and seniority, and organization context (industry, size, country). From those it can propose *likely reason categories* and *draft neutral language*; the HR user writes any person-specific rationale themselves and confirms the suggestion (provenance, HR-decides). This is both a constraint and a genuine selling point: defensibly GDPR-clean AI in a domain where the incumbent's AI is a data-protection liability.
 
 We can also **pre-fill** likely reasons from our own model: their "Ansvar" (responsibility) is one of our evaluation criteria, so a role scored high on a criterion can pre-suggest the matching work-related reason.
 
@@ -61,13 +61,13 @@ We can also **pre-fill** likely reasons from our own model: their "Ansvar" (resp
 
 **What it shows.** A **"Kvinnodominerade arbeten"** worklist and a table comparing a women-dominated job against comparator jobs across **levels** (Nivå 7, 6, 5): count, share women, mean pay, mean-pay difference in % and SEK, and a "pay level affected by" tag. The headline finding: a level-7 women-dominated role is paid *less* than roles at level 6 and level 5, that is, higher-valued work is paid less than lower-valued work.
 
-**What is good.** This captures a requirement our current P1 likvärdigt view does not fully express. Our P1 groups by band and compares women vs men *within* a band. But Diskrimineringslagen 3:9 specifically requires identifying **women-dominated** jobs and comparing their pay against equivalent *or higher-valued* non-women-dominated jobs. The "higher band paid less than a lower band" inversion is the core red flag of equivalent-work analysis, and it is a cross-band comparison, not a within-band one.
+**What is good.** This captures a requirement our current P1 likvärdigt view does not fully express. Our P1 groups by level and compares women vs men *within* a level. But Diskrimineringslagen 3:9 specifically requires identifying **women-dominated** jobs and comparing their pay against equivalent *or higher-valued* non-women-dominated jobs. The "higher level paid less than a lower level" inversion is the core red flag of equivalent-work analysis, and it is a cross-level comparison, not a within-level one.
 
-**What to adopt.** The women-dominated lens (flag roles at >= 60% one gender, which is the könsdominans signal ADR-0012 classes as P2) and the cross-band comparison that surfaces the inversion.
+**What to adopt.** The women-dominated lens (flag roles at >= 60% one gender, which is the könsdominans signal ADR-0012 classes as P2) and the cross-level comparison that surfaces the inversion.
 
-**How to do it better.** Surface the inversion **visually and prominently** (a higher-valued women-dominated role sitting below lower-valued roles on a pay-by-band view) rather than as a dense table, and anchor it to our transparent band weights so the "why is this equivalent" is legible. Explain könsdominans and likvärdigt inline.
+**How to do it better.** Surface the inversion **visually and prominently** (a higher-valued women-dominated role sitting below lower-valued roles on a pay-by-level view) rather than as a dense table, and anchor it to our transparent level weights so the "why is this equivalent" is legible. Explain könsdominans and likvärdigt inline.
 
-**Where it lands.** The könsdominans flag is a P2 signal; the cross-band comparison enriches likvärdigt and sits on the P1 -> P2 boundary. Scope carefully so the mandatory P1 view stays simple and this is an additive "understand why" layer (ADR-0012: P2 complements P1, never replaces it).
+**Where it lands.** The könsdominans flag is a P2 signal; the cross-level comparison enriches likvärdigt and sits on the P1 -> P2 boundary. Scope carefully so the mandatory P1 view stays simple and this is an additive "understand why" layer (ADR-0012: P2 complements P1, never replaces it).
 
 ### Screens 4 and 5: Analysera / per-person scatter with rich hover
 
@@ -104,7 +104,7 @@ We can also **pre-fill** likely reasons from our own model: their "Ansvar" (resp
 These shape every feature above and are where we differentiate:
 
 1. **Guide every concept.** Adjusted gap, quartile, likvärdigt, könsdominans, sakligt skäl: each is a domain term most HR users do not know. Every surface that introduces one explains it inline in plain language. This is a product priority, not a nicety.
-2. **Deterministic and auditable.** Gap, band, and now the adjusted gap are pure `packages/core` computations over the frozen snapshot. Every number on every screen and in every export is reproducible and traceable. The incumbent shows dashboard numbers; we show numbers you can defend to a union or a court.
+2. **Deterministic and auditable.** Gap, level, and now the adjusted gap are pure `packages/core` computations over the frozen snapshot. Every number on every screen and in every export is reproducible and traceable. The incumbent shows dashboard numbers; we show numbers you can defend to a union or a court.
 3. **GDPR-first AI (the load-bearing constraint).** We never send person PII to the AI. Our AI-assist for objective reasons operates on role-level and aggregate inputs only, proposes categories and neutral draft language, and HR confirms. This reshapes the "Generativa insikter" feature relative to the incumbent and is a defensible advantage in a regulated domain.
 4. **Small-cell privacy rigor.** We already reason about masking; the export boundary is where the per-gender minimum applies. The scatter and per-employee report inherit this.
 5. **Brand and animation.** The overview, the equality clock, and the worklist transitions are opportunities to make the analysis feel alive (Motion, respecting reduced-motion).
@@ -135,9 +135,9 @@ Each item is a candidate for its own brainstorm -> spec -> plan. Effort is rough
 
 ### F4. Women-dominated cross-level likvärdigt (M4/M5, P2)
 
-- **What.** Flag women-dominated roles (könsdominans >= 60%) and compare each against comparator roles across bands, surfacing the "higher-valued work paid less" inversion.
-- **Scope.** Extends the likvärdigt analysis with a könsdominans classifier (pure core) and a cross-band comparison view.
-- **Effort.** M. **Priority.** P2 (additive to the mandatory P1). **Depends on.** P1 likvärdigt (built), band weights (built).
+- **What.** Flag women-dominated roles (könsdominans >= 60%) and compare each against comparator roles across levels, surfacing the "higher-valued work paid less" inversion.
+- **Scope.** Extends the likvärdigt analysis with a könsdominans classifier (pure core) and a cross-level comparison view.
+- **Effort.** M. **Priority.** P2 (additive to the mandatory P1). **Depends on.** P1 likvärdigt (built), level weights (built).
 - **Key decisions.** Keep P1 simple and put this in a P2 "understand why" layer; the könsdominans threshold. **Risk.** Blurring the mandatory P1 primary view; keep the boundary clean.
 
 ### F5. Per-person analysis scatter over the snapshot (M4/M5)

@@ -27,7 +27,7 @@ vi.mock("@/components/org-context", () => ({
 
 import WorkOverviewPage from "@/app/(app)/work/page"
 
-function bandRow(overrides: Record<string, unknown>) {
+function levelRow(overrides: Record<string, unknown>) {
   return {
     roleId: "r1",
     title: "CTO",
@@ -38,7 +38,7 @@ function bandRow(overrides: Record<string, unknown>) {
     ratedCount: 9,
     totalCriteria: 9,
     score: 90,
-    band: 1,
+    level: 1,
     familyId: null,
     familyName: null,
     anchor: null,
@@ -49,9 +49,9 @@ function bandRow(overrides: Record<string, unknown>) {
 function results(rows: Array<Record<string, unknown>>) {
   return {
     rows,
-    bands: [
-      { band: 1, minScore: 80 },
-      { band: 2, minScore: 0 },
+    levels: [
+      { level: 1, minScore: 80 },
+      { level: 2, minScore: 0 },
     ],
   }
 }
@@ -77,7 +77,7 @@ describe("WorkOverviewPage", () => {
       ref === "assessment.results.getResults" ? results([]) : undefined
     )
     renderPage()
-    expect(screen.getByText(messages.dashboard.bands.empty)).toBeDefined()
+    expect(screen.getByText(messages.dashboard.levels.empty)).toBeDefined()
     expect(
       document.querySelector('[data-slot="empty-icon"] svg')
     ).not.toBeNull()
@@ -86,15 +86,15 @@ describe("WorkOverviewPage", () => {
   it("renders the ladder with both view toggles when roles exist", () => {
     useQueryMock.mockImplementation((ref: string) =>
       ref === "assessment.results.getResults"
-        ? results([bandRow({})])
+        ? results([levelRow({})])
         : undefined
     )
     renderPage()
-    expect(screen.getByText(messages.dashboard.bands.viewLadder)).toBeDefined()
-    expect(screen.getByText(messages.dashboard.bands.viewMatrix)).toBeDefined()
+    expect(screen.getByText(messages.dashboard.levels.viewLadder)).toBeDefined()
+    expect(screen.getByText(messages.dashboard.levels.viewMatrix)).toBeDefined()
     // Ladder is the default view: the role chip is on screen.
     expect(screen.getByRole("link", { name: /CTO/ })).toBeDefined()
-    expect(screen.getByText("Band 1")).toBeDefined()
+    expect(screen.getByText("Level 1")).toBeDefined()
   })
 
   it("keeps the ladder view selected when the results arrive after loading", () => {
@@ -103,27 +103,27 @@ describe("WorkOverviewPage", () => {
     // the selection must survive it or the loaded page shows no view at all.
     useQueryMock.mockImplementation(() => undefined)
     const { rerender } = renderPage()
-    expect(screen.getByText(messages.dashboard.bands.viewLadder)).toBeDefined()
+    expect(screen.getByText(messages.dashboard.levels.viewLadder)).toBeDefined()
 
     useQueryMock.mockImplementation((ref: string) =>
       ref === "assessment.results.getResults"
-        ? results([bandRow({})])
+        ? results([levelRow({})])
         : undefined
     )
     rerender(page())
     expect(screen.getByRole("link", { name: /CTO/ })).toBeDefined()
-    expect(screen.getByText("Band 1")).toBeDefined()
+    expect(screen.getByText("Level 1")).toBeDefined()
   })
 
-  it("the families view shows family rows with roles in band columns and hides the group toggle", async () => {
+  it("the families view shows family rows with roles in level columns and hides the group toggle", async () => {
     useQueryMock.mockImplementation((ref: string) =>
       ref === "assessment.results.getResults"
         ? results([
-            bandRow({ familyId: "f1", familyName: "Engineering" }),
-            bandRow({
+            levelRow({ familyId: "f1", familyName: "Engineering" }),
+            levelRow({
               roleId: "r2",
               title: "Analyst",
-              band: 2,
+              level: 2,
               familyId: null,
               familyName: null,
             }),
@@ -133,16 +133,16 @@ describe("WorkOverviewPage", () => {
     renderPage()
     // The toggle exists on the ladder view...
     expect(
-      screen.getByText(messages.dashboard.bands.groupByFamily)
+      screen.getByText(messages.dashboard.levels.groupByFamily)
     ).toBeDefined()
 
     fireEvent.click(
-      screen.getByRole("tab", { name: messages.dashboard.bands.viewFamilies })
+      screen.getByRole("tab", { name: messages.dashboard.levels.viewFamilies })
     )
     // ...and hides on the families view, where family IS the row axis.
     await waitFor(() => {
       expect(
-        screen.queryByText(messages.dashboard.bands.groupByFamily)
+        screen.queryByText(messages.dashboard.levels.groupByFamily)
       ).toBeNull()
     })
     // One label row per family (the family-less bucket included), roles as
@@ -155,7 +155,7 @@ describe("WorkOverviewPage", () => {
         name: messages.dashboard.roles.family.none,
       })
     ).toBeDefined()
-    expect(screen.getByRole("columnheader", { name: "Band 1" })).toBeDefined()
+    expect(screen.getByRole("columnheader", { name: "Level 1" })).toBeDefined()
     expect(screen.getAllByRole("link", { name: /CTO/ }).length).toBeGreaterThan(
       0
     )
@@ -164,12 +164,12 @@ describe("WorkOverviewPage", () => {
   it("offers a group-by-family toggle when roles have families", () => {
     useQueryMock.mockImplementation((ref: string) =>
       ref === "assessment.results.getResults"
-        ? results([bandRow({ familyId: "f1", familyName: "Engineering" })])
+        ? results([levelRow({ familyId: "f1", familyName: "Engineering" })])
         : undefined
     )
     renderPage()
     expect(
-      screen.getByText(messages.dashboard.bands.groupByFamily)
+      screen.getByText(messages.dashboard.levels.groupByFamily)
     ).toBeDefined()
   })
 })

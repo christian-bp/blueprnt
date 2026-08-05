@@ -39,11 +39,11 @@ async function seedTemplateOrganization(t: ReturnType<typeof initConvexTest>) {
 }
 
 describe("setRating", () => {
-  it("upserts by (role, criterion), audits, and logs band.shift on completion", async () => {
+  it("upserts by (role, criterion), audits, and logs level.shift on completion", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, roleId } = await seedTemplateOrganization(t)
 
-    // Rate the first 8 criteria at 5: still incomplete, so no band.shift.
+    // Rate the first 8 criteria at 5: still incomplete, so no level.shift.
     for (const criterion of model.criteria.slice(0, 8)) {
       await asAdmin.mutation(api.assessment.ratings.setRating, {
         orgId,
@@ -56,13 +56,13 @@ describe("setRating", () => {
       const shifts = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "band.shift")
+          q.eq("orgId", orgId).eq("type", "level.shift")
         )
         .collect()
       expect(shifts).toHaveLength(0)
     })
 
-    // The 9th rating completes the role: all-5 means score 100, Band 1.
+    // The 9th rating completes the role: all-5 means score 100, Level 1.
     const lastCriterion = model.criteria[8]
     if (lastCriterion === undefined) throw new Error("seed")
     await asAdmin.mutation(api.assessment.ratings.setRating, {
@@ -76,18 +76,18 @@ describe("setRating", () => {
       const shifts = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "band.shift")
+          q.eq("orgId", orgId).eq("type", "level.shift")
         )
         .collect()
       expect(shifts).toHaveLength(1)
       expect(shifts[0]?.payload).toMatchObject({
         roleId,
-        changes: { band: { from: null, to: 1 } },
+        changes: { level: { from: null, to: 1 } },
       })
     })
 
     // Re-rating the scope criterion (5 weight points) from 5 to 0 drops the
-    // normalized score from 100 to floor(20 * 110 / 27) = 81: Band 3.
+    // normalized score from 100 to floor(20 * 110 / 27) = 81: Level 3.
     const scopeCriterion = model.criteria[0]
     if (scopeCriterion === undefined) throw new Error("seed")
     await asAdmin.mutation(api.assessment.ratings.setRating, {
@@ -106,17 +106,17 @@ describe("setRating", () => {
       const shifts = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "band.shift")
+          q.eq("orgId", orgId).eq("type", "level.shift")
         )
         .collect()
       expect(shifts).toHaveLength(2)
       expect(shifts[0]?.payload).toMatchObject({
         roleId,
-        changes: { band: { from: null, to: 1 } },
+        changes: { level: { from: null, to: 1 } },
       })
       expect(shifts[1]?.payload).toMatchObject({
         roleId,
-        changes: { band: { from: 1, to: 3 } },
+        changes: { level: { from: 1, to: 3 } },
       })
       const changes = await ctx.db
         .query("auditLog")
@@ -146,14 +146,14 @@ describe("setRating", () => {
       })
     })
 
-    // band.shift cause: the last shift was triggered by re-rating the scope
+    // level.shift cause: the last shift was triggered by re-rating the scope
     // criterion, so its payload records the rating.change cause with the role
     // and criterion that moved it.
     await t.run(async (ctx) => {
       const shifts = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "band.shift")
+          q.eq("orgId", orgId).eq("type", "level.shift")
         )
         .collect()
       const lastShift = shifts[shifts.length - 1]

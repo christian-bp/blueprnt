@@ -21,15 +21,15 @@ const genderTallyShape = v.object({
   men: v.number(),
 })
 
-// One gender-gap group in the wire shape. roleTitle/level are populated for
-// equal-work groups only (null for equivalent-work). Means + gap are null
+// One gender-gap group in the wire shape. roleTitle/seniority are populated
+// for equal-work groups only (null for equivalent-work). Means + gap are null
 // when the group is insufficient, i.e. a gender is absent (ADR-0012
 // amendment).
 const gapGroupShape = v.object({
   key: v.string(),
   roleTitle: v.union(v.string(), v.null()),
-  level: v.union(v.string(), v.null()),
-  band: v.union(v.number(), v.null()),
+  seniority: v.union(v.string(), v.null()),
+  level: v.union(v.number(), v.null()),
   womenCount: v.number(),
   menCount: v.number(),
   womenMeanComp: v.union(v.number(), v.null()),
@@ -61,12 +61,12 @@ const orgAggregateShape = v.object({
 
 // One comparator in a women-dominated group's cross-level comparison
 // (Diskrimineringslagen's third comparison): a non-dominated, equal-or-lower
-// valued banded group whose whole-group mean out-earns the dominated group.
+// valued leveled group whose whole-group mean out-earns the dominated group.
 const womenDominatedComparisonShape = v.object({
   key: v.string(),
   roleTitle: v.union(v.string(), v.null()),
-  level: v.union(v.string(), v.null()),
-  band: v.number(),
+  seniority: v.union(v.string(), v.null()),
+  level: v.number(),
   headcount: v.number(),
   womenSharePct: v.number(),
   meanComp: v.number(),
@@ -81,8 +81,8 @@ const womenDominatedComparisonShape = v.object({
 const womenDominatedGroupShape = v.object({
   key: v.string(),
   roleTitle: v.union(v.string(), v.null()),
-  level: v.union(v.string(), v.null()),
-  band: v.number(),
+  seniority: v.union(v.string(), v.null()),
+  level: v.number(),
   headcount: v.number(),
   womenSharePct: v.number(),
   meanComp: v.number(),
@@ -94,8 +94,8 @@ const womenDominatedGroupShape = v.object({
 interface Bucket {
   key: string
   roleTitle: string | null
-  level: string | null
-  band: number | null
+  seniority: string | null
+  level: number | null
   women: number[]
   men: number[]
 }
@@ -112,8 +112,8 @@ function toGapGroup(bucket: Bucket) {
   return {
     key: bucket.key,
     roleTitle: bucket.roleTitle,
+    seniority: bucket.seniority,
     level: bucket.level,
-    band: bucket.band,
     womenCount: stats.womenCount,
     menCount: stats.menCount,
     womenMeanComp: masked ? null : stats.womenMeanComp,
@@ -169,17 +169,17 @@ export function buildGapAggregates(rows: SnapshotRow[]): {
   const currency =
     priced.find((r) => r.currency !== undefined)?.currency ?? null
 
-  // Steg 1, lika arbete (equal work): (roleTitle, band, level).
+  // Steg 1, lika arbete (equal work): (roleTitle, level, seniority).
   const equalWorkMap = new Map<string, Bucket>()
   for (const row of priced) {
-    const key = `${row.roleTitle}|${row.band ?? "none"}|${row.level}`
+    const key = `${row.roleTitle}|${row.level ?? "none"}|${row.seniority}`
     let bucket = equalWorkMap.get(key)
     if (bucket === undefined) {
       bucket = {
         key,
         roleTitle: row.roleTitle,
+        seniority: row.seniority,
         level: row.level,
-        band: row.band,
         women: [],
         men: [],
       }
@@ -188,55 +188,56 @@ export function buildGapAggregates(rows: SnapshotRow[]): {
     pushByGender(bucket, row)
   }
 
-  // Steg 2, likvärdigt arbete (equivalent work): band. Null-band priced rows
-  // are excluded (band is the equivalence key, so they cannot be placed).
+  // Steg 2, likvärdigt arbete (equivalent work): level. Null-level priced
+  // rows are excluded (level is the equivalence key, so they cannot be
+  // placed).
   const equivalentWorkMap = new Map<number, Bucket>()
   for (const row of priced) {
-    if (row.band === null) continue
-    const key = `${row.band}`
-    let bucket = equivalentWorkMap.get(row.band)
+    if (row.level === null) continue
+    const key = `${row.level}`
+    let bucket = equivalentWorkMap.get(row.level)
     if (bucket === undefined) {
       bucket = {
         key,
         roleTitle: null,
-        level: null,
-        band: row.band,
+        seniority: null,
+        level: row.level,
         women: [],
         men: [],
       }
-      equivalentWorkMap.set(row.band, bucket)
+      equivalentWorkMap.set(row.level, bucket)
     }
     pushByGender(bucket, row)
   }
 
-  // Deterministic order: band asc (null last), then title, then level.
-  const byBandTitleLevel = (a: Bucket, b: Bucket): number => {
-    const ba = a.band ?? Number.POSITIVE_INFINITY
-    const bb = b.band ?? Number.POSITIVE_INFINITY
-    if (ba !== bb) return ba - bb
+  // Deterministic order: level asc (null last), then title, then seniority.
+  const byLevelTitleSeniority = (a: Bucket, b: Bucket): number => {
+    const la = a.level ?? Number.POSITIVE_INFINITY
+    const lb = b.level ?? Number.POSITIVE_INFINITY
+    if (la !== lb) return la - lb
     const ta = a.roleTitle ?? ""
     const tb = b.roleTitle ?? ""
     if (ta !== tb) return ta.localeCompare(tb)
-    return (a.level ?? "").localeCompare(b.level ?? "")
+    return (a.seniority ?? "").localeCompare(b.seniority ?? "")
   }
 
   const equalWork = [...equalWorkMap.values()]
-    .sort(byBandTitleLevel)
+    .sort(byLevelTitleSeniority)
     .map(toGapGroup)
   const equivalentWork = [...equivalentWorkMap.values()]
-    .sort((a, b) => (a.band ?? 0) - (b.band ?? 0))
+    .sort((a, b) => (a.level ?? 0) - (b.level ?? 0))
     .map(toGapGroup)
 
   // Diskrimineringslagen's third comparison: every women-dominated
-  // equal-work group against equal-or-lower-valued banded groups that
-  // out-earn it. Unbanded buckets are passed through too; the engine itself
-  // drops anything without a band (it cannot be placed on the value ladder).
+  // equal-work group against equal-or-lower-valued leveled groups that
+  // out-earn it. Unleveled buckets are passed through too; the engine itself
+  // drops anything without a level (it cannot be placed on the value ladder).
   const comparableGroups: ComparableGroup[] = [...equalWorkMap.values()].map(
     (bucket) => ({
       key: bucket.key,
       roleTitle: bucket.roleTitle,
+      seniority: bucket.seniority,
       level: bucket.level,
-      band: bucket.band,
       womenCount: bucket.women.length,
       menCount: bucket.men.length,
       meanComp: wholeGroupMean(bucket),

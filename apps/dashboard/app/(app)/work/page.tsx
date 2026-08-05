@@ -26,32 +26,32 @@ import { useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { useState } from "react"
-import { BandLadder } from "@/components/bands/band-ladder"
-import { BandMatrix } from "@/components/bands/band-matrix"
-import { FamilyBandMatrix } from "@/components/bands/family-band-matrix"
-import { FamilyFilter } from "@/components/bands/family-filter"
-import { PendingRoles } from "@/components/bands/pending-roles"
+import { FamilyFilter } from "@/components/levels/family-filter"
+import { FamilyLevelMatrix } from "@/components/levels/family-level-matrix"
+import { LevelLadder } from "@/components/levels/level-ladder"
+import { LevelMatrix } from "@/components/levels/level-matrix"
+import { PendingRoles } from "@/components/levels/pending-roles"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useOrganization } from "@/components/org-context"
 import { PageHeading } from "@/components/page-heading"
 import { usePageTitle } from "@/hooks/use-page-title"
-import { trackColumns } from "@/lib/bands"
+import { trackColumns } from "@/lib/levels"
 
 // Filter key for roles with no family (the "No family" option).
 const NO_FAMILY = "__none__"
 
 // /work is the app's only full-bleed route (AppShell), which the matrix and
 // families views need: they are horizontal and want every pixel. The ladder is
-// a vertical list of band rows, so it instead lines up with every other page by
+// a vertical list of level rows, so it instead lines up with every other page by
 // applying the shell's content width. The loading placeholder below carries it
 // too, so the panel does not narrow when the data arrives.
-// Work > Overview: the band ladder (default) and a band-by-track matrix
+// Work > Overview: the level ladder (default) and a level-by-track matrix
 // toggle. A multi-select family filter shows/hides families, and a "group by
-// family" switch clusters roles by family inside each band (ladder) or cell
-// (matrix), animating them into and out of their groups. Score and band
+// family" switch clusters roles by family inside each level (ladder) or cell
+// (matrix), animating them into and out of their groups. Score and level
 // recompute reactively from the model and ratings (ADR-0002: never stored).
 export default function WorkOverviewPage() {
-  const t = useTranslations("dashboard.bands")
+  const t = useTranslations("dashboard.levels")
   const tHelp = useTranslations("dashboard.help")
   const tFamily = useTranslations("dashboard.roles.family")
   const tNav = useTranslations("dashboard.nav")
@@ -86,7 +86,7 @@ export default function WorkOverviewPage() {
 
   if (results === undefined) {
     // Content-shaped loading state mirroring the ladder view: the REAL tabs
-    // (static i18n chrome, enabled no-ops while the results load), then band
+    // (static i18n chrome, enabled no-ops while the results load), then level
     // rows (the ladder's real bordered boxes: a w-28 label block and role
     // chips), so nothing reflows when the results arrive.
     return (
@@ -110,17 +110,17 @@ export default function WorkOverviewPage() {
               PAGE_CONTENT_MAX_W
             )}
           >
-            {[3, 2, 4, 1, 2].map((chips, band) => (
+            {[3, 2, 4, 1, 2].map((chips, level) => (
               <li
                 // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
-                key={band}
+                key={level}
                 className="rounded-xl border p-3"
               >
                 <div className="flex gap-4">
                   {/* The rail bars sit in line boxes matching the real text
                       lines (text-sm 20px + text-xs 16px = a 36px rail), so
                       the skeleton row measures exactly as tall as a loaded
-                      band row (measured in headless Chrome: 62px vs 60px
+                      level row (measured in headless Chrome: 62px vs 60px
                       with naively stacked bars). */}
                   <div className="w-28 shrink-0">
                     <div className="flex h-5 items-center">
@@ -178,7 +178,7 @@ export default function WorkOverviewPage() {
   // put when families are filtered (hidden families leave hatched empty cells
   // rather than collapsing the columns, even when everything is hidden).
   const trackCols = trackColumns(
-    results.rows.filter((row) => row.band !== null)
+    results.rows.filter((row) => row.level !== null)
   )
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-6">
@@ -250,8 +250,8 @@ export default function WorkOverviewPage() {
               PAGE_CONTENT_MAX_W
             )}
           >
-            <BandLadder
-              bands={results.bands}
+            <LevelLadder
+              levels={results.levels}
               rows={filteredRows}
               groupByFamily={grouped}
             />
@@ -266,8 +266,8 @@ export default function WorkOverviewPage() {
             value="matrix"
             className="flex min-h-0 flex-1 flex-col gap-4"
           >
-            <BandMatrix
-              bands={results.bands}
+            <LevelMatrix
+              levels={results.levels}
               rows={filteredRows}
               tracks={trackCols}
               groupByFamily={grouped}
@@ -278,7 +278,7 @@ export default function WorkOverviewPage() {
             value="families"
             className="flex min-h-0 flex-1 flex-col gap-4"
           >
-            <FamilyBandMatrix bands={results.bands} rows={filteredRows} />
+            <FamilyLevelMatrix levels={results.levels} rows={filteredRows} />
             <PendingRoles rows={filteredRows} />
           </TabsContent>
         </Tabs>

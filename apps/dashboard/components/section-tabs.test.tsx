@@ -91,9 +91,9 @@ describe("SectionTabs", () => {
   })
 
   it("shows the count of roles left to evaluate on the Roles tab", () => {
-    // Three roles, one evaluated (has a band): two remain.
+    // Three roles, one evaluated (has a level): two remain.
     setQueries([{ roleId: "r1" }, { roleId: "r2" }, { roleId: "r3" }], {
-      rows: [{ roleId: "r1", band: 3 }],
+      rows: [{ roleId: "r1", level: 3 }],
     })
     renderTabs()
     expect(screen.getByLabelText("2 roles left to evaluate")).toBeDefined()
@@ -105,7 +105,7 @@ describe("SectionTabs", () => {
     expect(document.querySelector("number-flow-react")).toBeNull()
     unmount()
 
-    setQueries([{ roleId: "r1" }], { rows: [{ roleId: "r1", band: 2 }] })
+    setQueries([{ roleId: "r1" }], { rows: [{ roleId: "r1", level: 2 }] })
     renderTabs()
     expect(document.querySelector("number-flow-react")).toBeNull()
   })

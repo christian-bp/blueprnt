@@ -40,7 +40,7 @@ function modelFixture() {
     templateKey: "standard",
     criteria: [],
     tracks: [{ key: "IC", name: "Individual contributor", order: 1 }],
-    bandThresholds: [],
+    levelThresholds: [],
   }
 }
 
@@ -103,7 +103,7 @@ describe("RolesPage", () => {
   beforeEach(() => {
     currentRoles = [roleFixture()]
     currentModel = modelFixture()
-    currentResults = { rows: [], bands: [] }
+    currentResults = { rows: [], levels: [] }
     useQueryMock.mockReset()
     useQueryMock.mockImplementation((ref: string) => {
       if (ref === "assessment.roles.listRoles") return currentRoles

@@ -43,8 +43,8 @@ function group(flag: GapGroup["flag"], key: string): GapGroup {
   return {
     key,
     roleTitle: "SWE",
-    level: "Senior",
-    band: 3,
+    seniority: "Senior",
+    level: 3,
     womenCount: 2,
     menCount: 2,
     womenMeanComp: 90000,

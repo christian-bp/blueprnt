@@ -92,7 +92,7 @@ function loaded(roles: Array<Record<string, unknown>> = ROLES) {
     }
     if (ref === "assessment.roles.listRoles") return roles
     if (ref === "assessment.results.getResults") {
-      return { rows: [], bands: [{ band: 1, minScore: 0 }] }
+      return { rows: [], levels: [{ level: 1, minScore: 0 }] }
     }
     if (ref === "evaluationModel.model.getModel") {
       return {
@@ -101,7 +101,7 @@ function loaded(roles: Array<Record<string, unknown>> = ROLES) {
         templateKey: null,
         criteria: [],
         tracks: TRACKS,
-        bandThresholds: [{ band: 1, minScore: 0 }],
+        levelThresholds: [{ level: 1, minScore: 0 }],
       }
     }
     return undefined
@@ -172,7 +172,7 @@ describe("FamilyPage", () => {
   // fewer cells than headings does not leave a gap at the end: every later
   // value slides one column left and sits under someone else's heading. The
   // Employees column shipped as a heading and a skeleton bar with no body
-  // cell, which put each band under "Employees" and left "Band" empty, and
+  // cell, which put each level under "Employees" and left "Level" empty, and
   // nothing failed. Counting is what catches it.
   it("gives every row a cell for every heading", async () => {
     useQueryMock.mockImplementation(loaded())

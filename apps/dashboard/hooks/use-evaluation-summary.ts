@@ -7,7 +7,7 @@ import { useMemo } from "react"
 import { countUnevaluated } from "@/lib/evaluation-summary"
 
 // The live evaluation summary for an org: how many roles still lack a
-// completed evaluation (no band in the results query). Shared source for the
+// completed evaluation (no level in the results query). Shared source for the
 // Roles tab's count badge, on the same listRoles + getResults pair the role
 // register renders from, so the badge and the register's "not yet evaluated"
 // rows can never disagree (the subscriptions dedupe with the pages').
@@ -24,7 +24,7 @@ export function useEvaluationSummary(orgId: string) {
             roles.map((role) => ({ roleId: role.roleId as string })),
             results.rows.map((row) => ({
               roleId: row.roleId as string,
-              band: row.band ?? null,
+              level: row.level ?? null,
             }))
           ),
     [roles, results]

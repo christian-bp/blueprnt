@@ -17,7 +17,7 @@ vi.mock("convex/react", () => ({
   useQuery: () => ({
     modelName: "M",
     pointBudget: 6,
-    bandThresholds: [],
+    levelThresholds: [],
     criteria: [
       {
         criterionId: "c1",

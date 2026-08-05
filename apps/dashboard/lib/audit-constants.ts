@@ -5,7 +5,7 @@ import type {
   PayGapReason,
   PraxisAreaKey,
   SuggestionKind,
-  TRACK_LEVELS,
+  TRACK_SENIORITIES,
 } from "@workspace/constants"
 import { LANGUAGE_LABEL_KEYS } from "@/lib/locales"
 
@@ -75,7 +75,7 @@ export const FINDING_VALUE_KEYS: Record<PayMappingFinding, string> = {
 
 // payMapping.groupAnalysisUpdated `groupLabel` when the row documents a
 // praxis review area (an equalWork/equivalentWork row's groupLabel is already
-// a "roleTitle · level" display string and resolves to nothing here).
+// a "roleTitle · seniority" display string and resolves to nothing here).
 export const PRAXIS_AREA_VALUE_KEYS: Record<PraxisAreaKey, string> = {
   payPolicy: "payMapping.review.praxis.payPolicy.title",
   collectiveAgreements: "payMapping.review.praxis.collectiveAgreements.title",
@@ -97,10 +97,10 @@ export const PAY_GAP_REASON_VALUE_KEYS: Record<PayGapReason, string> = {
   responsibility: "payMapping.reasons.responsibility",
 }
 
-// assignment.set `levelSource`: the same concept the people register's
+// assignment.set `senioritySource`: the same concept the people register's
 // "Suggested" badge and the classify state badge already name.
-type LevelSource = "suggested" | "confirmed"
-export const LEVEL_SOURCE_VALUE_KEYS: Record<LevelSource, string> = {
+type SenioritySource = "suggested" | "confirmed"
+export const SENIORITY_SOURCE_VALUE_KEYS: Record<SenioritySource, string> = {
   suggested: "people.suggestedBadge",
   confirmed: "classify.state.confirmed",
 }
@@ -212,11 +212,12 @@ export const SALARY_SOURCE_VALUE_KEYS: Record<SalarySource, string> = {
 // role `trackKey`: the fixed V1 tracks (ADR-0006). The labels are the same
 // in every locale by design (the Nordic convention keeps these English), but
 // they still live in i18n like every other displayed string.
-export const TRACK_VALUE_KEYS: Record<keyof typeof TRACK_LEVELS, string> = {
-  IC: "auditLog.values.tracks.IC",
-  Lead: "auditLog.values.tracks.Lead",
-  M: "auditLog.values.tracks.M",
-}
+export const TRACK_VALUE_KEYS: Record<keyof typeof TRACK_SENIORITIES, string> =
+  {
+    IC: "auditLog.values.tracks.IC",
+    Lead: "auditLog.values.tracks.Lead",
+    M: "auditLog.values.tracks.M",
+  }
 
 // Maps "model.draft" -> "modelDraft", etc., for i18n keys
 // (auditLog.ai.kind.<key>). Typed by SuggestionKind and total, so a kind added
@@ -252,7 +253,7 @@ const CODED_FIELD_DOMAINS: Record<string, Record<string, string>> = {
   scope: SCOPE_VALUE_KEYS,
   finding: FINDING_VALUE_KEYS,
   groupLabel: PRAXIS_AREA_VALUE_KEYS,
-  levelSource: LEVEL_SOURCE_VALUE_KEYS,
+  senioritySource: SENIORITY_SOURCE_VALUE_KEYS,
   role: MEMBER_ROLE_VALUE_KEYS,
   status: STATUS_VALUE_KEYS,
   country: COUNTRY_VALUE_KEYS,
@@ -295,7 +296,7 @@ export const ERASED_AUDIT_VALUE_FIELDS: ReadonlySet<string> = new Set([
 // `dashboard`-scoped translator). Returns undefined when the field carries no
 // coded domain (free text, ids, booleans), the value is not a known member of
 // its domain (e.g. `groupLabel` for an equalWork/equivalentWork row, which is
-// already a "roleTitle · level" display string, not a praxis area key), or
+// already a "roleTitle · seniority" display string, not a praxis area key), or
 // the translator has no string for the resolved key: in any of those cases
 // the caller falls back to the raw value rather than throwing or rendering
 // nothing.

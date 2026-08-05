@@ -1,4 +1,7 @@
-import { isValidLevelForTrack, TRACK_LEVELS } from "@workspace/constants"
+import {
+  isValidSeniorityForTrack,
+  TRACK_SENIORITIES,
+} from "@workspace/constants"
 import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
@@ -198,8 +201,8 @@ describe("listRoles and getRole", () => {
         orgId,
         personId,
         roleId,
-        level: `${track.key}1`,
-        levelSource: "confirmed",
+        seniority: `${track.key}1`,
+        senioritySource: "confirmed",
       })
     }
     // An archived person keeps their (historically true) open assignment, so
@@ -363,7 +366,7 @@ describe("updateRole", () => {
     })
   })
 
-  it("edits the role: a track swap re-suggests the level and flags it unconfirmed", async () => {
+  it("edits the role: a track swap re-suggests the seniority and flags it unconfirmed", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
     const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
@@ -375,9 +378,10 @@ describe("updateRole", () => {
     })
     const otherTrack = model.tracks.find((tr) => tr.key !== track.key)
     if (otherTrack === undefined) throw new Error("seed")
-    // Assign a person at a level valid for the CURRENT track.
-    const level = TRACK_LEVELS[track.key as keyof typeof TRACK_LEVELS][0]
-    if (level === undefined) throw new Error("seed")
+    // Assign a person at a seniority valid for the CURRENT track.
+    const seniority =
+      TRACK_SENIORITIES[track.key as keyof typeof TRACK_SENIORITIES][0]
+    if (seniority === undefined) throw new Error("seed")
     const { personId } = await asAdmin.mutation(
       api.people.people.createPerson,
       { orgId, displayName: "Bo Ek", gender: "Man" }
@@ -386,18 +390,18 @@ describe("updateRole", () => {
       orgId,
       personId,
       roleId,
-      level,
-      levelSource: "confirmed",
+      seniority,
+      senioritySource: "confirmed",
     })
 
-    // The track change is NOT blocked: it re-suggests the level for the new
-    // track and flags it unconfirmed, rather than orphaning it.
+    // The track change is NOT blocked: it re-suggests the seniority for the
+    // new track and flags it unconfirmed, rather than orphaning it.
     const result = await asAdmin.mutation(api.assessment.roles.updateRole, {
       orgId,
       roleId,
       trackKey: otherTrack.key,
     })
-    expect(result.levelsReset).toBe(1)
+    expect(result.senioritiesReset).toBe(1)
 
     await t.run(async (ctx) => {
       const role = await ctx.db.get(roleId)
@@ -412,12 +416,14 @@ describe("updateRole", () => {
       const open = assignments.find((a) => a.endedAt === undefined)
       expect(open).toBeDefined()
       // Re-suggested, unconfirmed, and valid for the NEW track.
-      expect(open?.levelSource).toBe("suggested")
-      expect(isValidLevelForTrack(otherTrack.key, open?.level ?? "")).toBe(true)
+      expect(open?.senioritySource).toBe("suggested")
+      expect(
+        isValidSeniorityForTrack(otherTrack.key, open?.seniority ?? "")
+      ).toBe(true)
     })
   })
 
-  it("track swap with no active assignments returns levelsReset 0", async () => {
+  it("track swap with no active assignments returns senioritiesReset 0", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
     const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
@@ -434,7 +440,7 @@ describe("updateRole", () => {
       roleId,
       trackKey: otherTrack.key,
     })
-    expect(result.levelsReset).toBe(0)
+    expect(result.senioritiesReset).toBe(0)
     await t.run(async (ctx) => {
       const role = await ctx.db.get(roleId)
       expect(role?.trackKey).toBe(otherTrack.key)
@@ -463,8 +469,9 @@ describe("updateRole", () => {
     )
     const otherTrack = model.tracks.find((tr) => tr.key !== track.key)
     if (otherTrack === undefined) throw new Error("seed")
-    const level = TRACK_LEVELS[track.key as keyof typeof TRACK_LEVELS][0]
-    if (level === undefined) throw new Error("seed")
+    const seniority =
+      TRACK_SENIORITIES[track.key as keyof typeof TRACK_SENIORITIES][0]
+    if (seniority === undefined) throw new Error("seed")
 
     // Person A is assigned to roleId, then reassigned elsewhere so the
     // roleId row becomes CLOSED (endedAt set) history, not the active
@@ -479,16 +486,16 @@ describe("updateRole", () => {
       orgId,
       personId: closedPersonId,
       roleId,
-      level,
-      levelSource: "confirmed",
+      seniority,
+      senioritySource: "confirmed",
       effectiveAt: ts1,
     })
     await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
       orgId,
       personId: closedPersonId,
       roleId: otherRoleId,
-      level,
-      levelSource: "confirmed",
+      seniority,
+      senioritySource: "confirmed",
       effectiveAt: ts2,
     })
 
@@ -502,8 +509,8 @@ describe("updateRole", () => {
       orgId,
       personId: openPersonId,
       roleId,
-      level,
-      levelSource: "confirmed",
+      seniority,
+      senioritySource: "confirmed",
     })
 
     const closedBefore = await t.run(async (ctx) => {
@@ -528,17 +535,17 @@ describe("updateRole", () => {
     })
     // Only the ACTIVE orphaned assignment (person B) is reset; the closed
     // history row (person A) is left alone and does not count.
-    expect(result.levelsReset).toBe(1)
+    expect(result.senioritiesReset).toBe(1)
 
     await t.run(async (ctx) => {
       const role = await ctx.db.get(roleId)
       expect(role?.trackKey).toBe(otherTrack.key)
 
-      // The closed row's level and levelSource are UNCHANGED: closed history
-      // is never reset, only the currently active assignment.
+      // The closed row's seniority and senioritySource are UNCHANGED: closed
+      // history is never reset, only the currently active assignment.
       const closedAfter = await ctx.db.get(closedBefore._id)
-      expect(closedAfter?.level).toBe(closedBefore.level)
-      expect(closedAfter?.levelSource).toBe(closedBefore.levelSource)
+      expect(closedAfter?.seniority).toBe(closedBefore.seniority)
+      expect(closedAfter?.senioritySource).toBe(closedBefore.senioritySource)
       expect(closedAfter?.endedAt).toBe(closedBefore.endedAt)
 
       const openAssignments = await ctx.db
@@ -550,8 +557,10 @@ describe("updateRole", () => {
       const open = openAssignments.find((a) => a.endedAt === undefined)
       expect(open).toBeDefined()
       // Re-suggested, unconfirmed, and valid for the NEW track.
-      expect(open?.levelSource).toBe("suggested")
-      expect(isValidLevelForTrack(otherTrack.key, open?.level ?? "")).toBe(true)
+      expect(open?.senioritySource).toBe("suggested")
+      expect(
+        isValidSeniorityForTrack(otherTrack.key, open?.seniority ?? "")
+      ).toBe(true)
     })
   })
 
@@ -580,7 +589,7 @@ describe("updateRole", () => {
 })
 
 describe("archiveRole", () => {
-  it("soft-archives (admin only), logs band.shift to null, hides from listRoles", async () => {
+  it("soft-archives (admin only), logs level.shift to null, hides from listRoles", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
     const asEditor = await addEditor(t, orgId, "editor2@acme.se")
@@ -606,7 +615,7 @@ describe("archiveRole", () => {
       const shifts = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "band.shift")
+          q.eq("orgId", orgId).eq("type", "level.shift")
         )
         .collect()
       const shift = shifts.find(
@@ -614,8 +623,8 @@ describe("archiveRole", () => {
       )
       expect(shift?.payload).toMatchObject({
         roleId,
-        changes: { band: { from: 1, to: null } },
-        // The archive band.shift threads the triggering cause.
+        changes: { level: { from: 1, to: null } },
+        // The archive level.shift threads the triggering cause.
         cause: { event: "role.archived", roleId },
       })
 
@@ -651,7 +660,7 @@ describe("archiveRole", () => {
     expect(list).toHaveLength(0)
   })
 
-  it("captures computedBand on the via-archive anchorRole.updated row", async () => {
+  it("captures computedLevel on the via-archive anchorRole.updated row", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model, track } = await seedTemplateOrganization(t)
     const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
@@ -663,12 +672,12 @@ describe("archiveRole", () => {
       purpose: "p",
       responsibilities: "r",
     })
-    // All ratings 5, so the computed band is the top band (1).
+    // All ratings 5, so the computed level is the top level (1).
     await rateAll(t, orgId, roleId as string, model.criteria, 5)
     await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
       orgId,
       roleId,
-      expectedBand: 1,
+      expectedLevel: 1,
       motivation: "Reference role for engineering.",
     })
 
@@ -688,13 +697,13 @@ describe("archiveRole", () => {
       const payload = viaArchive?.payload as {
         roleId?: string
         viaArchive?: boolean
-        computedBand?: number | null
+        computedLevel?: number | null
         changes?: Record<string, { from: unknown; to: unknown }>
       }
       expect(payload.roleId).toBe(roleId)
-      // The live pre-archive band (top band, all ratings 5), captured before
+      // The live pre-archive level (top level, all ratings 5), captured before
       // the role leaves the results set.
-      expect(payload.computedBand).toBe(1)
+      expect(payload.computedLevel).toBe(1)
       // The retire diff is still recorded alongside the new field.
       expect(payload.changes?.status).toMatchObject({ to: "replaced" })
     })
@@ -720,8 +729,9 @@ describe("archiveRole", () => {
         trackKey: track.key,
       }
     )
-    const level = TRACK_LEVELS[track.key as keyof typeof TRACK_LEVELS][0]
-    if (level === undefined) throw new Error("seed")
+    const seniority =
+      TRACK_SENIORITIES[track.key as keyof typeof TRACK_SENIORITIES][0]
+    if (seniority === undefined) throw new Error("seed")
 
     // Person A was reassigned elsewhere before the archive: their row on
     // roleId is already CLOSED (historical), not the active assignment, and
@@ -736,16 +746,16 @@ describe("archiveRole", () => {
       orgId,
       personId: closedPersonId,
       roleId,
-      level,
-      levelSource: "confirmed",
+      seniority,
+      senioritySource: "confirmed",
       effectiveAt: ts1,
     })
     await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
       orgId,
       personId: closedPersonId,
       roleId: otherRoleId,
-      level,
-      levelSource: "confirmed",
+      seniority,
+      senioritySource: "confirmed",
       effectiveAt: ts2,
     })
 
@@ -759,8 +769,8 @@ describe("archiveRole", () => {
       orgId,
       personId: openPersonId,
       roleId,
-      level,
-      levelSource: "confirmed",
+      seniority,
+      senioritySource: "confirmed",
     })
 
     await asAdmin.mutation(api.assessment.roles.archiveRole, { orgId, roleId })
@@ -812,8 +822,8 @@ describe("archiveRole", () => {
       }
       expect(payload.roleId).toBe(roleId)
       expect(payload.changes?.roleId).toEqual({ from: roleId, to: null })
-      expect(payload.changes?.level).toEqual({ from: level, to: null })
-      expect(payload.changes?.levelSource).toEqual({
+      expect(payload.changes?.seniority).toEqual({ from: seniority, to: null })
+      expect(payload.changes?.senioritySource).toEqual({
         from: "confirmed",
         to: null,
       })
@@ -854,7 +864,7 @@ describe("role family membership", () => {
       familyId: techId,
     })
 
-    // listRoles carries the family and the track/level orders.
+    // listRoles carries the family and the track order.
     const list = await asAdmin.query(api.assessment.roles.listRoles, {
       orgId,
       locale: "sv",

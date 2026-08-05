@@ -288,7 +288,7 @@ const personShape = v.object(personFields)
 const listPersonShape = v.object({
   ...personFields,
   roleId: v.union(v.id("roles"), v.null()),
-  levelSource: v.union(
+  senioritySource: v.union(
     v.literal("suggested"),
     v.literal("confirmed"),
     v.null()
@@ -338,13 +338,13 @@ export const listPeople = orgQuery({
       .collect()
     const activeByPerson = new Map<
       string,
-      { roleId: Id<"roles">; levelSource: "suggested" | "confirmed" }
+      { roleId: Id<"roles">; senioritySource: "suggested" | "confirmed" }
     >()
     for (const assignment of assignments) {
       if (assignment.endedAt === undefined) {
         activeByPerson.set(assignment.personId, {
           roleId: assignment.roleId,
-          levelSource: assignment.levelSource,
+          senioritySource: assignment.senioritySource,
         })
       }
     }
@@ -354,7 +354,7 @@ export const listPeople = orgQuery({
       return {
         ...toPersonShape(person),
         roleId: active?.roleId ?? null,
-        levelSource: active?.levelSource ?? null,
+        senioritySource: active?.senioritySource ?? null,
       }
     })
   },

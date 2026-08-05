@@ -1,4 +1,4 @@
-import { trackKeyForLevel } from "@workspace/constants"
+import { trackKeyForSeniority } from "@workspace/constants"
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -25,7 +25,7 @@ export function TrackBadge({
   name: string
   className?: string
   // Always show the short track key (IC / Lead / M), regardless of viewport.
-  // Used where space is tight and the track is a compact tag, e.g. the band
+  // Used where space is tight and the track is a compact tag, e.g. the level
   // Overview chips. The full name stays reachable via the title tooltip.
   short?: boolean
 }) {
@@ -51,24 +51,24 @@ export function TrackBadge({
   )
 }
 
-// A level code ("M2", "IC5", "Lead-2") as a badge tinted by the track it
-// belongs to, so levels read with the same color language as TrackBadge
-// wherever they appear without the track object in hand. A level outside
+// A seniority code ("M2", "IC5", "Lead-2") as a badge tinted by the track it
+// belongs to, so seniorities read with the same color language as TrackBadge
+// wherever they appear without the track object in hand. A seniority outside
 // every ladder falls back to the plain outline badge.
-export function LevelBadge({
-  level,
+export function SeniorityBadge({
+  seniority,
   className,
 }: {
-  level: string
+  seniority: string
   className?: string
 }) {
-  const trackKey = trackKeyForLevel(level)
+  const trackKey = trackKeyForSeniority(seniority)
   return (
     <Badge
       variant="outline"
       className={cn(trackKey !== undefined && TRACK_TINTS[trackKey], className)}
     >
-      {level}
+      {seniority}
     </Badge>
   )
 }

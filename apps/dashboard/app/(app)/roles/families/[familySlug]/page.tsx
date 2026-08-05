@@ -35,8 +35,8 @@ import {
 } from "@/components/roles/role-table-toolbar"
 import {
   ROLE_SKELETON_COLUMNS,
-  RoleBandCell,
   RoleEmployeesCell,
+  RoleLevelCell,
   RoleTableHeadings,
   RoleTeamCell,
   RoleTitleCell,
@@ -46,7 +46,7 @@ import { TableSkeleton } from "@/components/table-skeleton"
 import { usePageTitle } from "@/hooks/use-page-title"
 
 // Per-family progression: the family's roles in one table with a track column,
-// ordered by track (track order) then title. Band outcomes appear only for
+// ordered by track (track order) then title. Level outcomes appear only for
 // complete roles (the same visibility rule as the results view); a role
 // without one shows a muted "not yet evaluated" line instead of a blank cell.
 // The register's toolbar (shared component, shared search matcher) sits above
@@ -159,7 +159,7 @@ export default function FamilyPage(props: {
     )
   }
 
-  const bandByRole = new Map(
+  const levelByRole = new Map(
     results.rows.map((row) => [row.roleId as string, row])
   )
   // One flat list, ordered by track (track order) then title.
@@ -247,7 +247,7 @@ export default function FamilyPage(props: {
               <RoleTableHeadings />
               <TableBody>
                 {shownRoles.map((role) => {
-                  const result = bandByRole.get(role.roleId as string)
+                  const result = levelByRole.get(role.roleId as string)
                   return (
                     <TableRow key={role.roleId}>
                       {/* Every cell comes from the shared role row, so this
@@ -270,7 +270,7 @@ export default function FamilyPage(props: {
                         <RoleEmployeesCell count={role.employeeCount} />
                       </TableCell>
                       <TableCell>
-                        <RoleBandCell band={result?.band ?? null} />
+                        <RoleLevelCell level={result?.level ?? null} />
                       </TableCell>
                     </TableRow>
                   )

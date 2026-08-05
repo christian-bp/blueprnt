@@ -1,5 +1,5 @@
-// Shared scaffolding classes for the two band matrices (bands x tracks and
-// families x bands), so their scroll/sticky behavior cannot drift.
+// Shared scaffolding classes for the two level matrices (levels x tracks and
+// families x levels), so their scroll/sticky behavior cannot drift.
 
 // The scroll wrapper: horizontal for wide grids (the wide-content rule), and
 // vertically filling the height-bounded tab panel on /work (flex-1 inside

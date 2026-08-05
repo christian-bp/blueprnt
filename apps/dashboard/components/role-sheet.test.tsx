@@ -46,7 +46,7 @@ type Result = {
   ratedCount: number
   totalCriteria: number
   score: number | null
-  band: number | null
+  level: number | null
   criteria: {
     criterionId: string
     name: string
@@ -106,7 +106,7 @@ describe("RoleSheet", () => {
       ratedCount: 3,
       totalCriteria: 3,
       score: 71,
-      band: 3,
+      level: 3,
       criteria: [
         {
           criterionId: "scope",
@@ -128,11 +128,11 @@ describe("RoleSheet", () => {
   })
   afterEach(() => cleanup())
 
-  it("shows the band and a compact breakdown (no raw score) for a complete role", () => {
+  it("shows the level and a compact breakdown (no raw score) for a complete role", () => {
     renderSheet()
     open()
     expect(screen.getByText("Engineer")).toBeTruthy()
-    expect(screen.getByText("Band 3")).toBeTruthy()
+    expect(screen.getByText("Level 3")).toBeTruthy()
     // The raw 0-100 weighting is intentionally not shown in the sheet.
     expect(screen.queryByText("71 / 100")).toBeNull()
     // Breakdown is present but compact: names + shares, no "rated X / 5".
@@ -142,7 +142,12 @@ describe("RoleSheet", () => {
   })
 
   it("shows progress and no per-criterion values for an incomplete role", () => {
-    result = { ...(result as Result), complete: false, score: null, band: null }
+    result = {
+      ...(result as Result),
+      complete: false,
+      score: null,
+      level: null,
+    }
     install()
     renderSheet()
     open()

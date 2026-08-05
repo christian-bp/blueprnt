@@ -32,10 +32,10 @@ export {
   type SuggestionKind,
 } from "./suggestions"
 export {
-  TRACK_LEVELS,
-  isValidLevelForTrack,
-  trackKeyForLevel,
-} from "./trackLevels"
+  TRACK_SENIORITIES,
+  isValidSeniorityForTrack,
+  trackKeyForSeniority,
+} from "./trackSeniorities"
 export {
   DEFAULT_BASIS_BY_FIELD,
   PAY_BASIS,

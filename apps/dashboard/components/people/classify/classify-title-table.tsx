@@ -4,8 +4,8 @@ import NumberFlow from "@number-flow/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
   MAX_ASSIGNMENTS_PER_MUTATION,
-  TRACK_LEVELS,
-  isValidLevelForTrack,
+  TRACK_SENIORITIES,
+  isValidSeniorityForTrack,
 } from "@workspace/constants"
 import { ArrowDown01Icon, Tag01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -75,11 +75,11 @@ export interface ClassifyPersonRow {
   externalRef: string | null
   employmentStartDate: string | null
   isManager: boolean | null
-  suggestedLevel: string | null
+  suggestedSeniority: string | null
   currentAssignment: {
     roleId: string
-    level: string
-    levelSource: "suggested" | "confirmed"
+    seniority: string
+    senioritySource: "suggested" | "confirmed"
   } | null
 }
 
@@ -111,14 +111,14 @@ export interface ClassifyTrack {
 // iff no person has any assignment; pending otherwise (mixed or all suggested).
 export function classificationStateForPeople(
   people: Array<{
-    currentAssignment: { levelSource: "suggested" | "confirmed" } | null
+    currentAssignment: { senioritySource: "suggested" | "confirmed" } | null
   }>
 ): "confirmed" | "pending" | "unclassified" {
   if (people.length === 0) return "unclassified"
   const hasAny = people.some((p) => p.currentAssignment !== null)
   if (!hasAny) return "unclassified"
   const allConfirmed = people.every(
-    (p) => p.currentAssignment?.levelSource === "confirmed"
+    (p) => p.currentAssignment?.senioritySource === "confirmed"
   )
   return allConfirmed ? "confirmed" : "pending"
 }
@@ -175,14 +175,14 @@ export function confirmedRoleFor(group: {
   people: Array<{
     currentAssignment: {
       roleId: string
-      levelSource: "suggested" | "confirmed"
+      senioritySource: "suggested" | "confirmed"
     } | null
   }>
 }): string | null {
   if (group.people.length === 0) return null
   let roleId: string | null = null
   for (const p of group.people) {
-    if (p.currentAssignment?.levelSource !== "confirmed") return null
+    if (p.currentAssignment?.senioritySource !== "confirmed") return null
     if (roleId === null) {
       roleId = p.currentAssignment.roleId
     } else if (roleId !== p.currentAssignment.roleId) {
@@ -192,37 +192,38 @@ export function confirmedRoleFor(group: {
   return roleId
 }
 
-// The level to show/submit for a person, in priority order: their currently
-// assigned level (kept across a role swap when it is still valid on the
-// track), the engine's suggestion, the track's first level. An explicit
-// per-person selection overrides all of these at the call sites.
-export function resolveLevel(
-  person: Pick<ClassifyPersonRow, "suggestedLevel" | "currentAssignment">,
+// The seniority to show/submit for a person, in priority order: their
+// currently assigned seniority (kept across a role swap when it is still
+// valid on the track), the engine's suggestion, the track's first seniority.
+// An explicit per-person selection overrides all of these at the call sites.
+export function resolveSeniority(
+  person: Pick<ClassifyPersonRow, "suggestedSeniority" | "currentAssignment">,
   trackKey: string
 ): string {
-  const current = person.currentAssignment?.level
-  if (current !== undefined && isValidLevelForTrack(trackKey, current)) {
+  const current = person.currentAssignment?.seniority
+  if (current !== undefined && isValidSeniorityForTrack(trackKey, current)) {
     return current
   }
   if (
-    person.suggestedLevel !== null &&
-    isValidLevelForTrack(trackKey, person.suggestedLevel)
+    person.suggestedSeniority !== null &&
+    isValidSeniorityForTrack(trackKey, person.suggestedSeniority)
   ) {
-    return person.suggestedLevel
+    return person.suggestedSeniority
   }
-  const levels = TRACK_LEVELS[trackKey as keyof typeof TRACK_LEVELS] ?? []
-  return levels[0] ?? ""
+  const seniorities =
+    TRACK_SENIORITIES[trackKey as keyof typeof TRACK_SENIORITIES] ?? []
+  return seniorities[0] ?? ""
 }
 
-// Build a fresh per-person level Map for a group using the new track's
-// defaults, resetting any stale levels from a previous track.
-function buildDefaultLevels(
+// Build a fresh per-person seniority Map for a group using the new track's
+// defaults, resetting any stale seniorities from a previous track.
+function buildDefaultSeniorities(
   people: ClassifyPersonRow[],
   trackKey: string
 ): Map<string, string> {
   const result = new Map<string, string>()
   for (const p of people) {
-    result.set(p.personId, resolveLevel(p, trackKey))
+    result.set(p.personId, resolveSeniority(p, trackKey))
   }
   return result
 }
@@ -431,8 +432,8 @@ export function ClassifyTitleTable({
   // per-person review panel is opt-in via its row.
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set())
 
-  // Per-person selected levels: outer key = rowKey(group), inner key = personId
-  const [selectedLevel, setSelectedLevel] = useState<
+  // Per-person selected seniorities: outer key = rowKey(group), inner key = personId
+  const [selectedSeniority, setSelectedSeniority] = useState<
     Map<string, Map<string, string>>
   >(() => new Map())
 
@@ -462,16 +463,16 @@ export function ClassifyTitleTable({
     })
   }
 
-  function handleLevelChange(
+  function handleSeniorityChange(
     groupKey: string,
     personId: string,
-    level: string
+    seniority: string
   ) {
-    setSelectedLevel((prev) => {
+    setSelectedSeniority((prev) => {
       const next = new Map(prev)
-      const groupLevels = new Map(prev.get(groupKey) ?? new Map())
-      groupLevels.set(personId, level)
-      next.set(groupKey, groupLevels)
+      const groupSeniorities = new Map(prev.get(groupKey) ?? new Map())
+      groupSeniorities.set(personId, seniority)
+      next.set(groupKey, groupSeniorities)
       return next
     })
   }
@@ -490,9 +491,10 @@ export function ClassifyTitleTable({
     })
 
     // When the role changes to one on a different track, reset per-person
-    // levels so an out-of-track level can never be submitted (ADR-0005:
-    // level must be valid for the track; the server re-validates via
-    // isValidLevelForTrack, but the UI must not offer or submit an invalid one).
+    // seniorities so an out-of-track seniority can never be submitted
+    // (ADR-0005: seniority must be valid for the track; the server
+    // re-validates via isValidSeniorityForTrack, but the UI must not offer or
+    // submit an invalid one).
     if (newRoleId !== null) {
       const newRole = roleById.get(newRoleId)
       const prevRoleId =
@@ -509,9 +511,12 @@ export function ClassifyTitleTable({
         (prevRole === undefined || prevRole.trackKey !== newRole.trackKey)
 
       if (trackChanged && newRole !== undefined) {
-        setSelectedLevel((prev) => {
+        setSelectedSeniority((prev) => {
           const next = new Map(prev)
-          next.set(groupKey, buildDefaultLevels(group.people, newRole.trackKey))
+          next.set(
+            groupKey,
+            buildDefaultSeniorities(group.people, newRole.trackKey)
+          )
           return next
         })
       }
@@ -522,8 +527,8 @@ export function ClassifyTitleTable({
   // a group, derived once: the resolved role (an explicit pick wins over the
   // confirmed role, which wins over the engine suggestion) and whether the
   // group is actionable. A confirmed group becomes actionable again when the
-  // pending selection differs from what is confirmed (role swap or level
-  // change), so re-confirming applies the change.
+  // pending selection differs from what is confirmed (role swap or
+  // seniority change), so re-confirming applies the change.
   function resolveGroup(group: ClassifyTitleGroup) {
     const key = rowKey(group)
     const state = classificationStateForPeople(group.people)
@@ -535,16 +540,16 @@ export function ClassifyTitleTable({
         ? roleById.get(currentRoleId)
         : undefined
     const trackKey = role?.trackKey ?? ""
-    const groupLevels = selectedLevel.get(key)
-    const levelsDirty =
-      groupLevels !== undefined &&
+    const groupSeniorities = selectedSeniority.get(key)
+    const senioritiesDirty =
+      groupSeniorities !== undefined &&
       group.people.some((p) => {
-        const picked = groupLevels.get(p.personId)
-        return picked !== undefined && picked !== p.currentAssignment?.level
+        const picked = groupSeniorities.get(p.personId)
+        return picked !== undefined && picked !== p.currentAssignment?.seniority
       })
     const dirty =
       state === "confirmed" &&
-      (currentRoleId !== confirmedRoleId || levelsDirty)
+      (currentRoleId !== confirmedRoleId || senioritiesDirty)
     const actionable =
       currentRoleId !== null &&
       currentRoleId !== undefined &&
@@ -552,19 +557,21 @@ export function ClassifyTitleTable({
     return { key, state, confirmedRoleId, currentRoleId, trackKey, actionable }
   }
 
-  // Builds the per-person assignment payload for a group. Level resolution:
-  // the per-person selected level when present, else resolveLevel (current
-  // assigned level, then suggestion, then the track's first level). This
-  // guarantees a valid level is always submitted.
+  // Builds the per-person assignment payload for a group. Seniority
+  // resolution: the per-person selected seniority when present, else
+  // resolveSeniority (current assigned seniority, then suggestion, then the
+  // track's first seniority). This guarantees a valid seniority is always
+  // submitted.
   function buildAssignments(group: ClassifyTitleGroup): BulkAssignment[] {
     const key = rowKey(group)
     const { currentRoleId, trackKey } = resolveGroup(group)
     if (currentRoleId === null || currentRoleId === undefined) return []
-    const groupLevels = selectedLevel.get(key)
+    const groupSeniorities = selectedSeniority.get(key)
     return group.people.map((p) => ({
       personId: p.personId,
       roleId: currentRoleId,
-      level: groupLevels?.get(p.personId) ?? resolveLevel(p, trackKey),
+      seniority:
+        groupSeniorities?.get(p.personId) ?? resolveSeniority(p, trackKey),
     }))
   }
 
@@ -585,7 +592,7 @@ export function ClassifyTitleTable({
       await assignPeople({
         orgId,
         assignments: chunk as Parameters<typeof assignPeople>[0]["assignments"],
-        levelSource: "confirmed",
+        senioritySource: "confirmed",
       })
       onChunkDone?.(chunk.length)
     }
@@ -741,8 +748,8 @@ export function ClassifyTitleTable({
             const { key, state, currentRoleId, trackKey, actionable } =
               resolveGroup(group)
             const isExpanded = expanded.has(key)
-            const groupLevels =
-              selectedLevel.get(key) ?? new Map<string, string>()
+            const groupSeniorities =
+              selectedSeniority.get(key) ?? new Map<string, string>()
             const isConfirming = confirming.has(key)
             const roleTitle =
               currentRoleId !== null && currentRoleId !== undefined
@@ -755,7 +762,7 @@ export function ClassifyTitleTable({
             return (
               <Fragment key={key}>
                 {/* The collapsed row is pure status: title, count, the resolved
-                  role (read-only), and the state. Every edit (role, levels)
+                  role (read-only), and the state. Every edit (role, seniorities)
                   and the Confirm itself live in the expanded panel, so a
                   group cannot be confirmed without its people on screen.
                   The whole row toggles; the chevron stays the accessible
@@ -936,14 +943,14 @@ export function ClassifyTitleTable({
                             <ClassifyPersonRows
                               people={group.people}
                               trackKey={trackKey}
-                              selectedLevel={groupLevels}
-                              onLevelChange={(personId, level) =>
-                                handleLevelChange(key, personId, level)
+                              selectedSeniority={groupSeniorities}
+                              onSeniorityChange={(personId, seniority) =>
+                                handleSeniorityChange(key, personId, seniority)
                               }
                             />
 
                             {/* The ONLY Confirm: it exists solely inside the
-                              open panel, with every person's level on screen,
+                              open panel, with every person's seniority on screen,
                               and only while there is something to confirm
                               (not yet confirmed, or a pending change). */}
                             {actionable && (

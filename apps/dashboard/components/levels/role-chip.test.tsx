@@ -2,11 +2,11 @@ import { cleanup, render, screen } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
-import { RoleChip } from "@/components/bands/role-chip"
+import { RoleChip } from "@/components/levels/role-chip"
 import { RoleSheetProvider } from "@/components/role-sheet"
-import type { BandRoleRow } from "@/lib/bands"
+import type { LevelRoleRow } from "@/lib/levels"
 
-function row(overrides: Partial<BandRoleRow>): BandRoleRow {
+function row(overrides: Partial<LevelRoleRow>): LevelRoleRow {
   return {
     roleId: "r1",
     slug: "r1",
@@ -14,7 +14,7 @@ function row(overrides: Partial<BandRoleRow>): BandRoleRow {
     trackKey: "IC",
     trackName: "Individual contributor",
     score: 78,
-    band: 3,
+    level: 3,
     ratedCount: 9,
     totalCriteria: 9,
     familyId: null,
@@ -24,7 +24,7 @@ function row(overrides: Partial<BandRoleRow>): BandRoleRow {
   }
 }
 
-function renderChip(r: BandRoleRow) {
+function renderChip(r: LevelRoleRow) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <RoleChip role={r} />
@@ -61,15 +61,19 @@ describe("RoleChip", () => {
     expect(screen.queryByRole("link", { name: /Staff Engineer/ })).toBeNull()
   })
 
-  it("flags an anchor whose computed band deviates from the agreed band", () => {
-    renderChip(row({ band: 3, anchor: { expectedBand: 2, status: "active" } }))
-    const expected = messages.dashboard.bands.deviation.replace("{band}", "2")
+  it("flags an anchor whose computed level deviates from the agreed level", () => {
+    renderChip(
+      row({ level: 3, anchor: { expectedLevel: 2, status: "active" } })
+    )
+    const expected = messages.dashboard.levels.deviation.replace("{level}", "2")
     expect(screen.getByText(expected)).toBeDefined()
   })
 
-  it("shows no deviation flag when the computed band matches the agreed band", () => {
-    renderChip(row({ band: 2, anchor: { expectedBand: 2, status: "active" } }))
-    const expected = messages.dashboard.bands.deviation.replace("{band}", "2")
+  it("shows no deviation flag when the computed level matches the agreed level", () => {
+    renderChip(
+      row({ level: 2, anchor: { expectedLevel: 2, status: "active" } })
+    )
+    const expected = messages.dashboard.levels.deviation.replace("{level}", "2")
     expect(screen.queryByText(expected)).toBeNull()
   })
 })

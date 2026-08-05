@@ -1,5 +1,5 @@
 import {
-  isValidLevelForTrack,
+  isValidSeniorityForTrack,
   MAX_ASSIGNMENTS_PER_MUTATION,
 } from "@workspace/constants"
 import { type Infer, v } from "convex/values"
@@ -34,8 +34,8 @@ const assignmentShape = v.object({
   assignmentId: v.id("personAssignments"),
   personId: v.id("people"),
   roleId: v.id("roles"),
-  level: v.string(),
-  levelSource: v.union(v.literal("suggested"), v.literal("confirmed")),
+  seniority: v.string(),
+  senioritySource: v.union(v.literal("suggested"), v.literal("confirmed")),
   effectiveAt: v.number(),
   endedAt: v.union(v.number(), v.null()),
 })
@@ -45,8 +45,8 @@ function toAssignmentShape(doc: Doc<"personAssignments">) {
     assignmentId: doc._id,
     personId: doc.personId,
     roleId: doc.roleId,
-    level: doc.level,
-    levelSource: doc.levelSource,
+    seniority: doc.seniority,
+    senioritySource: doc.senioritySource,
     effectiveAt: doc.effectiveAt,
     endedAt: doc.endedAt ?? null,
   }
@@ -55,7 +55,7 @@ function toAssignmentShape(doc: Doc<"personAssignments">) {
 // The assignment that was active at a point in time: effectiveAt <= at, and
 // still open or ended after `at`. Pure interval lookup over a person's
 // assignment timeline, exported so the pay history can join each salary
-// record to the role + level it was earned under (derived, never stored:
+// record to the role + seniority it was earned under (derived, never stored:
 // a later or corrected classification re-joins history automatically).
 export function assignmentActiveAt(
   assignments: readonly Doc<"personAssignments">[],
@@ -140,7 +140,7 @@ export async function countHoldersByRole(
   return counts
 }
 
-// Shared assignment write. Validates the level against the role's track,
+// Shared assignment write. Validates the seniority against the role's track,
 // enforces the strictly-chronological guard against the current open
 // assignment, closes that open assignment, inserts the new row, and writes the
 // assignment.set audit row. Callers MUST have already asserted that personId
@@ -154,8 +154,8 @@ export async function writeAssignment(
     actorId: string
     personId: Id<"people">
     roleId: Id<"roles">
-    level: string
-    levelSource: "suggested" | "confirmed"
+    seniority: string
+    senioritySource: "suggested" | "confirmed"
     effectiveAt: number
   }
 ): Promise<Id<"personAssignments">> {
@@ -165,9 +165,9 @@ export async function writeAssignment(
     throw appError(ERROR_CODES.notFound)
   }
 
-  // Validate level against the role's track.
-  if (!isValidLevelForTrack(role.trackKey, args.level)) {
-    throw appError(ERROR_CODES.invalidLevel)
+  // Validate seniority against the role's track.
+  if (!isValidSeniorityForTrack(role.trackKey, args.seniority)) {
+    throw appError(ERROR_CODES.invalidSeniority)
   }
 
   // Find and close the current open assignment, if any.
@@ -189,29 +189,29 @@ export async function writeAssignment(
 
   const prevSnapshot: Record<string, unknown> = {
     roleId: null,
-    level: null,
-    levelSource: null,
+    seniority: null,
+    senioritySource: null,
   }
 
   if (openAssignment !== null) {
     await ctx.db.patch(openAssignment._id, { endedAt: args.effectiveAt })
     prevSnapshot.roleId = openAssignment.roleId
-    prevSnapshot.level = openAssignment.level
-    prevSnapshot.levelSource = openAssignment.levelSource
+    prevSnapshot.seniority = openAssignment.seniority
+    prevSnapshot.senioritySource = openAssignment.senioritySource
   }
 
   const nextSnapshot: Record<string, unknown> = {
     roleId: args.roleId,
-    level: args.level,
-    levelSource: args.levelSource,
+    seniority: args.seniority,
+    senioritySource: args.senioritySource,
   }
 
   const assignmentId = await ctx.db.insert("personAssignments", {
     orgId: args.orgId,
     personId: args.personId,
     roleId: args.roleId,
-    level: args.level,
-    levelSource: args.levelSource,
+    seniority: args.seniority,
+    senioritySource: args.senioritySource,
     effectiveAt: args.effectiveAt,
   })
 
@@ -233,16 +233,16 @@ export async function writeAssignment(
   return assignmentId
 }
 
-// Assign a person to a role at a given seniority level.
+// Assign a person to a role at a given seniority.
 // If the person has an open assignment (no endedAt), it is closed first by
 // setting its endedAt = effectiveAt. The new assignment becomes the active one.
-// Audit: assignment.set (changes diff: roleId, level, levelSource).
+// Audit: assignment.set (changes diff: roleId, seniority, senioritySource).
 export const assignPersonToRole = orgMutation({
   args: {
     personId: v.id("people"),
     roleId: v.id("roles"),
-    level: v.string(),
-    levelSource: v.union(v.literal("suggested"), v.literal("confirmed")),
+    seniority: v.string(),
+    senioritySource: v.union(v.literal("suggested"), v.literal("confirmed")),
     effectiveAt: v.optional(v.number()),
   },
   returns: v.id("personAssignments"),
@@ -256,8 +256,8 @@ export const assignPersonToRole = orgMutation({
       actorId: ctx.authUserId,
       personId: args.personId,
       roleId: args.roleId,
-      level: args.level,
-      levelSource: args.levelSource,
+      seniority: args.seniority,
+      senioritySource: args.senioritySource,
       effectiveAt: args.effectiveAt ?? Date.now(),
     })
   },
@@ -276,10 +276,10 @@ export const assignPeopleToRole = orgMutation({
       v.object({
         personId: v.id("people"),
         roleId: v.id("roles"),
-        level: v.string(),
+        seniority: v.string(),
       })
     ),
-    levelSource: v.union(v.literal("suggested"), v.literal("confirmed")),
+    senioritySource: v.union(v.literal("suggested"), v.literal("confirmed")),
     effectiveAt: v.optional(v.number()),
   },
   returns: v.array(v.id("personAssignments")),
@@ -303,8 +303,8 @@ export const assignPeopleToRole = orgMutation({
           actorId: ctx.authUserId,
           personId: a.personId,
           roleId: a.roleId,
-          level: a.level,
-          levelSource: args.levelSource,
+          seniority: a.seniority,
+          senioritySource: args.senioritySource,
           effectiveAt,
         })
       )
@@ -354,8 +354,8 @@ const rolePersonShape = v.object({
   personId: v.id("people"),
   publicId: v.string(),
   displayName: v.string(),
-  level: v.string(),
-  levelSource: v.union(v.literal("suggested"), v.literal("confirmed")),
+  seniority: v.string(),
+  senioritySource: v.union(v.literal("suggested"), v.literal("confirmed")),
   department: v.union(v.string(), v.null()),
   ftePercent: v.union(v.number(), v.null()),
 })
@@ -402,8 +402,8 @@ export const listPeopleForRole = orgQuery({
         personId: person._id,
         publicId: person.publicId,
         displayName: person.displayName,
-        level: assignment.level,
-        levelSource: assignment.levelSource,
+        seniority: assignment.seniority,
+        senioritySource: assignment.senioritySource,
         department: person.department ?? null,
         ftePercent: person.ftePercent ?? null,
       })

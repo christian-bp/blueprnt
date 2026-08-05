@@ -70,8 +70,9 @@ describe("assessment/seed.seedRatedRoles", () => {
         expect(roleRatings).toHaveLength(9)
       }
 
-      // Verify the role -> level -> rating-row and templateKey -> column mapping
-      // landed: a mis-map would still total the same count but score wrong.
+      // Verify the role -> criterion -> rating-row and templateKey -> column
+      // mapping landed: a mis-map would still total the same count but score
+      // wrong.
       const templateKeyById = new Map(
         criteria.map((c) => [c._id, c.templateKey])
       )

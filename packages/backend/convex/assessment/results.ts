@@ -6,8 +6,8 @@ import { deriveResults } from "./compute"
 import { familyNames, trackNames } from "./names"
 
 // The results view: live-derived rows for every non-archived role plus the
-// model's band list. Score/band are computed at read time and never stored
-// (ADR-0002). Sorted band-first (Band 1 on top), score desc within a band,
+// model's level list. Score/level are computed at read time and never stored
+// (ADR-0002). Sorted level-first (Level 1 on top), score desc within a level,
 // incomplete roles last by title.
 export const getResults = orgQuery({
   args: { locale: v.optional(v.string()) },
@@ -23,19 +23,19 @@ export const getResults = orgQuery({
         ratedCount: v.number(),
         totalCriteria: v.number(),
         score: v.union(v.number(), v.null()),
-        band: v.union(v.number(), v.null()),
+        level: v.union(v.number(), v.null()),
         familyId: v.union(v.id("roleFamilies"), v.null()),
         familyName: v.union(v.string(), v.null()),
         anchor: v.union(
           v.null(),
           v.object({
-            expectedBand: v.number(),
+            expectedLevel: v.number(),
             status: v.union(v.literal("active"), v.literal("underReview")),
           })
         ),
       })
     ),
-    bands: v.array(v.object({ band: v.number(), minScore: v.number() })),
+    levels: v.array(v.object({ level: v.number(), minScore: v.number() })),
   }),
   handler: async (ctx, { locale }) => {
     const derived = await deriveResults(ctx, ctx.orgId)
@@ -49,13 +49,13 @@ export const getResults = orgQuery({
       .query("models")
       .withIndex("by_org", (q) => q.eq("orgId", ctx.orgId))
       .unique()
-    const bands =
+    const levels =
       model === null
         ? []
-        : [...model.bandThresholds]
-            .sort((a, b) => a.band - b.band)
+        : [...model.levelThresholds]
+            .sort((a, b) => a.level - b.level)
             .map((threshold) => ({
-              band: threshold.band,
+              level: threshold.level,
               minScore: threshold.minScore,
             }))
 
@@ -73,7 +73,10 @@ export const getResults = orgQuery({
       const anchor =
         anchorRole === undefined || anchorRole.status === "replaced"
           ? null
-          : { expectedBand: anchorRole.expectedBand, status: anchorRole.status }
+          : {
+              expectedLevel: anchorRole.expectedLevel,
+              status: anchorRole.status,
+            }
       rows.push({
         roleId: role._id,
         title: role.title,
@@ -84,7 +87,7 @@ export const getResults = orgQuery({
         ratedCount: result?.ratedCount ?? 0,
         totalCriteria: derived.totalCriteria,
         score: result?.score ?? null,
-        band: result?.band ?? null,
+        level: result?.level ?? null,
         familyId: role.familyId ?? null,
         familyName:
           role.familyId !== undefined
@@ -95,22 +98,22 @@ export const getResults = orgQuery({
     }
     const sortLocale = clampLocale(locale)
     rows.sort((a, b) => {
-      if (a.band !== null && b.band !== null) {
+      if (a.level !== null && b.level !== null) {
         return (
-          a.band - b.band ||
+          a.level - b.level ||
           (b.score ?? 0) - (a.score ?? 0) ||
           a.title.localeCompare(b.title, sortLocale)
         )
       }
-      if (a.band !== null) return -1
-      if (b.band !== null) return 1
+      if (a.level !== null) return -1
+      if (b.level !== null) return 1
       return a.title.localeCompare(b.title, sortLocale)
     })
-    return { rows, bands }
+    return { rows, levels }
   },
 })
 
-// Per-role result: score (normalized 0-100), band outcome, and the
+// Per-role result: score (normalized 0-100), level outcome, and the
 // per-criterion breakdown (localized criterion name, weight points, rating
 // value, motivation). The role view derives each criterion's contribution
 // share from value * weightPoints client-side (packages/core criterionShares),
@@ -126,7 +129,7 @@ export const getRoleResult = orgQuery({
       ratedCount: v.number(),
       totalCriteria: v.number(),
       score: v.union(v.number(), v.null()),
-      band: v.union(v.number(), v.null()),
+      level: v.union(v.number(), v.null()),
       criteria: v.array(
         v.object({
           criterionId: v.id("criteria"),
@@ -176,7 +179,7 @@ export const getRoleResult = orgQuery({
       ratedCount: result?.ratedCount ?? 0,
       totalCriteria: derived.totalCriteria,
       score: result?.score ?? null,
-      band: result?.band ?? null,
+      level: result?.level ?? null,
       criteria: criteriaRows.map((row) => {
         // Pristine template criteria localize by key (same rule as getModel).
         const localized =

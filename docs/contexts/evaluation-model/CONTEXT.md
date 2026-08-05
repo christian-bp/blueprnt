@@ -1,34 +1,38 @@
 # Värderingsmodell (evaluation-model)
 
-Den konfigurerbara jobbarkitekturen och poängmodellen som en organisation definierar: kriterierna och deras vikter, track/nivå-schemat, bandtrösklarna samt mallarna bakom dem.
+Den konfigurerbara jobbarkitekturen och poängmodellen som en organisation definierar: kriterierna och deras vikter, track/senioritetsschemat, nivåtrösklarna samt mallarna bakom dem.
 
-Grundprincip: **track beskriver rollen; bandet värderar den; nivå beskriver individen.** Ordningen är alltid: beskriv rollen (track) → värdera mot kriterierna → bandet faller ut sist. Nivån är medarbetarens senioritet inom rollens track och sätts vid rollplaceringen (V2, ADR-0005), aldrig på rollen. Den pedagogiska förklaringen av modellen finns i [track-level-band.md](./track-level-band.md) (läs dess repo-anmärkning: nivådelen är reviderad).
+Grundprincip: **track beskriver rollen; nivån värderar den; senioriteten beskriver individen.** Ordningen är alltid: beskriv rollen (track) → värdera mot kriterierna → nivån faller ut sist. Senioriteten är medarbetarens senioritet inom rollens track och sätts vid rollplaceringen (V2, ADR-0005), aldrig på rollen. Den pedagogiska förklaringen av modellen finns i [track-level-band.md](./track-level-band.md) (läs dess repo-anmärkning: senioritetsdelen är reviderad och termerna är omdöpta, ADR-0014).
 
 ## Språk
 
 **Rollfamilj** *(kod: Role family)*:
-En bred familj av liknande roller, t.ex. Software Engineering (System Developer, Tech Lead och Engineering Manager kan höra dit). Hierarkin är rollfamilj → roll → (V2) medarbetare med nivå. En rollfamilj är inte en track: tracken säger vilken *sorts* jobb rollen är (IC/Lead/M), familjen grupperar besläktade roller. Sedan 2026-06-06 modelleras rollfamiljen som egen entitet: organisationen skapar familjer och en roll kan tillhöra högst en familj (tillhörigheten är frivillig). Familjer påverkar aldrig poäng eller band; de grupperar rollistan, filtrerar resultatvyn och ger progressionsvyn per familj (se PLAN-V1 §9.14).
+En bred familj av liknande roller, t.ex. Software Engineering (System Developer, Tech Lead och Engineering Manager kan höra dit). Hierarkin är rollfamilj → roll → (V2) medarbetare med senioritet. En rollfamilj är inte en track: tracken säger vilken *sorts* jobb rollen är (IC/Lead/M), familjen grupperar besläktade roller. Sedan 2026-06-06 modelleras rollfamiljen som egen entitet: organisationen skapar familjer och en roll kan tillhöra högst en familj (tillhörigheten är frivillig). Familjer påverkar aldrig poäng eller nivå; de grupperar rollistan, filtrerar resultatvyn och ger progressionsvyn per familj (se PLAN-V1 §9.14).
 _Undvik_: Jobbfamilj (säg "rollfamilj"), Track (en familj är inte en track)
 
 **Track**:
 Vilken *sorts* jobb en roll är — dess arketyp: Individual Contributor (IC), Lead eller Manager (M). Beskriver rollen, aldrig personen. En track är inte en rollfamilj: en rollfamilj rymmer flera roller, ofta med olika tracks.
 _Undvik_: Karriärväg (godtagbar synonym, men "Track" är kanoniskt), Jobbfamilj/Rollfamilj (en familj är inte en track, se Rollfamilj)
 
-**Nivå** *(kod: Level)*:
-Medarbetarens *senioritet inom rollens track* (IC1–IC5, Lead-1–Lead-3, M1–M3). Sätts på **individen** vid rollplaceringen (V2, people-kontexten), aldrig på rollen (ADR-0005): rollen "System Developer" är IC, Bo i den kan vara IC1 och Axel IC4. Scopad per track — en IC5 och en M3 är inte samma "nivå". Nivådefinitionerna är konstanten `TRACK_LEVELS` i `@workspace/constants` (standardmall.md är prosareferens) och driver validering av individens rollplacering; de seedas inte i modellen (ADR-0005, tillägg 2026-07-10).
-_Undvik_: Senioritet (godtagbar beskrivning, "Nivå" är kanoniskt), Grad, Nivåroll (utgånget begrepp: roller bär ingen nivå)
+**Senioritet** *(kod: Seniority)* (tidigare Nivå/Level, omdöpt 2026-08-05, ADR-0014):
+Medarbetarens *senioritet inom rollens track* (IC1–IC5, Lead-1–Lead-3, M1–M3). Sätts på **individen** vid rollplaceringen (V2, people-kontexten), aldrig på rollen (ADR-0005): rollen "System Developer" är IC, Bo i den kan vara IC1 och Axel IC4. Scopad per track — en IC5 och en M3 är inte samma senioritet. Senioritetsdefinitionerna är konstanten `TRACK_SENIORITIES` i `@workspace/constants` (standardmall.md är prosareferens) och driver validering av individens rollplacering; de seedas inte i modellen (ADR-0005, tillägg 2026-07-10).
+_Undvik_: Nivå (utgånget för detta begrepp: Nivå är rollens beräknade tyngd, se nedan), Grad, Nivåroll (utgånget begrepp: roller bär ingen senioritet)
 
-**Band**:
-Hur *tung* en roll är jämfört med alla andra roller i bolaget — utdataklassificeringen som beräknas från total viktad poäng via trösklar. **Band 1 är högst.** Bandet skapar jämförbarhet mellan tracks och är grunden för framtida koppling till löneband/policy (V2).
-_Undvik_: Grad, Tier, Nivå (Band är utdata över hela bolaget; nivå är indata inom en track)
+**Nivå** *(kod: Level)* (tidigare Band, omdöpt 2026-08-05, ADR-0014):
+Hur *tung* en roll är jämfört med alla andra roller i bolaget — utdataklassificeringen som beräknas från total viktad poäng via trösklar. **Nivå 1 är högst.** Nivån skapar jämförbarhet mellan tracks och är grunden för framtida koppling till löneband/policy (V2).
+_Undvik_: Grad, Tier, Band (utgången term, se ADR-0014), Senioritet (nivån är utdata över hela bolaget; senioriteten är indata inom en track)
 
 **Kriterium** *(kod: Criterion)*:
 En sak en roll värderas på (t.ex. Scope & Påverkan, Komplexitet, Finansiellt ansvar). Har namn, beskrivning och en 0–5-**ankarskala**. Fullt konfigurerbart — en organisation kan lägga till egna (Excelns "Impact on Exit" är ett eget kriterium).
 _Undvik_: Faktor ("faktor" finns i källdokumenten; "kriterium" är kanoniskt, "faktor" är alias)
 
 **Ankare** *(kod: Anchor)*:
-Texten som beskriver vad varje poäng 0–5 betyder för ett kriterium (t.ex. Autonomi 1 = "följer instruktioner", 5 = "sätter riktning för andra funktioner"). Konfigurerbar per kriterium. Kanonisk term i tal och kod är **ankare** (fältet `criteria.anchors`); i UI heter kriteriets texter "bedömningsskala" (de sex nivåerna 0 till 5; tidigare "bedömningsnivå", omdöpt 2026-06-24), så att de läses som skalan för HUR en roll bedöms och inte förväxlas med kriteriets VIKT (1–5 viktpoäng) i viktningssteget. Modellbyggaren håller dessa isär i två steg: "Definiera" (bedömningsskalan) och "Vikta" (viktpoängen), som aldrig visas samtidigt. Obs: denna 0–5-skala är kriteriets bedömningsskala och är INTE samma som individens senioritetsnivå inom ett track (V2-term, ADR-0005).
+Texten som beskriver vad varje poäng 0–5 betyder för ett kriterium (t.ex. Autonomi 1 = "följer instruktioner", 5 = "sätter riktning för andra funktioner"). Konfigurerbar per kriterium. Kanonisk term i tal och kod är **ankare** (fältet `criteria.anchors`); i UI heter kriteriets texter "bedömningsskala" (de sex stegen 0 till 5; tidigare "bedömningsnivå", omdöpt 2026-06-24), så att de läses som skalan för HUR en roll bedöms och inte förväxlas med kriteriets VIKT (1–5 viktpoäng) i viktningssteget. Modellbyggaren håller dessa isär i två steg: "Definiera" (bedömningsskalan) och "Vikta" (viktpoängen), som aldrig visas samtidigt. Obs: skalans lägen heter **steg** (kod `step`, tidigare nivå, ADR-0014). Denna 0–5-skala är kriteriets bedömningsskala och är INTE samma som individens senioritet inom ett track (V2-term, ADR-0005).
 _Undvik_: Ankarroll (en annan sak, se Värdering), Skalbeskrivning
+
+**Steg** *(kod: Step)*:
+Ett läge på kriteriets bedömningsskala 0–5 (fältet `anchors[].step`); varje steg bär en ankartext. Hette nivå före ADR-0014. Steget är läget på skalan; det valda värdet för en roll är betyget (se assessment-ordlistan).
+_Undvik_: Nivå (utgånget för detta begrepp, ADR-0014: Nivå är rollens beräknade tyngd), Grad
 
 **Viktpoäng** *(kod: Weight points)*:
 Kriteriets vikt, angiven av HR som ett heltal 1 till 5 (1 = relativt lägst, 3 = neutral, 5 = relativt högst). Viktpoängen är synliga och redigerbara men begränsade av poängbudgeten: summan över alla kriterier är alltid exakt lika med budgeten, så att höja ett kriterium kräver att sänka ett annat. Motorn multiplicerar betyget med viktpoängen. Sedan 2026-06-06; ersätter den tidigare 7-gradiga betydelseskalan med dolda vikter (se [viktning-poangbudget.md](./viktning-poangbudget.md) och ADR-0004).
@@ -43,19 +47,19 @@ Den härledda procentvikten per kriterium: viktpoäng delat med summan av alla v
 _Undvik_: Procentvikt (säg "andel"), Vikt i procent
 
 **Mall** *(kod: Template)*:
-En återanvändbar förkonfigurerad modell — kriterier, ankare, viktpoäng, track-schema, bandtrösklar — anpassad till en jobb-/organisationstyp (t.ex. SaaS/tech, kommersiell, G&A, operations). En organisation startar från en mall (eller tomt) och anpassar sedan; dess modell är oberoende därefter.
+En återanvändbar förkonfigurerad modell — kriterier, ankare, viktpoäng, track-schema, nivåtrösklar — anpassad till en jobb-/organisationstyp (t.ex. SaaS/tech, kommersiell, G&A, operations). En organisation startar från en mall (eller tomt) och anpassar sedan; dess modell är oberoende därefter.
 _Undvik_: Modell (en mall är startförkonfigurationen; organisationens redigerbara kopia är modellen)
 
-**Bandtröskel** *(kod: Band threshold)*:
-Lägsta poäng för ett band, som heltal på den normaliserade 0 till 100-poängskalan. Konfigurerbar per band; definierar var poäng → band. (Band 1 = högst.)
+**Nivåtröskel** *(kod: Level threshold)* (tidigare Bandtröskel/Band threshold, ADR-0014):
+Lägsta poäng för en nivå, som heltal på den normaliserade 0 till 100-poängskalan. Konfigurerbar per nivå; definierar var poäng → nivå. (Nivå 1 = högst.)
 _Undvik_: Gränsvärde, Intervallgräns
 
 **Modell** *(kod: Model)*:
-En organisations levande värderingskonfiguration — kriterier, ankare, viktpoäng, track-schema, bandtrösklar. Det finns **en** aktiv modell per organisation (V1: ingen versionering). När modellen ändras räknas alla rollers poäng/band om direkt — poäng och band **härleds** från sparade betyg + aktuell modell.
+En organisations levande värderingskonfiguration — kriterier, ankare, viktpoäng, track-schema, nivåtrösklar. Det finns **en** aktiv modell per organisation (V1: ingen versionering). När modellen ändras räknas alla rollers poäng/nivå om direkt — poäng och nivå **härleds** från sparade betyg + aktuell modell.
 _Undvik_: Mall (mallen är startförkonfigurationen; modellen är organisationens levande, redigerbara konfiguration), Modellversion (ingen versionering i V1)
 
 **Revisionslogg** *(kod: Audit log)*:
-Spårbar logg över ändringar som påverkar utfall — främst modelländringar (vem, vad, när) och vilka roller som bytte band som följd. Ger spårbarhet trots att V1 saknar versionering.
+Spårbar logg över ändringar som påverkar utfall — främst modelländringar (vem, vad, när) och vilka roller som bytte nivå som följd. Ger spårbarhet trots att V1 saknar versionering.
 _Undvik_: Ändringslogg, Historik (säg "revisionslogg")
 
 **Kriterieurvalsprotokoll** *(kod: Criterion rationale)*:
@@ -78,32 +82,33 @@ Nyckelformat är bibliotek-neutralt (punktnamnrymd). Svenska är standardspråk.
 | --- | --- | --- |
 | `model.roleFamily` | Rollfamilj | Role family |
 | `model.track` | Track | Track |
+| `model.seniority` | Senioritet | Seniority |
 | `model.level` | Nivå | Level |
-| `model.band` | Band | Band |
 | `model.criterion` | Kriterium | Criterion |
 | `model.anchor` | Ankare | Anchor |
+| `model.step` | Steg | Step |
 | `model.weightPoints` | Viktpoäng | Weight points |
 | `model.pointBudget` | Poängbudget | Point budget |
 | `model.share` | Andel | Share |
 | `model.template` | Mall | Template |
-| `model.bandThreshold` | Bandtröskel | Band threshold |
+| `model.levelThreshold` | Nivåtröskel | Level threshold |
 | `model.auditLog` | Revisionslogg | Audit log |
 | `model.criterionRationale` | Kriterieurvalsprotokoll | Criterion rationale |
 | `model.biasReview` | Bias-granskning | Bias review |
 | `model.methodAppendix` | Metodbilaga | Method appendix |
 
-Etikettsordval är förslag — bekräftas med användaren. (De tidigare `model.importance.*`-etiketterna utgick 2026-06-06 med poängbudgeten, ADR-0004.)
+Etikettsordval är förslag, bekräftas med användaren. `model.*`-nycklarna är ordlistans referenstermer och finns i alla språkfiler; alla har ännu inte en UI-konsument. (De tidigare `model.importance.*`-etiketterna utgick 2026-06-06 med poängbudgeten, ADR-0004.)
 
 ## Flaggade oklarheter
 
-- **Bandnumrering är inverterad**: Band 1 = högst; högre bandnummer = lägre tyngd. Säg detta uttryckligen i UI och text.
-- **Track/nivå vs band-orsakssamband**: en rolls track/nivå *bestämmer inte* dess band — bandet kommer enbart från poängen. De korrelerar men är inte kausala.
-- **Track-guardrails** (Excelns min/max per (track, nivå) per kriterium): **pensionerade ur V1:s betygsflöde** (ADR-0005) — de var definierade per nivå och har inget fäste när rollen saknar nivå. Intervallen ligger kvar som referensdata i standardmall.md för V2 (t.ex. placeringsstöd).
-- **Egna kriterier (full konfiguration)**: HR kan skapa egna kriterier utöver standardmallen, med egna 0–5-ankare, och anpassa kriterier/ankare/viktpoäng/bandtrösklar fritt. Även egna kriterier viktas med **viktpoäng inom poängbudgeten** (nya kriterier startar på 3) — aldrig fria siffervikter eller procentsatser.
-- **Live-omräkning (V1-beslut)**: ingen modellversionering i V1 — en levande modell per organisation, och ändringar räknar om alla rollers poäng/band direkt (härleds från sparade betyg + aktuell modell). Avviker medvetet från briefens versioneringskrav; konsekvens: roller kan tyst byta band vid modelländring. Spårbarhet löses med en **revisionslogg** (ingår i V1). Se ADR-0002.
+- **Nivånumrering är inverterad**: Nivå 1 = högst; högre nivånummer = lägre tyngd. Säg detta uttryckligen i UI och text.
+- **Track/senioritet vs nivå-orsakssamband**: en rolls track/senioritet *bestämmer inte* dess nivå — nivån kommer enbart från poängen. De korrelerar men är inte kausala.
+- **Track-guardrails** (Excelns min/max per (track, senioritet) per kriterium): **pensionerade ur V1:s betygsflöde** (ADR-0005) — de var definierade per senioritet och har inget fäste när rollen saknar senioritet. Intervallen ligger kvar som referensdata i standardmall.md för V2 (t.ex. placeringsstöd).
+- **Egna kriterier (full konfiguration)**: HR kan skapa egna kriterier utöver standardmallen, med egna 0–5-ankare, och anpassa kriterier/ankare/viktpoäng/nivåtrösklar fritt. Även egna kriterier viktas med **viktpoäng inom poängbudgeten** (nya kriterier startar på 3) — aldrig fria siffervikter eller procentsatser.
+- **Live-omräkning (V1-beslut)**: ingen modellversionering i V1 — en levande modell per organisation, och ändringar räknar om alla rollers poäng/nivå direkt (härleds från sparade betyg + aktuell modell). Avviker medvetet från briefens versioneringskrav; konsekvens: roller kan tyst byta nivå vid modelländring. Spårbarhet löses med en **revisionslogg** (ingår i V1). Se ADR-0002.
 - **Rollfamiljens granularitet**: granulariteten bestäms per organisation (Software Developer eller bredare Software Engineering). Sedan 2026-06-06 är rollfamiljen en egen entitet med frivillig tillhörighet per roll. Samma sak gäller rollerna själva (ADR-0005): skiljer sig seniorens arbete åt på riktigt blir det en egen roll ("Senior System Developer"), annars är det samma roll och senioriteten bor hos individen.
-- **Mallinnehållets språk**: mallseedade, orörda rader (kriterier via templateKey, tracks/nivåer via key) lokaliseras vid läsning till UI-språket (sv/en, fallback en). Egna och AI-skapade kriterier visas som de författats. När E2-redigering ändrar en mallrad rensas templateKey och organisationen äger texten (beslut 2026-06-05).
+- **Mallinnehållets språk**: mallseedade, orörda rader (kriterier via templateKey, tracks/senioriteter via key) lokaliseras vid läsning till UI-språket (sv/en, fallback en). Egna och AI-skapade kriterier visas som de författats. När E2-redigering ändrar en mallrad rensas templateKey och organisationen äger texten (beslut 2026-06-05).
 
 ## Exempeldialog
-— "Axel är IC4, så rollen System Developer borde väl ligga högt i band?"
-— "Nivån är Axels senioritet, inte rollens egenskap. Rollen värderas som det jobb den är, och bandet faller ut ur den viktade poängen. Skulle Axels arbete faktiskt skilja sig från de andra utvecklarnas är det en egen roll som värderas för sig."
+— "Axel är IC4, så rollen System Developer borde väl ligga på en hög nivå?"
+— "IC4 är Axels senioritet, inte rollens egenskap. Rollen värderas som det jobb den är, och nivån faller ut ur den viktade poängen. Skulle Axels arbete faktiskt skilja sig från de andra utvecklarnas är det en egen roll som värderas för sig."

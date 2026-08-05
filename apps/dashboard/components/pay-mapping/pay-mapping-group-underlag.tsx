@@ -33,53 +33,57 @@ import type {
 } from "./pay-mapping-gap-types"
 import { PayMappingScatter } from "./pay-mapping-scatter"
 
-// A group's own frozen, priced members: rows matching its roleTitle/level/
-// band identity (the same identity the engine keys a group on). Shared by
-// the equal-work member table and both scopes' scatter embeds below, so
-// member matching never drifts between callers. This is its one home,
-// module-private since no other file resolves members directly.
+// A group's own frozen, priced members: rows matching its roleTitle/
+// seniority/level identity (the same identity the engine keys a group on).
+// Shared by the equal-work member table and both scopes' scatter embeds
+// below, so member matching never drifts between callers. This is its one
+// home, module-private since no other file resolves members directly.
 function groupMembers(
   rows: PayMappingSnapshotRow[] | undefined,
-  group: { roleTitle: string | null; level: string | null; band: number | null }
+  group: {
+    roleTitle: string | null
+    seniority: string | null
+    level: number | null
+  }
 ): PayMappingSnapshotRow[] | undefined {
   return rows?.filter(
     (row) =>
       row.roleTitle === group.roleTitle &&
+      row.seniority === group.seniority &&
       row.level === group.level &&
-      row.band === group.band &&
       row.basicMonthly !== null
   )
 }
 
-// The shared role+level label for an equal-work group, a women-dominated
+// The shared role+seniority label for an equal-work group, a women-dominated
 // group, or one of its comparators. Exported because review-group-step.tsx
 // needs the exact same label for its heading and finding sentences.
 export function groupLabel(group: {
   roleTitle: string | null
-  level: string | null
+  seniority: string | null
 }): string {
-  return [group.roleTitle, group.level]
+  return [group.roleTitle, group.seniority]
     .filter((part) => part !== null)
     .join(" · ")
 }
 
 // Maps a snapshot row back to whichever group (the dominated group itself,
-// or one of its comparators) it belongs to, by the same roleTitle/level/band
-// identity groupMembers matches on.
+// or one of its comparators) it belongs to, by the same roleTitle/seniority/
+// level identity groupMembers matches on.
 function womenDominatedGroupLabelFor(
   group: WomenDominatedGroupWire
 ): (row: PayMappingSnapshotRow) => string {
   const entries = [
     {
       roleTitle: group.roleTitle,
+      seniority: group.seniority,
       level: group.level,
-      band: group.band,
       label: groupLabel(group),
     },
     ...group.comparisons.map((comparison) => ({
       roleTitle: comparison.roleTitle,
+      seniority: comparison.seniority,
       level: comparison.level,
-      band: comparison.band,
       label: groupLabel(comparison),
     })),
   ]
@@ -87,8 +91,8 @@ function womenDominatedGroupLabelFor(
     entries.find(
       (entry) =>
         entry.roleTitle === row.roleTitle &&
-        entry.level === row.level &&
-        entry.band === row.band
+        entry.seniority === row.seniority &&
+        entry.level === row.level
     )?.label ?? ""
 }
 
@@ -198,7 +202,7 @@ function EqualWorkUnderlag({
 
 // The equivalentWork scope's underlying data: the full cross-level
 // comparison table (or the compliance-positive "nothing out-earns it"
-// message), the band's own women-men gap for context, and the scatter over
+// message), the level's own women-men gap for context, and the scatter over
 // the comparison set (the dominated group's members plus every
 // comparator's, each labeled with its owning group).
 function EquivalentWorkUnderlag({
@@ -223,8 +227,8 @@ function EquivalentWorkUnderlag({
   const percentText = (pct: number) =>
     format.number(pct / 100, { style: "percent", maximumFractionDigits: 1 })
   const moneyText = (value: number) => money(value, currency)
-  const bandRow = equivalentWork.find(
-    (candidate) => candidate.band === group.band
+  const levelRow = equivalentWork.find(
+    (candidate) => candidate.level === group.level
   )
   const scatterRows = [
     ...(groupMembers(rows, group) ?? []),
@@ -246,7 +250,7 @@ function EquivalentWorkUnderlag({
             <TableHeader>
               <TableRow>
                 <TableHead className="w-16 text-right">
-                  {tCols("band")}
+                  {tCols("level")}
                 </TableHead>
                 <TableHead>{tCols("group")}</TableHead>
                 <TableHead className="w-20 text-right">
@@ -271,7 +275,7 @@ function EquivalentWorkUnderlag({
                 (comparison: WomenDominatedComparisonWire) => (
                   <TableRow key={comparison.key}>
                     <TableCell className="text-right tabular-nums">
-                      {comparison.band}
+                      {comparison.level}
                     </TableCell>
                     <TableCell className="truncate font-medium">
                       {groupLabel(comparison)}
@@ -300,16 +304,18 @@ function EquivalentWorkUnderlag({
           </Table>
         </div>
       )}
-      {bandRow !== undefined && (
+      {levelRow !== undefined && (
         <div className="flex items-center gap-2">
           <p className="text-muted-foreground text-sm">
-            {bandRow.gapPct === null || bandRow.gapPct === 0
-              ? tGap("bandContextNone", { band: group.band })
+            {levelRow.gapPct === null || levelRow.gapPct === 0
+              ? tGap("levelContextNone", { level: group.level })
               : tGap(
-                  bandRow.gapPct > 0 ? "bandContext" : "bandContextWomenAhead",
+                  levelRow.gapPct > 0
+                    ? "levelContext"
+                    : "levelContextWomenAhead",
                   {
-                    band: group.band,
-                    gap: format.number(Math.abs(bandRow.gapPct) / 100, {
+                    level: group.level,
+                    gap: format.number(Math.abs(levelRow.gapPct) / 100, {
                       style: "percent",
                       maximumFractionDigits: 1,
                     }),

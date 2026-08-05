@@ -25,7 +25,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
         "Vaikuttaa liiketoiminta-/toimintoalueeseen; määrittää suunnan suuremmille osille organisaatiota.",
         "Yrityksenlaajuinen vaikutus; strateginen vastuu ja suora vaikutus organisaation tuloksiin.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Yritys haluaa, että vastuun laajuudella ja organisatorisella vaikutuksella on vain rajallinen painoarvo roolin arvioinnissa. Roolit, joiden ulottuvuus on suppeampi, eivät siis saa erityisen vahvaa palkkiota juuri tällä ulottuvuudella.",
         "Yritys pitää laajuutta ja vaikutusta merkityksellisenä, mutta katsoo, että sen tulee normaalisti painaa vähemmän kuin mallin tärkeämmät kriteerit. Laajemman vastuun tulee vaikuttaa arviointiin, mutta ei olla sen päätekijä.",
         "Yritys haluaa, että laajuudella ja vaikutuksella on selkeä ja tasapainoinen paikka mallissa. Roolit, joiden organisatorinen ulottuvuus on suurempi, saavat painoarvoa ilman, että tämä ulottuvuus hallitsee arviointia.",
@@ -41,9 +41,9 @@ export const standardTemplateContentFi: StandardTemplateContent = {
           "Menee osittain päällekkäin kriteerien Itsenäisyys ja päätösvalta (päätösvalta) sekä Henkilöstö-/esihenkilövastuu kanssa; tässä painopiste on nimenomaan siinä, kuinka pitkälle roolin vaikutukset ulottuvat organisaatiossa.",
         biasRisk: "low",
         biasComment:
-          "Näkyvän valtuutuksen palkitseminen enemmän kuin tosiasiallisen vaikutuksen voi suosia perinteisesti näkyviä rooleja. Tasokuvaukset lähtevät vaikutuksesta ja vastuusta arvon sijaan ja ovat sukupuolineutraaleja.",
+          "Näkyvän valtuutuksen palkitseminen enemmän kuin tosiasiallisen vaikutuksen voi suosia perinteisesti näkyviä rooleja. Porraskuvaukset lähtevät vaikutuksesta ja vastuusta arvon sijaan ja ovat sukupuolineutraaleja.",
         biasAction:
-          "Tasoankkurit kuvaavat tosiasiallista ulottuvuutta ja tuloksia, eivät muodollista asemaa, jotta myös roolit ilman näkyvää titteliä voidaan arvioida korkealle.",
+          "Porrasankkurit kuvaavat tosiasiallista ulottuvuutta ja tuloksia, eivät muodollista asemaa, jotta myös roolit ilman näkyvää titteliä voidaan arvioida korkealle.",
       },
     },
     risk: {
@@ -60,7 +60,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
         "Suuri vaikutus talouteen, maineeseen tai vaatimustenmukaisuuteen.",
         "Kriittinen vaikutus organisaation tuloksiin, strategiaan tai sääntelyn noudattamiseen.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Yritys haluaa, että riskillä ja seurauksilla on vain rajallinen vaikutus roolin arviointiin. Rooleja, joissa virheillä on suuremmat seuraukset, ei siis palkita erityisen paljon tällä ulottuvuudella.",
         "Yritys arvioi riskin ja seuraukset merkityksellisiksi, mutta katsoo, että tämän kriteerin tulee normaalisti painaa vähemmän kuin mallin tärkeimmät ulottuvuudet.",
         "Yritys haluaa, että riskillä ja seurauksilla on tasapainoinen paikka mallissa. Erot vaikutuksessa laatuun, vaatimustenmukaisuuteen, toimintaan tai brändiin otetaan huomioon normaalilla tasolla.",
@@ -76,7 +76,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
           "Menee osittain päällekkäin kriteerin Laajuus ja vaikutus kanssa; tässä painopiste on virheiden tai puutteiden seurauksissa itse ulottuvuuden sijaan.",
         biasRisk: "low",
         biasComment:
-          "Näkyvät operatiiviset tai tekniset riskit voidaan yliarvioida, kun taas hiljainen laatu-, huolenpito- tai vaatimustenmukaisuustyö aliarvioidaan. Tasokuvaukset kattavat myös laadun, vaatimustenmukaisuuden ja suhteet ja ovat sukupuolineutraaleja.",
+          "Näkyvät operatiiviset tai tekniset riskit voidaan yliarvioida, kun taas hiljainen laatu-, huolenpito- tai vaatimustenmukaisuustyö aliarvioidaan. Porraskuvaukset kattavat myös laadun, vaatimustenmukaisuuden ja suhteet ja ovat sukupuolineutraaleja.",
         biasAction:
           "Ankkuritekstit sisältävät seuraukset laadulle, vaatimustenmukaisuudelle ja asiakassuhteille, eivät vain taloudellisia tai teknisiä virheitä, jotta erilaiset vastuutyypit arvioidaan tasavertaisesti.",
       },
@@ -95,7 +95,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
         "Suuri monimutkaisuus; käsittelee ristiriitaisia vaatimuksia ja epäselviä edellytyksiä.",
         "Äärimmäisen monimutkaisia tilanteita; vie eteenpäin tuntemattomilla/innovatiivisilla alueilla, joissa epävarmuus on suuri.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Yritys haluaa, että monimutkaisuudella ja epäselvyydellä on vain pieni vaikutus roolin kokonaisarviointiin. Rooleja, joiden edellytykset ovat monimutkaisemmat ja epävarmemmat, ei siksi palkita erityisen paljon tällä ulottuvuudella.",
         "Yritys arvioi monimutkaisuuden ja epävarmuuden merkityksellisiksi, mutta katsoo, että tämän ulottuvuuden tulee normaalisti painaa vähemmän kuin tärkeimmät kriteerit.",
         "Yritys haluaa, että monimutkaisuudella ja epäselvyydellä on tasapainoinen ja selkeä paikka mallissa. Roolit, jotka vaativat ongelmanratkaisua epävarmemmissa tai vaikeasti tulkittavissa yhteyksissä, saavat normaalin painoarvon arvioinnissa.",
@@ -111,7 +111,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
           "Menee osittain päällekkäin kriteerin Osaamisen syvyys/laajuus kanssa; tässä painopiste on ongelmien monimutkaisuudessa ja epävarmuudessa vaaditun tiedon sijaan.",
         biasRisk: "low",
         biasComment:
-          "Tekninen monimutkaisuus voidaan yliarvioida, kun taas suhteisiin liittyvä, koordinoiva tai monitulkintainen monimutkaisuus aliarvioidaan. Tasokuvaukset kattavat myös organisatorisen ja liiketoiminnallisen monimutkaisuuden ja ovat sukupuolineutraaleja.",
+          "Tekninen monimutkaisuus voidaan yliarvioida, kun taas suhteisiin liittyvä, koordinoiva tai monitulkintainen monimutkaisuus aliarvioidaan. Porraskuvaukset kattavat myös organisatorisen ja liiketoiminnallisen monimutkaisuuden ja ovat sukupuolineutraaleja.",
         biasAction:
           "Ankkuritekstit kuvaavat monimutkaisuutta laajasti (tekninen, liiketoiminnallinen ja organisatorinen), jotta myös koordinoivat ja monitulkintaiset yhteydet arvioidaan monimutkaisiksi.",
       },
@@ -130,7 +130,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
         "Tekee strategisia päätöksiä toimialueensa sisällä ja määrittää suunnan osa-alueelle.",
         "Tekee päätöksiä, jotka vaikuttavat useisiin toimialueisiin tai koko organisaatioon.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Yritys haluaa, että itsenäisyyden asteella ja päätösvallalla on vain pieni vaikutus roolin kokonaisarviointiin.",
         "Yritys pitää itsenäisyyttä ja päätöstasoa merkityksellisenä, mutta katsoo, että sen tulee normaalisti painaa vähemmän kuin mallin tärkeämmät kriteerit.",
         "Yritys haluaa, että itsenäisyydellä ja päätösvallalla on selkeä ja tasapainoinen paikka mallissa. Roolin arviointiin vaikuttaa se, kuinka itsenäisesti se toimii, ilman että tälle kriteerille annetaan erityisen vahvaa painoa.",
@@ -146,7 +146,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
           "Menee osittain päällekkäin kriteerien Laajuus ja vaikutus sekä Henkilöstö-/esihenkilövastuu kanssa; tässä painopiste on itsenäisyydessä ja päätösvallassa ulottuvuuden tai muiden johtamisen sijaan.",
         biasRisk: "medium",
         biasComment:
-          "Näkyvä päätösvalta voidaan yliarvioida suhteessa tosiasialliseen vaikutukseen, mikä voi suosia muodollista valtuutusta kantavia rooleja verrattuna senioriasiantuntijoihin, joilla on todellista vaikutusvaltaa. Tasokuvaukset ovat sukupuolineutraaleja.",
+          "Näkyvä päätösvalta voidaan yliarvioida suhteessa tosiasialliseen vaikutukseen, mikä voi suosia muodollista valtuutusta kantavia rooleja verrattuna senioriasiantuntijoihin, joilla on todellista vaikutusvaltaa. Porraskuvaukset ovat sukupuolineutraaleja.",
         biasAction:
           "Ankkuritekstit kattavat myös itsenäisen aloitteellisuuden ja ongelmanratkaisun, eivät vain muodollista päätösvaltaa, jotta todellinen vaikutusvalta ilman titteliä voidaan arvioida korkealle.",
       },
@@ -165,7 +165,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
         "Hallitsee monimutkaista sidosryhmäympäristöä, jossa on kilpailevia intressejä.",
         "Edustaa organisaatiota ulospäin ja hallitsee strategisia sidosryhmiä.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Yritys haluaa, että yhteistyön ja koordinoinnin laajuudella on vain pieni vaikutus siihen, miten rooleja arvioidaan suhteessa toisiinsa.",
         "Yritys arvioi sidosryhmien laajuuden merkitykselliseksi, mutta katsoo, että kriteerin tulee normaalisti painaa vähemmän kuin mallin tärkeimmät ulottuvuudet.",
         "Yritys haluaa, että sidosryhmien laajuudella on selkeä ja tasapainoinen paikka mallissa. Roolit, joilla on laaja sisäinen tai ulkoinen yhteistyö, saavat normaalin painoarvon arvioinnissa.",
@@ -181,7 +181,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
           "Menee osittain päällekkäin kriteerin Laajuus ja vaikutus kanssa; tässä painopiste on yhteistyön laajuudessa ja vaihtelevuudessa tuloksen ulottuvuuden sijaan.",
         biasRisk: "low",
         biasComment:
-          "Tämä kriteeri vastustaa tunnettua biasia arvottamalla nimenomaisesti suhteisiin liittyvän ja koordinoivan työn. Jäljelle jäävä riski: ulkoinen, näkyvä edustus voidaan yliarvioida suhteessa sisäiseen koordinointityöhön. Tasokuvaukset ovat sukupuolineutraaleja.",
+          "Tämä kriteeri vastustaa tunnettua biasia arvottamalla nimenomaisesti suhteisiin liittyvän ja koordinoivan työn. Jäljelle jäävä riski: ulkoinen, näkyvä edustus voidaan yliarvioida suhteessa sisäiseen koordinointityöhön. Porraskuvaukset ovat sukupuolineutraaleja.",
         biasAction:
           "Ankkuritekstit arvottavat sisäisen toimintorajat ylittävän koordinoinnin tasavertaisesti ulkoisen edustuksen kanssa, jotta näkyvä ulkoinen verkostoituminen ei sinänsä paina enemmän.",
       },
@@ -200,7 +200,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
         "Rooli vaatii asiantuntijaosaamista monimutkaisella toimialueella. Rooli edellyttää, että sen haltija määrittelee menetelmät, rakenteet ja työtavat toimialueellaan ja toimii sisäisenä asiantuntijana vaativissa kysymyksissä.",
         "Rooli vaatii toimialaa johtavaa osaamista ja tiedon kehittämistä. Rooli vaatii, että sen haltija kehittää uusia työtapoja, malleja tai tekniikoita ja määrittää suunnan ja periaatteet organisaation tuleville kyvykkyyksille alueella.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Yritys haluaa, että syvän asiantuntemuksen, kokemuksen tai tieteenalat ylittävän laajuuden vaatimuksilla on vain rajallinen vaikutus roolin kokonaisarviointiin.",
         "Yritys pitää osaamisen syvyyttä ja laajuutta merkityksellisenä, mutta katsoo, että sen tulee normaalisti painaa vähemmän kuin tärkeimmät kriteerit.",
         "Yritys haluaa, että osaamisen syvyydellä ja laajuudella on selkeä ja tasapainoinen paikka mallissa. Asiantuntemuksen ja kokemuksen vaatimusten tulee vaikuttaa arviointiin normaalilla tasolla.",
@@ -216,7 +216,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
           "Menee osittain päällekkäin kriteerien Monimutkaisuus ja epäselvyys sekä Muodollinen pätevyys kanssa; tässä painopiste on tosiasiallisessa tiedossa ja kokemuksessa ongelmien monimutkaisuuden tai muodollisten vaatimusten sijaan.",
         biasRisk: "low",
         biasComment:
-          "Muodollisesti tunnustettu tai näkyvä asiantuntemus voidaan yliarvioida suhteessa hiljaiseen, kokemusperäiseen tietoon. Tasokuvaukset lähtevät sovelletusta osaamisesta, eivät pelkästä tittelistä tai koulutuksesta, ja ovat sukupuolineutraaleja.",
+          "Muodollisesti tunnustettu tai näkyvä asiantuntemus voidaan yliarvioida suhteessa hiljaiseen, kokemusperäiseen tietoon. Porraskuvaukset lähtevät sovelletusta osaamisesta, eivät pelkästä tittelistä tai koulutuksesta, ja ovat sukupuolineutraaleja.",
         biasAction:
           "Ankkuritekstit arvottavat käytännön kokemuksen ja sovelletun menetelmäymmärryksen tasavertaisesti muodollisesti tunnustetun erikoistumisen kanssa.",
       },
@@ -235,7 +235,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
         "Vastuu suuremmasta budjetista/liiketoiminta-alueesta.",
         "Vastuu merkittävästä osasta yrityksen taloutta tai tulosta.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Yritys haluaa, että taloudellisella vastuulla on vain rajallinen vaikutus roolin kokonaisarviointiin. Budjetti- tai tulosvastuulle ei siis anneta erityisen suurta painoa mallissa.",
         "Yritys pitää taloudellista vastuuta merkityksellisenä, mutta katsoo, että sen tulee normaalisti painaa vähemmän kuin tärkeimmät kriteerit.",
         "Yritys haluaa, että taloudellisella vastuulla on selkeä ja tasapainoinen paikka mallissa. Budjettivaikutus, kustannusvastuu tai tulosvastuu lasketaan mukaan arvioinnin normaalina osana.",
@@ -251,9 +251,9 @@ export const standardTemplateContentFi: StandardTemplateContent = {
           "Menee osittain päällekkäin kriteerien Itsenäisyys ja päätösvalta (päätösvalta) sekä Laajuus ja vaikutus kanssa; tässä painopiste on nimenomaan vastuussa taloudellisista raameista ja tuloksista.",
         biasRisk: "medium",
         biasComment:
-          "Suurelle budjetille voidaan antaa liian suuri paino verrattuna monimutkaisuuteen, vastuuseen ja erityisosaamiseen, mikä voi suosia perinteisesti miesvaltaisia budjettia kantavia rooleja. Tasokuvaukset ovat sukupuolineutraaleja.",
+          "Suurelle budjetille voidaan antaa liian suuri paino verrattuna monimutkaisuuteen, vastuuseen ja erityisosaamiseen, mikä voi suosia perinteisesti miesvaltaisia budjettia kantavia rooleja. Porraskuvaukset ovat sukupuolineutraaleja.",
         biasAction:
-          "Kriteeri pidetään maltillisella painolla mallissa, jotta budjetin koko ei sinänsä hallitse arviointia, ja tasot kuvaavat päätösvastuuta pelkkien summien koon sijaan.",
+          "Kriteeri pidetään maltillisella painolla mallissa, jotta budjetin koko ei sinänsä hallitse arviointia, ja portaat kuvaavat päätösvastuuta pelkkien summien koon sijaan.",
       },
     },
     people: {
@@ -270,7 +270,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
         "Toiminnon johtaja, jolla on useita johtamistasoja tai suurempi organisaatio.",
         "Strateginen johtaja yritystasolla (Head/Director/C-level).",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Yritys haluaa, että henkilöstö- ja esihenkilövastuulla on vain rajallinen vaikutus roolin kokonaisarviointiin. Muodollinen johtajuus ei siis itsessään aja arviointia erityisen paljon.",
         "Yritys arvioi henkilöstö- ja esihenkilövastuun merkitykselliseksi, mutta katsoo, että sen tulee normaalisti painaa vähemmän kuin mallin tärkeimmät kriteerit.",
         "Yritys haluaa, että henkilöstö- ja esihenkilövastuulla on selkeä ja tasapainoinen paikka mallissa. Muiden johtamisen tulee vaikuttaa arviointiin, mutta ilman erityisen vahvistettua painoa.",
@@ -286,9 +286,9 @@ export const standardTemplateContentFi: StandardTemplateContent = {
           "Menee osittain päällekkäin kriteerien Laajuus ja vaikutus (organisatorinen ulottuvuus) sekä Itsenäisyys ja päätösvalta (päätösvalta) kanssa; tässä painopiste on nimenomaan vastuussa, jota käytetään muiden ihmisten kautta.",
         biasRisk: "medium",
         biasComment:
-          "Näkyvän valtuutuksen ja alaisten lukumäärän palkitseminen enemmän kuin tosiasiallisen johtamisvaikutuksen voi yliarvioida perinteisesti miesvaltaisia esihenkilörooleja ja aliarvioida senioriasiantuntijoita ja koordinointipainotteista työtä. Tasokuvaukset sinänsä ovat sukupuolineutraaleja.",
+          "Näkyvän valtuutuksen ja alaisten lukumäärän palkitseminen enemmän kuin tosiasiallisen johtamisvaikutuksen voi yliarvioida perinteisesti miesvaltaisia esihenkilörooleja ja aliarvioida senioriasiantuntijoita ja koordinointipainotteista työtä. Porraskuvaukset sinänsä ovat sukupuolineutraaleja.",
         biasAction:
-          "Tasoankkurit kuvaavat johtajuuden sisältöä pelkän alaisten lukumäärän sijaan, ja kriteeri pidetään maltillisella painolla, jotta esihenkilötitteli ei sinänsä hallitse arviointia.",
+          "Porrasankkurit kuvaavat johtajuuden sisältöä pelkän alaisten lukumäärän sijaan, ja kriteeri pidetään maltillisella painolla, jotta esihenkilötitteli ei sinänsä hallitse arviointia.",
       },
     },
     formal: {
@@ -305,7 +305,7 @@ export const standardTemplateContentFi: StandardTemplateContent = {
         "Vaaditaan edistynyt akateeminen taso tai edistynyt erityissertifiointi. Rooli vaatii esim. maisterin tutkinnon, edistyneen sertifioinnin (IFRS, TISAX, turvallisuusselvitys, CPA jne.) tai vastaavan korkean teoreettisen tason.",
         "Vaaditaan korkeimman tason ammattiasiantuntemusta. Rooli vaatii tutkimustason osaamista, edistynyttä asiantuntija-akkreditointia tai erittäin merkittävää toimialakohtaista asiantuntemusta, joka asettaa normin alueelle.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Yritys haluaa, että muodollisen pätevyyden vaatimuksilla on vain rajallinen vaikutus roolin kokonaisarviointiin.",
         "Yritys arvioi muodollisen pätevyyden merkitykselliseksi, mutta katsoo, että kriteerin tulee normaalisti painaa vähemmän kuin mallin tärkeämmät ulottuvuudet.",
         "Yritys haluaa, että muodollisella pätevyydellä on selkeä ja tasapainoinen paikka mallissa. Koulutusvaatimusten tai vastaavien kokemusvaatimusten tulee vaikuttaa arviointiin normaalilla tasolla.",
@@ -321,9 +321,9 @@ export const standardTemplateContentFi: StandardTemplateContent = {
           "Menee osittain päällekkäin kriteerin Osaamisen syvyys/laajuus kanssa; tässä painopiste on muodollisissa vaatimuksissa tosiasiallisesti sovelletun tiedon ja kokemuksen sijaan.",
         biasRisk: "medium",
         biasComment:
-          "Muodolliseen asemaan nojaaminen tosiasiallisen työn sisällön sijaan voi asettaa epäedulliseen asemaan osaamisen, joka on hankittu muita kuin perinteisen koulutuksen kautta. Tasokuvaukset sallivat vastaavan dokumentoidun kokemuksen ja ovat sukupuolineutraaleja.",
+          "Muodolliseen asemaan nojaaminen tosiasiallisen työn sisällön sijaan voi asettaa epäedulliseen asemaan osaamisen, joka on hankittu muita kuin perinteisen koulutuksen kautta. Porraskuvaukset sallivat vastaavan dokumentoidun kokemuksen ja ovat sukupuolineutraaleja.",
         biasAction:
-          "Tasot tunnustavat nimenomaisesti vastaavan kokemuksen muodollisen koulutuksen rinnalla, ja kriteeri pidetään matalalla painolla, jotta muodolliset ansiot eivät sinänsä aja arviointia.",
+          "Portaat tunnustavat nimenomaisesti vastaavan kokemuksen muodollisen koulutuksen rinnalla, ja kriteeri pidetään matalalla painolla, jotta muodolliset ansiot eivät sinänsä aja arviointia.",
       },
     },
   },

@@ -47,7 +47,7 @@ function renderTabs() {
 const GROUPS = [
   {
     people: [
-      { currentAssignment: { levelSource: "confirmed" } },
+      { currentAssignment: { senioritySource: "confirmed" } },
       { currentAssignment: null },
     ],
   },
@@ -117,7 +117,7 @@ describe("PeopleTabs", () => {
     unmount()
 
     useQueryMock.mockReturnValue([
-      { people: [{ currentAssignment: { levelSource: "confirmed" } }] },
+      { people: [{ currentAssignment: { senioritySource: "confirmed" } }] },
     ])
     renderTabs()
     expect(document.querySelector("number-flow-react")).toBeNull()

@@ -1,6 +1,6 @@
 import {
-  type BandThreshold,
   type CriterionWeight,
+  type LevelThreshold,
   type RatingValue,
   type RoleRatings,
   type RoleResult,
@@ -11,16 +11,16 @@ import type { GenericMutationCtx } from "convex/server"
 import type { DataModel } from "../_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
 import { AUDIT_EVENTS, buildChanges, logAudit } from "../lib/audit"
-import type { BandCause } from "../lib/auditPayloads"
+import type { LevelCause } from "../lib/auditPayloads"
 
 export interface DerivedResults {
   results: RoleResult[]
   totalCriteria: number
 }
 
-// Derives the org's full result set (score/band per role) from current state
+// Derives the org's full result set (score/level per role) from current state
 // via the pure engine. Never stores anything (ADR-0002). Used by the results
-// queries and by mutations for before/after band.shift diffs. Alpha-scale
+// queries and by mutations for before/after level.shift diffs. Alpha-scale
 // data: full-org collects are deliberate and fine.
 export async function deriveResults(
   ctx: QueryCtx | MutationCtx,
@@ -43,8 +43,8 @@ export async function deriveResults(
 
   // Thresholds live on the model document (ADR-0006): no extra read on the
   // hottest path in the app (this runs twice per result-affecting mutation).
-  const thresholds: BandThreshold[] = model.bandThresholds.map((row) => ({
-    band: row.band,
+  const thresholds: LevelThreshold[] = model.levelThresholds.map((row) => ({
+    level: row.level,
     minScore: row.minScore,
   }))
 
@@ -81,20 +81,20 @@ export async function deriveResults(
   }
 }
 
-// Compares two derived result sets and logs one band.shift audit row per role
-// whose band changed; a role missing on one side counts as band null. Runs in
-// the same transaction as the mutation that caused the shift, so the audit
+// Compares two derived result sets and logs one level.shift audit row per role
+// whose level changed; a role missing on one side counts as level null. Runs
+// in the same transaction as the mutation that caused the shift, so the audit
 // trail can never drift from the data (ADR-0002 live derivation). The required
 // `cause` records the triggering domain event (and the role/criterion/entity it
-// touched) so a band.shift can always be traced back to what moved it.
-export async function logBandShifts(
+// touched) so a level.shift can always be traced back to what moved it.
+export async function logLevelShifts(
   ctx: GenericMutationCtx<DataModel>,
   args: {
     orgId: string
     actorId: string
     before: RoleResult[]
     after: RoleResult[]
-    cause: BandCause
+    cause: LevelCause
   }
 ) {
   const beforeByRole = new Map(args.before.map((r) => [r.roleId, r]))
@@ -102,11 +102,11 @@ export async function logBandShifts(
   const roleIds = new Set([...beforeByRole.keys(), ...afterByRole.keys()])
   // The result fields diffed into changes. A role missing on one side is
   // represented with all four picked as null so buildChanges still emits them
-  // (it skips keys absent from `after`): changes.band is therefore always
-  // present (the band change gates the row), even for appear/disappear shifts.
-  const FIELDS = ["band", "score", "complete", "ratedCount"] as const
+  // (it skips keys absent from `after`): changes.level is therefore always
+  // present (the level change gates the row), even for appear/disappear shifts.
+  const FIELDS = ["level", "score", "complete", "ratedCount"] as const
   const pick = (result: RoleResult | undefined): Record<string, unknown> => ({
-    band: result?.band ?? null,
+    level: result?.level ?? null,
     score: result?.score ?? null,
     complete: result?.complete ?? null,
     ratedCount: result?.ratedCount ?? null,
@@ -114,12 +114,12 @@ export async function logBandShifts(
   for (const roleId of roleIds) {
     const beforeResult = beforeByRole.get(roleId)
     const afterResult = afterByRole.get(roleId)
-    // Gate on the band actually changing (a role missing on one side reads as
-    // band null via the ?? null collapse pick applies).
-    if ((beforeResult?.band ?? null) === (afterResult?.band ?? null)) continue
+    // Gate on the level actually changing (a role missing on one side reads as
+    // level null via the ?? null collapse pick applies).
+    if ((beforeResult?.level ?? null) === (afterResult?.level ?? null)) continue
     await logAudit(ctx, {
       orgId: args.orgId,
-      type: AUDIT_EVENTS.bandShift,
+      type: AUDIT_EVENTS.levelShift,
       actorId: args.actorId,
       payload: {
         roleId,

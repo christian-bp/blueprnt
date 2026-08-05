@@ -2,9 +2,9 @@ import type { AuditEvent, PlatformAuditEvent } from "./audit"
 
 // Typed payload contracts for the audit-log writers. These constrain the
 // ENVELOPE of each event's payload (which keys/shape per event); they never
-// reduce what the diff engine (buildChanges/snapshots/logBandShifts) captures.
+// reduce what the diff engine (buildChanges/snapshots/logLevelShifts) captures.
 // Every field's { from, to }, create/delete snapshots, positional anchors diff,
-// bulk items[].changes, moves[], provenance meta, and band.shift cause+changes
+// bulk items[].changes, moves[], provenance meta, and level.shift cause+changes
 // are produced by the same code and now additionally type-checked.
 //
 // The shapes here MUST match what collectPayloadLeaves walks and what each
@@ -50,9 +50,9 @@ export type AuditSuggestionItem = {
   status: string
 }
 
-// What triggered a band.shift: the domain event plus the role/criterion/entity
+// What triggered a level.shift: the domain event plus the role/criterion/entity
 // it touched, so a shift can be traced back to what moved it.
-export type BandCause = {
+export type LevelCause = {
   event: AuditEvent
   roleId?: string
   criterionId?: string
@@ -248,21 +248,21 @@ export interface AuditPayloads {
     created: boolean
     changes: Changes
   }
-  "band.shift": {
+  "level.shift": {
     roleId: string
-    cause: BandCause
+    cause: LevelCause
     changes: Changes
     totalCriteria?: number
   }
   "anchorRole.designated": {
     roleId: string
-    computedBand: number | null
+    computedLevel: number | null
     changes: Changes
   }
   "anchorRole.updated": {
     roleId: string
-    computedBand?: number | null
-    expectedBand?: number
+    computedLevel?: number | null
+    expectedLevel?: number
     viaArchive?: boolean
     viaReconcile?: boolean
     batchId?: string
@@ -325,7 +325,7 @@ export interface AuditPayloads {
   "payMapping.groupAnalysisUpdated": {
     runId: string
     scope: "equalWork" | "equivalentWork" | "praxis"
-    // "roleTitle · level" for equalWork/equivalentWork; for praxis, the raw
+    // "roleTitle · seniority" for equalWork/equivalentWork; for praxis, the raw
     // PRAXIS_AREA_KEYS area-key slug (never split, it carries no "|").
     // Role-level content either way, never person identity.
     groupLabel: string

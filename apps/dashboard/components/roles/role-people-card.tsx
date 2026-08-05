@@ -40,7 +40,7 @@ import {
   TableSkeleton,
   type TableSkeletonColumn,
 } from "@/components/table-skeleton"
-import { LevelBadge } from "@/components/track-badge"
+import { SeniorityBadge } from "@/components/track-badge"
 
 // The employees currently classified into this role: the reciprocal of the
 // person page's role link, so a role answers "who holds it?" without a detour
@@ -51,8 +51,8 @@ import { LevelBadge } from "@/components/track-badge"
 
 const PAGE_SIZE = 25
 
-// Skeleton shape per column, mirroring the real row content (name link, level
-// badge, department, short FTE value).
+// Skeleton shape per column, mirroring the real row content (name link,
+// seniority badge, department, short FTE value).
 const ROLE_PEOPLE_SKELETON_COLUMNS: TableSkeletonColumn[] = [
   { className: "w-36 max-w-full" },
   { className: "h-5 w-12 rounded-full" },
@@ -63,8 +63,9 @@ const ROLE_PEOPLE_SKELETON_COLUMNS: TableSkeletonColumn[] = [
 // Shared by the loaded table and the loading skeleton so the two cannot
 // drift. Fixed widths (with table-fixed): auto layout re-measures columns
 // from the visible rows, so widths would jump on a page flip or when the
-// skeleton swaps for data. Name takes the remaining space; level is w-28 to
-// fit the widest level code, department and FTE mirror the people register.
+// skeleton swaps for data. Name takes the remaining space; seniority is w-28
+// to fit the widest seniority code, department and FTE mirror the people
+// register.
 function RolePeopleTableHeader() {
   const t = useTranslations("dashboard.people.columns")
   const tHelp = useTranslations("dashboard.help")
@@ -73,13 +74,13 @@ function RolePeopleTableHeader() {
       <TableRow>
         <TableHead>{t("name")}</TableHead>
         <TableHead className="w-28">
-          {/* Level is the one domain term this surface introduces (the
+          {/* Seniority is the one domain term this surface introduces (the
               individual's seniority within the role's track, never the role's
               own weight), so its help sits on the column that uses it. */}
           <span className="flex items-center gap-1.5">
-            {t("level")}
-            <HelpMorphButton label={tHelp("classifyLevelLabel")}>
-              {tHelp("classifyLevelBody")}
+            {t("seniority")}
+            <HelpMorphButton label={tHelp("classifySeniorityLabel")}>
+              {tHelp("classifySeniorityBody")}
             </HelpMorphButton>
           </span>
         </TableHead>
@@ -215,7 +216,7 @@ export function RolePeopleCard({
                       >
                         {row.displayName}
                       </Link>
-                      {row.levelSource === "suggested" && (
+                      {row.senioritySource === "suggested" && (
                         <SuggestedRoleBadge />
                       )}
                     </div>
@@ -226,7 +227,7 @@ export function RolePeopleCard({
                       rows. */}
                   <TableCell>
                     <div className="flex items-center">
-                      <LevelBadge level={row.level} />
+                      <SeniorityBadge seniority={row.seniority} />
                     </div>
                   </TableCell>
                   <TableCell className="truncate text-muted-foreground">

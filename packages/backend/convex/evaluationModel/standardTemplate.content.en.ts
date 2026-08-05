@@ -4,13 +4,13 @@ export interface CriterionContent {
   name: string
   description: string
   helpText: string
-  // Anchor texts for scores 0..5, in order.
+  // Anchor texts for scores 0..5, in order (one text per step).
   anchors: [string, string, string, string, string, string]
   // Per-criterion weighting explanation for weight points 1..5 (File B): what
   // it means to give THIS criterion that weight. Shown in the weight control's
   // hover card. Custom/edited criteria carry no templateKey, so getModel returns
-  // null and the UI falls back to the generic level meanings.
-  weightLevels: [string, string, string, string, string]
+  // null and the UI falls back to the generic weight meanings.
+  weightMeanings: [string, string, string, string, string]
   // Compliance evidence (kriterieurvalsprotokoll + bias-granskning) shown in the
   // Method tab and metodbilaga. Template content: re-localized to the viewer's
   // locale until HR edits it. Must satisfy isDocumented (purpose, whyRelevant,
@@ -54,7 +54,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
         "Affects a business/functional area; defines direction for larger parts of the organization.",
         "Company-wide impact; strategic responsibility and direct effect on the organization's results.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "The company wants the extent of responsibility and organizational impact to have only a limited effect on the role evaluation. Roles with shorter reach should therefore not be rewarded particularly strongly on this dimension.",
         "The company considers scope and impact relevant, but it should normally weigh lighter than the model's more prioritized criteria. Broader responsibility should influence the evaluation, but not be a main driver.",
         "The company wants scope and impact to have a clear and balanced place in the model. Roles with greater organizational reach should make a difference, but without this dimension dominating the evaluation.",
@@ -70,9 +70,9 @@ export const standardTemplateContentEn: StandardTemplateContent = {
           "Overlaps partly with Autonomy (decision authority) and People/Management Responsibility; here the focus is specifically how far the role's effects reach in the organization.",
         biasRisk: "low",
         biasComment:
-          "Rewarding visible mandate more than actual impact can favour traditionally visible roles. The level descriptions are based on effect and responsibility rather than rank, and are gender-neutral.",
+          "Rewarding visible mandate more than actual impact can favour traditionally visible roles. The step descriptions are based on effect and responsibility rather than rank, and are gender-neutral.",
         biasAction:
-          "The level anchors describe actual reach and results rather than formal position, so roles without a visible title can still be rated high.",
+          "The step anchors describe actual reach and results rather than formal position, so roles without a visible title can still be rated high.",
       },
     },
     risk: {
@@ -89,7 +89,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
         "High impact on finances, reputation or compliance.",
         "Critical impact on the organization's results, strategy or regulatory compliance.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "The company wants risk and consequence to have only a limited effect on the role evaluation. Roles where errors carry greater consequences should therefore not be rewarded particularly much on this dimension.",
         "The company judges risk and consequence to be relevant, but this criterion should normally weigh lighter than the most prioritized dimensions in the model.",
         "The company wants risk and consequence to have a balanced place in the model. Differences in impact on quality, compliance, operations or brand should be taken into account at a normal level.",
@@ -105,7 +105,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
           "Overlaps partly with Scope & Impact; here the focus is the consequences of errors or shortcomings rather than reach itself.",
         biasRisk: "low",
         biasComment:
-          "Visible operational or technical risk can be over-valued while quiet quality, care or compliance work is under-valued. The level descriptions also cover quality, compliance and relationships, and are gender-neutral.",
+          "Visible operational or technical risk can be over-valued while quiet quality, care or compliance work is under-valued. The step descriptions also cover quality, compliance and relationships, and are gender-neutral.",
         biasAction:
           "The anchors include consequences for quality, compliance and customer relations, not only financial or technical failures, so different kinds of responsibility are judged on equal terms.",
       },
@@ -124,7 +124,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
         "High complexity; handles conflicting requirements and unclear conditions.",
         "Extremely complex situations; drives progress in unknown/innovative areas with high uncertainty.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "The company wants complexity and ambiguity to have only a small effect on the overall role evaluation. Roles with more complex and uncertain conditions should therefore not be rewarded particularly much on this dimension.",
         "The company judges complexity and uncertainty to be relevant, but this dimension should normally weigh lighter than the most prioritized criteria.",
         "The company wants complexity and ambiguity to have a balanced and clear place in the model. Roles that require problem solving in more uncertain or hard-to-interpret contexts should make a normal difference in the evaluation.",
@@ -140,7 +140,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
           "Overlaps partly with Knowledge Depth/Breadth; here the focus is the complexity and uncertainty of the problems rather than the knowledge required.",
         biasRisk: "low",
         biasComment:
-          "Technical complexity can be over-valued while relational, coordinating or ambiguous complexity is under-valued. The level descriptions also cover organizational and business complexity, and are gender-neutral.",
+          "Technical complexity can be over-valued while relational, coordinating or ambiguous complexity is under-valued. The step descriptions also cover organizational and business complexity, and are gender-neutral.",
         biasAction:
           "The anchors describe complexity broadly (technical, business and organizational) so that coordinating and ambiguous contexts also count as complex.",
       },
@@ -159,7 +159,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
         "Makes strategic decisions within a domain and sets direction for a sub-area.",
         "Makes decisions that affect several domains or the entire organization.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "The company wants the degree of independence and decision authority to have only a small effect on the overall role evaluation.",
         "The company considers autonomy and decision level relevant, but it should normally weigh lighter than the more prioritized criteria in the model.",
         "The company wants autonomy and decision authority to have a clear and balanced place in the model. The role should be affected by how independently it operates, but without giving this criterion extra strong weight.",
@@ -175,7 +175,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
           "Overlaps partly with Scope & Impact and People/Management Responsibility; here the focus is independence and decision authority rather than reach or leading others.",
         biasRisk: "medium",
         biasComment:
-          "Visible decision mandate can be over-valued relative to actual impact, which can favour formally mandated roles over senior specialists with real influence. The level descriptions are gender-neutral.",
+          "Visible decision mandate can be over-valued relative to actual impact, which can favour formally mandated roles over senior specialists with real influence. The step descriptions are gender-neutral.",
         biasAction:
           "The anchors also cover independent initiative and problem solving, not only formal decision mandate, so real influence without a title can be rated high.",
       },
@@ -194,7 +194,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
         "Manages a complex stakeholder environment with competing interests.",
         "Represents the organization externally and manages strategic stakeholders.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "The company wants the breadth of collaboration and coordination to have only a small effect on how roles are valued relative to one another.",
         "The company judges stakeholder breadth to be relevant, but the criterion should normally weigh lighter than the most prioritized dimensions in the model.",
         "The company wants stakeholder breadth to have a clear and balanced place in the model. Roles with broad internal or external collaboration should make a normal difference in the evaluation.",
@@ -210,7 +210,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
           "Overlaps partly with Scope & Impact; here the focus is the breadth and variety of collaboration rather than the reach of the outcome.",
         biasRisk: "low",
         biasComment:
-          "This criterion counters a known bias by explicitly valuing relational and coordinating work. Residual risk: external, visible representation can be over-valued relative to internal coordination. The level descriptions are gender-neutral.",
+          "This criterion counters a known bias by explicitly valuing relational and coordinating work. Residual risk: external, visible representation can be over-valued relative to internal coordination. The step descriptions are gender-neutral.",
         biasAction:
           "The anchors value internal cross-functional coordination on a par with external representation, so visible external networking does not by itself weigh more.",
       },
@@ -229,7 +229,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
         "The role requires expert competence within a complex domain. The role assumes that the holder defines methods, structures and working practices within its domain and acts as an internal expert in qualified matters.",
         "The role requires domain-leading competence and knowledge development. The role requires the holder to develop new working practices, models or techniques and to set direction and principles for the organization's future capabilities within the area.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "The company wants requirements for deep expertise, experience or cross-disciplinary breadth to have only a limited effect on the overall role evaluation.",
         "The company considers knowledge depth and breadth relevant, but it should normally weigh lighter than the most prioritized criteria.",
         "The company wants knowledge depth and breadth to have a clear and balanced place in the model. Expertise and experience requirements should affect the evaluation at a normal level.",
@@ -245,7 +245,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
           "Overlaps partly with Complexity & Ambiguity and Formal Qualifications; here the focus is actual knowledge and experience rather than the complexity of the problems or formal requirements.",
         biasRisk: "low",
         biasComment:
-          "Formally recognized or visible expertise can be over-valued relative to quiet, experience-based knowledge. The level descriptions are based on applied competence, not title or education alone, and are gender-neutral.",
+          "Formally recognized or visible expertise can be over-valued relative to quiet, experience-based knowledge. The step descriptions are based on applied competence, not title or education alone, and are gender-neutral.",
         biasAction:
           "The anchors value practical experience and applied methodological understanding on a par with formally recognized specialization.",
       },
@@ -264,7 +264,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
         "Responsible for a larger budget/business area.",
         "Responsible for a significant part of the company's finances or P&L.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "The company wants financial responsibility to have only a limited effect on the overall role evaluation. Budget or results responsibility should therefore not be given particularly large weight in the model.",
         "The company considers financial responsibility relevant, but it should normally weigh lighter than the most prioritized criteria.",
         "The company wants financial responsibility to have a clear and balanced place in the model. Budget impact, cost responsibility or results responsibility should count as a normal part of the evaluation.",
@@ -280,9 +280,9 @@ export const standardTemplateContentEn: StandardTemplateContent = {
           "Overlaps partly with Autonomy (decision authority) and Scope & Impact; here the focus is specifically responsibility for financial frames and results.",
         biasRisk: "medium",
         biasComment:
-          "A large budget can be given too much weight relative to complexity, responsibility and specialist knowledge, which can favour traditionally male-dominated budget-holding roles. The level descriptions are gender-neutral.",
+          "A large budget can be given too much weight relative to complexity, responsibility and specialist knowledge, which can favour traditionally male-dominated budget-holding roles. The step descriptions are gender-neutral.",
         biasAction:
-          "The criterion is kept at a moderate weight in the model so that budget size does not by itself dominate the evaluation, and the levels describe decision responsibility rather than amount alone.",
+          "The criterion is kept at a moderate weight in the model so that budget size does not by itself dominate the evaluation, and the steps describe decision responsibility rather than amount alone.",
       },
     },
     people: {
@@ -299,7 +299,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
         "Function head with several management layers or a larger organization.",
         "Strategic leader at company level (Head/Director/C-level).",
       ],
-      weightLevels: [
+      weightMeanings: [
         "The company wants people and management responsibility to have only a limited effect on the overall role evaluation. Formal leadership should therefore not, in itself, drive the evaluation particularly much.",
         "The company judges people and management responsibility to be relevant, but it should normally weigh lighter than the most prioritized criteria in the model.",
         "The company wants people and management responsibility to have a clear and balanced place in the model. Leading others should affect the evaluation, but without being given particularly reinforced weight.",
@@ -315,9 +315,9 @@ export const standardTemplateContentEn: StandardTemplateContent = {
           "Overlaps partly with Scope & Impact (organizational reach) and Autonomy (decision authority); here the focus is specifically responsibility exercised through other people.",
         biasRisk: "medium",
         biasComment:
-          "Rewarding visible mandate and number of direct reports more than actual leadership impact can over-value traditionally male-coded manager roles and under-value senior individual contributors and coordination-heavy work. The level descriptions themselves are gender-neutral.",
+          "Rewarding visible mandate and number of direct reports more than actual leadership impact can over-value traditionally male-coded manager roles and under-value senior individual contributors and coordination-heavy work. The step descriptions themselves are gender-neutral.",
         biasAction:
-          "The level anchors describe leadership content rather than headcount alone, and the criterion is kept at a moderate weight so a manager title does not by itself dominate the evaluation.",
+          "The step anchors describe leadership content rather than headcount alone, and the criterion is kept at a moderate weight so a manager title does not by itself dominate the evaluation.",
       },
     },
     formal: {
@@ -334,7 +334,7 @@ export const standardTemplateContentEn: StandardTemplateContent = {
         "Advanced academic level or advanced specialist certification required. The role requires e.g. a master's degree, advanced certification (IFRS, TISAX, security certificate, CPA etc.) or equivalent high theoretical level.",
         "Professional expertise at the highest level required. The role requires research-level competence, advanced expert accreditation or very substantial domain-specific expertise that sets the norm for the area.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "The company wants requirements for formal qualifications to have only a limited effect on the overall role evaluation.",
         "The company judges formal qualifications to be relevant, but the criterion should normally weigh lighter than the more prioritized dimensions in the model.",
         "The company wants formal qualifications to have a clear and balanced place in the model. Education requirements or equivalent experience requirements should affect the evaluation at a normal level.",
@@ -350,9 +350,9 @@ export const standardTemplateContentEn: StandardTemplateContent = {
           "Overlaps partly with Knowledge Depth/Breadth; here the focus is formal requirements rather than actual applied knowledge and experience.",
         biasRisk: "medium",
         biasComment:
-          "Resting on formal status instead of actual work content can disadvantage competence acquired outside traditional education. The level descriptions allow equivalent documented experience and are gender-neutral.",
+          "Resting on formal status instead of actual work content can disadvantage competence acquired outside traditional education. The step descriptions allow equivalent documented experience and are gender-neutral.",
         biasAction:
-          "The levels explicitly recognize equivalent experience alongside formal education, and the criterion is kept at a low weight so formal credentials do not by themselves drive the evaluation.",
+          "The steps explicitly recognize equivalent experience alongside formal education, and the criterion is kept at a low weight so formal credentials do not by themselves drive the evaluation.",
       },
     },
   },

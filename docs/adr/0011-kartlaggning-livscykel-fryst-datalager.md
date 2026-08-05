@@ -39,3 +39,7 @@ Mönstret finns redan: revisionsloggen bevarar sina rader och tombstonar `actorN
 - V2-entiteten (arbetsnamn `payMappingRun` / kartläggning) bär: status, referensdatum, ansvarig, population med exkluderingar, den frysta datan (löner, roller, band/policyintervall, demografi, betyg, modellkonfiguration), metadata, samt referenser från arbetslagrets poster via `snapshot_id`.
 - En dedikerad listvy (alla kartläggningar med status, population, antal flaggade skillnader, öppna åtgärder, ansvarig, datum) och en jämförelsevy mellan två kartläggningar (gap-, kvartil-, off-policy- och åtgärdseffektsförändring) hör till modulen.
 - Byggs inte nu. Detta är ett söm-förtydligande så att kartläggningsmodulen designas rätt från start i stället för att retrofittas.
+
+## Tillägg 2026-08-05: begreppen har bytt namn (ADR-0014)
+
+Beslutet står fast, orden har bytt namn. Det som här heter **band** (rollens beräknade tyngd, t.ex. "band/policyintervall") heter i dag **nivå** (kod `level`), och individens position inom rollens track heter i dag **senioritet** (kod `seniority`). Texten ovan skrivs inte om: läs den med den nyckeln. Se [ADR-0014](./0014-terminologi-niva-senioritet-steg.md).

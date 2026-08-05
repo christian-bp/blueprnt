@@ -1,14 +1,14 @@
 import { isWeightPoints } from "./weighting"
 import type {
-  BandThreshold,
   ComputeInput,
   CriterionShare,
   CriterionWeight,
+  LevelThreshold,
   RatingInput,
   RoleResult,
 } from "./types"
 
-// Pure scoring engine (ADR-0002): score and band are always derived, never
+// Pure scoring engine (ADR-0002): score and level are always derived, never
 // stored. No Convex imports, no side effects, fully deterministic.
 
 export function assertUniqueCriteria(criteria: CriterionWeight[]): void {
@@ -30,8 +30,8 @@ function assertValidRating(value: number): void {
 // Normalized weighted score on the fixed 0-100 scale (ADR-0004):
 // floor(20 * sum(rating * weightPoints) / sum(weightPoints)). Normalizing
 // over the model's own point sum keeps the scale independent of the
-// criterion count, so band thresholds stay meaningful when criteria are
-// added or removed. Flooring keeps the comparison against integer band
+// criterion count, so level thresholds stay meaningful when criteria are
+// added or removed. Flooring keeps the comparison against integer level
 // thresholds exact: floored >= T iff unfloored >= T for integer T. All
 // inputs are small integers, so the float quotient is exact whenever the
 // true quotient is an integer and the floor is safe.
@@ -105,26 +105,29 @@ export function criterionShares(
   }))
 }
 
-// Band 1 is highest; minScore is the inclusive lower bound of a band. Picks
+// Level 1 is highest; minScore is the inclusive lower bound of a level. Picks
 // the threshold with the highest minScore the score reaches (tie-break:
-// lowest band number). Callers always seed a floor threshold at minScore 0,
+// lowest level number). Callers always seed a floor threshold at minScore 0,
 // so a no-match is an invariant violation, not a normal case.
-export function assignBand(score: number, thresholds: BandThreshold[]): number {
+export function assignLevel(
+  score: number,
+  thresholds: LevelThreshold[]
+): number {
   if (!Number.isFinite(score) || score < 0) {
     throw new Error(`invalid score: ${score}`)
   }
-  if (thresholds.length === 0) throw new Error("no band thresholds")
+  if (thresholds.length === 0) throw new Error("no level thresholds")
   const sorted = [...thresholds].sort(
-    (a, b) => b.minScore - a.minScore || a.band - b.band
+    (a, b) => b.minScore - a.minScore || a.level - b.level
   )
   for (const threshold of sorted) {
-    if (score >= threshold.minScore) return threshold.band
+    if (score >= threshold.minScore) return threshold.level
   }
-  throw new Error(`no band threshold matches score ${score}`)
+  throw new Error(`no level threshold matches score ${score}`)
 }
 
-// Derives the full result set. A role has a score and band only when EVERY
-// model criterion is rated; partial ratings yield null score/band plus the
+// Derives the full result set. A role has a score and level only when EVERY
+// model criterion is rated; partial ratings yield null score/level plus the
 // rated/total counters. Output order follows input order.
 export function computeResults(input: ComputeInput): RoleResult[] {
   assertUniqueCriteria(input.criteria)
@@ -147,7 +150,7 @@ export function computeResults(input: ComputeInput): RoleResult[] {
       totalCriteria,
       complete,
       score,
-      band: score === null ? null : assignBand(score, input.thresholds),
+      level: score === null ? null : assignLevel(score, input.thresholds),
     }
   })
 }

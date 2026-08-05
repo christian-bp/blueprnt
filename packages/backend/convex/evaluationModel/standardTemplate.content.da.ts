@@ -25,7 +25,7 @@ export const standardTemplateContentDa: StandardTemplateContent = {
         "Påvirker et forretnings-/funktionsområde; sætter retning for større dele af organisationen.",
         "Virksomhedsomfattende indvirkning; strategisk ansvar og direkte effekt på organisationens resultater.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Virksomheden ønsker, at omfanget af ansvar og organisatorisk indvirkning kun skal have begrænset gennemslag i rollevurderingen. Roller med kortere rækkevidde skal altså ikke belønnes særlig stærkt på netop denne dimension.",
         "Virksomheden mener, at omfang og indvirkning er relevant, men at det normalt skal veje lettere end modellens mere prioriterede kriterier. Bredere ansvar skal påvirke vurderingen, men ikke være en hoveddrivkraft.",
         "Virksomheden ønsker, at omfang og indvirkning skal have en tydelig og balanceret plads i modellen. Roller med større organisatorisk rækkevidde skal slå igennem, men uden at denne dimension dominerer vurderingen.",
@@ -41,9 +41,9 @@ export const standardTemplateContentDa: StandardTemplateContent = {
           "Overlapper delvist med Autonomi (beslutningskompetence) og Personale-/ledelsesansvar; her ligger fokus specifikt på, hvor langt rollens effekter når ud i organisationen.",
         biasRisk: "low",
         biasComment:
-          "At belønne synligt mandat mere end faktisk gennemslag kan begunstige traditionelt synlige roller. Niveaubeskrivelserne tager udgangspunkt i effekt og ansvar snarere end rang og er kønsneutrale.",
+          "At belønne synligt mandat mere end faktisk gennemslag kan begunstige traditionelt synlige roller. Trinbeskrivelserne tager udgangspunkt i effekt og ansvar snarere end rang og er kønsneutrale.",
         biasAction:
-          "Niveauankrene beskriver faktisk rækkevidde og resultater, ikke formel position, så også roller uden synlig titel kan bedømmes højt.",
+          "Trinankrene beskriver faktisk rækkevidde og resultater, ikke formel position, så også roller uden synlig titel kan bedømmes højt.",
       },
     },
     risk: {
@@ -60,7 +60,7 @@ export const standardTemplateContentDa: StandardTemplateContent = {
         "Høj påvirkning på økonomi, omdømme eller compliance.",
         "Kritisk påvirkning på organisationens resultater, strategi eller regelefterlevelse.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Virksomheden ønsker, at risiko og konsekvens kun skal have begrænset indvirkning på rollevurderingen. Roller, hvor fejl får større følger, skal altså ikke belønnes særlig meget på denne dimension.",
         "Virksomheden vurderer, at risiko og konsekvens er relevant, men at dette kriterium normalt skal veje lettere end de mest prioriterede dimensioner i modellen.",
         "Virksomheden ønsker, at risiko og konsekvens skal have en balanceret plads i modellen. Forskelle i påvirkning af kvalitet, compliance, drift eller brand skal indgå på et normalt niveau.",
@@ -76,7 +76,7 @@ export const standardTemplateContentDa: StandardTemplateContent = {
           "Overlapper delvist med Omfang og indvirkning; her ligger fokus på konsekvenserne af fejl eller mangler snarere end på selve rækkevidden.",
         biasRisk: "low",
         biasComment:
-          "Synlige operative eller tekniske risici kan overvurderes, mens stille kvalitets-, omsorgs- eller compliancearbejde undervurderes. Niveaubeskrivelserne omfatter også kvalitet, compliance og relationer og er kønsneutrale.",
+          "Synlige operative eller tekniske risici kan overvurderes, mens stille kvalitets-, omsorgs- eller compliancearbejde undervurderes. Trinbeskrivelserne omfatter også kvalitet, compliance og relationer og er kønsneutrale.",
         biasAction:
           "Ankerteksterne inkluderer konsekvenser for kvalitet, compliance og kunderelationer, ikke kun økonomiske eller tekniske fejl, så forskellige typer af ansvar bedømmes ligeværdigt.",
       },
@@ -95,7 +95,7 @@ export const standardTemplateContentDa: StandardTemplateContent = {
         "Høj kompleksitet; håndterer modstridende krav og uklare forudsætninger.",
         "Ekstremt komplekse situationer; driver fremdrift i ukendte/innovative områder med høj usikkerhed.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Virksomheden ønsker, at kompleksitet og tvetydighed kun skal have lille indvirkning på den samlede rollevurdering. Roller med mere komplekse og usikre forudsætninger skal derfor ikke belønnes særlig meget på denne dimension.",
         "Virksomheden vurderer, at kompleksitet og usikkerhed er relevant, men at denne dimension normalt skal veje lettere end de mest prioriterede kriterier.",
         "Virksomheden ønsker, at kompleksitet og tvetydighed skal have en balanceret og tydelig plads i modellen. Roller, der kræver problemløsning i mere usikre eller svært fortolkelige sammenhænge, skal have et normalt gennemslag i vurderingen.",
@@ -111,7 +111,7 @@ export const standardTemplateContentDa: StandardTemplateContent = {
           "Overlapper delvist med Vidensdybde/-bredde; her ligger fokus på problemernes kompleksitet og usikkerhed snarere end på den viden, der kræves.",
         biasRisk: "low",
         biasComment:
-          "Teknisk kompleksitet kan overvurderes, mens relationel, koordinerende eller flertydig kompleksitet undervurderes. Niveaubeskrivelserne omfatter også organisatorisk og forretningsmæssig kompleksitet og er kønsneutrale.",
+          "Teknisk kompleksitet kan overvurderes, mens relationel, koordinerende eller flertydig kompleksitet undervurderes. Trinbeskrivelserne omfatter også organisatorisk og forretningsmæssig kompleksitet og er kønsneutrale.",
         biasAction:
           "Ankerteksterne beskriver kompleksitet bredt (teknisk, forretningsmæssig og organisatorisk), så også koordinerende og flertydige sammenhænge bedømmes som komplekse.",
       },
@@ -130,7 +130,7 @@ export const standardTemplateContentDa: StandardTemplateContent = {
         "Træffer strategiske beslutninger inden for et domæne og sætter retning for et delområde.",
         "Træffer beslutninger der påvirker flere domæner eller hele organisationen.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Virksomheden ønsker, at graden af selvstændighed og beslutningskompetence kun skal have lille indvirkning på den samlede rollevurdering.",
         "Virksomheden mener, at autonomi og beslutningsniveau er relevant, men at det normalt skal veje lettere end de mere prioriterede kriterier i modellen.",
         "Virksomheden ønsker, at autonomi og beslutningskompetence skal have en tydelig og balanceret plads i modellen. Rollen skal påvirkes af, hvor selvstændigt den arbejder, men uden at dette kriterium tillægges ekstra stor vægt.",
@@ -146,7 +146,7 @@ export const standardTemplateContentDa: StandardTemplateContent = {
           "Overlapper delvist med Omfang og indvirkning og Personale-/ledelsesansvar; her ligger fokus på selvstændighed og beslutningskompetence snarere end på rækkevidde eller det at lede andre.",
         biasRisk: "medium",
         biasComment:
-          "Synligt beslutningsmandat kan overvurderes i forhold til faktisk gennemslag, hvilket kan begunstige roller med formelt mandat frem for seniorspecialister med reel indflydelse. Niveaubeskrivelserne er kønsneutrale.",
+          "Synligt beslutningsmandat kan overvurderes i forhold til faktisk gennemslag, hvilket kan begunstige roller med formelt mandat frem for seniorspecialister med reel indflydelse. Trinbeskrivelserne er kønsneutrale.",
         biasAction:
           "Ankerteksterne omfatter også selvstændigt initiativ og problemløsning, ikke kun formelt beslutningsmandat, så reel indflydelse uden titel kan bedømmes højt.",
       },
@@ -165,7 +165,7 @@ export const standardTemplateContentDa: StandardTemplateContent = {
         "Håndterer et komplekst interessentmiljø med modstridende interesser.",
         "Repræsenterer organisationen eksternt og håndterer strategiske interessenter.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Virksomheden ønsker, at bredden i samspil og koordinering kun skal have lille indvirkning på, hvordan roller vurderes i forhold til hinanden.",
         "Virksomheden vurderer, at interessentbredde er relevant, men at kriteriet normalt skal veje lettere end de mest prioriterede dimensioner i modellen.",
         "Virksomheden ønsker, at interessentbredde skal have en tydelig og balanceret plads i modellen. Roller med bredt internt eller eksternt samspil skal have et normalt gennemslag i vurderingen.",
@@ -181,7 +181,7 @@ export const standardTemplateContentDa: StandardTemplateContent = {
           "Overlapper delvist med Omfang og indvirkning; her ligger fokus på bredden og variationen i samspillet snarere end på resultatets rækkevidde.",
         biasRisk: "low",
         biasComment:
-          "Dette kriterium modvirker en kendt bias ved udtrykkeligt at værdsætte relationelt og koordinerende arbejde. Resterende risiko: ekstern, synlig repræsentation kan overvurderes i forhold til internt koordineringsarbejde. Niveaubeskrivelserne er kønsneutrale.",
+          "Dette kriterium modvirker en kendt bias ved udtrykkeligt at værdsætte relationelt og koordinerende arbejde. Resterende risiko: ekstern, synlig repræsentation kan overvurderes i forhold til internt koordineringsarbejde. Trinbeskrivelserne er kønsneutrale.",
         biasAction:
           "Ankerteksterne værdsætter intern tværfunktionel koordinering på lige fod med ekstern repræsentation, så synligt eksternt netværksarbejde ikke i sig selv vejer tungere.",
       },
@@ -200,7 +200,7 @@ export const standardTemplateContentDa: StandardTemplateContent = {
         "Rollen kræver ekspertkompetence inden for et komplekst domæne. Rollen forudsætter, at indehaveren definerer metoder, strukturer og arbejdsgange inden for sit domæne og fungerer som intern ekspert i kvalificerede spørgsmål.",
         "Rollen kræver domæneledende kompetence og vidensudvikling. Rollen kræver, at indehaveren udvikler nye arbejdsgange, modeller eller teknikker og sætter retning og principper for organisationens fremtidige evner inden for området.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Virksomheden ønsker, at krav om dyb ekspertise, erfaring eller tværfaglig bredde kun skal have begrænset indvirkning på den samlede rollevurdering.",
         "Virksomheden mener, at vidensdybde og -bredde er relevant, men at det normalt skal veje lettere end de mest prioriterede kriterier.",
         "Virksomheden ønsker, at vidensdybde og -bredde skal have en tydelig og balanceret plads i modellen. Ekspertise og erfaringskrav skal påvirke vurderingen på et normalt niveau.",
@@ -216,7 +216,7 @@ export const standardTemplateContentDa: StandardTemplateContent = {
           "Overlapper delvist med Kompleksitet og tvetydighed og Formelle kvalifikationer; her ligger fokus på faktisk viden og erfaring snarere end på problemernes kompleksitet eller de formelle krav.",
         biasRisk: "low",
         biasComment:
-          "Formelt anerkendt eller synlig ekspertise kan overvurderes i forhold til stille, erfaringsbaseret viden. Niveaubeskrivelserne tager udgangspunkt i anvendt kompetence, ikke kun titel eller uddannelse, og er kønsneutrale.",
+          "Formelt anerkendt eller synlig ekspertise kan overvurderes i forhold til stille, erfaringsbaseret viden. Trinbeskrivelserne tager udgangspunkt i anvendt kompetence, ikke kun titel eller uddannelse, og er kønsneutrale.",
         biasAction:
           "Ankerteksterne værdsætter praktisk erfaring og anvendt metodeforståelse på lige fod med formelt anerkendt specialisering.",
       },
@@ -235,7 +235,7 @@ export const standardTemplateContentDa: StandardTemplateContent = {
         "Ansvar for et større budget/forretningsområde.",
         "Ansvar for en betydelig del af virksomhedens økonomi eller P&L.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Virksomheden ønsker, at økonomisk ansvar kun skal have begrænset indvirkning på den samlede rollevurdering. Budget- eller resultatansvar skal altså ikke tillægges særlig stor vægt i modellen.",
         "Virksomheden mener, at økonomisk ansvar er relevant, men at det normalt skal veje lettere end de mest prioriterede kriterier.",
         "Virksomheden ønsker, at økonomisk ansvar skal have en tydelig og balanceret plads i modellen. Budgetpåvirkning, omkostningsansvar eller resultatansvar skal regnes med som en normal del af vurderingen.",
@@ -251,9 +251,9 @@ export const standardTemplateContentDa: StandardTemplateContent = {
           "Overlapper delvist med Autonomi (beslutningskompetence) og Omfang og indvirkning; her ligger fokus specifikt på ansvaret for økonomiske rammer og resultater.",
         biasRisk: "medium",
         biasComment:
-          "Et stort budget kan tillægges for stor vægt i forhold til kompleksitet, ansvar og specialistviden, hvilket kan begunstige traditionelt mandsdominerede budgetbærende roller. Niveaubeskrivelserne er kønsneutrale.",
+          "Et stort budget kan tillægges for stor vægt i forhold til kompleksitet, ansvar og specialistviden, hvilket kan begunstige traditionelt mandsdominerede budgetbærende roller. Trinbeskrivelserne er kønsneutrale.",
         biasAction:
-          "Kriteriet holdes på en moderat vægt i modellen, så budgetstørrelse ikke i sig selv dominerer vurderingen, og niveauerne beskriver beslutningsansvar snarere end kun beløbenes størrelse.",
+          "Kriteriet holdes på en moderat vægt i modellen, så budgetstørrelse ikke i sig selv dominerer vurderingen, og trinene beskriver beslutningsansvar snarere end kun beløbenes størrelse.",
       },
     },
     people: {
@@ -270,7 +270,7 @@ export const standardTemplateContentDa: StandardTemplateContent = {
         "Funktionschef med flere ledelseslag eller en større organisation.",
         "Strategisk leder på virksomhedsniveau (Head/Director/C-level).",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Virksomheden ønsker, at personale- og ledelsesansvar kun skal have begrænset indvirkning på den samlede rollevurdering. Formelt lederskab skal altså ikke i sig selv drive vurderingen særlig meget.",
         "Virksomheden vurderer, at personale- og ledelsesansvar er relevant, men at det normalt skal veje lettere end de mest prioriterede kriterier i modellen.",
         "Virksomheden ønsker, at personale- og ledelsesansvar skal have en tydelig og balanceret plads i modellen. At lede andre skal påvirke vurderingen, men uden at blive tillagt særlig forstærket vægt.",
@@ -286,9 +286,9 @@ export const standardTemplateContentDa: StandardTemplateContent = {
           "Overlapper delvist med Omfang og indvirkning (organisatorisk rækkevidde) og Autonomi (beslutningskompetence); her ligger fokus specifikt på ansvar, der udøves gennem andre mennesker.",
         biasRisk: "medium",
         biasComment:
-          "At belønne synligt mandat og antal medarbejdere mere end faktisk ledelsespåvirkning kan overvurdere traditionelt mandsdominerede lederroller og undervurdere seniorspecialister og koordineringstungt arbejde. Niveaubeskrivelserne i sig selv er kønsneutrale.",
+          "At belønne synligt mandat og antal medarbejdere mere end faktisk ledelsespåvirkning kan overvurdere traditionelt mandsdominerede lederroller og undervurdere seniorspecialister og koordineringstungt arbejde. Trinbeskrivelserne i sig selv er kønsneutrale.",
         biasAction:
-          "Niveauankrene beskriver ledelsens indhold snarere end kun antal medarbejdere, og kriteriet holdes på en moderat vægt, så en ledertitel ikke i sig selv dominerer evalueringen.",
+          "Trinankrene beskriver ledelsens indhold snarere end kun antal medarbejdere, og kriteriet holdes på en moderat vægt, så en ledertitel ikke i sig selv dominerer evalueringen.",
       },
     },
     formal: {
@@ -305,7 +305,7 @@ export const standardTemplateContentDa: StandardTemplateContent = {
         "Avanceret akademisk niveau eller avanceret specialistcertificering kræves. Rollen kræver f.eks. en kandidatgrad, avanceret certificering (IFRS, TISAX, sikkerhedsgodkendelse, CPA osv.) eller tilsvarende højt teoretisk niveau.",
         "Fagekspertise på højeste niveau kræves. Rollen kræver kompetence på forskningsniveau, avanceret ekspertakkreditering eller særdeles betydelig domænespecifik ekspertise, der sætter normen for området.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Virksomheden ønsker, at krav om formelle kvalifikationer kun skal have begrænset indvirkning på den samlede rollevurdering.",
         "Virksomheden vurderer, at formelle kvalifikationer er relevant, men at kriteriet normalt skal veje lettere end de mere prioriterede dimensioner i modellen.",
         "Virksomheden ønsker, at formelle kvalifikationer skal have en tydelig og balanceret plads i modellen. Uddannelseskrav eller tilsvarende erfaringskrav skal påvirke vurderingen på et normalt niveau.",
@@ -321,9 +321,9 @@ export const standardTemplateContentDa: StandardTemplateContent = {
           "Overlapper delvist med Vidensdybde/-bredde; her ligger fokus på de formelle krav snarere end på faktisk anvendt viden og erfaring.",
         biasRisk: "medium",
         biasComment:
-          "At hvile på formel status i stedet for faktisk arbejdsindhold kan stille kompetence, der er erhvervet ad andre veje end traditionel uddannelse, ringere. Niveaubeskrivelserne tillader tilsvarende dokumenteret erfaring og er kønsneutrale.",
+          "At hvile på formel status i stedet for faktisk arbejdsindhold kan stille kompetence, der er erhvervet ad andre veje end traditionel uddannelse, ringere. Trinbeskrivelserne tillader tilsvarende dokumenteret erfaring og er kønsneutrale.",
         biasAction:
-          "Niveauerne anerkender udtrykkeligt tilsvarende erfaring ved siden af formel uddannelse, og kriteriet holdes på lav vægt, så formelle meritter ikke i sig selv driver vurderingen.",
+          "Trinene anerkender udtrykkeligt tilsvarende erfaring ved siden af formel uddannelse, og kriteriet holdes på lav vægt, så formelle meritter ikke i sig selv driver vurderingen.",
       },
     },
   },

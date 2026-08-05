@@ -6,18 +6,19 @@ import { DEV_COMPANY, RATINGS_BY_TITLE } from "./devCompany"
 import { insertStarterSet } from "./starters"
 
 // Dev/seed-only: give an org the blueprnt demo company (DEV_COMPANY: ~40 roles
-// across 8 families) and rate every role so the results/band view is populated.
-// Creates the families + roles via the shared insertStarterSet helper, then
-// rates each role against all nine criteria using RATINGS_BY_TITLE keyed by the
-// role's title (per-role vectors mirroring the production demo org's hand-tuned
-// ratings; level is not stored on the role and does not drive the band). Idempotent:
-// skips entirely if the org already has a role. The standard model must exist
-// first (seedStandardModel), since ratings reference the seeded criteria by id.
-// No auth context (the dev seed is "use node"), so this is an internalMutation;
-// the founder authId is passed in as actorId (the admin-gated
-// createStarterSet/setRating cannot be used) so the role/roleFamily.created
-// audit rows are attributed to the seeded account, not "system". Ratings are
-// inserted directly and do not log rating.change/band.shift rows.
+// across 8 families) and rate every role so the results/level view is
+// populated. Creates the families + roles via the shared insertStarterSet
+// helper, then rates each role against all nine criteria using
+// RATINGS_BY_TITLE keyed by the role's title (per-role vectors mirroring the
+// production demo org's hand-tuned ratings; seniority is not stored on the
+// role and does not drive the level). Idempotent: skips entirely if the org
+// already has a role. The standard model must exist first (seedStandardModel),
+// since ratings reference the seeded criteria by id. No auth context (the dev
+// seed is "use node"), so this is an internalMutation; the founder authId is
+// passed in as actorId (the admin-gated createStarterSet/setRating cannot be
+// used) so the role/roleFamily.created audit rows are attributed to the seeded
+// account, not "system". Ratings are inserted directly and do not log
+// rating.change/level.shift rows.
 export const seedRatedRoles = internalMutation({
   args: { orgId: v.string(), actorId: v.string() },
   returns: v.object({ roleCount: v.number(), ratingCount: v.number() }),

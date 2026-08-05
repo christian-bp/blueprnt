@@ -52,9 +52,9 @@ const ROLES = [
 ]
 
 function renderMenu(
-  currentAssignment: { roleId: string; level: string } | null = {
+  currentAssignment: { roleId: string; seniority: string } | null = {
     roleId: "role1",
-    level: "IC3",
+    seniority: "IC3",
   }
 ) {
   return render(
@@ -97,7 +97,7 @@ describe("PersonActionsMenu", () => {
     expect(screen.getByRole("alertdialog")).toBeDefined()
   })
 
-  it("edits the role: a track swap resets the level and saves a confirmed assignment", async () => {
+  it("edits the role: a track swap resets the seniority and saves a confirmed assignment", async () => {
     renderMenu()
     openMenu()
     fireEvent.click(screen.getByRole("menuitem", { name: m.editPerson.title }))
@@ -111,8 +111,8 @@ describe("PersonActionsMenu", () => {
       "Engineering Manager"
     )
 
-    // role2 is on the M track; IC3 is invalid there, so the level falls back
-    // to the track's first level and the form is dirty + valid.
+    // role2 is on the M track; IC3 is invalid there, so the seniority falls
+    // back to the track's first seniority and the form is dirty + valid.
     const save = screen.getByRole("button", {
       name: m.editPerson.cta,
     }) as HTMLButtonElement
@@ -125,8 +125,8 @@ describe("PersonActionsMenu", () => {
           orgId: "org-1",
           personId: "p1",
           roleId: "role2",
-          level: "M1",
-          levelSource: "confirmed",
+          seniority: "M1",
+          senioritySource: "confirmed",
         })
       )
     })
@@ -165,8 +165,8 @@ describe("PersonActionsMenu", () => {
       expect(assignMock).toHaveBeenCalledWith(
         expect.objectContaining({
           roleId: "role1",
-          level: "IC1",
-          levelSource: "confirmed",
+          seniority: "IC1",
+          senioritySource: "confirmed",
         })
       )
     })

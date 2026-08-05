@@ -28,7 +28,7 @@ import { DeviationBadge } from "@/components/deviation-badge"
 import { useOrganization } from "@/components/org-context"
 import { RoleCriterionBreakdown } from "@/components/roles/role-criterion-breakdown"
 import { ResponsibilitiesList } from "@/components/roles/responsibilities-list"
-import { BandBadge } from "@/components/band-badge"
+import { LevelBadge } from "@/components/level-badge"
 import { TrackBadge } from "@/components/track-badge"
 
 interface RoleSheetContextValue {
@@ -82,7 +82,7 @@ function RoleSheetContent({
   onClose: () => void
 }) {
   const t = useTranslations("dashboard.roleSheet")
-  const tBands = useTranslations("dashboard.bands")
+  const tLevels = useTranslations("dashboard.levels")
   const tRoles = useTranslations("dashboard.roles")
   const tDetail = useTranslations("dashboard.roles.detail")
   const tRole = useTranslations("assessment.role")
@@ -134,10 +134,10 @@ function RoleSheetContent({
                 name={role.trackName}
                 short
               />
-              {/* Band sits with the title once the role is fully evaluated,
+              {/* Level sits with the title once the role is fully evaluated,
                   matching the role page result badge. */}
-              {result?.complete && result.band !== null && (
-                <BandBadge band={result.band} />
+              {result?.complete && result.level !== null && (
+                <LevelBadge level={result.level} />
               )}
             </div>
             {subtitle.length > 0 ? (
@@ -158,13 +158,15 @@ function RoleSheetContent({
                     strokeWidth={2}
                     aria-hidden="true"
                   />
-                  {tBands("anchorLabel")}
+                  {tLevels("anchorLabel")}
                 </span>
                 {result !== undefined &&
                   result !== null &&
-                  result.band !== null &&
-                  result.band !== role.anchorRole.expectedBand && (
-                    <DeviationBadge agreedBand={role.anchorRole.expectedBand} />
+                  result.level !== null &&
+                  result.level !== role.anchorRole.expectedLevel && (
+                    <DeviationBadge
+                      agreedLevel={role.anchorRole.expectedLevel}
+                    />
                   )}
               </div>
             )}
@@ -172,7 +174,7 @@ function RoleSheetContent({
 
           <div className="flex-1 space-y-6 px-4 pb-4">
             {/* The job profile leads the sheet: it is what the reader came for;
-                the evaluation result (band + breakdown) follows below. No
+                the evaluation result (level + breakdown) follows below. No
                 heading: as the first section, the profile needs no label. */}
             <section className="space-y-4">
               {role.purpose.trim().length > 0 && (
@@ -199,14 +201,14 @@ function RoleSheetContent({
               </div>
             </section>
 
-            {/* Result: weighting + band + breakdown when complete, else progress. */}
+            {/* Result: weighting + level + breakdown when complete, else progress. */}
             <section className="space-y-3">
               {result === undefined ? (
                 <div className="flex justify-center py-4">
                   <Spinner aria-label={t("loading")} />
                 </div>
               ) : result?.complete ? (
-                // Band now lives in the header; the body carries only the
+                // Level now lives in the header; the body carries only the
                 // per-criterion contribution breakdown.
                 <RoleCriterionBreakdown criteria={result.criteria} />
               ) : (

@@ -60,7 +60,7 @@ async function createRatedRole(args: {
 }
 
 describe("designateAnchorRole", () => {
-  it("designates a fully rated role, audits, and lists it with the computed band", async () => {
+  it("designates a fully rated role, audits, and lists it with the computed level", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
     const roleId = await createRatedRole({
@@ -74,14 +74,14 @@ describe("designateAnchorRole", () => {
     await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
       orgId,
       roleId,
-      expectedBand: 1,
+      expectedLevel: 1,
       motivation: "  Stable, well-understood reference for engineering.  ",
     })
 
     await t.run(async (ctx) => {
       const role = await ctx.db.get(roleId)
       expect(role?.anchorRole?.status).toBe("active")
-      expect(role?.anchorRole?.expectedBand).toBe(1)
+      expect(role?.anchorRole?.expectedLevel).toBe(1)
       // The motivation is stored trimmed.
       expect(role?.anchorRole?.motivation).toBe(
         "Stable, well-understood reference for engineering."
@@ -95,13 +95,13 @@ describe("designateAnchorRole", () => {
         .collect()
       expect(audit).toHaveLength(1)
       // Create-snapshot of all 4 anchor fields, every entry from null, plus
-      // the live computed band the designation is calibrated against. The
+      // the live computed level the designation is calibrated against. The
       // reviewedAt captured in the payload equals what was stored (hoist).
       expect(audit[0]?.payload).toEqual({
         roleId,
-        computedBand: 1,
+        computedLevel: 1,
         changes: {
-          expectedBand: { from: null, to: 1 },
+          expectedLevel: { from: null, to: 1 },
           motivation: {
             from: null,
             to: "Stable, well-understood reference for engineering.",
@@ -118,9 +118,9 @@ describe("designateAnchorRole", () => {
     )
     expect(anchors).toHaveLength(1)
     expect(anchors[0]?.title).toBe("Software Developer")
-    expect(anchors[0]?.expectedBand).toBe(1)
-    // All ratings are 5, so the computed band is the top band.
-    expect(anchors[0]?.computedBand).toBe(1)
+    expect(anchors[0]?.expectedLevel).toBe(1)
+    // All ratings are 5, so the computed level is the top level.
+    expect(anchors[0]?.computedLevel).toBe(1)
 
     // getRole carries the designation for the role page.
     const role = await asAdmin.query(api.assessment.roles.getRole, {
@@ -145,13 +145,13 @@ describe("designateAnchorRole", () => {
       asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
         orgId,
         roleId,
-        expectedBand: 3,
+        expectedLevel: 3,
         motivation: "m",
       })
     ).rejects.toThrow(/errors.ratingsIncomplete/)
   })
 
-  it("rejects an out-of-range band and a blank motivation", async () => {
+  it("rejects an out-of-range level and a blank motivation", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
     const roleId = await createRatedRole({
@@ -161,12 +161,12 @@ describe("designateAnchorRole", () => {
       title: "Ref",
       value: 3,
     })
-    for (const expectedBand of [0, 8, 2.5]) {
+    for (const expectedLevel of [0, 8, 2.5]) {
       await expect(
         asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
           orgId,
           roleId,
-          expectedBand,
+          expectedLevel,
           motivation: "m",
         })
       ).rejects.toThrow(/errors.invalidInput/)
@@ -175,7 +175,7 @@ describe("designateAnchorRole", () => {
       asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
         orgId,
         roleId,
-        expectedBand: 3,
+        expectedLevel: 3,
         motivation: "   ",
       })
     ).rejects.toThrow(/errors.invalidInput/)
@@ -194,14 +194,14 @@ describe("designateAnchorRole", () => {
     await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
       orgId,
       roleId,
-      expectedBand: 3,
+      expectedLevel: 3,
       motivation: "m",
     })
     await expect(
       asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
         orgId,
         roleId,
-        expectedBand: 3,
+        expectedLevel: 3,
         motivation: "m",
       })
     ).rejects.toThrow(/errors.invalidTransition/)
@@ -209,7 +209,7 @@ describe("designateAnchorRole", () => {
 })
 
 describe("updateAnchorRole", () => {
-  it("updates band, motivation, and status, bumps reviewedAt, and audits", async () => {
+  it("updates level, motivation, and status, bumps reviewedAt, and audits", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
     const roleId = await createRatedRole({
@@ -222,7 +222,7 @@ describe("updateAnchorRole", () => {
     await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
       orgId,
       roleId,
-      expectedBand: 3,
+      expectedLevel: 3,
       motivation: "first",
     })
     // Pin the stored reviewedAt to a known past value so the update's bump is
@@ -240,7 +240,7 @@ describe("updateAnchorRole", () => {
     await asAdmin.mutation(api.assessment.anchorRoles.updateAnchorRole, {
       orgId,
       roleId,
-      expectedBand: 4,
+      expectedLevel: 4,
       motivation: "second",
       status: "underReview",
     })
@@ -248,7 +248,7 @@ describe("updateAnchorRole", () => {
     await t.run(async (ctx) => {
       const role = await ctx.db.get(roleId)
       expect(role?.anchorRole).toMatchObject({
-        expectedBand: 4,
+        expectedLevel: 4,
         motivation: "second",
         status: "underReview",
       })
@@ -262,16 +262,16 @@ describe("updateAnchorRole", () => {
       expect(audit).toHaveLength(1)
       const payload = audit[0]?.payload as {
         roleId?: string
-        computedBand?: number | null
+        computedLevel?: number | null
         motivationChanged?: unknown
         changes?: Record<string, { from: unknown; to: unknown }>
       }
       // The lossy boolean is gone; the actual before/after is captured.
       expect(payload.motivationChanged).toBeUndefined()
-      // computedBand is always captured (the live derived band).
-      expect(typeof payload.computedBand).toBe("number")
+      // computedLevel is always captured (the live derived level).
+      expect(typeof payload.computedLevel).toBe("number")
       expect(payload.changes).toEqual({
-        expectedBand: { from: 3, to: 4 },
+        expectedLevel: { from: 3, to: 4 },
         motivation: { from: "first", to: "second" },
         status: { from: "active", to: "underReview" },
         reviewedAt: { from: before, to: role?.anchorRole?.reviewedAt },
@@ -279,7 +279,7 @@ describe("updateAnchorRole", () => {
     })
   })
 
-  it("captures only changed fields and always the computed band on a plain edit", async () => {
+  it("captures only changed fields and always the computed level on a plain edit", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
     const roleId = await createRatedRole({
@@ -292,7 +292,7 @@ describe("updateAnchorRole", () => {
     await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
       orgId,
       roleId,
-      expectedBand: 3,
+      expectedLevel: 3,
       motivation: "first",
     })
 
@@ -307,8 +307,8 @@ describe("updateAnchorRole", () => {
     })
 
     // A plain motivation-only edit (no reactivation): the always-capture fix
-    // means computedBand is still present, and only motivation + reviewedAt
-    // appear in changes (no expectedBand/status, no motivationChanged key).
+    // means computedLevel is still present, and only motivation + reviewedAt
+    // appear in changes (no expectedLevel/status, no motivationChanged key).
     await asAdmin.mutation(api.assessment.anchorRoles.updateAnchorRole, {
       orgId,
       roleId,
@@ -324,13 +324,13 @@ describe("updateAnchorRole", () => {
         .collect()
       expect(audit).toHaveLength(1)
       const payload = audit[0]?.payload as {
-        computedBand?: number | null
+        computedLevel?: number | null
         motivationChanged?: unknown
         changes?: Record<string, { from: unknown; to: unknown }>
       }
       expect(payload.motivationChanged).toBeUndefined()
-      // computedBand captured on a non-reactivation path too.
-      expect(typeof payload.computedBand).toBe("number")
+      // computedLevel captured on a non-reactivation path too.
+      expect(typeof payload.computedLevel).toBe("number")
       const changeKeys = Object.keys(payload.changes ?? {}).sort()
       expect(changeKeys).toEqual(["motivation", "reviewedAt"])
       expect(payload.changes?.motivation).toEqual({
@@ -353,7 +353,7 @@ describe("updateAnchorRole", () => {
     await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
       orgId,
       roleId,
-      expectedBand: 3,
+      expectedLevel: 3,
       motivation: "m",
     })
     await asAdmin.mutation(api.assessment.anchorRoles.updateAnchorRole, {
@@ -368,7 +368,7 @@ describe("updateAnchorRole", () => {
       roleId,
       status: "active",
     })
-    // The reactivation row also captures the live computed band (the path that
+    // The reactivation row also captures the live computed level (the path that
     // already derives results), confirming always-capture there too.
     await t.run(async (ctx) => {
       const audit = await ctx.db
@@ -386,8 +386,8 @@ describe("updateAnchorRole", () => {
       })
       expect(
         typeof (
-          reactivation?.payload as { computedBand?: number | null } | undefined
-        )?.computedBand
+          reactivation?.payload as { computedLevel?: number | null } | undefined
+        )?.computedLevel
       ).toBe("number")
     })
     await asAdmin.mutation(api.assessment.anchorRoles.updateAnchorRole, {
@@ -427,7 +427,7 @@ describe("updateAnchorRole", () => {
     await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
       orgId,
       roleId,
-      expectedBand: 3,
+      expectedLevel: 3,
       motivation: "m",
     })
 
@@ -446,11 +446,11 @@ describe("updateAnchorRole", () => {
         .collect()
       expect(audit).toHaveLength(1)
       // Via archive: the status transition to "replaced" is now captured as a
-      // before/after change, with the pre-patch expectedBand as a scalar.
+      // before/after change, with the pre-patch expectedLevel as a scalar.
       expect(audit[0]?.payload).toMatchObject({
         roleId,
         viaArchive: true,
-        expectedBand: 3,
+        expectedLevel: 3,
         changes: {
           status: { from: "active", to: "replaced" },
         },

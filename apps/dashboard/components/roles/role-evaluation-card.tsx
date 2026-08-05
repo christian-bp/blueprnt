@@ -42,7 +42,7 @@ import { RoleCriterionBreakdown } from "@/components/roles/role-criterion-breakd
 
 // One card for the whole evaluation lifecycle. While incomplete it shows the
 // progress and the entry into the blind stepper; once complete it shows the
-// weighting, band, and per-criterion breakdown, with the anchor status inline
+// weighting, level, and per-criterion breakdown, with the anchor status inline
 // and the two actions (adjust, manage anchor) in a header menu. The result view
 // applies only to a live, fully-evaluated role: an archived role has left the
 // results set, so it stays read-only.
@@ -87,21 +87,21 @@ export function RoleEvaluationCard({
     roleId,
     locale,
   })
-  // The band-position scale needs the band count; only the result view uses it.
+  // The level-position scale needs the level count; only the result view uses it.
   const model = useQuery(
     api.evaluationModel.model.getModel,
     showResult ? { orgId, locale } : "skip"
   )
-  const bandCount = model?.bandThresholds.length ?? 0
-  // The band leads with the engine-computed outcome for every role (ADR-0002).
-  // An anchor role additionally flags a deviation when its computed band
-  // differs from the agreed band: the score is primary, the anchor is a sanity
-  // check (matching the bands overview and the rating flow).
-  const heroBand = result?.band ?? null
+  const levelCount = model?.levelThresholds.length ?? 0
+  // The level leads with the engine-computed outcome for every role (ADR-0002).
+  // An anchor role additionally flags a deviation when its computed level
+  // differs from the agreed level: the score is primary, the anchor is a
+  // sanity check (matching the levels overview and the rating flow).
+  const heroLevel = result?.level ?? null
   const anchorDeviates =
     anchorRole !== null &&
-    result?.band != null &&
-    result.band !== anchorRole.expectedBand
+    result?.level != null &&
+    result.level !== anchorRole.expectedLevel
 
   const ctaLabel = ratedCount === 0 ? t("rateCta") : t("resumeRateCta")
 
@@ -154,15 +154,16 @@ export function RoleEvaluationCard({
         {showResult ? (
           result?.complete ? (
             <>
-              {/* The band is the engine-computed outcome. An anchor role is
+              {/* The level is the engine-computed outcome. An anchor role is
                   marked with the anchor icon + a help morph and, when its
-                  computed band differs from the agreed band, a deviation flag
-                  (the agreed band is the sanity check, not the headline); its
-                  motivation shows below the scale. A normal role uses the tag
-                  icon. The full-width scale marks the computed band in the
-                  brand color (Band 1 = highest, per the help). */}
+                  computed level differs from the agreed level, a deviation
+                  flag (the agreed level is the sanity check, not the
+                  headline); its motivation shows below the scale. A normal
+                  role uses the tag icon. The full-width scale marks the
+                  computed level in the brand color (Level 1 = highest, per
+                  the help). */}
               <div className="space-y-2">
-                {heroBand != null && (
+                {heroLevel != null && (
                   <div className="flex items-center gap-2">
                     <HugeiconsIcon
                       icon={anchorRole !== null ? AnchorIcon : Tag01Icon}
@@ -172,7 +173,7 @@ export function RoleEvaluationCard({
                     <div className="flex flex-1 items-baseline justify-between gap-3">
                       <span className="flex items-center gap-1.5">
                         <span className="font-semibold text-xl leading-none">
-                          {`${tAssessment("band")} ${heroBand}`}
+                          {tAssessment("levelNumbered", { level: heroLevel })}
                         </span>
                         {anchorRole !== null && (
                           <HelpMorphButton label={tHelp("anchorRoleLabel")}>
@@ -181,7 +182,7 @@ export function RoleEvaluationCard({
                         )}
                         {anchorDeviates && anchorRole !== null && (
                           <DeviationBadge
-                            agreedBand={anchorRole.expectedBand}
+                            agreedLevel={anchorRole.expectedLevel}
                           />
                         )}
                       </span>
@@ -193,15 +194,15 @@ export function RoleEvaluationCard({
                     </div>
                   </div>
                 )}
-                {heroBand != null && bandCount > 0 && (
+                {heroLevel != null && levelCount > 0 && (
                   <div className="flex gap-1" aria-hidden="true">
-                    {Array.from({ length: bandCount }, (_, i) => i + 1).map(
+                    {Array.from({ length: levelCount }, (_, i) => i + 1).map(
                       (b) => (
                         <div
                           key={b}
                           className={cn(
                             "h-1.5 flex-1 rounded-full",
-                            b === heroBand ? "bg-brand" : "bg-muted"
+                            b === heroLevel ? "bg-brand" : "bg-muted"
                           )}
                         />
                       )

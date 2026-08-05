@@ -23,7 +23,7 @@ vi.mock("convex/react", () => ({
         : vi.fn(),
   useQuery: (ref: unknown) =>
     ref === "evaluationModel.model.getModel"
-      ? { bandThresholds: [80, 60, 40, 20] }
+      ? { levelThresholds: [80, 60, 40, 20] }
       : ref === "assessment.anchorRoles.listAnchorRoles"
         ? []
         : undefined,
@@ -50,7 +50,7 @@ import {
 const anchor = messages.dashboard.roles.anchor
 
 const designated: AnchorRoleInfo = {
-  expectedBand: 2,
+  expectedLevel: 2,
   motivation: "Reference role for the platform track",
   status: "active",
   reviewedAt: 1_700_000_000_000,
@@ -93,8 +93,8 @@ describe("AnchorDialog", () => {
     // The real Base UI Select works inside the portaled dialog; drive its
     // popup listbox directly.
     await pickSelectOption(
-      screen.getByRole("combobox", { name: anchor.expectedBandLabel }),
-      anchor.bandOption.replace("{band}", "2")
+      screen.getByRole("combobox", { name: anchor.expectedLevelLabel }),
+      anchor.levelOption.replace("{level}", "2")
     )
     fireEvent.change(screen.getByLabelText(anchor.motivationLabel), {
       target: { value: "  Stable reference role.  " },
@@ -105,7 +105,7 @@ describe("AnchorDialog", () => {
       expect(designateMock).toHaveBeenCalledWith({
         orgId: "org-1",
         roleId: "role-1",
-        expectedBand: 2,
+        expectedLevel: 2,
         motivation: "Stable reference role.",
       })
     })

@@ -28,7 +28,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import { isValidLevelForTrack, TRACK_LEVELS } from "@workspace/constants"
+import {
+  isValidSeniorityForTrack,
+  TRACK_SENIORITIES,
+} from "@workspace/constants"
 import { useMutation, useQuery } from "convex/react"
 import { useLocale, useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
@@ -49,9 +52,9 @@ const GENDER_VALUES = ["Man", "Kvinna"] as const
 
 // Zod factory (messages via i18n). Only name and gender are required (the
 // backend re-validates); the optional strings normalize to "" here and are
-// omitted from the mutation payload. The role + level pair is optional as a
-// pair: no role means the person starts unassigned (assignable later on the
-// person page); a picked role requires a level valid for its track
+// omitted from the mutation payload. The role + seniority pair is optional
+// as a pair: no role means the person starts unassigned (assignable later on
+// the person page); a picked role requires a seniority valid for its track
 // (ADR-0005). FTE reaches the schema as a number via valueAsNumber, with the
 // empty input mapped to undefined at the field.
 function makeAddPersonSchema(t: ValidationT, roles: AssignableRole[]) {
@@ -60,7 +63,7 @@ function makeAddPersonSchema(t: ValidationT, roles: AssignableRole[]) {
       displayName: z.string().trim().min(1, t("required")),
       gender: z.enum(GENDER_VALUES, { error: t("required") }),
       roleId: z.string(),
-      level: z.string(),
+      seniority: z.string(),
       department: z.string().trim(),
       externalRef: z.string().trim(),
       employmentStartDate: z.string(),
@@ -72,10 +75,10 @@ function makeAddPersonSchema(t: ValidationT, roles: AssignableRole[]) {
         const role = roles.find((r) => String(r.roleId) === values.roleId)
         return (
           role !== undefined &&
-          isValidLevelForTrack(role.trackKey, values.level)
+          isValidSeniorityForTrack(role.trackKey, values.seniority)
         )
       },
-      { path: ["level"], message: t("required") }
+      { path: ["seniority"], message: t("required") }
     )
 }
 
@@ -141,7 +144,7 @@ export function AddPersonDialog() {
       // until an explicit choice is made.
       gender: "" as AddPersonValues["gender"],
       roleId: "",
-      level: "",
+      seniority: "",
       department: "",
       externalRef: "",
       employmentStartDate: "",
@@ -151,8 +154,10 @@ export function AddPersonDialog() {
 
   const selectedRoleId = form.watch("roleId")
   const selectedRole = roles.find((r) => r.roleId === selectedRoleId)
-  const levels = selectedRole
-    ? (TRACK_LEVELS[selectedRole.trackKey as keyof typeof TRACK_LEVELS] ?? [])
+  const seniorities = selectedRole
+    ? (TRACK_SENIORITIES[
+        selectedRole.trackKey as keyof typeof TRACK_SENIORITIES
+      ] ?? [])
     : []
 
   function handleOpenChange(next: boolean) {
@@ -194,15 +199,15 @@ export function AddPersonDialog() {
     }
     // The optional assignment is a second write: if it fails the person
     // still exists, so surface the error but continue to the person page,
-    // where Edit role and level can finish the job.
+    // where Edit role and seniority can finish the job.
     if (values.roleId !== "") {
       try {
         await assignPerson({
           orgId,
           personId: created.personId,
           roleId: values.roleId as Id<"roles">,
-          level: values.level,
-          levelSource: "confirmed",
+          seniority: values.seniority,
+          senioritySource: "confirmed",
         })
       } catch {
         toast.error(tToast("error"))
@@ -288,10 +293,11 @@ export function AddPersonDialog() {
                     </FormItem>
                   )}
                 />
-                {/* Optional role + level pair (same controls as the person
-                    page's Edit role and level): a manually added person gets
-                    a real role directly instead of a free-text title (titles
-                    are the payroll import's matching artifact). */}
+                {/* Optional role + seniority pair (same controls as the
+                    person page's Edit role and seniority): a manually added
+                    person gets a real role directly instead of a free-text
+                    title (titles are the payroll import's matching
+                    artifact). */}
                 <FormField
                   control={form.control}
                   name="roleId"
@@ -307,18 +313,23 @@ export function AddPersonDialog() {
                         onValueChange={(value) => {
                           field.onChange(value)
                           // A role on another track invalidates the picked
-                          // level: fall back to the new track's first level.
+                          // seniority: fall back to the new track's first
+                          // seniority.
                           const role = roles.find((r) => r.roleId === value)
-                          const trackLevels = role
-                            ? (TRACK_LEVELS[
-                                role.trackKey as keyof typeof TRACK_LEVELS
+                          const trackSeniorities = role
+                            ? (TRACK_SENIORITIES[
+                                role.trackKey as keyof typeof TRACK_SENIORITIES
                               ] ?? [])
                             : []
-                          const level = form.getValues("level")
-                          if (!trackLevels.includes(level)) {
-                            form.setValue("level", trackLevels[0] ?? "", {
-                              shouldValidate: true,
-                            })
+                          const seniority = form.getValues("seniority")
+                          if (!trackSeniorities.includes(seniority)) {
+                            form.setValue(
+                              "seniority",
+                              trackSeniorities[0] ?? "",
+                              {
+                                shouldValidate: true,
+                              }
+                            )
                           }
                         }}
                       >
@@ -347,10 +358,10 @@ export function AddPersonDialog() {
                 />
                 <FormField
                   control={form.control}
-                  name="level"
+                  name="seniority"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{tDetail("level")}</FormLabel>
+                      <FormLabel>{tDetail("seniority")}</FormLabel>
                       {/* Keyed by track: a cross-track role change must
                           remount options and value together (the bubble
                           select otherwise fires a spurious ""). */}
@@ -367,14 +378,14 @@ export function AddPersonDialog() {
                             className="w-full"
                           >
                             <SelectValue
-                              placeholder={tForm("levelPlaceholder")}
+                              placeholder={tForm("seniorityPlaceholder")}
                             />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {levels.map((level) => (
-                            <SelectItem key={level} value={level}>
-                              {level}
+                          {seniorities.map((seniority) => (
+                            <SelectItem key={seniority} value={seniority}>
+                              {seniority}
                             </SelectItem>
                           ))}
                         </SelectContent>

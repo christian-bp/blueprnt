@@ -73,7 +73,7 @@ must force visibility while armed or busy (the component appends
 
 **Symptom:** toggling "group by family" OFF in the Overview, the role chips
 moved part of the way, paused, then continued; toggling it ON was fluid.
-(`band-ladder.tsx` / `band-matrix.tsx`, 2026-06-15.)
+(`level-ladder.tsx` / `level-matrix.tsx`, 2026-06-15.)
 
 **Cause:** the family labels are full-width rows in the same `AnimatePresence`
 as the chips. With an `exit` fade, `AnimatePresence` keeps a removed label

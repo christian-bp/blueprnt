@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import {
-  assignBand,
+  assignLevel,
   computeResults,
   criterionShares,
   scoreRole,
@@ -137,45 +137,45 @@ describe("scoreRole", () => {
   })
 })
 
-describe("assignBand", () => {
+describe("assignLevel", () => {
   it("maps the 0-100 default thresholds with inclusive lower bounds", () => {
-    expect(assignBand(100, STANDARD_THRESHOLDS)).toBe(1)
-    expect(assignBand(98, STANDARD_THRESHOLDS)).toBe(1)
-    expect(assignBand(97, STANDARD_THRESHOLDS)).toBe(2)
-    expect(assignBand(83, STANDARD_THRESHOLDS)).toBe(2)
-    expect(assignBand(82, STANDARD_THRESHOLDS)).toBe(3)
-    expect(assignBand(0, STANDARD_THRESHOLDS)).toBe(7)
+    expect(assignLevel(100, STANDARD_THRESHOLDS)).toBe(1)
+    expect(assignLevel(98, STANDARD_THRESHOLDS)).toBe(1)
+    expect(assignLevel(97, STANDARD_THRESHOLDS)).toBe(2)
+    expect(assignLevel(83, STANDARD_THRESHOLDS)).toBe(2)
+    expect(assignLevel(82, STANDARD_THRESHOLDS)).toBe(3)
+    expect(assignLevel(0, STANDARD_THRESHOLDS)).toBe(7)
   })
 
-  it("breaks minScore ties toward the lowest band number (highest band)", () => {
+  it("breaks minScore ties toward the lowest level number (highest level)", () => {
     const thresholds = [
-      { band: 2, minScore: 50 },
-      { band: 1, minScore: 50 },
-      { band: 3, minScore: 0 },
+      { level: 2, minScore: 50 },
+      { level: 1, minScore: 50 },
+      { level: 3, minScore: 0 },
     ]
-    expect(assignBand(75, thresholds)).toBe(1)
+    expect(assignLevel(75, thresholds)).toBe(1)
   })
 
   it("throws on an empty threshold list", () => {
-    expect(() => assignBand(10, [])).toThrow(/no band thresholds/)
+    expect(() => assignLevel(10, [])).toThrow(/no level thresholds/)
   })
 
   it("throws when no threshold matches (missing floor)", () => {
-    expect(() => assignBand(10, [{ band: 1, minScore: 50 }])).toThrow(
-      /no band threshold matches/
+    expect(() => assignLevel(10, [{ level: 1, minScore: 50 }])).toThrow(
+      /no level threshold matches/
     )
   })
 
   it("throws on a negative or non-finite score", () => {
-    expect(() => assignBand(-1, STANDARD_THRESHOLDS)).toThrow(/invalid score/)
+    expect(() => assignLevel(-1, STANDARD_THRESHOLDS)).toThrow(/invalid score/)
     expect(() =>
-      assignBand(Number.POSITIVE_INFINITY, STANDARD_THRESHOLDS)
+      assignLevel(Number.POSITIVE_INFINITY, STANDARD_THRESHOLDS)
     ).toThrow(/invalid score/)
   })
 })
 
 describe("computeResults", () => {
-  it("derives score and band only for fully rated roles", () => {
+  it("derives score and level only for fully rated roles", () => {
     const roles: RoleRatings[] = [
       { roleId: "r-full", ratings: allRated(5) },
       { roleId: "r-partial", ratings: allRated(5).slice(0, 4) },
@@ -193,7 +193,7 @@ describe("computeResults", () => {
         totalCriteria: 9,
         complete: true,
         score: 100,
-        band: 1,
+        level: 1,
       },
       {
         roleId: "r-partial",
@@ -201,7 +201,7 @@ describe("computeResults", () => {
         totalCriteria: 9,
         complete: false,
         score: null,
-        band: null,
+        level: null,
       },
       {
         roleId: "r-none",
@@ -209,7 +209,7 @@ describe("computeResults", () => {
         totalCriteria: 9,
         complete: false,
         score: null,
-        band: null,
+        level: null,
       },
     ])
   })
@@ -226,7 +226,7 @@ describe("computeResults", () => {
       totalCriteria: 0,
       complete: false,
       score: null,
-      band: null,
+      level: null,
     })
   })
 
@@ -260,7 +260,7 @@ describe("computeResults", () => {
       ratedCount: 8,
       complete: false,
       score: null,
-      band: null,
+      level: null,
     })
   })
 })

@@ -15,7 +15,7 @@ import { useLocale, useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { SPRING } from "@/lib/motion"
 
-// The reveal step after the last criterion: the FIRST place score and band
+// The reveal step after the last criterion: the FIRST place score and level
 // outcome become visible (assessment glossary blindness). Live query: the
 // result derives from current model + ratings, nothing is stored.
 export function RatingResult({
@@ -38,7 +38,7 @@ export function RatingResult({
   // only; the rated role itself may appear, in which case the row reads as
   // its own calibration point. The spinner gate below waits for this query
   // too, so the comparison renders with the reveal instead of popping in
-  // under the band a beat later (layout-shift rule).
+  // under the level a beat later (layout-shift rule).
   const anchors = useQuery(api.assessment.anchorRoles.listAnchorRoles, {
     orgId,
   })
@@ -58,13 +58,13 @@ export function RatingResult({
 
   const activeAnchors = anchors.filter((anchor) => anchor.status === "active")
   // The guide's manual-validation principle: when the result lands two or
-  // more bands from EVERY anchor, the comparison is too uncertain to support
+  // more levels from EVERY anchor, the comparison is too uncertain to support
   // the score and the reveal asks for a manual check.
   const nearestDistance =
-    result.band !== null && activeAnchors.length > 0
+    result.level !== null && activeAnchors.length > 0
       ? Math.min(
           ...activeAnchors.map((anchor) =>
-            Math.abs(anchor.expectedBand - (result.band ?? 0))
+            Math.abs(anchor.expectedLevel - (result.level ?? 0))
           )
         )
       : null
@@ -97,9 +97,9 @@ export function RatingResult({
               </div>
               <div>
                 <p className="text-muted-foreground text-sm">
-                  {t("bandLabel")}
+                  {t("levelLabel")}
                 </p>
-                <Badge className="text-base">{result.band}</Badge>
+                <Badge className="text-base">{result.level}</Badge>
               </div>
             </div>
             {activeAnchors.length > 0 && (
@@ -118,7 +118,7 @@ export function RatingResult({
                     >
                       <span className="truncate">{anchor.title}</span>
                       <Badge variant="outline">
-                        {t("anchorBand", { band: anchor.expectedBand })}
+                        {t("anchorLevel", { level: anchor.expectedLevel })}
                       </Badge>
                     </li>
                   ))}

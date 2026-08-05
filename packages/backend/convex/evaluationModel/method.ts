@@ -69,7 +69,7 @@ export function complianceStatus(c: Doc<"criteria">): ComplianceStatus {
 
 // Saves rationale + bias texts. Empty strings clear a field (stored as
 // undefined so the optional stays clean). Approved criteria are locked: editing
-// requires an explicit reopen via setCriterionApproval first. No band-shift.
+// requires an explicit reopen via setCriterionApproval first. No level-shift.
 export const saveCriterionCompliance = adminMutation({
   args: {
     criterionId: v.id("criteria"),
@@ -126,7 +126,7 @@ export const saveCriterionCompliance = adminMutation({
 
 // Explicit admin sign-off. Approving requires the criterion to be documented
 // (required subset present); stamps decidedBy (the acting admin) + decidedAt.
-// Un-approving clears the stamp. No band-shift.
+// Un-approving clears the stamp. No level-shift.
 export const setCriterionApproval = adminMutation({
   args: { criterionId: v.id("criteria"), approved: v.boolean() },
   returns: v.null(),
@@ -195,8 +195,8 @@ export const getMethodModel = adminQuery({
           decidedAt: v.union(v.number(), v.null()),
         })
       ),
-      bandThresholds: v.array(
-        v.object({ band: v.number(), minScore: v.number() })
+      levelThresholds: v.array(
+        v.object({ level: v.number(), minScore: v.number() })
       ),
       progress: v.object({
         documented: v.number(),
@@ -299,13 +299,15 @@ export const getMethodModel = adminQuery({
       })
     }
 
-    const thresholds = [...model.bandThresholds].sort((a, b) => a.band - b.band)
+    const thresholds = [...model.levelThresholds].sort(
+      (a, b) => a.level - b.level
+    )
 
     return {
       modelName: isTemplateModel ? content.modelName : model.name,
       pointBudget: rows.length * 3,
       criteria,
-      bandThresholds: thresholds,
+      levelThresholds: thresholds,
       progress: { documented, approved, total: rows.length },
     }
   },

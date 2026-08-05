@@ -54,18 +54,18 @@ export const people = defineTable({
   // Route resolution: look up by org + public route key.
   .index("by_org_publicId", ["orgId", "publicId"])
 
-// Role assignment per individual: connects a person to a role with a seniority
-// level. Effective-dated so history is preserved when an assignment changes.
+// Role assignment per individual: connects a person to a role with a seniority.
+// Effective-dated so history is preserved when an assignment changes.
 // A person may have at most one active assignment (endedAt absent) at a time;
 // this invariant is enforced in mutations, not the schema.
 export const personAssignments = defineTable({
   orgId: v.string(),
   personId: v.id("people"),
   roleId: v.id("roles"),
-  // Per-individual seniority level within the role's track, e.g. "IC3", "Lead-2", "M1".
-  level: v.string(),
-  // Whether the level was set by AI suggestion or confirmed by HR.
-  levelSource: v.union(v.literal("suggested"), v.literal("confirmed")),
+  // Per-individual seniority within the role's track, e.g. "IC3", "Lead-2", "M1".
+  seniority: v.string(),
+  // Whether the seniority was set by AI suggestion or confirmed by HR.
+  senioritySource: v.union(v.literal("suggested"), v.literal("confirmed")),
   // Epoch ms: when this assignment became effective.
   effectiveAt: v.number(),
   // Epoch ms: when this assignment ended. Absent means currently active.

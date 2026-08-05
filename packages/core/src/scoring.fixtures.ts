@@ -1,6 +1,6 @@
 import type {
-  BandThreshold,
   CriterionWeight,
+  LevelThreshold,
   RatingInput,
   RatingValue,
 } from "./types"
@@ -20,14 +20,14 @@ export const STANDARD_CRITERIA: CriterionWeight[] = [
 ]
 
 // Default thresholds on the normalized 0-100 scale (standardmall.md).
-export const STANDARD_THRESHOLDS: BandThreshold[] = [
-  { band: 1, minScore: 98 },
-  { band: 2, minScore: 83 },
-  { band: 3, minScore: 74 },
-  { band: 4, minScore: 63 },
-  { band: 5, minScore: 53 },
-  { band: 6, minScore: 41 },
-  { band: 7, minScore: 0 },
+export const STANDARD_THRESHOLDS: LevelThreshold[] = [
+  { level: 1, minScore: 98 },
+  { level: 2, minScore: 83 },
+  { level: 3, minScore: 74 },
+  { level: 4, minScore: 63 },
+  { level: 5, minScore: 53 },
+  { level: 6, minScore: 41 },
+  { level: 7, minScore: 0 },
 ]
 
 export function allRated(value: RatingValue): RatingInput[] {

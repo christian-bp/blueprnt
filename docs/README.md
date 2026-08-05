@@ -8,7 +8,7 @@ har. Koden förklarar hur; dokumenten förklarar vad och varför.
 
 | Vad | Var | Exempel |
 | --- | --- | --- |
-| Domäntermer och språkregler | `docs/contexts/*/CONTEXT.md` (ordlistorna) | Bandutfall, Rollfamilj, Betyg kontra Poäng |
+| Domäntermer och språkregler | `docs/contexts/*/CONTEXT.md` (ordlistorna) | Nivåutfall, Rollfamilj, Betyg kontra Poäng |
 | Arkitekturinvarianter och teknikval | `docs/adr/` | EU-residens, live-omräkning utan versionering, AI som inbäddad assistent |
 | Scope, byggordning, öppna frågor | `docs/PLAN-V1.md` | Öppna frågor i paragraf 9 flyttas till Avgjort med datum när de avgörs |
 | Skivornas design och utförandeplaner | `docs/superpowers/specs/` och `docs/superpowers/plans/` | En spec och en plan per skiva, daterade |

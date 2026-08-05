@@ -8,17 +8,17 @@ describe("OverviewWidgetCard", () => {
   it("renders the title, headline, badge, a linked View action, and the decorative viz", () => {
     render(
       <OverviewWidgetCard
-        title="Band distribution"
+        title="Level distribution"
         headline={<>48 roles</>}
-        badge={<span>6 bands</span>}
+        badge={<span>6 levels</span>}
         action={{ label: "View", href: "/work" }}
         viz={<svg data-testid="viz" />}
       />
     )
 
-    expect(screen.getByText("Band distribution")).toBeDefined()
+    expect(screen.getByText("Level distribution")).toBeDefined()
     expect(screen.getByText("48 roles")).toBeDefined()
-    expect(screen.getByText("6 bands")).toBeDefined()
+    expect(screen.getByText("6 levels")).toBeDefined()
 
     const action = screen.getByRole("link", { name: "View" })
     expect(action.getAttribute("href")).toBe("/work")

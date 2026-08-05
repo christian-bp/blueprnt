@@ -270,7 +270,7 @@ describe("betterAuth/seed.removeOrganizationsForUserEmail + accounts/mirrors.rem
       const modelId = await ctx.db.insert("models", {
         orgId,
         name: "Standard",
-        bandThresholds: [{ band: 1, minScore: 98 }],
+        levelThresholds: [{ level: 1, minScore: 98 }],
       })
       await ctx.db.insert("criteria", {
         orgId,
@@ -278,7 +278,7 @@ describe("betterAuth/seed.removeOrganizationsForUserEmail + accounts/mirrors.rem
         name: "Scope",
         description: "desc",
         helpText: "help",
-        anchors: [{ level: 3, text: "anchor text" }],
+        anchors: [{ step: 3, text: "anchor text" }],
         weightPoints: 4,
         order: 1,
         isCustom: false,
@@ -393,7 +393,7 @@ describe("devReset.wipeAppTables", () => {
       await ctx.db.insert("models", {
         orgId: "ba_org_seed",
         name: "Standard",
-        bandThresholds: [],
+        levelThresholds: [],
       })
       await ctx.db.insert("roles", {
         orgId: "ba_org_seed",

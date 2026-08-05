@@ -30,7 +30,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { role } = useOrganization()
 
   // Home is the dashboard landing. Job architecture owns the role world (the
-  // band Overview at /work and the role register at /roles); its two sub-pages
+  // level Overview at /work and the role register at /roles); its two sub-pages
   // are switched from header tabs (SectionTabs), so it is a single flat item
   // here that stays active across both paths. Model edits the assessment model.
   const navMain: NavItem[] = [

@@ -2,7 +2,7 @@ import { isBalanced, isWeightPoints } from "@workspace/core"
 import { describe, expect, it } from "vitest"
 import {
   CRITERION_KEYS,
-  DEFAULT_BAND_THRESHOLDS,
+  DEFAULT_LEVEL_THRESHOLDS,
   DEFAULT_WEIGHT_POINTS,
   TRACK_KEYS,
   templateContent,
@@ -13,10 +13,10 @@ describe("standard template structure", () => {
   it("has 9 criteria, 3 tracks, 7 descending thresholds", () => {
     expect(CRITERION_KEYS).toHaveLength(9)
     expect(TRACK_KEYS).toEqual(["IC", "Lead", "M"])
-    expect(DEFAULT_BAND_THRESHOLDS).toHaveLength(7)
-    const scores = DEFAULT_BAND_THRESHOLDS.map((t) => t.minScore)
+    expect(DEFAULT_LEVEL_THRESHOLDS).toHaveLength(7)
+    const scores = DEFAULT_LEVEL_THRESHOLDS.map((t) => t.minScore)
     expect([...scores].sort((a, b) => b - a)).toEqual(scores)
-    expect(DEFAULT_BAND_THRESHOLDS[0]).toEqual({ band: 1, minScore: 98 })
+    expect(DEFAULT_LEVEL_THRESHOLDS[0]).toEqual({ level: 1, minScore: 98 })
   })
 
   it("keeps weight points on the 1-5 scale, exactly balanced", () => {
@@ -49,9 +49,9 @@ describe("standard template structure", () => {
           expect(anchor.length).toBeGreaterThan(0)
         }
         // The per-criterion weighting explanations (weight points 1..5).
-        expect(criterion.weightLevels).toHaveLength(5)
-        for (const level of criterion.weightLevels) {
-          expect(level.length).toBeGreaterThan(0)
+        expect(criterion.weightMeanings).toHaveLength(5)
+        for (const meaning of criterion.weightMeanings) {
+          expect(meaning.length).toBeGreaterThan(0)
         }
         // Compliance evidence must be documented-complete in every locale
         // (purpose, whyRelevant, biasComment non-empty; biasRisk set) so a

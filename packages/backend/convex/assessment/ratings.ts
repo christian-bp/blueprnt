@@ -7,8 +7,8 @@ import { isProfileComplete } from "./roles"
 
 // The only hand-entered value in the whole loop (assessment glossary): a
 // 0-5 integer per (role, criterion), with an optional motivation. Blind by
-// design: this mutation never returns or logs a score or band; the band.shift
-// wrap records derived consequences in the audit log only.
+// design: this mutation never returns or logs a score or level; the
+// level.shift wrap records derived consequences in the audit log only.
 export const setRating = orgMutation({
   args: {
     roleId: v.id("roles"),
@@ -80,9 +80,9 @@ export const setRating = orgMutation({
       })
     }
     const after = await deriveResults(ctx, ctx.orgId)
-    // Thread the triggering event so each resulting band.shift records what
+    // Thread the triggering event so each resulting level.shift records what
     // moved it (the role + criterion that was rated).
-    await ctx.audit.bandShifts({
+    await ctx.audit.levelShifts({
       before: before.results,
       after: after.results,
       cause: { event: AUDIT_EVENTS.ratingChanged, roleId, criterionId },

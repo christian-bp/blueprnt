@@ -600,7 +600,7 @@ describe("AI suggestion lifecycle", () => {
     })
   })
 
-  it("confirmModelDraft band.shift rows carry the AI-confirm cause", async () => {
+  it("confirmModelDraft level.shift rows carry the AI-confirm cause", async () => {
     const t = initConvexTest()
     const anchors = ["a0", "a1", "a2", "a3", "a4", "a5"]
     const { orgId, asAdmin, roleId } = await seedRoleOrganization(t)
@@ -614,7 +614,7 @@ describe("AI suggestion lifecycle", () => {
         responsibilities: "Ships features",
       })
     })
-    // Fully rate the role against the seeded template so it has a complete band.
+    // Fully rate the role against the seeded template so it has a complete level.
     const criteria = await t.run(async (ctx) =>
       ctx.db
         .query("criteria")
@@ -630,7 +630,7 @@ describe("AI suggestion lifecycle", () => {
       })
     }
     // A confirmed model draft adds a new criterion, which flips the fully-rated
-    // role to incomplete (band -> null): a deterministic band.shift. The shift
+    // role to incomplete (level -> null): a deterministic level.shift. The shift
     // rows must be traceable back to the suggestion that caused them.
     const suggestionId = await asAdmin.mutation(
       api.ai.suggest.requestModelDraft,
@@ -662,10 +662,10 @@ describe("AI suggestion lifecycle", () => {
       const shifts = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "band.shift")
+          q.eq("orgId", orgId).eq("type", "level.shift")
         )
         .collect()
-      // The earlier setRating calls also emit band.shift rows (cause:
+      // The earlier setRating calls also emit level.shift rows (cause:
       // rating.change). Isolate the rows the confirm produced via their cause:
       // they must point back to THIS suggestion with the AI-confirm event.
       const fromConfirm = shifts.filter((shift) => {
@@ -677,8 +677,8 @@ describe("AI suggestion lifecycle", () => {
         )
       })
       expect(fromConfirm.length).toBeGreaterThan(0)
-      // No confirm-time band.shift may be missing the cause (the threading is
-      // applied at the logBandShifts call, so every row from this confirm has
+      // No confirm-time level.shift may be missing the cause (the threading is
+      // applied at the logLevelShifts call, so every row from this confirm has
       // it). The rating-change rows are the only OTHER cause present.
       const causeEvents = new Set(
         shifts.map(

@@ -254,13 +254,14 @@ export function ModelBuilder({
                     editable={false}
                     importanceNode={
                       // Each weight button is its own hover trigger, so hovering
-                      // (or focusing) a single level reveals ONLY that level's
-                      // meaning. Because the per-criterion weighting texts are
-                      // full sentences (not the short generic phrases), one
-                      // popover per level reads far better than a single card
-                      // listing all five. Root/Trigger(render) add no DOM and
-                      // Content portals out, so the joined ButtonGroup styling
-                      // (which targets direct children) is unaffected.
+                      // (or focusing) a single weight point reveals ONLY that
+                      // point's meaning. Because the per-criterion weighting
+                      // texts are full sentences (not the short generic
+                      // phrases), one popover per weight point reads far better
+                      // than a single card listing all five. Root/Trigger(render)
+                      // add no DOM and Content portals out, so the joined
+                      // ButtonGroup styling (which targets direct children) is
+                      // unaffected.
                       <ButtonGroup
                         aria-label={tEditor("setWeightPoints", {
                           name: criterion.name,
@@ -268,12 +269,13 @@ export function ModelBuilder({
                         className="w-full"
                       >
                         {WEIGHT_POINT_OPTIONS.map((option) => {
-                          // The criterion's own weighting text for this level
-                          // when it is a pristine template criterion (getModel
-                          // localizes weightLevels[1..5]); the generic level
-                          // meaning for custom or edited criteria (null).
+                          // The criterion's own weighting text for this weight
+                          // point when it is a pristine template criterion
+                          // (getModel localizes weightMeanings[1..5]); the
+                          // generic weight meaning for custom or edited
+                          // criteria (null).
                           const meaning =
-                            criterion.weightLevels?.[option - 1] ??
+                            criterion.weightMeanings?.[option - 1] ??
                             tBuilder(
                               `weightMeaning${option}` as WeightMeaningKey
                             )
@@ -281,7 +283,7 @@ export function ModelBuilder({
                             <HoverCard
                               key={option}
                               // Keep the card open when you click to pick this
-                              // level: the button is its own trigger, so
+                              // weight point: the button is its own trigger, so
                               // without this the press dismisses the card and
                               // hover reopens it (a flicker). It still closes
                               // on pointer-leave.

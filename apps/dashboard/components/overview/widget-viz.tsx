@@ -44,20 +44,20 @@ import { headcountTrendDomain } from "@/lib/headcount-trend"
 const TOOLTIP_ABOVE = { y: -40 }
 
 // A minimal vertical mini bar chart (Midday Profit-card style): one bar per
-// configured band, left-to-right ascending (Band 1 first), height scaled to
+// configured level, left-to-right ascending (Level 1 first), height scaled to
 // the largest count by recharts' own auto domain.
-export function BandBars({
+export function LevelBars({
   counts,
 }: {
-  counts: { band: number; count: number }[]
+  counts: { level: number; count: number }[]
 }) {
   const t = useTranslations("dashboard.overview.widgets")
   const config = {
-    count: { label: t("bands.seriesLabel"), color: "var(--brand)" },
+    count: { label: t("levels.seriesLabel"), color: "var(--brand)" },
   } satisfies ChartConfig
   const data = counts.map((c) => ({
     ...c,
-    label: t("bands.barLabel", { band: c.band }),
+    label: t("levels.barLabel", { level: c.level }),
   }))
 
   return (
@@ -73,9 +73,9 @@ export function BandBars({
           position={TOOLTIP_ABOVE}
           content={<ChartTooltipContent className={CHART_TOOLTIP_TEXT} />}
         />
-        {/* minPointSize forces a visible sliver even for a band that holds
-            zero roles, so every configured band stays present in the chart
-            (buildBandOverview zero-fills them); the tooltip still reads the
+        {/* minPointSize forces a visible sliver even for a level that holds
+            zero roles, so every configured level stays present in the chart
+            (buildLevelOverview zero-fills them); the tooltip still reads the
             true 0 count. */}
         {/* Top corners only: this strip bleeds to the card's bottom edge, so a
             bottom radius would cut a notch out against it. */}

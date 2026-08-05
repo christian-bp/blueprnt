@@ -52,8 +52,8 @@ function equalWorkGroup(overrides: Partial<GapGroup> = {}): GapGroup {
   return {
     key: "k",
     roleTitle: "Role",
-    level: "Level",
-    band: 3,
+    seniority: "Seniority",
+    level: 3,
     womenCount: 2,
     menCount: 3,
     womenMeanComp: 90000,
@@ -67,8 +67,8 @@ function equalWorkGroup(overrides: Partial<GapGroup> = {}): GapGroup {
 const COMPARISON: WomenDominatedComparisonWire = {
   key: "cmp-1",
   roleTitle: "Technician",
-  level: "Mid",
-  band: 2,
+  seniority: "Mid",
+  level: 2,
   headcount: 4,
   womenSharePct: 25,
   meanComp: 44000,
@@ -82,8 +82,8 @@ function womenDominatedGroup(
   return {
     key: "wd",
     roleTitle: "Nurse",
-    level: "Senior",
-    band: 3,
+    seniority: "Senior",
+    level: 3,
     headcount: 10,
     womenSharePct: 90,
     meanComp: 40000,
@@ -110,21 +110,21 @@ const GAP: PayMappingGapResult = {
     equalWorkGroup({
       key: "swe",
       roleTitle: "SWE",
-      level: "Senior",
+      seniority: "Senior",
       gapPct: 8,
       flag: "elevated",
     }),
     equalWorkGroup({
       key: "sales",
       roleTitle: "Sales",
-      level: "Mid",
+      seniority: "Mid",
       gapPct: 15,
       flag: "critical",
     }),
     equalWorkGroup({
       key: "qa",
       roleTitle: "QA",
-      level: "Mid",
+      seniority: "Mid",
       gapPct: 2,
       flag: "ok",
     }),
@@ -134,13 +134,13 @@ const GAP: PayMappingGapResult = {
     womenDominatedGroup({
       key: "wd-1",
       roleTitle: "Nurse",
-      level: "Senior",
+      seniority: "Senior",
       comparisons: [COMPARISON],
     }),
     womenDominatedGroup({
       key: "wd-2",
       roleTitle: "Receptionist",
-      level: "Junior",
+      seniority: "Junior",
       comparisons: [],
     }),
   ],
@@ -381,7 +381,7 @@ describe("PayMappingReview", () => {
     expect(screen.getByText(t.introTitle)).toBeDefined()
 
     openJumpMenu()
-    // The jump-menu row keeps the full "title · level" label; the opened
+    // The jump-menu row keeps the full "title · seniority" label; the opened
     // card's heading is the bare role title.
     fireEvent.click(screen.getByText("QA · Mid"))
 

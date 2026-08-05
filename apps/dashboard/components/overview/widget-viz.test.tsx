@@ -5,8 +5,8 @@ import { NextIntlClientProvider } from "next-intl"
 import type { ReactNode } from "react"
 import { afterEach, describe, expect, it } from "vitest"
 import {
-  BandBars,
   HeadcountTrend,
+  LevelBars,
   QuartileSplitBars,
 } from "@/components/overview/widget-viz"
 
@@ -21,16 +21,16 @@ function renderWithIntl(children: ReactNode) {
   )
 }
 
-describe("BandBars", () => {
+describe("LevelBars", () => {
   afterEach(cleanup)
 
   it("mounts a chart container for representative data", () => {
     const { container } = renderWithIntl(
-      <BandBars
+      <LevelBars
         counts={[
-          { band: 1, count: 2 },
-          { band: 2, count: 0 },
-          { band: 3, count: 4 },
+          { level: 1, count: 2 },
+          { level: 2, count: 0 },
+          { level: 3, count: 4 },
         ]}
       />
     )
@@ -38,13 +38,13 @@ describe("BandBars", () => {
   })
 
   it("mounts without crashing for an empty counts array", () => {
-    const { container } = renderWithIntl(<BandBars counts={[]} />)
+    const { container } = renderWithIntl(<LevelBars counts={[]} />)
     expect(container.querySelector('[data-slot="chart"]')).not.toBeNull()
   })
 
   it("is decorative", () => {
     const { container } = renderWithIntl(
-      <BandBars counts={[{ band: 1, count: 1 }]} />
+      <LevelBars counts={[{ level: 1, count: 1 }]} />
     )
     expect(
       container

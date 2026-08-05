@@ -98,7 +98,7 @@ export const removeSeededOrganization = internalMutation({
   args: { orgId: v.string() },
   returns: v.null(),
   handler: async (ctx, { orgId }) => {
-    // Models: criteria, then the model itself. Anchors and band thresholds
+    // Models: criteria, then the model itself. Anchors and level thresholds
     // ride along on their parent documents; tracks are constants (ADR-0006).
     const models = await ctx.db
       .query("models")

@@ -112,7 +112,7 @@ export function CriterionItem({
   note?: ReactNode
   // The criterion's 0-5 anchor scale; when given, the row gets a collapsible
   // section revealing the texts (shared by onboarding and the model page).
-  anchors?: { level: number; text: string }[]
+  anchors?: { step: number; text: string }[]
   // Optional caption rendered inside the expanded scale.
   anchorsCaption?: string
   editable: boolean
@@ -319,9 +319,9 @@ export function CriterionItem({
                   )}
                   <ol className="space-y-1.5 pt-2">
                     {anchors.map((anchor) => (
-                      <li key={anchor.level} className="flex gap-2 text-sm">
+                      <li key={anchor.step} className="flex gap-2 text-sm">
                         <span className="w-4 shrink-0 text-right font-medium tabular-nums">
-                          {anchor.level}
+                          {anchor.step}
                         </span>
                         <span className="min-w-0 text-muted-foreground">
                           {anchor.text}

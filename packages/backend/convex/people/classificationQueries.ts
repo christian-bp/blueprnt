@@ -4,22 +4,22 @@ import { orgQuery } from "../lib/functions"
 import { buildTitleGroups } from "./classificationShared"
 
 // One person's row within a title group. Tenure signals (employmentStartDate,
-// isManager) let the Classify surface show why a level was suggested;
-// suggestedLevel is the engine's per-person level (null when the group matched
-// no role); currentAssignment carries the persisted suggestion/confirmation
-// state.
+// isManager) let the Classify surface show why a seniority was suggested;
+// suggestedSeniority is the engine's per-person seniority (null when the
+// group matched no role); currentAssignment carries the persisted
+// suggestion/confirmation state.
 const personRowShape = v.object({
   personId: v.id("people"),
   displayName: v.string(),
   externalRef: v.union(v.string(), v.null()),
   employmentStartDate: v.union(v.string(), v.null()),
   isManager: v.union(v.boolean(), v.null()),
-  suggestedLevel: v.union(v.string(), v.null()),
+  suggestedSeniority: v.union(v.string(), v.null()),
   currentAssignment: v.union(
     v.object({
       roleId: v.id("roles"),
-      level: v.string(),
-      levelSource: v.union(v.literal("suggested"), v.literal("confirmed")),
+      seniority: v.string(),
+      senioritySource: v.union(v.literal("suggested"), v.literal("confirmed")),
     }),
     v.null()
   ),
@@ -27,7 +27,7 @@ const personRowShape = v.object({
 
 // Distinct titles across an org's active people, each with the people sharing
 // it, their current open assignment, and the deterministic engine suggestion
-// (matched role + per-person level) computed via the shared
+// (matched role + per-person seniority) computed via the shared
 // buildTitleGroups helper (the SAME grouping/engine path classifyOrg persists
 // from, so what HR sees equals what gets written). Groups over a by_org collect
 // (distinct titles are bounded by headcount, so the collect is safe; spec 5).
@@ -94,13 +94,13 @@ export const listPeopleByTitle = orgQuery({
           externalRef: person.externalRef ?? null,
           employmentStartDate: person.employmentStartDate ?? null,
           isManager: person.isManager ?? null,
-          suggestedLevel:
-            group.suggestedLevelByPerson.get(person._id as string) ?? null,
+          suggestedSeniority:
+            group.suggestedSeniorityByPerson.get(person._id as string) ?? null,
           // "Classified" = a confirmed open assignment to an ACTIVE role
           // (the same definition computePayMappingPreconditions uses, so the
           // gate and this surface can never disagree). An open assignment
           // whose role is archived or missing is exposed as null here, not
-          // as its stale role/level: it is not a real classification, so
+          // as its stale role/seniority: it is not a real classification, so
           // the person surfaces for reassignment on the classify page (and
           // countClassified/the tab badge/the to-do's classify group all
           // count them as unclassified too, since they read this field).
@@ -108,8 +108,8 @@ export const listPeopleByTitle = orgQuery({
             open !== null && activeRoleIds.has(open.roleId as string)
               ? {
                   roleId: open.roleId as Id<"roles">,
-                  level: open.level,
-                  levelSource: open.levelSource,
+                  seniority: open.seniority,
+                  senioritySource: open.senioritySource,
                 }
               : null,
         }

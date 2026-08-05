@@ -4,14 +4,14 @@ import type { Id } from "../_generated/dataModel"
 import { initConvexTest } from "../testing.helpers"
 
 // Directly seed a run + snapshot rows (freeze logic is covered by runs.test.ts);
-// this gives exact control over gender/band/level/pay per row.
+// this gives exact control over gender/level/seniority/pay per row.
 const OPERATOR = "HR Person"
 
 interface SeedRow {
   gender: "Man" | "Kvinna"
   roleTitle: string
-  level: string
-  band: number | null
+  seniority: string
+  level: number | null
   basicMonthly: number | null
   ftePercent?: number
   birthDate?: string
@@ -44,7 +44,7 @@ async function seedRun(
       withPayCount: rows.filter((r) => r.basicMonthly !== null).length,
       womenCount: rows.filter((r) => r.gender === "Kvinna").length,
       menCount: rows.filter((r) => r.gender === "Man").length,
-      frozenModel: { criteria: [], bandThresholds: [] },
+      frozenModel: { criteria: [], levelThresholds: [] },
     })
     let i = 0
     for (const r of rows) {
@@ -60,9 +60,9 @@ async function seedRun(
         ...(r.birthDate !== undefined ? { birthDate: r.birthDate } : {}),
         roleTitle: r.roleTitle,
         trackKey: "engineering",
+        seniority: r.seniority,
         level: r.level,
-        band: r.band,
-        score: r.band === null ? null : 50,
+        score: r.level === null ? null : 50,
         basicMonthly: r.basicMonthly,
         components: [],
         ...(r.basicMonthly !== null ? { currency: "SEK" } : {}),
@@ -74,36 +74,36 @@ async function seedRun(
 }
 
 describe("getPayMappingGap", () => {
-  it("groups equal-work by (roleTitle, band, level) and computes the gap", async () => {
+  it("groups equal-work by (roleTitle, level, seniority) and computes the gap", async () => {
     const t = initConvexTest()
-    // One equal-work group: SWE, band 3, Senior, 2 women @ 90k, 2 men @ 100k.
+    // One equal-work group: SWE, level 3, Senior, 2 women @ 90k, 2 men @ 100k.
     const { orgId, runId, asHr } = await seedRun(t, [
       {
         gender: "Kvinna",
         roleTitle: "SWE",
-        level: "Senior",
-        band: 3,
+        seniority: "Senior",
+        level: 3,
         basicMonthly: 90000,
       },
       {
         gender: "Kvinna",
         roleTitle: "SWE",
-        level: "Senior",
-        band: 3,
+        seniority: "Senior",
+        level: 3,
         basicMonthly: 90000,
       },
       {
         gender: "Man",
         roleTitle: "SWE",
-        level: "Senior",
-        band: 3,
+        seniority: "Senior",
+        level: 3,
         basicMonthly: 100000,
       },
       {
         gender: "Man",
         roleTitle: "SWE",
-        level: "Senior",
-        band: 3,
+        seniority: "Senior",
+        level: 3,
         basicMonthly: 100000,
       },
     ])
@@ -118,44 +118,44 @@ describe("getPayMappingGap", () => {
     expect(result?.equalWork).toHaveLength(1)
     const group = result?.equalWork[0]
     expect(group?.roleTitle).toBe("SWE")
-    expect(group?.level).toBe("Senior")
-    expect(group?.band).toBe(3)
+    expect(group?.seniority).toBe("Senior")
+    expect(group?.level).toBe(3)
     expect(group?.womenCount).toBe(2)
     expect(group?.menCount).toBe(2)
     expect(group?.gapPct).toBeCloseTo(10, 5)
     expect(group?.flag).toBe("elevated")
   })
 
-  it("groups equivalent-work by band across different roles", async () => {
+  it("groups equivalent-work by level across different roles", async () => {
     const t = initConvexTest()
-    // Band 2 spans two roles; 2 women @ 80k + 2 men @ 100k => 20% gap.
+    // Level 2 spans two roles; 2 women @ 80k + 2 men @ 100k => 20% gap.
     const { orgId, runId, asHr } = await seedRun(t, [
       {
         gender: "Kvinna",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 80000,
       },
       {
         gender: "Kvinna",
         roleTitle: "PM",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 80000,
       },
       {
         gender: "Man",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 100000,
       },
       {
         gender: "Man",
         roleTitle: "PM",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 100000,
       },
     ])
@@ -166,12 +166,12 @@ describe("getPayMappingGap", () => {
     })
 
     expect(result?.equivalentWork).toHaveLength(1)
-    const band2 = result?.equivalentWork[0]
-    expect(band2?.band).toBe(2)
-    expect(band2?.roleTitle).toBeNull()
-    expect(band2?.womenCount).toBe(2)
-    expect(band2?.gapPct).toBeCloseTo(20, 5)
-    expect(band2?.flag).toBe("critical")
+    const level2 = result?.equivalentWork[0]
+    expect(level2?.level).toBe(2)
+    expect(level2?.roleTitle).toBeNull()
+    expect(level2?.womenCount).toBe(2)
+    expect(level2?.gapPct).toBeCloseTo(20, 5)
+    expect(level2?.flag).toBe("critical")
   })
 
   it("FTE-adjusts a part-timer up to full-time equivalent", async () => {
@@ -181,30 +181,30 @@ describe("getPayMappingGap", () => {
       {
         gender: "Kvinna",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 50000,
         ftePercent: 50,
       },
       {
         gender: "Kvinna",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 100000,
       },
       {
         gender: "Man",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 100000,
       },
       {
         gender: "Man",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 100000,
       },
     ])
@@ -229,29 +229,29 @@ describe("getPayMappingGap", () => {
       {
         gender: "Man",
         roleTitle: "Lead",
-        level: "Staff",
-        band: 1,
+        seniority: "Staff",
+        level: 1,
         basicMonthly: 100000,
       },
       {
         gender: "Man",
         roleTitle: "Lead",
-        level: "Staff",
-        band: 1,
+        seniority: "Staff",
+        level: 1,
         basicMonthly: 100000,
       },
       {
         gender: "Kvinna",
         roleTitle: "Analyst",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 45000,
       },
       {
         gender: "Man",
         roleTitle: "Analyst",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 50000,
       },
     ])
@@ -277,21 +277,21 @@ describe("getPayMappingGap", () => {
     expect(mixed?.womenMeanComp).toBe(45000)
   })
 
-  it("excludes null-band priced rows from equivalentWork", async () => {
+  it("excludes null-level priced rows from equivalentWork", async () => {
     const t = initConvexTest()
     const { orgId, runId, asHr } = await seedRun(t, [
       {
         gender: "Kvinna",
         roleTitle: "New",
-        level: "Mid",
-        band: null,
+        seniority: "Mid",
+        level: null,
         basicMonthly: 70000,
       },
       {
         gender: "Man",
         roleTitle: "New",
-        level: "Mid",
-        band: null,
+        seniority: "Mid",
+        level: null,
         basicMonthly: 70000,
       },
     ])
@@ -302,9 +302,9 @@ describe("getPayMappingGap", () => {
     })
 
     expect(result?.equivalentWork).toHaveLength(0)
-    // The rows still form an equal-work group (title, none, level).
+    // The rows still form an equal-work group (title, none, seniority).
     expect(result?.equalWork).toHaveLength(1)
-    expect(result?.equalWork[0]?.band).toBeNull()
+    expect(result?.equalWork[0]?.level).toBeNull()
   })
 
   it("ignores rows with no pay", async () => {
@@ -313,15 +313,15 @@ describe("getPayMappingGap", () => {
       {
         gender: "Kvinna",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: null,
       },
       {
         gender: "Man",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: null,
       },
     ])
@@ -342,8 +342,8 @@ describe("getPayMappingGap", () => {
       {
         gender: "Kvinna",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 90000,
       },
     ])
@@ -369,43 +369,43 @@ describe("getPayMappingGap", () => {
       {
         gender: "Kvinna",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 90000,
       },
       {
         gender: "Kvinna",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 90000,
       },
       {
         gender: "Kvinna",
         roleTitle: "PM",
-        level: "Mid",
-        band: 3,
+        seniority: "Mid",
+        level: 3,
         basicMonthly: 90000,
       },
       {
         gender: "Man",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 100000,
       },
       {
         gender: "Man",
         roleTitle: "PM",
-        level: "Mid",
-        band: 3,
+        seniority: "Mid",
+        level: 3,
         basicMonthly: 100000,
       },
       {
         gender: "Man",
         roleTitle: "PM",
-        level: "Mid",
-        band: 3,
+        seniority: "Mid",
+        level: 3,
         basicMonthly: 100000,
       },
     ])
@@ -430,15 +430,15 @@ describe("getPayMappingGap", () => {
       {
         gender: "Man",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 100000,
       },
       {
         gender: "Man",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 100000,
       },
     ])
@@ -459,37 +459,37 @@ describe("getPayMappingGap", () => {
       {
         gender: "Kvinna",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 30000,
       },
       {
         gender: "Kvinna",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 35000,
       },
       {
         gender: "Man",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 40000,
       },
       {
         gender: "Man",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 45000,
       },
       // Unpriced rows never enter the quartile ranking.
       {
         gender: "Man",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: null,
       },
     ])
@@ -516,24 +516,24 @@ describe("getPayMappingGap", () => {
       {
         gender: "Kvinna",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 90000,
         birthDate: "1990-01-01",
       },
       {
         gender: "Man",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: null,
         birthDate: "1985-06-15",
       },
       {
         gender: "Man",
         roleTitle: "SWE",
-        level: "Mid",
-        band: 2,
+        seniority: "Mid",
+        level: 2,
         basicMonthly: 100000,
       },
     ])
@@ -553,58 +553,58 @@ describe("getPayMappingGap", () => {
 
   it("returns the women-dominated cross-level comparison", async () => {
     const t = initConvexTest()
-    // Nurse (band 3, Mid): 3 women @ 38000 => 100% women, women-dominated.
-    // Tech (band 3, Mid): 1 woman + 2 men @ 42000 => not dominated, out-earns
-    // Nurse by 4000. An unbanded priced person cannot be placed and is
+    // Nurse (level 3, Mid): 3 women @ 38000 => 100% women, women-dominated.
+    // Tech (level 3, Mid): 1 woman + 2 men @ 42000 => not dominated, out-earns
+    // Nurse by 4000. An unleveled priced person cannot be placed and is
     // skipped entirely from the comparison.
     const { orgId, runId, asHr } = await seedRun(t, [
       {
         gender: "Kvinna",
         roleTitle: "Nurse",
-        level: "Mid",
-        band: 3,
+        seniority: "Mid",
+        level: 3,
         basicMonthly: 38000,
       },
       {
         gender: "Kvinna",
         roleTitle: "Nurse",
-        level: "Mid",
-        band: 3,
+        seniority: "Mid",
+        level: 3,
         basicMonthly: 38000,
       },
       {
         gender: "Kvinna",
         roleTitle: "Nurse",
-        level: "Mid",
-        band: 3,
+        seniority: "Mid",
+        level: 3,
         basicMonthly: 38000,
       },
       {
         gender: "Kvinna",
         roleTitle: "Tech",
-        level: "Mid",
-        band: 3,
+        seniority: "Mid",
+        level: 3,
         basicMonthly: 42000,
       },
       {
         gender: "Man",
         roleTitle: "Tech",
-        level: "Mid",
-        band: 3,
+        seniority: "Mid",
+        level: 3,
         basicMonthly: 42000,
       },
       {
         gender: "Man",
         roleTitle: "Tech",
-        level: "Mid",
-        band: 3,
+        seniority: "Mid",
+        level: 3,
         basicMonthly: 42000,
       },
       {
         gender: "Man",
         roleTitle: "Support",
-        level: "Junior",
-        band: null,
+        seniority: "Junior",
+        level: null,
         basicMonthly: 50000,
       },
     ])

@@ -22,7 +22,7 @@ import Link from "next/link"
 // widths declared on the headings, so a row with fewer cells than headings
 // leaves no gap at the end: every later value slides one column left and sits
 // under someone else's heading. The family page shipped exactly that way (an
-// Employees heading and skeleton bar with no body cell, so each band rendered
+// Employees heading and skeleton bar with no body cell, so each level rendered
 // under "Employees"), which is what a second hand-written copy of a row buys.
 //
 // The role import's review table is deliberately NOT a consumer. It shows
@@ -36,8 +36,8 @@ import Link from "next/link"
 // widths would jump whenever filtering changed which rows show. Title takes the
 // remaining space.
 //
-// Band is w-40 to fit the column's widest content on one line (the sv "Inte
-// utvärderad ännu" cell text, wider than the fi "Vaativuusluokka" heading);
+// Level is w-40 to fit the column's widest content on one line (the sv "Inte
+// utvärderad ännu" cell text, wider than the fi "Vaativuustaso" heading);
 // narrower wraps or clips. Employees is w-32 to fit the widest locale label
 // (da "Medarbejdere", fi "Työntekijät"); the value itself is a short number.
 export function RoleTableHeadings() {
@@ -50,7 +50,7 @@ export function RoleTableHeadings() {
         <TableHead className="w-44">{t("table.track")}</TableHead>
         <TableHead className="w-[22%]">{t("table.team")}</TableHead>
         <TableHead className="w-32">{t("table.employees")}</TableHead>
-        <TableHead className="w-40">{tAssessment("band")}</TableHead>
+        <TableHead className="w-40">{tAssessment("level")}</TableHead>
       </TableRow>
     </TableHeader>
   )
@@ -107,7 +107,7 @@ export function RoleTeamCell({ team }: { team: string }) {
 }
 
 // A cell whose value is absent rather than unknown: no one holds the role, no
-// band has been computed yet. Shown rather than blanked, because "none yet" is
+// level has been computed yet. Shown rather than blanked, because "none yet" is
 // information, but a step fainter than real values so a column of them reads as
 // the gaps it is and the actual data stays the thing you see first. One
 // constant, so the two absences in this row can never end up different weights.
@@ -123,19 +123,19 @@ export function RoleEmployeesCell({ count }: { count: number }) {
   )
 }
 
-// The evaluation outcome: a role's band once it is fully evaluated, otherwise a
-// muted "not yet evaluated" line (an incomplete or still-computing role has no
-// band yet, the same rule as the overview tables), so a register shows which
-// roles still need evaluating instead of a blank cell.
+// The evaluation outcome: a role's level once it is fully evaluated, otherwise
+// a muted "not yet evaluated" line (an incomplete or still-computing role has
+// no level yet, the same rule as the overview tables), so a register shows
+// which roles still need evaluating instead of a blank cell.
 //
 // The number plain, the way the employee count beside it is. A filled brand
 // pill on every evaluated row turned the column into a stripe of colour down
 // the register, which read as a status needing attention rather than as the
 // ordinary outcome it is on a fully evaluated role.
-export function RoleBandCell({ band }: { band: number | null }) {
+export function RoleLevelCell({ level }: { level: number | null }) {
   const t = useTranslations("dashboard.roles")
-  return band != null ? (
-    <span className="tabular-nums">{band}</span>
+  return level != null ? (
+    <span className="tabular-nums">{level}</span>
   ) : (
     <span className={cn("block truncate", ABSENT_VALUE)}>
       {t("notEvaluated")}

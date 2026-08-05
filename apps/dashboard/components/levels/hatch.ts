@@ -1,4 +1,4 @@
-// The diagonal-hatch fill for empty bands (ladder) and empty cells (matrix).
+// The diagonal-hatch fill for empty levels (ladder) and empty cells (matrix).
 //
 // The `background-size` is the load-bearing part. It pins the gradient to one
 // spatial period of the -60deg, 6px-period pattern: 6px / sin(60deg) = 4*sqrt(3)

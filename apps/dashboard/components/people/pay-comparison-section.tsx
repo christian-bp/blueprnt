@@ -68,15 +68,15 @@ export function PayComparisonSectionSkeleton() {
 }
 
 // "Pay compared with the role" on the person page: same-role people as a dot
-// plot on FTE-adjusted total monthly pay (x) by level (rows), dots colored by
-// gender (the tool's core pay-gap lens) with the viewed person marked by a
-// brand ring and dashed line. The tooltip names each person and breaks the
-// figure into basic vs variable with the gap to the viewed person. The
-// "Same role" chip scopes this to a per-role, per-person detail view (v3 P3
-// optional QC, ADR-0012), not the seed of v3's P1 primary gender-gap view:
-// that is a separate gender-aggregate query (lika arbete =
-// job_title+band+level, likvärdigt arbete = band; single-gender groups read
-// as insufficient per the ADR-0012 amendment).
+// plot on FTE-adjusted total monthly pay (x) by seniority (rows), dots
+// colored by gender (the tool's core pay-gap lens) with the viewed person
+// marked by a brand ring and dashed line. The tooltip names each person and
+// breaks the figure into basic vs variable with the gap to the viewed
+// person. The "Same role" chip scopes this to a per-role, per-person detail
+// view (v3 P3 optional QC, ADR-0012), not the seed of v3's P1 primary
+// gender-gap view: that is a separate gender-aggregate query (lika arbete =
+// job_title+level+seniority, likvärdigt arbete = level; single-gender groups
+// read as insufficient per the ADR-0012 amendment).
 export function PayComparisonSection({
   personId,
   trackKey,
@@ -178,7 +178,7 @@ export function PayComparisonTooltip({
         {name}
       </p>
       <p className="text-muted-foreground">
-        {point.level} &middot; {point.payYear}
+        {point.seniority} &middot; {point.payYear}
       </p>
       <p className="flex items-center gap-1.5 text-muted-foreground">
         <span
@@ -283,7 +283,7 @@ function PayComparisonChart({
   const t = useTranslations("dashboard.people.payComparison")
   const tGender = useTranslations("dashboard.people.gender")
   const money = useMoney()
-  const { levels, data } = buildPayComparisonRows(trackKey, points)
+  const { seniorities, data } = buildPayComparisonRows(trackKey, points)
   // Dots are colored by gender (the tool's core pay-gap lens). Splitting into
   // two series is what gives the legend its Man / Woman entries; self-ness is a
   // separate cue (the brand ring on the dot + the dashed reference line).
@@ -327,16 +327,16 @@ function PayComparisonChart({
             tickMargin={8}
             tickFormatter={(value: number) => money(value, currency)}
           />
-          {/* Levels ride a numeric row axis (reversed: row 0 on top) instead
-              of a category axis, so every ladder level shows as a row even
-              without a dot. */}
+          {/* Seniorities ride a numeric row axis (reversed: row 0 on top)
+              instead of a category axis, so every ladder seniority shows as
+              a row even without a dot. */}
           <YAxis
             type="number"
             dataKey="row"
             reversed
-            domain={[-0.5, levels.length - 0.5]}
-            ticks={levels.map((_, index) => index)}
-            tickFormatter={(row: number) => levels[row] ?? ""}
+            domain={[-0.5, seniorities.length - 0.5]}
+            ticks={seniorities.map((_, index) => index)}
+            tickFormatter={(row: number) => seniorities[row] ?? ""}
             tickLine={false}
             axisLine={false}
             width={56}

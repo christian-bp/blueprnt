@@ -189,16 +189,16 @@ export const upsertGroupAnalysis = orgMutation({
       auditView(next),
       GROUP_ANALYSIS_AUDIT_FIELDS
     )
-    const [roleTitle, , level] = groupKey.split("|")
-    // groupLabel resolves the key to display text (roleTitle · level) for
+    const [roleTitle, , seniority] = groupKey.split("|")
+    // groupLabel resolves the key to display text (roleTitle · seniority) for
     // equalWork/equivalentWork: the trail never shows a raw internal key. Praxis'
     // groupKey is already a constant area-key slug (PRAXIS_AREA_KEYS), not
-    // the "roleTitle|band|level" format: never split it on "|", log it as
+    // the "roleTitle|level|seniority" format: never split it on "|", log it as
     // the raw key (a stable, non-PII display value).
     const groupLabel =
       scope === "praxis"
         ? groupKey
-        : [roleTitle, level].filter((p) => p !== "").join(" · ")
+        : [roleTitle, seniority].filter((p) => p !== "").join(" · ")
     await ctx.audit.log({
       type: AUDIT_EVENTS.payMappingGroupAnalysisUpdated,
       payload: {

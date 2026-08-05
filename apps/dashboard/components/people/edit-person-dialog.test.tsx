@@ -73,7 +73,7 @@ function renderDialog(onOpenChange = vi.fn(), person = PERSON) {
         onOpenChange={onOpenChange}
         person={person}
         roles={ROLES}
-        currentAssignment={{ roleId: "role1", level: "IC3" }}
+        currentAssignment={{ roleId: "role1", seniority: "IC3" }}
       />
     </NextIntlClientProvider>
   )
@@ -140,7 +140,7 @@ describe("EditPersonDialog", () => {
       messages.dashboard.toast.personUpdated
     )
     expect(onOpenChange).toHaveBeenCalledWith(false)
-    // The unchanged role/level pair writes no new assignment.
+    // The unchanged role/seniority pair writes no new assignment.
     expect(assignMock).not.toHaveBeenCalled()
   })
 

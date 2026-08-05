@@ -104,8 +104,8 @@ describe("erasePersonAsOrg", () => {
       orgId,
       personId,
       roleId,
-      level: "IC3",
-      levelSource: "confirmed",
+      seniority: "IC3",
+      senioritySource: "confirmed",
     })
 
     // Confirm rows exist before erasure.
@@ -373,8 +373,8 @@ describe("erasePersonAsOrg", () => {
       orgId,
       personId,
       roleId,
-      level: "IC3",
-      levelSource: "confirmed",
+      seniority: "IC3",
+      senioritySource: "confirmed",
     })
     await asAdmin.mutation(api.people.pay.setSalary, {
       orgId,
@@ -512,8 +512,8 @@ describe("erasePersonAsOrg", () => {
       orgId,
       personId,
       roleId,
-      level: "IC2",
-      levelSource: "confirmed",
+      seniority: "IC2",
+      senioritySource: "confirmed",
     })
 
     await asAdmin.mutation(api.people.erase.erasePersonAsOrg, {
@@ -571,8 +571,8 @@ describe("erasePersonAsOrg (org-scoped HR erasure)", () => {
         orgId,
         personId,
         roleId,
-        level: "IC3",
-        levelSource: "confirmed" as const,
+        seniority: "IC3",
+        senioritySource: "confirmed" as const,
         effectiveAt: 1_000,
       })
       await ctx.db.insert("payRecords", {

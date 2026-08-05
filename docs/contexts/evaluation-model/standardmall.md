@@ -1,4 +1,4 @@
-# Standardmall, viktpoäng & bandtrösklar
+# Standardmall, viktpoäng & nivåtrösklar
 
 Referensdata för värderingsmodellens standardmall. (Status: arbetsutkast.)
 
@@ -40,29 +40,29 @@ Varje kriterium har dessutom en 0–5-ankarskala (textbeskrivningar per betyg). 
 
 ## Totalpoäng (normaliserad 0 till 100)
 
-Rollens totalpoäng = **20 × Σ(betyg × viktpoäng) / Σ(viktpoäng)**, avrundad nedåt till heltal. Max är alltid 100 oavsett antal kriterier, så bandtrösklarna behåller sin innebörd när kriterier läggs till eller tas bort. Nedåtavrundningen gör jämförelsen mot heltalströsklar exakt: visad poäng ≥ tröskel om och endast om den oavrundade poängen är det.
+Rollens totalpoäng = **20 × Σ(betyg × viktpoäng) / Σ(viktpoäng)**, avrundad nedåt till heltal. Max är alltid 100 oavsett antal kriterier, så nivåtrösklarna behåller sin innebörd när kriterier läggs till eller tas bort. Nedåtavrundningen gör jämförelsen mot heltalströsklar exakt: visad poäng ≥ tröskel om och endast om den oavrundade poängen är det.
 
-## Standard-bandtrösklar (7 band, seedas i standardmallen)
+## Standard-nivåtrösklar (7 nivåer, seedas i standardmallen)
 
-Band 1 = högst; tröskel = lägsta poäng (inklusive) som heltal på 0 till 100-skalan. Förvalen är Excel-prototypens trösklar översatta till andel av max (530/540 → 98 osv.):
+Nivå 1 = högst; tröskel = lägsta poäng (inklusive) som heltal på 0 till 100-skalan. Förvalen är Excel-prototypens trösklar översatta till andel av max (530/540 → 98 osv.):
 
-| Band | Minpoäng |
+| Nivå | Minpoäng |
 | --- | --- |
-| Band 1 | 98 |
-| Band 2 | 83 |
-| Band 3 | 74 |
-| Band 4 | 63 |
-| Band 5 | 53 |
-| Band 6 | 41 |
-| Band 7 | 0 |
+| Nivå 1 | 98 |
+| Nivå 2 | 83 |
+| Nivå 3 | 74 |
+| Nivå 4 | 63 |
+| Nivå 5 | 53 |
+| Nivå 6 | 41 |
+| Nivå 7 | 0 |
 
 - **Kalibrering återstår:** viktspridningen ändras med nya skalan (5:1 mot prototypens 18:8), så rollfördelningen blir inte identisk med prototypens. Trösklarna ska kalibreras mot verklig data före lansering.
-- Excelns alternativa **10-bandskolumn** användes medvetet **inte** (historisk anteckning; prototypens exakta totaler på 540-skalan kan inte längre reproduceras).
-- **Kompetensmatrisens bandbeskrivningar täcker Band 1–6**; Band 7 saknar beskrivande text. (Öppet: skriv en Band 7-beskrivning — instegsband — eller dokumentera medvetet att den saknas.)
+- Excelns alternativa **10-bandskolumn** (källdokumentets ord; vi säger nivå sedan ADR-0014) användes medvetet **inte** (historisk anteckning; prototypens exakta totaler på 540-skalan kan inte längre reproduceras).
+- **Kompetensmatrisens nivåbeskrivningar täcker Nivå 1–6**; Nivå 7 saknar beskrivande text. (Öppet: skriv en Nivå 7-beskrivning, den lägsta instegsnivån, eller dokumentera medvetet att den saknas.)
 
 ## Track-schema
 
-Track-schemat: **IC1–IC5, Lead 1–3, M1–M3.** Sedan 2026-06-07 (ADR-0005) bär roller bara en **track**; nivåerna är individens senioritet vid rollplaceringen. Nivåladdarna lever som konstanten `TRACK_LEVELS` i `@workspace/constants` (denna standardmall är prosareferens) och driver validering av individ-till-roll-placering; de seedas inte i modellen (ADR-0005, tillägg 2026-07-10). Guardrail-intervallen (min/max per nivå och kriterium, kurerade från Excel-fliken "Track") är **pensionerade ur V1:s betygsflöde** och står kvar här som referens, t.ex. som placeringsstöd i V2; de seedas inte längre. Lead-3 finns inte i Excel; definitionen nedan gäller.
+Track-schemat: **IC1–IC5, Lead 1–3, M1–M3.** Sedan 2026-06-07 (ADR-0005) bär roller bara en **track**; senioriteterna är individens senioritet vid rollplaceringen. Senioritetsladdrarna lever som konstanten `TRACK_SENIORITIES` i `@workspace/constants` (denna standardmall är prosareferens) och driver validering av individ-till-roll-placering; de seedas inte i modellen (ADR-0005, tillägg 2026-07-10). Guardrail-intervallen (min/max per senioritet och kriterium, kurerade från Excel-fliken "Track") är **pensionerade ur V1:s betygsflöde** och står kvar här som referens, t.ex. som placeringsstöd i V2; de seedas inte längre. Lead-3 finns inte i Excel; definitionen nedan gäller.
 
 ### Lead-3
 
@@ -82,10 +82,10 @@ Guardrail-intervall (rådgivande), med grannarna som kalibreringsreferens:
 | Finansiellt ansvar | 1–2 | **1–2** | 1–2 | 3–4 |
 | Personal-/Ledningsansvar | 1–1 | **1–1** | 0–1 | 4–4 |
 
-**Motivering (kort):** Lead-3 fullföljer trackens jämna +1-progression (Lead-1 → Lead-2 → Lead-3) och når strategisk nivå via bredd: scope, komplexitet, autonomi, intressentbredd och risk. Kunskap hålls på 3–4 (IC5 äger kunskapstaket 5–5). Två hårda tak skiljer Lead-tracken från Manager-tracken: **Personal 1–1** och **Finans 1–2** (M2: 4–4 respektive 3–4); M2 bär personal- och budgetansvar medan Lead-3 når sin tyngd via bredd och autonomi. Därmed kan IC5, Lead-3 och M2 landa i jämförbara band via olika profiler, i linje med principen att band härleds ur poäng, inte track. Att koordinering och intressentbredd får nå toppen medan personal/finans hålls lågt följer HR-kritikens varning för att övervärdera synligt mandat relativt faktisk påverkan.
+**Motivering (kort):** Lead-3 fullföljer trackens jämna +1-progression (Lead-1 → Lead-2 → Lead-3) och når strategisk nivå via bredd: scope, komplexitet, autonomi, intressentbredd och risk. Kunskap hålls på 3–4 (IC5 äger kunskapstaket 5–5). Två hårda tak skiljer Lead-tracken från Manager-tracken: **Personal 1–1** och **Finans 1–2** (M2: 4–4 respektive 3–4); M2 bär personal- och budgetansvar medan Lead-3 når sin tyngd via bredd och autonomi. Därmed kan IC5, Lead-3 och M2 landa på jämförbara nivåer via olika profiler, i linje med principen att nivån härleds ur poäng, inte track. Att koordinering och intressentbredd får nå toppen medan personal/finans hålls lågt följer HR-kritikens varning för att övervärdera synligt mandat relativt faktisk påverkan.
 
 ## Medvetet ignorerat från Excel-prototypen
 
 - **"Helper"-fliken** (8 kriterier, summa 100, andra värden) är en föråldrad/oanvänd viktuppsättning som **inte** används av resultatberäkningen — den seedas aldrig.
-- **Kompetensmatrisens Band→Track-koppling** (t.ex. "Band 1 = Head of X") är *deskriptiv dokumentation*, inte en regel — den seedas **inte** som styrande logik. Band härleds alltid enbart från poängen (track bestämmer aldrig band).
+- **Kompetensmatrisens Nivå→Track-koppling** (t.ex. "Nivå 1 = Head of X") är *deskriptiv dokumentation*, inte en regel — den seedas **inte** som styrande logik. Nivån härleds alltid enbart från poängen (track bestämmer aldrig nivån).
 - **"Impact on Exit"**: kolumnens bidrag i resultatfliken är **inte** en formel av betyget (ingen vikt kopplar dem — en fri justeringspost i prototypen). Den seedas därför **inte** som kriterium. Vill en organisation ha den blir den ett vanligt eget kriterium viktat med viktpoäng inom poängbudgeten.

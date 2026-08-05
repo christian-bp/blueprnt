@@ -27,7 +27,7 @@ export interface StepperCriterion {
   name: string
   description: string
   helpText: string
-  anchors: { level: number; text: string }[]
+  anchors: { step: number; text: string }[]
 }
 
 // Step transition: slide in the travel direction, quick fade out. mode="wait"
@@ -45,7 +45,7 @@ const stepVariants: Variants = {
 
 // The blind rating flow (assessment glossary): one criterion at a time, the
 // anchor texts are the selectable options, optional motivation per rating.
-// NEVER renders score, band, weights, or other criteria's values; the reveal
+// NEVER renders score, level, weights, or other criteria's values; the reveal
 // happens in the result step the parent shows after onCompleted.
 export function RatingStepper({
   orgId,
@@ -86,15 +86,15 @@ export function RatingStepper({
   // The latest keyboard-relevant state and actions, read by the document key
   // handler below so it can bind once and never read stale values.
   const keysRef = useRef<{
-    anchors: { level: number; text: string }[]
+    anchors: { step: number; text: string }[]
     selected: number | undefined
     pending: boolean
-    select: (level: number) => void
+    select: (step: number) => void
     advance: () => void
   } | null>(null)
 
   // Keyboard shortcuts for the blind rating flow: press a digit (an anchor
-  // level, 0-5) to choose it, Enter to save and continue. Editable fields (the
+  // step, 0-5) to choose it, Enter to save and continue. Editable fields (the
   // motivation textarea) keep their own typing, and Enter on a focused button
   // (Next/Back/anchor) is left to that button's native activation so we never
   // advance twice. The Next button carries the matching Enter hint (Kbd).
@@ -127,10 +127,10 @@ export function RatingStepper({
         return
       }
       if (/^[0-9]$/.test(event.key)) {
-        const level = Number(event.key)
-        if (keys.anchors.some((anchor) => anchor.level === level)) {
+        const step = Number(event.key)
+        if (keys.anchors.some((anchor) => anchor.step === step)) {
           event.preventDefault()
-          keys.select(level)
+          keys.select(step)
         }
       }
     }
@@ -180,10 +180,10 @@ export function RatingStepper({
     anchors: current.anchors,
     selected,
     pending,
-    select: (level) =>
+    select: (step) =>
       setValues((currentValues) => ({
         ...currentValues,
-        [current.criterionId]: level,
+        [current.criterionId]: step,
       })),
     advance: () => {
       void handleNext()
@@ -194,7 +194,7 @@ export function RatingStepper({
     <div className="w-full max-w-2xl space-y-4">
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-1.5 text-muted-foreground text-sm">
-          {t("step", { current: index + 1, total: criteria.length })}
+          {t("progress", { current: index + 1, total: criteria.length })}
           <HelpMorphButton label={tHelp("blindRatingLabel")}>
             {tHelp("blindRatingBody")}
           </HelpMorphButton>
@@ -242,11 +242,11 @@ export function RatingStepper({
                 className="space-y-2"
               >
                 {current.anchors.map((anchor) => {
-                  const isSelected = selected === anchor.level
+                  const isSelected = selected === anchor.step
                   return (
                     // biome-ignore lint/a11y/useSemanticElements: the anchor text is the option label; full-width styled cards with rich text use the radiogroup/radio ARIA pattern, not a native radio input
                     <button
-                      key={anchor.level}
+                      key={anchor.step}
                       type="button"
                       role="radio"
                       aria-checked={isSelected}
@@ -259,7 +259,7 @@ export function RatingStepper({
                       onClick={() =>
                         setValues((currentValues) => ({
                           ...currentValues,
-                          [current.criterionId]: anchor.level,
+                          [current.criterionId]: anchor.step,
                         }))
                       }
                     >
@@ -269,7 +269,7 @@ export function RatingStepper({
                           isSelected ? "text-brand" : "text-muted-foreground"
                         )}
                       >
-                        {anchor.level}
+                        {anchor.step}
                       </span>
                       <span className="min-w-0 flex-1">{anchor.text}</span>
                     </button>

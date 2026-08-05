@@ -63,13 +63,13 @@ export const addCriterion = adminMutation({
       name: args.name.trim(),
       description: args.description,
       helpText: args.helpText,
-      anchors: args.anchors.map((text, level) => ({ level, text })),
+      anchors: args.anchors.map((text, step) => ({ step, text })),
       weightPoints: NEUTRAL_WEIGHT_POINTS,
       order: maxOrder + 1,
       isCustom: true,
     })
     const after = await deriveResults(ctx, ctx.orgId)
-    await ctx.audit.bandShifts({
+    await ctx.audit.levelShifts({
       before: before.results,
       after: after.results,
       cause: { event: AUDIT_EVENTS.modelUpdated, criterionId },
@@ -87,7 +87,7 @@ export const addCriterion = adminMutation({
             name: args.name.trim(),
             description: args.description,
             helpText: args.helpText,
-            anchors: args.anchors.map((text, level) => ({ level, text })),
+            anchors: args.anchors.map((text, step) => ({ step, text })),
             weightPoints: NEUTRAL_WEIGHT_POINTS,
             order: maxOrder + 1,
             isCustom: true,
@@ -106,7 +106,7 @@ export const addCriterion = adminMutation({
 // Edits a criterion's texts: name, description, help text, and the six
 // assessment anchors. Weights are NOT edited here (rebalanceWeights owns the
 // zero-sum flow), and a text change can never move a score, so there is no
-// band-shift diff. Editing a template-seeded criterion materializes the
+// level-shift diff. Editing a template-seeded criterion materializes the
 // texts as organization content: templateKey is cleared, so getModel stops
 // localizing the row and renders it as stored (see localize.ts). This is the
 // "start from the standard model, then adapt" path.
@@ -127,7 +127,7 @@ export const updateCriterion = adminMutation({
     if (criterion === null || criterion.orgId !== ctx.orgId) {
       throw appError(ERROR_CODES.notFound)
     }
-    const newAnchors = args.anchors.map((text, level) => ({ level, text }))
+    const newAnchors = args.anchors.map((text, step) => ({ step, text }))
     // `criterion` is the pre-patch in-memory doc: Convex patch does not mutate
     // the already-read object, so it is safe to diff against the new values.
     await ctx.db.patch(args.criterionId, {
@@ -146,7 +146,7 @@ export const updateCriterion = adminMutation({
         // Only changed text fields are recorded. `templateKey: undefined` in
         // `after` makes buildChanges emit key -> null when a custom edit
         // detaches a template-seeded criterion; anchorDiff adds the anchors
-        // entry only when the level-ordered texts actually differ.
+        // entry only when the step-ordered texts actually differ.
         changes: {
           ...buildChanges(
             criterion,
@@ -168,7 +168,7 @@ export const updateCriterion = adminMutation({
 
 // Atomic reweighting: receives the FULL allocation (every model criterion
 // exactly once), validates each value against the 1-5 scale and the exact
-// point budget, and applies the changes in one transaction. One band-shift
+// point budget, and applies the changes in one transaction. One level-shift
 // diff and one audit row per save, with from/to per changed criterion.
 // Deliberately does not touch templateKey: template texts stay localized;
 // weighting is organization state by design.
@@ -225,7 +225,7 @@ export const rebalanceWeights = adminMutation({
       await ctx.db.patch(criterion._id, { weightPoints })
     }
     const after = await deriveResults(ctx, ctx.orgId)
-    await ctx.audit.bandShifts({
+    await ctx.audit.levelShifts({
       before: before.results,
       after: after.results,
       cause: { event: AUDIT_EVENTS.modelUpdated, entityId: model._id },
@@ -265,7 +265,7 @@ export const rebalanceWeights = adminMutation({
 // lightest up while under; ties resolve in display order), and every
 // adjustment is recorded in the removal's audit payload. One click always
 // works; the user never has to pre-stage a removal by reweighting. Wrapped
-// in a band-shift diff: removal can change scores or flip roles to
+// in a level-shift diff: removal can change scores or flip roles to
 // complete/incomplete.
 //
 // Composition floor: once onboarding is complete a model never drops below
@@ -338,7 +338,7 @@ export const removeCriterion = adminMutation({
       })
     }
     const after = await deriveResults(ctx, ctx.orgId)
-    await ctx.audit.bandShifts({
+    await ctx.audit.levelShifts({
       before: before.results,
       after: after.results,
       cause: { event: AUDIT_EVENTS.modelUpdated, criterionId },

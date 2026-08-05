@@ -407,8 +407,8 @@ describe("removeSeededOrganization", () => {
       orgId,
       personId,
       roleId,
-      level: "IC2",
-      levelSource: "confirmed",
+      seniority: "IC2",
+      senioritySource: "confirmed",
     })
 
     // Seed a pay record.

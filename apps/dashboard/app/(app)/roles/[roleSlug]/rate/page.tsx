@@ -59,8 +59,8 @@ export default function RatePage(props: {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                {[0, 1, 2, 3, 4, 5].map((level) => (
-                  <Skeleton key={level} className="h-12 w-full rounded-md" />
+                {[0, 1, 2, 3, 4, 5].map((step) => (
+                  <Skeleton key={step} className="h-12 w-full rounded-md" />
                 ))}
               </div>
               {/* The real nav buttons (static i18n chrome). Disabled is the

@@ -184,8 +184,8 @@ export function isWomenDominated(
 export interface ComparableGroup {
   key: string
   roleTitle: string | null
-  level: string | null
-  band: number | null
+  seniority: string | null
+  level: number | null
   womenCount: number
   menCount: number
   meanComp: number | null
@@ -194,8 +194,8 @@ export interface ComparableGroup {
 export interface WomenDominatedComparison {
   key: string
   roleTitle: string | null
-  level: string | null
-  band: number
+  seniority: string | null
+  level: number
   headcount: number
   womenSharePct: number
   meanComp: number
@@ -207,8 +207,8 @@ export interface WomenDominatedComparison {
 export interface WomenDominatedGroup {
   key: string
   roleTitle: string | null
-  level: string | null
-  band: number
+  seniority: string | null
+  level: number
   headcount: number
   womenSharePct: number
   meanComp: number
@@ -220,20 +220,20 @@ function womenSharePct(womenCount: number, menCount: number): number {
 }
 
 // Diskrimineringslagen's third comparison: every women-dominated group with a
-// band, against every NON-women-dominated banded group of equal or LOWER
-// value (band 1 is highest, so numerically >=) whose whole-group mean is
-// HIGHER. Groups without a band or mean cannot be placed and are skipped (the
+// level, against every NON-women-dominated group that has a level of equal or
+// LOWER value (level 1 is highest, so numerically >=) whose whole-group mean is
+// HIGHER. Groups without a level or mean cannot be placed and are skipped (the
 // pay-mapping preconditions gate now blocks a run at start whenever any
-// staffed role would resolve no band, so this filter guards a case the gate
+// staffed role would resolve no level, so this filter guards a case the gate
 // already prevents rather than one that reaches production data). Deterministic
-// ordering: output by comparison count desc, then band asc, then key;
-// comparisons by band asc (higher value first), then diffSek desc.
+// ordering: output by comparison count desc, then level asc, then key;
+// comparisons by level asc (higher value first), then diffSek desc.
 export function womenDominatedComparisons(
   groups: readonly ComparableGroup[]
 ): WomenDominatedGroup[] {
   const placeable = groups.filter(
-    (g): g is ComparableGroup & { band: number; meanComp: number } =>
-      g.band !== null && g.meanComp !== null
+    (g): g is ComparableGroup & { level: number; meanComp: number } =>
+      g.level !== null && g.meanComp !== null
   )
   const dominated = placeable.filter((g) =>
     isWomenDominated(g.womenCount, g.menCount)
@@ -244,18 +244,18 @@ export function womenDominatedComparisons(
   const result = dominated.map((group) => ({
     key: group.key,
     roleTitle: group.roleTitle,
+    seniority: group.seniority,
     level: group.level,
-    band: group.band,
     headcount: group.womenCount + group.menCount,
     womenSharePct: womenSharePct(group.womenCount, group.menCount),
     meanComp: group.meanComp,
     comparisons: others
-      .filter((o) => o.band >= group.band && o.meanComp > group.meanComp)
+      .filter((o) => o.level >= group.level && o.meanComp > group.meanComp)
       .map((o) => ({
         key: o.key,
         roleTitle: o.roleTitle,
+        seniority: o.seniority,
         level: o.level,
-        band: o.band,
         headcount: o.womenCount + o.menCount,
         womenSharePct: womenSharePct(o.womenCount, o.menCount),
         meanComp: o.meanComp,
@@ -266,13 +266,13 @@ export function womenDominatedComparisons(
             : ((o.meanComp - group.meanComp) / group.meanComp) * 100,
       }))
       .sort((a, b) =>
-        a.band !== b.band ? a.band - b.band : b.diffSek - a.diffSek
+        a.level !== b.level ? a.level - b.level : b.diffSek - a.diffSek
       ),
   }))
   return result.sort((a, b) => {
     if (a.comparisons.length !== b.comparisons.length)
       return b.comparisons.length - a.comparisons.length
-    if (a.band !== b.band) return a.band - b.band
+    if (a.level !== b.level) return a.level - b.level
     return a.key.localeCompare(b.key)
   })
 }

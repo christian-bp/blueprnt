@@ -5,15 +5,15 @@ import { initConvexTest } from "../testing.helpers"
 
 // Directly seed a run + snapshot rows (freeze logic is covered by
 // runs.test.ts; the grouping logic by gap.test.ts). This gives exact control
-// over gender/band/level/pay per row so a group's flag (critical/ok) is
+// over gender/level/seniority/pay per row so a group's flag (critical/ok) is
 // deterministic.
 const OPERATOR = "HR Person"
 
 interface SeedRow {
   gender: "Man" | "Kvinna"
   roleTitle: string
-  level: string
-  band: number | null
+  seniority: string
+  level: number | null
   basicMonthly: number | null
 }
 
@@ -44,7 +44,7 @@ async function seedRun(
       withPayCount: rows.filter((r) => r.basicMonthly !== null).length,
       womenCount: rows.filter((r) => r.gender === "Kvinna").length,
       menCount: rows.filter((r) => r.gender === "Man").length,
-      frozenModel: { criteria: [], bandThresholds: [] },
+      frozenModel: { criteria: [], levelThresholds: [] },
     })
     let i = 0
     for (const r of rows) {
@@ -58,9 +58,9 @@ async function seedRun(
         gender: r.gender,
         roleTitle: r.roleTitle,
         trackKey: "engineering",
+        seniority: r.seniority,
         level: r.level,
-        band: r.band,
-        score: r.band === null ? null : 50,
+        score: r.level === null ? null : 50,
         basicMonthly: r.basicMonthly,
         components: [],
         ...(r.basicMonthly !== null ? { currency: "SEK" } : {}),
@@ -78,15 +78,15 @@ const criticalRows: SeedRow[] = [
   {
     gender: "Kvinna",
     roleTitle: "SWE",
-    level: "Senior",
-    band: 3,
+    seniority: "Senior",
+    level: 3,
     basicMonthly: 80000,
   },
   {
     gender: "Man",
     roleTitle: "SWE",
-    level: "Senior",
-    band: 3,
+    seniority: "Senior",
+    level: 3,
     basicMonthly: 100000,
   },
 ]
@@ -98,15 +98,15 @@ const okRows: SeedRow[] = [
   {
     gender: "Kvinna",
     roleTitle: "PM",
-    level: "Mid",
-    band: 2,
+    seniority: "Mid",
+    level: 2,
     basicMonthly: 100000,
   },
   {
     gender: "Man",
     roleTitle: "PM",
-    level: "Mid",
-    band: 2,
+    seniority: "Mid",
+    level: 2,
     basicMonthly: 100000,
   },
 ]
@@ -115,49 +115,49 @@ const okRows: SeedRow[] = [
 // group (Tech) that out-earns it, mirroring gap.test.ts's "returns the
 // women-dominated cross-level comparison" seed. The women-dominated groups
 // share the equal-work group's key format
-// (`${roleTitle}|${band}|${level}`).
+// (`${roleTitle}|${level}|${seniority}`).
 const WOMEN_DOMINATED_GROUP_KEY = "Nurse|3|Mid"
 const womenDominatedRows: SeedRow[] = [
   {
     gender: "Kvinna",
     roleTitle: "Nurse",
-    level: "Mid",
-    band: 3,
+    seniority: "Mid",
+    level: 3,
     basicMonthly: 38000,
   },
   {
     gender: "Kvinna",
     roleTitle: "Nurse",
-    level: "Mid",
-    band: 3,
+    seniority: "Mid",
+    level: 3,
     basicMonthly: 38000,
   },
   {
     gender: "Kvinna",
     roleTitle: "Nurse",
-    level: "Mid",
-    band: 3,
+    seniority: "Mid",
+    level: 3,
     basicMonthly: 38000,
   },
   {
     gender: "Kvinna",
     roleTitle: "Tech",
-    level: "Mid",
-    band: 3,
+    seniority: "Mid",
+    level: 3,
     basicMonthly: 42000,
   },
   {
     gender: "Man",
     roleTitle: "Tech",
-    level: "Mid",
-    band: 3,
+    seniority: "Mid",
+    level: 3,
     basicMonthly: 42000,
   },
   {
     gender: "Man",
     roleTitle: "Tech",
-    level: "Mid",
-    band: 3,
+    seniority: "Mid",
+    level: 3,
     basicMonthly: 42000,
   },
 ]

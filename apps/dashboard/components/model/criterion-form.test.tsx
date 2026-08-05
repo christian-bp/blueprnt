@@ -65,7 +65,7 @@ describe("CriterionForm", () => {
       target: { value: "  Problem solving  " },
     })
     fireEvent.change(
-      screen.getByLabelText(editor.anchorLevel.replace("{level}", "0")),
+      screen.getByLabelText(editor.anchorStep.replace("{step}", "0")),
       { target: { value: "None" } }
     )
     fireEvent.submit(
@@ -97,7 +97,7 @@ describe("CriterionForm", () => {
     expect(
       (
         screen.getByLabelText(
-          editor.anchorLevel.replace("{level}", "5")
+          editor.anchorStep.replace("{step}", "5")
         ) as HTMLInputElement
       ).value
     ).toBe("a5")
@@ -125,51 +125,51 @@ describe("CriterionForm", () => {
   })
 })
 
-describe("CriterionForm level clarity pass", () => {
+describe("CriterionForm step clarity pass", () => {
   afterEach(() => {
     cleanup()
   })
 
-  it("renders the levels helper line under the anchors legend", () => {
+  it("renders the steps helper line under the anchors legend", () => {
     renderForm()
-    expect(screen.getByText(editor.levelsIntro)).toBeDefined()
+    expect(screen.getByText(editor.stepsIntro)).toBeDefined()
   })
 
-  it("renders all six level labels from 0 to 5", () => {
+  it("renders all six step labels from 0 to 5", () => {
     renderForm()
-    for (let level = 0; level <= 5; level++) {
+    for (let step = 0; step <= 5; step++) {
       expect(
-        screen.getByText(editor.anchorLevel.replace("{level}", String(level)))
+        screen.getByText(editor.anchorStep.replace("{step}", String(step)))
       ).toBeDefined()
     }
   })
 
   it("tags the lowest and highest rows", () => {
     renderForm()
-    expect(screen.getByText(editor.levelEndpointLowest)).toBeDefined()
-    expect(screen.getByText(editor.levelEndpointHighest)).toBeDefined()
+    expect(screen.getByText(editor.stepEndpointLowest)).toBeDefined()
+    expect(screen.getByText(editor.stepEndpointHighest)).toBeDefined()
   })
 
   it("gives the 0 and 5 inputs example placeholders", () => {
     renderForm()
     expect(
-      screen.getByPlaceholderText(editor.levelPlaceholderLowest)
+      screen.getByPlaceholderText(editor.stepPlaceholderLowest)
     ).toBeDefined()
     expect(
-      screen.getByPlaceholderText(editor.levelPlaceholderHighest)
+      screen.getByPlaceholderText(editor.stepPlaceholderHighest)
     ).toBeDefined()
   })
 
-  it("keeps each anchor input's accessible name exactly the level label", () => {
+  it("keeps each anchor input's accessible name exactly the step label", () => {
     renderForm()
     // getByLabelText defaults to exact=true and matches the full accessible
-    // name; the explicit aria-label on the input keeps it "Level 0"/"Level 5"
+    // name; the explicit aria-label on the input keeps it "Step 0"/"Step 5"
     // even though the visible Label also contains the badge and endpoint tag.
     expect(
-      screen.getByLabelText(editor.anchorLevel.replace("{level}", "0"))
+      screen.getByLabelText(editor.anchorStep.replace("{step}", "0"))
     ).toBeDefined()
     expect(
-      screen.getByLabelText(editor.anchorLevel.replace("{level}", "5"))
+      screen.getByLabelText(editor.anchorStep.replace("{step}", "5"))
     ).toBeDefined()
   })
 })

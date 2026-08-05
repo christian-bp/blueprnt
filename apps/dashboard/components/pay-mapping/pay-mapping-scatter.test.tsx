@@ -26,8 +26,8 @@ function row(
     gender: "Kvinna",
     roleTitle: "SWE",
     trackKey: "IC",
-    level: "Senior",
-    band: 3,
+    seniority: "Senior",
+    level: 3,
     basicMonthly: 40000,
     components: [],
     birthDate: "1990-07-01",
@@ -216,7 +216,7 @@ function renderTooltip(point: ScatterPoint, xMode: ScatterXMode = "age") {
 describe("ScatterTooltipContent", () => {
   afterEach(() => cleanup())
 
-  it("names the person, and shows role/level, band, and gender", () => {
+  it("names the person, and shows role/seniority, level, and gender", () => {
     const point: ScatterPoint = {
       x: 36,
       y: 40000,
@@ -225,14 +225,14 @@ describe("ScatterTooltipContent", () => {
         displayName: "Alex Doe",
         gender: "Kvinna",
         roleTitle: "SWE",
-        level: "Senior",
-        band: 3,
+        seniority: "Senior",
+        level: 3,
       }),
     }
     renderTooltip(point)
     expect(screen.getByText("Alex Doe")).toBeDefined()
     expect(screen.getByText("SWE · Senior")).toBeDefined()
-    expect(screen.getByText("Band 3")).toBeDefined()
+    expect(screen.getByText("Level 3")).toBeDefined()
     expect(screen.getByText(mGender.Kvinna)).toBeDefined()
   })
 

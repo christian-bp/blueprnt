@@ -7,12 +7,12 @@ import { useFormatter, useTranslations } from "next-intl"
 import type { ReactNode } from "react"
 import { OverviewWidgetCard } from "@/components/overview/widget-card"
 import {
-  BandBars,
+  LevelBars,
   HeadcountTrend,
   QuartileSplitBars,
 } from "@/components/overview/widget-viz"
 import type { PayMappingHeadline } from "@/hooks/use-pay-mapping-headline"
-import type { BandOverview } from "@/lib/band-overview"
+import type { LevelOverview } from "@/lib/level-overview"
 import { GenderMenIcon } from "@/components/gender-mark"
 import { WIDGET_CHART_HEIGHT } from "@/lib/chart-style"
 import { type HeadcountPoint, headcountTotal } from "@/lib/headcount-trend"
@@ -22,7 +22,7 @@ import type { OverviewStats } from "@/lib/todo"
 // Shared loading placeholder for a single OverviewWidgetCard slot: the same
 // chrome (title, skeleton headline, real action link) used both for the
 // initial three-up load (stats undefined) and for a single card whose own
-// independent query (bandOverview, payMappingHeadline) resolves after
+// independent query (levelOverview, payMappingHeadline) resolves after
 // stats, so every loading state in this grid measures identically and
 // there is one source of truth for the skeleton card. The viz area itself
 // stays empty (no shimmer bar) rather than a skeleton, reserving the exact
@@ -39,7 +39,7 @@ function renderSkeletonCard(label: string, viewLabel: string, href: string) {
   )
 }
 
-// The overview's three always-present data cards: Workforce, Band
+// The overview's three always-present data cards: Workforce, Level
 // distribution, and Pay gap. Unlike the previous domain-card grid, no item
 // rows live here (they moved to TodoList): each card is a stat headline plus
 // a decorative viz on the shared OverviewWidgetCard chrome, and every card
@@ -47,12 +47,12 @@ function renderSkeletonCard(label: string, viewLabel: string, href: string) {
 // grid never reflows as its own data arrives.
 export function OverviewWidgets({
   stats,
-  bandOverview,
+  levelOverview,
   payMappingHeadline,
   headcountTrend,
 }: {
   stats: OverviewStats | undefined
-  bandOverview: BandOverview | undefined | null
+  levelOverview: LevelOverview | undefined | null
   payMappingHeadline: PayMappingHeadline | undefined | null
   headcountTrend: HeadcountPoint[] | undefined | null
 }) {
@@ -68,7 +68,7 @@ export function OverviewWidgets({
           t("workforce.view"),
           "/people"
         )}
-        {renderSkeletonCard(t("bands.label"), t("bands.view"), "/work")}
+        {renderSkeletonCard(t("levels.label"), t("levels.view"), "/work")}
         {renderSkeletonCard(t("gap.label"), t("gap.view"), "/pay-mappings")}
       </div>
     )
@@ -133,28 +133,28 @@ export function OverviewWidgets({
     )
   }
 
-  // --- Band distribution: role/band narrative, empty until a band resolves.
-  // bandOverview is its own subscription (getResults) that can still be
-  // loading after stats resolves, so its own undefined is a skeleton card,
-  // never the null empty state.
-  let bandCard: ReactNode
-  if (bandOverview === undefined) {
-    bandCard = renderSkeletonCard(t("bands.label"), t("bands.view"), "/work")
+  // --- Level distribution: role/level narrative, empty until a level
+  // resolves. levelOverview is its own subscription (getResults) that can
+  // still be loading after stats resolves, so its own undefined is a
+  // skeleton card, never the null empty state.
+  let levelCard: ReactNode
+  if (levelOverview === undefined) {
+    levelCard = renderSkeletonCard(t("levels.label"), t("levels.view"), "/work")
   } else {
-    const bandsHeadline =
-      bandOverview === null
-        ? t("bands.empty")
-        : t("bands.headline", {
-            roles: bandOverview.totalRoles,
-            bands: bandOverview.bandCount,
+    const levelsHeadline =
+      levelOverview === null
+        ? t("levels.empty")
+        : t("levels.headline", {
+            roles: levelOverview.totalRoles,
+            levels: levelOverview.levelCount,
           })
-    const bandCounts = bandOverview === null ? [] : bandOverview.bandCounts
-    bandCard = (
+    const levelCounts = levelOverview === null ? [] : levelOverview.levelCounts
+    levelCard = (
       <OverviewWidgetCard
-        title={t("bands.label")}
-        headline={bandsHeadline}
-        action={{ label: t("bands.view"), href: "/work" }}
-        viz={<BandBars counts={bandCounts} />}
+        title={t("levels.label")}
+        headline={levelsHeadline}
+        action={{ label: t("levels.view"), href: "/work" }}
+        viz={<LevelBars counts={levelCounts} />}
       />
     )
   }
@@ -243,7 +243,7 @@ export function OverviewWidgets({
         action={{ label: t("workforce.view"), href: "/people" }}
         viz={workforceViz}
       />
-      {bandCard}
+      {levelCard}
       {gapCard}
     </div>
   )

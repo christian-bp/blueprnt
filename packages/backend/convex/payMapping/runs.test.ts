@@ -1,4 +1,4 @@
-import { BASE_PRAXIS_AREA_KEYS, TRACK_LEVELS } from "@workspace/constants"
+import { BASE_PRAXIS_AREA_KEYS, TRACK_SENIORITIES } from "@workspace/constants"
 import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import type { Id } from "../_generated/dataModel"
@@ -14,9 +14,9 @@ const OPERATOR_NAME = "HR Person"
 // always <= the freeze reference date (Date.now() inside the mutation).
 const PAST = 1_700_000_000_000
 
-// Seeds an org with: a template model (criteria + bandThresholds), one fully
+// Seeds an org with: a template model (criteria + levelThresholds), one fully
 // evaluated role (every criterion rated so the engine returns a non-null
-// band/score), and two classified active people (confirmed open assignment
+// level/score), and two classified active people (confirmed open assignment
 // to that role) one of whom has a pay record and one who does not. Satisfies
 // the preconditions gate outright, so startPayMappingRun succeeds. Returns
 // the caller's org id and an HR (admin) identity wrapper for the freeze
@@ -42,7 +42,7 @@ async function seedForFreeze(t: ReturnType<typeof initConvexTest>) {
   })
   const asHr = t.withIdentity({ subject: userId })
 
-  // Model with criteria + band thresholds.
+  // Model with criteria + level thresholds.
   await asHr.mutation(api.evaluationModel.model.createModelFromTemplate, {
     orgId,
   })
@@ -50,10 +50,11 @@ async function seedForFreeze(t: ReturnType<typeof initConvexTest>) {
   if (model === null) throw new Error("seed: model")
   const track = model.tracks[0]
   if (track === undefined) throw new Error("seed: track")
-  const level = TRACK_LEVELS[track.key as keyof typeof TRACK_LEVELS][0]
-  if (level === undefined) throw new Error("seed: level")
+  const seniority =
+    TRACK_SENIORITIES[track.key as keyof typeof TRACK_SENIORITIES][0]
+  if (seniority === undefined) throw new Error("seed: seniority")
 
-  // One role, fully evaluated (all criteria rated => complete => band/score).
+  // One role, fully evaluated (all criteria rated => complete => level/score).
   const { roleId } = await asHr.mutation(api.assessment.roles.createRole, {
     orgId,
     title: "Software Engineer",
@@ -101,15 +102,15 @@ async function seedForFreeze(t: ReturnType<typeof initConvexTest>) {
     orgId,
     personId: withPay,
     roleId,
-    level,
-    levelSource: "confirmed",
+    seniority,
+    senioritySource: "confirmed",
   })
   await asHr.mutation(api.people.assignments.assignPersonToRole, {
     orgId,
     personId: withoutPay,
     roleId,
-    level,
-    levelSource: "confirmed",
+    seniority,
+    senioritySource: "confirmed",
   })
 
   // Only the first classified person has a pay record.
@@ -151,10 +152,10 @@ describe("startPayMappingRun", () => {
         .collect()
     )
     expect(rows).toHaveLength(2)
-    // Both classified rows carry the evaluated role and a non-null band/score.
+    // Both classified rows carry the evaluated role and a non-null level/score.
     for (const row of rows) {
       expect(row.roleTitle).toBe("Software Engineer")
-      expect(typeof row.band).toBe("number")
+      expect(typeof row.level).toBe("number")
       expect(typeof row.score).toBe("number")
     }
     // Exactly one row carries the frozen pay (basicMonthly), the other null.
@@ -245,11 +246,12 @@ describe("startPayMappingRun preconditions gate", () => {
     if (model === null) throw new Error("seed: model")
     const track = model.tracks[0]
     if (track === undefined) throw new Error("seed: track")
-    const level = TRACK_LEVELS[track.key as keyof typeof TRACK_LEVELS][0]
-    if (level === undefined) throw new Error("seed: level")
+    const seniority =
+      TRACK_SENIORITIES[track.key as keyof typeof TRACK_SENIORITIES][0]
+    if (seniority === undefined) throw new Error("seed: seniority")
 
     // A second role with a confirmed assignment but no ratings: staffed,
-    // incomplete, resolves no band.
+    // incomplete, resolves no level.
     const { roleId: unevaluatedRoleId } = await asHr.mutation(
       api.assessment.roles.createRole,
       {
@@ -269,8 +271,8 @@ describe("startPayMappingRun preconditions gate", () => {
       orgId,
       personId,
       roleId: unevaluatedRoleId,
-      level,
-      levelSource: "confirmed",
+      seniority,
+      senioritySource: "confirmed",
     })
 
     await expect(
@@ -291,8 +293,9 @@ describe("startPayMappingRun preconditions gate", () => {
     if (model === null) throw new Error("seed: model")
     const track = model.tracks[0]
     if (track === undefined) throw new Error("seed: track")
-    const level = TRACK_LEVELS[track.key as keyof typeof TRACK_LEVELS][0]
-    if (level === undefined) throw new Error("seed: level")
+    const seniority =
+      TRACK_SENIORITIES[track.key as keyof typeof TRACK_SENIORITIES][0]
+    if (seniority === undefined) throw new Error("seed: seniority")
 
     const { roleId: retiredRoleId } = await asHr.mutation(
       api.assessment.roles.createRole,
@@ -313,14 +316,14 @@ describe("startPayMappingRun preconditions gate", () => {
       orgId,
       personId,
       roleId: retiredRoleId,
-      level,
-      levelSource: "confirmed",
+      seniority,
+      senioritySource: "confirmed",
     })
     // Simulate a PRE-EXISTING stale row: archive the role directly (bypassing
     // archiveRole, which now ends its own open assignments) so the person's
     // confirmed assignment stays open, pointing at an archived role -- the
     // exact shape the C1 review finding described (this used to pass the
-    // gate and freeze a band-less row).
+    // gate and freeze a level-less row).
     await t.run(async (ctx) => {
       await ctx.db.patch(retiredRoleId, { archivedAt: Date.now() })
     })
@@ -391,8 +394,9 @@ describe("getPayMappingPreconditions", () => {
     if (model === null) throw new Error("seed: model")
     const track = model.tracks[0]
     if (track === undefined) throw new Error("seed: track")
-    const level = TRACK_LEVELS[track.key as keyof typeof TRACK_LEVELS][0]
-    if (level === undefined) throw new Error("seed: level")
+    const seniority =
+      TRACK_SENIORITIES[track.key as keyof typeof TRACK_SENIORITIES][0]
+    if (seniority === undefined) throw new Error("seed: seniority")
 
     // An unclassified person (no assignment at all).
     await asHr.mutation(api.people.people.createPerson, {
@@ -418,8 +422,8 @@ describe("getPayMappingPreconditions", () => {
       orgId,
       personId: staffedPersonId,
       roleId: unevaluatedRoleId,
-      level,
-      levelSource: "confirmed",
+      seniority,
+      senioritySource: "confirmed",
     })
 
     // An unstaffed, unevaluated role: must not appear.
@@ -570,19 +574,19 @@ describe("getPayMappingRunBySlug", () => {
 })
 
 // Directly seed a run + snapshot rows (mirrors gap.test.ts/analyses.test.ts's
-// seedRun): exact control over gender/band/level/pay per row, so a group's
+// seedRun): exact control over gender/level/seniority/pay per row, so a group's
 // flag (critical/ok/insufficient) and the ADR-0012 documentation requirement
 // it drives are deterministic, without going through the full freeze flow.
 interface SeedRow {
   gender: "Man" | "Kvinna"
   roleTitle: string
-  level: string
-  band: number | null
+  seniority: string
+  level: number | null
   basicMonthly: number | null
 }
 
 // Inserts one payMappingRuns row + its snapshot rows directly (bypassing
-// startPayMappingRun): exact control over gender/band/level/pay per row and
+// startPayMappingRun): exact control over gender/level/seniority/pay per row and
 // referenceDate. Shared by seedRun (single-run scenarios) and multi-run
 // scenarios (the previousActions praxis-area applicability rule, which keys
 // on an earlier COMPLETED run in the SAME org).
@@ -611,7 +615,7 @@ async function insertRun(
       withPayCount: rows.filter((r) => r.basicMonthly !== null).length,
       womenCount: rows.filter((r) => r.gender === "Kvinna").length,
       menCount: rows.filter((r) => r.gender === "Man").length,
-      frozenModel: { criteria: [], bandThresholds: [] },
+      frozenModel: { criteria: [], levelThresholds: [] },
     })
     let i = 0
     for (const r of rows) {
@@ -625,9 +629,9 @@ async function insertRun(
         gender: r.gender,
         roleTitle: r.roleTitle,
         trackKey: "engineering",
+        seniority: r.seniority,
         level: r.level,
-        band: r.band,
-        score: r.band === null ? null : 50,
+        score: r.level === null ? null : 50,
         basicMonthly: r.basicMonthly,
         components: [],
         ...(r.basicMonthly !== null ? { currency: "SEK" } : {}),
@@ -743,43 +747,43 @@ const requiredGroupRows: SeedRow[] = [
   {
     gender: "Kvinna",
     roleTitle: "Nurse",
-    level: "Mid",
-    band: 3,
+    seniority: "Mid",
+    level: 3,
     basicMonthly: 38000,
   },
   {
     gender: "Kvinna",
     roleTitle: "Nurse",
-    level: "Mid",
-    band: 3,
+    seniority: "Mid",
+    level: 3,
     basicMonthly: 38000,
   },
   {
     gender: "Kvinna",
     roleTitle: "Nurse",
-    level: "Mid",
-    band: 3,
+    seniority: "Mid",
+    level: 3,
     basicMonthly: 38000,
   },
   {
     gender: "Kvinna",
     roleTitle: "Tech",
-    level: "Mid",
-    band: 3,
+    seniority: "Mid",
+    level: 3,
     basicMonthly: 42000,
   },
   {
     gender: "Man",
     roleTitle: "Tech",
-    level: "Mid",
-    band: 3,
+    seniority: "Mid",
+    level: 3,
     basicMonthly: 42000,
   },
   {
     gender: "Man",
     roleTitle: "Tech",
-    level: "Mid",
-    band: 3,
+    seniority: "Mid",
+    level: 3,
     basicMonthly: 42000,
   },
 ]
@@ -791,15 +795,15 @@ const noRequiredGroupRows: SeedRow[] = [
   {
     gender: "Kvinna",
     roleTitle: "PM",
-    level: "Mid",
-    band: 2,
+    seniority: "Mid",
+    level: 2,
     basicMonthly: 100000,
   },
   {
     gender: "Man",
     roleTitle: "PM",
-    level: "Mid",
-    band: 2,
+    seniority: "Mid",
+    level: 2,
     basicMonthly: 100000,
   },
 ]

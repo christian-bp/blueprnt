@@ -112,11 +112,11 @@ export function ScatterTooltipContent({
         {row.erased ? tDetail("erased") : row.displayName}
       </p>
       <p className="text-muted-foreground">
-        {row.roleTitle} &middot; {row.level}
+        {row.roleTitle} &middot; {row.seniority}
       </p>
-      {row.band !== null && (
+      {row.level !== null && (
         <p className="text-muted-foreground">
-          {tGap("bandLabel", { band: row.band })}
+          {tGap("levelLabel", { level: row.level })}
         </p>
       )}
       <p className="flex items-center gap-1.5 text-muted-foreground">

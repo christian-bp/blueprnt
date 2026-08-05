@@ -1,5 +1,5 @@
 // Pure derivation of the front-page "To do" from the existing role + method
-// queries. No stored aggregate (derive, like score/band). The profileComplete
+// queries. No stored aggregate (derive, like score/level). The profileComplete
 // gate splits roles: a role without a profile can only be described, never
 // evaluated. Only non-empty groups are returned, in priority order.
 export const MAX_ITEMS = 4
@@ -77,7 +77,7 @@ type TodoTitleGroup = {
   people: {
     currentAssignment: {
       roleId: string
-      levelSource: "suggested" | "confirmed"
+      senioritySource: "suggested" | "confirmed"
     } | null
   }[]
 }
@@ -113,7 +113,7 @@ function computeCounts({
   const classify: ClassifyItem[] = []
   for (const group of peopleByTitle) {
     const awaiting = group.people.filter(
-      (p) => p.currentAssignment?.levelSource !== "confirmed"
+      (p) => p.currentAssignment?.senioritySource !== "confirmed"
     ).length
     if (awaiting > 0) {
       classify.push({
@@ -179,7 +179,7 @@ function computeCounts({
   // The pay-mapping gate's own readiness, mirroring the backend's shared
   // precondition helper exactly: every person classified (a confirmed open
   // assignment) and every STAFFED role (holding at least one open
-  // assignment, any confirmation state) resolves a band (fully rated). An
+  // assignment, any confirmation state) resolves a level (fully rated). An
   // unstaffed role's evaluation state never blocks this, unlike
   // describe/evaluate above, which track every role regardless of staffing.
   const totalUnclassified = classify.reduce(

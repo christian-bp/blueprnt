@@ -34,7 +34,7 @@ function row(overrides: Partial<RolesTableRow>): RolesTableRow {
     familyName: "Engineering",
     familySlug: "engineering",
     employeeCount: 0,
-    band: null,
+    level: null,
     ...overrides,
   }
 }
@@ -191,10 +191,10 @@ describe("RolesTable", () => {
     expect(pushMock).toHaveBeenCalledWith("/roles/r1")
   })
 
-  it("shows the band for an evaluated role and a not-yet-evaluated line otherwise", () => {
+  it("shows the level for an evaluated role and a not-yet-evaluated line otherwise", () => {
     renderTable([
-      row({ roleId: "r1", title: "Done Role", band: 3 }),
-      row({ roleId: "r2", title: "Todo Role", band: null }),
+      row({ roleId: "r1", title: "Done Role", level: 3 }),
+      row({ roleId: "r2", title: "Todo Role", level: null }),
     ])
     expect(screen.getByText("3")).toBeDefined()
     // An unevaluated role is called out, never a blank cell.

@@ -2,15 +2,15 @@ import { cleanup, render, screen } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
-import { BandMatrix } from "@/components/bands/band-matrix"
-import { type BandRoleRow, trackColumns } from "@/lib/bands"
+import { LevelMatrix } from "@/components/levels/level-matrix"
+import { type LevelRoleRow, trackColumns } from "@/lib/levels"
 
-const BANDS = [
-  { band: 1, minScore: 80 },
-  { band: 2, minScore: 0 },
+const LEVELS = [
+  { level: 1, minScore: 80 },
+  { level: 2, minScore: 0 },
 ]
 
-function role(overrides: Partial<BandRoleRow>): BandRoleRow {
+function role(overrides: Partial<LevelRoleRow>): LevelRoleRow {
   return {
     roleId: "r1",
     slug: "r1",
@@ -18,7 +18,7 @@ function role(overrides: Partial<BandRoleRow>): BandRoleRow {
     trackKey: "M",
     trackName: "Manager",
     score: 90,
-    band: 1,
+    level: 1,
     ratedCount: 9,
     totalCriteria: 9,
     familyId: null,
@@ -29,14 +29,14 @@ function role(overrides: Partial<BandRoleRow>): BandRoleRow {
 }
 
 function renderMatrix(
-  rows: BandRoleRow[],
+  rows: LevelRoleRow[],
   groupByFamily = false,
-  tracks = trackColumns(rows.filter((row) => row.band !== null))
+  tracks = trackColumns(rows.filter((row) => row.level !== null))
 ) {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <BandMatrix
-        bands={BANDS}
+      <LevelMatrix
+        levels={LEVELS}
         rows={rows}
         tracks={tracks}
         groupByFamily={groupByFamily}
@@ -45,7 +45,7 @@ function renderMatrix(
   )
 }
 
-describe("BandMatrix", () => {
+describe("LevelMatrix", () => {
   afterEach(() => cleanup())
 
   it("renders a column header per present track in IC, Lead, M order", () => {
@@ -64,19 +64,21 @@ describe("BandMatrix", () => {
     expect(headers).toEqual(["", "IC", "M"])
   })
 
-  it("places a role in the cell where its band meets its track", () => {
-    renderMatrix([role({ roleId: "m1", title: "CTO", band: 1, trackKey: "M" })])
-    expect(screen.getByText("Band 1")).toBeDefined()
+  it("places a role in the cell where its level meets its track", () => {
+    renderMatrix([
+      role({ roleId: "m1", title: "CTO", level: 1, trackKey: "M" }),
+    ])
+    expect(screen.getByText("Level 1")).toBeDefined()
     expect(screen.getByRole("link", { name: /CTO/ })).toBeDefined()
   })
 
-  it("excludes roles without a band from the grid", () => {
+  it("excludes roles without a level from the grid", () => {
     renderMatrix([
-      role({ roleId: "m1", title: "CTO", band: 1, trackKey: "M" }),
+      role({ roleId: "m1", title: "CTO", level: 1, trackKey: "M" }),
       role({
         roleId: "x1",
         title: "Draftee",
-        band: null,
+        level: null,
         trackKey: "IC",
         score: null,
       }),
@@ -91,7 +93,7 @@ describe("BandMatrix", () => {
         role({
           roleId: "a",
           title: "CTO",
-          band: 1,
+          level: 1,
           trackKey: "M",
           trackName: "Manager",
           familyId: "f1",
@@ -100,7 +102,7 @@ describe("BandMatrix", () => {
         role({
           roleId: "b",
           title: "VP Sales",
-          band: 1,
+          level: 1,
           trackKey: "M",
           trackName: "Manager",
           familyId: "f2",
@@ -114,7 +116,7 @@ describe("BandMatrix", () => {
   })
 
   it("pins every empty-cell hatch to a fixed background-size (WebKit #94795 guard)", () => {
-    // See BandLadder: a fixed background-size keeps the hatch crisp in tall
+    // See LevelLadder: a fixed background-size keeps the hatch crisp in tall
     // cells in Safari (WebKit #94795). The matrix is where this actually bites,
     // because a cell stretches to the tallest sibling. jsdom cannot paint, so we
     // guard the class: every empty cell must carry the size-pinned hatch.
@@ -123,7 +125,7 @@ describe("BandMatrix", () => {
       { key: "M", name: "Manager" },
     ])
     const hatches = container.querySelectorAll('[class*="background-size:"]')
-    // 2 bands x 2 tracks, every cell empty and hatched.
+    // 2 levels x 2 tracks, every cell empty and hatched.
     expect(hatches.length).toBe(4)
     for (const hatch of hatches) {
       expect(hatch.className).toContain("repeating-linear-gradient")

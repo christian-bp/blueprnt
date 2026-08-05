@@ -133,16 +133,16 @@ export function CriterionForm({
             </span>
           </legend>
           {/* Static helper line: states the 0-to-5 direction in plain language
-              so the six inputs read as the levels of the scale, not as a list
+              so the six inputs read as the steps of the scale, not as a list
               of names. Always present (no state-triggered reveal), so the
               layout never shifts. */}
           <p className="text-muted-foreground text-sm">
-            {tEditor("levelsIntro")}
+            {tEditor("stepsIntro")}
           </p>
           {anchors.map((_anchor, index) => {
             const isLowest = index === 0
             const isHighest = index === anchors.length - 1
-            const levelLabel = tEditor("anchorLevel", { level: index })
+            const stepLabel = tEditor("anchorStep", { step: index })
             return (
               <div
                 // The anchor list is fixed-length and positional, so the index
@@ -160,31 +160,31 @@ export function CriterionForm({
                   <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground text-xs tabular-nums">
                     {index}
                   </span>
-                  {levelLabel}
+                  {stepLabel}
                   {isLowest && (
                     <span className="text-muted-foreground text-xs">
-                      {tEditor("levelEndpointLowest")}
+                      {tEditor("stepEndpointLowest")}
                     </span>
                   )}
                   {isHighest && (
                     <span className="text-muted-foreground text-xs">
-                      {tEditor("levelEndpointHighest")}
+                      {tEditor("stepEndpointHighest")}
                     </span>
                   )}
                 </Label>
                 <Input
                   id={`criterion-anchor-${index}`}
-                  // Explicit accessible name so the input is "Level N" even
+                  // Explicit accessible name so the input is "Step N" even
                   // though the visible Label also holds the badge and endpoint
                   // tag; aria-label overrides the associated label text in the
-                  // accessible-name computation. Keeps getByLabelText("Level N")
+                  // accessible-name computation. Keeps getByLabelText("Step N")
                   // working.
-                  aria-label={levelLabel}
+                  aria-label={stepLabel}
                   placeholder={
                     isLowest
-                      ? tEditor("levelPlaceholderLowest")
+                      ? tEditor("stepPlaceholderLowest")
                       : isHighest
-                        ? tEditor("levelPlaceholderHighest")
+                        ? tEditor("stepPlaceholderHighest")
                         : undefined
                   }
                   {...form.register(`anchors.${index}` as const)}

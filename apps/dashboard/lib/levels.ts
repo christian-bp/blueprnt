@@ -1,42 +1,42 @@
-// The shape the band Overview components consume. It is a structural subset
+// The shape the level Overview components consume. It is a structural subset
 // of a getResults row (assessment/results.ts), so rows can be passed straight
-// through. Score/band are derived at read time and may be null while a role's
+// through. Score/level are derived at read time and may be null while a role's
 // assessment is incomplete (ADR-0002).
-export interface BandRoleRow {
+export interface LevelRoleRow {
   roleId: string
   title: string
   slug: string
   trackKey: string
   trackName: string
   score: number | null
-  band: number | null
+  level: number | null
   ratedCount: number
   totalCriteria: number
   familyId: string | null
   familyName: string | null
-  anchor: { expectedBand: number; status: "active" | "underReview" } | null
+  anchor: { expectedLevel: number; status: "active" | "underReview" } | null
 }
 
-export interface BandRange {
-  band: number
+export interface LevelRange {
+  level: number
   min: number
   max: number
 }
 
-// The closed [min,max] weighting range each band covers, derived from the
-// model's band thresholds (minScore is the inclusive lower bound). Band 1 is
-// the highest band and tops out at 100; every other band's max is one below
-// the next-higher band's minScore. Pure so it stays unit-testable.
-export function bandRanges(
-  bands: { band: number; minScore: number }[]
-): BandRange[] {
-  const sorted = [...bands].sort((a, b) => a.band - b.band)
+// The closed [min,max] weighting range each level covers, derived from the
+// model's level thresholds (minScore is the inclusive lower bound). Level 1 is
+// the highest level and tops out at 100; every other level's max is one below
+// the next-higher level's minScore. Pure so it stays unit-testable.
+export function levelRanges(
+  levels: { level: number; minScore: number }[]
+): LevelRange[] {
+  const sorted = [...levels].sort((a, b) => a.level - b.level)
   return sorted.map((threshold, index) => {
-    const prevBand = sorted[index - 1]
+    const prevLevel = sorted[index - 1]
     return {
-      band: threshold.band,
+      level: threshold.level,
       min: threshold.minScore,
-      max: prevBand ? prevBand.minScore - 1 : 100,
+      max: prevLevel ? prevLevel.minScore - 1 : 100,
     }
   })
 }

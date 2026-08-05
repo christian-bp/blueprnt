@@ -13,7 +13,7 @@ En användares medlemskap i en organisation, som bär användarens roll där.
 _Undvik_: Användare (en användare är den globala identiteten; en medlem är identiteten *inom* en organisation)
 
 **Admin**:
-En medlem som kan konfigurera värderingsmodeller, vikter och bandtrösklar samt hantera medlemmar.
+En medlem som kan konfigurera värderingsmodeller, vikter och nivåtrösklar samt hantera medlemmar.
 _Undvik_: Ägare, Chef
 
 **Editor**:

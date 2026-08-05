@@ -9,7 +9,7 @@ import { useClassificationSummary } from "@/hooks/use-classification-summary"
 
 // Sub-pages of the People section, shown as header tabs (mirrors ModelTabs).
 // People is the /people index (the directory, including person detail pages);
-// Classify is the nested route where HR maps titles to roles and levels. The
+// Classify is the nested route where HR maps titles to roles and seniorities. The
 // Classify tab carries a count badge with the people still waiting for a
 // confirmed classification. The underline uses a layoutId distinct from the
 // other sections' so they never cross-animate. The header only mounts this

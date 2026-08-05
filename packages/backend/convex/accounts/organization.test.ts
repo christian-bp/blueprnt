@@ -225,7 +225,7 @@ describe("organization settings", () => {
       const modelId = await ctx.db.insert("models", {
         orgId,
         name: "Standard",
-        bandThresholds: [],
+        levelThresholds: [],
       })
       for (let index = 0; index < 5; index++) {
         await ctx.db.insert("criteria", {
@@ -270,7 +270,7 @@ describe("organization settings", () => {
       const modelId = await ctx.db.insert("models", {
         orgId,
         name: "Scratch",
-        bandThresholds: [],
+        levelThresholds: [],
       })
       for (let index = 0; index < 3; index++) {
         await ctx.db.insert("criteria", {
@@ -333,7 +333,7 @@ describe("organization settings", () => {
       const modelId = await ctx.db.insert("models", {
         orgId,
         name: "Standard",
-        bandThresholds: [],
+        levelThresholds: [],
       })
       for (let index = 0; index < 5; index++) {
         await ctx.db.insert("criteria", {

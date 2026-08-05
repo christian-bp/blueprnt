@@ -19,7 +19,7 @@ describe("payMapping schema + slug", () => {
         womenCount: 0,
         menCount: 0,
         withPayCount: 0,
-        frozenModel: { criteria: [], bandThresholds: [] },
+        frozenModel: { criteria: [], levelThresholds: [] },
       })
     )
     const row = await t.run(async (ctx) => ctx.db.get(runId))
@@ -42,7 +42,7 @@ describe("payMapping schema + slug", () => {
         womenCount: 0,
         menCount: 0,
         withPayCount: 0,
-        frozenModel: { criteria: [], bandThresholds: [] },
+        frozenModel: { criteria: [], levelThresholds: [] },
       })
       const slug = await uniqueSlug(
         ctx,

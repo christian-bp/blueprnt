@@ -32,8 +32,8 @@ function renderUnderlag(props: Parameters<typeof PayMappingGroupUnderlag>[0]) {
 const EQUAL_WORK_GROUP: GapGroup = {
   key: "swe|senior",
   roleTitle: "SWE",
-  level: "Senior",
-  band: 3,
+  seniority: "Senior",
+  level: 3,
   womenCount: 1,
   menCount: 1,
   womenMeanComp: 90000,
@@ -49,8 +49,8 @@ const EQUAL_WORK_ROWS: PayMappingSnapshotRow[] = [
     gender: "Kvinna",
     roleTitle: "SWE",
     trackKey: "IC",
-    level: "Senior",
-    band: 3,
+    seniority: "Senior",
+    level: 3,
     basicMonthly: 90000,
     components: [],
     currency: "SEK",
@@ -62,8 +62,8 @@ const EQUAL_WORK_ROWS: PayMappingSnapshotRow[] = [
     gender: "Man",
     roleTitle: "SWE",
     trackKey: "IC",
-    level: "Senior",
-    band: 3,
+    seniority: "Senior",
+    level: 3,
     basicMonthly: 100000,
     components: [],
     currency: "SEK",
@@ -75,8 +75,8 @@ const EQUAL_WORK_ROWS: PayMappingSnapshotRow[] = [
     gender: "Man",
     roleTitle: "Other",
     trackKey: "IC",
-    level: "Junior",
-    band: 1,
+    seniority: "Junior",
+    level: 1,
     basicMonthly: 50000,
     components: [],
     currency: "SEK",
@@ -106,7 +106,7 @@ describe("PayMappingGroupUnderlag - equalWork", () => {
   it("shows the Empty state with an icon instead of an empty table when the group has no priced members", async () => {
     renderUnderlag({
       scope: "equalWork",
-      group: { ...EQUAL_WORK_GROUP, roleTitle: "No Match", level: "None" },
+      group: { ...EQUAL_WORK_GROUP, roleTitle: "No Match", seniority: "None" },
       rows: EQUAL_WORK_ROWS,
       currency: "SEK",
       referenceDateMs: REFERENCE_DATE_MS,
@@ -136,7 +136,7 @@ describe("PayMappingGroupUnderlag - equalWork", () => {
       expect(screen.getByText("Anna Annan")).toBeDefined()
     })
     expect(screen.getByText("Bertil Berg")).toBeDefined()
-    // The row from a different roleTitle/level/band is excluded by
+    // The row from a different roleTitle/seniority/level is excluded by
     // groupMembers's scoping.
     expect(screen.queryByText("Not In Group")).toBeNull()
     // The scatter embed is scoped to the same member set. Its title
@@ -158,8 +158,8 @@ const COMPARATOR_ROW_A: PayMappingSnapshotRow = {
   gender: "Man",
   roleTitle: "Technician",
   trackKey: "IC",
-  level: "Mid",
-  band: 3,
+  seniority: "Mid",
+  level: 3,
   basicMonthly: 44000,
   components: [],
   currency: "SEK",
@@ -172,8 +172,8 @@ const DOMINATED_ROW: PayMappingSnapshotRow = {
   gender: "Kvinna",
   roleTitle: "Nurse",
   trackKey: "IC",
-  level: "Senior",
-  band: 3,
+  seniority: "Senior",
+  level: 3,
   basicMonthly: 40000,
   components: [],
   currency: "SEK",
@@ -183,8 +183,8 @@ const DOMINATED_ROW: PayMappingSnapshotRow = {
 const WOMEN_DOMINATED_GROUP: WomenDominatedGroupWire = {
   key: "nurse|senior",
   roleTitle: "Nurse",
-  level: "Senior",
-  band: 3,
+  seniority: "Senior",
+  level: 3,
   headcount: 4,
   womenSharePct: 90,
   meanComp: 40000,
@@ -192,8 +192,8 @@ const WOMEN_DOMINATED_GROUP: WomenDominatedGroupWire = {
     {
       key: "technician|mid",
       roleTitle: "Technician",
-      level: "Mid",
-      band: 3,
+      seniority: "Mid",
+      level: 3,
       headcount: 3,
       womenSharePct: 25,
       meanComp: 44000,
@@ -203,12 +203,12 @@ const WOMEN_DOMINATED_GROUP: WomenDominatedGroupWire = {
   ],
 }
 
-const EQUIVALENT_WORK_BANDS: GapGroup[] = [
+const EQUIVALENT_WORK_LEVELS: GapGroup[] = [
   {
-    key: "band-3",
+    key: "level-3",
     roleTitle: null,
-    level: null,
-    band: 3,
+    seniority: null,
+    level: 3,
     womenCount: 4,
     menCount: 4,
     womenMeanComp: 90000,
@@ -227,7 +227,7 @@ describe("PayMappingGroupUnderlag - equivalentWork", () => {
     renderUnderlag({
       scope: "equivalentWork",
       group: WOMEN_DOMINATED_GROUP,
-      equivalentWork: EQUIVALENT_WORK_BANDS,
+      equivalentWork: EQUIVALENT_WORK_LEVELS,
       rows: [DOMINATED_ROW, COMPARATOR_ROW_A],
       currency: "SEK",
       referenceDateMs: REFERENCE_DATE_MS,
@@ -236,11 +236,11 @@ describe("PayMappingGroupUnderlag - equivalentWork", () => {
     expect(screen.queryByText("Technician · Mid")).toBeNull()
   })
 
-  it("expands to show the full comparison table, the band-context sentence with its help button, and the scoped scatter", async () => {
+  it("expands to show the full comparison table, the level-context sentence with its help button, and the scoped scatter", async () => {
     renderUnderlag({
       scope: "equivalentWork",
       group: WOMEN_DOMINATED_GROUP,
-      equivalentWork: EQUIVALENT_WORK_BANDS,
+      equivalentWork: EQUIVALENT_WORK_LEVELS,
       rows: [DOMINATED_ROW, COMPARATOR_ROW_A],
       currency: "SEK",
       referenceDateMs: REFERENCE_DATE_MS,
@@ -253,7 +253,7 @@ describe("PayMappingGroupUnderlag - equivalentWork", () => {
     expect(screen.getByText("Technician · Mid")).toBeDefined()
     expect(screen.getByText("10%")).toBeDefined() // the comparator's diff%
     expect(
-      screen.getByText("Within band 3, women earn 10% less than men.")
+      screen.getByText("Within level 3, women earn 10% less than men.")
     ).toBeDefined()
     expect(
       screen.getByRole("button", { name: tHelp.payGapEquivalentWorkLabel })

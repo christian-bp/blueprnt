@@ -83,11 +83,11 @@ export type MethodAppendixLabels = {
   methodologyBody: string
   criteriaTitle: string
   rationaleTitle: string
-  bandsTitle: string
+  levelsTitle: string
   colCriterion: string
   colWeight: string
   colShare: string
-  colBand: string
+  colLevel: string
   colMinScore: string
   purpose: string
   whyRelevant: string
@@ -156,7 +156,7 @@ export function MethodAppendix({
             page={pageRefs?.methodology}
           />
           <TocRow label={labels.criteriaTitle} page={pageRefs?.criteria} />
-          <TocRow label={labels.bandsTitle} page={pageRefs?.bands} />
+          <TocRow label={labels.levelsTitle} page={pageRefs?.levels} />
           <TocRow label={labels.rationaleTitle} page={undefined} />
           {doc.criteria.map((c) => (
             <TocRow
@@ -201,18 +201,18 @@ export function MethodAppendix({
           ))}
         </Section>
         <Section
-          title={labels.bandsTitle}
+          title={labels.levelsTitle}
           onRenderPage={
-            onResolvePage ? (p) => onResolvePage("bands", p) : undefined
+            onResolvePage ? (p) => onResolvePage("levels", p) : undefined
           }
         >
           <View style={s.row}>
-            <Text style={[s.cellName, s.label]}>{labels.colBand}</Text>
+            <Text style={[s.cellName, s.label]}>{labels.colLevel}</Text>
             <Text style={[s.cellNum, s.label]}>{labels.colMinScore}</Text>
           </View>
-          {doc.bandThresholds.map((b) => (
-            <View key={b.band} style={s.row}>
-              <Text style={s.cellName}>{b.band}</Text>
+          {doc.levelThresholds.map((b) => (
+            <View key={b.level} style={s.row}>
+              <Text style={s.cellName}>{b.level}</Text>
               <Text style={s.cellNum}>{b.minScore}</Text>
             </View>
           ))}

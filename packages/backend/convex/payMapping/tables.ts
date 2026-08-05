@@ -40,8 +40,8 @@ export const payMappingRuns = defineTable({
         anchorCount: v.number(),
       })
     ),
-    bandThresholds: v.array(
-      v.object({ band: v.number(), minScore: v.number() })
+    levelThresholds: v.array(
+      v.object({ level: v.number(), minScore: v.number() })
     ),
   }),
   // The samverkansredogörelse (DL 3 kap. 11-14 §§): who the employer
@@ -59,7 +59,7 @@ export const payMappingRuns = defineTable({
 
 // One immutable frozen row per person in a run's population. Holds a
 // pseudonymizable identity (NOT a live FK): erasure keys on personPublicId,
-// tombstones displayName, clears birthDate, keeps the gender/band/pay aggregate.
+// tombstones displayName, clears birthDate, keeps the gender/level/pay aggregate.
 export const payMappingSnapshotRows = defineTable({
   orgId: v.string(),
   runId: v.id("payMappingRuns"),
@@ -74,8 +74,8 @@ export const payMappingSnapshotRows = defineTable({
   employmentStartDate: v.optional(v.string()),
   roleTitle: v.string(),
   trackKey: v.string(),
-  level: v.string(),
-  band: v.union(v.number(), v.null()),
+  seniority: v.string(),
+  level: v.union(v.number(), v.null()),
   score: v.union(v.number(), v.null()),
   basicMonthly: v.union(v.number(), v.null()),
   components: v.array(
@@ -127,9 +127,9 @@ export const payMappingFindingValidator = v.union(
 // p1 for praxis): the reasons cited plus a free-text note, a done flag, and
 // (praxis only) a finding verdict. groupKey is the same key format the gap
 // query already produces for equalWork/equivalentWork (equalWork:
-// `${roleTitle}|${band}|${level}`; women-dominated: the same equalWork key);
+// `${roleTitle}|${level}|${seniority}`; women-dominated: the same equalWork key);
 // for praxis it is instead one of the constant PRAXIS_AREA_KEYS slugs, never
-// the "roleTitle|band|level" format. Group-level only, never person PII.
+// the "roleTitle|level|seniority" format. Group-level only, never person PII.
 export const payMappingGroupAnalyses = defineTable({
   orgId: v.string(),
   runId: v.id("payMappingRuns"),

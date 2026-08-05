@@ -42,8 +42,8 @@ export const roles = defineTable({
   // so the calibration history stays auditable.
   anchorRole: v.optional(
     v.object({
-      // The agreed band for the reference role (1 = highest).
-      expectedBand: v.number(),
+      // The agreed level for the reference role (1 = highest).
+      expectedLevel: v.number(),
       // Why this role was chosen as an anchor (designation rationale).
       motivation: v.string(),
       status: v.union(
@@ -59,7 +59,7 @@ export const roles = defineTable({
   .index("by_org", ["orgId"])
   .index("by_org_slug", ["orgId", "slug"])
 
-// The stored truth (ADR-0002): ratings persist, score/band derive.
+// The stored truth (ADR-0002): ratings persist, score/level derive.
 export const ratings = defineTable({
   orgId: v.string(),
   roleId: v.id("roles"),

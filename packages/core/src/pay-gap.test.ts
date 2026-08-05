@@ -181,8 +181,8 @@ function comparable(overrides: Partial<ComparableGroup>): ComparableGroup {
   return {
     key: "k",
     roleTitle: "SWE",
-    level: "Mid",
-    band: 3,
+    seniority: "Mid",
+    level: 3,
     womenCount: 1,
     menCount: 3,
     meanComp: 40000,
@@ -194,42 +194,46 @@ describe("womenDominatedComparisons", () => {
   const womenDominated = comparable({
     key: "wd",
     roleTitle: "Marketing",
-    level: "Mid",
-    band: 3,
+    seniority: "Mid",
+    level: 3,
     womenCount: 3,
     menCount: 1,
     meanComp: 38000,
   })
 
-  it("compares against non-dominated groups in the same or lower-valued band that earn more", () => {
-    const sameBandHigher = comparable({ key: "a", band: 3, meanComp: 42000 })
-    const lowerValueHigher = comparable({ key: "b", band: 5, meanComp: 45000 }) // band 5 < band 3 in value
-    const higherValueBand = comparable({ key: "c", band: 1, meanComp: 60000 }) // band 1 is HIGHER value: excluded
-    const sameBandLowerPaid = comparable({ key: "d", band: 3, meanComp: 30000 }) // earns less: excluded
+  it("compares against non-dominated groups in the same or lower-valued level that earn more", () => {
+    const sameLevelHigher = comparable({ key: "a", level: 3, meanComp: 42000 })
+    const lowerValueHigher = comparable({ key: "b", level: 5, meanComp: 45000 }) // level 5 < level 3 in value
+    const higherValueLevel = comparable({ key: "c", level: 1, meanComp: 60000 }) // level 1 is HIGHER value: excluded
+    const sameLevelLowerPaid = comparable({
+      key: "d",
+      level: 3,
+      meanComp: 30000,
+    }) // earns less: excluded
     // Also women-dominated, so it is excluded as a comparator for "wd" even
-    // though its band and pay would otherwise qualify it; it still surfaces
-    // as its own entry (banded + dominated), same as the solitary-group and
+    // though its level and pay would otherwise qualify it; it still surfaces
+    // as its own entry (has a level + dominated), same as the solitary-group and
     // ordering tests below, with zero comparisons of its own.
     const alsoDominated = comparable({
       key: "e",
-      band: 3,
+      level: 3,
       womenCount: 4,
       menCount: 0,
       meanComp: 50000,
     })
     const result = womenDominatedComparisons([
       womenDominated,
-      sameBandHigher,
+      sameLevelHigher,
       lowerValueHigher,
-      higherValueBand,
-      sameBandLowerPaid,
+      higherValueLevel,
+      sameLevelLowerPaid,
       alsoDominated,
     ])
     expect(result).toHaveLength(2)
     const group = result[0]
     expect(group?.key).toBe("wd")
     expect(group?.womenSharePct).toBeCloseTo(75, 5)
-    expect(group?.comparisons.map((c) => c.key)).toEqual(["a", "b"]) // band asc (higher value first)
+    expect(group?.comparisons.map((c) => c.key)).toEqual(["a", "b"]) // level asc (higher value first)
     expect(group?.comparisons[0]?.diffSek).toBe(4000)
     expect(group?.comparisons[0]?.diffPct).toBeCloseTo((4000 / 38000) * 100, 5)
     expect(result[1]?.key).toBe("e") // fewer comparisons (0) sorts after "wd"
@@ -242,17 +246,17 @@ describe("womenDominatedComparisons", () => {
     expect(result[0]?.comparisons).toEqual([])
   })
 
-  it("skips unbanded groups entirely and orders output by comparison count desc, then band", () => {
-    const unbanded = comparable({
+  it("skips groups without a level entirely and orders output by comparison count desc, then level", () => {
+    const withoutLevel = comparable({
       key: "u",
-      band: null,
+      level: null,
       womenCount: 5,
       menCount: 0,
     })
-    const rival = comparable({ key: "r", band: 3, meanComp: 50000 })
+    const rival = comparable({ key: "r", level: 3, meanComp: 50000 })
     const second = comparable({
       key: "wd2",
-      band: 4,
+      level: 4,
       womenCount: 4,
       menCount: 1,
       meanComp: 39000,
@@ -260,10 +264,10 @@ describe("womenDominatedComparisons", () => {
     const result = womenDominatedComparisons([
       womenDominated,
       second,
-      unbanded,
+      withoutLevel,
       rival,
     ])
-    // wd (band 3) compares to r; wd2 (band 4) compares to nothing in a same-or-lower band that earns more... r is band 3 = HIGHER value than band 4, so excluded for wd2.
+    // wd (level 3) compares to r; wd2 (level 4) compares to nothing in a same-or-lower level that earns more... r is level 3 = HIGHER value than level 4, so excluded for wd2.
     expect(result.map((g) => g.key)).toEqual(["wd", "wd2"])
     expect(result[1]?.comparisons).toEqual([])
   })
@@ -271,12 +275,12 @@ describe("womenDominatedComparisons", () => {
   it("null-guards diffPct when the dominated mean is 0", () => {
     const zero = comparable({
       key: "z",
-      band: 3,
+      level: 3,
       womenCount: 2,
       menCount: 0,
       meanComp: 0,
     })
-    const rival = comparable({ key: "r", band: 3, meanComp: 1000 })
+    const rival = comparable({ key: "r", level: 3, meanComp: 1000 })
     const result = womenDominatedComparisons([zero, rival])
     expect(result[0]?.comparisons[0]?.diffPct).toBeNull()
     expect(result[0]?.comparisons[0]?.diffSek).toBe(1000)

@@ -13,8 +13,8 @@ export type { GenderTally } from "@workspace/core"
 export interface GapGroup {
   key: string
   roleTitle: string | null
-  level: string | null
-  band: number | null
+  seniority: string | null
+  level: number | null
   womenCount: number
   menCount: number
   womenMeanComp: number | null
@@ -35,13 +35,13 @@ export interface OrgAggregate {
 }
 
 // One comparator in a women-dominated group's cross-level comparison
-// (Diskrimineringslagen's third comparison): a non-dominated, equal-or-lower
-// valued banded group whose whole-group mean out-earns the dominated group.
+// (Diskrimineringslagen's third comparison): a non-dominated group at an
+// equal-or-lower level whose whole-group mean out-earns the dominated group.
 export interface WomenDominatedComparisonWire {
   key: string
   roleTitle: string | null
-  level: string | null
-  band: number
+  seniority: string | null
+  level: number
   headcount: number
   womenSharePct: number
   meanComp: number
@@ -103,8 +103,8 @@ export interface PayMappingSnapshotRow {
   gender: "Man" | "Kvinna"
   roleTitle: string
   trackKey: string
-  level: string
-  band: number | null
+  seniority: string
+  level: number | null
   basicMonthly: number | null
   components: { kind: string; monthlyAmount: number }[]
   birthDate?: string

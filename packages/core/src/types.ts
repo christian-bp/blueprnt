@@ -3,8 +3,8 @@ import type { WeightPoints } from "./weighting"
 // A rating is the raw 0-5 an assessor gives a role on a criterion.
 export type RatingValue = 0 | 1 | 2 | 3 | 4 | 5
 
-// Band 1 is the HIGHEST band. Higher band number = lower weight.
-export type Band = number
+// Level 1 is the HIGHEST level. Higher level number = lower weight.
+export type Level = number
 
 export interface CriterionWeight {
   criterionId: string
@@ -27,10 +27,10 @@ export interface RatingInput {
   value: RatingValue
 }
 
-// Inclusive lower bound of a band on the normalized 0-100 score scale, as an
-// integer (ADR-0004). Band 1 is highest.
-export interface BandThreshold {
-  band: number
+// Inclusive lower bound of a level on the normalized 0-100 score scale, as an
+// integer (ADR-0004). Level 1 is highest.
+export interface LevelThreshold {
+  level: number
   minScore: number
 }
 
@@ -40,7 +40,7 @@ export interface RoleRatings {
   ratings: RatingInput[]
 }
 
-// Derived result for one role. score/band are non-null only when EVERY model
+// Derived result for one role. score/level are non-null only when EVERY model
 // criterion has a rating (complete). score is the normalized 0-100 integer.
 export interface RoleResult {
   roleId: string
@@ -48,11 +48,11 @@ export interface RoleResult {
   totalCriteria: number
   complete: boolean
   score: number | null
-  band: number | null
+  level: number | null
 }
 
 export interface ComputeInput {
   criteria: CriterionWeight[]
-  thresholds: BandThreshold[]
+  thresholds: LevelThreshold[]
   roles: RoleRatings[]
 }

@@ -36,7 +36,7 @@ done
 pandoc "$tmp" -f gfm+raw_attribute -o docs/blueprnt-planeringsunderlag.pdf \
   --toc --toc-depth=2 \
   --metadata title="blueprnt" \
-  --metadata subtitle="Komplett planeringsunderlag — rollvärdering, banding & EU-lönetransparens" \
+  --metadata subtitle="Komplett planeringsunderlag — rollvärdering, nivåsättning & EU-lönetransparens" \
   --metadata date="$PDF_DATE" \
   "${COMMON_ARGS[@]}"
 rm -f "$tmp"

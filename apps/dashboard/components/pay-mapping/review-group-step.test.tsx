@@ -60,8 +60,8 @@ function sek(value: number) {
 const GROUP_LESS: GapGroup = {
   key: "swe|3|senior",
   roleTitle: "SWE",
-  level: "Senior",
-  band: 3,
+  seniority: "Senior",
+  level: 3,
   womenCount: 2,
   menCount: 3,
   womenMeanComp: 90_000,
@@ -73,7 +73,7 @@ const GROUP_LESS: GapGroup = {
 const GROUP_MORE: GapGroup = {
   ...GROUP_LESS,
   key: "swe|2|mid",
-  band: 2,
+  level: 2,
   womenCount: 1,
   menCount: 4,
   gapPct: -8,
@@ -83,7 +83,7 @@ const GROUP_MORE: GapGroup = {
 const GROUP_NONE: GapGroup = {
   ...GROUP_LESS,
   key: "swe|1|junior",
-  band: 1,
+  level: 1,
   womenCount: 3,
   menCount: 3,
   womenMeanComp: 100_000,
@@ -95,8 +95,8 @@ const GROUP_NONE: GapGroup = {
 const GROUP_ONLY_WOMEN: GapGroup = {
   key: "nurse|3|senior",
   roleTitle: "Nurse",
-  level: "Senior",
-  band: null,
+  seniority: "Senior",
+  level: null,
   womenCount: 4,
   menCount: 0,
   womenMeanComp: 80_000,
@@ -108,8 +108,8 @@ const GROUP_ONLY_WOMEN: GapGroup = {
 const GROUP_ONLY_MEN: GapGroup = {
   key: "welder|2|mid",
   roleTitle: "Welder",
-  level: "Mid",
-  band: 2,
+  seniority: "Mid",
+  level: 2,
   womenCount: 0,
   menCount: 5,
   womenMeanComp: null,
@@ -121,8 +121,8 @@ const GROUP_ONLY_MEN: GapGroup = {
 const WD_GROUP_ONE: WomenDominatedGroupWire = {
   key: "nurse|3|senior",
   roleTitle: "Nurse",
-  level: "Senior",
-  band: 3,
+  seniority: "Senior",
+  level: 3,
   headcount: 5,
   womenSharePct: 80,
   meanComp: 40_000,
@@ -130,8 +130,8 @@ const WD_GROUP_ONE: WomenDominatedGroupWire = {
     {
       key: "tech|2|mid",
       roleTitle: "Technician",
-      level: "Mid",
-      band: 2,
+      seniority: "Mid",
+      level: 2,
       headcount: 3,
       womenSharePct: 25,
       meanComp: 44_000,
@@ -148,8 +148,8 @@ const WD_GROUP_TWO: WomenDominatedGroupWire = {
     {
       key: "eng|2|junior",
       roleTitle: "Engineer",
-      level: "Junior",
-      band: 2,
+      seniority: "Junior",
+      level: 2,
       headcount: 2,
       womenSharePct: 30,
       meanComp: 46_000,
@@ -234,19 +234,19 @@ describe("ReviewGroupStep", () => {
   })
 
   describe("equal-work heading", () => {
-    it("renders the title heading with the flag, level, and band badges beside it", () => {
+    it("renders the title heading with the flag, seniority, and level badges beside it", () => {
       renderEqualWorkStep(GROUP_LESS)
       expect(screen.getByRole("heading", { name: "SWE" })).toBeDefined()
       expect(screen.getByText("Senior")).toBeDefined()
       expect(screen.getByText(tGap.flag.critical)).toBeDefined()
       expect(
-        screen.getByText(tGap.bandLabel.replace("{band}", "3"))
+        screen.getByText(tGap.levelLabel.replace("{level}", "3"))
       ).toBeDefined()
     })
 
-    it("omits the band badge when the group has no band", () => {
+    it("omits the level badge when the group has no level", () => {
       renderEqualWorkStep(GROUP_ONLY_WOMEN)
-      expect(screen.queryByText(/^Band /)).toBeNull()
+      expect(screen.queryByText(/^Level /)).toBeNull()
     })
   })
 
@@ -328,10 +328,10 @@ describe("ReviewGroupStep", () => {
       ).toBeDefined()
     })
 
-    it("renders the band badge (always present) but no flag badge", () => {
+    it("renders the level badge (always present) but no flag badge", () => {
       renderWdStep(WD_GROUP_ONE)
       expect(
-        screen.getByText(tGap.bandLabel.replace("{band}", "3"))
+        screen.getByText(tGap.levelLabel.replace("{level}", "3"))
       ).toBeDefined()
       for (const flag of [
         "critical",
@@ -352,7 +352,7 @@ describe("ReviewGroupStep", () => {
       ).toBeDefined()
       expect(
         screen.getByText(
-          `Technician · Mid (band 2) earns ${sek(4_000)} more per month on average.`
+          `Technician · Mid (level 2) earns ${sek(4_000)} more per month on average.`
         )
       ).toBeDefined()
     })
@@ -364,12 +364,12 @@ describe("ReviewGroupStep", () => {
       ).toBeDefined()
       expect(
         screen.getByText(
-          `Technician · Mid (band 2) earns ${sek(4_000)} more per month on average.`
+          `Technician · Mid (level 2) earns ${sek(4_000)} more per month on average.`
         )
       ).toBeDefined()
       expect(
         screen.getByText(
-          `Engineer · Junior (band 2) earns ${sek(6_000)} more per month on average.`
+          `Engineer · Junior (level 2) earns ${sek(6_000)} more per month on average.`
         )
       ).toBeDefined()
     })

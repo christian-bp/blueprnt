@@ -4,8 +4,8 @@ import { afterEach, describe, expect, it } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
 import { OverviewWidgets } from "@/components/overview/overview-widgets"
 import type { PayMappingHeadline } from "@/hooks/use-pay-mapping-headline"
-import type { BandOverview } from "@/lib/band-overview"
 import type { HeadcountPoint } from "@/lib/headcount-trend"
+import type { LevelOverview } from "@/lib/level-overview"
 import type { OverviewStats } from "@/lib/todo"
 
 const t = messages.dashboard.overview.widgets
@@ -27,13 +27,14 @@ const ALL_DONE: OverviewStats = {
 function renderWidgets(
   options: {
     stats?: OverviewStats | undefined
-    bandOverview?: BandOverview | undefined | null
+    levelOverview?: LevelOverview | undefined | null
     payMappingHeadline?: PayMappingHeadline | undefined | null
     headcountTrend?: HeadcountPoint[] | undefined | null
   } = {}
 ) {
   const stats = "stats" in options ? options.stats : ALL_DONE
-  const bandOverview = "bandOverview" in options ? options.bandOverview : null
+  const levelOverview =
+    "levelOverview" in options ? options.levelOverview : null
   const payMappingHeadline =
     "payMappingHeadline" in options ? options.payMappingHeadline : null
   const headcountTrend =
@@ -42,7 +43,7 @@ function renderWidgets(
     <NextIntlClientProvider locale="en" messages={messages}>
       <OverviewWidgets
         stats={stats}
-        bandOverview={bandOverview}
+        levelOverview={levelOverview}
         payMappingHeadline={payMappingHeadline}
         headcountTrend={headcountTrend}
       />
@@ -56,7 +57,7 @@ describe("OverviewWidgets", () => {
   it("renders exactly three cards", () => {
     renderWidgets()
     expect(screen.getByText(t.workforce.label)).toBeDefined()
-    expect(screen.getByText(t.bands.label)).toBeDefined()
+    expect(screen.getByText(t.levels.label)).toBeDefined()
     expect(screen.getByText(t.gap.label)).toBeDefined()
   })
 
@@ -153,33 +154,33 @@ describe("OverviewWidgets", () => {
     expect(workforceCard?.querySelector('[data-slot="chart"]')).toBeNull()
   })
 
-  it("shows the band card's role/band headline, its bars, and a link to /work", () => {
-    const bandOverview: BandOverview = {
+  it("shows the level card's role/level headline, its bars, and a link to /work", () => {
+    const levelOverview: LevelOverview = {
       totalRoles: 4,
-      bandCount: 2,
-      bandCounts: [
-        { band: 1, count: 1 },
-        { band: 2, count: 3 },
-        { band: 3, count: 0 },
+      levelCount: 2,
+      levelCounts: [
+        { level: 1, count: 1 },
+        { level: 2, count: 3 },
+        { level: 3, count: 0 },
       ],
     }
-    renderWidgets({ bandOverview })
-    expect(screen.getByText("4 roles across 2 bands")).toBeDefined()
-    const bandCard = screen
-      .getByText(t.bands.label)
+    renderWidgets({ levelOverview })
+    expect(screen.getByText("4 roles across 2 levels")).toBeDefined()
+    const levelCard = screen
+      .getByText(t.levels.label)
       .closest('[data-slot="card"]')
-    expect(bandCard?.querySelector('[data-slot="chart"]')).not.toBeNull()
-    const action = screen.getByRole("link", { name: t.bands.view })
+    expect(levelCard?.querySelector('[data-slot="chart"]')).not.toBeNull()
+    const action = screen.getByRole("link", { name: t.levels.view })
     expect(action.getAttribute("href")).toBe("/work")
   })
 
-  it("shows the band card's empty line, with the chart still at its usual height, when there is no band overview", () => {
-    renderWidgets({ bandOverview: null })
-    expect(screen.getByText(t.bands.empty)).toBeDefined()
-    const bandCard = screen
-      .getByText(t.bands.label)
+  it("shows the level card's empty line, with the chart still at its usual height, when there is no level overview", () => {
+    renderWidgets({ levelOverview: null })
+    expect(screen.getByText(t.levels.empty)).toBeDefined()
+    const levelCard = screen
+      .getByText(t.levels.label)
       .closest('[data-slot="card"]')
-    expect(bandCard?.querySelector('[data-slot="chart"]')).not.toBeNull()
+    expect(levelCard?.querySelector('[data-slot="chart"]')).not.toBeNull()
   })
 
   it("upgrades the pay-gap card to the percent and quartile bars once a run's gap is measurable", () => {
@@ -247,18 +248,20 @@ describe("OverviewWidgets", () => {
     expect(action.getAttribute("href")).toBe("/pay-mappings/pay-2026")
   })
 
-  it("shows a skeleton headline, an empty viz (no chart, no viz skeleton), and not the empty state, while bandOverview is still loading", () => {
-    renderWidgets({ bandOverview: undefined })
-    const bandCard = screen
-      .getByText(t.bands.label)
+  it("shows a skeleton headline, an empty viz (no chart, no viz skeleton), and not the empty state, while levelOverview is still loading", () => {
+    renderWidgets({ levelOverview: undefined })
+    const levelCard = screen
+      .getByText(t.levels.label)
       .closest('[data-slot="card"]')
-    expect(bandCard).not.toBeNull()
+    expect(levelCard).not.toBeNull()
     // Only the headline skeleton remains; the chart area itself is empty
     // (no shimmer, no chart) until its own data resolves.
-    expect(bandCard?.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(1)
-    expect(bandCard?.querySelector('[data-slot="chart"]')).toBeNull()
-    expect(screen.queryByText(t.bands.empty)).toBeNull()
-    const action = screen.getByRole("link", { name: t.bands.view })
+    expect(levelCard?.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(
+      1
+    )
+    expect(levelCard?.querySelector('[data-slot="chart"]')).toBeNull()
+    expect(screen.queryByText(t.levels.empty)).toBeNull()
+    const action = screen.getByRole("link", { name: t.levels.view })
     expect(action.getAttribute("href")).toBe("/work")
   })
 
@@ -284,7 +287,7 @@ describe("OverviewWidgets", () => {
     // No chart mounts anywhere yet: every viz area is a plain empty div.
     expect(container.querySelectorAll('[data-slot="chart"]')).toHaveLength(0)
     expect(screen.getByText(t.workforce.label)).toBeDefined()
-    expect(screen.getByText(t.bands.label)).toBeDefined()
+    expect(screen.getByText(t.levels.label)).toBeDefined()
     expect(screen.getByText(t.gap.label)).toBeDefined()
     expect(screen.queryByText("10 people today")).toBeNull()
     expect(screen.queryByText("4.2%")).toBeNull()

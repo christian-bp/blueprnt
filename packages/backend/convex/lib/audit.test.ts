@@ -178,9 +178,9 @@ describe("buildDeleteChanges", () => {
 
 describe("anchorDiff", () => {
   const anchors = (texts: string[]) =>
-    texts.map((text, level) => ({ level, text }))
+    texts.map((text, step) => ({ step, text }))
 
-  it("returns {} when every level-ordered anchor text is identical", () => {
+  it("returns {} when every step-ordered anchor text is identical", () => {
     const before = anchors(["a", "b", "c"])
     const after = anchors(["a", "b", "c"])
     expect(anchorDiff(before, after)).toEqual({})
@@ -202,14 +202,14 @@ describe("anchorDiff", () => {
     })
   })
 
-  it("flags a level reorder as differing", () => {
+  it("flags a step reorder as differing", () => {
     const before = [
-      { level: 0, text: "a" },
-      { level: 1, text: "b" },
+      { step: 0, text: "a" },
+      { step: 1, text: "b" },
     ]
     const after = [
-      { level: 1, text: "a" },
-      { level: 0, text: "b" },
+      { step: 1, text: "a" },
+      { step: 0, text: "b" },
     ]
     expect(anchorDiff(before, after)).toEqual({
       anchors: { from: before, to: after },
@@ -228,7 +228,7 @@ describe("criterionCreateItem", () => {
       helpText: "help",
       weightPoints: 3,
       isCustom: false,
-      anchors: [{ level: 0, text: "low" }],
+      anchors: [{ step: 0, text: "low" }],
     })
     expect(item.criterionId).toBe("crit-1")
     expect(item.label).toBe("Scope")
@@ -247,7 +247,7 @@ describe("criterionCreateItem", () => {
     }
     expect(item.changes.name?.to).toBe("Scope")
     expect(item.changes.templateKey?.to).toBe("scope")
-    expect(item.changes.anchors?.to).toEqual([{ level: 0, text: "low" }])
+    expect(item.changes.anchors?.to).toEqual([{ step: 0, text: "low" }])
   })
 
   it("defaults optional fields and a missing templateKey to null", () => {
@@ -277,7 +277,7 @@ describe("criterionDeleteItem", () => {
       name: "Scope",
       description: "desc",
       helpText: "help",
-      anchors: [{ level: 0, text: "low" }],
+      anchors: [{ step: 0, text: "low" }],
       templateKey: "scope",
       weightPoints: 4,
       order: 1,
@@ -311,7 +311,7 @@ describe("categoryForEvent", () => {
     expect(categoryForEvent("role.updated")).toBe("role")
     expect(categoryForEvent("roleFamily.renamed")).toBe("role")
     expect(categoryForEvent("rating.change")).toBe("role")
-    expect(categoryForEvent("band.shift")).toBe("role")
+    expect(categoryForEvent("level.shift")).toBe("role")
     expect(categoryForEvent("anchorRole.designated")).toBe("role")
     expect(categoryForEvent("organization.settingsUpdated")).toBe(
       "organization"
@@ -413,14 +413,14 @@ const SUBJECT_FIXTURES: { [E in AuditEvent]: AuditPayloads[E] } = {
     created: true,
     changes: {},
   },
-  "band.shift": {
+  "level.shift": {
     roleId: "role-1",
     cause: { event: "rating.change", roleId: "role-1" },
     changes: {},
   },
   "anchorRole.designated": {
     roleId: "role-1",
-    computedBand: 2,
+    computedLevel: 2,
     changes: {},
   },
   "anchorRole.updated": { roleId: "role-1", changes: {} },
@@ -506,7 +506,7 @@ const EXPECTED_SUBJECTS: { [E in AuditEvent]: AuditSubject | undefined } = {
   "role.updated": { kind: "role", id: "role-1" },
   "role.archived": { kind: "role", id: "role-1" },
   "rating.change": { kind: "role", id: "role-1" },
-  "band.shift": { kind: "role", id: "role-1" },
+  "level.shift": { kind: "role", id: "role-1" },
   "anchorRole.designated": { kind: "role", id: "role-1" },
   "anchorRole.updated": { kind: "role", id: "role-1" },
   "roleFamily.created": undefined,
@@ -645,8 +645,8 @@ describe("buildSearchText", () => {
             label: "Scope",
             changes: {
               anchors: {
-                from: [{ level: 0, text: "low" }],
-                to: [{ level: 0, text: "high" }],
+                from: [{ step: 0, text: "low" }],
+                to: [{ step: 0, text: "high" }],
               },
             },
           },
@@ -658,7 +658,7 @@ describe("buildSearchText", () => {
         {
           label: "Scope",
           changes: {
-            anchors: { from: [{ level: 0, text: "low" }], to: null },
+            anchors: { from: [{ step: 0, text: "low" }], to: null },
           },
         },
       ],

@@ -58,8 +58,8 @@ describe("assignPersonToRole", () => {
         orgId,
         personId,
         roleId,
-        level: "IC3",
-        levelSource: "confirmed",
+        seniority: "IC3",
+        senioritySource: "confirmed",
       }
     )
 
@@ -69,8 +69,8 @@ describe("assignPersonToRole", () => {
       expect(row?.orgId).toBe(orgId)
       expect(row?.personId).toBe(personId)
       expect(row?.roleId).toBe(roleId)
-      expect(row?.level).toBe("IC3")
-      expect(row?.levelSource).toBe("confirmed")
+      expect(row?.seniority).toBe("IC3")
+      expect(row?.senioritySource).toBe("confirmed")
       expect(row?.effectiveAt).toBeTypeOf("number")
       expect(row?.endedAt).toBeUndefined()
 
@@ -99,8 +99,8 @@ describe("assignPersonToRole", () => {
         orgId,
         personId,
         roleId,
-        level: "IC1",
-        levelSource: "suggested",
+        seniority: "IC1",
+        senioritySource: "suggested",
         effectiveAt: ts,
       }
     )
@@ -111,24 +111,24 @@ describe("assignPersonToRole", () => {
     })
   })
 
-  it("rejects a level that does not belong to the role's track", async () => {
+  it("rejects a seniority that does not belong to the role's track", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
     const { personId, roleId } = await seedPersonAndRole(orgId, asAdmin)
 
-    // IC role, but M1 is a Manager-track level.
+    // IC role, but M1 is a Manager-track seniority.
     await expect(
       asAdmin.mutation(api.people.assignments.assignPersonToRole, {
         orgId,
         personId,
         roleId,
-        level: "M1",
-        levelSource: "confirmed",
+        seniority: "M1",
+        senioritySource: "confirmed",
       })
-    ).rejects.toThrow(/errors.invalidLevel/)
+    ).rejects.toThrow(/errors.invalidSeniority/)
   })
 
-  it("rejects an entirely unknown level string", async () => {
+  it("rejects an entirely unknown seniority string", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
     const { personId, roleId } = await seedPersonAndRole(orgId, asAdmin)
@@ -138,10 +138,10 @@ describe("assignPersonToRole", () => {
         orgId,
         personId,
         roleId,
-        level: "XYZ",
-        levelSource: "confirmed",
+        seniority: "XYZ",
+        senioritySource: "confirmed",
       })
-    ).rejects.toThrow(/errors.invalidLevel/)
+    ).rejects.toThrow(/errors.invalidSeniority/)
   })
 
   it("rejects a new assignment whose effectiveAt is <= the current open assignment's effectiveAt", async () => {
@@ -154,8 +154,8 @@ describe("assignPersonToRole", () => {
       orgId,
       personId,
       roleId,
-      level: "IC1",
-      levelSource: "confirmed",
+      seniority: "IC1",
+      senioritySource: "confirmed",
       effectiveAt: 100,
     })
 
@@ -167,8 +167,8 @@ describe("assignPersonToRole", () => {
         orgId,
         personId,
         roleId,
-        level: "IC2",
-        levelSource: "confirmed",
+        seniority: "IC2",
+        senioritySource: "confirmed",
         effectiveAt: 50,
       })
     ).rejects.toThrow(/errors.invalidEffectiveDate/)
@@ -179,8 +179,8 @@ describe("assignPersonToRole", () => {
         orgId,
         personId,
         roleId,
-        level: "IC2",
-        levelSource: "confirmed",
+        seniority: "IC2",
+        senioritySource: "confirmed",
         effectiveAt: 100,
       })
     ).rejects.toThrow(/errors.invalidEffectiveDate/)
@@ -200,8 +200,8 @@ describe("assignPersonToRole", () => {
         orgId,
         personId,
         roleId,
-        level: "IC1",
-        levelSource: "confirmed",
+        seniority: "IC1",
+        senioritySource: "confirmed",
         effectiveAt: ts1,
       }
     )
@@ -212,8 +212,8 @@ describe("assignPersonToRole", () => {
         orgId,
         personId,
         roleId,
-        level: "IC2",
-        levelSource: "confirmed",
+        seniority: "IC2",
+        senioritySource: "confirmed",
         effectiveAt: ts2,
       }
     )
@@ -223,7 +223,7 @@ describe("assignPersonToRole", () => {
       expect(firstRow?.endedAt).toBe(ts2)
 
       const secondRow = await ctx.db.get(second)
-      expect(secondRow?.level).toBe("IC2")
+      expect(secondRow?.seniority).toBe("IC2")
       expect(secondRow?.endedAt).toBeUndefined()
     })
   })
@@ -237,8 +237,8 @@ describe("assignPersonToRole", () => {
       orgId,
       personId,
       roleId,
-      level: "IC1",
-      levelSource: "suggested",
+      seniority: "IC1",
+      senioritySource: "suggested",
       effectiveAt: 1_700_000_000_000,
     })
 
@@ -247,8 +247,8 @@ describe("assignPersonToRole", () => {
       orgId,
       personId,
       roleId,
-      level: "IC3",
-      levelSource: "confirmed",
+      seniority: "IC3",
+      senioritySource: "confirmed",
       effectiveAt: 1_700_000_100_000,
     })
 
@@ -257,8 +257,8 @@ describe("assignPersonToRole", () => {
       { orgId, personId }
     )
     expect(current).not.toBeNull()
-    expect(current?.level).toBe("IC3")
-    expect(current?.levelSource).toBe("confirmed")
+    expect(current?.seniority).toBe("IC3")
+    expect(current?.senioritySource).toBe("confirmed")
     expect(current?.endedAt).toBeNull()
   })
 
@@ -271,8 +271,8 @@ describe("assignPersonToRole", () => {
       orgId,
       personId,
       roleId,
-      level: "IC1",
-      levelSource: "suggested",
+      seniority: "IC1",
+      senioritySource: "suggested",
       effectiveAt: 1_700_000_000_000,
     })
 
@@ -280,8 +280,8 @@ describe("assignPersonToRole", () => {
       orgId,
       personId,
       roleId,
-      level: "IC2",
-      levelSource: "confirmed",
+      seniority: "IC2",
+      senioritySource: "confirmed",
       effectiveAt: 1_700_000_100_000,
     })
 
@@ -291,9 +291,9 @@ describe("assignPersonToRole", () => {
     )
     expect(list).toHaveLength(2)
     // Most recent (IC2) first.
-    expect(list[0]?.level).toBe("IC2")
+    expect(list[0]?.seniority).toBe("IC2")
     expect(list[0]?.endedAt).toBeNull()
-    expect(list[1]?.level).toBe("IC1")
+    expect(list[1]?.seniority).toBe("IC1")
     expect(list[1]?.endedAt).toBeTypeOf("number")
   })
 
@@ -344,8 +344,8 @@ describe("cross-org isolation", () => {
         orgId: orgB,
         personId: personAId,
         roleId: roleBId,
-        level: "IC1",
-        levelSource: "confirmed",
+        seniority: "IC1",
+        senioritySource: "confirmed",
       })
     ).rejects.toThrow(/errors.notFound/)
   })
@@ -383,8 +383,8 @@ describe("cross-org isolation", () => {
         orgId: orgB,
         personId: personBId,
         roleId: roleAId,
-        level: "IC1",
-        levelSource: "confirmed",
+        seniority: "IC1",
+        senioritySource: "confirmed",
       })
     ).rejects.toThrow(/errors.notFound/)
   })
@@ -399,8 +399,8 @@ describe("cross-org isolation", () => {
       orgId: orgA,
       personId,
       roleId,
-      level: "IC2",
-      levelSource: "confirmed",
+      seniority: "IC2",
+      senioritySource: "confirmed",
     })
 
     // Org B queries for org A's person: should get null, not the assignment.
@@ -421,8 +421,8 @@ describe("cross-org isolation", () => {
       orgId: orgA,
       personId,
       roleId,
-      level: "IC1",
-      levelSource: "confirmed",
+      seniority: "IC1",
+      senioritySource: "confirmed",
     })
 
     const result = await asAdminB.query(
@@ -448,10 +448,10 @@ describe("assignPeopleToRole (bulk)", () => {
       {
         orgId,
         assignments: [
-          { personId, roleId, level: "IC2" },
-          { personId: secondPersonId, roleId, level: "IC1" },
+          { personId, roleId, seniority: "IC2" },
+          { personId: secondPersonId, roleId, seniority: "IC1" },
         ],
-        levelSource: "confirmed",
+        senioritySource: "confirmed",
       }
     )
     expect(ids).toHaveLength(2)
@@ -462,7 +462,7 @@ describe("assignPeopleToRole (bulk)", () => {
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .collect()
       expect(rows).toHaveLength(2)
-      expect(rows.every((r) => r.levelSource === "confirmed")).toBe(true)
+      expect(rows.every((r) => r.senioritySource === "confirmed")).toBe(true)
 
       const auditRows = await ctx.db
         .query("auditLog")
@@ -474,7 +474,7 @@ describe("assignPeopleToRole (bulk)", () => {
     })
   })
 
-  it("rejects the whole batch when one level is invalid for the role's track", async () => {
+  it("rejects the whole batch when one seniority is invalid for the role's track", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
     const { personId, roleId } = await seedPersonAndRole(orgId, asAdmin)
@@ -487,13 +487,13 @@ describe("assignPeopleToRole (bulk)", () => {
       asAdmin.mutation(api.people.assignments.assignPeopleToRole, {
         orgId,
         assignments: [
-          { personId, roleId, level: "IC2" },
-          // M1 is not a valid level on the IC track.
-          { personId: secondPersonId, roleId, level: "M1" },
+          { personId, roleId, seniority: "IC2" },
+          // M1 is not a valid seniority on the IC track.
+          { personId: secondPersonId, roleId, seniority: "M1" },
         ],
-        levelSource: "confirmed",
+        senioritySource: "confirmed",
       })
-    ).rejects.toThrow(/errors.invalidLevel/)
+    ).rejects.toThrow(/errors.invalidSeniority/)
 
     // All-or-nothing: the valid first assignment must not have persisted.
     await t.run(async (ctx) => {
@@ -516,13 +516,13 @@ describe("assignPeopleToRole batch bound", () => {
     // per-item work, so a batch this size never reaches the loop.
     const assignments = Array.from(
       { length: MAX_ASSIGNMENTS_PER_MUTATION + 1 },
-      () => ({ personId, roleId, level: "IC1" })
+      () => ({ personId, roleId, seniority: "IC1" })
     )
     await expect(
       asAdmin.mutation(api.people.assignments.assignPeopleToRole, {
         orgId,
         assignments,
-        levelSource: "confirmed",
+        senioritySource: "confirmed",
       })
     ).rejects.toThrow(/errors.invalidInput/)
   })
@@ -548,18 +548,18 @@ describe("assignPeopleToRole batch bound", () => {
     const assignments = personIds.map((personId) => ({
       personId,
       roleId,
-      level: "IC1",
+      seniority: "IC1",
     }))
     const ids = await asAdmin.mutation(
       api.people.assignments.assignPeopleToRole,
-      { orgId, assignments, levelSource: "confirmed" }
+      { orgId, assignments, senioritySource: "confirmed" }
     )
     expect(ids).toHaveLength(MAX_ASSIGNMENTS_PER_MUTATION)
   })
 })
 
 describe("listPeopleForRole", () => {
-  it("returns the role's current holders, name-ordered, with their level", async () => {
+  it("returns the role's current holders, name-ordered, with their seniority", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t, "hr-holders@acme.se")
     const { roleId } = await seedPersonAndRole(orgId, asAdmin)
@@ -589,15 +589,15 @@ describe("listPeopleForRole", () => {
       orgId,
       personId: bo,
       roleId,
-      level: "IC2",
-      levelSource: "suggested",
+      seniority: "IC2",
+      senioritySource: "suggested",
     })
     await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
       orgId,
       personId: anna,
       roleId,
-      level: "IC3",
-      levelSource: "confirmed",
+      seniority: "IC3",
+      senioritySource: "confirmed",
     })
 
     const rows = await asAdmin.query(api.people.assignments.listPeopleForRole, {
@@ -610,15 +610,18 @@ describe("listPeopleForRole", () => {
     ])
     expect(rows[0]).toMatchObject({
       personId: anna,
-      level: "IC3",
-      levelSource: "confirmed",
+      seniority: "IC3",
+      senioritySource: "confirmed",
       department: "Engineering",
       ftePercent: 100,
     })
     // The route handle travels with the row: the card links to the person
     // page by publicId, never by the internal id.
     expect(rows[0]?.publicId).toBeTypeOf("string")
-    expect(rows[1]).toMatchObject({ level: "IC2", levelSource: "suggested" })
+    expect(rows[1]).toMatchObject({
+      seniority: "IC2",
+      senioritySource: "suggested",
+    })
   })
 
   it("reports null for a person with no department or FTE on record", async () => {
@@ -629,8 +632,8 @@ describe("listPeopleForRole", () => {
       orgId,
       personId,
       roleId,
-      level: "IC1",
-      levelSource: "confirmed",
+      seniority: "IC1",
+      senioritySource: "confirmed",
     })
 
     const rows = await asAdmin.query(api.people.assignments.listPeopleForRole, {
@@ -665,15 +668,15 @@ describe("listPeopleForRole", () => {
       orgId,
       personId: mover,
       roleId,
-      level: "IC1",
-      levelSource: "confirmed",
+      seniority: "IC1",
+      senioritySource: "confirmed",
     })
     await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
       orgId,
       personId: leaver,
       roleId,
-      level: "IC1",
-      levelSource: "confirmed",
+      seniority: "IC1",
+      senioritySource: "confirmed",
     })
     // A later assignment closes the first one: the mover is a holder of the
     // new role only.
@@ -681,8 +684,8 @@ describe("listPeopleForRole", () => {
       orgId,
       personId: mover,
       roleId: otherRoleId,
-      level: "IC2",
-      levelSource: "confirmed",
+      seniority: "IC2",
+      senioritySource: "confirmed",
       effectiveAt: Date.now() + 1000,
     })
     await asAdmin.mutation(api.people.people.archivePerson, {
@@ -711,8 +714,8 @@ describe("listPeopleForRole", () => {
       orgId,
       personId,
       roleId,
-      level: "IC1",
-      levelSource: "confirmed",
+      seniority: "IC1",
+      senioritySource: "confirmed",
     })
 
     const other = await seedOrg(t, "hr-org-b@beta.se")
@@ -742,8 +745,8 @@ describe("listPeopleForRole ordering and history", () => {
         orgId,
         personId,
         roleId,
-        level: "IC1",
-        levelSource: "confirmed",
+        seniority: "IC1",
+        senioritySource: "confirmed",
       })
     }
 
@@ -761,26 +764,26 @@ describe("listPeopleForRole ordering and history", () => {
     expect(en.map((row) => row.displayName)).toEqual(["Åsa Ek", "Bo Nilsson"])
   })
 
-  it("lists a re-assigned person once, at their current level", async () => {
+  it("lists a re-assigned person once, at their current seniority", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t, "hr-relevel@acme.se")
     const { personId, roleId } = await seedPersonAndRole(orgId, asAdmin)
 
-    // A level change within the same role closes the first row and opens a
+    // A seniority change within the same role closes the first row and opens a
     // second one, so the role's history holds two rows for one holder.
     await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
       orgId,
       personId,
       roleId,
-      level: "IC2",
-      levelSource: "suggested",
+      seniority: "IC2",
+      senioritySource: "suggested",
     })
     await asAdmin.mutation(api.people.assignments.assignPersonToRole, {
       orgId,
       personId,
       roleId,
-      level: "IC3",
-      levelSource: "confirmed",
+      seniority: "IC3",
+      senioritySource: "confirmed",
       effectiveAt: Date.now() + 1000,
     })
 
@@ -789,6 +792,9 @@ describe("listPeopleForRole ordering and history", () => {
       roleId,
     })
     expect(rows).toHaveLength(1)
-    expect(rows[0]).toMatchObject({ level: "IC3", levelSource: "confirmed" })
+    expect(rows[0]).toMatchObject({
+      seniority: "IC3",
+      senioritySource: "confirmed",
+    })
   })
 })

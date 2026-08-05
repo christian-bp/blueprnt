@@ -22,7 +22,7 @@ import {
   PAY_GAP_REASONS,
   PRAXIS_AREA_KEYS,
   SUGGESTION_KINDS,
-  TRACK_LEVELS,
+  TRACK_SENIORITIES,
 } from "@workspace/constants"
 import en from "@workspace/i18n/messages/en.json"
 import { routing } from "@workspace/i18n/routing"
@@ -38,13 +38,13 @@ import {
   FINDING_VALUE_KEYS,
   GENDER_VALUE_KEYS,
   INDUSTRY_VALUE_KEYS,
-  LEVEL_SOURCE_VALUE_KEYS,
   MEMBER_ROLE_VALUE_KEYS,
   PAY_GAP_REASON_VALUE_KEYS,
   PLATFORM_AUDIT_FILTER_CATEGORIES,
   PRAXIS_AREA_VALUE_KEYS,
   SALARY_SOURCE_VALUE_KEYS,
   SCOPE_VALUE_KEYS,
+  SENIORITY_SOURCE_VALUE_KEYS,
   STATUS_VALUE_KEYS,
   TRACK_VALUE_KEYS,
 } from "./audit-constants"
@@ -132,9 +132,9 @@ describe("audit log category filters", () => {
 // its label fails this test instead of shipping a raw key.
 //
 // The rest are fields not covered by an imported constant: the compliance /
-// band-shift / rating diff fields, and the flat-stats event fields
+// level-shift / rating diff fields, and the flat-stats event fields
 // (people.imported, classification.suggested, platform.*). Kept in sync by hand
-// with the writers (evaluationModel/method.ts, engine band.shift, ratings, and
+// with the writers (evaluationModel/method.ts, engine level.shift, ratings, and
 // the flat-stats event payloads in auditPayloads.ts).
 const OTHER_AUDIT_FIELDS = [
   // criterion.complianceUpdated (COMPLIANCE_AUDIT_FIELDS in method.ts)
@@ -143,8 +143,8 @@ const OTHER_AUDIT_FIELDS = [
   "biasRisk",
   "biasComment",
   "biasAction",
-  // band.shift diffs (assessment/compute.ts FIELDS) + rating.change
-  "band",
+  // level.shift diffs (assessment/compute.ts FIELDS) + rating.change
+  "level",
   "score",
   "complete",
   "ratedCount",
@@ -235,11 +235,11 @@ describe("audit log field labels", () => {
 const PAY_MAPPING_SCOPES = ["equalWork", "equivalentWork", "praxis"] as const
 const PAY_MAPPING_FINDINGS = ["none", "found"] as const
 // The non-pay-mapping coded domains, mirrored from their backend validators
-// by the same hand-synced convention: assignment levelSource
+// by the same hand-synced convention: assignment senioritySource
 // (people/tables.ts), org member roles (lib/functions.ts scopes), the shared
 // `status` union (Better Auth invitations + suggestions + anchor
 // designations), salary source (people/pay.ts), and the fixed V1 tracks.
-const LEVEL_SOURCES = ["suggested", "confirmed"] as const
+const SENIORITY_SOURCES = ["suggested", "confirmed"] as const
 const MEMBER_ROLES = ["admin", "editor"] as const
 const AUDIT_STATUSES = [
   "pending",
@@ -285,8 +285,8 @@ describe("audit log value labels", () => {
     expect(Object.keys(PAY_GAP_REASON_VALUE_KEYS).sort()).toEqual(
       [...PAY_GAP_REASONS].sort()
     )
-    expect(Object.keys(LEVEL_SOURCE_VALUE_KEYS).sort()).toEqual(
-      [...LEVEL_SOURCES].sort()
+    expect(Object.keys(SENIORITY_SOURCE_VALUE_KEYS).sort()).toEqual(
+      [...SENIORITY_SOURCES].sort()
     )
     expect(Object.keys(MEMBER_ROLE_VALUE_KEYS).sort()).toEqual(
       [...MEMBER_ROLES].sort()
@@ -316,7 +316,7 @@ describe("audit log value labels", () => {
       [...SALARY_SOURCES].sort()
     )
     expect(Object.keys(TRACK_VALUE_KEYS).sort()).toEqual(
-      Object.keys(TRACK_LEVELS).sort()
+      Object.keys(TRACK_SENIORITIES).sort()
     )
     expect(Object.keys(AI_KIND_VALUE_KEYS).sort()).toEqual(
       Object.values(SUGGESTION_KINDS).sort()
@@ -329,7 +329,7 @@ describe("audit log value labels", () => {
       ...Object.values(FINDING_VALUE_KEYS),
       ...Object.values(PRAXIS_AREA_VALUE_KEYS),
       ...Object.values(PAY_GAP_REASON_VALUE_KEYS),
-      ...Object.values(LEVEL_SOURCE_VALUE_KEYS),
+      ...Object.values(SENIORITY_SOURCE_VALUE_KEYS),
       ...Object.values(MEMBER_ROLE_VALUE_KEYS),
       ...Object.values(STATUS_VALUE_KEYS),
       ...Object.values(COUNTRY_VALUE_KEYS),

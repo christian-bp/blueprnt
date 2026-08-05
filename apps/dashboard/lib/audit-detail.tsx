@@ -429,10 +429,10 @@ export const FIELD_DISPLAY_ORDER = [
   "templateKey",
   "value",
   "motivation",
-  "expectedBand",
+  "expectedLevel",
   "status",
   "reviewedAt",
-  "band",
+  "level",
   "score",
   "complete",
   "ratedCount",
@@ -446,7 +446,7 @@ export const FIELD_DISPLAY_ORDER = [
   "expiresAt",
   "archivedAt",
   "orgId",
-  "bandThresholds",
+  "levelThresholds",
   // Person diff fields (person.* events); country/archivedAt are already above.
   "department",
   "employmentType",
@@ -459,8 +459,8 @@ export const FIELD_DISPLAY_ORDER = [
   "source",
   // Assignment diff fields (assignment.set).
   "roleId",
-  "level",
-  "levelSource",
+  "seniority",
+  "senioritySource",
   // Flat-stats fields: event summaries whose payload is a bag of counts/codes
   // (people.imported, classification.suggested, platform.*), not a diff.
   "peopleCreated",
@@ -589,7 +589,7 @@ export type AuditContextLabels = {
 // testable: the resolved run label first (falling back to the runDeleted
 // row's captured `label`, then to the deleted-run marker once the run is
 // hard-deleted), joined by ": " with the documented group and its comparison
-// scope when both are present (a group label is itself "roleTitle · level",
+// scope when both are present (a group label is itself "roleTitle · seniority",
 // so a " · " join would blur where the run ends and the group begins), then
 // whichever ids the row resolved (role, criterion, family with its
 // captured-name fallback, model, member). Invitation rows deliberately get
@@ -698,7 +698,7 @@ export function formatAuditDetail(
     case "anchorRole.designated":
     case "anchorRole.updated":
     // assignment.set carries the assigned roleId (top-level, resolved to the
-    // role title by the audit-log query); the level detail lives in the sheet.
+    // role title by the audit-log query); the seniority detail lives in the sheet.
     case "assignment.set":
       return roleName(p.roleId)
     case "role.updated": {
@@ -725,14 +725,14 @@ export function formatAuditDetail(
         </>
       )
     }
-    case "band.shift": {
+    case "level.shift": {
       const base = roleName(p.roleId)
-      const band = changes?.band
-      return band != null && (band.from != null || band.to != null) ? (
+      const level = changes?.level
+      return level != null && (level.from != null || level.to != null) ? (
         <>
-          {base} ({formatAuditValue(band.from)}
+          {base} ({formatAuditValue(level.from)}
           <ChangeArrow />
-          {formatAuditValue(band.to)})
+          {formatAuditValue(level.to)})
         </>
       ) : (
         base
@@ -845,7 +845,7 @@ export function formatAuditDetail(
     // formatChanges-only rendering would drop them; show both alongside the
     // reasons/note/done/finding changes. Both are coded: scope is always a
     // wire code, and groupLabel is a raw PRAXIS_AREA_KEYS slug for a praxis
-    // row (already a real "roleTitle · level" display string otherwise), so
+    // row (already a real "roleTitle · seniority" display string otherwise), so
     // both go through valueLabel, falling back to the raw value when unset.
     case "payMapping.groupAnalysisUpdated": {
       const rawGroupLabel = typeof p.groupLabel === "string" ? p.groupLabel : ""

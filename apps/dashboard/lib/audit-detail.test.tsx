@@ -12,13 +12,13 @@ import {
   FINDING_VALUE_KEYS,
   GENDER_VALUE_KEYS,
   INDUSTRY_VALUE_KEYS,
-  LEVEL_SOURCE_VALUE_KEYS,
   MEMBER_ROLE_VALUE_KEYS,
   PAY_GAP_REASON_VALUE_KEYS,
   PRAXIS_AREA_VALUE_KEYS,
   resolveCodedValue,
   SALARY_SOURCE_VALUE_KEYS,
   SCOPE_VALUE_KEYS,
+  SENIORITY_SOURCE_VALUE_KEYS,
   STATUS_VALUE_KEYS,
   TRACK_VALUE_KEYS,
 } from "./audit-constants"
@@ -119,8 +119,8 @@ describe("formatAuditValue", () => {
   })
 
   it("compact-JSON stringifies objects and arrays (never [object Object])", () => {
-    expect(formatAuditValue({ band: 2, score: 88 })).toBe(
-      '{"band":2,"score":88}'
+    expect(formatAuditValue({ level: 2, score: 88 })).toBe(
+      '{"level":2,"score":88}'
     )
     expect(formatAuditValue([1, 2, 3])).toBe("[1,2,3]")
     expect(formatAuditValue({ a: 1 })).not.toContain("[object Object]")
@@ -193,8 +193,8 @@ describe("resolveCodedValue", () => {
   })
 
   it("resolves every non-pay-mapping coded domain to its key", () => {
-    expect(resolveCodedValue("levelSource", "suggested", translate)).toBe(
-      LEVEL_SOURCE_VALUE_KEYS.suggested
+    expect(resolveCodedValue("senioritySource", "suggested", translate)).toBe(
+      SENIORITY_SOURCE_VALUE_KEYS.suggested
     )
     expect(resolveCodedValue("role", "admin", translate)).toBe(
       MEMBER_ROLE_VALUE_KEYS.admin
@@ -317,7 +317,7 @@ describe("formatChanges", () => {
 
   it("renders a complex value as label + placeholder, never [object Object]", () => {
     const out = formatChanges(
-      { anchors: { from: null, to: [{ level: 0, text: "x" }] } },
+      { anchors: { from: null, to: [{ step: 0, text: "x" }] } },
       fieldLabel,
       "…"
     )
@@ -463,8 +463,8 @@ describe("formatAuditDetail", () => {
       {
         roleId: "r1",
         changes: {
-          anchors: { from: null, to: [{ level: 0, text: "x" }] },
-          bandThresholds: { from: [{ band: 1 }], to: [{ band: 2 }] },
+          anchors: { from: null, to: [{ step: 0, text: "x" }] },
+          levelThresholds: { from: [{ level: 1 }], to: [{ level: 2 }] },
         },
       },
       names,
@@ -562,12 +562,12 @@ describe("formatAuditDetail", () => {
     ).toBe("Jane Doe: Role: editor → admin")
   })
 
-  it("renders band.shift from the changes.band from/to", () => {
+  it("renders level.shift from the changes.level from/to", () => {
     const names = { r1: "System Developer" }
     expect(
       formatAuditDetail(
-        "band.shift",
-        { roleId: "r1", changes: { band: { from: 3, to: 2 } } },
+        "level.shift",
+        { roleId: "r1", changes: { level: { from: 3, to: 2 } } },
         names,
         labels,
         fieldLabel
@@ -575,11 +575,11 @@ describe("formatAuditDetail", () => {
     ).toBe("System Developer (3 → 2)")
   })
 
-  it("renders band.shift with just the role when no band change is present", () => {
+  it("renders level.shift with just the role when no level change is present", () => {
     const names = { r1: "System Developer" }
     expect(
       formatAuditDetail(
-        "band.shift",
+        "level.shift",
         { roleId: "r1", changes: { score: { from: 80, to: 90 } } },
         names,
         labels,
@@ -754,8 +754,8 @@ describe("formatAuditDetail", () => {
           roleId: "r1",
           changes: {
             roleId: { from: null, to: "r1" },
-            level: { from: null, to: "IC3" },
-            levelSource: { from: null, to: "suggested" },
+            seniority: { from: null, to: "IC3" },
+            senioritySource: { from: null, to: "suggested" },
           },
         },
         { r1: "Analyst" },
@@ -772,7 +772,7 @@ describe("formatAuditDetail", () => {
         {
           runId: "run1",
           scope: "equalWork",
-          // groupLabel is already a real "roleTitle · level" display string
+          // groupLabel is already a real "roleTitle · seniority" display string
           // for equalWork/equivalentWork, so valueLabel must pass it through
           // unchanged (it is not a praxis area key).
           groupLabel: "PM · Mid",
@@ -955,13 +955,13 @@ describe("changeEntries", () => {
   it("marks isComplex true when either side is a non-null object", () => {
     const out = changeEntries(
       {
-        anchors: { from: null, to: [{ level: 0, text: "x" }] },
+        anchors: { from: null, to: [{ step: 0, text: "x" }] },
         title: { from: "a", to: "b" },
       },
       fieldLabel
     )
     expect(out[0]?.isComplex).toBe(true)
-    expect(out[0]?.to).toBe('[{"level":0,"text":"x"}]')
+    expect(out[0]?.to).toBe('[{"step":0,"text":"x"}]')
     expect(out[0]?.to).not.toContain("[object Object]")
     expect(out[1]?.isComplex).toBe(false)
   })
@@ -1467,7 +1467,7 @@ describe("auditContextParts", () => {
     })
     const names = { run1: "Lönekartläggning 2026" }
     // Run and group join into ONE ": "-separated part: a group label is
-    // itself "roleTitle · level", so a " · " list join would blur where the
+    // itself "roleTitle · seniority", so a " · " list join would blur where the
     // run ends and the group begins.
     expect(
       parts("payMapping.groupAnalysisUpdated", payload("equalWork"), names)

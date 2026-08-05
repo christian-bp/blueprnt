@@ -58,7 +58,7 @@ const PEOPLE = [
     statisticalCode: null,
     archivedAt: null,
     roleId: "role1",
-    levelSource: "confirmed",
+    senioritySource: "confirmed",
   },
   {
     personId: "p2",
@@ -75,7 +75,7 @@ const PEOPLE = [
     statisticalCode: null,
     archivedAt: null,
     roleId: "role1",
-    levelSource: "suggested",
+    senioritySource: "suggested",
   },
   {
     personId: "p3",
@@ -92,7 +92,7 @@ const PEOPLE = [
     statisticalCode: null,
     archivedAt: null,
     roleId: null,
-    levelSource: null,
+    senioritySource: null,
   },
 ]
 
@@ -120,11 +120,11 @@ const BY_TITLE: ClassifyTitleGroup[] = [
         externalRef: "42",
         employmentStartDate: null,
         isManager: null,
-        suggestedLevel: "Senior",
+        suggestedSeniority: "Senior",
         currentAssignment: {
           roleId: "role1",
-          level: "Senior",
-          levelSource: "confirmed" as const,
+          seniority: "Senior",
+          senioritySource: "confirmed" as const,
         },
       },
       {
@@ -133,11 +133,11 @@ const BY_TITLE: ClassifyTitleGroup[] = [
         externalRef: null,
         employmentStartDate: null,
         isManager: null,
-        suggestedLevel: "Mid",
+        suggestedSeniority: "Mid",
         currentAssignment: {
           roleId: "role1",
-          level: "Mid",
-          levelSource: "suggested" as const,
+          seniority: "Mid",
+          senioritySource: "suggested" as const,
         },
       },
     ],
@@ -153,7 +153,7 @@ const BY_TITLE: ClassifyTitleGroup[] = [
         externalRef: null,
         employmentStartDate: null,
         isManager: null,
-        suggestedLevel: null,
+        suggestedSeniority: null,
         currentAssignment: null,
       },
     ],
@@ -363,7 +363,7 @@ describe("PeopleSection", () => {
       statisticalCode: null,
       archivedAt: null,
       roleId: null,
-      levelSource: null,
+      senioritySource: null,
     }))
     onQuery((ref) => queryRouter(ref, manyPeople, []))
     renderSection()
@@ -444,7 +444,7 @@ describe("PeopleSection", () => {
       statisticalCode: null,
       archivedAt: null,
       roleId: null,
-      levelSource: null,
+      senioritySource: null,
     }))
     onQuery((ref) => queryRouter(ref, manyPeople, []))
     renderSection()
@@ -482,7 +482,7 @@ describe("PeopleSection", () => {
       statisticalCode: null,
       archivedAt: null,
       roleId: null,
-      levelSource: null,
+      senioritySource: null,
     }))
     onQuery((ref) => queryRouter(ref, manyPeople, []))
     renderSection()

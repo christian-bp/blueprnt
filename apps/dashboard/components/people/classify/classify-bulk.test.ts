@@ -9,7 +9,7 @@ const a = (n: number, offset: number = 0): BulkAssignment[] =>
   Array.from({ length: n }, (_, i) => ({
     personId: `p${offset + i}`,
     roleId: "r1",
-    level: "IC1",
+    seniority: "IC1",
   }))
 
 describe("selectionState", () => {

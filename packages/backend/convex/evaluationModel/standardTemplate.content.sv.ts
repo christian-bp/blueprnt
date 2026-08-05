@@ -2,11 +2,11 @@ import type { StandardTemplateContent } from "./standardTemplate.content.en"
 
 // Swedish source content for the standard template (source of record). Criterion
 // definitions and anchor texts are curated from the Excel prototype tab
-// "Vikter & faktorer"; level definitions from the "Track" tab. The Lead3
+// "Vikter & faktorer"; seniority definitions from the "Track" tab. The Lead3
 // definition is from docs/contexts/evaluation-model/standardmall.md.
 // description is the short criterion description shown inline; helpText is the
 // extended description shown behind the info help and in the rating flow (the
-// "Kriteriebeskrivningar" copy). weightLevels are the per-criterion weighting
+// "Kriteriebeskrivningar" copy). weightMeanings are the per-criterion weighting
 // explanations for weight points 1..5 (the "Kriterietexter i Viktningsmodellen"
 // copy): what it means to give THIS criterion that weight.
 export const standardTemplateContentSv: StandardTemplateContent = {
@@ -26,7 +26,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
         "Sätter riktning och prioriteringar för ett affärs- eller funktionsområde. Resultat påverkar organisationens konkurrensförmåga.",
         "Bär strategiskt ansvar med direkt effekt på organisationens samlade resultat och långsiktiga position.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Företaget vill att omfattningen av ansvar och organisatorisk påverkan endast ska ha begränsat genomslag i rollvärderingen. Roller med kortare räckvidd ska alltså inte premieras särskilt starkt på just denna dimension.",
         "Företaget anser att scope och påverkan är relevant, men att det normalt ska väga lättare än modellens mer prioriterade kriterier. Bredare ansvar ska påverka värderingen, men inte vara en huvuddrivare.",
         "Företaget vill att scope och påverkan ska ha en tydlig och balanserad plats i modellen. Roller med större organisatorisk räckvidd ska få genomslag, men utan att denna dimension dominerar värderingen.",
@@ -42,9 +42,9 @@ export const standardTemplateContentSv: StandardTemplateContent = {
           "Överlappar delvis med Autonomi (beslutsmandat) och Personal-/Ledningsansvar; här ligger fokus specifikt på hur långt rollens effekter når i organisationen.",
         biasRisk: "low",
         biasComment:
-          "Att belöna synligt mandat mer än faktiskt genomslag kan gynna traditionellt synliga roller. Nivåbeskrivningarna utgår från effekt och ansvar snarare än rang och är könsneutrala.",
+          "Att belöna synligt mandat mer än faktiskt genomslag kan gynna traditionellt synliga roller. Stegbeskrivningarna utgår från effekt och ansvar snarare än rang och är könsneutrala.",
         biasAction:
-          "Nivåankarna beskriver faktisk räckvidd och resultat, inte formell position, så att även roller utan synlig titel kan bedömas högt.",
+          "Stegankarna beskriver faktisk räckvidd och resultat, inte formell position, så att även roller utan synlig titel kan bedömas högt.",
       },
     },
     risk: {
@@ -61,7 +61,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
         "Fel kan medföra betydande ekonomisk skada, regulatoriska brister, varumärkesskada eller förlust av strategiska relationer.",
         "Fel eller underlåtenhet kan hota organisationens fortlevnad, strategiska position eller grundläggande legala ställning.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Företaget vill att risk och konsekvens endast ska ha begränsad påverkan på rollvärderingen. Roller där fel får större följder ska alltså inte premieras särskilt mycket på denna dimension.",
         "Företaget bedömer att risk och konsekvens är relevant, men att detta kriterium normalt ska väga lättare än de mest prioriterade dimensionerna i modellen.",
         "Företaget vill att risk och konsekvens ska ha en balanserad plats i modellen. Skillnader i påverkan på kvalitet, efterlevnad, verksamhet eller varumärke ska beaktas på en normal nivå.",
@@ -77,7 +77,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
           "Överlappar delvis med Scope & Påverkan; här ligger fokus på konsekvenserna av fel eller brister snarare än på räckvidden i sig.",
         biasRisk: "low",
         biasComment:
-          "Synliga operativa eller tekniska risker kan övervärderas medan tyst kvalitets-, omsorgs- eller efterlevnadsarbete undervärderas. Nivåbeskrivningarna omfattar även kvalitet, efterlevnad och relationer och är könsneutrala.",
+          "Synliga operativa eller tekniska risker kan övervärderas medan tyst kvalitets-, omsorgs- eller efterlevnadsarbete undervärderas. Stegbeskrivningarna omfattar även kvalitet, efterlevnad och relationer och är könsneutrala.",
         biasAction:
           "Ankartexterna inkluderar konsekvenser för kvalitet, efterlevnad och kundrelationer, inte bara ekonomiska eller tekniska fel, så att olika typer av ansvar bedöms likvärdigt.",
       },
@@ -96,7 +96,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
         "Rollen arbetar med oklara förutsättningar, motsägelsefulla krav och hög osäkerhet. Utvecklar nya lösningsmodeller.",
         "Rollen definierar nya problemställningar i outforskade områden. Etablerad praxis saknas.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Företaget vill att komplexitet och otydlighet endast ska ha liten påverkan på den samlade rollvärderingen. Roller med mer komplexa och osäkra förutsättningar ska därför inte premieras särskilt mycket på denna dimension.",
         "Företaget bedömer att komplexitet och osäkerhet är relevant, men att denna dimension normalt ska väga lättare än de mest prioriterade kriterierna.",
         "Företaget vill att komplexitet och otydlighet ska ha en balanserad och tydlig plats i modellen. Roller som kräver problemlösning i mer osäkra eller svårtolkade sammanhang ska få ett normalt genomslag i värderingen.",
@@ -112,7 +112,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
           "Överlappar delvis med Kunskapsdjup/Bredd; här ligger fokus på problemens komplexitet och osäkerhet snarare än på den kunskap som krävs.",
         biasRisk: "low",
         biasComment:
-          "Teknisk komplexitet kan övervärderas medan relationell, samordnande eller mångtydig komplexitet undervärderas. Nivåbeskrivningarna omfattar även organisatorisk och affärsmässig komplexitet och är könsneutrala.",
+          "Teknisk komplexitet kan övervärderas medan relationell, samordnande eller mångtydig komplexitet undervärderas. Stegbeskrivningarna omfattar även organisatorisk och affärsmässig komplexitet och är könsneutrala.",
         biasAction:
           "Ankartexterna beskriver komplexitet brett (teknisk, affärsmässig och organisatorisk) så att även samordnande och tvetydiga sammanhang bedöms som komplexa.",
       },
@@ -131,7 +131,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
         "Fattar strategiska beslut inom sin domän. Sätter riktlinjer och ramar som andra följer.",
         "Fattar beslut som formar flera domäner eller hela organisationens riktning. Definierar styrmodell och delegation.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Företaget vill att grad av självständighet och beslutsmandat endast ska ha liten påverkan på den samlade rollvärderingen.",
         "Företaget anser att autonomi och beslutsnivå är relevant, men att det normalt ska väga lättare än de mer prioriterade kriterierna i modellen.",
         "Företaget vill att autonomi och beslutsmandat ska ha en tydlig och balanserad plats i modellen. Rollen ska påverkas av hur självständigt den verkar, men utan att detta kriterium ges extra stark tyngd.",
@@ -147,7 +147,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
           "Överlappar delvis med Scope & Påverkan och Personal-/Ledningsansvar; här ligger fokus på självständighet och beslutsmandat snarare än på räckvidd eller att leda andra.",
         biasRisk: "medium",
         biasComment:
-          "Synligt beslutsmandat kan övervärderas jämfört med faktiskt genomslag, vilket kan gynna formellt mandatbärande roller framför seniora specialister med reellt inflytande. Nivåbeskrivningarna är könsneutrala.",
+          "Synligt beslutsmandat kan övervärderas jämfört med faktiskt genomslag, vilket kan gynna formellt mandatbärande roller framför seniora specialister med reellt inflytande. Stegbeskrivningarna är könsneutrala.",
         biasAction:
           "Ankartexterna omfattar även självständigt initiativ och problemlösning, inte bara formellt beslutsmandat, så att reellt inflytande utan titel kan bedömas högt.",
       },
@@ -166,7 +166,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
         "Navigerar en miljö med motstridiga intressen och hög förhandlingskomplexitet. Balanserar krav från flera starka parter.",
         "Representerar organisationen på strategisk nivå mot styrelse, nyckelkunder, myndigheter eller branschorgan.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Företaget vill att bredden i samverkan och koordinering endast ska ha liten påverkan på hur roller värderas relativt varandra.",
         "Företaget bedömer att intressentbredd är relevant, men att kriteriet normalt ska väga lättare än de mest prioriterade dimensionerna i modellen.",
         "Företaget vill att intressentbredd ska ha en tydlig och balanserad plats i modellen. Roller med bred intern eller extern samverkan ska få ett normalt genomslag i värderingen.",
@@ -182,7 +182,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
           "Överlappar delvis med Scope & Påverkan; här ligger fokus på bredden och variationen i samverkan snarare än på räckvidden av resultatet.",
         biasRisk: "low",
         biasComment:
-          "Detta kriterium motverkar en känd bias genom att uttryckligen värdera relationellt och samordnande arbete. Kvarstående risk: extern, synlig representation kan övervärderas jämfört med internt samordningsarbete. Nivåbeskrivningarna är könsneutrala.",
+          "Detta kriterium motverkar en känd bias genom att uttryckligen värdera relationellt och samordnande arbete. Kvarstående risk: extern, synlig representation kan övervärderas jämfört med internt samordningsarbete. Stegbeskrivningarna är könsneutrala.",
         biasAction:
           "Ankartexterna värderar intern tvärfunktionell samordning likvärdigt med extern representation, så att synligt externt nätverkande inte i sig väger tyngre.",
       },
@@ -201,7 +201,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
         "Definierar metoder, standarder och kvalitetsnormer inom domänen. Intern referenspunkt i kvalificerade frågor.",
         "Utvecklar ny kunskap, metodik eller teknik. Sätter principer som styr organisationens framtida förmåga. Kan påverka branschen externt.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Företaget vill att krav på djup expertis, erfarenhet eller tvärdisciplinär bredd endast ska ha begränsad påverkan på den samlade rollvärderingen.",
         "Företaget anser att kunskapsdjup och bredd är relevant, men att det normalt ska väga lättare än de mest prioriterade kriterierna.",
         "Företaget vill att kunskapsdjup och bredd ska ha en tydlig och balanserad plats i modellen. Expertis och erfarenhetskrav ska påverka värderingen på en normal nivå.",
@@ -217,7 +217,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
           "Överlappar delvis med Komplexitet & Otydlighet och Formell kompetens; här ligger fokus på faktisk kunskap och erfarenhet snarare än på problemens komplexitet eller formella krav.",
         biasRisk: "low",
         biasComment:
-          "Formellt erkänd eller synlig expertis kan övervärderas jämfört med tyst, erfarenhetsbaserad kunskap. Nivåbeskrivningarna utgår från tillämpad kompetens, inte enbart titel eller utbildning, och är könsneutrala.",
+          "Formellt erkänd eller synlig expertis kan övervärderas jämfört med tyst, erfarenhetsbaserad kunskap. Stegbeskrivningarna utgår från tillämpad kompetens, inte enbart titel eller utbildning, och är könsneutrala.",
         biasAction:
           "Ankartexterna värderar praktisk erfarenhet och tillämpad metodförståelse likvärdigt med formellt erkänd specialisering.",
       },
@@ -236,7 +236,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
         "Ansvarar för betydande budget, portfölj eller ett affärsområdes intäkter och kostnader.",
         "Bär direkt ansvar för väsentlig del av organisationens totala resultat eller finansiella strategi.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Företaget vill att ekonomiskt ansvar endast ska ha begränsad påverkan på den samlade rollvärderingen. Budget- eller resultatansvar ska alltså inte ges särskilt stor tyngd i modellen.",
         "Företaget anser att finansiellt ansvar är relevant, men att det normalt ska väga lättare än de mest prioriterade kriterierna.",
         "Företaget vill att finansiellt ansvar ska ha en tydlig och balanserad plats i modellen. Budgetpåverkan, kostnadsansvar eller resultatansvar ska räknas in som en normal del av värderingen.",
@@ -252,9 +252,9 @@ export const standardTemplateContentSv: StandardTemplateContent = {
           "Överlappar delvis med Autonomi (beslutsmandat) och Scope & Påverkan; här ligger fokus specifikt på ansvar för ekonomiska ramar och resultat.",
         biasRisk: "medium",
         biasComment:
-          "Stor budget kan ges för stor vikt jämfört med komplexitet, ansvar och specialistkunskap, vilket kan gynna traditionellt mansdominerade budgetbärande roller. Nivåbeskrivningarna är könsneutrala.",
+          "Stor budget kan ges för stor vikt jämfört med komplexitet, ansvar och specialistkunskap, vilket kan gynna traditionellt mansdominerade budgetbärande roller. Stegbeskrivningarna är könsneutrala.",
         biasAction:
-          "Kriteriet hålls på en måttlig vikt i modellen så att budgetstorlek inte i sig dominerar värderingen, och nivåerna beskriver beslutsansvar snarare än enbart beloppens storlek.",
+          "Kriteriet hålls på en måttlig vikt i modellen så att budgetstorlek inte i sig dominerar värderingen, och stegen beskriver beslutsansvar snarare än enbart beloppens storlek.",
       },
     },
     people: {
@@ -271,7 +271,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
         "Leder en hel funktion med flera chefsled. Ansvarar för organisationsdesign och funktionens samlade prestation.",
         "Del av företagsledningen. Sätter riktning för ledarskap, kultur och organisationsmodell på företagsnivå.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Företaget vill att personal- och ledningsansvar endast ska ha begränsad påverkan på den samlade rollvärderingen. Formellt ledarskap ska alltså inte i sig driva värderingen särskilt mycket.",
         "Företaget bedömer att personal- och ledningsansvar är relevant, men att det normalt ska väga lättare än de mest prioriterade kriterierna i modellen.",
         "Företaget vill att personal- och ledningsansvar ska ha en tydlig och balanserad plats i modellen. Att leda andra ska påverka värderingen, men utan att ges särskilt förstärkt tyngd.",
@@ -287,9 +287,9 @@ export const standardTemplateContentSv: StandardTemplateContent = {
           "Överlappar delvis med Scope & Påverkan (organisatorisk räckvidd) och Autonomi (beslutsmandat); här ligger fokus specifikt på ansvar som utövas genom andra människor.",
         biasRisk: "medium",
         biasComment:
-          "Att belöna synligt mandat och antal underställda mer än faktisk ledarpåverkan kan övervärdera traditionellt mansdominerade chefsroller och undervärdera seniora specialister och samordningstungt arbete. Nivåbeskrivningarna i sig är könsneutrala.",
+          "Att belöna synligt mandat och antal underställda mer än faktisk ledarpåverkan kan övervärdera traditionellt mansdominerade chefsroller och undervärdera seniora specialister och samordningstungt arbete. Stegbeskrivningarna i sig är könsneutrala.",
         biasAction:
-          "Nivåankarna beskriver ledarskapets innehåll snarare än enbart antal underställda, och kriteriet hålls på en måttlig vikt så att en chefstitel inte i sig dominerar utvärderingen.",
+          "Stegankarna beskriver ledarskapets innehåll snarare än enbart antal underställda, och kriteriet hålls på en måttlig vikt så att en chefstitel inte i sig dominerar utvärderingen.",
       },
     },
     formal: {
@@ -306,7 +306,7 @@ export const standardTemplateContentSv: StandardTemplateContent = {
         "Kräver masterexamen, avancerad professionell certifiering (t.ex. CPA, juristexamen, CISA, PMP avancerad) eller motsvarande.",
         "Kräver forskningsnivå, doktorsexamen eller unik domänexpertis på en nivå som normerar fältet.",
       ],
-      weightLevels: [
+      weightMeanings: [
         "Företaget vill att krav på formell kompetens endast ska ha begränsad påverkan på den samlade rollvärderingen.",
         "Företaget bedömer att formell kompetens är relevant, men att kriteriet normalt ska väga lättare än de mer prioriterade dimensionerna i modellen.",
         "Företaget vill att formell kompetens ska ha en tydlig och balanserad plats i modellen. Utbildningskrav eller motsvarande erfarenhetskrav ska påverka värderingen på en normal nivå.",
@@ -322,9 +322,9 @@ export const standardTemplateContentSv: StandardTemplateContent = {
           "Överlappar delvis med Kunskapsdjup/Bredd; här ligger fokus på formella krav snarare än på faktisk tillämpad kunskap och erfarenhet.",
         biasRisk: "medium",
         biasComment:
-          "Att vila på formell status i stället för faktiskt arbetsinnehåll kan missgynna kompetens som förvärvats på andra vägar än traditionell utbildning. Nivåbeskrivningarna tillåter motsvarande dokumenterad erfarenhet och är könsneutrala.",
+          "Att vila på formell status i stället för faktiskt arbetsinnehåll kan missgynna kompetens som förvärvats på andra vägar än traditionell utbildning. Stegbeskrivningarna tillåter motsvarande dokumenterad erfarenhet och är könsneutrala.",
         biasAction:
-          "Nivåerna erkänner uttryckligen motsvarande erfarenhet vid sidan av formell utbildning, och kriteriet hålls på låg vikt så att formella meriter inte i sig driver värderingen.",
+          "Stegen erkänner uttryckligen motsvarande erfarenhet vid sidan av formell utbildning, och kriteriet hålls på låg vikt så att formella meriter inte i sig driver värderingen.",
       },
     },
   },

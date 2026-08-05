@@ -64,7 +64,7 @@ async function createRatedRole(args: {
 }
 
 describe("getResults", () => {
-  it("derives the standardmall anchors live and sorts band-first", async () => {
+  it("derives the standardmall anchors live and sorts level-first", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
     const topId = await createRatedRole({
@@ -94,7 +94,7 @@ describe("getResults", () => {
       orgId,
       locale: "sv",
     })
-    expect(results.bands.map((band) => band.band)).toEqual([
+    expect(results.levels.map((level) => level.level)).toEqual([
       1, 2, 3, 4, 5, 6, 7,
     ])
     expect(results.rows.map((row) => row.roleId)).toEqual([
@@ -106,13 +106,13 @@ describe("getResults", () => {
       title: "Top",
       complete: true,
       score: 100,
-      band: 1,
+      level: 1,
     })
-    expect(results.rows[1]).toMatchObject({ score: 0, band: 7 })
+    expect(results.rows[1]).toMatchObject({ score: 0, level: 7 })
     expect(results.rows[2]).toMatchObject({
       complete: false,
       score: null,
-      band: null,
+      level: null,
       ratedCount: 4,
       totalCriteria: 9,
     })
@@ -121,7 +121,7 @@ describe("getResults", () => {
   it("includes anchor info per row, and excludes non-anchor and replaced anchors", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedTemplateOrganization(t)
-    // Fully rated => complete => band 1 (value 5 on every criterion).
+    // Fully rated => complete => level 1 (value 5 on every criterion).
     const topId = await createRatedRole({
       orgId,
       asAdmin,
@@ -133,7 +133,7 @@ describe("getResults", () => {
     await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
       orgId,
       roleId: topId,
-      expectedBand: 2,
+      expectedLevel: 2,
       motivation: "reference point",
     })
 
@@ -142,9 +142,9 @@ describe("getResults", () => {
       locale: "sv",
     })
     const top = active.rows.find((row) => row.roleId === topId)
-    // The computed band (1) and the agreed band (2) diverge by design.
-    expect(top?.band).toBe(1)
-    expect(top?.anchor).toEqual({ expectedBand: 2, status: "active" })
+    // The computed level (1) and the agreed level (2) diverge by design.
+    expect(top?.level).toBe(1)
+    expect(top?.anchor).toEqual({ expectedLevel: 2, status: "active" })
     expect(active.rows.find((row) => row.title === "Plain")?.anchor).toBeNull()
 
     // underReview passes through; replaced reads as null (calibration history).
@@ -158,7 +158,7 @@ describe("getResults", () => {
       locale: "sv",
     })
     expect(review.rows.find((row) => row.roleId === topId)?.anchor).toEqual({
-      expectedBand: 2,
+      expectedLevel: 2,
       status: "underReview",
     })
 
@@ -192,7 +192,7 @@ describe("getRoleResult", () => {
       locale: "sv",
     })
     expect(result).not.toBeNull()
-    expect(result).toMatchObject({ complete: true, score: 100, band: 1 })
+    expect(result).toMatchObject({ complete: true, score: 100, level: 1 })
     expect(result?.criteria).toHaveLength(9)
     const scopeRow = result?.criteria[0]
     expect(scopeRow?.value).toBe(5)
@@ -221,7 +221,7 @@ describe("getRoleResult", () => {
       ratedCount: 2,
       totalCriteria: 9,
       score: null,
-      band: null,
+      level: null,
     })
   })
 

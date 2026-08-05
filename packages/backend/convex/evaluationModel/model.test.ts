@@ -41,21 +41,19 @@ describe("createModelFromTemplate", () => {
       expect(criteria.every((c) => c.isCustom === false)).toBe(true)
 
       // Anchors live on the criterion document (ADR-0006): exactly 6 per
-      // criterion, ordered by level.
+      // criterion, ordered by step.
       let anchorCount = 0
       for (const criterion of criteria) {
-        expect(criterion.anchors.map((a) => a.level)).toEqual([
-          0, 1, 2, 3, 4, 5,
-        ])
+        expect(criterion.anchors.map((a) => a.step)).toEqual([0, 1, 2, 3, 4, 5])
         anchorCount += criterion.anchors.length
       }
       expect(anchorCount).toBe(54)
 
       // Thresholds live on the model document (ADR-0006).
       const model = await ctx.db.get(modelId)
-      expect(model?.bandThresholds).toHaveLength(7)
+      expect(model?.levelThresholds).toHaveLength(7)
       expect(
-        model?.bandThresholds.find((threshold) => threshold.band === 1)
+        model?.levelThresholds.find((threshold) => threshold.level === 1)
           ?.minScore
       ).toBe(98)
 
@@ -159,7 +157,7 @@ describe("createEmptyModel", () => {
         .withIndex("by_org", (q) => q.eq("orgId", orgId))
         .unique()
       expect(model?.templateKey).toBeUndefined()
-      expect(model?.bandThresholds).toHaveLength(7)
+      expect(model?.levelThresholds).toHaveLength(7)
       const criteria = await ctx.db
         .query("criteria")
         .withIndex("by_model", (q) => q.eq("modelId", modelId))
@@ -358,8 +356,8 @@ describe("getModel", () => {
     expect(en?.criteria[0]?.anchors[0]?.text).toMatch(/Responsible for own/)
     // Pristine template criteria carry their localized per-criterion weighting
     // texts (weight points 1..5), not the Swedish source.
-    expect(en?.criteria[0]?.weightLevels).toHaveLength(5)
-    expect(en?.criteria[0]?.weightLevels?.[0]).not.toMatch(/Företaget/)
+    expect(en?.criteria[0]?.weightMeanings).toHaveLength(5)
+    expect(en?.criteria[0]?.weightMeanings?.[0]).not.toMatch(/Företaget/)
     const enIc = en?.tracks.find((track) => track.key === "IC")
     expect(enIc?.name).toBe("Individual Contributor")
 
@@ -371,8 +369,8 @@ describe("getModel", () => {
     expect(sv?.name).toBe("Standardmodell")
     expect(sv?.criteria[0]?.name).toBe("Scope & Påverkan")
     expect(sv?.criteria[0]?.anchors[0]?.text).toMatch(/Ansvarar för egna/)
-    expect(sv?.criteria[0]?.weightLevels).toHaveLength(5)
-    expect(sv?.criteria[0]?.weightLevels?.[0]).toMatch(
+    expect(sv?.criteria[0]?.weightMeanings).toHaveLength(5)
+    expect(sv?.criteria[0]?.weightMeanings?.[0]).toMatch(
       /Företaget vill att omfattningen/
     )
   })
@@ -427,8 +425,8 @@ describe("getModel", () => {
     expect(custom?.description).toBe("Stored description")
     expect(custom?.anchors[0]?.text).toBe("a0")
     // A custom criterion has no per-criterion weighting text: null, so the UI
-    // falls back to the generic level meanings.
-    expect(custom?.weightLevels).toBeNull()
+    // falls back to the generic weight meanings.
+    expect(custom?.weightMeanings).toBeNull()
     const sv = await asAdmin.query(api.evaluationModel.model.getModel, {
       orgId,
       locale: "sv",
@@ -476,7 +474,7 @@ describe("evaluationModel/model.seedStandardModel", () => {
         .collect()
       expect(models).toHaveLength(1)
       expect(models[0]?.templateKey).toBe(STANDARD_TEMPLATE_KEY)
-      expect(models[0]?.bandThresholds).toHaveLength(7)
+      expect(models[0]?.levelThresholds).toHaveLength(7)
 
       const criteria = await ctx.db
         .query("criteria")
@@ -485,10 +483,10 @@ describe("evaluationModel/model.seedStandardModel", () => {
       expect(criteria).toHaveLength(9)
       // Point budget is exactly criteria count x 3 (ADR-0004).
       expect(criteria.reduce((sum, c) => sum + c.weightPoints, 0)).toBe(27)
-      // Anchors are mapped to { level, text } objects, not raw strings.
+      // Anchors are mapped to { step, text } objects, not raw strings.
       for (const criterion of criteria) {
         expect(criterion.anchors.length).toBeGreaterThan(0)
-        expect(criterion.anchors[0]).toHaveProperty("level")
+        expect(criterion.anchors[0]).toHaveProperty("step")
         expect(criterion.anchors[0]).toHaveProperty("text")
         expect(criterion.isCustom).toBe(false)
       }
@@ -594,7 +592,7 @@ describe("model.created / model.discarded audit payloads (before/after)", () => 
       from: null,
       to: STANDARD_TEMPLATE_KEY,
     })
-    expect(changes.bandThresholds.from).toBeNull()
+    expect(changes.levelThresholds.from).toBeNull()
     // count == criteria count == items length, each with a label + create-changes.
     expect(payload?.count).toBe(9)
     const items = payload?.items as Array<{
@@ -644,7 +642,7 @@ describe("model.created / model.discarded audit payloads (before/after)", () => 
       { from: unknown; to: unknown }
     >
     expect(changes.name).toEqual({ from: null, to: "Vår modell" })
-    expect(changes.bandThresholds.from).toBeNull()
+    expect(changes.levelThresholds.from).toBeNull()
     expect(changes.templateKey).toBeUndefined()
     expect(payload?.count).toBe(0)
     expect(payload?.items).toEqual([])
@@ -682,7 +680,7 @@ describe("model.created / model.discarded audit payloads (before/after)", () => 
       string,
       { from: unknown; to: unknown }
     >
-    for (const field of ["name", "templateKey", "bandThresholds"]) {
+    for (const field of ["name", "templateKey", "levelThresholds"]) {
       expect(changes[field]).toBeDefined()
       expect(changes[field]?.to).toBeNull()
     }

@@ -2,40 +2,40 @@
 
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
-import { RoleChip } from "@/components/bands/role-chip"
-import { HATCH_CLASS } from "@/components/bands/hatch"
+import { RoleChip } from "@/components/levels/role-chip"
+import { HATCH_CLASS } from "@/components/levels/hatch"
 import {
   MATRIX_COL_HEADER_CLASS,
   MATRIX_WRAPPER_CLASS,
-} from "@/components/bands/matrix-chrome"
-import { type BandRoleRow, bandRanges } from "@/lib/bands"
+} from "@/components/levels/matrix-chrome"
+import { type LevelRoleRow, levelRanges } from "@/lib/levels"
 import { SPRING } from "@/lib/motion"
 import { groupByFamily as groupRowsByFamily } from "@/lib/role-groups"
 
-// Band x track matrix: bands down (Band 1 on top), tracks across. Each role
-// sits in the cell where its band meets its track. The track columns are
-// passed in (derived from the UNFILTERED roles) so the grid stays stable as
-// the family filter changes: hidden families just leave hatched empty cells
-// rather than collapsing the grid (and an all-hidden filter still shows the
-// full hatched grid). Same neutral-ink chips, inline anchor treatment, and
-// group-by-family clustering as the ladder.
-export function BandMatrix({
-  bands,
+// Level x track matrix: levels down (Level 1 on top), tracks across. Each
+// role sits in the cell where its level meets its track. The track columns
+// are passed in (derived from the UNFILTERED roles) so the grid stays stable
+// as the family filter changes: hidden families just leave hatched empty
+// cells rather than collapsing the grid (and an all-hidden filter still shows
+// the full hatched grid). Same neutral-ink chips, inline anchor treatment,
+// and group-by-family clustering as the ladder.
+export function LevelMatrix({
+  levels,
   rows,
   tracks,
   groupByFamily = false,
 }: {
-  bands: { band: number; minScore: number }[]
-  rows: BandRoleRow[]
+  levels: { level: number; minScore: number }[]
+  rows: LevelRoleRow[]
   tracks: { key: string; name: string }[]
   groupByFamily?: boolean
 }) {
-  const t = useTranslations("dashboard.bands")
+  const t = useTranslations("dashboard.levels")
   const tFamily = useTranslations("dashboard.roles.family")
-  const ranges = bandRanges(bands)
-  const placed = rows.filter((row) => row.band !== null)
+  const ranges = levelRanges(levels)
+  const placed = rows.filter((row) => row.level !== null)
 
-  const renderChip = (role: BandRoleRow) => (
+  const renderChip = (role: LevelRoleRow) => (
     <motion.div
       key={role.roleId}
       layout="position"
@@ -49,8 +49,9 @@ export function BandMatrix({
     </motion.div>
   )
 
-  // No exit on the label (see BandLadder): unmounting it instantly on ungroup
-  // lets the cell's chips reflow in a single smooth FLIP instead of two phases.
+  // No exit on the label (see LevelLadder): unmounting it instantly on
+  // ungroup lets the cell's chips reflow in a single smooth FLIP instead of
+  // two phases.
   const familyLabel = (key: string, name: string) => (
     <motion.div
       key={`fam-${key}`}
@@ -88,15 +89,16 @@ export function BandMatrix({
         </thead>
         <tbody>
           {ranges.map((range) => (
-            <tr key={range.band}>
+            <tr key={range.level}>
               <th scope="row" className="text-left align-middle font-normal">
                 <div className="whitespace-nowrap font-semibold text-sm">
-                  {t("bandRow", { band: range.band })}
+                  {t("levelRow", { level: range.level })}
                 </div>
               </th>
               {tracks.map((track) => {
                 const cell = placed.filter(
-                  (row) => row.band === range.band && row.trackKey === track.key
+                  (row) =>
+                    row.level === range.level && row.trackKey === track.key
                 )
                 return (
                   <td
@@ -112,9 +114,9 @@ export function BandMatrix({
                       // Empty cell: a diagonal-hatch placeholder that fills the
                       // whole cell (matching a tall sibling, e.g. a 3-role
                       // track). The spacer floors the row height when the entire
-                      // band row is empty; the absolute hatch then stretches to
+                      // level row is empty; the absolute hatch then stretches to
                       // whatever height the row ends up being. Decorative (the
-                      // row and column headers carry the band and track).
+                      // row and column headers carry the level and track).
                       <>
                         <div aria-hidden="true" className="min-h-8" />
                         <div

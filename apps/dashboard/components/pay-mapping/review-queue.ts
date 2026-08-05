@@ -57,7 +57,7 @@ const FLAG_RANK: Record<PayGapFlag, number> = {
 
 // Worklist order for the equal-work view: worst flag first, then the widest
 // gap, then a stable key order. The equivalent-work view keeps the engine's
-// own delivered order instead (comparison count desc, then band asc, then
+// own delivered order instead (comparison count desc, then level asc, then
 // key; see womenDominatedComparisons in @workspace/core), so it never calls
 // this.
 function sortGroupsByAttention(groups: GapGroup[]): GapGroup[] {

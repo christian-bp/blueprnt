@@ -257,8 +257,8 @@ describe("accounts.audit.getAuditLogPage (browse)", () => {
           roleId: roleB,
           changes: {
             roleId: { from: roleA, to: roleB },
-            level: { from: "IC3", to: "Lead-1" },
-            levelSource: { from: "confirmed", to: "suggested" },
+            seniority: { from: "IC3", to: "Lead-1" },
+            senioritySource: { from: "confirmed", to: "suggested" },
           },
         },
       })
@@ -312,7 +312,7 @@ describe("accounts.audit.getAuditLogPage (browse)", () => {
       const modelId = await ctx.db.insert("models", {
         orgId,
         name: "Standard model",
-        bandThresholds: [],
+        levelThresholds: [],
       })
       const criterionId = await ctx.db.insert("criteria", {
         orgId,
@@ -392,7 +392,7 @@ describe("accounts.audit.getAuditLogPage (browse)", () => {
         withPayCount: 2,
         womenCount: 1,
         menCount: 1,
-        frozenModel: { criteria: [], bandThresholds: [] },
+        frozenModel: { criteria: [], levelThresholds: [] },
       })
       await logAudit(ctx, {
         orgId,

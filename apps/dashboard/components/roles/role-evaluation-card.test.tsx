@@ -27,7 +27,7 @@ type Result = {
   ratedCount: number
   totalCriteria: number
   score: number | null
-  band: number | null
+  level: number | null
   criteria: {
     criterionId: string
     name: string
@@ -44,7 +44,7 @@ const completeResult: Result = {
   ratedCount: 3,
   totalCriteria: 3,
   score: 71,
-  band: 3,
+  level: 3,
   criteria: [
     {
       criterionId: "scope",
@@ -71,7 +71,7 @@ const completeResult: Result = {
 }
 
 const designated: AnchorRoleInfo = {
-  expectedBand: 2,
+  expectedLevel: 2,
   motivation: "Reference role for the platform track",
   status: "active",
   reviewedAt: 1_700_000_000_000,
@@ -83,7 +83,7 @@ function setResult(next: Result | null) {
   onQuery((ref) => {
     if (ref === "assessment.results.getRoleResult") return next
     if (ref === "evaluationModel.model.getModel")
-      return { bandThresholds: [80, 60, 40, 20] }
+      return { levelThresholds: [80, 60, 40, 20] }
     if (ref === "assessment.anchorRoles.listAnchorRoles") return []
     return undefined
   })
@@ -148,11 +148,11 @@ describe("RoleEvaluationCard", () => {
     ).toBeDefined()
   })
 
-  it("shows the weighting, band, and breakdown once complete", () => {
+  it("shows the weighting, level, and breakdown once complete", () => {
     setResult(completeResult)
     renderCard({ ratedCount: 3, totalCriteria: 3 })
     expect(screen.getByText("Weighting 71")).toBeDefined()
-    expect(screen.getByText("Band 3")).toBeDefined()
+    expect(screen.getByText("Level 3")).toBeDefined()
     expect(screen.getByText("Complexity")).toBeDefined()
   })
 
@@ -183,7 +183,7 @@ describe("RoleEvaluationCard", () => {
     ).toBeDefined()
   })
 
-  it("leads with the computed band and flags the anchor deviation", () => {
+  it("leads with the computed level and flags the anchor deviation", () => {
     setResult(completeResult)
     renderCard({
       ratedCount: 3,
@@ -191,18 +191,21 @@ describe("RoleEvaluationCard", () => {
       isAdmin: true,
       anchorRole: designated,
     })
-    // The computed band (3) is the headline, not the agreed band (2).
-    expect(screen.getByText("Band 3")).toBeDefined()
-    // The agreed band appears only as the deviation flag (score is primary).
-    const deviation = messages.dashboard.bands.deviation.replace("{band}", "2")
+    // The computed level (3) is the headline, not the agreed level (2).
+    expect(screen.getByText("Level 3")).toBeDefined()
+    // The agreed level appears only as the deviation flag (score is primary).
+    const deviation = messages.dashboard.levels.deviation.replace(
+      "{level}",
+      "2"
+    )
     expect(screen.getByText(deviation)).toBeDefined()
-    // The band carries the anchor concept help.
+    // The level carries the anchor concept help.
     expect(
       screen.getByRole("button", {
         name: messages.dashboard.help.anchorRoleLabel,
       })
     ).toBeDefined()
-    // The anchor's motivation is shown under the band.
+    // The anchor's motivation is shown under the level.
     expect(
       screen.getByText("Reference role for the platform track")
     ).toBeDefined()
@@ -220,8 +223,8 @@ describe("RoleEvaluationCard", () => {
       isAdmin: false,
       anchorRole: designated,
     })
-    // The computed band is shown; the role is still marked as an anchor.
-    expect(screen.getByText("Band 3")).toBeDefined()
+    // The computed level is shown; the role is still marked as an anchor.
+    expect(screen.getByText("Level 3")).toBeDefined()
     openMenu()
     expect(
       screen.getByRole("menuitem", { name: detail.adjustRateCta })

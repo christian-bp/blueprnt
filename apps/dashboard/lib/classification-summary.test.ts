@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest"
 import { countClassified } from "@/lib/classification-summary"
 
-const conf = { currentAssignment: { levelSource: "confirmed" as const } }
-const sug = { currentAssignment: { levelSource: "suggested" as const } }
+const conf = { currentAssignment: { senioritySource: "confirmed" as const } }
+const sug = { currentAssignment: { senioritySource: "suggested" as const } }
 const none = { currentAssignment: null }
 
 describe("countClassified", () => {

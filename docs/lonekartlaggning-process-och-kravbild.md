@@ -24,7 +24,7 @@ Analysen ska pröva om löneskillnader har direkt eller indirekt samband med kö
 3. En **kvinnodominerad grupp** mot en icke kvinnodominerad grupp som har **högre lön trots lägre bedömda krav**.
 
 Viktiga preciseringar:
-- **Gruppering efter arbetsuppgifter, inte titlar** [DO]: "Indelningen i lika arbete ska inte bestämmas av någonting annat än likheten i arbetsuppgifter." Befattningstitel, facklig tillhörighet och avtalsområde är fel grunder. (Implikation: vår gruppering på roll + nivå fungerar för att rollerna är arbetsinnehållsprofiler, men guiden i verktyget måste säga att roller ska spegla faktiska arbetsuppgifter.)
+- **Gruppering efter arbetsuppgifter, inte titlar** [DO]: "Indelningen i lika arbete ska inte bestämmas av någonting annat än likheten i arbetsuppgifter." Befattningstitel, facklig tillhörighet och avtalsområde är fel grunder. (Implikation: vår gruppering på roll + nivå + senioritet fungerar för att rollerna är arbetsinnehållsprofiler, men guiden i verktyget måste säga att roller ska spegla faktiska arbetsuppgifter.)
 - **Ingen de minimis** [DO]: "Löneskillnaden ska analyseras oavsett hur liten den är." Varje skillnad i lika arbete ska analyseras; procenttrösklar (som våra 5/10 %-flaggor) är prioriteringspraxis, inte lag. Verktyget måste därför presentera ÄVEN gröna grupper som analyserade (med sin skillnad), inte dölja dem, och göra det möjligt att dokumentera vilken grupp som helst.
 - **Kvinnodominans** [lagtext, DO, parts]: lagen säger bara "är eller brukar anses vara kvinnodominerat". 60 %-gränsen är DO-praxis, och partsguiden kallar den uttryckligen "endast en riktpunkt". Källorna varierar mellan ">60 %" och ">=60 %"; vår inklusiva tröskel (>=60 %) är den försiktigare (fler grupper analyseras) och behålls. "Brukar anses" har också en historisk dimension (traditionellt kvinnoyrke) som ren andelsberäkning inte fångar; en framtida manuell markering kan behövas. Lagstiftaren har angett att en grupp kan bestå av EN person [parts].
 - **Gruppjämförelsen använder allas löner** [DO]: likvärdigt-jämförelsen görs på gruppnivå med både kvinnors och mäns löner (vår motor gör redan så).
@@ -32,7 +32,7 @@ Viktiga preciseringar:
 
 ## 3. Likvärdigt arbete och arbetsvärdering (10 §) [lagtext, parts]
 
-Likvärdighet avgörs genom en **sammantagen bedömning av arbetets krav och natur**: kraven bedöms med kriterier som **kunskap och färdigheter** samt **ansvar** och **ansträngning**; vid arbetets natur beaktas särskilt **arbetsförhållandena**. Individens prestation ska INTE vägas in här (den hör hemma i sakliga skäl-analysen). Faktorlistan är exemplifierande, lagen kräver en strukturerad och könsneutral metod men INTE ett systematiskt arbetsvärderingssystem; poäng och viktning är tillåtna. (Vår motor med viktpoäng och band uppfyller detta; ADR-0004/0012 står stadigt.)
+Likvärdighet avgörs genom en **sammantagen bedömning av arbetets krav och natur**: kraven bedöms med kriterier som **kunskap och färdigheter** samt **ansvar** och **ansträngning**; vid arbetets natur beaktas särskilt **arbetsförhållandena**. Individens prestation ska INTE vägas in här (den hör hemma i sakliga skäl-analysen). Faktorlistan är exemplifierande, lagen kräver en strukturerad och könsneutral metod men INTE ett systematiskt arbetsvärderingssystem; poäng och viktning är tillåtna. (Vår motor med viktpoäng och nivå uppfyller detta; ADR-0004/0012 står stadigt.)
 
 ## 4. Dokumentationskravet är trappat (13-14 §§) [lagtext, DO]
 

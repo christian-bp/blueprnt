@@ -66,9 +66,9 @@ describe("criterion editor", () => {
       expect(a?.order).toBe(1)
       expect(b?.order).toBe(2)
       expect(a?.isCustom).toBe(true)
-      // Anchors live on the criterion document (ADR-0006), level-ordered.
+      // Anchors live on the criterion document (ADR-0006), step-ordered.
       expect(a?.anchors).toHaveLength(6)
-      expect(a?.anchors.map((anchor) => anchor.level)).toEqual([
+      expect(a?.anchors.map((anchor) => anchor.step)).toEqual([
         0, 1, 2, 3, 4, 5,
       ])
     })
@@ -383,12 +383,12 @@ async function seedRatedTemplateOrganization(
   return { orgId, asAdmin, model, roleId }
 }
 
-describe("model edits shift bands live", () => {
-  it("rebalanceWeights logs band.shift when a derived band moves", async () => {
+describe("model edits shift levels live", () => {
+  it("rebalanceWeights logs level.shift when a derived level moves", async () => {
     const t = initConvexTest()
     // scope rated 5, everything else 3. Template allocation (5,4,4,3,3,3,2,2,1):
-    // raw 91 -> 20*91/27 = 67 -> Band 4. Swapping scope (5->1) with formal
-    // (1->5): raw 83 -> 61 -> Band 5.
+    // raw 91 -> 20*91/27 = 67 -> Level 4. Swapping scope (5->1) with formal
+    // (1->5): raw 83 -> 61 -> Level 5.
     const { orgId, asAdmin, model, roleId } =
       await seedRatedTemplateOrganization(t, (index) => (index === 0 ? 5 : 3))
     const scope = model.criteria[0]
@@ -410,13 +410,13 @@ describe("model edits shift bands live", () => {
       const shifts = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "band.shift")
+          q.eq("orgId", orgId).eq("type", "level.shift")
         )
         .collect()
       expect(shifts.map((row) => row.payload)).toContainEqual(
         expect.objectContaining({
           roleId,
-          changes: expect.objectContaining({ band: { from: 4, to: 5 } }),
+          changes: expect.objectContaining({ level: { from: 4, to: 5 } }),
         })
       )
     })
@@ -424,9 +424,9 @@ describe("model edits shift bands live", () => {
 
   it("removeCriterion deletes its ratings and can keep a role complete", async () => {
     const t = initConvexTest()
-    // scope 5, stakeholders 0, others 3: raw 82 over 27 points -> 60 (Band 5).
+    // scope 5, stakeholders 0, others 3: raw 82 over 27 points -> 60 (Level 5).
     // Removing stakeholders (3 points, allowed) drops nothing from the
-    // numerator but shrinks the denominator: 82 over 24 -> 68 (Band 4).
+    // numerator but shrinks the denominator: 82 over 24 -> 68 (Level 4).
     const { orgId, asAdmin, model, roleId } =
       await seedRatedTemplateOrganization(t, (index) =>
         index === 0 ? 5 : index === 5 ? 0 : 3
@@ -445,17 +445,17 @@ describe("model edits shift bands live", () => {
         )
         .collect()
       expect(orphans).toHaveLength(0)
-      // Still complete (8 of 8) with the better band.
+      // Still complete (8 of 8) with the better level.
       const shifts = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "band.shift")
+          q.eq("orgId", orgId).eq("type", "level.shift")
         )
         .collect()
       expect(shifts.map((row) => row.payload)).toContainEqual(
         expect.objectContaining({
           roleId,
-          changes: expect.objectContaining({ band: { from: 5, to: 4 } }),
+          changes: expect.objectContaining({ level: { from: 5, to: 4 } }),
         })
       )
     })
@@ -568,7 +568,7 @@ describe("model edits shift bands live", () => {
     ).rejects.toThrow(/errors.tooFewCriteria/)
   })
 
-  it("addCriterion makes complete roles incomplete (band.shift to null)", async () => {
+  it("addCriterion makes complete roles incomplete (level.shift to null)", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, roleId } = await seedRatedTemplateOrganization(t)
     await asAdmin.mutation(api.evaluationModel.criteria.addCriterion, {
@@ -582,13 +582,13 @@ describe("model edits shift bands live", () => {
       const shifts = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "band.shift")
+          q.eq("orgId", orgId).eq("type", "level.shift")
         )
         .collect()
       expect(shifts.map((row) => row.payload)).toContainEqual(
         expect.objectContaining({
           roleId,
-          changes: expect.objectContaining({ band: { from: 1, to: null } }),
+          changes: expect.objectContaining({ level: { from: 1, to: null } }),
         })
       )
     })
@@ -775,10 +775,10 @@ describe("criteria audit payloads (before/after)", () => {
     expect(changes.weightPoints).toEqual({ from: null, to: 3 })
     expect(changes.order).toEqual({ from: null, to: 1 })
     expect(changes.isCustom).toEqual({ from: null, to: true })
-    // The anchors array is captured level-ordered with from:null.
+    // The anchors array is captured step-ordered with from:null.
     expect(changes.anchors).toEqual({
       from: null,
-      to: VALID_ANCHORS.map((text, level) => ({ level, text })),
+      to: VALID_ANCHORS.map((text, step) => ({ step, text })),
     })
   })
 
@@ -813,7 +813,7 @@ describe("criteria audit payloads (before/after)", () => {
     const storedAnchors = await t.run(async (ctx) => {
       const row = (await ctx.db.get(target.criterionId)) as Doc<"criteria">
       return [...row.anchors]
-        .sort((a, b) => a.level - b.level)
+        .sort((a, b) => a.step - b.step)
         .map((anchor) => anchor.text)
     })
 
@@ -867,8 +867,8 @@ describe("criteria audit payloads (before/after)", () => {
     // Name/description/helpText unchanged -> omitted; only anchors moved.
     expect(changes.name).toBeUndefined()
     expect(changes.anchors).toEqual({
-      from: VALID_ANCHORS.map((text, level) => ({ level, text })),
-      to: changedAnchors.map((text, level) => ({ level, text })),
+      from: VALID_ANCHORS.map((text, step) => ({ step, text })),
+      to: changedAnchors.map((text, step) => ({ step, text })),
     })
   })
 
@@ -968,16 +968,16 @@ describe("criteria audit payloads (before/after)", () => {
     expect(allKeys(payload)).not.toContain("notes")
   })
 
-  it("threads cause.event = model.updated + criterionId onto add/remove band shifts", async () => {
+  it("threads cause.event = model.updated + criterionId onto add/remove level shifts", async () => {
     const t = initConvexTest()
-    // Seeding the ratings produces rating.change-caused band shifts; the
+    // Seeding the ratings produces rating.change-caused level shifts; the
     // criterion mutations below add model.updated-caused ones. We only assert
     // about the model.updated shifts.
     const { orgId, asAdmin, roleId } = await seedRatedTemplateOrganization(
       t,
       (index) => (index === 0 ? 5 : 3)
     )
-    // addCriterion flips the role to incomplete -> band.shift with cause.
+    // addCriterion flips the role to incomplete -> level.shift with cause.
     await asAdmin.mutation(api.evaluationModel.criteria.addCriterion, {
       orgId,
       name: "Collaboration",
@@ -989,7 +989,7 @@ describe("criteria audit payloads (before/after)", () => {
       const shifts = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "band.shift")
+          q.eq("orgId", orgId).eq("type", "level.shift")
         )
         .collect()
       const modelShifts = shifts.filter(
@@ -1010,7 +1010,7 @@ describe("criteria audit payloads (before/after)", () => {
     })
   })
 
-  it("threads cause.entityId = modelId for weights.rebalanced band shifts", async () => {
+  it("threads cause.entityId = modelId for weights.rebalanced level shifts", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, model } = await seedRatedTemplateOrganization(
       t,
@@ -1035,7 +1035,7 @@ describe("criteria audit payloads (before/after)", () => {
       const shifts = await ctx.db
         .query("auditLog")
         .withIndex("by_org_type", (q) =>
-          q.eq("orgId", orgId).eq("type", "band.shift")
+          q.eq("orgId", orgId).eq("type", "level.shift")
         )
         .collect()
       const rebalanceShifts = shifts.filter(

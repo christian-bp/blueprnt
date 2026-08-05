@@ -5,7 +5,7 @@ import { orgMutation } from "../lib/functions"
 import { writeAssignment } from "./assignments"
 import { buildTitleGroups } from "./classificationShared"
 
-// Shared classification routine. Computes and persists levelSource:"suggested"
+// Shared classification routine. Computes and persists senioritySource:"suggested"
 // assignments for people whose title matched a role (Plan 1 engines, via the
 // shared buildTitleGroups helper, no AI). Idempotent; never overwrites
 // confirmed. Writes a PII-free audit summary. Callers: the public
@@ -68,15 +68,17 @@ export async function classifyOrg(
             .collect()
         ).find((a) => a.endedAt === undefined) ?? null
 
-      // buildTitleGroups always populates suggestedLevelByPerson for every
+      // buildTitleGroups always populates suggestedSeniorityByPerson for every
       // person in a matched group (role is defined here). A miss means the
       // shared helper and this write path have diverged; fail loud rather than
       // silently recompute with different engine inputs (which would disagree
       // with listPeopleByTitle).
-      const level = group.suggestedLevelByPerson.get(person._id as string)
-      if (level === null || level === undefined) {
+      const seniority = group.suggestedSeniorityByPerson.get(
+        person._id as string
+      )
+      if (seniority === null || seniority === undefined) {
         throw new Error(
-          `classifyOrg invariant: no suggested level for person ${person._id}`
+          `classifyOrg invariant: no suggested seniority for person ${person._id}`
         )
       }
 
@@ -88,9 +90,9 @@ export async function classifyOrg(
       // suggestable here too, rather than skip re-classification forever.
       if (
         open !== null &&
-        ((open.levelSource === "confirmed" &&
+        ((open.senioritySource === "confirmed" &&
           roleById.has(open.roleId as string)) ||
-          (open.roleId === role._id && open.level === level))
+          (open.roleId === role._id && open.seniority === seniority))
       ) {
         skipped += 1
         continue
@@ -101,8 +103,8 @@ export async function classifyOrg(
         actorId,
         personId: person._id,
         roleId: role._id,
-        level,
-        levelSource: "suggested",
+        seniority,
+        senioritySource: "suggested",
         effectiveAt:
           open !== null && now <= open.effectiveAt ? open.effectiveAt + 1 : now,
       })

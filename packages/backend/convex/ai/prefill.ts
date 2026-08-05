@@ -81,7 +81,7 @@ const PREFILL_CONCURRENCY =
 //
 // ADR-0003 note: this is a deliberate, scoped softening of "AI output is a
 // suggestion HR confirms". The auto-applied text is name-derived profile copy
-// the user edits later, and the deterministic score/band path never depends
+// the user edits later, and the deterministic score/level path never depends
 // on it (ADR-0002). Provenance is preserved by: one aiUsageEvents row PER CALL
 // and a per-role role.updated audit row (written by applyPrefill).
 //

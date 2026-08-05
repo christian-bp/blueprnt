@@ -1,4 +1,4 @@
-import { TRACK_LEVELS } from "@workspace/constants"
+import { TRACK_SENIORITIES } from "@workspace/constants"
 import { describe, expect, it } from "vitest"
 import { api, components } from "../_generated/api"
 import { initConvexTest } from "../testing.helpers"
@@ -27,7 +27,7 @@ async function seedPersonAndFreeze(t: ReturnType<typeof initConvexTest>) {
   })
   const asAdmin = t.withIdentity({ subject: userId })
 
-  // Model with criteria + band thresholds.
+  // Model with criteria + level thresholds.
   await asAdmin.mutation(api.evaluationModel.model.createModelFromTemplate, {
     orgId,
   })
@@ -37,10 +37,11 @@ async function seedPersonAndFreeze(t: ReturnType<typeof initConvexTest>) {
   if (model === null) throw new Error("seed: model")
   const track = model.tracks[0]
   if (track === undefined) throw new Error("seed: track")
-  const level = TRACK_LEVELS[track.key as keyof typeof TRACK_LEVELS][0]
-  if (level === undefined) throw new Error("seed: level")
+  const seniority =
+    TRACK_SENIORITIES[track.key as keyof typeof TRACK_SENIORITIES][0]
+  if (seniority === undefined) throw new Error("seed: seniority")
 
-  // One role, fully evaluated (all criteria rated => complete => band/score).
+  // One role, fully evaluated (all criteria rated => complete => level/score).
   const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
     orgId,
     title: "Software Engineer",
@@ -81,8 +82,8 @@ async function seedPersonAndFreeze(t: ReturnType<typeof initConvexTest>) {
     orgId,
     personId,
     roleId,
-    level,
-    levelSource: "confirmed",
+    seniority,
+    senioritySource: "confirmed",
   })
   await t.run(async (ctx) => {
     await ctx.db.insert("payRecords", {
@@ -108,7 +109,7 @@ async function seedPersonAndFreeze(t: ReturnType<typeof initConvexTest>) {
 }
 
 describe("erasure pseudonymizes snapshot rows", () => {
-  it("tombstones name + clears birthDate, keeps gender/band/pay", async () => {
+  it("tombstones name + clears birthDate, keeps gender/level/pay", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin, personId, publicId } = await seedPersonAndFreeze(t)
 
@@ -129,9 +130,9 @@ describe("erasure pseudonymizes snapshot rows", () => {
     expect(rows[0]?.erased).toBe(true)
     expect(rows[0]?.displayName).toBe("deleted user")
     expect(rows[0]?.birthDate).toBeUndefined()
-    // Aggregate is kept: gender/band/pay survive the erasure untouched.
+    // Aggregate is kept: gender/level/pay survive the erasure untouched.
     expect(rows[0]?.gender).toBe("Kvinna")
-    expect(typeof rows[0]?.band).toBe("number")
+    expect(typeof rows[0]?.level).toBe("number")
     expect(rows[0]?.basicMonthly).toBe(50000)
 
     // The live person row is gone.

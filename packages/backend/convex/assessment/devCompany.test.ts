@@ -1,5 +1,5 @@
 import {
-  assignBand,
+  assignLevel,
   type RatingValue,
   scoreRole,
   type WeightPoints,
@@ -7,13 +7,13 @@ import {
 import { describe, expect, it } from "vitest"
 import {
   CRITERION_KEYS,
-  DEFAULT_BAND_THRESHOLDS,
+  DEFAULT_LEVEL_THRESHOLDS,
   DEFAULT_WEIGHT_POINTS,
 } from "../evaluationModel/standardTemplate"
 import { DEV_COMPANY, RATINGS_BY_TITLE } from "./devCompany"
 
-const THRESHOLDS = DEFAULT_BAND_THRESHOLDS.map((t) => ({
-  band: t.band,
+const THRESHOLDS = DEFAULT_LEVEL_THRESHOLDS.map((t) => ({
+  level: t.level,
   minScore: t.minScore,
 }))
 
@@ -29,7 +29,7 @@ function evaluate(ratings: readonly number[], weights: Record<string, number>) {
     value: (ratings[i] ?? 0) as RatingValue,
   }))
   const score = scoreRole(ratingInputs, criteria)
-  return { score, band: assignBand(score, THRESHOLDS) }
+  return { score, level: assignLevel(score, THRESHOLDS) }
 }
 
 const DEFAULT_WEIGHTS: Record<string, number> = Object.fromEntries(
@@ -54,34 +54,39 @@ const ALL_TITLES = DEV_COMPANY.flatMap((f) => f.roles.map((r) => r.title))
 
 describe("devCompany ratings", () => {
   it("has a 0-5 ratings vector of length 9 for every role", () => {
+    // Both directions: every title has a vector, no orphan vectors linger for
+    // renamed/removed titles, and duplicate titles would break the equality.
+    expect(Object.keys(RATINGS_BY_TITLE).sort()).toEqual([...ALL_TITLES].sort())
     for (const title of ALL_TITLES) {
       const vector = RATINGS_BY_TITLE[title]
       expect(vector, `ratings for ${title}`).toBeDefined()
       expect(vector?.length).toBe(CRITERION_KEYS.length)
       for (const value of vector ?? []) {
+        expect(Number.isInteger(value)).toBe(true)
         expect(value).toBeGreaterThanOrEqual(0)
         expect(value).toBeLessThanOrEqual(5)
       }
     }
   })
 
-  it("produces a real default-weight band spread with leadership on top", () => {
+  it("produces a real default-weight level spread with leadership on top", () => {
     const dist: Record<number, number> = {}
-    const bandByTitle: Record<string, number> = {}
+    const levelByTitle: Record<string, number> = {}
     for (const title of ALL_TITLES) {
-      const { band } = evaluate(RATINGS_BY_TITLE[title] ?? [], DEFAULT_WEIGHTS)
-      dist[band] = (dist[band] ?? 0) + 1
-      bandByTitle[title] = band
+      const { level } = evaluate(RATINGS_BY_TITLE[title] ?? [], DEFAULT_WEIGHTS)
+      dist[level] = (dist[level] ?? 0) + 1
+      levelByTitle[title] = level
     }
-    console.log("default band distribution:", dist)
-    // Spread across several bands, not all clustered in one.
+    // Spread across several levels, not all clustered in one.
     expect(Object.keys(dist).length).toBeGreaterThanOrEqual(4)
-    // The CEO sits in the top (lowest-numbered) occupied band.
-    const topBand = Math.min(...Object.keys(dist).map(Number))
-    expect(bandByTitle.CEO).toBe(topBand)
+    // The demo reaches the actual top level, and the CEO is what sits there;
+    // pinning the absolute level (not just "top occupied") catches a retune
+    // that silently empties level 1.
+    expect(levelByTitle.CEO).toBe(1)
+    expect(dist[1]).toBeGreaterThanOrEqual(1)
   })
 
-  it("re-weighting toward technical criteria moves the bands", () => {
+  it("re-weighting toward technical criteria moves the levels", () => {
     const ceoBase = evaluate(RATINGS_BY_TITLE.CEO ?? [], DEFAULT_WEIGHTS)
     const ceoTech = evaluate(RATINGS_BY_TITLE.CEO ?? [], TECH_WEIGHTS)
     const archBase = evaluate(
@@ -100,10 +105,6 @@ describe("devCompany ratings", () => {
       RATINGS_BY_TITLE["Software Developer"] ?? [],
       TECH_WEIGHTS
     )
-    console.log("CEO", ceoBase, "->", ceoTech)
-    console.log("Cloud Architect", archBase, "->", archTech)
-    console.log("Developer", devBase, "->", devTech)
-
     // Default: the CEO outranks the complexity/knowledge-peaked architect.
     expect(ceoBase.score).toBeGreaterThan(archBase.score)
     // Technical weighting moves the two in opposite directions: the CEO dips
@@ -111,7 +112,7 @@ describe("devCompany ratings", () => {
     // the architect's technical peak rises.
     expect(ceoTech.score).toBeLessThan(ceoBase.score)
     expect(archTech.score).toBeGreaterThan(archBase.score)
-    // A developer climbs at least one band under technical weighting.
-    expect(devTech.band).toBeLessThan(devBase.band)
+    // A developer climbs at least one level under technical weighting.
+    expect(devTech.level).toBeLessThan(devBase.level)
   })
 })

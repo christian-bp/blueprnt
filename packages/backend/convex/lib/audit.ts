@@ -30,7 +30,7 @@ export const AUDIT_EVENTS = {
   roleUpdated: "role.updated",
   roleArchived: "role.archived",
   ratingChanged: "rating.change",
-  bandShift: "band.shift",
+  levelShift: "level.shift",
   anchorRoleDesignated: "anchorRole.designated",
   anchorRoleUpdated: "anchorRole.updated",
   roleFamilyCreated: "roleFamily.created",
@@ -80,7 +80,7 @@ export function categoryForEvent(type: string): AuditCategory | undefined {
     type.startsWith("role.") ||
     type.startsWith("roleFamily.") ||
     type.startsWith("rating.") ||
-    type.startsWith("band.") ||
+    type.startsWith("level.") ||
     type.startsWith("anchorRole.")
   )
     return "role"
@@ -164,7 +164,7 @@ const AUDIT_SUBJECTS: {
   "role.updated": (payload) => ({ kind: "role", id: payload.roleId }),
   "role.archived": (payload) => ({ kind: "role", id: payload.roleId }),
   "rating.change": (payload) => ({ kind: "role", id: payload.roleId }),
-  "band.shift": (payload) => ({ kind: "role", id: payload.roleId }),
+  "level.shift": (payload) => ({ kind: "role", id: payload.roleId }),
   "anchorRole.designated": (payload) => ({ kind: "role", id: payload.roleId }),
   "anchorRole.updated": (payload) => ({ kind: "role", id: payload.roleId }),
   "roleFamily.created": null,
@@ -230,7 +230,7 @@ export function subjectForEvent<E extends AuditEvent>(
 // its own `changes.*.{from,to}` (bulk children like created/removed criteria);
 // each `suggestions[]` element's scalar values (dropped AI suggestions); and each
 // `moves[]` element's `fromLabel`, `toLabel`, and `motivation` (AI weight-move
-// rationales). Booleans, nulls, object-valued from/to (anchors, bandThresholds),
+// rationales). Booleans, nulls, object-valued from/to (anchors, levelThresholds),
 // and any deeper nesting are ignored on purpose; pushScalar drops non-scalars.
 function collectPayloadLeaves(payload: Record<string, unknown>): string[] {
   const leaves: string[] = []
@@ -428,14 +428,14 @@ export function buildDeleteChanges(
   return changes
 }
 
-// Returns { anchors: { from, to } } only when any level-ordered anchor text
+// Returns { anchors: { from, to } } only when any step-ordered anchor text
 // differs between before and after, else {}. Needed because buildChanges
 // compares arrays by reference and would always flag anchors as changed. The
-// arrays are compared positionally (already stored ordered by level): a length
-// change or any differing level/text at a position counts as a difference.
+// arrays are compared positionally (already stored ordered by step): a length
+// change or any differing step/text at a position counts as a difference.
 export function anchorDiff(
-  before: Array<{ level: number; text: string }>,
-  after: Array<{ level: number; text: string }>
+  before: Array<{ step: number; text: string }>,
+  after: Array<{ step: number; text: string }>
 ): Record<"anchors", { from: unknown; to: unknown }> | Record<string, never> {
   let differs = before.length !== after.length
   if (!differs) {
@@ -446,7 +446,7 @@ export function anchorDiff(
         differs = true
         break
       }
-      if (a.level !== b.level || a.text !== b.text) {
+      if (a.step !== b.step || a.text !== b.text) {
         differs = true
         break
       }
@@ -473,18 +473,18 @@ export const CRITERION_AUDIT_FIELDS = [
 // The anchor-role designation fields diffed by anchorRoles.ts (designate/update).
 // roles.ts and starters.ts archive paths diff only the status/reviewedAt subset.
 export const ANCHOR_AUDIT_FIELDS = [
-  "expectedBand",
+  "expectedLevel",
   "motivation",
   "status",
   "reviewedAt",
 ] as const
 
-// The model document fields diffed on create/discard (anchors and band
+// The model document fields diffed on create/discard (anchors and level
 // thresholds ride on the model row, ADR-0006).
 export const MODEL_AUDIT_FIELDS = [
   "name",
   "templateKey",
-  "bandThresholds",
+  "levelThresholds",
 ] as const
 
 // The organization settings fields diffed on settingsUpdated.
@@ -639,8 +639,8 @@ export const PAY_AUDIT_FIELDS = ["payYear", "source", "currency"] as const
 // detail sheet, and the frontend labels it "Role".
 export const ASSIGNMENT_AUDIT_FIELDS = [
   "roleId",
-  "level",
-  "levelSource",
+  "seniority",
+  "senioritySource",
 ] as const
 
 // The pay-gap documentation fields diffed on payMapping.groupAnalysisUpdated
@@ -671,7 +671,7 @@ export function criterionCreateItem(args: {
   helpText?: string
   weightPoints: number
   isCustom: boolean
-  anchors?: Array<{ level: number; text: string }>
+  anchors?: Array<{ step: number; text: string }>
 }): {
   criterionId?: string
   label: string

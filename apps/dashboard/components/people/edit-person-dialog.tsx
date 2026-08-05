@@ -28,7 +28,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import { isValidLevelForTrack, TRACK_LEVELS } from "@workspace/constants"
+import {
+  isValidSeniorityForTrack,
+  TRACK_SENIORITIES,
+} from "@workspace/constants"
 import { useMutation } from "convex/react"
 import { useTranslations } from "next-intl"
 import { useEffect, useMemo, useState } from "react"
@@ -67,8 +70,8 @@ export interface EditablePerson {
 
 // Zod factory (messages via i18n): name and gender stay required; the rest
 // may be empty, and an emptied field CLEARS the stored value on save. The
-// role + level pair is optional as a pair (an unassigned person can stay
-// unassigned); a picked role requires a level valid for its track
+// role + seniority pair is optional as a pair (an unassigned person can stay
+// unassigned); a picked role requires a seniority valid for its track
 // (ADR-0005).
 function makeEditPersonSchema(t: ValidationT, roles: AssignableRole[]) {
   return z
@@ -76,7 +79,7 @@ function makeEditPersonSchema(t: ValidationT, roles: AssignableRole[]) {
       displayName: z.string().trim().min(1, t("required")),
       gender: z.enum(GENDER_VALUES, { error: t("required") }),
       roleId: z.string(),
-      level: z.string(),
+      seniority: z.string(),
       externalRef: z.string().trim(),
       department: z.string().trim(),
       employmentStartDate: z.string(),
@@ -88,10 +91,10 @@ function makeEditPersonSchema(t: ValidationT, roles: AssignableRole[]) {
         const role = roles.find((r) => r.roleId === values.roleId)
         return (
           role !== undefined &&
-          isValidLevelForTrack(role.trackKey, values.level)
+          isValidSeniorityForTrack(role.trackKey, values.seniority)
         )
       },
-      { path: ["level"], message: t("required") }
+      { path: ["seniority"], message: t("required") }
     )
 }
 
@@ -106,13 +109,13 @@ function isPersonRefExistsError(error: unknown): boolean {
 // Maps a person + assignment to the form's value shape (absent becomes "").
 function toFormValues(
   person: EditablePerson,
-  currentAssignment: { roleId: string; level: string } | null
+  currentAssignment: { roleId: string; seniority: string } | null
 ): EditPersonValues {
   return {
     displayName: person.displayName,
     gender: person.gender,
     roleId: currentAssignment?.roleId ?? "",
-    level: currentAssignment?.level ?? "",
+    seniority: currentAssignment?.seniority ?? "",
     externalRef: person.externalRef ?? "",
     department: person.department ?? "",
     employmentStartDate: person.employmentStartDate ?? "",
@@ -121,12 +124,12 @@ function toFormValues(
 }
 
 // Full-field editing of an employee from the person page (the actions menu
-// carries the trigger): identity details plus the role + level pair in ONE
-// dialog. Pre-filled and therefore gated on isDirty as well as isValid, so
-// an unchanged form cannot fire a no-op mutation. The backend clears an
+// carries the trigger): identity details plus the role + seniority pair in
+// ONE dialog. Pre-filled and therefore gated on isDirty as well as isValid,
+// so an unchanged form cannot fire a no-op mutation. The backend clears an
 // identity field when it receives "" (or null for FTE): an explicit manual
 // decision, unlike the import path where an absent field never clears. A
-// changed role or level writes a CONFIRMED assignment through the same
+// changed role or seniority writes a CONFIRMED assignment through the same
 // mutation the classify surface uses.
 export function EditPersonDialog({
   open,
@@ -139,7 +142,7 @@ export function EditPersonDialog({
   onOpenChange: (open: boolean) => void
   person: EditablePerson
   roles: AssignableRole[]
-  currentAssignment: { roleId: string; level: string } | null
+  currentAssignment: { roleId: string; seniority: string } | null
 }) {
   const t = useTranslations("dashboard.people.editPerson")
   const tForm = useTranslations("dashboard.people.personForm")
@@ -182,8 +185,10 @@ export function EditPersonDialog({
 
   const selectedRoleId = form.watch("roleId")
   const selectedRole = roles.find((r) => r.roleId === selectedRoleId)
-  const levels = selectedRole
-    ? (TRACK_LEVELS[selectedRole.trackKey as keyof typeof TRACK_LEVELS] ?? [])
+  const seniorities = selectedRole
+    ? (TRACK_SENIORITIES[
+        selectedRole.trackKey as keyof typeof TRACK_SENIORITIES
+      ] ?? [])
     : []
 
   async function onSubmit(values: EditPersonValues) {
@@ -209,20 +214,20 @@ export function EditPersonDialog({
       }
       return
     }
-    // A changed role/level pair writes a confirmed assignment; unchanged
+    // A changed role/seniority pair writes a confirmed assignment; unchanged
     // classification writes nothing (effective-dated history stays clean).
     const assignmentChanged =
       values.roleId !== "" &&
       (values.roleId !== (currentAssignment?.roleId ?? "") ||
-        values.level !== (currentAssignment?.level ?? ""))
+        values.seniority !== (currentAssignment?.seniority ?? ""))
     if (assignmentChanged) {
       try {
         await assignPerson({
           orgId,
           personId: person.personId,
           roleId: values.roleId as Id<"roles">,
-          level: values.level,
-          levelSource: "confirmed",
+          seniority: values.seniority,
+          senioritySource: "confirmed",
         })
       } catch {
         setFailure(true)
@@ -318,19 +323,24 @@ export function EditPersonDialog({
                       onValueChange={(value) => {
                         field.onChange(value)
                         // A role on another track invalidates the picked
-                        // level: fall back to the new track's first level.
+                        // seniority: fall back to the new track's first
+                        // seniority.
                         const role = roles.find((r) => r.roleId === value)
-                        const trackLevels = role
-                          ? (TRACK_LEVELS[
-                              role.trackKey as keyof typeof TRACK_LEVELS
+                        const trackSeniorities = role
+                          ? (TRACK_SENIORITIES[
+                              role.trackKey as keyof typeof TRACK_SENIORITIES
                             ] ?? [])
                           : []
-                        const level = form.getValues("level")
-                        if (!trackLevels.includes(level)) {
-                          form.setValue("level", trackLevels[0] ?? "", {
-                            shouldValidate: true,
-                            shouldDirty: true,
-                          })
+                        const seniority = form.getValues("seniority")
+                        if (!trackSeniorities.includes(seniority)) {
+                          form.setValue(
+                            "seniority",
+                            trackSeniorities[0] ?? "",
+                            {
+                              shouldValidate: true,
+                              shouldDirty: true,
+                            }
+                          )
                         }
                       }}
                     >
@@ -357,10 +367,10 @@ export function EditPersonDialog({
               />
               <FormField
                 control={form.control}
-                name="level"
+                name="seniority"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{tDetail("level")}</FormLabel>
+                    <FormLabel>{tDetail("seniority")}</FormLabel>
                     {/* Keyed by track: a cross-track role change must remount
                         options and value together (the bubble select
                         otherwise fires a spurious ""). */}
@@ -377,14 +387,14 @@ export function EditPersonDialog({
                           className="w-full"
                         >
                           <SelectValue
-                            placeholder={tForm("levelPlaceholder")}
+                            placeholder={tForm("seniorityPlaceholder")}
                           />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {levels.map((level) => (
-                          <SelectItem key={level} value={level}>
-                            {level}
+                        {seniorities.map((seniority) => (
+                          <SelectItem key={seniority} value={seniority}>
+                            {seniority}
                           </SelectItem>
                         ))}
                       </SelectContent>

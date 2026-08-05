@@ -71,17 +71,17 @@ export default function RolesPage() {
     )
   }
 
-  // Band lives in the results query (only complete roles have one); merge it
+  // Level lives in the results query (only complete roles have one); merge it
   // onto each row so the table can show the outcome.
-  const bandByRole = new Map(
+  const levelByRole = new Map(
     results.rows.map((resultRow) => [
       resultRow.roleId as string,
-      resultRow.band ?? null,
+      resultRow.level ?? null,
     ])
   )
   const rows = roles.map((role) => ({
     ...role,
-    band: bandByRole.get(role.roleId as string) ?? null,
+    level: levelByRole.get(role.roleId as string) ?? null,
   }))
 
   return (

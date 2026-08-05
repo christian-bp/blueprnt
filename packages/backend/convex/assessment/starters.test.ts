@@ -42,7 +42,7 @@ describe("getIndustryStarter", () => {
     )
     expect(starter.families.length).toBeGreaterThan(0)
     expect(starter.families[0]?.name).toBe("Engineering")
-    // One role per JOB (ADR-0005): no junior/senior variants, no level.
+    // One role per JOB (ADR-0005): no junior/senior variants, no seniority.
     // The predefined profile (purpose + responsibilities) rides along, so a
     // template create makes the role arrive profileComplete.
     const role = starter.families[0]?.roles[0]
@@ -576,8 +576,8 @@ describe("reconcileStarterSet", () => {
       throw new Error("seed")
     }
     // Fully rate the soon-archived role (one rating per criterion) so it has a
-    // computed band: its ratings must survive the archive, and archiving it must
-    // log the band.shift as the band drops out of the results set.
+    // computed level: its ratings must survive the archive, and archiving it must
+    // log the level.shift as the level drops out of the results set.
     const criteriaCount = await t.run(async (ctx) => {
       const model = await ctx.db
         .query("models")
@@ -631,18 +631,18 @@ describe("reconcileStarterSet", () => {
     expect(
       (archived[0]?.payload as { roleId: string } | undefined)?.roleId
     ).toBe(goner.roleId)
-    // A fully-rated role leaving the results set logs exactly one band.shift
-    // (band -> null), mirroring archiveRole, so the reconcile band history is
-    // complete. The un-rated Keeper stays band null throughout and shifts none.
-    const shifts = await auditOfType(t, orgId, "band.shift")
+    // A fully-rated role leaving the results set logs exactly one level.shift
+    // (level -> null), mirroring archiveRole, so the reconcile level history is
+    // complete. The un-rated Keeper stays level null throughout and shifts none.
+    const shifts = await auditOfType(t, orgId, "level.shift")
     expect(shifts).toHaveLength(1)
     const shiftPayload = shifts[0]?.payload as {
       roleId: string
-      changes: { band: { from: unknown; to: unknown } }
+      changes: { level: { from: unknown; to: unknown } }
     }
     expect(shiftPayload.roleId).toBe(goner.roleId)
-    expect(typeof shiftPayload.changes.band.from).toBe("number")
-    expect(shiftPayload.changes.band.to).toBeNull()
+    expect(typeof shiftPayload.changes.level.from).toBe("number")
+    expect(shiftPayload.changes.level.to).toBeNull()
   })
 
   it("removes a family that becomes empty when its roles are dropped", async () => {
@@ -1294,7 +1294,7 @@ describe("reconcileStarterSet audit before/after", () => {
     expect(payload.changes.archivedAt?.to).toBe(storedArchivedAt)
   })
 
-  it("captures computedBand on the via-reconcile anchorRole.updated row", async () => {
+  it("captures computedLevel on the via-reconcile anchorRole.updated row", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedTemplateOrganization(t)
     await asAdmin.mutation(api.assessment.starters.reconcileStarterSet, {
@@ -1319,7 +1319,7 @@ describe("reconcileStarterSet audit before/after", () => {
       throw new Error("seed")
     }
 
-    // Fully rate the soon-archived role (all 5 -> top band) so it has a
+    // Fully rate the soon-archived role (all 5 -> top level) so it has a
     // complete assessment and can be designated as a calibration anchor.
     await t.run(async (ctx) => {
       const model = await ctx.db
@@ -1345,7 +1345,7 @@ describe("reconcileStarterSet audit before/after", () => {
     await asAdmin.mutation(api.assessment.anchorRoles.designateAnchorRole, {
       orgId,
       roleId: anchor.roleId,
-      expectedBand: 1,
+      expectedLevel: 1,
       motivation: "Reference role for engineering.",
     })
 
@@ -1369,14 +1369,14 @@ describe("reconcileStarterSet audit before/after", () => {
     const payload = viaReconcile?.payload as {
       roleId: string
       viaReconcile: boolean
-      computedBand: number | null
+      computedLevel: number | null
       changes: Changes
     }
     expect(payload.roleId).toBe(anchor.roleId)
     expect(payload.viaReconcile).toBe(true)
-    // The live pre-archive band (top band, all ratings 5), captured before
+    // The live pre-archive level (top level, all ratings 5), captured before
     // the role leaves the results set, sourced from the single pre-loop derive.
-    expect(payload.computedBand).toBe(1)
+    expect(payload.computedLevel).toBe(1)
     // The retire diff is still recorded alongside the new field.
     expect(payload.changes.status).toMatchObject({ to: "replaced" })
   })

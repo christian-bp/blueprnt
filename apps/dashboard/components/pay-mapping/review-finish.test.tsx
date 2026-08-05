@@ -50,8 +50,8 @@ function equalWorkGroup(overrides: Partial<GapGroup> = {}): GapGroup {
   return {
     key: "k",
     roleTitle: "Role",
-    level: "Level",
-    band: 3,
+    seniority: "Seniority",
+    level: 3,
     womenCount: 2,
     menCount: 2,
     womenMeanComp: 90000,

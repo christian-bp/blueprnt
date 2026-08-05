@@ -38,7 +38,7 @@ const PEOPLE_NEUTRAL = [
       {
         currentAssignment: {
           roleId: "neutral-staffed",
-          levelSource: "confirmed" as const,
+          senioritySource: "confirmed" as const,
         },
       },
     ],
@@ -167,7 +167,9 @@ describe("buildTodo", () => {
           // One suggested + one unassigned: both awaiting confirmation.
           title: "Sales Manager",
           people: [
-            { currentAssignment: { roleId: "r2", levelSource: "suggested" } },
+            {
+              currentAssignment: { roleId: "r2", senioritySource: "suggested" },
+            },
             { currentAssignment: null },
           ],
         },
@@ -175,7 +177,9 @@ describe("buildTodo", () => {
           // Fully confirmed: nothing to do, excluded.
           title: "Backend Engineer",
           people: [
-            { currentAssignment: { roleId: "r1", levelSource: "confirmed" } },
+            {
+              currentAssignment: { roleId: "r1", senioritySource: "confirmed" },
+            },
           ],
         },
       ],
@@ -282,7 +286,9 @@ describe("buildTodo startPayMapping group", () => {
         {
           title: "Backend Engineer",
           people: [
-            { currentAssignment: { roleId: "r1", levelSource: "confirmed" } },
+            {
+              currentAssignment: { roleId: "r1", senioritySource: "confirmed" },
+            },
           ],
         },
       ],
@@ -405,7 +411,7 @@ describe("buildOverviewStats", () => {
             {
               currentAssignment: {
                 roleId: "r3",
-                levelSource: "suggested" as const,
+                senioritySource: "suggested" as const,
               },
             },
           ],

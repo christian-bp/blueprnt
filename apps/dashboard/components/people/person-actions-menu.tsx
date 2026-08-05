@@ -21,8 +21,8 @@ import { ErasePersonControl } from "@/components/people/erase-person-control"
 // The person page's unified actions menu: a single "..." trigger in the
 // employee card's header (same anatomy as FamilyActionsMenu) holding the
 // person actions: one Edit dialog covering the identity details AND the
-// role + level pair, and the GDPR erasure as a destructive item opening the
-// type-to-confirm dialog.
+// role + seniority pair, and the GDPR erasure as a destructive item opening
+// the type-to-confirm dialog.
 export function PersonActionsMenu({
   person,
   roles,
@@ -30,7 +30,7 @@ export function PersonActionsMenu({
 }: {
   person: EditablePerson
   roles: AssignableRole[]
-  currentAssignment: { roleId: string; level: string } | null
+  currentAssignment: { roleId: string; seniority: string } | null
 }) {
   const t = useTranslations("dashboard.people")
   const [detailsOpen, setDetailsOpen] = useState(false)

@@ -33,7 +33,7 @@ export function FamilyFilter({
   hidden: Set<string>
   onHiddenChange: (hidden: Set<string>) => void
 }) {
-  const t = useTranslations("dashboard.bands")
+  const t = useTranslations("dashboard.levels")
   const tFamily = useTranslations("dashboard.roles.family")
   const shownCount = options.filter((option) => !hidden.has(option.id)).length
   const label =

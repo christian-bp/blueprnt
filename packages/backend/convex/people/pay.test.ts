@@ -37,12 +37,12 @@ async function seedPerson(
   return personId
 }
 
-// Seeds a role and assigns the given person to it at the given level.
+// Seeds a role and assigns the given person to it at the given seniority.
 async function seedRoleWithAssignment(
   orgId: string,
   asAdmin: ReturnType<ReturnType<typeof initConvexTest>["withIdentity"]>,
   personId: Awaited<ReturnType<typeof seedPerson>>,
-  level = "IC3"
+  seniority = "IC3"
 ) {
   const { roleId } = await asAdmin.mutation(api.assessment.roles.createRole, {
     orgId,
@@ -55,8 +55,8 @@ async function seedRoleWithAssignment(
     orgId,
     personId,
     roleId,
-    level,
-    levelSource: "confirmed",
+    seniority,
+    senioritySource: "confirmed",
   })
   return roleId
 }
@@ -712,7 +712,7 @@ describe("deleteSalary", () => {
   })
 })
 
-describe("getSalaryHistory role/level join", () => {
+describe("getSalaryHistory role/seniority join", () => {
   it("joins each record to the assignment active at its effective time", async () => {
     const t = initConvexTest()
     const { orgId, asAdmin } = await seedOrg(t)
@@ -744,8 +744,8 @@ describe("getSalaryHistory role/level join", () => {
       orgId,
       personId,
       roleId: engineerId,
-      level: "IC3",
-      levelSource: "confirmed",
+      seniority: "IC3",
+      senioritySource: "confirmed",
       effectiveAt: 1000,
     })
     await asAdmin.mutation(api.people.pay.setSalary, {
@@ -761,8 +761,8 @@ describe("getSalaryHistory role/level join", () => {
       orgId,
       personId,
       roleId: managerId,
-      level: "M2",
-      levelSource: "confirmed",
+      seniority: "M2",
+      senioritySource: "confirmed",
       effectiveAt: 2000,
     })
     await asAdmin.mutation(api.people.pay.setSalary, {
@@ -782,8 +782,14 @@ describe("getSalaryHistory role/level join", () => {
     // Most recent first: the raise under the manager assignment, then the
     // old salary under the (now closed) engineer assignment.
     expect(history).toHaveLength(2)
-    expect(history[0]?.assignment).toEqual({ roleId: managerId, level: "M2" })
-    expect(history[1]?.assignment).toEqual({ roleId: engineerId, level: "IC3" })
+    expect(history[0]?.assignment).toEqual({
+      roleId: managerId,
+      seniority: "M2",
+    })
+    expect(history[1]?.assignment).toEqual({
+      roleId: engineerId,
+      seniority: "IC3",
+    })
   })
 
   it("returns a null assignment for a record that predates all assignments", async () => {
@@ -812,8 +818,8 @@ describe("getSalaryHistory role/level join", () => {
       orgId,
       personId,
       roleId,
-      level: "IC1",
-      levelSource: "confirmed",
+      seniority: "IC1",
+      senioritySource: "confirmed",
       effectiveAt: 1000,
     })
 
@@ -858,7 +864,7 @@ describe("getRolePayComparison", () => {
     const roleId = await seedRoleWithAssignment(orgId, asAdmin, personId)
 
     // Peer on the same role at 80% FTE: 40000 basic + 0 components
-    // grosses up to 50000. levelSource "suggested" must still count.
+    // grosses up to 50000. senioritySource "suggested" must still count.
     const { personId: peerId } = await asAdmin.mutation(
       api.people.people.createPerson,
       { orgId, displayName: "Bo Berg", gender: "Man", ftePercent: 80 }
@@ -867,8 +873,8 @@ describe("getRolePayComparison", () => {
       orgId,
       personId: peerId,
       roleId,
-      level: "IC2",
-      levelSource: "suggested",
+      seniority: "IC2",
+      senioritySource: "suggested",
     })
     await asAdmin.mutation(api.people.pay.setSalary, {
       orgId,
@@ -903,7 +909,7 @@ describe("getRolePayComparison", () => {
     expect(self).toMatchObject({
       displayName: "Anna Svensson",
       gender: "Kvinna",
-      level: "IC3",
+      seniority: "IC3",
       basic: 55000,
       variable: 5000,
       amount: 60000,
@@ -912,11 +918,11 @@ describe("getRolePayComparison", () => {
     })
     expect(self?.publicId).toBeTypeOf("string")
     // Peer: 80% FTE grosses 40000 basic to 50000, no variable; suggested
-    // level still counts.
+    // seniority still counts.
     expect(peer).toMatchObject({
       displayName: "Bo Berg",
       gender: "Man",
-      level: "IC2",
+      seniority: "IC2",
       basic: 50000,
       variable: 0,
       amount: 50000,
@@ -933,9 +939,9 @@ describe("getRolePayComparison", () => {
         "displayName",
         "gender",
         "isSelf",
-        "level",
         "payYear",
         "publicId",
+        "seniority",
         "variable",
       ])
     }
@@ -995,8 +1001,8 @@ describe("getRolePayComparison", () => {
       orgId,
       personId: eurPeer,
       roleId,
-      level: "IC2",
-      levelSource: "confirmed",
+      seniority: "IC2",
+      senioritySource: "confirmed",
     })
     // Insert the EUR record directly: setSalary now rejects any currency other
     // than the org's, so a non-org currency can only reach the DB via a
@@ -1024,8 +1030,8 @@ describe("getRolePayComparison", () => {
       orgId,
       personId: archivedPeer,
       roleId,
-      level: "IC4",
-      levelSource: "confirmed",
+      seniority: "IC4",
+      senioritySource: "confirmed",
     })
     await asAdmin.mutation(api.people.pay.setSalary, {
       orgId,

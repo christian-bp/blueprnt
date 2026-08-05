@@ -1,5 +1,5 @@
-import { isValidLevelForTrack } from "@workspace/constants"
-import { suggestLevelForPerson } from "@workspace/core"
+import { isValidSeniorityForTrack } from "@workspace/constants"
+import { suggestSeniorityForPerson } from "@workspace/core"
 import { v } from "convex/values"
 import type { Doc, Id } from "../_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
@@ -267,7 +267,7 @@ const ratingShape = v.object({
 })
 
 // Full job profile readout for the role page and the rating flow. NEVER
-// returns score or band: the blind rating flow reads this; results come from
+// returns score or level: the blind rating flow reads this; results come from
 // assessment/results.ts (assessment glossary, blindness).
 const roleDetailShape = v.object({
   roleId: v.id("roles"),
@@ -290,7 +290,7 @@ const roleDetailShape = v.object({
   anchorRole: v.union(
     v.null(),
     v.object({
-      expectedBand: v.number(),
+      expectedLevel: v.number(),
       motivation: v.string(),
       status: v.union(
         v.literal("active"),
@@ -305,7 +305,7 @@ const roleDetailShape = v.object({
 
 // Builds the full profile readout for a resolved role doc. Shared by getRole
 // (by id, from in-app navigation) and getRoleBySlug (by URL handle). NEVER
-// returns score or band: the blind rating flow reads this; results come from
+// returns score or level: the blind rating flow reads this; results come from
 // assessment/results.ts (assessment glossary, blindness).
 async function buildRoleDetail(
   ctx: QueryCtx & { orgId: string },
@@ -409,7 +409,7 @@ export const updateRole = orgMutation({
     familyId: v.optional(v.union(v.id("roleFamilies"), v.null())),
     ...optionalProfileArgs,
   },
-  returns: v.object({ levelsReset: v.number() }),
+  returns: v.object({ senioritiesReset: v.number() }),
   handler: async (ctx, args) => {
     const role = await requireOwnRole(ctx, args.roleId)
     if (role.archivedAt !== undefined) {
@@ -477,7 +477,7 @@ export const updateRole = orgMutation({
       assertFieldLength(value)
       patch[field] = value.trim()
     }
-    if (Object.keys(patch).length === 0) return { levelsReset: 0 }
+    if (Object.keys(patch).length === 0) return { senioritiesReset: 0 }
     await ctx.db.patch(args.roleId, patch)
     await ctx.audit.log({
       type: AUDIT_EVENTS.roleUpdated,
@@ -487,10 +487,10 @@ export const updateRole = orgMutation({
       },
     })
 
-    // A track change orphans every active assignment's level (ladders are
-    // disjoint: IC*/Lead-*/M*), so re-suggest a level in the new track and
+    // A track change orphans every active assignment's seniority (ladders are
+    // disjoint: IC*/Lead-*/M*), so re-suggest a seniority in the new track and
     // flag it unconfirmed. HR re-confirms via the Classify surface / to-do.
-    let levelsReset = 0
+    let senioritiesReset = 0
     if (args.trackKey !== undefined && args.trackKey !== role.trackKey) {
       const now = Date.now()
       const roleAssignments = await loadRoleAssignments(
@@ -500,12 +500,12 @@ export const updateRole = orgMutation({
       )
       for (const a of roleAssignments) {
         if (a.endedAt !== undefined) continue // closed history is untouched
-        if (isValidLevelForTrack(args.trackKey, a.level)) continue // defensive
+        if (isValidSeniorityForTrack(args.trackKey, a.seniority)) continue // defensive
         const person = await ctx.db.get(a.personId)
         // Defensive/unreachable: erasePersonAsOrg hard-deletes personAssignments
         // child-first, so a dangling personId here cannot occur in practice.
         if (person === null) continue
-        const { suggestedLevel } = suggestLevelForPerson({
+        const { suggestedSeniority } = suggestSeniorityForPerson({
           trackKey: args.trackKey,
           ...(person.title !== undefined ? { title: person.title } : {}),
           ...(person.employmentStartDate !== undefined
@@ -520,19 +520,19 @@ export const updateRole = orgMutation({
           roleId: role._id,
           // writeAssignment requires effectiveAt strictly after the open row.
           effectiveAt: Math.max(now, a.effectiveAt + 1),
-          level: suggestedLevel,
-          levelSource: "suggested",
+          seniority: suggestedSeniority,
+          senioritySource: "suggested",
         })
-        levelsReset++
+        senioritiesReset++
       }
     }
-    return { levelsReset }
+    return { senioritiesReset }
   },
 })
 
 // Soft archive: role ids are permanent and rows are never deleted
 // (assessment glossary, role-id permanence). Archived roles leave the
-// results set, so the wrap logs band.shift to null for a complete role.
+// results set, so the wrap logs level.shift to null for a complete role.
 export const archiveRole = adminMutation({
   args: { roleId: v.id("roles") },
   returns: v.null(),
@@ -582,10 +582,10 @@ export const archiveRole = adminMutation({
           changes: buildChanges(
             {
               roleId: assignment.roleId,
-              level: assignment.level,
-              levelSource: assignment.levelSource,
+              seniority: assignment.seniority,
+              senioritySource: assignment.senioritySource,
             },
-            { roleId: null, level: null, levelSource: null },
+            { roleId: null, seniority: null, senioritySource: null },
             ASSIGNMENT_AUDIT_FIELDS
           ),
         },
@@ -593,7 +593,7 @@ export const archiveRole = adminMutation({
     }
 
     const after = await deriveResults(ctx, ctx.orgId)
-    await ctx.audit.bandShifts({
+    await ctx.audit.levelShifts({
       before: before.results,
       after: after.results,
       cause: { event: AUDIT_EVENTS.roleArchived, roleId },
@@ -604,11 +604,11 @@ export const archiveRole = adminMutation({
         payload: {
           roleId,
           viaArchive: true,
-          expectedBand: role.anchorRole?.expectedBand,
-          // The live computed band of this role just before it leaves the
+          expectedLevel: role.anchorRole?.expectedLevel,
+          // The live computed level of this role just before it leaves the
           // results set, sourced from the pre-archive derive (`before`).
-          computedBand:
-            before.results.find((r) => r.roleId === roleId)?.band ?? null,
+          computedLevel:
+            before.results.find((r) => r.roleId === roleId)?.level ?? null,
           changes: buildChanges(role.anchorRole ?? {}, retiredAnchor, [
             "status",
             "reviewedAt",

@@ -45,7 +45,7 @@ vi.mock("convex/react", () => ({
         decidedAt: 1,
       },
     ],
-    bandThresholds: [],
+    levelThresholds: [],
     progress: { documented: 1, approved: 1, total: 2 },
   }),
   useMutation: () => vi.fn(),

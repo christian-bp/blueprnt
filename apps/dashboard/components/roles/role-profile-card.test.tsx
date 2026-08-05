@@ -127,7 +127,7 @@ describe("RoleProfileCard", () => {
   })
 
   it("opens the manage menu, edits, saves only the changed fields, and exits edit mode", async () => {
-    updateRoleMock.mockResolvedValue({ levelsReset: 0 })
+    updateRoleMock.mockResolvedValue({ senioritiesReset: 0 })
     renderCard(makeRole())
     startEditing()
     fireEvent.change(
@@ -179,7 +179,7 @@ describe("RoleProfileCard", () => {
   })
 
   it("leaves the family untouched when only a text field changes", async () => {
-    updateRoleMock.mockResolvedValue({ levelsReset: 0 })
+    updateRoleMock.mockResolvedValue({ senioritiesReset: 0 })
     renderCard(makeRole({ familyId: "f-tech", familyName: "Tech" }))
     startEditing()
     fireEvent.change(
@@ -281,7 +281,7 @@ describe("RoleProfileCard", () => {
   })
 
   it("edits the track and toasts the reset count", async () => {
-    updateRoleMock.mockResolvedValueOnce({ levelsReset: 2 })
+    updateRoleMock.mockResolvedValueOnce({ senioritiesReset: 2 })
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
         {/* The form wrapper makes Base UI render the track Select's hidden
@@ -323,10 +323,10 @@ describe("RoleProfileCard", () => {
       )
     })
     // The reset count surfaces as a toast; next-intl renders the ICU plural:
-    // 2 -> "2 people's levels need re-confirming.".
+    // 2 -> "2 people's seniority needs re-confirming.".
     await waitFor(() => {
       expect(vi.mocked(toast.success)).toHaveBeenCalledWith(
-        "Track changed. 2 people's levels need re-confirming."
+        "Track changed. 2 people's seniority needs re-confirming."
       )
     })
   })

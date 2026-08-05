@@ -35,8 +35,8 @@ import {
 } from "@/components/roles/role-table-toolbar"
 import {
   ROLE_SKELETON_COLUMNS,
-  RoleBandCell,
   RoleEmployeesCell,
+  RoleLevelCell,
   RoleTableHeadings,
   RoleTeamCell,
   RoleTitleCell,
@@ -74,7 +74,7 @@ export interface RolesTableRow {
   familyName: string | null
   familySlug: string | null
   employeeCount: number
-  band: number | null
+  level: number | null
 }
 
 // MODULE-LEVEL constant: state.grouping keys the grouped-row-model memo, and
@@ -153,7 +153,7 @@ const columns = columnHelper.columns([
   columnHelper.display({
     id: "evaluation",
     enableGlobalFilter: false,
-    cell: ({ row }) => <RoleBandCell band={row.original.band} />,
+    cell: ({ row }) => <RoleLevelCell level={row.original.level} />,
   }),
 ])
 

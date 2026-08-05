@@ -32,7 +32,7 @@ export function AppShell(props: {
   children: ReactNode
 }) {
   const pathname = usePathname()
-  // The band-architecture views (/work: ladder, matrix, families) are wide
+  // The level-architecture views (/work: ladder, matrix, families) are wide
   // grid surfaces that earn the whole viewport, width AND height: the inset
   // card locks to the viewport (its rounded bottom never pushed off-screen)
   // and the view scrolls inside. Every other page keeps the capped reading

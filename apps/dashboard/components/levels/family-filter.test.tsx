@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import messages from "@workspace/i18n/messages/en.json"
-import { FamilyFilter } from "@/components/bands/family-filter"
+import { FamilyFilter } from "@/components/levels/family-filter"
 
 const OPTIONS = [
   { id: "f1", name: "Engineering" },
@@ -52,7 +52,7 @@ describe("FamilyFilter", () => {
     const onHiddenChange = renderFilter(new Set(["f1"]))
     expect(
       screen.getByText(
-        messages.dashboard.bands.familiesShown
+        messages.dashboard.levels.familiesShown
           .replace("{shown}", "1")
           .replace("{total}", "2")
       )
@@ -71,7 +71,7 @@ describe("FamilyFilter", () => {
     openMenu()
     fireEvent.click(
       await screen.findByRole("menuitem", {
-        name: messages.dashboard.bands.selectAll,
+        name: messages.dashboard.levels.selectAll,
       })
     )
     expect(onHiddenChange).toHaveBeenCalledWith(new Set())

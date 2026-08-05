@@ -8,7 +8,7 @@ import {
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
-import { LevelBadge } from "@/components/track-badge"
+import { SeniorityBadge } from "@/components/track-badge"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -128,8 +128,9 @@ export function PersonDetail({ publicId }: { publicId: string }) {
 
   // Loading: hold the skeleton until every query has resolved. assignment and
   // roles being undefined (still loading) would cause the classification block
-  // to flash "no assignment" then re-render with the real level, so the gate
-  // covers all four queries. null/empty still passes (loaded but absent data).
+  // to flash "no assignment" then re-render with the real seniority, so the
+  // gate covers all four queries. null/empty still passes (loaded but absent
+  // data).
   // Mirror the loaded two-card layout so nothing reflows when data arrives.
   const skeleton = (
     <div className="space-y-6">
@@ -232,8 +233,8 @@ export function PersonDetail({ publicId }: { publicId: string }) {
         null)
       : null
 
-  // Role titles for the salary history's role/level join (a missing role,
-  // e.g. deleted, still shows the level alone).
+  // Role titles for the salary history's role/seniority join (a missing
+  // role, e.g. deleted, still shows the seniority alone).
   const roleTitleById = new Map(roles.map((r) => [String(r.roleId), r.title]))
 
   return (
@@ -266,7 +267,7 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                   assignment !== null
                     ? {
                         roleId: String(assignment.roleId),
-                        level: assignment.level,
+                        seniority: assignment.seniority,
                       }
                     : null
                 }
@@ -315,11 +316,11 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                         {role.title}
                       </Link>
                     )}
-                    {/* The level in the app-wide track-tinted badge. A
-                        suggested level is provisional: the hint beside it
+                    {/* The seniority in the app-wide track-tinted badge. A
+                        suggested seniority is provisional: the hint beside it
                         links to Classify, where the confirmation happens. */}
-                    <LevelBadge level={assignment.level} />
-                    {assignment.levelSource === "suggested" && (
+                    <SeniorityBadge seniority={assignment.seniority} />
+                    {assignment.senioritySource === "suggested" && (
                       <Link
                         href="/people/classify"
                         className="inline-flex items-center gap-1.5 text-muted-foreground underline-offset-4 hover:underline"
@@ -330,7 +331,7 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                           strokeWidth={2}
                           aria-hidden="true"
                         />
-                        {t("suggestedLevelHint")}
+                        {t("suggestedSeniorityHint")}
                       </Link>
                     )}
                   </div>
@@ -376,10 +377,10 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                 // page, and two currency amounts plus a role can never share
                 // fixed columns across locales and magnitudes (the headers
                 // and values overlapped). Each record stacks instead: year
-                // and the role + level it was earned under on the left, the
-                // total (the headline number) with the labeled basic beneath
-                // on the right; long content wraps or truncates, never
-                // overlaps.
+                // and the role + seniority it was earned under on the left,
+                // the total (the headline number) with the labeled basic
+                // beneath on the right; long content wraps or truncates,
+                // never overlaps.
                 <ul className="divide-y text-sm">
                   {salary.map((record) => (
                     <li
@@ -401,8 +402,8 @@ export function PersonDetail({ publicId }: { publicId: string }) {
                                 String(record.assignment.roleId)
                               )
                               return title !== undefined && title !== ""
-                                ? `${title} · ${record.assignment.level}`
-                                : record.assignment.level
+                                ? `${title} · ${record.assignment.seniority}`
+                                : record.assignment.seniority
                             })()}
                           </p>
                         )}

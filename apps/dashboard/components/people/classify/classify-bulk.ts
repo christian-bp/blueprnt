@@ -4,7 +4,7 @@
 export type BulkAssignment = {
   personId: string
   roleId: string
-  level: string
+  seniority: string
 }
 
 // The effective selection given what is currently actionable: stale keys

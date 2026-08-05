@@ -76,9 +76,9 @@ export interface PeopleTableRow {
   department: string | null
   ftePercent: number | null
   // The person's active role assignment (null when unclassified): its role id
-  // drives the role filter, and levelSource flags a still-suggested assignment.
+  // drives the role filter, and senioritySource flags a still-suggested assignment.
   roleId: string | null
-  levelSource: "suggested" | "confirmed" | null
+  senioritySource: "suggested" | "confirmed" | null
 }
 
 // The people list's free-text search: case-insensitive substring over the
@@ -194,7 +194,7 @@ export function PeopleSection() {
       department: person.department ?? null,
       ftePercent: person.ftePercent ?? null,
       roleId: person.roleId !== null ? String(person.roleId) : null,
-      levelSource: person.levelSource,
+      senioritySource: person.senioritySource,
     }))
   }, [people])
 
@@ -546,7 +546,7 @@ export function PeopleSection() {
                               {row.name}
                             </Link>
                             {roleFilterActive &&
-                              row.levelSource === "suggested" && (
+                              row.senioritySource === "suggested" && (
                                 <SuggestedRoleBadge />
                               )}
                           </div>
