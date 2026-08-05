@@ -180,6 +180,7 @@
     "accountMenu": "Kontomeny",
     "nav": {
       "groups": {
+        "status": "Nuläge",
         "evaluation": "Arbetsvärdering",
         "peoplePay": "Medarbetare & lön",
         "administration": "Administration"

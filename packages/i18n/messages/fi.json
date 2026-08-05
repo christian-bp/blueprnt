@@ -180,6 +180,7 @@
     "accountMenu": "Tilivalikko",
     "nav": {
       "groups": {
+        "status": "Tilanne",
         "evaluation": "Työn arviointi",
         "peoplePay": "Työntekijät & palkka",
         "administration": "Hallinto"

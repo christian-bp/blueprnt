@@ -180,6 +180,7 @@
     "accountMenu": "Account menu",
     "nav": {
       "groups": {
+        "status": "Status",
         "evaluation": "Job evaluation",
         "peoplePay": "People & pay",
         "administration": "Administration"

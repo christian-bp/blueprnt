@@ -4,7 +4,7 @@ import {
   Audit02Icon,
   Briefcase01Icon,
   ChartColumnIcon,
-  Home01Icon,
+  DashboardSquare02Icon,
   Layers01Icon,
   UserGroup03Icon,
   UserMultipleIcon,
@@ -28,13 +28,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations("dashboard")
   const { role } = useOrganization()
 
-  // Home is the dashboard landing: the one destination that belongs to no
-  // category, so it sits above the labeled groups without a heading of its own.
-  const navHome: NavItem[] = [
+  // The dashboard landing. It gets its own heading like every other
+  // destination (a single uncaptioned row above captioned ones reads as a
+  // stray), and the dashboard grid rather than a house: the page is a panel of
+  // widgets, and a house would promise a "home" concept the app does not have.
+  const navStatus: NavItem[] = [
     {
       title: t("nav.home"),
       url: "/",
-      icon: <HugeiconsIcon icon={Home01Icon} strokeWidth={2} />,
+      icon: <HugeiconsIcon icon={DashboardSquare02Icon} strokeWidth={2} />,
     },
   ]
 
@@ -98,7 +100,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavOrganization />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navHome} />
+        <NavMain label={t("nav.groups.status")} items={navStatus} />
         <NavMain label={t("nav.groups.evaluation")} items={navEvaluation} />
         <NavMain label={t("nav.groups.peoplePay")} items={navPeoplePay} />
         {navAdmin.length > 0 ? (

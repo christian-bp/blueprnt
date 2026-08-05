@@ -180,6 +180,7 @@
     "accountMenu": "Kontomenu",
     "nav": {
       "groups": {
+        "status": "Status",
         "evaluation": "Jobvurdering",
         "peoplePay": "Medarbejdere & løn",
         "administration": "Administration"
