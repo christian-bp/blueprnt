@@ -1,0 +1,32 @@
+packages/i18n/messages/fi.json
+  s_46d3319fc60049::t_cfcd0172aee906 183
+packages/i18n/messages/da.json
+  s_46d3319fc60049::t_c0392342393248 183
+apps/dashboard/components/app-sidebar.tsx
+  s_46d3319fc60049::t_143c6618d30f51 31-34
+  s_46d3319fc60049::t_816ccb41fa6019 103
+  s_46d3319fc60049::t_4feec5995230bf 35
+  s_46d3319fc60049::t_016eeb07fb93c1 7,39
+packages/i18n/messages/en.json
+  s_46d3319fc60049::t_8ef52a7aef3228 183
+packages/i18n/messages/nb.json
+  s_46d3319fc60049::t_4c507e79ab98e0 183
+packages/i18n/messages/sv.json
+  s_46d3319fc60049::t_a61324800537a1 183
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "662f3bbaeb7ba01cad375eea749d3150c03fe1ee",
+  "prompts": {},
+  "sessions": {
+    "s_46d3319fc60049": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "816e546f-aa36-4e52-9850-ffd3291e457d",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
