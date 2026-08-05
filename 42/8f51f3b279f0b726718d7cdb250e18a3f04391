@@ -1,0 +1,27 @@
+apps/dashboard/components/pay-mapping/mean-comparison-bars.tsx
+  s_309818ec3c36db::t_88a940ae08965c 113
+biome.json
+  s_309818ec3c36db::t_db9268dc8cef0e 2
+CLAUDE.md
+  s_309818ec3c36db::t_fc1981a6c30e7e 65
+.githooks/pre-commit
+  s_309818ec3c36db::t_65cdb5bf72724a 16-17,19
+.github/workflows/ci.yml
+  s_309818ec3c36db::t_b7fcb499abbfa4 38-40,42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "428f51f3b279f0b726718d7cdb250e18a3f04391",
+  "prompts": {},
+  "sessions": {
+    "s_309818ec3c36db": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "728d32ae-0f77-489a-9438-8e5b5fe7ff99",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
