@@ -6,7 +6,7 @@ import {
   AnchorIcon,
   InformationCircleIcon,
   MoreHorizontalIcon,
-  Tag01Icon,
+  Stairs01Icon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
@@ -166,7 +166,7 @@ export function RoleEvaluationCard({
                 {heroLevel != null && (
                   <div className="flex items-center gap-2">
                     <HugeiconsIcon
-                      icon={anchorRole !== null ? AnchorIcon : Tag01Icon}
+                      icon={anchorRole !== null ? AnchorIcon : Stairs01Icon}
                       strokeWidth={2}
                       className="size-4 shrink-0 text-muted-foreground"
                     />
