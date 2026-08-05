@@ -3,6 +3,7 @@
 import {
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -28,20 +29,33 @@ export type NavItem = {
 // breaks that (the icon jumps to center and the text blanks instantly).
 const RAIL_CLASSES = "group-data-[collapsible=icon]:p-1.5! [&_svg]:size-5"
 
-// The active page fills its row with the brand via the --sidebar-primary token
-// (a proper filled "primary" treatment), rather than forcing the icon color.
-// data-active is set from isActive by SidebarMenuButton; we override its default
-// sidebar-accent active + hover styles to the sidebar-primary pair, so the label
-// and glyph sit in brand-foreground on a brand pill (also on hover).
+// The active page reads as a tinted brand pill: brand ink (label AND glyph,
+// which inherit currentColor) on a 10% brand wash, rather than a saturated
+// fill. The fill competed with the page's own brand accents for attention and
+// made the rest of the nav read as disabled; the wash marks position while
+// leaving the emphasis to the content. data-active is set from isActive by
+// SidebarMenuButton; these override its default sidebar-accent treatment for
+// all three states (rest, hover, press), because leaving :active unhandled
+// flashes the vendor's gray on click.
 const ACTIVE_CLASSES =
-  "data-active:bg-sidebar-primary data-active:text-sidebar-primary-foreground data-active:hover:bg-sidebar-primary data-active:hover:text-sidebar-primary-foreground"
+  "data-active:bg-brand/10 data-active:text-brand data-active:hover:bg-brand/15 data-active:hover:text-brand data-active:active:bg-brand/15 data-active:active:text-brand"
 
-// Primary navigation: flat leaf links. A leaf is active on an exact URL match
-// or a sub-path (so /work does not match /workspace); the optional `match`
-// prefixes extend that (Work is active across /work and /roles). Sub-navigation
-// within a section lives in the header (SectionTabs), not here, so this stays a
-// plain flat menu that reads identically in the expanded and collapsed rail.
-export function NavMain({ items }: { items: NavItem[] }) {
+// Primary navigation: flat leaf links under an optional group heading (the
+// caller renders one NavMain per category, so the sidebar reads as labeled
+// areas instead of one undifferentiated list). A leaf is active on an exact URL
+// match or a sub-path (so /work does not match /workspace); the optional
+// `match` prefixes extend that (Work is active across /work and /roles).
+// Sub-navigation within a section lives in the header (SectionTabs), not here,
+// so this stays a plain flat menu that reads identically in the expanded and
+// collapsed rail: the heading fades out with the rail (the vendored
+// SidebarGroupLabel handles that), leaving the glyphs aligned.
+export function NavMain({
+  items,
+  label,
+}: {
+  items: NavItem[]
+  label?: string
+}) {
   const pathname = usePathname()
   const isActive = (url: string) =>
     url === "/"
@@ -52,6 +66,9 @@ export function NavMain({ items }: { items: NavItem[] }) {
 
   return (
     <SidebarGroup>
+      {label === undefined ? null : (
+        <SidebarGroupLabel>{label}</SidebarGroupLabel>
+      )}
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => (

@@ -179,6 +179,11 @@
     },
     "accountMenu": "Tilivalikko",
     "nav": {
+      "groups": {
+        "evaluation": "Työn arviointi",
+        "peoplePay": "Työntekijät & palkka",
+        "administration": "Hallinto"
+      },
       "home": "Yleiskatsaus",
       "overview": "Yleiskatsaus",
       "work": "Työarkkitehtuuri",

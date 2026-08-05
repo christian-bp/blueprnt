@@ -25,7 +25,6 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Logout01Icon,
-  MoreVerticalCircle01Icon,
   Settings01Icon,
   UserCircle02Icon,
 } from "@hugeicons/core-free-icons"
@@ -34,6 +33,7 @@ import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { LanguageMenuSub } from "@/components/language-menu"
+import { UpDownChevrons } from "@/components/updown-chevrons"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
@@ -90,11 +90,8 @@ export function NavUser() {
                 {email}
               </span>
             </div>
-            <HugeiconsIcon
-              icon={MoreVerticalCircle01Icon}
-              strokeWidth={2}
-              className="ml-auto size-4 group-data-[collapsible=icon]:hidden"
-            />
+            {/* Matches the org switcher: both rows open a picker panel. */}
+            <UpDownChevrons className="ml-auto group-data-[collapsible=icon]:hidden" />
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-(--anchor-width) min-w-56 rounded-lg"

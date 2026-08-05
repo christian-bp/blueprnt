@@ -1,9 +1,6 @@
 "use client"
 
-import {
-  MoreVerticalCircle01Icon,
-  Tick02Icon,
-} from "@hugeicons/core-free-icons"
+import { Tick02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { authClient } from "@/lib/auth-client"
@@ -28,6 +25,7 @@ import {
   useSidebar,
 } from "@workspace/ui/components/sidebar"
 import { useTranslations } from "next-intl"
+import { UpDownChevrons } from "@/components/updown-chevrons"
 
 function initialsOf(name: string): string {
   return name
@@ -89,17 +87,18 @@ export function NavOrganization() {
               ) : null}
               <AvatarFallback>{initialsOf(current.name)}</AvatarFallback>
             </Avatar>
+            {/* Label above the name: it names the KIND of thing the row is
+                ("Company"), so it reads as the heading for the value below
+                rather than a caption trailing it. */}
             <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-              <span className="truncate font-medium">{current.name}</span>
               <span className="truncate text-muted-foreground text-xs">
                 {t("orgSwitcher.label")}
               </span>
+              <span className="truncate font-medium">{current.name}</span>
             </div>
-            <HugeiconsIcon
-              icon={MoreVerticalCircle01Icon}
-              strokeWidth={2}
-              className="ml-auto size-4 group-data-[collapsible=icon]:hidden"
-            />
+            {/* Up/down chevrons, not a dots glyph: this row SWAPS the active
+                company, it is not an actions menu (the menu is switch-only). */}
+            <UpDownChevrons className="ml-auto group-data-[collapsible=icon]:hidden" />
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-(--anchor-width) min-w-56 rounded-lg"

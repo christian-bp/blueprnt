@@ -179,6 +179,11 @@
     },
     "accountMenu": "Kontomeny",
     "nav": {
+      "groups": {
+        "evaluation": "Arbeidsvurdering",
+        "peoplePay": "Medarbeidere & lønn",
+        "administration": "Administrasjon"
+      },
       "home": "Oversikt",
       "overview": "Oversikt",
       "work": "Jobbarkitektur",

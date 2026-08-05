@@ -16,7 +16,6 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-  SidebarSeparator,
 } from "@workspace/ui/components/sidebar"
 import { useTranslations } from "next-intl"
 import type * as React from "react"
@@ -29,16 +28,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations("dashboard")
   const { role } = useOrganization()
 
-  // Home is the dashboard landing. Job architecture owns the role world (the
-  // level Overview at /work and the role register at /roles); its two sub-pages
-  // are switched from header tabs (SectionTabs), so it is a single flat item
-  // here that stays active across both paths. Model edits the assessment model.
-  const navMain: NavItem[] = [
+  // Home is the dashboard landing: the one destination that belongs to no
+  // category, so it sits above the labeled groups without a heading of its own.
+  const navHome: NavItem[] = [
     {
       title: t("nav.home"),
       url: "/",
       icon: <HugeiconsIcon icon={Home01Icon} strokeWidth={2} />,
     },
+  ]
+
+  // Job evaluation: the role world and the model that values it. Job
+  // architecture owns both the level Overview at /work and the role register at
+  // /roles; its two sub-pages are switched from header tabs (SectionTabs), so
+  // it is a single flat item here that stays active across both paths.
+  const navEvaluation: NavItem[] = [
     {
       title: t("nav.work"),
       url: "/work",
@@ -50,6 +54,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       url: "/model",
       icon: <HugeiconsIcon icon={Layers01Icon} strokeWidth={2} />,
     },
+  ]
+
+  // People & pay: the employee register and the pay mappings built from it.
+  // These are the person-data surfaces, kept apart from the role world both in
+  // the nav and in the domain (Role != Person).
+  const navPeoplePay: NavItem[] = [
     {
       title: t("nav.people"),
       url: "/people",
@@ -63,7 +73,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   ]
 
   // Admin-only destinations (team/org settings and the org's event trail),
-  // shown below a separator from the primary work nav. The adminQuery is the
+  // shown as their own labeled group below the work nav. The adminQuery is the
   // real gate; hiding the items just keeps them out of editors' sight.
   const navAdmin: NavItem[] = []
   if (role === "admin") {
@@ -88,12 +98,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavOrganization />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navMain} />
+        <NavMain items={navHome} />
+        <NavMain label={t("nav.groups.evaluation")} items={navEvaluation} />
+        <NavMain label={t("nav.groups.peoplePay")} items={navPeoplePay} />
         {navAdmin.length > 0 ? (
-          <>
-            <SidebarSeparator />
-            <NavMain items={navAdmin} />
-          </>
+          <NavMain label={t("nav.groups.administration")} items={navAdmin} />
         ) : null}
       </SidebarContent>
       <SidebarFooter>

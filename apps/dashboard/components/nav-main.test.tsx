@@ -17,6 +17,9 @@ vi.mock("@workspace/ui/components/sidebar", () => ({
   SidebarGroupContent: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
   ),
+  SidebarGroupLabel: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="group-label">{children}</div>
+  ),
   SidebarMenu: ({ children }: { children: React.ReactNode }) => (
     <ul>{children}</ul>
   ),
@@ -90,12 +93,21 @@ describe("NavMain", () => {
     expect(activeOf("Model")).toBe("false")
   })
 
-  it("fills the active page with the brand via --sidebar-primary", () => {
+  it("marks the active page with a tinted brand wash, not a filled pill", () => {
     renderNav()
     const homeButton = screen.getByText("Home").closest("button")
-    expect(homeButton?.className).toContain("data-active:bg-sidebar-primary")
-    expect(homeButton?.className).toContain(
-      "data-active:text-sidebar-primary-foreground"
-    )
+    expect(homeButton?.className).toContain("data-active:bg-brand/10")
+    expect(homeButton?.className).toContain("data-active:text-brand")
+    // The vendor's gray active treatment must not survive in any state,
+    // including the :active press that would otherwise flash through.
+    expect(homeButton?.className).toContain("data-active:hover:bg-brand/15")
+    expect(homeButton?.className).toContain("data-active:active:bg-brand/15")
+  })
+
+  it("renders a group heading only when the caller names the group", () => {
+    const { rerender } = render(<NavMain items={ITEMS} />)
+    expect(screen.queryByTestId("group-label")).toBeNull()
+    rerender(<NavMain items={ITEMS} label="Job evaluation" />)
+    expect(screen.getByTestId("group-label").textContent).toBe("Job evaluation")
   })
 })

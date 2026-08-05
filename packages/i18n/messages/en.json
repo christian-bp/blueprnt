@@ -179,6 +179,11 @@
     },
     "accountMenu": "Account menu",
     "nav": {
+      "groups": {
+        "evaluation": "Job evaluation",
+        "peoplePay": "People & pay",
+        "administration": "Administration"
+      },
       "home": "Overview",
       "overview": "Overview",
       "work": "Job architecture",
