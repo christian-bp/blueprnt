@@ -3,6 +3,7 @@
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import type { PayGapReason } from "@workspace/constants"
+import { flagWomenBehind, type PayGapFlag } from "@workspace/core"
 import { useMutation } from "convex/react"
 import { ConvexError } from "convex/values"
 import { useFormatter, useTranslations } from "next-intl"
@@ -51,25 +52,48 @@ function isDocumentationRequiredError(error: unknown): boolean {
 // Every group that reaches this step passed the ADR-0015 entry conditions
 // (both genders, women trailing on the primary metric), so the variants
 // reduce to "less" (base salary), "lessTcc" (a tccDriven group's finding
-// lives in total comp), and a defensive "none" for a gapless edge. A pure
+// lives in total comp), "lessTccWorse" (admitted on the base gap, but the
+// TCC gap is what sets the group's severest-of-two flag: the sentence must
+// name the metric behind the flag, or a red badge sits next to a sentence
+// about a smaller gap), and a defensive "none" for a gapless edge. A pure
 // data-selector, deliberately never touching next-intl's own
 // translate-function type: threading THAT type through an explicit
 // parameter elsewhere in this file triggered a real "Type instantiation is
 // excessively deep" compiler error (it is a deeply generic overload set
 // keyed to the whole message JSON, meant to be called in place, not passed
-// around). The gap is left as a raw signed percent (not yet formatted, and
-// not yet abs'd): the render site turns it into the ICU string via its own
+// around). The gaps are left as raw signed percents (not yet formatted, and
+// not yet abs'd): the render site turns them into the ICU string via its own
 // percentText, right where it calls the real, precisely-typed tFinding.
+const FLAG_RANK: Record<PayGapFlag, number> = {
+  critical: 3,
+  elevated: 2,
+  ok: 1,
+  insufficient: 0,
+}
+
 function equalWorkFindingVariant(group: GapGroup): {
-  key: "none" | "less" | "lessTcc"
+  key: "none" | "less" | "lessTcc" | "lessTccWorse"
   women: number
   men: number
   gapPct: number | null
+  tccGapPct: number | null
 } {
   const { womenCount: women, menCount: men } = group
   const { gapPct } = primaryGapMetric(group)
-  if (gapPct === null || gapPct <= 0) return { key: "none", women, men, gapPct }
-  return { key: group.tccDriven ? "lessTcc" : "less", women, men, gapPct }
+  const tccGapPct = group.tcc.gapPct
+  if (gapPct === null || gapPct <= 0)
+    return { key: "none", women, men, gapPct, tccGapPct }
+  if (group.tccDriven) return { key: "lessTcc", women, men, gapPct, tccGapPct }
+  const tccSetsFlag =
+    FLAG_RANK[flagWomenBehind(women, men, group.tcc.gapPct)] >
+    FLAG_RANK[flagWomenBehind(women, men, group.base.gapPct)]
+  return {
+    key: tccSetsFlag ? "lessTccWorse" : "less",
+    women,
+    men,
+    gapPct,
+    tccGapPct,
+  }
 }
 
 interface ReviewGroupStepCommonProps {
@@ -302,6 +326,13 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
                 switch (variant.key) {
                   case "none":
                     return tFinding("none", {
+                      women: variant.women,
+                      men: variant.men,
+                    })
+                  case "lessTccWorse":
+                    return tFinding("lessTccWorse", {
+                      gap: percentText(Math.abs(variant.gapPct ?? 0)),
+                      tccGap: percentText(Math.abs(variant.tccGapPct ?? 0)),
                       women: variant.women,
                       men: variant.men,
                     })

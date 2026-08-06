@@ -1,6 +1,5 @@
 "use client"
 
-import { fteTotalMonthlyComp } from "@workspace/constants"
 import { diffVsMenMean } from "@workspace/core"
 import {
   type ChartConfig,
@@ -9,6 +8,7 @@ import {
 } from "@workspace/ui/components/chart"
 import { cn } from "@workspace/ui/lib/utils"
 import { useFormatter, useTranslations } from "next-intl"
+import { useMemo } from "react"
 import {
   ReferenceArea,
   ReferenceLine,
@@ -28,6 +28,8 @@ import { useMoney } from "@/hooks/use-money"
 import { CHART_AXIS_FONT_SIZE, CHART_TOOLTIP_TEXT } from "@/lib/chart-style"
 import { percentText } from "@/lib/percent"
 import {
+  fteBaseMonthly,
+  fteTotalMonthly,
   type GapGroup,
   groupMembers,
   type PayMappingSnapshotRow,
@@ -75,13 +77,7 @@ export function buildDotPlotModel(
   const metric = primaryGapMetric(group)
   const members = groupMembers(rows, group) ?? []
   const points: DotPlotPoint[] = members.map((row) => {
-    const base = fteTotalMonthlyComp(row.basicMonthly ?? 0, [], row.ftePercent)
-    const tcc = fteTotalMonthlyComp(
-      row.basicMonthly ?? 0,
-      row.components,
-      row.ftePercent
-    )
-    const x = group.tccDriven ? tcc : base
+    const x = group.tccDriven ? fteTotalMonthly(row) : fteBaseMonthly(row)
     const diff =
       metric.menMean === null ? null : diffVsMenMean(x, metric.menMean)
     return {
@@ -99,8 +95,10 @@ export function buildDotPlotModel(
     ...(metric.womenMean !== null ? [metric.womenMean] : []),
     ...(metric.menMean !== null ? [metric.menMean] : []),
   ]
-  const min = Math.min(...anchors)
-  const max = Math.max(...anchors)
+  // Defensive: a caller with no members and no means would otherwise produce
+  // an inverted Infinity domain.
+  const min = anchors.length === 0 ? 0 : Math.min(...anchors)
+  const max = anchors.length === 0 ? 0 : Math.max(...anchors)
   // 8% padding each side; a flat group (everyone on one value) still gets a
   // visible span instead of a zero-width domain.
   const span = max - min
@@ -191,7 +189,9 @@ export function PayGapDotPlot({
   const format = useFormatter()
   const money = useMoney()
 
-  const model = buildDotPlotModel(group, rows)
+  // Memoized: the model walks the whole group per build, and the detail
+  // pane re-renders with its parent's checklist state.
+  const model = useMemo(() => buildDotPlotModel(group, rows), [group, rows])
   const women = model.points.filter((point) => point.woman)
   const men = model.points.filter((point) => !point.woman)
 

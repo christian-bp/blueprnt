@@ -3,7 +3,6 @@
 import { ArrowDown01Icon, Alert02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import { fteTotalMonthlyComp } from "@workspace/constants"
 import {
   type CrossLevelPair,
   type CrossLevelWoman,
@@ -25,7 +24,7 @@ import {
   TableRow,
 } from "@workspace/ui/components/table"
 import { useTranslations } from "next-intl"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { LevelBadge } from "@/components/level-badge"
 import { useMoney } from "@/hooks/use-money"
@@ -34,28 +33,40 @@ import {
   documentationFor,
   DocumentationMenu,
 } from "./documentation-controls"
-import type {
-  ActionTargetWire,
-  PayMappingActionWire,
-  PayMappingNoteWire,
-  PayMappingSnapshotRow,
+import {
+  type ActionTargetWire,
+  fteBaseMonthly,
+  type PayMappingActionWire,
+  type PayMappingNoteWire,
+  type PayMappingSnapshotRow,
 } from "./pay-mapping-gap-types"
 
 // How many cases the section shows before the "show all" control: enough to
 // read the worst offenders at a glance without burying the rest of the page.
 const PREVIEW_COUNT = 5
 
+// One pair with the man's display values joined in: names stay out of the
+// engine (it works on pseudonymous ids), and resolving them here, from the
+// id map the builder already holds, keeps the render path free of per-pair
+// linear scans.
+export interface CrossLevelDisplayPair extends CrossLevelPair {
+  manName: string
+  manErased: boolean
+}
+
 // One rendered cross-level case: the engine's per-woman aggregate plus the
-// display values (names, tracks) resolved from the snapshot rows. Names stay
-// out of the engine (it works on pseudonymous ids); this is where they join.
-export interface CrossLevelCase extends CrossLevelWoman {
+// display values (names, tracks) resolved from the snapshot rows.
+export interface CrossLevelCase extends Omit<CrossLevelWoman, "pairs"> {
   womanName: string
   womanErased: boolean
   womanTrackKey: string
+  pairs: CrossLevelDisplayPair[]
 }
 
 // Pure: frozen rows -> the cross-level cases, FTE-adjusted on base salary
-// (the primary measure, ADR-0015). Exported for direct unit testing.
+// (the primary measure, ADR-0015). O(women x men) over the whole frozen
+// population: callers memoize it on `rows` (the section below does), never
+// call it bare in a render body. Exported for direct unit testing.
 export function buildCrossLevelCases(
   rows: PayMappingSnapshotRow[]
 ): CrossLevelCase[] {
@@ -66,10 +77,7 @@ export function buildCrossLevelCases(
       gender: row.gender,
       level: row.level,
       trackKey: row.trackKey,
-      base:
-        row.basicMonthly === null
-          ? null
-          : fteTotalMonthlyComp(row.basicMonthly, [], row.ftePercent),
+      base: row.basicMonthly === null ? null : fteBaseMonthly(row),
     }))
   )
   return cases.map((woman) => {
@@ -79,6 +87,14 @@ export function buildCrossLevelCases(
       womanName: row?.displayName ?? "",
       womanErased: row?.erased ?? false,
       womanTrackKey: row?.trackKey ?? "",
+      pairs: woman.pairs.map((pair) => {
+        const man = byId.get(pair.manPublicId)
+        return {
+          ...pair,
+          manName: man?.displayName ?? "",
+          manErased: man?.erased ?? false,
+        }
+      }),
     }
   })
 }
@@ -89,13 +105,11 @@ export function buildCrossLevelCases(
 // warning sign).
 function PairRow({
   pair,
-  rows,
   currency,
   documentation,
   womanPublicId,
 }: {
-  pair: CrossLevelPair
-  rows: PayMappingSnapshotRow[]
+  pair: CrossLevelDisplayPair
   currency: string
   womanPublicId: string
   documentation?: {
@@ -108,9 +122,7 @@ function PairRow({
   const t = useTranslations("dashboard.payMapping.crossLevel")
   const tDetail = useTranslations("dashboard.payMapping.detail")
   const money = useMoney()
-  const man = rows.find((row) => row.personPublicId === pair.manPublicId)
-  const manName =
-    man === undefined ? "" : man.erased ? tDetail("erased") : man.displayName
+  const manName = pair.manErased ? tDetail("erased") : pair.manName
   const target: ActionTargetWire = {
     kind: "pair",
     womanPublicId,
@@ -193,7 +205,9 @@ export function CrossLevelSection({
   const money = useMoney()
   const [expanded, setExpanded] = useState(false)
 
-  const cases = buildCrossLevelCases(rows)
+  // Memoized: O(women x men) over the whole frozen population, and the
+  // analysis tab re-renders on every checklist keystroke.
+  const cases = useMemo(() => buildCrossLevelCases(rows), [rows])
   // A real organization produces dozens of cases, and an unbounded list
   // pushes everything below it off the screen. The worst few lead (the
   // engine already orders by the largest difference); the rest are one
@@ -279,7 +293,6 @@ export function CrossLevelSection({
                         <PairRow
                           key={pair.manPublicId}
                           pair={pair}
-                          rows={rows}
                           currency={currency}
                           womanPublicId={item.personPublicId}
                           {...(documentation === undefined

@@ -1,5 +1,6 @@
 import {
   cleanup,
+  fireEvent,
   render,
   screen,
   waitFor,
@@ -165,7 +166,47 @@ describe("PayMappingActionsOverview", () => {
 
   it("shows a content-shaped skeleton while the run is loading", () => {
     const { container } = renderOverview({ run: undefined })
-    expect(container.querySelectorAll('[data-slot="skeleton"]').length).toBe(2)
+    // The page keeps its real structure while loading: the summary strip's
+    // labels, the real filter toolbar, and both tables with their headers.
+    // "Actions" labels both the summary count and the table heading.
+    expect(screen.getAllByText(mo.totalLabel).length).toBeGreaterThan(0)
+    expect(screen.getByLabelText(mo.statusAll)).toBeDefined()
+    const tables = screen.getAllByRole("table")
+    expect(tables).toHaveLength(2)
+    // The skeleton shows a full page of rows (the pager's own PAGE_SIZE),
+    // so the table never grows when the first page arrives.
+    const first = tables[0]
+    expect(
+      first === undefined ? 0 : within(first).getAllByRole("row").length
+    ).toBe(1 + 25)
+    expect(
+      container.querySelectorAll('[data-slot="skeleton"]').length
+    ).toBeGreaterThan(10)
+  })
+
+  it("paginates the actions table past one page and resets on a filter change", async () => {
+    const many = Array.from({ length: 26 }, (_, index) =>
+      action({
+        actionId: `a${index}` as Id<"payMappingActions">,
+        problem: `Problem ${index}`,
+      })
+    )
+    renderOverview({ actions: many })
+    expect(actionRowTexts()).toHaveLength(25)
+    fireEvent.click(
+      screen.getByLabelText(messages.dashboard.payMapping.toolbar.next)
+    )
+    await waitFor(() => {
+      expect(actionRowTexts()).toHaveLength(1)
+    })
+    // Narrowing from page 2 goes back to page 1 of the narrowed list.
+    await pickSelectOption(
+      screen.getByLabelText(mo.priorityAll),
+      m.priority.high
+    )
+    await waitFor(() => {
+      expect(actionRowTexts()).toHaveLength(25)
+    })
   })
 
   it("summarizes counts and rolls up the estimated cost", () => {
@@ -234,6 +275,22 @@ describe("PayMappingActionsOverview", () => {
     expect(toast.success).toHaveBeenCalledWith(
       tToast.payMappingActionStatusChanged
     )
+  })
+
+  it("row menus see the target's existing note, so they edit instead of duplicating", async () => {
+    // The default fixtures share one target: the action row's menu must
+    // read the note that already exists there ("Edit note"), never offer a
+    // second "Add note".
+    renderOverview()
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: m.menuLabel.replace("{target}", "SWE · Senior"),
+      })
+    )
+    await waitFor(() => {
+      expect(screen.getByText(m.editNoteTitle)).toBeDefined()
+    })
+    expect(screen.queryByText(m.createNoteTitle)).toBeNull()
   })
 
   it("says notes do not exist yet rather than blaming the filters", () => {

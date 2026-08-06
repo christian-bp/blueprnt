@@ -1,6 +1,5 @@
 "use client"
 
-import { fteTotalMonthlyComp } from "@workspace/constants"
 import { diffVsMenMean } from "@workspace/core"
 import {
   Table,
@@ -35,6 +34,8 @@ import {
 } from "./documentation-controls"
 import {
   type ActionTargetWire,
+  fteBaseMonthly,
+  fteTotalMonthly,
   type GapGroup,
   groupMembers,
   type PayMappingActionWire,
@@ -66,12 +67,8 @@ export function buildMemberRows(
 ): MemberRow[] {
   const menMean = primaryGapMetric(group).menMean
   return members.map((row) => {
-    const base = fteTotalMonthlyComp(row.basicMonthly ?? 0, [], row.ftePercent)
-    const tcc = fteTotalMonthlyComp(
-      row.basicMonthly ?? 0,
-      row.components,
-      row.ftePercent
-    )
+    const base = fteBaseMonthly(row)
+    const tcc = fteTotalMonthly(row)
     const primary = group.tccDriven ? tcc : base
     const diff = menMean === null ? null : diffVsMenMean(primary, menMean)
     return {

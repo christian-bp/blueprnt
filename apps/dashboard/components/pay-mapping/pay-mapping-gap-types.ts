@@ -1,5 +1,5 @@
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import type { PayGapReason } from "@workspace/constants"
+import { fteTotalMonthlyComp, type PayGapReason } from "@workspace/constants"
 import type { GenderTally, PayGapFlag } from "@workspace/core"
 
 // Re-exported for the overview widgets (the wire's distribution buckets are
@@ -254,6 +254,22 @@ export function groupLabel(group: {
   return [group.roleTitle, group.seniority]
     .filter((part) => part !== null)
     .join(" · ")
+}
+
+// A member's FTE-adjusted base salary and total compensation: the SAME
+// derivation the backend engine uses (gap.ts), shared here so no view can
+// silently diverge from the engine's numbers (e.g. by forgetting the
+// empty components array in the base case).
+export function fteBaseMonthly(row: PayMappingSnapshotRow): number {
+  return fteTotalMonthlyComp(row.basicMonthly ?? 0, [], row.ftePercent)
+}
+
+export function fteTotalMonthly(row: PayMappingSnapshotRow): number {
+  return fteTotalMonthlyComp(
+    row.basicMonthly ?? 0,
+    row.components,
+    row.ftePercent
+  )
 }
 
 // A group's own frozen, priced members: rows matching its roleTitle/

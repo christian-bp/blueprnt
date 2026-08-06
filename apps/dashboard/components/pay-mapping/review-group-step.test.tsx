@@ -282,6 +282,41 @@ describe("ReviewGroupStep", () => {
         )
       ).toBeDefined()
     })
+
+    it("names the total-comp gap when it, not the base gap, sets the flag", () => {
+      // Admitted on a 4% base gap (elevated), but the 20% tcc gap is what
+      // makes the group critical: the sentence must name the metric behind
+      // the flag, or the red badge sits next to a sentence about 4%.
+      renderEqualWorkStep(
+        makeGapGroup({
+          key: "ops|2|mid",
+          roleTitle: "Ops",
+          seniority: "Mid",
+          level: 2,
+          womenCount: 2,
+          menCount: 3,
+          base: {
+            womenMean: 96_000,
+            menMean: 100_000,
+            gapPct: 4,
+            gapKr: 4_000,
+          },
+          tcc: {
+            womenMean: 80_000,
+            menMean: 100_000,
+            gapPct: 20,
+            gapKr: 20_000,
+          },
+          tccDriven: false,
+          flag: "critical",
+        })
+      )
+      expect(
+        screen.getByText(
+          "The women in this group earn on average 4% less than the men in base salary, and 20% less in total compensation, which is what sets the group's flag (2 women · 3 men)."
+        )
+      ).toBeDefined()
+    })
   })
 
   describe("EqualWorkDetail composition", () => {

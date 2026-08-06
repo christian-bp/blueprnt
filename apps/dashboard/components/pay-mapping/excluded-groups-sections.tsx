@@ -1,7 +1,6 @@
 "use client"
 
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import { fteTotalMonthlyComp } from "@workspace/constants"
 import { type GenderStats, genderStats } from "@workspace/core"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -34,6 +33,7 @@ import {
 import {
   type ActionTargetWire,
   type ExcludedGroupsWire,
+  fteBaseMonthly,
   type GapGroup,
   type GenderPureGroupWire,
   groupLabel,
@@ -54,9 +54,7 @@ function groupBaseValues(
     level: number | null
   }
 ): number[] {
-  return (groupMembers(rows, group) ?? []).map((row) =>
-    fteTotalMonthlyComp(row.basicMonthly ?? 0, [], row.ftePercent)
-  )
+  return (groupMembers(rows, group) ?? []).map(fteBaseMonthly)
 }
 
 // Pure: a gender-pure group's own descriptive statistics. Exported for
@@ -131,122 +129,123 @@ export function GenderPureDeepDive({
   if (excluded.genderPure.length === 0) return null
 
   return (
-    <section className="space-y-3 rounded-md border border-dashed px-4 py-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <h3 className="font-medium text-sm">
-          {t("title", { count: excluded.genderPure.length })}
-        </h3>
-        <HelpMorphButton label={tHelp("genderPureLabel")}>
-          {tHelp("genderPureBody")}
-        </HelpMorphButton>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="ml-auto"
-          onClick={() => setOpen((shown) => !shown)}
-        >
-          {open ? t("hide") : t("show")}
-        </Button>
-      </div>
-      {/* The opt-in's own explanation, always visible: the user must know
-          what this is BEFORE deciding to open it (Iteration 2 note 2). */}
-      <p className="text-muted-foreground text-sm">{t("lead")}</p>
-
-      {open && (
-        <div className="space-y-2">
-          {excluded.genderPure.map((group) => {
-            const stats = genderPureStats(rows, group)
-            const members = groupMembers(rows, group) ?? []
-            const target: ActionTargetWire = {
-              kind: "group",
-              scope: "equalWork",
-              groupKey: group.key,
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <section className="space-y-3 rounded-md border border-dashed px-4 py-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="font-medium text-sm">
+            {t("title", { count: excluded.genderPure.length })}
+          </h3>
+          <HelpMorphButton label={tHelp("genderPureLabel")}>
+            {tHelp("genderPureBody")}
+          </HelpMorphButton>
+          {/* Controlled so the explicit opt-in button can flip its label;
+              the Collapsible still owns the animated panel geometry
+              (docs/ui-animation.md rule 2). */}
+          <CollapsibleTrigger
+            render={
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="ml-auto"
+              />
             }
-            const own = documentationFor(
-              target,
-              documentation?.actions,
-              documentation?.notes
-            )
-            return (
-              <div key={group.key} className="rounded-md border px-3 py-2">
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                  <span className="font-medium">{groupLabel(group)}</span>
-                  {group.level !== null && <LevelBadge level={group.level} />}
-                  <Badge variant="secondary">
-                    {t("onlyGender", {
-                      gender: tGender(group.gender),
-                      count: group.count,
-                    })}
-                  </Badge>
-                  {documentation !== undefined && (
-                    <span className="ml-auto flex h-9 items-center gap-1">
-                      <DocumentationBadges
-                        actions={own.actions}
-                        notes={own.notes}
-                      />
-                      {/* Notes only: a group with no woman-man comparison
+          >
+            {open ? t("hide") : t("show")}
+          </CollapsibleTrigger>
+        </div>
+        {/* The opt-in's own explanation, always visible: the user must know
+            what this is BEFORE deciding to open it (Iteration 2 note 2). */}
+        <p className="text-muted-foreground text-sm">{t("lead")}</p>
+
+        <CollapsibleContent className="h-(--collapsible-panel-height) overflow-hidden transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0 motion-reduce:transition-none">
+          <div className="space-y-2">
+            {excluded.genderPure.map((group) => {
+              const stats = genderPureStats(rows, group)
+              const members = groupMembers(rows, group) ?? []
+              const target: ActionTargetWire = {
+                kind: "group",
+                scope: "equalWork",
+                groupKey: group.key,
+              }
+              const own = documentationFor(
+                target,
+                documentation?.actions,
+                documentation?.notes
+              )
+              return (
+                <div key={group.key} className="rounded-md border px-3 py-2">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <span className="font-medium">{groupLabel(group)}</span>
+                    {group.level !== null && <LevelBadge level={group.level} />}
+                    <Badge variant="secondary">
+                      {t("onlyGender", {
+                        gender: tGender(group.gender),
+                        count: group.count,
+                      })}
+                    </Badge>
+                    {documentation !== undefined && (
+                      <span className="ml-auto flex h-9 items-center gap-1">
+                        <DocumentationBadges
+                          actions={own.actions}
+                          notes={own.notes}
+                        />
+                        {/* Notes only: a group with no woman-man comparison
                           carries no statutory finding, so it takes no formal
                           action (the backend rejects one). */}
-                      <DocumentationMenu
-                        runId={documentation.runId}
-                        target={target}
-                        targetLabel={groupLabel(group)}
-                        actions={own.actions}
-                        notes={own.notes}
-                        currency={currency}
-                        locked={documentation.locked}
-                        notesOnly
-                      />
-                    </span>
+                        <DocumentationMenu
+                          runId={documentation.runId}
+                          target={target}
+                          targetLabel={groupLabel(group)}
+                          actions={own.actions}
+                          notes={own.notes}
+                          currency={currency}
+                          locked={documentation.locked}
+                          notesOnly
+                        />
+                      </span>
+                    )}
+                  </div>
+                  {stats !== null && (
+                    <div className="pt-2">
+                      <StatsRow stats={stats} currency={currency} />
+                    </div>
+                  )}
+                  {members.length > 0 && (
+                    <div className="overflow-x-auto pt-2">
+                      <Table className="min-w-[24rem] table-fixed">
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>{tDetail("columns.name")}</TableHead>
+                            <TableHead className="w-32 text-right">
+                              {tDetail("columns.basePay")}
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {members.map((member) => (
+                            <TableRow key={member.personPublicId}>
+                              <TableCell className="truncate">
+                                {member.erased
+                                  ? tDetail("erased")
+                                  : member.displayName}
+                              </TableCell>
+                              <TableCell className="text-right tabular-nums">
+                                {money(fteBaseMonthly(member), currency)}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
                   )}
                 </div>
-                {stats !== null && (
-                  <div className="pt-2">
-                    <StatsRow stats={stats} currency={currency} />
-                  </div>
-                )}
-                {members.length > 0 && (
-                  <div className="overflow-x-auto pt-2">
-                    <Table className="min-w-[24rem] table-fixed">
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>{tDetail("columns.name")}</TableHead>
-                          <TableHead className="w-32 text-right">
-                            {tDetail("columns.basePay")}
-                          </TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {members.map((member) => (
-                          <TableRow key={member.personPublicId}>
-                            <TableCell className="truncate">
-                              {member.erased
-                                ? tDetail("erased")
-                                : member.displayName}
-                            </TableCell>
-                            <TableCell className="text-right tabular-nums">
-                              {money(
-                                fteTotalMonthlyComp(
-                                  member.basicMonthly ?? 0,
-                                  [],
-                                  member.ftePercent
-                                ),
-                                currency
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      )}
-    </section>
+              )
+            })}
+          </div>
+        </CollapsibleContent>
+      </section>
+    </Collapsible>
   )
 }
 
