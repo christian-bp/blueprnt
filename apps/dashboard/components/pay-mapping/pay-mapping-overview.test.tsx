@@ -117,7 +117,9 @@ function renderOverview(
       timeZone="Europe/Stockholm"
       messages={en}
     >
-      <PayMappingRunProvider value={{ run, gap: g, analyses }}>
+      <PayMappingRunProvider
+        value={{ run, gap: g, analyses, actions: [], notes: [] }}
+      >
         <PayMappingOverview gap={g} />
       </PayMappingRunProvider>
     </NextIntlClientProvider>

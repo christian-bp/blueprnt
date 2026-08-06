@@ -175,7 +175,14 @@
       "payMappingCompleted": "Lönekartläggningen slutförd.",
       "payMappingReopened": "Lönekartläggningen återöppnad.",
       "payMappingRenamed": "Lönekartläggningen har bytt namn",
-      "payMappingDeleted": "Lönekartläggning borttagen"
+      "payMappingDeleted": "Lönekartläggning borttagen",
+      "payMappingActionCreated": "Åtgärden skapades",
+      "payMappingActionUpdated": "Åtgärden uppdaterades",
+      "payMappingActionDeleted": "Åtgärden togs bort",
+      "payMappingActionStatusChanged": "Statusen uppdaterades",
+      "payMappingNoteCreated": "Noteringen lades till",
+      "payMappingNoteUpdated": "Noteringen uppdaterades",
+      "payMappingNoteDeleted": "Noteringen togs bort"
     },
     "accountMenu": "Kontomeny",
     "nav": {
@@ -1148,7 +1155,33 @@
           "group": "Grupp",
           "person": "Individ",
           "pair": "Tvärnivå-par"
-        }
+        },
+        "createTitle": "Skapa åtgärd",
+        "editTitle": "Redigera åtgärd",
+        "createNoteTitle": "Lägg till notering",
+        "editNoteTitle": "Redigera notering",
+        "linkedTo": "Kopplad till: {target}",
+        "problem": "Beskrivning av problemet",
+        "plannedAction": "Planerad åtgärd",
+        "reason": "Sakligt skäl (om tillämpligt)",
+        "reasonPlaceholder": "Välj ett skäl",
+        "owner": "Ansvarig person",
+        "ownerPlaceholder": "Välj en person",
+        "plannedDate": "Planerat datum",
+        "estimatedCost": "Beräknad kostnad",
+        "noteText": "Notering",
+        "noteTypeLabel": "Typ",
+        "save": "Spara",
+        "cancel": "Avbryt",
+        "deleteAction": "Ta bort åtgärd",
+        "deleteNote": "Ta bort notering",
+        "deleteActionTitle": "Ta bort åtgärden?",
+        "deleteNoteTitle": "Ta bort noteringen?",
+        "deleteDescription": "Detta kan inte ångras.",
+        "deleteConfirm": "Ta bort",
+        "menuLabel": "Dokumentation för {target}",
+        "noteBadge": "{count, plural, one {# notering} other {# noteringar}}",
+        "priorityLabel": "Prioritet"
       },
       "dotPlot": {
         "title": "Lönelägen i gruppen",
@@ -1177,7 +1210,8 @@
           "basePay": "Grundlön",
           "totalComp": "Total ersättning",
           "diffKr": "Mot M. medel",
-          "diffPct": "Mot M. medel %"
+          "diffPct": "Mot M. medel %",
+          "documentation": "Dokumentation"
         }
       },
       "gap": {

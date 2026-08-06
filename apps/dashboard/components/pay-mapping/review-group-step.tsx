@@ -17,6 +17,8 @@ import {
   type GapGroup,
   type GroupAnalysis,
   groupLabel,
+  type PayMappingActionWire,
+  type PayMappingNoteWire,
   type PayMappingSnapshotRow,
   primaryGapMetric,
   type WomenDominatedGroupWire,
@@ -78,6 +80,11 @@ interface ReviewGroupStepCommonProps {
   currency: string
   referenceDateMs: number
   requiresDocumentation: boolean
+  // The run's action/note work layer, threaded from the surface's own
+  // shell-context read (like rows/currency above), so this step stays a
+  // presentational component with no subscription of its own.
+  actions: PayMappingActionWire[] | undefined
+  notes: PayMappingNoteWire[] | undefined
   // Threaded from the surface: the wizard reveals the heading/content (true),
   // the summary's master-detail pane swaps instantly (false). See ScreenShell.
   animated: boolean
@@ -147,6 +154,8 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
     currency,
     referenceDateMs,
     requiresDocumentation,
+    actions,
+    notes,
     animated,
     headingLevel = "h1",
     onNext,
@@ -345,6 +354,7 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
             group={props.group}
             rows={rows}
             currency={currency}
+            documentation={{ runId, actions, notes, locked }}
           />
         )}
 

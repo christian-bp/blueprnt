@@ -378,6 +378,9 @@ export const listPayMappingRuns = orgQuery({
 })
 
 const snapshotRowShape = v.object({
+  // The pseudonymous person key (never a name-derived slug, never the raw
+  // id): the detail views anchor per-individual actions and notes to it.
+  personPublicId: v.string(),
   displayName: v.string(),
   erased: v.boolean(),
   gender: v.union(v.literal("Man"), v.literal("Kvinna")),
@@ -438,6 +441,7 @@ export const getPayMappingRunBySlug = orgQuery({
       referenceDate: run.referenceDate,
       collaboration: run.collaboration ?? null,
       rows: rows.map((r) => ({
+        personPublicId: r.personPublicId,
         displayName: r.displayName,
         erased: r.erased,
         gender: r.gender,

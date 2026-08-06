@@ -4,11 +4,21 @@ import { useFormatter, useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useMoney } from "@/hooks/use-money"
 import { percentText } from "@/lib/percent"
+import type { Id } from "@workspace/backend/convex/_generated/dataModel"
+import {
+  DocumentationBadges,
+  documentationFor,
+  DocumentationMenu,
+} from "./documentation-controls"
 import { GroupMemberTable } from "./group-member-table"
 import { PayGapDotPlot } from "./pay-gap-dot-plot"
 import {
+  type ActionTargetWire,
   type GapGroup,
   type GapMetric,
+  groupLabel,
+  type PayMappingActionWire,
+  type PayMappingNoteWire,
   type PayMappingSnapshotRow,
   primaryGapMetric,
 } from "./pay-mapping-gap-types"
@@ -72,10 +82,19 @@ export function EqualWorkDetail({
   group,
   rows,
   currency,
+  documentation,
 }: {
   group: GapGroup
   rows: PayMappingSnapshotRow[]
   currency: string
+  // The run's work layer (ADR-0015): present, the group heading and every
+  // member row carry their own documentation badge + "..." menu.
+  documentation?: {
+    runId: Id<"payMappingRuns">
+    actions: PayMappingActionWire[] | undefined
+    notes: PayMappingNoteWire[] | undefined
+    locked: boolean
+  }
 }) {
   const t = useTranslations("dashboard.payMapping.detail")
   const tGapRoot = useTranslations("dashboard.payMapping.gap")
@@ -88,9 +107,39 @@ export function EqualWorkDetail({
     ? t("summary.baseLabel")
     : t("summary.tccLabel")
 
+  const groupTarget: ActionTargetWire = {
+    kind: "group",
+    scope: "equalWork",
+    groupKey: group.key,
+  }
+  const groupDocs = documentationFor(
+    groupTarget,
+    documentation?.actions,
+    documentation?.notes
+  )
+
   return (
     <div className="space-y-4">
       <div className="space-y-0.5">
+        {/* The group's own documentation affordance, in a fixed-height row
+            so gaining a badge never shifts the summary beneath. */}
+        {documentation !== undefined && (
+          <div className="flex h-9 items-center gap-2">
+            <DocumentationBadges
+              actions={groupDocs.actions}
+              notes={groupDocs.notes}
+            />
+            <DocumentationMenu
+              runId={documentation.runId}
+              target={groupTarget}
+              targetLabel={groupLabel(group)}
+              actions={groupDocs.actions}
+              notes={groupDocs.notes}
+              currency={currency}
+              locked={documentation.locked}
+            />
+          </div>
+        )}
         <p className="text-muted-foreground text-sm">
           {tGap("women")}:{" "}
           <span className="tabular-nums">{group.womenCount}</span>
@@ -113,7 +162,22 @@ export function EqualWorkDetail({
             {tHelp("payGapMemberDiffBody")}
           </HelpMorphButton>
         </div>
-        <GroupMemberTable group={group} rows={rows} currency={currency} />
+        <GroupMemberTable
+          group={group}
+          rows={rows}
+          currency={currency}
+          {...(documentation === undefined
+            ? {}
+            : {
+                documentation: {
+                  runId: documentation.runId,
+                  scope: "equalWork" as const,
+                  actions: documentation.actions,
+                  notes: documentation.notes,
+                  locked: documentation.locked,
+                },
+              })}
+        />
       </div>
     </div>
   )

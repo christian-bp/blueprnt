@@ -23,6 +23,7 @@ function memberRow(
   overrides: Partial<PayMappingSnapshotRow> = {}
 ): PayMappingSnapshotRow {
   return {
+    personPublicId: "p1",
     displayName: "Person",
     erased: false,
     gender: "Man",

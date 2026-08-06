@@ -130,7 +130,7 @@ export function PayMappingSummary() {
   const tErrors = useTranslations("errors")
   const pathname = usePathname()
   const { orgId } = useOrganization()
-  const { run, gap, analyses } = usePayMappingRun()
+  const { run, gap, analyses, actions, notes } = usePayMappingRun()
   const runsList = useQuery(api.payMapping.runs.listPayMappingRuns, { orgId })
   const completePayMappingRun = useMutation(
     api.payMapping.runs.completePayMappingRun
@@ -463,6 +463,8 @@ export function PayMappingSummary() {
             rows={currentRun.rows}
             currency={currency}
             referenceDateMs={currentRun.referenceDate}
+            actions={actions}
+            notes={notes}
             requiresDocumentation={equalWorkGroupRequiresDocumentation(
               group.flag
             )}
@@ -490,6 +492,8 @@ export function PayMappingSummary() {
           rows={currentRun.rows}
           currency={currency}
           referenceDateMs={currentRun.referenceDate}
+          actions={actions}
+          notes={notes}
           requiresDocumentation={womenDominatedGroupRequiresDocumentation(
             group.comparisons.length
           )}
@@ -542,6 +546,8 @@ export function PayMappingSummary() {
               rows={currentRun.rows}
               currency={currency}
               referenceDateMs={currentRun.referenceDate}
+              actions={actions}
+              notes={notes}
               requiresDocumentation={equalWorkGroupRequiresDocumentation(
                 open.group.flag
               )}
@@ -562,6 +568,8 @@ export function PayMappingSummary() {
             rows={currentRun.rows}
             currency={currency}
             referenceDateMs={currentRun.referenceDate}
+            actions={actions}
+            notes={notes}
             requiresDocumentation={womenDominatedGroupRequiresDocumentation(
               open.group.comparisons.length
             )}

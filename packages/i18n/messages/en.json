@@ -175,7 +175,14 @@
       "payMappingCompleted": "Pay mapping completed.",
       "payMappingReopened": "Pay mapping reopened.",
       "payMappingRenamed": "Pay mapping renamed",
-      "payMappingDeleted": "Pay mapping deleted"
+      "payMappingDeleted": "Pay mapping deleted",
+      "payMappingActionCreated": "Action created",
+      "payMappingActionUpdated": "Action updated",
+      "payMappingActionDeleted": "Action deleted",
+      "payMappingActionStatusChanged": "Status updated",
+      "payMappingNoteCreated": "Note added",
+      "payMappingNoteUpdated": "Note updated",
+      "payMappingNoteDeleted": "Note deleted"
     },
     "accountMenu": "Account menu",
     "nav": {
@@ -1148,7 +1155,33 @@
           "group": "Group",
           "person": "Individual",
           "pair": "Cross-level pair"
-        }
+        },
+        "createTitle": "Create action",
+        "editTitle": "Edit action",
+        "createNoteTitle": "Add note",
+        "editNoteTitle": "Edit note",
+        "linkedTo": "Linked to: {target}",
+        "problem": "Description of the problem",
+        "plannedAction": "Planned action",
+        "reason": "Objective reason (if any)",
+        "reasonPlaceholder": "Select a reason",
+        "owner": "Responsible person",
+        "ownerPlaceholder": "Select a person",
+        "plannedDate": "Planned date",
+        "estimatedCost": "Estimated cost",
+        "noteText": "Note",
+        "noteTypeLabel": "Type",
+        "save": "Save",
+        "cancel": "Cancel",
+        "deleteAction": "Delete action",
+        "deleteNote": "Delete note",
+        "deleteActionTitle": "Delete this action?",
+        "deleteNoteTitle": "Delete this note?",
+        "deleteDescription": "This cannot be undone.",
+        "deleteConfirm": "Delete",
+        "menuLabel": "Documentation for {target}",
+        "noteBadge": "{count, plural, one {# note} other {# notes}}",
+        "priorityLabel": "Priority"
       },
       "dotPlot": {
         "title": "Pay positions in the group",
@@ -1177,7 +1210,8 @@
           "basePay": "Base salary",
           "totalComp": "Total compensation",
           "diffKr": "Vs men's avg",
-          "diffPct": "Vs men's avg %"
+          "diffPct": "Vs men's avg %",
+          "documentation": "Documentation"
         }
       },
       "gap": {

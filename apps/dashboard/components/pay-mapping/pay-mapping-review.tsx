@@ -66,7 +66,7 @@ export function PayMappingReview() {
   const t = useTranslations("dashboard.payMapping.review")
   const tGap = useTranslations("dashboard.payMapping.gap")
   const { orgId } = useOrganization()
-  const { run, gap, analyses } = usePayMappingRun()
+  const { run, gap, analyses, actions, notes } = usePayMappingRun()
   const runsList = useQuery(api.payMapping.runs.listPayMappingRuns, { orgId })
   const router = useRouter()
   const pathname = usePathname()
@@ -329,6 +329,8 @@ export function PayMappingReview() {
               rows={currentRun.rows}
               currency={currency}
               referenceDateMs={currentRun.referenceDate}
+              actions={actions}
+              notes={notes}
               requiresDocumentation={equalWorkGroupRequiresDocumentation(
                 step.group.flag
               )}
@@ -350,6 +352,8 @@ export function PayMappingReview() {
             rows={currentRun.rows}
             currency={currency}
             referenceDateMs={currentRun.referenceDate}
+            actions={actions}
+            notes={notes}
             requiresDocumentation={womenDominatedGroupRequiresDocumentation(
               step.group.comparisons.length
             )}
@@ -406,6 +410,8 @@ export function PayMappingReview() {
             rows={currentRun.rows}
             currency={currency}
             referenceDateMs={currentRun.referenceDate}
+            actions={actions}
+            notes={notes}
             requiresDocumentation={equalWorkGroupRequiresDocumentation(
               group.flag
             )}
@@ -435,6 +441,8 @@ export function PayMappingReview() {
           rows={currentRun.rows}
           currency={currency}
           referenceDateMs={currentRun.referenceDate}
+          actions={actions}
+          notes={notes}
           requiresDocumentation={womenDominatedGroupRequiresDocumentation(
             group.comparisons.length
           )}

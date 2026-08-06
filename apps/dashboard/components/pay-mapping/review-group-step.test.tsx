@@ -183,6 +183,8 @@ function renderEqualWorkStep(group: GapGroup, overrides: StepOverrides = {}) {
         rows={ROWS}
         currency="SEK"
         referenceDateMs={Date.UTC(2026, 6, 1)}
+        actions={[]}
+        notes={[]}
         requiresDocumentation={overrides.requiresDocumentation ?? true}
         animated={overrides.animated ?? true}
         onNext={onNext}
@@ -211,6 +213,8 @@ function renderWdStep(
         rows={ROWS}
         currency="SEK"
         referenceDateMs={Date.UTC(2026, 6, 1)}
+        actions={[]}
+        notes={[]}
         requiresDocumentation={overrides.requiresDocumentation ?? true}
         animated={overrides.animated ?? true}
         onNext={onNext}

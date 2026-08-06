@@ -144,6 +144,80 @@ export interface GroupAnalysis {
   finding: "none" | "found" | null
 }
 
+// What an action or note is anchored to (ADR-0015): a whole comparison
+// group, one individual within a group, or a tvärnivå pair. Individuals are
+// referenced by personPublicId only (Role != Person); display values come
+// from the snapshot row.
+export type ActionTargetWire =
+  | { kind: "group"; scope: "equalWork" | "equivalentWork"; groupKey: string }
+  | {
+      kind: "person"
+      scope: "equalWork" | "equivalentWork"
+      groupKey: string
+      personPublicId: string
+    }
+  | { kind: "pair"; womanPublicId: string; manPublicId: string }
+
+export type ActionStatus = "notStarted" | "inProgress" | "done"
+export type ActionPriority = "high" | "medium" | "low"
+export type NoteType = "objectiveReason" | "discussionNeeded" | "noActionNeeded"
+
+// listActions' wire shape: a formal remediation action (åtgärd, DL 3 kap.
+// 11 §). ownerName resolves at read time, so an erased or renamed owner
+// never leaves a stale name frozen on the row.
+export interface PayMappingActionWire {
+  actionId: Id<"payMappingActions">
+  target: ActionTargetWire
+  problem: string
+  plannedAction: string
+  reason: PayGapReason | null
+  ownerUserId: string
+  ownerName: string
+  plannedDate: number
+  estimatedCost: number | null
+  priority: ActionPriority
+  status: ActionStatus
+  createdAt: number
+}
+
+// listNotes' wire shape: an informal note (notering) with its three-way
+// classification.
+export interface PayMappingNoteWire {
+  noteId: Id<"payMappingNotes">
+  target: ActionTargetWire
+  text: string
+  noteType: NoteType
+  createdBy: string
+  createdByName: string
+  createdAt: number
+}
+
+// Whether a record is anchored to exactly this target: the detail views' own
+// per-group and per-row filter, so a badge never counts a sibling's records.
+export function targetMatches(
+  target: ActionTargetWire,
+  match: ActionTargetWire
+): boolean {
+  if (target.kind !== match.kind) return false
+  if (target.kind === "pair" && match.kind === "pair") {
+    return (
+      target.womanPublicId === match.womanPublicId &&
+      target.manPublicId === match.manPublicId
+    )
+  }
+  if (target.kind === "group" && match.kind === "group") {
+    return target.scope === match.scope && target.groupKey === match.groupKey
+  }
+  if (target.kind === "person" && match.kind === "person") {
+    return (
+      target.scope === match.scope &&
+      target.groupKey === match.groupKey &&
+      target.personPublicId === match.personPublicId
+    )
+  }
+  return false
+}
+
 // Structural subset of getPayMappingRunBySlug's per-person row (the frozen
 // snapshot). currency/payYear are only present once a pay record was frozen;
 // birthDate/employmentStartDate/ftePercent only when the source person had
@@ -151,6 +225,9 @@ export interface GroupAnalysis {
 // pay was frozen); the scatter derives age/tenure from birthDate/
 // employmentStartDate against the run's referenceDate.
 export interface PayMappingSnapshotRow {
+  // The pseudonymous person key: per-individual actions and notes anchor to
+  // it (never a name).
+  personPublicId: string
   displayName: string
   erased: boolean
   gender: "Man" | "Kvinna"

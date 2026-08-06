@@ -3,7 +3,9 @@
 import { createContext, type ReactNode, useContext } from "react"
 import type {
   GroupAnalysis,
+  PayMappingActionWire,
   PayMappingGapResult,
+  PayMappingNoteWire,
   PayMappingRunDetail,
 } from "./pay-mapping-gap-types"
 
@@ -17,6 +19,10 @@ interface PayMappingRunContextValue {
   run: PayMappingRunDetail | undefined
   gap: PayMappingGapResult | undefined
   analyses: GroupAnalysis[] | undefined
+  // The action/note work layer (ADR-0015), shared by the detail views'
+  // badges and the actions overview so both read one subscription.
+  actions: PayMappingActionWire[] | undefined
+  notes: PayMappingNoteWire[] | undefined
 }
 
 const PayMappingRunContext = createContext<PayMappingRunContextValue | null>(

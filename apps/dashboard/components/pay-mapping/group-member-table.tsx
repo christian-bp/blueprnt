@@ -23,13 +23,22 @@ import {
 import { useFormatter, useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
 import { genderKeyStyle } from "@/components/gender-mark"
+import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { TablePagination } from "@/components/table-pagination"
 import { ariaSort, TableSortButton } from "@/components/table-sort-button"
 import { useMoney } from "@/hooks/use-money"
 import { percentText } from "@/lib/percent"
 import {
+  DocumentationBadges,
+  documentationFor,
+  DocumentationMenu,
+} from "./documentation-controls"
+import {
+  type ActionTargetWire,
   type GapGroup,
   groupMembers,
+  type PayMappingActionWire,
+  type PayMappingNoteWire,
   type PayMappingSnapshotRow,
   primaryGapMetric,
 } from "./pay-mapping-gap-types"
@@ -39,6 +48,7 @@ import {
 // PRIMARY metric (base salary, or total comp for a tccDriven group), so the
 // columns always agree with the group's own finding sentence and dot plot.
 export interface MemberRow {
+  personPublicId: string
   name: string
   erased: boolean
   woman: boolean
@@ -65,6 +75,7 @@ export function buildMemberRows(
     const primary = group.tccDriven ? tcc : base
     const diff = menMean === null ? null : diffVsMenMean(primary, menMean)
     return {
+      personPublicId: row.personPublicId,
       name: row.displayName,
       erased: row.erased,
       woman: row.gender === "Kvinna",
@@ -111,10 +122,21 @@ export function GroupMemberTable({
   group,
   rows,
   currency,
+  documentation,
 }: {
   group: GapGroup
   rows: PayMappingSnapshotRow[]
   currency: string
+  // Omitted by surfaces that render the table read-only (the deep-dive's
+  // own affordances differ); present, the trailing column carries each
+  // member's documentation badge + "..." menu.
+  documentation?: {
+    runId: Id<"payMappingRuns">
+    scope: "equalWork" | "equivalentWork"
+    actions: PayMappingActionWire[] | undefined
+    notes: PayMappingNoteWire[] | undefined
+    locked: boolean
+  }
 }) {
   const t = useTranslations("dashboard.payMapping.detail")
   const tGender = useTranslations("dashboard.people.gender")
@@ -202,6 +224,11 @@ export function GroupMemberTable({
             <TableHead className="w-24 text-right">
               {t("columns.diffPct")}
             </TableHead>
+            {documentation !== undefined && (
+              <TableHead className="w-40">
+                {t("columns.documentation")}
+              </TableHead>
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -244,6 +271,46 @@ export function GroupMemberTable({
                 <TableCell className="text-right tabular-nums">
                   {diff.pct}
                 </TableCell>
+                {documentation !== undefined && (
+                  <TableCell>
+                    {/* Fixed-height flex slot: a row gaining documentation
+                        must never reflow its neighbours (layout-shift rule),
+                        and an inline-flex control directly in a cell would
+                        inflate the line box (skeleton-parity rule). */}
+                    <div className="flex h-9 items-center justify-between gap-1">
+                      {(() => {
+                        const target: ActionTargetWire = {
+                          kind: "person",
+                          scope: documentation.scope,
+                          groupKey: group.key,
+                          personPublicId: row.personPublicId,
+                        }
+                        const own = documentationFor(
+                          target,
+                          documentation.actions,
+                          documentation.notes
+                        )
+                        return (
+                          <>
+                            <DocumentationBadges
+                              actions={own.actions}
+                              notes={own.notes}
+                            />
+                            <DocumentationMenu
+                              runId={documentation.runId}
+                              target={target}
+                              targetLabel={row.erased ? t("erased") : row.name}
+                              actions={own.actions}
+                              notes={own.notes}
+                              currency={currency}
+                              locked={documentation.locked}
+                            />
+                          </>
+                        )
+                      })()}
+                    </div>
+                  </TableCell>
+                )}
               </TableRow>
             )
           })}

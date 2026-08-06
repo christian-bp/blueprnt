@@ -30,7 +30,9 @@ import { makeExcluded, makeGapGroup } from "@/test/pay-mapping-fixtures"
 import type {
   GapGroup,
   GroupAnalysis,
+  PayMappingActionWire,
   PayMappingGapResult,
+  PayMappingNoteWire,
   PayMappingRunDetail,
   WomenDominatedComparisonWire,
   WomenDominatedGroupWire,
@@ -237,6 +239,8 @@ function renderSummary(
     run: PayMappingRunDetail | undefined
     gap: PayMappingGapResult | undefined
     analyses: GroupAnalysis[] | undefined
+    actions: PayMappingActionWire[] | undefined
+    notes: PayMappingNoteWire[] | undefined
     runsList: unknown[]
   }> = {}
 ) {
@@ -248,6 +252,8 @@ function renderSummary(
           run: "run" in overrides ? overrides.run : RUN,
           gap: "gap" in overrides ? overrides.gap : GAP,
           analyses: "analyses" in overrides ? overrides.analyses : [],
+          actions: "actions" in overrides ? overrides.actions : [],
+          notes: "notes" in overrides ? overrides.notes : [],
         }}
       >
         <PayMappingSummary />
@@ -313,7 +319,13 @@ describe("PayMappingSummary", () => {
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
         <PayMappingRunProvider
-          value={{ run: undefined, gap: undefined, analyses: undefined }}
+          value={{
+            run: undefined,
+            gap: undefined,
+            analyses: undefined,
+            actions: undefined,
+            notes: undefined,
+          }}
         >
           <PayMappingSummary />
         </PayMappingRunProvider>

@@ -175,7 +175,14 @@
       "payMappingCompleted": "Palkkakartoitus viimeistelty.",
       "payMappingReopened": "Palkkakartoitus avattu uudelleen.",
       "payMappingRenamed": "Palkkakartoitus nimetty uudelleen",
-      "payMappingDeleted": "Palkkakartoitus poistettu"
+      "payMappingDeleted": "Palkkakartoitus poistettu",
+      "payMappingActionCreated": "Toimenpide luotiin",
+      "payMappingActionUpdated": "Toimenpide päivitettiin",
+      "payMappingActionDeleted": "Toimenpide poistettiin",
+      "payMappingActionStatusChanged": "Tila päivitettiin",
+      "payMappingNoteCreated": "Merkintä lisättiin",
+      "payMappingNoteUpdated": "Merkintä päivitettiin",
+      "payMappingNoteDeleted": "Merkintä poistettiin"
     },
     "accountMenu": "Tilivalikko",
     "nav": {
@@ -1148,7 +1155,33 @@
           "group": "Ryhmä",
           "person": "Yksilö",
           "pair": "Tasojen välinen pari"
-        }
+        },
+        "createTitle": "Luo toimenpide",
+        "editTitle": "Muokkaa toimenpidettä",
+        "createNoteTitle": "Lisää merkintä",
+        "editNoteTitle": "Muokkaa merkintää",
+        "linkedTo": "Liitetty: {target}",
+        "problem": "Ongelman kuvaus",
+        "plannedAction": "Suunniteltu toimenpide",
+        "reason": "Asiallinen peruste (jos on)",
+        "reasonPlaceholder": "Valitse peruste",
+        "owner": "Vastuuhenkilö",
+        "ownerPlaceholder": "Valitse henkilö",
+        "plannedDate": "Suunniteltu päivä",
+        "estimatedCost": "Arvioitu kustannus",
+        "noteText": "Merkintä",
+        "noteTypeLabel": "Tyyppi",
+        "save": "Tallenna",
+        "cancel": "Peruuta",
+        "deleteAction": "Poista toimenpide",
+        "deleteNote": "Poista merkintä",
+        "deleteActionTitle": "Poistetaanko toimenpide?",
+        "deleteNoteTitle": "Poistetaanko merkintä?",
+        "deleteDescription": "Tätä ei voi kumota.",
+        "deleteConfirm": "Poista",
+        "menuLabel": "Dokumentaatio: {target}",
+        "noteBadge": "{count, plural, one {# merkintä} other {# merkintää}}",
+        "priorityLabel": "Prioriteetti"
       },
       "dotPlot": {
         "title": "Palkka-asemat ryhmässä",
@@ -1177,7 +1210,8 @@
           "basePay": "Peruspalkka",
           "totalComp": "Kokonaiskorvaus",
           "diffKr": "Ero M. ka.",
-          "diffPct": "Ero M. ka. %"
+          "diffPct": "Ero M. ka. %",
+          "documentation": "Dokumentaatio"
         }
       },
       "gap": {

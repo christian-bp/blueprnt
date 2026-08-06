@@ -33,6 +33,7 @@ function renderUnderlyingData(
 }
 
 const COMPARATOR_ROW_A: PayMappingSnapshotRow = {
+  personPublicId: "tom",
   displayName: "Tom Tech",
   erased: false,
   gender: "Man",
@@ -47,6 +48,7 @@ const COMPARATOR_ROW_A: PayMappingSnapshotRow = {
 }
 
 const DOMINATED_ROW: PayMappingSnapshotRow = {
+  personPublicId: "nina",
   displayName: "Nina Nurse",
   erased: false,
   gender: "Kvinna",

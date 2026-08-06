@@ -39,6 +39,8 @@ import { makeExcluded, makeGapGroup } from "@/test/pay-mapping-fixtures"
 import type {
   GapGroup,
   GroupAnalysis,
+  PayMappingActionWire,
+  PayMappingNoteWire,
   PayMappingGapResult,
   PayMappingRunDetail,
   WomenDominatedComparisonWire,
@@ -206,12 +208,16 @@ function renderCard(
     run: PayMappingRunDetail | undefined
     gap: PayMappingGapResult | undefined
     analyses: GroupAnalysis[] | undefined
+    actions: PayMappingActionWire[] | undefined
+    notes: PayMappingNoteWire[] | undefined
   }> = {}
 ) {
   const value = {
     run: "run" in overrides ? overrides.run : RUN_ACTIVE,
     gap: "gap" in overrides ? overrides.gap : GAP,
     analyses: "analyses" in overrides ? overrides.analyses : ANALYSES_PARTIAL,
+    actions: "actions" in overrides ? overrides.actions : [],
+    notes: "notes" in overrides ? overrides.notes : [],
   }
   return render(
     <NextIntlClientProvider locale="en" messages={en}>
@@ -397,7 +403,13 @@ describe("PayMappingJourneyCard", () => {
   })
 
   it("shows a content-shaped loading state: real title and chapter labels, skeleton state text and CTA", () => {
-    renderCard({ run: undefined, gap: undefined, analyses: undefined })
+    renderCard({
+      run: undefined,
+      gap: undefined,
+      analyses: undefined,
+      actions: undefined,
+      notes: undefined,
+    })
     expect(screen.getByText(tJourney.title)).toBeDefined()
     expect(screen.getByText(m.review.chapters.start)).toBeDefined()
     expect(screen.getByText(m.review.chapters.praxis)).toBeDefined()

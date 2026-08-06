@@ -53,6 +53,17 @@ export function PayMappingRunShell({
     api.payMapping.analyses.listGroupAnalyses,
     run === undefined || run === null ? "skip" : { orgId, runId: run.runId }
   )
+  // The work layer (actions + notes): same skip-until-resolved pattern, so
+  // the detail views' documentation badges and the actions overview share
+  // one subscription each.
+  const actions = useQuery(
+    api.payMapping.actions.listActions,
+    run === undefined || run === null ? "skip" : { orgId, runId: run.runId }
+  )
+  const notes = useQuery(
+    api.payMapping.notes.listNotes,
+    run === undefined || run === null ? "skip" : { orgId, runId: run.runId }
+  )
   usePageTitle(run?.label)
 
   // /pay-mappings/<slug>[/<sub>...] -> the sub-page's tab key. Deriving it
@@ -86,7 +97,7 @@ export function PayMappingRunShell({
 
   if (isReviewTakeover) {
     return (
-      <PayMappingRunProvider value={{ run, gap, analyses }}>
+      <PayMappingRunProvider value={{ run, gap, analyses, actions, notes }}>
         {children}
       </PayMappingRunProvider>
     )
@@ -100,7 +111,7 @@ export function PayMappingRunShell({
           carries only the sub-page's name as its title. Static i18n, real
           from the first paint. */}
       <PageHeader title={t(`tabs.${payMappingSubPageKey(sub)}`)} />
-      <PayMappingRunProvider value={{ run, gap, analyses }}>
+      <PayMappingRunProvider value={{ run, gap, analyses, actions, notes }}>
         {children}
       </PayMappingRunProvider>
     </div>

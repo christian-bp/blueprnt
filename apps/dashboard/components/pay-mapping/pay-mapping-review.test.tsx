@@ -34,7 +34,9 @@ import { makeExcluded, makeGapGroup } from "@/test/pay-mapping-fixtures"
 import type {
   GapGroup,
   GroupAnalysis,
+  PayMappingActionWire,
   PayMappingGapResult,
+  PayMappingNoteWire,
   PayMappingRunDetail,
   WomenDominatedComparisonWire,
   WomenDominatedGroupWire,
@@ -207,6 +209,8 @@ function renderShell(
     run: PayMappingRunDetail | undefined
     gap: PayMappingGapResult | undefined
     analyses: GroupAnalysis[] | undefined
+    actions: PayMappingActionWire[] | undefined
+    notes: PayMappingNoteWire[] | undefined
     runsList: unknown[]
   }> = {}
 ) {
@@ -218,6 +222,8 @@ function renderShell(
           run: "run" in overrides ? overrides.run : RUN,
           gap: "gap" in overrides ? overrides.gap : GAP,
           analyses: "analyses" in overrides ? overrides.analyses : [],
+          actions: "actions" in overrides ? overrides.actions : [],
+          notes: "notes" in overrides ? overrides.notes : [],
         }}
       >
         <PayMappingReview />
@@ -425,7 +431,13 @@ describe("PayMappingReview", () => {
   })
 
   it("renders real progress chrome with skeleton placeholders while loading", () => {
-    renderShell({ run: undefined, gap: undefined, analyses: undefined })
+    renderShell({
+      run: undefined,
+      gap: undefined,
+      analyses: undefined,
+      actions: undefined,
+      notes: undefined,
+    })
     expect(screen.getByText(t.allSteps)).toBeDefined()
     expect(
       document.querySelectorAll('[data-slot="skeleton"]').length

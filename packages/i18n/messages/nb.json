@@ -175,7 +175,14 @@
       "payMappingCompleted": "Lønnskartleggingen fullført.",
       "payMappingReopened": "Lønnskartleggingen gjenåpnet.",
       "payMappingRenamed": "Lønnskartleggingen har fått nytt navn",
-      "payMappingDeleted": "Lønnskartlegging slettet"
+      "payMappingDeleted": "Lønnskartlegging slettet",
+      "payMappingActionCreated": "Tiltaket ble opprettet",
+      "payMappingActionUpdated": "Tiltaket ble oppdatert",
+      "payMappingActionDeleted": "Tiltaket ble slettet",
+      "payMappingActionStatusChanged": "Statusen ble oppdatert",
+      "payMappingNoteCreated": "Notatet ble lagt til",
+      "payMappingNoteUpdated": "Notatet ble oppdatert",
+      "payMappingNoteDeleted": "Notatet ble slettet"
     },
     "accountMenu": "Kontomeny",
     "nav": {
@@ -1148,7 +1155,33 @@
           "group": "Gruppe",
           "person": "Individ",
           "pair": "Tvernivå-par"
-        }
+        },
+        "createTitle": "Opprett tiltak",
+        "editTitle": "Rediger tiltak",
+        "createNoteTitle": "Legg til notat",
+        "editNoteTitle": "Rediger notat",
+        "linkedTo": "Knyttet til: {target}",
+        "problem": "Beskrivelse av problemet",
+        "plannedAction": "Planlagt tiltak",
+        "reason": "Saklig grunn (hvis aktuelt)",
+        "reasonPlaceholder": "Velg en grunn",
+        "owner": "Ansvarlig person",
+        "ownerPlaceholder": "Velg en person",
+        "plannedDate": "Planlagt dato",
+        "estimatedCost": "Beregnet kostnad",
+        "noteText": "Notat",
+        "noteTypeLabel": "Type",
+        "save": "Lagre",
+        "cancel": "Avbryt",
+        "deleteAction": "Slett tiltak",
+        "deleteNote": "Slett notat",
+        "deleteActionTitle": "Slette tiltaket?",
+        "deleteNoteTitle": "Slette notatet?",
+        "deleteDescription": "Dette kan ikke angres.",
+        "deleteConfirm": "Slett",
+        "menuLabel": "Dokumentasjon for {target}",
+        "noteBadge": "{count, plural, one {# notat} other {# notater}}",
+        "priorityLabel": "Prioritet"
       },
       "dotPlot": {
         "title": "Lønnsposisjoner i gruppen",
@@ -1177,7 +1210,8 @@
           "basePay": "Grunnlønn",
           "totalComp": "Total kompensasjon",
           "diffKr": "Mot M. snitt",
-          "diffPct": "Mot M. snitt %"
+          "diffPct": "Mot M. snitt %",
+          "documentation": "Dokumentasjon"
         }
       },
       "gap": {
