@@ -10,6 +10,8 @@ describe("pay gap reason taxonomy", () => {
     expect(PAY_GAP_REASONS).toEqual([
       "alternativeLabourMarket",
       "recruitmentPayLevel",
+      "geographicDifferentiation",
+      "retention",
       "experience",
       "historicalPay",
       "competence",

@@ -93,6 +93,8 @@ export const payMappingSnapshotRows = defineTable({
 export const payGapReasonValidator = v.union(
   v.literal("alternativeLabourMarket"),
   v.literal("recruitmentPayLevel"),
+  v.literal("geographicDifferentiation"),
+  v.literal("retention"),
   v.literal("experience"),
   v.literal("historicalPay"),
   v.literal("competence"),

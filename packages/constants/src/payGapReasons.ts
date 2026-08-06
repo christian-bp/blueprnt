@@ -4,7 +4,18 @@
 // factors. i18n labels live at dashboard.payMapping.reasons.<key> and
 // group headings at dashboard.payMapping.reasons.groups.<group>.
 export const PAY_GAP_REASON_GROUPS = {
-  market: ["alternativeLabourMarket", "recruitmentPayLevel"],
+  // geographicDifferentiation: ortsdifferentiering (pay levels differ by
+  // location). retention: market pressure to keep key competence. Both are
+  // established sakliga skäl in Swedish pay-mapping practice; individual
+  // negotiation is deliberately NOT a code (the defensible content of that
+  // case is recruitmentPayLevel), nor is an "other" catch-all (nuance
+  // belongs in the mandatory free-text fields, not an undocumented code).
+  market: [
+    "alternativeLabourMarket",
+    "recruitmentPayLevel",
+    "geographicDifferentiation",
+    "retention",
+  ],
   individual: ["experience", "historicalPay", "competence", "performance"],
   work: ["responsibility"],
 } as const

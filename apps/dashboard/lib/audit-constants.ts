@@ -90,6 +90,8 @@ export const PRAXIS_AREA_VALUE_KEYS: Record<PraxisAreaKey, string> = {
 export const PAY_GAP_REASON_VALUE_KEYS: Record<PayGapReason, string> = {
   alternativeLabourMarket: "payMapping.reasons.alternativeLabourMarket",
   recruitmentPayLevel: "payMapping.reasons.recruitmentPayLevel",
+  geographicDifferentiation: "payMapping.reasons.geographicDifferentiation",
+  retention: "payMapping.reasons.retention",
   experience: "payMapping.reasons.experience",
   historicalPay: "payMapping.reasons.historicalPay",
   competence: "payMapping.reasons.competence",
