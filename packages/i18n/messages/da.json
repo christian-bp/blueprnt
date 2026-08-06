@@ -1198,6 +1198,7 @@
         "back": "Tilbage til lønkortlægninger",
         "erased": "Slettet",
         "fteShare": "({fte} % FTE)",
+        "crossLevelFlagged": "Tjenes forbi af en mand på lavere niveau",
         "summary": {
           "womenMean": "Kvindernes gennemsnit: {value}",
           "menMean": "Mændenes gennemsnit: {value}",
@@ -1211,6 +1212,9 @@
           "basePay": "Grundløn",
           "totalComp": "Samlet løn",
           "documentation": "Dokumentation",
+          "track": "Track",
+          "role": "Rolle",
+          "crossLevel": "På tværs af niveau",
           "diffVsMen": "Mod M. gns."
         }
       },
@@ -1282,6 +1286,8 @@
         },
         "alternativeLabourMarket": "Alternativt arbejdsmarked",
         "recruitmentPayLevel": "Lønniveau ved rekruttering",
+        "geographicDifferentiation": "Geografisk differentiering",
+        "retention": "Fastholdelse af nøglekompetencer",
         "experience": "Erfaring",
         "historicalPay": "Historisk løn",
         "competence": "Kompetence",
@@ -1440,6 +1446,12 @@
         },
         "showAll": "Vis {count} mere",
         "showFewer": "Vis færre"
+      },
+      "levelAnalysis": {
+        "title": "Niveauanalyse: kvinder og mænd inden for hvert niveau ({count, plural, one {# niveau} other {# niveauer}})",
+        "show": "Vis analysen",
+        "hide": "Skjul analysen",
+        "lead": "For hvert niveau, hvor kvinder i gennemsnit tjener mindre end mænd, vises hver enkelt persons løn mod mændenes gennemsnit i niveauet, med rolle og track synlige, da de kan forklare en forskel. Den supplerer de lovpligtige sammenligninger ovenfor og bærer ingen egen dokumentationspligt."
       },
       "actionsOverview": {
         "totalLabel": "Tiltag",
@@ -1951,6 +1963,8 @@
       "collaborationBody": "Samarbejde betyder at involvere medarbejderne og deres faglige repræsentanter i hvert trin af lønkortlægningen (diskrimineringslovens 3 kap. 11 §). Hvis organisationen er bundet af en kollektiv overenskomst, har de faglige repræsentanter ret til de oplysninger, de har brug for for at deltage (12 §).",
       "crossLevelLabel": "Hvad er et tværniveau-tilfælde?",
       "crossLevelBody": "Lønkortlægningen grupperer ligeværdigt arbejde per niveau, men en lønforskel kan også gå PÅ TVÆRS af niveauerne: en kvinde, hvis rolle er vurderet som mere krævende, tjener mindre end en mand på et lavere vurderet niveau. Den inversion er et strukturelt advarselstegn og listes derfor separat fra sammenligningen inden for niveauet. Track (IC, Lead, Manager) kan være en saglig grund til den; når begge sider ligger på samme track, falder den grund bort, og tilfældet kræver en dokumenteret grund eller et tiltag.",
+      "levelAnalysisLabel": "Hvad er niveauanalysen?",
+      "levelAnalysisBody": "Arbejde på samme niveau betragtes som ligeværdigt. Denne analyse sammenligner kvinders og mænds løn inden for hvert niveau, på tværs af roller. En advarselsmarkering betyder, at kvinden desuden tjenes forbi af mindst én mand på et lavere niveau (et tværniveautilfælde, listet ovenfor). Rolle og track vises, fordi en forskel kan have en saglig forklaring dér.",
       "genderPureLabel": "Hvorfor ligger disse grupper for sig?",
       "genderPureBody": "En lønkortlægning sammenligner kvinders løn mod mænds. En gruppe, hvor alle har samme køn, har ingen sådan sammenligning at foretage, så den har hverken flag, dokumentationspligt eller plads i den lovpligtige rapport. Den findes her, fordi intern lønspredning og outliers alligevel er værd at forstå: en stor spredning inden for ét og samme job kan pege på en lønfastsættelse, der bliver et løngab i samme øjeblik gruppens sammensætning ændrer sig.",
       "womenAheadLabel": "Hvorfor ligger disse ikke i hovedflowet?",

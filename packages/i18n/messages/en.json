@@ -1198,6 +1198,7 @@
         "back": "Back to pay mappings",
         "erased": "Erased",
         "fteShare": "({fte} % FTE)",
+        "crossLevelFlagged": "Out-earned by a man on a lower level",
         "summary": {
           "womenMean": "Women's average: {value}",
           "menMean": "Men's average: {value}",
@@ -1211,6 +1212,9 @@
           "basePay": "Base salary",
           "totalComp": "Total compensation",
           "documentation": "Documentation",
+          "track": "Track",
+          "role": "Role",
+          "crossLevel": "Cross-level",
           "diffVsMen": "Vs men's avg"
         }
       },
@@ -1282,6 +1286,8 @@
         },
         "alternativeLabourMarket": "Alternative labour market",
         "recruitmentPayLevel": "Pay level at recruitment",
+        "geographicDifferentiation": "Geographic differentiation",
+        "retention": "Retention of key competence",
         "experience": "Experience",
         "historicalPay": "Historical pay",
         "competence": "Competence",
@@ -1440,6 +1446,12 @@
         },
         "showAll": "Show {count} more",
         "showFewer": "Show fewer"
+      },
+      "levelAnalysis": {
+        "title": "Level analysis: women and men within each level ({count, plural, one {# level} other {# levels}})",
+        "show": "Show analysis",
+        "hide": "Hide analysis",
+        "lead": "For every level where women earn less than men on average, this shows each individual's pay against the men's average in the level, with role and track visible, since those can explain a difference. It complements the statutory comparisons above and carries no documentation duty of its own."
       },
       "actionsOverview": {
         "totalLabel": "Actions",
@@ -1951,6 +1963,8 @@
       "collaborationBody": "Collaboration (Swedish: samverkan) means cooperating with employees and their union representatives at every step of the pay mapping (Diskrimineringslagen 3 kap. 11 §). If your organization is bound by a collective agreement, the union representatives have a right to the information they need to take part (12 §).",
       "crossLevelLabel": "What is a cross-level case?",
       "crossLevelBody": "The pay mapping groups equivalent work by level, but a pay difference can also cut ACROSS levels: a woman whose role was evaluated as more demanding earns less than a man on a lower-valued level. That inversion is a structural warning sign, so it is listed separately from the within-level comparison. Track (IC, Lead, Manager) can be an objective explanation for it; when both sides sit on the same track, that explanation is gone and the case needs a documented reason or an action.",
+      "levelAnalysisLabel": "What is the level analysis?",
+      "levelAnalysisBody": "Work on the same level is considered equivalent. This analysis compares women's and men's pay within each level, across roles. A warning marker means the woman is also out-earned by at least one man on a lower level (a cross-level case, listed above). Role and track are shown because a difference can have an objective explanation there.",
       "genderPureLabel": "Why are these groups separate?",
       "genderPureBody": "A pay mapping compares women's pay against men's. A group where everyone shares a gender has no such comparison to make, so it carries no flag, no documentation duty, and no place in the statutory report. It is kept here because internal pay dispersion and outliers are still worth understanding: a wide spread inside one job can point at pay-setting that would show up as a gender gap the moment the group's composition changes.",
       "womenAheadLabel": "Why are these not in the main flow?",
