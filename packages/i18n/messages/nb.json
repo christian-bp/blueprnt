@@ -720,6 +720,7 @@
         "plannedDate": "Planlagt dato",
         "targetLabel": "Gruppe",
         "targetKind": "Knyttet til",
+        "detailsChanged": "Detaljer endret",
         "noteType": "Notattype",
         "note": "Utdypet analyse",
         "done": "Markert fullført",
@@ -1209,8 +1210,6 @@
           "gender": "Kjønn",
           "basePay": "Grunnlønn",
           "totalComp": "Total kompensasjon",
-          "diffKr": "Mot M. snitt",
-          "diffPct": "Mot M. snitt %",
           "documentation": "Dokumentasjon",
           "diffVsMen": "Mot M. snitt"
         }
@@ -1353,6 +1352,7 @@
         "finding": {
           "less": "Kvinnene i denne gruppen tjener i gjennomsnitt {gap} mindre enn mennene ({women} kvinner · {men} menn).",
           "lessTcc": "Kvinnene i denne gruppen tjener i gjennomsnitt {gap} mindre enn mennene i total kompensasjon, mens grunnlønnene ikke viser noen slik forskjell ({women} kvinner · {men} menn).",
+          "lessTccWorse": "Kvinnene i denne gruppen tjener i gjennomsnitt {gap} mindre enn mennene i grunnlønn, og {tccGap} mindre i total kompensasjon, som er det som setter gruppens flagg ({women} kvinner · {men} menn).",
           "none": "Det er ikke noe målbart lønnsgap mellom kvinnene og mennene i denne gruppen ({women} kvinner · {men} menn).",
           "orgLess": "Kvinnene tjener i gjennomsnitt {gap} mindre enn mennene i hele lønnskartleggingen.",
           "orgMore": "Kvinnene tjener i gjennomsnitt {gap} mer enn mennene i hele lønnskartleggingen.",

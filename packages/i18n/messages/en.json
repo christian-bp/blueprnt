@@ -720,6 +720,7 @@
         "plannedDate": "Planned date",
         "targetLabel": "Group",
         "targetKind": "Linked to",
+        "detailsChanged": "Details changed",
         "noteType": "Note type",
         "note": "Deepened analysis",
         "done": "Marked done",
@@ -1209,8 +1210,6 @@
           "gender": "Gender",
           "basePay": "Base salary",
           "totalComp": "Total compensation",
-          "diffKr": "Vs men's avg",
-          "diffPct": "Vs men's avg %",
           "documentation": "Documentation",
           "diffVsMen": "Vs men's avg"
         }
@@ -1353,6 +1352,7 @@
         "finding": {
           "less": "The women in this group earn on average {gap} less than the men ({women} women · {men} men).",
           "lessTcc": "The women in this group earn on average {gap} less than the men in total compensation, while base salaries show no such gap ({women} women · {men} men).",
+          "lessTccWorse": "The women in this group earn on average {gap} less than the men in base salary, and {tccGap} less in total compensation, which is what sets the group's flag ({women} women · {men} men).",
           "none": "There is no measurable pay difference between the women and the men in this group ({women} women · {men} men).",
           "orgLess": "Women earn on average {gap} less than men across the whole pay mapping.",
           "orgMore": "Women earn on average {gap} more than men across the whole pay mapping.",

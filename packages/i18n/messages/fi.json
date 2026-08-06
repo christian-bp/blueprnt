@@ -720,6 +720,7 @@
         "plannedDate": "Suunniteltu päivä",
         "targetLabel": "Ryhmä",
         "targetKind": "Liitetty",
+        "detailsChanged": "Tiedot muutettu",
         "noteType": "Merkinnän tyyppi",
         "note": "Syventävä analyysi",
         "done": "Merkitty valmiiksi",
@@ -1209,8 +1210,6 @@
           "gender": "Sukupuoli",
           "basePay": "Peruspalkka",
           "totalComp": "Kokonaiskorvaus",
-          "diffKr": "Ero M. ka.",
-          "diffPct": "Ero M. ka. %",
           "documentation": "Dokumentaatio",
           "diffVsMen": "Ero M. ka."
         }
@@ -1353,6 +1352,7 @@
         "finding": {
           "less": "Tämän ryhmän naiset ansaitsevat keskimäärin {gap} vähemmän kuin miehet ({women} naista · {men} miestä).",
           "lessTcc": "Tämän ryhmän naiset ansaitsevat kokonaiskorvauksessa keskimäärin {gap} vähemmän kuin miehet, vaikka peruspalkoissa vastaavaa eroa ei ole ({women} naista · {men} miestä).",
+          "lessTccWorse": "Tämän ryhmän naiset ansaitsevat keskimäärin {gap} vähemmän kuin miehet peruspalkassa ja {tccGap} vähemmän kokonaiskorvauksessa, mikä määrittää ryhmän lipun ({women} naista · {men} miestä).",
           "none": "Tämän ryhmän naisten ja miesten välillä ei ole mitattavaa palkkaeroa ({women} naista · {men} miestä).",
           "orgLess": "Naiset ansaitsevat keskimäärin {gap} vähemmän kuin miehet koko palkkakartoituksessa.",
           "orgMore": "Naiset ansaitsevat keskimäärin {gap} enemmän kuin miehet koko palkkakartoituksessa.",
