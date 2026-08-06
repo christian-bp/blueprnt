@@ -1244,7 +1244,8 @@
       "tabs": {
         "overview": "Översikt",
         "analysis": "Analys",
-        "report": "Rapport"
+        "report": "Rapport",
+        "actions": "Åtgärder"
       },
       "overview": {
         "headlineGapLabel": "Lönegap",
@@ -1439,6 +1440,35 @@
         },
         "showAll": "Visa {count} till",
         "showFewer": "Visa färre"
+      },
+      "actionsOverview": {
+        "totalLabel": "Åtgärder",
+        "notesLabel": "Noteringar",
+        "costLabel": "Beräknad summa",
+        "actionsHeading": "Åtgärder",
+        "notesHeading": "Noteringar",
+        "discussionCount": "({count} behöver vidare diskussion)",
+        "emptyTitle": "Inga åtgärder ännu",
+        "emptyBody": "Åtgärder och noteringar du skapar i analysen samlas här, med ansvarig, planerat datum och status.",
+        "emptyCta": "Gå till analysen",
+        "statusAll": "Alla statusar",
+        "priorityAll": "Alla prioriteter",
+        "scopeAll": "Alla jämförelser",
+        "scopeEqualWork": "Lika arbete",
+        "scopeEquivalentWork": "Kvinnodominerade",
+        "scopePair": "Tvärnivå-par",
+        "ownerAll": "Alla ansvariga",
+        "dueAll": "Alla datum",
+        "dueSoon": "Förfaller inom {days} dagar",
+        "noMatches": "Inga åtgärder matchar filtren.",
+        "noNotes": "Inga noteringar matchar filtren.",
+        "columns": {
+          "status": "Status",
+          "linkedTo": "Kopplad till",
+          "author": "Tillagd av",
+          "created": "Tillagd"
+        },
+        "noNotesYet": "Inga noteringar ännu."
       }
     },
     "rating": {

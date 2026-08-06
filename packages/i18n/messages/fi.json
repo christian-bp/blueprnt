@@ -1244,7 +1244,8 @@
       "tabs": {
         "overview": "Yleiskatsaus",
         "analysis": "Analyysi",
-        "report": "Raportti"
+        "report": "Raportti",
+        "actions": "Toimenpiteet"
       },
       "overview": {
         "headlineGapLabel": "Palkkaero",
@@ -1439,6 +1440,35 @@
         },
         "showAll": "Näytä {count} lisää",
         "showFewer": "Näytä vähemmän"
+      },
+      "actionsOverview": {
+        "totalLabel": "Toimenpiteet",
+        "notesLabel": "Merkinnät",
+        "costLabel": "Arvioitu summa",
+        "actionsHeading": "Toimenpiteet",
+        "notesHeading": "Merkinnät",
+        "discussionCount": "({count} vaatii lisäkeskustelua)",
+        "emptyTitle": "Ei vielä toimenpiteitä",
+        "emptyBody": "Analyysissä luomasi toimenpiteet ja merkinnät kerätään tänne vastuuhenkilön, suunnitellun päivän ja tilan kanssa.",
+        "emptyCta": "Siirry analyysiin",
+        "statusAll": "Kaikki tilat",
+        "priorityAll": "Kaikki prioriteetit",
+        "scopeAll": "Kaikki vertailut",
+        "scopeEqualWork": "Samaa työtä",
+        "scopeEquivalentWork": "Naisvaltaiset",
+        "scopePair": "Tasojen välinen pari",
+        "ownerAll": "Kaikki vastuuhenkilöt",
+        "dueAll": "Kaikki päivät",
+        "dueSoon": "Erääntyy {days} päivän sisällä",
+        "noMatches": "Yksikään toimenpide ei vastaa suodattimia.",
+        "noNotes": "Yksikään merkintä ei vastaa suodattimia.",
+        "columns": {
+          "status": "Tila",
+          "linkedTo": "Liitetty",
+          "author": "Lisääjä",
+          "created": "Lisätty"
+        },
+        "noNotesYet": "Ei vielä merkintöjä."
       }
     },
     "rating": {

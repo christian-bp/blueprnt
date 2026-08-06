@@ -1244,7 +1244,8 @@
       "tabs": {
         "overview": "Oversigt",
         "analysis": "Analyse",
-        "report": "Rapport"
+        "report": "Rapport",
+        "actions": "Tiltag"
       },
       "overview": {
         "headlineGapLabel": "Løngab",
@@ -1439,6 +1440,35 @@
         },
         "showAll": "Vis {count} mere",
         "showFewer": "Vis færre"
+      },
+      "actionsOverview": {
+        "totalLabel": "Tiltag",
+        "notesLabel": "Notater",
+        "costLabel": "Beregnet sum",
+        "actionsHeading": "Tiltag",
+        "notesHeading": "Notater",
+        "discussionCount": "({count} kræver videre drøftelse)",
+        "emptyTitle": "Ingen tiltag endnu",
+        "emptyBody": "Tiltag og notater, du opretter i analysen, samles her med ansvarlig, planlagt dato og status.",
+        "emptyCta": "Gå til analysen",
+        "statusAll": "Alle statusser",
+        "priorityAll": "Alle prioriteter",
+        "scopeAll": "Alle sammenligninger",
+        "scopeEqualWork": "Lige arbejde",
+        "scopeEquivalentWork": "Kvindedominerede",
+        "scopePair": "Tværniveau-par",
+        "ownerAll": "Alle ansvarlige",
+        "dueAll": "Alle datoer",
+        "dueSoon": "Forfalder inden for {days} dage",
+        "noMatches": "Ingen tiltag matcher filtrene.",
+        "noNotes": "Ingen notater matcher filtrene.",
+        "columns": {
+          "status": "Status",
+          "linkedTo": "Knyttet til",
+          "author": "Tilføjet af",
+          "created": "Tilføjet"
+        },
+        "noNotesYet": "Ingen notater endnu."
       }
     },
     "rating": {

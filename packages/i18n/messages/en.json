@@ -1244,7 +1244,8 @@
       "tabs": {
         "overview": "Overview",
         "analysis": "Analysis",
-        "report": "Report"
+        "report": "Report",
+        "actions": "Actions"
       },
       "overview": {
         "headlineGapLabel": "Pay gap",
@@ -1439,6 +1440,35 @@
         },
         "showAll": "Show {count} more",
         "showFewer": "Show fewer"
+      },
+      "actionsOverview": {
+        "totalLabel": "Actions",
+        "notesLabel": "Notes",
+        "costLabel": "Estimated total",
+        "actionsHeading": "Actions",
+        "notesHeading": "Notes",
+        "discussionCount": "({count} need further discussion)",
+        "emptyTitle": "No actions yet",
+        "emptyBody": "Actions and notes you create in the analysis collect here, with their owner, planned date and status.",
+        "emptyCta": "Go to the analysis",
+        "statusAll": "All statuses",
+        "priorityAll": "All priorities",
+        "scopeAll": "All comparisons",
+        "scopeEqualWork": "Equal work",
+        "scopeEquivalentWork": "Women-dominated",
+        "scopePair": "Cross-level pair",
+        "ownerAll": "All owners",
+        "dueAll": "Any date",
+        "dueSoon": "Due within {days} days",
+        "noMatches": "No actions match the filters.",
+        "noNotes": "No notes match the filters.",
+        "columns": {
+          "status": "Status",
+          "linkedTo": "Linked to",
+          "author": "Added by",
+          "created": "Added"
+        },
+        "noNotesYet": "No notes yet."
       }
     },
     "rating": {

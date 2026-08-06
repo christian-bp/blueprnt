@@ -16,6 +16,7 @@ import { SPRING } from "@/lib/motion"
 const TABS = [
   { labelKey: "overview", sub: "" },
   { labelKey: "analysis", sub: "analysis" },
+  { labelKey: "actions", sub: "actions" },
   { labelKey: "report", sub: "report" },
 ] as const
 

@@ -1244,7 +1244,8 @@
       "tabs": {
         "overview": "Oversikt",
         "analysis": "Analyse",
-        "report": "Rapport"
+        "report": "Rapport",
+        "actions": "Tiltak"
       },
       "overview": {
         "headlineGapLabel": "Lønnsgap",
@@ -1439,6 +1440,35 @@
         },
         "showAll": "Vis {count} til",
         "showFewer": "Vis færre"
+      },
+      "actionsOverview": {
+        "totalLabel": "Tiltak",
+        "notesLabel": "Notater",
+        "costLabel": "Beregnet sum",
+        "actionsHeading": "Tiltak",
+        "notesHeading": "Notater",
+        "discussionCount": "({count} trenger videre diskusjon)",
+        "emptyTitle": "Ingen tiltak ennå",
+        "emptyBody": "Tiltak og notater du oppretter i analysen samles her, med ansvarlig, planlagt dato og status.",
+        "emptyCta": "Gå til analysen",
+        "statusAll": "Alle statuser",
+        "priorityAll": "Alle prioriteter",
+        "scopeAll": "Alle sammenligninger",
+        "scopeEqualWork": "Likt arbeid",
+        "scopeEquivalentWork": "Kvinnedominerte",
+        "scopePair": "Tvernivå-par",
+        "ownerAll": "Alle ansvarlige",
+        "dueAll": "Alle datoer",
+        "dueSoon": "Forfaller innen {days} dager",
+        "noMatches": "Ingen tiltak matcher filtrene.",
+        "noNotes": "Ingen notater matcher filtrene.",
+        "columns": {
+          "status": "Status",
+          "linkedTo": "Knyttet til",
+          "author": "Lagt til av",
+          "created": "Lagt til"
+        },
+        "noNotesYet": "Ingen notater ennå."
       }
     },
     "rating": {
