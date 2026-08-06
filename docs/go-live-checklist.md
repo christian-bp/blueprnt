@@ -168,6 +168,31 @@ in the same change.
   `payRecords`, and `personAssignments`). Decide before go-live whether to add
   an erasure/anonymization hook for these names or record an explicit ADR
   exception, and implement whichever is decided.
+- [ ] **Decide the erasure path for person- and pair-targeted actions and
+  notes (`payMappingActions`/`payMappingNotes`).** A record whose target is
+  `person` or `pair` carries the employee's `personPublicId` plus
+  user-authored free text (`problem`, `plannedAction`, note `text`) and an
+  optional `estimatedCost` (on a person-targeted action effectively that
+  individual's planned raise), and `erasePersonRecords` does not touch these
+  tables. The structured link is safe (the publicId becomes a dead pseudonym
+  once the `people` row and snapshot identity are gone, and the overview
+  never denormalizes a name), but the free text can name the person and no
+  hook can reach it today: neither table is indexable by person without a
+  new index. Decide before go-live: (a) add the index + a hook that
+  hard-deletes or tombstones person/pair-targeted rows on erasure, or (b)
+  record an explicit ADR exception, mirroring the collaboration-participants
+  entry above. Consider also whether `estimatedCost` should be allowed on
+  person targets at all (restricting it to group targets removes the
+  salary-adjacent half of the problem). ADR-0015 §7 carries the matching
+  raderingsförbehåll.
+- [ ] **Native review of the Iteration 2 pay-mapping strings (nb/da/fi).**
+  The 2026-08-06 analysis-views rebuild added ~140 keys per locale
+  (`dashboard.payMapping.detail/dotPlot/crossLevel/actions/actionsOverview/
+  deepDive/womenAhead.*`, the `finding.lessTcc`/`lessTccWorse` variants,
+  action/note toasts, audit event/field/value labels, and the five new
+  `dashboard.help.*` pairs). The nb, da, and fi values are machine-drafted
+  and flagged in the feature commits; have native speakers review them
+  before launch.
 - [ ] **Gate `deletePayMappingRun` on run status.** The mutation currently
   hard-deletes a run (and its snapshot rows + group analyses) regardless of
   `status`, including a `completed` run, which is the statutory kartläggning
@@ -308,8 +333,23 @@ suite covers them before go-live:
   onboarding a large org: `classifyOrg` (one suggested assignment per matched
   person, people/classification.ts), the import apply step if it writes
   per-person in one mutation, and `deletePayMappingRun`'s child-first delete
-  loop. Verify each against Convex's per-transaction document limits at the
-  target org size (~8-12 writes per person for assignment-writing paths).
+  loop (which since Iteration 2 also removes the run's `payMappingActions`
+  and `payMappingNotes`). Verify each against Convex's per-transaction
+  document limits at the target org size (~8-12 writes per person for
+  assignment-writing paths).
+  Same class, read-side, added by Iteration 2: every work-layer create/update
+  (`payMapping/actions.ts`, `notes.ts`) `.collect()`s the run's entire
+  `payMappingSnapshotRows` inside the mutation to validate one target
+  (`validateTarget` runs `buildGapAggregates` over the whole snapshot). At
+  ~10k employees that is a 10k-document read set (transaction budget + OCC
+  conflict surface) per saved action. Before large-org onboarding, bound it:
+  a `by_run_group` index on (orgId, runId, roleTitle, level, seniority)
+  lets validation fetch just the target group; the same index also makes the
+  person-membership check a point lookup. Client-side sibling: the tvärnivå
+  scan (`crossLevelPairs`, O(women x men) over the whole frozen population)
+  runs in the browser on the analysis tab; it is memoized per data change,
+  but at very large populations the single pass itself deserves a
+  measurement before onboarding.
   The read side needs the same bounding: `listPeopleByTitle`
   (people/classificationQueries.ts, the classify surface's data source)
   collects every active person via `by_org`, then runs one `personAssignments`
