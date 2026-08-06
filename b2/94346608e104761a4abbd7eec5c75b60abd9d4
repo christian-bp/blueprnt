@@ -1,0 +1,62 @@
+apps/dashboard/components/pay-mapping/analysis-spine.tsx
+  s_7d4d2043db4111::t_4a6f0497de2fff 44-62,67
+  s_7d4d2043db4111::t_9dae7e2eac8057 1-43,63-66,68-97
+packages/i18n/messages/nb.json
+  s_7d4d2043db4111::t_981824aa9b60f7 1253-1271,1990-1994
+apps/dashboard/components/pay-mapping/pay-mapping-summary.tsx
+  s_7d4d2043db4111::t_6160adf2e4722e 248-251
+  s_7d4d2043db4111::t_55d7e5f2f65bf3 271-273,276,282-305
+  s_7d4d2043db4111::t_943b91ff1d61e6 32
+  s_7d4d2043db4111::t_10aff9392496e7 9,11-17,20-21,31
+  s_7d4d2043db4111::t_a0704fe84ad392 916-927
+  s_7d4d2043db4111::t_cc8464c1d18ab9 277-281
+  s_7d4d2043db4111::t_b5b9debe9e96d1 147
+  s_7d4d2043db4111::t_f24e9738bc612b 719-733
+  s_7d4d2043db4111::t_beceebf04f26f4 482-489
+  s_7d4d2043db4111::t_4f0def87848d19 750-767
+  s_7d4d2043db4111::t_c2d9b6d86e1917 311-333
+apps/dashboard/components/pay-mapping/next-step-panel.test.tsx
+  s_7d4d2043db4111::t_0337c43e651f85 1-70,72,76,78-94
+  s_7d4d2043db4111::t_fb2fe9594533b0 71,73-75,77
+packages/i18n/messages/en.json
+  s_7d4d2043db4111::t_981824aa9b60f7 1253-1271,1990-1994
+apps/dashboard/components/pay-mapping/analysis-spine.test.tsx
+  s_7d4d2043db4111::t_66f2b28799e46f 1-44,51-67,69-74,78-84
+  s_7d4d2043db4111::t_09fa6aab08b4a0 45-50
+  s_7d4d2043db4111::t_943b91ff1d61e6 68,75-77
+apps/dashboard/components/pay-mapping/pay-mapping-summary.test.tsx
+  s_7d4d2043db4111::t_b5342fa478f5cd 673-677
+  s_7d4d2043db4111::t_064e8e3a1db963 672
+  s_7d4d2043db4111::t_537da78819a250 464-469
+  s_7d4d2043db4111::t_fb3b2975b0834e 337-338,345,348
+  s_7d4d2043db4111::t_9d0bdf78a3bb9f 477-479
+  s_7d4d2043db4111::t_2745e48898cf3c 335-336
+  s_7d4d2043db4111::t_9c5392a539ed6c 53
+  s_7d4d2043db4111::t_bc0bfc93d5d4cc 409,411-420,427-439
+  s_7d4d2043db4111::t_943b91ff1d61e6 440-442
+packages/i18n/messages/fi.json
+  s_7d4d2043db4111::t_981824aa9b60f7 1253-1271,1990-1994
+packages/i18n/messages/sv.json
+  s_7d4d2043db4111::t_981824aa9b60f7 1253-1271,1990-1994
+packages/i18n/messages/da.json
+  s_7d4d2043db4111::t_981824aa9b60f7 1253-1271,1990-1994
+apps/dashboard/components/pay-mapping/next-step-panel.tsx
+  s_7d4d2043db4111::t_2e9343b66f0d1f 1-47,49-67
+  s_7d4d2043db4111::t_943b91ff1d61e6 48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "b294346608e104761a4abbd7eec5c75b60abd9d4",
+  "prompts": {},
+  "sessions": {
+    "s_7d4d2043db4111": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cbeef8ee-16ed-4aed-b926-c1546f14fb33",
+        "model": "claude-opus-5"
+      },
+      "human_author": null
+    }
+  }
+}
