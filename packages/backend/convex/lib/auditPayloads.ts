@@ -354,6 +354,56 @@ export interface AuditPayloads {
     label: string
     populationCount: number
   }
+  // Action/note events (ADR-0015). targetLabel is always GROUP-level display
+  // text ("roleTitle · seniority"), even for person- and pair-targeted
+  // records: a person's name must never enter these payloads (it could not
+  // be scrubbed on erasure), so targetKind carries the anchoring instead.
+  // The diffs cover structured fields only (ACTION_AUDIT_FIELDS /
+  // NOTE_AUDIT_FIELDS): free text, owner, and cost stay out of the trail.
+  "payMapping.actionCreated": {
+    runId: string
+    actionId: string
+    targetKind: "group" | "person" | "pair"
+    targetLabel: string
+    changes: Changes
+  }
+  "payMapping.actionUpdated": {
+    runId: string
+    actionId: string
+    targetLabel: string
+    changes: Changes
+  }
+  "payMapping.actionStatusChanged": {
+    runId: string
+    actionId: string
+    targetLabel: string
+    changes: Changes
+  }
+  "payMapping.actionDeleted": {
+    runId: string
+    actionId: string
+    targetKind: "group" | "person" | "pair"
+    targetLabel: string
+  }
+  "payMapping.noteCreated": {
+    runId: string
+    noteId: string
+    targetKind: "group" | "person" | "pair"
+    targetLabel: string
+    noteType: "objectiveReason" | "discussionNeeded" | "noActionNeeded"
+  }
+  "payMapping.noteUpdated": {
+    runId: string
+    noteId: string
+    targetLabel: string
+    changes: Changes
+  }
+  "payMapping.noteDeleted": {
+    runId: string
+    noteId: string
+    targetKind: "group" | "person" | "pair"
+    targetLabel: string
+  }
 }
 
 // Admin audit payloads, keyed 1:1 by every PLATFORM_AUDIT_EVENTS value. Also

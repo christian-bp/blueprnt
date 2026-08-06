@@ -33,6 +33,8 @@ const APP_TABLES = [
   "payMappingRuns",
   "payMappingSnapshotRows",
   "payMappingGroupAnalyses",
+  "payMappingActions",
+  "payMappingNotes",
 ] as const satisfies readonly TableNames[]
 
 // `satisfies readonly TableNames[]` above only checks that every name LISTED is

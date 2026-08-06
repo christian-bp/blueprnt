@@ -708,6 +708,12 @@
         "withPayCount": "Palkka tiedossa",
         "label": "Nimi",
         "reasons": "Asialliset perusteet",
+        "reason": "Asiallinen peruste",
+        "priority": "Prioriteetti",
+        "plannedDate": "Suunniteltu päivä",
+        "targetLabel": "Ryhmä",
+        "targetKind": "Liitetty",
+        "noteType": "Merkinnän tyyppi",
         "note": "Syventävä analyysi",
         "done": "Merkitty valmiiksi",
         "finding": "Arviointi",
@@ -793,7 +799,14 @@
         "payMappingRunReopened": "Palkkakartoitus avattu uudelleen",
         "payMappingRunRenamed": "Palkkakartoitus nimetty uudelleen",
         "payMappingCollaborationUpdated": "Yhteistoiminta päivitetty",
-        "payMappingRunDeleted": "Palkkakartoitus poistettu"
+        "payMappingRunDeleted": "Palkkakartoitus poistettu",
+        "payMappingActionCreated": "Toimenpide luotu",
+        "payMappingActionUpdated": "Toimenpide päivitetty",
+        "payMappingActionStatusChanged": "Toimenpiteen tila muutettu",
+        "payMappingActionDeleted": "Toimenpide poistettu",
+        "payMappingNoteCreated": "Merkintä lisätty",
+        "payMappingNoteUpdated": "Merkintä päivitetty",
+        "payMappingNoteDeleted": "Merkintä poistettu"
       },
       "ai": {
         "modelDraft": "Mallin kriteerit: {count} lisätty",
@@ -1114,6 +1127,28 @@
         "importLine": "Työntekijöitä ei ole vielä tuotu",
         "classifyLine": "{count, plural, one {# henkilö ei ole vielä luokiteltu} other {# henkilöä ei ole vielä luokiteltu}}",
         "evaluateLine": "{count, plural, one {# rooli, jossa on työntekijöitä, odottaa arviointia} other {# roolia, joissa on työntekijöitä, odottaa arviointia}}"
+      },
+      "actions": {
+        "status": {
+          "notStarted": "Aloittamatta",
+          "inProgress": "Käynnissä",
+          "done": "Valmis"
+        },
+        "priority": {
+          "high": "Korkea",
+          "medium": "Keskitaso",
+          "low": "Matala"
+        },
+        "noteType": {
+          "objectiveReason": "Asiallinen peruste dokumentoitu",
+          "discussionNeeded": "Vaatii lisäkeskustelua",
+          "noActionNeeded": "Ei toimenpiteitä"
+        },
+        "targetKind": {
+          "group": "Ryhmä",
+          "person": "Yksilö",
+          "pair": "Tasojen välinen pari"
+        }
       },
       "dotPlot": {
         "title": "Palkka-asemat ryhmässä",

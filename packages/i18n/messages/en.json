@@ -708,6 +708,12 @@
         "withPayCount": "With a salary",
         "label": "Name",
         "reasons": "Objective reasons",
+        "reason": "Objective reason",
+        "priority": "Priority",
+        "plannedDate": "Planned date",
+        "targetLabel": "Group",
+        "targetKind": "Linked to",
+        "noteType": "Note type",
         "note": "Deepened analysis",
         "done": "Marked done",
         "finding": "Assessment",
@@ -793,7 +799,14 @@
         "payMappingRunReopened": "Pay mapping reopened",
         "payMappingRunRenamed": "Pay mapping renamed",
         "payMappingCollaborationUpdated": "Collaboration updated",
-        "payMappingRunDeleted": "Pay mapping deleted"
+        "payMappingRunDeleted": "Pay mapping deleted",
+        "payMappingActionCreated": "Action created",
+        "payMappingActionUpdated": "Action updated",
+        "payMappingActionStatusChanged": "Action status changed",
+        "payMappingActionDeleted": "Action deleted",
+        "payMappingNoteCreated": "Note added",
+        "payMappingNoteUpdated": "Note updated",
+        "payMappingNoteDeleted": "Note deleted"
       },
       "ai": {
         "modelDraft": "Model criteria: {count} added",
@@ -1114,6 +1127,28 @@
         "importLine": "No employees have been imported yet",
         "classifyLine": "{count, plural, one {# person is not classified yet} other {# people are not classified yet}}",
         "evaluateLine": "{count, plural, one {# role with employees still needs a completed evaluation} other {# roles with employees still need a completed evaluation}}"
+      },
+      "actions": {
+        "status": {
+          "notStarted": "Not started",
+          "inProgress": "In progress",
+          "done": "Done"
+        },
+        "priority": {
+          "high": "High",
+          "medium": "Medium",
+          "low": "Low"
+        },
+        "noteType": {
+          "objectiveReason": "Objective reason documented",
+          "discussionNeeded": "Further discussion needed",
+          "noActionNeeded": "No action needed"
+        },
+        "targetKind": {
+          "group": "Group",
+          "person": "Individual",
+          "pair": "Cross-level pair"
+        }
       },
       "dotPlot": {
         "title": "Pay positions in the group",

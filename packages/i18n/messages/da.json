@@ -708,6 +708,12 @@
         "withPayCount": "Med løn",
         "label": "Navn",
         "reasons": "Saglige grunde",
+        "reason": "Saglig grund",
+        "priority": "Prioritet",
+        "plannedDate": "Planlagt dato",
+        "targetLabel": "Gruppe",
+        "targetKind": "Knyttet til",
+        "noteType": "Notattype",
         "note": "Uddybet analyse",
         "done": "Markeret udført",
         "finding": "Vurdering",
@@ -793,7 +799,14 @@
         "payMappingRunReopened": "Lønkortlægning genåbnet",
         "payMappingRunRenamed": "Lønkortlægning omdøbt",
         "payMappingCollaborationUpdated": "Samarbejde opdateret",
-        "payMappingRunDeleted": "Lønkortlægning slettet"
+        "payMappingRunDeleted": "Lønkortlægning slettet",
+        "payMappingActionCreated": "Tiltag oprettet",
+        "payMappingActionUpdated": "Tiltag opdateret",
+        "payMappingActionStatusChanged": "Tiltagsstatus ændret",
+        "payMappingActionDeleted": "Tiltag slettet",
+        "payMappingNoteCreated": "Notat tilføjet",
+        "payMappingNoteUpdated": "Notat opdateret",
+        "payMappingNoteDeleted": "Notat slettet"
       },
       "ai": {
         "modelDraft": "Modelkriterier: {count} tilføjet",
@@ -1114,6 +1127,28 @@
         "importLine": "Ingen medarbejdere er importeret endnu",
         "classifyLine": "{count, plural, one {# person er ikke klassificeret endnu} other {# personer er ikke klassificeret endnu}}",
         "evaluateLine": "{count, plural, one {# rolle med medarbejdere mangler en færdig vurdering} other {# roller med medarbejdere mangler en færdig vurdering}}"
+      },
+      "actions": {
+        "status": {
+          "notStarted": "Ikke påbegyndt",
+          "inProgress": "I gang",
+          "done": "Afsluttet"
+        },
+        "priority": {
+          "high": "Høj",
+          "medium": "Medium",
+          "low": "Lav"
+        },
+        "noteType": {
+          "objectiveReason": "Saglig grund dokumenteret",
+          "discussionNeeded": "Kræver videre drøftelse",
+          "noActionNeeded": "Intet tiltag kræves"
+        },
+        "targetKind": {
+          "group": "Gruppe",
+          "person": "Individ",
+          "pair": "Tværniveau-par"
+        }
       },
       "dotPlot": {
         "title": "Lønpositioner i gruppen",

@@ -11,7 +11,9 @@ import {
   importProgress,
 } from "./people/tables"
 import {
+  payMappingActions,
   payMappingGroupAnalyses,
+  payMappingNotes,
   payMappingRuns,
   payMappingSnapshotRows,
 } from "./payMapping/tables"
@@ -48,4 +50,6 @@ export default defineSchema({
   payMappingRuns,
   payMappingSnapshotRows,
   payMappingGroupAnalyses,
+  payMappingActions,
+  payMappingNotes,
 })

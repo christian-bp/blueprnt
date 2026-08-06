@@ -1,4 +1,5 @@
 import {
+  ACTION_AUDIT_FIELDS,
   ANCHOR_AUDIT_FIELDS,
   ASSIGNMENT_AUDIT_FIELDS,
   AUDIT_CATEGORIES,
@@ -6,6 +7,7 @@ import {
   CRITERION_AUDIT_FIELDS,
   ERASED_FIELD_VALUE,
   GROUP_ANALYSIS_AUDIT_FIELDS,
+  NOTE_AUDIT_FIELDS,
   PERSON_IDENTITY_AUDIT_FIELDS,
   MODEL_AUDIT_FIELDS,
   PAY_AUDIT_FIELDS,
@@ -28,6 +30,7 @@ import en from "@workspace/i18n/messages/en.json"
 import { routing } from "@workspace/i18n/routing"
 import { describe, expect, it } from "vitest"
 import {
+  ACTION_PRIORITY_VALUE_KEYS,
   AI_KIND_VALUE_KEYS,
   AUDIT_FILTER_CATEGORIES,
   BIAS_RISK_VALUE_KEYS,
@@ -39,6 +42,7 @@ import {
   GENDER_VALUE_KEYS,
   INDUSTRY_VALUE_KEYS,
   MEMBER_ROLE_VALUE_KEYS,
+  NOTE_TYPE_VALUE_KEYS,
   PAY_GAP_REASON_VALUE_KEYS,
   PLATFORM_AUDIT_FILTER_CATEGORIES,
   PRAXIS_AREA_VALUE_KEYS,
@@ -46,6 +50,7 @@ import {
   SCOPE_VALUE_KEYS,
   SENIORITY_SOURCE_VALUE_KEYS,
   STATUS_VALUE_KEYS,
+  TARGET_KIND_VALUE_KEYS,
   TRACK_VALUE_KEYS,
 } from "./audit-constants"
 import { LANGUAGE_LABEL_KEYS } from "./locales"
@@ -186,6 +191,9 @@ const OTHER_AUDIT_FIELDS = [
   // payMapping.runCompleted flat-stat fields
   "equalWorkDone",
   "equivalentWorkDone",
+  // payMapping.action*/note* flat (non-diffed) payload fields
+  "targetKind",
+  "targetLabel",
   // ai.suggestionConfirmed flat-stat fields (the import kinds). These render
   // through payloadStats/StatList, not a `changes` diff, so without a label
   // the sheet printed the raw payload keys.
@@ -206,6 +214,8 @@ const ALL_AUDIT_FIELDS = [
     ...PAY_AUDIT_FIELDS,
     ...ASSIGNMENT_AUDIT_FIELDS,
     ...GROUP_ANALYSIS_AUDIT_FIELDS,
+    ...ACTION_AUDIT_FIELDS,
+    ...NOTE_AUDIT_FIELDS,
     ...OTHER_AUDIT_FIELDS,
   ]),
 ]
@@ -253,7 +263,18 @@ const AUDIT_STATUSES = [
   "active",
   "underReview",
   "replaced",
+  "notStarted",
+  "inProgress",
+  "done",
 ] as const
+// payMapping.action*/note* domains (payMapping/tables.ts validators).
+const ACTION_PRIORITIES = ["high", "medium", "low"] as const
+const NOTE_TYPES = [
+  "objectiveReason",
+  "discussionNeeded",
+  "noActionNeeded",
+] as const
+const ACTION_TARGET_KINDS = ["group", "person", "pair"] as const
 const SALARY_SOURCES = ["import", "manual"] as const
 const BIAS_RISKS = ["low", "medium", "high"] as const
 // person.* `gender` (the Swedish wire codes on the people table).
@@ -293,6 +314,15 @@ describe("audit log value labels", () => {
     )
     expect(Object.keys(STATUS_VALUE_KEYS).sort()).toEqual(
       [...AUDIT_STATUSES].sort()
+    )
+    expect(Object.keys(ACTION_PRIORITY_VALUE_KEYS).sort()).toEqual(
+      [...ACTION_PRIORITIES].sort()
+    )
+    expect(Object.keys(NOTE_TYPE_VALUE_KEYS).sort()).toEqual(
+      [...NOTE_TYPES].sort()
+    )
+    expect(Object.keys(TARGET_KIND_VALUE_KEYS).sort()).toEqual(
+      [...ACTION_TARGET_KINDS].sort()
     )
     expect(Object.keys(COUNTRY_VALUE_KEYS).sort()).toEqual(
       [...COUNTRY_KEYS].sort()

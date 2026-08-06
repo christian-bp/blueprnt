@@ -121,6 +121,93 @@ export const payMappingFindingValidator = v.union(
   v.literal("found")
 )
 
+// Which comparison a work-layer record belongs to: the lika arbete flow or
+// the women-dominated (likvärdigt) chapter. Shared by group analyses,
+// actions, and notes.
+export const payComparisonScopeValidator = v.union(
+  v.literal("equalWork"),
+  v.literal("equivalentWork")
+)
+
+// What an action or note is anchored to (ADR-0015, Iteration 2 note 5):
+// a whole comparison group, one individual within a group, or a tvärnivå
+// pair. Individuals are referenced by personPublicId ONLY (Role != Person):
+// names and pay are never denormalized in; display values resolve from the
+// snapshot row, which the erasure path already pseudonymizes, so an erased
+// person renders as the tombstone with no extra hook.
+export const actionTargetValidator = v.union(
+  v.object({
+    kind: v.literal("group"),
+    scope: payComparisonScopeValidator,
+    groupKey: v.string(),
+  }),
+  v.object({
+    kind: v.literal("person"),
+    scope: payComparisonScopeValidator,
+    groupKey: v.string(),
+    personPublicId: v.string(),
+  }),
+  v.object({
+    kind: v.literal("pair"),
+    womanPublicId: v.string(),
+    manPublicId: v.string(),
+  })
+)
+
+export const payMappingActionStatusValidator = v.union(
+  v.literal("notStarted"),
+  v.literal("inProgress"),
+  v.literal("done")
+)
+
+export const payMappingActionPriorityValidator = v.union(
+  v.literal("high"),
+  v.literal("medium"),
+  v.literal("low")
+)
+
+// A formal remediation action (åtgärd, DL 3 kap. 11 §; M7). Work-layer
+// content keyed to the run (ADR-0011): free text is statutory documentation
+// the user writes (steered away from naming individuals); estimatedCost is
+// an org budget figure. ownerUserId is a system user, resolved to a name at
+// read time (never frozen in). Status updates stay allowed after the run
+// completes (the plan runs over years); content edits lock with the run.
+export const payMappingActions = defineTable({
+  orgId: v.string(),
+  runId: v.id("payMappingRuns"),
+  target: actionTargetValidator,
+  problem: v.string(),
+  plannedAction: v.string(),
+  reason: v.optional(payGapReasonValidator),
+  ownerUserId: v.string(),
+  plannedDate: v.number(), // epoch ms (day precision)
+  estimatedCost: v.optional(v.number()),
+  priority: payMappingActionPriorityValidator,
+  status: payMappingActionStatusValidator,
+  createdBy: v.string(), // actorId
+  createdAt: v.number(),
+}).index("by_run", ["orgId", "runId"])
+
+// An informal note (notering, Iteration 2 note 5): free-text context that is
+// NOT a formal action. Fully locked once the run completes. The deep-dive's
+// gender-pure groups take notes too (their group keys validate against the
+// excluded bucket, not only the shown flow).
+export const payMappingNoteTypeValidator = v.union(
+  v.literal("objectiveReason"),
+  v.literal("discussionNeeded"),
+  v.literal("noActionNeeded")
+)
+
+export const payMappingNotes = defineTable({
+  orgId: v.string(),
+  runId: v.id("payMappingRuns"),
+  target: actionTargetValidator,
+  text: v.string(),
+  noteType: payMappingNoteTypeValidator,
+  createdBy: v.string(), // actorId
+  createdAt: v.number(),
+}).index("by_run", ["orgId", "runId"])
+
 // One documentation entry for an equal-work (lika) or equivalent-work
 // (likvärdigt)/women-dominated group, or (scope "praxis") a
 // lönebestämmelser/praxis review area, in a run (ADR-0012 gate; DL 3 kap. 8 §

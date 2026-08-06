@@ -589,9 +589,10 @@ export const setPayMappingCollaboration = orgMutation({
 })
 
 // Hard-deletes a pay-mapping run and every child row that references it,
-// child-first: payMappingSnapshotRows and payMappingGroupAnalyses are the
-// only two tables that carry a runId (payMapping/tables.ts's by_run
-// indexes); deleting the parent row first would strand them. Pre-launch
+// child-first: payMappingSnapshotRows, payMappingGroupAnalyses,
+// payMappingActions and payMappingNotes are the tables that carry a runId
+// (payMapping/tables.ts's by_run indexes); deleting the parent row first
+// would strand them. Pre-launch
 // (CLAUDE.md "No legacy before launch"): any run status is deletable, not
 // only draft/active ones -- the frontend's confirm dialog carries the
 // "cannot be undone" warning instead of a server-side status gate. The
@@ -657,6 +658,22 @@ export const deletePayMappingRun = orgMutation({
       .withIndex("by_run", (q) => q.eq("orgId", ctx.orgId).eq("runId", runId))
       .collect()
     for (const row of analysisRows) {
+      await ctx.db.delete(row._id)
+    }
+
+    const actionRows = await ctx.db
+      .query("payMappingActions")
+      .withIndex("by_run", (q) => q.eq("orgId", ctx.orgId).eq("runId", runId))
+      .collect()
+    for (const row of actionRows) {
+      await ctx.db.delete(row._id)
+    }
+
+    const noteRows = await ctx.db
+      .query("payMappingNotes")
+      .withIndex("by_run", (q) => q.eq("orgId", ctx.orgId).eq("runId", runId))
+      .collect()
+    for (const row of noteRows) {
       await ctx.db.delete(row._id)
     }
 

@@ -479,6 +479,50 @@ const SUBJECT_FIXTURES: { [E in AuditEvent]: AuditPayloads[E] } = {
     label: "Lönekartläggning 2026",
     populationCount: 10,
   },
+  "payMapping.actionCreated": {
+    runId: "run-1",
+    actionId: "action-1",
+    targetKind: "group",
+    targetLabel: "SWE · Senior",
+    changes: {},
+  },
+  "payMapping.actionUpdated": {
+    runId: "run-1",
+    actionId: "action-1",
+    targetLabel: "SWE · Senior",
+    changes: {},
+  },
+  "payMapping.actionStatusChanged": {
+    runId: "run-1",
+    actionId: "action-1",
+    targetLabel: "SWE · Senior",
+    changes: {},
+  },
+  "payMapping.actionDeleted": {
+    runId: "run-1",
+    actionId: "action-1",
+    targetKind: "person",
+    targetLabel: "SWE · Senior",
+  },
+  "payMapping.noteCreated": {
+    runId: "run-1",
+    noteId: "note-1",
+    targetKind: "group",
+    targetLabel: "SWE · Senior",
+    noteType: "discussionNeeded",
+  },
+  "payMapping.noteUpdated": {
+    runId: "run-1",
+    noteId: "note-1",
+    targetLabel: "SWE · Senior",
+    changes: {},
+  },
+  "payMapping.noteDeleted": {
+    runId: "run-1",
+    noteId: "note-1",
+    targetKind: "group",
+    targetLabel: "SWE · Senior",
+  },
 }
 
 // The expected subject per fixture above: the canonical primary entity, or
@@ -531,6 +575,13 @@ const EXPECTED_SUBJECTS: { [E in AuditEvent]: AuditSubject | undefined } = {
   "payMapping.collaborationUpdated": { kind: "payMappingRun", id: "run-1" },
   "payMapping.runRenamed": { kind: "payMappingRun", id: "run-1" },
   "payMapping.runDeleted": { kind: "payMappingRun", id: "run-1" },
+  "payMapping.actionCreated": { kind: "payMappingRun", id: "run-1" },
+  "payMapping.actionUpdated": { kind: "payMappingRun", id: "run-1" },
+  "payMapping.actionStatusChanged": { kind: "payMappingRun", id: "run-1" },
+  "payMapping.actionDeleted": { kind: "payMappingRun", id: "run-1" },
+  "payMapping.noteCreated": { kind: "payMappingRun", id: "run-1" },
+  "payMapping.noteUpdated": { kind: "payMappingRun", id: "run-1" },
+  "payMapping.noteDeleted": { kind: "payMappingRun", id: "run-1" },
 }
 
 describe("subjectForEvent", () => {

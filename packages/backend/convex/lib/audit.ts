@@ -55,6 +55,13 @@ export const AUDIT_EVENTS = {
   payMappingCollaborationUpdated: "payMapping.collaborationUpdated",
   payMappingRunRenamed: "payMapping.runRenamed",
   payMappingRunDeleted: "payMapping.runDeleted",
+  payMappingActionCreated: "payMapping.actionCreated",
+  payMappingActionUpdated: "payMapping.actionUpdated",
+  payMappingActionStatusChanged: "payMapping.actionStatusChanged",
+  payMappingActionDeleted: "payMapping.actionDeleted",
+  payMappingNoteCreated: "payMapping.noteCreated",
+  payMappingNoteUpdated: "payMapping.noteUpdated",
+  payMappingNoteDeleted: "payMapping.noteDeleted",
 } as const
 
 export type AuditEvent = (typeof AUDIT_EVENTS)[keyof typeof AUDIT_EVENTS]
@@ -207,6 +214,34 @@ const AUDIT_SUBJECTS: {
     id: payload.runId,
   }),
   "payMapping.runDeleted": (payload) => ({
+    kind: "payMappingRun",
+    id: payload.runId,
+  }),
+  "payMapping.actionCreated": (payload) => ({
+    kind: "payMappingRun",
+    id: payload.runId,
+  }),
+  "payMapping.actionUpdated": (payload) => ({
+    kind: "payMappingRun",
+    id: payload.runId,
+  }),
+  "payMapping.actionStatusChanged": (payload) => ({
+    kind: "payMappingRun",
+    id: payload.runId,
+  }),
+  "payMapping.actionDeleted": (payload) => ({
+    kind: "payMappingRun",
+    id: payload.runId,
+  }),
+  "payMapping.noteCreated": (payload) => ({
+    kind: "payMappingRun",
+    id: payload.runId,
+  }),
+  "payMapping.noteUpdated": (payload) => ({
+    kind: "payMappingRun",
+    id: payload.runId,
+  }),
+  "payMapping.noteDeleted": (payload) => ({
     kind: "payMappingRun",
     id: payload.runId,
   }),
@@ -656,6 +691,24 @@ export const GROUP_ANALYSIS_AUDIT_FIELDS = [
   "done",
   "finding",
 ] as const
+
+// The action fields diffed on payMapping.action* events (payMapping/
+// actions.ts). Deliberately STRUCTURED fields only (ADR-0015): the free
+// texts (problem, planned action), the owner (a user name that erasure
+// could not scrub out of a diff), and the estimated cost (salary-adjacent
+// for a person-targeted action) never enter the trail; an edit touching
+// only those logs an empty diff, which still records that the action
+// changed. plannedDate is diffed as an ISO date string, never epoch ms.
+export const ACTION_AUDIT_FIELDS = [
+  "status",
+  "priority",
+  "reason",
+  "plannedDate",
+] as const
+
+// The note field diffed on payMapping.noteUpdated: the classification only;
+// the note text itself never enters the trail (same rationale as above).
+export const NOTE_AUDIT_FIELDS = ["noteType"] as const
 
 // One bulk `items` entry for a freshly created criterion (template/scratch/AI).
 // Wraps buildCreateChanges over CRITERION_AUDIT_FIELDS; the human label is the

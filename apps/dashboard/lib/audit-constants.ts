@@ -97,6 +97,33 @@ export const PAY_GAP_REASON_VALUE_KEYS: Record<PayGapReason, string> = {
   responsibility: "payMapping.reasons.responsibility",
 }
 
+// payMapping.action* `priority` (mirrors payMapping/tables.ts's
+// payMappingActionPriorityValidator), labeled where the action surfaces
+// label it.
+type ActionPriority = "high" | "medium" | "low"
+export const ACTION_PRIORITY_VALUE_KEYS: Record<ActionPriority, string> = {
+  high: "payMapping.actions.priority.high",
+  medium: "payMapping.actions.priority.medium",
+  low: "payMapping.actions.priority.low",
+}
+
+// payMapping.note* `noteType` (mirrors payMappingNoteTypeValidator).
+type NoteType = "objectiveReason" | "discussionNeeded" | "noActionNeeded"
+export const NOTE_TYPE_VALUE_KEYS: Record<NoteType, string> = {
+  objectiveReason: "payMapping.actions.noteType.objectiveReason",
+  discussionNeeded: "payMapping.actions.noteType.discussionNeeded",
+  noActionNeeded: "payMapping.actions.noteType.noActionNeeded",
+}
+
+// payMapping.action*/note* `targetKind` (mirrors actionTargetValidator's
+// kind literals): what the record is anchored to.
+type ActionTargetKind = "group" | "person" | "pair"
+export const TARGET_KIND_VALUE_KEYS: Record<ActionTargetKind, string> = {
+  group: "payMapping.actions.targetKind.group",
+  person: "payMapping.actions.targetKind.person",
+  pair: "payMapping.actions.targetKind.pair",
+}
+
 // assignment.set `senioritySource`: the same concept the people register's
 // "Suggested" badge and the classify state badge already name.
 type SenioritySource = "suggested" | "confirmed"
@@ -117,8 +144,9 @@ export const MEMBER_ROLE_VALUE_KEYS: Record<MemberRole, string> = {
 // union: invitation lifecycle (Better Auth: pending/accepted/rejected/
 // canceled, accounts/mirrors.ts), suggestion lifecycle (shared/tables.ts:
 // generating/suggested/confirmed/rejected/failed; also the dropped-
-// suggestions list), and anchor designation (assessment/tables.ts:
-// active/underReview/replaced).
+// suggestions list), anchor designation (assessment/tables.ts:
+// active/underReview/replaced), and the action lifecycle
+// (payMapping/tables.ts: notStarted/inProgress/done).
 type AuditStatus =
   | "pending"
   | "accepted"
@@ -131,6 +159,9 @@ type AuditStatus =
   | "active"
   | "underReview"
   | "replaced"
+  | "notStarted"
+  | "inProgress"
+  | "done"
 export const STATUS_VALUE_KEYS: Record<AuditStatus, string> = {
   pending: "organization.members.pending",
   accepted: "auditLog.values.status.accepted",
@@ -143,6 +174,9 @@ export const STATUS_VALUE_KEYS: Record<AuditStatus, string> = {
   active: "roles.anchor.statusActive",
   underReview: "roles.anchor.statusUnderReview",
   replaced: "roles.anchor.statusReplaced",
+  notStarted: "payMapping.actions.status.notStarted",
+  inProgress: "payMapping.actions.status.inProgress",
+  done: "payMapping.actions.status.done",
 }
 
 // organization/person `country`: the onboarding country select's labels.
@@ -265,6 +299,10 @@ const CODED_FIELD_DOMAINS: Record<string, Record<string, string>> = {
   source: SALARY_SOURCE_VALUE_KEYS,
   trackKey: TRACK_VALUE_KEYS,
   kind: AI_KIND_VALUE_KEYS,
+  priority: ACTION_PRIORITY_VALUE_KEYS,
+  noteType: NOTE_TYPE_VALUE_KEYS,
+  targetKind: TARGET_KIND_VALUE_KEYS,
+  reason: PAY_GAP_REASON_VALUE_KEYS,
 }
 
 // The tombstone the backend writes over an erased person's identity values in
