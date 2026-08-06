@@ -1,0 +1,43 @@
+apps/dashboard/components/pay-mapping/review-chapter-intro.test.tsx
+  s_7d4d2043db4111::t_6d15b905aa1916 5-6,13-14,20,32-36
+apps/dashboard/components/pay-mapping/cross-level-section.test.tsx
+  s_7d4d2043db4111::t_f5b40651a73121 8-170,173-203
+  s_7d4d2043db4111::t_76222efe0646a9 1-7
+  s_7d4d2043db4111::t_ae681733099aef 171-172
+packages/i18n/messages/en.json
+  s_7d4d2043db4111::t_0221284dec18cb 1426-1438,1895-1897
+packages/i18n/messages/da.json
+  s_7d4d2043db4111::t_0221284dec18cb 1426-1438,1895-1897
+apps/dashboard/components/pay-mapping/cross-level-section.tsx
+  s_7d4d2043db4111::t_553d9cdd510ff2 168,172-176,191
+  s_7d4d2043db4111::t_bda1935ed155c2 1-167,169-171,177-190,192-288
+packages/i18n/messages/fi.json
+  s_7d4d2043db4111::t_0221284dec18cb 1426-1438,1895-1897
+apps/dashboard/components/pay-mapping/pay-mapping-summary.tsx
+  s_7d4d2043db4111::t_ee8f5361524b07 23,656-671
+packages/i18n/messages/nb.json
+  s_7d4d2043db4111::t_0221284dec18cb 1426-1438,1895-1897
+apps/dashboard/components/pay-mapping/pay-mapping-review.tsx
+  s_7d4d2043db4111::t_553d9cdd510ff2 312-316
+packages/i18n/messages/sv.json
+  s_7d4d2043db4111::t_0221284dec18cb 1426-1438,1895-1897
+apps/dashboard/components/pay-mapping/review-chapter-intro.tsx
+  s_7d4d2043db4111::t_553d9cdd510ff2 10,13-18,39-43,50-57,110-115
+  s_7d4d2043db4111::t_22c74f93c12fa3 116
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "ceb0b19283b5e80fd96af5f5d51f27d94b0fd53c",
+  "prompts": {},
+  "sessions": {
+    "s_7d4d2043db4111": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cbeef8ee-16ed-4aed-b926-c1546f14fb33",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
