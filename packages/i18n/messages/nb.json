@@ -1115,15 +1115,34 @@
         "classifyLine": "{count, plural, one {# person er ikke klassifisert ennå} other {# personer er ikke klassifisert ennå}}",
         "evaluateLine": "{count, plural, one {# rolle med ansatte mangler fullført vurdering} other {# roller med ansatte mangler fullført vurdering}}"
       },
+      "dotPlot": {
+        "title": "Lønnsposisjoner i gruppen",
+        "pay": "Lønn",
+        "diff": "Mot mennenes gjennomsnitt",
+        "womenMean": "Kv. snitt",
+        "menMean": "M. snitt",
+        "gapLabel": "Gap: {kr} ({pct})"
+      },
       "detail": {
         "population": "Personer inkludert",
         "notFound": "Den lønnskartleggingen ble ikke funnet.",
         "back": "Tilbake til lønnskartlegginger",
         "erased": "Slettet",
+        "fteShare": "({fte} % FTE)",
+        "summary": {
+          "womenMean": "Kvinnenes gjennomsnitt: {value}",
+          "menMean": "Mennenes gjennomsnitt: {value}",
+          "gap": "Gap: {kr} ({pct})",
+          "baseLabel": "Grunnlønn:",
+          "tccLabel": "Total kompensasjon:"
+        },
         "columns": {
           "name": "Navn",
           "gender": "Kjønn",
-          "salary": "Månedslønn"
+          "basePay": "Grunnlønn",
+          "totalComp": "Total kompensasjon",
+          "diffKr": "Mot M. snitt",
+          "diffPct": "Mot M. snitt %"
         }
       },
       "gap": {
@@ -1241,7 +1260,7 @@
         }
       },
       "review": {
-        "showUnderlag": "Vis grunnlaget",
+        "showUnderlyingData": "Vis grunnlaget",
         "previous": "Forrige",
         "backToJourney": "Tilbake til gjennomgangen",
         "skip": "Hopp over",
@@ -1782,6 +1801,10 @@
       "payQuartilesBody": "Alle med lønn rangeres etter lønn og deles i fire like store grupper, fra den lavest betalte fjerdedelen til den høyeste. Hvis kvinner samler seg i de nedre kvartilene og menn i de øvre, er lønnsnivåene ujevnt fordelt (et glasstakmønster).",
       "payGapReasonsLabel": "Saklige grunner",
       "payGapReasonsBody": "Svensk lov krever en saklig grunn, for eksempel markedsforhold eller erfaring, for enhver lønnsforskjell mellom sammenlignbare grupper. Velg faktorene som gjelder, og utdyp i tekstfeltet.",
+      "payGapDotPlotLabel": "Hva viser punktdiagrammet?",
+      "payGapDotPlotBody": "Hvert punkt er én persons lønn i denne gruppen, på gruppens primære mål: FTE-justert grunnlønn (eller total kompensasjon når gruppens forskjell ligger i variable deler). Kvinnenes rad ligger over mennenes, de stiplede linjene markerer hvert kjønns gjennomsnitt, og det tonede båndet mellom dem er lønnsgapet i kroner og prosent. Hold musepekeren over et punkt for å se hvem det er og hvor langt personen ligger fra mennenes gjennomsnitt.",
+      "payGapMemberDiffLabel": "Hva betyr 'mot mennenes gjennomsnitt'?",
+      "payGapMemberDiffBody": "Personens FTE-justerte lønn minus gjennomsnittet for mennene i denne gruppen, på gruppens primære mål. En negativ verdi betyr at personen tjener mindre enn mennenes gjennomsnitt; en positiv verdi mer. Deltidslønninger regnes opp til heltidsekvivalent slik at sammenligningen blir likt mot likt.",
       "payGapScatterLabel": "Hva viser diagrammet?",
       "payGapScatterBody": "Hvert punkt er én person, plottet etter alder eller ansettelsestid mot heltidsjustert total lønn. Lønnsforskjeller kan skyldes saklige, ikke-diskriminerende grunner som alder eller ansiennitet: bruk denne visningen til å sjekke om et slikt mønster forklarer et gap før du konkluderer at det er uforklart. Diagrammet synliggjør også lønnsspredningen: lovens analyse ser på forskjeller i spredning mellom gruppene som sammenlignes, ikke bare på gjennomsnittene.",
       "payGapGateLabel": "Hva innebærer det å fullføre lønnskartleggingen?",

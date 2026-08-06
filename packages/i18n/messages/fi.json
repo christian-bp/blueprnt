@@ -1115,15 +1115,34 @@
         "classifyLine": "{count, plural, one {# henkilö ei ole vielä luokiteltu} other {# henkilöä ei ole vielä luokiteltu}}",
         "evaluateLine": "{count, plural, one {# rooli, jossa on työntekijöitä, odottaa arviointia} other {# roolia, joissa on työntekijöitä, odottaa arviointia}}"
       },
+      "dotPlot": {
+        "title": "Palkka-asemat ryhmässä",
+        "pay": "Palkka",
+        "diff": "Ero miesten keskiarvoon",
+        "womenMean": "Naisten ka.",
+        "menMean": "Miesten ka.",
+        "gapLabel": "Ero: {kr} ({pct})"
+      },
       "detail": {
         "population": "Mukana olevat henkilöt",
         "notFound": "Palkkakartoitusta ei löytynyt.",
         "back": "Takaisin palkkakartoituksiin",
         "erased": "Poistettu",
+        "fteShare": "({fte} % FTE)",
+        "summary": {
+          "womenMean": "Naisten keskiarvo: {value}",
+          "menMean": "Miesten keskiarvo: {value}",
+          "gap": "Ero: {kr} ({pct})",
+          "baseLabel": "Peruspalkka:",
+          "tccLabel": "Kokonaiskorvaus:"
+        },
         "columns": {
           "name": "Nimi",
           "gender": "Sukupuoli",
-          "salary": "Kuukausipalkka"
+          "basePay": "Peruspalkka",
+          "totalComp": "Kokonaiskorvaus",
+          "diffKr": "Ero M. ka.",
+          "diffPct": "Ero M. ka. %"
         }
       },
       "gap": {
@@ -1241,7 +1260,7 @@
         }
       },
       "review": {
-        "showUnderlag": "Näytä taustatiedot",
+        "showUnderlyingData": "Näytä taustatiedot",
         "previous": "Edellinen",
         "backToJourney": "Takaisin tarkastukseen",
         "skip": "Ohita toistaiseksi",
@@ -1782,6 +1801,10 @@
       "payQuartilesBody": "Kaikki palkalliset asetetaan palkan mukaan järjestykseen ja jaetaan neljään yhtä suureen ryhmään, pienipalkkaisimmasta neljänneksestä suurimpaan. Jos naiset keskittyvät alempiin neljänneksiin ja miehet ylempiin, palkkatasot jakautuvat epätasaisesti (lasikattokuvio).",
       "payGapReasonsLabel": "Asialliset perusteet",
       "payGapReasonsBody": "Ruotsin laki edellyttää asiallista perustetta, esimerkiksi markkinatilannetta tai kokemusta, jokaiselle vertailukelpoisten ryhmien väliselle palkkaerolle. Valitse tekijät, jotka koskevat tilannetta, ja tarkenna tekstikentässä.",
+      "payGapDotPlotLabel": "Mitä pisteet kertovat?",
+      "payGapDotPlotBody": "Jokainen piste on yhden henkilön palkka tässä ryhmässä ryhmän ensisijaisella mittarilla: FTE-korjattu peruspalkka (tai kokonaiskorvaus, kun ryhmän ero on muuttuvissa osissa). Naisten rivi on miesten yläpuolella, katkoviivat merkitsevät kummankin sukupuolen keskiarvon, ja niiden välinen sävytetty kaista on palkkaero kruunuina ja prosentteina. Vie osoitin pisteen päälle nähdäksesi kuka henkilö on ja kuinka kaukana hän on miesten keskiarvosta.",
+      "payGapMemberDiffLabel": "Mitä 'ero miesten keskiarvoon' tarkoittaa?",
+      "payGapMemberDiffBody": "Henkilön FTE-korjattu palkka miinus tämän ryhmän miesten keskiarvo ryhmän ensisijaisella mittarilla. Negatiivinen arvo tarkoittaa, että henkilö ansaitsee vähemmän kuin miesten keskiarvo; positiivinen arvo enemmän. Osa-aikapalkat korotetaan kokoaikavastaaviksi, jotta vertailu on yhdenmukainen.",
       "payGapScatterLabel": "Mitä kaavio näyttää?",
       "payGapScatterBody": "Jokainen piste on yksi henkilö, sijoitettuna iän tai palvelusajan mukaan suhteessa kokoaikaistettuun kokonaispalkkaan. Palkkaerot voivat johtua asiallisista, syrjimättömistä syistä kuten iästä tai kokemuksesta: käytä tätä näkymää tarkistaaksesi, selittääkö tällainen syy palkkaeron, ennen kuin päätellään, että se on selittämätön. Kaavio näyttää myös palkkahajonnan: laissa edellytetty analyysi tarkastelee hajonnan eroja vertailtavien ryhmien välillä, ei vain keskiarvoja.",
       "payGapGateLabel": "Mitä palkkakartoituksen viimeistely tarkoittaa?",

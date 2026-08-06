@@ -16,6 +16,7 @@ import { useMoney } from "@/hooks/use-money"
 import {
   type GapGroup,
   type GroupAnalysis,
+  groupLabel,
   type PayMappingSnapshotRow,
   primaryGapMetric,
   type WomenDominatedGroupWire,
@@ -25,11 +26,8 @@ import {
   type PayMappingGroupAnalysisFormHandle,
   PayMappingGroupAnalysisForm,
 } from "./pay-mapping-group-analysis-form"
-import {
-  groupLabel,
-  PayMappingGroupUnderlag,
-} from "./pay-mapping-group-underlag"
-import { MeanComparisonBars } from "./mean-comparison-bars"
+import { EqualWorkDetail } from "./equal-work-detail"
+import { WomenDominatedUnderlyingData } from "./women-dominated-underlying-data"
 import { ReviewStepActions } from "./review-step-actions"
 
 // Distinguishes the one reachable backend rejection from this step (marking
@@ -97,11 +95,10 @@ type ReviewGroupStepProps =
   | ({
       scope: "equivalentWork"
       group: WomenDominatedGroupWire
-      // The full equivalent-work level list: PayMappingGroupUnderlag's own
-      // equivalent-work branch needs it (to find the group's own level's
-      // women-men gap for its level-context sentence), mirroring the union
-      // it composes. The shell holds the run's whole gap result and passes
-      // gap.equivalentWork through unchanged.
+      // The full equivalent-work level list: WomenDominatedUnderlyingData
+      // needs it (to find the group's own level's women-men gap for its
+      // level-context sentence). The shell holds the run's whole gap result
+      // and passes gap.equivalentWork through unchanged.
       equivalentWork: GapGroup[]
     } & ReviewGroupStepCommonProps)
 
@@ -110,11 +107,11 @@ type ReviewGroupStepProps =
 // (ADR-0012). Composes, in order: the group's heading (label +
 // severity/level chips), the plain-language finding sentence(s) that
 // restate the group's own numbers so the reader never has to translate a
-// raw percentage into a judgment, MeanComparisonBars (equalWork only, and
-// only once both means are known),
+// raw percentage into a judgment, the EqualWorkDetail view (equalWork only:
+// summary strip, swimlane dot plot, member table; Iteration 2 note 3),
 // PayMappingGroupAnalysisForm (the reasons/note documentation surface), the
-// PayMappingGroupUnderlag disclosure (the underlying rows/tables/scatter),
-// and the shared ReviewStepActions row.
+// WomenDominatedUnderlyingData disclosure (equivalentWork only: the cross-level
+// comparison tables/scatter), and the shared ReviewStepActions row.
 //
 // Klarmarkerad ownership split (mirrors the form's own doc comment): the
 // FORM owns saving reasons/note on every edit (autosave, silent). THIS step
@@ -340,19 +337,16 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
           )}
         </div>
 
-        {props.scope === "equalWork" &&
-          (() => {
-            // The bars follow the finding sentence's own metric: base
-            // salary, or total comp for a tccDriven group.
-            const primary = primaryGapMetric(props.group)
-            return primary.womenMean !== null && primary.menMean !== null ? (
-              <MeanComparisonBars
-                womenMean={primary.womenMean}
-                menMean={primary.menMean}
-                currency={currency}
-              />
-            ) : null
-          })()}
+        {/* The detail view leads (Iteration 2 note 3): summary strip, the
+            swimlane dot plot, then the individual member table, all before
+            the documentation form. */}
+        {props.scope === "equalWork" && (
+          <EqualWorkDetail
+            group={props.group}
+            rows={rows}
+            currency={currency}
+          />
+        )}
 
         <PayMappingGroupAnalysisForm
           ref={formRef}
@@ -365,17 +359,8 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
           onDocumentationChange={setDoc}
         />
 
-        {props.scope === "equalWork" ? (
-          <PayMappingGroupUnderlag
-            scope="equalWork"
-            group={props.group}
-            rows={rows}
-            currency={currency}
-            referenceDateMs={referenceDateMs}
-          />
-        ) : (
-          <PayMappingGroupUnderlag
-            scope="equivalentWork"
+        {props.scope === "equivalentWork" && (
+          <WomenDominatedUnderlyingData
             group={props.group}
             equivalentWork={props.equivalentWork}
             rows={rows}

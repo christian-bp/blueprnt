@@ -45,6 +45,7 @@ const tForm = messages.dashboard.payMapping.analysisForm
 const tReasons = messages.dashboard.payMapping.reasons
 const tToast = messages.dashboard.toast
 const tGap = messages.dashboard.payMapping.gap
+const m = messages.dashboard.payMapping
 
 const RUN_ID = "run-1" as Id<"payMappingRuns">
 const ROWS: PayMappingSnapshotRow[] = []
@@ -279,32 +280,60 @@ describe("ReviewGroupStep", () => {
     })
   })
 
-  describe("MeanComparisonBars", () => {
-    it("renders both bars for a mixed equal-work group with both means known", () => {
-      const { container } = renderEqualWorkStep(GROUP_LESS)
+  describe("EqualWorkDetail composition", () => {
+    // Matches a summary-strip line by its full text content: MetricLine's
+    // <p> mixes text nodes and spans, so the default text matcher (immediate
+    // text children only) cannot see the whole sentence. Whitespace is
+    // collapsed on both sides (Intl money strings carry non-breaking
+    // spaces), mirroring the sek() helper's own normalization.
+    const byLineText =
+      (expected: string) => (_: string, element: Element | null) =>
+        element?.tagName === "P" &&
+        (element.textContent ?? "").replace(/\s+/g, " ") === expected
+
+    it("renders the summary strip, dot plot card and member-table heading", () => {
+      renderEqualWorkStep(GROUP_LESS)
       expect(
-        container.querySelectorAll('[data-testid="mean-bar"]')
-      ).toHaveLength(2)
+        screen.getByText(
+          byLineText(
+            `Women's average: ${sek(90_000)} · Men's average: ${sek(100_000)} · Gap: -${sek(10_000)} (10%)`
+          )
+        )
+      ).toBeDefined()
+      expect(screen.getByText(m.dotPlot.title)).toBeDefined()
+      expect(screen.getByText(m.gap.groupMembers)).toBeDefined()
     })
 
-    it("renders the tcc means for a tccDriven group (the finding's own metric)", () => {
+    it("leads with the tcc means for a tccDriven group, base as the muted parallel", () => {
       renderEqualWorkStep(GROUP_TCC_DRIVEN)
-      // The women's tcc mean, not the (equal) base mean.
-      expect(screen.getByText(sek(90_000))).toBeDefined()
+      // Primary line: the tcc metric (women 90k vs men 100k).
+      expect(
+        screen.getByText(
+          byLineText(
+            `Women's average: ${sek(90_000)} · Men's average: ${sek(100_000)} · Gap: -${sek(10_000)} (10%)`
+          )
+        )
+      ).toBeDefined()
+      // Parallel line: the level base salaries, prefixed with their label.
+      expect(
+        screen.getByText(
+          byLineText(
+            `Base salary: Women's average: ${sek(100_000)} · Men's average: ${sek(100_000)} · Gap: ${sek(0)} (0%)`
+          )
+        )
+      ).toBeDefined()
     })
 
-    it("renders no bars when the means are null (defensively masked group)", () => {
-      const { container } = renderEqualWorkStep(GROUP_MASKED)
-      expect(
-        container.querySelectorAll('[data-testid="mean-bar"]')
-      ).toHaveLength(0)
+    it("renders no summary lines when the means are null (defensively masked group)", () => {
+      renderEqualWorkStep(GROUP_MASKED)
+      expect(screen.queryByText(/Women's average/)).toBeNull()
+      // The chrome still renders: no crash on an all-null metric.
+      expect(screen.getByText(m.dotPlot.title)).toBeDefined()
     })
 
-    it("renders no bars for an equivalentWork (women-dominated) group", () => {
-      const { container } = renderWdStep(WD_GROUP_ONE)
-      expect(
-        container.querySelectorAll('[data-testid="mean-bar"]')
-      ).toHaveLength(0)
+    it("renders no detail view for an equivalentWork (women-dominated) group", () => {
+      renderWdStep(WD_GROUP_ONE)
+      expect(screen.queryByText(m.dotPlot.title)).toBeNull()
     })
   })
 

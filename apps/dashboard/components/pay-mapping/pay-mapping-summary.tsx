@@ -28,7 +28,7 @@ import {
   ChecklistRows,
   ChecklistSearchSection,
 } from "./review-checklist"
-import { groupLabel } from "./pay-mapping-group-underlag"
+import { groupLabel } from "./pay-mapping-gap-types"
 import { usePayMappingRun } from "./pay-mapping-run-context"
 import { isGateUnmetError } from "./review-finish"
 import { ReviewGroupStep } from "./review-group-step"

@@ -1115,15 +1115,34 @@
         "classifyLine": "{count, plural, one {# person is not classified yet} other {# people are not classified yet}}",
         "evaluateLine": "{count, plural, one {# role with employees still needs a completed evaluation} other {# roles with employees still need a completed evaluation}}"
       },
+      "dotPlot": {
+        "title": "Pay positions in the group",
+        "pay": "Pay",
+        "diff": "Vs men's average",
+        "womenMean": "Women's avg",
+        "menMean": "Men's avg",
+        "gapLabel": "Gap: {kr} ({pct})"
+      },
       "detail": {
         "population": "People included",
         "notFound": "That pay mapping was not found.",
         "back": "Back to pay mappings",
         "erased": "Erased",
+        "fteShare": "({fte} % FTE)",
+        "summary": {
+          "womenMean": "Women's average: {value}",
+          "menMean": "Men's average: {value}",
+          "gap": "Gap: {kr} ({pct})",
+          "baseLabel": "Base salary:",
+          "tccLabel": "Total compensation:"
+        },
         "columns": {
           "name": "Name",
           "gender": "Gender",
-          "salary": "Monthly salary"
+          "basePay": "Base salary",
+          "totalComp": "Total compensation",
+          "diffKr": "Vs men's avg",
+          "diffPct": "Vs men's avg %"
         }
       },
       "gap": {
@@ -1241,7 +1260,7 @@
         }
       },
       "review": {
-        "showUnderlag": "Show the underlying data",
+        "showUnderlyingData": "Show the underlying data",
         "previous": "Previous",
         "backToJourney": "Back to the review",
         "skip": "Skip for now",
@@ -1782,6 +1801,10 @@
       "payQuartilesBody": "Everyone with a salary is ranked by pay and split into four equal groups, from the lowest-paid quarter to the highest. If women cluster in the lower quartiles and men in the upper, pay levels are unevenly distributed (a glass-ceiling pattern).",
       "payGapReasonsLabel": "Objective reasons",
       "payGapReasonsBody": "Swedish law requires an objective reason, for example market conditions or experience, for every pay difference between comparable groups. Pick the factors that apply and elaborate in the text field.",
+      "payGapDotPlotLabel": "What does the dot plot show?",
+      "payGapDotPlotBody": "Each dot is one person's pay in this group, on the group's primary measure: FTE-adjusted base salary (or total compensation when the group's difference sits in variable pay). The women's row sits above the men's, the dashed lines mark each gender's average, and the shaded band between them is the pay gap in kronor and percent. Hover a dot to see who it is and how far they sit from the men's average.",
+      "payGapMemberDiffLabel": "What does 'vs men's average' mean?",
+      "payGapMemberDiffBody": "The person's FTE-adjusted pay minus the average of the men in this group, on the group's primary measure. A negative value means the person earns less than the men's average; a positive value means more. Part-time salaries are grossed up to full-time equivalents so the comparison is like for like.",
       "payGapScatterLabel": "What does this chart show?",
       "payGapScatterBody": "Each dot is one person, plotted by age or tenure against FTE-adjusted total pay. Pay can differ for objective, non-discriminatory reasons such as age or seniority: use this view to check for such a pattern before concluding a gap is unexplained. The scatter also makes pay dispersion visible: the law's analysis looks at differences in spread between the groups being compared, not only their averages.",
       "payGapGateLabel": "What does completing the pay mapping do?",

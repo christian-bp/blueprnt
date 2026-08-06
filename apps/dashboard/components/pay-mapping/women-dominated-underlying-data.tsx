@@ -6,13 +6,6 @@ import {
   CollapsibleTrigger,
 } from "@workspace/ui/components/collapsible"
 import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@workspace/ui/components/empty"
-import {
   Table,
   TableBody,
   TableCell,
@@ -20,52 +13,20 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
-import { ArrowDown01Icon, UserGroup03Icon } from "@hugeicons/core-free-icons"
+import { ArrowDown01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { useFormatter, useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useMoney } from "@/hooks/use-money"
-import type {
-  GapGroup,
-  PayMappingSnapshotRow,
-  WomenDominatedComparisonWire,
-  WomenDominatedGroupWire,
+import {
+  type GapGroup,
+  groupLabel,
+  groupMembers,
+  type PayMappingSnapshotRow,
+  type WomenDominatedComparisonWire,
+  type WomenDominatedGroupWire,
 } from "./pay-mapping-gap-types"
 import { PayMappingScatter } from "./pay-mapping-scatter"
-
-// A group's own frozen, priced members: rows matching its roleTitle/
-// seniority/level identity (the same identity the engine keys a group on).
-// Shared by the equal-work member table and both scopes' scatter embeds
-// below, so member matching never drifts between callers. This is its one
-// home, module-private since no other file resolves members directly.
-function groupMembers(
-  rows: PayMappingSnapshotRow[] | undefined,
-  group: {
-    roleTitle: string | null
-    seniority: string | null
-    level: number | null
-  }
-): PayMappingSnapshotRow[] | undefined {
-  return rows?.filter(
-    (row) =>
-      row.roleTitle === group.roleTitle &&
-      row.seniority === group.seniority &&
-      row.level === group.level &&
-      row.basicMonthly !== null
-  )
-}
-
-// The shared role+seniority label for an equal-work group, a women-dominated
-// group, or one of its comparators. Exported because review-group-step.tsx
-// needs the exact same label for its heading and finding sentences.
-export function groupLabel(group: {
-  roleTitle: string | null
-  seniority: string | null
-}): string {
-  return [group.roleTitle, group.seniority]
-    .filter((part) => part !== null)
-    .join(" · ")
-}
 
 // Maps a snapshot row back to whichever group (the dominated group itself,
 // or one of its comparators) it belongs to, by the same roleTitle/seniority/
@@ -96,116 +57,14 @@ function womenDominatedGroupLabelFor(
     )?.label ?? ""
 }
 
-type PayMappingGroupUnderlagProps =
-  | {
-      scope: "equalWork"
-      group: GapGroup
-      rows: PayMappingSnapshotRow[]
-      currency: string
-      referenceDateMs: number
-    }
-  | {
-      scope: "equivalentWork"
-      group: WomenDominatedGroupWire
-      equivalentWork: GapGroup[]
-      rows: PayMappingSnapshotRow[]
-      currency: string
-      referenceDateMs: number
-    }
-
-// The equal-work scope's underlying data: the group's own frozen members
-// (the priced rows its figures cover) and the scatter scoped to exactly
-// those rows.
-function EqualWorkUnderlag({
-  group,
-  rows,
-  currency,
-  referenceDateMs,
-}: {
-  group: GapGroup
-  rows: PayMappingSnapshotRow[]
-  currency: string
-  referenceDateMs: number
-}) {
-  const t = useTranslations("dashboard.payMapping")
-  const tGap = useTranslations("dashboard.payMapping.gap")
-  const tScatter = useTranslations("dashboard.payMapping.scatter")
-  const tPeople = useTranslations("dashboard.people")
-  const money = useMoney()
-  const members = groupMembers(rows, group) ?? []
-
-  return (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <h4 className="font-medium text-sm">{tGap("groupMembers")}</h4>
-        {members.length === 0 ? (
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <HugeiconsIcon
-                  icon={UserGroup03Icon}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                />
-              </EmptyMedia>
-              <EmptyTitle>{tGap("groupMembers")}</EmptyTitle>
-              <EmptyDescription>{tGap("empty")}</EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        ) : (
-          <Table className="table-fixed">
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("detail.columns.name")}</TableHead>
-                <TableHead className="w-28">
-                  {t("detail.columns.gender")}
-                </TableHead>
-                <TableHead className="w-36">
-                  {t("detail.columns.salary")}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {/* Index keys: the frozen member list never reorders, and the
-                  rows carry no id (erased rows all share one tombstone name,
-                  so a name-based key would collide and could drop a row). */}
-              {members.map((member, index) => (
-                // biome-ignore lint/suspicious/noArrayIndexKey: frozen order, no stable id on the wire
-                <TableRow key={index}>
-                  <TableCell className="truncate font-medium">
-                    {member.erased ? t("detail.erased") : member.displayName}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {tPeople(`gender.${member.gender}`)}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground tabular-nums">
-                    {member.basicMonthly !== null &&
-                    member.currency !== undefined
-                      ? money(member.basicMonthly, member.currency)
-                      : "-"}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </div>
-      <PayMappingScatter
-        rows={members}
-        currency={currency}
-        referenceDateMs={referenceDateMs}
-        title={tScatter("titleEqualWork")}
-      />
-    </div>
-  )
-}
-
-// The equivalentWork scope's underlying data: the full cross-level
-// comparison table (or the compliance-positive "nothing out-earns it"
-// message), the level's own women-men gap for context, and the scatter over
-// the comparison set (the dominated group's members plus every
-// comparator's, each labeled with its owning group).
-function EquivalentWorkUnderlag({
+// The women-dominated (equivalentWork) scope's underlying data: the full
+// cross-level comparison table (or the compliance-positive "nothing
+// out-earns it" message), the level's own women-men gap for context, and
+// the scatter over the comparison set (the dominated group's members plus
+// every comparator's, each labeled with its owning group). The equal-work
+// scope no longer discloses underlag here: its detail view (EqualWorkDetail)
+// renders the members and plot inline (Iteration 2 note 3).
+function UnderlyingDataContent({
   group,
   equivalentWork,
   rows,
@@ -340,15 +199,22 @@ function EquivalentWorkUnderlag({
   )
 }
 
-// The group step's disclosure for the data behind a group's figures: closed
-// by default (the primary task is documenting the reason, not re-reading the
-// underlying rows) and expandable on demand via a chevron-rotating trigger.
-export function PayMappingGroupUnderlag(props: PayMappingGroupUnderlagProps) {
+// The women-dominated group step's disclosure for the data behind its
+// figures: closed by default (the primary task is documenting the reason,
+// not re-reading the underlying rows) and expandable on demand via a
+// chevron-rotating trigger.
+export function WomenDominatedUnderlyingData(props: {
+  group: WomenDominatedGroupWire
+  equivalentWork: GapGroup[]
+  rows: PayMappingSnapshotRow[]
+  currency: string
+  referenceDateMs: number
+}) {
   const t = useTranslations("dashboard.payMapping.review")
   return (
     <Collapsible>
       <CollapsibleTrigger className="group flex items-center gap-1.5 text-muted-foreground text-sm hover:text-foreground">
-        {t("showUnderlag")}
+        {t("showUnderlyingData")}
         <HugeiconsIcon
           icon={ArrowDown01Icon}
           strokeWidth={2}
@@ -362,11 +228,7 @@ export function PayMappingGroupUnderlag(props: PayMappingGroupUnderlagProps) {
           an inner div carries the spacing, so height:0 truly means zero. */}
       <CollapsibleContent className="h-(--collapsible-panel-height) overflow-hidden transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0 motion-reduce:transition-none">
         <div className="pt-4">
-          {props.scope === "equalWork" ? (
-            <EqualWorkUnderlag {...props} />
-          ) : (
-            <EquivalentWorkUnderlag {...props} />
-          )}
+          <UnderlyingDataContent {...props} />
         </div>
       </CollapsibleContent>
     </Collapsible>

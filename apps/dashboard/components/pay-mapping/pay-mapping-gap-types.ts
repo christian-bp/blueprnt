@@ -167,6 +167,39 @@ export interface PayMappingSnapshotRow {
   payYear?: number
 }
 
+// The shared role+seniority display label for an equal-work group, a
+// women-dominated group, or one of its comparators: every heading, finding
+// sentence, and checklist row renders the same "roleTitle · seniority" text.
+export function groupLabel(group: {
+  roleTitle: string | null
+  seniority: string | null
+}): string {
+  return [group.roleTitle, group.seniority]
+    .filter((part) => part !== null)
+    .join(" · ")
+}
+
+// A group's own frozen, priced members: rows matching its roleTitle/
+// seniority/level identity (the same identity the engine keys a group on).
+// Shared by the equal-work detail view and the equivalent-work underlag so
+// member matching never drifts between callers.
+export function groupMembers(
+  rows: PayMappingSnapshotRow[] | undefined,
+  group: {
+    roleTitle: string | null
+    seniority: string | null
+    level: number | null
+  }
+): PayMappingSnapshotRow[] | undefined {
+  return rows?.filter(
+    (row) =>
+      row.roleTitle === group.roleTitle &&
+      row.seniority === group.seniority &&
+      row.level === group.level &&
+      row.basicMonthly !== null
+  )
+}
+
 // Structural subset of getPayMappingRunBySlug's return shape, kept local
 // (like RoleProfile in role-profile-card.tsx) rather than importing the
 // generated query type.

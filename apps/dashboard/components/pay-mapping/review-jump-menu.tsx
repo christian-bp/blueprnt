@@ -18,7 +18,7 @@ import type {
   GroupAnalysis,
   PayMappingGapResult,
 } from "./pay-mapping-gap-types"
-import { groupLabel } from "./pay-mapping-group-underlag"
+import { groupLabel } from "./pay-mapping-gap-types"
 import {
   chapterMeta,
   type ChecklistRowBase,
