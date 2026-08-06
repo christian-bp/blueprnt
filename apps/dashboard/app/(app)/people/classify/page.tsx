@@ -27,7 +27,10 @@ import { usePageTitle } from "@/hooks/use-page-title"
 // a separate refresh.
 export default function ClassifyPage() {
   const t = useTranslations("dashboard.classify")
-  usePageTitle(t("pageTitle"))
+  // Title and heading are the page's nav label (people.tabs.classify), so the
+  // browser tab, the header tab, the sidebar sub-page, and the h1 agree.
+  const tTabs = useTranslations("dashboard.people.tabs")
+  usePageTitle(tTabs("classify"))
 
   const { orgId } = useOrganization()
   const locale = useLocale()
@@ -62,7 +65,7 @@ export default function ClassifyPage() {
   if (groups === undefined || roles === undefined || model === undefined) {
     return (
       <div className="space-y-4">
-        <PageHeader title={t("heading")} description={t("description")} />
+        <PageHeader title={tTabs("classify")} description={t("description")} />
         <ClassifyBulkToolbar />
         <Table className="table-fixed">
           <ClassifyTableHeader />
@@ -79,7 +82,7 @@ export default function ClassifyPage() {
 
   return (
     <div className="space-y-4">
-      <PageHeader title={t("heading")} description={t("description")} />
+      <PageHeader title={tTabs("classify")} description={t("description")} />
       <ClassifyTitleTable
         orgId={orgId}
         groups={groups}

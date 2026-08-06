@@ -114,7 +114,10 @@ describe("OrganizationMembersSection", () => {
     listInvitations.mockResolvedValueOnce({ data: [], error: null })
     renderSection()
     expect(await screen.findByText(t.empty)).toBeDefined()
-    expect(screen.getByText(t.title)).toBeDefined()
+    // The empty state's title is the page's nav label (organization.tabs.members).
+    expect(
+      screen.getByText(en.dashboard.organization.tabs.members)
+    ).toBeDefined()
     expect(screen.queryByRole("table")).toBeNull()
     expect(
       document.querySelector('[data-slot="empty-icon"] svg')

@@ -165,6 +165,9 @@ const PAY_MAPPING_SKELETON_COLUMNS: TableSkeletonColumn[] = [
 
 export function PayMappingsSection() {
   const t = useTranslations("dashboard.payMapping")
+  // The page's name comes from its nav label so the heading can never drift
+  // from the sidebar entry.
+  const tNav = useTranslations("dashboard.nav")
   const tToolbar = useTranslations("dashboard.payMapping.toolbar")
   const tHelp = useTranslations("dashboard.help")
   const format = useFormatter()
@@ -315,7 +318,7 @@ export function PayMappingsSection() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title={t("heading")}
+        title={tNav("payMapping")}
         description={t("description")}
         action={startDialog}
       />
@@ -345,7 +348,7 @@ export function PayMappingsSection() {
               />
             </EmptyMedia>
             <div className="flex items-center gap-1.5">
-              <EmptyTitle>{t("heading")}</EmptyTitle>
+              <EmptyTitle>{tNav("payMapping")}</EmptyTitle>
               <HelpMorphButton label={tHelp("payMappingLabel")}>
                 {tHelp("payMappingBody")}
               </HelpMorphButton>
@@ -365,7 +368,7 @@ export function PayMappingsSection() {
           {shown === 0 ? (
             <Empty>
               <EmptyHeader>
-                <EmptyTitle>{t("heading")}</EmptyTitle>
+                <EmptyTitle>{tNav("payMapping")}</EmptyTitle>
                 <EmptyDescription>{tToolbar("noMatches")}</EmptyDescription>
               </EmptyHeader>
               <Button type="button" variant="outline" onClick={clearFilters}>

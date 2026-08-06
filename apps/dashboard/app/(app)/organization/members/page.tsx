@@ -19,7 +19,7 @@ export default function OrganizationMembersPage() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title={t("title")}
+        title={tTabs("members")}
         description={t("description")}
         action={
           <InviteMemberDialog

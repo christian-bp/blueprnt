@@ -57,6 +57,9 @@ type InvitationItem = NonNullable<ListResult["data"]>[number]
 // are disabled and a footnote explains why; the backend re-checks regardless.
 export function OrganizationMembersSection(props: { refreshKey: number }) {
   const t = useTranslations("dashboard.organization.members")
+  // The empty state's title is the page's nav label (organization.tabs.members),
+  // matching the page heading and the sidebar sub-page.
+  const tTabs = useTranslations("dashboard.organization.tabs")
   const ti = useTranslations("dashboard.organization.invitations")
   const tToast = useTranslations("dashboard.toast")
   const { orgId } = useOrganization()
@@ -162,7 +165,7 @@ export function OrganizationMembersSection(props: { refreshKey: number }) {
                 aria-hidden="true"
               />
             </EmptyMedia>
-            <EmptyTitle>{t("title")}</EmptyTitle>
+            <EmptyTitle>{tTabs("members")}</EmptyTitle>
             <EmptyDescription>{t("empty")}</EmptyDescription>
           </EmptyHeader>
         </Empty>

@@ -55,7 +55,9 @@ export default function WorkOverviewPage() {
   const tHelp = useTranslations("dashboard.help")
   const tFamily = useTranslations("dashboard.roles.family")
   const tNav = useTranslations("dashboard.nav")
-  usePageTitle(tNav("work"))
+  // Title and heading are the page's nav label (nav.overview), so the browser
+  // tab, the header tab, the sidebar sub-page, and the h1 all say one thing.
+  usePageTitle(tNav("overview"))
   const { orgId } = useOrganization()
   const locale = useLocale()
   const results = useQuery(api.assessment.results.getResults, { orgId, locale })
@@ -75,7 +77,7 @@ export default function WorkOverviewPage() {
   const header = (
     <div>
       <div className="flex items-center gap-1.5">
-        <PageHeading>{t("heading")}</PageHeading>
+        <PageHeading>{tNav("overview")}</PageHeading>
         <HelpMorphButton label={tHelp("scoreLabel")}>
           {tHelp("scoreBody")}
         </HelpMorphButton>
@@ -193,7 +195,7 @@ export default function WorkOverviewPage() {
                 aria-hidden="true"
               />
             </EmptyMedia>
-            <EmptyTitle>{t("heading")}</EmptyTitle>
+            <EmptyTitle>{tNav("overview")}</EmptyTitle>
             <EmptyDescription>{t("empty")}</EmptyDescription>
           </EmptyHeader>
           <Link

@@ -188,7 +188,8 @@ export function RolesTable({
   roles: RolesTableRow[]
   tracks: RolesTableTrack[]
 }) {
-  const t = useTranslations("dashboard.roles")
+  // The no-matches title is the page's nav label, matching the page heading.
+  const tNav = useTranslations("dashboard.nav")
   const tToolbar = useTranslations("dashboard.roles.toolbar")
   const tFamily = useTranslations("dashboard.roles.family")
   const router = useRouter()
@@ -261,7 +262,7 @@ export function RolesTable({
 
       {shown === 0 ? (
         <NoMatchesEmpty
-          title={t("heading")}
+          title={tNav("roles")}
           description={tToolbar("noMatches")}
           clearLabel={tToolbar("clearFilters")}
           onClear={clearFilters}

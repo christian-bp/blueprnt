@@ -12,12 +12,13 @@ import { usePageTitle } from "@/hooks/use-page-title"
 export default function ModelMethodPage() {
   const { orgId } = useOrganization()
   const t = useTranslations("dashboard.model.method")
+  const tTabs = useTranslations("dashboard.model.tabs")
   const tHelp = useTranslations("dashboard.help")
-  usePageTitle(t("title"))
+  usePageTitle(tTabs("method"))
   return (
     <div className="space-y-4">
       <PageHeader
-        title={t("title")}
+        title={tTabs("method")}
         titleAdornment={
           <HelpMorphButton label={tHelp("methodAppendixLabel")}>
             {tHelp("methodAppendixBody")}

@@ -47,7 +47,7 @@ export default function RolesPage() {
     return (
       <div className="space-y-4">
         <PageHeader
-          title={t("heading")}
+          title={tNav("roles")}
           description={t("description")}
           action={
             <div className="flex items-center gap-2">
@@ -87,7 +87,7 @@ export default function RolesPage() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title={t("heading")}
+        title={tNav("roles")}
         description={t("description")}
         action={
           // Import is the primary: a register is built fastest in bulk, and
@@ -122,7 +122,7 @@ export default function RolesPage() {
                 aria-hidden="true"
               />
             </EmptyMedia>
-            <EmptyTitle>{t("heading")}</EmptyTitle>
+            <EmptyTitle>{tNav("roles")}</EmptyTitle>
             <EmptyDescription>{t("empty")}</EmptyDescription>
           </EmptyHeader>
           <Link

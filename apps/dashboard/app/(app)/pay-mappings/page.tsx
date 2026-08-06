@@ -5,7 +5,7 @@ import { PayMappingsSection } from "@/components/pay-mapping/pay-mappings-sectio
 import { usePageTitle } from "@/hooks/use-page-title"
 
 export default function PayMappingsPage() {
-  const t = useTranslations("dashboard.payMapping")
-  usePageTitle(t("heading"))
+  const tNav = useTranslations("dashboard.nav")
+  usePageTitle(tNav("payMapping"))
   return <PayMappingsSection />
 }

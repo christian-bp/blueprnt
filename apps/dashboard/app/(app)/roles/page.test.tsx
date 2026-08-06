@@ -162,7 +162,8 @@ describe("RolesPage", () => {
     expect(create.disabled).toBe(false)
 
     // The heading and the table's own toolbar are real too, not gray bars.
-    expect(screen.getByText(t.heading)).toBeTruthy()
+    // The heading is the page's nav label (shared with the sidebar entry).
+    expect(screen.getByText(messages.dashboard.nav.roles)).toBeTruthy()
     expect(
       screen.getByRole("textbox", { name: t.toolbar.searchPlaceholder })
     ).toBeTruthy()

@@ -407,6 +407,9 @@ export function ClassifyTitleTable({
   tracks: ClassifyTrack[]
 }) {
   const t = useTranslations("dashboard.classify")
+  // The empty state's title is the page's nav label (people.tabs.classify),
+  // matching the heading, header tab, and sidebar sub-page.
+  const tTabs = useTranslations("dashboard.people.tabs")
   const tToast = useTranslations("dashboard.toast")
 
   // Per-row selected role: keyed by rowKey(group) (never null)
@@ -716,7 +719,7 @@ export function ClassifyTitleTable({
               aria-hidden="true"
             />
           </EmptyMedia>
-          <EmptyTitle>{t("heading")}</EmptyTitle>
+          <EmptyTitle>{tTabs("classify")}</EmptyTitle>
           <EmptyDescription>{t("empty")}</EmptyDescription>
         </EmptyHeader>
       </Empty>

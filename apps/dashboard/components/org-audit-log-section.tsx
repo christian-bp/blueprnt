@@ -323,11 +323,11 @@ export function OrgAuditLogSection() {
     return (
       <section className="space-y-4">
         <div>
-          <PageHeading>{t("heading")}</PageHeading>
+          <PageHeading>{tDashboard("nav.auditLog")}</PageHeading>
         </div>
         <Empty>
           <EmptyHeader>
-            <EmptyTitle>{t("heading")}</EmptyTitle>
+            <EmptyTitle>{tDashboard("nav.auditLog")}</EmptyTitle>
             <EmptyDescription>{t("notAuthorized")}</EmptyDescription>
           </EmptyHeader>
         </Empty>
@@ -357,7 +357,7 @@ export function OrgAuditLogSection() {
   return (
     <section className="space-y-4">
       <div>
-        <PageHeading>{t("heading")}</PageHeading>
+        <PageHeading>{tDashboard("nav.auditLog")}</PageHeading>
         <p className="text-muted-foreground text-sm">{t("description")}</p>
       </div>
 
@@ -440,7 +440,7 @@ export function OrgAuditLogSection() {
                 />
               </EmptyMedia>
             )}
-            <EmptyTitle>{t("heading")}</EmptyTitle>
+            <EmptyTitle>{tDashboard("nav.auditLog")}</EmptyTitle>
             <EmptyDescription>
               {isSearching ? t("search.empty") : t("empty")}
             </EmptyDescription>

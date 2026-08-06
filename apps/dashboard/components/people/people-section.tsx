@@ -174,6 +174,9 @@ const PEOPLE_SKELETON_COLUMNS: TableSkeletonColumn[] = [
 
 export function PeopleSection() {
   const t = useTranslations("dashboard.people")
+  // The page's own name (the Directory sub-page) comes from the nav label so
+  // the heading can never drift from the sidebar sub-menu and header tab.
+  const tTabs = useTranslations("dashboard.people.tabs")
   const tToolbar = useTranslations("dashboard.people.toolbar")
   const tGender = useTranslations("dashboard.people.gender")
   const { orgId } = useOrganization()
@@ -482,7 +485,7 @@ export function PeopleSection() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title={t("heading")}
+        title={tTabs("people")}
         description={t("description")}
         action={headerActions}
       />
@@ -506,7 +509,7 @@ export function PeopleSection() {
                 aria-hidden="true"
               />
             </EmptyMedia>
-            <EmptyTitle>{t("heading")}</EmptyTitle>
+            <EmptyTitle>{tTabs("people")}</EmptyTitle>
             <EmptyDescription>{t("empty")}</EmptyDescription>
           </EmptyHeader>
           <Link
@@ -522,7 +525,7 @@ export function PeopleSection() {
 
           {shown === 0 ? (
             <NoMatchesEmpty
-              title={t("heading")}
+              title={tTabs("people")}
               description={tToolbar("noMatches")}
               clearLabel={tToolbar("clearFilters")}
               onClear={clearFilters}
