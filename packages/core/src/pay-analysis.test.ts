@@ -178,6 +178,42 @@ describe("classifyEqualWorkGroup", () => {
     expect(result.tccDriven).toBe(false)
     expect(result.flag).toBe("elevated")
   })
+
+  // Guards the documentation gate: `shown` requires a positive gap on at
+  // least one metric, whose directional flag is then never `insufficient`,
+  // so a shown group can never slip past the `flag !== "ok"` gate through a
+  // masked metric.
+  it("never classifies a shown group as insufficient", () => {
+    const gaps = [
+      { womenBase: [90000], menBase: [100000] },
+      {
+        womenBase: [50000],
+        menBase: [50000],
+        womenTcc: [50000],
+        menTcc: [60000],
+      },
+    ]
+    for (const input of gaps) {
+      const result = group(input)
+      expect(result.outcome).toBe("shown")
+      expect(result.flag).not.toBe("insufficient")
+    }
+  })
+
+  it("keeps the severest real flag when the other metric's gap is undefined", () => {
+    // A zero men TCC mean nulls that metric's gapPct (undefined ratio), so
+    // its flag is insufficient; the combined flag must stay the base
+    // metric's critical, never degrade to insufficient.
+    const result = group({
+      womenBase: [80000],
+      menBase: [100000],
+      womenTcc: [0],
+      menTcc: [0],
+    })
+    expect(result.outcome).toBe("shown")
+    expect(result.tcc.gapPct).toBeNull()
+    expect(result.flag).toBe("critical")
+  })
 })
 
 describe("diffVsMenMean", () => {

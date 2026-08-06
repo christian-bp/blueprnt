@@ -238,7 +238,12 @@ export function crossLevelPairs(
       .sort((a, b) =>
         a.diffKr !== b.diffKr
           ? b.diffKr - a.diffKr
-          : a.manPublicId.localeCompare(b.manPublicId)
+          : // Plain code-point order, never localeCompare: collation depends
+            // on the host's ICU locale, and this module must return identical
+            // results on client and server (publicIds are ASCII).
+            a.manPublicId < b.manPublicId
+            ? -1
+            : 1
       )
     const worstPair = pairs[0]
     if (worstPair === undefined) continue
@@ -255,6 +260,9 @@ export function crossLevelPairs(
   return result.sort((a, b) =>
     a.worstPair.diffKr !== b.worstPair.diffKr
       ? b.worstPair.diffKr - a.worstPair.diffKr
-      : a.personPublicId.localeCompare(b.personPublicId)
+      : // Code-point order for the same determinism reason as above.
+        a.personPublicId < b.personPublicId
+        ? -1
+        : 1
   )
 }
