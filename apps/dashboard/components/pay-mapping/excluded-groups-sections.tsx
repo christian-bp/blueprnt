@@ -23,6 +23,7 @@ import { useFormatter, useTranslations } from "next-intl"
 import { useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { LevelBadge } from "@/components/level-badge"
+import { TrackBadge } from "@/components/track-badge"
 import { useMoney } from "@/hooks/use-money"
 import { percentText } from "@/lib/percent"
 import {
@@ -178,6 +179,15 @@ export function GenderPureDeepDive({
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                     <span className="font-medium">{groupLabel(group)}</span>
                     {group.level !== null && <LevelBadge level={group.level} />}
+                    {/* Track is constant within a group (one role); frozen
+                        data carries only the key, so the badge shows it. */}
+                    {members[0] !== undefined && (
+                      <TrackBadge
+                        trackKey={members[0].trackKey}
+                        name={members[0].trackKey}
+                        short
+                      />
+                    )}
                     <Badge variant="secondary">
                       {t("onlyGender", {
                         gender: tGender(group.gender),

@@ -237,19 +237,22 @@ describe("PayMappingActionsOverview", () => {
     expect(screen.queryByLabelText(mo.statusAll)).toBeNull()
   })
 
-  it("lists an action with its owner, group link and planned date", () => {
+  it("lists an action with its owner, group link, planned action and date", () => {
     renderOverview()
     const rows = actionRowTexts()
     expect(rows).toHaveLength(1)
     expect(rows[0]).toContain("Alice Admin")
     expect(rows[0]).toContain("SWE · Senior")
     expect(rows[0]).toContain("Unexplained gap")
-    // Every "linked to" cell deep-links back into the analysis.
+    // The planned action rides under the problem in the same cell.
+    expect(rows[0]).toContain("Salary review")
+    // Every "linked to" cell deep-links to the record's OWN group in the
+    // analysis (the summary pre-selects the matching checklist step).
     expect(
       screen
         .getAllByRole("link", { name: "SWE · Senior" })[0]
         ?.getAttribute("href")
-    ).toBe("/pay-mappings/2026/analysis")
+    ).toBe("/pay-mappings/2026/analysis?step=equalWork:SWE%7C3%7CSenior")
   })
 
   it("narrows the list by status and says so when nothing matches", async () => {

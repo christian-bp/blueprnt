@@ -81,6 +81,18 @@ function targetScope(
   return target.kind === "pair" ? "pair" : target.scope
 }
 
+// The deep link that opens the record's OWN group in the analysis: the
+// summary pre-selects the checklist step matching ?step=<scope>:<key>. A
+// pair has no chapter step of its own, so it links to the analysis plainly
+// (the tvärnivå section sits at the top there).
+function analysisStepHref(
+  analysisHref: string,
+  target: ActionTargetWire
+): string {
+  if (target.kind === "pair") return analysisHref
+  return `${analysisHref}?step=${target.scope}:${encodeURIComponent(target.groupKey)}`
+}
+
 // A summary-strip figure: a NumberFlow once the value is known (statuses
 // move while the page is open), a small bar while it loads.
 function StatValue({ value }: { value: number | undefined }) {
@@ -530,18 +542,26 @@ export function PayMappingActionsOverview() {
                               </div>
                             </TableCell>
                             <TableCell className="truncate">
-                              {/* Back into the analysis, where the record's
-                                  own group and row live. */}
+                              {/* Back into the analysis, opening the
+                                  record's own group. */}
                               <Link
-                                href={analysisHref}
+                                href={analysisStepHref(
+                                  analysisHref,
+                                  action.target
+                                )}
                                 className="underline underline-offset-4"
                               >
                                 {targetGroupLabel(action.target) ||
                                   t(`targetKind.${action.target.kind}`)}
                               </Link>
                             </TableCell>
-                            <TableCell className="truncate">
-                              {action.problem}
+                            <TableCell>
+                              <div className="truncate">{action.problem}</div>
+                              {/* The planned action rides under the problem
+                                  (an eighth column would not fit). */}
+                              <div className="truncate text-muted-foreground text-xs">
+                                {action.plannedAction}
+                              </div>
                             </TableCell>
                             <TableCell className="truncate">
                               {action.ownerName}
@@ -651,7 +671,7 @@ export function PayMappingActionsOverview() {
                           </TableCell>
                           <TableCell className="truncate">
                             <Link
-                              href={analysisHref}
+                              href={analysisStepHref(analysisHref, note.target)}
                               className="underline underline-offset-4"
                             >
                               {targetGroupLabel(note.target) ||

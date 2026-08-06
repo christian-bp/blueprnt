@@ -16,7 +16,7 @@ import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "@/lib/toast"
 import { AccordionSection } from "@/components/accordion-section"
 import { ContinueReviewItem } from "./continue-review-item"
@@ -186,6 +186,34 @@ export function PayMappingSummary() {
           hasPreviousCompletedRun,
         })
       : null
+
+  // Deep link from the actions overview (?step=<scope>:<groupKey>): once
+  // the queue exists, pre-select the matching checklist row so the link
+  // opens the record's own group, not just the page. Read from
+  // window.location exactly once instead of useSearchParams: the value is
+  // consumed only at mount (the link always navigates here from another
+  // tab), and this avoids the Suspense boundary useSearchParams demands of
+  // the whole page. An unknown key is ignored (the run may have changed
+  // since the record was written).
+  const appliedStepParamRef = useRef(false)
+  useEffect(() => {
+    if (appliedStepParamRef.current || queue === null || gap === undefined)
+      return
+    appliedStepParamRef.current = true
+    const param = new URLSearchParams(window.location.search).get("step")
+    if (param === null) return
+    const separator = param.indexOf(":")
+    if (separator === -1) return
+    const scope = param.slice(0, separator)
+    const key = param.slice(separator + 1)
+    if (scope !== "equalWork" && scope !== "equivalentWork") return
+    const exists =
+      scope === "equalWork"
+        ? gap.equalWork.some((group) => group.key === key)
+        : gap.womenDominated.some((group) => group.key === key)
+    if (!exists) return
+    setSelected(groupOpenStep(queue, scope, key))
+  }, [queue, gap])
 
   // Moves focus onto the right pane the moment its content actually
   // changes: a different checklist row selected, "mark done and continue"

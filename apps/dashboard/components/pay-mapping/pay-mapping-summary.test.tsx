@@ -417,6 +417,34 @@ describe("PayMappingSummary", () => {
     expect(document.activeElement).toBe(document.body)
   })
 
+  it("pre-selects the checklist row a ?step= deep link names", async () => {
+    // The actions overview's "linked to" links land here with the record's
+    // own group in the query string.
+    window.history.pushState({}, "", "/analysis?step=equalWork:sales")
+    try {
+      renderSummary()
+      await vi.waitFor(() => {
+        const row = checklistRowFor("Sales · Mid")
+        expect(row?.getAttribute("aria-current")).toBe("true")
+      })
+    } finally {
+      window.history.pushState({}, "", "/")
+    }
+  })
+
+  it("ignores a ?step= deep link whose group no longer exists", async () => {
+    window.history.pushState({}, "", "/analysis?step=equalWork:gone")
+    try {
+      renderSummary()
+      // Falls back to the implicit landing (the first remaining step).
+      expect(await screen.findByText(t.introTitle)).toBeDefined()
+      const row = checklistRowFor(t.collaborationTitle)
+      expect(row?.getAttribute("aria-current")).toBe("true")
+    } finally {
+      window.history.pushState({}, "", "/")
+    }
+  })
+
   it("renders the opened step's own heading as an h4 (the pane sits under the page's h2 and this summary's own h3)", async () => {
     renderSummary()
     expect(
