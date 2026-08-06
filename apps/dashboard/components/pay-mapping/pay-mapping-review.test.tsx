@@ -350,7 +350,18 @@ describe("PayMappingReview", () => {
       expect(upsertMock).toHaveBeenCalledTimes(1)
     })
 
-    fireEvent.click(screen.getByRole("button", { name: t.markDoneNext }))
+    // The upsert fires directly in the toggle handler, but the primary button
+    // only enables two commits later (the form's onDocumentationChange effect,
+    // then the step's setDoc), so waiting on the mock alone can click a
+    // still-disabled button under CI load. Wait for the real precondition.
+    const markDone = screen.getByRole("button", {
+      name: t.markDoneNext,
+    }) as HTMLButtonElement
+    await vi.waitFor(() => {
+      expect(markDone.disabled).toBe(false)
+    })
+
+    fireEvent.click(markDone)
     await vi.waitFor(() => {
       expect(upsertMock).toHaveBeenCalledTimes(2)
     })
