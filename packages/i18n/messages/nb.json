@@ -1469,6 +1469,29 @@
           "created": "Lagt til"
         },
         "noNotesYet": "Ingen notater ennå."
+      },
+      "deepDive": {
+        "title": "{count, plural, one {# kjønnsren gruppe} other {# kjønnsrene grupper}}",
+        "lead": "Disse gruppene har bare medlemmer av ett kjønn, så det finnes ingen kvinne-mann-sammenligning å gjøre. De ligger utenfor den lovpålagte lønnskartleggingen og har verken flagg eller dokumentasjonsplikt, men den interne lønnsspredningen kan likevel være verdt et blikk.",
+        "show": "Vis analysen",
+        "hide": "Skjul analysen",
+        "onlyGender": "Bare {gender} ({count})",
+        "singletons": "{count, plural, one {# gruppe med én enkelt person vises ikke: det finnes ingenting å sammenligne i den.} other {# grupper med én enkelt person vises ikke: det finnes ingenting å sammenligne i dem.}}",
+        "stats": {
+          "min": "Lavest",
+          "median": "Median",
+          "mean": "Snitt",
+          "max": "Høyest",
+          "spread": "Spredning"
+        }
+      },
+      "womenAhead": {
+        "title": "{count, plural, one {# gruppe der kvinnene ikke ligger etter} other {# grupper der kvinnene ikke ligger etter}}",
+        "lead": "Begge kjønn er representert og kvinnenes gjennomsnitt ligger på nivå med eller over mennenes, så det finnes ingen forskjell til kvinnenes ulempe å gjøre noe med. Listes her som informasjon; gruppene har verken flagg eller dokumentasjonsplikt.",
+        "show": "Vis gruppene",
+        "womenMean": "Kvinnenes gjennomsnitt",
+        "menMean": "Mennenes gjennomsnitt",
+        "womenLead": "Forskjell"
       }
     },
     "rating": {
@@ -1927,7 +1950,11 @@
       "collaborationLabel": "Hva er samarbeid?",
       "collaborationBody": "Samarbeid vil si å involvere de ansatte og deres tillitsvalgte i hvert steg av lønnskartleggingen (diskrimineringslovens 3 kap. 11 §). Hvis virksomheten er bundet av tariffavtale, har tillitsvalgte rett til den informasjonen de behøver for å delta (12 §).",
       "crossLevelLabel": "Hva er et tvernivå-tilfelle?",
-      "crossLevelBody": "Lønnskartleggingen grupperer likeverdig arbeid per nivå, men en lønnsforskjell kan også gå PÅ TVERS av nivåene: en kvinne hvis rolle er vurdert som mer krevende tjener mindre enn en mann på et lavere verdsatt nivå. Den inversjonen er et strukturelt varselsignal og listes derfor separat fra sammenligningen innenfor nivået. Track (IC, Lead, Manager) kan være en saklig grunn til den; når begge sider ligger på samme track, faller den grunnen bort og tilfellet trenger en dokumentert grunn eller et tiltak."
+      "crossLevelBody": "Lønnskartleggingen grupperer likeverdig arbeid per nivå, men en lønnsforskjell kan også gå PÅ TVERS av nivåene: en kvinne hvis rolle er vurdert som mer krevende tjener mindre enn en mann på et lavere verdsatt nivå. Den inversjonen er et strukturelt varselsignal og listes derfor separat fra sammenligningen innenfor nivået. Track (IC, Lead, Manager) kan være en saklig grunn til den; når begge sider ligger på samme track, faller den grunnen bort og tilfellet trenger en dokumentert grunn eller et tiltak.",
+      "genderPureLabel": "Hvorfor ligger disse gruppene for seg?",
+      "genderPureBody": "En lønnskartlegging sammenligner kvinners lønn mot menns. En gruppe der alle har samme kjønn har ingen slik sammenligning å gjøre, så den har verken flagg, dokumentasjonsplikt eller plass i den lovpålagte rapporten. Den finnes her fordi intern lønnsspredning og uteliggere likevel er verdt å forstå: en stor spredning innenfor én og samme jobb kan peke på en lønnsfastsettelse som blir et lønnsgap i det øyeblikket gruppens sammensetning endres.",
+      "womenAheadLabel": "Hvorfor ligger disse ikke i hovedflyten?",
+      "womenAheadBody": "Den lovpålagte plikten retter seg mot lønnsforskjeller til kvinnenes ulempe. Når kvinnene i en gruppe ligger på nivå med eller over mennenes gjennomsnitt, finnes det ingenting å forklare eller gjøre noe med, så gruppen forlater hovedflyten i stedet for å fylle den med grønne rader. Tallene finnes her som analytisk informasjon."
     },
     "widgetCard": {
       "expand": "Forstørr"

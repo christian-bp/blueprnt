@@ -21,6 +21,11 @@ import { toast } from "@/lib/toast"
 import { AccordionSection } from "@/components/accordion-section"
 import { ContinueReviewItem } from "./continue-review-item"
 import { CrossLevelSection } from "./cross-level-section"
+import {
+  GenderPureDeepDive,
+  SingletonNote,
+  WomenAheadGroups,
+} from "./excluded-groups-sections"
 import { useOrganization } from "@/components/org-context"
 import { TableSearchField } from "@/components/table-search-field"
 import {
@@ -788,6 +793,25 @@ export function PayMappingSummary() {
             </motion.div>
           </AnimatePresence>
         </div>
+      </div>
+
+      {/* Outside the statutory flow (ADR-0015), so they close the page
+          rather than competing with it: what the entry conditions excluded,
+          each stated in its own words. */}
+      <div className="space-y-3">
+        <SingletonNote excluded={currentGap.excluded} />
+        <WomenAheadGroups excluded={currentGap.excluded} currency={currency} />
+        <GenderPureDeepDive
+          excluded={currentGap.excluded}
+          rows={currentRun.rows}
+          currency={currency}
+          documentation={{
+            runId: currentRun.runId,
+            actions,
+            notes,
+            locked,
+          }}
+        />
       </div>
     </div>
   )

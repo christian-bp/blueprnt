@@ -97,6 +97,7 @@ export function DocumentationMenu({
   notes,
   currency,
   locked,
+  notesOnly = false,
 }: {
   runId: Id<"payMappingRuns">
   target: ActionTargetWire
@@ -105,6 +106,10 @@ export function DocumentationMenu({
   notes: PayMappingNoteWire[]
   currency: string
   locked: boolean
+  // The deep-dive's gender-pure groups carry no statutory finding, so they
+  // take notes but never a formal action (the backend rejects one); the
+  // menu must not offer what the server will refuse.
+  notesOnly?: boolean
 }) {
   const t = useTranslations("dashboard.payMapping.actions")
   const tToast = useTranslations("dashboard.toast")
@@ -154,12 +159,14 @@ export function DocumentationMenu({
           <HugeiconsIcon icon={MoreVerticalIcon} strokeWidth={2} />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            disabled={locked}
-            onClick={() => setActionOpen(true)}
-          >
-            {existingAction === undefined ? t("createTitle") : t("editTitle")}
-          </DropdownMenuItem>
+          {!notesOnly && (
+            <DropdownMenuItem
+              disabled={locked}
+              onClick={() => setActionOpen(true)}
+            >
+              {existingAction === undefined ? t("createTitle") : t("editTitle")}
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem disabled={locked} onClick={() => setNoteOpen(true)}>
             {existingNote === undefined
               ? t("createNoteTitle")

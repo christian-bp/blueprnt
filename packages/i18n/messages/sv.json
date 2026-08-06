@@ -1469,6 +1469,29 @@
           "created": "Tillagd"
         },
         "noNotesYet": "Inga noteringar ännu."
+      },
+      "deepDive": {
+        "title": "{count, plural, one {# könsren grupp} other {# könsrena grupper}}",
+        "lead": "De här grupperna har bara medlemmar av ett kön, så det finns ingen kvinna-man-jämförelse att göra. De ligger utanför den lagstadgade lönekartläggningen och har varken flagga eller dokumentationsplikt, men den interna lönespridningen kan ändå vara värd att titta på.",
+        "show": "Visa analysen",
+        "hide": "Dölj analysen",
+        "onlyGender": "Endast {gender} ({count})",
+        "singletons": "{count, plural, one {# grupp med en enda person visas inte: det finns inget att jämföra inom den.} other {# grupper med en enda person visas inte: det finns inget att jämföra inom dem.}}",
+        "stats": {
+          "min": "Lägst",
+          "median": "Median",
+          "mean": "Medel",
+          "max": "Högst",
+          "spread": "Spridning"
+        }
+      },
+      "womenAhead": {
+        "title": "{count, plural, one {# grupp där kvinnorna inte ligger efter} other {# grupper där kvinnorna inte ligger efter}}",
+        "lead": "Båda könen finns representerade och kvinnornas genomsnitt ligger i nivå med eller över männens, så det finns ingen skillnad till kvinnornas nackdel att åtgärda. Listas här som information; grupperna har varken flagga eller dokumentationsplikt.",
+        "show": "Visa grupperna",
+        "womenMean": "Kvinnors genomsnitt",
+        "menMean": "Männens genomsnitt",
+        "womenLead": "Skillnad"
       }
     },
     "rating": {
@@ -1927,7 +1950,11 @@
       "collaborationLabel": "Vad är samverkan?",
       "collaborationBody": "Samverkan innebär att samverka med arbetstagarna och deras fackliga representanter i varje steg av lönekartläggningen (diskrimineringslagen 3 kap. 11 §). Om er organisation är bunden av kollektivavtal har de fackliga representanterna rätt till den information de behöver för att delta (12 §).",
       "crossLevelLabel": "Vad är ett tvärnivå-fall?",
-      "crossLevelBody": "Lönekartläggningen grupperar likvärdigt arbete per nivå, men en löneskillnad kan också gå TVÄRS över nivåerna: en kvinna vars roll har värderats som mer krävande tjänar mindre än en man på en lägre värderad nivå. Den inversionen är ett strukturellt varningstecken och listas därför separat från jämförelsen inom nivån. Track (IC, Lead, Manager) kan vara ett sakligt skäl till den; när båda sidor ligger på samma track faller det skälet bort och fallet behöver ett dokumenterat skäl eller en åtgärd."
+      "crossLevelBody": "Lönekartläggningen grupperar likvärdigt arbete per nivå, men en löneskillnad kan också gå TVÄRS över nivåerna: en kvinna vars roll har värderats som mer krävande tjänar mindre än en man på en lägre värderad nivå. Den inversionen är ett strukturellt varningstecken och listas därför separat från jämförelsen inom nivån. Track (IC, Lead, Manager) kan vara ett sakligt skäl till den; när båda sidor ligger på samma track faller det skälet bort och fallet behöver ett dokumenterat skäl eller en åtgärd.",
+      "genderPureLabel": "Varför ligger de här grupperna för sig?",
+      "genderPureBody": "En lönekartläggning jämför kvinnors lön mot mäns. En grupp där alla har samma kön har ingen sådan jämförelse att göra, så den har varken flagga, dokumentationsplikt eller plats i den lagstadgade rapporten. Den finns kvar här eftersom intern lönespridning och outliers ändå är värda att förstå: en stor spridning inom ett och samma jobb kan peka på en lönesättning som blir ett lönegap i samma stund som gruppens sammansättning ändras.",
+      "womenAheadLabel": "Varför ligger de här inte i huvudflödet?",
+      "womenAheadBody": "Den lagstadgade plikten riktar sig mot löneskillnader till kvinnors nackdel. När kvinnorna i en grupp ligger i nivå med eller över männens genomsnitt finns det inget att förklara eller åtgärda, så gruppen lämnar huvudflödet i stället för att fylla det med gröna rader. Siffrorna finns kvar här som analytisk information."
     },
     "widgetCard": {
       "expand": "Förstora"

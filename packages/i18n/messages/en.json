@@ -1469,6 +1469,29 @@
           "created": "Added"
         },
         "noNotesYet": "No notes yet."
+      },
+      "deepDive": {
+        "title": "{count, plural, one {# gender-pure group} other {# gender-pure groups}}",
+        "lead": "These groups have members of one gender only, so there is no woman-man comparison to make. They are outside the statutory pay mapping and carry no flag or documentation duty, but their internal pay spread can still be worth a look.",
+        "show": "Show the analysis",
+        "hide": "Hide the analysis",
+        "onlyGender": "Only {gender} ({count})",
+        "singletons": "{count, plural, one {# group with a single person is not shown: there is nothing to compare within it.} other {# groups with a single person are not shown: there is nothing to compare within them.}}",
+        "stats": {
+          "min": "Lowest",
+          "median": "Median",
+          "mean": "Average",
+          "max": "Highest",
+          "spread": "Spread"
+        }
+      },
+      "womenAhead": {
+        "title": "{count, plural, one {# group where the women are not behind} other {# groups where the women are not behind}}",
+        "lead": "Both genders are represented and the women's average is at or above the men's, so there is no difference to the women's disadvantage to act on. Listed here as information; these groups carry no flag and no documentation duty.",
+        "show": "Show the groups",
+        "womenMean": "Women's average",
+        "menMean": "Men's average",
+        "womenLead": "Difference"
       }
     },
     "rating": {
@@ -1927,7 +1950,11 @@
       "collaborationLabel": "What is collaboration?",
       "collaborationBody": "Collaboration (Swedish: samverkan) means cooperating with employees and their union representatives at every step of the pay mapping (Diskrimineringslagen 3 kap. 11 §). If your organization is bound by a collective agreement, the union representatives have a right to the information they need to take part (12 §).",
       "crossLevelLabel": "What is a cross-level case?",
-      "crossLevelBody": "The pay mapping groups equivalent work by level, but a pay difference can also cut ACROSS levels: a woman whose role was evaluated as more demanding earns less than a man on a lower-valued level. That inversion is a structural warning sign, so it is listed separately from the within-level comparison. Track (IC, Lead, Manager) can be an objective explanation for it; when both sides sit on the same track, that explanation is gone and the case needs a documented reason or an action."
+      "crossLevelBody": "The pay mapping groups equivalent work by level, but a pay difference can also cut ACROSS levels: a woman whose role was evaluated as more demanding earns less than a man on a lower-valued level. That inversion is a structural warning sign, so it is listed separately from the within-level comparison. Track (IC, Lead, Manager) can be an objective explanation for it; when both sides sit on the same track, that explanation is gone and the case needs a documented reason or an action.",
+      "genderPureLabel": "Why are these groups separate?",
+      "genderPureBody": "A pay mapping compares women's pay against men's. A group where everyone shares a gender has no such comparison to make, so it carries no flag, no documentation duty, and no place in the statutory report. It is kept here because internal pay dispersion and outliers are still worth understanding: a wide spread inside one job can point at pay-setting that would show up as a gender gap the moment the group's composition changes.",
+      "womenAheadLabel": "Why are these not in the main flow?",
+      "womenAheadBody": "The statutory duty targets pay differences to women's disadvantage. When the women in a group are at or above the men's average, there is nothing to explain or act on, so the group leaves the main flow rather than filling it with green rows. The figures stay here as analytical information."
     },
     "widgetCard": {
       "expand": "Expand"

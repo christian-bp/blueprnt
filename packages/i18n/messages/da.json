@@ -1469,6 +1469,29 @@
           "created": "Tilføjet"
         },
         "noNotesYet": "Ingen notater endnu."
+      },
+      "deepDive": {
+        "title": "{count, plural, one {# kønsren gruppe} other {# kønsrene grupper}}",
+        "lead": "Disse grupper har kun medlemmer af ét køn, så der er ingen kvinde-mand-sammenligning at foretage. De ligger uden for den lovpligtige lønkortlægning og har hverken flag eller dokumentationspligt, men den interne lønspredning kan alligevel være værd at se på.",
+        "show": "Vis analysen",
+        "hide": "Skjul analysen",
+        "onlyGender": "Kun {gender} ({count})",
+        "singletons": "{count, plural, one {# gruppe med en enkelt person vises ikke: der er intet at sammenligne i den.} other {# grupper med en enkelt person vises ikke: der er intet at sammenligne i dem.}}",
+        "stats": {
+          "min": "Lavest",
+          "median": "Median",
+          "mean": "Gennemsnit",
+          "max": "Højest",
+          "spread": "Spredning"
+        }
+      },
+      "womenAhead": {
+        "title": "{count, plural, one {# gruppe hvor kvinderne ikke ligger bagefter} other {# grupper hvor kvinderne ikke ligger bagefter}}",
+        "lead": "Begge køn er repræsenteret, og kvindernes gennemsnit ligger på niveau med eller over mændenes, så der er ingen forskel til kvindernes ulempe at handle på. Listes her som information; grupperne har hverken flag eller dokumentationspligt.",
+        "show": "Vis grupperne",
+        "womenMean": "Kvindernes gennemsnit",
+        "menMean": "Mændenes gennemsnit",
+        "womenLead": "Forskel"
       }
     },
     "rating": {
@@ -1927,7 +1950,11 @@
       "collaborationLabel": "Hvad er samarbejde?",
       "collaborationBody": "Samarbejde betyder at involvere medarbejderne og deres faglige repræsentanter i hvert trin af lønkortlægningen (diskrimineringslovens 3 kap. 11 §). Hvis organisationen er bundet af en kollektiv overenskomst, har de faglige repræsentanter ret til de oplysninger, de har brug for for at deltage (12 §).",
       "crossLevelLabel": "Hvad er et tværniveau-tilfælde?",
-      "crossLevelBody": "Lønkortlægningen grupperer ligeværdigt arbejde per niveau, men en lønforskel kan også gå PÅ TVÆRS af niveauerne: en kvinde, hvis rolle er vurderet som mere krævende, tjener mindre end en mand på et lavere vurderet niveau. Den inversion er et strukturelt advarselstegn og listes derfor separat fra sammenligningen inden for niveauet. Track (IC, Lead, Manager) kan være en saglig grund til den; når begge sider ligger på samme track, falder den grund bort, og tilfældet kræver en dokumenteret grund eller et tiltag."
+      "crossLevelBody": "Lønkortlægningen grupperer ligeværdigt arbejde per niveau, men en lønforskel kan også gå PÅ TVÆRS af niveauerne: en kvinde, hvis rolle er vurderet som mere krævende, tjener mindre end en mand på et lavere vurderet niveau. Den inversion er et strukturelt advarselstegn og listes derfor separat fra sammenligningen inden for niveauet. Track (IC, Lead, Manager) kan være en saglig grund til den; når begge sider ligger på samme track, falder den grund bort, og tilfældet kræver en dokumenteret grund eller et tiltag.",
+      "genderPureLabel": "Hvorfor ligger disse grupper for sig?",
+      "genderPureBody": "En lønkortlægning sammenligner kvinders løn mod mænds. En gruppe, hvor alle har samme køn, har ingen sådan sammenligning at foretage, så den har hverken flag, dokumentationspligt eller plads i den lovpligtige rapport. Den findes her, fordi intern lønspredning og outliers alligevel er værd at forstå: en stor spredning inden for ét og samme job kan pege på en lønfastsættelse, der bliver et løngab i samme øjeblik gruppens sammensætning ændrer sig.",
+      "womenAheadLabel": "Hvorfor ligger disse ikke i hovedflowet?",
+      "womenAheadBody": "Den lovpligtige pligt retter sig mod lønforskelle til kvindernes ulempe. Når kvinderne i en gruppe ligger på niveau med eller over mændenes gennemsnit, er der intet at forklare eller handle på, så gruppen forlader hovedflowet i stedet for at fylde det med grønne rækker. Tallene findes her som analytisk information."
     },
     "widgetCard": {
       "expand": "Forstør"
