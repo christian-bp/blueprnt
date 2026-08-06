@@ -47,3 +47,7 @@ Flaggnivåerna (🔴 >10 %, 🟠 5-10 %, ✅ <5 %) och allt annat i denna ADR st
 ## Tillägg 2026-08-05: begreppen har bytt namn (ADR-0014)
 
 Beslutet ovan står fast, orden har bytt namn. Det som här heter **band** (rollens beräknade tyngd) heter i dag **Nivå** (kod `level`, Nivå 1 är högst), och det som här heter **level** (individens senioritet inom rollens track) heter i dag **Senioritet** (kod `seniority`). Texten ovan skrivs inte om: läs "band" som Nivå och "level" i individ-betydelsen som Senioritet. Se [ADR-0014](./0014-terminologi-niva-senioritet-steg.md).
+
+## Tillägg 2026-08-06: instegsvillkor ersätter ⚪-presentationen (ADR-0015)
+
+Iteration 2-noteringarna ändrar hur P1-vyn presenterar och gate-ar sina grupper: singletons döljs helt, könsrena grupper flyttar till en frivillig fördjupningsanalys (och tappar sin dokumentationsplikt, en ändring av grindens ⚪-regel ovan), grupper där kvinnorna tjänar mer flyttar till en informationsvy, och grundlön blir gruppernas primära mått med TCC parallellt. Flaggtrösklarna, P1:s obligatoriska ställning, den kvinnodominerade tvärjämförelsen och exportgränsens småcellsminimum står fast. Se [ADR-0015](./0015-instegsvillkor-och-atgardslager.md).

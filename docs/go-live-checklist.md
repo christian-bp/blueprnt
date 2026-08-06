@@ -292,6 +292,16 @@ suite covers them before go-live:
   in the export slice, not the engine; the in-app view keeps the loose rule.
   Not an in-app blocker.
 
+- [ ] **Report methodology note for entry-condition-excluded groups (M8).**
+  ADR-0015's entry conditions silently drop singleton groups and route
+  gender-pure and women-ahead groups out of the primary lika arbete flow;
+  none of them appear in the report's equal-work section. So the statutory
+  documentation stays honest, the M8 report must carry an aggregate
+  methodology note ("N groups excluded for lacking a comparison basis": the
+  wire already exposes `excluded.singletonCount` plus the gender-pure and
+  reverse lists from `getPayMappingGap`). Belongs to the report slice, not
+  the engine. Not an in-app blocker.
+
 - [ ] **Chunk the remaining org-scaled single-transaction writes.** Per the
   CLAUDE.md scalability rule, write paths whose work grows with org size must
   run as bounded chunks. Known single-transaction paths to convert before
