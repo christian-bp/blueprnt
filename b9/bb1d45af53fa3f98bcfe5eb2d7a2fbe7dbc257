@@ -1,0 +1,92 @@
+apps/dashboard/components/pay-mapping/women-dominated-underlying-data.test.tsx
+  s_7d4d2043db4111::t_2ef053c2a0cc06 17-155,159
+apps/dashboard/components/pay-mapping/equal-work-detail.tsx
+  s_7d4d2043db4111::t_79302946210d95 1-43,47-80,82-94,97-110,112-120
+  s_7d4d2043db4111::t_418caac6fdbb8b 111
+  s_7d4d2043db4111::t_ec2740f7d97d61 44-46,95-96
+  s_7d4d2043db4111::t_457dab5638f6c8 81
+apps/dashboard/components/pay-mapping/pay-gap-dot-plot.tsx
+  s_7d4d2043db4111::t_ec2740f7d97d61 218-221,308-310
+  s_7d4d2043db4111::t_6d206ed26e7fd4 1-217,222-307,311-327
+packages/i18n/messages/da.json
+  s_7d4d2043db4111::t_72221090643e78 1118-1124
+  s_7d4d2043db4111::t_bd81d4edb7c549 1263
+  s_7d4d2043db4111::t_93b153c0177d78 1804-1807
+  s_7d4d2043db4111::t_d9ddadaafd3f13 1144-1145
+  s_7d4d2043db4111::t_733bb771930b79 1125,1131-1138,1142-1143
+packages/i18n/messages/nb.json
+  s_7d4d2043db4111::t_bd81d4edb7c549 1263
+  s_7d4d2043db4111::t_93b153c0177d78 1804-1807
+  s_7d4d2043db4111::t_72221090643e78 1118-1124
+  s_7d4d2043db4111::t_d9ddadaafd3f13 1144-1145
+  s_7d4d2043db4111::t_3b119eb2759fbd 1125,1131-1138,1142-1143
+apps/dashboard/components/pay-mapping/review-jump-menu.tsx
+  s_7d4d2043db4111::t_d51de58536b27e 21
+apps/dashboard/components/pay-mapping/women-dominated-underlying-data.tsx
+  s_7d4d2043db4111::t_d51de58536b27e 16,21-27,60-67,202-212,217,231
+apps/dashboard/components/pay-mapping/pay-mapping-gap-types.ts
+  s_7d4d2043db4111::t_100ab182c38716 182-202
+  s_7d4d2043db4111::t_c7029792b63e51 170-181
+apps/dashboard/components/pay-mapping/review-group-step.test.tsx
+  s_7d4d2043db4111::t_26f2c55d6a4482 283-285,293-295,297-304,307,309-324,327-331,334-336
+  s_7d4d2043db4111::t_82876162cabf66 48
+  s_7d4d2043db4111::t_5afd8bd8e8f868 286-292
+packages/i18n/messages/fi.json
+  s_7d4d2043db4111::t_72221090643e78 1118-1124
+  s_7d4d2043db4111::t_d9ddadaafd3f13 1144-1145
+  s_7d4d2043db4111::t_bd81d4edb7c549 1263
+  s_7d4d2043db4111::t_93b153c0177d78 1804-1807
+  s_7d4d2043db4111::t_2986479393ab8c 1125,1131-1138,1142-1143
+packages/i18n/messages/en.json
+  s_7d4d2043db4111::t_72221090643e78 1118-1124
+  s_7d4d2043db4111::t_93b153c0177d78 1804-1807
+  s_7d4d2043db4111::t_d9ddadaafd3f13 1144-1145
+  s_7d4d2043db4111::t_bd81d4edb7c549 1263
+  s_7d4d2043db4111::t_6987ebbdff15b3 1125,1131-1138,1142-1143
+apps/dashboard/components/pay-mapping/pay-mapping-summary.tsx
+  s_7d4d2043db4111::t_d51de58536b27e 31
+apps/dashboard/components/pay-mapping/group-member-table.test.tsx
+  s_7d4d2043db4111::t_ec2740f7d97d61 1-7
+  s_7d4d2043db4111::t_e1ef1b430ab45c 8-131,133,139,143-179
+  s_7d4d2043db4111::t_b454d2cda016ec 132,134-138,140-142
+apps/dashboard/components/pay-mapping/review-group-step.tsx
+  s_7d4d2043db4111::t_04dd506e288ce6 110-111,114
+  s_7d4d2043db4111::t_7730665233d50b 340-343,349
+  s_7d4d2043db4111::t_ec2740f7d97d61 344-348
+  s_7d4d2043db4111::t_e4affe17cd5930 362
+  s_7d4d2043db4111::t_d51de58536b27e 19,30,113,363
+  s_7d4d2043db4111::t_f02e864e24fb49 98-101
+  s_7d4d2043db4111::t_0fafa3b118b019 29
+apps/dashboard/components/pay-mapping/group-member-table.tsx
+  s_7d4d2043db4111::t_ec2740f7d97d61 185
+  s_7d4d2043db4111::t_0f4298a44c2174 157-159,172-175
+  s_7d4d2043db4111::t_8a6b02c9ca4db6 1-120,122-156,160-171,176-181,183-184,186-188,190-263,266-270
+  s_7d4d2043db4111::t_e17ec4f74fce5d 121
+  s_7d4d2043db4111::t_0ff8a21abf2213 182,189
+  s_7d4d2043db4111::t_c5b1b54f3d3b1f 264-265
+packages/i18n/messages/sv.json
+  s_7d4d2043db4111::t_93b153c0177d78 1804-1807
+  s_7d4d2043db4111::t_72221090643e78 1118-1124
+  s_7d4d2043db4111::t_d9ddadaafd3f13 1144-1145
+  s_7d4d2043db4111::t_bd81d4edb7c549 1263
+  s_7d4d2043db4111::t_ce280f54a0b1ab 1125,1131-1138,1142-1143
+apps/dashboard/components/pay-mapping/pay-gap-dot-plot.test.tsx
+  s_7d4d2043db4111::t_56ee75091e7203 1-40,47-181
+  s_7d4d2043db4111::t_ec2740f7d97d61 41-46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "b9bb1d45af53fa3f98bcfe5eb2d7a2fbe7dbc257",
+  "prompts": {},
+  "sessions": {
+    "s_7d4d2043db4111": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cbeef8ee-16ed-4aed-b926-c1546f14fb33",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
