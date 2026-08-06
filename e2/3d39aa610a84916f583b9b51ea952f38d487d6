@@ -1,0 +1,65 @@
+apps/dashboard/components/nav-main.tsx
+  s_0e8d3e36e03eae::t_e14f514660cffa 105-115
+  s_0e8d3e36e03eae::t_babba4f91b1089 13,19
+  s_0e8d3e36e03eae::t_702371b6caf504 80-87
+  s_0e8d3e36e03eae::t_8fec7e15cb1c0c 10-12,15,18,21-31,37,56-58,62,64-65,67-71,102-104,116-143,151-178
+  s_0e8d3e36e03eae::t_8585222cbc562b 144-150
+apps/dashboard/components/nav-main.test.tsx
+  s_0e8d3e36e03eae::t_483c0a4e603836 272
+  s_0e8d3e36e03eae::t_15abfd35134705 7-10
+  s_0e8d3e36e03eae::t_e5feb63757255b 2,16-35,80-92,98-101,108-133,151,163,208-236,240-271,273-274
+  s_0e8d3e36e03eae::t_35083fbfdd7ab8 144-150,152-153
+  s_0e8d3e36e03eae::t_9fb9519fe59a23 275-276,285-298
+  s_0e8d3e36e03eae::t_b48a3a15b0c79f 277-284
+  s_0e8d3e36e03eae::t_bfa59f8520ff80 237-239
+  s_0e8d3e36e03eae::t_144f333db54420 39
+  s_0e8d3e36e03eae::t_9385e735a77127 70-79
+  s_0e8d3e36e03eae::t_60e08cb18499fa 93-97
+  s_0e8d3e36e03eae::t_f939342b4a44c8 158-159
+  s_3810bb71526b96::t_5e957e95d71a70 154
+apps/dashboard/components/organization/organization-tabs.tsx
+  s_0e8d3e36e03eae::t_146601cde7bb38 8,11-15,17,19-22,26,29-30,33-35,37,42-43
+apps/dashboard/components/people/people-tabs.tsx
+  s_0e8d3e36e03eae::t_a14f2ea479bf88 9,12-19,21,25-28,32,35,37-40,45,48
+apps/dashboard/components/app-sidebar.tsx
+  s_0e8d3e36e03eae::t_1a29db7ca1996e 99
+  s_0e8d3e36e03eae::t_f4d55a2da07dd6 79
+  s_0e8d3e36e03eae::t_513e6b38432dd5 61,67
+  s_0e8d3e36e03eae::t_774f7bc0b2a6ae 54
+  s_0e8d3e36e03eae::t_cb489255a17ffc 26,32-38
+  s_0e8d3e36e03eae::t_b0919f83836647 81-82
+  s_0e8d3e36e03eae::t_8f2ad94f5c055e 39
+apps/dashboard/lib/section-pages.test.ts
+  s_0e8d3e36e03eae::t_0239e3538675b8 1-31,49-52
+  s_0e8d3e36e03eae::t_3a64e5c653f7d5 32-48
+apps/dashboard/components/model/model-tabs.tsx
+  s_0e8d3e36e03eae::t_8930f47d8b9092 8,11-18,20,22-25,28-33,36-38,40,45-46
+apps/dashboard/components/section-tabs.tsx
+  s_0e8d3e36e03eae::t_64512f66576a35 9,11-16,21,25-28,33-34,36-39,44,47
+apps/dashboard/lib/section-pages.ts
+  s_0e8d3e36e03eae::t_af16fdfc9d6946 1-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "e23d39aa610a84916f583b9b51ea952f38d487d6",
+  "prompts": {},
+  "sessions": {
+    "s_0e8d3e36e03eae": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0950de25-dd83-4db9-9e9b-6d5cfa7a4df5",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_3810bb71526b96": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2cc9731d-4e2f-40d1-b6c4-3f479cae8ceb",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
