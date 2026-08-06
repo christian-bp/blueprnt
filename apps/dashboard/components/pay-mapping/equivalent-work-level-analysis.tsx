@@ -1,14 +1,8 @@
 "use client"
 
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import { Button } from "@workspace/ui/components/button"
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@workspace/ui/components/collapsible"
 import { useTranslations } from "next-intl"
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { LevelBadge } from "@/components/level-badge"
 import { buildCrossLevelCases } from "./cross-level-section"
@@ -58,7 +52,6 @@ export function EquivalentWorkLevelAnalysis({
   const t = useTranslations("dashboard.payMapping.levelAnalysis")
   const tGap = useTranslations("dashboard.payMapping.gap.columns")
   const tHelp = useTranslations("dashboard.help")
-  const [open, setOpen] = useState(false)
 
   const qualifying = equivalentWork.filter(meetsEntryConditions)
 
@@ -91,77 +84,52 @@ export function EquivalentWorkLevelAnalysis({
           }
     }
 
-  if (qualifying.length === 0) return null
-
   return (
-    <Collapsible open={open} onOpenChange={setOpen}>
-      <section className="space-y-3 rounded-md border border-dashed px-4 py-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <h3 className="font-medium text-sm">
-            {t("title", { count: qualifying.length })}
-          </h3>
-          <HelpMorphButton label={tHelp("levelAnalysisLabel")}>
-            {tHelp("levelAnalysisBody")}
-          </HelpMorphButton>
-          <CollapsibleTrigger
-            render={
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="ml-auto"
-              />
-            }
-          >
-            {open ? t("hide") : t("show")}
-          </CollapsibleTrigger>
-        </div>
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-2">
         <p className="text-muted-foreground text-sm">{t("lead")}</p>
-
-        <CollapsibleContent className="h-(--collapsible-panel-height) overflow-hidden transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0 motion-reduce:transition-none">
-          <div className="space-y-6 pt-1">
-            {qualifying.map((group) => (
-              <section key={group.key} className="space-y-3">
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                  {group.level !== null && <LevelBadge level={group.level} />}
-                  <span className="text-muted-foreground text-sm">
-                    {tGap("women")}:{" "}
-                    <span className="tabular-nums">{group.womenCount}</span>
-                    {" · "}
-                    {tGap("men")}:{" "}
-                    <span className="tabular-nums">{group.menCount}</span>
-                  </span>
-                  <PayGapFlagBadge flag={group.flag} />
-                </div>
-                <MetricLine
-                  metric={primaryGapMetric(group)}
-                  currency={currency}
-                />
-                <PayGapDotPlot group={group} rows={rows} currency={currency} />
-                <GroupMemberTable
-                  group={group}
-                  rows={rows}
-                  currency={currency}
-                  variant="level"
-                  crossLevelFlagged={crossLevelFlagged}
-                  memberTarget={targetForLevel(group.level)}
-                  {...(documentation === undefined
-                    ? {}
-                    : {
-                        documentation: {
-                          runId: documentation.runId,
-                          scope: "equalWork" as const,
-                          actions: documentation.actions,
-                          notes: documentation.notes,
-                          locked: documentation.locked,
-                        },
-                      })}
-                />
-              </section>
-            ))}
-          </div>
-        </CollapsibleContent>
-      </section>
-    </Collapsible>
+        <HelpMorphButton label={tHelp("levelAnalysisLabel")}>
+          {tHelp("levelAnalysisBody")}
+        </HelpMorphButton>
+      </div>
+      <div className="space-y-6 pt-1">
+        {qualifying.map((group) => (
+          <section key={group.key} className="space-y-3">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              {group.level !== null && <LevelBadge level={group.level} />}
+              <span className="text-muted-foreground text-sm">
+                {tGap("women")}:{" "}
+                <span className="tabular-nums">{group.womenCount}</span>
+                {" · "}
+                {tGap("men")}:{" "}
+                <span className="tabular-nums">{group.menCount}</span>
+              </span>
+              <PayGapFlagBadge flag={group.flag} />
+            </div>
+            <MetricLine metric={primaryGapMetric(group)} currency={currency} />
+            <PayGapDotPlot group={group} rows={rows} currency={currency} />
+            <GroupMemberTable
+              group={group}
+              rows={rows}
+              currency={currency}
+              variant="level"
+              crossLevelFlagged={crossLevelFlagged}
+              memberTarget={targetForLevel(group.level)}
+              {...(documentation === undefined
+                ? {}
+                : {
+                    documentation: {
+                      runId: documentation.runId,
+                      scope: "equalWork" as const,
+                      actions: documentation.actions,
+                      notes: documentation.notes,
+                      locked: documentation.locked,
+                    },
+                  })}
+            />
+          </section>
+        ))}
+      </div>
+    </div>
   )
 }

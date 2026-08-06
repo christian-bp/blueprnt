@@ -1269,6 +1269,27 @@
           "equivalentWork": "Compare this women-dominated group against the lower-valued groups that still out-earn it."
         }
       },
+      "supplementary": {
+        "heading": "Further analysis · does not affect completion",
+        "lead": "These views help you understand the pay picture. None of them is counted in what must be documented before the pay mapping can be completed.",
+        "items": {
+          "crossLevel": "Pay across levels",
+          "levelAnalysis": "Pay by level",
+          "womenAhead": "Groups where women are not behind",
+          "genderPure": "Single-gender groups",
+          "singletons": "One-person job titles"
+        },
+        "empty": {
+          "crossLevel": "No woman is out-earned by a man on a lower level.",
+          "levelAnalysis": "On no level do the women earn less than the men on average.",
+          "womenAhead": "Every group with both genders has a difference to the women's disadvantage.",
+          "genderPure": "Every group has both women and men.",
+          "singletons": "Every job title is held by at least two people."
+        },
+        "body": {
+          "singletons": "A job title held by one person has nothing to compare inside it, so it is not part of the equal-work comparison. The people themselves still count in every organization-level figure."
+        }
+      },
       "overview": {
         "headlineGapLabel": "Pay gap",
         "insufficient": "Not enough data for an organization-level gap.",
@@ -1467,9 +1488,6 @@
         "showFewer": "Show fewer"
       },
       "levelAnalysis": {
-        "title": "Level analysis: women and men within each level ({count, plural, one {# level} other {# levels}})",
-        "show": "Show analysis",
-        "hide": "Hide analysis",
         "lead": "For every level where women earn less than men on average, this shows each individual's pay against the men's average in the level, with role and track visible, since those can explain a difference. It complements the statutory comparisons above and carries no documentation duty of its own."
       },
       "actionsOverview": {
@@ -1502,12 +1520,8 @@
         "noNotesYet": "No notes yet."
       },
       "deepDive": {
-        "title": "{count, plural, one {# gender-pure group} other {# gender-pure groups}}",
         "lead": "These groups have members of one gender only, so there is no woman-man comparison to make. They are outside the statutory pay mapping and carry no flag or documentation duty, but their internal pay spread can still be worth a look.",
-        "show": "Show the analysis",
-        "hide": "Hide the analysis",
         "onlyGender": "Only {gender} ({count})",
-        "singletons": "{count, plural, one {# group with a single person is not shown: there is nothing to compare within it.} other {# groups with a single person are not shown: there is nothing to compare within them.}}",
         "stats": {
           "min": "Lowest",
           "median": "Median",
@@ -1517,9 +1531,7 @@
         }
       },
       "womenAhead": {
-        "title": "{count, plural, one {# group where the women are not behind} other {# groups where the women are not behind}}",
         "lead": "Both genders are represented and the women's average is at or above the men's, so there is no difference to the women's disadvantage to act on. Listed here as information; these groups carry no flag and no documentation duty.",
-        "show": "Show the groups",
         "womenMean": "Women's average",
         "menMean": "Men's average",
         "womenLead": "Difference"
@@ -1991,7 +2003,9 @@
       "analysisProgressLabel": "What is counted here?",
       "analysisProgressBody": "The count covers the steps that must be documented before the pay mapping can be completed: the collaboration record, the pay-practice review, every equal-work group with a pay difference to the women's disadvantage, and every women-dominated group with a higher-paid comparison. Analyses that carry no documentation duty are not counted.",
       "collaborationStripLabel": "Why is the collaboration shown here?",
-      "collaborationStripBody": "The law requires the employer to carry out the pay mapping together with the employees, normally through the union (DL 3 kap. 11-12 §§). This line shows what was recorded when the mapping started, so it stays visible while you work. Showing it does not by itself discharge the duty at each step."
+      "collaborationStripBody": "The law requires the employer to carry out the pay mapping together with the employees, normally through the union (DL 3 kap. 11-12 §§). This line shows what was recorded when the mapping started, so it stays visible while you work. Showing it does not by itself discharge the duty at each step.",
+      "supplementaryLabel": "What is in here?",
+      "supplementaryBody": "These views help you understand the pay picture, and some of them can carry notes or actions of their own. None of them is counted in what must be documented before the pay mapping can be completed: that is the four chapters above. The cross-level cases are worth reading even though they are not counted, since a woman out-earned by a man on a lower level is a structural warning sign."
     },
     "widgetCard": {
       "expand": "Expand"

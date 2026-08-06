@@ -25,6 +25,7 @@ export function AccordionSection({
   meta,
   className,
   contentClassName,
+  id,
   children,
 }: {
   value: string
@@ -35,10 +36,13 @@ export function AccordionSection({
   // per-section card chrome: rounded-xl border px-4).
   className?: string
   contentClassName?: string
+  // A DOM id on the item, for surfaces that scroll one section into view
+  // from elsewhere on the page.
+  id?: string
   children: ReactNode
 }) {
   return (
-    <AccordionItem value={value} className={className}>
+    <AccordionItem value={value} className={className} id={id}>
       <AccordionTrigger className="[&>svg]:hidden!">
         <span className="flex flex-1 items-center gap-2">
           <HugeiconsIcon

@@ -200,19 +200,11 @@ export function CrossLevelSection({
   }
 }) {
   const t = useTranslations("dashboard.payMapping.crossLevel")
-  const tDetail = useTranslations("dashboard.payMapping.detail")
   const tHelp = useTranslations("dashboard.help")
-  const money = useMoney()
-  const [expanded, setExpanded] = useState(false)
 
   // Memoized: O(women x men) over the whole frozen population, and the
   // analysis tab re-renders on every checklist keystroke.
   const cases = useMemo(() => buildCrossLevelCases(rows), [rows])
-  // A real organization produces dozens of cases, and an unbounded list
-  // pushes everything below it off the screen. The worst few lead (the
-  // engine already orders by the largest difference); the rest are one
-  // click away.
-  const visible = expanded ? cases : cases.slice(0, PREVIEW_COUNT)
   if (cases.length === 0) {
     return hideWhenEmpty ? null : (
       <p className="text-muted-foreground text-sm">{t("none")}</p>
@@ -235,6 +227,46 @@ export function CrossLevelSection({
           {tHelp("crossLevelBody")}
         </HelpMorphButton>
       </div>
+      <CrossLevelCases
+        cases={cases}
+        currency={currency}
+        {...(documentation === undefined ? {} : { documentation })}
+      />
+    </section>
+  )
+}
+
+// The cases themselves: the lead sentence and the per-woman rows. Split out
+// of the section above so the supplementary drawer can own its own heading
+// and count (the accordion trigger carries them) while the guided chapter
+// intro keeps the standalone heading it needs.
+export function CrossLevelCases({
+  cases,
+  currency,
+  documentation,
+}: {
+  cases: CrossLevelCase[]
+  currency: string
+  documentation?: {
+    runId: Id<"payMappingRuns">
+    actions: PayMappingActionWire[] | undefined
+    notes: PayMappingNoteWire[] | undefined
+    locked: boolean
+  }
+}) {
+  const t = useTranslations("dashboard.payMapping.crossLevel")
+  const tDetail = useTranslations("dashboard.payMapping.detail")
+  const money = useMoney()
+  const [expanded, setExpanded] = useState(false)
+
+  // A real organization produces dozens of cases, and an unbounded list
+  // pushes everything below it off the screen. The worst few lead (the
+  // engine already orders by the largest difference); the rest are one
+  // click away.
+  const visible = expanded ? cases : cases.slice(0, PREVIEW_COUNT)
+
+  return (
+    <div className="space-y-3">
       <p className="text-muted-foreground text-sm">{t("lead")}</p>
 
       <div className="space-y-2">
@@ -320,6 +352,6 @@ export function CrossLevelSection({
             : t("showAll", { count: cases.length - PREVIEW_COUNT })}
         </Button>
       )}
-    </section>
+    </div>
   )
 }

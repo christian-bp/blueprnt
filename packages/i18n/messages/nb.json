@@ -1269,6 +1269,27 @@
           "equivalentWork": "Sammenlign denne kvinnedominerte gruppen mot de lavere verdsatte gruppene som likevel tjener mer."
         }
       },
+      "supplementary": {
+        "heading": "Utdypet analyse · påvirker ikke fullføringen",
+        "lead": "Disse visningene hjelper dere å forstå lønnsbildet. Ingen av dem telles med i det som må dokumenteres før lønnskartleggingen kan fullføres.",
+        "items": {
+          "crossLevel": "Lønn på tvers av nivåer",
+          "levelAnalysis": "Lønn per nivå",
+          "womenAhead": "Grupper der kvinnene ikke ligger etter",
+          "genderPure": "Kjønnsrene grupper",
+          "singletons": "Stillinger med én person"
+        },
+        "empty": {
+          "crossLevel": "Ingen kvinne tjenes forbi av en mann på et lavere nivå.",
+          "levelAnalysis": "På ingen nivåer tjener kvinnene i gjennomsnitt mindre enn mennene.",
+          "womenAhead": "I hver gruppe med begge kjønn finnes en forskjell til kvinnenes ulempe.",
+          "genderPure": "Hver gruppe har både kvinner og menn.",
+          "singletons": "Hver stilling har minst to personer."
+        },
+        "body": {
+          "singletons": "En stilling med én person har ingenting å sammenligne innenfor seg, og inngår derfor ikke i sammenligningen av likt arbeid. Personene telles fortsatt med i alle tall på organisasjonsnivå."
+        }
+      },
       "overview": {
         "headlineGapLabel": "Lønnsgap",
         "insufficient": "Utilstrekkelig grunnlag for et lønnsgap på organisasjonsnivå.",
@@ -1467,9 +1488,6 @@
         "showFewer": "Vis færre"
       },
       "levelAnalysis": {
-        "title": "Nivåanalyse: kvinner og menn innenfor hvert nivå ({count, plural, one {# nivå} other {# nivåer}})",
-        "show": "Vis analysen",
-        "hide": "Skjul analysen",
         "lead": "For hvert nivå der kvinner i gjennomsnitt tjener mindre enn menn, vises hver enkeltpersons lønn mot mennenes gjennomsnitt i nivået, med rolle og track synlige, siden de kan forklare en forskjell. Den utfyller de lovpålagte sammenligningene ovenfor og bærer ingen egen dokumentasjonsplikt."
       },
       "actionsOverview": {
@@ -1502,12 +1520,8 @@
         "noNotesYet": "Ingen notater ennå."
       },
       "deepDive": {
-        "title": "{count, plural, one {# kjønnsren gruppe} other {# kjønnsrene grupper}}",
         "lead": "Disse gruppene har bare medlemmer av ett kjønn, så det finnes ingen kvinne-mann-sammenligning å gjøre. De ligger utenfor den lovpålagte lønnskartleggingen og har verken flagg eller dokumentasjonsplikt, men den interne lønnsspredningen kan likevel være verdt et blikk.",
-        "show": "Vis analysen",
-        "hide": "Skjul analysen",
         "onlyGender": "Bare {gender} ({count})",
-        "singletons": "{count, plural, one {# gruppe med én enkelt person vises ikke: det finnes ingenting å sammenligne i den.} other {# grupper med én enkelt person vises ikke: det finnes ingenting å sammenligne i dem.}}",
         "stats": {
           "min": "Lavest",
           "median": "Median",
@@ -1517,9 +1531,7 @@
         }
       },
       "womenAhead": {
-        "title": "{count, plural, one {# gruppe der kvinnene ikke ligger etter} other {# grupper der kvinnene ikke ligger etter}}",
         "lead": "Begge kjønn er representert og kvinnenes gjennomsnitt ligger på nivå med eller over mennenes, så det finnes ingen forskjell til kvinnenes ulempe å gjøre noe med. Listes her som informasjon; gruppene har verken flagg eller dokumentasjonsplikt.",
-        "show": "Vis gruppene",
         "womenMean": "Kvinnenes gjennomsnitt",
         "menMean": "Mennenes gjennomsnitt",
         "womenLead": "Forskjell"
@@ -1991,7 +2003,9 @@
       "analysisProgressLabel": "Hva telles her?",
       "analysisProgressBody": "Tellingen omfatter stegene som må dokumenteres før lønnskartleggingen kan fullføres: samarbeidsredegjørelsen, gjennomgangen av lønnsfastsettingspraksis, hver gruppe med likt arbeid der det finnes en lønnsforskjell til kvinnenes ulempe, og hver kvinnedominert gruppe med en høyere betalt sammenligningsgruppe. Analyser uten dokumentasjonsplikt telles ikke.",
       "collaborationStripLabel": "Hvorfor vises samarbeidet her?",
-      "collaborationStripBody": "Loven krever at arbeidsgiveren gjennomfører lønnskartleggingen sammen med arbeidstakerne, normalt gjennom fagforeningen (DL 3 kap. 11-12 §§). Denne linjen viser hva som ble registrert da kartleggingen startet, slik at det er synlig mens du arbeider. At det vises oppfyller ikke i seg selv plikten ved hvert steg."
+      "collaborationStripBody": "Loven krever at arbeidsgiveren gjennomfører lønnskartleggingen sammen med arbeidstakerne, normalt gjennom fagforeningen (DL 3 kap. 11-12 §§). Denne linjen viser hva som ble registrert da kartleggingen startet, slik at det er synlig mens du arbeider. At det vises oppfyller ikke i seg selv plikten ved hvert steg.",
+      "supplementaryLabel": "Hva finnes her?",
+      "supplementaryBody": "Disse visningene hjelper dere å forstå lønnsbildet, og noen av dem kan bære egne notater eller tiltak. Ingen av dem telles med i det som må dokumenteres før lønnskartleggingen kan fullføres: det er de fire kapitlene over. Tverrnivåtilfellene er verdt å lese selv om de ikke telles, siden en kvinne som tjenes forbi av en mann på et lavere nivå er et strukturelt varselsignal."
     },
     "widgetCard": {
       "expand": "Forstørr"

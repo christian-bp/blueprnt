@@ -1269,6 +1269,27 @@
           "equivalentWork": "Vertaa tätä naisvaltaista ryhmää alempiarvoisiin ryhmiin, jotka silti ansaitsevat enemmän."
         }
       },
+      "supplementary": {
+        "heading": "Syventävä analyysi · ei vaikuta viimeistelyyn",
+        "lead": "Nämä näkymät auttavat ymmärtämään palkkakuvaa. Mitään niistä ei lasketa siihen, mikä on dokumentoitava ennen palkkakartoituksen viimeistelyä.",
+        "items": {
+          "crossLevel": "Palkat tasojen yli",
+          "levelAnalysis": "Palkat tasoittain",
+          "womenAhead": "Ryhmät joissa naiset eivät jää jälkeen",
+          "genderPure": "Yhden sukupuolen ryhmät",
+          "singletons": "Yhden henkilön tehtävänimikkeet"
+        },
+        "empty": {
+          "crossLevel": "Yhtäkään naista ei ohita alemman tason mies.",
+          "levelAnalysis": "Millään tasolla naiset eivät ansaitse keskimäärin vähemmän kuin miehet.",
+          "womenAhead": "Jokaisessa ryhmässä, jossa on molempia sukupuolia, on naisten kannalta epäedullinen ero.",
+          "genderPure": "Jokaisessa ryhmässä on sekä naisia että miehiä.",
+          "singletons": "Jokaisessa tehtävänimikkeessä on vähintään kaksi henkilöä."
+        },
+        "body": {
+          "singletons": "Yhden henkilön tehtävänimikkeessä ei ole mitään verrattavaa sisäisesti, joten se ei kuulu samanarvoisen työn vertailuun. Henkilöt lasketaan silti mukaan kaikkiin organisaatiotason lukuihin."
+        }
+      },
       "overview": {
         "headlineGapLabel": "Palkkaero",
         "insufficient": "Riittämättömät tiedot organisaatiotason palkkaeroa varten.",
@@ -1467,9 +1488,6 @@
         "showFewer": "Näytä vähemmän"
       },
       "levelAnalysis": {
-        "title": "Tasoanalyysi: naiset ja miehet kullakin tasolla ({count, plural, one {# taso} other {# tasoa}})",
-        "show": "Näytä analyysi",
-        "hide": "Piilota analyysi",
         "lead": "Jokaiselta tasolta, jolla naiset ansaitsevat keskimäärin vähemmän kuin miehet, näytetään kunkin henkilön palkka tason miesten keskiarvoon verrattuna, rooli ja track näkyvissä, koska ne voivat selittää eron. Se täydentää yllä olevia lakisääteisiä vertailuja eikä kanna omaa dokumentointivelvoitetta."
       },
       "actionsOverview": {
@@ -1502,12 +1520,8 @@
         "noNotesYet": "Ei vielä merkintöjä."
       },
       "deepDive": {
-        "title": "{count, plural, one {# yhden sukupuolen ryhmä} other {# yhden sukupuolen ryhmää}}",
         "lead": "Näissä ryhmissä on vain yhden sukupuolen edustajia, joten nais-mies-vertailua ei voi tehdä. Ne ovat lakisääteisen palkkakartoituksen ulkopuolella eikä niillä ole lippua tai dokumentointivelvoitetta, mutta sisäinen palkkahajonta voi silti olla katsomisen arvoinen.",
-        "show": "Näytä analyysi",
-        "hide": "Piilota analyysi",
         "onlyGender": "Vain {gender} ({count})",
-        "singletons": "{count, plural, one {# yhden henkilön ryhmää ei näytetä: siinä ei ole mitään vertailtavaa.} other {# yhden henkilön ryhmää ei näytetä: niissä ei ole mitään vertailtavaa.}}",
         "stats": {
           "min": "Alin",
           "median": "Mediaani",
@@ -1517,9 +1531,7 @@
         }
       },
       "womenAhead": {
-        "title": "{count, plural, one {# ryhmä jossa naiset eivät jää jälkeen} other {# ryhmää joissa naiset eivät jää jälkeen}}",
         "lead": "Molemmat sukupuolet ovat edustettuina ja naisten keskiarvo on miesten tasolla tai sen yli, joten naisten haitaksi olevaa eroa ei ole korjattavana. Listataan tässä tietona; ryhmillä ei ole lippua eikä dokumentointivelvoitetta.",
-        "show": "Näytä ryhmät",
         "womenMean": "Naisten keskiarvo",
         "menMean": "Miesten keskiarvo",
         "womenLead": "Ero"
@@ -1991,7 +2003,9 @@
       "analysisProgressLabel": "Mitä tässä lasketaan?",
       "analysisProgressBody": "Laskenta kattaa vaiheet, jotka on dokumentoitava ennen palkkakartoituksen viimeistelyä: yhteistoimintaselvitys, palkanmäärityskäytännön läpikäynti, jokainen samanarvoisen työn ryhmä, jossa on naisten kannalta epäedullinen palkkaero, ja jokainen naisvaltainen ryhmä, jolla on korkeammin palkattu vertailuryhmä. Analyyseja ilman dokumentointivelvoitetta ei lasketa.",
       "collaborationStripLabel": "Miksi yhteistoiminta näkyy tässä?",
-      "collaborationStripBody": "Laki edellyttää, että työnantaja tekee palkkakartoituksen yhdessä työntekijöiden kanssa, tavallisesti ammattiliiton kautta (DL 3 luku 11-12 §). Tämä rivi näyttää, mitä kirjattiin kartoituksen alkaessa, jotta se pysyy näkyvissä työskennellessäsi. Näyttäminen ei sinänsä täytä velvoitetta kussakin vaiheessa."
+      "collaborationStripBody": "Laki edellyttää, että työnantaja tekee palkkakartoituksen yhdessä työntekijöiden kanssa, tavallisesti ammattiliiton kautta (DL 3 luku 11-12 §). Tämä rivi näyttää, mitä kirjattiin kartoituksen alkaessa, jotta se pysyy näkyvissä työskennellessäsi. Näyttäminen ei sinänsä täytä velvoitetta kussakin vaiheessa.",
+      "supplementaryLabel": "Mitä täällä on?",
+      "supplementaryBody": "Nämä näkymät auttavat ymmärtämään palkkakuvaa, ja osa niistä voi kantaa omia merkintöjä tai toimenpiteitä. Mitään niistä ei lasketa siihen, mikä on dokumentoitava ennen palkkakartoituksen viimeistelyä: se on yllä olevat neljä lukua. Tasojen väliset tapaukset kannattaa lukea, vaikka niitä ei lasketa, koska alemman tason miehen ohittama nainen on rakenteellinen varoitusmerkki."
     },
     "widgetCard": {
       "expand": "Suurenna"

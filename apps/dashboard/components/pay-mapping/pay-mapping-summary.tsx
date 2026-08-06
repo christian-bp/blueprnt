@@ -31,13 +31,11 @@ import { AccordionSection } from "@/components/accordion-section"
 import { AnalysisSpine } from "./analysis-spine"
 import { type AnalysisChapter, NextStepPanel } from "./next-step-panel"
 import { ContinueReviewItem } from "./continue-review-item"
-import { CrossLevelSection } from "./cross-level-section"
-import { EquivalentWorkLevelAnalysis } from "./equivalent-work-level-analysis"
 import {
-  GenderPureDeepDive,
-  SingletonNote,
-  WomenAheadGroups,
-} from "./excluded-groups-sections"
+  SUPPLEMENTARY_ITEMS,
+  SupplementaryAnalysis,
+  type SupplementaryItemKey,
+} from "./supplementary-analysis"
 import { useOrganization } from "@/components/org-context"
 import { TableSearchField } from "@/components/table-search-field"
 import {
@@ -145,6 +143,7 @@ export function PayMappingSummary() {
   const tJourney = useTranslations("dashboard.payMapping.journey")
   const tGap = useTranslations("dashboard.payMapping.gap")
   const tAnalysis = useTranslations("dashboard.payMapping.analysis")
+  const tSupplementary = useTranslations("dashboard.payMapping.supplementary")
   const tToast = useTranslations("dashboard.toast")
   const tErrors = useTranslations("errors")
   const pathname = usePathname()
@@ -164,6 +163,10 @@ export function PayMappingSummary() {
   // must never swap a phone straight into a card with no list in sight).
   const [selected, setSelected] = useState<OpenStep | undefined>(undefined)
   const [query, setQuery] = useState("")
+  // The supplementary drawer's own single-open state, lifted here so the
+  // checklist's search results can open and scroll to one of its items.
+  const [openSupplementary, setOpenSupplementary] =
+    useState<SupplementaryItemKey | null>(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
   // Skips the pane's own mount-focus (below) exactly once: never on the
   // page's initial mount (hasMountedPaneRef), and never right after
@@ -744,6 +747,16 @@ export function PayMappingSummary() {
       row.label.toLowerCase().includes(trimmedQuery)
     ),
   }))
+  // The drawer's own items as checklist rows: they carry no done state (they
+  // carry no obligation either), so the icon reads as remaining and the
+  // sr-only status says so.
+  const supplementaryRows = SUPPLEMENTARY_ITEMS.map((item) => ({
+    id: `supplementary:${item}`,
+    label: tSupplementary(`items.${item}`),
+    srStatus: srStatusFor(false),
+    done: false,
+    item,
+  })).filter((row) => row.label.toLowerCase().includes(trimmedQuery))
 
   return (
     <div className="space-y-4">
@@ -764,37 +777,6 @@ export function PayMappingSummary() {
             <ContinueReviewItem href={reviewHref} remaining={remaining} />
           ) : undefined
         }
-      />
-      {/* The run-level tvärnivå check (Iteration 2 note 4): it compares
-          individuals ACROSS levels, so it belongs above the per-group
-          master-detail rather than inside any one group. Hidden entirely
-          when there is nothing to show, since this is the steady-state
-          summary rather than a guided step. */}
-      <CrossLevelSection
-        rows={currentRun.rows}
-        currency={currency}
-        hideWhenEmpty
-        documentation={{
-          runId: currentRun.runId,
-          actions,
-          notes,
-          locked,
-        }}
-      />
-      {/* The per-level likvärdigt analysis (Iteration 2 note 4): collapsed
-          to one line by default; an analytical complement beside the
-          statutory chapters, never a gate input. */}
-      <EquivalentWorkLevelAnalysis
-        equivalentWork={currentGap.equivalentWork}
-        equalWork={currentGap.equalWork}
-        rows={currentRun.rows}
-        currency={currency}
-        documentation={{
-          runId: currentRun.runId,
-          actions,
-          notes,
-          locked,
-        }}
       />
       {/* The two-column master-detail (lg+): the left column always carries
           the checklist and is hidden below lg only while a card is open (the
@@ -836,16 +818,33 @@ export function PayMappingSummary() {
             </CardContent>
             <CardContent className="space-y-6 lg:min-h-0 lg:overflow-y-auto">
               {searching ? (
-                filteredSections.map((section) => (
+                <>
+                  {filteredSections.map((section) => (
+                    <ChecklistSearchSection
+                      key={section.key}
+                      title={section.title}
+                      meta={section.meta}
+                      rows={section.rows}
+                      currentId={currentRowId}
+                      onSelect={(row) => setSelected(row.openStep)}
+                    />
+                  ))}
+                  {/* A sixth, virtual section so a search reaches the five
+                      analyses in the drawer too: before this, a query that
+                      matched one of them returned nothing at all. */}
                   <ChecklistSearchSection
-                    key={section.key}
-                    title={section.title}
-                    meta={section.meta}
-                    rows={section.rows}
-                    currentId={currentRowId}
-                    onSelect={(row) => setSelected(row.openStep)}
+                    title={tSupplementary("heading")}
+                    meta={undefined}
+                    rows={supplementaryRows}
+                    currentId={null}
+                    onSelect={(row) => {
+                      setOpenSupplementary(row.item)
+                      document
+                        .getElementById(`supplementary-${row.item}`)
+                        ?.scrollIntoView({ block: "start" })
+                    }}
                   />
-                ))
+                </>
               ) : (
                 <Accordion
                   multiple
@@ -932,24 +931,26 @@ export function PayMappingSummary() {
         </div>
       </div>
 
-      {/* Outside the statutory flow (ADR-0015), so they close the page
-          rather than competing with it: what the entry conditions excluded,
-          each stated in its own words. */}
-      <div className="space-y-3">
-        <SingletonNote excluded={currentGap.excluded} />
-        <WomenAheadGroups excluded={currentGap.excluded} currency={currency} />
-        <GenderPureDeepDive
-          excluded={currentGap.excluded}
-          rows={currentRun.rows}
-          currency={currency}
-          documentation={{
-            runId: currentRun.runId,
-            actions,
-            notes,
-            locked,
-          }}
-        />
-      </div>
+      {/* Rung 4: everything outside the statutory flow (ADR-0015) in ONE
+          drawer, under a heading that says it does not affect completion.
+          Five sections with five different expand controls used to sit
+          above and below the checklist with nothing saying which of them
+          carried an obligation. */}
+      <SupplementaryAnalysis
+        excluded={currentGap.excluded}
+        equivalentWork={currentGap.equivalentWork}
+        equalWork={currentGap.equalWork}
+        rows={currentRun.rows}
+        currency={currency}
+        openItem={openSupplementary}
+        onOpenItemChange={setOpenSupplementary}
+        documentation={{
+          runId: currentRun.runId,
+          actions,
+          notes,
+          locked,
+        }}
+      />
     </div>
   )
 }

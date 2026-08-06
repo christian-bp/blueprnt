@@ -1,10 +1,4 @@
-import {
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react"
+import { cleanup, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
@@ -200,18 +194,12 @@ describe("EquivalentWorkLevelAnalysis", () => {
     cleanup()
   })
 
-  it("is collapsed by default but states what it is", () => {
+  // The open/close control lives on the supplementary drawer's accordion
+  // now (Iteration 3), so this component renders its sections directly.
+  it("renders one section per qualifying level with track, role and flags", () => {
     renderAnalysis()
     expect(screen.getByText(m.levelAnalysis.lead)).toBeDefined()
-    expect(screen.queryByText("Anna Ask")).toBeNull()
-  })
-
-  it("opens to one section per qualifying level with track, role and flags", async () => {
-    renderAnalysis()
-    fireEvent.click(screen.getByRole("button", { name: m.levelAnalysis.show }))
-    await waitFor(() => {
-      expect(screen.getByText("Anna Ask")).toBeDefined()
-    })
+    expect(screen.getByText("Anna Ask")).toBeDefined()
     // Level 3 is gender-pure: its lone member never gets a section of his
     // own (he appears only as Anna's cross-level counterpart elsewhere).
     expect(screen.queryByText("Sven Svan")).toBeNull()
@@ -223,12 +211,8 @@ describe("EquivalentWorkLevelAnalysis", () => {
     expect(screen.getAllByText(m.detail.crossLevelFlagged)).toHaveLength(2)
   })
 
-  it("offers documentation only to members of shown equal-work groups", async () => {
+  it("offers documentation only to members of shown equal-work groups", () => {
     renderAnalysis()
-    fireEvent.click(screen.getByRole("button", { name: m.levelAnalysis.show }))
-    await waitFor(() => {
-      expect(screen.getByText("Anna Ask")).toBeDefined()
-    })
     expect(
       screen.getByRole("button", {
         name: m.actions.menuLabel.replace("{target}", "Anna Ask"),
@@ -242,8 +226,8 @@ describe("EquivalentWorkLevelAnalysis", () => {
     ).toBeNull()
   })
 
-  it("renders nothing when no level qualifies", () => {
-    const { container } = render(
+  it("renders no level section when none qualifies", () => {
+    render(
       <NextIntlClientProvider locale="en" messages={messages}>
         <EquivalentWorkLevelAnalysis
           equivalentWork={[LEVEL_3]}
@@ -253,6 +237,9 @@ describe("EquivalentWorkLevelAnalysis", () => {
         />
       </NextIntlClientProvider>
     )
-    expect(container.textContent).toBe("")
+    // The drawer decides whether to render this body at all; asked to
+    // render with nothing qualifying, it shows its lead and no members.
+    expect(screen.queryByText("Anna Ask")).toBeNull()
+    expect(screen.queryByText("Sven Svan")).toBeNull()
   })
 })

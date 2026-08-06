@@ -119,20 +119,12 @@ describe("GenderPureDeepDive", () => {
     cleanup()
   })
 
-  it("is closed by default, but always states what it is first", () => {
+  // The open/close control lives on the supplementary drawer's accordion
+  // now (Iteration 3), so this component renders its content directly.
+  it("states what the analysis is, then the group's statistics and members", () => {
     renderDeepDive()
     expect(screen.getByText(m.deepDive.lead)).toBeDefined()
-    expect(screen.getByText("1 gender-pure group")).toBeDefined()
-    // Nothing of the analysis itself until the user opts in.
-    expect(screen.queryByText("Lars Lead")).toBeNull()
-  })
-
-  it("opens on demand to the group's statistics and its members", async () => {
-    renderDeepDive()
-    fireEvent.click(screen.getByRole("button", { name: m.deepDive.show }))
-    await waitFor(() => {
-      expect(screen.getByText("Lars Lead")).toBeDefined()
-    })
+    expect(screen.getByText("Lars Lead")).toBeDefined()
     expect(screen.getByText(m.deepDive.stats.median)).toBeDefined()
     expect(screen.getByText(m.deepDive.stats.spread)).toBeDefined()
     // The other group's member never appears here.
@@ -141,30 +133,15 @@ describe("GenderPureDeepDive", () => {
 
   it("offers notes but never a formal action (the backend rejects one)", async () => {
     renderDeepDive()
-    fireEvent.click(screen.getByRole("button", { name: m.deepDive.show }))
-    await waitFor(() => {
-      expect(screen.getByText("Lars Lead")).toBeDefined()
-    })
     fireEvent.click(
       screen.getByRole("button", {
         name: m.actions.menuLabel.replace("{target}", "Lead · Staff"),
       })
     )
-    expect(screen.getByText(m.actions.createNoteTitle)).toBeDefined()
+    await waitFor(() => {
+      expect(screen.getByText(m.actions.createNoteTitle)).toBeDefined()
+    })
     expect(screen.queryByText(m.actions.createTitle)).toBeNull()
-  })
-
-  it("renders nothing when no group is gender-pure", () => {
-    const { container } = render(
-      <NextIntlClientProvider locale="en" messages={messages}>
-        <GenderPureDeepDive
-          excluded={makeExcluded()}
-          rows={ROWS}
-          currency="SEK"
-        />
-      </NextIntlClientProvider>
-    )
-    expect(container.textContent).toBe("")
   })
 })
 
@@ -173,7 +150,7 @@ describe("WomenAheadGroups", () => {
     cleanup()
   })
 
-  it("lists the groups as information, with no flag anywhere", async () => {
+  it("lists the groups as information, with no flag anywhere", () => {
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
         <WomenAheadGroups
@@ -198,23 +175,11 @@ describe("WomenAheadGroups", () => {
       </NextIntlClientProvider>
     )
     expect(screen.getByText(m.womenAhead.lead)).toBeDefined()
-    fireEvent.click(screen.getByRole("button", { name: m.womenAhead.show }))
-    await waitFor(() => {
-      expect(screen.getByText("PM · Mid")).toBeDefined()
-    })
+    expect(screen.getByText("PM · Mid")).toBeDefined()
     // No severity chip: these groups carry no finding.
     for (const flag of Object.values(m.gap.flag)) {
       expect(screen.queryByText(flag)).toBeNull()
     }
-  })
-
-  it("renders nothing when no group has the women ahead", () => {
-    const { container } = render(
-      <NextIntlClientProvider locale="en" messages={messages}>
-        <WomenAheadGroups excluded={makeExcluded()} currency="SEK" />
-      </NextIntlClientProvider>
-    )
-    expect(container.textContent).toBe("")
   })
 })
 
@@ -223,21 +188,18 @@ describe("SingletonNote", () => {
     cleanup()
   })
 
-  it("states how many one-person groups were dropped, and why", () => {
+  it("explains why a one-person title carries no comparison", () => {
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
-        <SingletonNote excluded={makeExcluded({ singletonCount: 42 })} />
+        <SingletonNote />
       </NextIntlClientProvider>
     )
-    expect(screen.getByText(/42 groups with a single person/)).toBeDefined()
-  })
-
-  it("says nothing when no group was dropped", () => {
-    const { container } = render(
-      <NextIntlClientProvider locale="en" messages={messages}>
-        <SingletonNote excluded={makeExcluded()} />
-      </NextIntlClientProvider>
-    )
-    expect(container.textContent).toBe("")
+    // The count itself lives in the drawer item's meta slot; the body says
+    // why, and that the people still count everywhere else.
+    expect(
+      screen.getByText(
+        messages.dashboard.payMapping.supplementary.body.singletons
+      )
+    ).toBeDefined()
   })
 })
