@@ -186,7 +186,7 @@
         "administration": "Administration"
       },
       "home": "Översikt",
-      "overview": "Översikt",
+      "overview": "Nivåer",
       "work": "Jobbarkitektur",
       "roles": "Roller",
       "rolesRemainingLabel": "{count, plural, one {# roll kvar att utvärdera} other {# roller kvar att utvärdera}}",
@@ -200,7 +200,6 @@
       "payMapping": "Lönekartläggningar"
     },
     "people": {
-      "heading": "Medarbetare",
       "description": "Medarbetare importerade från ert lönesystem.",
       "empty": "Inga medarbetare importerade än.",
       "suggestedBadge": "Föreslagen",
@@ -228,7 +227,7 @@
         "ftePart": "Deltid"
       },
       "tabs": {
-        "people": "Personer",
+        "people": "Register",
         "classify": "Klassificera",
         "remainingLabel": "{count, plural, one {# person kvar att klassificera} other {# personer kvar att klassificera}}"
       },
@@ -493,9 +492,7 @@
       }
     },
     "classify": {
-      "heading": "Klassificera anställda",
       "description": "Tilldela varje anställd en roll och senioritet i er jobbarkitektur.",
-      "pageTitle": "Klassificering",
       "columns": {
         "title": "Importerad befattning",
         "people": "Anställda",
@@ -545,7 +542,6 @@
       }
     },
     "auditLog": {
-      "heading": "Händelselogg",
       "description": "Varje ändring i din organisation, vem som gjorde den och när.",
       "empty": "Ingen aktivitet har registrerats ännu.",
       "notAuthorized": "Endast organisationsadministratörer kan se händelseloggen.",
@@ -895,7 +891,6 @@
       "progress": "{rated} / {total} kriterier bedömda"
     },
     "roles": {
-      "heading": "Roller",
       "description": "Jobbprofiler som värderas mot er modell. Roller, aldrig personer.",
       "newCta": "Skapa roll",
       "empty": "Inga roller ännu. Skapa din första roll för att börja värdera.",
@@ -1062,7 +1057,6 @@
       }
     },
     "payMapping": {
-      "heading": "Lönekartläggningar",
       "description": "Frysta ögonblicksbilder av er lönedata för lönekartläggning. Var och en fångar en tidpunkt.",
       "startCta": "Starta lönekartläggning",
       "empty": "Inga lönekartläggningar än. Starta en för att frysa dagens lönedata för analys.",
@@ -1371,7 +1365,6 @@
       "lockedExplanation": "Betygsättningen är låst eftersom rollen är godkänd eller arkiverad. Återöppna rollen från rollsidan för att betygsätta igen."
     },
     "levels": {
-      "heading": "Översikt",
       "description": "Nivåerna och rollerna i varje nivå, härledda live från aktuell modell och bedömningar.",
       "viewLadder": "Stege",
       "viewMatrix": "Matris",
@@ -1388,7 +1381,7 @@
       "anchorLabel": "Ankarroll",
       "deviation": "≠ Nivå {level}",
       "deviationLabel": "Beräknad nivå avviker från den överenskomna nivån {level}",
-      "empty": "Inga roller att visa ännu. Skapa en roll och utvärdera den för att se översikten.",
+      "empty": "Inga roller att visa ännu. Skapa en roll och utvärdera den för att se nivåerna.",
       "emptyCta": "Skapa en roll"
     },
     "auth": {
@@ -1639,7 +1632,6 @@
         "cancel": "Avbryt"
       },
       "method": {
-        "title": "Metod",
         "description": "Dokumentera varför varje kriterium finns och dess biasgranskning, exportera sedan metodbilagan.",
         "documented": "{documented}/{total} dokumenterade",
         "approved": "{approved}/{total} godkända",
@@ -2177,7 +2169,6 @@
         "error": "Det gick inte att uppdatera logotypen. Försök igen."
       },
       "members": {
-        "title": "Teammedlemmar",
         "description": "Personer med åtkomst till den här organisationen.",
         "table": {
           "name": "Namn",

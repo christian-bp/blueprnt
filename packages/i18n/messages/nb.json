@@ -186,7 +186,7 @@
         "administration": "Administrasjon"
       },
       "home": "Oversikt",
-      "overview": "Oversikt",
+      "overview": "Nivåer",
       "work": "Jobbarkitektur",
       "roles": "Roller",
       "rolesRemainingLabel": "{count, plural, one {# rolle igjen å vurdere} other {# roller igjen å vurdere}}",
@@ -200,7 +200,6 @@
       "payMapping": "Lønnskartlegginger"
     },
     "people": {
-      "heading": "Ansatte",
       "description": "Ansatte importert fra lønnssystemet.",
       "empty": "Ingen ansatte importert ennå.",
       "suggestedBadge": "Foreslått",
@@ -228,7 +227,7 @@
         "ftePart": "Deltid"
       },
       "tabs": {
-        "people": "Personer",
+        "people": "Register",
         "classify": "Klassifiser",
         "remainingLabel": "{count, plural, one {# person igjen å klassifisere} other {# personer igjen å klassifisere}}"
       },
@@ -493,9 +492,7 @@
       }
     },
     "classify": {
-      "heading": "Klassifiser ansatte",
       "description": "Tildel hver ansatt en rolle og senioritet i jobbarkitekturen.",
-      "pageTitle": "Klassifisering",
       "columns": {
         "title": "Importert stillingstittel",
         "people": "Ansatte",
@@ -545,7 +542,6 @@
       }
     },
     "auditLog": {
-      "heading": "Hendelseslogg",
       "description": "Hver endring i organisasjonen din, hvem som gjorde den og når.",
       "empty": "Ingen aktivitet er registrert ennå.",
       "notAuthorized": "Bare organisasjonsadministratorer kan se hendelsesloggen.",
@@ -895,7 +891,6 @@
       "progress": "{rated} / {total} kriterier vurdert"
     },
     "roles": {
-      "heading": "Roller",
       "description": "Jobbprofiler som vurderes mot modellen deres. Roller, aldri personer.",
       "newCta": "Opprett rolle",
       "empty": "Ingen roller ennå. Opprett den første rollen for å begynne å vurdere.",
@@ -1062,7 +1057,6 @@
       }
     },
     "payMapping": {
-      "heading": "Lønnskartlegginger",
       "description": "Fryste øyeblikksbilder av lønnsdataene for likelønnsanalyse. Hver av dem fanger et tidspunkt.",
       "startCta": "Start lønnskartlegging",
       "empty": "Ingen lønnskartlegginger ennå. Start en for å fryse dagens lønnsdata for analyse.",
@@ -1371,7 +1365,6 @@
       "lockedExplanation": "Vurderingen er låst fordi rollen er godkjent eller arkivert. Gjenåpne rollen fra rollesiden for å vurdere igjen."
     },
     "levels": {
-      "heading": "Oversikt",
       "description": "Nivåene og rollene i hvert nivå, utledet live fra gjeldende modell og vurderinger.",
       "viewLadder": "Stige",
       "viewMatrix": "Matrise",
@@ -1388,7 +1381,7 @@
       "anchorLabel": "Ankerrolle",
       "deviation": "≠ Nivå {level}",
       "deviationLabel": "Beregnet nivå avviker fra det avtalte nivået {level}",
-      "empty": "Ingen roller å vise ennå. Opprett en rolle og vurder den for å se oversikten.",
+      "empty": "Ingen roller å vise ennå. Opprett en rolle og vurder den for å se nivåene.",
       "emptyCta": "Opprett en rolle"
     },
     "auth": {
@@ -1639,7 +1632,6 @@
         "cancel": "Avbryt"
       },
       "method": {
-        "title": "Metode",
         "description": "Dokumenter hvorfor hvert kriterium finnes og dets biasvurdering, og eksporter deretter metodevedlegget.",
         "documented": "{documented}/{total} dokumentert",
         "approved": "{approved}/{total} godkjent",
@@ -2177,7 +2169,6 @@
         "error": "Kunne ikke oppdatere logoen. Prøv igjen."
       },
       "members": {
-        "title": "Teammedlemmer",
         "description": "Personer med tilgang til denne organisasjonen.",
         "table": {
           "name": "Navn",

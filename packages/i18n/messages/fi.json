@@ -186,7 +186,7 @@
         "administration": "Hallinto"
       },
       "home": "Yleiskatsaus",
-      "overview": "Yleiskatsaus",
+      "overview": "Tasot",
       "work": "Työarkkitehtuuri",
       "roles": "Roolit",
       "rolesRemainingLabel": "{count, plural, one {# rooli arvioimatta} other {# roolia arvioimatta}}",
@@ -200,7 +200,6 @@
       "payMapping": "Palkkakartoitukset"
     },
     "people": {
-      "heading": "Henkilöstö",
       "description": "Palkanlaskentajärjestelmästä tuodut työntekijät.",
       "empty": "Ei tuotuja työntekijöitä vielä.",
       "suggestedBadge": "Ehdotettu",
@@ -228,7 +227,7 @@
         "ftePart": "Osa-aikainen"
       },
       "tabs": {
-        "people": "Henkilöt",
+        "people": "Rekisteri",
         "classify": "Luokittele",
         "remainingLabel": "{count, plural, one {# henkilö luokittelematta} other {# henkilöä luokittelematta}}"
       },
@@ -493,9 +492,7 @@
       }
     },
     "classify": {
-      "heading": "Luokittele työntekijät",
       "description": "Määritä jokaiselle työntekijälle rooli ja senioriteetti työrooliarkkitehtuurissa.",
-      "pageTitle": "Luokittelu",
       "columns": {
         "title": "Tuotu tehtävänimike",
         "people": "Työntekijät",
@@ -545,7 +542,6 @@
       }
     },
     "auditLog": {
-      "heading": "Tapahtumaloki",
       "description": "Jokainen muutos organisaatiossasi, kuka sen teki ja milloin.",
       "empty": "Toimintaa ei ole vielä kirjattu.",
       "notAuthorized": "Vain organisaation järjestelmänvalvojat voivat nähdä tapahtumalokin.",
@@ -895,7 +891,6 @@
       "progress": "{rated} / {total} kriteeriä arvioitu"
     },
     "roles": {
-      "heading": "Roolit",
       "description": "Tehtäväprofiilit, joita arvioidaan mallinne perusteella. Roolit, ei koskaan henkilöt.",
       "newCta": "Luo rooli",
       "empty": "Ei vielä rooleja. Luo ensimmäinen rooli aloittaaksesi arvioinnin.",
@@ -1062,7 +1057,6 @@
       }
     },
     "payMapping": {
-      "heading": "Palkkakartoitukset",
       "description": "Jäädytettyjä tilannekuvia palkkatiedoistanne tasa-arvoanalyysiä varten. Jokainen niistä tallentaa yhden ajankohdan.",
       "startCta": "Aloita palkkakartoitus",
       "empty": "Ei palkkakartoituksia vielä. Aloita yksi jäädyttääksesi tämän päivän palkkatiedot analyysiä varten.",
@@ -1371,7 +1365,6 @@
       "lockedExplanation": "Arviointi on lukittu, koska rooli on hyväksytty tai arkistoitu. Avaa rooli uudelleen roolisivulta arvioidaksesi uudestaan."
     },
     "levels": {
-      "heading": "Yleiskatsaus",
       "description": "Vaativuustasot ja kunkin tason roolit, johdettu reaaliaikaisesti nykyisestä mallista ja arvioinneista.",
       "viewLadder": "Tikkaat",
       "viewMatrix": "Matriisi",
@@ -1388,7 +1381,7 @@
       "anchorLabel": "Ankkurirooli",
       "deviation": "≠ Taso {level}",
       "deviationLabel": "Laskettu vaativuustaso poikkeaa sovitusta vaativuustasosta {level}",
-      "empty": "Ei vielä näytettäviä rooleja. Luo rooli ja arvioi se nähdäksesi yleiskatsauksen.",
+      "empty": "Ei vielä näytettäviä rooleja. Luo rooli ja arvioi se nähdäksesi tasot.",
       "emptyCta": "Luo rooli"
     },
     "auth": {
@@ -1639,7 +1632,6 @@
         "cancel": "Peruuta"
       },
       "method": {
-        "title": "Menetelmä",
         "description": "Dokumentoi, miksi kukin kriteeri on olemassa ja sen vinoumien arviointi, ja vie sitten menetelmäliite.",
         "documented": "{documented}/{total} dokumentoitu",
         "approved": "{approved}/{total} hyväksytty",
@@ -2177,7 +2169,6 @@
         "error": "Logon päivittäminen epäonnistui. Yritä uudelleen."
       },
       "members": {
-        "title": "Tiimin jäsenet",
         "description": "Henkilöt, joilla on pääsy tähän organisaatioon.",
         "table": {
           "name": "Nimi",

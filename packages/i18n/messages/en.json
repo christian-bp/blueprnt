@@ -186,7 +186,7 @@
         "administration": "Administration"
       },
       "home": "Overview",
-      "overview": "Overview",
+      "overview": "Levels",
       "work": "Job architecture",
       "roles": "Roles",
       "rolesRemainingLabel": "{count, plural, one {# role left to evaluate} other {# roles left to evaluate}}",
@@ -200,7 +200,6 @@
       "payMapping": "Pay mappings"
     },
     "people": {
-      "heading": "People",
       "description": "Employees imported from your payroll system.",
       "empty": "No employees imported yet.",
       "suggestedBadge": "Suggested",
@@ -228,7 +227,7 @@
         "ftePart": "Part-time"
       },
       "tabs": {
-        "people": "People",
+        "people": "Directory",
         "classify": "Classify",
         "remainingLabel": "{count, plural, one {# person left to classify} other {# people left to classify}}"
       },
@@ -493,9 +492,7 @@
       }
     },
     "classify": {
-      "heading": "Classify employees",
       "description": "Assign each employee to a role and seniority in your job architecture.",
-      "pageTitle": "Classification",
       "columns": {
         "title": "Imported job title",
         "people": "Employees",
@@ -545,7 +542,6 @@
       }
     },
     "auditLog": {
-      "heading": "Audit log",
       "description": "Every change in your organization, who made it and when.",
       "empty": "No activity recorded yet.",
       "notAuthorized": "Only organization admins can view the audit log.",
@@ -895,7 +891,6 @@
       "progress": "{rated} / {total} criteria assessed"
     },
     "roles": {
-      "heading": "Roles",
       "description": "Job profiles evaluated against your model. Roles, never persons.",
       "newCta": "Create role",
       "empty": "No roles yet. Create your first role to start evaluating.",
@@ -1062,7 +1057,6 @@
       }
     },
     "payMapping": {
-      "heading": "Pay mappings",
       "description": "Frozen snapshots of your pay data for equal-pay analysis. Each one captures a point in time.",
       "startCta": "Start pay mapping",
       "empty": "No pay mappings yet. Start one to freeze today's pay data for analysis.",
@@ -1371,7 +1365,6 @@
       "lockedExplanation": "The rating is locked because the role is approved or archived. Reopen the role from the role page to rate it again."
     },
     "levels": {
-      "heading": "Overview",
       "description": "The levels and the roles in each, derived live from the current model and ratings.",
       "viewLadder": "Ladder",
       "viewMatrix": "Matrix",
@@ -1388,7 +1381,7 @@
       "anchorLabel": "Anchor role",
       "deviation": "≠ Level {level}",
       "deviationLabel": "Computed level deviates from the agreed level {level}",
-      "empty": "No roles to show yet. Create a role and evaluate it to see the overview.",
+      "empty": "No roles to show yet. Create a role and evaluate it to see the levels.",
       "emptyCta": "Create a role"
     },
     "auth": {
@@ -1639,7 +1632,6 @@
         "cancel": "Cancel"
       },
       "method": {
-        "title": "Method",
         "description": "Document why each criterion exists and its bias review, then export the method appendix.",
         "documented": "{documented}/{total} documented",
         "approved": "{approved}/{total} approved",
@@ -2177,7 +2169,6 @@
         "error": "Could not update the logo. Try again."
       },
       "members": {
-        "title": "Team members",
         "description": "People with access to this organization.",
         "table": {
           "name": "Name",

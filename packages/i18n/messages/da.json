@@ -186,7 +186,7 @@
         "administration": "Administration"
       },
       "home": "Oversigt",
-      "overview": "Oversigt",
+      "overview": "Niveauer",
       "work": "Jobarkitektur",
       "roles": "Roller",
       "rolesRemainingLabel": "{count, plural, one {# rolle tilbage at vurdere} other {# roller tilbage at vurdere}}",
@@ -200,7 +200,6 @@
       "payMapping": "Lønkortlægninger"
     },
     "people": {
-      "heading": "Medarbejdere",
       "description": "Medarbejdere importeret fra lønsystemet.",
       "empty": "Ingen medarbejdere importeret endnu.",
       "suggestedBadge": "Foreslået",
@@ -228,7 +227,7 @@
         "ftePart": "Deltid"
       },
       "tabs": {
-        "people": "Personer",
+        "people": "Register",
         "classify": "Klassificér",
         "remainingLabel": "{count, plural, one {# person tilbage at klassificere} other {# personer tilbage at klassificere}}"
       },
@@ -493,9 +492,7 @@
       }
     },
     "classify": {
-      "heading": "Klassificér medarbejdere",
       "description": "Tildel hver medarbejder en rolle og en senioritet i jobbarkitekturen.",
-      "pageTitle": "Klassificering",
       "columns": {
         "title": "Importeret jobtitel",
         "people": "Medarbejdere",
@@ -545,7 +542,6 @@
       }
     },
     "auditLog": {
-      "heading": "Hændelseslog",
       "description": "Hver ændring i din organisation, hvem der foretog den og hvornår.",
       "empty": "Ingen aktivitet er registreret endnu.",
       "notAuthorized": "Kun organisationsadministratorer kan se hændelsesloggen.",
@@ -895,7 +891,6 @@
       "progress": "{rated} / {total} kriterier vurderet"
     },
     "roles": {
-      "heading": "Roller",
       "description": "Jobprofiler der vurderes mod jeres model. Roller, aldrig personer.",
       "newCta": "Opret rolle",
       "empty": "Ingen roller endnu. Opret din første rolle for at begynde at vurdere.",
@@ -1062,7 +1057,6 @@
       }
     },
     "payMapping": {
-      "heading": "Lønkortlægninger",
       "description": "Frosne øjebliksbilleder af jeres lønninger til ligelønsanalyse. Hver af dem fanger et tidspunkt.",
       "startCta": "Start lønkortlægning",
       "empty": "Ingen lønkortlægninger endnu. Start en for at fastfryse dagens lønninger til analyse.",
@@ -1371,7 +1365,6 @@
       "lockedExplanation": "Vurderingen er låst, fordi rollen er godkendt eller arkiveret. Genåbn rollen fra rollesiden for at vurdere igen."
     },
     "levels": {
-      "heading": "Oversigt",
       "description": "Niveauerne og rollerne i hvert niveau, udledt live fra den aktuelle model og vurderinger.",
       "viewLadder": "Stige",
       "viewMatrix": "Matrix",
@@ -1388,7 +1381,7 @@
       "anchorLabel": "Ankerrolle",
       "deviation": "≠ Niveau {level}",
       "deviationLabel": "Det beregnede niveau afviger fra det aftalte niveau {level}",
-      "empty": "Ingen roller at vise endnu. Opret en rolle og vurder den for at se oversigten.",
+      "empty": "Ingen roller at vise endnu. Opret en rolle og vurder den for at se niveauerne.",
       "emptyCta": "Opret en rolle"
     },
     "auth": {
@@ -1639,7 +1632,6 @@
         "cancel": "Annuller"
       },
       "method": {
-        "title": "Metode",
         "description": "Dokumenter, hvorfor hvert kriterium findes, og dets bias-gennemgang, og eksporter derefter metodebilag.",
         "documented": "{documented}/{total} dokumenteret",
         "approved": "{approved}/{total} godkendt",
@@ -2177,7 +2169,6 @@
         "error": "Kunne ikke opdatere logoet. Prøv igen."
       },
       "members": {
-        "title": "Teammedlemmer",
         "description": "Personer med adgang til denne organisation.",
         "table": {
           "name": "Navn",
