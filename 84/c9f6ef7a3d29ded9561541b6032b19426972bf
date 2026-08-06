@@ -1,0 +1,25 @@
+docs/superpowers/plans/2026-08-06-iteration-2-analysis-views-rebuild.md
+  s_7d4d2043db4111::t_cbf59c6679ffc6 1-215
+docs/adr/0012-primar-konslonegap-vy-och-prioritetsordning.md
+  s_7d4d2043db4111::t_14b601a95c0a18 50-53
+docs/adr/0015-instegsvillkor-och-atgardslager.md
+  s_7d4d2043db4111::t_db44eba5b6d151 1-30
+docs/go-live-checklist.md
+  s_7d4d2043db4111::t_40dcb5e6a51bc7 295-304
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "84c9f6ef7a3d29ded9561541b6032b19426972bf",
+  "prompts": {},
+  "sessions": {
+    "s_7d4d2043db4111": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cbeef8ee-16ed-4aed-b926-c1546f14fb33",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
