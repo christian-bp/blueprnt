@@ -1,0 +1,19 @@
+apps/dashboard/components/pay-mapping/pay-mapping-review.test.tsx
+  s_0e8d3e36e03eae::t_9939e783dd9005 353-364
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "1ef02746718359530b782dad8c1823c0e7babfd8",
+  "prompts": {},
+  "sessions": {
+    "s_0e8d3e36e03eae": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0950de25-dd83-4db9-9e9b-6d5cfa7a4df5",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
