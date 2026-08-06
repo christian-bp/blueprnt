@@ -1,0 +1,27 @@
+docs/go-live-checklist.md
+  s_7d4d2043db4111::t_baf68c6521ff3d 171-195
+  s_7d4d2043db4111::t_07cab124ef82ab 336-352
+docs/adr/0015-instegsvillkor-och-atgardslager.md
+  s_7d4d2043db4111::t_1e5d9d6576fa46 15
+  s_7d4d2043db4111::t_dfba89bc51fc72 10
+  s_7d4d2043db4111::t_603e4c092e85a5 29
+docs/superpowers/analysis/lonekartlaggning-progress-tracker.html
+  s_7d4d2043db4111::t_87cf0004d064e1 1,511,513
+  s_7d4d2043db4111::t_6e21936f364177 487-488
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "22d49af60ef30eaba40805a24038fc5358808f0b",
+  "prompts": {},
+  "sessions": {
+    "s_7d4d2043db4111": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cbeef8ee-16ed-4aed-b926-c1546f14fb33",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
