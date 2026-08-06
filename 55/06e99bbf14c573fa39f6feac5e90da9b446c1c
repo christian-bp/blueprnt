@@ -1,0 +1,62 @@
+packages/i18n/messages/en.json
+  s_7d4d2043db4111::t_28a8c90d0ec923 1272-1292,2006-2008
+apps/dashboard/components/pay-mapping/excluded-groups-sections.test.tsx
+  s_7d4d2043db4111::t_bd4600bb1b72a7 122-124,127,141-143,153,178,200-202
+  s_7d4d2043db4111::t_8626d308bcbdc6 191,194,197-199,203
+apps/dashboard/components/pay-mapping/equivalent-work-level-analysis.tsx
+  s_7d4d2043db4111::t_159b848ae51cd2 5,96-130
+  s_7d4d2043db4111::t_5e486dd89f0a57 88-89,91-95
+  s_7d4d2043db4111::t_db0847f43c621d 131-133
+apps/dashboard/components/pay-mapping/pay-mapping-summary.tsx
+  s_7d4d2043db4111::t_a9d3e8f159451a 821-834,836-845,847
+  s_7d4d2043db4111::t_b32e30ba98230f 36-38
+  s_7d4d2043db4111::t_3ca873e474607e 934-953
+  s_7d4d2043db4111::t_87f40c097d74ab 146
+  s_7d4d2043db4111::t_48f989c64cf017 166-169
+  s_7d4d2043db4111::t_c5fc9b14e9b1ed 35
+  s_7d4d2043db4111::t_b4ef2bbc886257 750-759
+packages/i18n/messages/nb.json
+  s_7d4d2043db4111::t_28a8c90d0ec923 1272-1292,2006-2008
+packages/i18n/messages/fi.json
+  s_7d4d2043db4111::t_28a8c90d0ec923 1272-1292,2006-2008
+packages/i18n/messages/da.json
+  s_7d4d2043db4111::t_28a8c90d0ec923 1272-1292,2006-2008
+apps/dashboard/components/pay-mapping/supplementary-analysis.test.tsx
+  s_7d4d2043db4111::t_699557b38652c3 161-167,170
+  s_7d4d2043db4111::t_d6623a72b8395b 1-160,168-169,171-180
+apps/dashboard/components/pay-mapping/supplementary-analysis.tsx
+  s_7d4d2043db4111::t_492a2f207343d5 1-181
+  s_7d4d2043db4111::t_c24b20decdb0c1 182-183
+apps/dashboard/components/pay-mapping/equivalent-work-level-analysis.test.tsx
+  s_7d4d2043db4111::t_d0f2540110b8f0 197-199,202,214,229-230,240-243
+  s_7d4d2043db4111::t_6573190226a6b5 1
+apps/dashboard/components/accordion-section.tsx
+  s_7d4d2043db4111::t_074dd16a7517a1 28,39-41,45
+apps/dashboard/components/pay-mapping/cross-level-section.tsx
+  s_7d4d2043db4111::t_12d7d2b9257a5c 230-269
+  s_7d4d2043db4111::t_b79c87bbc1384b 355
+apps/dashboard/components/pay-mapping/excluded-groups-sections.tsx
+  s_7d4d2043db4111::t_ae2ed4f234a091 300-303,307-312
+  s_7d4d2043db4111::t_6eaa3ec56710c9 96-98,122-123,125-129
+  s_7d4d2043db4111::t_72701afc528735 221-222
+  s_7d4d2043db4111::t_ea9162a9184cd8 245-246,248-252
+  s_7d4d2043db4111::t_159b848ae51cd2 130-148,150-169,172-187,189-220,253-296,298-299,313
+packages/i18n/messages/sv.json
+  s_7d4d2043db4111::t_28a8c90d0ec923 1272-1292,2006-2008
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "5506e99bbf14c573fa39f6feac5e90da9b446c1c",
+  "prompts": {},
+  "sessions": {
+    "s_7d4d2043db4111": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cbeef8ee-16ed-4aed-b926-c1546f14fb33",
+        "model": "unknown"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
