@@ -1,0 +1,63 @@
+apps/dashboard/components/organization/organization-members-section.tsx
+  s_0e8d3e36e03eae::t_dfccf1deac76ff 168
+  s_0e8d3e36e03eae::t_87c7ef2b989d58 60-62
+apps/dashboard/components/org-audit-log-section.tsx
+  s_0e8d3e36e03eae::t_7403f3bebbb6b8 330,443
+  s_0e8d3e36e03eae::t_a10e65a67c2872 326,360
+apps/dashboard/components/organization/organization-members-section.test.tsx
+  s_0e8d3e36e03eae::t_b7269db762be2c 118-120
+  s_0e8d3e36e03eae::t_eaf0131b6381db 117
+apps/dashboard/app/(app)/work/page.tsx
+  s_0e8d3e36e03eae::t_213b6e4e711059 58-60
+  s_0e8d3e36e03eae::t_a69daba278098a 198
+  s_0e8d3e36e03eae::t_47ccb66298008c 80
+apps/dashboard/app/(app)/pay-mappings/page.tsx
+  s_0e8d3e36e03eae::t_7ffa5b17fc6a54 8-9
+apps/dashboard/app/(app)/people/page.tsx
+  s_0e8d3e36e03eae::t_4138d5f53de2a0 8-11
+apps/dashboard/app/(app)/people/classify/page.tsx
+  s_0e8d3e36e03eae::t_7d3cbea28c31f3 68,85
+  s_0e8d3e36e03eae::t_91fa638e057905 30-33
+apps/dashboard/components/people/classify/classify-title-table.tsx
+  s_0e8d3e36e03eae::t_466410f3df2aaa 722
+  s_0e8d3e36e03eae::t_b4dce4191b4c6b 410-412
+apps/dashboard/app/(app)/roles/page.tsx
+  s_0e8d3e36e03eae::t_ed39c5adfdd48c 50
+  s_0e8d3e36e03eae::t_f8eaaf04fae91f 90
+  s_0e8d3e36e03eae::t_304adda0c37cc5 125
+apps/dashboard/components/people/people-section.tsx
+  s_0e8d3e36e03eae::t_8cfb4191828dbd 528
+  s_0e8d3e36e03eae::t_d897c5c82d03d0 488
+  s_0e8d3e36e03eae::t_afec921806ae58 177-179
+  s_0e8d3e36e03eae::t_72033b9d338537 512
+apps/dashboard/app/(app)/roles/page.test.tsx
+  s_0e8d3e36e03eae::t_febd05a9e6cc99 165-166
+apps/dashboard/components/roles/roles-table.tsx
+  s_0e8d3e36e03eae::t_c2323e510cf489 191-192
+  s_0e8d3e36e03eae::t_118800b00eb535 265
+apps/dashboard/app/(app)/organization/members/page.tsx
+  s_0e8d3e36e03eae::t_50f29b50c380c0 22
+apps/dashboard/components/pay-mapping/pay-mappings-section.tsx
+  s_0e8d3e36e03eae::t_1d3e6e3fd64145 321
+  s_0e8d3e36e03eae::t_dfb938d2d33daf 351
+  s_0e8d3e36e03eae::t_390cb132e90f39 168-170
+  s_0e8d3e36e03eae::t_3c2d219dab63ea 371
+apps/dashboard/app/(app)/model/method/page.tsx
+  s_0e8d3e36e03eae::t_3e0409639fbd85 15,17,21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "a633d04a9e3d49640276203cebf365a7afd1491a",
+  "prompts": {},
+  "sessions": {
+    "s_0e8d3e36e03eae": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0950de25-dd83-4db9-9e9b-6d5cfa7a4df5",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
