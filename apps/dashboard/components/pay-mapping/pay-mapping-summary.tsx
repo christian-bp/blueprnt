@@ -680,7 +680,13 @@ export function PayMappingSummary() {
             handleBackToSummary above); never itself part of either
             AnimatePresence swap, so it stays a stable anchor above both
             columns. */}
-        <h3 ref={headingRef} tabIndex={-1} className="font-semibold text-base">
+        {/* outline-none for the same reason as the pane container below:
+            this heading is a programmatic focus target only. */}
+        <h3
+          ref={headingRef}
+          tabIndex={-1}
+          className="font-semibold text-base outline-none"
+        >
           {t("summaryTitle")}
         </h3>
         {showBanner && (
@@ -814,7 +820,13 @@ export function PayMappingSummary() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="space-y-2"
+              // outline-none: the container is not keyboard-reachable (it
+              // takes focus only programmatically, right after the user's
+              // own selection), so the browser's default outline would
+              // draw a ring around the whole pane without telling anyone
+              // anything. The focus move itself stays: it is what makes a
+              // screen reader announce the newly opened step.
+              className="space-y-2 outline-none"
             >
               {explicitCardOpen && (
                 <Button

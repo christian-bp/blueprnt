@@ -533,7 +533,14 @@ export function PayMappingReview() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: direction * -24 }}
           transition={{ duration: 0.2 }}
-          className={cn("w-full", !wideStep && "mx-auto max-w-2xl")}
+          // outline-none: a programmatic focus target only (never reachable
+          // by Tab), so the browser's default outline would ring the whole
+          // step card for no one's benefit; the focus move itself is what
+          // makes a screen reader announce the new step.
+          className={cn(
+            "w-full outline-none",
+            !wideStep && "mx-auto max-w-2xl"
+          )}
         >
           {extraGroup !== null
             ? renderExtraGroup(extraGroup)
