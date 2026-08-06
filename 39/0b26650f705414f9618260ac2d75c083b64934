@@ -1,0 +1,76 @@
+packages/backend/convex/lib/audit.ts
+  s_7d4d2043db4111::t_d2da71c3f62310 58-64
+  s_7d4d2043db4111::t_1f1e4ccd3fd7d8 695-712
+  s_7d4d2043db4111::t_d83dabfb08c79f 220-247
+packages/backend/convex/lib/auditPayloads.ts
+  s_7d4d2043db4111::t_255c71aa2e2352 357-406
+packages/backend/convex/schema.ts
+  s_7d4d2043db4111::t_923de782fe8cdb 14,16,53-54
+packages/backend/convex/payMapping/actions.test.ts
+  s_7d4d2043db4111::t_24193eb05d4ac9 1-2,4-27,37-114,120-214,220-346,359-437,442-481
+  s_7d4d2043db4111::t_9e26cb7d0f29e2 3,28-36
+  s_7d4d2043db4111::t_dda7915ca2c109 115-119,215-219
+  s_7d4d2043db4111::t_6b6280cca50007 438-441
+  s_7d4d2043db4111::t_563d70b6d29fa9 347-358
+packages/i18n/messages/da.json
+  s_7d4d2043db4111::t_6b6280cca50007 711-716,803-809
+  s_7d4d2043db4111::t_9d9fa258390f3f 802,1131-1151
+  s_7d4d2043db4111::t_cf7b40cb3d9502 1152
+packages/i18n/messages/fi.json
+  s_7d4d2043db4111::t_6b6280cca50007 711-716,803-809
+  s_7d4d2043db4111::t_9d9fa258390f3f 802,1131-1151
+  s_7d4d2043db4111::t_117ac9dd2a8515 1152
+packages/i18n/messages/sv.json
+  s_7d4d2043db4111::t_9d9fa258390f3f 802,1131-1151
+  s_7d4d2043db4111::t_6b6280cca50007 711-716,803-809
+  s_7d4d2043db4111::t_95ea82d28522a0 1152
+apps/dashboard/lib/audit-labels.test.ts
+  s_7d4d2043db4111::t_a5b0e99cadf305 266-268,270-277,318-326
+  s_7d4d2043db4111::t_5f80419ed3da68 2,10,33,45,53,194-196,217-218
+packages/backend/convex/_generated/api.d.ts
+  s_7d4d2043db4111::t_dda7915ca2c109 67,71,74,158,162,165
+packages/backend/convex/devReset.ts
+  s_7d4d2043db4111::t_4a04dc549535b7 36-37
+packages/i18n/messages/en.json
+  s_7d4d2043db4111::t_9d9fa258390f3f 802,1131-1151
+  s_7d4d2043db4111::t_6b6280cca50007 711-716,803-809
+  s_7d4d2043db4111::t_7a5b83b0c6ee6d 1152
+packages/backend/convex/payMapping/actions.ts
+  s_7d4d2043db4111::t_0f55e5cec2ea17 1-18,20,22-141,147-199,205-253,260-278,285-291,293-297
+  s_7d4d2043db4111::t_847411c176d535 19,21,142-146,200-204,254-259,279-284,292
+packages/backend/convex/payMapping/notes.ts
+  s_7d4d2043db4111::t_6e29cab0071408 1-177
+packages/backend/convex/payMapping/tables.ts
+  s_7d4d2043db4111::t_169b5ceb029758 124-210
+packages/i18n/messages/nb.json
+  s_7d4d2043db4111::t_6b6280cca50007 711-716,803-809
+  s_7d4d2043db4111::t_9d9fa258390f3f 802,1131-1151
+  s_7d4d2043db4111::t_3513b88a8edf3f 1152
+apps/dashboard/lib/audit-constants.ts
+  s_7d4d2043db4111::t_5f80419ed3da68 100-126,147-149,162-164,177-179,302-305
+packages/backend/convex/lib/audit.test.ts
+  s_7d4d2043db4111::t_0b9819e75450c3 482-525,578-584
+packages/backend/convex/payMapping/workLayer.ts
+  s_7d4d2043db4111::t_5d9603b02bf982 1-87
+  s_7d4d2043db4111::t_48196da2ecee42 88-112,114-125
+  s_7d4d2043db4111::t_dda7915ca2c109 113
+packages/backend/convex/payMapping/runs.ts
+  s_7d4d2043db4111::t_4a04dc549535b7 592-595,664-678
+  s_7d4d2043db4111::t_2960bf05d15b48 679
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "390b26650f705414f9618260ac2d75c083b64934",
+  "prompts": {},
+  "sessions": {
+    "s_7d4d2043db4111": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cbeef8ee-16ed-4aed-b926-c1546f14fb33",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
