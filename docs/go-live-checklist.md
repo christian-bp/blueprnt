@@ -190,9 +190,12 @@ in the same change.
   (`dashboard.payMapping.detail/dotPlot/crossLevel/actions/actionsOverview/
   deepDive/womenAhead.*`, the `finding.lessTcc`/`lessTccWorse` variants,
   action/note toasts, audit event/field/value labels, and the five new
-  `dashboard.help.*` pairs). The nb, da, and fi values are machine-drafted
-  and flagged in the feature commits; have native speakers review them
-  before launch.
+  `dashboard.help.*` pairs), and slice C2 added the
+  `dashboard.payMapping.levelAnalysis.*` section, the level-table columns,
+  the `levelAnalysis` help pair, and the two new reason labels
+  (`geographicDifferentiation`, `retention`). The nb, da, and fi values are
+  machine-drafted and flagged in the feature commits; have native speakers
+  review them before launch.
 - [ ] **Gate `deletePayMappingRun` on run status.** The mutation currently
   hard-deletes a run (and its snapshot rows + group analyses) regardless of
   `status`, including a `completed` run, which is the statutory kartläggning
