@@ -1,0 +1,83 @@
+packages/i18n/messages/en.json
+  s_7d4d2043db4111::t_998ce54c28ead3 1265
+apps/dashboard/components/pay-mapping/review-group-step.test.tsx
+  s_7d4d2043db4111::t_5cc5f461e8191f 248,263-264,267,290-297
+  s_7d4d2043db4111::t_0e84f27dc5c3b3 39
+  s_7d4d2043db4111::t_8f9ca11ed04af7 61,69,71-76,78-82,84,86,88-89,93,95,97-100,105-106,108-110,117,119
+apps/dashboard/components/pay-mapping/pay-mapping-overview.test.tsx
+  s_7d4d2043db4111::t_e583f06bb1a058 31,44,66
+apps/dashboard/components/pay-mapping/pay-mapping-review.test.tsx
+  s_7d4d2043db4111::t_cdc874edee7a09 52-55,62,112,119,126,130
+  s_7d4d2043db4111::t_68379cec96b083 33
+packages/i18n/messages/fi.json
+  s_7d4d2043db4111::t_b74e9f78c0419a 1265
+packages/i18n/messages/sv.json
+  s_7d4d2043db4111::t_a1af958ea81a2b 1265
+apps/dashboard/test/pay-mapping-fixtures.ts
+  s_7d4d2043db4111::t_60f9781c070ed6 1-58
+packages/backend/convex/payMapping/runs.test.ts
+  s_7d4d2043db4111::t_0de42397d1f2b7 708-712,722,731
+  s_7d4d2043db4111::t_e9ac9b4fe697e7 807-809
+  s_7d4d2043db4111::t_0837e4d4c32533 738-747,749-762
+packages/backend/convex/payMapping/gap.test.ts
+  s_7d4d2043db4111::t_c71b3aa39af992 16,68,78,126-129,131,178,182,184-186,224-229,232,234-274,312-325,327-328,331-406,414,431,434-468,497,716,718-724,782-785
+packages/backend/convex/payMapping/analyses.test.ts
+  s_7d4d2043db4111::t_7e2438a0046d27 94-97,105
+  s_7d4d2043db4111::t_478899713f62aa 464-477
+  s_7d4d2043db4111::t_812cba3f333202 463
+  s_7d4d2043db4111::t_fbdca3513de838 478-480
+  s_7d4d2043db4111::t_9ce081837f87d0 481-483
+apps/dashboard/components/pay-mapping/review-jump-menu.test.tsx
+  s_7d4d2043db4111::t_e25de81eebf942 6,19-22,27,75,82,89,93
+apps/dashboard/components/pay-mapping/pay-mapping-summary.test.tsx
+  s_7d4d2043db4111::t_cdc874edee7a09 54-57,64,116,123,130,134
+  s_7d4d2043db4111::t_68379cec96b083 29
+apps/dashboard/components/pay-mapping/pay-mapping-journey-card.test.tsx
+  s_7d4d2043db4111::t_e583f06bb1a058 38,57-60,111
+apps/dashboard/components/pay-mapping/review-queue.ts
+  s_7d4d2043db4111::t_35616b3f27b238 68-71
+  s_7d4d2043db4111::t_b9de5dc5a025c1 12-17
+apps/dashboard/components/pay-mapping/review-group-step.tsx
+  s_7d4d2043db4111::t_3385e8bd023cdc 344-355
+  s_7d4d2043db4111::t_c2ec00a4600332 50-55,64,69-72
+  s_7d4d2043db4111::t_717e09ee32e5ad 16-21
+apps/dashboard/components/pay-mapping/pay-mapping-group-underlag.test.tsx
+  s_7d4d2043db4111::t_f037c1e591966d 13,33,40,204,211
+apps/dashboard/components/pay-mapping/pay-mapping-group-underlag.tsx
+  s_7d4d2043db4111::t_3927b76b35c461 310-312,315,320
+packages/i18n/messages/da.json
+  s_7d4d2043db4111::t_03a7b87d3e7aad 1265
+apps/dashboard/components/pay-mapping/review-finish.test.tsx
+  s_7d4d2043db4111::t_bf8f6af5eca660 31,50-53,58,72
+apps/dashboard/components/pay-mapping/pay-mapping-gap-types.ts
+  s_7d4d2043db4111::t_435a3f73714ad4 9-19,23-26,34-35,37-68
+  s_7d4d2043db4111::t_d09b7ba3845da4 108-109,111-116
+packages/i18n/messages/nb.json
+  s_7d4d2043db4111::t_67ca6fd7cc684f 1265
+apps/dashboard/components/pay-mapping/review-queue.test.ts
+  s_7d4d2043db4111::t_f0a7c1e0c26c16 30
+  s_7d4d2043db4111::t_1498bf5179352f 2
+  s_7d4d2043db4111::t_ac48ae06cbd4a5 29
+  s_7d4d2043db4111::t_0f5800ab3f7934 72,79,86
+  s_7d4d2043db4111::t_ca20dd3329e65c 115
+packages/backend/convex/payMapping/gap.ts
+  s_7d4d2043db4111::t_ac48ae06cbd4a5 192-196,331
+  s_7d4d2043db4111::t_dd5e7ec3d735f3 4,7,9,27-48,56-82,86-89,96,117-119,131-132,138-139,144-159,165-170,174-182,186-191,197,199-201,210-212,215-218,222,226-228,236-238,240-255,316-330,332-355,358,362-366,384,391-392,395-397,435-436,466-473,482-483,509,525
+  s_7d4d2043db4111::t_f90870b4c21c58 198
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "f60c250b5e556dc4fc665d491baa658d1071bef9",
+  "prompts": {},
+  "sessions": {
+    "s_7d4d2043db4111": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cbeef8ee-16ed-4aed-b926-c1546f14fb33",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
