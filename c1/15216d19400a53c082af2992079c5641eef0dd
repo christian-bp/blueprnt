@@ -1,0 +1,60 @@
+apps/dashboard/components/pay-mapping/review-group-step.tsx
+  s_7d4d2043db4111::t_9942f68901054c 6
+  s_7d4d2043db4111::t_59ae9329908dbe 332-335
+  s_7d4d2043db4111::t_0635484a67a93b 55-58,64-65,67-73,75,79,83-96
+  s_7d4d2043db4111::t_82a6b5f4f56ca0 336-338
+apps/dashboard/components/pay-mapping/pay-gap-dot-plot.tsx
+  s_7d4d2043db4111::t_7e0b520d9ecbc9 80
+  s_7d4d2043db4111::t_6bd544e233c190 98-101
+  s_7d4d2043db4111::t_6a24492f124901 11
+  s_7d4d2043db4111::t_30f04517755edd 31-32
+  s_7d4d2043db4111::t_f5ee8e33475979 192-194
+apps/dashboard/components/pay-mapping/group-member-table.tsx
+  s_7d4d2043db4111::t_836acac6af5569 70-71
+  s_7d4d2043db4111::t_1c5eb3d12f1c24 37-38
+apps/dashboard/components/pay-mapping/pay-mapping-gap-types.ts
+  s_7d4d2043db4111::t_8670f042e4f598 268-272
+  s_7d4d2043db4111::t_dd3b95349d08e0 2
+  s_7d4d2043db4111::t_0a5ca6cca806ec 259-267,273
+  s_7d4d2043db4111::t_522be25e8e6de4 274
+apps/dashboard/components/pay-mapping/excluded-groups-sections.tsx
+  s_7d4d2043db4111::t_96fb374f47664b 36,57
+  s_7d4d2043db4111::t_059a55ef975388 232-235
+  s_7d4d2043db4111::t_cd3ad6daf9834a 132-151,153-162
+  s_7d4d2043db4111::t_83f1d08f3672b0 230
+  s_7d4d2043db4111::t_698542a283aa45 163-193,196-207,209-222,224-229,231,236-248
+apps/dashboard/components/pay-mapping/cross-level-section.tsx
+  s_7d4d2043db4111::t_279bc695acc02f 48-56,58-59,63,67-69,80,90-97
+  s_7d4d2043db4111::t_58762b3c5af6e2 27,36-41
+  s_7d4d2043db4111::t_8430e21b84a29c 208-210
+  s_7d4d2043db4111::t_e67f35bbcfdb1d 112,125
+apps/dashboard/components/pay-mapping/actions-overview.tsx
+  s_7d4d2043db4111::t_b44dfcf9534e3f 478
+  s_7d4d2043db4111::t_e479c55b6bbde4 29,37-41,45,58-60,84-120,129,143-144,150-160,197-214,216,218-224,228-243,257,267,273,279,285,291,294,298-304,332-335,345,367,389,412,433,451,479-579,583-596,602,608,612,636-675,679-691
+  s_7d4d2043db4111::t_3c358f9c38728e 692
+apps/dashboard/components/pay-mapping/actions-overview.test.tsx
+  s_7d4d2043db4111::t_2e42a48d13f9f3 3
+  s_7d4d2043db4111::t_c0f8d840e1fbb7 171-172
+  s_7d4d2043db4111::t_a0ab90fc3d37c2 169-170,173-209,294
+  s_7d4d2043db4111::t_de29eea879a8ea 280-293
+  s_7d4d2043db4111::t_677115ec71e69c 295
+apps/dashboard/components/pay-mapping/review-group-step.test.tsx
+  s_7d4d2043db4111::t_8670f042e4f598 298-303
+  s_7d4d2043db4111::t_248290265b4c55 285-297,304-319
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "c115216d19400a53c082af2992079c5641eef0dd",
+  "prompts": {},
+  "sessions": {
+    "s_7d4d2043db4111": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cbeef8ee-16ed-4aed-b926-c1546f14fb33",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
