@@ -1,0 +1,58 @@
+apps/dashboard/components/pay-mapping/cross-level-section.tsx
+  s_7d4d2043db4111::t_4392894b8478e1 13,28,44-47,194,197-201,227,298-309
+  s_7d4d2043db4111::t_c74c6268d46dc3 258-259,263,272
+packages/backend/convex/payMapping/actions.ts
+  s_7d4d2043db4111::t_c8974792cdabba 173-180
+apps/dashboard/components/pay-mapping/group-member-table.test.tsx
+  s_7d4d2043db4111::t_d60148e2e7e371 146-149,160-161
+  s_7d4d2043db4111::t_57101efd3f61b5 150-152
+  s_7d4d2043db4111::t_26d8599bf7e578 153-154,156-158
+  s_7d4d2043db4111::t_3117c7463a454c 155,159
+apps/dashboard/lib/audit-detail.tsx
+  s_7d4d2043db4111::t_c8974792cdabba 484-486,877-901
+  s_7d4d2043db4111::t_6b924eb3ca8144 902-915
+packages/backend/convex/payMapping/actions.test.ts
+  s_7d4d2043db4111::t_7c8d44486af6f7 166,174-190,195-198
+  s_7d4d2043db4111::t_4357f781741d40 191-194
+  s_7d4d2043db4111::t_eb373321af8403 199-200
+packages/i18n/messages/da.json
+  s_7d4d2043db4111::t_584d2ffaaae82f 1214-1215
+  s_7d4d2043db4111::t_4392894b8478e1 1439-1441
+apps/dashboard/components/pay-mapping/group-member-table.tsx
+  s_7d4d2043db4111::t_584d2ffaaae82f 221
+  s_7d4d2043db4111::t_c74c6268d46dc3 216-220,222-227,232,234-240,243-258,260-274,276-279,283-324
+  s_7d4d2043db4111::t_c3983ada59f847 228-231,233
+  s_7d4d2043db4111::t_d1f92efd9171a8 275
+apps/dashboard/components/pay-mapping/documentation-controls.tsx
+  s_7d4d2043db4111::t_d67be8ef72b1ff 182-221
+packages/i18n/messages/en.json
+  s_7d4d2043db4111::t_4392894b8478e1 1439-1441
+  s_7d4d2043db4111::t_584d2ffaaae82f 1214-1215
+packages/i18n/messages/nb.json
+  s_7d4d2043db4111::t_4392894b8478e1 1439-1441
+  s_7d4d2043db4111::t_584d2ffaaae82f 1214-1215
+apps/dashboard/components/pay-mapping/cross-level-section.test.tsx
+  s_7d4d2043db4111::t_123133dd2b7568 191-226
+packages/i18n/messages/sv.json
+  s_7d4d2043db4111::t_584d2ffaaae82f 1214-1215
+  s_7d4d2043db4111::t_4392894b8478e1 1439-1441
+packages/i18n/messages/fi.json
+  s_7d4d2043db4111::t_4392894b8478e1 1439-1441
+  s_7d4d2043db4111::t_584d2ffaaae82f 1214-1215
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "e9ef6a8c3611f58ccc545c3d5e888b31a896a4b4",
+  "prompts": {},
+  "sessions": {
+    "s_7d4d2043db4111": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cbeef8ee-16ed-4aed-b926-c1546f14fb33",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
