@@ -720,9 +720,21 @@ describe("getPayMappingGap", () => {
     // DL 3:9's cross-comparison (an all-women group is the very case that
     // comparison exists for). Tech (level 3, Mid): 1 woman + 2 men @ 42000,
     // no internal gap => reverse for lika arbete, but still the comparator
-    // that out-earns Nurse by 4000. An unleveled priced person cannot be
+    // that out-earns Nurse by 4000. Assistant (level 2, one woman @ 30000):
+    // a SINGLETON, silently dropped from lika arbete, yet 100% women and
+    // therefore still a women-dominated group in DL 3:9's cross-comparison
+    // (the entry conditions govern only the WITHIN-group comparison, ADR-0015
+    // §2; a lone female assistant out-earned by a lower-valued group is the
+    // comparison's textbook case). An unleveled priced person cannot be
     // placed and is skipped entirely from the comparison.
     const { orgId, runId, asHr } = await seedRun(t, [
+      {
+        gender: "Kvinna",
+        roleTitle: "Assistant",
+        seniority: "Mid",
+        level: 2,
+        basicMonthly: 30000,
+      },
       {
         gender: "Kvinna",
         roleTitle: "Nurse",
@@ -779,16 +791,26 @@ describe("getPayMappingGap", () => {
       runId,
     })
 
-    // The entry conditions routed both groups out of the primary flow...
+    // The entry conditions routed all three groups out of the primary flow
+    // (the Assistant and Support singletons silently, Nurse to the
+    // deep-dive)...
     expect(gap?.equalWork).toHaveLength(0)
     expect(gap?.excluded.genderPure.map((g) => g.roleTitle)).toEqual(["Nurse"])
+    expect(gap?.excluded.singletonCount).toBe(2)
     // ...but the statutory cross-comparison still sees them.
-    expect(gap?.womenDominated).toHaveLength(1)
-    const group = gap?.womenDominated[0]
-    expect(group?.roleTitle).toBe("Nurse")
-    expect(group?.womenSharePct).toBe(100)
-    expect(group?.comparisons).toHaveLength(1)
-    expect(group?.comparisons[0]?.roleTitle).toBe("Tech")
-    expect(group?.comparisons[0]?.diffSek).toBe(4000)
+    expect(gap?.womenDominated).toHaveLength(2)
+    const nurse = gap?.womenDominated.find((g) => g.roleTitle === "Nurse")
+    expect(nurse?.womenSharePct).toBe(100)
+    expect(nurse?.comparisons).toHaveLength(1)
+    expect(nurse?.comparisons[0]?.roleTitle).toBe("Tech")
+    expect(nurse?.comparisons[0]?.diffSek).toBe(4000)
+    // The leveled singleton woman IS a women-dominated group of her own,
+    // compared against the lower-valued Tech group that out-earns her.
+    const assistant = gap?.womenDominated.find(
+      (g) => g.roleTitle === "Assistant"
+    )
+    expect(assistant?.womenSharePct).toBe(100)
+    expect(assistant?.comparisons[0]?.roleTitle).toBe("Tech")
+    expect(assistant?.comparisons[0]?.diffSek).toBe(12000)
   })
 })

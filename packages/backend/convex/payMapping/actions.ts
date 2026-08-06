@@ -2,6 +2,7 @@ import { v } from "convex/values"
 import { components } from "../_generated/api"
 import {
   ACTION_AUDIT_FIELDS,
+  ACTION_UPDATE_AUDIT_FIELDS,
   AUDIT_EVENTS,
   buildChanges,
   buildCreateChanges,
@@ -16,10 +17,12 @@ import {
   payMappingActionStatusValidator,
 } from "./tables"
 import {
+  assertActionNumbersValid,
   assertOwnerIsMember,
   plannedDateIso,
   resolveTargetLabel,
   snapshotRowsForRun,
+  targetLabelFromRows,
   validateTarget,
 } from "./workLayer"
 
@@ -103,9 +106,12 @@ export const listActionOwners = orgQuery({
       await ctx.runQuery(components.betterAuth.provisioning.listMembers, {
         organizationId: ctx.orgId,
       })
+    // A member without a name falls back to the email's local part, never
+    // the full address: this roster is org-wide (editors assign owners),
+    // and a name lookup must not turn into an email disclosure.
     return members.map((m) => ({
       userId: m.userId,
-      name: m.name || m.email,
+      name: m.name || (m.email.split("@")[0] ?? m.email),
     }))
   },
 })
@@ -134,6 +140,7 @@ export const createAction = orgMutation({
       throw appError(ERROR_CODES.payMappingRunCompleted)
     if (content.problem.trim() === "" || content.plannedAction.trim() === "")
       throw appError(ERROR_CODES.invalidInput)
+    assertActionNumbersValid(content)
 
     const rows = await snapshotRowsForRun(ctx, ctx.orgId, runId)
     const { targetLabel } = validateTarget(rows, content.target, {
@@ -199,6 +206,7 @@ export const updateAction = orgMutation({
       throw appError(ERROR_CODES.payMappingRunCompleted)
     if (content.problem.trim() === "" || content.plannedAction.trim() === "")
       throw appError(ERROR_CODES.invalidInput)
+    assertActionNumbersValid(content)
 
     const rows = await snapshotRowsForRun(ctx, ctx.orgId, action.runId)
     const { targetLabel } = validateTarget(rows, content.target, {
@@ -221,17 +229,41 @@ export const updateAction = orgMutation({
       priority: content.priority,
     }
     await ctx.db.patch(actionId, next)
+    // The diff covers the structured fields AND the target (a re-target must
+    // never render as a no-op row), plus the detailsChanged marker when an
+    // edit only touched the untrailed fields (free text, owner, cost).
+    const changes = buildChanges(
+      {
+        ...auditView(action),
+        targetKind: action.target.kind,
+        targetLabel: targetLabelFromRows(rows, action.target),
+      },
+      {
+        ...auditView({ ...next, status: action.status }),
+        targetKind: content.target.kind,
+        targetLabel,
+      },
+      // detailsChanged is absent from both views, so buildChanges skips it
+      // here; it is set explicitly below when the marker applies.
+      [...ACTION_AUDIT_FIELDS, ...ACTION_UPDATE_AUDIT_FIELDS]
+    )
+    const detailsChanged =
+      action.problem !== next.problem ||
+      action.plannedAction !== next.plannedAction ||
+      action.ownerUserId !== next.ownerUserId ||
+      (action.estimatedCost ?? null) !== (content.estimatedCost ?? null)
     await ctx.audit.log({
       type: AUDIT_EVENTS.payMappingActionUpdated,
       payload: {
         runId: action.runId,
         actionId,
         targetLabel,
-        changes: buildChanges(
-          auditView(action),
-          auditView({ ...next, status: action.status }),
-          ACTION_AUDIT_FIELDS
-        ),
+        changes: {
+          ...changes,
+          ...(detailsChanged
+            ? { detailsChanged: { from: null, to: true } }
+            : {}),
+        },
       },
     })
     return null

@@ -12,6 +12,8 @@ import {
   categoryForEvent,
   criterionCreateItem,
   criterionDeleteItem,
+  ACTION_AUDIT_FIELDS,
+  ACTION_UPDATE_AUDIT_FIELDS,
   ANCHOR_AUDIT_FIELDS,
   ASSIGNMENT_AUDIT_FIELDS,
   CRITERION_AUDIT_FIELDS,
@@ -19,6 +21,7 @@ import {
   GROUP_ANALYSIS_AUDIT_FIELDS,
   isPersonIdentityField,
   MODEL_AUDIT_FIELDS,
+  NOTE_AUDIT_FIELDS,
   PAY_AUDIT_FIELDS,
   PERSON_AUDIT_FIELDS,
   PERSON_ERASURE_AUDIT_FIELDS,
@@ -760,6 +763,9 @@ describe("person audit field lists", () => {
       PAY_AUDIT_FIELDS,
       ASSIGNMENT_AUDIT_FIELDS,
       GROUP_ANALYSIS_AUDIT_FIELDS,
+      ACTION_AUDIT_FIELDS,
+      ACTION_UPDATE_AUDIT_FIELDS,
+      NOTE_AUDIT_FIELDS,
     }
     for (const [name, fields] of Object.entries(otherFieldSets)) {
       for (const field of fields as readonly string[]) {

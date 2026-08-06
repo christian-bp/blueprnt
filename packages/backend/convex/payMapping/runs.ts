@@ -521,8 +521,17 @@ export const completePayMappingRun = orgMutation({
           .filter((row) => row.scope === scope && row.done)
           .map((row) => row.groupKey)
       )
-    const equalWorkDone = doneKeys("equalWork")
-    const equivalentWorkDone = doneKeys("equivalentWork")
+    // Orphaned rows (groups the entry conditions have since excluded) stay
+    // stored as history but never count: the audited done-figures must match
+    // the groups that actually exist in the run.
+    const equalWorkDone = new Set(
+      [...doneKeys("equalWork")].filter((key) => keys.equalWorkAll.has(key))
+    )
+    const equivalentWorkDone = new Set(
+      [...doneKeys("equivalentWork")].filter((key) =>
+        keys.womenDominatedAll.has(key)
+      )
+    )
     const praxisDone = doneKeys("praxis")
     const praxisRequired = await applicablePraxisKeys(ctx, run)
     const collaborationFilled =

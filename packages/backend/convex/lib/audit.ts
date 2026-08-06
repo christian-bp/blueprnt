@@ -710,6 +710,18 @@ export const ACTION_AUDIT_FIELDS = [
 // the note text itself never enters the trail (same rationale as above).
 export const NOTE_AUDIT_FIELDS = ["noteType"] as const
 
+// Extra diff fields on payMapping.actionUpdated/noteUpdated beyond the
+// structured content: a re-target renders as an arrow (targetKind +
+// targetLabel; the label is group-level display text, never a name), and
+// an edit that only touched the untrailed fields (free text, owner, cost,
+// note text) sets the `detailsChanged` marker so the row never reads as a
+// no-op (ADR-0015: a changed-marker, never the text).
+export const ACTION_UPDATE_AUDIT_FIELDS = [
+  "targetKind",
+  "targetLabel",
+  "detailsChanged",
+] as const
+
 // One bulk `items` entry for a freshly created criterion (template/scratch/AI).
 // Wraps buildCreateChanges over CRITERION_AUDIT_FIELDS; the human label is the
 // criterion name (ids in items are NOT resolved at read time). The optional

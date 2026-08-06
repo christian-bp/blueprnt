@@ -2,11 +2,13 @@
 // validation against the frozen snapshot and the audit-safe display label.
 // Module-level pure/async helpers, imported by actions.ts and notes.ts so
 // the two record kinds can never drift on what a valid target is.
+import { fteTotalMonthlyComp } from "@workspace/constants"
+import { crossLevelPairs } from "@workspace/core"
 import type { Infer } from "convex/values"
 import type { Doc, Id } from "../_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "../_generated/server"
 import { appError, ERROR_CODES } from "../lib/errors"
-import { buildGapAggregates } from "./gap"
+import { buildGapAggregates, equalWorkGroupKey } from "./gap"
 import type { actionTargetValidator } from "./tables"
 
 export type ActionTarget = Infer<typeof actionTargetValidator>
@@ -22,6 +24,31 @@ export async function snapshotRowsForRun(
     .collect()
 }
 
+// The audit-safe display label a group key resolves to ("roleTitle ·
+// seniority"): the single derivation every call site (validation, existing-
+// record labels, the group-analysis trail) goes through, so the format and
+// its empty-part filtering can never drift.
+export function groupKeyLabel(groupKey: string): string {
+  const [roleTitle, , seniority] = groupKey.split("|")
+  return [roleTitle, seniority]
+    .filter((part) => part !== undefined && part !== "")
+    .join(" · ")
+}
+
+// A pair-targeted record is labeled by the WOMAN's group (the affected
+// side), through the same key derivation as everything else.
+function memberLabel(row: Doc<"payMappingSnapshotRows">): string {
+  return groupKeyLabel(equalWorkGroupKey(row))
+}
+
+// The engine's own base measure (FTE-adjusted base salary): pair validation
+// must judge the pair by the same number the analysis renders.
+function memberBase(row: Doc<"payMappingSnapshotRows">): number | null {
+  return row.basicMonthly === null
+    ? null
+    : fteTotalMonthlyComp(row.basicMonthly, [], row.ftePercent)
+}
+
 // Validates a target against the run's own groups and people, and returns
 // the audit-safe GROUP-level display label ("roleTitle · seniority"): even a
 // person- or pair-targeted record is labeled by its group, never by a name
@@ -29,19 +56,18 @@ export async function snapshotRowsForRun(
 //
 // Valid targets: a group in the shown lika arbete flow, a women-dominated
 // group (equivalentWork scope), or, when `allowExcludedGroups` (notes only),
-// a gender-pure group from the deep-dive. Persons must be members of the
-// run's snapshot; pairs must be a woman and a man from the snapshot.
+// a gender-pure group from the deep-dive. A person must be a member of the
+// exact group the target anchors to (never a member of some other group: a
+// gender-pure member could otherwise take a formal action through a shown
+// group's key). A pair must be a real tvärnivå pair by the engine's own
+// rule (the man on a numerically higher = lower-valued level, out-earning
+// the woman), never just any woman + any man.
 export function validateTarget(
   rows: Doc<"payMappingSnapshotRows">[],
   target: ActionTarget,
   options: { allowExcludedGroups: boolean }
 ): { targetLabel: string } {
   const { equalWork, excluded, womenDominated } = buildGapAggregates(rows)
-
-  const groupLabelFromKey = (groupKey: string): string => {
-    const [roleTitle, , seniority] = groupKey.split("|")
-    return [roleTitle, seniority].filter((p) => p !== "").join(" · ")
-  }
 
   if (target.kind === "pair") {
     const woman = rows.find(
@@ -54,8 +80,24 @@ export function validateTarget(
     if (woman === undefined || man === undefined) {
       throw appError(ERROR_CODES.notFound)
     }
-    // The pair is labeled by the WOMAN's group (the affected side).
-    return { targetLabel: `${woman.roleTitle} · ${woman.seniority}` }
+    const pair = crossLevelPairs([
+      {
+        personPublicId: woman.personPublicId,
+        gender: "Kvinna",
+        level: woman.level,
+        trackKey: woman.trackKey,
+        base: memberBase(woman),
+      },
+      {
+        personPublicId: man.personPublicId,
+        gender: "Man",
+        level: man.level,
+        trackKey: man.trackKey,
+        base: memberBase(man),
+      },
+    ])
+    if (pair.length === 0) throw appError(ERROR_CODES.notFound)
+    return { targetLabel: memberLabel(woman) }
   }
 
   const validKeys = new Set<string>(
@@ -74,10 +116,23 @@ export function validateTarget(
     const person = rows.find(
       (row) => row.personPublicId === target.personPublicId
     )
-    if (person === undefined) throw appError(ERROR_CODES.notFound)
+    if (person === undefined || equalWorkGroupKey(person) !== target.groupKey)
+      throw appError(ERROR_CODES.notFound)
   }
 
-  return { targetLabel: groupLabelFromKey(target.groupKey) }
+  return { targetLabel: groupKeyLabel(target.groupKey) }
+}
+
+// The audit-safe label of an EXISTING record's target, from rows the caller
+// already holds (updateAction diffs the OLD target's label without a second
+// snapshot read).
+export function targetLabelFromRows(
+  rows: Doc<"payMappingSnapshotRows">[],
+  target: ActionTarget
+): string {
+  if (target.kind !== "pair") return groupKeyLabel(target.groupKey)
+  const woman = rows.find((row) => row.personPublicId === target.womanPublicId)
+  return woman === undefined ? "" : memberLabel(woman)
 }
 
 // The ISO date string an action's plannedDate is diffed as (never epoch ms:
@@ -96,12 +151,7 @@ export async function resolveTargetLabel(
   runId: Id<"payMappingRuns">,
   target: ActionTarget
 ): Promise<string> {
-  if (target.kind !== "pair") {
-    const [roleTitle, , seniority] = target.groupKey.split("|")
-    return [roleTitle, seniority]
-      .filter((p) => p !== undefined && p !== "")
-      .join(" · ")
-  }
+  if (target.kind !== "pair") return groupKeyLabel(target.groupKey)
   const woman = (
     await ctx.db
       .query("payMappingSnapshotRows")
@@ -110,7 +160,7 @@ export async function resolveTargetLabel(
       )
       .collect()
   ).find((row) => row.runId === runId)
-  return woman === undefined ? "" : `${woman.roleTitle} · ${woman.seniority}`
+  return woman === undefined ? "" : memberLabel(woman)
 }
 
 // Pure membership gate for the Ansvarig field: the owner must be a current
@@ -120,6 +170,34 @@ export function assertOwnerIsMember(
   ownerUserId: string
 ): void {
   if (!members.some((m) => m.userId === ownerUserId)) {
+    throw appError(ERROR_CODES.invalidInput)
+  }
+}
+
+// Backend re-validation of an action's numeric content (the client's Zod
+// gate is never the only gate). Convex v.number() accepts NaN/Infinity, and
+// an out-of-range plannedDate would make plannedDateIso throw a raw
+// RangeError AFTER the insert instead of a translatable error code. The
+// date window is deliberately generous (multi-year action plans) but keeps
+// Date arithmetic valid.
+const PLANNED_DATE_MIN = Date.UTC(2000, 0, 1)
+const PLANNED_DATE_MAX = Date.UTC(2100, 0, 1)
+
+export function assertActionNumbersValid(content: {
+  plannedDate: number
+  estimatedCost?: number
+}): void {
+  if (
+    !Number.isFinite(content.plannedDate) ||
+    content.plannedDate < PLANNED_DATE_MIN ||
+    content.plannedDate > PLANNED_DATE_MAX
+  ) {
+    throw appError(ERROR_CODES.invalidInput)
+  }
+  if (
+    content.estimatedCost !== undefined &&
+    (!Number.isFinite(content.estimatedCost) || content.estimatedCost < 0)
+  ) {
     throw appError(ERROR_CODES.invalidInput)
   }
 }

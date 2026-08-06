@@ -376,10 +376,11 @@ export const AUDIT_DATE_FIELDS: ReadonlySet<string> = new Set([
   "onboardingCompletedAt",
 ])
 
-// ISO-date-string payload fields (person employmentStartDate, birthDate):
-// localized through the same dateLabel, so one sheet never mixes "2024-01-15"
-// with "Jan 15, 2024".
+// ISO-date-string payload fields (person employmentStartDate, birthDate,
+// action plannedDate): localized through the same dateLabel, so one sheet
+// never mixes "2024-01-15" with "Jan 15, 2024".
 export const AUDIT_ISO_DATE_FIELDS: ReadonlySet<string> = new Set([
   "employmentStartDate",
   "birthDate",
+  "plannedDate",
 ])

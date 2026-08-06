@@ -141,12 +141,25 @@ interface Bucket {
 
 type SnapshotRow = Doc<"payMappingSnapshotRows">
 
-const MASKED_METRIC: MetricComparison = {
+// The equal-work group key a snapshot row belongs to. The single source for
+// the "roleTitle|level|seniority" format: the grouping below, the work
+// layer's target-membership validation, and every label derivation resolve
+// through this same builder so the key format can never drift.
+export function equalWorkGroupKey(row: {
+  roleTitle: string
+  level: number | null
+  seniority: string
+}): string {
+  return `${row.roleTitle}|${row.level ?? "none"}|${row.seniority}`
+}
+
+// Frozen: this object is aliased into every masked group of every result.
+const MASKED_METRIC: MetricComparison = Object.freeze({
   womenMean: null,
   menMean: null,
   gapPct: null,
   gapKr: null,
-}
+})
 
 // Build one wire-shape GapGroup from a bucket's classification: single-gender
 // buckets (which only reach the wire in the equivalent-work per-level list;
@@ -252,7 +265,11 @@ export function buildGapAggregates(rows: SnapshotRow[]): {
   // Every priced, leveled row's per-level group, unconditionally: the
   // likvärdigt detail view applies its own entry conditions when it renders
   // (slice C); until then the women-dominated chapter's level-context
-  // sentence needs every level, both directions.
+  // sentence needs every level, both directions. NOTE: `flag` on these
+  // groups carries ADR-0015's DIRECTIONAL semantics (flagWomenBehind) like
+  // every other group wire; no current reader consumes it (the level
+  // context reads `base.gapPct` raw, in both directions), so a future
+  // consumer inherits the directional flag by default, not by accident.
   equivalentWork: GapGroupWire[]
   womenDominated: WomenDominatedGroup[]
 } {
@@ -264,7 +281,7 @@ export function buildGapAggregates(rows: SnapshotRow[]): {
   // Steg 1, lika arbete (equal work): (roleTitle, level, seniority).
   const equalWorkMap = new Map<string, Bucket>()
   for (const row of priced) {
-    const key = `${row.roleTitle}|${row.level ?? "none"}|${row.seniority}`
+    const key = equalWorkGroupKey(row)
     let bucket = equalWorkMap.get(key)
     if (bucket === undefined) {
       bucket = {

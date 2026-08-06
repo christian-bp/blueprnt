@@ -121,7 +121,9 @@ export const updateNote = orgMutation({
       throw appError(ERROR_CODES.payMappingRunCompleted)
     if (text.trim() === "") throw appError(ERROR_CODES.invalidInput)
 
-    await ctx.db.patch(noteId, { text: text.trim(), noteType })
+    const trimmed = text.trim()
+    const textChanged = note.text !== trimmed
+    await ctx.db.patch(noteId, { text: trimmed, noteType })
     await ctx.audit.log({
       type: AUDIT_EVENTS.payMappingNoteUpdated,
       payload: {
@@ -133,12 +135,17 @@ export const updateNote = orgMutation({
           note.runId,
           note.target
         ),
-        // The classification only; the note text never enters the trail.
-        changes: buildChanges(
-          { noteType: note.noteType },
-          { noteType },
-          NOTE_AUDIT_FIELDS
-        ),
+        // The classification only; the note text never enters the trail. A
+        // text-only edit sets the detailsChanged marker so the row never
+        // reads as a no-op (ADR-0015: a changed-marker, never the text).
+        changes: {
+          ...buildChanges(
+            { noteType: note.noteType },
+            { noteType },
+            NOTE_AUDIT_FIELDS
+          ),
+          ...(textChanged ? { detailsChanged: { from: null, to: true } } : {}),
+        },
       },
     })
     return null
