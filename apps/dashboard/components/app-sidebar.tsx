@@ -23,10 +23,19 @@ import { type NavItem, NavMain } from "@/components/nav-main"
 import { NavOrganization } from "@/components/nav-organization"
 import { NavUser } from "@/components/nav-user"
 import { useOrganization } from "@/components/org-context"
+import { SECTION_PAGES } from "@/lib/section-pages"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const t = useTranslations("dashboard")
   const { role } = useOrganization()
+
+  // A section's sub-pages come from SECTION_PAGES, the same list its header
+  // tabs render, so the sidebar and the header cannot drift apart.
+  const subPages = (section: keyof typeof SECTION_PAGES) =>
+    SECTION_PAGES[section].map((page) => ({
+      title: t(page.labelKey),
+      url: page.href,
+    }))
 
   // The dashboard landing. It gets its own heading like every other
   // destination (a single uncaptioned row above captioned ones reads as a
@@ -42,19 +51,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   // Job evaluation: the role world and the model that values it. Job
   // architecture owns both the level Overview at /work and the role register at
-  // /roles; its two sub-pages are switched from header tabs (SectionTabs), so
-  // it is a single flat item here that stays active across both paths.
+  // /roles, so it is a single item here that stays active across both paths.
   const navEvaluation: NavItem[] = [
     {
       title: t("nav.work"),
       url: "/work",
       match: ["/roles"],
       icon: <HugeiconsIcon icon={Briefcase01Icon} strokeWidth={2} />,
+      items: subPages("work"),
     },
     {
       title: t("nav.model"),
       url: "/model",
       icon: <HugeiconsIcon icon={Layers01Icon} strokeWidth={2} />,
+      items: subPages("model"),
     },
   ]
 
@@ -66,7 +76,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       title: t("nav.people"),
       url: "/people",
       icon: <HugeiconsIcon icon={UserGroup03Icon} strokeWidth={2} />,
+      items: subPages("people"),
     },
+    // Pay mappings has no static sub-pages: inside one kartläggning the
+    // header owns the per-run tabs (they are scoped to the run's slug).
     {
       title: t("nav.payMapping"),
       url: "/pay-mappings",
@@ -83,6 +96,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       title: t("nav.organization"),
       url: "/organization",
       icon: <HugeiconsIcon icon={UserMultipleIcon} strokeWidth={2} />,
+      items: subPages("organization"),
     })
     navAdmin.push({
       title: t("nav.auditLog"),

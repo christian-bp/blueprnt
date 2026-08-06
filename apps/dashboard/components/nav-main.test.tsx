@@ -1,16 +1,42 @@
 import { cleanup, render, screen } from "@testing-library/react"
+import type { ReactNode } from "react"
 import { cloneElement } from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 const pathState = vi.hoisted(() => ({ current: "/" }))
+const sidebarState = vi.hoisted(() => ({
+  state: "expanded" as "expanded" | "collapsed",
+  isMobile: false,
+}))
 
 vi.mock("next/navigation", () => ({
   usePathname: () => pathState.current,
 }))
 
+// Render motion elements synchronously as plain tags (the motion-only props
+// are stripped so they never reach the DOM): with AnimatePresence pass-through,
+// a section's sub-list mounts and unmounts instantly, which is what lets the
+// visibility assertions below observe the open/closed states directly.
+vi.mock("motion/react", () => ({
+  AnimatePresence: ({ children }: { children: ReactNode }) => <>{children}</>,
+  motion: {
+    div: ({
+      children,
+      initial: _initial,
+      animate: _animate,
+      exit: _exit,
+      transition: _transition,
+      ...rest
+    }: Record<string, unknown> & { children?: ReactNode }) => (
+      <div {...rest}>{children}</div>
+    ),
+  },
+}))
+
 // Pass the sidebar structure through as plain elements, and expose isActive as
 // a data attribute so the active-section logic is assertable.
 vi.mock("@workspace/ui/components/sidebar", () => ({
+  useSidebar: () => sidebarState,
   SidebarGroup: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
   ),
@@ -41,14 +67,70 @@ vi.mock("@workspace/ui/components/sidebar", () => ({
       </button>
     )
   },
+  SidebarMenuSub: ({
+    children,
+    className,
+  }: {
+    children: React.ReactNode
+    className?: string
+  }) => (
+    <ul data-testid="menu-sub" className={className}>
+      {children}
+    </ul>
+  ),
+  SidebarMenuSubItem: ({ children }: { children: React.ReactNode }) => (
+    <li>{children}</li>
+  ),
+  SidebarMenuSubButton: ({
+    children,
+    ...props
+  }: React.ComponentProps<"span"> & {
+    render?: React.ReactElement<Record<string, unknown>>
+    isActive?: boolean
+  }) => {
+    const { render: renderProp, isActive, ...rest } = props
+    return (
+      <span
+        data-testid="menu-sub-button"
+        data-active={isActive ? "true" : "false"}
+        {...rest}
+      >
+        {renderProp ? cloneElement(renderProp, undefined, children) : children}
+      </span>
+    )
+  },
 }))
 
 import { NavMain, type NavItem } from "@/components/nav-main"
 
 const ITEMS: NavItem[] = [
   { title: "Home", url: "/" },
-  { title: "Work", url: "/work", match: ["/roles"] },
-  { title: "Model", url: "/model" },
+  {
+    title: "Work",
+    url: "/work",
+    match: ["/roles"],
+    items: [
+      { title: "Overview", url: "/work" },
+      { title: "Roles", url: "/roles" },
+    ],
+  },
+  {
+    title: "Model",
+    url: "/model",
+    items: [
+      { title: "Criteria", url: "/model" },
+      { title: "Weighting", url: "/model/weighting" },
+      { title: "Method", url: "/model/method" },
+    ],
+  },
+  {
+    title: "People",
+    url: "/people",
+    items: [
+      { title: "Register", url: "/people" },
+      { title: "Classify", url: "/people/classify" },
+    ],
+  },
 ]
 
 function renderNav() {
@@ -59,13 +141,26 @@ function activeOf(name: string) {
   return screen.getByText(name).closest("button")?.getAttribute("data-active")
 }
 
+// The label sits in its own <span> inside the link, so climb to the mock's
+// explicitly tagged wrapper instead of the nearest span (closest() would
+// otherwise match the label itself).
+function subButtonOf(name: string) {
+  return screen.getByText(name).closest('[data-testid="menu-sub-button"]')
+}
+
+function subActiveOf(name: string) {
+  return subButtonOf(name)?.getAttribute("data-active")
+}
+
 describe("NavMain", () => {
   beforeEach(() => {
     pathState.current = "/"
+    sidebarState.state = "expanded"
+    sidebarState.isMobile = false
   })
   afterEach(() => cleanup())
 
-  it("renders each item as a single leaf link", () => {
+  it("renders each item as a section link", () => {
     renderNav()
     expect(
       screen.getByRole("link", { name: "Home" }).getAttribute("href")
@@ -109,5 +204,96 @@ describe("NavMain", () => {
     expect(screen.queryByTestId("group-label")).toBeNull()
     rerender(<NavMain items={ITEMS} label="Job evaluation" />)
     expect(screen.getByTestId("group-label").textContent).toBe("Job evaluation")
+  })
+
+  it("hides every sub-page while no section is open", () => {
+    pathState.current = "/"
+    renderNav()
+    expect(screen.queryByTestId("menu-sub")).toBeNull()
+    expect(screen.queryByText("Weighting")).toBeNull()
+  })
+
+  it("reveals only the open section's sub-pages", () => {
+    pathState.current = "/model"
+    renderNav()
+    // Model's sub-pages are out...
+    expect(
+      screen.getByRole("link", { name: "Weighting" }).getAttribute("href")
+    ).toBe("/model/weighting")
+    expect(
+      screen.getByRole("link", { name: "Method" }).getAttribute("href")
+    ).toBe("/model/method")
+    // ...and the other sections stay flat.
+    expect(screen.queryByText("Overview")).toBeNull()
+    expect(screen.queryByText("Classify")).toBeNull()
+  })
+
+  it("marks the section index sub-page active only on the index itself", () => {
+    pathState.current = "/model"
+    renderNav()
+    expect(subActiveOf("Criteria")).toBe("true")
+    expect(subActiveOf("Weighting")).toBe("false")
+    expect(
+      screen
+        .getByRole("link", { name: "Criteria" })
+        .getAttribute("aria-current")
+    ).toBe("page")
+    expect(
+      screen
+        .getByRole("link", { name: "Weighting" })
+        .getAttribute("aria-current")
+    ).toBeNull()
+  })
+
+  it("hands the index sub-page over to a deeper matching sibling", () => {
+    pathState.current = "/model/weighting"
+    renderNav()
+    expect(subActiveOf("Weighting")).toBe("true")
+    expect(subActiveOf("Criteria")).toBe("false")
+  })
+
+  it("keeps a register sub-page active on its detail pages", () => {
+    pathState.current = "/people/abc123"
+    renderNav()
+    expect(subActiveOf("Register")).toBe("true")
+    expect(subActiveOf("Classify")).toBe("false")
+  })
+
+  it("opens a section's sub-pages from a `match` path too", () => {
+    pathState.current = "/roles/r1"
+    renderNav()
+    expect(subActiveOf("Roles")).toBe("true")
+    expect(subActiveOf("Overview")).toBe("false")
+  })
+
+  it("marks the active sub-page with the same brand wash as the section", () => {
+    pathState.current = "/model"
+    renderNav()
+    const subButton = subButtonOf("Criteria")
+    expect(subButton?.className).toContain("data-active:bg-brand/10")
+    expect(subButton?.className).toContain("data-active:text-brand")
+  })
+
+  it("aligns the sub-list's right edge with its section entry", () => {
+    pathState.current = "/model"
+    renderNav()
+    const subList = screen.getByTestId("menu-sub")
+    expect(subList.className).toContain("mr-0")
+    expect(subList.className).toContain("pr-0")
+  })
+
+  it("closes the sub-pages with the icon rail so the space animates shut", () => {
+    pathState.current = "/model"
+    sidebarState.state = "collapsed"
+    renderNav()
+    expect(screen.queryByTestId("menu-sub")).toBeNull()
+  })
+
+  it("keeps sub-pages in the mobile sheet regardless of the rail state", () => {
+    pathState.current = "/model"
+    sidebarState.state = "collapsed"
+    sidebarState.isMobile = true
+    renderNav()
+    expect(screen.getByText("Weighting")).toBeDefined()
   })
 })
