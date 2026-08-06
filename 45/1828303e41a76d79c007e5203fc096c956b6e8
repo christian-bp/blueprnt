@@ -1,0 +1,25 @@
+packages/backend/convex/payMapping/tables.ts
+  s_7d4d2043db4111::t_db1f0d5eb0918b 96-97
+packages/constants/src/payGapReasons.test.ts
+  s_7d4d2043db4111::t_a5a2a504e68e2e 13-14
+packages/constants/src/payGapReasons.ts
+  s_7d4d2043db4111::t_cf162e0179b8fa 7-18
+apps/dashboard/lib/audit-constants.ts
+  s_7d4d2043db4111::t_66d54257609558 93-94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "451828303e41a76d79c007e5203fc096c956b6e8",
+  "prompts": {},
+  "sessions": {
+    "s_7d4d2043db4111": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cbeef8ee-16ed-4aed-b926-c1546f14fb33",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
