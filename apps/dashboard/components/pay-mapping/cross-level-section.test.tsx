@@ -188,6 +188,42 @@ describe("CrossLevelSection", () => {
     expect(screen.getAllByText(m.sameTrack)).toHaveLength(1)
   })
 
+  it("caps the list at a preview and reveals the rest on demand", async () => {
+    // Seven women, each out-earned by the same high-paid man on a lower
+    // level: more cases than the preview shows.
+    const many: PayMappingSnapshotRow[] = [
+      row({
+        personPublicId: "m",
+        displayName: "Rich Man",
+        level: 4,
+        basicMonthly: 90000,
+      }),
+      ...Array.from({ length: 7 }, (_, i) =>
+        row({
+          personPublicId: `w${i}`,
+          displayName: `Woman ${i}`,
+          gender: "Kvinna",
+          level: 3,
+          basicMonthly: 50000 + i * 1000,
+        })
+      ),
+    ]
+    renderSection({ rows: many })
+    expect(screen.getByText("7 cross-level cases")).toBeDefined()
+    // Worst first: Woman 0 has the largest difference, Woman 6 the smallest.
+    expect(screen.getByText("Woman 0")).toBeDefined()
+    expect(screen.queryByText("Woman 6")).toBeNull()
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: m.showAll.replace("{count}", "2"),
+      })
+    )
+    await waitFor(() => {
+      expect(screen.getByText("Woman 6")).toBeDefined()
+    })
+  })
+
   it("states the compliance-positive result in words when there is no case", () => {
     renderSection({ rows: [ROWS[1] as PayMappingSnapshotRow] })
     expect(screen.getByText(m.none)).toBeDefined()

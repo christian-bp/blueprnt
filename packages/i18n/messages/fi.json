@@ -1211,7 +1211,8 @@
           "totalComp": "Kokonaiskorvaus",
           "diffKr": "Ero M. ka.",
           "diffPct": "Ero M. ka. %",
-          "documentation": "Dokumentaatio"
+          "documentation": "Dokumentaatio",
+          "diffVsMen": "Ero M. ka."
         }
       },
       "gap": {
@@ -1435,7 +1436,9 @@
           "man": "Mies",
           "level": "Taso ja track",
           "diff": "Ero"
-        }
+        },
+        "showAll": "Näytä {count} lisää",
+        "showFewer": "Näytä vähemmän"
       }
     },
     "rating": {

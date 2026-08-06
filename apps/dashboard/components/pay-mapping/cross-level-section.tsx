@@ -10,6 +10,7 @@ import {
   crossLevelPairs,
 } from "@workspace/core"
 import { Badge } from "@workspace/ui/components/badge"
+import { Button } from "@workspace/ui/components/button"
 import {
   Collapsible,
   CollapsibleContent,
@@ -24,6 +25,7 @@ import {
   TableRow,
 } from "@workspace/ui/components/table"
 import { useTranslations } from "next-intl"
+import { useState } from "react"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { LevelBadge } from "@/components/level-badge"
 import { useMoney } from "@/hooks/use-money"
@@ -38,6 +40,10 @@ import type {
   PayMappingNoteWire,
   PayMappingSnapshotRow,
 } from "./pay-mapping-gap-types"
+
+// How many cases the section shows before the "show all" control: enough to
+// read the worst offenders at a glance without burying the rest of the page.
+const PREVIEW_COUNT = 5
 
 // One rendered cross-level case: the engine's per-woman aggregate plus the
 // display values (names, tracks) resolved from the snapshot rows. Names stay
@@ -185,8 +191,14 @@ export function CrossLevelSection({
   const tDetail = useTranslations("dashboard.payMapping.detail")
   const tHelp = useTranslations("dashboard.help")
   const money = useMoney()
+  const [expanded, setExpanded] = useState(false)
 
   const cases = buildCrossLevelCases(rows)
+  // A real organization produces dozens of cases, and an unbounded list
+  // pushes everything below it off the screen. The worst few lead (the
+  // engine already orders by the largest difference); the rest are one
+  // click away.
+  const visible = expanded ? cases : cases.slice(0, PREVIEW_COUNT)
   if (cases.length === 0) {
     return hideWhenEmpty ? null : (
       <p className="text-muted-foreground text-sm">{t("none")}</p>
@@ -212,7 +224,7 @@ export function CrossLevelSection({
       <p className="text-muted-foreground text-sm">{t("lead")}</p>
 
       <div className="space-y-2">
-        {cases.map((item) => (
+        {visible.map((item) => (
           <Collapsible key={item.personPublicId}>
             <div className="rounded-md border px-3 py-2">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -243,12 +255,12 @@ export function CrossLevelSection({
               {/* Animated geometry only on the panel, spacing on an inner
                   div (docs/ui-animation.md rule 2). */}
               <CollapsibleContent className="h-(--collapsible-panel-height) overflow-hidden transition-[height] duration-200 ease-out data-ending-style:h-0 data-starting-style:h-0 motion-reduce:transition-none">
-                <div className="pt-3">
-                  <Table className="table-fixed">
+                <div className="overflow-x-auto pt-3">
+                  <Table className="min-w-[40rem] table-fixed">
                     <TableHeader>
                       <TableRow>
                         <TableHead>{t("columns.man")}</TableHead>
-                        <TableHead className="w-40">
+                        <TableHead className="w-36">
                           {t("columns.level")}
                         </TableHead>
                         <TableHead className="w-32 text-right">
@@ -257,7 +269,7 @@ export function CrossLevelSection({
                         <TableHead className="w-32 text-right">
                           {t("columns.diff")}
                         </TableHead>
-                        <TableHead className="w-40">
+                        <TableHead className="w-28">
                           {tDetail("columns.documentation")}
                         </TableHead>
                       </TableRow>
@@ -283,6 +295,18 @@ export function CrossLevelSection({
           </Collapsible>
         ))}
       </div>
+      {cases.length > PREVIEW_COUNT && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setExpanded((open) => !open)}
+        >
+          {expanded
+            ? t("showFewer")
+            : t("showAll", { count: cases.length - PREVIEW_COUNT })}
+        </Button>
+      )}
     </section>
   )
 }

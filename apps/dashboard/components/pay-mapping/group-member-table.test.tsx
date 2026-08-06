@@ -143,6 +143,22 @@ describe("GroupMemberTable", () => {
     expect(renderedNames()).toEqual(["Anna", "Erik", "Mats", "Wilma"])
   })
 
+  it("renders the difference as one column carrying both kr and percent", () => {
+    renderTable({ group: GROUP, rows: ROWS, currency: "SEK" })
+    // Two separate columns pushed the documentation control off the
+    // analysis pane's visible width, so the difference reads as one value.
+    const cells = Array.from(document.querySelectorAll("td")).map(
+      (cell) => cell.textContent ?? ""
+    )
+    // "-SEK 10,000 (-10%)": the amount and its percent in one cell. Intl
+    // puts a non-breaking space after the currency code, so normalize first.
+    expect(
+      cells.some((text) =>
+        /SEK [\d,]+ \(-?\d+%\)$/.test(text.replace(/\s+/g, " ").trim())
+      )
+    ).toBe(true)
+  })
+
   it("marks part-time rows with their FTE share next to the grossed-up base", () => {
     renderTable({
       group: GROUP,

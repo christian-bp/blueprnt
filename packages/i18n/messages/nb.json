@@ -1211,7 +1211,8 @@
           "totalComp": "Total kompensasjon",
           "diffKr": "Mot M. snitt",
           "diffPct": "Mot M. snitt %",
-          "documentation": "Dokumentasjon"
+          "documentation": "Dokumentasjon",
+          "diffVsMen": "Mot M. snitt"
         }
       },
       "gap": {
@@ -1435,7 +1436,9 @@
           "man": "Mann",
           "level": "Nivå og track",
           "diff": "Forskjell"
-        }
+        },
+        "showAll": "Vis {count} til",
+        "showFewer": "Vis færre"
       }
     },
     "rating": {

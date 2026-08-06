@@ -1211,7 +1211,8 @@
           "totalComp": "Total ersättning",
           "diffKr": "Mot M. medel",
           "diffPct": "Mot M. medel %",
-          "documentation": "Dokumentation"
+          "documentation": "Dokumentation",
+          "diffVsMen": "Mot M. medel"
         }
       },
       "gap": {
@@ -1435,7 +1436,9 @@
           "man": "Man",
           "level": "Nivå och track",
           "diff": "Skillnad"
-        }
+        },
+        "showAll": "Visa {count} till",
+        "showFewer": "Visa färre"
       }
     },
     "rating": {

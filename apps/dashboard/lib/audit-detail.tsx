@@ -481,6 +481,9 @@ export const FIELD_DISPLAY_ORDER = [
   // not diffed, but ordered so they lead a no-changes stats fallback.
   "groupLabel",
   "scope",
+  // Pay-mapping action/note context fields (payMapping.action*/note*).
+  "targetLabel",
+  "targetKind",
   // Pay-mapping run completion flat-stats fields (payMapping.runCompleted).
   "equalWorkDone",
   "equivalentWorkDone",
@@ -857,6 +860,45 @@ export function formatAuditDetail(
         ? `${groupLabel} (${fieldLabel("scope")}: ${scope})`
         : groupLabel
       if (changes === null) return base
+      return (
+        <>
+          {base}:{" "}
+          {formatChanges(
+            changes,
+            fieldLabel,
+            undefined,
+            boolLabel,
+            valueLabel,
+            dateLabel
+          )}
+        </>
+      )
+    }
+    // The action/note events carry what the record is anchored to as flat
+    // context (targetLabel + targetKind), not as part of the diff, so the
+    // default case's changes-only rendering would drop the very thing that
+    // says WHICH group or person the record is about. targetKind is a wire
+    // code; targetLabel is already display text ("roleTitle · seniority",
+    // never a person's name, so the trail stays erasure-safe).
+    case "payMapping.actionCreated":
+    case "payMapping.actionUpdated":
+    case "payMapping.actionStatusChanged":
+    case "payMapping.actionDeleted":
+    case "payMapping.noteCreated":
+    case "payMapping.noteUpdated":
+    case "payMapping.noteDeleted": {
+      const rawLabel = typeof p.targetLabel === "string" ? p.targetLabel : ""
+      const rawKind = typeof p.targetKind === "string" ? p.targetKind : ""
+      const kind = valueLabel?.("targetKind", rawKind) ?? rawKind
+      const base = rawKind ? `${rawLabel} (${kind})` : rawLabel
+      // noteCreated has no diff: its classification is a flat field.
+      const rawNoteType = typeof p.noteType === "string" ? p.noteType : ""
+      const noteType = valueLabel?.("noteType", rawNoteType) ?? rawNoteType
+      if (changes === null) {
+        return rawNoteType
+          ? `${base}: ${fieldLabel("noteType")}: ${noteType}`
+          : base
+      }
       return (
         <>
           {base}:{" "}

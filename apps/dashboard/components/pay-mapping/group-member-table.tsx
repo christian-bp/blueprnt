@@ -213,109 +213,115 @@ export function GroupMemberTable({
 
   return (
     <div className="space-y-2">
-      <Table className="table-fixed">
-        <TableHeader>
-          <TableRow>
-            {sortableHead("name", t("columns.name"))}
-            {sortableHead("gender", t("columns.gender"), "w-24")}
-            {sortableHead("base", t("columns.basePay"), "w-32")}
-            {sortableHead("tcc", t("columns.totalComp"), "w-32")}
-            {sortableHead("diffKr", t("columns.diffKr"), "w-32")}
-            <TableHead className="w-24 text-right">
-              {t("columns.diffPct")}
-            </TableHead>
-            {documentation !== undefined && (
-              <TableHead className="w-40">
-                {t("columns.documentation")}
-              </TableHead>
-            )}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {/* Index keys: the frozen member list never reorders identity-wise,
+      {/* Six columns do not fit the analysis pane's width, and table-fixed
+          answers that by collapsing the one flexible column (the name) to
+          nothing. The table keeps a readable minimum and scrolls inside its
+          own container instead, per the wide-content rule. */}
+      <div className="overflow-x-auto">
+        <Table className="min-w-[46rem] table-fixed">
+          <TableHeader>
+            <TableRow>
+              {sortableHead("name", t("columns.name"))}
+              {sortableHead("gender", t("columns.gender"), "w-20")}
+              {sortableHead("base", t("columns.basePay"), "w-28")}
+              {sortableHead("tcc", t("columns.totalComp"), "w-28")}
+              {/* One combined difference column: two separate ones pushed
+                  the documentation control past the analysis pane's visible
+                  width, and the kr and percent read better together. */}
+              {sortableHead("diffKr", t("columns.diffVsMen"), "w-40")}
+              {documentation !== undefined && (
+                <TableHead className="w-28">
+                  {t("columns.documentation")}
+                </TableHead>
+              )}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {/* Index keys: the frozen member list never reorders identity-wise,
               and the rows carry no id (erased rows share one tombstone name,
               so a name key would collide). */}
-          {pageRows.map((row, index) => {
-            const diff = diffText(row)
-            return (
-              // biome-ignore lint/suspicious/noArrayIndexKey: frozen rows, no stable id on the wire
-              <TableRow key={index}>
-                <TableCell className="truncate font-medium">
-                  {row.erased ? t("erased") : row.name}
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  <span className="flex items-center gap-1.5">
-                    <span
-                      aria-hidden="true"
-                      className="size-2 shrink-0 rounded-[2px]"
-                      style={genderKeyStyle(row.woman ? "women" : "men")}
-                    />
-                    {tGender(row.woman ? "Kvinna" : "Man")}
-                  </span>
-                </TableCell>
-                <TableCell className="text-right tabular-nums">
-                  {money(row.base, currency)}
-                  {row.ftePercent !== null && row.ftePercent < 100 && (
-                    <span className="text-muted-foreground">
-                      {" "}
-                      {t("fteShare", { fte: row.ftePercent })}
+            {pageRows.map((row, index) => {
+              const diff = diffText(row)
+              return (
+                // biome-ignore lint/suspicious/noArrayIndexKey: frozen rows, no stable id on the wire
+                <TableRow key={index}>
+                  <TableCell className="truncate font-medium">
+                    {row.erased ? t("erased") : row.name}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    <span className="flex items-center gap-1.5">
+                      <span
+                        aria-hidden="true"
+                        className="size-2 shrink-0 rounded-[2px]"
+                        style={genderKeyStyle(row.woman ? "women" : "men")}
+                      />
+                      {tGender(row.woman ? "Kvinna" : "Man")}
                     </span>
-                  )}
-                </TableCell>
-                <TableCell className="text-right tabular-nums">
-                  {money(row.tcc, currency)}
-                </TableCell>
-                <TableCell className="text-right tabular-nums">
-                  {diff.kr}
-                </TableCell>
-                <TableCell className="text-right tabular-nums">
-                  {diff.pct}
-                </TableCell>
-                {documentation !== undefined && (
-                  <TableCell>
-                    {/* Fixed-height flex slot: a row gaining documentation
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {money(row.base, currency)}
+                    {row.ftePercent !== null && row.ftePercent < 100 && (
+                      <span className="text-muted-foreground">
+                        {" "}
+                        {t("fteShare", { fte: row.ftePercent })}
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {money(row.tcc, currency)}
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {diff.kr}
+                    {diff.pct === "-" ? "" : ` (${diff.pct})`}
+                  </TableCell>
+                  {documentation !== undefined && (
+                    <TableCell>
+                      {/* Fixed-height flex slot: a row gaining documentation
                         must never reflow its neighbours (layout-shift rule),
                         and an inline-flex control directly in a cell would
                         inflate the line box (skeleton-parity rule). */}
-                    <div className="flex h-9 items-center justify-between gap-1">
-                      {(() => {
-                        const target: ActionTargetWire = {
-                          kind: "person",
-                          scope: documentation.scope,
-                          groupKey: group.key,
-                          personPublicId: row.personPublicId,
-                        }
-                        const own = documentationFor(
-                          target,
-                          documentation.actions,
-                          documentation.notes
-                        )
-                        return (
-                          <>
-                            <DocumentationBadges
-                              actions={own.actions}
-                              notes={own.notes}
-                            />
-                            <DocumentationMenu
-                              runId={documentation.runId}
-                              target={target}
-                              targetLabel={row.erased ? t("erased") : row.name}
-                              actions={own.actions}
-                              notes={own.notes}
-                              currency={currency}
-                              locked={documentation.locked}
-                            />
-                          </>
-                        )
-                      })()}
-                    </div>
-                  </TableCell>
-                )}
-              </TableRow>
-            )
-          })}
-        </TableBody>
-      </Table>
+                      <div className="flex h-9 items-center justify-between gap-1">
+                        {(() => {
+                          const target: ActionTargetWire = {
+                            kind: "person",
+                            scope: documentation.scope,
+                            groupKey: group.key,
+                            personPublicId: row.personPublicId,
+                          }
+                          const own = documentationFor(
+                            target,
+                            documentation.actions,
+                            documentation.notes
+                          )
+                          return (
+                            <>
+                              <DocumentationBadges
+                                actions={own.actions}
+                                notes={own.notes}
+                              />
+                              <DocumentationMenu
+                                runId={documentation.runId}
+                                target={target}
+                                targetLabel={
+                                  row.erased ? t("erased") : row.name
+                                }
+                                actions={own.actions}
+                                notes={own.notes}
+                                currency={currency}
+                                locked={documentation.locked}
+                              />
+                            </>
+                          )
+                        })()}
+                      </div>
+                    </TableCell>
+                  )}
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
+      </div>
       {pageCount > 1 && (
         <TablePagination
           page={pagination.pageIndex}

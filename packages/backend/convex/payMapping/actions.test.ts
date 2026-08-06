@@ -163,11 +163,39 @@ describe("payMapping actions", () => {
     expect(changes.status?.to).toBe("notStarted")
     expect(changes.priority?.to).toBe("high")
     expect(changes.plannedDate?.to).toBe("2026-12-01")
+    expect(changes.reason?.to).toBe("experience")
     // Free text, owner, and cost never enter the trail (ADR-0015).
     expect(changes.problem).toBeUndefined()
     expect(changes.ownerUserId).toBeUndefined()
     expect(changes.estimatedCost).toBeUndefined()
     expect(JSON.stringify(payload)).not.toContain("Unexplained")
+  })
+
+  it("omits an unset optional field from the create diff", async () => {
+    const t = initConvexTest()
+    const { orgId, userId, runId, asHr } = await seedRun(t)
+    const { reason: _reason, ...withoutReason } = baseAction(userId)
+    await asHr.mutation(api.payMapping.actions.createAction, {
+      orgId,
+      runId,
+      ...withoutReason,
+    })
+    const audits = await t.run((ctx) =>
+      ctx.db
+        .query("auditLog")
+        .withIndex("by_org_type", (q) =>
+          q.eq("orgId", orgId).eq("type", "payMapping.actionCreated")
+        )
+        .collect()
+    )
+    const payload = audits[0]?.payload as
+      | { changes: Record<string, unknown> }
+      | undefined
+    const changes = payload?.changes ?? {}
+    // An optional field the user left unset is not a change: including it
+    // rendered as an empty-valued "Sakligt skäl: " row in the log.
+    expect("reason" in changes).toBe(false)
+    expect("status" in changes).toBe(true)
   })
 
   it("accepts a person target in the group and a valid tvärnivå pair", async () => {

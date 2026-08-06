@@ -1211,7 +1211,8 @@
           "totalComp": "Total compensation",
           "diffKr": "Vs men's avg",
           "diffPct": "Vs men's avg %",
-          "documentation": "Documentation"
+          "documentation": "Documentation",
+          "diffVsMen": "Vs men's avg"
         }
       },
       "gap": {
@@ -1435,7 +1436,9 @@
           "man": "Man",
           "level": "Level and track",
           "diff": "Difference"
-        }
+        },
+        "showAll": "Show {count} more",
+        "showFewer": "Show fewer"
       }
     },
     "rating": {

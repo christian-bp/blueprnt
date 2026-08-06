@@ -1211,7 +1211,8 @@
           "totalComp": "Samlet løn",
           "diffKr": "Mod M. gns.",
           "diffPct": "Mod M. gns. %",
-          "documentation": "Dokumentation"
+          "documentation": "Dokumentation",
+          "diffVsMen": "Mod M. gns."
         }
       },
       "gap": {
@@ -1435,7 +1436,9 @@
           "man": "Mand",
           "level": "Niveau og track",
           "diff": "Forskel"
-        }
+        },
+        "showAll": "Vis {count} mere",
+        "showFewer": "Vis færre"
       }
     },
     "rating": {

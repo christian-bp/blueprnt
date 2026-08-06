@@ -179,37 +179,46 @@ export function DocumentationMenu({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <ActionDialog
-        open={actionOpen}
-        onOpenChange={setActionOpen}
-        runId={runId}
-        target={target}
-        targetLabel={targetLabel}
-        action={existingAction}
-        currency={currency}
-      />
-      <NoteDialog
-        open={noteOpen}
-        onOpenChange={setNoteOpen}
-        runId={runId}
-        target={target}
-        targetLabel={targetLabel}
-        note={existingNote}
-      />
-      <ConfirmDeleteDialog
-        open={confirmOpen}
-        onOpenChange={setConfirmOpen}
-        title={
-          existingAction !== undefined
-            ? t("deleteActionTitle")
-            : t("deleteNoteTitle")
-        }
-        description={t("deleteDescription")}
-        confirmLabel={t("deleteConfirm")}
-        cancelLabel={t("cancel")}
-        onConfirm={handleDelete}
-        pending={pending}
-      />
+      {/* Mounted only while open: every member row and every cross-level
+          pair carries one of these menus, so keeping three dialog trees
+          alive per row made a page with dozens of rows visibly slow. */}
+      {actionOpen && (
+        <ActionDialog
+          open
+          onOpenChange={setActionOpen}
+          runId={runId}
+          target={target}
+          targetLabel={targetLabel}
+          action={existingAction}
+          currency={currency}
+        />
+      )}
+      {noteOpen && (
+        <NoteDialog
+          open
+          onOpenChange={setNoteOpen}
+          runId={runId}
+          target={target}
+          targetLabel={targetLabel}
+          note={existingNote}
+        />
+      )}
+      {confirmOpen && (
+        <ConfirmDeleteDialog
+          open={confirmOpen}
+          onOpenChange={setConfirmOpen}
+          title={
+            existingAction !== undefined
+              ? t("deleteActionTitle")
+              : t("deleteNoteTitle")
+          }
+          description={t("deleteDescription")}
+          confirmLabel={t("deleteConfirm")}
+          cancelLabel={t("cancel")}
+          onConfirm={handleDelete}
+          pending={pending}
+        />
+      )}
     </>
   )
 }

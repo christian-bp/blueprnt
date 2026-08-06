@@ -170,7 +170,14 @@ export const createAction = orgMutation({
         actionId,
         targetKind: content.target.kind,
         targetLabel,
-        changes: buildCreateChanges(auditView(doc), ACTION_AUDIT_FIELDS),
+        // An optional field the user left unset is not a "change" on
+        // create: including it rendered as an empty-valued row
+        // ("Sakligt skäl: ") in the log.
+        changes: Object.fromEntries(
+          Object.entries(
+            buildCreateChanges(auditView(doc), ACTION_AUDIT_FIELDS)
+          ).filter(([, change]) => change.to !== null)
+        ),
       },
     })
     return actionId
