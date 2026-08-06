@@ -1,0 +1,23 @@
+docs/adr/0016-helskarmsflode-eller-vanlig-layout.md
+  s_7d4d2043db4111::t_36feca13a2d54e 1-27
+docs/superpowers/plans/2026-08-06-iteration-3-analysis-ladder.md
+  s_7d4d2043db4111::t_b5c90f2d399ffb 163
+  s_7d4d2043db4111::t_db8b3aa68c4caa 72
+  s_7d4d2043db4111::t_4fdf99d7ae7565 1-71,73-162,164-180
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "84e7e7d5f8697a527fa23d58896c4a7a1709aebd",
+  "prompts": {},
+  "sessions": {
+    "s_7d4d2043db4111": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cbeef8ee-16ed-4aed-b926-c1546f14fb33",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
