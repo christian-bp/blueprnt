@@ -7,8 +7,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
+import { CrossLevelSection } from "./cross-level-section"
+import type {
+  PayMappingActionWire,
+  PayMappingNoteWire,
+  PayMappingSnapshotRow,
+} from "./pay-mapping-gap-types"
 import { ReviewStepActions } from "./review-step-actions"
 
 // The two group chapters' own intro step (ADR-0012): a static card that
@@ -29,12 +36,25 @@ export function ReviewChapterIntro({
   chapter,
   groupCount,
   locked,
+  rows,
+  currency,
+  runId,
+  actions,
+  notes,
   onNext,
   onPrevious,
 }: {
   chapter: "equalWork" | "equivalentWork"
   groupCount: number
   locked: boolean
+  // The equivalentWork chapter also carries the run-level tvärnivå check
+  // (Iteration 2 note 4): it compares individuals ACROSS levels, so it
+  // belongs to the chapter as a whole, not to any single group step.
+  rows: PayMappingSnapshotRow[]
+  currency: string
+  runId: Id<"payMappingRuns">
+  actions: PayMappingActionWire[] | undefined
+  notes: PayMappingNoteWire[] | undefined
   onNext: () => void
   onPrevious?: () => void
 }) {
@@ -86,6 +106,13 @@ export function ReviewChapterIntro({
         </div>
         {groupCount === 0 && (
           <p className="text-muted-foreground text-sm">{tIntro("empty")}</p>
+        )}
+        {chapter === "equivalentWork" && (
+          <CrossLevelSection
+            rows={rows}
+            currency={currency}
+            documentation={{ runId, actions, notes, locked }}
+          />
         )}
       </CardContent>
       <CardFooter>

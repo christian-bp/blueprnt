@@ -1423,6 +1423,19 @@
         "continueWizard": "Jatka tarkastusta",
         "backToSummary": "Takaisin yhteenvetoon",
         "openSummary": "Avaa yhteenveto"
+      },
+      "crossLevel": {
+        "title": "{count, plural, one {# tasojen välinen tapaus} other {# tasojen välistä tapausta}}",
+        "lead": "Korkeammalla tasolla (taso 1 on korkein) oleva nainen ansaitsee peruspalkkana vähemmän kuin alemmalla tasolla oleva mies. Track voi olla asiallinen peruste; sama track molemmilla puolilla vahvistaa tapausta.",
+        "none": "Yksikään korkeammalla tasolla oleva nainen ei ansaitse vähemmän kuin alemmalla tasolla oleva mies.",
+        "summary": "Ohittaa {count, plural, one {# mies} other {# miestä}} alemmilla tasoilla, enintään {diff} (taso {level}).",
+        "showPairs": "Näytä vertailut",
+        "sameTrack": "Sama track",
+        "columns": {
+          "man": "Mies",
+          "level": "Taso ja track",
+          "diff": "Ero"
+        }
       }
     },
     "rating": {
@@ -1879,7 +1892,9 @@
       "payGapGateLabel": "Mitä palkkakartoituksen viimeistely tarkoittaa?",
       "payGapGateBody": "Jokainen samaa työtä tekevä ryhmä, jolla on palkkaero, ja jokainen naisvaltainen ryhmä, jolla on korkeammin palkattu vertailu, on merkittävä valmiiksi dokumentoidulla perusteella ennen kuin palkkakartoitus voidaan viimeistellä. Tämä on Ruotsin lain edellyttämä lakisääteinen dokumentaatio.",
       "collaborationLabel": "Mitä yhteistoiminta tarkoittaa?",
-      "collaborationBody": "Yhteistoiminta tarkoittaa henkilöstön ja heidän luottamusmiestensä osallistamista palkkakartoituksen kaikissa vaiheissa (syrjintälain 3 luvun 11 §). Jos organisaationne on sidottu työehtosopimukseen, luottamusmiehillä on oikeus saada tarvitsemansa tiedot osallistuakseen (12 §)."
+      "collaborationBody": "Yhteistoiminta tarkoittaa henkilöstön ja heidän luottamusmiestensä osallistamista palkkakartoituksen kaikissa vaiheissa (syrjintälain 3 luvun 11 §). Jos organisaationne on sidottu työehtosopimukseen, luottamusmiehillä on oikeus saada tarvitsemansa tiedot osallistuakseen (12 §).",
+      "crossLevelLabel": "Mikä on tasojen välinen tapaus?",
+      "crossLevelBody": "Palkkakartoitus ryhmittelee samanarvoisen työn tason mukaan, mutta palkkaero voi kulkea myös TASOJEN YLI: nainen, jonka rooli on arvioitu vaativammaksi, ansaitsee vähemmän kuin mies alemmin arvioidulla tasolla. Tämä käänteisyys on rakenteellinen varoitusmerkki, joten se listataan erikseen tason sisäisestä vertailusta. Track (IC, Lead, Manager) voi olla sille asiallinen peruste; kun molemmat ovat samalla trackilla, peruste katoaa ja tapaus vaatii dokumentoidun perusteen tai toimenpiteen."
     },
     "widgetCard": {
       "expand": "Suurenna"

@@ -1423,6 +1423,19 @@
         "continueWizard": "Continue the review",
         "backToSummary": "Back to the summary",
         "openSummary": "Open the summary"
+      },
+      "crossLevel": {
+        "title": "{count, plural, one {# cross-level case} other {# cross-level cases}}",
+        "lead": "A woman on a higher level (level 1 is the highest) earns less in base salary than a man on a lower level. Track can be an objective explanation; the same track on both sides makes the case stronger.",
+        "none": "No woman on a higher level is out-earned by a man on a lower level.",
+        "summary": "Out-earned by {count, plural, one {# man} other {# men}} on lower levels, at most {diff} (level {level}).",
+        "showPairs": "Show the comparisons",
+        "sameTrack": "Same track",
+        "columns": {
+          "man": "Man",
+          "level": "Level and track",
+          "diff": "Difference"
+        }
       }
     },
     "rating": {
@@ -1879,7 +1892,9 @@
       "payGapGateLabel": "What does completing the pay mapping do?",
       "payGapGateBody": "Every equal-work group with a pay gap, and every women-dominated group with a higher-paid comparison, must be marked done with a documented reason before the pay mapping can be completed. This is the statutory documentation Swedish law requires.",
       "collaborationLabel": "What is collaboration?",
-      "collaborationBody": "Collaboration (Swedish: samverkan) means cooperating with employees and their union representatives at every step of the pay mapping (Diskrimineringslagen 3 kap. 11 §). If your organization is bound by a collective agreement, the union representatives have a right to the information they need to take part (12 §)."
+      "collaborationBody": "Collaboration (Swedish: samverkan) means cooperating with employees and their union representatives at every step of the pay mapping (Diskrimineringslagen 3 kap. 11 §). If your organization is bound by a collective agreement, the union representatives have a right to the information they need to take part (12 §).",
+      "crossLevelLabel": "What is a cross-level case?",
+      "crossLevelBody": "The pay mapping groups equivalent work by level, but a pay difference can also cut ACROSS levels: a woman whose role was evaluated as more demanding earns less than a man on a lower-valued level. That inversion is a structural warning sign, so it is listed separately from the within-level comparison. Track (IC, Lead, Manager) can be an objective explanation for it; when both sides sit on the same track, that explanation is gone and the case needs a documented reason or an action."
     },
     "widgetCard": {
       "expand": "Expand"

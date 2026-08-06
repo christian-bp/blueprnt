@@ -1423,6 +1423,19 @@
         "continueWizard": "Fortsätt granskningen",
         "backToSummary": "Tillbaka till sammanställningen",
         "openSummary": "Öppna sammanställningen"
+      },
+      "crossLevel": {
+        "title": "{count, plural, one {# tvärnivå-fall} other {# tvärnivå-fall}}",
+        "lead": "En kvinna på en högre nivå (nivå 1 är högst) har lägre grundlön än en man på en lägre nivå. Track kan vara ett sakligt skäl; samma track på båda sidor gör fallet starkare.",
+        "none": "Ingen kvinna på en högre nivå tjänar mindre än en man på en lägre nivå.",
+        "summary": "Tjänas förbi av {count, plural, one {# man} other {# män}} på lägre nivåer, som mest {diff} (nivå {level}).",
+        "showPairs": "Visa jämförelserna",
+        "sameTrack": "Samma track",
+        "columns": {
+          "man": "Man",
+          "level": "Nivå och track",
+          "diff": "Skillnad"
+        }
       }
     },
     "rating": {
@@ -1879,7 +1892,9 @@
       "payGapGateLabel": "Vad innebär det att slutföra lönekartläggningen?",
       "payGapGateBody": "Varje grupp med lika arbete som har ett löneglapp, och varje kvinnodominerad grupp med en högre betald jämförelse, måste klarmarkeras med ett dokumenterat skäl innan lönekartläggningen kan slutföras. Detta är den lagstadgade dokumentation som svensk lag kräver.",
       "collaborationLabel": "Vad är samverkan?",
-      "collaborationBody": "Samverkan innebär att samverka med arbetstagarna och deras fackliga representanter i varje steg av lönekartläggningen (diskrimineringslagen 3 kap. 11 §). Om er organisation är bunden av kollektivavtal har de fackliga representanterna rätt till den information de behöver för att delta (12 §)."
+      "collaborationBody": "Samverkan innebär att samverka med arbetstagarna och deras fackliga representanter i varje steg av lönekartläggningen (diskrimineringslagen 3 kap. 11 §). Om er organisation är bunden av kollektivavtal har de fackliga representanterna rätt till den information de behöver för att delta (12 §).",
+      "crossLevelLabel": "Vad är ett tvärnivå-fall?",
+      "crossLevelBody": "Lönekartläggningen grupperar likvärdigt arbete per nivå, men en löneskillnad kan också gå TVÄRS över nivåerna: en kvinna vars roll har värderats som mer krävande tjänar mindre än en man på en lägre värderad nivå. Den inversionen är ett strukturellt varningstecken och listas därför separat från jämförelsen inom nivån. Track (IC, Lead, Manager) kan vara ett sakligt skäl till den; när båda sidor ligger på samma track faller det skälet bort och fallet behöver ett dokumenterat skäl eller en åtgärd."
     },
     "widgetCard": {
       "expand": "Förstora"

@@ -309,6 +309,11 @@ export function PayMappingReview() {
             chapter={step.chapter}
             groupCount={groupCount}
             locked={locked}
+            rows={currentRun.rows}
+            currency={currency}
+            runId={currentRun.runId}
+            actions={actions}
+            notes={notes}
             onNext={goForward}
             onPrevious={previousHandler}
           />

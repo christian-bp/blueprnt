@@ -1423,6 +1423,19 @@
         "continueWizard": "Fortsæt gennemgangen",
         "backToSummary": "Tilbage til opsummeringen",
         "openSummary": "Åbn opsummeringen"
+      },
+      "crossLevel": {
+        "title": "{count, plural, one {# tværniveau-tilfælde} other {# tværniveau-tilfælde}}",
+        "lead": "En kvinde på et højere niveau (niveau 1 er højest) har lavere grundløn end en mand på et lavere niveau. Track kan være en saglig grund; samme track på begge sider gør tilfældet stærkere.",
+        "none": "Ingen kvinde på et højere niveau tjener mindre end en mand på et lavere niveau.",
+        "summary": "Overhales af {count, plural, one {# mand} other {# mænd}} på lavere niveauer, højst {diff} (niveau {level}).",
+        "showPairs": "Vis sammenligningerne",
+        "sameTrack": "Samme track",
+        "columns": {
+          "man": "Mand",
+          "level": "Niveau og track",
+          "diff": "Forskel"
+        }
       }
     },
     "rating": {
@@ -1879,7 +1892,9 @@
       "payGapGateLabel": "Hvad indebærer det at afslutte lønkortlægningen?",
       "payGapGateBody": "Hver gruppe med lige arbejde, der har et løngab, og hver kvindedomineret gruppe med en højere betalt sammenligning, skal markeres udført med en dokumenteret begrundelse, før lønkortlægningen kan afsluttes. Dette er den lovpligtige dokumentation, som svensk lov kræver.",
       "collaborationLabel": "Hvad er samarbejde?",
-      "collaborationBody": "Samarbejde betyder at involvere medarbejderne og deres faglige repræsentanter i hvert trin af lønkortlægningen (diskrimineringslovens 3 kap. 11 §). Hvis organisationen er bundet af en kollektiv overenskomst, har de faglige repræsentanter ret til de oplysninger, de har brug for for at deltage (12 §)."
+      "collaborationBody": "Samarbejde betyder at involvere medarbejderne og deres faglige repræsentanter i hvert trin af lønkortlægningen (diskrimineringslovens 3 kap. 11 §). Hvis organisationen er bundet af en kollektiv overenskomst, har de faglige repræsentanter ret til de oplysninger, de har brug for for at deltage (12 §).",
+      "crossLevelLabel": "Hvad er et tværniveau-tilfælde?",
+      "crossLevelBody": "Lønkortlægningen grupperer ligeværdigt arbejde per niveau, men en lønforskel kan også gå PÅ TVÆRS af niveauerne: en kvinde, hvis rolle er vurderet som mere krævende, tjener mindre end en mand på et lavere vurderet niveau. Den inversion er et strukturelt advarselstegn og listes derfor separat fra sammenligningen inden for niveauet. Track (IC, Lead, Manager) kan være en saglig grund til den; når begge sider ligger på samme track, falder den grund bort, og tilfældet kræver en dokumenteret grund eller et tiltag."
     },
     "widgetCard": {
       "expand": "Forstør"

@@ -2,17 +2,22 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
+import type { Id } from "@workspace/backend/convex/_generated/dataModel"
+import type { PayMappingSnapshotRow } from "@/components/pay-mapping/pay-mapping-gap-types"
 import { ReviewChapterIntro } from "@/components/pay-mapping/review-chapter-intro"
 
 const t = messages.dashboard.payMapping.review
 const tHelp = messages.dashboard.help
 const tForm = messages.dashboard.payMapping.analysisForm
 
+const RUN_ID = "run-1" as Id<"payMappingRuns">
+
 function renderIntro(
   overrides: Partial<{
     chapter: "equalWork" | "equivalentWork"
     groupCount: number
     locked: boolean
+    rows: PayMappingSnapshotRow[]
     onNext: () => void
     onPrevious: () => void
   }> = {}
@@ -24,6 +29,11 @@ function renderIntro(
         chapter={overrides.chapter ?? "equalWork"}
         groupCount={overrides.groupCount ?? 3}
         locked={overrides.locked ?? false}
+        rows={overrides.rows ?? []}
+        currency="SEK"
+        runId={RUN_ID}
+        actions={[]}
+        notes={[]}
         onNext={onNext}
         onPrevious={overrides.onPrevious}
       />

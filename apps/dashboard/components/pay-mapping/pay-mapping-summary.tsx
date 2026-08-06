@@ -20,6 +20,7 @@ import { useCallback, useRef, useState } from "react"
 import { toast } from "@/lib/toast"
 import { AccordionSection } from "@/components/accordion-section"
 import { ContinueReviewItem } from "./continue-review-item"
+import { CrossLevelSection } from "./cross-level-section"
 import { useOrganization } from "@/components/org-context"
 import { TableSearchField } from "@/components/table-search-field"
 import {
@@ -652,6 +653,22 @@ export function PayMappingSummary() {
           <ContinueReviewItem href={reviewHref} remaining={remaining} />
         )}
       </div>
+      {/* The run-level tvärnivå check (Iteration 2 note 4): it compares
+          individuals ACROSS levels, so it belongs above the per-group
+          master-detail rather than inside any one group. Hidden entirely
+          when there is nothing to show, since this is the steady-state
+          summary rather than a guided step. */}
+      <CrossLevelSection
+        rows={currentRun.rows}
+        currency={currency}
+        hideWhenEmpty
+        documentation={{
+          runId: currentRun.runId,
+          actions,
+          notes,
+          locked,
+        }}
+      />
       {/* The two-column master-detail (lg+): the left column always carries
           the checklist and is hidden below lg only while a card is open (the
           small-screen fallback's own "swap the whole view" behavior); the
