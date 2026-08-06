@@ -30,6 +30,7 @@ vi.mock("@/components/org-context", () => ({
 }))
 
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
+import { makeExcluded, makeGapGroup } from "@/test/pay-mapping-fixtures"
 import type {
   GapGroup,
   GroupAnalysis,
@@ -48,20 +49,17 @@ const t = messages.dashboard.payMapping.review
 const tGap = messages.dashboard.payMapping.gap
 const tReasons = messages.dashboard.payMapping.reasons
 
-function equalWorkGroup(overrides: Partial<GapGroup> = {}): GapGroup {
-  return {
+function equalWorkGroup(
+  overrides: Parameters<typeof makeGapGroup>[0] = {}
+): GapGroup {
+  return makeGapGroup({
     key: "k",
     roleTitle: "Role",
     seniority: "Seniority",
-    level: 3,
     womenCount: 2,
     menCount: 3,
-    womenMeanComp: 90000,
-    menMeanComp: 100000,
-    gapPct: 10,
-    flag: "elevated",
     ...overrides,
-  }
+  })
 }
 
 const COMPARISON: WomenDominatedComparisonWire = {
@@ -111,24 +109,25 @@ const GAP: PayMappingGapResult = {
       key: "swe",
       roleTitle: "SWE",
       seniority: "Senior",
-      gapPct: 8,
+      metric: { gapPct: 8 },
       flag: "elevated",
     }),
     equalWorkGroup({
       key: "sales",
       roleTitle: "Sales",
       seniority: "Mid",
-      gapPct: 15,
+      metric: { gapPct: 15 },
       flag: "critical",
     }),
     equalWorkGroup({
       key: "qa",
       roleTitle: "QA",
       seniority: "Mid",
-      gapPct: 2,
+      metric: { gapPct: 2 },
       flag: "ok",
     }),
   ],
+  excluded: makeExcluded(),
   equivalentWork: [],
   womenDominated: [
     womenDominatedGroup({

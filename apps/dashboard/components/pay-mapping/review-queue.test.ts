@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import { makeExcluded, makeGapGroup } from "@/test/pay-mapping-fixtures"
 import type {
   GapGroup,
   GroupAnalysis,
@@ -25,20 +26,8 @@ function stepAt(queue: ReviewQueue, index: number): ReviewStep {
   return step
 }
 
-function group(overrides: Partial<GapGroup> = {}): GapGroup {
-  return {
-    key: "k",
-    roleTitle: "SWE",
-    seniority: "Senior",
-    level: 3,
-    womenCount: 2,
-    menCount: 2,
-    womenMeanComp: 90000,
-    menMeanComp: 100000,
-    gapPct: 10,
-    flag: "elevated",
-    ...overrides,
-  }
+function group(overrides: Parameters<typeof makeGapGroup>[0] = {}): GapGroup {
+  return makeGapGroup({ key: "k", ...overrides })
 }
 
 const COMPARISON: WomenDominatedComparisonWire = {
@@ -80,21 +69,21 @@ const EQUAL_WORK: GapGroup[] = [
     key: "swe",
     roleTitle: "SWE",
     seniority: "Senior",
-    gapPct: 8,
+    metric: { gapPct: 8 },
     flag: "elevated",
   }),
   group({
     key: "sales",
     roleTitle: "Sales",
     seniority: "Mid",
-    gapPct: 15,
+    metric: { gapPct: 15 },
     flag: "critical",
   }),
   group({
     key: "qa",
     roleTitle: "QA",
     seniority: "Mid",
-    gapPct: 2,
+    metric: { gapPct: 2 },
     flag: "ok",
   }),
 ]
@@ -123,6 +112,7 @@ const GAP: PayMappingGapResult = {
     flag: "elevated",
   },
   equalWork: EQUAL_WORK,
+  excluded: makeExcluded(),
   equivalentWork: [],
   womenDominated: WOMEN_DOMINATED,
   population: { women: 5, men: 5 },

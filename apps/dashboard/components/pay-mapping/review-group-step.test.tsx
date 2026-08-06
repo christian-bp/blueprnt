@@ -36,6 +36,7 @@ import type {
 } from "@/components/pay-mapping/pay-mapping-gap-types"
 import { ReviewGroupStep } from "@/components/pay-mapping/review-group-step"
 import { mockMutation } from "@/test/convex-mocks"
+import { makeGapGroup } from "@/test/pay-mapping-fixtures"
 
 const upsertMock = mockMutation("payMapping.analyses.upsertGroupAnalysis")
 
@@ -57,66 +58,65 @@ function sek(value: number) {
   return formatMoney(value, "SEK", "en").replace(/\s+/g, " ")
 }
 
-const GROUP_LESS: GapGroup = {
+const GROUP_LESS: GapGroup = makeGapGroup({
   key: "swe|3|senior",
   roleTitle: "SWE",
   seniority: "Senior",
   level: 3,
   womenCount: 2,
   menCount: 3,
-  womenMeanComp: 90_000,
-  menMeanComp: 100_000,
-  gapPct: 10,
   flag: "critical",
-}
+})
 
-const GROUP_MORE: GapGroup = {
-  ...GROUP_LESS,
-  key: "swe|2|mid",
+// Admitted on the total-comp gap alone (ADR-0015): base salaries are level,
+// the men's bonuses open a 10% tcc gap.
+const GROUP_TCC_DRIVEN: GapGroup = makeGapGroup({
+  key: "sales|2|mid",
+  roleTitle: "Sales",
+  seniority: "Mid",
   level: 2,
-  womenCount: 1,
-  menCount: 4,
-  gapPct: -8,
+  womenCount: 2,
+  menCount: 3,
+  base: { womenMean: 100_000, menMean: 100_000, gapPct: 0, gapKr: 0 },
+  tcc: { womenMean: 90_000, menMean: 100_000, gapPct: 10, gapKr: 10_000 },
+  tccDriven: true,
   flag: "elevated",
-}
+})
 
-const GROUP_NONE: GapGroup = {
-  ...GROUP_LESS,
+const GROUP_NONE: GapGroup = makeGapGroup({
   key: "swe|1|junior",
+  roleTitle: "SWE",
+  seniority: "Junior",
   level: 1,
   womenCount: 3,
   menCount: 3,
-  womenMeanComp: 100_000,
-  menMeanComp: 100_000,
-  gapPct: 0,
+  metric: { womenMean: 100_000, menMean: 100_000, gapPct: 0, gapKr: 0 },
   flag: "ok",
-}
+})
 
-const GROUP_ONLY_WOMEN: GapGroup = {
-  key: "nurse|3|senior",
+// A shown group whose role never resolved a level (level is null in the
+// grouping key): the heading must simply omit the level badge.
+const GROUP_NO_LEVEL: GapGroup = makeGapGroup({
+  key: "nurse|none|senior",
   roleTitle: "Nurse",
   seniority: "Senior",
   level: null,
   womenCount: 4,
-  menCount: 0,
-  womenMeanComp: 80_000,
-  menMeanComp: null,
-  gapPct: null,
-  flag: "insufficient",
-}
+  menCount: 2,
+})
 
-const GROUP_ONLY_MEN: GapGroup = {
+// A defensively masked group (all metric fields null): the component's
+// null-guards must render no bars rather than crash.
+const GROUP_MASKED: GapGroup = makeGapGroup({
   key: "welder|2|mid",
   roleTitle: "Welder",
   seniority: "Mid",
   level: 2,
   womenCount: 0,
   menCount: 5,
-  womenMeanComp: null,
-  menMeanComp: 95_000,
-  gapPct: null,
+  metric: { womenMean: null, menMean: null, gapPct: null, gapKr: null },
   flag: "insufficient",
-}
+})
 
 const WD_GROUP_ONE: WomenDominatedGroupWire = {
   key: "nurse|3|senior",
@@ -245,7 +245,7 @@ describe("ReviewGroupStep", () => {
     })
 
     it("omits the level badge when the group has no level", () => {
-      renderEqualWorkStep(GROUP_ONLY_WOMEN)
+      renderEqualWorkStep(GROUP_NO_LEVEL)
       expect(screen.queryByText(/^Level /)).toBeNull()
     })
   })
@@ -260,11 +260,11 @@ describe("ReviewGroupStep", () => {
       ).toBeDefined()
     })
 
-    it("renders the 'earn more' sentence when women earn more on average", () => {
-      renderEqualWorkStep(GROUP_MORE)
+    it("renders the total-comp sentence for a tccDriven group", () => {
+      renderEqualWorkStep(GROUP_TCC_DRIVEN)
       expect(
         screen.getByText(
-          "The women in this group earn on average 8% more than the men (1 women · 4 men)."
+          "The women in this group earn on average 10% less than the men in total compensation, while base salaries show no such gap (2 women · 3 men)."
         )
       ).toBeDefined()
     })
@@ -274,24 +274,6 @@ describe("ReviewGroupStep", () => {
       expect(
         screen.getByText(
           "There is no measurable pay difference between the women and the men in this group (3 women · 3 men)."
-        )
-      ).toBeDefined()
-    })
-
-    it("renders the only-women sentence when the group has no men", () => {
-      renderEqualWorkStep(GROUP_ONLY_WOMEN)
-      expect(
-        screen.getByText(
-          "This group has only women (4 people), so there is no woman-man comparison to make. Explain why the group looks this way."
-        )
-      ).toBeDefined()
-    })
-
-    it("renders the only-men sentence (mirrored) when the group has no women", () => {
-      renderEqualWorkStep(GROUP_ONLY_MEN)
-      expect(
-        screen.getByText(
-          "This group has only men (5 people), so there is no woman-man comparison to make. Explain why the group looks this way."
         )
       ).toBeDefined()
     })
@@ -305,8 +287,14 @@ describe("ReviewGroupStep", () => {
       ).toHaveLength(2)
     })
 
-    it("renders no bars when a mean is null (only-women group)", () => {
-      const { container } = renderEqualWorkStep(GROUP_ONLY_WOMEN)
+    it("renders the tcc means for a tccDriven group (the finding's own metric)", () => {
+      renderEqualWorkStep(GROUP_TCC_DRIVEN)
+      // The women's tcc mean, not the (equal) base mean.
+      expect(screen.getByText(sek(90_000))).toBeDefined()
+    })
+
+    it("renders no bars when the means are null (defensively masked group)", () => {
+      const { container } = renderEqualWorkStep(GROUP_MASKED)
       expect(
         container.querySelectorAll('[data-testid="mean-bar"]')
       ).toHaveLength(0)

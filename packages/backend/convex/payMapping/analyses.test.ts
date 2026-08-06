@@ -91,8 +91,10 @@ const criticalRows: SeedRow[] = [
   },
 ]
 
-// An equal-work group with no gap: "ok" => the gate does not require
-// documentation (fri bock).
+// An equal-work group with a small women-behind gap (2%, "ok" flag): it
+// passes the ADR-0015 entry conditions (shown), but the gate does not
+// require documentation (fri bock). A gapless group would instead be routed
+// out of the flow entirely and stop being a valid documentation target.
 const OK_GROUP_KEY = "PM|2|Mid"
 const okRows: SeedRow[] = [
   {
@@ -100,7 +102,7 @@ const okRows: SeedRow[] = [
     roleTitle: "PM",
     seniority: "Mid",
     level: 2,
-    basicMonthly: 100000,
+    basicMonthly: 98000,
   },
   {
     gender: "Man",
@@ -452,6 +454,27 @@ describe("upsertGroupAnalysis", () => {
         runId,
         scope: "equivalentWork",
         groupKey: "DoesNotExist|1|Mid",
+        reasons: [],
+        note: undefined,
+        done: false,
+      })
+    ).rejects.toThrow(/errors.notFound/)
+  })
+
+  it("rejects equalWork documentation on a group the entry conditions excluded", async () => {
+    const t = initConvexTest()
+    // The all-women Nurse group is gender-pure: it leaves the primary lika
+    // arbete flow (ADR-0015), so it is no longer a valid equalWork
+    // documentation target; its documentation duty lives only under the
+    // women-dominated (equivalentWork) scope.
+    const { orgId, runId, asHr } = await seedRun(t, womenDominatedRows)
+
+    await expect(
+      asHr.mutation(api.payMapping.analyses.upsertGroupAnalysis, {
+        orgId,
+        runId,
+        scope: "equalWork",
+        groupKey: WOMEN_DOMINATED_GROUP_KEY,
         reasons: [],
         note: undefined,
         done: false,

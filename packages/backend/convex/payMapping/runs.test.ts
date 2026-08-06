@@ -705,11 +705,11 @@ async function markPraxisAreasDone(
   }
 }
 
-// Marks the REQUIRED_GROUP_KEY equalWork + equivalentWork documentation rows
-// done (the requiredGroupRows seed's single required group under both
-// scopes): the other half of a run seeded with requiredGroupRows that the
-// gate needs satisfied before the praxis + collaboration extension can be
-// exercised alone.
+// Marks the requiredGroupRows seed's two required documentation rows done
+// (the shown, flagged Analyst group under equalWork and the women-dominated
+// Nurse group under equivalentWork): the other half of a run seeded with
+// requiredGroupRows that the gate needs satisfied before the praxis +
+// collaboration extension can be exercised alone.
 async function markRequiredGroupsDone(
   asHr: ReturnType<ReturnType<typeof initConvexTest>["withIdentity"]>,
   orgId: string,
@@ -719,7 +719,7 @@ async function markRequiredGroupsDone(
     orgId,
     runId,
     scope: "equalWork",
-    groupKey: REQUIRED_GROUP_KEY,
+    groupKey: REQUIRED_EQUAL_WORK_KEY,
     reasons: ["experience"],
     note: undefined,
     done: true,
@@ -728,22 +728,38 @@ async function markRequiredGroupsDone(
     orgId,
     runId,
     scope: "equivalentWork",
-    groupKey: REQUIRED_GROUP_KEY,
+    groupKey: REQUIRED_WOMEN_DOMINATED_KEY,
     reasons: ["experience"],
     note: undefined,
     done: true,
   })
 }
 
-// A women-dominated (100% women) equal-work group (Nurse) plus a comparator
-// group (Tech) that out-earns it: mirrors analyses.test.ts's
-// womenDominatedRows. This single seed produces a REQUIRED group under both
-// scopes on the same key ("Nurse|3|Mid"): the equal-work bucket is
-// single-gender (insufficient flag, which equalWorkGroupRequiresDocumentation
-// treats as requiring doc), and the women-dominated cross-level comparison
-// finds Tech out-earning it.
-const REQUIRED_GROUP_KEY = "Nurse|3|Mid"
+// One REQUIRED group per scope (ADR-0015). equalWork: the Analyst group (1
+// woman 45k + 1 man 50k) passes the entry conditions and carries an
+// elevated flag, so the gate demands its documentation. equivalentWork: the
+// women-dominated (100% women) Nurse group plus a comparator group (Tech)
+// that out-earns it, mirroring analyses.test.ts's womenDominatedRows. The
+// all-women Nurse bucket itself is gender-pure and therefore NOT an
+// equalWork documentation target anymore; only its cross-level comparison
+// keeps a documentation duty.
+const REQUIRED_EQUAL_WORK_KEY = "Analyst|2|Mid"
+const REQUIRED_WOMEN_DOMINATED_KEY = "Nurse|3|Mid"
 const requiredGroupRows: SeedRow[] = [
+  {
+    gender: "Kvinna",
+    roleTitle: "Analyst",
+    seniority: "Mid",
+    level: 2,
+    basicMonthly: 45000,
+  },
+  {
+    gender: "Man",
+    roleTitle: "Analyst",
+    seniority: "Mid",
+    level: 2,
+    basicMonthly: 50000,
+  },
   {
     gender: "Kvinna",
     roleTitle: "Nurse",
@@ -788,9 +804,9 @@ const requiredGroupRows: SeedRow[] = [
   },
 ]
 
-// An equal-work group with no gap ("ok" flag) and no women-dominance:
-// neither scope requires documentation, so the run completes with no
-// analyses at all.
+// An equal-work group with no gap and no women-dominance: the entry
+// conditions route it out of the primary flow (reverse), so neither scope
+// requires documentation and the run completes with no analyses at all.
 const noRequiredGroupRows: SeedRow[] = [
   {
     gender: "Kvinna",

@@ -1262,10 +1262,8 @@
         "undoDone": "Angre fullført-merking",
         "finding": {
           "less": "Kvinnene i denne gruppen tjener i gjennomsnitt {gap} mindre enn mennene ({women} kvinner · {men} menn).",
-          "more": "Kvinnene i denne gruppen tjener i gjennomsnitt {gap} mer enn mennene ({women} kvinner · {men} menn).",
+          "lessTcc": "Kvinnene i denne gruppen tjener i gjennomsnitt {gap} mindre enn mennene i total kompensasjon, mens grunnlønnene ikke viser noen slik forskjell ({women} kvinner · {men} menn).",
           "none": "Det er ikke noe målbart lønnsgap mellom kvinnene og mennene i denne gruppen ({women} kvinner · {men} menn).",
-          "onlyWomen": "Denne gruppen har bare kvinner ({count, plural, one {# person} other {# personer}}), så det finnes ingen kvinne-mann-sammenligning å gjøre. Forklar hvorfor gruppen ser slik ut.",
-          "onlyMen": "Denne gruppen har bare menn ({count, plural, one {# person} other {# personer}}), så det finnes ingen kvinne-mann-sammenligning å gjøre. Forklar hvorfor gruppen ser slik ut.",
           "orgLess": "Kvinnene tjener i gjennomsnitt {gap} mindre enn mennene i hele lønnskartleggingen.",
           "orgMore": "Kvinnene tjener i gjennomsnitt {gap} mer enn mennene i hele lønnskartleggingen.",
           "orgNone": "Det er ikke noe målbart lønnsgap mellom kvinner og menn i hele lønnskartleggingen.",

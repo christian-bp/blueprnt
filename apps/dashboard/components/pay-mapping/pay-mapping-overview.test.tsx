@@ -28,6 +28,7 @@ vi.mock("@/components/org-context", () => ({
 }))
 
 import { onQuery } from "@/test/convex-mocks"
+import { makeExcluded, makeGapGroup } from "@/test/pay-mapping-fixtures"
 import type {
   GapGroup,
   GroupAnalysis,
@@ -40,18 +41,7 @@ import { PayMappingRunProvider } from "./pay-mapping-run-context"
 const m = en.dashboard.payMapping
 
 function group(flag: GapGroup["flag"], key: string): GapGroup {
-  return {
-    key,
-    roleTitle: "SWE",
-    seniority: "Senior",
-    level: 3,
-    womenCount: 2,
-    menCount: 2,
-    womenMeanComp: 90000,
-    menMeanComp: 100000,
-    gapPct: 10,
-    flag,
-  }
+  return makeGapGroup({ key, flag })
 }
 
 function gap(
@@ -73,6 +63,7 @@ function gap(
       group("elevated", "b"),
       group("elevated", "c"),
     ],
+    excluded: makeExcluded(),
     equivalentWork: [group("ok", "d")],
     womenDominated: [],
     population: { women: 3, men: 3 },

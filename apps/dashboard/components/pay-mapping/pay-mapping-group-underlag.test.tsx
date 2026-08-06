@@ -10,6 +10,7 @@ import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
 
 import { PayMappingGroupUnderlag } from "@/components/pay-mapping/pay-mapping-group-underlag"
+import { makeGapGroup } from "@/test/pay-mapping-fixtures"
 import type {
   GapGroup,
   PayMappingSnapshotRow,
@@ -29,18 +30,14 @@ function renderUnderlag(props: Parameters<typeof PayMappingGroupUnderlag>[0]) {
   )
 }
 
-const EQUAL_WORK_GROUP: GapGroup = {
+const EQUAL_WORK_GROUP: GapGroup = makeGapGroup({
   key: "swe|senior",
   roleTitle: "SWE",
   seniority: "Senior",
   level: 3,
   womenCount: 1,
   menCount: 1,
-  womenMeanComp: 90000,
-  menMeanComp: 100000,
-  gapPct: 10,
-  flag: "elevated",
-}
+})
 
 const EQUAL_WORK_ROWS: PayMappingSnapshotRow[] = [
   {
@@ -204,18 +201,14 @@ const WOMEN_DOMINATED_GROUP: WomenDominatedGroupWire = {
 }
 
 const EQUIVALENT_WORK_LEVELS: GapGroup[] = [
-  {
+  makeGapGroup({
     key: "level-3",
     roleTitle: null,
     seniority: null,
     level: 3,
     womenCount: 4,
     menCount: 4,
-    womenMeanComp: 90000,
-    menMeanComp: 100000,
-    gapPct: 10,
-    flag: "elevated",
-  },
+  }),
 ]
 
 describe("PayMappingGroupUnderlag - equivalentWork", () => {

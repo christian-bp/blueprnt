@@ -9,11 +9,12 @@ import {
   type PayGapFlag,
   womenDominatedGroupRequiresDocumentation,
 } from "@workspace/core"
-import type {
-  GapGroup,
-  GroupAnalysis,
-  PayMappingGapResult,
-  WomenDominatedGroupWire,
+import {
+  type GapGroup,
+  type GroupAnalysis,
+  type PayMappingGapResult,
+  primaryGapMetric,
+  type WomenDominatedGroupWire,
 } from "./pay-mapping-gap-types"
 
 export type ReviewStep =
@@ -64,8 +65,10 @@ function sortGroupsByAttention(groups: GapGroup[]): GapGroup[] {
   return [...groups].sort((a, b) => {
     const rank = FLAG_RANK[a.flag] - FLAG_RANK[b.flag]
     if (rank !== 0) return rank
-    const gapA = a.gapPct === null ? -1 : Math.abs(a.gapPct)
-    const gapB = b.gapPct === null ? -1 : Math.abs(b.gapPct)
+    const primaryA = primaryGapMetric(a).gapPct
+    const primaryB = primaryGapMetric(b).gapPct
+    const gapA = primaryA === null ? -1 : Math.abs(primaryA)
+    const gapB = primaryB === null ? -1 : Math.abs(primaryB)
     if (gapA !== gapB) return gapB - gapA
     return a.key.localeCompare(b.key)
   })

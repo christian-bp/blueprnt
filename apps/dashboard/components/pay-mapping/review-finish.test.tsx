@@ -28,6 +28,7 @@ vi.mock("@/components/org-context", () => ({
 
 import { ConvexError } from "convex/values"
 import { toast } from "@/lib/toast"
+import { makeExcluded, makeGapGroup } from "@/test/pay-mapping-fixtures"
 import type {
   GapGroup,
   GroupAnalysis,
@@ -46,20 +47,15 @@ const tTabs = messages.dashboard.payMapping.tabs
 const tToast = messages.dashboard.toast
 const tErrors = messages.errors
 
-function equalWorkGroup(overrides: Partial<GapGroup> = {}): GapGroup {
-  return {
+function equalWorkGroup(
+  overrides: Parameters<typeof makeGapGroup>[0] = {}
+): GapGroup {
+  return makeGapGroup({
     key: "k",
     roleTitle: "Role",
     seniority: "Seniority",
-    level: 3,
-    womenCount: 2,
-    menCount: 2,
-    womenMeanComp: 90000,
-    menMeanComp: 100000,
-    gapPct: 10,
-    flag: "elevated",
     ...overrides,
-  }
+  })
 }
 
 const GAP = {
@@ -73,6 +69,7 @@ const GAP = {
     flag: "elevated" as const,
   },
   equalWork: [equalWorkGroup()],
+  excluded: makeExcluded(),
   equivalentWork: [],
   womenDominated: [],
   population: { women: 6, men: 6 },

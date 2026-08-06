@@ -6,10 +6,24 @@ import type { GenderTally, PayGapFlag } from "@workspace/core"
 // index-aligned with @workspace/core's AGE_BUCKETS).
 export type { GenderTally } from "@workspace/core"
 
+// One metric's (base salary or total comp) woman-vs-man comparison in a
+// group (ADR-0015). Means are null when that gender is absent or the group
+// is masked; gapPct is signed (positive = women earn less), gapKr is the
+// same difference in currency units.
+export interface GapMetric {
+  womenMean: number | null
+  menMean: number | null
+  gapPct: number | null
+  gapKr: number | null
+}
+
 // Structural subset of getPayMappingGap's per-group result (the pay-gap
 // aggregate for an equalWork/equivalentWork group). Shared by the overview
 // headline, the analysis gap tables, and the run shell so all consumers use
-// the same shape without importing runtime values from each other.
+// the same shape without importing runtime values from each other. Base
+// salary is the primary measure, total comp rides alongside; the flag is
+// the severest of the two directional flags; tccDriven marks a group
+// admitted on the total-comp gap alone (ADR-0015).
 export interface GapGroup {
   key: string
   roleTitle: string | null
@@ -17,10 +31,41 @@ export interface GapGroup {
   level: number | null
   womenCount: number
   menCount: number
-  womenMeanComp: number | null
-  menMeanComp: number | null
-  gapPct: number | null
+  base: GapMetric
+  tcc: GapMetric
   flag: PayGapFlag
+  tccDriven: boolean
+}
+
+// The group's primary display measure: base salary (grundlön), except for a
+// tccDriven group, whose finding lives in total comp. Every finding
+// sentence, bar pair, and attention sort reads this one helper so the
+// primary metric can never drift between surfaces.
+export function primaryGapMetric(
+  group: Pick<GapGroup, "base" | "tcc" | "tccDriven">
+): GapMetric {
+  return group.tccDriven ? group.tcc : group.base
+}
+
+// A gender-pure (2+ members, one gender) equal-work group: out of the
+// primary flow and the gate, listed for the opt-in deep-dive (ADR-0015).
+export interface GenderPureGroupWire {
+  key: string
+  roleTitle: string | null
+  seniority: string | null
+  level: number | null
+  gender: "Kvinna" | "Man"
+  count: number
+}
+
+// What the entry conditions kept out of the primary lika arbete flow
+// (ADR-0015): singletons reduce to a count (the report's methodology note),
+// gender-pure groups feed the opt-in deep-dive, reverse groups (women lead
+// on both metrics) feed the info view.
+export interface ExcludedGroupsWire {
+  singletonCount: number
+  genderPure: GenderPureGroupWire[]
+  reverse: GapGroup[]
 }
 
 // The org-level aggregate: the same shape as a GapGroup's counts/means/gap,
@@ -60,7 +105,15 @@ export interface WomenDominatedGroupWire
 export interface PayMappingGapResult {
   currency: string | null
   org: OrgAggregate
+  // The primary lika arbete flow: only groups passing the ADR-0015 entry
+  // conditions.
   equalWork: GapGroup[]
+  // What the entry conditions excluded (deep-dive, info view, methodology
+  // count).
+  excluded: ExcludedGroupsWire
+  // Every priced, leveled row's per-level group, unconditionally (the
+  // likvärdigt detail view applies its own entry conditions when it
+  // renders).
   equivalentWork: GapGroup[]
   // The women-dominated cross-level comparison (Diskrimineringslagen's third
   // comparison), computed over the equal-work groups.

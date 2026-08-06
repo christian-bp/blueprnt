@@ -1,9 +1,12 @@
 import { fteTotalMonthlyComp } from "@workspace/constants"
 import {
   ageGenderTallies,
+  classifyEqualWorkGroup,
   type ComparableGroup,
   computeGenderGap,
+  type EqualWorkClassification,
   equalWorkGroupRequiresDocumentation,
+  type MetricComparison,
   type PayGapFlag,
   quartileGenderTallies,
   type WomenDominatedGroup,
@@ -21,10 +24,28 @@ const genderTallyShape = v.object({
   men: v.number(),
 })
 
-// One gender-gap group in the wire shape. roleTitle/seniority are populated
-// for equal-work groups only (null for equivalent-work). Means + gap are null
-// when the group is insufficient, i.e. a gender is absent (ADR-0012
-// amendment).
+const flagShape = v.union(
+  v.literal("critical"),
+  v.literal("elevated"),
+  v.literal("ok"),
+  v.literal("insufficient")
+)
+
+// One metric's (base salary or total comp) woman-vs-man comparison in the
+// wire shape. Means are null when that gender is absent or the group is
+// masked; the gap is null whenever a mean is.
+const gapMetricShape = v.object({
+  womenMean: v.union(v.number(), v.null()),
+  menMean: v.union(v.number(), v.null()),
+  gapPct: v.union(v.number(), v.null()),
+  gapKr: v.union(v.number(), v.null()),
+})
+
+// One gender-gap group in the wire shape (ADR-0015): base salary is the
+// primary measure, total comp rides alongside, the flag is the severest of
+// the two directional (women-behind) flags, and tccDriven marks a group
+// admitted on the total-comp gap alone. roleTitle/seniority are populated
+// for equal-work groups only (null for equivalent-work).
 const gapGroupShape = v.object({
   key: v.string(),
   roleTitle: v.union(v.string(), v.null()),
@@ -32,31 +53,47 @@ const gapGroupShape = v.object({
   level: v.union(v.number(), v.null()),
   womenCount: v.number(),
   menCount: v.number(),
-  womenMeanComp: v.union(v.number(), v.null()),
-  menMeanComp: v.union(v.number(), v.null()),
-  gapPct: v.union(v.number(), v.null()),
-  flag: v.union(
-    v.literal("critical"),
-    v.literal("elevated"),
-    v.literal("ok"),
-    v.literal("insufficient")
-  ),
+  base: gapMetricShape,
+  tcc: gapMetricShape,
+  flag: flagShape,
+  tccDriven: v.boolean(),
+})
+
+// A gender-pure (2+ members, one gender) equal-work group: out of the
+// primary flow and the gate, listed for the opt-in deep-dive (ADR-0015).
+// Identity and counts only; the deep-dive computes its statistics
+// client-side from the snapshot rows it already holds.
+const genderPureGroupShape = v.object({
+  key: v.string(),
+  roleTitle: v.union(v.string(), v.null()),
+  seniority: v.union(v.string(), v.null()),
+  level: v.union(v.number(), v.null()),
+  gender: v.union(v.literal("Kvinna"), v.literal("Man")),
+  count: v.number(),
+})
+
+// What the entry conditions kept out of the primary lika arbete flow
+// (ADR-0015): singletons are silently dropped (a count survives for the
+// report's methodology note), gender-pure groups feed the deep-dive, and
+// reverse groups (women lead on both metrics) feed the info view.
+const excludedShape = v.object({
+  singletonCount: v.number(),
+  genderPure: v.array(genderPureGroupShape),
+  reverse: v.array(gapGroupShape),
 })
 
 // The org-level aggregate: gender-gap stats over ALL priced rows, unmasked (a
-// population mean is not an individual salary, unlike a per-group mean).
+// population mean is not an individual salary, unlike a per-group mean). It
+// keeps the original total-comp measure and classifyPayGap's both-directions
+// flag: it is the survey's headline (EU metric surface), not an
+// entry-conditioned group view.
 const orgAggregateShape = v.object({
   womenCount: v.number(),
   menCount: v.number(),
   womenMeanComp: v.union(v.number(), v.null()),
   menMeanComp: v.union(v.number(), v.null()),
   gapPct: v.union(v.number(), v.null()),
-  flag: v.union(
-    v.literal("critical"),
-    v.literal("elevated"),
-    v.literal("ok"),
-    v.literal("insufficient")
-  ),
+  flag: flagShape,
 })
 
 // One comparator in a women-dominated group's cross-level comparison
@@ -77,7 +114,9 @@ const womenDominatedComparisonShape = v.object({
 // A women-dominated (>= 60% women) equal-work group plus the comparators
 // that out-earn it. Unlike equal-work/equivalent-work groups, the
 // whole-group mean is never masked: it is not a per-gender comparison, so
-// there is no single-gender case to hide.
+// there is no single-gender case to hide. The entry conditions never filter
+// this list: an all-women group is precisely the group DL 3:9's
+// cross-comparison exists for.
 const womenDominatedGroupShape = v.object({
   key: v.string(),
   roleTitle: v.union(v.string(), v.null()),
@@ -89,45 +128,77 @@ const womenDominatedGroupShape = v.object({
   comparisons: v.array(womenDominatedComparisonShape),
 })
 
-// A mutable bucket while grouping: the per-gender comp arrays plus the display
-// attributes shared by every row in the bucket.
+// A mutable bucket while grouping: the per-gender base/tcc value pairs plus
+// the display attributes shared by every row in the bucket.
 interface Bucket {
   key: string
   roleTitle: string | null
   seniority: string | null
   level: number | null
-  women: number[]
-  men: number[]
+  women: { base: number; tcc: number }[]
+  men: { base: number; tcc: number }[]
 }
 
 type SnapshotRow = Doc<"payMappingSnapshotRows">
 
-// Build one wire-shape GapGroup from a bucket: run the engine, then mask the
-// means + gap when the flag is insufficient (a single-gender group has no
-// woman-man comparison, so a "mean" would only restate individual pay).
-// Counts + flag are always exposed.
-function toGapGroup(bucket: Bucket) {
-  const stats = computeGenderGap(bucket.women, bucket.men)
-  const masked = stats.flag === "insufficient"
+const MASKED_METRIC: MetricComparison = {
+  womenMean: null,
+  menMean: null,
+  gapPct: null,
+  gapKr: null,
+}
+
+// Build one wire-shape GapGroup from a bucket's classification: single-gender
+// buckets (which only reach the wire in the equivalent-work per-level list;
+// the equal-work path routes them to `excluded`) mask their means + gaps (a
+// one-gender "mean" would only restate that gender's pay with no woman-man
+// comparison behind it). Counts + flag are always exposed.
+function toGapGroup(bucket: Bucket, classification: EqualWorkClassification) {
+  const masked =
+    classification.outcome === "genderPure" ||
+    classification.outcome === "singleton"
   return {
     key: bucket.key,
     roleTitle: bucket.roleTitle,
     seniority: bucket.seniority,
     level: bucket.level,
-    womenCount: stats.womenCount,
-    menCount: stats.menCount,
-    womenMeanComp: masked ? null : stats.womenMeanComp,
-    menMeanComp: masked ? null : stats.menMeanComp,
-    gapPct: masked ? null : stats.gapPct,
-    flag: stats.flag as PayGapFlag,
+    womenCount: bucket.women.length,
+    menCount: bucket.men.length,
+    base: masked ? MASKED_METRIC : classification.base,
+    tcc: masked ? MASKED_METRIC : classification.tcc,
+    flag: classification.flag as PayGapFlag,
+    tccDriven: classification.tccDriven,
   }
+}
+
+function classifyBucket(bucket: Bucket): EqualWorkClassification {
+  return classifyEqualWorkGroup({
+    womenBase: bucket.women.map((value) => value.base),
+    menBase: bucket.men.map((value) => value.base),
+    womenTcc: bucket.women.map((value) => value.tcc),
+    menTcc: bucket.men.map((value) => value.tcc),
+  })
 }
 
 // The wire shape one equal-work/equivalent-work group is rendered as.
 type GapGroupWire = ReturnType<typeof toGapGroup>
 
-function comp(row: SnapshotRow): number {
-  // basicMonthly is non-null here (callers filter priced rows first).
+const NO_COMPONENTS: { monthlyAmount: number }[] = []
+
+// FTE-adjusted monthly base salary (grundlön), the primary group measure
+// (ADR-0015). basicMonthly is non-null here (callers filter priced rows
+// first).
+function baseComp(row: SnapshotRow): number {
+  return fteTotalMonthlyComp(
+    row.basicMonthly ?? 0,
+    NO_COMPONENTS,
+    row.ftePercent
+  )
+}
+
+// FTE-adjusted total monthly comp (TCC), the parallel measure and the org
+// aggregate's measure.
+function tccComp(row: SnapshotRow): number {
   return fteTotalMonthlyComp(
     row.basicMonthly ?? 0,
     row.components,
@@ -136,23 +207,25 @@ function comp(row: SnapshotRow): number {
 }
 
 function pushByGender(bucket: Bucket, row: SnapshotRow): void {
-  if (row.gender === "Kvinna") bucket.women.push(comp(row))
-  else bucket.men.push(comp(row))
+  const value = { base: baseComp(row), tcc: tccComp(row) }
+  if (row.gender === "Kvinna") bucket.women.push(value)
+  else bucket.men.push(value)
 }
 
-// The whole-group mean (both genders together) of an equal-work bucket, the
-// measure the women-dominated comparison ranks groups by (never the masked
-// per-gender means: a group mean is not an individual salary). Every bucket
-// has at least one row, so this is always a real number.
+// The whole-group total-comp mean (both genders together) of an equal-work
+// bucket, the measure the women-dominated comparison ranks groups by (never
+// the masked per-gender means: a group mean is not an individual salary).
+// Every bucket has at least one row, so this is always a real number.
 function wholeGroupMean(bucket: Bucket): number {
   const all = [...bucket.women, ...bucket.men]
   let sum = 0
-  for (const value of all) sum += value
+  for (const value of all) sum += value.tcc
   return sum / all.length
 }
 
-// Build every grouping this run's rows support: the equal-work/
-// equivalent-work gap groups and the women-dominated cross-level comparison.
+// Build every grouping this run's rows support: the entry-conditioned
+// equal-work groups (plus what the conditions excluded), the per-level
+// equivalent-work groups, and the women-dominated cross-level comparison.
 // Pure over the rows (module-level, not a handler closure) so mutations
 // (analyses upsert, lifecycle complete/reopen) can reuse the exact same
 // groups the query shows, without duplicating the grouping logic or
@@ -160,7 +233,26 @@ function wholeGroupMean(bucket: Bucket): number {
 export function buildGapAggregates(rows: SnapshotRow[]): {
   priced: SnapshotRow[]
   currency: string | null
+  // The primary lika arbete flow: groups that pass the ADR-0015 entry
+  // conditions (both genders present, women trailing on base salary or, for
+  // a tccDriven group, on total comp).
   equalWork: GapGroupWire[]
+  excluded: {
+    singletonCount: number
+    genderPure: {
+      key: string
+      roleTitle: string | null
+      seniority: string | null
+      level: number | null
+      gender: "Kvinna" | "Man"
+      count: number
+    }[]
+    reverse: GapGroupWire[]
+  }
+  // Every priced, leveled row's per-level group, unconditionally: the
+  // likvärdigt detail view applies its own entry conditions when it renders
+  // (slice C); until then the women-dominated chapter's level-context
+  // sentence needs every level, both directions.
   equivalentWork: GapGroupWire[]
   womenDominated: WomenDominatedGroup[]
 } {
@@ -221,17 +313,57 @@ export function buildGapAggregates(rows: SnapshotRow[]): {
     return (a.seniority ?? "").localeCompare(b.seniority ?? "")
   }
 
-  const equalWork = [...equalWorkMap.values()]
-    .sort(byLevelTitleSeniority)
-    .map(toGapGroup)
+  // Route every equal-work bucket by its entry-condition outcome
+  // (ADR-0015): shown groups form the primary flow, the rest land in
+  // `excluded` (never silently vanish from the wire entirely, except
+  // singletons, which reduce to a count).
+  const equalWork: GapGroupWire[] = []
+  const reverse: GapGroupWire[] = []
+  const genderPure: {
+    key: string
+    roleTitle: string | null
+    seniority: string | null
+    level: number | null
+    gender: "Kvinna" | "Man"
+    count: number
+  }[] = []
+  let singletonCount = 0
+  for (const bucket of [...equalWorkMap.values()].sort(byLevelTitleSeniority)) {
+    const classification = classifyBucket(bucket)
+    switch (classification.outcome) {
+      case "shown":
+        equalWork.push(toGapGroup(bucket, classification))
+        break
+      case "reverse":
+        reverse.push(toGapGroup(bucket, classification))
+        break
+      case "genderPure":
+        genderPure.push({
+          key: bucket.key,
+          roleTitle: bucket.roleTitle,
+          seniority: bucket.seniority,
+          level: bucket.level,
+          gender: bucket.women.length > 0 ? "Kvinna" : "Man",
+          count: bucket.women.length + bucket.men.length,
+        })
+        break
+      case "singleton":
+        singletonCount += 1
+        break
+    }
+  }
+
   const equivalentWork = [...equivalentWorkMap.values()]
     .sort((a, b) => (a.level ?? 0) - (b.level ?? 0))
-    .map(toGapGroup)
+    .map((bucket) => toGapGroup(bucket, classifyBucket(bucket)))
 
   // Diskrimineringslagen's third comparison: every women-dominated
   // equal-work group against equal-or-lower-valued leveled groups that
-  // out-earn it. Unleveled buckets are passed through too; the engine itself
-  // drops anything without a level (it cannot be placed on the value ladder).
+  // out-earn it. ALL buckets participate, including gender-pure and
+  // singleton ones (an all-women group is the very case DL 3:9 targets; the
+  // entry conditions govern only the within-group lika arbete comparison).
+  // Unleveled buckets are passed through too; the engine itself drops
+  // anything without a level (it cannot be placed on the value ladder).
   const comparableGroups: ComparableGroup[] = [...equalWorkMap.values()].map(
     (bucket) => ({
       key: bucket.key,
@@ -249,17 +381,20 @@ export function buildGapAggregates(rows: SnapshotRow[]): {
     priced,
     currency,
     equalWork,
+    excluded: { singletonCount, genderPure, reverse },
     equivalentWork,
     womenDominated,
   }
 }
 
 // The group keys (equalWork scope, and separately women-dominated scope)
-// that exist in this run, and the subset of each that the ADR-0012 gate
-// requires documentation for. Shared by the analyses mutations (Tasks 5-6):
+// that exist in this run, and the subset of each that the ADR-0012/0015 gate
+// requires documentation for. Shared by the analyses mutations:
 // `*All` to validate an incoming groupKey belongs to a real group,
 // `*Required` to compute completion (every required key must have a done
-// documentation row).
+// documentation row). Only SHOWN equal-work groups are valid documentation
+// targets: what the entry conditions excluded carries no documentation duty
+// and accepts none (ADR-0015).
 export function requiredDocumentationKeys(rows: SnapshotRow[]): {
   equalWorkAll: Set<string>
   equalWorkRequired: Set<string>
@@ -297,6 +432,8 @@ export const getPayMappingGap = orgQuery({
       currency: v.union(v.string(), v.null()),
       org: orgAggregateShape,
       equalWork: v.array(gapGroupShape),
+      // What the entry conditions kept out of the primary flow (ADR-0015).
+      excluded: excludedShape,
       equivalentWork: v.array(gapGroupShape),
       // The women-dominated cross-level comparison (Diskrimineringslagen's
       // third comparison), computed over the equal-work groups.
@@ -326,8 +463,14 @@ export const getPayMappingGap = orgQuery({
       .withIndex("by_run", (q) => q.eq("orgId", ctx.orgId).eq("runId", runId))
       .collect()
 
-    const { priced, currency, equalWork, equivalentWork, womenDominated } =
-      buildGapAggregates(rows)
+    const {
+      priced,
+      currency,
+      equalWork,
+      excluded,
+      equivalentWork,
+      womenDominated,
+    } = buildGapAggregates(rows)
 
     // Org-level aggregate over ALL priced rows. Unlike the equal-work/
     // equivalent-work groups, this is never masked: a population mean is not
@@ -336,8 +479,8 @@ export const getPayMappingGap = orgQuery({
     const orgWomen: number[] = []
     const orgMen: number[] = []
     for (const row of priced) {
-      if (row.gender === "Kvinna") orgWomen.push(comp(row))
-      else orgMen.push(comp(row))
+      if (row.gender === "Kvinna") orgWomen.push(tccComp(row))
+      else orgMen.push(tccComp(row))
     }
     const orgStats = computeGenderGap(orgWomen, orgMen)
     const org = {
@@ -363,7 +506,7 @@ export const getPayMappingGap = orgQuery({
     )
     const quartiles = quartileGenderTallies(
       priced.map((row) => ({
-        comp: comp(row),
+        comp: tccComp(row),
         woman: row.gender === "Kvinna",
       }))
     )
@@ -379,6 +522,7 @@ export const getPayMappingGap = orgQuery({
       currency,
       org,
       equalWork,
+      excluded,
       equivalentWork,
       womenDominated,
       population,

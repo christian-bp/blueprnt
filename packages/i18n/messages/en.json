@@ -1262,10 +1262,8 @@
         "undoDone": "Undo mark as done",
         "finding": {
           "less": "The women in this group earn on average {gap} less than the men ({women} women · {men} men).",
-          "more": "The women in this group earn on average {gap} more than the men ({women} women · {men} men).",
+          "lessTcc": "The women in this group earn on average {gap} less than the men in total compensation, while base salaries show no such gap ({women} women · {men} men).",
           "none": "There is no measurable pay difference between the women and the men in this group ({women} women · {men} men).",
-          "onlyWomen": "This group has only women ({count, plural, one {# person} other {# people}}), so there is no woman-man comparison to make. Explain why the group looks this way.",
-          "onlyMen": "This group has only men ({count, plural, one {# person} other {# people}}), so there is no woman-man comparison to make. Explain why the group looks this way.",
           "orgLess": "Women earn on average {gap} less than men across the whole pay mapping.",
           "orgMore": "Women earn on average {gap} more than men across the whole pay mapping.",
           "orgNone": "There is no measurable pay gap between women and men across the whole pay mapping.",

@@ -1262,10 +1262,8 @@
         "undoDone": "Peru valmiiksi merkitseminen",
         "finding": {
           "less": "Tämän ryhmän naiset ansaitsevat keskimäärin {gap} vähemmän kuin miehet ({women} naista · {men} miestä).",
-          "more": "Tämän ryhmän naiset ansaitsevat keskimäärin {gap} enemmän kuin miehet ({women} naista · {men} miestä).",
+          "lessTcc": "Tämän ryhmän naiset ansaitsevat kokonaiskorvauksessa keskimäärin {gap} vähemmän kuin miehet, vaikka peruspalkoissa vastaavaa eroa ei ole ({women} naista · {men} miestä).",
           "none": "Tämän ryhmän naisten ja miesten välillä ei ole mitattavaa palkkaeroa ({women} naista · {men} miestä).",
-          "onlyWomen": "Tässä ryhmässä on vain naisia ({count, plural, one {# henkilö} other {# henkilöä}}), joten nais-mies-vertailua ei voi tehdä. Selitä, miksi ryhmä näyttää tällaiselta.",
-          "onlyMen": "Tässä ryhmässä on vain miehiä ({count, plural, one {# henkilö} other {# henkilöä}}), joten nais-mies-vertailua ei voi tehdä. Selitä, miksi ryhmä näyttää tällaiselta.",
           "orgLess": "Naiset ansaitsevat keskimäärin {gap} vähemmän kuin miehet koko palkkakartoituksessa.",
           "orgMore": "Naiset ansaitsevat keskimäärin {gap} enemmän kuin miehet koko palkkakartoituksessa.",
           "orgNone": "Naisten ja miesten välillä ei ole mitattavaa palkkaeroa koko palkkakartoituksessa.",

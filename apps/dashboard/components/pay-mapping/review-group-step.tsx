@@ -13,11 +13,12 @@ import { ScreenShell } from "@/components/screen-shell"
 import { LevelBadge } from "@/components/level-badge"
 import { SeniorityBadge } from "@/components/track-badge"
 import { useMoney } from "@/hooks/use-money"
-import type {
-  GapGroup,
-  GroupAnalysis,
-  PayMappingSnapshotRow,
-  WomenDominatedGroupWire,
+import {
+  type GapGroup,
+  type GroupAnalysis,
+  type PayMappingSnapshotRow,
+  primaryGapMetric,
+  type WomenDominatedGroupWire,
 } from "./pay-mapping-gap-types"
 import { PayGapFlagBadge } from "./pay-gap-flag-badge"
 import {
@@ -46,9 +47,12 @@ function isDocumentationRequiredError(error: unknown): boolean {
   )
 }
 
-// The equal-work finding sentence's variant key + raw interpolation numbers
-// (less/more/none/only-women/only-men). A pure data-selector, deliberately
-// never touching next-intl's own
+// The equal-work finding sentence's variant key + raw interpolation numbers.
+// Every group that reaches this step passed the ADR-0015 entry conditions
+// (both genders, women trailing on the primary metric), so the variants
+// reduce to "less" (base salary), "lessTcc" (a tccDriven group's finding
+// lives in total comp), and a defensive "none" for a gapless edge. A pure
+// data-selector, deliberately never touching next-intl's own
 // translate-function type: threading THAT type through an explicit
 // parameter elsewhere in this file triggered a real "Type instantiation is
 // excessively deep" compiler error (it is a deeply generic overload set
@@ -57,17 +61,15 @@ function isDocumentationRequiredError(error: unknown): boolean {
 // not yet abs'd): the render site turns it into the ICU string via its own
 // percentText, right where it calls the real, precisely-typed tFinding.
 function equalWorkFindingVariant(group: GapGroup): {
-  key: "onlyWomen" | "onlyMen" | "none" | "less" | "more"
+  key: "none" | "less" | "lessTcc"
   women: number
   men: number
   gapPct: number | null
 } {
-  const { womenCount: women, menCount: men, gapPct } = group
-  if (men === 0) return { key: "onlyWomen", women, men, gapPct }
-  if (women === 0) return { key: "onlyMen", women, men, gapPct }
-  if (gapPct === null || gapPct === 0)
-    return { key: "none", women, men, gapPct }
-  return { key: gapPct > 0 ? "less" : "more", women, men, gapPct }
+  const { womenCount: women, menCount: men } = group
+  const { gapPct } = primaryGapMetric(group)
+  if (gapPct === null || gapPct <= 0) return { key: "none", women, men, gapPct }
+  return { key: group.tccDriven ? "lessTcc" : "less", women, men, gapPct }
 }
 
 interface ReviewGroupStepCommonProps {
@@ -292,10 +294,6 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
               {(() => {
                 const variant = equalWorkFindingVariant(props.group)
                 switch (variant.key) {
-                  case "onlyWomen":
-                    return tFinding("onlyWomen", { count: variant.women })
-                  case "onlyMen":
-                    return tFinding("onlyMen", { count: variant.men })
                   case "none":
                     return tFinding("none", {
                       women: variant.women,
@@ -343,14 +341,18 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
         </div>
 
         {props.scope === "equalWork" &&
-          props.group.womenMeanComp !== null &&
-          props.group.menMeanComp !== null && (
-            <MeanComparisonBars
-              womenMean={props.group.womenMeanComp}
-              menMean={props.group.menMeanComp}
-              currency={currency}
-            />
-          )}
+          (() => {
+            // The bars follow the finding sentence's own metric: base
+            // salary, or total comp for a tccDriven group.
+            const primary = primaryGapMetric(props.group)
+            return primary.womenMean !== null && primary.menMean !== null ? (
+              <MeanComparisonBars
+                womenMean={primary.womenMean}
+                menMean={primary.menMean}
+                currency={currency}
+              />
+            ) : null
+          })()}
 
         <PayMappingGroupAnalysisForm
           ref={formRef}

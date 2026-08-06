@@ -35,6 +35,7 @@ vi.mock("@/components/org-context", () => ({
 import { toast } from "@/lib/toast"
 import { mockMutation, onQuery } from "@/test/convex-mocks"
 import { PayMappingJourneyCard } from "./pay-mapping-journey-card"
+import { makeExcluded, makeGapGroup } from "@/test/pay-mapping-fixtures"
 import type {
   GapGroup,
   GroupAnalysis,
@@ -53,20 +54,10 @@ const tJourney = m.journey
 const tDoc = m.documentation
 const tToast = en.dashboard.toast
 
-function equalWorkGroup(overrides: Partial<GapGroup> = {}): GapGroup {
-  return {
-    key: "a",
-    roleTitle: "SWE",
-    seniority: "Senior",
-    level: 3,
-    womenCount: 2,
-    menCount: 2,
-    womenMeanComp: 90000,
-    menMeanComp: 100000,
-    gapPct: 10,
-    flag: "elevated",
-    ...overrides,
-  }
+function equalWorkGroup(
+  overrides: Parameters<typeof makeGapGroup>[0] = {}
+): GapGroup {
+  return makeGapGroup({ key: "a", ...overrides })
 }
 
 const COMPARISON: WomenDominatedComparisonWire = {
@@ -117,6 +108,7 @@ const GAP: PayMappingGapResult = {
     equalWorkGroup({ key: "b", flag: "critical" }),
     equalWorkGroup({ key: "c", flag: "ok" }),
   ],
+  excluded: makeExcluded(),
   equivalentWork: [],
   womenDominated: [
     womenDominatedGroup({ key: "wd-1" }),

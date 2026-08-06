@@ -307,15 +307,17 @@ function EquivalentWorkUnderlag({
       {levelRow !== undefined && (
         <div className="flex items-center gap-2">
           <p className="text-muted-foreground text-sm">
-            {levelRow.gapPct === null || levelRow.gapPct === 0
+            {/* The level context reads the BASE metric: grundlön is the
+                primary group measure (ADR-0015). */}
+            {levelRow.base.gapPct === null || levelRow.base.gapPct === 0
               ? tGap("levelContextNone", { level: group.level })
               : tGap(
-                  levelRow.gapPct > 0
+                  levelRow.base.gapPct > 0
                     ? "levelContext"
                     : "levelContextWomenAhead",
                   {
                     level: group.level,
-                    gap: format.number(Math.abs(levelRow.gapPct) / 100, {
+                    gap: format.number(Math.abs(levelRow.base.gapPct) / 100, {
                       style: "percent",
                       maximumFractionDigits: 1,
                     }),
