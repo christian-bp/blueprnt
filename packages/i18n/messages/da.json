@@ -1250,6 +1250,25 @@
         "report": "Rapport",
         "actions": "Tiltag"
       },
+      "analysis": {
+        "progressLabel": "Dokumenteret",
+        "progressCount": "<done></done> / <total></total>",
+        "lead": "Fire kapitler. Alle skal dokumenteres, før lønkortlægningen kan afsluttes.",
+        "collaborationLabel": "Samarbejde:",
+        "collaborationEmpty": "Ikke registreret endnu",
+        "collaborationChange": "Ret",
+        "collaborationAdd": "Registrer",
+        "chapterPosition": "Kapitel {position} af {total} · {chapter}",
+        "nextStepLabel": "Næste: {label}",
+        "openStep": "Åbn trinnet",
+        "remainingAfter": "{count, plural, one {# trin tilbage efter dette} other {# trin tilbage efter dette}}",
+        "nextAction": {
+          "start": "Registrer, hvem der deltager i samarbejdet, og hvordan det foregår.",
+          "praxis": "Gennemgå jeres lønfastsættelsespraksis på området, og skriv ned, hvad I fandt.",
+          "equalWork": "Sammenlign kvinders og mænds løn i gruppen, og dokumentér en saglig grund for hver forskel, I ikke kan forklare.",
+          "equivalentWork": "Sammenlign denne kvindedominerede gruppe med de lavere vurderede grupper, der alligevel tjener mere."
+        }
+      },
       "overview": {
         "headlineGapLabel": "Løngab",
         "insufficient": "Utilstrækkeligt grundlag for et løngab på organisationsniveau.",
@@ -1968,7 +1987,11 @@
       "genderPureLabel": "Hvorfor ligger disse grupper for sig?",
       "genderPureBody": "En lønkortlægning sammenligner kvinders løn mod mænds. En gruppe, hvor alle har samme køn, har ingen sådan sammenligning at foretage, så den har hverken flag, dokumentationspligt eller plads i den lovpligtige rapport. Den findes her, fordi intern lønspredning og outliers alligevel er værd at forstå: en stor spredning inden for ét og samme job kan pege på en lønfastsættelse, der bliver et løngab i samme øjeblik gruppens sammensætning ændrer sig.",
       "womenAheadLabel": "Hvorfor ligger disse ikke i hovedflowet?",
-      "womenAheadBody": "Den lovpligtige pligt retter sig mod lønforskelle til kvindernes ulempe. Når kvinderne i en gruppe ligger på niveau med eller over mændenes gennemsnit, er der intet at forklare eller handle på, så gruppen forlader hovedflowet i stedet for at fylde det med grønne rækker. Tallene findes her som analytisk information."
+      "womenAheadBody": "Den lovpligtige pligt retter sig mod lønforskelle til kvindernes ulempe. Når kvinderne i en gruppe ligger på niveau med eller over mændenes gennemsnit, er der intet at forklare eller handle på, så gruppen forlader hovedflowet i stedet for at fylde det med grønne rækker. Tallene findes her som analytisk information.",
+      "analysisProgressLabel": "Hvad tælles her?",
+      "analysisProgressBody": "Tællingen omfatter de trin, der skal dokumenteres, før lønkortlægningen kan afsluttes: samarbejdsredegørelsen, gennemgangen af lønfastsættelsespraksis, hver gruppe med lige arbejde, hvor der er en lønforskel til kvindernes ulempe, og hver kvindedomineret gruppe med en højere lønnet sammenligningsgruppe. Analyser uden dokumentationspligt tælles ikke.",
+      "collaborationStripLabel": "Hvorfor vises samarbejdet her?",
+      "collaborationStripBody": "Loven kræver, at arbejdsgiveren gennemfører lønkortlægningen sammen med medarbejderne, normalt gennem fagforeningen (DL 3 kap. 11-12 §§). Denne linje viser, hvad der blev registreret, da kortlægningen startede, så det er synligt, mens du arbejder. At det vises opfylder ikke i sig selv pligten ved hvert trin."
     },
     "widgetCard": {
       "expand": "Forstør"

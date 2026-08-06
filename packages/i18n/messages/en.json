@@ -1250,6 +1250,25 @@
         "report": "Report",
         "actions": "Actions"
       },
+      "analysis": {
+        "progressLabel": "Documented",
+        "progressCount": "<done></done> / <total></total>",
+        "lead": "Four chapters. All of them must be documented before the pay mapping can be completed.",
+        "collaborationLabel": "Collaboration:",
+        "collaborationEmpty": "Not recorded yet",
+        "collaborationChange": "Change",
+        "collaborationAdd": "Record it",
+        "chapterPosition": "Chapter {position} of {total} · {chapter}",
+        "nextStepLabel": "Next: {label}",
+        "openStep": "Open this step",
+        "remainingAfter": "{count, plural, one {# step left after this one} other {# steps left after this one}}",
+        "nextAction": {
+          "start": "Record who takes part in the collaboration and how it happens.",
+          "praxis": "Review your pay-setting practice in this area and record what you found.",
+          "equalWork": "Compare women's and men's pay in this group and record an objective reason for any difference you cannot explain.",
+          "equivalentWork": "Compare this women-dominated group against the lower-valued groups that still out-earn it."
+        }
+      },
       "overview": {
         "headlineGapLabel": "Pay gap",
         "insufficient": "Not enough data for an organization-level gap.",
@@ -1968,7 +1987,11 @@
       "genderPureLabel": "Why are these groups separate?",
       "genderPureBody": "A pay mapping compares women's pay against men's. A group where everyone shares a gender has no such comparison to make, so it carries no flag, no documentation duty, and no place in the statutory report. It is kept here because internal pay dispersion and outliers are still worth understanding: a wide spread inside one job can point at pay-setting that would show up as a gender gap the moment the group's composition changes.",
       "womenAheadLabel": "Why are these not in the main flow?",
-      "womenAheadBody": "The statutory duty targets pay differences to women's disadvantage. When the women in a group are at or above the men's average, there is nothing to explain or act on, so the group leaves the main flow rather than filling it with green rows. The figures stay here as analytical information."
+      "womenAheadBody": "The statutory duty targets pay differences to women's disadvantage. When the women in a group are at or above the men's average, there is nothing to explain or act on, so the group leaves the main flow rather than filling it with green rows. The figures stay here as analytical information.",
+      "analysisProgressLabel": "What is counted here?",
+      "analysisProgressBody": "The count covers the steps that must be documented before the pay mapping can be completed: the collaboration record, the pay-practice review, every equal-work group with a pay difference to the women's disadvantage, and every women-dominated group with a higher-paid comparison. Analyses that carry no documentation duty are not counted.",
+      "collaborationStripLabel": "Why is the collaboration shown here?",
+      "collaborationStripBody": "The law requires the employer to carry out the pay mapping together with the employees, normally through the union (DL 3 kap. 11-12 §§). This line shows what was recorded when the mapping started, so it stays visible while you work. Showing it does not by itself discharge the duty at each step."
     },
     "widgetCard": {
       "expand": "Expand"

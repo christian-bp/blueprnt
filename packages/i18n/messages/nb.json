@@ -1250,6 +1250,25 @@
         "report": "Rapport",
         "actions": "Tiltak"
       },
+      "analysis": {
+        "progressLabel": "Dokumentert",
+        "progressCount": "<done></done> / <total></total>",
+        "lead": "Fire kapitler. Alle må dokumenteres før lønnskartleggingen kan fullføres.",
+        "collaborationLabel": "Samarbeid:",
+        "collaborationEmpty": "Ikke registrert ennå",
+        "collaborationChange": "Endre",
+        "collaborationAdd": "Registrer",
+        "chapterPosition": "Kapittel {position} av {total} · {chapter}",
+        "nextStepLabel": "Neste: {label}",
+        "openStep": "Åpne steget",
+        "remainingAfter": "{count, plural, one {# steg igjen etter dette} other {# steg igjen etter dette}}",
+        "nextAction": {
+          "start": "Registrer hvem som deltar i samarbeidet og hvordan det foregår.",
+          "praxis": "Gå gjennom lønnsfastsettingspraksisen på området og skriv ned hva dere fant.",
+          "equalWork": "Sammenlign kvinners og menns lønn i gruppen og dokumenter en saklig grunn for hver forskjell dere ikke kan forklare.",
+          "equivalentWork": "Sammenlign denne kvinnedominerte gruppen mot de lavere verdsatte gruppene som likevel tjener mer."
+        }
+      },
       "overview": {
         "headlineGapLabel": "Lønnsgap",
         "insufficient": "Utilstrekkelig grunnlag for et lønnsgap på organisasjonsnivå.",
@@ -1968,7 +1987,11 @@
       "genderPureLabel": "Hvorfor ligger disse gruppene for seg?",
       "genderPureBody": "En lønnskartlegging sammenligner kvinners lønn mot menns. En gruppe der alle har samme kjønn har ingen slik sammenligning å gjøre, så den har verken flagg, dokumentasjonsplikt eller plass i den lovpålagte rapporten. Den finnes her fordi intern lønnsspredning og uteliggere likevel er verdt å forstå: en stor spredning innenfor én og samme jobb kan peke på en lønnsfastsettelse som blir et lønnsgap i det øyeblikket gruppens sammensetning endres.",
       "womenAheadLabel": "Hvorfor ligger disse ikke i hovedflyten?",
-      "womenAheadBody": "Den lovpålagte plikten retter seg mot lønnsforskjeller til kvinnenes ulempe. Når kvinnene i en gruppe ligger på nivå med eller over mennenes gjennomsnitt, finnes det ingenting å forklare eller gjøre noe med, så gruppen forlater hovedflyten i stedet for å fylle den med grønne rader. Tallene finnes her som analytisk informasjon."
+      "womenAheadBody": "Den lovpålagte plikten retter seg mot lønnsforskjeller til kvinnenes ulempe. Når kvinnene i en gruppe ligger på nivå med eller over mennenes gjennomsnitt, finnes det ingenting å forklare eller gjøre noe med, så gruppen forlater hovedflyten i stedet for å fylle den med grønne rader. Tallene finnes her som analytisk informasjon.",
+      "analysisProgressLabel": "Hva telles her?",
+      "analysisProgressBody": "Tellingen omfatter stegene som må dokumenteres før lønnskartleggingen kan fullføres: samarbeidsredegjørelsen, gjennomgangen av lønnsfastsettingspraksis, hver gruppe med likt arbeid der det finnes en lønnsforskjell til kvinnenes ulempe, og hver kvinnedominert gruppe med en høyere betalt sammenligningsgruppe. Analyser uten dokumentasjonsplikt telles ikke.",
+      "collaborationStripLabel": "Hvorfor vises samarbeidet her?",
+      "collaborationStripBody": "Loven krever at arbeidsgiveren gjennomfører lønnskartleggingen sammen med arbeidstakerne, normalt gjennom fagforeningen (DL 3 kap. 11-12 §§). Denne linjen viser hva som ble registrert da kartleggingen startet, slik at det er synlig mens du arbeider. At det vises oppfyller ikke i seg selv plikten ved hvert steg."
     },
     "widgetCard": {
       "expand": "Forstørr"

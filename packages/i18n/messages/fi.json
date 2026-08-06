@@ -1250,6 +1250,25 @@
         "report": "Raportti",
         "actions": "Toimenpiteet"
       },
+      "analysis": {
+        "progressLabel": "Dokumentoitu",
+        "progressCount": "<done></done> / <total></total>",
+        "lead": "Neljä lukua. Kaikki on dokumentoitava ennen kuin palkkakartoitus voidaan viimeistellä.",
+        "collaborationLabel": "Yhteistoiminta:",
+        "collaborationEmpty": "Ei vielä kirjattu",
+        "collaborationChange": "Muuta",
+        "collaborationAdd": "Kirjaa",
+        "chapterPosition": "Luku {position}/{total} · {chapter}",
+        "nextStepLabel": "Seuraava: {label}",
+        "openStep": "Avaa vaihe",
+        "remainingAfter": "{count, plural, one {# vaihe jäljellä tämän jälkeen} other {# vaihetta jäljellä tämän jälkeen}}",
+        "nextAction": {
+          "start": "Kirjaa, ketkä osallistuvat yhteistoimintaan ja miten se toteutetaan.",
+          "praxis": "Käy läpi palkanmäärityskäytäntönne tällä alueella ja kirjaa, mitä havaitsitte.",
+          "equalWork": "Vertaa naisten ja miesten palkkoja ryhmässä ja dokumentoi asiallinen syy jokaiselle erolle, jota ette voi selittää.",
+          "equivalentWork": "Vertaa tätä naisvaltaista ryhmää alempiarvoisiin ryhmiin, jotka silti ansaitsevat enemmän."
+        }
+      },
       "overview": {
         "headlineGapLabel": "Palkkaero",
         "insufficient": "Riittämättömät tiedot organisaatiotason palkkaeroa varten.",
@@ -1968,7 +1987,11 @@
       "genderPureLabel": "Miksi nämä ryhmät ovat erikseen?",
       "genderPureBody": "Palkkakartoitus vertaa naisten palkkaa miesten palkkaan. Ryhmällä, jossa kaikki ovat samaa sukupuolta, ei ole tällaista vertailua, joten sillä ei ole lippua, dokumentointivelvoitetta eikä paikkaa lakisääteisessä raportissa. Se säilyy täällä, koska sisäinen palkkahajonta ja poikkeamat ovat silti ymmärtämisen arvoisia: suuri hajonta saman työn sisällä voi kertoa palkanmäärittelystä, joka muuttuu palkkaeroksi heti kun ryhmän kokoonpano muuttuu.",
       "womenAheadLabel": "Miksi nämä eivät ole päävirrassa?",
-      "womenAheadBody": "Lakisääteinen velvoite kohdistuu naisten haitaksi oleviin palkkaeroihin. Kun ryhmän naiset ovat miesten keskiarvon tasolla tai sen yli, selitettävää tai korjattavaa ei ole, joten ryhmä poistuu päävirrasta sen sijaan että täyttäisi sen vihreillä riveillä. Luvut säilyvät täällä analyyttisenä tietona."
+      "womenAheadBody": "Lakisääteinen velvoite kohdistuu naisten haitaksi oleviin palkkaeroihin. Kun ryhmän naiset ovat miesten keskiarvon tasolla tai sen yli, selitettävää tai korjattavaa ei ole, joten ryhmä poistuu päävirrasta sen sijaan että täyttäisi sen vihreillä riveillä. Luvut säilyvät täällä analyyttisenä tietona.",
+      "analysisProgressLabel": "Mitä tässä lasketaan?",
+      "analysisProgressBody": "Laskenta kattaa vaiheet, jotka on dokumentoitava ennen palkkakartoituksen viimeistelyä: yhteistoimintaselvitys, palkanmäärityskäytännön läpikäynti, jokainen samanarvoisen työn ryhmä, jossa on naisten kannalta epäedullinen palkkaero, ja jokainen naisvaltainen ryhmä, jolla on korkeammin palkattu vertailuryhmä. Analyyseja ilman dokumentointivelvoitetta ei lasketa.",
+      "collaborationStripLabel": "Miksi yhteistoiminta näkyy tässä?",
+      "collaborationStripBody": "Laki edellyttää, että työnantaja tekee palkkakartoituksen yhdessä työntekijöiden kanssa, tavallisesti ammattiliiton kautta (DL 3 luku 11-12 §). Tämä rivi näyttää, mitä kirjattiin kartoituksen alkaessa, jotta se pysyy näkyvissä työskennellessäsi. Näyttäminen ei sinänsä täytä velvoitetta kussakin vaiheessa."
     },
     "widgetCard": {
       "expand": "Suurenna"

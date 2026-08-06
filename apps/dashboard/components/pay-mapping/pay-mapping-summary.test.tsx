@@ -50,6 +50,7 @@ const tDoc = messages.dashboard.payMapping.documentation
 const tTabs = messages.dashboard.payMapping.tabs
 const tGap = messages.dashboard.payMapping.gap
 const tJourney = messages.dashboard.payMapping.journey
+const tAnalysis = messages.dashboard.payMapping.analysis
 const tToast = messages.dashboard.toast
 const tErrors = messages.errors
 
@@ -331,17 +332,20 @@ describe("PayMappingSummary", () => {
         </PayMappingRunProvider>
       </NextIntlClientProvider>
     )
-    expect(screen.getByText(t.summaryTitle)).toBeDefined()
+    // The spine's own chrome is real while loading (its heading and its lead
+    // are static i18n text); only the unknown count is a bar.
+    expect(screen.getByText(tAnalysis.progressLabel)).toBeDefined()
+    expect(screen.getByText(tAnalysis.lead)).toBeDefined()
     expect(
       document.querySelectorAll('[data-slot="skeleton"]').length
     ).toBeGreaterThan(0)
     expect(screen.queryByText(t.collaborationTitle)).toBeNull()
   })
 
-  it("shows the empty-currency text with no heading when the mapping has no salaries", () => {
+  it("shows the empty-currency state with no ladder when the mapping has no salaries", () => {
     renderSummary({ gap: { ...GAP, currency: null } })
     expect(screen.getByText(tGap.empty)).toBeDefined()
-    expect(screen.queryByText(t.summaryTitle)).toBeNull()
+    expect(screen.queryByText(tAnalysis.lead)).toBeNull()
   })
 
   it("shows the continue item (label, brand count, review link) while steps remain on an active run", () => {
@@ -402,19 +406,40 @@ describe("PayMappingSummary", () => {
     )
   })
 
-  it("lands on the first remaining step as the implicit default: card open, row current, no back control", async () => {
+  it("lands on the next-step panel, not on an opened step, and opens it on demand", async () => {
     renderSummary()
-    // Start (collaboration) is the first undone row, so its card is already
-    // open without any click.
-    expect(await screen.findByText(t.introTitle)).toBeDefined()
+    // Start (collaboration) is the first undone row, so the landing names
+    // it. Nothing heavier renders until the user asks: no step heading, no
+    // form, no gate panel.
+    expect(
+      await screen.findByText(
+        tAnalysis.nextStepLabel.replace("{label}", t.collaborationTitle)
+      )
+    ).toBeDefined()
+    expect(screen.getByText(tAnalysis.nextAction.start)).toBeDefined()
+    expect(screen.queryByRole("heading", { name: t.introTitle })).toBeNull()
     expect(screen.queryByText(t.finishActionsNote)).toBeNull()
-    const row = checklistRowFor(t.collaborationTitle)
-    expect(row?.getAttribute("aria-current")).toBe("true")
     // The landing is implicit: the small-screen back control only renders
     // for an explicit selection (the checklist must stay reachable).
     expect(screen.queryByRole("button", { name: t.backToSummary })).toBeNull()
     // And it never steals focus on page load.
     expect(document.activeElement).toBe(document.body)
+
+    fireEvent.click(screen.getByRole("button", { name: tAnalysis.openStep }))
+    expect(await screen.findByText(t.introTitle)).toBeDefined()
+    const row = checklistRowFor(t.collaborationTitle)
+    expect(row?.getAttribute("aria-current")).toBe("true")
+  })
+
+  it("lands on the completion panel once the gate is met, never on the next-step panel", async () => {
+    renderSummary({
+      run: { ...RUN, collaboration: COLLABORATION_FILLED },
+      analyses: ANALYSES_ALL_DONE,
+    })
+    await expectGatePanel()
+    expect(
+      screen.queryByRole("button", { name: tAnalysis.openStep })
+    ).toBeNull()
   })
 
   it("pre-selects the checklist row a ?step= deep link names", async () => {
@@ -436,10 +461,12 @@ describe("PayMappingSummary", () => {
     window.history.pushState({}, "", "/analysis?step=equalWork:gone")
     try {
       renderSummary()
-      // Falls back to the implicit landing (the first remaining step).
-      expect(await screen.findByText(t.introTitle)).toBeDefined()
-      const row = checklistRowFor(t.collaborationTitle)
-      expect(row?.getAttribute("aria-current")).toBe("true")
+      // Falls back to the implicit landing (the next-step panel).
+      expect(
+        await screen.findByText(
+          tAnalysis.nextStepLabel.replace("{label}", t.collaborationTitle)
+        )
+      ).toBeDefined()
     } finally {
       window.history.pushState({}, "", "/")
     }
@@ -447,6 +474,9 @@ describe("PayMappingSummary", () => {
 
   it("renders the opened step's own heading as an h4 (the pane sits under the page's h2 and this summary's own h3)", async () => {
     renderSummary()
+    fireEvent.click(
+      await screen.findByRole("button", { name: tAnalysis.openStep })
+    )
     expect(
       await screen.findByRole("heading", { name: t.introTitle, level: 4 })
     ).toBeDefined()
@@ -639,7 +669,12 @@ describe("PayMappingSummary", () => {
     expect(document.activeElement).toBe(paneContainer)
 
     fireEvent.click(screen.getByRole("button", { name: t.backToSummary }))
-    const heading = await screen.findByText(t.summaryTitle)
+    // The spine's heading is the standing itself ("Documented 5 / 29"), so
+    // match it by its label rather than a fixed full string.
+    const heading = await screen.findByRole("heading", {
+      level: 3,
+      name: new RegExp(tAnalysis.progressLabel),
+    })
     expect(document.activeElement).toBe(heading)
   })
 

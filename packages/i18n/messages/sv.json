@@ -1250,6 +1250,25 @@
         "report": "Rapport",
         "actions": "Åtgärder"
       },
+      "analysis": {
+        "progressLabel": "Dokumenterat",
+        "progressCount": "<done></done> / <total></total>",
+        "lead": "Fyra kapitel. Alla måste dokumenteras innan lönekartläggningen kan slutföras.",
+        "collaborationLabel": "Samverkan:",
+        "collaborationEmpty": "Inte registrerad än",
+        "collaborationChange": "Ändra",
+        "collaborationAdd": "Registrera",
+        "chapterPosition": "Kapitel {position} av {total} · {chapter}",
+        "nextStepLabel": "Nästa: {label}",
+        "openStep": "Öppna steget",
+        "remainingAfter": "{count, plural, one {# steg kvar efter det här} other {# steg kvar efter det här}}",
+        "nextAction": {
+          "start": "Registrera vilka som deltar i samverkan och hur den går till.",
+          "praxis": "Gå igenom er lönesättningspraxis inom området och skriv ned vad ni kom fram till.",
+          "equalWork": "Jämför kvinnors och mäns löner i gruppen och dokumentera ett sakligt skäl för varje skillnad ni inte kan förklara.",
+          "equivalentWork": "Jämför den här kvinnodominerade gruppen mot de lägre värderade grupper som ändå tjänar mer."
+        }
+      },
       "overview": {
         "headlineGapLabel": "Lönegap",
         "insufficient": "Otillräckligt underlag för ett lönegap på organisationsnivå.",
@@ -1968,7 +1987,11 @@
       "genderPureLabel": "Varför ligger de här grupperna för sig?",
       "genderPureBody": "En lönekartläggning jämför kvinnors lön mot mäns. En grupp där alla har samma kön har ingen sådan jämförelse att göra, så den har varken flagga, dokumentationsplikt eller plats i den lagstadgade rapporten. Den finns kvar här eftersom intern lönespridning och outliers ändå är värda att förstå: en stor spridning inom ett och samma jobb kan peka på en lönesättning som blir ett lönegap i samma stund som gruppens sammansättning ändras.",
       "womenAheadLabel": "Varför ligger de här inte i huvudflödet?",
-      "womenAheadBody": "Den lagstadgade plikten riktar sig mot löneskillnader till kvinnors nackdel. När kvinnorna i en grupp ligger i nivå med eller över männens genomsnitt finns det inget att förklara eller åtgärda, så gruppen lämnar huvudflödet i stället för att fylla det med gröna rader. Siffrorna finns kvar här som analytisk information."
+      "womenAheadBody": "Den lagstadgade plikten riktar sig mot löneskillnader till kvinnors nackdel. När kvinnorna i en grupp ligger i nivå med eller över männens genomsnitt finns det inget att förklara eller åtgärda, så gruppen lämnar huvudflödet i stället för att fylla det med gröna rader. Siffrorna finns kvar här som analytisk information.",
+      "analysisProgressLabel": "Vad räknas här?",
+      "analysisProgressBody": "Räkningen omfattar de steg som måste dokumenteras innan lönekartläggningen kan slutföras: samverkansredogörelsen, genomgången av lönesättningspraxis, varje grupp med lika arbete där det finns en löneskillnad till kvinnornas nackdel, och varje kvinnodominerad grupp med en högre betald jämförelsegrupp. Analyser utan dokumentationsplikt räknas inte.",
+      "collaborationStripLabel": "Varför visas samverkan här?",
+      "collaborationStripBody": "Lagen kräver att arbetsgivaren genomför lönekartläggningen tillsammans med arbetstagarna, normalt genom facket (DL 3 kap. 11-12 §§). Den här raden visar vad som registrerades när kartläggningen startade, så att det syns medan du arbetar. Att det visas fullgör inte i sig plikten vid varje steg."
     },
     "widgetCard": {
       "expand": "Förstora"

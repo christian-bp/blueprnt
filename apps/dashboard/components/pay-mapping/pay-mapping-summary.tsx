@@ -6,10 +6,19 @@ import {
   womenDominatedGroupRequiresDocumentation,
 } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
-import { Card, CardContent, CardFooter } from "@workspace/ui/components/card"
+import { Card, CardContent } from "@workspace/ui/components/card"
 import { Accordion } from "@workspace/ui/components/accordion"
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@workspace/ui/components/empty"
+import { Progress } from "@workspace/ui/components/progress"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
+import { Alert02Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { useMutation, useQuery } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
@@ -19,6 +28,8 @@ import type { ReactNode } from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "@/lib/toast"
 import { AccordionSection } from "@/components/accordion-section"
+import { AnalysisSpine } from "./analysis-spine"
+import { type AnalysisChapter, NextStepPanel } from "./next-step-panel"
 import { ContinueReviewItem } from "./continue-review-item"
 import { CrossLevelSection } from "./cross-level-section"
 import { EquivalentWorkLevelAnalysis } from "./equivalent-work-level-analysis"
@@ -133,6 +144,7 @@ export function PayMappingSummary() {
   const tTabs = useTranslations("dashboard.payMapping.tabs")
   const tJourney = useTranslations("dashboard.payMapping.journey")
   const tGap = useTranslations("dashboard.payMapping.gap")
+  const tAnalysis = useTranslations("dashboard.payMapping.analysis")
   const tToast = useTranslations("dashboard.toast")
   const tErrors = useTranslations("errors")
   const pathname = usePathname()
@@ -233,6 +245,10 @@ export function PayMappingSummary() {
       return
     }
     node.focus()
+    // Steps differ in height by hundreds of pixels (a praxis step is three
+    // lines, an equivalent-work step carries a table and a chart), so
+    // advancing without this leaves the user mid-pane on the next step.
+    node.scrollIntoView({ block: "start" })
   }, [])
 
   // The small-screen fallback's own "close" affordance (the button rendered
@@ -252,28 +268,69 @@ export function PayMappingSummary() {
     analyses === undefined ||
     runsList === undefined
   ) {
+    // Content-shaped: the real spine chrome (its heading, its label and its
+    // bar) with only the unknown count standing in as a bar, then the two
+    // columns in their real proportions, so nothing reflows on arrival.
     return (
       <div className="space-y-4">
-        <h3 className="font-semibold text-base">{t("summaryTitle")}</h3>
-        <Card>
-          <CardContent className="space-y-4">
-            {Array.from({ length: 4 }, (_, index) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
-              <div key={index} className="flex min-h-5 items-center">
-                <Skeleton className="h-4 w-full max-w-md" />
-              </div>
-            ))}
-          </CardContent>
-          <CardFooter>
-            <Skeleton className="h-9 w-32 rounded-md" />
-          </CardFooter>
-        </Card>
+        <section className="space-y-3">
+          <div className="flex items-center gap-2">
+            <h3 className="font-semibold text-base">
+              {tAnalysis("progressLabel")}
+            </h3>
+            <Skeleton className="h-4 w-12" />
+          </div>
+          <Progress value={0} aria-label={tAnalysis("progressLabel")} />
+          <p className="text-muted-foreground text-sm">{tAnalysis("lead")}</p>
+        </section>
+        <div className="grid gap-4 lg:grid-cols-[320px_1fr] lg:items-start">
+          <Card>
+            <CardContent className="space-y-4">
+              {Array.from({ length: 6 }, (_, index) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length placeholder, order is stable
+                <div key={index} className="flex min-h-5 items-center">
+                  <Skeleton className="h-4 w-full" />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="space-y-4">
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-5 w-64 max-w-full" />
+              <Skeleton className="h-4 w-full max-w-md" />
+              <Skeleton className="h-9 w-32 rounded-md" />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     )
   }
 
   if (gap.currency === null) {
-    return <p className="text-muted-foreground text-sm">{tGap("empty")}</p>
+    // The house empty primitive rather than a bare sentence: the frozen
+    // snapshot holds no priced rows, so there is nothing to analyse and the
+    // only useful move is back to the run's own overview.
+    return (
+      <Empty className="gap-4">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <HugeiconsIcon
+              icon={Alert02Icon}
+              strokeWidth={2}
+              aria-hidden="true"
+            />
+          </EmptyMedia>
+          <EmptyTitle>{tGap("empty")}</EmptyTitle>
+        </EmptyHeader>
+        <Link
+          href={`/pay-mappings/${pathname.split("/").filter(Boolean)[1] ?? ""}`}
+          className="text-sm underline underline-offset-4"
+        >
+          {tTabs("overview")}
+        </Link>
+      </Empty>
+    )
   }
 
   if (queue === null) {
@@ -422,12 +479,14 @@ export function PayMappingSummary() {
   // auto-opened card, so focusPaneContainer's own first-mount guard applies
   // and the landing never steals focus.
   const firstUndone = flatRows.find((row) => !row.done)
-  const openStep: OpenStep =
-    selected !== undefined
-      ? selected
-      : locked || gateMet
-        ? null
-        : (firstUndone?.openStep ?? null)
+  // Nothing opens by itself any more (Iteration 3, rung 2): the landing is
+  // NextStepPanel, which names the next undone step and offers one button.
+  // Auto-opening it put a chart, a 25-row table and a form on screen before
+  // the user had asked for anything. A completed or gate-met run still
+  // lands on the completion panel: the run is closed (or closable), so an
+  // untouched free-klarmarkering row is history, not "what's next".
+  const showNextStep = !locked && !gateMet && firstUndone !== undefined
+  const openStep: OpenStep = selected !== undefined ? selected : null
   const explicitCardOpen = openStep !== null && selected !== undefined
 
   const sections: {
@@ -657,7 +716,21 @@ export function PayMappingSummary() {
   }
 
   const currentRowId = openStep === null ? null : openStepId(openStep)
-  const paneKey = openStep === null ? "gate" : openStepId(openStep)
+  const paneKey =
+    openStep === null
+      ? showNextStep && selected === undefined
+        ? "next"
+        : "gate"
+      : openStepId(openStep)
+  // The chapter the next undone row belongs to, for the landing panel's
+  // "chapter N of 4" line. The row ids are "<scope>:<key>" for groups and
+  // "praxis:<area>" / "start" otherwise, so the section that holds the row
+  // is the authority rather than a second parse.
+  const nextChapter: AnalysisChapter =
+    (sections.find((section) =>
+      section.rows.some((row) => row.id === firstUndone?.id)
+    )?.key as AnalysisChapter | undefined) ?? "start"
+  const remainingAfterNext = Math.max(0, remaining - 1)
 
   // The checklist filter: label-only matching, same
   // scope the jump menu's own search covers. While a query is active the
@@ -674,25 +747,24 @@ export function PayMappingSummary() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        {/* tabIndex + headingRef: the return target for focus once the
-            small-screen fallback's back control closes an opened card (see
-            handleBackToSummary above); never itself part of either
-            AnimatePresence swap, so it stays a stable anchor above both
-            columns. */}
-        {/* outline-none for the same reason as the pane container below:
-            this heading is a programmatic focus target only. */}
-        <h3
-          ref={headingRef}
-          tabIndex={-1}
-          className="font-semibold text-base outline-none"
-        >
-          {t("summaryTitle")}
-        </h3>
-        {showBanner && (
-          <ContinueReviewItem href={reviewHref} remaining={remaining} />
-        )}
-      </div>
+      {/* Rung 0: where the whole mapping stands, above everything else.
+          headingRef is the return target for focus once the small-screen
+          fallback's back control closes an opened card (see
+          handleBackToSummary above); it is never part of either
+          AnimatePresence swap, so it stays a stable anchor above both
+          columns. */}
+      <AnalysisSpine
+        done={currentQueue.progress.overall.done}
+        total={currentQueue.progress.overall.total}
+        collaboration={collaboration}
+        onOpenCollaboration={() => setSelected(startRow.openStep)}
+        headingRef={headingRef}
+        right={
+          showBanner ? (
+            <ContinueReviewItem href={reviewHref} remaining={remaining} />
+          ) : undefined
+        }
+      />
       {/* The run-level tvärnivå check (Iteration 2 note 4): it compares
           individuals ACROSS levels, so it belongs above the per-group
           master-detail rather than inside any one group. Hidden entirely
@@ -841,9 +913,18 @@ export function PayMappingSummary() {
               )}
               <Card>
                 <CardContent>
-                  {openStep === null
-                    ? renderGatePanel()
-                    : renderOpenStep(openStep)}
+                  {openStep !== null ? (
+                    renderOpenStep(openStep)
+                  ) : showNextStep && selected === undefined ? (
+                    <NextStepPanel
+                      chapter={nextChapter}
+                      label={firstUndone?.label ?? ""}
+                      remainingAfter={remainingAfterNext}
+                      onOpen={() => setSelected(firstUndone?.openStep ?? null)}
+                    />
+                  ) : (
+                    renderGatePanel()
+                  )}
                 </CardContent>
               </Card>
             </motion.div>
