@@ -21,6 +21,7 @@ import { toast } from "@/lib/toast"
 import { AccordionSection } from "@/components/accordion-section"
 import { ContinueReviewItem } from "./continue-review-item"
 import { CrossLevelSection } from "./cross-level-section"
+import { EquivalentWorkLevelAnalysis } from "./equivalent-work-level-analysis"
 import {
   GenderPureDeepDive,
   SingletonNote,
@@ -695,6 +696,21 @@ export function PayMappingSummary() {
         rows={currentRun.rows}
         currency={currency}
         hideWhenEmpty
+        documentation={{
+          runId: currentRun.runId,
+          actions,
+          notes,
+          locked,
+        }}
+      />
+      {/* The per-level likvärdigt analysis (Iteration 2 note 4): collapsed
+          to one line by default; an analytical complement beside the
+          statutory chapters, never a gate input. */}
+      <EquivalentWorkLevelAnalysis
+        equivalentWork={currentGap.equivalentWork}
+        equalWork={currentGap.equalWork}
+        rows={currentRun.rows}
+        currency={currency}
         documentation={{
           runId: currentRun.runId,
           actions,

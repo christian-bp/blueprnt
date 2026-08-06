@@ -26,7 +26,8 @@ import {
 // One metric's compact "Kv. medel · M. medel · gap" line for the summary
 // strip; null means when a side is missing render nothing (the entry
 // conditions make that unreachable for shown groups, kept total anyway).
-function MetricLine({
+// Exported: the per-level likvärdigt analysis renders the same line.
+export function MetricLine({
   metric,
   currency,
   muted = false,

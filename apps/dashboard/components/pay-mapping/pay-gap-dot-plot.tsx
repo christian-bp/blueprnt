@@ -31,7 +31,7 @@ import {
   fteBaseMonthly,
   fteTotalMonthly,
   type GapGroup,
-  groupMembers,
+  membersOf,
   type PayMappingSnapshotRow,
   primaryGapMetric,
 } from "./pay-mapping-gap-types"
@@ -75,7 +75,7 @@ export function buildDotPlotModel(
   rows: PayMappingSnapshotRow[]
 ): DotPlotModel {
   const metric = primaryGapMetric(group)
-  const members = groupMembers(rows, group) ?? []
+  const members = membersOf(rows, group)
   const points: DotPlotPoint[] = members.map((row) => {
     const x = group.tccDriven ? fteTotalMonthly(row) : fteBaseMonthly(row)
     const diff =
