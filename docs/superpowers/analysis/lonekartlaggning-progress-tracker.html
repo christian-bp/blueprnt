@@ -1,0 +1,551 @@
+<title>Lönekartläggning progress tracker — blueprnt</title>
+<style>
+  :root {
+    --bg: #faf8f8; --surface: #ffffff; --surface-2: #f5f1f2;
+    --ink: #1c1719; --ink-2: #6c6266; --ink-3: #9b9195;
+    --line: #e8e1e3; --line-strong: #d8cfd2;
+    --accent: #e11d48; --accent-ink: #be123c; --accent-soft: rgba(225, 29, 72, 0.09);
+    --present: #15803d;   --present-bg: rgba(21, 128, 61, 0.11);
+    --partial: #b45309;   --partial-bg: rgba(180, 83, 9, 0.12);
+    --absent: #5f6b7a;    --absent-bg: rgba(95, 107, 122, 0.12);
+    --na: #99a3ae;        --na-bg: rgba(153, 163, 174, 0.14);
+    --shadow: 0 1px 2px rgba(28,23,25,.04), 0 8px 24px -12px rgba(28,23,25,.14);
+    --mono: ui-monospace, "SF Mono", "SFMono-Regular", "Menlo", "Cascadia Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #171315; --surface: #201b1e; --surface-2: #292326;
+      --ink: #f3edef; --ink-2: #b4a9ad; --ink-3: #877c81;
+      --line: #352d31; --line-strong: #443a3f;
+      --accent: #fb7185; --accent-ink: #fda4af; --accent-soft: rgba(251, 113, 133, 0.12);
+      --present: #4ade80; --present-bg: rgba(74, 222, 128, 0.13);
+      --partial: #fbbf24; --partial-bg: rgba(251, 191, 36, 0.13);
+      --absent: #94a3b8; --absent-bg: rgba(148, 163, 184, 0.13);
+      --na: #6b7684; --na-bg: rgba(107, 118, 132, 0.16);
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 30px -14px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #faf8f8; --surface: #ffffff; --surface-2: #f5f1f2;
+    --ink: #1c1719; --ink-2: #6c6266; --ink-3: #9b9195;
+    --line: #e8e1e3; --line-strong: #d8cfd2;
+    --accent: #e11d48; --accent-ink: #be123c; --accent-soft: rgba(225, 29, 72, 0.09);
+    --present: #15803d; --present-bg: rgba(21,128,61,0.11);
+    --partial: #b45309; --partial-bg: rgba(180,83,9,0.12);
+    --absent: #5f6b7a; --absent-bg: rgba(95,107,122,0.12);
+    --na: #99a3ae; --na-bg: rgba(153,163,174,0.14);
+    --shadow: 0 1px 2px rgba(28,23,25,.04), 0 8px 24px -12px rgba(28,23,25,.14);
+  }
+  :root[data-theme="dark"] {
+    --bg: #171315; --surface: #201b1e; --surface-2: #292326;
+    --ink: #f3edef; --ink-2: #b4a9ad; --ink-3: #877c81;
+    --line: #352d31; --line-strong: #443a3f;
+    --accent: #fb7185; --accent-ink: #fda4af; --accent-soft: rgba(251,113,133,0.12);
+    --present: #4ade80; --present-bg: rgba(74,222,128,0.13);
+    --partial: #fbbf24; --partial-bg: rgba(251,191,36,0.13);
+    --absent: #94a3b8; --absent-bg: rgba(148,163,184,0.13);
+    --na: #6b7684; --na-bg: rgba(107,118,132,0.16);
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 30px -14px rgba(0,0,0,.6);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--sans); line-height: 1.55;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: clamp(28px, 5vw, 72px) clamp(18px, 4vw, 40px) 96px; }
+  .num { font-variant-numeric: tabular-nums; }
+  .mono { font-family: var(--mono); }
+
+  header { border-bottom: 1px solid var(--line); padding-bottom: 32px; margin-bottom: 40px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent-ink); display: flex; align-items: center; gap: 10px; margin-bottom: 18px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 2px; background: var(--accent); border-radius: 2px; }
+  .eyebrow .live { display: inline-flex; align-items: center; gap: 6px; color: var(--present); }
+  .eyebrow .live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--present); }
+  h1 {
+    font-size: clamp(30px, 5vw, 46px); line-height: 1.04; letter-spacing: -0.025em;
+    font-weight: 800; margin: 0 0 14px; text-wrap: balance; max-width: 20ch;
+  }
+  .lede { font-size: clamp(16px, 2.1vw, 19px); color: var(--ink-2); max-width: 66ch; margin: 0 0 22px; }
+  .lede strong { color: var(--ink); font-weight: 650; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 22px; font-family: var(--mono); font-size: 12.5px; color: var(--ink-3); }
+  .meta span { display: inline-flex; gap: 7px; }
+  .meta b { color: var(--ink-2); font-weight: 500; }
+
+  .verdict {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+    padding: 24px 26px; box-shadow: var(--shadow); margin-bottom: 26px;
+    border-left: 4px solid var(--accent);
+  }
+  .verdict h2 { margin: 0 0 10px; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); font-weight: 700; }
+  .verdict p { margin: 0; font-size: 16.5px; color: var(--ink); }
+  .verdict p + p { margin-top: 12px; color: var(--ink-2); font-size: 15px; }
+  .verdict .now { margin-top: 14px; font-size: 14.5px; color: var(--ink); }
+  .verdict .now b { color: var(--accent-ink); }
+
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 44px; }
+  .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 18px 16px; }
+  .tile .big { font-size: 34px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; }
+  .tile .lbl { font-size: 12.5px; color: var(--ink-2); margin-top: 8px; }
+  .tile .sub { font-size: 11.5px; color: var(--ink-3); margin-top: 3px; }
+  .tile.accent .big { color: var(--accent-ink); }
+  .tile.present .big { color: var(--present); }
+  .tile.partial .big { color: var(--partial); }
+  .tile.absent .big { color: var(--absent); }
+
+  section { margin-bottom: 52px; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 8px; }
+  .sec-head h2 { font-size: 22px; font-weight: 750; letter-spacing: -0.02em; margin: 0; }
+  .sec-num { font-family: var(--mono); font-size: 13px; color: var(--accent-ink); font-weight: 600; }
+  .sec-desc { color: var(--ink-2); font-size: 14.5px; margin: 0 0 22px; max-width: 72ch; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 20px; padding: 14px 16px; background: var(--surface-2); border-radius: 12px; font-size: 13px; }
+  .legend .grp { display: flex; align-items: center; gap: 7px; color: var(--ink-2); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .dot-present { background: var(--present); }
+  .dot-partial { background: var(--partial); }
+  .dot-absent  { background: var(--absent); }
+  .dot-na      { background: var(--na); }
+
+  /* ---------- matrix ---------- */
+  .matrix { display: flex; flex-direction: column; gap: 10px; }
+  .mrow {
+    display: grid; grid-template-columns: minmax(200px, 1fr) 96px 150px minmax(210px, 1.5fr);
+    gap: 16px; align-items: center; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 13px; padding: 15px 18px;
+  }
+  .mrow .mtitle { font-weight: 650; font-size: 15px; }
+  .mrow .mtitle .mk { font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); display: block; margin-bottom: 2px; font-weight: 500; }
+  .phase { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; text-align: center; white-space: nowrap; }
+  .phase.shipped { color: var(--present); background: var(--present-bg); }
+  .phase.solid   { color: var(--present); background: var(--present-bg); }
+  .phase.next    { color: var(--accent-ink); background: var(--accent-soft); }
+  .phase.queued  { color: var(--absent); background: var(--absent-bg); }
+  .bar { display: flex; height: 10px; border-radius: 6px; overflow: hidden; background: var(--surface-2); }
+  .bar > i { display: block; height: 100%; }
+  .bar .s-present { background: var(--present); }
+  .bar .s-partial { background: var(--partial); }
+  .bar .s-absent  { background: var(--absent); }
+  .bar .s-na      { background: var(--na); }
+  .barcount { font-family: var(--mono); font-size: 11px; color: var(--ink-3); margin-top: 6px; display: flex; gap: 9px; }
+  .barcount b { font-weight: 600; }
+  .mverdict { font-size: 13px; color: var(--ink-2); line-height: 1.45; }
+
+  /* ---------- changelog ---------- */
+  .clog { display: flex; flex-direction: column; gap: 12px; }
+  .centry { display: grid; grid-template-columns: 108px 1fr; gap: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 13px; padding: 16px 18px; }
+  .centry .cwhen { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+  .centry .ctag { display: inline-block; margin-top: 6px; font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; }
+  .ctag.feat { color: var(--present); background: var(--present-bg); }
+  .ctag.fix  { color: var(--partial); background: var(--partial-bg); }
+  .ctag.decision { color: var(--accent-ink); background: var(--accent-soft); }
+  .centry .ctitle { font-weight: 700; font-size: 15.5px; letter-spacing: -0.01em; margin: 0 0 5px; }
+  .centry .cbody { font-size: 14px; color: var(--ink-2); margin: 0; }
+  .centry .cbody code { font-family: var(--mono); font-size: 12px; background: var(--surface-2); padding: 1px 6px; border-radius: 5px; color: var(--ink-2); }
+
+  .callout { background: var(--accent-soft); border: 1px solid color-mix(in oklab, var(--accent) 30%, transparent); border-radius: 16px; padding: 24px 26px; }
+  .callout h3 { margin: 0 0 12px; font-size: 18px; letter-spacing: -0.01em; }
+  .callout p { margin: 0 0 12px; font-size: 15px; color: var(--ink); }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout ol { margin: 12px 0 0; padding-left: 20px; }
+  .callout li { font-size: 14.5px; color: var(--ink); margin-bottom: 9px; }
+  .callout li b { color: var(--accent-ink); }
+  .callout .principle { font-size: 14.5px; color: var(--ink); background: var(--surface); border-radius: 10px; padding: 12px 14px; margin: 0 0 14px; border: 1px solid var(--line); }
+  .callout .principle b { color: var(--accent-ink); }
+
+  .plist { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+  .pitem { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 15px 17px; font-size: 14px; color: var(--ink-2); }
+  .pitem b { color: var(--ink); font-weight: 650; display: block; margin-bottom: 4px; font-size: 14.5px; }
+  .pitem.good { border-left: 3px solid var(--present); }
+  .pitem.build { border-left: 3px solid var(--accent); }
+
+  /* ---------- appendix ---------- */
+  details.mod { border: 1px solid var(--line); border-radius: 13px; margin-bottom: 12px; background: var(--surface); overflow: hidden; }
+  details.mod > summary {
+    cursor: pointer; list-style: none; padding: 15px 18px; display: flex; align-items: center; gap: 12px;
+    font-weight: 650; font-size: 15px;
+  }
+  details.mod > summary::-webkit-details-marker { display: none; }
+  details.mod > summary::after { content: "▸"; margin-left: auto; color: var(--ink-3); transition: transform .18s ease; }
+  details.mod[open] > summary::after { transform: rotate(90deg); }
+  details.mod > summary .mk { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+  .modbody { padding: 4px 18px 16px; border-top: 1px solid var(--line); }
+  .req { display: grid; grid-template-columns: 14px 1fr; gap: 11px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+  .req:last-child { border-bottom: none; }
+  .req .rdot { margin-top: 6px; }
+  .req-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+  .req-head .rt { font-weight: 600; font-size: 14px; }
+  .req-head .rref { font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); }
+  .chip { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; }
+  .chip.done  { color: var(--present); background: var(--present-bg); }
+  .chip.now   { color: var(--accent-ink); background: var(--accent-soft); }
+  .chip.core  { color: var(--partial); background: var(--partial-bg); }
+  .chip.later { color: var(--absent); background: var(--absent-bg); }
+  .chip.oos   { color: var(--na); background: var(--na-bg); }
+  .req-gap { margin: 5px 0 0; font-size: 13px; color: var(--ink-2); line-height: 1.45; }
+
+  footer { margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--ink-3); font-family: var(--mono); }
+
+  @media (max-width: 680px) {
+    .mrow { grid-template-columns: 1fr; gap: 10px; }
+    .centry { grid-template-columns: 1fr; gap: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Living progress tracker <span class="live">tracking</span></div>
+    <h1>blueprnt vs. the lönekartläggning method guide</h1>
+    <p class="lede">A module-by-module tracker of what the app does today against the Swedish equal-pay-mapping guide (Diskrimineringslagen kap. 3 + EU 2023/970), <strong>now with the whole analysis pillar shipped and pushed to main</strong>. This page evolves as we ship: green = done, rose = the next build, grey = queued for later.</p>
+    <div class="meta">
+      <span><b>Source</b> Lonekartlaggning_Steg_for_Steg_Guide v3.md</span>
+      <span><b>Modules</b> 9 (v2)</span>
+      <span><b>Now building</b> Iteration 2: slices A, B, C, E shipped; F and D remain</span>
+      <span><b>Updated</b> 2026-08-06</span>
+    </div>
+  </header>
+
+  <div class="verdict">
+    <h2>Where we are</h2>
+    <p>The <strong>entire analysis pillar is shipped and pushed to main</strong> (2026-07-23, 11 focused commits): all three statutory comparisons over the frozen snapshot, a <strong>guided review journey</strong> (a chromeless wizard takeover plus a master-detail summary with search, chapters and a completion gate), the documentation layer (localized reason catalog, deepened analysis, praxis assessments, klarmarkering), a preconditions gate on starting a run, run management (statuses, audited delete, status filter), and the survey overview (headline gap, equality clock, gender donut, quartile + age distributions, per-person scatter).</p>
+    <p>It went out behind a <strong>four-dimension whole-pile review</strong> (dead code, frontend correctness, backend + invariants, conventions/i18n/a11y) plus a 13-item fix wave; the full gate is green: typecheck, 1,290 dashboard tests, i18n parity + English-purity guards, Biome.</p>
+    <p><strong>Iteration 2 (2026-08-06):</strong> five system notes reshape the analysis views into their next form: entry conditions that hide non-comparable groups (singletons silently dropped, gender-pure groups to an opt-in deep-dive, women-earn-more groups to an info view), individual-level detail views (member tables with per-person diffs vs men's mean, swimlane dot plots, grundlön primary with TCC parallel), an explicit tvärnivå check for likvärdigt arbete, and the concrete M7 åtgärd/notering spec with a dedicated åtgärdsöversikt. Analyzed and planned as six slices (A-F) with seven flagged decisions, including an ADR-0015 amendment of ADR-0012's ⚪/direction semantics.</p>
+    <p class="now"><b>Next up:</b> Iteration 2 <strong>slices A, B, C and E are shipped and committed</strong> (2026-08-06: entry conditions + gate live, the equal-work detail view with dot plot and member table, medians/genderStats in core, browser-verified against a live run). Remaining: the <strong>åtgärdsöversikt (F)</strong> and the <strong>könsrena deep-dive + info view (D)</strong>; then the <strong>M8 report module</strong>. Plan: <span class="mono">docs/superpowers/plans/2026-08-06-iteration-2-analysis-views-rebuild.md</span>.</p>
+  </div>
+
+  <div class="tiles" id="tiles"></div>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">01</span><h2>Conformance matrix (v2)</h2></div>
+    <p class="sec-desc">One row per v2 guide module. The bar shows the mix of present / partial / absent / not-applicable requirements; the pill shows where each module sits in the build. The analysis modules (M3-M6) have flipped mostly green; the current build front is the Iteration 2 rebuild, whose new grey rows sit in M4/M5 (entry conditions, detail views, tvärnivå) and M7 (åtgärder + åtgärdsöversikt), with M8 (reporting) queued behind it.</p>
+    <div class="legend">
+      <span class="grp"><i class="dot dot-present"></i> Present / done</span>
+      <span class="grp"><i class="dot dot-partial"></i> Partial</span>
+      <span class="grp"><i class="dot dot-absent"></i> Absent (queued V2)</span>
+      <span class="grp"><i class="dot dot-na"></i> N/A (out of scope)</span>
+    </div>
+    <div class="matrix" id="matrix"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">02</span><h2>Recently shipped</h2></div>
+    <p class="sec-desc">The running log of what has landed. Newest first. Everything through 2026-07-23 is committed and pushed to <span class="mono">main</span>.</p>
+    <div class="clog" id="changelog"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Next up: the Iteration 2 rebuild (analysis detail views + the action layer)</h2></div>
+    <div class="callout">
+      <h3>Five system notes (2026-08-06) set the build front; M7 åtgärdsplan rides inside it</h3>
+      <p class="principle"><b>Entry conditions replace ⚪-everywhere:</b> a lika arbete group is shown only when it has at least 1 woman AND at least 1 man AND women's mean below men's (grundlön primary, TCC parallel). Singletons are silently dropped everywhere including the gate; gender-pure groups move to an opt-in deep-dive; women-earn-more groups to a low-key info view. This amends ADR-0012's ⚪ + both-directions flagging: <b>ADR-0015 required</b>.</p>
+      <p class="principle"><b>The detail views become individual-level:</b> per-group member tables (name, gender mark, grundlön, TCC, diff vs men's mean in kr and %, women-first ascending default sort), swimlane dot plots with both mean reference lines and the gap annotated, and for likvärdigt arbete an explicit <b>tvärnivå check</b> (a woman on a higher level out-earned by a lower-level man, per pair, with track as the explaining factor). Notes' hue-coded genders, emoji flags and inline row buttons are adapted to the design system (texture/outline marks, PayGapFlagBadge, row ... menus).</p>
+      <p class="principle"><b>The one remaining 3 kap. 11 § requirement lands with it:</b> åtgärder (owner, planned date, cost, priority, status) and noteringar (three types) at group, individual and pair level, plus a dedicated åtgärdsöversikt tab with filters, inline audited status updates and a summary bar. Person links go through personPublicId only (Role != Person; erasure-safe by construction).</p>
+      <p>Plan: <span class="mono">docs/superpowers/plans/2026-08-06-iteration-2-analysis-views-rebuild.md</span>. Recommended slice order:</p>
+      <ol>
+        <li><b>A. Engine + entry conditions + gate</b>: genderStats (min/median/mean/max/SD; the medians item folds in here), classifyEqualWorkGroup, crossLevelPairs, the reshaped gap query, ADR-0015.</li>
+        <li><b>B. Lika arbete detail view</b>: summary row, dot plot, member table with per-person diffs.</li>
+        <li><b>E. Åtgärder + noteringar</b>: entities, audit wiring, dialogs, row affordances + badges.</li>
+        <li><b>C. Likvärdigt detail + tvärnivå</b>: level/track columns, per-woman pair aggregation, level-lane plot.</li>
+        <li><b>F. Åtgärdsöversikt</b>: the Actions tab, two filtered lists, status updates, summary bar.</li>
+        <li><b>D. Könsrena deep-dive + women-earn-more info view</b>: opt-in, outside gate and report.</li>
+      </ol>
+      <p>Then the report module attaches to a finished survey: the internal kartläggningsrapport (PDF, the react-pdf kit already exists), the Art. 9 machine-readable export of the seven key metrics, the masked union report, the Art. 7 individual extract, and access/export logging at the export boundary. The engine's outcome classification is built so M8 inherits the exclusion boundary without rework.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Where the foundation is solid</h2></div>
+    <p class="sec-desc">The base the whole survey and pay-gap layer sits on is right.</p>
+    <div class="plist">
+      <div class="pitem good"><b>The survey is a guided flow, not a table dump</b> a chromeless wizard walks praxis questions and every flagged group step by step, and the analysis page is a searchable master-detail checklist that lands on the gate panel once everything required is done. The guide's "the system shall guide the user through the order" is the product's core bet, and the main differentiator vs. the incumbent's number-dense tables.</div>
+      <div class="pitem good"><b>Import produces faithful monthly figures</b> per-column monthly/annual basis (annual ÷12 at ingestion via one shared helper), the full PAY_COMPONENT_KINDS set ingested separately, and employment type captured, normalized across five locales, and audited like department.</div>
+      <div class="pitem good"><b>Pay-component model is directive-correct (§A2)</b> payRecords keeps basicMonthly separate from a typed components[] array, and TCC is derived on read, never stored (ADR-0002). The single most important seam, and it is right.</div>
+      <div class="pitem good"><b>Role-evaluation engine is complete</b> exact point-budget weighting (criteria × 3), deterministic normalize-to-0-100 + band assignment (Band 1 = highest), fixed track schema, per-individual level (ADR-0005), full anchor-role lifecycle.</div>
+      <div class="pitem good"><b>GDPR / audit / tenant spine carries pay data</b> every mutation writes a typed audit row, coded payload values render as localized labels (never raw enum codes), person-identifying fields are excluded from diffs and searchText, erasure hard-deletes child-first and pseudonymizes inside frozen snapshots, every function org-scoped fail-closed.</div>
+      <div class="pitem good"><b>Route-level pseudonymization is correct</b> people carry a short random publicId (never a name-slug, never the raw _id), externalRef is the employee number not a personnummer, no personnummer field exists anywhere.</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">05</span><h2>Build order from here</h2></div>
+    <p class="sec-desc">The v2 sequence held: the survey/snapshot container first, then the mandatory gender-gap view, then the guided documentation flow. Steps 1-3 are done; the legal must-haves (action plan, reporting) now come before the guide's own P2 fördjupningar.</p>
+    <div class="plist">
+      <div class="pitem good"><b>1. Kartläggning + data snapshot (Module 3) ✓</b> Shipped: the run entity, the immutable reference-date snapshot, the full status lifecycle with a completion gate, the preconditions gate, list + run management.</div>
+      <div class="pitem good"><b>2. Deterministic gap engine (packages/core) ✓</b> Shipped: pure and AI-free; mean FTE-adjusted total-comp gap both directions, the four flags, quartile + age tallies, women-dominance. Still to add: median, percentiles, SD, the A4 variable-pay metrics.</div>
+      <div class="pitem good"><b>3. P1 primary view + guided journey (Modules 4-6) ✓</b> Shipped, and beyond the plan: all three statutory comparisons, the review wizard + summary steady state, the reason catalog + praxis + klarmarkering documentation layer gating completion.</div>
+      <div class="pitem build"><b>4. Action plan (Module 7)</b> The åtgärdsplan entity with its legal fields, status, cost, follow-up; the 5% joint-pay-review trigger; wired into the existing completion gate.</div>
+      <div class="pitem build"><b>5. Reporting + export (Module 8)</b> Internal survey report, the Art. 9 JSON export (needs medians + A4), the de-identified union report, the individual Art. 7 extract, the archive package, access/export logging.</div>
+      <div class="pitem build"><b>6. Extended comparisons (P2) + non-gender QC (P3)</b> The configurable filtering engine, saved views, cohort/intersectional/trend analyses, off-policy outliers. Never a replacement for P1.</div>
+    </div>
+    <p class="sec-desc" style="margin-top:16px">Small seams to close alongside: <b>band-threshold calibration</b> to the Bilaga B reference model, a <b>working-conditions criterion</b>, the <b>samverkan participant-names erasure path</b> (tracked go-live decision), and minor import additions (cost_center, manager reference, a grundlön = 0 flag).</p>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">06</span><h2>Full requirement appendix</h2></div>
+    <p class="sec-desc">Every tracked requirement, grouped by v2 module. Chips: <span class="chip done">done</span> shipped · <span class="chip now">now</span> small open item · <span class="chip core">v2-core</span> next build · <span class="chip later">v2-later</span> larger scope · <span class="chip oos">out</span> deliberately not our product.</p>
+    <div id="appendix"></div>
+  </section>
+
+  <footer>
+    Living tracker, updated 2026-08-06 against Lonekartlaggning_Steg_for_Steg_Guide v3.md + the Iteration 2 systemnoteringar. Analysis pillar shipped 2026-07-23; Iteration 2 rebuild planned (slices A-F). Not legal advice.
+  </footer>
+</div>
+
+<script>
+  // status: p=present pa=partial ab=absent na=n/a ; phase: shipped|solid|next|queued
+  // prio chip: done|now|core|later|oos
+  const MODULES = [
+    { k: "M1", name: "Import & data collection", phase: "shipped",
+      verdict: "Faithful: monthly/annual basis, full component set, and employment type all ship. Small open items: cost_center, manager reference, a zero-salary flag.",
+      reqs: [
+        ["p","done","Per-column monthly/annual basis (annual ÷12)","§2.2","SHIPPED. Each money column carries a basis; annual amounts divided by 12 at ingestion via a shared toMonthly. Storage stays monthly, TCC formula unchanged."],
+        ["p","done","Full pay-component set ingested separately","§A2","SHIPPED. Import ingests every PAY_COMPONENT_KIND (variable, bonus, benefitInKind, fixedSupplement, allowance, equity, other) as distinct components."],
+        ["p","done","tcc_monthly implements the §2.2 formula","§2.2","SHIPPED. TCC = basic + components, all monthly; derived on read (ADR-0002). Annual inputs no longer overstate ~12x."],
+        ["p","done","employment_type captured + normalized","§2.1 / §3.3 #10","SHIPPED. Typed union permanent/fixedTerm/substitute/hourly, soft-normalized across sv/nb/da/fi/en (incl Danish Tidsbegrænset), audited like department."],
+        ["p","done","base_salary_monthly (gross-salary basis fixed)","§2.1","SHIPPED. A Gross Salary column now stays monthly (gross denotes pre-tax, not annual), caught by an adversarial review."],
+        ["p","now","employee_id / job_title / department","§2.1","externalRef upsert key, title (classification signal), department all imported and stored."],
+        ["p","now","employment_date","§2.1","employmentStartDate imported; cohort bucketing not built but the seam is correct."],
+        ["pa","oos","gender","§2.1","Binary Man/Kvinna (legal minimum); the guide's 4-category enum is a deliberate ADR-0010 decision."],
+        ["pa","later","age_group","§2.1","birthDate imported; age buckets ARE now derived for the overview's age-by-gender chart (AGE_BUCKETS in core); no stored age_group field."],
+        ["pa","core","job_family / band / track / level","§2.1","Reachable via role + classification, not an import column; level set per person via classification."],
+        ["p","done","work_classification (lika/likvärdigt)","Del 3","SHIPPED downstream: the gap query derives equal-work groups per role and equivalent-work groups per band from the frozen snapshot."],
+        ["ab","later","cost_center","§2.1","No field or synonym; common in payroll exports. Small add alongside the grouping engine."],
+        ["ab","later","manager_id reference","§2.1","Only a boolean isManager; no reference to a manager's employee number."],
+        ["pa","later","location (arbetsort)","§2.1 / §3.3 #11","Only ISO country code today; guide wants work location for geographic analysis."],
+        ["ab","now","Grundlön = 0 flag (§2.3)","§2.3","A zero base salary imports silently; guide wants it flagged (intern/stipendiat). Small validation add."],
+        ["p","now","Negative pay / duplicate id checks","§2.3","Negative pay is a hard error; within-batch duplicates flagged and skipped; cross-batch upsert-by-empno."],
+        ["pa","later",">10% missing gender warning","§2.3","No aggregate warning; each missing gender is instead a hard per-row blocker (stricter)."],
+        ["na","later","TCC < grundlön warning","§2.3","Structurally impossible in the additive non-negative model."],
+        ["p","now","CSV import + robustness","§6.1","Synonym-scored auto-detection with confidence, wizard mapping, saved profiles, live progress, true dry-run diff."],
+        ["na","later","Excel / HRIS import","§6.1","Excel deliberately out of V1 scope (ADR-0010); no HRIS integration yet."],
+      ]},
+    { k: "M2", name: "Role evaluation", phase: "solid",
+      verdict: "Substantially complete and correct. Remaining: band-threshold calibration to Bilaga B and a working-conditions criterion. Archived-role classifications no longer leak into snapshots (classified = confirmed assignment to an ACTIVE role).",
+      reqs: [
+        ["p","now","Criteria-based point model, fixed budget","§6.1","criteria × 3, 1-5 weight points."],
+        ["p","now","Normalize 0-100 + band by thresholds","§6.1","Deterministic; Band 1 = highest."],
+        ["p","now","Band thresholds live on model doc","ADR-0006","Aggregate on the model document."],
+        ["p","now","Fixed track schema + per-individual level","ADR-0005/0006","IC/Lead/M; level on personAssignments, never the role; level now renders as a track-tinted badge app-wide."],
+        ["p","now","Anchor-role designation & calibration","§6.1","Full ankarroll lifecycle."],
+        ["p","done","Classification tied to active roles","Del 4 Steg 1","SHIPPED. Classified = confirmed open assignment to an ACTIVE role everywhere; archiveRole ends open assignments and classification re-suggests; closes the band-less-snapshot hole."],
+        ["pa","core","Working-conditions criterion","Del 1.1","Arbetsförhållanden is a statutory dimension of equal-value work, not in the standard set. Add or document."],
+        ["pa","now","Band thresholds calibrated to Bilaga B","Bilaga B","Defaults are self-described pre-launch placeholders; calibrate before launch (skews likvärdigt grouping)."],
+      ]},
+    { k: "M3", name: "Kartläggning / survey lifecycle", phase: "solid",
+      verdict: "Lifecycle SHIPPED: the run entity + immutable snapshot, the full status flow (Aktiv/Pausad/Under granskning/Slutförd) with a completion gate and edit-locking, the preconditions gate on start, run management (audited delete + status filter), and GDPR pseudonymize-in-snapshot. Remaining: band policy-range (P3), cross-survey comparison, the archive package.",
+      reqs: [
+        ["p","done","Start a survey with a reference date","Del 5.4","SHIPPED. payMappingRuns entity + startPayMappingRun; reference date = freeze time (today)."],
+        ["p","done","Reference-date data snapshot (immutable)","Del 5.4 / ADR-0011","SHIPPED. One frozen row per classified person: pay as-of, engine-derived band/score, demographics, model config frozen once."],
+        ["p","done","Preconditions gate on starting a run","Del 4 Steg 1","SHIPPED. Start rejects until everyone is classified (confirmed assignment to an active role) and every active role has a completed evaluation; the create flow explains blockers as linked action rows; a dashboard todo group mirrors the same readiness."],
+        ["p","done","Status lifecycle","Del 5.4","SHIPPED. Aktiv/Pausad/Under granskning/Slutförd; completion is gated on the review journey (ADR-0012); a completed run rejects documentation edits with a coded error surfaced in the UI; reopen supported."],
+        ["p","done","Survey list view + run management","Del 5.4","SHIPPED. Kartläggningar register with search + pagination, per-row actions menu with a confirmed, audited hard delete (children first), and a completed/not-completed status filter. Completed-run deletion is a tracked go-live decision."],
+        ["ab","core","Band policy salary-range (min/mid/max)","Del 5.4 / ADR-0011","Deferred: its only consumer, off-policy detection, is P3. New org/band entity, kept on the band model, not the person."],
+        ["ab","later","Cross-survey comparison (trend)","Del 5.3-5.4","Needs analysis on >=2 runs. Compare gap, quartile, off-policy, action-effect change. The run switcher already jumps between runs on the same sub-page."],
+        ["ab","later","Access + export logging","Del 5.4 / ADR-0011","Deferred to the export slice (M8), logged at the export boundary where data leaves the system. v1 needs only a change-log, covered by the domain audit trail."],
+        ["p","done","GDPR: pseudonymize-in-snapshot on erasure","ADR-0011","SHIPPED. Erasure tombstones the name + clears the birth date in every snapshot row, keeping the gender/band/pay aggregate."],
+        ["ab","later","Archive export package (PDF+XLSX+JSON)","Del 5.4","Needs the report content (M8). Complete downloadable archive per survey."],
+        ["pa","later","Survey list KPI columns (flagged counts, open actions)","Del 5.4","Label, status, dates and population count ship; the guide also wants per-row flagged-differences and open-actions counts, which need the M5 aggregates + M7 actions."],
+        ["pa","later","Snapshot metadata + >=5y retention/backup","Del 5.4","Metadata (UTC timestamp, actor, system version) SHIPPED on the run; the retention/backup routine is later."],
+      ]},
+    { k: "M4", name: "Comparison groups", phase: "next",
+      verdict: "SHIPPED: all three statutory comparisons over the frozen snapshot: lika arbete (per role), likvärdigt arbete (per band), and the women-dominated cross-comparison (60% threshold), each with the four flags and small-cell masking. NOW (Iteration 2): entry conditions + direction rule reshape which groups the primary flow shows (singletons dropped, gender-pure to a deep-dive, women-earn-more to an info view). Remaining (P2): the configurable filtering engine, saved views, manual small-group merge.",
+      reqs: [
+        ["p","done","Entry conditions + direction rule (IT2 N1+N3)","IT2 N1-3","SHIPPED (slice A, ADR-0015 accepted). A lika arbete group is shown only with at least 1 woman AND 1 man AND women trailing on base salary or total comp (tccDriven admission); flag = the severest directional metric flag. Singletons silently dropped everywhere incl. the completion gate; the gate, wizard queue and checklist all read the same classification."],
+        ["pa","core","Gender-pure groups: opt-in deep-dive (IT2 N2)","IT2 N2","The EXCLUSION shipped with slice A (out of the primary flow, gate and report; all-women groups stay in the DL 3:9 cross-comparison, pinned by test; genderStats ready in core). The opt-in deep-dive SECTION (full stats, individual data, notes-only affordances) lands with slice D."],
+        ["pa","core","Women-earn-more info view (IT2 N3)","IT2 N3","The exclusion shipped with slice A (reverse groups leave the standard view into the excluded bucket, no flags, no documentation duty). The low-key info section rendering them lands with slice D."],
+        ["p","done","Lika arbete grouping (title+band+level)","Del 3.1","SHIPPED. getPayMappingGap groups priced snapshot rows per role; ⚪ when <4 total or a gender is missing."],
+        ["p","done","Likvärdigt arbete grouping (by band, min 4)","Del 3.2","SHIPPED. Grouped by band; band-first per ADR-0012; §9.13 point-clustering is a later refinement."],
+        ["p","done","Auto-create groups + <4 + missing-gender flags","Del 4 Steg 2","SHIPPED. Groups assembled from the snapshot; ⚪ masks means+gap for <4-total or single-gender groups (query-side, statistical + small-cell)."],
+        ["p","done","Women-dominated cross-level likvärdigt (könsdominans >=60%)","Del 3.2","SHIPPED. womenDominatedComparisons in core compares women-dominated groups against non-women-dominated groups with lower/equal value but higher pay; its own chapter (Kvinnodominerade grupper) in the review journey and the summary."],
+        ["ab","core","Filtering engine (filter/group/breakdown/measure/mask)","Del 3.3","No configurable engine yet; the statutory groupings + measure are fixed. P2."],
+        ["ab","later","14 configurable comparison types + saved views","Del 3.3","No user-chosen grouping key; no saved named analysis views. P2."],
+        ["ab","later","Manual merge of small groups","Del 4 Steg 2","No merge; ⚪ groups are instead documented + motivated per the guide's own fallback. P2."],
+      ]},
+    { k: "M5", name: "Analysis & statistics", phase: "next",
+      verdict: "The visual layer SHIPPED: the survey overview (headline gap, equality clock, gender donut, quartile + age distributions per gender), honest two-bar mean comparisons with a gap marker, the WCAG-AA flag badge, and the per-person scatter. NOW (Iteration 2): the engine grows full per-gender group stats (min/median/mean/max/SD) and grundlön-primary group metrics, and the group views become individual-level detail views (member tables with per-person diffs, swimlane dot plots, the tvärnivå check). Still later: variable-pay (A4), the 7 EU Art. 9 metrics as exports, the adjusted gap, outliers and trend.",
+      reqs: [
+        ["p","done","Full per-gender group stats: min/median/mean/max/SD (IT2 N2-3)","IT2 / A1","SHIPPED in core (slice A): genderStats replaces the mean-only seam; medians also unlock EU key metrics 3-4. First surface consumer is the slice-D deep-dive."],
+        ["p","done","Grundlön as primary group metric, TCC parallel (IT2 N3)","IT2 N3","SHIPPED (slice A): entry condition + flag on base salary with tccDriven admission; both metrics on the wire and in the detail view. Org overview keeps its TCC headline until M8 fixes the export metric set."],
+        ["p","done","Individual-level detail: per-person diff vs men's mean (IT2 N3-4)","IT2 N3-4","SHIPPED for equal work (slice B): sortable paginated member table (name, gender mark, grundlön, total comp, signed diff in kr and %), women-first lowest-paid default sort, FTE-adjusted values with part-time share marked, men's mean as the fixed reference in the summary strip and plot. The likvärdigt variant (level/track columns) lands with slice C."],
+        ["p","done","Swimlane dot plot per group (IT2 N3)","IT2 N3","SHIPPED (slice B): PayGapDotPlot with FTE-adjusted primary pay on X, one lane per gender (women on top), dashed mean reference lines, the gap band labeled in kr and %, filled-vs-outlined gender encoding (never hue), rich hover at CHART_TOOLTIP_TEXT."],
+        ["p","done","Tvärnivå check: higher-level woman out-earned by lower-level man (IT2 N4)","IT2 N4","SHIPPED (slices A + C): crossLevelPairs in core (level 1 = highest, per-woman aggregation, same-track marking) and the dedicated section in the equivalent-work chapter intro and above the Analysis tab's master-detail, previewing the worst five with a show-all, the full pair list behind a disclosure, and a per-pair documentation menu. The statutory group-level women-dominated comparison stays alongside."],
+        ["pa","now","Descriptive stats per group per gender","Del 4 Steg 3A","PARTIAL. Mean + count per gender BUILT (computeGenderGap); median/percentile/SD not yet. Median is the next core add (unlocks EU metrics 3-4)."],
+        ["pa","now","Gender pay gap (mean+median, base+TCC, both directions)","Del 4 Steg 3B / A1","PARTIAL. Mean FTE-adjusted total-comp gap BUILT + signed both directions; median + base-salary views deferred (additive; components already stored separately)."],
+        ["p","done","Auto-flag gap > 5% / > 10%","Del 4 Steg 4 / §C","SHIPPED. Four flags 🔴>10 / 🟠5-10 / ✅<5 / ⚪insufficient (classifyPayGap); WCAG-AA traffic-light chip; flagged groups require documentation before completion."],
+        ["p","done","Gap/grouping must be deterministic & AI-free","§11 pt 5","SHIPPED. Pure packages/core engine (no framework/clock/IO/randomness); the query never re-implements the math (single source)."],
+        ["p","done","Survey Overview dashboard (headline gap + distributions)","§3C","SHIPPED. Org-level gap headline, gender donut, quartile-per-gender and age-by-gender distributions, the documentation status card, and the journey card with a continue CTA."],
+        ["p","done","Equality clock (jämställdhetsklocka)","§7.2","SHIPPED. Derived deterministically from the gap (lib/equality-clock), rendered on the overview."],
+        ["p","done","Quartile distribution per gender (A3)","§3C / A3","SHIPPED. quartileGenderTallies in core (rank quartiles, deterministic ties); overview card."],
+        ["p","done","Per-person analysis scatter over the snapshot","Del 4 Steg 3A","SHIPPED. pay-mapping-scatter over the frozen rows, gender-coloured with the shared man/woman viz tokens."],
+        ["ab","later","Adjusted (decomposed) gap: explained vs unexplained","Del 4 Steg 3B","Pure deterministic regression in core; heavily caveated on small n; the legally-meaningful residual. F7."],
+        ["ab","core","Variable-pay receiving % + avg per gender (A4)","A4","Per-person variable is data-ready; the A4 aggregate metrics are not computed."],
+        ["ab","core","The 7 EU Art. 9.1 key metrics (B1)","§3C / §6.3 / B1","Means + quartiles exist; medians and the A4 pair do not, and nothing is exported machine-readably yet. The M8 report layer's core input."],
+        ["ab","later","Outliers: off-policy (band min/max) + >2 SD","Del 4 Steg 4","Off-policy needs the band policy-range entity (M3); >2 SD needs the SD from stats."],
+        ["pa","later","Within-gender spread + intersectional","Del 5.1-5.2","Age-by-gender ships on the overview; the general within-gender/intersectional engine needs the P2 filtering engine and <4 cell suppression."],
+        ["ab","later","Trend analysis against prior surveys","Del 5.3","Rides on >=2 frozen survey snapshots (M3)."],
+      ]},
+    { k: "M6", name: "Objective reasons", phase: "solid",
+      verdict: "SHIPPED as the guided review journey: the localized reason catalog, the per-group documentation form (reasons + deepened analysis + klarmarkering), the praxis chapter (3 kap. 8 § pt 1, which the guide itself skips), and the ADR-0012 completion gate. Remaining: per-code evidence metadata, the GDPR-safe AI-assist, approval flows.",
+      reqs: [
+        ["p","done","Grouped reason taxonomy + worklist","Del 4 Steg 5","SHIPPED. PAY_GAP_REASON_GROUPS taxonomy in constants; the analysis summary IS the worklist: a searchable chapter checklist with per-step done-state, landing on the first remaining step."],
+        ["p","done","Completion gate: flagged groups need documentation","Del 4 Steg 4","SHIPPED. Slutför is gated on every required review step: flagged groups documented or klarmarkerad with reasons, praxis areas answered. Completed runs lock edits; reopen supported. Actions integrate when M7 lands."],
+        ["p","done","Standardized reason catalog","Del 4 Steg 5","SHIPPED. payGapReasons in packages/constants, localized in all five locales, and rendered as localized labels in the audit log too (never raw codes)."],
+        ["p","done","Per-difference documentation form","§6.1","SHIPPED. Group analysis form (react-hook-form + Zod): objective reasons, deepened analysis, klarmarkering; every save audited; rejects edits on completed runs with a specific error."],
+        ["p","done","Bestämmelser & praxis review (3 kap. 8 § pt 1)","DiskL 3:8","SHIPPED. A dedicated chapter walks pay provisions and practice areas with verdict + reason per area; a statutory step the guide itself omits."],
+        ["ab","core","Per-code evidence-requirement metadata","Del 4 Steg 5","MARKET needs benchmark, RETENTION needs a dated decision, etc. Not modeled yet."],
+        ["pa","later","OTHER requires free text + HR approval","Del 4 Steg 5","Free-text motivation ships with the form; no separate approval step (single HR role by design)."],
+        ["ab","later","GDPR-safe AI-assist for reasons (aggregate/role only)","§11 pt 5","Suggests reason categories + neutral draft language from role/aggregate data; NEVER person PII (ADR-0003); HR confirms. Differentiator vs the incumbent's individual-data AI."],
+        ["ab","later","NEGO caveat + multi-actor approval flow","Del 4 Steg 5 / §6.1","Special-case NEGO rule and created/reviewed/approved distinction do not exist."],
+        ["p","done","Noteringar: informal notes, three types (IT2 N5)","IT2 N5","SHIPPED (slice E). payMappingNotes at group/individual level: sakligt skäl dokumenterat / vidare diskussion behövs / ingen åtgärd krävs; badge on the row; listed separately from actions in the åtgärdsöversikt; lock at completion. Slice E."],
+      ]},
+    { k: "M7", name: "Action plan", phase: "next",
+      verdict: "The entity and its in-view affordances SHIPPED (slice E): åtgärder and noteringar at group/individual/pair level with owner, planned date, cost, priority and status, created from the analysis views' row menus, audited with structured diffs only. Remaining: the dedicated Actions tab with filters, inline status updates and the cost roll-up (slice F), then follow-up/effect tracking and due-date notifications.",
+      reqs: [
+        ["p","done","Persisted action entity, target group/person/pair (IT2 N5)","Del 4 Steg 6 / IT2 N5","SHIPPED (slice E). payMappingActions: target via personPublicId only (Role != Person, erasure-safe by construction), problem + planned action (required), reason from the SHARED PayGapReason taxonomy (no second enum), owner user, planned date, optional cost (SEK), priority. Free text excluded from audit diffs (decision 6). Slice E."],
+        ["pa","core","Status enum & lifecycle + cost roll-up (IT2 N5)","Del 4 Steg 6 / IT2 N5","The STATUS lifecycle shipped (slice E); the cost roll-up lands with the overview (F). notStarted / inProgress / done + priority; status updates stay allowed on completed runs, content edits lock (decision 5); total-cost roll-up in the overview summary bar (NumberFlow). Slices E-F."],
+        ["ab","core","Åtgärdsöversikt: dedicated Actions tab (IT2 N5)","IT2 N5","Overview / Analysis / Actions / Report tabs; two filtered lists (actions + notes) with status, priority, comparison type, owner and due-window filters, deep links back into the source analysis view, inline audited status updates. Slice F."],
+        ["p","done","In-view affordances + documentation badges (IT2 N5)","IT2 N5","SHIPPED (slice E). Create action/note from the group header, member-table row or tvärnivå pair via the ... row menu; a status-colored badge in a pre-reserved slot opens existing documentation (status tokens, labels always visible). Slice E."],
+        ["ab","core","Joint pay review trigger (5% / 6 months)","Del 1 §C","The >=5% flag exists (elevated/critical); the joint-review obligation + samverkan documentation flow on top does not. Collaboration participants are already recorded on the run."],
+        ["ab","core","Follow-up / effect tracking + dashboard surface","Del 5.3 / §6.1","No follow-up note, actual-completion date, cross-survey effect, or UI."],
+        ["ab","later","Due-date notifications","§6.1","No due-date, reminder job, or notification (Sweego exists for delivery only)."],
+      ]},
+    { k: "M8", name: "Reporting & export", phase: "queued",
+      verdict: "No longer blocked: the engine, snapshot and documentation layer all exist; the report page is a scaffolded placeholder. Needs medians + the A3/A4 metrics for the full Art. 9 set. The competitor's Rapport surface is the model: a summary report for union/employer sign-off + management, per-employee + actions exports, per-analysis docs. Co-sign, access/export logging, and hardened per-gender masking land here.",
+      reqs: [
+        ["p","now","Branded PDF export foundation (react-pdf)","§6.1","Production-grade & reusable; renders only the model method appendix today."],
+        ["p","now","Audit log of who changed what & when","§6.1","Fully met, now with localized value labels; v2 adds access/export logging (below)."],
+        ["ab","core","Summary report for sign-off + presentation (PDF/PPTX)","Del 4 Steg 7","A branded summary the union + employer sign and management presents; pandoc+typst / react-pdf. F6."],
+        ["ab","later","Sign-off: union/employer co-sign + decision record","§6.1 / Del 4 Steg 7","Facket + arbetsgivare acknowledge/agree the outcome, and the guide's beslutsdokumentation (who reviewed and approved, when) is recorded; reuses the compliance-ack pattern. Today Slutför records the actor via the audit trail only. F6."],
+        ["ab","core","Access + export logging at the export boundary","Del 5.4 / ADR-0011","Deferred from M3 to here; logs where data leaves the system. F6."],
+        ["ab","core","Hardened small-cell masking at export (per-gender min)","A5 / §7.2","Mask when either gender has <2 people once the aggregate leaves the HR context (go-live checklist). F6."],
+        ["ab","core","Internal survey report (B3)","B3","No internal pay-mapping report; PDF renders only the method appendix. The documentation content it would render now exists."],
+        ["ab","core","EU Art. 9 structured + machine-readable export (B1)","§6.3 / B1","Two of seven figures computable today (mean gap, quartiles); medians + A4 missing; no JSON/XML export."],
+        ["ab","core","Facklig aggregate report (masked)","Del 4 Steg 7 / §7.2","No aggregated identifier-stripped export; needs the <4 masking primitive."],
+        ["ab","core","Individual employee report (Art. 7, B4)","B4 / A5","No per-employee extract of own pay + per-sex group averages."],
+        ["ab","later","Reporting-period config + reminders (B2)","B2","employeeCount is authoritative; the frequency logic on top is unbuilt."],
+        ["ab","later","XLSX export + historical trend report","Del 4 Steg 7","No spreadsheet write path; no year-over-year gap report."],
+      ]},
+    { k: "M9", name: "Access, security & GDPR", phase: "solid",
+      verdict: "Production-grade audit/erasure/tenant/pseudonymization spine; pseudonymize-in-snapshot now shipped. The person-data tier is dropped by design (HR-only). Export-boundary small-cell masking and the samverkan-names erasure path are the tracked gaps.",
+      reqs: [
+        ["p","now","RBAC enforced on every function","§6.1","Org roles gate every function."],
+        ["p","now","Audit log: typed row per mutation","§6.1","Every state-changing mutation writes a typed audit row; coded payload values render via localized labels (compile-time-guarded resolver)."],
+        ["p","now","Person-identifying fields excluded from diffs/searchText","Del 7","Structural exclusion; pay payloads amount-free."],
+        ["p","now","Erasure hard-deletes child-first + tombstones audit rows","§6.1","people + payRecords + personAssignments; actorName + searchText tombstoned."],
+        ["p","now","Org-scoping / tenant isolation","§6.1","Every people/pay function fail-closed."],
+        ["p","now","Route pseudonymization (publicId, no personnummer)","Del 7.2","publicId in routes; externalRef is the employee number, not a personnummer."],
+        ["p","now","Encryption at rest + transit, EU hosting","Del 7.2 / ADR-0001","Platform-provided by Convex; cipher claims belong in the DPA."],
+        ["na","oos","Person-data permission tier (2-3 roles)","Del 7.2","DROPPED by design: the whole audience is HR who legitimately hold pay; both roles seeing pay is intended (not a hole)."],
+        ["ab","core","Small-cell masking (<4 not shown individually)","A5 / Del 7.2","The gap tables mask ⚪ groups; the per-role chart still shows individual peer pay + gender within the HR context. The export-boundary hardening lands with M8."],
+        ["p","done","Pseudonymize-in-snapshot on erasure (ADR-0011)","ADR-0011","SHIPPED. erasePersonRecords calls pseudonymizePersonInSnapshots: name tombstoned + birth date cleared in every frozen row, aggregate kept."],
+        ["pa","now","Samverkan participant-names erasure path","Del 7 / go-live","payMappingRuns.collaboration holds participant names as a scoped statutory exception with no erasure hook yet; tracked go-live decision in docs/go-live-checklist.md."],
+        ["ab","later","Purpose limitation / retention 3-5y","Del 7.1","No retention/archival for detailed pay data yet (Module 3 backup covers surveys)."],
+      ]},
+  ];
+
+  const STATUS_LABEL = { p: "Present", pa: "Partial", ab: "Absent", na: "N/A" };
+  const DOT = { p: "present", pa: "partial", ab: "absent", na: "na" };
+  const PHASE_LABEL = { shipped: "Shipped", solid: "Solid", next: "Next up", queued: "Queued" };
+  const PRIO_CLASS = { done: "done", now: "now", core: "core", later: "later", oos: "oos" };
+  const PRIO_LABEL = { done: "done", now: "now", core: "v2-core", later: "v2-later", oos: "out" };
+
+  // ---- tiles (derived totals) ----
+  const totals = { p: 0, pa: 0, ab: 0, na: 0, done: 0 };
+  for (const m of MODULES) for (const r of m.reqs) { totals[r[0]]++; if (r[1] === "done") totals.done++; }
+  document.getElementById("tiles").innerHTML =
+    `<div class="tile present"><div class="big num">${totals.p}</div><div class="lbl">Present / done</div><div class="sub">${totals.done} shipped this cycle</div></div>` +
+    `<div class="tile partial"><div class="big num">${totals.pa}</div><div class="lbl">Partial</div><div class="sub">seam exists, not complete</div></div>` +
+    `<div class="tile absent"><div class="big num">${totals.ab}</div><div class="lbl">Absent</div><div class="sub">queued V2 build</div></div>` +
+    `<div class="tile accent"><div class="big num">IT2</div><div class="lbl">Now building</div><div class="sub">A, B, C, E shipped; F and D remaining</div></div>`;
+
+  // ---- matrix (derived counts) ----
+  const mEl = document.getElementById("matrix");
+  for (const m of MODULES) {
+    const c = { p: 0, pa: 0, ab: 0, na: 0 };
+    for (const r of m.reqs) c[r[0]]++;
+    const tot = m.reqs.length;
+    const seg = (n, cls) => n ? `<i class="s-${cls}" style="width:${(n / tot * 100).toFixed(2)}%"></i>` : "";
+    const row = document.createElement("div");
+    row.className = "mrow";
+    row.innerHTML =
+      `<div class="mtitle"><span class="mk">${m.k}</span>${m.name}</div>` +
+      `<div><span class="phase ${m.phase}">${PHASE_LABEL[m.phase]}</span></div>` +
+      `<div class="barwrap"><div class="bar">${seg(c.p, "present")}${seg(c.pa, "partial")}${seg(c.ab, "absent")}${seg(c.na, "na")}</div>` +
+        `<div class="barcount num"><span style="color:var(--present)"><b>${c.p}</b></span>${c.pa ? `<span style="color:var(--partial)"><b>${c.pa}</b></span>` : ""}${c.ab ? `<span style="color:var(--absent)"><b>${c.ab}</b></span>` : ""}${c.na ? `<span style="color:var(--na)"><b>${c.na}</b></span>` : ""}</div></div>` +
+      `<div class="mverdict">${m.verdict}</div>`;
+    mEl.appendChild(row);
+  }
+
+  // ---- changelog ----
+  const CHANGELOG = [
+    ["2026-08-06", "feat", "Iteration 2 slices C + E shipped: the action layer and the cross-level check",
+      "M7 landed end to end (slice E): payMappingActions + payMappingNotes as a run-keyed work layer targeting a group, an individual (personPublicId only, so an erased person renders as the tombstone with no extra hook) or a tvärnivå pair; owners resolve at read time; content and notes lock when the run completes while action STATUS stays open for the multi-year follow-up; seven audited events carry structured diffs only, with free text, owner and cost deliberately outside the trail. In the UI the group heading and every member row carry a documentation badge and one trailing ... menu opening the åtgärd/notering dialogs (target prefilled and locked, submit gated on validity and, for an edit, on isDirty). Slice C added the tvärnivå section: every woman on a higher level out-earned in FTE-adjusted base salary by a man on a lower level, aggregated per woman with the worst pair as the headline, the full pair list behind a disclosure, a same-track chip where the objective explanation falls away, and a per-pair documentation menu; it sits in the equivalent-work chapter intro and above the Analysis tab's master-detail. Browser-verified against the live 118-person run (an action created, its badge, the audit row), which also surfaced five defects now fixed: a collapsed name column, dialogs mounted while closed (the page stopped reaching document-idle), an unbounded 34-case list, an empty-valued audit field, and missing target context in the log."],
+    ["2026-08-06", "feat", "Iteration 2 slices A-B shipped: entry conditions live + the equal-work detail view",
+      "Slice A (ADR-0015, accepted): the pure pay-analysis engine landed in packages/core (entry-condition classification with tccDriven admission, per-metric base+tcc comparisons, directional women-behind flags, genderStats with min/median/mean/max/SD, per-member diffs, crossLevelPairs aggregated per woman), and the gap wire, completion gate, wizard queue and checklist all derive from it: singletons silently dropped, gender-pure and women-ahead groups routed to the excluded bucket, grundlön primary with TCC parallel. Slice B: the equal-work group step became the detail view: a summary strip (counts, per-gender means, gap in kr and %), the swimlane dot plot (women's lane on top, dashed mean reference lines, the gap band labeled in kr and %, filled-vs-outlined gender dots), and a sortable paginated member table (base + total comp + signed diff vs the men's mean, women-first lowest-paid default). The Swedish 'underlag' identifier left the codebase (WomenDominatedUnderlyingData). Verified in the browser against a live 118-person run (4 shown groups, 42 singletons and 4 gender-pure groups gone from the flow, queue 29 steps); full gate green (1,689 dashboard + 763 backend + 113 core tests, i18n parity, Biome zero). Committed as 4 focused commits on main."],
+    ["2026-08-06", "decision", "Iteration 2 systemnoteringar -> analysis-view rebuild plan",
+      "Five product notes reshape the analysis views: (1) singleton groups silently dropped everywhere; (2) gender-pure groups out of the primary flow into an opt-in deep-dive (full stats, individual data, notes only); (3) lika arbete entry conditions (both genders + women's mean below men's, grundlön primary with TCC parallel) plus an individual-level detail view (member table with per-person diffs vs men's mean, swimlane dot plot with mean reference lines and the gap annotated, summary row); (4) likvärdigt detail with level/track columns and an explicit tvärnivå check (a higher-level woman out-earned by a lower-level man, per pair, track as explaining factor); (5) the M7 åtgärd/notering layer at group/individual/pair level plus a dedicated åtgärdsöversikt. Master plan with the core engine design, work-layer schema, six slices (A-F, order A-B-E-C-F-D) and seven flagged decisions (incl. the ADR-0015 amendment of ADR-0012's ⚪/direction semantics and the TCC blind-spot risk): <code>docs/superpowers/plans/2026-08-06-iteration-2-analysis-views-rebuild.md</code>. The notes' hue-coded genders, emoji flags and inline row buttons are adapted to the design system (texture/outline marks, PayGapFlagBadge, row ... menus)."],
+    ["2026-07-23", "feat", "Analysis pillar pushed to main (11 focused commits)",
+      "The whole kartläggning arc went out: core gap engine + constants, the pay-mapping backend (gap, analyses, lifecycle, preconditions gate, delete), the classified-means-active-role fix, shared primitives (ScreenShell, AccordionSection, BandBadge/LevelBadge, WidgetCard), the full-viewport band overview, localized audit values, the guided journey + analysis surfaces, and the docs. Gated by a four-dimension whole-pile review (dead code, frontend correctness, backend + invariants, conventions/i18n/a11y) and a 13-item fix wave: heading hierarchy h2-h3-h4, /review chrome fully removed from the accessibility tree (shell, tabs AND the run switcher), the gate-panel landing aligned with the completion gate, a comment-narration sweep, five new test files, three orphan key families deleted, go-live entries for the samverkan-PII and completed-run-delete decisions. Full gate green: typecheck, 1,290 dashboard tests, i18n parity + purity, Biome."],
+    ["2026-07-23", "feat", "Preconditions gate + run management (M3 closes)",
+      "startPayMappingRun is now gated: every person classified and every active role evaluated, computed by one shared computePayMappingPreconditions and re-checked inside the freeze mutation. The create flow explains blockers as linked action rows (classify N people, evaluate N roles) instead of a disabled button, and a start-pay-mapping group joins the dashboard todo. A review caught the archived-role hole (a confirmed assignment to an archived role passed the gate but froze band-less): classified now means a confirmed assignment to an ACTIVE role everywhere, and archiveRole ends open assignments. The run table gained a row-actions menu with a confirmed, audited, child-first delete plus a completed/not-completed filter."],
+    ["2026-07-22", "feat", "Guided review journey: wizard takeover + summary steady state",
+      "The kartläggning became a guided flow. A chromeless wizard takeover on /review (import-wizard look: animated heading, OptionCard verdict choices, undo beside continue, done-count footer) walks praxis questions and every flagged group. The analysis page became a master-detail summary: a searchable chapter checklist (Kom igång & samverkan / Bestämmelser & praxis / Lika arbete / Kvinnodominerade grupper) on the left, the step pane on the right, landing on the first remaining step and on the gate panel once the gate is met; Slutför + reopen wired to the run status. Viewport-fit, layout-shift-free, unified with the dashboard todo's accordion anatomy."],
+    ["2026-07-21", "feat", "Analysis surfaces: documentation, praxis, overview, scatter",
+      "The documentation layer over the frozen snapshot: the group-analysis form (localized reason catalog + deepened analysis + klarmarkering, react-hook-form + Zod, audited), praxis assessments per area, and the completion gate. The run overview gained the journey card, equality clock, gender donut, quartile-per-gender and age-by-gender distributions, and honest two-bar mean comparisons with a dashed gap marker (after rejecting a dumbbell and a misleading split-bar). The women-dominated comparison (60% threshold) shipped as the third statutory chapter. Coded audit payload values now render as localized labels via a typed resolver (a new CLAUDE.md rule guards this for every future coded field)."],
+    ["2026-07-13", "decision", "Competitor teardown -> analysis + reporting plan",
+      "Reviewed a mature Swedish lönekartläggning tool (Översikt / Analysera / Rapport). Extracted a build plan (docs/pay-mapping-analysis-teardown-and-plan.md): a survey Overview + equality clock + an adjusted (decomposed) gap (M5); the objective-reasons surface with a grouped taxonomy, a GDPR-safe aggregate-only AI-assist, and the ADR-0012 completion gate (M6); a women-dominated cross-level likvärdigt comparison; a per-person analysis scatter over the snapshot; and a multi-format report with union/employer co-sign + hardened export masking (M8). Differentiators over the incumbent: guide-every-concept, deterministic/auditable numbers, and GDPR-first AI (no person PII to the model)."],
+    ["2026-07-13", "feat", "P1 gender-gap primary view built (Modules 4-5)",
+      "The mandatory P1 view (ADR-0012): a pure packages/core gap engine (classifyPayGap + computeGenderGap, mean FTE-adjusted total-comp gap, signed both directions, the four flags 🔴>10 / 🟠5-10 / ✅<5 / ⚪insufficient), the org-scoped getPayMappingGap aggregate query over the frozen snapshot, and the two-table view leading the survey detail with a WCAG-AA traffic-light flag chip + inline help. Built subagent-driven, then independently reviewed on three lenses (correctness / GDPR-Convex / UI-a11y-i18n)."],
+    ["2026-07-13", "feat", "Kartläggning snapshot shipped (Module 3 foundation)",
+      "The pay-mapping snapshot slice: the payMapping Convex context, the startPayMappingRun freeze (an immutable per-person snapshot with pay as-of the reference date, engine-derived band/score, demographics, and the model config frozen once), a Kartläggningar list + start dialog + read-only detail, and GDPR pseudonymize-in-snapshot on erasure. Built subagent-driven (9 tasks + per-task reviews + a whole-branch review)."],
+    ["2026-07-12", "decision", "ADR-0012 — gender pay gap is the mandatory primary view (guide v3)",
+      "Guide v3 makes the woman-vs-man gap for lika + likvärdigt arbete the pre-selected, always-on, non-disableable PRIMARY view of every survey (P1); extended comparisons are P2, non-gender QC is P3. Four flags 🔴>10% / 🟠5-10% / ✅<5% / ⚪ (<4 or missing-gender); masking default raised to 4; a survey is not complete until P1 is done + documented + unfair gaps have an action plan."],
+    ["2026-07-12", "decision", "ADR-0011 — Kartläggning lifecycle + frozen data layer",
+      "v2 promotes the frozen snapshot into a first-class survey module. Records the freeze-data-not-work model, the band policy salary-range entity, survey access/export logging, and the decision to pseudonymize an erased individual inside the immutable snapshot. Extends ADR-0008; CLAUDE.md's hard-delete invariant now points here for the scoped exception."],
+    ["2026-07-12", "fix", "Gross-salary basis + Danish fixed-term",
+      "An adversarial review of the shipped import found a Gross Salary column being divided by 12 (gross denotes pre-tax, not annual). Removed grosssalary from the annual hints; kept it as a base-salary synonym. Added Danish Tidsbegrænset recognition (a configured locale). Two regression tests added."],
+    ["2026-07-11", "feat", "Import fidelity",
+      "Per-column monthly/annual basis (annual ÷12 at ingestion via a shared toMonthly, storage stays monthly), full PAY_COMPONENT_KINDS ingestion, and a typed employmentType captured + audited. Built subagent-driven (8 TDD tasks + per-task reviews + a whole-feature review)."],
+    ["2026-07-11", "feat", "Conformance audit + foundation review",
+      "A 19-agent module-by-module audit against the guide mapped 116 requirements across 9 modules, verifying the V1 role engine and the GDPR/audit/tenant spine as solid and the people/pay data model as correctly shaped for the pay-gap layer."],
+  ];
+  const clEl = document.getElementById("changelog");
+  for (const [when, tag, title, body] of CHANGELOG) {
+    const el = document.createElement("div");
+    el.className = "centry";
+    el.innerHTML =
+      `<div><div class="cwhen num">${when}</div><span class="ctag ${tag}">${tag}</span></div>` +
+      `<div><p class="ctitle">${title}</p><p class="cbody">${body}</p></div>`;
+    clEl.appendChild(el);
+  }
+
+  // ---- appendix ----
+  const appEl = document.getElementById("appendix");
+  for (const m of MODULES) {
+    const counts = m.reqs.reduce((a, r) => (a[r[0]] = (a[r[0]] || 0) + 1, a), {});
+    const d = document.createElement("details");
+    d.className = "mod";
+    const summary =
+      `<span class="mk">${m.k}</span>${m.name}` +
+      `<span class="phase ${m.phase}" style="margin-left:6px">${PHASE_LABEL[m.phase]}</span>` +
+      `<span class="mono" style="margin-left:auto;margin-right:8px;color:var(--ink-3);font-size:12px">` +
+      `${["p", "pa", "ab", "na"].filter(s => counts[s]).map(s => `<i class="dot dot-${DOT[s]}" style="display:inline-block;vertical-align:middle;margin:0 3px 0 8px"></i>${counts[s]}`).join("")}</span>`;
+    let body = "";
+    for (const [st, pr, t, ref, gap] of m.reqs) {
+      body +=
+        `<div class="req"><i class="dot dot-${DOT[st]} rdot" title="${STATUS_LABEL[st]}"></i>` +
+        `<div><div class="req-head"><span class="rt">${t}</span><span class="rref">${ref}</span>` +
+        `<span class="chip ${PRIO_CLASS[pr]}">${PRIO_LABEL[pr]}</span></div>` +
+        `<p class="req-gap">${gap}</p></div></div>`;
+    }
+    d.innerHTML = `<summary>${summary}</summary><div class="modbody">${body}</div>`;
+    appEl.appendChild(d);
+  }
+</script>
+

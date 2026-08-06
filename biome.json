@@ -18,7 +18,8 @@
       "!packages/ui/src/lib",
       "!packages/ui/src/styles",
       "!packages/backend/convex/**/_generated",
-      "!packages/backend/convex/betterAuth/generatedSchema.ts"
+      "!packages/backend/convex/betterAuth/generatedSchema.ts",
+      "!docs/**/*.html"
     ]
   },
   "formatter": {
