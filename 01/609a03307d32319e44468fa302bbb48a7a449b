@@ -1,0 +1,61 @@
+packages/backend/convex/payMapping/actions.test.ts
+  s_7d4d2043db4111::t_84c620be179d8b 227-229,234
+  s_7d4d2043db4111::t_7868853e56b1d5 244
+  s_7d4d2043db4111::t_1765d92727592c 8-12
+  s_7d4d2043db4111::t_a9532d24248aa6 276-291,302-313,323-404
+  s_7d4d2043db4111::t_ba9d14814fed55 76-84
+  s_7d4d2043db4111::t_48a1a07c634967 591-597
+  s_7d4d2043db4111::t_047182647bf114 405
+packages/backend/convex/payMapping/actions.ts
+  s_7d4d2043db4111::t_2f41b80e3f8d6f 109-111,114
+  s_7d4d2043db4111::t_93819f0943810d 246-248
+  s_7d4d2043db4111::t_778e108b89266e 20,25
+  s_7d4d2043db4111::t_ebee50e4a217b8 5
+  s_7d4d2043db4111::t_c96bdd99b23507 232-245,249-254,261-266
+  s_7d4d2043db4111::t_989c4bf245e172 143
+  s_7d4d2043db4111::t_547f243954146a 209
+packages/backend/convex/payMapping/runs.ts
+  s_7d4d2043db4111::t_2e48cb60b7611d 524-534
+packages/backend/convex/payMapping/analyses.ts
+  s_7d4d2043db4111::t_38895d54290378 193-198
+  s_7d4d2043db4111::t_6e61dad7964f8b 13
+packages/backend/convex/lib/audit.ts
+  s_7d4d2043db4111::t_4a26f1aa765632 713-724
+packages/backend/convex/payMapping/workLayer.ts
+  s_7d4d2043db4111::t_91fedbfff2ac6b 5-6,11,27-51,59-64,83-100,119-120,123-133,135,154,163,176-203
+  s_7d4d2043db4111::t_8670f042e4f598 134
+packages/backend/convex/payMapping/gap.test.ts
+  s_7d4d2043db4111::t_cae4b997e2090d 794-796,799,801-814
+  s_7d4d2043db4111::t_77bb5a8653519f 723-728,731-737
+apps/dashboard/lib/audit-constants.ts
+  s_7d4d2043db4111::t_b5b137c12eafb7 379-381,385
+packages/backend/convex/payMapping/gap.ts
+  s_7d4d2043db4111::t_3dfceba852c4a2 144-157,162
+  s_7d4d2043db4111::t_d8f4bd71faec55 268-272
+  s_7d4d2043db4111::t_640a56b6aca482 284
+packages/backend/convex/lib/audit.test.ts
+  s_7d4d2043db4111::t_bc373b5df98109 15-16,24
+  s_7d4d2043db4111::t_e7948356900e65 766-768
+apps/dashboard/lib/audit-labels.test.ts
+  s_7d4d2043db4111::t_fc6f5baa8956f1 3
+  s_7d4d2043db4111::t_54ea9e5d93eeb7 219
+packages/backend/convex/payMapping/notes.ts
+  s_7d4d2043db4111::t_66ba9b027428fa 124-126,138-146,148
+  s_7d4d2043db4111::t_8670f042e4f598 147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "01609a03307d32319e44468fa302bbb48a7a449b",
+  "prompts": {},
+  "sessions": {
+    "s_7d4d2043db4111": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cbeef8ee-16ed-4aed-b926-c1546f14fb33",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
