@@ -64,6 +64,11 @@ export function PayMappingRunShell({
     api.payMapping.notes.listNotes,
     run === undefined || run === null ? "skip" : { orgId, runId: run.runId }
   )
+  // The org's other runs: the review queue needs to know whether an EARLIER
+  // run was completed (the "previous actions" praxis area applies only
+  // then). Subscribed here so the two surfaces that read the queue share
+  // one subscription and one derivation.
+  const runsList = useQuery(api.payMapping.runs.listPayMappingRuns, { orgId })
   usePageTitle(run?.label)
 
   // /pay-mappings/<slug>[/<sub>...] -> the sub-page's tab key. Deriving it
@@ -94,7 +99,9 @@ export function PayMappingRunShell({
           carries only the sub-page's name as its title. Static i18n, real
           from the first paint. */}
       <PageHeader title={t(`tabs.${payMappingSubPageKey(sub)}`)} />
-      <PayMappingRunProvider value={{ run, gap, analyses, actions, notes }}>
+      <PayMappingRunProvider
+        value={{ run, gap, analyses, actions, notes, runsList }}
+      >
         {children}
       </PayMappingRunProvider>
     </div>

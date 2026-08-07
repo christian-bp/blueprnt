@@ -25,7 +25,6 @@ vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "org-1", role: "admin" }),
 }))
 
-import { onQuery } from "@/test/convex-mocks"
 import { PayMappingJourneyCard } from "./pay-mapping-journey-card"
 import { makeExcluded, makeGapGroup } from "@/test/pay-mapping-fixtures"
 import type {
@@ -38,7 +37,10 @@ import type {
   WomenDominatedComparisonWire,
   WomenDominatedGroupWire,
 } from "./pay-mapping-gap-types"
-import { PayMappingRunProvider } from "./pay-mapping-run-context"
+import {
+  PayMappingRunProvider,
+  type PayMappingRunSummary,
+} from "./pay-mapping-run-context"
 
 const m = en.dashboard.payMapping
 const tJourney = m.journey
@@ -183,13 +185,6 @@ const RUN_COMPLETED: PayMappingRunDetail = {
   status: "completed",
 }
 
-const runsListState: { current: unknown[] } = { current: [] }
-
-onQuery((ref) => {
-  if (ref === "payMapping.runs.listPayMappingRuns") return runsListState.current
-  return undefined
-})
-
 function renderCard(
   overrides: Partial<{
     run: PayMappingRunDetail | undefined
@@ -197,6 +192,7 @@ function renderCard(
     analyses: GroupAnalysis[] | undefined
     actions: PayMappingActionWire[] | undefined
     notes: PayMappingNoteWire[] | undefined
+    runsList: PayMappingRunSummary[]
   }> = {}
 ) {
   const value = {
@@ -205,6 +201,7 @@ function renderCard(
     analyses: "analyses" in overrides ? overrides.analyses : ANALYSES_PARTIAL,
     actions: "actions" in overrides ? overrides.actions : [],
     notes: "notes" in overrides ? overrides.notes : [],
+    runsList: overrides.runsList ?? [],
   }
   return render(
     <NextIntlClientProvider locale="en" messages={en}>
@@ -220,9 +217,7 @@ afterEach(() => cleanup())
 // The chapter row's state text and count share one <dd>; querying it
 
 describe("PayMappingJourneyCard", () => {
-  beforeEach(() => {
-    runsListState.current = []
-  })
+  beforeEach(() => {})
 
   // Demoted in Iteration 3 (decision 3): the chapter breakdown and the
   // Complete/Reopen controls moved to the Analysis tab's completion panel,

@@ -1,6 +1,5 @@
 "use client"
 
-import { api } from "@workspace/backend/convex/_generated/api"
 import {
   equalWorkGroupRequiresDocumentation,
   womenDominatedGroupRequiresDocumentation,
@@ -23,7 +22,6 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { Alert02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { useQuery } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
@@ -42,7 +40,6 @@ import {
   SupplementaryAnalysis,
   type SupplementaryItemKey,
 } from "./supplementary-analysis"
-import { useOrganization } from "@/components/org-context"
 import { TableSearchField } from "@/components/table-search-field"
 import {
   chapterMeta,
@@ -55,12 +52,7 @@ import { groupLabel, primaryGapMetric } from "./pay-mapping-gap-types"
 import { usePayMappingRun } from "./pay-mapping-run-context"
 import { ReviewGroupStep } from "./review-group-step"
 import { ReviewPraxisStep } from "./review-praxis-step"
-import {
-  buildReviewQueue,
-  type ReviewQueue,
-  type ReviewStep,
-  stepKey,
-} from "./review-queue"
+import { type ReviewQueue, type ReviewStep, stepKey } from "./review-queue"
 import { ReviewStartStep } from "./review-start-step"
 
 // The pane's own open target: a real queue step (its group's real
@@ -149,9 +141,8 @@ export function PayMappingAnalysis() {
   const tAnalysis = useTranslations("dashboard.payMapping.analysis")
   const tSupplementary = useTranslations("dashboard.payMapping.supplementary")
   const pathname = usePathname()
-  const { orgId } = useOrganization()
-  const { run, gap, analyses, actions, notes } = usePayMappingRun()
-  const runsList = useQuery(api.payMapping.runs.listPayMappingRuns, { orgId })
+  const { run, gap, analyses, actions, notes, queue, locked } =
+    usePayMappingRun()
   // undefined = the user has not picked anything yet, so the pane falls back
   // to its landing default (the first REMAINING step, or the gate panel when
   // nothing remains). null = an explicit "nothing
@@ -196,33 +187,6 @@ export function PayMappingAnalysis() {
     () => buildCrossLevelCases(snapshotRows ?? []),
     [snapshotRows]
   )
-
-  // Same derivation as pay-mapping-review.tsx:63-70, byte for byte: whether
-  // an EARLIER run was completed decides whether the "previous actions"
-  // praxis area belongs in this run's own queue.
-  const collaboration = run?.collaboration ?? null
-  const hasPreviousCompletedRun =
-    run !== undefined &&
-    (runsList?.some(
-      (candidate) =>
-        candidate.status === "completed" &&
-        candidate.referenceDate < run.referenceDate
-    ) ??
-      false)
-
-  const queue: ReviewQueue | null =
-    run !== undefined &&
-    gap !== undefined &&
-    analyses !== undefined &&
-    runsList !== undefined &&
-    gap.currency !== null
-      ? buildReviewQueue({
-          gap,
-          analyses,
-          collaboration,
-          hasPreviousCompletedRun,
-        })
-      : null
 
   // Deep link from the actions overview (?step=<scope>:<groupKey>): once
   // the queue exists, pre-select the matching checklist row so the link
@@ -293,7 +257,7 @@ export function PayMappingAnalysis() {
     run === undefined ||
     gap === undefined ||
     analyses === undefined ||
-    runsList === undefined
+    queue === null
   ) {
     // Content-shaped: the real spine chrome (its heading, its label and its
     // bar) with only the unknown count standing in as a bar, then the two
@@ -360,12 +324,6 @@ export function PayMappingAnalysis() {
     )
   }
 
-  if (queue === null) {
-    // Unreachable (every condition above already guarantees `queue` is
-    // built), kept only so TypeScript can see it here too.
-    return null
-  }
-
   // Re-bound to their own, non-optional consts: narrowing from the guards
   // above does not carry into the nested render helper below, mirroring
   // pay-mapping-review.tsx's own identical rebinding and its doc comment.
@@ -374,7 +332,7 @@ export function PayMappingAnalysis() {
   const currency: string = gap.currency
   const currentAnalyses = analyses
   const currentQueue = queue
-  const locked = currentRun.status === "completed"
+  const collaboration = currentRun.collaboration ?? null
 
   const collaborationFilled =
     collaboration !== null &&

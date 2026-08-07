@@ -44,8 +44,11 @@ import type {
   WomenDominatedGroupWire,
 } from "@/components/pay-mapping/pay-mapping-gap-types"
 import { PayMappingAnalysis } from "@/components/pay-mapping/pay-mapping-analysis"
-import { PayMappingRunProvider } from "@/components/pay-mapping/pay-mapping-run-context"
-import { mockMutation, onQuery } from "@/test/convex-mocks"
+import {
+  PayMappingRunProvider,
+  type PayMappingRunSummary,
+} from "@/components/pay-mapping/pay-mapping-run-context"
+import { mockMutation } from "@/test/convex-mocks"
 
 const upsertMock = mockMutation("payMapping.analyses.upsertGroupAnalysis")
 const completeMock = mockMutation("payMapping.runs.completePayMappingRun")
@@ -233,13 +236,6 @@ const ANALYSES_EVERYTHING_DONE: GroupAnalysis[] = [
   groupDone("equivalentWork", "wd-2"),
 ]
 
-const runsListState: { current: unknown[] } = { current: [] }
-
-onQuery((ref) => {
-  if (ref === "payMapping.runs.listPayMappingRuns") return runsListState.current
-  return undefined
-})
-
 function renderSummary(
   overrides: Partial<{
     run: PayMappingRunDetail | undefined
@@ -247,10 +243,9 @@ function renderSummary(
     analyses: GroupAnalysis[] | undefined
     actions: PayMappingActionWire[] | undefined
     notes: PayMappingNoteWire[] | undefined
-    runsList: unknown[]
+    runsList: PayMappingRunSummary[]
   }> = {}
 ) {
-  runsListState.current = overrides.runsList ?? []
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <PayMappingRunProvider
@@ -260,6 +255,7 @@ function renderSummary(
           analyses: "analyses" in overrides ? overrides.analyses : [],
           actions: "actions" in overrides ? overrides.actions : [],
           notes: "notes" in overrides ? overrides.notes : [],
+          runsList: overrides.runsList ?? [],
         }}
       >
         <PayMappingAnalysis />
@@ -321,7 +317,6 @@ afterEach(() => cleanup())
 
 describe("PayMappingAnalysis", () => {
   beforeEach(() => {
-    runsListState.current = []
     upsertMock.mockReset()
     upsertMock.mockResolvedValue(null)
     completeMock.mockReset()
@@ -339,6 +334,7 @@ describe("PayMappingAnalysis", () => {
             gap: undefined,
             analyses: undefined,
             actions: undefined,
+            runsList: undefined,
             notes: undefined,
           }}
         >

@@ -134,6 +134,7 @@ function renderOverview(
           analyses: [],
           actions: "actions" in overrides ? overrides.actions : [action()],
           notes: "notes" in overrides ? overrides.notes : [note()],
+          runsList: [],
         }}
       >
         <PayMappingActionsOverview />

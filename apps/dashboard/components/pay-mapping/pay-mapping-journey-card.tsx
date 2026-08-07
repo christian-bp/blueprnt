@@ -1,18 +1,14 @@
 "use client"
 
-import { api } from "@workspace/backend/convex/_generated/api"
 import { buttonVariants } from "@workspace/ui/components/button"
 import { Progress } from "@workspace/ui/components/progress"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
-import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useOrganization } from "@/components/org-context"
 import { WidgetCard } from "@/components/widget-card"
 import { usePayMappingRun } from "./pay-mapping-run-context"
-import { buildReviewQueue, type ReviewQueue } from "./review-queue"
 
 // The Overview hub's progress line: how far the mapping has come, and one
 // way into the work. It deliberately owns nothing else. The chapter
@@ -26,39 +22,14 @@ export function PayMappingJourneyCard() {
   const tDoc = useTranslations("dashboard.payMapping.documentation")
   const tHelp = useTranslations("dashboard.help")
   const pathname = usePathname()
-  const { orgId } = useOrganization()
-  const { run, gap, analyses } = usePayMappingRun()
-  const runsList = useQuery(api.payMapping.runs.listPayMappingRuns, { orgId })
+  const { queue, locked } = usePayMappingRun()
 
   // The Overview page is the run's own index route, so the analysis tab
   // nests directly under the current path.
   const [, slug] = pathname.split("/").filter(Boolean)
   const analysisHref = `/pay-mappings/${slug}/analysis`
 
-  const collaboration = run?.collaboration ?? null
-  const hasPreviousCompletedRun =
-    run !== undefined &&
-    (runsList?.some(
-      (candidate) =>
-        candidate.status === "completed" &&
-        candidate.referenceDate < run.referenceDate
-    ) ??
-      false)
-
-  const queue: ReviewQueue | null =
-    run !== undefined &&
-    gap !== undefined &&
-    analyses !== undefined &&
-    runsList !== undefined
-      ? buildReviewQueue({
-          gap,
-          analyses,
-          collaboration,
-          hasPreviousCompletedRun,
-        })
-      : null
-
-  const completed = run?.status === "completed"
+  const completed = locked
 
   return (
     <WidgetCard
