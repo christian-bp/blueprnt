@@ -2,6 +2,8 @@
 
 > **For agentic workers:** each slice is sized for its own build cycle and ends Biome-clean, typecheck-clean and test-clean. Slices 1 to 4 do not touch the completion gate. Slice 7 only runs after ADR-0016 is in place.
 
+**Status: all seven slices shipped** (7 ran before 5; see that slice's note). Outstanding: a browser pass over the built surface, which the Chrome extension could not reach during the build.
+
 **Goal:** Make the pay-mapping analysis surface feel step-by-step and structured instead of overwhelming, and make it the single surface for the statutory journey.
 
 **Architecture:** The page becomes a ladder of four rungs (progress, chapter, step, evidence) where exactly one thing is open at each rung, so attention descends one level at a time and never fans out sideways. Everything that does not affect completion lives in one drawer whose heading says exactly that. Everything that does affect completion is reachable through exactly one door (ADR-0016).

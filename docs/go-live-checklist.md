@@ -196,6 +196,18 @@ in the same change.
   (`geographicDifferentiation`, `retention`). The nb, da, and fi values are
   machine-drafted and flagged in the feature commits; have native speakers
   review them before launch.
+- [ ] **Native review of the Iteration 3 analysis-ladder strings (nb/da/fi).**
+  The 2026-08-06/07 IA rebuild added the `dashboard.payMapping.analysis.*`
+  namespace (the spine's progress readout and samverkan strip, the next-step
+  panel, the chapter position and statutory duty copy, the worklist, the
+  completion row, the cross-level observation, and the phone's step position
+  and steps sheet) and the `dashboard.payMapping.supplementary.*` drawer with
+  its five item labels. The nb, da, and fi values are machine-drafted; have
+  native speakers review them before launch. Two phrasings need particular
+  care because they are claims a reader may take as legal statements: the
+  drawer heading ("Further analysis, does not affect completion", which is a
+  claim about OUR gate and must never read as a claim about the law) and the
+  cross-level observation sentence shown at the moment of finishing.
 - [ ] **Gate `deletePayMappingRun` on run status.** The mutation currently
   hard-deletes a run (and its snapshot rows + group analyses) regardless of
   `status`, including a `completed` run, which is the statutory kartläggning
