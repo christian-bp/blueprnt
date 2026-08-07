@@ -137,6 +137,8 @@ The scale answer and the guidance answer.
 
 ## Slice 5: one queue, one gate, one advance
 
+**Reordered during the build:** slice 7 (delete `/review`) ran first, because slice 5 would otherwise consolidate code slice 7 deletes. `PayMappingCompletionPanel` and the journey-card demotion shipped inside slice 7 for the same reason (deleting `ReviewFinish` requires its replacement). What remains of this slice is the `useReviewQueue()` hoist over the two surviving consumers.
+
 Zero pixels. The existing tests passing unmodified is the proof.
 
 **Files:** modify `pay-mapping-run-shell.tsx`, `pay-mapping-run-context.tsx`, `pay-mapping-summary.tsx`, `pay-mapping-review.tsx`, `pay-mapping-journey-card.tsx`; create `pay-mapping-completion-panel.tsx`.
@@ -151,9 +153,9 @@ Zero pixels. The existing tests passing unmodified is the proof.
 
 ## Slice 6: the phone
 
-**Files:** modify `pay-mapping-summary.tsx`, `review-jump-menu.tsx`.
+**Files:** modify `pay-mapping-analysis.tsx`.
 
-Replace the all-or-nothing checklist hide and the back-to-summary ghost button with a sticky `Step 7 of 26 · Lika arbete` context bar that opens `ReviewJumpMenu`'s Sheet. Animation pass against `docs/ui-animation.md` for the single-open accordion and the drawer.
+Replace the all-or-nothing checklist hide and the back-to-summary ghost button with a sticky `Step 7 of 26 · Lika arbete` context bar that opens a step sheet. **Not built on `ReviewJumpMenu`:** that component jumped by wizard queue index and died with the wizard in slice 7, so the sheet is built fresh on `ChecklistRows` and the analysis surface's own OpenStep model. Animation pass against `docs/ui-animation.md` for the single-open accordion and the drawer.
 
 **i18n:** roughly 4 leaves.
 
