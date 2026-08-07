@@ -1274,7 +1274,38 @@
         "filterLabel": "Näytä",
         "completeRow": "Viimeistele kartoitus",
         "completeLocked": "{count} jäljellä",
-        "completeReady": "Valmis viimeisteltäväksi"
+        "completeReady": "Valmis viimeisteltäväksi",
+        "worklist": {
+          "showAll": "Näytä kaikki {count} listana",
+          "columns": {
+            "group": "Ryhmä",
+            "gap": "Ero",
+            "flag": "Arvio",
+            "status": "Tila",
+            "headcount": "Henkilöä",
+            "womenShare": "Naisia",
+            "comparisons": "Korkeammin palkatut vertailut"
+          },
+          "status": {
+            "needsDocumenting": "Dokumentoitava",
+            "documented": "Dokumentoitu",
+            "noDuty": "Ei velvoitetta"
+          },
+          "setAside": "{formed} ryhmää muodostettiin. {compared} vertaillaan tässä. {singletons} tehtävänimikkeessä on vain yksi henkilö, {reverse} ryhmässä naiset eivät jää jälkeen ja {genderPure} ryhmässä on vain yksi sukupuoli.",
+          "setAsideLink": "Lue lisää",
+          "noMatches": "Yksikään ryhmä ei vastaa hakua."
+        },
+        "chapterOf": "Luku {position}/{total} · {chapter}",
+        "duty": {
+          "start": "Laki edellyttää, että työnantaja tekee palkkakartoituksen yhdessä työntekijöiden kanssa, tavallisesti ammattiliiton kautta.",
+          "praxis": "Laki edellyttää, että käytte läpi palkkaa koskevat määräykset ja käytännöt ja dokumentoitte sen, mikä osoittautuu epätasa-arvoiseksi.",
+          "equalWork": "Laki edellyttää, että vertaatte samaa työtä tekevien naisten ja miesten palkkoja ja dokumentoitte asiallisen syyn jokaiselle erolle, jota ette voi selittää.",
+          "equivalentWork": "Laki edellyttää, että vertaatte naisvaltaista ryhmää työhön, joka arvioidaan samanarvoiseksi tai alemmaksi mutta josta silti maksetaan enemmän."
+        },
+        "dutyHelp": {
+          "start": "Yhteistoiminta on oma vaatimuksensa (DL 3 luku 11-12 §), ei muodollisuus: työntekijöiden edustajat osallistuvat koko kartoitukseen, analyysi ja toimenpidesuunnitelma mukaan lukien. Kirjaa, ketkä osallistuvat ja miten se toteutetaan.",
+          "praxis": "Ennen varsinaista palkkavertailua työnantaja käy läpi palkkoja ohjaavat määräykset ja käytännöt: palkkapolitiikan, työehtosopimukset, edut ja muuttuvan palkan sekä palkanmäärityskäytännön. Epätasa-arvoiseksi osoittautuva dokumentoidaan ja muutetaan."
+        }
       },
       "supplementary": {
         "heading": "Syventävä analyysi · ei vaikuta viimeistelyyn",

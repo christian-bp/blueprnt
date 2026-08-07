@@ -33,6 +33,8 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "@/lib/toast"
 import { AccordionSection } from "@/components/accordion-section"
 import { AnalysisSpine } from "./analysis-spine"
+import { ChapterBar } from "./chapter-bar"
+import { ChapterWorklist, type WorklistRow } from "./chapter-worklist"
 import { type AnalysisChapter, NextStepPanel } from "./next-step-panel"
 import { ContinueReviewItem } from "./continue-review-item"
 import {
@@ -48,7 +50,7 @@ import {
   ChecklistRows,
   ChecklistSearchSection,
 } from "./review-checklist"
-import { groupLabel } from "./pay-mapping-gap-types"
+import { groupLabel, primaryGapMetric } from "./pay-mapping-gap-types"
 import { usePayMappingRun } from "./pay-mapping-run-context"
 import { isGateUnmetError } from "./review-finish"
 import { ReviewGroupStep } from "./review-group-step"
@@ -117,6 +119,11 @@ function openStepId(open: Exclude<OpenStep, null>): string {
     : stepKey(open)
 }
 
+// How many rows a chapter lists inline before the column offers the whole
+// chapter as a table instead. Past this the 320px column is a scroll, not a
+// list, and it stops answering "where is the worst of it".
+const INLINE_ROW_CAP = 8
+
 // One checklist row, built once per render so the same object backs both the
 // visible row (the shared review-checklist presentation: done icon + label +
 // sr-only state) and the advance-after-mark-done search below. The
@@ -181,6 +188,11 @@ export function PayMappingSummary() {
     undefined
   )
   const [rowFilter, setRowFilter] = useState<"all" | "remaining">("all")
+  // The chapter whose whole worklist is open in the pane, if any: the
+  // all-at-once view the 320px column cannot give at scale.
+  const [worklistChapter, setWorklistChapter] = useState<
+    "equalWork" | "equivalentWork" | null
+  >(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
   // Skips the pane's own mount-focus (below) exactly once: never on the
   // page's initial mount (hasMountedPaneRef), and never right after
@@ -744,35 +756,93 @@ export function PayMappingSummary() {
 
   const currentRowId = openStep === null ? null : openStepId(openStep)
   const paneKey =
-    openStep === null
-      ? showNextStep && selected === undefined
-        ? "next"
-        : "gate"
-      : openStepId(openStep)
-  // The chapter the next undone row belongs to, for the landing panel's
-  // "chapter N of 4" line. The row ids are "<scope>:<key>" for groups and
-  // "praxis:<area>" / "start" otherwise, so the section that holds the row
-  // is the authority rather than a second parse.
-  const nextChapter: AnalysisChapter =
-    (sections.find((section) =>
-      section.rows.some((row) => row.id === firstUndone?.id)
-    )?.key as AnalysisChapter | undefined) ?? "start"
-  const remainingAfterNext = Math.max(0, remaining - 1)
-
-  // The checklist filter: label-only matching, same
-  // scope the jump menu's own search covers. While a query is active the
-  // chapters render as plain filtered sections (no collapse: a collapsed
-  // chapter hiding its own hits would make the filter lie).
+    openStep !== null
+      ? openStepId(openStep)
+      : worklistChapter !== null
+        ? `worklist:${worklistChapter}`
+        : showNextStep && selected === undefined
+          ? "next"
+          : "gate"
+  // The section that holds a row is the authority on which chapter it
+  // belongs to, rather than a second parse of the row id.
   const chapterKeyForRowId = (rowId: string | undefined) =>
     sections.find((section) => section.rows.some((row) => row.id === rowId))
       ?.key
+
+  // The open step's own chapter, for the bar above it.
+  const openChapterForStep = (
+    openStep === null ? undefined : chapterKeyForRowId(openStepId(openStep))
+  ) as AnalysisChapter | undefined
+  // The chapter the next undone row belongs to, for the landing panel's
+  // "chapter N of 4" line.
+  const nextChapter: AnalysisChapter =
+    (chapterKeyForRowId(firstUndone?.id) as AnalysisChapter | undefined) ??
+    "start"
+  const remainingAfterNext = Math.max(0, remaining - 1)
 
   // Opening a step pins the checklist to that step's own chapter, so it
   // stays where the user is working: closing the step again (or advancing
   // to the next one) must not jump the list back to some other chapter.
   function selectRow(step: OpenStep) {
     if (step !== null) setChapterOverride(chapterKeyForRowId(openStepId(step)))
+    setWorklistChapter(null)
     setSelected(step)
+  }
+
+  // The worklist rows for a chapter, built from the SAME checklist rows the
+  // column renders, so the two can never disagree about what exists or what
+  // is done. Status is the third state ADR-0015 created: a group that is
+  // analysed and shown but carries no documentation duty.
+  function worklistRowsFor(
+    scope: "equalWork" | "equivalentWork"
+  ): WorklistRow[] {
+    if (scope === "equalWork") {
+      return currentGap.equalWork.map((group) => {
+        const row = equalWorkRows.find(
+          (candidate) =>
+            candidate.id ===
+            openStepId(groupOpenStep(currentQueue, scope, group.key))
+        )
+        const required = equalWorkGroupRequiresDocumentation(group.flag)
+        return {
+          id: row?.id ?? group.key,
+          label: groupLabel(group),
+          level: group.level,
+          status: row?.done
+            ? ("documented" as const)
+            : required
+              ? ("needsDocumenting" as const)
+              : ("noDuty" as const),
+          women: group.womenCount,
+          men: group.menCount,
+          gapPct: primaryGapMetric(group).gapPct,
+          flag: group.flag,
+        }
+      })
+    }
+    return currentGap.womenDominated.map((group) => {
+      const row = equivalentWorkRows.find(
+        (candidate) =>
+          candidate.id ===
+          openStepId(groupOpenStep(currentQueue, scope, group.key))
+      )
+      const required = womenDominatedGroupRequiresDocumentation(
+        group.comparisons.length
+      )
+      return {
+        id: row?.id ?? group.key,
+        label: groupLabel(group),
+        level: group.level,
+        status: row?.done
+          ? ("documented" as const)
+          : required
+            ? ("needsDocumenting" as const)
+            : ("noDuty" as const),
+        headcount: group.headcount,
+        womenSharePct: group.womenSharePct,
+        comparisons: group.comparisons.length,
+      }
+    })
   }
 
   // Until the user has opened anything, the checklist opens the chapter
@@ -942,10 +1012,33 @@ export function PayMappingSummary() {
                           className="not-last:border-b-0"
                         >
                           <ChecklistRows
-                            rows={section.rows}
+                            rows={section.rows.slice(0, INLINE_ROW_CAP)}
                             currentId={currentRowId}
                             onSelect={(row) => selectRow(row.openStep)}
                           />
+                          {/* Past the cap the column stops being a list and
+                              starts being a scroll: the whole chapter opens
+                              as a sortable table in the pane instead. */}
+                          {section.rows.length > INLINE_ROW_CAP &&
+                            (section.key === "equalWork" ||
+                              section.key === "equivalentWork") && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelected(undefined)
+                                  setWorklistChapter(
+                                    section.key === "equalWork"
+                                      ? "equalWork"
+                                      : "equivalentWork"
+                                  )
+                                }}
+                                className="mt-1 w-full rounded-md px-2 py-1.5 text-left text-muted-foreground text-sm underline-offset-4 hover:bg-muted/50 hover:underline"
+                              >
+                                {tAnalysis("worklist.showAll", {
+                                  count: section.rows.length,
+                                })}
+                              </button>
+                            )}
                         </AccordionSection>
                       ))}
                   </Accordion>
@@ -1012,13 +1105,53 @@ export function PayMappingSummary() {
               <Card>
                 <CardContent>
                   {openStep !== null ? (
-                    renderOpenStep(openStep)
+                    <div className="space-y-3">
+                      {/* Which chapter this step belongs to, with the
+                          statutory duty one click away, restated where the
+                          duty is actually discharged. */}
+                      {openChapterForStep !== undefined && (
+                        <ChapterBar chapter={openChapterForStep} />
+                      )}
+                      {renderOpenStep(openStep)}
+                    </div>
+                  ) : worklistChapter !== null ? (
+                    <div className="space-y-3">
+                      <ChapterBar chapter={worklistChapter} />
+                      <ChapterWorklist
+                        rows={worklistRowsFor(worklistChapter)}
+                        variant={worklistChapter}
+                        onOpen={(id) => {
+                          const row = flatRows.find(
+                            (candidate) => candidate.id === id
+                          )
+                          if (row !== undefined) selectRow(row.openStep)
+                        }}
+                        setAside={
+                          worklistChapter === "equalWork" ? (
+                            <p className="text-muted-foreground text-sm">
+                              {tAnalysis("worklist.setAside", {
+                                formed:
+                                  currentGap.equalWork.length +
+                                  currentGap.excluded.singletonCount +
+                                  currentGap.excluded.reverse.length +
+                                  currentGap.excluded.genderPure.length,
+                                compared: currentGap.equalWork.length,
+                                singletons: currentGap.excluded.singletonCount,
+                                reverse: currentGap.excluded.reverse.length,
+                                genderPure:
+                                  currentGap.excluded.genderPure.length,
+                              })}
+                            </p>
+                          ) : undefined
+                        }
+                      />
+                    </div>
                   ) : showNextStep && selected === undefined ? (
                     <NextStepPanel
                       chapter={nextChapter}
                       label={firstUndone?.label ?? ""}
                       remainingAfter={remainingAfterNext}
-                      onOpen={() => setSelected(firstUndone?.openStep ?? null)}
+                      onOpen={() => selectRow(firstUndone?.openStep ?? null)}
                     />
                   ) : (
                     renderGatePanel()

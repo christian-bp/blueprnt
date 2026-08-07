@@ -1274,7 +1274,38 @@
         "filterLabel": "Visa",
         "completeRow": "Slutför kartläggningen",
         "completeLocked": "{count} kvar",
-        "completeReady": "Klar att slutföra"
+        "completeReady": "Klar att slutföra",
+        "worklist": {
+          "showAll": "Visa alla {count} som lista",
+          "columns": {
+            "group": "Grupp",
+            "gap": "Gap",
+            "flag": "Bedömning",
+            "status": "Status",
+            "headcount": "Personer",
+            "womenShare": "Kvinnor",
+            "comparisons": "Högre betalda jämförelser"
+          },
+          "status": {
+            "needsDocumenting": "Behöver dokumenteras",
+            "documented": "Dokumenterad",
+            "noDuty": "Ingen plikt"
+          },
+          "setAside": "{formed} grupper bildades. {compared} jämförs här. {singletons} befattningar har bara en person, {reverse} grupper har kvinnorna inte efter och {genderPure} har bara ett kön.",
+          "setAsideLink": "Läs mer",
+          "noMatches": "Ingen grupp matchar sökningen."
+        },
+        "chapterOf": "Kapitel {position} av {total} · {chapter}",
+        "duty": {
+          "start": "Lagen kräver att arbetsgivaren genomför lönekartläggningen tillsammans med arbetstagarna, normalt genom facket.",
+          "praxis": "Lagen kräver att ni går igenom de bestämmelser och den praxis ni tillämpar för löner, och dokumenterar det som visar sig vara ojämställt.",
+          "equalWork": "Lagen kräver att ni jämför lönerna mellan kvinnor och män som utför lika arbete, och dokumenterar ett sakligt skäl för varje skillnad ni inte kan förklara.",
+          "equivalentWork": "Lagen kräver att ni jämför en kvinnodominerad grupp mot arbete som värderas som likvärdigt eller lägre men ändå betalar mer."
+        },
+        "dutyHelp": {
+          "start": "Samverkan är ett eget krav (DL 3 kap. 11-12 §§), inte en formalitet: arbetstagarnas representanter deltar i hela kartläggningen, analysen och åtgärdsplanen inräknade. Registrera vilka som deltar och hur det går till.",
+          "praxis": "Före själva lönejämförelsen går arbetsgivaren igenom de bestämmelser och den praxis som styr lönerna: lönepolicyn, kollektivavtalen, förmånerna och den rörliga lönen, samt lönesättningspraxis. Det som visar sig vara ojämställt dokumenteras och ändras."
+        }
       },
       "supplementary": {
         "heading": "Fördjupad analys · påverkar inte slutförandet",

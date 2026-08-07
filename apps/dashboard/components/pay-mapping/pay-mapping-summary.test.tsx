@@ -1,4 +1,10 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -817,6 +823,81 @@ describe("PayMappingSummary", () => {
     expect(screen.getByText("QA · Mid")).toBeDefined()
     openChapter(t.chapters.praxis)
     expect(screen.getByText(t.praxis.payPolicy.title)).toBeDefined()
+  })
+
+  // The invariant that makes a group disappearing from the UI a test
+  // failure rather than a silent loss: every group the engine produced is
+  // reachable somewhere on this surface, and the ones that never reach a
+  // comparison are accounted for in words.
+  it("renders every group the engine produced, or accounts for it in words", () => {
+    renderSummary({
+      gap: {
+        ...GAP,
+        excluded: makeExcluded({
+          singletonCount: 42,
+          reverse: [equalWorkGroup({ key: "rev", roleTitle: "Ops" })],
+          genderPure: [
+            {
+              key: "Lead|1|Staff",
+              roleTitle: "Lead",
+              seniority: "Staff",
+              level: 1,
+              gender: "Man",
+              count: 3,
+            },
+          ],
+        }),
+      },
+    })
+    // The three shown equal-work groups and the two women-dominated ones
+    // are all reachable from the checklist.
+    openChapter(t.chapters.equalWork)
+    for (const label of ["SWE · Senior", "Sales · Mid", "QA · Mid"]) {
+      expect(checklistRowFor(label)).toBeDefined()
+    }
+    openChapter(t.chapters.equivalentWork)
+    for (const label of ["Nurse · Senior", "Receptionist · Junior"]) {
+      expect(checklistRowFor(label)).toBeDefined()
+    }
+    // Everything the entry conditions kept out is counted in the drawer.
+    const drawer = messages.dashboard.payMapping.supplementary
+    const meta = (title: string) =>
+      screen
+        .getAllByRole("button")
+        .find((button) => (button.textContent ?? "").startsWith(title))
+        ?.textContent
+    expect(meta(drawer.items.singletons)).toContain("42")
+    expect(meta(drawer.items.womenAhead)).toContain("1")
+    expect(meta(drawer.items.genderPure)).toContain("1")
+  })
+
+  it("opens a chapter's whole worklist past the inline cap, with every group in it", async () => {
+    // Nine women-dominated groups: past the eight-row cap, so the column
+    // offers the table instead of becoming a scroll.
+    const many = Array.from({ length: 9 }, (_, index) =>
+      womenDominatedGroup({
+        key: `wd-${index}`,
+        roleTitle: `Group ${index}`,
+        seniority: "Mid",
+        comparisons: index === 0 ? [COMPARISON] : [],
+      })
+    )
+    renderSummary({ gap: { ...GAP, womenDominated: many } })
+    openChapter(t.chapters.equivalentWork)
+    const showAll = screen.getByRole("button", {
+      name: tAnalysis.worklist.showAll.replace("{count}", "9"),
+    })
+    fireEvent.click(showAll)
+    // The pane swaps through AnimatePresence, so the table lands a tick later.
+    const table = await screen.findByRole("table")
+    // Every group is a row, including the eight that carry no duty.
+    expect(within(table).getAllByRole("row")).toHaveLength(1 + 9)
+    expect(
+      within(table).getAllByText(tAnalysis.worklist.status.noDuty)
+    ).toHaveLength(8)
+    expect(
+      within(table).getAllByText(tAnalysis.worklist.status.needsDocumenting)
+    ).toHaveLength(1)
   })
 
   it("opens one chapter at a time, closing the one that was open", () => {

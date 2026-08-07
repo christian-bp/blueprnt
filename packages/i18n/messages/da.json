@@ -1274,7 +1274,38 @@
         "filterLabel": "Vis",
         "completeRow": "Afslut kortlægningen",
         "completeLocked": "{count} tilbage",
-        "completeReady": "Klar til at afslutte"
+        "completeReady": "Klar til at afslutte",
+        "worklist": {
+          "showAll": "Vis alle {count} som liste",
+          "columns": {
+            "group": "Gruppe",
+            "gap": "Gap",
+            "flag": "Vurdering",
+            "status": "Status",
+            "headcount": "Personer",
+            "womenShare": "Kvinder",
+            "comparisons": "Højere lønnede sammenligninger"
+          },
+          "status": {
+            "needsDocumenting": "Skal dokumenteres",
+            "documented": "Dokumenteret",
+            "noDuty": "Ingen pligt"
+          },
+          "setAside": "{formed} grupper blev dannet. {compared} sammenlignes her. {singletons} stillinger har kun én person, {reverse} grupper har kvinderne ikke bagefter og {genderPure} har kun ét køn.",
+          "setAsideLink": "Læs mere",
+          "noMatches": "Ingen gruppe matcher søgningen."
+        },
+        "chapterOf": "Kapitel {position} af {total} · {chapter}",
+        "duty": {
+          "start": "Loven kræver, at arbejdsgiveren gennemfører lønkortlægningen sammen med medarbejderne, normalt gennem fagforeningen.",
+          "praxis": "Loven kræver, at I gennemgår de bestemmelser og den praksis, I anvender for løn, og dokumenterer det, der viser sig at være ulige.",
+          "equalWork": "Loven kræver, at I sammenligner lønnen mellem kvinder og mænd, der udfører lige arbejde, og dokumenterer en saglig grund for hver forskel, I ikke kan forklare.",
+          "equivalentWork": "Loven kræver, at I sammenligner en kvindedomineret gruppe med arbejde, der vurderes som ligeværdigt eller lavere, men alligevel betaler mere."
+        },
+        "dutyHelp": {
+          "start": "Samarbejde er et selvstændigt krav (DL 3 kap. 11-12 §§), ikke en formalitet: medarbejdernes repræsentanter deltager i hele kortlægningen, analysen og handlingsplanen inklusive. Registrer, hvem der deltager, og hvordan det foregår.",
+          "praxis": "Før selve lønsammenligningen gennemgår arbejdsgiveren de bestemmelser og den praksis, der styrer lønnen: lønpolitikken, overenskomsterne, goderne og den variable løn samt lønfastsættelsespraksis. Det, der viser sig at være ulige, dokumenteres og ændres."
+        }
       },
       "supplementary": {
         "heading": "Uddybet analyse · påvirker ikke afslutningen",

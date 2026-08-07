@@ -1274,7 +1274,38 @@
         "filterLabel": "Show",
         "completeRow": "Complete the mapping",
         "completeLocked": "{count} left",
-        "completeReady": "Ready"
+        "completeReady": "Ready",
+        "worklist": {
+          "showAll": "Show all {count} as a list",
+          "columns": {
+            "group": "Group",
+            "gap": "Gap",
+            "flag": "Assessment",
+            "status": "Status",
+            "headcount": "People",
+            "womenShare": "Women",
+            "comparisons": "Higher-paid comparisons"
+          },
+          "status": {
+            "needsDocumenting": "Needs documenting",
+            "documented": "Documented",
+            "noDuty": "No duty"
+          },
+          "setAside": "{formed} groups were formed. {compared} are compared here. {singletons} job titles have only one person, {reverse} groups have the women not behind and {genderPure} have a single gender.",
+          "setAsideLink": "Read more",
+          "noMatches": "No group matches the search."
+        },
+        "chapterOf": "Chapter {position} of {total} · {chapter}",
+        "duty": {
+          "start": "The law requires the employer to carry out the pay mapping together with the employees, normally through the union.",
+          "praxis": "The law requires you to review the provisions and practice you apply to pay, and to record any that are found to be unequal.",
+          "equalWork": "The law requires you to compare pay between women and men doing equal work, and to record an objective reason for every difference you cannot explain.",
+          "equivalentWork": "The law requires you to compare a women-dominated group against work that is valued as equivalent or lower but still pays more."
+        },
+        "dutyHelp": {
+          "start": "Collaboration is a requirement in its own right (DL 3 kap. 11-12 §§), not a formality: the employees' representatives take part in the whole mapping, including the analysis and the action plan. Record who takes part and how it happens.",
+          "praxis": "Before the pay comparison itself, the employer reviews the provisions and practice that govern pay: the pay policy, the collective agreements, the benefits and variable pay, and the pay-setting practice. What is found to be unequal is recorded and changed."
+        }
       },
       "supplementary": {
         "heading": "Further analysis · does not affect completion",

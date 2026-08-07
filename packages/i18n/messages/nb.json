@@ -1274,7 +1274,38 @@
         "filterLabel": "Vis",
         "completeRow": "Fullfør kartleggingen",
         "completeLocked": "{count} igjen",
-        "completeReady": "Klar til å fullføre"
+        "completeReady": "Klar til å fullføre",
+        "worklist": {
+          "showAll": "Vis alle {count} som liste",
+          "columns": {
+            "group": "Gruppe",
+            "gap": "Gap",
+            "flag": "Vurdering",
+            "status": "Status",
+            "headcount": "Personer",
+            "womenShare": "Kvinner",
+            "comparisons": "Høyere betalte sammenligninger"
+          },
+          "status": {
+            "needsDocumenting": "Må dokumenteres",
+            "documented": "Dokumentert",
+            "noDuty": "Ingen plikt"
+          },
+          "setAside": "{formed} grupper ble dannet. {compared} sammenlignes her. {singletons} stillinger har bare én person, {reverse} grupper har kvinnene ikke bak og {genderPure} har bare ett kjønn.",
+          "setAsideLink": "Les mer",
+          "noMatches": "Ingen gruppe matcher søket."
+        },
+        "chapterOf": "Kapittel {position} av {total} · {chapter}",
+        "duty": {
+          "start": "Loven krever at arbeidsgiveren gjennomfører lønnskartleggingen sammen med arbeidstakerne, normalt gjennom fagforeningen.",
+          "praxis": "Loven krever at dere går gjennom bestemmelsene og praksisen dere bruker for lønn, og dokumenterer det som viser seg å være ulikt.",
+          "equalWork": "Loven krever at dere sammenligner lønnen mellom kvinner og menn som utfører likt arbeid, og dokumenterer en saklig grunn for hver forskjell dere ikke kan forklare.",
+          "equivalentWork": "Loven krever at dere sammenligner en kvinnedominert gruppe mot arbeid som verdsettes som likeverdig eller lavere, men likevel betaler mer."
+        },
+        "dutyHelp": {
+          "start": "Samarbeid er et eget krav (DL 3 kap. 11-12 §§), ikke en formalitet: arbeidstakernes representanter deltar i hele kartleggingen, analysen og tiltaksplanen inkludert. Registrer hvem som deltar og hvordan det foregår.",
+          "praxis": "Før selve lønnssammenligningen går arbeidsgiveren gjennom bestemmelsene og praksisen som styrer lønningene: lønnspolitikken, tariffavtalene, godene og den variable lønnen, samt lønnsfastsettingspraksisen. Det som viser seg å være ulikt dokumenteres og endres."
+        }
       },
       "supplementary": {
         "heading": "Utdypet analyse · påvirker ikke fullføringen",
