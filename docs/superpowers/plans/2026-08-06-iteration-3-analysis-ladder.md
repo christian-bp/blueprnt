@@ -127,7 +127,8 @@ The scale answer and the guidance answer.
 
 - `ChapterWorklist` is a full house register table: `table-fixed`, widths on header cells, `TableSortButton` with `aria-sort`, default sort equal to the current attention order (flag rank, then absolute gap, then key), `TablePagination` at 25 sharing one `PAGE_SIZE` constant with its `TableSkeleton`, and a no-matches empty state. Columns: group, women, men, gap, flag, status (Needs documenting / Documented / No duty), opening the step.
 - The trailing set-aside line states the full comparison universe in words and links into the drawer: "57 groups were formed. 4 are compared here. 42 job titles have only one person, 7 groups have women ahead and 4 have a single gender."
-- `ChapterBar` renders above every opened step: `Chapter N of 4 · <name>`, the statutory sentence in plain language, and a `HelpMorphButton` whose body is the existing `review.chapters.intro.*` method copy. Four new sentences, one per chapter.
+- `ChapterBar` renders above every opened step: `Chapter N of 4 · <name>` plus a `HelpMorphButton` carrying the statutory sentence and the existing `review.chapters.intro.*` method copy. **Built with the duty in the help rather than on the page:** the step already carries a finding sentence and a form, and a permanent third sentence above every step would spend the calm this rework exists for. Start and praxis get their own method copy (`analysis.dutyHelp.*`), since only the two statutory chapters had an intro.
+- The `Show all N as a list` row appears only past `INLINE_ROW_CAP` (8) and only for the two group chapters; start and praxis are never long enough to need it.
 - Ship the coverage invariant test named in the global constraints.
 
 **Tests:** the worklist renders every group including non-required ones labelled "No duty"; sort, filter and pagination; the chapter bar renders per chapter; the coverage invariant.
