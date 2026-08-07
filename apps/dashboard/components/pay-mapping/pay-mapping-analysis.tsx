@@ -982,8 +982,11 @@ export function PayMappingAnalysis() {
                 // hidden while a step is open, so this bar says where the
                 // step sits and opens the whole list on demand. It replaces
                 // a bare "back" button, which said where you had been
-                // rather than where you are.
-                <div className="flex items-center justify-between gap-2 lg:hidden">
+                // rather than where you are. Sticky because a step form is
+                // taller than a phone: orientation that scrolls away is
+                // orientation you no longer have. It rides inside the
+                // pane's own crossfade rather than appearing on its own.
+                <div className="sticky top-0 z-10 flex items-center justify-between gap-2 bg-background py-2 lg:hidden">
                   <span className="text-muted-foreground text-sm">
                     {tAnalysis("stepPosition", {
                       position: currentRowIndex + 1,

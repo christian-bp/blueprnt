@@ -163,6 +163,8 @@ Replace the all-or-nothing checklist hide and the back-to-summary ghost button w
 
 **Removed with it:** `handleBackToSummary`, the `suppressPaneFocusRef` machinery that existed only to stop its explicit heading-focus being stolen back, and the `payMapping.review.backToSummary` key in all five locales. The way out of an opened step on every screen size is now the checklist's own always-reachable completion row, which is where the mapping ends anyway.
 
+**Animation pass (`docs/ui-animation.md`):** nothing new to write. The chapter accordion and the supplementary drawer animate through the vendor's own `accordion-down`/`accordion-up` keyframes, and Base UI clears the measured height on open-complete, so an idle open panel is `height: auto` and a filter or search change inside it reflows without clipping; a Motion height animation there would fight the reopen keyframes for no gain. The sheet carries the vendor's fade plus 2.5rem slide. The new context bar sits INSIDE the pane's existing `AnimatePresence mode="wait"` crossfade rather than appearing on its own, so it never pops in against content that is simultaneously being replaced.
+
 ## Slice 7: one door
 
 Runs last, after ADR-0016.
