@@ -159,6 +159,10 @@ Replace the all-or-nothing checklist hide and the back-to-summary ghost button w
 
 **i18n:** roughly 4 leaves.
 
+**Built:** the checklist body is one definition (`checklistBody`) rendered both in the sticky column and, below `lg` while a step is open, inside a left `Sheet`, so the phone can never drift from the desktop list. The bar states the position (`Step 2 of 10 · Praxis`) rather than the way back, because the phone's problem is orientation, not history. Selecting a row closes the sheet.
+
+**Removed with it:** `handleBackToSummary`, the `suppressPaneFocusRef` machinery that existed only to stop its explicit heading-focus being stolen back, and the `payMapping.review.backToSummary` key in all five locales. The way out of an opened step on every screen size is now the checklist's own always-reachable completion row, which is where the mapping ends anyway.
+
 ## Slice 7: one door
 
 Runs last, after ADR-0016.

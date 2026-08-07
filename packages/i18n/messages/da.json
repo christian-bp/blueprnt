@@ -1308,7 +1308,9 @@
         },
         "crossLevelObservation": "{count, plural, one {# tværniveautilfælde er identificeret og ikke gennemgået. Det forhindrer ikke afslutning.} other {# tværniveautilfælde er identificeret og ikke gennemgået. De forhindrer ikke afslutning.}}",
         "crossLevelObservationCta": "Se på dem",
-        "openAnalysis": "Åbn analysen"
+        "openAnalysis": "Åbn analysen",
+        "stepsSheet": "Alle trin",
+        "stepPosition": "Trin {position} af {total} · {chapter}"
       },
       "supplementary": {
         "heading": "Uddybet analyse · påvirker ikke afslutningen",
@@ -1498,7 +1500,6 @@
           "done": "udført"
         },
         "finishActionsNote": "Lønjusteringer, omkostningsberegning og den treårige tidsplan tilføjes i handlingsplanen.",
-        "backToSummary": "Tilbage til opsummeringen",
         "cycleBody": "En lønkortlægning følger en årlig cyklus: undersøg lønnen, analyser forskellene, handl på det, du finder, og følg op næste år. Denne gennemgang dækker undersøg og analyser; selve handlingerne samles i handlingsplanen bagefter."
       },
       "crossLevel": {

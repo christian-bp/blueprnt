@@ -3,6 +3,7 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
   within,
 } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
@@ -268,9 +269,9 @@ function renderSummary(
 // until the outgoing side's own exit transition finishes, so the pane's
 // content changes one render "tick" after the click; finishActionsNote only
 // ever renders on the gate panel (the pane's null-selection landing state),
-// making it a reliable "we are back on the gate panel" signal, whether that
-// happened via the small-screen backToSummary control or an advance that
-// found nothing left to open.
+// making it a reliable "we are on the gate panel" signal, whether that
+// happened via the checklist's own completion row or an advance that found
+// nothing left to open.
 async function expectGatePanel() {
   await screen.findByText(t.finishActionsNote)
 }
@@ -308,8 +309,14 @@ function openChapter(title: string) {
     fireEvent.click(trigger)
 }
 
-async function backToSummary() {
-  fireEvent.click(screen.getByRole("button", { name: t.backToSummary }))
+// The checklist's last row: the always-reachable way back out of an opened
+// step and onto the gate panel, on every screen size.
+async function openCompletion() {
+  const row = screen
+    .getAllByText(tAnalysis.completeRow)
+    .map((node) => node.closest("button"))
+    .find((button) => button !== null)
+  fireEvent.click(row as HTMLElement)
   await expectGatePanel()
 }
 
@@ -407,9 +414,11 @@ describe("PayMappingAnalysis", () => {
     expect(screen.getByText(tAnalysis.nextAction.start)).toBeDefined()
     expect(screen.queryByRole("heading", { name: t.introTitle })).toBeNull()
     expect(screen.queryByText(t.finishActionsNote)).toBeNull()
-    // The landing is implicit: the small-screen back control only renders
+    // The landing is implicit: the small-screen context bar only renders
     // for an explicit selection (the checklist must stay reachable).
-    expect(screen.queryByRole("button", { name: t.backToSummary })).toBeNull()
+    expect(
+      screen.queryByRole("button", { name: tAnalysis.stepsSheet })
+    ).toBeNull()
     // And it never steals focus on page load.
     expect(document.activeElement).toBe(document.body)
 
@@ -494,7 +503,7 @@ describe("PayMappingAnalysis", () => {
     expect(button.disabled).toBe(false)
   })
 
-  it("selects the start row: opens the collaboration step, marks it aria-current, and returns via backToSummary", async () => {
+  it("selects the start row: opens the collaboration step, marks it aria-current, and returns via the completion row", async () => {
     // A fixture where start is NOT the landing default (collaboration
     // filled), so the click below is a real transition.
     renderSummary({ run: { ...RUN, collaboration: COLLABORATION_FILLED } })
@@ -507,7 +516,7 @@ describe("PayMappingAnalysis", () => {
     expect(await screen.findByText(t.introTitle)).toBeDefined()
     expect(row?.getAttribute("aria-current")).toBe("true")
 
-    await backToSummary()
+    await openCompletion()
     expect(checklistRowFor(t.collaborationTitle)).toBeDefined()
     expect(screen.queryByText(t.introTitle)).toBeNull()
   })
@@ -659,7 +668,7 @@ describe("PayMappingAnalysis", () => {
     ).not.toBe("true")
   })
 
-  it("moves focus onto the opened pane, and back onto the summary heading, on select/backToSummary", async () => {
+  it("moves focus onto the pane on every explicit selection, including the completion row", async () => {
     renderSummary()
     openChapter(t.chapters.praxis)
     fireEvent.click(screen.getByText(t.praxis.payPolicy.title))
@@ -668,14 +677,36 @@ describe("PayMappingAnalysis", () => {
     expect(paneContainer).not.toBeNull()
     expect(document.activeElement).toBe(paneContainer)
 
-    fireEvent.click(screen.getByRole("button", { name: t.backToSummary }))
-    // The spine's heading is the standing itself ("Documented 5 / 29"), so
-    // match it by its label rather than a fixed full string.
-    const heading = await screen.findByRole("heading", {
-      level: 3,
-      name: new RegExp(tAnalysis.progressLabel),
+    await openCompletion()
+    const gate = screen
+      .getByText(t.finishActionsNote)
+      .closest('[tabindex="-1"]')
+    expect(gate).not.toBeNull()
+    expect(document.activeElement).toBe(gate)
+  })
+
+  it("below lg, an opened step says where it sits and opens the whole list in a sheet", async () => {
+    renderSummary()
+    openChapter(t.chapters.praxis)
+    fireEvent.click(screen.getByText(t.praxis.payPolicy.title))
+    await screen.findByText(t.praxis.payPolicy.question)
+    // Pay policy is the second row of the checklist's flat order (start
+    // comes first), out of ten.
+    expect(
+      screen.getByText(
+        tAnalysis.stepPosition
+          .replace("{position}", "2")
+          .replace("{total}", "10")
+          .replace("{chapter}", t.chapters.praxis)
+      )
+    ).toBeDefined()
+    // The sheet carries the same checklist, so the phone can never drift
+    // from the desktop column: opening it duplicates every row.
+    const before = screen.getAllByText(tAnalysis.completeRow).length
+    fireEvent.click(screen.getByRole("button", { name: tAnalysis.stepsSheet }))
+    await waitFor(() => {
+      expect(screen.getAllByText(tAnalysis.completeRow).length).toBe(before + 1)
     })
-    expect(document.activeElement).toBe(heading)
   })
 
   it("renders the opened card read-only on a locked (completed) run", async () => {
@@ -695,7 +726,7 @@ describe("PayMappingAnalysis", () => {
     openChapter(t.chapters.praxis)
     fireEvent.click(screen.getByText(t.praxis.payPolicy.title))
     await screen.findByText(t.praxis.payPolicy.question)
-    await backToSummary()
+    await openCompletion()
     const button = screen.getByRole("button", {
       name: tDoc.complete,
     }) as HTMLButtonElement

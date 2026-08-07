@@ -1308,7 +1308,9 @@
         },
         "crossLevelObservation": "{count, plural, one {# tverrnivåtilfelle er identifisert og ikke gjennomgått. Det hindrer ikke fullføring.} other {# tverrnivåtilfeller er identifisert og ikke gjennomgått. De hindrer ikke fullføring.}}",
         "crossLevelObservationCta": "Se på dem",
-        "openAnalysis": "Åpne analysen"
+        "openAnalysis": "Åpne analysen",
+        "stepsSheet": "Alle steg",
+        "stepPosition": "Steg {position} av {total} · {chapter}"
       },
       "supplementary": {
         "heading": "Utdypet analyse · påvirker ikke fullføringen",
@@ -1498,7 +1500,6 @@
           "done": "utført"
         },
         "finishActionsNote": "Lønnsjusteringer, kostnadsberegning og den treårige tidsplanen legges til i handlingsplanen.",
-        "backToSummary": "Tilbake til sammendraget",
         "cycleBody": "En lønnskartlegging følger en årlig syklus: undersøk lønnen, analyser forskjellene, gjør noe med det du finner, og følg opp neste år. Denne gjennomgangen dekker undersøk og analyser; selve tiltakene samles i handlingsplanen etterpå."
       },
       "crossLevel": {

@@ -1308,7 +1308,9 @@
         },
         "crossLevelObservation": "{count, plural, one {# cross-level case is identified and not reviewed. It does not prevent completion.} other {# cross-level cases are identified and not reviewed. They do not prevent completion.}}",
         "crossLevelObservationCta": "Look at them",
-        "openAnalysis": "Open the analysis"
+        "openAnalysis": "Open the analysis",
+        "stepsSheet": "All steps",
+        "stepPosition": "Step {position} of {total} · {chapter}"
       },
       "supplementary": {
         "heading": "Further analysis · does not affect completion",
@@ -1498,7 +1500,6 @@
           "done": "done"
         },
         "finishActionsNote": "Pay adjustments, cost estimate and the three-year time plan are added in the action plan.",
-        "backToSummary": "Back to the summary",
         "cycleBody": "A pay mapping runs on an annual cycle: investigate the pay, analyze the differences, act on what you find, and follow up next year. This journey covers investigate and analyze; the actions themselves are gathered in the action plan afterward."
       },
       "crossLevel": {

@@ -1308,7 +1308,9 @@
         },
         "crossLevelObservation": "{count, plural, one {# tasojen välinen tapaus on tunnistettu eikä käyty läpi. Se ei estä viimeistelyä.} other {# tasojen välistä tapausta on tunnistettu eikä käyty läpi. Ne eivät estä viimeistelyä.}}",
         "crossLevelObservationCta": "Katso ne",
-        "openAnalysis": "Avaa analyysi"
+        "openAnalysis": "Avaa analyysi",
+        "stepsSheet": "Kaikki vaiheet",
+        "stepPosition": "Vaihe {position}/{total} · {chapter}"
       },
       "supplementary": {
         "heading": "Syventävä analyysi · ei vaikuta viimeistelyyn",
@@ -1498,7 +1500,6 @@
           "done": "valmis"
         },
         "finishActionsNote": "Palkkakorjaukset, kustannusarvio ja kolmen vuoden aikataulu lisätään toimintasuunnitelmaan.",
-        "backToSummary": "Takaisin yhteenvetoon",
         "cycleBody": "Palkkakartoitus noudattaa vuosittaista kiertoa: selvitä palkat, analysoi erot, toimi havaintojen perusteella ja seuraa tilannetta seuraavana vuonna. Tämä prosessi kattaa selvittämisen ja analysoinnin; itse toimenpiteet kootaan jälkeenpäin toimintasuunnitelmaan."
       },
       "crossLevel": {

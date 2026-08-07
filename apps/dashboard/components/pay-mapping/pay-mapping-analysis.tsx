@@ -6,6 +6,13 @@ import {
 } from "@workspace/core"
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent } from "@workspace/ui/components/card"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@workspace/ui/components/sheet"
 import { Accordion } from "@workspace/ui/components/accordion"
 import {
   ToggleGroup,
@@ -171,14 +178,13 @@ export function PayMappingAnalysis() {
   const [worklistChapter, setWorklistChapter] = useState<
     "equalWork" | "equivalentWork" | null
   >(null)
+  // The steps sheet is the phone's checklist; selecting a row closes it.
+  const [stepsSheetOpen, setStepsSheetOpen] = useState(false)
   const headingRef = useRef<HTMLHeadingElement>(null)
-  // Skips the pane's own mount-focus (below) exactly once: never on the
-  // page's initial mount (hasMountedPaneRef), and never right after
-  // handleBackToSummary's own explicit heading-focus (suppressPaneFocusRef),
-  // so that manual "close" doesn't get its focus immediately stolen back
-  // when the gate panel remounts in the pane a moment later.
+  // Skips the pane's own mount-focus (below) on the page's initial mount:
+  // the landing is not a transition the user asked for, so it must not
+  // steal focus.
   const hasMountedPaneRef = useRef(false)
-  const suppressPaneFocusRef = useRef(false)
   // One O(women x men) scan for the page: the drawer's first item lists the
   // cases and the completion panel names their count at the moment of
   // finishing, and neither should pay for its own pass.
@@ -231,27 +237,12 @@ export function PayMappingAnalysis() {
       hasMountedPaneRef.current = true
       return
     }
-    if (suppressPaneFocusRef.current) {
-      suppressPaneFocusRef.current = false
-      return
-    }
     node.focus()
     // Steps differ in height by hundreds of pixels (a praxis step is three
     // lines, an equivalent-work step carries a table and a chart), so
     // advancing without this leaves the user mid-pane on the next step.
     node.scrollIntoView({ block: "start" })
   }, [])
-
-  // The small-screen fallback's own "close" affordance (the button rendered
-  // alongside the opened card below, hidden at lg+ where there is no
-  // equivalent "back" concept): a manual step-away, so focus returns to the
-  // summary heading exactly like the pre-master-detail overlay did, rather
-  // than to the gate panel that is about to remount in the pane.
-  function handleBackToSummary() {
-    suppressPaneFocusRef.current = true
-    setSelected(null)
-    headingRef.current?.focus()
-  }
 
   if (
     run === undefined ||
@@ -649,6 +640,7 @@ export function PayMappingAnalysis() {
   }
 
   const currentRowId = openStep === null ? null : openStepId(openStep)
+  const currentRowIndex = flatRows.findIndex((row) => row.id === currentRowId)
   const paneKey =
     openStep !== null
       ? openStepId(openStep)
@@ -678,6 +670,7 @@ export function PayMappingAnalysis() {
   // stays where the user is working: closing the step again (or advancing
   // to the next one) must not jump the list back to some other chapter.
   function selectRow(step: OpenStep) {
+    setStepsSheetOpen(false)
     if (step !== null) setChapterOverride(chapterKeyForRowId(openStepId(step)))
     setWorklistChapter(null)
     setSelected(step)
@@ -773,14 +766,159 @@ export function PayMappingAnalysis() {
     item,
   })).filter((row) => row.label.toLowerCase().includes(trimmedQuery))
 
+  // The checklist's own content, rendered both in the sticky column and,
+  // below lg while a step is open, inside the steps sheet: one definition,
+  // so the phone can never drift from the desktop list.
+  const checklistBody = (
+    <>
+      {/* Its own non-scrolling block (shares the Card's own gap so it
+                still aligns with the scrolling block below) so the search
+                field stays reachable while the sections list underneath it
+                scrolls; only that list, not the field, may leave the
+                viewport. */}
+      <CardContent className="space-y-2 lg:shrink-0">
+        <TableSearchField
+          placeholder={t("searchSteps")}
+          value={query}
+          onChange={setQuery}
+          className="w-full"
+        />
+        {/* Defaults to All: the documented rows ARE the evidence
+                  record, so hiding them by default would make the work
+                  already done invisible on arrival. */}
+        <ToggleGroup
+          variant="outline"
+          aria-label={tAnalysis("filterLabel")}
+          value={[rowFilter]}
+          onValueChange={(value) => {
+            const next = value[0]
+            if (next === "all" || next === "remaining") setRowFilter(next)
+          }}
+        >
+          <ToggleGroupItem value="all">
+            {tAnalysis("filterAll")}
+          </ToggleGroupItem>
+          <ToggleGroupItem value="remaining">
+            {tAnalysis("filterRemaining")}
+          </ToggleGroupItem>
+        </ToggleGroup>
+      </CardContent>
+      <CardContent className="space-y-6 lg:min-h-0 lg:overflow-y-auto">
+        {searching ? (
+          <>
+            {filteredSections.map((section) => (
+              <ChecklistSearchSection
+                key={section.key}
+                title={section.title}
+                meta={section.meta}
+                rows={section.rows}
+                currentId={currentRowId}
+                onSelect={(row) => selectRow(row.openStep)}
+              />
+            ))}
+            {/* A sixth, virtual section so a search reaches the five
+                      analyses in the drawer too: before this, a query that
+                      matched one of them returned nothing at all. */}
+            <ChecklistSearchSection
+              title={tSupplementary("heading")}
+              meta={undefined}
+              rows={supplementaryRows}
+              currentId={null}
+              onSelect={(row) => {
+                setOpenSupplementary(row.item)
+                document
+                  .getElementById(`supplementary-${row.item}`)
+                  ?.scrollIntoView({ block: "start" })
+              }}
+            />
+          </>
+        ) : (
+          <>
+            {/* Single-open (rung 1): one chapter at a time, following
+                      the open or next step until the user opens another
+                      themselves. A collapsed chapter always shows its own
+                      count, so folding never hides an obligation. */}
+            <Accordion
+              value={openChapter === undefined ? [] : [openChapter]}
+              onValueChange={(value) => setChapterOverride(value[0] ?? "")}
+            >
+              {listedSections
+                .filter((section) => section.rows.length > 0)
+                .map((section) => (
+                  <AccordionSection
+                    key={section.key}
+                    value={section.key}
+                    title={section.title}
+                    meta={section.meta}
+                    // No divider between chapters: the checklist sits in
+                    // one Card already (drop the vendor item's own
+                    // not-last:border-b, matched on the same variant so
+                    // tailwind-merge dedupes it).
+                    className="not-last:border-b-0"
+                  >
+                    <ChecklistRows
+                      rows={section.rows.slice(0, INLINE_ROW_CAP)}
+                      currentId={currentRowId}
+                      onSelect={(row) => selectRow(row.openStep)}
+                    />
+                    {/* Past the cap the column stops being a list and
+                              starts being a scroll: the whole chapter opens
+                              as a sortable table in the pane instead. */}
+                    {section.rows.length > INLINE_ROW_CAP &&
+                      (section.key === "equalWork" ||
+                        section.key === "equivalentWork") && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelected(undefined)
+                            setWorklistChapter(
+                              section.key === "equalWork"
+                                ? "equalWork"
+                                : "equivalentWork"
+                            )
+                          }}
+                          className="mt-1 w-full rounded-md px-2 py-1.5 text-left text-muted-foreground text-sm underline-offset-4 hover:bg-muted/50 hover:underline"
+                        >
+                          {tAnalysis("worklist.showAll", {
+                            count: section.rows.length,
+                          })}
+                        </button>
+                      )}
+                  </AccordionSection>
+                ))}
+            </Accordion>
+            {/* The end of the ladder, always reachable: the run's own
+                      completion, with its state stated rather than only
+                      implied by a disabled button somewhere else. */}
+            <button
+              type="button"
+              onClick={() => selectRow(null)}
+              aria-current={openStep === null ? "true" : undefined}
+              className={cn(
+                "flex w-full items-center gap-2 rounded-md border-t px-2 pt-3 pb-1.5 text-left text-sm transition-colors",
+                openStep === null && selected !== undefined
+                  ? "font-medium"
+                  : "hover:bg-muted/50"
+              )}
+            >
+              <span>{tAnalysis("completeRow")}</span>
+              <span className="ml-auto text-muted-foreground tabular-nums">
+                {gateMet
+                  ? tAnalysis("completeReady")
+                  : tAnalysis("completeLocked", { count: remaining })}
+              </span>
+            </button>
+          </>
+        )}
+      </CardContent>
+    </>
+  )
+
   return (
     <div className="space-y-4">
       {/* Rung 0: where the whole mapping stands, above everything else.
-          headingRef is the return target for focus once the small-screen
-          fallback's back control closes an opened card (see
-          handleBackToSummary above); it is never part of either
-          AnimatePresence swap, so it stays a stable anchor above both
-          columns. */}
+          headingRef stays a stable focus anchor above both columns: it is
+          never part of either AnimatePresence swap. */}
       <AnalysisSpine
         done={currentQueue.progress.overall.done}
         total={currentQueue.progress.overall.total}
@@ -813,148 +951,7 @@ export function PayMappingAnalysis() {
           )}
         >
           <Card className="lg:max-h-[calc(100svh_-_14rem)]">
-            {/* Its own non-scrolling block (shares the Card's own gap so it
-                still aligns with the scrolling block below) so the search
-                field stays reachable while the sections list underneath it
-                scrolls; only that list, not the field, may leave the
-                viewport. */}
-            <CardContent className="space-y-2 lg:shrink-0">
-              <TableSearchField
-                placeholder={t("searchSteps")}
-                value={query}
-                onChange={setQuery}
-                className="w-full"
-              />
-              {/* Defaults to All: the documented rows ARE the evidence
-                  record, so hiding them by default would make the work
-                  already done invisible on arrival. */}
-              <ToggleGroup
-                variant="outline"
-                aria-label={tAnalysis("filterLabel")}
-                value={[rowFilter]}
-                onValueChange={(value) => {
-                  const next = value[0]
-                  if (next === "all" || next === "remaining") setRowFilter(next)
-                }}
-              >
-                <ToggleGroupItem value="all">
-                  {tAnalysis("filterAll")}
-                </ToggleGroupItem>
-                <ToggleGroupItem value="remaining">
-                  {tAnalysis("filterRemaining")}
-                </ToggleGroupItem>
-              </ToggleGroup>
-            </CardContent>
-            <CardContent className="space-y-6 lg:min-h-0 lg:overflow-y-auto">
-              {searching ? (
-                <>
-                  {filteredSections.map((section) => (
-                    <ChecklistSearchSection
-                      key={section.key}
-                      title={section.title}
-                      meta={section.meta}
-                      rows={section.rows}
-                      currentId={currentRowId}
-                      onSelect={(row) => selectRow(row.openStep)}
-                    />
-                  ))}
-                  {/* A sixth, virtual section so a search reaches the five
-                      analyses in the drawer too: before this, a query that
-                      matched one of them returned nothing at all. */}
-                  <ChecklistSearchSection
-                    title={tSupplementary("heading")}
-                    meta={undefined}
-                    rows={supplementaryRows}
-                    currentId={null}
-                    onSelect={(row) => {
-                      setOpenSupplementary(row.item)
-                      document
-                        .getElementById(`supplementary-${row.item}`)
-                        ?.scrollIntoView({ block: "start" })
-                    }}
-                  />
-                </>
-              ) : (
-                <>
-                  {/* Single-open (rung 1): one chapter at a time, following
-                      the open or next step until the user opens another
-                      themselves. A collapsed chapter always shows its own
-                      count, so folding never hides an obligation. */}
-                  <Accordion
-                    value={openChapter === undefined ? [] : [openChapter]}
-                    onValueChange={(value) =>
-                      setChapterOverride(value[0] ?? "")
-                    }
-                  >
-                    {listedSections
-                      .filter((section) => section.rows.length > 0)
-                      .map((section) => (
-                        <AccordionSection
-                          key={section.key}
-                          value={section.key}
-                          title={section.title}
-                          meta={section.meta}
-                          // No divider between chapters: the checklist sits in
-                          // one Card already (drop the vendor item's own
-                          // not-last:border-b, matched on the same variant so
-                          // tailwind-merge dedupes it).
-                          className="not-last:border-b-0"
-                        >
-                          <ChecklistRows
-                            rows={section.rows.slice(0, INLINE_ROW_CAP)}
-                            currentId={currentRowId}
-                            onSelect={(row) => selectRow(row.openStep)}
-                          />
-                          {/* Past the cap the column stops being a list and
-                              starts being a scroll: the whole chapter opens
-                              as a sortable table in the pane instead. */}
-                          {section.rows.length > INLINE_ROW_CAP &&
-                            (section.key === "equalWork" ||
-                              section.key === "equivalentWork") && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setSelected(undefined)
-                                  setWorklistChapter(
-                                    section.key === "equalWork"
-                                      ? "equalWork"
-                                      : "equivalentWork"
-                                  )
-                                }}
-                                className="mt-1 w-full rounded-md px-2 py-1.5 text-left text-muted-foreground text-sm underline-offset-4 hover:bg-muted/50 hover:underline"
-                              >
-                                {tAnalysis("worklist.showAll", {
-                                  count: section.rows.length,
-                                })}
-                              </button>
-                            )}
-                        </AccordionSection>
-                      ))}
-                  </Accordion>
-                  {/* The end of the ladder, always reachable: the run's own
-                      completion, with its state stated rather than only
-                      implied by a disabled button somewhere else. */}
-                  <button
-                    type="button"
-                    onClick={() => selectRow(null)}
-                    aria-current={openStep === null ? "true" : undefined}
-                    className={cn(
-                      "flex w-full items-center gap-2 rounded-md border-t px-2 pt-3 pb-1.5 text-left text-sm transition-colors",
-                      openStep === null && selected !== undefined
-                        ? "font-medium"
-                        : "hover:bg-muted/50"
-                    )}
-                  >
-                    <span>{tAnalysis("completeRow")}</span>
-                    <span className="ml-auto text-muted-foreground tabular-nums">
-                      {gateMet
-                        ? tAnalysis("completeReady")
-                        : tAnalysis("completeLocked", { count: remaining })}
-                    </span>
-                  </button>
-                </>
-              )}
-            </CardContent>
+            {checklistBody}
           </Card>
         </div>
         <div className="min-w-0">
@@ -981,15 +978,41 @@ export function PayMappingAnalysis() {
               className="space-y-2 outline-none"
             >
               {explicitCardOpen && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="lg:hidden"
-                  onClick={handleBackToSummary}
-                >
-                  {t("backToSummary")}
-                </Button>
+                // The phone's own orientation: the checklist column is
+                // hidden while a step is open, so this bar says where the
+                // step sits and opens the whole list on demand. It replaces
+                // a bare "back" button, which said where you had been
+                // rather than where you are.
+                <div className="flex items-center justify-between gap-2 lg:hidden">
+                  <span className="text-muted-foreground text-sm">
+                    {tAnalysis("stepPosition", {
+                      position: currentRowIndex + 1,
+                      total: flatRows.length,
+                      chapter:
+                        openChapterForStep === undefined
+                          ? ""
+                          : t(`chapters.${openChapterForStep}`),
+                    })}
+                  </span>
+                  <Sheet open={stepsSheetOpen} onOpenChange={setStepsSheetOpen}>
+                    <SheetTrigger
+                      render={
+                        <Button type="button" variant="outline" size="sm" />
+                      }
+                    >
+                      {tAnalysis("stepsSheet")}
+                    </SheetTrigger>
+                    <SheetContent
+                      side="left"
+                      className="w-full overflow-y-auto p-4 sm:max-w-sm"
+                    >
+                      <SheetHeader className="p-0">
+                        <SheetTitle>{tAnalysis("stepsSheet")}</SheetTitle>
+                      </SheetHeader>
+                      {checklistBody}
+                    </SheetContent>
+                  </Sheet>
+                </div>
               )}
               <Card>
                 <CardContent>
