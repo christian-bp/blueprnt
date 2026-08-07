@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl"
 import { useMemo, useState } from "react"
 import { AccordionSection } from "@/components/accordion-section"
 import { HelpMorphButton } from "@/components/help-morph-button"
-import { buildCrossLevelCases, CrossLevelCases } from "./cross-level-section"
+import { type CrossLevelCase, CrossLevelCases } from "./cross-level-section"
 import { EquivalentWorkLevelAnalysis } from "./equivalent-work-level-analysis"
 import {
   GenderPureDeepDive,
@@ -50,6 +50,7 @@ export function SupplementaryAnalysis({
   equivalentWork,
   equalWork,
   rows,
+  crossLevelCases,
   currency,
   documentation,
   openItem,
@@ -59,6 +60,10 @@ export function SupplementaryAnalysis({
   equivalentWork: GapGroup[]
   equalWork: GapGroup[]
   rows: PayMappingSnapshotRow[]
+  // Passed in rather than derived here: the completion panel names the same
+  // count at the moment of finishing, and the O(women x men) scan should
+  // run once for the page, not once per consumer.
+  crossLevelCases: CrossLevelCase[]
   currency: string
   documentation?: {
     runId: Id<"payMappingRuns">
@@ -77,10 +82,7 @@ export function SupplementaryAnalysis({
   const open = openItem === undefined ? ownOpen : openItem
   const setOpen = onOpenItemChange ?? setOwnOpen
 
-  // One scan for the whole page: O(women x men) over the frozen population,
-  // and the count has to render whether or not the item is open (the count
-  // is what makes a real finding impossible to miss).
-  const cases = useMemo(() => buildCrossLevelCases(rows), [rows])
+  const cases = crossLevelCases
   const levels = useMemo(
     () => equivalentWork.filter(meetsEntryConditions),
     [equivalentWork]

@@ -43,7 +43,7 @@ import type {
   WomenDominatedComparisonWire,
   WomenDominatedGroupWire,
 } from "@/components/pay-mapping/pay-mapping-gap-types"
-import { PayMappingSummary } from "@/components/pay-mapping/pay-mapping-summary"
+import { PayMappingAnalysis } from "@/components/pay-mapping/pay-mapping-analysis"
 import { PayMappingRunProvider } from "@/components/pay-mapping/pay-mapping-run-context"
 import { mockMutation, onQuery } from "@/test/convex-mocks"
 
@@ -53,7 +53,6 @@ const completeMock = mockMutation("payMapping.runs.completePayMappingRun")
 const t = messages.dashboard.payMapping.review
 const tForm = messages.dashboard.payMapping.analysisForm
 const tDoc = messages.dashboard.payMapping.documentation
-const tTabs = messages.dashboard.payMapping.tabs
 const tGap = messages.dashboard.payMapping.gap
 const tJourney = messages.dashboard.payMapping.journey
 const tAnalysis = messages.dashboard.payMapping.analysis
@@ -104,7 +103,7 @@ function womenDominatedGroup(
 // SALES (critical) and SWE (elevated) both require documentation and sit in
 // the queue; QA (ok flag) never does, checklist/finish only. WD-1 has a
 // comparator (a required queue step); WD-2 has none (checklist-only, free
-// klarmarkering). Flat checklist order (see pay-mapping-summary.tsx's own
+// klarmarkering). Flat checklist order (see pay-mapping-analysis.tsx's own
 // flatRows): start, payPolicy, collectiveAgreements, benefits, payPractices,
 // SWE, Sales, QA, Nurse (wd-1), Receptionist (wd-2).
 const GAP: PayMappingGapResult = {
@@ -263,7 +262,7 @@ function renderSummary(
           notes: "notes" in overrides ? overrides.notes : [],
         }}
       >
-        <PayMappingSummary />
+        <PayMappingAnalysis />
       </PayMappingRunProvider>
     </NextIntlClientProvider>
   )
@@ -320,7 +319,7 @@ async function backToSummary() {
 
 afterEach(() => cleanup())
 
-describe("PayMappingSummary", () => {
+describe("PayMappingAnalysis", () => {
   beforeEach(() => {
     runsListState.current = []
     upsertMock.mockReset()
@@ -343,7 +342,7 @@ describe("PayMappingSummary", () => {
             notes: undefined,
           }}
         >
-          <PayMappingSummary />
+          <PayMappingAnalysis />
         </PayMappingRunProvider>
       </NextIntlClientProvider>
     )
@@ -361,28 +360,6 @@ describe("PayMappingSummary", () => {
     renderSummary({ gap: { ...GAP, currency: null } })
     expect(screen.getByText(tGap.empty)).toBeDefined()
     expect(screen.queryByText(tAnalysis.lead)).toBeNull()
-  })
-
-  it("shows the continue item (label, brand count, review link) while steps remain on an active run", () => {
-    renderSummary()
-    // The item's accessible name is the full remaining-steps sentence
-    // (aria-label); visually it carries the label and the bare count.
-    const link = screen.getByRole("link", {
-      name: "8 steps remain in the guided review.",
-    })
-    expect(link.getAttribute("href")).toBe("/pay-mappings/pay-2026/review")
-    expect(link.textContent).toContain(t.continueWizard)
-    expect(link.textContent).toContain("8")
-  })
-
-  it("hides the continue item once every actionable step is done", () => {
-    renderSummary({
-      run: { ...RUN, collaboration: COLLABORATION_FILLED },
-      analyses: ANALYSES_ALL_DONE,
-    })
-    expect(
-      screen.queryByRole("link", { name: /remain in the guided review/ })
-    ).toBeNull()
   })
 
   it("hides the continue item on a non-active run even while steps remain", () => {
@@ -767,16 +744,16 @@ describe("PayMappingSummary", () => {
     })
   })
 
-  it("shows the completed note and a link to the overview instead of the Complete action", () => {
+  it("shows the completed note and Reopen instead of the Complete action", () => {
     renderSummary({
       run: { ...RUN, status: "completed" },
       analyses: ANALYSES_ALL_DONE,
     })
     expect(screen.getByText(tDoc.completedNote)).toBeDefined()
     expect(screen.queryByRole("button", { name: tDoc.complete })).toBeNull()
-
-    const link = screen.getByRole("link", { name: tTabs.overview })
-    expect(link.getAttribute("href")).toBe("/pay-mappings/pay-2026")
+    // Reopen moved here with the rest of the completion controls: one
+    // surface owns the end of the ladder.
+    expect(screen.getByRole("button", { name: tDoc.reopen })).toBeDefined()
   })
 
   it("lists every group as an icon + label row, with the state as sr-only text and no visible status", () => {

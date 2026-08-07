@@ -94,15 +94,7 @@ describe("PayMappingRunShell", () => {
     expect(screen.queryByRole("heading", { name: m.tabs.overview })).toBeNull()
   })
 
-  it("renders no PageHeader chrome on the /review takeover, only the content", () => {
-    pathState.current = "/pay-mappings/pay-2026/review"
-    renderShell()
-    expect(screen.getByText("probe-child")).toBeDefined()
-    expect(screen.queryByRole("heading")).toBeNull()
-    expect(screen.queryByRole("heading", { name: m.tabs.overview })).toBeNull()
-  })
-
-  it("still renders the PageHeader chrome on /analysis (not just /review)", () => {
+  it("renders the PageHeader chrome on every sub-page", () => {
     pathState.current = "/pay-mappings/pay-2026/analysis"
     renderShell()
     expect(screen.getByRole("heading", { name: m.tabs.analysis })).toBeDefined()

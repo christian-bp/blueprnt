@@ -1305,7 +1305,10 @@
         "dutyHelp": {
           "start": "Yhteistoiminta on oma vaatimuksensa (DL 3 luku 11-12 §), ei muodollisuus: työntekijöiden edustajat osallistuvat koko kartoitukseen, analyysi ja toimenpidesuunnitelma mukaan lukien. Kirjaa, ketkä osallistuvat ja miten se toteutetaan.",
           "praxis": "Ennen varsinaista palkkavertailua työnantaja käy läpi palkkoja ohjaavat määräykset ja käytännöt: palkkapolitiikan, työehtosopimukset, edut ja muuttuvan palkan sekä palkanmäärityskäytännön. Epätasa-arvoiseksi osoittautuva dokumentoidaan ja muutetaan."
-        }
+        },
+        "crossLevelObservation": "{count, plural, one {# tasojen välinen tapaus on tunnistettu eikä käyty läpi. Se ei estä viimeistelyä.} other {# tasojen välistä tapausta on tunnistettu eikä käyty läpi. Ne eivät estä viimeistelyä.}}",
+        "crossLevelObservationCta": "Katso ne",
+        "openAnalysis": "Avaa analyysi"
       },
       "supplementary": {
         "heading": "Syventävä analyysi · ei vaikuta viimeistelyyn",
@@ -1416,13 +1419,11 @@
       "review": {
         "showUnderlyingData": "Näytä taustatiedot",
         "previous": "Edellinen",
-        "backToJourney": "Takaisin tarkastukseen",
         "skip": "Ohita toistaiseksi",
         "continue": "Jatka",
         "markDoneNext": "Merkitse valmiiksi ja jatka",
         "introTitle": "Aloitetaan",
         "introBody": "Palkkakartoitus kartoittaa palkat, roolit ja väestötiedot, jotta epäasialliset naisten ja miesten väliset palkkaerot löydetään ja korjataan. Tämä prosessi käy läpi lain edellyttämät vaiheet ja tuottaa dokumentaation, joka palkkakartoituksen on säilytettävä.",
-        "cycleBody": "Palkkakartoitus noudattaa vuosittaista kiertoa: selvitä palkat, analysoi erot, toimi havaintojen perusteella ja seuraa tilannetta seuraavana vuonna. Tämä prosessi kattaa selvittämisen ja analysoinnin; itse toimenpiteet kootaan jälkeenpäin toimintasuunnitelmaan.",
         "autosaveHint": "Kaikki syöttämäsi tiedot tallentuvat automaattisesti.",
         "collaborationTitle": "Yhteistoiminta",
         "collaborationParticipants": "Ketkä osallistuvat yhteistoimintaan?",
@@ -1472,16 +1473,13 @@
             "helper": "Dokumentaatiossa on arvioitava, toteutettiinko viime vuoden suunnitellut toimenpiteet ja saavutettiinko niillä tavoiteltu vaikutus."
           }
         },
-        "allSteps": "Kaikki vaiheet",
         "searchSteps": "Hae vaiheita",
         "noMatches": "Mikään vaihe ei vastaa hakua.",
-        "progressDone": "{done}/{total} valmiina",
         "chapters": {
           "start": "Aloitus ja yhteistoiminta",
           "praxis": "Säännöt ja käytäntö",
           "equalWork": "Samaa työtä tekevät ryhmät",
           "equivalentWork": "Naisvaltaiset ryhmät",
-          "finish": "Lopetus",
           "intro": {
             "equalWork": {
               "title": "Samaa työtä tekevät ryhmät",
@@ -1499,16 +1497,9 @@
           "toReview": "tarkistettava",
           "done": "valmis"
         },
-        "finish": {
-          "title": "Kaikki tarkistettu",
-          "backToSummary": "Takaisin yhteenvetoon"
-        },
         "finishActionsNote": "Palkkakorjaukset, kustannusarvio ja kolmen vuoden aikataulu lisätään toimintasuunnitelmaan.",
-        "summaryTitle": "Yhteenveto",
-        "remainingBanner": "{count, plural, one {# vaihe on jäljellä ohjatussa tarkastuksessa.} other {# vaihetta on jäljellä ohjatussa tarkastuksessa.}}",
-        "continueWizard": "Jatka tarkastusta",
         "backToSummary": "Takaisin yhteenvetoon",
-        "openSummary": "Avaa yhteenveto"
+        "cycleBody": "Palkkakartoitus noudattaa vuosittaista kiertoa: selvitä palkat, analysoi erot, toimi havaintojen perusteella ja seuraa tilannetta seuraavana vuonna. Tämä prosessi kattaa selvittämisen ja analysoinnin; itse toimenpiteet kootaan jälkeenpäin toimintasuunnitelmaan."
       },
       "crossLevel": {
         "title": "{count, plural, one {# tasojen välinen tapaus} other {# tasojen välistä tapausta}}",

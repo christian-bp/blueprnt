@@ -1305,7 +1305,10 @@
         "dutyHelp": {
           "start": "Collaboration is a requirement in its own right (DL 3 kap. 11-12 §§), not a formality: the employees' representatives take part in the whole mapping, including the analysis and the action plan. Record who takes part and how it happens.",
           "praxis": "Before the pay comparison itself, the employer reviews the provisions and practice that govern pay: the pay policy, the collective agreements, the benefits and variable pay, and the pay-setting practice. What is found to be unequal is recorded and changed."
-        }
+        },
+        "crossLevelObservation": "{count, plural, one {# cross-level case is identified and not reviewed. It does not prevent completion.} other {# cross-level cases are identified and not reviewed. They do not prevent completion.}}",
+        "crossLevelObservationCta": "Look at them",
+        "openAnalysis": "Open the analysis"
       },
       "supplementary": {
         "heading": "Further analysis · does not affect completion",
@@ -1416,13 +1419,11 @@
       "review": {
         "showUnderlyingData": "Show the underlying data",
         "previous": "Previous",
-        "backToJourney": "Back to the review",
         "skip": "Skip for now",
         "continue": "Continue",
         "markDoneNext": "Mark done and continue",
         "introTitle": "Get started",
         "introBody": "A pay mapping maps your pay, roles and demographics to find and address unjustified pay differences between women and men. This journey walks through the steps the law requires and produces the documentation your pay mapping must keep on file.",
-        "cycleBody": "A pay mapping runs on an annual cycle: investigate the pay, analyze the differences, act on what you find, and follow up next year. This journey covers investigate and analyze; the actions themselves are gathered in the action plan afterward.",
         "autosaveHint": "Everything you enter is saved automatically.",
         "collaborationTitle": "Collaboration",
         "collaborationParticipants": "Who takes part in the collaboration?",
@@ -1472,16 +1473,13 @@
             "helper": "The documentation must evaluate whether last year's planned measures were carried out and whether they had the intended effect."
           }
         },
-        "allSteps": "All steps",
         "searchSteps": "Search steps",
         "noMatches": "No steps match the search.",
-        "progressDone": "{done} of {total} done",
         "chapters": {
           "start": "Get started and collaboration",
           "praxis": "Rules and practice",
           "equalWork": "Equal work groups",
           "equivalentWork": "Women-dominated groups",
-          "finish": "Finish",
           "intro": {
             "equalWork": {
               "title": "Equal work groups",
@@ -1499,16 +1497,9 @@
           "toReview": "to review",
           "done": "done"
         },
-        "finish": {
-          "title": "Everything reviewed",
-          "backToSummary": "Back to the summary"
-        },
         "finishActionsNote": "Pay adjustments, cost estimate and the three-year time plan are added in the action plan.",
-        "summaryTitle": "Summary",
-        "remainingBanner": "{count, plural, one {# step remains in the guided review.} other {# steps remain in the guided review.}}",
-        "continueWizard": "Continue the review",
         "backToSummary": "Back to the summary",
-        "openSummary": "Open the summary"
+        "cycleBody": "A pay mapping runs on an annual cycle: investigate the pay, analyze the differences, act on what you find, and follow up next year. This journey covers investigate and analyze; the actions themselves are gathered in the action plan afterward."
       },
       "crossLevel": {
         "title": "{count, plural, one {# cross-level case} other {# cross-level cases}}",

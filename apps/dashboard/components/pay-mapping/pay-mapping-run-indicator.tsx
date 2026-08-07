@@ -46,12 +46,6 @@ export function PayMappingRunIndicator() {
   )
 
   if (slug === undefined || run === null) return null
-  // The /review takeover is a fixed, full-viewport overlay with its own
-  // chrome; it only visually covers the header, so an unguarded switcher
-  // would stay keyboard/screen-reader-reachable underneath it. Same guard
-  // as PayMappingTabs.
-  if (rest[0] === "review") return null
-
   // Swapping the run keeps the visitor on the same sub-page (comparing the
   // same view across years is the point of switching).
   const subPath = rest.length > 0 ? `/${rest.join("/")}` : ""

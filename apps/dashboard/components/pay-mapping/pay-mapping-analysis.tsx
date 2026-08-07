@@ -23,20 +23,20 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { Alert02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { useMutation, useQuery } from "convex/react"
+import { useQuery } from "convex/react"
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
-import { useCallback, useEffect, useRef, useState } from "react"
-import { toast } from "@/lib/toast"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { AccordionSection } from "@/components/accordion-section"
 import { AnalysisSpine } from "./analysis-spine"
+import { buildCrossLevelCases } from "./cross-level-section"
+import { PayMappingCompletionPanel } from "./pay-mapping-completion-panel"
 import { ChapterBar } from "./chapter-bar"
 import { ChapterWorklist, type WorklistRow } from "./chapter-worklist"
 import { type AnalysisChapter, NextStepPanel } from "./next-step-panel"
-import { ContinueReviewItem } from "./continue-review-item"
 import {
   SUPPLEMENTARY_ITEMS,
   SupplementaryAnalysis,
@@ -49,12 +49,11 @@ import {
   type ChecklistRowBase,
   ChecklistRows,
   ChecklistSearchSection,
+  stepDoneFor,
 } from "./review-checklist"
 import { groupLabel, primaryGapMetric } from "./pay-mapping-gap-types"
 import { usePayMappingRun } from "./pay-mapping-run-context"
-import { isGateUnmetError } from "./review-finish"
 import { ReviewGroupStep } from "./review-group-step"
-import { stepDoneFor } from "./review-jump-menu"
 import { ReviewPraxisStep } from "./review-praxis-step"
 import {
   buildReviewQueue,
@@ -63,13 +62,11 @@ import {
   stepKey,
 } from "./review-queue"
 import { ReviewStartStep } from "./review-start-step"
-import { ReviewStepActions } from "./review-step-actions"
 
 // The pane's own open target: a real queue step (its group's real
 // requiresDocumentation applies) or a non-queue group looked up by scope+key
 // (an "ok"-flag equalWork group or a zero-comparator equivalentWork group,
-// neither of which occupies a queue index; mirrors pay-mapping-review.tsx's
-// own extraGroup mechanism, openExtraGroup). Only "start" |
+// neither of which occupies a queue index). Only "start" |
 // "praxis" | "group" | "extraGroup" are ever SET below: "chapterIntro" and
 // "finish" are part of ReviewStep's own type (so the switch in
 // renderOpenStep stays exhaustive over it) but the checklist has no intro or
@@ -110,9 +107,8 @@ function groupOpenStep(
 // A stable id for an OpenStep, used both for aria-current comparison and for
 // locating the current row in the checklist's own flat order (see
 // advanceAfter below). Reuses review-queue.ts's own stepKey for every real
-// ReviewStep variant (so a queue group's id never drifts from the wizard's
-// own); an extraGroup has no ReviewStep counterpart, so it gets the same
-// "scope:key" shape by hand.
+// ReviewStep variant; an extraGroup has no ReviewStep counterpart, so it
+// gets the same "scope:key" shape by hand.
 function openStepId(open: Exclude<OpenStep, null>): string {
   return open.kind === "extraGroup"
     ? `${open.scope}:${open.key}`
@@ -132,39 +128,30 @@ interface ChecklistRow extends ChecklistRowBase {
   openStep: Exclude<OpenStep, null>
 }
 
-// The Analysis tab's steady state: a two-column master-detail on lg+
-// screens -- a searchable checklist of every step on the left (chapters as
-// collapsible sections), the selected step's own card in the right pane, a
-// row click swapping the pane directly with no back round-trip -- with an
-// in-place overlay kept only as the SMALL-SCREEN fallback (the list alone;
-// an EXPLICIT row selection swaps the whole view to the card via
-// backToSummary). The pane's landing default (nothing picked yet) is the
-// gate panel (the actions note + the Complete section) once the gate is
-// met, else the first REMAINING step. "Mark done and continue" on any
-// opened step advances the pane to the next REMAINING row in the
-// checklist's own order (see advanceAfter below), landing back on the gate
-// panel once nothing remains. Self-contained (usePayMappingRun + its own
-// listPayMappingRuns subscription, mirroring pay-mapping-review.tsx's own
-// hasPreviousCompletedRun derivation byte for byte), so the route that
-// mounts it stays thin.
-export function PayMappingSummary() {
+// The run's only work surface (ADR-0016), built as a ladder of four rungs
+// with exactly one thing open at each (Iteration 3): the spine states where
+// the whole mapping stands, the checklist opens one chapter at a time, the
+// pane holds one of four states (the next-step landing, a chapter's whole
+// worklist, one open step, or the completion panel), and the evidence
+// behind a step is collapsed inside it. Everything that does not affect
+// completion lives in one drawer below.
+//
+// "Mark done and continue" advances the pane to the next REMAINING row in
+// the checklist's own flat order (see advanceAfter below), landing on the
+// completion panel once nothing remains. Self-contained (usePayMappingRun +
+// its own listPayMappingRuns subscription), so the route that mounts it
+// stays thin.
+export function PayMappingAnalysis() {
   const t = useTranslations("dashboard.payMapping.review")
-  const tDoc = useTranslations("dashboard.payMapping.documentation")
   const tTabs = useTranslations("dashboard.payMapping.tabs")
   const tJourney = useTranslations("dashboard.payMapping.journey")
   const tGap = useTranslations("dashboard.payMapping.gap")
   const tAnalysis = useTranslations("dashboard.payMapping.analysis")
   const tSupplementary = useTranslations("dashboard.payMapping.supplementary")
-  const tToast = useTranslations("dashboard.toast")
-  const tErrors = useTranslations("errors")
   const pathname = usePathname()
   const { orgId } = useOrganization()
   const { run, gap, analyses, actions, notes } = usePayMappingRun()
   const runsList = useQuery(api.payMapping.runs.listPayMappingRuns, { orgId })
-  const completePayMappingRun = useMutation(
-    api.payMapping.runs.completePayMappingRun
-  )
-  const [completing, setCompleting] = useState(false)
   // undefined = the user has not picked anything yet, so the pane falls back
   // to its landing default (the first REMAINING step, or the gate panel when
   // nothing remains). null = an explicit "nothing
@@ -201,6 +188,14 @@ export function PayMappingSummary() {
   // when the gate panel remounts in the pane a moment later.
   const hasMountedPaneRef = useRef(false)
   const suppressPaneFocusRef = useRef(false)
+  // One O(women x men) scan for the page: the drawer's first item lists the
+  // cases and the completion panel names their count at the moment of
+  // finishing, and neither should pay for its own pass.
+  const snapshotRows = run?.rows
+  const crossLevelCases = useMemo(
+    () => buildCrossLevelCases(snapshotRows ?? []),
+    [snapshotRows]
+  )
 
   // Same derivation as pay-mapping-review.tsx:63-70, byte for byte: whether
   // an EARLIER run was completed decides whether the "previous actions"
@@ -395,34 +390,9 @@ export function PayMappingSummary() {
     currentQueue.progress.overall.done === currentQueue.progress.overall.total
   const remaining =
     currentQueue.progress.overall.total - currentQueue.progress.overall.done
-  const showBanner = remaining > 0 && currentRun.status === "active"
-
-  // The run's own overview and the wizard's takeover route both sit at the
-  // analysis sub-page's sibling routes, same derivation as
-  // review-finish.tsx's overviewHref (minus/plus the trailing segment).
-  const [, slug] = pathname.split("/").filter(Boolean)
-  const overviewHref = `/pay-mappings/${slug}`
-  const reviewHref = `/pay-mappings/${slug}/review`
-
-  async function handleComplete() {
-    setCompleting(true)
-    try {
-      await completePayMappingRun({ orgId, runId: currentRun.runId })
-      toast.success(tToast("payMappingCompleted"))
-    } catch (error) {
-      toast.error(
-        isGateUnmetError(error)
-          ? tErrors("payMappingGateUnmet")
-          : tToast("error")
-      )
-    } finally {
-      setCompleting(false)
-    }
-  }
-
   // The checklist's own rows, built once per render: every step (queue or
-  // not) the summary has always listed, each with its done state (stepDoneFor
-  // from review-jump-menu.tsx, mirrored as sr-only text) and its own
+  // not) the checklist lists, each with its done state (stepDoneFor from
+  // review-checklist.tsx, mirrored as sr-only text) and its own
   // OpenStep, so the same row objects back both the rendered button and the
   // flat order advanceAfter searches below.
   const srStatusFor = (done: boolean) =>
@@ -720,40 +690,6 @@ export function PayMappingSummary() {
     }
   }
 
-  // The right pane's own landing state (nothing selected): the completion
-  // gate (the actions note, then Complete when the gate is unmet/met, or
-  // the completedNote + a plain link back to the overview on a completed
-  // run).
-  function renderGatePanel(): ReactNode {
-    return (
-      <div className="space-y-4">
-        <p className="text-muted-foreground text-sm">
-          {t("finishActionsNote")}
-        </p>
-        {currentRun.status === "completed" ? (
-          <div className="space-y-2">
-            <p className="text-muted-foreground text-sm">
-              {tDoc("completedNote")}
-            </p>
-            <Link
-              href={overviewHref}
-              className="text-sm underline underline-offset-4"
-            >
-              {tTabs("overview")}
-            </Link>
-          </div>
-        ) : (
-          <ReviewStepActions
-            primaryLabel={tDoc("complete")}
-            onPrimary={handleComplete}
-            primaryDisabled={!gateMet || completing}
-            hint={gateMet ? undefined : tDoc("remaining", { count: remaining })}
-          />
-        )}
-      </div>
-    )
-  }
-
   const currentRowId = openStep === null ? null : openStepId(openStep)
   const paneKey =
     openStep !== null
@@ -893,11 +829,6 @@ export function PayMappingSummary() {
         collaboration={collaboration}
         onOpenCollaboration={() => setSelected(startRow.openStep)}
         headingRef={headingRef}
-        right={
-          showBanner ? (
-            <ContinueReviewItem href={reviewHref} remaining={remaining} />
-          ) : undefined
-        }
       />
       {/* The two-column master-detail (lg+): the left column always carries
           the checklist and is hidden below lg only while a card is open (the
@@ -1154,7 +1085,17 @@ export function PayMappingSummary() {
                       onOpen={() => selectRow(firstUndone?.openStep ?? null)}
                     />
                   ) : (
-                    renderGatePanel()
+                    <PayMappingCompletionPanel
+                      queue={currentQueue}
+                      run={currentRun}
+                      crossLevelCount={crossLevelCases.length}
+                      onShowCrossLevel={() => {
+                        setOpenSupplementary("crossLevel")
+                        document
+                          .getElementById("supplementary-crossLevel")
+                          ?.scrollIntoView({ block: "start" })
+                      }}
+                    />
                   )}
                 </CardContent>
               </Card>
@@ -1173,6 +1114,7 @@ export function PayMappingSummary() {
         equivalentWork={currentGap.equivalentWork}
         equalWork={currentGap.equalWork}
         rows={currentRun.rows}
+        crossLevelCases={crossLevelCases}
         currency={currency}
         openItem={openSupplementary}
         onOpenItemChange={setOpenSupplementary}

@@ -95,12 +95,6 @@ describe("PayMappingRunIndicator", () => {
     expect(container.innerHTML).toBe("")
   })
 
-  it("renders nothing on the /review takeover (the overlay only covers the header visually)", () => {
-    pathState.current = "/pay-mappings/pay-2026/review"
-    const { container } = renderIndicator()
-    expect(container.innerHTML).toBe("")
-  })
-
   it("shows the current run's label and status on the trigger", () => {
     renderIndicator()
     expect(screen.getByText("Pay mapping 2026")).toBeDefined()

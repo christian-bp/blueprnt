@@ -1305,7 +1305,10 @@
         "dutyHelp": {
           "start": "Samarbejde er et selvstændigt krav (DL 3 kap. 11-12 §§), ikke en formalitet: medarbejdernes repræsentanter deltager i hele kortlægningen, analysen og handlingsplanen inklusive. Registrer, hvem der deltager, og hvordan det foregår.",
           "praxis": "Før selve lønsammenligningen gennemgår arbejdsgiveren de bestemmelser og den praksis, der styrer lønnen: lønpolitikken, overenskomsterne, goderne og den variable løn samt lønfastsættelsespraksis. Det, der viser sig at være ulige, dokumenteres og ændres."
-        }
+        },
+        "crossLevelObservation": "{count, plural, one {# tværniveautilfælde er identificeret og ikke gennemgået. Det forhindrer ikke afslutning.} other {# tværniveautilfælde er identificeret og ikke gennemgået. De forhindrer ikke afslutning.}}",
+        "crossLevelObservationCta": "Se på dem",
+        "openAnalysis": "Åbn analysen"
       },
       "supplementary": {
         "heading": "Uddybet analyse · påvirker ikke afslutningen",
@@ -1416,13 +1419,11 @@
       "review": {
         "showUnderlyingData": "Vis grundlaget",
         "previous": "Forrige",
-        "backToJourney": "Tilbage til gennemgangen",
         "skip": "Spring over",
         "continue": "Fortsæt",
         "markDoneNext": "Markér udført og gå videre",
         "introTitle": "Kom godt i gang",
         "introBody": "En lønkortlægning kortlægger løn, roller og demografi for at finde og rette usaglige lønforskelle mellem kvinder og mænd. Denne gennemgang tager dig igennem de trin, loven kræver, og skaber den dokumentation, lønkortlægningen skal opbevare.",
-        "cycleBody": "En lønkortlægning følger en årlig cyklus: undersøg lønnen, analyser forskellene, handl på det, du finder, og følg op næste år. Denne gennemgang dækker undersøg og analyser; selve handlingerne samles i handlingsplanen bagefter.",
         "autosaveHint": "Alt du udfylder gemmes automatisk.",
         "collaborationTitle": "Samarbejde",
         "collaborationParticipants": "Hvem deltager i samarbejdet?",
@@ -1472,16 +1473,13 @@
             "helper": "Dokumentationen skal vurdere, om sidste års planlagte foranstaltninger blev gennemført, og om de havde den tilsigtede effekt."
           }
         },
-        "allSteps": "Alle trin",
         "searchSteps": "Søg i trin",
         "noMatches": "Ingen trin matcher søgningen.",
-        "progressDone": "{done} af {total} udført",
         "chapters": {
           "start": "Kom godt i gang & samarbejde",
           "praxis": "Bestemmelser & praksis",
           "equalWork": "Grupper med lige arbejde",
           "equivalentWork": "Kvindedominerede grupper",
-          "finish": "Afslut",
           "intro": {
             "equalWork": {
               "title": "Grupper med lige arbejde",
@@ -1499,16 +1497,9 @@
           "toReview": "afventer gennemgang",
           "done": "udført"
         },
-        "finish": {
-          "title": "Alt gennemgået",
-          "backToSummary": "Tilbage til opsummeringen"
-        },
         "finishActionsNote": "Lønjusteringer, omkostningsberegning og den treårige tidsplan tilføjes i handlingsplanen.",
-        "summaryTitle": "Opsummering",
-        "remainingBanner": "{count, plural, one {# trin resterer i den vejledte gennemgang.} other {# trin resterer i den vejledte gennemgang.}}",
-        "continueWizard": "Fortsæt gennemgangen",
         "backToSummary": "Tilbage til opsummeringen",
-        "openSummary": "Åbn opsummeringen"
+        "cycleBody": "En lønkortlægning følger en årlig cyklus: undersøg lønnen, analyser forskellene, handl på det, du finder, og følg op næste år. Denne gennemgang dækker undersøg og analyser; selve handlingerne samles i handlingsplanen bagefter."
       },
       "crossLevel": {
         "title": "{count, plural, one {# tværniveau-tilfælde} other {# tværniveau-tilfælde}}",

@@ -23,6 +23,7 @@ import type {
   GapGroup,
   PayMappingSnapshotRow,
 } from "@/components/pay-mapping/pay-mapping-gap-types"
+import { buildCrossLevelCases } from "@/components/pay-mapping/cross-level-section"
 import { SupplementaryAnalysis } from "@/components/pay-mapping/supplementary-analysis"
 import { makeExcluded, makeGapGroup } from "@/test/pay-mapping-fixtures"
 
@@ -108,6 +109,7 @@ function renderDrawer(
         equivalentWork={overrides.equivalentWork ?? []}
         equalWork={[]}
         rows={overrides.rows ?? ROWS}
+        crossLevelCases={buildCrossLevelCases(overrides.rows ?? ROWS)}
         currency="SEK"
       />
     </NextIntlClientProvider>

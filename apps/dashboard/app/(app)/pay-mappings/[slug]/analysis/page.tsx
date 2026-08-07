@@ -1,11 +1,10 @@
 "use client"
 
-import { PayMappingSummary } from "@/components/pay-mapping/pay-mapping-summary"
+import { PayMappingAnalysis } from "@/components/pay-mapping/pay-mapping-analysis"
 
-// The Analysis section: the run's steady-state summary (ADR-0012), not the
-// guided wizard (that moved to the full-screen takeover at the sibling
-// /review route). The [slug] layout's shell resolves the run + gap;
-// PayMappingSummary reads them straight from that context.
+// The Analysis section: the run's only work surface (ADR-0016). The [slug]
+// layout's shell resolves the run + gap; PayMappingAnalysis reads them
+// straight from that context.
 export default function PayMappingAnalysisPage() {
-  return <PayMappingSummary />
+  return <PayMappingAnalysis />
 }

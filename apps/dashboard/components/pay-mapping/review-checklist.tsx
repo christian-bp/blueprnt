@@ -4,6 +4,15 @@ import { CheckmarkCircle02Icon, CircleIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { cn } from "@workspace/ui/lib/utils"
 import type { useTranslations } from "next-intl"
+import type {
+  GroupAnalysis,
+  PayMappingGapResult,
+} from "./pay-mapping-gap-types"
+import {
+  isStepDone,
+  type ReviewQueueInput,
+  type ReviewStep,
+} from "./review-queue"
 
 // The review checklist's shared presentation (the wizard's "All steps"
 // sheet and the analysis summary's checklist read the same): a plain row
@@ -137,4 +146,27 @@ export function chapterMeta(
 ): string | undefined {
   if (count.total === 0) return undefined
   return tJourney("count", count)
+}
+
+// A step's own done-state for an ARBITRARY step, not just the wizard's
+// current one: the analysis checklist lists every praxis area and every
+// equalWork/equivalentWork group, queue member or not, and needs each
+// one's done row without walking the queue. Goes through review-queue.ts's own isStepDone (the single source
+// of the done rule) rather than re-deriving the analyses lookup here:
+// collaboration and hasPreviousCompletedRun are irrelevant filler because
+// neither caller ever asks isStepDone about a "start" step this way (the
+// start row's own done-state comes from queue.progress.collaborationDone
+// instead, which already carries the real collaboration check).
+export function stepDoneFor(
+  step: Extract<ReviewStep, { kind: "praxis" | "group" }>,
+  gap: PayMappingGapResult,
+  analyses: GroupAnalysis[]
+): boolean {
+  const input: ReviewQueueInput = {
+    gap,
+    analyses,
+    collaboration: null,
+    hasPreviousCompletedRun: false,
+  }
+  return isStepDone(step, input)
 }

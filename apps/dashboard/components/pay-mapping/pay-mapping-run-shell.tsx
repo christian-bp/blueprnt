@@ -70,15 +70,6 @@ export function PayMappingRunShell({
   // from the pathname (the shell lives in the persistent [slug] layout, so
   // no page can pass it) keeps the title in the standard PageHeader slot.
   const [, , sub] = pathname.split("/").filter(Boolean)
-  // The /review takeover (PayMappingReview) is a fixed, full-viewport
-  // overlay with its own complete chrome (WizardShell); it only visually
-  // covers this shell's PageHeader, which stays in the DOM underneath it,
-  // reachable by keyboard/screen reader and mislabeled "Overview"
-  // (payMappingSubPageKey has no "review" entry, so it falls back). Render
-  // no chrome element at all here on that sub-route: nothing to hide means
-  // nothing left in the accessibility tree.
-  const isReviewTakeover = sub === "review"
-
   if (run === null) {
     // Match the roles detail precedent: a plain message + back link, no
     // breadcrumb (the error string does not read as a page name in a crumb).
@@ -92,14 +83,6 @@ export function PayMappingRunShell({
           {t("detail.back")}
         </Link>
       </div>
-    )
-  }
-
-  if (isReviewTakeover) {
-    return (
-      <PayMappingRunProvider value={{ run, gap, analyses, actions, notes }}>
-        {children}
-      </PayMappingRunProvider>
     )
   }
 

@@ -157,11 +157,10 @@ describe("PayMappingOverview", () => {
     expect(screen.getByText(/1 person without a birth date/)).toBeDefined()
   })
 
-  it("no longer renders the flag-summary widget: the journey card's rows carry that count instead", () => {
+  it("no longer renders the flag-summary widget: progress and the way in live on the journey card", () => {
     renderOverview(gap())
     expect(screen.queryByText("Flagged groups")).toBeNull()
     expect(screen.queryByText(/need(s)? attention/)).toBeNull()
-    expect(screen.queryByText("Open the analysis")).toBeNull()
   })
 
   it("states the org-level finding as a sentence, unsigned percent with the direction in the word, above the mean bars", () => {

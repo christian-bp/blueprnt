@@ -1305,7 +1305,10 @@
         "dutyHelp": {
           "start": "Samverkan är ett eget krav (DL 3 kap. 11-12 §§), inte en formalitet: arbetstagarnas representanter deltar i hela kartläggningen, analysen och åtgärdsplanen inräknade. Registrera vilka som deltar och hur det går till.",
           "praxis": "Före själva lönejämförelsen går arbetsgivaren igenom de bestämmelser och den praxis som styr lönerna: lönepolicyn, kollektivavtalen, förmånerna och den rörliga lönen, samt lönesättningspraxis. Det som visar sig vara ojämställt dokumenteras och ändras."
-        }
+        },
+        "crossLevelObservation": "{count, plural, one {# tvärnivåfall är identifierat och inte genomgånget. Det hindrar inte slutförande.} other {# tvärnivåfall är identifierade och inte genomgångna. De hindrar inte slutförande.}}",
+        "crossLevelObservationCta": "Titta på dem",
+        "openAnalysis": "Öppna analysen"
       },
       "supplementary": {
         "heading": "Fördjupad analys · påverkar inte slutförandet",
@@ -1416,13 +1419,11 @@
       "review": {
         "showUnderlyingData": "Visa underlag",
         "previous": "Föregående",
-        "backToJourney": "Tillbaka till granskningen",
         "skip": "Hoppa över",
         "continue": "Fortsätt",
         "markDoneNext": "Klarmarkera och gå till nästa",
         "introTitle": "Kom igång",
         "introBody": "En lönekartläggning kartlägger löner, roller och demografi för att hitta och åtgärda osakliga löneskillnader mellan kvinnor och män. Den här genomgången går igenom de steg som lagen kräver och tar fram den dokumentation som lönekartläggningen ska bevara.",
-        "cycleBody": "En lönekartläggning följer en årlig cykel: undersök lönerna, analysera skillnaderna, åtgärda det ni hittar och följ upp nästa år. Den här genomgången täcker undersök och analysera; själva åtgärderna samlas i handlingsplanen efteråt.",
         "autosaveHint": "Allt du fyller i sparas automatiskt.",
         "collaborationTitle": "Samverkan",
         "collaborationParticipants": "Vilka deltar i samverkan?",
@@ -1472,16 +1473,13 @@
             "helper": "Dokumentationen ska utvärdera om förra årets planerade åtgärder genomfördes och om de fick avsedd effekt."
           }
         },
-        "allSteps": "Alla steg",
         "searchSteps": "Sök steg",
         "noMatches": "Inga steg matchar sökningen.",
-        "progressDone": "{done} av {total} klara",
         "chapters": {
           "start": "Kom igång & samverkan",
           "praxis": "Bestämmelser & praxis",
           "equalWork": "Grupper med lika arbete",
           "equivalentWork": "Kvinnodominerade grupper",
-          "finish": "Avsluta",
           "intro": {
             "equalWork": {
               "title": "Grupper med lika arbete",
@@ -1499,16 +1497,9 @@
           "toReview": "kvar att granska",
           "done": "klar"
         },
-        "finish": {
-          "title": "Allt granskat",
-          "backToSummary": "Tillbaka till sammanställningen"
-        },
         "finishActionsNote": "Löneåtgärder, kostnadsberäkning och den treåriga tidsplanen läggs till i handlingsplanen.",
-        "summaryTitle": "Sammanställning",
-        "remainingBanner": "{count, plural, one {# steg kvarstår i den guidade granskningen.} other {# steg kvarstår i den guidade granskningen.}}",
-        "continueWizard": "Fortsätt granskningen",
         "backToSummary": "Tillbaka till sammanställningen",
-        "openSummary": "Öppna sammanställningen"
+        "cycleBody": "En lönekartläggning följer en årlig cykel: undersök lönerna, analysera skillnaderna, åtgärda det ni hittar och följ upp nästa år. Den här genomgången täcker undersök och analysera; själva åtgärderna samlas i handlingsplanen efteråt."
       },
       "crossLevel": {
         "title": "{count, plural, one {# tvärnivå-fall} other {# tvärnivå-fall}}",

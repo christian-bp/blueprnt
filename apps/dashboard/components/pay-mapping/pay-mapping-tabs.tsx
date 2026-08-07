@@ -35,13 +35,6 @@ export function PayMappingTabs() {
   // /pay-mappings/<slug>[/<sub>] -> ["pay-mappings", slug, sub?]
   const [, slug, sub] = pathname.split("/").filter(Boolean)
   if (slug === undefined) return null
-  // The /review takeover is a fixed, full-viewport overlay covering the
-  // site header; these tabs would only be hidden by that z-index, not
-  // actually removed from the page, staying reachable by keyboard/screen
-  // reader underneath it and matching no tab (there is no "review" entry).
-  // Render nothing while it is up.
-  if (sub === "review") return null
-
   return (
     <nav
       aria-label={tNav("payMapping")}

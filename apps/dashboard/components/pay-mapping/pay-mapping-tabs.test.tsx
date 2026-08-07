@@ -68,11 +68,4 @@ describe("PayMappingTabs", () => {
         .getAttribute("aria-current")
     ).toBeNull()
   })
-
-  it("renders nothing on the /review takeover (its full-viewport overlay covers this row)", () => {
-    pathState.current = "/pay-mappings/pay-2026/review"
-    const { container } = renderTabs()
-    expect(container.innerHTML).toBe("")
-    expect(screen.queryByRole("link")).toBeNull()
-  })
 })

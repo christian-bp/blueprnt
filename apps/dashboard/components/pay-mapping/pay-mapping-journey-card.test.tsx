@@ -1,11 +1,4 @@
-import {
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react"
+import { cleanup, render, screen } from "@testing-library/react"
 import en from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -32,8 +25,7 @@ vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "org-1", role: "admin" }),
 }))
 
-import { toast } from "@/lib/toast"
-import { mockMutation, onQuery } from "@/test/convex-mocks"
+import { onQuery } from "@/test/convex-mocks"
 import { PayMappingJourneyCard } from "./pay-mapping-journey-card"
 import { makeExcluded, makeGapGroup } from "@/test/pay-mapping-fixtures"
 import type {
@@ -48,13 +40,9 @@ import type {
 } from "./pay-mapping-gap-types"
 import { PayMappingRunProvider } from "./pay-mapping-run-context"
 
-const completeMock = mockMutation("payMapping.runs.completePayMappingRun")
-const reopenMock = mockMutation("payMapping.runs.reopenPayMappingRun")
-
 const m = en.dashboard.payMapping
 const tJourney = m.journey
 const tDoc = m.documentation
-const tToast = en.dashboard.toast
 
 function equalWorkGroup(
   overrides: Parameters<typeof makeGapGroup>[0] = {}
@@ -130,14 +118,6 @@ const GAP: PayMappingGapResult = {
 }
 
 // Nothing requiring documentation at all (no equal-work/women-dominated
-// groups): the countable chapter rows must read "Done" (nothing to do),
-// never "Not started", when their total is zero.
-const GAP_NOTHING_REQUIRED: PayMappingGapResult = {
-  ...GAP,
-  equalWork: [equalWorkGroup({ key: "c", flag: "ok" })],
-  womenDominated: [womenDominatedGroup({ key: "wd-2", comparisons: [] })],
-}
-
 function praxisDone(area: string): GroupAnalysis {
   return {
     scope: "praxis",
@@ -203,6 +183,13 @@ const RUN_COMPLETED: PayMappingRunDetail = {
   status: "completed",
 }
 
+const runsListState: { current: unknown[] } = { current: [] }
+
+onQuery((ref) => {
+  if (ref === "payMapping.runs.listPayMappingRuns") return runsListState.current
+  return undefined
+})
+
 function renderCard(
   overrides: Partial<{
     run: PayMappingRunDetail | undefined
@@ -231,201 +218,46 @@ function renderCard(
 afterEach(() => cleanup())
 
 // The chapter row's state text and count share one <dd>; querying it
-// directly (via the <dt> label's row) sidesteps getByText's exact-match
-// limitation once the row's text is a combined "state · count" string.
-function chapterRowText(label: string): string {
-  const dt = screen.getByText(label)
-  const row = dt.closest("div")
-  const dd = row?.querySelector("dd")
-  if (dd === null || dd === undefined) {
-    throw new Error(`missing row content for "${label}"`)
-  }
-  return dd.textContent ?? ""
-}
 
 describe("PayMappingJourneyCard", () => {
   beforeEach(() => {
-    onQuery((ref) => {
-      if (ref === "payMapping.runs.listPayMappingRuns") return []
-      return undefined
-    })
-    completeMock.mockReset()
-    reopenMock.mockReset()
-    completeMock.mockResolvedValue(null)
-    reopenMock.mockResolvedValue(null)
-    vi.mocked(toast.success).mockReset()
-    vi.mocked(toast.error).mockReset()
+    runsListState.current = []
   })
 
-  it("renders the title and the four chapter rows with their derived state", () => {
+  // Demoted in Iteration 3 (decision 3): the chapter breakdown and the
+  // Complete/Reopen controls moved to the Analysis tab's completion panel,
+  // so exactly one surface answers "where do I stand" and owns finishing.
+  it("shows the overall progress and one way into the analysis", () => {
     renderCard()
     expect(screen.getByText(tJourney.title)).toBeDefined()
-
-    expect(screen.getByText(m.review.chapters.start)).toBeDefined()
-    expect(screen.getByText(m.review.chapters.praxis)).toBeDefined()
-    expect(screen.getByText(m.review.chapters.equalWork)).toBeDefined()
-    expect(screen.getByText(m.review.chapters.equivalentWork)).toBeDefined()
-
-    // start: collaboration is null -> not started. praxis: 2 of 4 done -> in
-    // progress. equalWork: 1 of 2 done -> in progress. equivalentWork: 0 of
-    // 1 done -> not started. The start row's text is the bare state word
-    // (never a count); the countable rows carry the state word plus their
-    // count.
-    expect(chapterRowText(m.review.chapters.start)).toBe(
-      tJourney.state.notStarted
-    )
-    expect(chapterRowText(m.review.chapters.praxis)).toBe(
-      `${tJourney.state.inProgress} · 2 of 4`
-    )
-    expect(chapterRowText(m.review.chapters.equalWork)).toBe(
-      `${tJourney.state.inProgress} · 1 of 2`
-    )
-    expect(chapterRowText(m.review.chapters.equivalentWork)).toBe(
-      `${tJourney.state.notStarted} · 0 of 1`
-    )
+    // Three of the partial fixture's rows are done out of the queue's own
+    // required total; the exact pair is the queue's business, so match the
+    // shape rather than restate its arithmetic.
+    expect(screen.getByText(/^\d+ of \d+$/)).toBeDefined()
+    const link = screen.getByRole("link", { name: m.analysis.openAnalysis })
+    expect(link.getAttribute("href")).toBe("/pay-mappings/pay-2026/analysis")
   })
 
-  it("shows a countable row's done-of-total count, but never on the start row", () => {
-    renderCard()
-    // equalWork: 1 of 2 done (see ANALYSES_PARTIAL comment above).
-    expect(chapterRowText(m.review.chapters.equalWork)).toContain("1 of 2")
-    expect(chapterRowText(m.review.chapters.start)).not.toContain("of")
-  })
-
-  it("reads a countable chapter with nothing required as done, not not-started", () => {
-    renderCard({ gap: GAP_NOTHING_REQUIRED, analyses: [] })
-    // start: not started, no count. praxis: 0 of 4 -> not started, with a
-    // count (there IS a total to report). equalWork/equivalentWork: nothing required
-    // (total 0) -> done, with no count (a "0 of 0" count would be noise).
-    expect(chapterRowText(m.review.chapters.start)).toBe(
-      tJourney.state.notStarted
-    )
-    expect(chapterRowText(m.review.chapters.praxis)).toBe(
-      `${tJourney.state.notStarted} · 0 of 4`
-    )
-    expect(chapterRowText(m.review.chapters.equalWork)).toBe(
-      tJourney.state.done
-    )
-    expect(chapterRowText(m.review.chapters.equivalentWork)).toBe(
-      tJourney.state.done
-    )
-  })
-
-  it("shows the compact continue item into the review while the gate is unmet", () => {
-    renderCard()
-    // The item's accessible name is the full remaining-steps sentence
-    // (aria-label); visually it carries the label and the bare count.
-    // 5 of 8 overall steps remain (see ANALYSES_PARTIAL comment above).
-    const link = screen.getByRole("link", {
-      name: "5 steps remain in the guided review.",
-    })
-    // The takeover wizard, not the summary: unmet steps still need the
-    // guided journey.
-    expect(link.getAttribute("href")).toBe("/pay-mappings/pay-2026/review")
-    expect(link.textContent).toContain(m.review.continueWizard)
-    expect(link.textContent).toContain("5")
+  it("owns no completion controls: they live on the analysis tab", () => {
+    renderCard({ analyses: ANALYSES_ALL_DONE })
     expect(screen.queryByRole("button", { name: tDoc.complete })).toBeNull()
+    expect(screen.queryByRole("button", { name: tDoc.reopen })).toBeNull()
   })
 
-  it("enables Complete once every required step is done and fires the mutation", async () => {
-    renderCard({
-      run: { ...RUN_ACTIVE, collaboration: COLLABORATION_FILLED },
-      analyses: ANALYSES_ALL_DONE,
-    })
-    expect(
-      screen.queryByRole("link", { name: /remain in the guided review/ })
-    ).toBeNull()
-    const button = screen.getByRole("button", {
-      name: tDoc.complete,
-    }) as HTMLButtonElement
-    expect(button.disabled).toBe(false)
-
-    fireEvent.click(button)
-    await waitFor(() => {
-      expect(completeMock).toHaveBeenCalledWith({
-        orgId: "org-1",
-        runId: "run-1",
-      })
-    })
-    expect(toast.success).toHaveBeenCalledWith(tToast.payMappingCompleted)
-  })
-
-  it("guards Complete against a double click: the mutation fires once", async () => {
-    let resolveComplete: () => void = () => {}
-    completeMock.mockImplementation(
-      () =>
-        new Promise<null>((resolve) => {
-          resolveComplete = () => resolve(null)
-        })
-    )
-    renderCard({
-      run: { ...RUN_ACTIVE, collaboration: COLLABORATION_FILLED },
-      analyses: ANALYSES_ALL_DONE,
-    })
-    const button = screen.getByRole("button", {
-      name: tDoc.complete,
-    }) as HTMLButtonElement
-
-    fireEvent.click(button)
-    await waitFor(() => expect(button.disabled).toBe(true))
-    fireEvent.click(button)
-    expect(completeMock).toHaveBeenCalledTimes(1)
-
-    resolveComplete()
-    await waitFor(() => {
-      expect(toast.success).toHaveBeenCalledWith(tToast.payMappingCompleted)
-    })
-    expect(toast.error).not.toHaveBeenCalled()
-  })
-
-  it("shows the completed note and reopens the run via the confirm dialog", async () => {
+  it("states that a completed run is locked, still without the controls", () => {
     renderCard({ run: RUN_COMPLETED, analyses: ANALYSES_ALL_DONE })
     expect(screen.getByText(tDoc.completedNote)).toBeDefined()
-    expect(screen.queryByRole("button", { name: tDoc.complete })).toBeNull()
-    expect(
-      screen.queryByRole("link", { name: /remain in the guided review/ })
-    ).toBeNull()
-
-    fireEvent.click(screen.getByRole("button", { name: tDoc.reopen }))
-    const dialog = screen.getByRole("alertdialog")
-    expect(within(dialog).getByText(tDoc.reopenConfirmTitle)).toBeDefined()
-
-    fireEvent.click(
-      within(dialog).getByRole("button", { name: tDoc.reopenConfirmCta })
-    )
-    await waitFor(() => {
-      expect(reopenMock).toHaveBeenCalledWith({
-        orgId: "org-1",
-        runId: "run-1",
-      })
-    })
-    expect(toast.success).toHaveBeenCalledWith(tToast.payMappingReopened)
+    expect(screen.queryByRole("button", { name: tDoc.reopen })).toBeNull()
   })
 
-  it("shows a content-shaped loading state: real title and chapter labels, skeleton state text and CTA", () => {
-    renderCard({
-      run: undefined,
-      gap: undefined,
-      analyses: undefined,
-      actions: undefined,
-      notes: undefined,
-    })
+  it("renders its real chrome while the queue is still loading", () => {
+    renderCard({ gap: undefined })
+    // The title and the CTA are static i18n text; only the unknown count
+    // and its bar stand in.
     expect(screen.getByText(tJourney.title)).toBeDefined()
-    expect(screen.getByText(m.review.chapters.start)).toBeDefined()
-    expect(screen.getByText(m.review.chapters.praxis)).toBeDefined()
-    expect(screen.getByText(m.review.chapters.equalWork)).toBeDefined()
-    expect(screen.getByText(m.review.chapters.equivalentWork)).toBeDefined()
-    expect(screen.queryByText(tJourney.state.notStarted)).toBeNull()
-    expect(screen.queryByText(tJourney.state.inProgress)).toBeNull()
-    expect(screen.queryByText(tJourney.state.done)).toBeNull()
-
-    // The CTA's own type (Complete vs the Continue link) is itself
-    // state-dependent and unknown until the queue resolves, so it renders
-    // as a skeleton bar rather than a real (and possibly wrong) control.
-    expect(screen.queryByRole("button", { name: tDoc.complete })).toBeNull()
     expect(
-      screen.queryByRole("link", { name: /remain in the guided review/ })
-    ).toBeNull()
+      screen.getByRole("link", { name: m.analysis.openAnalysis })
+    ).toBeDefined()
     expect(
       document.querySelectorAll('[data-slot="skeleton"]').length
     ).toBeGreaterThan(0)
