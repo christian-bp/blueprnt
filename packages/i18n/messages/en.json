@@ -1267,7 +1267,13 @@
           "praxis": "Review your pay-setting practice in this area and record what you found.",
           "equalWork": "Compare women's and men's pay in this group and record an objective reason for any difference you cannot explain.",
           "equivalentWork": "Compare this women-dominated group against the lower-valued groups that still out-earn it."
-        }
+        },
+        "filterAll": "All",
+        "filterRemaining": "Remaining",
+        "filterLabel": "Show",
+        "completeRow": "Complete the mapping",
+        "completeLocked": "{count} left",
+        "completeReady": "Ready"
       },
       "supplementary": {
         "heading": "Further analysis · does not affect completion",

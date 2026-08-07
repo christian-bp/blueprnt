@@ -1267,7 +1267,13 @@
           "praxis": "Gå igenom er lönesättningspraxis inom området och skriv ned vad ni kom fram till.",
           "equalWork": "Jämför kvinnors och mäns löner i gruppen och dokumentera ett sakligt skäl för varje skillnad ni inte kan förklara.",
           "equivalentWork": "Jämför den här kvinnodominerade gruppen mot de lägre värderade grupper som ändå tjänar mer."
-        }
+        },
+        "filterAll": "Alla",
+        "filterRemaining": "Kvarvarande",
+        "filterLabel": "Visa",
+        "completeRow": "Slutför kartläggningen",
+        "completeLocked": "{count} kvar",
+        "completeReady": "Klar att slutföra"
       },
       "supplementary": {
         "heading": "Fördjupad analys · påverkar inte slutförandet",

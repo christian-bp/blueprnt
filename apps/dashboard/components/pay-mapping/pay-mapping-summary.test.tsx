@@ -298,6 +298,15 @@ function chapterTrigger(title: string) {
     )
 }
 
+// The checklist opens ONE chapter at a time (Iteration 3, rung 1), and it
+// follows the open or next step until the user opens another. A test that
+// reaches into a different chapter opens it first, exactly as a user does.
+function openChapter(title: string) {
+  const trigger = chapterTrigger(title)
+  if (trigger !== undefined && trigger.getAttribute("aria-expanded") !== "true")
+    fireEvent.click(trigger)
+}
+
 async function backToSummary() {
   fireEvent.click(screen.getByRole("button", { name: t.backToSummary }))
   await expectGatePanel()
@@ -510,6 +519,9 @@ describe("PayMappingSummary", () => {
     // A fixture where start is NOT the landing default (collaboration
     // filled), so the click below is a real transition.
     renderSummary({ run: { ...RUN, collaboration: COLLABORATION_FILLED } })
+    // Start is done here, so the landing opens the praxis chapter; reach
+    // back into start the way a user does.
+    openChapter(t.chapters.start)
     const row = checklistRowFor(t.collaborationTitle)
     expect(row).toBeDefined()
     fireEvent.click(row as HTMLElement)
@@ -523,6 +535,7 @@ describe("PayMappingSummary", () => {
 
   it("selects a praxis row: opens it and marks it aria-current", async () => {
     renderSummary()
+    openChapter(t.chapters.praxis)
     const row = screen.getByText(t.praxis.payPolicy.title).closest("button")
     fireEvent.click(screen.getByText(t.praxis.payPolicy.title))
     expect(await screen.findByText(t.praxis.payPolicy.question)).toBeDefined()
@@ -531,6 +544,7 @@ describe("PayMappingSummary", () => {
 
   it("selects a queue equal-work group row (requiring documentation)", async () => {
     renderSummary()
+    openChapter(t.chapters.equalWork)
     fireEvent.click(screen.getByText("Sales · Mid"))
     expect(
       await screen.findByRole("button", { name: t.markDoneNext })
@@ -539,6 +553,7 @@ describe("PayMappingSummary", () => {
 
   it("selects a non-queue equal-work group with free klarmarkering (primary enabled without documentation)", async () => {
     renderSummary()
+    openChapter(t.chapters.equalWork)
     fireEvent.click(screen.getByText("QA · Mid"))
     const primary = (await screen.findByRole("button", {
       name: t.markDoneNext,
@@ -548,6 +563,7 @@ describe("PayMappingSummary", () => {
 
   it("selects a queue equivalent-work group row (with a comparator)", async () => {
     renderSummary()
+    openChapter(t.chapters.equivalentWork)
     fireEvent.click(screen.getByText("Nurse · Senior"))
     expect(
       await screen.findByRole("button", { name: t.markDoneNext })
@@ -556,6 +572,7 @@ describe("PayMappingSummary", () => {
 
   it("selects a non-queue equivalent-work group with free klarmarkering (primary enabled without documentation)", async () => {
     renderSummary()
+    openChapter(t.chapters.equivalentWork)
     fireEvent.click(screen.getByText("Receptionist · Junior"))
     const primary = (await screen.findByRole("button", {
       name: t.markDoneNext,
@@ -567,6 +584,7 @@ describe("PayMappingSummary", () => {
     renderSummary({
       analyses: [praxisDone("collectiveAgreements")],
     })
+    openChapter(t.chapters.praxis)
     fireEvent.click(screen.getByText(t.praxis.payPolicy.title))
     await screen.findByText(t.praxis.payPolicy.question)
 
@@ -608,6 +626,7 @@ describe("PayMappingSummary", () => {
     })
     // Sales is also the landing default here (first undone), so its label
     // renders in both the row and the already-open card.
+    openChapter(t.chapters.equalWork)
     fireEvent.click(checklistRowFor("Sales · Mid") as HTMLElement)
     const primary = await screen.findByRole("button", { name: t.markDoneNext })
     fireEvent.click(primary)
@@ -642,6 +661,7 @@ describe("PayMappingSummary", () => {
     // queue), so the pane already shows the gate panel before this click;
     // select Receptionist explicitly to mark it done, which still has
     // nothing left to advance to.
+    openChapter(t.chapters.equivalentWork)
     fireEvent.click(checklistRowFor("Receptionist · Junior") as HTMLElement)
     const primary = await screen.findByRole("button", {
       name: t.markDoneNext,
@@ -662,6 +682,7 @@ describe("PayMappingSummary", () => {
 
   it("moves focus onto the opened pane, and back onto the summary heading, on select/backToSummary", async () => {
     renderSummary()
+    openChapter(t.chapters.praxis)
     fireEvent.click(screen.getByText(t.praxis.payPolicy.title))
     const question = await screen.findByText(t.praxis.payPolicy.question)
     const paneContainer = question.closest('[tabindex="-1"]')
@@ -683,6 +704,7 @@ describe("PayMappingSummary", () => {
       run: { ...RUN, status: "completed", collaboration: COLLABORATION_FILLED },
       analyses: ANALYSES_ALL_DONE,
     })
+    openChapter(t.chapters.praxis)
     fireEvent.click(screen.getByText(t.praxis.payPolicy.title))
     expect(await screen.findByText(tForm.lockedHint)).toBeDefined()
   })
@@ -691,6 +713,7 @@ describe("PayMappingSummary", () => {
     renderSummary()
     // With steps remaining the landing default is a step card; reach the
     // gate panel the way a small screen does (explicit open, then back).
+    openChapter(t.chapters.praxis)
     fireEvent.click(screen.getByText(t.praxis.payPolicy.title))
     await screen.findByText(t.praxis.payPolicy.question)
     await backToSummary()
@@ -752,15 +775,17 @@ describe("PayMappingSummary", () => {
 
   it("lists every group as an icon + label row, with the state as sr-only text and no visible status", () => {
     renderSummary()
-    for (const label of [
-      "SWE · Senior",
-      "Sales · Mid",
-      "QA · Mid",
-      "Nurse · Senior",
-      "Receptionist · Junior",
-    ]) {
+    // One chapter at a time, so each is opened in turn; every group is
+    // still reachable, which is what this pins.
+    openChapter(t.chapters.equalWork)
+    for (const label of ["SWE · Senior", "Sales · Mid", "QA · Mid"]) {
       expect(checklistRowFor(label)).toBeDefined()
     }
+    openChapter(t.chapters.equivalentWork)
+    for (const label of ["Nurse · Senior", "Receptionist · Junior"]) {
+      expect(checklistRowFor(label)).toBeDefined()
+    }
+    openChapter(t.chapters.equalWork)
     // The gap/status details live in the opened card, never in the row: the
     // row's text is exactly the label + the sr-only done/remaining state,
     // nothing else.
@@ -779,24 +804,67 @@ describe("PayMappingSummary", () => {
 
   it("filters the checklist by label while searching, flattening the chapters", () => {
     renderSummary()
+    openChapter(t.chapters.equalWork)
     const search = screen.getByRole("textbox", { name: t.searchSteps })
     fireEvent.change(search, { target: { value: "sales" } })
     expect(checklistRowFor("Sales · Mid")).toBeDefined()
     expect(screen.queryByText("QA · Mid")).toBeNull()
     expect(screen.queryByText(t.praxis.payPolicy.title)).toBeNull()
 
+    // Clearing the query returns to the single-open chapter list, on the
+    // chapter that was open before the search.
     fireEvent.change(search, { target: { value: "" } })
     expect(screen.getByText("QA · Mid")).toBeDefined()
+    openChapter(t.chapters.praxis)
     expect(screen.getByText(t.praxis.payPolicy.title)).toBeDefined()
   })
 
-  it("collapses and re-expands a chapter from its heading", () => {
+  it("opens one chapter at a time, closing the one that was open", () => {
     renderSummary()
-    const trigger = chapterTrigger(t.chapters.praxis) as HTMLElement
-    fireEvent.click(trigger)
+    // The landing opens the chapter holding the next undone step (start).
+    expect(screen.getByText(t.collaborationTitle)).toBeDefined()
     expect(screen.queryByText(t.praxis.payPolicy.title)).toBeNull()
 
-    fireEvent.click(trigger)
+    const praxis = chapterTrigger(t.chapters.praxis) as HTMLElement
+    fireEvent.click(praxis)
     expect(screen.getByText(t.praxis.payPolicy.title)).toBeDefined()
+    expect(screen.queryByText(t.collaborationTitle)).toBeNull()
+
+    // Collapsing the open one leaves every chapter closed, and each still
+    // reports its own count so nothing is hidden.
+    fireEvent.click(praxis)
+    expect(screen.queryByText(t.praxis.payPolicy.title)).toBeNull()
+    expect(chapterTrigger(t.chapters.praxis)?.textContent).toContain(
+      tJourney.count.replace("{done}", "0").replace("{total}", "4")
+    )
+  })
+
+  it("filters the checklist to remaining rows on demand, all by default", () => {
+    renderSummary({
+      run: { ...RUN, collaboration: COLLABORATION_FILLED },
+      analyses: [praxisDone("payPolicy")],
+    })
+    openChapter(t.chapters.praxis)
+    // All by default: the documented rows ARE the evidence record.
+    expect(screen.getByText(t.praxis.payPolicy.title)).toBeDefined()
+    fireEvent.click(
+      screen.getByRole("button", { name: tAnalysis.filterRemaining })
+    )
+    expect(screen.queryByText(t.praxis.payPolicy.title)).toBeNull()
+    expect(screen.getByText(t.praxis.benefits.title)).toBeDefined()
+  })
+
+  it("always offers the completion row, stating what is left", async () => {
+    renderSummary()
+    const row = screen
+      .getAllByRole("button")
+      .find((button) =>
+        (button.textContent ?? "").startsWith(tAnalysis.completeRow)
+      )
+    expect(row?.textContent).toContain(
+      tAnalysis.completeLocked.replace("{count}", "8")
+    )
+    fireEvent.click(row as HTMLElement)
+    await expectGatePanel()
   })
 })

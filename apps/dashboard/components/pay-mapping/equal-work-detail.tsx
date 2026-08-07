@@ -10,6 +10,7 @@ import {
   documentationFor,
   DocumentationMenu,
 } from "./documentation-controls"
+import { EvidenceDisclosure } from "./evidence-disclosure"
 import { GroupMemberTable } from "./group-member-table"
 import { PayGapDotPlot } from "./pay-gap-dot-plot"
 import {
@@ -156,30 +157,36 @@ export function EqualWorkDetail({
         />
       </div>
       <PayGapDotPlot group={group} rows={rows} currency={currency} />
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <h4 className="font-medium text-sm">{tGapRoot("groupMembers")}</h4>
+      {/* The summary strip and the plot stay visible: they are WHY this
+          group is flagged. The per-person table is the evidence behind
+          that, collapsed so every opened step starts at roughly the same
+          height with the form at the bottom (rung 3). */}
+      <EvidenceDisclosure
+        label={tGapRoot("groupMembers")}
+        count={group.womenCount + group.menCount}
+      >
+        <div className="space-y-2">
           <HelpMorphButton label={tHelp("payGapMemberDiffLabel")}>
             {tHelp("payGapMemberDiffBody")}
           </HelpMorphButton>
+          <GroupMemberTable
+            group={group}
+            rows={rows}
+            currency={currency}
+            {...(documentation === undefined
+              ? {}
+              : {
+                  documentation: {
+                    runId: documentation.runId,
+                    scope: "equalWork" as const,
+                    actions: documentation.actions,
+                    notes: documentation.notes,
+                    locked: documentation.locked,
+                  },
+                })}
+          />
         </div>
-        <GroupMemberTable
-          group={group}
-          rows={rows}
-          currency={currency}
-          {...(documentation === undefined
-            ? {}
-            : {
-                documentation: {
-                  runId: documentation.runId,
-                  scope: "equalWork" as const,
-                  actions: documentation.actions,
-                  notes: documentation.notes,
-                  locked: documentation.locked,
-                },
-              })}
-        />
-      </div>
+      </EvidenceDisclosure>
     </div>
   )
 }

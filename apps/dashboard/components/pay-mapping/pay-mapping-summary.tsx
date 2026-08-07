@@ -9,6 +9,10 @@ import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent } from "@workspace/ui/components/card"
 import { Accordion } from "@workspace/ui/components/accordion"
 import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@workspace/ui/components/toggle-group"
+import {
   Empty,
   EmptyHeader,
   EmptyMedia,
@@ -167,6 +171,16 @@ export function PayMappingSummary() {
   // checklist's search results can open and scroll to one of its items.
   const [openSupplementary, setOpenSupplementary] =
     useState<SupplementaryItemKey | null>(null)
+  // The checklist's own two controls (rung 1). The chapter override is
+  // undefined until the user opens a chapter themselves; until then the
+  // open chapter follows the current or next step, so the list always
+  // shows where the work is. The row filter defaults to All: a default
+  // that hid documented rows would make the evidence record invisible on
+  // arrival, which is the opposite of what an auditor needs.
+  const [chapterOverride, setChapterOverride] = useState<string | undefined>(
+    undefined
+  )
+  const [rowFilter, setRowFilter] = useState<"all" | "remaining">("all")
   const headingRef = useRef<HTMLHeadingElement>(null)
   // Skips the pane's own mount-focus (below) exactly once: never on the
   // page's initial mount (hasMountedPaneRef), and never right after
@@ -228,6 +242,9 @@ export function PayMappingSummary() {
         ? gap.equalWork.some((group) => group.key === key)
         : gap.womenDominated.some((group) => group.key === key)
     if (!exists) return
+    // Open the chapter too, or a deep link would select a row inside a
+    // collapsed chapter (rung 1 is single-open).
+    setChapterOverride(scope)
     setSelected(groupOpenStep(queue, scope, key))
   }, [queue, gap])
 
@@ -537,7 +554,14 @@ export function PayMappingSummary() {
       index === -1
         ? undefined
         : flatRows.slice(index + 1).find((row) => !row.done)
-    setSelected(next?.openStep ?? null)
+    // Through selectRow, so the checklist follows the advance into the next
+    // step's chapter rather than staying on the one just finished.
+    if (next === undefined) {
+      setSelected(null)
+      return
+    }
+    setChapterOverride(chapterKeyForRowId(next.id))
+    setSelected(next.openStep)
   }
 
   function renderOpenStep(open: Exclude<OpenStep, null>): ReactNode {
@@ -739,6 +763,23 @@ export function PayMappingSummary() {
   // scope the jump menu's own search covers. While a query is active the
   // chapters render as plain filtered sections (no collapse: a collapsed
   // chapter hiding its own hits would make the filter lie).
+  const chapterKeyForRowId = (rowId: string | undefined) =>
+    sections.find((section) => section.rows.some((row) => row.id === rowId))
+      ?.key
+
+  // Opening a step pins the checklist to that step's own chapter, so it
+  // stays where the user is working: closing the step again (or advancing
+  // to the next one) must not jump the list back to some other chapter.
+  function selectRow(step: OpenStep) {
+    if (step !== null) setChapterOverride(chapterKeyForRowId(openStepId(step)))
+    setSelected(step)
+  }
+
+  // Until the user has opened anything, the checklist opens the chapter
+  // holding the next undone step: the list shows where the work is.
+  const openChapter =
+    chapterOverride ?? chapterKeyForRowId(firstUndone?.id) ?? sections[0]?.key
+
   const trimmedQuery = query.trim().toLowerCase()
   const searching = trimmedQuery !== ""
   const filteredSections = sections.map((section) => ({
@@ -746,6 +787,16 @@ export function PayMappingSummary() {
     rows: section.rows.filter((row) =>
       row.label.toLowerCase().includes(trimmedQuery)
     ),
+  }))
+  // The Remaining filter never hides the row that is currently open: a
+  // step you just marked done would otherwise vanish from under the
+  // selection you are still looking at.
+  const listedSections = sections.map((section) => ({
+    ...section,
+    rows:
+      rowFilter === "all"
+        ? section.rows
+        : section.rows.filter((row) => !row.done || row.id === currentRowId),
   }))
   // The drawer's own items as checklist rows: they carry no done state (they
   // carry no obligation either), so the icon reads as remaining and the
@@ -808,13 +859,32 @@ export function PayMappingSummary() {
                 field stays reachable while the sections list underneath it
                 scrolls; only that list, not the field, may leave the
                 viewport. */}
-            <CardContent className="lg:shrink-0">
+            <CardContent className="space-y-2 lg:shrink-0">
               <TableSearchField
                 placeholder={t("searchSteps")}
                 value={query}
                 onChange={setQuery}
                 className="w-full"
               />
+              {/* Defaults to All: the documented rows ARE the evidence
+                  record, so hiding them by default would make the work
+                  already done invisible on arrival. */}
+              <ToggleGroup
+                variant="outline"
+                aria-label={tAnalysis("filterLabel")}
+                value={[rowFilter]}
+                onValueChange={(value) => {
+                  const next = value[0]
+                  if (next === "all" || next === "remaining") setRowFilter(next)
+                }}
+              >
+                <ToggleGroupItem value="all">
+                  {tAnalysis("filterAll")}
+                </ToggleGroupItem>
+                <ToggleGroupItem value="remaining">
+                  {tAnalysis("filterRemaining")}
+                </ToggleGroupItem>
+              </ToggleGroup>
             </CardContent>
             <CardContent className="space-y-6 lg:min-h-0 lg:overflow-y-auto">
               {searching ? (
@@ -826,7 +896,7 @@ export function PayMappingSummary() {
                       meta={section.meta}
                       rows={section.rows}
                       currentId={currentRowId}
-                      onSelect={(row) => setSelected(row.openStep)}
+                      onSelect={(row) => selectRow(row.openStep)}
                     />
                   ))}
                   {/* A sixth, virtual section so a search reaches the five
@@ -846,32 +916,61 @@ export function PayMappingSummary() {
                   />
                 </>
               ) : (
-                <Accordion
-                  multiple
-                  defaultValue={sections.map((section) => section.key)}
-                >
-                  {sections
-                    .filter((section) => section.rows.length > 0)
-                    .map((section) => (
-                      <AccordionSection
-                        key={section.key}
-                        value={section.key}
-                        title={section.title}
-                        meta={section.meta}
-                        // No divider between chapters: the checklist sits in
-                        // one Card already (drop the vendor item's own
-                        // not-last:border-b, matched on the same variant so
-                        // tailwind-merge dedupes it).
-                        className="not-last:border-b-0"
-                      >
-                        <ChecklistRows
-                          rows={section.rows}
-                          currentId={currentRowId}
-                          onSelect={(row) => setSelected(row.openStep)}
-                        />
-                      </AccordionSection>
-                    ))}
-                </Accordion>
+                <>
+                  {/* Single-open (rung 1): one chapter at a time, following
+                      the open or next step until the user opens another
+                      themselves. A collapsed chapter always shows its own
+                      count, so folding never hides an obligation. */}
+                  <Accordion
+                    value={openChapter === undefined ? [] : [openChapter]}
+                    onValueChange={(value) =>
+                      setChapterOverride(value[0] ?? "")
+                    }
+                  >
+                    {listedSections
+                      .filter((section) => section.rows.length > 0)
+                      .map((section) => (
+                        <AccordionSection
+                          key={section.key}
+                          value={section.key}
+                          title={section.title}
+                          meta={section.meta}
+                          // No divider between chapters: the checklist sits in
+                          // one Card already (drop the vendor item's own
+                          // not-last:border-b, matched on the same variant so
+                          // tailwind-merge dedupes it).
+                          className="not-last:border-b-0"
+                        >
+                          <ChecklistRows
+                            rows={section.rows}
+                            currentId={currentRowId}
+                            onSelect={(row) => selectRow(row.openStep)}
+                          />
+                        </AccordionSection>
+                      ))}
+                  </Accordion>
+                  {/* The end of the ladder, always reachable: the run's own
+                      completion, with its state stated rather than only
+                      implied by a disabled button somewhere else. */}
+                  <button
+                    type="button"
+                    onClick={() => selectRow(null)}
+                    aria-current={openStep === null ? "true" : undefined}
+                    className={cn(
+                      "flex w-full items-center gap-2 rounded-md border-t px-2 pt-3 pb-1.5 text-left text-sm transition-colors",
+                      openStep === null && selected !== undefined
+                        ? "font-medium"
+                        : "hover:bg-muted/50"
+                    )}
+                  >
+                    <span>{tAnalysis("completeRow")}</span>
+                    <span className="ml-auto text-muted-foreground tabular-nums">
+                      {gateMet
+                        ? tAnalysis("completeReady")
+                        : tAnalysis("completeLocked", { count: remaining })}
+                    </span>
+                  </button>
+                </>
               )}
             </CardContent>
           </Card>

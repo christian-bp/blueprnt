@@ -1267,7 +1267,13 @@
           "praxis": "Käy läpi palkanmäärityskäytäntönne tällä alueella ja kirjaa, mitä havaitsitte.",
           "equalWork": "Vertaa naisten ja miesten palkkoja ryhmässä ja dokumentoi asiallinen syy jokaiselle erolle, jota ette voi selittää.",
           "equivalentWork": "Vertaa tätä naisvaltaista ryhmää alempiarvoisiin ryhmiin, jotka silti ansaitsevat enemmän."
-        }
+        },
+        "filterAll": "Kaikki",
+        "filterRemaining": "Jäljellä",
+        "filterLabel": "Näytä",
+        "completeRow": "Viimeistele kartoitus",
+        "completeLocked": "{count} jäljellä",
+        "completeReady": "Valmis viimeisteltäväksi"
       },
       "supplementary": {
         "heading": "Syventävä analyysi · ei vaikuta viimeistelyyn",

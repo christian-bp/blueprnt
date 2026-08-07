@@ -1267,7 +1267,13 @@
           "praxis": "Gå gjennom lønnsfastsettingspraksisen på området og skriv ned hva dere fant.",
           "equalWork": "Sammenlign kvinners og menns lønn i gruppen og dokumenter en saklig grunn for hver forskjell dere ikke kan forklare.",
           "equivalentWork": "Sammenlign denne kvinnedominerte gruppen mot de lavere verdsatte gruppene som likevel tjener mer."
-        }
+        },
+        "filterAll": "Alle",
+        "filterRemaining": "Gjenstående",
+        "filterLabel": "Vis",
+        "completeRow": "Fullfør kartleggingen",
+        "completeLocked": "{count} igjen",
+        "completeReady": "Klar til å fullføre"
       },
       "supplementary": {
         "heading": "Utdypet analyse · påvirker ikke fullføringen",
