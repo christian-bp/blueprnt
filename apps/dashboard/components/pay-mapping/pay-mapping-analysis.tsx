@@ -152,11 +152,11 @@ export function PayMappingAnalysis() {
     usePayMappingRun()
   // undefined = the user has not picked anything yet, so the pane falls back
   // to its landing default (the first REMAINING step, or the gate panel when
-  // nothing remains). null = an explicit "nothing
-  // open" (an advance that found nothing left, or the small-screen back
-  // control). The distinction also drives the small-screen fallback: only an
-  // EXPLICIT selection hides the checklist below lg (the landing default
-  // must never swap a phone straight into a card with no list in sight).
+  // nothing remains). null = an explicit "nothing open" (the completion row,
+  // or an advance that found nothing left). The distinction also drives the
+  // small-screen fallback: only an EXPLICIT selection hides the checklist
+  // below lg (the landing default must never swap a phone straight into a
+  // card with no list in sight).
   const [selected, setSelected] = useState<OpenStep | undefined>(undefined)
   const [query, setQuery] = useState("")
   // The supplementary drawer's own single-open state, lifted here so the
@@ -181,10 +181,15 @@ export function PayMappingAnalysis() {
   // The steps sheet is the phone's checklist; selecting a row closes it.
   const [stepsSheetOpen, setStepsSheetOpen] = useState(false)
   const headingRef = useRef<HTMLHeadingElement>(null)
-  // Skips the pane's own mount-focus (below) on the page's initial mount:
-  // the landing is not a transition the user asked for, so it must not
-  // steal focus.
-  const hasMountedPaneRef = useRef(false)
+  // Armed by the handlers below, consumed by the pane's callback ref: the
+  // pane focuses and scrolls ONLY for a selection the user made. It cannot
+  // be a mount counter. The run's queries resolve independently, so the
+  // landing pane re-keys as each one arrives, and a counter would let the
+  // second mount scroll a freshly opened page down past the spine.
+  const pendingPaneFocusRef = useRef(false)
+  const requestPaneFocus = useCallback(() => {
+    pendingPaneFocusRef.current = true
+  }, [])
   // One O(women x men) scan for the page: the drawer's first item lists the
   // cases and the completion panel names their count at the moment of
   // finishing, and neither should pay for its own pass.
@@ -222,8 +227,9 @@ export function PayMappingAnalysis() {
     // Open the chapter too, or a deep link would select a row inside a
     // collapsed chapter (rung 1 is single-open).
     setChapterOverride(scope)
+    requestPaneFocus()
     setSelected(groupOpenStep(queue, scope, key))
-  }, [queue, gap])
+  }, [queue, gap, requestPaneFocus])
 
   // Moves focus onto the right pane the moment its content actually
   // changes: a different checklist row selected, "mark done and continue"
@@ -233,10 +239,8 @@ export function PayMappingAnalysis() {
   // ref fires exactly when the new content lands.
   const focusPaneContainer = useCallback((node: HTMLDivElement | null) => {
     if (node === null) return
-    if (!hasMountedPaneRef.current) {
-      hasMountedPaneRef.current = true
-      return
-    }
+    if (!pendingPaneFocusRef.current) return
+    pendingPaneFocusRef.current = false
     node.focus()
     // Steps differ in height by hundreds of pixels (a praxis step is three
     // lines, an equivalent-work step carries a table and a chart), so
@@ -487,6 +491,7 @@ export function PayMappingAnalysis() {
         : flatRows.slice(index + 1).find((row) => !row.done)
     // Through selectRow, so the checklist follows the advance into the next
     // step's chapter rather than staying on the one just finished.
+    requestPaneFocus()
     if (next === undefined) {
       setSelected(null)
       return
@@ -670,6 +675,7 @@ export function PayMappingAnalysis() {
   // stays where the user is working: closing the step again (or advancing
   // to the next one) must not jump the list back to some other chapter.
   function selectRow(step: OpenStep) {
+    requestPaneFocus()
     setStepsSheetOpen(false)
     if (step !== null) setChapterOverride(chapterKeyForRowId(openStepId(step)))
     setWorklistChapter(null)
@@ -870,6 +876,7 @@ export function PayMappingAnalysis() {
                         <button
                           type="button"
                           onClick={() => {
+                            requestPaneFocus()
                             setSelected(undefined)
                             setWorklistChapter(
                               section.key === "equalWork"
@@ -923,7 +930,10 @@ export function PayMappingAnalysis() {
         done={currentQueue.progress.overall.done}
         total={currentQueue.progress.overall.total}
         collaboration={collaboration}
-        onOpenCollaboration={() => setSelected(startRow.openStep)}
+        onOpenCollaboration={() => {
+          requestPaneFocus()
+          setSelected(startRow.openStep)
+        }}
         headingRef={headingRef}
       />
       {/* The two-column master-detail (lg+): the left column always carries

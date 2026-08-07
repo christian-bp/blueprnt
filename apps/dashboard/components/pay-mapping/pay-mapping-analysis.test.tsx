@@ -29,6 +29,13 @@ vi.mock(
 vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "org-1", role: "admin" }),
 }))
+// NumberFlow's custom element never upgrades in jsdom, so its
+// getSnapshotBeforeUpdate throws the moment a rendered value changes. Stand
+// it in with the plain number it animates, which is also what the spine's
+// assertions want to read.
+vi.mock("@number-flow/react", () => ({
+  default: ({ value }: { value: number }) => <span>{value}</span>,
+}))
 
 import { ConvexError } from "convex/values"
 import { toast } from "@/lib/toast"
@@ -683,6 +690,39 @@ describe("PayMappingAnalysis", () => {
       .closest('[tabindex="-1"]')
     expect(gate).not.toBeNull()
     expect(document.activeElement).toBe(gate)
+  })
+
+  it("never focuses or scrolls the pane on arrival, including when a late query re-keys the landing", async () => {
+    // The run's queries resolve independently, so the landing pane re-keys
+    // as each one lands. A mount-count guard let the SECOND mount focus,
+    // which scrolled a freshly opened page down past the spine.
+    const { rerender } = renderSummary({ analyses: [] })
+    await screen.findByText(tAnalysis.nextAction.start)
+    expect(document.activeElement).toBe(document.body)
+
+    // The analyses query lands: start is now done, so the landing moves to
+    // the next chapter and the pane re-keys.
+    rerender(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <PayMappingRunProvider
+          value={{
+            run: { ...RUN, collaboration: COLLABORATION_FILLED },
+            gap: GAP,
+            analyses: ANALYSES_ALL_DONE,
+            actions: [],
+            notes: [],
+            runsList: [],
+          }}
+        >
+          <PayMappingAnalysis />
+        </PayMappingRunProvider>
+      </NextIntlClientProvider>
+    )
+    // The pane re-keyed: its landing no longer points at the start step.
+    await waitFor(() => {
+      expect(screen.queryByText(tAnalysis.nextAction.start)).toBeNull()
+    })
+    expect(document.activeElement).toBe(document.body)
   })
 
   it("below lg, an opened step says where it sits and opens the whole list in a sheet", async () => {
