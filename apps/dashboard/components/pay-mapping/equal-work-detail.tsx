@@ -126,7 +126,10 @@ export function EqualWorkDetail({
         {/* The group's own documentation affordance, in a fixed-height row
             so gaining a badge never shifts the summary beneath. */}
         {documentation !== undefined && (
-          <div className="flex h-9 items-center gap-2">
+          // Right-aligned: with no documentation yet the row is a single
+          // "..." trigger, which reads as an orphaned icon on the left and
+          // as the section's own action on the right.
+          <div className="flex h-9 items-center justify-end gap-2">
             <DocumentationBadges
               actions={groupDocs.actions}
               notes={groupDocs.notes}
@@ -166,9 +169,14 @@ export function EqualWorkDetail({
         count={group.womenCount + group.menCount}
       >
         <div className="space-y-2">
-          <HelpMorphButton label={tHelp("payGapMemberDiffLabel")}>
-            {tHelp("payGapMemberDiffBody")}
-          </HelpMorphButton>
+          {/* The caption gives the help button something to sit beside: a
+              lone icon at the top of the panel explains nothing. */}
+          <p className="flex items-center gap-1.5 text-muted-foreground text-sm">
+            {t("diffCaption")}
+            <HelpMorphButton label={tHelp("payGapMemberDiffLabel")}>
+              {tHelp("payGapMemberDiffBody")}
+            </HelpMorphButton>
+          </p>
           <GroupMemberTable
             group={group}
             rows={rows}

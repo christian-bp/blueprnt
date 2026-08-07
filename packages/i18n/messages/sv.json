@@ -1199,6 +1199,7 @@
         "erased": "Raderad",
         "fteShare": "({fte} % FTE)",
         "crossLevelFlagged": "Tjänas förbi av en man på lägre nivå",
+        "diffCaption": "Skillnaden mäts mot männens genomsnitt i den här gruppen.",
         "summary": {
           "womenMean": "Kvinnors genomsnitt: {value}",
           "menMean": "Männens genomsnitt: {value}",

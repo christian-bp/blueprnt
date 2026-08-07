@@ -1199,6 +1199,7 @@
         "erased": "Poistettu",
         "fteShare": "({fte} % FTE)",
         "crossLevelFlagged": "Alemman tason mies ansaitsee enemmän",
+        "diffCaption": "Ero mitataan tämän ryhmän miesten keskiarvoon.",
         "summary": {
           "womenMean": "Naisten keskiarvo: {value}",
           "menMean": "Miesten keskiarvo: {value}",

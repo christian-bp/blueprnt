@@ -1199,6 +1199,7 @@
         "erased": "Erased",
         "fteShare": "({fte} % FTE)",
         "crossLevelFlagged": "Out-earned by a man on a lower level",
+        "diffCaption": "The difference is measured against the men's average in this group.",
         "summary": {
           "womenMean": "Women's average: {value}",
           "menMean": "Men's average: {value}",

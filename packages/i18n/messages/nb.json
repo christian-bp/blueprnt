@@ -1199,6 +1199,7 @@
         "erased": "Slettet",
         "fteShare": "({fte} % FTE)",
         "crossLevelFlagged": "Tjenes forbi av en mann på lavere nivå",
+        "diffCaption": "Forskjellen måles mot mennenes gjennomsnitt i denne gruppen.",
         "summary": {
           "womenMean": "Kvinnenes gjennomsnitt: {value}",
           "menMean": "Mennenes gjennomsnitt: {value}",
