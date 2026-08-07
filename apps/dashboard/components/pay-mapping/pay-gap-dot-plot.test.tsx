@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it } from "vitest"
 import {
   buildDotPlotModel,
   DotPlotTooltipContent,
+  meanLabelPlacement,
   PayGapDotPlot,
 } from "@/components/pay-mapping/pay-gap-dot-plot"
 import type { PayMappingSnapshotRow } from "@/components/pay-mapping/pay-mapping-gap-types"
@@ -154,6 +155,25 @@ describe("DotPlotTooltipContent", () => {
 describe("PayGapDotPlot", () => {
   afterEach(() => {
     cleanup()
+  })
+
+  it("stacks the two mean labels and turns each one inward from its line", () => {
+    // Women behind: their line is the left one, so their label reads
+    // rightwards and the men's leftwards, and the women's sits a line above
+    // so the two can never overprint on a narrow gap.
+    const behind = meanLabelPlacement(90000, 100000)
+    expect(behind.women).toBe("insideBottomLeft")
+    expect(behind.men).toBe("insideBottomRight")
+    expect(behind.womenDy).toBeLessThan(0)
+
+    // Women ahead: the sides swap, or the outer label runs off the plot.
+    const ahead = meanLabelPlacement(100000, 90000)
+    expect(ahead.women).toBe("insideBottomRight")
+    expect(ahead.men).toBe("insideBottomLeft")
+
+    // A single mean has no other label to avoid.
+    expect(meanLabelPlacement(90000, null).women).toBe("insideBottomLeft")
+    expect(meanLabelPlacement(null, 90000).men).toBe("insideBottomRight")
   })
 
   it("renders the card title, help, and the text legend for both series", () => {

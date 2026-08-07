@@ -113,8 +113,33 @@ export function buildDotPlotModel(
   }
 }
 
+// Where each mean's label sits, so the two can never overprint. They ride
+// on their OWN lines (women above men, matching the swimlane order): side by
+// side they collide the moment the means are close, and a 9% gap on a phone
+// puts the lines about 50px apart while each label is wider than that, which
+// turned the two words into an unreadable smudge on exactly the gaps that
+// most need reading. Each label also turns INWARD from its own line, or the
+// outer one runs off the plot and is clipped; which line is left depends on
+// the data, because women earn more in a real share of groups.
+export function meanLabelPlacement(
+  womenMean: number | null,
+  menMean: number | null
+): {
+  women: "insideBottomLeft" | "insideBottomRight"
+  men: "insideBottomLeft" | "insideBottomRight"
+  womenDy: number
+} {
+  const womenLeft =
+    womenMean === null || menMean === null ? true : womenMean <= menMean
+  return {
+    women: womenLeft ? "insideBottomLeft" : "insideBottomRight",
+    men: womenLeft ? "insideBottomRight" : "insideBottomLeft",
+    womenDy: -(CHART_AXIS_FONT_SIZE + 2),
+  }
+}
+
 // The per-dot tooltip, exported and driven purely by props (same jsdom
-// rationale as ScatterTooltipContent): name, the member's pay on the plot's
+// rationale as buildDotPlotModel): name, the member's pay on the plot's
 // metric, and the diff against the men's mean in kr and %. HR-only surface:
 // individual pay is by design visible in-app.
 export function DotPlotTooltipContent({
@@ -204,6 +229,8 @@ export function PayGapDotPlot({
     woman: { label: tGender("Kvinna"), color: "var(--gender-woman)" },
   } satisfies ChartConfig
 
+  const meanLabels = meanLabelPlacement(model.womenMean, model.menMean)
+
   const gapLabel =
     model.gapKr !== null && model.gapPct !== null
       ? t("gapLabel", {
@@ -273,6 +300,7 @@ export function PayGapDotPlot({
                   : {})}
               />
             )}
+            {/* Placement is meanLabelPlacement's call; see it for why. */}
             {model.womenMean !== null && (
               <ReferenceLine
                 x={model.womenMean}
@@ -280,7 +308,8 @@ export function PayGapDotPlot({
                 strokeDasharray="4 3"
                 label={{
                   value: t("womenMean"),
-                  position: "insideBottomLeft" as const,
+                  position: meanLabels.women,
+                  dy: meanLabels.womenDy,
                   fontSize: CHART_AXIS_FONT_SIZE,
                   fill: "var(--muted-foreground)",
                 }}
@@ -293,7 +322,7 @@ export function PayGapDotPlot({
                 strokeDasharray="4 3"
                 label={{
                   value: t("menMean"),
-                  position: "insideBottomRight" as const,
+                  position: meanLabels.men,
                   fontSize: CHART_AXIS_FONT_SIZE,
                   fill: "var(--muted-foreground)",
                 }}
