@@ -144,32 +144,34 @@ export function ChapterWorklist({
   return (
     <div className="space-y-2">
       <div className="overflow-x-auto">
-        <Table className="min-w-[44rem] table-fixed">
+        {/* The fixed columns stay tight so the flexible group column keeps
+            enough width to read a real role title without truncating. */}
+        <Table className="min-w-[38rem] table-fixed">
           <TableHeader>
             <TableRow>
               {head("label", t("columns.group"))}
               {variant === "equalWork" ? (
                 <>
-                  <TableHead className="w-20 text-right">
+                  <TableHead className="w-16 text-right">
                     {t("columns.womenShare")}
                   </TableHead>
-                  {head("gap", t("columns.gap"), "w-24 text-right")}
-                  <TableHead className="w-28">{t("columns.flag")}</TableHead>
+                  {head("gap", t("columns.gap"), "w-20 text-right")}
+                  <TableHead className="w-24">{t("columns.flag")}</TableHead>
                 </>
               ) : (
                 <>
-                  {head("headcount", t("columns.headcount"), "w-24 text-right")}
-                  <TableHead className="w-24 text-right">
+                  {head("headcount", t("columns.headcount"), "w-20 text-right")}
+                  <TableHead className="w-20 text-right">
                     {t("columns.womenShare")}
                   </TableHead>
                   {head(
                     "comparisons",
                     t("columns.comparisons"),
-                    "w-44 text-right"
+                    "w-28 text-right"
                   )}
                 </>
               )}
-              {head("status", t("columns.status"), "w-44")}
+              {head("status", t("columns.status"), "w-40")}
             </TableRow>
           </TableHeader>
           <TableBody>
