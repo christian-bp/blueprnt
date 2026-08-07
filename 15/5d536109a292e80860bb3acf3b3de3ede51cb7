@@ -1,0 +1,51 @@
+packages/i18n/messages/fi.json
+  s_7d4d2043db4111::t_52993d4f07a2ff 1277-1308
+packages/i18n/messages/da.json
+  s_7d4d2043db4111::t_52993d4f07a2ff 1277-1308
+apps/dashboard/components/pay-mapping/pay-mapping-summary.test.tsx
+  s_7d4d2043db4111::t_656cb98b0e5b4e 1-7,828-873,875-890,893-901
+  s_7d4d2043db4111::t_00502088ddd21e 874,891-892
+  s_7d4d2043db4111::t_b4624e9a20e851 902
+apps/dashboard/components/pay-mapping/chapter-worklist.tsx
+  s_7d4d2043db4111::t_ddbe33522491a5 244-245
+  s_7d4d2043db4111::t_f5992b85f5d121 79
+  s_7d4d2043db4111::t_404e88209740cc 1-12,14-78,80-243,246-250
+  s_7d4d2043db4111::t_f88876d4705817 13
+apps/dashboard/components/pay-mapping/chapter-bar.tsx
+  s_7d4d2043db4111::t_5a1c70f4c50f4a 5,18
+  s_7d4d2043db4111::t_c5ec79cc11bce2 1-4,6-17,19-39
+apps/dashboard/components/pay-mapping/pay-mapping-summary.tsx
+  s_7d4d2043db4111::t_1e1bb4584f221c 36-37
+  s_7d4d2043db4111::t_9c3c0f90bc6209 766-767,777-780
+  s_7d4d2043db4111::t_e8855b21027e82 1108-1138,1140-1148,1154
+  s_7d4d2043db4111::t_5eb51bf683c5f4 53,1029-1033
+  s_7d4d2043db4111::t_6a0bda5be512bc 122-126
+  s_7d4d2043db4111::t_5a1c70f4c50f4a 803-804,826-827,1139
+  s_7d4d2043db4111::t_09fc3e6448c42e 1015,1019-1028,1034-1041
+  s_7d4d2043db4111::t_34db30ffc1488a 191-195
+  s_7d4d2043db4111::t_bf3c2aa38649e2 788,792-802,805-825,828-845
+  s_7d4d2043db4111::t_e3793d70732d70 759-765,772-775
+  s_7d4d2043db4111::t_c9a98f45f3ebf7 776,781-782,846-847
+packages/i18n/messages/nb.json
+  s_7d4d2043db4111::t_52993d4f07a2ff 1277-1308
+packages/i18n/messages/sv.json
+  s_7d4d2043db4111::t_52993d4f07a2ff 1277-1308
+packages/i18n/messages/en.json
+  s_7d4d2043db4111::t_52993d4f07a2ff 1277-1308
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "155d536109a292e80860bb3acf3b3de3ede51cb7",
+  "prompts": {},
+  "sessions": {
+    "s_7d4d2043db4111": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cbeef8ee-16ed-4aed-b926-c1546f14fb33",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
