@@ -1,0 +1,39 @@
+apps/dashboard/components/pay-mapping/pay-mapping-analysis.test.tsx
+  s_7d4d2043db4111::t_481d641ce8d6de 258
+  s_7d4d2043db4111::t_9a81f22937d3f2 337
+  s_7d4d2043db4111::t_297642b176e48d 47-51,246
+apps/dashboard/components/pay-mapping/pay-mapping-journey-card.test.tsx
+  s_7d4d2043db4111::t_297642b176e48d 40-43,195
+  s_7d4d2043db4111::t_9a81f22937d3f2 204,220
+apps/dashboard/components/pay-mapping/actions-overview.test.tsx
+  s_7d4d2043db4111::t_9a81f22937d3f2 137
+apps/dashboard/components/pay-mapping/pay-mapping-run-context.tsx
+  s_7d4d2043db4111::t_a16370fe6f8fba 3,11,13-22,30-40,43-48,57,60-86,88
+apps/dashboard/components/pay-mapping/pay-mapping-overview.test.tsx
+  s_7d4d2043db4111::t_9a81f22937d3f2 121
+apps/dashboard/components/pay-mapping/pay-mapping-analysis.tsx
+  s_7d4d2043db4111::t_2bfbbaeec3d4e2 335
+  s_7d4d2043db4111::t_b8e0b8d0519a32 55
+  s_7d4d2043db4111::t_653e35088de04f 144-145,260
+apps/dashboard/components/pay-mapping/pay-mapping-journey-card.tsx
+  s_7d4d2043db4111::t_653e35088de04f 25,32
+apps/dashboard/components/pay-mapping/pay-mapping-run-shell.tsx
+  s_7d4d2043db4111::t_9a81f22937d3f2 102-104
+  s_7d4d2043db4111::t_a06643afce32a7 67-71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "76524230a134398fa0563177f9c1b5301103ce6a",
+  "prompts": {},
+  "sessions": {
+    "s_7d4d2043db4111": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cbeef8ee-16ed-4aed-b926-c1546f14fb33",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
