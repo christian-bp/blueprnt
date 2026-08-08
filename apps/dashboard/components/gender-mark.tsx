@@ -73,13 +73,110 @@ export const GENDER_MARK_BORDER = {
   strokeWidth: 1,
 } as const
 
-// A hatch cannot survive on a scatter dot (the pattern tile is wider than the
-// mark), so a dot chart carries the same distinction as filled against
-// outlined, in the same ink. Solid still means women.
+// A point mark encodes gender by SHAPE ALONE: a triangle is women, a circle
+// is men, everywhere in the app. Both are solid, in the same ink.
+//
+// Shape rather than fill, because two overlapping marks that differ only in
+// fill cannot be counted, and a dot plot's whole job is showing where
+// individuals sit. A hatch cannot do it at all here: the pattern tile is
+// wider than the mark, which is why area marks (bars, bands) keep the hatch
+// and point marks do not.
+//
+// Once the shape carries the meaning, outlining one series is redundant and
+// costs twice: a hollow mark reads fainter than the solid one beside it, so
+// the two series stop looking like one dataset, and the hollow one was the
+// harder hover target. Solid-vs-outlined also made the men's series the
+// "unmarked" case, which the encoding deliberately avoids.
+//
+// The two shapes carry equal visual weight: recharts draws symbols through
+// d3-shape, where `size` is AREA in square pixels, so a triangle and a
+// circle at the same size cover the same amount of ink.
+//
+// Each mark carries a hairline stroke in the CARD's colour, not the ink.
+// Solid marks in one colour merge into a single blob where they overlap,
+// and a dot plot of 22 salaries overlaps constantly; a background-coloured
+// edge separates neighbours without adding a second visual channel. This is
+// the point family's counterpart to GENDER_MARK_BORDER, which gives a
+// hatched AREA the silhouette it otherwise lacks.
 export const GENDER_DOT = {
-  women: { fill: "var(--gender-woman)", stroke: "none", strokeWidth: 0 },
-  men: { fill: "none", stroke: "var(--gender-man)", strokeWidth: 1.5 },
+  women: {
+    shape: "triangle",
+    fill: "var(--gender-woman)",
+    stroke: "var(--card)",
+    strokeWidth: 1,
+  },
+  men: {
+    shape: "circle",
+    fill: "var(--gender-man)",
+    stroke: "var(--card)",
+    strokeWidth: 1,
+  },
 } as const
+
+// One point mark, drawn at (cx, cy) in SVG. Charts that let recharts place
+// their symbols get the shape through GENDER_DOT's `shape`; a chart that
+// renders its own dots (to add a selection ring, say) uses this, so the two
+// paths cannot drift into drawing different shapes for the same series.
+//
+// `size` is the mark's AREA, matching d3-shape's own convention, so a
+// triangle and a circle at one size cover the same ink.
+export function GenderPointMark({
+  cx,
+  cy,
+  series,
+  size = 64,
+}: {
+  cx: number
+  cy: number
+  series: GenderSeries
+  size?: number
+}) {
+  const stroke = { stroke: "var(--card)", strokeWidth: 1 }
+  if (series === "men") {
+    return (
+      <circle
+        cx={cx}
+        cy={cy}
+        r={Math.sqrt(size / Math.PI)}
+        fill="var(--gender-man)"
+        {...stroke}
+      />
+    )
+  }
+  // Equilateral triangle of the same area: side = sqrt(4 * area / sqrt(3)),
+  // centred on its centroid so it sits on the same baseline as the circle.
+  const side = Math.sqrt((4 * size) / Math.sqrt(3))
+  const height = (side * Math.sqrt(3)) / 2
+  return (
+    <path
+      d={`M ${cx} ${cy - (height * 2) / 3} L ${cx + side / 2} ${cy + height / 3} L ${cx - side / 2} ${cy + height / 3} Z`}
+      fill="var(--gender-woman)"
+      {...stroke}
+    />
+  )
+}
+
+// A POINT mark's key: the same triangle/circle the scatter draws, so the
+// legend and the hover show the object the chart shows. An area chart's key
+// stays the hatched square (genderKeyStyle); using that one beside a scatter
+// was the bug this replaces, where the legend showed a hatched square for a
+// series drawn as a hollow ring.
+//
+// Sized and inset like GenderMenIcon so both keys occupy the same 12x12 box
+// and neither series reads as the smaller one.
+export function GenderDotIcon({ series }: { series: GenderSeries }) {
+  return (
+    <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+      {series === "women" ? (
+        // An equilateral triangle inscribed so its area matches the circle
+        // below it, mirroring how d3-shape normalises symbol size to area.
+        <path d="M6 1.2 L11.2 10.4 L0.8 10.4 Z" fill="var(--gender-woman)" />
+      ) : (
+        <circle cx="6" cy="6" r="4.6" fill="var(--gender-man)" />
+      )}
+    </svg>
+  )
+}
 
 // The men series' key inside a chart TOOLTIP, drawn as a hatched chip so the
 // hover never shows a solid swatch for a series the chart draws hatched. Goes
@@ -203,18 +300,29 @@ export function GenderKeyRow({
   series,
   label,
   value,
+  mark = "area",
 }: {
   series: GenderSeries
   label: string
   value?: string
+  // Which family of mark this legend belongs to. "area" is the hatched
+  // square (bars, bands, arcs); "point" is the scatter's own triangle or
+  // circle. A legend must show the object its chart shows.
+  mark?: "area" | "point"
 }) {
   return (
     <div className="flex w-full items-center gap-2">
-      <span
-        aria-hidden
-        className="size-2.5 shrink-0 rounded-[2px]"
-        style={genderKeyStyle(series)}
-      />
+      {mark === "point" ? (
+        <span className="size-2.5 shrink-0">
+          <GenderDotIcon series={series} />
+        </span>
+      ) : (
+        <span
+          aria-hidden
+          className="size-2.5 shrink-0 rounded-[2px]"
+          style={genderKeyStyle(series)}
+        />
+      )}
       <span className="text-muted-foreground">{label}</span>
       {value !== undefined && (
         <span className="ml-auto font-medium text-foreground tabular-nums">
@@ -228,9 +336,11 @@ export function GenderKeyRow({
 export function GenderLegend({
   items,
   className,
+  mark = "area",
 }: {
   items: { series: GenderSeries; label: string; value?: string }[]
   className?: string
+  mark?: "area" | "point"
 }) {
   // gap-1.5 and text-sm mirror ChartTooltipContent's own list, so the row pitch
   // matches the hover's.
@@ -242,6 +352,7 @@ export function GenderLegend({
           series={item.series}
           label={item.label}
           value={item.value}
+          mark={mark}
         />
       ))}
     </div>

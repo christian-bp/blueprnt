@@ -21,10 +21,10 @@ import {
   YAxis,
 } from "recharts"
 import {
-  GENDER_DOT,
+  GenderDotIcon,
+  GenderPointMark,
   GenderLegend,
   GenderMenIcon,
-  genderKeyStyle,
 } from "@/components/gender-mark"
 import { useOrganization } from "@/components/org-context"
 import { WidgetCard } from "@/components/widget-card"
@@ -181,11 +181,11 @@ export function PayComparisonTooltip({
         {point.seniority} &middot; {point.payYear}
       </p>
       <p className="flex items-center gap-1.5 text-muted-foreground">
-        <span
-          aria-hidden="true"
-          className="size-2 shrink-0 rounded-[2px]"
-          style={genderKeyStyle(genderSeries)}
-        />
+        {/* The hover shows the same mark the plot draws: a point chart's
+            key is its triangle or circle, never the area charts' square. */}
+        <span aria-hidden="true" className="size-2.5 shrink-0">
+          <GenderDotIcon series={genderSeries} />
+        </span>
         {tGender(point.gender)}
       </p>
 
@@ -242,7 +242,6 @@ function GenderDot({
 }) {
   if (cx === undefined || cy === undefined) return null
   const isSelf = payload?.isSelf ?? false
-  const mark = payload?.gender === "Man" ? GENDER_DOT.men : GENDER_DOT.women
   return (
     <>
       {isSelf && (
@@ -255,13 +254,13 @@ function GenderDot({
           strokeWidth={1.5}
         />
       )}
-      <circle
+      {/* Through the shared mark, so this chart's hand-placed dots draw the
+          same triangle/circle as the ones recharts places elsewhere. */}
+      <GenderPointMark
         cx={cx}
         cy={cy}
-        r={5}
-        fill={mark.fill}
-        stroke={mark.stroke === "none" ? "var(--background)" : mark.stroke}
-        strokeWidth={mark.stroke === "none" ? 1 : mark.strokeWidth}
+        series={payload?.gender === "Man" ? "men" : "women"}
+        size={78}
       />
     </>
   )
@@ -371,6 +370,7 @@ function PayComparisonChart({
       </ChartContainer>
       {/* Both series are named here, so gender is never mark-alone. */}
       <GenderLegend
+        mark="point"
         items={[
           { series: "women", label: tGender("Kvinna") },
           { series: "men", label: tGender("Man") },

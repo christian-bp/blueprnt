@@ -19,9 +19,9 @@ import {
 } from "recharts"
 import {
   GENDER_DOT,
+  GenderDotIcon,
   GenderLegend,
   GenderMenIcon,
-  genderKeyStyle,
 } from "@/components/gender-mark"
 import { WidgetCard } from "@/components/widget-card"
 import { useMoney } from "@/hooks/use-money"
@@ -165,11 +165,9 @@ export function DotPlotTooltipContent({
         {point.erased ? tDetail("erased") : point.name}
       </p>
       <p className="flex items-center gap-1.5 text-muted-foreground">
-        <span
-          aria-hidden="true"
-          className="size-2 shrink-0 rounded-[2px]"
-          style={genderKeyStyle(point.woman ? "women" : "men")}
-        />
+        <span aria-hidden="true" className="size-2.5 shrink-0">
+          <GenderDotIcon series={point.woman ? "women" : "men"} />
+        </span>
         {tGender(point.woman ? "Kvinna" : "Man")}
       </p>
       <dl className="mt-2 space-y-0.5 border-t pt-2">
@@ -197,8 +195,8 @@ export function DotPlotTooltipContent({
 // member as a dot on the group's primary pay measure, one swimlane per
 // gender (women on top), vertical reference lines at both gender means, and
 // the span between them shaded and labeled with the gap in kr and %. Women
-// draw solid, men as an outline in the same ink (a hatch cannot survive a
-// dot), with the text legend keeping the key honest.
+// draw as a solid triangle, men as an outlined circle in the same ink
+// (GENDER_DOT), with the text legend keeping the key honest.
 export function PayGapDotPlot({
   group,
   rows,
@@ -211,7 +209,6 @@ export function PayGapDotPlot({
   const t = useTranslations("dashboard.payMapping.dotPlot")
   const tHelp = useTranslations("dashboard.help")
   const tGender = useTranslations("dashboard.people.gender")
-  const format = useFormatter()
   const money = useMoney()
 
   // Memoized: the model walks the whole group per build, and the detail
@@ -230,14 +227,6 @@ export function PayGapDotPlot({
   } satisfies ChartConfig
 
   const meanLabels = meanLabelPlacement(model.womenMean, model.menMean)
-
-  const gapLabel =
-    model.gapKr !== null && model.gapPct !== null
-      ? t("gapLabel", {
-          kr: money(Math.abs(model.gapKr), currency),
-          pct: percentText(model.gapPct, format),
-        })
-      : null
 
   return (
     <WidgetCard
@@ -279,25 +268,21 @@ export function PayGapDotPlot({
                 value === WOMEN_LANE ? tGender("Kvinna") : tGender("Man")
               }
             />
-            {/* The gap band: a light fill between the two means under the
+            {/* The gap band: a light fill between the two means, under the
                 labeled reference lines (a fill stays light under visible
-                strokes; the strokes carry the reading). */}
+                strokes; the strokes carry the reading).
+
+                The band carries NO figure of its own. The gap is already
+                stated as a badge above the plot, and repeating it here put
+                the same percentage on screen twice within one card. The
+                band's job is showing how wide the gap is, which is
+                something only it can do. */}
             {model.womenMean !== null && model.menMean !== null && (
               <ReferenceArea
                 x1={Math.min(model.womenMean, model.menMean)}
                 x2={Math.max(model.womenMean, model.menMean)}
                 fill="var(--brand)"
                 fillOpacity={0.06}
-                {...(gapLabel !== null
-                  ? {
-                      label: {
-                        value: gapLabel,
-                        position: "top" as const,
-                        fontSize: CHART_AXIS_FONT_SIZE,
-                        fill: "var(--muted-foreground)",
-                      },
-                    }
-                  : {})}
               />
             )}
             {/* Placement is meanLabelPlacement's call; see it for why. */}
@@ -345,6 +330,7 @@ export function PayGapDotPlot({
         </ChartContainer>
         {/* Both series named in text, so gender is never mark-alone. */}
         <GenderLegend
+          mark="point"
           items={[
             { series: "women", label: tGender("Kvinna") },
             { series: "men", label: tGender("Man") },

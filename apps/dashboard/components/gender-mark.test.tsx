@@ -4,6 +4,7 @@ import { cleanup, render } from "@testing-library/react"
 import { afterEach, describe, expect, it } from "vitest"
 import {
   GENDER_DOT,
+  GenderPointMark,
   GenderHatch,
   GenderMenIcon,
   orderGenderPayload,
@@ -67,12 +68,46 @@ describe("gender marks", () => {
     expect(new Set(ids).size).toBe(2)
   })
 
-  it("separates scatter dots by fill and outline, not by color", () => {
-    // Both marks draw in the same ink; only fill vs stroke differs.
+  it("separates point marks by SHAPE, not by colour or by fill", () => {
+    // Shape carries the whole distinction on a point mark: two overlapping
+    // marks differing only in fill cannot be counted, and a hatch cannot
+    // survive a mark narrower than its pattern tile.
+    expect(GENDER_DOT.women.shape).toBe("triangle")
+    expect(GENDER_DOT.men.shape).toBe("circle")
+    // Both solid, in the same ink. Outlining one series made it read as the
+    // secondary case and was the harder hover target.
     expect(GENDER_DOT.women.fill).toBe("var(--gender-woman)")
-    expect(GENDER_DOT.men.fill).toBe("none")
-    expect(GENDER_DOT.men.stroke).toBe("var(--gender-man)")
-    expect(GENDER_DOT.men.strokeWidth).toBeGreaterThan(0)
+    expect(GENDER_DOT.men.fill).toBe("var(--gender-man)")
+  })
+
+  it("edges every point mark in the card's colour, never the ink", () => {
+    // Solid marks in one colour merge where they overlap, and a dot plot of
+    // 22 salaries overlaps constantly. A background-coloured hairline
+    // separates neighbours without adding a second visual channel.
+    for (const mark of [GENDER_DOT.women, GENDER_DOT.men]) {
+      expect(mark.stroke).toBe("var(--card)")
+      expect(mark.strokeWidth).toBeGreaterThan(0)
+    }
+  })
+
+  it("draws both point shapes at equal area", () => {
+    // d3-shape sizes symbols by AREA, and GenderPointMark mirrors it, so
+    // neither gender reads as the smaller mark.
+    const { container } = render(
+      <>
+        <svg aria-label="women">
+          <GenderPointMark cx={20} cy={20} series="women" size={100} />
+        </svg>
+        <svg aria-label="men">
+          <GenderPointMark cx={20} cy={20} series="men" size={100} />
+        </svg>
+      </>
+    )
+    const circle = container.querySelector("circle")
+    const radius = Number(circle?.getAttribute("r"))
+    expect(Math.PI * radius * radius).toBeCloseTo(100, 1)
+    // The triangle is drawn as a path; its three points bound the same area.
+    expect(container.querySelector("path")?.getAttribute("d")).toContain("M 20")
   })
 
   it("gives the men mark a stripe at both scales, women none", () => {
