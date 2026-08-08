@@ -179,6 +179,7 @@
   body {
     @apply bg-background text-foreground;
     }
+
   html {
     @apply font-sans;
     }
@@ -210,4 +211,30 @@
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+/* Charts and their focus ring.
+ *
+ * recharts makes the plot surface focusable so keyboard users can step
+ * through the data (accessibilityLayer). shadcn's ChartContainer then
+ * silences that focus with `[&_.recharts-surface]:outline-hidden`, which
+ * leaves a focusable element with no visible focus at all: a keyboard user
+ * tabs into a chart and sees nothing.
+ *
+ * These rules live OUTSIDE @layer on purpose. ChartContainer's utilities
+ * sit in @layer utilities and would otherwise win.
+ *
+ * The surface gets the design system's own ring on KEYBOARD focus only.
+ * Everything inside it gets none, ever: a click lands focus on whichever
+ * internal element was hit and the browser would outline a shape in the
+ * middle of the plot, which says nothing to the reader. ChartContainer
+ * names the surface, the layers and the sectors one by one; this covers
+ * the rest without having to enumerate them.
+ */
+[data-slot="chart"] :focus {
+  outline: none;
+}
+[data-slot="chart"] .recharts-surface:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
