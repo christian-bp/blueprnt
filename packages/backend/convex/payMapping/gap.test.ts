@@ -75,7 +75,7 @@ async function seedRun(
 }
 
 describe("getPayMappingGap", () => {
-  it("groups equal-work by (roleTitle, level, seniority) and computes both metrics", async () => {
+  it("groups equal-work by (roleTitle, level) and computes both metrics", async () => {
     const t = initConvexTest()
     // One equal-work group: SWE, level 3, Senior, 2 women @ 90k, 2 men @ 100k.
     const { orgId, runId, asHr } = await seedRun(t, [
@@ -119,7 +119,9 @@ describe("getPayMappingGap", () => {
     expect(result?.equalWork).toHaveLength(1)
     const group = result?.equalWork[0]
     expect(group?.roleTitle).toBe("SWE")
-    expect(group?.seniority).toBe("Senior")
+    // A group spans every seniority step in the title at this level
+    // (ADR-0017), so it carries none of its own.
+    expect(group?.seniority).toBeNull()
     expect(group?.level).toBe(3)
     expect(group?.womenCount).toBe(2)
     expect(group?.menCount).toBe(2)
@@ -311,9 +313,10 @@ describe("getPayMappingGap", () => {
 
     expect(result?.excluded.genderPure).toEqual([
       {
-        key: "Lead|1|Staff",
+        // roleTitle|level (ADR-0017), and no seniority of its own.
+        key: "Lead|1",
         roleTitle: "Lead",
-        seniority: "Staff",
+        seniority: null,
         level: 1,
         gender: "Man",
         count: 2,

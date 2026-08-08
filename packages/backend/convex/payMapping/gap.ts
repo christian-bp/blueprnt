@@ -142,15 +142,14 @@ interface Bucket {
 type SnapshotRow = Doc<"payMappingSnapshotRows">
 
 // The equal-work group key a snapshot row belongs to. The single source for
-// the "roleTitle|level|seniority" format: the grouping below, the work
-// layer's target-membership validation, and every label derivation resolve
-// through this same builder so the key format can never drift.
+// the "roleTitle|level" format: the grouping below, the work layer's
+// target-membership validation, and every label derivation resolve through
+// this same builder so the key format can never drift.
 export function equalWorkGroupKey(row: {
   roleTitle: string
   level: number | null
-  seniority: string
 }): string {
-  return `${row.roleTitle}|${row.level ?? "none"}|${row.seniority}`
+  return `${row.roleTitle}|${row.level ?? "none"}`
 }
 
 // Frozen: this object is aliased into every masked group of every result.
@@ -278,7 +277,11 @@ export function buildGapAggregates(rows: SnapshotRow[]): {
   const currency =
     priced.find((r) => r.currency !== undefined)?.currency ?? null
 
-  // Steg 1, lika arbete (equal work): (roleTitle, level, seniority).
+  // Steg 1, lika arbete (equal work): (roleTitle, level). Seniority is
+  // deliberately NOT part of the key; see ADR-0017. In short: 8 § is about
+  // the duties, experience is a REASON a documenter gives inside a group
+  // (the reason list already offers it), and splitting on it left 96 people
+  // with no counterpart of the other gender at all.
   const equalWorkMap = new Map<string, Bucket>()
   for (const row of priced) {
     const key = equalWorkGroupKey(row)
@@ -287,7 +290,12 @@ export function buildGapAggregates(rows: SnapshotRow[]): {
       bucket = {
         key,
         roleTitle: row.roleTitle,
-        seniority: row.seniority,
+        // A group spans every seniority step in the title at this level
+        // (ADR-0017), so it has none of its own. Taking the first row's
+        // would name the whole group after whoever happened to be first.
+        // The step stays visible per person in the member table, which is
+        // where it helps a documenter weigh experience as a reason.
+        seniority: null,
         level: row.level,
         women: [],
         men: [],

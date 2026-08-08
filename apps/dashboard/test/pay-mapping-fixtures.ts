@@ -33,7 +33,11 @@ export function makeGapGroup(
   return {
     key: "SWE|3|Senior",
     roleTitle: "SWE",
-    seniority: "Senior",
+    // A group spans every seniority step in its title at this level
+    // (ADR-0017), so the engine gives it none. Fixtures mirror that, or
+    // every assertion about a group's label is testing a shape the engine
+    // never produces.
+    seniority: null,
     level: 3,
     womenCount: 2,
     menCount: 2,
