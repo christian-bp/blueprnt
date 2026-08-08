@@ -1,0 +1,329 @@
+apps/dashboard/components/pay-mapping/analysis-chapters.ts
+  s_7d4d2043db4111::t_b1cef6b60b0ea9 2-13
+  s_7d4d2043db4111::t_aa61a872d819ca 47-50
+  s_7d4d2043db4111::t_5dee87e8eed47d 14-46,51-68
+  s_7d4d2043db4111::t_4381341a9c1b0f 69-83
+  s_7d4d2043db4111::t_a3b81f21852721 1
+apps/dashboard/app/(app)/pay-mappings/[slug]/analysis/layout.tsx
+  s_7d4d2043db4111::t_782bf6bc9ff539 1-17
+apps/dashboard/components/pay-mapping/analysis-chapter-tabs.tsx
+  s_7d4d2043db4111::t_87daacdd3d838d 5,7-9,12,14-16,21,27-37,64-78,93-98,100-103
+  s_7d4d2043db4111::t_f34e5e4697bdac 3-4,79,92
+  s_7d4d2043db4111::t_c5637de8d05233 11
+  s_7d4d2043db4111::t_0d484f618aaf4e 13
+  s_7d4d2043db4111::t_a3a4bddfcc08b1 18-20,22-26,40-57,59,61
+  s_7d4d2043db4111::t_78214bb37e6d7e 80-91
+  s_7d4d2043db4111::t_e21a6d8f2a128e 39
+apps/dashboard/app/(app)/pay-mappings/[slug]/analysis/page.tsx
+  s_7d4d2043db4111::t_c24c4b17a05799 1,3-19
+apps/dashboard/components/pay-mapping/pay-mapping-gap-types.ts
+  s_7d4d2043db4111::t_27b5d14deb7c61 159,275-281,298-302
+  s_7d4d2043db4111::t_87df1f30129008 202,204-205
+apps/dashboard/components/pay-mapping/analysis-section-shell.tsx
+  s_7d4d2043db4111::t_db6e8533ab35a7 4,31
+  s_7d4d2043db4111::t_8b1306dec5f4ed 5-6,12-13,15,20-22,29-30,36,43-46,51-53,61-65
+  s_7d4d2043db4111::t_674026a01df666 54-55
+  s_7d4d2043db4111::t_ce27cc1252e3d3 16-18
+  s_7d4d2043db4111::t_4faaf8529f6f77 8-11
+  s_7d4d2043db4111::t_d4ed0fc3bab9bc 33,60
+  s_7d4d2043db4111::t_d2b999e0ae16a7 56-59
+  s_7d4d2043db4111::t_4366b7c68630c2 23-28,32,37
+  s_7d4d2043db4111::t_bcddfece0b4671 38-42,47-50
+  s_7d4d2043db4111::t_6aac2a0fca122e 7,19
+packages/backend/convex/payMapping/analyses.test.ts
+  s_7d4d2043db4111::t_a0e3ad5f9303af 76,98,121,312,456
+  s_7d4d2043db4111::t_3f2ea4b3b7d452 365
+apps/dashboard/components/pay-mapping/documentation-controls.test.tsx
+  s_7d4d2043db4111::t_d1d17f1b70334f 123-129,131-134,137,139-140
+apps/dashboard/components/pay-mapping/pay-mapping-analysis.test.tsx
+  s_7d4d2043db4111::t_353a59fcd1e7c6 1-2
+  s_7d4d2043db4111::t_d444effa58e5df 654,695-696,699-702,726-739
+  s_7d4d2043db4111::t_8ac730b1de549a 63
+  s_7d4d2043db4111::t_f642f1a33d3d19 394,402,431,439,525,629,718-721
+  s_7d4d2043db4111::t_db261942d90c2c 403-404,453,602,633
+  s_7d4d2043db4111::t_f776598fd4fa08 60-62
+  s_7d4d2043db4111::t_0fbf7bebb503de 638,640,644-645,649-650
+  s_7d4d2043db4111::t_1907735f897b71 561-562
+  s_7d4d2043db4111::t_ee912a4218eb91 379-380,563,618,621-623
+  s_7d4d2043db4111::t_481a491439641a 291-292,294
+  s_7d4d2043db4111::t_0dbb2008fe404d 764,766-791
+  s_7d4d2043db4111::t_58412e9f7df20d 420-423
+  s_7d4d2043db4111::t_2a1d679e337141 19,22-24
+  s_7d4d2043db4111::t_0506cbdc3f9bdf 441,534
+  s_7d4d2043db4111::t_debc2d0007a9ef 84,94,109,139,146,153,164,170,714
+  s_7d4d2043db4111::t_e4c0d54624163b 450,553,601,676,752
+  s_7d4d2043db4111::t_ca496b06ddced7 411,419,432,440
+  s_7d4d2043db4111::t_d24e4e7efa4fe9 616-617,667
+  s_7d4d2043db4111::t_3d765e0a387835 356,498,508,511,533,546,641,646,663
+  s_7d4d2043db4111::t_20892e68d559f2 389-392,398,657-660,664
+  s_7d4d2043db4111::t_c8394135f97157 253-254,324,367-369,371
+  s_7d4d2043db4111::t_70a2a8ba0efd00 792-809
+  s_7d4d2043db4111::t_e19b41e6e45628 269,570-575,578-579,584,586,592,596
+  s_7d4d2043db4111::t_534e3215975f88 554-557,559-560
+  s_7d4d2043db4111::t_d4be968b8b69ae 474-476,478
+  s_7d4d2043db4111::t_73623c2bf84fa1 59
+packages/backend/convex/payMapping/runs.test.ts
+  s_7d4d2043db4111::t_a0e3ad5f9303af 746-747
+apps/dashboard/components/pay-mapping/pay-mapping-analysis.tsx
+  s_7d4d2043db4111::t_3c7422d4f19051 480-483,512-517,519
+  s_7d4d2043db4111::t_a5cc5187c4f756 890,893
+  s_7d4d2043db4111::t_60df5d75421e57 36
+  s_7d4d2043db4111::t_1662031c37f980 237-240
+  s_7d4d2043db4111::t_345ef557deac55 678,683
+  s_7d4d2043db4111::t_c3db1cda7e8296 249-255,520
+  s_7d4d2043db4111::t_dedd9a10de7391 34,172
+  s_7d4d2043db4111::t_4faaf8529f6f77 37
+  s_7d4d2043db4111::t_f96072c1c52e1e 155-157,165
+  s_7d4d2043db4111::t_ae7ae421646af9 876-889,891-892,894-904
+  s_7d4d2043db4111::t_808296edc9224d 245-247
+  s_7d4d2043db4111::t_29e07750e73b2d 466-476
+  s_7d4d2043db4111::t_b7b41c28a906f2 160-163
+  s_7d4d2043db4111::t_9d2094ba3206df 463-465,479,485-491
+  s_7d4d2043db4111::t_e3b49b179fe201 484,518,676,679-681
+  s_7d4d2043db4111::t_a753a17a12c6f2 460-462
+  s_7d4d2043db4111::t_fddbff19c1473f 428
+  s_7d4d2043db4111::t_f6199188a40e10 826-831,835,865,867
+  s_7d4d2043db4111::t_36425bd4dc1864 158-159,164
+  s_7d4d2043db4111::t_4a23222a48c923 1013-1018
+  s_7d4d2043db4111::t_482c144d14fa59 477-478
+  s_7d4d2043db4111::t_dfc6763e2afca8 814,816-821,823
+  s_7d4d2043db4111::t_ef16032b9f5e25 248
+  s_7d4d2043db4111::t_893fed29bd8fcf 69-88
+  s_7d4d2043db4111::t_d0b4ffb0f51a9c 89,521
+apps/dashboard/app/(app)/pay-mappings/[slug]/analysis/praxis/page.tsx
+  s_7d4d2043db4111::t_09031c1e3ff2bc 1-10
+packages/backend/convex/payMapping/tables.ts
+  s_7d4d2043db4111::t_b49dbf2e864556 135-153,167-172
+apps/dashboard/components/pay-mapping/pay-mapping-tabs.tsx
+  s_7d4d2043db4111::t_5123219805fffc 5,17-21,24-28,54,56,58
+packages/i18n/messages/en.json
+  s_7d4d2043db4111::t_9fe37e50431c41 1207
+  s_7d4d2043db4111::t_2b615ba9a7b803 1305
+  s_7d4d2043db4111::t_62a590def3cc52 1158
+  s_7d4d2043db4111::t_1a9e771c48dd10 1228-1229
+  s_7d4d2043db4111::t_4d8cdcaaa939af 1230-1231,1258-1259
+  s_7d4d2043db4111::t_9854a39091e267 1220-1227
+  s_7d4d2043db4111::t_75c91953303629 1419
+  s_7d4d2043db4111::t_9ba3329c75fb7c 1392-1393
+  s_7d4d2043db4111::t_487aff37a161a5 1475
+  s_7d4d2043db4111::t_d2d7fdf461e317 1473-1474,1476-1479
+  s_7d4d2043db4111::t_bb7520b41156b4 1208-1210
+  s_7d4d2043db4111::t_e1f92c90b413f6 1206
+  s_7d4d2043db4111::t_7bbbd0c7a912da 1192
+  s_7d4d2043db4111::t_40b2d2f2c4b8ab 1306-1307
+  s_7d4d2043db4111::t_fe1b16fc8683d8 1971
+packages/i18n/messages/sv.json
+  s_7d4d2043db4111::t_d2d7fdf461e317 1473-1479
+  s_7d4d2043db4111::t_e1f92c90b413f6 1206
+  s_7d4d2043db4111::t_1a9e771c48dd10 1228-1229
+  s_7d4d2043db4111::t_62a590def3cc52 1158
+  s_7d4d2043db4111::t_7bbbd0c7a912da 1192
+  s_7d4d2043db4111::t_9ba3329c75fb7c 1392-1393
+  s_7d4d2043db4111::t_40b2d2f2c4b8ab 1306-1307
+  s_7d4d2043db4111::t_bb7520b41156b4 1208-1210
+  s_7d4d2043db4111::t_4d8cdcaaa939af 1230-1231,1258-1259
+  s_7d4d2043db4111::t_9854a39091e267 1220-1227
+  s_7d4d2043db4111::t_fe1b16fc8683d8 1971
+  s_7d4d2043db4111::t_75c91953303629 1419
+  s_7d4d2043db4111::t_9fe37e50431c41 1207
+  s_7d4d2043db4111::t_2b615ba9a7b803 1305
+docs/superpowers/analysis/lonekartlaggning-progress-tracker.html
+  s_7d4d2043db4111::t_71ca0952199305 487-488
+apps/dashboard/components/pay-mapping/comparator-table.test.tsx
+  s_7d4d2043db4111::t_64b33ce7649360 1,6-8,24,26-28,30-38,53-63,66-68,70-78,81-101,104-116,118
+  s_7d4d2043db4111::t_e67846b6c43c15 69
+  s_7d4d2043db4111::t_462f541b7030a2 43-44,48,117
+apps/dashboard/components/pay-mapping/analysis-spine.tsx
+  s_7d4d2043db4111::t_9ba3329c75fb7c 4,8,40,83-93,95,97-100,103-106,108-109,123-124,126-138,143-171
+  s_7d4d2043db4111::t_695cbb5c1de5c5 111-115
+  s_7d4d2043db4111::t_04a8694512161c 47-58,64-67,77-78,139-142
+  s_7d4d2043db4111::t_ce27cc1252e3d3 28-31,101-102
+  s_7d4d2043db4111::t_bba5d8df335d1f 116,122
+  s_7d4d2043db4111::t_63f10a20991a3f 33-34
+  s_7d4d2043db4111::t_7a1fc684dffdc4 19,32
+  s_7d4d2043db4111::t_b7e2afe3577978 18,25-27,76,79-82,96,107,110,172
+  s_7d4d2043db4111::t_dab286516546aa 119-121
+  s_7d4d2043db4111::t_2aea47aed438a9 117-118,125
+apps/dashboard/components/pay-mapping/chapter-bar.tsx
+  s_7d4d2043db4111::t_8ac730b1de549a 5
+apps/dashboard/components/pay-mapping/comparator-table.tsx
+  s_7d4d2043db4111::t_b8157c69db235a 96-101,103-104
+  s_7d4d2043db4111::t_4d8cdcaaa939af 102
+  s_7d4d2043db4111::t_5dc8914113498c 81-85,89
+  s_7d4d2043db4111::t_e88a9bee9d1fba 13,15,23,26,29-44,50,72,74,78-80,86-88,90,92-94,106-108,165-166,209-210
+  s_7d4d2043db4111::t_ef75016d74db12 173-204
+  s_7d4d2043db4111::t_e85e26985f4574 91
+  s_7d4d2043db4111::t_9e411c1e5787b9 11-12,46-47,52-63,66,95,105,109-164,167-172,205-208
+apps/dashboard/components/pay-mapping/actions-overview.tsx
+  s_7d4d2043db4111::t_f5ad0895b3ab1e 71-73
+  s_7d4d2043db4111::t_a67e9e0514891f 53,85-90
+  s_7d4d2043db4111::t_a6e61e46a8a5ec 63-67,69-70,80-82,91-93,98-100
+  s_7d4d2043db4111::t_630b86d18530b7 79
+  s_7d4d2043db4111::t_ce27cc1252e3d3 166-168,170,347
+packages/backend/convex/payMapping/notes.ts
+  s_7d4d2043db4111::t_dc56d7577d47ad 132,161
+apps/dashboard/app/(app)/pay-mappings/[slug]/analysis/equivalent-work/page.tsx
+  s_7d4d2043db4111::t_09031c1e3ff2bc 1-10
+apps/dashboard/components/pay-mapping/women-dominated-underlying-data.tsx
+  s_7d4d2043db4111::t_1489011473050e 41-56,71,85,91-96
+  s_7d4d2043db4111::t_630b86d18530b7 61,67-68,78-83,86-90
+  s_7d4d2043db4111::t_de8a7a13fdfc3e 3
+apps/dashboard/components/pay-mapping/equal-work-detail.tsx
+  s_7d4d2043db4111::t_86c7be4a5402b6 215-224,229-241,243-247,249-253,255,257,259,261-262
+  s_7d4d2043db4111::t_81dadd9942ae47 12,122
+  s_7d4d2043db4111::t_9fe37e50431c41 210-211,213-214
+  s_7d4d2043db4111::t_5286dba3c08e82 3-4,29-56,68,72-86,88-96,98,100-101,107,121,125-126,128,130,242,248,254,256
+  s_7d4d2043db4111::t_a067e99ca0cce8 87,97,124
+  s_7d4d2043db4111::t_084139c4752c2f 5,7,57-67,69-71,99,102-106,108-120,123,127,129,131-133
+packages/backend/convex/payMapping/workLayer.ts
+  s_7d4d2043db4111::t_229a9748d1ef24 37-38,42-46,114-119
+  s_7d4d2043db4111::t_434019e46f78c4 30-32
+  s_7d4d2043db4111::t_3b303bad8bcc6f 54-60,62-64,66-67,97,100-104
+apps/dashboard/components/pay-mapping/actions-overview.test.tsx
+  s_7d4d2043db4111::t_fdcbf480c0f971 252-255
+  s_7d4d2043db4111::t_fa313e8f9dc7b4 236-238
+  s_7d4d2043db4111::t_8121296ce1fa65 257-258
+  s_7d4d2043db4111::t_51db955b5cd284 92,111,248,293
+packages/i18n/messages/da.json
+  s_7d4d2043db4111::t_9854a39091e267 1220-1227
+  s_7d4d2043db4111::t_d2d7fdf461e317 1473-1477,1479
+  s_7d4d2043db4111::t_9ba3329c75fb7c 1392-1393
+  s_7d4d2043db4111::t_1a9e771c48dd10 1228-1229
+  s_7d4d2043db4111::t_bb7520b41156b4 1208-1210
+  s_7d4d2043db4111::t_62a590def3cc52 1158
+  s_7d4d2043db4111::t_e1f92c90b413f6 1206
+  s_7d4d2043db4111::t_40b2d2f2c4b8ab 1306-1307
+  s_7d4d2043db4111::t_fe1b16fc8683d8 1971
+  s_7d4d2043db4111::t_487aff37a161a5 1478
+  s_7d4d2043db4111::t_2b615ba9a7b803 1305
+  s_7d4d2043db4111::t_7bbbd0c7a912da 1192
+  s_7d4d2043db4111::t_75c91953303629 1419
+  s_7d4d2043db4111::t_9fe37e50431c41 1207
+  s_7d4d2043db4111::t_4d8cdcaaa939af 1230-1231,1258-1259
+packages/i18n/messages/fi.json
+  s_7d4d2043db4111::t_e1f92c90b413f6 1206
+  s_7d4d2043db4111::t_75c91953303629 1419
+  s_7d4d2043db4111::t_62a590def3cc52 1158
+  s_7d4d2043db4111::t_4d8cdcaaa939af 1230-1231,1258-1259
+  s_7d4d2043db4111::t_487aff37a161a5 1476-1478
+  s_7d4d2043db4111::t_1a9e771c48dd10 1228-1229
+  s_7d4d2043db4111::t_9ba3329c75fb7c 1392-1393
+  s_7d4d2043db4111::t_9854a39091e267 1220-1227
+  s_7d4d2043db4111::t_40b2d2f2c4b8ab 1306-1307
+  s_7d4d2043db4111::t_bb7520b41156b4 1208-1210
+  s_7d4d2043db4111::t_d2d7fdf461e317 1473-1475,1479
+  s_7d4d2043db4111::t_9fe37e50431c41 1207
+  s_7d4d2043db4111::t_2b615ba9a7b803 1305
+  s_7d4d2043db4111::t_fe1b16fc8683d8 1971
+  s_7d4d2043db4111::t_7bbbd0c7a912da 1192
+apps/dashboard/components/app-shell.tsx
+  s_7d4d2043db4111::t_4107f8f0be77c7 23-33,58-60,95-99
+packages/backend/convex/lib/auditPayloads.ts
+  s_7d4d2043db4111::t_408acdbe8fbd89 366,385,391,404
+apps/dashboard/components/pay-mapping/review-group-step.tsx
+  s_7d4d2043db4111::t_f6d43c7bf4051c 314-319,352-366
+  s_7d4d2043db4111::t_e85e26985f4574 39
+  s_7d4d2043db4111::t_630b86d18530b7 308-313
+  s_7d4d2043db4111::t_6a0b9f74462f26 390-398,400,404-418,420-421,426-432
+  s_7d4d2043db4111::t_07472cc281454c 373-389
+  s_7d4d2043db4111::t_bd579003bedccd 338-350
+  s_7d4d2043db4111::t_e2f549ee1dc5ca 41,422-425
+  s_7d4d2043db4111::t_0b95afe6883975 34-38
+  s_7d4d2043db4111::t_b6e4cb2d3adc26 14-15,202
+  s_7d4d2043db4111::t_8605580d184a86 22
+  s_7d4d2043db4111::t_6e91ad33550ad2 320,351
+apps/dashboard/components/pay-mapping/pay-mapping-journey-card.tsx
+  s_7d4d2043db4111::t_8e7c010f41f8af 11-12,15-24,30,32-35,37,72-75,79,82-84
+  s_7d4d2043db4111::t_09687907f8575c 76-78
+apps/dashboard/components/pay-mapping/review-group-step.test.tsx
+  s_7d4d2043db4111::t_3e0715df06b284 382-384,386-387
+  s_7d4d2043db4111::t_4970ff86ea63b2 266,310,318-324,334-335,365
+  s_7d4d2043db4111::t_8bb5684b94cfca 259-263,265,278,307-309,316
+  s_7d4d2043db4111::t_08702065c958c1 7
+  s_7d4d2043db4111::t_66d3174aea774a 405,407-413,416,418-429,443-444
+  s_7d4d2043db4111::t_3ce7fd391cd53a 329-332,336-364
+  s_7d4d2043db4111::t_d1d17f1b70334f 430-442
+packages/backend/convex/payMapping/actions.test.ts
+  s_7d4d2043db4111::t_be5f207a6172f3 258-262,269-272,329-331,333,345-346,348-349
+  s_7d4d2043db4111::t_a0e3ad5f9303af 13-16,332,347,661
+  s_7d4d2043db4111::t_3f2ea4b3b7d452 196,599
+  s_7d4d2043db4111::t_28a1cab52d7553 87-108
+apps/dashboard/components/pay-mapping/pay-mapping-scatter.tsx
+  s_7d4d2043db4111::t_8e5cdbb0c60680 198-223
+  s_7d4d2043db4111::t_e99b31147e6dac 323-330
+  s_7d4d2043db4111::t_ba9946cbb3208b 20-21
+  s_7d4d2043db4111::t_5f56b14abd27f0 335
+  s_7d4d2043db4111::t_12ccfd2551b38a 178,185-189
+  s_7d4d2043db4111::t_314f315faa7fd7 17,124-128
+apps/dashboard/components/pay-mapping/pay-mapping-completion-panel.tsx
+  s_7d4d2043db4111::t_c5637de8d05233 21
+apps/dashboard/components/pay-mapping/analysis-chapter-tabs.test.tsx
+  s_7d4d2043db4111::t_d85483be6edf47 1,6,19-20,22-23,25-27,29-33,38,50-54,56-58,62-64,66,72-76,79,86-88,91,93,97-102,106-111,115-118
+  s_7d4d2043db4111::t_8b1ad7f8f0c7e8 7,59-61,65,67-69,77-78,83,85,112,119
+  s_7d4d2043db4111::t_3e46fc8f868b16 82,84,89-90,92,96,103,120-122
+  s_7d4d2043db4111::t_3781151b6b5c93 10-17,39-42,45
+packages/backend/convex/payMapping/actions.ts
+  s_7d4d2043db4111::t_dc56d7577d47ad 293,313
+apps/dashboard/components/pay-mapping/pay-mapping-journey-card.test.tsx
+  s_7d4d2043db4111::t_3895d9d9246d30 1,28-30,51-55,227-229,231-235,251-255,258-261,263-275,278-322,325-326
+  s_7d4d2043db4111::t_28880043b4e8c1 240-249
+apps/dashboard/components/pay-mapping/pay-mapping-tabs.test.tsx
+  s_7d4d2043db4111::t_23417b7ce47c60 35-37,40
+  s_7d4d2043db4111::t_fbaad260c18de0 60-70
+  s_7d4d2043db4111::t_07bf4eb95c6f2b 71-72
+apps/dashboard/app/(app)/pay-mappings/[slug]/analysis/start/page.tsx
+  s_7d4d2043db4111::t_09031c1e3ff2bc 1-10
+apps/dashboard/components/pay-mapping/group-member-table.tsx
+  s_7d4d2043db4111::t_a67defd0d46a01 69,110,127,155-156,225,293-298
+docs/go-live-checklist.md
+  s_7d4d2043db4111::t_2873988f498ec6 193,196-199
+apps/dashboard/app/(app)/pay-mappings/[slug]/analysis/equal-work/page.tsx
+  s_7d4d2043db4111::t_09031c1e3ff2bc 1-10
+apps/dashboard/components/pay-mapping/analysis-spine.test.tsx
+  s_7d4d2043db4111::t_de491696bed12c 45-49,53-63,68-77
+  s_7d4d2043db4111::t_2f4c53aafe0359 5,37
+  s_7d4d2043db4111::t_69a14c2ae5aec3 64,127-128
+  s_7d4d2043db4111::t_39b8efa45f1ca1 1
+  s_7d4d2043db4111::t_fb8e6180df0e6c 15,25-31
+  s_7d4d2043db4111::t_335c70a188af4c 80-97
+  s_7d4d2043db4111::t_17a05fdf7b23d2 16,24,100-113,116-123
+  s_7d4d2043db4111::t_9a1e2a10212c83 124-126,129
+packages/i18n/messages/nb.json
+  s_7d4d2043db4111::t_fe1b16fc8683d8 1971
+  s_7d4d2043db4111::t_d2d7fdf461e317 1473-1479
+  s_7d4d2043db4111::t_75c91953303629 1419
+  s_7d4d2043db4111::t_9ba3329c75fb7c 1392-1393
+  s_7d4d2043db4111::t_4d8cdcaaa939af 1230-1231,1258-1259
+  s_7d4d2043db4111::t_7bbbd0c7a912da 1192
+  s_7d4d2043db4111::t_9fe37e50431c41 1207
+  s_7d4d2043db4111::t_40b2d2f2c4b8ab 1306-1307
+  s_7d4d2043db4111::t_9854a39091e267 1220-1227
+  s_7d4d2043db4111::t_62a590def3cc52 1158
+  s_7d4d2043db4111::t_2b615ba9a7b803 1305
+  s_7d4d2043db4111::t_1a9e771c48dd10 1228-1229
+  s_7d4d2043db4111::t_e1f92c90b413f6 1206
+  s_7d4d2043db4111::t_bb7520b41156b4 1208-1210
+docs/superpowers/plans/2026-08-07-iteration-4-analysis-chapters-as-pages.md
+  s_7d4d2043db4111::t_0ac4ca393351b1 23,26,79,109,111
+  s_7d4d2043db4111::t_378d0acf89854e 64-76
+  s_7d4d2043db4111::t_596d0fc44790eb 52-63
+  s_7d4d2043db4111::t_bc51a92c3b1c9b 32-38,81,83,99,113
+  s_7d4d2043db4111::t_11a0f2fcc9db95 1-19,24-25,27-31,39-51,77-78,80,82,84-98,100-108,110,112,114-115
+  s_7d4d2043db4111::t_ac6ef3189794c8 20-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "e7c4637c25cfef805951ee2cad222d7ba957a9eb",
+  "prompts": {},
+  "sessions": {
+    "s_7d4d2043db4111": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cbeef8ee-16ed-4aed-b926-c1546f14fb33",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
