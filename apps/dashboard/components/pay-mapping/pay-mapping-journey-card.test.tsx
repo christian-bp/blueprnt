@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react"
+import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import en from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -25,6 +25,9 @@ vi.mock("@/components/org-context", () => ({
   useOrganization: () => ({ orgId: "org-1", role: "admin" }),
 }))
 
+import { ConvexError } from "convex/values"
+import { toast } from "@/lib/toast"
+import { mockMutation } from "@/test/convex-mocks"
 import { PayMappingJourneyCard } from "./pay-mapping-journey-card"
 import { makeExcluded, makeGapGroup } from "@/test/pay-mapping-fixtures"
 import type {
@@ -45,6 +48,11 @@ import {
 const m = en.dashboard.payMapping
 const tJourney = m.journey
 const tDoc = m.documentation
+const tReview = m.review
+const tToast = en.dashboard.toast
+const tErrors = en.errors
+
+const completeMock = mockMutation("payMapping.runs.completePayMappingRun")
 
 function equalWorkGroup(
   overrides: Parameters<typeof makeGapGroup>[0] = {}
@@ -216,33 +224,106 @@ afterEach(() => cleanup())
 
 // The chapter row's state text and count share one <dd>; querying it
 
+// The run's process card, and since the analysis section lost its index
+// page, the reliable home for finishing the run: the completion panel is
+// mounted here rather than only appearing at the end of a chapter's steps.
 describe("PayMappingJourneyCard", () => {
-  beforeEach(() => {})
+  beforeEach(() => {
+    completeMock.mockReset()
+    vi.mocked(toast.success).mockReset()
+    vi.mocked(toast.error).mockReset()
+  })
 
-  // Demoted in Iteration 3 (decision 3): the chapter breakdown and the
-  // Complete/Reopen controls moved to the Analysis tab's completion panel,
-  // so exactly one surface answers "where do I stand" and owns finishing.
   it("shows the overall progress and one way into the analysis", () => {
     renderCard()
     expect(screen.getByText(tJourney.title)).toBeDefined()
-    // Three of the partial fixture's rows are done out of the queue's own
-    // required total; the exact pair is the queue's business, so match the
-    // shape rather than restate its arithmetic.
-    expect(screen.getByText(/^\d+ of \d+$/)).toBeDefined()
+    // Several "N of M" pairs render: the overall figure on the progress
+    // line, and the completion panel's per-chapter breakdown below it.
+    // Pick the overall one by the line it sits on. The exact pair is the
+    // queue's business, so match the shape rather than restate arithmetic.
+    const overall = screen
+      .getAllByText(/^\d+ of \d+$/)
+      .find((node) =>
+        node.closest("p")?.textContent?.startsWith(m.analysis.progressLabel)
+      )
+    expect(overall).toBeDefined()
     const link = screen.getByRole("link", { name: m.analysis.openAnalysis })
-    expect(link.getAttribute("href")).toBe("/pay-mappings/pay-2026/analysis")
+    // Straight to the first chapter. The section's own path is only a
+    // redirect there, and routing through it would cost a round trip.
+    expect(link.getAttribute("href")).toBe(
+      "/pay-mappings/pay-2026/analysis/start"
+    )
   })
 
-  it("owns no completion controls: they live on the analysis tab", () => {
+  it("owns the run's completion controls", () => {
+    // They used to live only inside the analysis section, on an index page
+    // that listed no steps. That page is gone, so finishing needs a home
+    // that does not depend on being mid-flow.
     renderCard({ analyses: ANALYSES_ALL_DONE })
-    expect(screen.queryByRole("button", { name: tDoc.complete })).toBeNull()
-    expect(screen.queryByRole("button", { name: tDoc.reopen })).toBeNull()
+    expect(screen.getByRole("button", { name: tDoc.complete })).toBeDefined()
   })
 
-  it("states that a completed run is locked, still without the controls", () => {
+  it("breaks the standing down per chapter", () => {
+    renderCard()
+    for (const chapter of [
+      tReview.chapters.start,
+      tReview.chapters.praxis,
+      tReview.chapters.equalWork,
+      tReview.chapters.equivalentWork,
+    ]) {
+      expect(screen.getByText(chapter)).toBeDefined()
+    }
+  })
+
+  it("disables Complete with the remaining-count hint while the gate is unmet", () => {
+    renderCard()
+    const button = screen.getByRole("button", {
+      name: tDoc.complete,
+    }) as HTMLButtonElement
+    expect(button.disabled).toBe(true)
+    expect(screen.getByText(/5 steps remain/)).toBeDefined()
+    expect(screen.getByText(tReview.finishActionsNote)).toBeDefined()
+  })
+
+  it("enables Complete and fires the mutation + toast once the gate is met", async () => {
+    renderCard({
+      run: { ...RUN_ACTIVE, collaboration: COLLABORATION_FILLED },
+      analyses: ANALYSES_ALL_DONE,
+    })
+    const button = screen.getByRole("button", {
+      name: tDoc.complete,
+    }) as HTMLButtonElement
+    expect(button.disabled).toBe(false)
+
+    fireEvent.click(button)
+    await vi.waitFor(() => {
+      expect(completeMock).toHaveBeenCalledWith({
+        orgId: "org-1",
+        runId: "run-1",
+      })
+    })
+    expect(toast.success).toHaveBeenCalledWith(tToast.payMappingCompleted)
+  })
+
+  it("shows the statutory gate-unmet error distinctly from a generic failure", async () => {
+    completeMock.mockRejectedValueOnce(
+      new ConvexError({ code: "errors.payMappingGateUnmet" })
+    )
+    renderCard({
+      run: { ...RUN_ACTIVE, collaboration: COLLABORATION_FILLED },
+      analyses: ANALYSES_ALL_DONE,
+    })
+    fireEvent.click(screen.getByRole("button", { name: tDoc.complete }))
+    await vi.waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(tErrors.payMappingGateUnmet)
+    })
+  })
+
+  it("shows the completed note and Reopen instead of the Complete action", () => {
     renderCard({ run: RUN_COMPLETED, analyses: ANALYSES_ALL_DONE })
     expect(screen.getByText(tDoc.completedNote)).toBeDefined()
-    expect(screen.queryByRole("button", { name: tDoc.reopen })).toBeNull()
+    expect(screen.queryByRole("button", { name: tDoc.complete })).toBeNull()
+    expect(screen.getByRole("button", { name: tDoc.reopen })).toBeDefined()
   })
 
   it("renders its real chrome while the queue is still loading", () => {

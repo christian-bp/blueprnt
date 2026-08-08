@@ -13,7 +13,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@workspace/ui/components/sheet"
-import { Accordion } from "@workspace/ui/components/accordion"
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -32,21 +31,13 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import type { ReactNode } from "react"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { AccordionSection } from "@/components/accordion-section"
-import { AnalysisSpine } from "./analysis-spine"
-import { buildCrossLevelCases } from "./cross-level-section"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { type AnalysisChapter, chapterHref } from "./analysis-chapters"
 import { PayMappingCompletionPanel } from "./pay-mapping-completion-panel"
 import { ChapterBar } from "./chapter-bar"
 import { ChapterWorklist, type WorklistRow } from "./chapter-worklist"
-import { type AnalysisChapter, NextStepPanel } from "./next-step-panel"
-import {
-  SUPPLEMENTARY_ITEMS,
-  SupplementaryAnalysis,
-  type SupplementaryItemKey,
-} from "./supplementary-analysis"
 import { TableSearchField } from "@/components/table-search-field"
 import {
   chapterMeta,
@@ -74,6 +65,27 @@ type OpenStep =
   | ReviewStep
   | { kind: "extraGroup"; scope: "equalWork" | "equivalentWork"; key: string }
   | null
+
+// Whether opening a step should move the page, given where the pane's top
+// landed. It moves ONLY when the new content would otherwise start
+// off-screen.
+//
+// Steps differ in height by hundreds of pixels (a praxis step is three
+// lines, an equivalent-work step carries a table and a chart), so submitting
+// at the bottom of a tall one and advancing leaves the next step's top far
+// above the viewport. But on desktop the checklist sits BESIDE the pane, so
+// picking a row must scroll nothing: the user is already looking at what
+// they clicked, and moving the page would take the list they are working
+// down out of view.
+//
+// Measured rather than keyed off the lg breakpoint, so the rule states the
+// actual intent and cannot drift from the grid's own class.
+export function shouldScrollPaneIntoView(
+  paneTop: number,
+  viewportHeight: number
+): boolean {
+  return paneTop < 0 || paneTop > viewportHeight
+}
 
 // Finds a group's OWN queue step by scope+key, if it has one (an
 // equalWork/equivalentWork group that requires documentation and therefore
@@ -140,14 +152,24 @@ interface ChecklistRow extends ChecklistRowBase {
 // completion panel once nothing remains. Self-contained (usePayMappingRun +
 // its own listPayMappingRuns subscription), so the route that mounts it
 // stays thin.
-export function PayMappingAnalysis() {
+export function PayMappingAnalysis({
+  chapter,
+}: {
+  // The chapter this page shows. Required: every analysis route IS a
+  // chapter now. The section briefly also had an index page ("Läget")
+  // carrying what is next and the completion panel, but it listed no steps
+  // of its own, and a page with no work on it is where the surface's bugs
+  // kept coming from. The spine and the chapter tab row answer "how far
+  // along" on every page, and the run's Overview owns finishing.
+  chapter: AnalysisChapter
+}) {
   const t = useTranslations("dashboard.payMapping.review")
   const tTabs = useTranslations("dashboard.payMapping.tabs")
   const tJourney = useTranslations("dashboard.payMapping.journey")
   const tGap = useTranslations("dashboard.payMapping.gap")
   const tAnalysis = useTranslations("dashboard.payMapping.analysis")
-  const tSupplementary = useTranslations("dashboard.payMapping.supplementary")
   const pathname = usePathname()
+  const router = useRouter()
   const { run, gap, analyses, actions, notes, queue, locked } =
     usePayMappingRun()
   // undefined = the user has not picked anything yet, so the pane falls back
@@ -159,19 +181,6 @@ export function PayMappingAnalysis() {
   // card with no list in sight).
   const [selected, setSelected] = useState<OpenStep | undefined>(undefined)
   const [query, setQuery] = useState("")
-  // The supplementary drawer's own single-open state, lifted here so the
-  // checklist's search results can open and scroll to one of its items.
-  const [openSupplementary, setOpenSupplementary] =
-    useState<SupplementaryItemKey | null>(null)
-  // The checklist's own two controls (rung 1). The chapter override is
-  // undefined until the user opens a chapter themselves; until then the
-  // open chapter follows the current or next step, so the list always
-  // shows where the work is. The row filter defaults to All: a default
-  // that hid documented rows would make the evidence record invisible on
-  // arrival, which is the opposite of what an auditor needs.
-  const [chapterOverride, setChapterOverride] = useState<string | undefined>(
-    undefined
-  )
   const [rowFilter, setRowFilter] = useState<"all" | "remaining">("all")
   // The chapter whose whole worklist is open in the pane, if any: the
   // all-at-once view the 320px column cannot give at scale.
@@ -180,7 +189,6 @@ export function PayMappingAnalysis() {
   >(null)
   // The steps sheet is the phone's checklist; selecting a row closes it.
   const [stepsSheetOpen, setStepsSheetOpen] = useState(false)
-  const headingRef = useRef<HTMLHeadingElement>(null)
   // Armed by the handlers below, consumed by the pane's callback ref: the
   // pane focuses and scrolls ONLY for a selection the user made. It cannot
   // be a mount counter. The run's queries resolve independently, so the
@@ -190,15 +198,6 @@ export function PayMappingAnalysis() {
   const requestPaneFocus = useCallback(() => {
     pendingPaneFocusRef.current = true
   }, [])
-  // One O(women x men) scan for the page: the drawer's first item lists the
-  // cases and the completion panel names their count at the moment of
-  // finishing, and neither should pay for its own pass.
-  const snapshotRows = run?.rows
-  const crossLevelCases = useMemo(
-    () => buildCrossLevelCases(snapshotRows ?? []),
-    [snapshotRows]
-  )
-
   // Deep link from the actions overview (?step=<scope>:<groupKey>): once
   // the queue exists, pre-select the matching checklist row so the link
   // opens the record's own group, not just the page. Read from
@@ -226,7 +225,6 @@ export function PayMappingAnalysis() {
     if (!exists) return
     // Open the chapter too, or a deep link would select a row inside a
     // collapsed chapter (rung 1 is single-open).
-    setChapterOverride(scope)
     requestPaneFocus()
     setSelected(groupOpenStep(queue, scope, key))
   }, [queue, gap, requestPaneFocus])
@@ -236,15 +234,25 @@ export function PayMappingAnalysis() {
   // advancing to the next remaining step, or landing back on the gate
   // panel. AnimatePresence's mode="wait" (below) defers mounting the
   // INCOMING pane until the outgoing one's exit finishes, so this callback
-  // ref fires exactly when the new content lands.
+  // ref fires exactly when the new content lands. The scroll decision lives
+  // in shouldScrollPaneIntoView, which is where the judgement is and is
+  // therefore where the test is: this wiring cannot be exercised under
+  // happy-dom, because motion never mounts the incoming pane there.
   const focusPaneContainer = useCallback((node: HTMLDivElement | null) => {
     if (node === null) return
     if (!pendingPaneFocusRef.current) return
     pendingPaneFocusRef.current = false
-    node.focus()
-    // Steps differ in height by hundreds of pixels (a praxis step is three
-    // lines, an equivalent-work step carries a table and a chart), so
-    // advancing without this leaves the user mid-pane on the next step.
+    // preventScroll, then decide for ourselves below: focus() scrolls a
+    // partly-offscreen element by its own rule (nearest edge), which is not
+    // the rule we want and cannot be turned off any other way.
+    node.focus({ preventScroll: true })
+    if (
+      !shouldScrollPaneIntoView(
+        node.getBoundingClientRect().top,
+        window.innerHeight
+      )
+    )
+      return
     node.scrollIntoView({ block: "start" })
   }, [])
 
@@ -267,7 +275,6 @@ export function PayMappingAnalysis() {
             <Skeleton className="h-4 w-12" />
           </div>
           <Progress value={0} aria-label={tAnalysis("progressLabel")} />
-          <p className="text-muted-foreground text-sm">{tAnalysis("lead")}</p>
         </section>
         <div className="grid gap-4 lg:grid-cols-[320px_1fr] lg:items-start">
           <Card>
@@ -339,10 +346,6 @@ export function PayMappingAnalysis() {
       step.kind === "praxis"
   )
 
-  const gateMet =
-    currentQueue.progress.overall.done === currentQueue.progress.overall.total
-  const remaining =
-    currentQueue.progress.overall.total - currentQueue.progress.overall.done
   // The checklist's own rows, built once per render: every step (queue or
   // not) the checklist lists, each with its done state (stepDoneFor from
   // review-checklist.tsx, mirrored as sr-only text) and its own
@@ -422,29 +425,7 @@ export function PayMappingAnalysis() {
     ...equivalentWorkRows,
   ]
 
-  // The pane's landing default until the user picks something themselves
-  // (see `selected`'s own comment above): the gate panel once the gate is
-  // met, else the first REMAINING step in the checklist's flat order. Gates
-  // on `gateMet` (queue.progress, required steps only), not on every
-  // flatRow being done: an untouched free-klarmarkering row must never keep
-  // a gate-met run off the gate panel. A completed run always lands on the
-  // gate panel (its completedNote + overview link): the run is closed, so a
-  // leftover free-klarmarkering row is history, not "what's next". Derived
-  // during render, never via an effect: the first pane mount IS the
-  // auto-opened card, so focusPaneContainer's own first-mount guard applies
-  // and the landing never steals focus.
-  const firstUndone = flatRows.find((row) => !row.done)
-  // Nothing opens by itself any more (Iteration 3, rung 2): the landing is
-  // NextStepPanel, which names the next undone step and offers one button.
-  // Auto-opening it put a chart, a 25-row table and a form on screen before
-  // the user had asked for anything. A completed or gate-met run still
-  // lands on the completion panel: the run is closed (or closable), so an
-  // untouched free-klarmarkering row is history, not "what's next".
-  const showNextStep = !locked && !gateMet && firstUndone !== undefined
-  const openStep: OpenStep = selected !== undefined ? selected : null
-  const explicitCardOpen = openStep !== null && selected !== undefined
-
-  const sections: {
+  const allSections: {
     key: string
     title: string
     meta: string | undefined
@@ -476,6 +457,38 @@ export function PayMappingAnalysis() {
     },
   ]
 
+  // A page lists only its own chapter; the tab row above is where the
+  // others are chosen.
+  const sections = allSections.filter((section) => section.key === chapter)
+  // The rows this page lists, and the first of them still to document.
+  const chapterRows = sections.flatMap((section) => section.rows)
+  const chapterFirstUndone = chapterRows.find((row) => !row.done)
+  // A chapter page OPENS its own work on arrival. Iteration 3 auto-opened
+  // nothing, but that was one surface carrying all four chapters, where
+  // landing there was not a choice the user had made. Opening a chapter IS
+  // the request, so answering it with a button that repeats what was just
+  // asked for is a step backwards.
+  //
+  // A FINISHED chapter still opens its first step, never a bare "this is
+  // done" panel. Documenting a chapter must not lock its own record away:
+  // a one-step chapter has no list to click back into, so a done-panel
+  // landing made what was written unreachable from anywhere in the app.
+  // Being finished is a fact about the work, not a reason to hide it.
+  const chapterLanding: OpenStep =
+    chapterFirstUndone?.openStep ?? chapterRows[0]?.openStep ?? null
+  const openStep: OpenStep =
+    selected !== undefined
+      ? selected
+      : worklistChapter !== null
+        ? null
+        : chapterLanding
+  // Only an EXPLICIT selection hides the list below lg. An auto-opened
+  // landing must not, or a phone would arrive on a chapter with the step
+  // filling the screen and no way to see the others.
+  const explicitCardOpen = openStep !== null && selected !== undefined
+  // A one-step chapter has nothing to choose between, so it renders the
+  // step full width with no list beside it.
+  const showChapterList = chapterRows.length > 1
   // "Mark done and continue" advances the pane to the next REMAINING row
   // after the current one, in the checklist's own flat order above. Never
   // wraps back to an earlier row: this is a wizard-like convenience for
@@ -496,7 +509,16 @@ export function PayMappingAnalysis() {
       setSelected(null)
       return
     }
-    setChapterOverride(chapterKeyForRowId(next.id))
+    // Chapters are pages, so the next remaining row may not be on this one.
+    // Opening it in place would leave the tab row and the list showing one
+    // chapter while the pane showed another's step.
+    const nextChapterKey = allSections.find((section) =>
+      section.rows.some((row) => row.id === next.id)
+    )?.key
+    if (nextChapterKey !== chapter) {
+      router.push(chapterHref(pathname, nextChapterKey as AnalysisChapter))
+      return
+    }
     setSelected(next.openStep)
   }
 
@@ -651,25 +673,20 @@ export function PayMappingAnalysis() {
       ? openStepId(openStep)
       : worklistChapter !== null
         ? `worklist:${worklistChapter}`
-        : showNextStep && selected === undefined
-          ? "next"
-          : "gate"
+        : "gate"
   // The section that holds a row is the authority on which chapter it
-  // belongs to, rather than a second parse of the row id.
+  // belongs to, rather than a second parse of the row id. Searches ALL
+  // sections, never only the one this page shows: "which chapter owns this
+  // row" is a fact about the row, and advanceAfter has to recognise a next
+  // step that lives on another page.
   const chapterKeyForRowId = (rowId: string | undefined) =>
-    sections.find((section) => section.rows.some((row) => row.id === rowId))
+    allSections.find((section) => section.rows.some((row) => row.id === rowId))
       ?.key
 
   // The open step's own chapter, for the bar above it.
   const openChapterForStep = (
     openStep === null ? undefined : chapterKeyForRowId(openStepId(openStep))
   ) as AnalysisChapter | undefined
-  // The chapter the next undone row belongs to, for the landing panel's
-  // "chapter N of 4" line.
-  const nextChapter: AnalysisChapter =
-    (chapterKeyForRowId(firstUndone?.id) as AnalysisChapter | undefined) ??
-    "start"
-  const remainingAfterNext = Math.max(0, remaining - 1)
 
   // Opening a step pins the checklist to that step's own chapter, so it
   // stays where the user is working: closing the step again (or advancing
@@ -677,7 +694,6 @@ export function PayMappingAnalysis() {
   function selectRow(step: OpenStep) {
     requestPaneFocus()
     setStepsSheetOpen(false)
-    if (step !== null) setChapterOverride(chapterKeyForRowId(openStepId(step)))
     setWorklistChapter(null)
     setSelected(step)
   }
@@ -738,11 +754,6 @@ export function PayMappingAnalysis() {
     })
   }
 
-  // Until the user has opened anything, the checklist opens the chapter
-  // holding the next undone step: the list shows where the work is.
-  const openChapter =
-    chapterOverride ?? chapterKeyForRowId(firstUndone?.id) ?? sections[0]?.key
-
   const trimmedQuery = query.trim().toLowerCase()
   const searching = trimmedQuery !== ""
   const filteredSections = sections.map((section) => ({
@@ -761,17 +772,6 @@ export function PayMappingAnalysis() {
         ? section.rows
         : section.rows.filter((row) => !row.done || row.id === currentRowId),
   }))
-  // The drawer's own items as checklist rows: they carry no done state (they
-  // carry no obligation either), so the icon reads as remaining and the
-  // sr-only status says so.
-  const supplementaryRows = SUPPLEMENTARY_ITEMS.map((item) => ({
-    id: `supplementary:${item}`,
-    label: tSupplementary(`items.${item}`),
-    srStatus: srStatusFor(false),
-    done: false,
-    item,
-  })).filter((row) => row.label.toLowerCase().includes(trimmedQuery))
-
   // The checklist's own content, rendered both in the sticky column and,
   // below lg while a step is open, inside the steps sheet: one definition,
   // so the phone can never drift from the desktop list.
@@ -811,57 +811,28 @@ export function PayMappingAnalysis() {
       </CardContent>
       <CardContent className="space-y-6 lg:min-h-0 lg:overflow-y-auto">
         {searching ? (
-          <>
-            {filteredSections.map((section) => (
-              <ChecklistSearchSection
-                key={section.key}
-                title={section.title}
-                meta={section.meta}
-                rows={section.rows}
-                currentId={currentRowId}
-                onSelect={(row) => selectRow(row.openStep)}
-              />
-            ))}
-            {/* A sixth, virtual section so a search reaches the five
-                      analyses in the drawer too: before this, a query that
-                      matched one of them returned nothing at all. */}
+          filteredSections.map((section) => (
             <ChecklistSearchSection
-              title={tSupplementary("heading")}
-              meta={undefined}
-              rows={supplementaryRows}
-              currentId={null}
-              onSelect={(row) => {
-                setOpenSupplementary(row.item)
-                document
-                  .getElementById(`supplementary-${row.item}`)
-                  ?.scrollIntoView({ block: "start" })
-              }}
+              key={section.key}
+              title={section.title}
+              meta={section.meta}
+              rows={section.rows}
+              currentId={currentRowId}
+              onSelect={(row) => selectRow(row.openStep)}
             />
-          </>
+          ))
         ) : (
           <>
-            {/* Single-open (rung 1): one chapter at a time, following
-                      the open or next step until the user opens another
-                      themselves. A collapsed chapter always shows its own
-                      count, so folding never hides an obligation. */}
-            <Accordion
-              value={openChapter === undefined ? [] : [openChapter]}
-              onValueChange={(value) => setChapterOverride(value[0] ?? "")}
-            >
+            {/* A chapter page lists its OWN steps, flat. The chapter tab
+                row above already names the chapter and carries its count,
+                so a section header here would say both a second time.
+                (This replaced Iteration 3's single-open accordion, which
+                existed only to keep four chapters on one surface.) */}
+            <div className="space-y-6">
               {listedSections
                 .filter((section) => section.rows.length > 0)
                 .map((section) => (
-                  <AccordionSection
-                    key={section.key}
-                    value={section.key}
-                    title={section.title}
-                    meta={section.meta}
-                    // No divider between chapters: the checklist sits in
-                    // one Card already (drop the vendor item's own
-                    // not-last:border-b, matched on the same variant so
-                    // tailwind-merge dedupes it).
-                    className="not-last:border-b-0"
-                  >
+                  <div key={section.key}>
                     <ChecklistRows
                       rows={section.rows.slice(0, INLINE_ROW_CAP)}
                       currentId={currentRowId}
@@ -891,30 +862,9 @@ export function PayMappingAnalysis() {
                           })}
                         </button>
                       )}
-                  </AccordionSection>
+                  </div>
                 ))}
-            </Accordion>
-            {/* The end of the ladder, always reachable: the run's own
-                      completion, with its state stated rather than only
-                      implied by a disabled button somewhere else. */}
-            <button
-              type="button"
-              onClick={() => selectRow(null)}
-              aria-current={openStep === null ? "true" : undefined}
-              className={cn(
-                "flex w-full items-center gap-2 rounded-md border-t px-2 pt-3 pb-1.5 text-left text-sm transition-colors",
-                openStep === null && selected !== undefined
-                  ? "font-medium"
-                  : "hover:bg-muted/50"
-              )}
-            >
-              <span>{tAnalysis("completeRow")}</span>
-              <span className="ml-auto text-muted-foreground tabular-nums">
-                {gateMet
-                  ? tAnalysis("completeReady")
-                  : tAnalysis("completeLocked", { count: remaining })}
-              </span>
-            </button>
+            </div>
           </>
         )}
       </CardContent>
@@ -923,47 +873,35 @@ export function PayMappingAnalysis() {
 
   return (
     <div className="space-y-4">
-      {/* Rung 0: where the whole mapping stands, above everything else.
-          headingRef stays a stable focus anchor above both columns: it is
-          never part of either AnimatePresence swap. */}
-      <AnalysisSpine
-        done={currentQueue.progress.overall.done}
-        total={currentQueue.progress.overall.total}
-        collaboration={collaboration}
-        onOpenCollaboration={() => {
-          requestPaneFocus()
-          setSelected(startRow.openStep)
-        }}
-        headingRef={headingRef}
-      />
-      {/* The two-column master-detail (lg+): the left column always carries
-          the checklist and is hidden below lg only while a card is open (the
-          small-screen fallback's own "swap the whole view" behavior); the
-          right pane always carries the gate panel or the opened card and is
-          never hidden, so on small screens it simply stacks below the
-          checklist when nothing is selected -- the same information the old
-          single listing card showed together, just as two cards instead of
-          one. lg:sticky keeps the checklist beside the pane without
-          reflowing on selection; the scroll region lives INSIDE the Card
-          (max-h on the Card, overflow on its content), never on this
-          wrapper: the Card's elevation is a ring (a box-shadow, painted
-          outside its border box), and an overflow on the wrapper clips it
-          to nothing along the straight edges. The 14rem in the cap is the
-          measured chrome around the card (site header + page padding +
-          the two heading rows above + the bottom padding), so the whole
-          page fits the viewport with no scroll. Hidden below lg only on an
-          EXPLICIT selection (see `selected`). */}
-      <div className="grid gap-4 lg:grid-cols-[320px_1fr] lg:items-start">
-        <div
-          className={cn(
-            "lg:sticky lg:top-6 lg:self-start",
-            explicitCardOpen && "hidden lg:block"
-          )}
-        >
-          <Card className="lg:max-h-[calc(100svh_-_14rem)]">
-            {checklistBody}
-          </Card>
-        </div>
+      {/* Läget lists no steps of its own (the chapter tab row above is
+          where chapters are chosen since Iteration 4), so it renders the
+          pane full width. A chapter page keeps the two-column
+          master-detail: the left column carries THAT chapter's rows and is
+          hidden below lg only while a card is open (the phone's own "swap
+          the whole view" behavior). lg:sticky keeps the list beside the
+          pane without reflowing on selection; the scroll region lives
+          INSIDE the Card (max-h on the Card, overflow on its content),
+          never on this wrapper, because the Card's elevation is a ring
+          painted outside its border box and an overflow here would clip it
+          to nothing along the straight edges. */}
+      <div
+        className={cn(
+          "grid gap-4 lg:items-start",
+          showChapterList && "lg:grid-cols-[320px_1fr]"
+        )}
+      >
+        {showChapterList && (
+          <div
+            className={cn(
+              "lg:sticky lg:top-6 lg:self-start",
+              explicitCardOpen && "hidden lg:block"
+            )}
+          >
+            <Card className="lg:max-h-[calc(100svh_-_14rem)]">
+              {checklistBody}
+            </Card>
+          </div>
+        )}
         <div className="min-w-0">
           {/* Transform+opacity only, per docs/ui-animation.md: a plain
               crossfade each time the pane's own content changes (a
@@ -1071,24 +1009,16 @@ export function PayMappingAnalysis() {
                         }
                       />
                     </div>
-                  ) : showNextStep && selected === undefined ? (
-                    <NextStepPanel
-                      chapter={nextChapter}
-                      label={firstUndone?.label ?? ""}
-                      remainingAfter={remainingAfterNext}
-                      onOpen={() => selectRow(firstUndone?.openStep ?? null)}
-                    />
                   ) : (
+                    // Reached by advancing past the last remaining row in
+                    // this chapter: the in-flow way to finish, so the user
+                    // who has just documented the last thing does not have
+                    // to go looking for the button. The run's Overview
+                    // carries the same panel as the reliable home, which is
+                    // where someone who is not mid-flow will look.
                     <PayMappingCompletionPanel
                       queue={currentQueue}
                       run={currentRun}
-                      crossLevelCount={crossLevelCases.length}
-                      onShowCrossLevel={() => {
-                        setOpenSupplementary("crossLevel")
-                        document
-                          .getElementById("supplementary-crossLevel")
-                          ?.scrollIntoView({ block: "start" })
-                      }}
                     />
                   )}
                 </CardContent>
@@ -1097,28 +1027,6 @@ export function PayMappingAnalysis() {
           </AnimatePresence>
         </div>
       </div>
-
-      {/* Rung 4: everything outside the statutory flow (ADR-0015) in ONE
-          drawer, under a heading that says it does not affect completion.
-          Five sections with five different expand controls used to sit
-          above and below the checklist with nothing saying which of them
-          carried an obligation. */}
-      <SupplementaryAnalysis
-        excluded={currentGap.excluded}
-        equivalentWork={currentGap.equivalentWork}
-        equalWork={currentGap.equalWork}
-        rows={currentRun.rows}
-        crossLevelCases={crossLevelCases}
-        currency={currency}
-        openItem={openSupplementary}
-        onOpenItemChange={setOpenSupplementary}
-        documentation={{
-          runId: currentRun.runId,
-          actions,
-          notes,
-          locked,
-        }}
-      />
     </div>
   )
 }

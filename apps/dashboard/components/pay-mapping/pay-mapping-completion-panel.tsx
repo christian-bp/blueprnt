@@ -18,8 +18,8 @@ import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { useOrganization } from "@/components/org-context"
 import { toast } from "@/lib/toast"
+import { ANALYSIS_CHAPTERS } from "./analysis-chapters"
 import type { PayMappingRunDetail } from "./pay-mapping-gap-types"
-import { ANALYSIS_CHAPTERS } from "./next-step-panel"
 import type { ReviewQueue } from "./review-queue"
 import { ReviewStepActions } from "./review-step-actions"
 
@@ -47,8 +47,6 @@ export function isGateUnmetError(error: unknown): boolean {
 export function PayMappingCompletionPanel({
   queue,
   run,
-  crossLevelCount,
-  onShowCrossLevel,
 }: {
   queue: ReviewQueue
   run: PayMappingRunDetail
@@ -56,11 +54,9 @@ export function PayMappingCompletionPanel({
   // decision 2): the tvärnivå cases are not counted toward completion, so
   // this is where an employer who never opened the drawer still meets them.
   crossLevelCount?: number
-  onShowCrossLevel?: () => void
 }) {
   const t = useTranslations("dashboard.payMapping.review")
   const tChapters = useTranslations("dashboard.payMapping.review.chapters")
-  const tAnalysis = useTranslations("dashboard.payMapping.analysis")
   const tDoc = useTranslations("dashboard.payMapping.documentation")
   const tJourney = useTranslations("dashboard.payMapping.journey")
   const tToast = useTranslations("dashboard.toast")
@@ -137,25 +133,6 @@ export function PayMappingCompletionPanel({
         ))}
       </dl>
       <p className="text-muted-foreground text-sm">{t("finishActionsNote")}</p>
-      {crossLevelCount !== undefined && crossLevelCount > 0 && (
-        // Stated, never blocking: the statute names group comparisons, so
-        // an individual inversion is an observation the employer should
-        // have met before finishing, not a gate.
-        <p className="flex flex-wrap items-center gap-2 text-muted-foreground text-sm">
-          {tAnalysis("crossLevelObservation", { count: crossLevelCount })}
-          {onShowCrossLevel !== undefined && (
-            <Button
-              type="button"
-              variant="link"
-              size="sm"
-              className="h-auto px-0"
-              onClick={onShowCrossLevel}
-            >
-              {tAnalysis("crossLevelObservationCta")}
-            </Button>
-          )}
-        </p>
-      )}
       {completed ? (
         <div className="space-y-2">
           <p className="text-muted-foreground text-sm">

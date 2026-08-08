@@ -132,11 +132,25 @@ export const payComparisonScopeValidator = v.union(
 )
 
 // What an action or note is anchored to (ADR-0015, Iteration 2 note 5):
-// a whole comparison group, one individual within a group, or a tvärnivå
-// pair. Individuals are referenced by personPublicId ONLY (Role != Person):
-// names and pay are never denormalized in; display values resolve from the
-// snapshot row, which the erasure path already pseudonymizes, so an erased
-// person renders as the tombstone with no extra hook.
+// a whole comparison group, one individual within a group, or ONE
+// comparison a women-dominated group is measured against. Individuals are
+// referenced by personPublicId ONLY (Role != Person): names and pay are
+// never denormalized in; display values resolve from the snapshot row,
+// which the erasure path already pseudonymizes, so an erased person
+// renders as the tombstone with no extra hook.
+//
+// The "comparison" kind exists because 3 kap. 9 § asks whether the
+// difference against EACH equally or lower valued job has a connection to
+// sex, and those answers differ: in a real run one women-dominated group
+// was measured against 16 jobs whose differences ranged from 3 677 kr to
+// 50 218 kr a month. One reason for the whole group forces sixteen
+// separate judgements into one, which is exactly where the documentation
+// is read hardest. It is optional per row: most comparisons need nothing,
+// and requiring all of them would be unworkable at 21 groups.
+//
+// It replaces the former "pair" kind, whose only producer (the cross-level
+// section) was removed once the equivalent-work scatter showed the same
+// finding in context.
 export const actionTargetValidator = v.union(
   v.object({
     kind: v.literal("group"),
@@ -150,9 +164,12 @@ export const actionTargetValidator = v.union(
     personPublicId: v.string(),
   }),
   v.object({
-    kind: v.literal("pair"),
-    womanPublicId: v.string(),
-    manPublicId: v.string(),
+    kind: v.literal("comparison"),
+    // The women-dominated group being documented, and the comparison it is
+    // measured against: both are group keys, so the pair reads the same way
+    // the analysis renders it.
+    groupKey: v.string(),
+    comparisonKey: v.string(),
   })
 )
 

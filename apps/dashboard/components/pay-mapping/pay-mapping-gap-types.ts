@@ -156,7 +156,7 @@ export type ActionTargetWire =
       groupKey: string
       personPublicId: string
     }
-  | { kind: "pair"; womanPublicId: string; manPublicId: string }
+  | { kind: "comparison"; groupKey: string; comparisonKey: string }
 
 export type ActionStatus = "notStarted" | "inProgress" | "done"
 export type ActionPriority = "high" | "medium" | "low"
@@ -199,10 +199,10 @@ export function targetMatches(
   match: ActionTargetWire
 ): boolean {
   if (target.kind !== match.kind) return false
-  if (target.kind === "pair" && match.kind === "pair") {
+  if (target.kind === "comparison" && match.kind === "comparison") {
     return (
-      target.womanPublicId === match.womanPublicId &&
-      target.manPublicId === match.manPublicId
+      target.groupKey === match.groupKey &&
+      target.comparisonKey === match.comparisonKey
     )
   }
   if (target.kind === "group" && match.kind === "group") {
@@ -256,54 +256,6 @@ export function groupLabel(group: {
     .join(" · ")
 }
 
-// The equal-work entry conditions as a display predicate (mirrors
-// classifyEqualWorkGroup's "shown" outcome, ADR-0015: both genders present
-// and the women trailing on base salary, or on total comp for the
-// TCC-driven admission). Used by the per-level likvärdigt analysis to pick
-// which levels get a section; NEVER a gate input (the gate derives from the
-// backend's own classification).
-export function meetsEntryConditions(
-  group: Pick<GapGroup, "womenCount" | "menCount" | "base" | "tcc">
-): boolean {
-  return (
-    group.womenCount > 0 &&
-    group.menCount > 0 &&
-    ((group.base.gapPct ?? 0) > 0 || (group.tcc.gapPct ?? 0) > 0)
-  )
-}
-
-// A LEVEL group's own frozen, priced members: every priced row on the level
-// regardless of role (the equivalence key is the level alone). groupMembers
-// below cannot resolve these: a level group carries null roleTitle/
-// seniority, which no snapshot row has.
-export function levelMembers(
-  rows: PayMappingSnapshotRow[] | undefined,
-  level: number
-): PayMappingSnapshotRow[] {
-  return (rows ?? []).filter(
-    (row) => row.level === level && row.basicMonthly !== null
-  )
-}
-
-// The SHOWN equal-work group a member belongs to, or null when their group
-// left the primary flow (singleton, gender-pure, reverse). The per-level
-// view anchors a member's documentation to this key so the record is the
-// SAME one the equal-work detail shows (no new target kind), and members of
-// excluded groups get no formal-documentation affordance there (ADR-0015).
-export function shownEqualWorkKeyFor(
-  row: { roleTitle: string; seniority: string; level: number | null },
-  equalWork: GapGroup[]
-): string | null {
-  return (
-    equalWork.find(
-      (group) =>
-        group.roleTitle === row.roleTitle &&
-        group.seniority === row.seniority &&
-        group.level === row.level
-    )?.key ?? null
-  )
-}
-
 // A member's FTE-adjusted base salary and total compensation: the SAME
 // derivation the backend engine uses (gap.ts), shared here so no view can
 // silently diverge from the engine's numbers (e.g. by forgetting the
@@ -320,10 +272,13 @@ export function fteTotalMonthly(row: PayMappingSnapshotRow): number {
   )
 }
 
-// A group's own frozen, priced members: rows matching its roleTitle/
-// seniority/level identity (the same identity the engine keys a group on).
-// Shared by the equal-work detail view and the equivalent-work underlag so
-// member matching never drifts between callers.
+// A group's own frozen, priced members. Shared by the equal-work detail
+// view and the equivalent-work underlag so member matching never drifts
+// between callers.
+//
+// roleTitle + level, matching the engine's own group key (ADR-0017).
+// Seniority is NOT part of it: a group spans every step in its title at
+// this level, so matching on it returned nobody at all.
 export function groupMembers(
   rows: PayMappingSnapshotRow[] | undefined,
   group: {
@@ -335,18 +290,16 @@ export function groupMembers(
   return rows?.filter(
     (row) =>
       row.roleTitle === group.roleTitle &&
-      row.seniority === group.seniority &&
       row.level === group.level &&
       row.basicMonthly !== null
   )
 }
 
-// Member selection for ANY gap group: an equal-work group matches by its
-// roleTitle/seniority/level identity, a per-level likvärdigt group (null
-// roleTitle and seniority, a concrete level: the only shape the wire
-// produces with nulls there) takes every priced row on the level. One
-// dispatch so the dot plot, the member table, and the level analysis can
-// never pick members differently for the same group.
+// A gap group's own frozen, priced members, never null. The single entry
+// point, so the dot plot and the member table can never pick members
+// differently for the same group. It used to dispatch on the group's shape
+// too, because a per-level likvärdigt group (null roleTitle and seniority,
+// a concrete level) selects by level alone; nothing renders those now.
 export function membersOf(
   rows: PayMappingSnapshotRow[] | undefined,
   group: {
@@ -355,13 +308,6 @@ export function membersOf(
     level: number | null
   }
 ): PayMappingSnapshotRow[] {
-  if (
-    group.roleTitle === null &&
-    group.seniority === null &&
-    group.level !== null
-  ) {
-    return levelMembers(rows, group.level)
-  }
   return groupMembers(rows, group) ?? []
 }
 

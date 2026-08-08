@@ -32,9 +32,12 @@ describe("PayMappingTabs", () => {
     expect(
       screen.getByRole("link", { name: tabs.overview }).getAttribute("href")
     ).toBe("/pay-mappings/pay-2026")
+    // Analysis links past its own segment: the section has no page there,
+    // only a redirect into the first chapter, and a tab click should not
+    // spend a round trip on it.
     expect(
       screen.getByRole("link", { name: tabs.analysis }).getAttribute("href")
-    ).toBe("/pay-mappings/pay-2026/analysis")
+    ).toBe("/pay-mappings/pay-2026/analysis/start")
     expect(
       screen.getByRole("link", { name: tabs.report }).getAttribute("href")
     ).toBe("/pay-mappings/pay-2026/report")
@@ -52,6 +55,19 @@ describe("PayMappingTabs", () => {
         .getByRole("link", { name: tabs.analysis })
         .getAttribute("aria-current")
     ).toBeNull()
+  })
+
+  it("marks the analysis tab active on a chapter page, not just its own segment", () => {
+    // The href now points past the segment while the current-state match
+    // still keys off the segment, so the two must not drift: every chapter
+    // page has to keep the tab lit.
+    pathState.current = "/pay-mappings/pay-2026/analysis/equivalent-work"
+    renderTabs()
+    expect(
+      screen
+        .getByRole("link", { name: tabs.analysis })
+        .getAttribute("aria-current")
+    ).toBe("page")
   })
 
   it("marks the analysis tab active on its sub-route", () => {

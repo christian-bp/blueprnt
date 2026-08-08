@@ -14,10 +14,11 @@ import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { CartesianGrid, Scatter, ScatterChart, XAxis, YAxis } from "recharts"
 import {
-  GENDER_DOT,
+  GenderDotIcon,
   GenderLegend,
   GenderMenIcon,
-  genderKeyStyle,
+  GenderPointMark,
+  type GenderSeries,
 } from "@/components/gender-mark"
 import { WidgetCard } from "@/components/widget-card"
 import { useMoney } from "@/hooks/use-money"
@@ -120,11 +121,11 @@ export function ScatterTooltipContent({
         </p>
       )}
       <p className="flex items-center gap-1.5 text-muted-foreground">
-        <span
-          aria-hidden="true"
-          className="size-2 shrink-0 rounded-[2px]"
-          style={genderKeyStyle(genderSeries)}
-        />
+        {/* The hover shows the same mark the plot draws: a point chart's
+            key is its triangle or circle, never the area charts' square. */}
+        <span aria-hidden="true" className="size-2.5 shrink-0">
+          <GenderDotIcon series={genderSeries} />
+        </span>
         {tGender(row.gender)}
       </p>
 
@@ -174,12 +175,18 @@ export function PayMappingScatter({
   currency,
   referenceDateMs,
   groupLabelFor,
+  highlightGroupLabel,
   title,
 }: {
   rows: PayMappingSnapshotRow[] | undefined
   currency: string
   referenceDateMs: number
   groupLabelFor?: (row: PayMappingSnapshotRow) => string
+  // When set, only people whose group label matches stay at full strength
+  // and the rest recede. It is what ties a selected table row to the
+  // individuals behind its average, so the two are one object rather than
+  // two lists to hold in your head.
+  highlightGroupLabel?: string | null
   title: string
 }) {
   const t = useTranslations("dashboard.payMapping.scatter")
@@ -187,6 +194,32 @@ export function PayMappingScatter({
   const tGender = useTranslations("dashboard.people.gender")
   const money = useMoney()
   const [xMode, setXMode] = useState<ScatterXMode>("age")
+
+  // A point's own mark, so the highlight rides on the point rather than on
+  // its series. Recedes everyone outside the selected group; with no
+  // selection every point draws at full strength.
+  const markFor =
+    (series: GenderSeries) =>
+    // biome-ignore lint/suspicious/noExplicitAny: recharts types a custom shape's props as any
+    (props: any) => {
+      const point = props?.payload as ScatterPoint | undefined
+      if (
+        props?.cx === undefined ||
+        props?.cy === undefined ||
+        point === undefined
+      ) {
+        return <g />
+      }
+      const dimmed =
+        highlightGroupLabel !== undefined &&
+        highlightGroupLabel !== null &&
+        point.groupLabel !== highlightGroupLabel
+      return (
+        <g opacity={dimmed ? 0.25 : 1}>
+          <GenderPointMark cx={props.cx} cy={props.cy} series={series} />
+        </g>
+      )
+    }
 
   const help = {
     label: tHelp("payGapScatterLabel"),
@@ -287,12 +320,19 @@ export function PayMappingScatter({
                 )
               }}
             />
-            <Scatter name="man" data={men} {...GENDER_DOT.men} />
-            <Scatter name="woman" data={women} {...GENDER_DOT.women} />
+            {/* One series per gender, always the same points in the
+                same series. The highlight is drawn per POINT through
+                `shape`. Splitting the data into a kept and a dimmed series
+                instead made recharts animate: a point moving between
+                series reads as new data, so every selection change sent
+                dots flying from their old positions. */}
+            <Scatter name="man" data={men} shape={markFor("men")} />
+            <Scatter name="woman" data={women} shape={markFor("women")} />
           </ScatterChart>
         </ChartContainer>
         {/* Both series are named here, so gender is never mark-alone. */}
         <GenderLegend
+          mark="point"
           items={[
             { series: "women", label: tGender("Kvinna") },
             { series: "men", label: tGender("Man") },

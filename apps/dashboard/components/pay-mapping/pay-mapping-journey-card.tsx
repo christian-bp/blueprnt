@@ -8,28 +8,33 @@ import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { WidgetCard } from "@/components/widget-card"
+import { chapterSegment } from "./analysis-chapters"
+import { PayMappingCompletionPanel } from "./pay-mapping-completion-panel"
 import { usePayMappingRun } from "./pay-mapping-run-context"
 
-// The Overview hub's progress line: how far the mapping has come, and one
-// way into the work. It deliberately owns nothing else. The chapter
-// breakdown and the Complete/Reopen controls live on the Analysis tab's
-// completion panel (Iteration 3 decision 3), so there is exactly one
-// authoritative answer to "where do I stand" and one place to finish;
-// Overview stays communicative.
+// The Overview hub's process card: how far the mapping has come, the way
+// into the work, and where the run is finished.
+//
+// Finishing used to live only inside the Analysis tab, on a section index
+// page. That page listed no steps of its own and is gone, so the action
+// needs a home that does not depend on being mid-flow. This is it: the
+// run's own index route, next to the progress it belongs to. The chapter
+// pane still shows the same panel after the last remaining step, which is
+// the in-flow convenience; both render the ONE component, so there is still
+// exactly one derivation of "is the duty met".
 export function PayMappingJourneyCard() {
   const tJourney = useTranslations("dashboard.payMapping.journey")
   const tAnalysis = useTranslations("dashboard.payMapping.analysis")
-  const tDoc = useTranslations("dashboard.payMapping.documentation")
   const tHelp = useTranslations("dashboard.help")
   const pathname = usePathname()
-  const { queue, locked } = usePayMappingRun()
+  const { run, queue, locked } = usePayMappingRun()
 
-  // The Overview page is the run's own index route, so the analysis tab
-  // nests directly under the current path.
+  // The Overview page is the run's own index route, so the analysis section
+  // nests directly under the current path. Straight to the first chapter:
+  // the section's own path is only a redirect there, and going through it
+  // would cost a round trip.
   const [, slug] = pathname.split("/").filter(Boolean)
-  const analysisHref = `/pay-mappings/${slug}/analysis`
-
-  const completed = locked
+  const analysisHref = `/pay-mappings/${slug}/analysis/${chapterSegment("start")}`
 
   return (
     <WidgetCard
@@ -62,17 +67,21 @@ export function PayMappingJourneyCard() {
               }
               aria-label={tAnalysis("progressLabel")}
             />
-            {completed && (
-              <p className="text-muted-foreground text-sm">
-                {tDoc("completedNote")}
-              </p>
-            )}
           </div>
         )}
-        {/* One way in: the work, and the finishing, both live on Analysis. */}
-        <Link href={analysisHref} className={cn(buttonVariants())}>
+        {/* Above the panel: entering the work is the common move, and a
+            completed run still reads its own note inside the panel. */}
+        <Link
+          href={analysisHref}
+          className={cn(
+            buttonVariants({ variant: locked ? "outline" : "default" })
+          )}
+        >
           {tAnalysis("openAnalysis")}
         </Link>
+        {queue !== null && run !== undefined && (
+          <PayMappingCompletionPanel queue={queue} run={run} />
+        )}
       </div>
     </WidgetCard>
   )

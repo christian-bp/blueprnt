@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl"
 import { HelpMorphButton } from "@/components/help-morph-button"
-import { ANALYSIS_CHAPTERS, type AnalysisChapter } from "./next-step-panel"
+import { ANALYSIS_CHAPTERS, type AnalysisChapter } from "./analysis-chapters"
 
 // The one line above an opened step: which chapter this is, and one click
 // away, what the law actually asks for here.

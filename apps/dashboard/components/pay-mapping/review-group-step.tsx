@@ -11,13 +11,15 @@ import { useEffect, useRef, useState } from "react"
 import { toast } from "@/lib/toast"
 import { useOrganization } from "@/components/org-context"
 import { ScreenShell } from "@/components/screen-shell"
+import { Badge } from "@workspace/ui/components/badge"
+import { GenderDotIcon } from "@/components/gender-mark"
 import { LevelBadge } from "@/components/level-badge"
 import { SeniorityBadge } from "@/components/track-badge"
-import { useMoney } from "@/hooks/use-money"
 import {
   type GapGroup,
   type GroupAnalysis,
   groupLabel,
+  type ActionTargetWire,
   type PayMappingActionWire,
   type PayMappingNoteWire,
   type PayMappingSnapshotRow,
@@ -29,8 +31,14 @@ import {
   type PayMappingGroupAnalysisFormHandle,
   PayMappingGroupAnalysisForm,
 } from "./pay-mapping-group-analysis-form"
+import {
+  DocumentationBadges,
+  documentationFor,
+  DocumentationMenu,
+} from "./documentation-controls"
+import { ComparatorTable } from "./comparator-table"
 import { EqualWorkDetail } from "./equal-work-detail"
-import { WomenDominatedUnderlyingData } from "./women-dominated-underlying-data"
+import { WomenDominatedScatter } from "./women-dominated-underlying-data"
 import { ReviewStepActions } from "./review-step-actions"
 
 // Distinguishes the one reachable backend rejection from this step (marking
@@ -191,8 +199,8 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
   const tFinding = useTranslations("dashboard.payMapping.review.finding")
   const tToast = useTranslations("dashboard.toast")
   const tErrors = useTranslations("errors")
+  const tGap = useTranslations("dashboard.payMapping.gap")
   const format = useFormatter()
-  const money = useMoney()
   const { orgId } = useOrganization()
   const upsertGroupAnalysis = useMutation(
     api.payMapping.analyses.upsertGroupAnalysis
@@ -297,6 +305,19 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
   // primary "mark done" action is gated on the identical condition.
   const blocked = requiresDocumentation && !doc.documented
 
+  // Which comparator row the reader is pointing at, shared by the table
+  // and the plot beneath it.
+  const [selectedComparison, setSelectedComparison] = useState<string | null>(
+    null
+  )
+
+  const groupTarget: ActionTargetWire = {
+    kind: "group",
+    scope: props.scope,
+    groupKey: props.group.key,
+  }
+  const docs = documentationFor(groupTarget, props.actions, props.notes)
+
   return (
     <ScreenShell
       heading={props.group.roleTitle ?? label}
@@ -314,65 +335,101 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
           {props.group.level !== null && (
             <LevelBadge level={props.group.level} />
           )}
+          {/* The women's share, which is what admitted this group to the
+              chapter (>= 60% is the DO's own guide figure). The only fact
+              the removed lead sentence carried that is not visible
+              elsewhere on the step. */}
+          {props.scope === "equivalentWork" && (
+            <Badge variant="outline" className="gap-1.5 font-normal">
+              <span aria-hidden="true" className="size-2.5 shrink-0">
+                <GenderDotIcon series="women" />
+              </span>
+              {tGap("womenShareBadge", {
+                share: percentText(props.group.womenSharePct),
+              })}
+            </Badge>
+          )}
+          {/* The group's own documentation control belongs on the heading
+              row, beside the badges that describe the same group. It used
+              to sit in its own right-aligned strip further down, where a
+              lone "..." read as an orphan hovering over the figures rather
+              than as this group's action. */}
+          <DocumentationBadges actions={docs.actions} notes={docs.notes} />
+          <DocumentationMenu
+            runId={props.runId}
+            target={groupTarget}
+            targetLabel={label}
+            actions={docs.actions}
+            notes={docs.notes}
+            currency={props.currency}
+            locked={locked}
+          />
         </>
       }
     >
       <div className="w-full space-y-4">
         <div className="space-y-2">
           {props.scope === "equalWork" ? (
+            // The figures live in EqualWorkDetail's badges below, next to
+            // the plot that shows the same gap. A sentence restating them
+            // put the same percentage on screen four times (here, in the
+            // figures, on the plot's own gap label, and in the flag badge).
+            //
+            // The exception is a group with no measurable difference:
+            // there are no figures to badge, so words are the only way to
+            // say that nothing was found. Skipping this would leave the
+            // step's most reassuring result as a blank space.
+            equalWorkFindingVariant(props.group).key === "none" ? (
+              <p className="text-base text-muted-foreground">
+                {tFinding("none", {
+                  women: props.group.womenCount,
+                  men: props.group.menCount,
+                })}
+              </p>
+            ) : null
+          ) : // No lead sentences. "X is women-dominated (100% women)" became
+          // the share badge on the heading, and "16 equally or lower
+          // valued jobs earn more on average" restated the table directly
+          // below it, which lists exactly those jobs with the difference
+          // in its own column.
+          props.group.comparisons.length === 0 ? (
+            // Stated in words, because there is no table to speak for
+            // it: this is the compliance-positive result, and a blank
+            // space would read as something failing to load.
             <p className="text-base text-muted-foreground">
-              {(() => {
-                const variant = equalWorkFindingVariant(props.group)
-                switch (variant.key) {
-                  case "none":
-                    return tFinding("none", {
-                      women: variant.women,
-                      men: variant.men,
-                    })
-                  case "lessTccWorse":
-                    return tFinding("lessTccWorse", {
-                      gap: percentText(Math.abs(variant.gapPct ?? 0)),
-                      tccGap: percentText(Math.abs(variant.tccGapPct ?? 0)),
-                      women: variant.women,
-                      men: variant.men,
-                    })
-                  default:
-                    return tFinding(variant.key, {
-                      gap: percentText(Math.abs(variant.gapPct ?? 0)),
-                      women: variant.women,
-                      men: variant.men,
-                    })
-                }
-              })()}
+              {tGap("noComparators")}
             </p>
           ) : (
             <>
-              <p className="text-base text-muted-foreground">
-                {tFinding("wdLead", {
-                  label,
-                  share: percentText(props.group.womenSharePct),
-                })}
-              </p>
-              {props.group.comparisons.length > 0 && (
-                <>
-                  <p className="text-base text-muted-foreground">
-                    {tFinding("wdComparisons", {
-                      count: props.group.comparisons.length,
+              <ComparatorTable
+                comparisons={props.group.comparisons}
+                currency={currency}
+                selectedKey={selectedComparison}
+                onSelect={setSelectedComparison}
+                {...(props.runId === undefined
+                  ? {}
+                  : {
+                      documentation: {
+                        runId: props.runId,
+                        groupKey: props.group.key,
+                        actions: props.actions,
+                        notes: props.notes,
+                        locked,
+                      },
                     })}
-                  </p>
-                  <ul className="list-disc space-y-1 pl-5 text-base text-muted-foreground">
-                    {props.group.comparisons.map((comparison) => (
-                      <li key={comparison.key}>
-                        {tFinding("wdComparator", {
-                          label: groupLabel(comparison),
-                          level: comparison.level,
-                          diff: money(comparison.diffSek, currency),
-                        })}
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
+              />
+              {/* The individuals, right under the table of averages.
+                      Averages say WHETHER there is a gap; the plot is
+                      where a documenter can see whether something like
+                      length of service explains it, which is the
+                      objective ground they have to weigh. */}
+              <WomenDominatedScatter
+                group={props.group}
+                rows={rows}
+                currency={currency}
+                referenceDateMs={referenceDateMs}
+                highlightComparisonKey={selectedComparison}
+              />
             </>
           )}
         </div>
@@ -399,16 +456,6 @@ export function ReviewGroupStep(props: ReviewGroupStepProps) {
           analysis={analysis}
           onDocumentationChange={setDoc}
         />
-
-        {props.scope === "equivalentWork" && (
-          <WomenDominatedUnderlyingData
-            group={props.group}
-            equivalentWork={props.equivalentWork}
-            rows={rows}
-            currency={currency}
-            referenceDateMs={referenceDateMs}
-          />
-        )}
       </div>
       <ReviewStepActions
         onPrevious={onPrevious}

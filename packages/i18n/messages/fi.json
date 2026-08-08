@@ -1155,7 +1155,7 @@
         "targetKind": {
           "group": "Ryhmä",
           "person": "Yksilö",
-          "pair": "Tasojen välinen pari"
+          "comparison": "Vertailu"
         },
         "createTitle": "Luo toimenpide",
         "editTitle": "Muokkaa toimenpidettä",
@@ -1189,8 +1189,7 @@
         "pay": "Palkka",
         "diff": "Ero miesten keskiarvoon",
         "womenMean": "Naisten ka.",
-        "menMean": "Miesten ka.",
-        "gapLabel": "Ero: {kr} ({pct})"
+        "menMean": "Miesten ka."
       },
       "detail": {
         "population": "Mukana olevat henkilöt",
@@ -1198,14 +1197,17 @@
         "back": "Takaisin palkkakartoituksiin",
         "erased": "Poistettu",
         "fteShare": "({fte} % FTE)",
-        "crossLevelFlagged": "Alemman tason mies ansaitsee enemmän",
         "diffCaption": "Ero mitataan tämän ryhmän miesten keskiarvoon.",
         "summary": {
           "womenMean": "Naisten keskiarvo: {value}",
           "menMean": "Miesten keskiarvo: {value}",
           "gap": "Ero: {kr} ({pct})",
           "baseLabel": "Peruspalkka:",
-          "tccLabel": "Kokonaiskorvaus:"
+          "tccLabel": "Kokonaiskorvaus:",
+          "baseBadge": "Peruspalkka",
+          "tccBadge": "Kokonaispalkkaus",
+          "meanSuffix": "keskimäärin",
+          "gapLabel": "Ero"
         },
         "columns": {
           "name": "Nimi",
@@ -1213,10 +1215,20 @@
           "basePay": "Peruspalkka",
           "totalComp": "Kokonaiskorvaus",
           "documentation": "Dokumentaatio",
-          "track": "Track",
           "role": "Rooli",
-          "crossLevel": "Tasojen välinen",
           "diffVsMen": "Ero M. ka."
+        },
+        "comparators": {
+          "level": "Taso",
+          "work": "Työ",
+          "count": "Määrä",
+          "womenShare": "Naisten osuus",
+          "mean": "Keskipalkka",
+          "diffPct": "Ero %",
+          "diffSek": "Ero",
+          "reason": "Palkkatasoon vaikuttaa",
+          "selectRow": "Näytä {label} kaaviossa",
+          "actions": "Toimet"
         }
       },
       "gap": {
@@ -1243,7 +1255,8 @@
         "groupMembers": "Ryhmän henkilöt",
         "levelContext": "Vaativuustasolla {level} naiset ansaitsevat {gap} vähemmän kuin miehet.",
         "levelContextWomenAhead": "Vaativuustasolla {level} naiset ansaitsevat {gap} enemmän kuin miehet.",
-        "levelContextNone": "Vaativuustasolla {level} ei ole mitattavaa naisten ja miesten välistä palkkaeroa."
+        "levelContextNone": "Vaativuustasolla {level} ei ole mitattavaa naisten ja miesten välistä palkkaeroa.",
+        "womenShareBadge": "{share} naisia"
       },
       "tabs": {
         "overview": "Yleiskatsaus",
@@ -1253,28 +1266,9 @@
       },
       "analysis": {
         "progressLabel": "Dokumentoitu",
-        "progressCount": "<done></done> / <total></total>",
-        "lead": "Neljä lukua. Kaikki on dokumentoitava ennen kuin palkkakartoitus voidaan viimeistellä.",
-        "collaborationLabel": "Yhteistoiminta:",
-        "collaborationEmpty": "Ei vielä kirjattu",
-        "collaborationChange": "Muuta",
-        "collaborationAdd": "Kirjaa",
-        "chapterPosition": "Luku {position}/{total} · {chapter}",
-        "nextStepLabel": "Seuraava: {label}",
-        "openStep": "Avaa vaihe",
-        "remainingAfter": "{count, plural, one {# vaihe jäljellä tämän jälkeen} other {# vaihetta jäljellä tämän jälkeen}}",
-        "nextAction": {
-          "start": "Kirjaa, ketkä osallistuvat yhteistoimintaan ja miten se toteutetaan.",
-          "praxis": "Käy läpi palkanmäärityskäytäntönne tällä alueella ja kirjaa, mitä havaitsitte.",
-          "equalWork": "Vertaa naisten ja miesten palkkoja ryhmässä ja dokumentoi asiallinen syy jokaiselle erolle, jota ette voi selittää.",
-          "equivalentWork": "Vertaa tätä naisvaltaista ryhmää alempiarvoisiin ryhmiin, jotka silti ansaitsevat enemmän."
-        },
         "filterAll": "Kaikki",
         "filterRemaining": "Jäljellä",
         "filterLabel": "Näytä",
-        "completeRow": "Viimeistele kartoitus",
-        "completeLocked": "{count} jäljellä",
-        "completeReady": "Valmis viimeisteltäväksi",
         "worklist": {
           "showAll": "Näytä kaikki {count} listana",
           "columns": {
@@ -1306,32 +1300,11 @@
           "start": "Yhteistoiminta on oma vaatimuksensa (DL 3 luku 11-12 §), ei muodollisuus: työntekijöiden edustajat osallistuvat koko kartoitukseen, analyysi ja toimenpidesuunnitelma mukaan lukien. Kirjaa, ketkä osallistuvat ja miten se toteutetaan.",
           "praxis": "Ennen varsinaista palkkavertailua työnantaja käy läpi palkkoja ohjaavat määräykset ja käytännöt: palkkapolitiikan, työehtosopimukset, edut ja muuttuvan palkan sekä palkanmäärityskäytännön. Epätasa-arvoiseksi osoittautuva dokumentoidaan ja muutetaan."
         },
-        "crossLevelObservation": "{count, plural, one {# tasojen välinen tapaus on tunnistettu eikä käyty läpi. Se ei estä viimeistelyä.} other {# tasojen välistä tapausta on tunnistettu eikä käyty läpi. Ne eivät estä viimeistelyä.}}",
-        "crossLevelObservationCta": "Katso ne",
         "openAnalysis": "Avaa analyysi",
         "stepsSheet": "Kaikki vaiheet",
-        "stepPosition": "Vaihe {position}/{total} · {chapter}"
-      },
-      "supplementary": {
-        "heading": "Syventävä analyysi · ei vaikuta viimeistelyyn",
-        "lead": "Nämä näkymät auttavat ymmärtämään palkkakuvaa. Mitään niistä ei lasketa siihen, mikä on dokumentoitava ennen palkkakartoituksen viimeistelyä.",
-        "items": {
-          "crossLevel": "Palkat tasojen yli",
-          "levelAnalysis": "Palkat tasoittain",
-          "womenAhead": "Ryhmät joissa naiset eivät jää jälkeen",
-          "genderPure": "Yhden sukupuolen ryhmät",
-          "singletons": "Yhden henkilön tehtävänimikkeet"
-        },
-        "empty": {
-          "crossLevel": "Yhtäkään naista ei ohita alemman tason mies.",
-          "levelAnalysis": "Millään tasolla naiset eivät ansaitse keskimäärin vähemmän kuin miehet.",
-          "womenAhead": "Jokaisessa ryhmässä, jossa on molempia sukupuolia, on naisten kannalta epäedullinen ero.",
-          "genderPure": "Jokaisessa ryhmässä on sekä naisia että miehiä.",
-          "singletons": "Jokaisessa tehtävänimikkeessä on vähintään kaksi henkilöä."
-        },
-        "body": {
-          "singletons": "Yhden henkilön tehtävänimikkeessä ei ole mitään verrattavaa sisäisesti, joten se ei kuulu samanarvoisen työn vertailuun. Henkilöt lasketaan silti mukaan kaikkiin organisaatiotason lukuihin."
-        }
+        "stepPosition": "Vaihe {position}/{total} · {chapter}",
+        "chapterNav": "Analyysin luvut",
+        "progressBarLabel": "Koko palkkakartoituksen edistyminen"
       },
       "overview": {
         "headlineGapLabel": "Palkkaero",
@@ -1416,10 +1389,10 @@
           "notStarted": "Ei aloitettu",
           "inProgress": "Kesken",
           "done": "Valmis"
-        }
+        },
+        "countRich": "<done></done> / <total></total>"
       },
       "review": {
-        "showUnderlyingData": "Näytä taustatiedot",
         "previous": "Edellinen",
         "skip": "Ohita toistaiseksi",
         "continue": "Jatka",
@@ -1443,10 +1416,7 @@
           "none": "Tämän ryhmän naisten ja miesten välillä ei ole mitattavaa palkkaeroa ({women} naista · {men} miestä).",
           "orgLess": "Naiset ansaitsevat keskimäärin {gap} vähemmän kuin miehet koko palkkakartoituksessa.",
           "orgMore": "Naiset ansaitsevat keskimäärin {gap} enemmän kuin miehet koko palkkakartoituksessa.",
-          "orgNone": "Naisten ja miesten välillä ei ole mitattavaa palkkaeroa koko palkkakartoituksessa.",
-          "wdLead": "{label} on naisvaltainen ({share} naisia).",
-          "wdComparisons": "{count, plural, one {Yksi samanarvoinen tai alempi tehtävä ansaitsee keskimäärin enemmän.} other {# samanarvoista tai alempaa tehtävää ansaitsee keskimäärin enemmän.}}",
-          "wdComparator": "{label} (taso {level}) ansaitsee keskimäärin {diff} enemmän kuukaudessa."
+          "orgNone": "Naisten ja miesten välillä ei ole mitattavaa palkkaeroa koko palkkakartoituksessa."
         },
         "praxis": {
           "payPolicy": {
@@ -1500,25 +1470,13 @@
           "done": "valmis"
         },
         "finishActionsNote": "Palkkakorjaukset, kustannusarvio ja kolmen vuoden aikataulu lisätään toimintasuunnitelmaan.",
-        "cycleBody": "Palkkakartoitus noudattaa vuosittaista kiertoa: selvitä palkat, analysoi erot, toimi havaintojen perusteella ja seuraa tilannetta seuraavana vuonna. Tämä prosessi kattaa selvittämisen ja analysoinnin; itse toimenpiteet kootaan jälkeenpäin toimintasuunnitelmaan."
-      },
-      "crossLevel": {
-        "title": "{count, plural, one {# tasojen välinen tapaus} other {# tasojen välistä tapausta}}",
-        "lead": "Korkeammalla tasolla (taso 1 on korkein) oleva nainen ansaitsee peruspalkkana vähemmän kuin alemmalla tasolla oleva mies. Track voi olla asiallinen peruste; sama track molemmilla puolilla vahvistaa tapausta.",
-        "none": "Yksikään korkeammalla tasolla oleva nainen ei ansaitse vähemmän kuin alemmalla tasolla oleva mies.",
-        "summary": "Ohittaa {count, plural, one {# mies} other {# miestä}} alemmilla tasoilla, enintään {diff} (taso {level}).",
-        "showPairs": "Näytä vertailut",
-        "sameTrack": "Sama track",
-        "columns": {
-          "man": "Mies",
-          "level": "Taso ja track",
-          "diff": "Ero"
-        },
-        "showAll": "Näytä {count} lisää",
-        "showFewer": "Näytä vähemmän"
-      },
-      "levelAnalysis": {
-        "lead": "Jokaiselta tasolta, jolla naiset ansaitsevat keskimäärin vähemmän kuin miehet, näytetään kunkin henkilön palkka tason miesten keskiarvoon verrattuna, rooli ja track näkyvissä, koska ne voivat selittää eron. Se täydentää yllä olevia lakisääteisiä vertailuja eikä kanna omaa dokumentointivelvoitetta."
+        "cycleBody": "Palkkakartoitus noudattaa vuosittaista kiertoa: selvitä palkat, analysoi erot, toimi havaintojen perusteella ja seuraa tilannetta seuraavana vuonna. Tämä prosessi kattaa selvittämisen ja analysoinnin; itse toimenpiteet kootaan jälkeenpäin toimintasuunnitelmaan.",
+        "chaptersShort": {
+          "start": "Yhteistoiminta",
+          "praxis": "Käytäntö",
+          "equalWork": "Samaa työtä",
+          "equivalentWork": "Samanarvoista työtä"
+        }
       },
       "actionsOverview": {
         "totalLabel": "Toimenpiteet",
@@ -1548,23 +1506,6 @@
           "created": "Lisätty"
         },
         "noNotesYet": "Ei vielä merkintöjä."
-      },
-      "deepDive": {
-        "lead": "Näissä ryhmissä on vain yhden sukupuolen edustajia, joten nais-mies-vertailua ei voi tehdä. Ne ovat lakisääteisen palkkakartoituksen ulkopuolella eikä niillä ole lippua tai dokumentointivelvoitetta, mutta sisäinen palkkahajonta voi silti olla katsomisen arvoinen.",
-        "onlyGender": "Vain {gender} ({count})",
-        "stats": {
-          "min": "Alin",
-          "median": "Mediaani",
-          "mean": "Keskiarvo",
-          "max": "Ylin",
-          "spread": "Hajonta"
-        }
-      },
-      "womenAhead": {
-        "lead": "Molemmat sukupuolet ovat edustettuina ja naisten keskiarvo on miesten tasolla tai sen yli, joten naisten haitaksi olevaa eroa ei ole korjattavana. Listataan tässä tietona; ryhmillä ei ole lippua eikä dokumentointivelvoitetta.",
-        "womenMean": "Naisten keskiarvo",
-        "menMean": "Miesten keskiarvo",
-        "womenLead": "Ero"
       }
     },
     "rating": {
@@ -2022,20 +1963,12 @@
       "payGapGateBody": "Jokainen samaa työtä tekevä ryhmä, jolla on palkkaero, ja jokainen naisvaltainen ryhmä, jolla on korkeammin palkattu vertailu, on merkittävä valmiiksi dokumentoidulla perusteella ennen kuin palkkakartoitus voidaan viimeistellä. Tämä on Ruotsin lain edellyttämä lakisääteinen dokumentaatio.",
       "collaborationLabel": "Mitä yhteistoiminta tarkoittaa?",
       "collaborationBody": "Yhteistoiminta tarkoittaa henkilöstön ja heidän luottamusmiestensä osallistamista palkkakartoituksen kaikissa vaiheissa (syrjintälain 3 luvun 11 §). Jos organisaationne on sidottu työehtosopimukseen, luottamusmiehillä on oikeus saada tarvitsemansa tiedot osallistuakseen (12 §).",
-      "crossLevelLabel": "Mikä on tasojen välinen tapaus?",
-      "crossLevelBody": "Palkkakartoitus ryhmittelee samanarvoisen työn tason mukaan, mutta palkkaero voi kulkea myös TASOJEN YLI: nainen, jonka rooli on arvioitu vaativammaksi, ansaitsee vähemmän kuin mies alemmin arvioidulla tasolla. Tämä käänteisyys on rakenteellinen varoitusmerkki, joten se listataan erikseen tason sisäisestä vertailusta. Track (IC, Lead, Manager) voi olla sille asiallinen peruste; kun molemmat ovat samalla trackilla, peruste katoaa ja tapaus vaatii dokumentoidun perusteen tai toimenpiteen.",
-      "levelAnalysisLabel": "Mikä tasoanalyysi on?",
-      "levelAnalysisBody": "Saman tason työ katsotaan samanarvoiseksi. Tämä analyysi vertaa naisten ja miesten palkkoja kullakin tasolla, roolirajojen yli. Varoitusmerkki tarkoittaa, että naisen ohittaa lisäksi vähintään yksi alemman tason mies (tasojen välinen tapaus, listattu yllä). Rooli ja track näytetään, koska erolle voi olla asiallinen selitys niissä.",
       "genderPureLabel": "Miksi nämä ryhmät ovat erikseen?",
       "genderPureBody": "Palkkakartoitus vertaa naisten palkkaa miesten palkkaan. Ryhmällä, jossa kaikki ovat samaa sukupuolta, ei ole tällaista vertailua, joten sillä ei ole lippua, dokumentointivelvoitetta eikä paikkaa lakisääteisessä raportissa. Se säilyy täällä, koska sisäinen palkkahajonta ja poikkeamat ovat silti ymmärtämisen arvoisia: suuri hajonta saman työn sisällä voi kertoa palkanmäärittelystä, joka muuttuu palkkaeroksi heti kun ryhmän kokoonpano muuttuu.",
       "womenAheadLabel": "Miksi nämä eivät ole päävirrassa?",
       "womenAheadBody": "Lakisääteinen velvoite kohdistuu naisten haitaksi oleviin palkkaeroihin. Kun ryhmän naiset ovat miesten keskiarvon tasolla tai sen yli, selitettävää tai korjattavaa ei ole, joten ryhmä poistuu päävirrasta sen sijaan että täyttäisi sen vihreillä riveillä. Luvut säilyvät täällä analyyttisenä tietona.",
       "analysisProgressLabel": "Mitä tässä lasketaan?",
-      "analysisProgressBody": "Laskenta kattaa vaiheet, jotka on dokumentoitava ennen palkkakartoituksen viimeistelyä: yhteistoimintaselvitys, palkanmäärityskäytännön läpikäynti, jokainen samanarvoisen työn ryhmä, jossa on naisten kannalta epäedullinen palkkaero, ja jokainen naisvaltainen ryhmä, jolla on korkeammin palkattu vertailuryhmä. Analyyseja ilman dokumentointivelvoitetta ei lasketa.",
-      "collaborationStripLabel": "Miksi yhteistoiminta näkyy tässä?",
-      "collaborationStripBody": "Laki edellyttää, että työnantaja tekee palkkakartoituksen yhdessä työntekijöiden kanssa, tavallisesti ammattiliiton kautta (DL 3 luku 11-12 §). Tämä rivi näyttää, mitä kirjattiin kartoituksen alkaessa, jotta se pysyy näkyvissä työskennellessäsi. Näyttäminen ei sinänsä täytä velvoitetta kussakin vaiheessa.",
-      "supplementaryLabel": "Mitä täällä on?",
-      "supplementaryBody": "Nämä näkymät auttavat ymmärtämään palkkakuvaa, ja osa niistä voi kantaa omia merkintöjä tai toimenpiteitä. Mitään niistä ei lasketa siihen, mikä on dokumentoitava ennen palkkakartoituksen viimeistelyä: se on yllä olevat neljä lukua. Tasojen väliset tapaukset kannattaa lukea, vaikka niitä ei lasketa, koska alemman tason miehen ohittama nainen on rakenteellinen varoitusmerkki."
+      "analysisProgressBody": "Laskenta kattaa vaiheet, jotka on dokumentoitava ennen palkkakartoituksen viimeistelyä: yhteistoimintaselvitys, palkanmäärityskäytännön läpikäynti, jokainen samanarvoisen työn ryhmä, jossa on naisten kannalta epäedullinen palkkaero, ja jokainen naisvaltainen ryhmä, jolla on korkeammin palkattu vertailuryhmä. Analyyseja ilman dokumentointivelvoitetta ei lasketa."
     },
     "widgetCard": {
       "expand": "Suurenna"

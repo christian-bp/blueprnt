@@ -743,8 +743,8 @@ async function markRequiredGroupsDone(
 // all-women Nurse bucket itself is gender-pure and therefore NOT an
 // equalWork documentation target anymore; only its cross-level comparison
 // keeps a documentation duty.
-const REQUIRED_EQUAL_WORK_KEY = "Analyst|2|Mid"
-const REQUIRED_WOMEN_DOMINATED_KEY = "Nurse|3|Mid"
+const REQUIRED_EQUAL_WORK_KEY = "Analyst|2"
+const REQUIRED_WOMEN_DOMINATED_KEY = "Nurse|3"
 const requiredGroupRows: SeedRow[] = [
   {
     gender: "Kvinna",

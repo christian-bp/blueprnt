@@ -73,7 +73,7 @@ async function seedRun(
 
 // An equal-work group with a 20% gap (women 80k vs men 100k): magnitude > 10
 // => "critical" => the ADR-0012 gate requires documentation.
-const CRITICAL_GROUP_KEY = "SWE|3|Senior"
+const CRITICAL_GROUP_KEY = "SWE|3"
 const criticalRows: SeedRow[] = [
   {
     gender: "Kvinna",
@@ -95,7 +95,7 @@ const criticalRows: SeedRow[] = [
 // passes the ADR-0015 entry conditions (shown), but the gate does not
 // require documentation (fri bock). A gapless group would instead be routed
 // out of the flow entirely and stop being a valid documentation target.
-const OK_GROUP_KEY = "PM|2|Mid"
+const OK_GROUP_KEY = "PM|2"
 const okRows: SeedRow[] = [
   {
     gender: "Kvinna",
@@ -118,7 +118,7 @@ const okRows: SeedRow[] = [
 // women-dominated cross-level comparison" seed. The women-dominated groups
 // share the equal-work group's key format
 // (`${roleTitle}|${level}|${seniority}`).
-const WOMEN_DOMINATED_GROUP_KEY = "Nurse|3|Mid"
+const WOMEN_DOMINATED_GROUP_KEY = "Nurse|3"
 const womenDominatedRows: SeedRow[] = [
   {
     gender: "Kvinna",
@@ -309,7 +309,7 @@ describe("upsertGroupAnalysis", () => {
         orgId,
         runId,
         scope: "equalWork",
-        groupKey: "DoesNotExist|1|Mid",
+        groupKey: "DoesNotExist|1",
         reasons: [],
         note: undefined,
         done: false,
@@ -362,7 +362,7 @@ describe("upsertGroupAnalysis", () => {
     expect(audits).toHaveLength(1)
     const payload = audits[0]?.payload as Record<string, unknown>
     expect(payload.scope).toBe("equalWork")
-    expect(payload.groupLabel).toBe("PM · Mid")
+    expect(payload.groupLabel).toBe("PM")
     const changes = payload.changes as Record<
       string,
       { from: unknown; to: unknown }
@@ -453,7 +453,7 @@ describe("upsertGroupAnalysis", () => {
         orgId,
         runId,
         scope: "equivalentWork",
-        groupKey: "DoesNotExist|1|Mid",
+        groupKey: "DoesNotExist|1",
         reasons: [],
         note: undefined,
         done: false,

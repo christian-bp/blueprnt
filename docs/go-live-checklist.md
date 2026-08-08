@@ -190,12 +190,13 @@ in the same change.
   (`dashboard.payMapping.detail/dotPlot/crossLevel/actions/actionsOverview/
   deepDive/womenAhead.*`, the `finding.lessTcc`/`lessTccWorse` variants,
   action/note toasts, audit event/field/value labels, and the five new
-  `dashboard.help.*` pairs), and slice C2 added the
-  `dashboard.payMapping.levelAnalysis.*` section, the level-table columns,
-  the `levelAnalysis` help pair, and the two new reason labels
+  `dashboard.help.*` pairs), plus slice C2's two new reason labels
   (`geographicDifferentiation`, `retention`). The nb, da, and fi values are
   machine-drafted and flagged in the feature commits; have native speakers
-  review them before launch.
+  review them before launch. Slice C2's own `levelAnalysis` section, the
+  level-table columns and the `levelAnalysis` help pair are NOT in scope:
+  the surface they belonged to was removed (see the further-analysis entry
+  below) and their keys went with it.
 - [ ] **Native review of the Iteration 3 analysis-ladder strings (nb/da/fi).**
   The 2026-08-06/07 IA rebuild added the `dashboard.payMapping.analysis.*`
   namespace (the spine's progress readout and samverkan strip, the next-step

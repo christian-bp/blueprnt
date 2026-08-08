@@ -20,6 +20,17 @@ import { SiteHeader } from "@/components/site-header"
 // page padding, so a page's visible content is this minus px-4 (lg:px-6).
 export const PAGE_MAX_W = "max-w-6xl"
 
+// The wider cap for pages whose content is a data surface rather than
+// reading text. The pay-mapping analysis is the case: a 320px step column
+// beside a comparator table that needs 56rem to show a job title next to
+// its figures, plus scatter plots that read better the more room the
+// points have to separate. At 6xl those tables scroll horizontally inside
+// a column narrower than they are, which is the worst of both.
+//
+// Deliberately NOT applied everywhere: a page of prose at 80rem is a wall,
+// and the 6xl cap is what keeps ordinary pages readable.
+export const PAGE_WIDE_MAX_W = "max-w-[85rem]"
+
 // The same width measured as CONTENT, for use inside /work: that route is
 // full-bleed (no cap, so its matrix can use every pixel), which means anything
 // there that should line up with other pages has to subtract the padding the
@@ -44,6 +55,9 @@ export function AppShell(props: {
   // and the view scrolls inside. Every other page keeps the capped reading
   // width and normal page flow.
   const fullBleed = pathname === "/work"
+  // The analysis section (its index and every chapter page) is a data
+  // surface: wide tables and plots, not prose.
+  const wide = /^\/pay-mappings\/[^/]+\/analysis(\/|$)/.test(pathname)
   return (
     <OrganizationProvider value={props.organization}>
       {/* This ui package's sidebar variant does not bundle a TooltipProvider;
@@ -78,7 +92,11 @@ export function AppShell(props: {
                 <div
                   className={cn(
                     "flex w-full flex-col gap-4 px-4 py-4 md:gap-6 md:py-6 lg:px-6",
-                    fullBleed ? "min-h-0 flex-1" : PAGE_MAX_W
+                    fullBleed
+                      ? "min-h-0 flex-1"
+                      : wide
+                        ? PAGE_WIDE_MAX_W
+                        : PAGE_MAX_W
                   )}
                 >
                   {/* Role quick-look sheet, openable from any role chip in the

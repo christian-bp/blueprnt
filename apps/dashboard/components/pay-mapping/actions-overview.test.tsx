@@ -89,7 +89,7 @@ function action(
 ): PayMappingActionWire {
   return {
     actionId: "a1" as Id<"payMappingActions">,
-    target: { kind: "group", scope: "equalWork", groupKey: "SWE|3|Senior" },
+    target: { kind: "group", scope: "equalWork", groupKey: "SWE|3" },
     problem: "Unexplained gap",
     plannedAction: "Salary review",
     reason: null,
@@ -108,7 +108,7 @@ function action(
 function note(overrides: Partial<PayMappingNoteWire> = {}): PayMappingNoteWire {
   return {
     noteId: "n1" as Id<"payMappingNotes">,
-    target: { kind: "group", scope: "equalWork", groupKey: "SWE|3|Senior" },
+    target: { kind: "group", scope: "equalWork", groupKey: "SWE|3" },
     text: "Discuss with the union",
     noteType: "discussionNeeded",
     createdBy: "u1",
@@ -233,7 +233,9 @@ describe("PayMappingActionsOverview", () => {
     expect(screen.getByText(mo.emptyTitle)).toBeDefined()
     expect(
       screen.getByRole("link", { name: mo.emptyCta }).getAttribute("href")
-    ).toBe("/pay-mappings/2026/analysis")
+      // The section has no page of its own, so a bare link goes to the
+      // first chapter rather than through a redirect.
+    ).toBe("/pay-mappings/2026/analysis/start")
     // No filter toolbar when there is nothing to filter.
     expect(screen.queryByLabelText(mo.statusAll)).toBeNull()
   })
@@ -243,17 +245,17 @@ describe("PayMappingActionsOverview", () => {
     const rows = actionRowTexts()
     expect(rows).toHaveLength(1)
     expect(rows[0]).toContain("Alice Admin")
-    expect(rows[0]).toContain("SWE · Senior")
+    expect(rows[0]).toContain("SWE")
     expect(rows[0]).toContain("Unexplained gap")
     // The planned action rides under the problem in the same cell.
     expect(rows[0]).toContain("Salary review")
-    // Every "linked to" cell deep-links to the record's OWN group in the
-    // analysis (the summary pre-selects the matching checklist step).
+    // Every "linked to" cell deep-links to the record's OWN group, on the
+    // page that lists it. Chapters are pages since Iteration 4, so a link
+    // to the section index would land on Läget, which lists no steps, and
+    // open nothing.
     expect(
-      screen
-        .getAllByRole("link", { name: "SWE · Senior" })[0]
-        ?.getAttribute("href")
-    ).toBe("/pay-mappings/2026/analysis?step=equalWork:SWE%7C3%7CSenior")
+      screen.getAllByRole("link", { name: "SWE" })[0]?.getAttribute("href")
+    ).toBe("/pay-mappings/2026/analysis/equal-work?step=equalWork:SWE%7C3")
   })
 
   it("narrows the list by status and says so when nothing matches", async () => {
@@ -288,7 +290,7 @@ describe("PayMappingActionsOverview", () => {
     renderOverview()
     fireEvent.click(
       screen.getByRole("button", {
-        name: m.menuLabel.replace("{target}", "SWE · Senior"),
+        name: m.menuLabel.replace("{target}", "SWE"),
       })
     )
     await waitFor(() => {

@@ -10,8 +10,10 @@ import { initConvexTest } from "../testing.helpers"
 // (Support level 3 @ 50k vs w1 level 2 @ 45k: a real tvärnivå pair), so the
 // action path (shown only), the note path (excluded groups allowed), and
 // pair validation are all exercised against the same run.
-const SHOWN_KEY = "Analyst|2|Mid"
-const GENDER_PURE_KEY = "Lead|1|Staff"
+const SHOWN_KEY = "Analyst|2"
+const GENDER_PURE_KEY = "Lead|1"
+const WD_GROUP_KEY = "Nurse|2"
+const COMPARISON_KEY = "Support|3"
 
 async function seedRun(
   t: ReturnType<typeof initConvexTest>,
@@ -81,6 +83,28 @@ async function seedRun(
       seniority: "Junior",
       level: 3,
       basicMonthly: 50000,
+    },
+    // A women-dominated group (100% women) out-earned by Support, which
+    // sits on a numerically higher = lower-valued level: exactly the 3 kap.
+    // 9 § comparison, so a comparison-targeted record has a real target to
+    // validate against.
+    {
+      personPublicId: "w2",
+      displayName: "Berit",
+      gender: "Kvinna" as const,
+      roleTitle: "Nurse",
+      seniority: "Mid",
+      level: 2,
+      basicMonthly: 40000,
+    },
+    {
+      personPublicId: "w3",
+      displayName: "Cissi",
+      gender: "Kvinna" as const,
+      roleTitle: "Nurse",
+      seniority: "Mid",
+      level: 2,
+      basicMonthly: 41000,
     },
   ]
   const runId = await t.run(async (ctx) => {
@@ -169,7 +193,7 @@ describe("payMapping actions", () => {
     expect(audits).toHaveLength(1)
     const payload = audits[0]?.payload as Record<string, unknown>
     expect(payload.targetKind).toBe("group")
-    expect(payload.targetLabel).toBe("Analyst · Mid")
+    expect(payload.targetLabel).toBe("Analyst")
     const changes = payload.changes as Record<string, { to: unknown }>
     expect(changes.status?.to).toBe("notStarted")
     expect(changes.priority?.to).toBe("high")
@@ -231,14 +255,21 @@ describe("payMapping actions", () => {
       orgId,
       runId,
       ...baseAction(userId),
-      target: { kind: "pair", womanPublicId: "w1", manPublicId: "m4" },
+      target: {
+        kind: "comparison",
+        groupKey: WD_GROUP_KEY,
+        comparisonKey: COMPARISON_KEY,
+      },
     })
 
     const list = await asHr.query(api.payMapping.actions.listActions, {
       orgId,
       runId,
     })
-    expect(list.map((a) => a.target.kind).sort()).toEqual(["pair", "person"])
+    expect(list.map((a) => a.target.kind).sort()).toEqual([
+      "comparison",
+      "person",
+    ])
   })
 
   it("rejects excluded groups, unknown or out-of-group people, non-pairs, and non-member owners", async () => {
@@ -295,7 +326,11 @@ describe("payMapping actions", () => {
         orgId,
         runId,
         ...baseAction(userId),
-        target: { kind: "pair", womanPublicId: "m2", manPublicId: "m3" },
+        target: {
+          kind: "comparison",
+          groupKey: WD_GROUP_KEY,
+          comparisonKey: "nope|9",
+        },
       })
     ).rejects.toThrow(/errors.notFound/)
 
@@ -307,7 +342,11 @@ describe("payMapping actions", () => {
         orgId,
         runId,
         ...baseAction(userId),
-        target: { kind: "pair", womanPublicId: "w1", manPublicId: "m2" },
+        target: {
+          kind: "comparison",
+          groupKey: "nope|9",
+          comparisonKey: COMPARISON_KEY,
+        },
       })
     ).rejects.toThrow(/errors.notFound/)
 
@@ -557,7 +596,7 @@ describe("payMapping notes", () => {
     )
     const payload = audits[0]?.payload as Record<string, unknown>
     expect(payload.noteType).toBe("objectiveReason")
-    expect(payload.targetLabel).toBe("Lead · Staff")
+    expect(payload.targetLabel).toBe("Lead")
     expect(JSON.stringify(payload)).not.toContain("recruitment")
   })
 
@@ -619,7 +658,7 @@ describe("payMapping notes", () => {
       asHr.mutation(api.payMapping.notes.createNote, {
         orgId,
         runId,
-        target: { kind: "group", scope: "equalWork", groupKey: "Nope|1|X" },
+        target: { kind: "group", scope: "equalWork", groupKey: "Nope|1" },
         text: "text",
         noteType: "discussionNeeded",
       })

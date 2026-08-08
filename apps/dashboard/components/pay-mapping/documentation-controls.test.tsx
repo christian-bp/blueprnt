@@ -120,22 +120,24 @@ describe("documentationFor", () => {
     expect(own.actions.map((a) => a.actionId)).toEqual(["a1"])
   })
 
-  it("matches a pair on both sides, and treats an undefined work layer as empty", () => {
-    const pair: ActionTargetWire = {
-      kind: "pair",
-      womanPublicId: "w1",
-      manPublicId: "m1",
+  it("matches a comparison on both keys, and treats an undefined work layer as empty", () => {
+    // Both halves must match: a group is measured against many jobs, and a
+    // reason written for one of them says nothing about the others.
+    const comparison: ActionTargetWire = {
+      kind: "comparison",
+      groupKey: "Nurse|2|Mid",
+      comparisonKey: "Support|3|Junior",
     }
-    const swapped: ActionTargetWire = {
-      kind: "pair",
-      womanPublicId: "w1",
-      manPublicId: "m2",
+    const otherJob: ActionTargetWire = {
+      kind: "comparison",
+      groupKey: "Nurse|2|Mid",
+      comparisonKey: "IT|3|Mid",
     }
     const own = documentationFor(
-      pair,
+      comparison,
       [
-        action({ target: pair }),
-        action({ actionId: "a2" as Id<"payMappingActions">, target: swapped }),
+        action({ target: comparison }),
+        action({ actionId: "a2" as Id<"payMappingActions">, target: otherJob }),
       ],
       undefined
     )

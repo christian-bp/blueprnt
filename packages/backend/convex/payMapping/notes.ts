@@ -129,12 +129,7 @@ export const updateNote = orgMutation({
       payload: {
         runId: note.runId,
         noteId,
-        targetLabel: await resolveTargetLabel(
-          ctx,
-          ctx.orgId,
-          note.runId,
-          note.target
-        ),
+        targetLabel: resolveTargetLabel(note.target),
         // The classification only; the note text never enters the trail. A
         // text-only edit sets the detailsChanged marker so the row never
         // reads as a no-op (ADR-0015: a changed-marker, never the text).
@@ -163,12 +158,7 @@ export const deleteNote = orgMutation({
     if (run === null) throw appError(ERROR_CODES.notFound)
     if (run.status === "completed")
       throw appError(ERROR_CODES.payMappingRunCompleted)
-    const targetLabel = await resolveTargetLabel(
-      ctx,
-      ctx.orgId,
-      note.runId,
-      note.target
-    )
+    const targetLabel = resolveTargetLabel(note.target)
     await ctx.db.delete(noteId)
     await ctx.audit.log({
       type: AUDIT_EVENTS.payMappingNoteDeleted,

@@ -4,6 +4,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
@@ -255,23 +256,14 @@ describe("ReviewGroupStep", () => {
     })
   })
 
-  describe("equal-work finding sentence", () => {
-    it("renders the 'earn less' sentence when women earn less on average", () => {
+  describe("equal-work finding", () => {
+    it("states a measurable gap in badges, not in a sentence", () => {
+      // The badges below carry the figures, next to the plot showing the
+      // same gap. A sentence restating them put one percentage on screen
+      // four times.
       renderEqualWorkStep(GROUP_LESS)
-      expect(
-        screen.getByText(
-          "The women in this group earn on average 10% less than the men (2 women · 3 men)."
-        )
-      ).toBeDefined()
-    })
-
-    it("renders the total-comp sentence for a tccDriven group", () => {
-      renderEqualWorkStep(GROUP_TCC_DRIVEN)
-      expect(
-        screen.getByText(
-          "The women in this group earn on average 10% less than the men in total compensation, while base salaries show no such gap (2 women · 3 men)."
-        )
-      ).toBeDefined()
+      expect(screen.queryByText(/earn on average/)).toBeNull()
+      expect(screen.getByText(`-${sek(10_000)}`)).toBeDefined()
     })
 
     it("renders the 'no measurable difference' sentence when the gap is zero", () => {
@@ -283,7 +275,7 @@ describe("ReviewGroupStep", () => {
       ).toBeDefined()
     })
 
-    it("names the total-comp gap when it, not the base gap, sets the flag", () => {
+    it("badges the second measure only when it changes the picture", () => {
       // Admitted on a 4% base gap (elevated), but the 20% tcc gap is what
       // makes the group critical: the sentence must name the metric behind
       // the flag, or the red badge sits next to a sentence about 4%.
@@ -312,55 +304,65 @@ describe("ReviewGroupStep", () => {
         })
       )
       expect(
-        screen.getByText(
-          "The women in this group earn on average 4% less than the men in base salary, and 20% less in total compensation, which is what sets the group's flag (2 women · 3 men)."
-        )
+        // The base gap is 4% (elevated) but total comp is 20% (critical),
+        // so the second measure earns its badge: it is the one behind the
+        // red flag.
+        screen.getByText("Total comp")
       ).toBeDefined()
     })
   })
 
   describe("EqualWorkDetail composition", () => {
-    // Matches a summary-strip line by its full text content: MetricLine's
-    // <p> mixes text nodes and spans, so the default text matcher (immediate
-    // text children only) cannot see the whole sentence. Whitespace is
-    // collapsed on both sides (Intl money strings carry non-breaking
-    // spaces), mirroring the sek() helper's own normalization.
-    const byLineText =
-      (expected: string) => (_: string, element: Element | null) =>
-        element?.tagName === "P" &&
-        (element.textContent ?? "").replace(/\s+/g, " ") === expected
-
-    it("renders the summary strip, dot plot card and member-table heading", () => {
+    it("badges each series' headcount and mean, plus the gap", () => {
       renderEqualWorkStep(GROUP_LESS)
-      expect(
-        screen.getByText(
-          byLineText(
-            `Women's average: ${sek(90_000)} · Men's average: ${sek(100_000)} · Gap: -${sek(10_000)} (10%)`
-          )
-        )
-      ).toBeDefined()
+      // Each series names itself, counts itself and states its mean, so no
+      // number stands alone waiting to be interpreted.
+      expect(screen.getByText("Women")).toBeDefined()
+      expect(screen.getByText("Men")).toBeDefined()
+      expect(screen.getByText(sek(90_000))).toBeDefined()
+      expect(screen.getByText(sek(100_000))).toBeDefined()
+      expect(screen.getByText(`-${sek(10_000)}`)).toBeDefined()
       expect(screen.getByText(m.dotPlot.title)).toBeDefined()
       expect(screen.getByText(m.gap.groupMembers)).toBeDefined()
     })
 
-    it("leads with the tcc means for a tccDriven group, base as the muted parallel", () => {
+    it("badges a second measure that tells a different story", () => {
+      // Total comp is 10% apart while the base salaries are identical: the
+      // difference is entirely in the variable pay, which is exactly what
+      // the documenter needs to know. So this one earns its badge.
       renderEqualWorkStep(GROUP_TCC_DRIVEN)
-      // Primary line: the tcc metric (women 90k vs men 100k).
-      expect(
-        screen.getByText(
-          byLineText(
-            `Women's average: ${sek(90_000)} · Men's average: ${sek(100_000)} · Gap: -${sek(10_000)} (10%)`
-          )
-        )
-      ).toBeDefined()
-      // Parallel line: the level base salaries, prefixed with their label.
-      expect(
-        screen.getByText(
-          byLineText(
-            `Base salary: Women's average: ${sek(100_000)} · Men's average: ${sek(100_000)} · Gap: ${sek(0)} (0%)`
-          )
-        )
-      ).toBeDefined()
+      expect(screen.getByText(`-${sek(10_000)}`)).toBeDefined()
+      expect(screen.getByText("Base")).toBeDefined()
+    })
+
+    it("leaves out a second measure that only restates the first", () => {
+      // Both measures land on the same flag and the same direction, so the
+      // second row would repeat one krona difference against a bigger
+      // base. That is the noise the badges replace.
+      renderEqualWorkStep(
+        makeGapGroup({
+          key: "same|2|mid",
+          roleTitle: "Same",
+          seniority: "Mid",
+          level: 2,
+          womenCount: 2,
+          menCount: 3,
+          base: {
+            womenMean: 90_000,
+            menMean: 100_000,
+            gapKr: -10_000,
+            gapPct: 10,
+          },
+          tcc: {
+            womenMean: 95_000,
+            menMean: 105_000,
+            gapKr: -10_000,
+            gapPct: 9.5,
+          },
+          flag: "critical",
+        })
+      )
+      expect(screen.queryByText("Total comp")).toBeNull()
     })
 
     it("renders no summary lines when the means are null (defensively masked group)", () => {
@@ -377,11 +379,12 @@ describe("ReviewGroupStep", () => {
   })
 
   describe("women-dominated finding sentence", () => {
-    it("renders the lead sentence with the group's label and women share", () => {
+    it("badges the women's share instead of stating it in a sentence", () => {
+      // The share is what admitted the group to this chapter, so it stays;
+      // the sentence around it restated the heading and the table below.
       renderWdStep(WD_GROUP_ONE)
-      expect(
-        screen.getByText("Nurse · Senior is women-dominated (80% women).")
-      ).toBeDefined()
+      expect(screen.getByText("80% women")).toBeDefined()
+      expect(screen.queryByText(/is women-dominated/)).toBeNull()
     })
 
     it("renders the level badge (always present) but no flag badge", () => {
@@ -399,35 +402,46 @@ describe("ReviewGroupStep", () => {
       }
     })
 
-    it("renders the singular comparisons sentence and one comparator line", () => {
+    it("tables one comparator with a column per fact", () => {
       renderWdStep(WD_GROUP_ONE)
-      expect(
-        screen.getByText(
-          "One equally or lower valued job earns more on average."
-        )
-      ).toBeDefined()
-      expect(
-        screen.getByText(
-          `Technician · Mid (level 2) earns ${sek(4_000)} more per month on average.`
-        )
-      ).toBeDefined()
+      // A row per comparator, not a sentence per comparator: at 16 of them
+      // the same clause repeated sixteen times is unreadable, and the
+      // figures never line up to be compared.
+      const table = screen.getByRole("table")
+      expect(within(table).getAllByRole("row")).toHaveLength(2)
+      expect(within(table).getByText("Technician · Mid")).toBeDefined()
+      expect(within(table).getByText(`+${sek(4_000)}`)).toBeDefined()
     })
 
-    it("renders the plural comparisons sentence and every comparator line", () => {
+    it("tables every comparator, in the order the engine produced", () => {
       renderWdStep(WD_GROUP_TWO)
-      expect(
-        screen.getByText("2 equally or lower valued jobs earn more on average.")
-      ).toBeDefined()
-      expect(
-        screen.getByText(
-          `Technician · Mid (level 2) earns ${sek(4_000)} more per month on average.`
-        )
-      ).toBeDefined()
-      expect(
-        screen.getByText(
-          `Engineer · Junior (level 2) earns ${sek(6_000)} more per month on average.`
-        )
-      ).toBeDefined()
+      const table = screen.getByRole("table")
+      const rows = within(table).getAllByRole("row").slice(1)
+      expect(rows).toHaveLength(2)
+      // The order IS the finding, so it must survive untouched: the engine
+      // puts the largest difference first within a level.
+      expect(rows[0]?.textContent).toContain("Technician · Mid")
+      expect(rows[1]?.textContent).toContain("Engineer · Junior")
+    })
+
+    it("names every column so no figure needs interpreting", () => {
+      renderWdStep(WD_GROUP_TWO)
+      const table = screen.getByRole("table")
+      // The column headers only: `comparators` also holds the reason
+      // column's own label and the row-select hint, neither of which is a
+      // heading.
+      const headers = [
+        m.detail.comparators.level,
+        m.detail.comparators.work,
+        m.detail.comparators.count,
+        m.detail.comparators.womenShare,
+        m.detail.comparators.mean,
+        m.detail.comparators.diffPct,
+        m.detail.comparators.diffSek,
+      ]
+      for (const header of headers) {
+        expect(within(table).getByText(header)).toBeDefined()
+      }
     })
   })
 

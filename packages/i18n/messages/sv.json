@@ -1155,7 +1155,7 @@
         "targetKind": {
           "group": "Grupp",
           "person": "Individ",
-          "pair": "Tvärnivå-par"
+          "comparison": "Jämförelse"
         },
         "createTitle": "Skapa åtgärd",
         "editTitle": "Redigera åtgärd",
@@ -1189,8 +1189,7 @@
         "pay": "Lön",
         "diff": "Mot männens genomsnitt",
         "womenMean": "Kv. medel",
-        "menMean": "M. medel",
-        "gapLabel": "Gap: {kr} ({pct})"
+        "menMean": "M. medel"
       },
       "detail": {
         "population": "Personer som ingår",
@@ -1198,14 +1197,17 @@
         "back": "Tillbaka till lönekartläggningar",
         "erased": "Raderad",
         "fteShare": "({fte} % FTE)",
-        "crossLevelFlagged": "Tjänas förbi av en man på lägre nivå",
         "diffCaption": "Skillnaden mäts mot männens genomsnitt i den här gruppen.",
         "summary": {
           "womenMean": "Kvinnors genomsnitt: {value}",
           "menMean": "Männens genomsnitt: {value}",
           "gap": "Gap: {kr} ({pct})",
           "baseLabel": "Grundlön:",
-          "tccLabel": "Total ersättning:"
+          "tccLabel": "Total ersättning:",
+          "baseBadge": "Grundlön",
+          "tccBadge": "Total ersättning",
+          "meanSuffix": "i snitt",
+          "gapLabel": "Gap"
         },
         "columns": {
           "name": "Namn",
@@ -1213,10 +1215,20 @@
           "basePay": "Grundlön",
           "totalComp": "Total ersättning",
           "documentation": "Dokumentation",
-          "track": "Track",
           "role": "Roll",
-          "crossLevel": "Tvärnivå",
           "diffVsMen": "Mot M. medel"
+        },
+        "comparators": {
+          "level": "Nivå",
+          "work": "Arbete",
+          "count": "Antal",
+          "womenShare": "Andel kvinnor",
+          "mean": "Medellön",
+          "diffPct": "Skillnad %",
+          "diffSek": "Skillnad",
+          "reason": "Löneläget påverkas av",
+          "selectRow": "Visa {label} i diagrammet",
+          "actions": "Åtgärder"
         }
       },
       "gap": {
@@ -1243,7 +1255,8 @@
         "groupMembers": "Personer i gruppen",
         "levelContext": "Inom nivå {level} tjänar kvinnor {gap} mindre än män.",
         "levelContextWomenAhead": "Inom nivå {level} tjänar kvinnor {gap} mer än män.",
-        "levelContextNone": "Inom nivå {level} finns inget mätbart lönegap mellan kvinnor och män."
+        "levelContextNone": "Inom nivå {level} finns inget mätbart lönegap mellan kvinnor och män.",
+        "womenShareBadge": "{share} kvinnor"
       },
       "tabs": {
         "overview": "Översikt",
@@ -1253,28 +1266,9 @@
       },
       "analysis": {
         "progressLabel": "Dokumenterat",
-        "progressCount": "<done></done> / <total></total>",
-        "lead": "Fyra kapitel. Alla måste dokumenteras innan lönekartläggningen kan slutföras.",
-        "collaborationLabel": "Samverkan:",
-        "collaborationEmpty": "Inte registrerad än",
-        "collaborationChange": "Ändra",
-        "collaborationAdd": "Registrera",
-        "chapterPosition": "Kapitel {position} av {total} · {chapter}",
-        "nextStepLabel": "Nästa: {label}",
-        "openStep": "Öppna steget",
-        "remainingAfter": "{count, plural, one {# steg kvar efter det här} other {# steg kvar efter det här}}",
-        "nextAction": {
-          "start": "Registrera vilka som deltar i samverkan och hur den går till.",
-          "praxis": "Gå igenom er lönesättningspraxis inom området och skriv ned vad ni kom fram till.",
-          "equalWork": "Jämför kvinnors och mäns löner i gruppen och dokumentera ett sakligt skäl för varje skillnad ni inte kan förklara.",
-          "equivalentWork": "Jämför den här kvinnodominerade gruppen mot de lägre värderade grupper som ändå tjänar mer."
-        },
         "filterAll": "Alla",
         "filterRemaining": "Kvarvarande",
         "filterLabel": "Visa",
-        "completeRow": "Slutför kartläggningen",
-        "completeLocked": "{count} kvar",
-        "completeReady": "Klar att slutföra",
         "worklist": {
           "showAll": "Visa alla {count} som lista",
           "columns": {
@@ -1306,32 +1300,11 @@
           "start": "Samverkan är ett eget krav (DL 3 kap. 11-12 §§), inte en formalitet: arbetstagarnas representanter deltar i hela kartläggningen, analysen och åtgärdsplanen inräknade. Registrera vilka som deltar och hur det går till.",
           "praxis": "Före själva lönejämförelsen går arbetsgivaren igenom de bestämmelser och den praxis som styr lönerna: lönepolicyn, kollektivavtalen, förmånerna och den rörliga lönen, samt lönesättningspraxis. Det som visar sig vara ojämställt dokumenteras och ändras."
         },
-        "crossLevelObservation": "{count, plural, one {# tvärnivåfall är identifierat och inte genomgånget. Det hindrar inte slutförande.} other {# tvärnivåfall är identifierade och inte genomgångna. De hindrar inte slutförande.}}",
-        "crossLevelObservationCta": "Titta på dem",
         "openAnalysis": "Öppna analysen",
         "stepsSheet": "Alla steg",
-        "stepPosition": "Steg {position} av {total} · {chapter}"
-      },
-      "supplementary": {
-        "heading": "Fördjupad analys · påverkar inte slutförandet",
-        "lead": "De här vyerna hjälper er att förstå lönebilden. Ingen av dem räknas in i det som måste dokumenteras innan lönekartläggningen kan slutföras.",
-        "items": {
-          "crossLevel": "Löner över nivågränser",
-          "levelAnalysis": "Löner per nivå",
-          "womenAhead": "Grupper där kvinnorna inte ligger efter",
-          "genderPure": "Könsrena grupper",
-          "singletons": "Befattningar med en person"
-        },
-        "empty": {
-          "crossLevel": "Ingen kvinna tjänas förbi av en man på en lägre nivå.",
-          "levelAnalysis": "På ingen nivå tjänar kvinnorna i genomsnitt mindre än männen.",
-          "womenAhead": "I varje grupp med båda könen finns en skillnad till kvinnornas nackdel.",
-          "genderPure": "Varje grupp har både kvinnor och män.",
-          "singletons": "Varje befattning har minst två personer."
-        },
-        "body": {
-          "singletons": "En befattning med en enda person har inget att jämföra inom sig och ingår därför inte i jämförelsen av lika arbete. Personerna räknas fortfarande in i alla siffror på organisationsnivå."
-        }
+        "stepPosition": "Steg {position} av {total} · {chapter}",
+        "chapterNav": "Analysens kapitel",
+        "progressBarLabel": "Hela lönekartläggningens framsteg"
       },
       "overview": {
         "headlineGapLabel": "Lönegap",
@@ -1416,10 +1389,10 @@
           "notStarted": "Inte påbörjad",
           "inProgress": "Pågår",
           "done": "Klar"
-        }
+        },
+        "countRich": "<done></done> av <total></total>"
       },
       "review": {
-        "showUnderlyingData": "Visa underlag",
         "previous": "Föregående",
         "skip": "Hoppa över",
         "continue": "Fortsätt",
@@ -1443,10 +1416,7 @@
           "none": "Det finns ingen mätbar löneskillnad mellan kvinnorna och männen i den här gruppen ({women} kvinnor · {men} män).",
           "orgLess": "Kvinnorna tjänar i genomsnitt {gap} mindre än männen i hela lönekartläggningen.",
           "orgMore": "Kvinnorna tjänar i genomsnitt {gap} mer än männen i hela lönekartläggningen.",
-          "orgNone": "Det finns ingen mätbar löneskillnad mellan kvinnor och män i hela lönekartläggningen.",
-          "wdLead": "{label} är kvinnodominerad ({share} kvinnor).",
-          "wdComparisons": "{count, plural, one {Ett likvärdigt eller lägre värderat arbete har högre lön i genomsnitt.} other {# likvärdiga eller lägre värderade arbeten har högre lön i genomsnitt.}}",
-          "wdComparator": "{label} (nivå {level}) tjänar {diff} mer per månad i genomsnitt."
+          "orgNone": "Det finns ingen mätbar löneskillnad mellan kvinnor och män i hela lönekartläggningen."
         },
         "praxis": {
           "payPolicy": {
@@ -1500,25 +1470,13 @@
           "done": "klar"
         },
         "finishActionsNote": "Löneåtgärder, kostnadsberäkning och den treåriga tidsplanen läggs till i handlingsplanen.",
-        "cycleBody": "En lönekartläggning följer en årlig cykel: undersök lönerna, analysera skillnaderna, åtgärda det ni hittar och följ upp nästa år. Den här genomgången täcker undersök och analysera; själva åtgärderna samlas i handlingsplanen efteråt."
-      },
-      "crossLevel": {
-        "title": "{count, plural, one {# tvärnivå-fall} other {# tvärnivå-fall}}",
-        "lead": "En kvinna på en högre nivå (nivå 1 är högst) har lägre grundlön än en man på en lägre nivå. Track kan vara ett sakligt skäl; samma track på båda sidor gör fallet starkare.",
-        "none": "Ingen kvinna på en högre nivå tjänar mindre än en man på en lägre nivå.",
-        "summary": "Tjänas förbi av {count, plural, one {# man} other {# män}} på lägre nivåer, som mest {diff} (nivå {level}).",
-        "showPairs": "Visa jämförelserna",
-        "sameTrack": "Samma track",
-        "columns": {
-          "man": "Man",
-          "level": "Nivå och track",
-          "diff": "Skillnad"
-        },
-        "showAll": "Visa {count} till",
-        "showFewer": "Visa färre"
-      },
-      "levelAnalysis": {
-        "lead": "För varje nivå där kvinnor i genomsnitt tjänar mindre än män visas varje individs lön mot männens medel i nivån, med roll och track synliga, eftersom de kan förklara en skillnad. Den kompletterar de lagstadgade jämförelserna ovan och bär ingen egen dokumentationsplikt."
+        "cycleBody": "En lönekartläggning följer en årlig cykel: undersök lönerna, analysera skillnaderna, åtgärda det ni hittar och följ upp nästa år. Den här genomgången täcker undersök och analysera; själva åtgärderna samlas i handlingsplanen efteråt.",
+        "chaptersShort": {
+          "start": "Samverkan",
+          "praxis": "Praxis",
+          "equalWork": "Lika arbete",
+          "equivalentWork": "Likvärdigt arbete"
+        }
       },
       "actionsOverview": {
         "totalLabel": "Åtgärder",
@@ -1548,23 +1506,6 @@
           "created": "Tillagd"
         },
         "noNotesYet": "Inga noteringar ännu."
-      },
-      "deepDive": {
-        "lead": "De här grupperna har bara medlemmar av ett kön, så det finns ingen kvinna-man-jämförelse att göra. De ligger utanför den lagstadgade lönekartläggningen och har varken flagga eller dokumentationsplikt, men den interna lönespridningen kan ändå vara värd att titta på.",
-        "onlyGender": "Endast {gender} ({count})",
-        "stats": {
-          "min": "Lägst",
-          "median": "Median",
-          "mean": "Medel",
-          "max": "Högst",
-          "spread": "Spridning"
-        }
-      },
-      "womenAhead": {
-        "lead": "Båda könen finns representerade och kvinnornas genomsnitt ligger i nivå med eller över männens, så det finns ingen skillnad till kvinnornas nackdel att åtgärda. Listas här som information; grupperna har varken flagga eller dokumentationsplikt.",
-        "womenMean": "Kvinnors genomsnitt",
-        "menMean": "Männens genomsnitt",
-        "womenLead": "Skillnad"
       }
     },
     "rating": {
@@ -2022,20 +1963,12 @@
       "payGapGateBody": "Varje grupp med lika arbete som har ett löneglapp, och varje kvinnodominerad grupp med en högre betald jämförelse, måste klarmarkeras med ett dokumenterat skäl innan lönekartläggningen kan slutföras. Detta är den lagstadgade dokumentation som svensk lag kräver.",
       "collaborationLabel": "Vad är samverkan?",
       "collaborationBody": "Samverkan innebär att samverka med arbetstagarna och deras fackliga representanter i varje steg av lönekartläggningen (diskrimineringslagen 3 kap. 11 §). Om er organisation är bunden av kollektivavtal har de fackliga representanterna rätt till den information de behöver för att delta (12 §).",
-      "crossLevelLabel": "Vad är ett tvärnivå-fall?",
-      "crossLevelBody": "Lönekartläggningen grupperar likvärdigt arbete per nivå, men en löneskillnad kan också gå TVÄRS över nivåerna: en kvinna vars roll har värderats som mer krävande tjänar mindre än en man på en lägre värderad nivå. Den inversionen är ett strukturellt varningstecken och listas därför separat från jämförelsen inom nivån. Track (IC, Lead, Manager) kan vara ett sakligt skäl till den; när båda sidor ligger på samma track faller det skälet bort och fallet behöver ett dokumenterat skäl eller en åtgärd.",
-      "levelAnalysisLabel": "Vad är nivåanalysen?",
-      "levelAnalysisBody": "Arbete på samma nivå betraktas som likvärdigt. Den här analysen jämför kvinnors och mäns löner inom varje nivå, över rollgränserna. En varningsmarkering betyder att kvinnan dessutom tjänas förbi av minst en man på en lägre nivå (ett tvärnivåfall, listat ovan). Roll och track visas eftersom en skillnad kan ha en saklig förklaring där.",
       "genderPureLabel": "Varför ligger de här grupperna för sig?",
       "genderPureBody": "En lönekartläggning jämför kvinnors lön mot mäns. En grupp där alla har samma kön har ingen sådan jämförelse att göra, så den har varken flagga, dokumentationsplikt eller plats i den lagstadgade rapporten. Den finns kvar här eftersom intern lönespridning och outliers ändå är värda att förstå: en stor spridning inom ett och samma jobb kan peka på en lönesättning som blir ett lönegap i samma stund som gruppens sammansättning ändras.",
       "womenAheadLabel": "Varför ligger de här inte i huvudflödet?",
       "womenAheadBody": "Den lagstadgade plikten riktar sig mot löneskillnader till kvinnors nackdel. När kvinnorna i en grupp ligger i nivå med eller över männens genomsnitt finns det inget att förklara eller åtgärda, så gruppen lämnar huvudflödet i stället för att fylla det med gröna rader. Siffrorna finns kvar här som analytisk information.",
       "analysisProgressLabel": "Vad räknas här?",
-      "analysisProgressBody": "Räkningen omfattar de steg som måste dokumenteras innan lönekartläggningen kan slutföras: samverkansredogörelsen, genomgången av lönesättningspraxis, varje grupp med lika arbete där det finns en löneskillnad till kvinnornas nackdel, och varje kvinnodominerad grupp med en högre betald jämförelsegrupp. Analyser utan dokumentationsplikt räknas inte.",
-      "collaborationStripLabel": "Varför visas samverkan här?",
-      "collaborationStripBody": "Lagen kräver att arbetsgivaren genomför lönekartläggningen tillsammans med arbetstagarna, normalt genom facket (DL 3 kap. 11-12 §§). Den här raden visar vad som registrerades när kartläggningen startade, så att det syns medan du arbetar. Att det visas fullgör inte i sig plikten vid varje steg.",
-      "supplementaryLabel": "Vad finns här?",
-      "supplementaryBody": "De här vyerna hjälper er att förstå lönebilden, och några av dem kan bära egna noteringar eller åtgärder. Ingen av dem räknas in i det som måste dokumenteras innan lönekartläggningen kan slutföras: det är de fyra kapitlen ovanför. Tvärnivåfallen är värda att läsa trots att de inte räknas, eftersom en kvinna som tjänas förbi av en man på en lägre nivå är ett strukturellt varningstecken."
+      "analysisProgressBody": "Räkningen omfattar de steg som måste dokumenteras innan lönekartläggningen kan slutföras: samverkansredogörelsen, genomgången av lönesättningspraxis, varje grupp med lika arbete där det finns en löneskillnad till kvinnornas nackdel, och varje kvinnodominerad grupp med en högre betald jämförelsegrupp. Analyser utan dokumentationsplikt räknas inte."
     },
     "widgetCard": {
       "expand": "Förstora"

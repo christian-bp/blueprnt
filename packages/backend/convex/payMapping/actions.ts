@@ -290,12 +290,7 @@ export const setActionStatus = orgMutation({
       payload: {
         runId: action.runId,
         actionId,
-        targetLabel: await resolveTargetLabel(
-          ctx,
-          ctx.orgId,
-          action.runId,
-          action.target
-        ),
+        targetLabel: resolveTargetLabel(action.target),
         changes: { status: { from: action.status, to: status } },
       },
     })
@@ -315,12 +310,7 @@ export const deleteAction = orgMutation({
     // A completed run's action plan is part of the sealed documentation.
     if (run.status === "completed")
       throw appError(ERROR_CODES.payMappingRunCompleted)
-    const targetLabel = await resolveTargetLabel(
-      ctx,
-      ctx.orgId,
-      action.runId,
-      action.target
-    )
+    const targetLabel = resolveTargetLabel(action.target)
     await ctx.db.delete(actionId)
     await ctx.audit.log({
       type: AUDIT_EVENTS.payMappingActionDeleted,

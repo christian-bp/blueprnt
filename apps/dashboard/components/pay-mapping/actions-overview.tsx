@@ -50,6 +50,7 @@ import {
   type PayMappingActionWire,
   type PayMappingNoteWire,
 } from "./pay-mapping-gap-types"
+import { chapterSegment } from "./analysis-chapters"
 import { usePayMappingRun } from "./pay-mapping-run-context"
 
 const STATUSES: ActionStatus[] = ["notStarted", "inProgress", "done"]
@@ -59,38 +60,44 @@ const DUE_WINDOW_DAYS = 30
 // table never grows when the first page arrives.
 const PAGE_SIZE = 25
 
-// The group a record is anchored to, as display text. A person- or
-// pair-targeted record still reads by its GROUP (the group key is the only
-// display value the target carries; the person's own name lives in the
-// detail view, never denormalized here).
+// The group a record is anchored to, as display text. A person-targeted
+// record still reads by its GROUP (the group key is the only display value
+// the target carries; the person's own name lives in the detail view,
+// never denormalized here). A comparison reads by the job it compares
+// AGAINST: that is the row the reader documented.
 function targetGroupLabel(target: ActionTargetWire): string {
-  if (target.kind === "pair") return ""
-  const [roleTitle, , seniority] = target.groupKey.split("|")
-  return groupLabel({
-    roleTitle: roleTitle ?? null,
-    seniority: seniority ?? null,
-  })
+  const key =
+    target.kind === "comparison" ? target.comparisonKey : target.groupKey
+  // A group key is roleTitle|level (ADR-0017), so the title alone names it.
+  const [roleTitle] = key.split("|")
+  return groupLabel({ roleTitle: roleTitle ?? null, seniority: null })
 }
 
 // Whether a record belongs to the lika arbete flow or the women-dominated
 // chapter: the overview's "type of comparison" filter, and the deep link
 // back into the analysis.
-function targetScope(
-  target: ActionTargetWire
-): "equalWork" | "equivalentWork" | "pair" {
-  return target.kind === "pair" ? "pair" : target.scope
+function targetScope(target: ActionTargetWire): "equalWork" | "equivalentWork" {
+  // A comparison only ever belongs to the women-dominated chapter: it is
+  // one of the jobs a dominated group is measured against.
+  return target.kind === "comparison" ? "equivalentWork" : target.scope
 }
 
-// The deep link that opens the record's OWN group in the analysis: the
-// summary pre-selects the checklist step matching ?step=<scope>:<key>. A
-// pair has no chapter step of its own, so it links to the analysis plainly
-// (the tvärnivå section sits at the top there).
+// The deep link that opens the record's OWN group in the analysis. Chapters
+// are pages (Iteration 4), so this must address the owning CHAPTER's page:
+// the section index lists no steps, so a link there would land on Läget and
+// open nothing. The ?step= key is still scope-qualified, because the page
+// resolves it through the same parser either way.
+//
+// A comparison links to the DOMINATED group's step, not to the job it is
+// compared against: that step is where the comparison is listed and where
+// its reason was written.
 function analysisStepHref(
   analysisHref: string,
   target: ActionTargetWire
 ): string {
-  if (target.kind === "pair") return analysisHref
-  return `${analysisHref}?step=${target.scope}:${encodeURIComponent(target.groupKey)}`
+  const scope = targetScope(target)
+  const segment = chapterSegment(scope)
+  return `${analysisHref}/${segment}?step=${scope}:${encodeURIComponent(target.groupKey)}`
 }
 
 // A summary-strip figure: a NumberFlow once the value is known (statuses
@@ -156,7 +163,11 @@ export function PayMappingActionsOverview() {
   const [notesPage, setNotesPage] = useState(0)
 
   const [, slug] = pathname.split("/").filter(Boolean)
+  // The section's base path: every link built from it appends the owning
+  // record's own chapter segment (see analysisStepHref). The section has no
+  // page of its own, so a bare link goes to the first chapter.
   const analysisHref = `/pay-mappings/${slug}/analysis`
+  const analysisStartHref = `${analysisHref}/${chapterSegment("start")}`
   const currency = gap?.currency ?? ""
   const locked = run?.status === "completed"
   const loading =
@@ -333,7 +344,7 @@ export function PayMappingActionsOverview() {
             <EmptyDescription>{tOverview("emptyBody")}</EmptyDescription>
           </EmptyHeader>
           <Link
-            href={analysisHref}
+            href={analysisStartHref}
             className="text-sm underline underline-offset-4"
           >
             {tOverview("emptyCta")}

@@ -363,7 +363,7 @@ export interface AuditPayloads {
   "payMapping.actionCreated": {
     runId: string
     actionId: string
-    targetKind: "group" | "person" | "pair"
+    targetKind: "group" | "person" | "comparison"
     targetLabel: string
     changes: Changes
   }
@@ -382,13 +382,13 @@ export interface AuditPayloads {
   "payMapping.actionDeleted": {
     runId: string
     actionId: string
-    targetKind: "group" | "person" | "pair"
+    targetKind: "group" | "person" | "comparison"
     targetLabel: string
   }
   "payMapping.noteCreated": {
     runId: string
     noteId: string
-    targetKind: "group" | "person" | "pair"
+    targetKind: "group" | "person" | "comparison"
     targetLabel: string
     noteType: "objectiveReason" | "discussionNeeded" | "noActionNeeded"
   }
@@ -401,7 +401,7 @@ export interface AuditPayloads {
   "payMapping.noteDeleted": {
     runId: string
     noteId: string
-    targetKind: "group" | "person" | "pair"
+    targetKind: "group" | "person" | "comparison"
     targetLabel: string
   }
 }

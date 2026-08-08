@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react"
 import { useTranslations } from "next-intl"
+import { chapterSegment } from "./analysis-chapters"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { SPRING } from "@/lib/motion"
@@ -13,9 +14,18 @@ import { SPRING } from "@/lib/motion"
 // only inside a run (a slug segment exists), so the list page keeps its plain
 // header. The underline uses a layoutId distinct from the other sections' so
 // they never cross-animate.
+// `sub` is what the URL's first sub-segment must equal for the tab to read
+// as current; `landing` is where the tab actually goes when it differs.
+// Analysis needs the split: the section has no page of its own (every route
+// under it is a chapter), so linking at the bare segment would spend a
+// round trip on the redirect that lives there.
 const TABS = [
   { labelKey: "overview", sub: "" },
-  { labelKey: "analysis", sub: "analysis" },
+  {
+    labelKey: "analysis",
+    sub: "analysis",
+    landing: `analysis/${chapterSegment("start")}`,
+  },
   { labelKey: "actions", sub: "actions" },
   { labelKey: "report", sub: "report" },
 ] as const
@@ -41,10 +51,11 @@ export function PayMappingTabs() {
       className="flex h-full items-stretch gap-1"
     >
       {TABS.map((tab) => {
+        const target = "landing" in tab ? tab.landing : tab.sub
         const href =
-          tab.sub === ""
+          target === ""
             ? `/pay-mappings/${slug}`
-            : `/pay-mappings/${slug}/${tab.sub}`
+            : `/pay-mappings/${slug}/${target}`
         const active = (sub ?? "") === tab.sub
         return (
           <Link

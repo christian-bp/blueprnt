@@ -1,23 +1,21 @@
 "use client"
 
+import { Coins01Icon, UserMultiple02Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { flagWomenBehind } from "@workspace/core"
 import { useFormatter, useTranslations } from "next-intl"
+import { GenderDotIcon, type GenderSeries } from "@/components/gender-mark"
 import { HelpMorphButton } from "@/components/help-morph-button"
 import { useMoney } from "@/hooks/use-money"
 import { percentText } from "@/lib/percent"
 import type { Id } from "@workspace/backend/convex/_generated/dataModel"
-import {
-  DocumentationBadges,
-  documentationFor,
-  DocumentationMenu,
-} from "./documentation-controls"
+import type { ReactNode } from "react"
 import { EvidenceDisclosure } from "./evidence-disclosure"
 import { GroupMemberTable } from "./group-member-table"
 import { PayGapDotPlot } from "./pay-gap-dot-plot"
 import {
-  type ActionTargetWire,
   type GapGroup,
   type GapMetric,
-  groupLabel,
   type PayMappingActionWire,
   type PayMappingNoteWire,
   type PayMappingSnapshotRow,
@@ -28,6 +26,111 @@ import {
 // strip; null means when a side is missing render nothing (the entry
 // conditions make that unreachable for shown groups, kept total anyway).
 // Exported: the per-level likvärdigt analysis renders the same line.
+// A small two-line figure card. Line one names WHAT the figure is about
+// (the series, or the gap); line two carries the money. The one-line form
+// this replaces read "1 · 53 859 kr", which needs the reader to already
+// know that the first number is a headcount and the second a mean.
+//
+// The icons do the labelling the compact form could not: a people mark for
+// the count, a coins mark for the money, both already used elsewhere in the
+// app for exactly these. The gender mark ties the card to its own series in
+// the plot below, and the series is NAMED as well as marked, because
+// identity is never left to a mark alone.
+function FigureCard({
+  children,
+  title,
+}: {
+  children: ReactNode
+  title: ReactNode
+}) {
+  return (
+    <div className="flex min-w-0 flex-col gap-0.5 rounded-md border px-2.5 py-1.5">
+      <div className="flex items-center gap-1.5 text-sm">{title}</div>
+      <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+function MeanCard({
+  series,
+  count,
+  mean,
+  currency,
+}: {
+  series: GenderSeries
+  count: number
+  mean: number | null
+  currency: string
+}) {
+  const t = useTranslations("dashboard.payMapping.detail.summary")
+  const tGap = useTranslations("dashboard.payMapping.gap.columns")
+  const money = useMoney()
+  if (mean === null) return null
+  return (
+    <FigureCard
+      title={
+        <>
+          <span aria-hidden="true" className="size-3 shrink-0">
+            <GenderDotIcon series={series} />
+          </span>
+          <span className="font-medium">
+            {tGap(series === "women" ? "women" : "men")}
+          </span>
+          <HugeiconsIcon
+            icon={UserMultiple02Icon}
+            strokeWidth={2}
+            aria-hidden="true"
+            className="ml-1 size-3.5 shrink-0 text-muted-foreground"
+          />
+          <span className="text-muted-foreground tabular-nums">{count}</span>
+        </>
+      }
+    >
+      <HugeiconsIcon
+        icon={Coins01Icon}
+        strokeWidth={2}
+        aria-hidden="true"
+        className="size-3.5 shrink-0"
+      />
+      <span className="text-foreground tabular-nums">
+        {money(mean, currency)}
+      </span>
+      <span>{t("meanSuffix")}</span>
+    </FigureCard>
+  )
+}
+
+// The gap itself, signed so the direction is in the number rather than in a
+// sentence beside it.
+function GapCard({
+  metric,
+  currency,
+  prefix,
+}: {
+  metric: GapMetric
+  currency: string
+  prefix?: string
+}) {
+  const t = useTranslations("dashboard.payMapping.detail.summary")
+  const format = useFormatter()
+  const money = useMoney()
+  if (metric.gapKr === null || metric.gapPct === null) return null
+  return (
+    <FigureCard
+      title={<span className="font-medium">{prefix ?? t("gapLabel")}</span>}
+    >
+      <span className="text-foreground tabular-nums">
+        {money(-metric.gapKr, currency, { signed: true })}
+      </span>
+      <span className="tabular-nums">
+        ({percentText(metric.gapPct, format)})
+      </span>
+    </FigureCard>
+  )
+}
+
 export function MetricLine({
   metric,
   currency,
@@ -100,64 +203,63 @@ export function EqualWorkDetail({
 }) {
   const t = useTranslations("dashboard.payMapping.detail")
   const tGapRoot = useTranslations("dashboard.payMapping.gap")
-  const tGap = useTranslations("dashboard.payMapping.gap.columns")
   const tHelp = useTranslations("dashboard.help")
 
   const primary = primaryGapMetric(group)
   const secondary = group.tccDriven ? group.base : group.tcc
+  // The badge form of the label, without the sentence colon the line
+  // version carries.
   const secondaryPrefix = group.tccDriven
-    ? t("summary.baseLabel")
-    : t("summary.tccLabel")
-
-  const groupTarget: ActionTargetWire = {
-    kind: "group",
-    scope: "equalWork",
-    groupKey: group.key,
-  }
-  const groupDocs = documentationFor(
-    groupTarget,
-    documentation?.actions,
-    documentation?.notes
-  )
+    ? t("summary.baseBadge")
+    : t("summary.tccBadge")
+  // The second measure earns its place only when it says something the
+  // first one does not: a different flag (its gap crosses a threshold the
+  // primary does not) or the opposite direction. Otherwise it restates the
+  // same krona difference against a bigger base.
+  const secondaryMatters =
+    secondary.gapPct !== null &&
+    primary.gapPct !== null &&
+    (flagWomenBehind(group.womenCount, group.menCount, secondary.gapPct) !==
+      flagWomenBehind(group.womenCount, group.menCount, primary.gapPct) ||
+      Math.sign(secondary.gapPct) !== Math.sign(primary.gapPct))
 
   return (
     <div className="space-y-4">
       <div className="space-y-0.5">
-        {/* The group's own documentation affordance, in a fixed-height row
-            so gaining a badge never shifts the summary beneath. */}
-        {documentation !== undefined && (
-          // Right-aligned: with no documentation yet the row is a single
-          // "..." trigger, which reads as an orphaned icon on the left and
-          // as the section's own action on the right.
-          <div className="flex h-9 items-center justify-end gap-2">
-            <DocumentationBadges
-              actions={groupDocs.actions}
-              notes={groupDocs.notes}
-            />
-            <DocumentationMenu
-              runId={documentation.runId}
-              target={groupTarget}
-              targetLabel={groupLabel(group)}
-              actions={groupDocs.actions}
-              notes={groupDocs.notes}
+        {/* The figures as badges rather than three sentences. Everything
+            the plot below already shows (the gap's size, where the means
+            sit, the spread) is not repeated here; what a plot cannot give
+            is the exact means and the headcount when points overlap, so
+            that is what these carry. The gender marks tie each badge to
+            its own series in the plot.
+
+            The secondary metric appears ONLY when it changes the picture
+            (see secondaryMatters). Base and total comp usually differ by a
+            percentage point because the base is larger, not because
+            anything different is happening, and a second row of near
+            identical numbers is the noise this replaces. */}
+        <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+          <MeanCard
+            series="women"
+            count={group.womenCount}
+            mean={primary.womenMean}
+            currency={currency}
+          />
+          <MeanCard
+            series="men"
+            count={group.menCount}
+            mean={primary.menMean}
+            currency={currency}
+          />
+          <GapCard metric={primary} currency={currency} />
+          {secondaryMatters && (
+            <GapCard
+              metric={secondary}
               currency={currency}
-              locked={documentation.locked}
+              prefix={secondaryPrefix}
             />
-          </div>
-        )}
-        <p className="text-muted-foreground text-sm">
-          {tGap("women")}:{" "}
-          <span className="tabular-nums">{group.womenCount}</span>
-          {" · "}
-          {tGap("men")}: <span className="tabular-nums">{group.menCount}</span>
-        </p>
-        <MetricLine metric={primary} currency={currency} />
-        <MetricLine
-          metric={secondary}
-          currency={currency}
-          muted
-          prefix={secondaryPrefix}
-        />
+          )}
+        </div>
       </div>
       <PayGapDotPlot group={group} rows={rows} currency={currency} />
       {/* The summary strip and the plot stay visible: they are WHY this
