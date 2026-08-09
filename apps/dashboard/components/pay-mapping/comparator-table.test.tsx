@@ -1,4 +1,10 @@
-import { cleanup, render, screen, within } from "@testing-library/react"
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it, vi } from "vitest"
@@ -141,5 +147,62 @@ describe("ComparatorTable columns", () => {
     expect(
       screen.getByText(messages.dashboard.payMapping.detail.comparators.reason)
     ).toBeDefined()
+  })
+})
+
+// Selecting a comparator is what lights its people up in the plot below, so
+// it has to be reachable without a mouse. It was a bare onClick on the <tr>
+// once, which left the whole feature unavailable to keyboard users.
+describe("ComparatorTable selection", () => {
+  const NAME =
+    messages.dashboard.payMapping.detail.comparators.selectRow.replace(
+      "{label}",
+      "IT Manager"
+    )
+
+  it("exposes each comparator as a named button, without unrowing the row", () => {
+    const { container } = renderTable({ onSelect: vi.fn() })
+    expect(screen.getByRole("button", { name: NAME })).toBeDefined()
+    // A role on the <tr> would replace its row semantics, which breaks the
+    // table for the readers the keyboard path exists for.
+    for (const row of container.querySelectorAll("tbody tr")) {
+      expect(row.getAttribute("role")).toBeNull()
+      expect(row.getAttribute("tabindex")).toBeNull()
+    }
+  })
+
+  it("selects with the keyboard", () => {
+    const onSelect = vi.fn()
+    renderTable({ onSelect })
+    // A real button, so Enter and Space are the browser's job, not ours:
+    // what has to hold is that activating it selects.
+    fireEvent.click(screen.getByRole("button", { name: NAME }))
+    expect(onSelect).toHaveBeenCalledWith("IT Manager|5")
+  })
+
+  // A toggle, so its state is aria-pressed, and hitting it again clears the
+  // highlight rather than re-selecting the same row.
+  it("reports the selected comparator as pressed and toggles off", () => {
+    const onSelect = vi.fn()
+    renderTable({ onSelect, selectedKey: "IT Manager|5" })
+    const button = screen.getByRole("button", { name: NAME })
+    expect(button.getAttribute("aria-pressed")).toBe("true")
+    fireEvent.click(button)
+    expect(onSelect).toHaveBeenCalledWith(null)
+  })
+
+  // The row is clickable too, and its handler must not fire alongside the
+  // button's and undo the selection.
+  it("does not double-fire when the button inside the row is clicked", () => {
+    const onSelect = vi.fn()
+    renderTable({ onSelect })
+    fireEvent.click(screen.getByRole("button", { name: NAME }))
+    expect(onSelect).toHaveBeenCalledTimes(1)
+  })
+
+  // A read-only rendering must not advertise a control at all.
+  it("stays inert when there is nothing to select", () => {
+    renderTable()
+    expect(screen.queryByRole("button", { name: NAME })).toBeNull()
   })
 })

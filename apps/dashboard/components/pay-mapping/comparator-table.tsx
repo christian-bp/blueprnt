@@ -174,18 +174,21 @@ export function ComparatorTable({
                     documentation?.notes
                   )
             const selected = selectedKey === comparison.key
+            const select =
+              onSelect === undefined
+                ? undefined
+                : () => onSelect(selected ? null : comparison.key)
             return (
               <TableRow
                 key={comparison.key}
-                // Selecting is a plain click on the row, not a control of its
-                // own: the row IS the thing being pointed at, and a checkbox
-                // column would cost width the job titles already need.
-                onClick={
-                  onSelect === undefined
-                    ? undefined
-                    : () => onSelect(selected ? null : comparison.key)
-                }
-                aria-selected={onSelect === undefined ? undefined : selected}
+                // The whole row stays clickable, because the row IS the thing
+                // being pointed at and a checkbox column would cost width the
+                // job titles already need. The row itself carries no role or
+                // tabIndex, though: a role on a <tr> replaces its row
+                // semantics, which breaks the table for exactly the readers
+                // the keyboard path is meant to serve. The real control lives
+                // in the Work cell below.
+                onClick={select}
                 className={cn(
                   onSelect !== undefined && "cursor-pointer",
                   selected && "bg-muted"
@@ -195,7 +198,31 @@ export function ComparatorTable({
                   {comparison.level}
                 </TableCell>
                 <TableCell className="truncate">
-                  {groupLabel(comparison)}
+                  {/* Selecting lights this job up in the plot below, so it
+                      needs to be reachable without a mouse. As a toggle it
+                      reports aria-pressed, and its name says what selecting
+                      does rather than repeating the title the cell already
+                      shows. */}
+                  {select === undefined ? (
+                    groupLabel(comparison)
+                  ) : (
+                    <button
+                      type="button"
+                      aria-label={t("selectRow", {
+                        label: groupLabel(comparison),
+                      })}
+                      aria-pressed={selected}
+                      // The row's own onClick would fire a second time and
+                      // undo this one.
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        select()
+                      }}
+                      className="max-w-full cursor-pointer truncate text-left hover:underline focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-2"
+                    >
+                      {groupLabel(comparison)}
+                    </button>
+                  )}
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
                   {comparison.headcount}

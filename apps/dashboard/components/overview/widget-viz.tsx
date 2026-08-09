@@ -140,8 +140,20 @@ function TrendArea({
     >
       {/* No side or bottom margin: the fill runs to the card's own edges,
           which is what makes it read as the card's surface rather than a
-          picture sitting on it. The top margin is the stroke's headroom. */}
-      <AreaChart data={rows} margin={{ top: 8, left: 0, right: 0, bottom: 0 }}>
+          picture sitting on it. The top margin is the stroke's headroom.
+
+          accessibilityLayer OFF, unlike every other chart in the app. It
+          defaults on, and it puts tabIndex=0 and role="application" on the
+          plot surface, which inside this aria-hidden container makes a tab
+          stop that a screen reader cannot announce at all. These trends are
+          hidden on purpose (the tile above states the same figures in text),
+          so the keyboard has nothing to reach here. A chart that is NOT
+          aria-hidden keeps the layer. */}
+      <AreaChart
+        accessibilityLayer={false}
+        data={rows}
+        margin={{ top: 8, left: 0, right: 0, bottom: 0 }}
+      >
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="var(--brand)" stopOpacity={0.3} />
