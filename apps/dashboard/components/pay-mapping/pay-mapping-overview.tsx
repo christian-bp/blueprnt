@@ -278,7 +278,21 @@ function QuartileStat({
   const tGap = useTranslations("dashboard.payMapping.gap.columns")
   const marks = useGenderMarks()
   if (quartiles === undefined) {
-    return <Skeleton className="h-40 w-full" />
+    // The same box the loaded state occupies, not just the plot's height: the
+    // legend below it is two lines of static i18n text, so it renders for
+    // real rather than as a bar, and the card stops growing by its height
+    // when the data lands.
+    return (
+      <div className="space-y-2">
+        <Skeleton className="h-40 w-full" />
+        <GenderLegend
+          items={[
+            { series: "women", label: tGap("women") },
+            { series: "men", label: tGap("men") },
+          ]}
+        />
+      </div>
+    )
   }
   const config = {
     men: {
