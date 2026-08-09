@@ -1,3 +1,4 @@
+import type { ActionTargetKind } from "../payMapping/tables"
 import type { AuditEvent, PlatformAuditEvent } from "./audit"
 
 // Typed payload contracts for the audit-log writers. These constrain the
@@ -325,7 +326,7 @@ export interface AuditPayloads {
   "payMapping.groupAnalysisUpdated": {
     runId: string
     scope: "equalWork" | "equivalentWork" | "praxis"
-    // "roleTitle · seniority" for equalWork/equivalentWork; for praxis, the raw
+    // The role title for equalWork/equivalentWork; for praxis, the raw
     // PRAXIS_AREA_KEYS area-key slug (never split, it carries no "|").
     // Role-level content either way, never person identity.
     groupLabel: string
@@ -355,15 +356,15 @@ export interface AuditPayloads {
     populationCount: number
   }
   // Action/note events (ADR-0015). targetLabel is always GROUP-level display
-  // text ("roleTitle · seniority"), even for person- and pair-targeted
-  // records: a person's name must never enter these payloads (it could not
-  // be scrubbed on erasure), so targetKind carries the anchoring instead.
+  // text (the role title), even for person- and comparison-targeted records:
+  // a person's name must never enter these payloads (it could not be scrubbed
+  // on erasure), so targetKind carries the anchoring instead.
   // The diffs cover structured fields only (ACTION_AUDIT_FIELDS /
   // NOTE_AUDIT_FIELDS): free text, owner, and cost stay out of the trail.
   "payMapping.actionCreated": {
     runId: string
     actionId: string
-    targetKind: "group" | "person" | "comparison"
+    targetKind: ActionTargetKind
     targetLabel: string
     changes: Changes
   }
@@ -382,13 +383,13 @@ export interface AuditPayloads {
   "payMapping.actionDeleted": {
     runId: string
     actionId: string
-    targetKind: "group" | "person" | "comparison"
+    targetKind: ActionTargetKind
     targetLabel: string
   }
   "payMapping.noteCreated": {
     runId: string
     noteId: string
-    targetKind: "group" | "person" | "comparison"
+    targetKind: ActionTargetKind
     targetLabel: string
     noteType: "objectiveReason" | "discussionNeeded" | "noActionNeeded"
   }
@@ -401,7 +402,7 @@ export interface AuditPayloads {
   "payMapping.noteDeleted": {
     runId: string
     noteId: string
-    targetKind: "group" | "person" | "comparison"
+    targetKind: ActionTargetKind
     targetLabel: string
   }
 }

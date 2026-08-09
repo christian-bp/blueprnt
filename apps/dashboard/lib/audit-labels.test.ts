@@ -18,6 +18,7 @@ import {
   ROLE_CREATE_FIELDS,
   SETTINGS_AUDIT_FIELDS,
 } from "@workspace/backend/convex/lib/audit"
+import { ACTION_TARGET_KINDS } from "@workspace/backend/convex/payMapping/tables"
 import {
   COUNTRY_KEYS,
   EMPLOYMENT_TYPES,
@@ -270,13 +271,16 @@ const AUDIT_STATUSES = [
   "done",
 ] as const
 // payMapping.action*/note* domains (payMapping/tables.ts validators).
+// ACTION_TARGET_KINDS is imported from there rather than restated: a local
+// copy went stale through the pair-to-comparison rename and the guard below
+// compared two equally-stale lists, so it passed while the audit log showed
+// the raw code.
 const ACTION_PRIORITIES = ["high", "medium", "low"] as const
 const NOTE_TYPES = [
   "objectiveReason",
   "discussionNeeded",
   "noActionNeeded",
 ] as const
-const ACTION_TARGET_KINDS = ["group", "person", "pair"] as const
 const SALARY_SOURCES = ["import", "manual"] as const
 const BIAS_RISKS = ["low", "medium", "high"] as const
 // person.* `gender` (the Swedish wire codes on the people table).

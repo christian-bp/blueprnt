@@ -199,6 +199,26 @@ export const actionTargetValidator = v.union(
   })
 )
 
+// The kinds above as a VALUE, because two consumers outside this file need
+// the list rather than the validator: the audit payload contracts, and the
+// dashboard's map from kind to its localized label. Both used to restate the
+// literals, and when "pair" became "comparison" the label map kept the dead
+// kind, so the audit log rendered the raw wire code and the drift test passed
+// because its own copy of the list was stale too.
+export const ACTION_TARGET_KINDS = ["group", "person", "comparison"] as const
+export type ActionTargetKind = (typeof ACTION_TARGET_KINDS)[number]
+
+// Compile-time drift guard: the list and the validator must admit exactly the
+// same kinds, so neither can gain or lose one alone.
+type KindFromValidator = Infer<typeof actionTargetValidator>["kind"]
+type _KindsExact = KindFromValidator extends ActionTargetKind
+  ? ActionTargetKind extends KindFromValidator
+    ? true
+    : never
+  : never
+const _assertKindsMatch: _KindsExact = true
+void _assertKindsMatch
+
 export const payMappingActionStatusValidator = v.union(
   v.literal("notStarted"),
   v.literal("inProgress"),
@@ -257,11 +277,11 @@ export const payMappingNotes = defineTable({
 // (likvärdigt)/women-dominated group, or (scope "praxis") a
 // lönebestämmelser/praxis review area, in a run (ADR-0012 gate; DL 3 kap. 8 §
 // p1 for praxis): the reasons cited plus a free-text note, a done flag, and
-// (praxis only) a finding verdict. groupKey is the same key format the gap
-// query already produces for equalWork/equivalentWork (equalWork:
-// `${roleTitle}|${level}|${seniority}`; women-dominated: the same equalWork key);
-// for praxis it is instead one of the constant PRAXIS_AREA_KEYS slugs, never
-// the "roleTitle|level|seniority" format. Group-level only, never person PII.
+// (praxis only) a finding verdict. groupKey is whatever equalWorkGroupKey
+// (gap.ts) produces for equalWork/equivalentWork, which is where the format
+// is defined rather than restated here; women-dominated uses that same key.
+// For praxis it is instead one of the constant PRAXIS_AREA_KEYS slugs, never
+// a group key. Group-level only, never person PII.
 export const payMappingGroupAnalyses = defineTable({
   orgId: v.string(),
   runId: v.id("payMappingRuns"),

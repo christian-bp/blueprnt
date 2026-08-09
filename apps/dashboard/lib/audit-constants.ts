@@ -1,3 +1,4 @@
+import type { ActionTargetKind } from "@workspace/backend/convex/payMapping/tables"
 import type {
   CountryKey,
   EmploymentType,
@@ -119,11 +120,14 @@ export const NOTE_TYPE_VALUE_KEYS: Record<NoteType, string> = {
 
 // payMapping.action*/note* `targetKind` (mirrors actionTargetValidator's
 // kind literals): what the record is anchored to.
-type ActionTargetKind = "group" | "person" | "pair"
+// Keyed by the backend's own kind union, not a copy of it: this map went on
+// naming the retired "pair" kind after the rename, so the audit log rendered
+// "comparison" as a raw wire code. Importing the type makes that a compile
+// error instead.
 export const TARGET_KIND_VALUE_KEYS: Record<ActionTargetKind, string> = {
   group: "payMapping.actions.targetKind.group",
   person: "payMapping.actions.targetKind.person",
-  pair: "payMapping.actions.targetKind.pair",
+  comparison: "payMapping.actions.targetKind.comparison",
 }
 
 // assignment.set `senioritySource`: the same concept the people register's

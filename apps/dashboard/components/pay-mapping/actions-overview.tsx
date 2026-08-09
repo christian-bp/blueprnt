@@ -402,11 +402,14 @@ export function PayMappingActionsOverview() {
               </SelectContent>
             </Select>
             <Select
+              // The options are exactly targetScope's range. It used to also
+              // offer the cross-level pair, which no target has resolved to
+              // since comparisons became part of the equivalent-work chapter,
+              // so choosing it silently emptied the list.
               items={{
                 all: tOverview("scopeAll"),
                 equalWork: tOverview("scopeEqualWork"),
                 equivalentWork: tOverview("scopeEquivalentWork"),
-                pair: tOverview("scopePair"),
               }}
               value={scopeFilter}
               onValueChange={onSelectValue(filterSetter(setScopeFilter))}
@@ -422,7 +425,6 @@ export function PayMappingActionsOverview() {
                 <SelectItem value="equivalentWork">
                   {tOverview("scopeEquivalentWork")}
                 </SelectItem>
-                <SelectItem value="pair">{tOverview("scopePair")}</SelectItem>
               </SelectContent>
             </Select>
             {owners.length > 0 && (
