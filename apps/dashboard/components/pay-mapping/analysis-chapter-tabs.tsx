@@ -85,20 +85,28 @@ export function AnalysisChapterTabs() {
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          {tab.done && (
-            <>
-              <HugeiconsIcon
-                icon={CheckmarkCircle02Icon}
-                strokeWidth={2}
-                aria-hidden="true"
-                className="size-3.5 shrink-0 text-muted-foreground"
-              />
-              {/* The mark replaces a count a screen reader could read, so
-                  the state has to survive as text. Same wording as the
-                  checklist rows use for a documented step. */}
-              <span className="sr-only">{t("status.done")}</span>
-            </>
-          )}
+          {/* The slot is always there and only the mark inside it fades in.
+              Rendering the icon conditionally widened the tab by its own size
+              plus the row's gap the moment a chapter finished, pushing that
+              tab's label and every tab after it sideways: on load, when every
+              done mark arrives at once, and again live when the last step of
+              a chapter is documented. */}
+          <span
+            aria-hidden="true"
+            className={`size-3.5 shrink-0 text-muted-foreground transition-opacity ${
+              tab.done ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <HugeiconsIcon
+              icon={CheckmarkCircle02Icon}
+              strokeWidth={2}
+              className="size-3.5"
+            />
+          </span>
+          {/* The mark replaces a count a screen reader could read, so the
+              state has to survive as text. Same wording as the checklist rows
+              use for a documented step. */}
+          {tab.done && <span className="sr-only">{t("status.done")}</span>}
           {tab.label}
           {tab.current && (
             <motion.span

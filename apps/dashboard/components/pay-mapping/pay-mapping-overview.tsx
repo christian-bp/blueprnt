@@ -404,10 +404,19 @@ export function PayMappingOverview({
           }}
           // Which way the reading goes. Without it the tile is identical for
           // two orgs with mirrored gaps.
+          //
+          // The slot is held while loading, the way the population tile
+          // beside it does: dropping the footer entirely made the tile a
+          // footer's height shorter than its final self, so the whole KPI
+          // strip grew when the gap landed.
           footer={
-            org === undefined || org.gapPct === null
-              ? undefined
-              : tClock(equalityClockDirection(org.gapPct))
+            org === undefined ? (
+              <span className="flex items-center">
+                <Skeleton className="h-4 w-24" />
+              </span>
+            ) : org.gapPct === null ? undefined : (
+              tClock(equalityClockDirection(org.gapPct))
+            )
           }
         >
           <ClockStat org={org} />
