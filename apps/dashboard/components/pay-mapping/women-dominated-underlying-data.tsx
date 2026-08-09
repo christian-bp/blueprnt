@@ -5,37 +5,23 @@ import {
   groupLabel,
   groupMembers,
   type PayMappingSnapshotRow,
+  rowInGroup,
   type WomenDominatedGroupWire,
 } from "./pay-mapping-gap-types"
 import { PayMappingScatter } from "./pay-mapping-scatter"
 
 // Maps a snapshot row back to whichever group (the dominated group itself,
-// or one of its comparators) it belongs to, by the same roleTitle/seniority/
-// level identity groupMembers matches on.
+// or one of its comparators) it belongs to, through rowInGroup: the same
+// identity groupMembers uses to pick the points in the first place, so a
+// point that IS drawn can never fail to be labelled.
 function womenDominatedGroupLabelFor(
   group: WomenDominatedGroupWire
 ): (row: PayMappingSnapshotRow) => string {
-  const entries = [
-    {
-      roleTitle: group.roleTitle,
-      seniority: group.seniority,
-      level: group.level,
-      label: groupLabel(group),
-    },
-    ...group.comparisons.map((comparison) => ({
-      roleTitle: comparison.roleTitle,
-      seniority: comparison.seniority,
-      level: comparison.level,
-      label: groupLabel(comparison),
-    })),
-  ]
-  return (row) =>
-    entries.find(
-      (entry) =>
-        entry.roleTitle === row.roleTitle &&
-        entry.seniority === row.seniority &&
-        entry.level === row.level
-    )?.label ?? ""
+  const entries = [group, ...group.comparisons]
+  return (row) => {
+    const match = entries.find((entry) => rowInGroup(row, entry))
+    return match === undefined ? "" : groupLabel(match)
+  }
 }
 
 // The scatter behind a women-dominated group's figures: every member of the

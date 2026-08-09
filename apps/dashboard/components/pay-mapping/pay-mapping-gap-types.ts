@@ -2,8 +2,7 @@ import type { Id } from "@workspace/backend/convex/_generated/dataModel"
 import { fteTotalMonthlyComp, type PayGapReason } from "@workspace/constants"
 import type { GenderTally, PayGapFlag } from "@workspace/core"
 
-// Re-exported for the overview widgets (the wire's distribution buckets are
-// index-aligned with @workspace/core's AGE_BUCKETS).
+// Re-exported for the overview widgets.
 export type { GenderTally } from "@workspace/core"
 
 // One metric's (base salary or total comp) woman-vs-man comparison in a
@@ -123,9 +122,6 @@ export interface PayMappingGapResult {
   population: GenderTally
   // Four rank quartiles of the priced population, lower -> upper (A3).
   quartiles: GenderTally[]
-  // Age bands over the whole frozen population, aligned with AGE_BUCKETS;
-  // rows without a parseable birth date are counted in `unknown`.
-  age: { buckets: GenderTally[]; unknown: number }
 }
 
 // One row of the run's documentation (the objective reasons, deepened
@@ -272,13 +268,28 @@ export function fteTotalMonthly(row: PayMappingSnapshotRow): number {
   )
 }
 
+// Whether a frozen row belongs to a group: roleTitle + level, matching the
+// engine's own group key (ADR-0017). Seniority is NOT part of it, because a
+// group spans every step in its title at this level and carries none of its
+// own; matching on it compares a group's null against a person's real step
+// and finds nobody.
+//
+// The ONE identity test. Every surface that has to decide "is this person in
+// this group" reads it, so the answer cannot differ between the members a
+// plot draws and the group a point is labelled with. It already did once:
+// the scatter's label builder kept a seniority clause after this rule
+// dropped it, so every point got an empty label and selecting a row in the
+// table dimmed the whole plot instead of lighting one job up.
+export function rowInGroup(
+  row: PayMappingSnapshotRow,
+  group: { roleTitle: string | null; level: number | null }
+): boolean {
+  return row.roleTitle === group.roleTitle && row.level === group.level
+}
+
 // A group's own frozen, priced members. Shared by the equal-work detail
 // view and the equivalent-work underlag so member matching never drifts
 // between callers.
-//
-// roleTitle + level, matching the engine's own group key (ADR-0017).
-// Seniority is NOT part of it: a group spans every step in its title at
-// this level, so matching on it returned nobody at all.
 export function groupMembers(
   rows: PayMappingSnapshotRow[] | undefined,
   group: {
@@ -288,10 +299,7 @@ export function groupMembers(
   }
 ): PayMappingSnapshotRow[] | undefined {
   return rows?.filter(
-    (row) =>
-      row.roleTitle === group.roleTitle &&
-      row.level === group.level &&
-      row.basicMonthly !== null
+    (row) => rowInGroup(row, group) && row.basicMonthly !== null
   )
 }
 
@@ -321,6 +329,9 @@ export interface PayMappingRunDetail {
   // The freeze time (epoch ms): the scatter computes age/tenure at this
   // frozen date, never the live clock.
   referenceDate: number
+  // The frozen headcount. Same field the run list reports, so the overview's
+  // population card compares like with like across mappings.
+  populationCount: number
   rows: PayMappingSnapshotRow[]
   // The samverkansredogörelse (who the employer cooperated with and how);
   // null until set. Participant names are statutory documentation content
