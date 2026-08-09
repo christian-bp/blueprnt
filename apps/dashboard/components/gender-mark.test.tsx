@@ -4,6 +4,7 @@ import { cleanup, render } from "@testing-library/react"
 import { afterEach, describe, expect, it } from "vitest"
 import {
   GENDER_DOT,
+  genderMarkBorder,
   GenderPointMark,
   GenderHatch,
   GenderMenIcon,
@@ -15,9 +16,10 @@ import {
 
 afterEach(cleanup)
 
-// The encoding's whole point: the two series are told apart WITHOUT hue, so a
-// chart survives colorblind vision, greyscale and print. These tests guard
-// that property rather than the specific colors.
+// The encoding is REDUNDANT: hue tells the two series apart quickly, the mark
+// tells them apart at all when hue is unavailable (greyscale, print, a reader
+// who cannot separate the two). These tests guard both channels rather than
+// the specific colours: dropping either one costs a whole audience.
 
 describe("gender marks", () => {
   function Probe() {
@@ -39,7 +41,7 @@ describe("gender marks", () => {
     expect(getByTestId("men").getAttribute("fill")).toMatch(/^url\(#/)
   })
 
-  it("paints the women series with the shared ink", () => {
+  it("paints the women series with its own ink", () => {
     const { getByTestId } = render(<Probe />)
     expect(getByTestId("women").getAttribute("fill")).toBe(
       "var(--gender-woman)"
@@ -74,13 +76,13 @@ describe("gender marks", () => {
     // survive a mark narrower than its pattern tile.
     expect(GENDER_DOT.women.shape).toBe("triangle")
     expect(GENDER_DOT.men.shape).toBe("circle")
-    // Both solid, in the same ink. Outlining one series made it read as the
-    // secondary case and was the harder hover target.
+    // Both solid, each in its own ink. Outlining one series made it read as
+    // the secondary case and was the harder hover target.
     expect(GENDER_DOT.women.fill).toBe("var(--gender-woman)")
     expect(GENDER_DOT.men.fill).toBe("var(--gender-man)")
   })
 
-  it("edges every point mark in the card's colour, never the ink", () => {
+  it("edges every point mark in the card's colour, never its own ink", () => {
     // Solid marks in one colour merge where they overlap, and a dot plot of
     // 22 salaries overlaps constantly. A background-coloured hairline
     // separates neighbours without adding a second visual channel.
@@ -108,6 +110,38 @@ describe("gender marks", () => {
     expect(Math.PI * radius * radius).toBeCloseTo(100, 1)
     // The triangle is drawn as a path; its three points bound the same area.
     expect(container.querySelector("path")?.getAttribute("d")).toContain("M 20")
+  })
+
+  it("gives each series its own border ink, never one shared stroke", () => {
+    // While both series were the brand ink this was a single constant that
+    // every call site spread onto BOTH bars. With two hues that outlines the
+    // women's bar in the men's blue, which is worse than no border: it states
+    // the wrong series. Taking a required argument is what makes that a
+    // compile error rather than a thing to notice in a screenshot.
+    expect(genderMarkBorder("women").stroke).toBe("var(--gender-woman-edge)")
+    expect(genderMarkBorder("men").stroke).toBe("var(--gender-man)")
+    expect(genderMarkBorder("women").strokeWidth).toBeGreaterThan(0)
+  })
+
+  it("edges the solid series in a DARKER step of its own ink", () => {
+    // The men's mark is a pale wash under stripes, so their ink already
+    // contours it. A solid fill outlined in its own colour has no visible
+    // edge at all, which left the two series looking differently
+    // constructed rather than differently filled.
+    expect(genderMarkBorder("women").stroke).not.toBe("var(--gender-woman)")
+    expect(genderMarkBorder("women").stroke).toContain("--gender-woman")
+    // The hatched series needs no separate edge ink, and inventing one would
+    // be a second value to keep in step with nothing.
+    expect(genderMarkBorder("men").stroke).toBe("var(--gender-man)")
+  })
+
+  it("borders an HTML mark in its own ink too", () => {
+    // Same defect, other family: genderKeyStyle and genderFillStyle both hard
+    // coded the men's token for the border of BOTH series.
+    for (const style of [genderKeyStyle, genderFillStyle]) {
+      expect(style("women").border).toContain("--gender-woman-edge")
+      expect(style("men").border).toContain("--gender-man")
+    }
   })
 
   it("gives the men mark a stripe at both scales, women none", () => {
@@ -194,5 +228,51 @@ describe("gender ChartConfigs", () => {
       }
     }
     expect(offenders).toEqual([])
+  })
+})
+
+// The tokens themselves, read from the stylesheet. Nothing in the component
+// layer can catch the two planes drifting back onto one colour: every mark
+// references var(--gender-woman) / var(--gender-man) and would keep passing
+// while rendering a chart with one ink and no hue channel at all.
+describe("gender tokens", () => {
+  const css = readFileSync(
+    join(process.cwd(), "../../packages/ui/src/styles/globals.css"),
+    "utf8"
+  )
+  const declarations = (name: string) =>
+    [...css.matchAll(new RegExp(`--gender-${name}:\\s*([^;]+);`, "g"))].map(
+      (m) => m[1]?.trim()
+    )
+
+  it("declares both series in the light and the dark plane", () => {
+    expect(declarations("woman")).toHaveLength(2)
+    expect(declarations("man")).toHaveLength(2)
+    expect(declarations("woman-edge")).toHaveLength(2)
+  })
+
+  it("registers every gender token in @theme, or the build drops it", () => {
+    // Found the hard way: --gender-woman-edge resolved to nothing in the
+    // browser while --gender-woman right above it worked. A custom property
+    // that no @theme entry references is stripped from the compiled CSS, so
+    // a new token is invisible until it is registered here too.
+    for (const name of ["gender-man", "gender-woman", "gender-woman-edge"]) {
+      expect(css).toContain(`--color-${name}: var(--${name});`)
+    }
+  })
+
+  it("gives the two series different ink in every plane", () => {
+    const women = declarations("woman")
+    const men = declarations("man")
+    expect(women).not.toEqual(declarations("woman-edge"))
+    for (const [i, w] of women.entries()) {
+      expect(w).not.toBe(men[i])
+    }
+  })
+
+  it("keeps both series off the brand, so a chart never competes with the CTA", () => {
+    for (const value of [...declarations("woman"), ...declarations("man")]) {
+      expect(value).not.toBe("var(--brand)")
+    }
   })
 })

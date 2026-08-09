@@ -10,19 +10,21 @@ import { useId } from "react"
 export type GenderSeries = "women" | "men"
 
 // The one place the women/men encoding is defined. Every chart that splits
-// people by gender draws both series in the SAME ink (--gender-woman and
-// --gender-man both resolve to the brand) and separates them by FILL TEXTURE:
-// women solid, men a diagonal hatch. Hue carries no meaning, so the split
-// survives colorblind vision, greyscale and print, and the charts stay inside
-// the brand instead of importing two foreign hues.
+// people by gender separates the two series REDUNDANTLY: by hue (amber and
+// blue, --gender-woman and --gender-man) and by mark (women solid, men a
+// diagonal hatch; women a triangle, men a circle).
 //
-// Two marks cannot be told apart without being drawn differently, and solid
-// reads as the primary mark, so the solid is deliberately the WOMEN series:
-// the group whose pay disadvantage the product measures is not the one drawn
-// as the marked case.
+// Both channels, not one. Hue is read faster, which is why it is here at all.
+// The mark is what survives the channels hue does not: greyscale, print, and
+// a reader who cannot separate the two hues. Dropping either one costs a
+// whole audience, so no chart may encode gender with only a colour.
 //
-// Identity is never left to the fill alone. Every surface using these marks
-// also names the series, in a legend, a stat row, or the tooltip.
+// Solid reads as the primary mark, so the solid is deliberately the WOMEN
+// series: the group whose pay disadvantage the product measures is not the
+// one drawn as the marked case.
+//
+// Identity is never left to fill or hue alone. Every surface using these
+// marks also names the series, in a legend, a stat row, or the tooltip.
 
 // A 4x4 tile rotated -45deg holding a faint wash and a thin line, matching the
 // hatch the workforce area chart already uses so the two read as one language.
@@ -63,30 +65,43 @@ export function useGenderMarks() {
   }
 }
 
-// Every gender mark carries a border in the same ink. A hatch is stripes with
+// Every gender mark carries a border in ITS OWN ink. A hatch is stripes with
 // no edge of its own, so a hatched shape without one reads as a smudge that
 // fades into the card rather than as a bounded area; the border is what gives
 // it a silhouette. It doubles as the separator between stacked segments, so
 // they no longer need a card-colored spacer to stop reading as one mass.
-export const GENDER_MARK_BORDER = {
-  stroke: "var(--gender-man)",
-  strokeWidth: 1,
-} as const
+//
+// Per series, not one constant. While both series shared the brand ink this
+// was a single value and every call site spread the same object onto both
+// bars. With two hues that would outline the women's bar in the men's blue,
+// which is worse than no border at all: it states the wrong series.
+//
+// The women's stroke is a DARKER step of their own ink, not the ink itself.
+// A hatch is a pale wash, so the men's ink already contours it; a solid fill
+// outlined in its own colour has no visible edge, which left the two series
+// looking differently constructed rather than merely differently filled.
+export function genderMarkBorder(series: GenderSeries) {
+  return {
+    stroke:
+      series === "women" ? "var(--gender-woman-edge)" : "var(--gender-man)",
+    strokeWidth: 1,
+  } as const
+}
 
-// A point mark encodes gender by SHAPE ALONE: a triangle is women, a circle
-// is men, everywhere in the app. Both are solid, in the same ink.
+// A point mark encodes gender by SHAPE as well as hue: a triangle is women,
+// a circle is men, everywhere in the app.
 //
-// Shape rather than fill, because two overlapping marks that differ only in
-// fill cannot be counted, and a dot plot's whole job is showing where
-// individuals sit. A hatch cannot do it at all here: the pattern tile is
-// wider than the mark, which is why area marks (bars, bands) keep the hatch
-// and point marks do not.
+// The shape is not decoration on top of the colour. Two overlapping marks
+// that differ only in fill cannot be counted, and a dot plot's whole job is
+// showing where individuals sit, so the shape is what makes a cluster
+// readable even for someone who sees both hues perfectly. A hatch cannot do
+// it here at all: the pattern tile is wider than the mark, which is why area
+// marks (bars, bands) keep the hatch and point marks do not.
 //
-// Once the shape carries the meaning, outlining one series is redundant and
-// costs twice: a hollow mark reads fainter than the solid one beside it, so
-// the two series stop looking like one dataset, and the hollow one was the
-// harder hover target. Solid-vs-outlined also made the men's series the
-// "unmarked" case, which the encoding deliberately avoids.
+// Both marks stay solid. A hollow one reads fainter than the solid beside it,
+// so the two series stop looking like one dataset, and it was the harder
+// hover target. Solid-vs-outlined also made one series the "unmarked" case,
+// which the encoding deliberately avoids.
 //
 // The two shapes carry equal visual weight: recharts draws symbols through
 // d3-shape, where `size` is AREA in square pixels, so a triangle and a
@@ -96,7 +111,7 @@ export const GENDER_MARK_BORDER = {
 // Solid marks in one colour merge into a single blob where they overlap,
 // and a dot plot of 22 salaries overlaps constantly; a background-coloured
 // edge separates neighbours without adding a second visual channel. This is
-// the point family's counterpart to GENDER_MARK_BORDER, which gives a
+// the point family's counterpart to genderMarkBorder, which gives a
 // hatched AREA the silhouette it otherwise lacks.
 export const GENDER_DOT = {
   women: {
@@ -370,13 +385,17 @@ export function GenderLegend({
 // one is a scaled version of the other.
 // A key: a legend chip, a tooltip swatch, anything around 8-10px.
 export function genderKeyStyle(series: GenderSeries): CSSProperties {
-  // Bordered to match the marks (GENDER_MARK_BORDER): a key that is a bare
-  // hatch while the chart's shapes are outlined stops being the same object.
-  // box-sizing is border-box, so the border sits inside the swatch's size.
-  const border = "1px solid var(--gender-man)"
+  // Bordered to match the marks (genderMarkBorder), in the series' OWN ink: a
+  // key that is a bare hatch while the chart's shapes are outlined stops
+  // being the same object. box-sizing is border-box, so the border sits
+  // inside the swatch's size.
   if (series === "women") {
-    return { backgroundColor: "var(--gender-woman)", border }
+    return {
+      backgroundColor: "var(--gender-woman)",
+      border: "1px solid var(--gender-woman-edge)",
+    }
   }
+  const border = "1px solid var(--gender-man)"
   return {
     backgroundImage:
       "repeating-linear-gradient(-45deg, var(--gender-man) 0 1.4px, transparent 1.4px 4px)",
@@ -389,14 +408,17 @@ export function genderKeyStyle(series: GenderSeries): CSSProperties {
 // GenderHatch's weight (a 1px line at 0.6 alpha over a 16% wash) so an HTML
 // bar and an SVG bar on the same page carry the same texture.
 export function genderFillStyle(series: GenderSeries): CSSProperties {
-  // Bordered like every other mark (GENDER_MARK_BORDER). An HTML bar is still
-  // a gender mark: without the outline the hatched one has no edge and reads
-  // as a smudge next to the solid one. box-sizing is border-box, so the border
-  // sits inside the bar rather than growing it.
-  const border = "1px solid var(--gender-man)"
+  // Bordered like every other mark (genderMarkBorder), in the series' own
+  // ink. An HTML bar is still a gender mark: without the outline the hatched
+  // one has no edge and reads as a smudge next to the solid one. box-sizing
+  // is border-box, so the border sits inside the bar rather than growing it.
   if (series === "women") {
-    return { backgroundColor: "var(--gender-woman)", border }
+    return {
+      backgroundColor: "var(--gender-woman)",
+      border: "1px solid var(--gender-woman-edge)",
+    }
   }
+  const border = "1px solid var(--gender-man)"
   return {
     backgroundImage:
       "repeating-linear-gradient(-45deg, color-mix(in srgb, var(--gender-man) 60%, transparent) 0 1px, transparent 1px 4px)",

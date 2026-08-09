@@ -47,17 +47,44 @@
     --chart-3: oklch(0.6 0.118 184.704);
     --chart-4: oklch(0.511 0.096 186.391);
     --chart-5: oklch(0.437 0.078 188.216);
-    /* Gender data-viz ink, reused by EVERY chart that splits people by gender.
-       HUE CARRIES NO MEANING HERE: both series are the brand hue, and the two
-       are told apart by FILL TEXTURE instead (women solid, men a diagonal
-       hatch of the same ink; see components/gender-mark.tsx). A second hue
-       would either clash with the brand or, if it were rose, put pink on
-       "women". Encoding by texture also means the split survives any color
-       vision, greyscale, and print, none of which a hue pair guarantees.
-       Both tokens resolve to the same color on purpose: they stay separate so
-       one plane can diverge from the other without touching call sites. */
-    --gender-woman: var(--brand);
-    --gender-man: var(--brand);
+    /* Gender data-viz ink, reused by EVERY chart that splits people by
+       gender. The two series are told apart REDUNDANTLY: by hue here, and by
+       mark in components/gender-mark.tsx (women solid, men a diagonal hatch;
+       women a triangle, men a circle). Hue is the fast channel, the mark is
+       the robust one, so the split still survives greyscale and print where
+       hue is gone.
+
+       Blue and orange, because that opposition is the only one that holds
+       under all three dichromacies: it rides the blue-yellow axis, which is
+       the axis every type keeps. Cool/cool pairs measured far better on
+       screen and then collapsed into a single colour under simulated
+       deuteranopia. Neither is the brand rose, so a chart never competes
+       with the CTA and title colour sitting beside it, and neither is pink,
+       which no pay-equity chart should put on "women".
+
+       Softened towards the pairing the category is used to (a muted denim
+       and a terracotta orange) rather than a saturated cobalt and gold.
+       Both still clear 3:1 against the card, which the familiar soft blue
+       does NOT (it measures 2.96), and the men's series is drawn hatched on
+       top of that, so it needs the headroom.
+
+       Orange sits at 52deg, clear of --flag-elevated at 78deg. Lighter and
+       less red than the first pass, towards the softer orange this category
+       tends to use, but still clearing 3:1 against the card ON ITS OWN: the
+       darker edge below carries plenty of boundary contrast, and a fill that
+       leans on it entirely would vanish anywhere the edge is not drawn. */
+    --gender-woman: oklch(0.67 0.135 52);
+    --gender-man: oklch(0.60 0.12 250);
+    /* The women's mark needs its own edge ink; the men's does not. A hatch
+       is a pale wash under stripes, so the ink itself already reads as a
+       contour against it. A solid fill outlined in the same ink has no edge
+       at all, which left the two series looking differently CONSTRUCTED:
+       the men's bars drawn, the women's merely filled. This is a darker step
+       of the same hue, never a second hue. It is deliberately a smaller step
+       than the men's edge-to-interior contrast (3.26): that one sits against
+       an almost-white wash, and the same jump against a saturated fill reads
+       as a heavy frame rather than a contour. */
+    --gender-woman-edge: oklch(0.48 0.14 46);
     --radius: 0.625rem;
     --sidebar: oklch(0.985 0 0);
     --sidebar-foreground: oklch(0.145 0 0);
@@ -105,11 +132,13 @@
     --chart-3: oklch(0.6 0.118 184.704);
     --chart-4: oklch(0.511 0.096 186.391);
     --chart-5: oklch(0.437 0.078 188.216);
-    /* Gender data-viz ink, dark-surface steps. Same texture encoding as the
-       light plane (see :root); the dark --brand step already carries enough
-       contrast against the dark card, so both resolve to it unchanged. */
-    --gender-woman: var(--brand);
-    --gender-man: var(--brand);
+    /* Gender data-viz ink, dark-surface steps. Same pairing as the light
+       plane (see :root), lifted in lightness: the light-plane pair is darker
+       than the dark card it would sit on. Both land near 7:1 there, well
+       past the 3:1 a graphical object needs. */
+    --gender-woman: oklch(0.76 0.125 52);
+    --gender-man: oklch(0.70 0.12 250);
+    --gender-woman-edge: oklch(0.58 0.13 46);
     --sidebar: oklch(0.205 0 0);
     --sidebar-foreground: oklch(0.985 0 0);
     --sidebar-primary: var(--brand);
@@ -153,6 +182,7 @@
     --color-chart-5: var(--chart-5);
     --color-gender-man: var(--gender-man);
     --color-gender-woman: var(--gender-woman);
+    --color-gender-woman-edge: var(--gender-woman-edge);
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);
     --radius-lg: var(--radius);
