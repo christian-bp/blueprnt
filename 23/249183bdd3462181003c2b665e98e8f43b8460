@@ -1,0 +1,33 @@
+packages/backend/convex/lib/auditPayloads.ts
+  s_3e2b06947bca1a::t_f9c5d25fad9bbb 329,359-361
+  s_3e2b06947bca1a::t_248ae44aa0e8c5 367,386,392,405
+  s_3e2b06947bca1a::t_5738f3872d4f0f 1
+apps/dashboard/lib/audit-labels.test.ts
+  s_3e2b06947bca1a::t_753d78e40de6b1 274-277
+  s_3e2b06947bca1a::t_fd5876699eb240 21
+packages/backend/convex/payMapping/tables.ts
+  s_3e2b06947bca1a::t_24460030441d89 202-221
+  s_3e2b06947bca1a::t_84028d9f8c9024 280-284
+apps/dashboard/components/pay-mapping/actions-overview.tsx
+  s_3e2b06947bca1a::t_ca8b1ac65fc232 405-408
+apps/dashboard/lib/audit-constants.ts
+  s_3e2b06947bca1a::t_018aee45a330ff 130
+  s_3e2b06947bca1a::t_f2848b58234d91 123-126
+  s_3e2b06947bca1a::t_0a830ec21910d5 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "23249183bdd3462181003c2b665e98e8f43b8460",
+  "prompts": {},
+  "sessions": {
+    "s_3e2b06947bca1a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f1060ec2-cb75-42c1-a673-7f901288258e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
