@@ -2,15 +2,18 @@ import { cleanup, render, screen } from "@testing-library/react"
 import messages from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, describe, expect, it } from "vitest"
+import { OrganizationProvider } from "@/components/org-context"
 import { TodoActions } from "@/components/overview/todo-actions"
 import type { Todo, TodoGroup } from "@/lib/todo"
 
 const t = messages.dashboard.overview
 
-function renderActions(todo: Todo | undefined) {
+function renderActions(todo: Todo | undefined, orgId = "org-1") {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <TodoActions todo={todo} />
+      <OrganizationProvider value={{ orgId, name: "Acme", role: "admin" }}>
+        <TodoActions todo={todo} />
+      </OrganizationProvider>
     </NextIntlClientProvider>
   )
 }
@@ -88,6 +91,19 @@ describe("TodoActions arrival burst", () => {
     expect(
       container.querySelectorAll('[data-testid="success-confetti"]')
     ).toHaveLength(0)
+  })
+
+  // Once per COMPANY, not once per app. A single flag meant the first company
+  // to show work spent the only burst there was, so switching company never
+  // celebrated again, and finishing onboarding for a new company landed on a
+  // dashboard the previous one had already used up.
+  it("throws it again for a company that has not arrived yet", () => {
+    renderActions(todoWith([CLASSIFY]), "org-1")
+    cleanup()
+    const { container } = renderActions(todoWith([CLASSIFY]), "org-2")
+    expect(
+      container.querySelectorAll('[data-testid="success-confetti"]')
+    ).toHaveLength(1)
   })
 
   // Nothing to point at, nothing to celebrate: the standing destinations are

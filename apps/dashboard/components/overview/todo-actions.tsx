@@ -13,6 +13,7 @@ import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 import { ActionCard, ActionCardSkeleton } from "@/components/action-card"
 import { ConfettiBurst } from "@/components/confetti-burst"
+import { useOrganization } from "@/components/org-context"
 import type { Todo, TodoGroup, TodoGroupKey } from "@/lib/todo"
 
 // Where each kind of outstanding work is done. Total over the group keys, so
@@ -42,10 +43,17 @@ const GROUP_ICONS: Record<TodoGroupKey, IconSvgElement> = {
 // start the mapping), so the first four ARE the four most pressing things.
 const MAX_CARDS = 4
 
-// Module-level, so returning to the dashboard within a session does not throw
-// the burst again. A reload starts a new session and it fires once more,
-// which is the point: it is an arrival effect, not an achievement.
-let burstShown = false
+// Which companies have already had their burst this session. Module-level, so
+// returning to the dashboard does not throw it again; a reload starts a new
+// session and it fires once more, which is the point: it is an arrival
+// effect, not an achievement.
+//
+// Per COMPANY, not one flag for the app. A single flag meant the first
+// company to show work consumed the only burst there was, so switching
+// company never celebrated again, and neither did finishing onboarding for a
+// new company (the previous company's dashboard had already spent it). Each
+// company arrives once.
+const burstShownFor = new Set<string>()
 
 // The four surfaces a fresh org most often jumps to, used to pad the row
 // out when there is less outstanding work than it holds: the same domain
@@ -85,17 +93,22 @@ const SHORTCUTS: {
 export function TodoActions({ todo }: { todo: Todo | undefined }) {
   const t = useTranslations("dashboard.overview")
   const tQuick = useTranslations("dashboard.overview.quickActions")
+  const { orgId } = useOrganization()
   const groups = todo?.groups ?? []
 
-  // Fires once, when the row first has work to point at. The to-do query
-  // resolves after the first paint, so this cannot be read at mount: it has
-  // to wait for the moment the cards actually appear.
-  const [celebrate, setCelebrate] = useState(false)
+  // Fires once per company, when its row first has work to point at. The
+  // to-do query resolves after the first paint, so this cannot be read at
+  // mount: it has to wait for the moment the cards actually appear.
+  const [celebrating, setCelebrating] = useState<string | null>(null)
   useEffect(() => {
-    if (burstShown || groups.length === 0) return
-    burstShown = true
-    setCelebrate(true)
-  }, [groups.length])
+    if (burstShownFor.has(orgId) || groups.length === 0) return
+    burstShownFor.add(orgId)
+    setCelebrating(orgId)
+  }, [orgId, groups.length])
+  // Compared against the current company rather than held as a bare boolean:
+  // switching company keeps this component mounted, so a plain flag would
+  // leave the new company's row wearing the old one's burst.
+  const celebrate = celebrating === orgId
 
   // Until the query lands nobody knows WHICH cards these are, so the row
   // holds its shape with skeletons rather than showing standing destinations
@@ -142,7 +155,14 @@ export function TodoActions({ todo }: { todo: Todo | undefined }) {
         // overflow, so confetti thrown inside one is cut off at its edge in a
         // straight line. The wrapper is the positioned parent it throws from
         // and nothing clips it.
-        <div key={card.key} className="relative">
+        //
+        // Keyed by SLOT, not by the card in it. The row is always four slots
+        // and the to-do query keeps pushing while an org's data settles, so
+        // keying by card would remount the wrapper every time a group's
+        // membership changed and restart the burst from its first frame,
+        // which reads as a flicker that never finishes.
+        // biome-ignore lint/suspicious/noArrayIndexKey: the slot IS the identity here
+        <div key={index} className="relative">
           {/* BEFORE the card, so the card paints over it. That is the whole
               clipping mechanism: the card is opaque, so no piece is ever
               visible INSIDE its bounds, and what shows is only what has
@@ -156,10 +176,11 @@ export function TodoActions({ todo }: { todo: Todo | undefined }) {
               overlapping the card is hidden. Do not reorder these two, and do
               not move the origin back to center without moving this too.
 
-              Every work card, and only the first time the row shows work this
-              session: the burst marks WHICH of the four cards are waiting on
-              the reader, so lighting one of three would point at the wrong
-              thing. Never the padding links, which are not work.
+              Every work card, and only the first time THIS COMPANY's row
+              shows work this session: the burst marks WHICH of the four cards
+              are waiting on the reader, so lighting one of three would point
+              at the wrong thing. Never the padding links, which are not
+              work.
 
               Staggered along the row so it reads as one sweep rather than
               four simultaneous pops, and a small spread keeps the pieces
