@@ -1,0 +1,47 @@
+packages/backend/convex/payMapping/tables.ts
+  s_3e2b06947bca1a::t_9bfefa7d0ca7f9 56-60
+  s_3e2b06947bca1a::t_f375eced84659e 16-25,45-55
+packages/backend/convex/payMapping/orgGap.ts
+  s_3e2b06947bca1a::t_a291293c5b390b 34-38
+  s_3e2b06947bca1a::t_910f79104843cd 1-33,39-74
+packages/backend/convex/payMapping/tables.test.ts
+  s_3e2b06947bca1a::t_ceed1df69ec665 21-22,46-47
+packages/backend/convex/payMapping/gap.test.ts
+  s_3e2b06947bca1a::t_1f457825218036 677,713-714
+  s_3e2b06947bca1a::t_ceed1df69ec665 48-49
+packages/backend/convex/payMapping/gap.ts
+  s_3e2b06947bca1a::t_3d3bc230ab2654 17,19-20,481
+  s_3e2b06947bca1a::t_f4e2a45407d983 483-485
+packages/backend/convex/payMapping/analyses.test.ts
+  s_3e2b06947bca1a::t_ceed1df69ec665 47-48
+packages/backend/convex/payMapping/runs.ts
+  s_3e2b06947bca1a::t_9bfefa7d0ca7f9 357-360,396-397
+  s_3e2b06947bca1a::t_7809f5888d90a8 241-243,282,313-318,324,330-331
+  s_3e2b06947bca1a::t_0b7f09b14d9913 19-20
+  s_3e2b06947bca1a::t_d668e1e07763fc 440-444
+  s_3e2b06947bca1a::t_73360add5d3d49 469
+  s_3e2b06947bca1a::t_2a9632f0bd1e1b 226-227,232-233
+packages/backend/convex/payMapping/actions.test.ts
+  s_3e2b06947bca1a::t_ceed1df69ec665 124-125
+packages/backend/convex/payMapping/runs.test.ts
+  s_3e2b06947bca1a::t_66af72c6fc96d2 167-196
+  s_3e2b06947bca1a::t_ceed1df69ec665 648-649
+packages/backend/convex/accounts/audit.test.ts
+  s_3e2b06947bca1a::t_ceed1df69ec665 395-396
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "a121366cee1f2a67cb7a475d228f18d9e9dd9a83",
+  "prompts": {},
+  "sessions": {
+    "s_3e2b06947bca1a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f1060ec2-cb75-42c1-a673-7f901288258e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
