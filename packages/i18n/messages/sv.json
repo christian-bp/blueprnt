@@ -358,7 +358,7 @@
           "title": "Importerar personer",
           "description": "Dina personer importeras. Håll fönstret öppet tills importen är klar.",
           "working": "Importerar...",
-          "progressCount": "{processed} av {total} rader"
+          "progressCount": "<processed></processed> av <total></total> rader"
         },
         "done": {
           "title": "Importen är klar",
@@ -948,7 +948,7 @@
         "prefilling": {
           "heading": "Skapar rollprofiler",
           "body": "Vi skriver ett syfte och ansvarsområden för varje ny roll utifrån dess namn. Det kan ta en stund.",
-          "progress": "{done} av {total} roller"
+          "progress": "<done></done> av <total></total> roller"
         },
         "done": {
           "title": "Roller tillagda",
@@ -1735,7 +1735,7 @@
         "ungroupedFamilyName": "Övriga roller",
         "prefillingHeading": "Skapar rollprofiler",
         "prefillingBody": "Vi skriver ett syfte och ansvarsområden för varje roll utifrån dess namn. Det kan ta en stund för en stor uppsättning.",
-        "prefillingProgress": "{done} av {total} roller"
+        "prefillingProgress": "<done></done> av <total></total> roller"
       }
     },
     "model": {

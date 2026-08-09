@@ -1,5 +1,6 @@
 "use client"
 
+import NumberFlow from "@number-flow/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import { useQuery } from "convex/react"
 import { useTranslations } from "next-intl"
@@ -29,9 +30,13 @@ export function ImportingStep({ importId }: { importId: string }) {
       label={t("working")}
       countLabel={
         progress !== null && progress !== undefined
-          ? t("progressCount", {
-              processed: progress.processed,
-              total: progress.total,
+          ? // A running readout, so the figures roll digit-by-digit rather
+            // than swapping. The connective and the unit stay inside the
+            // message (Finnish writes "12/40 rivia", not "12 of 40"), so the
+            // numbers are tagged rather than concatenated around a component.
+            t.rich("progressCount", {
+              processed: () => <NumberFlow value={progress.processed} />,
+              total: () => <NumberFlow value={progress.total} />,
             })
           : undefined
       }

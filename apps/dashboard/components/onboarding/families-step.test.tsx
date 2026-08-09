@@ -47,6 +47,14 @@ vi.mock("@/components/typewriter-placeholder", () => ({
   TypewriterPlaceholder: () => null,
 }))
 
+// NumberFlow renders a custom element that happy-dom never upgrades, so its
+// getSnapshotBeforeUpdate throws the moment the count CHANGES in place. The
+// progress readout changes by definition; the digit animation is the
+// library's business, these tests are about the figures.
+vi.mock("@number-flow/react", () => ({
+  default: ({ value }: { value: number }) => <span>{value}</span>,
+}))
+
 import { FamiliesStep } from "@/components/onboarding/families-step"
 
 const t = messages.dashboard.onboarding.families
@@ -1094,8 +1102,13 @@ describe("FamiliesStep", () => {
     expect(screen.getByText(t.prefillingBody)).toBeDefined()
     expect(screen.getByRole("progressbar")).toBeDefined()
     expect(
-      screen.getByText(
-        t.prefillingProgress.replace("{done}", "0").replace("{total}", "3")
+      screen.getByText((_, element) =>
+        element?.textContent ===
+        t.prefillingProgress
+          .replace("<done></done>", "0")
+          .replace("<total></total>", "3")
+          ? element?.tagName === "P"
+          : false
       )
     ).toBeDefined()
     // The review's Next button is gone while the prefilling screen is up.

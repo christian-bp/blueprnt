@@ -15,6 +15,7 @@ import { NextButton } from "@/components/next-button"
 import { PastedRolesField } from "@/components/pasted-roles-field"
 import { ScreenShell } from "@/components/screen-shell"
 import { WizardFooter } from "@/components/wizard-footer"
+import NumberFlow from "@number-flow/react"
 import { WizardProgress } from "@/components/wizard-progress"
 import { useFamiliesDraftFlow } from "@/hooks/use-families-draft-flow"
 import { capitalizeFirst } from "@/lib/capitalize"
@@ -220,7 +221,10 @@ export function FamiliesStep({
         label={t("prefillingHeading")}
         heading
         description={t("prefillingBody")}
-        countLabel={t("prefillingProgress", { done, total })}
+        countLabel={t.rich("prefillingProgress", {
+          done: () => <NumberFlow value={done} />,
+          total: () => <NumberFlow value={total} />,
+        })}
         accent
       />
     )

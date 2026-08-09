@@ -3,7 +3,7 @@
 import { Progress } from "@workspace/ui/components/progress"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { cn } from "@workspace/ui/lib/utils"
-import { useEffect, useState } from "react"
+import { type ReactNode, useEffect, useState } from "react"
 
 // The percentage is derived in this one place so no caller recomputes (and
 // potentially diverges from) the same math. A non-positive total reads as
@@ -52,7 +52,9 @@ export function WizardProgress({
   // The right-slot "{done} of {total} ..." text, already localized by the
   // caller. Left empty while there is nothing real to report yet; the slot
   // stays reserved either way so nothing shifts once it appears.
-  countLabel?: string
+  // A node, not a string: a live count renders through NumberFlow, so the
+  // caller passes the rendered rich message rather than a formatted string.
+  countLabel?: ReactNode
   // Brand-accented bar and spinner, both together: one flag cannot express
   // "bar branded, spinner not" or vice versa, and the two pre-extraction
   // implementations disagreed on which piece to brand (the people import

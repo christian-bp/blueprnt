@@ -25,6 +25,7 @@ import { PastedRolesField } from "@/components/pasted-roles-field"
 import { FamilyReviewTable } from "@/components/family-review-table"
 import { ScreenShell } from "@/components/screen-shell"
 import { SubmitButton } from "@/components/submit-button"
+import NumberFlow from "@number-flow/react"
 import { SuccessCheck } from "@/components/success-check"
 import { WizardDots } from "@/components/wizard-dots"
 import { WizardFooter } from "@/components/wizard-footer"
@@ -384,7 +385,10 @@ export function RoleImportWizard() {
         label={t("prefilling.heading")}
         heading
         description={t("prefilling.body")}
-        countLabel={t("prefilling.progress", { done, total })}
+        countLabel={t.rich("prefilling.progress", {
+          done: () => <NumberFlow value={done} />,
+          total: () => <NumberFlow value={total} />,
+        })}
         accent
       />
     )

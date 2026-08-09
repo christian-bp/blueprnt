@@ -362,7 +362,7 @@
           "title": "Importing people",
           "description": "Your people are being imported. Keep this window open until it finishes.",
           "working": "Importing...",
-          "progressCount": "{processed} of {total} rows"
+          "progressCount": "<processed></processed> of <total></total> rows"
         },
         "done": {
           "title": "Import complete",
@@ -948,7 +948,7 @@
         "prefilling": {
           "heading": "Drafting job profiles",
           "body": "We are writing a purpose and responsibilities for each new role from its name. This can take a moment.",
-          "progress": "{done} of {total} roles"
+          "progress": "<done></done> of <total></total> roles"
         },
         "done": {
           "title": "Roles added",
@@ -1735,7 +1735,7 @@
         "ungroupedFamilyName": "Other roles",
         "prefillingHeading": "Drafting role profiles",
         "prefillingBody": "We're writing a purpose and responsibilities for each role from its name. This can take a moment for a large set.",
-        "prefillingProgress": "{done} of {total} roles"
+        "prefillingProgress": "<done></done> of <total></total> roles"
       }
     },
     "model": {

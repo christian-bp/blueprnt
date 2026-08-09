@@ -41,6 +41,14 @@ vi.mock("@/components/typewriter-placeholder", () => ({
   TypewriterPlaceholder: () => null,
 }))
 
+// NumberFlow renders a custom element that happy-dom never upgrades, so its
+// getSnapshotBeforeUpdate throws the moment the count CHANGES in place. The
+// progress readout changes by definition; the digit animation is the
+// library's business, these tests are about the figures.
+vi.mock("@number-flow/react", () => ({
+  default: ({ value }: { value: number }) => <span>{value}</span>,
+}))
+
 import { RoleImportWizard } from "@/components/roles/import/role-import-wizard"
 
 const t = messages.dashboard.roles.import
@@ -881,8 +889,15 @@ describe("RoleImportWizard", () => {
     expect(screen.getByText(t.prefilling.body)).toBeTruthy()
     expect(screen.getByRole("progressbar")).toBeTruthy()
     expect(
-      screen.getByText(
-        t.prefilling.progress.replace("{done}", "0").replace("{total}", "2")
+      // The figures are NumberFlow nodes inside the message now, so the text
+      // is split across elements: match on the whole line's content.
+      screen.getByText((_, element) =>
+        element?.textContent ===
+        t.prefilling.progress
+          .replace("<done></done>", "0")
+          .replace("<total></total>", "2")
+          ? element?.tagName === "P"
+          : false
       )
     ).toBeTruthy()
 

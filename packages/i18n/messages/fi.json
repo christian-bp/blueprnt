@@ -358,7 +358,7 @@
           "title": "Tuodaan henkilöitä",
           "description": "Henkilöitäsi tuodaan. Pidä ikkuna auki, kunnes tuonti on valmis.",
           "working": "Tuodaan...",
-          "progressCount": "{processed}/{total} riviä"
+          "progressCount": "<processed></processed>/<total></total> riviä"
         },
         "done": {
           "title": "Tuonti on valmis",
@@ -948,7 +948,7 @@
         "prefilling": {
           "heading": "Luodaan rooliprofiileja",
           "body": "Kirjoitamme jokaiselle uudelle roolille tarkoituksen ja vastuut sen nimen perusteella. Tämä voi kestää hetken.",
-          "progress": "{done}/{total} roolia"
+          "progress": "<done></done>/<total></total> roolia"
         },
         "done": {
           "title": "Rooleja lisätty",
@@ -1735,7 +1735,7 @@
         "ungroupedFamilyName": "Muut roolit",
         "prefillingHeading": "Luodaan rooliprofiileja",
         "prefillingBody": "Kirjoitamme jokaiselle roolille tarkoituksen ja vastuut sen nimen perusteella. Tämä voi kestää hetken suuren joukon kohdalla.",
-        "prefillingProgress": "{done}/{total} roolia"
+        "prefillingProgress": "<done></done>/<total></total> roolia"
       }
     },
     "model": {
