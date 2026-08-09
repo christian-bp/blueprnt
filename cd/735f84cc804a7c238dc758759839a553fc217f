@@ -1,0 +1,326 @@
+apps/dashboard/components/pay-mapping/equality-clock.tsx
+  s_3e2b06947bca1a::t_f16577ee5198f6 109-110,114-115
+  s_3e2b06947bca1a::t_bb5bfc8e4165df 17-20,22-23,28-29,31-34,36-40,44-49,92-101
+  s_3e2b06947bca1a::t_2270696cbe5073 79-83,106-108,111-113
+  s_3e2b06947bca1a::t_31328d6573d085 116
+apps/dashboard/components/action-card.test.tsx
+  s_3e2b06947bca1a::t_a291293c5b390b 75
+  s_3e2b06947bca1a::t_ebe686635480de 2,4,6,8-22,24,26-35,37,39-63,66-74
+  s_3e2b06947bca1a::t_de2762d4ba24ef 25,36
+apps/dashboard/lib/trend-domain.ts
+  s_3e2b06947bca1a::t_6fad9c2b4043dd 1-19
+apps/dashboard/lib/pay-gap-trend.test.ts
+  s_3e2b06947bca1a::t_8d357216c968b3 11-14
+  s_3e2b06947bca1a::t_4a9133454be747 1-10,15-65
+apps/dashboard/components/pay-mapping/equality-clock.test.tsx
+  s_3e2b06947bca1a::t_e4d4a74b8e5acc 1,4,15
+  s_3e2b06947bca1a::t_301cdfba660817 24
+  s_3e2b06947bca1a::t_9ab3ed35be9f66 18-21,28,30-40
+  s_3e2b06947bca1a::t_844f853e2322fb 16
+apps/dashboard/components/widget-card.tsx
+  s_3e2b06947bca1a::t_93ee48955933c6 144
+  s_3e2b06947bca1a::t_1195f86ec2f975 3-4,21,28-30,32,38,44,49-50,154,166
+  s_3e2b06947bca1a::t_26631dd2420d38 31,45-46,117-119,124-128,156-165,175-176,178-181,183-185
+  s_3e2b06947bca1a::t_45c625bbc07ced 24,177,182
+  s_3e2b06947bca1a::t_8ac44083c6a679 26,155
+  s_3e2b06947bca1a::t_b7ba5cdd5523ab 137-143
+  s_3e2b06947bca1a::t_76c5295cc40dfa 8,10-11,33-37,39-43,51-58,62,105-114,120-123,129-136,145-151,153,167,169-174
+  s_3e2b06947bca1a::t_2e9cac7fea040a 47,59,63-88,92,94-95,97,102
+  s_3e2b06947bca1a::t_5eab83489f7765 27,48,60-61
+apps/dashboard/components/pay-mapping/pay-mapping-population-card.test.tsx
+  s_3e2b06947bca1a::t_6d387605c6111c 1-114
+apps/dashboard/components/pay-mapping/pay-mapping-run-shell.test.tsx
+  s_3e2b06947bca1a::t_ecf42a083c1765 33,37,40
+apps/dashboard/components/pay-mapping/pay-mapping-run-indicator.test.tsx
+  s_3e2b06947bca1a::t_97d961f966ee03 35
+  s_3e2b06947bca1a::t_c3bec5890031d8 39,41
+apps/dashboard/lib/chart-style.ts
+  s_3e2b06947bca1a::t_05e6bbd9a7ea2c 32
+apps/dashboard/app/(app)/page.tsx
+  s_3e2b06947bca1a::t_5c50960832cdb1 5-8,25-26
+  s_3e2b06947bca1a::t_01f2f054c5a4eb 56-63,65
+  s_3e2b06947bca1a::t_d1cf3a3dc28276 9,20-24,54
+  s_3e2b06947bca1a::t_271ddd70e7ec86 16,38,64
+apps/dashboard/components/overview/todo-actions.test.tsx
+  s_3e2b06947bca1a::t_9288df9549da62 162-163
+  s_3e2b06947bca1a::t_e7f31726562d1e 24-26
+  s_3e2b06947bca1a::t_1758ece56ff69f 68-70
+  s_3e2b06947bca1a::t_b99f53ebc7f84f 1-23,27-60,103-142,188-202,222-223
+  s_3e2b06947bca1a::t_667f14949a6165 64-66,71-76,80-81
+  s_3e2b06947bca1a::t_6177a591aa48da 155-161,164-169
+  s_3e2b06947bca1a::t_8d462a517a9540 172-173,175
+  s_3e2b06947bca1a::t_633d411897cb35 152-154
+  s_3e2b06947bca1a::t_f1894cc0afe807 182
+  s_3e2b06947bca1a::t_e95624fe115b93 143-151,170-171,174,176-181,183-187
+  s_3e2b06947bca1a::t_15ee923fc20b6b 203-221
+  s_3e2b06947bca1a::t_650abf2d54aaeb 77-79
+  s_3e2b06947bca1a::t_60f84784665a99 61-63,67,82-102
+apps/dashboard/components/app-shell.tsx
+  s_3e2b06947bca1a::t_0b2307363e517f 58-62
+apps/dashboard/components/overview/overview-widgets.tsx
+  s_3e2b06947bca1a::t_a40c5790b70ac8 27-29,31-35,59-63
+  s_3e2b06947bca1a::t_af36b583b26080 199
+  s_3e2b06947bca1a::t_301cdfba660817 119-121,149-151
+  s_3e2b06947bca1a::t_ec644ceca79834 54,160-161,171,177-183,191-194,265,279-280,282,295,308-309,311
+  s_3e2b06947bca1a::t_da97c3ce2cdc69 18,37-40,55,57-58
+  s_3e2b06947bca1a::t_e128dc21197a2a 16
+  s_3e2b06947bca1a::t_0dbc49c0fc605b 3,5-8,159
+  s_3e2b06947bca1a::t_69428918d830dc 262
+  s_3e2b06947bca1a::t_acf075ca49c6cf 4,9,17,23,41-53,69-72,85-93,95-118,122-148,152-158,206,214,257-261,266,268-278,283,288,312
+  s_3e2b06947bca1a::t_91f4b8179cf7ac 195-198,200-205,209-213,252-254,289-291,296,300-305,307
+  s_3e2b06947bca1a::t_3ef8b358b2641d 284-287,292
+  s_3e2b06947bca1a::t_a1e1bfeb050411 263,293
+  s_3e2b06947bca1a::t_a31f289e14d7cd 306
+  s_3e2b06947bca1a::t_b44417ee41d95a 22,163-170,172-176,184-190,229-240,242-250,264,267,281,294,297-299,310
+  s_3e2b06947bca1a::t_a291293c5b390b 64
+  s_3e2b06947bca1a::t_d386fea8896974 19,36,162,207-208,215-217,251
+apps/dashboard/components/pay-mapping/actions-overview.test.tsx
+  s_3e2b06947bca1a::t_69521fcbb06bd7 55,58
+  s_3e2b06947bca1a::t_d09aaff7f825aa 42-46
+apps/dashboard/components/pay-mapping/pay-mapping-analysis.test.tsx
+  s_3e2b06947bca1a::t_bd292d9268b3a9 48-52
+  s_3e2b06947bca1a::t_9022d0119a0633 187,189
+apps/dashboard/app/(app)/page.test.tsx
+  s_3e2b06947bca1a::t_6b924d3b6a4a3f 121-122,159-160
+  s_3e2b06947bca1a::t_dbf6c094e562f2 106,116-118,120,123
+  s_3e2b06947bca1a::t_4d3721976c2b28 164,167-169
+apps/dashboard/components/pay-mapping/pay-mapping-population.ts
+  s_3e2b06947bca1a::t_50868d7d4ea520 1-35
+apps/dashboard/components/pay-mapping/pay-mapping-population.test.ts
+  s_3e2b06947bca1a::t_50868d7d4ea520 1-55
+apps/dashboard/hooks/use-pay-mapping-headline.test.tsx
+  s_3e2b06947bca1a::t_549de33a749b0c 37,44-46
+apps/dashboard/components/pay-mapping/pay-mapping-population-card.tsx
+  s_3e2b06947bca1a::t_a40c5790b70ac8 36-45
+  s_3e2b06947bca1a::t_6776848b29c241 1-11,14-30,49,51-53,60-64,71-75,109-110
+  s_3e2b06947bca1a::t_97355e50b35ba0 12,33-35,46,54-59,65-70,76-85,94-108
+  s_3e2b06947bca1a::t_50868d7d4ea520 13
+  s_3e2b06947bca1a::t_8d72a71f023694 86-92
+  s_3e2b06947bca1a::t_cdff2696c9c892 31-32,47-48,50,93
+apps/dashboard/lib/trend-domain.test.ts
+  s_3e2b06947bca1a::t_6a6e373f89a344 1-48
+apps/dashboard/components/panel-card.tsx
+  s_3e2b06947bca1a::t_aa649b55662e2a 45-48
+  s_3e2b06947bca1a::t_55ae72d6e951a6 22,31-37,42,65
+  s_3e2b06947bca1a::t_61da01b9dd678e 1-21,23-30,38-41,43-44,49-64,66-68
+packages/i18n/messages/fi.json
+  s_3e2b06947bca1a::t_a31f289e14d7cd 914-915,1344
+  s_3e2b06947bca1a::t_ec644ceca79834 916-917
+  s_3e2b06947bca1a::t_33bdc6b8594c0c 1240
+  s_3e2b06947bca1a::t_8c7e8f4600f3d2 1241
+  s_3e2b06947bca1a::t_fd8494c53aec08 899,911-913
+  s_3e2b06947bca1a::t_62fefa51b20961 1338
+  s_3e2b06947bca1a::t_826a4fd6a50698 869-884,892-894,906-910
+  s_3e2b06947bca1a::t_4933f50c916702 905
+  s_3e2b06947bca1a::t_2b9b67619f8106 1329
+  s_3e2b06947bca1a::t_92b841b1269097 1324-1328
+  s_3e2b06947bca1a::t_1bbfe96b986a1d 1242
+  s_3e2b06947bca1a::t_d7e21d9cf63d33 1304
+  s_3e2b06947bca1a::t_8d1a8bb8ea0b22 1319
+apps/dashboard/components/pay-mapping/pay-mapping-overview.test.tsx
+  s_3e2b06947bca1a::t_ad18d72ed69ef4 127,135
+  s_3e2b06947bca1a::t_a62c65975c5c53 124,130,134,138
+  s_3e2b06947bca1a::t_c8c7d5ef588022 192-194
+  s_3e2b06947bca1a::t_20ea65ed35f981 83-84,87
+  s_3e2b06947bca1a::t_06c134fba666c4 137,222-224
+  s_3e2b06947bca1a::t_13b2aab2bce5b6 142-145,148,152-156
+  s_3e2b06947bca1a::t_b8b8ad517badda 211
+  s_3e2b06947bca1a::t_00b63fe09a3c63 31-35
+  s_3e2b06947bca1a::t_b8c49cf09ba389 217
+  s_3e2b06947bca1a::t_d64ff20ff8d6ff 202
+apps/dashboard/components/card-overlay-link.tsx
+  s_3e2b06947bca1a::t_de2762d4ba24ef 7-13,32
+  s_3e2b06947bca1a::t_44045c5903c6d4 1-6,14-31,33-35
+packages/i18n/messages/nb.json
+  s_3e2b06947bca1a::t_4933f50c916702 905
+  s_3e2b06947bca1a::t_62fefa51b20961 1338
+  s_3e2b06947bca1a::t_826a4fd6a50698 869-884,892-894,906-910
+  s_3e2b06947bca1a::t_ec644ceca79834 916-917
+  s_3e2b06947bca1a::t_33bdc6b8594c0c 1240
+  s_3e2b06947bca1a::t_8c7e8f4600f3d2 1241
+  s_3e2b06947bca1a::t_64afff63d8a683 1324-1328
+  s_3e2b06947bca1a::t_d7e21d9cf63d33 1304
+  s_3e2b06947bca1a::t_2b9b67619f8106 1329
+  s_3e2b06947bca1a::t_a31f289e14d7cd 914-915,1344
+  s_3e2b06947bca1a::t_1bbfe96b986a1d 1242
+  s_3e2b06947bca1a::t_fd8494c53aec08 899,911-913
+  s_3e2b06947bca1a::t_47d679cf2fcd5f 1319
+apps/dashboard/components/panel-card.test.tsx
+  s_3e2b06947bca1a::t_29a4d3f630c3ea 1-56
+CLAUDE.md
+  s_3e2b06947bca1a::t_aed195a5979415 71
+apps/dashboard/components/action-card.tsx
+  s_3e2b06947bca1a::t_58d82284b85a60 36
+  s_3e2b06947bca1a::t_f796302a6998de 5,7,88-104,106-120
+  s_3e2b06947bca1a::t_45c625bbc07ced 6,15-16,87
+  s_3e2b06947bca1a::t_49a270befb1db0 46-51
+  s_3e2b06947bca1a::t_7f7d147faf01c2 53,55,57-62
+  s_3e2b06947bca1a::t_8c39233abed0d9 31-35,66
+  s_3e2b06947bca1a::t_b027fda52f5737 1-3,8-9,14,17-21,23-27,37,39-41,65,78-81,86,121-123
+  s_3e2b06947bca1a::t_8d462a517a9540 42
+  s_3e2b06947bca1a::t_51f5af092f5271 4,22,28-30,38,43-45,63-64,69-76,82-85
+  s_3e2b06947bca1a::t_dbf6c094e562f2 105
+  s_3e2b06947bca1a::t_2a1fe1008168a0 10-13,67-68,77
+  s_3e2b06947bca1a::t_550667f01fc599 52,54,56
+apps/dashboard/components/success-check.tsx
+  s_3e2b06947bca1a::t_c67bb3d78be326 4,8,10-11,43
+apps/dashboard/components/pay-mapping/pay-mapping-completion-panel.tsx
+  s_3e2b06947bca1a::t_8c6c6d8cc68a08 41-42,47-51
+  s_3e2b06947bca1a::t_433c9077ba160b 43-46
+packages/i18n/messages/en.json
+  s_3e2b06947bca1a::t_a31f289e14d7cd 914-915,1344
+  s_3e2b06947bca1a::t_e03fdc88dc8db0 1324-1328
+  s_3e2b06947bca1a::t_fd8494c53aec08 899,911-913
+  s_3e2b06947bca1a::t_ec644ceca79834 916-917
+  s_3e2b06947bca1a::t_33bdc6b8594c0c 1240
+  s_3e2b06947bca1a::t_2b9b67619f8106 1329
+  s_3e2b06947bca1a::t_826a4fd6a50698 869-884,892-894,906-910
+  s_3e2b06947bca1a::t_1bbfe96b986a1d 1242
+  s_3e2b06947bca1a::t_62fefa51b20961 1338
+  s_3e2b06947bca1a::t_4933f50c916702 905
+  s_3e2b06947bca1a::t_d7e21d9cf63d33 1304
+  s_3e2b06947bca1a::t_8c7e8f4600f3d2 1241
+  s_3e2b06947bca1a::t_e7387e22b908e1 1319
+apps/dashboard/components/pay-mapping/pay-mapping-run-context.tsx
+  s_3e2b06947bca1a::t_380c0a2169bfe6 13-17,21-22
+apps/dashboard/components/overview/overview-widgets.test.tsx
+  s_3e2b06947bca1a::t_301cdfba660817 203
+  s_3e2b06947bca1a::t_a80998e96ac779 10,71-72,77-78
+  s_3e2b06947bca1a::t_0a7cda8076f28f 2,5-8,26-38,40-47,57-63,67,84-87,89-101,108-114,116-129,131-135,138-139,142,146-148,151-156,159-162,165-171,174-176,178-179,182-185,188-202,204,206,208-212,214-218,222-230,233-249,251-254,273-281
+  s_3e2b06947bca1a::t_c8afb435c6fd62 39
+  s_3e2b06947bca1a::t_ef371949407c00 257-261,264-267,269-270
+  s_3e2b06947bca1a::t_836a05837b0998 69-70,73-76,79-83,88,102,213
+  s_3e2b06947bca1a::t_fcf643f61c4cd6 64-66,68
+packages/core/src/pay-gap.ts
+  s_3e2b06947bca1a::t_62fefa51b20961 105-107
+  s_3e2b06947bca1a::t_9c9cdf65df8d08 73-74
+apps/dashboard/components/overview/widget-viz.test.tsx
+  s_3e2b06947bca1a::t_e128dc21197a2a 7
+  s_3e2b06947bca1a::t_836a05837b0998 113-127,129-145,147-160,162-165
+  s_3e2b06947bca1a::t_a31f289e14d7cd 20,128,146,161
+  s_3e2b06947bca1a::t_59671e5d24c13f 166
+apps/dashboard/components/medallion.tsx
+  s_3e2b06947bca1a::t_aa649b55662e2a 34
+  s_3e2b06947bca1a::t_e87ba0b03e1280 2,6-14,24-26,28-30,32,35-42,47,50
+  s_3e2b06947bca1a::t_857a9f8ede683f 4-5,16-23,27,31,43-46,48-49
+apps/dashboard/components/success-check.test.tsx
+  s_3e2b06947bca1a::t_4465c0b24cbe42 79-84,87-88,102,104,106
+  s_3e2b06947bca1a::t_9b649cc818a7cb 122,124-145
+  s_3e2b06947bca1a::t_dab3a11fd8592b 13
+  s_3e2b06947bca1a::t_d681d0746f27b5 12,74-78,85-86,89-101,103,105,107-121
+  s_3e2b06947bca1a::t_30c65bb91676b7 123,146
+apps/dashboard/components/widget-card.test.tsx
+  s_3e2b06947bca1a::t_de2762d4ba24ef 64
+  s_3e2b06947bca1a::t_9f3c692ecbcd02 2,5-6,8,10-11,16,19-28,30-34,37-58,61-63,65-69,71-72,75-85,87,89
+  s_3e2b06947bca1a::t_b2fe409226b2ba 59-60
+packages/i18n/messages/da.json
+  s_3e2b06947bca1a::t_62fefa51b20961 1338
+  s_3e2b06947bca1a::t_30aab8a8b2c770 1324-1328
+  s_3e2b06947bca1a::t_a31f289e14d7cd 914-915,1344
+  s_3e2b06947bca1a::t_8c7e8f4600f3d2 1241
+  s_3e2b06947bca1a::t_1bbfe96b986a1d 1242
+  s_3e2b06947bca1a::t_2b9b67619f8106 1329
+  s_3e2b06947bca1a::t_ec644ceca79834 916-917
+  s_3e2b06947bca1a::t_fd8494c53aec08 899,911-913
+  s_3e2b06947bca1a::t_826a4fd6a50698 869-884,892-894,906-910
+  s_3e2b06947bca1a::t_4933f50c916702 905
+  s_3e2b06947bca1a::t_d7e21d9cf63d33 1304
+  s_3e2b06947bca1a::t_33bdc6b8594c0c 1240
+  s_3e2b06947bca1a::t_4d021c0bf0adfe 1319
+apps/dashboard/hooks/use-pay-gap-trend.ts
+  s_3e2b06947bca1a::t_507976372f4e26 5,7-10,15-18
+  s_3e2b06947bca1a::t_8a1722016c131d 1-4,6,11-14,19
+apps/dashboard/lib/pay-gap-trend.ts
+  s_3e2b06947bca1a::t_8d357216c968b3 26-27,30-33,35-42
+  s_3e2b06947bca1a::t_499fd84afce88f 1-25,28-29,34,43-50
+apps/dashboard/test/pay-mapping-fixtures.ts
+  s_3e2b06947bca1a::t_1f9ab5011864ec 54-82
+  s_3e2b06947bca1a::t_d5a8ea56505ce9 1-3,8,10
+  s_3e2b06947bca1a::t_b624e07b700ce6 83
+packages/i18n/messages/sv.json
+  s_3e2b06947bca1a::t_d7e21d9cf63d33 1304
+  s_3e2b06947bca1a::t_ec644ceca79834 916-917
+  s_3e2b06947bca1a::t_fd8494c53aec08 899,911-913
+  s_3e2b06947bca1a::t_2b9b67619f8106 1329
+  s_3e2b06947bca1a::t_826a4fd6a50698 869-884,892-894,906-910
+  s_3e2b06947bca1a::t_8c7e8f4600f3d2 1241
+  s_3e2b06947bca1a::t_4933f50c916702 905
+  s_3e2b06947bca1a::t_1bbfe96b986a1d 1242
+  s_3e2b06947bca1a::t_a31f289e14d7cd 914-915,1344
+  s_3e2b06947bca1a::t_62fefa51b20961 1338
+  s_3e2b06947bca1a::t_33bdc6b8594c0c 1240
+  s_3e2b06947bca1a::t_3d02541d79d2ca 1324-1328
+  s_3e2b06947bca1a::t_6d795cc070c5fc 1319
+apps/dashboard/components/pay-mapping/pay-mapping-overview.tsx
+  s_3e2b06947bca1a::t_301cdfba660817 417-420
+  s_3e2b06947bca1a::t_9c9cdf65df8d08 358-361,427
+  s_3e2b06947bca1a::t_a40c5790b70ac8 57-67
+  s_3e2b06947bca1a::t_15ed202cc1dcd2 48-56,69-75,77,396
+  s_3e2b06947bca1a::t_39f8a3054c4682 4-7
+  s_3e2b06947bca1a::t_fc5199332fba8b 388
+  s_3e2b06947bca1a::t_7d5bae7799f9cd 391,400,421
+  s_3e2b06947bca1a::t_84575bdd8979b1 25,381-387,416,422
+  s_7d4d2043db4111::t_f274416ba43ef3 244
+  s_3e2b06947bca1a::t_0dc8c137500da0 68,76,78-81,86-90
+  s_3e2b06947bca1a::t_3f01c2b89966d9 15,376
+  s_3e2b06947bca1a::t_2270696cbe5073 3,27-31,405-411
+  s_7d4d2043db4111::t_d5c57a27c7712e 20,335,342
+  s_3e2b06947bca1a::t_012d814adc388d 33
+  s_3e2b06947bca1a::t_89e3fd59fea751 42-47
+  s_3e2b06947bca1a::t_512e2c78e65cd7 397
+  s_3e2b06947bca1a::t_a362406025a753 357,362-366
+apps/dashboard/components/overview/todo-actions.tsx
+  s_3e2b06947bca1a::t_2d3992c0c2104d 151,175
+  s_3e2b06947bca1a::t_e45094600622c9 50-52
+  s_3e2b06947bca1a::t_081e8d882b6b63 158,168-169,171-174
+  s_3e2b06947bca1a::t_4216f26be2b416 72-79,115-135
+  s_3e2b06947bca1a::t_f796302a6998de 14,80-84,99-112
+  s_3e2b06947bca1a::t_c3ed06b7d28eea 146-150,152-157,176-182
+  s_3e2b06947bca1a::t_37a349dbac8817 13,15,45-49,89-98,140-145
+  s_3e2b06947bca1a::t_61a5f0ede7917c 11,18-29,40-44,53-71,85,87-88,139,189-204
+  s_3e2b06947bca1a::t_3d400df7c126dd 159-167,170
+apps/dashboard/components/confetti-burst.tsx
+  s_3e2b06947bca1a::t_b00f6d554f4b23 78-81,103-104,109-113
+  s_3e2b06947bca1a::t_d0d23089de473a 1-32,48-53,59-77,82-98,105-108,114-125,129-135,143-146,149-151,159-165,167-168,170,173-174,183-191,193-198,200-207
+  s_3e2b06947bca1a::t_e969e29694e80f 54-58,99-102,136-141,147,169,171-172
+  s_3e2b06947bca1a::t_ba63f4f5db50a3 33-47,142,148,152-158,166,175-182,192,199
+  s_3e2b06947bca1a::t_d681d0746f27b5 126-128
+apps/dashboard/lib/percent.ts
+  s_3e2b06947bca1a::t_0225f449ebc227 15-29
+apps/dashboard/components/overview/widget-viz.tsx
+  s_3e2b06947bca1a::t_65c0e5ede4d50d 26
+  s_3e2b06947bca1a::t_f51b6a0aabbc91 98-104,108-132,152,159-160,162-164,176-177,179-184,186-188,213-216,219
+  s_3e2b06947bca1a::t_0628d76a0092bc 25
+  s_3e2b06947bca1a::t_2def6da5b19480 105,173-174,220-222,226,229-232,234-237,240-248,253,264-270,272-275,277,279-305,308,312-314
+  s_3e2b06947bca1a::t_05e6bbd9a7ea2c 23-24,223-225,227-228,249-252,254-260,262-263
+  s_3e2b06947bca1a::t_80f5f3dc19af62 153-157,218
+  s_3e2b06947bca1a::t_0225f449ebc227 22,27,46,84-86,91-92,233,238-239,271,276,278,306-307,309-311
+  s_3e2b06947bca1a::t_397ffe0e4a1f2a 28
+  s_3e2b06947bca1a::t_9c9cdf65df8d08 3-15,30-32
+  s_3e2b06947bca1a::t_69428918d830dc 106-107,133-150,158,161,167-171
+  s_3e2b06947bca1a::t_c51db4c9e7913c 151,165-166,172,175
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "cd735f84cc804a7c238dc758759839a553fc217f",
+  "prompts": {},
+  "sessions": {
+    "s_3e2b06947bca1a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f1060ec2-cb75-42c1-a673-7f901288258e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    },
+    "s_7d4d2043db4111": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cbeef8ee-16ed-4aed-b926-c1546f14fb33",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
