@@ -1,0 +1,31 @@
+docs/go-live-checklist.md
+  s_3e2b06947bca1a::t_8507e6c010cf18 202-218
+apps/dashboard/lib/level-overview.ts
+  s_3e2b06947bca1a::t_26e45ad4ea20a6 1-7,18-20,26-28,30
+  s_3e2b06947bca1a::t_677282190fa7a7 33-36
+packages/backend/convex/payMapping/workLayer.ts
+  s_3e2b06947bca1a::t_f9c5d25fad9bbb 25-27,35
+apps/dashboard/components/pay-mapping/pay-mapping-overview.test.tsx
+  s_3e2b06947bca1a::t_cdce1662c131ef 6-7,12-13
+apps/dashboard/lib/level-overview.test.ts
+  s_3e2b06947bca1a::t_6ed05932be3de8 17-19,24
+packages/backend/convex/payMapping/analyses.ts
+  s_3e2b06947bca1a::t_38070a9416cdbb 196-197
+  s_3e2b06947bca1a::t_f9c5d25fad9bbb 193
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "2032bef96398dfa9836b62bcca1bb149856e50ed",
+  "prompts": {},
+  "sessions": {
+    "s_3e2b06947bca1a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f1060ec2-cb75-42c1-a673-7f901288258e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
