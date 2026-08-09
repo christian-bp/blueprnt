@@ -24,26 +24,42 @@ export function OnboardingGate(props: { children: ReactNode }) {
   const active = authClient.useActiveOrganization()
 
   const orgList = orgs.data ?? null
-  const activeId = resolveActiveOrgId(active.data?.id, orgList)
+  // Nothing is decided until the active-organization query settles: while it
+  // is in flight its data is null, and resolving that would fall back to the
+  // first membership and scope the whole shell to the wrong company for a
+  // beat.
+  const activeId = active.isPending
+    ? null
+    : resolveActiveOrgId(active.data?.id, orgList)
 
   // Persist a default active company when none is set, so
   // session.activeOrganizationId is always populated on the next load.
+  //
+  // Gated on isPending, not just on data being absent. The active-organization
+  // query reports data: null WHILE IT IS STILL IN FLIGHT, which is
+  // indistinguishable from "no active company" by data alone, so on every
+  // reload this wrote the first company in the list over whatever the user
+  // had actually selected. That is why switching company and reloading came
+  // back on the first one.
   useEffect(() => {
+    if (active.isPending) return
     const first = orgList?.[0]
     if (active.data == null && first) {
       void authClient.organization.setActive({
         organizationId: first.id,
       })
     }
-  }, [active.data, orgList])
+  }, [active.data, active.isPending, orgList])
 
   const status = useQuery(
     api.accounts.onboarding.getOnboardingStatus,
     activeId !== null ? { orgId: activeId } : "skip"
   )
 
-  // Memberships still loading.
-  if (orgList === null) return <LoadingScreen label={t("loading")} />
+  // Memberships, or which of them is active, still loading.
+  if (orgList === null || active.isPending) {
+    return <LoadingScreen label={t("loading")} />
+  }
   // Signed in but provisioned into no company yet (rare: provisioning is
   // back-office and signup is disabled). Nothing to render.
   if (orgList.length === 0) return null

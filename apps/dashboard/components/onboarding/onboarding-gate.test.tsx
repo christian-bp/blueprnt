@@ -12,11 +12,18 @@ vi.mock("convex/react", () => ({
 // status query. With no active org it would only auto-pick one and spin.
 let orgsData: { id: string; name: string }[] = []
 let activeData: { id: string; name: string } | null = null
+// The real query reports data: null while it is IN FLIGHT, which is
+// indistinguishable from "no active company" unless isPending is read, so the
+// mock carries it too.
+let activePending = false
 const setActiveMock = vi.fn()
 vi.mock("@/lib/auth-client", () => ({
   authClient: {
     useListOrganizations: () => ({ data: orgsData }),
-    useActiveOrganization: () => ({ data: activeData }),
+    useActiveOrganization: () => ({
+      data: activeData,
+      isPending: activePending,
+    }),
     organization: { setActive: (...a: unknown[]) => setActiveMock(...a) },
   },
 }))
@@ -45,6 +52,7 @@ describe("OnboardingGate", () => {
   beforeEach(() => {
     orgsData = [{ id: "o1", name: "Acme" }]
     activeData = { id: "o1", name: "Acme" }
+    activePending = false
     setActiveMock.mockReset()
     setActiveMock.mockResolvedValue(undefined)
   })
@@ -115,5 +123,49 @@ describe("OnboardingGate", () => {
     )
     expect(screen.getByTestId("wizard")).toBeDefined()
     expect(screen.queryByTestId("shell")).toBeNull()
+  })
+
+  // The bug this guards: on every reload the active-organization query is
+  // briefly pending with data: null, which reads as "no active company". The
+  // gate used to answer that by persisting the FIRST membership, silently
+  // overwriting the company the user had chosen, so a reload after switching
+  // came back on the wrong one.
+  describe("while the active company is still loading", () => {
+    beforeEach(() => {
+      activePending = true
+      activeData = null
+      orgsData = [
+        { id: "o1", name: "Acme" },
+        { id: "o2", name: "Globex" },
+      ]
+    })
+
+    it("does not persist a default company over the user's choice", () => {
+      renderGate()
+      expect(setActiveMock).not.toHaveBeenCalled()
+    })
+
+    it("holds on the loading screen instead of scoping to the first company", () => {
+      // Cleared here, not in the shared beforeEach: the mock's return value is
+      // configured per test there and resetting it would strip that too.
+      useQueryMock.mockClear()
+      renderGate()
+      expect(screen.queryByTestId("shell")).toBeNull()
+      expect(screen.queryByTestId("wizard")).toBeNull()
+      // Nothing is queried for a company that has not been resolved yet.
+      for (const call of useQueryMock.mock.calls) {
+        expect(call[1]).not.toEqual({ orgId: "o1" })
+      }
+    })
+  })
+
+  // Once it HAS settled and there genuinely is no active company, picking a
+  // default is still the right answer: the next load needs one persisted.
+  it("persists the first membership once the query settles with none active", () => {
+    activePending = false
+    activeData = null
+    orgsData = [{ id: "o1", name: "Acme" }]
+    renderGate()
+    expect(setActiveMock).toHaveBeenCalledWith({ organizationId: "o1" })
   })
 })
