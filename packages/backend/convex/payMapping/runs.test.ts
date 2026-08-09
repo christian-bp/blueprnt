@@ -164,6 +164,36 @@ describe("startPayMappingRun", () => {
     expect(paid[0]?.basicMonthly).toBe(50000)
   })
 
+  // The figure the front page's trend plots. Stored at freeze rather than
+  // recomputed per visit: the trend draws one point per run, and reading it
+  // from the snapshot rows would scan every row of every run on each
+  // dashboard load (the same reason womenCount/menCount are denormalized).
+  it("stores the org-level gap on the run, matching what the run's own Overview computes", async () => {
+    const t = initConvexTest()
+    const { orgId, asHr } = await seedForFreeze(t)
+
+    const { runId } = await asHr.mutation(
+      api.payMapping.runs.startPayMappingRun,
+      { orgId, label: "Test" }
+    )
+
+    const run = await t.run((ctx) => ctx.db.get(runId))
+    // This fixture prices exactly one person, so one gender has no priced
+    // row and the gap is not measurable: the stored figure says so rather
+    // than reading as zero.
+    expect(run?.orgGapPct).toBeNull()
+    expect(run?.orgGapFlag).toBe("insufficient")
+
+    // The stored figure and the one the run page derives from the same frozen
+    // rows come from one helper, so they cannot disagree.
+    const aggregate = await asHr.query(api.payMapping.gap.getPayMappingGap, {
+      orgId,
+      runId,
+    })
+    expect(run?.orgGapPct).toBe(aggregate?.org.gapPct ?? null)
+    expect(run?.orgGapFlag).toBe(aggregate?.org.flag)
+  })
+
   it("writes exactly one payMapping.runStarted audit row with no person data", async () => {
     const t = initConvexTest()
     const { orgId, asHr } = await seedForFreeze(t)
@@ -615,6 +645,8 @@ async function insertRun(
       withPayCount: rows.filter((r) => r.basicMonthly !== null).length,
       womenCount: rows.filter((r) => r.gender === "Kvinna").length,
       menCount: rows.filter((r) => r.gender === "Man").length,
+      orgGapPct: null,
+      orgGapFlag: "insufficient",
       frozenModel: { criteria: [], levelThresholds: [] },
     })
     let i = 0

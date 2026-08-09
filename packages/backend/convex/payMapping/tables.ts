@@ -13,6 +13,16 @@ export const payMappingRunStatus = v.union(
   v.literal("completed")
 )
 
+// The severity band of a gap figure, mirroring @workspace/core's PayGapFlag.
+// Declared here so the frozen run row and every wire shape that carries a
+// flag share one union.
+export const payGapFlag = v.union(
+  v.literal("critical"),
+  v.literal("elevated"),
+  v.literal("ok"),
+  v.literal("insufficient")
+)
+
 // A kartläggning (pay-mapping survey). The mutable metadata + the model config
 // frozen once (ADR-0008); per-person frozen data lives in payMappingSnapshotRows.
 export const payMappingRuns = defineTable({
@@ -32,6 +42,22 @@ export const payMappingRuns = defineTable({
   // scanning every snapshot row of every run on each dashboard load.
   womenCount: v.number(),
   menCount: v.number(),
+  // The org-level unadjusted gap, denormalized at freeze time for the same
+  // reason the gender split above is: the front page plots one point per run,
+  // and computing it at read time would scan every snapshot row of every run
+  // on each dashboard load, which passes Convex's per-transaction read
+  // ceiling well inside the org sizes this product targets.
+  //
+  // Unlike the counts, this is ENGINE OUTPUT: it is computed by orgGap() over
+  // the frozen rows. That is sound because the rows it derives from are
+  // themselves frozen (ADR-0011), so the figure can only go stale if the gap
+  // formula itself changes, which is a recompute-all event.
+  //
+  // Null when that mapping had no measurable gap (a gender absent among its
+  // priced rows), which is a real reading and not a missing one: the trend
+  // keeps the point and breaks its curve there.
+  orgGapPct: v.union(v.number(), v.null()),
+  orgGapFlag: payGapFlag,
   frozenModel: v.object({
     criteria: v.array(
       v.object({

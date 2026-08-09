@@ -16,7 +16,8 @@ import { appError, ERROR_CODES } from "../lib/errors"
 import { orgMutation, orgQuery } from "../lib/functions"
 import { uniqueSlug } from "../lib/slug"
 import { requiredDocumentationKeys } from "./gap"
-import { payMappingRunStatus } from "./tables"
+import { orgGap, type PricedRow } from "./orgGap"
+import { payGapFlag, payMappingRunStatus } from "./tables"
 
 const SYSTEM_VERSION = "v2-slice1"
 
@@ -222,10 +223,14 @@ export const startPayMappingRun = orgMutation({
       initiatedBy: ctx.authUserId,
       initiatedAt: referenceDate,
       systemVersion: SYSTEM_VERSION,
+      // Placeholders, patched below once the rows are frozen: the counts and
+      // the gap are all derived from the rows this insert precedes.
       populationCount: 0,
       withPayCount: 0,
       womenCount: 0,
       menCount: 0,
+      orgGapPct: null,
+      orgGapFlag: "insufficient",
       frozenModel,
     })
 
@@ -233,6 +238,9 @@ export const startPayMappingRun = orgMutation({
     let withPayCount = 0
     let womenCount = 0
     let menCount = 0
+    // Every frozen row, for the org-gap figure stored on the run below.
+    // orgGap() applies the priced filter itself.
+    const pricedRows: PricedRow[] = []
 
     for (const person of active) {
       const assignments = await ctx.db
@@ -271,7 +279,7 @@ export const startPayMappingRun = orgMutation({
       const pay = payRecordAt(payRows, referenceDate)
       if (pay !== null) withPayCount += 1
 
-      await ctx.db.insert("payMappingSnapshotRows", {
+      const snapshotRow = {
         orgId: ctx.orgId,
         runId,
         personPublicId: person.publicId,
@@ -302,17 +310,25 @@ export const startPayMappingRun = orgMutation({
         components: pay?.components ?? [],
         ...(pay?.currency !== undefined ? { currency: pay.currency } : {}),
         ...(pay?.payYear !== undefined ? { payYear: pay.payYear } : {}),
-      })
+      }
+      await ctx.db.insert("payMappingSnapshotRows", snapshotRow)
+      // The stored gap derives from the rows actually inserted, through the
+      // same helpers getPayMappingGap reads, so the figure on the run row and
+      // the figure on the run's own Overview cannot disagree.
+      pricedRows.push(snapshotRow)
       populationCount += 1
       if (person.gender === "Kvinna") womenCount += 1
       else menCount += 1
     }
 
+    const gap = orgGap(pricedRows)
     await ctx.db.patch(runId, {
       populationCount,
       withPayCount,
       womenCount,
       menCount,
+      orgGapPct: gap.gapPct,
+      orgGapFlag: gap.flag,
     })
     await ctx.audit.log({
       type: AUDIT_EVENTS.payMappingRunStarted,
@@ -338,6 +354,10 @@ const runSummary = v.object({
   withPayCount: v.number(),
   womenCount: v.number(),
   menCount: v.number(),
+  // The frozen org-level gap. Null when that mapping had no measurable gap,
+  // which the front page's trend draws as a break in the curve.
+  orgGapPct: v.union(v.number(), v.null()),
+  orgGapFlag: payGapFlag,
 })
 
 export const listPayMappingRuns = orgQuery({
@@ -373,6 +393,8 @@ export const listPayMappingRuns = orgQuery({
       womenCount: r.womenCount,
       menCount: r.menCount,
       withPayCount: r.withPayCount,
+      orgGapPct: r.orgGapPct,
+      orgGapFlag: r.orgGapFlag,
     }))
   },
 })
@@ -415,6 +437,11 @@ export const getPayMappingRunBySlug = orgQuery({
       label: v.string(),
       status: payMappingRunStatus,
       referenceDate: v.number(),
+      // The frozen headcount, denormalized at freeze time. The overview's
+      // population card reads it here rather than counting `rows`, so this
+      // run and the one it is compared against (listPayMappingRuns) report
+      // the same figure from the same field.
+      populationCount: v.number(),
       rows: v.array(snapshotRowShape),
       collaboration: v.union(
         v.object({ participants: v.string(), description: v.string() }),
@@ -439,6 +466,7 @@ export const getPayMappingRunBySlug = orgQuery({
       label: run.label,
       status: run.status,
       referenceDate: run.referenceDate,
+      populationCount: run.populationCount,
       collaboration: run.collaboration ?? null,
       rows: rows.map((r) => ({
         personPublicId: r.personPublicId,

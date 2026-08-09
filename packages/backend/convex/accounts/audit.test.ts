@@ -392,6 +392,8 @@ describe("accounts.audit.getAuditLogPage (browse)", () => {
         withPayCount: 2,
         womenCount: 1,
         menCount: 1,
+        orgGapPct: null,
+        orgGapFlag: "insufficient",
         frozenModel: { criteria: [], levelThresholds: [] },
       })
       await logAudit(ctx, {

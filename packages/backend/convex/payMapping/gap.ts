@@ -1,9 +1,7 @@
 import { fteTotalMonthlyComp } from "@workspace/constants"
 import {
-  ageGenderTallies,
   classifyEqualWorkGroup,
   type ComparableGroup,
-  computeGenderGap,
   type EqualWorkClassification,
   equalWorkGroupRequiresDocumentation,
   type MetricComparison,
@@ -16,9 +14,10 @@ import {
 import { v } from "convex/values"
 import type { Doc } from "../_generated/dataModel"
 import { orgQuery } from "../lib/functions"
+import { orgGap, tccComp } from "./orgGap"
 
-// Per-gender headcounts for one distribution bucket (a pay quartile or an
-// age band). Counts only, never pay values, so no small-cell masking applies.
+// Per-gender headcounts for one distribution bucket (a pay quartile). Counts
+// only, never pay values, so no small-cell masking applies.
 const genderTallyShape = v.object({
   women: v.number(),
   men: v.number(),
@@ -204,16 +203,6 @@ function baseComp(row: SnapshotRow): number {
   return fteTotalMonthlyComp(
     row.basicMonthly ?? 0,
     NO_COMPONENTS,
-    row.ftePercent
-  )
-}
-
-// FTE-adjusted total monthly comp (TCC), the parallel measure and the org
-// aggregate's measure.
-function tccComp(row: SnapshotRow): number {
-  return fteTotalMonthlyComp(
-    row.basicMonthly ?? 0,
-    row.components,
     row.ftePercent
   )
 }
@@ -468,14 +457,6 @@ export const getPayMappingGap = orgQuery({
       population: genderTallyShape,
       // Four rank quartiles of the priced population, lower -> upper (A3).
       quartiles: v.array(genderTallyShape),
-      // Age bands over the WHOLE frozen population (a demographics view, not
-      // a pay view), aligned by index with @workspace/core's AGE_BUCKETS.
-      // Rows without a parseable birth date (including erasure-pseudonymized
-      // ones) are counted in `unknown`, never silently dropped.
-      age: v.object({
-        buckets: v.array(genderTallyShape),
-        unknown: v.number(),
-      }),
     })
   ),
   handler: async (ctx, { runId }) => {
@@ -497,30 +478,11 @@ export const getPayMappingGap = orgQuery({
       womenDominated,
     } = buildGapAggregates(rows)
 
-    // Org-level aggregate over ALL priced rows. Unlike the equal-work/
-    // equivalent-work groups, this is never masked: a population mean is not
-    // an individual salary. computeGenderGap still flags "insufficient" when
-    // a gender is missing, in which case gapPct is null.
-    const orgWomen: number[] = []
-    const orgMen: number[] = []
-    for (const row of priced) {
-      if (row.gender === "Kvinna") orgWomen.push(tccComp(row))
-      else orgMen.push(tccComp(row))
-    }
-    const orgStats = computeGenderGap(orgWomen, orgMen)
-    const org = {
-      womenCount: orgStats.womenCount,
-      menCount: orgStats.menCount,
-      womenMeanComp: orgStats.womenMeanComp,
-      menMeanComp: orgStats.menMeanComp,
-      gapPct: orgStats.gapPct,
-      flag: orgStats.flag as PayGapFlag,
-    }
+    const org = orgGap(rows)
 
-    // Distribution views (headcounts only). The population split and the age
-    // bands cover the whole frozen population; quartiles rank the priced rows
-    // (the pay-based view). Ages are taken at the run's reference date, so
-    // the figures are deterministic replays of the freeze, never the clock.
+    // Distribution views (headcounts only). The population split covers the
+    // whole frozen population; quartiles rank the priced rows (the pay-based
+    // view).
     const population = rows.reduce(
       (tally, row) => {
         if (row.gender === "Kvinna") tally.women += 1
@@ -535,14 +497,6 @@ export const getPayMappingGap = orgQuery({
         woman: row.gender === "Kvinna",
       }))
     )
-    const age = ageGenderTallies(
-      rows.map((row) => ({
-        birthDate: row.birthDate,
-        woman: row.gender === "Kvinna",
-      })),
-      run.referenceDate
-    )
-
     return {
       currency,
       org,
@@ -552,7 +506,6 @@ export const getPayMappingGap = orgQuery({
       womenDominated,
       population,
       quartiles,
-      age,
     }
   },
 })

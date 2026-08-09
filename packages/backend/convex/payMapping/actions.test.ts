@@ -121,6 +121,8 @@ async function seedRun(
       withPayCount: rows.length,
       womenCount: 1,
       menCount: 3,
+      orgGapPct: null,
+      orgGapFlag: "insufficient",
       frozenModel: { criteria: [], levelThresholds: [] },
     })
     for (const r of rows) {

@@ -45,6 +45,8 @@ async function seedRun(
       withPayCount: rows.filter((r) => r.basicMonthly !== null).length,
       womenCount: rows.filter((r) => r.gender === "Kvinna").length,
       menCount: rows.filter((r) => r.gender === "Man").length,
+      orgGapPct: null,
+      orgGapFlag: "insufficient",
       frozenModel: { criteria: [], levelThresholds: [] },
     })
     let i = 0
@@ -672,7 +674,7 @@ describe("getPayMappingGap", () => {
     ])
   })
 
-  it("returns age bands at the reference date over the whole population", async () => {
+  it("counts the whole frozen population, priced or not", async () => {
     const t = initConvexTest()
     // referenceDate 1_700_000_000_000 = 2023-11-14: 1990-01-01 is 33 (30-39,
     // index 2); an unpriced row still counts (demographics view); a missing
@@ -708,11 +710,8 @@ describe("getPayMappingGap", () => {
       runId,
     })
 
-    // 1990-01-01 -> 33 and 1985-06-15 -> 38: both in the 30-39 band.
-    expect(result?.age.buckets[2]).toEqual({ women: 1, men: 1 })
-    expect(result?.age.unknown).toBe(1)
-    expect(result?.age.buckets).toHaveLength(7)
-    // The population split covers the whole frozen population, priced or not.
+    // The population split covers every frozen row, including the unpriced
+    // one the gap statistics themselves leave out.
     expect(result?.population).toEqual({ women: 1, men: 2 })
   })
 

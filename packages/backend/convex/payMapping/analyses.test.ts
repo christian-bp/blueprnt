@@ -44,6 +44,8 @@ async function seedRun(
       withPayCount: rows.filter((r) => r.basicMonthly !== null).length,
       womenCount: rows.filter((r) => r.gender === "Kvinna").length,
       menCount: rows.filter((r) => r.gender === "Man").length,
+      orgGapPct: null,
+      orgGapFlag: "insufficient",
       frozenModel: { criteria: [], levelThresholds: [] },
     })
     let i = 0

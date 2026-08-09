@@ -18,6 +18,8 @@ describe("payMapping schema + slug", () => {
         populationCount: 0,
         womenCount: 0,
         menCount: 0,
+        orgGapPct: null,
+        orgGapFlag: "insufficient",
         withPayCount: 0,
         frozenModel: { criteria: [], levelThresholds: [] },
       })
@@ -41,6 +43,8 @@ describe("payMapping schema + slug", () => {
         populationCount: 0,
         womenCount: 0,
         menCount: 0,
+        orgGapPct: null,
+        orgGapFlag: "insufficient",
         withPayCount: 0,
         frozenModel: { criteria: [], levelThresholds: [] },
       })
