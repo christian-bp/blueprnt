@@ -9,6 +9,8 @@ const run = (over: Partial<HeadlineRunCandidate>): HeadlineRunCandidate => ({
   slug: "r1",
   label: "Run",
   status: "active",
+  orgGapPct: 4.2,
+  orgGapFlag: "ok",
   ...over,
 })
 
