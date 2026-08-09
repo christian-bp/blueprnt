@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 import { PageHeading } from "@/components/page-heading"
 
 // The consistent page header used across dashboard pages: an optional breadcrumb
-// trail above a left block with the brand title (plus an optional inline
+// trail above a left block with the page title (plus an optional inline
 // adornment, e.g. a concept HelpMorphButton or a track badge) and an optional
 // description beneath it, and an optional action on the right (e.g. a
 // Create/Invite button or an actions menu). One component so every page header

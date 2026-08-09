@@ -6,9 +6,11 @@ import { useEffect, useState } from "react"
 import { authClient } from "@/lib/auth-client"
 import { greetingBucket } from "@/lib/greeting"
 
-// The greeting is the overview's hero heading: larger than a standard page title
-// (PageHeading is text-lg), still brand-colored.
-const HEADING_CLASS = "font-semibold text-3xl text-brand"
+// The greeting is the overview's hero heading: larger than a standard page
+// title (PageHeading is text-lg), in the same regular ink as every other
+// heading. Brand rose is a data-viz colour too, so it stays off headings
+// and lands on the accents instead (links, CTAs, the widget icon chips).
+const HEADING_CLASS = "font-semibold text-3xl"
 
 // Personal welcome heading: a time-of-day greeting plus the user's first name.
 // The hour is read AFTER mount (never during SSR) so the server clock cannot
