@@ -1,0 +1,29 @@
+apps/dashboard/components/pay-mapping/analysis-chapter-tabs.tsx
+  s_3e2b06947bca1a::t_d7e21d9cf63d33 39,56-65
+packages/i18n/messages/da.json
+  s_3e2b06947bca1a::t_d1e40aa9441fb5 1307-1308
+packages/i18n/messages/en.json
+  s_3e2b06947bca1a::t_469a7de23e64e4 1307-1308
+packages/i18n/messages/fi.json
+  s_3e2b06947bca1a::t_c5d4a96877f8c5 1307-1308
+packages/i18n/messages/nb.json
+  s_3e2b06947bca1a::t_5749a455e8f2ba 1307-1308
+packages/i18n/messages/sv.json
+  s_3e2b06947bca1a::t_8844c59cab4f6f 1307-1308
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "e893ecbb826b84358bd95108d1df24199e4d82b7",
+  "prompts": {},
+  "sessions": {
+    "s_3e2b06947bca1a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f1060ec2-cb75-42c1-a673-7f901288258e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Christian Ek <hi@christianek.io>"
+    }
+  }
+}
