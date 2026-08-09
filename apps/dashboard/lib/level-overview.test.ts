@@ -14,20 +14,14 @@ describe("buildLevelOverview", () => {
     expect(result).toBeNull()
   })
 
-  it("counts roles per level, zero-filled, sorted ascending by level", () => {
+  // A role with no resolved level counts toward neither figure, and a
+  // configured level nobody sits on is not one of the levels "in use".
+  it("counts the placed roles and the levels they occupy", () => {
     const result = buildLevelOverview({
       rows: [{ level: 2 }, { level: 1 }, { level: 2 }, { level: null }],
       levels: [{ level: 2 }, { level: 1 }, { level: 3 }],
     })
-    expect(result).toEqual({
-      totalRoles: 3,
-      levelCount: 2,
-      levelCounts: [
-        { level: 1, count: 1 },
-        { level: 2, count: 2 },
-        { level: 3, count: 0 },
-      ],
-    })
+    expect(result).toEqual({ totalRoles: 3, levelCount: 2 })
   })
 
   it("ignores a resolved level that no longer matches any configured level", () => {

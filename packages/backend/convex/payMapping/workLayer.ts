@@ -22,10 +22,9 @@ export async function snapshotRowsForRun(
     .collect()
 }
 
-// The audit-safe display label a group key resolves to ("roleTitle ·
-// seniority"): the single derivation every call site (validation, existing-
-// record labels, the group-analysis trail) goes through, so the format and
-// its empty-part filtering can never drift.
+// The audit-safe display label a group key resolves to: the single
+// derivation every call site (validation, existing-record labels, the
+// group-analysis trail) goes through, so the format can never drift.
 export function groupKeyLabel(groupKey: string): string {
   // A group is roleTitle|level (ADR-0017), so the title alone is its name;
   // the level rides as its own badge rather than inside the label.
@@ -33,7 +32,7 @@ export function groupKeyLabel(groupKey: string): string {
 }
 
 // Validates a target against the run's own groups and people, and returns
-// the audit-safe GROUP-level display label ("roleTitle · seniority"): even a
+// the audit-safe GROUP-level display label (the role title): even a
 // person-targeted record is labeled by its group, never by a name (a name
 // in an audit payload could not be scrubbed on erasure).
 //

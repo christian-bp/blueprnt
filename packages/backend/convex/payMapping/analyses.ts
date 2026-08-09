@@ -190,11 +190,11 @@ export const upsertGroupAnalysis = orgMutation({
       auditView(next),
       GROUP_ANALYSIS_AUDIT_FIELDS
     )
-    // groupKeyLabel resolves the key to display text (roleTitle · seniority)
+    // groupKeyLabel resolves the key to display text (the role title)
     // for equalWork/equivalentWork: the trail never shows a raw internal key.
     // Praxis' groupKey is already a constant area-key slug (PRAXIS_AREA_KEYS),
-    // not the "roleTitle|level|seniority" format: never split it on "|", log
-    // it as the raw key (a stable, non-PII display value).
+    // not a composed group key: never split it on "|", log it as the raw key
+    // (a stable, non-PII display value).
     const groupLabel = scope === "praxis" ? groupKey : groupKeyLabel(groupKey)
     await ctx.audit.log({
       type: AUDIT_EVENTS.payMappingGroupAnalysisUpdated,

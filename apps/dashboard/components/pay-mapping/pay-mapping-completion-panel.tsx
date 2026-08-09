@@ -55,10 +55,6 @@ export function PayMappingCompletionPanel({
 }: {
   queue: ReviewQueue
   run: PayMappingRunDetail
-  // Non-gating findings worth naming at the moment of finishing (ADR-0015
-  // decision 2): the tvärnivå cases are not counted toward completion, so
-  // this is where an employer who never opened the drawer still meets them.
-  crossLevelCount?: number
 }) {
   const t = useTranslations("dashboard.payMapping.review")
   const tDoc = useTranslations("dashboard.payMapping.documentation")

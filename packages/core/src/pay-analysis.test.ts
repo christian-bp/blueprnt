@@ -2,8 +2,6 @@ import { describe, expect, it } from "vitest"
 import {
   classifyEqualWorkGroup,
   compareMetric,
-  type CrossLevelMember,
-  crossLevelPairs,
   diffVsMenMean,
   flagWomenBehind,
   genderStats,
@@ -224,80 +222,5 @@ describe("diffVsMenMean", () => {
 
   it("nulls the pct when the men mean is 0", () => {
     expect(diffVsMenMean(1000, 0)).toEqual({ kr: 1000, pct: null })
-  })
-})
-
-describe("crossLevelPairs", () => {
-  const member = (
-    id: string,
-    gender: "Man" | "Kvinna",
-    level: number | null,
-    base: number | null,
-    trackKey = "ic"
-  ): CrossLevelMember => ({
-    personPublicId: id,
-    gender,
-    level,
-    trackKey,
-    base,
-  })
-
-  it("pairs a higher-level woman with every lower-level man who out-earns her", () => {
-    // Level 1 is highest: the woman on level 3 outranks the men on level 4.
-    const result = crossLevelPairs([
-      member("anna", "Kvinna", 3, 61000),
-      member("erik", "Man", 4, 65000),
-      member("jonas", "Man", 4, 62000, "lead"),
-      member("sam", "Man", 4, 60000),
-    ])
-    expect(result).toHaveLength(1)
-    const anna = result[0]
-    expect(anna?.personPublicId).toBe("anna")
-    expect(anna?.outEarnedByCount).toBe(2)
-    // Pairs ordered by diff desc; the worst pair is the headline.
-    expect(anna?.worstPair.manPublicId).toBe("erik")
-    expect(anna?.worstPair.diffKr).toBe(4000)
-    expect(anna?.pairs.map((p) => p.manPublicId)).toEqual(["erik", "jonas"])
-  })
-
-  it("never pairs within the same level or against a higher-level man", () => {
-    const result = crossLevelPairs([
-      member("w", "Kvinna", 3, 50000),
-      member("same-level", "Man", 3, 60000),
-      member("higher-level", "Man", 2, 70000),
-    ])
-    expect(result).toHaveLength(0)
-  })
-
-  it("marks same-track pairs (the stronger warning sign)", () => {
-    const result = crossLevelPairs([
-      member("w", "Kvinna", 2, 50000, "ic"),
-      member("m1", "Man", 3, 55000, "ic"),
-      member("m2", "Man", 3, 56000, "manager"),
-    ])
-    const pairs = result[0]?.pairs ?? []
-    expect(pairs.find((p) => p.manPublicId === "m1")?.sameTrack).toBe(true)
-    expect(pairs.find((p) => p.manPublicId === "m2")?.sameTrack).toBe(false)
-  })
-
-  it("skips members without a level or base salary", () => {
-    const result = crossLevelPairs([
-      member("w", "Kvinna", null, 50000),
-      member("w2", "Kvinna", 2, null),
-      member("m", "Man", 3, 60000),
-    ])
-    expect(result).toHaveLength(0)
-  })
-
-  it("orders women by their worst pair's diff, then publicId", () => {
-    const result = crossLevelPairs([
-      member("small-gap", "Kvinna", 2, 59000),
-      member("big-gap", "Kvinna", 2, 50000),
-      member("m", "Man", 3, 60000),
-    ])
-    expect(result.map((w) => w.personPublicId)).toEqual([
-      "big-gap",
-      "small-gap",
-    ])
   })
 })

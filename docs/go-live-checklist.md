@@ -199,16 +199,23 @@ in the same change.
   below) and their keys went with it.
 - [ ] **Native review of the Iteration 3 analysis-ladder strings (nb/da/fi).**
   The 2026-08-06/07 IA rebuild added the `dashboard.payMapping.analysis.*`
-  namespace (the spine's progress readout and samverkan strip, the next-step
-  panel, the chapter position and statutory duty copy, the worklist, the
-  completion row, the cross-level observation, and the phone's step position
-  and steps sheet) and the `dashboard.payMapping.supplementary.*` drawer with
-  its five item labels. The nb, da, and fi values are machine-drafted; have
-  native speakers review them before launch. Two phrasings need particular
-  care because they are claims a reader may take as legal statements: the
-  drawer heading ("Further analysis, does not affect completion", which is a
-  claim about OUR gate and must never read as a claim about the law) and the
-  cross-level observation sentence shown at the moment of finishing.
+  namespace (the spine's progress readout and samverkan strip, the chapter
+  position and statutory duty copy, the worklist, the completion row, and the
+  phone's step position and steps sheet). The nb, da, and fi values are
+  machine-drafted; have native speakers review them before launch. The
+  supplementary drawer, the next-step panel and the cross-level observation
+  were in this entry's original scope and are no longer: the chapter rebuild
+  removed all three and their keys went with them.
+- [ ] **Native review of the Iteration 4 dashboard strings (nb/da/fi).**
+  The 2026-08-08/09 rebuild added the overview's widget copy
+  (`dashboard.overview.widgets.*` including both trend titles and the two
+  empty-state sentences, and the `quickActions.*` label/detail pairs), the
+  run overview's population deltas
+  (`dashboard.payMapping.overview.population*`), and the numbered chapter tab
+  format (`dashboard.payMapping.analysis.chapterTab`). All machine-drafted.
+  One phrasing needs particular care because a reader may take it as a claim
+  about their own data: `widgets.gapTrend.unmeasuredEmpty`, which says a
+  mapping had no MEASURABLE gap, not that it had no gap.
 - [ ] **Gate `deletePayMappingRun` on run status.** The mutation currently
   hard-deletes a run (and its snapshot rows + group analyses) regardless of
   `status`, including a `completed` run, which is the statutory kartläggning

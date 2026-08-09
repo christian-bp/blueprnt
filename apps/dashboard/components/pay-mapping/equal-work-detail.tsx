@@ -131,52 +131,6 @@ function GapCard({
   )
 }
 
-export function MetricLine({
-  metric,
-  currency,
-  muted = false,
-  prefix,
-}: {
-  metric: GapMetric
-  currency: string
-  muted?: boolean
-  prefix?: string
-}) {
-  const t = useTranslations("dashboard.payMapping.detail.summary")
-  const format = useFormatter()
-  const money = useMoney()
-  if (metric.womenMean === null || metric.menMean === null) return null
-  const gap =
-    metric.gapKr !== null && metric.gapPct !== null
-      ? t("gap", {
-          kr: money(-metric.gapKr, currency, { signed: true }),
-          pct: percentText(metric.gapPct, format),
-        })
-      : null
-  return (
-    <p
-      className={
-        muted
-          ? "text-muted-foreground text-xs"
-          : "text-muted-foreground text-sm"
-      }
-    >
-      {prefix !== undefined && <span>{prefix} </span>}
-      {t("womenMean", { value: money(metric.womenMean, currency) })}
-      {" · "}
-      {t("menMean", { value: money(metric.menMean, currency) })}
-      {gap !== null && (
-        <>
-          {" · "}
-          <span className={muted ? undefined : "font-medium text-foreground"}>
-            {gap}
-          </span>
-        </>
-      )}
-    </p>
-  )
-}
-
 // The equal-work detail view (Iteration 2 note 3): a compact summary strip
 // (counts, per-gender means, the gap in kr and %), the swimlane dot plot as
 // the first visual, then the individual member table. The group's primary

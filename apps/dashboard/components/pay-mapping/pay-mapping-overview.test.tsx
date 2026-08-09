@@ -3,15 +3,14 @@ import en from "@workspace/i18n/messages/en.json"
 import { NextIntlClientProvider } from "next-intl"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-// The journey card (rendered first) builds its CTA/hasPreviousCompletedRun
-// from the current path, same as pay-mapping-run-indicator.tsx.
+// The overview reads the current path to build its in-run links, same as
+// pay-mapping-run-indicator.tsx.
 vi.mock("next/navigation", () => ({
   usePathname: () => "/pay-mappings/pay-2026",
 }))
 
-// The journey card (rendered above the KPI/chart grids) calls useMutation +
-// useQuery + useOrganization, so this test file needs the same mocks as
-// pay-mapping-journey-card.test.tsx.
+// The KPI tiles and panels reach for useMutation + useQuery +
+// useOrganization, so the whole Convex surface is mocked here.
 vi.mock("@/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
